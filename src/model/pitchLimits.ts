@@ -1,5 +1,6 @@
 import { boat, type BoatData } from './boat';
 import { boomPoint, vangStrutEnds } from './rigGeometry';
+import { capPaidOut } from './ropeLengths';
 import { distance, vec3 } from './vec3';
 
 /**
@@ -41,13 +42,16 @@ export function toppingLiftLength(psiDeg: number, data: BoatData = boat): number
 export function vangPaidOut(easedPct: number, data: BoatData = boat): number {
   const extension = vangStrutLength(vangLimit(easedPct, data), data);
   const hauled = vangStrutLength(vangLimit(0, data), data);
-  return data.rig.vang.tacklePurchase * (extension - hauled);
+  return capPaidOut('rope_vang', data.rig.vang.tacklePurchase * (extension - hauled), data);
 }
 
-/** Topping lift paid out from fully hauled: the boom end hangs lower, so the line is longer. */
+/**
+ * Topping lift paid out from fully hauled: the boom end hangs lower, so the line is longer.
+ * Never more than the rope's total length (as for the vang).
+ */
 export function toppingLiftPaidOut(easedPct: number, data: BoatData = boat): number {
-  return (
+  const paid =
     toppingLiftLength(toppingLiftLimit(easedPct, data), data) -
-    toppingLiftLength(toppingLiftLimit(0, data), data)
-  );
+    toppingLiftLength(toppingLiftLimit(0, data), data);
+  return capPaidOut('rope_topping_lift', paid, data);
 }

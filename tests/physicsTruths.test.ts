@@ -142,16 +142,17 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
     expect(back).toBeLessThan(front / 4);
   });
 
-  it('PT-04 the boom cannot swing past the shrouds: never beyond maxSwingDeg (80°)', () => {
-    expect(boat.rig.boom.maxSwingDeg).toBe(80);
+  it('PT-04 the boom cannot swing past the shrouds: never beyond maxSwingDeg (about 72°)', () => {
+    const max = boat.rig.boom.maxSwingDeg;
+    expect(max).toBe(72);
     for (const wd of [100, 135, 150, 170, 180, -170, -135, -100]) {
       const sol = settle({ ctl_wind_dir: wd, ctl_mainsheet: 100 });
-      expect(Math.abs(sol.thetaDeg), `wd ${wd}`).toBeCloseTo(80, 6);
+      expect(Math.abs(sol.thetaDeg), `wd ${wd}`).toBeCloseTo(max, 6);
     }
     for (let wd = -180; wd <= 180; wd += 5) {
       for (const ms of [0, 50, 100]) {
         const sol = settle({ ctl_wind_dir: wd, ctl_mainsheet: ms, ctl_vang: 100 });
-        expect(Math.abs(sol.thetaDeg)).toBeLessThanOrEqual(80 + 1e-9);
+        expect(Math.abs(sol.thetaDeg)).toBeLessThanOrEqual(max + 1e-9);
       }
     }
   });
@@ -185,20 +186,21 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
       1,
     );
     gybe = run(gybe, { ...sheet, ctl_wind_dir: -165 }, 0.25);
-    // An ordinary move: sheet let go from fully hauled on a broad reach (80° swing).
+    // An ordinary move: sheet let go from fully hauled on a broad reach (a full swing out).
     const ordinary = run(
       initialRig(controls({ ...sheet, ctl_wind_dir: 165, ctl_mainsheet: 0 })),
       { ...sheet, ctl_wind_dir: 165 },
       0.25,
     );
-    const gybeProgress = (gybe.theta.value + 80) / 160;
-    const ordinaryProgress = Math.abs(ordinary.theta.value) / 80;
+    const max = boat.rig.boom.maxSwingDeg;
+    const gybeProgress = (gybe.theta.value + max) / (2 * max);
+    const ordinaryProgress = Math.abs(ordinary.theta.value) / max;
     expect(gybeProgress).toBeGreaterThan(0.5);
     expect(gybeProgress).toBeGreaterThan(2 * ordinaryProgress);
   });
 
   it('PT-06 more boom angle needs more mainsheet, the same on both sides', () => {
-    for (let theta = 0; theta < 80; theta += 5) {
+    for (let theta = 0; theta < boat.rig.boom.maxSwingDeg; theta += 5) {
       for (const psi of [-6, 0, 6, 12]) {
         const here = sheetLength({ thetaDeg: theta, psiDeg: psi });
         expect(sheetLength({ thetaDeg: theta + 5, psiDeg: psi })).toBeGreaterThan(here);
@@ -209,7 +211,8 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
       expect(mainsheetPaidOut(ms + 5)).toBeGreaterThan(mainsheetPaidOut(ms));
     }
     expect(mainsheetPaidOut(0)).toBe(0);
-    expect(mainsheetPaidOut(100)).toBeCloseTo(12.7, 1);
+    // PHASE1_SPEC 8.2: about 11 m at 100 % with the manual's boom height and S.
+    expect(mainsheetPaidOut(100)).toBeCloseTo(11, 0);
   });
 
   it('PT-06 near the centreline a little rope gives a lot of angle; far out, a lot of rope gives little angle', () => {

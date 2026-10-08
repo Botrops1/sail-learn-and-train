@@ -119,11 +119,10 @@ export function fillFor(aoaDeg: number, data: BoatData = boat): number {
  * The fill that sets how much the wind lifts the boom (ψ_t): the fill the main would have with
  * the boom as low as the topping lift allows, where the sheet lets it swing furthest.
  *
- * PHASE1_SPEC 8.3 says to use the fill from the previous frame. With the current data that
- * loop (fill → lift → pitch → swing → fill) has a gain of about 2 near close-hauled, so it has
- * two stable answers and the boom jumps 8–10° on a 1 % sheet change, against the continuity
- * rule in PHASE1_SPEC 11. This estimate breaks the loop: the answer is unique and smooth, and
- * on a reach or run (where the sail is clearly filled) nothing changes. Raised in the M2 PR.
+ * PHASE1_SPEC 8.3 (decided in M2): the previous frame's fill made the loop fill → lift →
+ * pitch → swing → fill bistable near close-hauled (gain about 2), so the boom jumped 8–10° on a
+ * 1 % sheet change. This estimate breaks the loop: the answer is unique and smooth, and on a
+ * reach or run (where the sail is clearly filled) nothing changes.
  */
 export function liftFill(
   input: BoomInput,

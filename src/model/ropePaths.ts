@@ -132,7 +132,8 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
   const lead = data.rig.lineLead;
   const mastExit = (side: 1 | -1, slot: number) => leadPoint(lead.mastExit, side, slot, data);
 
-  // Mainsheet: two parts from each deck block up to the three boom blocks, then the tails.
+  // Mainsheet: two parts from each deck block up to the three boom blocks. Each tail runs
+  // forward to the mast-foot organiser (manual lead plan), then aft to its clutch.
   const [deckPort, deckStarboard] = deckBlocks(data);
   const spacing = data.modelDetail.mainsheetBoomBlockSpacing;
   const boomBlock = (k: number) =>
@@ -162,19 +163,11 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
         feed: 0,
       },
       {
-        points: [
-          deckPort,
-          leadPoint(lead.coamingFront, -1, 4, data),
-          clutchPoint('clutch_bank_b', 4, data),
-        ],
+        points: [deckPort, ...leadToClutch('clutch_bank_b', 4, data)],
         feed: sheetOut,
       },
       {
-        points: [
-          deckStarboard,
-          leadPoint(lead.coamingFront, 1, 1, data),
-          clutchPoint('clutch_bank_a', 1, data),
-        ],
+        points: [deckStarboard, ...leadToClutch('clutch_bank_a', 1, data)],
         feed: sheetOut,
       },
     ],

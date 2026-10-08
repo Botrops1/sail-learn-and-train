@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-08
+Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.7, 11)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -128,7 +128,7 @@ From `hanse508.json → controls.list`. Each rope control:
 
 - Slider plus `−` / `+` steppers. Press-and-hold on a stepper repeats (accelerating).
 - Values snap to the global step (1 % or 5 %, default 5 %). Keyboard arrows move by the step when focused.
-- Shows the value ("35 % eased"), the rope's **paid-out length in metres** relative to fully hauled, and a state chip: **taut**, **slack**, or **fighting** (see 8.3, step 4).
+- Shows the value ("35 % eased"), the rope's **paid-out length in metres** relative to fully hauled (never more than the rope's total length from `runningRigging`), and a state chip: **taut**, **slack**, or **fighting** (see 8.3, step 4).
 - The model does not jump to the new value. The rope length approaches the target with a first-order lag (`visual.controlResponseTimeS`), so the user sees the boom move.
 
 Wheel control: −35° … +35° rudder, slider plus steppers (step 1° or 5° following the same global setting).
@@ -170,7 +170,7 @@ Without any rope the boom would weathervane and point downwind:
 
 `θ_free = −windFrom`, clamped to `±boom.maxSwingDeg`.
 
-At wind from near dead astern this is ambiguous. Use **hysteresis**: the boom stays on its current side until the wind comes more than `visual.gybeHysteresisDeg` from the other side (sailing "by the lee"), then swings across to the other side. Animate the swing and flash a short "GYBE" label. Phase 2 will add the energy of that swing.
+At wind from near dead astern this is ambiguous. Use **hysteresis**: the boom stays on its current side until the wind comes `visual.gybeHysteresisDeg` or more from the other side (sailing "by the lee"; with 15° the boom crosses at exactly −165° when the wind goes 170 → 180 → −170 → −165), then swings across to the other side. Animate the swing and flash a short "GYBE" label. Phase 2 will add the energy of that swing.
 
 The jib's free direction is the same: its chord wants to point downwind. Its side follows the sign of `windFrom` (the car crosses when the wind crosses the bow); within the gybe hysteresis band near dead astern it stays on the same side as the boom.
 
@@ -191,13 +191,13 @@ Control mapping for `ctl_mainsheet = e %`:
 - `L_min = L(0, ψ_lowest)` where `ψ_lowest = min(toppingLiftEasedDeg, vangHauledDeg)`. This is the boom on the centreline at its lowest.
 - `L_max = L(maxSwingDeg, vangEasedDeg)`. Full ease always allows full swing.
 - `L_avail = L_min + e/100 · (L_max − L_min)`.
-- Rope paid out from fully hauled = `partsPerSide · (L_avail − L_min)` (about 12.7 m at 100 % with the current data).
+- Rope paid out from fully hauled = `partsPerSide · (L_avail − L_min)` (about 11 m at 100 % with the current data).
 
 ### 8.3 Boom solve (each frame)
 
 1. **Targets.**
    - Free swing `θ_free` from 8.1.
-   - Pitch target `ψ_t = gravityDropDeg + fill · windLiftMaxDeg · min(1, speed / windLiftReferenceKn)`. This is a teaching approximation: the loaded sail lifts the boom against gravity; with no wind the rigid vang's spring keeps the boom from drooping more than `gravityDropDeg`. Use the main's `fill` from the previous frame to break the loop (fill depends on θ, θ on ψ).
+   - Pitch target `ψ_t = gravityDropDeg + fill · windLiftMaxDeg · min(1, speed / windLiftReferenceKn)`. This is a teaching approximation: the loaded sail lifts the boom against gravity; with no wind the rigid vang's spring keeps the boom from drooping more than `gravityDropDeg`. The `fill` here is an estimate that breaks the loop (fill depends on θ, θ on ψ): the fill the main would have with the boom at its **lowest allowed pitch** (the topping-lift limit), where the sheet lets it swing furthest: `fill_lift = fill(|windFrom| − min(|θ_free|, θ_max(lower)))`; 0 below 1 kn, 1 by the lee. (Decided in M2: using the previous frame's fill made the loop bistable near close-hauled, so a 1 % sheet change could move the boom 8–10°.)
    - Wind below 1 kn: no swing target (the boom keeps its current θ), `fill` = 0.
 2. **Hard limits on pitch.**
    - Lower: topping lift, interpolated `toppingLiftHauledDeg` (0 %) → `toppingLiftEasedDeg` (100 %).
@@ -212,14 +212,14 @@ Control mapping for `ctl_mainsheet = e %`:
    - If no ψ is feasible, the sheet is pulling the boom lower than the topping lift allows: θ = 0, ψ = lower, mark mainsheet and topping lift *fighting*.
    - This was prototyped with the current data: it is smooth across sheet and wind sweeps; at 20 kn on a beam reach the vang changes boom pitch by about 1° at 5 % sheet but about 10–14° at 40–70 % sheet (PT-07, PT-08). Keep it that way when tuning.
 4. **Rope states.**
-   - Mainsheet **taut** when it constrains the boom: `|θ_free| − |θ| > 0.5°` or `ψ < ψ_t − 0.5°`. Otherwise **slack**, with slack = `L_avail − L(θ, ψ)` (can be 0 m, e.g. head to wind with the sheet hauled in).
+   - Mainsheet **taut** when it constrains the boom (`|θ_free| − |θ| > 0.5°` or `ψ < ψ_t − 0.5°`) **and** has no spare rope (`L_avail − L(θ, ψ)` below `visual.solver.tautToleranceM`). Otherwise **slack**, with slack = `L_avail − L(θ, ψ)` (can be 0 m, e.g. head to wind with the sheet hauled in). So a sheet hanging loose while the vang holds the boom down is never called taut.
    - Vang **taut** when ψ is at its upper limit and `ψ_t` is above it.
    - Topping lift **taut** when ψ is at its lower limit and something pulls the boom down (gravity or the sheet).
 5. **Smoothing.** Move the displayed θ and ψ towards the solved values with a critically damped spring (time constant about 0.3 s), so changes are visible but quick. A gybe swing uses its own faster spring.
 
 ### 8.4 Angle of attack, fill and luffing
 
-- `AoA = |windFrom| − |θ|`, using the **unclamped** wind angle (so on a run with the boom at its 80° stop the sail is filled, not luffing). It is the angle by which the sheet holds the sail in from pure weathervaning. Clamp it at ≥ 0.
+- `AoA = |windFrom| − |θ|`, using the **unclamped** wind angle (so on a run with the boom at its 72° stop the sail is filled, not luffing). It is the angle by which the sheet holds the sail in from pure weathervaning. Clamp it at ≥ 0.
 - **By the lee** (wind on the same side as the boom, inside the gybe hysteresis band): treat the main as filled from behind (`fill = 1`) and show a small "by the lee: gybe risk" label.
 - `fill = smoothstep(luffAoaDeg.fullyLuffing, luffAoaDeg.fullyFilled, AoA)`.
 - `fill ≈ 0` means the sail **luffs**: animate flapping that starts at the luff and grows with wind speed.
@@ -248,8 +248,8 @@ Control mapping for `ctl_mainsheet = e %`:
 
 - Each rope has a path from data: fixed points plus moving points (boom blocks, clew, car, boom end).
 - Only the **working segment** can sag. The other segments are straight.
-- Sag: for chord length d and slack s, use a parabola with mid-sag `f = sqrt(3·d·s/8)`, capped at 1.5 m. Direction: straight down, gravity.
-- The visual radius is `visual.ropeRenderRadius` (thicker than real so ropes are visible on a phone).
+- Sag: for chord length d and slack s, use a parabola with mid-sag `f = sqrt(3·d·s/8)`, capped at `visual.ropeMaxSagM` (1.5 m). Direction: gravity **at right angles to the rope** (the part of "down" across the rope; the same as straight down for a level rope, and still visible on a steep one such as a mainsheet part). A vertical rope sags aft. A sagging rope never hangs below the deck under it.
+- The visual radius is `visual.ropeRenderRadius` (thicker than real so ropes are visible on a phone), but a rope is never drawn thinner than `SCENE.ropes.minScreenWidthPx` (about 2.5 CSS px) on screen: far from the camera the tube gets wider, close up the data radius is used.
 - Updating geometry every frame is fine for about 10 ropes. Reuse buffers instead of creating new objects every frame.
 
 ## 9. State, URL and architecture
@@ -293,7 +293,7 @@ Shows FPS, layout mode, viewport size and aspect, device pixel ratio, θ/ψ/φ, 
 
 | Kind | What |
 |---|---|
-| Unit (Vitest) | Every Phase 1 rule in `PHYSICS_TRUTHS.md` marked `Phase 1` gets at least one test named after its id (e.g. `PT-01 ...`). Plus: mirror symmetry (windFrom → −windFrom gives θ → −θ), monotonic sheet length, continuity (a 1 % control change never moves θ by more than 5°, except a gybe), no NaN anywhere across a sweep of all wind directions × control values. |
+| Unit (Vitest) | Every Phase 1 rule in `PHYSICS_TRUTHS.md` marked `Phase 1` gets at least one test named after its id (e.g. `PT-01 ...`). Plus: mirror symmetry (windFrom → −windFrom gives θ → −θ), monotonic sheet length, continuity (a 1 % control change never moves θ by more than 5°, except a gybe and the first 1 % of mainsheet from fully hauled: by the sheet geometry alone (PT-06) that step gives about 5.5°, and is checked by its own test), no NaN anywhere across a sweep of all wind directions × control values. |
 | Data | A test loads `hanse508.json` and `parts.json` and checks that every referenced id exists, that every rope with a control points to an existing control, and that the numbers are finite and inside sane ranges. |
 | Visual | `npm run shots` (Playwright, headless Chromium) saves PNGs at 390×844, 820×1000 and 1440×900 for the five wind presets × camera presets Side (port) and Top, into `docs/screenshots/`. Look at them before saying visual work is done. Commit the set at the end of each milestone. If WebGL fails headless, try `--use-angle=swiftshader` / `--enable-unsafe-swiftshader`. |
 | CI | GitHub Actions on every PR: typecheck, lint, unit tests, build. On `main`: the same plus deploy to Pages. |

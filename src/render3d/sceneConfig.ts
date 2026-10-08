@@ -53,6 +53,12 @@ export const SCENE = {
       halyard: '#4b545c',
     },
     fighting: '#e8112d',
+    /**
+     * Ropes are never drawn thinner than this on screen (CSS px), so sag and colour show on a
+     * phone at whole-boat zoom. Close up, the 3D radius from the data (visual.ropeRenderRadius)
+     * is used.
+     */
+    minScreenWidthPx: 2.5,
     radialSegments: 6,
     /** Length of one stripe pattern along the rope, metres; it slides as the rope moves. */
     stripePeriodM: 0.3,

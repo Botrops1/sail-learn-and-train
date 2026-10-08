@@ -95,18 +95,25 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     if (state.selection !== previous.selection) highlight(state.selection);
   });
 
+  let canvasHeight = 1;
   return {
     pixelRatio,
     resize(width, height, bottomInset, stacked) {
       if (width <= 0 || height <= 0) return;
       renderer.setSize(width, height, false);
+      canvasHeight = height;
       rig.setViewport(width, height, bottomInset, { topBowUp: stacked });
     },
     render(now) {
       const state = store.getState();
-      boatModel.update(state.rig, state.controls);
-      streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
       rig.update(now);
+      camera.updateMatrixWorld();
+      // Pixel size at 1 m: the projection's vertical scale over the canvas height (CSS px).
+      boatModel.update(state.rig, state.controls, {
+        eye: camera.position.toArray() as [number, number, number],
+        metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
+      });
+      streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
       renderer.render(scene, camera);
     },
   };

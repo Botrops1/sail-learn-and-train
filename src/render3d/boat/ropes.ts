@@ -12,7 +12,26 @@ import { asThin, partMesh, type PartUserData, type PickSegment } from './parts';
  */
 export interface RopeMeshes {
   objects: THREE.Mesh[];
-  update(drawings: RopeDrawing[]): void;
+  update(drawings: RopeDrawing[], view?: RopeView): void;
+}
+
+/**
+ * Where the camera is, so ropes far away can be drawn thicker than their 3D radius and stay
+ * visible on a phone (at least `SCENE.ropes.minScreenWidthPx` across).
+ */
+export interface RopeView {
+  eye: Vec3;
+  /** Size of one screen pixel (CSS px), in metres, at 1 m from the camera. */
+  metresPerPixelAt1m: number;
+}
+
+/** Tube radius at a point: the data's radius, or more if that would be too thin on screen. */
+function radiusAt(p: Vec3, view: RopeView | undefined): number {
+  const radius = boat.visual.ropeRenderRadius;
+  if (!view) return radius;
+  const distanceToEye = Math.hypot(p[0] - view.eye[0], p[1] - view.eye[1], p[2] - view.eye[2]);
+  const minimum = (SCENE.ropes.minScreenWidthPx / 2) * view.metresPerPixelAt1m * distanceToEye;
+  return Math.max(radius, minimum);
 }
 
 type ColorKey = keyof typeof SCENE.ropes.colors;
@@ -94,8 +113,13 @@ const binormal = new THREE.Vector3();
 const radial = new THREE.Vector3();
 
 /** Writes one strand's tube into the buffers, starting at vertex `base`. */
-function writeStrand(rope: RopeMesh, base: number, points: Vec3[], feed: number): void {
-  const radius = boat.visual.ropeRenderRadius;
+function writeStrand(
+  rope: RopeMesh,
+  base: number,
+  points: Vec3[],
+  feed: number,
+  view: RopeView | undefined,
+): void {
   const period = SCENE.ropes.stripePeriodM;
   let arc = 0;
   for (let i = 0; i < points.length; i += 1) {
@@ -109,6 +133,7 @@ function writeStrand(rope: RopeMesh, base: number, points: Vec3[], feed: number)
     normal.crossVectors(tangent, Math.abs(tangent.dot(UP)) > 0.9 ? SIDE : UP).normalize();
     binormal.crossVectors(tangent, normal);
     const u = (arc + feed) / period;
+    const radius = radiusAt(p, view);
     for (let j = 0; j < RADIAL; j += 1) {
       const angle = (2 * Math.PI * j) / RADIAL;
       radial
@@ -163,7 +188,7 @@ export function buildRopes(initial: RopeDrawing[]): RopeMeshes {
     };
   };
 
-  const update = (drawings: RopeDrawing[]) => {
+  const update = (drawings: RopeDrawing[], view?: RopeView) => {
     for (const drawing of drawings) {
       const rope = ropes.get(drawing.id);
       if (!rope) continue;
@@ -173,7 +198,7 @@ export function buildRopes(initial: RopeDrawing[]): RopeMeshes {
       }
       let base = 0;
       drawing.strands.forEach((strand) => {
-        writeStrand(rope, base, strand.points, strand.feed);
+        writeStrand(rope, base, strand.points, strand.feed, view);
         base += strand.points.length * RADIAL;
       });
       const geometry = rope.mesh.geometry;

@@ -5,6 +5,7 @@ import { boat } from '../src/model/boat';
 import { defaultControls } from '../src/model/controls';
 import { initialRig } from '../src/model/sim';
 import { buildBoat } from '../src/render3d/boat';
+import { SCENE } from '../src/render3d/sceneConfig';
 
 /** No wind, topping lift holding the boom level: the boom stays on the centreline at ψ = 0. */
 const CENTRED = {
@@ -184,5 +185,32 @@ describe('boat model', () => {
   it('optional sails are data-driven: the gennaker is not built while disabled', () => {
     expect(boat.sails.gennaker.enabled).toBe(false);
     expect(partIds.has('sail_gennaker')).toBe(false);
+  });
+});
+
+describe('rope thickness on screen', () => {
+  it('far from the camera a rope is drawn at least minScreenWidthPx wide; close up, at its 3D radius', () => {
+    const controls = defaultControls();
+    const rig = initialRig(controls);
+    const model = buildBoat(controls, rig);
+    const vang = model.root.getObjectByName('rope_vang') as THREE.Mesh;
+    const widthAcross = () => {
+      vang.geometry.computeBoundingBox();
+      const box = vang.geometry.boundingBox as THREE.Box3;
+      // The tackle and its lead run mostly fore-aft and up; across (z) is about one tube wide
+      // near the mast foot. Use the smallest box side as a stand-in for the thickness.
+      const size = box.getSize(new THREE.Vector3());
+      return Math.min(size.x, size.y, size.z);
+    };
+    model.update(rig, controls);
+    const plain = widthAcross();
+    const metresPerPixelAt1m = 0.002;
+    model.update(rig, controls, { eye: [0, 3, -200], metresPerPixelAt1m });
+    const far = widthAcross();
+    expect(far).toBeGreaterThan(plain);
+    const pixelsAcross = far / (metresPerPixelAt1m * 200);
+    expect(pixelsAcross).toBeGreaterThanOrEqual(SCENE.ropes.minScreenWidthPx * 0.9);
+    model.update(rig, controls, { eye: [0, 3, -0.5], metresPerPixelAt1m });
+    expect(widthAcross()).toBeCloseTo(plain, 6);
   });
 });

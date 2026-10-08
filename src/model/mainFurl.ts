@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import { capPaidOut } from './ropeLengths';
 
 /**
  * In-mast furling with a two-line drive (PHASE1_SPEC 8.6, PT-12). One furling line has two
@@ -26,8 +27,8 @@ export function mainFurlLengths(unfurledPct: number, data: BoatData = boat): Mai
   return {
     unfurled: f,
     clewDistance: f * foot,
-    inTailPaidOut: f * travel,
-    outTailPaidOut: (1 - f) * travel,
-    outhaulPaidOut: data.rig.outhaul.purchase * (1 - f) * foot,
+    inTailPaidOut: capPaidOut('rope_main_furling_line', f * travel, data),
+    outTailPaidOut: capPaidOut('rope_main_furling_line', (1 - f) * travel, data),
+    outhaulPaidOut: capPaidOut('rope_outhaul', data.rig.outhaul.purchase * (1 - f) * foot, data),
   };
 }

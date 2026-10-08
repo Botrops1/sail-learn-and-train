@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import { capPaidOut } from './ropeLengths';
 import type { BoomPose } from './rigGeometry';
 import type { Vec3 } from './vec3';
 
@@ -61,10 +62,14 @@ export function availableSheetLength(easedPct: number, data: BoatData = boat): n
   return min + (easedPct / 100) * (max - min);
 }
 
-/** Rope paid out at the clutches from fully hauled: partsPerSide · (L_avail − L_min). */
+/**
+ * Rope paid out at the clutches from fully hauled: partsPerSide · (L_avail − L_min), never more
+ * than the rope's total length.
+ */
 export function mainsheetPaidOut(easedPct: number, data: BoatData = boat): number {
   const { min } = sheetRange(data);
-  return data.rig.mainsheet.partsPerSide * (availableSheetLength(easedPct, data) - min);
+  const paid = data.rig.mainsheet.partsPerSide * (availableSheetLength(easedPct, data) - min);
+  return capPaidOut('rope_mainsheet', paid, data);
 }
 
 /** Bisection steps: 30 halvings of 80° is under a millionth of a degree. */

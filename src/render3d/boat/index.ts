@@ -11,14 +11,17 @@ import { buildHull } from './hull';
 import { buildMainSail } from './mainSail';
 import { createMaterials } from './materials';
 import { buildRig } from './rig';
-import { buildRopes } from './ropes';
+import { buildRopes, type RopeView } from './ropes';
 import { buildJib } from './sails';
 
 export interface BoatModel {
   root: THREE.Group;
   boomPivot: THREE.Group;
-  /** Shows the rig as solved: boom pose, mainsail shape, ropes and the masthead indicator. */
-  update(rig: RigState, controls: Controls): void;
+  /**
+   * Shows the rig as solved: boom pose, mainsail shape, ropes and the masthead indicator.
+   * With `ropeView`, ropes far from the camera are drawn thick enough to see.
+   */
+  update(rig: RigState, controls: Controls, ropeView?: RopeView): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
 }
@@ -66,10 +69,10 @@ export function buildBoat(
     windex.pivot,
   );
 
-  const update = (next: RigState, nextControls: Controls) => {
+  const update = (next: RigState, nextControls: Controls, ropeView?: RopeView) => {
     rigParts.setBoomPose(drawnPose(next));
     mainSail.update(sailInput(next, nextControls));
-    ropes.update(ropeDrawings(next));
+    ropes.update(ropeDrawings(next), ropeView);
     windex.update(nextControls.ctl_wind_dir);
     root.updateMatrixWorld(true);
   };

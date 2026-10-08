@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { initialState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
+import { boat } from '../src/model/boat';
 import { defaultControls } from '../src/model/controls';
 import { CAMERA_PRESETS, DEFAULT_CAMERA, DEFAULT_SETTINGS } from '../src/model/settings';
 
@@ -55,8 +56,8 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
 
   it('a link opens with the rig already settled for its controls', () => {
     const state = parseUrlState('?wd=90&ms=100');
-    expect(state.rig.solution.thetaDeg).toBeCloseTo(-80, 6);
-    expect(state.rig.theta.value).toBeCloseTo(-80, 6);
+    expect(state.rig.solution.thetaDeg).toBeCloseTo(-boat.rig.boom.maxSwingDeg, 6);
+    expect(state.rig.theta.value).toBeCloseTo(-boat.rig.boom.maxSwingDeg, 6);
   });
 
   it('reads sel when it is a registered id, otherwise ignores it', () => {
