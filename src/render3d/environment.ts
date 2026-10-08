@@ -30,58 +30,86 @@ function valueNoise(random: () => number, period: number): (x: number, y: number
   };
 }
 
+/** Linear 0..1 → sRGB byte, through a lookup table (the sky has half a million pixels). */
+const SRGB_STEPS = 4096;
+const srgbTable = Uint8Array.from({ length: SRGB_STEPS + 1 }, (_, i) => {
+  const c = i / SRGB_STEPS;
+  const v = c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
+  return Math.round(Math.min(1, Math.max(0, v)) * 255);
+});
+function toByte(linear: number): number {
+  return srgbTable[Math.round(Math.min(1, Math.max(0, linear)) * SRGB_STEPS)] ?? 0;
+}
+
 export function skyTexture(): THREE.DataTexture {
   const s = SCENE.sky;
   const width = s.width;
   const height = s.height;
   const random = seededRandom(2018);
-  const octaves = [8, 16, 32].map((period) => ({ period, noise: valueNoise(random, period) }));
-  const zenith = new THREE.Color(s.zenith);
-  const horizon = new THREE.Color(s.horizon);
-  const below = new THREE.Color(s.belowHorizon);
-  const glow = new THREE.Color(s.sunGlow);
-  const cloud = new THREE.Color(s.cloud);
+  const octaves = [8, 16, 32].map((period, k) => ({
+    period,
+    amplitude: 1 / (k + 1),
+    noise: valueNoise(random, period),
+  }));
+  const weight = octaves.reduce((sum, o) => sum + o.amplitude, 0);
+  // Colours in the linear working space, as plain numbers.
+  const rgb = (hex: string) => {
+    const c = new THREE.Color(hex);
+    return [c.r, c.g, c.b] as const;
+  };
+  const zenith = rgb(s.zenith);
+  const horizon = rgb(s.horizon);
+  const below = rgb(s.belowHorizon);
+  const glow = rgb(s.sunGlow);
+  const cloud = rgb(s.cloud);
   const sun = sunDirection();
   const data = new Uint8Array(width * height * 4);
-  const colour = new THREE.Color();
-  const srgb = { r: 0, g: 0, b: 0 };
-  const direction = new THREE.Vector3();
+  const cosAz = Float32Array.from({ length: width }, (_, x) =>
+    Math.cos(((x + 0.5) / width - 0.5) * 2 * Math.PI),
+  );
+  const sinAz = Float32Array.from({ length: width }, (_, x) =>
+    Math.sin(((x + 0.5) / width - 0.5) * 2 * Math.PI),
+  );
+  const base = [0, 0, 0];
   for (let y = 0; y < height; y += 1) {
     // Row 0 is the bottom of the texture (straight down), the last row straight up.
     const elevation = ((y + 0.5) / height - 0.5) * Math.PI;
+    const cosEl = Math.cos(elevation);
+    const sinEl = Math.sin(elevation);
+    const t = elevation < 0 ? Math.min(1, -elevation / 0.25) : Math.pow(Math.max(0, sinEl), 0.6);
+    const far = elevation < 0 ? below : zenith;
+    for (let k = 0; k < 3; k += 1) {
+      base[k] = (horizon[k] ?? 0) + ((far[k] ?? 0) - (horizon[k] ?? 0)) * t;
+    }
+    // Clouds thin out towards the horizon and the zenith.
+    const band = elevation > 0 ? Math.sin(Math.min(1, elevation / 0.9) * Math.PI) : 0;
+    const v = elevation / (Math.PI / 2);
     for (let x = 0; x < width; x += 1) {
-      const u = (x + 0.5) / width;
-      const azimuth = (u - 0.5) * 2 * Math.PI;
-      direction.set(
-        Math.cos(elevation) * Math.cos(azimuth),
-        Math.sin(elevation),
-        Math.cos(elevation) * Math.sin(azimuth),
-      );
-      if (elevation < 0) {
-        colour.copy(horizon).lerp(below, Math.min(1, -elevation / 0.25));
-      } else {
-        colour.copy(horizon).lerp(zenith, Math.pow(Math.sin(elevation), 0.6));
-        // Clouds: patches of noise, thinning towards the horizon and the zenith.
+      let r = base[0] ?? 0;
+      let g = base[1] ?? 0;
+      let b = base[2] ?? 0;
+      if (band > 0.01) {
+        const u = (x + 0.5) / width;
         let n = 0;
-        let weight = 0;
-        octaves.forEach(({ period, noise }, k) => {
-          const amplitude = 1 / (k + 1);
-          // Stretch along the horizon, so clouds near it look flatter.
-          n += amplitude * noise(u * period, (elevation / (Math.PI / 2)) * period * 0.5);
-          weight += amplitude;
-        });
-        n /= weight;
-        const band = Math.sin(Math.min(1, elevation / 0.9) * Math.PI);
-        const amount = THREE.MathUtils.smoothstep(n, 0.5, 0.72) * band * s.cloudOpacity;
-        colour.lerp(cloud, amount);
+        // Stretched along the horizon, so clouds near it look flatter.
+        for (const o of octaves) n += o.amplitude * o.noise(u * o.period, v * o.period * 0.5);
+        const amount = THREE.MathUtils.smoothstep(n / weight, 0.5, 0.72) * band * s.cloudOpacity;
+        r += (cloud[0] - r) * amount;
+        g += (cloud[1] - g) * amount;
+        b += (cloud[2] - b) * amount;
       }
-      const sunAmount = Math.pow(Math.max(0, direction.dot(sun)), 48);
-      colour.lerp(glow, sunAmount * 0.8);
-      colour.getRGB(srgb, THREE.SRGBColorSpace);
+      const facing =
+        cosEl * (cosAz[x] ?? 0) * sun.x + sinEl * sun.y + cosEl * (sinAz[x] ?? 0) * sun.z;
+      if (facing > 0) {
+        const amount = Math.pow(facing, 48) * 0.8;
+        r += (glow[0] - r) * amount;
+        g += (glow[1] - g) * amount;
+        b += (glow[2] - b) * amount;
+      }
       const i = (y * width + x) * 4;
-      data[i] = Math.round(Math.min(1, srgb.r) * 255);
-      data[i + 1] = Math.round(Math.min(1, srgb.g) * 255);
-      data[i + 2] = Math.round(Math.min(1, srgb.b) * 255);
+      data[i] = toByte(r);
+      data[i + 1] = toByte(g);
+      data[i + 2] = toByte(b);
       data[i + 3] = 255;
     }
   }
