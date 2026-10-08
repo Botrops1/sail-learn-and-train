@@ -3,6 +3,8 @@ import { boat } from '../../model/boat';
 import {
   CENTRED_BOOM,
   selfTackingTrackEnds,
+  shroudSegments as rigShroudSegments,
+  spreaderSegments as rigSpreaderSegments,
   vangStrutEnds,
   type BoomPose,
 } from '../../model/rigGeometry';
@@ -100,55 +102,20 @@ function buildMast(materials: BoatMaterials): THREE.Object3D {
   );
 }
 
-/** Spreader tip on one side (side = +1 starboard, −1 port), swept back from the mast. */
-function spreaderTip(
-  set: { y: number; halfSpan: number; sweepBackDeg: number },
-  side: number,
-): Vec3 {
-  const sweep = set.sweepBackDeg * DEG;
-  return [
-    boat.rig.mast.x - set.halfSpan * Math.sin(sweep),
-    set.y,
-    side * set.halfSpan * Math.cos(sweep),
-  ];
-}
-
 function buildSpreadersAndShrouds(materials: BoatMaterials): THREE.Object3D[] {
-  const { mast, spreaders, shrouds } = boat.rig;
-  const detail = boat.modelDetail;
-  const radius = detail.wireRenderRadius;
   const spreaderGeometries: THREE.BufferGeometry[] = [];
   const spreaderSegments: PickSegment[] = [];
   const shroudGeometries: THREE.BufferGeometry[] = [];
   const shroudSegments: PickSegment[] = [];
-  const addWire = (a: Vec3, b: Vec3) => {
-    shroudGeometries.push(cylinderBetween(a, b, radius, 6));
-    shroudSegments.push([a, b]);
-  };
-
-  for (const side of [1, -1]) {
-    const tips = spreaders.sets.map((set) => {
-      const root: Vec3 = [mast.x, set.y, (side * mast.sectionAthwart) / 2];
-      const tip = spreaderTip(set, side);
-      const geometry = cylinderBetween(root, tip, detail.spreaderDiameter / 2, 8);
-      spreaderGeometries.push(geometry);
-      spreaderSegments.push([root, tip]);
-      return tip;
-    });
-    const chainplate: Vec3 = [
-      shrouds.chainplate.x,
-      shrouds.chainplate.y,
-      side * shrouds.chainplate.halfZ,
-    ];
-    // Cap shroud: chainplate → each spreader tip in turn → mast near the top.
-    let previous = chainplate;
-    for (const tip of tips) {
-      addWire(previous, tip);
-      previous = tip;
+  for (const side of [1, -1] as const) {
+    for (const { a, b, radius } of rigSpreaderSegments(side)) {
+      spreaderGeometries.push(cylinderBetween(a, b, radius, 8));
+      spreaderSegments.push([a, b]);
     }
-    addWire(previous, [mast.x, shrouds.capShroudTopY, (side * mast.sectionAthwart) / 2]);
-    // Lower shroud: chainplate → mast at the lower spreader root.
-    addWire(chainplate, [mast.x, shrouds.lowerShroudTopY, (side * mast.sectionAthwart) / 2]);
+    for (const { a, b, radius } of rigShroudSegments(side)) {
+      shroudGeometries.push(cylinderBetween(a, b, radius, 6));
+      shroudSegments.push([a, b]);
+    }
   }
   return [
     asThin(partMesh('part_spreader', spreaderGeometries, materials.spar, spreaderSegments)),

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { Store } from '../app/store';
 import { requirePartId } from '../model/registry';
+import type { Vec3 } from '../model/vec3';
 import { buildBoat } from './boat';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
@@ -82,6 +83,14 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           const ndc = new THREE.Vector3(x, y, z).project(camera);
           return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
+        /** Puts the camera at a position looking at a target (close-up screenshots). */
+        setView: (position: Vec3, target: Vec3, fovDeg: number = SCENE.camera.verticalFovDeg) =>
+          rig.setPose({ position, target, fovDeg }),
+        /** Draw calls and triangles of the last frame. */
+        stats: () => ({
+          calls: renderer.info.render.calls,
+          triangles: renderer.info.render.triangles,
+        }),
       },
     });
   }
