@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 792 400" width="792" height="400">
+
+<style>
+  svg { background:#ffffff; font-family: system-ui, sans-serif; }
+  .wl { stroke:#2b7bb9; stroke-width:2; stroke-dasharray:8 6; }
+  .hull { fill:#eef1f4; stroke:#1d2733; stroke-width:2; }
+  .roof { fill:#dfe5ea; stroke:#1d2733; stroke-width:1.2; }
+  .cockpit { fill:#f3e6cc; stroke:#8a6d3b; stroke-width:1.2; }
+  .keel { fill:#9aa5b1; stroke:#1d2733; stroke-width:1.5; }
+  .spar { fill:#b9c2cc; stroke:#1d2733; stroke-width:1.2; }
+  .stay { stroke:#6b7785; stroke-width:1.5; }
+  .fit { stroke:#1d2733; stroke-width:2; }
+  .fitc { fill:#1d2733; }
+  .sail { fill:rgba(255,255,255,0.75); stroke:#5c6b7a; stroke-width:1.4; }
+  .sailfoot { stroke:#5c6b7a; stroke-width:2; }
+  .sheet { stroke:#d9480f; stroke-width:2.5; }
+  .ctl { stroke:#2f9e44; stroke-width:2.5; }
+  .ctlthin { stroke:#2f9e44; stroke-width:1.2; stroke-dasharray:5 4; }
+  .track { fill:none; stroke:#7048e8; stroke-width:4; }
+  .block { fill:#d9480f; }
+  .wheel { fill:none; stroke:#1d2733; stroke-width:2; }
+  .winch { fill:#495057; }
+  .winchopt { fill:none; stroke:#495057; stroke-width:2; stroke-dasharray:3 3; }
+  .clutch { fill:#212529; }
+  .scale { stroke:#000; stroke-width:3; }
+  .origin { fill:#e03131; }
+  .lbl { font-size:15px; fill:#1d2733; }
+  .title { font-size:20px; font-weight:600; fill:#1d2733; }
+  .note { font-size:13px; fill:#5c6b7a; }
+</style>
+<text class="title" x="60" y="32">Hanse 508 — plan view from above (bow right)</text>
+<text class="note" x="60" y="386">Generated from content/boat/hanse508.json. Approximate (±0.15 m). Not for navigation or construction.</text>
+  <polygon class="hull" points="680.0,198.0 664.8,205.6 650.0,211.6 634.8,217.6 620.0,223.2 605.2,228.4 590.0,233.6 575.2,238.8 560.4,244.0 545.6,248.8 530.4,253.2 515.6,257.6 500.8,261.6 485.6,265.6 470.8,269.2 456.0,272.4 441.2,275.6 426.0,278.0 411.2,280.4 396.4,282.8 381.6,284.8 366.4,286.8 351.6,288.0 336.8,289.2 321.6,290.0 306.8,290.4 292.0,290.8 277.2,291.0 262.0,290.8 247.2,290.4 232.4,289.6 217.2,288.8 202.4,287.6 187.6,286.8 172.8,285.2 157.6,283.6 142.8,282.0 128.0,280.4 113.2,278.8 98.0,277.2 86.8,276.0 84.0,274.0 84.0,118.0 86.8,116.0 98.0,114.8 113.2,113.2 128.0,111.6 142.8,110.0 157.6,108.4 172.8,106.8 187.6,105.2 202.4,104.4 217.2,103.2 232.4,102.4 247.2,101.6 262.0,101.2 277.2,101.0 292.0,101.2 306.8,101.6 321.6,102.0 336.8,102.8 351.6,104.0 366.4,105.2 381.6,107.2 396.4,109.2 411.2,111.6 426.0,114.0 441.2,116.4 456.0,119.6 470.8,122.8 485.6,126.4 500.8,130.4 515.6,134.4 530.4,138.8 545.6,143.2 560.4,148.0 575.2,153.2 590.0,158.4 605.2,163.6 620.0,168.8 634.8,174.4 650.0,180.4 664.8,186.4 680.0,194.0"/>
+  <line class="fit" x1="680.0" y1="196.0" x2="704.0" y2="196.0"/>
+  <polygon class="roof" points="508.0,159.2 508.0,232.8 476.0,242.0 306.0,242.0 306.0,150.0 476.0,150.0"/>
+  <polygon class="cockpit" points="120.0,144.0 304.0,144.0 304.0,248.0 120.0,248.0"/>
+  <polygon class="spar" points="422.0,192.4 434.0,192.4 434.0,199.6 422.0,199.6"/>
+  <polygon class="spar" points="170.0,192.4 420.0,192.4 420.0,199.6 170.0,199.6"/>
+  <line class="sheet" x1="298.0" y1="196.0" x2="304.8" y2="179.2"/>
+  <circle class="block" cx="304.8" cy="179.2" r="5"/>
+  <line class="sheet" x1="298.0" y1="196.0" x2="304.8" y2="212.8"/>
+  <circle class="block" cx="304.8" cy="212.8" r="5"/>
+  <polyline class="track" points="442.0,160.0 441.5,163.6 441.0,167.2 440.6,170.7 440.2,174.3 439.9,177.9 439.6,181.6 439.5,185.2 439.3,188.8 439.2,192.4 439.2,196.0 439.2,199.6 439.3,203.2 439.5,206.8 439.6,210.4 439.9,214.1 440.2,217.7 440.6,221.3 441.0,224.8 441.5,228.4 442.0,232.0"/>
+  <line class="sailfoot" x1="672.8" y1="196.0" x2="444.8" y2="232.0"/>
+  <circle class="fitc" cx="420.0" cy="138.8" r="4"/>
+  <circle class="fitc" cx="420.0" cy="253.2" r="4"/>
+  <polygon class="wheel" points="136.0,140.8 144.0,140.8 144.0,180.8 136.0,180.8"/>
+  <polygon class="wheel" points="136.0,211.2 144.0,211.2 144.0,251.2 136.0,251.2"/>
+  <circle class="winch" cx="174.8" cy="132.0" r="6.4"/>
+  <circle class="winch" cx="174.8" cy="260.0" r="6.4"/>
+  <circle class="winchopt" cx="138.0" cy="132.0" r="6.4"/>
+  <circle class="winchopt" cx="138.0" cy="260.0" r="6.4"/>
+  <polygon class="clutch" points="151.2,128.4 168.8,128.4 168.8,136.4 151.2,136.4"/>
+  <text class="lbl" x="148.0" y="114.4" text-anchor="middle">clutch BANK A (port?)</text>
+  <polygon class="clutch" points="151.2,255.6 168.8,255.6 168.8,263.6 151.2,263.6"/>
+  <text class="lbl" x="148.0" y="284.4" text-anchor="middle">clutch BANK B (starboard?)</text>
+  <polygon class="clutch" points="223.2,281.6 232.8,281.6 232.8,286.4 223.2,286.4"/>
+  <text class="lbl" x="240.0" y="290.0" text-anchor="start">JIB ROLL clutch (side?)</text>
+  <text class="lbl" x="704.0" y="78.0" text-anchor="end">BOW</text>
+  <text class="lbl" x="84.0" y="78.0" text-anchor="start">STERN</text>
+  <text class="lbl" x="596.0" y="330.0" text-anchor="middle">STARBOARD side (+z)</text>
+  <text class="lbl" x="596.0" y="78.0" text-anchor="middle">PORT side (-z)</text>
+  <text class="lbl" x="450.0" y="250.0" text-anchor="start">self-tacking track</text>
+  <text class="lbl" x="312.0" y="171.2" text-anchor="middle">mainsheet deck blocks</text>
+  <text class="lbl" x="104.0" y="200.8" text-anchor="middle">wheels</text>
+  <line class="scale" x1="72.0" y1="328.0" x2="272.0" y2="328.0"/>
+  <text class="lbl" x="172.0" y="323.2" text-anchor="middle">5 m</text>
+  <text class="note" x="72.0" y="330.0"></text>
+  <circle class="winch" cx="308.0" cy="323.0" r="6"/><text class="lbl" x="318.0" y="328.0">winch</text>
+  <circle class="winchopt" cx="383.0" cy="323.0" r="6"/><text class="lbl" x="393.0" y="328.0">optional winch</text>
+  <circle class="origin" cx="428.0" cy="196.0" r="5"/>
+</svg>

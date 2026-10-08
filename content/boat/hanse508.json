@@ -1,0 +1,354 @@
+{
+  "$comment": "Hanse 508 geometry for sail-learn-and-train. Single source of truth for the 3D model and the rig solver. Units: metres and degrees. See docs/BOAT_REFERENCE.md for how every number was obtained and how confident we are.",
+  "meta": {
+    "model": "Hanse 508",
+    "variant": "Reference boat: in-mast furling main (manual, Selden), self-tacking jib with manual furler, German mainsheet, single forestay, no gennaker rigged",
+    "frame": {
+      "origin": "Mast station (centre of mast section), on the waterline, on the centreline",
+      "x": "forward (towards the bow) is positive",
+      "y": "up is positive (y = 0 is the waterline)",
+      "z": "starboard is positive (port is negative)",
+      "handedness": "right-handed, matches three.js (x forward, y up, z starboard)"
+    },
+    "sourceKeys": {
+      "brochure": "Hanse 508 price list / spec sheet H508.22_PL_EN_20221216 (not stored in repo, copyrighted). Official figures.",
+      "drawing": "Measured from the brochure side view and deck plan drawings at ~35 px/m (side) and ~107 px/m (plan). Typical error +/-0.15 m.",
+      "photo": "Photos taken on the reference boat, stored in docs/reference/photos/.",
+      "assumption": "Engineering guess. Plausible but unverified. Safe to tune."
+    }
+  },
+
+  "dimensions": {
+    "source": "brochure",
+    "loa": 15.55,
+    "hullLength": 14.93,
+    "lwl": 13.54,
+    "beam": 4.75,
+    "draft": 2.40,
+    "displacementTonnes": 14.7,
+    "mastAboveWaterline": 22.05,
+    "engineHp": 80,
+    "sailAreaM2": {
+      "mainInMastFurling": 58.7,
+      "mainStandardBattened": 66.5,
+      "selfTackingJib": 51.3,
+      "gennaker": 176.4,
+      "reacher": 87.4
+    }
+  },
+
+  "hull": {
+    "source": "drawing",
+    "stemX": 6.30,
+    "bowFittingTipX": 6.90,
+    "bowFittingHalfWidth": 0.14,
+    "transomX": -8.60,
+    "deckEdgeHalfBeam": {
+      "$comment": "[x, half-beam] pairs traced from the deck plan outline, bow to stern. Max half-beam 2.375 = beam/2.",
+      "points": [
+        [6.30, 0.05], [5.92, 0.24], [5.55, 0.39], [5.17, 0.54], [4.80, 0.68],
+        [4.43, 0.81], [4.05, 0.94], [3.68, 1.07], [3.31, 1.20], [2.94, 1.32],
+        [2.56, 1.43], [2.19, 1.54], [1.82, 1.64], [1.44, 1.74], [1.07, 1.83],
+        [0.70, 1.91], [0.33, 1.99], [-0.05, 2.05], [-0.42, 2.11], [-0.79, 2.17],
+        [-1.16, 2.22], [-1.54, 2.27], [-1.91, 2.30], [-2.28, 2.33], [-2.66, 2.35],
+        [-3.03, 2.36], [-3.40, 2.37], [-3.77, 2.375], [-4.15, 2.37], [-4.52, 2.36],
+        [-4.89, 2.34], [-5.27, 2.32], [-5.64, 2.29], [-6.01, 2.27], [-6.38, 2.23],
+        [-6.76, 2.19], [-7.13, 2.15], [-7.50, 2.11], [-7.87, 2.07], [-8.25, 2.03],
+        [-8.53, 2.00], [-8.60, 1.95]
+      ]
+    },
+    "sheerHeight": {
+      "$comment": "[x, y] height of the deck edge above the waterline.",
+      "points": [[6.30, 1.67], [3.00, 1.55], [0.00, 1.48], [-4.00, 1.42], [-8.60, 1.33]]
+    },
+    "waterline": {
+      "$comment": "Hull meets the waterline from fwdX to aftX (difference = LWL 13.54). Plumb bow; the transom bottom sits just above the water.",
+      "fwdX": 6.20,
+      "aftX": -7.34,
+      "transomBottomY": 0.25
+    },
+    "canoeBody": {
+      "$comment": "Hull bottom (without keel). Deepest point and a smooth fair curve to the waterline ends is good enough.",
+      "maxDepthBelowWL": 0.65,
+      "deepestX": -1.0
+    },
+    "keel": {
+      "type": "L-keel (cast iron fin with bulb extending aft)",
+      "finRoot": { "fwdX": -0.45, "aftX": -1.75, "y": -0.60 },
+      "finTip": { "fwdX": -0.70, "aftX": -1.90, "y": -2.00 },
+      "bulb": { "fwdX": -0.10, "aftX": -2.50, "topY": -2.00, "bottomY": -2.40 }
+    },
+    "rudder": {
+      "stockX": -7.75,
+      "topY": 0.10,
+      "topYNote": "The hull bottom rises above the waterline aft of x = -7.34, so the rudder top meets the hull just above the waterline (as in the drawing).",
+      "bottomY": -1.95,
+      "chordTop": 0.75,
+      "chordBottom": 0.55,
+      "maxAngleDeg": 35,
+      "maxAngleSource": "assumption"
+    },
+    "saildrive": {
+      "x": -4.40,
+      "propY": -0.90,
+      "propDiameter": 0.50,
+      "blades": 2,
+      "source": "brochure (2-blade fixed prop, saildrive) + drawing (position)"
+    }
+  },
+
+  "deck": {
+    "source": "drawing",
+    "coachroof": { "frontX": 2.00, "aftX": -3.05, "halfWidth": 1.15, "topY": 1.84 },
+    "cockpit": {
+      "frontX": -3.10,
+      "aftX": -7.70,
+      "wellHalfWidth": 1.30,
+      "soleY": 1.00,
+      "soleYSource": "assumption",
+      "coamingTopY": 1.55,
+      "coamingTopYSource": "assumption"
+    },
+    "aftPlatform": { "frontX": -7.70, "aftX": -8.60, "y": 1.33, "note": "Teak aft deck over the fold-out bathing platform." },
+    "companionway": { "x": -3.05, "halfWidth": 0.33 }
+  },
+
+  "rig": {
+    "mast": {
+      "source": "drawing + brochure",
+      "x": 0.0,
+      "footY": 1.84,
+      "topY": 21.55,
+      "airDraftY": 22.05,
+      "airDraftNote": "Brochure 'mast length above WL approx. 22.05 m' includes masthead fittings. Drawing measures the mast tube top at ~21.55.",
+      "sectionForeAft": 0.30,
+      "sectionAthwart": 0.18,
+      "sectionSource": "assumption (in-mast furling masts have a large section with a slot on the aft face)",
+      "deckStepped": true
+    },
+    "spreaders": {
+      "source": "heights from drawing, span and sweep are assumptions",
+      "sets": [
+        { "y": 8.10, "halfSpan": 1.05, "sweepBackDeg": 20 },
+        { "y": 14.40, "halfSpan": 0.75, "sweepBackDeg": 20 }
+      ]
+    },
+    "shrouds": {
+      "source": "drawing (chainplates), assumption (tops)",
+      "chainplate": { "x": -0.20, "y": 1.50, "halfZ": 1.43 },
+      "capShroudTopY": 21.00,
+      "lowerShroudTopY": 8.10
+    },
+    "forestay": {
+      "source": "drawing",
+      "bottom": [6.16, 1.75, 0.0],
+      "top": [0.16, 21.10, 0.0]
+    },
+    "backstay": {
+      "source": "drawing",
+      "top": [-0.15, 21.50, 0.0],
+      "bottom": [-8.20, 1.40, 0.0],
+      "note": "Drawn as a single backstay. Split or single on the reference boat: unknown."
+    },
+    "boom": {
+      "source": "drawing",
+      "gooseneck": [-0.20, 3.08, 0.0],
+      "length": 6.25,
+      "maxSwingDeg": 80,
+      "maxSwingSource": "assumption (geometry check: boom would touch the cap shroud at ~83 deg)",
+      "pitch": {
+        "$comment": "Boom pitch in degrees, + = boom end up. Phase-1 teaching approximation, prototyped in Python to satisfy PT-07/PT-08 smoothly. Tune visually, keep the tests green.",
+        "toppingLiftHauledDeg": 6,
+        "toppingLiftEasedDeg": -6,
+        "vangHauledDeg": -2,
+        "vangEasedDeg": 12,
+        "windLiftMaxDeg": 20,
+        "windLiftReferenceKn": 20,
+        "gravityDropDeg": -6,
+        "pitchStiffness": 8
+      }
+    },
+    "vang": {
+      "source": "drawing",
+      "mastPoint": [-0.18, 2.05, 0.0],
+      "boomDistance": 2.12,
+      "type": "tackle (assumed; brochure says 'kicker'; rigid or rope vang on the reference boat unknown)"
+    },
+    "toppingLift": {
+      "source": "assumption",
+      "mastExit": [-0.15, 21.00, 0.0],
+      "boomDistance": 6.20,
+      "boatLabel": "Boom lift"
+    },
+    "mainsheet": {
+      "source": "photo (both clutch banks carry MAIN SHEET) + drawing (positions)",
+      "system": "German mainsheet: one rope, boom blocks <-> two deck blocks on the coachroof aft end, both tails led aft to the cockpit, no traveller",
+      "boomDistance": 3.05,
+      "deckBlocks": { "x": -3.08, "y": 1.80, "halfZ": 0.42 },
+      "partsPerSide": 2,
+      "partsPerSideSource": "assumption (purchase on the reference boat unknown)"
+    },
+    "selfTackingTrack": {
+      "source": "drawing (position, width), assumption (arc shape)",
+      "shape": "Circular arc centred on the jib tack (in plan view)",
+      "centreX": 0.28,
+      "y": 1.86,
+      "halfSpan": 0.90
+    },
+    "jibFurler": {
+      "source": "brochure (manual jib furler) + drawing",
+      "drum": [6.12, 1.75, 0.0],
+      "drumHeight": 0.15
+    },
+    "mainFurlingGearbox": {
+      "source": "photo (Selden manual in-mast furling gearbox with winch-handle socket and IN/OUT arrow)",
+      "position": [-0.17, 2.35, 0.0],
+      "note": "Exact position on the mast unknown. Backup: furl/unfurl by hand with a winch handle at the mast."
+    }
+  },
+
+  "sails": {
+    "main": {
+      "source": "drawing + brochure",
+      "type": "In-mast furling mainsail, no battens",
+      "tackHeightAboveBoom": 0.07,
+      "headY": 21.20,
+      "footLength": 6.15,
+      "modelledAreaM2": 55.5,
+      "officialAreaM2": 58.7,
+      "areaNote": "Simple triangle is ~5% smaller than the official area. Acceptable for teaching.",
+      "furl": "Rolls into the mast. Unfurled fraction f moves the clew along the boom: clewDistance = f * footLength. Luff stays full height."
+    },
+    "jib": {
+      "source": "drawing + brochure",
+      "type": "Self-tacking jib on a manual furler",
+      "tack": [6.12, 1.89, 0.0],
+      "head": [0.31, 20.60, 0.0],
+      "clewTrimmedRef": [0.42, 2.23, 0.90],
+      "clewTrimmedRefNote": "Clew fully trimmed with the car at the starboard end of the track (wind from port). Mirror z for the other tack.",
+      "lengths": { "luff": 19.59, "foot": 5.78, "leech": 18.39 },
+      "modelledAreaM2": 53.1,
+      "officialAreaM2": 51.3,
+      "furl": "Rolls around the forestay. Unfurled fraction f: foot and leech shrink towards the luff; the clew moves forward along the foot direction.",
+      "sheet": {
+        "minClewToCar": 0.35,
+        "minClewToCarNote": "Sanity reference only. The app computes the true minimum from geometry at startup.",
+        "maxEaseBeyondMin": 1.60,
+        "source": "assumption"
+      }
+    },
+    "gennaker": {
+      "enabled": false,
+      "note": "Exists as a brochure option (176.4 m2, own halyard and 2 sheets). Not rigged on the reference boat. Data slot reserved; implement in a later phase behind a settings toggle."
+    },
+    "reacher": {
+      "enabled": false,
+      "note": "Option on a second forestay (87.4 m2, genoa tracks). Not on the reference boat as far as known."
+    }
+  },
+
+  "cockpitHardware": {
+    "source": "drawing (positions), photo (labels), assumption (which bank is which side)",
+    "helms": [
+      { "id": "helm_port", "x": -7.20, "z": -0.88 },
+      { "id": "helm_starboard", "x": -7.20, "z": 0.88 }
+    ],
+    "wheelDiameter": 1.00,
+    "wheelHubY": 1.85,
+    "wheelSource": "assumption",
+    "wheelTurnsLockToLock": 2.5,
+    "wheelTurnsSource": "assumption",
+    "winches": [
+      { "id": "winch_primary_port", "x": -6.33, "y": 1.55, "z": -1.60, "note": "Standard: 2 x Lewmar 55 ST EVO (brochure)" },
+      { "id": "winch_primary_starboard", "x": -6.33, "y": 1.55, "z": 1.60 },
+      { "id": "winch_secondary_port", "x": -7.25, "y": 1.55, "z": -1.60, "optional": true, "note": "Option XC5200; drawn on the deck plan; present on the reference boat? unknown" },
+      { "id": "winch_secondary_starboard", "x": -7.25, "y": 1.55, "z": 1.60, "optional": true }
+    ],
+    "clutchBanks": [
+      {
+        "id": "clutch_bank_a",
+        "side": "port",
+        "sideSource": "assumption (photo does not show which side)",
+        "x": -6.70, "y": 1.50, "z": -1.59,
+        "photo": "docs/reference/photos/clutch-bank-a.jpg",
+        "clutches": [
+          { "slot": 1, "label": "Main sheet", "ropeId": "rope_mainsheet", "tail": "port" },
+          { "slot": 2, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "a" },
+          { "slot": 3, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "b" },
+          { "slot": 4, "label": "Main halyard", "ropeId": "rope_main_halyard" },
+          { "slot": 5, "label": "Genoa sheet", "ropeId": "rope_jib_sheet" }
+        ]
+      },
+      {
+        "id": "clutch_bank_b",
+        "side": "starboard",
+        "sideSource": "assumption (photo does not show which side)",
+        "x": -6.70, "y": 1.50, "z": 1.59,
+        "photo": "docs/reference/photos/clutch-bank-b.jpg",
+        "clutches": [
+          { "slot": 1, "label": "SPI HALYARD", "ropeId": "rope_spi_halyard" },
+          { "slot": 2, "label": "Boom lift", "ropeId": "rope_topping_lift" },
+          { "slot": 3, "label": "Main outhaul", "ropeId": "rope_outhaul" },
+          { "slot": 4, "label": "MAIN SHEET", "ropeId": "rope_mainsheet", "tail": "starboard" },
+          { "slot": 5, "label": "Vang", "ropeId": "rope_vang" }
+        ]
+      }
+    ],
+    "jibRollClutch": {
+      "id": "clutch_jib_roll",
+      "label": "JIB ROLL",
+      "ropeId": "rope_jib_furling_line",
+      "x": -5.00, "y": 1.50, "z": 2.20,
+      "source": "photo (clutch on the side deck near the stanchions); side and position are assumptions",
+      "photo": "docs/reference/photos/jib-roll-clutch.jpg"
+    },
+    "engineControl": {
+      "id": "engine_control",
+      "type": "Single-lever throttle/gear control (Allpa) with start/stop/power panel and tachometer",
+      "rpmLimitSticker": 2500,
+      "photo": "docs/reference/photos/engine-control.jpg",
+      "phase": 2
+    }
+  },
+
+  "ropes": {
+    "$comment": "Every rope the model knows. 'path' lists fitting/point ids from the working end to the tail; the renderer draws straight segments between them, except the 'working' segment which can sag. Static ropes are drawn but not controllable in Phase 1.",
+    "list": [
+      { "id": "rope_mainsheet", "controlId": "ctl_mainsheet", "working": "boom blocks <-> deck blocks (both legs)", "tails": ["port", "starboard"], "colorKey": "mainsheet" },
+      { "id": "rope_jib_sheet", "controlId": "ctl_jib_sheet", "working": "jib clew <-> self-tacking car", "colorKey": "jibsheet" },
+      { "id": "rope_vang", "controlId": "ctl_vang", "working": "vang mast point <-> vang boom point", "colorKey": "control" },
+      { "id": "rope_topping_lift", "controlId": "ctl_topping_lift", "working": "mast exit <-> boom end", "colorKey": "control" },
+      { "id": "rope_outhaul", "controlId": "ctl_main_furl", "working": "inside the boom (show only paid-out length)", "coupled": "opposite to rope_main_furling_line", "colorKey": "furling" },
+      { "id": "rope_main_furling_line", "controlId": "ctl_main_furl", "working": "mast gearbox drum -> aft", "coupled": "opposite to rope_outhaul", "colorKey": "furling" },
+      { "id": "rope_jib_furling_line", "controlId": "ctl_jib_furl", "working": "furler drum -> aft along the side deck", "colorKey": "furling" },
+      { "id": "rope_main_halyard", "controlId": null, "static": true, "note": "With in-mast furling the main halyard stays hoisted.", "colorKey": "halyard" },
+      { "id": "rope_spi_halyard", "controlId": null, "static": true, "note": "Parked. Belongs to the gennaker (not rigged).", "colorKey": "halyard" }
+    ]
+  },
+
+  "controls": {
+    "$comment": "All rope controls are continuous 0..100 with a user-selectable step (1% or 5%). Convention: 0 = fully hauled in / furled, 100 = fully eased / unfurled.",
+    "list": [
+      { "id": "ctl_mainsheet", "label": "Main sheet", "unit": "% eased", "min": 0, "max": 100, "default": 30 },
+      { "id": "ctl_jib_sheet", "label": "Jib sheet", "boatLabel": "Genoa sheet", "unit": "% eased", "min": 0, "max": 100, "default": 30 },
+      { "id": "ctl_vang", "label": "Vang", "unit": "% eased", "min": 0, "max": 100, "default": 50 },
+      { "id": "ctl_topping_lift", "label": "Topping lift", "boatLabel": "Boom lift", "unit": "% eased", "min": 0, "max": 100, "default": 100, "note": "Normally fully eased while sailing" },
+      { "id": "ctl_main_furl", "label": "Mainsail out", "unit": "% unfurled", "min": 0, "max": 100, "default": 100 },
+      { "id": "ctl_jib_furl", "label": "Jib out", "unit": "% unfurled", "min": 0, "max": 100, "default": 100 },
+      { "id": "ctl_rudder", "label": "Wheel", "unit": "deg rudder", "min": -35, "max": 35, "default": 0, "note": "Visual only in Phase 1" },
+      { "id": "ctl_wind_dir", "label": "Test wind from", "unit": "deg, + = from starboard", "min": -180, "max": 180, "default": 60 },
+      { "id": "ctl_wind_speed", "label": "Test wind speed", "unit": "kn", "min": 0, "max": 30, "default": 12 }
+    ]
+  },
+
+  "visual": {
+    "$comment": "Teaching approximations for Phase 1. Not physics. Tune freely, keep them here.",
+    "ropeRenderRadius": 0.025,
+    "luffAoaDeg": { "fullyLuffing": 2, "fullyFilled": 10 },
+    "gybeHysteresisDeg": 15,
+    "baseTwistDeg": 4,
+    "twistPerDegBoomRise": 1.5,
+    "jibTwistPerDegEasedBeyondTrack": 0.8,
+    "controlResponseTimeS": 0.4
+  }
+}
