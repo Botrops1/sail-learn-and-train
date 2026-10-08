@@ -8,7 +8,9 @@ import {
   mainsheetPaidOut,
   maxSwingFor,
   sheetLength,
+  sheetPctToClear,
 } from '../src/model/mainsheet';
+import { lowerPitchLimit, lowestPitch, toppingLiftLimit } from '../src/model/pitchLimits';
 import { ropeDrawings } from '../src/model/ropePaths';
 import { mainSailCorners, boomEnd } from '../src/model/rigGeometry';
 import { mainSailGrid, mainSailTwistDeg } from '../src/model/sailShape';
@@ -21,6 +23,8 @@ import type { Vec3 } from '../src/model/vec3';
  */
 
 const pitch = boat.rig.boom.pitch;
+/** The rigid vang strut's stop: the boom's lowest pitch with the topping lift eased. */
+const strutStop = boat.rig.vang.strutStopDeg;
 
 function controls(values: Partial<Controls>): Controls {
   return { ...defaultControls(), ...values };
@@ -295,8 +299,8 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
 
   it('PT-09 no wind, topping lift eased: the rigid vang strut holds the boom, the lift carries nothing', () => {
     const sol = settle({ ctl_wind_speed: 0, ctl_topping_lift: 100, ctl_vang: 50 });
-    // The strut stops the boom at toppingLiftEasedDeg (about 2° down), above its gravity droop.
-    expect(sol.psiDeg).toBeCloseTo(Math.max(pitch.gravityDropDeg, pitch.toppingLiftEasedDeg), 6);
+    // The strut stops the boom at strutStopDeg (about 2° down), above its gravity droop.
+    expect(sol.psiDeg).toBeCloseTo(Math.max(pitch.gravityDropDeg, strutStop), 6);
     expect(sol.toppingLift.state).toBe('slack');
   });
 
@@ -361,7 +365,8 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
       return {
         inTail: furling?.strands[0]?.feed ?? NaN,
         outTail: furling?.strands[1]?.feed ?? NaN,
-        outhaul: outhaul?.strands[0]?.feed ?? NaN,
+        // The lead to the clutch (the last strand) moves with the rope paid out.
+        outhaul: outhaul?.strands.at(-1)?.feed ?? NaN,
       };
     };
     const furled = feeds(20);
@@ -369,6 +374,94 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
     expect(out.inTail).toBeGreaterThan(furled.inTail);
     expect(out.outTail).toBeLessThan(furled.outTail);
     expect(out.outhaul).toBeLessThan(furled.outhaul);
+  });
+});
+
+describe('M2 follow-ups (owner-approved after M2)', () => {
+  it('PT-06 topping lift eased (default): the boom moves from the first 1 % of main sheet, at every 1 % up to 11 %', () => {
+    for (const wd of [60, 90]) {
+      const end = (ms: number) => {
+        const sol = settle({ ctl_wind_dir: wd, ctl_mainsheet: ms });
+        return boomEnd({ thetaDeg: sol.thetaDeg, psiDeg: sol.psiDeg });
+      };
+      for (let ms = 1; ms <= 11; ms += 1) {
+        const [a, b] = [end(ms - 1), end(ms)];
+        // The boom end moves at least 3 cm (it swings out, or the sheet lets it rise).
+        expect(
+          Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]),
+          `wd ${wd} ms ${ms}`,
+        ).toBeGreaterThan(0.03);
+      }
+      expect(Math.abs(settle({ ctl_wind_dir: wd, ctl_mainsheet: 1 }).thetaDeg)).toBeGreaterThan(5);
+      expect(Math.abs(settle({ ctl_wind_dir: wd, ctl_mainsheet: 10 }).thetaDeg)).toBeGreaterThan(
+        15,
+      );
+    }
+    // The eased lift never holds the boom: the sheet starts working at 0 %.
+    expect(sheetPctToClear(lowestPitch())).toBe(0);
+  });
+
+  it('PT-06 owner report (no movement 0–10 %, a jump at 11 %): that is a hauled topping lift fighting the sheet (PT-09); the panel names the % where it ends', () => {
+    const hauled = { ctl_wind_dir: 60, ctl_topping_lift: 0 };
+    const clear = sheetPctToClear(lowerPitchLimit(0));
+    expect(clear).toBeGreaterThan(9);
+    expect(clear).toBeLessThan(13);
+    for (let ms = 0; ms < Math.floor(clear); ms += 1) {
+      const sol = settle({ ...hauled, ctl_mainsheet: ms });
+      expect(sol.thetaDeg, `ms ${ms}`).toBeCloseTo(0, 9);
+      expect(sol.mainsheet.state, `ms ${ms}`).toBe('fighting');
+      expect(sol.toppingLift.state, `ms ${ms}`).toBe('fighting');
+    }
+    const free = settle({ ...hauled, ctl_mainsheet: Math.ceil(clear) });
+    expect(free.mainsheet.state).not.toBe('fighting');
+    expect(Math.abs(free.thetaDeg)).toBeGreaterThan(0);
+  });
+
+  it('PT-09 the lowest boom pitch is max(topping-lift limit, rigid vang strut stop)', () => {
+    expect(pitch.toppingLiftEasedDeg).toBe(-6);
+    expect(strutStop).toBe(-2);
+    for (let tl = 0; tl <= 100; tl += 5) {
+      expect(lowerPitchLimit(tl), `tl ${tl}`).toBe(Math.max(toppingLiftLimit(tl), strutStop));
+    }
+    expect(lowestPitch()).toBe(strutStop);
+  });
+
+  it('PT-09 a fully eased topping lift is slack with spare rope and drawn sagging; the strut carries the boom', () => {
+    for (const ws of [0, 12]) {
+      const rig = initialRig(controls({ ctl_wind_speed: ws, ctl_topping_lift: 100 }));
+      expect(rig.solution.toppingLift.state, `ws ${ws}`).toBe('slack');
+      expect(rig.solution.toppingLift.slack, `ws ${ws}`).toBeGreaterThan(0.3);
+      const lift = ropeDrawings(rig).find((rope) => rope.id === 'rope_topping_lift');
+      expect(sagOf(lift?.strands[0]?.points ?? []), `ws ${ws}`).toBeGreaterThan(0.3);
+    }
+    expect(settle({ ctl_wind_speed: 0, ctl_topping_lift: 100 }).psiDeg).toBeCloseTo(strutStop, 6);
+  });
+
+  it('PT-09 a topping lift that carries the boom is drawn straight', () => {
+    const rig = initialRig(controls({ ctl_wind_speed: 0, ctl_topping_lift: 0, ctl_vang: 100 }));
+    expect(rig.solution.toppingLift.state).toBe('taut');
+    const lift = ropeDrawings(rig).find((rope) => rope.id === 'rope_topping_lift');
+    expect(sagOf(lift?.strands[0]?.points ?? [])).toBeLessThan(1e-9);
+  });
+
+  it('PT-12 the outhaul runs 1:1 in one part along the top of the boom, from the clew to the boom-end sheave', () => {
+    for (const mf of [0, 40, 100]) {
+      const rig = initialRig(controls({ ctl_main_furl: mf }));
+      const outhaul = ropeDrawings(rig).find((rope) => rope.id === 'rope_outhaul');
+      const onBoom = outhaul?.strands[0]?.points ?? [];
+      expect(onBoom, `mf ${mf}`).toHaveLength(2);
+      const along = Math.hypot(
+        ...((onBoom[1] as Vec3).map((c, i) => c - ((onBoom[0] as Vec3)[i] ?? 0)) as [
+          number,
+          number,
+          number,
+        ]),
+      );
+      const clew = mainFurlLengths(mf).clewDistance;
+      expect(along, `mf ${mf}`).toBeCloseTo(boat.rig.outhaul.boomBlockDistance - clew, 6);
+    }
+    expect(boat.rig.outhaul.purchase).toBe(1);
+    expect(mainFurlLengths(0).outhaulPaidOut).toBeCloseTo(boat.sails.main.footLength, 9);
   });
 });
 
@@ -388,10 +481,7 @@ describe('PHYSICS_TRUTHS PT-14: a furled sail does not push the boom', () => {
     const angle = rig.solution.thetaDeg;
     rig = run(rig, furling, 3);
     expect(rig.solution.thetaDeg).toBeCloseTo(angle, 9);
-    expect(rig.solution.psiDeg).toBeCloseTo(
-      Math.max(pitch.gravityDropDeg, pitch.toppingLiftEasedDeg),
-      6,
-    );
+    expect(rig.solution.psiDeg).toBeCloseTo(Math.max(pitch.gravityDropDeg, strutStop), 6);
     expect(rig.solution.fill).toBe(0);
     expect(rig.solution.mainsheet.state).toBe('slack');
   });
@@ -474,7 +564,7 @@ describe('boom solver: general checks (PHASE1_SPEC 11)', () => {
   });
 
   it('the first 1 % of mainsheet gives no more swing than the sheet geometry allows (about 5.5°)', () => {
-    const geometric = maxSwingFor(availableSheetLength(1), boat.rig.boom.pitch.toppingLiftEasedDeg);
+    const geometric = maxSwingFor(availableSheetLength(1), strutStop);
     expect(geometric).toBeLessThan(6);
     for (const wd of [45, 90, 175]) {
       expect(Math.abs(settle({ ctl_wind_dir: wd, ctl_mainsheet: 1 }).thetaDeg)).toBeLessThanOrEqual(

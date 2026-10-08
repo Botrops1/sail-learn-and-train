@@ -5,7 +5,9 @@ import { distance, vec3 } from './vec3';
 
 /**
  * Vang and topping lift (PHASE1_SPEC 8.3 step 2): hard limits on the boom pitch ψ.
- * Topping lift: lower limit, toppingLiftHauledDeg (0 %) → toppingLiftEasedDeg (100 %).
+ * Topping lift: its own limit runs toppingLiftHauledDeg (0 %) → toppingLiftEasedDeg (100 %).
+ * The rigid vang strut stops the boom at strutStopDeg, so the lower limit is the higher of the
+ * two: an eased topping lift hangs slack while the strut carries the boom.
  * Vang: upper limit, vangHauledDeg (0 %) → vangEasedDeg (100 %).
  */
 
@@ -13,9 +15,20 @@ function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
+/** How low the topping lift alone would let the boom end go (it may be below the strut stop). */
 export function toppingLiftLimit(easedPct: number, data: BoatData = boat): number {
   const p = data.rig.boom.pitch;
   return lerp(p.toppingLiftHauledDeg, p.toppingLiftEasedDeg, easedPct / 100);
+}
+
+/** Lower pitch limit: max(topping-lift limit, rigid vang strut stop). */
+export function lowerPitchLimit(toppingLiftPct: number, data: BoatData = boat): number {
+  return Math.max(toppingLiftLimit(toppingLiftPct, data), data.rig.vang.strutStopDeg);
+}
+
+/** The lowest pitch the boom can ever have: the lower limit with the topping lift fully eased. */
+export function lowestPitch(data: BoatData = boat): number {
+  return lowerPitchLimit(100, data);
 }
 
 export function vangLimit(easedPct: number, data: BoatData = boat): number {

@@ -3,7 +3,8 @@ import { boat } from '../model/boat';
 import type { RopeStatus } from '../model/boomSolver';
 import { controlSpec, snapControl, type ControlId } from '../model/controls';
 import { mainFurlLengths } from '../model/mainFurl';
-import { mainsheetPaidOut } from '../model/mainsheet';
+import { jibFurlingLinePaidOut, jibSheetPaidOut } from '../model/jib';
+import { mainsheetPaidOut, sheetPctToClear } from '../model/mainsheet';
 import { toppingLiftPaidOut, vangPaidOut } from '../model/pitchLimits';
 import { partInfo } from '../model/registry';
 import { el } from './dom';
@@ -11,9 +12,9 @@ import { t, type StringKey } from './i18n';
 import { setText, stepButton } from './stepper';
 
 /**
- * Temporary rope control list for M2 (PHASE1_SPEC 12, M2): the mainsail's ropes as sliders with
- * − / + buttons. Each shows its value, the rope paid out in metres and a state chip
- * (taut / slack / fighting). The clutch-bank drawing replaces this list in M4.
+ * Temporary rope control list (PHASE1_SPEC 12, M2 and M3): the ropes of the mainsail and the
+ * jib as sliders with − / + buttons. Each shows its value, the rope paid out in metres and a
+ * state chip (taut / slack / fighting). The clutch-bank drawing replaces this list in M4.
  */
 
 interface RopeControl {
@@ -58,7 +59,25 @@ const ROPE_CONTROLS: RopeControl[] = [
     name: 'control.mainFurl',
     unit: 'unfurled',
   },
+  {
+    id: 'ctl_jib_sheet',
+    ropeId: 'rope_jib_sheet',
+    name: 'control.jibSheet',
+    unit: 'eased',
+    status: (s) => s.rig.jibSolution.sheet,
+    paidOut: (s) => jibSheetPaidOut(s.rig.applied.jibSheet),
+  },
+  {
+    id: 'ctl_jib_furl',
+    ropeId: 'rope_jib_furling_line',
+    name: 'control.jibFurl',
+    unit: 'unfurled',
+    paidOut: (s) => jibFurlingLinePaidOut(s.rig.jibSolution.unfurled),
+  },
 ];
+
+/** Closer than this to the middle of its track (metres), the car is "in the middle". */
+const CAR_MIDDLE_M = 0.05;
 
 function metres(value: number): string {
   return value.toFixed(1);
@@ -158,6 +177,39 @@ export function createRopeControls(store: Store): HTMLElement {
               ? 'main.luffing'
               : 'main.filled';
         lines.push(t(key, { angle: Math.round(Math.abs(state.rig.solution.thetaDeg)) }));
+        // PT-06 / PT-09: a hauled topping lift holds the boom up, so the hauled sheet cannot
+        // swing it until it is eased past the boom's height on the lift.
+        if (state.rig.solution.mainsheet.state === 'fighting') {
+          lines.push(
+            t('main.fightingLift', {
+              pct: Math.ceil(sheetPctToClear(state.rig.solution.lowerDeg)),
+            }),
+          );
+        }
+      }
+      if (control.id === 'ctl_jib_sheet') {
+        const jib = state.rig.jibSolution;
+        const calm = state.controls.ctl_wind_speed < boat.visual.solver.minWindKn;
+        const key = jib.furled
+          ? 'jib.furled'
+          : calm
+            ? 'jib.calm'
+            : jib.fill < 0.5
+              ? 'jib.luffing'
+              : 'jib.filled';
+        lines.push(t(key, { angle: Math.round(Math.abs(jib.headingDeg)) }));
+        const track = boat.rig.selfTackingTrack.halfSpan;
+        const side = { side: t(jib.carZ < 0 ? 'wind.side.port' : 'wind.side.starboard') };
+        lines.push(
+          Math.abs(jib.carZ) >= track - 1e-6
+            ? t('jib.carEnd', side)
+            : Math.abs(jib.carZ) < CAR_MIDDLE_M
+              ? t('jib.carMiddle')
+              : t('jib.car', side),
+        );
+      }
+      if (control.id === 'ctl_jib_furl' && state.rig.jibSolution.furlBlocked) {
+        lines.push(t('jib.furlBlocked', { pct: Math.round(state.rig.jibSolution.unfurled * 100) }));
       }
       if (control.id === 'ctl_main_furl') {
         const furl = mainFurlLengths(state.rig.applied.mainFurl);
@@ -179,5 +231,6 @@ export function createRopeControls(store: Store): HTMLElement {
     el('p', { class: 'hint' }, [t('ropes.hint')]),
     list,
     el('p', { class: 'hint' }, [t('furl.hint')]),
+    el('p', { class: 'hint' }, [t('jib.hint')]),
   ]);
 }

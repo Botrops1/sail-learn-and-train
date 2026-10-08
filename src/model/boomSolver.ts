@@ -1,6 +1,12 @@
 import { boat, type BoatData } from './boat';
 import { availableSheetLength, maxSwingFor, sheetLength } from './mainsheet';
-import { toppingLiftLength, toppingLiftLimit, vangLimit, vangStrutLength } from './pitchLimits';
+import {
+  lowerPitchLimit,
+  toppingLiftLength,
+  toppingLiftLimit,
+  vangLimit,
+  vangStrutLength,
+} from './pitchLimits';
 
 /**
  * Boom solver (PHASE1_SPEC 8.1–8.4): a quasi-static teaching approximation. The wind pushes
@@ -50,7 +56,7 @@ export interface BoomSolution {
   psiTargetDeg: number;
   /** The fill used for the wind's lift in ψ_t (see liftFill). */
   liftFill: number;
-  /** Pitch limits: topping lift (lower) and vang (upper). */
+  /** Pitch limits: topping lift or vang strut stop (lower) and vang (upper). */
   lowerDeg: number;
   upperDeg: number;
   /** Wind on the same side as the boom, inside the gybe band (PHASE1_SPEC 8.4). */
@@ -78,8 +84,8 @@ export function smoothstep(edge0: number, edge1: number, x: number): number {
   return t * t * (3 - 2 * t);
 }
 
-/** The side the wind pushes the boom to: wind from starboard → boom to port. */
-function leewardSide(windFromDeg: number): Side | null {
+/** The side the wind pushes the boom (and the jib) to: wind from starboard → port. */
+export function leewardSide(windFromDeg: number): Side | null {
   if (windFromDeg > 0 && windFromDeg < 180) return -1;
   if (windFromDeg < 0) return 1;
   return null;
@@ -183,7 +189,8 @@ export function solveBoom(
     : Math.min(Math.abs(memory.thetaDeg), maxSwing);
 
   // 2. Hard limits on pitch (needed for the lift estimate too).
-  const lower = toppingLiftLimit(input.toppingLiftPct, data);
+  const liftLimit = toppingLiftLimit(input.toppingLiftPct, data);
+  const lower = lowerPitchLimit(input.toppingLiftPct, data);
   const upper = vangLimit(input.vangPct, data);
   const available = availableSheetLength(input.mainsheetPct, data);
 
@@ -246,16 +253,16 @@ export function solveBoom(
   const atUpper = Math.abs(psi - upper) < 1e-6;
   const atLower = Math.abs(psi - lower) < 1e-6;
   const vangSlack = Math.max(0, vangStrutLength(upper, data) - vangStrutLength(psi, data));
-  const liftSlack = Math.max(0, toppingLiftLength(lower, data) - toppingLiftLength(psi, data));
+  // The lift's spare rope is measured to its own limit: eased below the strut stop, it hangs slack.
+  const liftSlack = Math.max(0, toppingLiftLength(liftLimit, data) - toppingLiftLength(psi, data));
   const vang: RopeStatus = fightingLimits
     ? { state: 'fighting', slack: 0 }
     : atUpper && psiTarget > upper
       ? { state: 'taut', slack: 0 }
       : { state: 'slack', slack: data.rig.vang.tacklePurchase * vangSlack };
   const pulledDown = psiTarget < lower || mainsheet.state !== 'slack';
-  // Fully eased, the topping lift's limit is the rigid vang strut's lowest position
-  // (toppingLiftEasedDeg): there the strut carries the boom, not the lift.
-  const liftCarries = lower > pitch.toppingLiftEasedDeg + 1e-6;
+  // Eased to or below the rigid vang strut's stop, the strut carries the boom, not the lift.
+  const liftCarries = liftLimit > data.rig.vang.strutStopDeg + 1e-6;
   const toppingLift: RopeStatus =
     fightingLimits || fightingSheet
       ? { state: 'fighting', slack: 0 }

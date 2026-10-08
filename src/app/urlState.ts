@@ -8,13 +8,15 @@ export const URL_STATE_VERSION = 1;
 
 /**
  * Controls in the URL so far, with their short names (PHASE1_SPEC 9.2, WORKFLOW 5). M2 adds the
- * boom and wind controls; the jib (`js`, `jf`) and the wheel (`rd`) follow with their milestones.
+ * boom and wind controls, M3 the jib (`js`, `jf`); the wheel (`rd`) follows in M4.
  */
 export const URL_CONTROLS: readonly (readonly [string, ControlId])[] = [
   ['ms', 'ctl_mainsheet'],
+  ['js', 'ctl_jib_sheet'],
   ['vg', 'ctl_vang'],
   ['tl', 'ctl_topping_lift'],
   ['mf', 'ctl_main_furl'],
+  ['jf', 'ctl_jib_furl'],
   ['wd', 'ctl_wind_dir'],
   ['ws', 'ctl_wind_speed'],
 ];

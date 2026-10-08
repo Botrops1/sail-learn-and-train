@@ -76,6 +76,22 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
     expect(hanse508.rig.outhaul.boomBlockDistance).toBeLessThanOrEqual(hanse508.rig.boom.length);
     expect(hanse508.visual.mainSail.rows).toBeGreaterThanOrEqual(12);
     expect(hanse508.visual.mainSail.columns).toBeGreaterThanOrEqual(6);
+    // The rigid vang strut stops the boom between the topping lift's eased and hauled limits.
+    expect(hanse508.rig.vang.strutStopDeg).toBeGreaterThan(pitch.toppingLiftEasedDeg);
+    expect(hanse508.rig.vang.strutStopDeg).toBeLessThan(pitch.toppingLiftHauledDeg);
+  });
+
+  it('jib tuning is consistent (PHASE1_SPEC 8.5)', () => {
+    const { jib } = hanse508.sails;
+    const track = hanse508.rig.selfTackingTrack;
+    expect(jib.sheet.purchase).toBe(2);
+    expect(jib.sheet.maxEaseBeyondMin).toBeGreaterThan(0);
+    expect(track.halfSpan).toBeGreaterThan(1);
+    expect(track.halfSpan).toBeLessThan(hanse508.deck.coachroof.maxHalfWidth + 0.1);
+    expect(track.sheetBlockHeight).toBeGreaterThan(0);
+    expect(track.sheetBlockHeight).toBeLessThan(0.5);
+    expect(hanse508.rig.jibFurler.lineTravelM).toBeGreaterThan(0);
+    expect(hanse508.visual.jibTwistPerDegEasedBeyondTrack).toBeGreaterThan(0);
   });
 
   it('control defaults lie between min and max', () => {
