@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11)
+Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -41,7 +41,7 @@ Everything else in Phase 1 serves that idea or prepares the ground for later pha
 
 ### Out of scope (do not build yet)
 
-Boat motion, speed, heel, apparent wind, forces in kN, gybe energy, the bird's-eye 2D view, water shading beyond a simple plane, waves, environment (buoys, harbour), engine and prop walk, compass and instruments, the learning layer beyond the one-line tooltip, Russian UI, exercises, clutch open/close logic and winch handling, gennaker/reacher, sound, accounts, backend, analytics.
+Boat motion, speed, heel, apparent wind, forces in kN, gybe energy, the bird's-eye 2D view, waves (M3b added ripples drawn on the flat water and a sky, at the owner's request), environment (buoys, harbour), engine and prop walk, compass and instruments, the learning layer beyond the one-line tooltip, Russian UI, exercises, clutch open/close logic and winch handling, gennaker/reacher, sound, accounts, backend, analytics.
 
 If something here looks necessary to finish a milestone, stop and ask in the PR instead of building it.
 
@@ -99,9 +99,9 @@ Build everything from primitives and simple extrusions using `hanse508.json`. Lo
 | Rigid vang | Two telescoping tubes from the mast foot to the boom (`rig.vang`), shortening/lengthening as the boom pitches, with the vang tackle alongside. Registry id `part_vang_strut` (strut) and `rope_vang` (tackle). |
 | Self-tacking track and car | **Straight** bar across the deck just in front of the mast, and a small box car that slides along it. |
 | Wheels | Two torus rings with spokes on pedestals. Rotate with the rudder (lock to lock = `wheelTurnsLockToLock`). |
-| Winches, clutch banks, deck blocks, furling drums, gearbox, mast-foot turning blocks, sprayhood | Small primitives at the given positions. Render only winches with `present !== false` (one per side). |
+| Winches, clutch banks, deck blocks, furling drums, gearbox, mast-foot turning blocks, sprayhood | Small primitives at the given positions. Render only winches with `present !== false` (one per side). M3b: self-tailing winches, individual clutches with labels, sheave blocks, one turning block per line at the mast foot, covered line channels, sprayhood shell just aft of the mainsheet deck blocks (see 6.4). |
 | Masthead wind indicator | Small arrow at the masthead pointing into the test wind. |
-| Water | A large flat plane at y = 0, semi-transparent so the keel stays visible. A subtle grid helps judge scale. |
+| Water | A large flat plane at y = 0, semi-transparent so the keel stays visible. A subtle grid helps judge scale. M3b: drifting ripples (normal map) that reflect the sky at high detail. |
 | Wind | Light streaks or particles moving across the scene in the test wind direction, speed scaled to wind speed. Must not hide the boat. |
 
 ### 6.2 Camera
@@ -120,6 +120,16 @@ Build everything from primitives and simple extrusions using `hanse508.json`. Lo
 | Beam, starboard | +90 | 12 kn |
 | Broad, starboard | +135 | 12 kn |
 | Run | 175 | 12 kn |
+
+### 6.4 Look and detail levels (M3b)
+
+- Procedural only: no model files, no image textures. Teak, non-slip deck and sail seams are generated textures; the sky is a generated gradient with clouds, used as the background and (blurred) for reflections.
+- **Detail: High / Low** (View tab, URL `detail=high|low`). Without the parameter, screens whose shorter side is under 600 CSS px (phones) start on Low, others on High.
+  - High: physically based materials reflecting the sky, soft sun shadows, finer round shapes, pixel ratio up to 2.
+  - Low: simple (Lambert) materials with the same colours and textures, no shadows or reflections, pixel ratio up to 1.5.
+- The debug overlay shows the detail level, draw calls and triangles.
+- Control lines: out of the mast (or off the furling drum) almost vertically (75–80°) to one turning block per line at the mast foot, then flat aft in a covered channel on each side, under the sprayhood's side edge and along the coaming to the clutches (route points in `rig.lineLead`). The JIB ROLL line continues past its clutch to the port winch and ends in its self-tailer.
+- No rope passes through the coachroof or the sprayhood: a slack mainsheet part that would sag into the sprayhood lies on it.
 
 ## 7. Ropes and controls
 
@@ -260,6 +270,7 @@ Control mapping for `ctl_mainsheet = e %`:
 - Mesh: a grid between the luff and the leech, at least 12 rows × 6 columns. For each row, rotate by twist that grows from 0 at the foot to `twist` at the head, where `twist = baseTwistDeg + twistPerDegBoomRise · max(0, ψ)`.
 - Camber offset towards leeward scales with `fill`. When luffing, add a time-varying ripple near the luff.
 - Leeward for the camber and the twist is the side away from the **wind** (`−sign(windFrom)`), not the boom's side: by the lee and while the boom swings across in a gybe, the sail still curves away from the wind. Wind dead ahead or astern: the boom's side.
+- **Rig contact (M3b):** the sail never passes through the spreaders or shrouds on the boom's side. A row of the grid that the rig would cut runs straight from the luff to the binding spreader tip or shroud, wraps round it (one column of the grid follows the cap shroud, one row passes through each spreader tip) and continues beyond it in its own shape, curling round more the further the leech reaches past it. A flapping sail counts as touching when its flapping could reach the rig. Drawing only: the boom solve and its 72° limit are unchanged.
 - **Furling couples three rope ends:** the furling line has two tails (one rolls the sail in, one rolls it out) plus the outhaul. When `ctl_main_furl` goes up (more sail out), the "out" tail and the outhaul are hauled in while the "in" tail pays out; the reverse when furling. Show all three lengths in the panel.
 
 ### 8.7 Rope rendering
@@ -267,7 +278,7 @@ Control mapping for `ctl_mainsheet = e %`:
 - Each rope has a path from data: fixed points plus moving points (boom blocks, clew, car, boom end).
 - The main sheet is drawn with `mainsheet.partsPerSide` parts from each deck block to the boom blocks (`2 · partsPerSide − 1` blocks, the middle one shared); its spare rope is shared equally by all parts.
 - Only the **working segment** can sag. The other segments are straight.
-- Sag: for chord length d and slack s, use a parabola with mid-sag `f = sqrt(3·d·s/8)`, capped at `visual.ropeMaxSagM` (1.5 m). Direction: gravity **at right angles to the rope** (the part of "down" across the rope; the same as straight down for a level rope, and still visible on a steep one such as a mainsheet part). A vertical rope sags aft. A sagging rope never hangs below the deck under it.
+- Sag: for chord length d and slack s, use a parabola with mid-sag `f = sqrt(3·d·s/8)`, capped at `visual.ropeMaxSagM` (1.5 m). Direction: gravity **at right angles to the rope** (the part of "down" across the rope; the same as straight down for a level rope, and still visible on a steep one such as a mainsheet part). A vertical rope sags aft. A sagging rope never hangs below the deck under it, and (M3b) a slack mainsheet part that would sag into the sprayhood lies on it instead.
 - The visual radius is `visual.ropeRenderRadius` (thicker than real so ropes are visible on a phone), but a rope is never drawn thinner than `SCENE.ropes.minScreenWidthPx` (about 2.5 CSS px) on screen: far from the camera the tube gets wider, close up the data radius is used.
 - Updating geometry every frame is fine for about 10 ropes. Reuse buffers instead of creating new objects every frame.
 
@@ -291,13 +302,13 @@ content/        data (JSON) imported at build time
 
 ### 9.2 URL state
 
-- Readable query parameters, updated with `history.replaceState` (debounced 300 ms). Example: `?ms=35&js=40&vg=50&tl=20&mf=100&jf=100&rd=0&wd=60&ws=12&cam=side-port&sel=rope_vang&step=5`.
+- Readable query parameters, updated with `history.replaceState` (debounced 300 ms). Example: `?ms=35&js=40&vg=50&tl=20&mf=100&jf=100&rd=0&wd=60&ws=12&cam=side-port&sel=rope_vang&step=5&detail=high` (`detail` since M3b, see 6.4).
 - Camera: only the preset is stored, `cam=side-port|side-starboard|top|bow|helm|free`. Dragging the view switches to `cam=free`. A link with `cam=free` opens the default view: the free camera position is not stored.
 - Opening such a URL reproduces the view exactly. A **Share / copy link** button in the View tab copies it.
 - Unknown or out-of-range values fall back to defaults silently.
 - Add `v=1` for future migrations.
-- Added in M4a: `rd` (wheel, degrees, + = starboard, always written); `jr` (jib out as reached, %, only when it is less than the controls alone give: the jib sheet was hauled against a jib furled with the sheet released; a link without it would show the furl blocked instead; values below `jf` are ignored); `lg=0` (legend hidden) and `mode` (Ropes-tab mode) only when they differ from the default. The name `detail` is reserved for the View tab's detail setting (M3b).
-- The Share button in the View tab copies the full link (the address bar has the same); if the browser does not allow copying, the link is shown selected to copy by hand. Reset all needs a second tap within 4 s; it sets controls, camera, selection and settings back to the defaults (the debug overlay stays as it is) and the rig moves back visibly.
+- Added in M4a: `rd` (wheel, degrees, + = starboard, always written); `jr` (jib out as reached, %, only when it is less than the controls alone give: the jib sheet was hauled against a jib furled with the sheet released; a link without it would show the furl blocked instead; values below `jf` are ignored); `lg=0` (legend hidden) and `mode` (Ropes-tab mode) only when they differ from the default. `detail` is M3b's render detail.
+- The Share button in the View tab copies the full link (the address bar has the same); if the browser does not allow copying, the link is shown selected to copy by hand. Reset all needs a second tap within 4 s; it sets controls, camera, selection and settings back to the defaults (the debug overlay and the Detail level stay as they are: they suit the device) and the rig moves back visibly.
 
 ### 9.3 Debug overlay (toggle, off by default; `?debug=1` turns it on)
 
@@ -305,7 +316,7 @@ Shows FPS, layout mode, viewport size and aspect, device pixel ratio, θ/ψ/φ, 
 
 ## 10. Quality and performance
 
-- Target ≥ 50 fps on a mid-range phone, never below 30 during interaction. Cap device pixel ratio at 2. No real-time shadows in Phase 1. Keep draw calls low (merge static meshes).
+- Target ≥ 50 fps on a mid-range phone, never below 30 during interaction. Cap device pixel ratio at 2. Real-time shadows only at Detail: High (M3b, owner request; phones start on Low). Keep draw calls low (merge static meshes).
 - First load under 1.5 MB compressed, excluding three.js; fine to be a bit over if justified.
 - No console errors. TypeScript `strict`. ESLint clean.
 - Accessibility: every control has an accessible name and keyboard access. Colour is never the only signal.
@@ -354,6 +365,15 @@ Each milestone is **one PR**, small enough to review on a phone. Do not start th
 - Jib solver (8.5), track and car, jib furling with the sheet interaction, jib luffing and twist.
 - Unit tests for PT-10, PT-11, PT-13.
 - **Done when:** all M3 checks in `WORKFLOW.md` pass.
+
+### M3b: Visual pass (owner request)
+
+- Realistic but low-poly look (6.4): materials, sky and reflections, ripples, soft shadows, better winches, clutches, blocks and stanchions. Procedural only.
+- Mainsail bends around spreaders and shrouds (8.6), with a test sampling the sail mesh against them at full ease, wind from both sides.
+- Covered line channels, line routing with 75–80° drops at the mast, sprayhood clear of every rope, JIB ROLL to the port winch (6.4), with tests.
+- Detail High / Low in the View tab and the URL; draw calls, triangles and FPS reported from the debug overlay.
+- No new controls, no rig-model behaviour changes.
+- **Done when:** all M3b checks in `WORKFLOW.md` pass.
 
 ### M4: Cockpit / clutch-bank panel
 

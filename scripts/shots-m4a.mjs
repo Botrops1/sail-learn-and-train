@@ -202,7 +202,8 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     const reset = await search(page);
     check(
       'reset: defaults',
-      reset === '?v=1&ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12&cam=side-port&step=5',
+      reset ===
+        '?v=1&ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12&cam=side-port&step=5&detail=low',
       reset,
     );
     await context.close();

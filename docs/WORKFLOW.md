@@ -127,6 +127,16 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 - [ ] `?wd=90&js=0`, ease the jib sheet to 100 %: the jib opens only to about 30–35°, and its top twists more than its bottom. (PT-11)
 - [ ] `?js=0`, try to furl the jib: it stops with a hint to ease the sheet. Ease the sheet: furling continues. (PT-13)
 
+### M3b: Visual pass
+
+- [ ] The boat looks more real: white gelcoat hull with a dark stripe at the waterline, teak cockpit and side decks, silver mast and boom, sails with faint seams, a sky with clouds, rippled water, soft shadows (View tab → Detail: High).
+- [ ] `?wd=175&ms=100`, look from above (Top) and close up at the lower spreader on the left: the mainsail rests against the spreader tip and the wire, it does not pass through them. Same with `wd=-175` (other side).
+- [ ] `?wd=60&ms=100`, Helm view and close up at the sprayhood: no rope goes through the sprayhood. The main sheet comes down just in front of it.
+- [ ] Close up at the mast foot: each line comes down the mast almost vertically to its own small block, then runs flat aft into a grey covered channel; no rope cuts straight across from the mast to the cockpit.
+- [ ] Follow the JIB ROLL line (blue, left side deck): past its clutch it runs aft to the left winch, wraps round it and ends in the top of the winch.
+- [ ] View tab → Detail: High / Low switches the look; the link (Share/address bar) keeps `detail=…`. On a phone it starts on Low.
+- [ ] `?debug=1` on your phone, Low and High: note FPS, draw calls and triangles from the overlay.
+
 ### M4: Clutch-bank panel
 
 - [ ] Ropes tab: the two clutch banks look like the photos, with the labels exactly as on the boat.

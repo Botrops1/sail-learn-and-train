@@ -4,6 +4,7 @@ import { carPoint, jibClew } from '../../model/jib';
 import { drawnPose, ropeDrawings } from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
 import { boat } from '../../model/boat';
+import type { Detail } from '../../model/settings';
 import { initialRig, type RigState } from '../../model/sim';
 import { wheelTurnDeg } from '../../model/steering';
 import { buildWindex } from '../wind';
@@ -38,13 +39,14 @@ export interface BoatModel {
 export function buildBoat(
   controls: Controls = defaultControls(),
   rig: RigState = initialRig(controls),
+  detail: Detail = 'high',
 ): BoatModel {
-  const materials = createMaterials();
+  const materials = createMaterials(detail);
   const root = new THREE.Group();
   root.name = 'boat';
-  const rigParts = buildRig(materials);
+  const rigParts = buildRig(materials, detail);
   const rudderPivot = buildRudder(materials);
-  const hardware = buildCockpitHardware(materials);
+  const hardware = buildCockpitHardware(materials, detail);
   // A sail rolled away below the point where it stops pushing (PT-14) is not drawn.
   const shown = (unfurled: number) => unfurled * 100 >= boat.visual.solver.furledBelowPct;
   const mainInput = mainSailInputFor(rig, controls);
@@ -60,7 +62,7 @@ export function buildBoat(
     buildSaildrive(materials),
     ...rigParts.objects,
     ...hardware.objects,
-    ...buildDeckGear(materials),
+    ...buildDeckGear(materials, detail),
     mainSail.mesh,
     jibSail.mesh,
     ...ropes.objects,
@@ -84,6 +86,14 @@ export function buildBoat(
     root.updateMatrixWorld(true);
   };
   update(rig, controls);
+  // Sun shadows (drawn at high detail only): everything casts; thin ropes and see-through
+  // windows do not catch shadows.
+  root.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    const id = (object.userData as { partId?: string }).partId ?? '';
+    object.castShadow = !object.material.transparent || id.startsWith('sail_');
+    object.receiveShadow = !id.startsWith('rope_') && !object.material.transparent;
+  });
   return {
     root,
     boomPivot: rigParts.boomPivot,

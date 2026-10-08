@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
 import { sheerAt } from '../../model/hullShape';
+import type { Detail } from '../../model/settings';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import { boxAt, cylinderBetween, partMesh, smallPartMesh, type PickSegment } from './parts';
@@ -12,7 +13,11 @@ export interface CockpitHardware {
 }
 
 /** Wheels on pedestals, winches and clutch banks (PHASE1_SPEC 6.1). */
-export function buildCockpitHardware(materials: BoatMaterials): CockpitHardware {
+export function buildCockpitHardware(
+  materials: BoatMaterials,
+  detail: Detail = 'high',
+): CockpitHardware {
+  const segments = detail === 'high' ? 32 : 14;
   const wheels = boat.cockpitHardware.helms.map((helm) => buildWheel(helm, materials));
   return {
     objects: [
@@ -20,11 +25,17 @@ export function buildCockpitHardware(materials: BoatMaterials): CockpitHardware 
       // Only the winches on the reference boat: the brochure's optional ones are `present: false`.
       ...boat.cockpitHardware.winches
         .filter((winch) => !('present' in winch) || winch.present !== false)
-        .map((winch) => buildWinch(winch, materials)),
-      ...boat.cockpitHardware.clutchBanks.map((bank) =>
-        buildClutch(bank.id, [bank.x, bank.y, bank.z], boat.modelDetail.clutchBank, materials),
+        .flatMap((winch) => buildWinch(winch, materials, segments)),
+      ...boat.cockpitHardware.clutchBanks.flatMap((bank) =>
+        buildClutch(
+          bank.id,
+          [bank.x, bank.y, bank.z],
+          boat.modelDetail.clutchBank,
+          bank.clutches.length,
+          materials,
+        ),
       ),
-      buildClutch(
+      ...buildClutch(
         boat.cockpitHardware.jibRollClutch.id,
         [
           boat.cockpitHardware.jibRollClutch.x,
@@ -32,6 +43,7 @@ export function buildCockpitHardware(materials: BoatMaterials): CockpitHardware 
           boat.cockpitHardware.jibRollClutch.z,
         ],
         boat.modelDetail.jibRollClutch,
+        1,
         materials,
       ),
     ],
@@ -101,29 +113,73 @@ function buildWheel(
   return { pivot, pedestal };
 }
 
-/** Winch drum standing on the coaming. */
+/**
+ * Self-tailing winch (Lewmar 55 ST style) standing on the coaming: a base flange and a
+ * black drum, a chrome self-tailer on top with the stripper arm pointing outboard.
+ */
 function buildWinch(
   winch: { id: string; x: number; y: number; z: number },
   materials: BoatMaterials,
-): THREE.Object3D {
+  segments: number,
+): THREE.Object3D[] {
   const size = boat.modelDetail.winch;
-  const drum = new THREE.CylinderGeometry(size.diameter / 2, size.diameter / 2, size.height, 16);
-  drum.translate(winch.x, winch.y + size.height / 2, winch.z);
-  return smallPartMesh(winch.id, [drum], materials.fitting, [
-    [winch.x, winch.y + size.height / 2, winch.z],
+  const r = size.diameter / 2;
+  const h = size.height;
+  // [radius, height] from the base up, as fractions of the drum radius and the winch height.
+  const lathe = (profile: [number, number][]) =>
+    new THREE.LatheGeometry(
+      profile.map(([pr, ph]) => new THREE.Vector2(pr * r, ph * h)),
+      segments,
+    ).translate(winch.x, winch.y, winch.z);
+  const drum = lathe([
+    [0, 0],
+    [1.2, 0],
+    [1.2, 0.06],
+    [1.0, 0.1],
+    [0.93, 0.35],
+    [0.95, 0.6],
+    [1.02, 0.66],
   ]);
+  // Self-tailer: jaws ring, then a nearly flat chrome cap.
+  const top = lathe([
+    [1.02, 0.66],
+    [1.06, 0.74],
+    [1.04, 0.86],
+    [0.96, 0.92],
+    [0.3, 0.95],
+    [0, 0.95],
+  ]);
+  // Winch-handle socket in the middle of the cap.
+  const socket = new THREE.CylinderGeometry(0.16 * r, 0.16 * r, 0.03 * h, 8).translate(
+    winch.x,
+    winch.y + 0.955 * h,
+    winch.z,
+  );
+  const outboard = Math.sign(winch.z) || 1;
+  const arm = boxAt(
+    [winch.x, winch.y + 0.9 * h, winch.z + outboard * 0.9 * r],
+    [0.03, 0.025, 0.6 * r],
+  );
+  const centre: Vec3 = [winch.x, winch.y + h / 2, winch.z];
+  return [
+    smallPartMesh(winch.id, [drum, socket], materials.dark, [centre]),
+    smallPartMesh(winch.id, [top, arm], materials.chrome, [centre]),
+  ];
 }
 
 /**
- * A clutch bank (or the single JIB ROLL clutch). The data gives an approximate position; the
- * model stands the clutch on whatever is below it: the coaming top beside the cockpit, else the deck.
+ * A clutch bank (or the single JIB ROLL clutch): a row of clutches, each a black body with a
+ * lever on top carrying a white label, as in the photos. The data gives an approximate
+ * position; the model stands the clutches on whatever is below: the coaming top beside the
+ * cockpit, else the deck.
  */
 function buildClutch(
   id: string,
   position: Vec3,
   size: { length: number; width: number; height: number },
+  count: number,
   materials: BoatMaterials,
-): THREE.Object3D {
+): THREE.Object3D[] {
   const { cockpit } = boat.deck;
   const coamingOuter = cockpit.wellHalfWidth + boat.modelDetail.coamingWidth;
   const onCoaming =
@@ -131,11 +187,30 @@ function buildClutch(
     position[0] >= cockpit.aftX &&
     Math.abs(position[2]) <= coamingOuter;
   const baseY = Math.max(position[1], onCoaming ? cockpit.coamingTopY : sheerAt(position[0]));
+  const each = size.width / count;
+  const bodies: THREE.BufferGeometry[] = [];
+  const labels: THREE.BufferGeometry[] = [];
+  for (let k = 0; k < count; k += 1) {
+    const z = position[2] - size.width / 2 + each * (k + 0.5);
+    const bodyHeight = size.height * 0.62;
+    bodies.push(
+      boxAt([position[0], baseY + bodyHeight / 2, z], [size.length, bodyHeight, each * 0.9]),
+    );
+    // Lever: the full length on top, its front end raised a little.
+    const lever = boxAt([0, 0, 0], [size.length * 0.92, size.height * 0.3, each * 0.8]);
+    lever.rotateZ(-0.06);
+    lever.translate(position[0], baseY + bodyHeight + size.height * 0.15, z);
+    bodies.push(lever);
+    labels.push(
+      boxAt(
+        [position[0] + size.length * 0.08, baseY + size.height + 0.002, z],
+        [size.length * 0.45, 0.004, each * 0.5],
+      ),
+    );
+  }
   const centre: Vec3 = [position[0], baseY + size.height / 2, position[2]];
-  return smallPartMesh(
-    id,
-    [boxAt(centre, [size.length, size.height, size.width])],
-    materials.dark,
-    [centre],
-  );
+  return [
+    smallPartMesh(id, bodies, materials.dark, [centre]),
+    smallPartMesh(id, labels, materials.gelcoat, [centre]),
+  ];
 }

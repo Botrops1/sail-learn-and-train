@@ -4,6 +4,7 @@ import {
   DEFAULT_SETTINGS,
   type CameraPreset,
   type CameraState,
+  type Detail,
   type RopesMode,
   type Settings,
   type StepSize,
@@ -28,6 +29,7 @@ export interface AppState {
 export type Action =
   | { type: 'setStep'; step: StepSize }
   | { type: 'setDebug'; debug: boolean }
+  | { type: 'setDetail'; detail: Detail }
   | { type: 'setRopesMode'; mode: RopesMode }
   | { type: 'setLegend'; legend: boolean }
   /** Reset all (View tab): controls, camera, selection and settings back to the defaults. */
@@ -81,14 +83,17 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, settings: { ...state.settings, step: action.step } };
     case 'setDebug':
       return { ...state, settings: { ...state.settings, debug: action.debug } };
+    case 'setDetail':
+      return { ...state, settings: { ...state.settings, detail: action.detail } };
     case 'setRopesMode':
       return { ...state, settings: { ...state.settings, ropesMode: action.mode } };
     case 'setLegend':
       return { ...state, settings: { ...state.settings, legend: action.legend } };
     case 'reset': {
       // The rig keeps moving from where it is, so the boom and sails swing back visibly. The
-      // debug overlay is a tool, not part of what is shown: it stays as it is.
-      const defaults = initialState({ settings: { debug: state.settings.debug } });
+      // debug overlay and the render detail suit the device, not what is shown: they stay.
+      const { debug, detail } = state.settings;
+      const defaults = initialState({ settings: { debug, detail } });
       return { ...defaults, rig: state.rig };
     }
     case 'setCameraPreset':

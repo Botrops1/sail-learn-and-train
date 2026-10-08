@@ -28,12 +28,32 @@ export type StepSize = (typeof STEP_SIZES)[number];
 export const ROPES_MODES = ['easy'] as const;
 export type RopesMode = (typeof ROPES_MODES)[number];
 
+/**
+ * Render detail (M3b): `high` = soft shadows, reflections, finer shapes; `low` = cheaper
+ * lighting and shapes for phones. Stored in the URL like the step size.
+ */
+export const DETAIL_LEVELS = ['high', 'low'] as const;
+export type Detail = (typeof DETAIL_LEVELS)[number];
+
+/** Screens whose shorter side is below this (CSS px) count as phones: they start at low detail. */
+export const PHONE_SCREEN_SHORT_SIDE_PX = 600;
+
+/** The starting detail when the URL does not say: high on desktops and tablets, low on phones. */
+export function defaultDetail(screenWidth: number, screenHeight: number): Detail {
+  return Math.min(screenWidth, screenHeight) < PHONE_SCREEN_SHORT_SIDE_PX ? 'low' : 'high';
+}
+
+export function isDetail(value: string): value is Detail {
+  return (DETAIL_LEVELS as readonly string[]).includes(value);
+}
+
 export interface Settings {
   step: StepSize;
   debug: boolean;
   ropesMode: RopesMode;
   /** Rope colour legend shown in the Ropes tab (PHASE1_SPEC 5.2, 7.3). */
   legend: boolean;
+  detail: Detail;
 }
 
 export interface CameraState {
@@ -43,6 +63,7 @@ export interface CameraState {
 export const DEFAULT_SETTINGS: Readonly<Settings> = {
   step: 5,
   debug: false,
+  detail: 'high',
   ropesMode: 'easy',
   legend: true,
 };

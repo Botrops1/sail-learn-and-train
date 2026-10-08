@@ -197,6 +197,51 @@ describe('boat model', () => {
   });
 });
 
+describe('M3b: detail levels', () => {
+  const ids = (detail: 'high' | 'low') => {
+    const found = new Set<string>();
+    let triangles = 0;
+    buildBoat(CENTRED, initialRig(CENTRED), detail).root.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+      found.add(object.userData.partId as string);
+      const geometry = object.geometry as THREE.BufferGeometry;
+      triangles += (geometry.index?.count ?? geometry.getAttribute('position').count) / 3;
+    });
+    return { found, triangles };
+  };
+
+  it('low detail draws the same parts as high detail, with fewer triangles', () => {
+    const high = ids('high');
+    const low = ids('low');
+    expect([...low.found].sort()).toEqual([...high.found].sort());
+    expect(low.triangles).toBeLessThan(high.triangles);
+  });
+
+  it('high detail uses physically based materials (reflections), low detail cheaper ones', () => {
+    const kinds = (detail: 'high' | 'low') => {
+      const types = new Set<string>();
+      buildBoat(CENTRED, initialRig(CENTRED), detail).root.traverse((object) => {
+        if (
+          object instanceof THREE.Mesh &&
+          !(object.userData.partId as string).startsWith('rope_')
+        ) {
+          types.add((object.material as THREE.Material).type);
+        }
+      });
+      return types;
+    };
+    expect([...kinds('low')]).toEqual(['MeshLambertMaterial']);
+    expect(kinds('high').has('MeshLambertMaterial')).toBe(false);
+  });
+
+  it('the new parts carry registry ids: line channels, sprayhood windows, winch tops', () => {
+    const high = ids('high').found;
+    for (const id of ['fit_line_channels', 'fit_sprayhood', 'winch_primary_port']) {
+      expect(high.has(id), id).toBe(true);
+    }
+  });
+});
+
 describe('rope thickness on screen', () => {
   it('far from the camera a rope is drawn at least minScreenWidthPx wide; close up, at its 3D radius', () => {
     const controls = defaultControls();

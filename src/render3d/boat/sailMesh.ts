@@ -23,6 +23,9 @@ export function buildSailMesh(
 ): SailMesh {
   const { rows, columns } = first;
   const positions = new Float32Array((rows + 1) * (columns + 1) * 3);
+  // Texture coordinates: u across the sail, v the height in metres (the seams are horizontal
+  // panels, see textures.ts).
+  const uvs = new Float32Array((rows + 1) * (columns + 1) * 2);
   const indices: number[] = [];
   for (let i = 0; i < rows; i += 1) {
     for (let j = 0; j < columns; j += 1) {
@@ -35,6 +38,7 @@ export function buildSailMesh(
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
   geometry.setIndex(indices);
 
   const mesh = partMesh(partId, [geometry], materials.sail);
@@ -44,8 +48,13 @@ export function buildSailMesh(
   const at = (points: Vec3[], i: number, j: number) => points[i * (columns + 1) + j] as Vec3;
   const update = (grid: SailGrid, show: boolean) => {
     const { points } = grid;
-    points.forEach((p, k) => positions.set(p, k * 3));
+    points.forEach((p, k) => {
+      positions.set(p, k * 3);
+      uvs[k * 2] = (k % (columns + 1)) / columns;
+      uvs[k * 2 + 1] = p[1];
+    });
     geometry.getAttribute('position').needsUpdate = true;
+    geometry.getAttribute('uv').needsUpdate = true;
     geometry.computeVertexNormals();
     geometry.boundingSphere = null;
     geometry.boundingBox = null;

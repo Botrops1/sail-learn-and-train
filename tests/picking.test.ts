@@ -24,7 +24,16 @@ const STARBOARD = ['clutch_bank_a', 'winch_primary_starboard'];
 const VIEWS: { preset: CameraPreset; expected: string[] }[] = [
   { preset: 'side-port', expected: [...CENTRELINE, ...PORT] },
   { preset: 'side-starboard', expected: [...CENTRELINE, ...STARBOARD] },
-  { preset: 'top', expected: [...CENTRELINE, ...PORT, ...STARBOARD] },
+  // M3b: the furling gearbox sits on the mast's aft face under the gooseneck (photo), so from
+  // straight above the boom hides it, as on the boat.
+  {
+    preset: 'top',
+    expected: [
+      ...CENTRELINE.filter((id) => id !== 'part_main_furling_gearbox'),
+      ...PORT,
+      ...STARBOARD,
+    ],
+  },
 ];
 const SCREENS = [
   { name: 'phone 3D view', width: 390, height: 380, topBowUp: true },

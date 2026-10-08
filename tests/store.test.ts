@@ -22,6 +22,15 @@ describe('store', () => {
     expect(store.getState().camera.preset).toBe('top');
   });
 
+  it('M3b: setDetail switches the render detail and nothing else', () => {
+    const store = createStore(initialState());
+    const before = store.getState();
+    store.dispatch({ type: 'setDetail', detail: 'low' });
+    expect(store.getState().settings.detail).toBe('low');
+    expect(store.getState().controls).toBe(before.controls);
+    expect(before.settings.detail).toBe('high');
+  });
+
   it('select sets and clears the selected part', () => {
     const store = createStore(initialState());
     expect(store.getState().selection).toBeNull();
@@ -68,13 +77,13 @@ describe('store', () => {
     expect(store.getState().settings.ropesMode).toBe('easy');
   });
 
-  it('reset brings controls, camera, selection and settings back to the defaults (debug stays)', () => {
+  it('reset brings controls, camera, selection and settings back to the defaults (debug and detail stay)', () => {
     const defaults = initialState();
     const store = createStore(
       initialState({
         controls: { ctl_mainsheet: 90, ctl_rudder: -20, ctl_wind_dir: -120, ctl_jib_furl: 40 },
         camera: { preset: 'top' },
-        settings: { step: 1, debug: true, legend: false },
+        settings: { step: 1, debug: true, legend: false, detail: 'low' },
         selection: 'rope_vang',
       }),
     );
@@ -84,7 +93,8 @@ describe('store', () => {
     expect(state.controls).toEqual(defaults.controls);
     expect(state.camera).toEqual(defaults.camera);
     expect(state.selection).toBeNull();
-    expect(state.settings).toEqual({ ...defaults.settings, debug: true });
+    // Debug overlay and render detail suit the device: Reset keeps them (M3b's Detail setting).
+    expect(state.settings).toEqual({ ...defaults.settings, debug: true, detail: 'low' });
     // The rig is not snapped: it moves back from where it was.
     expect(state.rig).toBe(rigBefore);
     for (let i = 0; i < 600; i += 1) store.dispatch({ type: 'step', dt: 1 / 60 });

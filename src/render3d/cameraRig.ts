@@ -27,6 +27,8 @@ export interface CameraRig {
   update(now: number): void;
   /** Called when the user moves the camera by hand (drag, pinch, wheel). */
   onUserMove(listener: () => void): void;
+  /** Debug only (screenshots of close-ups): puts the camera at a pose as if moved by hand. */
+  setPose(pose: CameraPose): void;
 }
 
 /**
@@ -159,6 +161,14 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     },
     onUserMove(listener) {
       listeners.push(listener);
+    },
+    setPose(pose) {
+      tween = undefined;
+      movedByHand = true;
+      currentPreset = 'free';
+      apply(pose);
+      controls.update();
+      lastFreePose = currentPose();
     },
   };
 }

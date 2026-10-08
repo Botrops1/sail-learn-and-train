@@ -1,0 +1,26 @@
+[
+  {
+    "viewport": "phone-390x844",
+    "detail": "default",
+    "fps": 29,
+    "calls": 52,
+    "triangles": 13802,
+    "overlay": "FPS         29\nLayout      stacked\nViewport    390×844\nAspect      0.46\nPixel ratio 1.00 → 1.00\nCamera      side-port\nSelected    –\nStep        5 %\nBoom θ ψ    -27.9° 3.8°\nθ free ψ t  -60.0° 9.0°\nψ limits    -2.0° … 5.0°\nMain        AoA 32.1° fill 1.00\nJib         φ -22.4° h -20.8°\n            AoA 39.2° fill 1.00\nCar z       -1.40 m  out 100 %\nRopes       sheet taut\n            vang slack 0.09 m\n            lift slack 0.99 m\n            jib sheet taut\nBuild       51157b9 2026-10-08"
+  },
+  {
+    "viewport": "foldable-820x1000",
+    "detail": "default",
+    "fps": 15,
+    "calls": 52,
+    "triangles": 13802,
+    "overlay": "FPS         15\nLayout      side by side\nViewport    820×1000\nAspect      0.82\nPixel ratio 1.00 → 1.00\nCamera      side-port\nSelected    –\nStep        5 %\nBoom θ ψ    -27.9° 3.8°\nθ free ψ t  -60.0° 9.0°\nψ limits    -2.0° … 5.0°\nMain        AoA 32.1° fill 1.00\nJib         φ -22.4° h -20.8°\n            AoA 39.2° fill 1.00\nCar z       -1.40 m  out 100 %\nRopes       sheet taut\n            vang slack 0.09 m\n            lift slack 0.99 m\n            jib sheet taut\nBuild       51157b9 2026-10-08"
+  },
+  {
+    "viewport": "desktop-1440x900",
+    "detail": "default",
+    "fps": 12,
+    "calls": 52,
+    "triangles": 13802,
+    "overlay": "FPS         12\nLayout      side by side\nViewport    1440×900\nAspect      1.60\nPixel ratio 1.00 → 1.00\nCamera      side-port\nSelected    –\nStep        5 %\nBoom θ ψ    -27.9° 3.8°\nθ free ψ t  -60.0° 9.0°\nψ limits    -2.0° … 5.0°\nMain        AoA 32.1° fill 1.00\nJib         φ -22.4° h -20.8°\n            AoA 39.2° fill 1.00\nCar z       -1.40 m  out 100 %\nRopes       sheet taut\n            vang slack 0.09 m\n            lift slack 0.99 m\n            jib sheet taut\nBuild       51157b9 2026-10-08"
+  }
+]

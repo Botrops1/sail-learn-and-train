@@ -18,7 +18,7 @@ export default defineConfig(
   },
   {
     // Playwright runs some callbacks of the screenshot script inside the page.
-    files: ['scripts/shots*.mjs'],
+    files: ['scripts/shots*.mjs', 'scripts/visual-shots.mjs'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
   },
   {

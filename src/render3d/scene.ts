@@ -3,13 +3,17 @@ import type { Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
 import { requirePartId } from '../model/registry';
 import type { Vec3 } from '../model/vec3';
+import type { Detail } from '../model/settings';
+import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
+import { rippleNormalMap, skyTexture, sunDirection } from './environment';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
 import { SCENE } from './sceneConfig';
 import { buildWindStreaks } from './wind';
 
 export interface SceneView {
+  /** The device pixel ratio the renderer uses (capped; lower at low detail). */
   readonly pixelRatio: number;
   /**
    * Resizes the drawing buffer; `bottomInset` CSS px at the bottom are covered by buttons.
@@ -17,6 +21,8 @@ export interface SceneView {
    */
   resize(width: number, height: number, bottomInset: number, stacked: boolean): void;
   render(now: number): void;
+  /** Draw calls and triangles of the last frame (debug overlay). */
+  stats(): RenderStats;
 }
 
 /**
@@ -24,46 +30,66 @@ export interface SceneView {
  * with its moving boom, mainsail and ropes, wind streaks, the orbit camera with presets, and
  * tap-to-identify. Each frame draws the rig as the store holds it.
  * Boat frame = three.js frame: x forward, y up, z starboard (PHASE1_SPEC 4).
+ *
+ * M3b: a procedural sky that the boat and the water reflect, rippled water and, at high detail,
+ * soft sun shadows. Changing the detail rebuilds the boat with the other materials.
  */
 export function createScene(host: HTMLElement, store: Store): SceneView {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     powerPreference: 'high-performance',
   });
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, SCENE.maxPixelRatio);
-  renderer.setPixelRatio(pixelRatio);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = SCENE.light.toneMappingExposure;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.domElement.classList.add('scene-canvas');
   host.append(renderer.domElement);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(SCENE.skyColor);
-  scene.fog = new THREE.Fog(SCENE.skyColor, SCENE.fogNear, SCENE.fogFar);
+  const sky = skyTexture();
+  scene.background = sky;
+  scene.fog = new THREE.Fog(SCENE.sky.horizon, SCENE.fogNear, SCENE.fogFar);
+  // The blurred sky for reflections is made the first time High detail is used (phones
+  // start on Low and skip the work).
+  let reflections: THREE.Texture | undefined;
+  const reflectionsOf = () => {
+    if (!reflections) {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      reflections = pmrem.fromEquirectangular(sky).texture;
+      pmrem.dispose();
+    }
+    return reflections;
+  };
+  scene.environmentIntensity = SCENE.light.environmentIntensity;
 
-  scene.add(
-    new THREE.HemisphereLight(
-      SCENE.light.skyColor,
-      SCENE.light.groundColor,
-      SCENE.light.hemisphereIntensity,
-    ),
+  const hemisphere = new THREE.HemisphereLight(
+    SCENE.light.skyColor,
+    SCENE.light.groundColor,
+    SCENE.light.hemisphereIntensity,
   );
   const sun = new THREE.DirectionalLight(0xffffff, SCENE.light.sunIntensity);
-  sun.position.set(...SCENE.light.sunDirection);
   const fill = new THREE.DirectionalLight(0xffffff, SCENE.light.fillIntensity);
   fill.position.set(...SCENE.light.fillDirection);
-  scene.add(sun, fill);
+  configureSunShadow(sun);
+  scene.add(hemisphere, sun, sun.target, fill);
 
   const initial = store.getState();
-  const boatModel = buildBoat(initial.controls, initial.rig);
-  const water = buildWater();
+  const holder = new THREE.Group();
+  holder.name = 'boatHolder';
+  let detail: Detail = initial.settings.detail;
+  let boatModel = buildBoat(initial.controls, initial.rig, detail);
+  holder.add(boatModel.root);
+  const ripples = rippleNormalMap();
+  const water = buildWater(ripples);
   const streaks = buildWindStreaks();
-  scene.add(boatModel.root, water, streaks.object);
+  scene.add(holder, water.object, streaks.object);
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
   rig.goTo(store.getState().camera.preset, false);
   rig.onUserMove(() => store.dispatch({ type: 'setCameraPreset', preset: 'free' }));
 
-  const picker = createPicker(camera, boatModel.root, water);
+  const picker = createPicker(camera, holder, water.object);
   listenForTaps(renderer.domElement, (x, y) => {
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
@@ -102,26 +128,69 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           const ndc = found.project(camera);
           return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
+        /** Puts the camera at a position looking at a target (close-up screenshots). */
+        setView: (position: Vec3, target: Vec3, fovDeg: number = SCENE.camera.verticalFovDeg) =>
+          rig.setPose({ position, target, fovDeg }),
+        /** Draw calls and triangles of the last frame. */
+        stats: () => ({
+          calls: renderer.info.render.calls,
+          triangles: renderer.info.render.triangles,
+        }),
       },
     });
   }
 
   // Ropes that share a control light up together (PHASE1_SPEC 7.2), e.g. the outhaul with the
   // main furling line, or the rudder with both wheels.
-  const highlight = createHighlighter(boatModel.root);
+  let highlight = createHighlighter(boatModel.root);
   highlight(highlightIds(store.getState().selection));
+
+  let size = { width: 1, height: 1 };
+  let pixelRatio = 1;
+  /** Puts the renderer, lights, water and materials in the given detail level. */
+  const applyDetail = () => {
+    const high = detail === 'high';
+    pixelRatio = Math.min(
+      window.devicePixelRatio || 1,
+      high ? SCENE.maxPixelRatio : SCENE.maxPixelRatioLow,
+    );
+    renderer.setPixelRatio(pixelRatio);
+    renderer.setSize(size.width, size.height, false);
+    renderer.shadowMap.enabled = high;
+    sun.castShadow = high;
+    scene.environment = high ? reflectionsOf() : null;
+    hemisphere.intensity = high
+      ? SCENE.light.hemisphereIntensityHigh
+      : SCENE.light.hemisphereIntensity;
+    sun.intensity = high ? SCENE.light.sunIntensityHigh : SCENE.light.sunIntensity;
+    fill.intensity = high ? SCENE.light.fillIntensityHigh : SCENE.light.fillIntensity;
+    water.setDetail(detail);
+  };
+  applyDetail();
 
   store.subscribe((state, previous) => {
     const preset = state.camera.preset;
     if (preset !== previous.camera.preset && preset !== rig.preset) rig.goTo(preset);
-    if (state.selection !== previous.selection) highlight(highlightIds(state.selection));
+    if (state.settings.detail !== detail) {
+      detail = state.settings.detail;
+      holder.remove(boatModel.root);
+      dispose(boatModel.root);
+      boatModel = buildBoat(state.controls, state.rig, detail);
+      holder.add(boatModel.root);
+      highlight = createHighlighter(boatModel.root);
+      highlight(highlightIds(state.selection));
+      applyDetail();
+    } else if (state.selection !== previous.selection) highlight(highlightIds(state.selection));
   });
 
   let canvasHeight = 1;
   return {
-    pixelRatio,
+    get pixelRatio() {
+      return pixelRatio;
+    },
     resize(width, height, bottomInset, stacked) {
       if (width <= 0 || height <= 0) return;
+      size = { width, height };
       renderer.setSize(width, height, false);
       canvasHeight = height;
       rig.setViewport(width, height, bottomInset, { topBowUp: stacked });
@@ -136,9 +205,46 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
       });
       streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
+      water.update(now / 1000);
       renderer.render(scene, camera);
     },
+    stats() {
+      return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
+    },
   };
+}
+
+/**
+ * Sun shadows (high detail): an orthographic shadow camera over the boat and its mast, along
+ * the sun direction, soft-edged (PCF filter).
+ */
+function configureSunShadow(sun: THREE.DirectionalLight): void {
+  const s = SCENE.shadows;
+  const centre = new THREE.Vector3(...SCENE.shadowCentre);
+  sun.target.position.copy(centre);
+  sun.position.copy(centre).addScaledVector(sunDirection(), s.distance);
+  sun.shadow.mapSize.set(s.mapSize, s.mapSize);
+  const cam = sun.shadow.camera;
+  cam.left = -s.halfExtent;
+  cam.right = s.halfExtent;
+  cam.top = s.halfExtent;
+  cam.bottom = -s.halfExtent;
+  cam.near = 1;
+  cam.far = 2 * s.distance;
+  cam.updateProjectionMatrix();
+  sun.shadow.radius = s.radius;
+  sun.shadow.bias = s.bias;
+  sun.shadow.normalBias = s.normalBias;
+}
+
+/** Frees the GPU memory of a removed boat (geometries and the cloned materials). */
+function dispose(root: THREE.Object3D): void {
+  root.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    object.geometry.dispose();
+    const materials = Array.isArray(object.material) ? object.material : [object.material];
+    for (const material of materials) (material as THREE.Material).dispose();
+  });
 }
 
 /**
@@ -198,30 +304,66 @@ function createHighlighter(root: THREE.Object3D): (partIds: string[]) => void {
   };
 }
 
-function buildWater(): THREE.Object3D {
+interface Water {
+  object: THREE.Object3D;
+  setDetail(detail: Detail): void;
+  /** Drifts the ripples. */
+  update(timeS: number): void;
+}
+
+/**
+ * Water (PHASE1_SPEC 6.1; M3b): a large plane at y = 0, see-through so the keel stays
+ * visible, with drifting ripples that catch the sky's reflections at high detail, and a faint
+ * scale grid.
+ */
+function buildWater(ripples: THREE.Texture): Water {
+  const w = SCENE.water;
   const group = new THREE.Group();
   group.userData.partId = requirePartId('env_water');
+  ripples.repeat.set(w.size / w.rippleTileM, w.size / w.rippleTileM);
 
-  const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(SCENE.water.size, SCENE.water.size),
-    new THREE.MeshBasicMaterial({
-      color: SCENE.water.color,
-      transparent: true,
-      opacity: SCENE.water.opacity,
-      depthWrite: false,
-    }),
+  const high = new THREE.MeshStandardMaterial({
+    color: w.color,
+    roughness: w.roughness,
+    metalness: 0,
+    normalMap: ripples,
+    normalScale: new THREE.Vector2(w.rippleStrength, w.rippleStrength),
+    transparent: true,
+    opacity: w.opacity,
+    depthWrite: false,
+  });
+  const low = new THREE.MeshLambertMaterial({
+    color: w.lowColor,
+    transparent: true,
+    opacity: w.lowOpacity,
+    depthWrite: false,
+  });
+  const plane = new THREE.Mesh<THREE.PlaneGeometry, THREE.Material>(
+    new THREE.PlaneGeometry(w.size, w.size),
+    high,
   );
   plane.rotation.x = -Math.PI / 2;
+  plane.receiveShadow = true;
   plane.userData.partId = group.userData.partId;
 
   const divisions = Math.round(SCENE.grid.size / SCENE.grid.cellSize);
   const grid = new THREE.GridHelper(SCENE.grid.size, divisions, SCENE.grid.color, SCENE.grid.color);
   const gridMaterial = grid.material as THREE.Material;
   gridMaterial.transparent = true;
-  gridMaterial.opacity = SCENE.grid.opacity;
   gridMaterial.depthWrite = false;
+  grid.position.y = 0.005;
   grid.userData.partId = group.userData.partId;
 
   group.add(plane, grid);
-  return group;
+  return {
+    object: group,
+    setDetail(detail) {
+      plane.material = detail === 'high' ? high : low;
+      gridMaterial.opacity = detail === 'high' ? SCENE.grid.opacityHigh : SCENE.grid.opacity;
+    },
+    update(timeS) {
+      const drift = (w.rippleDriftMPerS * timeS) / w.rippleTileM;
+      ripples.offset.set(drift, drift * 0.6);
+    },
+  };
 }

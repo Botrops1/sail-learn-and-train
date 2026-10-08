@@ -2,7 +2,7 @@ import { BUILD_INFO, REPO_URL } from '../app/buildInfo';
 import type { Store } from '../app/store';
 import { shareLink } from '../app/urlSync';
 import { entryFor } from '../model/panelEntries';
-import { CAMERA_PRESETS, STEP_SIZES } from '../model/settings';
+import { CAMERA_PRESETS, DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { createRopesTab } from './ropesTab';
@@ -166,6 +166,26 @@ function buildViewTab(store: Store): HTMLElement[] {
   });
   stepGroup.append(stepOptions);
 
+  const detailGroup = el('fieldset', { class: 'field segmented' }, [
+    el('legend', {}, [t('view.detail.label')]),
+    el('p', { class: 'hint' }, [t('view.detail.hint')]),
+  ]);
+  const detailOptions = el('div', { class: 'segments' });
+  const detailInputs = DETAIL_LEVELS.map((detail) => {
+    const input = el('input', { type: 'radio', name: 'detail', value: detail });
+    input.addEventListener('change', () => {
+      if (input.checked) store.dispatch({ type: 'setDetail', detail });
+    });
+    detailOptions.append(
+      el('label', { class: 'segment' }, [
+        input,
+        el('span', {}, [t(`view.detail.${detail}` as StringKey)]),
+      ]),
+    );
+    return { detail, input };
+  });
+  detailGroup.append(detailOptions);
+
   const debugInput = el('input', { type: 'checkbox', id: 'debug-toggle' });
   debugInput.addEventListener('change', () =>
     store.dispatch({ type: 'setDebug', debug: debugInput.checked }),
@@ -197,6 +217,7 @@ function buildViewTab(store: Store): HTMLElement[] {
     const { settings, camera } = state;
     for (const { preset, input } of cameraInputs) input.checked = preset === camera.preset;
     for (const { step, input } of stepInputs) input.checked = step === settings.step;
+    for (const { detail, input } of detailInputs) input.checked = detail === settings.detail;
     debugInput.checked = settings.debug;
     legendInput.checked = settings.legend;
   };
@@ -206,6 +227,7 @@ function buildViewTab(store: Store): HTMLElement[] {
   return [
     cameraGroup,
     stepGroup,
+    detailGroup,
     ...buildShareAndReset(store),
     legendField,
     debugField,
