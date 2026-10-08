@@ -4,7 +4,7 @@ A web-based tool for sailing training and knowledge building: see how a cruising
 
 The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels).
 
-**Status:** Phase 1 (interactive boat and rope controls) is about to start. Nothing to try yet.
+**Status:** Phase 1 (interactive boat and rope controls) has started. Milestone M0 gives the empty app shell: the layout, a placeholder 3D scene, the panel tabs and the build version. The boat comes in M1.
 **Live site** (after the first deploy): https://botrops1.github.io/sail-learn-and-train/
 
 ## Documents
@@ -22,6 +22,17 @@ The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, G
 ## How it is built
 
 Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, TypeScript, three.js, Vitest; deployed with GitHub Actions to GitHub Pages.
+
+## Commands
+
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Local dev server |
+| `npm run build` | Production build into `dist/` |
+| `npm test` | Unit and data tests (Vitest) |
+| `npm run typecheck` | TypeScript check |
+| `npm run lint` | ESLint and Prettier check |
+| `npm run shots` | Build, then screenshots into `docs/screenshots/<milestone>/` |
 
 ## Disclaimer
 

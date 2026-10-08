@@ -1,0 +1,7 @@
+dist/
+node_modules/
+docs/
+content/
+*.md
+package-lock.json
+LICENSE
