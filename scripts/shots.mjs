@@ -7,7 +7,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm3';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm3b';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 const BASE_PATH = '/sail-learn-and-train/';
 
@@ -570,7 +570,8 @@ try {
   };
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5`);
+  // The phone-sized screen starts at low detail (M3b).
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -578,12 +579,23 @@ try {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
-  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&debug=1`);
+  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
+  // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
+  await page.getByText('High', { exact: true }).click();
+  await expectUrl('Detail high', `?v=1&${c}&cam=side-starboard&step=1&detail=high&debug=1`);
+  await page.waitForTimeout(1500);
+  const overlay = await page.getByTestId('debug-overlay').innerText();
+  const ok = /Detail\s+high/.test(overlay) && /Draw calls\s+\d+/.test(overlay);
+  if (!ok) problems.push(`live Detail high: overlay says ${overlay.replace(/\n/g, ' | ')}`);
+  console.log(`live Detail high -> overlay ${ok ? 'ok' : 'WRONG'}`);
+  await page.screenshot({ path: path.join(OUT_DIR, 'live-desktop-view-tab-detail-high.png') });
+  await page.getByText('Low', { exact: true }).click();
+  await expectUrl('Detail low', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
   await context.close();
 
   await liveM2Checks();

@@ -7,6 +7,7 @@ import { createInfoCard } from '../ui/infoCard';
 import { createLayout } from '../ui/layout';
 import { createPanel } from '../ui/panel';
 import { createWindIndicator } from '../ui/windIndicator';
+import { defaultDetail } from '../model/settings';
 import { createStore } from './store';
 import { parseUrlState } from './urlState';
 import { startUrlSync } from './urlSync';
@@ -17,7 +18,9 @@ const FPS_WINDOW_MS = 500;
 /** Wires store, layout, panel, 3D view and the main loop together. */
 export function startApp(host: HTMLElement): void {
   document.title = t('app.title');
-  const store = createStore(parseUrlState(window.location.search));
+  const store = createStore(
+    parseUrlState(window.location.search, defaultDetail(window.screen.width, window.screen.height)),
+  );
   startUrlSync(store);
 
   const layout = createLayout(host);
@@ -62,10 +65,12 @@ export function startApp(host: HTMLElement): void {
       frames = 0;
       windowStart = now;
     }
-    debug.update(fps, layout.viewport(), {
-      device: window.devicePixelRatio || 1,
-      render: scene?.pixelRatio ?? 0,
-    });
+    debug.update(
+      fps,
+      layout.viewport(),
+      { device: window.devicePixelRatio || 1, render: scene?.pixelRatio ?? 0 },
+      scene?.stats(),
+    );
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);

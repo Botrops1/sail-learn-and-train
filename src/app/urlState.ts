@@ -1,6 +1,14 @@
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
 import { isRegisteredPartId } from '../model/registry';
-import { isCameraPreset, isStepSize, type CameraPreset, type StepSize } from '../model/settings';
+import {
+  DEFAULT_SETTINGS,
+  isCameraPreset,
+  isDetail,
+  isStepSize,
+  type CameraPreset,
+  type Detail,
+  type StepSize,
+} from '../model/settings';
 import { initialState, type AppState } from './store';
 
 /** URL schema version (PHASE1_SPEC 9.2). Bump when a parameter changes meaning. */
@@ -27,9 +35,13 @@ const INTEGER = /^-?\d+$/;
  * Reads the app state from a query string such as `?ms=35&wd=60&cam=top&step=1&debug=1`.
  * Unknown or out-of-range values fall back to the defaults silently (PHASE1_SPEC 9.2).
  * Control values are whole numbers. `cam=free` opens the default view: the position of a
- * hand-moved camera is not stored.
+ * hand-moved camera is not stored. `detail=high|low` (M3b); without it, `fallbackDetail` (the
+ * app passes the default for the screen size: low on phones).
  */
-export function parseUrlState(search: string): AppState {
+export function parseUrlState(
+  search: string,
+  fallbackDetail: Detail = DEFAULT_SETTINGS.detail,
+): AppState {
   const params = new URLSearchParams(search);
 
   const controls: Partial<Controls> = {};
@@ -57,6 +69,9 @@ export function parseUrlState(search: string): AppState {
     if (isStepSize(value)) stepSize = value;
   }
 
+  const detailParam = params.get('detail');
+  const detail = detailParam !== null && isDetail(detailParam) ? detailParam : fallbackDetail;
+
   let debug: boolean | undefined;
   const debugParam = params.get('debug');
   if (debugParam === '1') debug = true;
@@ -68,6 +83,7 @@ export function parseUrlState(search: string): AppState {
     settings: {
       ...(stepSize !== undefined ? { step: stepSize } : {}),
       ...(debug !== undefined ? { debug } : {}),
+      detail,
     },
     selection,
   });
@@ -81,6 +97,7 @@ export function serializeUrlState(state: AppState): string {
   params.set('cam', state.camera.preset);
   if (state.selection) params.set('sel', state.selection);
   params.set('step', String(state.settings.step));
+  params.set('detail', state.settings.detail);
   if (state.settings.debug) params.set('debug', '1');
   return `?${params.toString()}`;
 }

@@ -17,8 +17,10 @@ export interface BoatMaterials {
   /** Non-slip deck and coachroof top. */
   deck: THREE.Material;
   teak: THREE.Material;
-  /** Smooth white gelcoat: coachroof sides, coamings, channel covers. */
+  /** Smooth white gelcoat: coachroof sides, coamings. */
   gelcoat: THREE.Material;
+  /** Line channel covers: light grey moulding, so they stand out from the white deck. */
+  cover: THREE.Material;
   /** Black plastic and hard-anodised fittings: clutches, blocks, wheels, winch drums. */
   dark: THREE.Material;
   appendage: THREE.Material;
@@ -104,6 +106,7 @@ export function createMaterials(detail: Detail = 'high'): BoatMaterials {
       ),
     }),
     gelcoat: make({ color: c.gelcoat, roughness: 0.3, clearcoat: 0.6 }),
+    cover: make({ color: c.channelCover, roughness: 0.4 }),
     dark: make({ color: c.dark, roughness: 0.45 }),
     appendage: make({ color: c.appendage, roughness: 0.75 }),
     spar: make({ color: c.spar, roughness: 0.32, metalness: 0.75 }),

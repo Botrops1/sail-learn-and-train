@@ -22,6 +22,15 @@ describe('store', () => {
     expect(store.getState().camera.preset).toBe('top');
   });
 
+  it('M3b: setDetail switches the render detail and nothing else', () => {
+    const store = createStore(initialState());
+    const before = store.getState();
+    store.dispatch({ type: 'setDetail', detail: 'low' });
+    expect(store.getState().settings.detail).toBe('low');
+    expect(store.getState().controls).toBe(before.controls);
+    expect(before.settings.detail).toBe('high');
+  });
+
   it('select sets and clears the selected part', () => {
     const store = createStore(initialState());
     expect(store.getState().selection).toBeNull();

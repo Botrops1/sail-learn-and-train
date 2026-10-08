@@ -16,6 +16,9 @@ const DIST = process.env.VISUAL_DIST ?? 'dist';
 const OUT = process.env.VISUAL_OUT ?? path.join('docs', 'screenshots', 'm3b', 'after');
 const DETAILS = (process.env.VISUAL_DETAIL ?? 'high,low').split(',').filter(Boolean);
 const BASE = '/sail-learn-and-train/';
+// Optional filters while iterating: comma-separated viewport names / shot names.
+const ONLY_VIEWPORTS = process.env.VISUAL_VIEWPORTS?.split(',');
+const ONLY_SHOTS = process.env.VISUAL_SHOTS?.split(',');
 
 const VIEWPORTS = [
   { name: 'phone-390x844', width: 390, height: 844 },
@@ -45,14 +48,19 @@ const SHOTS = [
     view: { position: [-6.4, 3.4, 3.0], target: [-3.2, 2.0, 0.3], fov: 50 },
   },
   {
-    name: 'run-sail-on-spreaders-front',
+    name: 'run-sail-on-spreaders-edge',
     query: '?wd=175&ws=12&ms=100',
-    view: { position: [6.5, 12.5, -7.5], target: [-1.6, 9.5, -2.2], fov: 50 },
+    view: { position: [-3.4, 10.2, -7.6], target: [-0.8, 8.4, -1.9], fov: 50 },
   },
   {
-    name: 'run-sail-on-spreaders-above',
+    name: 'run-sail-on-spreaders-from-front',
     query: '?wd=175&ws=12&ms=100',
-    view: { position: [1.5, 24.0, -3.5], target: [-1.5, 10.0, -2.0], fov: 50 },
+    view: { position: [1.6, 10.8, -4.2], target: [-0.85, 8.1, -1.9], fov: 50 },
+  },
+  {
+    name: 'closeup-hull-waterline',
+    query: '?wd=60&ws=12',
+    view: { position: [2.0, 1.4, -7.0], target: [-1.2, 0.3, -2.2], fov: 50 },
   },
   { name: 'run-top', query: '?wd=175&ws=12&ms=100&cam=top' },
 ];
@@ -108,8 +116,10 @@ async function open(viewport, label, query) {
 
 try {
   for (const viewport of VIEWPORTS) {
+    if (ONLY_VIEWPORTS && !ONLY_VIEWPORTS.includes(viewport.name)) continue;
     for (const level of levels) {
       for (const shot of SHOTS) {
+        if (ONLY_SHOTS && !ONLY_SHOTS.includes(shot.name)) continue;
         const label = `${viewport.name}/${level ?? 'default'}/${shot.name}`;
         const query = `${shot.query}&debug=1${level ? `&detail=${level}` : ''}`;
         const { context, page } = await open(viewport, label, query);

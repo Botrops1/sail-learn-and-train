@@ -101,7 +101,7 @@ function buildLineChannels(materials: BoatMaterials): THREE.Object3D {
       segments.push([lift(path[i] as Vec3), lift(path[i + 1] as Vec3)]);
     }
   }
-  return partMesh('fit_line_channels', [triangles(positions)], materials.gelcoat, segments);
+  return partMesh('fit_line_channels', [triangles(positions)], materials.cover, segments);
 }
 
 /**

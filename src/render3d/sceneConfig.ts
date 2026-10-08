@@ -16,7 +16,8 @@ export const SCENE = {
   sky: {
     zenith: '#5f97c8',
     horizon: '#d6e7f2',
-    belowHorizon: '#a9c4d4',
+    /** What shows through the see-through water: deep water, not sky. */
+    belowHorizon: '#14495a',
     sunGlow: '#fff6e0',
     cloud: '#ffffff',
     cloudCount: 70,
@@ -56,6 +57,7 @@ export const SCENE = {
     hull: '#f3f4f1',
     deck: '#e6e9e8',
     gelcoat: '#f1f2ef',
+    channelCover: '#bfc6cb',
     clearcoatRoughness: 0.12,
     dark: '#26292d',
     appendage: '#3b4148',
@@ -204,6 +206,8 @@ export const SCENE = {
     fillDirection: [-0.3, 0.6, 0.8] as const,
     toneMappingExposure: 1.0,
   },
+  /** Centre of the sun's shadow box: the middle of the boat, a third of the way up the mast. */
+  shadowCentre: [-1, 6, 0] as const,
   /** Soft sun shadows, high detail only (M3b, owner request). */
   shadows: {
     mapSize: 2048,

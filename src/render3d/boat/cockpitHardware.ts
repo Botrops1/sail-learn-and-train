@@ -140,14 +140,21 @@ function buildWinch(
     [0.95, 0.6],
     [1.02, 0.66],
   ]);
+  // Self-tailer: jaws ring, then a nearly flat chrome cap.
   const top = lathe([
     [1.02, 0.66],
-    [1.05, 0.72],
-    [0.98, 0.86],
-    [0.8, 0.95],
-    [0.35, 1.0],
-    [0, 1.0],
+    [1.06, 0.74],
+    [1.04, 0.86],
+    [0.96, 0.92],
+    [0.3, 0.95],
+    [0, 0.95],
   ]);
+  // Winch-handle socket in the middle of the cap.
+  const socket = new THREE.CylinderGeometry(0.16 * r, 0.16 * r, 0.03 * h, 8).translate(
+    winch.x,
+    winch.y + 0.955 * h,
+    winch.z,
+  );
   const outboard = Math.sign(winch.z) || 1;
   const arm = boxAt(
     [winch.x, winch.y + 0.9 * h, winch.z + outboard * 0.9 * r],
@@ -155,7 +162,7 @@ function buildWinch(
   );
   const centre: Vec3 = [winch.x, winch.y + h / 2, winch.z];
   return [
-    smallPartMesh(winch.id, [drum], materials.dark, [centre]),
+    smallPartMesh(winch.id, [drum, socket], materials.dark, [centre]),
     smallPartMesh(winch.id, [top, arm], materials.chrome, [centre]),
   ];
 }

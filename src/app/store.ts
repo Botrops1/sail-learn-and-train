@@ -4,6 +4,7 @@ import {
   DEFAULT_SETTINGS,
   type CameraPreset,
   type CameraState,
+  type Detail,
   type Settings,
   type StepSize,
 } from '../model/settings';
@@ -27,6 +28,7 @@ export interface AppState {
 export type Action =
   | { type: 'setStep'; step: StepSize }
   | { type: 'setDebug'; debug: boolean }
+  | { type: 'setDetail'; detail: Detail }
   | { type: 'setCameraPreset'; preset: CameraPreset }
   | { type: 'select'; partId: string | null }
   | { type: 'setControls'; values: Partial<Controls> }
@@ -74,6 +76,8 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, settings: { ...state.settings, step: action.step } };
     case 'setDebug':
       return { ...state, settings: { ...state.settings, debug: action.debug } };
+    case 'setDetail':
+      return { ...state, settings: { ...state.settings, detail: action.detail } };
     case 'setCameraPreset':
       return { ...state, camera: { ...state.camera, preset: action.preset } };
     case 'select':

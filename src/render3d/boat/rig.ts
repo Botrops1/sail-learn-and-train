@@ -272,7 +272,8 @@ function buildSelfTackingTrack(materials: BoatMaterials): {
   return {
     track: partMesh(
       'fit_self_tacking_track',
-      [boxAt([portEnd[0], portEnd[1], 0], [3 * radius, 2 * radius, 2 * portEnd[2] * -1])],
+      // A flat black track whose top is where the car runs.
+      [boxAt([portEnd[0], portEnd[1] + radius / 2, 0], [2 * radius, radius, -2 * portEnd[2]])],
       materials.dark,
       [[portEnd, starboardEnd]],
     ),
