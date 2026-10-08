@@ -407,14 +407,14 @@ function wrapAroundRig(
     // The wrap point: off the obstacle to windward and outwards, so both the straight part
     // from the luff and the part beyond (bending up to 90° to leeward) clear it.
     const c = binding.disc.clearance;
-    const [vx, vz] = fromPolar(binding.r, binding.a);
-    const radialX = (vx - luff[0]) / binding.r;
-    const radialZ = (vz - luff[2]) / binding.r;
-    // Windward: towards a smaller angle, i.e. towards the centreline aft.
-    const [wx, wz] = fromPolar(binding.r, binding.a - 1e-3);
-    const windX = (wx - vx) / Math.hypot(wx - vx, wz - vz);
-    const windZ = (wz - vz) / Math.hypot(wx - vx, wz - vz);
-    const wrap = polar(vx + c * (radialX + windX), vz + c * (radialZ + windZ));
+    const { a } = binding;
+    // Outwards from the luff, and to windward (towards a smaller angle, i.e. aft).
+    const radial = [-Math.cos(a), side * Math.sin(a)] as const;
+    const windward = [-Math.sin(a), -side * Math.cos(a)] as const;
+    const wrap = polar(
+      binding.disc.x + c * (radial[0] + windward[0]),
+      binding.disc.z + c * (radial[1] + windward[1]),
+    );
     const wrapsBeyond = reach > wrap.r;
     const limit = wrapsBeyond ? wrap.a : binding.tangent;
     // A leech that only just reaches past the obstacle mostly rests against it; the further it
