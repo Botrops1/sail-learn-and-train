@@ -12,6 +12,13 @@ export type PickSegment = readonly [Vec3, Vec3];
 export interface PartUserData {
   partId: string;
   pickSegments?: PickSegment[];
+  /**
+   * Small fittings (blocks, clutches, gooseneck, ...): centres of an invisible round hit area,
+   * in the object's local frame. See picking.ts.
+   */
+  hitPoints?: Vec3[];
+  /** A wire: so thin on screen that it never hides a part behind it from a tap. */
+  wire?: boolean;
 }
 
 export function v3(p: Vec3): THREE.Vector3 {
@@ -34,6 +41,27 @@ export function partMesh(
   if (pickSegments.length > 0) userData.pickSegments = pickSegments;
   Object.assign(mesh.userData, userData);
   mesh.name = partId;
+  return mesh;
+}
+
+/**
+ * A small fitting: like partMesh, but found through an invisible hit area around each of
+ * `hitPoints`, which is never smaller than about a fingertip on screen (see picking.ts).
+ */
+export function smallPartMesh(
+  partId: string,
+  geometries: THREE.BufferGeometry[],
+  material: THREE.Material,
+  hitPoints: Vec3[],
+): THREE.Mesh {
+  const mesh = partMesh(partId, geometries, material);
+  (mesh.userData as PartUserData).hitPoints = hitPoints;
+  return mesh;
+}
+
+/** Marks a mesh as a wire (stays, shrouds, lifelines), see PartUserData.wire. */
+export function asWire(mesh: THREE.Mesh): THREE.Mesh {
+  (mesh.userData as PartUserData).wire = true;
   return mesh;
 }
 

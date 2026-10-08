@@ -8,7 +8,15 @@ import {
 } from '../../model/rigGeometry';
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
-import { boxAt, cylinderBetween, partMesh, v3, type PickSegment } from './parts';
+import {
+  asWire,
+  boxAt,
+  cylinderBetween,
+  partMesh,
+  smallPartMesh,
+  v3,
+  type PickSegment,
+} from './parts';
 
 const DEG = Math.PI / 180;
 
@@ -136,16 +144,15 @@ function buildSpreadersAndShrouds(materials: BoatMaterials): THREE.Object3D[] {
   }
   return [
     partMesh('part_spreader', spreaderGeometries, materials.spar, spreaderSegments),
-    partMesh('part_shroud', shroudGeometries, materials.wire, shroudSegments),
+    asWire(partMesh('part_shroud', shroudGeometries, materials.wire, shroudSegments)),
   ];
 }
 
 function buildStay(id: string, a: Vec3, b: Vec3, materials: BoatMaterials): THREE.Object3D {
-  return partMesh(
-    id,
-    [cylinderBetween(a, b, boat.modelDetail.wireRenderRadius, 6)],
-    materials.wire,
-    [[a, b]],
+  return asWire(
+    partMesh(id, [cylinderBetween(a, b, boat.modelDetail.wireRenderRadius, 6)], materials.wire, [
+      [a, b],
+    ]),
   );
 }
 
@@ -180,11 +187,11 @@ function buildBoom(materials: BoatMaterials): THREE.Group {
     0,
   ]);
   pivot.add(
-    partMesh(
+    smallPartMesh(
       'fit_mainsheet_boom_blocks',
       blocks.map((p) => new THREE.SphereGeometry(blockRadius, 12, 8).translate(...p)),
       materials.block,
-      [[blocks[0] ?? [0, 0, 0], blocks[2] ?? [0, 0, 0]]],
+      blocks,
     ),
   );
   return pivot;
@@ -193,7 +200,7 @@ function buildBoom(materials: BoatMaterials): THREE.Group {
 function buildGooseneck(materials: BoatMaterials): THREE.Object3D {
   const g = vec3(boat.rig.boom.gooseneck);
   const size = boat.modelDetail.gooseneckSize;
-  return partMesh('part_gooseneck', [boxAt(g, [size, size, size])], materials.fitting, [[g, g]]);
+  return smallPartMesh('part_gooseneck', [boxAt(g, [size, size, size])], materials.fitting, [g]);
 }
 
 function buildDeckBlocks(materials: BoatMaterials): THREE.Object3D {
@@ -203,11 +210,11 @@ function buildDeckBlocks(materials: BoatMaterials): THREE.Object3D {
     [d.x, d.y, -d.halfZ],
     [d.x, d.y, d.halfZ],
   ];
-  return partMesh(
+  return smallPartMesh(
     'fit_mainsheet_deck_blocks',
     points.map((p) => new THREE.SphereGeometry(radius, 12, 8).translate(...p)),
     materials.block,
-    points.map((p) => [p, p] as const),
+    points,
   );
 }
 
@@ -216,11 +223,11 @@ function buildGearbox(materials: BoatMaterials): THREE.Object3D {
   const p = vec3(boat.rig.mainFurlingGearbox.position);
   const size = boat.modelDetail.mainFurlingGearbox;
   const centre: Vec3 = [p[0] - size.foreAft / 2, p[1], p[2]];
-  return partMesh(
+  return smallPartMesh(
     'part_main_furling_gearbox',
     [boxAt(centre, [size.foreAft, size.height, size.athwart])],
     materials.dark,
-    [[centre, centre]],
+    [centre],
   );
 }
 
@@ -229,9 +236,13 @@ function buildJibFurler(materials: BoatMaterials): THREE.Object3D {
   const drum = vec3(f.drum);
   const top: Vec3 = [drum[0], drum[1] + f.drumHeight, drum[2]];
   const radius = boat.modelDetail.jibFurlerDrumDiameter / 2;
-  return partMesh('part_jib_furler', [cylinderBetween(drum, top, radius, 16)], materials.dark, [
-    [drum, top],
-  ]);
+  const middle: Vec3 = [drum[0], drum[1] + f.drumHeight / 2, drum[2]];
+  return smallPartMesh(
+    'part_jib_furler',
+    [cylinderBetween(drum, top, radius, 16)],
+    materials.dark,
+    [middle],
+  );
 }
 
 /** Straight self-tacking track and its car (at the centre while the jib is on the centreline). */
@@ -243,12 +254,12 @@ function buildSelfTackingTrack(materials: BoatMaterials): THREE.Object3D[] {
   const carCentre: Vec3 = [portEnd[0], portEnd[1] + radius + car.height / 2, 0];
   return [
     partMesh('fit_self_tacking_track', [track], materials.fitting, [[portEnd, starboardEnd]]),
-    partMesh(
+    smallPartMesh(
       'fit_self_tacking_car',
       // The car runs athwartships along the track, so its length lies along z.
       [boxAt(carCentre, [car.width, car.height, car.length])],
       materials.dark,
-      [[carCentre, carCentre]],
+      [carCentre],
     ),
   ];
 }
@@ -303,10 +314,10 @@ function buildTurningBlocks(materials: BoatMaterials): THREE.Object3D {
     const angle = (2 * Math.PI * (i + 0.5)) / count;
     return [mast.x + ringRadius * Math.cos(angle), y, ringRadius * Math.sin(angle)];
   });
-  return partMesh(
+  return smallPartMesh(
     'fit_mast_base_turning_blocks',
     points.map((p) => new THREE.SphereGeometry(blockDiameter / 2, 10, 6).translate(...p)),
     materials.block,
-    points.map((p) => [p, p] as const),
+    points,
   );
 }

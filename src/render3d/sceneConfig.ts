@@ -83,6 +83,11 @@ export const SCENE = {
     tapMaxMovePx: 8,
     tapMaxDurationMs: 700,
     tolerancePx: 22,
+    /**
+     * Radius of the invisible hit area around each small fitting, CSS px: 48 px across, a
+     * fingertip (touch targets ≥ 44 px, PHASE1_SPEC 5.1).
+     */
+    smallPartRadiusPx: 24,
     /** A thin part counts as visible if it is at most this far behind the surface hit, metres. */
     depthSlack: 1.0,
   },

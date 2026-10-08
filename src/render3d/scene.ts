@@ -64,6 +64,18 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     store.dispatch({ type: 'select', partId });
   });
 
+  // Debug only (`?debug=1`): lets the screenshot script aim taps at the small parts.
+  if (store.getState().settings.debug) {
+    Object.assign(window, {
+      __sailDebug: {
+        hitCentres: () => {
+          const rect = renderer.domElement.getBoundingClientRect();
+          return picker.hitCentres(rect.width, rect.height);
+        },
+      },
+    });
+  }
+
   const highlight = createHighlighter(boatModel.root);
   highlight(store.getState().selection);
 

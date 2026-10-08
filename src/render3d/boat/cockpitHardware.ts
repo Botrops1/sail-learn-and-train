@@ -3,7 +3,7 @@ import { boat } from '../../model/boat';
 import { sheerAt } from '../../model/hullShape';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
-import { boxAt, cylinderBetween, partMesh, type PickSegment } from './parts';
+import { boxAt, cylinderBetween, partMesh, smallPartMesh, type PickSegment } from './parts';
 
 export interface CockpitHardware {
   objects: THREE.Object3D[];
@@ -107,11 +107,11 @@ function buildWinch(
   materials: BoatMaterials,
 ): THREE.Object3D {
   const size = boat.modelDetail.winch;
-  const base: Vec3 = [winch.x, winch.y, winch.z];
-  const top: Vec3 = [winch.x, winch.y + size.height, winch.z];
   const drum = new THREE.CylinderGeometry(size.diameter / 2, size.diameter / 2, size.height, 16);
   drum.translate(winch.x, winch.y + size.height / 2, winch.z);
-  return partMesh(winch.id, [drum], materials.fitting, [[base, top]]);
+  return smallPartMesh(winch.id, [drum], materials.fitting, [
+    [winch.x, winch.y + size.height / 2, winch.z],
+  ]);
 }
 
 /**
@@ -132,7 +132,10 @@ function buildClutch(
     Math.abs(position[2]) <= coamingOuter;
   const baseY = Math.max(position[1], onCoaming ? cockpit.coamingTopY : sheerAt(position[0]));
   const centre: Vec3 = [position[0], baseY + size.height / 2, position[2]];
-  return partMesh(id, [boxAt(centre, [size.length, size.height, size.width])], materials.dark, [
-    [centre, centre],
-  ]);
+  return smallPartMesh(
+    id,
+    [boxAt(centre, [size.length, size.height, size.width])],
+    materials.dark,
+    [centre],
+  );
 }

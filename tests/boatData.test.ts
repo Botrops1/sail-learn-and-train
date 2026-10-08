@@ -133,6 +133,11 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
   it('coachroof and cockpit shapes are sane', () => {
     const { coachroof, cockpit, aftPlatform } = hanse508.deck;
     expect(coachroof.frontHalfWidth).toBeLessThan(coachroof.halfWidth);
+    expect(coachroof.maxHalfWidth).toBeGreaterThan(coachroof.halfWidth);
+    expect(coachroof.maxHalfWidthFromX).toBeGreaterThan(coachroof.aftX);
+    expect(coachroof.maxHalfWidthFromX).toBeLessThan(coachroof.chamferStartX);
+    // The self-tacking track ends at the edges of the raised deck in front of the mast (photo).
+    expect(coachroof.maxHalfWidth).toBeGreaterThanOrEqual(hanse508.rig.selfTackingTrack.halfSpan);
     expect(coachroof.chamferStartX).toBeGreaterThan(coachroof.aftX);
     expect(coachroof.chamferStartX).toBeLessThan(coachroof.frontX);
     expect(coachroof.topFrontX).toBeLessThan(coachroof.frontX);

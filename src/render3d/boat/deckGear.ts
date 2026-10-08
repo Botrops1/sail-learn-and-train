@@ -3,7 +3,7 @@ import { boat } from '../../model/boat';
 import { halfBeamAt, sheerAt } from '../../model/hullShape';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
-import { cylinderBetween, partMesh, type PickSegment } from './parts';
+import { asWire, cylinderBetween, partMesh, type PickSegment } from './parts';
 
 /** Sprayhood and lifelines (PHASE1_SPEC 6.1; sizes in modelDetail are estimates from photos). */
 export function buildDeckGear(materials: BoatMaterials): THREE.Object3D[] {
@@ -78,5 +78,5 @@ function buildLifelines(materials: BoatMaterials): THREE.Object3D {
       }
     });
   }
-  return partMesh('part_lifelines', geometries, materials.wire, segments);
+  return asWire(partMesh('part_lifelines', geometries, materials.wire, segments));
 }

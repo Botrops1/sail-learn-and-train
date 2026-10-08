@@ -105,10 +105,13 @@
       "aftX": -3.05,
       "halfWidth": 1.15,
       "topY": 1.84,
+      "maxHalfWidth": 1.45,
+      "maxHalfWidthFromX": 0.00,
+      "maxHalfWidthSource": "photo estimate (self-tacking-track-full.jpg: the track ends at the edges of the raised deck in front of the mast; track halfSpan 1.40)",
       "frontHalfWidth": 0.92,
       "chamferStartX": 1.20,
       "topFrontX": 1.60,
-      "shapeNote": "Plan: full halfWidth from aftX to chamferStartX, then the corners are cut to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. Measured from the reference sketches (docs/reference)."
+      "shapeNote": "Plan: halfWidth (drawing) at aftX, widening in a straight taper to maxHalfWidth at maxHalfWidthFromX (the mast), full width from there to chamferStartX, then the corners are cut to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. halfWidth, chamfer and front from the reference sketches; maxHalfWidth from the photo."
     },
     "cockpit": {
       "frontX": -3.10,

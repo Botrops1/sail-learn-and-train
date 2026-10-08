@@ -173,22 +173,28 @@ function aftPlatform(stations: number[]): THREE.BufferGeometry {
 }
 
 /**
- * Coachroof: plan outline with the front corners cut, front face sloping back to topFrontX.
+ * Coachroof: drawing width at the aft end, widening to maxHalfWidth at the mast (photo: the
+ * self-tacking track ends at its edges), front corners cut, front face sloping back to topFrontX.
  * Its base sits a little below the deck so no gap shows.
  */
 function coachroof(): THREE.BufferGeometry {
   const r = boat.deck.coachroof;
   const baseY = Math.min(sheerAt(r.frontX), sheerAt(r.aftX)) - OVERLAP;
   const chamferAt = (x: number) =>
-    r.halfWidth +
-    ((r.frontHalfWidth - r.halfWidth) * (x - r.chamferStartX)) / (r.frontX - r.chamferStartX);
-  const outline = (frontX: number): [number, number][] => [
-    [r.aftX, -r.halfWidth],
-    [r.chamferStartX, -r.halfWidth],
-    [frontX, -chamferAt(frontX)],
-    [frontX, chamferAt(frontX)],
-    [r.chamferStartX, r.halfWidth],
+    r.maxHalfWidth +
+    ((r.frontHalfWidth - r.maxHalfWidth) * (x - r.chamferStartX)) / (r.frontX - r.chamferStartX);
+  const half = (frontX: number): [number, number][] => [
     [r.aftX, r.halfWidth],
+    [r.maxHalfWidthFromX, r.maxHalfWidth],
+    [r.chamferStartX, r.maxHalfWidth],
+    [frontX, chamferAt(frontX)],
+  ];
+  // Port side from aft to front, then starboard from front to aft: a convex outline.
+  const outline = (frontX: number): [number, number][] => [
+    ...half(frontX).map(([x, z]): [number, number] => [x, -z]),
+    ...half(frontX)
+      .reverse()
+      .map(([x, z]): [number, number] => [x, z]),
   ];
   const bottom = outline(r.frontX);
   const top = outline(r.topFrontX);

@@ -59,6 +59,24 @@ const MUST_IDENTIFY = [
   'fit_self_tacking_track',
 ];
 
+/** Small fittings with an enlarged hit area, by side; each must respond where it is visible. */
+const SMALL_CENTRELINE = [
+  'part_gooseneck',
+  'part_main_furling_gearbox',
+  'fit_self_tacking_car',
+  'fit_mainsheet_boom_blocks',
+  'fit_mainsheet_deck_blocks',
+  'fit_mast_base_turning_blocks',
+  'part_jib_furler',
+];
+const SMALL_PORT = ['clutch_bank_b', 'clutch_jib_roll', 'winch_primary_port'];
+const SMALL_STARBOARD = ['clutch_bank_a', 'winch_primary_starboard'];
+const SMALL_PART_VIEWS = [
+  { cam: 'side-port', expected: [...SMALL_CENTRELINE, ...SMALL_PORT] },
+  { cam: 'side-starboard', expected: [...SMALL_CENTRELINE, ...SMALL_STARBOARD] },
+  { cam: 'top', expected: [...SMALL_CENTRELINE, ...SMALL_PORT, ...SMALL_STARBOARD] },
+];
+
 /** Parts that must never be drawn (not on the reference boat). */
 const MUST_NOT_IDENTIFY = ['winch_secondary_port', 'winch_secondary_starboard'];
 
@@ -194,6 +212,43 @@ try {
   }
   for (const id of MUST_NOT_IDENTIFY) {
     if (found.has(id)) problems.push(`tap sweep found ${id}, which should not be drawn`);
+  }
+
+  // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
+  // (positions from the debug-only hook) must show its card.
+  for (const viewport of VIEWPORTS.slice(0, 3)) {
+    for (const view of SMALL_PART_VIEWS) {
+      const label = `small parts ${viewport.name}/${view.cam}`;
+      const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1`);
+      await page.waitForTimeout(800);
+      const box = await page.locator('canvas.scene-canvas').boundingBox();
+      const barTop = await page
+        .locator('.camera-bar')
+        .evaluate((bar) => bar.getBoundingClientRect().top);
+      const centres = await page.evaluate(() => window.__sailDebug.hitCentres());
+      const missing = [];
+      for (const id of view.expected) {
+        let ok = false;
+        for (const c of centres.filter((centre) => centre.partId === id)) {
+          const x = box.x + c.x;
+          const y = box.y + c.y;
+          if (y > barTop - 4 || x < box.x || x > box.x + box.width) continue;
+          await page.mouse.click(x, y);
+          const part = await cardPart(page);
+          if (part) await page.keyboard.press('Escape');
+          if (part?.id === id) {
+            ok = true;
+            break;
+          }
+        }
+        if (!ok) missing.push(id);
+      }
+      if (missing.length > 0) problems.push(`${label}: no card for ${missing.join(', ')}`);
+      console.log(
+        `${label}: ${view.expected.length - missing.length}/${view.expected.length} respond`,
+      );
+      await context.close();
+    }
   }
 
   // Live checks on one page, no reload: layout follows resizes; camera buttons and dragging
