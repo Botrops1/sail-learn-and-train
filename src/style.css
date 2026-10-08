@@ -654,9 +654,10 @@ html[data-layout='side'] .rig-alerts {
 
 .clutch-drawing {
   display: block;
-  width: 100%;
+  /* Uses the pane's side padding too: every pixel counts for ten clutches side by side. */
+  width: calc(100% + 24px);
   height: auto;
-  margin: 4px 0 8px;
+  margin: 4px -12px 8px;
   user-select: none;
   -webkit-user-select: none;
 }

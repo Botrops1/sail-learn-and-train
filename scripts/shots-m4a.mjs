@@ -22,7 +22,6 @@ export const M4A_SCENES = [
   { name: 'select-main-halyard-static', query: '?sel=rope_main_halyard&cam=side-port' },
   { name: 'select-spi-halyard-static', query: '?sel=rope_spi_halyard&cam=side-port' },
   { name: 'wheel-25-stbd-helm', query: '?sel=part_rudder&rd=25&cam=helm' },
-  { name: 'wheel-25-stbd-top', query: '?sel=part_rudder&rd=25&cam=top' },
   {
     name: 'jib-sheet-hauled-against-furl-bow',
     query: '?js=30&jf=40&jr=40&sel=rope_jib_sheet&cam=bow',
@@ -153,7 +152,7 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     const phone = viewports[0];
     const { context, page } = await openPage(phone, 'm4a share', '?wd=90&ws=12&js=100&cam=bow');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-    await page.locator('[data-select="rope_jib_furl"]').click();
+    await page.locator('[data-select="rope_jib_furling_line"]').click();
     const jibOut = page.getByLabel('Jib out', { exact: true });
     await jibOut.focus();
     for (let i = 0; i < 12; i += 1) await page.keyboard.press('ArrowLeft');
