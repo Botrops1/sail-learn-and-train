@@ -102,6 +102,7 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 - [ ] One-finger drag rotates, pinch zooms, two-finger drag pans. The camera never goes under the water.
 - [ ] Camera presets work: Side (port), Side (starboard), Top, Bow, Helm.
 - [ ] Tapping the mast, boom, a wheel, a winch, the keel or a stay shows a card with its name and a one-line explanation.
+- [ ] Matches the photos in `docs/reference/photos/`: rigid vang strut from the mast foot to the boom, straight jib track just in front of the mast, one winch per side by the wheels, clutch bank in front of each winch, JIB ROLL clutch on the port side deck.
 
 ### M2: Mainsail, boom and test wind
 
@@ -115,7 +116,7 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 - [ ] `?wd=90&ws=20&ms=50&vg=100`, then `vg=0`: with the vang eased, the boom end is higher and the top of the sail is more open. (PT-07)
 - [ ] `?ws=0&tl=0&vg=0`: both ropes are shown as "fighting". (PT-09)
 - [ ] Wind 170 → 180 → −170 → −165: the boom stays, then swings across with a "GYBE" label. (PT-05)
-- [ ] Changing "Mainsail out": the sail gets smaller from the back, and the outhaul and furling-line lengths move in opposite directions. (PT-12)
+- [ ] Changing "Mainsail out": the sail gets smaller from the back; the "in" furling tail moves one way, the "out" tail and the outhaul the other. (PT-12)
 
 ### M3: Self-tacking jib
 

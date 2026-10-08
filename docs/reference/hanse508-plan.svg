@@ -40,22 +40,20 @@
   <circle class="block" cx="304.8" cy="179.2" r="5"/>
   <line class="sheet" x1="298.0" y1="196.0" x2="304.8" y2="212.8"/>
   <circle class="block" cx="304.8" cy="212.8" r="5"/>
-  <polyline class="track" points="442.0,160.0 441.5,163.6 441.0,167.2 440.6,170.7 440.2,174.3 439.9,177.9 439.6,181.6 439.5,185.2 439.3,188.8 439.2,192.4 439.2,196.0 439.2,199.6 439.3,203.2 439.5,206.8 439.6,210.4 439.9,214.1 440.2,217.7 440.6,221.3 441.0,224.8 441.5,228.4 442.0,232.0"/>
+  <line class="track" x1="439.2" y1="160.0" x2="439.2" y2="232.0"/>
   <line class="sailfoot" x1="672.8" y1="196.0" x2="444.8" y2="232.0"/>
   <circle class="fitc" cx="420.0" cy="138.8" r="4"/>
   <circle class="fitc" cx="420.0" cy="253.2" r="4"/>
   <polygon class="wheel" points="136.0,140.8 144.0,140.8 144.0,180.8 136.0,180.8"/>
   <polygon class="wheel" points="136.0,211.2 144.0,211.2 144.0,251.2 136.0,251.2"/>
-  <circle class="winch" cx="174.8" cy="132.0" r="6.4"/>
-  <circle class="winch" cx="174.8" cy="260.0" r="6.4"/>
-  <circle class="winchopt" cx="138.0" cy="132.0" r="6.4"/>
-  <circle class="winchopt" cx="138.0" cy="260.0" r="6.4"/>
-  <polygon class="clutch" points="151.2,128.4 168.8,128.4 168.8,136.4 151.2,136.4"/>
-  <text class="lbl" x="148.0" y="114.4" text-anchor="middle">clutch BANK A (port?)</text>
+  <circle class="winch" cx="138.0" cy="132.0" r="6.4"/>
+  <circle class="winch" cx="138.0" cy="260.0" r="6.4"/>
   <polygon class="clutch" points="151.2,255.6 168.8,255.6 168.8,263.6 151.2,263.6"/>
-  <text class="lbl" x="148.0" y="284.4" text-anchor="middle">clutch BANK B (starboard?)</text>
-  <polygon class="clutch" points="223.2,281.6 232.8,281.6 232.8,286.4 223.2,286.4"/>
-  <text class="lbl" x="240.0" y="290.0" text-anchor="start">JIB ROLL clutch (side?)</text>
+  <text class="lbl" x="148.0" y="284.4" text-anchor="middle">clutch BANK A (starboard)</text>
+  <polygon class="clutch" points="151.2,128.4 168.8,128.4 168.8,136.4 151.2,136.4"/>
+  <text class="lbl" x="148.0" y="114.4" text-anchor="middle">clutch BANK B (port)</text>
+  <polygon class="clutch" points="287.2,105.6 296.8,105.6 296.8,110.4 287.2,110.4"/>
+  <text class="lbl" x="304.0" y="114.0" text-anchor="start">JIB ROLL clutch</text>
   <text class="lbl" x="704.0" y="78.0" text-anchor="end">BOW</text>
   <text class="lbl" x="84.0" y="78.0" text-anchor="start">STERN</text>
   <text class="lbl" x="596.0" y="330.0" text-anchor="middle">STARBOARD side (+z)</text>
@@ -67,6 +65,5 @@
   <text class="lbl" x="172.0" y="323.2" text-anchor="middle">5 m</text>
   <text class="note" x="72.0" y="330.0"></text>
   <circle class="winch" cx="308.0" cy="323.0" r="6"/><text class="lbl" x="318.0" y="328.0">winch</text>
-  <circle class="winchopt" cx="383.0" cy="323.0" r="6"/><text class="lbl" x="393.0" y="328.0">optional winch</text>
   <circle class="origin" cx="428.0" cy="196.0" r="5"/>
 </svg>
