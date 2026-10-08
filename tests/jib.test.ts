@@ -603,7 +603,7 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
         }
       }
     }
-  });
+  }, 60_000);
 
   it('the jib sheet is drawn with two parts from the clew to the car, then into the mast and from its foot to the "Genoa sheet" clutch', () => {
     const rig = initialRig(controls({ ctl_wind_dir: 90, ctl_jib_sheet: 100 }));

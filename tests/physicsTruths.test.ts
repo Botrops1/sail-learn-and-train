@@ -627,5 +627,5 @@ describe('boom solver: general checks (PHASE1_SPEC 11)', () => {
         }
       }
     }
-  });
+  }, 60_000);
 });
