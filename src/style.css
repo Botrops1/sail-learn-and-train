@@ -1,0 +1,265 @@
+/*
+ * Layout (PHASE1_SPEC 5.1). The mode is decided in src/ui/layoutMode.ts and set on
+ * <html data-layout="stacked|side">, so CSS and the debug overlay always agree.
+ */
+:root {
+  --bg: #f6f8fa;
+  --surface: #ffffff;
+  --text: #17222b;
+  --muted: #52616d;
+  --line: #d5dde3;
+  --accent: #0b5f95;
+  --accent-soft: #e2eef6;
+  --focus: #e07b00;
+  --touch: 44px;
+  --font-label: 16px;
+  --font-small: 14px;
+  --panel-min: 320px;
+  --panel-max: 440px;
+  --view-share: 52%;
+  --view-min: 260px;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: var(--font-label);
+  line-height: 1.4;
+  -webkit-text-size-adjust: 100%;
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.shell {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+html[data-layout='stacked'] .shell {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(var(--view-min), var(--view-share)) minmax(0, 1fr);
+}
+
+html[data-layout='side'] .shell {
+  grid-template-columns: minmax(0, 1fr) clamp(var(--panel-min), 30%, var(--panel-max));
+  grid-template-rows: minmax(0, 1fr);
+}
+
+/* 3D view */
+.view {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #cfe5f3;
+}
+
+.scene-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.scene-error {
+  margin: 0;
+  padding: 16px;
+  font-size: var(--font-label);
+}
+
+.debug {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  margin: 0;
+  padding: 6px 8px;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgb(10 20 30 / 0.72);
+  color: #e8f1f7;
+  font:
+    13px/1.35 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  pointer-events: none;
+  white-space: pre;
+}
+
+/* Panel */
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--surface);
+}
+
+html[data-layout='stacked'] .panel {
+  border-top: 1px solid var(--line);
+}
+
+html[data-layout='side'] .panel {
+  border-left: 1px solid var(--line);
+}
+
+.tabs {
+  display: flex;
+  flex: none;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab {
+  flex: 1 1 0;
+  min-height: var(--touch);
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab[aria-selected='true'] {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
+.panel-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pane {
+  padding: 12px 16px;
+}
+
+.pane:focus-visible,
+.tab:focus-visible,
+.segment:focus-within,
+.toggle:focus-within,
+.footer a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.placeholder {
+  margin: 8px 0;
+  color: var(--muted);
+}
+
+.field {
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+}
+
+.field legend {
+  padding: 0;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 2px 0 8px;
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.segments {
+  display: flex;
+  gap: 8px;
+}
+
+.segment {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.segment input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segment:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--touch);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-top: auto;
+  padding: 8px 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+  color: var(--accent);
+}
