@@ -282,8 +282,8 @@
         "photo": "docs/reference/photos/clutch-bank-a.jpg",
         "clutches": [
           { "slot": 1, "label": "Main sheet", "ropeId": "rope_mainsheet", "tail": "starboard" },
-          { "slot": 2, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "furl", "tailNote": "Which of the two clutches furls and which unfurls is unconfirmed" },
-          { "slot": 3, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "unfurl" },
+          { "slot": 2, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "furl", "tailNote": "Left of the two: rolls the main in (owner confirmed the right one unfurls)" },
+          { "slot": 3, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "unfurl", "tailNote": "Right of the two: rolls the main out (owner)" },
           { "slot": 4, "label": "Main halyard", "ropeId": "rope_main_halyard" },
           { "slot": 5, "label": "Genoa sheet", "ropeId": "rope_jib_sheet" }
         ]

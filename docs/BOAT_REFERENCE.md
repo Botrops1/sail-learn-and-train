@@ -78,8 +78,8 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Slot | Label on the boat | What it is | Russian (draft) | App control |
 |---|---|---|---|---|
 | 1 | Main sheet | Mainsheet, starboard end | гика-шкот | `ctl_mainsheet` |
-| 2 | Main furling | Furling line: one tail rolls the main **in** | закруточный конец грота | `ctl_main_furl` |
-| 3 | Main furling | Furling line: the other tail rolls the main **out** (which clutch is which: unconfirmed) | закруточный конец грота | `ctl_main_furl` |
+| 2 | Main furling (left) | Furling line: this tail rolls the main **in** | закруточный конец грота | `ctl_main_furl` |
+| 3 | Main furling (right) | Furling line: this tail rolls the main **out** (confirmed by the owner) | закруточный конец грота | `ctl_main_furl` |
 | 4 | Main halyard | Main halyard, stays up with in-mast furling | грота-фал | static |
 | 5 | Genoa sheet | **Jib sheet** of the self-tacking jib | стаксель-шкот | `ctl_jib_sheet` |
 
@@ -132,7 +132,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Mainsheet purchase | 2 parts per side | **Confirmed** by photo |
 | Vang type | rigid strut with tackle | **Confirmed** by photo |
 | Self-tacking track | straight, ±0.9 m | Shape **confirmed**; length uncertain (maybe ±1.2 m) |
-| Which "Main furling" clutch furls and which unfurls | slot 2 furls, slot 3 unfurls | Unconfirmed |
+| Which "Main furling" clutch furls and which unfurls | left (slot 2) furls, right (slot 3) unfurls | **Confirmed** by the owner |
 | Boom maximum swing | 80° | Assumption |
 | Spreader span and sweep | 1.05 m / 0.75 m, 20° back | Two sets and sweep confirmed by photo; sizes estimated |
 | Cockpit sole height, wheel size | 1.0 m above waterline, 1.0 m wheel | Assumption, not important |
@@ -141,12 +141,12 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 
 ## 6. Open questions for the skipper / next time aboard
 
-1. Which of the two "Main furling" clutches rolls the sail in, and which rolls it out? When unfurling, is the outhaul hauled together with the "out" line?
+1. When unfurling, is the outhaul hauled together with the "out" furling line, or only tensioned at the end?
 2. How long is the self-tacking track (end to end)?
 3. What does the red button on the engine lever do? (Typically: disengage the gear to rev in neutral; confirm.)
 4. Is the topping lift ("Boom lift") normally eased while sailing, given the rigid vang holds the boom up?
 
-Answered from the October photos: two-line main furling, straight track, single forestay, one winch per side, rigid vang, topping lift line exists, bank sides.
+Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, one winch per side, rigid vang, topping lift line exists, bank sides.
 
 ### Photo checklist (if you are near a Hanse 508 again)
 
