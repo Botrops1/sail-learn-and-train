@@ -191,7 +191,7 @@ Control mapping for `ctl_mainsheet = e %`:
 - `L_min = L(0, ψ_lowest)` where `ψ_lowest = min(toppingLiftEasedDeg, vangHauledDeg)`. This is the boom on the centreline at its lowest.
 - `L_max = L(maxSwingDeg, vangEasedDeg)`. Full ease always allows full swing.
 - `L_avail = L_min + e/100 · (L_max − L_min)`.
-- Rope paid out from fully hauled = `partsPerSide · (L_avail − L_min)` (about 12.7 m at 100 % with the current data).
+- Rope paid out from fully hauled = `partsPerSide · (L_avail − L_min)` (about 11 m at 100 % with the current data).
 
 ### 8.3 Boom solve (each frame)
 
@@ -219,7 +219,7 @@ Control mapping for `ctl_mainsheet = e %`:
 
 ### 8.4 Angle of attack, fill and luffing
 
-- `AoA = |windFrom| − |θ|`, using the **unclamped** wind angle (so on a run with the boom at its 80° stop the sail is filled, not luffing). It is the angle by which the sheet holds the sail in from pure weathervaning. Clamp it at ≥ 0.
+- `AoA = |windFrom| − |θ|`, using the **unclamped** wind angle (so on a run with the boom at its 72° stop the sail is filled, not luffing). It is the angle by which the sheet holds the sail in from pure weathervaning. Clamp it at ≥ 0.
 - **By the lee** (wind on the same side as the boom, inside the gybe hysteresis band): treat the main as filled from behind (`fill = 1`) and show a small "by the lee: gybe risk" label.
 - `fill = smoothstep(luffAoaDeg.fullyLuffing, luffAoaDeg.fullyFilled, AoA)`.
 - `fill ≈ 0` means the sail **luffs**: animate flapping that starts at the luff and grows with wind speed.

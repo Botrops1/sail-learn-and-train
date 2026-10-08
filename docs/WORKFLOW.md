@@ -107,11 +107,11 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 ### M2: Mainsail, boom and test wind
 
 - [ ] Wind tab: dragging the dial moves the wind arrow; wind streaks and the masthead indicator follow.
-- [ ] `?wd=90&ws=12&ms=0`, then ease the main sheet step by step: the boom swings out to **port** (left when looking forward). Near 100 % it stops at about 80°. (PT-02, PT-04)
+- [ ] `?wd=90&ws=12&ms=0`, then ease the main sheet step by step: the boom swings out to **port** (left when looking forward). Near 100 % it stops at about 72°. (PT-02, PT-04)
 - [ ] Same, but the wind from the other side (`wd=-90`): the boom goes to **starboard**. (PT-02)
 - [ ] `?wd=0&ws=12`, ease the main sheet 0 → 100 %: the boom stays in the middle, the sheet sags, the sail flaps. (PT-01, PT-03)
 - [ ] `?wd=60&ws=12&ms=100`: the boom lines up with the wind, the sheet sags, the sail flaps. Haul in until it stops flapping. (PT-03)
-- [ ] `?wd=175&ws=12&ms=100`: running downwind, the boom rests at about 80° and the sail is full, not flapping.
+- [ ] `?wd=175&ws=12&ms=100`: running downwind, the boom rests at about 72° and the sail is full, not flapping.
 - [ ] Paid-out metres: the first 10 % of easing moves the boom much more than the last 10 %. (PT-06)
 - [ ] `?wd=90&ws=20&ms=50&vg=100`, then `vg=0`: with the vang eased, the boom end is higher and the top of the sail is more open. (PT-07)
 - [ ] `?ws=0&tl=0&vg=0`: both ropes are shown as "fighting". (PT-09)

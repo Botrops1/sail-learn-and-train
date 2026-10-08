@@ -36,14 +36,14 @@
   <polygon class="cockpit" points="120.0,144.0 304.0,144.0 304.0,248.0 120.0,248.0"/>
   <polygon class="spar" points="422.0,192.4 434.0,192.4 434.0,199.6 422.0,199.6"/>
   <polygon class="spar" points="170.0,192.4 420.0,192.4 420.0,199.6 170.0,199.6"/>
-  <line class="sheet" x1="298.0" y1="196.0" x2="304.8" y2="179.2"/>
+  <line class="sheet" x1="303.0" y1="196.0" x2="304.8" y2="179.2"/>
   <circle class="block" cx="304.8" cy="179.2" r="5"/>
-  <line class="sheet" x1="298.0" y1="196.0" x2="304.8" y2="212.8"/>
+  <line class="sheet" x1="303.0" y1="196.0" x2="304.8" y2="212.8"/>
   <circle class="block" cx="304.8" cy="212.8" r="5"/>
   <line class="track" x1="439.2" y1="140.0" x2="439.2" y2="252.0"/>
-  <line class="sailfoot" x1="672.8" y1="196.0" x2="444.8" y2="232.0"/>
-  <circle class="fitc" cx="420.0" cy="138.8" r="4"/>
-  <circle class="fitc" cx="420.0" cy="253.2" r="4"/>
+  <line class="sailfoot" x1="677.2" y1="196.0" x2="453.6" y2="232.0"/>
+  <circle class="fitc" cx="393.4" cy="108.8" r="4"/>
+  <circle class="fitc" cx="393.4" cy="283.2" r="4"/>
   <polygon class="wheel" points="136.0,140.8 144.0,140.8 144.0,180.8 136.0,180.8"/>
   <polygon class="wheel" points="136.0,211.2 144.0,211.2 144.0,251.2 136.0,251.2"/>
   <circle class="winch" cx="138.0" cy="132.0" r="6.4"/>
