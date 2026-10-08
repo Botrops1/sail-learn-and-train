@@ -57,7 +57,7 @@ Frame: origin at the mast, on the waterline, on the centreline; **x forward, y u
 | Boom | gooseneck (−0.20, 3.08), length 6.25 m |
 | Mainsheet | boom point 3.05 m from the gooseneck; deck blocks at x = −3.08, z = ±0.42 on the coachroof aft end |
 | Vang | mast (−0.18, 2.05) → boom 2.12 m from the gooseneck |
-| Self-tacking track | straight, about 0.28 m in front of the mast, 1.8 m wide in the drawing (photos suggest it may be up to about 2.4 m) |
+| Self-tacking track | straight, about 0.28 m in front of the mast, about 2.8 m end to end (photo estimate; the drawing suggested 1.8 m) |
 | Jib | tack (6.12, 1.89), head (0.31, 20.60), clew about 0.4 m forward of the mast, 2.2 m above the waterline |
 | Wheels | x = −7.20, z = ±0.88 |
 | Winches | x = −7.25, z = ±1.60 (the drawing also shows optional winches at x = −6.33; not on the reference boat) |
@@ -106,6 +106,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 - `mainsheet-german.jpg`: three blocks under the boom, two rope parts down to each spring-mounted deck block; topping lift at the boom end; outhaul lines along the top of the boom. (Lettering on the boom blurred.)
 - `mast-gooseneck-vang-outhaul.jpg`: gooseneck, rigid vang strut "Seldén … 30" with tackle, furled mainsail clew in the mast slot with two outhaul lines to the boom, furling gearbox.
 - `mast-base-turning-blocks.jpg`, `mast-base-turning-blocks-2.jpg`: ring of turning blocks at the mast foot, lines leading aft; one end of the self-tacking track with car.
+- `self-tacking-track-full.jpg`: the whole self-tacking track across the deck in front of the mast, car at the port end with the jib sheet; lines from the mast foot running aft in channels on both sides. (Boom lettering and sprayhood windows blurred.)
 - `foredeck-self-tacking-track.jpg`: straight self-tacking track in front of the mast; jib sheet with two parts from the clew to the car; furled jib.
 - `bow-jib-furler.jpg`: Seldén Furlex 404S furler drum, anchor roller and chain, windlass, cleats.
 - `side-deck-jib-roll.jpg`: port side deck, JIB ROLL clutch, furling line led forward along the stanchion bases.
@@ -131,7 +132,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | JIB ROLL clutch | port side deck, x ≈ −3.4 | Side **confirmed** by photo; position estimated |
 | Mainsheet purchase | 2 parts per side | **Confirmed** by photo |
 | Vang type | rigid strut with tackle | **Confirmed** by photo |
-| Self-tacking track | straight, ±0.9 m | Shape **confirmed**; length uncertain (maybe ±1.2 m) |
+| Self-tacking track | straight, ±1.4 m | Shape **confirmed** by photo; length estimated from the photo (±0.3 m) |
 | Which "Main furling" clutch furls and which unfurls | left (slot 2) furls, right (slot 3) unfurls | **Confirmed** by the owner |
 | Boom maximum swing | 80° | Assumption |
 | Spreader span and sweep | 1.05 m / 0.75 m, 20° back | Two sets and sweep confirmed by photo; sizes estimated |
@@ -142,11 +143,10 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 ## 6. Open questions for the skipper / next time aboard
 
 1. When unfurling, is the outhaul hauled together with the "out" furling line, or only tensioned at the end?
-2. How long is the self-tacking track (end to end)?
-3. What does the red button on the engine lever do? (Typically: disengage the gear to rev in neutral; confirm.)
-4. Is the topping lift ("Boom lift") normally eased while sailing, given the rigid vang holds the boom up?
+2. What does the red button on the engine lever do? (Typically: disengage the gear to rev in neutral; confirm.)
+3. Is the topping lift ("Boom lift") normally eased while sailing, given the rigid vang holds the boom up?
 
-Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, one winch per side, rigid vang, topping lift line exists, bank sides.
+Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, straight self-tacking track about 2.8 m long, one winch per side, rigid vang, topping lift line exists, bank sides.
 
 ### Photo checklist (if you are near a Hanse 508 again)
 

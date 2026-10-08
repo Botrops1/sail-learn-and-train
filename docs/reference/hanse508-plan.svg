@@ -40,7 +40,7 @@
   <circle class="block" cx="304.8" cy="179.2" r="5"/>
   <line class="sheet" x1="298.0" y1="196.0" x2="304.8" y2="212.8"/>
   <circle class="block" cx="304.8" cy="212.8" r="5"/>
-  <line class="track" x1="439.2" y1="160.0" x2="439.2" y2="232.0"/>
+  <line class="track" x1="439.2" y1="140.0" x2="439.2" y2="252.0"/>
   <line class="sailfoot" x1="672.8" y1="196.0" x2="444.8" y2="232.0"/>
   <circle class="fitc" cx="420.0" cy="138.8" r="4"/>
   <circle class="fitc" cx="420.0" cy="253.2" r="4"/>

@@ -193,12 +193,12 @@
       "partsPerSideSource": "photo: three blocks on the boom, two rope parts down to each spring-mounted deck block (docs/reference/photos/mainsheet-german.jpg)"
     },
     "selfTackingTrack": {
-      "source": "drawing (position, width), photo (straight track right in front of the mast)",
+      "source": "photo (straight track right in front of the mast, spanning most of the deck width; docs/reference/photos/self-tacking-track-full.jpg) + drawing (position)",
       "shape": "Straight athwartships track in plan view",
-      "halfSpanNote": "Drawing gives about 0.9 m each side; photos suggest it may be longer (up to about 1.2 m). Unconfirmed.",
       "centreX": 0.28,
       "y": 1.86,
-      "halfSpan": 0.90
+      "halfSpan": 1.40,
+      "halfSpanSource": "photo estimate (about 2.8 m end to end, ±0.3 m); the deck-plan drawing showed only about 1.8 m"
     },
     "jibFurler": {
       "source": "brochure (manual jib furler) + photo (Selden Furlex 404S) + drawing",
