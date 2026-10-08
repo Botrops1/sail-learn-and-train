@@ -122,7 +122,7 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 
 - [ ] `?wd=30`, then `wd=-30`: the car slides across the track and the jib fills on the other side. (PT-10)
 - [ ] `?wd=0`: the jib flaps in the middle.
-- [ ] `?wd=90&js=0`, ease the jib sheet to 100 %: the jib opens only to about 25–30°, and its top twists more than its bottom. (PT-11)
+- [ ] `?wd=90&js=0`, ease the jib sheet to 100 %: the jib opens only to about 30–35°, and its top twists more than its bottom. (PT-11)
 - [ ] `?js=0`, try to furl the jib: it stops with a hint to ease the sheet. Ease the sheet: furling continues. (PT-13)
 
 ### M4: Clutch-bank panel
