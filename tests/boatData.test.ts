@@ -117,10 +117,13 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       ['toppingLift.mastExit', hanse508.rig.toppingLift.mastExit],
       ['jibFurler.drum', hanse508.rig.jibFurler.drum],
       ['mainFurlingGearbox', hanse508.rig.mainFurlingGearbox.position],
-      ['lineLead.mastExit', hanse508.rig.lineLead.mastExit],
-      ['lineLead.mastFootTurn', hanse508.rig.lineLead.mastFootTurn],
-      ['lineLead.coachroofAft', hanse508.rig.lineLead.coachroofAft],
-      ['lineLead.coamingFront', hanse508.rig.lineLead.coamingFront],
+      ...hanse508.rig.lineLead.channel.path.map((p, i): [string, number[]] => [
+        `lineLead.channel.path[${i}]`,
+        p,
+      ]),
+      ...hanse508.rig.lineLead.lines.flatMap((line): [string, number[]][] =>
+        'exit' in line && line.exit ? [[`lineLead exit ${line.rope}`, line.exit]] : [],
+      ),
       ['jib.tack', hanse508.sails.jib.tack],
       ['jib.head', hanse508.sails.jib.head],
       ['jib.clewTrimmedRef', hanse508.sails.jib.clewTrimmedRef],

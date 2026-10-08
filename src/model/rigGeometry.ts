@@ -140,3 +140,64 @@ export function boomLocalToWorld(
     -px * Math.sin(theta) + z * Math.cos(theta),
   ]);
 }
+
+/** A straight wire or tube of the rig, as drawn (its radius is the drawn radius). */
+export interface RigSegment {
+  a: Vec3;
+  b: Vec3;
+  radius: number;
+}
+
+type SpreaderSet = BoatData['rig']['spreaders']['sets'][number];
+
+/** Spreader tip on one side (side = +1 starboard, −1 port), swept back from the mast. */
+export function spreaderTip(set: SpreaderSet, side: 1 | -1, data: BoatData = boat): Vec3 {
+  const sweep = set.sweepBackDeg * DEG;
+  return [
+    data.rig.mast.x - set.halfSpan * Math.sin(sweep),
+    set.y,
+    side * set.halfSpan * Math.cos(sweep),
+  ];
+}
+
+/** The spreaders on one side, from the mast's side face to the tip, lowest first. */
+export function spreaderSegments(side: 1 | -1, data: BoatData = boat): RigSegment[] {
+  const { mast, spreaders } = data.rig;
+  return spreaders.sets.map((set) => ({
+    a: [mast.x, set.y, (side * mast.sectionAthwart) / 2],
+    b: spreaderTip(set, side, data),
+    radius: data.modelDetail.spreaderDiameter / 2,
+  }));
+}
+
+/** Cap shroud on one side: chainplate → each spreader tip in turn → mast near the top. */
+export function capShroudPoints(side: 1 | -1, data: BoatData = boat): Vec3[] {
+  const { mast, spreaders, shrouds } = data.rig;
+  return [
+    [shrouds.chainplate.x, shrouds.chainplate.y, side * shrouds.chainplate.halfZ],
+    ...spreaders.sets.map((set) => spreaderTip(set, side, data)),
+    [mast.x, shrouds.capShroudTopY, (side * mast.sectionAthwart) / 2],
+  ];
+}
+
+/** Lower shroud on one side: chainplate → mast at the lower spreader root. */
+export function lowerShroudPoints(side: 1 | -1, data: BoatData = boat): [Vec3, Vec3] {
+  const { mast, shrouds } = data.rig;
+  return [
+    [shrouds.chainplate.x, shrouds.chainplate.y, side * shrouds.chainplate.halfZ],
+    [mast.x, shrouds.lowerShroudTopY, (side * mast.sectionAthwart) / 2],
+  ];
+}
+
+/** Cap and lower shroud on one side as straight wires. */
+export function shroudSegments(side: 1 | -1, data: BoatData = boat): RigSegment[] {
+  const radius = data.modelDetail.wireRenderRadius;
+  const cap = capShroudPoints(side, data);
+  const wires: RigSegment[] = [];
+  for (let i = 1; i < cap.length; i += 1) {
+    wires.push({ a: cap[i - 1] as Vec3, b: cap[i] as Vec3, radius });
+  }
+  const [a, b] = lowerShroudPoints(side, data);
+  wires.push({ a, b, radius });
+  return wires;
+}

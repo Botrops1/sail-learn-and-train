@@ -6,12 +6,36 @@ export const SCENE = {
   /** PHASE1_SPEC 10: cap the device pixel ratio at 2. */
   maxPixelRatio: 2,
   skyColor: '#cfe5f3',
-  /** Fog fades the grid into the horizon so the edge of the water plane is not visible. */
+  /** Fog fades the water into the horizon so the edge of the water plane is not visible. */
   fogNear: 60,
-  fogFar: 220,
+  fogFar: 260,
+  /**
+   * Procedural sky (M3b): a gradient from the zenith to a hazy horizon with soft clouds, used
+   * as the background and, blurred, for the reflections on metal, gelcoat and water.
+   */
+  sky: {
+    zenith: '#5f97c8',
+    horizon: '#d6e7f2',
+    /** What shows through the see-through water: deep water, not sky. */
+    belowHorizon: '#14495a',
+    sunGlow: '#fff6e0',
+    cloud: '#ffffff',
+    cloudCount: 70,
+    cloudOpacity: 0.55,
+    width: 1024,
+    height: 512,
+  },
   water: {
-    color: '#2f7fb0',
-    opacity: 0.55,
+    color: '#1f7a8c',
+    /** Low detail (no reflections): a lighter, flat colour. */
+    lowColor: '#3f8fae',
+    opacity: 0.78,
+    lowOpacity: 0.6,
+    roughness: 0.12,
+    /** Ripples: a tiling normal map, `rippleTileM` metres, drifting slowly. */
+    rippleTileM: 9,
+    rippleStrength: 0.35,
+    rippleDriftMPerS: 0.25,
     /** Side length of the square water plane, metres. */
     size: 600,
   },
@@ -22,22 +46,54 @@ export const SCENE = {
     size: 200,
     color: '#ffffff',
     opacity: 0.18,
+    /** High detail: fainter, the ripples show the water surface. */
+    opacityHigh: 0.07,
   },
-  /** Colours of the boat model. Neutral, so the teaching colours of the ropes (M2+) stand out. */
+  /**
+   * Colours of the boat (M3b: from the reference photos). Neutral, so the teaching colours of
+   * the ropes stand out.
+   */
   boat: {
     hull: '#f3f4f1',
-    deck: '#dfe3e6',
-    teak: '#b98a5a',
-    coachroof: '#eceff1',
-    dark: '#2e353b',
-    appendage: '#55606a',
-    spar: '#a7b1ba',
-    wire: '#3d4852',
-    fitting: '#4b545c',
-    block: '#5c6670',
-    fabric: '#3f474e',
-    sail: '#fbfbf6',
-    sailOpacity: 0.9,
+    deck: '#e6e9e8',
+    gelcoat: '#f1f2ef',
+    channelCover: '#bfc6cb',
+    clearcoatRoughness: 0.12,
+    dark: '#26292d',
+    appendage: '#3b4148',
+    spar: '#c9ced3',
+    spreader: '#41464c',
+    wire: '#b9bec3',
+    fitting: '#d8dce0',
+    chrome: '#eef0f2',
+    block: '#25282c',
+    fabric: '#3d4248',
+    glass: '#1c2a33',
+    glassOpacity: 0.55,
+    sail: '#f8f6ef',
+    sailOpacity: 0.93,
+    /** Anti-fouling below the waterline and a thin boot stripe above it (heights in metres). */
+    waterline: {
+      antifouling: '#2c3137',
+      antifoulingTopY: 0.03,
+      stripe: '#47525e',
+      stripeTopY: 0.1,
+    },
+  },
+  /** Procedural textures (M3b), see boat/textures.ts. */
+  textures: {
+    teak: {
+      color: '#a8733e',
+      caulkColor: '#231d19',
+      planksPerTile: 8,
+      plankWidthM: 0.065,
+      tileLengthM: 2.4,
+      caulkTexels: 2,
+      plankShadeVariation: 0.22,
+      grainStrength: 0.08,
+    },
+    nonSlip: { tileM: 0.12, dotsPerTile: 8 },
+    sail: { seamShade: 0.86 },
   },
   /**
    * Teaching colours of the ropes (PHASE1_SPEC 7.3), one per function, from the Okabe–Ito
@@ -137,11 +193,33 @@ export const SCENE = {
     skyColor: '#ffffff',
     groundColor: '#4d6b80',
     hemisphereIntensity: 2.2,
+    /** High detail: the sky's reflections light the boat too, so the sky light is weaker. */
+    hemisphereIntensityHigh: 0.6,
+    environmentIntensity: 0.9,
     sunIntensity: 1.6,
-    /** Direction towards the sun (no shadows in Phase 1). */
+    sunIntensityHigh: 2.6,
+    /** Direction towards the sun. */
     sunDirection: [0.4, 1, -0.6] as const,
     /** A weaker light from the other side, so the starboard side and sails are not grey. */
     fillIntensity: 0.9,
+    fillIntensityHigh: 0.35,
     fillDirection: [-0.3, 0.6, 0.8] as const,
+    toneMappingExposure: 1.0,
   },
+  /** Centre of the sun's shadow box: the middle of the boat, a third of the way up the mast. */
+  shadowCentre: [-1, 6, 0] as const,
+  /** Soft sun shadows, high detail only (M3b, owner request). */
+  shadows: {
+    mapSize: 2048,
+    /** Half-size of the square the shadow covers around the boat, metres (boat and mast). */
+    halfExtent: 15,
+    /** Softness: PCF filter radius in shadow-map texels. */
+    radius: 3,
+    bias: -0.0004,
+    normalBias: 0.03,
+    /** Distance of the shadow camera from the boat along the sun direction, metres. */
+    distance: 45,
+  },
+  /** Low detail: largest device pixel ratio used (high detail: maxPixelRatio). */
+  maxPixelRatioLow: 1.5,
 } as const;

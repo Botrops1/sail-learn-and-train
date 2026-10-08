@@ -1,5 +1,6 @@
 import type * as THREE from 'three';
 import { boat } from '../../model/boat';
+import { coachroofBaseY, coachroofHalfOutline } from '../../model/deckVolumes';
 import { halfBeamAt, sectionPoint, sheerAt } from '../../model/hullShape';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
@@ -24,19 +25,16 @@ export function buildHull(materials: BoatMaterials): THREE.Object3D[] {
   const stations = hullStations();
   return [
     partMesh('part_hull', [hullShell(stations), endCap(boat.hull.stemX, +1)], materials.hull),
-    partMesh(
-      'part_stern',
-      [endCap(boat.hull.transomX, -1), aftPlatform(stations)],
-      materials.teak,
+    partMesh('part_stern', [aftPlatform(stations)], materials.teak, [
       [
-        [
-          [boat.hull.transomX, sheerAt(boat.hull.transomX), 0],
-          [boat.deck.aftPlatform.frontX, sheerAt(boat.deck.aftPlatform.frontX), 0],
-        ],
+        [boat.hull.transomX, sheerAt(boat.hull.transomX), 0],
+        [boat.deck.aftPlatform.frontX, sheerAt(boat.deck.aftPlatform.frontX), 0],
       ],
-    ),
-    partMesh('part_deck', [deck(stations)], materials.deck),
-    partMesh('part_coachroof', [coachroof()], materials.coachroof),
+    ]),
+    partMesh('part_stern', [endCap(boat.hull.transomX, -1)], materials.hull),
+    partMesh('part_deck', [deck(stations, 'foredeck')], materials.deck),
+    partMesh('part_deck', [deck(stations, 'sideDecks')], materials.teak),
+    ...coachroof(materials),
     ...cockpit(materials),
     companionway(materials),
     bowFitting(materials),
@@ -122,34 +120,52 @@ function endCap(x: number, direction: number): THREE.BufferGeometry {
 }
 
 /**
- * Flat deck at sheer height, with the cockpit well left open and the aft platform drawn
- * separately (teak). Each station strip spans the beam, or only the side decks beside the well.
+ * Flat deck at sheer height, in two parts: the non-slip foredeck forward of the coachroof, and
+ * the teak side decks beside the coachroof and the cockpit (M3b, owner request). The cockpit
+ * well is left open and the aft platform is drawn separately.
  */
-function deck(stations: number[]): THREE.BufferGeometry {
-  const { cockpit, aftPlatform } = boat.deck;
+function deck(stations: number[], part: 'foredeck' | 'sideDecks'): THREE.BufferGeometry {
+  const { cockpit, aftPlatform, coachroof: roof } = boat.deck;
   const positions: number[] = [];
-  const deckStations = stations.filter((x) => x >= aftPlatform.frontX);
+  const outline = coachroofHalfOutline(roof.frontX);
+  const roofHalf = (x: number) => {
+    for (let i = 1; i < outline.length; i += 1) {
+      const [x0, w0] = outline[i - 1] as [number, number];
+      const [x1, w1] = outline[i] as [number, number];
+      if (x <= x1) return w0 + ((w1 - w0) * (x - x0)) / Math.max(1e-9, x1 - x0);
+    }
+    return roof.frontHalfWidth;
+  };
+  const deckStations = [...new Set([...stations, roof.frontX, roof.aftX])]
+    .filter((x) => x >= aftPlatform.frontX)
+    .sort((a, b) => a - b);
   for (let i = 0; i < deckStations.length - 1; i += 1) {
     const x0 = deckStations[i] ?? 0;
     const x1 = deckStations[i + 1] ?? 0;
+    const mid = (x0 + x1) / 2;
     const y0 = sheerAt(x0);
     const y1 = sheerAt(x1);
     const b0 = halfBeamAt(x0);
     const b1 = halfBeamAt(x1);
-    const besideWell = x0 >= cockpit.aftX - EPS && x1 <= cockpit.frontX + EPS;
-    if (besideWell) {
-      const w = cockpit.wellHalfWidth;
-      for (const side of [1, -1]) {
-        pushQuad(
-          positions,
-          [x0, y0, side * w],
-          [x0, y0, side * b0],
-          [x1, y1, side * b1],
-          [x1, y1, side * w],
-        );
-      }
-    } else {
+    const forward = mid >= roof.frontX;
+    if (forward !== (part === 'foredeck')) continue;
+    if (forward) {
       pushQuad(positions, [x0, y0, -b0], [x0, y0, b0], [x1, y1, b1], [x1, y1, -b1]);
+      continue;
+    }
+    // Beside the coachroof (under it there is nothing to draw) or beside the cockpit well.
+    const inner = (x: number) =>
+      x >= roof.aftX - EPS ? roofHalf(x) - OVERLAP : cockpit.wellHalfWidth;
+    const w0 = Math.min(inner(x0), b0);
+    const w1 = Math.min(inner(x1), b1);
+    for (const side of [1, -1]) {
+      pushQuad(
+        positions,
+        [x0, y0, side * w0],
+        [x0, y0, side * b0],
+        [x1, y1, side * b1],
+        [x1, y1, side * w1],
+      );
     }
   }
   return triangles(positions);
@@ -174,53 +190,43 @@ function aftPlatform(stations: number[]): THREE.BufferGeometry {
 
 /**
  * Coachroof: drawing width at the aft end, widening to maxHalfWidth at the mast (photo: the
- * self-tacking track ends at its edges), front corners cut, front face sloping back to topFrontX.
- * Its base sits a little below the deck so no gap shows.
+ * self-tacking track ends at its edges), front corners cut, front face sloping back to
+ * topFrontX. Non-slip top, smooth gelcoat sides. Its base sits a little below the deck so no
+ * gap shows.
  */
-function coachroof(): THREE.BufferGeometry {
+function coachroof(materials: BoatMaterials): THREE.Object3D[] {
   const r = boat.deck.coachroof;
-  const baseY = Math.min(sheerAt(r.frontX), sheerAt(r.aftX)) - OVERLAP;
-  const chamferAt = (x: number) =>
-    r.maxHalfWidth +
-    ((r.frontHalfWidth - r.maxHalfWidth) * (x - r.chamferStartX)) / (r.frontX - r.chamferStartX);
-  const half = (frontX: number): [number, number][] => [
-    [r.aftX, r.halfWidth],
-    [r.maxHalfWidthFromX, r.maxHalfWidth],
-    [r.chamferStartX, r.maxHalfWidth],
-    [frontX, chamferAt(frontX)],
-  ];
+  const baseY = coachroofBaseY();
   // Port side from aft to front, then starboard from front to aft: a convex outline.
   const outline = (frontX: number): [number, number][] => [
-    ...half(frontX).map(([x, z]): [number, number] => [x, -z]),
-    ...half(frontX)
+    ...coachroofHalfOutline(frontX).map(([x, z]): [number, number] => [x, -z]),
+    ...coachroofHalfOutline(frontX)
       .reverse()
       .map(([x, z]): [number, number] => [x, z]),
   ];
   const bottom = outline(r.frontX);
   const top = outline(r.topFrontX);
-  const positions: number[] = [];
+  const sides: number[] = [];
   for (let i = 0; i < bottom.length; i += 1) {
     const next = (i + 1) % bottom.length;
     const [bx0, bz0] = bottom[i] ?? [0, 0];
     const [bx1, bz1] = bottom[next] ?? [0, 0];
     const [tx0, tz0] = top[i] ?? [0, 0];
     const [tx1, tz1] = top[next] ?? [0, 0];
-    pushQuad(
-      positions,
-      [bx0, baseY, bz0],
-      [bx1, baseY, bz1],
-      [tx1, r.topY, tz1],
-      [tx0, r.topY, tz0],
-    );
+    pushQuad(sides, [bx0, baseY, bz0], [bx1, baseY, bz1], [tx1, r.topY, tz1], [tx0, r.topY, tz0]);
   }
   // Roof top: a fan over the convex outline.
+  const roof: number[] = [];
   const [cx, cz] = top[0] ?? [0, 0];
   for (let i = 1; i < top.length - 1; i += 1) {
     const [x1, z1] = top[i] ?? [0, 0];
     const [x2, z2] = top[i + 1] ?? [0, 0];
-    positions.push(cx, r.topY, cz, x1, r.topY, z1, x2, r.topY, z2);
+    roof.push(cx, r.topY, cz, x1, r.topY, z1, x2, r.topY, z2);
   }
-  return triangles(positions);
+  return [
+    partMesh('part_coachroof', [triangles(roof)], materials.deck),
+    partMesh('part_coachroof', [triangles(sides)], materials.gelcoat),
+  ];
 }
 
 /** Cockpit well (sole and walls) and the side coamings that carry winches and clutches. */
@@ -251,6 +257,7 @@ function cockpit(materials: BoatMaterials): THREE.Object3D[] {
     const top = sheerAt(x) + EPS;
     pushQuad(positions, [x, c.soleY, -w], [x, c.soleY, w], [x, top, w], [x, top, -w]);
   }
+  const sole = triangles(positions.splice(0, 18));
   const well = triangles(positions);
 
   const coamingWidth = boat.modelDetail.coamingWidth;
@@ -264,7 +271,10 @@ function cockpit(materials: BoatMaterials): THREE.Object3D[] {
     ];
     return boxAt(centre, [c.frontX - c.aftX, height, coamingWidth]);
   });
-  return [partMesh('part_cockpit', [well, ...coamings], materials.teak)];
+  return [
+    partMesh('part_cockpit', [sole], materials.teak),
+    partMesh('part_cockpit', [well, ...coamings], materials.gelcoat),
+  ];
 }
 
 /** Companionway: the opening in the coachroof's aft face, with a sliding hatch on the roof. */

@@ -87,13 +87,18 @@ describe('rope drawing (PHASE1_SPEC 8.7)', () => {
   });
 
   it('a slack sheet sags; a sheet holding the boom is straight', () => {
+    // The part that hangs most (M3b: one part of a slack sheet lies on the sprayhood).
     const sag = (values: Partial<Controls>) => {
       const sheet = drawings(values).find((rope) => rope.id === 'rope_mainsheet');
-      const points = sheet?.strands[0]?.points ?? [];
-      const a = points[0] as Vec3;
-      const b = points[points.length - 1] as Vec3;
-      const middle = points[Math.floor(points.length / 2)] as Vec3;
-      return (a[1] + b[1]) / 2 - middle[1];
+      const parts = (sheet?.strands ?? []).slice(0, 2 * boat.rig.mainsheet.partsPerSide);
+      return Math.max(
+        ...parts.map(({ points }) => {
+          const a = points[0] as Vec3;
+          const b = points[points.length - 1] as Vec3;
+          const middle = points[Math.floor(points.length / 2)] as Vec3;
+          return (a[1] + b[1]) / 2 - middle[1];
+        }),
+      );
     };
     expect(sag({ ctl_wind_dir: 0, ctl_mainsheet: 80 })).toBeGreaterThan(0.3);
     expect(sag({ ctl_wind_dir: 90, ctl_mainsheet: 40 })).toBeLessThan(0.01);

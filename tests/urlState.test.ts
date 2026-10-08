@@ -3,7 +3,12 @@ import { initialState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
 import { defaultControls } from '../src/model/controls';
-import { CAMERA_PRESETS, DEFAULT_CAMERA, DEFAULT_SETTINGS } from '../src/model/settings';
+import {
+  CAMERA_PRESETS,
+  DEFAULT_CAMERA,
+  DEFAULT_SETTINGS,
+  defaultDetail,
+} from '../src/model/settings';
 
 /** The controls part of the default URL (M2: boom and wind controls). */
 const DEFAULT_CONTROLS_QUERY = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&wd=60&ws=12';
@@ -29,6 +34,26 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(state.settings.debug).toBe(DEFAULT_SETTINGS.debug);
     expect(parseUrlState('?step=5.0').settings.step).toBe(DEFAULT_SETTINGS.step);
     expect(parseUrlState('?step=').settings.step).toBe(DEFAULT_SETTINGS.step);
+  });
+
+  it('M3b: reads detail=high|low; without it, the fallback (the screen-size default) is used', () => {
+    expect(parseUrlState('?detail=low').settings.detail).toBe('low');
+    expect(parseUrlState('?detail=high', 'low').settings.detail).toBe('high');
+    expect(parseUrlState('', 'low').settings.detail).toBe('low');
+    expect(parseUrlState('?detail=ultra', 'low').settings.detail).toBe('low');
+    expect(parseUrlState('').settings.detail).toBe('high');
+    const low = {
+      ...initialState(),
+      settings: { ...initialState().settings, detail: 'low' as const },
+    };
+    expect(parseUrlState(serializeUrlState(low), 'high').settings.detail).toBe('low');
+  });
+
+  it('M3b: the default detail is low on phone screens and high on bigger ones', () => {
+    expect(defaultDetail(390, 844)).toBe('low');
+    expect(defaultDetail(844, 390)).toBe('low');
+    expect(defaultDetail(820, 1000)).toBe('high');
+    expect(defaultDetail(1440, 900)).toBe('high');
   });
 
   it('ignores parameters it does not know yet', () => {
@@ -76,17 +101,19 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
   it('cam=free is kept as the preset (the free position itself is not stored)', () => {
     expect(parseUrlState('?cam=free').camera).toEqual({ preset: 'free' });
     expect(serializeUrlState(initialState({ camera: { preset: 'free' } }))).toBe(
-      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=free&step=5`,
+      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=free&step=5&detail=high`,
     );
   });
 
   it('writes v=1 and readable parameters', () => {
     const c = DEFAULT_CONTROLS_QUERY;
-    expect(serializeUrlState(initialState())).toBe(`?v=1&${c}&cam=side-port&step=5`);
+    expect(serializeUrlState(initialState())).toBe(`?v=1&${c}&cam=side-port&step=5&detail=high`);
     const withDebug = initialState({ settings: { step: 1, debug: true } });
-    expect(serializeUrlState(withDebug)).toBe(`?v=1&${c}&cam=side-port&step=1&debug=1`);
+    expect(serializeUrlState(withDebug)).toBe(`?v=1&${c}&cam=side-port&step=1&detail=high&debug=1`);
     const withSelection = initialState({ selection: 'part_boom' });
-    expect(serializeUrlState(withSelection)).toBe(`?v=1&${c}&cam=side-port&sel=part_boom&step=5`);
+    expect(serializeUrlState(withSelection)).toBe(
+      `?v=1&${c}&cam=side-port&sel=part_boom&step=5&detail=high`,
+    );
   });
 
   it('round-trips the controls', () => {

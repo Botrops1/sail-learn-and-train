@@ -12,9 +12,15 @@ export interface PixelRatio {
   render: number;
 }
 
+/** What the last frame cost the graphics card (M3b). */
+export interface RenderStats {
+  calls: number;
+  triangles: number;
+}
+
 export interface DebugOverlay {
   /** Called once per rendered frame with the measured frames per second. */
-  update(fps: number, viewport: Viewport, pixelRatio: PixelRatio): void;
+  update(fps: number, viewport: Viewport, pixelRatio: PixelRatio, render?: RenderStats): void;
 }
 
 /** Debug overlay (PHASE1_SPEC 9.3). Off by default; `?debug=1` or the View tab turns it on. */
@@ -30,7 +36,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
 
   let lastText = '';
   return {
-    update(fps, viewport, pixelRatio) {
+    update(fps, viewport, pixelRatio, render) {
       if (box.hidden) return;
       const { camera, settings, selection, rig } = store.getState();
       const sol = rig.solution;
@@ -44,6 +50,9 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
         [t('debug.viewport'), `${viewport.width}×${viewport.height}`],
         [t('debug.aspect'), (viewport.width / viewport.height).toFixed(2)],
         [t('debug.dpr'), `${pixelRatio.device.toFixed(2)} → ${pixelRatio.render.toFixed(2)}`],
+        [t('debug.detail'), settings.detail],
+        [t('debug.calls'), render ? String(render.calls) : '–'],
+        [t('debug.triangles'), render ? String(render.triangles) : '–'],
         [t('debug.cam'), camera.preset],
         [t('debug.selection'), selection ?? '–'],
         [t('debug.step'), `${settings.step} %`],

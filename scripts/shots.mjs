@@ -7,7 +7,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm3';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm3b';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 const BASE_PATH = '/sail-learn-and-train/';
 
@@ -144,7 +144,15 @@ const SMALL_STARBOARD = ['clutch_bank_a', 'winch_primary_starboard'];
 const SMALL_PART_VIEWS = [
   { cam: 'side-port', expected: [...SMALL_CENTRELINE, ...SMALL_PORT] },
   { cam: 'side-starboard', expected: [...SMALL_CENTRELINE, ...SMALL_STARBOARD] },
-  { cam: 'top', expected: [...SMALL_CENTRELINE, ...SMALL_PORT, ...SMALL_STARBOARD] },
+  // M3b: the furling gearbox is on the mast's aft face under the gooseneck: hidden from above.
+  {
+    cam: 'top',
+    expected: [
+      ...SMALL_CENTRELINE.filter((id) => id !== 'part_main_furling_gearbox'),
+      ...SMALL_PORT,
+      ...SMALL_STARBOARD,
+    ],
+  },
 ];
 
 /** Parts that must never be drawn (not on the reference boat). */
@@ -391,8 +399,11 @@ async function liveM3Checks() {
   }
 }
 
+// SHOTS_ONLY_LIVE=1: only the live checks (quick re-check while iterating).
+const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
+
 try {
-  for (const viewport of VIEWPORTS) {
+  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       const label = `${viewport.name}/${scene.name}`;
@@ -443,13 +454,15 @@ try {
   // Tap-to-identify sweep: tap a grid over the 3D view in several presets and collect what the
   // card shows. Every tap must give a registered part with a name (or nothing, for the sky).
   const found = new Map();
-  const sweeps = [
-    { viewport: VIEWPORTS[0], cam: 'side-port' },
-    { viewport: VIEWPORTS[0], cam: 'bow' },
-    { viewport: VIEWPORTS[0], cam: 'helm' },
-    { viewport: VIEWPORTS[2], cam: 'side-starboard' },
-    { viewport: VIEWPORTS[2], cam: 'top' },
-  ];
+  const sweeps = ONLY_LIVE
+    ? []
+    : [
+        { viewport: VIEWPORTS[0], cam: 'side-port' },
+        { viewport: VIEWPORTS[0], cam: 'bow' },
+        { viewport: VIEWPORTS[0], cam: 'helm' },
+        { viewport: VIEWPORTS[2], cam: 'side-starboard' },
+        { viewport: VIEWPORTS[2], cam: 'top' },
+      ];
   for (const { viewport, cam } of sweeps) {
     const label = `taps ${viewport.name}/${cam}`;
     const { context, page } = await openPage(viewport, label, `?cam=${cam}`);
@@ -480,7 +493,7 @@ try {
   console.log(
     `identified by tapping: ${[...found.entries()].map(([id, n]) => `${id}×${n}`).join(', ')}`,
   );
-  for (const id of MUST_IDENTIFY) {
+  for (const id of ONLY_LIVE ? [] : MUST_IDENTIFY) {
     if (!found.has(id)) problems.push(`tap sweep never identified ${id}`);
   }
   for (const id of MUST_NOT_IDENTIFY) {
@@ -489,7 +502,7 @@ try {
 
   // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
   // (positions from the debug-only hook) must show its card.
-  for (const viewport of VIEWPORTS.slice(0, 3)) {
+  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS.slice(0, 3)) {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1`);
@@ -562,7 +575,8 @@ try {
   };
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5`);
+  // The phone-sized screen starts at low detail (M3b).
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -570,12 +584,23 @@ try {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
-  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&debug=1`);
+  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
+  // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
+  await page.getByText('High', { exact: true }).click();
+  await expectUrl('Detail high', `?v=1&${c}&cam=side-starboard&step=1&detail=high&debug=1`);
+  await page.waitForTimeout(1500);
+  const overlay = await page.getByTestId('debug-overlay').innerText();
+  const ok = /Detail\s+high/.test(overlay) && /Draw calls\s+\d+/.test(overlay);
+  if (!ok) problems.push(`live Detail high: overlay says ${overlay.replace(/\n/g, ' | ')}`);
+  console.log(`live Detail high -> overlay ${ok ? 'ok' : 'WRONG'}`);
+  await page.screenshot({ path: path.join(OUT_DIR, 'live-desktop-view-tab-detail-high.png') });
+  await page.getByText('Low', { exact: true }).click();
+  await expectUrl('Detail low', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
   await context.close();
 
   await liveM2Checks();
@@ -591,10 +616,12 @@ const dev = await createServer({ server: { port: 5190, strictPort: false }, logL
 await dev.listen();
 const compareBrowser = await chromium.launch({ args: LAUNCH_ARGS });
 try {
-  for (const [view, width, height] of [
-    ['side', 824, 1168],
-    ['plan', 792, 400],
-  ]) {
+  for (const [view, width, height] of ONLY_LIVE
+    ? []
+    : [
+        ['side', 824, 1168],
+        ['plan', 792, 400],
+      ]) {
     const page = await compareBrowser.newPage({ viewport: { width, height } });
     page.on('pageerror', (error) => problems.push(`compare ${view}: page error: ${error.message}`));
     await page.goto(`${dev.resolvedUrls.local[0]}scripts/compare/index.html?view=${view}`);
