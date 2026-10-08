@@ -593,7 +593,11 @@ try {
     console.log(`live resize ${step.width}x${step.height} -> ${layout} ${ok ? 'ok' : 'WRONG'}`);
   }
   const expectUrl = async (what, expected) => {
-    await page.waitForTimeout(500);
+    // The address bar follows after a 300 ms debounce; at High detail one software-rendered
+    // frame can take longer than that, so wait up to 3 s for it rather than a fixed 0.5 s.
+    await page
+      .waitForFunction((want) => window.location.search === want, expected, { timeout: 3000 })
+      .catch(() => undefined);
     const search = await page.evaluate(() => window.location.search);
     const ok = search === expected;
     if (!ok) problems.push(`live ${what}: got ${search}, expected ${expected}`);
