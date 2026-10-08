@@ -48,9 +48,17 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const sky = skyTexture();
   scene.background = sky;
   scene.fog = new THREE.Fog(SCENE.sky.horizon, SCENE.fogNear, SCENE.fogFar);
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const reflections = pmrem.fromEquirectangular(sky).texture;
-  pmrem.dispose();
+  // The blurred sky for reflections is made the first time High detail is used (phones
+  // start on Low and skip the work).
+  let reflections: THREE.Texture | undefined;
+  const reflectionsOf = () => {
+    if (!reflections) {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      reflections = pmrem.fromEquirectangular(sky).texture;
+      pmrem.dispose();
+    }
+    return reflections;
+  };
   scene.environmentIntensity = SCENE.light.environmentIntensity;
 
   const hemisphere = new THREE.HemisphereLight(
@@ -129,7 +137,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     renderer.setSize(size.width, size.height, false);
     renderer.shadowMap.enabled = high;
     sun.castShadow = high;
-    scene.environment = high ? reflections : null;
+    scene.environment = high ? reflectionsOf() : null;
     hemisphere.intensity = high
       ? SCENE.light.hemisphereIntensityHigh
       : SCENE.light.hemisphereIntensity;

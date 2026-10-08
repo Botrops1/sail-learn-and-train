@@ -399,8 +399,11 @@ async function liveM3Checks() {
   }
 }
 
+// SHOTS_ONLY_LIVE=1: only the live checks (quick re-check while iterating).
+const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
+
 try {
-  for (const viewport of VIEWPORTS) {
+  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       const label = `${viewport.name}/${scene.name}`;
@@ -451,13 +454,15 @@ try {
   // Tap-to-identify sweep: tap a grid over the 3D view in several presets and collect what the
   // card shows. Every tap must give a registered part with a name (or nothing, for the sky).
   const found = new Map();
-  const sweeps = [
-    { viewport: VIEWPORTS[0], cam: 'side-port' },
-    { viewport: VIEWPORTS[0], cam: 'bow' },
-    { viewport: VIEWPORTS[0], cam: 'helm' },
-    { viewport: VIEWPORTS[2], cam: 'side-starboard' },
-    { viewport: VIEWPORTS[2], cam: 'top' },
-  ];
+  const sweeps = ONLY_LIVE
+    ? []
+    : [
+        { viewport: VIEWPORTS[0], cam: 'side-port' },
+        { viewport: VIEWPORTS[0], cam: 'bow' },
+        { viewport: VIEWPORTS[0], cam: 'helm' },
+        { viewport: VIEWPORTS[2], cam: 'side-starboard' },
+        { viewport: VIEWPORTS[2], cam: 'top' },
+      ];
   for (const { viewport, cam } of sweeps) {
     const label = `taps ${viewport.name}/${cam}`;
     const { context, page } = await openPage(viewport, label, `?cam=${cam}`);
@@ -488,7 +493,7 @@ try {
   console.log(
     `identified by tapping: ${[...found.entries()].map(([id, n]) => `${id}×${n}`).join(', ')}`,
   );
-  for (const id of MUST_IDENTIFY) {
+  for (const id of ONLY_LIVE ? [] : MUST_IDENTIFY) {
     if (!found.has(id)) problems.push(`tap sweep never identified ${id}`);
   }
   for (const id of MUST_NOT_IDENTIFY) {
@@ -497,7 +502,7 @@ try {
 
   // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
   // (positions from the debug-only hook) must show its card.
-  for (const viewport of VIEWPORTS.slice(0, 3)) {
+  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS.slice(0, 3)) {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1`);
@@ -611,10 +616,12 @@ const dev = await createServer({ server: { port: 5190, strictPort: false }, logL
 await dev.listen();
 const compareBrowser = await chromium.launch({ args: LAUNCH_ARGS });
 try {
-  for (const [view, width, height] of [
-    ['side', 824, 1168],
-    ['plan', 792, 400],
-  ]) {
+  for (const [view, width, height] of ONLY_LIVE
+    ? []
+    : [
+        ['side', 824, 1168],
+        ['plan', 792, 400],
+      ]) {
     const page = await compareBrowser.newPage({ viewport: { width, height } });
     page.on('pageerror', (error) => problems.push(`compare ${view}: page error: ${error.message}`));
     await page.goto(`${dev.resolvedUrls.local[0]}scripts/compare/index.html?view=${view}`);
