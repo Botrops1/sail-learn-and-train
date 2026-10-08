@@ -140,11 +140,17 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
     expect(cockpit.aftX).toBe(aftPlatform.frontX);
   });
 
-  it('model detail sizes are small positive numbers (metres)', () => {
+  it('model detail: counts are whole numbers, positions lie on the boat, sizes are small', () => {
+    const { transomX, bowFittingTipX } = hanse508.hull;
     for (const [path, value] of numbers(hanse508.modelDetail)) {
-      expect(value, path).toBeGreaterThan(0);
-      if (!path.includes('spokes') && !path.includes('Exponent')) {
-        expect(value, path).toBeLessThan(1);
+      if (/(count|spokes)$/.test(path)) {
+        expect(Number.isInteger(value) && value >= 1, path).toBe(true);
+      } else if (/X$/.test(path)) {
+        expect(value, path).toBeGreaterThanOrEqual(transomX);
+        expect(value, path).toBeLessThanOrEqual(bowFittingTipX);
+      } else {
+        expect(value, path).toBeGreaterThan(0);
+        expect(value, path).toBeLessThan(path.includes('Exponent') ? 5 : 2.5);
       }
     }
   });

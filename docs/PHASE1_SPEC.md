@@ -74,7 +74,7 @@ If something here looks necessary to finish a milestone, stop and ask in the PR 
 
 ### 5.2 Regions
 
-1. **3D view** with a small overlay: camera preset buttons, a compact wind indicator (arrow + "from 60° stbd, 12 kn"), and an info card when something is tapped.
+1. **3D view** with a small overlay: camera preset buttons, a compact wind indicator (arrow + "from 60° stbd, 12 kn"), and an info card when something is tapped. In the stacked layout the info card is a compact strip at the top of the panel instead, so it never covers the boat; side by side it is a small, closable card over the 3D view.
 2. **Panel** with three tabs:
    - **Ropes** (default): the clutch-bank view and the control strip (see 7).
    - **Wind**: the wind dial and speed slider, plus the five wind presets (see 6.3).
@@ -106,7 +106,8 @@ Build everything from primitives and simple extrusions using `hanse508.json`. Lo
 ### 6.2 Camera
 
 - Orbit around a target near the boom (mouse drag, one-finger drag), zoom (wheel, pinch), pan (right drag, two-finger drag). Damped.
-- Presets with a smooth 0.5 s transition: **Side (port)**, **Side (starboard)**, **Top**, **Bow**, **Helm** (eye height at the port wheel looking forward), **Free**.
+- Presets with a smooth 0.5 s transition: **Side (port)**, **Side (starboard)**, **Top**, **Bow**, **Helm** (standing eye height behind the port wheel, looking forward and slightly down, with the wheel, winch and clutch bank in the foreground), **Free**.
+- **Top** shows the bow pointing up in the stacked (portrait) layout and pointing right in the side-by-side layout.
 - Clamp so the camera never goes under the water plane or inside the hull.
 
 ### 6.3 Wind presets (for testing and screenshots, not lessons)

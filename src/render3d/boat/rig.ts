@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
-import { CENTRED_BOOM, selfTackingTrackPoints, type BoomPose } from '../../model/rigGeometry';
+import {
+  CENTRED_BOOM,
+  selfTackingTrackEnds,
+  vangStrutEnds,
+  type BoomPose,
+} from '../../model/rigGeometry';
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import { boxAt, cylinderBetween, partMesh, v3, type PickSegment } from './parts';
@@ -9,14 +14,21 @@ const DEG = Math.PI / 180;
 
 export interface Rig {
   objects: THREE.Object3D[];
-  /** Pivot at the gooseneck; rotate with setBoomPose(). */
+  /** Pivot at the gooseneck. */
   boomPivot: THREE.Group;
+  /** Swings and pitches the boom and lets the rigid vang strut follow it. */
+  setBoomPose(pose: BoomPose): void;
 }
 
 /** Mast, spreaders, standing rigging, boom and the rig fittings (PHASE1_SPEC 6.1). */
 export function buildRig(materials: BoatMaterials): Rig {
   const boomPivot = buildBoom(materials);
-  setBoomPose(boomPivot, CENTRED_BOOM);
+  const vang = buildVangStrut(materials);
+  const setPose = (pose: BoomPose) => {
+    setBoomPose(boomPivot, pose);
+    vang.follow(pose);
+  };
+  setPose(CENTRED_BOOM);
   return {
     objects: [
       buildMast(materials),
@@ -34,13 +46,16 @@ export function buildRig(materials: BoatMaterials): Rig {
         materials,
       ),
       boomPivot,
+      ...vang.tubes,
       buildGooseneck(materials),
+      buildTurningBlocks(materials),
       buildDeckBlocks(materials),
       buildGearbox(materials),
       buildJibFurler(materials),
       ...buildSelfTackingTrack(materials),
     ],
     boomPivot,
+    setBoomPose: setPose,
   };
 }
 
@@ -136,7 +151,7 @@ function buildStay(id: string, a: Vec3, b: Vec3, materials: BoatMaterials): THRE
 
 /**
  * Boom in a pivot group at the gooseneck. In the group's frame the boom points aft (−x);
- * the mainsheet boom blocks hang under it at mainsheet.boomDistance.
+ * the three mainsheet boom blocks hang under it, centred on mainsheet.boomDistance.
  */
 function buildBoom(materials: BoatMaterials): THREE.Group {
   const { boom, mainsheet } = boat.rig;
@@ -158,13 +173,18 @@ function buildBoom(materials: BoatMaterials): THREE.Group {
       ],
     ),
   );
-  const blockCentre: Vec3 = [-mainsheet.boomDistance, -section.height / 2 - blockRadius, 0];
+  const spacing = boat.modelDetail.mainsheetBoomBlockSpacing;
+  const blocks: Vec3[] = [-1, 0, 1].map((k) => [
+    -mainsheet.boomDistance + k * spacing,
+    -section.height / 2 - blockRadius,
+    0,
+  ]);
   pivot.add(
     partMesh(
       'fit_mainsheet_boom_blocks',
-      [new THREE.SphereGeometry(blockRadius, 12, 8).translate(...blockCentre)],
+      blocks.map((p) => new THREE.SphereGeometry(blockRadius, 12, 8).translate(...p)),
       materials.block,
-      [[blockCentre, blockCentre]],
+      [[blocks[0] ?? [0, 0, 0], blocks[2] ?? [0, 0, 0]]],
     ),
   );
   return pivot;
@@ -214,24 +234,79 @@ function buildJibFurler(materials: BoatMaterials): THREE.Object3D {
   ]);
 }
 
-/** Curved self-tacking track and its car (at the centre while the jib is on the centreline). */
+/** Straight self-tacking track and its car (at the centre while the jib is on the centreline). */
 function buildSelfTackingTrack(materials: BoatMaterials): THREE.Object3D[] {
-  const points = selfTackingTrackPoints();
-  const curve = new THREE.CatmullRomCurve3(points.map(v3));
+  const [portEnd, starboardEnd] = selfTackingTrackEnds();
   const radius = boat.modelDetail.selfTackingTrack.radius;
-  const track = new THREE.TubeGeometry(curve, points.length * 2, radius, 6, false);
-  const segments: PickSegment[] = points.slice(1).map((p, i) => [points[i] ?? p, p] as const);
+  const track = cylinderBetween(portEnd, starboardEnd, radius, 8);
   const car = boat.modelDetail.selfTackingCar;
-  const centre = points[Math.floor(points.length / 2)] ?? points[0] ?? [0, 0, 0];
-  const carCentre: Vec3 = [centre[0], centre[1] + radius + car.height / 2, centre[2]];
+  const carCentre: Vec3 = [portEnd[0], portEnd[1] + radius + car.height / 2, 0];
   return [
-    partMesh('fit_self_tacking_track', [track], materials.fitting, segments),
+    partMesh('fit_self_tacking_track', [track], materials.fitting, [[portEnd, starboardEnd]]),
     partMesh(
       'fit_self_tacking_car',
-      // The car runs athwartships at the track centre, so its length lies along z.
+      // The car runs athwartships along the track, so its length lies along z.
       [boxAt(carCentre, [car.width, car.height, car.length])],
       materials.dark,
       [[carCentre, carCentre]],
     ),
   ];
+}
+
+/**
+ * Rigid vang (Selden Rodkicker): a thick tube fixed at the mast point and a thin tube fixed at
+ * the boom point, sliding inside each other. Each tube is a unit cylinder along +y, so
+ * following the boom only needs a new position, direction and length.
+ */
+function buildVangStrut(materials: BoatMaterials): {
+  tubes: THREE.Object3D[];
+  follow(pose: BoomPose): void;
+} {
+  const size = boat.modelDetail.vangStrut;
+  const [restA, restB] = vangStrutEnds(CENTRED_BOOM);
+  const tubeLength = size.tubeFraction * v3(restA).distanceTo(v3(restB));
+  const unitTube = (diameter: number) => {
+    const geometry = new THREE.CylinderGeometry(diameter / 2, diameter / 2, 1, 12);
+    geometry.translate(0, 0.5, 0);
+    return partMesh('part_vang_strut', [geometry], materials.spar, [
+      [
+        [0, 0, 0],
+        [0, 1, 0],
+      ],
+    ]);
+  };
+  const lower = unitTube(size.lowerDiameter);
+  const upper = unitTube(size.upperDiameter);
+  const up = new THREE.Vector3(0, 1, 0);
+  const place = (tube: THREE.Object3D, from: THREE.Vector3, to: THREE.Vector3) => {
+    tube.position.copy(from);
+    tube.quaternion.setFromUnitVectors(up, to.clone().sub(from).normalize());
+    tube.scale.set(1, tubeLength, 1);
+    tube.updateMatrixWorld();
+  };
+  return {
+    tubes: [lower, upper],
+    follow(pose) {
+      const [a, b] = vangStrutEnds(pose).map(v3) as [THREE.Vector3, THREE.Vector3];
+      place(lower, a, b);
+      place(upper, b, a);
+    },
+  };
+}
+
+/** Ring of turning blocks around the mast foot, where the lines turn aft. */
+function buildTurningBlocks(materials: BoatMaterials): THREE.Object3D {
+  const { count, ringRadius, blockDiameter } = boat.modelDetail.mastBaseTurningBlocks;
+  const { mast } = boat.rig;
+  const y = mast.footY + blockDiameter / 2;
+  const points: Vec3[] = Array.from({ length: count }, (_, i) => {
+    const angle = (2 * Math.PI * (i + 0.5)) / count;
+    return [mast.x + ringRadius * Math.cos(angle), y, ringRadius * Math.sin(angle)];
+  });
+  return partMesh(
+    'fit_mast_base_turning_blocks',
+    points.map((p) => new THREE.SphereGeometry(blockDiameter / 2, 10, 6).translate(...p)),
+    materials.block,
+    points.map((p) => [p, p] as const),
+  );
 }

@@ -12,8 +12,8 @@ export interface BoatMaterials {
   spar: THREE.Material;
   wire: THREE.Material;
   fitting: THREE.Material;
-  optionalFitting: THREE.Material;
   block: THREE.Material;
+  fabric: THREE.Material;
   sail: THREE.Material;
 }
 
@@ -33,12 +33,8 @@ export function createMaterials(): BoatMaterials {
     spar: lambert(c.spar),
     wire: lambert(c.wire),
     fitting: lambert(c.fitting),
-    optionalFitting: lambert(c.fitting, {
-      transparent: true,
-      opacity: c.optionalOpacity,
-      depthWrite: false,
-    }),
     block: lambert(c.block),
+    fabric: lambert(c.fabric),
     sail: lambert(c.sail, { transparent: true, opacity: c.sailOpacity }),
   };
 }

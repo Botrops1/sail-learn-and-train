@@ -6,7 +6,8 @@ import {
   jibCentrelineClew,
   jibCorners,
   mainSailCorners,
-  selfTackingTrackPoints,
+  selfTackingTrackEnds,
+  vangStrutEnds,
 } from '../src/model/rigGeometry';
 import { distance, vec3 } from '../src/model/vec3';
 
@@ -56,16 +57,20 @@ describe('static rig geometry (M1)', () => {
     );
   });
 
-  it('self-tacking track: arc around the jib tack, centre at centreX, ends at ±halfSpan', () => {
-    const points = selfTackingTrackPoints();
+  it('self-tacking track: straight across the deck at centreX, ends at ±halfSpan', () => {
+    const [port, starboard] = selfTackingTrackEnds();
     const track = boat.rig.selfTackingTrack;
-    const tack = vec3(boat.sails.jib.tack);
-    const radius = tack[0] - track.centreX;
-    for (const p of points) {
-      expect(Math.hypot(p[0] - tack[0], p[2] - tack[2])).toBeCloseTo(radius, 6);
-    }
-    expect(points[0]?.[2]).toBeCloseTo(-track.halfSpan, 6);
-    expect(points[points.length - 1]?.[2]).toBeCloseTo(track.halfSpan, 6);
-    expect(points[Math.floor(points.length / 2)]?.[0]).toBeCloseTo(track.centreX, 6);
+    expect(port).toEqual([track.centreX, track.y, -track.halfSpan]);
+    expect(starboard).toEqual([track.centreX, track.y, track.halfSpan]);
+    expect(distance(port, starboard)).toBeCloseTo(2.8, 1);
+  });
+
+  it('rigid vang strut runs from the mast foot to the boom and follows the boom', () => {
+    const [mastEnd, boomEnd] = vangStrutEnds();
+    expect(mastEnd).toEqual(vec3(boat.rig.vang.mastPoint));
+    expect(boomEnd).toEqual(boomPoint(boat.rig.vang.boomDistance));
+    const lifted = vangStrutEnds({ thetaDeg: 0, psiDeg: 8 })[1];
+    expect(lifted[1]).toBeGreaterThan(boomEnd[1]);
+    expect(distance(mastEnd, lifted)).toBeGreaterThan(distance(mastEnd, boomEnd));
   });
 });

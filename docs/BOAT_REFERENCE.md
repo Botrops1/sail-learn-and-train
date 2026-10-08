@@ -144,7 +144,10 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Mast section | 0.30 × 0.18 m | Assumption, not important |
 | Hull cross-section shape | superellipse, exponent 2.5, between the keel line and the deck edge (`modelDetail.hullSectionExponent`) | Not important; a photo of the hull out of the water would help |
 | Keel line (hull bottom on the centreline) | parabola from the deepest point (−0.65 m at x = −1.0) to the waterline ends, then straight up to the transom | Not important |
-| Sizes of small parts in the 3D model | `modelDetail` in the data file: boom section 0.24 × 0.14 m, keel fin 0.20 m and bulb 0.55 m wide, rudder 0.09 m thick with 20 % balance, winch drum 0.26 m, clutch bank 0.44 × 0.20 m, coaming 0.55 m wide, wires drawn 5 cm thick, and similar | Not important: chosen to look right and be tappable on a phone; they do not affect the rig solver |
+| Sizes of small parts in the 3D model | `modelDetail` in the data file: boom section 0.24 × 0.14 m, keel fin 0.20 m and bulb 0.55 m wide, rudder 0.09 m thick with 20 % balance, winch drum 0.26 m, clutch bank 0.44 × 0.20 m, coaming 0.55 m wide, wires drawn 5 cm thick, vang strut tubes 8 and 5.5 cm, three boom blocks 0.35 m apart, and similar | Not important: chosen to look right and be tappable on a phone; they do not affect the rig solver |
+| Sprayhood | on the coachroof's aft end, x = −3.05 … −1.75, half-width 1.05, 0.75 m high (`modelDetail.sprayhood`) | Estimated from photos |
+| Turning blocks at the mast foot | 8 blocks in a ring of radius 0.30 m around the mast (`modelDetail.mastBaseTurningBlocks`) | Count and size estimated from photos |
+| Lifelines | stanchions every ~2.1 m along both deck edges from x = −8.2 to +5.4, 0.65 m high, wires at 0.65 and 0.33 m (`modelDetail.lifelines`) | Estimated from photos |
 | Clutch height | the data's y is approximate; the model stands each clutch on the coaming top (banks A and B) or the deck (JIB ROLL) | Not important |
 
 ## 6. Open questions for the skipper / next time aboard

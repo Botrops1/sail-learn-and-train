@@ -51,7 +51,16 @@ const MUST_IDENTIFY = [
   'helm_starboard',
   'winch_primary_port',
   'winch_primary_starboard',
+  'clutch_bank_a',
+  'clutch_bank_b',
+  'part_vang_strut',
+  'fit_sprayhood',
+  'part_lifelines',
+  'fit_self_tacking_track',
 ];
+
+/** Parts that must never be drawn (not on the reference boat). */
+const MUST_NOT_IDENTIFY = ['winch_secondary_port', 'winch_secondary_starboard'];
 
 const LAUNCH_ARGS = [
   '--use-angle=swiftshader',
@@ -182,6 +191,9 @@ try {
   );
   for (const id of MUST_IDENTIFY) {
     if (!found.has(id)) problems.push(`tap sweep never identified ${id}`);
+  }
+  for (const id of MUST_NOT_IDENTIFY) {
+    if (found.has(id)) problems.push(`tap sweep found ${id}, which should not be drawn`);
   }
 
   // Live checks on one page, no reload: layout follows resizes; camera buttons and dragging

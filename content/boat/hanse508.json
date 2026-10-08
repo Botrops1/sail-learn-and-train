@@ -394,7 +394,17 @@
     "selfTackingTrack": { "radius": 0.035 },
     "selfTackingCar": { "length": 0.22, "width": 0.12, "height": 0.09 },
     "jibFurlerDrumDiameter": 0.26,
-    "mainFurlingGearbox": { "foreAft": 0.18, "height": 0.24, "athwart": 0.22 }
+    "mainFurlingGearbox": { "foreAft": 0.18, "height": 0.24, "athwart": 0.22 },
+    "mainsheetBoomBlockSpacing": 0.35,
+    "mainsheetBoomBlockSpacingNote": "Three blocks under the boom (photo), centred on rig.mainsheet.boomDistance; spacing estimated.",
+    "vangStrut": { "lowerDiameter": 0.08, "upperDiameter": 0.055, "tubeFraction": 0.62 },
+    "vangStrutNote": "Rigid vang drawn as two telescoping tubes: the thick one from the mast point, the thin one from the boom point, each tubeFraction of the strut length at rest so they overlap.",
+    "mastBaseTurningBlocks": { "count": 8, "ringRadius": 0.30, "blockDiameter": 0.09 },
+    "mastBaseTurningBlocksNote": "Ring of turning blocks around the mast foot (photos mast-base-turning-blocks*.jpg); count and sizes estimated.",
+    "sprayhood": { "frontX": -1.75, "aftX": -3.05, "halfWidth": 1.05, "height": 0.75 },
+    "sprayhoodNote": "Fabric shelter on the aft end of the coachroof over the companionway; its aft edge is at the coachroof's aft end. Size and position estimated from photos (side-deck-jib-roll.jpg, mainsheet-german.jpg).",
+    "lifelines": { "fwdX": 5.40, "aftX": -8.20, "stanchionSpacing": 2.10, "height": 0.65, "lowerWireHeight": 0.33, "inset": 0.06, "stanchionDiameter": 0.03, "wireRadius": 0.012 },
+    "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated."
   },
 
   "visual": {

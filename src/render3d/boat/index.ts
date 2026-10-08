@@ -1,14 +1,18 @@
 import * as THREE from 'three';
 import { buildKeel, buildRudder, buildSaildrive } from './appendages';
 import { buildCockpitHardware } from './cockpitHardware';
+import { buildDeckGear } from './deckGear';
 import { buildHull } from './hull';
 import { createMaterials } from './materials';
 import { buildRig } from './rig';
 import { buildSails } from './sails';
+import type { BoomPose } from '../../model/rigGeometry';
 
 export interface BoatModel {
   root: THREE.Group;
   boomPivot: THREE.Group;
+  /** Swings and pitches the boom (the rigid vang strut follows). Static at θ = ψ = 0 in M1. */
+  setBoomPose(pose: BoomPose): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
 }
@@ -32,8 +36,18 @@ export function buildBoat(): BoatModel {
     buildSaildrive(materials),
     ...rig.objects,
     ...hardware.objects,
+    ...buildDeckGear(materials),
     ...buildSails(materials),
   );
   root.updateMatrixWorld(true);
-  return { root, boomPivot: rig.boomPivot, rudderPivot, wheelPivots: hardware.wheelPivots };
+  return {
+    root,
+    boomPivot: rig.boomPivot,
+    setBoomPose: (pose) => {
+      rig.setBoomPose(pose);
+      root.updateMatrixWorld(true);
+    },
+    rudderPivot,
+    wheelPivots: hardware.wheelPivots,
+  };
 }

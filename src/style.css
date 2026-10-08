@@ -113,47 +113,72 @@ html[data-layout='side'] .shell {
 }
 
 /*
- * Overlays on the 3D view: the info card at the top (it would hide the hull and keel at the
- * bottom), the camera presets at the bottom (thumb reach).
+ * Info card. Side by side: a small card over the top of the 3D view (at the bottom it would
+ * hide the hull and keel). Stacked: a compact strip at the top of the panel, never over the boat.
  */
 .info-area {
+  pointer-events: none;
+}
+
+html[data-layout='side'] .info-area {
   position: absolute;
   top: 8px;
   right: 8px;
   left: 8px;
   display: flex;
   justify-content: flex-start;
-  pointer-events: none;
 }
 
 .info-card {
   position: relative;
-  width: min(100%, 360px);
+  padding: 8px 44px 8px 12px;
+  pointer-events: auto;
+}
+
+html[data-layout='side'] .info-card {
+  width: min(100%, 320px);
   max-height: 40vh;
   overflow-y: auto;
-  padding: 8px 44px 8px 12px;
   border-radius: 10px;
   background: rgb(255 255 255 / 0.95);
   box-shadow: 0 2px 10px rgb(10 20 30 / 0.25);
-  pointer-events: auto;
+}
+
+html[data-layout='stacked'] .info-area {
+  flex: none;
+}
+
+html[data-layout='stacked'] .info-card {
+  max-height: 104px;
+  overflow-y: auto;
+  border-bottom: 1px solid var(--line);
+  background: var(--accent-soft);
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 10px;
 }
 
 .card-name {
   margin: 0;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.3;
 }
 
 .card-label {
-  margin: 2px 0 0;
+  margin: 0;
   color: var(--accent);
   font-size: var(--font-small);
   font-weight: 600;
 }
 
 .card-short {
-  margin: 4px 0 0;
-  font-size: 15px;
+  margin: 2px 0 0;
+  font-size: var(--font-small);
+  line-height: 1.35;
 }
 
 .card-close {

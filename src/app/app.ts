@@ -32,13 +32,14 @@ export function startApp(host: HTMLElement): void {
   }
 
   if (scene) {
-    createInfoCard(layout.view, store);
+    createInfoCard(layout, store);
     const cameraBar = createCameraBar(layout.view, store);
     const view = scene;
     const resize = () => {
       const viewBox = layout.view.getBoundingClientRect();
       const inset = viewBox.bottom - cameraBar.getBoundingClientRect().top;
-      view.resize(layout.view.clientWidth, layout.view.clientHeight, inset);
+      const stacked = layout.viewport().mode === 'stacked';
+      view.resize(layout.view.clientWidth, layout.view.clientHeight, inset, stacked);
     };
     new ResizeObserver(resize).observe(layout.view);
     resize();

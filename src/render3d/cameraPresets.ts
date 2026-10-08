@@ -12,6 +12,16 @@ import { SCENE } from './sceneConfig';
 export interface CameraPose {
   position: Vec3;
   target: Vec3;
+  /** Vertical field of view; the helm view uses a wider lens than the whole-boat views. */
+  fovDeg: number;
+}
+
+export interface PresetOptions {
+  /**
+   * Top view with the bow pointing up the screen (stacked, portrait layout). Otherwise the bow
+   * points right, like docs/reference/hanse508-plan.svg (side-by-side layout).
+   */
+  topBowUp?: boolean;
 }
 
 export interface Lens {
@@ -22,12 +32,16 @@ export interface Lens {
 const DEG = Math.PI / 180;
 const WORLD_UP: Vec3 = [0, 1, 0];
 
-/** Box that the whole-boat presets frame: hull, keel and rig. */
-export function framingBox(data: BoatData = boat): { min: Vec3; max: Vec3 } {
+/**
+ * Box that the whole-boat presets frame: hull, keel and rig. Seen from above, the rig adds no
+ * width or length (the mast top sits in the middle), so the top view frames the hull up to the
+ * mast foot and the boat fills more of the screen.
+ */
+export function framingBox(data: BoatData = boat, fromAbove = false): { min: Vec3; max: Vec3 } {
   const halfBeam = data.dimensions.beam / 2;
   return {
     min: [data.hull.transomX, -data.dimensions.draft, -halfBeam],
-    max: [data.hull.bowFittingTipX, data.rig.mast.topY, halfBeam],
+    max: [data.hull.bowFittingTipX, fromAbove ? data.rig.mast.footY : data.rig.mast.topY, halfBeam],
   };
 }
 
@@ -75,36 +89,62 @@ export function fitDistance(
 }
 
 /** Camera pose for a preset. `free` returns the default view (the free position is not stored). */
-export function presetPose(preset: CameraPreset, lens: Lens, data: BoatData = boat): CameraPose {
+export function presetPose(
+  preset: CameraPreset,
+  lens: Lens,
+  options: PresetOptions = {},
+  data: BoatData = boat,
+): CameraPose {
   const cam = SCENE.camera;
   if (preset === 'helm') return helmPose(data);
-  const box = framingBox(data);
+  const box = framingBox(data, preset === 'top');
   const target: Vec3 = scale(add(box.min, box.max), 0.5);
   const direction = {
     'side-port': viewDirection(90, cam.sideElevationDeg),
     'side-starboard': viewDirection(-90, cam.sideElevationDeg),
-    // From almost straight above, nudged to starboard, so the bow points right and port is at
-    // the top of the screen, like docs/reference/hanse508-plan.svg.
-    top: viewDirection(-90, cam.topElevationDeg),
+    // From almost straight above. The screen's "up" is the side the camera is nudged away from:
+    // nudged aft, the bow points up (starboard on the right); nudged to starboard, the bow
+    // points right and port is at the top, like the plan sketch.
+    top: viewDirection(options.topBowUp ? 180 : -90, cam.topElevationDeg),
     bow: viewDirection(0, cam.bowElevationDeg),
     free: viewDirection(90, cam.sideElevationDeg),
   }[preset];
-  const distance = fitDistance(box, target, direction, lens);
-  return { position: add(target, scale(direction, distance)), target };
+  let distance = fitDistance(box, target, direction, lens);
+  if (preset === 'top') {
+    // Stay well above the masthead, or the rig right under the camera fills the view.
+    distance = Math.max(distance, (data.rig.mast.topY - target[1]) * cam.topAboveMastFactor);
+  }
+  return {
+    position: add(target, scale(direction, distance)),
+    target,
+    fovDeg: cam.verticalFovDeg,
+  };
 }
 
 /**
- * Eye height behind the port wheel, looking forward at boom height by the mast, so the boat
- * ahead fills the view and the top of the wheel shows at the bottom on wide screens.
+ * Standing eye height behind the port wheel, looking forward, slightly down and a little to
+ * port, with a wider lens: the wheel, the port winch and clutch bank are in the foreground,
+ * the cockpit and coachroof ahead.
  */
 function helmPose(data: BoatData): CameraPose {
   const cam = SCENE.camera;
   const helm = data.cockpitHardware.helms.find((h) => h.id === 'helm_port');
-  const x = (helm?.x ?? 0) - cam.helmBehindWheel;
-  const z = helm?.z ?? 0;
+  const eye: Vec3 = [
+    (helm?.x ?? 0) - cam.helmBehindWheel,
+    data.deck.cockpit.soleY + cam.helmEyeHeight,
+    helm?.z ?? 0,
+  ];
+  const down = cam.helmLookDownDeg * DEG;
+  const yaw = cam.helmYawToPortDeg * DEG;
+  const look: Vec3 = [
+    Math.cos(down) * Math.cos(yaw),
+    -Math.sin(down),
+    -Math.cos(down) * Math.sin(yaw),
+  ];
   return {
-    position: [x, data.deck.cockpit.soleY + cam.helmEyeHeight, z],
-    target: [data.rig.mast.x, data.rig.boom.gooseneck[1] ?? 0, z],
+    position: eye,
+    target: add(eye, scale(look, cam.helmTargetDistance)),
+    fovDeg: cam.helmVerticalFovDeg,
   };
 }
 

@@ -103,19 +103,18 @@ export function boomEnd(pose: BoomPose = CENTRED_BOOM, data: BoatData = boat): V
 }
 
 /**
- * Self-tacking track (PHASE1_SPEC 6.1): a circular arc in plan view, centred on the jib tack,
- * passing through x = centreX on the centreline, ending at z = ±halfSpan.
- * Returns points from the port end to the starboard end.
+ * Self-tacking track (PHASE1_SPEC 6.1): a straight athwartships bar at x = centreX, from the
+ * port end (z = −halfSpan) to the starboard end (z = +halfSpan).
  */
-export function selfTackingTrackPoints(segments = 24, data: BoatData = boat): Vec3[] {
+export function selfTackingTrackEnds(data: BoatData = boat): [Vec3, Vec3] {
   const track = data.rig.selfTackingTrack;
-  const tack = vec3(data.sails.jib.tack);
-  const radius = tack[0] - track.centreX;
-  const maxAngle = Math.asin(track.halfSpan / radius);
-  const points: Vec3[] = [];
-  for (let i = 0; i <= segments; i += 1) {
-    const a = -maxAngle + (2 * maxAngle * i) / segments;
-    points.push([tack[0] - radius * Math.cos(a), track.y, radius * Math.sin(a)]);
-  }
-  return points;
+  return [
+    [track.centreX, track.y, -track.halfSpan],
+    [track.centreX, track.y, track.halfSpan],
+  ];
+}
+
+/** Rigid vang strut: from its mast point to its point on the boom, for a boom pose. */
+export function vangStrutEnds(pose: BoomPose = CENTRED_BOOM, data: BoatData = boat): [Vec3, Vec3] {
+  return [vec3(data.rig.vang.mastPoint), boomPoint(data.rig.vang.boomDistance, pose, data)];
 }

@@ -17,7 +17,10 @@ export function buildCockpitHardware(materials: BoatMaterials): CockpitHardware 
   return {
     objects: [
       ...wheels.flatMap((wheel) => [wheel.pivot, wheel.pedestal]),
-      ...boat.cockpitHardware.winches.map((winch) => buildWinch(winch, materials)),
+      // Only the winches on the reference boat: the brochure's optional ones are `present: false`.
+      ...boat.cockpitHardware.winches
+        .filter((winch) => !('present' in winch) || winch.present !== false)
+        .map((winch) => buildWinch(winch, materials)),
       ...boat.cockpitHardware.clutchBanks.map((bank) =>
         buildClutch(bank.id, [bank.x, bank.y, bank.z], boat.modelDetail.clutchBank, materials),
       ),
@@ -98,9 +101,9 @@ function buildWheel(
   return { pivot, pedestal };
 }
 
-/** Winch drum standing on the coaming. Optional winches are drawn see-through. */
+/** Winch drum standing on the coaming. */
 function buildWinch(
-  winch: { id: string; x: number; y: number; z: number; optional?: boolean },
+  winch: { id: string; x: number; y: number; z: number },
   materials: BoatMaterials,
 ): THREE.Object3D {
   const size = boat.modelDetail.winch;
@@ -108,12 +111,7 @@ function buildWinch(
   const top: Vec3 = [winch.x, winch.y + size.height, winch.z];
   const drum = new THREE.CylinderGeometry(size.diameter / 2, size.diameter / 2, size.height, 16);
   drum.translate(winch.x, winch.y + size.height / 2, winch.z);
-  return partMesh(
-    winch.id,
-    [drum],
-    winch.optional ? materials.optionalFitting : materials.fitting,
-    [[base, top]],
-  );
+  return partMesh(winch.id, [drum], materials.fitting, [[base, top]]);
 }
 
 /**

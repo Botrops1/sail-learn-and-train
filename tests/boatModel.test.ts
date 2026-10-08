@@ -48,8 +48,54 @@ describe('static boat model (M1)', () => {
       'part_main_furling_gearbox',
       'sail_main',
       'sail_jib',
+      'part_vang_strut',
+      'fit_mast_base_turning_blocks',
+      'fit_sprayhood',
+      'part_lifelines',
+      'part_stern',
+      'part_bow',
+      'part_companionway',
+      'part_gooseneck',
     ];
     for (const id of expected) expect(partIds, id).toContain(id);
+  });
+
+  it('builds only the winches on the reference boat (present !== false): one per side', () => {
+    for (const winch of boat.cockpitHardware.winches) {
+      const present = !('present' in winch) || winch.present !== false;
+      expect(partIds.has(winch.id), winch.id).toBe(present);
+    }
+    expect([...partIds].filter((id) => id.startsWith('winch_'))).toHaveLength(2);
+  });
+
+  it('each clutch bank sits just forward of the winch on its side; JIB ROLL on the port deck', () => {
+    const centre = (id: string) => {
+      const mesh = meshes.find((candidate) => candidate.userData.partId === id);
+      return new THREE.Box3().setFromObject(mesh as THREE.Mesh).getCenter(new THREE.Vector3());
+    };
+    const bankA = centre('clutch_bank_a');
+    const bankB = centre('clutch_bank_b');
+    expect(bankA.z).toBeGreaterThan(0); // A starboard
+    expect(bankB.z).toBeLessThan(0); // B port
+    expect(bankA.x).toBeGreaterThan(centre('winch_primary_starboard').x);
+    expect(bankB.x).toBeGreaterThan(centre('winch_primary_port').x);
+    expect(centre('clutch_jib_roll').z).toBeLessThan(0);
+  });
+
+  it('the vang strut follows the boom when it pitches', () => {
+    const strut = () => {
+      const box = new THREE.Box3();
+      model.root.traverse((object) => {
+        if (object.userData.partId === 'part_vang_strut') box.expandByObject(object);
+      });
+      return box;
+    };
+    const before = strut().max.y;
+    model.setBoomPose({ thetaDeg: 0, psiDeg: 10 });
+    const after = strut().max.y;
+    model.setBoomPose({ thetaDeg: 0, psiDeg: 0 });
+    expect(after).toBeGreaterThan(before);
+    expect(strut().max.y).toBeCloseTo(before, 6);
   });
 
   it('no geometry has NaN positions', () => {
@@ -94,6 +140,13 @@ describe('static boat model (M1)', () => {
       expect(pivot?.position.x).toBeCloseTo(helm.x, 6);
       expect(pivot?.position.z).toBeCloseTo(helm.z, 6);
     }
+  });
+
+  it('lifelines stay on the deck, inside the beam', () => {
+    const mesh = meshes.find((candidate) => candidate.userData.partId === 'part_lifelines');
+    const box = new THREE.Box3().setFromObject(mesh as THREE.Mesh);
+    expect(box.max.z).toBeLessThan(boat.dimensions.beam / 2);
+    expect(box.min.y).toBeGreaterThan(1);
   });
 
   it('rope-free M1: no rope meshes yet', () => {

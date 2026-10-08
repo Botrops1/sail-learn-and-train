@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { boat } from '../src/model/boat';
 import { CAMERA_PRESETS } from '../src/model/settings';
 import { sheerAt } from '../src/model/hullShape';
+import { cross, dot, normalize, sub, type Vec3 } from '../src/model/vec3';
 import {
   clampCameraPosition,
   framingBox,
@@ -34,13 +35,58 @@ describe('camera presets (PHASE1_SPEC 6.2)', () => {
     expect(presetPose('bow', PHONE).position[0]).toBeGreaterThan(boat.hull.bowFittingTipX);
   });
 
-  it('helm is at eye height at the port wheel, looking forward', () => {
+  it('helm: standing behind the port wheel, looking forward, down and a little to port', () => {
     const helm = presetPose('helm', PHONE);
     const wheel = boat.cockpitHardware.helms.find((h) => h.id === 'helm_port');
     expect(helm.position[2]).toBeCloseTo(wheel?.z ?? NaN, 6);
     expect(helm.position[0]).toBeLessThan(wheel?.x ?? NaN);
     expect(helm.position[1]).toBeGreaterThan(boat.deck.cockpit.soleY + 1.2);
     expect(helm.target[0]).toBeGreaterThan(helm.position[0]);
+    expect(helm.target[1]).toBeLessThan(helm.position[1]);
+    expect(helm.target[2]).toBeLessThan(helm.position[2]);
+    expect(helm.fovDeg).toBeGreaterThan(presetPose('side-port', PHONE).fovDeg);
+  });
+
+  it('helm: wheel, port winch and port clutch bank are in front of the camera and in view', () => {
+    const lens = { verticalFovDeg: 64, aspect: 390 / 380 };
+    const helm = presetPose('helm', lens);
+    const forward = normalize(sub(helm.target, helm.position));
+    const halfV = (helm.fovDeg * Math.PI) / 360;
+    const halfH = Math.atan(Math.tan(halfV) * lens.aspect);
+    const hw = boat.cockpitHardware;
+    const points: [string, Vec3][] = [
+      ['wheel', [hw.helms[0]?.x ?? 0, hw.wheelHubY, hw.helms[0]?.z ?? 0]],
+      ['winch', [hw.winches[0]?.x ?? 0, hw.winches[0]?.y ?? 0, hw.winches[0]?.z ?? 0]],
+      [
+        'clutch bank B',
+        [hw.clutchBanks[1]?.x ?? 0, hw.clutchBanks[1]?.y ?? 0, hw.clutchBanks[1]?.z ?? 0],
+      ],
+    ];
+    const right = normalize(cross(forward, [0, 1, 0]));
+    const up = cross(right, forward);
+    for (const [name, p] of points) {
+      const q = sub(p, helm.position);
+      const depth = dot(q, forward);
+      expect(depth, name).toBeGreaterThan(0);
+      expect(Math.abs(Math.atan2(dot(q, right), depth)), name).toBeLessThan(halfH);
+      expect(Math.abs(Math.atan2(dot(q, up), depth)), name).toBeLessThan(halfV);
+    }
+  });
+
+  it('top: the camera is well above the masthead on every screen shape', () => {
+    for (const lens of [PHONE, DESKTOP, { verticalFovDeg: 40, aspect: 2 }]) {
+      expect(presetPose('top', lens).position[1]).toBeGreaterThan(boat.rig.mast.topY * 1.5);
+    }
+  });
+
+  it('top: bow right by default (like the plan sketch), bow up when asked (stacked layout)', () => {
+    const right = presetPose('top', PHONE);
+    const up = presetPose('top', PHONE, { topBowUp: true });
+    // The camera is nudged away from the side that ends up at the top of the screen.
+    expect(right.position[2] - right.target[2]).toBeGreaterThan(0);
+    expect(Math.abs(right.position[0] - right.target[0])).toBeLessThan(1);
+    expect(up.position[0] - up.target[0]).toBeLessThan(0);
+    expect(Math.abs(up.position[2] - up.target[2])).toBeLessThan(1);
   });
 
   it('a narrow screen needs a more distant camera to fit the whole boat', () => {

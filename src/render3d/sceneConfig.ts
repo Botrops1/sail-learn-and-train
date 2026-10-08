@@ -35,9 +35,9 @@ export const SCENE = {
     wire: '#3d4852',
     fitting: '#4b545c',
     block: '#5c6670',
+    fabric: '#3f474e',
     sail: '#fbfbf6',
     sailOpacity: 0.9,
-    optionalOpacity: 0.35,
   },
   /** Tint of the part shown in the info card. */
   highlight: { color: '#ff9f1c', intensity: 0.55 },
@@ -55,9 +55,18 @@ export const SCENE = {
     bowElevationDeg: 10,
     /** The top preset looks almost straight down (exactly 90° has no defined "up"). */
     topElevationDeg: 89.5,
-    /** Helm preset: eye height above the cockpit sole and distance behind the wheel, metres. */
+    /** The top camera is at least this many times the masthead height above the orbit centre. */
+    topAboveMastFactor: 1.6,
+    /** Helm preset: standing eye height above the cockpit sole, distance behind the wheel (m). */
     helmEyeHeight: 1.65,
-    helmBehindWheel: 0.8,
+    helmBehindWheel: 1.0,
+    /** Helm preset looks down and a little to port, so wheel, winch and clutch bank show. */
+    helmLookDownDeg: 20,
+    helmYawToPortDeg: 12,
+    /** Distance of the helm view's orbit centre in front of the eye, metres. */
+    helmTargetDistance: 5,
+    /** Wider lens for the helm view, so the cockpit fits on a portrait phone. */
+    helmVerticalFovDeg: 64,
     /** Orbit limits, metres. */
     minDistance: 3,
     maxDistance: 140,

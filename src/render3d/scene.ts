@@ -8,8 +8,11 @@ import { SCENE } from './sceneConfig';
 
 export interface SceneView {
   readonly pixelRatio: number;
-  /** Resizes the drawing buffer; `bottomInset` CSS px at the bottom are covered by buttons. */
-  resize(width: number, height: number, bottomInset: number): void;
+  /**
+   * Resizes the drawing buffer; `bottomInset` CSS px at the bottom are covered by buttons.
+   * In the stacked (portrait) layout the Top view shows the bow pointing up.
+   */
+  resize(width: number, height: number, bottomInset: number, stacked: boolean): void;
   render(now: number): void;
 }
 
@@ -72,10 +75,10 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   return {
     pixelRatio,
-    resize(width, height, bottomInset) {
+    resize(width, height, bottomInset, stacked) {
       if (width <= 0 || height <= 0) return;
       renderer.setSize(width, height, false);
-      rig.setViewport(width, height, bottomInset);
+      rig.setViewport(width, height, bottomInset, { topBowUp: stacked });
     },
     render(now) {
       rig.update(now);

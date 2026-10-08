@@ -8,6 +8,7 @@ import {
   presetPose,
   type CameraPose,
   type Lens,
+  type PresetOptions,
 } from './cameraPresets';
 import { SCENE } from './sceneConfig';
 
@@ -18,10 +19,10 @@ export interface CameraRig {
   /** Moves to a preset with a short transition (or jumps there if `animate` is false). */
   goTo(preset: CameraPreset, animate?: boolean): void;
   /**
-   * Call when the drawing size changes. `bottomInset` (CSS px) is covered by the camera
-   * buttons: presets frame the boat in the area above it.
+   * Call when the drawing size or layout changes. `bottomInset` (CSS px) is covered by the
+   * camera buttons: presets frame the boat in the area above it.
    */
-  setViewport(width: number, height: number, bottomInset: number): void;
+  setViewport(width: number, height: number, bottomInset: number, options: PresetOptions): void;
   /** Call once per frame before rendering. */
   update(now: number): void;
   /** Called when the user moves the camera by hand (drag, pinch, wheel). */
@@ -70,20 +71,40 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     }
   });
 
+  let viewport = { width: 1, height: 1, inset: 0 };
+  let options: PresetOptions = {};
+  /** The lens the whole-boat presets are fitted with: the area above the buttons. */
   let lens: Lens = { verticalFovDeg: cam.verticalFovDeg, aspect: 1 };
+
+  /**
+   * Renders the top part of a taller virtual image whose centre is the centre of the area above
+   * the buttons, so the camera aims at the middle of the free area.
+   */
+  function updateProjection(): void {
+    const { width, height, inset } = viewport;
+    camera.aspect = width / (height + inset);
+    camera.setViewOffset(width, height + inset, 0, inset, width, height);
+    camera.updateProjectionMatrix();
+  }
+
   const currentPose = (): CameraPose => ({
     position: camera.position.toArray() as [number, number, number],
     target: controls.target.toArray() as [number, number, number],
+    fovDeg: camera.fov,
   });
   const apply = (pose: CameraPose) => {
     camera.position.set(...pose.position);
     controls.target.set(...pose.target);
     camera.lookAt(controls.target);
+    if (camera.fov !== pose.fovDeg) {
+      camera.fov = pose.fovDeg;
+      updateProjection();
+    }
   };
 
   function poseFor(preset: CameraPreset): CameraPose {
     if (preset === 'free' && lastFreePose) return lastFreePose;
-    return presetPose(preset, lens);
+    return presetPose(preset, lens, options);
   }
 
   return {
@@ -102,22 +123,21 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         controls.update();
       }
     },
-    setViewport(width, height, bottomInset) {
-      // Render the top part of a taller virtual image whose centre is the centre of the area
-      // above the buttons, so the camera aims at the middle of the free area.
+    setViewport(width, height, bottomInset, presetOptions) {
       const inset = Math.min(Math.max(0, bottomInset), height * 0.4);
-      camera.aspect = width / (height + inset);
-      camera.setViewOffset(width, height + inset, 0, inset, width, height);
-      camera.updateProjectionMatrix();
+      viewport = { width, height, inset };
+      options = presetOptions;
+      updateProjection();
       const tanHalf = Math.tan((cam.verticalFovDeg * Math.PI) / 360);
       lens = {
         verticalFovDeg:
           (Math.atan((tanHalf * (height - inset)) / (height + inset)) * 360) / Math.PI,
         aspect: width / (height - inset),
       };
-      // A preset keeps the whole boat in view when the screen rotates or folds.
-      if (currentPreset !== 'free' && !interacting) {
-        const to = presetPose(currentPreset, lens);
+      // A preset keeps the whole boat in view when the screen rotates or folds; so does the
+      // default view opened by a `cam=free` link until the user moves the camera.
+      if ((currentPreset !== 'free' || !movedByHand) && !interacting) {
+        const to = presetPose(currentPreset, lens, options);
         if (tween) tween.to = to;
         else apply(to);
       }
@@ -171,5 +191,6 @@ function interpolatePose(from: CameraPose, to: CameraPose, t: number): CameraPos
   return {
     position: position.toArray() as [number, number, number],
     target: target.toArray() as [number, number, number],
+    fovDeg: from.fovDeg + (to.fovDeg - from.fovDeg) * t,
   };
 }

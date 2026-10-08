@@ -2,13 +2,18 @@ import type { Store } from '../app/store';
 import { partInfo } from '../model/registry';
 import { el } from './dom';
 import { t } from './i18n';
+import type { LayoutShell } from './layout';
 
 /**
- * Tap-to-identify card over the 3D view (PHASE1_SPEC 5.2 and 3, item 9): the part's name,
- * its label as written on the boat (if any) and a one-line explanation from the registry.
- * Closed with × or Escape; tapping the sky closes it too.
+ * Tap-to-identify card (PHASE1_SPEC 5.2 and 3, item 9): the part's name, its label as written
+ * on the boat (if any) and a one-line explanation from the registry. Closed with × or Escape;
+ * tapping the sky closes it too.
+ *
+ * Side-by-side layout: a small card over the top of the 3D view. Stacked (portrait) layout: a
+ * compact strip at the top of the panel, so it never covers the boat. It moves when the layout
+ * switches.
  */
-export function createInfoCard(host: HTMLElement, store: Store): void {
+export function createInfoCard(layout: LayoutShell, store: Store): void {
   const name = el('h2', { class: 'card-name' });
   const label = el('p', { class: 'card-label' });
   const short = el('p', { class: 'card-short' });
@@ -25,10 +30,16 @@ export function createInfoCard(host: HTMLElement, store: Store): void {
   const card = el(
     'section',
     { class: 'info-card', 'data-testid': 'info-card', 'aria-label': t('card.label') },
-    [close, name, label, short],
+    [close, el('div', { class: 'card-head' }, [name, label]), short],
   );
   const live = el('div', { class: 'info-area', 'aria-live': 'polite' }, [card]);
-  host.append(live);
+
+  const place = (mode: 'stacked' | 'side') => {
+    if (mode === 'stacked' && live.parentElement !== layout.panel) layout.panel.prepend(live);
+    if (mode === 'side' && live.parentElement !== layout.view) layout.view.append(live);
+  };
+  place(layout.viewport().mode);
+  layout.onChange((viewport) => place(viewport.mode));
 
   const render = () => {
     const id = store.getState().selection;

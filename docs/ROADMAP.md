@@ -50,3 +50,4 @@ The reference boat is a **Hanse 508**. The tool favours clarity over realism.
 | 2026-10-08 | Control ids: controls do not get their own registry entries. A rope control's `data-part-id` is its rope's id (e.g. `ctl_vang` → `rope_vang`). Ids for controls without a rope (wheel, test wind) are decided in M2. |
 | 2026-10-08 | Camera in the URL: only the preset is stored (`cam` = side-port, side-starboard, top, bow, helm or free). Dragging switches to `cam=free`; a link with `cam=free` opens the default view. The free camera position is not stored. |
 | 2026-10-08 | License stays GPL-3.0-only. |
+| 2026-10-08 | M1 review: lifelines and stanchions are modelled; optional winches are not rendered. Helm view shows the cockpit (wheel, winch, clutch bank in front). Top view: bow up in the stacked layout, bow right side by side. Stacked layout: the info card is a compact strip at the top of the panel. |
