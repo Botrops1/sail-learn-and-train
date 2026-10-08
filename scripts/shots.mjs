@@ -234,6 +234,7 @@ async function liveM2Checks() {
       sawGybe ||= await page.getByTestId('gybe-label').isVisible();
       sawTack ||= await page.getByTestId('tack-label').isVisible();
     }
+    await page.waitForTimeout(500);
     const url = await page.evaluate(() => window.location.search);
     check('dial wd 40 → −40', url.includes('wd=-40'), url);
     check('tack shows "Tack", not "GYBE"', sawTack && !sawGybe, `tack ${sawTack}, gybe ${sawGybe}`);
