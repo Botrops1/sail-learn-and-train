@@ -3,7 +3,7 @@ import { boat } from '../model/boat';
 import type { RopeStatus } from '../model/boomSolver';
 import { controlSpec, snapControl, type ControlId } from '../model/controls';
 import { mainFurlLengths } from '../model/mainFurl';
-import { jibFurlingLinePaidOut, jibSheetPaidOut } from '../model/jib';
+import { jibFurlingLinePaidOut, jibSheetPaidOutFor } from '../model/jib';
 import { mainsheetPaidOut, sheetPctToClear } from '../model/mainsheet';
 import { toppingLiftPaidOut, vangPaidOut } from '../model/pitchLimits';
 import { partInfo } from '../model/registry';
@@ -65,7 +65,7 @@ const ROPE_CONTROLS: RopeControl[] = [
     name: 'control.jibSheet',
     unit: 'eased',
     status: (s) => s.rig.jibSolution.sheet,
-    paidOut: (s) => jibSheetPaidOut(s.rig.applied.jibSheet),
+    paidOut: (s) => jibSheetPaidOutFor(s.rig.jibSolution.sheetAvailable),
   },
   {
     id: 'ctl_jib_furl',
@@ -198,6 +198,8 @@ export function createRopeControls(store: Store): HTMLElement {
               ? 'jib.luffing'
               : 'jib.filled';
         lines.push(t(key, { angle: Math.round(Math.abs(jib.headingDeg)) }));
+        if (jib.sheet.state === 'fighting') lines.push(t('jib.sheetFightsFurl'));
+        else if (jib.sheetReleased && jib.unfurled < 1) lines.push(t('jib.sheetReleased'));
         const track = boat.rig.selfTackingTrack.halfSpan;
         const side = { side: t(jib.carZ < 0 ? 'wind.side.port' : 'wind.side.starboard') };
         lines.push(
@@ -219,7 +221,15 @@ export function createRopeControls(store: Store): HTMLElement {
           t('furl.outhaul', { m: metres(furl.outhaulPaidOut) }),
         );
       }
-      lines.forEach((text, index) => setText(metaLine(index), text));
+      lines.forEach((text, index) => {
+        const line = metaLine(index);
+        line.hidden = false;
+        setText(line, text);
+      });
+      // Hints come and go (fighting, furl stopped): hide lines not needed now.
+      metaLines.slice(lines.length).forEach((line) => {
+        line.hidden = true;
+      });
     });
   }
 

@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 notes in 8.5)
+Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions in 8.5)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -238,7 +238,9 @@ Control mapping for `ctl_mainsheet = e %`:
 - Solve: on the free (leeward) side, find the largest φ such that the chord heading does not exceed |θ_free| and `distance(clew(φ), car(clew)) ≤ ℓ_avail`. Use bisection.
 - Chord heading `h` = horizontal angle of tack → clew from the aft centreline. Jib `AoA = |windFrom| − h`; fill and luffing work as for the main. (Wind shadow from the main on a run is Phase 2.)
 - Jib twist (visual): extra top twist grows with how far the clew has swung beyond the track end (`visual.jibTwistPerDegEasedBeyondTrack`). This shows that an eased self-tacker opens at the top rather than swinging far out.
-- **Furling interaction:** furling moves the clew forward, which needs a longer jib sheet. If `ℓ_avail` is too short for the requested furl, the furl stops where the sheet allows. The jib-furl control then shows the message "Ease the jib sheet to furl further". (M3: with `maxEaseBeyondMin` = 1.6 m the fully eased sheet allows furling only to about 71 %; open question in `BOAT_REFERENCE.md`.)
+- **Furling interaction:** furling moves the clew forward, which needs a longer jib sheet. If `ℓ_avail` is too short for the requested furl, the furl stops where the sheet allows (the clew as far forward as it reaches with the jib centred). The jib-furl control then shows the message "Ease the jib sheet fully (100 %) to furl further".
+- **100 % = sheet released** (decided after M3): at `sheet.releasedAtPct` (100 %) the sheet counts as released for furling: `ℓ_avail = max(ℓ_geoMin + maxEaseBeyondMin, span(φ = 0, f))`, where `span(0, f)` is the clew–car length the furl needs. The jib then furls completely, with no block. A fully unfurled jib never needs more than the sailing length, so sailing (PT-11) is unchanged; the extra length only exists while the jib is partly furled (below about 71 %, where it holds the jib on the centreline). The release follows the control's setting, not the lagged rope. Below 100 % the furl stops as above.
+- A jib furled further than the current sheet allows (furled with the sheet released, then the sheet hauled) stays furled: the furling line holds it, and the jib sheet shows **fighting**.
 
 ### 8.6 Mainsail
 

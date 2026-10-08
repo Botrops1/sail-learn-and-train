@@ -424,6 +424,8 @@
         "purchaseSource": "photo: two rope parts between the clew and the car",
         "route": "car -> along the track -> turning block at the mast foot -> aft along the coachroof -> clutch 'Genoa sheet' (starboard bank)",
         "maxEaseBeyondMin": 1.6,
+        "releasedAtPct": 100,
+        "releasedNote": "Owner decision after M3: at this setting the sheet counts as released for furling. Its working length is then max(the sailing length above, the clew-car length the furl needs with the jib centred), so the jib furls completely. A fully unfurled jib never needs more than the sailing length, so sailing (PT-11) is unchanged. Below it, furling stops where the sheet is too short (PT-13).",
         "source": "assumption"
       },
       "clewCentreline": [0.57, 2.31, 0.0]

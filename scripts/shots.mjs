@@ -21,7 +21,7 @@ const VIEWPORTS = [
     width: 844,
     height: 390,
     layout: 'side',
-    only: ['wind-beam-side-port', 'pt11-jib-sheet-100-bow', 'pt13-furl-blocked-ropes-tab'],
+    only: ['wind-beam-side-port', 'pt11-jib-sheet-100-bow', 'm3-jib-fully-furled-sheet-released'],
   },
 ];
 
@@ -65,10 +65,17 @@ const SCENES = [
     scrollTo: '[data-part-id="rope_jib_furling_line"]',
   },
   {
-    name: 'pt13-furl-sheet-eased-ropes-tab',
+    name: 'pt13-furl-sheet-90-ropes-tab',
+    query: '?js=90&jf=0&cam=side-port',
+    scrollTo: '[data-part-id="rope_jib_furling_line"]',
+  },
+  // Owner decision after M3: 100 % jib sheet = released, so the jib rolls away completely.
+  {
+    name: 'm3-jib-fully-furled-sheet-released',
     query: '?js=100&jf=0&cam=side-port',
     scrollTo: '[data-part-id="rope_jib_furling_line"]',
   },
+  { name: 'm3-jib-fully-furled-bow', query: '?js=100&jf=0&cam=bow' },
   // M2 follow-ups: an eased topping lift hangs slack; a hauled one fights the main sheet.
   { name: 'm2fix-topping-lift-eased-sags-side', query: '?wd=90&ws=12&ms=40&cam=side-port' },
   {
@@ -341,14 +348,30 @@ async function liveM3Checks() {
     );
     await page.locator('[data-part-id="rope_jib_furling_line"]').scrollIntoViewIfNeeded();
     await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-pt13-furl-blocked.png') });
-    await page.getByLabel('Jib sheet', { exact: true }).focus();
+    // Sheet 90 %: the furl continues, but stops again with the hint.
+    const sheet = page.getByLabel('Jib sheet', { exact: true });
+    await sheet.focus();
     await page.keyboard.press('End');
-    await page.waitForTimeout(1500);
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowLeft');
+    await page.waitForTimeout(3000);
     meta = await controlMeta(page, 'rope_jib_furling_line');
     const stopped = Number(/stopped at (\d+) %/.exec(meta)?.[1] ?? NaN);
-    check('easing the sheet lets the furl continue', stopped < 80, meta.replace(/\n/g, ' | '));
+    check('sheet 90 %: the furl continues, then stops', stopped < 80, meta.replace(/\n/g, ' | '));
+    // 100 % = released: the furl completes, the hint goes away, the furling line is all in.
+    await sheet.focus();
+    await page.keyboard.press('End');
+    await page.waitForTimeout(3000);
+    meta = await controlMeta(page, 'rope_jib_furling_line');
+    check(
+      'sheet 100 % (released): the jib furls completely',
+      !meta.includes('Ease the jib sheet') && meta.includes('0.0 m of rope paid out'),
+      meta.replace(/\n/g, ' | '),
+    );
     await page.locator('[data-part-id="rope_jib_furling_line"]').scrollIntoViewIfNeeded();
-    await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-pt13-sheet-eased.png') });
+    await page.screenshot({
+      path: path.join(OUT_DIR, 'live-phone-pt13-sheet-released-furled.png'),
+    });
     await context.close();
   }
 }

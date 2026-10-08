@@ -1,7 +1,7 @@
 import { boat, type BoatData } from './boat';
 import { initialSide, solveBoom, type BoomInput, type BoomSolution } from './boomSolver';
 import type { Controls } from './controls';
-import { solveJib, type JibInput, type JibSolution } from './jib';
+import { jibSheetReleased, solveJib, type JibInput, type JibSolution } from './jib';
 import type { Vec3 } from './vec3';
 
 /**
@@ -92,6 +92,7 @@ function jibInput(controls: Controls, rope: AppliedControls, boom: BoomSolution)
     windSpeedKn: controls.ctl_wind_speed,
     sheetPct: rope.jibSheet,
     unfurledPct: rope.jibFurl,
+    sheetReleased: jibSheetReleased(controls.ctl_jib_sheet),
     boomSide: boom.side,
   };
 }
@@ -106,7 +107,7 @@ export function initialRig(controls: Controls, data: BoatData = boat): RigState 
   );
   const jib = solveJib(
     jibInput(controls, rope, solution),
-    { side: solution.side, phiDeg: 0 },
+    { side: solution.side, phiDeg: 0, unfurled: 1 },
     data,
   );
   return {
@@ -141,6 +142,7 @@ function sameJibInput(a: JibInput, b: JibInput): boolean {
     a.windSpeedKn === b.windSpeedKn &&
     a.sheetPct === b.sheetPct &&
     a.unfurledPct === b.unfurledPct &&
+    a.sheetReleased === b.sheetReleased &&
     a.boomSide === b.boomSide
   );
 }
@@ -196,7 +198,9 @@ export function step(
     toppingLift: lag(rig.applied.toppingLift, target.toppingLift, dt, tau),
     mainFurl: lag(rig.applied.mainFurl, target.mainFurl, dt, tau),
     jibSheet: lag(rig.applied.jibSheet, target.jibSheet, dt, tau),
-    jibFurl: lag(rig.applied.jibFurl, target.jibFurl, dt, tau),
+    // The furling line cannot run ahead of the jib: while the sheet stops the furl, the request
+    // waits at the furl reached, so a released sheet lets the jib roll in smoothly, not jump.
+    jibFurl: lag(rig.jibSolution.unfurled * 100, target.jibFurl, dt, tau),
   };
 
   // Once the ropes have arrived, the controls usually stay put for many frames: reuse the solve.
@@ -219,7 +223,11 @@ export function step(
       ? { ...rig.jibSolution, tack: false }
       : solveJib(
           nextJibInput,
-          { side: rig.jibSolution.side, phiDeg: rig.jibSolution.phiDeg },
+          {
+            side: rig.jibSolution.side,
+            phiDeg: rig.jibSolution.phiDeg,
+            unfurled: rig.jibSolution.unfurled,
+          },
           data,
         );
   return {

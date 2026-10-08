@@ -111,8 +111,10 @@
   "jib.furled": "Jib furled (rolled around the forestay)",
   "jib.car": "Car on the {side} side of its track",
   "jib.carEnd": "Car at the {side} end of its track: easing more lets the top of the jib twist open",
-  "jib.furlBlocked": "Ease the jib sheet to furl further (stopped at {pct} % out)",
-  "jib.hint": "The jib's sheet runs to a car (a slider) on a short track in front of the mast. The car slides to the side away from the wind by itself, so the jib changes sides with no work. Furling rolls the jib around the forestay (the wire to the bow): its back corner moves forward, so the sheet must be eased.",
+  "jib.furlBlocked": "Ease the jib sheet fully (100 %) to furl further (stopped at {pct} % out)",
+  "jib.hint": "The jib's sheet runs to a car (a slider) on a short track in front of the mast. The car slides to the side away from the wind by itself, so the jib changes sides with no work. Furling rolls the jib around the forestay (the wire to the bow): its back corner moves forward, so the sheet must be eased. At 100 % the sheet is released and the jib can be rolled away completely.",
   "debug.carZ": "Car z",
-  "jib.carMiddle": "Car in the middle of its track"
+  "jib.carMiddle": "Car in the middle of its track",
+  "jib.sheetReleased": "Sheet released (100 %): it runs out as far as the furl needs",
+  "jib.sheetFightsFurl": "The jib is rolled up further than this sheet allows: the sheet pulls against the furling line. Ease the sheet to 100 %, or unfurl the jib."
 }

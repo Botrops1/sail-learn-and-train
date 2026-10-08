@@ -1,14 +1,7 @@
 import { boat, type BoatData } from './boat';
 import type { RopeState } from './boomSolver';
 import { halfBeamAt, sheerAt } from './hullShape';
-import {
-  availableJibSheet,
-  carPoint,
-  jibClew,
-  jibFurlingLinePaidOut,
-  jibSheetPaidOut,
-  jibSheetSpan,
-} from './jib';
+import { carPoint, jibClew, jibFurlingLinePaidOut, jibSheetPaidOutFor, jibSheetSpan } from './jib';
 import { mainFurlLengths } from './mainFurl';
 import { availableSheetLength, deckBlocks, mainsheetBlocks, mainsheetPaidOut } from './mainsheet';
 import {
@@ -328,10 +321,7 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
   );
   const spare =
     jib.sheet.state === 'slack'
-      ? Math.max(
-          0,
-          availableJibSheet(rig.applied.jibSheet, data) - jibSheetSpan(phi, jib.unfurled, data),
-        )
+      ? Math.max(0, jib.sheetAvailable - jibSheetSpan(phi, jib.unfurled, data))
       : 0;
   const part = (sign: 1 | -1): RopeStrand => ({
     points: sagCurve(
@@ -353,7 +343,7 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
       part(-1),
       {
         points: [car, trackMiddle, ...leadToClutch('clutch_bank_a', 5, data)],
-        feed: jibSheetPaidOut(rig.applied.jibSheet, data),
+        feed: jibSheetPaidOutFor(jib.sheetAvailable, data),
       },
     ],
   };
