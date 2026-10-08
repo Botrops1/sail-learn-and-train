@@ -7,7 +7,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm2';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm3';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 const BASE_PATH = '/sail-learn-and-train/';
 
@@ -21,7 +21,7 @@ const VIEWPORTS = [
     width: 844,
     height: 390,
     layout: 'side',
-    only: ['wind-beam-side-port', 'pt09-fighting-ropes-tab', 'wind-tab'],
+    only: ['wind-beam-side-port', 'pt11-jib-sheet-100-bow', 'm3-jib-fully-furled-sheet-released'],
   },
 ];
 
@@ -50,19 +50,40 @@ const SCENES = [
       query: `?wd=${wd}&ws=12&ms=80&cam=${cam}`,
     }));
   }),
-  // WORKFLOW M2 checklist, one picture per check.
-  { name: 'pt02-wind-stbd-boom-port-top', query: '?wd=90&ws=12&ms=100&cam=top' },
-  { name: 'pt02-wind-port-boom-stbd-top', query: '?wd=-90&ws=12&ms=100&cam=top' },
-  { name: 'pt01-head-to-wind-sheet-eased', query: '?wd=0&ws=12&ms=100&cam=side-port' },
-  { name: 'pt03-wind60-sheet-100-luffing', query: '?wd=60&ws=12&ms=100&cam=side-port' },
-  { name: 'pt03-wind60-sheet-30-filled', query: '?wd=60&ws=12&ms=30&cam=side-port' },
-  { name: 'pt07-vang-hauled', query: '?wd=90&ws=20&ms=50&vg=0&cam=side-port' },
-  { name: 'pt07-vang-eased', query: '?wd=90&ws=20&ms=50&vg=100&cam=side-port' },
-  { name: 'pt09-fighting-ropes-tab', query: '?ws=0&tl=0&vg=0&cam=side-port' },
-  { name: 'pt12-mainsail-40-out', query: '?wd=90&ws=12&ms=60&mf=40&cam=side-port' },
-  { name: 'pt14-mainsail-furled', query: '?wd=90&ws=12&ms=100&mf=0&cam=top' },
-  { name: 'wind-tab', query: '?wd=60&ws=12&cam=side-port', tab: 'Wind' },
-  { name: 'card-mainsheet', query: '?wd=60&ws=12&cam=side-port&sel=rope_mainsheet' },
+  // WORKFLOW M3 checklist, one picture per check (the M2 set stays in docs/screenshots/m2).
+  { name: 'pt10-wind30-car-port-top', query: '?wd=30&ws=12&cam=top' },
+  { name: 'pt10-wind-30-car-stbd-top', query: '?wd=-30&ws=12&cam=top' },
+  { name: 'pt10-wind30-bow', query: '?wd=30&ws=12&cam=bow' },
+  { name: 'm3-head-to-wind-jib-flaps-bow', query: '?wd=0&ws=12&cam=bow' },
+  { name: 'pt11-jib-sheet-0-top', query: '?wd=90&ws=12&js=0&cam=top' },
+  { name: 'pt11-jib-sheet-100-top', query: '?wd=90&ws=12&js=100&cam=top' },
+  { name: 'pt11-jib-sheet-0-bow', query: '?wd=90&ws=12&js=0&cam=bow' },
+  { name: 'pt11-jib-sheet-100-bow', query: '?wd=90&ws=12&js=100&cam=bow' },
+  {
+    name: 'pt13-furl-blocked-ropes-tab',
+    query: '?js=0&jf=0&cam=side-port',
+    scrollTo: '[data-part-id="rope_jib_furling_line"]',
+  },
+  {
+    name: 'pt13-furl-sheet-90-ropes-tab',
+    query: '?js=90&jf=0&cam=side-port',
+    scrollTo: '[data-part-id="rope_jib_furling_line"]',
+  },
+  // Owner decision after M3: 100 % jib sheet = released, so the jib rolls away completely.
+  {
+    name: 'm3-jib-fully-furled-sheet-released',
+    query: '?js=100&jf=0&cam=side-port',
+    scrollTo: '[data-part-id="rope_jib_furling_line"]',
+  },
+  { name: 'm3-jib-fully-furled-bow', query: '?js=100&jf=0&cam=bow' },
+  // M2 follow-ups: an eased topping lift hangs slack; a hauled one fights the main sheet.
+  { name: 'm2fix-topping-lift-eased-sags-side', query: '?wd=90&ws=12&ms=40&cam=side-port' },
+  {
+    name: 'm2fix-pt06-lift-hauled-sheet-fighting',
+    query: '?wd=60&ws=12&tl=0&ms=5&cam=side-port',
+    scrollTo: '[data-part-id="rope_mainsheet"]',
+  },
+  { name: 'card-jib-sheet', query: '?wd=60&ws=12&cam=side-port&sel=rope_jib_sheet' },
   { name: 'view-tab-debug', query: '?cam=top&debug=1', tab: 'View' },
 ];
 
@@ -89,6 +110,7 @@ const MUST_IDENTIFY = [
   'rope_mainsheet',
   'rope_vang',
   'rope_topping_lift',
+  'rope_jib_sheet',
   'part_windex',
 ];
 
@@ -272,6 +294,88 @@ async function liveM2Checks() {
   }
 }
 
+/** Text of a rope control's lines, by its rope id. */
+const controlMeta = (page, ropeId) =>
+  page.locator(`[data-part-id="${ropeId}"] .control-meta`).innerText();
+
+/**
+ * M3 live checks (WORKFLOW M3): the car slides across when the wind crosses the bow (PT-10);
+ * furling with the sheet hauled stops with a hint, easing the sheet lets it continue (PT-13).
+ */
+async function liveM3Checks() {
+  const phone = VIEWPORTS[0];
+  const check = (what, ok, detail) => {
+    if (!ok) problems.push(`live M3 ${what}: ${detail}`);
+    console.log(`live M3 ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
+  };
+
+  // PT-10: wind 30 → −30 with the dial keys (step 5): the car crosses to starboard.
+  {
+    const { context, page } = await openPage(phone, 'pt10', '?wd=30&ws=12&cam=top');
+    const before = await controlMeta(page, 'rope_jib_sheet');
+    check('car at port end at +30', before.includes('port end'), before.replace(/\n/g, ' | '));
+    await page.getByRole('tab', { name: 'Wind' }).click();
+    await page.getByTestId('wind-dial').focus();
+    for (let i = 0; i < 12; i += 1) {
+      await page.keyboard.press('ArrowLeft');
+      await page.waitForTimeout(80);
+    }
+    await page.waitForTimeout(1200);
+    const url = await page.evaluate(() => window.location.search);
+    check('dial wd 30 → −30', url.includes('wd=-30'), url);
+    await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-pt10-after-wd-30.png') });
+    await page.getByRole('tab', { name: 'Ropes' }).click();
+    const after = await controlMeta(page, 'rope_jib_sheet');
+    check(
+      'car at starboard end at −30',
+      after.includes('starboard end'),
+      after.replace(/\n/g, ' | '),
+    );
+    await context.close();
+  }
+
+  // PT-13: sheet hauled, furl the jib with the keyboard (Home = 0 %): stops with the hint.
+  {
+    const { context, page } = await openPage(phone, 'pt13', '?wd=60&ws=12&js=0&cam=side-port');
+    await page.getByLabel('Jib out', { exact: true }).focus();
+    await page.keyboard.press('Home');
+    await page.waitForTimeout(1500);
+    let meta = await controlMeta(page, 'rope_jib_furling_line');
+    check(
+      'furl blocked with the sheet hauled',
+      meta.includes('Ease the jib sheet'),
+      meta.replace(/\n/g, ' | '),
+    );
+    await page.locator('[data-part-id="rope_jib_furling_line"]').scrollIntoViewIfNeeded();
+    await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-pt13-furl-blocked.png') });
+    // Sheet 90 %: the furl continues, but stops again with the hint.
+    const sheet = page.getByLabel('Jib sheet', { exact: true });
+    await sheet.focus();
+    await page.keyboard.press('End');
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowLeft');
+    await page.waitForTimeout(3000);
+    meta = await controlMeta(page, 'rope_jib_furling_line');
+    const stopped = Number(/stopped at (\d+) %/.exec(meta)?.[1] ?? NaN);
+    check('sheet 90 %: the furl continues, then stops', stopped < 80, meta.replace(/\n/g, ' | '));
+    // 100 % = released: the furl completes, the hint goes away, the furling line is all in.
+    await sheet.focus();
+    await page.keyboard.press('End');
+    await page.waitForTimeout(3000);
+    meta = await controlMeta(page, 'rope_jib_furling_line');
+    check(
+      'sheet 100 % (released): the jib furls completely',
+      !meta.includes('Ease the jib sheet') && meta.includes('0.0 m of rope paid out'),
+      meta.replace(/\n/g, ' | '),
+    );
+    await page.locator('[data-part-id="rope_jib_furling_line"]').scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: path.join(OUT_DIR, 'live-phone-pt13-sheet-released-furled.png'),
+    });
+    await context.close();
+  }
+}
+
 try {
   for (const viewport of VIEWPORTS) {
     for (const scene of SCENES) {
@@ -279,6 +383,7 @@ try {
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.tab) await page.getByRole('tab', { name: scene.tab }).click();
+      if (scene.scrollTo) await page.locator(scene.scrollTo).scrollIntoViewIfNeeded();
       await page.waitForTimeout(1200);
 
       const facts = await page.evaluate(() => ({
@@ -440,7 +545,7 @@ try {
     if (!ok) problems.push(`live ${what}: got ${search}, expected ${expected}`);
     console.log(`live ${what} -> ${search} ${ok ? 'ok' : 'WRONG'}`);
   };
-  const c = 'ms=30&vg=50&tl=100&mf=100&wd=60&ws=12';
+  const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
   await expectUrl('Top button', `?v=1&${c}&cam=top&step=5`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
@@ -459,6 +564,7 @@ try {
   await context.close();
 
   await liveM2Checks();
+  await liveM3Checks();
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11)
+Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions in 8.5)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -190,7 +190,7 @@ Geometric sheet length: `L(θ, ψ) = |B − D_port| + |B − D_stbd|`.
 
 Control mapping for `ctl_mainsheet = e %`:
 
-- `L_min = L(0, ψ_lowest)` where `ψ_lowest = min(toppingLiftEasedDeg, vangHauledDeg)`. This is the boom on the centreline at its lowest.
+- `L_min = L(0, ψ_lowest)` where `ψ_lowest = min(max(toppingLiftEasedDeg, vang.strutStopDeg), vangHauledDeg)`. This is the boom on the centreline at its lowest (topping lift eased, boom on the vang strut's stop).
 - `L_max = L(maxSwingDeg, vangEasedDeg)`. Full ease always allows full swing.
 - `L_avail = L_min + e/100 · (L_max − L_min)`.
 - Rope paid out from fully hauled = `partsPerSide · (L_avail − L_min)` (about 10 m at 100 % with the current data).
@@ -203,7 +203,7 @@ Control mapping for `ctl_mainsheet = e %`:
    - Wind below 1 kn: no swing target (the boom keeps its current θ), `fill` = 0.
    - **Mainsail out** (`ctl_main_furl`, fraction f): the wind's lift in `ψ_t` and its swing push (the `(|θ_free| − θ)²` term of the cost in step 3) are multiplied by f. Below `visual.solver.furledBelowPct` there is no sail: treat it exactly like no wind (the boom keeps its θ, rests on its stop, the sheet goes slack; PT-14). The panel says "furled".
 2. **Hard limits on pitch.**
-   - Lower: topping lift, interpolated `toppingLiftHauledDeg` (0 %) → `toppingLiftEasedDeg` (100 %). Fully eased, this limit is the rigid vang strut's lowest position (about 2° down): the strut, not the lift, then carries the boom.
+   - Lower: `max(topping-lift limit, rig.vang.strutStopDeg)`. The topping-lift limit is interpolated `toppingLiftHauledDeg` (0 %) → `toppingLiftEasedDeg` (100 %, −6°). The rigid vang strut stops the boom at about 2° down, so a topping lift eased below that hangs slack with spare rope (measured to its own limit) and is drawn sagging, while the strut carries the boom. (Decided after M2.)
    - Upper: vang, interpolated `vangHauledDeg` (0 %) → `vangEasedDeg` (100 %).
    - If lower > upper, the vang and topping lift are **fighting**: set ψ to the midpoint, θ to what the sheet allows at that ψ, and mark both ropes *fighting*.
 3. **Find the pose closest to the targets that the mainsheet allows.**
@@ -217,7 +217,7 @@ Control mapping for `ctl_mainsheet = e %`:
 4. **Rope states.**
    - Mainsheet **taut** when it constrains the boom (`|θ_free| − |θ| > 0.5°` or `ψ < ψ_t − 0.5°`) **and** has no spare rope (`L_avail − L(θ, ψ)` below `visual.solver.tautToleranceM`). Otherwise **slack**, with spare rope at the clutch = `partsPerSide · (L_avail − L(θ, ψ))`, the same factor as "paid out" (can be 0 m, e.g. head to wind with the sheet hauled in). So a sheet hanging loose while the vang holds the boom down is never called taut.
    - Vang **taut** when ψ is at its upper limit and `ψ_t` is above it. Its spare rope is the strut's spare extension times `vang.tacklePurchase` (the factor of "paid out").
-   - Topping lift **taut** when ψ is at its lower limit, something pulls the boom down (gravity or the sheet), and the lift is hauled above the strut's lowest position.
+   - Topping lift **taut** when ψ is at its lower limit, something pulls the boom down (gravity or the sheet), and the lift is hauled above the strut's stop. Otherwise **slack**, with spare rope = its length at its own limit minus its length at ψ.
 5. **Smoothing.** Move the displayed θ and ψ towards the solved values with a critically damped spring (time constant about 0.3 s), so changes are visible but quick. A gybe swing uses its own faster spring.
 
 ### 8.4 Angle of attack, fill and luffing
@@ -234,11 +234,13 @@ Control mapping for `ctl_mainsheet = e %`:
 - The jib is a rigid triangle hinged on its luff (tack → head, along the forestay). The clew can only rotate around the luff axis by an angle φ. Get the φ = 0 clew (on the centreline) by rotating `clewTrimmedRef` around the luff axis until z = 0; side lengths then stay as in `jib.lengths`.
 - When the jib is partly furled, the clew sits at fraction f along the foot from the tack, and the leech shortens accordingly.
 - The **car** sits on the straight track at the point nearest the clew's plan position, clamped to the track ends. It is always on the leeward side, which is what makes it self-tacking.
-- The jib sheet working length is the distance clew → car. Control mapping: `ℓ_avail = ℓ_geoMin + e/100 · maxEaseBeyondMin`, where `ℓ_geoMin` is computed once at startup as the shortest clew–car distance over the allowed rotation range (expect about 0.35–0.4 m; `minClewToCar` in the data is only a sanity reference). The sheet has a 2:1 purchase (`sheet.purchase`), so rope paid out at the clutch = `purchase · (ℓ_avail − ℓ_geoMin)`.
+- The jib sheet working length is the distance clew → car (the sheet block on the car, `selfTackingTrack.sheetBlockHeight` above the track). Control mapping: `ℓ_avail = ℓ_geoMin + e/100 · maxEaseBeyondMin`, where `ℓ_geoMin` is computed once at startup as the shortest clew–car distance over the allowed rotation range (the rotation at which the chord heading reaches `boom.maxSwingDeg`; with the current data 0.35 m, with the jib centred). The sheet has a 2:1 purchase (`sheet.purchase`), so rope paid out at the clutch = `purchase · (ℓ_avail − ℓ_geoMin)`.
 - Solve: on the free (leeward) side, find the largest φ such that the chord heading does not exceed |θ_free| and `distance(clew(φ), car(clew)) ≤ ℓ_avail`. Use bisection.
 - Chord heading `h` = horizontal angle of tack → clew from the aft centreline. Jib `AoA = |windFrom| − h`; fill and luffing work as for the main. (Wind shadow from the main on a run is Phase 2.)
 - Jib twist (visual): extra top twist grows with how far the clew has swung beyond the track end (`visual.jibTwistPerDegEasedBeyondTrack`). This shows that an eased self-tacker opens at the top rather than swinging far out.
-- **Furling interaction:** furling moves the clew forward, which needs a longer jib sheet. If `ℓ_avail` is too short for the requested furl, the furl stops where the sheet allows. The jib-furl control then shows the message "Ease the jib sheet to furl further".
+- **Furling interaction:** furling moves the clew forward, which needs a longer jib sheet. If `ℓ_avail` is too short for the requested furl, the furl stops where the sheet allows (the clew as far forward as it reaches with the jib centred). The jib-furl control then shows the message "Ease the jib sheet fully (100 %) to furl further".
+- **100 % = sheet released** (decided after M3): at `sheet.releasedAtPct` (100 %) the sheet counts as released for furling: `ℓ_avail = max(ℓ_geoMin + maxEaseBeyondMin, span(φ = 0, f))`, where `span(0, f)` is the clew–car length the furl needs. The jib then furls completely, with no block. A fully unfurled jib never needs more than the sailing length, so sailing (PT-11) is unchanged; the extra length only exists while the jib is partly furled (below about 71 %, where it holds the jib on the centreline). The release follows the control's setting, not the lagged rope. Below 100 % the furl stops as above.
+- A jib furled further than the current sheet allows (furled with the sheet released, then the sheet hauled) stays furled: the furling line holds it, and the jib sheet shows **fighting**.
 
 ### 8.6 Mainsail
 

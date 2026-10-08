@@ -293,7 +293,7 @@
       "pitch": {
         "$comment": "Boom pitch in degrees, + = boom end up. Phase-1 teaching approximation, prototyped in Python to satisfy PT-07/PT-08 smoothly. Tune visually, keep the tests green.",
         "toppingLiftHauledDeg": 4,
-        "toppingLiftEasedDeg": -2,
+        "toppingLiftEasedDeg": -6,
         "vangHauledDeg": -2,
         "vangEasedDeg": 12,
         "windLiftMaxDeg": 20,
@@ -301,7 +301,7 @@
         "gravityDropDeg": -3,
         "gravityDropNote": "The rigid vang's gas spring holds the boom up against its own weight, so with no wind the boom only droops slightly. The mainsheet can still pull it lower.",
         "pitchStiffness": 8,
-        "toppingLiftNote": "toppingLiftHauledDeg 4: below the vang's default limit (5 deg at 50 %), so at default settings a hauled topping lift visibly carries the boom; hauling both still makes them fight. toppingLiftEasedDeg -2: the rigid vang strut stops the boom drooping more than about 2 deg, so a fully hauled main sheet cannot pull the boom end far down. Owner-approved assumptions (M2 review)."
+        "toppingLiftNote": "toppingLiftHauledDeg 4: below the vang's default limit (5 deg at 50 %), so at default settings a hauled topping lift visibly carries the boom; hauling both still makes them fight. toppingLiftEasedDeg -6: fully eased, the lift would let the boom end down to 6 deg below level, but the rigid vang strut stops it first (rig.vang.strutStopDeg), so an eased lift hangs slack with spare rope. The boom's lowest pitch is max(topping-lift limit, strut stop). Owner-approved assumptions (M2 review; separated from the strut stop after M2)."
       }
     },
     "vang": {
@@ -312,7 +312,9 @@
       "typeSource": "photo (docs/reference/photos/mast-gooseneck-vang-outhaul.jpg)",
       "render": "Two telescoping tubes from the mast foot to the boom, with the tackle running alongside",
       "tacklePurchase": 4,
-      "tacklePurchaseSource": "assumption (rope tackle on the strut; the number of parts is not visible in the photo). Only changes the 'metres paid out' shown for the vang."
+      "tacklePurchaseSource": "assumption (rope tackle on the strut; the number of parts is not visible in the photo). Only changes the 'metres paid out' shown for the vang.",
+      "strutStopDeg": -2,
+      "strutStopSource": "assumption, owner-approved (M2 review): the rigid vang strut stops the boom drooping more than about 2 deg below level, so a fully hauled main sheet cannot pull the boom end far down. Lowest boom pitch = max(topping-lift limit, strut stop)."
     },
     "toppingLift": {
       "source": "photo (line from the boom end straight up the mast) + assumption (exit height)",
@@ -323,9 +325,9 @@
     "outhaul": {
       "source": "photo (two outhaul lines along the top of the boom: docs/reference/photos/mast-gooseneck-vang-outhaul.jpg) + assumption (block position)",
       "boomBlockDistance": 6.2,
-      "route": "clew (comes out of the mast slot) -> aft along the top of the boom to a block near the boom end -> forward along the boom -> gooseneck -> down the mast -> turning block at the mast foot -> aft to clutch 'Main outhaul' (port bank)",
+      "route": "clew (comes out of the mast slot) -> one part aft along the top of the boom to a sheave at the boom end -> forward inside the boom (not drawn) -> out at the gooseneck -> down the mast -> turning block at the mast foot -> aft to clutch 'Main outhaul' (port bank)",
       "purchase": 1,
-      "purchaseSource": "assumption: moving the clew by 1 m needs 1 m of outhaul"
+      "purchaseSource": "unconfirmed (owner decision after M2: model 1:1, one part along the boom). The photo shows two lines at the clew, which could mean a 2:1 purchase. Moving the clew by 1 m needs 1 m of outhaul."
     },
     "mainsheet": {
       "source": "photo (both clutch banks carry MAIN SHEET) + drawing (positions)",
@@ -347,13 +349,17 @@
       "centreX": 0.28,
       "y": 1.98,
       "halfSpan": 1.4,
-      "halfSpanSource": "photo estimate (about 2.8 m end to end, ±0.3 m); the deck-plan drawing showed only about 1.8 m"
+      "halfSpanSource": "photo estimate (about 2.8 m end to end, ±0.3 m); the deck-plan drawing showed only about 1.8 m",
+      "sheetBlockHeight": 0.125,
+      "sheetBlockHeightSource": "assumption: the jib sheet's block on the car sits this far above the track's centre line (track radius plus car height in modelDetail). The jib solver measures the sheet from the clew to this point."
     },
     "jibFurler": {
       "source": "brochure (manual jib furler) + photo (Selden Furlex 404S) + drawing",
       "model": "Selden Furlex 404S",
       "drum": [6.28, 1.75, 0.0],
-      "drumHeight": 0.15
+      "drumHeight": 0.15,
+      "lineTravelM": 12.0,
+      "lineTravelSource": "assumption: metres of furling line that pass the JIB ROLL clutch between fully furled and fully unfurled (roughly 25 turns of a drum line of about 0.5 m). Only changes the 'metres paid out' shown for the jib furling line; capped at the 45 m in runningRigging."
     },
     "mainFurlingGearbox": {
       "source": "photo (Selden manual in-mast furling gearbox with winch-handle socket and IN/OUT arrow) + owner",
@@ -413,11 +419,13 @@
       "furl": "Rolls around the forestay. Unfurled fraction f: foot and leech shrink towards the luff; the clew moves forward along the foot direction.",
       "sheet": {
         "minClewToCar": 0.35,
-        "minClewToCarNote": "Sanity reference only. The app computes the true minimum from geometry at startup.",
+        "minClewToCarNote": "Sanity reference only. The app computes the true minimum from geometry at startup (about 0.35 m from the clew to the car's sheet block, rig.selfTackingTrack.sheetBlockHeight).",
         "purchase": 2,
         "purchaseSource": "photo: two rope parts between the clew and the car",
         "route": "car -> along the track -> turning block at the mast foot -> aft along the coachroof -> clutch 'Genoa sheet' (starboard bank)",
         "maxEaseBeyondMin": 1.6,
+        "releasedAtPct": 100,
+        "releasedNote": "Owner decision after M3: at this setting the sheet counts as released for furling. Its working length is then max(the sailing length above, the clew-car length the furl needs with the jib centred), so the jib furls completely. A fully unfurled jib never needs more than the sailing length, so sailing (PT-11) is unchanged. Below it, furling stops where the sheet is too short (PT-13).",
         "source": "assumption"
       },
       "clewCentreline": [0.57, 2.31, 0.0]
@@ -619,7 +627,7 @@
       {
         "id": "rope_outhaul",
         "controlId": "ctl_main_furl",
-        "working": "two parts along the top of the boom from the sail clew (at the mast slot) to a block on the boom, then forward to the mast",
+        "working": "one part along the top of the boom from the sail clew (at the mast slot) to a sheave at the boom end, then forward inside the boom to the mast",
         "coupled": "hauled together with the unfurl tail, against the furl tail",
         "colorKey": "furling"
       },
@@ -804,7 +812,9 @@
     "vangTackleOffset": 0.07,
     "vangTackleOffsetNote": "The vang tackle is drawn this far beside the strut so both stay visible.",
     "outhaulPartSpacing": 0.06,
-    "outhaulPartSpacingNote": "Distance between the two outhaul parts on top of the boom.",
+    "outhaulPartSpacingNote": "The outhaul is drawn this far to port of the boom's centre line on top of the boom, clear of the topping lift.",
+    "jibSheetPartSpacing": 0.05,
+    "jibSheetPartSpacingNote": "The jib sheet's two parts between the clew and the car are drawn this far apart so both stay visible.",
     "windexLength": 0.6,
     "windexHeightAboveMast": 0.15,
     "vangStrutNote": "Rigid vang drawn as two telescoping tubes: the thick one from the mast point, the thin one from the boom point, each tubeFraction of the strut length at rest so they overlap.",

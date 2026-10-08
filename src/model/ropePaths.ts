@@ -1,5 +1,7 @@
 import { boat, type BoatData } from './boat';
 import type { RopeState } from './boomSolver';
+import { halfBeamAt, sheerAt } from './hullShape';
+import { carPoint, jibClew, jibFurlingLinePaidOut, jibSheetPaidOutFor, jibSheetSpan } from './jib';
 import { mainFurlLengths } from './mainFurl';
 import { availableSheetLength, deckBlocks, mainsheetBlocks, mainsheetPaidOut } from './mainsheet';
 import {
@@ -11,10 +13,10 @@ import {
 } from './pitchLimits';
 import { boomLocalToWorld, type BoomPose } from './rigGeometry';
 import type { RigState } from './sim';
-import { add, distance, length, scale, sub, vec3, type Vec3 } from './vec3';
+import { add, cross, distance, length, normalize, scale, sub, vec3, type Vec3 } from './vec3';
 
 /**
- * Where the M2 ropes run, as polylines in boat coordinates (PHASE1_SPEC 8.7). Pure maths, so
+ * Where the ropes run, as polylines in boat coordinates (PHASE1_SPEC 8.7). Pure maths, so
  * the renderer only copies points into buffers.
  *
  * Each rope is drawn as one or more strands, from the working end towards the clutch. Only the
@@ -22,8 +24,14 @@ import { add, distance, length, scale, sub, vec3, type Vec3 } from './vec3';
  * always has the same number of points, so the renderer can reuse its buffers.
  */
 
-export type M2RopeId =
-  'rope_mainsheet' | 'rope_vang' | 'rope_topping_lift' | 'rope_outhaul' | 'rope_main_furling_line';
+export type RopeId =
+  | 'rope_mainsheet'
+  | 'rope_vang'
+  | 'rope_topping_lift'
+  | 'rope_outhaul'
+  | 'rope_main_furling_line'
+  | 'rope_jib_sheet'
+  | 'rope_jib_furling_line';
 
 export interface RopeStrand {
   points: Vec3[];
@@ -35,7 +43,7 @@ export interface RopeStrand {
 }
 
 export interface RopeDrawing {
-  id: M2RopeId;
+  id: RopeId;
   state: RopeState;
   strands: RopeStrand[];
 }
@@ -203,21 +211,24 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
     ],
   };
 
-  // Topping lift: boom end up to the masthead, inside the mast, out at its foot and aft.
-  const liftEnd = local([-data.rig.toppingLift.boomDistance, boomTop, 0]);
+  // Topping lift: boom end up to the masthead, inside the mast, out at its foot and aft. Its
+  // spare rope is measured to the lift's own limit, so a lift eased below the rigid vang
+  // strut's stop hangs slack while the strut carries the boom.
+  const liftPoint: Vec3 = [-data.rig.toppingLift.boomDistance, boomTop, 0];
+  const liftEnd = local(liftPoint);
   const liftExit = vec3(data.rig.toppingLift.mastExit);
   const liftAvailable = distance(
     liftExit,
     boomLocalToWorld(
-      [-data.rig.toppingLift.boomDistance, 0, 0],
+      liftPoint,
       { thetaDeg: pose.thetaDeg, psiDeg: toppingLiftLimit(rig.applied.toppingLift, data) },
       data,
     ),
   );
   const liftSpare =
-    solution.toppingLift.state === 'fighting'
-      ? 0
-      : Math.max(0, liftAvailable - distance(liftExit, liftEnd));
+    solution.toppingLift.state === 'slack'
+      ? Math.max(0, liftAvailable - distance(liftExit, liftEnd))
+      : 0;
   const toppingLift: RopeDrawing = {
     id: 'rope_topping_lift',
     state: solution.toppingLift.state,
@@ -233,19 +244,26 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
     ],
   };
 
-  // Main furling: the clew, the outhaul and both tails of the furling line.
+  // Main furling: the clew, the outhaul and both tails of the furling line. The outhaul runs
+  // in one part (1:1) from the clew aft along the top of the boom to a sheave at the boom end,
+  // forward inside the boom (not drawn), and out at the gooseneck. Its marks on the boom stay
+  // with the clew (feed 0); the lead to the clutch moves by the rope paid out.
   const furl = mainFurlLengths(rig.applied.mainFurl, data);
-  const part = data.modelDetail.outhaulPartSpacing / 2;
+  const side = -data.modelDetail.outhaulPartSpacing;
   const outhaul: RopeDrawing = {
     id: 'rope_outhaul',
     state: 'taut',
     strands: [
       {
         points: [
-          local([-furl.clewDistance, boomTop, part]),
-          local([-data.rig.outhaul.boomBlockDistance, boomTop, part]),
-          local([-data.rig.outhaul.boomBlockDistance, boomTop, -part]),
-          local([0, boomTop, -part]),
+          local([-furl.clewDistance, boomTop, side]),
+          local([-data.rig.outhaul.boomBlockDistance, boomTop, side]),
+        ],
+        feed: 0,
+      },
+      {
+        points: [
+          local([0, boomTop, side]),
           mastExit(-1, 3),
           ...leadToClutch('clutch_bank_b', 3, data),
         ],
@@ -276,5 +294,97 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
     ],
   };
 
-  return [mainsheet, vang, toppingLift, outhaul, furlingLine];
+  return [mainsheet, vang, toppingLift, outhaul, furlingLine, ...jibRopes(rig, data)];
+}
+
+/**
+ * Jib sheet and jib furling line (PHASE1_SPEC 8.5, 8.7). The sheet has two parts between the
+ * clew and the car (2:1, photo), then runs along the track to the mast foot and aft to the
+ * "Genoa sheet" clutch. The furling line runs from the drum at the bow aft along the port
+ * stanchion bases to the JIB ROLL clutch.
+ */
+function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
+  const segments = data.visual.ropeSagSegments;
+  const jib = rig.jibSolution;
+  const phi = rig.jibPhi.value;
+  const clew = jibClew(phi, jib.unfurled, data);
+  const car = carPoint(clew, data);
+  const track = data.rig.selfTackingTrack;
+
+  // The two parts, a little apart across the rope so both show. The rope's spare,
+  // purchase · (ℓ_avail − ℓ), is shared by the purchase's parts: each has ℓ_avail − ℓ.
+  const along = sub(car, clew);
+  const across = normalize(cross(along, [0, 1, 0]));
+  const offset = scale(
+    length(across) > 0 ? across : [1, 0, 0],
+    data.modelDetail.jibSheetPartSpacing / 2,
+  );
+  const spare =
+    jib.sheet.state === 'slack'
+      ? Math.max(0, jib.sheetAvailable - jibSheetSpan(phi, jib.unfurled, data))
+      : 0;
+  const part = (sign: 1 | -1): RopeStrand => ({
+    points: sagCurve(
+      add(clew, scale(offset, sign)),
+      add(car, scale(offset, sign)),
+      spare,
+      segments,
+      data,
+      track.y,
+    ),
+    feed: 0,
+  });
+  const trackMiddle: Vec3 = [track.centreX, car[1], 0];
+  const jibSheet: RopeDrawing = {
+    id: 'rope_jib_sheet',
+    state: jib.sheet.state,
+    strands: [
+      part(1),
+      part(-1),
+      {
+        points: [car, trackMiddle, ...leadToClutch('clutch_bank_a', 5, data)],
+        feed: jibSheetPaidOutFor(jib.sheetAvailable, data),
+      },
+    ],
+  };
+
+  // Furling line: drum → fairleads at the port stanchion bases forward of the clutch → clutch.
+  const furler = data.rig.jibFurler;
+  const drum = vec3(furler.drum);
+  const drumRadius = data.modelDetail.jibFurlerDrumDiameter / 2;
+  const lifelines = data.modelDetail.lifelines;
+  const clutch = data.cockpitHardware.jibRollClutch;
+  const clutchSize = data.modelDetail.jibRollClutch;
+  const radius = data.visual.ropeRenderRadius;
+  const count = Math.max(
+    2,
+    Math.round((lifelines.fwdX - lifelines.aftX) / lifelines.stanchionSpacing) + 1,
+  );
+  const fairleads: Vec3[] = [];
+  for (let i = count - 1; i >= 0; i -= 1) {
+    const x = lifelines.aftX + ((lifelines.fwdX - lifelines.aftX) * i) / (count - 1);
+    if (x <= clutch.x + clutchSize.length / 2) break;
+    const inboard = lifelines.inset + lifelines.stanchionDiameter;
+    fairleads.push([x, sheerAt(x, data) + radius, -(halfBeamAt(x, data) - inboard)]);
+  }
+  const furlingLine: RopeDrawing = {
+    id: 'rope_jib_furling_line',
+    state: 'taut',
+    strands: [
+      {
+        points: [
+          [drum[0], drum[1] + furler.drumHeight / 2, drum[2] - drumRadius],
+          ...fairleads,
+          // The JIB ROLL clutch stands on the side deck (as in the 3D model).
+          [
+            clutch.x + clutchSize.length / 2,
+            Math.max(clutch.y, sheerAt(clutch.x, data)) + clutchSize.height / 2,
+            clutch.z,
+          ],
+        ],
+        feed: jibFurlingLinePaidOut(jib.unfurled, data),
+      },
+    ],
+  };
+  return [jibSheet, furlingLine];
 }

@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
+import { defaultControls } from '../src/model/controls';
 import type { CameraPreset } from '../src/model/settings';
+import { initialRig } from '../src/model/sim';
 import { buildBoat } from '../src/render3d/boat';
 import { presetPose } from '../src/render3d/cameraPresets';
 import { createPicker } from '../src/render3d/picking';
@@ -63,6 +65,10 @@ describe('tap-to-identify: small fittings', () => {
   }
 
   it('an isolated small fitting still responds to a tap 20 px away (phone, side view)', () => {
+    // Wind from port: the jib swings to starboard, away from the camera, so nothing covers the
+    // furler drum (with the default wind the jib's foot lies in front of it from the port side).
+    const fromPort = { ...defaultControls(), ctl_wind_dir: -60 };
+    const clear = buildBoat(fromPort, initialRig(fromPort));
     const screen = SCREENS[0] ?? { width: 390, height: 380 };
     const lens = {
       verticalFovDeg: SCENE.camera.verticalFovDeg,
@@ -73,7 +79,7 @@ describe('tap-to-identify: small fittings', () => {
     camera.position.set(...pose.position);
     camera.lookAt(...pose.target);
     camera.updateMatrixWorld();
-    const picker = createPicker(camera, model.root, water);
+    const picker = createPicker(camera, clear.root, water);
     const furler = picker
       .hitCentres(screen.width, screen.height)
       .find((c) => c.partId === 'part_jib_furler');

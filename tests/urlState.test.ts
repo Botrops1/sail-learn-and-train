@@ -6,7 +6,7 @@ import { defaultControls } from '../src/model/controls';
 import { CAMERA_PRESETS, DEFAULT_CAMERA, DEFAULT_SETTINGS } from '../src/model/settings';
 
 /** The controls part of the default URL (M2: boom and wind controls). */
-const DEFAULT_CONTROLS_QUERY = 'ms=30&vg=50&tl=100&mf=100&wd=60&ws=12';
+const DEFAULT_CONTROLS_QUERY = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&wd=60&ws=12';
 
 describe('URL state (PHASE1_SPEC 9.2)', () => {
   it('empty query gives the defaults', () => {
@@ -32,9 +32,16 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
   });
 
   it('ignores parameters it does not know yet', () => {
-    const state = parseUrlState('?js=35&jf=10&rd=5&cam=bow');
+    const state = parseUrlState('?rd=5&cam=bow');
     expect(state.camera.preset).toBe('bow');
     expect(state.controls).toEqual(defaultControls());
+  });
+
+  it('reads the M3 jib controls: js, jf', () => {
+    const state = parseUrlState('?js=35&jf=80');
+    expect(state.controls.ctl_jib_sheet).toBe(35);
+    expect(state.controls.ctl_jib_furl).toBe(80);
+    expect(parseUrlState('?js=101&jf=-5').controls).toEqual(defaultControls());
   });
 
   it('reads the M2 controls: ms, vg, tl, mf, wd, ws', () => {

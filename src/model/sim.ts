@@ -1,6 +1,7 @@
 import { boat, type BoatData } from './boat';
 import { initialSide, solveBoom, type BoomInput, type BoomSolution } from './boomSolver';
 import type { Controls } from './controls';
+import { jibSheetReleased, solveJib, type JibInput, type JibSolution } from './jib';
 import type { Vec3 } from './vec3';
 
 /**
@@ -26,6 +27,9 @@ export interface AppliedControls {
   vang: number;
   toppingLift: number;
   mainFurl: number;
+  jibSheet: number;
+  /** Jib out as asked for; the sheet may stop the furl earlier (jib.unfurled is what is reached). */
+  jibFurl: number;
 }
 
 /** A value moved by a critically damped spring. */
@@ -50,6 +54,12 @@ export interface RigState {
   gybeLabelS: number;
   /** Seconds left to show the "Tack" label (boom crossed with the wind from ahead). */
   tackLabelS: number;
+  /** What the latest jib solve was for, and its result (PHASE1_SPEC 8.5). */
+  jibInput?: JibInput;
+  jibSolution: JibSolution;
+  /** What is drawn: the jib's rotation around the luff and its fill, moving towards the solve. */
+  jibPhi: Spring;
+  jibFill: number;
   /** Simulation time, seconds (drives the flapping of a luffing sail). */
   timeS: number;
 }
@@ -60,6 +70,8 @@ function applied(controls: Controls): AppliedControls {
     vang: controls.ctl_vang,
     toppingLift: controls.ctl_topping_lift,
     mainFurl: controls.ctl_main_furl,
+    jibSheet: controls.ctl_jib_sheet,
+    jibFurl: controls.ctl_jib_furl,
   };
 }
 
@@ -74,12 +86,28 @@ function boomInput(controls: Controls, rope: AppliedControls): BoomInput {
   };
 }
 
+function jibInput(controls: Controls, rope: AppliedControls, boom: BoomSolution): JibInput {
+  return {
+    windFromDeg: controls.ctl_wind_dir,
+    windSpeedKn: controls.ctl_wind_speed,
+    sheetPct: rope.jibSheet,
+    unfurledPct: rope.jibFurl,
+    sheetReleased: jibSheetReleased(controls.ctl_jib_sheet),
+    boomSide: boom.side,
+  };
+}
+
 /** The settled rig for a set of controls: the first frame, a shared link, a test. */
 export function initialRig(controls: Controls, data: BoatData = boat): RigState {
   const rope = applied(controls);
   const solution = solveBoom(
     boomInput(controls, rope),
     { side: initialSide(controls.ctl_wind_dir), thetaDeg: 0 },
+    data,
+  );
+  const jib = solveJib(
+    jibInput(controls, rope, solution),
+    { side: solution.side, phiDeg: 0, unfurled: 1 },
     data,
   );
   return {
@@ -91,6 +119,9 @@ export function initialRig(controls: Controls, data: BoatData = boat): RigState 
     gybing: false,
     gybeLabelS: 0,
     tackLabelS: 0,
+    jibSolution: { ...jib, tack: false },
+    jibPhi: { value: jib.phiDeg, velocity: 0 },
+    jibFill: jib.fill,
     timeS: 0,
   };
 }
@@ -103,6 +134,17 @@ export function lag(value: number, target: number, dt: number, tau: number): num
   if (tau <= 0) return target;
   const next = target + (value - target) * Math.exp(-dt / tau);
   return Math.abs(next - target) < ARRIVED ? target : next;
+}
+
+function sameJibInput(a: JibInput, b: JibInput): boolean {
+  return (
+    a.windFromDeg === b.windFromDeg &&
+    a.windSpeedKn === b.windSpeedKn &&
+    a.sheetPct === b.sheetPct &&
+    a.unfurledPct === b.unfurledPct &&
+    a.sheetReleased === b.sheetReleased &&
+    a.boomSide === b.boomSide
+  );
 }
 
 function sameInput(a: BoomInput, b: BoomInput): boolean {
@@ -155,6 +197,10 @@ export function step(
     vang: lag(rig.applied.vang, target.vang, dt, tau),
     toppingLift: lag(rig.applied.toppingLift, target.toppingLift, dt, tau),
     mainFurl: lag(rig.applied.mainFurl, target.mainFurl, dt, tau),
+    jibSheet: lag(rig.applied.jibSheet, target.jibSheet, dt, tau),
+    // The furling line cannot run ahead of the jib: while the sheet stops the furl, the request
+    // waits at the furl reached, so a released sheet lets the jib roll in smoothly, not jump.
+    jibFurl: lag(rig.jibSolution.unfurled * 100, target.jibFurl, dt, tau),
   };
 
   // Once the ropes have arrived, the controls usually stay put for many frames: reuse the solve.
@@ -169,6 +215,21 @@ export function step(
     solution.gybe ||
     (rig.gybing && !solution.tack && Math.abs(rig.theta.value - solution.thetaDeg) > GYBE_DONE_DEG);
   const swingTau = gybing ? v.gybeSwingTimeS : v.boomSmoothingTimeS;
+
+  // The jib: solved like the boom; it crosses at the normal speed (the car slides across).
+  const nextJibInput = jibInput(controls, rope, solution);
+  const jib =
+    rig.jibInput && sameJibInput(rig.jibInput, nextJibInput)
+      ? { ...rig.jibSolution, tack: false }
+      : solveJib(
+          nextJibInput,
+          {
+            side: rig.jibSolution.side,
+            phiDeg: rig.jibSolution.phiDeg,
+            unfurled: rig.jibSolution.unfurled,
+          },
+          data,
+        );
   return {
     applied: rope,
     input,
@@ -179,6 +240,10 @@ export function step(
     gybing,
     gybeLabelS: solution.gybe ? v.gybeLabelS : solution.tack ? 0 : Math.max(0, rig.gybeLabelS - dt),
     tackLabelS: solution.tack ? v.gybeLabelS : solution.gybe ? 0 : Math.max(0, rig.tackLabelS - dt),
+    jibInput: nextJibInput,
+    jibSolution: jib,
+    jibPhi: springTo(rig.jibPhi, jib.phiDeg, dt, v.boomSmoothingTimeS),
+    jibFill: lag(rig.jibFill, jib.fill, dt, v.boomSmoothingTimeS),
     timeS: rig.timeS + dt,
   };
 }

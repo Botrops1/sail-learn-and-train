@@ -34,6 +34,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
       if (box.hidden) return;
       const { camera, settings, selection, rig } = store.getState();
       const sol = rig.solution;
+      const jib = rig.jibSolution;
       const deg = (value: number) => `${value.toFixed(1)}°`;
       const rope = (name: string, status: RopeStatus) =>
         `${name} ${status.state}${status.state === 'slack' ? ` ${status.slack.toFixed(2)} m` : ''}`;
@@ -50,10 +51,13 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
         [t('debug.free'), `${deg(sol.thetaFreeDeg)} ${deg(sol.psiTargetDeg)}`],
         [t('debug.limits'), `${deg(sol.lowerDeg)} … ${deg(sol.upperDeg)}`],
         [t('debug.main'), `AoA ${deg(sol.aoaDeg)} fill ${sol.fill.toFixed(2)}`],
-        [t('debug.jib'), 'φ – (M3)'],
+        [t('debug.jib'), `φ ${deg(rig.jibPhi.value)} h ${deg(jib.headingDeg)}`],
+        ['', `AoA ${deg(jib.aoaDeg)} fill ${jib.fill.toFixed(2)}`],
+        [t('debug.carZ'), `${jib.carZ.toFixed(2)} m  out ${(jib.unfurled * 100).toFixed(0)} %`],
         [t('debug.ropes'), rope('sheet', sol.mainsheet)],
         ['', rope('vang', sol.vang)],
         ['', rope('lift', sol.toppingLift)],
+        ['', rope('jib sheet', jib.sheet)],
         [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
       ];
       const text = rows.map(([label, value]) => `${label.padEnd(12)}${value}`).join('\n');

@@ -171,9 +171,11 @@ describe('boat model', () => {
     expect(box.min.y).toBeGreaterThan(1);
   });
 
-  it('M2 draws the mainsail ropes only: no jib sheet or jib furling line yet (M3)', () => {
+  it('M3 draws the mainsail and jib ropes; the static halyards are not drawn yet', () => {
     const ropes = [...partIds].filter((id) => id.startsWith('rope_')).sort();
     expect(ropes).toEqual([
+      'rope_jib_furling_line',
+      'rope_jib_sheet',
       'rope_main_furling_line',
       'rope_mainsheet',
       'rope_outhaul',

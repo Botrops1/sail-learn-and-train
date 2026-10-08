@@ -27,6 +27,8 @@ export interface Rig {
   boomPivot: THREE.Group;
   /** Swings and pitches the boom and lets the rigid vang strut follow it. */
   setBoomPose(pose: BoomPose): void;
+  /** Slides the self-tacking car along its track (z, + = starboard). */
+  setCarZ(z: number): void;
 }
 
 /** Mast, spreaders, standing rigging, boom and the rig fittings (PHASE1_SPEC 6.1). */
@@ -38,6 +40,7 @@ export function buildRig(materials: BoatMaterials): Rig {
     vang.follow(pose);
   };
   setPose(CENTRED_BOOM);
+  const track = buildSelfTackingTrack(materials);
   return {
     objects: [
       buildMast(materials),
@@ -61,10 +64,14 @@ export function buildRig(materials: BoatMaterials): Rig {
       buildDeckBlocks(materials),
       buildGearbox(materials),
       buildJibFurler(materials),
-      ...buildSelfTackingTrack(materials),
+      track.track,
+      track.car,
     ],
     boomPivot,
     setBoomPose: setPose,
+    setCarZ(z) {
+      track.car.position.z = z;
+    },
   };
 }
 
@@ -246,23 +253,35 @@ function buildJibFurler(materials: BoatMaterials): THREE.Object3D {
   );
 }
 
-/** Straight self-tacking track and its car (at the centre while the jib is on the centreline). */
-function buildSelfTackingTrack(materials: BoatMaterials): THREE.Object3D[] {
+/**
+ * Straight self-tacking track and its car. The car is built around its own origin (on the
+ * track's centre line) so sliding it only changes its z; its hit area moves with it.
+ */
+function buildSelfTackingTrack(materials: BoatMaterials): {
+  track: THREE.Object3D;
+  car: THREE.Object3D;
+} {
   const [portEnd, starboardEnd] = selfTackingTrackEnds();
   const radius = boat.modelDetail.selfTackingTrack.radius;
-  const track = cylinderBetween(portEnd, starboardEnd, radius, 8);
-  const car = boat.modelDetail.selfTackingCar;
-  const carCentre: Vec3 = [portEnd[0], portEnd[1] + radius + car.height / 2, 0];
-  return [
-    partMesh('fit_self_tacking_track', [track], materials.fitting, [[portEnd, starboardEnd]]),
-    smallPartMesh(
-      'fit_self_tacking_car',
-      // The car runs athwartships along the track, so its length lies along z.
-      [boxAt(carCentre, [car.width, car.height, car.length])],
-      materials.dark,
-      [carCentre],
+  const size = boat.modelDetail.selfTackingCar;
+  const carCentre: Vec3 = [0, radius + size.height / 2, 0];
+  const car = smallPartMesh(
+    'fit_self_tacking_car',
+    // The car runs athwartships along the track, so its length lies along z.
+    [boxAt(carCentre, [size.width, size.height, size.length])],
+    materials.dark,
+    [carCentre],
+  );
+  car.position.set(portEnd[0], portEnd[1], 0);
+  return {
+    track: partMesh(
+      'fit_self_tacking_track',
+      [cylinderBetween(portEnd, starboardEnd, radius, 8)],
+      materials.fitting,
+      [[portEnd, starboardEnd]],
     ),
-  ];
+    car,
+  };
 }
 
 /**

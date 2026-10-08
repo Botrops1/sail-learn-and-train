@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import { lowestPitch } from './pitchLimits';
 import { capPaidOut } from './ropeLengths';
 import type { BoomPose } from './rigGeometry';
 import type { Vec3 } from './vec3';
@@ -53,7 +54,7 @@ export function mainsheetBlocks(data: BoatData = boat): {
 }
 
 export interface SheetRange {
-  /** Boom on the centreline at its lowest: L(0, ψ_lowest). */
+  /** Boom on the centreline at its lowest (topping lift eased, on the strut stop): L(0, ψ_lowest). */
   min: number;
   /** Full swing with the vang eased: L(maxSwing, vangEasedDeg). */
   max: number;
@@ -66,7 +67,7 @@ export function sheetRange(data: BoatData = boat): SheetRange {
   const cached = ranges.get(data);
   if (cached) return cached;
   const pitch = data.rig.boom.pitch;
-  const lowest = Math.min(pitch.toppingLiftEasedDeg, pitch.vangHauledDeg);
+  const lowest = Math.min(lowestPitch(data), pitch.vangHauledDeg);
   const range = {
     min: sheetLength({ thetaDeg: 0, psiDeg: lowest }, data),
     max: sheetLength({ thetaDeg: data.rig.boom.maxSwingDeg, psiDeg: pitch.vangEasedDeg }, data),
@@ -79,6 +80,17 @@ export function sheetRange(data: BoatData = boat): SheetRange {
 export function availableSheetLength(easedPct: number, data: BoatData = boat): number {
   const { min, max } = sheetRange(data);
   return min + (easedPct / 100) * (max - min);
+}
+
+/**
+ * The main sheet setting (% eased) at which the sheet becomes long enough for the centred boom
+ * at pitch ψ: below it, a sheet hauled further fights whatever holds the boom up there (a
+ * hauled topping lift, PT-09), and the boom cannot swing (PT-06).
+ */
+export function sheetPctToClear(psiDeg: number, data: BoatData = boat): number {
+  const { min, max } = sheetRange(data);
+  const needed = sheetLength({ thetaDeg: 0, psiDeg }, data);
+  return Math.min(100, Math.max(0, (100 * (needed - min)) / (max - min)));
 }
 
 /**
