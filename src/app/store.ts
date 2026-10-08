@@ -1,3 +1,4 @@
+import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
 import {
   DEFAULT_CAMERA,
   DEFAULT_SETTINGS,
@@ -6,12 +7,17 @@ import {
   type Settings,
   type StepSize,
 } from '../model/settings';
+import { initialRig, step, type RigState } from '../model/sim';
 
 /**
- * The single app store (PHASE1_SPEC 9.1). M1 holds camera, settings and the selected part;
- * controls and rig are added by later milestones.
+ * The single app store (PHASE1_SPEC 9.1): control targets, the solved rig, the selected part,
+ * camera and settings. UI dispatches actions; renderers read the state.
  */
 export interface AppState {
+  /** What the user has set (targets). */
+  controls: Controls;
+  /** What the rig is doing (solved and smoothed, advanced every frame). */
+  rig: RigState;
   camera: CameraState;
   settings: Settings;
   /** Registry id of the part shown in the info card, or null. */
@@ -22,15 +28,45 @@ export type Action =
   | { type: 'setStep'; step: StepSize }
   | { type: 'setDebug'; debug: boolean }
   | { type: 'setCameraPreset'; preset: CameraPreset }
-  | { type: 'select'; partId: string | null };
+  | { type: 'select'; partId: string | null }
+  | { type: 'setControls'; values: Partial<Controls> }
+  | { type: 'step'; dt: number };
 
-export function initialState(overrides: Partial<AppState> = {}): AppState {
+export interface InitialOverrides {
+  controls?: Partial<Controls>;
+  camera?: Partial<CameraState>;
+  settings?: Partial<Settings>;
+  selection?: string | null;
+}
+
+export function initialState(overrides: InitialOverrides = {}): AppState {
+  const controls = { ...defaultControls(), ...overrides.controls };
   return {
+    controls,
+    // A link opens with the rig already settled: no swing from the centre on load.
+    rig: initialRig(controls),
     camera: { ...DEFAULT_CAMERA, ...overrides.camera },
     settings: { ...DEFAULT_SETTINGS, ...overrides.settings },
     selection: overrides.selection ?? null,
   };
 }
+
+function withControls(controls: Controls, values: Partial<Controls>): Controls {
+  const next = { ...controls };
+  let changed = false;
+  for (const [id, value] of Object.entries(values) as [ControlId, number | undefined][]) {
+    if (value === undefined || !Number.isFinite(value)) continue;
+    const clamped = clampControl(id, value);
+    if (next[id] !== clamped) {
+      next[id] = clamped;
+      changed = true;
+    }
+  }
+  return changed ? next : controls;
+}
+
+/** Longest frame step, seconds: a background tab must not make the rig jump. */
+const MAX_STEP_S = 0.1;
 
 export function reduce(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -42,6 +78,14 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, camera: { ...state.camera, preset: action.preset } };
     case 'select':
       return { ...state, selection: action.partId };
+    case 'setControls': {
+      const controls = withControls(state.controls, action.values);
+      return controls === state.controls ? state : { ...state, controls };
+    }
+    case 'step': {
+      const dt = Math.min(MAX_STEP_S, Math.max(0, action.dt));
+      return { ...state, rig: step({ controls: state.controls, rig: state.rig }, dt) };
+    }
   }
 }
 

@@ -3,6 +3,8 @@ import type { Store } from '../app/store';
 import { CAMERA_PRESETS, STEP_SIZES } from '../model/settings';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
+import { createRopeControls } from './ropeControls';
+import { createWindPanel } from './windPanel';
 
 export const TAB_IDS = ['ropes', 'wind', 'view'] as const;
 export type TabId = (typeof TAB_IDS)[number];
@@ -15,8 +17,8 @@ const TAB_LABELS: Record<TabId, StringKey> = {
 
 /**
  * The panel: three tabs (Ropes, Wind, View) and the footer line (PHASE1_SPEC 5.2).
- * The Ropes and Wind tabs are placeholders until M2/M4; View has the camera presets, the step
- * size and the debug toggle.
+ * Ropes: a temporary list of the mainsail controls (the clutch-bank drawing comes in M4).
+ * Wind: the test-wind dial, speed and presets. View: camera presets, step size, debug toggle.
  */
 export function createPanel(host: HTMLElement, store: Store): void {
   const tabList = el('div', {
@@ -56,8 +58,8 @@ export function createPanel(host: HTMLElement, store: Store): void {
     body.append(pane);
   }
 
-  panes.get('ropes')?.append(el('p', { class: 'placeholder' }, [t('ropes.placeholder')]));
-  panes.get('wind')?.append(el('p', { class: 'placeholder' }, [t('wind.placeholder')]));
+  panes.get('ropes')?.append(createRopeControls(store));
+  panes.get('wind')?.append(...createWindPanel(store));
   panes.get('view')?.append(...buildViewTab(store));
 
   const footer = el('footer', { class: 'footer' }, [
@@ -152,8 +154,11 @@ function buildViewTab(store: Store): HTMLElement[] {
     el('p', { class: 'hint' }, [t('view.debug.hint')]),
   ]);
 
-  const sync = () => {
-    const { settings, camera } = store.getState();
+  const sync = (state = store.getState(), previous?: typeof state) => {
+    if (previous && state.settings === previous.settings && state.camera === previous.camera) {
+      return;
+    }
+    const { settings, camera } = state;
     for (const { preset, input } of cameraInputs) input.checked = preset === camera.preset;
     for (const { step, input } of stepInputs) input.checked = step === settings.step;
     debugInput.checked = settings.debug;

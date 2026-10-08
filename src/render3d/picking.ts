@@ -43,26 +43,36 @@ export function createPicker(
   water: THREE.Object3D,
 ): Picker {
   const raycaster = new THREE.Raycaster();
-  const segments: Target[] = [];
-  const smallParts: Target[] = [];
+  let segments: Target[] = [];
+  let smallParts: Target[] = [];
   const smallIds = new Set<string>();
-  boatRoot.traverse((object) => {
-    const data = object.userData as Partial<PartUserData>;
-    if (!data.partId) return;
-    for (const [a, b] of data.pickSegments ?? []) {
-      segments.push({
-        object,
-        partId: data.partId,
-        a: new THREE.Vector3(...a),
-        b: new THREE.Vector3(...b),
-      });
-    }
-    for (const p of data.hitPoints ?? []) {
-      const point = new THREE.Vector3(...p);
-      smallParts.push({ object, partId: data.partId, a: point, b: point });
-      smallIds.add(data.partId);
-    }
-  });
+
+  /**
+   * Collects the tap targets. Done at each tap, not once: the boom, mainsail and ropes move,
+   * and the moving ropes and sail edges replace their pick segments every frame.
+   */
+  function collect(): void {
+    segments = [];
+    smallParts = [];
+    smallIds.clear();
+    boatRoot.traverse((object) => {
+      const data = object.userData as Partial<PartUserData>;
+      if (!data.partId || !object.visible) return;
+      for (const [a, b] of data.pickSegments ?? []) {
+        segments.push({
+          object,
+          partId: data.partId,
+          a: new THREE.Vector3(...a),
+          b: new THREE.Vector3(...b),
+        });
+      }
+      for (const p of data.hitPoints ?? []) {
+        const point = new THREE.Vector3(...p);
+        smallParts.push({ object, partId: data.partId, a: point, b: point });
+        smallIds.add(data.partId);
+      }
+    });
+  }
 
   const worldA = new THREE.Vector3();
   const worldB = new THREE.Vector3();
@@ -104,10 +114,13 @@ export function createPicker(
 
   return {
     pick(x, y, width, height) {
+      collect();
       const { tolerancePx, smallPartRadiusPx } = SCENE.picking;
       raycaster.setFromCamera(new THREE.Vector2((x / width) * 2 - 1, 1 - (y / height) * 2), camera);
       const hits = raycaster.intersectObjects([boatRoot, water], true);
-      const boatHits = hits.filter((hit) => partIdOf(hit.object) && !isWithin(hit.object, water));
+      const boatHits = hits.filter(
+        (hit) => hit.object.visible && partIdOf(hit.object) && !isWithin(hit.object, water),
+      );
       const boatHit = boatHits[0];
       const waterHit = hits.find((hit) => isWithin(hit.object, water));
       const hiding = boatHits.find(
@@ -126,6 +139,7 @@ export function createPicker(
       );
     },
     hitCentres(width, height) {
+      collect();
       const centres: HitCentre[] = [];
       for (const target of smallParts) {
         worldA.copy(target.a).applyMatrix4(target.object.matrixWorld);

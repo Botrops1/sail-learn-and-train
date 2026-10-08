@@ -39,6 +39,48 @@ export const SCENE = {
     sail: '#fbfbf6',
     sailOpacity: 0.9,
   },
+  /**
+   * Teaching colours of the ropes (PHASE1_SPEC 7.3), one per function, from the Okabe–Ito
+   * palette (distinguishable with the common kinds of colour blindness). A rope whose controls
+   * fight each other turns red; the panel says "fighting" too, so colour is not the only signal.
+   */
+  ropes: {
+    colors: {
+      mainsheet: '#e69f00',
+      jibsheet: '#009e73',
+      control: '#cc79a7',
+      furling: '#0072b2',
+      halyard: '#4b545c',
+    },
+    fighting: '#e8112d',
+    /**
+     * Ropes are never drawn thinner than this on screen (CSS px), so sag and colour show on a
+     * phone at whole-boat zoom. Close up, the 3D radius from the data (visual.ropeRenderRadius)
+     * is used.
+     */
+    minScreenWidthPx: 2.5,
+    radialSegments: 6,
+    /** Length of one stripe pattern along the rope, metres; it slides as the rope moves. */
+    stripePeriodM: 0.3,
+    stripeTexels: 8,
+    stripeDarkTexels: 3,
+    stripeDarkness: 0.55,
+  },
+  /** Wind streaks (PHASE1_SPEC 6.1): light lines drifting with the test wind. */
+  wind: {
+    streakCount: 90,
+    /** Streaks fill a square of this size around the boat, metres, from low to high. */
+    areaSize: 70,
+    minHeight: 0.6,
+    maxHeight: 24,
+    /** Drift speed on screen per knot of wind, metres per second (slower than real). */
+    metresPerSecondPerKnot: 0.35,
+    /** Streak length: base plus per knot, metres. */
+    streakBaseLength: 0.8,
+    streakLengthPerKnot: 0.12,
+    color: '#ffffff',
+    opacity: 0.55,
+  },
   /** Tint of the part shown in the info card. */
   highlight: { color: '#ff9f1c', intensity: 0.55 },
   camera: {

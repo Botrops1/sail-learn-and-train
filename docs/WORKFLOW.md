@@ -117,6 +117,8 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 - [ ] `?ws=0&tl=0&vg=0`: both ropes are shown as "fighting". (PT-09)
 - [ ] Wind 170 → 180 → −170 → −165: the boom stays, then swings across with a "GYBE" label. (PT-05)
 - [ ] Changing "Mainsail out": the sail gets smaller from the back; the "in" furling tail moves one way, the "out" tail and the outhaul the other. (PT-12)
+- [ ] `?wd=90&ws=12&ms=40`, set "Mainsail out" to 0 %: the boom drops onto its stop and stays; easing the main sheet does not move it; the panel says "furled". (PT-14)
+- [ ] `?wd=40&ws=12&ms=20`, turn the wind to −40 (across the bow): the boom crosses at normal speed with a "Tack" note, not "GYBE".
 
 ### M3: Self-tacking jib
 

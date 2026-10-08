@@ -2,6 +2,7 @@
 // at the same scale and origin as the reference sketches in docs/reference/ and lays the sketch
 // on top. Used by `npm run shots` (served by the Vite dev server, not part of the app).
 import * as THREE from 'three';
+import { defaultControls } from '../../src/model/controls';
 import { buildBoat } from '../../src/render3d/boat';
 import { SCENE } from '../../src/render3d/sceneConfig';
 
@@ -54,7 +55,9 @@ const sun = new THREE.DirectionalLight(0xffffff, SCENE.light.sunIntensity);
 sun.position.set(...SCENE.light.sunDirection);
 const fill = new THREE.DirectionalLight(0xffffff, SCENE.light.fillIntensity);
 fill.position.set(...SCENE.light.fillDirection);
-scene.add(sun, fill, buildBoat().root);
+// No wind and the topping lift holding the boom level: boom on the centreline at ψ = 0, as drawn.
+const centred = { ...defaultControls(), ctl_wind_dir: 0, ctl_wind_speed: 0, ctl_topping_lift: 50 };
+scene.add(sun, fill, buildBoat(centred).root);
 
 const [ox, oy] = sketch.origin;
 const m = sketch.pxPerM;

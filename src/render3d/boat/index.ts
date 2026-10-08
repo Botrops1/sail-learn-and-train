@@ -1,52 +1,75 @@
 import * as THREE from 'three';
+import { defaultControls, type Controls } from '../../model/controls';
+import { drawnPose, ropeDrawings } from '../../model/ropePaths';
+import { mainSailInputFor } from '../../model/sailShape';
+import { initialRig, type RigState } from '../../model/sim';
+import { buildWindex } from '../wind';
 import { buildKeel, buildRudder, buildSaildrive } from './appendages';
 import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
 import { buildHull } from './hull';
+import { buildMainSail } from './mainSail';
 import { createMaterials } from './materials';
 import { buildRig } from './rig';
-import { buildSails } from './sails';
-import type { BoomPose } from '../../model/rigGeometry';
+import { buildRopes, type RopeView } from './ropes';
+import { buildJib } from './sails';
 
 export interface BoatModel {
   root: THREE.Group;
   boomPivot: THREE.Group;
-  /** Swings and pitches the boom (the rigid vang strut follows). Static at θ = ψ = 0 in M1. */
-  setBoomPose(pose: BoomPose): void;
+  /**
+   * Shows the rig as solved: boom pose, mainsail shape, ropes and the masthead indicator.
+   * With `ropeView`, ropes far from the camera are drawn thick enough to see.
+   */
+  update(rig: RigState, controls: Controls, ropeView?: RopeView): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
 }
 
 /**
- * The static Hanse 508 (PHASE1_SPEC 6.1, milestone M1), built from primitives using
- * content/boat/hanse508.json. Every mesh carries a registry id in userData.partId.
- * Works without WebGL (pure geometry), so tests can inspect it.
+ * The Hanse 508 (PHASE1_SPEC 6.1), built from primitives using content/boat/hanse508.json.
+ * Every mesh carries a registry id in userData.partId. Works without WebGL (pure geometry), so
+ * tests can inspect it. `update` moves the boom, reshapes the main and redraws the ropes.
  */
-export function buildBoat(): BoatModel {
+export function buildBoat(
+  controls: Controls = defaultControls(),
+  rig: RigState = initialRig(controls),
+): BoatModel {
   const materials = createMaterials();
   const root = new THREE.Group();
   root.name = 'boat';
-  const rig = buildRig(materials);
+  const rigParts = buildRig(materials);
   const rudderPivot = buildRudder(materials);
   const hardware = buildCockpitHardware(materials);
+  const mainSail = buildMainSail(materials, mainSailInputFor(rig, controls));
+  const ropes = buildRopes(ropeDrawings(rig));
+  const windex = buildWindex(materials);
   root.add(
     ...buildHull(materials),
     buildKeel(materials),
     rudderPivot,
     buildSaildrive(materials),
-    ...rig.objects,
+    ...rigParts.objects,
     ...hardware.objects,
     ...buildDeckGear(materials),
-    ...buildSails(materials),
+    mainSail.mesh,
+    buildJib(materials),
+    ...ropes.objects,
+    windex.pivot,
   );
-  root.updateMatrixWorld(true);
+
+  const update = (next: RigState, nextControls: Controls, ropeView?: RopeView) => {
+    rigParts.setBoomPose(drawnPose(next));
+    mainSail.update(mainSailInputFor(next, nextControls));
+    ropes.update(ropeDrawings(next), ropeView);
+    windex.update(nextControls.ctl_wind_dir);
+    root.updateMatrixWorld(true);
+  };
+  update(rig, controls);
   return {
     root,
-    boomPivot: rig.boomPivot,
-    setBoomPose: (pose) => {
-      rig.setBoomPose(pose);
-      root.updateMatrixWorld(true);
-    },
+    boomPivot: rigParts.boomPivot,
+    update,
     rudderPivot,
     wheelPivots: hardware.wheelPivots,
   };

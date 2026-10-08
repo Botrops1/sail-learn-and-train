@@ -4,7 +4,7 @@ A web-based tool for sailing training and knowledge building: see how a cruising
 
 The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels).
 
-**Status:** Phase 1 (interactive boat and rope controls) is in progress. Milestone M1 shows the static 3D boat: orbit camera with presets (side, top, bow, helm) and tap-to-identify for every part. Ropes, wind and the moving boom come in M2.
+**Status:** Phase 1 (interactive boat and rope controls) is in progress. Milestone M2 adds a test wind you set by hand, the moving boom and mainsail (it swings, lifts, twists and flaps), the mainsail's ropes drawn in 3D (sagging when slack, red when fighting) and a temporary list of their controls. The self-tacking jib comes in M3, the clutch-bank panel in M4.
 **Live site** (after the first deploy): https://botrops1.github.io/sail-learn-and-train/
 
 ## Documents

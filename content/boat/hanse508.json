@@ -292,15 +292,16 @@
       "maxSwingSource": "computed from the manual's chainplate position: the boom (half-thickness ~0.13 m) meets the cap shroud at about 72-73 deg",
       "pitch": {
         "$comment": "Boom pitch in degrees, + = boom end up. Phase-1 teaching approximation, prototyped in Python to satisfy PT-07/PT-08 smoothly. Tune visually, keep the tests green.",
-        "toppingLiftHauledDeg": 6,
-        "toppingLiftEasedDeg": -6,
+        "toppingLiftHauledDeg": 4,
+        "toppingLiftEasedDeg": -2,
         "vangHauledDeg": -2,
         "vangEasedDeg": 12,
         "windLiftMaxDeg": 20,
         "windLiftReferenceKn": 20,
         "gravityDropDeg": -3,
         "gravityDropNote": "The rigid vang's gas spring holds the boom up against its own weight, so with no wind the boom only droops slightly. The mainsheet can still pull it lower.",
-        "pitchStiffness": 8
+        "pitchStiffness": 8,
+        "toppingLiftNote": "toppingLiftHauledDeg 4: below the vang's default limit (5 deg at 50 %), so at default settings a hauled topping lift visibly carries the boom; hauling both still makes them fight. toppingLiftEasedDeg -2: the rigid vang strut stops the boom drooping more than about 2 deg, so a fully hauled main sheet cannot pull the boom end far down. Owner-approved assumptions (M2 review)."
       }
     },
     "vang": {
@@ -309,13 +310,22 @@
       "boomDistance": 2.12,
       "type": "Rigid vang: Selden Rodkicker (size 30) strut with a rope tackle. Pulls the boom down and its gas spring also supports it from below.",
       "typeSource": "photo (docs/reference/photos/mast-gooseneck-vang-outhaul.jpg)",
-      "render": "Two telescoping tubes from the mast foot to the boom, with the tackle running alongside"
+      "render": "Two telescoping tubes from the mast foot to the boom, with the tackle running alongside",
+      "tacklePurchase": 4,
+      "tacklePurchaseSource": "assumption (rope tackle on the strut; the number of parts is not visible in the photo). Only changes the 'metres paid out' shown for the vang."
     },
     "toppingLift": {
       "source": "photo (line from the boom end straight up the mast) + assumption (exit height)",
       "mastExit": [-0.15, 21.86, 0.0],
       "boomDistance": 6.2,
       "boatLabel": "Boom lift"
+    },
+    "outhaul": {
+      "source": "photo (two outhaul lines along the top of the boom: docs/reference/photos/mast-gooseneck-vang-outhaul.jpg) + assumption (block position)",
+      "boomBlockDistance": 6.2,
+      "route": "clew (comes out of the mast slot) -> aft along the top of the boom to a block near the boom end -> forward along the boom -> gooseneck -> down the mast -> turning block at the mast foot -> aft to clutch 'Main outhaul' (port bank)",
+      "purchase": 1,
+      "purchaseSource": "assumption: moving the clew by 1 m needs 1 m of outhaul"
     },
     "mainsheet": {
       "source": "photo (both clutch banks carry MAIN SHEET) + drawing (positions)",
@@ -348,7 +358,19 @@
     "mainFurlingGearbox": {
       "source": "photo (Selden manual in-mast furling gearbox with winch-handle socket and IN/OUT arrow) + owner",
       "position": [0.0, 2.45, -0.11],
-      "note": "Two-line drive: one line furls (rolls the sail in), the other unfurls. Backup: turn the gearbox by hand with a winch handle at the mast. Exact height on the mast estimated. Photo shows it on a side face of the mast, below the gooseneck (which side: unconfirmed; port assumed)."
+      "note": "Two-line drive: one line furls (rolls the sail in), the other unfurls. Backup: turn the gearbox by hand with a winch handle at the mast. Exact height on the mast estimated. Photo shows it on a side face of the mast, below the gooseneck (which side: unconfirmed; port assumed).",
+      "lineTravelM": 8.0,
+      "lineTravelSource": "assumption: metres of furling line that pass the clutch between fully furled and fully unfurled (about 20 turns of a drum of about 0.13 m). Only changes the 'metres paid out' shown for the furling tails."
+    },
+    "lineLead": {
+      "source": "manual (Selden 510-142 lead plan: lines turn at the mast-foot organiser and run aft) + photo (covered channels on the coachroof: mast-base-turning-blocks*.jpg, self-tacking-track-full.jpg) + assumption (exact path)",
+      "$comment": "Waypoints of the control lines between the mast foot and the clutch banks, starboard side; the port side is the mirror image (z negated). Each line runs a little apart from its neighbours (spacing, by clutch slot).",
+      "mastExit": [-0.16, 2.75, 0.06],
+      "mastExitNote": "Where lines that run inside the mast (topping lift) or down its aft face (outhaul) leave it, above the furling gearbox.",
+      "mastFootTurn": [-0.34, 2.02, 0.1],
+      "coachroofAft": [-2.95, 2.0, 1.08],
+      "coamingFront": [-3.4, 1.6, 1.55],
+      "spacing": 0.04
     },
     "mastFootLeadOrganiser": {
       "source": "manual (Selden 510-142 lead plan, standard rig) + clutch photos",
@@ -779,6 +801,12 @@
       "upperDiameter": 0.055,
       "tubeFraction": 0.62
     },
+    "vangTackleOffset": 0.07,
+    "vangTackleOffsetNote": "The vang tackle is drawn this far beside the strut so both stay visible.",
+    "outhaulPartSpacing": 0.06,
+    "outhaulPartSpacingNote": "Distance between the two outhaul parts on top of the boom.",
+    "windexLength": 0.6,
+    "windexHeightAboveMast": 0.15,
     "vangStrutNote": "Rigid vang drawn as two telescoping tubes: the thick one from the mast point, the thin one from the boom point, each tubeFraction of the strut length at rest so they overlap.",
     "mastBaseTurningBlocks": {
       "count": 8,
@@ -816,7 +844,36 @@
     "baseTwistDeg": 4,
     "twistPerDegBoomRise": 1.5,
     "jibTwistPerDegEasedBeyondTrack": 0.8,
-    "controlResponseTimeS": 0.4
+    "controlResponseTimeS": 0.4,
+    "boomSmoothingTimeS": 0.3,
+    "boomSmoothingNote": "Time constant of the critically damped spring that moves the drawn boom towards the solved pose (PHASE1_SPEC 8.3 step 5). The fill of the sails follows with the same time constant.",
+    "gybeSwingTimeS": 0.12,
+    "gybeSwingNote": "Faster spring while the boom swings across in an accidental gybe.",
+    "gybeLabelS": 2.0,
+    "ropeMaxSagM": 1.5,
+    "ropeSagSegments": 12,
+    "solver": {
+      "$comment": "Numbers from PHASE1_SPEC 8.1-8.4.",
+      "minWindKn": 1,
+      "pitchSearchStepDeg": 0.25,
+      "tautToleranceDeg": 0.5,
+      "tautToleranceM": 0.01,
+      "furledBelowPct": 0.5,
+      "furledNote": "Below this much mainsail out there is no sail to push or lift the boom (PT-14); the sail is not drawn either."
+    },
+    "mainSail": {
+      "$comment": "Look of the mainsail mesh (PHASE1_SPEC 8.6). camberRatio: depth of the curve as a fraction of the chord when filled. The luff ripple is the flapping of a luffing sail: amplitude at referenceKn, scaled with the wind speed, strongest at the luff.",
+      "rows": 16,
+      "columns": 8,
+      "camberRatio": 0.1,
+      "rippleAmplitudeM": 0.22,
+      "rippleWavelengthM": 2.4,
+      "rippleFrequencyHz": 1.8,
+      "rippleReferenceKn": 12,
+      "rippleMaxWindScale": 1.5,
+      "rippleFrontFractionWhenFilled": 0.3,
+      "rippleHeightPhaseRad": 2.1
+    }
   },
   "runningRigging": {
     "source": "manual (running rigging table, option FCL = in-mast furling). The charter boat's actual ropes may differ (photos show white ropes with blue or black flecks).",

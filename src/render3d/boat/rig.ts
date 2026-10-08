@@ -6,6 +6,7 @@ import {
   vangStrutEnds,
   type BoomPose,
 } from '../../model/rigGeometry';
+import { mainsheetBlocks } from '../../model/mainsheet';
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import {
@@ -181,7 +182,7 @@ function buildBoom(materials: BoatMaterials): THREE.Group {
     ),
   );
   const spacing = boat.modelDetail.mainsheetBoomBlockSpacing;
-  const blocks: Vec3[] = [-1, 0, 1].map((k) => [
+  const blocks: Vec3[] = mainsheetBlocks().offsets.map((k) => [
     -mainsheet.boomDistance + k * spacing,
     -section.height / 2 - blockRadius,
     0,

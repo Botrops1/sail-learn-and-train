@@ -39,4 +39,24 @@ describe('store', () => {
     store.dispatch({ type: 'setDebug', debug: true });
     expect(listener).not.toHaveBeenCalled();
   });
+
+  it('setControls clamps values; an unchanged value keeps the same state object', () => {
+    const store = createStore(initialState());
+    store.dispatch({ type: 'setControls', values: { ctl_mainsheet: 140, ctl_wind_dir: -180 } });
+    expect(store.getState().controls.ctl_mainsheet).toBe(100);
+    expect(store.getState().controls.ctl_wind_dir).toBe(180);
+    const before = store.getState();
+    store.dispatch({ type: 'setControls', values: { ctl_mainsheet: 100 } });
+    expect(store.getState()).toBe(before);
+  });
+
+  it('step moves the rig towards the new controls; a long pause is cut to 0.1 s', () => {
+    const store = createStore(initialState({ controls: { ctl_wind_dir: 90, ctl_mainsheet: 0 } }));
+    store.dispatch({ type: 'setControls', values: { ctl_mainsheet: 100 } });
+    store.dispatch({ type: 'step', dt: 5 });
+    const applied = store.getState().rig.applied.mainsheet;
+    expect(applied).toBeGreaterThan(0);
+    expect(applied).toBeLessThan(50);
+    expect(store.getState().rig.timeS).toBeCloseTo(0.1, 9);
+  });
 });
