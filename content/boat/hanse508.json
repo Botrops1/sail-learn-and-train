@@ -2,7 +2,7 @@
   "$comment": "Hanse 508 geometry for sail-learn-and-train. Single source of truth for the 3D model and the rig solver. Units: metres and degrees. See docs/BOAT_REFERENCE.md for how every number was obtained and how confident we are.",
   "meta": {
     "model": "Hanse 508",
-    "variant": "Reference boat: in-mast furling main (manual, Selden), self-tacking jib with manual furler, German mainsheet, single forestay, no gennaker rigged",
+    "variant": "Reference boat: in-mast furling main (manual, Selden, two-line furling drive), self-tacking jib on a Selden Furlex 404S manual furler, German mainsheet, rigid vang (Selden Rodkicker), single forestay, no gennaker rigged",
     "frame": {
       "origin": "Mast station (centre of mast section), on the waterline, on the centreline",
       "x": "forward (towards the bow) is positive",
@@ -14,6 +14,7 @@
       "brochure": "Hanse 508 price list / spec sheet H508.22_PL_EN_20221216 (not stored in repo, copyrighted). Official figures.",
       "drawing": "Measured from the brochure side view and deck plan drawings at ~35 px/m (side) and ~107 px/m (plan). Typical error +/-0.15 m.",
       "photo": "Photos taken on the reference boat, stored in docs/reference/photos/.",
+      "owner": "Observed on board by the owner (stated directly).",
       "assumption": "Engineering guess. Plausible but unverified. Safe to tune."
     }
   },
@@ -164,7 +165,8 @@
         "vangEasedDeg": 12,
         "windLiftMaxDeg": 20,
         "windLiftReferenceKn": 20,
-        "gravityDropDeg": -6,
+        "gravityDropDeg": -3,
+        "gravityDropNote": "The rigid vang's gas spring holds the boom up against its own weight, so with no wind the boom only droops slightly. The mainsheet can still pull it lower.",
         "pitchStiffness": 8
       }
     },
@@ -172,10 +174,12 @@
       "source": "drawing",
       "mastPoint": [-0.18, 2.05, 0.0],
       "boomDistance": 2.12,
-      "type": "tackle (assumed; brochure says 'kicker'; rigid or rope vang on the reference boat unknown)"
+      "type": "Rigid vang: Selden Rodkicker (size 30) strut with a rope tackle. Pulls the boom down and its gas spring also supports it from below.",
+      "typeSource": "photo (docs/reference/photos/mast-gooseneck-vang-outhaul.jpg)",
+      "render": "Two telescoping tubes from the mast foot to the boom, with the tackle running alongside"
     },
     "toppingLift": {
-      "source": "assumption",
+      "source": "photo (line from the boom end straight up the mast) + assumption (exit height)",
       "mastExit": [-0.15, 21.00, 0.0],
       "boomDistance": 6.20,
       "boatLabel": "Boom lift"
@@ -186,24 +190,26 @@
       "boomDistance": 3.05,
       "deckBlocks": { "x": -3.08, "y": 1.80, "halfZ": 0.42 },
       "partsPerSide": 2,
-      "partsPerSideSource": "assumption (purchase on the reference boat unknown)"
+      "partsPerSideSource": "photo: three blocks on the boom, two rope parts down to each spring-mounted deck block (docs/reference/photos/mainsheet-german.jpg)"
     },
     "selfTackingTrack": {
-      "source": "drawing (position, width), assumption (arc shape)",
-      "shape": "Circular arc centred on the jib tack (in plan view)",
+      "source": "photo (straight track right in front of the mast, spanning most of the deck width; docs/reference/photos/self-tacking-track-full.jpg) + drawing (position)",
+      "shape": "Straight athwartships track in plan view",
       "centreX": 0.28,
       "y": 1.86,
-      "halfSpan": 0.90
+      "halfSpan": 1.40,
+      "halfSpanSource": "photo estimate (about 2.8 m end to end, ±0.3 m); the deck-plan drawing showed only about 1.8 m"
     },
     "jibFurler": {
-      "source": "brochure (manual jib furler) + drawing",
+      "source": "brochure (manual jib furler) + photo (Selden Furlex 404S) + drawing",
+      "model": "Selden Furlex 404S",
       "drum": [6.12, 1.75, 0.0],
       "drumHeight": 0.15
     },
     "mainFurlingGearbox": {
-      "source": "photo (Selden manual in-mast furling gearbox with winch-handle socket and IN/OUT arrow)",
+      "source": "photo (Selden manual in-mast furling gearbox with winch-handle socket and IN/OUT arrow) + owner",
       "position": [-0.17, 2.35, 0.0],
-      "note": "Exact position on the mast unknown. Backup: furl/unfurl by hand with a winch handle at the mast."
+      "note": "Two-line drive: one line furls (rolls the sail in), the other unfurls. Backup: turn the gearbox by hand with a winch handle at the mast. Exact height on the mast estimated."
     }
   },
 
@@ -233,6 +239,9 @@
       "sheet": {
         "minClewToCar": 0.35,
         "minClewToCarNote": "Sanity reference only. The app computes the true minimum from geometry at startup.",
+        "purchase": 2,
+        "purchaseSource": "photo: two rope parts between the clew and the car",
+        "route": "car -> along the track -> turning block at the mast foot -> aft along the coachroof -> clutch 'Genoa sheet' (starboard bank)",
         "maxEaseBeyondMin": 1.60,
         "source": "assumption"
       }
@@ -248,7 +257,7 @@
   },
 
   "cockpitHardware": {
-    "source": "drawing (positions), photo (labels), assumption (which bank is which side)",
+    "source": "drawing (positions), photo (labels, layout), owner (which bank is on which side)",
     "helms": [
       { "id": "helm_port", "x": -7.20, "z": -0.88 },
       { "id": "helm_starboard", "x": -7.20, "z": 0.88 }
@@ -259,37 +268,37 @@
     "wheelTurnsLockToLock": 2.5,
     "wheelTurnsSource": "assumption",
     "winches": [
-      { "id": "winch_primary_port", "x": -6.33, "y": 1.55, "z": -1.60, "note": "Standard: 2 x Lewmar 55 ST EVO (brochure)" },
-      { "id": "winch_primary_starboard", "x": -6.33, "y": 1.55, "z": 1.60 },
-      { "id": "winch_secondary_port", "x": -7.25, "y": 1.55, "z": -1.60, "optional": true, "note": "Option XC5200; drawn on the deck plan; present on the reference boat? unknown" },
-      { "id": "winch_secondary_starboard", "x": -7.25, "y": 1.55, "z": 1.60, "optional": true }
+      { "id": "winch_primary_port", "x": -7.25, "y": 1.55, "z": -1.60, "note": "Standard: 2 x Lewmar 55 ST EVO (brochure). Photo: one winch per side next to the wheel, aft of the clutch bank." },
+      { "id": "winch_primary_starboard", "x": -7.25, "y": 1.55, "z": 1.60 },
+      { "id": "winch_secondary_port", "x": -6.33, "y": 1.55, "z": -1.60, "optional": true, "present": false, "note": "Option XC5200 drawn on the deck plan. Not on the reference boat (photo shows one winch per side). Do not render." },
+      { "id": "winch_secondary_starboard", "x": -6.33, "y": 1.55, "z": 1.60, "optional": true, "present": false }
     ],
     "clutchBanks": [
       {
         "id": "clutch_bank_a",
-        "side": "port",
-        "sideSource": "assumption (photo does not show which side)",
-        "x": -6.70, "y": 1.50, "z": -1.59,
+        "side": "starboard",
+        "sideSource": "owner (the main furling lines are on the right side)",
+        "x": -6.70, "y": 1.50, "z": 1.59,
         "photo": "docs/reference/photos/clutch-bank-a.jpg",
         "clutches": [
-          { "slot": 1, "label": "Main sheet", "ropeId": "rope_mainsheet", "tail": "port" },
-          { "slot": 2, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "a" },
-          { "slot": 3, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "b" },
+          { "slot": 1, "label": "Main sheet", "ropeId": "rope_mainsheet", "tail": "starboard" },
+          { "slot": 2, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "furl", "tailNote": "Left of the two: rolls the main in (owner confirmed the right one unfurls)" },
+          { "slot": 3, "label": "Main furling", "ropeId": "rope_main_furling_line", "tail": "unfurl", "tailNote": "Right of the two: rolls the main out (owner)" },
           { "slot": 4, "label": "Main halyard", "ropeId": "rope_main_halyard" },
           { "slot": 5, "label": "Genoa sheet", "ropeId": "rope_jib_sheet" }
         ]
       },
       {
         "id": "clutch_bank_b",
-        "side": "starboard",
-        "sideSource": "assumption (photo does not show which side)",
-        "x": -6.70, "y": 1.50, "z": 1.59,
+        "side": "port",
+        "sideSource": "owner (the vang is on the left side)",
+        "x": -6.70, "y": 1.50, "z": -1.59,
         "photo": "docs/reference/photos/clutch-bank-b.jpg",
         "clutches": [
           { "slot": 1, "label": "SPI HALYARD", "ropeId": "rope_spi_halyard" },
           { "slot": 2, "label": "Boom lift", "ropeId": "rope_topping_lift" },
           { "slot": 3, "label": "Main outhaul", "ropeId": "rope_outhaul" },
-          { "slot": 4, "label": "MAIN SHEET", "ropeId": "rope_mainsheet", "tail": "starboard" },
+          { "slot": 4, "label": "MAIN SHEET", "ropeId": "rope_mainsheet", "tail": "port" },
           { "slot": 5, "label": "Vang", "ropeId": "rope_vang" }
         ]
       }
@@ -298,9 +307,9 @@
       "id": "clutch_jib_roll",
       "label": "JIB ROLL",
       "ropeId": "rope_jib_furling_line",
-      "x": -5.00, "y": 1.50, "z": 2.20,
-      "source": "photo (clutch on the side deck near the stanchions); side and position are assumptions",
-      "photo": "docs/reference/photos/jib-roll-clutch.jpg"
+      "x": -3.40, "y": 1.45, "z": -2.20,
+      "source": "photo: on the port side deck next to the sprayhood, the furling line runs forward along the stanchion bases to the bow (fore-aft position estimated)",
+      "photo": "docs/reference/photos/side-deck-jib-roll.jpg"
     },
     "engineControl": {
       "id": "engine_control",
@@ -308,6 +317,14 @@
       "rpmLimitSticker": 2500,
       "photo": "docs/reference/photos/engine-control.jpg",
       "phase": 2
+    },
+    "helmInstruments": {
+      "note": "Photo of the starboard helm: magnetic compass, B&G multifunction display and B&G autopilot control next to the winch; rope tails stowed in a bin at the helm. Phase 2+.",
+      "phase": 2
+    },
+    "mastBase": {
+      "note": "All halyards and control lines come down the mast and turn at a ring of Selden turning blocks at the mast foot, then run aft along the coachroof in covered channels, one group to each clutch bank. Photos: mast-base-turning-blocks*.jpg.",
+      "source": "photo"
     }
   },
 
@@ -316,11 +333,11 @@
     "list": [
       { "id": "rope_mainsheet", "controlId": "ctl_mainsheet", "working": "boom blocks <-> deck blocks (both legs)", "tails": ["port", "starboard"], "colorKey": "mainsheet" },
       { "id": "rope_jib_sheet", "controlId": "ctl_jib_sheet", "working": "jib clew <-> self-tacking car", "colorKey": "jibsheet" },
-      { "id": "rope_vang", "controlId": "ctl_vang", "working": "vang mast point <-> vang boom point", "colorKey": "control" },
+      { "id": "rope_vang", "controlId": "ctl_vang", "working": "tackle along the rigid vang strut, mast foot <-> boom", "colorKey": "control" },
       { "id": "rope_topping_lift", "controlId": "ctl_topping_lift", "working": "mast exit <-> boom end", "colorKey": "control" },
-      { "id": "rope_outhaul", "controlId": "ctl_main_furl", "working": "inside the boom (show only paid-out length)", "coupled": "opposite to rope_main_furling_line", "colorKey": "furling" },
-      { "id": "rope_main_furling_line", "controlId": "ctl_main_furl", "working": "mast gearbox drum -> aft", "coupled": "opposite to rope_outhaul", "colorKey": "furling" },
-      { "id": "rope_jib_furling_line", "controlId": "ctl_jib_furl", "working": "furler drum -> aft along the side deck", "colorKey": "furling" },
+      { "id": "rope_outhaul", "controlId": "ctl_main_furl", "working": "two parts along the top of the boom from the sail clew (at the mast slot) to a block on the boom, then forward to the mast", "coupled": "hauled together with the unfurl tail, against the furl tail", "colorKey": "furling" },
+      { "id": "rope_main_furling_line", "controlId": "ctl_main_furl", "working": "mast gearbox drum -> aft; two tails: one furls, the other unfurls", "tails": ["furl", "unfurl"], "colorKey": "furling" },
+      { "id": "rope_jib_furling_line", "controlId": "ctl_jib_furl", "working": "furler drum -> aft along the port side deck via stanchion-base fairleads", "colorKey": "furling" },
       { "id": "rope_main_halyard", "controlId": null, "static": true, "note": "With in-mast furling the main halyard stays hoisted.", "colorKey": "halyard" },
       { "id": "rope_spi_halyard", "controlId": null, "static": true, "note": "Parked. Belongs to the gennaker (not rigged).", "colorKey": "halyard" }
     ]

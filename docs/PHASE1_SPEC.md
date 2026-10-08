@@ -94,10 +94,11 @@ Build everything from primitives and simple extrusions using `hanse508.json`. Lo
 | Keel, rudder, saildrive | Simple solids. Rudder rotates with `ctl_rudder`. |
 | Mast | Box or rounded box, `sectionForeAft × sectionAthwart`, from `footY` to `topY`. |
 | Spreaders, shrouds, forestay, backstay | Thin cylinders/lines. Static. |
-| Boom | Box, pivoting at the gooseneck with angles θ (swing) and ψ (pitch). |
-| Self-tacking track and car | Thin curved bar (arc centred on the jib tack in plan view) and a small box car that slides along it. |
+| Boom | Box, pivoting at the gooseneck with angles θ (swing) and ψ (pitch). Three mainsheet blocks under the middle; outhaul lines along the top. |
+| Rigid vang | Two telescoping tubes from the mast foot to the boom (`rig.vang`), shortening/lengthening as the boom pitches, with the vang tackle alongside. Registry id `part_vang_strut` (strut) and `rope_vang` (tackle). |
+| Self-tacking track and car | **Straight** bar across the deck just in front of the mast, and a small box car that slides along it. |
 | Wheels | Two torus rings with spokes on pedestals. Rotate with the rudder (lock to lock = `wheelTurnsLockToLock`). |
-| Winches, clutch banks, deck blocks, furling drums, gearbox | Small primitives at the given positions. |
+| Winches, clutch banks, deck blocks, furling drums, gearbox, mast-foot turning blocks, sprayhood | Small primitives at the given positions. Render only winches with `present !== false` (one per side). |
 | Masthead wind indicator | Small arrow at the masthead pointing into the test wind. |
 | Water | A large flat plane at y = 0, semi-transparent so the keel stays visible. A subtle grid helps judge scale. |
 | Wind | Light streaks or particles moving across the scene in the test wind direction, speed scaled to wind speed. Must not hide the boat. |
@@ -137,9 +138,11 @@ Test wind: a draggable dial (compass ring with the boat outline in the middle an
 
 A 2D SVG drawing that looks like the real clutch banks in [`docs/reference/photos/`](reference/photos):
 
-- **Bank A** (port, assumed): Main sheet · Main furling · Main furling · Main halyard · Genoa sheet
-- **Bank B** (starboard, assumed): SPI HALYARD · Boom lift · Main outhaul · MAIN SHEET · Vang
-- **JIB ROLL** single clutch, shown separately.
+- **Bank B** (port, left as you face forward): SPI HALYARD · Boom lift · Main outhaul · MAIN SHEET · Vang
+- **Bank A** (starboard, right): Main sheet · Main furling · Main furling · Main halyard · Genoa sheet
+- **JIB ROLL** single clutch on the port side deck, shown separately.
+
+Draw port on the left and starboard on the right, as seen from the helm looking forward.
 
 Each clutch shows the **label exactly as written on the boat** and, smaller, our canonical name (e.g. "Genoa sheet → jib sheet"). Tapping a clutch selects that rope:
 
@@ -193,7 +196,7 @@ Control mapping for `ctl_mainsheet = e %`:
 
 1. **Targets.**
    - Free swing `θ_free` from 8.1.
-   - Pitch target `ψ_t = gravityDropDeg + fill · windLiftMaxDeg · min(1, speed / windLiftReferenceKn)`. This is a teaching approximation: the loaded sail lifts the boom against gravity. Use the main's `fill` from the previous frame to break the loop (fill depends on θ, θ on ψ).
+   - Pitch target `ψ_t = gravityDropDeg + fill · windLiftMaxDeg · min(1, speed / windLiftReferenceKn)`. This is a teaching approximation: the loaded sail lifts the boom against gravity; with no wind the rigid vang's spring keeps the boom from drooping more than `gravityDropDeg`. Use the main's `fill` from the previous frame to break the loop (fill depends on θ, θ on ψ).
    - Wind below 1 kn: no swing target (the boom keeps its current θ), `fill` = 0.
 2. **Hard limits on pitch.**
    - Lower: topping lift, interpolated `toppingLiftHauledDeg` (0 %) → `toppingLiftEasedDeg` (100 %).
@@ -226,8 +229,8 @@ Control mapping for `ctl_mainsheet = e %`:
 
 - The jib is a rigid triangle hinged on its luff (tack → head, along the forestay). The clew can only rotate around the luff axis by an angle φ. Get the φ = 0 clew (on the centreline) by rotating `clewTrimmedRef` around the luff axis until z = 0; side lengths then stay as in `jib.lengths`.
 - When the jib is partly furled, the clew sits at fraction f along the foot from the tack, and the leech shortens accordingly.
-- The **car** sits on the track arc at the point nearest the clew's plan position, clamped to the track ends. It is always on the leeward side, which is what makes it self-tacking.
-- The jib sheet working length is the distance clew → car. Control mapping: `ℓ_avail = ℓ_geoMin + e/100 · maxEaseBeyondMin`, where `ℓ_geoMin` is computed once at startup as the shortest clew–car distance over the allowed rotation range (expect about 0.35–0.4 m; `minClewToCar` in the data is only a sanity reference).
+- The **car** sits on the straight track at the point nearest the clew's plan position, clamped to the track ends. It is always on the leeward side, which is what makes it self-tacking.
+- The jib sheet working length is the distance clew → car. Control mapping: `ℓ_avail = ℓ_geoMin + e/100 · maxEaseBeyondMin`, where `ℓ_geoMin` is computed once at startup as the shortest clew–car distance over the allowed rotation range (expect about 0.35–0.4 m; `minClewToCar` in the data is only a sanity reference). The sheet has a 2:1 purchase (`sheet.purchase`), so rope paid out at the clutch = `purchase · (ℓ_avail − ℓ_geoMin)`.
 - Solve: on the free (leeward) side, find the largest φ such that the chord heading does not exceed |θ_free| and `distance(clew(φ), car(clew)) ≤ ℓ_avail`. Use bisection.
 - Chord heading `h` = horizontal angle of tack → clew from the aft centreline. Jib `AoA = |windFrom| − h`; fill and luffing work as for the main. (Wind shadow from the main on a run is Phase 2.)
 - Jib twist (visual): extra top twist grows with how far the clew has swung beyond the track end (`visual.jibTwistPerDegEasedBeyondTrack`). This shows that an eased self-tacker opens at the top rather than swinging far out.
@@ -238,7 +241,7 @@ Control mapping for `ctl_mainsheet = e %`:
 - Luff on the mast's aft face from the tack (`gooseneck + tackHeightAboveBoom`) to `headY`. The foot runs along the boom to the clew at `f · footLength` (f = unfurled fraction).
 - Mesh: a grid between the luff and the leech, at least 12 rows × 6 columns. For each row, rotate by twist that grows from 0 at the foot to `twist` at the head, where `twist = baseTwistDeg + twistPerDegBoomRise · max(0, ψ)`.
 - Camber offset towards leeward scales with `fill`. When luffing, add a time-varying ripple near the luff.
-- **Furling couples two ropes:** when `ctl_main_furl` goes up (more sail out), the outhaul is hauled in while the furling line pays out, and the reverse when furling. Show both lengths in the panel.
+- **Furling couples three rope ends:** the furling line has two tails (one rolls the sail in, one rolls it out) plus the outhaul. When `ctl_main_furl` goes up (more sail out), the "out" tail and the outhaul are hauled in while the "in" tail pays out; the reverse when furling. Show all three lengths in the panel.
 
 ### 8.7 Rope rendering
 
