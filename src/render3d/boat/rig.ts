@@ -9,7 +9,7 @@ import {
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import {
-  asWire,
+  asThin,
   boxAt,
   cylinderBetween,
   partMesh,
@@ -143,13 +143,13 @@ function buildSpreadersAndShrouds(materials: BoatMaterials): THREE.Object3D[] {
     addWire(chainplate, [mast.x, shrouds.lowerShroudTopY, (side * mast.sectionAthwart) / 2]);
   }
   return [
-    partMesh('part_spreader', spreaderGeometries, materials.spar, spreaderSegments),
-    asWire(partMesh('part_shroud', shroudGeometries, materials.wire, shroudSegments)),
+    asThin(partMesh('part_spreader', spreaderGeometries, materials.spar, spreaderSegments)),
+    asThin(partMesh('part_shroud', shroudGeometries, materials.wire, shroudSegments)),
   ];
 }
 
 function buildStay(id: string, a: Vec3, b: Vec3, materials: BoatMaterials): THREE.Object3D {
-  return asWire(
+  return asThin(
     partMesh(id, [cylinderBetween(a, b, boat.modelDetail.wireRenderRadius, 6)], materials.wire, [
       [a, b],
     ]),

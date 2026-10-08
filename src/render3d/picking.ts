@@ -33,9 +33,9 @@ interface Target {
  * 3. Thin long parts (mast, stays, boom, ...) are found up to `tolerancePx` away.
  * 4. Otherwise the surface the ray hits.
  *
- * Steps 2 and 3 skip parts hidden behind the surface the ray hits. Wires, and surfaces the ray
- * only grazes (a sail seen edge-on from above), hide nothing. The water is see-through: parts under
- * it (keel, rudder) are found through it.
+ * Steps 2 and 3 skip parts hidden behind the surface the ray hits. Wires and thin struts, and
+ * surfaces the ray only grazes (a sail seen edge-on from above), hide nothing. The water is
+ * see-through: parts under it (keel, rudder) are found through it.
  */
 export function createPicker(
   camera: THREE.Camera,
@@ -111,7 +111,7 @@ export function createPicker(
       const boatHit = boatHits[0];
       const waterHit = hits.find((hit) => isWithin(hit.object, water));
       const hiding = boatHits.find(
-        (hit) => !isWire(hit.object) && !grazes(hit, raycaster.ray.direction),
+        (hit) => !isThin(hit.object) && !grazes(hit, raycaster.ray.direction),
       );
       const surfaceDistance = hiding?.distance ?? Infinity;
       const surfacePart = boatHit ? partIdOf(boatHit.object) : null;
@@ -137,8 +137,8 @@ export function createPicker(
   };
 }
 
-function isWire(object: THREE.Object3D): boolean {
-  return (object.userData as Partial<PartUserData>).wire === true;
+function isThin(object: THREE.Object3D): boolean {
+  return (object.userData as Partial<PartUserData>).thin === true;
 }
 
 /** Cosine below which a ray only grazes a surface (about 8° or flatter). */

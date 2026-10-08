@@ -17,8 +17,8 @@ export interface PartUserData {
    * in the object's local frame. See picking.ts.
    */
   hitPoints?: Vec3[];
-  /** A wire: so thin on screen that it never hides a part behind it from a tap. */
-  wire?: boolean;
+  /** A wire or thin strut: so thin on screen that it never hides a part behind it from a tap. */
+  thin?: boolean;
 }
 
 export function v3(p: Vec3): THREE.Vector3 {
@@ -59,9 +59,9 @@ export function smallPartMesh(
   return mesh;
 }
 
-/** Marks a mesh as a wire (stays, shrouds, lifelines), see PartUserData.wire. */
-export function asWire(mesh: THREE.Mesh): THREE.Mesh {
-  (mesh.userData as PartUserData).wire = true;
+/** Marks a mesh as thin (stays, shrouds, lifelines, spreaders), see PartUserData.thin. */
+export function asThin(mesh: THREE.Mesh): THREE.Mesh {
+  (mesh.userData as PartUserData).thin = true;
   return mesh;
 }
 

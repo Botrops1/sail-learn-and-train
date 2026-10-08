@@ -26,6 +26,7 @@ const VIEWS: { preset: CameraPreset; expected: string[] }[] = [
 ];
 const SCREENS = [
   { name: 'phone 3D view', width: 390, height: 380, topBowUp: true },
+  { name: 'foldable 3D view', width: 500, height: 940, topBowUp: false },
   { name: 'desktop 3D view', width: 1008, height: 840, topBowUp: false },
 ];
 
