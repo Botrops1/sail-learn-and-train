@@ -89,9 +89,11 @@ describe('M3b: the eased mainsail presses against the rig instead of passing thr
   }
   // Partly furled, and flapping (sheet eased with the wind further forward).
   for (const wd of [175, -175]) {
-    for (const mf of [80, 60, 40]) cases.push({ ctl_wind_dir: wd, ctl_mainsheet: 100, ctl_main_furl: mf });
+    for (const mf of [80, 60, 40])
+      cases.push({ ctl_wind_dir: wd, ctl_mainsheet: 100, ctl_main_furl: mf });
   }
-  for (const wd of [100, -100, 75, -75]) cases.push({ ctl_wind_dir: wd, ctl_mainsheet: 100, ctl_wind_speed: 25 });
+  for (const wd of [100, -100, 75, -75])
+    cases.push({ ctl_wind_dir: wd, ctl_mainsheet: 100, ctl_wind_speed: 25 });
 
   it('full ease, wind from both sides: no spreader or shroud crosses the sail mesh', () => {
     for (const values of cases) {
@@ -124,7 +126,10 @@ describe('M3b: the eased mainsail presses against the rig instead of passing thr
       expect(gap, `wd ${wd}`).toBeLessThan(0.06);
       // The lower spreader tip on the boom's side is where the row through it bends.
       const side = wd > 0 ? -1 : 1;
-      const tip = spreaderTip(boat.rig.spreaders.sets[0] as (typeof boat.rig.spreaders.sets)[0], side);
+      const tip = spreaderTip(
+        boat.rig.spreaders.sets[0] as (typeof boat.rig.spreaders.sets)[0],
+        side,
+      );
       const nearest = Math.min(...grid.points.map((p) => Math.hypot(...sub(p, tip))));
       expect(nearest, `wd ${wd}`).toBeLessThan(0.15);
     }

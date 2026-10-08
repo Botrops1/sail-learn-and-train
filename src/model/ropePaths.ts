@@ -2,6 +2,7 @@ import { boat, type BoatData } from './boat';
 import type { RopeState } from './boomSolver';
 import { halfBeamAt, sheerAt } from './hullShape';
 import { carPoint, jibClew, jibFurlingLinePaidOut, jibSheetPaidOutFor, jibSheetSpan } from './jib';
+import { channelLane, cutsSprayhood, sprayhoodClearY } from './deckVolumes';
 import { mainFurlLengths } from './mainFurl';
 import { availableSheetLength, deckBlocks, mainsheetBlocks, mainsheetPaidOut } from './mainsheet';
 import {
@@ -83,11 +84,54 @@ export function sagCurve(
   for (let i = 0; i <= segments; i += 1) {
     const t = i / segments;
     const p = add(add(a, scale(sub(b, a), t)), scale(direction, 4 * sag * t * (1 - t)));
-    const floor = Math.min(floorY, a[1], b[1]);
+    // The floor never lifts a rope whose both ends are lower (it only stops the sag).
+    const floor = Math.min(floorY, Math.max(a[1], b[1]));
     points.push([p[0], Math.max(p[1], floor), p[2]]);
   }
   return points;
 }
+
+/**
+ * A slack rope that would hang into the sprayhood lies on it instead (M3b): points inside the
+ * hood are lifted onto its surface, and both ends of a straight piece that would still dip
+ * into it are lifted together.
+ */
+export function drapeOverSprayhood(points: Vec3[], data: BoatData = boat): Vec3[] {
+  const radius = data.visual.ropeRenderRadius;
+  const lift = (p: Vec3) =>
+    cutsSprayhood(p, radius, data)
+      ? Math.max(0, sprayhoodClearY(p[0], p[2], radius, data) + DRAPE_MARGIN_M - p[1])
+      : 0;
+  const out = points.map((p): Vec3 => [p[0], p[1] + lift(p), p[2]]);
+  for (let pass = 0; pass < DRAPE_PASSES; pass += 1) {
+    let moved = false;
+    for (let i = 1; i < out.length; i += 1) {
+      const a = out[i - 1] as Vec3;
+      const b = out[i] as Vec3;
+      let need = 0;
+      for (let k = 1; k < DRAPE_SAMPLES; k += 1) {
+        const t = k / DRAPE_SAMPLES;
+        need = Math.max(
+          need,
+          lift([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]),
+        );
+      }
+      if (need > 0) {
+        // The ends of the whole rope stay where they are fixed.
+        if (i - 1 > 0) out[i - 1] = [a[0], a[1] + need, a[2]];
+        if (i < out.length - 1) out[i] = [b[0], b[1] + need, b[2]];
+        moved = true;
+      }
+    }
+    if (!moved) break;
+  }
+  return out;
+}
+
+/** Gap kept between a draped rope and the hood, metres; passes and samples per straight piece. */
+const DRAPE_MARGIN_M = 0.005;
+const DRAPE_PASSES = 4;
+const DRAPE_SAMPLES = 6;
 
 type BankId = 'clutch_bank_a' | 'clutch_bank_b';
 
@@ -105,21 +149,45 @@ function clutchPoint(bankId: BankId, slot: number, data: BoatData): Vec3 {
   ];
 }
 
-/** A line-lead waypoint on one side (+1 starboard, −1 port), spread out by clutch slot. */
-function leadPoint(point: readonly number[], side: 1 | -1, slot: number, data: BoatData): Vec3 {
-  const p = vec3(point);
-  return [p[0], p[1], side * p[2] + (slot - 3) * data.rig.lineLead.spacing];
+type LineSpec = BoatData['rig']['lineLead']['lines'][number];
+
+/** The lead of one rope end from the mast foot to its clutch (rig.lineLead.lines). */
+export function lineSpec(rope: string, tail?: string, data: BoatData = boat): LineSpec {
+  const spec = data.rig.lineLead.lines.find(
+    (line) => line.rope === rope && (tail === undefined || ('tail' in line && line.tail === tail)),
+  );
+  if (!spec) throw new Error(`No line lead for ${rope} ${tail ?? ''} in hanse508.json.`);
+  return spec;
 }
 
-/** From the mast foot aft along the coachroof to a clutch (straight segments). */
-function leadToClutch(bankId: BankId, slot: number, data: BoatData): Vec3[] {
-  const side = bankId === 'clutch_bank_a' ? 1 : -1;
-  const lead = data.rig.lineLead;
+/** Centre of a line's turning block at the mast foot (on a ring around the mast). */
+export function turningBlockPoint(spec: LineSpec, data: BoatData = boat): Vec3 {
+  const angle = (spec.blockAngleDeg * Math.PI) / 180;
+  const ring = data.rig.lineLead.turningBlockRingRadius;
   return [
-    leadPoint(lead.mastFootTurn, side, slot, data),
-    leadPoint(lead.coachroofAft, side, slot, data),
-    leadPoint(lead.coamingFront, side, slot, data),
-    clutchPoint(bankId, slot, data),
+    data.rig.mast.x - ring * Math.cos(angle),
+    data.rig.mast.footY + data.modelDetail.mastBaseTurningBlocks.blockDiameter / 2,
+    ring * Math.sin(angle),
+  ];
+}
+
+/** Where a line leaves the mast (or its fitting) before dropping to its turning block. */
+export function mastExitPoint(spec: LineSpec): Vec3 | undefined {
+  return 'exit' in spec && spec.exit ? vec3(spec.exit) : undefined;
+}
+
+/**
+ * From the turning block at the mast foot, flat aft into the covered channel on the clutch's
+ * side, along it (under the sprayhood's edge, down onto the coaming) to the clutch.
+ */
+function leadToClutch(spec: LineSpec, data: BoatData): Vec3[] {
+  const bankId = spec.bank as BankId;
+  const side = bankId === 'clutch_bank_a' ? 1 : -1;
+  const frontLane = 'frontLane' in spec && spec.frontLane ? spec.frontLane : spec.slot;
+  return [
+    turningBlockPoint(spec, data),
+    ...channelLane(side, spec.slot, frontLane, data.visual.ropeRenderRadius, data),
+    clutchPoint(bankId, spec.slot, data),
   ];
 }
 
@@ -137,8 +205,12 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
   const boomBottom = -data.modelDetail.boomSection.height / 2 - blockRadius;
   const solution = rig.solution;
   const local = (p: Vec3) => boomLocalToWorld(p, pose, data);
-  const lead = data.rig.lineLead;
-  const mastExit = (side: 1 | -1, slot: number) => leadPoint(lead.mastExit, side, slot, data);
+  const lead = (rope: RopeId, tail?: string) => leadToClutch(lineSpec(rope, tail, data), data);
+  const exitOf = (rope: RopeId) => {
+    const exit = mastExitPoint(lineSpec(rope, undefined, data));
+    if (!exit) throw new Error(`No mast exit for ${rope} in hanse508.json.`);
+    return exit;
+  };
 
   // Mainsheet: two parts from each deck block up to the three boom blocks. Each tail runs
   // forward to the mast-foot organiser (manual lead plan), then aft to its clutch.
@@ -158,8 +230,13 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
   const perPart = sheetSpare / 2;
   const sheetOut = mainsheetPaidOut(rig.applied.mainsheet, data) / 2;
   const blocks = mainsheetBlocks(data);
+  // The tails leave the deck blocks lying on the coachroof; slack parts sag onto it.
+  const onRoof = (p: Vec3): Vec3 => [p[0], Math.max(p[1], data.deck.coachroof.topY + radius), p[2]];
   const sheetPart = (k: number, deck: Vec3): RopeStrand => ({
-    points: sagCurve(boomBlock(k), deck, perPart, segments, data, deck[1]),
+    points: drapeOverSprayhood(
+      sagCurve(boomBlock(k), deck, perPart, segments, data, onRoof(deck)[1]),
+      data,
+    ),
     feed: 0,
   });
   const mainsheet: RopeDrawing = {
@@ -169,11 +246,11 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
       ...blocks.port.map((k) => sheetPart(k, deckPort)),
       ...blocks.starboard.map((k) => sheetPart(k, deckStarboard)),
       {
-        points: [deckPort, ...leadToClutch('clutch_bank_b', 4, data)],
+        points: [onRoof(deckPort), ...lead('rope_mainsheet', 'port')],
         feed: sheetOut,
       },
       {
-        points: [deckStarboard, ...leadToClutch('clutch_bank_a', 1, data)],
+        points: [onRoof(deckStarboard), ...lead('rope_mainsheet', 'starboard')],
         feed: sheetOut,
       },
     ],
@@ -205,7 +282,7 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
         feed: 0,
       },
       {
-        points: [vangBottom, ...leadToClutch('clutch_bank_b', 5, data)],
+        points: [vangBottom, ...lead('rope_vang')],
         feed: vangPaidOut(rig.applied.vang, data),
       },
     ],
@@ -238,7 +315,7 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
         feed: 0,
       },
       {
-        points: [mastExit(-1, 2), ...leadToClutch('clutch_bank_b', 2, data)],
+        points: [exitOf('rope_topping_lift'), ...lead('rope_topping_lift')],
         feed: toppingLiftPaidOut(rig.applied.toppingLift, data),
       },
     ],
@@ -249,6 +326,8 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
   // forward inside the boom (not drawn), and out at the gooseneck. Its marks on the boom stay
   // with the clew (feed 0); the lead to the clutch moves by the rope paid out.
   const furl = mainFurlLengths(rig.applied.mainFurl, data);
+  const gooseneck = vec3(data.rig.boom.gooseneck);
+  const gooseneckSize = data.modelDetail.gooseneckSize;
   const side = -data.modelDetail.outhaulPartSpacing;
   const outhaul: RopeDrawing = {
     id: 'rope_outhaul',
@@ -263,35 +342,26 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
       },
       {
         points: [
-          local([0, boomTop, side]),
-          mastExit(-1, 3),
-          ...leadToClutch('clutch_bank_b', 3, data),
+          [exitOf('rope_outhaul')[0], gooseneck[1] - gooseneckSize / 2, exitOf('rope_outhaul')[2]],
+          exitOf('rope_outhaul'),
+          ...lead('rope_outhaul'),
         ],
         feed: furl.outhaulPaidOut,
       },
     ],
   };
 
-  const gearbox = vec3(data.rig.mainFurlingGearbox.position);
-  const box = data.modelDetail.mainFurlingGearbox;
-  const drum = (z: number): Vec3 => [
-    gearbox[0] - box.foreAft / 2,
-    gearbox[1] - box.height / 2,
-    gearbox[2] + z,
-  ];
+  // Both tails come off the drum under the gearbox and drop to their turning blocks.
+  const tail = (name: 'furl' | 'unfurl', feed: number): RopeStrand => {
+    const spec = lineSpec('rope_main_furling_line', name, data);
+    const exit = mastExitPoint(spec);
+    if (!exit) throw new Error('No drum exit for the main furling line in hanse508.json.');
+    return { points: [exit, ...leadToClutch(spec, data)], feed };
+  };
   const furlingLine: RopeDrawing = {
     id: 'rope_main_furling_line',
     state: 'taut',
-    strands: [
-      {
-        points: [drum(-box.athwart / 4), ...leadToClutch('clutch_bank_a', 2, data)],
-        feed: furl.inTailPaidOut,
-      },
-      {
-        points: [drum(box.athwart / 4), ...leadToClutch('clutch_bank_a', 3, data)],
-        feed: furl.outTailPaidOut,
-      },
-    ],
+    strands: [tail('furl', furl.inTailPaidOut), tail('unfurl', furl.outTailPaidOut)],
   };
 
   return [mainsheet, vang, toppingLift, outhaul, furlingLine, ...jibRopes(rig, data)];
@@ -330,21 +400,28 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
       spare,
       segments,
       data,
-      track.y,
+      // A slack sheet lies on the coachroof (the track is on it).
+      Math.max(track.y, data.deck.coachroof.topY + data.visual.ropeRenderRadius),
     ),
     feed: 0,
   });
-  const trackMiddle: Vec3 = [track.centreX, car[1], 0];
+  // From the car into the mast front, down inside the mast (not drawn), out on its starboard
+  // side, down to the turning block and aft to the "Genoa sheet" clutch.
+  const sheetSpec = lineSpec('rope_jib_sheet', undefined, data);
+  const sheetExit = mastExitPoint(sheetSpec);
+  const sheetEntry = 'entry' in sheetSpec ? sheetSpec.entry : undefined;
+  if (!sheetExit || !sheetEntry) {
+    throw new Error('No mast entry or exit for the jib sheet in hanse508.json.');
+  }
+  const sheetFeed = jibSheetPaidOutFor(jib.sheetAvailable, data);
   const jibSheet: RopeDrawing = {
     id: 'rope_jib_sheet',
     state: jib.sheet.state,
     strands: [
       part(1),
       part(-1),
-      {
-        points: [car, trackMiddle, ...leadToClutch('clutch_bank_a', 5, data)],
-        feed: jibSheetPaidOutFor(jib.sheetAvailable, data),
-      },
+      { points: [car, vec3(sheetEntry)], feed: sheetFeed },
+      { points: [sheetExit, ...leadToClutch(sheetSpec, data)], feed: sheetFeed },
     ],
   };
 
@@ -381,6 +458,12 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
             Math.max(clutch.y, sheerAt(clutch.x, data)) + clutchSize.height / 2,
             clutch.z,
           ],
+          [
+            clutch.x - clutchSize.length / 2,
+            Math.max(clutch.y, sheerAt(clutch.x, data)) + clutchSize.height / 2,
+            clutch.z,
+          ],
+          ...jibRollToWinch(data),
         ],
         feed: jibFurlingLinePaidOut(jib.unfurled, data),
       },
@@ -388,3 +471,42 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
   };
   return [jibSheet, furlingLine];
 }
+
+/**
+ * The jib furling line past its clutch (M3b, owner): aft along the port side deck, over the
+ * coaming outboard of clutch bank B, onto the port winch from forward on its inboard side,
+ * clockwise round the drum (seen from above) and into the self-tailer on top.
+ */
+export function jibRollToWinch(data: BoatData = boat): Vec3[] {
+  const lead = data.cockpitHardware.jibRollClutch.leadToWinch;
+  const radius = data.visual.ropeRenderRadius;
+  const winch = data.cockpitHardware.winches.find((w) => w.id === lead.winch);
+  if (!winch) throw new Error(`Winch ${lead.winch} is missing from hanse508.json.`);
+  const size = data.modelDetail.winch;
+  const points: Vec3[] = [
+    ...lead.sideDeck.map(([x = 0, z = 0]): Vec3 => [x, sheerAt(x, data) + radius, z]),
+    ...lead.overCoaming.map((p) => vec3(p)),
+  ];
+  // Clockwise seen from above (bow up, starboard right): from the inboard side, aft, outboard.
+  const wrapRadius = size.diameter / 2 + radius;
+  const turns = lead.wraps;
+  const steps = turns * WRAP_POINTS_PER_TURN;
+  const bottom = winch.y + lead.wrapBottomAboveWinchBase;
+  const top = winch.y + lead.wrapTopAboveWinchBase;
+  for (let k = 0; k <= steps; k += 1) {
+    const phi = (2 * Math.PI * k) / WRAP_POINTS_PER_TURN;
+    const inboard = -Math.sign(winch.z) || 1;
+    points.push([
+      winch.x - wrapRadius * Math.sin(phi),
+      bottom + ((top - bottom) * k) / steps,
+      winch.z + inboard * wrapRadius * Math.cos(phi),
+    ]);
+  }
+  // Up into the jaws of the self-tailer, just inside the drum's rim.
+  const jaw = size.diameter / 2 - radius;
+  points.push([winch.x - jaw * 0.7, winch.y + size.height - radius, winch.z - jaw * 0.7]);
+  return points;
+}
+
+/** Points per turn of a rope wrapped round a winch drum. */
+const WRAP_POINTS_PER_TURN = 12;

@@ -605,10 +605,10 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     }
   });
 
-  it('the jib sheet is drawn with two parts from the clew to the car, then led to the "Genoa sheet" clutch', () => {
+  it('the jib sheet is drawn with two parts from the clew to the car, then into the mast and from its foot to the "Genoa sheet" clutch', () => {
     const rig = initialRig(controls({ ctl_wind_dir: 90, ctl_jib_sheet: 100 }));
     const sheet = ropeDrawings(rig).find((rope) => rope.id === 'rope_jib_sheet');
-    expect(sheet?.strands).toHaveLength(3);
+    expect(sheet?.strands).toHaveLength(4);
     const clew = jibClew(rig.jibPhi.value, rig.jibSolution.unfurled);
     const car = carPoint(clew);
     for (const part of sheet?.strands.slice(0, 2) ?? []) {
@@ -619,7 +619,11 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
       );
       expect(Math.hypot(last[0] - car[0], last[1] - car[1], last[2] - car[2])).toBeLessThan(0.1);
     }
-    const lead = sheet?.strands[2]?.points ?? [];
+    // M3b: car → into the mast front (strand 2); out of the mast foot → clutch (strand 3).
+    const intoMast = sheet?.strands[2]?.points ?? [];
+    expect(intoMast[0]?.[2]).toBeCloseTo(rig.jibSolution.carZ, 6);
+    expect(Math.abs(intoMast[1]?.[0] ?? 9)).toBeLessThan(boat.rig.mast.sectionForeAft);
+    const lead = sheet?.strands[3]?.points ?? [];
     const end = lead[lead.length - 1] as Vec3;
     const bankA = boat.cockpitHardware.clutchBanks.find((bank) => bank.id === 'clutch_bank_a');
     expect(end[2]).toBeGreaterThan(0);

@@ -70,10 +70,13 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
         expect(sol.mainsheet.slack, `ms ${ms}`).toBeGreaterThan(0.2);
       }
     }
-    // The slack shows: the sheet's parts hang down between the boom and the deck.
+    // The slack shows: the sheet's parts hang down between the boom and the deck. (M3b: the
+    // part to the aftmost boom block sags aft onto the sprayhood and lies on it, so the
+    // check takes the part that hangs most.)
     const rig = initialRig(controls({ ctl_wind_dir: 0, ctl_mainsheet: 100 }));
     const sheet = ropeDrawings(rig).find((rope) => rope.id === 'rope_mainsheet');
-    expect(sagOf(sheet?.strands[0]?.points ?? [])).toBeGreaterThan(0.3);
+    const parts = (sheet?.strands ?? []).slice(0, 2 * boat.rig.mainsheet.partsPerSide);
+    expect(Math.max(...parts.map((part) => sagOf(part.points)))).toBeGreaterThan(0.3);
   });
 
   it('PT-01 easing a sheet never moves the boom further than the wind wants it', () => {

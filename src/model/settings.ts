@@ -21,16 +21,36 @@ export type CameraPreset = (typeof CAMERA_PRESETS)[number];
 export const STEP_SIZES = [1, 5] as const;
 export type StepSize = (typeof STEP_SIZES)[number];
 
+/**
+ * Render detail (M3b): `high` = soft shadows, reflections, finer shapes; `low` = cheaper
+ * lighting and shapes for phones. Stored in the URL like the step size.
+ */
+export const DETAIL_LEVELS = ['high', 'low'] as const;
+export type Detail = (typeof DETAIL_LEVELS)[number];
+
+/** Screens whose shorter side is below this (CSS px) count as phones: they start at low detail. */
+export const PHONE_SCREEN_SHORT_SIDE_PX = 600;
+
+/** The starting detail when the URL does not say: high on desktops and tablets, low on phones. */
+export function defaultDetail(screenWidth: number, screenHeight: number): Detail {
+  return Math.min(screenWidth, screenHeight) < PHONE_SCREEN_SHORT_SIDE_PX ? 'low' : 'high';
+}
+
+export function isDetail(value: string): value is Detail {
+  return (DETAIL_LEVELS as readonly string[]).includes(value);
+}
+
 export interface Settings {
   step: StepSize;
   debug: boolean;
+  detail: Detail;
 }
 
 export interface CameraState {
   preset: CameraPreset;
 }
 
-export const DEFAULT_SETTINGS: Readonly<Settings> = { step: 5, debug: false };
+export const DEFAULT_SETTINGS: Readonly<Settings> = { step: 5, debug: false, detail: 'high' };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
 
 export function isCameraPreset(value: string): value is CameraPreset {

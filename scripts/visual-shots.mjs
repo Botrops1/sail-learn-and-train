@@ -123,7 +123,9 @@ try {
         }
         await page.waitForTimeout(1500);
         const suffix = level ? `-${level}` : '';
-        await page.screenshot({ path: path.join(OUT, `${viewport.name}-${shot.name}${suffix}.png`) });
+        await page.screenshot({
+          path: path.join(OUT, `${viewport.name}-${shot.name}${suffix}.png`),
+        });
         console.log(label);
         await context.close();
       }
@@ -151,9 +153,7 @@ await writeFile(path.join(OUT, 'stats.json'), `${JSON.stringify(stats, null, 2)}
 const table = [
   '| Viewport | Detail | Draw calls | Triangles | FPS (headless, software WebGL) |',
   '|---|---|---|---|---|',
-  ...stats.map(
-    (s) => `| ${s.viewport} | ${s.detail} | ${s.calls} | ${s.triangles} | ${s.fps} |`,
-  ),
+  ...stats.map((s) => `| ${s.viewport} | ${s.detail} | ${s.calls} | ${s.triangles} | ${s.fps} |`),
 ].join('\n');
 await writeFile(path.join(OUT, 'stats.md'), `${table}\n`);
 console.log(table);

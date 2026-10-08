@@ -144,7 +144,15 @@ const SMALL_STARBOARD = ['clutch_bank_a', 'winch_primary_starboard'];
 const SMALL_PART_VIEWS = [
   { cam: 'side-port', expected: [...SMALL_CENTRELINE, ...SMALL_PORT] },
   { cam: 'side-starboard', expected: [...SMALL_CENTRELINE, ...SMALL_STARBOARD] },
-  { cam: 'top', expected: [...SMALL_CENTRELINE, ...SMALL_PORT, ...SMALL_STARBOARD] },
+  // M3b: the furling gearbox is on the mast's aft face under the gooseneck: hidden from above.
+  {
+    cam: 'top',
+    expected: [
+      ...SMALL_CENTRELINE.filter((id) => id !== 'part_main_furling_gearbox'),
+      ...SMALL_PORT,
+      ...SMALL_STARBOARD,
+    ],
+  },
 ];
 
 /** Parts that must never be drawn (not on the reference boat). */

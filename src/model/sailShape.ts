@@ -197,7 +197,9 @@ function sailGrid(input: SailGridInput, data: BoatData, layout?: GridLayout): Sa
     const normal: Vec3 = size > 1e-9 ? scale(across, input.side / size) : [0, 0, input.side];
     const depth = fill * look.camberRatio * chordLength;
     for (let j = 0; j <= columns; j += 1) {
-      const u = layout ? columnU(j, columns, layout.contactU[i] ?? 0.5, layout.contactColumn) : j / columns;
+      const u = layout
+        ? columnU(j, columns, layout.contactU[i] ?? 0.5, layout.contactColumn)
+        : j / columns;
       let offset = depth * 4 * u * (1 - u);
       if (ripple > 0 && u < rippleWidth) {
         const envelope = Math.sin((Math.PI * u) / rippleWidth);
@@ -354,7 +356,10 @@ function wrapAroundRig(
 
     const discs: Disc[] = [];
     const shroudAt = (points: readonly Vec3[]) => {
-      if (contact[1] < (points[0] as Vec3)[1] || contact[1] > (points[points.length - 1] as Vec3)[1])
+      if (
+        contact[1] < (points[0] as Vec3)[1] ||
+        contact[1] > (points[points.length - 1] as Vec3)[1]
+      )
         return;
       const p = pointAtHeight([...points], contact[1]);
       discs.push({ x: p[0], z: p[2], clearance: wire + gap });

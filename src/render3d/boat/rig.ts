@@ -9,6 +9,8 @@ import {
   type BoomPose,
 } from '../../model/rigGeometry';
 import { mainsheetBlocks } from '../../model/mainsheet';
+import { turningBlockPoint } from '../../model/ropePaths';
+import type { Detail } from '../../model/settings';
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import {
@@ -16,6 +18,7 @@ import {
   boxAt,
   cylinderBetween,
   partMesh,
+  sheaveBlock,
   smallPartMesh,
   v3,
   type PickSegment,
@@ -34,8 +37,9 @@ export interface Rig {
 }
 
 /** Mast, spreaders, standing rigging, boom and the rig fittings (PHASE1_SPEC 6.1). */
-export function buildRig(materials: BoatMaterials): Rig {
-  const boomPivot = buildBoom(materials);
+export function buildRig(materials: BoatMaterials, detail: Detail = 'high'): Rig {
+  const segments = detail === 'high' ? 24 : 12;
+  const boomPivot = buildBoom(materials, segments);
   const vang = buildVangStrut(materials);
   const setPose = (pose: BoomPose) => {
     setBoomPose(boomPivot, pose);
@@ -45,7 +49,7 @@ export function buildRig(materials: BoatMaterials): Rig {
   const track = buildSelfTackingTrack(materials);
   return {
     objects: [
-      buildMast(materials),
+      buildMast(materials, segments),
       ...buildSpreadersAndShrouds(materials),
       buildStay(
         'part_forestay',
@@ -63,7 +67,7 @@ export function buildRig(materials: BoatMaterials): Rig {
       ...vang.tubes,
       buildGooseneck(materials),
       buildTurningBlocks(materials),
-      buildDeckBlocks(materials),
+      buildDeckBlocks(materials, segments),
       buildGearbox(materials),
       buildJibFurler(materials),
       track.track,
@@ -86,12 +90,26 @@ export function setBoomPose(pivot: THREE.Object3D, pose: BoomPose): void {
   pivot.rotation.set(0, pose.thetaDeg * DEG, -pose.psiDeg * DEG, 'YZX');
 }
 
-function buildMast(materials: BoatMaterials): THREE.Object3D {
+/** An elliptical tube along y, `foreAft` × `athwart`, from y0 to y1 (in-mast furling section). */
+function ellipticalTube(
+  x: number,
+  y0: number,
+  y1: number,
+  foreAft: number,
+  athwart: number,
+  segments: number,
+): THREE.BufferGeometry {
+  const geometry = new THREE.CylinderGeometry(0.5, 0.5, y1 - y0, segments, 1);
+  geometry.scale(foreAft, 1, athwart);
+  geometry.translate(x, (y0 + y1) / 2, 0);
+  return geometry;
+}
+
+function buildMast(materials: BoatMaterials, segments: number): THREE.Object3D {
   const m = boat.rig.mast;
-  const height = m.topY - m.footY;
   return partMesh(
     'part_mast',
-    [boxAt([m.x, m.footY + height / 2, 0], [m.sectionForeAft, height, m.sectionAthwart])],
+    [ellipticalTube(m.x, m.footY, m.topY, m.sectionForeAft, m.sectionAthwart, segments)],
     materials.spar,
     [
       [
@@ -118,7 +136,7 @@ function buildSpreadersAndShrouds(materials: BoatMaterials): THREE.Object3D[] {
     }
   }
   return [
-    asThin(partMesh('part_spreader', spreaderGeometries, materials.spar, spreaderSegments)),
+    asThin(partMesh('part_spreader', spreaderGeometries, materials.spreader, spreaderSegments)),
     asThin(partMesh('part_shroud', shroudGeometries, materials.wire, shroudSegments)),
   ];
 }
@@ -135,7 +153,7 @@ function buildStay(id: string, a: Vec3, b: Vec3, materials: BoatMaterials): THRE
  * Boom in a pivot group at the gooseneck. In the group's frame the boom points aft (−x);
  * the three mainsheet boom blocks hang under it, centred on mainsheet.boomDistance.
  */
-function buildBoom(materials: BoatMaterials): THREE.Group {
+function buildBoom(materials: BoatMaterials, segments: number): THREE.Group {
   const { boom, mainsheet } = boat.rig;
   const section = boat.modelDetail.boomSection;
   const blockRadius = boat.modelDetail.block.radius;
@@ -145,7 +163,12 @@ function buildBoom(materials: BoatMaterials): THREE.Group {
   pivot.add(
     partMesh(
       'part_boom',
-      [boxAt([-boom.length / 2, 0, 0], [boom.length, section.height, section.width])],
+      [
+        new THREE.CylinderGeometry(0.5, 0.5, boom.length, segments, 1)
+          .scale(section.height, 1, section.width)
+          .rotateZ(Math.PI / 2)
+          .translate(-boom.length / 2, 0, 0),
+      ],
       materials.spar,
       [
         [
@@ -164,7 +187,7 @@ function buildBoom(materials: BoatMaterials): THREE.Group {
   pivot.add(
     smallPartMesh(
       'fit_mainsheet_boom_blocks',
-      blocks.map((p) => new THREE.SphereGeometry(blockRadius, 12, 8).translate(...p)),
+      blocks.flatMap((p) => sheaveBlock(p, [0, 0, 1], blockRadius, [0, 1, 0])),
       materials.block,
       blocks,
     ),
@@ -178,19 +201,23 @@ function buildGooseneck(materials: BoatMaterials): THREE.Object3D {
   return smallPartMesh('part_gooseneck', [boxAt(g, [size, size, size])], materials.fitting, [g]);
 }
 
-function buildDeckBlocks(materials: BoatMaterials): THREE.Object3D {
+/**
+ * Spring-mounted mainsheet deck blocks: each block stands on a short spring that keeps it
+ * upright when the sheet is slack (photo mainsheet-german.jpg).
+ */
+function buildDeckBlocks(materials: BoatMaterials, segments: number): THREE.Object3D {
   const d = boat.rig.mainsheet.deckBlocks;
   const radius = boat.modelDetail.block.radius;
+  const roof = boat.deck.coachroof.topY;
   const points: Vec3[] = [
     [d.x, d.y, -d.halfZ],
     [d.x, d.y, d.halfZ],
   ];
-  return smallPartMesh(
-    'fit_mainsheet_deck_blocks',
-    points.map((p) => new THREE.SphereGeometry(radius, 12, 8).translate(...p)),
-    materials.block,
-    points,
-  );
+  const geometries = points.flatMap((p) => [
+    ...sheaveBlock(p, [0, 0, 1], radius, [0, -1, 0], segments),
+    cylinderBetween([p[0], roof, p[2]], [p[0], p[1] - radius, p[2]], radius * 0.45, 8),
+  ]);
+  return smallPartMesh('fit_mainsheet_deck_blocks', geometries, materials.block, points);
 }
 
 /** In-mast furling gearbox on the mast's aft face. */
@@ -245,8 +272,8 @@ function buildSelfTackingTrack(materials: BoatMaterials): {
   return {
     track: partMesh(
       'fit_self_tacking_track',
-      [cylinderBetween(portEnd, starboardEnd, radius, 8)],
-      materials.fitting,
+      [boxAt([portEnd[0], portEnd[1], 0], [3 * radius, 2 * radius, 2 * portEnd[2] * -1])],
+      materials.dark,
       [[portEnd, starboardEnd]],
     ),
     car,
@@ -294,19 +321,21 @@ function buildVangStrut(materials: BoatMaterials): {
   };
 }
 
-/** Ring of turning blocks around the mast foot, where the lines turn aft. */
+/**
+ * Turning blocks around the mast foot, one per line (rig.lineLead.lines): each sheave stands
+ * upright in the plane from the mast towards its line's lead aft, the line coming down from
+ * the mast and leaving flat along the deck.
+ */
 function buildTurningBlocks(materials: BoatMaterials): THREE.Object3D {
-  const { count, ringRadius, blockDiameter } = boat.modelDetail.mastBaseTurningBlocks;
-  const { mast } = boat.rig;
-  const y = mast.footY + blockDiameter / 2;
-  const points: Vec3[] = Array.from({ length: count }, (_, i) => {
-    const angle = (2 * Math.PI * (i + 0.5)) / count;
-    return [mast.x + ringRadius * Math.cos(angle), y, ringRadius * Math.sin(angle)];
-  });
-  return smallPartMesh(
-    'fit_mast_base_turning_blocks',
-    points.map((p) => new THREE.SphereGeometry(blockDiameter / 2, 10, 6).translate(...p)),
-    materials.block,
-    points,
-  );
+  const radius = boat.modelDetail.mastBaseTurningBlocks.blockDiameter / 2;
+  const points: Vec3[] = [];
+  const geometries: THREE.BufferGeometry[] = [];
+  for (const line of boat.rig.lineLead.lines) {
+    const p = turningBlockPoint(line);
+    const outward: Vec3 = [p[0] - boat.rig.mast.x, 0, p[2]];
+    const axle: Vec3 = [-outward[2], 0, outward[0]];
+    geometries.push(...sheaveBlock(p, axle, radius, [-outward[0], 0, -outward[2]], 12));
+    points.push(p);
+  }
+  return smallPartMesh('fit_mast_base_turning_blocks', geometries, materials.block, points);
 }
