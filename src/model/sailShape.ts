@@ -1,6 +1,8 @@
 import { boat, type BoatData } from './boat';
-import type { Side } from './boomSolver';
+import { curveSide, type Side } from './boomSolver';
+import type { Controls } from './controls';
 import { mainSailCorners, type BoomPose } from './rigGeometry';
+import type { RigState } from './sim';
 import { add, length, scale, sub, type Vec3 } from './vec3';
 
 /**
@@ -23,10 +25,26 @@ export interface MainSailShapeInput {
   unfurled: number;
   /** 0 = luffing, 1 = filled. */
   fill: number;
-  /** The boom's side: the sail twists and curves towards it (leeward). */
+  /** The leeward side: the sail twists and curves towards it (see curveSide). */
   side: Side;
   windSpeedKn: number;
   timeS: number;
+}
+
+/**
+ * The mainsail as drawn for a rig state: the drawn boom pose, the unfurled fraction, the drawn
+ * fill, and the curve towards leeward. Leeward comes from the wind, not the boom, so the curve
+ * never points the wrong way while the boom swings across in a gybe or sails by the lee.
+ */
+export function mainSailInputFor(rig: RigState, controls: Controls): MainSailShapeInput {
+  return {
+    pose: { thetaDeg: rig.theta.value, psiDeg: rig.psi.value },
+    unfurled: rig.applied.mainFurl / 100,
+    fill: rig.fill,
+    side: curveSide(controls.ctl_wind_dir, rig.solution.side),
+    windSpeedKn: controls.ctl_wind_speed,
+    timeS: rig.timeS,
+  };
 }
 
 export interface SailGrid {

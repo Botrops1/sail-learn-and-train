@@ -42,6 +42,14 @@ const SCENES = [
       query: `?wd=${preset.wd}&ws=12&cam=${cam}`,
     })),
   ),
+  // The presets change only the wind (easing is the learner's job). A realistic trim downwind:
+  ...['broad', 'run'].flatMap((name) => {
+    const wd = WIND_PRESETS.find((preset) => preset.name === name)?.wd;
+    return ['side-port', 'top'].map((cam) => ({
+      name: `wind-${name}-sheet-eased-${cam}`,
+      query: `?wd=${wd}&ws=12&ms=80&cam=${cam}`,
+    }));
+  }),
   // WORKFLOW M2 checklist, one picture per check.
   { name: 'pt02-wind-stbd-boom-port-top', query: '?wd=90&ws=12&ms=100&cam=top' },
   { name: 'pt02-wind-port-boom-stbd-top', query: '?wd=-90&ws=12&ms=100&cam=top' },
@@ -52,6 +60,7 @@ const SCENES = [
   { name: 'pt07-vang-eased', query: '?wd=90&ws=20&ms=50&vg=100&cam=side-port' },
   { name: 'pt09-fighting-ropes-tab', query: '?ws=0&tl=0&vg=0&cam=side-port' },
   { name: 'pt12-mainsail-40-out', query: '?wd=90&ws=12&ms=60&mf=40&cam=side-port' },
+  { name: 'pt14-mainsail-furled', query: '?wd=90&ws=12&ms=100&mf=0&cam=top' },
   { name: 'wind-tab', query: '?wd=60&ws=12&cam=side-port', tab: 'Wind' },
   { name: 'card-mainsheet', query: '?wd=60&ws=12&cam=side-port&sel=rope_mainsheet' },
   { name: 'view-tab-debug', query: '?cam=top&debug=1', tab: 'View' },
@@ -209,6 +218,26 @@ async function liveM2Checks() {
     await page.waitForTimeout(250);
     check('gybe at −165', await gybeShown(), 'label shown');
     await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-gybe-wd-165.png') });
+    await context.close();
+  }
+
+  // Tack: wind 40 → −40 across the bow with the dial keys: "Tack", never "GYBE".
+  {
+    const { context, page } = await openPage(phone, 'tack', '?wd=40&ws=12&ms=20&cam=top');
+    await page.getByRole('tab', { name: 'Wind' }).click();
+    await page.getByTestId('wind-dial').focus();
+    let sawGybe = false;
+    let sawTack = false;
+    for (let i = 0; i < 16; i += 1) {
+      await page.keyboard.press('ArrowLeft');
+      await page.waitForTimeout(120);
+      sawGybe ||= await page.getByTestId('gybe-label').isVisible();
+      sawTack ||= await page.getByTestId('tack-label').isVisible();
+    }
+    const url = await page.evaluate(() => window.location.search);
+    check('dial wd 40 → −40', url.includes('wd=-40'), url);
+    check('tack shows "Tack", not "GYBE"', sawTack && !sawGybe, `tack ${sawTack}, gybe ${sawGybe}`);
+    await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-tack-wd-40.png') });
     await context.close();
   }
 

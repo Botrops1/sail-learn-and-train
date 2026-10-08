@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { boat } from '../../model/boat';
 import { mainSailGrid, type MainSailShapeInput } from '../../model/sailShape';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
@@ -12,9 +13,6 @@ export interface MainSailMesh {
   mesh: THREE.Mesh;
   update(input: MainSailShapeInput): void;
 }
-
-/** Below this unfurled fraction the sail is rolled away and not drawn. */
-const MIN_VISIBLE_UNFURLED = 0.005;
 
 export function buildMainSail(materials: BoatMaterials, initial: MainSailShapeInput): MainSailMesh {
   const first = mainSailGrid(initial);
@@ -46,7 +44,8 @@ export function buildMainSail(materials: BoatMaterials, initial: MainSailShapeIn
     geometry.computeVertexNormals();
     geometry.boundingSphere = null;
     geometry.boundingBox = null;
-    const visible = input.unfurled > MIN_VISIBLE_UNFURLED;
+    // Rolled away below the same point where it stops pushing the boom (PT-14).
+    const visible = input.unfurled * 100 >= boat.visual.solver.furledBelowPct;
     mesh.visible = visible;
     // Edges for tap-to-identify: luff, leech and foot.
     const edges: PickSegment[] = [];

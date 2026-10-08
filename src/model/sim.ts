@@ -46,8 +46,10 @@ export interface RigState {
   fill: number;
   /** True while the boom swings across after an accidental gybe. */
   gybing: boolean;
-  /** Seconds left to show the "GYBE" label. */
+  /** Seconds left to show the "GYBE" label (boom crossed with the wind from behind). */
   gybeLabelS: number;
+  /** Seconds left to show the "Tack" label (boom crossed with the wind from ahead). */
+  tackLabelS: number;
   /** Simulation time, seconds (drives the flapping of a luffing sail). */
   timeS: number;
 }
@@ -68,6 +70,7 @@ function boomInput(controls: Controls, rope: AppliedControls): BoomInput {
     mainsheetPct: rope.mainsheet,
     vangPct: rope.vang,
     toppingLiftPct: rope.toppingLift,
+    unfurledPct: rope.mainFurl,
   };
 }
 
@@ -81,12 +84,13 @@ export function initialRig(controls: Controls, data: BoatData = boat): RigState 
   );
   return {
     applied: rope,
-    solution: { ...solution, gybe: false },
+    solution: { ...solution, gybe: false, tack: false },
     theta: { value: solution.thetaDeg, velocity: 0 },
     psi: { value: solution.psiDeg, velocity: 0 },
     fill: solution.fill,
     gybing: false,
     gybeLabelS: 0,
+    tackLabelS: 0,
     timeS: 0,
   };
 }
@@ -107,7 +111,8 @@ function sameInput(a: BoomInput, b: BoomInput): boolean {
     a.windSpeedKn === b.windSpeedKn &&
     a.mainsheetPct === b.mainsheetPct &&
     a.vangPct === b.vangPct &&
-    a.toppingLiftPct === b.toppingLiftPct
+    a.toppingLiftPct === b.toppingLiftPct &&
+    a.unfurledPct === b.unfurledPct
   );
 }
 
@@ -156,11 +161,13 @@ export function step(
   const input = boomInput(controls, rope);
   const solution =
     rig.input && sameInput(rig.input, input)
-      ? { ...rig.solution, gybe: false }
+      ? { ...rig.solution, gybe: false, tack: false }
       : solveBoom(input, { side: rig.solution.side, thetaDeg: rig.solution.thetaDeg }, data);
 
+  // Only a gybe swings fast; a tack crosses at the normal speed.
   const gybing =
-    solution.gybe || (rig.gybing && Math.abs(rig.theta.value - solution.thetaDeg) > GYBE_DONE_DEG);
+    solution.gybe ||
+    (rig.gybing && !solution.tack && Math.abs(rig.theta.value - solution.thetaDeg) > GYBE_DONE_DEG);
   const swingTau = gybing ? v.gybeSwingTimeS : v.boomSmoothingTimeS;
   return {
     applied: rope,
@@ -170,7 +177,8 @@ export function step(
     psi: springTo(rig.psi, solution.psiDeg, dt, v.boomSmoothingTimeS),
     fill: lag(rig.fill, solution.fill, dt, v.boomSmoothingTimeS),
     gybing,
-    gybeLabelS: solution.gybe ? v.gybeLabelS : Math.max(0, rig.gybeLabelS - dt),
+    gybeLabelS: solution.gybe ? v.gybeLabelS : solution.tack ? 0 : Math.max(0, rig.gybeLabelS - dt),
+    tackLabelS: solution.tack ? v.gybeLabelS : solution.gybe ? 0 : Math.max(0, rig.tackLabelS - dt),
     timeS: rig.timeS + dt,
   };
 }

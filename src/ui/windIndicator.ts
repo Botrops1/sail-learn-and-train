@@ -8,7 +8,8 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /**
  * Over the 3D view (PHASE1_SPEC 5.2, 8.1, 8.4): a compact wind indicator (arrow, "from 60° stbd,
- * 12 kn"), the short "GYBE" flash after an accidental gybe, and the "by the lee" warning.
+ * 12 kn"), the short "GYBE" flash after an accidental gybe (wind from behind), a quieter "Tack"
+ * note when the boom crosses with the wind from ahead, and the "by the lee" warning.
  */
 export function createWindIndicator(host: HTMLElement, store: Store): void {
   // Arrow on a bow-up compass: it points where the wind blows to (down = from ahead).
@@ -28,7 +29,10 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
   const byTheLee = el('div', { class: 'rig-alert', 'data-testid': 'by-the-lee-label' }, [
     t('alert.byTheLee'),
   ]);
-  const alerts = el('div', { class: 'rig-alerts', 'aria-live': 'polite' }, [gybe, byTheLee]);
+  const tack = el('div', { class: 'rig-alert rig-alert-tack', 'data-testid': 'tack-label' }, [
+    t('alert.tack'),
+  ]);
+  const alerts = el('div', { class: 'rig-alerts', 'aria-live': 'polite' }, [gybe, tack, byTheLee]);
   host.append(chip, alerts);
 
   const refresh = (state: AppState) => {
@@ -38,6 +42,8 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
     setText(text, t('wind.chip', { from: windFromText(from, true), speed }));
     const flashing = state.rig.gybeLabelS > 0;
     if (gybe.hidden === flashing) gybe.hidden = !flashing;
+    const tacking = state.rig.tackLabelS > 0 && !flashing;
+    if (tack.hidden === tacking) tack.hidden = !tacking;
     const lee = state.rig.solution.byTheLee && !flashing;
     if (byTheLee.hidden === lee) byTheLee.hidden = !lee;
   };

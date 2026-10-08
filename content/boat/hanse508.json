@@ -292,15 +292,16 @@
       "maxSwingSource": "computed from the manual's chainplate position: the boom (half-thickness ~0.13 m) meets the cap shroud at about 72-73 deg",
       "pitch": {
         "$comment": "Boom pitch in degrees, + = boom end up. Phase-1 teaching approximation, prototyped in Python to satisfy PT-07/PT-08 smoothly. Tune visually, keep the tests green.",
-        "toppingLiftHauledDeg": 6,
-        "toppingLiftEasedDeg": -6,
+        "toppingLiftHauledDeg": 4,
+        "toppingLiftEasedDeg": -2,
         "vangHauledDeg": -2,
         "vangEasedDeg": 12,
         "windLiftMaxDeg": 20,
         "windLiftReferenceKn": 20,
         "gravityDropDeg": -3,
         "gravityDropNote": "The rigid vang's gas spring holds the boom up against its own weight, so with no wind the boom only droops slightly. The mainsheet can still pull it lower.",
-        "pitchStiffness": 8
+        "pitchStiffness": 8,
+        "toppingLiftNote": "toppingLiftHauledDeg 4: below the vang's default limit (5 deg at 50 %), so at default settings a hauled topping lift visibly carries the boom; hauling both still makes them fight. toppingLiftEasedDeg -2: the rigid vang strut stops the boom drooping more than about 2 deg, so a fully hauled main sheet cannot pull the boom end far down. Owner-approved assumptions (M2 review)."
       }
     },
     "vang": {
@@ -856,7 +857,9 @@
       "minWindKn": 1,
       "pitchSearchStepDeg": 0.25,
       "tautToleranceDeg": 0.5,
-      "tautToleranceM": 0.01
+      "tautToleranceM": 0.01,
+      "furledBelowPct": 0.5,
+      "furledNote": "Below this much mainsail out there is no sail to push or lift the boom (PT-14); the sail is not drawn either."
     },
     "mainSail": {
       "$comment": "Look of the mainsail mesh (PHASE1_SPEC 8.6). camberRatio: depth of the curve as a fraction of the chord when filled. The luff ripple is the flapping of a luffing sail: amplitude at referenceKn, scaled with the wind speed, strongest at the luff.",

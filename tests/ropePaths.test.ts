@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { boat } from '../src/model/boat';
+import { boat, type BoatData } from '../src/model/boat';
+import { mainsheetBlocks } from '../src/model/mainsheet';
+import { vangStrutLength } from '../src/model/pitchLimits';
 import { defaultControls, type Controls } from '../src/model/controls';
 import { ropeDrawings, sagCurve } from '../src/model/ropePaths';
 import { initialRig } from '../src/model/sim';
@@ -104,5 +106,35 @@ describe('rope drawing (PHASE1_SPEC 8.7)', () => {
     const bottom = tackle[tackle.length - 1] as Vec3;
     expect(distance(bottom, boat.rig.vang.mastPoint as unknown as Vec3)).toBeLessThan(0.1);
     expect(top[1]).toBeGreaterThan(bottom[1]);
+  });
+
+  it('the main sheet has partsPerSide parts on each side (from the data), plus its two tails', () => {
+    const sheet = (data: BoatData) =>
+      ropeDrawings(initialRig(defaultControls(), data), data).find(
+        (rope) => rope.id === 'rope_mainsheet',
+      );
+    expect(boat.rig.mainsheet.partsPerSide).toBe(2);
+    expect(sheet(boat)?.strands).toHaveLength(2 * 2 + 2);
+    expect(mainsheetBlocks().offsets).toHaveLength(3);
+    const three = structuredClone(boat) as BoatData;
+    three.rig.mainsheet.partsPerSide = 3;
+    expect(sheet(three)?.strands).toHaveLength(2 * 3 + 2);
+    expect(mainsheetBlocks(three).offsets).toHaveLength(5);
+  });
+
+  it('"spare" metres use the same rope-parts factor as "paid out" (main sheet, vang)', () => {
+    const sol = initialRig({ ...defaultControls(), ctl_wind_dir: 0, ctl_mainsheet: 80 }).solution;
+    expect(sol.mainsheet.state).toBe('slack');
+    expect(sol.mainsheet.slack).toBeCloseTo(
+      boat.rig.mainsheet.partsPerSide * (sol.sheetAvailable - sol.sheetUsed),
+      9,
+    );
+    const calm = initialRig({ ...defaultControls(), ctl_wind_speed: 0, ctl_vang: 100 }).solution;
+    expect(calm.vang.state).toBe('slack');
+    expect(calm.vang.slack).toBeCloseTo(
+      boat.rig.vang.tacklePurchase *
+        (vangStrutLength(calm.upperDeg) - vangStrutLength(calm.psiDeg)),
+      9,
+    );
   });
 });

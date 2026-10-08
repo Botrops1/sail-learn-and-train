@@ -150,11 +150,13 @@ export function createRopeControls(store: Store): HTMLElement {
       if (control.paidOut) lines.push(t('control.paidOut', { m: metres(control.paidOut(state)) }));
       if (control.id === 'ctl_mainsheet') {
         const calm = state.controls.ctl_wind_speed < boat.visual.solver.minWindKn;
-        const key = calm
-          ? 'main.calm'
-          : state.rig.solution.fill < 0.5
-            ? 'main.luffing'
-            : 'main.filled';
+        const key = state.rig.solution.furled
+          ? 'main.furled'
+          : calm
+            ? 'main.calm'
+            : state.rig.solution.fill < 0.5
+              ? 'main.luffing'
+              : 'main.filled';
         lines.push(t(key, { angle: Math.round(Math.abs(state.rig.solution.thetaDeg)) }));
       }
       if (control.id === 'ctl_main_furl') {

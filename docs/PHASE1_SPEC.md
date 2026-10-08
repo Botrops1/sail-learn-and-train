@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.7, 11)
+Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -172,6 +172,8 @@ Without any rope the boom would weathervane and point downwind:
 
 At wind from near dead astern this is ambiguous. Use **hysteresis**: the boom stays on its current side until the wind comes `visual.gybeHysteresisDeg` or more from the other side (sailing "by the lee"; with 15° the boom crosses at exactly −165° when the wind goes 170 → 180 → −170 → −165), then swings across to the other side. Animate the swing and flash a short "GYBE" label. Phase 2 will add the energy of that swing.
 
+The "GYBE" label and the fast swing are only for a crossing with the wind from behind (`|windFrom| > 90°` at the moment the boom changes sides). When the wind crosses the bow the boom changes sides at the normal speed and a quieter "Tack" label shows instead.
+
 The jib's free direction is the same: its chord wants to point downwind. Its side follows the sign of `windFrom` (the car crosses when the wind crosses the bow); within the gybe hysteresis band near dead astern it stays on the same side as the boom.
 
 ### 8.2 Mainsheet geometry (German mainsheet)
@@ -191,7 +193,7 @@ Control mapping for `ctl_mainsheet = e %`:
 - `L_min = L(0, ψ_lowest)` where `ψ_lowest = min(toppingLiftEasedDeg, vangHauledDeg)`. This is the boom on the centreline at its lowest.
 - `L_max = L(maxSwingDeg, vangEasedDeg)`. Full ease always allows full swing.
 - `L_avail = L_min + e/100 · (L_max − L_min)`.
-- Rope paid out from fully hauled = `partsPerSide · (L_avail − L_min)` (about 11 m at 100 % with the current data).
+- Rope paid out from fully hauled = `partsPerSide · (L_avail − L_min)` (about 10 m at 100 % with the current data).
 
 ### 8.3 Boom solve (each frame)
 
@@ -199,22 +201,23 @@ Control mapping for `ctl_mainsheet = e %`:
    - Free swing `θ_free` from 8.1.
    - Pitch target `ψ_t = gravityDropDeg + fill · windLiftMaxDeg · min(1, speed / windLiftReferenceKn)`. This is a teaching approximation: the loaded sail lifts the boom against gravity; with no wind the rigid vang's spring keeps the boom from drooping more than `gravityDropDeg`. The `fill` here is an estimate that breaks the loop (fill depends on θ, θ on ψ): the fill the main would have with the boom at its **lowest allowed pitch** (the topping-lift limit), where the sheet lets it swing furthest: `fill_lift = fill(|windFrom| − min(|θ_free|, θ_max(lower)))`; 0 below 1 kn, 1 by the lee. (Decided in M2: using the previous frame's fill made the loop bistable near close-hauled, so a 1 % sheet change could move the boom 8–10°.)
    - Wind below 1 kn: no swing target (the boom keeps its current θ), `fill` = 0.
+   - **Mainsail out** (`ctl_main_furl`, fraction f): the wind's lift in `ψ_t` and its swing push (the `(|θ_free| − θ)²` term of the cost in step 3) are multiplied by f. Below `visual.solver.furledBelowPct` there is no sail: treat it exactly like no wind (the boom keeps its θ, rests on its stop, the sheet goes slack; PT-14). The panel says "furled".
 2. **Hard limits on pitch.**
-   - Lower: topping lift, interpolated `toppingLiftHauledDeg` (0 %) → `toppingLiftEasedDeg` (100 %).
+   - Lower: topping lift, interpolated `toppingLiftHauledDeg` (0 %) → `toppingLiftEasedDeg` (100 %). Fully eased, this limit is the rigid vang strut's lowest position (about 2° down): the strut, not the lift, then carries the boom.
    - Upper: vang, interpolated `vangHauledDeg` (0 %) → `vangEasedDeg` (100 %).
    - If lower > upper, the vang and topping lift are **fighting**: set ψ to the midpoint, θ to what the sheet allows at that ψ, and mark both ropes *fighting*.
 3. **Find the pose closest to the targets that the mainsheet allows.**
    - For ψ from `lower` to `min(upper, max(lower, ψ_t))` in 0.25° steps:
      - skip ψ if even `L(0, ψ) > L_avail`;
      - otherwise `θ_max(ψ)` = largest θ with `L(θ, ψ) ≤ L_avail` (bisection), `θ = min(|θ_free|, θ_max)`;
-     - cost = `(|θ_free| − θ)² + pitchStiffness · (ψ_t − ψ)²`.
+     - cost = `f · (|θ_free| − θ)² + pitchStiffness · (ψ_t − ψ)²` (f = mainsail out, 1 when fully out).
    - Take the lowest cost and put θ on the free side (the side from 8.1, including the gybe hysteresis).
    - If no ψ is feasible, the sheet is pulling the boom lower than the topping lift allows: θ = 0, ψ = lower, mark mainsheet and topping lift *fighting*.
    - This was prototyped with the current data: it is smooth across sheet and wind sweeps; at 20 kn on a beam reach the vang changes boom pitch by about 1° at 5 % sheet but about 10–14° at 40–70 % sheet (PT-07, PT-08). Keep it that way when tuning.
 4. **Rope states.**
-   - Mainsheet **taut** when it constrains the boom (`|θ_free| − |θ| > 0.5°` or `ψ < ψ_t − 0.5°`) **and** has no spare rope (`L_avail − L(θ, ψ)` below `visual.solver.tautToleranceM`). Otherwise **slack**, with slack = `L_avail − L(θ, ψ)` (can be 0 m, e.g. head to wind with the sheet hauled in). So a sheet hanging loose while the vang holds the boom down is never called taut.
-   - Vang **taut** when ψ is at its upper limit and `ψ_t` is above it.
-   - Topping lift **taut** when ψ is at its lower limit and something pulls the boom down (gravity or the sheet).
+   - Mainsheet **taut** when it constrains the boom (`|θ_free| − |θ| > 0.5°` or `ψ < ψ_t − 0.5°`) **and** has no spare rope (`L_avail − L(θ, ψ)` below `visual.solver.tautToleranceM`). Otherwise **slack**, with spare rope at the clutch = `partsPerSide · (L_avail − L(θ, ψ))`, the same factor as "paid out" (can be 0 m, e.g. head to wind with the sheet hauled in). So a sheet hanging loose while the vang holds the boom down is never called taut.
+   - Vang **taut** when ψ is at its upper limit and `ψ_t` is above it. Its spare rope is the strut's spare extension times `vang.tacklePurchase` (the factor of "paid out").
+   - Topping lift **taut** when ψ is at its lower limit, something pulls the boom down (gravity or the sheet), and the lift is hauled above the strut's lowest position.
 5. **Smoothing.** Move the displayed θ and ψ towards the solved values with a critically damped spring (time constant about 0.3 s), so changes are visible but quick. A gybe swing uses its own faster spring.
 
 ### 8.4 Angle of attack, fill and luffing
@@ -242,11 +245,13 @@ Control mapping for `ctl_mainsheet = e %`:
 - Luff on the mast's aft face from the tack (`gooseneck + tackHeightAboveBoom`) to `headY`. The foot runs along the boom to the clew at `f · footLength` (f = unfurled fraction).
 - Mesh: a grid between the luff and the leech, at least 12 rows × 6 columns. For each row, rotate by twist that grows from 0 at the foot to `twist` at the head, where `twist = baseTwistDeg + twistPerDegBoomRise · max(0, ψ)`.
 - Camber offset towards leeward scales with `fill`. When luffing, add a time-varying ripple near the luff.
+- Leeward for the camber and the twist is the side away from the **wind** (`−sign(windFrom)`), not the boom's side: by the lee and while the boom swings across in a gybe, the sail still curves away from the wind. Wind dead ahead or astern: the boom's side.
 - **Furling couples three rope ends:** the furling line has two tails (one rolls the sail in, one rolls it out) plus the outhaul. When `ctl_main_furl` goes up (more sail out), the "out" tail and the outhaul are hauled in while the "in" tail pays out; the reverse when furling. Show all three lengths in the panel.
 
 ### 8.7 Rope rendering
 
 - Each rope has a path from data: fixed points plus moving points (boom blocks, clew, car, boom end).
+- The main sheet is drawn with `mainsheet.partsPerSide` parts from each deck block to the boom blocks (`2 · partsPerSide − 1` blocks, the middle one shared); its spare rope is shared equally by all parts.
 - Only the **working segment** can sag. The other segments are straight.
 - Sag: for chord length d and slack s, use a parabola with mid-sag `f = sqrt(3·d·s/8)`, capped at `visual.ropeMaxSagM` (1.5 m). Direction: gravity **at right angles to the rope** (the part of "down" across the rope; the same as straight down for a level rope, and still visible on a steep one such as a mainsheet part). A vertical rope sags aft. A sagging rope never hangs below the deck under it.
 - The visual radius is `visual.ropeRenderRadius` (thicker than real so ropes are visible on a phone), but a rope is never drawn thinner than `SCENE.ropes.minScreenWidthPx` (about 2.5 CSS px) on screen: far from the camera the tube gets wider, close up the data radius is used.

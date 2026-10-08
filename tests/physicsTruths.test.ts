@@ -211,8 +211,8 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
       expect(mainsheetPaidOut(ms + 5)).toBeGreaterThan(mainsheetPaidOut(ms));
     }
     expect(mainsheetPaidOut(0)).toBe(0);
-    // PHASE1_SPEC 8.2: about 11 m at 100 % with the manual's boom height and S.
-    expect(mainsheetPaidOut(100)).toBeCloseTo(11, 0);
+    // PHASE1_SPEC 8.2: about 10 m at 100 % with the manual's boom height and S.
+    expect(mainsheetPaidOut(100)).toBeCloseTo(10, 0);
   });
 
   it('PT-06 near the centreline a little rope gives a lot of angle; far out, a lot of rope gives little angle', () => {
@@ -293,11 +293,21 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
     expect(sol.vang.state).toBe('slack');
   });
 
-  it('PT-09 no wind, topping lift eased: the rigid vang spring holds the boom, the lift hangs slack', () => {
+  it('PT-09 no wind, topping lift eased: the rigid vang strut holds the boom, the lift carries nothing', () => {
     const sol = settle({ ctl_wind_speed: 0, ctl_topping_lift: 100, ctl_vang: 50 });
-    expect(sol.psiDeg).toBeCloseTo(pitch.gravityDropDeg, 6);
+    // The strut stops the boom at toppingLiftEasedDeg (about 2° down), above its gravity droop.
+    expect(sol.psiDeg).toBeCloseTo(Math.max(pitch.gravityDropDeg, pitch.toppingLiftEasedDeg), 6);
     expect(sol.toppingLift.state).toBe('slack');
-    expect(sol.toppingLift.slack).toBeGreaterThan(0.1);
+  });
+
+  it('PT-09 at the default vang (50 %), hauling the topping lift lifts the boom onto it; hauling both fights', () => {
+    const lifted = settle({ ctl_wind_speed: 0, ctl_topping_lift: 0 });
+    expect(lifted.psiDeg).toBeCloseTo(pitch.toppingLiftHauledDeg, 6);
+    expect(lifted.toppingLift.state).toBe('taut');
+    expect(lifted.vang.state).toBe('slack');
+    const both = settle({ ctl_wind_speed: 0, ctl_topping_lift: 0, ctl_vang: 0 });
+    expect(both.toppingLift.state).toBe('fighting');
+    expect(both.vang.state).toBe('fighting');
   });
 
   it('PT-09 topping lift and vang both hauled tight: both are fighting', () => {
@@ -362,6 +372,49 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
   });
 });
 
+describe('PHYSICS_TRUTHS PT-14: a furled sail does not push the boom', () => {
+  it('PT-14 once the main is fully furled, the boom keeps its angle, rests on its stop, the sheet is slack', () => {
+    const reach = { ctl_wind_dir: 90, ctl_wind_speed: 20, ctl_mainsheet: 40, ctl_vang: 100 };
+    let rig = initialRig(controls(reach));
+    expect(rig.solution.psiDeg).toBeGreaterThan(5);
+    const furling = { ...reach, ctl_main_furl: 0 };
+    // While it rolls in, the lift fades and the boom drops onto its stop.
+    let seconds = 0;
+    while (!rig.solution.furled && seconds < 20) {
+      rig = run(rig, furling, 0.5);
+      seconds += 0.5;
+    }
+    expect(rig.solution.furled).toBe(true);
+    const angle = rig.solution.thetaDeg;
+    rig = run(rig, furling, 3);
+    expect(rig.solution.thetaDeg).toBeCloseTo(angle, 9);
+    expect(rig.solution.psiDeg).toBeCloseTo(
+      Math.max(pitch.gravityDropDeg, pitch.toppingLiftEasedDeg),
+      6,
+    );
+    expect(rig.solution.fill).toBe(0);
+    expect(rig.solution.mainsheet.state).toBe('slack');
+  });
+
+  it('PT-14 easing the sheet with the main furled does not move the boom out', () => {
+    const start = initialRig(controls({ ctl_wind_dir: 90, ctl_main_furl: 0, ctl_mainsheet: 10 }));
+    const eased = run(start, { ctl_wind_dir: 90, ctl_main_furl: 0, ctl_mainsheet: 100 }, 3);
+    expect(eased.solution.thetaDeg).toBeCloseTo(start.solution.thetaDeg, 6);
+    expect(eased.solution.mainsheet.state).toBe('slack');
+  });
+
+  it('PT-14 with part of the main out, the wind lifts the boom less', () => {
+    const reach = { ctl_wind_dir: 90, ctl_wind_speed: 20, ctl_mainsheet: 50, ctl_vang: 100 };
+    const full = settle({ ...reach, ctl_main_furl: 100 });
+    const half = settle({ ...reach, ctl_main_furl: 50 });
+    const little = settle({ ...reach, ctl_main_furl: 10 });
+    expect(half.psiTargetDeg).toBeLessThan(full.psiTargetDeg);
+    expect(little.psiTargetDeg).toBeLessThan(half.psiTargetDeg);
+    // Still a sail: it keeps pushing the boom to leeward.
+    expect(little.thetaDeg).toBeLessThan(-20);
+  });
+});
+
 describe('boom solver: general checks (PHASE1_SPEC 11)', () => {
   const winds = Array.from({ length: 73 }, (_, i) => -180 + i * 5);
 
@@ -386,9 +439,11 @@ describe('boom solver: general checks (PHASE1_SPEC 11)', () => {
         ['ctl_mainsheet', { ctl_vang: 0, ctl_wind_speed: 25 }],
         ['ctl_vang', { ctl_mainsheet: 40, ctl_wind_speed: 20 }],
         ['ctl_topping_lift', { ctl_mainsheet: 30 }],
+        ['ctl_main_furl', { ctl_mainsheet: 40, ctl_wind_speed: 20 }],
       ] as const) {
         let previous: BoomSolution | null = null;
-        for (let value = 0; value <= 100; value += 1) {
+        // Mainsail out starts at 1 %: at 0 % there is no sail and the boom keeps its angle (PT-14).
+        for (let value = id === 'ctl_main_furl' ? 1 : 0; value <= 100; value += 1) {
           const values: Partial<Controls> = { ...fixed, ctl_wind_dir: wd, [id]: value };
           const sol = solveBoom(
             {
@@ -397,6 +452,7 @@ describe('boom solver: general checks (PHASE1_SPEC 11)', () => {
               mainsheetPct: values.ctl_mainsheet ?? 30,
               vangPct: values.ctl_vang ?? 50,
               toppingLiftPct: values.ctl_topping_lift ?? 100,
+              unfurledPct: values.ctl_main_furl ?? 100,
             },
             previous
               ? { side: previous.side, thetaDeg: previous.thetaDeg }

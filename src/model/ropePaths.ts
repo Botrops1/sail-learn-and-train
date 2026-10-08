@@ -1,7 +1,7 @@
 import { boat, type BoatData } from './boat';
 import type { RopeState } from './boomSolver';
 import { mainFurlLengths } from './mainFurl';
-import { availableSheetLength, deckBlocks, mainsheetPaidOut } from './mainsheet';
+import { availableSheetLength, deckBlocks, mainsheetBlocks, mainsheetPaidOut } from './mainsheet';
 import {
   toppingLiftLimit,
   toppingLiftPaidOut,
@@ -145,23 +145,21 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
     solution.mainsheet.state === 'fighting'
       ? 0
       : Math.max(0, availableSheetLength(rig.applied.mainsheet, data) - sheetUsed);
-  // partsPerSide parts on each side share the spare rope: L counts one part per side.
+  // L counts one part per side; the rope's spare, partsPerSide · (L_avail − L), is shared by
+  // the 2 · partsPerSide parts, so each part has (L_avail − L) / 2.
   const perPart = sheetSpare / 2;
   const sheetOut = mainsheetPaidOut(rig.applied.mainsheet, data) / 2;
+  const blocks = mainsheetBlocks(data);
+  const sheetPart = (k: number, deck: Vec3): RopeStrand => ({
+    points: sagCurve(boomBlock(k), deck, perPart, segments, data, deck[1]),
+    feed: 0,
+  });
   const mainsheet: RopeDrawing = {
     id: 'rope_mainsheet',
     state: solution.mainsheet.state,
     strands: [
-      { points: sagCurve(boomBlock(1), deckPort, perPart, segments, data, deckPort[1]), feed: 0 },
-      { points: sagCurve(boomBlock(0), deckPort, perPart, segments, data, deckPort[1]), feed: 0 },
-      {
-        points: sagCurve(boomBlock(0), deckStarboard, perPart, segments, data, deckStarboard[1]),
-        feed: 0,
-      },
-      {
-        points: sagCurve(boomBlock(-1), deckStarboard, perPart, segments, data, deckStarboard[1]),
-        feed: 0,
-      },
+      ...blocks.port.map((k) => sheetPart(k, deckPort)),
+      ...blocks.starboard.map((k) => sheetPart(k, deckStarboard)),
       {
         points: [deckPort, ...leadToClutch('clutch_bank_b', 4, data)],
         feed: sheetOut,

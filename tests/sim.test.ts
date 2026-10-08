@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { boat } from '../src/model/boat';
 import { defaultControls, type Controls } from '../src/model/controls';
+import { mainSailInputFor } from '../src/model/sailShape';
 import { AT_REST, initialRig, lag, springTo, step, type RigState } from '../src/model/sim';
 
 function run(rig: RigState, controls: Controls, seconds: number, dt = 1 / 60): RigState {
@@ -72,11 +73,41 @@ describe('rig step (PHASE1_SPEC 7.1, 8.3 step 5, 9.1)', () => {
     expect(rig.gybing).toBe(false);
   });
 
-  it('a tack (wind crossing the bow) changes sides without a GYBE label', () => {
+  it('a tack (wind crossing the bow) changes sides at normal speed with a "Tack" label, not GYBE', () => {
     const base = { ...defaultControls(), ctl_mainsheet: 20 };
     let rig = initialRig({ ...base, ctl_wind_dir: 40 });
-    rig = run(rig, { ...base, ctl_wind_dir: -40 }, 1);
+    rig = run(rig, { ...base, ctl_wind_dir: -40 }, 1 / 60);
     expect(rig.solution.side).toBe(1);
+    expect(rig.solution.tack).toBe(true);
+    expect(rig.solution.gybe).toBe(false);
+    expect(rig.tackLabelS).toBeGreaterThan(0);
     expect(rig.gybeLabelS).toBe(0);
+    expect(rig.gybing).toBe(false);
+    rig = run(rig, { ...base, ctl_wind_dir: -40 }, 1);
+    expect(rig.gybeLabelS).toBe(0);
+  });
+
+  it('crossing with the wind from behind is a gybe (fast swing, GYBE label), never a tack', () => {
+    const base = { ...defaultControls(), ctl_mainsheet: 100 };
+    let rig = run(initialRig({ ...base, ctl_wind_dir: 170 }), { ...base, ctl_wind_dir: -170 }, 1);
+    rig = run(rig, { ...base, ctl_wind_dir: -165 }, 1 / 60);
+    expect(rig.solution.gybe).toBe(true);
+    expect(rig.solution.tack).toBe(false);
+    expect(rig.gybing).toBe(true);
+    expect(rig.tackLabelS).toBe(0);
+  });
+
+  it('the sail curves to leeward of the wind, also by the lee and while the boom swings across', () => {
+    const base = { ...defaultControls(), ctl_mainsheet: 100 };
+    let rig = initialRig({ ...base, ctl_wind_dir: 170 });
+    expect(mainSailInputFor(rig, { ...base, ctl_wind_dir: 170 }).side).toBe(-1);
+    // By the lee: boom still to port, wind from port, so leeward is starboard.
+    rig = run(rig, { ...base, ctl_wind_dir: -170 }, 1);
+    expect(rig.theta.value).toBeLessThan(0);
+    expect(mainSailInputFor(rig, { ...base, ctl_wind_dir: -170 }).side).toBe(1);
+    // Mid-gybe: the drawn boom is still on the port side; the curve already points to starboard.
+    rig = run(rig, { ...base, ctl_wind_dir: -165 }, 1 / 60);
+    expect(rig.theta.value).toBeLessThan(0);
+    expect(mainSailInputFor(rig, { ...base, ctl_wind_dir: -165 }).side).toBe(1);
   });
 });

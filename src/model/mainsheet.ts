@@ -33,6 +33,25 @@ export function sheetLength(pose: BoomPose, data: BoatData = boat): number {
   return Math.sqrt(across + (z + d.halfZ) ** 2) + Math.sqrt(across + (z - d.halfZ) ** 2);
 }
 
+/**
+ * Boom blocks of the main sheet, as steps of `mainsheetBoomBlockSpacing` from the sheet point
+ * (+ = further aft), and which block each rope part goes up to. partsPerSide parts run from each
+ * deck block; the two sides share the middle block (photo: three blocks, two parts per side).
+ */
+export function mainsheetBlocks(data: BoatData = boat): {
+  offsets: number[];
+  port: number[];
+  starboard: number[];
+} {
+  const n = Math.max(1, Math.round(data.rig.mainsheet.partsPerSide));
+  const offsets = Array.from({ length: 2 * n - 1 }, (_, i) => i - (n - 1));
+  return {
+    offsets,
+    port: Array.from({ length: n }, (_, i) => n - 1 - i),
+    starboard: Array.from({ length: n }, (_, i) => -i),
+  };
+}
+
 export interface SheetRange {
   /** Boom on the centreline at its lowest: L(0, ψ_lowest). */
   min: number;

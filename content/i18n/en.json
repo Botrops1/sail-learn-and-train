@@ -99,5 +99,7 @@
   "debug.main": "Main",
   "debug.jib": "Jib",
   "debug.ropes": "Ropes",
-  "main.calm": "No wind: the mainsail hangs loose, boom {angle}° out"
+  "main.calm": "No wind: the mainsail hangs loose, boom {angle}° out",
+  "main.furled": "Mainsail furled (rolled into the mast): no sail for the wind to push, boom {angle}° out",
+  "alert.tack": "Tack: the boom moved across"
 }

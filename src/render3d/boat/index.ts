@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { defaultControls, type Controls } from '../../model/controls';
 import { drawnPose, ropeDrawings } from '../../model/ropePaths';
-import type { MainSailShapeInput } from '../../model/sailShape';
+import { mainSailInputFor } from '../../model/sailShape';
 import { initialRig, type RigState } from '../../model/sim';
 import { buildWindex } from '../wind';
 import { buildKeel, buildRudder, buildSaildrive } from './appendages';
@@ -26,17 +26,6 @@ export interface BoatModel {
   wheelPivots: THREE.Group[];
 }
 
-function sailInput(rig: RigState, controls: Controls): MainSailShapeInput {
-  return {
-    pose: drawnPose(rig),
-    unfurled: rig.applied.mainFurl / 100,
-    fill: rig.fill,
-    side: rig.solution.side,
-    windSpeedKn: controls.ctl_wind_speed,
-    timeS: rig.timeS,
-  };
-}
-
 /**
  * The Hanse 508 (PHASE1_SPEC 6.1), built from primitives using content/boat/hanse508.json.
  * Every mesh carries a registry id in userData.partId. Works without WebGL (pure geometry), so
@@ -52,7 +41,7 @@ export function buildBoat(
   const rigParts = buildRig(materials);
   const rudderPivot = buildRudder(materials);
   const hardware = buildCockpitHardware(materials);
-  const mainSail = buildMainSail(materials, sailInput(rig, controls));
+  const mainSail = buildMainSail(materials, mainSailInputFor(rig, controls));
   const ropes = buildRopes(ropeDrawings(rig));
   const windex = buildWindex(materials);
   root.add(
@@ -71,7 +60,7 @@ export function buildBoat(
 
   const update = (next: RigState, nextControls: Controls, ropeView?: RopeView) => {
     rigParts.setBoomPose(drawnPose(next));
-    mainSail.update(sailInput(next, nextControls));
+    mainSail.update(mainSailInputFor(next, nextControls));
     ropes.update(ropeDrawings(next), ropeView);
     windex.update(nextControls.ctl_wind_dir);
     root.updateMatrixWorld(true);

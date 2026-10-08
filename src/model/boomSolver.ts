@@ -15,7 +15,10 @@ export type RopeState = 'taut' | 'slack' | 'fighting';
 
 export interface RopeStatus {
   state: RopeState;
-  /** Spare rope in the working part, metres (0 when taut or fighting). */
+  /**
+   * Spare rope, metres at the clutch (0 when taut or fighting): the geometric spare times the
+   * rope's parts, the same factor as "paid out" (main sheet: partsPerSide, vang: its tackle).
+   */
   slack: number;
 }
 
@@ -27,6 +30,8 @@ export interface BoomInput {
   mainsheetPct: number;
   vangPct: number;
   toppingLiftPct: number;
+  /** Mainsail out, % unfurled. The wind's push and lift scale with it; 0 = no sail. */
+  unfurledPct: number;
 }
 
 /** What the solver carries over from the previous frame. */
@@ -52,6 +57,10 @@ export interface BoomSolution {
   byTheLee: boolean;
   /** The boom changed sides with the wind from behind the beam: an accidental gybe. */
   gybe: boolean;
+  /** The boom changed sides with the wind forward of the beam: a tack. */
+  tack: boolean;
+  /** The main is rolled away: nothing for the wind to push. */
+  furled: boolean;
   /** Angle of attack of the main, degrees (≥ 0). */
   aoaDeg: number;
   /** 0 = luffing (flapping), 1 = filled. */
@@ -84,7 +93,19 @@ export function initialSide(windFromDeg: number): Side {
 export interface SideDecision {
   side: Side;
   byTheLee: boolean;
+  /** Changed sides with the wind from behind (|windFrom| > 90°): an accidental gybe. */
   gybe: boolean;
+  /** Changed sides with the wind forward of the beam: a tack. */
+  tack: boolean;
+}
+
+/**
+ * The side the sail curves and twists to: away from the wind (leeward), whichever side the
+ * boom is on at the moment (by the lee, or still swinging across in a gybe). Wind dead ahead or
+ * astern: the boom's side.
+ */
+export function curveSide(windFromDeg: number, boomSide: Side): Side {
+  return leewardSide(windFromDeg) ?? boomSide;
 }
 
 /**
@@ -100,13 +121,14 @@ export function decideSide(
 ): SideDecision {
   const wanted = leewardSide(windFromDeg);
   if (windSpeedKn < data.visual.solver.minWindKn || wanted === null || wanted === current) {
-    return { side: current, byTheLee: false, gybe: false };
+    return { side: current, byTheLee: false, gybe: false, tack: false };
   }
   const byTheLeeAngle = 180 - Math.abs(windFromDeg);
   if (byTheLeeAngle < data.visual.gybeHysteresisDeg) {
-    return { side: current, byTheLee: true, gybe: false };
+    return { side: current, byTheLee: true, gybe: false, tack: false };
   }
-  return { side: wanted, byTheLee: false, gybe: Math.abs(windFromDeg) > 90 };
+  const fromBehind = Math.abs(windFromDeg) > 90;
+  return { side: wanted, byTheLee: false, gybe: fromBehind, tack: !fromBehind };
 }
 
 /** Main fill from the angle of attack (PHASE1_SPEC 8.4). */
@@ -147,10 +169,14 @@ export function solveBoom(
   const { solver } = data.visual;
   const pitch = data.rig.boom.pitch;
   const maxSwing = data.rig.boom.maxSwingDeg;
-  const windy = input.windSpeedKn >= solver.minWindKn;
+  // The wind's push and lift scale with the sail out (PT-14); no sail is like no wind.
+  const furled = input.unfurledPct < solver.furledBelowPct;
+  const sail = furled ? 0 : Math.min(1, input.unfurledPct / 100);
+  const windy = input.windSpeedKn >= solver.minWindKn && !furled;
+  const pushKn = windy ? input.windSpeedKn : 0;
 
   // 1. Targets.
-  const decision = decideSide(input.windFromDeg, input.windSpeedKn, memory.side, data);
+  const decision = decideSide(input.windFromDeg, pushKn, memory.side, data);
   const side = decision.side;
   const freeMagnitude = windy
     ? Math.min(Math.abs(input.windFromDeg), maxSwing)
@@ -161,10 +187,12 @@ export function solveBoom(
   const upper = vangLimit(input.vangPct, data);
   const available = availableSheetLength(input.mainsheetPct, data);
 
-  const lift = liftFill(input, freeMagnitude, decision.byTheLee, lower, available, data);
+  const lift = windy
+    ? liftFill(input, freeMagnitude, decision.byTheLee, lower, available, data)
+    : 0;
   const psiTarget =
     pitch.gravityDropDeg +
-    lift * pitch.windLiftMaxDeg * Math.min(1, input.windSpeedKn / pitch.windLiftReferenceKn);
+    sail * lift * pitch.windLiftMaxDeg * Math.min(1, pushKn / pitch.windLiftReferenceKn);
 
   let theta: number;
   let psi: number;
@@ -186,8 +214,9 @@ export function solveBoom(
       const thetaMax = maxSwingFor(available, candidate, data);
       if (thetaMax === null) continue;
       const swing = Math.min(freeMagnitude, thetaMax);
+      // The wind's swing push weighs in proportion to the sail out (PT-14).
       const cost =
-        (freeMagnitude - swing) ** 2 + pitch.pitchStiffness * (psiTarget - candidate) ** 2;
+        sail * (freeMagnitude - swing) ** 2 + pitch.pitchStiffness * (psiTarget - candidate) ** 2;
       if (!best || cost < best.cost) best = { theta: swing, psi: candidate, cost };
     }
     if (best) {
@@ -212,7 +241,7 @@ export function solveBoom(
     ? { state: 'fighting', slack: 0 }
     : sheetConstrains && sheetSlack < solver.tautToleranceM
       ? { state: 'taut', slack: 0 }
-      : { state: 'slack', slack: sheetSlack };
+      : { state: 'slack', slack: data.rig.mainsheet.partsPerSide * sheetSlack };
 
   const atUpper = Math.abs(psi - upper) < 1e-6;
   const atLower = Math.abs(psi - lower) < 1e-6;
@@ -222,12 +251,15 @@ export function solveBoom(
     ? { state: 'fighting', slack: 0 }
     : atUpper && psiTarget > upper
       ? { state: 'taut', slack: 0 }
-      : { state: 'slack', slack: vangSlack };
+      : { state: 'slack', slack: data.rig.vang.tacklePurchase * vangSlack };
   const pulledDown = psiTarget < lower || mainsheet.state !== 'slack';
+  // Fully eased, the topping lift's limit is the rigid vang strut's lowest position
+  // (toppingLiftEasedDeg): there the strut carries the boom, not the lift.
+  const liftCarries = lower > pitch.toppingLiftEasedDeg + 1e-6;
   const toppingLift: RopeStatus =
     fightingLimits || fightingSheet
       ? { state: 'fighting', slack: 0 }
-      : atLower && pulledDown
+      : atLower && pulledDown && liftCarries
         ? { state: 'taut', slack: 0 }
         : { state: 'slack', slack: liftSlack };
 
@@ -246,6 +278,8 @@ export function solveBoom(
     upperDeg: upper,
     byTheLee: decision.byTheLee,
     gybe: decision.gybe,
+    tack: decision.tack,
+    furled,
     aoaDeg,
     fill,
     mainsheet,
