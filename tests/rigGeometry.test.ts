@@ -9,6 +9,7 @@ import {
   selfTackingTrackEnds,
   vangStrutEnds,
 } from '../src/model/rigGeometry';
+import { sheetLength } from '../src/model/mainsheet';
 import { distance, vec3 } from '../src/model/vec3';
 
 describe('static rig geometry (M1)', () => {
@@ -72,5 +73,18 @@ describe('static rig geometry (M1)', () => {
     const lifted = vangStrutEnds({ thetaDeg: 0, psiDeg: 8 })[1];
     expect(lifted[1]).toBeGreaterThan(boomEnd[1]);
     expect(distance(mastEnd, lifted)).toBeGreaterThan(distance(mastEnd, boomEnd));
+  });
+});
+
+describe('mainsheet length (PHASE1_SPEC 8.2)', () => {
+  it('sheetLength is |B − D_port| + |B − D_stbd| with B = boomPoint(boomDistance, θ, ψ)', () => {
+    const d = boat.rig.mainsheet.deckBlocks;
+    for (const thetaDeg of [-80, -30, 0, 12, 55, 80]) {
+      for (const psiDeg of [-6, 0, 7, 12]) {
+        const b = boomPoint(boat.rig.mainsheet.boomDistance, { thetaDeg, psiDeg });
+        const expected = distance(b, [d.x, d.y, -d.halfZ]) + distance(b, [d.x, d.y, d.halfZ]);
+        expect(sheetLength({ thetaDeg, psiDeg })).toBeCloseTo(expected, 12);
+      }
+    }
   });
 });

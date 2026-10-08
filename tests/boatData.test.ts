@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import hanse508 from '../content/boat/hanse508.json';
 import registry from '../content/registry/parts.json';
+import { CONTROL_IDS } from '../src/model/controls';
 import { distance, vec3 } from '../src/model/vec3';
 
 /** Data test (PHASE1_SPEC 11): ids resolve, ropes point to controls, numbers are sane. */
@@ -55,6 +56,28 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
     for (const id of controlIds) expect(registryIds.has(id), id).toBe(false);
   });
 
+  it('the app knows exactly the controls in controls.list', () => {
+    expect([...controlIds].sort()).toEqual([...CONTROL_IDS].sort());
+  });
+
+  it('boom tuning is consistent (PHASE1_SPEC 8.3)', () => {
+    const { pitch, maxSwingDeg } = hanse508.rig.boom;
+    expect(pitch.toppingLiftHauledDeg).toBeGreaterThan(pitch.toppingLiftEasedDeg);
+    expect(pitch.vangEasedDeg).toBeGreaterThan(pitch.vangHauledDeg);
+    expect(pitch.pitchStiffness).toBeGreaterThan(0);
+    expect(hanse508.visual.gybeHysteresisDeg).toBeGreaterThan(0);
+    expect(hanse508.visual.gybeHysteresisDeg).toBeLessThan(180 - maxSwingDeg + 30);
+    expect(hanse508.visual.luffAoaDeg.fullyFilled).toBeGreaterThan(
+      hanse508.visual.luffAoaDeg.fullyLuffing,
+    );
+    expect(hanse508.rig.outhaul.boomBlockDistance).toBeGreaterThanOrEqual(
+      hanse508.sails.main.footLength,
+    );
+    expect(hanse508.rig.outhaul.boomBlockDistance).toBeLessThanOrEqual(hanse508.rig.boom.length);
+    expect(hanse508.visual.mainSail.rows).toBeGreaterThanOrEqual(12);
+    expect(hanse508.visual.mainSail.columns).toBeGreaterThanOrEqual(6);
+  });
+
   it('control defaults lie between min and max', () => {
     for (const control of hanse508.controls.list) {
       expect(control.min, control.id).toBeLessThan(control.max);
@@ -78,6 +101,10 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       ['toppingLift.mastExit', hanse508.rig.toppingLift.mastExit],
       ['jibFurler.drum', hanse508.rig.jibFurler.drum],
       ['mainFurlingGearbox', hanse508.rig.mainFurlingGearbox.position],
+      ['lineLead.mastExit', hanse508.rig.lineLead.mastExit],
+      ['lineLead.mastFootTurn', hanse508.rig.lineLead.mastFootTurn],
+      ['lineLead.coachroofAft', hanse508.rig.lineLead.coachroofAft],
+      ['lineLead.coamingFront', hanse508.rig.lineLead.coamingFront],
       ['jib.tack', hanse508.sails.jib.tack],
       ['jib.head', hanse508.sails.jib.head],
       ['jib.clewTrimmedRef', hanse508.sails.jib.clewTrimmedRef],

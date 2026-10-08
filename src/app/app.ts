@@ -6,6 +6,7 @@ import { t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
 import { createLayout } from '../ui/layout';
 import { createPanel } from '../ui/panel';
+import { createWindIndicator } from '../ui/windIndicator';
 import { createStore } from './store';
 import { parseUrlState } from './urlState';
 import { startUrlSync } from './urlSync';
@@ -32,6 +33,7 @@ export function startApp(host: HTMLElement): void {
   }
 
   if (scene) {
+    createWindIndicator(layout.view, store);
     createInfoCard(layout, store);
     const cameraBar = createCameraBar(layout.view, store);
     const view = scene;
@@ -48,7 +50,11 @@ export function startApp(host: HTMLElement): void {
   let frames = 0;
   let windowStart = performance.now();
   let fps = 0;
+  let last: number | undefined;
   const loop = (now: number) => {
+    // The rig moves towards the controls (lagged ropes, smoothed boom), then it is drawn.
+    store.dispatch({ type: 'step', dt: last === undefined ? 0 : (now - last) / 1000 });
+    last = now;
     scene?.render(now);
     frames += 1;
     if (now - windowStart >= FPS_WINDOW_MS) {

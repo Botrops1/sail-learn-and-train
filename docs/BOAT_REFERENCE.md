@@ -57,6 +57,8 @@ Frame: origin at the mast, on the waterline, on the centreline; **x forward, y u
 | Boom | gooseneck (−0.20, 3.08), length 6.25 m |
 | Mainsheet | boom point 3.05 m from the gooseneck; deck blocks at x = −3.08, z = ±0.42 on the coachroof aft end |
 | Vang | mast (−0.18, 2.05) → boom 2.12 m from the gooseneck |
+| Outhaul | from the clew along the top of the boom to a block 6.20 m from the gooseneck, back forward to the gooseneck, down the mast (**estimate**) |
+| Control-line lead | out of the mast at about y = 2.6, turning blocks at the mast foot, aft along the coachroof edge (z ≈ ±1.08 at its aft end), down onto the coaming (x ≈ −3.4) and aft to the clutch banks (**estimate**, `rig.lineLead`) |
 | Coachroof | x = −3.05 … +2.00, top y = 1.84. Half-width 1.15 at the aft end (drawing), widening to about 1.45 at the mast (**photo estimate**: the self-tacking track ends at the edges of the raised deck in front of the mast) and staying that wide to x = 1.20; front corners cut to half-width 0.92 at x = 2.00; front face slopes back to x = 1.60 at the top (from the reference sketches) |
 | Self-tacking track | straight, about 0.28 m in front of the mast, about 2.8 m end to end (photo estimate; the drawing suggested 1.8 m) |
 | Jib | tack (6.12, 1.89), head (0.31, 20.60), clew about 0.4 m forward of the mast, 2.2 m above the waterline |
@@ -150,12 +152,19 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Turning blocks at the mast foot | 8 blocks in a ring of radius 0.30 m around the mast (`modelDetail.mastBaseTurningBlocks`) | Count and size estimated from photos |
 | Lifelines | stanchions every ~2.1 m along both deck edges from x = −8.2 to +5.4, 0.65 m high, wires at 0.65 and 0.33 m (`modelDetail.lifelines`) | Estimated from photos |
 | Clutch height | the data's y is approximate; the model stands each clutch on the coaming top (banks A and B) or the deck (JIB ROLL) | Not important |
+| Vang tackle purchase | 4 parts (`rig.vang.tacklePurchase`) | **Assumption**: only changes the "metres paid out" shown for the vang (about 0.9 m from fully hauled to fully eased) |
+| Main furling line travel | 8 m of line pass the clutch between fully furled and fully out (`rig.mainFurlingGearbox.lineTravelM`; about 20 turns of a 0.13 m drum) | **Assumption**: only changes the "metres paid out" shown for the two furling tails |
+| Outhaul | block on the boom 6.20 m from the gooseneck; 1 m of outhaul moves the clew 1 m (`rig.outhaul`) | Two lines on top of the boom **confirmed** by photo; block position and purchase estimated |
+| Control-line lead from the mast foot to the clutches | waypoints in `rig.lineLead` | Channels **confirmed** by photo; exact path estimated, only affects the drawing |
+| Rope and sail drawing details | vang tackle drawn 7 cm beside the strut, outhaul parts 6 cm apart, masthead wind indicator 0.6 m long, 0.15 m above the mast (`modelDetail`) | Not important |
 
 ## 6. Open questions for the skipper / next time aboard
 
 1. When unfurling, is the outhaul hauled together with the "out" furling line, or only tensioned at the end?
 2. What does the red button on the engine lever do? (Typically: disengage the gear to rev in neutral; confirm.)
 3. Is the topping lift ("Boom lift") normally eased while sailing, given the rigid vang holds the boom up?
+4. How many parts does the vang tackle have (count the rope parts between the two blocks on the strut)?
+5. Roughly how much main furling line comes out of the "in" clutch when the main goes from fully furled to fully out (a guess in metres is fine)?
 
 Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, straight self-tacking track about 2.8 m long, one winch per side, rigid vang, topping lift line exists, bank sides.
 

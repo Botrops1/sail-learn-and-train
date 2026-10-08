@@ -7,7 +7,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm1';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm2';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 const BASE_PATH = '/sail-learn-and-train/';
 
@@ -21,24 +21,44 @@ const VIEWPORTS = [
     width: 844,
     height: 390,
     layout: 'side',
-    only: ['side-port', 'card-boom'],
+    only: ['wind-beam-side-port', 'pt09-fighting-ropes-tab', 'wind-tab'],
   },
+];
+
+/** Wind presets (PHASE1_SPEC 6.3), shot from the side (port) and from the top (spec 11). */
+const WIND_PRESETS = [
+  { name: 'head', wd: 0 },
+  { name: 'close', wd: 45 },
+  { name: 'beam', wd: 90 },
+  { name: 'broad', wd: 135 },
+  { name: 'run', wd: 175 },
 ];
 
 /** What to show at each size. `tab` is clicked before the shot. */
 const SCENES = [
-  { name: 'side-port', query: '?cam=side-port' },
-  { name: 'side-starboard', query: '?cam=side-starboard' },
-  { name: 'top', query: '?cam=top' },
-  { name: 'bow', query: '?cam=bow' },
-  { name: 'helm', query: '?cam=helm' },
-  { name: 'card-boom', query: '?cam=side-port&sel=part_boom' },
-  { name: 'view-tab', query: '?cam=top&debug=1', tab: 'View' },
+  ...WIND_PRESETS.flatMap((preset) =>
+    ['side-port', 'top'].map((cam) => ({
+      name: `wind-${preset.name}-${cam}`,
+      query: `?wd=${preset.wd}&ws=12&cam=${cam}`,
+    })),
+  ),
+  // WORKFLOW M2 checklist, one picture per check.
+  { name: 'pt02-wind-stbd-boom-port-top', query: '?wd=90&ws=12&ms=100&cam=top' },
+  { name: 'pt02-wind-port-boom-stbd-top', query: '?wd=-90&ws=12&ms=100&cam=top' },
+  { name: 'pt01-head-to-wind-sheet-eased', query: '?wd=0&ws=12&ms=100&cam=side-port' },
+  { name: 'pt03-wind60-sheet-100-luffing', query: '?wd=60&ws=12&ms=100&cam=side-port' },
+  { name: 'pt03-wind60-sheet-30-filled', query: '?wd=60&ws=12&ms=30&cam=side-port' },
+  { name: 'pt07-vang-hauled', query: '?wd=90&ws=20&ms=50&vg=0&cam=side-port' },
+  { name: 'pt07-vang-eased', query: '?wd=90&ws=20&ms=50&vg=100&cam=side-port' },
+  { name: 'pt09-fighting-ropes-tab', query: '?ws=0&tl=0&vg=0&cam=side-port' },
+  { name: 'pt12-mainsail-40-out', query: '?wd=90&ws=12&ms=60&mf=40&cam=side-port' },
+  { name: 'wind-tab', query: '?wd=60&ws=12&cam=side-port', tab: 'Wind' },
+  { name: 'card-mainsheet', query: '?wd=60&ws=12&cam=side-port&sel=rope_mainsheet' },
+  { name: 'view-tab-debug', query: '?cam=top&debug=1', tab: 'View' },
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
 const MUST_IDENTIFY = [
-  'part_mast',
   'part_boom',
   'part_keel',
   'part_hull',
@@ -57,6 +77,10 @@ const MUST_IDENTIFY = [
   'fit_sprayhood',
   'part_lifelines',
   'fit_self_tacking_track',
+  'rope_mainsheet',
+  'rope_vang',
+  'rope_topping_lift',
+  'part_windex',
 ];
 
 /** Small fittings with an enlarged hit area, by side; each must respond where it is visible. */
@@ -126,6 +150,98 @@ const cardPart = (page) =>
     };
   });
 
+/** Text of the mainsheet control's lines ("… paid out", "Mainsail filled, boom 34° out"). */
+const mainsheetMeta = (page) =>
+  page.locator('[data-part-id="rope_mainsheet"] .control-meta').innerText();
+
+const boomAngle = async (page) => {
+  const text = await mainsheetMeta(page);
+  const match = /boom (\d+)° out/.exec(text);
+  return match ? Number(match[1]) : NaN;
+};
+
+/**
+ * M2 live checks (WORKFLOW M2): presets, rope controls and keyboard reach the URL; easing the
+ * sheet from the centre moves the boom more than easing far out (PT-06); wind 170 → 180 →
+ * −170 → −165 gives a gybe (PT-05); a held + button repeats.
+ */
+async function liveM2Checks() {
+  const phone = VIEWPORTS[0];
+  const check = (what, ok, detail) => {
+    if (!ok) problems.push(`live M2 ${what}: ${detail}`);
+    console.log(`live M2 ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
+  };
+
+  // PT-06: angle per 10 % of sheet, near the centre and far out (beam reach, vang eased).
+  const angles = {};
+  for (const ms of [0, 10, 70, 80]) {
+    const { context, page } = await openPage(
+      phone,
+      `pt06 ms=${ms}`,
+      `?wd=90&ws=12&vg=100&ms=${ms}`,
+    );
+    await page.waitForTimeout(400);
+    angles[ms] = await boomAngle(page);
+    await context.close();
+  }
+  const first = angles[10] - angles[0];
+  const late = angles[80] - angles[70];
+  check('PT-06 first vs late 10 %', first > late, `${first}° vs ${late}°`);
+
+  // Gybe: wind 170 → 180 → −170 → −165 with the dial's keyboard (step 5).
+  {
+    const { context, page } = await openPage(phone, 'gybe', '?wd=170&ws=12&ms=100&cam=top');
+    await page.getByRole('tab', { name: 'Wind' }).click();
+    const dial = page.getByTestId('wind-dial');
+    await dial.focus();
+    const gybeShown = () => page.getByTestId('gybe-label').isVisible();
+    const leeShown = () => page.getByTestId('by-the-lee-label').isVisible();
+    for (let i = 0; i < 4; i += 1) {
+      await page.keyboard.press('ArrowRight');
+      await page.waitForTimeout(400);
+    }
+    const url = await page.evaluate(() => window.location.search);
+    check('dial wd 170 → −170', url.includes('wd=-170'), url);
+    check('no gybe at −170', !(await gybeShown()), 'label hidden');
+    check('by the lee at −170', await leeShown(), 'label shown');
+    await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-by-the-lee-wd-170.png') });
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(250);
+    check('gybe at −165', await gybeShown(), 'label shown');
+    await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-gybe-wd-165.png') });
+    await context.close();
+  }
+
+  // Presets, slider keyboard, held + button.
+  {
+    const { context, page } = await openPage(phone, 'controls', '?wd=0&ws=5&ms=30');
+    await page.getByRole('tab', { name: 'Wind' }).click();
+    await page.getByRole('button', { name: 'Beam, starboard' }).click();
+    await page.waitForTimeout(500);
+    let url = await page.evaluate(() => window.location.search);
+    check('preset beam', url.includes('wd=90&ws=12'), url);
+    await page.getByRole('tab', { name: 'Ropes' }).click();
+    await page.getByLabel('Main sheet', { exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    await page.waitForTimeout(500);
+    url = await page.evaluate(() => window.location.search);
+    check('slider arrow key', url.includes('ms=35'), url);
+    const plus = page.getByRole('button', { name: 'More: Vang' });
+    const box = await plus.boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.waitForTimeout(1500);
+    await page.mouse.up();
+    await page.waitForTimeout(500);
+    url = await page.evaluate(() => window.location.search);
+    const vg = Number(/vg=(\d+)/.exec(url)?.[1]);
+    check('held + repeats', vg >= 70, `vg=${vg}`);
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: path.join(OUT_DIR, 'live-phone-after-preset-and-controls.png') });
+    await context.close();
+  }
+}
+
 try {
   for (const viewport of VIEWPORTS) {
     for (const scene of SCENES) {
@@ -142,6 +258,10 @@ try {
         innerWidth: window.innerWidth,
         innerHeight: window.innerHeight,
         sceneError: document.querySelector('.scene-error')?.textContent ?? null,
+        panelOverflow: (() => {
+          const body = document.querySelector('.panel-body');
+          return body ? body.scrollWidth - body.clientWidth : 0;
+        })(),
         version: document.querySelector('[data-testid="build-version"]')?.textContent ?? null,
         url: window.location.search,
       }));
@@ -159,6 +279,9 @@ try {
         );
       }
       if (facts.sceneError) problems.push(`${label}: ${facts.sceneError}`);
+      if (facts.panelOverflow > 0) {
+        problems.push(`${label}: panel content is ${facts.panelOverflow} px too wide`);
+      }
 
       const file = path.join(OUT_DIR, `${viewport.name}-${scene.name}.png`);
       await page.screenshot({ path: file });
@@ -243,6 +366,14 @@ try {
         }
         if (!ok) missing.push(id);
       }
+      // The mast is thin and sits between the sails' edges: a tap right on it must find it.
+      if (view.cam !== 'top') {
+        const mast = await page.evaluate(() => window.__sailDebug.project(0, 10, 0));
+        await page.mouse.click(box.x + mast.x, box.y + mast.y);
+        const part = await cardPart(page);
+        if (part) await page.keyboard.press('Escape');
+        if (part?.id !== 'part_mast') missing.push(`part_mast (got ${part?.id ?? 'nothing'})`);
+      }
       if (missing.length > 0) problems.push(`${label}: no card for ${missing.join(', ')}`);
       console.log(
         `${label}: ${view.expected.length - missing.length}/${view.expected.length} respond`,
@@ -264,7 +395,8 @@ try {
   ];
   for (const step of steps) {
     await page.setViewportSize({ width: step.width, height: step.height });
-    await page.waitForTimeout(150);
+    // Software WebGL in the headless browser is slow: give the resize event time to land.
+    await page.waitForTimeout(800);
     const layout = await page.evaluate(() => document.documentElement.dataset.layout);
     const ok = layout === step.layout;
     if (!ok)
@@ -278,8 +410,9 @@ try {
     if (!ok) problems.push(`live ${what}: got ${search}, expected ${expected}`);
     console.log(`live ${what} -> ${search} ${ok ? 'ok' : 'WRONG'}`);
   };
-  await page.getByRole('button', { name: 'Top' }).click();
-  await expectUrl('Top button', '?v=1&cam=top&step=5');
+  const c = 'ms=30&vg=50&tl=100&mf=100&wd=60&ws=12';
+  await page.getByRole('button', { name: 'Top', exact: true }).click();
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -287,15 +420,15 @@ try {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', '?v=1&cam=free&step=5');
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
-  await expectUrl('View tab', '?v=1&cam=side-starboard&step=1&debug=1');
-  await page.waitForTimeout(600);
-  await page.screenshot({ path: path.join(OUT_DIR, 'live-desktop-after-drag-and-starboard.png') });
+  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&debug=1`);
   await context.close();
+
+  await liveM2Checks();
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

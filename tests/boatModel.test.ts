@@ -2,11 +2,21 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import registry from '../content/registry/parts.json';
 import { boat } from '../src/model/boat';
+import { defaultControls } from '../src/model/controls';
+import { initialRig } from '../src/model/sim';
 import { buildBoat } from '../src/render3d/boat';
 
+/** No wind, topping lift holding the boom level: the boom stays on the centreline at ψ = 0. */
+const CENTRED = {
+  ...defaultControls(),
+  ctl_wind_dir: 0,
+  ctl_wind_speed: 0,
+  ctl_topping_lift: 50,
+};
+
 /** The 3D model can be built without WebGL, so its structure is tested here. */
-describe('static boat model (M1)', () => {
-  const model = buildBoat();
+describe('boat model', () => {
+  const model = buildBoat(CENTRED);
   const meshes: THREE.Mesh[] = [];
   model.root.traverse((object) => {
     if (object instanceof THREE.Mesh) meshes.push(object);
@@ -18,7 +28,7 @@ describe('static boat model (M1)', () => {
     for (const mesh of meshes) expect(registryIds, mesh.name).toContain(mesh.userData.partId);
   });
 
-  it('builds the parts listed in PHASE1_SPEC 6.1 (without ropes and wind: M2)', () => {
+  it('builds the parts listed in PHASE1_SPEC 6.1', () => {
     const expected = [
       'part_hull',
       'part_deck',
@@ -56,6 +66,12 @@ describe('static boat model (M1)', () => {
       'part_bow',
       'part_companionway',
       'part_gooseneck',
+      'part_windex',
+      'rope_mainsheet',
+      'rope_vang',
+      'rope_topping_lift',
+      'rope_outhaul',
+      'rope_main_furling_line',
     ];
     for (const id of expected) expect(partIds, id).toContain(id);
   });
@@ -90,10 +106,11 @@ describe('static boat model (M1)', () => {
       });
       return box;
     };
+    const rig = initialRig(CENTRED);
     const before = strut().max.y;
-    model.setBoomPose({ thetaDeg: 0, psiDeg: 10 });
+    model.update({ ...rig, psi: { value: 10, velocity: 0 } }, CENTRED);
     const after = strut().max.y;
-    model.setBoomPose({ thetaDeg: 0, psiDeg: 0 });
+    model.update(rig, CENTRED);
     expect(after).toBeGreaterThan(before);
     expect(strut().max.y).toBeCloseTo(before, 6);
   });
@@ -112,7 +129,11 @@ describe('static boat model (M1)', () => {
     expect(box.max.x - box.min.x).toBeCloseTo(boat.hull.bowFittingTipX - boat.hull.transomX, 1);
     expect(box.max.z - box.min.z).toBeCloseTo(boat.dimensions.beam, 1);
     expect(-box.min.y).toBeCloseTo(boat.dimensions.draft, 1);
-    expect(box.max.y).toBeCloseTo(boat.rig.mast.topY, 1);
+    // The masthead wind indicator stands just above the mast top.
+    expect(box.max.y).toBeGreaterThanOrEqual(boat.rig.mast.topY);
+    expect(box.max.y).toBeLessThan(
+      boat.rig.mast.topY + boat.modelDetail.windexHeightAboveMast + 0.1,
+    );
   });
 
   it('hull spans stem to transom and sits on the waterline', () => {
@@ -149,8 +170,15 @@ describe('static boat model (M1)', () => {
     expect(box.min.y).toBeGreaterThan(1);
   });
 
-  it('rope-free M1: no rope meshes yet', () => {
-    for (const id of partIds) expect(id.startsWith('rope_'), id).toBe(false);
+  it('M2 draws the mainsail ropes only: no jib sheet or jib furling line yet (M3)', () => {
+    const ropes = [...partIds].filter((id) => id.startsWith('rope_')).sort();
+    expect(ropes).toEqual([
+      'rope_main_furling_line',
+      'rope_mainsheet',
+      'rope_outhaul',
+      'rope_topping_lift',
+      'rope_vang',
+    ]);
   });
 
   it('optional sails are data-driven: the gennaker is not built while disabled', () => {

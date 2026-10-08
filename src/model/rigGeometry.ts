@@ -118,3 +118,25 @@ export function selfTackingTrackEnds(data: BoatData = boat): [Vec3, Vec3] {
 export function vangStrutEnds(pose: BoomPose = CENTRED_BOOM, data: BoatData = boat): [Vec3, Vec3] {
   return [vec3(data.rig.vang.mastPoint), boomPoint(data.rig.vang.boomDistance, pose, data)];
 }
+
+/**
+ * A point given in the boom's own frame (origin at the gooseneck, −x along the boom towards
+ * its end, y up from the boom's centreline, z to starboard when the boom is centred) in boat
+ * coordinates for a boom pose. Same rotation as boomPoint: pitch first, then swing.
+ */
+export function boomLocalToWorld(
+  local: Vec3,
+  pose: BoomPose = CENTRED_BOOM,
+  data: BoatData = boat,
+): Vec3 {
+  const theta = pose.thetaDeg * DEG;
+  const psi = pose.psiDeg * DEG;
+  const [x, y, z] = local;
+  const px = x * Math.cos(psi) + y * Math.sin(psi);
+  const py = -x * Math.sin(psi) + y * Math.cos(psi);
+  return add(vec3(data.rig.boom.gooseneck), [
+    px * Math.cos(theta) + z * Math.sin(theta),
+    py,
+    -px * Math.sin(theta) + z * Math.cos(theta),
+  ]);
+}

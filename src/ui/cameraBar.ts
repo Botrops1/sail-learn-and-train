@@ -24,8 +24,9 @@ export function createCameraBar(host: HTMLElement, store: Store): HTMLElement {
   });
   host.append(bar);
 
-  const sync = () => {
-    const active = store.getState().camera.preset;
+  const sync = (state = store.getState(), previous?: typeof state) => {
+    if (previous && state.camera === previous.camera) return;
+    const active = state.camera.preset;
     for (const { preset, button } of buttons) {
       button.setAttribute('aria-pressed', String(preset === active));
     }

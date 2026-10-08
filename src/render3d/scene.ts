@@ -5,6 +5,7 @@ import { buildBoat } from './boat';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
 import { SCENE } from './sceneConfig';
+import { buildWindStreaks } from './wind';
 
 export interface SceneView {
   readonly pixelRatio: number;
@@ -17,8 +18,9 @@ export interface SceneView {
 }
 
 /**
- * The 3D view (PHASE1_SPEC 6): sky, semi-transparent water with a scale grid, the static
- * Hanse 508 (M1), the orbit camera with presets, and tap-to-identify.
+ * The 3D view (PHASE1_SPEC 6): sky, semi-transparent water with a scale grid, the Hanse 508
+ * with its moving boom, mainsail and ropes, wind streaks, the orbit camera with presets, and
+ * tap-to-identify. Each frame draws the rig as the store holds it.
  * Boat frame = three.js frame: x forward, y up, z starboard (PHASE1_SPEC 4).
  */
 export function createScene(host: HTMLElement, store: Store): SceneView {
@@ -48,9 +50,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   fill.position.set(...SCENE.light.fillDirection);
   scene.add(sun, fill);
 
-  const boatModel = buildBoat();
+  const initial = store.getState();
+  const boatModel = buildBoat(initial.controls, initial.rig);
   const water = buildWater();
-  scene.add(boatModel.root, water);
+  const streaks = buildWindStreaks();
+  scene.add(boatModel.root, water, streaks.object);
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
@@ -64,13 +68,19 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     store.dispatch({ type: 'select', partId });
   });
 
-  // Debug only (`?debug=1`): lets the screenshot script aim taps at the small parts.
+  // Debug only (`?debug=1`): lets the screenshot script aim taps at small and thin parts.
   if (store.getState().settings.debug) {
     Object.assign(window, {
       __sailDebug: {
         hitCentres: () => {
           const rect = renderer.domElement.getBoundingClientRect();
           return picker.hitCentres(rect.width, rect.height);
+        },
+        /** Canvas position (CSS px) of a point in boat coordinates. */
+        project: (x: number, y: number, z: number) => {
+          const rect = renderer.domElement.getBoundingClientRect();
+          const ndc = new THREE.Vector3(x, y, z).project(camera);
+          return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
       },
     });
@@ -93,6 +103,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       rig.setViewport(width, height, bottomInset, { topBowUp: stacked });
     },
     render(now) {
+      const state = store.getState();
+      boatModel.update(state.rig, state.controls);
+      streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
       rig.update(now);
       renderer.render(scene, camera);
     },

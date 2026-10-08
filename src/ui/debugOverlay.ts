@@ -1,4 +1,5 @@
 import { BUILD_INFO } from '../app/buildInfo';
+import type { RopeStatus } from '../model/boomSolver';
 import type { Store } from '../app/store';
 import { el } from './dom';
 import { t } from './i18n';
@@ -31,7 +32,11 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
   return {
     update(fps, viewport, pixelRatio) {
       if (box.hidden) return;
-      const { camera, settings, selection } = store.getState();
+      const { camera, settings, selection, rig } = store.getState();
+      const sol = rig.solution;
+      const deg = (value: number) => `${value.toFixed(1)}°`;
+      const rope = (name: string, status: RopeStatus) =>
+        `${name} ${status.state}${status.state === 'slack' ? ` ${status.slack.toFixed(2)} m` : ''}`;
       const rows: [string, string][] = [
         [t('debug.fps'), fps.toFixed(0)],
         [t('debug.layout'), t(viewport.mode === 'side' ? 'layout.side' : 'layout.stacked')],
@@ -41,6 +46,14 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
         [t('debug.cam'), camera.preset],
         [t('debug.selection'), selection ?? '–'],
         [t('debug.step'), `${settings.step} %`],
+        [t('debug.boom'), `${deg(rig.theta.value)} ${deg(rig.psi.value)}`],
+        [t('debug.free'), `${deg(sol.thetaFreeDeg)} ${deg(sol.psiTargetDeg)}`],
+        [t('debug.limits'), `${deg(sol.lowerDeg)} … ${deg(sol.upperDeg)}`],
+        [t('debug.main'), `AoA ${deg(sol.aoaDeg)} fill ${sol.fill.toFixed(2)}`],
+        [t('debug.jib'), 'φ – (M3)'],
+        [t('debug.ropes'), rope('sheet', sol.mainsheet)],
+        ['', rope('vang', sol.vang)],
+        ['', rope('lift', sol.toppingLift)],
         [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
       ];
       const text = rows.map(([label, value]) => `${label.padEnd(12)}${value}`).join('\n');
