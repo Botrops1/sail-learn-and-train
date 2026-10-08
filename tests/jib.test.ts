@@ -8,7 +8,7 @@ import {
   jibFurlingLinePaidOut,
   jibHeadingDeg,
   jibMaxPhiDeg,
-  jibSheetMin,
+  jibSheetHauled,
   jibSheetPaidOut,
   jibSheetPaidOutFor,
   jibSheetReleased,
@@ -65,6 +65,12 @@ interface SweepStep {
    * 1 % of main sheet), and 1 % of furl frees about 6 cm of sheet: up to about 8.5° per step.
    */
   nearHeld: boolean;
+  /**
+   * The sheet was hauled off its release point (100 %) with the jib partly furled: the extra
+   * rope the furl took out is taken in at once, and the jib moves in to its sheet angle (up to
+   * about 31° with the jib mostly rolled up).
+   */
+  leftRelease: boolean;
 }
 
 /** Solves the jib for one control swept 1 % at a time, the other jib control fixed. */
@@ -78,6 +84,18 @@ function jibSweep(
   const side = wd > 0 ? -1 : 1;
   const direction = to >= from ? 1 : -1;
   const solutions: JibSolution[] = [];
+  // Start like a link does: the jib at its angle fully out (see initialRig).
+  const fullyOut = solveJib(
+    {
+      windFromDeg: wd,
+      windSpeedKn: 12,
+      sheetPct: id === 'ctl_jib_sheet' ? from : fixed,
+      unfurledPct: 100,
+      sheetReleased: jibSheetReleased(id === 'ctl_jib_sheet' ? from : fixed),
+      boomSide: side,
+    },
+    { side, phiDeg: 0, unfurled: 1 },
+  );
   let previous: JibSolution | null = null;
   for (let value = from; direction * (to - value) >= 0; value += direction) {
     const jib = solveJib(
@@ -89,7 +107,7 @@ function jibSweep(
         sheetReleased: jibSheetReleased(id === 'ctl_jib_sheet' ? value : fixed),
         boomSide: side,
       },
-      previous ?? { side, phiDeg: 0, unfurled: 1 },
+      previous ?? { side, phiDeg: fullyOut.phiDeg, unfurled: 1 },
     );
     solutions.push(jib);
     previous = jib;
@@ -106,6 +124,8 @@ function jibSweep(
       value: from + direction * i,
       change: Math.abs(jib.headingDeg - (solutions[i - 1]?.headingDeg ?? 0)),
       blocked: jib.furlBlocked,
+      leftRelease:
+        (solutions[i - 1]?.sheetReleased ?? false) && !jib.sheetReleased && jib.unfurled < 1,
       nearHeld: held.slice(Math.max(0, i - 2), i + 2).some(Boolean),
     };
   });
@@ -140,9 +160,13 @@ describe('jib geometry (PHASE1_SPEC 8.5)', () => {
     }
   });
 
-  it('ℓ_geoMin is the clew–car distance with the jib centred, about 0.35 m (minClewToCar)', () => {
-    expect(jibSheetMin()).toBeCloseTo(jibSheetSpan(0), 9);
-    expect(jibSheetMin()).toBeCloseTo(boat.sails.jib.sheet.minClewToCar, 1);
+  it('fully hauled, the jib sits with the car just at the end of the track, about 14° out (ℓ_hauled ≈ 0.53 m)', () => {
+    expect(jibSheetHauled()).toBeCloseTo(boat.sails.jib.sheet.hauledClewToCar, 1);
+    const hauled = settle({ ctl_wind_dir: 90, ctl_jib_sheet: 0 });
+    expect(Math.abs(hauled.carZ)).toBeCloseTo(halfSpan, 3);
+    expect(Math.abs(hauled.headingDeg)).toBeGreaterThan(13);
+    expect(Math.abs(hauled.headingDeg)).toBeLessThan(15);
+    expect(jibSheetSpan(hauled.phiDeg)).toBeCloseTo(jibSheetHauled(), 6);
   });
 
   it('the sheet span grows steadily as the jib swings out, the same on both sides (the solver bisects on it)', () => {
@@ -160,7 +184,7 @@ describe('jib geometry (PHASE1_SPEC 8.5)', () => {
   it('jib sheet: 2:1, so the rope paid out at the clutch is twice the eased working length', () => {
     expect(boat.sails.jib.sheet.purchase).toBe(2);
     expect(jibSheetPaidOut(0)).toBe(0);
-    expect(jibSheetPaidOut(100)).toBeCloseTo(2 * boat.sails.jib.sheet.maxEaseBeyondMin, 9);
+    expect(jibSheetPaidOut(100)).toBeCloseTo(2 * boat.sails.jib.sheet.maxEaseBeyondHauled, 9);
     for (let js = 0; js < 100; js += 5) {
       expect(jibSheetPaidOut(js + 5)).toBeGreaterThan(jibSheetPaidOut(js));
     }
@@ -209,17 +233,31 @@ describe('PHYSICS_TRUTHS Phase 1 (M3: self-tacking jib)', () => {
     }
   });
 
-  it('PT-10 the car is always on the leeward side, at the end of the track once the jib is out', () => {
-    for (let wd = 10; wd <= 165; wd += 5) {
-      for (const [w, side] of [
-        [wd, -1],
-        [-wd, 1],
-      ] as const) {
-        const jib = settle({ ctl_wind_dir: w, ctl_jib_sheet: 50 });
-        expect(jib.side, `wd ${w}`).toBe(side);
-        expect(Math.sign(jib.carZ), `wd ${w}`).toBe(side);
+  it('PT-10 the car is always on the leeward side, at the end of the track once the jib is out, also with the sheet fully hauled', () => {
+    for (const js of [0, 10, 30, 50, 100]) {
+      for (let wd = 10; wd <= 165; wd += 5) {
+        for (const [w, side] of [
+          [wd, -1],
+          [-wd, 1],
+        ] as const) {
+          const jib = settle({ ctl_wind_dir: w, ctl_jib_sheet: js });
+          expect(jib.side, `wd ${w} js ${js}`).toBe(side);
+          expect(Math.sign(jib.carZ), `wd ${w} js ${js}`).toBe(side);
+          // Wind from 15° or more aft of the bow pushes the jib past the track end.
+          if (wd >= 15) expect(Math.abs(jib.carZ), `wd ${w} js ${js}`).toBeCloseTo(halfSpan, 6);
+        }
       }
     }
+  });
+
+  it('PT-10 with the sheet fully hauled (review of M3): wind +30 → −30, the car slides across and the jib fills on the new side', () => {
+    let rig = initialRig(controls({ ctl_wind_dir: 30, ctl_jib_sheet: 0 }));
+    expect(rig.jibSolution.carZ).toBeCloseTo(-halfSpan, 6);
+    expect(rig.jibSolution.fill).toBeGreaterThan(0.95);
+    rig = run(rig, { ctl_wind_dir: -30, ctl_jib_sheet: 0 }, 3);
+    expect(rig.jibSolution.carZ).toBeCloseTo(halfSpan, 6);
+    expect(drawnCarZ(rig)).toBeCloseTo(halfSpan, 2);
+    expect(rig.jibSolution.fill).toBeGreaterThan(0.95);
   });
 
   it('PT-11 an eased self-tacker opens only to about 30–35° on a beam reach; the car reaches the track end at about 14°', () => {
@@ -246,13 +284,15 @@ describe('PHYSICS_TRUTHS Phase 1 (M3: self-tacking jib)', () => {
 
   it('PT-11 once the car is at the track end, easing lifts the clew and twists the top of the jib open', () => {
     const at = (js: number) => settle({ ctl_wind_dir: 90, ctl_jib_sheet: js });
-    // On the track: base twist only.
-    expect(at(5).twistDeg).toBeCloseTo(boat.visual.baseTwistDeg, 9);
+    // Car still on the track (wind from 10°, the jib only 10° out): base twist only.
+    const onTrack = settle({ ctl_wind_dir: 10, ctl_jib_sheet: 0 });
+    expect(Math.abs(onTrack.carZ)).toBeLessThan(halfSpan);
+    expect(onTrack.twistDeg).toBeCloseTo(boat.visual.baseTwistDeg, 9);
     expect(at(100).twistDeg).toBeGreaterThan(at(50).twistDeg);
     expect(at(50).twistDeg).toBeGreaterThan(at(20).twistDeg);
     expect(at(100).twistDeg).toBeGreaterThan(boat.visual.baseTwistDeg + 10);
     const clewY = (js: number) => jibClew(at(js).phiDeg)[1];
-    expect(clewY(100)).toBeGreaterThan(clewY(20) + 0.1);
+    expect(clewY(100)).toBeGreaterThan(clewY(0) + 0.1);
 
     // In the sail mesh: the top of the jib is turned further out than the foot, more so eased.
     const openTop = (js: number) => {
@@ -272,15 +312,16 @@ describe('PHYSICS_TRUTHS Phase 1 (M3: self-tacking jib)', () => {
       // Both to port (negative): the top is further out.
       return foot - top;
     };
-    expect(openTop(20)).toBeGreaterThan(0);
-    expect(openTop(100)).toBeGreaterThan(openTop(20) + 8);
+    expect(openTop(0)).toBeGreaterThan(0);
+    expect(openTop(100)).toBeGreaterThan(openTop(0) + 8);
   });
 
   it('PT-13 jib sheet hauled: the jib cannot be furled; the furl stops with a hint', () => {
     let rig = initialRig(controls({ ctl_jib_sheet: 0 }));
     rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 0 }, 3);
     expect(rig.jibSolution.furlBlocked).toBe(true);
-    expect(rig.jibSolution.unfurled).toBeCloseTo(1, 6);
+    // Fully hauled, the clew can only come about 20 cm forward: the jib stays about 96 % out.
+    expect(rig.jibSolution.unfurled).toBeGreaterThan(0.94);
     expect(rig.jibSolution.sheet.state).toBe('taut');
   });
 
@@ -314,13 +355,17 @@ describe('PHYSICS_TRUTHS Phase 1 (M3: self-tacking jib)', () => {
       expect(reachable, `js ${js}`).toBeLessThanOrEqual(previous);
       previous = reachable;
     }
-    expect(minUnfurledFor(availableJibSheet(0))).toBeCloseTo(1, 6);
+    expect(minUnfurledFor(availableJibSheet(0))).toBeGreaterThan(0.94);
   });
 
   it('PT-13 the drawn furling line moves with the jib actually furled, not with the blocked request', () => {
     const blocked = initialRig(controls({ ctl_jib_sheet: 0, ctl_jib_furl: 0 }));
     const line = ropeDrawings(blocked).find((rope) => rope.id === 'rope_jib_furling_line');
-    expect(line?.strands[0]?.feed).toBeCloseTo(jibFurlingLinePaidOut(1), 9);
+    expect(line?.strands[0]?.feed).toBeCloseTo(
+      jibFurlingLinePaidOut(blocked.jibSolution.unfurled),
+      9,
+    );
+    expect(line?.strands[0]?.feed).toBeGreaterThan(jibFurlingLinePaidOut(0.94));
   });
 });
 
@@ -395,22 +440,40 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     expect(Math.abs(rig.jibSolution.headingDeg)).toBeLessThan(Math.abs(angle) - 5);
   });
 
-  it('continuity: a 1 % jib control change never moves the jib by more than 5° (except next to where the sheet holds it on the centreline)', () => {
+  it('continuity: a 1 % jib sheet change never moves the jib by more than 5°, except hauling it off 100 % with the jib partly furled', () => {
+    for (const wd of [10, 20, 45, 90, 135, 175, -60]) {
+      for (const jf of [100, 90, 80, 50, 1]) {
+        for (const [from, to] of [
+          [0, 100],
+          [100, 0],
+        ] as const) {
+          for (const step of jibSweep(wd, 'ctl_jib_sheet', jf, from, to)) {
+            const what = `wd ${wd} jf ${jf} js → ${step.value}`;
+            // Not a small step by nature: 99 % is a much shorter sheet than the rope the
+            // furl took out, so the hauled sheet takes it in at once (drawn with the usual
+            // smoothing). Measured: up to about 31° with the jib mostly rolled up.
+            if (step.leftRelease) continue;
+            expect(step.change, what).toBeLessThanOrEqual(5);
+          }
+        }
+      }
+    }
+  });
+
+  it('continuity: a 1 % "Jib out" change never moves the jib by more than 5°, except next to where the sheet holds it on the centreline (PHASE1_SPEC 11)', () => {
     for (const wd of [20, 45, 90, 135, 175, -60]) {
-      for (const sweep of [
-        { id: 'ctl_jib_sheet', fixed: 100, from: 0, to: 100 },
-        { id: 'ctl_jib_sheet', fixed: 80, from: 0, to: 100 },
-        { id: 'ctl_jib_furl', fixed: 30, from: 0, to: 100 },
-        { id: 'ctl_jib_furl', fixed: 60, from: 0, to: 100 },
-        { id: 'ctl_jib_furl', fixed: 100, from: 0, to: 100 },
-        { id: 'ctl_jib_furl', fixed: 100, from: 100, to: 0 },
-      ] as const) {
-        const steps = jibSweep(wd, sweep.id, sweep.fixed, sweep.from, sweep.to);
-        steps.forEach((step) => {
-          expect(step.change, `wd ${wd} ${sweep.id} → ${step.value}`).toBeLessThanOrEqual(
-            step.nearHeld ? HELD_STEP_LIMIT_DEG : 5,
-          );
-        });
+      for (const js of [0, 30, 60, 95, 100]) {
+        // From 1 %: at 0 % there is no sail, and the jib keeps its angle (as for the main).
+        for (const [from, to] of [
+          [1, 100],
+          [100, 1],
+        ] as const) {
+          for (const step of jibSweep(wd, 'ctl_jib_furl', js, from, to)) {
+            expect(step.change, `wd ${wd} js ${js} jf → ${step.value}`).toBeLessThanOrEqual(
+              step.nearHeld ? HELD_STEP_LIMIT_DEG : 5,
+            );
+          }
+        }
       }
     }
   });
@@ -439,7 +502,7 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
   it('decision after M3: releasing the sheet lets a blocked jib roll in smoothly, never in one jump', () => {
     let rig = initialRig(controls({ ctl_jib_sheet: 0 }));
     rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 0 }, 3);
-    expect(rig.jibSolution.unfurled).toBeCloseTo(1, 6);
+    expect(rig.jibSolution.unfurled).toBeGreaterThan(0.94);
     let largest = 0;
     for (let frame = 0; frame < 6 * 60; frame += 1) {
       const before = rig.jibSolution.unfurled;
@@ -456,6 +519,32 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 2 / 60);
     rig = run(rig, { ctl_jib_sheet: 90, ctl_jib_furl: 0 }, 6);
     expect(rig.jibSolution.unfurled).toBeGreaterThan(minUnfurledFor(availableJibSheet(90)) - 0.1);
+  });
+
+  it('review of M3: a released sheet lets the jib keep its angle while it furls; the jib flaps, the sheet is slack', () => {
+    for (const wd of [45, 90, 135]) {
+      let rig = initialRig(controls({ ctl_wind_dir: wd, ctl_jib_sheet: 100 }));
+      const fullyOut = Math.abs(rig.jibSolution.headingDeg);
+      for (let frame = 0; frame < 6 * 60; frame += 1) {
+        rig = run(rig, { ctl_wind_dir: wd, ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 1 / 60);
+        const jib = rig.jibSolution;
+        if (jib.furled || jib.unfurled >= 1) continue;
+        expect(Math.abs(jib.headingDeg), `wd ${wd} out ${jib.unfurled}`).toBeCloseTo(fullyOut, 3);
+        expect(jib.fill).toBe(0);
+        expect(jib.sheet.state).toBe('slack');
+      }
+      expect(rig.jibSolution.unfurled).toBe(0);
+    }
+  });
+
+  it('review of M3: the "fighting" chip clears as soon as the jib is out far enough for the hauled sheet', () => {
+    let rig = initialRig(controls({ ctl_jib_sheet: 100 }));
+    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 6);
+    rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 0 }, 2);
+    expect(rig.jibSolution.sheet.state).toBe('fighting');
+    rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 100 }, 2);
+    expect(rig.jibSolution.unfurled).toBeGreaterThan(0.99);
+    expect(rig.jibSolution.sheet.state).not.toBe('fighting');
   });
 
   it('decision after M3: the released sheet changes nothing for a fully unfurled jib (PT-11 still holds)', () => {

@@ -164,6 +164,13 @@ describe('boat model', () => {
     }
   });
 
+  it('the jib car is drawn up to the sheet block the jib solver measures from (one value, no copy)', () => {
+    const car = meshes.find((candidate) => candidate.userData.partId === 'fit_self_tacking_car');
+    const box = new THREE.Box3().setFromObject(car as THREE.Mesh);
+    const track = boat.rig.selfTackingTrack;
+    expect(box.max.y).toBeCloseTo(track.y + track.sheetBlockHeight, 6);
+  });
+
   it('lifelines stay on the deck, inside the beam', () => {
     const mesh = meshes.find((candidate) => candidate.userData.partId === 'part_lifelines');
     const box = new THREE.Box3().setFromObject(mesh as THREE.Mesh);

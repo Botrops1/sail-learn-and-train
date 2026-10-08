@@ -28,8 +28,12 @@ interface JibFrame {
   foot: Vec3;
   /** Rotation at which the chord heading reaches the boom's maximum swing: the allowed range. */
   maxPhiDeg: number;
-  /** ℓ_geoMin: shortest clew–car distance over the allowed rotation range, fully unfurled. */
-  sheetMin: number;
+  /**
+   * ℓ_hauled: the clew–car distance with the jib fully out and the car just at the end of the
+   * track (the jib about 14° out). Fully hauled, the sheet holds the jib there: the track's ends
+   * set how far in a self-tacking jib can be pulled, and the car stays at the leeward end (PT-10).
+   */
+  sheetHauled: number;
 }
 
 const frames = new WeakMap<BoatData, JibFrame>();
@@ -47,15 +51,12 @@ function frameFor(data: BoatData): JibFrame {
   const headingAt = (phiDeg: number) => Math.abs(headingOf(tack, clewAt(phiDeg, 1)));
   // The chord heading grows with φ (the clew swings out around the forestay).
   const maxPhiDeg = bisectLargest(0, 90, (phi) => headingAt(phi) <= data.rig.boom.maxSwingDeg);
-  // ℓ_geoMin, computed once (PHASE1_SPEC 8.5): sample the whole allowed range, both sides.
-  let sheetMin = distance(clewAt(0, 1), carPoint(clewAt(0, 1), data));
-  const samples = Math.ceil(2 * maxPhiDeg * 4);
-  for (let i = 0; i <= samples; i += 1) {
-    const phi = -maxPhiDeg + (2 * maxPhiDeg * i) / samples;
-    const clew = clewAt(phi, 1);
-    sheetMin = Math.min(sheetMin, distance(clew, carPoint(clew, data)));
-  }
-  const frame = { tack, head, axis, foot, maxPhiDeg, sheetMin };
+  // ℓ_hauled, computed once (PHASE1_SPEC 8.5): the clew where the car reaches the track end.
+  const halfSpan = data.rig.selfTackingTrack.halfSpan;
+  const atTrackEnd = bisectLargest(0, maxPhiDeg, (phi) => clewAt(phi, 1)[2] <= halfSpan);
+  const hauledClew = clewAt(atTrackEnd, 1);
+  const sheetHauled = distance(hauledClew, carPoint(hauledClew, data));
+  const frame = { tack, head, axis, foot, maxPhiDeg, sheetHauled };
   frames.set(data, frame);
   return frame;
 }
@@ -115,14 +116,14 @@ export function jibSheetSpan(phiDeg: number, unfurled = 1, data: BoatData = boat
   return distance(clew, carPoint(clew, data));
 }
 
-/** ℓ_geoMin (PHASE1_SPEC 8.5), computed once per boat. */
-export function jibSheetMin(data: BoatData = boat): number {
-  return frameFor(data).sheetMin;
+/** ℓ_hauled (PHASE1_SPEC 8.5): the working length fully hauled, computed once per boat. */
+export function jibSheetHauled(data: BoatData = boat): number {
+  return frameFor(data).sheetHauled;
 }
 
-/** ℓ_avail for sailing: ℓ_geoMin + e/100 · maxEaseBeyondMin. */
+/** ℓ_avail for sailing: ℓ_hauled + e/100 · maxEaseBeyondHauled. */
 export function availableJibSheet(easedPct: number, data: BoatData = boat): number {
-  return jibSheetMin(data) + (easedPct / 100) * data.sails.jib.sheet.maxEaseBeyondMin;
+  return jibSheetHauled(data) + (easedPct / 100) * data.sails.jib.sheet.maxEaseBeyondHauled;
 }
 
 /**
@@ -134,23 +135,22 @@ export function jibSheetReleased(easedPct: number, data: BoatData = boat): boole
 }
 
 /**
- * ℓ_avail for the sheet setting and the unfurled fraction. Released, it is the larger of the
- * sailing length and the length the furl needs (the clew reached with the jib centred). A fully
- * unfurled jib never needs more than the sailing length, so sailing (PT-11) does not change.
+ * ℓ_avail while the sheet is released and the jib partly furled: the larger of the sailing
+ * length and the length the furl needs to keep the jib at `keepPhiDeg` (the angle it has).
+ * A fully unfurled jib uses the sailing length, so sailing (PT-11) does not change.
  */
-export function availableJibSheetFor(
+export function releasedJibSheet(
   easedPct: number,
   unfurled: number,
-  released: boolean,
+  keepPhiDeg: number,
   data: BoatData = boat,
 ): number {
-  const sailing = availableJibSheet(easedPct, data);
-  return released ? Math.max(sailing, jibSheetSpan(0, unfurled, data)) : sailing;
+  return Math.max(availableJibSheet(easedPct, data), jibSheetSpan(keepPhiDeg, unfurled, data));
 }
 
-/** Rope paid out at the clutch for a working length ℓ: purchase · (ℓ − ℓ_geoMin), capped. */
+/** Rope paid out at the clutch for a working length ℓ: purchase · (ℓ − ℓ_hauled), capped. */
 export function jibSheetPaidOutFor(available: number, data: BoatData = boat): number {
-  const paid = data.sails.jib.sheet.purchase * (available - jibSheetMin(data));
+  const paid = data.sails.jib.sheet.purchase * (available - jibSheetHauled(data));
   return capPaidOut('rope_jib_sheet', paid, data);
 }
 
@@ -312,11 +312,15 @@ export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = bo
   // sheet pulls against it (fighting). Released, the sheet runs out as far as the furl needs.
   const asked = Math.min(1, Math.max(0, input.unfurledPct / 100));
   const released = input.sheetReleased;
-  const reachable = released ? 0 : minUnfurledFor(availableJibSheet(input.sheetPct, data), data);
+  const sailing = availableJibSheet(input.sheetPct, data);
+  const reachable = released ? 0 : minUnfurledFor(sailing, data);
   const unfurled = Math.max(asked, Math.min(reachable, memory.unfurled));
   const furlBlocked = asked < unfurled - 1e-9;
-  const sheetFights = unfurled < reachable - 1e-9;
-  const available = availableJibSheetFor(input.sheetPct, unfurled, released, data);
+  // Compared as lengths, with the same tolerance as the main sheet, so the chip clears as soon
+  // as the jib is (visibly) out far enough for the sheet.
+  const sheetFights =
+    !released && jibSheetSpan(0, unfurled, data) > sailing + solver.tautToleranceM;
+  const releasedFurling = released && unfurled < 1;
   const furled = unfurled * 100 < solver.furledBelowPct;
   const windy = input.windSpeedKn >= solver.minWindKn && !furled;
 
@@ -331,6 +335,21 @@ export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = bo
     ? Math.min(Math.abs(input.windFromDeg), data.rig.boom.maxSwingDeg)
     : Math.abs(jibHeadingDeg(jibClew(memory.phiDeg, 1, data), data));
   const phiFree = phiForHeading(freeHeading, data);
+  // Released while furling: the sheet runs out just as far as the furl needs to keep the jib at
+  // the angle it already has (at least what the sailing length allows). Nothing pulls it in to
+  // the centreline, it just flaps (decided after the M3 review). Releasing changes nothing at
+  // that moment, so the jib does not jump.
+  const available = releasedFurling
+    ? releasedJibSheet(
+        input.sheetPct,
+        unfurled,
+        Math.min(
+          phiFree,
+          Math.max(maxPhiForSheet(sailing, unfurled, data), Math.abs(memory.phiDeg)),
+        ),
+        data,
+      )
+    : sailing;
   const phiSheet = maxPhiForSheet(available, unfurled, data);
   const phi = Math.min(phiFree, phiSheet);
   const phiDeg = side * phi;
@@ -343,7 +362,8 @@ export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = bo
   const inGybeBand = 180 - Math.abs(input.windFromDeg) < data.visual.gybeHysteresisDeg;
   const byTheLee = windy && inGybeBand && leeward !== null && leeward !== side;
   const aoaDeg = Math.max(0, Math.abs(input.windFromDeg) - heading);
-  const fill = !windy ? 0 : byTheLee ? 1 : fillFor(aoaDeg, data);
+  // A released sheet holds no shape: while it runs out for the furl, the jib flaps.
+  const fill = !windy || releasedFurling ? 0 : byTheLee ? 1 : fillFor(aoaDeg, data);
 
   // Taut when the sheet holds the jib in (or holds the clew out against the furl) and has no
   // spare rope; otherwise slack, with its spare rope at the clutch. Fighting when it is hauled
@@ -352,7 +372,7 @@ export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = bo
   const constrains = freeHeading - heading > solver.tautToleranceDeg || furlBlocked;
   const sheet: RopeStatus = sheetFights
     ? { state: 'fighting', slack: 0 }
-    : constrains && spare < solver.tautToleranceM
+    : constrains && spare < solver.tautToleranceM && !releasedFurling
       ? { state: 'taut', slack: 0 }
       : { state: 'slack', slack: data.sails.jib.sheet.purchase * spare };
 

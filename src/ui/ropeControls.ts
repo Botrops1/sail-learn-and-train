@@ -76,9 +76,6 @@ const ROPE_CONTROLS: RopeControl[] = [
   },
 ];
 
-/** Closer than this to the middle of its track (metres), the car is "in the middle". */
-const CAR_MIDDLE_M = 0.05;
-
 function metres(value: number): string {
   return value.toFixed(1);
 }
@@ -198,6 +195,13 @@ export function createRopeControls(store: Store): HTMLElement {
               ? 'jib.luffing'
               : 'jib.filled';
         lines.push(t(key, { angle: Math.round(Math.abs(jib.headingDeg)) }));
+        if (
+          !calm &&
+          !jib.furled &&
+          Math.abs(state.controls.ctl_wind_dir) >= boat.visual.jibWindShadowNoteFromDeg
+        ) {
+          lines.push(t('jib.windShadow'));
+        }
         if (jib.sheet.state === 'fighting') lines.push(t('jib.sheetFightsFurl'));
         else if (jib.sheetReleased && jib.unfurled < 1) lines.push(t('jib.sheetReleased'));
         const track = boat.rig.selfTackingTrack.halfSpan;
@@ -205,7 +209,7 @@ export function createRopeControls(store: Store): HTMLElement {
         lines.push(
           Math.abs(jib.carZ) >= track - 1e-6
             ? t('jib.carEnd', side)
-            : Math.abs(jib.carZ) < CAR_MIDDLE_M
+            : Math.abs(jib.carZ) < boat.visual.jibCarMiddleM
               ? t('jib.carMiddle')
               : t('jib.car', side),
         );
