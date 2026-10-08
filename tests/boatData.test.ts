@@ -85,7 +85,7 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
     const { jib } = hanse508.sails;
     const track = hanse508.rig.selfTackingTrack;
     expect(jib.sheet.purchase).toBe(2);
-    expect(jib.sheet.maxEaseBeyondMin).toBeGreaterThan(0);
+    expect(jib.sheet.maxEaseBeyondHauled).toBeGreaterThan(0);
     expect(track.halfSpan).toBeGreaterThan(1);
     expect(track.halfSpan).toBeLessThan(hanse508.deck.coachroof.maxHalfWidth + 0.1);
     expect(track.sheetBlockHeight).toBeGreaterThan(0);

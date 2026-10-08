@@ -264,11 +264,13 @@ function buildSelfTackingTrack(materials: BoatMaterials): {
   const [portEnd, starboardEnd] = selfTackingTrackEnds();
   const radius = boat.modelDetail.selfTackingTrack.radius;
   const size = boat.modelDetail.selfTackingCar;
-  const carCentre: Vec3 = [0, radius + size.height / 2, 0];
+  // The car reaches up to the jib sheet's block, where the jib solver measures the sheet.
+  const height = boat.rig.selfTackingTrack.sheetBlockHeight - radius;
+  const carCentre: Vec3 = [0, radius + height / 2, 0];
   const car = smallPartMesh(
     'fit_self_tacking_car',
     // The car runs athwartships along the track, so its length lies along z.
-    [boxAt(carCentre, [size.width, size.height, size.length])],
+    [boxAt(carCentre, [size.width, height, size.length])],
     materials.dark,
     [carCentre],
   );

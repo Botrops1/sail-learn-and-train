@@ -351,7 +351,7 @@
       "halfSpan": 1.4,
       "halfSpanSource": "photo estimate (about 2.8 m end to end, ±0.3 m); the deck-plan drawing showed only about 1.8 m",
       "sheetBlockHeight": 0.125,
-      "sheetBlockHeightSource": "assumption: the jib sheet's block on the car sits this far above the track's centre line (track radius plus car height in modelDetail). The jib solver measures the sheet from the clew to this point."
+      "sheetBlockHeightSource": "assumption: the jib sheet's block on the car sits this far above the track's centre line. The jib solver measures the sheet from the clew to this point, and the 3D car is drawn up to it (car height = this minus modelDetail.selfTackingTrack.radius), so the two always agree."
     },
     "jibFurler": {
       "source": "brochure (manual jib furler) + photo (Selden Furlex 404S) + drawing",
@@ -418,14 +418,15 @@
       "officialAreaM2": 51.5,
       "furl": "Rolls around the forestay. Unfurled fraction f: foot and leech shrink towards the luff; the clew moves forward along the foot direction.",
       "sheet": {
-        "minClewToCar": 0.35,
-        "minClewToCarNote": "Sanity reference only. The app computes the true minimum from geometry at startup (about 0.35 m from the clew to the car's sheet block, rig.selfTackingTrack.sheetBlockHeight).",
+        "hauledClewToCar": 0.53,
+        "hauledClewToCarNote": "Sanity reference only. Fully hauled, the jib sits with the car just at the end of the track (about 14 deg out; the track ends set how far in a self-tacking jib can be pulled). The app computes this clew-car length from geometry at startup (about 0.53 m to the car's sheet block, rig.selfTackingTrack.sheetBlockHeight). Changed after the M3 review: before, fully hauled meant the jib on the centreline.",
         "purchase": 2,
         "purchaseSource": "photo: two rope parts between the clew and the car",
         "route": "car -> along the track -> turning block at the mast foot -> aft along the coachroof -> clutch 'Genoa sheet' (starboard bank)",
-        "maxEaseBeyondMin": 1.6,
+        "maxEaseBeyondHauled": 1.4,
+        "maxEaseBeyondHauledNote": "Working length added between fully hauled and fully eased. Retuned after the M3 review (was 1.6 m beyond the centred clew) so a fully eased jib still opens to about 31 deg (PT-11).",
         "releasedAtPct": 100,
-        "releasedNote": "Owner decision after M3: at this setting the sheet counts as released for furling. Its working length is then max(the sailing length above, the clew-car length the furl needs with the jib centred), so the jib furls completely. A fully unfurled jib never needs more than the sailing length, so sailing (PT-11) is unchanged. Below it, furling stops where the sheet is too short (PT-13).",
+        "releasedNote": "Owner decision after M3: at this setting the sheet counts as released for furling. Its working length is then max(the sailing length above, the clew-car length the furl needs to keep the jib at its fully-out angle), so the jib furls completely, keeps its angle and flaps (M3 review: it is no longer pulled in to the centreline). A fully unfurled jib uses the sailing length, so sailing (PT-11) is unchanged. Below it, furling stops where the sheet is too short (PT-13).",
         "source": "assumption"
       },
       "clewCentreline": [0.57, 2.31, 0.0]
@@ -793,8 +794,7 @@
     },
     "selfTackingCar": {
       "length": 0.22,
-      "width": 0.12,
-      "height": 0.09
+      "width": 0.12
     },
     "jibFurlerDrumDiameter": 0.26,
     "mainFurlingGearbox": {
@@ -854,6 +854,10 @@
     "baseTwistDeg": 4,
     "twistPerDegBoomRise": 1.5,
     "jibTwistPerDegEasedBeyondTrack": 0.8,
+    "jibCarMiddleM": 0.05,
+    "jibCarMiddleNote": "Closer than this to the middle of its track, the panel says the car is in the middle.",
+    "jibWindShadowNoteFromDeg": 150,
+    "jibWindShadowNote": "With the wind at least this far aft, the panel adds that on a run the mainsail blocks the jib's wind (Phase 2 models it; M3 review).",
     "controlResponseTimeS": 0.4,
     "boomSmoothingTimeS": 0.3,
     "boomSmoothingNote": "Time constant of the critically damped spring that moves the drawn boom towards the solved pose (PHASE1_SPEC 8.3 step 5). The fill of the sails follows with the same time constant.",

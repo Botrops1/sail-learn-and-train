@@ -115,6 +115,7 @@
   "jib.hint": "The jib's sheet runs to a car (a slider) on a short track in front of the mast. The car slides to the side away from the wind by itself, so the jib changes sides with no work. Furling rolls the jib around the forestay (the wire to the bow): its back corner moves forward, so the sheet must be eased. At 100 % the sheet is released and the jib can be rolled away completely.",
   "debug.carZ": "Car z",
   "jib.carMiddle": "Car in the middle of its track",
-  "jib.sheetReleased": "Sheet released (100 %): it runs out as far as the furl needs",
-  "jib.sheetFightsFurl": "The jib is rolled up further than this sheet allows: the sheet pulls against the furling line. Ease the sheet to 100 %, or unfurl the jib."
+  "jib.sheetReleased": "Sheet released (100 %): it runs out as the jib rolls up, so the jib flaps",
+  "jib.sheetFightsFurl": "The jib is rolled up further than this sheet allows: the sheet pulls against the furling line. Ease the sheet to 100 %, or unfurl the jib.",
+  "jib.windShadow": "With the wind from behind, the mainsail would block the jib's wind and the jib would collapse. The app shows this in a later step."
 }

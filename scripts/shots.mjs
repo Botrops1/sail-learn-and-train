@@ -54,6 +54,9 @@ const SCENES = [
   { name: 'pt10-wind30-car-port-top', query: '?wd=30&ws=12&cam=top' },
   { name: 'pt10-wind-30-car-stbd-top', query: '?wd=-30&ws=12&cam=top' },
   { name: 'pt10-wind30-bow', query: '?wd=30&ws=12&cam=bow' },
+  // M3 review: fully hauled, the car still sits at the leeward end of the track (PT-10).
+  { name: 'pt10-sheet-0-wind30-top', query: '?wd=30&ws=12&js=0&cam=top' },
+  { name: 'pt10-sheet-0-wind-30-top', query: '?wd=-30&ws=12&js=0&cam=top' },
   { name: 'm3-head-to-wind-jib-flaps-bow', query: '?wd=0&ws=12&cam=bow' },
   { name: 'pt11-jib-sheet-0-top', query: '?wd=90&ws=12&js=0&cam=top' },
   { name: 'pt11-jib-sheet-100-top', query: '?wd=90&ws=12&js=100&cam=top' },
@@ -76,6 +79,18 @@ const SCENES = [
     scrollTo: '[data-part-id="rope_jib_furling_line"]',
   },
   { name: 'm3-jib-fully-furled-bow', query: '?js=100&jf=0&cam=bow' },
+  // M3 review: released sheet, half furled: the jib keeps its angle and flaps.
+  {
+    name: 'review-released-half-furled-top',
+    query: '?wd=90&ws=12&js=100&jf=50&cam=top',
+    scrollTo: '[data-part-id="rope_jib_sheet"]',
+  },
+  // M3 review: on a run the panel says the main would block the jib's wind (Phase 2).
+  {
+    name: 'review-run-jib-note-ropes-tab',
+    query: '?wd=175&ws=12&ms=80&cam=top',
+    scrollTo: '[data-part-id="rope_jib_sheet"]',
+  },
   // M2 follow-ups: an eased topping lift hangs slack; a hauled one fights the main sheet.
   { name: 'm2fix-topping-lift-eased-sags-side', query: '?wd=90&ws=12&ms=40&cam=side-port' },
   {
@@ -311,7 +326,7 @@ async function liveM3Checks() {
 
   // PT-10: wind 30 → −30 with the dial keys (step 5): the car crosses to starboard.
   {
-    const { context, page } = await openPage(phone, 'pt10', '?wd=30&ws=12&cam=top');
+    const { context, page } = await openPage(phone, 'pt10', '?wd=30&ws=12&js=0&cam=top');
     const before = await controlMeta(page, 'rope_jib_sheet');
     check('car at port end at +30', before.includes('port end'), before.replace(/\n/g, ' | '));
     await page.getByRole('tab', { name: 'Wind' }).click();

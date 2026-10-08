@@ -105,11 +105,15 @@ export function initialRig(controls: Controls, data: BoatData = boat): RigState 
     { side: initialSide(controls.ctl_wind_dir), thetaDeg: 0 },
     data,
   );
-  const jib = solveJib(
-    jibInput(controls, rope, solution),
+  const input = jibInput(controls, rope, solution);
+  // A link has no history: start from the angle the jib has fully out, so a released sheet on a
+  // partly furled jib keeps that angle (as it would have while being furled).
+  const fullyOut = solveJib(
+    { ...input, unfurledPct: 100 },
     { side: solution.side, phiDeg: 0, unfurled: 1 },
     data,
   );
+  const jib = solveJib(input, { side: fullyOut.side, phiDeg: fullyOut.phiDeg, unfurled: 1 }, data);
   return {
     applied: rope,
     solution: { ...solution, gybe: false, tack: false },
