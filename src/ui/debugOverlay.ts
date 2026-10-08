@@ -31,7 +31,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
   return {
     update(fps, viewport, pixelRatio) {
       if (box.hidden) return;
-      const { camera, settings } = store.getState();
+      const { camera, settings, selection } = store.getState();
       const rows: [string, string][] = [
         [t('debug.fps'), fps.toFixed(0)],
         [t('debug.layout'), t(viewport.mode === 'side' ? 'layout.side' : 'layout.stacked')],
@@ -39,6 +39,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
         [t('debug.aspect'), (viewport.width / viewport.height).toFixed(2)],
         [t('debug.dpr'), `${pixelRatio.device.toFixed(2)} → ${pixelRatio.render.toFixed(2)}`],
         [t('debug.cam'), camera.preset],
+        [t('debug.selection'), selection ?? '–'],
         [t('debug.step'), `${settings.step} %`],
         [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
       ];

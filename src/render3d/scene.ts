@@ -1,21 +1,24 @@
 import * as THREE from 'three';
-import { hullBounds, type Box3 } from '../model/boat';
+import type { Store } from '../app/store';
 import { requirePartId } from '../model/registry';
+import { buildBoat } from './boat';
+import { createCameraRig } from './cameraRig';
+import { createPicker } from './picking';
 import { SCENE } from './sceneConfig';
 
 export interface SceneView {
   readonly pixelRatio: number;
-  /** Resizes the drawing buffer to the host element. */
-  resize(width: number, height: number): void;
-  render(): void;
+  /** Resizes the drawing buffer; `bottomInset` CSS px at the bottom are covered by buttons. */
+  resize(width: number, height: number, bottomInset: number): void;
+  render(now: number): void;
 }
 
 /**
- * M0 scene: sky colour, semi-transparent water plane at y = 0 with a scale grid,
- * and a placeholder box where the hull will be. Boat frame = three.js frame:
- * x forward, y up, z starboard (PHASE1_SPEC 4).
+ * The 3D view (PHASE1_SPEC 6): sky, semi-transparent water with a scale grid, the static
+ * Hanse 508 (M1), the orbit camera with presets, and tap-to-identify.
+ * Boat frame = three.js frame: x forward, y up, z starboard (PHASE1_SPEC 4).
  */
-export function createScene(host: HTMLElement): SceneView {
+export function createScene(host: HTMLElement, store: Store): SceneView {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     powerPreference: 'high-performance',
@@ -38,54 +41,95 @@ export function createScene(host: HTMLElement): SceneView {
   );
   const sun = new THREE.DirectionalLight(0xffffff, SCENE.light.sunIntensity);
   sun.position.set(...SCENE.light.sunDirection);
-  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xffffff, SCENE.light.fillIntensity);
+  fill.position.set(...SCENE.light.fillDirection);
+  scene.add(sun, fill);
 
-  const bounds = hullBounds();
-  scene.add(buildPlaceholder(bounds));
-  scene.add(buildWater());
+  const boatModel = buildBoat();
+  const water = buildWater();
+  scene.add(boatModel.root, water);
 
-  const camera = new THREE.PerspectiveCamera(
-    SCENE.camera.verticalFovDeg,
-    1,
-    SCENE.camera.near,
-    SCENE.camera.far,
-  );
-  const target = new THREE.Vector3(
-    (bounds.min[0] + bounds.max[0]) / 2,
-    (bounds.min[1] + bounds.max[1]) / 2,
-    (bounds.min[2] + bounds.max[2]) / 2,
-  );
-  const radius =
-    new THREE.Vector3(...bounds.max).sub(new THREE.Vector3(...bounds.min)).length() / 2;
+  const rig = createCameraRig(renderer.domElement);
+  const camera = rig.camera;
+  rig.goTo(store.getState().camera.preset, false);
+  rig.onUserMove(() => store.dispatch({ type: 'setCameraPreset', preset: 'free' }));
 
-  function frameCamera(aspect: number): void {
-    const vFov = THREE.MathUtils.degToRad(SCENE.camera.verticalFovDeg);
-    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * aspect);
-    const distance = (radius * SCENE.camera.framingMargin) / Math.sin(Math.min(vFov, hFov) / 2);
-    const azimuth = THREE.MathUtils.degToRad(SCENE.camera.azimuthFromBowDeg);
-    const elevation = THREE.MathUtils.degToRad(SCENE.camera.elevationDeg);
-    // Port is -z; azimuth 0 = towards the bow (+x).
-    const direction = new THREE.Vector3(
-      Math.cos(elevation) * Math.cos(azimuth),
-      Math.sin(elevation),
-      -Math.cos(elevation) * Math.sin(azimuth),
-    );
-    camera.position.copy(target).addScaledVector(direction, distance);
-    camera.lookAt(target);
-  }
+  const picker = createPicker(camera, boatModel.root, water);
+  listenForTaps(renderer.domElement, (x, y) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    const partId = picker.pick(x, y, rect.width, rect.height);
+    store.dispatch({ type: 'select', partId });
+  });
+
+  const highlight = createHighlighter(boatModel.root);
+  highlight(store.getState().selection);
+
+  store.subscribe((state, previous) => {
+    const preset = state.camera.preset;
+    if (preset !== previous.camera.preset && preset !== rig.preset) rig.goTo(preset);
+    if (state.selection !== previous.selection) highlight(state.selection);
+  });
 
   return {
     pixelRatio,
-    resize(width, height) {
+    resize(width, height, bottomInset) {
       if (width <= 0 || height <= 0) return;
       renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      frameCamera(camera.aspect);
+      rig.setViewport(width, height, bottomInset);
     },
-    render() {
+    render(now) {
+      rig.update(now);
       renderer.render(scene, camera);
     },
+  };
+}
+
+/**
+ * Calls `onTap` with canvas coordinates for a short single-finger press that did not move
+ * (a drag rotates the camera instead).
+ */
+function listenForTaps(canvas: HTMLElement, onTap: (x: number, y: number) => void): void {
+  const { tapMaxMovePx, tapMaxDurationMs } = SCENE.picking;
+  const down = new Map<number, { x: number; y: number; time: number }>();
+  let multiTouch = false;
+  canvas.addEventListener('pointerdown', (event) => {
+    down.set(event.pointerId, { x: event.clientX, y: event.clientY, time: event.timeStamp });
+    if (down.size > 1) multiTouch = true;
+  });
+  const finish = (event: PointerEvent, cancelled: boolean) => {
+    const start = down.get(event.pointerId);
+    down.delete(event.pointerId);
+    const wasMulti = multiTouch;
+    if (down.size === 0) multiTouch = false;
+    if (!start || cancelled || wasMulti || event.button > 0) return;
+    const moved = Math.hypot(event.clientX - start.x, event.clientY - start.y);
+    if (moved > tapMaxMovePx || event.timeStamp - start.time > tapMaxDurationMs) return;
+    const rect = canvas.getBoundingClientRect();
+    onTap(event.clientX - rect.left, event.clientY - rect.top);
+  };
+  canvas.addEventListener('pointerup', (event) => finish(event, false));
+  canvas.addEventListener('pointercancel', (event) => finish(event, true));
+}
+
+/** Tints every mesh of the selected part (each part has its own material, see partMesh). */
+function createHighlighter(root: THREE.Object3D): (partId: string | null) => void {
+  const byPart = new Map<string, THREE.MeshLambertMaterial[]>();
+  root.traverse((object) => {
+    const id = (object.userData as { partId?: string }).partId;
+    if (!id || !(object instanceof THREE.Mesh)) return;
+    const material = object.material as THREE.Material;
+    if (material instanceof THREE.MeshLambertMaterial) {
+      byPart.set(id, [...(byPart.get(id) ?? []), material]);
+    }
+  });
+  let current: string | null = null;
+  return (partId) => {
+    for (const material of byPart.get(current ?? '') ?? []) material.emissive.setHex(0x000000);
+    current = partId;
+    for (const material of byPart.get(partId ?? '') ?? []) {
+      material.emissive.set(SCENE.highlight.color);
+      material.emissiveIntensity = SCENE.highlight.intensity;
+    }
   };
 }
 
@@ -115,27 +159,4 @@ function buildWater(): THREE.Object3D {
 
   group.add(plane, grid);
   return group;
-}
-
-/** Stand-in for the hull until M1 builds the real model: the hull's bounding box. */
-function buildPlaceholder(bounds: Box3): THREE.Object3D {
-  const size = new THREE.Vector3(...bounds.max).sub(new THREE.Vector3(...bounds.min));
-  const geometry = new THREE.BoxGeometry(size.x, size.y, size.z);
-  const box = new THREE.Mesh(
-    geometry,
-    new THREE.MeshLambertMaterial({ color: SCENE.placeholder.color }),
-  );
-  const edges = new THREE.LineSegments(
-    new THREE.EdgesGeometry(geometry),
-    new THREE.LineBasicMaterial({ color: SCENE.placeholder.edgeColor }),
-  );
-  box.add(edges);
-  box.position.set(
-    (bounds.min[0] + bounds.max[0]) / 2,
-    (bounds.min[1] + bounds.max[1]) / 2,
-    (bounds.min[2] + bounds.max[2]) / 2,
-  );
-  box.userData.partId = requirePartId('part_hull');
-  edges.userData.partId = box.userData.partId;
-  return box;
 }

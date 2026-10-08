@@ -99,7 +99,16 @@
 
   "deck": {
     "source": "drawing",
-    "coachroof": { "frontX": 2.00, "aftX": -3.05, "halfWidth": 1.15, "topY": 1.84 },
+    "coachroof": {
+      "frontX": 2.00,
+      "aftX": -3.05,
+      "halfWidth": 1.15,
+      "topY": 1.84,
+      "frontHalfWidth": 0.92,
+      "chamferStartX": 1.20,
+      "topFrontX": 1.60,
+      "shapeNote": "Plan: full halfWidth from aftX to chamferStartX, then the corners are cut to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. Measured from the reference sketches (docs/reference)."
+    },
     "cockpit": {
       "frontX": -3.10,
       "aftX": -7.70,
@@ -339,6 +348,36 @@
       { "id": "ctl_wind_dir", "label": "Test wind from", "unit": "deg, + = from starboard", "min": -180, "max": 180, "default": 60 },
       { "id": "ctl_wind_speed", "label": "Test wind speed", "unit": "kn", "min": 0, "max": 30, "default": 12 }
     ]
+  },
+
+  "modelDetail": {
+    "$comment": "Sizes of small parts that only the 3D model needs (thicknesses, diameters, section shapes). Not measured: chosen to look right and be tappable at teaching scale. They do not affect the rig solver. Safe to tune.",
+    "source": "assumption",
+    "hullSectionExponent": 2.5,
+    "hullSectionExponentNote": "Cross-section shape of the hull between the keel line and the deck edge (superellipse). 2 = round bilge, higher = fuller, flatter bottom and more upright topsides.",
+    "bowFittingHeight": 0.12,
+    "coamingWidth": 0.55,
+    "companionwayHatchLength": 0.90,
+    "spreaderDiameter": 0.09,
+    "boomSection": { "height": 0.24, "width": 0.14 },
+    "gooseneckSize": 0.14,
+    "wireRenderRadius": 0.025,
+    "wireRenderRadiusNote": "Shrouds and stays drawn thicker than real (about 12-16 mm) so they stay visible on a phone, like visual.ropeRenderRadius.",
+    "keelFinThickness": 0.20,
+    "keelBulbWidth": 0.55,
+    "rudderThickness": 0.09,
+    "rudderBalance": 0.20,
+    "rudderBalanceNote": "Fraction of the rudder chord in front of the stock (balanced spade rudder).",
+    "saildriveLeg": { "chord": 0.42, "thickness": 0.12 },
+    "winch": { "diameter": 0.26, "height": 0.24 },
+    "clutchBank": { "length": 0.44, "width": 0.20, "height": 0.08 },
+    "jibRollClutch": { "length": 0.24, "width": 0.12, "height": 0.08 },
+    "wheel": { "rimTubeRadius": 0.025, "spokes": 6, "pedestalWidth": 0.16 },
+    "block": { "radius": 0.07 },
+    "selfTackingTrack": { "radius": 0.035 },
+    "selfTackingCar": { "length": 0.22, "width": 0.12, "height": 0.09 },
+    "jibFurlerDrumDiameter": 0.26,
+    "mainFurlingGearbox": { "foreAft": 0.18, "height": 0.24, "athwart": 0.22 }
   },
 
   "visual": {

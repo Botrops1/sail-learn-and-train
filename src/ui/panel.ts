@@ -1,6 +1,6 @@
 import { BUILD_INFO, REPO_URL } from '../app/buildInfo';
 import type { Store } from '../app/store';
-import { STEP_SIZES } from '../model/settings';
+import { CAMERA_PRESETS, STEP_SIZES } from '../model/settings';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 
@@ -15,7 +15,8 @@ const TAB_LABELS: Record<TabId, StringKey> = {
 
 /**
  * The panel: three tabs (Ropes, Wind, View) and the footer line (PHASE1_SPEC 5.2).
- * In M0 the Ropes and Wind tabs are placeholders; View has the step size and debug toggle.
+ * The Ropes and Wind tabs are placeholders until M2/M4; View has the camera presets, the step
+ * size and the debug toggle.
  */
 export function createPanel(host: HTMLElement, store: Store): void {
   const tabList = el('div', {
@@ -102,6 +103,23 @@ export function createPanel(host: HTMLElement, store: Store): void {
 }
 
 function buildViewTab(store: Store): HTMLElement[] {
+  const cameraGroup = el('fieldset', { class: 'field segmented' }, [
+    el('legend', {}, [t('cam.label')]),
+    el('p', { class: 'hint' }, [t('cam.hint')]),
+  ]);
+  const cameraOptions = el('div', { class: 'segments segments-grid' });
+  const cameraInputs = CAMERA_PRESETS.map((preset) => {
+    const input = el('input', { type: 'radio', name: 'camera', value: preset });
+    input.addEventListener('change', () => {
+      if (input.checked) store.dispatch({ type: 'setCameraPreset', preset });
+    });
+    cameraOptions.append(
+      el('label', { class: 'segment' }, [input, el('span', {}, [t(`cam.${preset}` as StringKey)])]),
+    );
+    return { preset, input };
+  });
+  cameraGroup.append(cameraOptions);
+
   const stepGroup = el('fieldset', { class: 'field segmented' }, [
     el('legend', {}, [t('view.step.label')]),
     el('p', { class: 'hint' }, [t('view.step.hint')]),
@@ -135,12 +153,18 @@ function buildViewTab(store: Store): HTMLElement[] {
   ]);
 
   const sync = () => {
-    const { settings } = store.getState();
+    const { settings, camera } = store.getState();
+    for (const { preset, input } of cameraInputs) input.checked = preset === camera.preset;
     for (const { step, input } of stepInputs) input.checked = step === settings.step;
     debugInput.checked = settings.debug;
   };
   store.subscribe(sync);
   sync();
 
-  return [stepGroup, debugField, el('p', { class: 'placeholder' }, [t('view.placeholder')])];
+  return [
+    cameraGroup,
+    stepGroup,
+    debugField,
+    el('p', { class: 'placeholder' }, [t('view.placeholder')]),
+  ];
 }

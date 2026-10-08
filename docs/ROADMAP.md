@@ -28,7 +28,7 @@ The reference boat is a **Hanse 508**. The tool favours clarity over realism.
 
 ## Architecture hooks to keep from Phase 1 onwards
 
-- **IDs everywhere.** Every mesh, rope and UI control maps to an id in `content/registry/parts.json`. Phase 4 hangs its content on these ids.
+- **IDs everywhere.** Every mesh and rope maps to an id in `content/registry/parts.json`; a rope's UI control uses its rope's id. Phase 4 hangs its content on these ids.
 - **Pure model.** `src/model` has no DOM and no three.js. `step(state, dt)` already takes boat velocity and heading (zero in Phase 1).
 - **Data-driven boat and sails.** Geometry, ropes, controls and optional sails (gennaker `enabled: false`) come from `content/boat/hanse508.json`. A second boat later means a second data file, not new code paths.
 - **i18n from day one.** UI strings through `t()`. Names come from the registry by language code. Adding a language means adding data.
@@ -47,3 +47,6 @@ The reference boat is a **Hanse 508**. The tool favours clarity over realism.
 | 2026-10-08 | Repo `Botrops1/sail-learn-and-train`, public, GPL-3.0. Hosting: GitHub Pages. |
 | 2026-10-08 | Layout: portrait first, also near-square foldables and desktop (stacked vs. side-by-side at 700 px / aspect 0.8). |
 | 2026-10-08 | Stack: Vite + TypeScript + three.js + Vitest, no UI framework unless a clear need appears. |
+| 2026-10-08 | Control ids: controls do not get their own registry entries. A rope control's `data-part-id` is its rope's id (e.g. `ctl_vang` → `rope_vang`). Ids for controls without a rope (wheel, test wind) are decided in M2. |
+| 2026-10-08 | Camera in the URL: only the preset is stored (`cam` = side-port, side-starboard, top, bow, helm or free). Dragging switches to `cam=free`; a link with `cam=free` opens the default view. The free camera position is not stored. |
+| 2026-10-08 | License stays GPL-3.0-only. |

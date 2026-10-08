@@ -55,7 +55,7 @@ If something here looks necessary to finish a milestone, stop and ask in the PR 
 | Boom angle θ | Horizontal angle of the boom from the aft-pointing centreline. **+ = boom to starboard.** Wind from starboard pushes the boom to port (θ < 0). |
 | Boom pitch ψ | + = boom end up. |
 | Rope controls | `0 %` = fully hauled in (or fully furled). `100 %` = fully eased (or fully unfurled). Shown as "% eased" or "% unfurled". |
-| IDs | Every mesh, rope and UI control carries an id from `content/registry/parts.json` (`mesh.userData.partId`, `data-part-id`). Never invent ids in code; add them to the registry first. |
+| IDs | Every mesh and rope carries an id from `content/registry/parts.json` (`mesh.userData.partId`). Controls do **not** get their own registry entries: a rope control's `data-part-id` is its rope's id (e.g. `ctl_vang` → `rope_vang`). Ids for controls without a rope (wheel, test wind) are proposed in M2. Never invent ids in code; add them to the registry first. |
 | Text | All UI strings through `t('key')` from a strings file (`content/i18n/en.json`). Part names come from the registry by language code. Phase 1 ships English only. |
 
 ## 5. Layout
@@ -269,6 +269,7 @@ content/        data (JSON) imported at build time
 ### 9.2 URL state
 
 - Readable query parameters, updated with `history.replaceState` (debounced 300 ms). Example: `?ms=35&js=40&vg=50&tl=20&mf=100&jf=100&rd=0&wd=60&ws=12&cam=side-port&sel=rope_vang&step=5`.
+- Camera: only the preset is stored, `cam=side-port|side-starboard|top|bow|helm|free`. Dragging the view switches to `cam=free`. A link with `cam=free` opens the default view: the free camera position is not stored.
 - Opening such a URL reproduces the view exactly. A **Share / copy link** button in the View tab copies it.
 - Unknown or out-of-range values fall back to defaults silently.
 - Add `v=1` for future migrations.

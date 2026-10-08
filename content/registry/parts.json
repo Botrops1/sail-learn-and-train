@@ -1,5 +1,5 @@
 {
-  "$comment": "ID registry for everything the user can see, touch or learn about. Every 3D object (mesh.userData.partId), every rope, every UI control (data-part-id) points to one id here. Phase 1 uses id + names.en + boatLabel for the tap-to-identify tooltip. Phase 4 (learning layer) adds full descriptions. Russian is an AI draft until a Russian-speaking sailor has reviewed it.",
+  "$comment": "ID registry for everything the user can see, touch or learn about. Every 3D object (mesh.userData.partId) and every rope points to one id here. UI controls have no entries of their own: a rope control's data-part-id is its rope's id (decision 2026-10-08). Phase 1 uses id + names.en + boatLabel for the tap-to-identify tooltip. Phase 4 (learning layer) adds full descriptions. Russian is an AI draft until a Russian-speaking sailor has reviewed it.",
   "schemaVersion": 1,
   "statusValues": {
     "draft": "Written by AI, not verified",

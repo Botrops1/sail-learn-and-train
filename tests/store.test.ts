@@ -22,6 +22,15 @@ describe('store', () => {
     expect(store.getState().camera.preset).toBe('top');
   });
 
+  it('select sets and clears the selected part', () => {
+    const store = createStore(initialState());
+    expect(store.getState().selection).toBeNull();
+    store.dispatch({ type: 'select', partId: 'part_mast' });
+    expect(store.getState().selection).toBe('part_mast');
+    store.dispatch({ type: 'select', partId: null });
+    expect(store.getState().selection).toBeNull();
+  });
+
   it('unsubscribe stops notifications', () => {
     const store = createStore(initialState());
     const listener = vi.fn();

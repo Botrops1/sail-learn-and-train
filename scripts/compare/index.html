@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Model vs reference sketch</title>
+    <style>
+      body {
+        margin: 0;
+        background: #ffffff;
+      }
+      .stack {
+        position: relative;
+      }
+      .stack > * {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      img {
+        opacity: 0.9;
+        mix-blend-mode: multiply;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stack" id="stack"></div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
