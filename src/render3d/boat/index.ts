@@ -5,6 +5,7 @@ import { drawnPose, ropeDrawings } from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
 import { boat } from '../../model/boat';
 import { initialRig, type RigState } from '../../model/sim';
+import { wheelTurnDeg } from '../../model/steering';
 import { buildWindex } from '../wind';
 import { buildKeel, buildRudder, buildSaildrive } from './appendages';
 import { buildCockpitHardware } from './cockpitHardware';
@@ -75,6 +76,11 @@ export function buildBoat(
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
     ropes.update(ropeDrawings(next), ropeView);
     windex.update(nextControls.ctl_wind_dir);
+    // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
+    // around y), wheels turned clockwise as seen from behind them (a turn around x).
+    rudderPivot.rotation.y = (next.applied.rudder * Math.PI) / 180;
+    const wheel = (wheelTurnDeg(next.applied.rudder) * Math.PI) / 180;
+    for (const pivot of hardware.wheelPivots) pivot.rotation.x = wheel;
     root.updateMatrixWorld(true);
   };
   update(rig, controls);

@@ -179,6 +179,25 @@ export function minUnfurledFor(available: number, data: BoatData = boat): number
   return 1 - bisectLargest(0, 1, (g) => jibSheetSpan(0, 1 - g, data) <= available);
 }
 
+/**
+ * Jib out (0..1) once the ropes have arrived at the controls, starting from `reached`, the
+ * fraction it has now (the same rule as in solveJib). A link without history starts fully out
+ * (`reached` = 1): there, a furl the sheet does not allow is blocked. A jib already furled
+ * further (sheet released, then hauled) stays furled: the sheet fights the furling line.
+ */
+export function settledJibUnfurled(
+  sheetPct: number,
+  unfurledPct: number,
+  reached: number,
+  data: BoatData = boat,
+): number {
+  const asked = Math.min(1, Math.max(0, unfurledPct / 100));
+  const reachable = jibSheetReleased(sheetPct, data)
+    ? 0
+    : minUnfurledFor(availableJibSheet(sheetPct, data), data);
+  return Math.max(asked, Math.min(reachable, reached));
+}
+
 /** Largest rotation (≥ 0) at which the sheet still reaches: span(φ, f) ≤ available. */
 export function maxPhiForSheet(available: number, unfurled: number, data: BoatData = boat): number {
   return bisectLargest(

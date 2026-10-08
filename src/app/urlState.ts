@@ -1,14 +1,24 @@
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
+import { settledJibUnfurled } from '../model/jib';
 import { isRegisteredPartId } from '../model/registry';
-import { isCameraPreset, isStepSize, type CameraPreset, type StepSize } from '../model/settings';
+import {
+  DEFAULT_SETTINGS,
+  isCameraPreset,
+  isRopesMode,
+  isStepSize,
+  type CameraPreset,
+  type RopesMode,
+  type StepSize,
+} from '../model/settings';
+import type { RigHistory } from '../model/sim';
 import { initialState, type AppState } from './store';
 
 /** URL schema version (PHASE1_SPEC 9.2). Bump when a parameter changes meaning. */
 export const URL_STATE_VERSION = 1;
 
 /**
- * Controls in the URL so far, with their short names (PHASE1_SPEC 9.2, WORKFLOW 5). M2 adds the
- * boom and wind controls, M3 the jib (`js`, `jf`); the wheel (`rd`) follows in M4.
+ * Every control in the URL, with its short name (PHASE1_SPEC 9.2, WORKFLOW 5). M2 added the
+ * boom and wind controls, M3 the jib (`js`, `jf`), M4a the wheel (`rd`).
  */
 export const URL_CONTROLS: readonly (readonly [string, ControlId])[] = [
   ['ms', 'ctl_mainsheet'],
@@ -17,6 +27,7 @@ export const URL_CONTROLS: readonly (readonly [string, ControlId])[] = [
   ['tl', 'ctl_topping_lift'],
   ['mf', 'ctl_main_furl'],
   ['jf', 'ctl_jib_furl'],
+  ['rd', 'ctl_rudder'],
   ['wd', 'ctl_wind_dir'],
   ['ws', 'ctl_wind_speed'],
 ];
@@ -62,15 +73,52 @@ export function parseUrlState(search: string): AppState {
   if (debugParam === '1') debug = true;
   else if (debugParam === '0') debug = false;
 
+  let legend: boolean | undefined;
+  const legendParam = params.get('lg');
+  if (legendParam === '1') legend = true;
+  else if (legendParam === '0') legend = false;
+
+  let ropesMode: RopesMode | undefined;
+  const mode = params.get('mode');
+  if (mode !== null && isRopesMode(mode)) ropesMode = mode;
+
+  // `jr`: how far the jib is out when that is less than the controls alone give (the sheet was
+  // hauled against a jib furled with the sheet released). Never less than "Jib out" asked for.
+  const history: RigHistory = {};
+  const jr = params.get('jr');
+  if (jr !== null && /^\d+$/.test(jr)) {
+    const value = Number(jr);
+    const asked = controls.ctl_jib_furl ?? controlSpec('ctl_jib_furl').default;
+    if (value >= asked && value <= 100) history.jibUnfurled = value / 100;
+  }
+
   return initialState({
     controls,
     camera: preset ? { preset } : {},
     settings: {
       ...(stepSize !== undefined ? { step: stepSize } : {}),
       ...(debug !== undefined ? { debug } : {}),
+      ...(legend !== undefined ? { legend } : {}),
+      ...(ropesMode !== undefined ? { ropesMode } : {}),
     },
     selection,
+    history,
   });
+}
+
+/** Below this (as a fraction) the furl a link restores is the same as without `jr`. */
+const JR_TOLERANCE = 0.005;
+
+/**
+ * The jib's furl for `jr`, as a whole percentage, or null when a link without it opens the same:
+ * where the jib settles from now, compared with where it settles from fully out.
+ */
+export function jibReachedParam(state: AppState): number | null {
+  const { ctl_jib_sheet: sheet, ctl_jib_furl: furl } = state.controls;
+  const settled = settledJibUnfurled(sheet, furl, state.rig.jibSolution.unfurled);
+  const fresh = settledJibUnfurled(sheet, furl, 1);
+  const percent = Math.round(settled * 100);
+  return fresh - settled > JR_TOLERANCE && percent < Math.round(fresh * 100) ? percent : null;
 }
 
 /** Writes the state as a readable query string (with the leading `?`). */
@@ -78,9 +126,18 @@ export function serializeUrlState(state: AppState): string {
   const params = new URLSearchParams();
   params.set('v', String(URL_STATE_VERSION));
   for (const [key, id] of URL_CONTROLS) params.set(key, String(Math.round(state.controls[id])));
+  const jr = jibReachedParam(state);
+  if (jr !== null) params.set('jr', String(jr));
   params.set('cam', state.camera.preset);
   if (state.selection) params.set('sel', state.selection);
   params.set('step', String(state.settings.step));
+  // Settings that are rarely changed are only written when they differ from the default.
+  if (state.settings.legend !== DEFAULT_SETTINGS.legend) {
+    params.set('lg', state.settings.legend ? '1' : '0');
+  }
+  if (state.settings.ropesMode !== DEFAULT_SETTINGS.ropesMode) {
+    params.set('mode', state.settings.ropesMode);
+  }
   if (state.settings.debug) params.set('debug', '1');
   return `?${params.toString()}`;
 }

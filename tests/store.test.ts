@@ -59,4 +59,38 @@ describe('store', () => {
     expect(applied).toBeLessThan(50);
     expect(store.getState().rig.timeS).toBeCloseTo(0.1, 9);
   });
+
+  it('setLegend and setRopesMode change only their setting', () => {
+    const store = createStore(initialState());
+    store.dispatch({ type: 'setLegend', legend: false });
+    expect(store.getState().settings.legend).toBe(false);
+    store.dispatch({ type: 'setRopesMode', mode: 'easy' });
+    expect(store.getState().settings.ropesMode).toBe('easy');
+  });
+
+  it('reset brings controls, camera, selection and settings back to the defaults (debug stays)', () => {
+    const defaults = initialState();
+    const store = createStore(
+      initialState({
+        controls: { ctl_mainsheet: 90, ctl_rudder: -20, ctl_wind_dir: -120, ctl_jib_furl: 40 },
+        camera: { preset: 'top' },
+        settings: { step: 1, debug: true, legend: false },
+        selection: 'rope_vang',
+      }),
+    );
+    const rigBefore = store.getState().rig;
+    store.dispatch({ type: 'reset' });
+    const state = store.getState();
+    expect(state.controls).toEqual(defaults.controls);
+    expect(state.camera).toEqual(defaults.camera);
+    expect(state.selection).toBeNull();
+    expect(state.settings).toEqual({ ...defaults.settings, debug: true });
+    // The rig is not snapped: it moves back from where it was.
+    expect(state.rig).toBe(rigBefore);
+    for (let i = 0; i < 600; i += 1) store.dispatch({ type: 'step', dt: 1 / 60 });
+    const settled = store.getState().rig;
+    expect(settled.applied).toEqual(defaults.rig.applied);
+    expect(settled.solution.thetaDeg).toBeCloseTo(defaults.rig.solution.thetaDeg, 6);
+    expect(settled.jibSolution.unfurled).toBe(1);
+  });
 });

@@ -637,3 +637,306 @@ html[data-layout='side'] .rig-alerts {
   font-weight: 600;
   text-align: center;
 }
+
+/* Ropes tab (PHASE1_SPEC 7.2, M4a): clutch-bank drawing, selected-rope strip, list, legend. */
+.mode-line {
+  margin-bottom: 0;
+}
+
+.mode-line strong {
+  color: var(--text);
+}
+
+.section-title {
+  margin: 16px 0 8px;
+  font-size: var(--font-label);
+}
+
+.clutch-drawing {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 4px 0 8px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.clutch {
+  cursor: pointer;
+  outline: none;
+}
+
+.clutch-hit {
+  fill: transparent;
+}
+
+.clutch-body {
+  fill: #2b3136;
+  stroke: #12171b;
+  stroke-width: 1;
+}
+
+.clutch-body-large {
+  fill: #1d2226;
+}
+
+.clutch-sticker {
+  fill: #ffffff;
+}
+
+.clutch-sticker-plate {
+  fill: #d3d8dc;
+}
+
+.clutch-label {
+  fill: #111111;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.clutch-tag,
+.clutch-caption {
+  fill: var(--muted);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.clutch-caption {
+  fill: var(--text);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.clutch-rope {
+  stroke-linecap: butt;
+}
+
+.clutch-bank {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 3;
+}
+
+.clutch-bank.is-selected {
+  stroke: #ff9f1c;
+}
+
+.clutch.is-selected .clutch-body {
+  stroke: #ff9f1c;
+  stroke-width: 3;
+}
+
+.clutch.is-selected .clutch-hit {
+  fill: rgb(255 159 28 / 0.18);
+}
+
+.clutch:focus-visible .clutch-hit {
+  stroke: var(--focus);
+  stroke-width: 3;
+}
+
+.rope-strip {
+  margin: 0 -16px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+/* Stacked: the selected rope's slider stays on screen below a tall drawing. */
+html[data-layout='stacked'] .rope-strip:not(.is-empty) {
+  position: sticky;
+  z-index: 1;
+  bottom: 0;
+  max-height: min(150px, 30svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 -4px 10px rgb(10 20 30 / 0.12);
+}
+
+.rope-strip .control {
+  border-color: #ff9f1c;
+}
+
+.strip-empty {
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.shared-hint {
+  margin: 4px 0;
+  padding: 2px 8px;
+  border-left: 4px solid #ff9f1c;
+  background: #fff4e5;
+  font-size: var(--font-small);
+}
+
+.shared-hint summary,
+.strip-more summary {
+  min-height: 32px;
+  padding: 4px 0;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.shared-hint p,
+.strip-more p {
+  margin: 0 0 6px;
+}
+
+.strip-more {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.strip-more summary {
+  color: var(--accent);
+}
+
+.shared-hint summary:focus-visible,
+.strip-more summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.static-note {
+  margin: 4px 0 2px;
+  font-size: var(--font-small);
+}
+
+.rope-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.rope-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--touch);
+  padding: 4px 8px 4px 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rope-item[aria-pressed='true'] {
+  border-color: #ff9f1c;
+  background: #fff4e5;
+}
+
+.rope-item:focus-visible,
+.action-button:focus-visible,
+.share-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.rope-item-swatch {
+  flex: none;
+  width: 10px;
+  height: 28px;
+}
+
+.rope-item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rope-item-name {
+  font-size: var(--font-small);
+  font-weight: 700;
+}
+
+.rope-item-value {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rope-legend ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-small);
+}
+
+.rope-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rope-legend[hidden] {
+  display: none;
+}
+
+.legend-swatch {
+  flex: none;
+  width: 36px;
+  height: 10px;
+}
+
+/* View tab: Share and Reset. */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-button {
+  flex: 1 1 0;
+  min-height: var(--touch);
+  padding: 6px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: #ffffff;
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.action-reset {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.action-reset[data-armed='true'] {
+  border-color: #b00020;
+  background: #b00020;
+  color: #ffffff;
+}
+
+.share-link {
+  width: 100%;
+  min-height: var(--touch);
+  margin: 4px 0;
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  font-size: var(--font-small);
+}
+
+.share-link[hidden] {
+  display: none;
+}
+
+.action-status:empty {
+  display: none;
+}

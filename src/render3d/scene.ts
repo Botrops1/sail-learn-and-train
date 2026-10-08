@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import type { Store } from '../app/store';
+import { highlightIds } from '../model/panelEntries';
 import { requirePartId } from '../model/registry';
+import type { Vec3 } from '../model/vec3';
 import { buildBoat } from './boat';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
@@ -82,17 +84,37 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           const ndc = new THREE.Vector3(x, y, z).project(camera);
           return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
+        /** Canvas position (CSS px) of a point along a part's pick segments (e.g. a rope). */
+        partPoint: (partId: string, fraction = 0.5) => {
+          let found: THREE.Vector3 | undefined;
+          boatModel.root.traverse((object) => {
+            const segments = (object.userData as { partId?: string; pickSegments?: Vec3[][] })
+              .pickSegments;
+            if (found || object.userData.partId !== partId || !segments?.length) return;
+            const segment = segments[Math.floor(fraction * (segments.length - 1))];
+            if (!segment?.[0] || !segment[1]) return;
+            found = new THREE.Vector3(...segment[0])
+              .lerp(new THREE.Vector3(...segment[1]), 0.5)
+              .applyMatrix4(object.matrixWorld);
+          });
+          if (!found) return null;
+          const rect = renderer.domElement.getBoundingClientRect();
+          const ndc = found.project(camera);
+          return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
+        },
       },
     });
   }
 
+  // Ropes that share a control light up together (PHASE1_SPEC 7.2), e.g. the outhaul with the
+  // main furling line, or the rudder with both wheels.
   const highlight = createHighlighter(boatModel.root);
-  highlight(store.getState().selection);
+  highlight(highlightIds(store.getState().selection));
 
   store.subscribe((state, previous) => {
     const preset = state.camera.preset;
     if (preset !== previous.camera.preset && preset !== rig.preset) rig.goTo(preset);
-    if (state.selection !== previous.selection) highlight(state.selection);
+    if (state.selection !== previous.selection) highlight(highlightIds(state.selection));
   });
 
   let canvasHeight = 1;
@@ -146,24 +168,32 @@ function listenForTaps(canvas: HTMLElement, onTap: (x: number, y: number) => voi
   canvas.addEventListener('pointercancel', (event) => finish(event, true));
 }
 
-/** Tints every mesh of the selected part (each part has its own material, see partMesh). */
-function createHighlighter(root: THREE.Object3D): (partId: string | null) => void {
-  const byPart = new Map<string, THREE.MeshLambertMaterial[]>();
+/**
+ * Tints every mesh of the selected parts (each part has its own material, see partMesh). Works
+ * with any material that has an emissive colour.
+ */
+function createHighlighter(root: THREE.Object3D): (partIds: string[]) => void {
+  type Emissive = THREE.Material & { emissive: THREE.Color; emissiveIntensity: number };
+  const byPart = new Map<string, Emissive[]>();
   root.traverse((object) => {
     const id = (object.userData as { partId?: string }).partId;
     if (!id || !(object instanceof THREE.Mesh)) return;
     const material = object.material as THREE.Material;
-    if (material instanceof THREE.MeshLambertMaterial) {
-      byPart.set(id, [...(byPart.get(id) ?? []), material]);
+    if ('emissive' in material && material.emissive instanceof THREE.Color) {
+      byPart.set(id, [...(byPart.get(id) ?? []), material as Emissive]);
     }
   });
-  let current: string | null = null;
-  return (partId) => {
-    for (const material of byPart.get(current ?? '') ?? []) material.emissive.setHex(0x000000);
-    current = partId;
-    for (const material of byPart.get(partId ?? '') ?? []) {
-      material.emissive.set(SCENE.highlight.color);
-      material.emissiveIntensity = SCENE.highlight.intensity;
+  let current: string[] = [];
+  return (partIds) => {
+    for (const id of current) {
+      for (const material of byPart.get(id) ?? []) material.emissive.setHex(0x000000);
+    }
+    current = partIds;
+    for (const id of current) {
+      for (const material of byPart.get(id) ?? []) {
+        material.emissive.set(SCENE.highlight.color);
+        material.emissiveIntensity = SCENE.highlight.intensity;
+      }
     }
   };
 }

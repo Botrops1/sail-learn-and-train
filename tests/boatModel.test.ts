@@ -223,3 +223,28 @@ describe('rope thickness on screen', () => {
     expect(widthAcross()).toBeCloseTo(plain, 6);
   });
 });
+
+describe('wheel and rudder in 3D (M4a)', () => {
+  it('rudder +: its back edge swings to starboard, and both wheels turn clockwise as seen from behind', () => {
+    // 5° of rudder is less than a quarter turn of the wheel, so the rim's top shows the sense.
+    const controls = { ...defaultControls(), ctl_rudder: 5 };
+    const rig = initialRig(controls);
+    const model = buildBoat(controls, rig);
+    const blade = model.rudderPivot.children[0] as THREE.Mesh;
+    blade.geometry.computeBoundingBox();
+    const box = blade.geometry.boundingBox as THREE.Box3;
+    // The aft-most point of the blade (its back edge), in the boat frame.
+    const backEdge = new THREE.Vector3(box.min.x, (box.min.y + box.max.y) / 2, 0).applyMatrix4(
+      model.rudderPivot.matrixWorld,
+    );
+    expect(backEdge.z).toBeGreaterThan(0.02);
+    for (const pivot of model.wheelPivots) {
+      // The top of the rim moves to starboard (right, seen from behind facing forward).
+      const top = new THREE.Vector3(0, 0.4, 0).applyEuler(pivot.rotation);
+      expect(top.z).toBeGreaterThan(0.1);
+    }
+    model.update(initialRig(defaultControls()), defaultControls());
+    expect(model.rudderPivot.rotation.y).toBe(0);
+    for (const pivot of model.wheelPivots) expect(pivot.rotation.x).toBe(0);
+  });
+});

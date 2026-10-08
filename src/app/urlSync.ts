@@ -1,4 +1,4 @@
-import type { Store } from './store';
+import type { AppState, Store } from './store';
 import { serializeUrlState } from './urlState';
 
 /** Debounce for URL updates (PHASE1_SPEC 9.2). */
@@ -6,7 +6,8 @@ const URL_UPDATE_DEBOUNCE_MS = 300;
 
 /**
  * Keeps the address bar in sync with the store, using history.replaceState. The rig changes
- * every frame, so only a change of what the URL shows (re)starts the debounce timer.
+ * every frame, so only a change of what the URL shows (re)starts the debounce timer. Of the rig,
+ * only the jib's furl can show in the URL (`jr`).
  */
 export function startUrlSync(store: Store): void {
   let timer: number | undefined;
@@ -22,7 +23,8 @@ export function startUrlSync(store: Store): void {
       state.controls === previous.controls &&
       state.camera === previous.camera &&
       state.settings === previous.settings &&
-      state.selection === previous.selection
+      state.selection === previous.selection &&
+      state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled
     ) {
       return;
     }
@@ -33,4 +35,10 @@ export function startUrlSync(store: Store): void {
     timer = window.setTimeout(write, URL_UPDATE_DEBOUNCE_MS);
   });
   write();
+}
+
+/** The full link to what is shown now (View tab → Share). */
+export function shareLink(state: AppState): string {
+  const { origin, pathname } = window.location;
+  return `${origin}${pathname}${serializeUrlState(state)}`;
 }

@@ -14,6 +14,7 @@ import {
   jibSheetReleased,
   jibSheetSpan,
   minUnfurledFor,
+  settledJibUnfurled,
   solveJib,
   type JibSolution,
 } from '../src/model/jib';
@@ -626,5 +627,33 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     expect(Math.abs(end[0] - (bankA?.x ?? 0))).toBeLessThan(0.5);
     // The chord heading used for the angle matches the drawn clew.
     expect(Math.abs(jibHeadingDeg(clew))).toBeCloseTo(Math.abs(rig.jibSolution.headingDeg), 6);
+  });
+});
+
+describe('jib furl in a shared link (M4a, jr)', () => {
+  it('settledJibUnfurled gives the furl the solver settles at, from any furl reached so far', () => {
+    for (const js of [0, 30, 60, 90, 99, 100]) {
+      for (const jf of [0, 25, 40, 70, 100]) {
+        for (const reached of [0, 0.25, 0.4, 0.7, 1]) {
+          if (reached < jf / 100) continue;
+          const rig = initialRig(controls({ ctl_jib_sheet: js, ctl_jib_furl: jf }), boat, {
+            jibUnfurled: reached,
+          });
+          expect(rig.jibSolution.unfurled, `js=${js} jf=${jf} from ${reached}`).toBeCloseTo(
+            settledJibUnfurled(js, jf, reached),
+            9,
+          );
+        }
+      }
+    }
+  });
+
+  it('a link without history starts fully out: the same as initialRig always gave', () => {
+    for (const js of [0, 50, 100]) {
+      for (const jf of [0, 50, 100]) {
+        const plain = initialRig(controls({ ctl_jib_sheet: js, ctl_jib_furl: jf }));
+        expect(plain.jibSolution.unfurled).toBeCloseTo(settledJibUnfurled(js, jf, 1), 9);
+      }
+    }
   });
 });
