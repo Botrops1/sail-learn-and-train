@@ -1,7 +1,9 @@
 import { createScene, type SceneView } from '../render3d/scene';
+import { createCameraBar } from '../ui/cameraBar';
 import { createDebugOverlay } from '../ui/debugOverlay';
 import { el } from '../ui/dom';
 import { t } from '../ui/i18n';
+import { createInfoCard } from '../ui/infoCard';
 import { createLayout } from '../ui/layout';
 import { createPanel } from '../ui/panel';
 import { createStore } from './store';
@@ -23,15 +25,22 @@ export function startApp(host: HTMLElement): void {
 
   let scene: SceneView | undefined;
   try {
-    scene = createScene(layout.view);
+    scene = createScene(layout.view, store);
   } catch (error) {
     console.warn('3D view unavailable:', error);
     layout.view.append(el('p', { class: 'scene-error' }, [t('scene.unavailable')]));
   }
 
   if (scene) {
+    createInfoCard(layout, store);
+    const cameraBar = createCameraBar(layout.view, store);
     const view = scene;
-    const resize = () => view.resize(layout.view.clientWidth, layout.view.clientHeight);
+    const resize = () => {
+      const viewBox = layout.view.getBoundingClientRect();
+      const inset = viewBox.bottom - cameraBar.getBoundingClientRect().top;
+      const stacked = layout.viewport().mode === 'stacked';
+      view.resize(layout.view.clientWidth, layout.view.clientHeight, inset, stacked);
+    };
     new ResizeObserver(resize).observe(layout.view);
     resize();
   }
@@ -40,7 +49,7 @@ export function startApp(host: HTMLElement): void {
   let windowStart = performance.now();
   let fps = 0;
   const loop = (now: number) => {
-    scene?.render();
+    scene?.render(now);
     frames += 1;
     if (now - windowStart >= FPS_WINDOW_MS) {
       fps = (frames * 1000) / (now - windowStart);

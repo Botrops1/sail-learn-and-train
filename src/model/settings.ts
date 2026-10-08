@@ -3,7 +3,10 @@
  * Pure data: no DOM, no three.js (PHASE1_SPEC 9.1).
  */
 
-/** Camera presets from PHASE1_SPEC 6.2. The camera itself is built in M1. */
+/**
+ * Camera presets from PHASE1_SPEC 6.2. Only the preset is stored (in the store and the URL);
+ * `free` means the user has moved the camera by hand. The free position itself is not stored.
+ */
 export const CAMERA_PRESETS = [
   'side-port',
   'side-starboard',

@@ -9,7 +9,7 @@ export default defineConfig(
   js.configs.recommended,
   tseslint.configs.strict,
   {
-    files: ['src/**/*.ts'],
+    files: ['src/**/*.ts', 'scripts/compare/**/*.ts'],
     languageOptions: { globals: globals.browser },
   },
   {

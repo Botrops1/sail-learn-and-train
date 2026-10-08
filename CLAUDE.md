@@ -20,7 +20,7 @@ The owner has **no sailing knowledge** and works **from a phone only**: PRs are 
 - Stay inside the spec's scope. If something seems needed that the spec excludes, ask in the PR description instead of building it.
 - Keep `src/model` pure (no DOM, no three.js). Renderers read state; UI dispatches actions.
 - **No magic numbers** for boat geometry or tuning. They belong in `content/boat/hanse508.json`. If you add or change one, update `docs/BOAT_REFERENCE.md` (mark it as an assumption if it is a guess).
-- **IDs:** every mesh, rope and control gets an id from `content/registry/parts.json`. Add new ids to the registry first, with `status: "draft"`.
+- **IDs:** every mesh and rope gets an id from `content/registry/parts.json`; a rope control uses its rope's id (no registry entry of its own). Add new ids to the registry first, with `status: "draft"`.
 - **Sailing claims need sources.** Never "fix" a failing physics-truth test by editing the rule to match the code. If you believe a rule is wrong, explain why in the PR and leave the decision to the owner.
 - **Russian text:** never present AI-drafted Russian as verified. Registry status stays `draft` until a sailor reviews it.
 - **No copyrighted material** in the repo: no brochure PDFs or images, no copied text from courses or books. Facts and numbers are fine; cite the source.
@@ -65,4 +65,4 @@ Deploy: GitHub Actions builds `main` and publishes to GitHub Pages at `https://b
 
 ## License
 
-GPL-3.0 (see `LICENSE`). three.js is MIT, which is compatible.
+GPL-3.0-only (see `LICENSE`). three.js is MIT, which is compatible.

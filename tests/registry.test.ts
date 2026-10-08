@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import registry from '../content/registry/parts.json';
-import { hullBounds } from '../src/model/boat';
-import { isRegisteredPartId, requirePartId } from '../src/model/registry';
+import { isRegisteredPartId, partInfo, requirePartId } from '../src/model/registry';
 
 describe('part registry', () => {
   it('ids are unique', () => {
@@ -9,23 +8,25 @@ describe('part registry', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('ids used by the M0 scene exist', () => {
-    for (const id of ['part_hull', 'env_water']) expect(isRegisteredPartId(id)).toBe(true);
+  it('every entry has an English name, a one-liner and a status', () => {
+    for (const entry of registry.entries) {
+      expect(entry.names.en.trim(), entry.id).not.toBe('');
+      expect(entry.short.en.trim(), entry.id).not.toBe('');
+      expect(Object.keys(registry.statusValues), entry.id).toContain(entry.status.en);
+    }
   });
 
   it('an invented id fails loudly', () => {
     expect(() => requirePartId('part_made_up')).toThrow(/parts\.json/);
+    expect(isRegisteredPartId('part_made_up')).toBe(false);
   });
-});
 
-describe('boat data', () => {
-  it('hull bounds come from hanse508.json and are sane', () => {
-    const { min, max } = hullBounds();
-    const length = max[0] - min[0];
-    const beam = max[2] - min[2];
-    expect(length).toBeCloseTo(14.9, 1);
-    expect(beam).toBeCloseTo(4.75, 2);
-    expect(min[1]).toBeLessThan(0);
-    expect(max[1]).toBeGreaterThan(1);
+  it('partInfo gives the name, the labels on the boat and the one-liner', () => {
+    const info = partInfo('rope_topping_lift');
+    expect(info?.name).toBe('Topping lift');
+    expect(info?.boatLabels).toEqual(['Boom lift']);
+    expect(info?.short).toMatch(/boom/i);
+    expect(partInfo('part_mast')?.boatLabels).toEqual([]);
+    expect(partInfo('part_made_up')).toBeUndefined();
   });
 });

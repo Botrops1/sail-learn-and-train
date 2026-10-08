@@ -8,23 +8,27 @@ import {
 } from '../model/settings';
 
 /**
- * The single app store (PHASE1_SPEC 9.1). M0 holds only camera and settings;
- * controls, rig and selection are added by later milestones.
+ * The single app store (PHASE1_SPEC 9.1). M1 holds camera, settings and the selected part;
+ * controls and rig are added by later milestones.
  */
 export interface AppState {
   camera: CameraState;
   settings: Settings;
+  /** Registry id of the part shown in the info card, or null. */
+  selection: string | null;
 }
 
 export type Action =
   | { type: 'setStep'; step: StepSize }
   | { type: 'setDebug'; debug: boolean }
-  | { type: 'setCameraPreset'; preset: CameraPreset };
+  | { type: 'setCameraPreset'; preset: CameraPreset }
+  | { type: 'select'; partId: string | null };
 
 export function initialState(overrides: Partial<AppState> = {}): AppState {
   return {
     camera: { ...DEFAULT_CAMERA, ...overrides.camera },
     settings: { ...DEFAULT_SETTINGS, ...overrides.settings },
+    selection: overrides.selection ?? null,
   };
 }
 
@@ -36,6 +40,8 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, settings: { ...state.settings, debug: action.debug } };
     case 'setCameraPreset':
       return { ...state, camera: { ...state.camera, preset: action.preset } };
+    case 'select':
+      return { ...state, selection: action.partId };
   }
 }
 

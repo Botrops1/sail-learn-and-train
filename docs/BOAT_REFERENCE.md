@@ -57,6 +57,7 @@ Frame: origin at the mast, on the waterline, on the centreline; **x forward, y u
 | Boom | gooseneck (−0.20, 3.08), length 6.25 m |
 | Mainsheet | boom point 3.05 m from the gooseneck; deck blocks at x = −3.08, z = ±0.42 on the coachroof aft end |
 | Vang | mast (−0.18, 2.05) → boom 2.12 m from the gooseneck |
+| Coachroof | x = −3.05 … +2.00, top y = 1.84. Half-width 1.15 at the aft end (drawing), widening to about 1.45 at the mast (**photo estimate**: the self-tacking track ends at the edges of the raised deck in front of the mast) and staying that wide to x = 1.20; front corners cut to half-width 0.92 at x = 2.00; front face slopes back to x = 1.60 at the top (from the reference sketches) |
 | Self-tacking track | straight, about 0.28 m in front of the mast, about 2.8 m end to end (photo estimate; the drawing suggested 1.8 m) |
 | Jib | tack (6.12, 1.89), head (0.31, 20.60), clew about 0.4 m forward of the mast, 2.2 m above the waterline |
 | Wheels | x = −7.20, z = ±0.88 |
@@ -68,6 +69,8 @@ Reference sketches generated from the data file (they show exactly what the 3D m
 
 - [`reference/hanse508-side.svg`](reference/hanse508-side.svg)
 - [`reference/hanse508-plan.svg`](reference/hanse508-plan.svg)
+
+`npm run shots` also renders the 3D model at the sketches' scale with the sketch laid on top (`docs/screenshots/<milestone>/compare-*-model-vs-sketch.png`), to check the proportions.
 
 ## 4. Ropes, clutches and controls
 
@@ -139,6 +142,14 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Cockpit sole height, wheel size | 1.0 m above waterline, 1.0 m wheel | Assumption, not important |
 | Topping lift exit height | y = 21.0 | Line confirmed by photo; height estimated |
 | Mast section | 0.30 × 0.18 m | Assumption, not important |
+| Coachroof width near the mast | half-width about 1.45 m (`deck.coachroof.maxHalfWidth`), tapering to the drawing's 1.15 m at the aft end | Photo estimate (`self-tacking-track-full.jpg`); the deck-plan drawing showed 1.15 m all along |
+| Hull cross-section shape | superellipse, exponent 2.5, between the keel line and the deck edge (`modelDetail.hullSectionExponent`) | Not important; a photo of the hull out of the water would help |
+| Keel line (hull bottom on the centreline) | parabola from the deepest point (−0.65 m at x = −1.0) to the waterline ends, then straight up to the transom | Not important |
+| Sizes of small parts in the 3D model | `modelDetail` in the data file: boom section 0.24 × 0.14 m, keel fin 0.20 m and bulb 0.55 m wide, rudder 0.09 m thick with 20 % balance, winch drum 0.26 m, clutch bank 0.44 × 0.20 m, coaming 0.55 m wide, wires drawn 5 cm thick, vang strut tubes 8 and 5.5 cm, three boom blocks 0.35 m apart, and similar | Not important: chosen to look right and be tappable on a phone; they do not affect the rig solver |
+| Sprayhood | on the coachroof's aft end, x = −3.05 … −1.75, half-width 1.05, 0.75 m high (`modelDetail.sprayhood`) | Estimated from photos |
+| Turning blocks at the mast foot | 8 blocks in a ring of radius 0.30 m around the mast (`modelDetail.mastBaseTurningBlocks`) | Count and size estimated from photos |
+| Lifelines | stanchions every ~2.1 m along both deck edges from x = −8.2 to +5.4, 0.65 m high, wires at 0.65 and 0.33 m (`modelDetail.lifelines`) | Estimated from photos |
+| Clutch height | the data's y is approximate; the model stands each clutch on the coaming top (banks A and B) or the deck (JIB ROLL) | Not important |
 
 ## 6. Open questions for the skipper / next time aboard
 

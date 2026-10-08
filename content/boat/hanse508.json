@@ -100,7 +100,19 @@
 
   "deck": {
     "source": "drawing",
-    "coachroof": { "frontX": 2.00, "aftX": -3.05, "halfWidth": 1.15, "topY": 1.84 },
+    "coachroof": {
+      "frontX": 2.00,
+      "aftX": -3.05,
+      "halfWidth": 1.15,
+      "topY": 1.84,
+      "maxHalfWidth": 1.45,
+      "maxHalfWidthFromX": 0.00,
+      "maxHalfWidthSource": "photo estimate (self-tacking-track-full.jpg: the track ends at the edges of the raised deck in front of the mast; track halfSpan 1.40)",
+      "frontHalfWidth": 0.92,
+      "chamferStartX": 1.20,
+      "topFrontX": 1.60,
+      "shapeNote": "Plan: halfWidth (drawing) at aftX, widening in a straight taper to maxHalfWidth at maxHalfWidthFromX (the mast), full width from there to chamferStartX, then the corners are cut to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. halfWidth, chamfer and front from the reference sketches; maxHalfWidth from the photo."
+    },
     "cockpit": {
       "frontX": -3.10,
       "aftX": -7.70,
@@ -356,6 +368,46 @@
       { "id": "ctl_wind_dir", "label": "Test wind from", "unit": "deg, + = from starboard", "min": -180, "max": 180, "default": 60 },
       { "id": "ctl_wind_speed", "label": "Test wind speed", "unit": "kn", "min": 0, "max": 30, "default": 12 }
     ]
+  },
+
+  "modelDetail": {
+    "$comment": "Sizes of small parts that only the 3D model needs (thicknesses, diameters, section shapes). Not measured: chosen to look right and be tappable at teaching scale. They do not affect the rig solver. Safe to tune.",
+    "source": "assumption",
+    "hullSectionExponent": 2.5,
+    "hullSectionExponentNote": "Cross-section shape of the hull between the keel line and the deck edge (superellipse). 2 = round bilge, higher = fuller, flatter bottom and more upright topsides.",
+    "bowFittingHeight": 0.12,
+    "coamingWidth": 0.55,
+    "companionwayHatchLength": 0.90,
+    "spreaderDiameter": 0.09,
+    "boomSection": { "height": 0.24, "width": 0.14 },
+    "gooseneckSize": 0.14,
+    "wireRenderRadius": 0.025,
+    "wireRenderRadiusNote": "Shrouds and stays drawn thicker than real (about 12-16 mm) so they stay visible on a phone, like visual.ropeRenderRadius.",
+    "keelFinThickness": 0.20,
+    "keelBulbWidth": 0.55,
+    "rudderThickness": 0.09,
+    "rudderBalance": 0.20,
+    "rudderBalanceNote": "Fraction of the rudder chord in front of the stock (balanced spade rudder).",
+    "saildriveLeg": { "chord": 0.42, "thickness": 0.12 },
+    "winch": { "diameter": 0.26, "height": 0.24 },
+    "clutchBank": { "length": 0.44, "width": 0.20, "height": 0.08 },
+    "jibRollClutch": { "length": 0.24, "width": 0.12, "height": 0.08 },
+    "wheel": { "rimTubeRadius": 0.025, "spokes": 6, "pedestalWidth": 0.16 },
+    "block": { "radius": 0.07 },
+    "selfTackingTrack": { "radius": 0.035 },
+    "selfTackingCar": { "length": 0.22, "width": 0.12, "height": 0.09 },
+    "jibFurlerDrumDiameter": 0.26,
+    "mainFurlingGearbox": { "foreAft": 0.18, "height": 0.24, "athwart": 0.22 },
+    "mainsheetBoomBlockSpacing": 0.35,
+    "mainsheetBoomBlockSpacingNote": "Three blocks under the boom (photo), centred on rig.mainsheet.boomDistance; spacing estimated.",
+    "vangStrut": { "lowerDiameter": 0.08, "upperDiameter": 0.055, "tubeFraction": 0.62 },
+    "vangStrutNote": "Rigid vang drawn as two telescoping tubes: the thick one from the mast point, the thin one from the boom point, each tubeFraction of the strut length at rest so they overlap.",
+    "mastBaseTurningBlocks": { "count": 8, "ringRadius": 0.30, "blockDiameter": 0.09 },
+    "mastBaseTurningBlocksNote": "Ring of turning blocks around the mast foot (photos mast-base-turning-blocks*.jpg); count and sizes estimated.",
+    "sprayhood": { "frontX": -1.75, "aftX": -3.05, "halfWidth": 1.05, "height": 0.75 },
+    "sprayhoodNote": "Fabric shelter on the aft end of the coachroof over the companionway; its aft edge is at the coachroof's aft end. Size and position estimated from photos (side-deck-jib-roll.jpg, mainsheet-german.jpg).",
+    "lifelines": { "fwdX": 5.40, "aftX": -8.20, "stanchionSpacing": 2.10, "height": 0.65, "lowerWireHeight": 0.33, "inset": 0.06, "stanchionDiameter": 0.03, "wireRadius": 0.012 },
+    "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated."
   },
 
   "visual": {
