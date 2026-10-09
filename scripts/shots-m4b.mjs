@@ -281,11 +281,13 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       '?mode=realistic&wd=90&ws=12&st=starboard&wsb=a2.4.t&sel=rope_main_furling_line&cam=side-port',
     );
     await page.waitForTimeout(500);
-    await page.locator(`${drawing('starboard')} [data-key="a2"]`).click();
+    // The link selects the "in" tail (a2) already: a tap on it would open its clutch.
     const button = await centre(page, '[data-testid="act-button"]');
     await page.mouse.move(button.x, button.y);
     await page.mouse.down();
     await page.waitForTimeout(600);
+    await page.locator('.real-alert').scrollIntoViewIfNeeded();
+    await shot(page, 'live-phone-main-furl-blocked');
     const text = await stripText(page);
     await page.mouse.up();
     check(
@@ -293,7 +295,6 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       /Main outhaul/.test(text) && /Main furling/.test(text),
       text.split('\n')[1],
     );
-    await shot(page, 'live-phone-main-furl-blocked');
     await context.close();
   }
 
