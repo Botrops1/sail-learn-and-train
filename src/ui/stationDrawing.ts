@@ -3,6 +3,7 @@ import { boat } from '../model/boat';
 import {
   stationWinch,
   tailSpecs,
+  type Notice,
   type RealisticAction,
   type StationId,
   type TailSpec,
@@ -10,6 +11,12 @@ import {
 import { partInfo } from '../model/registry';
 import { SCENE } from '../render3d/sceneConfig';
 import { el } from './dom';
+import {
+  crankTracker,
+  createHandlePocket,
+  createSocketHandle,
+  createStrainBar,
+} from './handleDrawing';
 import { t, type StringKey } from './i18n';
 import { ropeColorKey, ROPE_DASH } from './ropeLegend';
 import { setText } from './stepper';
@@ -30,7 +37,11 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
  * - the tail in the jaw: drag it out;
  * - the tail in the hand, dragged back up to its clutch: off the winch, but only with 0 turns
  *   on the drum (otherwise it says to take the turns off first);
- * - the button: hold it to winch in.
+ * - the button: hold it to winch in;
+ * - the winch handle (M4c), lying here or carried: drag it onto the drum to put it in the
+ *   socket on top (a tap picks it up); in the socket, circle its grip to crank: clockwise is
+ *   1st gear, anticlockwise 2nd gear, both haul the rope in.
+ * A strain bar beside the drum shows the load against the limit while the winch works.
  */
 const D = {
   width: 360,
@@ -49,6 +60,10 @@ const D = {
   winch: { drop: 64, radius: 33, jaw: 12, ringStep: 4, hit: 26 },
   button: { fromRight: 50, radius: 23 },
   hand: { dx: -92, dy: 34 },
+  /** M4c: the strain bar right of the drum, the handle's pocket left of it, the handle's arm. */
+  strain: { dx: 30, halfHeight: 33 },
+  pocket: { x: 40, dy: -12 },
+  handleArm: 49,
   bottomPad: 30,
   ropeWidth: 5,
   font: { label: 11.5, minLabel: 8 },
@@ -57,8 +72,6 @@ const D = {
   tapMove: 10,
   /** Lever drag that opens or closes (drawing units). */
   leverMove: 12,
-  /** One drawing unit of tail pulled away from the winch lets out this much rope (m). */
-  easePerUnitM: 0.012,
   /** Circling this far (radians) counts as one turn on the drum. */
   turnRad: 2 * Math.PI * 0.9,
 } as const;
@@ -509,6 +522,17 @@ export function createStationDrawing(
     ),
     buttonText,
   );
+  // M4c: strain bar, the handle's pocket and the handle in the socket on top of the winch.
+  const strainBar = createStrainBar(
+    cx + r + D.strain.dx,
+    cy - D.strain.halfHeight,
+    2 * D.strain.halfHeight,
+  );
+  const pocket = createHandlePocket(D.pocket.x, cy + D.pocket.dy);
+  const socketHandle = createSocketHandle(cx, cy, D.handleArm);
+  winchGroup.append(socketHandle.group);
+  root.append(strainBar.group, pocket.group);
+
   // A ghost line while a tail is dragged.
   const ghost = svg('line', {
     class: 'real-ghost',
@@ -519,6 +543,11 @@ export function createStationDrawing(
 
   // --- gestures ---
   const dispatch = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
+  const easePerUnitM = boat.realisticMode.hand.easePerDrawingUnitM;
+  const crank = crankTracker(
+    () => ({ x: cx, y: cy }),
+    (turnsPerS) => dispatch({ type: 'crank', turnsPerS }),
+  );
   const point = (event: PointerEvent): { x: number; y: number } => {
     const matrix = root.getScreenCTM();
     if (!matrix) return { x: 0, y: 0 };
@@ -608,6 +637,7 @@ export function createStationDrawing(
       clutchFrom: tailNode ? fromClutch(p, tailNode) : 0,
     };
     if (kind === 'button') dispatch({ type: 'button', winch: winchId, held: true });
+    if (kind === 'crank') crank.start(p.x, p.y, event.timeStamp);
     // A clutch is selected when the press ends as a tap or a lever drag, not on touching it:
     // a finger that starts a scroll on a clutch body must not select it.
     if (kind === 'tail') options.onSelect(key);
@@ -621,11 +651,19 @@ export function createStationDrawing(
     if (!drag) return;
     const p = point(event);
     drag.moved = Math.max(drag.moved, Math.hypot(p.x - drag.start.x, p.y - drag.start.y));
-    if (drag.kind === 'tail' || drag.kind === 'hand' || drag.kind === 'jaw') {
+    if (drag.kind === 'crank') crank.move(p.x, p.y, event.timeStamp);
+    if (
+      drag.kind === 'tail' ||
+      drag.kind === 'hand' ||
+      drag.kind === 'jaw' ||
+      drag.kind === 'handle'
+    ) {
       const from =
         drag.kind === 'tail'
           ? { x: nodeFor(drag.key)?.mid ?? p.x, y: nodeFor(drag.key)?.bottom ?? p.y }
-          : { x: cx, y: cy };
+          : drag.kind === 'handle'
+            ? drag.start
+            : { x: cx, y: cy };
       ghost.setAttribute('x1', String(from.x));
       ghost.setAttribute('y1', String(from.y));
       ghost.setAttribute('x2', String(p.x));
@@ -658,7 +696,7 @@ export function createStationDrawing(
         const key = winchTail();
         const node = key ? nodeFor(key) : undefined;
         if (key && node && easingDrag(p, drag, node) && openClutch(key)) {
-          dispatch({ type: 'ease', key, metres: (distance - drag.far) * D.easePerUnitM });
+          dispatch({ type: 'ease', key, metres: (distance - drag.far) * easePerUnitM });
         }
         drag.far = distance;
       }
@@ -677,6 +715,15 @@ export function createStationDrawing(
     switch (current.kind) {
       case 'button':
         dispatch({ type: 'button', winch: winchId, held: false });
+        break;
+      case 'crank':
+        crank.end();
+        break;
+      case 'handle':
+        if (cancelled) break;
+        // Onto the drum: into the socket on top. A tap: pick it up (carry it).
+        if (overDrum && current.moved >= D.tapMove) dispatch({ type: 'handle', to: 'socket' });
+        else if (current.moved < D.tapMove) dispatch({ type: 'handle', to: 'carry' });
         break;
       case 'clutch': {
         if (cancelled) break;
@@ -698,7 +745,7 @@ export function createStationDrawing(
         if (overDrum) dispatch({ type: 'onWinch', key: current.key });
         // Dragged away elsewhere: the hand tries to let the rope out (PT-15: not through a
         // closed clutch).
-        else dispatch({ type: 'ease', key: current.key, metres: current.moved * D.easePerUnitM });
+        else dispatch({ type: 'ease', key: current.key, metres: current.moved * easePerUnitM });
         break;
       case 'hand': {
         if (cancelled) break;
@@ -710,7 +757,7 @@ export function createStationDrawing(
           if (overClutch(p, node)) {
             dispatch({ type: 'offWinch', winch: winchId, needZeroTurns: true });
           } else if (easingDrag(p, current, node) && !openClutch(key)) {
-            dispatch({ type: 'ease', key, metres: current.moved * D.easePerUnitM });
+            dispatch({ type: 'ease', key, metres: current.moved * easePerUnitM });
           }
         }
         break;
@@ -873,9 +920,22 @@ export function createStationDrawing(
     setText(buttonText, t(winch?.cutOut ? 'real.button.cutOut' : 'real.button.label'));
     drumHit.classList.toggle('is-active', Boolean(onWinch));
 
+    // The winch handle (M4c) and the strain while the winch works.
+    const handle = real.handle;
+    pocket.update(
+      handle.place === 'carried' || (handle.place === 'stowed' && handle.station === station),
+      handle.place === 'carried',
+    );
+    socketHandle.update(
+      handle.place === 'socket' && handle.station === station,
+      handle.angle,
+      handle.crank !== 0,
+    );
+    strainBar.update(winch?.strain ?? null);
+
     // The last thing that could not be done, written over the drawing.
     const n = real.notice;
-    const text = n ? noticeText(n.key, n.tail) : '';
+    const text = n ? noticeText(n) : '';
     setText(notice, text);
     notice.hidden = text === '';
   };
@@ -884,9 +944,10 @@ export function createStationDrawing(
 }
 
 /** The message for an action that could not be done. */
-export function noticeText(key: string, tail: string | null): string {
-  const spec = tail ? tailSpecs().find((s) => s.key === tail) : undefined;
+export function noticeText(notice: Notice): string {
+  const spec = notice.tail ? tailSpecs().find((s) => s.key === notice.tail) : undefined;
   const label = spec?.label ?? '';
-  const station = spec ? t(`real.station.${spec.station}` as StringKey) : '';
-  return t(`real.notice.${key}` as StringKey, { label, station });
+  const where = notice.station ?? spec?.station;
+  const station = where ? t(`real.station.${where}` as StringKey) : '';
+  return t(`real.notice.${notice.key}` as StringKey, { label, station });
 }

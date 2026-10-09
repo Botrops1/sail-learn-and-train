@@ -1,12 +1,15 @@
 import type { AppState, Store } from '../app/store';
+import { parseUrlState } from '../app/urlState';
 import { boat } from '../model/boat';
 import { entryFor } from '../model/panelEntries';
 import {
   STATION_IDS,
   runningTails,
+  socketAt,
   stationWinch,
   tailSpecs,
   winchOf,
+  type HandleReport,
   type RealisticAction,
   type StationId,
   type TailReport,
@@ -16,6 +19,7 @@ import { partInfo } from '../model/registry';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { CONTROL_VIEWS, controlView, createControl, stateText, valueText } from './ropeControls';
+import { createMastDrawing } from './mastDrawing';
 import { createStationDrawing, noticeText, type StationDrawing } from './stationDrawing';
 import { setText, stepButton } from './stepper';
 
@@ -24,6 +28,9 @@ import { setText, stepButton } from './stepper';
  * Starboard, Helm), alerts from the others, the station drawing, and a strip for the selected
  * clutch with a button for every gesture (open / close, onto the winch, turns, self-tailer,
  * ease, winch button, pull by hand) and what the rope is doing.
+ *
+ * M4c: the Mast station (the furling gearbox), the strain while a winch works, the winch handle
+ * (a bar with where it is and a button for every handle gesture) and a practice scenario.
  */
 
 function kn(newtons: number): string {
@@ -66,6 +73,11 @@ function statusLines(state: AppState, spec: TailSpec): { lines: string[]; alert:
     if (load >= boat.realisticMode.loads.fightingN) lines.push(t('real.status.loadFighting'));
     else if (load > 0) lines.push(t('real.status.load', { kn: kn(load) }));
     else lines.push(t('real.status.noPull'));
+    // While the motor works: its load against the cut-out (the strain bar, M4c).
+    if (winch?.button && winch.strain !== null) {
+      const cutOut = boat.realisticMode.electricWinch.cutOutLoadN;
+      lines.push(t('real.strain.motor', { kn: kn(winch.strain * cutOut), max: kn(cutOut) }));
+    }
     if (open && Number.isFinite(report.holdN) && report.holdN > 0) {
       lines.push(t('real.status.hold', { kn: kn(report.holdN) }));
     }
@@ -83,17 +95,21 @@ function statusLines(state: AppState, spec: TailSpec): { lines: string[]; alert:
   return { lines, alert: report ? motionText(report, state.paused) : null };
 }
 
+/** “Main outhaul” (Port), …: the clutches that block a furl, and where they are. */
+function blockerLabels(keys: string[]): string {
+  return keys
+    .map((key) => tailSpecs().find((spec) => spec.key === key))
+    .map((spec) =>
+      spec ? `“${spec.label}” (${t(`real.station.${spec.station}` as StringKey)})` : '',
+    )
+    .join(', ');
+}
+
 /** What the rope is doing, as one line (null when it is simply held). */
 function motionText(report: TailReport, paused: boolean): string | null {
   const note = report.note;
-  if (note === 'cutOutBlocked') {
-    const labels = report.blockers
-      .map((key) => tailSpecs().find((spec) => spec.key === key))
-      .map((spec) =>
-        spec ? `“${spec.label}” (${t(`real.station.${spec.station}` as StringKey)})` : '',
-      )
-      .join(', ');
-    return t('real.note.cutOutBlocked', { clutches: labels });
+  if (note === 'cutOutBlocked' || note === 'stuckBlocked') {
+    return t(`real.note.${note}`, { clutches: blockerLabels(report.blockers) });
   }
   if (note) return t(`real.note.${note}` as StringKey);
   if (report.motion === 'running')
@@ -101,6 +117,18 @@ function motionText(report: TailReport, paused: boolean): string | null {
   if (report.motion === 'hauling') return t('real.motion.hauling');
   if (report.motion === 'easing') return t('real.motion.easing');
   return null;
+}
+
+/** Why the cranked handle does not turn, or null while it turns (M4c). */
+function handleNoteText(report: HandleReport): string | null {
+  const note = report.note;
+  if (note === null) return null;
+  if (note === 'stuckBlocked') {
+    return t('real.note.stuckBlocked', { clutches: blockerLabels(report.blockers) });
+  }
+  if (note === 'stallGearbox' || note === 'gearboxIn' || note === 'gearboxOut' || note === 'noRope')
+    return t(`real.handleNote.${note}`);
+  return t(`real.note.${note}`);
 }
 
 interface Alert {
@@ -177,6 +205,7 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
   for (const station of ['port', 'starboard'] as const) {
     drawings.set(station, createStationDrawing(store, station, { onSelect: select }));
   }
+  const mast = createMastDrawing(store);
   const wheel = createControl(store, controlView('ctl_rudder'));
   const helm = el('div', { class: 'helm-station', 'data-testid': 'helm-station' }, [
     el('p', { class: 'hint' }, [t('real.helm.hint')]),
@@ -307,6 +336,91 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     motor,
     pull,
   ]);
+  // The winch handle (M4c): where it is, and a button for every handle gesture.
+  const handleSpec = boat.realisticMode.winchHandle;
+  const handleWhere = el('p', { class: 'handle-where', 'data-testid': 'handle-where' });
+  const handleAlert = el('p', { class: 'real-alert', 'aria-live': 'polite', hidden: '' });
+  const handleMeta = el('div', { class: 'control-meta', hidden: '' }, [
+    el('span', { class: 'meta-line' }),
+    el('span', { class: 'meta-line' }),
+  ]);
+  const handleTo = (to: 'carry' | 'stow' | 'socket') => () => dispatch({ type: 'handle', to });
+  const takeHandle = action('real.handle.take', handleTo('carry'), 'act-handle-take');
+  const outHandle = action('real.handle.out', handleTo('carry'), 'act-handle-out');
+  const leaveHandle = action('real.handle.leave', handleTo('stow'), 'act-handle-leave');
+  const intoHandle = action('real.handle.intoWinch', handleTo('socket'), 'act-handle-in');
+  const crankHold = (label: StringKey, testid: string, turnsPerS: number) =>
+    hold(
+      label,
+      testid,
+      () => dispatch({ type: 'crank', turnsPerS }),
+      () => {
+        if (store.getState().realistic.handle.crank !== 0)
+          dispatch({ type: 'crank', turnsPerS: 0 });
+      },
+    );
+  const crankCw = crankHold('real.handle.crankCw', 'act-crank-cw', handleSpec.maxTurnsPerS);
+  const crankCcw = crankHold('real.handle.crankCcw', 'act-crank-ccw', -handleSpec.maxTurnsPerS);
+  const crankOne = crankHold('real.handle.crank', 'act-crank', handleSpec.maxTurnsPerS);
+  const switchIn = action(
+    'real.gearbox.setIn',
+    () => dispatch({ type: 'gearbox', to: 'in' }),
+    'act-switch-in',
+  );
+  const switchOut = action(
+    'real.gearbox.setOut',
+    () => dispatch({ type: 'gearbox', to: 'out' }),
+    'act-switch-out',
+  );
+  const handleActions = el('div', { class: 'real-actions' }, [
+    switchIn,
+    switchOut,
+    takeHandle,
+    outHandle,
+    intoHandle,
+    leaveHandle,
+    crankCw,
+    crankCcw,
+    crankOne,
+  ]);
+  const handleBar = el(
+    'section',
+    {
+      class: 'real-strip handle-bar',
+      'data-testid': 'handle-bar',
+      'aria-label': t('real.handle.title'),
+    },
+    [
+      el('div', { class: 'control-head' }, [
+        el('span', { class: 'control-name' }, [t('real.handle.title')]),
+      ]),
+      handleWhere,
+      handleAlert,
+      handleMeta,
+      handleActions,
+    ],
+  );
+
+  // Practice (M4c): the furling line slips; a link from the data file sets it up.
+  const practiceButton = el(
+    'button',
+    { type: 'button', class: 'action-button', 'data-testid': 'practice-furl-slips' },
+    [t('real.practice.button')],
+  );
+  practiceButton.addEventListener('click', () => {
+    const scenario = boat.realisticMode.scenarios.find((s) => s.id === 'furlLineSlips');
+    if (!scenario) return;
+    const now = store.getState().settings;
+    const next = parseUrlState(scenario.query, now.detail);
+    const settings = { ...next.settings, debug: now.debug, step: now.step, legend: now.legend };
+    store.dispatch({ type: 'load', state: { ...next, settings } });
+  });
+  const practice = el('details', { class: 'strip-more real-how', 'data-testid': 'practice' }, [
+    el('summary', {}, [t('real.practice.title')]),
+    el('p', {}, [t('real.practice.text')]),
+    practiceButton,
+  ]);
+
   const more = el('details', { class: 'strip-more' }, [
     el('summary', {}, [t('ropes.strip.more')]),
     el('p', { class: 'real-more-text' }),
@@ -330,9 +444,9 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
 
   const howTo = el('details', { class: 'strip-more real-how' }, [
     el('summary', {}, [t('real.how.title')]),
-    ...(['real.how.1', 'real.how.2', 'real.how.3', 'real.how.4', 'real.how.5'] as const).map(
-      (key) => el('p', {}, [t(key)]),
-    ),
+    ...(
+      ['real.how.1', 'real.how.2', 'real.how.3', 'real.how.4', 'real.how.5', 'real.how.6'] as const
+    ).map((key) => el('p', {}, [t(key)])),
   ]);
 
   const statusNodes: HTMLElement[] = [];
@@ -382,11 +496,15 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     }
     helm.hidden = station !== 'helm';
     if (station === 'helm') wheel.refresh(state);
+    mast.element.hidden = station !== 'mast';
+    if (station === 'mast') mast.refresh(state);
+    refreshHandle(state);
 
-    // The strip.
+    // The strip (the clutches' stations only).
     const spec = selected ? tailSpecs().find((s) => s.key === selected) : undefined;
-    strip.hidden = station === 'helm';
-    empty.hidden = station === 'helm' || Boolean(spec) || Boolean(state.selection && !spec);
+    const noClutches = station === 'helm' || station === 'mast';
+    strip.hidden = noClutches;
+    empty.hidden = noClutches || Boolean(spec) || Boolean(state.selection && !spec);
     const otherStation =
       !spec && state.selection ? otherStationFor(state.selection, station) : null;
     stripOther.hidden = !otherStation;
@@ -420,10 +538,7 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
       setText(node, text);
     });
     statusNodes.slice(lines.length).forEach((node) => (node.hidden = true));
-    const notice =
-      real.notice && real.notice.tail === spec.key
-        ? noticeText(real.notice.key, real.notice.tail)
-        : null;
+    const notice = real.notice && real.notice.tail === spec.key ? noticeText(real.notice) : null;
     const alertLine = alert ?? notice;
     stripAlert.hidden = !alertLine;
     setText(stripAlert, alertLine ?? '');
@@ -454,6 +569,66 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     if (moreText) setText(moreText, partInfo(spec.ropeId)?.short ?? '');
   };
 
+  /** The handle bar: where the handle is, what cranking does, the buttons that apply here. */
+  const refreshHandle = (state: AppState) => {
+    const real = state.realistic;
+    const station = real.station;
+    const handle = real.handle;
+    const carried = handle.place === 'carried';
+    const here = carried || handle.station === station;
+    const socket = socketAt(station);
+    const atGearbox = socket === boat.realisticMode.mastGearbox.partId;
+    const inHere = here && handle.place === 'socket';
+    const where = carried
+      ? t('real.handle.carried')
+      : !here
+        ? t(handle.place === 'socket' ? 'real.handle.awaySocket' : 'real.handle.awayStowed', {
+            station: t(`real.station.${handle.station}` as StringKey),
+          })
+        : handle.place === 'stowed'
+          ? t('real.handle.hereStowed')
+          : t(atGearbox ? 'real.handle.hereGearbox' : 'real.handle.hereWinch');
+    setText(handleWhere, where);
+    takeHandle.hidden = !(here && handle.place === 'stowed');
+    outHandle.hidden = !inHere;
+    leaveHandle.hidden = !carried;
+    intoHandle.hidden = !(here && handle.place !== 'socket' && socket !== null);
+    setText(intoHandle, t(atGearbox ? 'real.handle.intoGearbox' : 'real.handle.intoWinch'));
+    crankCw.hidden = !inHere || atGearbox;
+    crankCcw.hidden = !inHere || atGearbox;
+    crankOne.hidden = !inHere || !atGearbox;
+    const crank = handle.crank;
+    crankCw.classList.toggle('is-pressed', inHere && crank > 0 && !atGearbox);
+    crankCcw.classList.toggle('is-pressed', inHere && crank < 0);
+    crankOne.classList.toggle('is-pressed', inHere && crank !== 0 && atGearbox);
+    switchIn.hidden = station !== 'mast';
+    switchOut.hidden = station !== 'mast';
+    switchIn.setAttribute('aria-pressed', String(real.gearbox === 'in'));
+    switchOut.setAttribute('aria-pressed', String(real.gearbox === 'out'));
+
+    const report = inHere && crank !== 0 ? real.handleReport : null;
+    const note = report ? handleNoteText(report) : null;
+    handleAlert.hidden = note === null;
+    setText(handleAlert, note ?? '');
+    handleMeta.hidden = report === null || report.note === 'noRope';
+    if (report) {
+      const [speedLine, forceLine] = [...handleMeta.children] as HTMLElement[];
+      if (speedLine) {
+        speedLine.hidden = report.speedMps <= 0;
+        setText(speedLine, t('real.handle.cranking', { speed: report.speedMps.toFixed(2) }));
+      }
+      if (forceLine) {
+        setText(
+          forceLine,
+          t('real.strain.handle', {
+            n: String(Math.round(report.forceN)),
+            max: String(Math.round(report.stallN)),
+          }),
+        );
+      }
+    }
+  };
+
   store.subscribe(refresh);
   refresh(store.getState());
 
@@ -462,9 +637,12 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     alerts,
     pausedLine,
     ...[...drawings.values()].map((drawing) => drawing.element),
+    mast.element,
     helm,
     empty,
     strip,
+    handleBar,
+    practice,
     howTo,
   ];
 }

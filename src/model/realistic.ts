@@ -15,8 +15,13 @@ import { toppingLiftPaidOut, vangPaidOut } from './pitchLimits';
 import type { RigState } from './sim';
 import {
   easesSmoothly,
+  handleForceN,
+  handlePowerRatio,
+  handleStalls,
+  handleTurnsPerS,
   holdingForceN,
   motorCutOut,
+  ropePerHandleTurnM,
   runningSpeedMps,
   runsOut,
   sheetLoadAtSailN,
@@ -33,9 +38,15 @@ import {
  * what holds it: the winch (capstan rule, PT-16), a hand, or nothing. A rope whose pull is
  * more than what holds it runs out (PT-18). The electric winch hauls a rope in through a closed
  * clutch (PT-15), slowing with the load and cutting out above its safe load (PT-19a).
+ *
+ * M4c adds the one winch handle: it lies at one station at a time, is carried by the user, and
+ * fits the socket on top of a winch (a manual backup with two gears, PT-19) or the in-mast
+ * furling gearbox at the Mast station (rolls the main in or out by hand). Every winch reports
+ * its strain (the load against the motor's cut-out, or the handle force against what a person
+ * can push).
  */
 
-export const STATION_IDS = ['port', 'starboard', 'helm'] as const;
+export const STATION_IDS = ['port', 'starboard', 'helm', 'mast'] as const;
 export type StationId = (typeof STATION_IDS)[number];
 
 export function isStationId(value: string): value is StationId {
@@ -104,6 +115,7 @@ interface RopeEntry {
 interface StationEntry {
   id: string;
   winch?: string;
+  gearbox?: string;
   clutches?: string[];
   controls?: string[];
 }
@@ -208,6 +220,11 @@ export interface WinchState {
   drumSpeed: number;
   /** Drum rotation, degrees clockwise seen from above; drawing only. */
   drumAngle: number;
+  /**
+   * Strain while the winch works (button held or handle cranked): the load as a fraction of the
+   * limit (1 = at the limit, can be more); null while it is not working (M4c strain bar).
+   */
+  strain: number | null;
 }
 
 /** What a rope end is doing (shown in the panel, alerts and 3D). */
@@ -225,7 +242,14 @@ export type TailNote =
   | 'cutOutEnd'
   | 'cutOutBlocked'
   | 'cutOutLoad'
-  | 'fullyEased';
+  | 'fullyEased'
+  /** Cranked with the handle (M4c): too heavy in 1st gear, or even in 2nd. */
+  | 'stallFirst'
+  | 'stallSecond'
+  /** Cranked with the handle against a hard stop: fighting rope, rope fully in, furl blocked. */
+  | 'stuckFighting'
+  | 'stuckEnd'
+  | 'stuckBlocked';
 
 export interface TailReport {
   /** Pull on the tail, newtons (what makes it run out). */
@@ -238,7 +262,56 @@ export interface TailReport {
   /** Rope speed at the clutch, m/s (+ = running or eased out, − = hauled in). */
   speedMps: number;
   note: TailNote | null;
-  /** Keys of the clutches that block a furl (cutOutBlocked). */
+  /** Keys of the clutches that block a furl (cutOutBlocked, stuckBlocked). */
+  blockers: string[];
+}
+
+/** Where the winch handle is: lying at a station, carried by the user, or in a socket there. */
+export type HandlePlace = 'stowed' | 'carried' | 'socket';
+
+export interface HandleState {
+  /** The station it is at (when carried: where the user stands). */
+  station: StationId;
+  place: HandlePlace;
+  /** How fast the user is cranking it, handle turns per second (+ clockwise, − anticlockwise). */
+  crank: number;
+  /** Handle rotation, degrees clockwise seen from above; drawing only. */
+  angle: number;
+}
+
+/** The IN/OUT switch of the mast furling gearbox. */
+export type GearboxSwitch = 'in' | 'out';
+
+/** Why the handle does not turn (shown in the handle's line). */
+export type HandleNote =
+  | 'stallFirst'
+  | 'stallSecond'
+  | 'stallGearbox'
+  | 'stuckFighting'
+  | 'stuckEnd'
+  | 'stuckBlocked'
+  | 'gearboxIn'
+  | 'gearboxOut'
+  | 'noRope'
+  | 'noTurns'
+  | 'wrongWay'
+  | 'slipping';
+
+/** What cranking the handle does now (M4c), while the user cranks it. */
+export interface HandleReport {
+  at: 'winch' | 'gearbox';
+  /** Winch gear: 1 (clockwise, fast) or 2 (anticlockwise, strong); null at the gearbox. */
+  gear: 1 | 2 | null;
+  /** Push needed on the handle, newtons. */
+  forceN: number;
+  /** Most a person can push (the handle stalls there). */
+  stallN: number;
+  /** Handle turns per second actually made (+ clockwise). */
+  turnsPerS: number;
+  /** Rope or furling line brought in, m/s (at the gearbox: furling-line equivalent). */
+  speedMps: number;
+  note: HandleNote | null;
+  /** Clutch keys that block the furl (stuckBlocked). */
   blockers: string[];
 }
 
@@ -252,12 +325,18 @@ export type NoticeKey =
   | 'staticRope'
   | 'notHere'
   | 'onWinch'
-  | 'turnsOn';
+  | 'turnsOn'
+  | 'handleElsewhere'
+  | 'handleNotIn'
+  | 'noSocket'
+  | 'gearboxNotHere';
 
 export interface Notice {
   key: NoticeKey;
   /** The tail it is about. */
   tail: string | null;
+  /** The station it is about, when not the tail's (e.g. where the handle is). */
+  station?: StationId;
 }
 
 export interface RealisticState {
@@ -272,6 +351,12 @@ export interface RealisticState {
   /** Latest step's report per tail (keys of controllable tails). */
   reports: Record<string, TailReport>;
   notice: Notice | null;
+  /** The one winch handle (M4c). */
+  handle: HandleState;
+  /** The mast furling gearbox's IN/OUT switch (M4c). */
+  gearbox: GearboxSwitch;
+  /** Latest step's report on the cranked handle, or null while nobody cranks it. */
+  handleReport: HandleReport | null;
 }
 
 function emptyWinch(): WinchState {
@@ -283,14 +368,52 @@ function emptyWinch(): WinchState {
     cutOut: false,
     drumSpeed: 0,
     drumAngle: 0,
+    strain: null,
   };
+}
+
+function isGearboxSwitch(value: string): value is GearboxSwitch {
+  return value === 'in' || value === 'out';
+}
+
+/** Where the handle starts: lying at its station (a pocket), the gearbox switch as in the data. */
+export function initialHandle(data: BoatData = boat): HandleState {
+  const start = data.realisticMode.winchHandle.startStation;
+  return { station: isStationId(start) ? start : 'port', place: 'stowed', crank: 0, angle: 0 };
+}
+
+export function initialGearbox(data: BoatData = boat): GearboxSwitch {
+  const start = data.realisticMode.mastGearbox.switchStart;
+  return isGearboxSwitch(start) ? start : 'out';
 }
 
 /** Everything held: clutches closed, winches empty (a link always opens like this, then setup). */
 export function initialRealistic(data: BoatData = boat): RealisticState {
   const winches: Record<string, WinchState> = {};
   for (const id of winchIds(data)) winches[id] = emptyWinch();
-  return { station: 'port', open: {}, winches, ease: {}, pull: null, reports: {}, notice: null };
+  return {
+    station: 'port',
+    open: {},
+    winches,
+    ease: {},
+    pull: null,
+    reports: {},
+    notice: null,
+    handle: initialHandle(data),
+    gearbox: initialGearbox(data),
+    handleReport: null,
+  };
+}
+
+/** The socket the handle fits at a station: its winch, the mast gearbox, or none (helm). */
+export function socketAt(station: StationId, data: BoatData = boat): string | null {
+  const entry = stationsOf(data).find((s) => s.id === station);
+  return entry?.winch ?? entry?.gearbox ?? null;
+}
+
+/** The socket the handle is in (a winch id or the gearbox's part id), or null. */
+export function handleSocket(state: RealisticState, data: BoatData = boat): string | null {
+  return state.handle.place === 'socket' ? socketAt(state.handle.station, data) : null;
 }
 
 /** The winch a tail is on, if any. */
@@ -313,13 +436,21 @@ export type RealisticAction =
   | { type: 'button'; winch: string; held: boolean }
   | { type: 'ease'; key: string; metres: number }
   | { type: 'pull'; key: string | null }
+  /** The winch handle (M4c): pick it up and carry it, leave it here, or put it in the socket. */
+  | { type: 'handle'; to: 'carry' | 'stow' | 'socket' }
+  /** Crank the handle in its socket, turns per second (+ clockwise, − anticlockwise, 0 stop). */
+  | { type: 'crank'; turnsPerS: number }
+  /** The mast gearbox's IN/OUT switch. */
+  | { type: 'gearbox'; to: GearboxSwitch }
   | { type: 'clearNotice' };
 
-/** Most rope the hand lets out ahead of the rope (a long drag does not store more). */
-const MAX_EASE_AHEAD_M = 2;
-
-function withNotice(state: RealisticState, key: NoticeKey, tail: string | null): RealisticState {
-  return { ...state, notice: { key, tail } };
+function withNotice(
+  state: RealisticState,
+  key: NoticeKey,
+  tail: string | null,
+  station?: StationId,
+): RealisticState {
+  return { ...state, notice: station ? { key, tail, station } : { key, tail } };
 }
 
 function setWinch(state: RealisticState, id: string, winch: Partial<WinchState>): RealisticState {
@@ -358,7 +489,21 @@ export function reduceRealistic(
           w.button ? { ...w, button: false, cutOut: false } : w,
         ]),
       );
-      return { ...state, station: action.station, winches, notice: null, pull: null, ease: {} };
+      // The handle goes along if carried; a handle being cranked is let go.
+      const handle: HandleState = {
+        ...state.handle,
+        crank: 0,
+        station: state.handle.place === 'carried' ? action.station : state.handle.station,
+      };
+      return {
+        ...state,
+        station: action.station,
+        winches,
+        notice: null,
+        pull: null,
+        ease: {},
+        handle,
+      };
     }
     case 'clutch': {
       const spec = here(action.key);
@@ -422,7 +567,10 @@ export function reduceRealistic(
       if (winch && state.winches[winch]?.selfTailer) {
         return withNotice(state, 'inSelfTailer', action.key);
       }
-      const ahead = Math.min(MAX_EASE_AHEAD_M, (state.ease[action.key] ?? 0) + action.metres);
+      const ahead = Math.min(
+        data.realisticMode.hand.easeAheadMaxM,
+        (state.ease[action.key] ?? 0) + action.metres,
+      );
       return { ...state, ease: { ...state.ease, [action.key]: ahead }, notice: null };
     }
     case 'pull': {
@@ -431,6 +579,52 @@ export function reduceRealistic(
       if (typeof spec === 'string') return withNotice(state, spec, action.key);
       if (winchOf(state, action.key)) return withNotice(state, 'onWinch', action.key);
       return { ...state, pull: action.key, notice: null };
+    }
+    case 'handle': {
+      const handle = state.handle;
+      // Only a handle here (or carried) can be picked up, left or put in.
+      if (handle.place !== 'carried' && handle.station !== state.station) {
+        return withNotice(state, 'handleElsewhere', null, handle.station);
+      }
+      if (action.to === 'socket' && !socketAt(state.station, data)) {
+        return withNotice(state, 'noSocket', null, state.station);
+      }
+      const place: HandlePlace =
+        action.to === 'carry' ? 'carried' : action.to === 'stow' ? 'stowed' : 'socket';
+      if (place === handle.place && handle.station === state.station) return state;
+      return {
+        ...state,
+        notice: null,
+        handle: { ...handle, station: state.station, place, crank: 0 },
+      };
+    }
+    case 'crank': {
+      const turnsPerS = Number.isFinite(action.turnsPerS) ? action.turnsPerS : 0;
+      // Stopping always works.
+      if (turnsPerS === 0) {
+        return state.handle.crank === 0
+          ? state
+          : { ...state, handle: { ...state.handle, crank: 0 } };
+      }
+      const handle = state.handle;
+      if (handle.place !== 'carried' && handle.station !== state.station) {
+        return withNotice(state, 'handleElsewhere', null, handle.station);
+      }
+      if (handle.place !== 'socket') return withNotice(state, 'handleNotIn', null, state.station);
+      if (handle.crank === turnsPerS) return state;
+      return { ...state, notice: null, handle: { ...handle, crank: turnsPerS } };
+    }
+    case 'gearbox': {
+      if (!stationsOf(data).some((s) => s.id === state.station && s.gearbox)) {
+        const mast = stationsOf(data).find((s) => s.gearbox)?.id;
+        return withNotice(
+          state,
+          'gearboxNotHere',
+          null,
+          mast && isStationId(mast) ? mast : undefined,
+        );
+      }
+      return state.gearbox === action.to ? state : { ...state, gearbox: action.to, notice: null };
     }
     case 'clearNotice':
       return state.notice ? { ...state, notice: null } : state;
@@ -470,10 +664,30 @@ function ropePullN(spec: TailSpec, controls: Controls, rig: RigState, data: Boat
   }
 }
 
-/** What resists hauling a rope end in (newtons): its pull, or (out tail, outhaul) its own load. */
-function ropeResistN(spec: TailSpec, pull: number, data: BoatData): number {
-  if (spec.payOutSign > 0) return pull;
-  return (data.realisticMode.loads.fixedN as Record<string, number | undefined>)[spec.ropeId] ?? 0;
+/** The main's pull by the sheet-rule estimate (newtons at the clew; 0 when luffing or furled). */
+function mainSailLoadN(controls: Controls, rig: RigState, data: BoatData): number {
+  const area = data.sails.main.officialAreaM2 * (rig.applied.mainFurl / 100) * rig.solution.fill;
+  return sheetLoadAtSailN(area, controls.ctl_wind_speed, data);
+}
+
+/**
+ * What resists hauling a rope end in (newtons): its pull, or (out tail, outhaul) its own load.
+ * The main's "in" furling tail also feels part of the main's load while it still pulls (M4c):
+ * rolling a loaded main in is hard.
+ */
+function ropeResistN(
+  spec: TailSpec,
+  pull: number,
+  controls: Controls,
+  rig: RigState,
+  data: BoatData,
+): number {
+  const loads = data.realisticMode.loads;
+  if (spec.payOutSign > 0) {
+    if (spec.ropeId !== 'rope_main_furling_line') return pull;
+    return pull + loads.mainFurlSailLoadFraction * mainSailLoadN(controls, rig, data);
+  }
+  return (loads.fixedN as Record<string, number | undefined>)[spec.ropeId] ?? 0;
 }
 
 /** Is the control at the end hauling this tail moves it to (fully hauled, or fully unfurled)? */
@@ -565,7 +779,7 @@ export function stepRealistic(
       open,
       free: open && !winch && !pulling && !easing,
       pull,
-      resist: ropeResistN(spec, pull, data),
+      resist: ropeResistN(spec, pull, controls, rig, data),
       hold,
       out: 0,
       haul: 0,
@@ -575,6 +789,15 @@ export function stepRealistic(
       haulLoad: 0,
     });
   }
+
+  // The handle, if someone cranks it in a socket here (M4c).
+  const socket = handleSocket(state, data);
+  const crank = state.handle.crank;
+  const cranking = socket !== null && crank !== 0;
+  const handleSpec = data.realisticMode.winchHandle;
+  let handleReport: HandleReport | null = null;
+  /** Handle turns per second actually made (drawing and reports). */
+  let handleTurns = 0;
 
   // 2. Furls that something blocks: the other ends must run out freely (PHASE1_SPEC 7.2.2).
   const blockersFor = (group: Group, hauled: TailWork): string[] => {
@@ -662,6 +885,52 @@ export function stepRealistic(
         }
         continue;
       }
+      // Cranking the winch with the handle (M4c, PT-19): both directions haul the rope in,
+      // clockwise in 1st gear (fast, weak), anticlockwise in 2nd (slow, strong).
+      if (w.winch && cranking && socket === w.winchId) {
+        const gear = crank > 0 ? 1 : 2;
+        const ratio = handlePowerRatio(crank, data);
+        const stallN = handleSpec.stallForceN;
+        const stuck =
+          note === 'cutOutFighting'
+            ? 'stuckFighting'
+            : note === 'cutOutEnd'
+              ? 'stuckEnd'
+              : note === 'cutOutBlocked'
+                ? 'stuckBlocked'
+                : null;
+        const force = stuck ? stallN : handleForceN(haulLoad, ratio);
+        let handleNote: HandleNote | null = null;
+        if (w.winch.turns <= 0) {
+          handleNote = w.winch.turns < 0 ? 'wrongWay' : 'noTurns';
+          w.note = handleNote;
+        } else if (stuck) {
+          handleNote = stuck;
+          w.note = stuck;
+        } else if (handleStalls(force, data)) {
+          handleNote = gear === 1 ? 'stallFirst' : 'stallSecond';
+          w.note = handleNote;
+        } else if (w.hold < haulLoad) {
+          handleNote = 'slipping';
+          w.note = 'slipping';
+        } else {
+          const turns = Math.min(Math.abs(crank), handleTurnsPerS(force, data));
+          handleTurns = Math.sign(crank) * turns;
+          w.haul = turns * ropePerHandleTurnM(ratio, data);
+          w.motion = 'hauling';
+        }
+        handleReport = {
+          at: 'winch',
+          gear,
+          forceN: force,
+          stallN,
+          turnsPerS: handleTurns,
+          speedMps: w.haul,
+          note: handleNote,
+          blockers: handleNote === 'stuckBlocked' ? w.blockers : [],
+        };
+        continue;
+      }
       // Pulling in by hand (off the winch): only a light rope.
       if (state.pull === spec.key) {
         if (note !== null && note !== 'cutOutFighting') w.note = note;
@@ -676,6 +945,69 @@ export function stepRealistic(
     }
   }
 
+  // The mast gearbox (M4c): the handle turns the furling mandrel the way the switch says. It
+  // works like hauling the matching furling tail, so the ends that pay out must run free.
+  const gearbox = rm.mastGearbox;
+  /** Rate the gearbox drives its control at, % per second (0 when it does not move). */
+  let gearboxRate = 0;
+  if (cranking && socket === gearbox.partId) {
+    const group = groups(data).find((g) => g.controlId === gearbox.controlId);
+    const value = isControlId(gearbox.controlId) ? controls[gearbox.controlId] : 0;
+    const rollIn = state.gearbox === 'in';
+    // Rolling in hauls the +1 ends (the "in" tail); rolling out the −1 ends ("out" tail, outhaul).
+    const drivers = (group?.tails ?? [])
+      .filter((t) => (rollIn ? t.payOutSign > 0 : t.payOutSign < 0))
+      .map((t) => work.get(t.key))
+      .filter((w): w is TailWork => !!w);
+    const mustRun = (group?.tails ?? []).filter((t) =>
+      rollIn ? t.payOutSign < 0 : t.payOutSign > 0,
+    );
+    const blockers = mustRun.filter((t) => !work.get(t.key)?.free).map((t) => t.key);
+    const load = Math.max(0, ...drivers.map((w) => w.resist));
+    const stallN = handleSpec.stallForceN;
+    const atEnd = rollIn ? value <= 0 : value >= 100;
+    const force = blockers.length > 0 ? stallN : handleForceN(load, gearbox.powerRatio);
+    let handleNote: HandleNote | null = null;
+    let speed = 0;
+    if (atEnd) handleNote = rollIn ? 'gearboxIn' : 'gearboxOut';
+    else if (blockers.length > 0) handleNote = 'stuckBlocked';
+    else if (handleStalls(force, data)) handleNote = 'stallGearbox';
+    else {
+      const turns = Math.min(Math.abs(crank), handleTurnsPerS(force, data));
+      handleTurns = Math.sign(crank) * turns;
+      speed = turns * ropePerHandleTurnM(gearbox.powerRatio, data);
+      const perPct = drivers[0]?.spec.metresPerPct ?? 1;
+      gearboxRate = ((rollIn ? -1 : 1) * speed) / perPct;
+    }
+    handleReport = {
+      at: 'gearbox',
+      gear: null,
+      forceN: atEnd ? 0 : force,
+      stallN,
+      turnsPerS: handleTurns,
+      speedMps: speed,
+      note: handleNote,
+      blockers: handleNote === 'stuckBlocked' ? blockers : [],
+    };
+  }
+  // A handle cranked on a winch with no rope on the drum: it turns freely.
+  const socketWinch = socket ? state.winches[socket] : undefined;
+  if (cranking && socketWinch && !socketWinch.tail) {
+    const ratio = handlePowerRatio(crank, data);
+    const turns = Math.min(Math.abs(crank), handleSpec.maxTurnsPerS);
+    handleTurns = Math.sign(crank) * turns;
+    handleReport = {
+      at: 'winch',
+      gear: crank > 0 ? 1 : 2,
+      forceN: 0,
+      stallN: handleSpec.stallForceN,
+      turnsPerS: handleTurns,
+      speedMps: turns * ropePerHandleTurnM(ratio, data),
+      note: 'noRope',
+      blockers: [],
+    };
+  }
+
   // 3. Combine the ends of each control into its new value.
   const values: Partial<Controls> = {};
   const moved = new Map<string, number>();
@@ -684,7 +1016,10 @@ export function stepRealistic(
     const value = controls[id];
     let next: number;
     const tails = group.tails.map((t) => work.get(t.key)).filter((w): w is TailWork => !!w);
-    if (group.kind === 'twoEnds') {
+    if (gearboxRate !== 0 && id === gearbox.controlId) {
+      // The gearbox turns the mandrel: the furling tails and the outhaul follow it.
+      next = value + gearboxRate * dt;
+    } else if (group.kind === 'twoEnds') {
       // One rope, two ends: the rope out at either end adds up.
       const metres = tails.reduce((sum, w) => sum + (w.out - w.haul) * dt, 0);
       next = value + metres / (tails[0]?.spec.metresPerPct ?? 1);
@@ -733,14 +1068,27 @@ export function stepRealistic(
     // With no turns the right way the rope does not grip: the motor turns freely.
     const load = w && winch.turns > 0 ? w.haulLoad : 0;
     const cutOut = winch.button && motorCutOut(load, winch.cutOut, data);
-    // The drum: driven by the motor; a rope running out with the wrong-way turns spins it.
+    const cranked = cranking && socket === id && !winch.button;
+    // The drum: driven by the motor or the handle (both clockwise); a rope running out with the
+    // wrong-way turns spins it.
     let target = winch.button && !cutOut ? winchSpeedMps(load, false, data) : 0;
+    if (cranked && handleReport) target = handleReport.speedMps;
     if (w && w.motion === 'running' && winch.turns < 0) target = w.out;
     const drumSpeed =
       spin > 0 && dt > 0 ? target + (winch.drumSpeed - target) * Math.exp(-dt / spin) : target;
     const drumAngle = (winch.drumAngle + (((drumSpeed * dt) / radius) * 180) / Math.PI) % 360;
-    winches[id] = { ...winch, cutOut, drumSpeed, drumAngle };
+    // Strain (M4c): the motor's load against its cut-out, or the handle force against a push.
+    const strain = winch.button
+      ? load / rm.electricWinch.cutOutLoadN
+      : cranked && handleReport
+        ? handleReport.forceN / handleReport.stallN
+        : null;
+    winches[id] = { ...winch, cutOut, drumSpeed, drumAngle, strain };
   }
+  const handle: HandleState =
+    handleTurns !== 0 && dt > 0
+      ? { ...state.handle, angle: (state.handle.angle + handleTurns * 360 * dt) % 360 }
+      : state.handle;
 
   const ease: Record<string, number> = {};
   for (const [key, metres] of Object.entries(state.ease)) {
@@ -756,7 +1104,12 @@ export function stepRealistic(
     // A driver that the group rules stopped does not move: report it as held.
     const moving = changed !== 0 || dt === 0;
     let motion = w.motion;
-    if (!moving && (motion === 'running' || motion === 'easing' || motion === 'hauling')) {
+    // While the gearbox turns the mandrel, the furling ends just follow it.
+    const byGearbox = gearboxRate !== 0 && w.spec.controlId === gearbox.controlId;
+    if (
+      (!moving || byGearbox) &&
+      (motion === 'running' || motion === 'easing' || motion === 'hauling')
+    ) {
       motion = 'held';
     }
     reports[key] = {
@@ -770,7 +1123,7 @@ export function stepRealistic(
     };
   }
 
-  return { state: { ...state, winches, ease, reports }, values };
+  return { state: { ...state, winches, ease, reports, handle, handleReport }, values };
 }
 
 /** Tail keys whose rope is running out now, per station (for the alerts strip). */

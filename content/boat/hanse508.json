@@ -1086,7 +1086,7 @@
     "use": "Total rope lengths are upper limits for paid-out length; diameters can scale the rendered thickness."
   },
   "realisticMode": {
-    "$comment": "Realistic mode (PHASE1_SPEC 7.2.2, M4b): clutches, winch turns, holding and running ropes. Teaching model, not engineering. Sources in docs/PHYSICS_TRUTHS.md; every value marked 'assumption' is a guess, safe to tune (docs/BOAT_REFERENCE.md section 5).",
+    "$comment": "Realistic mode (PHASE1_SPEC 7.2.2, M4b and M4c): clutches, winch turns, holding and running ropes, the strain bar, the winch handle and the mast furling gearbox. Teaching model, not engineering. Sources in docs/PHYSICS_TRUTHS.md; every value marked 'assumption' is a guess, safe to tune (docs/BOAT_REFERENCE.md section 5).",
     "stations": [
       {
         "id": "port",
@@ -1101,9 +1101,13 @@
       {
         "id": "helm",
         "controls": ["ctl_rudder"]
+      },
+      {
+        "id": "mast",
+        "gearbox": "part_main_furling_gearbox"
       }
     ],
-    "stationsSource": "owner (2026-10-09): each side's ropes go to that side's winch; one person works one station at a time",
+    "stationsSource": "owner (2026-10-09): each side's ropes go to that side's winch; one person works one station at a time. M4c: the Mast station has the in-mast furling gearbox (photo mast-furling-gearbox.jpg)",
     "capstan": {
       "frictionMu": 0.2,
       "frictionMuSource": "PHYSICS_TRUTHS [4]: polyester cover on an aluminium drum",
@@ -1130,7 +1134,9 @@
       "fightingN": 12000,
       "fightingSource": "assumption: a rope fighting another (PHASE1_SPEC 8.3), hauled against its end stop, or a furl that something blocks: more than the winch's cut-out load",
       "ropeFrictionN": 40,
-      "ropeFrictionNote": "assumption: friction in the blocks and the open clutch. A rope pulled out with less than this does not run"
+      "ropeFrictionNote": "assumption: friction in the blocks and the open clutch. A rope pulled out with less than this does not run",
+      "mainFurlSailLoadFraction": 0.1,
+      "mainFurlSailLoadNote": "assumption (M4c): rolling the main in while it still pulls is hard. Hauling the 'in' furling tail (or cranking the gearbox IN) feels this fraction of the main's sheet-rule load (PHYSICS_TRUTHS [8], times fill and how much is out) on top of its other load. A full main at 20 kn gives about 0.66 kN: one turn on the winch slips, two hold. A luffing main (sheet eased, sail flapping) adds nothing"
     },
     "running": {
       "maxSpeedMps": 6.0,
@@ -1151,7 +1157,42 @@
       "grabbyPeriodS": 0.6,
       "grabbyMoveFraction": 0.3,
       "easeStepM": 0.25,
-      "note": "assumption: easing by hand lets the rope out at up to easeMaxSpeed while the tail is let go (a drag in the drawing, or the Ease button: easeStepM per press); with too many turns it moves only for grabbyMoveFraction of every grabbyPeriod (jerks). Pulling a light rope in by hand: pullSpeed"
-    }
+      "note": "assumption: easing by hand lets the rope out at up to easeMaxSpeed while the tail is let go (a drag in the drawing, or the Ease button: easeStepM per press); with too many turns it moves only for grabbyMoveFraction of every grabbyPeriod (jerks). Pulling a light rope in by hand: pullSpeed",
+      "easeAheadMaxM": 2,
+      "easePerDrawingUnitM": 0.012,
+      "easeDrawingNote": "assumption (moved from the code in M4c, M4b review): the hand lets out at most easeAheadMaxM ahead of the rope; in the station drawing one unit of tail pulled away from the winch lets out easePerDrawingUnitM"
+    },
+    "strain": {
+      "warnFraction": 0.8,
+      "note": "assumption (M4c): the strain bar on a winch shows the load against the limit (the motor's cut-out, or the most a hand can push on the handle); above warnFraction it turns orange, at the limit red"
+    },
+    "winchHandle": {
+      "partId": "part_winch_handle",
+      "startStation": "port",
+      "countSource": "owner (2026-10-09): one winch handle on board, used mainly at the mast furling gearbox; it also fits the cockpit winches as a backup",
+      "lengthM": 0.254,
+      "lengthSource": "assumption: a standard 10-inch winch handle",
+      "powerRatioClockwise": 13.8,
+      "powerRatioAnticlockwise": 54,
+      "powerRatioSource": "PHYSICS_TRUTHS [7] (Lewmar EVO 55, 1st and 2nd gear) as a stand-in: the winch on the boat is not marked (owner). [6]: both handle directions turn the drum clockwise, one fast and weak, the other slow and strong; clockwise = 1st gear as in PHASE1_SPEC 7.2.2",
+      "stallForceN": 250,
+      "stallForceSource": "assumption (PHASE1_SPEC 7.2.2): above about 250 N on the handle even the strong direction stalls",
+      "maxTurnsPerS": 1.2,
+      "speedNote": "assumption: a person cranks at most about 72 turns a minute with no load, slower in proportion to the handle force, and not at all at stallForceN. Rope per handle turn = 2 pi x lengthM / power ratio (about 0.12 m in 1st gear, 0.03 m in 2nd)"
+    },
+    "mastGearbox": {
+      "partId": "part_main_furling_gearbox",
+      "controlId": "ctl_main_furl",
+      "switchStart": "out",
+      "powerRatio": 8,
+      "source": "photo mast-furling-gearbox.jpg (gearbox with an IN/OUT switch and a winch-handle socket); owner (used when the furling line slips). The ratio (furling-line metres per handle turn = 2 pi x handle length / ratio, about 0.2 m) and the switch's start position are assumptions, and cranking either way turns the mandrel the way the switch says (the mechanism is not known). The main rolls in only while the 'out' furling tail and the outhaul run free, as when furling with the line (PHASE1_SPEC 7.2.2)"
+    },
+    "scenarios": [
+      {
+        "id": "furlLineSlips",
+        "query": "?mode=realistic&wd=60&ws=20&ms=30&mf=100&st=starboard&co=a3,b3&wsb=a2.1.t&sel=rope_main_furling_line&cam=helm",
+        "note": "M4c teaching scenario (PHASE1_SPEC 7.2.2): furling the main at 20 kn with the sail still pulling and one turn of the 'in' furling tail on the starboard winch: the line slips. The 'out' tail and the outhaul clutches are already open. Fix: fetch the winch handle from Port, go to the Mast, switch IN, handle in, crank (or add a turn on the winch, or luff first)"
+      }
+    ]
   }
 }
