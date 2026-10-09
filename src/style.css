@@ -746,7 +746,7 @@ html[data-layout='side'] .rig-alerts {
 }
 
 /* Stacked: the selected rope's slider stays on screen below a tall drawing (Easy mode). */
-html[data-layout='stacked'] .rope-strip:not(.is-empty, .real-strip) {
+html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   position: sticky;
   z-index: 1;
   bottom: 0;
@@ -1287,7 +1287,11 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty, .real-strip) {
 }
 
 .real-strip {
-  margin-top: 4px;
+  margin: 4px -16px 0;
+  padding: 8px 16px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .real-status .meta-line[hidden] {

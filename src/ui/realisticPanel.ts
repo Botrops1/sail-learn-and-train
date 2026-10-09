@@ -309,7 +309,7 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
   const strip = el(
     'section',
     {
-      class: 'rope-strip real-strip',
+      class: 'real-strip',
       'data-testid': 'real-strip',
       'aria-label': t('ropes.strip.label'),
     },
