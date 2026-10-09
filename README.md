@@ -16,6 +16,7 @@ The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, G
 | [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md) | Facts about the boat, sources, assumptions, open questions |
 | [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md) | Sailing rules the simulation must obey, with sources and tests |
 | [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | How to build and check each milestone from a phone |
+| [`docs/EXERCISES.md`](docs/EXERCISES.md) | Planned exercises, failure modes and wind modes (later phases) |
 | [`CLAUDE.md`](CLAUDE.md) | Instructions for the coding agent |
 | [`content/`](content) | Boat geometry and the term registry (data, not code) |
 

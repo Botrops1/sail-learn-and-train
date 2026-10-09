@@ -50,7 +50,10 @@ Sources are listed at the bottom.
 | PT-28 | 2 | **Self-tacking jibs** need no sheet work when tacking, which is why they suit short-handed sailing. | source-checked [3] |
 | PT-29 | 2 | **Heel reduces drive.** A boat heeled too far sails slower and pulls harder on the helm (weather helm); easing the main reduces both. | to-verify |
 | PT-30 | 3 | **Waves grow with wind strength and fetch** and make the boat pitch and roll, which moves the apparent wind at the masthead and knocks the boat off course. | to-verify |
-| PT-31 | 5 | **Anchoring needs scope:** let out several times the water depth in chain, more in strong wind. | to-verify |
+| PT-31 | 5 | **Anchoring needs scope:** all-chain, let out at least 4 × the effective depth (water depth plus bow-roller height), more in strong wind (add about 2 boat lengths). The owner's instructor rule, at least 3 boat lengths, is also checked; the larger wins. | source-checked [10] (instructor rule: owner) |
+| PT-32 | 2 | **Overpowered boats round up:** too much sail or a main sheeted hard in a gust makes the boat heel, the rudder loses grip and she turns into the wind by herself. Easing the main sheet stops it. | to-verify |
+| PT-33 | 5 | **Thrusters work at low speed:** a bow or stern thruster pushes the bow or stern sideways near the pier; at more than a few knots it has little effect. | to-verify |
+| PT-34 | 5 | **Fenders come in before sailing:** left out at speed they bounce and can be torn off. | to-verify |
 
 ## Sources
 
@@ -63,5 +66,7 @@ Sources are listed at the bottom.
 7. Lewmar EVO 55 self-tailing winch, retailer specification (Defender). https://defender.com/en_us/lewmar-evo-size-55-self-tailing-winch. Power ratios 13.8:1 (1st) and 54:1 (2nd), drum 4 1/8 in.
 8. Rigging Doctor, *Calculating sheet loads*. https://www.riggingdoctor.com/life-aboard/2015/11/18/calculating-loads. Headsail sheet load (lb) = sail area (ft²) × wind speed² (mph) × 0.00431.
 9. Lewmar 40EST EVO ELS electric self-tailing winch, retailer description (Defender). https://defender.com/en_us/lewmar-40est-evo-els-series-electric-self-tailing-winch-kit. Push-button electric; speed falls as the load rises; cuts out above the safe working load and restarts when it drops; thermal trip; also works by hand.
+
+10. Sailboat Cruising, *How much anchor chain do I need?*. https://www.sailboat-cruising.com/anchor-chain-length.html. All-chain scope at least 4 × the effective depth (depth plus bow-roller height); add twice the boat's length in lively conditions; 7:1 or more in a storm.
 
 When you add a source, add it here and point the rule's status to it. Prefer sailing-school material (RYA, ASA, NauticEd), manufacturer manuals (Seldén, Lewmar, Hanse) and textbooks over forums.
