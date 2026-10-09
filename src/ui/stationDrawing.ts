@@ -28,6 +28,8 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
  * - the drum: circle a finger around it, clockwise adds a turn, anticlockwise takes one off;
  * - the tail in the hand: drag it into the jaw (self-tailer), or away from the winch to ease;
  * - the tail in the jaw: drag it out;
+ * - the tail in the hand, dragged back up to its clutch: off the winch, but only with 0 turns
+ *   on the drum (otherwise it says to take the turns off first);
  * - the button: hold it to winch in.
  */
 const D = {
@@ -524,6 +526,14 @@ export function createStationDrawing(
     return { x: p.x, y: p.y };
   };
   const nodeFor = (key: string) => nodes.find((node) => node.spec.key === key);
+  /** Is the point over the clutch of this rope (where a rope dragged back off the winch goes)? */
+  const overClutch = (p: { x: number; y: number }, node: ClutchNode): boolean => {
+    if (node.spec === rollSpec) {
+      return p.y < D.roll.top + D.roll.height + D.ropeIn && p.x < D.margin + D.roll.width + 8;
+    }
+    return Math.abs(p.x - node.mid) < unit / 2 + D.gap / 2 && p.y < node.bottom;
+  };
+  const openClutch = (key: string) => store.getState().realistic.open[key] === true;
   const winchTail = () => store.getState().realistic.winches[winchId]?.tail ?? null;
   const toggleClutch = (key: string) => {
     const open = store.getState().realistic.open[key] === true;
@@ -627,11 +637,16 @@ export function createStationDrawing(
       }
     }
     if (drag.kind === 'hand') {
-      // Pulling the tail away from the winch lets rope out (easing by hand).
+      // Pulling the tail away from the winch lets rope out (easing by hand), but not while it
+      // is on its way back to its clutch (taking it off the winch), and a closed clutch is
+      // told at the end of the drag, not on every move.
       const distance = Math.hypot(p.x - cx, p.y - cy);
       if (distance > drag.far) {
         const key = winchTail();
-        if (key) dispatch({ type: 'ease', key, metres: (distance - drag.far) * D.easePerUnitM });
+        const node = key ? nodeFor(key) : undefined;
+        if (key && node && !overClutch(p, node) && openClutch(key)) {
+          dispatch({ type: 'ease', key, metres: (distance - drag.far) * D.easePerUnitM });
+        }
         drag.far = distance;
       }
     }
@@ -672,14 +687,32 @@ export function createStationDrawing(
         // closed clutch).
         else dispatch({ type: 'ease', key: current.key, metres: current.moved * D.easePerUnitM });
         break;
-      case 'hand':
-        if (!cancelled && overJaw) dispatch({ type: 'selfTailer', winch: winchId, into: true });
-        break;
-      case 'jaw':
-        if (!cancelled && !overJaw && current.moved >= D.tapMove) {
-          dispatch({ type: 'selfTailer', winch: winchId, into: false });
+      case 'hand': {
+        if (cancelled) break;
+        const key = winchTail();
+        const node = key ? nodeFor(key) : undefined;
+        if (overJaw) dispatch({ type: 'selfTailer', winch: winchId, into: true });
+        else if (key && node && current.moved >= D.tapMove) {
+          // Back to its clutch: off the winch (only with no turns left on the drum).
+          if (overClutch(p, node)) {
+            dispatch({ type: 'offWinch', winch: winchId, needZeroTurns: true });
+          } else if (!openClutch(key)) {
+            dispatch({ type: 'ease', key, metres: current.moved * D.easePerUnitM });
+          }
         }
         break;
+      }
+      case 'jaw': {
+        if (cancelled || overJaw || current.moved < D.tapMove) break;
+        const key = winchTail();
+        const node = key ? nodeFor(key) : undefined;
+        // Dragged back to its clutch: the same off-the-winch gesture (it needs no turns, and a
+        // rope in the jaw has turns, so it says so). Dragged anywhere else: out of the jaw.
+        if (node && overClutch(p, node)) {
+          dispatch({ type: 'offWinch', winch: winchId, needZeroTurns: true });
+        } else dispatch({ type: 'selfTailer', winch: winchId, into: false });
+        break;
+      }
       default:
         break;
     }

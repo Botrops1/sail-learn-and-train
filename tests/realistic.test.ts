@@ -548,3 +548,39 @@ describe('Realistic mode: robustness', () => {
     }
   }, 60_000);
 });
+
+describe('Realistic mode: dragging the rope back to its clutch (take off the winch)', () => {
+  it('works with no turns on the drum, and only then; the button works at any time', () => {
+    let s = start({ ctl_wind_dir: 90, ctl_wind_speed: 12 }, 'port');
+    s = onWinch(s, VANG, 0);
+    expect(s.realistic.winches[PORT]?.tail).toBe(VANG);
+    // 0 turns: the gesture takes it off.
+    const off = act(s, { type: 'offWinch', winch: PORT, needZeroTurns: true });
+    expect(off.realistic.winches[PORT]?.tail).toBeNull();
+    expect(off.realistic.notice).toBeNull();
+    // With a turn on the drum: error, the rope stays on the winch.
+    const turned = act(s, { type: 'turn', winch: PORT, delta: 1 });
+    const refused = act(turned, { type: 'offWinch', winch: PORT, needZeroTurns: true });
+    expect(refused.realistic.winches[PORT]?.tail).toBe(VANG);
+    expect(refused.realistic.winches[PORT]?.turns).toBe(1);
+    expect(refused.realistic.notice).toEqual({ key: 'turnsOn', tail: VANG });
+    // Wrapped the wrong way counts as turns too.
+    const wrong = act(
+      s,
+      { type: 'turn', winch: PORT, delta: -1 },
+      { type: 'offWinch', winch: PORT, needZeroTurns: true },
+    );
+    expect(wrong.realistic.winches[PORT]?.tail).toBe(VANG);
+    expect(wrong.realistic.notice?.key).toBe('turnsOn');
+    // Take the turn off, then the gesture works.
+    const done = act(
+      refused,
+      { type: 'turn', winch: PORT, delta: -1 },
+      { type: 'offWinch', winch: PORT, needZeroTurns: true },
+    );
+    expect(done.realistic.winches[PORT]?.tail).toBeNull();
+    // The button (no needZeroTurns) takes it off with turns on the drum.
+    const button = act(turned, { type: 'offWinch', winch: PORT });
+    expect(button.realistic.winches[PORT]?.tail).toBeNull();
+  });
+});
