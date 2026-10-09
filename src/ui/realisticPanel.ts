@@ -73,6 +73,12 @@ function statusLines(state: AppState, spec: TailSpec): { lines: string[]; alert:
     if (load >= boat.realisticMode.loads.fightingN) lines.push(t('real.status.loadFighting'));
     else if (load > 0) lines.push(t('real.status.load', { kn: kn(load) }));
     else lines.push(t('real.status.noPull'));
+    // Hauling in can take more than the pull out (the out tail, the outhaul, a loaded main's
+    // "in" furling tail, M4c).
+    const haul = report.haulLoadN;
+    if (haul < boat.realisticMode.loads.fightingN && haul > load + 1) {
+      lines.push(t('real.status.haulLoad', { kn: kn(haul) }));
+    }
     // While the motor works: its load against the cut-out (the strain bar, M4c).
     if (winch?.button && winch.strain !== null) {
       const cutOut = boat.realisticMode.electricWinch.cutOutLoadN;

@@ -1190,7 +1190,7 @@
     "scenarios": [
       {
         "id": "furlLineSlips",
-        "query": "?mode=realistic&wd=60&ws=20&ms=30&mf=100&st=starboard&co=a3,b3&wsb=a2.1.t&sel=rope_main_furling_line&cam=helm",
+        "query": "?mode=realistic&wd=60&ws=20&ms=30&mf=100&st=starboard&co=a3,b3&wsb=a2.1.t&sel=rope_main_furling_line&cam=side-starboard",
         "note": "M4c teaching scenario (PHASE1_SPEC 7.2.2): furling the main at 20 kn with the sail still pulling and one turn of the 'in' furling tail on the starboard winch: the line slips. The 'out' tail and the outhaul clutches are already open. Fix: fetch the winch handle from Port, go to the Mast, switch IN, handle in, crank (or add a turn on the winch, or luff first)"
       }
     ]

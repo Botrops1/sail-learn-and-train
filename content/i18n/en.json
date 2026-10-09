@@ -330,5 +330,6 @@
   "real.how.6": "6. The winch handle (one on board) is a backup. In a winch it cranks the drum by hand: clockwise is fast but weak, anticlockwise slow but strong. At the Mast it fits the furling gearbox: set the switch to IN, put the handle in and circle its grip to roll the main in, with the “rolls out” line and the outhaul clutches open.",
   "real.practice.title": "Practice: the main furling line slips",
   "real.practice.text": "Furling the main at 20 kn while the sail still pulls: the “rolls main in” line has only 1 turn on the Starboard winch. Hold the winch button: the line slips. Fix it by hand at the mast: go to Port and take the winch handle, go to Mast, set the switch to IN, put the handle in and circle its grip. The “rolls out” line and the outhaul are already open. (Two turns on the winch, or luffing first, would also work.)",
-  "real.practice.button": "Set it up"
+  "real.practice.button": "Set it up",
+  "real.status.haulLoad": "Pulling it in takes about {kn} kN."
 }

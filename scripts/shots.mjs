@@ -8,8 +8,9 @@ import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 import { liveM4aChecks, M4A_SCENES } from './shots-m4a.mjs';
 import { liveM4bChecks, liveM4bFixChecks, liveM4bTouchChecks, M4B_SCENES } from './shots-m4b.mjs';
+import { liveM4cChecks, M4C_SCENES } from './shots-m4c.mjs';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm4b';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm4c';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 /** Every file of the set starts with this (M4a: "m4a-"), so parallel milestones never clash. */
 const PREFIX = process.env.SHOTS_PREFIX ?? `${MILESTONE}-`;
@@ -31,6 +32,7 @@ const VIEWPORTS = [
       'm3-jib-fully-furled-sheet-released',
       'm4a-select-vang-side',
       'm4b-port-station-helm',
+      'm4c-mast-station-handle-in',
     ],
   },
 ];
@@ -112,6 +114,7 @@ const SCENES = [
   { name: 'view-tab-debug', query: '?cam=top&debug=1', tab: 'View' },
   ...M4A_SCENES.map((scene) => ({ ...scene, name: `m4a-${scene.name}` })),
   ...M4B_SCENES.map((scene) => ({ ...scene, name: `m4b-${scene.name}` })),
+  ...M4C_SCENES.map((scene) => ({ ...scene, name: `m4c-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -429,7 +432,9 @@ async function liveM3Checks() {
 const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
 // SHOTS_ONLY_M4B=1: only the M4b scenes and live checks (quick re-check while iterating).
 const ONLY_M4B = process.env.SHOTS_ONLY_M4B === '1';
-const QUICK = ONLY_LIVE || ONLY_M4B;
+// SHOTS_ONLY_M4C=1: only the M4c scenes and live checks.
+const ONLY_M4C = process.env.SHOTS_ONLY_M4C === '1';
+const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C;
 
 /**
  * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
@@ -514,6 +519,7 @@ try {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       if (ONLY_M4B && !scene.name.startsWith('m4b-')) continue;
+      if (ONLY_M4C && !scene.name.startsWith('m4c-')) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.tab) await page.getByRole('tab', { name: scene.tab }).click();
@@ -521,6 +527,10 @@ try {
         await page.locator(`.rope-strip > :not([hidden]) ${scene.open} summary`).click();
       }
       if (scene.scrollTo) await page.locator(scene.scrollTo).scrollIntoViewIfNeeded();
+      // `centre`: scroll the panel so this part sits in the middle of it (M4c).
+      if (scene.centre) {
+        await page.locator(scene.centre).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+      }
       await page.waitForTimeout(1200);
 
       const facts = await page.evaluate(() => ({
@@ -657,28 +667,14 @@ try {
   }
 
   // Live checks: layout, camera and URL, the M2–M4a checklists, then M4b (Realistic mode).
-  if (!ONLY_M4B) await liveGeneralChecks();
-  await liveM4bChecks({
-    openPage,
-    viewports: VIEWPORTS,
-    outDir: OUT_DIR,
-    prefix: PREFIX,
-    problems,
-  });
-  await liveM4bTouchChecks({
-    openPage,
-    viewports: VIEWPORTS,
-    outDir: OUT_DIR,
-    prefix: PREFIX,
-    problems,
-  });
-  await liveM4bFixChecks({
-    openPage,
-    viewports: VIEWPORTS,
-    outDir: OUT_DIR,
-    prefix: PREFIX,
-    problems,
-  });
+  const live = { openPage, viewports: VIEWPORTS, outDir: OUT_DIR, prefix: PREFIX, problems };
+  if (!ONLY_M4B && !ONLY_M4C) await liveGeneralChecks();
+  if (!ONLY_M4C) {
+    await liveM4bChecks(live);
+    await liveM4bTouchChecks(live);
+    await liveM4bFixChecks(live);
+  }
+  await liveM4cChecks(live);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

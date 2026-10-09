@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-09 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12; M4b link parameters in 9.2 and implementation notes in 7.2.2, pending the owner's review)
+Status: approved for implementation · Last updated: 2026-10-09 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12; M4b link parameters in 9.2 and implementation notes in 7.2.2, owner's answers after M4b in 7.2.2 and 12; M4c details in 7.2.2 and link parameters in 9.2, pending the owner's review)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -230,8 +230,8 @@ The owner's experience matches: about 4 turns to winch, about 2 to ease under co
 
 **URL and Share.** The link stores the mode and the rope lengths as in Easy mode, plus clutch states and the winch setup (`st`, `co`, `wp`, `wsb`, decided in M4b, see 9.2). Running ropes are not stored: a link opens with everything held (the clutch of a rope running at that moment is written closed).
 
-**How M4b fills in the details** (proposed in the M4b PR; the owner may change them):
-- A clutch is selected by a tap; a tap on the selected clutch opens or closes it (a first tap opening a loaded clutch by accident would let the rope run). Dragging the lever up or down always works. Each clutch shows "OPEN" or "closed" in words, not only by the lever's position.
+**How M4b fills in the details** (proposed in the M4b PR; owner answers on PR #12: keep them as built. The owner will correct main furling in a later PR if the boat differs):
+- A clutch is selected by a tap; a tap on the selected clutch opens or closes it (a first tap opening a loaded clutch by accident would let the rope run). Dragging the lever up or down always works (owner: keep it). Each clutch shows "OPEN" or "closed" in words, not only by the lever's position.
 - In Realistic mode the rope lengths have no extra lag (7.1): the winch, a running rope or a hand already move them at their own speed.
 - A rope runs out at `running.maxSpeedMps · min(1, (excess / referenceN)²)`, excess = pull − holding force − rope friction (`loads.ropeFrictionN`). The main sheet's load per tail is the sheet load divided by 2 × `partsPerSide` (4 parts at the boom).
 - Furling lines: while the wind blows (≥ `solver.minWindKn`), the "in" tail of the main and the JIB ROLL line carry a small load that unrolls the sail if released. Furling the main by winching the "in" tail needs the "out" tail and the outhaul clutches open and off the winch; otherwise the winch cuts out and the panel names the clutches to open. Unfurling with the "out" tail needs the "in" tail free. The slack of the ends coming in (the outhaul, the "out" tail) is taken in through their clutches without anyone pulling it.
@@ -241,6 +241,16 @@ The owner's experience matches: about 4 turns to winch, about 2 to ease under co
 - A tail not on the winch can be let out by hand (a drag in the drawing or the Ease button): the hand holds it with `handTailForceN`, so a heavier pull just runs.
 - The winch "cuts out" check comes before the "slipping" check: the motor feels the rope's load even with few turns (PT-19a's lesson); below the cut-out, too few turns slip (PT-16).
 - A rope hauled to its end (0 %, or the main fully out with the "out" tail) stalls the winch: it cuts out with "the rope is fully in".
+
+**How M4c fills in the details** (proposed in the M4c PR; the owner may change them):
+- The handle starts lying at Port (`winchHandle.startStation`). It is in one of three places: lying at a station, carried by the user (it goes along when the user switches station), or in the socket at a station (a winch, or the mast gearbox; the helm has none). Gestures: tap the handle to pick it up; drag it onto the drum (or the gearbox socket) to put it in; in the socket, circle its grip to crank. Buttons for each: Take the handle, Leave the handle here, Handle into the winch / gearbox, Take the handle out, Crank (hold).
+- Cranking speed follows the finger, up to what a person manages against the load: `maxTurnsPerS` with no load, slower in proportion to the handle force, stopped at `stallForceN` (250 N). Rope per handle turn = 2π × handle length ÷ power ratio (about 0.12 m in 1st gear, 0.03 m in 2nd). So at light loads 1st gear is faster; above about 2.7 kN on the rope 2nd gear is faster; above about 3.4 kN 1st gear stalls (the PT-19 check uses the jib sheet at 25 kn, about 4.4 kN).
+- The handle needs what the electric winch needs: turns the right way, enough turns to hold (else the rope slips), and no hard stop. A fighting rope, a rope fully in or a blocked furl stop the handle in both gears (the 12 kN "fighting" load is a stop, not a load the strong gear could beat). The electric button wins when both are used.
+- The strain bar shows only while the winch works: the motor's load against its cut-out (button held), or the handle force against 250 N (cranking). Orange from `strain.warnFraction` (80 %), red at the limit. The strip also writes the motor's load ("about 2.8 kN of the 7.0 kN where it cuts out"), the handle bar the handle force.
+- Gearbox: the IN/OUT switch starts on OUT (`mastGearbox.switchStart`); cranking either way turns the mandrel the way the switch says (assumption). IN rolls the main in only while the "out" tail and the outhaul run free (clutch open, not on a winch), as when winching the "in" tail; OUT needs the "in" tail free. Ratio 8 (about 0.2 m of furling line per handle turn, assumption). The furling tails and the outhaul follow the mandrel; the "in" tail comes in through its clutch.
+- Why the line slips: hauling the "in" tail (or cranking IN) also feels a tenth of the main's sheet-rule load while the main still pulls (`loads.mainFurlSailLoadFraction`, assumption): at 20 kn with the main full that is about 0.66 kN, so one turn slips and two hold; a luffing main adds nothing. Hint: luff up first.
+- The scenario is a link stored in the data file (`realisticMode.scenarios`), opened by "Set it up" under "Practice: the main furling line slips": starboard station, the "in" tail on the winch with 1 turn in the self-tailer, the "out" tail and outhaul clutches already open, wind 60° at 20 kn, main sheet 30 %.
+- Walking away from a station lets go of the handle (cranking stops); a handle left in a socket stays there. Cranking waits while paused.
 
 **Not in M4b/M4c:** hand-over-hand pulling technique, riding turns (a jammed winch), a second handle, crew roles, timing or scoring (Phase 6).
 
@@ -375,6 +385,7 @@ content/        data (JSON) imported at build time
 - Add `v=1` for future migrations.
 - Added in M4a: `rd` (wheel, degrees, + = starboard, always written); `jr` (jib out as reached, %, only when it is less than the controls alone give: the jib sheet was hauled against a jib furled with the sheet released; a link without it would show the furl blocked instead; values below `jf` are ignored); `lg=0` (legend hidden) and `mode` (Ropes-tab mode) only when they differ from the default. `detail` is M3b's render detail.
 - Added in M4b (Realistic mode, 7.2.2), only when they differ from the start: `st` the station (`starboard`, `helm`; Port is the default); `co` the open clutches by key, bank key + slot (`a` = bank A starboard, `b` = bank B port, `r` = JIB ROLL; e.g. `co=a5,b3` = Genoa sheet and Main outhaul open); `wp` (port winch) and `wsb` (starboard winch) the rope on it as `<clutch key>.<turns>.<t|h>` (turns −5 … 5, negative = wrapped anticlockwise; `t` = tail in the self-tailer, `h` = in the hand), e.g. `wsb=a5.3.t`. Running ropes and Pause are not stored. A clutch or winch value that cannot be (a halyard clutch, a rope on the other side's winch, more than 5 turns) is ignored.
+- Added in M4c, only when they differ from the start: `st=mast`; `hd` the winch handle: `c` carried by the user, `<station>.s` lying at a station, `<station>.w` in the socket there (e.g. `hd=mast.w`; it starts as `port.s`); `gb=in` the gearbox switch (it starts on `out`). Cranking is not stored. A socket where there is none (`helm.w`) is ignored.
 - The Share button in the View tab copies the full link (the address bar has the same); if the browser does not allow copying, the link is shown selected to copy by hand. Reset all needs a second tap within 4 s; it sets controls, camera, selection and settings back to the defaults (the debug overlay and the Detail level stay as they are: they suit the device) and the rig moves back visibly.
 
 ### 9.3 Debug overlay (toggle, off by default; `?debug=1` turns it on)
@@ -469,6 +480,7 @@ M4 is built in two PRs (owner, 2026-10-08): **M4a** the Ropes tab in Easy mode (
 - Accessibility pass, empty states, error boundary ("3D not supported on this device"), README update, disclaimer in the footer ("Learning aid, not a substitute for sailing instruction").
 - Final screenshots.
 - Labels in 3D (the View-tab toggle of 5.2) and the halyards drawn in 3D (main halyard and SPI halyard, so selecting one highlights a rope in 3D too; owner, after M4a).
+- Realistic mode in 3D: the rope put on a winch is drawn wrapped on that winch (with its turns), instead of JIB ROLL always on the port winch (owner, after M4b).
 - **Done when:** every item of the Definition of Done below is ticked in the PR.
 
 ## 13. Definition of Done (Phase 1)
