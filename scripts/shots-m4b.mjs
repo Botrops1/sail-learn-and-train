@@ -313,7 +313,8 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
 
     // Three stations; only the chosen one is shown.
     const stations = await page.locator('.station-button').allInnerTexts();
-    check(`${v} three stations`, stations.join('|') === 'Port|Starboard|Helm', stations.join('|'));
+    // M4c added the Mast station.
+    check(`${v} stations`, stations.join('|') === 'Port|Starboard|Helm|Mast', stations.join('|'));
 
     // PT-15: drag the Vang lever up (open) and down (closed).
     await page.locator(drawing('port')).scrollIntoViewIfNeeded();
@@ -545,7 +546,7 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     await page.mouse.move(button.x, button.y);
     await page.mouse.down();
     await page.waitForTimeout(600);
-    await page.locator('.real-alert').scrollIntoViewIfNeeded();
+    await page.locator('[data-testid="real-strip"] .real-alert').scrollIntoViewIfNeeded();
     await shot(page, 'live-phone-main-furl-blocked');
     const text = await stripText(page);
     await page.mouse.up();
