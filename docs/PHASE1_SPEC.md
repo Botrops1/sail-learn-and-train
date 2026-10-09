@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-08 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12)
+Status: approved for implementation · Last updated: 2026-10-09 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12; M4b link parameters in 9.2 and implementation notes in 7.2.2, pending the owner's review)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -228,7 +228,17 @@ The owner's experience matches: about 4 turns to winch, about 2 to ease under co
 
 **Pause.** A pause button (top bar, both modes) freezes time: ropes, sails, running ropes. While paused the user can switch stations, set clutches, wrap turns and move the handle, as several crew members would at once; pressing a winch button, cranking and easing need time and wait. Everything prepared happens together on Resume. URL: `paused` is not stored.
 
-**URL and Share.** The link stores the mode and the rope lengths as in Easy mode, plus clutch states and the winch setup (`c`, `wp`, `ws2` or similar, decided in M4b and added to 9.2). Running ropes are not stored: a link opens with everything held.
+**URL and Share.** The link stores the mode and the rope lengths as in Easy mode, plus clutch states and the winch setup (`st`, `co`, `wp`, `wsb`, decided in M4b, see 9.2). Running ropes are not stored: a link opens with everything held (the clutch of a rope running at that moment is written closed).
+
+**How M4b fills in the details** (proposed in the M4b PR; the owner may change them):
+- A clutch is selected by a tap; a tap on the selected clutch opens or closes it (a first tap opening a loaded clutch by accident would let the rope run). Dragging the lever up or down always works. Each clutch shows "OPEN" or "closed" in words, not only by the lever's position.
+- In Realistic mode the rope lengths have no extra lag (7.1): the winch, a running rope or a hand already move them at their own speed.
+- A rope runs out at `running.maxSpeedMps · min(1, (excess / referenceN)²)`, excess = pull − holding force − rope friction (`loads.ropeFrictionN`). The main sheet's load per tail is the sheet load divided by 2 × `partsPerSide` (4 parts at the boom).
+- Furling lines: while the wind blows (≥ `solver.minWindKn`), the "in" tail of the main and the JIB ROLL line carry a small load that unrolls the sail if released. Furling the main by winching the "in" tail needs the "out" tail and the outhaul clutches open and off the winch; otherwise the winch cuts out and the panel names the clutches to open. Unfurling with the "out" tail needs the "in" tail free. The slack of the ends coming in (the outhaul, the "out" tail) is taken in through their clutches without anyone pulling it.
+- Furling the jib with JIB ROLL pulls the jib sheet out when the Genoa sheet clutch is open and the sheet is not on the winch (up to 100 % = released, 8.5); with the clutch closed the furl stops where the sheet allows and the winch cuts out.
+- A tail not on the winch can be let out by hand (a drag in the drawing or the Ease button): the hand holds it with `handTailForceN`, so a heavier pull just runs.
+- The winch "cuts out" check comes before the "slipping" check: the motor feels the rope's load even with few turns (PT-19a's lesson); below the cut-out, too few turns slip (PT-16).
+- A rope hauled to its end (0 %, or the main fully out with the "out" tail) stalls the winch: it cuts out with "the rope is fully in".
 
 **Not in M4b/M4c:** hand-over-hand pulling technique, riding turns (a jammed winch), a second handle, crew roles, timing or scoring (Phase 6).
 
@@ -362,6 +372,7 @@ content/        data (JSON) imported at build time
 - Unknown or out-of-range values fall back to defaults silently.
 - Add `v=1` for future migrations.
 - Added in M4a: `rd` (wheel, degrees, + = starboard, always written); `jr` (jib out as reached, %, only when it is less than the controls alone give: the jib sheet was hauled against a jib furled with the sheet released; a link without it would show the furl blocked instead; values below `jf` are ignored); `lg=0` (legend hidden) and `mode` (Ropes-tab mode) only when they differ from the default. `detail` is M3b's render detail.
+- Added in M4b (Realistic mode, 7.2.2), only when they differ from the start: `st` the station (`starboard`, `helm`; Port is the default); `co` the open clutches by key, bank key + slot (`a` = bank A starboard, `b` = bank B port, `r` = JIB ROLL; e.g. `co=a5,b3` = Genoa sheet and Main outhaul open); `wp` (port winch) and `wsb` (starboard winch) the rope on it as `<clutch key>.<turns>.<t|h>` (turns −5 … 5, negative = wrapped anticlockwise; `t` = tail in the self-tailer, `h` = in the hand), e.g. `wsb=a5.3.t`. Running ropes and Pause are not stored. A clutch or winch value that cannot be (a halyard clutch, a rope on the other side's winch, more than 5 turns) is ignored.
 - The Share button in the View tab copies the full link (the address bar has the same); if the browser does not allow copying, the link is shown selected to copy by hand. Reset all needs a second tap within 4 s; it sets controls, camera, selection and settings back to the defaults (the debug overlay and the Detail level stay as they are: they suit the device) and the rig moves back visibly.
 
 ### 9.3 Debug overlay (toggle, off by default; `?debug=1` turns it on)

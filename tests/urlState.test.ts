@@ -177,8 +177,9 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(parseUrlState('?lg=1').settings.legend).toBe(true);
     expect(parseUrlState('?lg=no').settings.legend).toBe(DEFAULT_SETTINGS.legend);
     expect(parseUrlState('?mode=easy').settings.ropesMode).toBe('easy');
-    // Realistic mode is not built yet (M4b): an unknown mode falls back to Easy.
-    expect(parseUrlState('?mode=realistic').settings.ropesMode).toBe('easy');
+    expect(parseUrlState('?mode=realistic').settings.ropesMode).toBe('realistic');
+    // An unknown mode falls back to Easy.
+    expect(parseUrlState('?mode=hard').settings.ropesMode).toBe('easy');
     const hidden = initialState({ settings: { legend: false } });
     expect(serializeUrlState(hidden)).toBe(
       `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lg=0`,
@@ -245,5 +246,51 @@ describe('URL state: the jib sheet hauled against a partly furled jib (M3 → M4
     expect(parseUrlState('?js=30&jf=40&jr=20').rig).toEqual(blocked.rig);
     expect(parseUrlState('?js=30&jf=40&jr=101').rig).toEqual(blocked.rig);
     expect(parseUrlState('?js=30&jf=40&jr=4x').rig).toEqual(blocked.rig);
+  });
+});
+
+describe('URL state: Realistic mode (M4b: st, co, wp, wsb)', () => {
+  const realistic = (query: string) => parseUrlState(`?mode=realistic&${query}`).realistic;
+
+  it('reads the station, the open clutches and the winch setup', () => {
+    const r = realistic('st=starboard&co=a5,b3&wp=b5.3.t&wsb=a5.-2.h');
+    expect(r.station).toBe('starboard');
+    expect(r.open).toEqual({ a5: true, b3: true });
+    expect(r.winches.winch_primary_port).toMatchObject({ tail: 'b5', turns: 3, selfTailer: true });
+    expect(r.winches.winch_primary_starboard).toMatchObject({
+      tail: 'a5',
+      turns: -2,
+      selfTailer: false,
+    });
+  });
+
+  it('ignores what cannot be: unknown or static clutches, the wrong winch, too many turns', () => {
+    const r = realistic('st=mast&co=a4,zz,b5&wp=a5.3.t&wsb=a1.9.h');
+    expect(r.station).toBe('port');
+    expect(r.open).toEqual({ b5: true });
+    expect(r.winches.winch_primary_port?.tail).toBeNull();
+    expect(r.winches.winch_primary_starboard?.tail).toBeNull();
+    // No turns: the tail cannot be in the self-tailer.
+    expect(realistic('wp=b5.0.t').winches.winch_primary_port?.selfTailer).toBe(false);
+  });
+
+  it('round-trips through the link, and a default state writes nothing extra', () => {
+    const query = `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&mode=realistic`;
+    expect(serializeUrlState(parseUrlState(query))).toBe(query);
+    const set = `${query}&st=starboard&co=a5,b3&wp=b5.3.t&wsb=a5.-2.h`;
+    expect(serializeUrlState(parseUrlState(set))).toBe(set);
+  });
+
+  it('a rope running out is not stored: its clutch is written closed (the link opens held)', () => {
+    const store = createStore(
+      parseUrlState('?mode=realistic&wd=90&ws=20&js=30&st=starboard&co=a5,a2&wsb=a1.3.t'),
+    );
+    store.dispatch({ type: 'step', dt: 1 / 60 });
+    const link = serializeUrlState(store.getState());
+    expect(store.getState().realistic.reports.a5?.motion).toBe('running');
+    expect(link).toContain('co=a2&');
+    expect(link).not.toContain('a5,');
+    expect(link).toContain('wsb=a1.3.t');
+    expect(link).not.toContain('paused');
   });
 });

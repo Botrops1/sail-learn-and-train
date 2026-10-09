@@ -12,7 +12,8 @@ import { asThin, partMesh, type PartUserData, type PickSegment } from './parts';
  */
 export interface RopeMeshes {
   objects: THREE.Mesh[];
-  update(drawings: RopeDrawing[], view?: RopeView): void;
+  /** `flashing`: ropes running out now, drawn in the flash colour (Realistic mode). */
+  update(drawings: RopeDrawing[], view?: RopeView, flashing?: ReadonlySet<string>): void;
 }
 
 /**
@@ -188,7 +189,7 @@ export function buildRopes(initial: RopeDrawing[]): RopeMeshes {
     };
   };
 
-  const update = (drawings: RopeDrawing[], view?: RopeView) => {
+  const update = (drawings: RopeDrawing[], view?: RopeView, flashing?: ReadonlySet<string>) => {
     for (const drawing of drawings) {
       const rope = ropes.get(drawing.id);
       if (!rope) continue;
@@ -209,7 +210,11 @@ export function buildRopes(initial: RopeDrawing[]): RopeMeshes {
       geometry.boundingBox = null;
       (rope.mesh.userData as PartUserData).pickSegments = pickSegments(drawing);
       rope.material.color.set(
-        drawing.state === 'fighting' ? SCENE.ropes.fighting : SCENE.ropes.colors[rope.colorKey],
+        flashing?.has(drawing.id)
+          ? SCENE.ropes.running
+          : drawing.state === 'fighting'
+            ? SCENE.ropes.fighting
+            : SCENE.ropes.colors[rope.colorKey],
       );
     }
   };

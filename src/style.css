@@ -93,7 +93,8 @@ html[data-layout='side'] .shell {
 
 .debug {
   position: absolute;
-  top: 8px;
+  /* Below the Pause button. */
+  top: 52px;
   right: 8px;
   margin: 0;
   padding: 6px 8px;
@@ -744,8 +745,8 @@ html[data-layout='side'] .rig-alerts {
   background: var(--surface);
 }
 
-/* Stacked: the selected rope's slider stays on screen below a tall drawing. */
-html[data-layout='stacked'] .rope-strip:not(.is-empty) {
+/* Stacked: the selected rope's slider stays on screen below a tall drawing (Easy mode). */
+html[data-layout='stacked'] .rope-strip:not(.is-empty, .real-strip) {
   position: sticky;
   z-index: 1;
   bottom: 0;
@@ -940,4 +941,434 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .action-status:empty {
   display: none;
+}
+
+/* Pause (PHASE1_SPEC 7.2.2, both modes): top right of the 3D view. */
+.pause-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  min-width: var(--touch);
+  min-height: 36px;
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pause-button.is-paused {
+  border-color: #b85c00;
+  background: #ff9f1c;
+  color: #1d1300;
+}
+
+.pause-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Ropes tab: Easy / Realistic switch. */
+.mode-switch {
+  margin-bottom: 8px;
+}
+
+.ropes-easy[hidden],
+.ropes-realistic[hidden],
+.station-wrap[hidden],
+.helm-station[hidden],
+.station-alerts[hidden],
+.paused-line[hidden],
+.real-strip[hidden],
+.strip-empty[hidden] {
+  display: none;
+}
+
+/* Realistic mode (M4b): stations, alerts, the station drawing and the strip. */
+.station-bar {
+  margin-bottom: 6px;
+}
+
+.station-button {
+  position: relative;
+  flex: 1 1 0;
+  min-height: var(--touch);
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.station-button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.station-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background: #e8112d;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.station-badge[hidden] {
+  display: none;
+}
+
+.station-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.station-alert {
+  min-height: 36px;
+  padding: 4px 10px;
+  border: 1px solid #e8112d;
+  border-radius: 8px;
+  background: #fde8eb;
+  color: #8a0016;
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.paused-line {
+  margin: 4px 0;
+  padding: 4px 8px;
+  border-left: 4px solid #ff9f1c;
+  background: #fff4e5;
+  font-size: var(--font-small);
+}
+
+.station-wrap {
+  position: relative;
+  margin: 0 -12px;
+}
+
+.station-drawing {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Gestures on the parts only, so the panel still scrolls when dragged elsewhere. */
+.station-drawing [data-drag] {
+  touch-action: none;
+  cursor: pointer;
+}
+
+.station-notice {
+  position: absolute;
+  top: 2px;
+  right: 8px;
+  left: 8px;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgb(23 34 43 / 0.92);
+  color: #ffffff;
+  font-size: var(--font-small);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.station-notice[hidden] {
+  display: none;
+}
+
+.real-clutch {
+  outline: none;
+}
+
+.real-clutch.is-selected .clutch-body {
+  stroke: #ff9f1c;
+  stroke-width: 3;
+}
+
+.real-clutch.is-selected .clutch-hit {
+  fill: rgb(255 159 28 / 0.18);
+}
+
+.real-clutch:focus-visible .clutch-hit {
+  stroke: var(--focus);
+  stroke-width: 3;
+}
+
+.real-lever-slot {
+  fill: #12171b;
+}
+
+.real-lever {
+  fill: #9aa4ab;
+  stroke: #f2f4f5;
+  stroke-width: 1.5;
+}
+
+.real-clutch.is-open .real-lever {
+  fill: #ffb547;
+  stroke: #ffffff;
+}
+
+.real-clutch-state {
+  fill: #d5dde3;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.real-clutch.is-open .real-clutch-state {
+  fill: #ffb547;
+  font-weight: 800;
+}
+
+/* JIB ROLL's state is written beside it, on the light background. */
+.real-clutch-roll .real-clutch-state {
+  fill: var(--muted);
+}
+
+.real-clutch-roll.is-open .real-clutch-state {
+  fill: #b85c00;
+}
+
+.real-clutch-tag {
+  fill: #0b5f95;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.real-caption {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.real-knob {
+  stroke: #ffffff;
+  stroke-width: 2.5;
+}
+
+.real-knob.is-selected {
+  stroke: #ff9f1c;
+  stroke-width: 3.5;
+}
+
+.real-tail,
+.real-on-drum {
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.real-tail.is-running {
+  animation: rope-running 0.25s steps(2) infinite;
+}
+
+@keyframes rope-running {
+  50% {
+    stroke: #fff36b;
+  }
+}
+
+.real-drum-hit {
+  fill: transparent;
+}
+
+.real-drum-hit.is-active {
+  fill: rgb(11 95 149 / 0.06);
+}
+
+.real-drum {
+  fill: #cdd3d8;
+  stroke: #5d676e;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.real-drum-tick {
+  stroke: #5d676e;
+  stroke-width: 3;
+  pointer-events: none;
+}
+
+.real-jaw {
+  fill: #2b3136;
+  pointer-events: none;
+}
+
+.real-turns {
+  fill: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.real-turns.is-wrong {
+  fill: #b00020;
+}
+
+.real-hand-text,
+.real-button-text {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.real-button {
+  outline: none;
+}
+
+.real-button-disc {
+  fill: #2b3136;
+  stroke: #9aa4ab;
+  stroke-width: 3;
+}
+
+.real-button-icon {
+  fill: #ffffff;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.real-button.is-pressed .real-button-disc {
+  fill: var(--accent);
+  stroke: #ffffff;
+}
+
+.real-button.is-cut-out .real-button-disc {
+  fill: #b00020;
+}
+
+.real-button.is-cut-out .real-button-text {
+  fill: #b00020;
+  font-weight: 800;
+}
+
+.real-button:focus-visible .real-button-disc {
+  stroke: var(--focus);
+}
+
+.real-ghost {
+  stroke: rgb(23 34 43 / 0.45);
+  stroke-dasharray: 4 4;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+.real-strip {
+  margin-top: 4px;
+}
+
+.real-status .meta-line[hidden] {
+  display: none;
+}
+
+.real-alert {
+  margin: 4px 0;
+  padding: 4px 8px;
+  border-left: 4px solid #ff9f1c;
+  background: #fff4e5;
+  font-size: var(--font-small);
+  font-weight: 600;
+}
+
+.real-alert.is-running {
+  border-left-color: #e8112d;
+  background: #fde8eb;
+  color: #8a0016;
+}
+
+.real-alert[hidden] {
+  display: none;
+}
+
+.real-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+
+.real-actions[hidden] {
+  display: none;
+}
+
+.real-action {
+  min-height: var(--touch);
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.real-action[hidden] {
+  display: none;
+}
+
+.real-action:disabled {
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: default;
+}
+
+.real-action.is-pressed,
+.real-action[aria-pressed='true'] {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.real-action:focus-visible,
+.station-button:focus-visible,
+.station-alert:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.real-how {
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .real-tail.is-running {
+    animation-duration: 1s;
+  }
 }

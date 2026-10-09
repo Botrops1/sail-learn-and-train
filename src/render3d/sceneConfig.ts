@@ -109,6 +109,9 @@ export const SCENE = {
       halyard: '#4b545c',
     },
     fighting: '#e8112d',
+    /** A rope running out (Realistic mode, PHASE1_SPEC 7.2.2) flashes between its colour and this. */
+    running: '#fff36b',
+    runningFlashHz: 4,
     /**
      * Ropes are never drawn thinner than this on screen (CSS px), so sag and colour show on a
      * phone at whole-boat zoom. Close up, the 3D radius from the data (visual.ropeRenderRadius)

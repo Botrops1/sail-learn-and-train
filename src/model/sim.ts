@@ -198,6 +198,15 @@ export function springTo(spring: Spring, target: number, dt: number, tau: number
   };
 }
 
+export interface StepOptions {
+  /**
+   * Rope lengths follow the controls at once (Realistic mode, PHASE1_SPEC 7.2.2: the winch,
+   * a running rope or a hand already move them at their own speed). Easy mode: false, the
+   * first-order lag of 7.1.
+   */
+  instantRopes?: boolean;
+}
+
 /** Degrees within which a gybe swing counts as finished. */
 const GYBE_DONE_DEG = 2;
 
@@ -210,12 +219,14 @@ export function step(
   dt: number,
   motion: BoatMotion = AT_REST,
   data: BoatData = boat,
+  options: StepOptions = {},
 ): RigState {
   void motion; // Phase 2: apparent wind from the boat's own motion.
   const { controls, rig } = sim;
   const v = data.visual;
   const target = applied(controls);
-  const tau = v.controlResponseTimeS;
+  // Realistic mode moves the ropes at their own speed (winch, running, hand): no extra lag.
+  const tau = options.instantRopes ? 0 : v.controlResponseTimeS;
   const rope: AppliedControls = {
     mainsheet: lag(rig.applied.mainsheet, target.mainsheet, dt, tau),
     vang: lag(rig.applied.vang, target.vang, dt, tau),

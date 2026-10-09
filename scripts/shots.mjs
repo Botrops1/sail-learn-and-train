@@ -7,8 +7,9 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 import { liveM4aChecks, M4A_SCENES } from './shots-m4a.mjs';
+import { liveM4bChecks, M4B_SCENES } from './shots-m4b.mjs';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm4a';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm4b';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 /** Every file of the set starts with this (M4a: "m4a-"), so parallel milestones never clash. */
 const PREFIX = process.env.SHOTS_PREFIX ?? `${MILESTONE}-`;
@@ -29,6 +30,7 @@ const VIEWPORTS = [
       'pt11-jib-sheet-100-bow',
       'm3-jib-fully-furled-sheet-released',
       'm4a-select-vang-side',
+      'm4b-port-station-helm',
     ],
   },
 ];
@@ -109,6 +111,7 @@ const SCENES = [
   { name: 'card-jib-sheet', query: '?wd=60&ws=12&cam=side-port&sel=rope_jib_sheet' },
   { name: 'view-tab-debug', query: '?cam=top&debug=1', tab: 'View' },
   ...M4A_SCENES.map((scene) => ({ ...scene, name: `m4a-${scene.name}` })),
+  ...M4B_SCENES.map((scene) => ({ ...scene, name: `m4b-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -424,155 +427,15 @@ async function liveM3Checks() {
 
 // SHOTS_ONLY_LIVE=1: only the live checks (quick re-check while iterating).
 const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
+// SHOTS_ONLY_M4B=1: only the M4b scenes and live checks (quick re-check while iterating).
+const ONLY_M4B = process.env.SHOTS_ONLY_M4B === '1';
+const QUICK = ONLY_LIVE || ONLY_M4B;
 
-try {
-  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS) {
-    for (const scene of SCENES) {
-      if (viewport.only && !viewport.only.includes(scene.name)) continue;
-      const label = `${viewport.name}/${scene.name}`;
-      const { context, page } = await openPage(viewport, label, scene.query);
-      if (scene.tab) await page.getByRole('tab', { name: scene.tab }).click();
-      if (scene.open) {
-        await page.locator(`.rope-strip > :not([hidden]) ${scene.open} summary`).click();
-      }
-      if (scene.scrollTo) await page.locator(scene.scrollTo).scrollIntoViewIfNeeded();
-      await page.waitForTimeout(1200);
-
-      const facts = await page.evaluate(() => ({
-        layout: document.documentElement.dataset.layout,
-        scrollWidth: document.documentElement.scrollWidth,
-        scrollHeight: document.documentElement.scrollHeight,
-        innerWidth: window.innerWidth,
-        innerHeight: window.innerHeight,
-        sceneError: document.querySelector('.scene-error')?.textContent ?? null,
-        panelOverflow: (() => {
-          const body = document.querySelector('.panel-body');
-          return body ? body.scrollWidth - body.clientWidth : 0;
-        })(),
-        version: document.querySelector('[data-testid="build-version"]')?.textContent ?? null,
-        url: window.location.search,
-      }));
-      if (facts.layout !== viewport.layout) {
-        problems.push(`${label}: layout ${facts.layout}, expected ${viewport.layout}`);
-      }
-      if (facts.scrollWidth > facts.innerWidth) {
-        problems.push(
-          `${label}: page scrolls sideways (${facts.scrollWidth} > ${facts.innerWidth})`,
-        );
-      }
-      if (facts.scrollHeight > facts.innerHeight) {
-        problems.push(
-          `${label}: page scrolls vertically (${facts.scrollHeight} > ${facts.innerHeight})`,
-        );
-      }
-      if (facts.sceneError) problems.push(`${label}: ${facts.sceneError}`);
-      if (facts.panelOverflow > 0) {
-        problems.push(`${label}: panel content is ${facts.panelOverflow} px too wide`);
-      }
-
-      const file = path.join(OUT_DIR, `${PREFIX}${viewport.name}-${scene.name}.png`);
-      await page.screenshot({ path: file });
-      console.log(`${file}  layout=${facts.layout}  ${facts.version}  ${facts.url}`);
-      await context.close();
-    }
-  }
-
-  // Tap-to-identify sweep: tap a grid over the 3D view in several presets and collect what the
-  // card shows. Every tap must give a registered part with a name (or nothing, for the sky).
-  const found = new Map();
-  const sweeps = ONLY_LIVE
-    ? []
-    : [
-        { viewport: VIEWPORTS[0], cam: 'side-port' },
-        { viewport: VIEWPORTS[0], cam: 'bow' },
-        { viewport: VIEWPORTS[0], cam: 'helm' },
-        { viewport: VIEWPORTS[2], cam: 'side-starboard' },
-        { viewport: VIEWPORTS[2], cam: 'top' },
-      ];
-  for (const { viewport, cam } of sweeps) {
-    const label = `taps ${viewport.name}/${cam}`;
-    const { context, page } = await openPage(viewport, label, `?cam=${cam}`);
-    await page.waitForTimeout(800);
-    const box = await page.locator('canvas.scene-canvas').boundingBox();
-    const barTop = await page
-      .locator('.camera-bar')
-      .evaluate((bar) => bar.getBoundingClientRect().top);
-    const step = viewport.width < 500 ? 14 : 24;
-    let taps = 0;
-    for (let y = box.y + step / 2; y < barTop - 4; y += step) {
-      for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
-        await page.mouse.click(x, y);
-        taps += 1;
-        const part = await cardPart(page);
-        if (!part) continue;
-        if (!part.id || !part.name) problems.push(`${label}: tap at ${x},${y} gave an empty card`);
-        found.set(part.id, (found.get(part.id) ?? 0) + 1);
-        await page.keyboard.press('Escape');
-      }
-    }
-    const search = await page.evaluate(() => window.location.search);
-    if (!search.includes(`cam=${cam}`))
-      problems.push(`${label}: taps changed the camera (${search})`);
-    console.log(`${label}: ${taps} taps`);
-    await context.close();
-  }
-  console.log(
-    `identified by tapping: ${[...found.entries()].map(([id, n]) => `${id}×${n}`).join(', ')}`,
-  );
-  for (const id of ONLY_LIVE ? [] : MUST_IDENTIFY) {
-    if (!found.has(id)) problems.push(`tap sweep never identified ${id}`);
-  }
-  for (const id of MUST_NOT_IDENTIFY) {
-    if (found.has(id)) problems.push(`tap sweep found ${id}, which should not be drawn`);
-  }
-
-  // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
-  // (positions from the debug-only hook) must show its card.
-  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS.slice(0, 3)) {
-    for (const view of SMALL_PART_VIEWS) {
-      const label = `small parts ${viewport.name}/${view.cam}`;
-      const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1`);
-      await page.waitForTimeout(800);
-      const box = await page.locator('canvas.scene-canvas').boundingBox();
-      const barTop = await page
-        .locator('.camera-bar')
-        .evaluate((bar) => bar.getBoundingClientRect().top);
-      const centres = await page.evaluate(() => window.__sailDebug.hitCentres());
-      const missing = [];
-      for (const id of view.expected) {
-        let ok = false;
-        for (const c of centres.filter((centre) => centre.partId === id)) {
-          const x = box.x + c.x;
-          const y = box.y + c.y;
-          if (y > barTop - 4 || x < box.x || x > box.x + box.width) continue;
-          await page.mouse.click(x, y);
-          const part = await cardPart(page);
-          if (part) await page.keyboard.press('Escape');
-          if (part?.id === id) {
-            ok = true;
-            break;
-          }
-        }
-        if (!ok) missing.push(id);
-      }
-      // The mast is thin and sits between the sails' edges: a tap right on it must find it.
-      if (view.cam !== 'top') {
-        const mast = await page.evaluate(() => window.__sailDebug.project(0, 10, 0));
-        await page.mouse.click(box.x + mast.x, box.y + mast.y);
-        const part = await cardPart(page);
-        if (part) await page.keyboard.press('Escape');
-        if (part?.id !== 'part_mast') missing.push(`part_mast (got ${part?.id ?? 'nothing'})`);
-      }
-      if (missing.length > 0) problems.push(`${label}: no card for ${missing.join(', ')}`);
-      console.log(
-        `${label}: ${view.expected.length - missing.length}/${view.expected.length} respond`,
-      );
-      await context.close();
-    }
-  }
-
-  // Live checks on one page, no reload: layout follows resizes; camera buttons and dragging
-  // reach the URL (only the preset is stored, a drag gives cam=free).
+/**
+ * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
+ * dragging reach the URL; then the M2, M3 and M4a checklists.
+ */
+async function liveGeneralChecks() {
   const { context, page } = await openPage(VIEWPORTS[0], 'live', '');
   const steps = [
     { width: 390, height: 844, layout: 'stacked' },
@@ -644,6 +507,164 @@ try {
     prefix: PREFIX,
     problems,
   });
+}
+
+try {
+  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS) {
+    for (const scene of SCENES) {
+      if (viewport.only && !viewport.only.includes(scene.name)) continue;
+      if (ONLY_M4B && !scene.name.startsWith('m4b-')) continue;
+      const label = `${viewport.name}/${scene.name}`;
+      const { context, page } = await openPage(viewport, label, scene.query);
+      if (scene.tab) await page.getByRole('tab', { name: scene.tab }).click();
+      if (scene.open) {
+        await page.locator(`.rope-strip > :not([hidden]) ${scene.open} summary`).click();
+      }
+      if (scene.scrollTo) await page.locator(scene.scrollTo).scrollIntoViewIfNeeded();
+      await page.waitForTimeout(1200);
+
+      const facts = await page.evaluate(() => ({
+        layout: document.documentElement.dataset.layout,
+        scrollWidth: document.documentElement.scrollWidth,
+        scrollHeight: document.documentElement.scrollHeight,
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+        sceneError: document.querySelector('.scene-error')?.textContent ?? null,
+        panelOverflow: (() => {
+          const body = document.querySelector('.panel-body');
+          return body ? body.scrollWidth - body.clientWidth : 0;
+        })(),
+        version: document.querySelector('[data-testid="build-version"]')?.textContent ?? null,
+        url: window.location.search,
+      }));
+      if (facts.layout !== viewport.layout) {
+        problems.push(`${label}: layout ${facts.layout}, expected ${viewport.layout}`);
+      }
+      if (facts.scrollWidth > facts.innerWidth) {
+        problems.push(
+          `${label}: page scrolls sideways (${facts.scrollWidth} > ${facts.innerWidth})`,
+        );
+      }
+      if (facts.scrollHeight > facts.innerHeight) {
+        problems.push(
+          `${label}: page scrolls vertically (${facts.scrollHeight} > ${facts.innerHeight})`,
+        );
+      }
+      if (facts.sceneError) problems.push(`${label}: ${facts.sceneError}`);
+      if (facts.panelOverflow > 0) {
+        problems.push(`${label}: panel content is ${facts.panelOverflow} px too wide`);
+      }
+
+      const file = path.join(OUT_DIR, `${PREFIX}${viewport.name}-${scene.name}.png`);
+      await page.screenshot({ path: file });
+      console.log(`${file}  layout=${facts.layout}  ${facts.version}  ${facts.url}`);
+      await context.close();
+    }
+  }
+
+  // Tap-to-identify sweep: tap a grid over the 3D view in several presets and collect what the
+  // card shows. Every tap must give a registered part with a name (or nothing, for the sky).
+  const found = new Map();
+  const sweeps = QUICK
+    ? []
+    : [
+        { viewport: VIEWPORTS[0], cam: 'side-port' },
+        { viewport: VIEWPORTS[0], cam: 'bow' },
+        { viewport: VIEWPORTS[0], cam: 'helm' },
+        { viewport: VIEWPORTS[2], cam: 'side-starboard' },
+        { viewport: VIEWPORTS[2], cam: 'top' },
+      ];
+  for (const { viewport, cam } of sweeps) {
+    const label = `taps ${viewport.name}/${cam}`;
+    const { context, page } = await openPage(viewport, label, `?cam=${cam}`);
+    await page.waitForTimeout(800);
+    const box = await page.locator('canvas.scene-canvas').boundingBox();
+    const barTop = await page
+      .locator('.camera-bar')
+      .evaluate((bar) => bar.getBoundingClientRect().top);
+    const step = viewport.width < 500 ? 14 : 24;
+    let taps = 0;
+    for (let y = box.y + step / 2; y < barTop - 4; y += step) {
+      for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
+        await page.mouse.click(x, y);
+        taps += 1;
+        const part = await cardPart(page);
+        if (!part) continue;
+        if (!part.id || !part.name) problems.push(`${label}: tap at ${x},${y} gave an empty card`);
+        found.set(part.id, (found.get(part.id) ?? 0) + 1);
+        await page.keyboard.press('Escape');
+      }
+    }
+    const search = await page.evaluate(() => window.location.search);
+    if (!search.includes(`cam=${cam}`))
+      problems.push(`${label}: taps changed the camera (${search})`);
+    console.log(`${label}: ${taps} taps`);
+    await context.close();
+  }
+  console.log(
+    `identified by tapping: ${[...found.entries()].map(([id, n]) => `${id}×${n}`).join(', ')}`,
+  );
+  for (const id of QUICK ? [] : MUST_IDENTIFY) {
+    if (!found.has(id)) problems.push(`tap sweep never identified ${id}`);
+  }
+  for (const id of MUST_NOT_IDENTIFY) {
+    if (found.has(id)) problems.push(`tap sweep found ${id}, which should not be drawn`);
+  }
+
+  // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
+  // (positions from the debug-only hook) must show its card.
+  for (const viewport of QUICK ? [] : VIEWPORTS.slice(0, 3)) {
+    for (const view of SMALL_PART_VIEWS) {
+      const label = `small parts ${viewport.name}/${view.cam}`;
+      const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1`);
+      await page.waitForTimeout(800);
+      const box = await page.locator('canvas.scene-canvas').boundingBox();
+      const barTop = await page
+        .locator('.camera-bar')
+        .evaluate((bar) => bar.getBoundingClientRect().top);
+      const centres = await page.evaluate(() => window.__sailDebug.hitCentres());
+      const missing = [];
+      for (const id of view.expected) {
+        let ok = false;
+        for (const c of centres.filter((centre) => centre.partId === id)) {
+          const x = box.x + c.x;
+          const y = box.y + c.y;
+          if (y > barTop - 4 || x < box.x || x > box.x + box.width) continue;
+          await page.mouse.click(x, y);
+          const part = await cardPart(page);
+          if (part) await page.keyboard.press('Escape');
+          if (part?.id === id) {
+            ok = true;
+            break;
+          }
+        }
+        if (!ok) missing.push(id);
+      }
+      // The mast is thin and sits between the sails' edges: a tap right on it must find it.
+      if (view.cam !== 'top') {
+        const mast = await page.evaluate(() => window.__sailDebug.project(0, 10, 0));
+        await page.mouse.click(box.x + mast.x, box.y + mast.y);
+        const part = await cardPart(page);
+        if (part) await page.keyboard.press('Escape');
+        if (part?.id !== 'part_mast') missing.push(`part_mast (got ${part?.id ?? 'nothing'})`);
+      }
+      if (missing.length > 0) problems.push(`${label}: no card for ${missing.join(', ')}`);
+      console.log(
+        `${label}: ${view.expected.length - missing.length}/${view.expected.length} respond`,
+      );
+      await context.close();
+    }
+  }
+
+  // Live checks: layout, camera and URL, the M2–M4a checklists, then M4b (Realistic mode).
+  if (!ONLY_M4B) await liveGeneralChecks();
+  await liveM4bChecks({
+    openPage,
+    viewports: VIEWPORTS,
+    outDir: OUT_DIR,
+    prefix: PREFIX,
+    problems,
+  });
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));
@@ -655,7 +676,7 @@ const dev = await createServer({ server: { port: 5190, strictPort: false }, logL
 await dev.listen();
 const compareBrowser = await chromium.launch({ args: LAUNCH_ARGS });
 try {
-  for (const [view, width, height] of ONLY_LIVE
+  for (const [view, width, height] of QUICK
     ? []
     : [
         ['side', 824, 1168],

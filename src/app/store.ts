@@ -9,7 +9,14 @@ import {
   type Settings,
   type StepSize,
 } from '../model/settings';
-import { initialRig, step, type RigHistory, type RigState } from '../model/sim';
+import {
+  initialRealistic,
+  reduceRealistic,
+  stepRealistic,
+  type RealisticAction,
+  type RealisticState,
+} from '../model/realistic';
+import { AT_REST, initialRig, step, type RigHistory, type RigState } from '../model/sim';
 
 /**
  * The single app store (PHASE1_SPEC 9.1): control targets, the solved rig, the selected part,
@@ -24,6 +31,10 @@ export interface AppState {
   settings: Settings;
   /** Registry id of the part shown in the info card, or null. */
   selection: string | null;
+  /** Realistic mode (PHASE1_SPEC 7.2.2): stations, clutches, winches. Kept while in Easy mode. */
+  realistic: RealisticState;
+  /** Pause (both modes): time stands still; not stored in the URL. */
+  paused: boolean;
 }
 
 export type Action =
@@ -37,6 +48,9 @@ export type Action =
   | { type: 'setCameraPreset'; preset: CameraPreset }
   | { type: 'select'; partId: string | null }
   | { type: 'setControls'; values: Partial<Controls> }
+  /** A clutch, winch or station action of Realistic mode. */
+  | { type: 'realistic'; action: RealisticAction }
+  | { type: 'setPaused'; paused: boolean }
   | { type: 'step'; dt: number };
 
 export interface InitialOverrides {
@@ -46,6 +60,8 @@ export interface InitialOverrides {
   selection?: string | null;
   /** From a shared link: rig history the controls alone do not give (see RigHistory). */
   history?: RigHistory;
+  /** From a shared link: clutches, winch setup and station (Realistic mode). */
+  realistic?: RealisticState;
 }
 
 export function initialState(overrides: InitialOverrides = {}): AppState {
@@ -57,6 +73,8 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     camera: { ...DEFAULT_CAMERA, ...overrides.camera },
     settings: { ...DEFAULT_SETTINGS, ...overrides.settings },
     selection: overrides.selection ?? null,
+    realistic: overrides.realistic ?? initialRealistic(),
+    paused: false,
   };
 }
 
@@ -104,9 +122,25 @@ export function reduce(state: AppState, action: Action): AppState {
       const controls = withControls(state.controls, action.values);
       return controls === state.controls ? state : { ...state, controls };
     }
+    case 'realistic': {
+      const realistic = reduceRealistic(state.realistic, action.action);
+      return realistic === state.realistic ? state : { ...state, realistic };
+    }
+    case 'setPaused':
+      return state.paused === action.paused ? state : { ...state, paused: action.paused };
     case 'step': {
-      const dt = Math.min(MAX_STEP_S, Math.max(0, action.dt));
-      return { ...state, rig: step({ controls: state.controls, rig: state.rig }, dt) };
+      // Paused: time stands still (dt = 0), but what was prepared is shown.
+      const dt = state.paused ? 0 : Math.min(MAX_STEP_S, Math.max(0, action.dt));
+      if (state.settings.ropesMode !== 'realistic') {
+        return { ...state, rig: step({ controls: state.controls, rig: state.rig }, dt) };
+      }
+      // Realistic mode: the clutches, winches and hands move the ropes, then the rig follows.
+      const moved = stepRealistic(state.realistic, state.controls, state.rig, dt);
+      const controls = withControls(state.controls, moved.values);
+      const rig = step({ controls, rig: state.rig }, dt, AT_REST, undefined, {
+        instantRopes: true,
+      });
+      return { ...state, controls, rig, realistic: moved.state };
     }
   }
 }

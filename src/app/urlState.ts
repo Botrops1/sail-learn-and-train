@@ -12,7 +12,16 @@ import {
   type RopesMode,
   type StepSize,
 } from '../model/settings';
+import {
+  initialRealistic,
+  isStationId,
+  stationWinch,
+  tailSpec,
+  type RealisticState,
+  type StationId,
+} from '../model/realistic';
 import type { RigHistory } from '../model/sim';
+import { boat } from '../model/boat';
 import { initialState, type AppState } from './store';
 
 /** URL schema version (PHASE1_SPEC 9.2). Bump when a parameter changes meaning. */
@@ -91,6 +100,8 @@ export function parseUrlState(
   const mode = params.get('mode');
   if (mode !== null && isRopesMode(mode)) ropesMode = mode;
 
+  const realistic = parseRealistic(params);
+
   // `jr`: how far the jib is out when that is less than the controls alone give (the sheet was
   // hauled against a jib furled with the sheet released). Never less than "Jib out" asked for.
   const history: RigHistory = {};
@@ -113,7 +124,63 @@ export function parseUrlState(
     },
     selection,
     history,
+    realistic,
   });
+}
+
+/**
+ * Realistic mode in the link (PHASE1_SPEC 9.2, decided in M4b): `st` the station (when not
+ * Port), `co` the open clutches by key (e.g. `co=a5,b3`), and one parameter per winch with the
+ * rope on it: `wp` (port winch) and `wsb` (starboard winch), as `<clutch key>.<turns>.<t|h>`
+ * (turns negative = wrapped anticlockwise; t = tail in the self-tailer, h = in the hand), e.g.
+ * `wsb=a5.3.t`. Anything invalid is left out silently.
+ */
+export const WINCH_PARAMS: Readonly<Record<string, string>> = { port: 'wp', starboard: 'wsb' };
+
+const WINCH_VALUE = /^([a-z]\d+)\.(-?\d)\.([th])$/;
+
+function parseRealistic(params: URLSearchParams): RealisticState {
+  const state = initialRealistic();
+  const station = params.get('st');
+  if (station !== null && isStationId(station)) state.station = station;
+  for (const key of (params.get('co') ?? '').split(',')) {
+    if (tailSpec(key)?.controlId) state.open[key] = true;
+  }
+  const maxTurns = boat.realisticMode.capstan.maxTurns;
+  for (const [stationId, name] of Object.entries(WINCH_PARAMS)) {
+    const match = WINCH_VALUE.exec(params.get(name) ?? '');
+    const winchId = isStationId(stationId) ? stationWinch(stationId) : null;
+    const winch = winchId ? state.winches[winchId] : undefined;
+    if (!match || !winch) continue;
+    const [, key = '', turnsText = '0', hold] = match;
+    const spec = tailSpec(key);
+    const turns = Number(turnsText);
+    if (!spec?.controlId || spec.winchId !== winchId || Math.abs(turns) > maxTurns) continue;
+    winch.tail = key;
+    winch.turns = turns;
+    winch.selfTailer = hold === 't' && turns !== 0;
+  }
+  return state;
+}
+
+/**
+ * The Realistic-mode parameters for a state. A rope running out is not stored (PHASE1_SPEC
+ * 7.2.2): its clutch is written closed, so the link opens with everything held.
+ */
+export function realisticParams(state: RealisticState): [string, string][] {
+  const result: [string, string][] = [];
+  if (state.station !== 'port') result.push(['st', state.station]);
+  const open = Object.keys(state.open)
+    .filter((key) => state.open[key] && state.reports[key]?.motion !== 'running')
+    .sort();
+  if (open.length > 0) result.push(['co', open.join(',')]);
+  for (const [stationId, name] of Object.entries(WINCH_PARAMS)) {
+    const winchId = stationWinch(stationId as StationId);
+    const winch = winchId ? state.winches[winchId] : undefined;
+    if (!winch?.tail) continue;
+    result.push([name, `${winch.tail}.${winch.turns}.${winch.selfTailer ? 't' : 'h'}`]);
+  }
+  return result;
 }
 
 /** Below this (as a fraction) the furl a link restores is the same as without `jr`. */
@@ -149,6 +216,8 @@ export function serializeUrlState(state: AppState): string {
   if (state.settings.ropesMode !== DEFAULT_SETTINGS.ropesMode) {
     params.set('mode', state.settings.ropesMode);
   }
+  for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
-  return `?${params.toString()}`;
+  // Commas need no escaping in a query (co=a5,b3 stays readable).
+  return `?${params.toString().replace(/%2C/g, ',')}`;
 }
