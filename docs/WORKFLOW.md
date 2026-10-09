@@ -154,17 +154,19 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 - [ ] Ropes tab → Realistic. Three station buttons: Port, Starboard, Helm. Only the chosen station can be worked; an alert shows when something happens at another one.
 - [ ] Port station, `?wd=90&ws=12&mode=realistic`: drag the Vang clutch lever up (open) and down (closed). With it closed, dragging the vang tail out does nothing and says "open the clutch". (PT-15)
 - [ ] Drag the vang tail onto the winch, circle clockwise twice: the drum shows 2 turns. Circle anticlockwise: turns come off.
-- [ ] Put the tail in the self-tailer, take the handle, crank: the vang comes in.
+- [ ] Put the tail in the self-tailer, hold the winch button: the vang comes in; let go and it stops.
 - [ ] Starboard station, `?wd=90&ws=20&js=30&mode=realistic`, nothing on the winch: open the Genoa sheet clutch. The jib sheet runs out fast, the jib flies out, "running" shows. (PT-18) Same at `ws=4`: it barely moves.
 - [ ] Reset, jib sheet on the winch with 2 turns, tail out of the self-tailer, at 20 kn: opening the clutch, the sheet slips. With 3 turns it holds. With 2 turns at 12 kn, dragging the tail eases it smoothly. (PT-16)
 - [ ] Wrap anticlockwise instead, open the clutch: the rope runs, "wrapped the wrong way". (PT-17)
+- [ ] `?ws=0&tl=0&vg=0&mode=realistic`: put the vang on the port winch and hold the button: the drum slows and cuts out with the hint about a fighting rope. (PT-19a)
 - [ ] Pause: open a clutch and wrap a winch while paused; nothing moves. Resume: both happen together.
 - [ ] Easy mode still works exactly as before; Share keeps the mode and the clutch states.
 
 ### M4c: Realistic mode, part 2
 
-- [ ] `?wd=60&ws=22&js=0&mode=realistic`, jib sheet on the starboard winch with 4 turns in the self-tailer: crank clockwise, the strain bar fills and it slows with "switch to 2nd gear"; crank anticlockwise, the rope comes in slowly. (PT-19)
-- [ ] Haul both the topping lift and the vang hard: the second one stalls the winch with the "fighting rope" hint.
+- [ ] Holding a winch button shows the strain bar; near the limit the drum slows, at the limit it stops.
+- [ ] Take the winch handle to the starboard winch on a loaded jib sheet: cranking clockwise struggles, anticlockwise brings the rope in slowly. (PT-19)
+- [ ] Main furling line slipping (the scenario in the app): go to the Mast station, switch IN, put the handle in and crank: the main rolls in, as long as the "out" line and outhaul clutches are open.
 
 ### M5: Phase 1 sign-off
 
