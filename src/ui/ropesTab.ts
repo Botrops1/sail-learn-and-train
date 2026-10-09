@@ -228,11 +228,11 @@ export function createRopesTab(store: Store): Element[] {
   ]);
 
   // Realistic mode (M4b): stations, clutches and winches worked by hand.
-  const realLegend = createRopeLegend();
   const realistic = el('div', { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' }, [
     ...createRealisticPanel(store),
-    realLegend,
   ]);
+  // Easy mode's legend sits after the list, before the explanations.
+  const legendSpot = legend.nextSibling;
 
   const modes = createModeSwitch(store);
   const showMode = (state: AppState, previous?: AppState) => {
@@ -240,7 +240,9 @@ export function createRopesTab(store: Store): Element[] {
     const real = state.settings.ropesMode === 'realistic';
     easy.hidden = real;
     realistic.hidden = !real;
-    realLegend.hidden = !state.settings.legend;
+    // One legend: it moves to the mode that is shown.
+    if (real && legend.parentElement !== realistic) realistic.append(legend);
+    if (!real && legend.parentElement !== easy) easy.insertBefore(legend, legendSpot);
   };
   store.subscribe(showMode);
   showMode(store.getState());
