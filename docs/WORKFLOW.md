@@ -42,6 +42,7 @@ Read CLAUDE.md and every document it lists. Milestones up to M<N-1> are merged.
 Implement milestone M<N> (<name>) from docs/PHASE1_SPEC.md, and only that milestone.
 Branch: m<N>-<short-name>. Same verification and PR rules as before (tests named after PHYSICS_TRUTHS ids, screenshots you have looked at, checklist from docs/WORKFLOW.md).
 List open questions in the PR instead of guessing.
+In the PR description, embed the 6–10 most important screenshots as images (https://github.com/Botrops1/sail-learn-and-train/blob/<branch>/docs/screenshots/<file>.png?raw=true), phone size first, so they show in the GitHub app.
 ```
 
 ### 3.3 Independent review (fresh session, optional)
@@ -79,6 +80,7 @@ In a session you can type `/model opus` or `/model sonnet`, and `/effort high` o
 | M0 scaffold, M1 boat model | Opus | high | Architecture and geometry decisions are expensive to redo |
 | M2 mainsail solver, M3 jib solver | Opus | high | The core maths; mistakes are subtle |
 | M4 clutch-bank panel | Sonnet | medium (switch to Opus if it struggles) | Mostly UI work |
+| M4b/M4c Realistic mode | Opus | high | Gestures plus a small physics model (capstan rule, loads) |
 | M5 polish, small fixes | Sonnet | medium | Fast, light on usage |
 | Reviews (3.3) | Opus | high | Finding subtle problems |
 
@@ -146,6 +148,23 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 - [ ] Step size 1 % / 5 % works for the slider and the +/− buttons. Holding a +/− button repeats.
 - [ ] The wheel control turns both wheels and the rudder.
 - [ ] Share copies a link; opening it in another tab shows exactly the same state. Reset restores the defaults.
+
+### M4b: Realistic mode, part 1
+
+- [ ] Ropes tab → Realistic. Three station buttons: Port, Starboard, Helm. Only the chosen station can be worked; an alert shows when something happens at another one.
+- [ ] Port station, `?wd=90&ws=12&mode=realistic`: drag the Vang clutch lever up (open) and down (closed). With it closed, dragging the vang tail out does nothing and says "open the clutch". (PT-15)
+- [ ] Drag the vang tail onto the winch, circle clockwise twice: the drum shows 2 turns. Circle anticlockwise: turns come off.
+- [ ] Put the tail in the self-tailer, take the handle, crank: the vang comes in.
+- [ ] Starboard station, `?wd=90&ws=20&js=30&mode=realistic`, nothing on the winch: open the Genoa sheet clutch. The jib sheet runs out fast, the jib flies out, "running" shows. (PT-18) Same at `ws=4`: it barely moves.
+- [ ] Reset, jib sheet on the winch with 2 turns, tail out of the self-tailer, at 20 kn: opening the clutch, the sheet slips. With 3 turns it holds. With 2 turns at 12 kn, dragging the tail eases it smoothly. (PT-16)
+- [ ] Wrap anticlockwise instead, open the clutch: the rope runs, "wrapped the wrong way". (PT-17)
+- [ ] Pause: open a clutch and wrap a winch while paused; nothing moves. Resume: both happen together.
+- [ ] Easy mode still works exactly as before; Share keeps the mode and the clutch states.
+
+### M4c: Realistic mode, part 2
+
+- [ ] `?wd=60&ws=22&js=0&mode=realistic`, jib sheet on the starboard winch with 4 turns in the self-tailer: crank clockwise, the strain bar fills and it slows with "switch to 2nd gear"; crank anticlockwise, the rope comes in slowly. (PT-19)
+- [ ] Haul both the topping lift and the vang hard: the second one stalls the winch with the "fighting rope" hint.
 
 ### M5: Phase 1 sign-off
 
