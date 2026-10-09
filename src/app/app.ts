@@ -6,6 +6,7 @@ import { t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
 import { createLayout } from '../ui/layout';
 import { createPanel } from '../ui/panel';
+import { createPauseButton } from '../ui/pauseButton';
 import { ropesTabShows } from '../ui/ropesTab';
 import { createWindIndicator } from '../ui/windIndicator';
 import { defaultDetail } from '../model/settings';
@@ -38,6 +39,7 @@ export function startApp(host: HTMLElement): void {
 
   if (scene) {
     createWindIndicator(layout.view, store);
+    createPauseButton(layout.view, store);
     const card = createInfoCard(layout, store, {
       shownInPanel: (partId) => panel.activeTab() === 'ropes' && ropesTabShows(partId),
     });

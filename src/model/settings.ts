@@ -22,10 +22,10 @@ export const STEP_SIZES = [1, 5] as const;
 export type StepSize = (typeof STEP_SIZES)[number];
 
 /**
- * How the Ropes tab works the ropes. `easy`: each rope is a slider (M4a). A later `realistic`
- * mode (clutches and winches worked by hand, M4b) is added to this list.
+ * How the Ropes tab works the ropes. `easy`: each rope is a slider (M4a). `realistic`: clutches,
+ * winches and hands, one station at a time (M4b, PHASE1_SPEC 7.2.2).
  */
-export const ROPES_MODES = ['easy'] as const;
+export const ROPES_MODES = ['easy', 'realistic'] as const;
 export type RopesMode = (typeof ROPES_MODES)[number];
 
 /**

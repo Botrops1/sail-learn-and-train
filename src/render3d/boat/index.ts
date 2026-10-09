@@ -25,7 +25,12 @@ export interface BoatModel {
    * indicator.
    * With `ropeView`, ropes far from the camera are drawn thick enough to see.
    */
-  update(rig: RigState, controls: Controls, ropeView?: RopeView): void;
+  update(
+    rig: RigState,
+    controls: Controls,
+    ropeView?: RopeView,
+    flashing?: ReadonlySet<string>,
+  ): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
 }
@@ -69,14 +74,19 @@ export function buildBoat(
     windex.pivot,
   );
 
-  const update = (next: RigState, nextControls: Controls, ropeView?: RopeView) => {
+  const update = (
+    next: RigState,
+    nextControls: Controls,
+    ropeView?: RopeView,
+    flashing?: ReadonlySet<string>,
+  ) => {
     rigParts.setBoomPose(drawnPose(next));
     const main = mainSailInputFor(next, nextControls);
     mainSail.update(mainSailGrid(main), shown(main.unfurled));
     const jib = jibInputFor(next, nextControls);
     jibSail.update(jibSailGrid(jib), shown(jib.unfurled));
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
-    ropes.update(ropeDrawings(next), ropeView);
+    ropes.update(ropeDrawings(next), ropeView, flashing);
     windex.update(nextControls.ctl_wind_dir);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).

@@ -2,6 +2,7 @@ import type { AppState, Store } from '../app/store';
 import { entryFor, panelEntries, type PanelEntry } from '../model/panelEntries';
 import { partInfo } from '../model/registry';
 import { SCENE } from '../render3d/sceneConfig';
+import { ROPES_MODES } from '../model/settings';
 import { createClutchDrawing } from './clutchDrawing';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
@@ -12,6 +13,7 @@ import {
   valueText,
   type ControlView,
 } from './ropeControls';
+import { createRealisticPanel } from './realisticPanel';
 import { createRopeLegend, ropeColorKey, ROPE_DASH } from './ropeLegend';
 import { setText } from './stepper';
 
@@ -29,8 +31,8 @@ export function ropesTabShows(selection: string | null): boolean {
  * drawing; and the rope colour legend.
  *
  * The selection is the store's: tapping a clutch, a list row or a rope in 3D selects the same
- * thing everywhere. A later Realistic mode (settings.ropesMode, M4b) replaces the strip with
- * clutches and winches worked by hand.
+ * thing everywhere. Realistic mode (settings.ropesMode, M4b) shows the stations instead, with
+ * clutches and winches worked by hand (realisticPanel.ts); the switch at the top changes mode.
  */
 
 /** Hints shown with an entry, besides its shared-control hint. */
@@ -209,7 +211,7 @@ export function createRopesTab(store: Store): Element[] {
 
   // The drawing comes first, so it shows without scrolling on a phone; the longer
   // explanations follow the list.
-  return [
+  const easy = el('div', { class: 'ropes-easy', 'data-testid': 'ropes-easy' }, [
     el('p', { class: 'hint mode-line', 'data-testid': 'ropes-mode' }, [
       el('strong', {}, [t('ropes.mode.easy')]),
       ' ',
@@ -223,7 +225,62 @@ export function createRopesTab(store: Store): Element[] {
     el('h3', { class: 'section-title' }, [t('ropes.about.title')]),
     el('p', { class: 'hint' }, [t('clutch.hint')]),
     el('p', { class: 'hint' }, [t('ropes.mode.easyHint')]),
-  ];
+  ]);
+
+  // Realistic mode (M4b): stations, clutches and winches worked by hand.
+  const realistic = el('div', { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' }, [
+    ...createRealisticPanel(store),
+  ]);
+  // Easy mode's legend sits after the list, before the explanations.
+  const legendSpot = legend.nextSibling;
+
+  const modes = createModeSwitch(store);
+  const showMode = (state: AppState, previous?: AppState) => {
+    if (previous && state.settings === previous.settings) return;
+    const real = state.settings.ropesMode === 'realistic';
+    easy.hidden = real;
+    realistic.hidden = !real;
+    // One legend: it moves to the mode that is shown.
+    if (real && legend.parentElement !== realistic) realistic.append(legend);
+    if (!real && legend.parentElement !== easy) easy.insertBefore(legend, legendSpot);
+  };
+  store.subscribe(showMode);
+  showMode(store.getState());
+  return [modes, easy, realistic];
+}
+
+/** Easy / Realistic, always one tap away (PHASE1_SPEC 7.2.1, 7.2.2). */
+function createModeSwitch(store: Store): HTMLElement {
+  const group = el('fieldset', { class: 'field segmented mode-switch' }, [
+    el('legend', { class: 'visually-hidden' }, [t('ropes.mode.label')]),
+  ]);
+  const options = el('div', { class: 'segments' });
+  const inputs = ROPES_MODES.map((mode) => {
+    const input = el('input', {
+      type: 'radio',
+      name: 'ropes-mode',
+      value: mode,
+      'data-testid': `mode-${mode}`,
+    });
+    input.addEventListener('change', () => {
+      if (input.checked) store.dispatch({ type: 'setRopesMode', mode });
+    });
+    options.append(
+      el('label', { class: 'segment' }, [
+        input,
+        el('span', {}, [t(`ropes.mode.option.${mode}` as StringKey)]),
+      ]),
+    );
+    return { mode, input };
+  });
+  group.append(options);
+  const sync = (state: AppState, previous?: AppState) => {
+    if (previous && state.settings === previous.settings) return;
+    for (const { mode, input } of inputs) input.checked = mode === state.settings.ropesMode;
+  };
+  store.subscribe(sync);
+  sync(store.getState());
+  return group;
 }
 
 /** Scrolls the panel just enough to show the strip (it may sit below a tall drawing). */

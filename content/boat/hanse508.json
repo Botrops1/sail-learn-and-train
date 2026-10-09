@@ -595,6 +595,7 @@
     "clutchBanks": [
       {
         "id": "clutch_bank_a",
+        "key": "a",
         "side": "starboard",
         "sideSource": "owner (the main furling lines are on the right side)",
         "x": -6.7,
@@ -636,6 +637,7 @@
       },
       {
         "id": "clutch_bank_b",
+        "key": "b",
         "side": "port",
         "sideSource": "owner (the vang is on the left side)",
         "x": -6.7,
@@ -674,6 +676,7 @@
     ],
     "jibRollClutch": {
       "id": "clutch_jib_roll",
+      "key": "r",
       "label": "JIB ROLL",
       "ropeId": "rope_jib_furling_line",
       "x": -3.4,
@@ -699,6 +702,7 @@
         "note": "After the clutch: aft along the port side deck ([x, z] pairs, on the deck), over the coaming outboard of clutch bank B ([x, y, z]), into the port winch from forward on its inboard side, wraps clockwise (seen from above) and ends in the self-tailer on top."
       }
     },
+    "clutchKeyNote": "Short key of each bank (clutch key = bank key + slot, e.g. a5 = Genoa sheet, r1 = JIB ROLL). Used by Realistic mode and its link parameters (PHASE1_SPEC 9.2).",
     "engineControl": {
       "id": "engine_control",
       "type": "Single-lever throttle/gear control (Allpa) with start/stop/power panel and tachometer",
@@ -1080,5 +1084,74 @@
       }
     },
     "use": "Total rope lengths are upper limits for paid-out length; diameters can scale the rendered thickness."
+  },
+  "realisticMode": {
+    "$comment": "Realistic mode (PHASE1_SPEC 7.2.2, M4b): clutches, winch turns, holding and running ropes. Teaching model, not engineering. Sources in docs/PHYSICS_TRUTHS.md; every value marked 'assumption' is a guess, safe to tune (docs/BOAT_REFERENCE.md section 5).",
+    "stations": [
+      {
+        "id": "port",
+        "winch": "winch_primary_port",
+        "clutches": ["clutch_bank_b", "clutch_jib_roll"]
+      },
+      {
+        "id": "starboard",
+        "winch": "winch_primary_starboard",
+        "clutches": ["clutch_bank_a"]
+      },
+      {
+        "id": "helm",
+        "controls": ["ctl_rudder"]
+      }
+    ],
+    "stationsSource": "owner (2026-10-09): each side's ropes go to that side's winch; one person works one station at a time",
+    "capstan": {
+      "frictionMu": 0.2,
+      "frictionMuSource": "PHYSICS_TRUTHS [4]: polyester cover on an aluminium drum",
+      "handTailForceN": 150,
+      "selfTailerGripN": 100,
+      "handPullN": 300,
+      "forcesSource": "assumption (PHASE1_SPEC 7.2.2): a hand on the tail about 150 N, the self-tailer jaw about 100 N, pulling a rope in by hand without a winch about 300 N",
+      "maxTurns": 5,
+      "smoothEaseMinTailN": 30,
+      "smoothEaseNote": "assumption: easing by hand is smooth while the hand still feels at least this much of the load on the tail (load / capstan factor); with more turns the tail force is too small to control and the rope eases in jerks (owner: about 2 turns to ease under control)"
+    },
+    "loads": {
+      "$comment": "Phase 1 estimates of the pull on each rope's tail (PHASE1_SPEC 7.2.2 Loads), replaced by Phase 2 forces.",
+      "sheetLbPerFt2PerMph2": 0.00431,
+      "sheetSource": "PHYSICS_TRUTHS [8]: sheet load (lb) = sail area (ft2) x wind speed^2 (mph) x 0.00431. Scaled by the sail's fill and how much of it is out, divided by the purchase (jib sheet 2:1, main sheet 2 x partsPerSide). Applied to the main as well (PHASE1_SPEC 7.2.2).",
+      "fixedN": {
+        "rope_vang": 400,
+        "rope_topping_lift": 250,
+        "rope_outhaul": 150,
+        "rope_main_furling_line": 200,
+        "rope_jib_furling_line": 250
+      },
+      "fixedSource": "assumption: small loads. Vang and topping lift only while taut (the wind lifting the boom against the vang, the boom's weight on the topping lift). The furling lines carry it while the wind blows: the wind tries to unroll the sail, so a released 'in' tail or JIB ROLL line runs slowly. The outhaul and the 'out' tail resist being hauled with it.",
+      "fightingN": 12000,
+      "fightingSource": "assumption: a rope fighting another (PHASE1_SPEC 8.3), hauled against its end stop, or a furl that something blocks: more than the winch's cut-out load",
+      "ropeFrictionN": 40,
+      "ropeFrictionNote": "assumption: friction in the blocks and the open clutch. A rope pulled out with less than this does not run"
+    },
+    "running": {
+      "maxSpeedMps": 6.0,
+      "referenceN": 1000,
+      "note": "assumption: a rope runs out at maxSpeed x min(1, (excess / reference)^2), where excess = load - holding force - friction. A high load runs out in about a second, a light one slowly or not at all (PT-18)"
+    },
+    "electricWinch": {
+      "noLoadSpeedMps": 0.4,
+      "slowestFraction": 0.3,
+      "cutOutLoadN": 7000,
+      "restartBelowFraction": 0.85,
+      "spinTimeS": 0.25,
+      "source": "PHYSICS_TRUTHS [9] (behaviour: slows with load, cuts out above the safe load, restarts when it drops). Values are assumptions: the winch on the boat is not marked (owner). Line speed 24 m/min with no load, 30 % of that just below the cut-out at 7 kN on the tail, restart below 85 % of it; the drum takes about 0.25 s to speed up or stop (drawing only)"
+    },
+    "hand": {
+      "easeMaxSpeedMps": 0.6,
+      "pullSpeedMps": 0.3,
+      "grabbyPeriodS": 0.6,
+      "grabbyMoveFraction": 0.3,
+      "easeStepM": 0.25,
+      "note": "assumption: easing by hand lets the rope out at up to easeMaxSpeed while the tail is let go (a drag in the drawing, or the Ease button: easeStepM per press); with too many turns it moves only for grabbyMoveFraction of every grabbyPeriod (jerks). Pulling a light rope in by hand: pullSpeed"
+    }
   }
 }

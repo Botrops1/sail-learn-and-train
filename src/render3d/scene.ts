@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import type { Store } from '../app/store';
+import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
+import { runningRopes } from '../model/realistic';
 import { requirePartId } from '../model/registry';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
@@ -200,10 +201,15 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       rig.update(now);
       camera.updateMatrixWorld();
       // Pixel size at 1 m: the projection's vertical scale over the canvas height (CSS px).
-      boatModel.update(state.rig, state.controls, {
-        eye: camera.position.toArray() as [number, number, number],
-        metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
-      });
+      boatModel.update(
+        state.rig,
+        state.controls,
+        {
+          eye: camera.position.toArray() as [number, number, number],
+          metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
+        },
+        flashingRopes(state),
+      );
       streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
       water.update(now / 1000);
       renderer.render(scene, camera);
@@ -212,6 +218,20 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
     },
   };
+}
+
+const NO_ROPES: ReadonlySet<string> = new Set();
+
+/**
+ * Ropes running out in Realistic mode flash (PHASE1_SPEC 7.2.2): on for half of each period of
+ * the simulation clock, so they stand still while paused.
+ */
+function flashingRopes(state: AppState): ReadonlySet<string> {
+  if (state.settings.ropesMode !== 'realistic') return NO_ROPES;
+  const running = runningRopes(state.realistic);
+  if (running.size === 0) return NO_ROPES;
+  const phase = (state.rig.timeS * SCENE.ropes.runningFlashHz) % 1;
+  return phase < 0.5 ? running : NO_ROPES;
 }
 
 /**
