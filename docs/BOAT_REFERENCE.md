@@ -212,9 +212,9 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 7. When furling the jib on the boat, is the jib sheet's clutch simply opened so the sheet runs out? (The app now treats 100 % jib sheet as "released" for furling, owner decision after M3; rolling the jib needs about 5.7 m more working length, about 11 m of rope at 2:1.)
 8. Side decks: teak or white non-slip? The owner asked for teak in M3b; the side-deck photo looks like white non-slip. Where exactly does the sprayhood start and end (fore and aft), and does the main sheet pass in front of it?
 9. Where exactly do the control-line channels run on the coachroof and into the cockpit, and how high does each line leave the mast?
-10. Do the electric winches have one button each, or two (fast/slow)? Where are the buttons (photo)?
+10. Bow and stern thrusters (owner: one at each end): what is the control at the helm (joystick, two buttons, toggle)? A photo would settle it; power unknown.
 
-Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, straight self-tacking track about 2.8 m long, one winch per side, rigid vang, topping lift line exists, bank sides. 2026-10-09: winches are electric; one winch handle, used mainly at the mast gearbox; each side's ropes go to that side's winch; winch model not marked (Lewmar only).
+Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, straight self-tacking track about 2.8 m long, one winch per side, rigid vang, topping lift line exists, bank sides. 2026-10-09: winches are electric; one winch handle, used mainly at the mast gearbox; each side's ropes go to that side's winch; winch model not marked (Lewmar only); one button per electric winch; bow and stern thrusters fitted.
 
 ### Photo checklist (if you are near a Hanse 508 again)
 
