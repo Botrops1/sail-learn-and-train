@@ -52,12 +52,12 @@ const handKnob = (station) => `${drawing(station)} [data-drag="hand"]`;
 const winchButton = (station) => `${drawing(station)} .real-button-disc`;
 
 /**
- * Scrolls the panel so the Vang clutch body is near the top and the "in your hand" knob is
- * still on screen, then returns both centres (page coordinates).
+ * Scrolls the panel so a clutch body (default: the Vang) is near the top and the "in your hand"
+ * knob is still on screen, then returns both centres (page coordinates).
  */
-async function handAndClutch(page, where) {
-  await page.locator(`${drawing('port')} .real-drum`).scrollIntoViewIfNeeded();
-  const clutchSel = `${drawing('port')} [data-key="b5"] .clutch-body`;
+async function handAndClutch(page, where, station = 'port', key = 'b5') {
+  await page.locator(`${drawing(station)} .real-drum`).scrollIntoViewIfNeeded();
+  const clutchSel = `${drawing(station)} [data-key="${key}"] .clutch-body`;
   const top = await page.locator('.panel-body').evaluate((el) => el.getBoundingClientRect().top);
   const clutch = await where(clutchSel);
   await page.locator('.panel-body').evaluate(
@@ -67,7 +67,7 @@ async function handAndClutch(page, where) {
     clutch.y - (top + 70),
   );
   await page.waitForTimeout(200);
-  return { hand: await where(handKnob('port')), clutch: await where(clutchSel) };
+  return { hand: await where(handKnob(station)), clutch: await where(clutchSel) };
 }
 
 async function circleDrum(page, station, turns) {
@@ -654,6 +654,87 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       'Easy mode drops mode from the link',
       !(await search(page)).includes('mode='),
       await search(page),
+    );
+    await context.close();
+  }
+}
+
+/**
+ * M4b review fixes (after #14): carrying the tail in the hand back to its clutch lets no rope
+ * out on the way, even with the clutch open; dragging it away from the winch still eases; the
+ * strip's winch button only works for the rope that is on the drum.
+ */
+export async function liveM4bFixChecks({ openPage, viewports, outDir, prefix, problems }) {
+  const check = (what, ok, detail) => {
+    if (!ok) problems.push(`live M4b fix ${what}: ${detail}`);
+    console.log(`live M4b fix ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
+  };
+  const search = (page) => page.evaluate(() => window.location.search);
+  const param = async (page, name) => new URLSearchParams(await search(page)).get(name);
+  const phone = viewports[0];
+  // A light jib sheet (4 kn, about 0.1 kN on the tail): the hand holds it with no turns.
+  const light = '?mode=realistic&wd=90&ws=4&js=30&st=starboard&co=a5&sel=rope_jib_sheet&cam=top';
+
+  {
+    const { context, page } = await openPage(phone, 'm4b fix take off', `${light}&wsb=a5.0.h`);
+    await page.waitForTimeout(500);
+    const { hand, clutch } = await handAndClutch(
+      page,
+      (sel) => centre(page, sel),
+      'starboard',
+      'a5',
+    );
+    await dragPath(page, line(hand, clutch, 12));
+    // Off the winch with its clutch open, the light sheet then creeps out slowly (under 1 % a
+    // second): read the link as soon as it shows the winch empty.
+    await page
+      .waitForFunction(() => !window.location.search.includes('wsb='), null, { timeout: 3000 })
+      .catch(() => undefined);
+    const wsb = await param(page, 'wsb');
+    const js = Number(await param(page, 'js'));
+    check(
+      'clutch open, 0 turns: back to its clutch takes it off and lets no rope out',
+      wsb === null && js <= 31,
+      await search(page),
+    );
+    await context.close();
+  }
+  {
+    const { context, page } = await openPage(phone, 'm4b fix ease', `${light}&wsb=a5.2.h`);
+    await page.waitForTimeout(500);
+    await page.locator(`${drawing('starboard')} .real-drum`).scrollIntoViewIfNeeded();
+    const hand = await centre(page, handKnob('starboard'));
+    await dragPath(page, line(hand, { x: hand.x - 30, y: hand.y + 70 }, 12));
+    await page.waitForTimeout(1200);
+    const js = Number(await param(page, 'js'));
+    check(
+      'dragging the hand away from the winch still eases',
+      js > 30 && (await param(page, 'wsb')) === 'a5.2.h',
+      await search(page),
+    );
+    await context.close();
+  }
+  for (const [sel, enabled] of [
+    ['rope_vang', false],
+    ['rope_jib_furling_line', true],
+  ]) {
+    const { context, page } = await openPage(
+      phone,
+      `m4b fix winch button ${sel}`,
+      `?mode=realistic&wd=90&ws=12&wp=r1.3.t&sel=${sel}&cam=top`,
+    );
+    await page.waitForTimeout(500);
+    const disabled = await page.getByTestId('act-button').isDisabled();
+    if (!enabled) {
+      await page.getByTestId('act-button').scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: path.join(outDir, `${prefix}live-phone-winch-button-other-rope.png`),
+      });
+    }
+    check(
+      `JIB ROLL on the winch, ${sel} selected: strip's winch button ${enabled ? 'works' : 'is off'}`,
+      disabled === !enabled,
+      `disabled ${disabled}`,
     );
     await context.close();
   }

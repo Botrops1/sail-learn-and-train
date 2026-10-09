@@ -273,13 +273,18 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     button.addEventListener('contextmenu', (event) => event.preventDefault());
     return button;
   };
+  // Let go of the winch that was pressed, even if the user has switched station since.
+  let pressedWinch = '';
   const motor = hold(
     'real.action.winch',
     'act-button',
-    () => dispatch({ type: 'button', winch: winchHere(), held: true }),
     () => {
-      const winch = store.getState().realistic.winches[winchHere()];
-      if (winch?.button) dispatch({ type: 'button', winch: winchHere(), held: false });
+      pressedWinch = winchHere();
+      dispatch({ type: 'button', winch: pressedWinch, held: true });
+    },
+    () => {
+      const winch = store.getState().realistic.winches[pressedWinch];
+      if (winch?.button) dispatch({ type: 'button', winch: pressedWinch, held: false });
     },
   );
   const pull = hold(
@@ -440,7 +445,8 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
       jawButton,
       t(onThis && winch?.selfTailer ? 'real.action.outOfJaw' : 'real.action.intoJaw'),
     );
-    motor.disabled = !winch;
+    // The strip is about the selected rope: its winch button only hauls that rope.
+    motor.disabled = !onThis;
     motor.classList.toggle('is-pressed', winch?.button === true);
     pull.hidden = onThis;
     pull.classList.toggle('is-pressed', real.pull === spec.key);

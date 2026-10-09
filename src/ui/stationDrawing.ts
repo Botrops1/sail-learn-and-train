@@ -533,6 +533,15 @@ export function createStationDrawing(
     }
     return Math.abs(p.x - node.mid) < unit / 2 + D.gap / 2 && p.y < node.bottom;
   };
+  /** Distance from a point to where the rope leaves its clutch (drawing units). */
+  const fromClutch = (p: { x: number; y: number }, node: ClutchNode): number =>
+    Math.hypot(p.x - node.mid, p.y - node.bottom);
+  /**
+   * Is the tail in the hand being pulled away (easing), not carried back towards its clutch
+   * (taking it off the winch)? Away from the drum, and no nearer the clutch than at the start.
+   */
+  const easingDrag = (p: { x: number; y: number }, current: Drag, node: ClutchNode): boolean =>
+    !overClutch(p, node) && fromClutch(p, node) >= current.clutchFrom;
   const openClutch = (key: string) => store.getState().realistic.open[key] === true;
   const winchTail = () => store.getState().realistic.winches[winchId]?.tail ?? null;
   const toggleClutch = (key: string) => {
@@ -551,6 +560,8 @@ export function createStationDrawing(
     far: number;
     /** The clutch was already selected when the press began (a tap then opens or closes it). */
     wasSelected: boolean;
+    /** Tail in the hand: its distance from its clutch when the drag began. */
+    clutchFrom: number;
   }
   let drag: Drag | null = null;
   let selectedKey: string | null = null;
@@ -583,6 +594,7 @@ export function createStationDrawing(
     const p = point(event);
     if (kind === 'drum' && !winchTail()) return;
     event.preventDefault();
+    const tailNode = kind === 'hand' ? nodeFor(winchTail() ?? '') : undefined;
     root.setPointerCapture(event.pointerId);
     drag = {
       kind,
@@ -593,6 +605,7 @@ export function createStationDrawing(
       acc: 0,
       far: Math.hypot(p.x - cx, p.y - cy),
       wasSelected: selectedKey === key,
+      clutchFrom: tailNode ? fromClutch(p, tailNode) : 0,
     };
     if (kind === 'button') dispatch({ type: 'button', winch: winchId, held: true });
     // A clutch is selected when the press ends as a tap or a lever drag, not on touching it:
@@ -644,7 +657,7 @@ export function createStationDrawing(
       if (distance > drag.far) {
         const key = winchTail();
         const node = key ? nodeFor(key) : undefined;
-        if (key && node && !overClutch(p, node) && openClutch(key)) {
+        if (key && node && easingDrag(p, drag, node) && openClutch(key)) {
           dispatch({ type: 'ease', key, metres: (distance - drag.far) * D.easePerUnitM });
         }
         drag.far = distance;
@@ -696,7 +709,7 @@ export function createStationDrawing(
           // Back to its clutch: off the winch (only with no turns left on the drum).
           if (overClutch(p, node)) {
             dispatch({ type: 'offWinch', winch: winchId, needZeroTurns: true });
-          } else if (!openClutch(key)) {
+          } else if (easingDrag(p, current, node) && !openClutch(key)) {
             dispatch({ type: 'ease', key, metres: current.moved * D.easePerUnitM });
           }
         }
