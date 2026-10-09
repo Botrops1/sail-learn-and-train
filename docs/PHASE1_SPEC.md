@@ -57,6 +57,7 @@ If something here looks necessary to finish a milestone, stop and ask in the PR 
 | Rope controls | `0 %` = fully hauled in (or fully furled). `100 %` = fully eased (or fully unfurled). Shown as "% eased" or "% unfurled". |
 | IDs | Every mesh and rope carries an id from `content/registry/parts.json` (`mesh.userData.partId`). Controls do **not** get their own registry entries: a rope control's `data-part-id` is its rope's id (e.g. `ctl_vang` → `rope_vang`). Ids for controls without a rope (wheel, test wind) are proposed in M2. Never invent ids in code; add them to the registry first. |
 | Text | All UI strings through `t('key')` from a strings file (`content/i18n/en.json`). Part names come from the registry by language code. Phase 1 ships English only. |
+| Wheel / rudder (`ctl_rudder`) | Degrees of rudder, −35 … +35. **+ = the rudder's back edge to starboard**: the wheel is turned clockwise (seen from behind it, facing forward) and the boat would turn to starboard, as a car does. The wheels turn `wheelTurnsLockToLock` (2.5) turns from lock to lock. Visual only in Phase 1. (M4a) |
 
 ## 5. Layout
 
@@ -165,6 +166,17 @@ Each clutch shows the **label exactly as written on the boat** and, smaller, our
 Below the banks, a compact list of all controls as a fallback, so every control is reachable without the drawing.
 
 Tapping a rope in 3D selects the same rope in the panel, and vice versa.
+
+#### 7.2.1 Easy mode (M4a)
+
+The Ropes tab has a mode setting, `settings.ropesMode`. M4a builds **Easy mode** (`easy`): every rope is a slider, as in 7.1. A later **Realistic mode** (M4b: clutches opened and closed, the winch worked by hand) adds a second value; nothing else in the tab's structure needs to change.
+
+- Order in the tab: one line naming the mode, the drawing, the strip for the selected rope, the list of all ropes and the wheel (two columns of buttons with value and state chip), the rope colour legend, then the longer explanations.
+- The drawing: bank B left, bank A right, as seen from the helm looking forward. Clutches stand side by side with their labels written along them, as in the photos; the two halyard clutches are the bigger lever type (`clutchPanel.largeClutchRopes`). JIB ROLL is drawn on its own above the banks ("port side deck, further forward"). Our name is written along a clutch's rope tail only where it differs from the label (e.g. "Genoa sheet" → "jib sheet"; the furling tails say "rolls main in" / "rolls main out"). Rope tails use the teaching colour and dash pattern of 7.3 and turn red while their rope is fighting, as in 3D.
+- Each clutch is narrower than 44 px on a phone (ten fit across); it is about three times as tall, and the list below has full-size buttons for every rope.
+- The strip shows the selected entry: name, labels on the boat, the shared-control hint (folded: "One rope, two ends." / "These work against each other."), the control of 7.1 and its lines, and a folded "What does it do?" with the registry's one-liner and the longer hints. Static ropes show their info line instead of a control (`clutchPanel.staticRopeNotes`).
+- In the stacked layout the strip is sticky at the bottom of the panel, at most about 150 px high (it scrolls inside), so the clutches stay visible above it. The info card is not shown there while the Ropes tab shows the same rope (it would repeat the strip).
+- Selecting a rope, a clutch, the outhaul, the JIB ROLL clutch, a wheel or the rudder anywhere (3D, link) opens the Ropes tab with that entry. Ropes on one control are highlighted together in 3D and in the drawing (outhaul with the furling line; the rudder with both wheels).
 
 ### 7.3 Rope colours (teaching colours)
 
@@ -295,6 +307,8 @@ content/        data (JSON) imported at build time
 - Opening such a URL reproduces the view exactly. A **Share / copy link** button in the View tab copies it.
 - Unknown or out-of-range values fall back to defaults silently.
 - Add `v=1` for future migrations.
+- Added in M4a: `rd` (wheel, degrees, + = starboard, always written); `jr` (jib out as reached, %, only when it is less than the controls alone give: the jib sheet was hauled against a jib furled with the sheet released; a link without it would show the furl blocked instead; values below `jf` are ignored); `lg=0` (legend hidden) and `mode` (Ropes-tab mode) only when they differ from the default. `detail` is M3b's render detail.
+- The Share button in the View tab copies the full link (the address bar has the same); if the browser does not allow copying, the link is shown selected to copy by hand. Reset all needs a second tap within 4 s; it sets controls, camera, selection and settings back to the defaults (the debug overlay and the Detail level stay as they are: they suit the device) and the rig moves back visibly.
 
 ### 9.3 Debug overlay (toggle, off by default; `?debug=1` turns it on)
 
@@ -367,11 +381,14 @@ Each milestone is **one PR**, small enough to review on a phone. Do not start th
 - Rudder/wheel control. Full URL state for all controls, a Share button, Reset.
 - **Done when:** all M4 checks in `WORKFLOW.md` pass.
 
+M4 is built in two PRs (owner, 2026-10-08): **M4a** the Ropes tab in Easy mode (7.2.1), selection sync, hints, legend, wheel, full URL state with Share and Reset; **M4b** Realistic mode (clutches and winches worked by hand).
+
 ### M5: Polish and Phase 1 sign-off
 
 - Performance pass on a real phone (the owner reports fps from the debug overlay).
 - Accessibility pass, empty states, error boundary ("3D not supported on this device"), README update, disclaimer in the footer ("Learning aid, not a substitute for sailing instruction").
 - Final screenshots.
+- Labels in 3D (the View-tab toggle of 5.2) and the halyards drawn in 3D (main halyard and SPI halyard, so selecting one highlights a rope in 3D too; owner, after M4a).
 - **Done when:** every item of the Definition of Done below is ticked in the PR.
 
 ## 13. Definition of Done (Phase 1)

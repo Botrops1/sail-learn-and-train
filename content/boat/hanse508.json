@@ -860,6 +860,21 @@
       }
     ]
   },
+  "clutchPanel": {
+    "$comment": "Ropes tab (PHASE1_SPEC 7.2, M4a): facts the clutch-bank drawing needs. Which clutch holds which rope, and the labels, are in cockpitHardware. Sizes of the drawing itself are presentation and live in src/ui/clutchDrawing.ts.",
+    "largeClutchRopes": ["rope_main_halyard", "rope_spi_halyard"],
+    "largeClutchSource": "photo: the two halyard clutches are a bigger type with a lever on top (clutch-bank-a.jpg, clutch-bank-b.jpg)",
+    "staticRopeNotes": {
+      "rope_main_halyard": "inMastFurling",
+      "rope_spi_halyard": "notRigged"
+    },
+    "staticRopeNotesComment": "Why a rope has no control in Phase 1; the UI shows the matching text (ropes.static.*)."
+  },
+  "steering": {
+    "$comment": "Wheel and rudder (PHASE1_SPEC 4, 7.1). Visual only in Phase 1. Range and default: controls.list ctl_rudder; wheel turns: cockpitHardware.wheelTurnsLockToLock.",
+    "rudderSign": "ctl_rudder > 0: the rudder's back edge to starboard. The wheel is turned clockwise (seen from behind it, facing forward) and the boat would turn to starboard, as a car does.",
+    "rudderSignSource": "general (wheel steering)"
+  },
   "modelDetail": {
     "$comment": "Sizes of small parts that only the 3D model needs (thicknesses, diameters, section shapes). Not measured: chosen to look right and be tappable at teaching scale. They do not affect the rig solver. Safe to tune.",
     "source": "assumption",

@@ -5,10 +5,11 @@ import {
   type CameraPreset,
   type CameraState,
   type Detail,
+  type RopesMode,
   type Settings,
   type StepSize,
 } from '../model/settings';
-import { initialRig, step, type RigState } from '../model/sim';
+import { initialRig, step, type RigHistory, type RigState } from '../model/sim';
 
 /**
  * The single app store (PHASE1_SPEC 9.1): control targets, the solved rig, the selected part,
@@ -29,6 +30,10 @@ export type Action =
   | { type: 'setStep'; step: StepSize }
   | { type: 'setDebug'; debug: boolean }
   | { type: 'setDetail'; detail: Detail }
+  | { type: 'setRopesMode'; mode: RopesMode }
+  | { type: 'setLegend'; legend: boolean }
+  /** Reset all (View tab): controls, camera, selection and settings back to the defaults. */
+  | { type: 'reset' }
   | { type: 'setCameraPreset'; preset: CameraPreset }
   | { type: 'select'; partId: string | null }
   | { type: 'setControls'; values: Partial<Controls> }
@@ -39,6 +44,8 @@ export interface InitialOverrides {
   camera?: Partial<CameraState>;
   settings?: Partial<Settings>;
   selection?: string | null;
+  /** From a shared link: rig history the controls alone do not give (see RigHistory). */
+  history?: RigHistory;
 }
 
 export function initialState(overrides: InitialOverrides = {}): AppState {
@@ -46,7 +53,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
   return {
     controls,
     // A link opens with the rig already settled: no swing from the centre on load.
-    rig: initialRig(controls),
+    rig: initialRig(controls, undefined, overrides.history),
     camera: { ...DEFAULT_CAMERA, ...overrides.camera },
     settings: { ...DEFAULT_SETTINGS, ...overrides.settings },
     selection: overrides.selection ?? null,
@@ -78,6 +85,17 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, settings: { ...state.settings, debug: action.debug } };
     case 'setDetail':
       return { ...state, settings: { ...state.settings, detail: action.detail } };
+    case 'setRopesMode':
+      return { ...state, settings: { ...state.settings, ropesMode: action.mode } };
+    case 'setLegend':
+      return { ...state, settings: { ...state.settings, legend: action.legend } };
+    case 'reset': {
+      // The rig keeps moving from where it is, so the boom and sails swing back visibly. The
+      // debug overlay and the render detail suit the device, not what is shown: they stay.
+      const { debug, detail } = state.settings;
+      const defaults = initialState({ settings: { debug, detail } });
+      return { ...defaults, rig: state.rig };
+    }
     case 'setCameraPreset':
       return { ...state, camera: { ...state.camera, preset: action.preset } };
     case 'select':

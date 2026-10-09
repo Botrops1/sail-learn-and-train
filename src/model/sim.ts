@@ -30,6 +30,8 @@ export interface AppliedControls {
   jibSheet: number;
   /** Jib out as asked for; the sheet may stop the furl earlier (jib.unfurled is what is reached). */
   jibFurl: number;
+  /** Rudder angle, degrees (+ = back edge to starboard). Turns the drawn rudder and wheels. */
+  rudder: number;
 }
 
 /** A value moved by a critically damped spring. */
@@ -72,6 +74,7 @@ function applied(controls: Controls): AppliedControls {
     mainFurl: controls.ctl_main_furl,
     jibSheet: controls.ctl_jib_sheet,
     jibFurl: controls.ctl_jib_furl,
+    rudder: controls.ctl_rudder,
   };
 }
 
@@ -97,8 +100,21 @@ function jibInput(controls: Controls, rope: AppliedControls, boom: BoomSolution)
   };
 }
 
+/** What a shared link adds to its controls: the part of the rig's history that shows. */
+export interface RigHistory {
+  /**
+   * Jib out as reached (0..1), when it is less than the controls alone give: the jib was furled
+   * with the sheet released, then the sheet was hauled (the sheet fights the furling line).
+   */
+  jibUnfurled?: number;
+}
+
 /** The settled rig for a set of controls: the first frame, a shared link, a test. */
-export function initialRig(controls: Controls, data: BoatData = boat): RigState {
+export function initialRig(
+  controls: Controls,
+  data: BoatData = boat,
+  history: RigHistory = {},
+): RigState {
   const rope = applied(controls);
   const solution = solveBoom(
     boomInput(controls, rope),
@@ -113,7 +129,11 @@ export function initialRig(controls: Controls, data: BoatData = boat): RigState 
     { side: solution.side, phiDeg: 0, unfurled: 1 },
     data,
   );
-  const jib = solveJib(input, { side: fullyOut.side, phiDeg: fullyOut.phiDeg, unfurled: 1 }, data);
+  const jib = solveJib(
+    input,
+    { side: fullyOut.side, phiDeg: fullyOut.phiDeg, unfurled: history.jibUnfurled ?? 1 },
+    data,
+  );
   return {
     applied: rope,
     solution: { ...solution, gybe: false, tack: false },
@@ -205,6 +225,7 @@ export function step(
     // The furling line cannot run ahead of the jib: while the sheet stops the furl, the request
     // waits at the furl reached, so a released sheet lets the jib roll in smoothly, not jump.
     jibFurl: lag(rig.jibSolution.unfurled * 100, target.jibFurl, dt, tau),
+    rudder: lag(rig.applied.rudder, target.rudder, dt, tau),
   };
 
   // Once the ropes have arrived, the controls usually stay put for many frames: reuse the solve.

@@ -6,6 +6,7 @@ import { t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
 import { createLayout } from '../ui/layout';
 import { createPanel } from '../ui/panel';
+import { ropesTabShows } from '../ui/ropesTab';
 import { createWindIndicator } from '../ui/windIndicator';
 import { defaultDetail } from '../model/settings';
 import { createStore } from './store';
@@ -24,7 +25,7 @@ export function startApp(host: HTMLElement): void {
   startUrlSync(store);
 
   const layout = createLayout(host);
-  createPanel(layout.panel, store);
+  const panel = createPanel(layout.panel, store);
   const debug = createDebugOverlay(layout.view, store);
 
   let scene: SceneView | undefined;
@@ -37,7 +38,10 @@ export function startApp(host: HTMLElement): void {
 
   if (scene) {
     createWindIndicator(layout.view, store);
-    createInfoCard(layout, store);
+    const card = createInfoCard(layout, store, {
+      shownInPanel: (partId) => panel.activeTab() === 'ropes' && ropesTabShows(partId),
+    });
+    panel.onTabChange(() => card.refresh());
     const cameraBar = createCameraBar(layout.view, store);
     const view = scene;
     const resize = () => {
