@@ -237,7 +237,7 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
       (await param(page, 'hd')) === 'c',
       `hd ${await param(page, 'hd')}`,
     );
-    // Walk to the mast, drag the handle into the socket, switch IN with a tap.
+    // Walk to the mast, drag the handle into the socket, flip the switch.
     await page.locator('.station-button[data-station="mast"]').tap();
     await settle(page);
     const md = drawing('mast');
@@ -251,11 +251,33 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
       (await param(page, 'hd')) === 'mast.w',
       `hd ${await param(page, 'hd')}`,
     );
-    const switchIn = await t.where(`${md} [data-switch="in"] .real-switch-box`);
-    await t.swipe([switchIn, switchIn]);
+    // The switch is a toggle, IN to the left and OUT to the right (owner): a tap flips it,
+    // a slide sets the side it goes to.
+    const toggle = await t.where(`${md} [data-testid="gearbox-switch"] .real-switch-box`);
+    const side = toggle.box.width / 3;
+    await t.swipe([toggle, toggle]);
     await settle(page);
     check(
-      'tap on IN sets the switch',
+      'tap flips the switch from OUT to IN',
+      (await param(page, 'gb')) === 'in',
+      `gb ${await param(page, 'gb')}`,
+    );
+    await t.swipe(
+      line({ x: toggle.x - side, y: toggle.y }, { x: toggle.x + side, y: toggle.y }, 6),
+    );
+    await settle(page);
+    check(
+      'slide right sets OUT',
+      (await param(page, 'gb')) === null,
+      `gb ${await param(page, 'gb')}`,
+    );
+    await shot(page, 'live-phone-mast-switch-out');
+    await t.swipe(
+      line({ x: toggle.x + side, y: toggle.y }, { x: toggle.x - side, y: toggle.y }, 6),
+    );
+    await settle(page);
+    check(
+      'slide left sets IN',
       (await param(page, 'gb')) === 'in',
       `gb ${await param(page, 'gb')}`,
     );
@@ -271,6 +293,59 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     check('cranking at the mast rolls the main in', mf < 100, `mf 100 → ${mf}`);
     await page.getByTestId('mast-status').scrollIntoViewIfNeeded();
     await shot(page, 'live-phone-mast-after-cranking');
+    await context.close();
+  }
+
+  // M4b review leftovers: a wrong-way rope stays out of the jaw; shutting a clutch on a
+  // running rope stops it with a warning.
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm4c review',
+      '?mode=realistic&wd=90&ws=12&wp=b5.-2.h&sel=rope_vang&cam=helm',
+    );
+    await page.waitForTimeout(600);
+    const t = touchTools(await context.newCDPSession(page), page);
+    const dr = drawing('port');
+    await centreOn(page, `${dr} .real-drum`);
+    const hand = await t.where(`${dr} [data-drag="hand"]`);
+    const jaw = await t.where(`${dr} .real-jaw`);
+    await t.swipe(line(hand, jaw, 10));
+    await settle(page);
+    const notice = await page
+      .locator('.station-wrap[data-station="port"] .station-notice')
+      .innerText();
+    check(
+      'wrong-way rope refused by the self-tailer',
+      (await param(page, 'wp')) === 'b5.-2.h' && /wrong way/.test(notice),
+      `wp ${await param(page, 'wp')} | ${notice}`,
+    );
+    await shot(page, 'live-phone-wrong-way-not-into-jaw');
+    await context.close();
+  }
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm4c closed on running',
+      '?mode=realistic&wd=90&ws=6&js=10&st=starboard&co=a5&sel=rope_jib_sheet&cam=helm',
+    );
+    // The link opens with the clutch open: at 6 kn the sheet runs out slowly. Shut it.
+    const t = touchTools(await context.newCDPSession(page), page);
+    const dr = drawing('starboard');
+    await centreOn(page, `${dr} [data-key="a5"] .real-lever`);
+    const lever = await t.where(`${dr} [data-key="a5"] .real-lever`);
+    await t.swipe(line(lever, { x: lever.x, y: lever.y + 40 }, 4));
+    await settle(page);
+    const strip = await page.getByTestId('real-strip').innerText();
+    const js = Number(await param(page, 'js'));
+    check(
+      'shutting the clutch on the running sheet warns',
+      /strip its cover/.test(strip) && (await param(page, 'co')) === null,
+      `co ${await param(page, 'co')}, js ${js} | ${strip.split('\n')[1]}`,
+    );
+    await page.getByTestId('real-strip').evaluate((el) => el.scrollIntoView({ block: 'start' }));
+    await page.waitForTimeout(300);
+    await shot(page, 'live-phone-clutch-shut-on-running-rope');
     await context.close();
   }
 

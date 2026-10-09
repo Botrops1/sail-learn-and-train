@@ -11,6 +11,8 @@ import {
   type StationId,
 } from '../src/model/realistic';
 import {
+  gearboxLinePerTurnM,
+  gearboxPowerRatio,
   handleForceN,
   handlePowerRatio,
   handleStalls,
@@ -78,7 +80,7 @@ describe('M4c data (hanse508.json → realisticMode)', () => {
     expect(h.stallForceN).toBeGreaterThan(0);
     expect(h.lengthM).toBeGreaterThan(0.1);
     expect(h.lengthM).toBeLessThan(0.4);
-    expect(rm.mastGearbox.powerRatio).toBeGreaterThan(1);
+    expect(gearboxPowerRatio()).toBeGreaterThan(1);
     expect(rm.strain.warnFraction).toBeGreaterThan(0);
     expect(rm.strain.warnFraction).toBeLessThan(1);
     expect(rm.stations.some((s) => s.id === 'mast')).toBe(true);
@@ -384,5 +386,93 @@ describe('URL state: the handle and the gearbox (M4c: hd, gb)', () => {
     s = act(s, { type: 'crank', turnsPerS: MAX });
     expect(serializeUrlState(s)).toContain('hd=port.w');
     expect(parseUrlState(serializeUrlState(s)).realistic.handle.crank).toBe(0);
+  });
+});
+
+describe('Owner answers after M4c', () => {
+  it('the handle starts at Port; clockwise is 1st gear', () => {
+    expect(initialRealistic().handle).toMatchObject({ station: 'port', place: 'stowed' });
+    expect(handlePowerRatio(1)).toBeLessThan(handlePowerRatio(-1));
+  });
+
+  it('about 40 handle turns roll the main from fully out to fully in (data: handleTurnsFullFurl)', () => {
+    expect(rm.mastGearbox.handleTurnsFullFurl).toBe(40);
+    expect(gearboxLinePerTurnM() * rm.mastGearbox.handleTurnsFullFurl).toBeCloseTo(
+      boat.rig.mainFurlingGearbox.lineTravelM,
+      9,
+    );
+    // Head to wind only the furling line's own small load is on the handle (about 25 N): it
+    // turns at nearly full speed, and every 1 % of "Mainsail out" is 0.4 turns.
+    let s = start({ ctl_wind_dir: 0, ctl_wind_speed: 12, ctl_main_furl: 100 }, 'starboard');
+    s = act(s, { type: 'clutch', key: FURL_OUT, open: true });
+    s = act(s, { type: 'station', station: 'port' }, { type: 'clutch', key: OUTHAUL, open: true });
+    s = handleIn(s, 'mast');
+    s = act(s, { type: 'gearbox', to: 'in' }, { type: 'crank', turnsPerS: MAX });
+    const seconds = 10;
+    s = run(s, seconds);
+    const turns = (100 - s.controls.ctl_main_furl) * (rm.mastGearbox.handleTurnsFullFurl / 100);
+    expect(turns).toBeGreaterThan(0.85 * MAX * seconds);
+    expect(turns).toBeLessThan(1.05 * MAX * seconds);
+  });
+
+  it('a different turn count in the data changes the gearbox (it is not fixed in the code)', () => {
+    const data = structuredClone(boat);
+    data.realisticMode.mastGearbox.handleTurnsFullFurl = 80;
+    expect(gearboxLinePerTurnM(data)).toBeCloseTo(gearboxLinePerTurnM() / 2, 9);
+    expect(gearboxPowerRatio(data)).toBeCloseTo(gearboxPowerRatio() * 2, 9);
+  });
+});
+
+describe('M4b review leftovers', () => {
+  it('the self-tailer grips at least as well as a hand on the tail', () => {
+    expect(rm.capstan.selfTailerGripN).toBeGreaterThanOrEqual(rm.capstan.handTailForceN);
+  });
+
+  it('a rope wrapped the wrong way does not go into the self-tailer, from a gesture or a link', () => {
+    let s = act(start({}, 'port'), { type: 'onWinch', key: VANG });
+    s = act(
+      s,
+      { type: 'turn', winch: PORT, delta: -1 },
+      { type: 'selfTailer', winch: PORT, into: true },
+    );
+    expect(s.realistic.winches[PORT]?.selfTailer).toBe(false);
+    expect(s.realistic.notice).toEqual({ key: 'wrongWayJaw', tail: VANG });
+    // In the jaw with one turn, taking it off and wrapping it the wrong way lets it out.
+    s = act(
+      s,
+      { type: 'turn', winch: PORT, delta: 1 },
+      { type: 'turn', winch: PORT, delta: 1 },
+      { type: 'selfTailer', winch: PORT, into: true },
+    );
+    expect(s.realistic.winches[PORT]?.selfTailer).toBe(true);
+    s = act(s, { type: 'turn', winch: PORT, delta: -1 }, { type: 'turn', winch: PORT, delta: -1 });
+    expect(s.realistic.winches[PORT]?.selfTailer).toBe(false);
+    expect(parseUrlState('?mode=realistic&wsb=a5.-3.t').realistic.winches[STBD]?.selfTailer).toBe(
+      false,
+    );
+  });
+
+  it('shutting a clutch on a running loaded rope stops it, with a warning', () => {
+    let s = start({ ctl_wind_dir: 90, ctl_wind_speed: 20, ctl_jib_sheet: 30 }, 'starboard');
+    s = run(act(s, { type: 'clutch', key: GENOA, open: true }), 0.05);
+    expect(s.realistic.reports[GENOA]?.motion).toBe('running');
+    s = act(s, { type: 'clutch', key: GENOA, open: false });
+    expect(s.realistic.notice).toEqual({ key: 'closedOnRunning', tail: GENOA });
+    const held = s.controls.ctl_jib_sheet;
+    s = run(s, 0.5);
+    expect(s.controls.ctl_jib_sheet).toBe(held);
+    // While paused nothing runs yet: no warning.
+    let paused = start({ ctl_wind_dir: 90, ctl_wind_speed: 20, ctl_jib_sheet: 30 }, 'starboard');
+    paused = reduce(paused, { type: 'setPaused', paused: true });
+    paused = run(act(paused, { type: 'clutch', key: GENOA, open: true }), 0.05);
+    paused = act(paused, { type: 'clutch', key: GENOA, open: false });
+    expect(paused.realistic.notice).toBeNull();
+    // Shutting a clutch on a rope that is not running gives no warning.
+    s = act(
+      s,
+      { type: 'clutch', key: GENOA, open: true },
+      { type: 'clutch', key: GENOA, open: false },
+    );
+    expect(s.realistic.notice).toBeNull();
   });
 });

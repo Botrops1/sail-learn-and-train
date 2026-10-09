@@ -15,6 +15,8 @@ import { toppingLiftPaidOut, vangPaidOut } from './pitchLimits';
 import type { RigState } from './sim';
 import {
   easesSmoothly,
+  gearboxLinePerTurnM,
+  gearboxPowerRatio,
   handleForceN,
   handlePowerRatio,
   handleStalls,
@@ -329,7 +331,11 @@ export type NoticeKey =
   | 'handleElsewhere'
   | 'handleNotIn'
   | 'noSocket'
-  | 'gearboxNotHere';
+  | 'gearboxNotHere'
+  /** A rope wrapped the wrong way does not feed into the self-tailer (M4b review). */
+  | 'wrongWayJaw'
+  /** The clutch was shut on a rope running out under load: it stops, but can be damaged. */
+  | 'closedOnRunning';
 
 export interface Notice {
   key: NoticeKey;
@@ -512,7 +518,14 @@ export function reduceRealistic(
         Object.entries(state.open).filter(([key]) => key !== action.key),
       );
       if (action.open) open[action.key] = true;
-      return { ...state, open, notice: null };
+      // Shutting a clutch on a loaded rope that is running out stops it, but on a boat it can
+      // strip the rope's cover (M4b review): it works, with a warning.
+      const running = !action.open && state.reports[action.key]?.motion === 'running';
+      return {
+        ...state,
+        open,
+        notice: running ? { key: 'closedOnRunning', tail: action.key } : null,
+      };
     }
     case 'onWinch': {
       const spec = here(action.key);
@@ -538,13 +551,15 @@ export function reduceRealistic(
       if (!winch?.tail) return withNotice(state, 'winchEmpty', null);
       const turns = Math.max(-maxTurns, Math.min(maxTurns, winch.turns + action.delta));
       if (turns === winch.turns) return state;
-      // Taking the last turn off lets the tail out of the jaw.
-      return setWinch(state, action.winch, { turns, selfTailer: winch.selfTailer && turns !== 0 });
+      // Taking the last turn off (or wrapping it the wrong way) lets the tail out of the jaw.
+      return setWinch(state, action.winch, { turns, selfTailer: winch.selfTailer && turns > 0 });
     }
     case 'selfTailer': {
       const winch = winchHere(action.winch);
       if (!winch?.tail) return withNotice(state, 'winchEmpty', null);
       if (action.into && winch.turns === 0) return withNotice(state, 'needTurns', winch.tail);
+      // A rope wrapped the wrong way leaves the drum on the wrong side of the jaw.
+      if (action.into && winch.turns < 0) return withNotice(state, 'wrongWayJaw', winch.tail);
       return setWinch(state, action.winch, { selfTailer: action.into });
     }
     case 'button': {
@@ -966,7 +981,7 @@ export function stepRealistic(
     const load = Math.max(0, ...drivers.map((w) => w.resist));
     const stallN = handleSpec.stallForceN;
     const atEnd = rollIn ? value <= 0 : value >= 100;
-    const force = blockers.length > 0 ? stallN : handleForceN(load, gearbox.powerRatio);
+    const force = blockers.length > 0 ? stallN : handleForceN(load, gearboxPowerRatio(data));
     let handleNote: HandleNote | null = null;
     let speed = 0;
     if (atEnd) handleNote = rollIn ? 'gearboxIn' : 'gearboxOut';
@@ -975,9 +990,9 @@ export function stepRealistic(
     else {
       const turns = Math.min(Math.abs(crank), handleTurnsPerS(force, data));
       handleTurns = Math.sign(crank) * turns;
-      speed = turns * ropePerHandleTurnM(gearbox.powerRatio, data);
-      const perPct = drivers[0]?.spec.metresPerPct ?? 1;
-      gearboxRate = ((rollIn ? -1 : 1) * speed) / perPct;
+      speed = turns * gearboxLinePerTurnM(data);
+      // handleTurnsFullFurl turns take the main from fully out (100 %) to fully in (0 %).
+      gearboxRate = ((rollIn ? -1 : 1) * turns * 100) / gearbox.handleTurnsFullFurl;
     }
     handleReport = {
       at: 'gearbox',

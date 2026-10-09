@@ -313,9 +313,7 @@
   "real.gearbox.switch": "Switch",
   "real.gearbox.in": "IN",
   "real.gearbox.out": "OUT",
-  "real.gearbox.setIn": "Switch to IN (rolls the main in)",
-  "real.gearbox.setOut": "Switch to OUT (rolls the main out)",
-  "real.gearbox.switchAria": "Gearbox switch: {dir}",
+  "real.gearbox.switchAria": "Gearbox switch, a toggle: IN to the left, OUT to the right. Now {dir}. Tap to flip it.",
   "real.gearbox.socket": "socket",
   "real.gearbox.lines": "furling line, aft to Starboard",
   "real.gearbox.mainOut": "Main out: {pct} %",
@@ -331,5 +329,9 @@
   "real.practice.title": "Practice: the main furling line slips",
   "real.practice.text": "Furling the main at 20 kn while the sail still pulls: the “rolls main in” line has only 1 turn on the Starboard winch. Hold the winch button: the line slips. Fix it by hand at the mast: go to Port and take the winch handle, go to Mast, set the switch to IN, put the handle in and circle its grip. The “rolls out” line and the outhaul are already open. (Two turns on the winch, or luffing first, would also work.)",
   "real.practice.button": "Set it up",
-  "real.status.haulLoad": "Pulling it in takes about {kn} kN."
+  "real.status.haulLoad": "Pulling it in takes about {kn} kN.",
+  "real.gearbox.flipToIn": "Flip the switch left to IN (rolls the main in)",
+  "real.gearbox.flipToOut": "Flip the switch right to OUT (rolls the main out)",
+  "real.notice.wrongWayJaw": "Wrapped the wrong way, the rope cannot go into the self-tailer. Take the turns off and wrap it clockwise.",
+  "real.notice.closedOnRunning": "The clutch stopped the running rope. On a real boat, snapping a clutch shut on a loaded rope that is running can strip its cover: take the load on the winch first, then open or close the clutch."
 }

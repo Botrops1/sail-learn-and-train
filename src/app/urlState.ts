@@ -164,7 +164,7 @@ function parseRealistic(params: URLSearchParams): RealisticState {
     if (!spec?.controlId || spec.winchId !== winchId || Math.abs(turns) > maxTurns) continue;
     winch.tail = key;
     winch.turns = turns;
-    winch.selfTailer = hold === 't' && turns !== 0;
+    winch.selfTailer = hold === 't' && turns > 0;
   }
   const handle = parseHandle(params.get('hd'), state.station);
   if (handle) state.handle = handle;

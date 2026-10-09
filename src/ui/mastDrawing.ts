@@ -1,7 +1,12 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import { isControlId } from '../model/controls';
-import { tailSpecs, type RealisticAction, type RealisticState } from '../model/realistic';
+import {
+  tailSpecs,
+  type GearboxSwitch,
+  type RealisticAction,
+  type RealisticState,
+} from '../model/realistic';
 import { el } from './dom';
 import {
   crankTracker,
@@ -24,7 +29,8 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
  * be open for the main to roll the way the switch says.
  *
  * Gestures (each also has a button under the drawing):
- * - IN / OUT: tap to set the switch;
+ * - the IN / OUT switch, a toggle (IN to the left, OUT to the right, owner): tap it to flip
+ *   it, or slide it left or right;
  * - the handle, lying here or carried: drag it onto the socket (a tap picks it up);
  * - the handle in the socket: circle its grip to crank.
  */
@@ -35,7 +41,8 @@ const M = {
   body: { x: 120, y: 56, width: 120, height: 120 },
   socket: { radius: 10, drop: 60 },
   arm: 52,
-  switchBox: { x: 16, width: 76, height: 42, inY: 72, outY: 124 },
+  /** The toggle: a track with IN on one half and OUT on the other, the knob on the chosen one. */
+  toggle: { x: 10, y: 98, width: 100, height: 44, inset: 3, slide: 12 },
   strain: { x: 262, top: 83, height: 66 },
   lines: { bottom: 230, gap: 10 },
   pocket: { x: 54, y: 204 },
@@ -51,6 +58,11 @@ function svg<K extends keyof SVGElementTagNameMap>(
   for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, String(value));
   node.append(...children);
   return node;
+}
+
+/** Sets an attribute only when it changes (the drawing refreshes every frame). */
+function attr(node: Element, name: string, value: string): void {
+  if (node.getAttribute(name) !== value) node.setAttribute(name, value);
 }
 
 /** The furling ends of the gearbox's control: those that pay out when rolling in, or out. */
@@ -147,42 +159,64 @@ export function createMastDrawing(store: Store): MastDrawing {
     ),
   );
 
-  // The IN / OUT switch: two buttons.
-  const s = M.switchBox;
-  root.append(
+  // The IN / OUT switch: a toggle, IN on the left and OUT on the right (switchPositions).
+  const tg = M.toggle;
+  const positions = gearbox.switchPositions as Record<GearboxSwitch, string>;
+  const half = tg.width / 2;
+  const sideX = (dir: GearboxSwitch) => (positions[dir] === 'left' ? tg.x : tg.x + half);
+  const toggle = svg('g', {
+    class: 'real-switch',
+    role: 'button',
+    tabindex: '0',
+    'data-drag': 'switch',
+    'data-testid': 'gearbox-switch',
+  });
+  const knob = svg('rect', {
+    x: sideX('out') + tg.inset,
+    y: tg.y + tg.inset,
+    width: half - 2 * tg.inset,
+    height: tg.height - 2 * tg.inset,
+    rx: 6,
+    class: 'real-switch-knob',
+  });
+  const labels = (['in', 'out'] as const).map((dir) =>
     svg(
       'text',
-      { x: s.x + s.width / 2, y: s.inY - 8, class: 'real-caption', 'text-anchor': 'middle' },
-      [t('real.gearbox.switch')],
+      {
+        x: sideX(dir) + half / 2,
+        y: tg.y + tg.height / 2,
+        class: 'real-switch-text',
+        'text-anchor': 'middle',
+        'dominant-baseline': 'central',
+        'data-switch': dir,
+      },
+      [t(dir === 'in' ? 'real.gearbox.in' : 'real.gearbox.out')],
     ),
   );
-  const switches = (['in', 'out'] as const).map((dir) => {
-    const y = dir === 'in' ? s.inY : s.outY;
-    const group = svg('g', {
-      class: 'real-switch',
-      role: 'button',
-      tabindex: '0',
-      'data-drag': `switch:${dir}`,
-      'data-switch': dir,
-      'aria-label': t(dir === 'in' ? 'real.gearbox.setIn' : 'real.gearbox.setOut'),
-    });
-    group.append(
-      svg('rect', { x: s.x, y, width: s.width, height: s.height, rx: 8, class: 'real-switch-box' }),
-      svg(
-        'text',
-        {
-          x: s.x + s.width / 2,
-          y: y + s.height / 2,
-          class: 'real-switch-text',
-          'text-anchor': 'middle',
-          'dominant-baseline': 'central',
-        },
-        [t(dir === 'in' ? 'real.gearbox.in' : 'real.gearbox.out')],
-      ),
-    );
-    root.append(group);
-    return { dir, group };
-  });
+  toggle.append(
+    svg('rect', {
+      x: tg.x,
+      y: tg.y,
+      width: tg.width,
+      height: tg.height,
+      rx: 9,
+      class: 'real-switch-box',
+    }),
+    knob,
+    ...labels,
+  );
+  root.append(
+    svg('text', { x: tg.x + half, y: tg.y - 8, class: 'real-caption', 'text-anchor': 'middle' }, [
+      t('real.gearbox.switch'),
+    ]),
+    toggle,
+  );
+  const flip = () => {
+    const now = store.getState().realistic.gearbox;
+    dispatch({ type: 'gearbox', to: now === 'in' ? 'out' : 'in' });
+  };
+  /** The switch position a slide towards this side sets. */
+  const towards = (side: 'left' | 'right'): GearboxSwitch => (positions.in === side ? 'in' : 'out');
 
   const strainBar = createStrainBar(M.strain.x, M.strain.top, M.strain.height);
   const pocket = createHandlePocket(M.pocket.x, M.pocket.y);
@@ -253,18 +287,27 @@ export function createMastDrawing(store: Store): MastDrawing {
       else if (current.moved < M.tapMove) dispatch({ type: 'handle', to: 'carry' });
       return;
     }
-    if (current.kind.startsWith('switch:') && current.moved < M.tapMove) {
-      dispatch({ type: 'gearbox', to: current.kind === 'switch:in' ? 'in' : 'out' });
+    if (current.kind === 'switch') {
+      // A slide sets the side it went to; a tap flips the switch.
+      const dx = p.x - current.start.x;
+      if (Math.abs(dx) >= tg.slide)
+        dispatch({ type: 'gearbox', to: towards(dx < 0 ? 'left' : 'right') });
+      else if (current.moved < M.tapMove) flip();
     }
   };
   root.addEventListener('pointerup', (event) => finish(event, false));
   root.addEventListener('pointercancel', (event) => finish(event, true));
   root.addEventListener('keydown', (event) => {
     const kind = (event.target as Element).closest('[data-drag]')?.getAttribute('data-drag') ?? '';
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    if (kind.startsWith('switch:')) {
+    if (kind === 'switch' && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
       event.preventDefault();
-      dispatch({ type: 'gearbox', to: kind === 'switch:in' ? 'in' : 'out' });
+      dispatch({ type: 'gearbox', to: towards(event.key === 'ArrowLeft' ? 'left' : 'right') });
+      return;
+    }
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    if (kind === 'switch') {
+      event.preventDefault();
+      flip();
     } else if (kind === 'handle') {
       event.preventDefault();
       dispatch({ type: 'handle', to: 'carry' });
@@ -276,11 +319,17 @@ export function createMastDrawing(store: Store): MastDrawing {
   const refresh = (state: AppState) => {
     const real = state.realistic;
     const handle = real.handle;
-    for (const { dir, group } of switches) {
-      const on = real.gearbox === dir;
-      group.classList.toggle('is-on', on);
-      group.setAttribute('aria-pressed', String(on));
+    attr(knob, 'x', String(sideX(real.gearbox) + tg.inset));
+    for (const label of labels) {
+      label.classList.toggle('is-on', label.getAttribute('data-switch') === real.gearbox);
     }
+    attr(
+      toggle,
+      'aria-label',
+      t('real.gearbox.switchAria', {
+        dir: t(real.gearbox === 'in' ? 'real.gearbox.in' : 'real.gearbox.out'),
+      }),
+    );
     pocket.update(
       handle.place === 'carried' || (handle.place === 'stowed' && handle.station === 'mast'),
       handle.place === 'carried',

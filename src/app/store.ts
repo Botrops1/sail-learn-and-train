@@ -125,7 +125,11 @@ export function reduce(state: AppState, action: Action): AppState {
       return controls === state.controls ? state : { ...state, controls };
     }
     case 'realistic': {
-      const realistic = reduceRealistic(state.realistic, action.action);
+      let realistic = reduceRealistic(state.realistic, action.action);
+      // While paused nothing runs yet: shutting the clutch then is just preparing.
+      if (state.paused && realistic.notice?.key === 'closedOnRunning') {
+        realistic = { ...realistic, notice: null };
+      }
       return realistic === state.realistic ? state : { ...state, realistic };
     }
     case 'setPaused':

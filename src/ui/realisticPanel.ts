@@ -368,19 +368,17 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
   const crankCw = crankHold('real.handle.crankCw', 'act-crank-cw', handleSpec.maxTurnsPerS);
   const crankCcw = crankHold('real.handle.crankCcw', 'act-crank-ccw', -handleSpec.maxTurnsPerS);
   const crankOne = crankHold('real.handle.crank', 'act-crank', handleSpec.maxTurnsPerS);
-  const switchIn = action(
-    'real.gearbox.setIn',
-    () => dispatch({ type: 'gearbox', to: 'in' }),
-    'act-switch-in',
-  );
-  const switchOut = action(
-    'real.gearbox.setOut',
-    () => dispatch({ type: 'gearbox', to: 'out' }),
-    'act-switch-out',
+  // The gearbox switch is a toggle (IN to the left, OUT to the right): one button flips it.
+  const switchFlip = action(
+    'real.gearbox.flipToIn',
+    () => {
+      const now = store.getState().realistic.gearbox;
+      dispatch({ type: 'gearbox', to: now === 'in' ? 'out' : 'in' });
+    },
+    'act-switch',
   );
   const handleActions = el('div', { class: 'real-actions' }, [
-    switchIn,
-    switchOut,
+    switchFlip,
     takeHandle,
     outHandle,
     intoHandle,
@@ -607,10 +605,11 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     crankCw.classList.toggle('is-pressed', inHere && crank > 0 && !atGearbox);
     crankCcw.classList.toggle('is-pressed', inHere && crank < 0);
     crankOne.classList.toggle('is-pressed', inHere && crank !== 0 && atGearbox);
-    switchIn.hidden = station !== 'mast';
-    switchOut.hidden = station !== 'mast';
-    switchIn.setAttribute('aria-pressed', String(real.gearbox === 'in'));
-    switchOut.setAttribute('aria-pressed', String(real.gearbox === 'out'));
+    switchFlip.hidden = station !== 'mast';
+    setText(
+      switchFlip,
+      t(real.gearbox === 'in' ? 'real.gearbox.flipToOut' : 'real.gearbox.flipToIn'),
+    );
 
     const report = inHere && crank !== 0 ? real.handleReport : null;
     const note = report ? handleNoteText(report) : null;

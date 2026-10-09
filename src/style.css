@@ -1473,23 +1473,25 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 }
 
 .real-switch-box {
-  fill: var(--surface);
-  stroke: var(--accent);
+  fill: #2b3136;
+  stroke: #9aa4ab;
+  stroke-width: 1.5;
+}
+
+.real-switch-knob {
+  fill: var(--accent);
+  stroke: #ffffff;
   stroke-width: 1.5;
 }
 
 .real-switch-text {
-  fill: var(--accent);
+  fill: #9aa4ab;
   font-size: 15px;
   font-weight: 800;
   pointer-events: none;
 }
 
-.real-switch.is-on .real-switch-box {
-  fill: var(--accent);
-}
-
-.real-switch.is-on .real-switch-text {
+.real-switch-text.is-on {
   fill: #ffffff;
 }
 
