@@ -51,6 +51,25 @@ const jaw = (station) => `${drawing(station)} .real-jaw`;
 const handKnob = (station) => `${drawing(station)} [data-drag="hand"]`;
 const winchButton = (station) => `${drawing(station)} .real-button-disc`;
 
+/**
+ * Scrolls the panel so the Vang clutch body is near the top and the "in your hand" knob is
+ * still on screen, then returns both centres (page coordinates).
+ */
+async function handAndClutch(page, where) {
+  await page.locator(`${drawing('port')} .real-drum`).scrollIntoViewIfNeeded();
+  const clutchSel = `${drawing('port')} [data-key="b5"] .clutch-body`;
+  const top = await page.locator('.panel-body').evaluate((el) => el.getBoundingClientRect().top);
+  const clutch = await where(clutchSel);
+  await page.locator('.panel-body').evaluate(
+    (el, delta) => {
+      el.scrollTop += delta;
+    },
+    clutch.y - (top + 70),
+  );
+  await page.waitForTimeout(200);
+  return { hand: await where(handKnob('port')), clutch: await where(clutchSel) };
+}
+
 async function circleDrum(page, station, turns) {
   const { x, y, box } = await centre(page, drum(station));
   const radius = box.width / 2 + 10;
@@ -169,6 +188,21 @@ export async function liveM4bTouchChecks({ openPage, viewports, outDir, prefix, 
   await t.swipe(line(p, d, 12));
   await settle();
   check('tail dragged onto the winch', (await param('wp')) === 'b5.0.h', String(await param('wp')));
+  // With 0 turns, dragging the rope back to its clutch takes it off the winch; then back on.
+  let hc = await handAndClutch(page, t.where);
+  await t.swipe(line(hc.hand, hc.clutch, 14));
+  await settle();
+  check(
+    '0 turns: rope dragged back to its clutch comes off the winch',
+    (await param('wp')) === null,
+    String(await param('wp')),
+  );
+  await ready();
+  p = await t.where(knob('port', 'b5'));
+  d = await t.where(drum('port'));
+  await t.swipe(line(p, d, 12));
+  await settle();
+  check('and onto the winch again', (await param('wp')) === 'b5.0.h', String(await param('wp')));
   await ready();
   d = await t.where(drum('port'));
   const ring = d.box.width / 2 + 10;
@@ -180,6 +214,19 @@ export async function liveM4bTouchChecks({ openPage, viewports, outDir, prefix, 
   await t.swipe(circle(d.x, d.y, ring, -1));
   await settle();
   check('one turn back anticlockwise', (await param('wp')) === 'b5.1.h', String(await param('wp')));
+  // With a turn on the drum the same gesture is refused with a message.
+  hc = await handAndClutch(page, t.where);
+  await t.swipe(line(hc.hand, hc.clutch, 14));
+  await page.waitForTimeout(400);
+  const refusal = await page.locator('[data-station="port"] .station-notice').innerText();
+  check(
+    '1 turn: dragging it back is refused with a message',
+    (await param('wp')) === 'b5.1.h' && /turns off first/i.test(refusal),
+    `${await param('wp')} | ${refusal}`,
+  );
+  await page.screenshot({
+    path: path.join(outDir, `${prefix}live-phone-take-off-needs-zero-turns.png`),
+  });
   await ready();
   d = await t.where(drum('port'));
   await t.swipe(circle(d.x, d.y, ring, 1));
@@ -298,6 +345,28 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     await dragPath(page, [p, { x: (p.x + d.x) / 2, y: (p.y + d.y) / 2 }, d]);
     await settleUrl(page);
     check(`${v} vang onto the winch`, (await param(page, 'wp')) === 'b5.0.h', await search(page));
+    // 0 turns: back to its clutch takes it off; then on again.
+    let hc = await handAndClutch(page, (sel) => centre(page, sel));
+    await dragPath(page, [
+      hc.hand,
+      { x: (hc.hand.x + hc.clutch.x) / 2, y: (hc.hand.y + hc.clutch.y) / 2 },
+      hc.clutch,
+    ]);
+    await settleUrl(page);
+    check(
+      `${v} 0 turns: back to its clutch comes off the winch`,
+      (await param(page, 'wp')) === null,
+      await search(page),
+    );
+    p = await centre(page, knob('port', 'b5'));
+    const d2 = await centre(page, drum('port'));
+    await dragPath(page, [p, { x: (p.x + d2.x) / 2, y: (p.y + d2.y) / 2 }, d2]);
+    await settleUrl(page);
+    check(
+      `${v} and onto the winch again`,
+      (await param(page, 'wp')) === 'b5.0.h',
+      await search(page),
+    );
     await circleDrum(page, 'port', 2);
     await settleUrl(page);
     check(`${v} two turns clockwise`, (await param(page, 'wp')) === 'b5.2.h', await search(page));
@@ -308,6 +377,20 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       `${v} anticlockwise takes one off`,
       (await param(page, 'wp')) === 'b5.1.h',
       await search(page),
+    );
+    // 1 turn: the same drag is refused with a message and the rope stays on the winch.
+    hc = await handAndClutch(page, (sel) => centre(page, sel));
+    await dragPath(page, [
+      hc.hand,
+      { x: (hc.hand.x + hc.clutch.x) / 2, y: (hc.hand.y + hc.clutch.y) / 2 },
+      hc.clutch,
+    ]);
+    await page.waitForTimeout(400);
+    const refusal = await page.locator('[data-station="port"] .station-notice').innerText();
+    check(
+      `${v} 1 turn: refused with a message`,
+      (await param(page, 'wp')) === 'b5.1.h' && /turns off first/i.test(refusal),
+      `${await param(page, 'wp')} | ${refusal}`,
     );
     await circleDrum(page, 'port', 1);
 

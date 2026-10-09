@@ -251,7 +251,8 @@ export type NoticeKey =
   | 'needTurns'
   | 'staticRope'
   | 'notHere'
-  | 'onWinch';
+  | 'onWinch'
+  | 'turnsOn';
 
 export interface Notice {
   key: NoticeKey;
@@ -302,7 +303,11 @@ export type RealisticAction =
   | { type: 'station'; station: StationId }
   | { type: 'clutch'; key: string; open: boolean }
   | { type: 'onWinch'; key: string }
-  | { type: 'offWinch'; winch: string }
+  /**
+   * `needZeroTurns`: the gesture of dragging the rope back to its clutch. It works only when no
+   * turn is left on the drum (take them off first); the button works at any time.
+   */
+  | { type: 'offWinch'; winch: string; needZeroTurns?: boolean }
   | { type: 'turn'; winch: string; delta: 1 | -1 }
   | { type: 'selfTailer'; winch: string; into: boolean }
   | { type: 'button'; winch: string; held: boolean }
@@ -371,6 +376,8 @@ export function reduceRealistic(
     case 'offWinch': {
       const winch = winchHere(action.winch);
       if (!winch?.tail) return withNotice(state, 'winchEmpty', null);
+      if (action.needZeroTurns && winch.turns !== 0)
+        return withNotice(state, 'turnsOn', winch.tail);
       const { drumAngle } = winch;
       return setWinch(state, action.winch, { ...emptyWinch(), drumAngle });
     }

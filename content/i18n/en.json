@@ -269,8 +269,9 @@
   "real.helm.hint": "The helm: the wheel turns the rudder. Later steps add the engine lever and instruments.",
   "real.how.title": "How to work a rope",
   "real.how.1": "1. A clutch (a lock on the rope) holds it when closed. Drag its lever up to open it. A closed clutch still lets the winch pull the rope in.",
-  "real.how.2": "2. Drag the rope's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way).",
+  "real.how.2": "2. Drag the rope's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way). To take the rope off the winch again, circle anticlockwise until it shows 0 turns, then drag the tail back up to its clutch.",
   "real.how.3": "3. Drag the tail into the jaw on top (the self-tailer) so the winch holds it, then hold the winch button to pull the rope in.",
   "real.how.4": "4. To ease (let out): open the clutch, take the tail out of the jaw and drag it away from the winch. About 2 turns ease smoothly; with 4 the rope jerks.",
-  "real.how.5": "5. Open a loaded clutch with nothing holding the tail and the rope runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm."
+  "real.how.5": "5. Open a loaded clutch with nothing holding the tail and the rope runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm.",
+  "real.notice.turnsOn": "Take the turns off first: circle the drum anticlockwise until it says 0 turns, then drag the rope back to its clutch."
 }

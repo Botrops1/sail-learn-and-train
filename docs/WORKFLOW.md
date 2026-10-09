@@ -160,6 +160,7 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 - [ ] Wrap anticlockwise instead, open the clutch: the rope runs, "wrapped the wrong way". (PT-17)
 - [ ] `?ws=0&tl=0&vg=0&mode=realistic`: put the vang on the port winch and hold the button: the drum slows and cuts out with the hint about a fighting rope. (PT-19a)
 - [ ] Pause: open a clutch and wrap a winch while paused; nothing moves. Resume: both happen together.
+- [ ] Take a rope off the winch: with 0 turns, drag the "in your hand" dot back up to the rope's clutch and it comes off. With 1 or more turns the drag is refused ("Take the turns off first"); the "Take off winch" button always works.
 - [ ] Easy mode still works exactly as before; Share keeps the mode and the clutch states.
 
 ### M4c: Realistic mode, part 2
