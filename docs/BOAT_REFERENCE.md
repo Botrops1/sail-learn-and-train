@@ -16,7 +16,7 @@ Everything we know about the real boat, where each fact comes from, and what is 
 | Gennaker | Not rigged (the halyard exists: "SPI HALYARD") | Owner; clutch label |
 | Steering | Twin wheels, emergency tiller, compass at each wheel; B&G instrument display and autopilot control at the helm | Brochure; photo `cockpit-winch-clutches.jpg` |
 | Engine | Diesel about 80 hp, saildrive, 2-blade fixed propeller; single-lever control; 2500 rpm limit sticker | Brochure; photo |
-| Winches | 2 × Lewmar 55 self-tailing, **one per side** next to the wheel, with the clutch bank just in front of it. No secondary winches. | Brochure; photo `cockpit-winch-clutches.jpg` |
+| Winches | 2 × Lewmar self-tailing, **electric** (push button; owner), size about 55 per the brochure, **one per side** next to the wheel, with the clutch bank just in front of it. No secondary winches. Port winch takes bank B and JIB ROLL, starboard winch bank A, one rope at a time. Each side's ropes go to that side's winch (owner). One winch handle on board, used mainly at the mast furling gearbox (IN/OUT switch) to roll the main in by hand when the furling line slips; the model on the drum is not marked (owner), so the EVO 55 power ratios 13.8 / 54 are a stand-in. | Brochure; photo `cockpit-winch-clutches.jpg`; ratios: PHYSICS_TRUTHS source [7] |
 | Foredeck | Anchor windlass, bow roller with chain, mooring cleats (Phase 5) | Photo `bow-jib-furler.jpg` |
 
 ## 2. Official figures
@@ -162,6 +162,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 |---|---|---|
 | Bank sides | A starboard, B port | **Confirmed** by the owner |
 | JIB ROLL clutch | port side deck, x ≈ −3.4 | Side **confirmed** by photo; position estimated |
+| Winch turns (Realistic mode) | about 4 turns to winch under load, about 2 to ease under control | **Owner's experience** (2026-10-09); matches the capstan rule (PHYSICS_TRUTHS PT-16) |
 | Mainsheet purchase | 2 parts per side | **Confirmed** by photo |
 | Vang type | rigid strut with tackle | **Confirmed** by photo |
 | Self-tacking track | straight, ±1.4 m | Shape **confirmed** by photo; length estimated from the photo (±0.3 m) |
@@ -211,8 +212,9 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 7. When furling the jib on the boat, is the jib sheet's clutch simply opened so the sheet runs out? (The app now treats 100 % jib sheet as "released" for furling, owner decision after M3; rolling the jib needs about 5.7 m more working length, about 11 m of rope at 2:1.)
 8. Side decks: teak or white non-slip? The owner asked for teak in M3b; the side-deck photo looks like white non-slip. Where exactly does the sprayhood start and end (fore and aft), and does the main sheet pass in front of it?
 9. Where exactly do the control-line channels run on the coachroof and into the cockpit, and how high does each line leave the mast?
+10. Do the electric winches have one button each, or two (fast/slow)? Where are the buttons (photo)?
 
-Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, straight self-tacking track about 2.8 m long, one winch per side, rigid vang, topping lift line exists, bank sides.
+Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, straight self-tacking track about 2.8 m long, one winch per side, rigid vang, topping lift line exists, bank sides. 2026-10-09: winches are electric; one winch handle, used mainly at the mast gearbox; each side's ropes go to that side's winch; winch model not marked (Lewmar only).
 
 ### Photo checklist (if you are near a Hanse 508 again)
 

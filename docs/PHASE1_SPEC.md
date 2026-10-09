@@ -41,7 +41,9 @@ Everything else in Phase 1 serves that idea or prepares the ground for later pha
 
 ### Out of scope (do not build yet)
 
-Boat motion, speed, heel, apparent wind, forces in kN, gybe energy, the bird's-eye 2D view, waves (M3b added ripples drawn on the flat water and a sky, at the owner's request), environment (buoys, harbour), engine and prop walk, compass and instruments, the learning layer beyond the one-line tooltip, Russian UI, exercises, clutch open/close logic and winch handling, gennaker/reacher, sound, accounts, backend, analytics.
+(Clutch and winch handling moved into scope on 2026-10-09: Realistic mode, 7.2.2, milestones M4b and M4c.)
+
+Boat motion, speed, heel, apparent wind, forces in kN, gybe energy, the bird's-eye 2D view, waves (M3b added ripples drawn on the flat water and a sky, at the owner's request), environment (buoys, harbour), engine and prop walk, compass and instruments, the learning layer beyond the one-line tooltip, Russian UI, exercises, gennaker/reacher, sound, accounts, backend, analytics.
 
 If something here looks necessary to finish a milestone, stop and ask in the PR instead of building it.
 
@@ -177,6 +179,58 @@ The Ropes tab has a mode setting, `settings.ropesMode`. M4a builds **Easy mode**
 - The strip shows the selected entry: name, labels on the boat, the shared-control hint (folded: "One rope, two ends." / "These work against each other."), the control of 7.1 and its lines, and a folded "What does it do?" with the registry's one-liner and the longer hints. Static ropes show their info line instead of a control (`clutchPanel.staticRopeNotes`).
 - In the stacked layout the strip is sticky at the bottom of the panel, at most about 150 px high (it scrolls inside), so the clutches stay visible above it. The info card is not shown there while the Ropes tab shows the same rope (it would repeat the strip).
 - Selecting a rope, a clutch, the outhaul, the JIB ROLL clutch, a wheel or the rudder anywhere (3D, link) opens the Ropes tab with that entry. Ropes on one control are highlighted together in 3D and in the drawing (outhaul with the furling line; the rudder with both wheels).
+
+#### 7.2.2 Realistic mode (M4b, M4c)
+
+`settings.ropesMode = realistic` (`mode=realistic` in the URL). The user works the ropes the way the crew does on the boat: clutch, winch, handle, tail. The rig model (section 8) is unchanged: Realistic mode only decides **how a rope's length changes**. Easy mode stays the default and is always one tap away.
+
+**Stations: one place at a time.** The panel shows one station; the others are out of reach until the user switches (a row of three buttons, or a swipe):
+
+| Station | What it has (from `cockpitHardware`) |
+|---|---|
+| Port | Bank B (5 clutches), JIB ROLL clutch, the port winch with its button, the winch handle if it is here |
+| Starboard | Bank A (5 clutches), the starboard winch with its button, the winch handle if it is here |
+| Helm | The wheel (later phases add the engine lever, instruments) |
+| Mast (M4c) | The in-mast furling gearbox: IN/OUT switch and a socket for the winch handle (photo `mast-furling-gearbox.jpg`) |
+
+Each side's ropes go to that side's winch (owner): bank B and JIB ROLL to the port winch, bank A to the starboard winch.
+
+Ropes not at the current station keep their state (a held rope stays held, a running rope keeps running). A small strip shows each station's alerts ("rope running at Port") so the user knows to switch. One person, one place: that is the lesson. The station drawing is a top-down view of that side: the clutches large enough to touch (about 60 px wide on a phone, unlike the compact M4a drawing), the winch as a circle with its self-tailer jaw, the rope tails.
+
+**Clutch** (lever, for each clutch): drag the lever **up to open**, **down to close** (tap toggles too).
+- Closed: the rope cannot run out. It *can* be pulled in through it (a closed clutch lets a rope through in the hauling direction), by the winch or, for a light load, by hand.
+- Open: the rope is held only by what holds its tail (the winch, a hand), else it runs (see "Running ropes").
+
+**Putting a rope on the winch** (one rope per winch, only from that side's clutches; JIB ROLL uses the port winch):
+1. Drag the rope's tail from its clutch onto the winch.
+2. Wrap it: circle a finger around the drum. **Clockwise** adds a turn, anticlockwise takes one off; the drum shows the turns (0–5). The drum turns only clockwise (seen from above). Turns put on anticlockwise are allowed so the mistake can happen: under load such a drum just turns with the rope and the rope runs out ("wrapped the wrong way").
+3. Put the tail into the self-tailer: drag it up into the jaw on top. In the jaw the winch holds the tail by itself; out of it, the tail is "in your hand".
+Every gesture has a button alternative (Add turn / Remove turn / Into self-tailer / Out of self-tailer / Take off winch) for accessibility and tests.
+
+**Electric winch button** (M4b). Both winches are electric (owner): a push button next to each winch. Hold it and the drum turns clockwise and hauls the rope in; let go and it stops. Easing is always done by hand. The winch slows as the load grows and **cuts out** above its safe load, restarting when the load drops (Lewmar load-sensing behaviour, PHYSICS_TRUTHS source [9]; the generation on the boat is not known, so values are assumptions in `realisticMode`). Lesson: the motor does not feel the load the way a hand does; winching against a fighting rope or a jammed sail goes straight to the cut-out. The button works with the rope in the self-tailer; with the tail in hand it works too, but the hand must hold the tail (capstan rule) or the rope slips.
+
+**Winch handle** (M4c). One handle on board (owner). On this boat it is used mainly at the **mast furling gearbox**, to roll the main in by hand when the furling line slips or jams: set the gearbox switch to IN (or OUT), put the handle in the socket, circle a finger to crank. It also fits the cockpit winches as a manual backup (circle to crank; both directions turn the drum the same way, clockwise faster and weaker, anticlockwise slower and stronger, source [6]). The handle is at one station at a time; taking it to the mast means leaving the cockpit.
+
+**Holding force: the capstan rule (teaching model).** Each loaded rope has a load estimate *L* (see "Loads"). A tail held with force *T* on a drum with *n* turns holds up to *T · e^(μ·2π·n)* (capstan equation). Values in `hanse508.json` (new block `realisticMode`): friction μ = 0.2 (polyester cover on an aluminium drum), hand tail force about 150 N, self-tailer grip about 100 N, hand pull without a winch about 300 N. That gives, per turn, holding factors of about 3.5, 12, 43, 150, 530. So:
+- 0 turns: a loaded rope cannot be held by hand once its clutch opens.
+- 1 turn: it slips under all but light loads.
+- 2 turns: held for light loads; easing by hand is smooth ("controlled ease").
+- 3–4 turns: held for normal loads; winching (electric or by hand) needs about 4 under load, but easing by hand gets grabby (eases in jerks; hint: "take a turn off to ease smoothly").
+The owner's experience matches: about 4 turns to winch, about 2 to ease under control.
+
+**Easing by hand.** Rope on the winch, tail out of the self-tailer, clutch open: drag the tail away from the winch; the rope runs out as far as the user lets it, at a speed limited by the holding force. With a closed clutch nothing moves (hint: "open the clutch").
+
+**Running ropes.** When a rope's load exceeds what holds it, it runs out: fast for a high load (the sail flies out in about a second), slowly or not at all for a light one; it stops when the load drops below the holding force or the rope reaches 100 %. The rope's tail and the panel show "running", the 3D rope flashes. Typical lesson: opening a loaded clutch with the rope not on the winch.
+
+**Loads (Phase 1 estimates, replaced by Phase 2 forces).** Sheet loads use the common winch-selection rule (PHYSICS_TRUTHS source [8]) *load (lb) = sail area (ft²) × wind speed² (mph) × 0.00431*, scaled by the sail's fill (0 when luffing) and how much of the sail is out, and divided by the rope's purchase (jib sheet 2:1, main sheet per its tackle). Example: jib 51.5 m² at 20 kn gives about 5.6 kN at the clew, about 2.8 kN on the tail; with a hand on the tail 2 turns then slip, 3 hold. The furling lines, vang, topping lift and outhaul get small fixed loads, marked as assumptions; a "fighting" rope (8.3) gets a high load. Halyards stay static.
+
+**Strain and backups (M4c).** A strain bar on the winch shows the load against the cut-out limit. Near the limit the drum slows; at the limit it stops with the hint "too much load: luff up, ease something else, or check for a fighting rope". Cranking by hand needs a handle force *F = L / power ratio* (Lewmar EVO 55 values 13.8 and 54 as a stand-in, source [7]; the model on the boat is unknown); above about 250 N even the strong direction stalls. Main furling backup at the mast: the furling line slipping or jammed (a teaching scenario, e.g. too few turns on the winch) is fixed by going to the Mast station, switch IN, handle in, crank; the main rolls in while the "out" line and outhaul must still run free (their clutches open).
+
+**Pause.** A pause button (top bar, both modes) freezes time: ropes, sails, running ropes. While paused the user can switch stations, set clutches, wrap turns and move the handle, as several crew members would at once; pressing a winch button, cranking and easing need time and wait. Everything prepared happens together on Resume. URL: `paused` is not stored.
+
+**URL and Share.** The link stores the mode and the rope lengths as in Easy mode, plus clutch states and the winch setup (`c`, `wp`, `ws2` or similar, decided in M4b and added to 9.2). Running ropes are not stored: a link opens with everything held.
+
+**Not in M4b/M4c:** hand-over-hand pulling technique, riding turns (a jammed winch), a second handle, crew roles, timing or scoring (Phase 6).
 
 ### 7.3 Rope colours (teaching colours)
 
@@ -381,7 +435,20 @@ Each milestone is **one PR**, small enough to review on a phone. Do not start th
 - Rudder/wheel control. Full URL state for all controls, a Share button, Reset.
 - **Done when:** all M4 checks in `WORKFLOW.md` pass.
 
-M4 is built in two PRs (owner, 2026-10-08): **M4a** the Ropes tab in Easy mode (7.2.1), selection sync, hints, legend, wheel, full URL state with Share and Reset; **M4b** Realistic mode (clutches and winches worked by hand).
+M4 is built in two PRs (owner, 2026-10-08): **M4a** the Ropes tab in Easy mode (7.2.1), selection sync, hints, legend, wheel, full URL state with Share and Reset; **M4b** Realistic mode (clutches and winches worked by hand). M4b was split again on 2026-10-09 (owner ideas): M4b and M4c below.
+
+### M4b: Realistic mode, part 1 (clutches, winch turns, holding)
+
+- Section 7.2.2 except Strain: the mode switch, the three stations with alerts, clutch levers, rope onto the winch with clockwise/anticlockwise turns, self-tailer, the electric winch button with slowing and cut-out, easing by hand, running ropes from the capstan rule, Phase 1 load estimates, Pause, URL and Share for the new state.
+- New block `realisticMode` in `hanse508.json`, values cited or marked as assumptions in `BOAT_REFERENCE.md`.
+- Unit tests for PT-15 … PT-18 and PT-19a (pure model: `src/model/winch.ts` or similar, no DOM).
+- Easy mode keeps working exactly as before.
+- **Done when:** all M4b checks in `WORKFLOW.md` pass.
+
+### M4c: Realistic mode, part 2 (strain, winch handle and the mast gearbox)
+
+- Strain bar, the winch handle as a cockpit backup (two directions, handle force from the load), the Mast station with the furling gearbox (IN/OUT switch, crank) and the slipping-furling-line scenario (7.2.2 Strain and backups). Unit tests for PT-19.
+- **Done when:** all M4c checks in `WORKFLOW.md` pass.
 
 ### M5: Polish and Phase 1 sign-off
 
