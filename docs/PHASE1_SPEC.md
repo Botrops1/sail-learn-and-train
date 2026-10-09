@@ -388,6 +388,7 @@ M4 is built in two PRs (owner, 2026-10-08): **M4a** the Ropes tab in Easy mode (
 - Performance pass on a real phone (the owner reports fps from the debug overlay).
 - Accessibility pass, empty states, error boundary ("3D not supported on this device"), README update, disclaimer in the footer ("Learning aid, not a substitute for sailing instruction").
 - Final screenshots.
+- Labels in 3D (the View-tab toggle of 5.2) and the halyards drawn in 3D (main halyard and SPI halyard, so selecting one highlights a rope in 3D too; owner, after M4a).
 - **Done when:** every item of the Definition of Done below is ticked in the PR.
 
 ## 13. Definition of Done (Phase 1)
