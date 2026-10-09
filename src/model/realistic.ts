@@ -349,10 +349,17 @@ export function reduceRealistic(
     stationWinch(state.station, data) === id ? state.winches[id] : undefined;
 
   switch (action.type) {
-    case 'station':
-      return action.station === state.station
-        ? state
-        : { ...state, station: action.station, notice: null, pull: null };
+    case 'station': {
+      if (action.station === state.station) return state;
+      // One person, one place: walking away lets go of the winch buttons and the tail in hand.
+      const winches = Object.fromEntries(
+        Object.entries(state.winches).map(([id, w]) => [
+          id,
+          w.button ? { ...w, button: false, cutOut: false } : w,
+        ]),
+      );
+      return { ...state, station: action.station, winches, notice: null, pull: null, ease: {} };
+    }
     case 'clutch': {
       const spec = here(action.key);
       if (typeof spec === 'string') return withNotice(state, spec, action.key);
@@ -396,7 +403,8 @@ export function reduceRealistic(
       return setWinch(state, action.winch, { selfTailer: action.into });
     }
     case 'button': {
-      const winch = winchHere(action.winch);
+      // Letting go always works, wherever the user stands now.
+      const winch = action.held ? winchHere(action.winch) : state.winches[action.winch];
       if (!winch) return action.held ? withNotice(state, 'notHere', null) : state;
       if (winch.button === action.held) return state;
       // Letting go resets the motor's cut-out.

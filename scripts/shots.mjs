@@ -7,7 +7,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 import { liveM4aChecks, M4A_SCENES } from './shots-m4a.mjs';
-import { liveM4bChecks, liveM4bTouchChecks, M4B_SCENES } from './shots-m4b.mjs';
+import { liveM4bChecks, liveM4bFixChecks, liveM4bTouchChecks, M4B_SCENES } from './shots-m4b.mjs';
 
 const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm4b';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
@@ -666,6 +666,13 @@ try {
     problems,
   });
   await liveM4bTouchChecks({
+    openPage,
+    viewports: VIEWPORTS,
+    outDir: OUT_DIR,
+    prefix: PREFIX,
+    problems,
+  });
+  await liveM4bFixChecks({
     openPage,
     viewports: VIEWPORTS,
     outDir: OUT_DIR,

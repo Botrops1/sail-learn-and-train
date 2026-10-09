@@ -350,6 +350,60 @@ describe('Realistic mode: stations, setup, pause (PHASE1_SPEC 7.2.2)', () => {
     expect(s.controls.ctl_jib_sheet).toBeGreaterThan(60);
   });
 
+  it('walking to another station lets go of the winch button there: that winch stops', () => {
+    let s = onWinch(start({ ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_vang: 50 }, 'port'), VANG, 4);
+    s = act(
+      s,
+      { type: 'selfTailer', winch: PORT, into: true },
+      { type: 'button', winch: PORT, held: true },
+    );
+    s = run(s, 0.5);
+    const vang = s.controls.ctl_vang;
+    expect(vang).toBeLessThan(50);
+    s = act(s, { type: 'station', station: 'starboard' });
+    expect(s.realistic.winches[PORT]?.button).toBe(false);
+    s = run(s, 1);
+    expect(s.controls.ctl_vang).toBe(vang);
+    // The finger lifted later (the release sent for the Port winch from Starboard) is harmless.
+    s = act(s, { type: 'button', winch: PORT, held: false });
+    expect(s.realistic.notice).toBeNull();
+  });
+
+  it('letting go of a winch button works from any station; pressing one does not', () => {
+    // Port winch held down, user at Starboard (a state only an older version could reach).
+    const atPort = [
+      { type: 'onWinch', key: VANG },
+      { type: 'turn', winch: PORT, delta: 1 },
+      { type: 'button', winch: PORT, held: true },
+    ] satisfies RealisticAction[];
+    const held = {
+      ...atPort.reduce((r, action) => reduceRealistic(r, action), initialRealistic()),
+      station: 'starboard' as const,
+    };
+    expect(held.winches[PORT]?.button).toBe(true);
+    expect(
+      reduceRealistic(held, { type: 'button', winch: PORT, held: false }).winches[PORT]?.button,
+    ).toBe(false);
+    const idle = { ...initialRealistic(), station: 'starboard' as const };
+    const pressed = reduceRealistic(idle, { type: 'button', winch: PORT, held: true });
+    expect(pressed.winches[PORT]?.button).toBe(false);
+    expect(pressed.notice?.key).toBe('notHere');
+  });
+
+  it('walking away also stops a hand easing a rope at the old station', () => {
+    let s = onWinch(
+      start({ ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_jib_sheet: 30 }, 'starboard'),
+      GENOA,
+      2,
+    );
+    s = act(s, { type: 'clutch', key: GENOA, open: true }, { type: 'ease', key: GENOA, metres: 1 });
+    expect(s.realistic.ease[GENOA]).toBe(1);
+    s = act(s, { type: 'station', station: 'port' });
+    expect(s.realistic.ease).toEqual({});
+    s = run(s, 1);
+    expect(s.controls.ctl_jib_sheet).toBe(30);
+  });
+
   it('static ropes (halyards) are not worked; one rope per winch; the jaw needs turns', () => {
     let s = start({}, 'starboard');
     s = act(s, { type: 'clutch', key: 'a4', open: true });
