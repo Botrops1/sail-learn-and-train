@@ -545,6 +545,25 @@ export function createStationDrawing(
   let drag: Drag | null = null;
   let selectedKey: string | null = null;
 
+  // A finger on a part that is dragged must not scroll the panel: the browser would take the
+  // touch over and cancel the gesture after a few pixels. `touch-action` does not reach shapes
+  // inside an SVG (it failed on a real phone), so the touch itself is claimed. Everything else
+  // lets the panel scroll: the body of a clutch (only its lever is dragged), and the area round
+  // the winch while no rope is on it.
+  root.addEventListener(
+    'touchstart',
+    (event) => {
+      const target = event.target as Element;
+      const part = target.closest('[data-drag]');
+      const what = part?.getAttribute('data-drag') ?? '';
+      if (!part) return;
+      if (what.startsWith('clutch:') && !target.closest('.real-lever, .real-lever-slot')) return;
+      if (what === 'drum' && !winchTail()) return;
+      event.preventDefault();
+    },
+    { passive: false },
+  );
+
   root.addEventListener('pointerdown', (event) => {
     if (event.button > 0) return;
     const target = (event.target as Element).closest('[data-drag]');
@@ -566,7 +585,9 @@ export function createStationDrawing(
       wasSelected: selectedKey === key,
     };
     if (kind === 'button') dispatch({ type: 'button', winch: winchId, held: true });
-    if (kind === 'tail' || kind === 'clutch') options.onSelect(key);
+    // A clutch is selected when the press ends as a tap or a lever drag, not on touching it:
+    // a finger that starts a scroll on a clutch body must not select it.
+    if (kind === 'tail') options.onSelect(key);
     if (kind === 'hand' || kind === 'jaw' || kind === 'drum') {
       const key = winchTail();
       if (key) options.onSelect(key);
@@ -632,9 +653,16 @@ export function createStationDrawing(
       case 'clutch': {
         if (cancelled) break;
         const dy = p.y - current.start.y;
-        if (dy < -D.leverMove) dispatch({ type: 'clutch', key: current.key, open: true });
-        else if (dy > D.leverMove) dispatch({ type: 'clutch', key: current.key, open: false });
-        else if (current.moved < D.tapMove && current.wasSelected) toggleClutch(current.key);
+        if (dy < -D.leverMove) {
+          options.onSelect(current.key);
+          dispatch({ type: 'clutch', key: current.key, open: true });
+        } else if (dy > D.leverMove) {
+          options.onSelect(current.key);
+          dispatch({ type: 'clutch', key: current.key, open: false });
+        } else if (current.moved < D.tapMove) {
+          if (current.wasSelected) toggleClutch(current.key);
+          else options.onSelect(current.key);
+        }
         break;
       }
       case 'tail':

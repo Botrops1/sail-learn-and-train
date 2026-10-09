@@ -7,7 +7,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import { createServer, preview } from 'vite';
 import { liveM4aChecks, M4A_SCENES } from './shots-m4a.mjs';
-import { liveM4bChecks, M4B_SCENES } from './shots-m4b.mjs';
+import { liveM4bChecks, liveM4bTouchChecks, M4B_SCENES } from './shots-m4b.mjs';
 
 const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm4b';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
@@ -659,6 +659,13 @@ try {
   // Live checks: layout, camera and URL, the M2–M4a checklists, then M4b (Realistic mode).
   if (!ONLY_M4B) await liveGeneralChecks();
   await liveM4bChecks({
+    openPage,
+    viewports: VIEWPORTS,
+    outDir: OUT_DIR,
+    prefix: PREFIX,
+    problems,
+  });
+  await liveM4bTouchChecks({
     openPage,
     viewports: VIEWPORTS,
     outDir: OUT_DIR,

@@ -65,6 +65,182 @@ async function circleDrum(page, station, turns) {
   await dragPath(page, points);
 }
 
+/**
+ * Real touch input (Chrome DevTools Protocol), as a finger on a phone: the mouse does not show
+ * what the browser does with a touch. Found on the owner's phone after M4b: the browser took
+ * the touch over to scroll the panel and cancelled every drag in the drawing.
+ */
+function touchTools(cdp, page) {
+  const send = (type, x, y) =>
+    cdp.send('Input.dispatchTouchEvent', {
+      type,
+      touchPoints: type === 'touchEnd' ? [] : [{ x, y, id: 1 }],
+    });
+  const where = async (selector) => {
+    const box = await page.locator(selector).first().boundingBox();
+    if (!box) throw new Error(`no box for ${selector}`);
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2, box };
+  };
+  return {
+    where,
+    /** Finger down at the first point, along the rest, up at the last. */
+    async swipe(points, { hold = 0 } = {}) {
+      const [first, ...rest] = points;
+      await send('touchStart', first.x, first.y);
+      for (const p of rest) {
+        await send('touchMove', p.x, p.y);
+        await page.waitForTimeout(20);
+      }
+      if (hold) await page.waitForTimeout(hold);
+      const last = rest.at(-1) ?? first;
+      await send('touchEnd', last.x, last.y);
+    },
+  };
+}
+
+/** Points along a line from a to b. */
+function line(a, b, steps = 10) {
+  return Array.from({ length: steps + 1 }, (_, i) => ({
+    x: a.x + ((b.x - a.x) * i) / steps,
+    y: a.y + ((b.y - a.y) * i) / steps,
+  }));
+}
+
+/** Points on a circle round (x, y), turns > 0 clockwise on screen, starting at the top. */
+function circle(x, y, radius, turns) {
+  const steps = Math.ceil(24 * Math.abs(turns)) + 2;
+  const sign = turns > 0 ? 1 : -1;
+  return Array.from({ length: steps + 1 }, (_, i) => {
+    const a = -Math.PI / 2 + sign * (i / steps) * Math.abs(turns) * 2 * Math.PI;
+    return { x: x + radius * Math.cos(a), y: y + radius * Math.sin(a) };
+  });
+}
+
+/**
+ * The M4b checklist with a finger: lever, tail onto the winch, turns, self-tailer, the button,
+ * and the panel still scrolling when the finger starts on empty space (not on a part).
+ */
+export async function liveM4bTouchChecks({ openPage, viewports, outDir, prefix, problems }) {
+  const check = (what, ok, detail) => {
+    if (!ok) problems.push(`live M4b touch ${what}: ${detail}`);
+    console.log(`live M4b touch ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
+  };
+  const phone = viewports[0];
+  const { context, page } = await openPage(
+    phone,
+    'm4b touch',
+    '?mode=realistic&wd=90&ws=12&cam=side-port',
+  );
+  await page.waitForTimeout(600);
+  const t = touchTools(await context.newCDPSession(page), page);
+  const param = async (name) =>
+    new URLSearchParams(await page.evaluate(() => window.location.search)).get(name);
+  const settle = () => page.waitForTimeout(700);
+  const dr = drawing('port');
+  // Scroll the drum into view first: positions are measured after the panel stops moving.
+  const ready = () => page.locator(`${dr} .real-drum`).scrollIntoViewIfNeeded();
+
+  // Lever up opens, down closes (PT-15).
+  await ready();
+  let p = await t.where(lever('port', 'b5'));
+  await t.swipe(line(p, { x: p.x, y: p.y - 40 }, 6));
+  await settle();
+  check('lever up opens the Vang clutch', (await param('co')) === 'b5', await param('co'));
+  p = await t.where(lever('port', 'b5'));
+  await t.swipe(line(p, { x: p.x, y: p.y + 40 }, 6));
+  await settle();
+  check('lever down closes it', (await param('co')) === null, String(await param('co')));
+
+  // A tap on the tail selects its rope.
+  await ready();
+  p = await t.where(knob('port', 'b5'));
+  await t.swipe([p, p]);
+  await settle();
+  check(
+    'tap on the tail selects the vang',
+    (await param('sel')) === 'rope_vang',
+    String(await param('sel')),
+  );
+
+  // Tail onto the winch, two turns clockwise, one back, into the self-tailer.
+  await ready();
+  p = await t.where(knob('port', 'b5'));
+  let d = await t.where(drum('port'));
+  await t.swipe(line(p, d, 12));
+  await settle();
+  check('tail dragged onto the winch', (await param('wp')) === 'b5.0.h', String(await param('wp')));
+  await ready();
+  d = await t.where(drum('port'));
+  const ring = d.box.width / 2 + 10;
+  await t.swipe(circle(d.x, d.y, ring, 2));
+  await settle();
+  check('two turns clockwise', (await param('wp')) === 'b5.2.h', String(await param('wp')));
+  await ready();
+  d = await t.where(drum('port'));
+  await t.swipe(circle(d.x, d.y, ring, -1));
+  await settle();
+  check('one turn back anticlockwise', (await param('wp')) === 'b5.1.h', String(await param('wp')));
+  await ready();
+  d = await t.where(drum('port'));
+  await t.swipe(circle(d.x, d.y, ring, 1));
+  // The "in your hand" knob sits low in the drawing: bring it fully on screen first.
+  await page.locator(handKnob('port')).scrollIntoViewIfNeeded();
+  p = await t.where(handKnob('port'));
+  const j = await t.where(jaw('port'));
+  await t.swipe(line(p, j, 10));
+  await settle();
+  check('tail into the self-tailer', (await param('wp')) === 'b5.2.t', String(await param('wp')));
+
+  // Hold the button: the vang comes in; lift the finger: it stops.
+  await ready();
+  const before = Number(await param('vg'));
+  const b = await t.where(winchButton('port'));
+  await t.swipe([b, b], { hold: 900 });
+  await settle();
+  const after = Number(await param('vg'));
+  await page.waitForTimeout(800);
+  const later = Number(await param('vg'));
+  check(
+    'button held by a finger hauls the vang, letting go stops it',
+    after < before && later === after,
+    `vg ${before} → ${after} → ${later}`,
+  );
+  await page.screenshot({ path: path.join(outDir, `${prefix}live-phone-touch-vang-on-winch.png`) });
+
+  // The panel still scrolls when the finger starts on the body of a clutch (only its lever is
+  // dragged), and that scroll does not select the clutch.
+  const body = page.locator('.panel-body');
+  await body.evaluate((el) => {
+    el.scrollTop = 0;
+  });
+  await page.waitForTimeout(200);
+  const spot = await t.where(`${dr} [data-key="b2"] .clutch-body`);
+  const selBefore = await param('sel');
+  await t.swipe(line({ x: spot.x, y: spot.y + 30 }, { x: spot.x, y: spot.y - 200 }, 12));
+  await page.waitForTimeout(500);
+  const scrolled = await body.evaluate((el) => el.scrollTop);
+  check('panel still scrolls from a clutch body', scrolled > 40, `scrollTop ${scrolled}`);
+  check(
+    'that scroll does not select the clutch',
+    (await param('sel')) === selBefore,
+    `${selBefore} → ${await param('sel')}`,
+  );
+  // A plain tap on a clutch body does select it.
+  await body.evaluate((el) => {
+    el.scrollTop = 0;
+  });
+  await page.waitForTimeout(200);
+  const body2 = await t.where(`${dr} [data-key="b2"] .clutch-body`);
+  await t.swipe([body2, body2]);
+  await settle();
+  check(
+    'tap on a clutch body selects it',
+    (await param('sel')) === 'rope_topping_lift',
+    String(await param('sel')),
+  );
+  await context.close();
+}
+
 export async function liveM4bChecks({ openPage, viewports, outDir, prefix, problems }) {
   const check = (what, ok, detail) => {
     if (!ok) problems.push(`live M4b ${what}: ${detail}`);
