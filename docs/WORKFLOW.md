@@ -1,4 +1,4 @@
-# Workflow: building Phase 1 from a phone
+# Workflow: building the app from a phone
 
 For the owner. How to run each milestone with Claude Code in the cloud, what to paste, and how to check the result without sailing knowledge.
 
@@ -198,4 +198,92 @@ Every check is a full link: tap it, then do what the line says.
 
 - Ask a Russian-speaking sailor to look at `content/registry/parts.json` (or a printable list Claude can generate) and the clutch-bank screen. Mark reviewed terms `sailor-reviewed`.
 - Answer the open questions in `docs/BOAT_REFERENCE.md` if you get the chance.
-- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1.
+- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1. (Done 2026-10-10: [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and section 7 below.)
+
+## 7. Phase 2
+
+Same loop as section 2: one session and one PR per milestone (M6 … M13, [`PHASE2_SPEC.md`](PHASE2_SPEC.md) section 5). The spec gives every formula, number and test, so **Sonnet at high effort** can build each milestone (`/model sonnet`, `/effort high`). For M6, M8 and M11 (the physics), an Opus review (prompt 3.3) before merging is worth it.
+
+### 7.1 Prompt for each Phase 2 milestone (replace N and the name)
+
+```
+Read CLAUDE.md and every document it lists. Phase 1 is done; Phase 2 milestones before M<N> are merged.
+Implement milestone M<N> (<name>) from docs/PHASE2_SPEC.md, and only that milestone. Read sections 0–5 of the spec first, then section <N>.
+Follow the spec's formulas, data values and function signatures exactly. If a test band fails, follow section 0 (check the formulas first; tune only the keys marked tunable; report it).
+Branch: m<N>-<short-name>. Same verification and PR rules as before (tests named after PHYSICS_TRUTHS ids, screenshots you have looked at, the M<N> checklist from docs/WORKFLOW.md section 7.2 with every link pointing at this PR's preview).
+Write anything you decide that the spec leaves open into the milestone's section of docs/PHASE2_SPEC.md, marked "decided in the M<N> PR".
+List open questions in the PR instead of guessing.
+In the PR description, embed the 6–10 most important screenshots as images, phone size first.
+```
+
+### 7.2 Checklists
+
+New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, default 0), `wd` the true wind's compass direction (old links: heading 0, so the picture is the same), `held=1` boat held still, `bs` boat speed at the start (kn; without it the boat starts at her steady speed), `ap=off|hdg|wind` autopilot (default: holding the heading) with its target `apt`; M7 `cam=map`; M10 `wm`, `seed`, `wg`, `tx`; M12 `eng=1`, `lv`. Replace `<N>` with the PR number.
+
+#### M6: The boat sails
+
+- [ ] Sailing across the wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100 — the strip at the top shows about 7.7–8.8 kn and "AUTO 0°". "App" (the apparent wind, what the sails feel) is further forward than "True 90° S" (about 55–60°). The water grid streams past and there is a wake behind the boat. (PT-20)
+- [ ] Held still is Phase 1: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&held=1 — the strip says "Held still", App = True, nothing moves.
+- [ ] Stuck head to wind ("in irons"): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=10&js=10&bs=6&ap=off — she slows down, both sails flap, and within about a minute she stops (she may drift backwards a little). Ropes tab → turn the wheel: once stopped, she does not turn. (PT-21, PT-35)
+- [ ] Autopilot, heading: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100 — Ropes tab → autopilot "Heading" is on. Tap +10: she turns 10° to starboard (right) and holds it. Then move the wheel: the autopilot goes to Standby with a notice.
+- [ ] Autopilot, wind angle: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&ap=wind — Wind tab → drag the wind arrow 20° round: the boat turns with the wind and the true angle in the strip stays 90°.
+- [ ] Tack with the autopilot: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=12&js=0&ap=wind — Ropes tab → Tack: she turns through the wind, slows down, the jib crosses by itself (no rope work) and she settles at "True 45° P" within about 40 s. (PT-28)
+- [ ] Bear away (turn away from the wind) and ease: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=12&js=0 — Ropes tab → tap −10 nine times (she turns until the true wind is about 135° on the starboard side): with the sheets still pulled in she is slow; ease the main sheet and the jib sheet to 100 % and the speed comes back to about 6 kn. (PT-22)
+- [ ] Wind presets are now relative to the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12 — Wind tab → tap "45° starboard": the wind arrow moves to 45° from the bow.
+- [ ] Old links still work: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60 — the boat sails with the wind 60° on the starboard bow (the Phase 1 picture) and the autopilot holds the course.
+- [ ] Frame rate: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&debug=1 — FPS mostly 50 or more, "Slowest" under 33 ms. Please note the numbers in the PR.
+
+#### M7: Map and wind instrument
+
+- [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=12&js=0&cam=map — the boat in the middle, a red wedge (the no-go zone, where she cannot sail) pointing into the wind, "Close-hauled" in bold, the box "True wind 12 kn from 045°", a blue arrow for the apparent wind. Wait 30 s: a grey track appears behind her.
+- [ ] Zoom and turn: same link — + and − change the scale bar; "Boat up" turns the map so the bow points up.
+- [ ] Running downwind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=12&ms=100&js=100&cam=map — "Run" is in bold, the no-go wedge points behind you.
+- [ ] Tap the red wedge: the card says "No-go zone". Tap the blue arrow: "Apparent wind".
+- [ ] Wind instrument: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100 — Wind tab: the solid needle (apparent) at about 56°, the outlined one (true) at 90°, AWS about 14.5, TWS 12. With `&held=1` added both needles point the same way.
+- [ ] Back to 3D: tap "Side" on the camera bar: the boat is drawn again.
+
+#### M8: Heel, forces and weather helm
+
+- [ ] Heel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=20&ms=15&js=0&cam=bow — the boat leans to port (left) about 25–36°, the strip says "Heel … P", and "Heeling a lot" shows after 2 s.
+- [ ] Easing helps: same link — Ropes tab → main sheet to 60: the heel gets smaller. Roll the main half in ("Mainsail out" 50): smaller again. (PT-25)
+- [ ] Round-up (the boat turns into the wind by herself): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=50&ws=18&ms=15&js=20 — Wind tab → speed to 28 kn: within half a minute she heels hard, turns towards the wind although the autopilot holds full rudder, and "ROUND-UP" shows. Open the link again, set the main sheet to 50 first, then 28 kn: she holds her course. (PT-32)
+- [ ] Weather helm (the boat's pull towards the wind): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=50&ws=10&ms=15&js=20 then https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=50&ws=20&ms=15&js=20 — Ropes tab: the wheel (turned by the autopilot) is turned further in the stronger wind. (PT-29)
+- [ ] Rope loads: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&sel=rope_mainsheet — the strip shows "Load … kN"; Wind tab → 24 kn: the load grows.
+- [ ] A gust makes a rope slip: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wd=90&ws=20&js=30&st=starboard&wsb=a5.2.h — open the Genoa sheet clutch: the sheet slips on the winch. With `ws=8` it holds.
+
+#### M9: Trim quality and telltales
+
+- [ ] Good trim: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40&js=50&cam=side-starboard — Ropes tab → "Sails": Mainsail "Good". Zoom in on the front of the main: the little ribbons (telltales) on both sides stream straight back.
+- [ ] Pulled in too far (stalled): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=0&js=50&cam=side-starboard — Mainsail "Stalled", the ribbons on the far (leeward) side hang down, the speed is lower. (PT-23)
+- [ ] Let out too far (luffing): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=100&js=50&cam=side-starboard — Mainsail "Luffing", the near-side ribbons lift, the front of the sail flaps.
+- [ ] Running, the main blocks the jib: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=12&ms=100&js=100 — Jib "Blanketed by the main" and it hangs empty. (PT-37)
+- [ ] Flogging tears a sail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=25&held=1 — leave the phone for about 7 minutes: the damage bar fills, then "Torn" and a "Repair sails" button; the torn sail shows a dark tear. Tap Repair. (PT-38)
+
+#### M10: Wind modes
+
+- [ ] Gusts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&wm=gusty&seed=7 — about once a minute "GUST" shows; speed and heel rise in the gust and drop after.
+- [ ] Repeatable: open the same link again: the gusts come at the same times (counted from opening).
+- [ ] Shifts with the wind autopilot: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&wm=shifty&wg=20&ap=wind — the boat's heading swings slowly with the wind; the true angle stays near 90°.
+- [ ] Building wind, sped up: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=20&js=25&wm=build&wg=12&tx=16 — the strip shows "×16"; within about 40 s the wind rises from 10 to 22 kn and the boat heels more.
+- [ ] Dying wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=14&ms=20&js=25&wm=die&wg=10&tx=16 — the wind falls to 4 kn; the boat slows.
+- [ ] Wind tab: the five mode buttons, the size slider, "New pattern" and ×1 / ×4 / ×16 work; the dial shows a thin arrow for the wind right now.
+
+#### M11: Gybes
+
+- [ ] Accidental gybe (the boom slams across): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=20&ms=100&js=100 — Ropes tab → autopilot −10, twice: the wind gets behind the main, the boom swings across hard, a red sector flashes where it swept, and a report shows the boom speed, energy and peak main sheet load (several kN). (PT-24, PT-26)
+- [ ] Controlled gybe: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=20&ms=5&js=100 — same steps: the boom only moves a little, and the report says "Controlled gybe" with a small load. Then ease the main sheet.
+- [ ] By-the-lee warning: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=15&ms=100&js=100 — autopilot −10 once: "By the lee" shows and a faint outline marks where the boom would swing; after 3 s the warning gets stronger.
+
+#### M12: Engine
+
+- [ ] Idle ahead: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=11 — "Engine 8xx rpm"; after a minute about 3.3 kn.
+- [ ] Cruise: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=66 — about 1,850 rpm and about 8 kn. Full ahead https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=100 — about 9.4 kn.
+- [ ] Astern: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=-100 — she goes backwards, up to about 5 kn; the wheel steers the other way.
+- [ ] Shifting: same link, drag the lever from astern straight to ahead: it pauses in neutral for half a second.
+- [ ] Engine at the Helm station: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=helm&ws=0 — Start, drag the lever forward: rpm and speed rise.
+- [ ] Motor-sailing: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=20&js=25&eng=1&lv=66 — faster than with sails alone.
+
+#### M13: Phase 2 sign-off
+
+- [ ] Frame rate on your phone, the heaviest case: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=16&ms=40&js=100&wm=gusty&tx=16&debug=1 — FPS mostly 50 or more at Detail Low and High (View tab); note FPS and Slowest in the PR.
+- [ ] Every item of the Phase 2 Definition of Done (PHASE2_SPEC 14) is ticked in the PR.
