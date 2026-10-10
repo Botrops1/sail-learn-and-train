@@ -2,12 +2,14 @@
 
 For the owner. How to run each milestone with Claude Code in the cloud, what to paste, and how to check the result without sailing knowledge.
 
-Live site (after the first deploy): **https://botrops1.github.io/sail-learn-and-train/**
+Live site (what is merged into `main`): **https://botrops1.github.io/sail-learn-and-train/**
+
+Each open pull request (PR) also has its own **preview** at `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/` (`<N>` = the PR number). A bot comment on the PR carries the link and is updated on every push; the preview is deleted when the PR is merged or closed. Test there **before** merging.
 
 ## 1. One-time setup (about 10 minutes)
 
 1. **Merge the starter-pack PR** (this file arrives with it) in the GitHub app.
-2. **Turn on GitHub Pages.** The GitHub app may not show this setting, so use the mobile browser: github.com → `Botrops1/sail-learn-and-train` → **Settings** → **Pages** → *Build and deployment* → Source: **GitHub Actions**. (If the menu is hidden, use the browser's "Desktop site" option.)
+2. **Turn on GitHub Pages.** The GitHub app may not show this setting, so use the mobile browser: github.com → `Botrops1/sail-learn-and-train` → **Settings** → **Pages** → *Build and deployment* → Source: **Deploy from a branch**, Branch: **gh-pages**, folder **/ (root)**, **Save**. (If the menu is hidden, use the browser's "Desktop site" option.) The `gh-pages` branch appears after the first deploy from `main` or the first PR preview; until it exists the branch is not in the list.
 3. **Claude app → Code tab:** make sure GitHub is connected and `Botrops1/sail-learn-and-train` is selectable. The default cloud environment is fine; nothing to configure.
 
 ## 2. The loop for each milestone
@@ -16,10 +18,11 @@ Live site (after the first deploy): **https://botrops1.github.io/sail-learn-and-
 2. Set model and effort (table in section 4), then paste the milestone prompt from section 3.
 3. Wait. Claude works, runs the tests, takes screenshots and opens a PR. You can close the app meanwhile.
 4. In the PR (GitHub app): read "What changed", open the screenshots, check that CI is green.
-5. **Merge.** About 2 minutes later the site updates. Pull to refresh on the phone and check that the **version in the footer** matches the merged commit (the first 7 characters).
-6. Go through the milestone checklist (section 5). Tick what works.
-7. Problems? In the same session, describe them with the bug template (section 3.4). Claude fixes them on a new branch and opens another PR.
+5. **Open the preview link in the PR comment** ("PR Preview Action"). It appears about 2 minutes after each push; pull to refresh the PR if it is not there yet. Check that the **version in the footer** matches the PR's latest commit (the first 7 characters, shown in the PR's Commits tab). The test links in the PR description already point at the preview.
+6. Go through the milestone checklist (section 5) on the preview. Tick what works.
+7. Problems? In the same session, describe them with the bug template (section 3.4). Claude pushes fixes to the same PR; the preview updates by itself.
 8. Optional for M2 and M3: run the **review prompt** (3.3) in a fresh session before merging. A second pair of eyes is cheap compared with debugging later.
+9. **Merge** when the preview works. About 2 minutes later the live site updates (footer shows the merged commit) and the preview is removed.
 
 If a merge breaks the site, open the merged PR in the GitHub app and tap **Revert**. That creates a PR that undoes it; merge that.
 
@@ -59,7 +62,7 @@ Post the result as a comment on the PR.
 ### 3.4 Bug report (paste into the session)
 
 ```
-Bug on the live site (version <footer hash>), phone <model>, <portrait/landscape/unfolded>.
+Bug on the preview of PR #<N> or the live site (version <footer hash>), phone <model>, <portrait/landscape/unfolded>.
 Link that shows it: <copy link from View tab → Share>
 What I did: ...
 What I expected: ...
@@ -88,11 +91,11 @@ Usage: cloud sessions share your plan's limits with normal chat. One session at 
 
 ## 5. Checklists (what to look for on the phone)
 
-Test links set the app to a known state. Base: `https://botrops1.github.io/sail-learn-and-train/`. Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, and your hand is full: no rope can be worked, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch.
+Test links set the app to a known state. Base: the PR's preview, `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/` (the links below use the live site; the same `?…` part works after the preview address). Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, and your hand is full: no rope can be worked, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch.
 
 ### M0: Scaffold
 
-- [ ] The site opens. The footer shows a version that matches the merged commit.
+- [ ] The site opens. The footer shows a version that matches the PR's latest commit (on the live site: the merged commit).
 - [ ] Portrait phone: the 3D area is on top and the panel below. Rotate to landscape or unfold: they switch to side by side.
 - [ ] On a computer, narrowing the browser window below about 700 px switches the layout live.
 - [ ] `?debug=1` shows the debug overlay with FPS and layout mode.
