@@ -25,7 +25,7 @@ export const M4C_SCENES = [
     centre: '[data-testid="station-drawing-starboard"] .real-drum',
   },
   {
-    name: 'port-handle-pocket-bar',
+    name: 'port-handle-slot-bar',
     query: '?mode=realistic&wd=90&ws=12&cam=helm',
     scrollTo: '[data-testid="handle-bar"]',
   },
@@ -228,8 +228,8 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     // Fetch the handle from Port: tap it in the drawing (picks it up).
     await page.locator('.station-button[data-station="port"]').tap();
     await settle(page);
-    await centreOn(page, `${drawing('port')} .real-pocket`);
-    const pocket = await t.where(`${drawing('port')} .real-pocket-box`);
+    await centreOn(page, `${drawing('port')} .real-slot`);
+    const pocket = await t.where(`${drawing('port')} .real-slot-box`);
     await t.swipe([pocket, pocket]);
     await settle(page);
     check(
@@ -242,7 +242,7 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await settle(page);
     const md = drawing('mast');
     await centreOn(page, md);
-    const carried = await t.where(`${md} .real-pocket-box`);
+    const carried = await t.where(`${md} .real-slot-box`);
     const socket = await t.where(`${md} .real-socket`);
     await t.swipe(line(carried, socket, 12));
     await settle(page);
@@ -349,30 +349,71 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // Owner comment after M4c: a carried handle fills the hand (B), the handle comes out of a
-  // winch by a gesture (C), and a tap on the handle icon takes it or lays it down (D).
+  // Owner comments after M4c: a carried handle fills the hand (B); the handle comes out of a
+  // winch only when its grip is dropped on the slot, never by cranking (C); a tap on the slot
+  // takes the handle or lays it down (D); every place has a slot, always drawn.
   {
     const { context, page } = await openPage(
       phone,
-      'm4c handle in hand',
+      'm4c handle slot',
       '?mode=realistic&wd=90&ws=12&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w&sel=rope_jib_sheet&cam=helm',
     );
     await page.waitForTimeout(600);
-    const t = touchTools(await context.newCDPSession(page), page);
+    const cdp = await context.newCDPSession(page);
+    const t = touchTools(cdp, page);
+    const f = finger(cdp, page);
     const dr = drawing('starboard');
     await centreOn(page, `${dr} .real-drum`);
     const drum = await t.where(`${dr} .real-drum`);
     const unit = drum.box.width / 66;
     const at = (dx, dy) => ({ x: drum.x + dx * unit, y: drum.y + dy * unit });
-    // C: pull the grip away from the winch: the handle comes out and is in the hand.
+    const slotBox = `${dr} .real-slot-box`;
+    const hd = async () => String(await param(page, 'hd'));
+    // The slot is drawn even while the handle is in the winch (it is empty then).
+    const empty = await page
+      .locator(`${dr} .real-slot`)
+      .evaluate((g) => g.classList.contains('is-empty'));
+    check(
+      'the slot is drawn while the handle is in the winch, and empty',
+      (await page.locator(slotBox).isVisible()) && empty,
+      `empty ${empty}`,
+    );
+    await shot(page, 'live-phone-slot-empty-handle-in-winch');
+    // C: a wide, sloppy circle with the finger far outside the crank circle: the handle stays.
     let grip = await t.where(`${dr} .real-crank`);
-    await t.swipe(line(grip, at(-100, 40), 12));
+    await f.down(grip);
+    await f.moveThrough(arc(drum, at(0, -125), 2.5));
+    await f.up(at(0, -125));
     await settle(page);
     check(
-      'C: pulling the grip out of the winch takes the handle out',
-      (await param(page, 'hd')) === 'c',
-      `hd ${await param(page, 'hd')}`,
+      'C: a wide circle while cranking does not take the handle out',
+      (await hd()) === 'starboard.w',
+      `hd ${await hd()}`,
     );
+    // C: the grip dragged away and let go anywhere but on the slot: the handle stays in.
+    grip = await t.where(`${dr} .real-crank`);
+    await t.swipe(line(grip, at(-100, 45), 12));
+    await settle(page);
+    check(
+      'C: the grip dropped away from the slot leaves the handle in the winch',
+      (await hd()) === 'starboard.w',
+      `hd ${await hd()}`,
+    );
+    // C: the grip dragged onto the slot: the handle comes out and lies there.
+    grip = await t.where(`${dr} .real-crank`);
+    let slot = await t.where(slotBox);
+    await t.swipe(line(grip, slot, 14));
+    await settle(page);
+    check(
+      'C: the grip dropped on the slot takes the handle out and lays it there',
+      (await hd()) === 'starboard.s',
+      `hd ${await hd()}`,
+    );
+    // D: a tap on the slot takes the handle.
+    slot = await t.where(slotBox);
+    await t.swipe([slot, slot]);
+    await settle(page);
+    check('D: tap on the slot takes the handle', (await hd()) === 'c', `hd ${await hd()}`);
     // B: with the handle in the hand a line end cannot be worked.
     const lever = await t.where(`${dr} [data-key="a5"] .real-lever`);
     await t.swipe(line(lever, { x: lever.x, y: lever.y - 40 }, 6));
@@ -384,34 +425,24 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
       `co ${await param(page, 'co')} | ${notice}`,
     );
     await shot(page, 'live-phone-handle-in-hand-refuses');
-    // D: a tap on the handle icon lays it down here, a second tap takes it again.
-    let icon = await t.where(`${dr} .real-pocket-box`);
-    await t.swipe([icon, icon]);
+    // D: a tap on the slot lays it down here, another takes it, another lays it down.
+    slot = await t.where(slotBox);
+    await t.swipe([slot, slot]);
     await settle(page);
     check(
-      'D: tap on the handle icon lays the carried handle down here',
-      (await param(page, 'hd')) === 'starboard.s',
-      `hd ${await param(page, 'hd')}`,
+      'D: tap on the slot lays the carried handle down here',
+      (await hd()) === 'starboard.s',
+      `hd ${await hd()}`,
     );
-    icon = await t.where(`${dr} .real-pocket-box`);
-    await t.swipe([icon, icon]);
+    await shot(page, 'live-phone-slot-handle-lying');
+    await t.swipe([slot, slot]);
     await settle(page);
-    check(
-      'D: tap on it again takes it',
-      (await param(page, 'hd')) === 'c',
-      `hd ${await param(page, 'hd')}`,
-    );
-    await t.swipe([icon, icon]);
+    check('D: tap on it again takes it', (await hd()) === 'c', `hd ${await hd()}`);
+    await t.swipe([slot, slot]);
     await settle(page);
-    check(
-      'D: and again lays it down',
-      (await param(page, 'hd')) === 'starboard.s',
-      `hd ${await param(page, 'hd')}`,
-    );
+    check('D: and again lays it down', (await hd()) === 'starboard.s', `hd ${await hd()}`);
     // With the handle laid down the line end works again.
     const lever2 = await t.where(`${dr} [data-key="a5"] .real-lever`);
-    await t.swipe(line(lever2, { x: lever2.x, y: lever2.y + 40 }, 6));
-    await settle(page);
     await t.swipe(line(lever2, { x: lever2.x, y: lever2.y - 40 }, 6));
     await settle(page);
     check(
@@ -421,23 +452,14 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     );
     await t.swipe(line(lever2, { x: lever2.x, y: lever2.y + 40 }, 6));
     await settle(page);
-    // C again: drag it from its icon into the winch, then pull the grip out onto the icon.
-    icon = await t.where(`${dr} .real-pocket-box`);
-    await t.swipe(line(icon, drum, 12));
+    // From the slot onto the drum: into the winch.
+    slot = await t.where(slotBox);
+    await t.swipe(line(slot, drum, 12));
     await settle(page);
     check(
-      'the handle dragged from its icon onto the drum goes into the winch',
-      (await param(page, 'hd')) === 'starboard.w',
-      `hd ${await param(page, 'hd')}`,
-    );
-    grip = await t.where(`${dr} .real-crank`);
-    icon = await t.where(`${dr} .real-pocket-box`);
-    await t.swipe(line(grip, icon, 14));
-    await settle(page);
-    check(
-      'C: the grip pulled out and dropped on the icon lays the handle down',
-      (await param(page, 'hd')) === 'starboard.s',
-      `hd ${await param(page, 'hd')}`,
+      'the handle dragged from the slot onto the drum goes into the winch',
+      (await hd()) === 'starboard.w',
+      `hd ${await hd()}`,
     );
     await context.close();
   }
@@ -451,24 +473,60 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     const t = touchTools(await context.newCDPSession(page), page);
     const md = drawing('mast');
     await centreOn(page, md);
-    const socket = await t.where(`${md} .real-socket`);
-    const unit = socket.box.width / 20;
+    const slotBox = `${md} .real-slot-box`;
+    const hd = async () => String(await param(page, 'hd'));
+    check(
+      'the slot is drawn at the mast while the handle is in the gearbox',
+      await page.locator(slotBox).isVisible(),
+      '',
+    );
     const grip = await t.where(`${md} .real-crank`);
-    await t.swipe(line(grip, { x: socket.x + 110 * unit, y: socket.y }, 12));
+    const slot = await t.where(slotBox);
+    await t.swipe(line(grip, slot, 14));
     await settle(page);
     check(
-      'C: pulling the grip out of the gearbox takes the handle out',
-      (await param(page, 'hd')) === 'c',
-      `hd ${await param(page, 'hd')}`,
+      'C: the grip dropped on the slot takes the handle out of the gearbox',
+      (await hd()) === 'mast.s',
+      `hd ${await hd()}`,
     );
-    const icon = await t.where(`${md} .real-pocket-box`);
-    await t.swipe([icon, icon]);
+    await t.swipe([slot, slot]);
     await settle(page);
     check(
-      'D: at the mast a tap on the icon lays it down',
-      (await param(page, 'hd')) === 'mast.s',
+      'D: at the mast a tap on the slot takes the handle',
+      (await hd()) === 'c',
+      `hd ${await hd()}`,
+    );
+    await t.swipe([slot, slot]);
+    await settle(page);
+    check('D: and lays it down', (await hd()) === 'mast.s', `hd ${await hd()}`);
+    await context.close();
+  }
+  {
+    // The slot at the helm and at a place the handle is not at.
+    const { context, page } = await openPage(
+      phone,
+      'm4c helm slot',
+      '?mode=realistic&st=helm&hd=c&cam=helm',
+    );
+    await page.waitForTimeout(600);
+    const t = touchTools(await context.newCDPSession(page), page);
+    const slotBox = '[data-testid="slot-view"] .real-slot-box';
+    check('the helm has a slot too', await page.locator(slotBox).isVisible(), '');
+    const slot = await t.where(slotBox);
+    await t.swipe([slot, slot]);
+    await settle(page);
+    check(
+      'D: at the helm a tap on the slot lays the carried handle down',
+      (await param(page, 'hd')) === 'helm.s',
       `hd ${await param(page, 'hd')}`,
     );
+    await shot(page, 'live-phone-helm-slot');
+    await page.locator('.station-button[data-station="starboard"]').tap();
+    await settle(page);
+    const away = await page
+      .locator(`${drawing('starboard')} .real-slot`)
+      .evaluate((g) => g.classList.contains('is-empty'));
+    check('the slot is drawn, empty, where the handle is not', away, `empty ${away}`);
     await context.close();
   }
 

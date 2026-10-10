@@ -10,9 +10,11 @@ import {
 import { el } from './dom';
 import {
   crankTracker,
-  createHandlePocket,
+  createHandleSlot,
   createSocketHandle,
   createStrainBar,
+  slotMode,
+  tapSlot,
 } from './handleDrawing';
 import { t, type StringKey } from './i18n';
 import { ropeColorKey, ROPE_DASH } from './ropeLegend';
@@ -45,7 +47,7 @@ const M = {
   toggle: { x: 10, y: 98, width: 100, height: 44, inset: 3, slide: 12 },
   strain: { x: 262, top: 83, height: 66 },
   lines: { bottom: 230, gap: 10 },
-  pocket: { x: 54, y: 204 },
+  slot: { x: 54, y: 204 },
   tapMove: 10,
 } as const;
 
@@ -219,10 +221,10 @@ export function createMastDrawing(store: Store): MastDrawing {
   const towards = (side: 'left' | 'right'): GearboxSwitch => (positions.in === side ? 'in' : 'out');
 
   const strainBar = createStrainBar(M.strain.x, M.strain.top, M.strain.height);
-  const pocket = createHandlePocket(M.pocket.x, M.pocket.y);
+  const slot = createHandleSlot(M.slot.x, M.slot.y);
   const socketHandle = createSocketHandle(cx, cy, M.arm);
   const ghost = svg('line', { class: 'real-ghost', 'stroke-width': 5, visibility: 'hidden' });
-  root.append(strainBar.group, pocket.group, socketHandle.group, ghost);
+  root.append(strainBar.group, slot.group, socketHandle.group, ghost);
 
   // --- gestures ---
   const dispatch = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
@@ -231,19 +233,24 @@ export function createMastDrawing(store: Store): MastDrawing {
     (turnsPerS) => dispatch({ type: 'crank', turnsPerS }),
     M.arm,
   );
-  /** A tap on the handle icon takes the handle, or lays it down here when it is carried. */
-  const tapHandle = () =>
-    dispatch({
-      type: 'handle',
-      to: store.getState().realistic.handle.place === 'carried' ? 'stow' : 'carry',
-    });
+  /** A tap on the slot takes the handle lying in it, or lays a carried handle down here. */
+  const tapHandle = () => {
+    const to = tapSlot(slotMode(store.getState().realistic.handle, 'mast'));
+    if (to) dispatch({ type: 'handle', to });
+  };
   const point = (event: PointerEvent) => {
     const matrix = root.getScreenCTM();
     if (!matrix) return { x: 0, y: 0 };
     const p = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
     return { x: p.x, y: p.y };
   };
-  let drag: { kind: string; start: { x: number; y: number }; moved: number } | null = null;
+  let drag: {
+    kind: string;
+    start: { x: number; y: number };
+    moved: number;
+    /** Cranking: the finger is outside the crank circle (it may be heading for the slot). */
+    out: boolean;
+  } | null = null;
 
   // A finger on a part must not scroll the panel (see stationDrawing.ts).
   root.addEventListener(
@@ -260,22 +267,22 @@ export function createMastDrawing(store: Store): MastDrawing {
     event.preventDefault();
     root.setPointerCapture(event.pointerId);
     const p = point(event);
-    drag = { kind, start: p, moved: 0 };
+    drag = { kind, start: p, moved: 0, out: false };
     if (kind === 'crank') crank.start(p.x, p.y, event.timeStamp);
   });
   root.addEventListener('pointermove', (event) => {
     if (!drag) return;
     const p = point(event);
     drag.moved = Math.max(drag.moved, Math.hypot(p.x - drag.start.x, p.y - drag.start.y));
-    if (drag.kind === 'crank' && crank.move(p.x, p.y, event.timeStamp)) {
-      // The grip was pulled out of the socket: the handle is carried; where it is dropped
-      // decides (on its icon: laid down here).
-      dispatch({ type: 'handle', to: 'carry' });
-      drag.kind = 'pulled';
+    if (drag.kind === 'crank') {
+      // A finger outside the crank circle only stops the crank. The handle stays in the
+      // socket; it comes out only when the grip is dropped on the slot (owner, after M4c).
+      drag.out = crank.move(p.x, p.y, event.timeStamp);
+      slot.setTarget(drag.out);
     }
-    if (drag.kind === 'handle' || drag.kind === 'pulled') {
-      ghost.setAttribute('x1', String(drag.kind === 'pulled' ? cx : drag.start.x));
-      ghost.setAttribute('y1', String(drag.kind === 'pulled' ? cy : drag.start.y));
+    if (drag.kind === 'handle' || (drag.kind === 'crank' && drag.out)) {
+      ghost.setAttribute('x1', String(drag.kind === 'crank' ? cx : drag.start.x));
+      ghost.setAttribute('y1', String(drag.kind === 'crank' ? cy : drag.start.y));
       ghost.setAttribute('x2', String(p.x));
       ghost.setAttribute('y2', String(p.y));
       ghost.setAttribute('visibility', 'visible');
@@ -290,14 +297,15 @@ export function createMastDrawing(store: Store): MastDrawing {
     const p = point(event);
     if (current.kind === 'crank') {
       crank.end();
+      slot.setTarget(false);
+      // Dropped on the slot: the handle comes out and lies there. Anywhere else: it stays in
+      // the socket.
+      if (!cancelled && current.out && slot.contains(p.x, p.y)) {
+        dispatch({ type: 'handle', to: 'stow' });
+      }
       return;
     }
     if (cancelled) return;
-    if (current.kind === 'pulled') {
-      // Dropped on the handle icon: laid down here; anywhere else it stays in the hand.
-      if (pocket.contains(p.x, p.y)) dispatch({ type: 'handle', to: 'stow' });
-      return;
-    }
     if (current.kind === 'handle') {
       const overSocket = Math.hypot(p.x - cx, p.y - cy) < M.socket.drop;
       if (overSocket && current.moved >= M.tapMove) dispatch({ type: 'handle', to: 'socket' });
@@ -347,10 +355,7 @@ export function createMastDrawing(store: Store): MastDrawing {
         dir: t(real.gearbox === 'in' ? 'real.gearbox.in' : 'real.gearbox.out'),
       }),
     );
-    pocket.update(
-      handle.place === 'carried' || (handle.place === 'stowed' && handle.station === 'mast'),
-      handle.place === 'carried',
-    );
+    slot.update(slotMode(handle, 'mast'));
     const inSocket = handle.place === 'socket' && handle.station === 'mast';
     socketHandle.update(inSocket, handle.angle, handle.crank !== 0);
     const report = real.handleReport;

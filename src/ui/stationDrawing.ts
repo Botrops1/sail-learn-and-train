@@ -13,9 +13,11 @@ import { SCENE } from '../render3d/sceneConfig';
 import { el } from './dom';
 import {
   crankTracker,
-  createHandlePocket,
+  createHandleSlot,
   createSocketHandle,
   createStrainBar,
+  slotMode,
+  tapSlot,
 } from './handleDrawing';
 import { t, type StringKey } from './i18n';
 import { ropeColorKey, ROPE_DASH } from './ropeLegend';
@@ -62,7 +64,7 @@ const D = {
   hand: { dx: -92, dy: 34 },
   /** M4c: the strain bar right of the drum, the handle's pocket left of it, the handle's arm. */
   strain: { dx: 30, halfHeight: 33 },
-  pocket: { x: 44, dy: -12 },
+  slot: { x: 44, dy: -12 },
   handleArm: 49,
   bottomPad: 30,
   ropeWidth: 5,
@@ -528,10 +530,10 @@ export function createStationDrawing(
     cy - D.strain.halfHeight,
     2 * D.strain.halfHeight,
   );
-  const pocket = createHandlePocket(D.pocket.x, cy + D.pocket.dy);
+  const slot = createHandleSlot(D.slot.x, cy + D.slot.dy);
   const socketHandle = createSocketHandle(cx, cy, D.handleArm);
   winchGroup.append(socketHandle.group);
-  root.append(strainBar.group, pocket.group);
+  root.append(strainBar.group, slot.group);
 
   // A ghost line while a tail is dragged.
   const ghost = svg('line', {
@@ -549,12 +551,11 @@ export function createStationDrawing(
     (turnsPerS) => dispatch({ type: 'crank', turnsPerS }),
     D.handleArm,
   );
-  /** A tap on the handle icon takes the handle, or lays it down here when it is carried. */
-  const tapHandle = () =>
-    dispatch({
-      type: 'handle',
-      to: store.getState().realistic.handle.place === 'carried' ? 'stow' : 'carry',
-    });
+  /** A tap on the slot takes the handle lying in it, or lays a carried handle down here. */
+  const tapHandle = () => {
+    const to = tapSlot(slotMode(store.getState().realistic.handle, station));
+    if (to) dispatch({ type: 'handle', to });
+  };
   const point = (event: PointerEvent): { x: number; y: number } => {
     const matrix = root.getScreenCTM();
     if (!matrix) return { x: 0, y: 0 };
@@ -598,6 +599,8 @@ export function createStationDrawing(
     wasSelected: boolean;
     /** Tail in the hand: its distance from its clutch when the drag began. */
     clutchFrom: number;
+    /** Cranking: the finger is outside the crank circle (it may be heading for the slot). */
+    out: boolean;
   }
   let drag: Drag | null = null;
   let selectedKey: string | null = null;
@@ -642,6 +645,7 @@ export function createStationDrawing(
       far: Math.hypot(p.x - cx, p.y - cy),
       wasSelected: selectedKey === key,
       clutchFrom: tailNode ? fromClutch(p, tailNode) : 0,
+      out: false,
     };
     if (kind === 'button') dispatch({ type: 'button', winch: winchId, held: true });
     if (kind === 'crank') crank.start(p.x, p.y, event.timeStamp);
@@ -658,18 +662,18 @@ export function createStationDrawing(
     if (!drag) return;
     const p = point(event);
     drag.moved = Math.max(drag.moved, Math.hypot(p.x - drag.start.x, p.y - drag.start.y));
-    if (drag.kind === 'crank' && crank.move(p.x, p.y, event.timeStamp)) {
-      // The grip was pulled out of the socket: the handle is carried; where it is dropped
-      // decides (on its icon: laid down here).
-      dispatch({ type: 'handle', to: 'carry' });
-      drag.kind = 'pulled';
+    if (drag.kind === 'crank') {
+      // A finger outside the crank circle only stops the crank. The handle stays in the
+      // socket; it comes out only when the grip is dropped on the slot (owner, after M4c).
+      drag.out = crank.move(p.x, p.y, event.timeStamp);
+      slot.setTarget(drag.out);
     }
     if (
       drag.kind === 'tail' ||
       drag.kind === 'hand' ||
       drag.kind === 'jaw' ||
       drag.kind === 'handle' ||
-      drag.kind === 'pulled'
+      (drag.kind === 'crank' && drag.out)
     ) {
       const from =
         drag.kind === 'tail'
@@ -731,10 +735,12 @@ export function createStationDrawing(
         break;
       case 'crank':
         crank.end();
-        break;
-      case 'pulled':
-        // Dropped on the handle icon: laid down here; anywhere else it stays in the hand.
-        if (!cancelled && pocket.contains(p.x, p.y)) dispatch({ type: 'handle', to: 'stow' });
+        slot.setTarget(false);
+        // Dropped on the slot: the handle comes out and lies there. Anywhere else: it stays
+        // in the socket.
+        if (!cancelled && current.out && slot.contains(p.x, p.y)) {
+          dispatch({ type: 'handle', to: 'stow' });
+        }
         break;
       case 'handle':
         if (cancelled) break;
@@ -944,10 +950,7 @@ export function createStationDrawing(
 
     // The winch handle (M4c) and the strain while the winch works.
     const handle = real.handle;
-    pocket.update(
-      handle.place === 'carried' || (handle.place === 'stowed' && handle.station === station),
-      handle.place === 'carried',
-    );
+    slot.update(slotMode(handle, station));
     socketHandle.update(
       handle.place === 'socket' && handle.station === station,
       handle.angle,
