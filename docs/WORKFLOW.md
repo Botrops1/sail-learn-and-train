@@ -88,7 +88,7 @@ Usage: cloud sessions share your plan's limits with normal chat. One session at 
 
 ## 5. Checklists (what to look for on the phone)
 
-Test links set the app to a known state. Base: `https://botrops1.github.io/sail-learn-and-train/`. Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch.
+Test links set the app to a known state. Base: `https://botrops1.github.io/sail-learn-and-train/`. Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, and your hand is full: no rope can be worked, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch.
 
 ### M0: Scaffold
 
@@ -165,9 +165,16 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 
 ### M4c: Realistic mode, part 2
 
-- [ ] Holding a winch button shows the strain bar; near the limit the drum slows, at the limit it stops. (`?mode=realistic&wd=90&ws=20&js=30&st=starboard&wsb=a5.4.t`; at the limit: `?mode=realistic&ws=0&tl=0&vg=0&wp=b5.4.t`)
-- [ ] Take the winch handle to the starboard winch on a loaded jib sheet: cranking clockwise struggles, anticlockwise brings the rope in slowly. (PT-19; ready-made: `?mode=realistic&wd=90&ws=25&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w`)
-- [ ] Main furling line slipping (the scenario in the app: Ropes → Realistic → "Practice: the main furling line slips" → Set it up): go to the Mast station, switch IN, put the handle in and crank: the main rolls in, as long as the "out" line and outhaul clutches are open.
+Every check is a full link: tap it, then do what the line says.
+
+- [ ] Holding a winch button shows the strain bar; near the limit the drum slows, at the limit it stops: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=90&ws=20&js=30&st=starboard&wsb=a5.4.t (hold the round button). At the limit, where it stops and says "cut out": https://botrops1.github.io/sail-learn-and-train/?mode=realistic&ws=0&tl=0&vg=0&wp=b5.4.t
+- [ ] Take the winch handle to the starboard winch on a loaded jib sheet: cranking clockwise struggles, anticlockwise brings the rope in slowly. (PT-19) Handle already in the winch, 25 kn: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=90&ws=25&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w
+- [ ] Main furling line slipping: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=60&ws=20&ms=30&mf=100&st=starboard&co=a3,b3&wsb=a2.1.t&sel=rope_main_furling_line&cam=side-starboard (the "Set it up" button in Ropes → Realistic → "Practice: the main furling line slips" opens the same). Hold the winch button: the line slips. Go to Port, tap the handle to take it, go to Mast, drag the handle into the socket, flip the switch to IN, circle the grip: the main rolls in, as long as the "out" line and outhaul clutches are open.
+- [ ] The gearbox switch: IN on the left, OUT on the right; a tap flips it, a slide sets that side: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&st=mast&hd=mast.w&wd=60&ws=20
+- [ ] A carried handle fills the hand: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=90&ws=12&hd=c (the handle is with you). Try a clutch lever or the winch button: refused ("You are holding the winch handle"). Tap the handle icon to lay it down: now they work.
+- [ ] Taking the handle out of a winch by gesture: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=90&ws=12&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w pull the grip away from the winch: it is in your hand. Drop it on the handle icon to lay it down. A tap on the icon takes it or lays it down.
+- [ ] A rope wrapped the wrong way does not go into the self-tailer: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=90&ws=12&wp=b5.-2.h&sel=rope_vang (drag the "in your hand" dot into the jaw on top).
+- [ ] Clutch shut on a running rope warns: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=90&ws=6&js=10&st=starboard&co=a5&sel=rope_jib_sheet (drag the Genoa sheet lever down).
 
 ### M5: Phase 1 sign-off
 
