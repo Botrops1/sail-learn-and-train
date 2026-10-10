@@ -210,6 +210,18 @@ function buildViewTab(store: Store): HTMLElement[] {
     el('p', { class: 'hint' }, [t('view.legend.hint')]),
   ]);
 
+  const labelsInput = el('input', { type: 'checkbox', id: 'labels-toggle' });
+  labelsInput.addEventListener('change', () =>
+    store.dispatch({ type: 'setLabels', labels: labelsInput.checked }),
+  );
+  const labelsField = el('div', { class: 'field' }, [
+    el('label', { class: 'toggle', for: 'labels-toggle' }, [
+      labelsInput,
+      el('span', {}, [t('view.labels.label')]),
+    ]),
+    el('p', { class: 'hint' }, [t('view.labels.hint')]),
+  ]);
+
   const sync = (state = store.getState(), previous?: typeof state) => {
     if (previous && state.settings === previous.settings && state.camera === previous.camera) {
       return;
@@ -220,18 +232,19 @@ function buildViewTab(store: Store): HTMLElement[] {
     for (const { detail, input } of detailInputs) input.checked = detail === settings.detail;
     debugInput.checked = settings.debug;
     legendInput.checked = settings.legend;
+    labelsInput.checked = settings.labels;
   };
   store.subscribe(sync);
   sync();
 
   return [
     cameraGroup,
+    labelsField,
     stepGroup,
     detailGroup,
     ...buildShareAndReset(store),
     legendField,
     debugField,
-    el('p', { class: 'placeholder' }, [t('view.placeholder')]),
   ];
 }
 

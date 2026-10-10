@@ -4,6 +4,7 @@ import { createDebugOverlay } from '../ui/debugOverlay';
 import { el } from '../ui/dom';
 import { t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
+import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createPanel } from '../ui/panel';
 import { createPauseButton } from '../ui/pauseButton';
@@ -37,7 +38,10 @@ export function startApp(host: HTMLElement): void {
     layout.view.append(el('p', { class: 'scene-error' }, [t('scene.unavailable')]));
   }
 
+  let labels: Labels3d | undefined;
   if (scene) {
+    // Under the view's own buttons and cards.
+    labels = createLabels3d(layout.view, store);
     createWindIndicator(layout.view, store);
     createPauseButton(layout.view, store);
     const card = createInfoCard(layout, store, {
@@ -65,6 +69,8 @@ export function startApp(host: HTMLElement): void {
     store.dispatch({ type: 'step', dt: last === undefined ? 0 : (now - last) / 1000 });
     last = now;
     scene?.render(now);
+    if (scene && store.getState().settings.labels) labels?.update(scene.labelPoints());
+    else labels?.update([]);
     frames += 1;
     if (now - windowStart >= FPS_WINDOW_MS) {
       fps = (frames * 1000) / (now - windowStart);

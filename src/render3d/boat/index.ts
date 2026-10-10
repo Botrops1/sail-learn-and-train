@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { defaultControls, type Controls } from '../../model/controls';
 import { carPoint, jibClew } from '../../model/jib';
-import { drawnPose, ropeDrawings, type WinchWrap } from '../../model/ropePaths';
+import { drawnPose, ropeDrawings, type RopeDrawing, type WinchWrap } from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
 import { boat } from '../../model/boat';
 import type { Detail } from '../../model/settings';
@@ -35,6 +35,8 @@ export interface BoatModel {
   ): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
+  /** The ropes as drawn by the last update (labels in 3D sit on them, M5). */
+  ropeDrawings(): readonly RopeDrawing[];
 }
 
 /**
@@ -60,7 +62,8 @@ export function buildBoat(
   const jibInput = jibInputFor(rig, controls);
   const mainSail = buildSailMesh('sail_main', materials, mainSailGrid(mainInput));
   const jibSail = buildSailMesh('sail_jib', materials, jibSailGrid(jibInput));
-  const ropes = buildRopes(ropeDrawings(rig));
+  let drawings = ropeDrawings(rig);
+  const ropes = buildRopes(drawings);
   const windex = buildWindex(materials);
   root.add(
     ...buildHull(materials),
@@ -89,7 +92,8 @@ export function buildBoat(
     const jib = jibInputFor(next, nextControls);
     jibSail.update(jibSailGrid(jib), shown(jib.unfurled));
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
-    ropes.update(ropeDrawings(next, boat, winches), ropeView, flashing);
+    drawings = ropeDrawings(next, boat, winches);
+    ropes.update(drawings, ropeView, flashing);
     windex.update(nextControls.ctl_wind_dir);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).
@@ -113,5 +117,6 @@ export function buildBoat(
     update,
     rudderPivot,
     wheelPivots: hardware.wheelPivots,
+    ropeDrawings: () => drawings,
   };
 }

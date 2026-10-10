@@ -1008,6 +1008,38 @@
   },
   "visual": {
     "$comment": "Teaching approximations for Phase 1. Not physics. Tune freely, keep them here.",
+    "labels3d": {
+      "$comment": "M5: names shown over the 3D view (View tab, Labels in 3D). In priority order: where two labels would overlap on screen, the one higher in the list wins (the selected part's label always shows). 'at' is a point in boat coordinates, or: 'mainSail' / 'jibSail' (the middle of the sail as drawn), 'boom' (distance metres from the gooseneck, moves with the boom), 'rope' (fraction of the way along one strand of the rope as drawn), 'hardware' (the cockpit fitting with this id in cockpitHardware, lift metres above it). Points are estimates chosen to sit on or next to each part; only the drawing uses them.",
+      "list": [
+        { "id": "sail_main", "at": "mainSail" },
+        { "id": "sail_jib", "at": "jibSail" },
+        { "id": "part_mast", "at": [0, 16.5, 0] },
+        { "id": "part_boom", "at": "boom", "distance": 5.2 },
+        { "id": "rope_mainsheet", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_jib_sheet", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_vang", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_topping_lift", "at": "rope", "strand": 0, "fraction": 0.3 },
+        { "id": "helm_port", "at": "hardware", "lift": 0.6 },
+        { "id": "helm_starboard", "at": "hardware", "lift": 0.6 },
+        { "id": "winch_primary_port", "at": "hardware", "lift": 0.3 },
+        { "id": "winch_primary_starboard", "at": "hardware", "lift": 0.3 },
+        { "id": "clutch_bank_b", "at": "hardware", "lift": 0.12 },
+        { "id": "clutch_bank_a", "at": "hardware", "lift": 0.12 },
+        { "id": "clutch_jib_roll", "at": "hardware", "lift": 0.12 },
+        { "id": "part_forestay", "at": [2.3, 14.0, 0] },
+        { "id": "part_backstay", "at": [-4.2, 11.7, 0] },
+        { "id": "part_keel", "at": [-1.4, -1.6, 0] },
+        { "id": "part_rudder", "at": [-7.75, -0.9, 0] },
+        { "id": "rope_outhaul", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_main_furling_line", "at": "rope", "strand": 0, "fraction": 0.08 },
+        { "id": "rope_jib_furling_line", "at": "rope", "strand": 0, "fraction": 0.15 },
+        { "id": "rope_spi_halyard", "at": "rope", "strand": 0, "fraction": 0.55 },
+        { "id": "rope_main_halyard", "at": "rope", "strand": 0, "fraction": 0.05 },
+        { "id": "fit_self_tacking_track", "at": [0.28, 2.05, 1.0] },
+        { "id": "part_jib_furler", "at": [6.28, 1.95, 0] },
+        { "id": "part_main_furling_gearbox", "at": [-0.15, 2.55, -0.08] }
+      ]
+    },
     "ropeRenderRadius": 0.025,
     "luffAoaDeg": {
       "fullyLuffing": 2,

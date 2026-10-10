@@ -53,6 +53,8 @@ export interface Settings {
   ropesMode: RopesMode;
   /** Rope colour legend shown in the Ropes tab (PHASE1_SPEC 5.2, 7.3). */
   legend: boolean;
+  /** Names shown over the parts and ropes in the 3D view (View tab, M5). */
+  labels: boolean;
   detail: Detail;
 }
 
@@ -66,6 +68,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   detail: 'high',
   ropesMode: 'easy',
   legend: true,
+  labels: false,
 };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
 

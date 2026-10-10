@@ -3,6 +3,7 @@ import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
 import { runningRopes, winchWraps } from '../model/realistic';
 import { requirePartId } from '../model/registry';
+import { labelAnchors } from '../model/labels3d';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
@@ -24,6 +25,17 @@ export interface SceneView {
   render(now: number): void;
   /** Draw calls and triangles of the last frame (debug overlay). */
   stats(): RenderStats;
+  /**
+   * Where each label of the labels in 3D sits on the canvas now (CSS px, M5), in priority order;
+   * points behind the camera are left out.
+   */
+  labelPoints(): ScreenPoint[];
+}
+
+export interface ScreenPoint {
+  id: string;
+  x: number;
+  y: number;
 }
 
 /**
@@ -218,8 +230,25 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     stats() {
       return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
     },
+    labelPoints() {
+      const rect = { width: size.width, height: canvasHeight };
+      const points: ScreenPoint[] = [];
+      for (const anchor of labelAnchors(store.getState().rig, boatModel.ropeDrawings())) {
+        projected.set(...anchor.point).project(camera);
+        // Behind the camera (or beyond the far plane): no label.
+        if (projected.z > 1 || projected.z < -1) continue;
+        points.push({
+          id: anchor.id,
+          x: ((projected.x + 1) / 2) * rect.width,
+          y: ((1 - projected.y) / 2) * rect.height,
+        });
+      }
+      return points;
+    },
   };
 }
+
+const projected = new THREE.Vector3();
 
 const NO_ROPES: ReadonlySet<string> = new Set();
 

@@ -403,6 +403,70 @@ button.segment {
   color: var(--accent);
 }
 
+/*
+ * Labels in 3D (M5): names over the parts, each just above a dot on its point. The layer lets
+ * drags through to the canvas; only the labels themselves can be tapped (they select the part).
+ */
+.labels3d {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.labels3d[hidden] {
+  display: none;
+}
+
+.label3d {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 3px 7px;
+  border: 1px solid rgb(23 34 43 / 0.25);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.86);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  visibility: hidden;
+  pointer-events: none;
+  cursor: pointer;
+  will-change: transform;
+}
+
+.label3d-shown {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* A bigger hit area than the label itself (touch targets, PHASE1_SPEC 5.1). */
+.label3d::before {
+  position: absolute;
+  inset: -8px -2px;
+  content: '';
+}
+
+/* A small pointer from the label down to its point on the boat. */
+.label3d::after {
+  position: absolute;
+  bottom: -5px;
+  left: calc(50% - 4px);
+  border-top: 5px solid rgb(23 34 43 / 0.45);
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  content: '';
+}
+
+.label3d-selected {
+  border-color: var(--focus);
+  background: #fff3e0;
+  color: #6b3a00;
+}
+
 /* Wind indicator and rig alerts over the 3D view (PHASE1_SPEC 5.2, 8.1, 8.4). */
 .wind-chip {
   position: absolute;
