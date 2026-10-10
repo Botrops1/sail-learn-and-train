@@ -1,0 +1,54 @@
+name: PR preview
+
+# Builds every pull request from this repository and publishes it to the gh-pages branch at
+# pr-preview/pr-<N>/, so it opens at
+# https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/
+# One comment on the PR carries the link and is updated on each push. Closing or merging the
+# PR removes the folder. Pull requests from forks are skipped (no write token for them).
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: pr-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      # Always check out: the publish step needs a git folder, also when removing a preview.
+      - uses: actions/checkout@v5
+        with:
+          # The PR's own commit (not GitHub's temporary merge commit), so the footer matches it.
+          # On close the default (the base branch) is enough.
+          ref: ${{ github.event.action != 'closed' && github.event.pull_request.head.sha || '' }}
+      - uses: actions/setup-node@v5
+        if: github.event.action != 'closed'
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+        if: github.event.action != 'closed'
+      # On pull requests GITHUB_SHA is the temporary merge commit. Unsetting it makes the build
+      # fall back to `git rev-parse HEAD` (vite.config.ts), which is the PR commit checked out above.
+      - name: Build for pr-preview/pr-${{ github.event.pull_request.number }}/
+        if: github.event.action != 'closed'
+        # No .nojekyll here: the one at the gh-pages root (deploy.yml) covers the previews, and
+        # a copy in the preview folder would be left behind when the preview is removed.
+        run: env -u GITHUB_SHA npm run build -- --base="/sail-learn-and-train/pr-preview/pr-${PR_NUMBER}/"
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+      - uses: rossjrw/pr-preview-action@ffa7509e91a3ec8dfc2e5536c4d5c1acdf7a6de9 # v1.8.1
+        with:
+          source-dir: dist
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          pages-base-url: botrops1.github.io/sail-learn-and-train
+          qr-code: false

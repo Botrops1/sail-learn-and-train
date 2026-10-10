@@ -41,6 +41,7 @@ The owner has **no sailing knowledge** and works **from a phone only**: PRs are 
 ## What changed (plain language, no jargon)
 ## How to check on your phone
 <paste the milestone checklist from docs/WORKFLOW.md, adapted>
+Preview of this PR: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ (link also in the bot comment)
 Live site after merge: https://botrops1.github.io/sail-learn-and-train/
 ## Screenshots
 <links to docs/screenshots/... files>
@@ -48,7 +49,7 @@ Live site after merge: https://botrops1.github.io/sail-learn-and-train/
 ## Known limitations / questions for the owner
 ```
 
-**Test links are full links** (owner, PR #16): every test condition in "How to check on your phone" is written as a complete URL starting with `https://botrops1.github.io/sail-learn-and-train/?` (tappable on a phone), never only the `?…` settings part. One link per check; say what to do after opening it.
+**Test links are full links** (owner, PR #16): every test condition in "How to check on your phone" is written as a complete URL (tappable on a phone), never only the `?…` settings part. Point them at the PR's preview, `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?…`: open the PR first, then edit its description to fill in the real number. One link per check; say what to do after opening it.
 
 Keep explanations short and concrete. The owner reads on a phone and does not know sailing terms yet: when you use one, add three or four words in brackets the first time, e.g. "vang (the rope that pulls the boom down)".
 
@@ -63,7 +64,7 @@ Keep explanations short and concrete. The owner reads on a phone and does not kn
 | `npm run lint` | ESLint |
 | `npm run shots` | Screenshots into `docs/screenshots/` |
 
-Deploy: GitHub Actions builds `main` and publishes to GitHub Pages at `https://botrops1.github.io/sail-learn-and-train/` (Vite `base: '/sail-learn-and-train/'`).
+Deploy: GitHub Pages serves the `gh-pages` branch. `deploy.yml` builds `main` and publishes it to the branch root, `https://botrops1.github.io/sail-learn-and-train/` (Vite `base: '/sail-learn-and-train/'`). `pr-preview.yml` builds each PR from this repo (not forks) with base `/sail-learn-and-train/pr-preview/pr-<N>/`, publishes it to `pr-preview/pr-<N>/` on the same branch, keeps one PR comment with the link, and removes the folder when the PR closes. The footer of a preview shows the PR's commit.
 
 ## License
 
