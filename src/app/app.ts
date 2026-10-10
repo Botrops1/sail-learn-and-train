@@ -14,6 +14,7 @@ import { createLayout } from '../ui/layout';
 import { createPanel } from '../ui/panel';
 import { createPauseButton } from '../ui/pauseButton';
 import { ropesTabShows } from '../ui/ropesTab';
+import { createInstrumentStrip } from '../ui/instrumentStrip';
 import { createWindIndicator } from '../ui/windIndicator';
 import { defaultDetail } from '../model/settings';
 import { createStore } from './store';
@@ -51,6 +52,7 @@ export function startApp(host: HTMLElement): void {
 
   // Under the view's own buttons and cards.
   const labels: Labels3d | undefined = scene ? createLabels3d(layout.view, store) : undefined;
+  createInstrumentStrip(layout.view, store, () => panel.showTab('wind'));
   createWindIndicator(layout.view, store);
   createPauseButton(layout.view, store);
   const card = createInfoCard(layout, store, {

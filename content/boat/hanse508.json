@@ -1264,5 +1264,184 @@
         "note": "M4c teaching scenario (PHASE1_SPEC 7.2.2): furling the main at 20 kn with the sail still pulling and one turn of the 'in' furling tail on the starboard winch: the line slips. The 'out' tail and the outhaul clutches are already open. Fix: fetch the winch handle from Port, go to the Mast, switch IN, handle in, crank (or add a turn on the winch, or luff first)"
       }
     ]
+  },
+  "physics": {
+    "$comment": "Phase 2 motion model (PHASE2_SPEC 6, 8, 11, 12). A teaching model, not a velocity prediction program. Every value is an assumption unless a source is named; see docs/BOAT_REFERENCE.md section 5. Prototyped 2026-10-10 against the Phase 1 rig solver.",
+    "constants": {
+      "airDensityKgM3": 1.225,
+      "waterDensityKgM3": 1025,
+      "gravityMps2": 9.81,
+      "waterViscosityM2s": 0.00000119,
+      "knotMps": 0.514444,
+      "source": "standard values (sea water about 15 °C); 1 kn = 1852 m / 3600 s"
+    },
+    "integration": {
+      "maxStepS": 0.05,
+      "solverAwaStepDeg": 0.1,
+      "solverAwsStepKn": 0.05
+    },
+    "mass": {
+      "payloadKg": 1000,
+      "payloadNote": "assumption: crew, water, fuel and gear added to dimensions.massesKg.lightCraftStandardKeel (14,739 kg, manual)",
+      "addedMassFraction": 0.05
+    },
+    "hull": {
+      "wettedSurfaceM2": 48,
+      "wettedSurfaceNote": "assumption: canoe body about 37 m² (≈ 2.6 √(volume × LWL)), keel about 9 m², rudder about 2 m²",
+      "frictionLengthFraction": 0.7,
+      "formFactor": 0.1,
+      "linearDragNPerMps": 80,
+      "residuaryPerWeightByFroude": [
+        [
+          0,
+          0
+        ],
+        [
+          0.1,
+          0
+        ],
+        [
+          0.15,
+          0.0002
+        ],
+        [
+          0.2,
+          0.0008
+        ],
+        [
+          0.25,
+          0.002
+        ],
+        [
+          0.3,
+          0.0045
+        ],
+        [
+          0.35,
+          0.01
+        ],
+        [
+          0.4,
+          0.022
+        ],
+        [
+          0.45,
+          0.05
+        ],
+        [
+          0.5,
+          0.09
+        ],
+        [
+          0.55,
+          0.13
+        ],
+        [
+          0.6,
+          0.17
+        ]
+      ],
+      "residuaryNote": "assumption: wave-making resistance as a fraction of the boat's weight against the Froude number V/√(g·LWL); the steep rise from 0.4 (8.9 kn) is the 'hull speed' wall (PT-36). Shape after typical sailing-yacht hull series results; tuned so full sail in 30 kn gives at most about 10.6 kn.",
+      "effectiveDraftM": 2.04,
+      "clrDepthM": 1,
+      "clrNote": "assumption: centre of lateral resistance (where the keel's sideways push acts) 1 m below the waterline",
+      "inducedMinSpeedMps": 2,
+      "asternResistanceFactor": 4,
+      "rudderAreaM2": 1.5,
+      "rudderDragCoefficient": 1
+    },
+    "windage": {
+      "areaM2": 8,
+      "dragCoefficient": 0.7
+    },
+    "sails": {
+      "liftByAoaDeg": [
+        [
+          0,
+          0
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          10,
+          0.85
+        ],
+        [
+          20,
+          1.45
+        ],
+        [
+          30,
+          1.35
+        ],
+        [
+          45,
+          1.05
+        ],
+        [
+          60,
+          0.65
+        ],
+        [
+          90,
+          0
+        ]
+      ],
+      "dragByAoaDeg": [
+        [
+          0,
+          0.15
+        ],
+        [
+          2,
+          0.15
+        ],
+        [
+          10,
+          0.1
+        ],
+        [
+          20,
+          0.17
+        ],
+        [
+          30,
+          0.35
+        ],
+        [
+          45,
+          0.7
+        ],
+        [
+          60,
+          1
+        ],
+        [
+          90,
+          1.25
+        ]
+      ],
+      "floggingDragCoefficient": 0.15,
+      "coefficientsNote": "assumption: lift and drag coefficients of a soft sail against its angle of attack (the AoA of PHASE1_SPEC 8.4): lift peaks near 20°, then the sail stalls; at 90° it is pure drag. Same table for both sails."
+    },
+    "steering": {
+      "turnLengthM": 16,
+      "yawLagS": 1.5,
+      "turnNote": "assumption: yaw rate = speed × tan(rudder) / turnLengthM; at full rudder (35°) the turning circle is about 46 m across (3 boat lengths)"
+    },
+    "autopilot": {
+      "kp": 2,
+      "kdS": 5,
+      "kiPerS": 0.15,
+      "integralBandDeg": 5,
+      "integralLimitDeg": 10,
+      "maxRudderDeg": 25,
+      "rudderRateDegPerS": 8,
+      "smallStepDeg": 1,
+      "largeStepDeg": 10,
+      "note": "assumption: a simple PID on the heading error, tuned in the prototype: a 20° course change at 12 kn settles within ±2° in about 11 s with less than 2° overshoot"
+    }
   }
 }
