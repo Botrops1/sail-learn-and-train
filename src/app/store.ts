@@ -51,6 +51,8 @@ export type Action =
   /** A clutch, winch or station action of Realistic mode. */
   | { type: 'realistic'; action: RealisticAction }
   | { type: 'setPaused'; paused: boolean }
+  /** Replace the whole state (a practice scenario opened from its link, M4c). */
+  | { type: 'load'; state: AppState }
   | { type: 'step'; dt: number };
 
 export interface InitialOverrides {
@@ -123,11 +125,17 @@ export function reduce(state: AppState, action: Action): AppState {
       return controls === state.controls ? state : { ...state, controls };
     }
     case 'realistic': {
-      const realistic = reduceRealistic(state.realistic, action.action);
+      let realistic = reduceRealistic(state.realistic, action.action);
+      // While paused nothing runs yet: shutting the clutch then is just preparing.
+      if (state.paused && realistic.notice?.key === 'closedOnRunning') {
+        realistic = { ...realistic, notice: null };
+      }
       return realistic === state.realistic ? state : { ...state, realistic };
     }
     case 'setPaused':
       return state.paused === action.paused ? state : { ...state, paused: action.paused };
+    case 'load':
+      return action.state;
     case 'step': {
       // Paused: time stands still (dt = 0), but what was prepared is shown.
       const dt = state.paused ? 0 : Math.min(MAX_STEP_S, Math.max(0, action.dt));

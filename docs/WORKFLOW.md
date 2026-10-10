@@ -88,7 +88,7 @@ Usage: cloud sessions share your plan's limits with normal chat. One session at 
 
 ## 5. Checklists (what to look for on the phone)
 
-Test links set the app to a known state. Base: `https://botrops1.github.io/sail-learn-and-train/`. Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer).
+Test links set the app to a known state. Base: `https://botrops1.github.io/sail-learn-and-train/`. Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch.
 
 ### M0: Scaffold
 
@@ -165,9 +165,9 @@ Test links set the app to a known state. Base: `https://botrops1.github.io/sail-
 
 ### M4c: Realistic mode, part 2
 
-- [ ] Holding a winch button shows the strain bar; near the limit the drum slows, at the limit it stops.
-- [ ] Take the winch handle to the starboard winch on a loaded jib sheet: cranking clockwise struggles, anticlockwise brings the rope in slowly. (PT-19)
-- [ ] Main furling line slipping (the scenario in the app): go to the Mast station, switch IN, put the handle in and crank: the main rolls in, as long as the "out" line and outhaul clutches are open.
+- [ ] Holding a winch button shows the strain bar; near the limit the drum slows, at the limit it stops. (`?mode=realistic&wd=90&ws=20&js=30&st=starboard&wsb=a5.4.t`; at the limit: `?mode=realistic&ws=0&tl=0&vg=0&wp=b5.4.t`)
+- [ ] Take the winch handle to the starboard winch on a loaded jib sheet: cranking clockwise struggles, anticlockwise brings the rope in slowly. (PT-19; ready-made: `?mode=realistic&wd=90&ws=25&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w`)
+- [ ] Main furling line slipping (the scenario in the app: Ropes → Realistic → "Practice: the main furling line slips" → Set it up): go to the Mast station, switch IN, put the handle in and crank: the main rolls in, as long as the "out" line and outhaul clutches are open.
 
 ### M5: Phase 1 sign-off
 

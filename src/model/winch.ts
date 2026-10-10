@@ -85,3 +85,52 @@ export function winchSpeedMps(loadN: number, cutOut: boolean, data: BoatData = b
 export function easesSmoothly(loadN: number, turns: number, data: BoatData = boat): boolean {
   return loadN / capstanFactor(turns, data) >= data.realisticMode.capstan.smoothEaseMinTailN;
 }
+
+/**
+ * Winch handle (PT-19, M4c). Both cranking directions turn the drum clockwise (PHYSICS_TRUTHS
+ * [6]): clockwise is 1st gear (fast, weak), anticlockwise 2nd gear (slow, strong). Returns the
+ * power ratio for a cranking direction (+1 clockwise, −1 anticlockwise).
+ */
+export function handlePowerRatio(direction: number, data: BoatData = boat): number {
+  const h = data.realisticMode.winchHandle;
+  return direction >= 0 ? h.powerRatioClockwise : h.powerRatioAnticlockwise;
+}
+
+/** Push on the handle (newtons) for a rope load: F = L / power ratio (PHASE1_SPEC 7.2.2). */
+export function handleForceN(loadN: number, powerRatio: number): number {
+  return Math.max(0, loadN) / powerRatio;
+}
+
+/** Rope brought in per handle turn (m): 2π × handle length / power ratio (work in = work out). */
+export function ropePerHandleTurnM(powerRatio: number, data: BoatData = boat): number {
+  return (2 * Math.PI * data.realisticMode.winchHandle.lengthM) / powerRatio;
+}
+
+/**
+ * The fastest a person turns the handle (turns per second) against a handle force: full speed
+ * with no load, slower in proportion to the force, stalled at the stall force.
+ */
+export function handleTurnsPerS(forceN: number, data: BoatData = boat): number {
+  const h = data.realisticMode.winchHandle;
+  return h.maxTurnsPerS * Math.max(0, 1 - forceN / h.stallForceN);
+}
+
+/** Does the handle stall (the person cannot turn it) at this handle force? */
+export function handleStalls(forceN: number, data: BoatData = boat): boolean {
+  return forceN >= data.realisticMode.winchHandle.stallForceN;
+}
+
+/** Furling line moved per turn of the handle in the mast gearbox (m): line travel / turns. */
+export function gearboxLinePerTurnM(data: BoatData = boat): number {
+  return (
+    data.rig.mainFurlingGearbox.lineTravelM / data.realisticMode.mastGearbox.handleTurnsFullFurl
+  );
+}
+
+/**
+ * The mast gearbox's power ratio, from the handle turns for a full furl (owner: about 40):
+ * handle circle per turn ÷ furling line per turn (work in = work out).
+ */
+export function gearboxPowerRatio(data: BoatData = boat): number {
+  return (2 * Math.PI * data.realisticMode.winchHandle.lengthM) / gearboxLinePerTurnM(data);
+}

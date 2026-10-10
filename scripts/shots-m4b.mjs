@@ -89,7 +89,7 @@ async function circleDrum(page, station, turns) {
  * what the browser does with a touch. Found on the owner's phone after M4b: the browser took
  * the touch over to scroll the panel and cancelled every drag in the drawing.
  */
-function touchTools(cdp, page) {
+export function touchTools(cdp, page) {
   const send = (type, x, y) =>
     cdp.send('Input.dispatchTouchEvent', {
       type,
@@ -118,7 +118,7 @@ function touchTools(cdp, page) {
 }
 
 /** Points along a line from a to b. */
-function line(a, b, steps = 10) {
+export function line(a, b, steps = 10) {
   return Array.from({ length: steps + 1 }, (_, i) => ({
     x: a.x + ((b.x - a.x) * i) / steps,
     y: a.y + ((b.y - a.y) * i) / steps,
@@ -313,7 +313,8 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
 
     // Three stations; only the chosen one is shown.
     const stations = await page.locator('.station-button').allInnerTexts();
-    check(`${v} three stations`, stations.join('|') === 'Port|Starboard|Helm', stations.join('|'));
+    // M4c added the Mast station.
+    check(`${v} stations`, stations.join('|') === 'Port|Starboard|Helm|Mast', stations.join('|'));
 
     // PT-15: drag the Vang lever up (open) and down (closed).
     await page.locator(drawing('port')).scrollIntoViewIfNeeded();
@@ -545,7 +546,7 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     await page.mouse.move(button.x, button.y);
     await page.mouse.down();
     await page.waitForTimeout(600);
-    await page.locator('.real-alert').scrollIntoViewIfNeeded();
+    await page.locator('[data-testid="real-strip"] .real-alert').scrollIntoViewIfNeeded();
     await shot(page, 'live-phone-main-furl-blocked');
     const text = await stripText(page);
     await page.mouse.up();

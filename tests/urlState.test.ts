@@ -265,7 +265,7 @@ describe('URL state: Realistic mode (M4b: st, co, wp, wsb)', () => {
   });
 
   it('ignores what cannot be: unknown or static clutches, the wrong winch, too many turns', () => {
-    const r = realistic('st=mast&co=a4,zz,b5&wp=a5.3.t&wsb=a1.9.h');
+    const r = realistic('st=deck&co=a4,zz,b5&wp=a5.3.t&wsb=a1.9.h');
     expect(r.station).toBe('port');
     expect(r.open).toEqual({ b5: true });
     expect(r.winches.winch_primary_port?.tail).toBeNull();

@@ -170,7 +170,8 @@ describe('PT-16 turns on the winch', () => {
     for (let n = 1; n < 5; n += 1) {
       expect(capstanFactor(n + 1) / capstanFactor(n)).toBeCloseTo(3.51, 1);
     }
-    expect(holdingForceN(3, 'hand')).toBeGreaterThan(holdingForceN(3, 'selfTailer'));
+    // The self-tailer's jaw grips at least as well as a hand (M4b review).
+    expect(holdingForceN(3, 'selfTailer')).toBeGreaterThanOrEqual(holdingForceN(3, 'hand'));
   });
 
   it('PT-16 jib sheet at 20 kn, tail in hand: 2 turns slip when the clutch opens, 3 turns hold', () => {

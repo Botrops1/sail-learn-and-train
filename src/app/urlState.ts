@@ -13,10 +13,14 @@ import {
   type StepSize,
 } from '../model/settings';
 import {
+  initialGearbox,
+  initialHandle,
   initialRealistic,
   isStationId,
+  socketAt,
   stationWinch,
   tailSpec,
+  type HandleState,
   type RealisticState,
   type StationId,
 } from '../model/realistic';
@@ -133,7 +137,9 @@ export function parseUrlState(
  * Port), `co` the open clutches by key (e.g. `co=a5,b3`), and one parameter per winch with the
  * rope on it: `wp` (port winch) and `wsb` (starboard winch), as `<clutch key>.<turns>.<t|h>`
  * (turns negative = wrapped anticlockwise; t = tail in the self-tailer, h = in the hand), e.g.
- * `wsb=a5.3.t`. Anything invalid is left out silently.
+ * `wsb=a5.3.t`. M4c adds `hd` (the winch handle, see parseHandle) and `gb` (the mast gearbox
+ * switch, `in` or `out`). Cranking the handle is not stored. Anything invalid is left out
+ * silently.
  */
 export const WINCH_PARAMS: Readonly<Record<string, string>> = { port: 'wp', starboard: 'wsb' };
 
@@ -158,9 +164,36 @@ function parseRealistic(params: URLSearchParams): RealisticState {
     if (!spec?.controlId || spec.winchId !== winchId || Math.abs(turns) > maxTurns) continue;
     winch.tail = key;
     winch.turns = turns;
-    winch.selfTailer = hold === 't' && turns !== 0;
+    winch.selfTailer = hold === 't' && turns > 0;
   }
+  const handle = parseHandle(params.get('hd'), state.station);
+  if (handle) state.handle = handle;
+  const gearbox = params.get('gb');
+  if (gearbox === 'in' || gearbox === 'out') state.gearbox = gearbox;
   return state;
+}
+
+/**
+ * The winch handle in the link (M4c): `hd=c` carried by the user, `hd=<station>.s` lying at a
+ * station, `hd=<station>.w` in the socket there (the winch, or the mast gearbox). Only written
+ * when it is not where it starts. A socket where there is none (the helm) is ignored.
+ */
+function parseHandle(value: string | null, station: StationId): HandleState | null {
+  if (value === null) return null;
+  const start = initialHandle();
+  if (value === 'c') return { ...start, station, place: 'carried' };
+  const match = /^([a-z]+)\.([sw])$/.exec(value);
+  const at = match?.[1] ?? '';
+  if (!match || !isStationId(at)) return null;
+  if (match[2] === 'w' && !socketAt(at)) return null;
+  return { ...start, station: at, place: match[2] === 'w' ? 'socket' : 'stowed' };
+}
+
+function handleParam(handle: HandleState): string | null {
+  const start = initialHandle();
+  if (handle.place === 'carried') return 'c';
+  if (handle.place === start.place && handle.station === start.station) return null;
+  return `${handle.station}.${handle.place === 'socket' ? 'w' : 's'}`;
 }
 
 /**
@@ -180,6 +213,9 @@ export function realisticParams(state: RealisticState): [string, string][] {
     if (!winch?.tail) continue;
     result.push([name, `${winch.tail}.${winch.turns}.${winch.selfTailer ? 't' : 'h'}`]);
   }
+  const handle = handleParam(state.handle);
+  if (handle) result.push(['hd', handle]);
+  if (state.gearbox !== initialGearbox()) result.push(['gb', state.gearbox]);
   return result;
 }
 
