@@ -23,11 +23,12 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
+      # Always check out: the publish step needs a git folder, also when removing a preview.
       - uses: actions/checkout@v5
-        if: github.event.action != 'closed'
         with:
           # The PR's own commit (not GitHub's temporary merge commit), so the footer matches it.
-          ref: ${{ github.event.pull_request.head.sha }}
+          # On close the default (the base branch) is enough.
+          ref: ${{ github.event.action != 'closed' && github.event.pull_request.head.sha || '' }}
       - uses: actions/setup-node@v5
         if: github.event.action != 'closed'
         with:
