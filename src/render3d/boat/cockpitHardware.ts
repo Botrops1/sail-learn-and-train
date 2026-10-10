@@ -46,6 +46,7 @@ export function buildCockpitHardware(
         1,
         materials,
       ),
+      ...buildRopeBins(materials),
     ],
     wheelPivots: wheels.map((wheel) => wheel.pivot),
   };
@@ -165,6 +166,31 @@ function buildWinch(
     smallPartMesh(winch.id, [drum, socket], materials.dark, [centre]),
     smallPartMesh(winch.id, [top, arm], materials.chrome, [centre]),
   ];
+}
+
+/**
+ * The rope tail boxes behind the winches (M5, owner, PR #19): a dark opening in the coaming top
+ * with a low rim, where the ropes' ends go in.
+ */
+function buildRopeBins(materials: BoatMaterials): THREE.Object3D[] {
+  const { ropeBins } = boat.cockpitHardware;
+  const size = boat.modelDetail.ropeBin;
+  const y = boat.deck.cockpit.coamingTopY;
+  return ropeBins.boxes.flatMap((box) => {
+    const { length: l, width: w, rimHeight: h, rimWidth: rim } = size;
+    const opening = boxAt([box.x, y + 0.002, box.z], [l - 2 * rim, 0.004, w - 2 * rim]);
+    const walls = [
+      boxAt([box.x + l / 2 - rim / 2, y + h / 2, box.z], [rim, h, w]),
+      boxAt([box.x - l / 2 + rim / 2, y + h / 2, box.z], [rim, h, w]),
+      boxAt([box.x, y + h / 2, box.z + w / 2 - rim / 2], [l, h, rim]),
+      boxAt([box.x, y + h / 2, box.z - w / 2 + rim / 2], [l, h, rim]),
+    ];
+    const centre: Vec3 = [box.x, y + h, box.z];
+    return [
+      smallPartMesh(ropeBins.id, [opening], materials.dark, [centre]),
+      smallPartMesh(ropeBins.id, walls, materials.gelcoat, [centre]),
+    ];
+  });
 }
 
 /**

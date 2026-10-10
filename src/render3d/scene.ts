@@ -3,6 +3,8 @@ import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
 import { runningRopes, winchWraps } from '../model/realistic';
 import { requirePartId } from '../model/registry';
+import { boat } from '../model/boat';
+import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
@@ -236,7 +238,15 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     labelPoints() {
       const rect = { width: size.width, height: canvasHeight };
       const points: ScreenPoint[] = [];
+      const eye = camera.position;
+      // Standing on board (e.g. the Helm view) the deck hides what is under the water.
+      const onBoard =
+        eye.y > 0 &&
+        eye.x > boat.hull.transomX &&
+        eye.x < boat.hull.stemX &&
+        Math.abs(eye.z) < halfBeamAt(eye.x);
       for (const anchor of labelAnchors(store.getState().rig, boatModel.ropeDrawings())) {
+        if (onBoard && anchor.point[1] < 0) continue;
         projected.set(...anchor.point).project(camera);
         // Behind the camera (or beyond the far plane): no label.
         if (projected.z > 1 || projected.z < -1) continue;

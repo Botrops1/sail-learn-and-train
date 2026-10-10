@@ -447,7 +447,8 @@ const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5;
  * dragging reach the URL; then the M2, M3 and M4a checklists.
  */
 async function liveGeneralChecks() {
-  const { context, page } = await openPage(VIEWPORTS[0], 'live', '');
+  // Labels in 3D off (M5), so the drag starts on the boat, not on a label.
+  const { context, page } = await openPage(VIEWPORTS[0], 'live', '?lb=0');
   const steps = [
     { width: 390, height: 844, layout: 'stacked' },
     { width: 844, height: 390, layout: 'side' },
@@ -480,7 +481,7 @@ async function liveGeneralChecks() {
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
   // The phone-sized screen starts at low detail (M3b).
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low`);
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -488,15 +489,15 @@ async function liveGeneralChecks() {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
-  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
+  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&debug=1`);
   // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
   await page.getByText('High', { exact: true }).click();
-  await expectUrl('Detail high', `?v=1&${c}&cam=side-starboard&step=1&detail=high&debug=1`);
+  await expectUrl('Detail high', `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&debug=1`);
   await page.waitForTimeout(1500);
   const overlay = await page.getByTestId('debug-overlay').innerText();
   const ok = /Detail\s+high/.test(overlay) && /Draw calls\s+\d+/.test(overlay);
@@ -506,7 +507,7 @@ async function liveGeneralChecks() {
     path: path.join(OUT_DIR, `${PREFIX}live-desktop-view-tab-detail-high.png`),
   });
   await page.getByText('Low', { exact: true }).click();
-  await expectUrl('Detail low', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
+  await expectUrl('Detail low', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&debug=1`);
   await context.close();
 
   await liveM2Checks();
@@ -593,7 +594,8 @@ try {
       ];
   for (const { viewport, cam } of sweeps) {
     const label = `taps ${viewport.name}/${cam}`;
-    const { context, page } = await openPage(viewport, label, `?cam=${cam}`);
+    // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
+    const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
     await page.waitForTimeout(800);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const barTop = await page
@@ -633,7 +635,7 @@ try {
   for (const viewport of QUICK ? [] : VIEWPORTS.slice(0, 3)) {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
-      const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1`);
+      const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
       await page.waitForTimeout(800);
       const box = await page.locator('canvas.scene-canvas').boundingBox();
       const barTop = await page

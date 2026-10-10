@@ -7,16 +7,18 @@ import { auditPage } from './a11y-audit.mjs';
 
 /** Screenshots at every size. */
 export const M5_SCENES = [
-  { name: 'labels-side-port', query: '?wd=60&ws=12&cam=side-port&lb=1' },
-  { name: 'labels-top-mainsheet', query: '?wd=90&ws=12&ms=50&cam=top&lb=1&sel=rope_mainsheet' },
-  { name: 'labels-helm', query: '?wd=60&ws=12&cam=helm&lb=1' },
+  { name: 'labels-side-port', query: '?wd=60&ws=12&cam=side-port' },
+  { name: 'labels-off-side-port', query: '?wd=60&ws=12&cam=side-port&lb=0' },
+  { name: 'rope-boxes-top', query: '?wd=90&ws=12&cam=top&sel=fit_rope_bin' },
+  { name: 'labels-top-mainsheet', query: '?wd=90&ws=12&ms=50&cam=top&sel=rope_mainsheet' },
+  { name: 'labels-helm', query: '?wd=60&ws=12&cam=helm' },
   { name: 'spi-halyard-selected', query: '?wd=60&ws=12&cam=side-port&sel=rope_spi_halyard' },
   { name: 'main-halyard-selected-top', query: '?wd=60&ws=12&cam=top&sel=rope_main_halyard' },
   {
     name: 'realistic-ropes-on-winches-helm',
     query: '?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h',
   },
-  { name: 'view-tab-labels-toggle', query: '?lb=1&cam=side-port', tab: 'View' },
+  { name: 'view-tab-labels-toggle', query: '?cam=side-port', tab: 'View' },
   { name: 'footer-disclaimer', query: '?wd=60&ws=12', scrollTo: '[data-testid="disclaimer"]' },
 ];
 
@@ -53,9 +55,9 @@ export async function liveM5Checks({
   const waitUrl = (page, test) =>
     page.waitForFunction(test, undefined, { timeout: 3000 }).catch(() => undefined);
 
-  // Labels in 3D: on from the link, a tap on a label selects its part, off from the View tab.
+  // Labels in 3D: on by default (owner, PR #19), a tap on a label selects its part, off from the View tab.
   for (const viewport of [phone, desktop]) {
-    const { context, page } = await openPage(viewport, `labels ${viewport.name}`, '?lb=1&wd=60');
+    const { context, page } = await openPage(viewport, `labels ${viewport.name}`, '?wd=60');
     await page.waitForTimeout(1500);
     const shown = await page.locator('.label3d.label3d-shown').count();
     check(`labels shown (${viewport.name})`, shown >= 6, `${shown} labels`);
@@ -77,11 +79,11 @@ export async function liveM5Checks({
     await shot(page, `live-${viewport.name}-labels-mast-selected`);
     await page.getByRole('tab', { name: 'View' }).click();
     await page.getByText('Labels in 3D', { exact: true }).click();
-    await waitUrl(page, () => !window.location.search.includes('lb=1'));
+    await waitUrl(page, () => window.location.search.includes('lb=0'));
     const hidden = await page.locator('[data-testid="labels3d"]').isHidden();
     check(
       `labels off (${viewport.name})`,
-      hidden && !(await search(page)).includes('lb='),
+      hidden && (await search(page)).includes('lb=0'),
       await search(page),
     );
     await context.close();
@@ -92,7 +94,7 @@ export async function liveM5Checks({
     const { context, page } = await openPage(
       desktop,
       'halyards',
-      '?wd=60&ws=12&cam=side-port&debug=1&detail=high',
+      '?wd=60&ws=12&cam=side-port&debug=1&detail=high&lb=0',
     );
     await page.waitForTimeout(1000);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
@@ -295,7 +297,7 @@ export async function liveM5Checks({
   for (const [name, query, tab] of [
     ['ropes-easy', '?sel=rope_vang', null],
     ['wind', '', 'Wind'],
-    ['view', '?lb=1', 'View'],
+    ['view', '', 'View'],
     ['realistic-port', '?mode=realistic&sel=rope_vang', null],
     ['realistic-starboard', '?mode=realistic&st=starboard&wsb=a5.3.t&hd=starboard.w', null],
     ['realistic-helm', '?mode=realistic&st=helm', null],
@@ -323,11 +325,7 @@ export async function liveM5Checks({
 
   // Frame times in the debug overlay (headless software rendering: not the phone's numbers).
   for (const viewport of [phone, desktop]) {
-    const { context, page } = await openPage(
-      viewport,
-      `perf ${viewport.name}`,
-      '?debug=1&lb=1&wd=60',
-    );
+    const { context, page } = await openPage(viewport, `perf ${viewport.name}`, '?debug=1&wd=60');
     await page.waitForTimeout(3000);
     const overlay = await page.getByTestId('debug-overlay').innerText();
     const row = (label) => new RegExp(`${label}\\s+(.+)`).exec(overlay)?.[1] ?? '?';

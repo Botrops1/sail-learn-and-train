@@ -187,16 +187,16 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(parseUrlState(serializeUrlState(hidden))).toEqual(hidden);
   });
 
-  it('M5: labels in 3D (lb) are off by default and written only when on', () => {
-    expect(parseUrlState('').settings.labels).toBe(false);
+  it('M5: labels in 3D (lb) are on by default (owner, PR #19) and written only when off', () => {
+    expect(parseUrlState('').settings.labels).toBe(true);
     expect(parseUrlState('?lb=1').settings.labels).toBe(true);
     expect(parseUrlState('?lb=0').settings.labels).toBe(false);
-    expect(parseUrlState('?lb=yes').settings.labels).toBe(false);
-    const on = initialState({ settings: { labels: true } });
-    expect(serializeUrlState(on)).toBe(
-      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lb=1`,
+    expect(parseUrlState('?lb=yes').settings.labels).toBe(true);
+    const off = initialState({ settings: { labels: false } });
+    expect(serializeUrlState(off)).toBe(
+      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lb=0`,
     );
-    expect(parseUrlState(serializeUrlState(on))).toEqual(on);
+    expect(parseUrlState(serializeUrlState(off))).toEqual(off);
     expect(serializeUrlState(initialState())).not.toContain('lb=');
   });
 });

@@ -48,7 +48,7 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
 
   for (const viewport of [viewports[0], viewports[2]]) {
     const v = viewport.name;
-    const { context, page } = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1');
+    const { context, page } = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0');
     await page.waitForTimeout(600);
 
     // Clutch "Vang" → vang selected, its slider shown.

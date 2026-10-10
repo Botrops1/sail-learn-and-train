@@ -68,7 +68,8 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   detail: 'high',
   ropesMode: 'easy',
   legend: true,
-  labels: false,
+  /** On by default (owner, PR #19). */
+  labels: true,
 };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
 

@@ -151,6 +151,35 @@ function clutchPoint(bankId: BankId, slot: number, data: BoatData): Vec3 {
   ];
 }
 
+/**
+ * A rope's tail from where it leaves its clutch into the rope tail box behind the winch on its
+ * side (M5, owner, PR #19): aft, past the winch drum on its inboard side in its own lane, then
+ * into the box. `lane` 0 is closest to the drum.
+ */
+export function tailToBin(side: 1 | -1, lane: number, from: Vec3, data: BoatData = boat): Vec3[] {
+  const bins = data.cockpitHardware.ropeBins;
+  const bin = bins.boxes.find((b) => Math.sign(b.z) === side);
+  const winch = data.cockpitHardware.winches.find(
+    (w) => Math.sign(w.z) === side && (!('present' in w) || w.present !== false),
+  );
+  if (!bin || !winch) throw new Error('No rope tail box or winch on this side in hanse508.json.');
+  const size = data.modelDetail.ropeBin;
+  const radius = data.visual.ropeRenderRadius;
+  const top = data.deck.cockpit.coamingTopY + radius;
+  const inboard = -side;
+  const laneZ =
+    winch.z +
+    inboard *
+      (data.modelDetail.winch.diameter / 2 + radius + size.passClearance + lane * size.laneSpacing);
+  const inBox = bin.z + inboard * (size.width / 2 - 2 * radius - lane * size.laneSpacing);
+  return [
+    [from[0] - size.turnX, top, laneZ],
+    [bin.x + size.length / 2, top, laneZ],
+    [bin.x, top, inBox],
+    [bin.x, data.deck.cockpit.coamingTopY - size.drop, inBox],
+  ];
+}
+
 /** Where a rope leaves its clutch towards the winch: the aft face of the bank. */
 function clutchExitPoint(bankId: BankId, slot: number, data: BoatData): Vec3 {
   const front = clutchPoint(bankId, slot, data);
@@ -220,9 +249,10 @@ export interface WinchWrap {
 }
 
 /**
- * The ropes as polylines. `winches`: Realistic mode's winch setup (M5): a rope on a winch runs
- * on from its clutch and is drawn wrapped on that winch with its turns. Without it (Easy mode)
- * only the JIB ROLL line goes on to the port winch, two turns into the self-tailer (M3b).
+ * The ropes as polylines. Every tail runs on from its clutch into the rope tail box behind the
+ * winch on its side (M5). `winches`: Realistic mode's winch setup: a rope on a winch is drawn
+ * wrapped on that winch with its turns instead. Easy mode has nothing on the winches (owner,
+ * PR #19).
  */
 export function ropeDrawings(
   rig: RigState,
@@ -237,14 +267,21 @@ export function ropeDrawings(
   const boomBottom = -data.modelDetail.boomSection.height / 2 - blockRadius;
   const solution = rig.solution;
   const local = (p: Vec3) => boomLocalToWorld(p, pose, data);
-  /** The lead to the clutch, continued onto the winch when this end is on one. */
+  /**
+   * The lead to the clutch, continued onto the winch when this end is on one, else into the
+   * rope tail box behind the winch (M5).
+   */
   const lead = (rope: RopeId, tail?: string) => {
     const spec = lineSpec(rope, tail, data);
     const points = leadToClutch(spec, data);
     const wrap = winches?.find((w) => w.ropeId === rope && (w.tail ?? undefined) === tail);
-    if (!wrap) return points;
     const exit = clutchExitPoint(spec.bank as BankId, spec.slot, data);
-    return [...points, exit, ...winchWrapPoints(wrap, exit, data)];
+    const side = spec.bank === 'clutch_bank_a' ? 1 : -1;
+    return [
+      ...points,
+      exit,
+      ...(wrap ? winchWrapPoints(wrap, exit, data) : tailToBin(side, spec.slot, exit, data)),
+    ];
   };
   const exitOf = (rope: RopeId) => {
     const exit = mastExitPoint(lineSpec(rope, undefined, data));
@@ -619,65 +656,23 @@ function jibRopes(
 }
 
 /**
- * Where the JIB ROLL line goes past its clutch. Easy mode (no winch setup): on to the port winch
- * and into its self-tailer (M3b). Realistic mode (M5): on to the port winch only while it is put
- * on it, wrapped as it is there; else its tail ends just past the clutch.
+ * Where the JIB ROLL line goes past its clutch: aft along the port side deck and over the
+ * coaming outboard of clutch bank B (M3b), then onto the port winch while it is put on it
+ * (Realistic mode, M5), else past the winch into the port rope tail box (M5, owner, PR #19).
  */
 function jibRollPastClutch(winches: readonly WinchWrap[] | undefined, data: BoatData): Vec3[] {
-  if (!winches) return jibRollToWinch(data);
   const roll = data.cockpitHardware.jibRollClutch;
-  const wrap = winches.find((w) => w.ropeId === roll.ropeId);
-  const deckY = (x: number) => sheerAt(x, data) + data.visual.ropeRenderRadius;
-  if (!wrap) {
-    const x = roll.x - data.modelDetail.jibRollClutch.length;
-    return [[x, Math.max(roll.y, deckY(x)) + data.modelDetail.jibRollClutch.height / 2, roll.z]];
-  }
   const lead = roll.leadToWinch;
+  const deckY = (x: number) => sheerAt(x, data) + data.visual.ropeRenderRadius;
   const path: Vec3[] = [
     ...lead.sideDeck.map(([x = 0, z = 0]): Vec3 => [x, deckY(x), z]),
     ...lead.overCoaming.map((p) => vec3(p)),
   ];
-  return [...path, ...winchWrapPoints(wrap, path[path.length - 1] as Vec3, data)];
+  const end = path[path.length - 1] as Vec3;
+  const wrap = winches?.find((w) => w.ropeId === roll.ropeId);
+  // Lane 0, next to the drum: the bank's own tails (slots 1–5) lie further inboard.
+  return [...path, ...(wrap ? winchWrapPoints(wrap, end, data) : tailToBin(-1, 0, end, data))];
 }
-
-/**
- * The jib furling line past its clutch (M3b, owner): aft along the port side deck, over the
- * coaming outboard of clutch bank B, onto the port winch from forward on its inboard side,
- * clockwise round the drum (seen from above) and into the self-tailer on top.
- */
-export function jibRollToWinch(data: BoatData = boat): Vec3[] {
-  const lead = data.cockpitHardware.jibRollClutch.leadToWinch;
-  const radius = data.visual.ropeRenderRadius;
-  const winch = data.cockpitHardware.winches.find((w) => w.id === lead.winch);
-  if (!winch) throw new Error(`Winch ${lead.winch} is missing from hanse508.json.`);
-  const size = data.modelDetail.winch;
-  const points: Vec3[] = [
-    ...lead.sideDeck.map(([x = 0, z = 0]): Vec3 => [x, sheerAt(x, data) + radius, z]),
-    ...lead.overCoaming.map((p) => vec3(p)),
-  ];
-  // Clockwise seen from above (bow up, starboard right): from the inboard side, aft, outboard.
-  const wrapRadius = size.diameter / 2 + radius;
-  const turns = lead.wraps;
-  const steps = turns * WRAP_POINTS_PER_TURN;
-  const bottom = winch.y + lead.wrapBottomAboveWinchBase;
-  const top = winch.y + lead.wrapTopAboveWinchBase;
-  for (let k = 0; k <= steps; k += 1) {
-    const phi = (2 * Math.PI * k) / WRAP_POINTS_PER_TURN;
-    const inboard = -Math.sign(winch.z) || 1;
-    points.push([
-      winch.x - wrapRadius * Math.sin(phi),
-      bottom + ((top - bottom) * k) / steps,
-      winch.z + inboard * wrapRadius * Math.cos(phi),
-    ]);
-  }
-  // Up into the jaws of the self-tailer, just inside the drum's rim.
-  const jaw = size.diameter / 2 - radius;
-  points.push([winch.x - jaw * 0.7, winch.y + size.height - radius, winch.z - jaw * 0.7]);
-  return points;
-}
-
-/** Points per turn of a rope wrapped round a winch drum. */
-const WRAP_POINTS_PER_TURN = 12;
 
 /**
  * Points per turn of a rope on a winch in Realistic mode (M5): finer, so a rope seen close up

@@ -3,7 +3,6 @@ import { boat } from '../src/model/boat';
 import { defaultControls, type Controls } from '../src/model/controls';
 import { channelPath, cutsCoachroof, cutsSprayhood } from '../src/model/deckVolumes';
 import {
-  jibRollToWinch,
   lineSpec,
   mastExitPoint,
   ropeDrawings,
@@ -125,7 +124,11 @@ describe('M3b: rope routes', () => {
       );
       const points = strand?.points ?? [];
       const at = points.findIndex((p) => Math.hypot(...sub(p, block)) < 1e-9);
-      const lead = points.slice(at + 1, points.length - 1);
+      // Up to the clutch's front face (M5: the tail then goes on into the rope tail box).
+      const bank = boat.cockpitHardware.clutchBanks.find((b) => b.id === line.bank);
+      const clutchFront = (bank?.x ?? 0) + boat.modelDetail.clutchBank.length / 2;
+      const clutchAt = points.findIndex((p, k) => k > at && Math.abs(p[0] - clutchFront) < 1e-9);
+      const lead = points.slice(at + 1, clutchAt);
       for (const p of samples(lead)) {
         // Where along the channel: the floor's centre line at this station.
         let centre: Vec3 = front;
@@ -154,17 +157,19 @@ describe('M3b: rope routes', () => {
       const rope = ropes.find((r) => r.id === line.rope);
       if (!rope) continue;
       const bank = boat.cockpitHardware.clutchBanks.find((b) => b.id === line.bank);
-      const ends = rope.strands.map((s) => s.points[s.points.length - 1] as Vec3);
-      const reaches = ends.some(
-        (e) =>
-          Math.abs(e[0] - (bank?.x ?? 0)) < boat.modelDetail.clutchBank.length &&
-          Math.abs(e[2] - (bank?.z ?? 0)) < boat.modelDetail.clutchBank.width,
+      // M5: the tail goes on through the clutch into the rope tail box behind the winch.
+      const reaches = rope.strands.some((s) =>
+        s.points.some(
+          (p) =>
+            Math.abs(p[0] - (bank?.x ?? 0)) <= boat.modelDetail.clutchBank.length / 2 + 1e-9 &&
+            Math.abs(p[2] - (bank?.z ?? 0)) < boat.modelDetail.clutchBank.width,
+        ),
       );
       expect(reaches, `${line.rope} → ${line.bank}`).toBe(true);
     }
   });
 
-  it('JIB ROLL: the furling line runs on past its clutch, aft along the port side deck, wraps the port winch and ends in its self-tailer', () => {
+  it('JIB ROLL: the furling line runs on past its clutch, aft along the port side deck, past the port winch (nothing on it in Easy mode) into the port rope tail box', () => {
     const rope = drawings({}).find((r) => r.id === 'rope_jib_furling_line');
     const points = rope?.strands[0]?.points ?? [];
     const clutch = boat.cockpitHardware.jibRollClutch;
@@ -173,31 +178,20 @@ describe('M3b: rope routes', () => {
     const w = winch as NonNullable<typeof winch>;
     // Past the clutch, still on the port side.
     const after = points.filter((p) => p[0] < clutch.x - 0.5);
-    expect(after.length).toBeGreaterThan(10);
+    expect(after.length).toBeGreaterThan(4);
     for (const p of after) expect(p[2]).toBeLessThan(0);
-    // Round the drum: at least two full turns at the drum's radius plus the rope's.
-    const wrapRadius = boat.modelDetail.winch.diameter / 2 + RADIUS;
-    const onDrum = points.filter(
-      (p) => Math.abs(Math.hypot(p[0] - w.x, p[2] - w.z) - wrapRadius) < 1e-6,
-    );
-    expect(onDrum.length).toBeGreaterThanOrEqual(2 * 12);
-    // Clockwise seen from above (bow up, starboard right), the way a winch turns.
-    const angle = (p: Vec3) => Math.atan2(p[2] - w.z, p[0] - w.x);
-    let turned = 0;
-    for (let i = 1; i < onDrum.length; i += 1) {
-      let d = angle(onDrum[i] as Vec3) - angle(onDrum[i - 1] as Vec3);
-      if (d > Math.PI) d -= 2 * Math.PI;
-      if (d < -Math.PI) d += 2 * Math.PI;
-      turned += d;
+    // Not wrapped on the drum: every point stays clear of it.
+    for (const p of points) {
+      expect(Math.hypot(p[0] - w.x, p[2] - w.z)).toBeGreaterThan(
+        boat.modelDetail.winch.diameter / 2 + RADIUS,
+      );
     }
-    expect(turned).toBeGreaterThan(2 * 2 * Math.PI - 0.1);
-    // Ends in the self-tailer on top of the winch.
+    // Ends in the port rope tail box, below its rim.
+    const box = boat.cockpitHardware.ropeBins.boxes.find((b) => b.side === 'port');
     const last = points[points.length - 1] as Vec3;
-    expect(Math.hypot(last[0] - w.x, last[2] - w.z)).toBeLessThan(
-      boat.modelDetail.winch.diameter / 2,
-    );
-    expect(last[1]).toBeGreaterThan(w.y + boat.modelDetail.winch.height * 0.8);
-    expect(points.slice(-jibRollToWinch().length)).toEqual(jibRollToWinch());
+    expect(Math.abs(last[0] - (box?.x ?? 0))).toBeLessThan(boat.modelDetail.ropeBin.length / 2);
+    expect(Math.abs(last[2] - (box?.z ?? 0))).toBeLessThan(boat.modelDetail.ropeBin.width / 2);
+    expect(last[1]).toBeLessThan(boat.deck.cockpit.coamingTopY);
   });
 
   it('the mainsheet tails come forward from their deck blocks to the mast foot, then aft in the channels', () => {

@@ -8,7 +8,7 @@ The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, G
 
 ## What you can do
 
-- **Look at the boat in 3D.** Drag to turn it, pinch to zoom, or use the camera buttons (port side, starboard side, top, bow, helm). Tap any part or rope to see its name, the label written on the boat and what it does. Turn on **Labels in 3D** (View tab) to see the names on the boat itself.
+- **Look at the boat in 3D.** Drag to turn it, pinch to zoom, or use the camera buttons (port side, starboard side, top, bow, helm). Tap any part or rope to see its name, the label written on the boat and what it does. The names are also written on the boat itself (**Labels in 3D**, View tab).
 - **Set a test wind** (Wind tab): direction on a dial, speed in knots, five presets. The sails and the boom react; a sail that is let out too far flaps.
 - **Work the ropes** (Ropes tab). The two clutch banks are drawn as on the boat, with their real labels ("Genoa sheet" is the jib sheet).
   - **Easy mode:** every rope is a slider (1 % or 5 % steps). The main idea: *ropes limit, wind pushes*: easing a sheet only lets the wind push the sail further.

@@ -703,11 +703,8 @@
           [-7.07, 1.61, -1.5]
         ],
         "winch": "winch_primary_port",
-        "wraps": 2,
-        "wrapBottomAboveWinchBase": 0.06,
-        "wrapTopAboveWinchBase": 0.16,
-        "source": "owner (M3b: the furling line continues past the JIB ROLL clutch aft to the port winch and ends in its self-tailer) + assumption (path)",
-        "note": "After the clutch: aft along the port side deck ([x, z] pairs, on the deck), over the coaming outboard of clutch bank B ([x, y, z]), into the port winch from forward on its inboard side, wraps clockwise (seen from above) and ends in the self-tailer on top."
+        "source": "owner (M3b: the furling line continues past the JIB ROLL clutch aft to the port winch; PR #19: with nothing on the winch, its end goes into the rope tail box behind it) + assumption (path)",
+        "note": "After the clutch: aft along the port side deck ([x, z] pairs, on the deck), over the coaming outboard of clutch bank B ([x, y, z]), to the port winch from forward on its inboard side. Put on the winch (Realistic mode) it wraps the drum; otherwise it runs past the drum into the port rope tail box (cockpitHardware.ropeBins). Until M5 it was always drawn with two turns into the self-tailer."
       }
     },
     "clutchKeyNote": "Short key of each bank (clutch key = bank key + slot, e.g. a5 = Genoa sheet, r1 = JIB ROLL). Used by Realistic mode and its link parameters (PHASE1_SPEC 9.2).",
@@ -717,6 +714,15 @@
       "rpmLimitSticker": 2500,
       "photo": "docs/reference/photos/engine-control.jpg",
       "phase": 2
+    },
+    "ropeBins": {
+      "boxes": [
+        { "side": "port", "x": -7.58, "z": -1.6 },
+        { "side": "starboard", "x": -7.58, "z": 1.6 }
+      ],
+      "id": "fit_rope_bin",
+      "source": "owner (PR #19): the ends of all lines are stored in a box on each side, behind the winch; position estimated",
+      "note": "Every rope's tail leaves its clutch at the back and runs past the winch on its inboard side into the box on its side, unless it is put on the winch (Realistic mode)."
     },
     "helmInstruments": {
       "note": "Photo of the starboard helm: magnetic compass, B&G multifunction display and B&G autopilot control next to the winch; rope tails stowed in a bin at the helm. Phase 2+.",
@@ -996,6 +1002,17 @@
       "wireRadius": 0.012
     },
     "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated.",
+    "ropeBin": {
+      "length": 0.24,
+      "width": 0.3,
+      "rimHeight": 0.02,
+      "rimWidth": 0.02,
+      "drop": 0.1,
+      "passClearance": 0.04,
+      "laneSpacing": 0.016,
+      "turnX": 0.08
+    },
+    "ropeBinNote": "M5 (owner, PR #19): the rope tail box behind each winch, drawn as an opening in the coaming top with a rim (length fore and aft, width across). Each tail runs aft from its clutch, turnX behind the clutch's aft face it turns to its lane beside the winch drum (passClearance outside the drum, lanes laneSpacing apart going inboard), then into the box and drop below its rim. Drawing only.",
     "winchRope": {
       "wrapBottomAboveBase": 0.06,
       "wrapTopAboveBase": 0.17,
@@ -1019,8 +1036,8 @@
         { "id": "rope_jib_sheet", "at": "rope", "strand": 0, "fraction": 0.5 },
         { "id": "rope_vang", "at": "rope", "strand": 0, "fraction": 0.5 },
         { "id": "rope_topping_lift", "at": "rope", "strand": 0, "fraction": 0.3 },
-        { "id": "helm_port", "at": "hardware", "lift": 0.6 },
-        { "id": "helm_starboard", "at": "hardware", "lift": 0.6 },
+        { "id": "helm_port", "at": "hardware", "lift": 0.5 },
+        { "id": "helm_starboard", "at": "hardware", "lift": 0.5 },
         { "id": "winch_primary_port", "at": "hardware", "lift": 0.3 },
         { "id": "winch_primary_starboard", "at": "hardware", "lift": 0.3 },
         { "id": "clutch_bank_b", "at": "hardware", "lift": 0.12 },

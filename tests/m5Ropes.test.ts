@@ -84,10 +84,10 @@ describe('M5: halyards in 3D', () => {
     const spec = lineSpec('rope_main_halyard');
     expect(points[0]).toEqual(mastExitPoint(spec));
     expect(points[1]).toEqual(turningBlockPoint(spec));
-    const end = points[points.length - 1] as Vec3;
     const bank = boat.cockpitHardware.clutchBanks.find((b) => b.id === 'clutch_bank_a');
-    expect(end[2]).toBeGreaterThan(0);
-    expect(Math.abs(end[0] - (bank?.x ?? 0))).toBeLessThan(boat.modelDetail.clutchBank.length);
+    const front = (bank?.x ?? 0) + boat.modelDetail.clutchBank.length / 2;
+    expect(points.some((p) => p[2] > 0 && Math.abs(p[0] - front) < 1e-9)).toBe(true);
+    expect((points.at(-1) as Vec3)[2]).toBeGreaterThan(0);
   });
 
   it('the gennaker halyard is parked down the front of the mast and its tail runs to "SPI HALYARD" (bank B, slot 1)', () => {
@@ -118,21 +118,41 @@ describe('M5: halyards in 3D', () => {
 });
 
 describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch', () => {
-  it('Easy mode (no winch setup) keeps the M3b drawing: only JIB ROLL on the port winch', () => {
+  it('Easy mode (owner, PR #19): nothing on the winches; every rope end runs past its winch into the rope tail box on its side', () => {
     const easy = ropeDrawings(rig);
     const realisticEmpty = ropeDrawings(rig, boat, []);
-    const roll = (d: RopeDrawing[]) => rope(d, 'rope_jib_furling_line').strands[0]?.points ?? [];
-    expect(turned(roll(easy), PORT)).toBeGreaterThan(2 * 2 * Math.PI - 0.1);
-    // Realistic mode with nothing on the winch: the line ends just past its clutch.
-    const clutch = boat.cockpitHardware.jibRollClutch;
-    const end = roll(realisticEmpty).at(-1) as Vec3;
-    expect(end[0]).toBeLessThan(clutch.x);
-    expect(end[0]).toBeGreaterThan(clutch.x - 0.5);
-    expect(turned(roll(realisticEmpty), PORT)).toBe(0);
-    // Every other rope is the same as in Easy mode.
+    expect(realisticEmpty).toEqual(easy);
+    const boxes = boat.cockpitHardware.ropeBins.boxes;
+    const size = boat.modelDetail.ropeBin;
+    let tails = 0;
     for (const drawing of easy) {
-      if (drawing.id === 'rope_jib_furling_line') continue;
-      expect(rope(realisticEmpty, drawing.id)).toEqual(drawing);
+      for (const strand of drawing.strands) {
+        expect(turned(strand.points, PORT), drawing.id).toBe(0);
+        expect(turned(strand.points, STARBOARD), drawing.id).toBe(0);
+        const end = strand.points.at(-1) as Vec3;
+        const box = boxes.find(
+          (b) =>
+            Math.abs(end[0] - b.x) < size.length / 2 && Math.abs(end[2] - b.z) < size.width / 2,
+        );
+        if (!box) continue;
+        tails += 1;
+        expect(end[1], drawing.id).toBeLessThan(boat.deck.cockpit.coamingTopY);
+      }
+    }
+    // Ten clutches with a rope and JIB ROLL: every one ends in a box.
+    expect(tails).toBe(11);
+    // On their way the tails pass the drums without touching them.
+    for (const drawing of easy) {
+      for (const strand of drawing.strands) {
+        for (const p of samples(strand.points)) {
+          for (const w of [PORT, STARBOARD]) {
+            if (p[1] > w.y + boat.modelDetail.winch.height || p[1] < w.y) continue;
+            expect(Math.hypot(p[0] - w.x, p[2] - w.z), drawing.id).toBeGreaterThan(
+              DRUM * 1.2 + RADIUS,
+            );
+          }
+        }
+      }
     }
   });
 
@@ -222,7 +242,13 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
                 );
               }
               const { cockpit } = boat.deck;
+              const inBox = boat.cockpitHardware.ropeBins.boxes.some(
+                (box) =>
+                  Math.abs(p[0] - box.x) < boat.modelDetail.ropeBin.length / 2 &&
+                  Math.abs(p[2] - box.z) < boat.modelDetail.ropeBin.width / 2,
+              );
               const onCoaming =
+                !inBox &&
                 Math.abs(p[2]) <= cockpit.wellHalfWidth + boat.modelDetail.coamingWidth &&
                 Math.abs(p[2]) >= cockpit.wellHalfWidth &&
                 p[0] <= cockpit.frontX &&

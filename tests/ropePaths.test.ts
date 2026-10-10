@@ -52,7 +52,7 @@ describe('rope drawing (PHASE1_SPEC 8.7)', () => {
     }
   });
 
-  it('tails end at their clutch: port bank (B) for vang, topping lift, outhaul and one mainsheet end; starboard bank (A) for the furling line and the other end', () => {
+  it('tails pass their clutch and end in the rope tail box behind the winch on that side (M5): port (bank B) for vang, topping lift, outhaul and one mainsheet end; starboard (bank A) for the furling line and the other end', () => {
     const ends = new Map<string, Vec3[]>();
     for (const rope of drawings({})) {
       ends.set(
@@ -60,10 +60,15 @@ describe('rope drawing (PHASE1_SPEC 8.7)', () => {
         rope.strands.map((strand) => strand.points[strand.points.length - 1] as Vec3),
       );
     }
-    const bankA = boat.cockpitHardware.clutchBanks.find((b) => b.id === 'clutch_bank_a');
-    const bankB = boat.cockpitHardware.clutchBanks.find((b) => b.id === 'clutch_bank_b');
-    const near = (p: Vec3 | undefined, bank: typeof bankA) =>
-      p !== undefined && bank !== undefined && Math.hypot(p[0] - bank.x, p[2] - bank.z) < 0.5;
+    const boxes = boat.cockpitHardware.ropeBins.boxes;
+    const bankA = boxes.find((b) => b.side === 'starboard');
+    const bankB = boxes.find((b) => b.side === 'port');
+    const size = boat.modelDetail.ropeBin;
+    const near = (p: Vec3 | undefined, box: typeof bankA) =>
+      p !== undefined &&
+      box !== undefined &&
+      Math.abs(p[0] - box.x) < size.length / 2 &&
+      Math.abs(p[2] - box.z) < size.width / 2;
     const last = (id: string) => ends.get(id)?.at(-1);
     expect(near(last('rope_vang'), bankB)).toBe(true);
     expect(near(last('rope_topping_lift'), bankB)).toBe(true);
