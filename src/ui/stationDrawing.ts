@@ -376,7 +376,8 @@ export function createStationDrawing(
       'data-drag': `tail:${rollSpec.key}`,
     });
     group.append(
-      svg('rect', { x: 0, y: 0, width: x + w, height: y + D.roll.height + 4, class: 'clutch-hit' }),
+      // Tall enough to touch (44 px, PHASE1_SPEC 5.1; M5 accessibility pass).
+      svg('rect', { x: 0, y: 0, width: x + w, height: y + D.roll.height + 8, class: 'clutch-hit' }),
       svg('line', {
         x1: 0,
         y1: midY,

@@ -15,6 +15,8 @@ import { SCENE } from './sceneConfig';
 import { buildWindStreaks } from './wind';
 
 export interface SceneView {
+  /** The 3D view's canvas (the app listens for a lost graphics context). */
+  readonly canvas: HTMLCanvasElement;
   /** The device pixel ratio the renderer uses (capped; lower at low detail). */
   readonly pixelRatio: number;
   /**
@@ -198,6 +200,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   let canvasHeight = 1;
   return {
+    canvas: renderer.domElement,
     get pixelRatio() {
       return pixelRatio;
     },

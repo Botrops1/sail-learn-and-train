@@ -73,6 +73,7 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
   panes.get('view')?.append(...buildViewTab(store));
 
   const footer = el('footer', { class: 'footer' }, [
+    el('p', { class: 'disclaimer', 'data-testid': 'disclaimer' }, [t('footer.disclaimer')]),
     el('span', { class: 'version', 'data-testid': 'build-version' }, [
       t('footer.version', { hash: BUILD_INFO.shortHash, date: BUILD_INFO.date }),
     ]),

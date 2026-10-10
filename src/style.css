@@ -85,16 +85,83 @@ html[data-layout='side'] .shell {
   touch-action: none;
 }
 
+/* Error boundary (M5): a message in place of the 3D view; the panel keeps working. */
 .scene-error {
-  margin: 0;
-  padding: 16px;
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  left: 12px;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.94);
+  font-size: var(--font-small);
+}
+
+.scene-error p {
+  margin: 0 0 8px;
+}
+
+.scene-error .scene-error-title {
   font-size: var(--font-label);
+  font-weight: 700;
+}
+
+.error-details {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.error-details summary {
+  min-height: var(--touch);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.error-details code {
+  overflow-wrap: anywhere;
+}
+
+.error-banner {
+  position: fixed;
+  z-index: 10;
+  top: max(8px, env(safe-area-inset-top));
+  right: 8px;
+  left: 8px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 10px 52px 10px 14px;
+  border: 1px solid #b85c00;
+  border-radius: 10px;
+  background: #fff3e0;
+  color: #3d2200;
+  font-size: var(--font-small);
+}
+
+.error-banner p {
+  margin: 0;
+}
+
+.banner-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--touch);
+  height: var(--touch);
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 22px;
+  cursor: pointer;
 }
 
 .debug {
   position: absolute;
   /* Below the Pause button. */
-  top: 52px;
+  top: 58px;
   right: 8px;
   margin: 0;
   padding: 6px 8px;
@@ -301,11 +368,6 @@ input[type='range']:focus-visible,
   outline-offset: -3px;
 }
 
-.placeholder {
-  margin: 8px 0;
-  color: var(--muted);
-}
-
 .field {
   margin: 0 0 16px;
   padding: 0;
@@ -394,6 +456,14 @@ button.segment {
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: var(--font-small);
+}
+
+.footer .disclaimer {
+  flex-basis: 100%;
+  margin: 0;
+  padding-top: 6px;
+  color: var(--text);
+  font-weight: 600;
 }
 
 .footer a {
@@ -668,12 +738,12 @@ html[data-layout='side'] .rig-alerts {
 .dial-label,
 .dial-side {
   fill: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   text-anchor: middle;
 }
 
 .dial-side {
-  font-size: 11px;
+  font-size: 13.5px;
 }
 
 .dial-boat {
@@ -1013,7 +1083,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   top: 8px;
   right: 8px;
   min-width: var(--touch);
-  min-height: 36px;
+  min-height: var(--touch);
   padding: 4px 12px;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -1233,7 +1303,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .real-caption {
   fill: var(--text);
-  font-size: 11px;
+  font-size: 13.5px;
   font-weight: 700;
   pointer-events: none;
 }
@@ -1292,7 +1362,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .real-turns {
   fill: var(--text);
-  font-size: 12px;
+  font-size: 13.5px;
   font-weight: 700;
   pointer-events: none;
 }
@@ -1304,7 +1374,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 .real-hand-text,
 .real-button-text {
   fill: var(--muted);
-  font-size: 11px;
+  font-size: 13.5px;
   font-weight: 600;
   pointer-events: none;
 }
@@ -1462,7 +1532,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .real-strain-text {
   fill: var(--muted);
-  font-size: 11px;
+  font-size: 13.5px;
   font-weight: 600;
   pointer-events: none;
 }
@@ -1548,7 +1618,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 .real-mast-text,
 .real-gearbox-text {
   fill: #3c454c;
-  font-size: 11px;
+  font-size: 13.5px;
   font-weight: 700;
   pointer-events: none;
 }

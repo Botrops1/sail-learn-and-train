@@ -18,9 +18,27 @@ export interface RenderStats {
   triangles: number;
 }
 
+/**
+ * Where a frame's time goes (M5 performance pass), averaged over the FPS window, milliseconds:
+ * the longest gap between two frames, and the main thread's work per frame for the model and
+ * panel (`step`, the store's frame step with every listener) and for the 3D view (`draw`,
+ * including the labels).
+ */
+export interface FrameTimes {
+  worstFrameMs: number;
+  stepMs: number;
+  drawMs: number;
+}
+
 export interface DebugOverlay {
   /** Called once per rendered frame with the measured frames per second. */
-  update(fps: number, viewport: Viewport, pixelRatio: PixelRatio, render?: RenderStats): void;
+  update(
+    fps: number,
+    viewport: Viewport,
+    pixelRatio: PixelRatio,
+    render?: RenderStats,
+    times?: FrameTimes,
+  ): void;
 }
 
 /** Debug overlay (PHASE1_SPEC 9.3). Off by default; `?debug=1` or the View tab turns it on. */
@@ -36,7 +54,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
 
   let lastText = '';
   return {
-    update(fps, viewport, pixelRatio, render) {
+    update(fps, viewport, pixelRatio, render, times) {
       if (box.hidden) return;
       const { camera, settings, selection, rig } = store.getState();
       const sol = rig.solution;
@@ -45,7 +63,18 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
       const rope = (name: string, status: RopeStatus) =>
         `${name} ${status.state}${status.state === 'slack' ? ` ${status.slack.toFixed(2)} m` : ''}`;
       const rows: [string, string][] = [
-        [t('debug.fps'), fps.toFixed(0)],
+        // Nothing measured yet in the first half second.
+        [t('debug.fps'), fps > 0 ? fps.toFixed(0) : '–'],
+        [
+          t('debug.worstFrame'),
+          times
+            ? `${times.worstFrameMs.toFixed(0)} ms (${(1000 / Math.max(1, times.worstFrameMs)).toFixed(0)} fps)`
+            : '–',
+        ],
+        [
+          t('debug.work'),
+          times ? `step ${times.stepMs.toFixed(1)} · 3D ${times.drawMs.toFixed(1)} ms` : '–',
+        ],
         [t('debug.layout'), t(viewport.mode === 'side' ? 'layout.side' : 'layout.stacked')],
         [t('debug.viewport'), `${viewport.width}×${viewport.height}`],
         [t('debug.aspect'), (viewport.width / viewport.height).toFixed(2)],

@@ -1,11 +1,21 @@
 # sail-learn-and-train
 
-A web-based tool for sailing training and knowledge building: see how a cruising yacht's ropes, sheets and sails react to the wind, and learn what everything is called in English and Russian.
+A free web app that shows a complete beginner how a cruising yacht's ropes, sheets and sails behave. It runs in the browser, on a phone first.
 
-The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels).
+The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels, two electric winches). Clarity over realism: the boat stands still, you set a test wind by hand, and you see what each rope does.
 
-**Status:** Phase 1 (interactive boat and rope controls) is in progress. M2 added a test wind you set by hand, the moving boom and mainsail and their ropes in 3D; M3 the self-tacking jib. M3b is a visual pass: a more realistic boat (gelcoat, teak, non-slip deck, metal spars, sailcloth with seams), a sky the boat reflects, rippled water, soft shadows, a mainsail that presses against the spreaders instead of passing through them, and control lines that run in covered channels as on the real boat. A **Detail: High / Low** switch in the View tab keeps it fast on phones. The clutch-bank panel comes in M4.
-**Live site** (after the first deploy): https://botrops1.github.io/sail-learn-and-train/
+**Live site:** https://botrops1.github.io/sail-learn-and-train/
+
+## What you can do
+
+- **Look at the boat in 3D.** Drag to turn it, pinch to zoom, or use the camera buttons (port side, starboard side, top, bow, helm). Tap any part or rope to see its name, the label written on the boat and what it does. Turn on **Labels in 3D** (View tab) to see the names on the boat itself.
+- **Set a test wind** (Wind tab): direction on a dial, speed in knots, five presets. The sails and the boom react; a sail that is let out too far flaps.
+- **Work the ropes** (Ropes tab). The two clutch banks are drawn as on the boat, with their real labels ("Genoa sheet" is the jib sheet).
+  - **Easy mode:** every rope is a slider (1 % or 5 % steps). The main idea: *ropes limit, wind pushes*: easing a sheet only lets the wind push the sail further.
+  - **Realistic mode:** one place at a time (port, starboard, helm, mast), clutches opened and closed, ropes wrapped on the electric winches with turns, the self-tailer, ropes that slip or run out when not held, the winch handle and the mast furling gearbox, and Pause.
+- **Share what you see:** the address (or View → Share) reproduces the exact state, useful for questions and bug reports.
+
+Phase 1 (this boat and its controls) ends with milestone M5, signed off by the owner after testing on a phone. Later phases add a moving boat, waves, a learning layer with Russian names, harbours and exercises: see [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## Documents
 
@@ -35,6 +45,8 @@ Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, 
 | `npm run lint` | ESLint and Prettier check |
 | `npm run shots` | Build, then screenshots into `docs/screenshots/<milestone>/` |
 | `node scripts/visual-shots.mjs` | After a build: camera presets and close-ups at both detail levels, plus draw calls, triangles and FPS |
+
+Add `?debug=1` to the address to see the frame rate, the slowest frame and the work per frame (for performance reports).
 
 ## Disclaimer
 
