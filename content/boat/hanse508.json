@@ -1114,7 +1114,7 @@
       "handTailForceN": 150,
       "selfTailerGripN": 200,
       "handPullN": 300,
-      "forcesSource": "assumption (PHASE1_SPEC 7.2.2): a hand on the tail about 150 N, the self-tailer jaw about 200 N (M4b review: the jaw grips at least as well as a hand; it was 100 N before M4c), pulling a rope in by hand without a winch about 300 N",
+      "forcesSource": "assumption (PHASE1_SPEC 7.2.2): a hand on the tail about 150 N, the self-tailer jaw about 200 N (M4b review: the jaw grips at least as well as a hand; it was 100 N before M4c; the owner accepted 200 N as a starting value), pulling a rope in by hand without a winch about 300 N",
       "maxTurns": 5,
       "smoothEaseMinTailN": 30,
       "smoothEaseNote": "assumption: easing by hand is smooth while the hand still feels at least this much of the load on the tail (load / capstan factor); with more turns the tail force is too small to control and the rope eases in jerks (owner: about 2 turns to ease under control)"
@@ -1136,7 +1136,7 @@
       "ropeFrictionN": 40,
       "ropeFrictionNote": "assumption: friction in the blocks and the open clutch. A rope pulled out with less than this does not run",
       "mainFurlSailLoadFraction": 0.15,
-      "mainFurlSailLoadNote": "assumption (M4c): rolling the main in while it still pulls is hard. Hauling the 'in' furling tail (or cranking the gearbox IN) feels this fraction of the main's sheet-rule load (PHYSICS_TRUTHS [8], times fill and how much is out) on top of its other load. A full main at 20 kn gives about 1.0 kN: one turn on the winch slips (in the self-tailer or in a hand), two hold. A luffing main (sheet eased, sail flapping) adds nothing"
+      "mainFurlSailLoadNote": "assumption (M4c; the owner accepted 15 % as a starting value, to be made configurable later): rolling the main in while it still pulls is hard. Hauling the 'in' furling tail (or cranking the gearbox IN) feels this fraction of the main's sheet-rule load (PHYSICS_TRUTHS [8], times fill and how much is out) on top of its other load. A full main at 20 kn gives about 1.0 kN: one turn on the winch slips (in the self-tailer or in a hand), two hold. A luffing main (sheet eased, sail flapping) adds nothing"
     },
     "running": {
       "maxSpeedMps": 6.0,
@@ -1189,7 +1189,7 @@
       "switchSource": "owner (after M4c): a toggle, IN to the left, OUT to the right. The start position (OUT, the main set) is an assumption",
       "handleTurnsFullFurl": 40,
       "handleTurnsSource": "owner (after M4c): about 40 handle turns roll the main from fully out to fully in. With rig.mainFurlingGearbox.lineTravelM that gives the gearbox's power ratio (2 pi x handle length x turns / line travel, about 8)",
-      "source": "photo mast-furling-gearbox.jpg (gearbox with an IN/OUT switch and a winch-handle socket); owner (used when the furling line slips). Cranking either way turns the mandrel the way the switch says (assumption: the mechanism is not known). The main rolls in only while the 'out' furling tail and the outhaul run free, as when furling with the line (PHASE1_SPEC 7.2.2)"
+      "source": "photo mast-furling-gearbox.jpg (gearbox with an IN/OUT switch and a winch-handle socket); owner (used when the furling line slips). Cranking either way turns the mandrel the way the switch says (owner, after M4c). The main rolls in only while the 'out' furling tail and the outhaul run free, as when furling with the line (PHASE1_SPEC 7.2.2)"
     },
     "scenarios": [
       {
