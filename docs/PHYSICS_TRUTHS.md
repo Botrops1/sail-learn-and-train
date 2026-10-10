@@ -45,7 +45,7 @@ Phase 2 rules are implemented from M6 on, each in the milestone named in [`PHASE
 | PT-21 | 2 | **No-go zone:** a sailing boat cannot sail closer than roughly 45° to the true wind (typically 30–50° depending on the boat). Inside it the sails luff and the boat stops ("in irons"). | source-checked [1] |
 | PT-22 | 2 | **Close-hauled to run:** as the boat bears away from close-hauled (~45°) towards a run (180°), the sails are progressively eased. | source-checked [1] |
 | PT-23 | 2 | **Over-trimmed sails stall:** a sail pulled in too far for its wind angle loses drive and makes more heel. Telltales on the leeward side stop streaming. | to-verify (candidate sources [13], [14], to read in M9) |
-| PT-24 | 2 | **Accidental gybe energy:** the boom crosses fast; the shock load on the mainsheet and fittings is large, and a person in the boom's path can be seriously hurt. A preventer stops it. | to-verify (candidate source [15], to read in M11) |
+| PT-24 | 2 | **Accidental gybe energy:** the boom crosses fast; the shock load on the mainsheet and fittings is large, and a person in the boom's path can be seriously hurt. A preventer stops it (the reference boat has none, so the app teaches the controlled gybe: main sheet hauled in first). | to-verify (candidate source [15], to read in M11) |
 | PT-25 | 2 | **Heel grows with wind force on the sails.** Easing sheets or reducing sail area reduces heel. | to-verify |
 | PT-26 | 2 | **Running dead downwind carries a risk of an accidental gybe.** | source-checked [1] (risk: to-verify) |
 | PT-27 | 5 | **Prop walk:** in reverse, a single propeller pushes the stern sideways (direction depends on rotation). | to-verify |

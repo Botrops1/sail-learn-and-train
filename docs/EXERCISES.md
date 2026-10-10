@@ -20,7 +20,7 @@ Every exercise uses the same format (ROADMAP Phase 6): **what you see → what i
 
 - Trim through the points of sail: close-hauled → reach → run, sheets eased progressively (PT-22).
 - Tacking (self-tacking jib: just the wheel) and the no-go zone (PT-21).
-- Controlled gybe (main sheet hauled in first) vs. accidental gybe (PT-05, PT-24), preventer.
+- Controlled gybe (main sheet hauled in first) vs. accidental gybe (PT-05, PT-24). The reference boat carries no preventer (owner, 2026-10-10).
 - Gust response: ease the main, luff up a little, then bear away again.
 - Reducing sail as the wind rises: furl the jib partly, then the main (in-mast furling instead of reefing).
 - Heaving-to / stopping the boat; getting out of irons.
