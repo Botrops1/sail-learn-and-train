@@ -83,6 +83,7 @@ export function startApp(host: HTMLElement): void {
   // Frame times for the debug overlay (M5 performance pass), summed over the FPS window.
   const sums = { worstFrameMs: 0, stepMs: 0, drawMs: 0 };
   let times: FrameTimes | undefined;
+  let stepFailed = false;
   const loop = (now: number) => {
     requestAnimationFrame(loop);
     if (last !== undefined) sums.worstFrameMs = Math.max(sums.worstFrameMs, now - last);
@@ -91,6 +92,9 @@ export function startApp(host: HTMLElement): void {
     try {
       store.dispatch({ type: 'step', dt: last === undefined ? 0 : (now - last) / 1000 });
     } catch (error) {
+      // Said once (console and banner), not every frame.
+      if (!stepFailed) console.error(error);
+      stepFailed = true;
       reportError(error);
     }
     last = now;
@@ -102,6 +106,7 @@ export function startApp(host: HTMLElement): void {
       } catch (error) {
         // A 3D view that fails while running stops; the panel keeps working (M5).
         scene = undefined;
+        labels?.update([]);
         showSceneError(layout.view, 'scene.failed', error);
       }
     }
