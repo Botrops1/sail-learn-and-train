@@ -1,4 +1,4 @@
-# Workflow: building Phase 1 from a phone
+# Workflow: building the app from a phone
 
 For the owner. How to run each milestone with Claude Code in the cloud, what to paste, and how to check the result without sailing knowledge.
 
@@ -198,4 +198,64 @@ Every check is a full link: tap it, then do what the line says.
 
 - Ask a Russian-speaking sailor to look at `content/registry/parts.json` (or a printable list Claude can generate) and the clutch-bank screen. Mark reviewed terms `sailor-reviewed`.
 - Answer the open questions in `docs/BOAT_REFERENCE.md` if you get the chance.
-- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1.
+- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1. (Done 2026-10-10: [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and section 7 below.)
+
+## 7. Phase 2
+
+Same loop as section 2, one session and one PR per milestone (M6 … M13, [`PHASE2_SPEC.md`](PHASE2_SPEC.md) 9). Model and effort: M6, M8 and M11 (the physics) Opus, high; M7, M9, M10, M12 Opus or Sonnet, high or medium; M13 Sonnet, medium.
+
+### 7.1 Prompt for each Phase 2 milestone (replace N and the name)
+
+```
+Read CLAUDE.md and every document it lists. Phase 1 is done; Phase 2 milestones up to M<N-1> are merged.
+Implement milestone M<N> (<name>) from docs/PHASE2_SPEC.md, and only that milestone.
+Branch: m<N>-<short-name>. Same verification and PR rules as before (tests named after PHYSICS_TRUTHS ids, screenshots you have looked at, checklist from docs/WORKFLOW.md section 7 with every check a full link to the PR preview).
+Write the details you decide into the milestone's section of docs/PHASE2_SPEC.md, marked "proposed in the M<N> PR".
+List open questions in the PR instead of guessing.
+In the PR description, embed the 6–10 most important screenshots as images, phone size first.
+```
+
+### 7.2 Checklists (drafts; each milestone PR makes them exact)
+
+New link parameters (PHASE2_SPEC 7): `hdg` heading (compass °), `wd` now the true wind's compass direction (old links: heading 0, so nothing changes), `held=1` boat held still, `bs` boat speed at the start (kn), `ap=hdg|wind` autopilot with its target `apt`; later `cam=map`, `wm`/`seed`/`wg` wind mode, `tx` time speed-up, `pv=1` preventer, `eng`/`rpm` engine. The links below use the preview address of the PR: `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/`.
+
+#### M6: The boat sails
+
+- [ ] The boat sails on a beam reach (wind across the side) and the water moves past: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=30 — the speed in the strip at the top settles between about 7 and 8 kn; the apparent wind (AWA) is further forward than the true wind (TWA 90). (PT-20)
+- [ ] Held still is Phase 1: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&held=1 — speed 0, AWA = TWA, everything as before.
+- [ ] Turn into the wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&bs=6 — the boat points straight into the wind: she slows down and stops, the sails flap ("in irons"). Turn the wheel: nothing happens once she has stopped. (PT-21, PT-35)
+- [ ] Bear away and ease: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=10&js=10 — close-hauled (wind 45° from the bow) at about 6–7 kn. Autopilot on Heading, then tap −10 a few times to turn away from the wind towards a run: with the sheets left in, the boat slows; ease the main and jib sheets as you go and she keeps her speed. (PT-22)
+- [ ] Tack: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=10&js=10 — turn the wheel to starboard (towards the wind) and keep turning until the wind is on the other side: the jib crosses by itself, no rope work. (PT-28)
+- [ ] A lot of wind does not make a lot more speed: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=110&ws=30&ms=50&js=40 — the speed stays under about 9 kn. (PT-36)
+- [ ] Autopilot, heading: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&ap=hdg — Wind tab: the pilot holds the course; +10 turns the boat 10° to starboard; touching the wheel puts it on Standby.
+- [ ] Autopilot, wind angle: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&ap=wind — turn the wind dial by 20°: the boat turns with the wind and keeps the same angle to it.
+- [ ] Old links still work: an M5 link from the Phase 1 sign-off opens with the same wind angle to the bow.
+- [ ] Frame rate on your phone with `debug=1` stays as in Phase 1.
+
+#### M7: Map and wind instrument
+
+- [ ] `cam=map` shows the boat, its track, both wind arrows, the no-go zone (directions she cannot sail) and the points of sail; the instrument dial in the Wind tab shows AWA, TWA, AWS, TWS.
+
+#### M8: Heel, forces and weather helm
+
+- [ ] More wind heels the boat; easing the main reduces the heel (PT-25). Heeled too far, she slows and the wheel needs more rudder (PT-29). Main sheeted hard in strong wind: she rounds up by herself (PT-32). Rope loads in kN; in Realistic mode a gust can make a rope slip.
+
+#### M9: Trim quality and telltales
+
+- [ ] Each sail shows luffing / good / stalled; the telltales show it too (PT-23). On a run the jib collapses behind the main (PT-37). A sail left flogging in strong wind warns, then tears (PT-38).
+
+#### M10: Wind modes
+
+- [ ] Gusty, Shifty, Building and Dying work; the same link gives the same gusts; time speed-up works.
+
+#### M11: Gybes and the preventer
+
+- [ ] An accidental gybe shows the boom's energy and the peak load and flashes the danger zone (PT-24, PT-26); a controlled gybe is gentle; the preventer stops the boom crossing.
+
+#### M12: Engine
+
+- [ ] Ahead, neutral and astern move the boat as expected; more rpm, more speed (up to the cruising speed).
+
+#### M13: Phase 2 sign-off
+
+- [ ] Every item of the Phase 2 Definition of Done is ticked in the PR; frame rate reported from the phone.

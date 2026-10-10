@@ -35,25 +35,31 @@ Sources are listed at the bottom.
 | PT-19 | **A two-speed winch turns the drum the same way in both handle directions:** one direction is fast and weak (1st gear), the other slow and strong (2nd gear). Too much load for 1st gear: switch to 2nd. (M4c; on this boat the handle is a backup, the winches are electric) | Realistic mode, winch handle on a heavily loaded winch: cranking clockwise struggles, anticlockwise brings the rope in slowly. | source-checked [6] (ratios: [7]; winch generation on the boat unconfirmed; clockwise = 1st gear: owner) |
 | PT-19a | **An electric winch slows as the load grows and cuts out above its safe load.** It does not feel the load like a hand: winching against a fighting rope goes straight to the cut-out. It restarts when the load drops. (M4b) | Haul the topping lift and the vang tight, then press the winch button on one of them: the drum slows and stops with the cut-out hint. | source-checked [9] (values: assumption) |
 
-## Rules for later phases (do not implement yet; listed so the architecture leaves room)
+## Rules for Phase 2 and later phases
+
+Phase 2 rules are implemented from M6 on, each in the milestone named in [`PHASE2_SPEC.md`](PHASE2_SPEC.md) 9. Rules of later phases: do not implement yet; they are listed so the architecture leaves room.
 
 | Id | Phase | Rule | Status |
 |---|---|---|---|
-| PT-20 | 2 | **Apparent wind** is the true wind plus the headwind from the boat's own motion. Sailing upwind or on a reach, it comes from further forward, and is usually stronger, than the true wind. | to-verify (standard textbook fact; cite in Phase 2) |
+| PT-20 | 2 | **Apparent wind** is the true wind plus the headwind from the boat's own motion. Sailing upwind or on a reach, it comes from further forward, and is usually stronger, than the true wind. | to-verify (standard textbook fact; candidate sources [11], [12], to read in M6) |
 | PT-21 | 2 | **No-go zone:** a sailing boat cannot sail closer than roughly 45° to the true wind (typically 30–50° depending on the boat). Inside it the sails luff and the boat stops ("in irons"). | source-checked [1] |
 | PT-22 | 2 | **Close-hauled to run:** as the boat bears away from close-hauled (~45°) towards a run (180°), the sails are progressively eased. | source-checked [1] |
-| PT-23 | 2 | **Over-trimmed sails stall:** a sail pulled in too far for its wind angle loses drive and makes more heel. Telltales on the leeward side stop streaming. | to-verify |
-| PT-24 | 2 | **Accidental gybe energy:** the boom crosses fast; the shock load on the mainsheet and fittings is large, and a person in the boom's path can be seriously hurt. A preventer stops it. | to-verify |
+| PT-23 | 2 | **Over-trimmed sails stall:** a sail pulled in too far for its wind angle loses drive and makes more heel. Telltales on the leeward side stop streaming. | to-verify (candidate sources [13], [14], to read in M9) |
+| PT-24 | 2 | **Accidental gybe energy:** the boom crosses fast; the shock load on the mainsheet and fittings is large, and a person in the boom's path can be seriously hurt. A preventer stops it. | to-verify (candidate source [15], to read in M11) |
 | PT-25 | 2 | **Heel grows with wind force on the sails.** Easing sheets or reducing sail area reduces heel. | to-verify |
 | PT-26 | 2 | **Running dead downwind carries a risk of an accidental gybe.** | source-checked [1] (risk: to-verify) |
 | PT-27 | 5 | **Prop walk:** in reverse, a single propeller pushes the stern sideways (direction depends on rotation). | to-verify |
 | PT-28 | 2 | **Self-tacking jibs** need no sheet work when tacking, which is why they suit short-handed sailing. | source-checked [3] |
-| PT-29 | 2 | **Heel reduces drive.** A boat heeled too far sails slower and pulls harder on the helm (weather helm); easing the main reduces both. | to-verify |
+| PT-29 | 2 | **Heel reduces drive.** A boat heeled too far sails slower and pulls harder on the helm (weather helm); easing the main reduces both. | to-verify (candidate source [16], to read in M8) |
 | PT-30 | 3 | **Waves grow with wind strength and fetch** and make the boat pitch and roll, which moves the apparent wind at the masthead and knocks the boat off course. | to-verify |
 | PT-31 | 5 | **Anchoring needs scope:** all-chain, let out at least 4 × the effective depth (water depth plus bow-roller height), more in strong wind (add about 2 boat lengths). The owner's instructor rule, at least 3 boat lengths, is also checked; the larger wins. | source-checked [10] (instructor rule: owner) |
-| PT-32 | 2 | **Overpowered boats round up:** too much sail or a main sheeted hard in a gust makes the boat heel, the rudder loses grip and she turns into the wind by herself. Easing the main sheet stops it. | to-verify |
+| PT-32 | 2 | **Overpowered boats round up:** too much sail or a main sheeted hard in a gust makes the boat heel, the rudder loses grip and she turns into the wind by herself. Easing the main sheet stops it. | to-verify (candidate source [17], to read in M8) |
 | PT-33 | 5 | **Thrusters work at low speed:** a bow or stern thruster pushes the bow or stern sideways near the pier; at more than a few knots it has little effect. | to-verify |
 | PT-34 | 5 | **Fenders come in before sailing:** left out at speed they bounce and can be torn off. | to-verify |
+| PT-35 | 2 | **No speed, no steering.** The rudder only turns the boat while water flows past it; a stopped boat (for example in irons) does not answer the wheel. | general |
+| PT-36 | 2 | **Hull speed.** A heavy displacement boat hardly sails faster than about 1.34 × √(waterline length in feet) knots: about 8.9 kn for this boat. More wind then mostly makes more heel and a bigger wave, not more speed. | to-verify (candidate source [18], to read in M6) |
+| PT-37 | 2 | **On a run the mainsail blankets the jib:** with the wind from behind, the main takes the jib's wind and the jib collapses. | to-verify |
+| PT-38 | 2 | **Flogging damages sails:** a sail left flapping hard in strong wind wears and can tear. | to-verify |
 
 ## Sources
 
@@ -68,5 +74,16 @@ Sources are listed at the bottom.
 9. Lewmar 40EST EVO ELS electric self-tailing winch, retailer description (Defender). https://defender.com/en_us/lewmar-40est-evo-els-series-electric-self-tailing-winch-kit. Push-button electric; speed falls as the load rises; cuts out above the safe working load and restarts when it drops; thermal trip; also works by hand.
 
 10. Sailboat Cruising, *How much anchor chain do I need?*. https://www.sailboat-cruising.com/anchor-chain-length.html. All-chain scope at least 4 × the effective depth (depth plus bow-roller height); add twice the boat's length in lively conditions; 7:1 or more in a storm.
+
+Candidate sources for Phase 2 (found while planning, 2026-10-10; the milestone that implements a rule reads the source and changes its status to `source-checked` only if it supports the rule):
+
+11. Wikipedia, *Apparent wind*. https://en.wikipedia.org/wiki/Apparent_wind
+12. Wikipedia, *High-performance sailing* (apparent wind worked example). https://en.wikipedia.org/wiki/High-performance_sailing
+13. Wikipedia, *Tell-tale (sailing)*. https://en.wikipedia.org/wiki/Tell-tale_(sailing)
+14. Practical Sailor, *Reading the telltales on your sails*. https://www.practical-sailor.com/sails-rigging-deckgear/reading-the-telltales-on-your-sails/
+15. Wikipedia, *Preventer*. https://en.wikipedia.org/wiki/Preventer
+16. NauticEd sailing blog, *Angle of heel on a sailboat*. https://sailing-blog.nauticed.org/angle-of-heel-on-a-sailboat/
+17. Practical Boat Owner, *Broaching on a boat and how to prevent it*. https://www.pbo.co.uk/seamanship/broaching-on-a-boat-and-how-to-prevent-it-87340
+18. Wikipedia, *Waterline length* (hull speed). https://en.wikipedia.org/wiki/Waterline_length
 
 When you add a source, add it here and point the rule's status to it. Prefer sailing-school material (RYA, ASA, NauticEd), manufacturer manuals (Seldén, Lewmar, Hanse) and textbooks over forums.
