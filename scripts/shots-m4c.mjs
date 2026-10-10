@@ -431,6 +431,8 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     );
     await shot(page, 'live-phone-handle-in-hand-refuses');
     // D: a tap on the slot lays it down here, another takes it, another lays it down.
+    await page.locator(slotBox).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(250);
     slot = await t.where(slotBox);
     await t.swipe([slot, slot]);
     await settle(page);
@@ -462,8 +464,11 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await t.swipe(line(lever2, { x: lever2.x, y: lever2.y + 40 }, 6));
     await settle(page);
     // From the slot onto the drum: into the winch.
+    await page.locator(`${dr} .real-drum`).evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(250);
+    const drumNow = await t.where(`${dr} .real-drum`);
     slot = await t.where(slotBox);
-    await t.swipe(line(slot, drum, 12));
+    await t.swipe(line(slot, drumNow, 12));
     await settle(page);
     check(
       'the handle dragged from the slot onto the drum goes into the winch',
