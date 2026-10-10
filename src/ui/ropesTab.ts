@@ -3,6 +3,7 @@ import { entryFor, panelEntries, type PanelEntry } from '../model/panelEntries';
 import { partInfo } from '../model/registry';
 import { SCENE } from '../render3d/sceneConfig';
 import { ROPES_MODES } from '../model/settings';
+import { createAutopilotPanel } from './autopilotPanel';
 import { createClutchDrawing } from './clutchDrawing';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
@@ -171,11 +172,11 @@ export function createRopesTab(store: Store): Element[] {
 
   const drawing = createClutchDrawing(store);
   const legend = createRopeLegend();
-  const list = el(
-    'div',
-    { class: 'rope-list' },
-    views.map((view) => view.row),
+  // The autopilot sits directly under the wheel's row (PHASE2_SPEC 6.5).
+  const rows: HTMLElement[] = views.flatMap((view) =>
+    view.entry.controlId === 'ctl_rudder' ? [view.row, createAutopilotPanel(store)] : [view.row],
   );
+  const list = el('div', { class: 'rope-list' }, rows);
 
   const rowText = (view: EntryView, state: AppState): string => {
     if (!view.view) return t('ropes.list.static');

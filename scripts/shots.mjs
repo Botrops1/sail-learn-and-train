@@ -10,8 +10,9 @@ import { liveM4aChecks, M4A_SCENES } from './shots-m4a.mjs';
 import { liveM4bChecks, liveM4bFixChecks, liveM4bTouchChecks, M4B_SCENES } from './shots-m4b.mjs';
 import { liveM4cChecks, M4C_SCENES } from './shots-m4c.mjs';
 import { liveM5Checks, M5_SCENES } from './shots-m5.mjs';
+import { liveM6Checks, M6_SCENES } from './shots-m6.mjs';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm5';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm6';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 /** Every file of the set starts with this (M4a: "m4a-"), so parallel milestones never clash. */
 const PREFIX = process.env.SHOTS_PREFIX ?? `${MILESTONE}-`;
@@ -119,6 +120,7 @@ const SCENES = [
   ...M4B_SCENES.map((scene) => ({ ...scene, name: `m4b-${scene.name}` })),
   ...M4C_SCENES.map((scene) => ({ ...scene, name: `m4c-${scene.name}` })),
   ...M5_SCENES.map((scene) => ({ ...scene, name: `m5-${scene.name}` })),
+  ...M6_SCENES.map((scene) => ({ ...scene, name: `m6-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -189,7 +191,8 @@ const origin =
   'http://localhost:4173';
 const browser = await chromium.launch({ args: LAUNCH_ARGS });
 
-await rm(OUT_DIR, { recursive: true, force: true });
+// SHOTS_KEEP=1 keeps the files already there (re-shooting one scene with SHOTS_SCENE).
+if (process.env.SHOTS_KEEP !== '1') await rm(OUT_DIR, { recursive: true, force: true });
 await mkdir(OUT_DIR, { recursive: true });
 
 const problems = [];
@@ -208,7 +211,11 @@ async function openPage(viewport, label, query) {
     }
   });
   page.on('pageerror', (error) => problems.push(`${label}: page error: ${error.message}`));
-  await page.goto(`${origin}${BASE_PATH}${query}`, { waitUntil: 'networkidle' });
+  // Since M6 the app opens Sailing. The older scenes and checks are about the ropes and sails,
+  // so they open Held still (the Phase 1 picture); the M6 ones (label contains "m6") sail.
+  const held = label.includes('m6') || /[?&]held=/.test(query);
+  const url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
+  await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   await page.waitForSelector('canvas.scene-canvas', { timeout: 10_000 });
   return { context, page };
 }
@@ -440,7 +447,9 @@ const ONLY_M4B = process.env.SHOTS_ONLY_M4B === '1';
 const ONLY_M4C = process.env.SHOTS_ONLY_M4C === '1';
 // SHOTS_ONLY_M5=1: only the M5 scenes and live checks.
 const ONLY_M5 = process.env.SHOTS_ONLY_M5 === '1';
-const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5;
+// SHOTS_ONLY_M6=1: only the M6 scenes and live checks.
+const ONLY_M6 = process.env.SHOTS_ONLY_M6 === '1';
+const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6;
 
 /**
  * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
@@ -481,7 +490,7 @@ async function liveGeneralChecks() {
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
   // The phone-sized screen starts at low detail (M3b).
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0`);
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -489,15 +498,18 @@ async function liveGeneralChecks() {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
-  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&debug=1`);
+  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&debug=1`);
   // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
   await page.getByText('High', { exact: true }).click();
-  await expectUrl('Detail high', `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&debug=1`);
+  await expectUrl(
+    'Detail high',
+    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&held=1&debug=1`,
+  );
   await page.waitForTimeout(1500);
   const overlay = await page.getByTestId('debug-overlay').innerText();
   const ok = /Detail\s+high/.test(overlay) && /Draw calls\s+\d+/.test(overlay);
@@ -507,7 +519,10 @@ async function liveGeneralChecks() {
     path: path.join(OUT_DIR, `${PREFIX}live-desktop-view-tab-detail-high.png`),
   });
   await page.getByText('Low', { exact: true }).click();
-  await expectUrl('Detail low', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&debug=1`);
+  await expectUrl(
+    'Detail low',
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&debug=1`,
+  );
   await context.close();
 
   await liveM2Checks();
@@ -522,12 +537,14 @@ async function liveGeneralChecks() {
 }
 
 try {
-  for (const viewport of ONLY_LIVE ? [] : VIEWPORTS) {
+  for (const viewport of ONLY_LIVE || process.env.SHOTS_NO_SCENES === '1' ? [] : VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       if (ONLY_M4B && !scene.name.startsWith('m4b-')) continue;
       if (ONLY_M4C && !scene.name.startsWith('m4c-')) continue;
       if (ONLY_M5 && !scene.name.startsWith('m5-')) continue;
+      if (ONLY_M6 && !scene.name.startsWith('m6-')) continue;
+      if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.tab) await page.getByRole('tab', { name: scene.tab }).click();
@@ -539,7 +556,7 @@ try {
       if (scene.centre) {
         await page.locator(scene.centre).evaluate((el) => el.scrollIntoView({ block: 'center' }));
       }
-      await page.waitForTimeout(1200);
+      await page.waitForTimeout(scene.waitMs ?? 1200);
 
       const facts = await page.evaluate(() => ({
         layout: document.documentElement.dataset.layout,
@@ -685,14 +702,15 @@ try {
     prefix: PREFIX,
     problems,
   };
-  if (!ONLY_M4B && !ONLY_M4C && !ONLY_M5) await liveGeneralChecks();
-  if (!ONLY_M4C && !ONLY_M5) {
+  if (!ONLY_M4B && !ONLY_M4C && !ONLY_M5 && !ONLY_M6) await liveGeneralChecks();
+  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6) {
     await liveM4bChecks(live);
     await liveM4bTouchChecks(live);
     await liveM4bFixChecks(live);
   }
-  if (!ONLY_M5) await liveM4cChecks(live);
-  await liveM5Checks(live);
+  if (!ONLY_M5 && !ONLY_M6) await liveM4cChecks(live);
+  if (!ONLY_M6) await liveM5Checks(live);
+  await liveM6Checks(live);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

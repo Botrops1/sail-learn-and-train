@@ -58,8 +58,8 @@ export function buildBoat(
   const hardware = buildCockpitHardware(materials, detail);
   // A sail rolled away below the point where it stops pushing (PT-14) is not drawn.
   const shown = (unfurled: number) => unfurled * 100 >= boat.visual.solver.furledBelowPct;
-  const mainInput = mainSailInputFor(rig, controls);
-  const jibInput = jibInputFor(rig, controls);
+  const mainInput = mainSailInputFor(rig, controls, rig.wind);
+  const jibInput = jibInputFor(rig, controls, rig.wind);
   const mainSail = buildSailMesh('sail_main', materials, mainSailGrid(mainInput));
   const jibSail = buildSailMesh('sail_jib', materials, jibSailGrid(jibInput));
   let drawings = ropeDrawings(rig);
@@ -87,14 +87,14 @@ export function buildBoat(
     winches?: readonly WinchWrap[],
   ) => {
     rigParts.setBoomPose(drawnPose(next));
-    const main = mainSailInputFor(next, nextControls);
+    const main = mainSailInputFor(next, nextControls, next.wind);
     mainSail.update(mainSailGrid(main), shown(main.unfurled));
-    const jib = jibInputFor(next, nextControls);
+    const jib = jibInputFor(next, nextControls, next.wind);
     jibSail.update(jibSailGrid(jib), shown(jib.unfurled));
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
     drawings = ropeDrawings(next, boat, winches);
     ropes.update(drawings, ropeView, flashing);
-    windex.update(nextControls.ctl_wind_dir);
+    windex.update(next.wind.awaDeg);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).
     rudderPivot.rotation.y = (next.applied.rudder * Math.PI) / 180;

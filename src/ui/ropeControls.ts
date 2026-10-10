@@ -145,7 +145,7 @@ function metaLines(view: ControlView, state: AppState): string[] {
       if (
         !calm &&
         !jib.furled &&
-        Math.abs(state.controls.ctl_wind_dir) >= boat.visual.jibWindShadowNoteFromDeg
+        Math.abs(state.rig.wind.awaDeg) >= boat.visual.jibWindShadowNoteFromDeg
       ) {
         lines.push(t('jib.windShadow'));
       }

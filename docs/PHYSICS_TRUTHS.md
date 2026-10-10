@@ -86,4 +86,6 @@ Candidate sources for Phase 2 (found while planning, 2026-10-10; the milestone t
 17. Practical Boat Owner, *Broaching on a boat and how to prevent it*. https://www.pbo.co.uk/seamanship/broaching-on-a-boat-and-how-to-prevent-it-87340
 18. Wikipedia, *Waterline length* (hull speed). https://en.wikipedia.org/wiki/Waterline_length
 
+M6 note: sources [11] and [18] could not be opened from the cloud build environment (Wikipedia is blocked by its network policy), so PT-20 and PT-36 stay `to-verify`; their tests are named after the ids and check the textbook formula and the hull-speed wall of the model. Someone with access should read the pages and update the status.
+
 When you add a source, add it here and point the rule's status to it. Prefer sailing-school material (RYA, ASA, NauticEd), manufacturer manuals (Seldén, Lewmar, Hanse) and textbooks over forums.

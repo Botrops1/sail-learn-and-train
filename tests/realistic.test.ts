@@ -43,7 +43,11 @@ const JIB_ROLL = 'r1';
 
 /** A Realistic-mode app state for a link with these controls. */
 function start(values: Partial<Controls>, station: StationId = 'port'): AppState {
-  const state = initialState({ controls: values, settings: { ropesMode: 'realistic' } });
+  const state = initialState({
+    controls: values,
+    settings: { ropesMode: 'realistic' },
+    boat: { mode: 'held' },
+  });
   return act(state, { type: 'station', station });
 }
 
@@ -450,7 +454,10 @@ describe('Realistic mode: stations, setup, pause (PHASE1_SPEC 7.2.2)', () => {
   });
 
   it('Pause works in Easy mode too: the rig stands still until Resume', () => {
-    let s = initialState({ controls: { ctl_wind_dir: 90, ctl_mainsheet: 0 } });
+    let s = initialState({
+      controls: { ctl_wind_dir: 90, ctl_mainsheet: 0 },
+      boat: { mode: 'held' },
+    });
     s = reduce(s, { type: 'setPaused', paused: true });
     s = reduce(s, { type: 'setControls', values: { ctl_mainsheet: 80 } });
     const theta = s.rig.theta.value;
@@ -461,7 +468,10 @@ describe('Realistic mode: stations, setup, pause (PHASE1_SPEC 7.2.2)', () => {
   });
 
   it('Easy mode is untouched: the Realistic state does not move ropes there', () => {
-    let s = initialState({ controls: { ctl_wind_dir: 90, ctl_wind_speed: 20, ctl_jib_sheet: 30 } });
+    let s = initialState({
+      controls: { ctl_wind_dir: 90, ctl_wind_speed: 20, ctl_jib_sheet: 30 },
+      boat: { mode: 'held' },
+    });
     s = act(
       s,
       { type: 'station', station: 'starboard' },

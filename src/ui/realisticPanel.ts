@@ -16,6 +16,7 @@ import {
   type TailSpec,
 } from '../model/realistic';
 import { partInfo } from '../model/registry';
+import { createAutopilotPanel } from './autopilotPanel';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { CONTROL_VIEWS, controlView, createControl, stateText, valueText } from './ropeControls';
@@ -224,6 +225,7 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     helmSlot.element,
     el('p', { class: 'hint' }, [t('real.helm.slot')]),
     wheel.element,
+    createAutopilotPanel(store),
   ]);
 
   // The strip for the selected clutch.
