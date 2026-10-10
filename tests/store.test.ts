@@ -77,6 +77,14 @@ describe('store', () => {
     expect(store.getState().settings.ropesMode).toBe('easy');
   });
 
+  it('M5: setLabels turns the labels in 3D off and on; Reset turns them on again', () => {
+    const store = createStore(initialState());
+    store.dispatch({ type: 'setLabels', labels: false });
+    expect(store.getState().settings).toEqual({ ...initialState().settings, labels: false });
+    store.dispatch({ type: 'reset' });
+    expect(store.getState().settings.labels).toBe(true);
+  });
+
   it('reset brings controls, camera, selection and settings back to the defaults (debug and detail stay)', () => {
     const defaults = initialState();
     const store = createStore(

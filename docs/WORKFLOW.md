@@ -91,7 +91,7 @@ Usage: cloud sessions share your plan's limits with normal chat. One session at 
 
 ## 5. Checklists (what to look for on the phone)
 
-Test links set the app to a known state. Base: the PR's preview, `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/` (the links below use the live site; the same `?…` part works after the preview address). Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, and your hand is full: no rope can be worked, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch.
+Test links set the app to a known state. Base: the PR's preview, `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/` (the links below use the live site; the same `?…` part works after the preview address). Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, and your hand is full: no rope can be worked, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch. Since M5 also `lb=0` labels in 3D off (they are on by default).
 
 ### M0: Scaffold
 
@@ -181,9 +181,17 @@ Every check is a full link: tap it, then do what the line says.
 
 ### M5: Phase 1 sign-off
 
-- [ ] `?debug=1` on your phone: FPS mostly 50 or more, never below 30 while dragging sliders.
-- [ ] Works portrait, landscape and on a foldable or tablet if available.
-- [ ] Disclaimer in the footer. README describes what the app is.
+Every check is a full link: tap it, then do what the line says.
+
+- [ ] Frame rate on your phone: https://botrops1.github.io/sail-learn-and-train/?debug=1 — drag the main sheet slider and turn the boat for a while. The overlay's FPS is mostly 50 or more, and "Slowest" stays under 33 ms (never below 30 fps). Please note FPS, Slowest and Work/frame in the PR, at Detail Low and High (View tab).
+- [ ] Labels in 3D (on by default): https://botrops1.github.io/sail-learn-and-train/?wd=60 — names appear on the boat (Mainsail, Mast, Boom, …). Pinch to zoom in: more names appear without covering each other. Tap "Mast": it is selected and its card opens. View tab → untick "Labels in 3D": they go (the link then has `lb=0`).
+- [ ] The halyards are drawn: https://botrops1.github.io/sail-learn-and-train/?wd=60&sel=rope_spi_halyard — the gennaker halyard is highlighted, running down the front of the mast. https://botrops1.github.io/sail-learn-and-train/?wd=60&cam=top&sel=rope_main_halyard — the main halyard's tail is highlighted from the mast foot aft to its clutch on the right.
+- [ ] A rope on a winch is wrapped on it in 3D: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=90&ws=12&cam=helm&sel=rope_vang&wp=b5.3.t — the pink vang goes round the left winch (3 turns) into the top. In the strip tap "Out of self-tailer", "Remove turn" three times, then "Take off winch": the turns come off one by one and the rope goes back into the box behind the winch.
+- [ ] A rope wrapped the wrong way is drawn the wrong way round: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&st=starboard&wd=90&ws=12&cam=side-starboard&wsb=a5.-2.h — zoom in on the right winch: the green jib sheet goes round it the other way and its end hangs to your hand.
+- [ ] The rope ends go into a box behind each winch, and in Easy mode nothing is on the winches: https://botrops1.github.io/sail-learn-and-train/?wd=60&cam=helm — the ropes come out of the back of the clutches, run past the left winch on its inside and into the dark box behind it. Tap the box: "Rope tail box".
+- [ ] Taller clutches with full-size words: https://botrops1.github.io/sail-learn-and-train/?mode=realistic&wd=60 — each label is written along its clutch, as on the boat, and "closed", "stays shut", "rolls in" are easy to read.
+- [ ] Works portrait, landscape and on a foldable or tablet if available: https://botrops1.github.io/sail-learn-and-train/?wd=60
+- [ ] Disclaimer in the footer ("Learning aid, not a substitute for sailing instruction."): https://botrops1.github.io/sail-learn-and-train/ — scroll the panel to the bottom. README describes what the app is: https://github.com/Botrops1/sail-learn-and-train#readme
 - [ ] Every item of the Definition of Done in `PHASE1_SPEC.md` is ticked in the PR.
 
 ## 6. After Phase 1

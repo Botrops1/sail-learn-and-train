@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
-import { runningRopes } from '../model/realistic';
+import { runningRopes, winchWraps } from '../model/realistic';
 import { requirePartId } from '../model/registry';
+import { boat } from '../model/boat';
+import { halfBeamAt } from '../model/hullShape';
+import { labelAnchors } from '../model/labels3d';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
@@ -14,6 +17,8 @@ import { SCENE } from './sceneConfig';
 import { buildWindStreaks } from './wind';
 
 export interface SceneView {
+  /** The 3D view's canvas (the app listens for a lost graphics context). */
+  readonly canvas: HTMLCanvasElement;
   /** The device pixel ratio the renderer uses (capped; lower at low detail). */
   readonly pixelRatio: number;
   /**
@@ -24,6 +29,17 @@ export interface SceneView {
   render(now: number): void;
   /** Draw calls and triangles of the last frame (debug overlay). */
   stats(): RenderStats;
+  /**
+   * Where each label of the labels in 3D sits on the canvas now (CSS px, M5), in priority order;
+   * points behind the camera are left out.
+   */
+  labelPoints(): ScreenPoint[];
+}
+
+export interface ScreenPoint {
+  id: string;
+  x: number;
+  y: number;
 }
 
 /**
@@ -186,6 +202,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   let canvasHeight = 1;
   return {
+    canvas: renderer.domElement,
     get pixelRatio() {
       return pixelRatio;
     },
@@ -209,6 +226,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
         },
         flashingRopes(state),
+        state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
       );
       streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
       water.update(now / 1000);
@@ -217,8 +235,33 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     stats() {
       return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
     },
+    labelPoints() {
+      const rect = { width: size.width, height: canvasHeight };
+      const points: ScreenPoint[] = [];
+      const eye = camera.position;
+      // Standing on board (e.g. the Helm view) the deck hides what is under the water.
+      const onBoard =
+        eye.y > 0 &&
+        eye.x > boat.hull.transomX &&
+        eye.x < boat.hull.stemX &&
+        Math.abs(eye.z) < halfBeamAt(eye.x);
+      for (const anchor of labelAnchors(store.getState().rig, boatModel.ropeDrawings())) {
+        if (onBoard && anchor.point[1] < 0) continue;
+        projected.set(...anchor.point).project(camera);
+        // Behind the camera (or beyond the far plane): no label.
+        if (projected.z > 1 || projected.z < -1) continue;
+        points.push({
+          id: anchor.id,
+          x: ((projected.x + 1) / 2) * rect.width,
+          y: ((1 - projected.y) / 2) * rect.height,
+        });
+      }
+      return points;
+    },
   };
 }
+
+const projected = new THREE.Vector3();
 
 const NO_ROPES: ReadonlySet<string> = new Set();
 

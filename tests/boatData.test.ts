@@ -199,6 +199,9 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       } else if (/X$/.test(path)) {
         expect(value, path).toBeGreaterThanOrEqual(transomX);
         expect(value, path).toBeLessThanOrEqual(bowFittingTipX);
+      } else if (/Deg$/.test(path)) {
+        expect(value, path).toBeGreaterThan(0);
+        expect(value, path).toBeLessThanOrEqual(360);
       } else {
         expect(value, path).toBeGreaterThan(0);
         expect(value, path).toBeLessThan(path.includes('Exponent') ? 5 : 2.5);

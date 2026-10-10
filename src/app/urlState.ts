@@ -100,6 +100,11 @@ export function parseUrlState(
   if (legendParam === '1') legend = true;
   else if (legendParam === '0') legend = false;
 
+  let labels: boolean | undefined;
+  const labelsParam = params.get('lb');
+  if (labelsParam === '1') labels = true;
+  else if (labelsParam === '0') labels = false;
+
   let ropesMode: RopesMode | undefined;
   const mode = params.get('mode');
   if (mode !== null && isRopesMode(mode)) ropesMode = mode;
@@ -124,6 +129,7 @@ export function parseUrlState(
       ...(debug !== undefined ? { debug } : {}),
       detail,
       ...(legend !== undefined ? { legend } : {}),
+      ...(labels !== undefined ? { labels } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
     },
     selection,
@@ -248,6 +254,9 @@ export function serializeUrlState(state: AppState): string {
   // Settings that are rarely changed are only written when they differ from the default.
   if (state.settings.legend !== DEFAULT_SETTINGS.legend) {
     params.set('lg', state.settings.legend ? '1' : '0');
+  }
+  if (state.settings.labels !== DEFAULT_SETTINGS.labels) {
+    params.set('lb', state.settings.labels ? '1' : '0');
   }
   if (state.settings.ropesMode !== DEFAULT_SETTINGS.ropesMode) {
     params.set('mode', state.settings.ropesMode);

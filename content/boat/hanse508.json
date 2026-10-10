@@ -422,7 +422,8 @@
           "bank": "clutch_bank_a",
           "slot": 4,
           "blockAngleDeg": 46,
-          "from": "mast (static halyard, not drawn)"
+          "exit": [-0.075, 2.87, 0.078],
+          "from": "mast: with in-mast furling the halyard runs inside the mast up to the masthead and down to the sail's head swivel; only its tail is seen, out of the mast's starboard side (M5)"
         },
         {
           "rope": "rope_jib_sheet",
@@ -439,7 +440,14 @@
           "bank": "clutch_bank_b",
           "slot": 1,
           "blockAngleDeg": -76,
-          "from": "mast (static halyard, not drawn)"
+          "exit": [-0.022, 2.94, -0.089],
+          "from": "mast: down inside from the masthead, out on the port side (M5)",
+          "parked": {
+            "masthead": [0.18, 21.3, -0.06],
+            "end": [0.18, 2.12, -0.06],
+            "note": "The gennaker is not rigged, so its halyard is parked: it leaves the mast front above the forestay (masthead) and runs down the front of the mast, its shackle clipped at the mast foot (end), just to port of the jib sheet's way into the mast. Drawn taut.",
+            "source": "assumption (M5): where the halyard leaves the mast and where its end is parked on the reference boat is not known"
+          }
         },
         {
           "rope": "rope_topping_lift",
@@ -695,11 +703,8 @@
           [-7.07, 1.61, -1.5]
         ],
         "winch": "winch_primary_port",
-        "wraps": 2,
-        "wrapBottomAboveWinchBase": 0.06,
-        "wrapTopAboveWinchBase": 0.16,
-        "source": "owner (M3b: the furling line continues past the JIB ROLL clutch aft to the port winch and ends in its self-tailer) + assumption (path)",
-        "note": "After the clutch: aft along the port side deck ([x, z] pairs, on the deck), over the coaming outboard of clutch bank B ([x, y, z]), into the port winch from forward on its inboard side, wraps clockwise (seen from above) and ends in the self-tailer on top."
+        "source": "owner (M3b: the furling line continues past the JIB ROLL clutch aft to the port winch; PR #19: with nothing on the winch, its end goes into the rope tail box behind it) + assumption (path)",
+        "note": "After the clutch: aft along the port side deck ([x, z] pairs, on the deck), over the coaming outboard of clutch bank B ([x, y, z]), to the port winch from forward on its inboard side. Put on the winch (Realistic mode) it wraps the drum; otherwise it runs past the drum into the port rope tail box (cockpitHardware.ropeBins). Until M5 it was always drawn with two turns into the self-tailer."
       }
     },
     "clutchKeyNote": "Short key of each bank (clutch key = bank key + slot, e.g. a5 = Genoa sheet, r1 = JIB ROLL). Used by Realistic mode and its link parameters (PHASE1_SPEC 9.2).",
@@ -709,6 +714,15 @@
       "rpmLimitSticker": 2500,
       "photo": "docs/reference/photos/engine-control.jpg",
       "phase": 2
+    },
+    "ropeBins": {
+      "boxes": [
+        { "side": "port", "x": -7.58, "z": -1.6 },
+        { "side": "starboard", "x": -7.58, "z": 1.6 }
+      ],
+      "id": "fit_rope_bin",
+      "source": "owner (PR #19): the ends of all lines are stored in a box on each side, behind the winch; position estimated",
+      "note": "Every rope's tail leaves its clutch at the back and runs past the winch on its inboard side into the box on its side, unless it is put on the winch (Realistic mode)."
     },
     "helmInstruments": {
       "note": "Photo of the starboard helm: magnetic compass, B&G multifunction display and B&G autopilot control next to the winch; rope tails stowed in a bin at the helm. Phase 2+.",
@@ -987,10 +1001,62 @@
       "footDiameter": 0.06,
       "wireRadius": 0.012
     },
-    "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated."
+    "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated.",
+    "ropeBin": {
+      "length": 0.24,
+      "width": 0.3,
+      "rimHeight": 0.02,
+      "rimWidth": 0.02,
+      "drop": 0.1,
+      "passClearance": 0.04,
+      "laneSpacing": 0.016,
+      "turnX": 0.08
+    },
+    "ropeBinNote": "M5 (owner, PR #19): the rope tail box behind each winch, drawn as an opening in the coaming top with a rim (length fore and aft, width across). Each tail runs aft from its clutch, turnX behind the clutch's aft face it turns to its lane beside the winch drum (passClearance outside the drum, lanes laneSpacing apart going inboard), then into the box and drop below its rim. Drawing only.",
+    "winchRope": {
+      "wrapBottomAboveBase": 0.06,
+      "wrapTopAboveBase": 0.17,
+      "jawAheadDeg": 50,
+      "handInboardM": 0.5,
+      "handAftM": 0.15,
+      "handAboveCoamingM": 0.2
+    },
+    "winchRopeNote": "M5, Realistic mode in 3D: a rope put on a winch leaves its clutch at the clutch's aft face and wraps the drum with its turns (clockwise seen from above, or anticlockwise when wrapped the wrong way), rising from wrapBottomAboveBase to wrapTopAboveBase above the winch's base. In the self-tailer it ends in the jaw on top, jawAheadDeg further round the drum; in the hand it leaves the drum towards a hand handInboardM inboard of the winch, handAftM aft of it and handAboveCoamingM above the coaming top. Drawing only (not important)."
   },
   "visual": {
     "$comment": "Teaching approximations for Phase 1. Not physics. Tune freely, keep them here.",
+    "labels3d": {
+      "$comment": "M5: names shown over the 3D view (View tab, Labels in 3D). In priority order: where two labels would overlap on screen, the one higher in the list wins (the selected part's label always shows). 'at' is a point in boat coordinates, or: 'mainSail' / 'jibSail' (the middle of the sail as drawn), 'boom' (distance metres from the gooseneck, moves with the boom), 'rope' (fraction of the way along one strand of the rope as drawn), 'hardware' (the cockpit fitting with this id in cockpitHardware, lift metres above it). Points are estimates chosen to sit on or next to each part; only the drawing uses them.",
+      "list": [
+        { "id": "sail_main", "at": "mainSail" },
+        { "id": "sail_jib", "at": "jibSail" },
+        { "id": "part_mast", "at": [0, 16.5, 0] },
+        { "id": "part_boom", "at": "boom", "distance": 5.2 },
+        { "id": "rope_mainsheet", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_jib_sheet", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_vang", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_topping_lift", "at": "rope", "strand": 0, "fraction": 0.3 },
+        { "id": "helm_port", "at": "hardware", "lift": 0.5 },
+        { "id": "helm_starboard", "at": "hardware", "lift": 0.5 },
+        { "id": "winch_primary_port", "at": "hardware", "lift": 0.3 },
+        { "id": "winch_primary_starboard", "at": "hardware", "lift": 0.3 },
+        { "id": "clutch_bank_b", "at": "hardware", "lift": 0.12 },
+        { "id": "clutch_bank_a", "at": "hardware", "lift": 0.12 },
+        { "id": "clutch_jib_roll", "at": "hardware", "lift": 0.12 },
+        { "id": "part_forestay", "at": [2.3, 14.0, 0] },
+        { "id": "part_backstay", "at": [-4.2, 11.7, 0] },
+        { "id": "part_keel", "at": [-1.4, -1.6, 0] },
+        { "id": "part_rudder", "at": [-7.75, -0.9, 0] },
+        { "id": "rope_outhaul", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_main_furling_line", "at": "rope", "strand": 0, "fraction": 0.08 },
+        { "id": "rope_jib_furling_line", "at": "rope", "strand": 0, "fraction": 0.15 },
+        { "id": "rope_spi_halyard", "at": "rope", "strand": 0, "fraction": 0.55 },
+        { "id": "rope_main_halyard", "at": "rope", "strand": 0, "fraction": 0.05 },
+        { "id": "fit_self_tacking_track", "at": [0.28, 2.05, 1.0] },
+        { "id": "part_jib_furler", "at": [6.28, 1.95, 0] },
+        { "id": "part_main_furling_gearbox", "at": [-0.15, 2.55, -0.08] }
+      ]
+    },
     "ropeRenderRadius": 0.025,
     "luffAoaDeg": {
       "fullyLuffing": 2,

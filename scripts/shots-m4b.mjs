@@ -59,15 +59,28 @@ async function handAndClutch(page, where, station = 'port', key = 'b5') {
   await page.locator(`${drawing(station)} .real-drum`).scrollIntoViewIfNeeded();
   const clutchSel = `${drawing(station)} [data-key="${key}"] .clutch-body`;
   const top = await page.locator('.panel-body').evaluate((el) => el.getBoundingClientRect().top);
-  const clutch = await where(clutchSel);
+  const body = await where(clutchSel);
   await page.locator('.panel-body').evaluate(
     (el, delta) => {
       el.scrollTop += delta;
     },
-    clutch.y - (top + 70),
+    body.box.y + body.box.height - 14 - (top + 70),
   );
   await page.waitForTimeout(200);
-  return { hand: await where(handKnob(station)), clutch: await where(clutchSel) };
+  // M5: the clutches are taller; the rope is dropped on the lower part of the clutch (anywhere
+  // on it counts), so the hand and the drop point both stay on a phone's screen.
+  const clutch = await where(clutchSel);
+  const bottom = { x: clutch.x, y: clutch.box.y + clutch.box.height - 14, box: clutch.box };
+  return { hand: await where(handKnob(station)), clutch: bottom };
+}
+
+/** Scrolls the panel so this part of the drawing is in the middle of what shows. */
+async function inView(page, selector) {
+  await page
+    .locator(selector)
+    .first()
+    .evaluate((el) => el.scrollIntoView({ block: 'center' }));
+  await page.waitForTimeout(250);
 }
 
 async function circleDrum(page, station, turns) {
@@ -161,6 +174,7 @@ export async function liveM4bTouchChecks({ openPage, viewports, outDir, prefix, 
 
   // Lever up opens, down closes (PT-15).
   await ready();
+  await inView(page, lever('port', 'b5'));
   let p = await t.where(lever('port', 'b5'));
   await t.swipe(line(p, { x: p.x, y: p.y - 40 }, 6));
   await settle();
@@ -341,6 +355,7 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     await shot(page, `live-${v}-pt15-open-the-clutch`);
 
     // Tail onto the winch, circle clockwise twice, then anticlockwise once.
+    await inView(page, `${drawing('port')} .real-tail`);
     p = await centre(page, knob('port', 'b5'));
     const d = await centre(page, drum('port'));
     await dragPath(page, [p, { x: (p.x + d.x) / 2, y: (p.y + d.y) / 2 }, d]);

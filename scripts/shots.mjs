@@ -9,8 +9,9 @@ import { createServer, preview } from 'vite';
 import { liveM4aChecks, M4A_SCENES } from './shots-m4a.mjs';
 import { liveM4bChecks, liveM4bFixChecks, liveM4bTouchChecks, M4B_SCENES } from './shots-m4b.mjs';
 import { liveM4cChecks, M4C_SCENES } from './shots-m4c.mjs';
+import { liveM5Checks, M5_SCENES } from './shots-m5.mjs';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm4c';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm5';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 /** Every file of the set starts with this (M4a: "m4a-"), so parallel milestones never clash. */
 const PREFIX = process.env.SHOTS_PREFIX ?? `${MILESTONE}-`;
@@ -33,6 +34,8 @@ const VIEWPORTS = [
       'm4a-select-vang-side',
       'm4b-port-station-helm',
       'm4c-mast-station-handle-in',
+      'm5-labels-side-port',
+      'm5-realistic-rope-wrapped-helm',
     ],
   },
 ];
@@ -115,6 +118,7 @@ const SCENES = [
   ...M4A_SCENES.map((scene) => ({ ...scene, name: `m4a-${scene.name}` })),
   ...M4B_SCENES.map((scene) => ({ ...scene, name: `m4b-${scene.name}` })),
   ...M4C_SCENES.map((scene) => ({ ...scene, name: `m4c-${scene.name}` })),
+  ...M5_SCENES.map((scene) => ({ ...scene, name: `m5-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -434,14 +438,17 @@ const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
 const ONLY_M4B = process.env.SHOTS_ONLY_M4B === '1';
 // SHOTS_ONLY_M4C=1: only the M4c scenes and live checks.
 const ONLY_M4C = process.env.SHOTS_ONLY_M4C === '1';
-const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C;
+// SHOTS_ONLY_M5=1: only the M5 scenes and live checks.
+const ONLY_M5 = process.env.SHOTS_ONLY_M5 === '1';
+const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5;
 
 /**
  * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
  * dragging reach the URL; then the M2, M3 and M4a checklists.
  */
 async function liveGeneralChecks() {
-  const { context, page } = await openPage(VIEWPORTS[0], 'live', '');
+  // Labels in 3D off (M5), so the drag starts on the boat, not on a label.
+  const { context, page } = await openPage(VIEWPORTS[0], 'live', '?lb=0');
   const steps = [
     { width: 390, height: 844, layout: 'stacked' },
     { width: 844, height: 390, layout: 'side' },
@@ -474,7 +481,7 @@ async function liveGeneralChecks() {
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
   // The phone-sized screen starts at low detail (M3b).
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low`);
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -482,15 +489,15 @@ async function liveGeneralChecks() {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
-  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
+  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&debug=1`);
   // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
   await page.getByText('High', { exact: true }).click();
-  await expectUrl('Detail high', `?v=1&${c}&cam=side-starboard&step=1&detail=high&debug=1`);
+  await expectUrl('Detail high', `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&debug=1`);
   await page.waitForTimeout(1500);
   const overlay = await page.getByTestId('debug-overlay').innerText();
   const ok = /Detail\s+high/.test(overlay) && /Draw calls\s+\d+/.test(overlay);
@@ -500,7 +507,7 @@ async function liveGeneralChecks() {
     path: path.join(OUT_DIR, `${PREFIX}live-desktop-view-tab-detail-high.png`),
   });
   await page.getByText('Low', { exact: true }).click();
-  await expectUrl('Detail low', `?v=1&${c}&cam=side-starboard&step=1&detail=low&debug=1`);
+  await expectUrl('Detail low', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&debug=1`);
   await context.close();
 
   await liveM2Checks();
@@ -520,6 +527,7 @@ try {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       if (ONLY_M4B && !scene.name.startsWith('m4b-')) continue;
       if (ONLY_M4C && !scene.name.startsWith('m4c-')) continue;
+      if (ONLY_M5 && !scene.name.startsWith('m5-')) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.tab) await page.getByRole('tab', { name: scene.tab }).click();
@@ -586,7 +594,8 @@ try {
       ];
   for (const { viewport, cam } of sweeps) {
     const label = `taps ${viewport.name}/${cam}`;
-    const { context, page } = await openPage(viewport, label, `?cam=${cam}`);
+    // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
+    const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
     await page.waitForTimeout(800);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const barTop = await page
@@ -626,7 +635,7 @@ try {
   for (const viewport of QUICK ? [] : VIEWPORTS.slice(0, 3)) {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
-      const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1`);
+      const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
       await page.waitForTimeout(800);
       const box = await page.locator('canvas.scene-canvas').boundingBox();
       const barTop = await page
@@ -667,14 +676,23 @@ try {
   }
 
   // Live checks: layout, camera and URL, the M2–M4a checklists, then M4b (Realistic mode).
-  const live = { openPage, viewports: VIEWPORTS, outDir: OUT_DIR, prefix: PREFIX, problems };
-  if (!ONLY_M4B && !ONLY_M4C) await liveGeneralChecks();
-  if (!ONLY_M4C) {
+  const live = {
+    openPage,
+    browser,
+    origin,
+    viewports: VIEWPORTS,
+    outDir: OUT_DIR,
+    prefix: PREFIX,
+    problems,
+  };
+  if (!ONLY_M4B && !ONLY_M4C && !ONLY_M5) await liveGeneralChecks();
+  if (!ONLY_M4C && !ONLY_M5) {
     await liveM4bChecks(live);
     await liveM4bTouchChecks(live);
     await liveM4bFixChecks(live);
   }
-  await liveM4cChecks(live);
+  if (!ONLY_M5) await liveM4cChecks(live);
+  await liveM5Checks(live);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

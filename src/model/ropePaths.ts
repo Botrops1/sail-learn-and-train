@@ -32,7 +32,9 @@ export type RopeId =
   | 'rope_outhaul'
   | 'rope_main_furling_line'
   | 'rope_jib_sheet'
-  | 'rope_jib_furling_line';
+  | 'rope_jib_furling_line'
+  | 'rope_main_halyard'
+  | 'rope_spi_halyard';
 
 export interface RopeStrand {
   points: Vec3[];
@@ -149,6 +151,41 @@ function clutchPoint(bankId: BankId, slot: number, data: BoatData): Vec3 {
   ];
 }
 
+/**
+ * A rope's tail from where it leaves its clutch into the rope tail box behind the winch on its
+ * side (M5, owner, PR #19): aft, past the winch drum on its inboard side in its own lane, then
+ * into the box. `lane` 0 is closest to the drum.
+ */
+export function tailToBin(side: 1 | -1, lane: number, from: Vec3, data: BoatData = boat): Vec3[] {
+  const bins = data.cockpitHardware.ropeBins;
+  const bin = bins.boxes.find((b) => Math.sign(b.z) === side);
+  const winch = data.cockpitHardware.winches.find(
+    (w) => Math.sign(w.z) === side && (!('present' in w) || w.present !== false),
+  );
+  if (!bin || !winch) throw new Error('No rope tail box or winch on this side in hanse508.json.');
+  const size = data.modelDetail.ropeBin;
+  const radius = data.visual.ropeRenderRadius;
+  const top = data.deck.cockpit.coamingTopY + radius;
+  const inboard = -side;
+  const laneZ =
+    winch.z +
+    inboard *
+      (data.modelDetail.winch.diameter / 2 + radius + size.passClearance + lane * size.laneSpacing);
+  const inBox = bin.z + inboard * (size.width / 2 - 2 * radius - lane * size.laneSpacing);
+  return [
+    [from[0] - size.turnX, top, laneZ],
+    [bin.x + size.length / 2, top, laneZ],
+    [bin.x, top, inBox],
+    [bin.x, data.deck.cockpit.coamingTopY - size.drop, inBox],
+  ];
+}
+
+/** Where a rope leaves its clutch towards the winch: the aft face of the bank. */
+function clutchExitPoint(bankId: BankId, slot: number, data: BoatData): Vec3 {
+  const front = clutchPoint(bankId, slot, data);
+  return [front[0] - data.modelDetail.clutchBank.length, front[1], front[2]];
+}
+
 type LineSpec = BoatData['rig']['lineLead']['lines'][number];
 
 /** The lead of one rope end from the mast foot to its clutch (rig.lineLead.lines). */
@@ -196,7 +233,32 @@ export function drawnPose(rig: RigState): BoomPose {
   return { thetaDeg: rig.theta.value, psiDeg: rig.psi.value };
 }
 
-export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[] {
+/**
+ * A rope put on a winch in Realistic mode (M5): which clutch's tail, which winch, how it is
+ * wrapped. Built from the Realistic-mode state (`winchWraps` in realistic.ts).
+ */
+export interface WinchWrap {
+  winchId: string;
+  ropeId: string;
+  /** Which end of the rope (main sheet: port / starboard; furling line: furl / unfurl). */
+  tail: string | null;
+  /** Turns on the drum: + clockwise seen from above (the right way), − anticlockwise. */
+  turns: number;
+  /** Tail in the self-tailer's jaw (else in the user's hand). */
+  selfTailer: boolean;
+}
+
+/**
+ * The ropes as polylines. Every tail runs on from its clutch into the rope tail box behind the
+ * winch on its side (M5). `winches`: Realistic mode's winch setup: a rope on a winch is drawn
+ * wrapped on that winch with its turns instead. Easy mode has nothing on the winches (owner,
+ * PR #19).
+ */
+export function ropeDrawings(
+  rig: RigState,
+  data: BoatData = boat,
+  winches?: readonly WinchWrap[],
+): RopeDrawing[] {
   const pose = drawnPose(rig);
   const segments = data.visual.ropeSagSegments;
   const radius = data.visual.ropeRenderRadius;
@@ -205,7 +267,22 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
   const boomBottom = -data.modelDetail.boomSection.height / 2 - blockRadius;
   const solution = rig.solution;
   const local = (p: Vec3) => boomLocalToWorld(p, pose, data);
-  const lead = (rope: RopeId, tail?: string) => leadToClutch(lineSpec(rope, tail, data), data);
+  /**
+   * The lead to the clutch, continued onto the winch when this end is on one, else into the
+   * rope tail box behind the winch (M5).
+   */
+  const lead = (rope: RopeId, tail?: string) => {
+    const spec = lineSpec(rope, tail, data);
+    const points = leadToClutch(spec, data);
+    const wrap = winches?.find((w) => w.ropeId === rope && (w.tail ?? undefined) === tail);
+    const exit = clutchExitPoint(spec.bank as BankId, spec.slot, data);
+    const side = spec.bank === 'clutch_bank_a' ? 1 : -1;
+    return [
+      ...points,
+      exit,
+      ...(wrap ? winchWrapPoints(wrap, exit, data) : tailToBin(side, spec.slot, exit, data)),
+    ];
+  };
   const exitOf = (rope: RopeId) => {
     const exit = mastExitPoint(lineSpec(rope, undefined, data));
     if (!exit) throw new Error(`No mast exit for ${rope} in hanse508.json.`);
@@ -356,7 +433,7 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
     const spec = lineSpec('rope_main_furling_line', name, data);
     const exit = mastExitPoint(spec);
     if (!exit) throw new Error('No drum exit for the main furling line in hanse508.json.');
-    return { points: [exit, ...leadToClutch(spec, data)], feed };
+    return { points: [exit, ...lead('rope_main_furling_line', name)], feed };
   };
   const furlingLine: RopeDrawing = {
     id: 'rope_main_furling_line',
@@ -364,7 +441,108 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
     strands: [tail('furl', furl.inTailPaidOut), tail('unfurl', furl.outTailPaidOut)],
   };
 
-  return [mainsheet, vang, toppingLift, outhaul, furlingLine, ...jibRopes(rig, data)];
+  return [
+    mainsheet,
+    vang,
+    toppingLift,
+    outhaul,
+    furlingLine,
+    ...jibRopes(rig, data, winches, lead),
+    ...halyards(lead, data),
+  ];
+}
+
+/**
+ * The two static halyards (M5, owner after M4a), so selecting one highlights a rope in 3D too.
+ * The main halyard runs inside the mast (in-mast furling): only its tail is seen, out of the
+ * mast foot, down to its turning block and aft to the "Main halyard" clutch. The gennaker
+ * halyard is parked: from the masthead down the front of the mast to its shackle at the mast
+ * foot, and its tail from the mast foot to "SPI HALYARD". Both are drawn taut.
+ */
+function halyards(lead: (rope: RopeId, tail?: string) => Vec3[], data: BoatData): RopeDrawing[] {
+  const tail = (rope: RopeId): RopeStrand => {
+    const exit = mastExitPoint(lineSpec(rope, undefined, data));
+    if (!exit) throw new Error(`No mast exit for ${rope} in hanse508.json.`);
+    return { points: [exit, ...lead(rope)], feed: 0 };
+  };
+  const spi = lineSpec('rope_spi_halyard', undefined, data);
+  if (!('parked' in spi) || !spi.parked) {
+    throw new Error('No parked run for the gennaker halyard in hanse508.json.');
+  }
+  return [
+    { id: 'rope_main_halyard', state: 'taut', strands: [tail('rope_main_halyard')] },
+    {
+      id: 'rope_spi_halyard',
+      state: 'taut',
+      strands: [
+        { points: [vec3(spi.parked.masthead), vec3(spi.parked.end)], feed: 0 },
+        tail('rope_spi_halyard'),
+      ],
+    },
+  ];
+}
+
+/**
+ * A rope's way round a winch drum (M5): from `from` (where it leaves the clutch) onto the drum
+ * at the tangent point, `|turns|` turns rising up the drum (clockwise seen from above for + turns,
+ * the way a winch turns; anticlockwise for − turns, PT-17), then into the self-tailer's jaw on
+ * top or off the drum to the hand. With no turns the rope runs straight to the hand.
+ */
+export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = boat): Vec3[] {
+  const winch = data.cockpitHardware.winches.find((w) => w.id === wrap.winchId);
+  if (!winch) throw new Error(`Winch ${wrap.winchId} is missing from hanse508.json.`);
+  const size = data.modelDetail.winch;
+  const detail = data.modelDetail.winchRope;
+  const radius = data.visual.ropeRenderRadius;
+  const r = size.diameter / 2 + radius;
+  const inboard = -Math.sign(winch.z) || 1;
+  const hand: Vec3 = [
+    winch.x - detail.handAftM,
+    data.deck.cockpit.coamingTopY + detail.handAboveCoamingM,
+    winch.z + inboard * detail.handInboardM,
+  ];
+  const turns = Math.min(Math.abs(wrap.turns), data.realisticMode.capstan.maxTurns);
+  if (turns === 0) return [hand];
+  // Angles round the drum seen from above: 0 = forward (+x), +90° = starboard (+z). Increasing
+  // angle is clockwise seen from above.
+  const dir = wrap.turns > 0 ? 1 : -1;
+  const at = (p: Vec3) => Math.atan2(p[2] - winch.z, p[0] - winch.x);
+  const reach = (p: Vec3) =>
+    Math.acos(Math.min(1, r / Math.max(r, Math.hypot(p[0] - winch.x, p[2] - winch.z))));
+  // The rope meets the drum where it runs on in the turning direction, and leaves it where the
+  // turning direction points at the hand.
+  const start = at(from) + dir * reach(from);
+  const end = start + dir * 2 * Math.PI * turns;
+  let total = 2 * Math.PI * turns;
+  if (!wrap.selfTailer) {
+    const leave = at(hand) - dir * reach(hand);
+    total += (((dir * (leave - end)) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  }
+  // Each turn lies one rope's width above the last, up to the top of the wrap.
+  const bottom = winch.y + detail.wrapBottomAboveBase;
+  const top = Math.min(winch.y + detail.wrapTopAboveBase, bottom + 2 * radius * turns);
+  const steps = Math.max(2, Math.ceil((WINCH_WRAP_POINTS_PER_TURN * total) / (2 * Math.PI)));
+  const points: Vec3[] = [];
+  for (let k = 0; k <= steps; k += 1) {
+    const a = start + (dir * total * k) / steps;
+    points.push([
+      winch.x + r * Math.cos(a),
+      bottom + ((top - bottom) * k) / steps,
+      winch.z + r * Math.sin(a),
+    ]);
+  }
+  if (!wrap.selfTailer) return [...points, hand];
+  // Up over the rim into the jaw, a little further round, just inside the drum's edge.
+  const jawAngle = start + dir * (total + (detail.jawAheadDeg * Math.PI) / 180);
+  const jaw = size.diameter / 2 - radius;
+  return [
+    ...points,
+    [
+      winch.x + jaw * Math.cos(jawAngle),
+      winch.y + size.height - radius,
+      winch.z + jaw * Math.sin(jawAngle),
+    ],
+  ];
 }
 
 /**
@@ -373,7 +551,12 @@ export function ropeDrawings(rig: RigState, data: BoatData = boat): RopeDrawing[
  * "Genoa sheet" clutch. The furling line runs from the drum at the bow aft along the port
  * stanchion bases to the JIB ROLL clutch.
  */
-function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
+function jibRopes(
+  rig: RigState,
+  data: BoatData,
+  winches: readonly WinchWrap[] | undefined,
+  lead: (rope: RopeId, tail?: string) => Vec3[],
+): RopeDrawing[] {
   const segments = data.visual.ropeSagSegments;
   const jib = rig.jibSolution;
   const phi = rig.jibPhi.value;
@@ -421,7 +604,7 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
       part(1),
       part(-1),
       { points: [car, vec3(sheetEntry)], feed: sheetFeed },
-      { points: [sheetExit, ...leadToClutch(sheetSpec, data)], feed: sheetFeed },
+      { points: [sheetExit, ...lead('rope_jib_sheet')], feed: sheetFeed },
     ],
   };
 
@@ -463,7 +646,7 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
             Math.max(clutch.y, sheerAt(clutch.x, data)) + clutchSize.height / 2,
             clutch.z,
           ],
-          ...jibRollToWinch(data),
+          ...jibRollPastClutch(winches, data),
         ],
         feed: jibFurlingLinePaidOut(jib.unfurled, data),
       },
@@ -473,40 +656,26 @@ function jibRopes(rig: RigState, data: BoatData): RopeDrawing[] {
 }
 
 /**
- * The jib furling line past its clutch (M3b, owner): aft along the port side deck, over the
- * coaming outboard of clutch bank B, onto the port winch from forward on its inboard side,
- * clockwise round the drum (seen from above) and into the self-tailer on top.
+ * Where the JIB ROLL line goes past its clutch: aft along the port side deck and over the
+ * coaming outboard of clutch bank B (M3b), then onto the port winch while it is put on it
+ * (Realistic mode, M5), else past the winch into the port rope tail box (M5, owner, PR #19).
  */
-export function jibRollToWinch(data: BoatData = boat): Vec3[] {
-  const lead = data.cockpitHardware.jibRollClutch.leadToWinch;
-  const radius = data.visual.ropeRenderRadius;
-  const winch = data.cockpitHardware.winches.find((w) => w.id === lead.winch);
-  if (!winch) throw new Error(`Winch ${lead.winch} is missing from hanse508.json.`);
-  const size = data.modelDetail.winch;
-  const points: Vec3[] = [
-    ...lead.sideDeck.map(([x = 0, z = 0]): Vec3 => [x, sheerAt(x, data) + radius, z]),
+function jibRollPastClutch(winches: readonly WinchWrap[] | undefined, data: BoatData): Vec3[] {
+  const roll = data.cockpitHardware.jibRollClutch;
+  const lead = roll.leadToWinch;
+  const deckY = (x: number) => sheerAt(x, data) + data.visual.ropeRenderRadius;
+  const path: Vec3[] = [
+    ...lead.sideDeck.map(([x = 0, z = 0]): Vec3 => [x, deckY(x), z]),
     ...lead.overCoaming.map((p) => vec3(p)),
   ];
-  // Clockwise seen from above (bow up, starboard right): from the inboard side, aft, outboard.
-  const wrapRadius = size.diameter / 2 + radius;
-  const turns = lead.wraps;
-  const steps = turns * WRAP_POINTS_PER_TURN;
-  const bottom = winch.y + lead.wrapBottomAboveWinchBase;
-  const top = winch.y + lead.wrapTopAboveWinchBase;
-  for (let k = 0; k <= steps; k += 1) {
-    const phi = (2 * Math.PI * k) / WRAP_POINTS_PER_TURN;
-    const inboard = -Math.sign(winch.z) || 1;
-    points.push([
-      winch.x - wrapRadius * Math.sin(phi),
-      bottom + ((top - bottom) * k) / steps,
-      winch.z + inboard * wrapRadius * Math.cos(phi),
-    ]);
-  }
-  // Up into the jaws of the self-tailer, just inside the drum's rim.
-  const jaw = size.diameter / 2 - radius;
-  points.push([winch.x - jaw * 0.7, winch.y + size.height - radius, winch.z - jaw * 0.7]);
-  return points;
+  const end = path[path.length - 1] as Vec3;
+  const wrap = winches?.find((w) => w.ropeId === roll.ropeId);
+  // Lane 0, next to the drum: the bank's own tails (slots 1–5) lie further inboard.
+  return [...path, ...(wrap ? winchWrapPoints(wrap, end, data) : tailToBin(-1, 0, end, data))];
 }
 
-/** Points per turn of a rope wrapped round a winch drum. */
-const WRAP_POINTS_PER_TURN = 12;
+/**
+ * Points per turn of a rope on a winch in Realistic mode (M5): finer, so a rope seen close up
+ * from the Helm view stays round on the drum.
+ */
+export const WINCH_WRAP_POINTS_PER_TURN = 24;

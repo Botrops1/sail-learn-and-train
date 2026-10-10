@@ -30,13 +30,14 @@ const D = {
   bankCaptionY: 52,
   ropeInTop: 58,
   clutchTop: 72,
-  clutchHeight: 104,
+  /** M5 (owner, PR #19): tall enough for the labels at full text size on a phone. */
+  clutchHeight: 122,
   /** A large clutch reaches further forward (its lever). */
   largeExtraTop: 10,
   sticker: { width: 15, inset: 11 },
   tailLength: 98,
   ropeWidth: 4.5,
-  font: { label: 11.5, minLabel: 9.5, tag: 11, caption: 12.5 },
+  font: { label: 12.5, minLabel: 11.6, tag: 12, caption: 12.5 },
   /** Approximate glyph widths (em) to fit a label on its sticker. */
   glyphEm: { upper: 0.68, lower: 0.54 },
 } as const;

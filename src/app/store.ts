@@ -43,6 +43,7 @@ export type Action =
   | { type: 'setDetail'; detail: Detail }
   | { type: 'setRopesMode'; mode: RopesMode }
   | { type: 'setLegend'; legend: boolean }
+  | { type: 'setLabels'; labels: boolean }
   /** Reset all (View tab): controls, camera, selection and settings back to the defaults. */
   | { type: 'reset' }
   | { type: 'setCameraPreset'; preset: CameraPreset }
@@ -109,6 +110,8 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, settings: { ...state.settings, ropesMode: action.mode } };
     case 'setLegend':
       return { ...state, settings: { ...state.settings, legend: action.legend } };
+    case 'setLabels':
+      return { ...state, settings: { ...state.settings, labels: action.labels } };
     case 'reset': {
       // The rig keeps moving from where it is, so the boom and sails swing back visibly. The
       // debug overlay and the render detail suit the device, not what is shown: they stay.

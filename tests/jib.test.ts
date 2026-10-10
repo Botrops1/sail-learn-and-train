@@ -625,10 +625,11 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     expect(intoMast[0]?.[2]).toBeCloseTo(rig.jibSolution.carZ, 6);
     expect(Math.abs(intoMast[1]?.[0] ?? 9)).toBeLessThan(boat.rig.mast.sectionForeAft);
     const lead = sheet?.strands[3]?.points ?? [];
-    const end = lead[lead.length - 1] as Vec3;
     const bankA = boat.cockpitHardware.clutchBanks.find((bank) => bank.id === 'clutch_bank_a');
+    // Through the clutch (M5: then on into the starboard rope tail box).
+    expect(lead.some((p) => p[2] > 0 && Math.abs(p[0] - (bankA?.x ?? 0)) < 0.5)).toBe(true);
+    const end = lead[lead.length - 1] as Vec3;
     expect(end[2]).toBeGreaterThan(0);
-    expect(Math.abs(end[0] - (bankA?.x ?? 0))).toBeLessThan(0.5);
     // The chord heading used for the angle matches the drawn clew.
     expect(Math.abs(jibHeadingDeg(clew))).toBeCloseTo(Math.abs(rig.jibSolution.headingDeg), 6);
   });

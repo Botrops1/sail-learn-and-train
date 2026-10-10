@@ -62,7 +62,7 @@ function stripeTexture(): THREE.DataTexture {
 }
 
 interface RopeMesh {
-  mesh: THREE.Mesh;
+  mesh: THREE.Mesh<THREE.BufferGeometry>;
   material: THREE.MeshLambertMaterial;
   colorKey: ColorKey;
   /** Points per strand, as built. */
@@ -176,7 +176,9 @@ export function buildRopes(initial: RopeDrawing[]): RopeMeshes {
       color: SCENE.ropes.colors[colorKey],
       map: texture,
     });
-    const mesh = asThin(partMesh(drawing.id, [built.geometry], base));
+    const mesh = asThin(
+      partMesh(drawing.id, [built.geometry], base),
+    ) as THREE.Mesh<THREE.BufferGeometry>;
     mesh.renderOrder = 2;
     return {
       mesh,
@@ -194,8 +196,16 @@ export function buildRopes(initial: RopeDrawing[]): RopeMeshes {
       const rope = ropes.get(drawing.id);
       if (!rope) continue;
       const layout = drawing.strands.map((strand) => strand.points.length);
+      // A rope put on or taken off a winch, or wrapped with another turn (Realistic mode, M5),
+      // has a new number of points: new buffers then. Otherwise they are reused every frame.
       if (layout.join() !== rope.layout.join()) {
-        throw new Error(`Rope ${drawing.id} changed its number of points.`);
+        const built = buildGeometry(layout);
+        rope.mesh.geometry.dispose();
+        rope.mesh.geometry = built.geometry;
+        rope.layout = layout;
+        rope.positions = built.positions;
+        rope.normals = built.normals;
+        rope.uvs = built.uvs;
       }
       let base = 0;
       drawing.strands.forEach((strand) => {

@@ -12,6 +12,7 @@ import { mainFurlLengths } from './mainFurl';
 import { mainsheetPaidOut } from './mainsheet';
 import { panelEntries } from './panelEntries';
 import { toppingLiftPaidOut, vangPaidOut } from './pitchLimits';
+import type { WinchWrap } from './ropePaths';
 import type { RigState } from './sim';
 import {
   easesSmoothly,
@@ -1170,6 +1171,26 @@ export function stepRealistic(
 }
 
 /** Tail keys whose rope is running out now, per station (for the alerts strip). */
+/**
+ * The ropes on the winches, for the 3D view (M5): each winch's tail with its turns and where its
+ * end is (self-tailer or hand).
+ */
+export function winchWraps(state: RealisticState, data: BoatData = boat): WinchWrap[] {
+  const wraps: WinchWrap[] = [];
+  for (const [winchId, winch] of Object.entries(state.winches)) {
+    const spec = winch.tail ? tailSpec(winch.tail, data) : undefined;
+    if (!spec) continue;
+    wraps.push({
+      winchId,
+      ropeId: spec.ropeId,
+      tail: spec.tail,
+      turns: winch.turns,
+      selfTailer: winch.selfTailer,
+    });
+  }
+  return wraps;
+}
+
 export function runningTails(state: RealisticState, data: BoatData = boat): TailSpec[] {
   return tailSpecs(data).filter((spec) => state.reports[spec.key]?.motion === 'running');
 }
