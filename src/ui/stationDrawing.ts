@@ -51,10 +51,14 @@ const D = {
   gap: 8,
   roll: { top: 6, height: 30, width: 128 },
   ropeIn: 14,
-  clutchHeight: 124,
+  /** M5 (owner, PR #19): tall enough for labels at full text size, written along the clutch. */
+  clutchHeight: 200,
   lever: { inset: 7, height: 15, closedDrop: 26 },
-  /** White label sticker under the lever; the label in up to two lines across it. */
-  sticker: { inset: 5, top: 54, height: 50, lineGap: 1.15, tagFont: 9 },
+  /**
+   * White label sticker under the lever; the label written along it (bottom to top, as on the
+   * boat), with the furling clutches' tag in a second line beside it.
+   */
+  sticker: { inset: 5, top: 52, height: 116, lineGap: 1.2, tagFont: 13.5 },
   /** The word "open" / "closed" sits in the clutch body under the sticker. */
   stateInset: 8,
   knobGap: 22,
@@ -68,7 +72,7 @@ const D = {
   handleArm: 49,
   bottomPad: 30,
   ropeWidth: 5,
-  font: { label: 11.5, minLabel: 8 },
+  font: { label: 15, minLabel: 13.5 },
   glyphEm: { upper: 0.68, lower: 0.54 },
   /** A drag shorter than this (drawing units) is a tap. */
   tapMove: 10,
@@ -239,22 +243,27 @@ export function createStationDrawing(
     });
     const stickerTop = clutchTop + D.sticker.top;
     const stickerWidth = unit - 2 * D.sticker.inset;
-    const lines = labelLines(spec.label);
-    const fontSize = Math.min(...lines.map((line) => fitFont(line, stickerWidth - 6)));
-    // The two furling clutches carry the same label: a small tag says which way each rolls.
+    const fontSize = fitFont(spec.label, D.sticker.height - 10);
+    // The two furling clutches carry the same label: a tag beside it says which way each rolls.
     const tag = spec.tail === 'furl' || spec.tail === 'unfurl' ? t(`real.tag.${spec.tail}`) : null;
-    const tagSpace = tag ? D.sticker.tagFont * D.sticker.lineGap : 0;
-    const labelY = stickerTop + (D.sticker.height - tagSpace) / 2;
-    const firstY = labelY - ((lines.length - 1) * fontSize * D.sticker.lineGap) / 2;
+    const lineStep = fontSize * D.sticker.lineGap;
+    const labelX = tag ? mid - lineStep / 2 : mid;
+    const labelY = stickerTop + D.sticker.height / 2;
+    // A static rope's clutch "stays shut" (two lines); the others say OPEN or closed.
+    const stateLines = spec.controlId ? [''] : labelLines(t('real.clutch.static'));
     const state = svg(
       'text',
       {
         x: mid,
-        y: clutchBottom - D.stateInset,
+        y: clutchBottom - D.stateInset - (stateLines.length - 1) * D.font.minLabel,
         class: 'real-clutch-state',
         'text-anchor': 'middle',
       },
-      [''],
+      stateLines.length > 1
+        ? stateLines.map((line, index) =>
+            svg('tspan', { x: mid, dy: index === 0 ? 0 : D.font.minLabel }, [line]),
+          )
+        : stateLines,
     );
     group.append(
       svg('rect', {
@@ -290,27 +299,27 @@ export function createStationDrawing(
         rx: 4,
         class: `clutch-sticker${spec.controlId ? '' : ' clutch-sticker-plate'}`,
       }),
-      ...lines.map((line, index) =>
-        svg(
-          'text',
-          {
-            x: mid,
-            y: firstY + index * fontSize * D.sticker.lineGap,
-            class: 'clutch-label',
-            'font-size': fontSize,
-            'text-anchor': 'middle',
-            'dominant-baseline': 'central',
-          },
-          [line],
-        ),
+      svg(
+        'text',
+        {
+          x: labelX,
+          y: labelY,
+          transform: `rotate(-90 ${labelX} ${labelY})`,
+          class: 'clutch-label',
+          'font-size': fontSize,
+          'text-anchor': 'middle',
+          'dominant-baseline': 'central',
+        },
+        [spec.label],
       ),
       ...(tag
         ? [
             svg(
               'text',
               {
-                x: mid,
-                y: stickerTop + D.sticker.height - tagSpace / 2 - 2,
+                x: labelX + lineStep,
+                y: labelY,
+                transform: `rotate(-90 ${labelX + lineStep} ${labelY})`,
                 class: 'real-clutch-tag',
                 'font-size': D.sticker.tagFont,
                 'text-anchor': 'middle',
@@ -863,12 +872,9 @@ export function createStationDrawing(
       attr(node.group, 'aria-pressed', String(selected === spec.key));
       const label = clutchAriaLabel(spec, open);
       attr(node.group, 'aria-label', label);
-      setText(
-        node.state,
-        spec.controlId
-          ? t(open ? 'real.clutch.openShort' : 'real.clutch.closedShort')
-          : t('real.clutch.static'),
-      );
+      if (spec.controlId) {
+        setText(node.state, t(open ? 'real.clutch.openShort' : 'real.clutch.closedShort'));
+      }
       const here = onWinch === spec.key;
       const running = report?.motion === 'running';
       node.tail.classList.toggle('is-running', running);

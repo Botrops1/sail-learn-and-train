@@ -9,12 +9,8 @@
 /** Controls that may be smaller than 44 px (owner decision after M4a: the compact clutches). */
 const SMALL_OK = ['.clutch-drawing .clutch'];
 
-/**
- * Text that may be smaller than 13 px: the words on the clutches' stickers and bodies, drawn at
- * the clutch's size like the stickers on the boat (M4a, M4b). The same words are in each clutch's
- * accessible name and in the strip under the drawing. Listed as a question for the owner (M5).
- */
-const SMALL_TEXT_OK = ['.clutch-label', '.clutch-tag', '.real-clutch-state', '.real-clutch-tag'];
+/** Text that may be smaller than 13 px: none since M5 (owner, PR #19: taller clutches). */
+const SMALL_TEXT_OK = [];
 
 export async function auditPage(page, label) {
   const found = await page.evaluate(
