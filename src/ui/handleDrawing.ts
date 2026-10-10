@@ -1,9 +1,10 @@
 import { boat } from '../model/boat';
-import { t } from './i18n';
+import type { HandleState, StationId } from '../model/realistic';
+import { t, type StringKey } from './i18n';
 
 /**
  * Drawing parts shared by the station drawings (M4c): the strain bar beside a winch or the
- * gearbox, the winch handle lying in its pocket, the handle in a socket (an arm with a grip to
+ * gearbox, the winch handle's slot, the handle in a socket (an arm with a grip to
  * circle), and a tracker that turns a finger circling the grip into a cranking speed.
  */
 
@@ -27,9 +28,9 @@ function attr(node: Element, name: string, value: string): void {
 /** Sizes in drawing units (the station drawings are 360 units wide, about 1 CSS px on a phone). */
 const H = {
   strain: { width: 12, labelGap: 13 },
-  pocket: { width: 64, height: 46, bar: 34, knob: 7 },
-  /** A handle in its socket is pulled out by dragging its grip this many times its arm away. */
-  pullOutArms: 1.7,
+  slot: { width: 64, height: 46, bar: 34, knob: 7 },
+  /** A finger further than this many handle arms from the socket has left the crank circle. */
+  crankArms: 2,
   grip: { radius: 14, hub: 5, arm: 5 },
 } as const;
 
@@ -80,22 +81,50 @@ export function createStrainBar(x: number, top: number, height: number): StrainB
   };
 }
 
-export interface HandlePocket {
+/**
+ * Where the handle is, as one station's slot sees it (owner, after M4c): `rest` lying in this
+ * slot, `carried` in the user's hand, `socket` in this station's winch or gearbox, `away` at
+ * another station (the slot is empty).
+ */
+export type SlotMode = 'rest' | 'carried' | 'socket' | 'away';
+
+/** The slot's mode at a station, from the Realistic state's handle. */
+export function slotMode(handle: HandleState, station: StationId): SlotMode {
+  if (handle.place === 'carried') return 'carried';
+  if (handle.station !== station) return 'away';
+  return handle.place === 'socket' ? 'socket' : 'rest';
+}
+
+/**
+ * What a tap on the slot does: take the handle lying in it, lay a carried one down, say where
+ * the handle is when it is elsewhere, and nothing while it sits in the socket (it only comes
+ * out by being dropped on the slot).
+ */
+export function tapSlot(mode: SlotMode): 'carry' | 'stow' | null {
+  if (mode === 'carried') return 'stow';
+  return mode === 'socket' ? null : 'carry';
+}
+
+export interface HandleSlot {
   group: SVGGElement;
-  /** Shown when the handle lies here or the user carries it. */
-  update(shown: boolean, carried: boolean): void;
-  /** Is the point (drawing units) over the pocket (where a dropped handle is laid down)? */
+  update(mode: SlotMode): void;
+  /** Highlight the slot as the place to drop the handle (a grip is being dragged out). */
+  setTarget(on: boolean): void;
+  /** Is the point (drawing units) over the slot? */
   contains(x: number, y: number): boolean;
 }
 
-/** The handle lying at this station (or carried): drag it onto the socket to put it in. */
-export function createHandlePocket(cx: number, cy: number): HandlePocket {
-  const p = H.pocket;
+/**
+ * The dedicated handle slot (owner, after M4c): drawn at every station, always, so the handle
+ * has one fixed place to lie. Empty it is a dashed box; with the handle in it, the handle lies
+ * in it. The handle comes out of a socket only when its grip is dropped on this box.
+ */
+export function createHandleSlot(cx: number, cy: number): HandleSlot {
+  const p = H.slot;
   const group = svg('g', {
-    class: 'real-pocket',
+    class: 'real-slot',
     role: 'button',
     tabindex: '0',
-    'aria-label': t('real.handle.pocketAria'),
     'data-drag': 'handle',
     'data-part-id': boat.realisticMode.winchHandle.partId,
   });
@@ -111,28 +140,75 @@ export function createHandlePocket(cx: number, cy: number): HandlePocket {
       width: p.width,
       height: p.height,
       rx: 8,
-      class: 'real-pocket-box',
+      class: 'real-slot-box',
     }),
     svg('line', {
       x1: cx - p.bar / 2,
       y1: cy,
       x2: cx + p.bar / 2,
       y2: cy,
-      class: 'real-handle-arm',
+      class: 'real-handle-arm real-slot-handle',
     }),
-    svg('circle', { cx: cx + p.bar / 2, cy, r: p.knob, class: 'real-handle-grip' }),
-    svg('circle', { cx: cx - p.bar / 2, cy, r: p.knob - 2, class: 'real-handle-hub' }),
+    svg('circle', {
+      cx: cx + p.bar / 2,
+      cy,
+      r: p.knob,
+      class: 'real-handle-grip real-slot-handle',
+    }),
+    svg('circle', {
+      cx: cx - p.bar / 2,
+      cy,
+      r: p.knob - 2,
+      class: 'real-handle-hub real-slot-handle',
+    }),
     label,
   );
   return {
     group,
-    update(shown, carried) {
-      attr(group, 'visibility', shown ? 'visible' : 'hidden');
-      group.classList.toggle('is-carried', carried);
-      label.textContent = t(carried ? 'real.handle.pocketCarried' : 'real.handle.pocket');
+    update(mode) {
+      group.classList.toggle('is-empty', mode === 'socket' || mode === 'away');
+      group.classList.toggle('is-carried', mode === 'carried');
+      label.textContent = t(`real.handle.slot.${mode}` as StringKey);
+      attr(group, 'aria-label', t(`real.handle.slotAria.${mode}` as StringKey));
+    },
+    setTarget(on) {
+      group.classList.toggle('is-target', on);
     },
     contains: (x, y) => Math.abs(x - cx) <= p.width / 2 + 4 && Math.abs(y - cy) <= p.height / 2 + 4,
   };
+}
+
+export interface SlotView {
+  element: SVGSVGElement;
+  update(mode: SlotMode): void;
+}
+
+/**
+ * A slot drawn on its own, for a place with no station drawing (the helm): a small picture with
+ * the slot in it. A tap on the slot calls `tap`.
+ */
+export function createSlotView(tap: () => void): SlotView {
+  const root = svg('svg', {
+    viewBox: '0 0 140 80',
+    class: 'slot-view',
+    role: 'group',
+    'data-testid': 'slot-view',
+  });
+  const slot = createHandleSlot(70, 30);
+  root.append(slot.group);
+  root.addEventListener('click', (event) => {
+    if ((event.target as Element).closest('.real-slot')) tap();
+  });
+  root.addEventListener('keydown', (event) => {
+    if (
+      (event.key === 'Enter' || event.key === ' ') &&
+      (event.target as Element).closest('.real-slot')
+    ) {
+      event.preventDefault();
+      tap();
+    }
+  });
+  return { element: root, update: (mode) => slot.update(mode) };
 }
 
 export interface SocketHandle {
@@ -181,7 +257,10 @@ const CRANK_STEP = 0.1;
 
 export interface CrankTracker {
   start(x: number, y: number, timeMs: number): void;
-  /** Returns true once the grip was pulled out of the socket (the crank has stopped). */
+  /**
+   * Returns true while the finger is outside the crank circle: the crank is stopped there, and
+   * starts again when the finger comes back. The handle itself stays in its socket.
+   */
   move(x: number, y: number, timeMs: number): boolean;
   end(): void;
 }
@@ -189,8 +268,8 @@ export interface CrankTracker {
 /**
  * Turns a finger circling the centre (cx, cy) into a cranking speed in turns per second
  * (+ clockwise on screen, which is clockwise seen from above). Sends 0 when the finger stops.
- * A finger that leaves the circle (further than `pullOutArms` handle arms from the centre) is
- * pulling the handle out of its socket: the crank stops and `move` says so.
+ * A finger that leaves the circle (further than `crankArms` handle arms from the centre) stops
+ * the crank and `move` says so; it never removes the handle (only a drop on the slot does).
  */
 export function crankTracker(
   centre: () => { x: number; y: number },
@@ -198,6 +277,8 @@ export function crankTracker(
   arm: number,
 ): CrankTracker {
   let last: { angle: number; time: number } | null = null;
+  let down = false;
+  let outside = false;
   let rate = 0;
   let sent = 0;
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -214,18 +295,31 @@ export function crankTracker(
   };
   return {
     start(x, y, timeMs) {
+      down = true;
+      outside = false;
       last = { angle: angleOf(x, y), time: timeMs };
       rate = 0;
     },
     move(x, y, timeMs) {
-      if (!last) return false;
+      if (!down) return false;
       const c = centre();
-      if (Math.hypot(x - c.x, y - c.y) > arm * H.pullOutArms) {
-        clearTimeout(timer);
-        last = null;
-        stop();
+      if (Math.hypot(x - c.x, y - c.y) > arm * H.crankArms) {
+        if (!outside) {
+          outside = true;
+          clearTimeout(timer);
+          last = null;
+          stop();
+        }
         return true;
       }
+      if (outside) {
+        // Back inside the circle: crank again from here.
+        outside = false;
+        last = { angle: angleOf(x, y), time: timeMs };
+        rate = 0;
+        return false;
+      }
+      if (!last) return false;
       const angle = angleOf(x, y);
       let delta = angle - last.angle;
       if (delta > Math.PI) delta -= 2 * Math.PI;
@@ -244,6 +338,8 @@ export function crankTracker(
     },
     end() {
       clearTimeout(timer);
+      down = false;
+      outside = false;
       last = null;
       stop();
     },

@@ -1403,26 +1403,53 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   pointer-events: none;
 }
 
-.real-pocket {
-  outline: none;
+.slot-view {
+  display: block;
+  width: 140px;
+  height: auto;
+  margin: 4px auto;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.real-pocket-box {
+.real-slot {
+  outline: none;
+  cursor: pointer;
+}
+
+.real-slot-box {
   fill: rgb(11 95 149 / 0.06);
   stroke: var(--accent);
   stroke-width: 1.5;
   stroke-dasharray: 4 3;
 }
 
-.real-pocket.is-carried .real-pocket-box {
+.real-slot:focus-visible .real-slot-box {
+  stroke: var(--focus);
+  stroke-width: 3;
+}
+
+/* The slot is always drawn. Empty (the handle is in the socket or at another place) it shows no handle. */
+.real-slot.is-empty .real-slot-handle {
+  visibility: hidden;
+}
+
+.real-slot.is-empty {
+  cursor: default;
+}
+
+.real-slot.is-carried .real-slot-box {
   fill: rgb(255 159 28 / 0.18);
   stroke: #ff9f1c;
   stroke-dasharray: none;
   stroke-width: 2.5;
 }
 
-.real-pocket:focus-visible .real-pocket-box {
-  stroke: var(--focus);
+/* A grip is being dragged out of its socket: this is where to drop it. */
+.real-slot.is-target .real-slot-box {
+  fill: rgb(47 158 68 / 0.25);
+  stroke: #2f9e44;
+  stroke-dasharray: none;
   stroke-width: 3;
 }
 

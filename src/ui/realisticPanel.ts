@@ -19,6 +19,7 @@ import { partInfo } from '../model/registry';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { CONTROL_VIEWS, controlView, createControl, stateText, valueText } from './ropeControls';
+import { createSlotView, slotMode, tapSlot } from './handleDrawing';
 import { createMastDrawing } from './mastDrawing';
 import { createStationDrawing, noticeText, type StationDrawing } from './stationDrawing';
 import { setText, stepButton } from './stepper';
@@ -213,8 +214,15 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
   }
   const mast = createMastDrawing(store);
   const wheel = createControl(store, controlView('ctl_rudder'));
+  // The helm has no socket, but the handle can be laid down there: it has a slot like the rest.
+  const helmSlot = createSlotView(() => {
+    const to = tapSlot(slotMode(store.getState().realistic.handle, 'helm'));
+    if (to) dispatch({ type: 'handle', to });
+  });
   const helm = el('div', { class: 'helm-station', 'data-testid': 'helm-station' }, [
     el('p', { class: 'hint' }, [t('real.helm.hint')]),
+    helmSlot.element,
+    el('p', { class: 'hint' }, [t('real.helm.slot')]),
     wheel.element,
   ]);
 
@@ -500,6 +508,7 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     }
     helm.hidden = station !== 'helm';
     if (station === 'helm') wheel.refresh(state);
+    helmSlot.update(slotMode(real.handle, 'helm'));
     mast.element.hidden = station !== 'mast';
     if (station === 'mast') mast.refresh(state);
     refreshHandle(state);
