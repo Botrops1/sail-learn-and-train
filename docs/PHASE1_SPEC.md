@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-09 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12; M4b link parameters in 9.2 and implementation notes in 7.2.2, owner's answers after M4b in 7.2.2 and 12; M4c details in 7.2.2 and link parameters in 9.2; M5 details in 5.2, 6.1, 7.2.2, 9.2, 9.3 and 12, pending the owner's review)
+Status: Phase 1 done (owner sign-off on PR #19) · Last updated: 2026-10-09 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12; M4b link parameters in 9.2 and implementation notes in 7.2.2, owner's answers after M4b in 7.2.2 and 12; M4c details in 7.2.2 and link parameters in 9.2; M5 details in 5.2, 6.1, 7.2.2, 9.2, 9.3 and 12, pending the owner's review)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
