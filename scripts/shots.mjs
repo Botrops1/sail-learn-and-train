@@ -35,7 +35,7 @@ const VIEWPORTS = [
       'm4b-port-station-helm',
       'm4c-mast-station-handle-in',
       'm5-labels-side-port',
-      'm5-realistic-ropes-on-winches-helm',
+      'm5-realistic-rope-wrapped-helm',
     ],
   },
 ];

@@ -15,7 +15,7 @@ export const M5_SCENES = [
   { name: 'spi-halyard-selected', query: '?wd=60&ws=12&cam=side-port&sel=rope_spi_halyard' },
   { name: 'main-halyard-selected-top', query: '?wd=60&ws=12&cam=top&sel=rope_main_halyard' },
   {
-    name: 'realistic-ropes-on-winches-helm',
+    name: 'realistic-rope-wrapped-helm',
     query: '?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h',
   },
   { name: 'view-tab-labels-toggle', query: '?cam=side-port', tab: 'View' },
