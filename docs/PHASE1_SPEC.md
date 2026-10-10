@@ -1,6 +1,6 @@
 # Phase 1 specification: interactive boat and rope controls
 
-Status: approved for implementation · Last updated: 2026-10-09 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12; M4b link parameters in 9.2 and implementation notes in 7.2.2, owner's answers after M4b in 7.2.2 and 12; M4c details in 7.2.2 and link parameters in 9.2, pending the owner's review)
+Status: approved for implementation · Last updated: 2026-10-09 (M2 decisions in 7.1, 8.1, 8.3, 8.6, 8.7, 11; M2 follow-ups in 8.2, 8.3; M3 decisions and review fixes in 8.5, 11; M3b visual pass in 6.1, 6.4, 8.6, 8.7, 9.2, 10, 12; M4b link parameters in 9.2 and implementation notes in 7.2.2, owner's answers after M4b in 7.2.2 and 12; M4c details in 7.2.2 and link parameters in 9.2; M5 details in 5.2, 6.1, 7.2.2, 9.2, 9.3 and 12, pending the owner's review)
 
 Read [`ROADMAP.md`](ROADMAP.md) first for the overall picture, then this file. Boat facts live in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules that must hold are listed in [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -82,6 +82,7 @@ If something here looks necessary to finish a milestone, stop and ask in the PR 
    - **Ropes** (default): the clutch-bank view and the control strip (see 7).
    - **Wind**: the wind dial and speed slider, plus the five wind presets (see 6.3).
    - **View**: camera presets, toggles (show labels in 3D, rope colour legend, debug overlay), step size (1 % / 5 %), Share link, Reset all.
+     - **Labels in 3D** (M5, off by default, `lb=1` in the link): the registry name of each part and rope over the 3D view, just above a point on it (`visual.labels3d` in the data file: the list, its order and each label's point). Where two labels would overlap on the screen, the one higher in the list shows; the selected part's label always shows, highlighted; no label covers the view's own buttons or the info card. Zooming in makes room for more. Tapping a label selects its part. The labels are a visual aid only: screen readers skip them (the same names are in the panel).
 3. **Footer line** inside the panel: build version (short commit hash + build date) and a link to the GitHub repo.
 
 ## 6. 3D scene
@@ -103,6 +104,7 @@ Build everything from primitives and simple extrusions using `hanse508.json`. Lo
 | Wheels | Two torus rings with spokes on pedestals. Rotate with the rudder (lock to lock = `wheelTurnsLockToLock`). |
 | Winches, clutch banks, deck blocks, furling drums, gearbox, mast-foot turning blocks, sprayhood | Small primitives at the given positions. Render only winches with `present !== false` (one per side). M3b: self-tailing winches, individual clutches with labels, sheave blocks, one turning block per line at the mast foot, covered line channels, sprayhood shell just aft of the mainsheet deck blocks (see 6.4). |
 | Masthead wind indicator | Small arrow at the masthead pointing into the test wind. |
+| Halyards (M5) | Static, drawn taut. The main halyard runs inside the mast (in-mast furling): only its tail is drawn, out of the mast's starboard side, down to its turning block and aft to "Main halyard". The gennaker halyard is parked: from the mast front above the forestay down to its shackle at the mast foot, and its tail from the mast foot to "SPI HALYARD" (`rig.lineLead.lines`: `exit`, `parked`; assumptions). |
 | Water | A large flat plane at y = 0, semi-transparent so the keel stays visible. A subtle grid helps judge scale. M3b: drifting ripples (normal map) that reflect the sky at high detail. |
 | Wind | Light streaks or particles moving across the scene in the test wind direction, speed scaled to wind speed. Must not hide the boat. |
 
@@ -254,6 +256,8 @@ The owner's experience matches: about 4 turns to winch, about 2 to ease under co
 - Walking away from a station lets go of the handle (cranking stops); a handle left in a socket stays there. Cranking waits while paused.
 - M4b review points (owner: make them, after M4c): the self-tailer grips at least as well as a hand (200 N, above); a rope wrapped the wrong way does not go into the self-tailer (the gesture and the button say so, a link with `.t` and negative turns opens with the tail in the hand, and turning the last turn the wrong way lets it out of the jaw); shutting a clutch on a rope that is running out still stops it, with the warning "on a real boat, snapping a clutch shut on a loaded rope that is running can strip its cover: take the load on the winch first" (no warning while paused, when nothing runs yet).
 
+**In 3D (M5, owner after M4b):** in Realistic mode a rope put on a winch is drawn on from its clutch and wrapped on that winch with its turns: clockwise seen from above, or anticlockwise when wrapped the wrong way (PT-17), each turn a rope's width above the last; it ends in the self-tailer's jaw on top, or leaves the drum towards the hand (inboard, above the coaming). With 0 turns it runs straight to the hand. A rope taken off the winch ends at its clutch again; JIB ROLL goes on to the port winch only while it is put on it. Easy mode keeps M3b's drawing (JIB ROLL two turns into the port self-tailer). Drawing values in `modelDetail.winchRope`.
+
 **Not in M4b/M4c:** hand-over-hand pulling technique, riding turns (a jammed winch), a second handle, crew roles, timing or scoring (Phase 6).
 
 ### 7.3 Rope colours (teaching colours)
@@ -387,12 +391,13 @@ content/        data (JSON) imported at build time
 - Add `v=1` for future migrations.
 - Added in M4a: `rd` (wheel, degrees, + = starboard, always written); `jr` (jib out as reached, %, only when it is less than the controls alone give: the jib sheet was hauled against a jib furled with the sheet released; a link without it would show the furl blocked instead; values below `jf` are ignored); `lg=0` (legend hidden) and `mode` (Ropes-tab mode) only when they differ from the default. `detail` is M3b's render detail.
 - Added in M4b (Realistic mode, 7.2.2), only when they differ from the start: `st` the station (`starboard`, `helm`; Port is the default); `co` the open clutches by key, bank key + slot (`a` = bank A starboard, `b` = bank B port, `r` = JIB ROLL; e.g. `co=a5,b3` = Genoa sheet and Main outhaul open); `wp` (port winch) and `wsb` (starboard winch) the rope on it as `<clutch key>.<turns>.<t|h>` (turns −5 … 5, negative = wrapped anticlockwise; `t` = tail in the self-tailer, `h` = in the hand), e.g. `wsb=a5.3.t`. Running ropes and Pause are not stored. A clutch or winch value that cannot be (a halyard clutch, a rope on the other side's winch, more than 5 turns) is ignored.
+- Added in M5: `lb=1` labels in 3D (off by default, written only when on).
 - Added in M4c, only when they differ from the start: `st=mast`; `hd` the winch handle: `c` carried by the user, `<station>.s` lying at a station, `<station>.w` in the socket there (e.g. `hd=mast.w`; it starts as `port.s`); `gb=in` the gearbox switch (it starts on `out`). Cranking is not stored. A socket where there is none (`helm.w`) is ignored.
 - The Share button in the View tab copies the full link (the address bar has the same); if the browser does not allow copying, the link is shown selected to copy by hand. Reset all needs a second tap within 4 s; it sets controls, camera, selection and settings back to the defaults (the debug overlay and the Detail level stay as they are: they suit the device) and the rig moves back visibly.
 
 ### 9.3 Debug overlay (toggle, off by default; `?debug=1` turns it on)
 
-Shows FPS, layout mode, viewport size and aspect, device pixel ratio, θ/ψ/φ, θ_free, AoA and fill per sail, each rope's state with slack in metres, and the build hash.
+Shows FPS, layout mode, viewport size and aspect, device pixel ratio, θ/ψ/φ, θ_free, AoA and fill per sail, each rope's state with slack in metres, and the build hash. M5 adds, for performance reports: **Slowest** (the longest gap between two frames in the last half second, and the frame rate that means) and **Work/frame** (main-thread milliseconds per frame for the model and panel, `step`, and for the 3D view with the labels, `3D`).
 
 ## 10. Quality and performance
 
@@ -484,6 +489,13 @@ M4 is built in two PRs (owner, 2026-10-08): **M4a** the Ropes tab in Easy mode (
 - Labels in 3D (the View-tab toggle of 5.2) and the halyards drawn in 3D (main halyard and SPI halyard, so selecting one highlights a rope in 3D too; owner, after M4a).
 - Realistic mode in 3D: the rope put on a winch is drawn wrapped on that winch (with its turns), instead of JIB ROLL always on the port winch (owner, after M4b).
 - **Done when:** every item of the Definition of Done below is ticked in the PR.
+
+**How M5 fills in the details** (proposed in the M5 PR, pending the owner's review):
+- Error boundary: without WebGL the 3D view shows "3D not supported on this device" with what to do, and the rest works (panel, wind chip, Pause, the info card). If the 3D view fails while running it stops with "The 3D view stopped working"; if the phone takes back the graphics memory, "The 3D view is paused" shows until it comes back. Any other uncaught error shows one banner at the top ("Something went wrong…", with the technical message folded away). The frame loop keeps running in every case.
+- Footer: "Learning aid, not a substitute for sailing instruction." above the version and the source link.
+- Accessibility pass: an audit in `npm run shots` (`scripts/a11y-audit.mjs`) checks, at phone size in every tab and station, that every control has an accessible name, text is at least 13 px, touch targets are at least 44 px and the Tab key reaches every control with a visible focus. Exceptions, as accepted earlier: the compact clutches of Easy mode (narrower than 44 px, M4a review) and the words on the clutches' stickers and bodies (drawn at the clutch's size, as on the boat). Fixed in M5: Pause 44 px high, the JIB ROLL row 44 px, larger captions in the station drawings and the wind dial.
+- Empty states: the Ropes strip with nothing selected and an empty winch say what to tap (since M4a/M4b); the debug overlay shows "–" until it has measured.
+- Performance: the debug overlay's frame times (9.3); the owner reports FPS from a real phone. Nothing was changed for speed in M5: the model and the 3D update take well under a millisecond a frame on the build machine.
 
 ## 13. Definition of Done (Phase 1)
 
