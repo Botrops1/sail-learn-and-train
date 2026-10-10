@@ -332,6 +332,8 @@ export type NoticeKey =
   | 'handleNotIn'
   | 'noSocket'
   | 'gearboxNotHere'
+  /** A carried handle fills the hand: no line end can be worked until it is laid down (M4c). */
+  | 'handleInHand'
   /** A rope wrapped the wrong way does not feed into the self-tailer (M4b review). */
   | 'wrongWayJaw'
   /** The clutch was shut on a rope running out under load: it stops, but can be damaged. */
@@ -485,6 +487,21 @@ export function reduceRealistic(
   const winchHere = (id: string) =>
     stationWinch(state.station, data) === id ? state.winches[id] : undefined;
 
+  // The hand that carries the winch handle cannot work a line end (owner, after M4c): clutches,
+  // tails, turns, the self-tailer, the winch button, easing and pulling wait until the handle is
+  // laid down. Letting go of a button always works.
+  const lineEnd = ['clutch', 'onWinch', 'offWinch', 'turn', 'selfTailer', 'ease', 'pull'];
+  const pressesButton = action.type === 'button' && action.held;
+  const takesTail = action.type === 'pull' && action.key === null;
+  if (
+    state.handle.place === 'carried' &&
+    (lineEnd.includes(action.type) || pressesButton) &&
+    !takesTail
+  ) {
+    const key = 'key' in action ? action.key : null;
+    return withNotice(state, 'handleInHand', key);
+  }
+
   switch (action.type) {
     case 'station': {
       if (action.station === state.station) return state;
@@ -607,9 +624,20 @@ export function reduceRealistic(
       const place: HandlePlace =
         action.to === 'carry' ? 'carried' : action.to === 'stow' ? 'stowed' : 'socket';
       if (place === handle.place && handle.station === state.station) return state;
+      // Picking the handle up takes the hand off whatever it was doing: a winch button pressed,
+      // rope being eased or pulled in.
+      const winches = Object.fromEntries(
+        Object.entries(state.winches).map(([id, w]) => [
+          id,
+          place === 'carried' && w.button ? { ...w, button: false, cutOut: false } : w,
+        ]),
+      );
       return {
         ...state,
         notice: null,
+        winches,
+        ease: place === 'carried' ? {} : state.ease,
+        pull: place === 'carried' ? null : state.pull,
         handle: { ...handle, station: state.station, place, crank: 0 },
       };
     }

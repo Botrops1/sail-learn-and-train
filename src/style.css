@@ -1414,6 +1414,13 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   stroke-dasharray: 4 3;
 }
 
+.real-pocket.is-carried .real-pocket-box {
+  fill: rgb(255 159 28 / 0.18);
+  stroke: #ff9f1c;
+  stroke-dasharray: none;
+  stroke-width: 2.5;
+}
+
 .real-pocket:focus-visible .real-pocket-box {
   stroke: var(--focus);
   stroke-width: 3;

@@ -349,6 +349,129 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
+  // Owner comment after M4c: a carried handle fills the hand (B), the handle comes out of a
+  // winch by a gesture (C), and a tap on the handle icon takes it or lays it down (D).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm4c handle in hand',
+      '?mode=realistic&wd=90&ws=12&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w&sel=rope_jib_sheet&cam=helm',
+    );
+    await page.waitForTimeout(600);
+    const t = touchTools(await context.newCDPSession(page), page);
+    const dr = drawing('starboard');
+    await centreOn(page, `${dr} .real-drum`);
+    const drum = await t.where(`${dr} .real-drum`);
+    const unit = drum.box.width / 66;
+    const at = (dx, dy) => ({ x: drum.x + dx * unit, y: drum.y + dy * unit });
+    // C: pull the grip away from the winch: the handle comes out and is in the hand.
+    let grip = await t.where(`${dr} .real-crank`);
+    await t.swipe(line(grip, at(-100, 40), 12));
+    await settle(page);
+    check(
+      'C: pulling the grip out of the winch takes the handle out',
+      (await param(page, 'hd')) === 'c',
+      `hd ${await param(page, 'hd')}`,
+    );
+    // B: with the handle in the hand a line end cannot be worked.
+    const lever = await t.where(`${dr} [data-key="a5"] .real-lever`);
+    await t.swipe(line(lever, { x: lever.x, y: lever.y - 40 }, 6));
+    await settle(page);
+    const notice = await page.locator(`${dr} ~ .station-notice`).innerText();
+    check(
+      'B: the Genoa sheet clutch cannot be opened with the handle in the hand',
+      (await param(page, 'co')) === null && /holding the winch handle/.test(notice),
+      `co ${await param(page, 'co')} | ${notice}`,
+    );
+    await shot(page, 'live-phone-handle-in-hand-refuses');
+    // D: a tap on the handle icon lays it down here, a second tap takes it again.
+    let icon = await t.where(`${dr} .real-pocket-box`);
+    await t.swipe([icon, icon]);
+    await settle(page);
+    check(
+      'D: tap on the handle icon lays the carried handle down here',
+      (await param(page, 'hd')) === 'starboard.s',
+      `hd ${await param(page, 'hd')}`,
+    );
+    icon = await t.where(`${dr} .real-pocket-box`);
+    await t.swipe([icon, icon]);
+    await settle(page);
+    check(
+      'D: tap on it again takes it',
+      (await param(page, 'hd')) === 'c',
+      `hd ${await param(page, 'hd')}`,
+    );
+    await t.swipe([icon, icon]);
+    await settle(page);
+    check(
+      'D: and again lays it down',
+      (await param(page, 'hd')) === 'starboard.s',
+      `hd ${await param(page, 'hd')}`,
+    );
+    // With the handle laid down the line end works again.
+    const lever2 = await t.where(`${dr} [data-key="a5"] .real-lever`);
+    await t.swipe(line(lever2, { x: lever2.x, y: lever2.y + 40 }, 6));
+    await settle(page);
+    await t.swipe(line(lever2, { x: lever2.x, y: lever2.y - 40 }, 6));
+    await settle(page);
+    check(
+      'B: laid down, the clutch lever works',
+      (await param(page, 'co'))?.includes('a5') === true,
+      `co ${await param(page, 'co')}`,
+    );
+    await t.swipe(line(lever2, { x: lever2.x, y: lever2.y + 40 }, 6));
+    await settle(page);
+    // C again: drag it from its icon into the winch, then pull the grip out onto the icon.
+    icon = await t.where(`${dr} .real-pocket-box`);
+    await t.swipe(line(icon, drum, 12));
+    await settle(page);
+    check(
+      'the handle dragged from its icon onto the drum goes into the winch',
+      (await param(page, 'hd')) === 'starboard.w',
+      `hd ${await param(page, 'hd')}`,
+    );
+    grip = await t.where(`${dr} .real-crank`);
+    icon = await t.where(`${dr} .real-pocket-box`);
+    await t.swipe(line(grip, icon, 14));
+    await settle(page);
+    check(
+      'C: the grip pulled out and dropped on the icon lays the handle down',
+      (await param(page, 'hd')) === 'starboard.s',
+      `hd ${await param(page, 'hd')}`,
+    );
+    await context.close();
+  }
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm4c handle out of the gearbox',
+      '?mode=realistic&st=mast&hd=mast.w&gb=in&wd=60&ws=20&cam=side-port',
+    );
+    await page.waitForTimeout(600);
+    const t = touchTools(await context.newCDPSession(page), page);
+    const md = drawing('mast');
+    await centreOn(page, md);
+    const socket = await t.where(`${md} .real-socket`);
+    const unit = socket.box.width / 20;
+    const grip = await t.where(`${md} .real-crank`);
+    await t.swipe(line(grip, { x: socket.x + 110 * unit, y: socket.y }, 12));
+    await settle(page);
+    check(
+      'C: pulling the grip out of the gearbox takes the handle out',
+      (await param(page, 'hd')) === 'c',
+      `hd ${await param(page, 'hd')}`,
+    );
+    const icon = await t.where(`${md} .real-pocket-box`);
+    await t.swipe([icon, icon]);
+    await settle(page);
+    check(
+      'D: at the mast a tap on the icon lays it down',
+      (await param(page, 'hd')) === 'mast.s',
+      `hd ${await param(page, 'hd')}`,
+    );
+    await context.close();
+  }
+
   // 4. The same crank with the mouse at the foldable and desktop sizes.
   for (const viewport of viewports.slice(1, 3)) {
     const { context, page } = await openPage(

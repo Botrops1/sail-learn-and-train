@@ -543,7 +543,9 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     });
     statusNodes.slice(lines.length).forEach((node) => (node.hidden = true));
     const notice = real.notice && real.notice.tail === spec.key ? noticeText(real.notice) : null;
-    const alertLine = alert ?? notice;
+    // A carried handle fills the hand: no line end can be worked (owner, after M4c).
+    const carried = real.handle.place === 'carried';
+    const alertLine = alert ?? notice ?? (carried ? t('real.notice.handleInHand') : null);
     stripAlert.hidden = !alertLine;
     setText(stripAlert, alertLine ?? '');
     stripAlert.classList.toggle('is-running', real.reports[spec.key]?.motion === 'running');
@@ -569,6 +571,12 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     motor.classList.toggle('is-pressed', winch?.button === true);
     pull.hidden = onThis;
     pull.classList.toggle('is-pressed', real.pull === spec.key);
+    clutchButton.disabled = carried;
+    ease.disabled = carried;
+    pull.disabled = carried;
+    for (const button of [winchButton, addTurn, removeTurn, jawButton, motor]) {
+      button.disabled = button.disabled || carried;
+    }
     const moreText = more.querySelector('.real-more-text');
     if (moreText) setText(moreText, partInfo(spec.ropeId)?.short ?? '');
   };

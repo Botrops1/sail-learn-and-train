@@ -28,6 +28,8 @@ function attr(node: Element, name: string, value: string): void {
 const H = {
   strain: { width: 12, labelGap: 13 },
   pocket: { width: 64, height: 46, bar: 34, knob: 7 },
+  /** A handle in its socket is pulled out by dragging its grip this many times its arm away. */
+  pullOutArms: 1.7,
   grip: { radius: 14, hub: 5, arm: 5 },
 } as const;
 
@@ -82,6 +84,8 @@ export interface HandlePocket {
   group: SVGGElement;
   /** Shown when the handle lies here or the user carries it. */
   update(shown: boolean, carried: boolean): void;
+  /** Is the point (drawing units) over the pocket (where a dropped handle is laid down)? */
+  contains(x: number, y: number): boolean;
 }
 
 /** The handle lying at this station (or carried): drag it onto the socket to put it in. */
@@ -124,8 +128,10 @@ export function createHandlePocket(cx: number, cy: number): HandlePocket {
     group,
     update(shown, carried) {
       attr(group, 'visibility', shown ? 'visible' : 'hidden');
+      group.classList.toggle('is-carried', carried);
       label.textContent = t(carried ? 'real.handle.pocketCarried' : 'real.handle.pocket');
     },
+    contains: (x, y) => Math.abs(x - cx) <= p.width / 2 + 4 && Math.abs(y - cy) <= p.height / 2 + 4,
   };
 }
 
@@ -175,17 +181,21 @@ const CRANK_STEP = 0.1;
 
 export interface CrankTracker {
   start(x: number, y: number, timeMs: number): void;
-  move(x: number, y: number, timeMs: number): void;
+  /** Returns true once the grip was pulled out of the socket (the crank has stopped). */
+  move(x: number, y: number, timeMs: number): boolean;
   end(): void;
 }
 
 /**
  * Turns a finger circling the centre (cx, cy) into a cranking speed in turns per second
  * (+ clockwise on screen, which is clockwise seen from above). Sends 0 when the finger stops.
+ * A finger that leaves the circle (further than `pullOutArms` handle arms from the centre) is
+ * pulling the handle out of its socket: the crank stops and `move` says so.
  */
 export function crankTracker(
   centre: () => { x: number; y: number },
   send: (turnsPerS: number) => void,
+  arm: number,
 ): CrankTracker {
   let last: { angle: number; time: number } | null = null;
   let rate = 0;
@@ -208,7 +218,14 @@ export function crankTracker(
       rate = 0;
     },
     move(x, y, timeMs) {
-      if (!last) return;
+      if (!last) return false;
+      const c = centre();
+      if (Math.hypot(x - c.x, y - c.y) > arm * H.pullOutArms) {
+        clearTimeout(timer);
+        last = null;
+        stop();
+        return true;
+      }
       const angle = angleOf(x, y);
       let delta = angle - last.angle;
       if (delta > Math.PI) delta -= 2 * Math.PI;
@@ -223,6 +240,7 @@ export function crankTracker(
       }
       clearTimeout(timer);
       timer = setTimeout(stop, CRANK_IDLE_MS);
+      return false;
     },
     end() {
       clearTimeout(timer);

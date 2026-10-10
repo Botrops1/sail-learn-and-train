@@ -229,7 +229,14 @@ export function createMastDrawing(store: Store): MastDrawing {
   const crank = crankTracker(
     () => ({ x: cx, y: cy }),
     (turnsPerS) => dispatch({ type: 'crank', turnsPerS }),
+    M.arm,
   );
+  /** A tap on the handle icon takes the handle, or lays it down here when it is carried. */
+  const tapHandle = () =>
+    dispatch({
+      type: 'handle',
+      to: store.getState().realistic.handle.place === 'carried' ? 'stow' : 'carry',
+    });
   const point = (event: PointerEvent) => {
     const matrix = root.getScreenCTM();
     if (!matrix) return { x: 0, y: 0 };
@@ -260,10 +267,15 @@ export function createMastDrawing(store: Store): MastDrawing {
     if (!drag) return;
     const p = point(event);
     drag.moved = Math.max(drag.moved, Math.hypot(p.x - drag.start.x, p.y - drag.start.y));
-    if (drag.kind === 'crank') crank.move(p.x, p.y, event.timeStamp);
-    if (drag.kind === 'handle') {
-      ghost.setAttribute('x1', String(drag.start.x));
-      ghost.setAttribute('y1', String(drag.start.y));
+    if (drag.kind === 'crank' && crank.move(p.x, p.y, event.timeStamp)) {
+      // The grip was pulled out of the socket: the handle is carried; where it is dropped
+      // decides (on its icon: laid down here).
+      dispatch({ type: 'handle', to: 'carry' });
+      drag.kind = 'pulled';
+    }
+    if (drag.kind === 'handle' || drag.kind === 'pulled') {
+      ghost.setAttribute('x1', String(drag.kind === 'pulled' ? cx : drag.start.x));
+      ghost.setAttribute('y1', String(drag.kind === 'pulled' ? cy : drag.start.y));
       ghost.setAttribute('x2', String(p.x));
       ghost.setAttribute('y2', String(p.y));
       ghost.setAttribute('visibility', 'visible');
@@ -281,10 +293,15 @@ export function createMastDrawing(store: Store): MastDrawing {
       return;
     }
     if (cancelled) return;
+    if (current.kind === 'pulled') {
+      // Dropped on the handle icon: laid down here; anywhere else it stays in the hand.
+      if (pocket.contains(p.x, p.y)) dispatch({ type: 'handle', to: 'stow' });
+      return;
+    }
     if (current.kind === 'handle') {
       const overSocket = Math.hypot(p.x - cx, p.y - cy) < M.socket.drop;
       if (overSocket && current.moved >= M.tapMove) dispatch({ type: 'handle', to: 'socket' });
-      else if (current.moved < M.tapMove) dispatch({ type: 'handle', to: 'carry' });
+      else if (current.moved < M.tapMove) tapHandle();
       return;
     }
     if (current.kind === 'switch') {
@@ -310,7 +327,7 @@ export function createMastDrawing(store: Store): MastDrawing {
       flip();
     } else if (kind === 'handle') {
       event.preventDefault();
-      dispatch({ type: 'handle', to: 'carry' });
+      tapHandle();
     }
   });
 

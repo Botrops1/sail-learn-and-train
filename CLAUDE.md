@@ -48,6 +48,8 @@ Live site after merge: https://botrops1.github.io/sail-learn-and-train/
 ## Known limitations / questions for the owner
 ```
 
+**Test links are full links** (owner, PR #16): every test condition in "How to check on your phone" is written as a complete URL starting with `https://botrops1.github.io/sail-learn-and-train/?` (tappable on a phone), never only the `?…` settings part. One link per check; say what to do after opening it.
+
 Keep explanations short and concrete. The owner reads on a phone and does not know sailing terms yet: when you use one, add three or four words in brackets the first time, e.g. "vang (the rope that pulls the boom down)".
 
 ## Commands (created in M0)

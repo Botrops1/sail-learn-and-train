@@ -476,3 +476,93 @@ describe('M4b review leftovers', () => {
     expect(s.realistic.notice).toBeNull();
   });
 });
+
+describe('A carried handle fills the hand (owner, after M4c)', () => {
+  const carrying = (values: Partial<Controls>, station: StationId) =>
+    act(start(values, 'port'), { type: 'handle', to: 'carry' }, { type: 'station', station });
+
+  it('no line end can be worked while the handle is carried: clutch, tail, turns, jaw, button, ease, pull', () => {
+    const base = carrying({ ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_jib_sheet: 30 }, 'starboard');
+    const refused: RealisticAction[] = [
+      { type: 'clutch', key: GENOA, open: true },
+      { type: 'onWinch', key: GENOA },
+      { type: 'turn', winch: STBD, delta: 1 },
+      { type: 'selfTailer', winch: STBD, into: true },
+      { type: 'offWinch', winch: STBD },
+      { type: 'button', winch: STBD, held: true },
+      { type: 'ease', key: GENOA, metres: 1 },
+      { type: 'pull', key: GENOA },
+    ];
+    for (const action of refused) {
+      const s = act(base, action);
+      expect(s.realistic.notice?.key, action.type).toBe('handleInHand');
+      expect(s.realistic.open, action.type).toEqual({});
+      expect(s.realistic.winches[STBD]?.tail, action.type).toBeNull();
+      expect(s.realistic.winches[STBD]?.button, action.type).toBe(false);
+    }
+    // Nothing moved the rope.
+    expect(run(act(base, refused[0] as RealisticAction), 1).controls.ctl_jib_sheet).toBe(30);
+  });
+
+  it('what is not a line end still works: walking, laying the handle down, the gearbox switch, letting go', () => {
+    let s = carrying({}, 'mast');
+    s = act(s, { type: 'gearbox', to: 'in' });
+    expect(s.realistic.gearbox).toBe('in');
+    expect(s.realistic.notice).toBeNull();
+    expect(act(s, { type: 'pull', key: null }).realistic.notice).toBeNull();
+    expect(act(s, { type: 'button', winch: STBD, held: false }).realistic.notice).toBeNull();
+    // Laid down at the mast: it stays there, and the hand is free again.
+    s = act(s, { type: 'handle', to: 'stow' }, { type: 'station', station: 'starboard' });
+    s = act(s, { type: 'clutch', key: GENOA, open: true });
+    expect(s.realistic.open[GENOA]).toBe(true);
+    expect(s.realistic.handle).toMatchObject({ station: 'mast', place: 'stowed' });
+  });
+
+  it('the handle can be forgotten: laid down at the wrong place, it is not at the next one', () => {
+    let s = act(start({}, 'port'), { type: 'handle', to: 'carry' }, { type: 'handle', to: 'stow' });
+    s = act(s, { type: 'station', station: 'starboard' }, { type: 'handle', to: 'carry' });
+    expect(s.realistic.notice).toEqual({ key: 'handleElsewhere', tail: null, station: 'port' });
+  });
+
+  it('picking the handle up lets go of the winch button, the easing and the pulling', () => {
+    let s = tailed(
+      start({ ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_jib_sheet: 30 }, 'starboard'),
+      GENOA,
+      3,
+    );
+    s = act(s, { type: 'station', station: 'port' }, { type: 'handle', to: 'stow' });
+    s = act(
+      s,
+      { type: 'station', station: 'starboard' },
+      { type: 'button', winch: STBD, held: true },
+    );
+    expect(s.realistic.winches[STBD]?.button).toBe(true);
+    // The handle lies at Port: it has to be fetched from there, so the button goes with the walk.
+    s = act(s, { type: 'station', station: 'port' }, { type: 'handle', to: 'carry' });
+    s = run(s, 0.5);
+    expect(s.realistic.winches[STBD]?.button).toBe(false);
+    expect(s.controls.ctl_jib_sheet).toBe(30);
+    // Same place: the button is let go when the handle is taken.
+    let t = tailed(start({ ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_vang: 60 }), VANG, 3);
+    t = act(t, { type: 'button', winch: PORT, held: true }, { type: 'handle', to: 'carry' });
+    expect(t.realistic.winches[PORT]?.button).toBe(false);
+    expect(t.realistic.ease).toEqual({});
+    expect(t.realistic.pull).toBeNull();
+  });
+
+  it('a handle in a socket is not in the hand: the electric button still works', () => {
+    let s = handleIn(
+      tailed(start({ ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_vang: 60 }), VANG, 3),
+      'port',
+    );
+    s = run(act(s, { type: 'button', winch: PORT, held: true }), 0.5);
+    expect(s.controls.ctl_vang).toBeLessThan(60);
+  });
+
+  it('a link that opens with the handle in the hand does not break (hd=c)', () => {
+    const s = parseUrlState('?mode=realistic&hd=c&wd=90&ws=12');
+    expect(act(s, { type: 'clutch', key: VANG, open: true }).realistic.notice?.key).toBe(
+      'handleInHand',
+    );
+  });
+});

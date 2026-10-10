@@ -62,7 +62,7 @@ const D = {
   hand: { dx: -92, dy: 34 },
   /** M4c: the strain bar right of the drum, the handle's pocket left of it, the handle's arm. */
   strain: { dx: 30, halfHeight: 33 },
-  pocket: { x: 40, dy: -12 },
+  pocket: { x: 44, dy: -12 },
   handleArm: 49,
   bottomPad: 30,
   ropeWidth: 5,
@@ -547,7 +547,14 @@ export function createStationDrawing(
   const crank = crankTracker(
     () => ({ x: cx, y: cy }),
     (turnsPerS) => dispatch({ type: 'crank', turnsPerS }),
+    D.handleArm,
   );
+  /** A tap on the handle icon takes the handle, or lays it down here when it is carried. */
+  const tapHandle = () =>
+    dispatch({
+      type: 'handle',
+      to: store.getState().realistic.handle.place === 'carried' ? 'stow' : 'carry',
+    });
   const point = (event: PointerEvent): { x: number; y: number } => {
     const matrix = root.getScreenCTM();
     if (!matrix) return { x: 0, y: 0 };
@@ -651,12 +658,18 @@ export function createStationDrawing(
     if (!drag) return;
     const p = point(event);
     drag.moved = Math.max(drag.moved, Math.hypot(p.x - drag.start.x, p.y - drag.start.y));
-    if (drag.kind === 'crank') crank.move(p.x, p.y, event.timeStamp);
+    if (drag.kind === 'crank' && crank.move(p.x, p.y, event.timeStamp)) {
+      // The grip was pulled out of the socket: the handle is carried; where it is dropped
+      // decides (on its icon: laid down here).
+      dispatch({ type: 'handle', to: 'carry' });
+      drag.kind = 'pulled';
+    }
     if (
       drag.kind === 'tail' ||
       drag.kind === 'hand' ||
       drag.kind === 'jaw' ||
-      drag.kind === 'handle'
+      drag.kind === 'handle' ||
+      drag.kind === 'pulled'
     ) {
       const from =
         drag.kind === 'tail'
@@ -719,11 +732,15 @@ export function createStationDrawing(
       case 'crank':
         crank.end();
         break;
+      case 'pulled':
+        // Dropped on the handle icon: laid down here; anywhere else it stays in the hand.
+        if (!cancelled && pocket.contains(p.x, p.y)) dispatch({ type: 'handle', to: 'stow' });
+        break;
       case 'handle':
         if (cancelled) break;
-        // Onto the drum: into the socket on top. A tap: pick it up (carry it).
+        // Onto the drum: into the socket on top. A tap: take it, or lay it down when carried.
         if (overDrum && current.moved >= D.tapMove) dispatch({ type: 'handle', to: 'socket' });
-        else if (current.moved < D.tapMove) dispatch({ type: 'handle', to: 'carry' });
+        else if (current.moved < D.tapMove) tapHandle();
         break;
       case 'clutch': {
         if (cancelled) break;
@@ -787,6 +804,11 @@ export function createStationDrawing(
     if (what === 'button' && (event.key === ' ' || event.key === 'Enter')) {
       event.preventDefault();
       if (!event.repeat) dispatch({ type: 'button', winch: winchId, held: true });
+      return;
+    }
+    if (what === 'handle' && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      tapHandle();
       return;
     }
     if (!what.startsWith('clutch:')) return;
