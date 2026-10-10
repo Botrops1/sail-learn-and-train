@@ -414,7 +414,12 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await t.swipe([slot, slot]);
     await settle(page);
     check('D: tap on the slot takes the handle', (await hd()) === 'c', `hd ${await hd()}`);
-    // B: with the handle in the hand a line end cannot be worked.
+    // B: with the handle in the hand a line end cannot be worked. (M5: the clutches are taller,
+    // so the lever is scrolled into view first.)
+    await page
+      .locator(`${dr} [data-key="a5"] .real-lever`)
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(250);
     const lever = await t.where(`${dr} [data-key="a5"] .real-lever`);
     await t.swipe(line(lever, { x: lever.x, y: lever.y - 40 }, 6));
     await settle(page);
@@ -442,6 +447,10 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await settle(page);
     check('D: and again lays it down', (await hd()) === 'starboard.s', `hd ${await hd()}`);
     // With the handle laid down the line end works again.
+    await page
+      .locator(`${dr} [data-key="a5"] .real-lever`)
+      .evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.waitForTimeout(250);
     const lever2 = await t.where(`${dr} [data-key="a5"] .real-lever`);
     await t.swipe(line(lever2, { x: lever2.x, y: lever2.y - 40 }, 6));
     await settle(page);
