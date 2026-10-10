@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { defaultControls, type Controls } from '../../model/controls';
 import { carPoint, jibClew } from '../../model/jib';
-import { drawnPose, ropeDrawings } from '../../model/ropePaths';
+import { drawnPose, ropeDrawings, type WinchWrap } from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
 import { boat } from '../../model/boat';
 import type { Detail } from '../../model/settings';
@@ -23,13 +23,15 @@ export interface BoatModel {
   /**
    * Shows the rig as solved: boom pose, sail shapes, the jib car, ropes and the masthead
    * indicator.
-   * With `ropeView`, ropes far from the camera are drawn thick enough to see.
+   * With `ropeView`, ropes far from the camera are drawn thick enough to see. `winches`: the
+   * ropes put on the winches in Realistic mode (M5); without it, Easy mode's drawing.
    */
   update(
     rig: RigState,
     controls: Controls,
     ropeView?: RopeView,
     flashing?: ReadonlySet<string>,
+    winches?: readonly WinchWrap[],
   ): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
@@ -79,6 +81,7 @@ export function buildBoat(
     nextControls: Controls,
     ropeView?: RopeView,
     flashing?: ReadonlySet<string>,
+    winches?: readonly WinchWrap[],
   ) => {
     rigParts.setBoomPose(drawnPose(next));
     const main = mainSailInputFor(next, nextControls);
@@ -86,7 +89,7 @@ export function buildBoat(
     const jib = jibInputFor(next, nextControls);
     jibSail.update(jibSailGrid(jib), shown(jib.unfurled));
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
-    ropes.update(ropeDrawings(next), ropeView, flashing);
+    ropes.update(ropeDrawings(next, boat, winches), ropeView, flashing);
     windex.update(nextControls.ctl_wind_dir);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).

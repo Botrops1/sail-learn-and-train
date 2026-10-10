@@ -422,7 +422,8 @@
           "bank": "clutch_bank_a",
           "slot": 4,
           "blockAngleDeg": 46,
-          "from": "mast (static halyard, not drawn)"
+          "exit": [-0.075, 2.87, 0.078],
+          "from": "mast: with in-mast furling the halyard runs inside the mast up to the masthead and down to the sail's head swivel; only its tail is seen, out of the mast's starboard side (M5)"
         },
         {
           "rope": "rope_jib_sheet",
@@ -439,7 +440,14 @@
           "bank": "clutch_bank_b",
           "slot": 1,
           "blockAngleDeg": -76,
-          "from": "mast (static halyard, not drawn)"
+          "exit": [-0.022, 2.94, -0.089],
+          "from": "mast: down inside from the masthead, out on the port side (M5)",
+          "parked": {
+            "masthead": [0.18, 21.3, -0.06],
+            "end": [0.18, 2.12, -0.06],
+            "note": "The gennaker is not rigged, so its halyard is parked: it leaves the mast front above the forestay (masthead) and runs down the front of the mast, its shackle clipped at the mast foot (end), just to port of the jib sheet's way into the mast. Drawn taut.",
+            "source": "assumption (M5): where the halyard leaves the mast and where its end is parked on the reference boat is not known"
+          }
         },
         {
           "rope": "rope_topping_lift",
@@ -987,7 +995,16 @@
       "footDiameter": 0.06,
       "wireRadius": 0.012
     },
-    "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated."
+    "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated.",
+    "winchRope": {
+      "wrapBottomAboveBase": 0.06,
+      "wrapTopAboveBase": 0.17,
+      "jawAheadDeg": 50,
+      "handInboardM": 0.5,
+      "handAftM": 0.15,
+      "handAboveCoamingM": 0.2
+    },
+    "winchRopeNote": "M5, Realistic mode in 3D: a rope put on a winch leaves its clutch at the clutch's aft face and wraps the drum with its turns (clockwise seen from above, or anticlockwise when wrapped the wrong way), rising from wrapBottomAboveBase to wrapTopAboveBase above the winch's base. In the self-tailer it ends in the jaw on top, jawAheadDeg further round the drum; in the hand it leaves the drum towards a hand handInboardM inboard of the winch, handAftM aft of it and handAboveCoamingM above the coaming top. Drawing only (not important)."
   },
   "visual": {
     "$comment": "Teaching approximations for Phase 1. Not physics. Tune freely, keep them here.",

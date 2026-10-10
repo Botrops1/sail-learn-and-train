@@ -81,15 +81,16 @@ describe('M3b: rope routes', () => {
       expect(angle, `${line.rope} ${'tail' in line ? line.tail : ''}`).toBeLessThanOrEqual(max);
       checked += 1;
     }
-    // Topping lift, outhaul, jib sheet and both furling tails.
-    expect(checked).toBe(5);
+    // Topping lift, outhaul, jib sheet, both furling tails and both halyards (M5).
+    expect(checked).toBe(7);
   });
 
   it('the drawn ropes really go out of the mast, down to their block, and flat aft into the channel', () => {
     const ropes = drawings({});
     for (const line of boat.rig.lineLead.lines) {
       const rope = ropes.find((r) => r.id === line.rope);
-      if (!rope) continue; // static halyards are not drawn
+      expect(rope, line.rope).toBeDefined();
+      if (!rope) continue;
       const block = turningBlockPoint(line);
       const strand = rope.strands.find((s) =>
         s.points.some((p) => Math.hypot(...sub(p, block)) < 1e-9),

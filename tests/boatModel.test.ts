@@ -178,17 +178,20 @@ describe('boat model', () => {
     expect(box.min.y).toBeGreaterThan(1);
   });
 
-  it('M3 draws the mainsail and jib ropes; the static halyards are not drawn yet', () => {
+  it('every rope is drawn: the mainsail and jib ropes (M2, M3) and the static halyards (M5)', () => {
     const ropes = [...partIds].filter((id) => id.startsWith('rope_')).sort();
     expect(ropes).toEqual([
       'rope_jib_furling_line',
       'rope_jib_sheet',
       'rope_main_furling_line',
+      'rope_main_halyard',
       'rope_mainsheet',
       'rope_outhaul',
+      'rope_spi_halyard',
       'rope_topping_lift',
       'rope_vang',
     ]);
+    expect(ropes).toEqual(boat.ropes.list.map((rope) => rope.id).sort());
   });
 
   it('optional sails are data-driven: the gennaker is not built while disabled', () => {

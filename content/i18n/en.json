@@ -163,7 +163,7 @@
   "legend.jibsheet": "Jib sheet",
   "legend.control": "Vang and topping lift (hold the boom down or up)",
   "legend.furling": "Furling lines and outhaul (roll the sails in and out)",
-  "legend.halyard": "Halyards (hoist the sails; not drawn in 3D)",
+  "legend.halyard": "Halyards (hoist the sails)",
   "legend.fighting": "Red: this rope pulls against another one (fighting)",
   "view.legend.label": "Rope colour legend",
   "view.legend.hint": "Shows what each rope colour means, at the bottom of the Ropes tab.",

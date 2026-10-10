@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
-import { runningRopes } from '../model/realistic';
+import { runningRopes, winchWraps } from '../model/realistic';
 import { requirePartId } from '../model/registry';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
@@ -209,6 +209,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
         },
         flashingRopes(state),
+        state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
       );
       streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
       water.update(now / 1000);
