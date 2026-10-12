@@ -320,7 +320,7 @@ export function mapLayout(state: AppState, view: MapViewport, width: TextWidth):
   const forward = bearingToScreen(heading, view);
   const starboard = bearingToScreen(heading + 90, view);
   const wind = state.rig.wind;
-  const trueFrom = compassDeg(state.controls.ctl_wind_dir);
+  const trueFrom = compassDeg(state.wind.dirDeg);
   const towards = bearingToScreen(heading + wind.awaDeg, view);
   const tailLength = MAP.apparentBasePx + MAP.apparentPerKnPx * wind.awsKn;
   // The arrow's head stops at the hull (or 10 px from the middle for a small boat).
@@ -683,19 +683,19 @@ export function createMapView(host: HTMLElement, store: Store): MapView {
   let shownRotation = '';
   const refreshWindBox = (state: AppState, view: MapViewport) => {
     const kn = Math.round(state.rig.wind.twsKn);
-    const from = bearing3(state.controls.ctl_wind_dir);
+    const from = bearing3(state.wind.dirDeg);
     const text = t('map.trueWind', { speed: kn, compass: from });
     if (text !== shownWind) {
       shownWind = text;
       setText(windText, text);
     }
-    const rotation = `${Math.round(-view.upDeg)}|${Math.round(compassDeg(state.controls.ctl_wind_dir) + 180 - view.upDeg)}`;
+    const rotation = `${Math.round(-view.upDeg)}|${Math.round(compassDeg(state.wind.dirDeg) + 180 - view.upDeg)}`;
     if (rotation !== shownRotation) {
       shownRotation = rotation;
       northMark.setAttribute('transform', `rotate(${Math.round(-view.upDeg)})`);
       windArrow.setAttribute(
         'transform',
-        `rotate(${Math.round(compassDeg(state.controls.ctl_wind_dir) + 180 - view.upDeg)})`,
+        `rotate(${Math.round(compassDeg(state.wind.dirDeg) + 180 - view.upDeg)})`,
       );
     }
     enlargedNote.hidden = !boatScale(view.metresPerPx).enlarged;
@@ -824,7 +824,7 @@ function drawWindField(
   view: MapViewport,
   timeS: number,
 ): void {
-  const towards = bearingToScreen(compassDeg(state.controls.ctl_wind_dir) + 180, view);
+  const towards = bearingToScreen(compassDeg(state.wind.dirDeg) + 180, view);
   const travel = MAP.windFieldTravelPx;
   const speed = MAP.windFieldDriftPxPerKnS * state.rig.wind.twsKn;
   ctx.lineWidth = 1.5;

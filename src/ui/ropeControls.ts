@@ -119,7 +119,7 @@ export function valueText(view: ControlView, value: number): string {
 function metaLines(view: ControlView, state: AppState): string[] {
   const lines: string[] = [];
   if (view.paidOut) lines.push(t('control.paidOut', { m: metres(view.paidOut(state)) }));
-  const calm = state.controls.ctl_wind_speed < boat.visual.solver.minWindKn;
+  const calm = state.wind.twsKn < boat.visual.solver.minWindKn;
   switch (view.id) {
     case 'ctl_mainsheet': {
       const key = state.rig.solution.furled

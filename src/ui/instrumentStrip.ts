@@ -1,5 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { compassDeg, mpsToKn, wrap180 } from '../model/angles';
+import { boat as boatData } from '../model/boat';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
@@ -38,8 +39,14 @@ export function createInstrumentStrip(
   const heading = el('span', { class: 'strip-heading', 'data-testid': 'strip-heading' });
   const heel = el('span', { class: 'strip-heel', 'data-testid': 'strip-heel' });
   const auto = el('span', { class: 'strip-auto', 'data-testid': 'strip-auto' });
+  const gust = el('span', { class: 'strip-gust', 'data-testid': 'strip-gust' }, [
+    t('instruments.gust'),
+  ]);
+  const timeScale = el('span', { class: 'strip-time', 'data-testid': 'strip-time' });
   const trueWind = el('span', { 'data-testid': 'strip-true' });
   const apparent = el('span', { 'data-testid': 'strip-apparent' });
+  // GUST and ×4 / ×16 (M10) get a row of their own, only while one shows: the first line is full.
+  const flags = el('span', { class: 'strip-line strip-flags' }, [gust, timeScale]);
   const strip = el(
     'button',
     {
@@ -52,6 +59,7 @@ export function createInstrumentStrip(
     [
       el('span', { class: 'strip-line' }, [speed, heading, heel, auto]),
       el('span', { class: 'strip-line strip-winds' }, [trueWind, apparent]),
+      flags,
     ],
   );
   strip.addEventListener('click', openWindTab);
@@ -87,6 +95,17 @@ export function createInstrumentStrip(
     }
     setText(auto, badge);
     auto.hidden = badge === '';
+    // GUST: the wind is well above the average the dial sets (gusty mode only; a building wind
+    // is not a gust). ×4 / ×16: time is sped up.
+    const gusting =
+      state.windMode.mode === 'gusty' &&
+      state.wind.twsKn > boatData.windModes.gustBadgeFraction * state.controls.ctl_wind_speed;
+    if (gust.hidden === gusting) gust.hidden = !gusting;
+    const sped = state.settings.timeScale > 1;
+    setText(timeScale, sped ? t('instruments.timeScale', { scale: state.settings.timeScale }) : '');
+    timeScale.hidden = !sped;
+    const flagged = gusting || sped;
+    if (flags.hidden === flagged) flags.hidden = !flagged;
     const wind = rig.wind;
     setText(trueWind, windText('instruments.true', wind.twaDeg, wind.twsKn));
     setText(apparent, windText('instruments.apparent', wind.awaDeg, wind.awsKn));

@@ -390,6 +390,14 @@ input[type='range']:focus-visible,
   gap: 8px;
 }
 
+.segments-wrap {
+  flex-wrap: wrap;
+}
+
+.segments-wrap .segment {
+  flex: 1 1 28%;
+}
+
 .segments-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -546,7 +554,8 @@ button.segment {
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-  max-width: calc(100% - 16px);
+  /* Leaves the Pause button free (it is about 70 px wide, 8 px from the edge). */
+  max-width: calc(100% - 94px);
   padding: 4px 10px;
   border: 0;
   border-radius: 12px;
@@ -589,6 +598,29 @@ button.segment {
 
 .strip-auto[hidden] {
   display: none;
+}
+
+.strip-gust,
+.strip-time {
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #b45309;
+  color: #ffffff;
+}
+
+.strip-time {
+  background: var(--text);
+}
+
+.strip-gust[hidden],
+.strip-time[hidden],
+.strip-flags[hidden] {
+  display: none;
+}
+
+/* A third row on the strip pushes the alerts down (stacked layout; side by side they are at the bottom). */
+html[data-layout='stacked'] .view:has(.strip-flags:not([hidden])) .rig-alerts {
+  top: 102px;
 }
 
 .strip-winds {
@@ -806,6 +838,24 @@ html[data-layout='side'] .rig-alerts {
 
 .dial-arrow path {
   fill: var(--accent);
+}
+
+.dial-arrow-now line {
+  stroke: var(--text);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.dial-arrow-now path {
+  fill: var(--text);
+}
+
+.wind-now[hidden] {
+  display: none;
+}
+
+.wind-now {
+  text-align: center;
 }
 
 .wind-value {

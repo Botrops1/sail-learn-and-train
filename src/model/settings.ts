@@ -59,6 +59,8 @@ export interface Settings {
   /** Names shown over the parts and ropes in the 3D view (View tab, M5). */
   labels: boolean;
   detail: Detail;
+  /** Time speed-up (M10, PHASE2_SPEC 10.2): 1, 4 or 16. Not about the hands: only the world. */
+  timeScale: number;
 }
 
 export interface CameraState {
@@ -73,6 +75,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   legend: true,
   /** On by default (owner, PR #19). */
   labels: true,
+  timeScale: 1,
 };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
 

@@ -35,6 +35,10 @@ export const SCENE = {
     /** Ripples: a tiling normal map, `rippleTileM` metres, drifting slowly. */
     rippleTileM: 9,
     rippleStrength: 0.35,
+    /** The ripples scale with the true wind now: × (wind / this), kept between the two limits (M10). */
+    rippleReferenceKn: 12,
+    rippleScaleMin: 0.3,
+    rippleScaleMax: 2,
     rippleDriftMPerS: 0.25,
     /** Side length of the square water plane, metres. */
     size: 600,

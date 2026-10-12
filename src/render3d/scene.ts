@@ -245,7 +245,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       holder.rotation.x = boatState.heelDeg * DEG;
       const centre = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
       wake.update(state, state.rig.timeS);
-      water.update(now / 1000, centre.eastM, centre.northM);
+      water.update(now / 1000, centre.eastM, centre.northM, state.wind.twsKn);
       renderer.render(scene, camera);
     },
     stats() {
@@ -393,7 +393,7 @@ interface Water {
    * Drifts the ripples; they stay fixed on the map as the plane steps (`centre*` is the map
    * position of the plane's centre).
    */
-  update(timeS: number, centreEastM: number, centreNorthM: number): void;
+  update(timeS: number, centreEastM: number, centreNorthM: number, twsKn: number): void;
 }
 
 /**
@@ -446,7 +446,13 @@ function buildWater(ripples: THREE.Texture): Water {
       plane.material = detail === 'high' ? high : low;
       gridMaterial.opacity = detail === 'high' ? SCENE.grid.opacityHigh : SCENE.grid.opacity;
     },
-    update(timeS, centreEastM, centreNorthM) {
+    update(timeS, centreEastM, centreNorthM, twsKn) {
+      // The ripples grow with the wind (M10): TWS / 12 kn, between 0.3 and 2.
+      const scale = Math.min(
+        w.rippleScaleMax,
+        Math.max(w.rippleScaleMin, twsKn / w.rippleReferenceKn),
+      );
+      high.normalScale.set(w.rippleStrength * scale, w.rippleStrength * scale);
       const drift = (w.rippleDriftMPerS * timeS) / w.rippleTileM;
       // The plane's u runs north, its v runs west (the plane is turned flat).
       // Offsets wrap (repeat wrapping): keep them small so the float precision lasts.
