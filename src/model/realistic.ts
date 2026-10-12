@@ -679,7 +679,8 @@ export function reduceRealistic(
 function ropePullN(spec: TailSpec, controls: Controls, rig: RigState, data: BoatData): number {
   const loads = data.realisticMode.loads;
   const fixed = (loads.fixedN as Record<string, number | undefined>)[spec.ropeId] ?? 0;
-  const windy = controls.ctl_wind_speed >= data.visual.solver.minWindKn;
+  // The wind the rig was solved for (a gust or a dying wind counts), not the dial's mean.
+  const windy = rig.wind.twsKn >= data.visual.solver.minWindKn;
   const byState = (status: RopeStatus, taut: number) =>
     status.state === 'fighting' ? loads.fightingN : status.state === 'taut' ? taut : 0;
   // The two sheets carry the sail forces of the apparent wind (M8, sheetLoads.ts).

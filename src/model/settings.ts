@@ -59,6 +59,13 @@ export interface Settings {
   /** Names shown over the parts and ropes in the 3D view (View tab, M5). */
   labels: boolean;
   detail: Detail;
+  /**
+   * Time scale (M10, PHASE2_SPEC 10.2, issue #25): ¼ … 16, one of `windModes.timeScales`. Not
+   * about the hands: only the world. Always 1 where the time bar has no speed part.
+   */
+  timeScale: number;
+  /** The time bar's speed part over the 3D view (View tab); off = only the Pause button. */
+  timeBar: boolean;
 }
 
 export interface CameraState {
@@ -73,6 +80,8 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   legend: true,
   /** On by default (owner, PR #19). */
   labels: true,
+  timeScale: 1,
+  timeBar: true,
 };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
 

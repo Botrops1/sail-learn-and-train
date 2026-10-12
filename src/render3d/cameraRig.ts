@@ -22,7 +22,17 @@ export interface CameraRig {
    * Call when the drawing size or layout changes. `bottomInset` (CSS px) is covered by the
    * camera buttons: presets frame the boat in the area above it.
    */
-  setViewport(width: number, height: number, bottomInset: number, options: PresetOptions): void;
+  /**
+   * `bottomInset` CSS px at the bottom are covered by buttons; `topInset` at the top by the time
+   * bar (M10): the camera aims at the middle of the free area between them.
+   */
+  setViewport(
+    width: number,
+    height: number,
+    bottomInset: number,
+    options: PresetOptions,
+    topInset?: number,
+  ): void;
   /** Call once per frame before rendering. */
   update(now: number): void;
   /** Called when the user moves the camera by hand (drag, pinch, wheel). */
@@ -73,19 +83,25 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     }
   });
 
-  let viewport = { width: 1, height: 1, inset: 0 };
+  let viewport = { width: 1, height: 1, inset: 0, top: 0 };
   let options: PresetOptions = {};
   /** The lens the whole-boat presets are fitted with: the area above the buttons. */
   let lens: Lens = { verticalFovDeg: cam.verticalFovDeg, aspect: 1 };
 
   /**
-   * Renders the top part of a taller virtual image whose centre is the centre of the area above
-   * the buttons, so the camera aims at the middle of the free area.
+   * Renders a window of a taller virtual image whose centre is the centre of the free area
+   * between the bar at the top (`top`) and the buttons at the bottom (`inset`), so the camera
+   * aims at the middle of the free area.
    */
   function updateProjection(): void {
-    const { width, height, inset } = viewport;
-    camera.aspect = width / (height + inset);
-    camera.setViewOffset(width, height + inset, 0, inset, width, height);
+    const { width, height, inset, top } = viewport;
+    // Window coordinates: the free area is [top, height − inset], its centre `c`. The virtual
+    // image is as tall as needed to put that centre in its middle.
+    const centre = (top + height - inset) / 2;
+    const offset = Math.max(0, height - 2 * centre);
+    const virtualHeight = 2 * (offset + centre);
+    camera.aspect = width / virtualHeight;
+    camera.setViewOffset(width, virtualHeight, 0, offset, width, height);
     camera.updateProjectionMatrix();
   }
 
@@ -125,16 +141,19 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         controls.update();
       }
     },
-    setViewport(width, height, bottomInset, presetOptions) {
+    setViewport(width, height, bottomInset, presetOptions, topInset = 0) {
       const inset = Math.min(Math.max(0, bottomInset), height * 0.4);
-      viewport = { width, height, inset };
+      const top = Math.min(Math.max(0, topInset), height * 0.4);
+      viewport = { width, height, inset, top };
       options = presetOptions;
       updateProjection();
       const tanHalf = Math.tan((cam.verticalFovDeg * Math.PI) / 360);
+      const free = height - inset - top;
+      const virtualHeight =
+        2 * (Math.max(0, height - (top + height - inset)) + (top + height - inset) / 2);
       lens = {
-        verticalFovDeg:
-          (Math.atan((tanHalf * (height - inset)) / (height + inset)) * 360) / Math.PI,
-        aspect: width / (height - inset),
+        verticalFovDeg: (Math.atan((tanHalf * free) / virtualHeight) * 360) / Math.PI,
+        aspect: width / free,
       };
       // A preset keeps the whole boat in view when the screen rotates or folds; so does the
       // default view opened by a `cam=free` link until the user moves the camera.

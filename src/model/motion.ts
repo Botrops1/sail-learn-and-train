@@ -89,6 +89,11 @@ export function effectiveMassKg(data: BoatData = hanse508): number {
   return boatMassKg(data) * (1 + data.physics.mass.addedMassFraction);
 }
 
+/** How many substeps a step of `dt` seconds takes: none longer than `integration.maxStepS`. */
+export function substepCount(dt: number, data: BoatData = hanse508): number {
+  return Math.max(1, Math.ceil(dt / data.physics.integration.maxStepS));
+}
+
 /** Advances the boat by `dt` seconds, in substeps of at most `integration.maxStepS`. */
 export function stepBoat(
   boatState: BoatState,
@@ -96,11 +101,10 @@ export function stepBoat(
   dt: number,
   data: BoatData = hanse508,
 ): { boat: BoatState; report: MotionReport } {
-  const { maxStepS } = data.physics.integration;
   const { turnLengthM, yawLagS } = data.physics.steering;
   const mEff = effectiveMassKg(data);
   const held = boatState.mode === 'held';
-  const count = held ? 1 : Math.max(1, Math.ceil(dt / maxStepS));
+  const count = held ? 1 : substepCount(dt, data);
   const h = held ? 0 : dt / count;
 
   const heelData = data.physics.heel;

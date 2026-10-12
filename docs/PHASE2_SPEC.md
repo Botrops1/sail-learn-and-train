@@ -34,7 +34,7 @@ The single idea Phase 2 must teach:
 6. Bird's-eye map: boat, track, both winds, no-go zone, points of sail.
 7. Forces and heel: sail forces, heel from the manual's righting moment, heel reducing drive, weather helm, round-up. Sheet loads from the forces replace Realistic mode's Phase 1 estimates.
 8. Trim quality: luffing / good / stalled, telltales, the main blanketing the jib downwind, sails torn by long flogging.
-9. Wind modes: Steady, Gusty, Shifty, Building, Dying; repeatable from a link; time speed-up.
+9. Wind modes: Steady, Gusty, Shifty, Building, Dying; repeatable from a link; time bar with slow motion and speed-up (issue #25).
 10. Gybes: boom swing energy, peak sheet load, danger zone, controlled vs accidental gybe.
 11. Engine: start/stop, single lever ahead/neutral/astern, rpm.
 
@@ -165,7 +165,7 @@ export interface AutopilotState {     // src/model/autopilot.ts
 | M7 | `track.ts`, `pointsOfSail.ts` | `ui/mapView.ts`, `ui/windInstrument.ts` |
 | M8 | `heel.ts`, `sheetLoads.ts` | (changes only) |
 | M9 | `trim.ts` | `render3d/boat/telltales.ts`, `ui/sailsPanel.ts` |
-| M10 | `windModes.ts`, `random.ts` | `ui/windModePanel.ts` |
+| M10 | `windModes.ts`, `random.ts` | `ui/windModePanel.ts`, `ui/timeBar.ts` (replaces `ui/pauseButton.ts`) |
 | M11 | `gybe.ts` | `render3d/dangerZone.ts`, `ui/gybeReport.ts` |
 | M12 | `engine.ts` | `ui/enginePanel.ts`, Helm-station lever in `ui/stationDrawing.ts` |
 
@@ -181,7 +181,7 @@ Each milestone is one PR, small enough to check on a phone. Section numbers matc
 | M7 | 7 | Bird's-eye map, wind instrument dial | (display) |
 | M8 | 8 | Heel, weather helm, round-up, loads in kN | PT-25, 29, 32, 36 |
 | M9 | 9 | Trim states, telltales, blanketed jib, torn sails | PT-23, 37, 38 |
-| M10 | 10 | Gusty, shifty, building, dying wind; time speed-up | (determinism) |
+| M10 | 10 | Gusty, shifty, building, dying wind; time bar (slow motion, pause, speed-up) | (determinism) |
 | M11 | 11 | Gybe energy, peak load, danger zone | PT-24, 26 |
 | M12 | 12 | Engine | PT-35 (engine case) |
 | M13 | 13 | Polish and sign-off | all |
@@ -786,7 +786,7 @@ Branch `m10-wind-modes`.
 "windModes": {
   "$comment": "PHASE2_SPEC 10. Teaching wind patterns; all values are assumptions (EXERCISES.md 4).",
   "maxTwsKn": 40,
-  "timeScales": [1, 4, 16],
+  "timeScales": [0.25, 0.5, 1, 2, 4, 8, 16],
   "gusty": { "meanIntervalS": 45, "riseS": 3, "holdMinS": 4, "holdMaxS": 10, "fallS": 5,
              "strengthDefaultPct": 30, "strengthMinPct": 10, "strengthMaxPct": 60,
              "veerMaxDeg": 10, "lullFraction": 0.5, "noisePct": 5, "noisePeriodsS": [23, 37] },
@@ -815,20 +815,25 @@ export function windAt(meanDirDeg: number, meanKn: number, wm: WindModeState, ti
     - the events alternate: gust, lull, gust, …;
     - each event's envelope `e(τ)`: from 0 to 1 over `riseS`, 1 for `hold`, back to 0 over `fallS` (smoothstep on the ramps), with τ the time since `at`.
   - `twsKn = meanKn · (1 + noise + Σ_events e·k)`, where `k = +size/100·amp` for a gust and `−lullFraction·size/100·amp` for a lull.
+    **Changed on the M10 PR (owner, 2026-10-12):** the summed event term `Σ_events e·k` is capped at what one event can reach, between `−lullFraction·size/100·1.3` and `+size/100·1.3` (1.3 = the largest `amp`), so overlapping gusts cannot pile up. The noise is added after the cap, and the random draws are unchanged. See 10.6.
   - `noise = noisePct/100 · (0.6·sin(2πt/23 + p1) + 0.4·sin(2πt/37 + p2))`, with `p1 = 2π·rnd()` and `p2 = 2π·rnd()` drawn first from the same stream.
   - `dirDeg = meanDir + Σ_gusts e·veer` (gusts veer clockwise; lulls do not change direction).
 - `shifty`: `rnd = mulberry32(seed)`; draw `p1, p2, p3 = 2π·rnd()` in that order. `dirDeg = meanDir + size·(0.6·sin(2πt/180 + p1) + 0.4·sin(2πt/67 + p2))`; `twsKn = meanKn·(1 + speedNoisePct/100·sin(2πt/29 + p3))`.
 - `building`: `twsKn = meanKn + size·smoothstep(0, rampS, t)`. `dying`: `max(0, meanKn − size·smoothstep(0, rampS, t))`.
 - `AppState.windMode` (default `steady`, `seed` 1, `size` = the mode's default). Changing the mode, the size or the seed sets `startS = rig.timeS`. The store passes `windAt(...)` to `step` (4.3, `StepOptions.wind`) and to `stepBoat`. The autopilot's wind mode uses the **current** wind direction (so it follows shifts).
-- Time speed-up `AppState.settings.timeScale ∈ {1, 4, 16}`: `dtSim = min(MAX_STEP_S, dt) · timeScale`; the rig is solved once per frame; the boat substeps as usual. Realistic mode's hand gestures are unaffected (they act on frames).
+- Time scale `AppState.settings.timeScale ∈ windModes.timeScales` (¼ … 16, issue #25): `dtSim = min(MAX_STEP_S, dt) · timeScale`; the rig is solved once per frame; the boat substeps as usual. Realistic mode's hand gestures are unaffected (they act on frames).
 
 ### 10.3 UI and URL
 
-- Wind tab, under the speed slider: `Wind changes: [Steady] [Gusty] [Shifty] [Building] [Dying]`. Under it, a slider for the size with its unit: `Gust strength 30 %`, `Shift size 15°`, `Change 10 kn over 10 min`. Then a `New pattern` button (new random seed 1…99,999) and `Time: [×1] [×4] [×16]`.
+- Wind tab, under the speed slider: `Wind changes: [Steady] [Gusty] [Shifty] [Building] [Dying]`. Under it, a slider for the size with its unit: `Gust strength 30 %`, `Shift size 15°`, `Change 10 kn over 10 min`. Then a `New pattern` button (new random seed 1…99,999).
+- **Time bar** (`ui/timeBar.ts`, issue #25; replaces the Phase 1 Pause button at the top of the 3D view, `data-testid="time-bar"`). One compact row: `Time ×1  [<<] [<] [II] [>] [>>]`. `<` / `>` one step down / up the `timeScales` list, `<<` / `>>` straight to ¼ / ×16, `II` = Pause / Resume exactly as in Phase 1 (`pause.*` strings and behaviour kept). The status shows `×¼`, `×½`, `×1` … `×16`; tapping it returns to ×1. Buttons at least 44 px high; on a phone the row must fit the 3D view's width beside the instrument strip, or it goes under it.
+  - **Fold:** tapping the word `Time` folds the bar to the Pause button alone and back. Remembered on the device (try/catch around storage), not in the link.
+  - **Where it shows:** Pause shows always (both boat modes, both rope modes, as in Phase 1). The speed part shows while Sailing, or in Held still when the wind mode is not Steady; otherwise only Pause shows (nothing else changes with time there), and the time scale goes back to ×1.
+  - **Setting:** View tab switch `Time bar` (on by default); off = only the Pause button, time scale ×1. URL `tb=0` when off.
 - The compass dial shows the mean (draggable) and a thin second arrow for the wind now.
-- Instrument strip: a `GUST` badge when TWS > `gustBadgeFraction` × mean; `×4` / `×16` badge when sped up.
+- Instrument strip: a `GUST` badge when TWS > `gustBadgeFraction` × mean; a `×4` / `×½` badge when the time scale is not 1 (so a folded bar still shows it).
 - The water's ripple strength scales with the current TWS / 12 kn (clamped 0.3 … 2).
-- URL: `wm` = `gusty` | `shifty` | `build` | `die` (absent = steady), `seed` (integer), `wg` (size), `tx` (`4` or `16`; absent = 1). The time in the mode is not stored: a link starts the pattern at its beginning.
+- URL: `wm` = `gusty` | `shifty` | `build` | `die` (absent = steady), `seed` (integer), `wg` (size), `tx` (`0.25`, `0.5`, `2`, `4`, `8` or `16`; absent = 1), `tb=0` (time bar off). The time in the mode is not stored: a link starts the pattern at its beginning.
 
 ### 10.4 Tests
 
@@ -836,13 +841,45 @@ export function windAt(meanDirDeg: number, meanKn: number, wm: WindModeState, ti
 2. Gusty, 30 %, mean 12 kn, 1 h of samples at 1 Hz: max TWS within 14.4–17.4 kn; time-average within ±5 % of 12; at least 30 gusts.
 3. Shifty, 15°: direction always within mean ± 15°, and beyond ± 10° at least once within 10 min.
 4. Building +10 kn: 12 kn at t = 0, 17 ± 0.2 at 300 s, 22 ± 0.1 at 600 s and after. Dying clamps at 0.
-5. Time ×16: 60 s of frames at 60 fps advance `rig.timeS` by 960 ± 1 s; no substep longer than `maxStepS`.
+5. Time ×16: 60 s of frames at 60 fps advance `rig.timeS` by 960 ± 1 s; no substep longer than `maxStepS`. Time ×¼: 60 s of frames advance it by 15 ± 0.1 s. The time bar's steps: `>` from ×1 gives ×2, `<<` gives ×¼, `>` at ×16 stays ×16; tapping the status gives ×1.
 6. Autopilot wind mode in a 20° shifty wind: after 5 min, |TWA − target| < 6° 90 % of the time.
-7. URL round trip of `wm`, `seed`, `wg`, `tx`.
+7. URL round trip of `wm`, `seed`, `wg`, `tx`, `tb`.
+8. Held still with Steady wind: the time bar shows only Pause and the time scale is 1.
 
 ### 10.5 Screenshots, done when
 
-`m10-wind-tab-gusty`, `m10-gust` (strip with the GUST badge). Done when all M10 checks pass.
+`m10-wind-tab-gusty`, `m10-gust` (strip with the GUST badge), `m10-time-bar` (the bar at ×4, and folded). Done when all M10 checks pass.
+
+
+### 10.6 Decided in the M10 PR
+
+Things the spec left open or did not foresee (each is "decided in the M10 PR"):
+
+- **Branch:** `m10-wind-modes`, as the spec and the owner's prompt say. M9 is developed in parallel, so `store.ts`, `hanse508.json`, `en.json`, `parts.json`, `shots.mjs` and this file may conflict with the M9 PR in their obvious places (both add lines next to each other).
+- **State:** `AppState.windMode` is `{ mode, seed, size, startS }` (10.2). `AppState.wind` is new: the true wind **now** (`windAt` at the rig clock after this step), so `state.wind` always equals `windAt(mean, state.windMode, state.rig.timeS)`. The dial and the speed slider show the mean (`controls`); the sails, the boat, the autopilot (Tack and Gybe included), the map, the strip's wind lines, the debug overlay and the "calm" notes read `state.wind` / `rig.wind`. Reset gives a steady wind at ×1. `settings.timeScale` is the time scale of the time bar (¼, ½, 1, 2, 4, 8 or 16; `windModes.timeScales`), `settings.timeBar` the View tab's switch (default on).
+- **Steady wind is Phase 1 and M6–M9 exactly:** `step` gets `StepOptions.wind` only when a mode other than Steady is on (4.3 rounds the apparent wind whenever a wind is passed), so a steady link behaves bit for bit as before.
+- **Held still:** wind modes work there too (the sails answer; the boat stays still).
+- **Which time:** the pattern is evaluated at the **end** of the step (`rig.timeS + dtSim`), and a paused app (dt = 0) freezes the pattern. Changing the mode, the size or the seed restarts it (`startS = rig.timeS`); moving the dial or the speed slider does not.
+- **Sizes:** the mode's default comes with the mode. The slider's range is the data's (gusty 10–60 %, shifty 5–40°); for Building and Dying it is 1 kn to `changeMaxKn` (20). Steps: gusty 5 %, others 1. The label "Change 10 kn over 10 min" takes its minutes from `rampS / 60`.
+- **New pattern:** the button draws a seed from 1 to 99,999 in the UI (the reducer stays pure: `newWindPattern` carries the seed). For Building and Dying there is nothing random, so it simply starts the change again; it is hidden (with the slider) on Steady.
+- **GUST badge:** shown only in **Gusty** mode, while the wind now is more than `gustBadgeFraction` × the mean (a building wind is not a gust). `×¼` … `×16` shows whenever the time scale is not 1 (also while the bar is folded). Both sit on a third row of the strip that exists only while one of them shows (on a phone the first row is full); the alerts, the map's controls and the debug box sit below the top area (see the time bar bullet).
+- **Time bar** (issue #25, merged into the M10 spec from `claude/epic-clarke-38g7ia`; built as 10.3 says): `ui/timeBar.ts` replaces `ui/pauseButton.ts` (deleted). The bar is `Time ×1 [«] [‹] [Pause] [›] [»]`: the arrows are the glyphs « ‹ › » (the spec's `<<` `<` `>` `>>`), `‹` / `›` one step down / up `windModes.timeScales`, `«` / `»` to ¼ / ×16, a tap on the status goes to ×1; at an end the two buttons for that direction are disabled. Pause is the Phase 1 button inside the bar with the same `data-testid="pause-button"`, class and `pause.*` strings. Logic is pure and tested: `src/model/timeScale.ts` (`stepTimeScale`, `slowestTimeScale`, `fastestTimeScale`, `timeScaleText`, `timeSpeedAvailable`, `isTimeScale`).
+  - **Rule in the store:** the speed part shows only when `timeSpeedAvailable(boat mode, wind mode, settings.timeBar)`: Sailing, or Held still with a wind mode other than Steady, and the View tab's switch on. Whenever that stops being true (Held still with Steady wind, the wind set to Steady while held, the switch turned off) the time scale goes back to ×1 and **stays** ×1 when it becomes available again; `setTimeScale` is refused while it is not available. `setTimeBar` is the new action; `tx` and `tb=0` in a link follow the same rule when it opens.
+  - **Fold:** the word `Time` (with `aria-expanded`) folds the bar. Decided in the M10 PR: the spec says "to the Pause button alone and back", but something must stay to tap to open it again, so a folded bar shows the small word `Time` (in the accent colour) next to Pause. The fold is kept in `localStorage` under `sail-learn.timeBarFolded` (inside try/catch), not in the link. Where the bar has no speed part the word is not shown either: only Pause, as in Phase 1.
+  - **Layout:** a new container `.view-top` holds the instrument strip and the bar (the strip is no longer absolutely positioned). It is a wrapping flex row: where the view is wide enough the bar sits at the right of the strip (as Pause did); otherwise it wraps under the strip, aligned right (phones in portrait). The strip's old `max-width: calc(100% - 94px)` is gone. `trackTopHeight` keeps `--view-top-h` on the view (the bottom edge of the top area), and everything that used to sit at a fixed 58–78 px under the top (the alerts in the stacked layout, the debug box, the map's wind box and its North up / Boat up switch) now sits at that edge plus its old gap, so none of them is covered when the bar is under the strip. The earlier `:has()` rule that moved the alerts for the strip's third row is replaced by this.
+  - **Camera framing under the bar:** where the bar wraps under the strip (phones in portrait) it would cover the top of the 3D picture (in the Top view the bow, with the jib furler). `CameraRig.setViewport` and `SceneView.resize` therefore take a `topInset` as well as the bottom inset: the whole-boat presets are framed in the area between the bar and the camera buttons (`topClearance` in `ui/timeBar.ts`, measured from the bar; 0 where the bar sits beside the strip, so those views are framed as before). The picture is smaller on a phone while the bar is open; folding the bar or switching it off gives the whole view back. The framing follows when the bar folds or the badge row appears (`trackTopHeight`'s callback).
+  - **Wind tab:** the `Time: [×1] [×4] [×16]` buttons are removed (the bar replaces them); the `wind.time.*` strings are removed. View tab: new switch `Time bar` (`view.timeBar.*`).
+  - **Labels in 3D** keep clear of the bar (`.time-bar` replaces `.pause-button` in the labels' blocking list).
+- **Merged with M9 (PR #30):** the stores combine (`sailDamage`, `repairSails` next to `windMode`, `wind`, `setTimeBar`); flogging damage is counted in **simulated** time (`floggingDamage(…, dt)` gets the scaled step), so a sail that flogs for 10 minutes tears after 10 simulated minutes, i.e. in 37 s at ×16 (and 40 minutes at ×¼); M9's `⚠ sail` badge moved from the first line of the strip into the third row with `GUST` and `×N` (the first line is full on a phone), and that row shows while any of the three shows. M9's shots script and mine are merged: both `SHOTS_ONLY_M9` and `SHOTS_ONLY_M10` exist.
+- **Dial:** the thin arrow and the line "Wind now: 12 kn from 097° (thin arrow)" show only while a mode is on. The thick arrow is still the mean and is still what you drag.
+- **Time speed-up and Realistic mode (accepted by the owner, 2026-10-12):** the step is multiplied for **everything the world does** (rig, boat, autopilot, and `stepRealistic`, so a running rope or the winch motor speeds up with the boat). Hand gestures are discrete actions (a drag, a tap): they are not scaled, and notices that count seconds for the screen (the autopilot's "you took the wheel") stay in real time. The boat substeps by `maxStepS`, so ×16 at 10 fps (a 1.6 s step, 32 substeps) is as stable as at 60 fps (checked: the autopilot in a 20° shifty wind holds within 4° at ×16 at both rates).
+- **Ripples:** the high-detail water's normal-map strength scales with the wind now, `clamp(TWS / 12 kn, 0.3, 2)` (`SCENE.water.rippleReferenceKn`, `rippleScaleMin`, `rippleScaleMax`). It is not visible at Detail: Low.
+- **URL:** `wm` (`gusty`, `shifty`, `build`, `die`; `steady` and anything unknown fall back to no mode), `seed` (1–99,999), `wg` (an integer inside the mode's range, else the mode's default), `tx` (`0.25`, `0.5`, `2`, `4`, `8` or `16`; a link with `tb=0`, or Held still with a steady wind, opens at ×1), `tb=0`. Written only when not the default (`seed` 1, the mode's default size, `×1`, bar on). The link does not store where in the pattern you are: it starts at the beginning, and the boat opens at the steady speed for the wind at that moment.
+- **Seeds and the test band (10.4 item 2), decided by the owner on the M10 PR (2026-10-12):** with the formulas exactly as in 10.2 two gusts could overlap and pile up: 59 of the seeds 1–200 peaked above 17.4 kn in an hour (the highest 20.0 kn). Instead of a minimum gap between events (which would change every pattern), the **summed gust/lull term is capped** at what a single event can reach: a gust at most `+size · 1.3`, a lull at least `−lullFraction · size · 1.3`. The random draws are unchanged, so a pattern differs from the uncapped one only where events overlapped. Result at 30 %, mean 12 kn, one hour at 1 Hz, seeds 1–200: the peak is 16.5–17.3 kn (the band 14.4–17.4 holds for **every** seed), the average 12.14–12.31 kn (within 5 %), the lowest value 9.1 kn. The test covers all 200 seeds. "At least 30 gusts" stays on fixed seeds (1 and 7): 2 of the seeds 1–200 have fewer, which the owner accepts. The wind's direction is not capped: overlapping gusts can veer it up to 19° (seeds 1–200) where one gust veers at most `veerMaxDeg` (10°). **Open question:** cap the veer too?
+- **Test 6 (autopilot in a 20° shifty wind):** the autopilot is set to Wind at the angle she is sailing when it is switched on (the wind at t = 0 is already shifted by up to 20°). After 5 minutes of settling, measured over the next 5 minutes, the error is under 6° for 100 % of the time (worst 4.1°) at 20°; at the slider's largest shift, 40°, the error reaches 12° and is under 6° only about two thirds of the time (the autopilot has no feed-forward for a moving target).
+- **Helper exports for tests:** `gustyEvents(seed, t)` (the gusts and lulls begun by `t`), `substepCount(dt)` in `motion.ts` (what `stepBoat` uses), `sizeRange(mode)`, `initialWindMode()`.
+- **PHYSICS_TRUTHS:** M10 adds and changes no rules (the spec's "rules tested" is "determinism"); the tests are in `tests/windModes.test.ts`.
+- **Screenshots script:** `SHOTS_ONLY_M10=1` runs only the M10 scenes and live checks (the Wind tab with each mode, the dial's thin arrow, the badges, the time bar open, folded, slow, over the map and held still, a building and a dying wind, the link); scenes and checks with "m10" in the label open Sailing; the default output folder is now `docs/screenshots/m10` and the prefix `m10-`. The Reset check of M4a (`shots-m4a.mjs`) now ignores `rd` and `bs` (live since M6 and M8).
 
 ---
 
@@ -987,7 +1024,7 @@ Branch `m13-phase2-signoff`.
 - [ ] The sails trim to the apparent wind; luffing, good and stalled trim are visible on the sails, the telltales and in the panel.
 - [ ] Heel, weather helm and round-up happen by themselves from too much sail or wrong trim, and easing fixes them.
 - [ ] Realistic mode's loads come from the sail forces: a gust can make a rope slip or a winch cut out.
-- [ ] Wind modes work and are repeatable from a link; time speed-up works.
+- [ ] Wind modes work and are repeatable from a link; the time bar slows, pauses and speeds up time.
 - [ ] An accidental gybe shows its energy and load and the danger zone; a controlled gybe is gentle.
 - [ ] The engine moves the boat ahead and astern at plausible speeds.
 - [ ] The map shows the boat, the track, both winds, the no-go zone and the points of sail.

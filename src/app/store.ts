@@ -26,6 +26,16 @@ import {
   type AutopilotState,
 } from '../model/autopilot';
 import { appendTrack, type TrackPoint } from '../model/track';
+import { isTimeScale, timeSpeedAvailable } from '../model/timeScale';
+import {
+  initialWindMode,
+  isSeed,
+  sizeRange,
+  windAt,
+  type WindModeId,
+  type WindModeState,
+  type WindNow,
+} from '../model/windModes';
 import { floggingDamage, NO_DAMAGE, type SailDamage } from '../model/trim';
 import {
   initialBoat,
@@ -61,6 +71,13 @@ export interface AppState {
   autopilotNoticeS: number;
   /** Where the boat has been (M7, for the map). Sailing only; not in the link. */
   track: TrackPoint[];
+  /** The wind pattern on top of the mean wind the dial and slider set (M10). */
+  windMode: WindModeState;
+  /**
+   * The true wind now (M10): the mean with the pattern applied, at the rig's clock. The dial and
+   * slider show the mean (`controls`); the sails, the boat, the autopilot and the map use this.
+   */
+  wind: WindNow;
   /** How worn each sail is from flogging (M9, 0 … 1; 1 = torn). Not in the link. */
   sailDamage: SailDamage;
 }
@@ -86,6 +103,16 @@ export type Action =
   /** Held still (Phase 1) or Sailing (PHASE2_SPEC 6.4). */
   | { type: 'setBoatMode'; mode: 'sailing' | 'held' }
   | { type: 'autopilot'; command: AutopilotCommand }
+  /** Wind modes (M10): the pattern restarts now; its size goes to the mode's default. */
+  | { type: 'setWindMode'; mode: WindModeId }
+  /** Size of the pattern: % (gusty), ° (shifty), kn (building, dying). Restarts the pattern. */
+  | { type: 'setWindSize'; size: number }
+  /** A new random pattern (the caller draws the seed, so the reducer stays pure). */
+  | { type: 'newWindPattern'; seed: number }
+  /** The time bar (M10, issue #25): a scale from `windModes.timeScales`; refused where the bar has no speed part. */
+  | { type: 'setTimeScale'; scale: number }
+  /** The View tab's switch for the time bar's speed part. Off puts the time scale back to ×1. */
+  | { type: 'setTimeBar'; timeBar: boolean }
   /** New sails: the flogging damage goes back to 0 (M9). */
   | { type: 'repairSails' }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
@@ -105,10 +132,16 @@ export interface InitialOverrides {
   boat?: Partial<BoatState>;
   /** From a shared link; without it the autopilot holds the boat's heading. */
   autopilot?: AutopilotState;
+  /** From a shared link: the wind mode, its seed and size. The pattern starts at time 0. */
+  windMode?: Partial<WindModeState>;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
-function boatFor(controls: Controls, overrides: Partial<BoatState> = {}): BoatState {
+function boatFor(
+  controls: Controls,
+  overrides: Partial<BoatState> = {},
+  wind?: WindNow,
+): BoatState {
   const mode = overrides.mode ?? 'sailing';
   const headingDeg = overrides.headingDeg ?? 0;
   if (mode === 'held') {
@@ -122,7 +155,10 @@ function boatFor(controls: Controls, overrides: Partial<BoatState> = {}): BoatSt
     });
   }
   // She opens settled: at her steady speed and heel (a link may give the speed).
-  const steady = steadyState(controls, headingDeg, undefined, { heel: true });
+  const steady = steadyState(controls, headingDeg, undefined, {
+    heel: true,
+    ...(wind ? { windDirDeg: wind.dirDeg, twsKn: wind.twsKn } : {}),
+  });
   const speedMps = overrides.speedMps ?? steady.speedMps;
   const heelDeg = overrides.heelDeg ?? steady.heelDeg;
   return initialBoat({ ...overrides, mode, headingDeg, speedMps, heelDeg });
@@ -132,13 +168,40 @@ function motionOf(boat: BoatState): BoatMotion {
   return { velocity: [boat.speedMps, 0, 0], headingDeg: boat.headingDeg, heelDeg: boat.heelDeg };
 }
 
+/** The true wind now for the controls' mean and a wind mode, at the rig clock `timeS`. */
+function windNow(controls: Controls, windMode: WindModeState, timeS: number): WindNow {
+  return windAt(controls.ctl_wind_dir, controls.ctl_wind_speed, windMode, timeS);
+}
+
+/**
+ * Where the time bar has no speed part the time runs at ×1 (PHASE2_SPEC 10.3): Held still with a
+ * steady wind, or the bar switched off.
+ */
+function withTimeRule(state: AppState): AppState {
+  const { settings } = state;
+  if (settings.timeScale === 1) return state;
+  return timeSpeedAvailable(state.boat.mode, state.windMode.mode, settings.timeBar)
+    ? state
+    : { ...state, settings: { ...settings, timeScale: 1 } };
+}
+
 export function initialState(overrides: InitialOverrides = {}): AppState {
   const controls = { ...defaultControls(), ...overrides.controls };
-  const boat = boatFor(controls, overrides.boat);
-  return {
+  const windMode = initialWindMode(overrides.windMode);
+  const wind = windNow(controls, windMode, 0);
+  // Steady wind: the controls are the wind (Phase 1 and the sailing of M6-M9 exactly).
+  const patterned = windMode.mode !== 'steady';
+  const boat = boatFor(controls, overrides.boat, patterned ? wind : undefined);
+  return withTimeRule({
     controls,
     // A link opens with the rig already settled for the apparent wind: no swing on load.
-    rig: initialRig(controls, undefined, overrides.history, motionOf(boat)),
+    rig: initialRig(
+      controls,
+      undefined,
+      overrides.history,
+      motionOf(boat),
+      patterned ? wind : undefined,
+    ),
     camera: { ...DEFAULT_CAMERA, ...overrides.camera },
     settings: { ...DEFAULT_SETTINGS, ...overrides.settings },
     selection: overrides.selection ?? null,
@@ -149,8 +212,10 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     motion: null,
     autopilotNoticeS: 0,
     track: [],
+    windMode,
+    wind,
     sailDamage: NO_DAMAGE,
-  };
+  });
 }
 
 function withControls(controls: Controls, values: Partial<Controls>): Controls {
@@ -192,7 +257,11 @@ export function reduce(state: AppState, action: Action): AppState {
       // debug overlay and the render detail suit the device, not what is shown: they stay.
       const { debug, detail } = state.settings;
       const defaults = initialState({ settings: { debug, detail } });
-      return { ...defaults, rig: state.rig };
+      return {
+        ...defaults,
+        rig: state.rig,
+        windMode: { ...defaults.windMode, startS: state.rig.timeS },
+      };
     }
     case 'setCameraPreset':
       return { ...state, camera: { ...state.camera, preset: action.preset } };
@@ -224,11 +293,15 @@ export function reduce(state: AppState, action: Action): AppState {
             }
           : { ...state.boat, mode: 'sailing' };
       // A new run starts a new track; held still keeps the one drawn so far.
-      return { ...state, boat, track: action.mode === 'sailing' ? [] : state.track };
+      return withTimeRule({
+        ...state,
+        boat,
+        track: action.mode === 'sailing' ? [] : state.track,
+      });
     }
     case 'autopilot': {
       const command = action.command;
-      const windDirDeg = state.controls.ctl_wind_dir;
+      const windDirDeg = state.wind.dirDeg;
       let autopilot = state.autopilot;
       if (command === 'off') {
         if (autopilot.mode === 'off') return state;
@@ -243,6 +316,44 @@ export function reduce(state: AppState, action: Action): AppState {
       }
       return autopilot === state.autopilot ? state : { ...state, autopilot };
     }
+    case 'setWindMode': {
+      if (state.windMode.mode === action.mode) return state;
+      const windMode = initialWindMode({
+        mode: action.mode,
+        seed: state.windMode.seed,
+        startS: state.rig.timeS,
+      });
+      return withTimeRule({
+        ...state,
+        windMode,
+        wind: windNow(state.controls, windMode, state.rig.timeS),
+      });
+    }
+    case 'setWindSize': {
+      const range = sizeRange(state.windMode.mode);
+      if (!range || !Number.isFinite(action.size)) return state;
+      const size = Math.min(range.max, Math.max(range.min, Math.round(action.size)));
+      const windMode = { ...state.windMode, size, startS: state.rig.timeS };
+      return { ...state, windMode, wind: windNow(state.controls, windMode, state.rig.timeS) };
+    }
+    case 'newWindPattern': {
+      if (state.windMode.mode === 'steady') return state;
+      const seed = isSeed(action.seed) ? action.seed : state.windMode.seed;
+      const windMode = { ...state.windMode, seed, startS: state.rig.timeS };
+      return { ...state, windMode, wind: windNow(state.controls, windMode, state.rig.timeS) };
+    }
+    case 'setTimeScale':
+      if (
+        !isTimeScale(action.scale) ||
+        state.settings.timeScale === action.scale ||
+        !timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar)
+      ) {
+        return state;
+      }
+      return { ...state, settings: { ...state.settings, timeScale: action.scale } };
+    case 'setTimeBar':
+      if (state.settings.timeBar === action.timeBar) return state;
+      return withTimeRule({ ...state, settings: { ...state.settings, timeBar: action.timeBar } });
     case 'repairSails':
       return state.sailDamage.main === 0 && state.sailDamage.jib === 0
         ? state
@@ -260,22 +371,20 @@ export function reduce(state: AppState, action: Action): AppState {
     case 'load':
       return action.state;
     case 'step': {
-      // Paused: time stands still (dt = 0), but what was prepared is shown.
+      // Paused: time stands still (dt = 0), but what was prepared is shown. The time speed-up
+      // (M10) multiplies the step; the boat still substeps by `integration.maxStepS`.
       const frame = Math.min(MAX_STEP_S, Math.max(0, action.dt));
-      const dt = state.paused ? 0 : frame;
+      const dt = state.paused ? 0 : frame * state.settings.timeScale;
       const sailing = state.boat.mode === 'sailing';
+      // The true wind at the end of this step: the mean with the wind mode's pattern.
+      const wind = windNow(state.controls, state.windMode, state.rig.timeS + dt);
+      const patterned = state.windMode.mode !== 'steady';
       let controls = state.controls;
       let autopilot = state.autopilot;
       // The autopilot moves the wheel's target (not through setControls: it must not switch
       // itself off).
       if (sailing && autopilot.mode !== 'off') {
-        const steered = stepAutopilot(
-          autopilot,
-          state.boat,
-          controls.ctl_wind_dir,
-          controls.ctl_rudder,
-          dt,
-        );
+        const steered = stepAutopilot(autopilot, state.boat, wind.dirDeg, controls.ctl_rudder, dt);
         autopilot = steered.autopilot;
         controls = withControls(controls, { ctl_rudder: steered.rudderTargetDeg });
       }
@@ -289,13 +398,14 @@ export function reduce(state: AppState, action: Action): AppState {
       }
       const rig = step({ controls, rig: state.rig }, dt, motionOf(state.boat), undefined, {
         instantRopes: realistic,
+        wind: patterned ? wind : undefined,
         damage: state.sailDamage,
       });
       const moving = stepBoat(
         state.boat,
         {
-          windDirDeg: controls.ctl_wind_dir,
-          twsKn: controls.ctl_wind_speed,
+          windDirDeg: wind.dirDeg,
+          twsKn: wind.twsKn,
           rudderDeg: rig.applied.rudder,
           rig,
           controls,
@@ -314,6 +424,7 @@ export function reduce(state: AppState, action: Action): AppState {
         boat: moving.boat,
         autopilot,
         motion: moving.report,
+        wind,
         autopilotNoticeS: Math.max(0, state.autopilotNoticeS - frame),
         track: sailing ? appendTrack(state.track, moving.boat, rig.timeS) : state.track,
         sailDamage: floggingDamage(state.sailDamage, rig, dt),

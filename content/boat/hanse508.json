@@ -1496,5 +1496,35 @@
       },
       "floggingNote": "assumption: 10 minutes of flogging at 20 kn apparent wind tears a sail; damage grows with the square of the wind"
     }
+  },
+  "windModes": {
+    "$comment": "PHASE2_SPEC 10. Teaching wind patterns; all values are assumptions (EXERCISES.md 4).",
+    "maxTwsKn": 40,
+    "timeScales": [0.25, 0.5, 1, 2, 4, 8, 16],
+    "gusty": {
+      "meanIntervalS": 45,
+      "riseS": 3,
+      "holdMinS": 4,
+      "holdMaxS": 10,
+      "fallS": 5,
+      "strengthDefaultPct": 30,
+      "strengthMinPct": 10,
+      "strengthMaxPct": 60,
+      "veerMaxDeg": 10,
+      "lullFraction": 0.5,
+      "noisePct": 5,
+      "noisePeriodsS": [23, 37]
+    },
+    "shifty": {
+      "periodsS": [180, 67],
+      "weights": [0.6, 0.4],
+      "sizeDefaultDeg": 15,
+      "sizeMinDeg": 5,
+      "sizeMaxDeg": 40,
+      "speedNoisePct": 5
+    },
+    "building": { "changeDefaultKn": 10, "changeMaxKn": 20, "rampS": 600 },
+    "dying": { "changeDefaultKn": 8, "changeMaxKn": 20, "rampS": 600 },
+    "gustBadgeFraction": 1.1
   }
 }

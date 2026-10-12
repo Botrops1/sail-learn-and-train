@@ -58,7 +58,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
   return {
     update(fps, viewport, pixelRatio, render, times) {
       if (box.hidden) return;
-      const { camera, settings, selection, rig, boat, motion, autopilot, controls } =
+      const { camera, settings, selection, rig, boat, motion, autopilot, wind, windMode } =
         store.getState();
       const sol = rig.solution;
       const jib = rig.jibSolution;
@@ -104,6 +104,10 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
           `${mpsToKn(boat.speedMps).toFixed(2)} kn ${boat.yawRateDegS.toFixed(1)}°/s`,
         ],
         [t('debug.winds'), `${rig.wind.twaDeg.toFixed(0)}° / ${rig.wind.twsKn.toFixed(1)} kn`],
+        [
+          t('debug.windMode'),
+          `${windMode.mode} seed ${windMode.seed} size ${windMode.size} ×${settings.timeScale} t ${(rig.timeS - windMode.startS).toFixed(0)} s`,
+        ],
         [t('debug.apparent'), `${rig.wind.awaDeg.toFixed(1)}° / ${rig.wind.awsKn.toFixed(2)} kn`],
         [
           t('debug.forces'),
@@ -126,7 +130,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
           t('debug.autopilot'),
           autopilot.mode === 'off'
             ? 'off'
-            : `${wrap180(autopilotHeadingDeg(autopilot, controls.ctl_wind_dir) - boat.headingDeg).toFixed(1)}° / ${autopilot.integralDeg.toFixed(2)}`,
+            : `${wrap180(autopilotHeadingDeg(autopilot, wind.dirDeg) - boat.headingDeg).toFixed(1)}° / ${autopilot.integralDeg.toFixed(2)}`,
         ],
         [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
       ];

@@ -6,6 +6,7 @@ import { el } from './dom';
 import { t } from './i18n';
 import { setText, stepButton } from './stepper';
 import { createWindInstrument } from './windInstrument';
+import { createWindModePanel, windNowText } from './windModePanel';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -112,6 +113,17 @@ export function createWindPanel(store: Store): HTMLElement[] {
     }),
   );
   dial.append(arrow);
+  // A wind mode moves the wind about: a thin second arrow shows the wind right now (M10), while
+  // the thick one is the mean the dial sets.
+  const nowArrow = svg('g', { class: 'dial-arrow-now', 'data-testid': 'dial-wind-now' });
+  nowArrow.append(
+    svg('line', { x1: 0, y1: -DIAL.arrowFrom, x2: 0, y2: -DIAL.arrowTo - 6 }),
+    svg('path', {
+      d: `M0,${-DIAL.arrowTo + 2} L-5,${-DIAL.arrowTo - 8} L5,${-DIAL.arrowTo - 8} Z`,
+    }),
+  );
+  nowArrow.setAttribute('aria-label', t('wind.now.aria'));
+  dial.append(nowArrow);
 
   const angleAt = (event: PointerEvent) => {
     const box = dial.getBoundingClientRect();
@@ -152,6 +164,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
   });
 
   const directionValue = el('p', { class: 'wind-value', 'aria-hidden': 'true' });
+  const windNow = el('p', { class: 'hint wind-now', 'data-testid': 'wind-now' });
   const directionField = el('fieldset', { class: 'field' }, [
     el('legend', {}, [t('wind.dial.label')]),
     el('p', { class: 'hint' }, [t('wind.dial.hint')]),
@@ -161,6 +174,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
       stepButton('+', t('wind.more'), () => nudge(1)),
     ]),
     directionValue,
+    windNow,
   ]);
 
   // Speed.
@@ -216,6 +230,17 @@ export function createWindPanel(store: Store): HTMLElement[] {
       shownHeading = heading;
       boatIcon.setAttribute('transform', `rotate(${heading})`);
     }
+    // The wind now (a mode moves it every frame); the mean follows the controls.
+    const patterned = state.windMode.mode !== 'steady';
+    nowArrow.style.display = patterned ? '' : 'none';
+    windNow.hidden = !patterned;
+    if (patterned) {
+      const rotation = `rotate(${Math.round(compassDeg(state.wind.dirDeg) * 4) / 4})`;
+      if (nowArrow.getAttribute('transform') !== rotation) {
+        nowArrow.setAttribute('transform', rotation);
+      }
+      setText(windNow, windNowText(state));
+    }
     if (
       previous &&
       state.controls === previous.controls &&
@@ -243,6 +268,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
     createWindInstrument(store),
     directionField,
     speedField,
+    ...createWindModePanel(store),
     presetField,
   ];
 }

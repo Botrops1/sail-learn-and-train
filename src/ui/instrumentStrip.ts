@@ -1,5 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { compassDeg, mpsToKn, wrap180 } from '../model/angles';
+import { timeScaleText } from '../model/timeScale';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
@@ -39,6 +40,10 @@ export function createInstrumentStrip(
   const heading = el('span', { class: 'strip-heading', 'data-testid': 'strip-heading' });
   const heel = el('span', { class: 'strip-heel', 'data-testid': 'strip-heel' });
   const auto = el('span', { class: 'strip-auto', 'data-testid': 'strip-auto' });
+  const gust = el('span', { class: 'strip-gust', 'data-testid': 'strip-gust' }, [
+    t('instruments.gust'),
+  ]);
+  const timeScale = el('span', { class: 'strip-time', 'data-testid': 'strip-time' });
   const worn = el(
     'span',
     {
@@ -51,6 +56,8 @@ export function createInstrumentStrip(
   );
   const trueWind = el('span', { 'data-testid': 'strip-true' });
   const apparent = el('span', { 'data-testid': 'strip-apparent' });
+  // GUST and ×4 / ×16 (M10) get a row of their own, only while one shows: the first line is full.
+  const flags = el('span', { class: 'strip-line strip-flags' }, [worn, gust, timeScale]);
   const strip = el(
     'button',
     {
@@ -61,8 +68,9 @@ export function createInstrumentStrip(
       'aria-label': t('instruments.label'),
     },
     [
-      el('span', { class: 'strip-line' }, [speed, heading, heel, auto, worn]),
+      el('span', { class: 'strip-line' }, [speed, heading, heel, auto]),
       el('span', { class: 'strip-line strip-winds' }, [trueWind, apparent]),
+      flags,
     ],
   );
   strip.addEventListener('click', openWindTab);
@@ -98,11 +106,26 @@ export function createInstrumentStrip(
     }
     setText(auto, badge);
     auto.hidden = badge === '';
+    // GUST: the wind is well above the average the dial sets (gusty mode only; a building wind
+    // is not a gust). ×¼ … ×16: time is slowed down or sped up.
+    const gusting =
+      state.windMode.mode === 'gusty' &&
+      state.wind.twsKn > boatData.windModes.gustBadgeFraction * state.controls.ctl_wind_speed;
+    if (gust.hidden === gusting) gust.hidden = !gusting;
+    const sped = state.settings.timeScale !== 1;
+    setText(
+      timeScale,
+      sped ? t('instruments.timeScale', { scale: timeScaleText(state.settings.timeScale) }) : '',
+    );
+    timeScale.hidden = !sped;
     // A sail worn out from flapping (M9).
     const wearing =
       Math.max(state.sailDamage.main, state.sailDamage.jib) >=
       boatData.physics.trim.flogging.warnAt;
     if (worn.hidden === wearing) worn.hidden = !wearing;
+    // The third row exists only while a badge shows (the first row is full on a phone).
+    const flagged = gusting || sped || wearing;
+    if (flags.hidden === flagged) flags.hidden = !flagged;
     const wind = rig.wind;
     setText(trueWind, windText('instruments.true', wind.twaDeg, wind.twsKn));
     setText(apparent, windText('instruments.apparent', wind.awaDeg, wind.awsKn));

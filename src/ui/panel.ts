@@ -226,6 +226,18 @@ function buildViewTab(store: Store): HTMLElement[] {
     el('p', { class: 'hint' }, [t('view.labels.hint')]),
   ]);
 
+  const timeBarInput = el('input', { type: 'checkbox', id: 'time-bar-toggle' });
+  timeBarInput.addEventListener('change', () =>
+    store.dispatch({ type: 'setTimeBar', timeBar: timeBarInput.checked }),
+  );
+  const timeBarField = el('div', { class: 'field' }, [
+    el('label', { class: 'toggle', for: 'time-bar-toggle' }, [
+      timeBarInput,
+      el('span', {}, [t('view.timeBar.label')]),
+    ]),
+    el('p', { class: 'hint' }, [t('view.timeBar.hint')]),
+  ]);
+
   const sync = (state = store.getState(), previous?: typeof state) => {
     if (previous && state.settings === previous.settings && state.camera === previous.camera) {
       return;
@@ -237,6 +249,7 @@ function buildViewTab(store: Store): HTMLElement[] {
     debugInput.checked = settings.debug;
     legendInput.checked = settings.legend;
     labelsInput.checked = settings.labels;
+    timeBarInput.checked = settings.timeBar;
   };
   store.subscribe(sync);
   sync();
@@ -244,6 +257,7 @@ function buildViewTab(store: Store): HTMLElement[] {
   return [
     cameraGroup,
     labelsField,
+    timeBarField,
     stepGroup,
     detailGroup,
     ...buildShareAndReset(store),

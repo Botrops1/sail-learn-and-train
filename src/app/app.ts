@@ -7,13 +7,14 @@ import {
   showSceneError,
   webglAvailable,
 } from '../ui/errorBoundary';
+import { el } from '../ui/dom';
 import { t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
 import { createPanel } from '../ui/panel';
-import { createPauseButton } from '../ui/pauseButton';
+import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
 import { createInstrumentStrip } from '../ui/instrumentStrip';
 import { createWindIndicator } from '../ui/windIndicator';
@@ -56,9 +57,16 @@ export function startApp(host: HTMLElement): void {
   // The bird's-eye map (M7) takes the 3D view's place while the camera is on Map. It needs no
   // WebGL, but without the camera bar there is no way back, so it comes with the 3D view.
   const map = scene ? createMapView(layout.view, store) : undefined;
-  createInstrumentStrip(layout.view, store, () => panel.showTab('wind'));
+  // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
+  // the view is too narrow for both, the bar under the strip.
+  const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
+  layout.view.append(top);
+  createInstrumentStrip(top, store, () => panel.showTab('wind'));
+  createTimeBar(top, store);
+  // The camera frames the boat below the time bar; `resize` is set once the scene exists.
+  let reframe = () => {};
+  trackTopHeight(layout.view, top, () => reframe());
   createWindIndicator(layout.view, store);
-  createPauseButton(layout.view, store);
   const card = createInfoCard(layout, store, {
     shownInPanel: (partId) => panel.activeTab() === 'ropes' && ropesTabShows(partId),
   });
@@ -76,8 +84,15 @@ export function startApp(host: HTMLElement): void {
       const viewBox = layout.view.getBoundingClientRect();
       const inset = viewBox.bottom - cameraBar.getBoundingClientRect().top;
       const stacked = layout.viewport().mode === 'stacked';
-      view.resize(layout.view.clientWidth, layout.view.clientHeight, inset, stacked);
+      view.resize(
+        layout.view.clientWidth,
+        layout.view.clientHeight,
+        inset,
+        stacked,
+        topClearance(top),
+      );
     };
+    reframe = resize;
     new ResizeObserver(resize).observe(layout.view);
     resize();
   }

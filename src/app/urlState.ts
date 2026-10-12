@@ -29,6 +29,14 @@ import {
 import type { RigHistory } from '../model/sim';
 import { boat } from '../model/boat';
 import type { BoatState } from '../model/motion';
+import { isTimeScale } from '../model/timeScale';
+import {
+  initialWindMode,
+  isSeed,
+  sizeRange,
+  type WindModeId,
+  type WindModeState,
+} from '../model/windModes';
 import { initialState, type AppState } from './store';
 
 /** URL schema version (PHASE1_SPEC 9.2). Bump when a parameter changes meaning. */
@@ -51,6 +59,8 @@ export const URL_CONTROLS: readonly (readonly [string, ControlId])[] = [
 ];
 
 const INTEGER = /^-?\d+$/;
+/** A decimal such as `0.25` (the time scale `tx`). */
+const DECIMAL = /^\d+(\.\d+)?$/;
 
 /**
  * Reads the app state from a query string such as `?ms=35&wd=60&cam=top&step=1&debug=1`.
@@ -113,6 +123,11 @@ export function parseUrlState(
   if (mode !== null && isRopesMode(mode)) ropesMode = mode;
 
   const realistic = parseRealistic(params);
+  const windMode = parseWindMode(params);
+  const txParam = params.get('tx');
+  const timeScale = txParam !== null && DECIMAL.test(txParam) ? Number(txParam) : undefined;
+  // `tb=0`: the time bar's speed part is off (then the time scale is 1: initialState).
+  const timeBar = params.get('tb') === '0' ? false : undefined;
   const { boat: boatState, autopilot } = parseBoat(params, controls.ctl_wind_dir ?? 60);
 
   // `jr`: how far the jib is out when that is less than the controls alone give (the sheet was
@@ -135,12 +150,15 @@ export function parseUrlState(
       ...(legend !== undefined ? { legend } : {}),
       ...(labels !== undefined ? { labels } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
+      ...(timeScale !== undefined && isTimeScale(timeScale) ? { timeScale } : {}),
+      ...(timeBar !== undefined ? { timeBar } : {}),
     },
     selection,
     history,
     realistic,
     boat: boatState,
     autopilot,
+    windMode,
   });
 }
 
@@ -149,6 +167,51 @@ function wholeNumber(value: string | null, min: number, max: number): number | u
   if (value === null || !INTEGER.test(value)) return undefined;
   const number = Number(value);
   return number >= min && number <= max ? number : undefined;
+}
+
+/** The wind mode's short name in the link (`wm`); absent = steady. */
+export const WIND_MODE_PARAMS: Readonly<Record<Exclude<WindModeId, 'steady'>, string>> = {
+  gusty: 'gusty',
+  shifty: 'shifty',
+  building: 'build',
+  dying: 'die',
+};
+
+/**
+ * The wind mode in the link (PHASE2_SPEC 10.3): `wm` = gusty | shifty | build | die, `seed` the
+ * pattern (1 … 99,999; default 1), `wg` its size (a value outside the mode's range falls back to
+ * the mode's default). The pattern always starts at its beginning when a link opens.
+ */
+function parseWindMode(params: URLSearchParams): Partial<WindModeState> {
+  const wm = params.get('wm');
+  const entry = Object.entries(WIND_MODE_PARAMS).find(([, name]) => name === wm);
+  if (!entry) return {};
+  const mode = entry[0] as WindModeId;
+  const result: Partial<WindModeState> = { mode };
+  const seed = wholeNumber(params.get('seed'), 1, 99999);
+  if (seed !== undefined && isSeed(seed)) result.seed = seed;
+  const range = sizeRange(mode);
+  const size = wholeNumber(params.get('wg'), range?.min ?? 0, range?.max ?? 0);
+  if (size !== undefined) result.size = size;
+  return result;
+}
+
+/** The wind-mode, time scale (`tx`) and time bar (`tb=0`) parameters: only what is not the default. */
+export function windModeParams(state: AppState): [string, string][] {
+  const result: [string, string][] = [];
+  const { windMode, settings } = state;
+  if (windMode.mode !== 'steady') {
+    result.push(['wm', WIND_MODE_PARAMS[windMode.mode]]);
+    if (windMode.seed !== initialWindMode().seed) result.push(['seed', String(windMode.seed)]);
+    if (windMode.size !== initialWindMode({ mode: windMode.mode }).size) {
+      result.push(['wg', String(windMode.size)]);
+    }
+  }
+  if (settings.timeScale !== DEFAULT_SETTINGS.timeScale) {
+    result.push(['tx', String(settings.timeScale)]);
+  }
+  if (settings.timeBar !== DEFAULT_SETTINGS.timeBar) result.push(['tb', '0']);
+  return result;
 }
 
 /** Boat speed in the link: knots with at most one decimal, −10 … 15. */
@@ -347,6 +410,7 @@ export function serializeUrlState(state: AppState): string {
     params.set('mode', state.settings.ropesMode);
   }
   for (const [name, value] of boatParams(state)) params.set(name, value);
+  for (const [name, value] of windModeParams(state)) params.set(name, value);
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
   // Commas need no escaping in a query (co=a5,b3 stays readable).
