@@ -248,8 +248,9 @@ export function createRopesTab(store: Store): Element[] {
     // One legend: it moves to the mode that is shown.
     if (real && legend.parentElement !== realistic) realistic.append(legend);
     if (!real && legend.parentElement !== easy) easy.insertBefore(legend, legendSpot);
-    // One Sails block as well: at the top of the Realistic view, or after the strip in Easy.
-    if (real && sails.parentElement !== realistic) realistic.prepend(sails);
+    // One Sails block as well: at the end of the Realistic view (the stations and clutches stay
+    // where they were), or after the strip in Easy.
+    if (real && sails.parentElement !== realistic) realistic.append(sails);
     if (!real && sails.parentElement !== easy) easy.insertBefore(sails, sailsSpot);
   };
   store.subscribe(showMode);

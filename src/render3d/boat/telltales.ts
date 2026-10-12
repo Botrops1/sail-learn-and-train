@@ -7,7 +7,7 @@ import type { RigState } from '../../model/sim';
 import { sailTrim, type SailDamage, type SailName } from '../../model/trim';
 import { SCENE } from '../sceneConfig';
 import type { BoatMaterials } from './materials';
-import { smallPartMesh } from './parts';
+import { asThin, partMesh } from './parts';
 
 const DEG = Math.PI / 180;
 
@@ -170,9 +170,9 @@ export function buildTelltales(materials: BoatMaterials): Telltales {
     const ribbons: Ribbon[] = [];
     heights.forEach((_, heightIndex) => {
       for (const face of [-1, 1] as const) {
-        const mesh = smallPartMesh('part_telltale', [geometry.clone()], colors[face], [
-          [c.lengthM / 2, 0, 0],
-        ]);
+        // Not a "small part" (no round hit area): a ribbon is tiny and hangs in the air in front
+        // of the sail, so a fingertip-sized area would steal taps from the parts behind it.
+        const mesh = asThin(partMesh('part_telltale', [geometry.clone()], colors[face]));
         mesh.matrixAutoUpdate = false;
         mesh.visible = false;
         objects.push(mesh);
