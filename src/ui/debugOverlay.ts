@@ -111,6 +111,17 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
             ? `${(motion.forces.driveN / 1000).toFixed(2)} / ${(motion.forces.sideN / 1000).toFixed(2)} / ${(motion.resistance.totalN / 1000).toFixed(2)} kN`
             : '–',
         ],
+        [t('debug.heel'), `${boat.heelDeg.toFixed(1)}° ${boat.heelRateDegS.toFixed(1)}°/s`],
+        [
+          t('debug.moments'),
+          motion
+            ? `${(motion.heelMomentNm / 1000).toFixed(1)} / ${(motion.rightingMomentNm / 1000).toFixed(1)}`
+            : '–',
+        ],
+        [
+          t('debug.helm'),
+          motion ? `${motion.grip.toFixed(2)} / ${motion.effectiveRudderDeg.toFixed(1)}°` : '–',
+        ],
         [
           t('debug.autopilot'),
           autopilot.mode === 'off'

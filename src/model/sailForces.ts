@@ -82,7 +82,7 @@ function oneSail(
 }
 
 export function sailForces(
-  rig: RigState,
+  rig: Pick<RigState, 'applied' | 'solution' | 'jibSolution'>,
   controls: Controls,
   awsKn: number,
   awaDeg: number,

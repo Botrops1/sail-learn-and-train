@@ -7,6 +7,7 @@ import { jibFurlingLinePaidOut, jibSheetPaidOutFor } from '../model/jib';
 import { mainsheetPaidOut, sheetPctToClear } from '../model/mainsheet';
 import { toppingLiftPaidOut, vangPaidOut } from '../model/pitchLimits';
 import { partInfo } from '../model/registry';
+import { sheetLoads } from '../model/sheetLoads';
 import { wheelTurns } from '../model/steering';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
@@ -89,6 +90,12 @@ export function controlView(id: ControlId): ControlView {
   return view;
 }
 
+/** "Load 1.8 kN (about 180 kg)": newtons in kN with one decimal, kg rounded to 10 kg. */
+export function loadText(newtons: number): string {
+  const kg = Math.round(newtons / boat.physics.constants.gravityMps2 / 10) * 10;
+  return t('ropes.load', { kn: (newtons / 1000).toFixed(1), kg });
+}
+
 function metres(value: number): string {
   return value.toFixed(1);
 }
@@ -123,6 +130,8 @@ function metaLines(view: ControlView, state: AppState): string[] {
             ? 'main.luffing'
             : 'main.filled';
       lines.push(t(key, { angle: Math.round(Math.abs(state.rig.solution.thetaDeg)) }));
+      const mainLoad = sheetLoads(state.rig, state.rig.forces).mainSheetRopeN;
+      if (mainLoad > 0) lines.push(loadText(mainLoad));
       // PT-06 / PT-09: a hauled topping lift holds the boom up, so the hauled sheet cannot
       // swing it until it is eased past the boom's height on the lift.
       if (state.rig.solution.mainsheet.state === 'fighting') {
@@ -142,6 +151,8 @@ function metaLines(view: ControlView, state: AppState): string[] {
             ? 'jib.luffing'
             : 'jib.filled';
       lines.push(t(key, { angle: Math.round(Math.abs(jib.headingDeg)) }));
+      const jibLoad = sheetLoads(state.rig, state.rig.forces).jibSheetRopeN;
+      if (jibLoad > 0) lines.push(loadText(jibLoad));
       if (
         !calm &&
         !jib.furled &&

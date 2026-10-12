@@ -1,3 +1,4 @@
+import { boat as boatData } from '../model/boat';
 import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
 import {
   DEFAULT_CAMERA,
@@ -106,14 +107,24 @@ function boatFor(controls: Controls, overrides: Partial<BoatState> = {}): BoatSt
   const mode = overrides.mode ?? 'sailing';
   const headingDeg = overrides.headingDeg ?? 0;
   if (mode === 'held') {
-    return initialBoat({ ...overrides, mode, headingDeg, speedMps: 0, yawRateDegS: 0, heelDeg: 0 });
+    return initialBoat({
+      ...overrides,
+      mode,
+      headingDeg,
+      speedMps: 0,
+      yawRateDegS: 0,
+      heelDeg: 0,
+    });
   }
-  const speedMps = overrides.speedMps ?? steadyState(controls, headingDeg).speedMps;
-  return initialBoat({ ...overrides, mode, headingDeg, speedMps });
+  // She opens settled: at her steady speed and heel (a link may give the speed).
+  const steady = steadyState(controls, headingDeg, undefined, { heel: true });
+  const speedMps = overrides.speedMps ?? steady.speedMps;
+  const heelDeg = overrides.heelDeg ?? steady.heelDeg;
+  return initialBoat({ ...overrides, mode, headingDeg, speedMps, heelDeg });
 }
 
 function motionOf(boat: BoatState): BoatMotion {
-  return { velocity: [boat.speedMps, 0, 0], headingDeg: boat.headingDeg };
+  return { velocity: [boat.speedMps, 0, 0], headingDeg: boat.headingDeg, heelDeg: boat.heelDeg };
 }
 
 export function initialState(overrides: InitialOverrides = {}): AppState {
@@ -202,6 +213,8 @@ export function reduce(state: AppState, action: Action): AppState {
               yawRateDegS: 0,
               heelDeg: 0,
               heelRateDegS: 0,
+              roundUpS: 0,
+              overpoweredS: 0,
             }
           : { ...state.boat, mode: 'sailing' };
       // A new run starts a new track; held still keeps the one drawn so far.
@@ -276,6 +289,8 @@ export function reduce(state: AppState, action: Action): AppState {
           rig,
           controls,
           engineThrustN: 0,
+          rudderLimitDeg:
+            autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
         },
         dt,
       );

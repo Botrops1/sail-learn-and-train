@@ -37,7 +37,11 @@ const GENOA = 'a5';
 const MAX = rm.winchHandle.maxTurnsPerS;
 
 function start(values: Partial<Controls>, station: StationId = 'port'): AppState {
-  const state = initialState({ controls: values, settings: { ropesMode: 'realistic' } });
+  const state = initialState({
+    controls: values,
+    settings: { ropesMode: 'realistic' },
+    boat: { mode: 'held' },
+  });
   return act(state, { type: 'station', station });
 }
 
@@ -141,7 +145,7 @@ describe('PT-19 two-speed winch handle', () => {
   });
 
   it('PT-19 a heavily loaded jib sheet: clockwise struggles and stalls, anticlockwise brings it in slowly', () => {
-    let base = start({ ctl_wind_dir: 90, ctl_wind_speed: 25, ctl_jib_sheet: 30 }, 'starboard');
+    let base = start({ ctl_wind_dir: 90, ctl_wind_speed: 30, ctl_jib_sheet: 30 }, 'starboard');
     base = handleIn(tailed(base, GENOA, 4), 'starboard');
     const first = run(act(base, { type: 'crank', turnsPerS: MAX }), 1);
     expect(first.controls.ctl_jib_sheet).toBe(30);
@@ -206,7 +210,7 @@ describe('Strain bar (PHASE1_SPEC 7.2.2 Strain)', () => {
   });
 
   it('cranking: the bar is the handle force against what a person can push', () => {
-    let s = start({ ctl_wind_dir: 90, ctl_wind_speed: 20, ctl_jib_sheet: 30 }, 'starboard');
+    let s = start({ ctl_wind_dir: 90, ctl_wind_speed: 24, ctl_jib_sheet: 30 }, 'starboard');
     s = handleIn(tailed(s, GENOA, 4), 'starboard');
     s = run(act(s, { type: 'crank', turnsPerS: MAX }), 0.2);
     const report = s.realistic.handleReport;
@@ -215,7 +219,7 @@ describe('Strain bar (PHASE1_SPEC 7.2.2 Strain)', () => {
       (report?.forceN ?? 0) / (report?.stallN ?? 1),
       6,
     );
-    // About 2.8 kN on the jib sheet at 20 kn: about 200 N in 1st gear, near the limit.
+    // About 2.8 kN on the jib sheet at 24 kn: about 200 N in 1st gear, near the limit.
     expect(s.realistic.winches[STBD]?.strain ?? 0).toBeGreaterThan(rm.strain.warnFraction);
   });
 });
@@ -284,7 +288,7 @@ describe('Mast station: the furling gearbox and the slipping furling line', () =
   it('a loaded main makes the "in" furling line slip with 1 turn; 2 turns hold; a luffing main adds nothing', () => {
     const furl = (turns: number, windDir: number) => {
       let s = start(
-        { ctl_wind_dir: windDir, ctl_wind_speed: 20, ctl_mainsheet: 30, ctl_main_furl: 100 },
+        { ctl_wind_dir: windDir, ctl_wind_speed: 27, ctl_mainsheet: 30, ctl_main_furl: 100 },
         'starboard',
       );
       s = act(s, { type: 'clutch', key: FURL_OUT, open: true });

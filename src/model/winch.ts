@@ -6,11 +6,6 @@ import { boat, type BoatData } from './boat';
  * docs/PHYSICS_TRUTHS.md (PT-15 … PT-19a).
  */
 
-/** Square feet per square metre, miles per hour per knot, newtons per pound-force. */
-const FT2_PER_M2 = 10.7639;
-const MPH_PER_KN = 1.15078;
-const N_PER_LBF = 4.44822;
-
 /**
  * Capstan factor e^(μ·2π·n) for n turns wrapped the right way (clockwise seen from above).
  * Turns wrapped the wrong way (n < 0) hold nothing: the drum turns with the rope (PT-17), so
@@ -33,15 +28,6 @@ export function tailForceN(hold: TailHold, data: BoatData = boat): number {
 /** The most a winch holds (newtons): tail force × capstan factor (PT-16). */
 export function holdingForceN(turns: number, hold: TailHold, data: BoatData = boat): number {
   return tailForceN(hold, data) * capstanFactor(turns, data);
-}
-
-/**
- * Pull on a sheet at the sail (newtons) by the winch-selection rule (PHYSICS_TRUTHS [8]):
- * load (lb) = area (ft²) × wind speed² (mph) × 0.00431.
- */
-export function sheetLoadAtSailN(areaM2: number, windKn: number, data: BoatData = boat): number {
-  const k = data.realisticMode.loads.sheetLbPerFt2PerMph2;
-  return areaM2 * FT2_PER_M2 * (windKn * MPH_PER_KN) ** 2 * k * N_PER_LBF;
 }
 
 /** How fast a rope runs out (m/s) when `excessN` more pulls it out than holds it (PT-18). */

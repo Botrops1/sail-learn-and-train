@@ -3,6 +3,7 @@ import { boat, type BoatData } from './boat';
 import { wrap180 } from './angles';
 import { initialSide, solveBoom, type BoomInput, type BoomSolution } from './boomSolver';
 import type { Controls } from './controls';
+import { sailForces, type SailForces } from './sailForces';
 import { jibSheetReleased, solveJib, type JibInput, type JibSolution } from './jib';
 import type { Vec3 } from './vec3';
 
@@ -22,6 +23,8 @@ import type { Vec3 } from './vec3';
 export interface BoatMotion {
   velocity: Vec3;
   headingDeg: number;
+  /** Heel, degrees, + = starboard rail down (M8). Missing = upright. */
+  heelDeg?: number;
 }
 
 export const AT_REST: Readonly<BoatMotion> = { velocity: [0, 0, 0], headingDeg: 0 };
@@ -74,6 +77,11 @@ export interface RigState {
    * wind it came from. Renderers read it; with the boat at rest it is the true wind.
    */
   wind: RigWind;
+  /**
+   * The sail forces of this frame (PHASE2_SPEC 8.3), from the apparent wind and the boat's heel:
+   * the sheet loads of Realistic mode come from them.
+   */
+  forces: SailForces;
 }
 
 export interface RigWind {
@@ -158,6 +166,17 @@ function jibInput(
   };
 }
 
+/** The sail forces for a rig that is solved for `wind` and sits at the motion's heel. */
+function forcesOf(
+  rig: Omit<RigState, 'forces'>,
+  controls: Controls,
+  motion: BoatMotion,
+  data: BoatData,
+): SailForces {
+  const { awsKn, awaDeg } = rig.wind;
+  return sailForces(rig, controls, awsKn, awaDeg, motion.heelDeg ?? 0, data);
+}
+
 /** What a shared link adds to its controls: the part of the rig's history that shows. */
 export interface RigHistory {
   /**
@@ -198,7 +217,7 @@ export function initialRig(
     { side: fullyOut.side, phiDeg: fullyOut.phiDeg, unfurled: history.jibUnfurled ?? 1 },
     data,
   );
-  return {
+  const settled = {
     applied: rope,
     solution: { ...solution, gybe: false, tack: false },
     theta: { value: solution.thetaDeg, velocity: 0 },
@@ -213,6 +232,7 @@ export function initialRig(
     timeS: 0,
     wind,
   };
+  return { ...settled, forces: forcesOf(settled, controls, motion, data) };
 }
 
 /** Closer than this (in % or degrees) a lagged or smoothed value has arrived. */
@@ -333,7 +353,7 @@ export function step(
           },
           data,
         );
-  return {
+  const next: Omit<RigState, 'forces'> = {
     applied: rope,
     input,
     solution,
@@ -350,4 +370,5 @@ export function step(
     timeS: rig.timeS + dt,
     wind,
   };
+  return { ...next, forces: forcesOf(next, controls, motion, data) };
 }

@@ -20,22 +20,27 @@ export interface Best {
   speedKn: number;
   main: number;
   jib: number;
+  /** Absolute heel at that speed, degrees (0 unless `heel`). */
+  heelDeg: number;
 }
 
 /** The fastest steady speed over the sheet grid of PHASE2_SPEC 6.3. */
-export function best(twsKn: number, twaDeg: number): Best {
-  let result: Best = { speedKn: -Infinity, main: 0, jib: 0 };
+export function best(twsKn: number, twaDeg: number, heel = false): Best {
+  let result: Best = { speedKn: -Infinity, main: 0, jib: 0, heelDeg: 0 };
   for (const main of MAIN_SHEETS) {
     for (const jib of JIB_SHEETS) {
-      const speedKn = mpsToKn(steadyState(trimmed(twsKn, twaDeg, main, jib), 0).speedMps);
-      if (speedKn > result.speedKn) result = { speedKn, main, jib };
+      const steady = steadyState(trimmed(twsKn, twaDeg, main, jib), 0, undefined, { heel });
+      const speedKn = mpsToKn(steady.speedMps);
+      if (speedKn > result.speedKn) {
+        result = { speedKn, main, jib, heelDeg: Math.abs(steady.heelDeg) };
+      }
     }
   }
   return result;
 }
 
-export function bestSpeedKn(twsKn: number, twaDeg: number): number {
-  return best(twsKn, twaDeg).speedKn;
+export function bestSpeedKn(twsKn: number, twaDeg: number, heel = false): number {
+  return best(twsKn, twaDeg, heel).speedKn;
 }
 
 import {
