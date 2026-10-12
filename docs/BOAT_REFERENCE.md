@@ -247,7 +247,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Wind modes: shifty (M10) | the direction swings ±15° (5–40° on the slider) as the sum of two slow waves (180 s and 67 s, weights 0.6 and 0.4); the speed varies ±5 % (`windModes.shifty`) | **Assumptions** |
 | Wind modes: building and dying (M10) | the speed changes by 10 kn (building) or 8 kn (dying), up to 20 kn on the slider, over 10 minutes with a smooth start and end; the wind never goes below 0 or above 40 kn (`windModes.building`, `dying`, `maxTwsKn`) | **Assumptions** |
 | Wind modes: GUST badge (M10) | shown in gusty mode while the wind is more than 1.1 × the mean (`windModes.gustBadgeFraction`) | **Assumption** (a display threshold) |
-| Wind modes: time speed-up (M10) | ×1, ×4 or ×16 (`windModes.timeScales`); the world runs faster, the rope and winch physics with it; hand gestures do not | **Assumption** (a teaching convenience) |
+| Wind modes: time bar (M10) | ¼, ½, 1, 2, 4, 8 or 16 (`windModes.timeScales`); the world runs at that speed, the rope and winch physics with it; hand gestures do not | **Assumption** (a teaching convenience; speeds above ×16 are decided in Phase 6) |
 
 ## 6. Open questions for the skipper / next time aboard
 

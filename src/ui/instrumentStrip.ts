@@ -1,6 +1,7 @@
 import type { AppState, Store } from '../app/store';
 import { compassDeg, mpsToKn, wrap180 } from '../model/angles';
 import { boat as boatData } from '../model/boat';
+import { timeScaleText } from '../model/timeScale';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
@@ -96,13 +97,16 @@ export function createInstrumentStrip(
     setText(auto, badge);
     auto.hidden = badge === '';
     // GUST: the wind is well above the average the dial sets (gusty mode only; a building wind
-    // is not a gust). ×4 / ×16: time is sped up.
+    // is not a gust). ×¼ … ×16: time is slowed down or sped up.
     const gusting =
       state.windMode.mode === 'gusty' &&
       state.wind.twsKn > boatData.windModes.gustBadgeFraction * state.controls.ctl_wind_speed;
     if (gust.hidden === gusting) gust.hidden = !gusting;
-    const sped = state.settings.timeScale > 1;
-    setText(timeScale, sped ? t('instruments.timeScale', { scale: state.settings.timeScale }) : '');
+    const sped = state.settings.timeScale !== 1;
+    setText(
+      timeScale,
+      sped ? t('instruments.timeScale', { scale: timeScaleText(state.settings.timeScale) }) : '',
+    );
     timeScale.hidden = !sped;
     const flagged = gusting || sped;
     if (flags.hidden === flagged) flags.hidden = !flagged;

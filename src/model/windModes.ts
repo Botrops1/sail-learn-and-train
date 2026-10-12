@@ -21,11 +21,6 @@ export function isWindModeId(value: string): value is WindModeId {
   return (WIND_MODE_IDS as readonly string[]).includes(value);
 }
 
-/** The time speed-ups on offer (data: `windModes.timeScales`). */
-export function isTimeScale(value: number, data: BoatData = boat): boolean {
-  return data.windModes.timeScales.includes(value);
-}
-
 export interface WindModeState {
   mode: WindModeId;
   /** Which pattern: the same seed gives the same wind. 1 … 99,999. */

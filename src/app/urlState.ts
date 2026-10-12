@@ -29,10 +29,10 @@ import {
 import type { RigHistory } from '../model/sim';
 import { boat } from '../model/boat';
 import type { BoatState } from '../model/motion';
+import { isTimeScale } from '../model/timeScale';
 import {
   initialWindMode,
   isSeed,
-  isTimeScale,
   sizeRange,
   type WindModeId,
   type WindModeState,
@@ -59,6 +59,8 @@ export const URL_CONTROLS: readonly (readonly [string, ControlId])[] = [
 ];
 
 const INTEGER = /^-?\d+$/;
+/** A decimal such as `0.25` (the time scale `tx`). */
+const DECIMAL = /^\d+(\.\d+)?$/;
 
 /**
  * Reads the app state from a query string such as `?ms=35&wd=60&cam=top&step=1&debug=1`.
@@ -122,7 +124,10 @@ export function parseUrlState(
 
   const realistic = parseRealistic(params);
   const windMode = parseWindMode(params);
-  const timeScale = wholeNumber(params.get('tx'), 1, 99);
+  const txParam = params.get('tx');
+  const timeScale = txParam !== null && DECIMAL.test(txParam) ? Number(txParam) : undefined;
+  // `tb=0`: the time bar's speed part is off (then the time scale is 1: initialState).
+  const timeBar = params.get('tb') === '0' ? false : undefined;
   const { boat: boatState, autopilot } = parseBoat(params, controls.ctl_wind_dir ?? 60);
 
   // `jr`: how far the jib is out when that is less than the controls alone give (the sheet was
@@ -146,6 +151,7 @@ export function parseUrlState(
       ...(labels !== undefined ? { labels } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
       ...(timeScale !== undefined && isTimeScale(timeScale) ? { timeScale } : {}),
+      ...(timeBar !== undefined ? { timeBar } : {}),
     },
     selection,
     history,
@@ -190,7 +196,7 @@ function parseWindMode(params: URLSearchParams): Partial<WindModeState> {
   return result;
 }
 
-/** The wind-mode and time parameters for a state: only what is not the default. */
+/** The wind-mode, time scale (`tx`) and time bar (`tb=0`) parameters: only what is not the default. */
 export function windModeParams(state: AppState): [string, string][] {
   const result: [string, string][] = [];
   const { windMode, settings } = state;
@@ -204,6 +210,7 @@ export function windModeParams(state: AppState): [string, string][] {
   if (settings.timeScale !== DEFAULT_SETTINGS.timeScale) {
     result.push(['tx', String(settings.timeScale)]);
   }
+  if (settings.timeBar !== DEFAULT_SETTINGS.timeBar) result.push(['tb', '0']);
   return result;
 }
 

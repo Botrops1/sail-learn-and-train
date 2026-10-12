@@ -45,6 +45,7 @@ const VIEWPORTS = [
       'm8-heeled-bow',
       'm8-load',
       'm10-wind-tab-gusty',
+      'm10-time-bar',
     ],
   },
 ];

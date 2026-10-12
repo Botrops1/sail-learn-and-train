@@ -263,11 +263,13 @@ describe('M10 the store', () => {
     expect(state.windMode.seed).toBe(4321);
   });
 
-  it('only 1, 4 and 16 are time speed-ups', () => {
+  it('only the scales of the time bar are accepted (¼, ½, 1, 2, 4, 8, 16)', () => {
     let state = act(base(), { type: 'setTimeScale', scale: 4 });
     expect(state.settings.timeScale).toBe(4);
     state = act(state, { type: 'setTimeScale', scale: 5 });
     expect(state.settings.timeScale).toBe(4);
+    state = act(state, { type: 'setTimeScale', scale: 0.25 });
+    expect(state.settings.timeScale).toBe(0.25);
   });
 
   it('the wind now follows the pattern; the dial’s mean stays as set', () => {

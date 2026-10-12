@@ -26,10 +26,10 @@ import {
   type AutopilotState,
 } from '../model/autopilot';
 import { appendTrack, type TrackPoint } from '../model/track';
+import { isTimeScale, timeSpeedAvailable } from '../model/timeScale';
 import {
   initialWindMode,
   isSeed,
-  isTimeScale,
   sizeRange,
   windAt,
   type WindModeId,
@@ -106,7 +106,10 @@ export type Action =
   | { type: 'setWindSize'; size: number }
   /** A new random pattern (the caller draws the seed, so the reducer stays pure). */
   | { type: 'newWindPattern'; seed: number }
+  /** The time bar (M10, issue #25): a scale from `windModes.timeScales`; refused where the bar has no speed part. */
   | { type: 'setTimeScale'; scale: number }
+  /** The View tab's switch for the time bar's speed part. Off puts the time scale back to ×1. */
+  | { type: 'setTimeBar'; timeBar: boolean }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
   | { type: 'load'; state: AppState }
   | { type: 'step'; dt: number };
@@ -165,6 +168,18 @@ function windNow(controls: Controls, windMode: WindModeState, timeS: number): Wi
   return windAt(controls.ctl_wind_dir, controls.ctl_wind_speed, windMode, timeS);
 }
 
+/**
+ * Where the time bar has no speed part the time runs at ×1 (PHASE2_SPEC 10.3): Held still with a
+ * steady wind, or the bar switched off.
+ */
+function withTimeRule(state: AppState): AppState {
+  const { settings } = state;
+  if (settings.timeScale === 1) return state;
+  return timeSpeedAvailable(state.boat.mode, state.windMode.mode, settings.timeBar)
+    ? state
+    : { ...state, settings: { ...settings, timeScale: 1 } };
+}
+
 export function initialState(overrides: InitialOverrides = {}): AppState {
   const controls = { ...defaultControls(), ...overrides.controls };
   const windMode = initialWindMode(overrides.windMode);
@@ -172,7 +187,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
   // Steady wind: the controls are the wind (Phase 1 and the sailing of M6-M9 exactly).
   const patterned = windMode.mode !== 'steady';
   const boat = boatFor(controls, overrides.boat, patterned ? wind : undefined);
-  return {
+  return withTimeRule({
     controls,
     // A link opens with the rig already settled for the apparent wind: no swing on load.
     rig: initialRig(
@@ -194,7 +209,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     track: [],
     windMode,
     wind,
-  };
+  });
 }
 
 function withControls(controls: Controls, values: Partial<Controls>): Controls {
@@ -272,7 +287,11 @@ export function reduce(state: AppState, action: Action): AppState {
             }
           : { ...state.boat, mode: 'sailing' };
       // A new run starts a new track; held still keeps the one drawn so far.
-      return { ...state, boat, track: action.mode === 'sailing' ? [] : state.track };
+      return withTimeRule({
+        ...state,
+        boat,
+        track: action.mode === 'sailing' ? [] : state.track,
+      });
     }
     case 'autopilot': {
       const command = action.command;
@@ -298,7 +317,11 @@ export function reduce(state: AppState, action: Action): AppState {
         seed: state.windMode.seed,
         startS: state.rig.timeS,
       });
-      return { ...state, windMode, wind: windNow(state.controls, windMode, state.rig.timeS) };
+      return withTimeRule({
+        ...state,
+        windMode,
+        wind: windNow(state.controls, windMode, state.rig.timeS),
+      });
     }
     case 'setWindSize': {
       const range = sizeRange(state.windMode.mode);
@@ -314,8 +337,17 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, windMode, wind: windNow(state.controls, windMode, state.rig.timeS) };
     }
     case 'setTimeScale':
-      if (!isTimeScale(action.scale) || state.settings.timeScale === action.scale) return state;
+      if (
+        !isTimeScale(action.scale) ||
+        state.settings.timeScale === action.scale ||
+        !timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar)
+      ) {
+        return state;
+      }
       return { ...state, settings: { ...state.settings, timeScale: action.scale } };
+    case 'setTimeBar':
+      if (state.settings.timeBar === action.timeBar) return state;
+      return withTimeRule({ ...state, settings: { ...state.settings, timeBar: action.timeBar } });
     case 'realistic': {
       let realistic = reduceRealistic(state.realistic, action.action);
       // While paused nothing runs yet: shutting the clutch then is just preparing.

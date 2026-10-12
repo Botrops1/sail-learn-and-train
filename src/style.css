@@ -161,7 +161,7 @@ html[data-layout='side'] .shell {
 .debug {
   position: absolute;
   /* Below the Pause button. */
-  top: 58px;
+  top: calc(var(--view-top-h, 64px) - 6px);
   right: 8px;
   margin: 0;
   padding: 6px 8px;
@@ -546,16 +546,32 @@ button.segment {
 }
 
 /* Instrument strip over the 3D view (PHASE2_SPEC 6.5). */
-.instrument-strip {
+/* The top of the 3D view: the strip and the time bar side by side; where they do not fit, the bar goes under the strip. */
+.view-top {
   position: absolute;
   top: 8px;
+  right: 8px;
   left: 8px;
   display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.view-top > * {
+  pointer-events: auto;
+}
+
+.instrument-strip {
+  display: flex;
+  flex: 0 1 auto;
   flex-direction: column;
   align-items: flex-start;
   gap: 2px;
-  /* Leaves the Pause button free (it is about 70 px wide, 8 px from the edge). */
-  max-width: calc(100% - 94px);
+  min-width: 0;
+  max-width: 100%;
   padding: 4px 10px;
   border: 0;
   border-radius: 12px;
@@ -618,11 +634,6 @@ button.segment {
   display: none;
 }
 
-/* A third row on the strip pushes the alerts down (stacked layout; side by side they are at the bottom). */
-html[data-layout='stacked'] .view:has(.strip-flags:not([hidden])) .rig-alerts {
-  top: 102px;
-}
-
 .strip-winds {
   column-gap: 12px;
   color: var(--muted);
@@ -631,7 +642,8 @@ html[data-layout='stacked'] .view:has(.strip-flags:not([hidden])) .rig-alerts {
 
 .rig-alerts {
   position: absolute;
-  top: 78px;
+  /* Below the strip and the time bar (their bottom edge is `--view-top-h`). */
+  top: calc(var(--view-top-h, 64px) + 14px);
   left: 50%;
   display: flex;
   flex-direction: column;
@@ -1168,11 +1180,8 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   display: none;
 }
 
-/* Pause (PHASE1_SPEC 7.2.2, both modes): top right of the 3D view. */
+/* Pause (PHASE1_SPEC 7.2.2, both modes): in the time bar, top right of the 3D view. */
 .pause-button {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   min-width: var(--touch);
   min-height: var(--touch);
   padding: 4px 12px;
@@ -1184,6 +1193,85 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   font-size: var(--font-small);
   font-weight: 700;
   cursor: pointer;
+}
+
+/* The time bar (PHASE2_SPEC 10.3, issue #25): Time ×1 [«] [‹] [Pause] [›] [»]. */
+.time-bar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.time-bar[data-speed='true'] {
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgb(255 255 255 / 0.9);
+}
+
+.time-bar[data-speed='true'] .pause-button {
+  border-color: transparent;
+  background: transparent;
+}
+
+.time-bar[data-speed='true'] .pause-button.is-paused {
+  border-color: #b85c00;
+  background: #ff9f1c;
+}
+
+.time-label,
+.time-status,
+.time-button {
+  min-height: var(--touch);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.time-label {
+  padding: 0 6px;
+  color: var(--muted);
+}
+
+.time-label[aria-expanded='false'] {
+  color: var(--accent);
+}
+
+.time-status {
+  min-width: 40px;
+  padding: 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-button {
+  min-width: 34px;
+  padding: 0 4px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.time-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.time-label[hidden],
+.time-status[hidden],
+.time-button[hidden] {
+  display: none;
+}
+
+.time-label:focus-visible,
+.time-status:focus-visible,
+.time-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
 }
 
 .pause-button.is-paused {
@@ -1991,7 +2079,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .view[data-map] .map-wind-box {
   position: absolute;
-  top: 68px;
+  top: calc(var(--view-top-h, 64px) + 4px);
   left: 8px;
   display: flex;
   align-items: center;
@@ -2045,7 +2133,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .view[data-map] .map-orient-group {
   position: absolute;
-  top: 58px;
+  top: calc(var(--view-top-h, 64px) - 6px);
   right: 8px;
   display: flex;
   overflow: hidden;

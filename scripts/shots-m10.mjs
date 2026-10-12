@@ -21,6 +21,16 @@ export const M10_SCENES = [
     centre: '[data-testid="wind-dial"]',
     waitMs: 2500,
   },
+  { name: 'time-bar', query: '?wd=60&ws=12&ms=20&js=25&tx=4&cam=side-port', waitMs: 2500 },
+  {
+    name: 'time-bar-folded',
+    query: '?wd=60&ws=12&ms=20&js=25&tx=4&cam=side-port',
+    click: ['time-fold'],
+    waitMs: 2500,
+  },
+  { name: 'time-bar-slow', query: '?wd=60&ws=12&ms=20&js=25&tx=0.25&cam=top', waitMs: 2500 },
+  { name: 'time-bar-map', query: '?wd=60&ws=12&ms=20&js=25&tx=2&cam=map&debug=1', waitMs: 3000 },
+  { name: 'time-bar-held', query: '?wd=60&ws=12&held=1&cam=side-port', waitMs: 1500 },
   {
     name: 'building-x16',
     query: '?wd=60&ws=10&ms=20&js=25&wm=build&wg=12&tx=16&cam=bow',

@@ -25,17 +25,10 @@ const SIZE_STEP: Record<WindModeId, number> = {
   dying: 1,
 };
 
-/** The label of each time speed-up on offer (data: `windModes.timeScales`). */
-const TIME_LABELS: Record<number, 'wind.time.x1' | 'wind.time.x4' | 'wind.time.x16'> = {
-  1: 'wind.time.x1',
-  4: 'wind.time.x4',
-  16: 'wind.time.x16',
-};
-
 /**
  * The wind modes of the Wind tab (PHASE2_SPEC 10.3), under the speed slider: `Wind changes`
  * [Steady] [Gusty] [Shifty] [Building] [Dying], a slider for the size of the pattern, `New
- * pattern`, and the time speed-up ×1 / ×4 / ×16. All carry the test wind's id (`env_wind`).
+ * pattern`. (The time scale is in the time bar over the 3D view.) All carry the test wind's id (`env_wind`).
  */
 export function createWindModePanel(store: Store): HTMLElement[] {
   // The five modes.
@@ -94,41 +87,12 @@ export function createWindModePanel(store: Store): HTMLElement[] {
     newPattern,
   ]);
 
-  // Time speed-up.
-  const timeOptions = el('div', { class: 'segments' });
-  const timeInputs = boat.windModes.timeScales.map((scale) => {
-    const input = el('input', {
-      type: 'radio',
-      name: 'time-scale',
-      value: String(scale),
-      'data-testid': `time-scale-${scale}`,
-    });
-    input.addEventListener('change', () => {
-      if (input.checked) store.dispatch({ type: 'setTimeScale', scale });
-    });
-    timeOptions.append(
-      el('label', { class: 'segment' }, [
-        input,
-        el('span', {}, [t(TIME_LABELS[scale] ?? 'wind.time.x1')]),
-      ]),
-    );
-    return { scale, input };
-  });
-  const time = el('fieldset', { class: 'field segmented', 'data-testid': 'time-scale' }, [
-    el('legend', {}, [t('wind.time.label')]),
-    el('p', { class: 'hint' }, [t('wind.time.hint')]),
-    timeOptions,
-  ]);
-
   let shownMode: WindModeId | undefined;
   const refresh = (state: AppState, previous?: AppState) => {
-    const { windMode, settings } = state;
+    const { windMode } = state;
     if (!previous || windMode.mode !== previous.windMode.mode) {
       for (const { mode, input } of modeInputs) input.checked = mode === windMode.mode;
       setText(modeHint, t(`wind.mode.${windMode.mode}.hint`));
-    }
-    if (!previous || settings.timeScale !== previous.settings.timeScale) {
-      for (const { scale, input } of timeInputs) input.checked = scale === settings.timeScale;
     }
     const range = sizeRange(windMode.mode);
     sizeField.hidden = range === null;
@@ -154,7 +118,7 @@ export function createWindModePanel(store: Store): HTMLElement[] {
   store.subscribe(refresh);
   refresh(store.getState());
 
-  return [modes, sizeField, time];
+  return [modes, sizeField];
 }
 
 /** "Wind now: 17 kn from 070°": the true wind with the pattern, under the compass dial. */
