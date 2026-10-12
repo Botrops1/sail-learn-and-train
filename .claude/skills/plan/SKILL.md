@@ -3,6 +3,7 @@ name: plan
 description: Plan a phase of sail-learn-and-train (e.g. "/plan 3") or an extra milestone (e.g. "/plan issue 26"). Run with Opus at high effort; writes a spec detailed enough for Sonnet at high effort to build each milestone without guessing, then opens a docs-only PR and watches it.
 argument-hint: <phase number> | issue <number> | <short description of an extra milestone>
 disable-model-invocation: true
+model: opus
 ---
 
 # Plan: $ARGUMENTS
@@ -15,7 +16,7 @@ The owner is not a developer and not a sailor. They answer questions in plain wo
 
 ## 1. Understand (read in full this time)
 
-- CLAUDE.md, `docs/ROADMAP.md` (the phase's row, the architecture hooks, the whole decisions log), `docs/EXERCISES.md`, the open questions in `docs/BOAT_REFERENCE.md`.
+- CLAUDE.md, `docs/CODE_MAP.md`, `docs/ROADMAP.md` (the phase's row, the architecture hooks, the whole decisions log), `docs/EXERCISES.md`, the open questions in `docs/BOAT_REFERENCE.md`.
 - The latest phase spec in full: its structure is the template. For Phase 3 onward, copy PHASE2_SPEC's structure.
 - Open GitHub issues (`list_issues`): which ones belong to this plan.
 - The code the plan builds on: `src/model`, `src/app/store.ts`, the URL state, the renderers and panels it touches. Note the real function names, file paths and data keys; the spec must use them.
@@ -73,7 +74,7 @@ For each milestone, start a subagent with `model: "sonnet"` and give it only wha
 
 ## 6. The other documents
 
-- `docs/PHYSICS_TRUTHS.md`: new rules with the next free ids, plain-words statement, "how to see it" link settings, status `to-verify` with candidate sources.
+- `docs/PHYSICS_TRUTHS.md`: new rules with the next free ids, plain-words statement, "how to see it" link settings, and sources. Open each source (web access is allowed for the usual sailing sites; if a site is blocked, name it to the owner): status `source-checked` when the source supports the rule, else `to-verify`.
 - `docs/WORKFLOW.md`: a checklist per milestone under `#### M<N>: <name>`, every check a full preview link (`https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?…`) with what to do and what the owner should see, in plain words; the link settings the phase adds.
 - `docs/ROADMAP.md`: the phase's status, and a decisions-log row with the owner's answers.
 - `docs/BOAT_REFERENCE.md`: new assumptions; `content/` only if the plan says data must exist before M1 of the phase.

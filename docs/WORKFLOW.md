@@ -68,6 +68,8 @@ In a session you can type `/model opus` or `/model sonnet`, and `/effort high` o
 | `/plan`, `/review` | Opus | high |
 | `/bug`, small doc changes | Sonnet | medium |
 
+The commands also name their model (`/milestone` and `/bug` Sonnet, `/plan` and `/review` Opus), so a wrong model setting is corrected while the command runs. Still set the model and effort when you start the session: the later rounds (your PR comments) run on the session's own model, and effort is not set by the command.
+
 Usage: cloud sessions share your plan's limits with normal chat. What costs the most is a long session: every step re-reads everything said so far. So one session per milestone, and start a new one for unrelated work instead of continuing an old one.
 
 ## 5. Checklists (what to look for on the phone)

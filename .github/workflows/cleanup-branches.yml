@@ -1,0 +1,53 @@
+name: Clean up merged branches
+
+# After every merge into main: deletes branches whose commits are all in main already (nothing
+# is lost) and that have no open pull request. main and gh-pages are never touched. Can also be
+# started by hand from the Actions tab.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: cleanup-branches
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const branches = await github.paginate(github.rest.repos.listBranches, {
+              owner,
+              repo,
+              per_page: 100,
+            });
+            const open = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const keep = new Set(['main', 'gh-pages', ...open.map((pr) => pr.head.ref)]);
+            for (const branch of branches) {
+              if (keep.has(branch.name) || branch.protected) continue;
+              const { data } = await github.rest.repos.compareCommitsWithBasehead({
+                owner,
+                repo,
+                basehead: `main...${encodeURIComponent(branch.name)}`,
+              });
+              if (data.ahead_by > 0) {
+                core.info(`kept ${branch.name} (${data.ahead_by} commits not in main)`);
+                continue;
+              }
+              await github.rest.git.deleteRef({ owner, repo, ref: `heads/${branch.name}` });
+              core.info(`deleted ${branch.name}`);
+            }

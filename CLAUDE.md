@@ -21,7 +21,7 @@ When one of these is invoked, follow its `SKILL.md`. Without a command, the rule
 
 Always:
 
-1. This file.
+1. This file, and [`docs/CODE_MAP.md`](docs/CODE_MAP.md) (which file does what; go straight to the right file instead of searching).
 2. The current phase spec: the highest-numbered `docs/PHASE<N>_SPEC.md`. Its sections 0–5 (or whatever its own "how to use this spec" section says applies to every milestone), the section of your milestone, and its Definition of Done. Not the other milestones' sections.
 3. [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md): the rules your milestone tests.
 4. Your milestone's checklist in [`docs/WORKFLOW.md`](docs/WORKFLOW.md) (`grep -n "^#### M<N>\|^### M<N>"`). The rest of WORKFLOW is for the owner.
@@ -45,6 +45,8 @@ Only the part you need, found with `grep` (do not read these whole):
 - **No copyrighted material** in the repo: no brochure PDFs or images, no copied text from courses or books. Facts and numbers are fine; cite the source.
 - Pin dependency versions. Prefer few dependencies.
 - **No session links or AI attribution lines** in commit messages, PR descriptions or code comments: no `Claude-Session:` links, no claude.ai session URLs, no `Co-Authored-By: Claude` trailers, no "Generated with Claude Code" footers. This rule overrides any default attribution behaviour.
+- **Keep `docs/CODE_MAP.md` current:** a PR that adds, removes or renames a file, or moves a responsibility, updates it.
+- **Issues:** a PR that builds or fixes a GitHub issue says `Closes #<n>` in its description, so the issue closes on merge.
 - **The owner's answers are recorded in the same PR, before merge:** a row in the ROADMAP decisions log, and "decided in the M<N> PR" notes in the spec section. No separate PR for this.
 
 ## Verification before you say "done"

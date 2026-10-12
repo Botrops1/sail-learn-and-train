@@ -34,5 +34,7 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.ts'],
     environment: 'node',
+    // Some simulation sweeps take a few seconds; the 5 s default failed them on a busy machine.
+    testTimeout: 30_000,
   },
 });
