@@ -1200,7 +1200,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   margin-left: auto;
 }
 
@@ -1235,6 +1235,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 }
 
 .time-label {
+  min-width: var(--touch);
   padding: 0 6px;
   color: var(--muted);
 }
@@ -1244,13 +1245,13 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 }
 
 .time-status {
-  min-width: 40px;
+  min-width: var(--touch);
   padding: 0 4px;
   font-variant-numeric: tabular-nums;
 }
 
 .time-button {
-  min-width: 34px;
+  min-width: var(--touch);
   padding: 0 4px;
   font-size: 20px;
   line-height: 1;
