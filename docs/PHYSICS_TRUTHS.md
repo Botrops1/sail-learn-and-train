@@ -90,4 +90,6 @@ M6 note: sources [11] and [18] could not be opened from the cloud build environm
 
 M8 note: sources [16] and [17] could not be opened from the cloud build environment either (the hosts do not resolve), so PT-25, PT-29 and PT-32 stay `to-verify`; their tests are named after the ids and check the behaviour of the model.
 
+M9 note: sources [13] and [14] could not be opened from the cloud build environment either (the hosts answer 403), so PT-23, PT-37 and PT-38 stay `to-verify`; their tests are named after the ids and check the behaviour of the model.
+
 When you add a source, add it here and point the rule's status to it. Prefer sailing-school material (RYA, ASA, NauticEd), manufacturer manuals (Seldén, Lewmar, Hanse) and textbooks over forums.

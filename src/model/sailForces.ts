@@ -2,6 +2,7 @@ import { boat, type BoatData } from './boat';
 import { DEG, interpTable, knToMps } from './angles';
 import type { Controls } from './controls';
 import type { RigState } from './sim';
+import { blanketFactor, NO_DAMAGE, tornForceFactor, type SailDamage } from './trim';
 
 /**
  * Sail forces from the apparent wind (PHASE2_SPEC 6.3). A teaching model: lift and drag
@@ -88,6 +89,7 @@ export function sailForces(
   awaDeg: number,
   heelDeg: number,
   data: BoatData = boat,
+  damage: SailDamage = NO_DAMAGE,
 ): SailForces {
   void controls; // the rig already holds the applied controls
   const { main, jib } = data.sails;
@@ -109,12 +111,13 @@ export function sailForces(
     },
     q,
     beta,
-    k,
+    k * tornForceFactor(damage, 'main', data),
     data,
   );
   const jibForce = oneSail(
     {
-      areaM2: jib.officialAreaM2 * j.unfurled,
+      // On a run the main takes the jib's wind (PT-37): less of the jib is working.
+      areaM2: jib.officialAreaM2 * j.unfurled * blanketFactor(awaDeg, data),
       furled: j.furled,
       byTheLee: j.byTheLee,
       aoaDeg: j.aoaDeg,
@@ -123,7 +126,7 @@ export function sailForces(
     },
     q,
     beta,
-    k,
+    k * tornForceFactor(damage, 'jib', data),
     data,
   );
   const sideN = mainForce.sideN + jibForce.sideN;

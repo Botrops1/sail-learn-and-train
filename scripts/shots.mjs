@@ -13,8 +13,9 @@ import { liveM5Checks, M5_SCENES } from './shots-m5.mjs';
 import { liveM6Checks, M6_SCENES } from './shots-m6.mjs';
 import { liveM7Checks, M7_SCENES } from './shots-m7.mjs';
 import { liveM8Checks, M8_SCENES } from './shots-m8.mjs';
+import { liveM9Checks, M9_SCENES } from './shots-m9.mjs';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm8';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm9';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 /** Every file of the set starts with this (M4a: "m4a-"), so parallel milestones never clash. */
 const PREFIX = process.env.SHOTS_PREFIX ?? `${MILESTONE}-`;
@@ -43,6 +44,7 @@ const VIEWPORTS = [
       'm7-instrument',
       'm8-heeled-bow',
       'm8-load',
+      'm9-sails-panel-good',
     ],
   },
 ];
@@ -129,6 +131,7 @@ const SCENES = [
   ...M6_SCENES.map((scene) => ({ ...scene, name: `m6-${scene.name}` })),
   ...M7_SCENES.map((scene) => ({ ...scene, name: `m7-${scene.name}` })),
   ...M8_SCENES.map((scene) => ({ ...scene, name: `m8-${scene.name}` })),
+  ...M9_SCENES.map((scene) => ({ ...scene, name: `m9-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -223,7 +226,11 @@ async function openPage(viewport, label, query) {
   // so they open Held still (the Phase 1 picture); the M6, M7 and M8 ones (label contains "m6",
   // "m7" or "m8") sail.
   const held =
-    label.includes('m6') || label.includes('m7') || label.includes('m8') || /[?&]held=/.test(query);
+    label.includes('m6') ||
+    label.includes('m7') ||
+    label.includes('m8') ||
+    label.includes('m9') ||
+    /[?&]held=/.test(query);
   const url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
@@ -464,7 +471,10 @@ const ONLY_M6 = process.env.SHOTS_ONLY_M6 === '1';
 const ONLY_M7 = process.env.SHOTS_ONLY_M7 === '1';
 // SHOTS_ONLY_M8=1: only the M8 scenes and live checks.
 const ONLY_M8 = process.env.SHOTS_ONLY_M8 === '1';
-const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8;
+// SHOTS_ONLY_M9=1: only the M9 scenes and live checks.
+const ONLY_M9 = process.env.SHOTS_ONLY_M9 === '1';
+const QUICK =
+  ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M9;
 
 /**
  * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
@@ -561,6 +571,7 @@ try {
       if (ONLY_M6 && !scene.name.startsWith('m6-')) continue;
       if (ONLY_M7 && !scene.name.startsWith('m7-')) continue;
       if (ONLY_M8 && !scene.name.startsWith('m8-')) continue;
+      if (ONLY_M9 && !scene.name.startsWith('m9-')) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
@@ -720,18 +731,19 @@ try {
     prefix: PREFIX,
     problems,
   };
-  const only = ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8;
+  const only = ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M9;
   if (!only) await liveGeneralChecks();
-  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8) {
+  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9) {
     await liveM4bChecks(live);
     await liveM4bTouchChecks(live);
     await liveM4bFixChecks(live);
   }
-  if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8) await liveM4cChecks(live);
-  if (!ONLY_M6 && !ONLY_M7 && !ONLY_M8) await liveM5Checks(live);
-  if (!ONLY_M7 && !ONLY_M8) await liveM6Checks(live);
-  if (!ONLY_M8) await liveM7Checks(live);
-  await liveM8Checks(live);
+  if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9) await liveM4cChecks(live);
+  if (!ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9) await liveM5Checks(live);
+  if (!ONLY_M7 && !ONLY_M8 && !ONLY_M9) await liveM6Checks(live);
+  if (!ONLY_M8 && !ONLY_M9) await liveM7Checks(live);
+  if (!ONLY_M9) await liveM8Checks(live);
+  await liveM9Checks(live);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));
