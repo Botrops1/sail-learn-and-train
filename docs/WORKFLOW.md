@@ -218,7 +218,7 @@ In the PR description, embed the 6–10 most important screenshots as images, ph
 
 ### 7.2 Checklists
 
-New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, default 0), `wd` the true wind's compass direction (old links: heading 0, so the picture is the same), `held=1` boat held still, `bs` boat speed at the start (kn; without it the boat starts at her steady speed), `ap=off|hdg|wind` autopilot (default: holding the heading) with its target `apt`; M7 `cam=map`; M10 `wm`, `seed`, `wg`, `tx`; M12 `eng=1`, `lv`. Replace `<N>` with the PR number.
+New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, default 0), `wd` the true wind's compass direction (old links: heading 0, so the picture is the same), `held=1` boat held still, `bs` boat speed at the start (kn; without it the boat starts at her steady speed), `ap=off|hdg|wind` autopilot (default: holding the heading) with its target `apt`; M7 `cam=map`; M10 `wm`, `seed`, `wg`, `tx`, `tb=0`; M12 `eng=1`, `lv`. Replace `<N>` with the PR number.
 
 #### M6: The boat sails
 
@@ -266,7 +266,10 @@ New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, defaul
 - [ ] Shifts with the wind autopilot: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&wm=shifty&wg=20&ap=wind — the boat's heading swings slowly with the wind; the true angle stays near 90°.
 - [ ] Building wind, sped up: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=20&js=25&wm=build&wg=12&tx=16 — the strip shows "×16"; within about 40 s the wind rises from 10 to 22 kn and the boat heels more.
 - [ ] Dying wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=14&ms=20&js=25&wm=die&wg=10&tx=16 — the wind falls to 4 kn; the boat slows.
-- [ ] Wind tab: the five mode buttons, the size slider, "New pattern" and ×1 / ×4 / ×16 work; the dial shows a thin arrow for the wind right now.
+- [ ] Wind tab: the five mode buttons, the size slider, "New pattern" work; the dial shows a thin arrow for the wind right now.
+- [ ] Time bar (issue #25): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=20&js=25 — over the 3D view: "Time ×1" and five buttons. Tap ">" twice: ×4, the boat moves faster. Tap "<<": ×¼, slow motion. Tap the "×¼": back to ×1. "II" pauses and resumes as before. Tap the word "Time": the bar folds to the Pause button; tap again to open it.
+- [ ] Time bar hides where it has nothing to do: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1 — boat held still, steady wind: only the Pause button shows.
+- [ ] Time bar switch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&tb=0 — only the Pause button shows; View tab → "Time bar" brings it back.
 
 #### M11: Gybes
 
