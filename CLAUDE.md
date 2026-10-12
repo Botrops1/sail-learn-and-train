@@ -13,6 +13,7 @@ The owner has **no sailing knowledge** and is not a developer. They work from a 
 | `/milestone <N>` | Build milestone M<N> from the current phase spec, open its PR, then watch the PR and act on the owner's comments |
 | `/review <PR number>` | Independent review of a PR in a fresh session; posts one comment, changes nothing |
 | `/bug <link> <what happened>` | Fix a bug found on the live site in a small PR, then watch it |
+| `/plan <phase number>` | Plan a phase (or `/plan issue <N>` for an extra milestone) with Opus: owner questions first, then a spec detailed enough for Sonnet to build without guessing, in a docs-only PR |
 
 When one of these is invoked, follow its `SKILL.md`. Without a command, the rules below still apply.
 
@@ -38,7 +39,7 @@ Only the part you need, found with `grep` (do not read these whole):
 - Keep `src/model` pure (no DOM, no three.js). Renderers read state; UI dispatches actions.
 - **No magic numbers** for boat geometry or tuning. They belong in `content/boat/hanse508.json`. If you add or change one, update `docs/BOAT_REFERENCE.md` (mark it as an assumption if it is a guess).
 - **IDs:** every mesh and rope gets an id from `content/registry/parts.json`; a rope control uses its rope's id (no registry entry of its own). Add new ids to the registry first, with `status: "draft"`.
-- **A new phase** starts with a planning session that writes `docs/PHASE<N>_SPEC.md` (same structure as PHASE2_SPEC: a "how to use" section, one section per milestone with tests and "done when") and the milestones' checklists in WORKFLOW.md. Nothing else in this file needs changing.
+- **A new phase** starts with `/plan <N>` (Opus), which writes `docs/PHASE<N>_SPEC.md` (same structure as PHASE2_SPEC: a "how to use" section, one section per milestone with tests and "done when") and the milestones' checklists in WORKFLOW.md. Nothing else in this file needs changing.
 - **Sailing claims need sources.** Never "fix" a failing physics-truth test by editing the rule to match the code. If you believe a rule is wrong, explain why in the PR and leave the decision to the owner.
 - **Russian text:** never present AI-drafted Russian as verified. Registry status stays `draft` until a sailor reviews it.
 - **No copyrighted material** in the repo: no brochure PDFs or images, no copied text from courses or books. Facts and numbers are fine; cite the source.

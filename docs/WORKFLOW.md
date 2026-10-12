@@ -39,6 +39,7 @@ If a merge breaks the site, open the merged PR in the GitHub app and tap **Rever
 | `/milestone <N>` | Build milestone M<N> (section 2) |
 | `/review <PR number>` | Independent review of a PR before merging (optional, Opus) |
 | `/bug <link> <what happened>` | A bug on the **live** site, after merge. Get the link from View tab → Share. Claude fixes it in a small PR and watches it |
+| `/plan <phase number>` | Before a new phase (Opus, high). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. After merging, start with `/milestone <N>` (Sonnet) |
 
 The commands live in `.claude/skills/` in the repo; Claude can change them if you ask.
 
@@ -63,7 +64,7 @@ In a session you can type `/model opus` or `/model sonnet`, and `/effort high` o
 | Work | Model | Effort |
 |---|---|---|
 | `/milestone` | Sonnet | high |
-| `/review`, planning a new phase | Opus | high |
+| `/plan`, `/review` | Opus | high |
 | `/bug`, small doc changes | Sonnet | medium |
 
 Usage: cloud sessions share your plan's limits with normal chat. What costs the most is a long session: every step re-reads everything said so far. So one session per milestone, and start a new one for unrelated work instead of continuing an old one.
@@ -177,7 +178,7 @@ Every check is a full link: tap it, then do what the line says.
 
 - Ask a Russian-speaking sailor to look at `content/registry/parts.json` (or a printable list Claude can generate) and the clutch-bank screen. Mark reviewed terms `sailor-reviewed`.
 - Answer the open questions in `docs/BOAT_REFERENCE.md` if you get the chance.
-- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1. (Done 2026-10-10: [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and section 7 below.)
+- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1. (Done 2026-10-10: [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and section 7 below.) Later phases start with `/plan <N>` (section 3.1).
 
 ## 7. Phase 2
 
