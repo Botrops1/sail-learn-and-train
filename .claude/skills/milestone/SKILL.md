@@ -13,7 +13,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 
 - `npm ci` (the cloud container starts without `node_modules`).
 - Check that the milestone before M$ARGUMENTS is merged into `main` (`git log origin/main --oneline | head`, the spec's milestone table). If it is not, or a PR for M$ARGUMENTS is already open, stop and tell the owner in two sentences what to do first.
-- Read narrowly, as CLAUDE.md "What to read" says: CLAUDE.md, the current phase spec's sections 0–5, section $ARGUMENTS and the Definition of Done, the PHYSICS_TRUTHS rules your milestone tests, and the M$ARGUMENTS checklist in `docs/WORKFLOW.md`. Use `grep` for everything else; do not read whole files you only need a line of.
+- Read narrowly, as CLAUDE.md "What to read" says: CLAUDE.md, the current phase spec's general sections (0–5 in PHASE2_SPEC), the section of M$ARGUMENTS and the Definition of Done, the PHYSICS_TRUTHS rules your milestone tests, and the M$ARGUMENTS checklist in `docs/WORKFLOW.md`. Use `grep` for everything else; do not read whole files you only need a line of.
 
 ## 2. Build
 

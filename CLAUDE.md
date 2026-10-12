@@ -21,14 +21,14 @@ When one of these is invoked, follow its `SKILL.md`. Without a command, the rule
 Always:
 
 1. This file.
-2. The current phase spec, [`docs/PHASE2_SPEC.md`](docs/PHASE2_SPEC.md): sections 0–5, the section of your milestone, and section 14. Not the other milestones' sections.
+2. The current phase spec: the highest-numbered `docs/PHASE<N>_SPEC.md`. Its sections 0–5 (or whatever its own "how to use this spec" section says applies to every milestone), the section of your milestone, and its Definition of Done. Not the other milestones' sections.
 3. [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md): the rules your milestone tests.
-4. Your milestone's checklist in [`docs/WORKFLOW.md`](docs/WORKFLOW.md) (section 7.1 for Phase 2). The rest of WORKFLOW is for the owner.
+4. Your milestone's checklist in [`docs/WORKFLOW.md`](docs/WORKFLOW.md) (`grep -n "^#### M<N>\|^### M<N>"`). The rest of WORKFLOW is for the owner.
 
 Only the part you need, found with `grep` (do not read these whole):
 
 - [`docs/ROADMAP.md`](docs/ROADMAP.md): phases and architecture hooks (context only, do not build ahead); the decisions log at the end.
-- [`docs/PHASE1_SPEC.md`](docs/PHASE1_SPEC.md): what Phase 2 builds on (layout, rig solver, ropes, Realistic mode, URL state). Section 4 (conventions) and 9 (architecture) when you touch those areas.
+- Earlier phase specs (`docs/PHASE1_SPEC.md`, …): what the current phase builds on (layout, rig solver, ropes, Realistic mode, URL state). The conventions and architecture sections when you touch those areas.
 - [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md), [`content/boat/hanse508.json`](content/boat/hanse508.json), [`content/registry/parts.json`](content/registry/parts.json): boat facts, sources, assumptions, ids.
 
 ## Working rules
@@ -38,6 +38,7 @@ Only the part you need, found with `grep` (do not read these whole):
 - Keep `src/model` pure (no DOM, no three.js). Renderers read state; UI dispatches actions.
 - **No magic numbers** for boat geometry or tuning. They belong in `content/boat/hanse508.json`. If you add or change one, update `docs/BOAT_REFERENCE.md` (mark it as an assumption if it is a guess).
 - **IDs:** every mesh and rope gets an id from `content/registry/parts.json`; a rope control uses its rope's id (no registry entry of its own). Add new ids to the registry first, with `status: "draft"`.
+- **A new phase** starts with a planning session that writes `docs/PHASE<N>_SPEC.md` (same structure as PHASE2_SPEC: a "how to use" section, one section per milestone with tests and "done when") and the milestones' checklists in WORKFLOW.md. Nothing else in this file needs changing.
 - **Sailing claims need sources.** Never "fix" a failing physics-truth test by editing the rule to match the code. If you believe a rule is wrong, explain why in the PR and leave the decision to the owner.
 - **Russian text:** never present AI-drafted Russian as verified. Registry status stays `draft` until a sailor reviews it.
 - **No copyrighted material** in the repo: no brochure PDFs or images, no copied text from courses or books. Facts and numbers are fine; cite the source.
