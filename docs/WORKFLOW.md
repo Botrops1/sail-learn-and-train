@@ -20,10 +20,11 @@ Each open pull request (PR) also has its own **preview** at `https://botrops1.gi
 2. Type **`/milestone 11`** (the milestone's number). Nothing else to paste.
 3. Wait. Claude builds, tests, opens a PR and **watches it**. You can close the app meanwhile.
 4. In the PR (GitHub app): read "What changed", check that CI is green (`check`, `browser-checks`, `preview`).
+   **If the PR starts with "Independent review required"** (the spec marks physics milestones that way): start the review now, before testing: new session, **Opus**, high, type **`/review <PR number>`**. It posts one comment on the PR with findings marked fix now / fix later / leave (about 15–30 minutes). Test while it runs or after it.
 5. Open the preview from the bot comment. Check that the **version in the footer** matches the PR's latest commit (first 7 characters, PR → Commits).
 6. Go through the checklist links in the PR description. Tick what works.
-7. **Answer and report problems as a comment on the PR**, in the GitHub app. Every question in the PR has a recommendation, so "accept all" is a valid answer, or "accept all except 2: …". For a bug, use the template in 3.2. The session picks the comment up by itself, fixes, records your answers in the decisions log and replies on the PR. No copying between sessions.
-8. For physics milestones (M11), optionally run a review before merging: new session, Opus, type **`/review <PR number>`**. It posts one comment with a recommendation per finding; reply on the PR with which ones to fix.
+7. **Answer and report problems as one comment on the PR**, in the GitHub app: your answers to the questions, which review findings to fix (e.g. "review: fix 1 and 3"), and anything you found. Every question has a recommendation, so "accept all" is a valid answer, or "accept all except 2: …". For a bug, use the template in 3.2. The session picks the comment up by itself, fixes, records your answers in the decisions log and replies on the PR. No copying between sessions.
+8. Test again on the updated preview (the reply names the new footer version).
 9. **Merge** when the preview works and CI is green. About 2 minutes later the live site updates and the preview is removed.
 
 **One milestone at a time.** Two milestones in parallel edit the same files and need a third session to sort out the overlap. A planning or review session next to the milestone is fine.
@@ -37,7 +38,7 @@ If a merge breaks the site, open the merged PR in the GitHub app and tap **Rever
 | Command | When |
 |---|---|
 | `/milestone <N>` | Build milestone M<N> (section 2) |
-| `/review <PR number>` | Independent review of a PR before merging (optional, Opus) |
+| `/review <PR number>` | Independent review of a PR, right after it opens and before you test (Opus). Required when the PR says so (physics milestones); optional otherwise |
 | `/bug <link> <what happened>` | A bug on the **live** site, after merge. Get the link from View tab → Share. Claude fixes it in a small PR and watches it |
 | `/plan <phase number>` | Before a new phase (Opus, high). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. After merging, start with `/milestone <N>` (Sonnet) |
 
@@ -182,7 +183,7 @@ Every check is a full link: tap it, then do what the line says.
 
 ## 7. Phase 2
 
-Same loop as section 2: one session and one PR per milestone (M6 … M13, [`PHASE2_SPEC.md`](PHASE2_SPEC.md) section 5), started with `/milestone <N>`. The spec gives every formula, number and test, so **Sonnet at high effort** can build each milestone. For M11 (the gybe physics), a `/review` with Opus before merging is worth it.
+Same loop as section 2: one session and one PR per milestone (M6 … M13, [`PHASE2_SPEC.md`](PHASE2_SPEC.md) section 5), started with `/milestone <N>`. The spec gives every formula, number and test, so **Sonnet at high effort** can build each milestone. M11 and M12 need a `/review` with Opus (the spec's milestones table has a review column; the PR reminds you).
 
 ### 7.1 Checklists
 

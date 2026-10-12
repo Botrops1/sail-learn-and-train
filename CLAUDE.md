@@ -62,6 +62,9 @@ Only the part you need, found with `grep` (do not read these whole):
 ## PR description template
 
 ```
+<only if the spec marks the milestone's independent review as required:>
+> **Independent review required before you test:** new Code session, Opus, high effort, type `/review <N>`.
+
 ## What changed (plain language, no jargon)
 ## How to check on your phone
 Preview of this PR: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ (link also in the bot comment)

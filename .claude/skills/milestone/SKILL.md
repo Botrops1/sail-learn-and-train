@@ -13,6 +13,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 
 - `npm ci` (the cloud container starts without `node_modules`).
 - Check that the milestone before M$ARGUMENTS is merged into `main` (`git log origin/main --oneline | head`, the spec's milestone table). If it is not, or a PR for M$ARGUMENTS is already open, stop and tell the owner in two sentences what to do first.
+- Find the milestone's **Independent review** marking (the line under its heading, or the review column of the spec's milestones table). Remember it for the PR and every reply.
 - Read narrowly, as CLAUDE.md "What to read" says: CLAUDE.md, the current phase spec's general sections (0–5 in PHASE2_SPEC), the section of M$ARGUMENTS and the Definition of Done, the PHYSICS_TRUTHS rules your milestone tests, and the M$ARGUMENTS checklist in `docs/WORKFLOW.md`. Use `grep` for everything else; do not read whole files you only need a line of.
 
 ## 2. Build
@@ -32,9 +33,10 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 ## 4. Open the PR
 
 - Push, open the PR against `main` (title `M$ARGUMENTS: <name>`), then edit the description to put the real PR number into every link.
+- If the review is **required**, the description starts with the review line from the CLAUDE.md template, above everything else.
 - Use the template in CLAUDE.md: plain language; every check a full preview link with what to do after opening it; **no screenshots**; every question ends with "Recommended: …, because …" and the "accept all" line.
 - Then subscribe to the PR's activity (`subscribe_pr_activity`) so the owner's comments in the GitHub app reach this session.
-- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are. Then end your turn.
+- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, high) now, before you test; then answer the review and your test findings in one comment."** Then end your turn.
 
 ## 5. While the PR is open
 
@@ -45,5 +47,6 @@ Each time the PR wakes you:
   - record the answers in the same PR: a row in the ROADMAP decisions log, and "decided in the M$ARGUMENTS PR" notes in the spec section;
   - run the checks again (section 3), push, and reply on the PR in a few lines: what changed, the new commit's first 7 characters (the preview footer shows it), anything left to check.
 - **A review comment** (it starts with "Independent review" or ends with a Claude Code footer): do not act on it by yourself. The owner replies with which items to fix.
+- **Review required but not done yet:** if the PR has no "Independent review" comment, end every reply on the PR with the reminder: "Reminder: this milestone needs `/review <PR number>` (Opus) before merging." Stop reminding once the review comment is there.
 - Bug reports from the owner usually carry a link from the app's Share button: open the same state in the browser checks to reproduce it before fixing.
 - **Merged or closed:** unsubscribe and stop. Do not start the next milestone.

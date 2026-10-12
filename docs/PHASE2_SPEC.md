@@ -161,30 +161,30 @@ export interface AutopilotState {     // src/model/autopilot.ts
 
 | Milestone | Model (`src/model/`) | UI / 3D |
 |---|---|---|
-| M6 | `angles.ts`, `mapFrame.ts`, `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts`, `autopilot.ts` | `ui/instrumentStrip.ts`, `ui/autopilotPanel.ts`, `render3d/world.ts`, `render3d/wake.ts` |
-| M7 | `track.ts`, `pointsOfSail.ts` | `ui/mapView.ts`, `ui/windInstrument.ts` |
-| M8 | `heel.ts`, `sheetLoads.ts` | (changes only) |
-| M9 | `trim.ts` | `render3d/boat/telltales.ts`, `ui/sailsPanel.ts` |
-| M10 | `windModes.ts`, `random.ts` | `ui/windModePanel.ts`, `ui/timeBar.ts` (replaces `ui/pauseButton.ts`) |
-| M11 | `gybe.ts` | `render3d/dangerZone.ts`, `ui/gybeReport.ts` |
-| M12 | `engine.ts` | `ui/enginePanel.ts`, Helm-station lever in `ui/stationDrawing.ts` |
+| M6 | `angles.ts`, `mapFrame.ts`, `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts`, `autopilot.ts` | `ui/instrumentStrip.ts`, `ui/autopilotPanel.ts`, `render3d/world.ts`, `render3d/wake.ts` | done | done |
+| M7 | `track.ts`, `pointsOfSail.ts` | `ui/mapView.ts`, `ui/windInstrument.ts` | done | done |
+| M8 | `heel.ts`, `sheetLoads.ts` | (changes only) | done | done |
+| M9 | `trim.ts` | `render3d/boat/telltales.ts`, `ui/sailsPanel.ts` | done | done |
+| M10 | `windModes.ts`, `random.ts` | `ui/windModePanel.ts`, `ui/timeBar.ts` (replaces `ui/pauseButton.ts`) | done | done |
+| M11 | `gybe.ts` | `render3d/dangerZone.ts`, `ui/gybeReport.ts` | **required** | **required** |
+| M12 | `engine.ts` | `ui/enginePanel.ts`, Helm-station lever in `ui/stationDrawing.ts` | **required** | **required** |
 
 Tests go in `tests/` (flat, as Phase 1): `tests/motion.test.ts`, `tests/autopilot.test.ts`, `tests/apparentWind.test.ts`, … Physics-truth tests are named after their id (`it('PT-20 …')`) and may live in `tests/physicsTruths2.test.ts`.
 
 ## 5. Milestones overview
 
-Each milestone is one PR, small enough to check on a phone. Section numbers match milestone numbers.
+Each milestone is one PR, small enough to check on a phone. Section numbers match milestone numbers. **Independent review** (added after M10): "required" means the owner runs `/review <PR>` with Opus as soon as the PR opens, before testing it on the phone (new physics whose errors tests and a phone check can miss).
 
-| Milestone | Section | What the owner sees | Rules tested |
-|---|---|---|---|
-| M6 | 6 | The boat sails, apparent wind, instruments, autopilot, Held still switch | PT-20, 21, 22, 28, 35, 36 (resistance wall) |
-| M7 | 7 | Bird's-eye map, wind instrument dial | (display) |
-| M8 | 8 | Heel, weather helm, round-up, loads in kN | PT-25, 29, 32, 36 |
-| M9 | 9 | Trim states, telltales, blanketed jib, torn sails | PT-23, 37, 38 |
-| M10 | 10 | Gusty, shifty, building, dying wind; time bar (slow motion, pause, speed-up) | (determinism) |
-| M11 | 11 | Gybe energy, peak load, danger zone | PT-24, 26 |
-| M12 | 12 | Engine | PT-35 (engine case) |
-| M13 | 13 | Polish and sign-off | all |
+| Milestone | Section | What the owner sees | Rules tested | Independent review |
+|---|---|---|---|---|
+| M6 | 6 | The boat sails, apparent wind, instruments, autopilot, Held still switch | PT-20, 21, 22, 28, 35, 36 (resistance wall) | done |
+| M7 | 7 | Bird's-eye map, wind instrument dial | (display) | done |
+| M8 | 8 | Heel, weather helm, round-up, loads in kN | PT-25, 29, 32, 36 | done |
+| M9 | 9 | Trim states, telltales, blanketed jib, torn sails | PT-23, 37, 38 | done |
+| M10 | 10 | Gusty, shifty, building, dying wind; time bar (slow motion, pause, speed-up) | (determinism) | done |
+| M11 | 11 | Gybe energy, peak load, danger zone | PT-24, 26 | **required** |
+| M12 | 12 | Engine | PT-35 (engine case) | **required** |
+| M13 | 13 | Polish and sign-off | all | not needed |
 
 ---
 
@@ -887,6 +887,8 @@ Things the spec left open or did not foresee (each is "decided in the M10 PR"):
 
 Branch `m11-gybes`. No preventer (owner: the boat has none).
 
+**Independent review: required** (new gybe physics: boom energy and peak sheet load; mistakes here teach the wrong danger).
+
 ### 11.1 Data (add to `physics`)
 
 ```json
@@ -956,6 +958,8 @@ Use `gybeStep` and `gybeImpact` directly (h = 0.001 s), main fully out, heel 0. 
 
 Branch `m12-engine`.
 
+**Independent review: required** (new physics: engine thrust against the hull resistance, PT-35 engine case).
+
 ### 12.1 Data (add to `physics`)
 
 ```json
@@ -1011,6 +1015,8 @@ Calm water (TWS 0), heading held, steady speed after 120 s:
 ## 13. M13: Polish and Phase 2 sign-off
 
 Branch `m13-phase2-signoff`.
+
+**Independent review: not needed** (polish and sign-off; the owner's phone check covers it).
 
 - Performance on the owner's phone: debug overlay FPS and Slowest at Detail Low and High, while sailing with gusts at ×16 (the heaviest case). Target as Phase 1 (≥ 50 fps, never below 30). If the step time is the problem, solve the rig every second frame at ×16 only.
 - Accessibility audit (`scripts/a11y-audit.mjs`) covers the new controls: autopilot, Held still switch, wind modes, engine, map buttons, sails panel.

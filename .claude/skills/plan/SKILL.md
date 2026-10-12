@@ -30,10 +30,11 @@ Write a short outline: the goal in two sentences, the milestones (one line each,
 General sections (keep them under about a quarter of the file; every builder reads them):
 
 - **0. How to use this spec**: one milestone per PR; read 0–5 then your section; build order; numbers are final; what to do when a test band fails (check the formulas against 3.x "common mistakes", then tune only keys marked **tunable**, report before/after, never widen a band); keep signatures; write back decisions as "decided in the M<N> PR"; earlier phases keep working.
-- **Goal, scope (in / out), conventions** (frames, signs, units, angle ranges: state them, do not assume), **shared helpers** (name, file, signature, one-line behaviour), **sources**, **common mistakes** (sign flips, degrees vs radians, units, frame order, state not reset), **architecture** (new state fields with types, order of work in the step, files added per milestone), **milestones overview** (table: milestone, what the owner sees, rules tested, depends on).
+- **Goal, scope (in / out), conventions** (frames, signs, units, angle ranges: state them, do not assume), **shared helpers** (name, file, signature, one-line behaviour), **sources**, **common mistakes** (sign flips, degrees vs radians, units, frame order, state not reset), **architecture** (new state fields with types, order of work in the step, files added per milestone), **milestones overview** (table: milestone, what the owner sees, rules tested, depends on, **independent review**: required / not needed).
 
 Each milestone section, in this order:
 
+0. **Independent review** line, directly under the heading: `**Independent review: required** (<why, one line>)` or `**Independent review: not needed** (<why>)`. See "When a review is required" below.
 1. **Files** to create or change, with paths.
 2. **Data**: the JSON to add, verbatim, with every value; mark tunable keys.
 3. **Model**: formulas written out, with units; function signatures in TypeScript; edge cases (zero wind, head to wind, paused, held still, both tacks).
@@ -50,6 +51,17 @@ Rules for every section:
 - One way to do each thing. If two approaches are possible, choose one and say why in one line.
 - Milestones are small enough to check on a phone in 15 minutes, each mergeable on its own, built in order.
 - Refer to existing code by real path and name.
+
+### When a review is required
+
+The owner cannot read code and a phone check only shows what is visible, so mark a milestone **required** when any of these holds:
+
+- it adds or changes **physics or model formulas** (forces, speeds, loads, angles, the rig solver), or a PHYSICS_TRUTHS rule;
+- a mistake would **teach the wrong sailing** (danger, what to do in an emergency, safety loads);
+- it changes **shared state, the step order, URL keys or old links**, or the behaviour of an earlier phase;
+- it is large (many files across model, store and UI).
+
+**Not needed** for UI layout, text, visuals, polish and docs-only work. When unsure, mark it required: a review costs one Opus session; a physics bug found later costs a milestone.
 
 ## 4. Prototype the numbers
 
@@ -68,6 +80,6 @@ For each milestone, start a subagent with `model: "sonnet"` and give it only wha
 
 ## 7. PR
 
-- One docs-only PR: `Phase <N> plan: <theme>` (or `Plan: <milestone>`). Description: what the phase will add, in plain words; the milestones table; the owner's answers as recorded; anything still open, each with a recommendation and the "accept all" line.
+- One docs-only PR: `Phase <N> plan: <theme>` (or `Plan: <milestone>`). Description: what the phase will add, in plain words; the milestones table (with the review column, so the owner sees which milestones need `/review`); the owner's answers as recorded; anything still open, each with a recommendation and the "accept all" line.
 - Subscribe to the PR's activity and act on the owner's comments as in `/milestone` section 5 (answers go into the spec and the decisions log in the same PR).
 - Tell the owner in chat: the PR link, and that after merging they start the first milestone with `/milestone <N>` (Sonnet, high effort).

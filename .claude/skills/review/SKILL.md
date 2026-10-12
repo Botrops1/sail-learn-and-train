@@ -9,6 +9,8 @@ disable-model-invocation: true
 
 The owner typed `/review $ARGUMENTS`. If no number was given, ask for it and stop. **Do not change code or push.**
 
+The review normally runs right after the PR opens, before the owner tests on the phone, so that fixes from the review and the owner's findings go into one round.
+
 1. Read the PR (description, diff, CI status) with the GitHub tools. Find its milestone and read, narrowly: CLAUDE.md, the phase spec's sections 0–5 and the milestone's section, and the PHYSICS_TRUTHS rules the milestone tests.
 2. Check out the PR's branch, `npm ci`, run `npm run typecheck`, `npm run lint`, `npm test`, and `SHOTS_ONLY=m<N> npm run shots` for its milestone. Look at the few PNGs that matter.
 3. Check:
