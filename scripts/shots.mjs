@@ -763,7 +763,7 @@ try {
   if (!ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM7Checks(live);
   if (!ONLY_M9 && !ONLY_M10) await liveM8Checks(live);
   if (!ONLY_M10) await liveM9Checks(live);
-  await liveM10Checks(live);
+  if (!ONLY_M9) await liveM10Checks(live);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));
