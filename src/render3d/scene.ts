@@ -6,6 +6,7 @@ import { requirePartId } from '../model/registry';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
+import { DEG } from '../model/angles';
 import { modulo } from '../model/mapFrame';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
@@ -129,7 +130,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         /** Canvas position (CSS px) of a point in boat coordinates. */
         project: (x: number, y: number, z: number) => {
           const rect = renderer.domElement.getBoundingClientRect();
-          const ndc = new THREE.Vector3(x, y, z).project(camera);
+          const ndc = new THREE.Vector3(x, y, z).applyMatrix4(holder.matrixWorld).project(camera);
           return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
         /** Canvas position (CSS px) of a point along a part's pick segments (e.g. a rope). */
@@ -239,6 +240,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).
       streaks.update(state.rig.wind.awaDeg, state.rig.wind.awsKn, now / 1000);
       const { boat: boatState } = state;
+      // She heels about her centreline at the waterline (+ = starboard rail down). The water, the
+      // wake and the camera stay level.
+      holder.rotation.x = boatState.heelDeg * DEG;
       const centre = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
       wake.update(state, state.rig.timeS);
       water.update(now / 1000, centre.eastM, centre.northM);
@@ -259,7 +263,10 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         Math.abs(eye.z) < halfBeamAt(eye.x);
       for (const anchor of labelAnchors(store.getState().rig, boatModel.ropeDrawings())) {
         if (onBoard && anchor.point[1] < 0) continue;
-        projected.set(...anchor.point).project(camera);
+        projected
+          .set(...anchor.point)
+          .applyMatrix4(holder.matrixWorld)
+          .project(camera);
         // Behind the camera (or beyond the far plane): no label.
         if (projected.z > 1 || projected.z < -1) continue;
         points.push({

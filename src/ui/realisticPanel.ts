@@ -19,7 +19,14 @@ import { partInfo } from '../model/registry';
 import { createAutopilotPanel } from './autopilotPanel';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
-import { CONTROL_VIEWS, controlView, createControl, stateText, valueText } from './ropeControls';
+import {
+  CONTROL_VIEWS,
+  controlView,
+  createControl,
+  loadText,
+  stateText,
+  valueText,
+} from './ropeControls';
 import { createSlotView, slotMode, tapSlot } from './handleDrawing';
 import { createMastDrawing } from './mastDrawing';
 import { createStationDrawing, noticeText, type StationDrawing } from './stationDrawing';
@@ -73,8 +80,11 @@ function statusLines(state: AppState, spec: TailSpec): { lines: string[]; alert:
   if (report) {
     const load = report.loadN;
     if (load >= boat.realisticMode.loads.fightingN) lines.push(t('real.status.loadFighting'));
-    else if (load > 0) lines.push(t('real.status.load', { kn: kn(load) }));
-    else lines.push(t('real.status.noPull'));
+    else if (load > 0) {
+      // The two sheets show the same line as the Easy strip (M8).
+      const sheet = spec.ropeId === 'rope_mainsheet' || spec.ropeId === 'rope_jib_sheet';
+      lines.push(sheet ? loadText(load) : t('real.status.load', { kn: kn(load) }));
+    } else lines.push(t('real.status.noPull'));
     // Hauling in can take more than the pull out (the out tail, the outhaul, a loaded main's
     // "in" furling tail, M4c).
     const haul = report.haulLoadN;

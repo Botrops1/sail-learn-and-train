@@ -14,6 +14,7 @@ import { panelEntries } from './panelEntries';
 import { toppingLiftPaidOut, vangPaidOut } from './pitchLimits';
 import type { WinchWrap } from './ropePaths';
 import type { RigState } from './sim';
+import { mainSailForceAtBlocksN, sheetLoads } from './sheetLoads';
 import {
   easesSmoothly,
   gearboxLinePerTurnM,
@@ -27,7 +28,6 @@ import {
   ropePerHandleTurnM,
   runningSpeedMps,
   runsOut,
-  sheetLoadAtSailN,
   tailForceN,
   winchSpeedMps,
 } from './winch';
@@ -675,26 +675,20 @@ export function reduceRealistic(
   }
 }
 
-/** The pull that tries to run a rope end out (newtons), from the solved rig (Phase 1 estimates). */
+/** The pull that tries to run a rope end out (newtons), from the solved rig and its sail forces. */
 function ropePullN(spec: TailSpec, controls: Controls, rig: RigState, data: BoatData): number {
   const loads = data.realisticMode.loads;
   const fixed = (loads.fixedN as Record<string, number | undefined>)[spec.ropeId] ?? 0;
   const windy = controls.ctl_wind_speed >= data.visual.solver.minWindKn;
   const byState = (status: RopeStatus, taut: number) =>
     status.state === 'fighting' ? loads.fightingN : status.state === 'taut' ? taut : 0;
-  const wind = controls.ctl_wind_speed;
+  // The two sheets carry the sail forces of the apparent wind (M8, sheetLoads.ts).
+  const sheets = sheetLoads(rig, rig.forces, data);
   switch (spec.ropeId) {
-    case 'rope_mainsheet': {
-      const s = rig.solution;
-      const area = data.sails.main.officialAreaM2 * (rig.applied.mainFurl / 100) * s.fill;
-      const purchase = 2 * data.rig.mainsheet.partsPerSide;
-      return byState(s.mainsheet, sheetLoadAtSailN(area, wind, data) / purchase);
-    }
-    case 'rope_jib_sheet': {
-      const j = rig.jibSolution;
-      const area = data.sails.jib.officialAreaM2 * j.unfurled * j.fill;
-      return byState(j.sheet, sheetLoadAtSailN(area, wind, data) / data.sails.jib.sheet.purchase);
-    }
+    case 'rope_mainsheet':
+      return byState(rig.solution.mainsheet, sheets.mainSheetRopeN);
+    case 'rope_jib_sheet':
+      return byState(rig.jibSolution.sheet, sheets.jibSheetRopeN);
     case 'rope_vang':
       return byState(rig.solution.vang, fixed);
     case 'rope_topping_lift':
@@ -708,10 +702,9 @@ function ropePullN(spec: TailSpec, controls: Controls, rig: RigState, data: Boat
   }
 }
 
-/** The main's pull by the sheet-rule estimate (newtons at the clew; 0 when luffing or furled). */
-function mainSailLoadN(controls: Controls, rig: RigState, data: BoatData): number {
-  const area = data.sails.main.officialAreaM2 * (rig.applied.mainFurl / 100) * rig.solution.fill;
-  return sheetLoadAtSailN(area, controls.ctl_wind_speed, data);
+/** The main's pull on the boom's sheet blocks (newtons; 0 when luffing or furled). */
+function mainSailLoadN(rig: RigState, data: BoatData): number {
+  return mainSailForceAtBlocksN(rig, rig.forces, data);
 }
 
 /**
@@ -719,17 +712,11 @@ function mainSailLoadN(controls: Controls, rig: RigState, data: BoatData): numbe
  * The main's "in" furling tail also feels part of the main's load while it still pulls (M4c):
  * rolling a loaded main in is hard.
  */
-function ropeResistN(
-  spec: TailSpec,
-  pull: number,
-  controls: Controls,
-  rig: RigState,
-  data: BoatData,
-): number {
+function ropeResistN(spec: TailSpec, pull: number, rig: RigState, data: BoatData): number {
   const loads = data.realisticMode.loads;
   if (spec.payOutSign > 0) {
     if (spec.ropeId !== 'rope_main_furling_line') return pull;
-    return pull + loads.mainFurlSailLoadFraction * mainSailLoadN(controls, rig, data);
+    return pull + loads.mainFurlSailLoadFraction * mainSailLoadN(rig, data);
   }
   return (loads.fixedN as Record<string, number | undefined>)[spec.ropeId] ?? 0;
 }
@@ -823,7 +810,7 @@ export function stepRealistic(
       open,
       free: open && !winch && !pulling && !easing,
       pull,
-      resist: ropeResistN(spec, pull, controls, rig, data),
+      resist: ropeResistN(spec, pull, rig, data),
       hold,
       out: 0,
       haul: 0,

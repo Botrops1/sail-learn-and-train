@@ -576,6 +576,10 @@ button.segment {
   font-weight: 800;
 }
 
+.strip-heel[hidden] {
+  display: none;
+}
+
 .strip-auto {
   padding: 0 6px;
   border-radius: 6px;
@@ -601,6 +605,8 @@ button.segment {
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  width: max-content;
+  max-width: calc(100% - 16px);
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -617,7 +623,7 @@ html[data-layout='side'] .rig-alerts {
   color: #8a3b00;
   font-size: var(--font-small);
   font-weight: 700;
-  white-space: nowrap;
+  text-align: center;
 }
 
 .rig-alert[hidden] {

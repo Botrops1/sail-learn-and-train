@@ -228,7 +228,9 @@ function settle(store: ReturnType<typeof createStore>, seconds: number): AppStat
 describe('URL state: the jib sheet hauled against a partly furled jib (M3 → M4a, jr)', () => {
   /** Jib furled to 40 % with the sheet released, then the sheet hauled to 30 %. */
   function hauledAgainstFurl(): AppState {
-    const store = createStore(initialState({ controls: { ctl_jib_sheet: 100 } }));
+    const store = createStore(
+      initialState({ controls: { ctl_jib_sheet: 100 }, boat: { mode: 'held' } }),
+    );
     store.dispatch({ type: 'setControls', values: { ctl_jib_furl: 40 } });
     settle(store, 6);
     store.dispatch({ type: 'setControls', values: { ctl_jib_sheet: 30 } });
@@ -333,7 +335,7 @@ describe('URL state: the boat (M6: hdg, bs, held, ap, apt)', () => {
     expect(state.boat.headingDeg).toBe(0);
     expect(state.controls.ctl_wind_dir).toBe(90);
     expect(state.autopilot).toEqual({ mode: 'heading', targetDeg: 0, integralDeg: 0 });
-    const steady = steadyState(state.controls, 0).speedMps;
+    const steady = steadyState(state.controls, 0, undefined, { heel: true }).speedMps;
     expect(state.boat.speedMps).toBeCloseTo(steady, 9);
     expect(mpsToKn(steady)).toBeGreaterThan(5);
   });
@@ -352,7 +354,7 @@ describe('URL state: the boat (M6: hdg, bs, held, ap, apt)', () => {
     expect(mpsToKn(state.boat.speedMps)).toBeCloseTo(6.3, 9);
     expect(serializeUrlState(state)).toContain('bs=6.3');
     expect(mpsToKn(parseUrlState('?bs=-3.5').boat.speedMps)).toBeCloseTo(-3.5, 9);
-    const steady = steadyState(defaultControls(), 0).speedMps;
+    const steady = steadyState(defaultControls(), 0, undefined, { heel: true }).speedMps;
     expect(parseUrlState('?bs=16').boat.speedMps).toBeCloseTo(steady, 9);
     expect(parseUrlState('?bs=fast').boat.speedMps).toBeCloseTo(steady, 9);
     expect(serializeUrlState(parseUrlState('?bs=0'))).toContain('bs=0.0');

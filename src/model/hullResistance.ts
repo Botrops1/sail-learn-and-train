@@ -51,9 +51,9 @@ export function hullResistance(
         Math.min(1, v / vi)
       : 0;
 
-  // Heel adds resistance from M8 on (physics.heel); upright in M6.
-  void heelDeg;
-  const heelN = 0;
+  // A heeled hull is dragged through the water at an angle: more resistance with the square of
+  // the heel (M8).
+  const heelN = (frictionN + residuaryN) * p.heel.resistanceIncreaseAt20Deg * (heelDeg / 20) ** 2;
   const rudderN =
     0.5 *
     rho *

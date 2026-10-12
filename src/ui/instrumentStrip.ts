@@ -36,6 +36,7 @@ export function createInstrumentStrip(
 ): void {
   const speed = el('span', { class: 'strip-speed', 'data-testid': 'strip-speed' });
   const heading = el('span', { class: 'strip-heading', 'data-testid': 'strip-heading' });
+  const heel = el('span', { class: 'strip-heel', 'data-testid': 'strip-heel' });
   const auto = el('span', { class: 'strip-auto', 'data-testid': 'strip-auto' });
   const trueWind = el('span', { 'data-testid': 'strip-true' });
   const apparent = el('span', { 'data-testid': 'strip-apparent' });
@@ -49,7 +50,7 @@ export function createInstrumentStrip(
       'aria-label': t('instruments.label'),
     },
     [
-      el('span', { class: 'strip-line' }, [speed, heading, auto]),
+      el('span', { class: 'strip-line' }, [speed, heading, heel, auto]),
       el('span', { class: 'strip-line strip-winds' }, [trueWind, apparent]),
     ],
   );
@@ -69,6 +70,12 @@ export function createInstrumentStrip(
       heading,
       t('instruments.heading', { deg: Math.round(compassDeg(boat.headingDeg)) % 360 }),
     );
+    // Heel: how far she leans, and which rail is down. Upright (under 1°) shows nothing.
+    const lean = Math.round(Math.abs(boat.heelDeg));
+    const leanText =
+      lean >= 1 ? t('instruments.heel', { deg: lean, side: sideLetter(boat.heelDeg) }) : '';
+    setText(heel, leanText);
+    heel.hidden = leanText === '';
     // The autopilot steers only while sailing: held still, no badge.
     let badge = '';
     if (boat.mode === 'held') badge = '';

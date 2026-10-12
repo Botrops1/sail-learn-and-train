@@ -1186,9 +1186,7 @@
       "smoothEaseNote": "assumption: easing by hand is smooth while the hand still feels at least this much of the load on the tail (load / capstan factor); with more turns the tail force is too small to control and the rope eases in jerks (owner: about 2 turns to ease under control)"
     },
     "loads": {
-      "$comment": "Phase 1 estimates of the pull on each rope's tail (PHASE1_SPEC 7.2.2 Loads), replaced by Phase 2 forces.",
-      "sheetLbPerFt2PerMph2": 0.00431,
-      "sheetSource": "PHYSICS_TRUTHS [8]: sheet load (lb) = sail area (ft2) x wind speed^2 (mph) x 0.00431. Scaled by the sail's fill and how much of it is out, divided by the purchase (jib sheet 2:1, main sheet 2 x partsPerSide). Applied to the main as well (PHASE1_SPEC 7.2.2).",
+      "$comment": "The pull on each rope's tail (PHASE1_SPEC 7.2.2 Loads). From M8 the two sheets come from the sail forces (physics.loads, src/model/sheetLoads.ts); the fixed loads below are unchanged.",
       "fixedN": {
         "rope_vang": 400,
         "rope_topping_lift": 250,
@@ -1260,8 +1258,8 @@
     "scenarios": [
       {
         "id": "furlLineSlips",
-        "query": "?mode=realistic&wd=60&ws=20&ms=30&mf=100&st=starboard&co=a3,b3&wsb=a2.1.t&sel=rope_main_furling_line&cam=side-starboard",
-        "note": "M4c teaching scenario (PHASE1_SPEC 7.2.2): furling the main at 20 kn with the sail still pulling and one turn of the 'in' furling tail on the starboard winch: the line slips. The 'out' tail and the outhaul clutches are already open. Fix: fetch the winch handle from Port, go to the Mast, switch IN, handle in, crank (or add a turn on the winch, or luff first)"
+        "query": "?mode=realistic&wd=60&ws=27&ms=30&mf=100&st=starboard&co=a3,b3&wsb=a2.1.t&sel=rope_main_furling_line&cam=side-starboard",
+        "note": "M4c teaching scenario (PHASE1_SPEC 7.2.2): furling the main at 27 kn with the sail still pulling and one turn of the 'in' furling tail on the starboard winch: the line slips. The 'out' tail and the outhaul clutches are already open. Fix: fetch the winch handle from Port, go to the Mast, switch IN, handle in, crank (or add a turn on the winch, or luff first)"
       }
     ]
   },
@@ -1442,6 +1440,27 @@
       "smallStepDeg": 1,
       "largeStepDeg": 10,
       "note": "assumption: a simple PID on the heading error, tuned in the prototype: a 20° course change at 12 kn settles within ±2° in about 11 s with less than 2° overshoot"
+    },
+    "heel": {
+      "rightingCurveNote": "assumption: RM(φ) = RM30 · sin(1.5 φ) / sin 45° with RM30 = dimensions.rightingMomentKNmAt30Deg (98.3 kNm, manual), peaking at 60°; GM ≈ 1.36 m at small angles",
+      "rollGyrationBeamFraction": 0.35,
+      "rollAddedInertiaFraction": 0.2,
+      "rollDampingRatio": 1.2,
+      "rollDampingNote": "assumption, tuned in M8 (spec value 0.6): a little over critical damping, so the heel eases to its angle without rocking, which is clearer for a beginner; it also keeps the lowest speed of the autopilot tack (PT-28) above 2 kn",
+      "maxHeelDeg": 60,
+      "resistanceIncreaseAt20Deg": 0.06,
+      "weatherHelmDegPerDegHeel": 0.32,
+      "weatherHelmNote": "assumption: heel adds a turn towards the wind like 0.32° of rudder per degree of heel (about 5.4° of rudder at 17° of heel, cf. PHYSICS_TRUTHS [16]: more than 5–7° of rudder means too much heel)",
+      "rudderGripByHeelDeg": [[0, 1], [20, 1], [40, 0.2], [90, 0.2]],
+      "rudderGripNote": "assumption: the rudder loses grip as she heels past 20° (it comes out of the water and stalls)",
+      "overpoweredHeelDeg": 25,
+      "roundUpMinHeelDeg": 25,
+      "roundUpMinYawRateDegS": 2
+    },
+    "loads": {
+      "jibSheetLoadFraction": 1.0,
+      "jibSheetLoadNote": "assumption: the jib sheet carries about the whole jib force (consistent with PHYSICS_TRUTHS [8])",
+      "mainCeAlongFootFraction": 0.333
     },
     "display": {
       "$comment": "Teaching display values (PHASE2_SPEC 7).",

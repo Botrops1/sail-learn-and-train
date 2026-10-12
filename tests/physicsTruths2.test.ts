@@ -126,10 +126,14 @@ describe('Held still is Phase 1', () => {
   it('Sailing to Held zeroes the speed at once and keeps the heading; Held to Sailing starts at 0', () => {
     let s = run(initialState({ boat: { headingDeg: 130 } }), 2);
     expect(s.boat.speedMps).toBeGreaterThan(1);
+    // She heels and the autopilot works against the weather helm, so the heading wanders a little.
+    const before = s.boat.headingDeg;
+    expect(Math.abs(before - 130)).toBeLessThan(2);
     s = act(s, { type: 'setBoatMode', mode: 'held' });
     expect(s.boat.speedMps).toBe(0);
     expect(s.boat.yawRateDegS).toBe(0);
-    expect(s.boat.headingDeg).toBeCloseTo(130, 3);
+    expect(s.boat.heelDeg).toBe(0);
+    expect(s.boat.headingDeg).toBe(before);
     const heading = s.boat.headingDeg;
     s = run(s, 2);
     expect(s.boat.headingDeg).toBe(heading);
