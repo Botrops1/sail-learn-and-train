@@ -6,6 +6,7 @@ import { rightingMomentNm, rollDamping, rollInertia } from './heel';
 import { boatMassKg, hullResistance, type Resistance } from './hullResistance';
 import { sailForces, type SailForces } from './sailForces';
 import { initialRig, type RigState } from './sim';
+import type { SailDamage } from './trim';
 
 /**
  * Boat motion on open water (PHASE2_SPEC 6.3): speed, heading and position from the sail forces
@@ -61,6 +62,8 @@ export interface MotionInputs {
    * round-up test. Missing: the wheel's.
    */
   rudderLimitDeg?: number;
+  /** Flogging damage (M9): a torn sail gives less force. Missing = new sails. */
+  damage?: SailDamage;
 }
 
 export interface MotionReport {
@@ -119,7 +122,15 @@ export function stepBoat(
   for (let i = 0; i < count; i += 1) {
     const twaDeg = wrap180(inputs.windDirDeg - headingDeg);
     const wind = apparentWind(inputs.twsKn, twaDeg, speedMps, data);
-    const forces = sailForces(inputs.rig, inputs.controls, wind.awsKn, wind.awaDeg, heelDeg, data);
+    const forces = sailForces(
+      inputs.rig,
+      inputs.controls,
+      wind.awsKn,
+      wind.awaDeg,
+      heelDeg,
+      data,
+      inputs.damage,
+    );
     const resistance = hullResistance(speedMps, forces.sideN, heelDeg, inputs.rudderDeg, data);
     const makeReport = (grip: number, effectiveRudderDeg: number, roundUp: boolean) => ({
       forces,

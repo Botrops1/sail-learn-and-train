@@ -1,11 +1,11 @@
 import type { AppState, Store } from '../app/store';
 import { compassDeg, mpsToKn, wrap180 } from '../model/angles';
-import { boat as boatData } from '../model/boat';
 import { timeScaleText } from '../model/timeScale';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
 import { sideLetter } from './autopilotPanel';
+import { boat as boatData } from '../model/boat';
 
 /** Collapses the space left where a wind straight ahead or astern has no side letter. */
 function tidy(text: string): string {
@@ -44,10 +44,20 @@ export function createInstrumentStrip(
     t('instruments.gust'),
   ]);
   const timeScale = el('span', { class: 'strip-time', 'data-testid': 'strip-time' });
+  const worn = el(
+    'span',
+    {
+      class: 'strip-sail',
+      'data-testid': 'strip-sail',
+      title: t('trim.badgeTitle'),
+      hidden: '',
+    },
+    [t('trim.badge')],
+  );
   const trueWind = el('span', { 'data-testid': 'strip-true' });
   const apparent = el('span', { 'data-testid': 'strip-apparent' });
   // GUST and ×4 / ×16 (M10) get a row of their own, only while one shows: the first line is full.
-  const flags = el('span', { class: 'strip-line strip-flags' }, [gust, timeScale]);
+  const flags = el('span', { class: 'strip-line strip-flags' }, [worn, gust, timeScale]);
   const strip = el(
     'button',
     {
@@ -108,7 +118,13 @@ export function createInstrumentStrip(
       sped ? t('instruments.timeScale', { scale: timeScaleText(state.settings.timeScale) }) : '',
     );
     timeScale.hidden = !sped;
-    const flagged = gusting || sped;
+    // A sail worn out from flapping (M9).
+    const wearing =
+      Math.max(state.sailDamage.main, state.sailDamage.jib) >=
+      boatData.physics.trim.flogging.warnAt;
+    if (worn.hidden === wearing) worn.hidden = !wearing;
+    // The third row exists only while a badge shows (the first row is full on a phone).
+    const flagged = gusting || sped || wearing;
     if (flags.hidden === flagged) flags.hidden = !flagged;
     const wind = rig.wind;
     setText(trueWind, windText('instruments.true', wind.twaDeg, wind.twsKn));

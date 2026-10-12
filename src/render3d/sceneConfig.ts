@@ -104,6 +104,27 @@ export const SCENE = {
    * palette (distinguishable with the common kinds of colour blindness). A rope whose controls
    * fight each other turns red; the panel says "fighting" too, so colour is not the only signal.
    */
+  /**
+   * Telltales and the tear mark on a torn sail (M9, PHASE2_SPEC 9.3): presentation sizes and the
+   * ribbons' movement (angle in degrees in the sail's plane, measured from the chord, + = up).
+   */
+  telltales: {
+    lengthM: 0.35,
+    widthM: 0.06,
+    /** Distance aft of the luff along the chord, metres. */
+    mainFromLuffM: 0.6,
+    jibFromLuffM: 0.8,
+    offFaceM: 0.03,
+    /** Port face red, starboard face green. */
+    portColor: '#d32f2f',
+    starboardColor: '#2e9d4a',
+    streaming: { baseDeg: 0, wiggleDeg: 5, frequencyHz: 3 },
+    lifting: { baseDeg: 60, wiggleDeg: 25, frequencyHz: 8 },
+    stalled: { baseDeg: -70, wiggleDeg: 15, frequencyHz: 2 },
+    /** How fast a ribbon moves to a new state (time constant, seconds). */
+    changeTimeS: 0.15,
+    tear: { color: '#2a2a2a', widthM: 0.06, liftM: 0.015, heightFraction: 0.5, zigzagRows: 0.5 },
+  },
   ropes: {
     colors: {
       mainsheet: '#e69f00',

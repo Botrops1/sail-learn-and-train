@@ -13,6 +13,7 @@ import { liveM5Checks, M5_SCENES } from './shots-m5.mjs';
 import { liveM6Checks, M6_SCENES } from './shots-m6.mjs';
 import { liveM7Checks, M7_SCENES } from './shots-m7.mjs';
 import { liveM8Checks, M8_SCENES } from './shots-m8.mjs';
+import { liveM9Checks, M9_SCENES } from './shots-m9.mjs';
 import { liveM10Checks, M10_SCENES } from './shots-m10.mjs';
 
 const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm10';
@@ -44,6 +45,7 @@ const VIEWPORTS = [
       'm7-instrument',
       'm8-heeled-bow',
       'm8-load',
+      'm9-sails-panel-good',
       'm10-wind-tab-gusty',
       'm10-time-bar',
     ],
@@ -132,6 +134,7 @@ const SCENES = [
   ...M6_SCENES.map((scene) => ({ ...scene, name: `m6-${scene.name}` })),
   ...M7_SCENES.map((scene) => ({ ...scene, name: `m7-${scene.name}` })),
   ...M8_SCENES.map((scene) => ({ ...scene, name: `m8-${scene.name}` })),
+  ...M9_SCENES.map((scene) => ({ ...scene, name: `m9-${scene.name}` })),
   ...M10_SCENES.map((scene) => ({ ...scene, name: `m10-${scene.name}` })),
 ];
 
@@ -230,6 +233,7 @@ async function openPage(viewport, label, query) {
     label.includes('m6') ||
     label.includes('m7') ||
     label.includes('m8') ||
+    label.includes('m9') ||
     label.includes('m10') ||
     /[?&]held=/.test(query);
   const url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
@@ -472,10 +476,20 @@ const ONLY_M6 = process.env.SHOTS_ONLY_M6 === '1';
 const ONLY_M7 = process.env.SHOTS_ONLY_M7 === '1';
 // SHOTS_ONLY_M8=1: only the M8 scenes and live checks.
 const ONLY_M8 = process.env.SHOTS_ONLY_M8 === '1';
+// SHOTS_ONLY_M9=1: only the M9 scenes and live checks.
+const ONLY_M9 = process.env.SHOTS_ONLY_M9 === '1';
 // SHOTS_ONLY_M10=1: only the M10 scenes and live checks.
 const ONLY_M10 = process.env.SHOTS_ONLY_M10 === '1';
 const QUICK =
-  ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M10;
+  ONLY_LIVE ||
+  ONLY_M4B ||
+  ONLY_M4C ||
+  ONLY_M5 ||
+  ONLY_M6 ||
+  ONLY_M7 ||
+  ONLY_M8 ||
+  ONLY_M9 ||
+  ONLY_M10;
 
 /**
  * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
@@ -572,6 +586,7 @@ try {
       if (ONLY_M6 && !scene.name.startsWith('m6-')) continue;
       if (ONLY_M7 && !scene.name.startsWith('m7-')) continue;
       if (ONLY_M8 && !scene.name.startsWith('m8-')) continue;
+      if (ONLY_M9 && !scene.name.startsWith('m9-')) continue;
       if (ONLY_M10 && !scene.name.startsWith('m10-')) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       const label = `${viewport.name}/${scene.name}`;
@@ -732,18 +747,22 @@ try {
     prefix: PREFIX,
     problems,
   };
-  const only = ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M10;
+  const only =
+    ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M9 || ONLY_M10;
   if (!only) await liveGeneralChecks();
-  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M10) {
+  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
     await liveM4bChecks(live);
     await liveM4bTouchChecks(live);
     await liveM4bFixChecks(live);
   }
-  if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M10) await liveM4cChecks(live);
-  if (!ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M10) await liveM5Checks(live);
-  if (!ONLY_M7 && !ONLY_M8 && !ONLY_M10) await liveM6Checks(live);
-  if (!ONLY_M8 && !ONLY_M10) await liveM7Checks(live);
-  if (!ONLY_M10) await liveM8Checks(live);
+  if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
+    await liveM4cChecks(live);
+  }
+  if (!ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM5Checks(live);
+  if (!ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM6Checks(live);
+  if (!ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM7Checks(live);
+  if (!ONLY_M9 && !ONLY_M10) await liveM8Checks(live);
+  if (!ONLY_M10) await liveM9Checks(live);
   await liveM10Checks(live);
 } finally {
   await browser.close();

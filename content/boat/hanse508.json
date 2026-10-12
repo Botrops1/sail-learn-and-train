@@ -1477,6 +1477,24 @@
       "pointsOfSailSource": "PHYSICS_TRUTHS [1] (Wikipedia, Point of sail): band edges are teaching choices",
       "trackSampleS": 1,
       "trackMaxPoints": 900
+    },
+    "trim": {
+      "luffingBelowFill": 0.5,
+      "stallAboveAoaDeg": 25,
+      "stallNote": "assumption: just past the peak of liftByAoaDeg (20°)",
+      "pushedFromAwaDeg": 150,
+      "telltaleHeights": [0.25, 0.5, 0.75],
+      "telltaleLuffAoaDeg": 6,
+      "blanket": { "fromAwaDeg": 150, "fullAwaDeg": 170, "jibForceFactorAtFull": 0.15 },
+      "blanketNote": "assumption: on a run the main takes the jib's wind (PT-37)",
+      "flogging": {
+        "minAwsKn": 8,
+        "referenceAwsKn": 20,
+        "lifeS": 600,
+        "warnAt": 0.5,
+        "tornForceFactor": 0.4
+      },
+      "floggingNote": "assumption: 10 minutes of flogging at 20 kn apparent wind tears a sail; damage grows with the square of the wind"
     }
   },
   "windModes": {

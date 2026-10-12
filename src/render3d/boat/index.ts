@@ -16,6 +16,8 @@ import { createMaterials } from './materials';
 import { buildRig } from './rig';
 import { buildRopes, type RopeView } from './ropes';
 import { buildSailMesh } from './sailMesh';
+import { buildTelltales } from './telltales';
+import { blanketFactor, NO_DAMAGE, type SailDamage } from '../../model/trim';
 
 export interface BoatModel {
   root: THREE.Group;
@@ -24,7 +26,8 @@ export interface BoatModel {
    * Shows the rig as solved: boom pose, sail shapes, the jib car, ropes and the masthead
    * indicator.
    * With `ropeView`, ropes far from the camera are drawn thick enough to see. `winches`: the
-   * ropes put on the winches in Realistic mode (M5); without it, Easy mode's drawing.
+   * ropes put on the winches in Realistic mode (M5); without it, Easy mode's drawing. `damage`
+   * (M9): a torn sail shows its tear.
    */
   update(
     rig: RigState,
@@ -32,6 +35,7 @@ export interface BoatModel {
     ropeView?: RopeView,
     flashing?: ReadonlySet<string>,
     winches?: readonly WinchWrap[],
+    damage?: SailDamage,
   ): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
@@ -65,6 +69,7 @@ export function buildBoat(
   let drawings = ropeDrawings(rig);
   const ropes = buildRopes(drawings);
   const windex = buildWindex(materials);
+  const telltales = buildTelltales(materials);
   root.add(
     ...buildHull(materials),
     buildKeel(materials),
@@ -77,6 +82,7 @@ export function buildBoat(
     jibSail.mesh,
     ...ropes.objects,
     windex.pivot,
+    ...telltales.objects,
   );
 
   const update = (
@@ -85,12 +91,25 @@ export function buildBoat(
     ropeView?: RopeView,
     flashing?: ReadonlySet<string>,
     winches?: readonly WinchWrap[],
+    damage: SailDamage = NO_DAMAGE,
   ) => {
     rigParts.setBoomPose(drawnPose(next));
     const main = mainSailInputFor(next, nextControls, next.wind);
-    mainSail.update(mainSailGrid(main), shown(main.unfurled));
-    const jib = jibInputFor(next, nextControls, next.wind);
-    jibSail.update(jibSailGrid(jib), shown(jib.unfurled));
+    const mainGrid = mainSailGrid(main);
+    mainSail.update(mainGrid, shown(main.unfurled));
+    // On a run the main takes the jib's wind (PT-37): the jib is drawn emptier, flapping.
+    const drawnJib = jibInputFor(next, nextControls, next.wind);
+    const jib = { ...drawnJib, fill: drawnJib.fill * blanketFactor(next.wind.awaDeg) };
+    const jibGrid = jibSailGrid(jib);
+    jibSail.update(jibGrid, shown(jib.unfurled));
+    telltales.update(
+      next,
+      next.wind.awaDeg,
+      { grid: mainGrid, leeSide: main.side, shown: shown(main.unfurled) },
+      { grid: jibGrid, leeSide: jib.side, shown: shown(jib.unfurled) },
+      damage,
+      next.timeS,
+    );
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
     drawings = ropeDrawings(next, boat, winches);
     ropes.update(drawings, ropeView, flashing);

@@ -1945,6 +1945,134 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   display: none;
 }
 
+/* Sails block of the Ropes tab (M9, PHASE2_SPEC 9.3). */
+.sails-panel {
+  margin: 4px 0 10px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.sails-panel .section-title {
+  margin: 0 0 4px;
+}
+
+.trim-intro {
+  margin: 0 0 6px;
+}
+
+.trim-row {
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+
+.trim-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trim-name {
+  font-weight: 700;
+}
+
+.trim-chip {
+  margin-left: auto;
+  padding: 1px 8px;
+  border: 1px solid currentcolor;
+  border-radius: 10px;
+  font-size: var(--font-small);
+  font-weight: 700;
+}
+
+.trim-chip[data-tone='good'] {
+  background: #e3f3e6;
+  color: #1d6b2f;
+}
+
+.trim-chip[data-tone='luffing'] {
+  background: #fff1d6;
+  color: #7a4a00;
+}
+
+.trim-chip[data-tone='stalled'] {
+  background: #fde8eb;
+  color: #b00020;
+}
+
+.trim-chip[data-tone='idle'] {
+  border-style: dashed;
+  color: var(--muted);
+}
+
+.trim-hint {
+  margin: 2px 0 0;
+  font-size: var(--font-small);
+}
+
+.trim-wear {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: var(--font-small);
+  font-weight: 600;
+}
+
+.trim-wear[hidden] {
+  display: none;
+}
+
+.trim-wear-bar {
+  flex: 0 0 96px;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.trim-wear-fill {
+  display: block;
+  height: 100%;
+  background: #7a4a00;
+}
+
+.trim-wear[data-level='warn'] .trim-wear-fill {
+  background: #c25b00;
+}
+
+.trim-wear[data-level='torn'] .trim-wear-fill {
+  background: #b00020;
+}
+
+.trim-repair {
+  min-height: var(--touch);
+  margin-top: 6px;
+  padding: 4px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+}
+
+.trim-repair[hidden] {
+  display: none;
+}
+
+.strip-sail[hidden] {
+  display: none;
+}
+
+.strip-sail {
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #fff1d6;
+  color: #7a4a00;
+}
+
 /* Wind instrument (M7, PHASE2_SPEC 7.5): a dial with the bow at the top, in the Wind tab. */
 .instrument-box {
   display: flex;

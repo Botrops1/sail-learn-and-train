@@ -31,7 +31,9 @@ describe('calibration bands (no heel, best sheets)', () => {
     [12, 45, 6.3, 7.4],
     [12, 90, 7.7, 8.8],
     [12, 135, 5.6, 6.7],
-    [12, 175, 4.8, 5.9],
+    // M9 (PT-37): on a run the main blankets the jib, so the M6 band 4.8–5.9 no longer holds;
+    // the band is the one PHASE2_SPEC 9.5 item 5 gives for this case.
+    [12, 175, 3.7, 5.0],
     [6, 90, 4.9, 5.9],
   ];
   for (const [tws, twa, low, high] of cases) {
