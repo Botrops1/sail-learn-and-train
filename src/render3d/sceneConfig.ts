@@ -106,7 +106,7 @@ export const SCENE = {
    */
   telltales: {
     lengthM: 0.35,
-    widthM: 0.03,
+    widthM: 0.06,
     /** Distance aft of the luff along the chord, metres. */
     mainFromLuffM: 0.6,
     jibFromLuffM: 0.8,
