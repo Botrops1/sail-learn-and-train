@@ -10,7 +10,7 @@ export const M7_SCENES = [
   {
     name: 'map-close-hauled',
     query: '?wd=45&ws=12&ms=12&js=0&cam=map',
-    waitMs: 20_000,
+    waitMs: 12_000,
   },
   { name: 'map-run', query: '?wd=175&ws=12&ms=100&js=100&cam=map', waitMs: 8000 },
   {
@@ -20,11 +20,17 @@ export const M7_SCENES = [
     waitMs: 12_000,
   },
   {
-    name: 'map-beam-reach-zoomed-in',
+    name: 'map-beam-reach-zoomed-out',
     query: '?wd=90&ws=12&ms=40&js=100&cam=map',
-    click: ['map-zoom-in'],
+    click: ['map-zoom-out', 'map-zoom-out'],
     // After the short hint on the map has faded out (about 8 s).
     waitMs: 10_000,
+  },
+  {
+    name: 'map-close-hauled-wide',
+    query: '?wd=45&ws=12&ms=12&js=0&cam=map',
+    click: ['map-zoom-out', 'map-zoom-out', 'map-zoom-out'],
+    waitMs: 20_000,
   },
   {
     name: 'map-in-irons',
@@ -106,41 +112,57 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
       (await text(page, 'map-wind-text')) === 'True wind 12 kn from 045°',
       await text(page, 'map-wind-text'),
     );
-    check('scale bar 100 m at 1 m/px', (await text(page, 'map-scale')) === '100 m', 'scale');
     check(
-      'boat enlarged note',
-      await page.getByTestId('map-enlarged').isVisible(),
-      'visible at 1 m/px',
-    );
-    await page.waitForTimeout(8000);
-    const points = await page.evaluate(() => window.__sailMap?.trackPoints() ?? -1);
-    check('track grows (about one point a second)', points >= 6 && points <= 14, `${points}`);
-
-    // Zoom: + halves the metres per pixel, − doubles.
-    await page.getByTestId('map-zoom-in').click();
-    check(
-      'zoom in: scale 50 m',
-      (await text(page, 'map-scale')) === '50 m',
+      'opens at 0.1 m/px: scale bar 10 m',
+      (await text(page, 'map-scale')) === '10 m',
       await text(page, 'map-scale'),
     );
     check(
-      'zoom in: boat no longer enlarged',
+      'boat drawn to scale at the start (no "boat enlarged")',
       !(await page.getByTestId('map-enlarged').isVisible()),
-      'hidden at 0.5 m/px',
+      'hidden at 0.1 m/px',
     );
     check(
       'zoom in is at its limit',
       await page.getByTestId('map-zoom-in').isDisabled(),
       'disabled',
     );
-    await page.getByTestId('map-zoom-out').click();
+    await page.waitForTimeout(8000);
+    const points = await page.evaluate(() => window.__sailMap?.trackPoints() ?? -1);
+    check('track grows (about one point a second)', points >= 6 && points <= 14, `${points}`);
+
+    // Zoom out: 0.1 → 0.2 → 0.5 → 1 m/px; at 1 m/px she is too small to draw to scale.
     await page.getByTestId('map-zoom-out').click();
     check(
-      'zoom out twice: scale 200 m',
-      (await text(page, 'map-scale')) === '200 m',
+      'zoom out once: scale 20 m',
+      (await text(page, 'map-scale')) === '20 m',
       await text(page, 'map-scale'),
     );
+    await page.getByTestId('map-zoom-out').click();
+    check(
+      'zoom out twice: scale 50 m',
+      (await text(page, 'map-scale')) === '50 m',
+      await text(page, 'map-scale'),
+    );
+    await page.getByTestId('map-zoom-out').click();
+    check(
+      'zoom out three times: scale 100 m',
+      (await text(page, 'map-scale')) === '100 m',
+      await text(page, 'map-scale'),
+    );
+    check(
+      'at 1 m/px: boat enlarged note',
+      await page.getByTestId('map-enlarged').isVisible(),
+      'visible',
+    );
     await page.getByTestId('map-zoom-in').click();
+    await page.getByTestId('map-zoom-in').click();
+    await page.getByTestId('map-zoom-in').click();
+    check(
+      'zoom in three times: back to 10 m',
+      (await text(page, 'map-scale')) === '10 m',
+      await text(page, 'map-scale'),
+    );
     check('link keeps cam=map', (await search(page)).includes('cam=map'), await search(page));
 
     // Boat up / North up.
@@ -180,7 +202,7 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
       String(await cardId(page)),
     );
     await page.keyboard.press('Escape');
-    await tapMap(page, 225, 300);
+    await tapMap(page, 200, 100);
     check('tap on open water: nothing', (await cardId(page)) === null, String(await cardId(page)));
     await page.getByTestId('map-wind-box').click();
     check('wind box: Test wind', (await cardId(page)) === 'env_wind', String(await cardId(page)));

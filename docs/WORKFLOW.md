@@ -235,8 +235,8 @@ New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, defaul
 
 #### M7: Map and wind instrument
 
-- [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=12&js=0&cam=map — the boat in the middle, a red wedge (the no-go zone, where she cannot sail) pointing into the wind, "Close-hauled" in bold, the box "True wind 12 kn from 045°", a blue arrow for the apparent wind. Wait 30 s: a grey track appears behind her.
-- [ ] Zoom: same link — + and − change the scale bar (100 m → 50 m …); at the closest zoom the note "boat enlarged" goes away.
+- [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=12&js=0&cam=map — the boat (large) in the middle, a red wedge (the no-go zone, where she cannot sail) pointing into the wind, "Close-hauled" in bold, the box "True wind 12 kn from 045°", a blue arrow for the apparent wind. Wait 30 s: a grey track appears behind her.
+- [ ] Zoom: same link — the map opens at its closest zoom (scale bar "10 m", the boat about 155 px long, drawn to scale). − zooms out (20 m, 50 m, 100 m …); at the 100 m scale she is drawn bigger than true size and the note "boat enlarged" shows. + zooms back in; at the closest zoom + is greyed out.
 - [ ] Boat up: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=85&ws=12&ms=12&js=0&hdg=40&cam=map — tap "Boat up": the map turns so her bow points up and the grid turns with it; "North up" turns it back.
 - [ ] Running downwind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=12&ms=100&js=100&cam=map — "Run" is in bold, the no-go wedge points behind you.
 - [ ] Tap the red wedge: the card says "No-go zone". Tap the blue arrow: "Apparent wind". Tap the boat: "Hull". Tap a name such as "Beam reach": its card. Tap the box at the top left: "Test wind".

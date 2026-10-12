@@ -17,9 +17,12 @@ import { setText } from './stepper';
  * The maths (`mapToScreen`, `scaleBar`, `mapLayout`, `pickMap`) is pure and exported for tests.
  */
 
-/** Zoom levels, metres per CSS pixel (PHASE2_SPEC 7.4); the map opens on index 1 (1 m/px). */
-export const ZOOM_LEVELS = [0.5, 1, 2, 4, 8] as const;
-export const DEFAULT_ZOOM_INDEX = 1;
+/**
+ * Zoom levels, metres per CSS pixel. The map opens on the closest one (0.1 m/px: the boat is
+ * about 155 px long); decided in the M7 PR, the spec had 0.5 … 8 and a default of 1.
+ */
+export const ZOOM_LEVELS = [0.1, 0.2, 0.5, 1, 2, 4, 8] as const;
+export const DEFAULT_ZOOM_INDEX = 0;
 
 /** Presentation sizes (CSS px unless noted): they belong to this UI, not to the boat file. */
 const MAP = {
@@ -34,6 +37,16 @@ const MAP = {
   /** The wedge's label sits this far off its middle line, on the side away from the arrow. */
   noGoLabelOffsetDeg: 24,
   labelRadiusPx: 120,
+  /** The wedge reaches at least this far beyond the hull, and the labels this far beyond it. */
+  wedgeBeyondHullPx: 45,
+  labelsBeyondWedgePx: 30,
+  /** Labels stay this far from the sides, and between these distances from the top and bottom. */
+  labelEdgePx: 4,
+  labelTopPx: 120,
+  /** The ring stays this far from the sides of the canvas (room for the words). */
+  labelSidePx: 40,
+  /** The apparent wind arrow's head stops this far off the hull. */
+  apparentHullGapPx: 4,
   /** Labels that would overlap are pushed outwards in steps of this size, up to this often. */
   labelPushPx: 16,
   labelPushMax: 4,
@@ -45,12 +58,13 @@ const MAP = {
   apparentPerKnPx: 3,
   apparentHeadGapPx: 10,
   headingLineM: 200,
+  gridFineM: 10,
   gridMinorM: 50,
   gridMajorM: 250,
   /** Grid lines closer together than this are left out. */
   gridMinPx: 8,
   scaleBarTargetPx: 80,
-  scaleBarMetres: [50, 100, 200, 500, 1000],
+  scaleBarMetres: [5, 10, 20, 50, 100, 200, 500, 1000],
   windFieldColumns: 3,
   windFieldRows: 3,
   windFieldDriftPxPerKnS: 2,
@@ -74,6 +88,7 @@ export const LABEL_ANGLES_DEG: Readonly<Record<string, number>> = {
 
 const COLOURS = {
   water: '#d9ebf6',
+  gridFine: 'rgb(60 110 150 / 0.09)',
   gridMinor: 'rgb(60 110 150 / 0.14)',
   gridMajor: 'rgb(60 110 150 / 0.3)',
   track: [70, 80, 92],
@@ -159,6 +174,44 @@ export function boatScale(metresPerPx: number): { pxPerM: number; enlarged: bool
     : { pxPerM: minimum, enlarged: true };
 }
 
+/**
+ * The radius of the no-go wedge and of the ring of point-of-sail labels, in px: 90 and 120, but
+ * further out when the boat is drawn so large that they would sit on her hull. `room` is how
+ * far the ring may reach on this canvas (see `ringRoom`); the wedge keeps 28 px inside it.
+ */
+export function ringRadii(
+  pxPerM: number,
+  room: number = Infinity,
+): { wedge: number; labels: number } {
+  const halfLength = (boat.dimensions.loa * pxPerM) / 2;
+  const wanted = Math.max(MAP.noGoRadiusPx, halfLength + MAP.wedgeBeyondHullPx);
+  const labels = Math.max(MAP.labelRadiusPx, Math.min(wanted + MAP.labelsBeyondWedgePx, room));
+  const wedge = Math.min(wanted, labels - MAP.labelsBeyondWedgePx + 2);
+  return { wedge, labels };
+}
+
+/**
+ * How far the label ring may reach: up to the strip and the wind box at the top (the boat's
+ * bow points up) and to the sides of the canvas.
+ */
+export function ringRoom(view: MapViewport): number {
+  return Math.min(view.centreYPx - MAP.labelTopPx, view.centreXPx - MAP.labelSidePx);
+}
+
+/** How far the hull's outline is from the boat's middle along a screen direction, in px. */
+function hullRadiusPx(
+  direction: ScreenPoint,
+  forward: ScreenPoint,
+  starboard: ScreenPoint,
+  pxPerM: number,
+): number {
+  const a = (boat.dimensions.loa * pxPerM) / 2;
+  const b = (boat.dimensions.beam * pxPerM) / 2;
+  const along = direction.x * forward.x + direction.y * forward.y;
+  const across = direction.x * starboard.x + direction.y * starboard.y;
+  return (a * b) / Math.sqrt((b * along) ** 2 + (a * across) ** 2);
+}
+
 /** A label placed on the map. */
 export interface MapLabel {
   id: string;
@@ -201,6 +254,7 @@ export function pointLabels(
   // The current point of sail first, so it keeps its place; the rest in the data's order.
   wanted.sort((a, b) => Number(b.id === current) - Number(a.id === current));
   const placed: { label: MapLabel; w: number }[] = [];
+  const labelRadius = ringRadii(boatScale(view.metresPerPx).pxPerM, ringRoom(view)).labels;
   for (const item of wanted) {
     const text = t(`pos.${item.id}` as StringKey);
     const bold = item.id === current;
@@ -210,12 +264,14 @@ export function pointLabels(
     const cy = view.centreYPx;
     let label: MapLabel | undefined;
     for (let push = 0; push <= MAP.labelPushMax; push += 1) {
-      const radius = MAP.labelRadiusPx + push * MAP.labelPushPx;
+      const radius = labelRadius + push * MAP.labelPushPx;
+      const margin = w / 2 + MAP.labelEdgePx;
       const candidate: MapLabel = {
         id: item.id,
         termId: item.termId,
         text,
-        x: cx + direction.x * radius,
+        // Kept inside the canvas sides.
+        x: Math.max(margin, Math.min(view.widthPx - margin, cx + direction.x * radius)),
         y: cy + direction.y * radius,
         bold,
       };
@@ -237,6 +293,8 @@ export interface MapLayout {
   starboard: ScreenPoint;
   /** Screen bearing (clockwise from up, degrees) the true wind comes from. */
   windFromScreenDeg: number;
+  /** Radius of the no-go wedge, px (see ringRadii). */
+  wedgeRadiusPx: number;
   /** The head of the apparent wind arrow (at the boat) and its tail (towards the wind). */
   apparentHead: ScreenPoint;
   apparentTail: ScreenPoint;
@@ -265,22 +323,33 @@ export function mapLayout(state: AppState, view: MapViewport, width: TextWidth):
   const trueFrom = compassDeg(state.controls.ctl_wind_dir);
   const towards = bearingToScreen(heading + wind.awaDeg, view);
   const tailLength = MAP.apparentBasePx + MAP.apparentPerKnPx * wind.awsKn;
+  // The arrow's head stops at the hull (or 10 px from the middle for a small boat).
+  const gap = Math.max(
+    MAP.apparentHeadGapPx,
+    hullRadiusPx(towards, forward, starboard, pxPerM) + MAP.apparentHullGapPx,
+  );
   const apparentHead = {
-    x: centre.x + towards.x * MAP.apparentHeadGapPx,
-    y: centre.y + towards.y * MAP.apparentHeadGapPx,
+    x: centre.x + towards.x * gap,
+    y: centre.y + towards.y * gap,
   };
   const apparentTail = {
-    x: centre.x + towards.x * (MAP.apparentHeadGapPx + tailLength),
-    y: centre.y + towards.y * (MAP.apparentHeadGapPx + tailLength),
+    x: centre.x + towards.x * (gap + tailLength),
+    y: centre.y + towards.y * (gap + tailLength),
   };
+  const wedgeRadiusPx = ringRadii(pxPerM, ringRoom(view)).wedge;
 
   // "Apparent 17 kn" just beyond the tail of the blue arrow, along the arrow.
   const apparentText = t('map.apparent', { speed: Math.round(wind.awsKn) });
   const apparentWidth = width(apparentText, true);
   const reach = Math.abs(towards.x) * (apparentWidth / 2) + Math.abs(towards.y) * MAP.labelHeightPx;
+  const apparentMargin = apparentWidth / 2 + MAP.labelEdgePx;
   const apparentLabel: PlacedText = {
     text: apparentText,
-    x: apparentTail.x + towards.x * (reach + 4),
+    // Kept inside the canvas sides, like the point-of-sail labels.
+    x: Math.max(
+      apparentMargin,
+      Math.min(view.widthPx - apparentMargin, apparentTail.x + towards.x * (reach + 4)),
+    ),
     y: apparentTail.y + towards.y * (reach + 4),
     bold: true,
   };
@@ -291,16 +360,18 @@ export function mapLayout(state: AppState, view: MapViewport, width: TextWidth):
   const noGoText = t(inside ? 'pos.no_go' : 'map.noGo');
   const noGoWidth = width(noGoText, inside);
   const side = wrap180(trueFrom - (heading + wind.awaDeg)) >= 0 ? 1 : -1;
-  const near = MAP.noGoLabelRadiusPx;
-  const far = MAP.noGoRadiusPx - 12;
+  const scale = wedgeRadiusPx / MAP.noGoRadiusPx;
+  const near = MAP.noGoLabelRadiusPx * scale;
+  const far = wedgeRadiusPx - 12;
+  const inner = MAP.noGoLabelInnerRadiusPx * scale;
   const spots: [number, number][] = [
     [side * MAP.noGoLabelOffsetDeg, near],
     [side * MAP.noGoLabelOffsetDeg, far],
     [-side * MAP.noGoLabelOffsetDeg, near],
     [-side * MAP.noGoLabelOffsetDeg, far],
-    [side * MAP.noGoLabelOffsetDeg, MAP.noGoLabelInnerRadiusPx],
-    [-side * MAP.noGoLabelOffsetDeg, MAP.noGoLabelInnerRadiusPx],
-    [0, MAP.noGoLabelInnerRadiusPx],
+    [side * MAP.noGoLabelOffsetDeg, inner],
+    [-side * MAP.noGoLabelOffsetDeg, inner],
+    [0, inner],
   ];
   let noGoLabel: PlacedText | undefined;
   for (const [offsetDeg, radius] of spots) {
@@ -324,6 +395,7 @@ export function mapLayout(state: AppState, view: MapViewport, width: TextWidth):
     forward,
     starboard,
     windFromScreenDeg: trueFrom - view.upDeg,
+    wedgeRadiusPx,
     apparentHead,
     apparentTail,
     apparentLabel,
@@ -356,14 +428,15 @@ export function pickMap(
 ): string | null {
   const layout = mapLayout(state, view, width);
   const p = { x, y };
-  // The boat: her drawn length along the bow, her beam across (at least a fingertip).
+  // The boat: an ellipse as long as she is drawn and as wide as her beam (at least a fingertip
+  // each way), so the root of the blue arrow, which starts at her hull, stays tappable.
   const halfLength = Math.max((boat.dimensions.loa * layout.pxPerM) / 2, MAP.hitPx);
   const halfBeam = Math.max((boat.dimensions.beam * layout.pxPerM) / 2, MAP.hitPx);
   const dx = x - layout.centre.x;
   const dy = y - layout.centre.y;
   const along = dx * layout.forward.x + dy * layout.forward.y;
   const across = dx * layout.starboard.x + dy * layout.starboard.y;
-  if (Math.abs(along) <= halfLength && Math.abs(across) <= halfBeam) {
+  if ((along / halfLength) ** 2 + (across / halfBeam) ** 2 <= 1) {
     return requirePartId('part_hull');
   }
   if (distanceToSegment(p, layout.apparentHead, layout.apparentTail) <= MAP.hitPx / 2) {
@@ -376,7 +449,7 @@ export function pickMap(
     }
   }
   const distance = Math.hypot(dx, dy);
-  if (distance <= MAP.noGoRadiusPx) {
+  if (distance <= layout.wedgeRadiusPx) {
     const direction = (((Math.atan2(dx, -dy) / DEG - layout.windFromScreenDeg) % 360) + 360) % 360;
     if (Math.abs(wrap180(direction)) <= boat.physics.display.noGoHalfAngleDeg) {
       return requirePartId('term_no_go_zone');
@@ -633,6 +706,15 @@ export function createMapView(host: HTMLElement, store: Store): MapView {
     Object.assign(window, {
       __sailMap: {
         trackPoints: () => store.getState().track.length,
+        /** The middle of the blue arrow on the canvas, CSS px. */
+        apparentMid: () => {
+          const state = store.getState();
+          const layout = mapLayout(state, viewport(state), textWidth);
+          return {
+            x: (layout.apparentHead.x + layout.apparentTail.x) / 2,
+            y: (layout.apparentHead.y + layout.apparentTail.y) / 2,
+          };
+        },
         /** Where the boat is on the canvas, CSS px. */
         centre: () => {
           const state = store.getState();
@@ -683,21 +765,23 @@ function drawMap(
 function drawGrid(ctx: CanvasRenderingContext2D, view: MapViewport): void {
   // Lines of the grid in map space, long enough to cover the canvas in any orientation.
   const reach = (Math.hypot(view.widthPx, view.heightPx) / 2) * view.metresPerPx;
-  const line = (minorM: number, colour: string) => {
-    if (minorM / view.metresPerPx < MAP.gridMinPx) return;
+  // Each level skips the lines of the next coarser one, which draws them stronger.
+  const line = (spacingM: number, coarserM: number | null, colour: string) => {
+    if (spacingM / view.metresPerPx < MAP.gridMinPx) return;
     ctx.strokeStyle = colour;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    const first = (centre: number) => Math.floor((centre - reach) / minorM) * minorM;
-    for (let e = first(view.centreEastM); e <= view.centreEastM + reach; e += minorM) {
-      if (minorM === MAP.gridMinorM && e % MAP.gridMajorM === 0) continue;
+    const first = (centre: number) => Math.floor((centre - reach) / spacingM) * spacingM;
+    const skip = (value: number) => coarserM !== null && value % coarserM === 0;
+    for (let e = first(view.centreEastM); e <= view.centreEastM + reach; e += spacingM) {
+      if (skip(e)) continue;
       const a = mapToScreen(e, view.centreNorthM - reach, view);
       const b = mapToScreen(e, view.centreNorthM + reach, view);
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
     }
-    for (let n = first(view.centreNorthM); n <= view.centreNorthM + reach; n += minorM) {
-      if (minorM === MAP.gridMinorM && n % MAP.gridMajorM === 0) continue;
+    for (let n = first(view.centreNorthM); n <= view.centreNorthM + reach; n += spacingM) {
+      if (skip(n)) continue;
       const a = mapToScreen(view.centreEastM - reach, n, view);
       const b = mapToScreen(view.centreEastM + reach, n, view);
       ctx.moveTo(a.x, a.y);
@@ -705,8 +789,9 @@ function drawGrid(ctx: CanvasRenderingContext2D, view: MapViewport): void {
     }
     ctx.stroke();
   };
-  line(MAP.gridMinorM, COLOURS.gridMinor);
-  line(MAP.gridMajorM, COLOURS.gridMajor);
+  line(MAP.gridFineM, MAP.gridMinorM, COLOURS.gridFine);
+  line(MAP.gridMinorM, MAP.gridMajorM, COLOURS.gridMinor);
+  line(MAP.gridMajorM, null, COLOURS.gridMajor);
 }
 
 /** A small arrow on screen at (x, y) pointing along `dir`. */
@@ -821,7 +906,7 @@ function drawNoGo(ctx: CanvasRenderingContext2D, state: AppState, layout: MapLay
   const selected = state.selection === 'term_no_go_zone';
   ctx.beginPath();
   ctx.moveTo(layout.centre.x, layout.centre.y);
-  ctx.arc(layout.centre.x, layout.centre.y, MAP.noGoRadiusPx, from, to);
+  ctx.arc(layout.centre.x, layout.centre.y, layout.wedgeRadiusPx, from, to);
   ctx.closePath();
   ctx.fillStyle = COLOURS.noGoFill;
   ctx.fill();

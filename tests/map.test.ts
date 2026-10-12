@@ -9,7 +9,10 @@ import { isRegisteredPartId } from '../src/model/registry';
 import { mapToBoat } from '../src/model/mapFrame';
 import {
   LABEL_ANGLES_DEG,
+  DEFAULT_ZOOM_INDEX,
   ZOOM_LEVELS,
+  ringRadii,
+  ringRoom,
   boatScale,
   mapLayout,
   mapToScreen,
@@ -180,7 +183,9 @@ describe('M7 map maths (PHASE2_SPEC 7.7)', () => {
   it('zoom changes the metres per pixel', () => {
     const view = viewport({ metresPerPx: 4 });
     expect(mapToScreen(400, 0, view).x).toBeCloseTo(280, 9);
-    expect(ZOOM_LEVELS).toEqual([0.5, 1, 2, 4, 8]);
+    expect(ZOOM_LEVELS).toEqual([0.1, 0.2, 0.5, 1, 2, 4, 8]);
+    // The map opens on the closest one.
+    expect(ZOOM_LEVELS[DEFAULT_ZOOM_INDEX]).toBe(0.1);
   });
 
   it('agrees with the boat frame of the 3D scene', () => {
@@ -195,6 +200,8 @@ describe('M7 map maths (PHASE2_SPEC 7.7)', () => {
     expect(scaleBar(2)).toEqual({ metres: 200, px: 100 });
     expect(scaleBar(4)).toEqual({ metres: 200, px: 50 });
     expect(scaleBar(8).metres).toBe(500);
+    expect(scaleBar(0.1)).toEqual({ metres: 10, px: 100 });
+    expect(scaleBar(0.2)).toEqual({ metres: 20, px: 100 });
   });
 
   it('the boat is drawn to scale, but at least 24 px long ("boat enlarged")', () => {
@@ -203,6 +210,25 @@ describe('M7 map maths (PHASE2_SPEC 7.7)', () => {
     expect(one.enlarged).toBe(true);
     expect(one.pxPerM * boat.dimensions.loa).toBeCloseTo(24, 9);
     expect(boatScale(8).pxPerM * boat.dimensions.loa).toBeCloseTo(24, 9);
+  });
+
+  it('at the closest zoom (0.1 m/px) she is 5 times as long as at 0.5 m/px, about 155 px', () => {
+    const closest = boatScale(0.1);
+    expect(closest.enlarged).toBe(false);
+    expect(closest.pxPerM * boat.dimensions.loa).toBeCloseTo(155.5, 6);
+    expect(closest.pxPerM / boatScale(0.5).pxPerM).toBeCloseTo(5, 9);
+  });
+
+  it('the wedge and the label ring stay clear of a large hull, and are 90 and 120 px for a small one', () => {
+    expect(ringRadii(boatScale(1).pxPerM)).toEqual({ wedge: 90, labels: 120 });
+    const big = ringRadii(boatScale(0.1).pxPerM);
+    expect(big.wedge).toBeGreaterThan((boat.dimensions.loa * boatScale(0.1).pxPerM) / 2 + 40);
+    expect(big.labels).toBeGreaterThan(big.wedge + 20);
+    // Where there is little room (a phone: the wind box is above), the ring stops there.
+    const tight = ringRadii(boatScale(0.1).pxPerM, 122);
+    expect(tight.labels).toBe(122);
+    expect(tight.wedge).toBeGreaterThanOrEqual(90);
+    expect(tight.wedge).toBeLessThan(tight.labels - 20);
   });
 });
 
@@ -348,6 +374,39 @@ describe('M7 map labels and taps (PHASE2_SPEC 7.4)', () => {
             Math.abs(a.y - b.y) < 14;
           expect(overlapping, `wind ${wind} heading ${heading} speed ${speed}`).toBe(false);
         }
+      }
+    }
+  });
+
+  it('at 0.1 m/px every label stays on a phone-sized canvas, and the arrow starts at the hull', () => {
+    const phone = viewport({
+      metresPerPx: 0.1,
+      widthPx: 390,
+      heightPx: 436,
+      centreXPx: 195,
+      centreYPx: 242,
+    });
+    for (const wind of [0, 45, 90, 135, 175, 225, 315]) {
+      for (const heading of [0, 40, 90, 200]) {
+        const state = initialState({
+          controls: { ctl_wind_dir: wind > 180 ? wind - 360 : wind, ctl_wind_speed: 12 },
+          boat: { ...SAILING, headingDeg: heading },
+        });
+        const layout = mapLayout(state, phone, width);
+        for (const label of layout.labels) {
+          const half = width(label.text, label.bold) / 2;
+          expect(
+            label.x - half,
+            `${label.text} left, wind ${wind} heading ${heading}`,
+          ).toBeGreaterThanOrEqual(0);
+          expect(label.x + half, `${label.text} right`).toBeLessThanOrEqual(390);
+        }
+        // The head of the blue arrow is off the middle of the boat, at her side, not inside her.
+        const head = Math.hypot(layout.apparentHead.x - 195, layout.apparentHead.y - 242);
+        expect(head).toBeGreaterThan(boat.dimensions.beam * layout.pxPerM * 0.45);
+        // On a phone the ring may reach only up to the wind box: the wedge stays modest.
+        expect(layout.wedgeRadiusPx).toBeGreaterThanOrEqual(90);
+        expect(layout.wedgeRadiusPx).toBeLessThanOrEqual(ringRoom(phone));
       }
     }
   });
