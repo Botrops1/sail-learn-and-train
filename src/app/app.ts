@@ -11,6 +11,7 @@ import { t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
+import { createMapView } from '../ui/mapView';
 import { createPanel } from '../ui/panel';
 import { createPauseButton } from '../ui/pauseButton';
 import { ropesTabShows } from '../ui/ropesTab';
@@ -52,6 +53,9 @@ export function startApp(host: HTMLElement): void {
 
   // Under the view's own buttons and cards.
   const labels: Labels3d | undefined = scene ? createLabels3d(layout.view, store) : undefined;
+  // The bird's-eye map (M7) takes the 3D view's place while the camera is on Map. It needs no
+  // WebGL, but without the camera bar there is no way back, so it comes with the 3D view.
+  const map = scene ? createMapView(layout.view, store) : undefined;
   createInstrumentStrip(layout.view, store, () => panel.showTab('wind'));
   createWindIndicator(layout.view, store);
   createPauseButton(layout.view, store);
@@ -101,7 +105,18 @@ export function startApp(host: HTMLElement): void {
     }
     last = now;
     const stepped = performance.now();
-    if (scene) {
+    if (map?.shown()) {
+      // The map shows: no 3D drawing (saves the battery), no labels in 3D.
+      labels?.update([]);
+      try {
+        map.update(now);
+      } catch (error) {
+        // A map that fails to draw gives the 3D view back; the panel keeps working.
+        console.error(error);
+        reportError(error);
+        store.dispatch({ type: 'setCameraPreset', preset: 'side-port' });
+      }
+    } else if (scene) {
       try {
         scene.render(now);
         labels?.update(store.getState().settings.labels ? scene.labelPoints() : []);

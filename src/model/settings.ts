@@ -6,6 +6,8 @@
 /**
  * Camera presets from PHASE1_SPEC 6.2. Only the preset is stored (in the store and the URL);
  * `free` means the user has moved the camera by hand. The free position itself is not stored.
+ * `map` (M7, PHASE2_SPEC 7.4) is not a 3D view: it shows the bird's-eye map instead of the
+ * 3D scene and leaves the 3D camera where it was.
  */
 export const CAMERA_PRESETS = [
   'side-port',
@@ -14,6 +16,7 @@ export const CAMERA_PRESETS = [
   'bow',
   'helm',
   'free',
+  'map',
 ] as const;
 export type CameraPreset = (typeof CAMERA_PRESETS)[number];
 

@@ -1799,3 +1799,322 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 .autopilot-notice[hidden] {
   display: none;
 }
+
+/* Wind instrument (M7, PHASE2_SPEC 7.5): a dial with the bow at the top, in the Wind tab. */
+.instrument-box {
+  display: flex;
+  justify-content: center;
+}
+
+.instrument-dial {
+  flex: 0 1 240px;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.instrument-ring {
+  fill: #eef5fa;
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.instrument-tick {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+
+.instrument-tick-major {
+  stroke-width: 2.5;
+}
+
+.instrument-sector {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: butt;
+}
+
+.instrument-sector-port {
+  stroke: #d33a3a;
+}
+
+.instrument-sector-starboard {
+  stroke: #2a9d4b;
+}
+
+.instrument-label {
+  fill: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.instrument-apparent line {
+  stroke: var(--text);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.instrument-apparent path {
+  fill: var(--text);
+}
+
+.instrument-true .needle-edge {
+  stroke: var(--accent);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+
+.instrument-true .needle-core {
+  stroke: #ffffff;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.instrument-true-tip circle {
+  fill: #ffffff;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+
+.instrument-true-letter {
+  fill: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.instrument-aws {
+  fill: var(--text);
+  font-size: 19px;
+  font-weight: 800;
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.instrument-tws {
+  fill: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  text-anchor: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.instrument-under {
+  margin: 4px 0 0;
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The bird's-eye map (M7, PHASE2_SPEC 7.4): over the 3D view while the camera is on Map. */
+.map-canvas,
+.map-wind-box,
+.map-orient-group,
+.map-scale,
+.map-hint,
+.map-zoom {
+  display: none;
+}
+
+/* three.js sets display: block on its canvas as an inline style, hence !important. */
+.view[data-map] .scene-canvas,
+.view[data-map] .labels3d {
+  display: none !important;
+}
+
+.view[data-map] .map-canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+
+.view[data-map] .map-wind-box {
+  position: absolute;
+  top: 68px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: min(200px, calc(100% - 16px));
+  min-height: var(--touch);
+  padding: 2px 10px 2px 4px;
+  border: 0;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.88);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-wind-icon {
+  flex: none;
+  width: 44px;
+  height: 46px;
+}
+
+.map-wind-ring {
+  fill: #eef5fa;
+  stroke: var(--muted);
+  stroke-width: 1.5;
+}
+
+.map-north-head {
+  fill: var(--muted);
+}
+
+.map-north-label {
+  fill: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.map-wind-arrow line {
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.map-wind-arrow path {
+  fill: var(--accent);
+}
+
+.view[data-map] .map-orient-group {
+  position: absolute;
+  top: 58px;
+  right: 8px;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.9);
+}
+
+.map-orient {
+  min-width: 0;
+  min-height: var(--touch);
+  padding: 4px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.map-orient[aria-pressed='true'] {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.view[data-map] .map-scale {
+  position: absolute;
+  bottom: 60px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.map-scale-line {
+  display: block;
+  height: 5px;
+  border: 2px solid var(--text);
+  border-top: 0;
+}
+
+.map-enlarged {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.map-enlarged[hidden] {
+  display: none;
+}
+
+.view[data-map] .map-zoom {
+  position: absolute;
+  right: 8px;
+  display: block;
+  width: var(--touch);
+  height: var(--touch);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.92);
+  color: var(--text);
+  font: inherit;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.view[data-map] .map-zoom:disabled {
+  color: var(--muted);
+  opacity: 0.55;
+  cursor: default;
+}
+
+.view[data-map] .map-zoom[data-testid='map-zoom-in'] {
+  bottom: 108px;
+}
+
+.view[data-map] .map-zoom[data-testid='map-zoom-out'] {
+  bottom: 60px;
+}
+
+.view[data-map] .map-hint {
+  position: absolute;
+  right: 64px;
+  bottom: 60px;
+  left: 124px;
+  display: block;
+  max-width: 300px;
+  margin: 0;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.9);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.3;
+  pointer-events: none;
+  /* Shown for a few seconds each time the map opens, then it gets out of the way. */
+  animation: map-hint-fade 9s ease-in forwards;
+}
+
+@keyframes map-hint-fade {
+  0%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.map-wind-box:focus-visible,
+.map-orient:focus-visible,
+.map-zoom:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}

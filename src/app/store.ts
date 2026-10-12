@@ -24,6 +24,7 @@ import {
   tackAutopilot,
   type AutopilotState,
 } from '../model/autopilot';
+import { appendTrack, type TrackPoint } from '../model/track';
 import {
   initialBoat,
   steadyState,
@@ -56,6 +57,8 @@ export interface AppState {
   motion: MotionReport | null;
   /** Seconds left to show "Autopilot on Standby: you took the wheel". */
   autopilotNoticeS: number;
+  /** Where the boat has been (M7, for the map). Sailing only; not in the link. */
+  track: TrackPoint[];
 }
 
 /** Autopilot commands (PHASE2_SPEC 6.4). `turnDeg` + = turn the boat to starboard. */
@@ -129,6 +132,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     autopilot: overrides.autopilot ?? engageAutopilot('heading', boat, controls.ctl_wind_dir),
     motion: null,
     autopilotNoticeS: 0,
+    track: [],
   };
 }
 
@@ -200,7 +204,8 @@ export function reduce(state: AppState, action: Action): AppState {
               heelRateDegS: 0,
             }
           : { ...state.boat, mode: 'sailing' };
-      return { ...state, boat };
+      // A new run starts a new track; held still keeps the one drawn so far.
+      return { ...state, boat, track: action.mode === 'sailing' ? [] : state.track };
     }
     case 'autopilot': {
       const command = action.command;
@@ -283,6 +288,7 @@ export function reduce(state: AppState, action: Action): AppState {
         autopilot,
         motion: moving.report,
         autopilotNoticeS: Math.max(0, state.autopilotNoticeS - frame),
+        track: sailing ? appendTrack(state.track, moving.boat, rig.timeS) : state.track,
       };
     }
   }

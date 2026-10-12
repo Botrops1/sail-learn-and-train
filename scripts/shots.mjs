@@ -11,8 +11,9 @@ import { liveM4bChecks, liveM4bFixChecks, liveM4bTouchChecks, M4B_SCENES } from 
 import { liveM4cChecks, M4C_SCENES } from './shots-m4c.mjs';
 import { liveM5Checks, M5_SCENES } from './shots-m5.mjs';
 import { liveM6Checks, M6_SCENES } from './shots-m6.mjs';
+import { liveM7Checks, M7_SCENES } from './shots-m7.mjs';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm6';
+const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm7';
 const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
 /** Every file of the set starts with this (M4a: "m4a-"), so parallel milestones never clash. */
 const PREFIX = process.env.SHOTS_PREFIX ?? `${MILESTONE}-`;
@@ -37,6 +38,8 @@ const VIEWPORTS = [
       'm4c-mast-station-handle-in',
       'm5-labels-side-port',
       'm5-realistic-rope-wrapped-helm',
+      'm7-map-close-hauled',
+      'm7-instrument',
     ],
   },
 ];
@@ -121,6 +124,7 @@ const SCENES = [
   ...M4C_SCENES.map((scene) => ({ ...scene, name: `m4c-${scene.name}` })),
   ...M5_SCENES.map((scene) => ({ ...scene, name: `m5-${scene.name}` })),
   ...M6_SCENES.map((scene) => ({ ...scene, name: `m6-${scene.name}` })),
+  ...M7_SCENES.map((scene) => ({ ...scene, name: `m7-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -212,11 +216,13 @@ async function openPage(viewport, label, query) {
   });
   page.on('pageerror', (error) => problems.push(`${label}: page error: ${error.message}`));
   // Since M6 the app opens Sailing. The older scenes and checks are about the ropes and sails,
-  // so they open Held still (the Phase 1 picture); the M6 ones (label contains "m6") sail.
-  const held = label.includes('m6') || /[?&]held=/.test(query);
+  // so they open Held still (the Phase 1 picture); the M6 and M7 ones (label contains "m6" or
+  // "m7") sail.
+  const held = label.includes('m6') || label.includes('m7') || /[?&]held=/.test(query);
   const url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
-  await page.waitForSelector('canvas.scene-canvas', { timeout: 10_000 });
+  // On the map (M7) the 3D canvas is hidden but still in the page.
+  await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
   return { context, page };
 }
 
@@ -449,7 +455,9 @@ const ONLY_M4C = process.env.SHOTS_ONLY_M4C === '1';
 const ONLY_M5 = process.env.SHOTS_ONLY_M5 === '1';
 // SHOTS_ONLY_M6=1: only the M6 scenes and live checks.
 const ONLY_M6 = process.env.SHOTS_ONLY_M6 === '1';
-const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6;
+// SHOTS_ONLY_M7=1: only the M7 scenes and live checks.
+const ONLY_M7 = process.env.SHOTS_ONLY_M7 === '1';
+const QUICK = ONLY_LIVE || ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7;
 
 /**
  * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
@@ -544,6 +552,7 @@ try {
       if (ONLY_M4C && !scene.name.startsWith('m4c-')) continue;
       if (ONLY_M5 && !scene.name.startsWith('m5-')) continue;
       if (ONLY_M6 && !scene.name.startsWith('m6-')) continue;
+      if (ONLY_M7 && !scene.name.startsWith('m7-')) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
@@ -551,6 +560,7 @@ try {
       if (scene.open) {
         await page.locator(`.rope-strip > :not([hidden]) ${scene.open} summary`).click();
       }
+      for (const id of scene.click ?? []) await page.getByTestId(id).click();
       if (scene.scrollTo) await page.locator(scene.scrollTo).scrollIntoViewIfNeeded();
       // `centre`: scroll the panel so this part sits in the middle of it (M4c).
       if (scene.centre) {
@@ -702,15 +712,16 @@ try {
     prefix: PREFIX,
     problems,
   };
-  if (!ONLY_M4B && !ONLY_M4C && !ONLY_M5 && !ONLY_M6) await liveGeneralChecks();
-  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6) {
+  if (!ONLY_M4B && !ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7) await liveGeneralChecks();
+  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7) {
     await liveM4bChecks(live);
     await liveM4bTouchChecks(live);
     await liveM4bFixChecks(live);
   }
-  if (!ONLY_M5 && !ONLY_M6) await liveM4cChecks(live);
-  if (!ONLY_M6) await liveM5Checks(live);
-  await liveM6Checks(live);
+  if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7) await liveM4cChecks(live);
+  if (!ONLY_M6 && !ONLY_M7) await liveM5Checks(live);
+  if (!ONLY_M7) await liveM6Checks(live);
+  await liveM7Checks(live);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

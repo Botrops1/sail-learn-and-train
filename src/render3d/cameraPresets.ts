@@ -88,7 +88,10 @@ export function fitDistance(
   return distance;
 }
 
-/** Camera pose for a preset. `free` returns the default view (the free position is not stored). */
+/**
+ * Camera pose for a preset. `free` and `map` return the default view (the free position is not
+ * stored; the map shows no 3D scene).
+ */
 export function presetPose(
   preset: CameraPreset,
   lens: Lens,
@@ -108,6 +111,9 @@ export function presetPose(
     top: viewDirection(options.topBowUp ? 180 : -90, cam.topElevationDeg),
     bow: viewDirection(0, cam.bowElevationDeg),
     free: viewDirection(90, cam.sideElevationDeg),
+    // The map hides the 3D scene; the camera keeps its pose (see scene.ts) and this is only
+    // what a link opened on the map starts from.
+    map: viewDirection(90, cam.sideElevationDeg),
   }[preset];
   let distance = fitDistance(box, target, direction, lens);
   if (preset === 'top') {

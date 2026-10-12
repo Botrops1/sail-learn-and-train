@@ -233,6 +233,9 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Physics: sail centres of effort (M6) | main: 2/3 of the way up from the gooseneck (about 9.7 m above the waterline); jib: the mean height of tack, head and clew (about 8.2 m); computed from the sail data, not stored | **Assumption** (a third of the way up a triangle) |
 | Physics: turning (M6) | yaw rate = speed × tan(rudder) / 16 m, following the wheel with a 1.5 s lag (`physics.steering`); at full wheel (35°) the turning circle is about 46 m across (3 boat lengths) | **Assumption** |
 | Physics: autopilot (M6) | PID on the heading error: kp 2.0, kd 5 s, ki 0.15 per s (only within 5° of the target, limited to ±10°), rudder at most 25° and 8°/s; buttons ±1° and ±10° (`physics.autopilot`) | **Assumption**; the real boat has a B&G autopilot (owner, 2026-10-10) whose behaviour is not known |
+| Map: no-go wedge (M7) | ±45° of the true wind, drawn 90 px long on the map (`physics.display.noGoHalfAngleDeg`) | PHYSICS_TRUTHS PT-21 [1]: about 45° either side (30–50° depending on the boat); the drawn wedge is a teaching picture, the model has no hard edge |
+| Map: points of sail (M7) | bands of the angle between the bow and the true wind: no-go 0–40°, close-hauled 40–55°, close reach 55–80°, beam reach 80–100°, broad reach 100–150°, run 150–180° (`physics.display.pointsOfSail`); the map labels sit at 45°, 67°, 90°, 125° and 180° | **Assumption**: names after Wikipedia, *Point of sail* [1]; the band edges are teaching choices |
+| Map: track (M7) | one point a second, the last 900 kept: 15 minutes of track (`physics.display.trackSampleS`, `trackMaxPoints`) | **Assumption** (a screen limit, not boat data) |
 
 ## 6. Open questions for the skipper / next time aboard
 

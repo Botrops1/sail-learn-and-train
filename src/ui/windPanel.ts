@@ -5,6 +5,7 @@ import { beaufort, WIND_PRESETS, windSide } from '../model/wind';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText, stepButton } from './stepper';
+import { createWindInstrument } from './windInstrument';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -239,6 +240,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
   return [
     el('p', { class: 'hint' }, [t('wind.hint')]),
     createBoatModeSwitch(store),
+    createWindInstrument(store),
     directionField,
     speedField,
     presetField,

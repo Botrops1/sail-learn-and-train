@@ -1442,6 +1442,22 @@
       "smallStepDeg": 1,
       "largeStepDeg": 10,
       "note": "assumption: a simple PID on the heading error, tuned in the prototype: a 20° course change at 12 kn settles within ±2° in about 11 s with less than 2° overshoot"
+    },
+    "display": {
+      "$comment": "Teaching display values (PHASE2_SPEC 7).",
+      "noGoHalfAngleDeg": 45,
+      "noGoSource": "PHYSICS_TRUTHS PT-21 [1]: about 45° either side of the true wind",
+      "pointsOfSail": [
+        { "id": "no_go", "fromDeg": 0, "toDeg": 40, "termId": "term_no_go_zone" },
+        { "id": "close_hauled", "fromDeg": 40, "toDeg": 55, "termId": "term_close_hauled" },
+        { "id": "close_reach", "fromDeg": 55, "toDeg": 80, "termId": "term_close_reach" },
+        { "id": "beam_reach", "fromDeg": 80, "toDeg": 100, "termId": "term_beam_reach" },
+        { "id": "broad_reach", "fromDeg": 100, "toDeg": 150, "termId": "term_broad_reach" },
+        { "id": "run", "fromDeg": 150, "toDeg": 180, "termId": "term_run" }
+      ],
+      "pointsOfSailSource": "PHYSICS_TRUTHS [1] (Wikipedia, Point of sail): band edges are teaching choices",
+      "trackSampleS": 1,
+      "trackMaxPoints": 900
     }
   }
 }

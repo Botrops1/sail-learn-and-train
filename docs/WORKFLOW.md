@@ -236,11 +236,12 @@ New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, defaul
 #### M7: Map and wind instrument
 
 - [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=12&ms=12&js=0&cam=map — the boat in the middle, a red wedge (the no-go zone, where she cannot sail) pointing into the wind, "Close-hauled" in bold, the box "True wind 12 kn from 045°", a blue arrow for the apparent wind. Wait 30 s: a grey track appears behind her.
-- [ ] Zoom and turn: same link — + and − change the scale bar; "Boat up" turns the map so the bow points up.
+- [ ] Zoom: same link — + and − change the scale bar (100 m → 50 m …); at the closest zoom the note "boat enlarged" goes away.
+- [ ] Boat up: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=85&ws=12&ms=12&js=0&hdg=40&cam=map — tap "Boat up": the map turns so her bow points up and the grid turns with it; "North up" turns it back.
 - [ ] Running downwind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=12&ms=100&js=100&cam=map — "Run" is in bold, the no-go wedge points behind you.
-- [ ] Tap the red wedge: the card says "No-go zone". Tap the blue arrow: "Apparent wind".
+- [ ] Tap the red wedge: the card says "No-go zone". Tap the blue arrow: "Apparent wind". Tap the boat: "Hull". Tap a name such as "Beam reach": its card. Tap the box at the top left: "Test wind".
 - [ ] Wind instrument: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100 — Wind tab: the solid needle (apparent) at about 56°, the outlined one (true) at 90°, AWS about 14.5, TWS 12. With `&held=1` added both needles point the same way.
-- [ ] Back to 3D: tap "Side" on the camera bar: the boat is drawn again.
+- [ ] Back to 3D: tap "Port" (the side view) on the camera bar: the boat is drawn again; "Map" brings the map back.
 
 #### M8: Heel, forces and weather helm
 
