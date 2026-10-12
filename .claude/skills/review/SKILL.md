@@ -16,7 +16,7 @@ The review normally runs right after the PR opens, before the owner tests on the
 2. Check out the PR's branch, `npm ci`, run `npm run typecheck`, `npm run lint`, `npm test`, and `SHOTS_ONLY=m<N> npm run shots` for its milestone. Look at the few PNGs that matter.
 3. Check:
    - **Correctness:** the code against the spec's formulas, numbers and signatures; tests that really test the rule (not bands widened to pass); sign and frame conventions.
-   - **Sailing sense:** does anything behave in a way a sailor would find wrong? Cite the rule or the source. For the PHYSICS_TRUTHS rules the milestone tests that are still `to-verify`, open the cited sources (web access is allowed for them) and say per rule whether the source supports it; recommend the status change, do not edit it.
+   - **Sailing sense:** does anything behave in a way a sailor would find wrong? Cite the rule or the source. Sources: every rule was checked once on 2026-10-12. Re-check only what the milestone touches: a rule it implements or whose behaviour it changes, and any still `to-verify`. Open the cited source (fetch it from the container with `curl`; the sailing sites are allowed in the cloud environment) and say per rule whether it still supports what the code now does; recommend status changes, do not edit them.
    - **Rules:** no magic numbers outside `hanse508.json`, ids from the registry, `src/model` pure, scope kept, docs updated.
    - **The PR description:** the checklist links work and match the spec; every question has a recommendation.
 4. Post **one** comment on the PR. Start it with "**Independent review**", then:
