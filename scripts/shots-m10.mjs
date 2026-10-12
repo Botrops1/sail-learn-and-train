@@ -52,7 +52,15 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
   };
   const [phone] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
-  const search = (page) => page.evaluate(() => window.location.search);
+  /** The link; the address bar follows the state at most every 300 ms, so wait a little for it. */
+  const search = async (page, pattern) => {
+    let current = await page.evaluate(() => window.location.search);
+    for (let i = 0; pattern && !pattern.test(current) && i < 30; i += 1) {
+      await page.waitForTimeout(100);
+      current = await page.evaluate(() => window.location.search);
+    }
+    return current;
+  };
   /** "True 90° S · 12 kn" → 12. */
   const trueKn = async (page) => Number(/· (\d+) kn/.exec(await text(page, 'strip-true'))?.[1]);
 
@@ -156,16 +164,24 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       'visible',
     );
     await page.waitForTimeout(500);
-    check('link has wm=gusty', (await search(page)).includes('wm=gusty'), await search(page));
+    check(
+      'link has wm=gusty',
+      (await search(page, /wm=gusty/)).includes('wm=gusty'),
+      await search(page),
+    );
     await page.getByTestId('wind-size').evaluate((input) => {
       input.value = '45';
       input.dispatchEvent(new Event('input', { bubbles: true }));
     });
     await page.waitForTimeout(500);
-    check('link has wg=45', (await search(page)).includes('wg=45'), await search(page));
+    check('link has wg=45', (await search(page, /wg=45/)).includes('wg=45'), await search(page));
     await page.getByTestId('wind-new-pattern').click();
     await page.waitForTimeout(500);
-    check('New pattern writes a seed', /seed=\d+/.test(await search(page)), await search(page));
+    check(
+      'New pattern writes a seed',
+      /seed=\d+/.test(await search(page, /seed=\d+/)),
+      await search(page),
+    );
     await page.getByText('Shifty', { exact: true }).click();
     check(
       'shifty: "Shift size 15°"',
@@ -189,7 +205,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     check(
       'steady leaves the link clean',
-      !/wm=|seed=|wg=|tx=/.test(await search(page)),
+      !/wm=|seed=|wg=|tx=/.test(await search(page, /^(?!.*(wm=|seed=|wg=|tx=))/)),
       await search(page),
     );
     await context.close();
@@ -234,7 +250,11 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     await page.getByTestId('time-faster').click();
     check('time bar: › twice gives ×4', (await status()) === '×4', await status());
     await page.waitForTimeout(500);
-    check('time bar: link has tx=4', (await search(page)).includes('tx=4'), await search(page));
+    check(
+      'time bar: link has tx=4',
+      (await search(page, /tx=4/)).includes('tx=4'),
+      await search(page),
+    );
     check(
       'time bar: ×4 badge in the strip',
       (await text(page, 'strip-time')) === '×4',
@@ -333,14 +353,14 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     );
     check(
       'View tab: tb=0 leaves the link',
-      !(await search(page)).includes('tb=0'),
+      !(await search(page, /^(?!.*tb=0)/)).includes('tb=0'),
       await search(page),
     );
     await page.locator('#time-bar-toggle').uncheck();
     await page.waitForTimeout(500);
     check(
       'View tab: the switch off writes tb=0',
-      (await search(page)).includes('tb=0'),
+      (await search(page, /tb=0/)).includes('tb=0'),
       await search(page),
     );
     await context.close();

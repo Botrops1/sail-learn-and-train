@@ -14,7 +14,7 @@ import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
 import { createPanel } from '../ui/panel';
-import { createTimeBar, trackTopHeight } from '../ui/timeBar';
+import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
 import { createInstrumentStrip } from '../ui/instrumentStrip';
 import { createWindIndicator } from '../ui/windIndicator';
@@ -63,7 +63,9 @@ export function startApp(host: HTMLElement): void {
   layout.view.append(top);
   createInstrumentStrip(top, store, () => panel.showTab('wind'));
   createTimeBar(top, store);
-  trackTopHeight(layout.view, top);
+  // The camera frames the boat below the time bar; `resize` is set once the scene exists.
+  let reframe = () => {};
+  trackTopHeight(layout.view, top, () => reframe());
   createWindIndicator(layout.view, store);
   const card = createInfoCard(layout, store, {
     shownInPanel: (partId) => panel.activeTab() === 'ropes' && ropesTabShows(partId),
@@ -82,8 +84,15 @@ export function startApp(host: HTMLElement): void {
       const viewBox = layout.view.getBoundingClientRect();
       const inset = viewBox.bottom - cameraBar.getBoundingClientRect().top;
       const stacked = layout.viewport().mode === 'stacked';
-      view.resize(layout.view.clientWidth, layout.view.clientHeight, inset, stacked);
+      view.resize(
+        layout.view.clientWidth,
+        layout.view.clientHeight,
+        inset,
+        stacked,
+        topClearance(top),
+      );
     };
+    reframe = resize;
     new ResizeObserver(resize).observe(layout.view);
     resize();
   }

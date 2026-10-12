@@ -26,10 +26,17 @@ export interface SceneView {
   /** The device pixel ratio the renderer uses (capped; lower at low detail). */
   readonly pixelRatio: number;
   /**
-   * Resizes the drawing buffer; `bottomInset` CSS px at the bottom are covered by buttons.
-   * In the stacked (portrait) layout the Top view shows the bow pointing up.
+   * Resizes the drawing buffer; `bottomInset` CSS px at the bottom are covered by buttons and
+   * `topInset` at the top by the time bar (M10). In the stacked (portrait) layout the Top view
+   * shows the bow pointing up.
    */
-  resize(width: number, height: number, bottomInset: number, stacked: boolean): void;
+  resize(
+    width: number,
+    height: number,
+    bottomInset: number,
+    stacked: boolean,
+    topInset?: number,
+  ): void;
   render(now: number): void;
   /** Draw calls and triangles of the last frame (debug overlay). */
   stats(): RenderStats;
@@ -220,12 +227,12 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     get pixelRatio() {
       return pixelRatio;
     },
-    resize(width, height, bottomInset, stacked) {
+    resize(width, height, bottomInset, stacked, topInset = 0) {
       if (width <= 0 || height <= 0) return;
       size = { width, height };
       renderer.setSize(width, height, false);
       canvasHeight = height;
-      rig.setViewport(width, height, bottomInset, { topBowUp: stacked });
+      rig.setViewport(width, height, bottomInset, { topBowUp: stacked }, topInset);
     },
     render(now) {
       const state = store.getState();

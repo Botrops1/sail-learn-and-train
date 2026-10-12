@@ -464,6 +464,8 @@ async function liveM3Checks() {
 
 // SHOTS_ONLY_LIVE=1: only the live checks (quick re-check while iterating).
 const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
+// SHOTS_ONLY_SMALL=1: only the small-parts tap check (every part must answer a tap).
+const ONLY_SMALL = process.env.SHOTS_ONLY_SMALL === '1';
 // SHOTS_ONLY_M4B=1: only the M4b scenes and live checks (quick re-check while iterating).
 const ONLY_M4B = process.env.SHOTS_ONLY_M4B === '1';
 // SHOTS_ONLY_M4C=1: only the M4c scenes and live checks.
@@ -577,7 +579,9 @@ async function liveGeneralChecks() {
 }
 
 try {
-  for (const viewport of ONLY_LIVE || process.env.SHOTS_NO_SCENES === '1' ? [] : VIEWPORTS) {
+  for (const viewport of ONLY_LIVE || ONLY_SMALL || process.env.SHOTS_NO_SCENES === '1'
+    ? []
+    : VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       if (ONLY_M4B && !scene.name.startsWith('m4b-')) continue;
@@ -694,7 +698,7 @@ try {
 
   // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
   // (positions from the debug-only hook) must show its card.
-  for (const viewport of QUICK ? [] : VIEWPORTS.slice(0, 3)) {
+  for (const viewport of QUICK && !ONLY_SMALL ? [] : VIEWPORTS.slice(0, 3)) {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
@@ -747,23 +751,27 @@ try {
     prefix: PREFIX,
     problems,
   };
-  const only =
-    ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M9 || ONLY_M10;
-  if (!only) await liveGeneralChecks();
-  if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
-    await liveM4bChecks(live);
-    await liveM4bTouchChecks(live);
-    await liveM4bFixChecks(live);
+  if (ONLY_SMALL) {
+    // Nothing else to run.
+  } else {
+    const only =
+      ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M9 || ONLY_M10;
+    if (!only) await liveGeneralChecks();
+    if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
+      await liveM4bChecks(live);
+      await liveM4bTouchChecks(live);
+      await liveM4bFixChecks(live);
+    }
+    if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
+      await liveM4cChecks(live);
+    }
+    if (!ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM5Checks(live);
+    if (!ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM6Checks(live);
+    if (!ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM7Checks(live);
+    if (!ONLY_M9 && !ONLY_M10) await liveM8Checks(live);
+    if (!ONLY_M10) await liveM9Checks(live);
+    if (!ONLY_M9) await liveM10Checks(live);
   }
-  if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
-    await liveM4cChecks(live);
-  }
-  if (!ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM5Checks(live);
-  if (!ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM6Checks(live);
-  if (!ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM7Checks(live);
-  if (!ONLY_M9 && !ONLY_M10) await liveM8Checks(live);
-  if (!ONLY_M10) await liveM9Checks(live);
-  if (!ONLY_M9) await liveM10Checks(live);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

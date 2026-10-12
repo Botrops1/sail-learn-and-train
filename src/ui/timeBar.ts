@@ -130,13 +130,27 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
 }
 
 /**
+ * How far down the 3D picture must start so that the time bar does not cover it, CSS px from
+ * the view's top. Where the bar sits beside the strip (wide views, or folded to Pause) the
+ * picture fills the view as before (the strip itself overlaps it, as it always did). Where the
+ * bar wraps under the strip (phones in portrait) the camera frames the boat below the bar.
+ */
+export function topClearance(top: HTMLElement): number {
+  const bar = top.querySelector<HTMLElement>('.time-bar');
+  if (!bar || bar.offsetTop < 4) return 0;
+  return Math.ceil(top.offsetTop + bar.offsetTop + bar.offsetHeight + 4);
+}
+
+/**
  * Keeps `--view-top-h` on the view: where the top area (instrument strip and time bar) ends, in
  * CSS px from the view's top. The map's controls, the debug box and the alerts sit below it.
+ * `onChange` runs when the top area changes size (the bar folds, a badge row appears).
  */
-export function trackTopHeight(view: HTMLElement, top: HTMLElement): void {
+export function trackTopHeight(view: HTMLElement, top: HTMLElement, onChange: () => void): void {
   const update = () => {
     const bottom = Math.ceil(top.offsetTop + top.offsetHeight);
     view.style.setProperty('--view-top-h', `${bottom}px`);
+    onChange();
   };
   new ResizeObserver(update).observe(top);
   update();
