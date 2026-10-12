@@ -254,7 +254,7 @@ New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, defaul
 
 #### M9: Trim quality and telltales
 
-- [ ] Good trim: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40&js=50&cam=side-starboard — Ropes tab → "Sails": Mainsail "Good". Zoom in on the front of the main: the little ribbons (telltales) on both sides stream straight back.
+- [ ] Good trim: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=25&js=50&cam=side-starboard — Ropes tab → "Sails": Mainsail "Good". Zoom in (pinch) on the front edge of the main, near the mast: the little ribbons (telltales) stream straight back, green ones on this side, red ones on the other.
 - [ ] Pulled in too far (stalled): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=0&js=50&cam=side-starboard — Mainsail "Stalled", the ribbons on the far (leeward) side hang down, the speed is lower. (PT-23)
 - [ ] Let out too far (luffing): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=100&js=50&cam=side-starboard — Mainsail "Luffing", the near-side ribbons lift, the front of the sail flaps.
 - [ ] Running, the main blocks the jib: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=12&ms=100&js=100 — Jib "Blanketed by the main" and it hangs empty. (PT-37)

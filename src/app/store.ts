@@ -26,6 +26,7 @@ import {
   type AutopilotState,
 } from '../model/autopilot';
 import { appendTrack, type TrackPoint } from '../model/track';
+import { floggingDamage, NO_DAMAGE, type SailDamage } from '../model/trim';
 import {
   initialBoat,
   steadyState,
@@ -60,6 +61,8 @@ export interface AppState {
   autopilotNoticeS: number;
   /** Where the boat has been (M7, for the map). Sailing only; not in the link. */
   track: TrackPoint[];
+  /** How worn each sail is from flogging (M9, 0 … 1; 1 = torn). Not in the link. */
+  sailDamage: SailDamage;
 }
 
 /** Autopilot commands (PHASE2_SPEC 6.4). `turnDeg` + = turn the boat to starboard. */
@@ -83,6 +86,8 @@ export type Action =
   /** Held still (Phase 1) or Sailing (PHASE2_SPEC 6.4). */
   | { type: 'setBoatMode'; mode: 'sailing' | 'held' }
   | { type: 'autopilot'; command: AutopilotCommand }
+  /** New sails: the flogging damage goes back to 0 (M9). */
+  | { type: 'repairSails' }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
   | { type: 'load'; state: AppState }
   | { type: 'step'; dt: number };
@@ -144,6 +149,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     motion: null,
     autopilotNoticeS: 0,
     track: [],
+    sailDamage: NO_DAMAGE,
   };
 }
 
@@ -237,6 +243,10 @@ export function reduce(state: AppState, action: Action): AppState {
       }
       return autopilot === state.autopilot ? state : { ...state, autopilot };
     }
+    case 'repairSails':
+      return state.sailDamage.main === 0 && state.sailDamage.jib === 0
+        ? state
+        : { ...state, sailDamage: NO_DAMAGE };
     case 'realistic': {
       let realistic = reduceRealistic(state.realistic, action.action);
       // While paused nothing runs yet: shutting the clutch then is just preparing.
@@ -279,6 +289,7 @@ export function reduce(state: AppState, action: Action): AppState {
       }
       const rig = step({ controls, rig: state.rig }, dt, motionOf(state.boat), undefined, {
         instantRopes: realistic,
+        damage: state.sailDamage,
       });
       const moving = stepBoat(
         state.boat,
@@ -289,6 +300,7 @@ export function reduce(state: AppState, action: Action): AppState {
           rig,
           controls,
           engineThrustN: 0,
+          damage: state.sailDamage,
           rudderLimitDeg:
             autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
         },
@@ -304,6 +316,7 @@ export function reduce(state: AppState, action: Action): AppState {
         motion: moving.report,
         autopilotNoticeS: Math.max(0, state.autopilotNoticeS - frame),
         track: sailing ? appendTrack(state.track, moving.boat, rig.timeS) : state.track,
+        sailDamage: floggingDamage(state.sailDamage, rig, dt),
       };
     }
   }

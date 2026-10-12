@@ -4,6 +4,7 @@ import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
 import { sideLetter } from './autopilotPanel';
+import { boat as boatData } from '../model/boat';
 
 /** Collapses the space left where a wind straight ahead or astern has no side letter. */
 function tidy(text: string): string {
@@ -38,6 +39,16 @@ export function createInstrumentStrip(
   const heading = el('span', { class: 'strip-heading', 'data-testid': 'strip-heading' });
   const heel = el('span', { class: 'strip-heel', 'data-testid': 'strip-heel' });
   const auto = el('span', { class: 'strip-auto', 'data-testid': 'strip-auto' });
+  const worn = el(
+    'span',
+    {
+      class: 'strip-sail',
+      'data-testid': 'strip-sail',
+      title: t('trim.badgeTitle'),
+      hidden: '',
+    },
+    [t('trim.badge')],
+  );
   const trueWind = el('span', { 'data-testid': 'strip-true' });
   const apparent = el('span', { 'data-testid': 'strip-apparent' });
   const strip = el(
@@ -50,7 +61,7 @@ export function createInstrumentStrip(
       'aria-label': t('instruments.label'),
     },
     [
-      el('span', { class: 'strip-line' }, [speed, heading, heel, auto]),
+      el('span', { class: 'strip-line' }, [speed, heading, heel, auto, worn]),
       el('span', { class: 'strip-line strip-winds' }, [trueWind, apparent]),
     ],
   );
@@ -87,6 +98,11 @@ export function createInstrumentStrip(
     }
     setText(auto, badge);
     auto.hidden = badge === '';
+    // A sail worn out from flapping (M9).
+    const wearing =
+      Math.max(state.sailDamage.main, state.sailDamage.jib) >=
+      boatData.physics.trim.flogging.warnAt;
+    if (worn.hidden === wearing) worn.hidden = !wearing;
     const wind = rig.wind;
     setText(trueWind, windText('instruments.true', wind.twaDeg, wind.twsKn));
     setText(apparent, windText('instruments.apparent', wind.awaDeg, wind.awsKn));

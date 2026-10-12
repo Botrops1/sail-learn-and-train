@@ -731,7 +731,7 @@ export function blanketFactor(awaDeg: number, data = boat): number   // 1 below 
   - blanketed: "The mainsail is taking the jib's wind."
   
   Colour is never the only signal (the text says it). A damage bar appears when damage > 0, with "Flogging wears the sail" from `warnAt`, and "Torn" plus a `Repair sails` button at 1.
-- **Telltales** (`render3d/boat/telltales.ts`, part id `part_telltale`): for each sail, 3 heights × 2 faces. Each is a thin ribbon 0.35 m × 0.03 m, placed 0.6 m (main) or 0.8 m (jib) aft of the luff along the chord, 0.03 m off each face. Port face red, starboard face green (presentation choice). Animation per frame:
+- **Telltales** (`render3d/boat/telltales.ts`, part id `part_telltale`): for each sail, 3 heights × 2 faces. Each is a thin ribbon 0.35 m × 0.03 m (0.06 m wide, decided in the M9 PR), placed 0.6 m (main) or 0.8 m (jib) aft of the luff along the chord, 0.03 m off each face. Port face red, starboard face green (presentation choice). Animation per frame:
   - streaming: lies along the chord with a small wiggle (±5°, 3 Hz);
   - lifting: tilted 60° upwards and fluttering (±25°, 8 Hz);
   - stalled: hangs 70° down and fluttering slowly (±15°, 2 Hz).
@@ -744,7 +744,7 @@ The state chips, hints and buttons above as `trim.*` keys. Registry: `part_tellt
 
 ### 9.5 Tests
 
-1. **PT-23**: TWS 12, TWA 60, steady state at main sheet 40 → main `good`; at main sheet 0 → `stalled`, the main's drive is lower and its side force higher than at 40.
+1. **PT-23**: TWS 12, TWA 60, steady state at main sheet 25 (was 40; decided in the M9 PR) → main `good`; at main sheet 0 → `stalled`, the main's drive is lower and its side force higher than at 40.
 2. Telltales: with the main `good` but twist 10°, the top windward telltale lifts first when easing (a sweep of the main sheet finds a setting where the top one lifts and the bottom one does not).
 3. **PT-37**: TWA 175, TWS 12: jib `blanketed`, `blanketFactor ≤ 0.2`. TWA 120: factor 1.
 4. **PT-38**: Held still, wind 25 kn from 0° (head to wind, both sails luffing): after `lifeS · (20/25)²` = 384 s ± 1 s of steps the main is torn. With wind 6 kn: no damage after 1 hour.
@@ -752,7 +752,27 @@ The state chips, hints and buttons above as `trim.*` keys. Registry: `part_tellt
 
 ### 9.6 Screenshots, done when
 
-`m9-telltales-good` (`?wd=60&ws=12&ms=40&js=50&cam=side-starboard`, close up), `m9-stalled` (`ms=0`), `m9-sails-panel`. Done when all M9 checks pass.
+`m9-telltales-good` (`?wd=60&ws=12&ms=25&js=50&cam=side-starboard`, close up; `ms=25` instead of 40, decided in the M9 PR), `m9-stalled` (`ms=0`), `m9-sails-panel`. Done when all M9 checks pass.
+
+### 9.7 Decided in the M9 PR
+
+Things the spec left open or got wrong (each is "decided in the M9 PR"):
+
+- **Branch:** the owner's prompt named `m9-trim`; the cloud session's designated branch is `claude/quirky-sagan-3cpy78`, so the PR comes from that (as in M8).
+- **The sheet values of the spec's test and checklist (9.5 item 1, WORKFLOW M9) do not give "good" trim.** With the Phase 1 rig solver, at TWS 12 and TWA 60 (steady state, with or without heel) main sheet 40 is already **luffing** (apparent wind about 42°, angle of attack about 2°, the boom can swing out to about 42°) and main sheet 0 is **stalled** (angle of attack 40°). Good trim, with the angle of attack between the luffing edge (6°) and the stall edge (25°), is main sheet **18–28** (best speed at 20–22: 7.5 kn). The formulas of 9.2 are implemented exactly; nothing tunable was changed. So the PT-23 test and the screenshots use main sheet **25** (angle of attack 16°, all telltales stream) in place of 40, and the WORKFLOW checklist links were changed to `ms=25`. Owner's answer: accepted; 40 was the beam-reach setting, and the Phase 1 sheet scale needs no review.
+- **The M6 calibration band for TWA 175 changed** (`tests/motion.test.ts`): blanketing lowers the best speed on a run from 5.4 to 4.7 kn (no heel), so the M6 band 4.8–5.9 became 3.7–5.0, the band 9.5 item 5 gives for the same case (with heel the best speed is the same, 4.7 kn). Accepted by the owner. Nothing else in an M6 or M8 test changed.
+- **Where the damage and the blanketing enter:** `sailForces(rig, controls, aws, awa, heel, data, damage = NO_DAMAGE)` takes the damage as a trailing argument; the jib's area is multiplied by `blanketFactor(awa)`, a torn sail's lift and drag by `tornForceFactor` (0.4). `step` (`StepOptions.damage`) and `stepBoat` (`MotionInputs.damage`) pass it on, so a torn sail also lowers `RigState.forces` and the Realistic mode loads. `initialRig` and `steadyState` use whole sails (damage is not in the link).
+- **State of a torn sail:** its trim state is still the solver's (a torn sail can be luffing and goes on wearing, capped at 1); the panel chip says "Torn" in place of the state, unless the sail is furled.
+- **Flogging damage uses the rig's quantised apparent wind** (`rig.wind`), the sim time step with the pause (dt = 0 while paused) and the speed-up of M10 when it arrives (it multiplies `dt` before `step`).
+- **Telltales when the state is `pushed`, `blanketed` or `furled`:** none are drawn (`SailTrim.telltales` is empty). The ribbon angle is measured in the sail's plane from the chord (+ = up the sail), moved to a new state with a 0.15 s time constant so a state change is not a jump. They are placed from the drawn sail grid (curve, twist, flapping), at the height fractions of the rows (the main's rows are not evenly spaced in height, so 25/50/75 % are approximate). The leeward face is the side the sail curves to (`curveSide`), as the sail drawing uses.
+- **Ribbon size: 0.35 m × 0.06 m** (owner's answer on the PR: wider than the spec's 0.03 m, so they show better; `SCENE.telltales.widthM`).
+- **The jib is drawn emptier when blanketed:** the drawn fill is multiplied by `blanketFactor` (render layer only, `render3d/boat/index.ts`), so on a run the jib hangs and flaps ("hangs empty" in the WORKFLOW check). Phase 1's drawing functions are untouched.
+- **Torn sail look:** a dark zig-zag strip (two quads thick, 6 cm wide, one each side of the sail) across the mid-height of the sail; it is part of the sail (`sail_main` / `sail_jib`), so a tap on it identifies the sail. `SCENE.telltales` holds the sizes.
+- **Sails block:** one block (`ui/sailsPanel.ts`) in the Ropes tab after the selected rope's strip and above the rope list in Easy mode; in Realistic mode the same block moves to the top of the Ropes tab. The wear bar shows from the first damage (percent), "Flogging wears the sail" from `warnAt`, "Torn" at 1; the Repair sails button shows when a sail is torn and sets both sails to new. The instrument strip shows `⚠ sail` from `warnAt`.
+- **Registry:** `part_telltale` (draft); its short text mentions the `term_telltale` term (the registry has no link field).
+- **Debug hook:** with `?debug=1`, `__sailDebug.setDamage(main, jib)` sets the damage so the torn look can be shot at once; the screenshot script uses it.
+- **Screenshots script:** `SHOTS_ONLY_M9=1` runs only the M9 scenes and live checks; scenes and checks with "m9" in the label open Sailing; the default output folder is `docs/screenshots/m9` and the prefix `m9-`.
+- **Sources:** [13] and [14] (Wikipedia, Practical Sailor) could not be opened from the build environment (403), so PT-23, PT-37 and PT-38 stay `to-verify`.
 
 ---
 

@@ -154,6 +154,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         /** Puts the camera at a position looking at a target (close-up screenshots). */
         setView: (position: Vec3, target: Vec3, fovDeg: number = SCENE.camera.verticalFovDeg) =>
           rig.setPose({ position, target, fovDeg }),
+        /** Sets the flogging damage of the sails (0…1), so a torn sail can be shot at once (M9). */
+        setDamage: (main: number, jib: number) => {
+          const state = store.getState();
+          store.dispatch({ type: 'load', state: { ...state, sailDamage: { main, jib } } });
+        },
         /** Draw calls and triangles of the last frame. */
         stats: () => ({
           calls: renderer.info.render.calls,
@@ -236,6 +241,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         },
         flashingRopes(state),
         state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
+        state.sailDamage,
       );
       // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).
       streaks.update(state.rig.wind.awaDeg, state.rig.wind.awsKn, now / 1000);

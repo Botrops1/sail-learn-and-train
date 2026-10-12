@@ -5,6 +5,7 @@ import { initialSide, solveBoom, type BoomInput, type BoomSolution } from './boo
 import type { Controls } from './controls';
 import { sailForces, type SailForces } from './sailForces';
 import { jibSheetReleased, solveJib, type JibInput, type JibSolution } from './jib';
+import { NO_DAMAGE, type SailDamage } from './trim';
 import type { Vec3 } from './vec3';
 
 /**
@@ -172,9 +173,10 @@ function forcesOf(
   controls: Controls,
   motion: BoatMotion,
   data: BoatData,
+  damage: SailDamage = NO_DAMAGE,
 ): SailForces {
   const { awsKn, awaDeg } = rig.wind;
-  return sailForces(rig, controls, awsKn, awaDeg, motion.heelDeg ?? 0, data);
+  return sailForces(rig, controls, awsKn, awaDeg, motion.heelDeg ?? 0, data, damage);
 }
 
 /** What a shared link adds to its controls: the part of the rig's history that shows. */
@@ -292,6 +294,8 @@ export interface StepOptions {
   instantRopes?: boolean;
   /** The true wind (direction from, speed) when it is not the controls' (M10 gusts). */
   wind?: TrueWind;
+  /** Flogging damage (M9): a torn sail gives less force, so the loads drop. */
+  damage?: SailDamage;
 }
 
 /** Degrees within which a gybe swing counts as finished. */
@@ -370,5 +374,5 @@ export function step(
     timeS: rig.timeS + dt,
     wind,
   };
-  return { ...next, forces: forcesOf(next, controls, motion, data) };
+  return { ...next, forces: forcesOf(next, controls, motion, data, options.damage) };
 }

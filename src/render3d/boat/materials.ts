@@ -37,6 +37,10 @@ export interface BoatMaterials {
   fabric: THREE.Material;
   glass: THREE.Material;
   sail: THREE.Material;
+  /** Telltale ribbons on the port (red) and starboard (green) face of a sail, and a torn sail's tear (M9). */
+  telltalePort: THREE.Material;
+  telltaleStarboard: THREE.Material;
+  tear: THREE.Material;
 }
 
 type Look = {
@@ -130,6 +134,9 @@ export function createMaterials(detail: Detail = 'high'): BoatMaterials {
       transparent: true,
       opacity: c.sailOpacity,
     }),
+    telltalePort: make({ color: SCENE.telltales.portColor, roughness: 0.9 }),
+    telltaleStarboard: make({ color: SCENE.telltales.starboardColor, roughness: 0.9 }),
+    tear: make({ color: SCENE.telltales.tear.color, roughness: 0.9 }),
   };
 }
 

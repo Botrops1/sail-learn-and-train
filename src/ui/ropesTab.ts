@@ -15,6 +15,7 @@ import {
   type ControlView,
 } from './ropeControls';
 import { createRealisticPanel } from './realisticPanel';
+import { createSailsPanel } from './sailsPanel';
 import { createRopeLegend, ropeColorKey, ROPE_DASH } from './ropeLegend';
 import { setText } from './stepper';
 
@@ -171,6 +172,7 @@ export function createRopesTab(store: Store): Element[] {
   );
 
   const drawing = createClutchDrawing(store);
+  const sails = createSailsPanel(store);
   const legend = createRopeLegend();
   // The autopilot sits directly under the wheel's row (PHASE2_SPEC 6.5).
   const rows: HTMLElement[] = views.flatMap((view) =>
@@ -220,6 +222,7 @@ export function createRopesTab(store: Store): Element[] {
     ]),
     drawing.element,
     strip,
+    sails,
     el('h3', { class: 'section-title' }, [t('ropes.list.title')]),
     list,
     legend,
@@ -234,6 +237,7 @@ export function createRopesTab(store: Store): Element[] {
   ]);
   // Easy mode's legend sits after the list, before the explanations.
   const legendSpot = legend.nextSibling;
+  const sailsSpot = sails.nextSibling;
 
   const modes = createModeSwitch(store);
   const showMode = (state: AppState, previous?: AppState) => {
@@ -244,6 +248,10 @@ export function createRopesTab(store: Store): Element[] {
     // One legend: it moves to the mode that is shown.
     if (real && legend.parentElement !== realistic) realistic.append(legend);
     if (!real && legend.parentElement !== easy) easy.insertBefore(legend, legendSpot);
+    // One Sails block as well: at the end of the Realistic view (the stations and clutches stay
+    // where they were), or after the strip in Easy.
+    if (real && sails.parentElement !== realistic) realistic.append(sails);
+    if (!real && sails.parentElement !== easy) easy.insertBefore(sails, sailsSpot);
   };
   store.subscribe(showMode);
   showMode(store.getState());
