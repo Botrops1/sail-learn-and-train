@@ -192,7 +192,10 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   store.subscribe((state, previous) => {
     const preset = state.camera.preset;
-    if (preset !== previous.camera.preset && preset !== rig.preset) rig.goTo(preset);
+    // The map leaves the 3D camera where it is: going back to the same view needs no move.
+    if (preset !== 'map' && preset !== previous.camera.preset && preset !== rig.preset) {
+      rig.goTo(preset);
+    }
     if (state.settings.detail !== detail) {
       detail = state.settings.detail;
       holder.remove(boatModel.root);
