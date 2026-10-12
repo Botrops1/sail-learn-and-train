@@ -2,7 +2,7 @@
 // debug-only camera hook, and the render cost (draw calls, triangles, FPS) per detail level.
 // Usage: npm run build && node scripts/visual-shots.mjs
 //   VISUAL_DIST  folder with a built site (default dist)
-//   VISUAL_OUT   output folder (default docs/screenshots/m3b/after)
+//   VISUAL_OUT   output folder (default shots/m3b/after)
 //   VISUAL_DETAIL  comma-separated detail levels to shoot, e.g. "high,low"; empty = no parameter
 //   (the build before M3b has no detail setting)
 // Fails on console errors. Writes stats.json and stats.md next to the PNGs.
@@ -13,7 +13,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 
 const DIST = process.env.VISUAL_DIST ?? 'dist';
-const OUT = process.env.VISUAL_OUT ?? path.join('docs', 'screenshots', 'm3b', 'after');
+const OUT = process.env.VISUAL_OUT ?? path.join('shots', 'm3b', 'after');
 const DETAILS = (process.env.VISUAL_DETAIL ?? 'high,low').split(',').filter(Boolean);
 const BASE = '/sail-learn-and-train/';
 // Optional filters while iterating: comma-separated viewport names / shot names.

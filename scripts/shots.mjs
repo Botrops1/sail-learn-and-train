@@ -1,7 +1,16 @@
-// Screenshots for the PR (PHASE1_SPEC 11, "Visual").
+// Browser checks and screenshots (PHASE1_SPEC 11, "Visual").
 // Usage: npm run shots   (builds first, then serves dist/ and drives headless Chromium)
-// Writes PNGs into docs/screenshots/<milestone>/ and fails on any console error, a wrong
-// layout mode, a page that scrolls, a tap that shows an unknown part, or a camera/URL problem.
+// Fails on any console error, a wrong layout mode, a page that scrolls, a tap that shows an
+// unknown part, a camera/URL problem or a failed live check. Writes PNGs into shots/ (not
+// committed; the agent looks at the ones it needs).
+//
+// Options (environment variables):
+//   SHOTS_ONLY=m10       only the scenes and live checks of these milestones (comma list)
+//   SHOTS_SIZES=phone    scenes at phone size only (CI); live checks and tap checks unchanged
+//   SHOTS_SCENE=<text>   only the scenes whose name contains <text>
+//   SHOTS_ONLY_LIVE=1    only the live checks;  SHOTS_ONLY_SMALL=1  only the small-parts taps
+//   SHOTS_NO_SCENES=1    no scenes;  SHOTS_KEEP=1  keep the files already in the folder
+//   SHOTS_OUT=<dir>      output folder (default shots/)
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from 'playwright';
@@ -16,10 +25,8 @@ import { liveM8Checks, M8_SCENES } from './shots-m8.mjs';
 import { liveM9Checks, M9_SCENES } from './shots-m9.mjs';
 import { liveM10Checks, M10_SCENES } from './shots-m10.mjs';
 
-const MILESTONE = process.env.SHOTS_MILESTONE ?? 'm10';
-const OUT_DIR = path.join('docs', 'screenshots', MILESTONE);
-/** Every file of the set starts with this (M4a: "m4a-"), so parallel milestones never clash. */
-const PREFIX = process.env.SHOTS_PREFIX ?? `${MILESTONE}-`;
+const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
+const PREFIX = process.env.SHOTS_PREFIX ?? '';
 const BASE_PATH = '/sail-learn-and-train/';
 
 /** The three sizes from the spec, plus a landscape phone to show the rotation switch. */
@@ -77,7 +84,7 @@ const SCENES = [
       query: `?wd=${wd}&ws=12&ms=80&cam=${cam}`,
     }));
   }),
-  // WORKFLOW M3 checklist, one picture per check (the M2 set stays in docs/screenshots/m2).
+  // WORKFLOW M3 checklist, one picture per check.
   { name: 'pt10-wind30-car-port-top', query: '?wd=30&ws=12&cam=top' },
   { name: 'pt10-wind-30-car-stbd-top', query: '?wd=-30&ws=12&cam=top' },
   { name: 'pt10-wind30-bow', query: '?wd=30&ws=12&cam=bow' },
@@ -227,15 +234,9 @@ async function openPage(viewport, label, query) {
   });
   page.on('pageerror', (error) => problems.push(`${label}: page error: ${error.message}`));
   // Since M6 the app opens Sailing. The older scenes and checks are about the ropes and sails,
-  // so they open Held still (the Phase 1 picture); the M6, M7 and M8 ones (label contains "m6",
-  // "m7" or "m8") sail.
-  const held =
-    label.includes('m6') ||
-    label.includes('m7') ||
-    label.includes('m8') ||
-    label.includes('m9') ||
-    label.includes('m10') ||
-    /[?&]held=/.test(query);
+  // so they open Held still (the Phase 1 picture); Phase 2 ones (label contains "m6" … "m19")
+  // sail.
+  const held = /m([6-9]|1\d)/.test(label) || /[?&]held=/.test(query);
   const url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
@@ -462,36 +463,16 @@ async function liveM3Checks() {
   }
 }
 
-// SHOTS_ONLY_LIVE=1: only the live checks (quick re-check while iterating).
 const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
-// SHOTS_ONLY_SMALL=1: only the small-parts tap check (every part must answer a tap).
 const ONLY_SMALL = process.env.SHOTS_ONLY_SMALL === '1';
-// SHOTS_ONLY_M4B=1: only the M4b scenes and live checks (quick re-check while iterating).
-const ONLY_M4B = process.env.SHOTS_ONLY_M4B === '1';
-// SHOTS_ONLY_M4C=1: only the M4c scenes and live checks.
-const ONLY_M4C = process.env.SHOTS_ONLY_M4C === '1';
-// SHOTS_ONLY_M5=1: only the M5 scenes and live checks.
-const ONLY_M5 = process.env.SHOTS_ONLY_M5 === '1';
-// SHOTS_ONLY_M6=1: only the M6 scenes and live checks.
-const ONLY_M6 = process.env.SHOTS_ONLY_M6 === '1';
-// SHOTS_ONLY_M7=1: only the M7 scenes and live checks.
-const ONLY_M7 = process.env.SHOTS_ONLY_M7 === '1';
-// SHOTS_ONLY_M8=1: only the M8 scenes and live checks.
-const ONLY_M8 = process.env.SHOTS_ONLY_M8 === '1';
-// SHOTS_ONLY_M9=1: only the M9 scenes and live checks.
-const ONLY_M9 = process.env.SHOTS_ONLY_M9 === '1';
-// SHOTS_ONLY_M10=1: only the M10 scenes and live checks.
-const ONLY_M10 = process.env.SHOTS_ONLY_M10 === '1';
-const QUICK =
-  ONLY_LIVE ||
-  ONLY_M4B ||
-  ONLY_M4C ||
-  ONLY_M5 ||
-  ONLY_M6 ||
-  ONLY_M7 ||
-  ONLY_M8 ||
-  ONLY_M9 ||
-  ONLY_M10;
+/** SHOTS_ONLY=m9,m10: only these milestones' scenes and live checks. */
+const ONLY = (process.env.SHOTS_ONLY ?? '')
+  .split(',')
+  .map((m) => m.trim().toLowerCase())
+  .filter(Boolean);
+const QUICK = ONLY_LIVE || ONLY.length > 0;
+/** SHOTS_SIZES=phone: scenes at phone size only (CI). */
+const SCENE_VIEWPORTS = process.env.SHOTS_SIZES === 'phone' ? [VIEWPORTS[0]] : VIEWPORTS;
 
 /**
  * Live checks on one page, no reload (M0–M4a): layout follows resizes; camera buttons and
@@ -581,17 +562,10 @@ async function liveGeneralChecks() {
 try {
   for (const viewport of ONLY_LIVE || ONLY_SMALL || process.env.SHOTS_NO_SCENES === '1'
     ? []
-    : VIEWPORTS) {
+    : SCENE_VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
-      if (ONLY_M4B && !scene.name.startsWith('m4b-')) continue;
-      if (ONLY_M4C && !scene.name.startsWith('m4c-')) continue;
-      if (ONLY_M5 && !scene.name.startsWith('m5-')) continue;
-      if (ONLY_M6 && !scene.name.startsWith('m6-')) continue;
-      if (ONLY_M7 && !scene.name.startsWith('m7-')) continue;
-      if (ONLY_M8 && !scene.name.startsWith('m8-')) continue;
-      if (ONLY_M9 && !scene.name.startsWith('m9-')) continue;
-      if (ONLY_M10 && !scene.name.startsWith('m10-')) continue;
+      if (ONLY.length > 0 && !ONLY.some((m) => scene.name.startsWith(`${m}-`))) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
@@ -751,26 +725,26 @@ try {
     prefix: PREFIX,
     problems,
   };
-  if (ONLY_SMALL) {
-    // Nothing else to run.
-  } else {
-    const only =
-      ONLY_M4B || ONLY_M4C || ONLY_M5 || ONLY_M6 || ONLY_M7 || ONLY_M8 || ONLY_M9 || ONLY_M10;
-    if (!only) await liveGeneralChecks();
-    if (!ONLY_M4C && !ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
+  /** Live checks per milestone; "general" covers M0–M4a (layout, camera, URL, M2–M4a). */
+  const liveGroups = {
+    general: () => liveGeneralChecks(),
+    m4b: async () => {
       await liveM4bChecks(live);
       await liveM4bTouchChecks(live);
       await liveM4bFixChecks(live);
+    },
+    m4c: () => liveM4cChecks(live),
+    m5: () => liveM5Checks(live),
+    m6: () => liveM6Checks(live),
+    m7: () => liveM7Checks(live),
+    m8: () => liveM8Checks(live),
+    m9: () => liveM9Checks(live),
+    m10: () => liveM10Checks(live),
+  };
+  if (!ONLY_SMALL) {
+    for (const [name, run] of Object.entries(liveGroups)) {
+      if (ONLY.length === 0 || ONLY.includes(name)) await run();
     }
-    if (!ONLY_M5 && !ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) {
-      await liveM4cChecks(live);
-    }
-    if (!ONLY_M6 && !ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM5Checks(live);
-    if (!ONLY_M7 && !ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM6Checks(live);
-    if (!ONLY_M8 && !ONLY_M9 && !ONLY_M10) await liveM7Checks(live);
-    if (!ONLY_M9 && !ONLY_M10) await liveM8Checks(live);
-    if (!ONLY_M10) await liveM9Checks(live);
-    if (!ONLY_M9) await liveM10Checks(live);
   }
 } finally {
   await browser.close();

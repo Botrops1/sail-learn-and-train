@@ -43,7 +43,7 @@ Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, 
 | `npm test` | Unit and data tests (Vitest) |
 | `npm run typecheck` | TypeScript check |
 | `npm run lint` | ESLint and Prettier check |
-| `npm run shots` | Build, then screenshots into `docs/screenshots/<milestone>/` |
+| `npm run shots` | Build, then browser checks and screenshots into `shots/` (not committed; options at the top of `scripts/shots.mjs`) |
 | `node scripts/visual-shots.mjs` | After a build: camera presets and close-ups at both detail levels, plus draw calls, triangles and FPS |
 
 Add `?debug=1` to the address to see the frame rate, the slowest frame and the work per frame (for performance reports).

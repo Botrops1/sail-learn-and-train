@@ -462,7 +462,7 @@ Things the spec left open (each is "decided in the M6 PR"):
 - **Wind tab text:** `True wind from 060° · 60° to starboard of the bow` (own strings `wind.relative.*`; Phase 1's `windFromText` and its strings were removed, nothing used them any more). The dial's Home / End keys set north / south. The − / + buttons turn the arrow one step clockwise / anticlockwise.
 - **URL:** the boat parameters are written after `mode` and before the Realistic parameters. `ap=off` writes no `apt`. `apt` for heading mode is the compass target; for wind mode the signed TWA. A heading outside 0–359 or a speed outside −10…15 kn falls back (heading 0; the steady speed). The address bar is updated at most every 300 ms (the latest link when the timer runs out) instead of after the controls stop changing, because a boat under way changes `bs` and `hdg` all the time.
 - **Phase 1 tests changed** (spec 6.9 item 14): tests that build a state and step it, or compare a whole state after a URL round trip, got `boat: { mode: 'held' }` (or a 6.8 kn speed that a link writes exactly); URL strings expect `bs=6.8`; the store's Reset test sets the boat held after the reset because Reset opens Sailing; one URL test adds `held=1`. Nothing else.
-- **Screenshots script:** the older scenes and live checks open Held still (`held=1` is added to their links unless the label contains "m6"), because they are about the ropes and sails; `SHOTS_ONLY_M6=1` runs only the M6 scenes and checks.
+- **Screenshots script:** the older scenes and live checks open Held still (`held=1` is added to their links unless the label contains "m6"), because they are about the ropes and sails; `SHOTS_ONLY=m6` runs only the M6 scenes and checks.
 - **Wake and water:** the wake is not tappable (the water under it is). The water plane steps along the grid with the boat, and the ripple texture is shifted by the plane's map position so the ripples stay fixed on the map. The registry kind of `env_wake` is `environment`, like the other environment parts.
 - **Sources:** PT-20 and PT-36 stay `to-verify`: the candidate sources (Wikipedia) cannot be reached from the build environment (blocked by its network policy), so they were not read.
 
@@ -567,7 +567,7 @@ Things the spec left open (each is "decided in the M7 PR"):
 - **Instrument dial:** the numbers 0…180 sit inside the ticks, the red and green close-hauled arcs outside the ring; the needles start outside the numbers in the middle (AWS big, TWS small). It is above the compass dial in the Wind tab, below the boat switch, with a hint that spells out AWA, AWS, TWA and TWS. The dial updates only when a rounded value changes.
 - **A short hint on the map** ("Tap the red wedge, the blue arrow or a name to learn what it is.") shows between the scale bar and the zoom buttons for about 8 s each time the map opens (a CSS animation, no state), then fades out so that it never covers the labels; the explanations are the info cards (the registry texts) and the sentence about the map in the View tab's camera hint.
 - **Debug:** with `?debug=1` the page has `window.__sailMap` (`trackPoints()`, `currentPointOfSail()`, `centre()`) for the screenshot script, like `__sailDebug`.
-- **Screenshots script:** `SHOTS_ONLY_M7=1` runs only the M7 scenes and checks; scenes and checks with "m7" in the label open Sailing; the default output folder is `docs/screenshots/m7` and the prefix `m7-`.
+- **Screenshots script:** `SHOTS_ONLY=m7` runs only the M7 scenes and checks; scenes and checks with "m7" in the label open Sailing; the default output folder is `docs/screenshots/m7` and the prefix `m7-`.
 - **PHYSICS_TRUTHS:** M7 adds no rules. The tests that draw PT-20 (the apparent wind arrow) and PT-21 (the no-go wedge) are named after those ids.
 
 ---
@@ -682,7 +682,7 @@ Things the spec left open or got wrong (each is "decided in the M8 PR"):
   - `tests/urlState.test.ts`: the `jr` test opens Held still (the autopilot's wheel now balances the weather helm, `rd=-3`); the two "steady speed" tests compare with `steadyState(…, { heel: true })`.
 - **Debug overlay:** three rows: heel and heel rate, heeling and righting moment (kNm), grip and `δeff`.
 - **Sources:** [16] and [17] could not be opened from the build environment (the hosts do not resolve), so PT-25, PT-29 and PT-32 stay `to-verify`.
-- **Screenshots script:** `SHOTS_ONLY_M8=1` runs only the M8 scenes and live checks (heel, alert, easing, Held still, the round-up with the main hard in and eased, the load line); scenes and checks with "m8" in the label open Sailing; the default output folder is `docs/screenshots/m8` and the prefix `m8-`. The script empties its folder at the start, so a run with `SHOTS_SCENE` leaves only that scene.
+- **Screenshots script:** `SHOTS_ONLY=m8` runs only the M8 scenes and live checks (heel, alert, easing, Held still, the round-up with the main hard in and eased, the load line); scenes and checks with "m8" in the label open Sailing; the default output folder is `docs/screenshots/m8` and the prefix `m8-`. The script empties its folder at the start, so a run with `SHOTS_SCENE` leaves only that scene.
 
 ---
 
@@ -771,7 +771,7 @@ Things the spec left open or got wrong (each is "decided in the M9 PR"):
 - **Sails block:** one block (`ui/sailsPanel.ts`) in the Ropes tab after the selected rope's strip and above the rope list in Easy mode; in Realistic mode the same block moves to the top of the Ropes tab. The wear bar shows from the first damage (percent), "Flogging wears the sail" from `warnAt`, "Torn" at 1; the Repair sails button shows when a sail is torn and sets both sails to new. The instrument strip shows `⚠ sail` from `warnAt`.
 - **Registry:** `part_telltale` (draft); its short text mentions the `term_telltale` term (the registry has no link field).
 - **Debug hook:** with `?debug=1`, `__sailDebug.setDamage(main, jib)` sets the damage so the torn look can be shot at once; the screenshot script uses it.
-- **Screenshots script:** `SHOTS_ONLY_M9=1` runs only the M9 scenes and live checks; scenes and checks with "m9" in the label open Sailing; the default output folder is `docs/screenshots/m9` and the prefix `m9-`.
+- **Screenshots script:** `SHOTS_ONLY=m9` runs only the M9 scenes and live checks; scenes and checks with "m9" in the label open Sailing; the default output folder is `docs/screenshots/m9` and the prefix `m9-`.
 - **Sources:** [13] and [14] (Wikipedia, Practical Sailor) could not be opened from the build environment (403), so PT-23, PT-37 and PT-38 stay `to-verify`.
 
 ---
@@ -879,7 +879,7 @@ Things the spec left open or did not foresee (each is "decided in the M10 PR"):
 - **Test 6 (autopilot in a 20° shifty wind):** the autopilot is set to Wind at the angle she is sailing when it is switched on (the wind at t = 0 is already shifted by up to 20°). After 5 minutes of settling, measured over the next 5 minutes, the error is under 6° for 100 % of the time (worst 4.1°) at 20°; at the slider's largest shift, 40°, the error reaches 12° and is under 6° only about two thirds of the time (the autopilot has no feed-forward for a moving target).
 - **Helper exports for tests:** `gustyEvents(seed, t)` (the gusts and lulls begun by `t`), `substepCount(dt)` in `motion.ts` (what `stepBoat` uses), `sizeRange(mode)`, `initialWindMode()`.
 - **PHYSICS_TRUTHS:** M10 adds and changes no rules (the spec's "rules tested" is "determinism"); the tests are in `tests/windModes.test.ts`.
-- **Screenshots script:** `SHOTS_ONLY_M10=1` runs only the M10 scenes and live checks (the Wind tab with each mode, the dial's thin arrow, the badges, the time bar open, folded, slow, over the map and held still, a building and a dying wind, the link); scenes and checks with "m10" in the label open Sailing; the default output folder is now `docs/screenshots/m10` and the prefix `m10-`. The Reset check of M4a (`shots-m4a.mjs`) now ignores `rd` and `bs` (live since M6 and M8).
+- **Screenshots script:** `SHOTS_ONLY=m10` runs only the M10 scenes and live checks (the Wind tab with each mode, the dial's thin arrow, the badges, the time bar open, folded, slow, over the map and held still, a building and a dying wind, the link); scenes and checks with "m10" in the label open Sailing; the default output folder is now `docs/screenshots/m10` and the prefix `m10-`. The Reset check of M4a (`shots-m4a.mjs`) now ignores `rd` and `bs` (live since M6 and M8).
 
 ---
 
