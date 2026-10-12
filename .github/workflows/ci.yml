@@ -28,8 +28,9 @@ jobs:
 
   # The browser checks (scripts/shots.mjs): every milestone's scenes at phone size plus every
   # live and tap check. Fails on console errors, wrong layouts, page scroll, unknown taps and
-  # failed live checks. Split into parallel parts so it takes minutes, not most of an hour; a
-  # new milestone's live checks land in the "live, Phase 2 on" part by themselves.
+  # failed live checks. Split into parallel parts (the slowest about 12 minutes on GitHub's
+  # runners, against 43 minutes in one go); a new milestone's live checks land in the
+  # "live, Phase 2 on" part by themselves.
   browser-part:
     name: browser (${{ matrix.part }})
     runs-on: ubuntu-latest
@@ -42,8 +43,12 @@ jobs:
             env: SHOTS_NO_LIVE=1 SHOTS_NO_TAPS=1
           - part: taps
             env: SHOTS_NO_SCENES=1 SHOTS_NO_LIVE=1
-          - part: live, Phase 1
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=general,m4b,m4c
+          - part: live, M0-M4a
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=general
+          - part: live, M4b
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4b
+          - part: live, M4c
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4c
           - part: live, Phase 2 on
             env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c
     steps:

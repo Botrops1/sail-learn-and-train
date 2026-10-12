@@ -95,7 +95,7 @@ Keep explanations short and concrete. The owner does not know sailing terms yet:
 | `npm run lint` | ESLint and Prettier check |
 | `npm run shots` | Browser checks and screenshots into `shots/` (not committed); options at the top of `scripts/shots.mjs` |
 
-Deploy: GitHub Pages serves the `gh-pages` branch. `deploy.yml` builds `main` and publishes it to the branch root, `https://botrops1.github.io/sail-learn-and-train/` (Vite `base: '/sail-learn-and-train/'`). `pr-preview.yml` builds each PR from this repo (not forks) with base `/sail-learn-and-train/pr-preview/pr-<N>/`, publishes it to `pr-preview/pr-<N>/` on the same branch, keeps one PR comment with the link, and removes the folder when the PR closes. The footer of a preview shows the PR's commit. `ci.yml` runs `check` (typecheck, lint, tests, build) and the browser checks on every PR, in four parallel parts summed up as `browser-checks`.
+Deploy: GitHub Pages serves the `gh-pages` branch. `deploy.yml` builds `main` and publishes it to the branch root, `https://botrops1.github.io/sail-learn-and-train/` (Vite `base: '/sail-learn-and-train/'`). `pr-preview.yml` builds each PR from this repo (not forks) with base `/sail-learn-and-train/pr-preview/pr-<N>/`, publishes it to `pr-preview/pr-<N>/` on the same branch, keeps one PR comment with the link, and removes the folder when the PR closes. The footer of a preview shows the PR's commit. `ci.yml` runs `check` (typecheck, lint, tests, build) and the browser checks on every PR, in parallel parts summed up as `browser-checks`.
 
 ## License
 
