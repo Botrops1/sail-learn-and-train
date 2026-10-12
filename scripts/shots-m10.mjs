@@ -178,23 +178,186 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       (await page.locator('label[for="wind-size"]').textContent()) === 'Change 10 kn over 10 min',
       (await page.locator('label[for="wind-size"]').textContent()) ?? '',
     );
-    await page.getByText('×4', { exact: true }).click();
+    await shot(page, 'live-phone-wind-tab-building');
+    problems.push(...(await auditPage(page, 'm10 wind tab')));
+    check(
+      'the Wind tab no longer has time buttons',
+      (await page.getByTestId('time-scale').count()) === 0,
+      'none',
+    );
+    await page.getByText('Steady', { exact: true }).click();
     await page.waitForTimeout(500);
     check(
-      '×4 badge shows',
+      'steady leaves the link clean',
+      !/wm=|seed=|wg=|tx=/.test(await search(page)),
+      await search(page),
+    );
+    await context.close();
+  }
+
+  // The time bar (issue #25).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm10 time bar',
+      '?wd=60&ws=12&ms=20&js=25&cam=side-port',
+    );
+    const status = () => text(page, 'time-status');
+    const visible = (id) => page.getByTestId(id).isVisible();
+    await page.waitForTimeout(800);
+    check(
+      'time bar: Time ×1 and the buttons show',
+      (await status()) === '×1' && (await visible('time-fastest')),
+      await status(),
+    );
+    // It fits the view and does not cover the strip.
+    const boxes = await page.evaluate(() => {
+      const box = (id) => document.querySelector(`[data-testid="${id}"]`)?.getBoundingClientRect();
+      const view = document.querySelector('.view').getBoundingClientRect();
+      const bar = box('time-bar');
+      const strip = box('instrument-strip');
+      return {
+        inside: bar.left >= view.left && bar.right <= view.right,
+        overlap: !(
+          bar.bottom <= strip.top ||
+          bar.top >= strip.bottom ||
+          bar.right <= strip.left ||
+          bar.left >= strip.right
+        ),
+        barHeight: Math.round(bar.height),
+      };
+    });
+    check('time bar: inside the view', boxes.inside, JSON.stringify(boxes));
+    check('time bar: does not cover the instrument strip', !boxes.overlap, JSON.stringify(boxes));
+    check('time bar: at least 44 px high', boxes.barHeight >= 44, JSON.stringify(boxes));
+    await page.getByTestId('time-faster').click();
+    await page.getByTestId('time-faster').click();
+    check('time bar: › twice gives ×4', (await status()) === '×4', await status());
+    await page.waitForTimeout(500);
+    check('time bar: link has tx=4', (await search(page)).includes('tx=4'), await search(page));
+    check(
+      'time bar: ×4 badge in the strip',
       (await text(page, 'strip-time')) === '×4',
       await text(page, 'strip-time'),
     );
-    check('link has tx=4', (await search(page)).includes('tx=4'), await search(page));
-    await shot(page, 'live-phone-wind-tab-building');
-    problems.push(...(await auditPage(page, 'm10 wind tab')));
-    await page.getByText('Steady', { exact: true }).click();
-    await page.getByText('×1', { exact: true }).click();
+    await shot(page, 'live-phone-time-bar-x4');
+    await page.getByTestId('time-slowest').click();
+    check('time bar: « gives ×¼', (await status()) === '×¼', await status());
+    check(
+      'time bar: ‹ is disabled at ×¼',
+      await page.getByTestId('time-slower').isDisabled(),
+      'disabled',
+    );
+    await shot(page, 'live-phone-time-bar-slow');
+    await page.getByTestId('time-status').click();
+    check('time bar: a tap on the status gives ×1', (await status()) === '×1', await status());
+    await page.getByTestId('time-fastest').click();
+    check('time bar: » gives ×16', (await status()) === '×16', await status());
+    check(
+      'time bar: › is disabled at ×16',
+      await page.getByTestId('time-faster').isDisabled(),
+      'disabled',
+    );
+    await page.getByTestId('time-status').click();
+    // Pause as in Phase 1.
+    await page.getByTestId('pause-button').click();
+    check(
+      'time bar: Pause says Resume',
+      (await text(page, 'pause-button')) === 'Resume',
+      await text(page, 'pause-button'),
+    );
+    await shot(page, 'live-phone-time-bar-paused');
+    await page.getByTestId('pause-button').click();
+    // Fold: only "Time" and Pause stay; the fold is remembered on this device.
+    await page.getByTestId('time-fold').click();
+    check(
+      'time bar folded: the buttons are gone',
+      !(await visible('time-fastest')) && !(await visible('time-status')),
+      'hidden',
+    );
+    check('time bar folded: Pause stays', await visible('pause-button'), 'visible');
+    await shot(page, 'live-phone-time-bar-folded');
+    await page.reload({ waitUntil: 'networkidle' });
     await page.waitForTimeout(500);
     check(
-      'steady and ×1 leave the link clean',
-      !/wm=|seed=|wg=|tx=/.test(await search(page)),
+      'time bar folded: remembered after a reload',
+      !(await visible('time-fastest')) && (await visible('time-fold')),
+      'folded',
+    );
+    await page.getByTestId('time-fold').click();
+    check('time bar: the word Time opens it again', await visible('time-fastest'), 'open');
+    problems.push(...(await auditPage(page, 'm10 time bar')));
+    await context.close();
+  }
+
+  // The bar has nothing to do while held still with a steady wind: only Pause.
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm10 time bar held',
+      '?wd=60&ws=12&held=1&tx=4',
+    );
+    await page.waitForTimeout(500);
+    check(
+      'held, steady: only Pause shows',
+      (await page.getByTestId('pause-button').isVisible()) &&
+        !(await page.getByTestId('time-fold').isVisible()) &&
+        !(await page.getByTestId('time-fastest').isVisible()),
+      'only Pause',
+    );
+    check(
+      'held, steady: no badge (the scale is 1)',
+      !(await page.getByTestId('strip-time').isVisible()),
+      'hidden',
+    );
+    await context.close();
+  }
+
+  // The View tab switch and tb=0.
+  {
+    const { context, page } = await openPage(phone, 'm10 time bar off', '?wd=60&ws=12&tb=0&tx=4');
+    await page.waitForTimeout(500);
+    check(
+      'tb=0: only Pause shows',
+      (await page.getByTestId('pause-button').isVisible()) &&
+        !(await page.getByTestId('time-fastest').isVisible()),
+      'only Pause',
+    );
+    await page.getByRole('tab', { name: 'View' }).click();
+    await page.locator('#time-bar-toggle').check();
+    await page.waitForTimeout(500);
+    check(
+      'View tab: the switch brings the bar back',
+      await page.getByTestId('time-fastest').isVisible(),
+      'visible',
+    );
+    check(
+      'View tab: tb=0 leaves the link',
+      !(await search(page)).includes('tb=0'),
       await search(page),
+    );
+    await page.locator('#time-bar-toggle').uncheck();
+    await page.waitForTimeout(500);
+    check(
+      'View tab: the switch off writes tb=0',
+      (await search(page)).includes('tb=0'),
+      await search(page),
+    );
+    await context.close();
+  }
+
+  // Held still with a changing wind: the speed part shows again.
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm10 time bar held wind',
+      '?wd=60&ws=12&held=1&wm=gusty',
+    );
+    await page.waitForTimeout(500);
+    check(
+      'held, gusty: the speed part shows',
+      await page.getByTestId('time-fastest').isVisible(),
+      'visible',
     );
     await context.close();
   }
