@@ -202,7 +202,9 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     const reset = await search(page);
     check(
       'reset: defaults',
-      reset ===
+      // The wheel (`rd`) and the speed (`bs`) are live since M6 and M8: the autopilot trims the
+      // wheel against weather helm within the first second, so only the rest is compared.
+      reset.replace(/rd=-?\d+/, 'rd=0').replace(/bs=[\d.]+/, 'bs=6.8') ===
         '?v=1&ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12&cam=side-port&step=5&detail=low&bs=6.8',
       reset,
     );
