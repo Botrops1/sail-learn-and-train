@@ -93,15 +93,32 @@ describe('M10 gusty', () => {
     return { max, average: sum / samples, gusts };
   };
 
-  it('30 %, mean 12 kn, 1 h at 1 Hz: peak 14.4–17.4 kn, average within 5 %, 30+ gusts', () => {
-    // The default seed and the one of the checklist link. (Other seeds can peak higher when two
-    // gusts overlap: see the M10 PR.)
-    for (const seed of [1, 7]) {
-      const { max, average, gusts } = stats(seed);
+  it('30 %, mean 12 kn, 1 h at 1 Hz: peak 14.4–17.4 kn and average within 5 %, for seeds 1–200', () => {
+    // Overlapping gusts are capped at what one event can reach, so every seed keeps the band.
+    for (let seed = 1; seed <= 200; seed += 1) {
+      const { max, average } = stats(seed);
       expect(max, `seed ${seed} max`).toBeGreaterThanOrEqual(14.4);
       expect(max, `seed ${seed} max`).toBeLessThanOrEqual(17.4);
       expect(Math.abs(average / MEAN - 1), `seed ${seed} average`).toBeLessThan(0.05);
-      expect(gusts, `seed ${seed} gusts`).toBeGreaterThanOrEqual(30);
+    }
+  });
+
+  it('30 %, 1 h: at least 30 gusts (seeds 1 and 7)', () => {
+    for (const seed of [1, 7]) {
+      expect(stats(seed).gusts, `seed ${seed} gusts`).toBeGreaterThanOrEqual(30);
+    }
+  });
+
+  it('a lull never takes away more than half of a single event, however many overlap', () => {
+    for (const size of [10, 30, 60]) {
+      for (let seed = 1; seed <= 50; seed += 1) {
+        const wm = mode({ mode: 'gusty', seed, size });
+        for (let t = 0; t <= 3600; t += 3) {
+          const tws = windAt(90, MEAN, wm, t).twsKn;
+          expect(tws).toBeGreaterThanOrEqual(MEAN * (1 - 0.5 * 1.3 * (size / 100) - 0.05) - 1e-9);
+          expect(tws).toBeLessThanOrEqual(MEAN * (1 + 1.3 * (size / 100) + 0.05) + 1e-9);
+        }
+      }
     }
   });
 

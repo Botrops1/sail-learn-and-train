@@ -108,6 +108,10 @@ function smoothstep(edge0: number, edge1: number, x: number): number {
   return u * u * (3 - 2 * u);
 }
 
+/** Each gust or lull is scaled by a random amp between AMP_MIN and AMP_MIN + AMP_SPAN (spec 10.2). */
+const AMP_MIN = 0.7;
+const AMP_SPAN = 0.6;
+
 /** One gust or lull of the gusty pattern: when it starts and how big it is. */
 export interface WindEvent {
   /** `true` = a gust (more wind, veers), `false` = a lull (less wind). */
@@ -133,7 +137,7 @@ function gustyPattern(
   while (at < t) {
     at += -g.meanIntervalS * Math.log(1 - rnd());
     const holdS = g.holdMinS + rnd() * (g.holdMaxS - g.holdMinS);
-    const amp = 0.7 + 0.6 * rnd();
+    const amp = AMP_MIN + AMP_SPAN * rnd();
     const veerDeg = rnd() * g.veerMaxDeg;
     events.push({ gust: events.length % 2 === 0, atS: at, holdS, amp, veerDeg });
   }
@@ -181,18 +185,23 @@ export function windAt(
         (g.noisePct / 100) *
         (0.6 * Math.sin((2 * Math.PI * t) / period1 + p1) +
           0.4 * Math.sin((2 * Math.PI * t) / period2 + p2));
-      let change = noise;
+      // Gusts and lulls can overlap. The sum of their terms never goes beyond what one event
+      // can reach (the largest amp, 1.3): gust up to +size · 1.3, lull down to
+      // −lullFraction · size · 1.3 (decided by the owner on the M10 PR).
+      let pattern = 0;
       let veer = 0;
       for (const event of events) {
         const e = envelope(event, t, data);
         if (e === 0) continue;
         if (event.gust) {
-          change += e * (wm.size / 100) * event.amp;
+          pattern += e * (wm.size / 100) * event.amp;
           veer += e * event.veerDeg;
         } else {
-          change -= e * g.lullFraction * (wm.size / 100) * event.amp;
+          pattern -= e * g.lullFraction * (wm.size / 100) * event.amp;
         }
       }
+      const up = (wm.size / 100) * (AMP_MIN + AMP_SPAN);
+      const change = noise + Math.min(up, Math.max(-g.lullFraction * up, pattern));
       twsKn = meanKn * (1 + change);
       dirDeg = meanDirDeg + veer;
       break;
