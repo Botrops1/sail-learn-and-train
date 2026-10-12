@@ -479,21 +479,22 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
   };
   const jibPct = async (page) => Number(/Jib sheet: (\d+) %/.exec(await stripText(page))?.[1]);
   {
-    const { context, page } = await jibOnWinch(20, 2);
+    // 24 kn since M8: the loads come from the sail forces (owner, M8 answers; PT-16 unit test).
+    const { context, page } = await jibOnWinch(24, 2);
     await page.waitForTimeout(250);
     const text = await stripText(page);
     await page.waitForTimeout(800);
     check(
-      'PT-16 2 turns at 20 kn slip',
+      'PT-16 2 turns at 24 kn slip',
       /Slipping/.test(text) && (await jibPct(page)) > 40,
       text.split('\n')[1],
     );
     await context.close();
   }
   {
-    const { context, page } = await jibOnWinch(20, 3);
+    const { context, page } = await jibOnWinch(24, 3);
     await page.waitForTimeout(1000);
-    check('PT-16 3 turns at 20 kn hold', (await jibPct(page)) === 30, `js ${await jibPct(page)}`);
+    check('PT-16 3 turns at 24 kn hold', (await jibPct(page)) === 30, `js ${await jibPct(page)}`);
     await shot(page, 'live-phone-pt16-three-turns-hold');
     await context.close();
   }

@@ -66,7 +66,8 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
     );
     const trueWind = await text(page, 'strip-true');
     const apparent = await text(page, 'strip-apparent');
-    check('true wind', trueWind.startsWith('True 90° S'), trueWind);
+    // ±1°: since M8 weather helm leaves the autopilot about 1° off its heading.
+    check('true wind', /^True (89|90|91)° S/.test(trueWind), trueWind);
     const awa = Number(/App (\d+)°/.exec(apparent)?.[1]);
     check('apparent wind is further forward', awa >= 50 && awa <= 65, apparent);
     await context.close();

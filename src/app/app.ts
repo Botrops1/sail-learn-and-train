@@ -89,7 +89,9 @@ export function startApp(host: HTMLElement): void {
         layout.view.clientHeight,
         inset,
         stacked,
-        topClearance(top),
+        // Stacked (phones): the strip spans the view's width, so the boat is framed below the
+        // whole top area, also in Held still where the time bar sits beside the strip.
+        stacked ? Math.ceil(top.offsetTop + top.offsetHeight + 4) : topClearance(top),
       );
     };
     reframe = resize;

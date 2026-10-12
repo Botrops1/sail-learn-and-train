@@ -284,10 +284,11 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
     const awa = await rotation('needle-apparent');
     const twa = await rotation('needle-true');
     check('apparent needle about 56°', awa >= 50 && awa <= 62, `${awa}`);
-    check('true needle at 90°', twa === 90, `${twa}`);
+    // ±1°: since M8 weather helm leaves the autopilot about 1° off its heading.
+    check('true needle at 90°', Math.abs(twa - 90) <= 1, `${twa}`);
     check(
       'speed and heading under the dial',
-      /^Speed \d\.\d kn · Heading 0°$/.test(await text(page, 'instrument-under')),
+      /^Speed \d\.\d kn · Heading (0|1|359)°$/.test(await text(page, 'instrument-under')),
       await text(page, 'instrument-under'),
     );
     await context.close();

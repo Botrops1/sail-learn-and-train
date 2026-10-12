@@ -10,6 +10,9 @@
 //   SHOTS_SCENE=<text>   only the scenes whose name contains <text>
 //   SHOTS_ONLY_LIVE=1    only the live checks;  SHOTS_ONLY_SMALL=1  only the small-parts taps
 //   SHOTS_NO_SCENES=1    no scenes;  SHOTS_KEEP=1  keep the files already in the folder
+//   SHOTS_NO_TAPS=1      no tap sweep, small-parts taps or sketch comparison
+//   SHOTS_NO_LIVE=1      no live checks;  SHOTS_SKIP=general,m4b  skip these live-check groups
+//   (CI splits the full run into parallel parts with these; see .github/workflows/ci.yml)
 //   SHOTS_OUT=<dir>      output folder (default shots/)
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -470,7 +473,13 @@ const ONLY = (process.env.SHOTS_ONLY ?? '')
   .split(',')
   .map((m) => m.trim().toLowerCase())
   .filter(Boolean);
-const QUICK = ONLY_LIVE || ONLY.length > 0;
+const QUICK = ONLY_LIVE || ONLY.length > 0 || process.env.SHOTS_NO_TAPS === '1';
+const NO_LIVE = process.env.SHOTS_NO_LIVE === '1';
+/** SHOTS_SKIP=general,m4b: live-check groups to leave out (another CI part runs them). */
+const SKIP = (process.env.SHOTS_SKIP ?? '')
+  .split(',')
+  .map((m) => m.trim().toLowerCase())
+  .filter(Boolean);
 /** SHOTS_SIZES=phone: scenes at phone size only (CI). */
 const SCENE_VIEWPORTS = process.env.SHOTS_SIZES === 'phone' ? [VIEWPORTS[0]] : VIEWPORTS;
 
@@ -741,8 +750,9 @@ try {
     m9: () => liveM9Checks(live),
     m10: () => liveM10Checks(live),
   };
-  if (!ONLY_SMALL) {
+  if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
+      if (SKIP.includes(name)) continue;
       if (ONLY.length === 0 || ONLY.includes(name)) await run();
     }
   }
