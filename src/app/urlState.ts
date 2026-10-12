@@ -1,3 +1,5 @@
+import { compassDeg, knToMps, mpsToKn, wrap180, wrap360 } from '../model/angles';
+import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
 import { settledJibUnfurled } from '../model/jib';
 import { isRegisteredPartId } from '../model/registry';
@@ -26,6 +28,7 @@ import {
 } from '../model/realistic';
 import type { RigHistory } from '../model/sim';
 import { boat } from '../model/boat';
+import type { BoatState } from '../model/motion';
 import { initialState, type AppState } from './store';
 
 /** URL schema version (PHASE1_SPEC 9.2). Bump when a parameter changes meaning. */
@@ -110,6 +113,7 @@ export function parseUrlState(
   if (mode !== null && isRopesMode(mode)) ropesMode = mode;
 
   const realistic = parseRealistic(params);
+  const { boat: boatState, autopilot } = parseBoat(params, controls.ctl_wind_dir ?? 60);
 
   // `jr`: how far the jib is out when that is less than the controls alone give (the sheet was
   // hauled against a jib furled with the sheet released). Never less than "Jib out" asked for.
@@ -135,7 +139,88 @@ export function parseUrlState(
     selection,
     history,
     realistic,
+    boat: boatState,
+    autopilot,
   });
+}
+
+/** Whole numbers only (no decimals, no text). */
+function wholeNumber(value: string | null, min: number, max: number): number | undefined {
+  if (value === null || !INTEGER.test(value)) return undefined;
+  const number = Number(value);
+  return number >= min && number <= max ? number : undefined;
+}
+
+/** Boat speed in the link: knots with at most one decimal, −10 … 15. */
+const SPEED_KN = /^-?\d+(\.\d)?$/;
+const BOAT_SPEED_KN = { min: -10, max: 15 };
+
+const AUTOPILOT_PARAMS = { off: 'off', heading: 'hdg', wind: 'wind' } as const;
+
+/**
+ * The boat in the link (PHASE2_SPEC 6.4): `hdg` heading, `bs` speed in knots (without it she
+ * starts at her steady speed), `held=1` held still, `ap=off|hdg|wind` with its target `apt`.
+ * Without `ap` the autopilot holds the heading, so an old link shows the boat sailing on.
+ */
+function parseBoat(
+  params: URLSearchParams,
+  windDirDeg: number,
+): { boat: Partial<BoatState>; autopilot: AutopilotState } {
+  const headingDeg = wholeNumber(params.get('hdg'), 0, 359) ?? 0;
+  const boatState: Partial<BoatState> = { headingDeg };
+  if (params.get('held') === '1') boatState.mode = 'held';
+  else {
+    const raw = params.get('bs');
+    const kn = raw !== null && SPEED_KN.test(raw) ? Number(raw) : undefined;
+    if (kn !== undefined && kn >= BOAT_SPEED_KN.min && kn <= BOAT_SPEED_KN.max) {
+      boatState.speedMps = knToMps(kn);
+    }
+  }
+  const ap = params.get('ap');
+  const mode = ap === 'off' ? 'off' : ap === 'wind' ? 'wind' : 'heading';
+  const apt = params.get('apt');
+  const targetDeg =
+    mode === 'wind'
+      ? (wholeNumber(apt, -180, 180) ?? Math.round(wrap180(windDirDeg - headingDeg)))
+      : (wholeNumber(apt, 0, 359) ?? headingDeg);
+  return {
+    boat: boatState,
+    autopilot: {
+      mode,
+      targetDeg: mode === 'wind' ? wrap180(targetDeg) : targetDeg,
+      integralDeg: 0,
+    },
+  };
+}
+
+/** Compass heading as a whole number, 0–359. */
+function headingParam(boat: BoatState): number {
+  return wrap360(Math.round(boat.headingDeg)) % 360;
+}
+
+/**
+ * The boat parameters for a state (PHASE2_SPEC 6.4): `hdg` when not 0, `bs` while sailing,
+ * `held` when held still, `ap` and `apt` unless the autopilot holds the heading.
+ */
+export function boatParams(state: AppState): [string, string][] {
+  const result: [string, string][] = [];
+  const { boat: boatState, autopilot } = state;
+  const heading = headingParam(boatState);
+  if (heading !== 0) result.push(['hdg', String(heading)]);
+  if (boatState.mode === 'held') result.push(['held', '1']);
+  else {
+    const kn = Math.round(mpsToKn(boatState.speedMps) * 10) / 10;
+    const clamped = Math.min(BOAT_SPEED_KN.max, Math.max(BOAT_SPEED_KN.min, kn));
+    result.push(['bs', (clamped === 0 ? 0 : clamped).toFixed(1)]);
+  }
+  const target = Math.round(autopilot.targetDeg);
+  const holdsHeading = autopilot.mode === 'heading' && wrap360(target) % 360 === heading;
+  if (!holdsHeading) {
+    result.push(['ap', AUTOPILOT_PARAMS[autopilot.mode]]);
+    if (autopilot.mode === 'heading') result.push(['apt', String(compassDeg(target) % 360)]);
+    if (autopilot.mode === 'wind') result.push(['apt', String(wrap180(target))]);
+  }
+  return result;
 }
 
 /**
@@ -261,6 +346,7 @@ export function serializeUrlState(state: AppState): string {
   if (state.settings.ropesMode !== DEFAULT_SETTINGS.ropesMode) {
     params.set('mode', state.settings.ropesMode);
   }
+  for (const [name, value] of boatParams(state)) params.set(name, value);
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
   // Commas need no escaping in a query (co=a5,b3 stays readable).

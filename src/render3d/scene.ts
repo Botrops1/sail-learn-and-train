@@ -6,6 +6,7 @@ import { requirePartId } from '../model/registry';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
+import { modulo } from '../model/mapFrame';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
@@ -14,7 +15,9 @@ import { rippleNormalMap, skyTexture, sunDirection } from './environment';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
 import { SCENE } from './sceneConfig';
+import { buildWake } from './wake';
 import { buildWindStreaks } from './wind';
+import { createWorld } from './world';
 
 export interface SceneView {
   /** The 3D view's canvas (the app listens for a lost graphics context). */
@@ -99,7 +102,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const ripples = rippleNormalMap();
   const water = buildWater(ripples);
   const streaks = buildWindStreaks();
-  scene.add(holder, water.object, streaks.object);
+  const world = createWorld(water.object);
+  const wake = buildWake();
+  scene.add(holder, world.group, wake.object, streaks.object);
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
@@ -228,8 +233,12 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         flashingRopes(state),
         state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
       );
-      streaks.update(state.controls.ctl_wind_dir, state.controls.ctl_wind_speed, now / 1000);
-      water.update(now / 1000);
+      // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).
+      streaks.update(state.rig.wind.awaDeg, state.rig.wind.awsKn, now / 1000);
+      const { boat: boatState } = state;
+      const centre = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
+      wake.update(state, state.rig.timeS);
+      water.update(now / 1000, centre.eastM, centre.northM);
       renderer.render(scene, camera);
     },
     stats() {
@@ -370,8 +379,11 @@ function createHighlighter(root: THREE.Object3D): (partIds: string[]) => void {
 interface Water {
   object: THREE.Object3D;
   setDetail(detail: Detail): void;
-  /** Drifts the ripples. */
-  update(timeS: number): void;
+  /**
+   * Drifts the ripples; they stay fixed on the map as the plane steps (`centre*` is the map
+   * position of the plane's centre).
+   */
+  update(timeS: number, centreEastM: number, centreNorthM: number): void;
 }
 
 /**
@@ -424,9 +436,14 @@ function buildWater(ripples: THREE.Texture): Water {
       plane.material = detail === 'high' ? high : low;
       gridMaterial.opacity = detail === 'high' ? SCENE.grid.opacityHigh : SCENE.grid.opacity;
     },
-    update(timeS) {
+    update(timeS, centreEastM, centreNorthM) {
       const drift = (w.rippleDriftMPerS * timeS) / w.rippleTileM;
-      ripples.offset.set(drift, drift * 0.6);
+      // The plane's u runs north, its v runs west (the plane is turned flat).
+      // Offsets wrap (repeat wrapping): keep them small so the float precision lasts.
+      ripples.offset.set(
+        modulo(drift + centreNorthM / w.rippleTileM, 1),
+        modulo(drift * 0.6 - centreEastM / w.rippleTileM, 1),
+      );
     },
   };
 }

@@ -140,6 +140,23 @@ export const SCENE = {
     color: '#ffffff',
     opacity: 0.55,
   },
+  /** The wake (PHASE2_SPEC 6.6): a ribbon behind the transom. Presentation only. */
+  wake: {
+    /** Positions kept: one every `sampleS` of simulation time, so 48 × 0.25 s = 12 s. */
+    maxPoints: 48,
+    sampleS: 0.25,
+    lifeS: 12,
+    y: 0.02,
+    baseHalfWidthM: 0.6,
+    /** The ribbon widens by this much per side per second of age, metres. */
+    widthPerS: 0.075,
+    opacity: 0.6,
+    /** Full strength at this speed; nothing is drawn below `minKn`. */
+    fullOpacityKn: 8,
+    minKn: 0.3,
+    /** A jump larger than this (Reset, a link) starts a new wake, metres. */
+    restartDistanceM: 10,
+  },
   /** Tint of the part shown in the info card. */
   highlight: { color: '#ff9f1c', intensity: 0.55 },
   camera: {

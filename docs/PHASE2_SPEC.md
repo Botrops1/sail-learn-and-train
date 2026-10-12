@@ -448,6 +448,24 @@ All M6 checks in `WORKFLOW.md` 7.2 pass on the phone; the tests above pass; scre
 
 No heel, weather helm or round-up (M8). No map (M7). Loads in Realistic mode stay the Phase 1 estimates, using the true wind speed (M8 replaces them).
 
+### 6.13 Decided in the M6 PR
+
+Things the spec left open (each is "decided in the M6 PR"):
+
+- **Branch** `m6-the-boat-sails` (the owner's prompt), not `m6-boat-sails`.
+- **Quantising the apparent wind** (4.3) is skipped when the boat is exactly at rest and no wind override is passed: the rig then gets the controls' wind unrounded, so Phase 1 stays bit-exact for any wind speed. A moving boat, or `StepOptions.wind` / `initialRig(…, wind)`, always rounds to 0.1° and 0.05 kn. `RigState.wind` also holds `twaDeg` and `twsKn`; `rigWind()` in `sim.ts` builds it.
+- **`steadyState`** has no `heel` option yet (M8 adds it with `heel.ts`); the signature is otherwise as in 6.3. A link with `held=1` or the Held switch gives a boat whose `stepBoat` returns the same object.
+- **Drawn sails** follow the apparent wind: `mainSailInputFor` / `jibInputFor` take an optional third argument (the wind to draw; default: the controls' wind, so Phase 1 tests are unchanged) and the 3D boat passes `rig.wind`. The masthead wind indicator and the wind streaks also use the apparent wind. The Ropes tab's "jib in the main's wind shadow" note uses the apparent angle.
+- **Autopilot commands:** tapping the mode that is already on does nothing (it keeps the target); the ±1/±10 buttons and Tack/Gybe do nothing on Standby (they are disabled). `AppState.autopilotNoticeS` counts the 3 s of "Autopilot on Standby: you took the wheel" (shown in the autopilot block and as an alert over the 3D view). The notice appears only if the autopilot was on, and only when the wheel value really changes.
+- **Where the autopilot block sits:** Easy mode: full width in the compact rope list, directly after the wheel's row. Realistic mode: in the Helm station block under the wheel control (`realisticPanel.ts`), not inside the station drawing. Both are the same component (`ui/autopilotPanel.ts`).
+- **Strip:** a tap opens the Wind tab (`Panel.showTab`). The side letter is left out for a wind straight ahead or astern. The alerts (Gybe, Tack, by the lee) moved 30 px lower to clear the two-line strip.
+- **Wind tab text:** `True wind from 060° · 60° to starboard of the bow` (own strings `wind.relative.*`; Phase 1's `windFromText` and its strings were removed, nothing used them any more). The dial's Home / End keys set north / south. The − / + buttons turn the arrow one step clockwise / anticlockwise.
+- **URL:** the boat parameters are written after `mode` and before the Realistic parameters. `ap=off` writes no `apt`. `apt` for heading mode is the compass target; for wind mode the signed TWA. A heading outside 0–359 or a speed outside −10…15 kn falls back (heading 0; the steady speed). The address bar is updated at most every 300 ms (the latest link when the timer runs out) instead of after the controls stop changing, because a boat under way changes `bs` and `hdg` all the time.
+- **Phase 1 tests changed** (spec 6.9 item 14): tests that build a state and step it, or compare a whole state after a URL round trip, got `boat: { mode: 'held' }` (or a 6.8 kn speed that a link writes exactly); URL strings expect `bs=6.8`; the store's Reset test sets the boat held after the reset because Reset opens Sailing; one URL test adds `held=1`. Nothing else.
+- **Screenshots script:** the older scenes and live checks open Held still (`held=1` is added to their links unless the label contains "m6"), because they are about the ropes and sails; `SHOTS_ONLY_M6=1` runs only the M6 scenes and checks.
+- **Wake and water:** the wake is not tappable (the water under it is). The water plane steps along the grid with the boat, and the ripple texture is shifted by the plane's map position so the ripples stay fixed on the map. The registry kind of `env_wake` is `environment`, like the other environment parts.
+- **Sources:** PT-20 and PT-36 stay `to-verify`: the candidate sources (Wikipedia) cannot be reached from the build environment (blocked by its network policy), so they were not read.
+
 ---
 
 ## 7. M7: Bird's-eye map and wind instrument

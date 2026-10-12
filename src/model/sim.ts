@@ -1,4 +1,6 @@
+import { apparentWind } from './apparentWind';
 import { boat, type BoatData } from './boat';
+import { wrap180 } from './angles';
 import { initialSide, solveBoom, type BoomInput, type BoomSolution } from './boomSolver';
 import type { Controls } from './controls';
 import { jibSheetReleased, solveJib, type JibInput, type JibSolution } from './jib';
@@ -13,7 +15,10 @@ import type { Vec3 } from './vec3';
  *   critically damped spring (`visual.boomSmoothingTimeS`, faster while gybing).
  */
 
-/** Boat motion. Zero in Phase 1; Phase 2 adds speed and heading without changing `step`. */
+/**
+ * Boat motion: `velocity[0]` is the speed along the bow in m/s, the other components are 0
+ * (PHASE2_SPEC 4.3). Zero in Phase 1 and while the boat is held still.
+ */
 export interface BoatMotion {
   velocity: Vec3;
   headingDeg: number;
@@ -64,6 +69,54 @@ export interface RigState {
   jibFill: number;
   /** Simulation time, seconds (drives the flapping of a luffing sail). */
   timeS: number;
+  /**
+   * The wind the rig was solved for (PHASE2_SPEC 4.3): the apparent wind, quantised, and the true
+   * wind it came from. Renderers read it; with the boat at rest it is the true wind.
+   */
+  wind: RigWind;
+}
+
+export interface RigWind {
+  /** Apparent wind angle to the bow, + = from starboard; apparent wind speed, knots. */
+  awaDeg: number;
+  awsKn: number;
+  /** True wind angle to the bow (compass wind direction minus heading) and speed, knots. */
+  twaDeg: number;
+  twsKn: number;
+}
+
+/** The true wind a rig is solved for when it is not the controls' (M10 gusts). */
+export interface TrueWind {
+  dirDeg: number;
+  twsKn: number;
+}
+
+/**
+ * The apparent wind for the boat's motion, quantised so that the solver's cache works
+ * (PHASE2_SPEC 4.3). A boat at rest feels exactly the true wind: no rounding, so Phase 1 is
+ * unchanged.
+ */
+export function rigWind(
+  controls: Controls,
+  motion: BoatMotion,
+  data: BoatData,
+  wind?: TrueWind,
+): RigWind {
+  const dirDeg = wind?.dirDeg ?? controls.ctl_wind_dir;
+  const twsKn = wind?.twsKn ?? controls.ctl_wind_speed;
+  const twaDeg = wrap180(dirDeg - motion.headingDeg);
+  const speed = motion.velocity[0];
+  if (speed === 0 && !wind) return { awaDeg: twaDeg, awsKn: twsKn, twaDeg, twsKn };
+  const apparent = apparentWind(twsKn, twaDeg, speed, data);
+  const { solverAwaStepDeg, solverAwsStepKn } = data.physics.integration;
+  const awaPerStep = Math.round(1 / solverAwaStepDeg);
+  const awsPerStep = Math.round(1 / solverAwsStepKn);
+  return {
+    awaDeg: Math.round(apparent.awaDeg * awaPerStep) / awaPerStep,
+    awsKn: Math.round(apparent.awsKn * awsPerStep) / awsPerStep,
+    twaDeg,
+    twsKn,
+  };
 }
 
 function applied(controls: Controls): AppliedControls {
@@ -78,10 +131,10 @@ function applied(controls: Controls): AppliedControls {
   };
 }
 
-function boomInput(controls: Controls, rope: AppliedControls): BoomInput {
+function boomInput(wind: RigWind, rope: AppliedControls): BoomInput {
   return {
-    windFromDeg: controls.ctl_wind_dir,
-    windSpeedKn: controls.ctl_wind_speed,
+    windFromDeg: wind.awaDeg,
+    windSpeedKn: wind.awsKn,
     mainsheetPct: rope.mainsheet,
     vangPct: rope.vang,
     toppingLiftPct: rope.toppingLift,
@@ -89,10 +142,15 @@ function boomInput(controls: Controls, rope: AppliedControls): BoomInput {
   };
 }
 
-function jibInput(controls: Controls, rope: AppliedControls, boom: BoomSolution): JibInput {
+function jibInput(
+  controls: Controls,
+  wind: RigWind,
+  rope: AppliedControls,
+  boom: BoomSolution,
+): JibInput {
   return {
-    windFromDeg: controls.ctl_wind_dir,
-    windSpeedKn: controls.ctl_wind_speed,
+    windFromDeg: wind.awaDeg,
+    windSpeedKn: wind.awsKn,
     sheetPct: rope.jibSheet,
     unfurledPct: rope.jibFurl,
     sheetReleased: jibSheetReleased(controls.ctl_jib_sheet),
@@ -109,19 +167,25 @@ export interface RigHistory {
   jibUnfurled?: number;
 }
 
-/** The settled rig for a set of controls: the first frame, a shared link, a test. */
+/**
+ * The settled rig for a set of controls: the first frame, a shared link, a test. With a moving
+ * boat it is settled for the apparent wind.
+ */
 export function initialRig(
   controls: Controls,
   data: BoatData = boat,
   history: RigHistory = {},
+  motion: BoatMotion = AT_REST,
+  trueWind?: TrueWind,
 ): RigState {
   const rope = applied(controls);
+  const wind = rigWind(controls, motion, data, trueWind);
   const solution = solveBoom(
-    boomInput(controls, rope),
-    { side: initialSide(controls.ctl_wind_dir), thetaDeg: 0 },
+    boomInput(wind, rope),
+    { side: initialSide(wind.awaDeg), thetaDeg: 0 },
     data,
   );
-  const input = jibInput(controls, rope, solution);
+  const input = jibInput(controls, wind, rope, solution);
   // A link has no history: start from the angle the jib has fully out, so a released sheet on a
   // partly furled jib keeps that angle (as it would have while being furled).
   const fullyOut = solveJib(
@@ -147,6 +211,7 @@ export function initialRig(
     jibPhi: { value: jib.phiDeg, velocity: 0 },
     jibFill: jib.fill,
     timeS: 0,
+    wind,
   };
 }
 
@@ -205,6 +270,8 @@ export interface StepOptions {
    * first-order lag of 7.1.
    */
   instantRopes?: boolean;
+  /** The true wind (direction from, speed) when it is not the controls' (M10 gusts). */
+  wind?: TrueWind;
 }
 
 /** Degrees within which a gybe swing counts as finished. */
@@ -212,7 +279,7 @@ const GYBE_DONE_DEG = 2;
 
 /**
  * Advances the rig by `dt` seconds towards the control targets. `motion` is the boat's
- * velocity and heading (zero in Phase 1).
+ * velocity and heading (zero in Phase 1): the rig is solved for the apparent wind it makes.
  */
 export function step(
   sim: { controls: Controls; rig: RigState },
@@ -221,8 +288,8 @@ export function step(
   data: BoatData = boat,
   options: StepOptions = {},
 ): RigState {
-  void motion; // Phase 2: apparent wind from the boat's own motion.
   const { controls, rig } = sim;
+  const wind = rigWind(controls, motion, data, options.wind);
   const v = data.visual;
   const target = applied(controls);
   // Realistic mode moves the ropes at their own speed (winch, running, hand): no extra lag.
@@ -240,7 +307,7 @@ export function step(
   };
 
   // Once the ropes have arrived, the controls usually stay put for many frames: reuse the solve.
-  const input = boomInput(controls, rope);
+  const input = boomInput(wind, rope);
   const solution =
     rig.input && sameInput(rig.input, input)
       ? { ...rig.solution, gybe: false, tack: false }
@@ -253,7 +320,7 @@ export function step(
   const swingTau = gybing ? v.gybeSwingTimeS : v.boomSmoothingTimeS;
 
   // The jib: solved like the boom; it crosses at the normal speed (the car slides across).
-  const nextJibInput = jibInput(controls, rope, solution);
+  const nextJibInput = jibInput(controls, wind, rope, solution);
   const jib =
     rig.jibInput && sameJibInput(rig.jibInput, nextJibInput)
       ? { ...rig.jibSolution, tack: false }
@@ -281,5 +348,6 @@ export function step(
     jibPhi: springTo(rig.jibPhi, jib.phiDeg, dt, v.boomSmoothingTimeS),
     jibFill: lag(rig.jibFill, jib.fill, dt, v.boomSmoothingTimeS),
     timeS: rig.timeS + dt,
+    wind,
   };
 }

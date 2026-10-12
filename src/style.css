@@ -537,34 +537,65 @@ button.segment {
   color: #6b3a00;
 }
 
-/* Wind indicator and rig alerts over the 3D view (PHASE1_SPEC 5.2, 8.1, 8.4). */
-.wind-chip {
+/* Instrument strip over the 3D view (PHASE2_SPEC 6.5). */
+.instrument-strip {
   position: absolute;
   top: 8px;
   left: 8px;
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
   max-width: calc(100% - 16px);
-  padding: 4px 10px 4px 6px;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 12px;
   background: rgb(255 255 255 / 0.88);
   color: var(--text);
-  font-size: var(--font-small);
-  font-weight: 600;
-  pointer-events: none;
+  font: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  cursor: pointer;
 }
 
-.wind-chip-arrow {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  fill: var(--accent);
+.instrument-strip:focus-visible {
+  outline: 3px solid var(--focus);
+}
+
+.strip-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 10px;
+  font-weight: 600;
+}
+
+.strip-speed {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.strip-auto {
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.strip-auto[hidden] {
+  display: none;
+}
+
+.strip-winds {
+  column-gap: 12px;
+  color: var(--muted);
+  font-weight: 600;
 }
 
 .rig-alerts {
   position: absolute;
-  top: 48px;
+  top: 78px;
   left: 50%;
   display: flex;
   flex-direction: column;
@@ -732,7 +763,11 @@ html[data-layout='side'] .rig-alerts {
 
 .dial-tick {
   stroke: var(--muted);
-  stroke-width: 2;
+  stroke-width: 1;
+}
+
+.dial-tick-major {
+  stroke-width: 2.5;
 }
 
 .dial-label,
@@ -1705,4 +1740,62 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   .real-tail.is-running {
     animation-duration: 1s;
   }
+}
+
+/* Autopilot (Ropes tab, Helm station; PHASE2_SPEC 6.5). */
+.autopilot {
+  grid-column: 1 / -1;
+  margin: 4px 0 6px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.autopilot .section-title {
+  margin: 0 0 6px;
+}
+
+.autopilot .segments {
+  margin-bottom: 6px;
+}
+
+.autopilot .segment {
+  min-height: var(--touch);
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+}
+
+.autopilot .segment[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.autopilot .segment:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.autopilot-status {
+  margin: 0;
+  font-size: var(--font-small);
+  font-weight: 600;
+}
+
+.autopilot-notice {
+  margin: 4px 0 0;
+  font-size: var(--font-small);
+  color: #8a3b00;
+  font-weight: 700;
+}
+
+.autopilot-notice[hidden] {
+  display: none;
 }

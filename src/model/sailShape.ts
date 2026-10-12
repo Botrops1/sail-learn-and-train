@@ -39,6 +39,19 @@ export function mainSailTwistDeg(psiDeg: number, data: BoatData = boat): number 
   return v.baseTwistDeg + v.twistPerDegBoomRise * Math.max(0, psiDeg);
 }
 
+/**
+ * The wind a sail is drawn for: the apparent wind on a moving boat (the renderer passes
+ * `rig.wind`); by default the controls' wind, as in Phase 1.
+ */
+export interface ShapeWind {
+  awaDeg: number;
+  awsKn: number;
+}
+
+function controlsWind(controls: Controls): ShapeWind {
+  return { awaDeg: controls.ctl_wind_dir, awsKn: controls.ctl_wind_speed };
+}
+
 export interface MainSailShapeInput {
   pose: BoomPose;
   /** Unfurled fraction, 0..1. */
@@ -56,13 +69,17 @@ export interface MainSailShapeInput {
  * fill, and the curve towards leeward. Leeward comes from the wind, not the boom, so the curve
  * never points the wrong way while the boom swings across in a gybe or sails by the lee.
  */
-export function mainSailInputFor(rig: RigState, controls: Controls): MainSailShapeInput {
+export function mainSailInputFor(
+  rig: RigState,
+  controls: Controls,
+  wind: ShapeWind = controlsWind(controls),
+): MainSailShapeInput {
   return {
     pose: { thetaDeg: rig.theta.value, psiDeg: rig.psi.value },
     unfurled: rig.applied.mainFurl / 100,
     fill: rig.fill,
-    side: curveSide(controls.ctl_wind_dir, rig.solution.side),
-    windSpeedKn: controls.ctl_wind_speed,
+    side: curveSide(wind.awaDeg, rig.solution.side),
+    windSpeedKn: wind.awsKn,
     timeS: rig.timeS,
   };
 }
@@ -79,13 +96,17 @@ export interface JibShapeInput {
 }
 
 /** The jib as drawn for a rig state: the smoothed rotation and fill, curving away from the wind. */
-export function jibInputFor(rig: RigState, controls: Controls): JibShapeInput {
+export function jibInputFor(
+  rig: RigState,
+  controls: Controls,
+  wind: ShapeWind = controlsWind(controls),
+): JibShapeInput {
   return {
     phiDeg: rig.jibPhi.value,
     unfurled: rig.jibSolution.unfurled,
     fill: rig.jibFill,
-    side: curveSide(controls.ctl_wind_dir, rig.jibSolution.side),
-    windSpeedKn: controls.ctl_wind_speed,
+    side: curveSide(wind.awaDeg, rig.jibSolution.side),
+    windSpeedKn: wind.awsKn,
     timeS: rig.timeS,
   };
 }

@@ -25,6 +25,8 @@ const TAB_LABELS: Record<TabId, StringKey> = {
  */
 export interface Panel {
   activeTab(): TabId;
+  /** Opens a tab (the instrument strip opens the Wind tab). */
+  showTab(id: TabId): void;
   onTabChange(listener: (tab: TabId) => void): void;
 }
 
@@ -109,6 +111,7 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
 
   return {
     activeTab: () => active,
+    showTab: (id) => select(id),
     onTabChange: (listener) => tabListeners.push(listener),
   };
 

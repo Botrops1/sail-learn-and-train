@@ -1,4 +1,6 @@
 import { BUILD_INFO } from '../app/buildInfo';
+import { mpsToKn, wrap180 } from '../model/angles';
+import { autopilotHeadingDeg } from '../model/autopilot';
 import type { RopeStatus } from '../model/boomSolver';
 import type { Store } from '../app/store';
 import { el } from './dom';
@@ -56,7 +58,8 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
   return {
     update(fps, viewport, pixelRatio, render, times) {
       if (box.hidden) return;
-      const { camera, settings, selection, rig } = store.getState();
+      const { camera, settings, selection, rig, boat, motion, autopilot, controls } =
+        store.getState();
       const sol = rig.solution;
       const jib = rig.jibSolution;
       const deg = (value: number) => `${value.toFixed(1)}°`;
@@ -96,6 +99,24 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
         ['', rope('vang', sol.vang)],
         ['', rope('lift', sol.toppingLift)],
         ['', rope('jib sheet', jib.sheet)],
+        [
+          t('debug.motion'),
+          `${mpsToKn(boat.speedMps).toFixed(2)} kn ${boat.yawRateDegS.toFixed(1)}°/s`,
+        ],
+        [t('debug.winds'), `${rig.wind.twaDeg.toFixed(0)}° / ${rig.wind.twsKn.toFixed(1)} kn`],
+        [t('debug.apparent'), `${rig.wind.awaDeg.toFixed(1)}° / ${rig.wind.awsKn.toFixed(2)} kn`],
+        [
+          t('debug.forces'),
+          motion
+            ? `${(motion.forces.driveN / 1000).toFixed(2)} / ${(motion.forces.sideN / 1000).toFixed(2)} / ${(motion.resistance.totalN / 1000).toFixed(2)} kN`
+            : '–',
+        ],
+        [
+          t('debug.autopilot'),
+          autopilot.mode === 'off'
+            ? 'off'
+            : `${wrap180(autopilotHeadingDeg(autopilot, controls.ctl_wind_dir) - boat.headingDeg).toFixed(1)}° / ${autopilot.integralDeg.toFixed(2)}`,
+        ],
         [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
       ];
       const text = rows.map(([label, value]) => `${label.padEnd(12)}${value}`).join('\n');

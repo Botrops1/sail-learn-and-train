@@ -93,6 +93,7 @@ describe('store', () => {
         camera: { preset: 'top' },
         settings: { step: 1, debug: true, legend: false, detail: 'low' },
         selection: 'rope_vang',
+        boat: { mode: 'held' },
       }),
     );
     const rigBefore = store.getState().rig;
@@ -105,10 +106,13 @@ describe('store', () => {
     expect(state.settings).toEqual({ ...defaults.settings, debug: true, detail: 'low' });
     // The rig is not snapped: it moves back from where it was.
     expect(state.rig).toBe(rigBefore);
+    // Reset opens Sailing (M6); this test is about the rig, so the boat is held still again.
+    store.dispatch({ type: 'setBoatMode', mode: 'held' });
     for (let i = 0; i < 600; i += 1) store.dispatch({ type: 'step', dt: 1 / 60 });
     const settled = store.getState().rig;
+    const held = initialState({ boat: { mode: 'held' } }).rig;
     expect(settled.applied).toEqual(defaults.rig.applied);
-    expect(settled.solution.thetaDeg).toBeCloseTo(defaults.rig.solution.thetaDeg, 6);
+    expect(settled.solution.thetaDeg).toBeCloseTo(held.solution.thetaDeg, 6);
     expect(settled.jibSolution.unfurled).toBe(1);
   });
 });

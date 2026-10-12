@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { createStore, initialState, type AppState } from '../src/app/store';
 import { jibReachedParam, parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
+import { knToMps, mpsToKn } from '../src/model/angles';
+import { steadyState } from '../src/model/motion';
 import { defaultControls, type Controls } from '../src/model/controls';
 import {
   CAMERA_PRESETS,
@@ -12,6 +14,15 @@ import {
 
 /** The controls part of the default URL (M2: boom and wind; M3: jib; M4a: wheel). */
 const DEFAULT_CONTROLS_QUERY = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
+
+/** M6: a sailing boat writes her speed; with the default controls she settles at 6.8 kn. */
+const DEFAULT_BOAT_QUERY = 'bs=6.8';
+
+/** M6: the boat in a state that is compared whole after a round trip (no speed to round). */
+const HELD = { mode: 'held' } as const;
+
+/** The default boat's speed as a link writes it (6.8 kn), so a round trip gives the same state. */
+const AT_6_8_KN = { speedMps: knToMps(6.8) };
 
 describe('URL state (PHASE1_SPEC 9.2)', () => {
   it('empty query gives the defaults', () => {
@@ -87,7 +98,7 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
   });
 
   it('a link opens with the rig already settled for its controls', () => {
-    const state = parseUrlState('?wd=90&ms=100');
+    const state = parseUrlState('?wd=90&ms=100&held=1');
     expect(state.rig.solution.thetaDeg).toBeCloseTo(-boat.rig.boom.maxSwingDeg, 6);
     expect(state.rig.theta.value).toBeCloseTo(-boat.rig.boom.maxSwingDeg, 6);
   });
@@ -101,18 +112,23 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
   it('cam=free is kept as the preset (the free position itself is not stored)', () => {
     expect(parseUrlState('?cam=free').camera).toEqual({ preset: 'free' });
     expect(serializeUrlState(initialState({ camera: { preset: 'free' } }))).toBe(
-      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=free&step=5&detail=high`,
+      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=free&step=5&detail=high&${DEFAULT_BOAT_QUERY}`,
     );
   });
 
   it('writes v=1 and readable parameters', () => {
     const c = DEFAULT_CONTROLS_QUERY;
-    expect(serializeUrlState(initialState())).toBe(`?v=1&${c}&cam=side-port&step=5&detail=high`);
+    const b = DEFAULT_BOAT_QUERY;
+    expect(serializeUrlState(initialState())).toBe(
+      `?v=1&${c}&cam=side-port&step=5&detail=high&${b}`,
+    );
     const withDebug = initialState({ settings: { step: 1, debug: true } });
-    expect(serializeUrlState(withDebug)).toBe(`?v=1&${c}&cam=side-port&step=1&detail=high&debug=1`);
+    expect(serializeUrlState(withDebug)).toBe(
+      `?v=1&${c}&cam=side-port&step=1&detail=high&${b}&debug=1`,
+    );
     const withSelection = initialState({ selection: 'part_boom' });
     expect(serializeUrlState(withSelection)).toBe(
-      `?v=1&${c}&cam=side-port&sel=part_boom&step=5&detail=high`,
+      `?v=1&${c}&cam=side-port&sel=part_boom&step=5&detail=high&${b}`,
     );
   });
 
@@ -126,6 +142,7 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
         ctl_wind_dir: -135,
         ctl_wind_speed: 0,
       },
+      boat: HELD,
     });
     expect(parseUrlState(serializeUrlState(state))).toEqual(state);
   });
@@ -139,6 +156,7 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
               camera: { preset },
               settings: { step, debug },
               selection,
+              boat: HELD,
             });
             expect(parseUrlState(serializeUrlState(state))).toEqual(state);
           }
@@ -166,7 +184,7 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
       ctl_wind_dir: -135,
       ctl_wind_speed: 0,
     };
-    const state = initialState({ controls });
+    const state = initialState({ controls, boat: HELD });
     const back = parseUrlState(serializeUrlState(state));
     expect(back.controls).toEqual(controls);
     expect(back).toEqual(state);
@@ -180,9 +198,9 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(parseUrlState('?mode=realistic').settings.ropesMode).toBe('realistic');
     // An unknown mode falls back to Easy.
     expect(parseUrlState('?mode=hard').settings.ropesMode).toBe('easy');
-    const hidden = initialState({ settings: { legend: false } });
+    const hidden = initialState({ settings: { legend: false }, boat: AT_6_8_KN });
     expect(serializeUrlState(hidden)).toBe(
-      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lg=0`,
+      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lg=0&${DEFAULT_BOAT_QUERY}`,
     );
     expect(parseUrlState(serializeUrlState(hidden))).toEqual(hidden);
   });
@@ -192,9 +210,9 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(parseUrlState('?lb=1').settings.labels).toBe(true);
     expect(parseUrlState('?lb=0').settings.labels).toBe(false);
     expect(parseUrlState('?lb=yes').settings.labels).toBe(true);
-    const off = initialState({ settings: { labels: false } });
+    const off = initialState({ settings: { labels: false }, boat: AT_6_8_KN });
     expect(serializeUrlState(off)).toBe(
-      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lb=0`,
+      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lb=0&${DEFAULT_BOAT_QUERY}`,
     );
     expect(parseUrlState(serializeUrlState(off))).toEqual(off);
     expect(serializeUrlState(initialState())).not.toContain('lb=');
@@ -288,7 +306,7 @@ describe('URL state: Realistic mode (M4b: st, co, wp, wsb)', () => {
   });
 
   it('round-trips through the link, and a default state writes nothing extra', () => {
-    const query = `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&mode=realistic`;
+    const query = `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&mode=realistic&${DEFAULT_BOAT_QUERY}`;
     expect(serializeUrlState(parseUrlState(query))).toBe(query);
     const set = `${query}&st=starboard&co=a5,b3&wp=b5.3.t&wsb=a5.-2.h`;
     expect(serializeUrlState(parseUrlState(set))).toBe(set);
@@ -305,5 +323,89 @@ describe('URL state: Realistic mode (M4b: st, co, wp, wsb)', () => {
     expect(link).not.toContain('a5,');
     expect(link).toContain('wsb=a1.3.t');
     expect(link).not.toContain('paused');
+  });
+});
+
+describe('URL state: the boat (M6: hdg, bs, held, ap, apt)', () => {
+  it('an old link opens with heading 0, the same wind picture, Sailing at her steady speed, autopilot holding 0', () => {
+    const state = parseUrlState('?wd=90&ws=12&ms=40');
+    expect(state.boat.mode).toBe('sailing');
+    expect(state.boat.headingDeg).toBe(0);
+    expect(state.controls.ctl_wind_dir).toBe(90);
+    expect(state.autopilot).toEqual({ mode: 'heading', targetDeg: 0, integralDeg: 0 });
+    const steady = steadyState(state.controls, 0).speedMps;
+    expect(state.boat.speedMps).toBeCloseTo(steady, 9);
+    expect(mpsToKn(steady)).toBeGreaterThan(5);
+  });
+
+  it('reads and writes the heading, only when it is not 0', () => {
+    expect(parseUrlState('?hdg=315').boat.headingDeg).toBe(315);
+    expect(parseUrlState('?hdg=360').boat.headingDeg).toBe(0);
+    expect(parseUrlState('?hdg=-5').boat.headingDeg).toBe(0);
+    expect(parseUrlState('?hdg=12.5').boat.headingDeg).toBe(0);
+    expect(serializeUrlState(parseUrlState('?hdg=315'))).toContain('hdg=315');
+    expect(serializeUrlState(parseUrlState('?hdg=0'))).not.toContain('hdg=');
+  });
+
+  it('reads and writes the speed in knots with one decimal, and falls back when out of range', () => {
+    const state = parseUrlState('?bs=6.3');
+    expect(mpsToKn(state.boat.speedMps)).toBeCloseTo(6.3, 9);
+    expect(serializeUrlState(state)).toContain('bs=6.3');
+    expect(mpsToKn(parseUrlState('?bs=-3.5').boat.speedMps)).toBeCloseTo(-3.5, 9);
+    const steady = steadyState(defaultControls(), 0).speedMps;
+    expect(parseUrlState('?bs=16').boat.speedMps).toBeCloseTo(steady, 9);
+    expect(parseUrlState('?bs=fast').boat.speedMps).toBeCloseTo(steady, 9);
+    expect(serializeUrlState(parseUrlState('?bs=0'))).toContain('bs=0.0');
+  });
+
+  it('held=1 holds the boat still: no speed, and no bs in the link', () => {
+    const state = parseUrlState('?wd=90&ws=12&held=1&bs=6');
+    expect(state.boat.mode).toBe('held');
+    expect(state.boat.speedMps).toBe(0);
+    const link = serializeUrlState(state);
+    expect(link).toContain('held=1');
+    expect(link).not.toContain('bs=');
+    expect(parseUrlState(link)).toEqual(state);
+  });
+
+  it('round-trips the autopilot: ap, and apt for a target that is not the heading', () => {
+    expect(parseUrlState('?ap=off').autopilot.mode).toBe('off');
+    expect(parseUrlState('?ap=hdg&apt=90')).toMatchObject({
+      autopilot: { mode: 'heading', targetDeg: 90 },
+    });
+    expect(parseUrlState('?hdg=10&ap=hdg').autopilot.targetDeg).toBe(10);
+    expect(parseUrlState('?ap=wind&apt=-45').autopilot).toEqual({
+      mode: 'wind',
+      targetDeg: -45,
+      integralDeg: 0,
+    });
+    // Without a target, wind mode holds the angle the boat has now.
+    expect(parseUrlState('?wd=90&ap=wind').autopilot.targetDeg).toBe(90);
+    expect(parseUrlState('?ap=wind&apt=500').autopilot.targetDeg).toBe(60);
+    expect(parseUrlState('?ap=banana').autopilot.mode).toBe('heading');
+
+    for (const query of [
+      '?wd=90&hdg=20&bs=7.0&ap=wind&apt=70',
+      '?wd=90&hdg=20&bs=7.0&ap=hdg&apt=100',
+      '?wd=90&hdg=20&bs=7.0&ap=off',
+      '?wd=-120&hdg=300&bs=5.5&ap=wind&apt=-60',
+    ]) {
+      const state = parseUrlState(query);
+      const link = serializeUrlState(state);
+      const back = parseUrlState(link);
+      expect(back.boat).toEqual(state.boat);
+      expect(back.autopilot).toEqual(state.autopilot);
+    }
+  });
+
+  it('writes ap only when the autopilot does not simply hold the heading', () => {
+    const holding = serializeUrlState(parseUrlState('?hdg=40&ap=hdg&apt=40'));
+    expect(holding).not.toContain('ap=');
+    expect(holding).not.toContain('apt=');
+    const turning = serializeUrlState(parseUrlState('?hdg=40&ap=hdg&apt=60'));
+    expect(turning).toContain('ap=hdg&apt=60');
+    const wind = serializeUrlState(parseUrlState('?wd=90&ap=wind'));
+    expect(wind).toContain('ap=wind&apt=90');
+    expect(serializeUrlState(parseUrlState('?ap=off'))).toContain('ap=off');
   });
 });
