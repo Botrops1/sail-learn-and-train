@@ -159,7 +159,27 @@ export function parseUrlState(
     boat: boatState,
     autopilot,
     windMode,
+    engine: parseEngine(params),
   });
+}
+
+/**
+ * The engine in the link (PHASE2_SPEC 12.3): `eng=1` running, `lv` the lever in % (−100 … 100,
+ * whole numbers; absent = 0, neutral). Out-of-range values are left out.
+ */
+function parseEngine(params: URLSearchParams): { running: boolean; leverPct: number } {
+  return {
+    running: params.get('eng') === '1',
+    leverPct: wholeNumber(params.get('lv'), -100, 100) ?? 0,
+  };
+}
+
+/** The engine parameters for a state: `eng=1` while running, `lv` when the lever is not at 0. */
+export function engineParams(state: AppState): [string, string][] {
+  const result: [string, string][] = [];
+  if (state.engine.running) result.push(['eng', '1']);
+  if (state.engine.leverPct !== 0) result.push(['lv', String(Math.round(state.engine.leverPct))]);
+  return result;
 }
 
 /** Whole numbers only (no decimals, no text). */
@@ -411,6 +431,7 @@ export function serializeUrlState(state: AppState): string {
   }
   for (const [name, value] of boatParams(state)) params.set(name, value);
   for (const [name, value] of windModeParams(state)) params.set(name, value);
+  for (const [name, value] of engineParams(state)) params.set(name, value);
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
   // Commas need no escaping in a query (co=a5,b3 stays readable).

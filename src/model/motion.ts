@@ -220,19 +220,21 @@ export interface SteadyState {
  * The speed the boat settles at with the controls as they are and her heading held
  * (PHASE2_SPEC 6.3): for links without `bs`, Reset and the calibration tests. With `opts.heel`
  * she also heels until the righting moment balances the sails' heeling moment (M8), and the
- * heel takes drive away.
+ * heel takes drive away. `opts.engineThrustN` (M12) adds the engine's push, ahead only: a link
+ * with the engine running opens at the speed it gives.
  */
 export function steadyState(
   controls: Controls,
   headingDeg: number,
   data: BoatData = hanse508,
-  opts: { heel?: boolean; windDirDeg?: number; twsKn?: number } = {},
+  opts: { heel?: boolean; windDirDeg?: number; twsKn?: number; engineThrustN?: number } = {},
 ): SteadyState {
   const dirDeg = opts.windDirDeg ?? controls.ctl_wind_dir;
   const twsKn = opts.twsKn ?? controls.ctl_wind_speed;
   const override =
     opts.windDirDeg === undefined && opts.twsKn === undefined ? undefined : { dirDeg, twsKn };
   const twaDeg = wrap180(dirDeg - headingDeg);
+  const thrustN = opts.engineThrustN ?? 0;
   let heelDeg = 0;
   let speed = 0;
   let wind = apparentWind(twsKn, twaDeg, speed, data);
@@ -260,7 +262,8 @@ export function steadyState(
       const mid = (low + high) / 2;
       const net =
         forces.driveN +
-        forces.windageN -
+        forces.windageN +
+        thrustN -
         hullResistance(mid, forces.sideN, heelDeg, 0, data).totalN;
       if (net > 0) low = mid;
       else high = mid;

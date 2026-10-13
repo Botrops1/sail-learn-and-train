@@ -25,6 +25,7 @@ import {
   tackAutopilot,
   type AutopilotState,
 } from '../model/autopilot';
+import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../model/engine';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, timeSpeedAvailable } from '../model/timeScale';
 import {
@@ -80,7 +81,12 @@ export interface AppState {
   wind: WindNow;
   /** How worn each sail is from flogging (M9, 0 … 1; 1 = torn). Not in the link. */
   sailDamage: SailDamage;
+  /** The engine (M12): stopped or running, the lever, rpm and gear. */
+  engine: EngineState;
 }
+
+/** Engine commands (PHASE2_SPEC 12.3): start, stop, or the lever (−100 … 100, whole numbers). */
+export type EngineCommand = 'start' | 'stop' | { leverPct: number };
 
 /** Autopilot commands (PHASE2_SPEC 6.4). `turnDeg` + = turn the boat to starboard. */
 export type AutopilotCommand = 'off' | 'heading' | 'wind' | 'tack' | { turnDeg: number };
@@ -103,6 +109,8 @@ export type Action =
   /** Held still (Phase 1) or Sailing (PHASE2_SPEC 6.4). */
   | { type: 'setBoatMode'; mode: 'sailing' | 'held' }
   | { type: 'autopilot'; command: AutopilotCommand }
+  /** The engine (M12). */
+  | { type: 'engine'; command: EngineCommand }
   /** Wind modes (M10): the pattern restarts now; its size goes to the mode's default. */
   | { type: 'setWindMode'; mode: WindModeId }
   /** Size of the pattern: % (gusty), ° (shifty), kn (building, dying). Restarts the pattern. */
@@ -134,6 +142,8 @@ export interface InitialOverrides {
   autopilot?: AutopilotState;
   /** From a shared link: the wind mode, its seed and size. The pattern starts at time 0. */
   windMode?: Partial<WindModeState>;
+  /** From a shared link: engine running and lever. */
+  engine?: { running?: boolean; leverPct?: number };
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -141,6 +151,7 @@ function boatFor(
   controls: Controls,
   overrides: Partial<BoatState> = {},
   wind?: WindNow,
+  engine: EngineState = initialEngine(),
 ): BoatState {
   const mode = overrides.mode ?? 'sailing';
   const headingDeg = overrides.headingDeg ?? 0;
@@ -157,6 +168,7 @@ function boatFor(
   // She opens settled: at her steady speed and heel (a link may give the speed).
   const steady = steadyState(controls, headingDeg, undefined, {
     heel: true,
+    engineThrustN: engineThrustN(engine),
     ...(wind ? { windDirDeg: wind.dirDeg, twsKn: wind.twsKn } : {}),
   });
   const speedMps = overrides.speedMps ?? steady.speedMps;
@@ -191,7 +203,8 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
   const wind = windNow(controls, windMode, 0);
   // Steady wind: the controls are the wind (Phase 1 and the sailing of M6-M9 exactly).
   const patterned = windMode.mode !== 'steady';
-  const boat = boatFor(controls, overrides.boat, patterned ? wind : undefined);
+  const engine = initialEngine(overrides.engine);
+  const boat = boatFor(controls, overrides.boat, patterned ? wind : undefined, engine);
   return withTimeRule({
     controls,
     // A link opens with the rig already settled for the apparent wind: no swing on load.
@@ -215,6 +228,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     windMode,
     wind,
     sailDamage: NO_DAMAGE,
+    engine,
   });
 }
 
@@ -316,6 +330,17 @@ export function reduce(state: AppState, action: Action): AppState {
       }
       return autopilot === state.autopilot ? state : { ...state, autopilot };
     }
+    case 'engine': {
+      const command = action.command;
+      const engine = state.engine;
+      if (command === 'start' || command === 'stop') {
+        const running = command === 'start';
+        return engine.running === running ? state : { ...state, engine: { ...engine, running } };
+      }
+      if (!Number.isFinite(command.leverPct)) return state;
+      const leverPct = Math.max(-100, Math.min(100, Math.round(command.leverPct)));
+      return leverPct === engine.leverPct ? state : { ...state, engine: { ...engine, leverPct } };
+    }
     case 'setWindMode': {
       if (state.windMode.mode === action.mode) return state;
       const windMode = initialWindMode({
@@ -383,7 +408,9 @@ export function reduce(state: AppState, action: Action): AppState {
       let autopilot = state.autopilot;
       // The autopilot moves the wheel's target (not through setControls: it must not switch
       // itself off).
-      if (sailing && autopilot.mode !== 'off') {
+      // Going astern the rudder turns her the other way, so a heading hold would turn her away:
+      // it does not steer then (decided in the M12 PR).
+      if (sailing && autopilot.mode !== 'off' && state.boat.speedMps >= 0) {
         const steered = stepAutopilot(autopilot, state.boat, wind.dirDeg, controls.ctl_rudder, dt);
         autopilot = steered.autopilot;
         controls = withControls(controls, { ctl_rudder: steered.rudderTargetDeg });
@@ -396,6 +423,8 @@ export function reduce(state: AppState, action: Action): AppState {
         controls = withControls(controls, moved.values);
         realisticState = moved.state;
       }
+      // The engine runs in Held still too (the boat just does not move).
+      const engine = stepEngine(state.engine, dt);
       const rig = step({ controls, rig: state.rig }, dt, motionOf(state.boat), undefined, {
         instantRopes: realistic,
         wind: patterned ? wind : undefined,
@@ -409,7 +438,7 @@ export function reduce(state: AppState, action: Action): AppState {
           rudderDeg: rig.applied.rudder,
           rig,
           controls,
-          engineThrustN: 0,
+          engineThrustN: engineThrustN(engine),
           damage: state.sailDamage,
           rudderLimitDeg:
             autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
@@ -428,6 +457,7 @@ export function reduce(state: AppState, action: Action): AppState {
         autopilotNoticeS: Math.max(0, state.autopilotNoticeS - frame),
         track: sailing ? appendTrack(state.track, moving.boat, rig.timeS) : state.track,
         sailDamage: floggingDamage(state.sailDamage, rig, dt),
+        engine,
       };
     }
   }
