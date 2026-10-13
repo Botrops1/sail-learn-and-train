@@ -17,6 +17,7 @@ import {
 } from '../model/realistic';
 import { partInfo } from '../model/registry';
 import { createAutopilotPanel } from './autopilotPanel';
+import { createEngineLever } from './enginePanel';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import {
@@ -236,6 +237,7 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     el('p', { class: 'hint' }, [t('real.helm.slot')]),
     wheel.element,
     createAutopilotPanel(store),
+    createEngineLever(store),
   ]);
 
   // The strip for the selected clutch.

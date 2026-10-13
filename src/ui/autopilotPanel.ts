@@ -116,6 +116,9 @@ export function createAutopilotPanel(store: Store): HTMLElement {
         side: t(target < 0 ? 'wind.side.port' : 'wind.side.starboard'),
       });
     } else text = t('autopilot.standby');
+    if (!held && autopilot.mode !== 'off' && state.boat.speedMps < 0) {
+      text = t('autopilot.astern');
+    }
     setText(status, text);
     const showNotice = state.autopilotNoticeS > 0 && !held;
     if (notice.hidden === showNotice) notice.hidden = !showNotice;

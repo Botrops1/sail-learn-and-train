@@ -58,7 +58,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
   return {
     update(fps, viewport, pixelRatio, render, times) {
       if (box.hidden) return;
-      const { camera, settings, selection, rig, boat, motion, autopilot, wind, windMode } =
+      const { camera, settings, selection, rig, boat, motion, autopilot, wind, windMode, engine } =
         store.getState();
       const sol = rig.solution;
       const jib = rig.jibSolution;
@@ -131,6 +131,12 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
           autopilot.mode === 'off'
             ? 'off'
             : `${wrap180(autopilotHeadingDeg(autopilot, wind.dirDeg) - boat.headingDeg).toFixed(1)}° / ${autopilot.integralDeg.toFixed(2)}`,
+        ],
+        [
+          t('debug.engine'),
+          engine.running
+            ? `${engine.gear} ${engine.rpm.toFixed(0)} rpm lv ${engine.leverPct}`
+            : 'stopped',
         ],
         [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
       ];

@@ -617,7 +617,8 @@ button.segment {
 }
 
 .strip-gust,
-.strip-time {
+.strip-time,
+.strip-engine {
   padding: 0 6px;
   border-radius: 6px;
   background: #b45309;
@@ -628,8 +629,13 @@ button.segment {
   background: var(--text);
 }
 
+.strip-engine {
+  background: var(--accent);
+}
+
 .strip-gust[hidden],
 .strip-time[hidden],
+.strip-engine[hidden],
 .strip-flags[hidden] {
   display: none;
 }
@@ -1956,6 +1962,205 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .autopilot-notice[hidden] {
   display: none;
+}
+
+/* Engine (Ropes tab and Helm station; M12, PHASE2_SPEC 12.3). */
+.engine-panel,
+.engine-helm {
+  grid-column: 1 / -1;
+  margin: 4px 0 6px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.engine-panel .section-title,
+.engine-helm .section-title {
+  margin: 0 0 6px;
+}
+
+.engine-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.engine-head .section-title {
+  margin: 0;
+}
+
+.engine-startstop {
+  min-width: 96px;
+  min-height: var(--touch);
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.engine-startstop[aria-pressed='true'] {
+  border-color: #b3261e;
+  background: #fbe9e7;
+  color: #b3261e;
+}
+
+.engine-startstop[aria-pressed='false'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.engine-gauge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
+}
+
+.engine-tach {
+  flex: none;
+}
+
+.tach-arc {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 5;
+}
+
+.tach-arc.is-red {
+  stroke: #b3261e;
+}
+
+.tach-tick {
+  stroke: var(--muted);
+  stroke-width: 1.5;
+}
+
+.tach-tick.is-red {
+  stroke: #b3261e;
+}
+
+.tach-needle {
+  stroke: var(--text);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.tach-hub {
+  fill: var(--text);
+}
+
+.engine-readout {
+  min-width: 0;
+}
+
+.engine-rpm {
+  display: block;
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.engine-status {
+  margin: 2px 0 0;
+  font-size: var(--font-small);
+  font-weight: 600;
+}
+
+.engine-scale {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 var(--touch);
+  padding: 2px 0;
+  color: var(--muted);
+  font-size: var(--font-small);
+  font-weight: 600;
+}
+
+.engine-scale span:not(.engine-band) {
+  position: relative;
+}
+
+.engine-scale span.engine-scale-neutral {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.engine-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--accent-soft);
+  border-radius: 4px;
+}
+
+.engine-helm-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.engine-lever-drawing {
+  flex: none;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.engine-track {
+  fill: var(--line);
+}
+
+.engine-band-drawing {
+  fill: var(--accent-soft);
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 4 3;
+}
+
+.engine-label {
+  fill: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.engine-label.is-neutral {
+  fill: var(--accent);
+}
+
+.engine-knob-body {
+  fill: var(--text);
+}
+
+.engine-knob-grip {
+  stroke: #ffffff;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.engine-helm-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.engine-lever-value {
+  margin: 0;
+  font-size: var(--font-small);
+  font-weight: 700;
 }
 
 /* Sails block of the Ropes tab (M9, PHASE2_SPEC 9.3). */
