@@ -245,3 +245,10 @@ describe('wind modes: what the speed slider shows (issue #33)', () => {
     expect(state.wind.twsKn).toBeGreaterThan(9);
   });
 });
+
+describe('time bar: Pause with waves (PHASE3_SPEC 6.4)', () => {
+  it('Held still keeps Pause while the water moves', () => {
+    expect(pauseAvailable('held', 'steady', 'easy', 'coastal')).toBe(true);
+    expect(pauseAvailable('held', 'steady', 'easy', 'flat')).toBe(false);
+  });
+});

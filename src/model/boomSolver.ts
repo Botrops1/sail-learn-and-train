@@ -1,3 +1,4 @@
+import { smoothstep } from './angles';
 import { boat, type BoatData } from './boat';
 import { availableSheetLength, maxSwingFor, sheetLength } from './mainsheet';
 import {
@@ -79,10 +80,8 @@ export interface BoomSolution {
   sheetUsed: number;
 }
 
-export function smoothstep(edge0: number, edge1: number, x: number): number {
-  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
-  return t * t * (3 - 2 * t);
-}
+// The shared helper lives in angles.ts (PHASE3_SPEC 3.2); re-exported so importers do not change.
+export { smoothstep } from './angles';
 
 /** The side the wind pushes the boom (and the jib) to: wind from starboard → port. */
 export function leewardSide(windFromDeg: number): Side | null {

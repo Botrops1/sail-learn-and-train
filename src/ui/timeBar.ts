@@ -137,7 +137,12 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     const speed = timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar);
     const open = speed && !folded;
     const scale = state.settings.timeScale;
-    const pausable = pauseAvailable(state.boat.mode, state.windMode.mode, state.settings.ropesMode);
+    const pausable = pauseAvailable(
+      state.boat.mode,
+      state.windMode.mode,
+      state.settings.ropesMode,
+      state.sea.setting,
+    );
     const key = [speed, open, scale, state.paused, pausable].join('|');
     if (key === shown) return;
     shown = key;

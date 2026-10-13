@@ -1,0 +1,24 @@
+{
+  "$comment": "Sailing area (ROADMAP architecture hook 'Sailing areas as data'): loaded by id, no area names or numbers in code. PHASE3_SPEC 6.2. Other areas later = other files with the same keys.",
+  "id": "adriatic",
+  "names": { "en": "Adriatic (Split)", "ru": "Адриатика (Сплит)" },
+  "namesStatus": { "en": "draft", "ru": "draft" },
+  "position": {
+    "latitudeDeg": 43.508,
+    "longitudeDeg": 16.44,
+    "source": "Split harbour, read off a map (owner, Phase 3 plan: Split is the reference point). Sunrise and sunset differ by only a few minutes along the Croatian coast."
+  },
+  "timeZone": {
+    "name": "Europe/Zagreb",
+    "standardOffsetMin": 60,
+    "summerOffsetMin": 120,
+    "standardAbbreviation": "CET",
+    "summerAbbreviation": "CEST",
+    "summerTime": "EU",
+    "source": "Wikipedia, Summer time in Europe: EU summer time runs from 01:00 UTC on the last Sunday in March to 01:00 UTC on the last Sunday in October; Croatia is on CET (UTC+1) / CEST (UTC+2)."
+  },
+  "sea": {
+    "fetchKm": { "flat": 0, "sheltered": 5, "coastal": 30, "open": 150 },
+    "fetchNote": "assumption: how far the wind blows over open water before it reaches the boat. Sheltered: a bay or a channel between islands; coastal: along the Croatian coast and between the outer islands; open: the open Adriatic (it is about 150–200 km wide)."
+  }
+}

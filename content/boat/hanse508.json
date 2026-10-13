@@ -1271,6 +1271,19 @@
       "knotMps": 0.514444,
       "source": "standard values (sea water about 15 °C); 1 kn = 1852 m / 3600 s"
     },
+    "waveResponse": {
+      "$comment": "PHASE3_SPEC 6.3 (M14). How the boat follows the water: the surface height is sampled along the waterline and across the beam; heave, pitch and roll follow the samples with a lag. Assumptions (BOAT_REFERENCE section 5).",
+      "sampleFractions": [-0.4, -0.2, 0, 0.2, 0.4],
+      "sampleNote": "assumption: five points along the centreline at these fractions of the waterline length either side of the waterline's middle; a wave shorter than the boat is averaged out",
+      "rollSampleBeamFraction": 0.4,
+      "heaveFollow": 1,
+      "pitchFollow": 1,
+      "rollFollow": 1,
+      "heaveLagS": 0.5,
+      "pitchLagS": 0.5,
+      "rollLagS": 0.5,
+      "lagNote": "assumption: the hull's inertia as a 0.5 s first-order lag behind the water; true to size (owner: not exaggerated)"
+    },
     "integration": {
       "maxStepS": 0.05,
       "solverAwaStepDeg": 0.1,
@@ -1558,5 +1571,27 @@
     "building": { "changeDefaultKn": 10, "changeMaxKn": 20, "rampS": 600 },
     "dying": { "changeDefaultKn": 8, "changeMaxKn": 20, "rampS": 600 },
     "gustBadgeFraction": 1.1
+  },
+  "waves": {
+    "$comment": "PHASE3_SPEC 6 (M14). Wind waves as three wave trains sized by the wind and the fetch (content/areas/<id>.json sea.fetchKm). Growth: JONSWAP fetch-limited formulas capped at a fully developed sea (PHYSICS_TRUTHS PT-39). The trains, their weights and phases and the build-up time are teaching assumptions (BOAT_REFERENCE section 5).",
+    "settings": ["flat", "sheltered", "coastal", "open"],
+    "defaultSetting": "coastal",
+    "growth": {
+      "heightCoefficient": 0.0016,
+      "periodCoefficient": 0.286,
+      "fullyDevelopedHeight": 0.2433,
+      "fullyDevelopedPeriod": 8.134,
+      "source": "JONSWAP fetch-limited growth, g·Hs/U² = 0.0016·(g·F/U²)^0.5 and g·Tp/U = 0.286·(g·F/U²)^(1/3), capped at the Pierson-Moskowitz fully developed sea (0.2433 and 8.134), as given in the US Army Corps of Engineers Shore Protection Manual and Coastal Engineering Manual (to-verify: not reachable from the cloud environment). U = wind speed (m/s), F = fetch (m)."
+    },
+    "minPeriodS": 1,
+    "minHeightM": 0.02,
+    "buildTimeS": 180,
+    "buildNote": "assumption: the waves follow the wind with a 3-minute time constant, so a gust (about 10 s) hardly changes them and a building wind (10 min) grows them visibly. Real waves take hours to reach their full size (Wikipedia, Wind wave); shortened for teaching (owner, Phase 3 plan).",
+    "trains": [
+      { "periodFactor": 1, "dirOffsetDeg": 0, "weight": 1, "phaseRad": 0 },
+      { "periodFactor": 0.8, "dirOffsetDeg": 25, "weight": 0.6, "phaseRad": 2.1 },
+      { "periodFactor": 0.65, "dirOffsetDeg": -35, "weight": 0.4, "phaseRad": 4.2 }
+    ],
+    "trainsNote": "assumption: a main train from the wind's direction at the peak period and two shorter, smaller trains from 25° and 35° either side, so the sea looks irregular. Amplitudes are scaled so that the significant wave height of the sum (4 × its standard deviation) equals the formula's height."
   }
 }

@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import type { SeaSetting } from './waves';
 import type { WindModeId } from './windModes';
 
 /**
@@ -49,14 +50,21 @@ export function timeSpeedAvailable(
 }
 
 /**
- * Whether Pause means anything (issue #34): in Held still with a steady wind and Easy ropes
- * nothing changes with time, so the bar shows a "Held still" chip instead. Realistic mode keeps
- * Pause (winching and easing take time); Sailing and a changing wind need it too.
+ * Whether Pause means anything (issue #34): in Held still with a steady wind, Easy ropes and
+ * flat water nothing changes with time, so the bar shows a "Held still" chip instead. Realistic
+ * mode keeps Pause (winching and easing take time); Sailing and a changing wind need it too, and
+ * so do waves (M14: the water moves, so Pause means something again).
  */
 export function pauseAvailable(
   boatMode: 'sailing' | 'held',
   windMode: WindModeId,
   ropesMode: 'easy' | 'realistic',
+  seaSetting: SeaSetting = 'flat',
 ): boolean {
-  return boatMode === 'sailing' || windMode !== 'steady' || ropesMode === 'realistic';
+  return (
+    boatMode === 'sailing' ||
+    windMode !== 'steady' ||
+    ropesMode === 'realistic' ||
+    seaSetting !== 'flat'
+  );
 }

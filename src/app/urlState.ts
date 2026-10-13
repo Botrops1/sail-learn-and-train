@@ -30,6 +30,7 @@ import type { RigHistory } from '../model/sim';
 import { boat } from '../model/boat';
 import type { BoatState } from '../model/motion';
 import { isTimeScale } from '../model/timeScale';
+import { defaultSeaSetting, isSeaSetting } from '../model/waves';
 import {
   initialWindMode,
   isSeed,
@@ -160,7 +161,22 @@ export function parseUrlState(
     autopilot,
     windMode,
     engine: parseEngine(params),
+    sea: parseSea(params),
   });
+}
+
+/**
+ * The Waves setting (M14): `sea` = flat | sheltered | coastal | open. A link without it, or with
+ * another value, opens with the default (Coastal): old links open with waves.
+ */
+function parseSea(params: URLSearchParams) {
+  const sea = params.get('sea');
+  return sea !== null && isSeaSetting(sea) ? sea : defaultSeaSetting();
+}
+
+/** The Waves parameter: written only when the setting is not the default. */
+export function seaParams(state: AppState): [string, string][] {
+  return state.sea.setting === defaultSeaSetting() ? [] : [['sea', state.sea.setting]];
 }
 
 /**
@@ -431,6 +447,7 @@ export function serializeUrlState(state: AppState): string {
   }
   for (const [name, value] of boatParams(state)) params.set(name, value);
   for (const [name, value] of windModeParams(state)) params.set(name, value);
+  for (const [name, value] of seaParams(state)) params.set(name, value);
   for (const [name, value] of engineParams(state)) params.set(name, value);
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');

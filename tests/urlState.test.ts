@@ -111,7 +111,7 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
 
   it('cam=free is kept as the preset (the free position itself is not stored)', () => {
     expect(parseUrlState('?cam=free').camera).toEqual({ preset: 'free' });
-    expect(serializeUrlState(initialState({ camera: { preset: 'free' } }))).toBe(
+    expect(serializeUrlState(initialState({ camera: { preset: 'free' }, sea: 'coastal' }))).toBe(
       `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=free&step=5&detail=high&${DEFAULT_BOAT_QUERY}`,
     );
   });
@@ -119,14 +119,14 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
   it('writes v=1 and readable parameters', () => {
     const c = DEFAULT_CONTROLS_QUERY;
     const b = DEFAULT_BOAT_QUERY;
-    expect(serializeUrlState(initialState())).toBe(
+    expect(serializeUrlState(initialState({ sea: 'coastal' }))).toBe(
       `?v=1&${c}&cam=side-port&step=5&detail=high&${b}`,
     );
-    const withDebug = initialState({ settings: { step: 1, debug: true } });
+    const withDebug = initialState({ settings: { step: 1, debug: true }, sea: 'coastal' });
     expect(serializeUrlState(withDebug)).toBe(
       `?v=1&${c}&cam=side-port&step=1&detail=high&${b}&debug=1`,
     );
-    const withSelection = initialState({ selection: 'part_boom' });
+    const withSelection = initialState({ selection: 'part_boom', sea: 'coastal' });
     expect(serializeUrlState(withSelection)).toBe(
       `?v=1&${c}&cam=side-port&sel=part_boom&step=5&detail=high&${b}`,
     );
@@ -198,7 +198,11 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(parseUrlState('?mode=realistic').settings.ropesMode).toBe('realistic');
     // An unknown mode falls back to Easy.
     expect(parseUrlState('?mode=hard').settings.ropesMode).toBe('easy');
-    const hidden = initialState({ settings: { legend: false }, boat: AT_6_8_KN });
+    const hidden = initialState({
+      settings: { legend: false },
+      boat: AT_6_8_KN,
+      sea: 'coastal',
+    });
     expect(serializeUrlState(hidden)).toBe(
       `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lg=0&${DEFAULT_BOAT_QUERY}`,
     );
@@ -210,7 +214,7 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(parseUrlState('?lb=1').settings.labels).toBe(true);
     expect(parseUrlState('?lb=0').settings.labels).toBe(false);
     expect(parseUrlState('?lb=yes').settings.labels).toBe(true);
-    const off = initialState({ settings: { labels: false }, boat: AT_6_8_KN });
+    const off = initialState({ settings: { labels: false }, boat: AT_6_8_KN, sea: 'coastal' });
     expect(serializeUrlState(off)).toBe(
       `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lb=0&${DEFAULT_BOAT_QUERY}`,
     );
@@ -409,5 +413,37 @@ describe('URL state: the boat (M6: hdg, bs, held, ap, apt)', () => {
     const wind = serializeUrlState(parseUrlState('?wd=90&ap=wind'));
     expect(wind).toContain('ap=wind&apt=90');
     expect(serializeUrlState(parseUrlState('?ap=off'))).toContain('ap=off');
+  });
+});
+
+describe('M14: the Waves setting (sea)', () => {
+  it('round-trips every setting; Coastal writes no sea, Flat writes sea=flat', () => {
+    for (const setting of ['flat', 'sheltered', 'coastal', 'open'] as const) {
+      const state = initialState({ sea: setting, controls: { ctl_wind_dir: 60 } });
+      expect(parseUrlState(serializeUrlState(state)).sea.setting).toBe(setting);
+    }
+    expect(serializeUrlState(initialState({ sea: 'coastal' }))).not.toContain('sea=');
+    expect(serializeUrlState(initialState({ sea: 'flat' }))).toContain('&sea=flat');
+    expect(serializeUrlState(initialState({ sea: 'open' }))).toContain('&sea=open');
+  });
+
+  it('links without sea, or with an unknown value, open Coastal', () => {
+    expect(parseUrlState('?wd=60').sea.setting).toBe('coastal');
+    expect(parseUrlState('?sea=storm').sea.setting).toBe('coastal');
+    expect(parseUrlState('?wd=60&sea=open').sea.setting).toBe('open');
+  });
+
+  it('a link opens with waves that already match its wind', () => {
+    const state = parseUrlState('?wd=90&ws=15');
+    expect(state.sea.windKn).toBe(15);
+    expect(state.sea.dirDeg).toBe(90);
+  });
+
+  it('sea is written after the wind-mode parameters and before the engine', () => {
+    const query = serializeUrlState(
+      initialState({ sea: 'flat', engine: { running: true }, boat: { speedMps: 3 } }),
+    );
+    expect(query.indexOf('&bs=')).toBeLessThan(query.indexOf('&sea=flat'));
+    expect(query.indexOf('&sea=flat')).toBeLessThan(query.indexOf('&eng=1'));
   });
 });
