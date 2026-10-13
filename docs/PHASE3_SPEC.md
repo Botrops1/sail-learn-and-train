@@ -464,7 +464,7 @@ Open points decided while building (the owner's answers on the PR are added belo
 - **Wake height:** `heightAt` is evaluated at each ribbon edge vertex (its own map offset from the boat), not once per ribbon point, so the ribbon lies on the waves across its width.
 - **`isSeaSetting`** takes the boat data as an optional second argument (like the other helpers), so the list of settings stays in `hanse508.json` (`waves.settings`).
 - **Tap plane:** the invisible pick plane is the old flat plane (turned flat, 600 m); the wave mesh and the grid are not tappable on their own.
-- **Test changes (6.8 item 11):** only `tests/urlState.test.ts`, rule (b): the five tests that compare `serializeUrlState(initialState(...))` with an exact string pass `sea: 'coastal'`. New cases were added to `tests/timeBar.test.ts` and `tests/urlState.test.ts`; nothing else of Phases 1 and 2 was touched.
+- **Test changes (6.8 item 11):** only `tests/urlState.test.ts`, rule (b): the four tests that compare `serializeUrlState(initialState(...))` with an exact string pass `sea: 'coastal'`. New cases were added to `tests/timeBar.test.ts` and `tests/urlState.test.ts`; nothing else of Phases 1 and 2 was touched.
 - **Browser checks:** the `sea=flat` rule of 6.9 is in `openPage` (`shots.mjs`); the five general `expectUrl` strings now end in `…&held=1&sea=flat` (and `&sea=flat&debug=1`).
 
 ---
