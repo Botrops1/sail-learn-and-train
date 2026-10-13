@@ -46,7 +46,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `autopilot.ts` | Standby / heading / wind-angle autopilot. |
 | `trim.ts` | Trim states (luffing, good, stalled, …), telltales, blanketing, flogging damage. |
 | `engine.ts` | Engine: lever → rpm and gear (through neutral), thrust along the bow. |
-| `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. |
+| `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. In almost no wind the swing is handed to the normal boom spring (limits in `physics.gybe`). |
 | `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying wind; time-bar scales. |
 | `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail, map frame, the track. |
 

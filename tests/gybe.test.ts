@@ -136,6 +136,33 @@ describe('the gybe in the rig (PHASE2_SPEC 11.2)', () => {
     expect(rig.lastGybe?.peakRopeN).toBeLessThan(3000);
   });
 
+  it('M13: in almost no wind the boom is not pushed across: it finishes on the normal spring, with no report', () => {
+    const weak = { ...sheet, ctl_wind_speed: 2 };
+    let rig = initialRig({ ...weak, ctl_wind_dir: 170 });
+    const go = (wd: number, seconds: number) => {
+      for (let t = 0; t < seconds - 1e-9; t += 1 / 60)
+        rig = step({ controls: { ...weak, ctl_wind_dir: wd }, rig }, 1 / 60, AT_REST);
+    };
+    go(-170, 1);
+    go(-165, 1 / 60);
+    expect(rig.gybing).toBe(true);
+    go(-165, boat.physics.gybe.maxSwingS + 0.5);
+    expect(rig.gybing).toBe(false);
+    expect(rig.lastGybe).toBeNull();
+    // handed to the spring, not jumped: still on its way, and it arrives
+    expect(rig.theta.value).toBeLessThan(rig.solution.thetaDeg - 5);
+    go(-165, 20);
+    expect(rig.theta.value).toBeCloseTo(rig.solution.thetaDeg, 0);
+    expect(rig.lastGybe).toBeNull();
+  });
+
+  it('M13: the limits of the weak-wind rule are in the boat file', () => {
+    const g = boat.physics.gybe;
+    expect(g.maxSwingS).toBe(8);
+    expect(g.minMainOut).toBeGreaterThan(0);
+    expect(g.minReportJ).toBeGreaterThan(0);
+  });
+
   it('a tack swings nothing and leaves no report', () => {
     const base = { ...sheet, ctl_mainsheet: 20 };
     let rig = initialRig({ ...base, ctl_wind_dir: 40 });

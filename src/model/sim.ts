@@ -314,11 +314,6 @@ export interface StepOptions {
   damage?: SailDamage;
 }
 
-/** A main furled away this far has no sail to push the boom: it moves at the normal speed. */
-const MIN_MAIN_OUT = 0.02;
-/** A swing that has not finished after this many seconds is cut short (no wind, no sail). */
-const GYBE_MAX_S = 8;
-
 interface GybeProgress {
   swing: GybeSwing | null;
   elapsedS: number;
@@ -346,7 +341,7 @@ function stepGybe(
   let elapsedS = rig.gybeElapsedS;
   let last = rig.lastGybe;
   if (solution.tack) swing = null;
-  else if (solution.gybe && mainOut > MIN_MAIN_OUT) {
+  else if (solution.gybe && mainOut > data.physics.gybe.minMainOut) {
     const from = rig.theta.value;
     swing = { thetaDeg: from, omegaDegS: 0, startDeg: from, stopDeg: solution.thetaDeg };
     elapsedS = 0;
@@ -363,10 +358,21 @@ function stepGybe(
     remaining -= h;
     timeS += h;
     elapsedS += h;
-    if (gybeArrived(swing) || noWind || elapsedS >= GYBE_MAX_S) {
-      last = gybeImpact(swing, timeS, data);
-      const stopped = { value: swing.stopDeg, velocity: 0 };
-      return { swing: null, elapsedS: 0, last, theta: stopped };
+    if (gybeArrived(swing)) {
+      // The sheet stops the boom. A bump too small to matter is not reported.
+      const impact = gybeImpact(swing, timeS, data);
+      if (impact.energyJ >= data.physics.gybe.minReportJ) last = impact;
+      return { swing: null, elapsedS: 0, last, theta: { value: swing.stopDeg, velocity: 0 } };
+    }
+    if (noWind || elapsedS >= data.physics.gybe.maxSwingS) {
+      // Almost no wind: the push is too weak to finish the swing. The boom carries on at the
+      // normal speed (the spring) to the new side, with no bump and no report.
+      return {
+        swing: null,
+        elapsedS: 0,
+        last,
+        theta: { value: swing.thetaDeg, velocity: swing.omegaDegS },
+      };
     }
   }
   const theta = swing ? { value: swing.thetaDeg, velocity: swing.omegaDegS } : null;

@@ -1,6 +1,6 @@
 # Phase 2 specification: wind and feedback
 
-Status: **ready for M6** (owner's review of the plan, 2026-10-10) · Last updated: 2026-10-10
+Status: **M6–M13 built**, waiting for the owner's sign-off (M13 PR) · Last updated: 2026-10-14
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phase 1 is done; [`PHASE1_SPEC.md`](PHASE1_SPEC.md) still describes everything Phase 2 builds on (layout, rig solver, ropes, Realistic mode, URL state). This file says only what Phase 2 adds or changes. Boat facts: [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules: [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -1055,6 +1055,17 @@ Branch `m13-phase2-signoff`.
 - Accessibility audit (`scripts/a11y-audit.mjs`) covers the new controls: autopilot, Held still switch, wind modes, engine, map buttons, sails panel.
 - Final screenshot set; README describes Phase 2; `BOAT_REFERENCE.md` lists every Phase 2 assumption; PHYSICS_TRUTHS statuses updated from the sources read.
 - **Done when:** every item of section 14 is ticked in the PR.
+
+### 13.1 Decided in the M13 PR
+
+Things the spec left open or did not foresee (each is "decided in the M13 PR"):
+
+- **Performance.** The model's cost per simulated frame in the heaviest case (gusty wind, ×16, sails working, 60 fps steps) is about 0.1 ms on a build machine (0.04 ms at ×1); `tests/stepCost.test.ts` guards it with a limit of 3 ms. The debug overlay's "step" (the store step plus every panel update) read 1.1–2.3 ms per frame in headless Chromium at ×16, where frames are slow and each step covers a long `dt`. So the "solve the rig every second frame at ×16" fallback was **not built**. The 3D drawing is the heavy part (headless software rendering: 6–15 ms of CPU work, 0–15 fps); the frame rate on the owner's phone is read from the overlay with the checklist link.
+- **Accessibility audit.** `scripts/shots-m13.mjs` runs `auditPage` on the autopilot block, the Sails block, the Wind tab with the Held still / Sailing switch and the gusty and shifty modes (time bar at ×4), and the engine at Detail Low. Earlier milestones already audit the map (M7), the instrument dial (M7), the time bar (M10), the gybe report (M11) and the engine (M12). All clean, nothing had to change.
+- **Gybe in almost no wind (left by M11, fixed).** A swing that has not finished after `physics.gybe.maxSwingS` (8 s), or with no wind, is handed to the normal boom spring from where it is: no jump and no report. A swing that does arrive is reported only if its energy is at least `physics.gybe.minReportJ` (50 J; a 4 kn gybe is about 690 J). `GYBE_MAX_S` and `MIN_MAIN_OUT` moved from `sim.ts` into the boat file (`maxSwingS`, `minMainOut`). Before → after at 2 kn: the boom jumped to the new side at 8 s and reported "Accidental gybe" with 29 J (0.0 kJ shown); now it keeps moving on the spring (about −38° at 8 s) and arrives with no report.
+- **Left as it is, put to the owner (M11 review items 4 and 5):** the peak load assumes the sheet gives 0.4 m; the spec's PT-24 bands depend on it. **Engine starts in gear** (M12 review): skipper question 17 in `BOAT_REFERENCE.md` is still unanswered, so nothing was changed.
+- **Owner's answers on the M13 PR (2026-10-13, "accept all"):** on the owner's phone the heaviest case (gusty wind, ×16, debug overlay) runs at **60 FPS with the slowest frame 17 ms**, which meets the target (≥ 50 fps, never below 30). Question 1: the 0.4 m sheet give stays (ask the skipper for a real figure, revisit in Phase 3). Question 2: the engine keeps starting in gear until the skipper answers question 17.
+- **Sources.** PT-38 got a candidate source (North Sails); the page could not be opened, so it stays `to-verify` (`PHYSICS_TRUTHS.md`, M13 note). No other status changed. Every Phase 2 assumption has a row in `BOAT_REFERENCE.md` section 5 (the M13 weak-wind keys were added).
 
 ## 14. Definition of Done (Phase 2)
 
