@@ -77,6 +77,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
       const sol = rig.solution;
       const jib = rig.jibSolution;
       const deg = (value: number) => `${value.toFixed(1)}°`;
+      const signed = (value: number) => `${value >= 0 ? '+' : '−'}${Math.abs(value).toFixed(1)}`;
       const rope = (name: string, status: RopeStatus) =>
         `${name} ${status.state}${status.state === 'slack' ? ` ${status.slack.toFixed(2)} m` : ''}`;
       const rows: [string, string][] = [
@@ -162,6 +163,12 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
         [
           t('debug.waveMotion'),
           `heave ${boat.waves.heaveM.toFixed(2)} m · pitch ${boat.waves.pitchDeg.toFixed(1)}° · roll ${boat.waves.rollDeg.toFixed(1)}°`,
+        ],
+        [
+          t('debug.wavePush'),
+          motion
+            ? `resistance ${(motion.waveResistanceN / 1000).toFixed(2)} kN · yaw ${signed(motion.waveYawDeg)}° · sails sideways ${motion.rigSideMps.toFixed(1)} m/s`
+            : '–',
         ],
       ];
       const text = rows.map(([label, value]) => `${label.padEnd(12)}${value}`).join('\n');

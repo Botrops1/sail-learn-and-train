@@ -50,7 +50,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. In almost no wind the swing is handed to the normal boom spring (limits in `physics.gybe`). |
 | `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying wind; time-bar scales, where the speed part shows, and where Pause is replaced by the "Held still" chip. |
 | `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail, map frame (`mapToBoat`/`boatToMap`, water shift), the track. |
-| `waves.ts`, `waveMotion.ts`, `area.ts` | Phase 3 waves: size from wind and fetch, the three wave trains and the surface height; heave, pitch and roll of the boat on them (phases at the boat); the area's data. |
+| `waves.ts`, `waveMotion.ts`, `area.ts` | Phase 3 waves: size from wind and fetch, the three wave trains and the surface height; heave, pitch and roll of the boat on them (phases at the boat), and (M15) what the rocking does to the sails (`rigMotion`), the steering (`waveYawDeg`) and the speed (`addedResistanceN`); the area's data. |
 
 ## `src/render3d/` (three.js; reads state, never changes it)
 
