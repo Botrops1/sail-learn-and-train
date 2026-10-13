@@ -37,17 +37,25 @@ jobs:
               per_page: 100,
             });
             const keep = new Set(['main', 'gh-pages', ...open.map((pr) => pr.head.ref)]);
+            let failed = 0;
             for (const branch of branches) {
               if (keep.has(branch.name) || branch.protected) continue;
-              const { data } = await github.rest.repos.compareCommitsWithBasehead({
-                owner,
-                repo,
-                basehead: `main...${encodeURIComponent(branch.name)}`,
-              });
-              if (data.ahead_by > 0) {
-                core.info(`kept ${branch.name} (${data.ahead_by} commits not in main)`);
-                continue;
+              try {
+                // Compare by commit id: branch names with "/" do not survive the URL encoding.
+                const { data } = await github.rest.repos.compareCommitsWithBasehead({
+                  owner,
+                  repo,
+                  basehead: `main...${branch.commit.sha}`,
+                });
+                if (data.ahead_by > 0) {
+                  core.info(`kept ${branch.name} (${data.ahead_by} commits not in main)`);
+                  continue;
+                }
+                await github.rest.git.deleteRef({ owner, repo, ref: `heads/${branch.name}` });
+                core.info(`deleted ${branch.name}`);
+              } catch (error) {
+                failed += 1;
+                core.warning(`could not check or delete ${branch.name}: ${error.message}`);
               }
-              await github.rest.git.deleteRef({ owner, repo, ref: `heads/${branch.name}` });
-              core.info(`deleted ${branch.name}`);
             }
+            if (failed > 0) core.setFailed(`${failed} branch(es) could not be handled`);
