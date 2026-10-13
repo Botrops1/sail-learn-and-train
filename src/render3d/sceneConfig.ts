@@ -40,14 +40,23 @@ export const SCENE = {
     rippleScaleMin: 0.3,
     rippleScaleMax: 2,
     rippleDriftMPerS: 0.25,
-    /** Side length of the square water plane, metres. */
+    /** Side length of the square outer water, metres. */
     size: 600,
+    /**
+     * The water group steps by this many metres along the map as the boat sails, so every vertex
+     * of both meshes sits on a fixed map point (M14); a multiple of both cell sizes.
+     */
+    stepM: 20,
+    /** Cell of the flat outer water (the part beyond the wave mesh), metres. */
+    outerCellM: 20,
+    /**
+     * The wave mesh (M14): a square of vertices around the boat, `cellM` apart (`cellLowM` at Low
+     * detail). The waves fade to flat between `fadeStartM` and `halfSizeM` from the boat.
+     */
+    waves: { cellM: 2, cellLowM: 4, halfSizeM: 100, fadeStartM: 70 },
   },
+  /** The scale grid is the wave mesh's lines, 2 m apart (4 m at Low detail). */
   grid: {
-    /** Grid cell size, metres: helps judge scale. */
-    cellSize: 2,
-    /** Grid extent, metres. */
-    size: 200,
     color: '#ffffff',
     opacity: 0.18,
     /** High detail: fainter, the ripples show the water surface. */

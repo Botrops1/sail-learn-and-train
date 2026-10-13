@@ -1,8 +1,9 @@
 import { BUILD_INFO } from '../app/buildInfo';
-import { mpsToKn, wrap180 } from '../model/angles';
+import { compassDeg, mpsToKn, wrap180 } from '../model/angles';
 import { autopilotHeadingDeg } from '../model/autopilot';
 import type { RopeStatus } from '../model/boomSolver';
 import type { Store } from '../app/store';
+import { significantHeightM, waveTrains } from '../model/waves';
 import { el } from './dom';
 import { t } from './i18n';
 import type { Viewport } from './layout';
@@ -58,8 +59,21 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
   return {
     update(fps, viewport, pixelRatio, render, times) {
       if (box.hidden) return;
-      const { camera, settings, selection, rig, boat, motion, autopilot, wind, windMode, engine } =
-        store.getState();
+      const {
+        camera,
+        settings,
+        selection,
+        rig,
+        boat,
+        motion,
+        autopilot,
+        wind,
+        windMode,
+        engine,
+        sea,
+      } = store.getState();
+      const trains = waveTrains(sea);
+      const mainTrain = trains[0];
       const sol = rig.solution;
       const jib = rig.jibSolution;
       const deg = (value: number) => `${value.toFixed(1)}°`;
@@ -139,6 +153,16 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
             : 'stopped',
         ],
         [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
+        [
+          t('debug.waves'),
+          mainTrain
+            ? `Hs ${significantHeightM(trains).toFixed(2)} m · Tp ${mainTrain.periodS.toFixed(1)} s · from ${String(Math.round(compassDeg(sea.dirDeg)) % 360).padStart(3, '0')}°`
+            : '–',
+        ],
+        [
+          t('debug.waveMotion'),
+          `heave ${boat.waves.heaveM.toFixed(2)} m · pitch ${boat.waves.pitchDeg.toFixed(1)}° · roll ${boat.waves.rollDeg.toFixed(1)}°`,
+        ],
       ];
       const text = rows.map(([label, value]) => `${label.padEnd(12)}${value}`).join('\n');
       if (text !== lastText) {

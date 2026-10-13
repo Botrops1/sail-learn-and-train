@@ -5,6 +5,7 @@ import { beaufort, WIND_PRESETS, windSide } from '../model/wind';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText, stepButton } from './stepper';
+import { createWavesPanel } from './wavesPanel';
 import { createWindInstrument } from './windInstrument';
 import { createWindModePanel, windNowText } from './windModePanel';
 
@@ -291,6 +292,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
     directionField,
     speedField,
     ...createWindModePanel(store),
+    createWavesPanel(store),
     presetField,
   ];
 }

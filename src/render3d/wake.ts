@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { mpsToKn } from '../model/angles';
 import { boat } from '../model/boat';
-import { mapToBoat } from '../model/mapFrame';
+import { boatToMap, mapToBoat } from '../model/mapFrame';
 import type { BoatState } from '../model/motion';
 import { requirePartId } from '../model/registry';
 import { SCENE } from './sceneConfig';
@@ -22,7 +22,12 @@ interface WakePoint {
  */
 export interface Wake {
   object: THREE.Mesh;
-  update(state: { boat: BoatState }, timeS: number): void;
+  /** `heightAt`: the drawn water height at a map offset from the boat (waves, M14). */
+  update(
+    state: { boat: BoatState },
+    timeS: number,
+    heightAt: (dEastM: number, dNorthM: number) => number,
+  ): void;
 }
 
 export function buildWake(): Wake {
@@ -55,7 +60,7 @@ export function buildWake(): Wake {
   const transomX = boat.hull.transomX;
   return {
     object,
-    update({ boat: state }, timeS) {
+    update({ boat: state }, timeS, heightAt) {
       const sailing = state.mode === 'sailing';
       const knots = Math.abs(mpsToKn(state.speedMps));
       if (!sailing) points.length = 0;
@@ -108,7 +113,11 @@ export function buildWake(): Wake {
           [1, 1],
         ] as const) {
           const v = i * 2 + offset;
-          positions.set([here2[0] - dz * half * side, w.y, here2[1] + dx * half * side], v * 3);
+          const x = here2[0] - dz * half * side;
+          const z = here2[1] + dx * half * side;
+          // Map offset of this point from the boat, for the height of the water under it.
+          const [dEast, dNorth] = boatToMap(x, z, state.headingDeg);
+          positions.set([x, w.y + heightAt(dEast, dNorth), z], v * 3);
           colors.set([1, 1, 1, alpha], v * 4);
         }
       });

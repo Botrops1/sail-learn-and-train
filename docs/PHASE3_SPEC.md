@@ -457,7 +457,15 @@ No feedback from the waves into the sailing (M15). No whitecaps, gust patches, b
 
 ### 6.12 Decided in the M14 PR
 
-(Filled in by the M14 builder: what this section left open, and the owner's answers on the PR.)
+Open points decided while building (the owner's answers on the PR are added below when they come):
+
+- **Debug rows:** the two wave rows (`waves`, `wave motion`) come after the `Build` row, as "at the end of the list" says.
+- **Time bar in Held still with waves:** Pause shows (6.4), but the speed part (`timeSpeedAvailable`) is unchanged: with a steady wind in Held still it stays hidden, so the waves cannot be sped up there. Sailing, or any wind mode other than Steady, shows it as before. (Question 1 on the PR.)
+- **Wake height:** `heightAt` is evaluated at each ribbon edge vertex (its own map offset from the boat), not once per ribbon point, so the ribbon lies on the waves across its width.
+- **`isSeaSetting`** takes the boat data as an optional second argument (like the other helpers), so the list of settings stays in `hanse508.json` (`waves.settings`).
+- **Tap plane:** the invisible pick plane is the old flat plane (turned flat, 600 m); the wave mesh and the grid are not tappable on their own.
+- **Test changes (6.8 item 11):** only `tests/urlState.test.ts`, rule (b): the five tests that compare `serializeUrlState(initialState(...))` with an exact string pass `sea: 'coastal'`. New cases were added to `tests/timeBar.test.ts` and `tests/urlState.test.ts`; nothing else of Phases 1 and 2 was touched.
+- **Browser checks:** the `sea=flat` rule of 6.9 is in `openPage` (`shots.mjs`); the five general `expectUrl` strings now end in `…&held=1&sea=flat` (and `&sea=flat&debug=1`).
 
 ---
 

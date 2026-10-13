@@ -2,17 +2,17 @@ import * as THREE from 'three';
 import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
 import { runningRopes, winchWraps } from '../model/realistic';
-import { requirePartId } from '../model/registry';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
 import { DEG } from '../model/angles';
-import { modulo } from '../model/mapFrame';
+import { waveTrains } from '../model/waves';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
 import { rippleNormalMap, skyTexture, sunDirection } from './environment';
+import { buildWaterSurface } from './waterSurface';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
 import { SCENE } from './sceneConfig';
@@ -111,7 +111,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const dangerZone = buildDangerZone();
   holder.add(dangerZone.object);
   const ripples = rippleNormalMap();
-  const water = buildWater(ripples);
+  const water = buildWaterSurface(ripples);
   const streaks = buildWindStreaks();
   const world = createWorld(water.object);
   const wake = buildWake();
@@ -122,7 +122,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   rig.goTo(store.getState().camera.preset, false);
   rig.onUserMove(() => store.dispatch({ type: 'setCameraPreset', preset: 'free' }));
 
-  const picker = createPicker(camera, holder, water.object);
+  const picker = createPicker(camera, holder, water.pickTarget);
   listenForTaps(renderer.domElement, (x, y) => {
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
@@ -255,14 +255,21 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       );
       dangerZone.update(state.rig);
       // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).
-      streaks.update(state.rig.wind.awaDeg, state.rig.wind.awsKn, now / 1000);
+      // They move with the simulation clock, so they stand still while paused (issue #32).
+      streaks.update(state.rig.wind.awaDeg, state.rig.wind.awsKn, state.rig.timeS);
       const { boat: boatState } = state;
-      // She heels about her centreline at the waterline (+ = starboard rail down). The water, the
-      // wake and the camera stay level.
-      holder.rotation.x = boatState.heelDeg * DEG;
-      const centre = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
-      wake.update(state, state.rig.timeS);
-      water.update(now / 1000, centre.eastM, centre.northM, state.wind.twsKn);
+      // She heels about her centreline at the waterline (+ = starboard rail down) and rides the
+      // waves: lifted by the heave, bow up by the pitch, rolled further by the waves. The water,
+      // the wake and the camera stay level.
+      holder.position.y = boatState.waves.heaveM;
+      holder.rotation.set(
+        (boatState.heelDeg + boatState.waves.rollDeg) * DEG,
+        0,
+        boatState.waves.pitchDeg * DEG,
+      );
+      const shift = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
+      water.update(state, shift, waveTrains(state.sea));
+      wake.update(state, state.rig.timeS, water.heightAt);
       renderer.render(scene, camera);
     },
     stats() {
@@ -400,83 +407,5 @@ function createHighlighter(root: THREE.Object3D): (partIds: string[]) => void {
         material.emissiveIntensity = SCENE.highlight.intensity;
       }
     }
-  };
-}
-
-interface Water {
-  object: THREE.Object3D;
-  setDetail(detail: Detail): void;
-  /**
-   * Drifts the ripples; they stay fixed on the map as the plane steps (`centre*` is the map
-   * position of the plane's centre).
-   */
-  update(timeS: number, centreEastM: number, centreNorthM: number, twsKn: number): void;
-}
-
-/**
- * Water (PHASE1_SPEC 6.1; M3b): a large plane at y = 0, see-through so the keel stays
- * visible, with drifting ripples that catch the sky's reflections at high detail, and a faint
- * scale grid.
- */
-function buildWater(ripples: THREE.Texture): Water {
-  const w = SCENE.water;
-  const group = new THREE.Group();
-  group.userData.partId = requirePartId('env_water');
-  ripples.repeat.set(w.size / w.rippleTileM, w.size / w.rippleTileM);
-
-  const high = new THREE.MeshStandardMaterial({
-    color: w.color,
-    roughness: w.roughness,
-    metalness: 0,
-    normalMap: ripples,
-    normalScale: new THREE.Vector2(w.rippleStrength, w.rippleStrength),
-    transparent: true,
-    opacity: w.opacity,
-    depthWrite: false,
-  });
-  const low = new THREE.MeshLambertMaterial({
-    color: w.lowColor,
-    transparent: true,
-    opacity: w.lowOpacity,
-    depthWrite: false,
-  });
-  const plane = new THREE.Mesh<THREE.PlaneGeometry, THREE.Material>(
-    new THREE.PlaneGeometry(w.size, w.size),
-    high,
-  );
-  plane.rotation.x = -Math.PI / 2;
-  plane.receiveShadow = true;
-  plane.userData.partId = group.userData.partId;
-
-  const divisions = Math.round(SCENE.grid.size / SCENE.grid.cellSize);
-  const grid = new THREE.GridHelper(SCENE.grid.size, divisions, SCENE.grid.color, SCENE.grid.color);
-  const gridMaterial = grid.material as THREE.Material;
-  gridMaterial.transparent = true;
-  gridMaterial.depthWrite = false;
-  grid.position.y = 0.005;
-  grid.userData.partId = group.userData.partId;
-
-  group.add(plane, grid);
-  return {
-    object: group,
-    setDetail(detail) {
-      plane.material = detail === 'high' ? high : low;
-      gridMaterial.opacity = detail === 'high' ? SCENE.grid.opacityHigh : SCENE.grid.opacity;
-    },
-    update(timeS, centreEastM, centreNorthM, twsKn) {
-      // The ripples grow with the wind (M10): TWS / 12 kn, between 0.3 and 2.
-      const scale = Math.min(
-        w.rippleScaleMax,
-        Math.max(w.rippleScaleMin, twsKn / w.rippleReferenceKn),
-      );
-      high.normalScale.set(w.rippleStrength * scale, w.rippleStrength * scale);
-      const drift = (w.rippleDriftMPerS * timeS) / w.rippleTileM;
-      // The plane's u runs north, its v runs west (the plane is turned flat).
-      // Offsets wrap (repeat wrapping): keep them small so the float precision lasts.
-      ripples.offset.set(
-        modulo(drift + centreNorthM / w.rippleTileM, 1),
-        modulo(drift * 0.6 - centreEastM / w.rippleTileM, 1),
-      );
-    },
   };
 }
