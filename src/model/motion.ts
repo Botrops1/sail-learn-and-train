@@ -7,6 +7,8 @@ import { boatMassKg, hullResistance, type Resistance } from './hullResistance';
 import { sailForces, type SailForces } from './sailForces';
 import { initialRig, type RigState } from './sim';
 import type { SailDamage } from './trim';
+import { initialWaveMotion, stepWaveMotion, type WaveMotion } from './waveMotion';
+import type { WaveTrain } from './waves';
 
 /**
  * Boat motion on open water (PHASE2_SPEC 6.3): speed, heading and position from the sail forces
@@ -30,6 +32,8 @@ export interface BoatState {
   /** Metres east and north of where the boat started. */
   eastM: number;
   northM: number;
+  /** Heave, pitch and roll on the waves, and the wave phases at the boat (M14). */
+  waves: WaveMotion;
 }
 
 export function initialBoat(overrides: Partial<BoatState> = {}): BoatState {
@@ -44,6 +48,7 @@ export function initialBoat(overrides: Partial<BoatState> = {}): BoatState {
     overpoweredS: 0,
     eastM: 0,
     northM: 0,
+    waves: initialWaveMotion(),
     ...overrides,
   };
 }
@@ -64,6 +69,8 @@ export interface MotionInputs {
   rudderLimitDeg?: number;
   /** Flogging damage (M9): a torn sail gives less force. Missing = new sails. */
   damage?: SailDamage;
+  /** The wave trains now (M14); missing = none. Nothing in the physics reads them yet. */
+  trains?: readonly WaveTrain[];
 }
 
 export interface MotionReport {
@@ -80,6 +87,8 @@ export interface MotionReport {
   /** She is turning into the wind by herself (the alert stays set for 3 s). */
   roundUp: boolean;
 }
+
+const NO_TRAINS: readonly WaveTrain[] = [];
 
 /** How long the round-up alert stays set after the last substep that met the test, seconds. */
 export const ROUND_UP_HOLD_S = 3;
@@ -113,13 +122,22 @@ export function stepBoat(
   const rudderLimit = inputs.rudderLimitDeg ?? controlSpec('ctl_rudder').max;
   let { headingDeg, speedMps, yawRateDegS, heelDeg, heelRateDegS, roundUpS, overpoweredS } =
     boatState;
-  let { eastM, northM } = boatState;
+  let { eastM, northM, waves } = boatState;
+  const trains = inputs.trains ?? NO_TRAINS;
+  if (held) {
+    // Held still: the boat bobs on the waves, nothing else moves (PHASE3_SPEC 6.3).
+    const waveSteps = substepCount(dt, data);
+    for (let i = 0; i < waveSteps; i += 1) {
+      waves = stepWaveMotion(waves, trains, 0, headingDeg, dt / waveSteps, data);
+    }
+  }
   if (held) {
     speedMps = 0;
     heelDeg = 0;
   }
   let report: MotionReport | undefined;
   for (let i = 0; i < count; i += 1) {
+    if (!held) waves = stepWaveMotion(waves, trains, speedMps, headingDeg, h, data);
     const twaDeg = wrap180(inputs.windDirDeg - headingDeg);
     const wind = apparentWind(inputs.twsKn, twaDeg, speedMps, data);
     const forces = sailForces(
@@ -191,9 +209,12 @@ export function stepBoat(
     report = makeReport(gripNow, turnRudderDeg, roundUpS > 0);
   }
   if (!report) throw new Error('stepBoat: no substep ran');
-  // Held still: the boat is returned as it is (the store has already zeroed its speed).
+  // Held still: the boat is returned as it is (the store has already zeroed its speed), with
+  // the wave motion.
   const next: BoatState = held
-    ? boatState
+    ? waves === boatState.waves
+      ? boatState
+      : { ...boatState, waves }
     : {
         ...boatState,
         headingDeg,
@@ -205,6 +226,7 @@ export function stepBoat(
         overpoweredS,
         eastM,
         northM,
+        waves,
       };
   return { boat: next, report };
 }

@@ -13,6 +13,16 @@ export function mapToBoat(
   return [northM * Math.cos(h) + eastM * Math.sin(h), eastM * Math.cos(h) - northM * Math.sin(h)];
 }
 
+/** A point in the boat frame (x forward, z starboard) as a map offset (east, north). */
+export function boatToMap(
+  xM: number,
+  zM: number,
+  headingDeg: number,
+): [east: number, north: number] {
+  const h = headingDeg * DEG;
+  return [xM * Math.sin(h) + zM * Math.cos(h), xM * Math.cos(h) - zM * Math.sin(h)];
+}
+
 /** `value` modulo `size`, always in [0, size) (also for negative values). */
 export function modulo(value: number, size: number): number {
   return ((value % size) + size) % size;

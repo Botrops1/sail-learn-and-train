@@ -27,6 +27,7 @@ export function startUrlSync(store: Store): void {
       state.controls === previous.controls &&
       state.camera === previous.camera &&
       state.settings === previous.settings &&
+      state.sea.setting === previous.sea.setting &&
       state.selection === previous.selection &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameRealisticLink(state, previous) &&

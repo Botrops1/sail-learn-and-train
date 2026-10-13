@@ -1,0 +1,281 @@
+import * as THREE from 'three';
+import type { AppState } from '../app/store';
+import { smoothstep } from '../model/angles';
+import { modulo } from '../model/mapFrame';
+import { requirePartId } from '../model/registry';
+import type { Detail } from '../model/settings';
+import { elevation, type WaveTrain } from '../model/waves';
+import { SCENE } from './sceneConfig';
+
+export interface WaterSurface {
+  /** Added to the world group (moved by `world.update`). */
+  object: THREE.Group;
+  /** The flat invisible plane the picker hits (part id env_water). */
+  pickTarget: THREE.Object3D;
+  setDetail(detail: Detail): void;
+  /**
+   * Heights, normals and ripples for the state; `shift` is what `world.update` returned;
+   * `trains` = waveTrains(state.sea), computed once per frame in scene.render.
+   */
+  update(
+    state: AppState,
+    shift: { x: number; z: number; centreEastM: number; centreNorthM: number },
+    trains: readonly WaveTrain[],
+  ): void;
+  /**
+   * The drawn surface height at a map offset from the boat: elevation × the inner mesh's fade at
+   * that point (0 beyond the inner mesh), for the wake and (M16) the buoys.
+   */
+  heightAt(dEastM: number, dNorthM: number): number;
+}
+
+/**
+ * Water (PHASE3_SPEC 6.6): an inner mesh of vertices around the boat that carries the waves, with
+ * the scale grid drawn along its edges, a flat outer mesh out to the edge of the water, and an
+ * invisible flat plane to tap. The group steps along the map in whole `stepM` so every vertex
+ * stays on a fixed map point; the ripples stay fixed on the map too. Local x is north, z is east.
+ */
+export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
+  const w = SCENE.water;
+  const partId = requirePartId('env_water');
+  const group = new THREE.Group();
+  group.userData.partId = partId;
+  ripples.repeat.set(1, 1);
+
+  const high = new THREE.MeshStandardMaterial({
+    color: w.color,
+    roughness: w.roughness,
+    metalness: 0,
+    normalMap: ripples,
+    normalScale: new THREE.Vector2(w.rippleStrength, w.rippleStrength),
+    transparent: true,
+    opacity: w.opacity,
+    depthWrite: false,
+  });
+  const low = new THREE.MeshLambertMaterial({
+    color: w.lowColor,
+    transparent: true,
+    opacity: w.lowOpacity,
+    depthWrite: false,
+  });
+  const gridMaterial = new THREE.LineBasicMaterial({
+    color: SCENE.grid.color,
+    transparent: true,
+    opacity: SCENE.grid.opacity,
+    depthWrite: false,
+  });
+
+  const half = w.waves.halfSizeM;
+  const fadeStart = w.waves.fadeStartM;
+  let cell: number = w.waves.cellM;
+  let perSide = 0;
+  let innerPositions = new Float32Array(0);
+  let innerNormals = new Float32Array(0);
+  let innerGeometry = new THREE.BufferGeometry();
+  const inner = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(innerGeometry, high);
+  inner.receiveShadow = true;
+  inner.frustumCulled = false;
+  inner.userData.partId = partId;
+  const grid = new THREE.LineSegments(new THREE.BufferGeometry(), gridMaterial);
+  grid.frustumCulled = false;
+  grid.renderOrder = 1;
+  grid.userData.partId = partId;
+  const outer = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(
+    new THREE.BufferGeometry(),
+    high,
+  );
+  outer.userData.partId = partId;
+  outer.receiveShadow = false;
+
+  const pickTarget = new THREE.Mesh(
+    new THREE.PlaneGeometry(w.size, w.size),
+    new THREE.MeshBasicMaterial({ visible: false }),
+  );
+  pickTarget.rotation.x = -Math.PI / 2;
+  pickTarget.userData.partId = partId;
+
+  group.add(inner, grid, outer, pickTarget);
+
+  /** True while the inner mesh is already flat, so the height work can be skipped. */
+  let flat = false;
+
+  /** The inner mesh for the current cell size, and the grid lines that share its positions. */
+  const buildInner = () => {
+    perSide = Math.round((2 * half) / cell) + 1;
+    const count = perSide * perSide;
+    innerPositions = new Float32Array(count * 3);
+    innerNormals = new Float32Array(count * 3);
+    const uvs = new Float32Array(count * 2);
+    for (let iz = 0; iz < perSide; iz += 1) {
+      for (let ix = 0; ix < perSide; ix += 1) {
+        const i = iz * perSide + ix;
+        const x = -half + ix * cell;
+        const z = -half + iz * cell;
+        innerPositions.set([x, 0, z], i * 3);
+        innerNormals.set([0, 1, 0], i * 3);
+        uvs.set([x / w.rippleTileM, -z / w.rippleTileM], i * 2);
+      }
+    }
+    const triangles: number[] = [];
+    const lines: number[] = [];
+    for (let iz = 0; iz < perSide; iz += 1) {
+      for (let ix = 0; ix < perSide; ix += 1) {
+        const i = iz * perSide + ix;
+        if (ix < perSide - 1) lines.push(i, i + 1);
+        if (iz < perSide - 1) lines.push(i, i + perSide);
+        if (ix < perSide - 1 && iz < perSide - 1) {
+          // Counter-clockwise seen from above (+y), with x north and z east.
+          triangles.push(i, i + perSide, i + 1, i + 1, i + perSide, i + perSide + 1);
+        }
+      }
+    }
+    const position = new THREE.BufferAttribute(innerPositions, 3);
+    position.setUsage(THREE.DynamicDrawUsage);
+    const normal = new THREE.BufferAttribute(innerNormals, 3);
+    normal.setUsage(THREE.DynamicDrawUsage);
+    const next = new THREE.BufferGeometry();
+    next.setAttribute('position', position);
+    next.setAttribute('normal', normal);
+    next.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    next.setIndex(triangles);
+    const lineGeometry = new THREE.BufferGeometry();
+    lineGeometry.setAttribute('position', position);
+    lineGeometry.setIndex(lines);
+    inner.geometry = next;
+    grid.geometry.dispose();
+    grid.geometry = lineGeometry;
+    innerGeometry.dispose();
+    innerGeometry = next;
+    flat = true;
+  };
+
+  /** The flat outer water: cells of `outerCellM` whose centres lie outside the inner square. */
+  const buildOuter = () => {
+    const cellM = w.outerCellM;
+    const cells = Math.round(w.size / cellM);
+    const origin = -w.size / 2;
+    const positions: number[] = [];
+    const uvs: number[] = [];
+    const push = (x: number, z: number) => {
+      positions.push(x, 0, z);
+      uvs.push(x / w.rippleTileM, -z / w.rippleTileM);
+    };
+    for (let ix = 0; ix < cells; ix += 1) {
+      for (let iz = 0; iz < cells; iz += 1) {
+        const x0 = origin + ix * cellM;
+        const z0 = origin + iz * cellM;
+        if (Math.max(Math.abs(x0 + cellM / 2), Math.abs(z0 + cellM / 2)) < half) continue;
+        push(x0, z0);
+        push(x0, z0 + cellM);
+        push(x0 + cellM, z0);
+        push(x0 + cellM, z0);
+        push(x0, z0 + cellM);
+        push(x0 + cellM, z0 + cellM);
+      }
+    }
+    const normals = new Float32Array((positions.length / 3) * 3);
+    for (let i = 0; i < normals.length; i += 3) normals[i + 1] = 1;
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+    outer.geometry.dispose();
+    outer.geometry = geometry;
+  };
+
+  buildInner();
+  buildOuter();
+
+  let lastShift = { x: 0, z: 0 };
+  let lastTrains: readonly WaveTrain[] = [];
+  let lastPhases: readonly number[] = [];
+  const fadeAt = (x: number, z: number) =>
+    1 - smoothstep(fadeStart, half, Math.max(Math.abs(x), Math.abs(z)));
+
+  return {
+    object: group,
+    pickTarget,
+    setDetail(detail) {
+      const material = detail === 'high' ? high : low;
+      inner.material = material;
+      outer.material = material;
+      gridMaterial.opacity = detail === 'high' ? SCENE.grid.opacityHigh : SCENE.grid.opacity;
+      cell = detail === 'high' ? w.waves.cellM : w.waves.cellLowM;
+      buildInner();
+      buildOuter();
+    },
+    update(state, shift, trains) {
+      lastShift = shift;
+      lastTrains = trains;
+      lastPhases = state.boat.waves.phases;
+      // The ripples grow with the wind (M10): TWS / 12 kn, between 0.3 and 2.
+      const scale = Math.min(
+        w.rippleScaleMax,
+        Math.max(w.rippleScaleMin, state.wind.twsKn / w.rippleReferenceKn),
+      );
+      high.normalScale.set(w.rippleStrength * scale, w.rippleStrength * scale);
+      // The ripples drift with the simulation clock (they stand still while paused, issue #32).
+      // The plane's u runs north, its v runs west. Offsets wrap: keep them small for precision.
+      const drift = (w.rippleDriftMPerS * state.rig.timeS) / w.rippleTileM;
+      ripples.offset.set(
+        modulo(drift + shift.centreNorthM / w.rippleTileM, 1),
+        modulo(drift * 0.6 - shift.centreEastM / w.rippleTileM, 1),
+      );
+
+      if (trains.length === 0) {
+        if (flat) return;
+        for (let i = 0; i < perSide * perSide; i += 1) {
+          innerPositions[i * 3 + 1] = 0;
+          innerNormals[i * 3] = 0;
+          innerNormals[i * 3 + 1] = 1;
+          innerNormals[i * 3 + 2] = 0;
+        }
+        flat = true;
+      } else {
+        flat = false;
+        const rows = trains.map((train, j) => ({
+          a: train.amplitudeM,
+          k: train.k,
+          dE: train.dirEast,
+          dN: train.dirNorth,
+          phase: lastPhases[j] ?? 0,
+        }));
+        for (let iz = 0; iz < perSide; iz += 1) {
+          const z = -half + iz * cell;
+          const east = shift.z + z;
+          for (let ix = 0; ix < perSide; ix += 1) {
+            const x = -half + ix * cell;
+            const north = shift.x + x;
+            const f = fadeAt(x, z);
+            let eta = 0;
+            let slopeEast = 0;
+            let slopeNorth = 0;
+            for (const r of rows) {
+              const arg = r.phase + r.k * (r.dE * east + r.dN * north);
+              eta += r.a * Math.cos(arg);
+              const slope = r.a * r.k * Math.sin(arg);
+              slopeEast -= slope * r.dE;
+              slopeNorth -= slope * r.dN;
+            }
+            const i = (iz * perSide + ix) * 3;
+            innerPositions[i + 1] = f * eta;
+            const nx = -f * slopeNorth;
+            const nz = -f * slopeEast;
+            const length = Math.hypot(nx, 1, nz);
+            innerNormals[i] = nx / length;
+            innerNormals[i + 1] = 1 / length;
+            innerNormals[i + 2] = nz / length;
+          }
+        }
+      }
+      inner.geometry.getAttribute('position').needsUpdate = true;
+      inner.geometry.getAttribute('normal').needsUpdate = true;
+    },
+    heightAt(dEastM, dNorthM) {
+      const x = dNorthM - lastShift.x;
+      const z = dEastM - lastShift.z;
+      if (Math.max(Math.abs(x), Math.abs(z)) >= half) return 0;
+      return fadeAt(x, z) * elevation(lastTrains, lastPhases, dEastM, dNorthM);
+    },
+  };
+}

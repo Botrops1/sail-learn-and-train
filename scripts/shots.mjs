@@ -30,6 +30,7 @@ import { liveM10Checks, M10_SCENES } from './shots-m10.mjs';
 import { liveM11Checks, M11_SCENES } from './shots-m11.mjs';
 import { liveM12Checks, M12_SCENES } from './shots-m12.mjs';
 import { liveM13Checks, M13_SCENES } from './shots-m13.mjs';
+import { liveM14Checks, M14_SCENES } from './shots-m14.mjs';
 
 const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
 const PREFIX = process.env.SHOTS_PREFIX ?? '';
@@ -152,6 +153,7 @@ const SCENES = [
   ...M11_SCENES.map((scene) => ({ ...scene, name: `m11-${scene.name}` })),
   ...M12_SCENES.map((scene) => ({ ...scene, name: `m12-${scene.name}` })),
   ...M13_SCENES.map((scene) => ({ ...scene, name: `m13-${scene.name}` })),
+  ...M14_SCENES.map((scene) => ({ ...scene, name: `m14-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -246,7 +248,12 @@ async function openPage(viewport, label, query) {
   // so they open Held still (the Phase 1 picture); Phase 2 ones (label contains "m6" … "m19")
   // sail.
   const held = /m([6-9]|1\d)/.test(label) || /[?&]held=/.test(query);
-  const url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
+  let url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
+  // Since M14 the water is Coastal by default. Everything older keeps its Phase 2 picture on
+  // flat water (the boat would rock under the tap sweeps), unless it is about the waves itself.
+  if (!/m1[4-9]/.test(label) && !/[?&]sea=/.test(query)) {
+    url += `${url.includes('?') ? '&' : '?'}sea=flat`;
+  }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
   await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
@@ -528,7 +535,7 @@ async function liveGeneralChecks() {
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
   // The phone-sized screen starts at low detail (M3b).
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1`);
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1&sea=flat`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -536,17 +543,20 @@ async function liveGeneralChecks() {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1&sea=flat`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
-  await expectUrl('View tab', `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&debug=1`);
+  await expectUrl(
+    'View tab',
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&debug=1`,
+  );
   // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
   await page.getByText('High', { exact: true }).click();
   await expectUrl(
     'Detail high',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&held=1&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&held=1&sea=flat&debug=1`,
   );
   await page.waitForTimeout(1500);
   const overlay = await page.getByTestId('debug-overlay').innerText();
@@ -559,7 +569,7 @@ async function liveGeneralChecks() {
   await page.getByText('Low', { exact: true }).click();
   await expectUrl(
     'Detail low',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&debug=1`,
   );
   await context.close();
 
@@ -758,6 +768,7 @@ try {
     m11: () => liveM11Checks(live),
     m12: () => liveM12Checks(live),
     m13: () => liveM13Checks(live),
+    m14: () => liveM14Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

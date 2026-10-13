@@ -43,3 +43,16 @@ export function interpTable(table: readonly (readonly number[])[], x: number): n
   }
   return last[1] ?? 0;
 }
+
+/** 0 below edge0, 1 above edge1, smooth (3t² − 2t³) between. */
+export function smoothstep(edge0: number, edge1: number, x: number): number {
+  const t = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
+  return t * t * (3 - 2 * t);
+}
+
+/** First-order lag over dt: value + (target − value)·(1 − e^(−dt/tau)). tau ≤ 0 → target. dt = 0 → value. */
+export function lagTowards(value: number, target: number, dt: number, tau: number): number {
+  if (dt === 0) return value;
+  if (tau <= 0) return target;
+  return value + (target - value) * (1 - Math.exp(-dt / tau));
+}

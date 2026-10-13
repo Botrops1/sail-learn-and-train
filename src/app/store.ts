@@ -29,6 +29,16 @@ import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../m
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
 import {
+  defaultSeaSetting,
+  initialSea,
+  setSeaSetting,
+  stepSea,
+  isSeaSetting,
+  waveTrains,
+  type SeaSetting,
+  type SeaState,
+} from '../model/waves';
+import {
   initialWindMode,
   isSeed,
   sizeRange,
@@ -83,6 +93,8 @@ export interface AppState {
   sailDamage: SailDamage;
   /** The engine (M12): stopped or running, the lever, rpm and gear. */
   engine: EngineState;
+  /** The sea (M14): the Waves setting and the wind the waves are made by (lagged). */
+  sea: SeaState;
 }
 
 /** Engine commands (PHASE2_SPEC 12.3): start, stop, or the lever (−100 … 100, whole numbers). */
@@ -113,6 +125,8 @@ export type Action =
   | { type: 'engine'; command: EngineCommand }
   /** Wind modes (M10): the pattern restarts now; its size goes to the mode's default. */
   | { type: 'setWindMode'; mode: WindModeId }
+  /** The Waves setting of the Wind tab (M14): Flat, Sheltered, Coastal, Open sea. */
+  | { type: 'setSeaSetting'; setting: SeaSetting }
   /** Size of the pattern: % (gusty), ° (shifty), kn (building, dying). Restarts the pattern. */
   | { type: 'setWindSize'; size: number }
   /** A new random pattern (the caller draws the seed, so the reducer stays pure). */
@@ -144,6 +158,11 @@ export interface InitialOverrides {
   windMode?: Partial<WindModeState>;
   /** From a shared link: engine running and lever. */
   engine?: { running?: boolean; leverPct?: number };
+  /**
+   * The Waves setting (M14). Without it the water is flat, so every Phase 1 and 2 state is as it
+   * was; the app passes `waves.defaultSetting` (links and Reset).
+   */
+  sea?: SeaSetting;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -193,11 +212,19 @@ function withTimeRule(state: AppState): AppState {
   const { settings } = state;
   // Where Pause is replaced by the "Held still" chip (issue #34) time must not stay frozen.
   let next = state;
-  if (state.paused && !pauseAvailable(state.boat.mode, state.windMode.mode, settings.ropesMode)) {
+  if (
+    state.paused &&
+    !pauseAvailable(state.boat.mode, state.windMode.mode, settings.ropesMode, state.sea.setting)
+  ) {
     next = { ...next, paused: false };
   }
   if (settings.timeScale === 1) return next;
-  return timeSpeedAvailable(state.boat.mode, state.windMode.mode, settings.timeBar)
+  return timeSpeedAvailable(
+    state.boat.mode,
+    state.windMode.mode,
+    settings.timeBar,
+    state.sea.setting,
+  )
     ? next
     : { ...next, settings: { ...settings, timeScale: 1 } };
 }
@@ -234,6 +261,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     wind,
     sailDamage: NO_DAMAGE,
     engine,
+    sea: initialSea(overrides.sea ?? 'flat', wind),
   });
 }
 
@@ -275,7 +303,10 @@ export function reduce(state: AppState, action: Action): AppState {
       // The rig keeps moving from where it is, so the boom and sails swing back visibly. The
       // debug overlay and the render detail suit the device, not what is shown: they stay.
       const { debug, detail } = state.settings;
-      const defaults = initialState({ settings: { debug, detail } });
+      const defaults = initialState({
+        settings: { debug, detail },
+        sea: defaultSeaSetting(),
+      });
       return {
         ...defaults,
         rig: state.rig,
@@ -366,6 +397,10 @@ export function reduce(state: AppState, action: Action): AppState {
       const windMode = { ...state.windMode, size, startS: state.rig.timeS };
       return { ...state, windMode, wind: windNow(state.controls, windMode, state.rig.timeS) };
     }
+    case 'setSeaSetting': {
+      if (!isSeaSetting(action.setting) || action.setting === state.sea.setting) return state;
+      return withTimeRule({ ...state, sea: setSeaSetting(state.sea, action.setting) });
+    }
     case 'newWindPattern': {
       if (state.windMode.mode === 'steady') return state;
       const seed = isSeed(action.seed) ? action.seed : state.windMode.seed;
@@ -376,7 +411,12 @@ export function reduce(state: AppState, action: Action): AppState {
       if (
         !isTimeScale(action.scale) ||
         state.settings.timeScale === action.scale ||
-        !timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar)
+        !timeSpeedAvailable(
+          state.boat.mode,
+          state.windMode.mode,
+          state.settings.timeBar,
+          state.sea.setting,
+        )
       ) {
         return state;
       }
@@ -409,6 +449,9 @@ export function reduce(state: AppState, action: Action): AppState {
       // The true wind at the end of this step: the mean with the wind mode's pattern.
       const wind = windNow(state.controls, state.windMode, state.rig.timeS + dt);
       const patterned = state.windMode.mode !== 'steady';
+      // The waves follow the wind slowly (M14); paused (dt = 0) they stay the same object.
+      const sea = stepSea(state.sea, wind, dt);
+      const trains = waveTrains(sea);
       let controls = state.controls;
       let autopilot = state.autopilot;
       // The autopilot moves the wheel's target (not through setControls: it must not switch
@@ -445,6 +488,7 @@ export function reduce(state: AppState, action: Action): AppState {
           controls,
           engineThrustN: engineThrustN(engine),
           damage: state.sailDamage,
+          trains,
           rudderLimitDeg:
             autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
         },
@@ -463,6 +507,7 @@ export function reduce(state: AppState, action: Action): AppState {
         track: sailing ? appendTrack(state.track, moving.boat, rig.timeS) : state.track,
         sailDamage: floggingDamage(state.sailDamage, rig, dt),
         engine,
+        sea,
       };
     }
   }

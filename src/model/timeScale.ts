@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import type { SeaSetting } from './waves';
 import type { WindModeId } from './windModes';
 
 /**
@@ -37,26 +38,35 @@ export function timeScaleText(scale: number): string {
 
 /**
  * Whether the speed part of the time bar shows (and a time scale other than ×1 can be set):
- * while Sailing, or in Held still when the wind mode is not Steady (nothing else changes with
- * time there), and only when the View tab's "Time bar" switch is on. Pause always shows.
+ * while Sailing, or in Held still when the wind mode is not Steady or there are waves (nothing
+ * else changes with time there; waves: owner, M14 PR), and only when the View tab's "Time bar"
+ * switch is on. Pause always shows.
  */
 export function timeSpeedAvailable(
   boatMode: 'sailing' | 'held',
   windMode: WindModeId,
   timeBar: boolean,
+  seaSetting: SeaSetting = 'flat',
 ): boolean {
-  return timeBar && (boatMode === 'sailing' || windMode !== 'steady');
+  return timeBar && (boatMode === 'sailing' || windMode !== 'steady' || seaSetting !== 'flat');
 }
 
 /**
- * Whether Pause means anything (issue #34): in Held still with a steady wind and Easy ropes
- * nothing changes with time, so the bar shows a "Held still" chip instead. Realistic mode keeps
- * Pause (winching and easing take time); Sailing and a changing wind need it too.
+ * Whether Pause means anything (issue #34): in Held still with a steady wind, Easy ropes and
+ * flat water nothing changes with time, so the bar shows a "Held still" chip instead. Realistic
+ * mode keeps Pause (winching and easing take time); Sailing and a changing wind need it too, and
+ * so do waves (M14: the water moves, so Pause means something again).
  */
 export function pauseAvailable(
   boatMode: 'sailing' | 'held',
   windMode: WindModeId,
   ropesMode: 'easy' | 'realistic',
+  seaSetting: SeaSetting = 'flat',
 ): boolean {
-  return boatMode === 'sailing' || windMode !== 'steady' || ropesMode === 'realistic';
+  return (
+    boatMode === 'sailing' ||
+    windMode !== 'steady' ||
+    ropesMode === 'realistic' ||
+    seaSetting !== 'flat'
+  );
 }
