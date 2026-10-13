@@ -190,13 +190,29 @@ export function createWindPanel(store: Store): HTMLElement[] {
   speed.addEventListener('input', () =>
     store.dispatch({ type: 'setControls', values: { ctl_wind_speed: Number(speed.value) } }),
   );
+  // In a wind mode the thumb follows the wind right now (issue #33); the slider still sets the
+  // average, so while a finger or key is on it the thumb shows what is being set.
+  let adjustingSpeed = false;
+  const adjust = (on: boolean) => () => {
+    adjustingSpeed = on;
+  };
+  speed.addEventListener('pointerdown', adjust(true));
+  speed.addEventListener('keydown', adjust(true));
+  for (const end of ['pointerup', 'pointercancel', 'keyup', 'blur']) {
+    speed.addEventListener(end, adjust(false));
+  }
   const speedValue = el('span', { class: 'control-value' });
+  const speedHint = el('p', { class: 'hint', 'data-testid': 'wind-speed-hint' }, [
+    t('wind.speed.hint'),
+  ]);
+  speedHint.hidden = true;
   const speedField = el('div', { class: 'field control' }, [
     el('div', { class: 'control-head' }, [
       el('label', { for: 'wind-speed', class: 'control-name' }, [t('wind.speed.label')]),
       speedValue,
     ]),
     el('div', { class: 'control-row' }, [speed]),
+    speedHint,
   ]);
 
   // Presets.
@@ -241,6 +257,15 @@ export function createWindPanel(store: Store): HTMLElement[] {
       }
       setText(windNow, windNowText(state));
     }
+    // The slider: the average when steady, the wind now in a wind mode (issue #33).
+    speedHint.hidden = !patterned;
+    if (!adjustingSpeed) {
+      const shown = patterned
+        ? Math.min(speedSpec.max, Math.max(speedSpec.min, Math.round(state.wind.twsKn)))
+        : state.controls.ctl_wind_speed;
+      if (speed.value !== String(shown)) speed.value = String(shown);
+      setText(speedValue, t('wind.speed.value', { speed: shown, force: beaufort(shown) }));
+    }
     if (
       previous &&
       state.controls === previous.controls &&
@@ -250,14 +275,11 @@ export function createWindPanel(store: Store): HTMLElement[] {
     const from = state.controls.ctl_wind_dir;
     const compass = compassDeg(from);
     const twa = wrap180(from - state.boat.headingDeg);
-    const kn = state.controls.ctl_wind_speed;
     arrow.setAttribute('transform', `rotate(${compass})`);
     dial.setAttribute('aria-valuenow', String(Math.round(compass)));
     const text = t('wind.compass', { compass: bearing(compass), relative: relativeText(twa) });
     dial.setAttribute('aria-valuetext', text);
     setText(directionValue, text);
-    if (speed.value !== String(kn)) speed.value = String(kn);
-    setText(speedValue, t('wind.speed.value', { speed: kn, force: beaufort(kn) }));
   };
   store.subscribe(refresh);
   refresh(store.getState());

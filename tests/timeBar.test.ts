@@ -3,6 +3,7 @@ import { boat } from '../src/model/boat';
 import {
   fastestTimeScale,
   isTimeScale,
+  pauseAvailable,
   slowestTimeScale,
   stepTimeScale,
   timeScaleText,
@@ -202,5 +203,45 @@ describe('time bar: the link', () => {
     }
     expect(parseUrlState('?wd=60&tb=1').settings.timeBar).toBe(true);
     expect(parseUrlState('?wd=60&tb=no').settings.timeBar).toBe(true);
+  });
+});
+
+describe('time bar: Held still has nothing to pause (issue #34)', () => {
+  it('Pause is replaced only in Held still, steady wind, Easy ropes', () => {
+    expect(pauseAvailable('held', 'steady', 'easy')).toBe(false);
+    expect(pauseAvailable('held', 'steady', 'realistic')).toBe(true);
+    expect(pauseAvailable('held', 'gusty', 'easy')).toBe(true);
+    expect(pauseAvailable('sailing', 'steady', 'easy')).toBe(true);
+  });
+
+  it("time cannot stay frozen when the chip takes Pause's place", () => {
+    let state = act(sailing(), { type: 'setPaused', paused: true });
+    expect(state.paused).toBe(true);
+    state = act(state, { type: 'setBoatMode', mode: 'held' });
+    expect(state.paused).toBe(false);
+    // Realistic mode keeps Pause, so a pause there survives, and ends if Easy comes back.
+    state = act(state, { type: 'setRopesMode', mode: 'realistic' });
+    state = act(state, { type: 'setPaused', paused: true });
+    expect(state.paused).toBe(true);
+    state = act(state, { type: 'setRopesMode', mode: 'easy' });
+    expect(state.paused).toBe(false);
+    // A changing wind keeps Pause too.
+    state = act(state, { type: 'setWindMode', mode: 'building' });
+    state = act(state, { type: 'setPaused', paused: true });
+    state = act(state, { type: 'setWindMode', mode: 'steady' });
+    expect(state.paused).toBe(false);
+  });
+});
+
+describe('wind modes: what the speed slider shows (issue #33)', () => {
+  it('in a building wind the wind now leaves the set average, so the slider must follow it', () => {
+    let state = initialState({
+      boat: { mode: 'held' },
+      controls: { ctl_wind_dir: 60, ctl_wind_speed: 8 },
+      windMode: { mode: 'building' },
+    });
+    state = run(state, 120, 10);
+    expect(state.controls.ctl_wind_speed).toBe(8);
+    expect(state.wind.twsKn).toBeGreaterThan(9);
   });
 });
