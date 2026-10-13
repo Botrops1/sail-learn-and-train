@@ -199,3 +199,60 @@ describe('model sanity', () => {
     }
   });
 });
+
+describe('PT-24 / PT-26 gybes (M11)', () => {
+  /** Runs a boat with the autopilot on heading 0 for ten minutes, counting gybes by their reports. */
+  function gybesIn(twaDeg: number, seed: number): { total: number; accidental: number } {
+    const state = initialState({
+      controls: {
+        ctl_wind_dir: twaDeg,
+        ctl_wind_speed: 12,
+        ctl_mainsheet: 100,
+        ctl_jib_sheet: 100,
+      },
+      boat: { headingDeg: 0 },
+      autopilot: { mode: 'heading', targetDeg: 0, integralDeg: 0 },
+      windMode: { mode: 'shifty', seed, size: 25 },
+    });
+    let last = state.rig.lastGybe;
+    let total = 0;
+    let accidental = 0;
+    run(state, 600, 30, (s) => {
+      if (s.rig.lastGybe !== last) {
+        last = s.rig.lastGybe;
+        total += 1;
+        if (last?.accidental) accidental += 1;
+      }
+      return s;
+    });
+    return { total, accidental };
+  }
+
+  it('PT-26 running dead downwind in a shifty wind: an accidental gybe within ten minutes', () => {
+    for (const seed of [1, 2, 3]) {
+      expect(gybesIn(175, seed).accidental, `seed ${seed}`).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('PT-26 at TWA 135 with the same wind there is none', () => {
+    for (const seed of [1, 2, 3]) expect(gybesIn(135, seed).total, `seed ${seed}`).toBe(0);
+  });
+
+  it('PT-24 the gybe leaves a report: boom speed, energy and a sheet load of several kN', () => {
+    const state = run(
+      initialState({
+        controls: { ctl_wind_dir: 170, ctl_wind_speed: 15, ctl_mainsheet: 100 },
+        boat: { headingDeg: 0, mode: 'held' },
+      }),
+      1,
+    );
+    expect(state.rig.lastGybe).toBeNull();
+    // The wind goes 15° by the lee: the boom swings across and stops against the sheet.
+    const gybed = run(act(state, { type: 'setControls', values: { ctl_wind_dir: -165 } }), 6);
+    const report = gybed.rig.lastGybe;
+    expect(report?.accidental).toBe(true);
+    expect(report?.peakRopeN).toBeGreaterThan(5000);
+    expect(gybed.rig.gybing).toBe(false);
+    expect(gybed.rig.theta.value).toBeGreaterThan(60);
+  });
+});

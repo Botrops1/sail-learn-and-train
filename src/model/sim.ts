@@ -3,6 +3,7 @@ import { boat, type BoatData } from './boat';
 import { wrap180 } from './angles';
 import { initialSide, solveBoom, type BoomInput, type BoomSolution } from './boomSolver';
 import type { Controls } from './controls';
+import { gybeArrived, gybeImpact, gybeStep, type GybeReport, type GybeSwing } from './gybe';
 import { sailForces, type SailForces } from './sailForces';
 import { jibSheetReleased, solveJib, type JibInput, type JibSolution } from './jib';
 import { NO_DAMAGE, type SailDamage } from './trim';
@@ -61,6 +62,17 @@ export interface RigState {
   fill: number;
   /** True while the boom swings across after an accidental gybe. */
   gybing: boolean;
+  /**
+   * The boom's swing while it crosses (M11): the wind pushes it, `gybeStep` moves it in small
+   * steps, and `theta` follows. Null when it is not swinging.
+   */
+  gybeSwing: GybeSwing | null;
+  /** Seconds since the swing began (a swing that cannot finish is cut short). */
+  gybeElapsedS: number;
+  /** The latest gybe's energy and sheet load, from the moment the sheet stopped the boom. */
+  lastGybe: GybeReport | null;
+  /** Seconds the boom has been by the lee without crossing (the warning gets stronger, M11). */
+  byTheLeeS: number;
   /** Seconds left to show the "GYBE" label (boom crossed with the wind from behind). */
   gybeLabelS: number;
   /** Seconds left to show the "Tack" label (boom crossed with the wind from ahead). */
@@ -226,6 +238,10 @@ export function initialRig(
     psi: { value: solution.psiDeg, velocity: 0 },
     fill: solution.fill,
     gybing: false,
+    gybeSwing: null,
+    gybeElapsedS: 0,
+    lastGybe: null,
+    byTheLeeS: 0,
     gybeLabelS: 0,
     tackLabelS: 0,
     jibSolution: { ...jib, tack: false },
@@ -298,8 +314,64 @@ export interface StepOptions {
   damage?: SailDamage;
 }
 
-/** Degrees within which a gybe swing counts as finished. */
-const GYBE_DONE_DEG = 2;
+/** A main furled away this far has no sail to push the boom: it moves at the normal speed. */
+const MIN_MAIN_OUT = 0.02;
+/** A swing that has not finished after this many seconds is cut short (no wind, no sail). */
+const GYBE_MAX_S = 8;
+
+interface GybeProgress {
+  swing: GybeSwing | null;
+  elapsedS: number;
+  last: GybeReport | null;
+  /** The boom's drawn angle when the swing drives it, null when the spring does. */
+  theta: Spring | null;
+}
+
+/**
+ * The gybe (PHASE2_SPEC 11.2). Phase 1's trigger (`solution.gybe`) starts a swing; while it runs
+ * the wind's push moves the boom in substeps; when the boom reaches the new side the sheet stops
+ * it and the impact is worked out. A tack swings nothing: it crosses at the normal speed.
+ */
+function stepGybe(
+  rig: RigState,
+  solution: BoomSolution,
+  rope: AppliedControls,
+  wind: RigWind,
+  heelDeg: number,
+  dt: number,
+  data: BoatData,
+): GybeProgress {
+  const mainOut = rope.mainFurl / 100;
+  let swing = rig.gybeSwing;
+  let elapsedS = rig.gybeElapsedS;
+  let last = rig.lastGybe;
+  if (solution.tack) swing = null;
+  else if (solution.gybe && mainOut > MIN_MAIN_OUT) {
+    const from = rig.theta.value;
+    swing = { thetaDeg: from, omegaDegS: 0, startDeg: from, stopDeg: solution.thetaDeg };
+    elapsedS = 0;
+  } else if (swing) swing = { ...swing, stopDeg: solution.thetaDeg };
+  if (!swing) return { swing: null, elapsedS: 0, last, theta: null };
+
+  const substep = data.physics.gybe.substepS;
+  const noWind = wind.awsKn < data.visual.solver.minWindKn;
+  let remaining = dt;
+  let timeS = rig.timeS;
+  while (swing && remaining > 1e-12) {
+    const h = Math.min(remaining, substep);
+    swing = gybeStep(swing, wind.awsKn, mainOut, heelDeg, h, data);
+    remaining -= h;
+    timeS += h;
+    elapsedS += h;
+    if (gybeArrived(swing) || noWind || elapsedS >= GYBE_MAX_S) {
+      last = gybeImpact(swing, timeS, data);
+      const stopped = { value: swing.stopDeg, velocity: 0 };
+      return { swing: null, elapsedS: 0, last, theta: stopped };
+    }
+  }
+  const theta = swing ? { value: swing.thetaDeg, velocity: swing.omegaDegS } : null;
+  return { swing, elapsedS, last, theta };
+}
 
 /**
  * Advances the rig by `dt` seconds towards the control targets. `motion` is the boat's
@@ -337,11 +409,8 @@ export function step(
       ? { ...rig.solution, gybe: false, tack: false }
       : solveBoom(input, { side: rig.solution.side, thetaDeg: rig.solution.thetaDeg }, data);
 
-  // Only a gybe swings fast; a tack crosses at the normal speed.
-  const gybing =
-    solution.gybe ||
-    (rig.gybing && !solution.tack && Math.abs(rig.theta.value - solution.thetaDeg) > GYBE_DONE_DEG);
-  const swingTau = gybing ? v.gybeSwingTimeS : v.boomSmoothingTimeS;
+  // Only a gybe swings across with the wind's push; a tack crosses at the normal speed.
+  const gybe = stepGybe(rig, solution, rope, wind, motion.heelDeg ?? 0, dt, data);
 
   // The jib: solved like the boom; it crosses at the normal speed (the car slides across).
   const nextJibInput = jibInput(controls, wind, rope, solution);
@@ -361,10 +430,14 @@ export function step(
     applied: rope,
     input,
     solution,
-    theta: springTo(rig.theta, solution.thetaDeg, dt, swingTau),
+    theta: gybe.theta ?? springTo(rig.theta, solution.thetaDeg, dt, v.boomSmoothingTimeS),
     psi: springTo(rig.psi, solution.psiDeg, dt, v.boomSmoothingTimeS),
     fill: lag(rig.fill, solution.fill, dt, v.boomSmoothingTimeS),
-    gybing,
+    gybing: gybe.swing !== null,
+    gybeSwing: gybe.swing,
+    gybeElapsedS: gybe.elapsedS,
+    lastGybe: gybe.last,
+    byTheLeeS: solution.byTheLee ? rig.byTheLeeS + dt : 0,
     gybeLabelS: solution.gybe ? v.gybeLabelS : solution.tack ? 0 : Math.max(0, rig.gybeLabelS - dt),
     tackLabelS: solution.tack ? v.gybeLabelS : solution.gybe ? 0 : Math.max(0, rig.tackLabelS - dt),
     jibInput: nextJibInput,

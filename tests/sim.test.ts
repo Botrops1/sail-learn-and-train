@@ -68,8 +68,10 @@ describe('rig step (PHASE1_SPEC 7.1, 8.3 step 5, 9.1)', () => {
     let rig = run(initialRig({ ...sheet, ctl_wind_dir: 170 }), { ...sheet, ctl_wind_dir: -170 }, 1);
     rig = run(rig, { ...sheet, ctl_wind_dir: -165 }, 1 / 60);
     expect(rig.gybeLabelS).toBeGreaterThan(boat.visual.gybeLabelS - 0.1);
+    // The label is gone after gybeLabelS; the swing itself takes about 2.6 s at 12 kn (M11).
     rig = run(rig, { ...sheet, ctl_wind_dir: -165 }, boat.visual.gybeLabelS + 0.1);
     expect(rig.gybeLabelS).toBe(0);
+    rig = run(rig, { ...sheet, ctl_wind_dir: -165 }, 3);
     expect(rig.gybing).toBe(false);
   });
 

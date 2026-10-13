@@ -180,7 +180,8 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
     expect(rig.solution.side).toBe(1);
     expect(rig.solution.gybe).toBe(true);
     expect(rig.gybeLabelS).toBeGreaterThan(0);
-    rig = run(rig, { ...sheet, ctl_wind_dir: -165 }, 1);
+    // The wind's push swings the boom (M11): about 2.6 s at 12 kn, so wait 5 s.
+    rig = run(rig, { ...sheet, ctl_wind_dir: -165 }, 5);
     expect(rig.theta.value).toBeGreaterThan(70);
   });
 
@@ -192,7 +193,8 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
       { ...sheet, ctl_wind_dir: -170 },
       1,
     );
-    gybe = run(gybe, { ...sheet, ctl_wind_dir: -165 }, 0.25);
+    // The swing takes about 2.6 s at 12 kn since M11 (the wind's push, not a spring): wait 5 s.
+    gybe = run(gybe, { ...sheet, ctl_wind_dir: -165 }, 5);
     // An ordinary move: sheet let go from fully hauled on a broad reach (a full swing out).
     const ordinary = run(
       initialRig(controls({ ...sheet, ctl_wind_dir: 165, ctl_mainsheet: 0 })),

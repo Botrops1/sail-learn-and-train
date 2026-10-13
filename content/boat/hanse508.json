@@ -1073,8 +1073,6 @@
     "controlResponseTimeS": 0.4,
     "boomSmoothingTimeS": 0.3,
     "boomSmoothingNote": "Time constant of the critically damped spring that moves the drawn boom towards the solved pose (PHASE1_SPEC 8.3 step 5). The fill of the sails follows with the same time constant.",
-    "gybeSwingTimeS": 0.12,
-    "gybeSwingNote": "Faster spring while the boom swings across in an accidental gybe.",
     "gybeLabelS": 2.0,
     "ropeMaxSagM": 1.5,
     "ropeSagSegments": 12,
@@ -1495,6 +1493,24 @@
         "tornForceFactor": 0.4
       },
       "floggingNote": "assumption: 10 minutes of flogging at 20 kn apparent wind tears a sail; damage grows with the square of the wind"
+    },
+    "gybe": {
+      "boomMassKg": 60,
+      "sailMassKg": 40,
+      "massNote": "assumption: Seldén B250 boom with fittings about 60 kg, in-mast furling main about 40 kg",
+      "driveCoefficient": 0.6,
+      "normalForceCoefficient": 1.2,
+      "sheetStretchM": 0.4,
+      "stretchNote": "assumption: how far the sheet system gives at the boom blocks when the swing is stopped (rope stretch, blocks, deck springs)",
+      "controlledMaxBoomDeg": 20,
+      "dangerFlashS": 1.5,
+      "reportS": 8,
+      "impactLoadDurationS": 0.3,
+      "driveGain": 3.2,
+      "driveFloor": 0.5,
+      "driveStartFraction": 0.3,
+      "driveNote": "assumption (decided in the M11 PR): the wind's push on the swinging sail is the spec's torque times driveGain × (driveFloor + (1 − driveFloor) × |sin of the angle the boom starts from|) × (driveStartFraction + (1 − driveStartFraction) × the fraction of the swing done). A boom swung wide is hit broadside, so the push is larger and it builds as the sail comes round; a boom hauled in is hit at a glancing angle. Tuned so that the spec's PT-24 numbers come out (2.1 s, 9.7 kJ, 12.2 kN at 15 kn)",
+      "substepS": 0.005
     }
   },
   "windModes": {
