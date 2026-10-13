@@ -219,12 +219,7 @@ function withTimeRule(state: AppState): AppState {
     next = { ...next, paused: false };
   }
   if (settings.timeScale === 1) return next;
-  return timeSpeedAvailable(
-    state.boat.mode,
-    state.windMode.mode,
-    settings.timeBar,
-    state.sea.setting,
-  )
+  return timeSpeedAvailable(state.boat.mode, state.windMode.mode, settings.timeBar)
     ? next
     : { ...next, settings: { ...settings, timeScale: 1 } };
 }
@@ -411,12 +406,7 @@ export function reduce(state: AppState, action: Action): AppState {
       if (
         !isTimeScale(action.scale) ||
         state.settings.timeScale === action.scale ||
-        !timeSpeedAvailable(
-          state.boat.mode,
-          state.windMode.mode,
-          state.settings.timeBar,
-          state.sea.setting,
-        )
+        !timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar)
       ) {
         return state;
       }

@@ -113,10 +113,6 @@ describe('time bar: where the speed part shows', () => {
     expect(timeSpeedAvailable('held', 'gusty', true)).toBe(true);
     expect(timeSpeedAvailable('sailing', 'gusty', false)).toBe(false);
     expect(timeSpeedAvailable('held', 'building', false)).toBe(false);
-    // Waves move in Held still, so they can be sped up too (owner, M14 PR).
-    expect(timeSpeedAvailable('held', 'steady', true, 'coastal')).toBe(true);
-    expect(timeSpeedAvailable('held', 'steady', true, 'flat')).toBe(false);
-    expect(timeSpeedAvailable('held', 'steady', false, 'coastal')).toBe(false);
   });
 
   it('Held still with a steady wind: the time scale is 1 and cannot be set', () => {
@@ -124,7 +120,7 @@ describe('time bar: where the speed part shows', () => {
     expect(held.settings.timeScale).toBe(1);
     expect(act(held, { type: 'setTimeScale', scale: 4 }).settings.timeScale).toBe(1);
     // A link with tx and held still gives ×1 too.
-    expect(parseUrlState('?wd=60&held=1&tx=4&sea=flat').settings.timeScale).toBe(1);
+    expect(parseUrlState('?wd=60&held=1&tx=4').settings.timeScale).toBe(1);
   });
 
   it('Held still with a changing wind: the scale can be set', () => {
@@ -254,16 +250,5 @@ describe('time bar: Pause with waves (PHASE3_SPEC 6.4)', () => {
   it('Held still keeps Pause while the water moves', () => {
     expect(pauseAvailable('held', 'steady', 'easy', 'coastal')).toBe(true);
     expect(pauseAvailable('held', 'steady', 'easy', 'flat')).toBe(false);
-  });
-});
-
-describe('time bar: speed in Held still with waves (owner, M14 PR)', () => {
-  it('a time scale can be set in Held still with Coastal waves, and Flat puts it back to ×1', () => {
-    let state = initialState({ sea: 'coastal', boat: { mode: 'held' } });
-    state = act(state, { type: 'setTimeScale', scale: 4 });
-    expect(state.settings.timeScale).toBe(4);
-    state = act(state, { type: 'setSeaSetting', setting: 'flat' });
-    expect(state.settings.timeScale).toBe(1);
-    expect(act(state, { type: 'setTimeScale', scale: 4 }).settings.timeScale).toBe(1);
   });
 });
