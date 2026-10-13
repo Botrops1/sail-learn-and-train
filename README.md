@@ -2,7 +2,7 @@
 
 A free web app that shows a complete beginner how a cruising yacht's ropes, sheets and sails behave. It runs in the browser, on a phone first.
 
-The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels, two electric winches). Clarity over realism: the boat stands still, you set a test wind by hand, and you see what each rope does.
+The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels, two electric winches). Clarity over realism: you set a test wind, work the ropes, and see what each rope does. Since Phase 2 the boat also sails: the wind pushes her, and what you do with the ropes, the wheel, the autopilot and the engine changes what she does.
 
 **Live site:** https://botrops1.github.io/sail-learn-and-train/
 
@@ -13,9 +13,15 @@ The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, G
 - **Work the ropes** (Ropes tab). The two clutch banks are drawn as on the boat, with their real labels ("Genoa sheet" is the jib sheet).
   - **Easy mode:** every rope is a slider (1 % or 5 % steps). The main idea: *ropes limit, wind pushes*: easing a sheet only lets the wind push the sail further.
   - **Realistic mode:** one place at a time (port, starboard, helm, mast), clutches opened and closed, ropes wrapped on the electric winches with turns, the self-tailer, ropes that slip or run out when not held, the winch handle and the mast furling gearbox, and Pause.
+- **Sail her** (Phase 2). Held still / Sailing switch (Held still is the Phase 1 picture). The boat makes her own wind: the instrument strip and the wind dial show the true and the apparent wind (the wind you feel on board). The wheel turns her only while she moves; the **autopilot** (Standby, hold a heading, or hold a wind angle) tacks and gybes on a button.
+- **See what the trim does.** Sails show luffing (flapping), good or stalled trim, with telltales (short ribbons) on the sails; the boat heels, gets weather helm (pulls to windward) and can round up; the main blankets the jib on a run; a sail left flogging wears out. Loads on the sheets come from the real sail forces, in kN.
+- **Bird's-eye map** with the boat, her track, both winds, the no-go zone and the points of sail.
+- **Wind modes** (Steady, Gusty, Shifty, Building, Dying), repeatable from a link, and a **time bar** (slow motion, pause, up to ×16).
+- **Gybes.** An accidental gybe shows the boom's speed, energy and the peak load on the main sheet, and a danger zone on the map; a controlled gybe (main sheet hauled in first) is gentle. The boat has no preventer.
+- **Engine:** Start/Stop, one lever from full astern to full ahead with neutral in the middle, rpm, and the engine's Helm-station lever in Realistic mode.
 - **Share what you see:** the address (or View → Share) reproduces the exact state, useful for questions and bug reports.
 
-Phase 1 (this boat and its controls) ends with milestone M5, signed off by the owner after testing on a phone. Later phases add a moving boat, waves, a learning layer with Russian names, harbours and exercises: see [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Phase 1 (this boat and its controls) ended with milestone M5, signed off by the owner after testing on a phone. Phase 2 (the moving boat, M6–M13) is built and waits for the owner's sign-off. Later phases add waves, a learning layer with Russian names, harbours and exercises: see [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## Documents
 
@@ -23,6 +29,7 @@ Phase 1 (this boat and its controls) ends with milestone M5, signed off by the o
 |---|---|
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | All phases, architecture principles, decisions log |
 | [`docs/PHASE1_SPEC.md`](docs/PHASE1_SPEC.md) | What Phase 1 builds, how, and when it is done |
+| [`docs/PHASE2_SPEC.md`](docs/PHASE2_SPEC.md) | What Phase 2 builds (the moving boat), milestone by milestone, with the Definition of Done |
 | [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md) | Facts about the boat, sources, assumptions, open questions |
 | [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md) | Sailing rules the simulation must obey, with sources and tests |
 | [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | How to build and check each milestone from a phone |

@@ -59,7 +59,7 @@ Phase 2 rules are implemented from M6 on, each in the milestone named in [`PHASE
 | PT-35 | 2 | **No speed, no steering.** The rudder only turns the boat while water flows past it; a stopped boat (for example in irons) does not answer the wheel. With the engine in gear the propeller gets her moving, and then the wheel turns her (M12). | general |
 | PT-36 | 2 | **Hull speed.** A heavy displacement boat hardly sails faster than about 1.34 × √(waterline length in feet) knots: about 8.9 kn for this boat. More wind then mostly makes more heel and a bigger wave, not more speed. | source-checked [25] (a rule of thumb for heavy displacement hulls; fine or planing hulls can exceed it) |
 | PT-37 | 2 | **On a run the mainsail blankets the jib:** with the wind from behind, the main takes the jib's wind and the jib collapses. | source-checked [24] (the main covering the jib on a run; how much force the jib keeps: assumption) |
-| PT-38 | 2 | **Flogging damages sails:** a sail left flapping hard in strong wind wears and can tear. | to-verify (no reachable source yet; candidates: Yachting Monthly *10 tips to make sails last longer*, sailmaker guides on leech flogging) |
+| PT-38 | 2 | **Flogging damages sails:** a sail left flapping hard in strong wind wears and can tear. | to-verify (candidates: North Sails, *The four F's of sail fatigue: flex, fiber compression, flogging and flutter* [26], whose search summary says flogging and leech flutter fatigue the cloth and that a ten-minute session can beat up to half the strength out of it; the page itself could not be opened in M13; Yachting Monthly *10 tips to make sails last longer*; sailmaker guides on leech flogging). The model's numbers (10 minutes at 20 kn tears a sail) are assumptions |
 
 ## Sources
 
@@ -103,5 +103,9 @@ Read on 2026-10-12 (all Phase 2 and Phase 1 `to-verify` rules at once, from the 
 25. Wikipedia, *Hull speed*. https://en.wikipedia.org/wiki/Hull_speed. About 1.34 × √(waterline length in feet) knots; more power hardly adds speed to a displacement hull because it climbs its own bow wave; a rule of thumb, which fine and planing hulls can exceed.
 
 Not reachable on 2026-10-12: [12] (rate-limited), [14], [16], [17] (hosts did not answer from the cloud environment), MIT [6] (certificate error). Rules that depend only on them keep their candidate notes.
+
+M13 note (2026-10-14): every Phase 2 rule has a test named after its id (`tests/physicsTruths.test.ts`, `tests/physicsTruths2.test.ts` and the milestone files). Statuses were not changed beyond what the earlier milestones read. PT-38 got a candidate source, [26] below; the host `www.northsails.com` did not resolve from the cloud environment, so the page was not read and the rule stays `to-verify`. PT-11 and PT-12 (Phase 1) are still `to-verify`.
+
+26. North Sails, *The four F's of sail fatigue: flex, fiber compression, flogging and flutter*. https://www.northsails.com/sailing/en/2018/04/four-fs-sail-fatigue-flex-fiber-compression-flogging-flutter. Candidate for PT-38 (not read, see the M13 note).
 
 When you add a source, add it here and point the rule's status to it. Prefer sailing-school material (RYA, ASA, NauticEd), manufacturer manuals (Seldén, Lewmar, Hanse) and textbooks over forums.
