@@ -16,6 +16,7 @@ import { rippleNormalMap, skyTexture, sunDirection } from './environment';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
 import { SCENE } from './sceneConfig';
+import { buildDangerZone } from './dangerZone';
 import { buildWake } from './wake';
 import { buildWindStreaks } from './wind';
 import { createWorld } from './world';
@@ -107,6 +108,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   let detail: Detail = initial.settings.detail;
   let boatModel = buildBoat(initial.controls, initial.rig, detail);
   holder.add(boatModel.root);
+  const dangerZone = buildDangerZone();
+  holder.add(dangerZone.object);
   const ripples = rippleNormalMap();
   const water = buildWater(ripples);
   const streaks = buildWindStreaks();
@@ -250,6 +253,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
         state.sailDamage,
       );
+      dangerZone.update(state.rig);
       // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).
       streaks.update(state.rig.wind.awaDeg, state.rig.wind.awsKn, now / 1000);
       const { boat: boatState } = state;
