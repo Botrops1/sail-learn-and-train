@@ -185,7 +185,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 ### 6.1 Files
 
 New: `content/areas/adriatic.json`, `src/model/area.ts`, `src/model/waves.ts`, `src/model/waveMotion.ts`, `src/render3d/waterSurface.ts`, `src/ui/wavesPanel.ts`, `tests/waves.test.ts`, `tests/physicsTruths3.test.ts`, `scripts/shots-m14.mjs`.
-Changed: `content/boat/hanse508.json` (top-level `waves`, `physics.waveResponse`), `src/app/urlSync.ts`, `src/model/angles.ts` and `src/model/boomSolver.ts` (3.2), `src/model/mapFrame.ts` (`boatToMap`), `src/model/motion.ts` (`BoatState.waves`, `stepBoat`), `src/app/store.ts`, `src/app/urlState.ts`, `src/render3d/scene.ts`, `src/render3d/world.ts`, `src/render3d/wake.ts`, `src/render3d/sceneConfig.ts`, `src/ui/windPanel.ts`, `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `content/registry/parts.json`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+Changed: `content/boat/hanse508.json` (top-level `waves`, `physics.waveResponse`), `src/app/urlSync.ts`, `src/model/angles.ts` and `src/model/boomSolver.ts` (3.2), `src/model/mapFrame.ts` (`boatToMap`), `src/model/motion.ts` (`BoatState.waves`, `stepBoat`), `src/app/store.ts`, `src/app/urlState.ts`, `src/render3d/scene.ts`, `src/render3d/world.ts`, `src/render3d/wake.ts`, `src/render3d/sceneConfig.ts`, `src/ui/windPanel.ts`, `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `content/registry/parts.json`, `tests/urlState.test.ts` (and the tests allowed in 6.8 item 11), `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
 ### 6.2 Data
 
@@ -399,7 +399,7 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface;
 - **Inner wave mesh**: a square grid of `(2·halfSizeM / cell + 1)²` vertices, `cell = cellM` at High detail and `cellLowM` at Low (rebuilt by `setDetail`). Vertex local position `(x, y, z)` with `x, z ∈ [−halfSizeM, halfSizeM]` (local x = north, z = east). Each frame, for each vertex: `ΔN = shift.x + x`, `ΔE = shift.z + z`; `f = 1 − smoothstep(fadeStartM, halfSizeM, max(|x|, |z|))`; `{eta, dEast, dNorth} = elevationAndSlope(trains, phases, ΔE, ΔN)`; `y = f·eta`; normal = normalize(`−f·dNorth`, 1, `−f·dEast`) in local (x, y, z). Write `position` and `normal` and set `needsUpdate`; `frustumCulled = false`. With no trains: set every y to 0 and every normal to (0, 1, 0) once, then skip the height work until trains return (`setDetail` rebuilds the mesh and clears that "already flat" flag). `heightAt(ΔE, ΔN)`: local `x = ΔN − shift.x`, `z = ΔE − shift.z`, the same fade `f`, `f · elevation(...)`. `trains = waveTrains(state.sea)`, `phases = state.boat.waves.phases`.
 - **UVs** for the ripple normal map (both meshes): `u = x / rippleTileM`, `v = −z / rippleTileM` (the plane's u runs north, its v runs west, as before); `ripples.repeat = (1, 1)`; the offset as now, from the plane centre's map position (`centreNorthM`, `centreEastM`) and the drift, with the drift's time from **`state.rig.timeS`** (was the frame time: issue #32). The ripple strength keeps scaling with the wind now (`state.wind.twsKn`, as M10 did).
 - **Grid lines**: `THREE.LineSegments` that share the inner mesh's `position` attribute, with an index joining neighbouring vertices along every row and every column (so the lines follow the waves and are 2 m apart at High, 4 m at Low). Same colour and opacities as the old grid (`SCENE.grid.color`, `opacity`, `opacityHigh`), `depthWrite: false`, `renderOrder` one higher than the water.
-- **Outer water**: a flat mesh at y = 0 covering `SCENE.water.size` in cells of `outerCellM`, built once, with the triangles of every cell whose centre lies inside the inner square (`max(|cx|, |cz|) < halfSizeM`) left out; same materials and UV rule as the inner mesh. Inner and outer meet at the square's edge, where the fade has brought the waves to y = 0.
+- **Outer water**: a flat mesh at y = 0 covering `SCENE.water.size` in cells of `outerCellM`, with the triangles of every cell whose centre lies inside the inner square (`max(|cx|, |cz|) < ` the inner mesh's current half-size) left out (rebuilt in `setDetail`, because M19 may give Low detail a smaller inner mesh); same materials and UV rule as the inner mesh. Inner and outer meet at the square's edge, where the fade has brought the waves to y = 0.
 - Materials as before (`high` standard, `low` Lambert; colours, opacity, `depthWrite: false`); `receiveShadow` on the inner mesh. Both meshes and the grid carry `userData.partId = 'env_water'`.
 - **Pick target**: a flat `PlaneGeometry(SCENE.water.size, SCENE.water.size)` mesh at y = 0 with `new THREE.MeshBasicMaterial({ visible: false })` (the raycaster still hits it), part id `env_water`, in the water group. `createPicker(camera, holder, water.pickTarget)` (`picking.ts` itself needs no change).
 - **Boat**: `holder.position.y = boat.waves.heaveM`; `holder.rotation.set((boat.heelDeg + boat.waves.rollDeg)·DEG, 0, boat.waves.pitchDeg·DEG)`. The camera, the water, the wake and the streaks do not rock.
@@ -418,7 +418,7 @@ Registry: `env_water` gets a new `short.en`: "The sea surface. Waves grow with t
 
 1. **PT-39 wave size** (`seaSize`, ±0.005 m, ±0.01 s): 15 kn, 30 km → 0.683 m, 3.832 s; 20 kn, 150 km → 2.036 m, 7.212 s; 12 kn, 5 km → 0.223 m, 1.958 s; 25 kn, 30 km → 1.138 m, 4.543 s; 30 kn, 10⁷ km (fully developed) → 5.907 m, 12.797 s; 0 kn or fetch 0 → height 0. Height strictly increases with the wind (fetch 30 km, 2 … 30 kn in 1 kn steps) and with the fetch at 15 kn over 1, 5 and 30 km; at 15 kn, 150 km and 1000 km give the same height, the fully developed `0.2433·U²/g` = 1.477 m (Open sea at 15 kn is already fully developed).
 2. `waveTrains`: Flat → `[]`; Coastal at 1 kn → `[]` (height 0.007 m); Coastal at 2 kn → 3 trains (0.026 m, period 1.0 s). `significantHeightM(waveTrains(...))` equals `seaSize(...).heightM` (1e-9). Main train `fromDeg` = `sea.dirDeg`; with `dirDeg` 0 the main train travels south (`dirEast` 0, `dirNorth` −1, 1e-12).
-3. **Phase at the boat** is the map-fixed wave: `trains = waveTrains(initialSea('coastal', { dirDeg: 20, twsKn: 15 }))`, kept the same throughout; a boat starting at the map origin sails at 6 m/s on heading 30 for 60 s: 3,600 calls of `stepWaveMotion(wm, trains, 6, 30, 1/60)`, the test integrating her position itself (`east += 6·sin(30°)/60`, `north += 6·cos(30°)/60`). Then for the map points p = (0, 0), (30, −20), (−40, 10), (12, 45), (−25, −35) offset from her final position, `elevation(trains, wm.phases, p − boatPos)` equals `Σ aᵢ cos(kᵢ·(dᵢ·p) − ωᵢ·60 + phaseRadᵢ)` (p in map coordinates from the origin) within 1e-6 m.
+3. **Phase at the boat** is the map-fixed wave: `trains = waveTrains(initialSea('coastal', { dirDeg: 20, twsKn: 15 }))`, kept the same throughout; a boat starting at the map origin sails at 6 m/s on heading 30 for 60 s: 3,600 calls of `stepWaveMotion(wm, trains, 6, 30, 1/60)`, the test integrating her position itself (`east += 6·sin(30°)/60`, `north += 6·cos(30°)/60`). Then for the map points p = (pE, pN) = (0, 0), (30, −20), (−40, 10), (12, 45), (−25, −35) (east, north, from the origin), `elevation(trains, wm.phases, pE − east, pN − north)` equals `Σ aᵢ cos(kᵢ·(dᵢ·p) − ωᵢ·60 + phaseRadᵢ)` (p in map coordinates from the origin) within 1e-6 m.
 4. `stepSea`: start `initialSea('coastal', { dirDeg: 0, twsKn: 10 })`, then 10,800 calls `stepSea(sea, { dirDeg: 0, twsKn: 20 }, 1/60)`: `windKn` = 16.32 ± 0.01; the same at 30 and 120 fps within 1e-6; direction 0 → 90 after 180 s: 56.9° ± 0.1; 170 → −170 after 180 s: −177.4° ± 0.1 (it turns 20° across ±180, not 340°); `dt = 0` returns the same object.
 5. **PT-40 the boat follows the waves** (`initialState({ sea: 'coastal', boat: { mode: 'held' }, controls: { ctl_wind_dir, ctl_wind_speed } })`, then 3,600 `step` actions of `dt` 1/30 through `reduce`; the largest absolute value of `boat.waves.pitchDeg`, `rollDeg`, `heaveM` over the frames with t ≥ 40 s): wind 15 kn from 0 (waves from ahead, heading 0): pitch 2.3–3.5° [2.90] and roll smaller than pitch [1.79]; wind 15 kn from 90 (beam on): roll 4.1–6.1° [5.08] and pitch smaller than roll [1.29]; `sea: 'open'`, wind 20 kn from 0: heave 0.65–1.0 m [0.83], pitch 4.0–6.0° [4.96].
 6. **M14 does not change the sailing**: Sailing, wind 15 kn from 135, main sheet 100, jib sheet 100, autopilot heading, 60 s at 30 fps, once with `sea: 'coastal'` and once with `'flat'`: `speedMps`, `headingDeg`, `heelDeg`, `eastM`, `northM` and `rig.wind` are identical (`toBe` / `toEqual`); the coastal run's wave motion is not zero.
@@ -426,7 +426,7 @@ Registry: `env_water` gets a new `short.en`: "The sea surface. Waves grow with t
 8. **Pause** (issue #32): `{ ...initialState({ sea: 'coastal' }), paused: true }`, 100 steps: `sea` and `boat.waves` are the same objects (`toBe`).
 9. Frame-rate independence of the motion: Held still, Coastal, wind 15 kn from 45, 60 s at 30, 60 and 120 fps: heave within 0.01 m, pitch and roll within 0.1° of each other at t = 60 s.
 10. **URL**: round trip of every setting; `?wd=60` → Coastal; `?sea=storm` → Coastal; Coastal writes no `sea`; Flat writes `sea=flat`. Reset → Coastal with `sea.windKn` = the wind now.
-11. All Phase 1 and Phase 2 tests green **unchanged** (they build states with `initialState`, which defaults to Flat). Allowed changes, nothing else: (a) a URL test that compares a parsed old link with a state built by `initialState(...)` may add `sea: 'coastal'` to the overrides; (b) a URL test that compares `serializeUrlState(initialState(...))` with an exact string (in `tests/urlState.test.ts`, about six) passes `sea: 'coastal'` to that `initialState`.
+11. All Phase 1 and Phase 2 tests green **unchanged** (they build states with `initialState`, which defaults to Flat). Allowed changes, nothing else: (a) a URL test that compares a parsed old link with a state built by `initialState(...)` may add `sea: 'coastal'` to the overrides; (b) a URL test that compares `serializeUrlState(initialState(...))` with an exact string passes `sea: 'coastal'` to that `initialState` (every such test in `tests/urlState.test.ts`); (c) a Phase 1/2 test that opens a link with `parseUrlState` and then steps it or compares the boat gets `&sea=flat` appended to its link. The PR lists every changed test file.
 
 ### 6.9 Browser checks (`scripts/shots-m14.mjs`)
 
@@ -453,6 +453,11 @@ All M14 checks in `WORKFLOW.md` (section 8) pass on the phone; the tests above p
 
 No feedback from the waves into the sailing (M15). No whitecaps, gust patches, buoys or horizon change (M16). No clock (M17). The camera does not ride the waves: in the Open sea the Helm view's eye can dip towards the cockpit at a crest (accepted, as with heel).
 
+
+### 6.12 Decided in the M14 PR
+
+(Filled in by the M14 builder: what this section left open, and the owner's answers on the PR.)
+
 ---
 
 ## 7. M15: Waves change the sailing
@@ -462,7 +467,7 @@ No feedback from the waves into the sailing (M15). No whitecaps, gust patches, b
 ### 7.1 Files
 
 New: `tests/waveFeedback.test.ts`, `scripts/shots-m15.mjs`.
-Changed: `content/boat/hanse508.json` (`physics.waveFeedback`), `src/model/apparentWind.ts`, `src/model/sim.ts` (`rigWind`), `src/model/waveMotion.ts`, `src/model/motion.ts` (`stepBoat`, `steadyState`, `MotionReport`), `src/app/store.ts` (`initialState`, `motionOf`, `boatFor`), `src/ui/wavesPanel.ts` (one hint sentence), `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `tests/motionHelpers.ts` (a statistics helper), `tests/physicsTruths3.test.ts`, `tests/stepCost.test.ts` (one new case), `tests/urlState.test.ts` and the Phase 1/2 tests named in 7.6 item 9, `scripts/shots.mjs`, `docs/PHYSICS_TRUTHS.md` (PT-43 status only if a source is found), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+Changed: `content/boat/hanse508.json` (`physics.waveFeedback`), `src/model/apparentWind.ts`, `src/model/sim.ts` (`rigWind`), `src/model/waveMotion.ts`, `src/model/motion.ts` (`stepBoat`, `steadyState`, `MotionReport`), `src/app/store.ts` (`initialState`, `motionOf`, `boatFor`), `src/ui/wavesPanel.ts` (one hint sentence), `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `tests/motionHelpers.ts` (a statistics helper), `tests/physicsTruths3.test.ts`, `tests/stepCost.test.ts` (one new case), `tests/waves.test.ts` (item 6 removed, see 7.6 item 9), `tests/urlState.test.ts` and the Phase 1/2 tests named in 7.6 item 9, `scripts/shots.mjs`, `docs/PHYSICS_TRUTHS.md` (PT-43 status only if a source is found), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
 ### 7.2 Data (`hanse508.json` → `physics.waveFeedback`, new)
 
@@ -503,11 +508,11 @@ export function rigMotion(wm: WaveMotion, data: BoatData = boat): { forwardMps: 
 /** The wave's push on the steering, as degrees of extra rudder (+ = turns her to starboard). */
 export function waveYawDeg(wm: WaveMotion, trains: readonly WaveTrain[], headingDeg: number, data: BoatData = boat): number;
 // no trains → 0; rel = |wrap180(trains[0].fromDeg − headingDeg)| (trains[0] is the main train, dirOffsetDeg 0);
-// yawDegPerDegRoll · wm.rollDeg · interp(yawFactorByRelDeg, rel). The sign (+ roll → + yaw) is the prototype's: do not flip it.
+// yawDegPerDegRoll · wm.rollDeg · interpTable(yawFactorByRelDeg, rel). The sign (+ roll → + yaw) is the prototype's: do not flip it.
 /** Extra resistance from the waves, N (≥ 0). */
 export function addedResistanceN(speedMps: number, headingDeg: number, trains: readonly WaveTrain[], data: BoatData = boat): number;
 // no trains or speedMps ≤ 0 → 0; Hs = significantHeightM(trains); rel as above;
-// addedResistanceCoefficient · ρw · g · Hs · beam² · interp(addedResistanceByRelDeg, rel) · min(1, speedMps / addedResistanceFullSpeedMps)
+// addedResistanceCoefficient · ρw · g · Hs · beam² · interpTable(addedResistanceByRelDeg, rel) · min(1, speedMps / addedResistanceFullSpeedMps)
 ```
 
 Only the wave roll (`wm.rollRateDegS`) moves the rig sideways, not the heel's own rate: with Flat everything is Phase 2 exactly.
@@ -548,7 +553,7 @@ Items 2–4 go in `tests/physicsTruths3.test.ts` (`it('PT-41 …')` etc.), the r
 6. Frame-rate independence: Coastal, 15 kn from 135, main 100, jib 100, 600 s at 30, 60 and 120 fps, samples t ≥ 200 s: mean speed within 0.05 kn, rudder standard deviation within 10 % of each other [7.11 kn, 5.13° at all three]. Time ×16: the same state with `setTimeScale 16`, frames of `dt` 0.1 s (the store's cap, so 1.6 s of simulated time per frame) until 600 simulated seconds: `speedMps`, `headingDeg`, `heelDeg`, `rig.wind.*`, every field of `boat.waves` and of `sea` finite, |speed| < 12 kn, rudder standard deviation (t ≥ 200 s) < 10° [6.98].
 7. `steadyState(trimmed(20, 45, 20, 0), 0, boat, { heel: true, trains: waveTrains(initialSea('open', { dirDeg: 45, twsKn: 20 })) })` is lower than without `trains`.
 8. `tests/stepCost.test.ts`: a new case like the existing heaviest one but with `sea: 'open'`: `initialState({ sea: 'open', controls: { ctl_wind_dir: 90, ctl_wind_speed: 16, ctl_mainsheet: 40, ctl_jib_sheet: 100 } })`, `setWindMode gusty`, `setTimeScale 16`, a 10 s warm-up, then 600 frames at 1/60 s, under the existing 3 ms limit per frame.
-9. All Phase 1 and Phase 2 tests green. Tests built with `initialState` default to Flat and need nothing. **Allowed changes, nothing else:** (a) a Phase 1/2 test that opens a link with `parseUrlState` and then steps it or checks a speed gets `&sea=flat` appended to its link (run the whole suite to find them; candidates: `engine.test.ts`, `windModes.test.ts`, `realisticHandle.test.ts`, `map.test.ts`, `timeBar.test.ts`), and the PR lists every changed file; (b) the two URL tests in `tests/urlState.test.ts` that compare a parsed link's opening speed with `steadyState(…, { heel: true })` ("an old link opens … at her steady speed" and the `bs` fallback) pass `trains: waveTrains(state.sea)` to `steadyState`, because a link without `sea` now opens in Coastal waves.
+9. All Phase 1 and Phase 2 tests green. Tests built with `initialState` default to Flat and need nothing. **Allowed changes, nothing else:** (a) a Phase 1/2 test that opens a link with `parseUrlState` and then steps it or checks a speed gets `&sea=flat` appended to its link (run the whole suite to find them; candidates: `engine.test.ts`, `windModes.test.ts`, `realisticHandle.test.ts`, `map.test.ts`, `timeBar.test.ts`), and the PR lists every changed file; (b) M14's test 6 in `tests/waves.test.ts` ("M14 does not change the sailing") is deleted: M15 makes the sailing differ on purpose, and its own tests replace it; (c) the two URL tests in `tests/urlState.test.ts` that compare a parsed link's opening speed with `steadyState(…, { heel: true })` ("an old link opens … at her steady speed" and the `bs` fallback) pass `trains: waveTrains(state.sea)` to `steadyState`, because a link without `sea` now opens in Coastal waves.
 
 ### 7.7 Browser checks (`scripts/shots-m15.mjs`)
 
@@ -567,6 +572,11 @@ All M15 checks in `WORKFLOW.md` pass on the phone; the tests above pass; the sce
 
 No change to heel dynamics (the waves do not push the heel; the wave roll is drawn on top). No broaching (the boat cannot be thrown round by a big wave), no surfing down waves, no slamming. The windex and the wind instrument show the sails' wind (`rig.wind`), not a separate masthead wind.
 
+
+### 7.10 Decided in the M15 PR
+
+(Filled in by the M15 builder: what this section left open, and the owner's answers on the PR.)
+
 ---
 
 ## 8. M16: Wind on the water, buoys and the horizon
@@ -576,7 +586,7 @@ No change to heel dynamics (the waves do not push the heel; the wave roll is dra
 ### 8.1 Files
 
 New: `src/model/windOnWater.ts`, `src/render3d/marks.ts`, `tests/windOnWater.test.ts`, `scripts/shots-m16.mjs`.
-Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (`waves.whitecaps`, `windModes.gustPreview`), `src/render3d/waterSurface.ts` (vertex colours), `src/render3d/scene.ts` (marks, fog, debug hook), `src/render3d/picking.ts` (extra roots), `src/render3d/sceneConfig.ts`, `src/ui/mapView.ts` (buoys), `content/registry/parts.json`, `content/i18n/en.json` (none needed unless the map label needs one), `tests/map.test.ts`, `tests/picking.test.ts`, `docs/PHYSICS_TRUTHS.md` (PT-45 status only if a source is found), `tests/physicsTruths3.test.ts`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (`waves.whitecaps`, `windModes.gustPreview`), `src/render3d/waterSurface.ts` (vertex colours), `src/render3d/scene.ts` (marks, fog, debug hook), `src/render3d/picking.ts` (extra roots), `src/render3d/sceneConfig.ts`, `src/ui/mapView.ts` (buoys), `content/registry/parts.json`, `tests/map.test.ts`, `tests/picking.test.ts`, `docs/PHYSICS_TRUTHS.md` (PT-45 status only if a source is found), `tests/physicsTruths3.test.ts`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
 ### 8.2 Data
 
@@ -621,7 +631,7 @@ Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (
 ### 8.3 Model (`src/model/windOnWater.ts`)
 
 ```ts
-/** Fraction of the sea surface that breaks white, 0 … 1 (interp of whitecaps.coverageByWindKn). */
+/** Fraction of the sea surface that breaks white, 0 … 1 (`interpTable(whitecaps.coverageByWindKn, twsKn)`, from `angles.ts`). */
 export function whitecapCoverage(twsKn: number, data: BoatData = boat): number;
 /** How white a point is, 0 … 1: hi = 1 − crestEdgeFactor·√coverage, lo = hi − crestEdgeWidth, smoothstep(lo, hi, eta / amplitudeSum). 0 when coverage or amplitudeSum is 0. */
 export function whitecapAmount(eta: number, amplitudeSum: number, coverage: number, data: BoatData = boat): number;
@@ -644,7 +654,7 @@ export function gustAt(profile: GustProfile, upwindM: number): number;
 export function buoyOffsets(boatState: Pick<BoatState, 'eastM' | 'northM'>, areaData: AreaData = area): { id: string; dEastM: number; dNorthM: number }[];
 ```
 
-The value at `u = 0` is the gust at the boat now (the same `windAt` the store uses at `rig.timeS`); the value at `u = 120 m` is the wind the boat will feel `120 / U` seconds later. That is what the dark patch shows. A strong gust saturates at +1 (amplitudes reach 1.3 × the size plus noise). Known limitation: the profile is measured from the boat, so on a moving boat the patch moves over the water at the wind speed plus her own speed towards it.
+The value at `u = 0` is the gust at the boat now (the same `windAt` the store uses: after a step, `state.wind` is the wind at the returned `state.rig.timeS`, PHASE2_SPEC 10.6); the value at `u = 120 m` is the wind the boat will feel `120 / U` seconds later. That is what the dark patch shows. A strong gust saturates at +1 (amplitudes reach 1.3 × the size plus noise). Known limitation: the profile is measured from the boat, so on a moving boat the patch moves over the water at the wind speed plus her own speed towards it.
 
 ### 8.4 3D
 
@@ -655,7 +665,7 @@ The value at `u = 0` is the gust at the boat now (the same `windAt` the store us
   3. Inner mesh only, when there are trains: `cov = whitecapCoverage(state.wind.twsKn)` (the wind now: crests whiten in a gust); `A = Σ amplitudeM`; `w = f · whitecapAmount(eta, A, cov)` (f = the fade of 6.6); `c.lerp(whitecapColor, w)`. The crests where the trains add up turn white, more of them in more wind. No trains: no whitecaps (steps 1 and 2 still apply, so the M14 "skip the height work" never skips the colours).
   - Set `needsUpdate` on the `color` attribute when written. The outer mesh's colours are recomputed on the first frame, after `setDetail`, and when the profile is not null or `state.wind.twsKn` changed since the last frame.
 - **Buoys** (`render3d/marks.ts`, `buildMarks(areaData = area): Marks` with `object: THREE.Group`, `update(state: AppState, heightAt: (dE: number, dN: number) => number): void` and `buoyObject(id: string): THREE.Object3D | undefined`), `marks.object` added to the **world group** (not the water group: they must not step with it); `scene.ts` calls `marks.update(state, water.heightAt)` after `world.update`. New `SCENE.marks`: `{ color: '#f5c400', roughness: 0.5, sphereRadiusM: 0.6, poleRadiusM: 0.04, poleBottomY: 0.5, poleTopY: 1.9, topmarkLengthM: 0.5, topmarkThicknessM: 0.08, floatY: 0.2, maxDrawM: 1000 }`. Each buoy is a group named `buoy_<id>`: a sphere (16 × 12 segments), a pole (cylinder from `poleBottomY` to `poleTopY`) and a child group `topmark` at `poleTopY` with two boxes `topmarkLengthM × topmarkThicknessM × topmarkThicknessM` crossing in an X (one turned +45°, one −45° about the topmark's local z axis). All `MeshStandardMaterial` in `color`, `roughness`. Every mesh `userData.partId = 'env_buoy'`; the sphere also gets `hitPoints: [[0, 0, 0]]` (the 24 px tap area of small parts, picking.ts), because 200 m away a buoy is only a few pixels on a phone. Each frame: local position `x = buoy.northM − boat.northM`, `z = buoy.eastM − boat.eastM` (world-group axes: x north, z east), `y = heightAt(ΔE, ΔN) + floatY` (the drawn surface: beyond the inner wave mesh it is flat, so a far buoy floats still); `topmark.rotation.y = Math.atan2(ΔN, ΔE)` so the X faces the boat. Beyond `maxDrawM` each **mesh** gets `visible = false` (the raycaster ignores a parent's visibility). No collisions: the boat passes through.
-- **Picking**: `createPicker(camera, boatRoot, water, extraRoots: THREE.Object3D[] = [])`: `collect` also traverses `extraRoots`; the ray tests `[boatRoot, ...extraRoots, water]`. The scene passes `[marks.object]`.
+- **Picking**: `createPicker(camera, boatRoot, water, extraRoots: THREE.Object3D[] = [])` (the first three arguments as today: the scene passes `holder` and `water.pickTarget`): `collect` also traverses `extraRoots`; the ray tests `[boatRoot, ...extraRoots, water]`. The scene passes `[marks.object]`.
 - **Debug hook** (`?debug=1`): `window.__sailWater = { gustProfile: () => GustProfile | null; buoyScreen: (id: string) => { x: number; y: number } | null }` (the profile of the last frame; a buoy's sphere centre, from `buoyObject(id)`'s world position projected with the camera, on the canvas in CSS px, null when behind the camera), for the browser checks.
 
 ### 8.5 UI: the map
@@ -672,7 +682,7 @@ Registry: `env_buoy` (kind `environment`, phase 3, names en "Practice buoy", ru 
 `tests/windOnWater.test.ts`, `tests/physicsTruths3.test.ts`, `tests/map.test.ts`.
 
 1. **PT-44 white horses**: `whitecapCoverage` is 0 at 0 and 6.9 kn, > 0 at 8 kn, 0.02 at 10 kn, 0.06 at 16 kn, 0.2 at 27 kn (1e-9), and strictly increases from 7 to 40 kn. Share of the sea that is white: Coastal trains at 16 kn (`waveTrains(initialSea('coastal', { dirDeg: 0, twsKn: 16 }))`, initial phases), a 200 × 200 grid of map points 1 m apart: the fraction with `whitecapAmount(eta, A, 0.06) > 0.5` is 0.04–0.12 [0.082]; the same at 27 kn with coverage 0.2: 0.11–0.32 [0.216] (bands: prototype ± 50 %). (**Tunable** if this fails: `crestEdgeFactor`, `crestEdgeWidth`.) `whitecapAmount(…, A = 0, …)` = 0 (no NaN).
-2. **PT-45 a gust shows upwind before it arrives**: Gusty, seed 1, size 30, mean 12 kn from 0, `startS` 0. Take the first gust of `gustyEvents(1, 3600)` (it begins at 33.7 s) and its peak time `tp = atS + riseS + holdS / 2` (41.7 s). With `U = knToMps(12)`: `gustAt(gustProfile(..., tp − 120 / U), 120)` equals `gustAt(gustProfile(..., tp), 0)` (1e-9), and that value is 1 (the gust saturates: unclamped 1.37). For a store (`initialState` with these controls, `setWindMode gusty`, stepped 50 s at 60 fps): `gustAt(gustProfile(controls, windMode, state.rig.timeS), 0)` equals `clamp((state.wind.twsKn − 12) / (12 · 0.3), −1, 1)` (1e-9). Outside the range: `gustAt(profile, 320)` is half of `values[last]`, `gustAt(profile, 340)` = 0. Steady, Shifty, Building, Dying → null; Gusty with mean 1.5 kn → null.
+2. **PT-45 a gust shows upwind before it arrives**: Gusty, seed 1, size 30, mean 12 kn from 0, `startS` 0. Take the first gust of `gustyEvents(1, 3600)` (it begins at 33.7 s) and its peak time `tp = atS + riseS + holdS / 2` (41.7 s). With `U = knToMps(12)`: `gustAt(gustProfile(..., tp − 120 / U), 120)` equals `gustAt(gustProfile(..., tp), 0)` (1e-9), and that value is 1 (the gust saturates: unclamped 1.37). For a store (`initialState` with these controls, `setWindMode gusty`, stepped 50 s at 60 fps): `gustAt(gustProfile(controls, windMode, state.rig.timeS), 0)` equals `clamp((state.wind.twsKn − 12) / (12 · 0.3), −1, 1)` (1e-9). Outside the range: `gustAt(profile, 310)` is half of `values[last]`, `gustAt(profile, 320)` = 0. Steady, Shifty, Building, Dying → null; Gusty with mean 1.5 kn → null.
 3. `upwindDistanceM` (`toBeCloseTo`): wind from 0, a point 100 m north → +100; wind from 90, 100 m east → +100; wind from 90, 100 m west → −100.
 4. `buoyOffsets` with the boat at east 50, north −20: N → (−50, 220), E → (150, 20).
 5. Map (`tests/map.test.ts`, its `viewport({ metresPerPx: 4 })` helper, `initialState()` defaults): `pickMap` at (180, 160) (the N buoy, 50 px above the boat's centre) returns `env_buoy`; at (210, 160) it does not.
@@ -694,6 +704,11 @@ All M16 checks in `WORKFLOW.md` pass on the phone; the tests pass; the scenes lo
 ### 8.10 Not in M16
 
 No collisions with the buoys, no other marks or land (Phase 5). No streaks of foam blown downwind at force 7, no spray. The wind streaks in the air stay as they are.
+
+
+### 8.11 Decided in the M16 PR
+
+(Filled in by the M16 builder: what this section left open, and the owner's answers on the PR.)
 
 ---
 
@@ -806,7 +821,7 @@ export function daylighting(elevationDeg: number, azimuthDeg: number, headingDeg
   - sun light: position = `SCENE.shadowCentre + sunDirection · SCENE.shadows.distance`, target the shadow centre; intensity = the detail's sun intensity × `sun`; colour = white lerped to `SCENE.daylight.warmSun` by `warm`; `castShadow` only at High detail and while `sun > 0.05`. `configureSunShadow` no longer places the light (it keeps the camera box); `applyDetail` no longer sets `sun.castShadow` or the light intensities (`render` sets them every frame from the detail's base values).
   - hemisphere light intensity × `sky`; fill light intensity × `sky`, colour white lerped to `SCENE.daylight.moonColour` by `night` (the moonlit night: owner); `scene.environmentIntensity = SCENE.light.environmentIntensity × sky` (otherwise the day-sky reflections light the boat at night at High detail).
   - `scene.backgroundIntensity = backgroundFloor + (1 − backgroundFloor)·smoothstep(backgroundFromDeg, backgroundToDeg, el)` and the fog colour = `SCENE.sky.horizon` × the same factor (until M18 replaces the sky).
-  - Water: `waterSurface.update(state, shift, night)` gains the `night` value. The base colour of M16's step 1 is first lerped to `SCENE.daylight.nightWater` by `night` (`base = detailBase.lerp(nightWater, night)`, then the wind darkening); the white crests use `whitecapColor` lerped to `nightWater` by `nightWhitecapDim · night`. The outer mesh's colours are also recomputed when `night` changed since the last frame.
+  - Water: `waterSurface.update(state, shift, trains, night)` gains `night` as a fourth parameter. The base colour of M16's step 1 is first lerped to `SCENE.daylight.nightWater` by `night` (`base = detailBase.lerp(nightWater, night)`, then the wind darkening); the white crests use `whitecapColor` lerped to `nightWater` by `nightWhitecapDim · night`. The outer mesh's colours are also recomputed when `night` changed since the last frame.
 - `SCENE.light.sunDirection` moves to `SCENE.sky.glowDirection` (same value): `environment.ts` reads it for the old sky texture's fixed glow (until M18), and `scene.ts` no longer imports `sunDirection()`. `scripts/compare/main.ts` (the model-vs-sketch comparison) uses `SCENE.sky.glowDirection` instead of `SCENE.light.sunDirection`.
 
 ### 9.7 Strings and registry
@@ -849,6 +864,11 @@ All M17 checks in `WORKFLOW.md` pass on the phone; the tests pass; the scenes lo
 
 No new sky colours, stars or sun glow in the right place (M18). No moon. Winds do not follow the clock (Phase 6). No other areas or area chooser (later).
 
+
+### 9.12 Decided in the M17 PR
+
+(Filled in by the M17 builder: what this section left open, and the owner's answers on the PR.)
+
 ---
 
 ## 10. M18: Sky through the day
@@ -858,7 +878,7 @@ No new sky colours, stars or sun glow in the right place (M18). No moon. Winds d
 ### 10.1 Files
 
 New: `src/render3d/skyDome.ts`, `src/render3d/skyColours.ts`, `tests/skyColours.test.ts`, `scripts/shots-m18.mjs`.
-Changed: `src/render3d/scene.ts` (the dome instead of the background texture, fog colour, reflections), `src/render3d/environment.ts` (`skyTexture` → `cloudTexture`; `srgbTable`, `toByte` and `sunDirection` removed), `src/render3d/daylight.ts` (`skyDirection`), `src/render3d/sceneConfig.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+Changed: `src/render3d/scene.ts` (the dome instead of the background texture, fog colour, reflections; the fog is constructed with colour `0xffffff` and `render` sets it every frame), `src/render3d/environment.ts` (`skyTexture` → `cloudTexture`; `srgbTable`, `toByte` and `sunDirection` removed), `src/render3d/daylight.ts` (`skyDirection`), `src/render3d/sceneConfig.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 10.2 Data (`sceneConfig.ts`, presentation)
 
@@ -873,7 +893,7 @@ Changed: `src/render3d/scene.ts` (the dome instead of the background texture, fo
 | 20 | `#5f97c8` | `#d6e7f2` | `#fff6e0` | `#ffffff` | 0.8 | 0 | 0 |
 | 90 | `#5f97c8` | `#d6e7f2` | `#fff6e0` | `#ffffff` | 0.8 | 0 | 0 |
 
-Write it as an array of `{ elevDeg, zenith, horizon, glow, cloud, glowStrength, haloStrength, stars }`. Other new keys: `SCENE.sky.domeRadiusM: 900`, `domeWidthSegments: 48`, `domeHeightSegments: 24`, `starThreshold: 0.99`, `starCellsPerDeg: 2`; `SCENE.daylight.nightBelow: '#030a10'` (`SCENE.sky.belowHorizon` is lerped to it by M17's `night`); `SCENE.reflections: { minTurnDeg: 5, minIntervalS: 2, size: 128 }`. Removed from `SCENE.sky` (now in the table or unused): `zenith`, `horizon`, `sunGlow`, `cloud`, `cloudCount`, `glowDirection`. Kept: `width`, `height`, `cloudOpacity`, `belowHorizon`.
+Write it as an array of `{ elevDeg, zenith, horizon, glow, cloud, glowStrength, haloStrength, stars }`. Other new keys: `SCENE.sky.domeRadiusM: 900`, `domeWidthSegments: 48`, `domeHeightSegments: 24`, `starThreshold: 0.99`, `starCellsPerDeg: 2`; `SCENE.daylight.nightBelow: '#030a10'` (`SCENE.sky.belowHorizon` is lerped to it by M17's `night`); `SCENE.reflections: { minTurnDeg: 5, minIntervalS: 2, size: 128 }`. Removed from `SCENE.sky` (now in the table or unused): `zenith`, `horizon`, `sunGlow`, `cloud`, `cloudCount`. Kept: `width`, `height`, `cloudOpacity`, `belowHorizon`, and `glowDirection` (only `scripts/compare/main.ts` still reads it). Removed from `SCENE.daylight`: `backgroundFloor`, `backgroundFromDeg`, `backgroundToDeg` (the background line goes).
 
 ### 10.3 Sky colours (`render3d/skyColours.ts`)
 
@@ -941,6 +961,11 @@ All M18 checks in `WORKFLOW.md` pass on the phone; the scenes looked at (phone f
 
 No moon, no weather (rain, fog banks, changing cloud cover), no lights on land.
 
+
+### 10.10 Decided in the M18 PR
+
+(Filled in by the M18 builder: what this section left open, and the owner's answers on the PR.)
+
 ---
 
 ## 11. M19: Polish and Phase 3 sign-off
@@ -950,12 +975,12 @@ No moon, no weather (rain, fog banks, changing cloud cover), no lights on land.
 ### 11.1 Files
 
 New: `scripts/shots-m19.mjs` (`M19_SCENES` empty, `liveM19Checks`, registered as `liveGroups.m19`).
-Changed: `src/render3d/sceneConfig.ts` and `src/render3d/waterSurface.ts`, `scene.ts` (the performance switches below), `README.md`, `docs/BOAT_REFERENCE.md`, `docs/PHYSICS_TRUTHS.md`, `docs/ROADMAP.md`, `docs/PHASE3_SPEC.md` (status line, "Decided in the M19 PR"), `docs/CODE_MAP.md`.
+Changed: `src/render3d/sceneConfig.ts`, `src/render3d/waterSurface.ts` and `src/render3d/scene.ts` (the performance keys below), `README.md`, `docs/BOAT_REFERENCE.md`, `docs/PHYSICS_TRUTHS.md`, `docs/ROADMAP.md`, `docs/PHASE3_SPEC.md` (status line, "Decided in the M19 PR"), `docs/CODE_MAP.md`.
 
 ### 11.2 Performance
 
 The agent cannot measure a phone (headless software rendering says nothing about FPS, PHASE2_SPEC 13.1). So:
-- Add three switches to `SCENE`, **off by default**: `SCENE.performance = { outerColoursEveryNthFrame: 1, innerHalfSizeLowM: 100, fadeStartLowM: 70 }` (Low detail uses these for the inner mesh) and use `SCENE.reflections.minIntervalS` (M18). When `outerColoursEveryNthFrame` is 2, the outer water's colours, when they are recomputed (M16 8.4), are written only every second rendered frame.
+- Add `SCENE.performance = { outerColoursEveryNthFrame: 1, innerHalfSizeLowM: 100, fadeStartLowM: 70 }` (values that change nothing: Low detail uses the last two for its inner mesh and the outer mesh's cut-out; High keeps `SCENE.water.waves.halfSizeM` and `fadeStartM`). The three tuning steps below use these keys and `SCENE.reflections.minIntervalS` (M18). When `outerColoursEveryNthFrame` is 2, the outer water's colours, when they are recomputed (M16 8.4), are written only every second rendered frame.
 - `liveM19Checks`: the M13 guard on the new heaviest case `?wd=90&ws=20&ms=40&js=100&sea=open&wm=gusty&tx=16&clk=202606012030&debug=1` at both details: the debug overlay's `step` stays under 8 ms per frame.
 - The owner measures with the WORKFLOW M19 link and posts FPS and Slowest in the PR. If they miss the target (FPS 50 or more, Slowest never above 33 ms), apply one step per owner comment, in this order, and ask for a new measurement: (1) `outerColoursEveryNthFrame: 2`; (2) `innerHalfSizeLowM: 80, fadeStartLowM: 56`; (3) `SCENE.reflections.minIntervalS: 5`. Report each step's before/after in the PR.
 
