@@ -952,6 +952,22 @@ Use `gybeStep` and `gybeImpact` directly (h = 0.001 s), main fully out, heel 0. 
 
 `m11-gybe-danger` (mid-crossing: Top view during a gybe, set up by a link with `wd` such that the boat is 20° by the lee, plus a 0.5 s wait), `m11-report`. Done when all M11 checks pass.
 
+### 11.7 Decided in the M11 PR
+
+Things the spec left open or did not foresee (each is "decided in the M11 PR"):
+
+- **The spec's torque alone is too weak (needs the owner's eye).** 11.2's formula gives about 4.5 kJ (2.3 s) at 15 kn for the swing from +72° to −72°, where 11.5 item 2 wants 8.5–12.5 kJ (1.6–2.5 s); no constant factor also keeps the hauled-in swing (±10°) under 1.5 kJ, because the prototype's push is clearly larger for a wide swing than for a small one. The spec leaves `cos²φ` undefined; it is read as `φ` = the heel (`gybeStep` has `heelDeg` and nothing else for it). A **shape factor** was added and tuned (not in the spec; the keys are in `physics.gybe`, marked as assumptions in `driveNote`): `driveGain × (driveFloor + (1 − driveFloor) × |sin startDeg|) × (driveStartFraction + (1 − driveStartFraction) × share of the swing done)` = `3.2 × (0.5 + 0.5 |sin start|) × (0.3 + 0.7 × done)`. A boom swung wide is hit broadside and the push builds as the sail comes round; one hauled in is hit at a glancing angle. Result, before → after: 15 kn, ±72°: 2.3 s, 4.5 kJ, 5.6 kN → **2.07 s, 9.7 kJ, 12.2 kN** (prototype 2.04 s, 10.3 kJ, 12.8 kN); boom end speed 17.7 m/s (the spec's example text says 17.7); hauled in ±10°: **1.0 kJ, 1.3 kN** (prototype 1.0, 1.3); 8 / 25 kn: 2.8 / 27.0 kJ (prototype 2.9 / 28.6, band ±20 %). No band was widened. Moment of inertia: 2,436 kg·m².
+- **Where the swing is computed:** inside `sim.ts → step` (`stepGybe`), in substeps of `physics.gybe.substepS` (0.005 s) within the frame's `dt`, so a ×16 time speed-up and a paused app (dt = 0) both work. The wind is the rig's apparent wind (`rig.wind.awsKn`), the heel is `motion.heelDeg`, the sail out is the applied furl (`rope.mainFurl / 100`).
+- **Start and stop:** a swing starts from the drawn boom angle (`theta.value`) when Phase 1's trigger fires (`solution.gybe`) and stops at the solved angle on the new side (`solution.thetaDeg`, followed if the trim changes during the swing). Direction = sign of `stopDeg − startDeg` (the spec's "sign of `stopDeg`" breaks for a boom nearly in the middle). A tack, or a main furled below 2 %, has no swing and uses the normal boom spring; a swing that has not arrived after 8 s, or with no wind, is stopped there (so a boom can never hang).
+- **`gybeSwingTimeS`** (Phase 1's fast spring) is removed from the boat file: nothing uses it any more.
+- **`GybeReport`** also carries `startDeg` and `stopDeg` (the danger zone needs them). `RigState` gets `gybeSwing`, `gybeElapsedS`, `lastGybe` and `byTheLeeS` (seconds by the lee; the warning gets stronger after 3 s).
+- **Phase 1 tests** that stepped a gybe for less time than the swing now takes got more simulated time, asserting the same things: PT-05 (1 s → 5 s, twice) and the GYBE label test (an extra 3 s before `gybing` must be false).
+- **Realistic mode:** `peakRopeN` is added to `rope_mainsheet`'s pull for `impactLoadDurationS` after the boom is stopped (`gybeImpactPullN`, in `realistic.ts`). The load shown on the Easy-mode sliders is not changed (a 0.3 s spike would flicker).
+- **Danger zone:** `render3d/dangerZone.ts`, a fan at the gooseneck's height (5 cm below), never a tap target. While the boom is by the lee but has not crossed: a faint outline from the boom's angle to its mirror image (an estimate of the new side).
+- **The report** shows for `reportS` after the impact; "peak main sheet load" is `peakRopeN` (one part of the rope, what the tail carries); "about N tonnes" is that load divided by g. Under a gybe's own label (the red GYBE flash of Phase 1, 2 s).
+- **PT-26 test:** seeds 1, 2 and 3 (Shifty 25°, 10 minutes, 30 fps in the test): an accidental gybe at TWA 175 for each; none at 135 for each.
+- **Screenshots:** `m11-gybe-danger` and `m11-report` are live checks (a gybe cannot be set up by a link alone: the boom opens on the right side for the wind), saved as `live-phone-gybe-danger.png`, `live-phone-gybe-report.png`; `SHOTS_ONLY=m11` runs them.
+
 ---
 
 ## 12. M12: Engine
