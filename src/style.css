@@ -1240,6 +1240,53 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   background: #ff9f1c;
 }
 
+/* "Held still" chip in place of Pause (issue #34), and its note. */
+.time-bar {
+  position: relative;
+}
+
+.time-held {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgb(255 255 255 / 0.9);
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.time-held[hidden],
+.pause-button[hidden],
+.time-held-note[hidden] {
+  display: none;
+}
+
+.time-held:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.time-held-note {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  right: 0;
+  width: max-content;
+  max-width: min(260px, calc(100vw - 32px));
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.97);
+  color: var(--text);
+  font-size: var(--font-small);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+}
+
 .time-label,
 .time-status,
 .time-button {

@@ -1,6 +1,7 @@
 import type { AppState, Store } from '../app/store';
 import {
   fastestTimeScale,
+  pauseAvailable,
   slowestTimeScale,
   stepTimeScale,
   timeScaleText,
@@ -9,6 +10,9 @@ import {
 import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
+
+/** How long the note under the "Held still" chip stays, ms. */
+const NOTE_SHOWN_MS = 6000;
 
 /** Where the fold of the bar is remembered on this device (not in the link). */
 const FOLD_KEY = 'sail-learn.timeBarFolded';
@@ -36,7 +40,9 @@ function writeFolded(folded: boolean): void {
  * back to normal speed. Pause freezes time, exactly as in Phase 1. The word "Time" folds the
  * bar to the Pause button (and a small "Time" to open it again); the fold is remembered on the
  * device. The speed part shows only where time changes something (Sailing, or a wind that
- * changes) and while the View tab's switch is on; otherwise only Pause shows.
+ * changes) and while the View tab's switch is on; otherwise only Pause shows. Where nothing
+ * changes with time at all (Held still, steady wind, Easy ropes; issue #34) Pause is replaced
+ * by a "Held still" chip; a tap on it explains in a small note where to change that.
  */
 export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
   let folded = readFolded();
@@ -94,10 +100,35 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     store.dispatch({ type: 'setPaused', paused: !store.getState().paused }),
   );
 
+  // Held still, steady wind, Easy ropes: nothing changes with time, so a chip says why.
+  const note = el('p', { class: 'time-held-note', role: 'status', 'data-testid': 'held-note' });
+  note.hidden = true;
+  note.textContent = t('time.held.note');
+  let noteTimer: number | undefined;
+  const showNote = (visible: boolean) => {
+    window.clearTimeout(noteTimer);
+    note.hidden = !visible;
+    held.setAttribute('aria-expanded', String(visible));
+    if (visible) noteTimer = window.setTimeout(() => showNote(false), NOTE_SHOWN_MS);
+  };
+  const held = el('button', {
+    type: 'button',
+    class: 'time-held',
+    'data-testid': 'held-chip',
+    'aria-expanded': 'false',
+    'aria-label': t('time.held.aria'),
+  });
+  held.textContent = t('time.held');
+  held.hidden = true;
+  held.addEventListener('click', () => showNote(note.hidden));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !note.hidden) showNote(false);
+  });
+
   const bar = el(
     'div',
     { class: 'time-bar', role: 'group', 'aria-label': t('time.group'), 'data-testid': 'time-bar' },
-    [fold, status, slowest, slower, pause, faster, fastest],
+    [fold, status, slowest, slower, pause, held, faster, fastest, note],
   );
   host.append(bar);
 
@@ -106,10 +137,15 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     const speed = timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar);
     const open = speed && !folded;
     const scale = state.settings.timeScale;
-    const key = [speed, open, scale, state.paused].join('|');
+    const pausable = pauseAvailable(state.boat.mode, state.windMode.mode, state.settings.ropesMode);
+    const key = [speed, open, scale, state.paused, pausable].join('|');
     if (key === shown) return;
     shown = key;
     bar.dataset.speed = String(speed);
+    bar.dataset.held = String(!pausable);
+    pause.hidden = !pausable;
+    held.hidden = pausable;
+    if (pausable) showNote(false);
     bar.dataset.open = String(open);
     fold.hidden = !speed;
     fold.setAttribute('aria-expanded', String(open));
