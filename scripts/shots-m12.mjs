@@ -148,16 +148,31 @@ export async function liveM12Checks({ openPage, viewports, outDir, prefix, probl
     const panel = easy(page).getByTestId('engine-panel');
     await panel.scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);
-    await panel.getByTestId('engine-lever').evaluate((input) => {
-      input.value = '-100';
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    });
+    // A finger swipe from the far right to the far left, through the middle: about 0.15 s real
+    // time = 0.04 s of simulated time at this speed, far less than the half second the gearbox waits.
+    const lever = panel.getByTestId('engine-lever');
+    const box = await lever.boundingBox();
+    if (!box) check('shifting: the lever slider is on screen', false, 'no box');
+    else {
+      const y = box.y + box.height / 2;
+      await page.mouse.move(box.x + box.width - 4, y);
+      await page.mouse.down();
+      for (let i = 1; i <= 12; i += 1) {
+        await page.mouse.move(box.x + box.width - 4 - ((box.width - 8) * i) / 12, y);
+        await page.waitForTimeout(12);
+      }
+      await page.mouse.up();
+    }
     let sawShift = false;
     for (let i = 0; i < 60 && !sawShift; i += 1) {
       await page.waitForTimeout(50);
       sawShift = /Shifting/.test((await panel.getByTestId('engine-status').textContent()) ?? '');
     }
-    check('shifting: it says "Shifting through neutral" for a moment', sawShift, String(sawShift));
+    check(
+      'shifting: a swipe through the middle still says "Shifting through neutral"',
+      sawShift,
+      String(sawShift),
+    );
     let astern = false;
     for (let i = 0; i < 100 && !astern; i += 1) {
       await page.waitForTimeout(100);

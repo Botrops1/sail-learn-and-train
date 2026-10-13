@@ -17,8 +17,9 @@ import { JIB_SHEETS, MAIN_SHEETS, act, initialState, run, trimmed } from './moti
 
 const E = boat.physics.engine;
 
-/** Calm water, wheel centred (heading held), from rest, engine running with `lever`; 120 s. */
-function motoring(leverPct: number, seconds = 120) {
+/** Calm water, wheel centred (heading held), from rest, engine running with `lever`. 300 s: the speed has settled (idle is
+ * still creeping up at 120 s: 3.01 kn, against 3.25 kn settled), as the spec asks for the steady speed. */
+function motoring(leverPct: number, seconds = 300) {
   let s = initialState({
     controls: { ctl_wind_speed: 0 },
     boat: { speedMps: 0 },
@@ -36,7 +37,7 @@ describe('engine model (PHASE2_SPEC 12.2)', () => {
     expect(targetRpm(-E.neutralBandPct)).toBe(E.idleRpm);
     expect(targetRpm(100)).toBe(E.maxRpm);
     expect(targetRpm(-100)).toBe(E.maxRpm);
-    expect(targetRpm(65.6)).toBeCloseTo(1850, -1);
+    expect(targetRpm(66)).toBeCloseTo(1860, -1);
   });
 
   it('the gear follows the lever, with a neutral band', () => {
@@ -84,10 +85,10 @@ describe('engine in calm water (PHASE2_SPEC 12.5)', () => {
     expect(speedKn).toBeLessThan(3.7);
   });
 
-  it('1,850 rpm gives 7.6–8.4 kn', () => {
-    const { speedKn, state } = motoring(65.6);
-    expect(state.engine.rpm).toBeGreaterThan(1840);
-    expect(state.engine.rpm).toBeLessThan(1860);
+  it('about 1,860 rpm (lever 66) gives 7.6–8.4 kn', () => {
+    const { speedKn, state } = motoring(66);
+    expect(state.engine.rpm).toBeGreaterThan(1850);
+    expect(state.engine.rpm).toBeLessThan(1870);
     expect(speedKn).toBeGreaterThan(7.6);
     expect(speedKn).toBeLessThan(8.4);
   });
@@ -142,6 +143,48 @@ describe('engine in calm water (PHASE2_SPEC 12.5)', () => {
     expect(engineThrustN(e)).toBeLessThan(0);
   });
 
+  it('a finger dragging the lever through the middle waits in neutral just as a jump does', () => {
+    // Review of the M12 PR: lever 60 → 20 → 5 → −30, frame by frame at 60 fps. Once the gearbox
+    // leaves ahead it stays out of gear for the shift delay, however the lever moves.
+    let e = initialEngine({ running: true, leverPct: 60 });
+    const dt = 1 / 60;
+    const path = [60, 20, 5, -30];
+    let neutralFrames = 0;
+    let engagedAt = -1;
+    let frame = 0;
+    for (const leverPct of path) {
+      e = stepEngine({ ...e, leverPct }, dt);
+      frame += 1;
+      if (e.gear === 'neutral') neutralFrames += 1;
+      else if (leverPct < 0 && engagedAt < 0) engagedAt = frame;
+    }
+    expect(e.gear).toBe('neutral');
+    expect(engagedAt).toBe(-1);
+    expect(engineThrustN(e)).toBe(0);
+    for (let i = 0; i < 120; i += 1) {
+      e = stepEngine({ ...e, leverPct: -30 }, dt);
+      frame += 1;
+      if (e.gear === 'neutral') neutralFrames += 1;
+      else if (engagedAt < 0) engagedAt = frame;
+    }
+    // In neutral from the frame the lever reached the band (frame 3) until the delay had run out.
+    expect(neutralFrames * dt).toBeGreaterThanOrEqual(E.gearShiftDelayS - dt);
+    expect(neutralFrames * dt).toBeLessThan(E.gearShiftDelayS + 2 * dt);
+    expect(e.gear).toBe('astern');
+    expect(engineThrustN(e)).toBeLessThan(0);
+  });
+
+  it('after sitting in neutral for the shift delay, a gear goes in at once', () => {
+    let e = initialEngine({ running: true, leverPct: 0 });
+    for (let i = 0; i < 40; i += 1) e = stepEngine(e, 1 / 60);
+    e = stepEngine({ ...e, leverPct: 50 }, 1 / 60);
+    expect(e.gear).toBe('ahead');
+    // But a gear that was only just left is not engaged again at once.
+    e = stepEngine({ ...e, leverPct: 5 }, 1 / 60);
+    e = stepEngine({ ...e, leverPct: 50 }, 1 / 60);
+    expect(e.gear).toBe('neutral');
+  });
+
   it('moving the lever into the neutral band shifts to neutral at once', () => {
     let e = initialEngine({ running: true, leverPct: 100 });
     e = stepEngine({ ...e, leverPct: 5 }, 0.05);
@@ -151,7 +194,7 @@ describe('engine in calm water (PHASE2_SPEC 12.5)', () => {
 });
 
 describe('motor-sailing', () => {
-  /** The steady speed with the engine at 1,850 rpm: the best sail trim of the sheet grid. */
+  /** The steady speed with the engine at about 1,860 rpm: the best sail trim of the sheet grid. */
   function bestWith(thrustN: number, furled: boolean): number {
     let best = -Infinity;
     for (const main of MAIN_SHEETS) {
@@ -168,8 +211,8 @@ describe('motor-sailing', () => {
     return best;
   }
 
-  it('TWS 12, TWA 60: best sails + 1,850 rpm beats either alone and stays ≤ 11 kn', () => {
-    const thrust = engineThrustN(initialEngine({ running: true, leverPct: 65.6 }));
+  it('TWS 12, TWA 60: best sails + about 1,860 rpm beats either alone and stays ≤ 11 kn', () => {
+    const thrust = engineThrustN(initialEngine({ running: true, leverPct: 66 }));
     const both = bestWith(thrust, false);
     const sailsOnly = bestWith(0, false);
     const engineOnly = bestWith(thrust, true);

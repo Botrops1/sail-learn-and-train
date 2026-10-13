@@ -495,7 +495,7 @@
   "engine.lever": "Engine lever",
   "engine.lever.less": "Engine lever towards astern",
   "engine.lever.more": "Engine lever towards ahead",
-  "engine.tach": "Engine speed {rpm} rpm (the red part starts at 2,500)",
+  "engine.tach": "Engine speed {rpm} rpm (the red part starts at {max})",
   "engine.gear.ahead": "In gear: ahead, the propeller pushes her forward",
   "engine.gear.astern": "In gear: astern, the propeller pushes her backwards",
   "engine.gear.neutral": "In neutral: the propeller does not push",

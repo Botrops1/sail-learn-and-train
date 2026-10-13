@@ -48,9 +48,10 @@ export function targetRpm(leverPct: number, data: BoatData = hanse508): number {
 
 /**
  * Advances the engine by `dt` seconds. The rpm lags to `targetRpm` while running (to 0 when
- * stopped). The gear follows the lever's side; going from ahead to astern (or back) passes
- * through neutral and waits `gearShiftDelayS` there. Moving the lever into the neutral band
- * puts the gearbox into neutral at once.
+ * stopped). The gear follows the lever's side. Whenever the gearbox leaves a gear (to the other
+ * side or into the neutral band) it goes to neutral at once and stays there for
+ * `gearShiftDelayS` before any gear goes in: a finger dragging the lever through the middle
+ * waits just as a jump over it does. Engaging after it has sat in neutral that long is immediate.
  */
 export function stepEngine(e: EngineState, dt: number, data: BoatData = hanse508): EngineState {
   const { rpmResponseS, gearShiftDelayS } = data.physics.engine;
@@ -59,18 +60,16 @@ export function stepEngine(e: EngineState, dt: number, data: BoatData = hanse508
 
   const wanted = gearOf(e.leverPct, data);
   let { gear, shiftS } = e;
-  if (wanted === gear) {
-    shiftS = 0;
-  } else if (wanted === 'neutral') {
-    gear = 'neutral';
-    shiftS = 0;
-  } else if (gear !== 'neutral') {
-    // Ahead ↔ astern: out of gear first, then wait before the other gear goes in.
+  if (gear !== 'neutral' && wanted !== gear) {
+    // The gearbox leaves its gear (to the other gear or into the neutral band): it must now stay
+    // in neutral for the shift delay, however the lever moves afterwards.
     gear = 'neutral';
     shiftS = gearShiftDelayS;
-  } else {
+  } else if (gear === 'neutral') {
     shiftS = Math.max(0, shiftS - dt);
-    if (shiftS === 0) gear = wanted;
+    if (shiftS === 0 && wanted !== 'neutral') gear = wanted;
+  } else {
+    shiftS = 0;
   }
   return { ...e, rpm, gear, shiftS };
 }

@@ -278,6 +278,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 14. ~~Preventer~~ Answered 2026-10-10: the boat carries no preventer.
 15. ~~Speed table~~ Answered 2026-10-10: none available; Phase 2 computes speeds from a physics model (PHASE2_SPEC 6).
 16. ~~Engine speed~~ Answered 2026-10-10: comfortable cruise 8 kn; maximum thought to be about 10 kn but uncomfortable. Idle rpm and the rpm for 8 kn are still unknown (the model assumes 800 rpm and about 1,850 rpm).
+17. Does the engine start only with the lever in neutral (a safety switch on the Allpa control)? The M12 engine starts in any lever position and she drives off if it is ahead; if the real boat only starts in neutral, M13 should do the same (found in the M12 independent review).
 
 Answered from the October photos and the owner: two-line main furling (right clutch unfurls), straight track, single forestay, straight self-tacking track about 2.8 m long, one winch per side, rigid vang, topping lift line exists, bank sides. 2026-10-09: winches are electric; one winch handle, used mainly at the mast gearbox; each side's ropes go to that side's winch; winch model not marked (Lewmar only); one button per electric winch; bow and stern thrusters fitted. After M4c: the winch handle is kept at the port side; about 40 handle turns roll the main in at the gearbox; the gearbox switch is a toggle, IN left, OUT right; clockwise is 1st gear on the winch.
 

@@ -110,7 +110,14 @@ function createTach(): Tach {
       const [x, y] = tachPoint(rpm, TACH.needle);
       setAttr(needle, 'x2', x.toFixed(1));
       setAttr(needle, 'y2', y.toFixed(1));
-      setAttr(element, 'aria-label', t('engine.tach', { rpm: Math.round(rpm / 10) * 10 }));
+      setAttr(
+        element,
+        'aria-label',
+        t('engine.tach', {
+          rpm: Math.round(rpm / 10) * 10,
+          max: ENGINE.maxRpm.toLocaleString('en-US'),
+        }),
+      );
     },
   };
 }

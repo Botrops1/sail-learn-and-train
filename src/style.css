@@ -2086,7 +2086,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   font-weight: 600;
 }
 
-.engine-scale span {
+.engine-scale span:not(.engine-band) {
   position: relative;
 }
 
