@@ -1,9 +1,12 @@
 import type { AppState, Store } from '../app/store';
 import { el } from './dom';
+import { createGybeReport } from './gybeReport';
 import { t } from './i18n';
 
 /** The heel alert shows after she has been over the limit this long, seconds. */
 const OVERPOWERED_AFTER_S = 2;
+/** The by-the-lee warning gets stronger after this long, seconds (PHASE2_SPEC 11.3). */
+const BY_THE_LEE_STRONG_AFTER_S = 3;
 
 /**
  * Over the 3D view (PHASE1_SPEC 8.1, 8.4; the wind chip became the instrument strip in M6): the
@@ -41,6 +44,7 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
     wheel,
   ]);
   host.append(alerts);
+  createGybeReport(alerts, store);
 
   const refresh = (state: AppState) => {
     const flashing = state.rig.gybeLabelS > 0;
@@ -49,6 +53,10 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
     if (tack.hidden === tacking) tack.hidden = !tacking;
     const lee = state.rig.solution.byTheLee && !flashing;
     if (byTheLee.hidden === lee) byTheLee.hidden = !lee;
+    const strong = state.rig.byTheLeeS > BY_THE_LEE_STRONG_AFTER_S;
+    const leeText = t(strong ? 'alert.byTheLeeStrong' : 'alert.byTheLee');
+    if (byTheLee.textContent !== leeText) byTheLee.textContent = leeText;
+    byTheLee.classList.toggle('rig-alert-gybe', strong);
     // Heeled over for more than 2 s, and the round-up (M8, PHASE2_SPEC 8.4).
     const heavy = state.boat.overpoweredS > OVERPOWERED_AFTER_S;
     if (overpowered.hidden === heavy) overpowered.hidden = !heavy;

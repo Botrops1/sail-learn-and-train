@@ -180,30 +180,42 @@ describe('PHYSICS_TRUTHS Phase 1 (M2: mainsail and boom)', () => {
     expect(rig.solution.side).toBe(1);
     expect(rig.solution.gybe).toBe(true);
     expect(rig.gybeLabelS).toBeGreaterThan(0);
-    rig = run(rig, { ...sheet, ctl_wind_dir: -165 }, 1);
+    // The wind's push swings the boom (M11): about 2.6 s at 12 kn, so wait 5 s.
+    rig = run(rig, { ...sheet, ctl_wind_dir: -165 }, 5);
     expect(rig.theta.value).toBeGreaterThan(70);
   });
 
   it('PT-05 the gybe swing is faster than an ordinary boom move', () => {
     const sheet = { ctl_mainsheet: 100, ctl_wind_speed: 12 };
+    /** The top boom speed (°/s) over `seconds`, and the rig at the end. */
+    const topSpeed = (start: RigState, values: Partial<Controls>, seconds: number) => {
+      const c = controls(values);
+      let current = start;
+      let top = 0;
+      for (let t = 0; t < seconds; t += 1 / 60) {
+        current = step({ controls: c, rig: current }, 1 / 60);
+        top = Math.max(top, Math.abs(current.theta.velocity));
+      }
+      return { top, rig: current };
+    };
     // By the lee with the boom to port, then the wind goes 15° by the lee: a gybe (160° swing).
-    let gybe = run(
+    const byTheLee = run(
       initialRig(controls({ ...sheet, ctl_wind_dir: 170 })),
       { ...sheet, ctl_wind_dir: -170 },
       1,
     );
-    gybe = run(gybe, { ...sheet, ctl_wind_dir: -165 }, 0.25);
+    // The swing takes about 2.6 s at 12 kn since M11 (the wind's push, not a spring): it starts
+    // from rest, so compare the top speed of the boom, not its position after a short time.
+    const gybe = topSpeed(byTheLee, { ...sheet, ctl_wind_dir: -165 }, 5);
     // An ordinary move: sheet let go from fully hauled on a broad reach (a full swing out).
-    const ordinary = run(
+    const ordinary = topSpeed(
       initialRig(controls({ ...sheet, ctl_wind_dir: 165, ctl_mainsheet: 0 })),
       { ...sheet, ctl_wind_dir: 165 },
-      0.25,
+      5,
     );
-    const max = boat.rig.boom.maxSwingDeg;
-    const gybeProgress = (gybe.theta.value + max) / (2 * max);
-    const ordinaryProgress = Math.abs(ordinary.theta.value) / max;
-    expect(gybeProgress).toBeGreaterThan(0.5);
-    expect(gybeProgress).toBeGreaterThan(2 * ordinaryProgress);
+    expect(gybe.rig.theta.value).toBeGreaterThan(boat.rig.boom.maxSwingDeg * 0.9);
+    expect(ordinary.top).toBeGreaterThan(10);
+    expect(gybe.top).toBeGreaterThan(1.5 * ordinary.top);
   });
 
   it('PT-06 more boom angle needs more mainsheet, the same on both sides', () => {

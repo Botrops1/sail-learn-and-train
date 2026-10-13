@@ -14,6 +14,7 @@ import { panelEntries } from './panelEntries';
 import { toppingLiftPaidOut, vangPaidOut } from './pitchLimits';
 import type { WinchWrap } from './ropePaths';
 import type { RigState } from './sim';
+import { gybeImpactPullN } from './gybe';
 import { mainSailForceAtBlocksN, sheetLoads } from './sheetLoads';
 import {
   easesSmoothly,
@@ -687,7 +688,10 @@ function ropePullN(spec: TailSpec, controls: Controls, rig: RigState, data: Boat
   const sheets = sheetLoads(rig, rig.forces, data);
   switch (spec.ropeId) {
     case 'rope_mainsheet':
-      return byState(rig.solution.mainsheet, sheets.mainSheetRopeN);
+      return (
+        byState(rig.solution.mainsheet, sheets.mainSheetRopeN) +
+        gybeImpactPullN(rig.lastGybe, rig.timeS, data)
+      );
     case 'rope_jib_sheet':
       return byState(rig.jibSolution.sheet, sheets.jibSheetRopeN);
     case 'rope_vang':

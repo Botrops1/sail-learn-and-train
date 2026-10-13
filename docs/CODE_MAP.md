@@ -45,6 +45,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `heel.ts`, `sheetLoads.ts` | Heel and weather helm; sheet loads from the sail forces. |
 | `autopilot.ts` | Standby / heading / wind-angle autopilot. |
 | `trim.ts` | Trim states (luffing, good, stalled, …), telltales, blanketing, flogging damage. |
+| `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. |
 | `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying wind; time-bar scales. |
 | `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail, map frame, the track. |
 
@@ -56,6 +57,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `cameraRig.ts`, `cameraPresets.ts` | Camera control and the presets (Side, Top, Bow, Helm). |
 | `picking.ts` | Tap-to-identify hit testing. |
 | `environment.ts`, `world.ts`, `wake.ts`, `wind.ts` | Sky and water, the moving water grid, the wake, wind streaks. |
+| `dangerZone.ts` | The red sector the boom sweeps in a gybe, and its faint outline by the lee. |
 | `boat/index.ts` | Builds the boat and applies the solved rig each frame. |
 | `boat/hull.ts`, `appendages.ts`, `deckGear.ts`, `cockpitHardware.ts`, `rig.ts`, `parts.ts` | Hull, keel/rudder, deck gear, wheels/winches/clutches, mast/boom/stays, part helpers. |
 | `boat/sailMesh.ts`, `ropes.ts`, `telltales.ts` | Sails, ropes, telltales and the tear mark. |
@@ -70,7 +72,8 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeLegend.ts` | Easy mode: rope sliders, − / + buttons, colour legend. |
 | `clutchDrawing.ts` | The clutch-bank drawing. |
 | `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: stations, gestures, Mast station, winch handle and strain bar. |
-| `windPanel.ts`, `windModePanel.ts`, `windIndicator.ts`, `windInstrument.ts` | Wind tab, wind modes, heel alert, wind instrument dial. |
+| `windPanel.ts`, `windModePanel.ts`, `windIndicator.ts`, `windInstrument.ts` | Wind tab, wind modes, the alert stack over the 3D view (gybe, by the lee, heel, round-up), wind instrument dial. |
+| `gybeReport.ts` | The gybe report (boom speed, energy, peak main sheet load) in the alert stack. |
 | `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, autopilot, Sails block, time bar. |
 | `mapView.ts` | Bird's-eye map (`cam=map`). |
 | `cameraBar.ts`, `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | Camera buttons, part card, 3D labels, debug overlay, error messages. |

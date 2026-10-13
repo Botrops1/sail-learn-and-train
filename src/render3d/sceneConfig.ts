@@ -182,6 +182,19 @@ export const SCENE = {
     /** A jump larger than this (Reset, a link) starts a new wake, metres. */
     restartDistanceM: 10,
   },
+  /** The boom's danger zone (PHASE2_SPEC 11.3). Presentation only. */
+  dangerZone: {
+    color: '#ff2d20',
+    /** Fill while the boom crosses, and the faint outline while it is by the lee. */
+    fillOpacity: 0.45,
+    outlineOpacity: 0.55,
+    /** The faint fill under the outline while the boom is by the lee (a 1 px line is hard to see on a phone). */
+    riskFillOpacity: 0.14,
+    /** Straight edges of the fan: one per this many degrees. */
+    segmentDeg: 3,
+    /** Height above the gooseneck, metres (so the fill does not flicker against the boom). */
+    liftM: -0.05,
+  },
   /** Tint of the part shown in the info card. */
   highlight: { color: '#ff9f1c', intensity: 0.55 },
   camera: {
