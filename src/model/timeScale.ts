@@ -38,15 +38,17 @@ export function timeScaleText(scale: number): string {
 
 /**
  * Whether the speed part of the time bar shows (and a time scale other than ×1 can be set):
- * while Sailing, or in Held still when the wind mode is not Steady (nothing else changes with
- * time there), and only when the View tab's "Time bar" switch is on. Pause always shows.
+ * while Sailing, or in Held still when the wind mode is not Steady or there are waves (nothing
+ * else changes with time there; waves: owner, M14 PR), and only when the View tab's "Time bar"
+ * switch is on. Pause always shows.
  */
 export function timeSpeedAvailable(
   boatMode: 'sailing' | 'held',
   windMode: WindModeId,
   timeBar: boolean,
+  seaSetting: SeaSetting = 'flat',
 ): boolean {
-  return timeBar && (boatMode === 'sailing' || windMode !== 'steady');
+  return timeBar && (boatMode === 'sailing' || windMode !== 'steady' || seaSetting !== 'flat');
 }
 
 /**

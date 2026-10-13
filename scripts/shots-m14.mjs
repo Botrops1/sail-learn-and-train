@@ -110,6 +110,19 @@ export async function liveM14Checks({ openPage, viewports, outDir, prefix, probl
     const pause = await page.getByTestId('pause-button').isVisible();
     const chip = await page.getByTestId('held-chip').isVisible();
     check('Held still with waves keeps Pause', pause && !chip, `pause ${pause}, chip ${chip}`);
+    // The speed buttons show too (owner, M14 PR): ×4 can be set.
+    const faster = page.getByTestId('time-faster');
+    const fasterShown = await faster.isVisible();
+    if (fasterShown) await faster.click();
+    await page
+      .waitForFunction(() => window.location.search.includes('tx='), null, { timeout: 3000 })
+      .catch(() => undefined);
+    const withTx = await search(page);
+    check(
+      'Held still with waves has the speed buttons',
+      fasterShown && withTx.includes('tx='),
+      withTx,
+    );
     await context.close();
     const flat = await openPage(phone, 'm14 held flat', '?wd=90&ws=15&held=1&sea=flat');
     await flat.page.waitForTimeout(1500);

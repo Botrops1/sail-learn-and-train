@@ -134,7 +134,12 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
 
   let shown = '';
   const refresh = (state: AppState) => {
-    const speed = timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar);
+    const speed = timeSpeedAvailable(
+      state.boat.mode,
+      state.windMode.mode,
+      state.settings.timeBar,
+      state.sea.setting,
+    );
     const open = speed && !folded;
     const scale = state.settings.timeScale;
     const pausable = pauseAvailable(
