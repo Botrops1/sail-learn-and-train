@@ -1,6 +1,6 @@
 # Phase 3 specification: basic environment
 
-Status: **planned** (owner's answers recorded 2026-10-13) · Last updated: 2026-10-13
+Status: **planned**, owner's answers recorded (outline and planning PR #41, 2026-10-13) · Last updated: 2026-10-13
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1 and 2 are done; [`PHASE1_SPEC.md`](PHASE1_SPEC.md) and [`PHASE2_SPEC.md`](PHASE2_SPEC.md) still describe everything Phase 3 builds on (layout, rig solver, boat motion, heel, wind modes, time bar, URL state). This file says only what Phase 3 adds or changes. Boat facts: [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules: [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -1019,5 +1019,7 @@ Every item of section 12 is ticked in the PR: the agent ticks what tests, CI and
 Decided with the owner (2026-10-13, "accept all" on the planning outline): waves first (M14–M16), then the clock (M17–M18); a Waves setting Flat / Sheltered / Coastal / Open sea opening on Coastal; waves follow the wind over minutes, not gusts, and a link opens with waves matching its wind; old links open with Coastal waves; Held still bobs but its sails ignore the motion; motion true to size; gusts visible on the water; the wind streaks stay; four yellow buoys 200 m N, E, S and W of the start, also on the map and tappable, no collisions; the Adriatic reference point is Split; night is dark blue with stars but readable, no navigation lights; the clock runs with simulated time (×16 faster, Pause stops it); the link stores the time on board (to the minute), "Now" reads the device clock once; issues #33 and #34 are fixed with `/bug` before M14, #32 in M14; the 0.4 m sheet give of the gybe load stays until the skipper answers.
 
 Decided in planning: the waves' phase is kept at the boat (6.3), so the waves stay fixed on the map over kilometres and a changing wind never makes them jump; `initialState()` defaults to Flat so Phase 1 and 2 tests stay unchanged, while links and Reset default to Coastal; the clock is stored as UTC and shown in the area's time zone by a pure EU summer-time rule (no device time zone); the wave growth formula is JONSWAP's, capped at a fully developed sea; the feedback values (yaw push, extra resistance) are teaching fits calibrated in the prototype.
+
+**Owner's answers on the planning PR (#41, 2026-10-13, "accept all"):** PT-43, PT-45 and the JONSWAP coefficients stay `to-verify` (the milestones and M19 try their sources again); the Open-sea fetch stays 150 km.
 
 Open (none blocks a milestone): the JONSWAP coefficients' source page (US Army Corps of Engineers) could not be opened from the cloud environment; PT-43 and PT-45 have no reachable source yet (see PHYSICS_TRUTHS).
