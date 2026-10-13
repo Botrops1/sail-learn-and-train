@@ -395,7 +395,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(
       phone,
       'm10 wind slider follows',
-      '?wd=60&ws=8&held=1&wm=building&tx=16',
+      '?wd=60&ws=8&held=1&wm=build&tx=16',
     );
     await page.getByRole('tab', { name: 'Wind' }).click();
     await page.waitForTimeout(12000);
