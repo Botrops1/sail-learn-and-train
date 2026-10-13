@@ -20,5 +20,14 @@
   "sea": {
     "fetchKm": { "flat": 0, "sheltered": 5, "coastal": 30, "open": 150 },
     "fetchNote": "assumption: how far the wind blows over open water before it reaches the boat. Sheltered: a bay or a channel between islands; coastal: along the Croatian coast and between the outer islands; open: the open Adriatic (it is about 150–200 km wide)."
+  },
+  "marks": {
+    "$comment": "Practice buoys (PHASE3_SPEC 8, owner): fixed marks in metres east and north of where the boat starts. Not real buoys.",
+    "buoys": [
+      { "id": "N", "eastM": 0, "northM": 200 },
+      { "id": "E", "eastM": 200, "northM": 0 },
+      { "id": "S", "eastM": 0, "northM": -200 },
+      { "id": "W", "eastM": -200, "northM": 0 }
+    ]
   }
 }

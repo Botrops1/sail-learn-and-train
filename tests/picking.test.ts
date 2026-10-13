@@ -103,4 +103,34 @@ describe('tap-to-identify: small fittings', () => {
       expect(picker.pick(x, y, screen.width, screen.height), `${dx},${dy}`).toBe('part_jib_furler');
     }
   });
+
+  it('a part with hit points under an extra root is found, unless it is hidden (M16)', () => {
+    const screen = { width: 390, height: 380 };
+    const lens = {
+      verticalFovDeg: SCENE.camera.verticalFovDeg,
+      aspect: screen.width / screen.height,
+    };
+    const camera = new THREE.PerspectiveCamera(SCENE.camera.verticalFovDeg, lens.aspect, 0.1, 1000);
+    camera.position.set(0, 3, 40);
+    camera.lookAt(0, 3, 0);
+    camera.updateMatrixWorld();
+    const extra = new THREE.Group();
+    const buoy = new THREE.Mesh(new THREE.SphereGeometry(0.6), new THREE.MeshBasicMaterial());
+    buoy.position.set(0, 3, 0);
+    buoy.userData = { partId: 'env_buoy', hitPoints: [[0, 0, 0]] };
+    extra.add(buoy);
+    extra.updateMatrixWorld(true);
+    const picker = createPicker(camera, new THREE.Group(), water, [extra]);
+    const centre = picker.hitCentres(screen.width, screen.height)[0];
+    expect(centre?.partId).toBe('env_buoy');
+    expect(picker.pick(centre?.x ?? 0, centre?.y ?? 0, screen.width, screen.height)).toBe(
+      'env_buoy',
+    );
+    // A tap a fingertip away still finds it (the hit area is larger than the drawn buoy).
+    expect(picker.pick((centre?.x ?? 0) + 15, centre?.y ?? 0, screen.width, screen.height)).toBe(
+      'env_buoy',
+    );
+    buoy.visible = false;
+    expect(picker.pick(centre?.x ?? 0, centre?.y ?? 0, screen.width, screen.height)).toBeNull();
+  });
 });

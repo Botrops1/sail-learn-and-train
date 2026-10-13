@@ -32,6 +32,7 @@ import { liveM12Checks, M12_SCENES } from './shots-m12.mjs';
 import { liveM13Checks, M13_SCENES } from './shots-m13.mjs';
 import { liveM14Checks, M14_SCENES } from './shots-m14.mjs';
 import { liveM15Checks, M15_SCENES } from './shots-m15.mjs';
+import { liveM16Checks, M16_SCENES } from './shots-m16.mjs';
 
 const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
 const PREFIX = process.env.SHOTS_PREFIX ?? '';
@@ -156,6 +157,7 @@ const SCENES = [
   ...M13_SCENES.map((scene) => ({ ...scene, name: `m13-${scene.name}` })),
   ...M14_SCENES.map((scene) => ({ ...scene, name: `m14-${scene.name}` })),
   ...M15_SCENES.map((scene) => ({ ...scene, name: `m15-${scene.name}` })),
+  ...M16_SCENES.map((scene) => ({ ...scene, name: `m16-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -772,6 +774,7 @@ try {
     m13: () => liveM13Checks(live),
     m14: () => liveM14Checks(live),
     m15: () => liveM15Checks(live),
+    m16: () => liveM16Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

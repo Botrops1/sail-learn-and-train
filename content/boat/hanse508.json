@@ -1580,7 +1580,14 @@
     },
     "building": { "changeDefaultKn": 10, "changeMaxKn": 20, "rampS": 600 },
     "dying": { "changeDefaultKn": 8, "changeMaxKn": 20, "rampS": 600 },
-    "gustBadgeFraction": 1.1
+    "gustBadgeFraction": 1.1,
+    "gustPreview": {
+      "fromM": -100,
+      "toM": 300,
+      "stepM": 20,
+      "minWindMps": 1,
+      "note": "assumption: a gust or lull travels downwind at the mean wind speed, so the patch of water it darkens 300 m upwind reaches the boat 300 m / wind speed later (PT-45)"
+    }
   },
   "waves": {
     "$comment": "PHASE3_SPEC 6 (M14). Wind waves as three wave trains sized by the wind and the fetch (content/areas/<id>.json sea.fetchKm). Growth: JONSWAP fetch-limited formulas capped at a fully developed sea (PHYSICS_TRUTHS PT-39). The trains, their weights and phases and the build-up time are teaching assumptions (BOAT_REFERENCE section 5).",
@@ -1602,6 +1609,13 @@
       { "periodFactor": 0.8, "dirOffsetDeg": 25, "weight": 0.6, "phaseRad": 2.1 },
       { "periodFactor": 0.65, "dirOffsetDeg": -35, "weight": 0.4, "phaseRad": 4.2 }
     ],
-    "trainsNote": "assumption: a main train from the wind's direction at the peak period and two shorter, smaller trains from 25° and 35° either side, so the sea looks irregular. Amplitudes are scaled so that the significant wave height of the sum (4 × its standard deviation) equals the formula's height."
+    "trainsNote": "assumption: a main train from the wind's direction at the peak period and two shorter, smaller trains from 25° and 35° either side, so the sea looks irregular. Amplitudes are scaled so that the significant wave height of the sum (4 × its standard deviation) equals the formula's height.",
+    "whitecaps": {
+      "coverageByWindKn": [[0, 0], [7, 0], [10, 0.02], [16, 0.06], [21, 0.12], [27, 0.2], [33, 0.3], [40, 0.4]],
+      "crestEdgeFactor": 1.3,
+      "crestEdgeWidth": 0.1,
+      "crestNote": "assumption: a point is white where the surface height, as a fraction of the sum of the trains' amplitudes, is above hi = 1 − crestEdgeFactor·√coverage (soft over crestEdgeWidth below it); with three trains this whitens about the coverage fraction of the surface (checked by a test)",
+      "source": "Beaufort scale (Wikipedia): perhaps scattered white horses at force 3 (7–10 kn), fairly frequent at 4 (11–16 kn), many at 5 (17–21 kn), more extensive at 6 (22–27 kn), blown in streaks at 7 (28–33 kn). The coverage fractions are a teaching assumption (PT-44)."
+    }
   }
 }

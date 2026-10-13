@@ -7,8 +7,8 @@ export const SCENE = {
   maxPixelRatio: 2,
   skyColor: '#cfe5f3',
   /** Fog fades the water into the horizon so the edge of the water plane is not visible. */
-  fogNear: 60,
-  fogFar: 260,
+  fogNear: 150,
+  fogFar: 900,
   /**
    * Procedural sky (M3b): a gradient from the zenith to a hazy horizon with soft clouds, used
    * as the background and, blurred, for the reflections on metal, gelcoat and water.
@@ -40,8 +40,8 @@ export const SCENE = {
     rippleScaleMin: 0.3,
     rippleScaleMax: 2,
     rippleDriftMPerS: 0.25,
-    /** Side length of the square outer water, metres. */
-    size: 600,
+    /** Side length of the square outer water, metres (M16: out to the fogged horizon). */
+    size: 2000,
     /**
      * The water group steps by this many metres along the map as the boat sails, so every vertex
      * of both meshes sits on a fixed map point (M14); a multiple of both cell sizes.
@@ -54,6 +54,34 @@ export const SCENE = {
      * detail). The waves fade to flat between `fadeStartM` and `halfSizeM` from the boat.
      */
     waves: { cellM: 2, cellLowM: 4, halfSizeM: 100, fadeStartM: 70 },
+    /**
+     * Wind on the water (M16, PHASE3_SPEC 8.4): the water darkens between `windDarkFromKn` and
+     * `windDarkToKn` of true wind, a gust darkens the patch it will arrive in, a lull lightens
+     * it, and the crests of the waves go white.
+     */
+    windyColor: '#16586a',
+    windDarkFromKn: 4,
+    windDarkToKn: 24,
+    windDarkAmount: 0.5,
+    gustColor: '#0b3442',
+    gustAmount: 0.45,
+    lullColor: '#5aa7bd',
+    lullAmount: 0.3,
+    whitecapColor: '#f2f6f7',
+  },
+  /** The practice buoys (M16, PHASE3_SPEC 8.4). */
+  marks: {
+    color: '#f5c400',
+    roughness: 0.5,
+    sphereRadiusM: 0.6,
+    poleRadiusM: 0.04,
+    poleBottomY: 0.5,
+    poleTopY: 1.9,
+    topmarkLengthM: 0.5,
+    topmarkThicknessM: 0.08,
+    floatY: 0.2,
+    /** Beyond this distance from the boat a buoy is not drawn or tappable, metres. */
+    maxDrawM: 1000,
   },
   /** The scale grid is the wave mesh's lines, 2 m apart (4 m at Low detail). */
   grid: {

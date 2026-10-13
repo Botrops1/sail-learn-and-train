@@ -3,6 +3,7 @@ import { DEG, compassDeg, wrap180 } from '../model/angles';
 import { boat } from '../model/boat';
 import { jibClew } from '../model/jib';
 import { mapToBoat } from '../model/mapFrame';
+import { buoyOffsets } from '../model/windOnWater';
 import { pointOfSail } from '../model/pointsOfSail';
 import { requirePartId } from '../model/registry';
 import type { TrackPoint } from '../model/track';
@@ -105,6 +106,8 @@ const COLOURS = {
   text: '#1d2a36',
   halo: 'rgb(255 255 255 / 0.9)',
   select: '#ff9f1c',
+  buoy: '#f5c400',
+  buoyOutline: '#3a3000',
 } as const;
 
 /** The map as drawn: which map point is in the middle, what points up, and the canvas size. */
@@ -414,8 +417,8 @@ function distanceToSegment(p: ScreenPoint, a: ScreenPoint, b: ScreenPoint): numb
 }
 
 /**
- * What a tap at a canvas position hits (PHASE2_SPEC 7.4): the boat, the apparent wind arrow, a
- * point-of-sail label or the no-go wedge, in that order; null for open water. Returns the
+ * What a tap at a canvas position hits (PHASE2_SPEC 7.4, M16): the boat, a practice buoy, the
+ * apparent wind arrow, a point-of-sail label or the no-go wedge, in that order; null for open water. Returns the
  * registry id the info card shows. The boat comes first because the arrow starts at her side
  * and a fingertip on the boat must not land on the arrow's root.
  */
@@ -438,6 +441,10 @@ export function pickMap(
   const across = dx * layout.starboard.x + dy * layout.starboard.y;
   if ((along / halfLength) ** 2 + (across / halfBeam) ** 2 <= 1) {
     return requirePartId('part_hull');
+  }
+  // A practice buoy (M16): a tap within a fingertip of its centre.
+  for (const buoy of buoyPoints(state, view)) {
+    if (Math.hypot(x - buoy.x, y - buoy.y) <= MAP.hitPx) return requirePartId('env_buoy');
   }
   if (distanceToSegment(p, layout.apparentHead, layout.apparentTail) <= MAP.hitPx / 2) {
     return requirePartId('term_apparent_wind');
@@ -758,8 +765,41 @@ function drawMap(
   const layout = mapLayout(state, view, width);
   drawNoGo(ctx, state, layout);
   drawLabels(ctx, layout, state.selection);
+  drawBuoys(ctx, state, view);
   drawBoat(ctx, state, view, layout);
   drawApparent(ctx, state, layout);
+}
+
+/** Where each practice buoy is on the canvas (CSS px), with its letter. */
+function buoyPoints(state: AppState, view: MapViewport): { id: string; x: number; y: number }[] {
+  return buoyOffsets(state.boat).map((offset) => ({
+    id: offset.id,
+    ...mapToScreen(state.boat.eastM + offset.dEastM, state.boat.northM + offset.dNorthM, view),
+  }));
+}
+
+/** The four practice buoys (M16): a yellow dot with its letter, on top of the labels. */
+function drawBuoys(ctx: CanvasRenderingContext2D, state: AppState, view: MapViewport): void {
+  const radius = Math.max(5, 0.6 / view.metresPerPx);
+  const margin = radius + 2;
+  for (const buoy of buoyPoints(state, view)) {
+    if (
+      buoy.x < -margin ||
+      buoy.y < -margin ||
+      buoy.x > view.widthPx + margin ||
+      buoy.y > view.heightPx + margin
+    ) {
+      continue;
+    }
+    ctx.beginPath();
+    ctx.arc(buoy.x, buoy.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = COLOURS.buoy;
+    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = COLOURS.buoyOutline;
+    ctx.stroke();
+    haloText(ctx, buoy.id, buoy.x + radius + 8, buoy.y, { bold: true, size: 12 });
+  }
 }
 
 function drawGrid(ctx: CanvasRenderingContext2D, view: MapViewport): void {
