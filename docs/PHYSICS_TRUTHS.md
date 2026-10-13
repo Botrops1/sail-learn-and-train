@@ -51,7 +51,7 @@ Phase 2 rules are implemented from M6 on, each in the milestone named in [`PHASE
 | PT-27 | 5 | **Prop walk:** in reverse, a single propeller pushes the stern sideways (direction depends on rotation). | to-verify |
 | PT-28 | 2 | **Self-tacking jibs** need no sheet work when tacking, which is why they suit short-handed sailing. | source-checked [3] |
 | PT-29 | 2 | **Heel reduces drive.** A boat heeled too far sails slower and pulls harder on the helm (weather helm); easing the main reduces both. | source-checked [23], [21] |
-| PT-30 | 3 | **Waves grow with wind strength and fetch** and make the boat pitch and roll, which moves the apparent wind at the masthead and knocks the boat off course. | to-verify |
+| PT-30 | 3 | **Waves grow with wind strength and fetch** and make the boat pitch and roll, which moves the apparent wind at the masthead and knocks the boat off course. | split into the testable rules PT-39 … PT-43 (Phase 3 rules below) |
 | PT-31 | 5 | **Anchoring needs scope:** all-chain, let out at least 4 × the effective depth (water depth plus bow-roller height), more in strong wind (add about 2 boat lengths). The owner's instructor rule, at least 3 boat lengths, is also checked; the larger wins. | source-checked [10] (instructor rule: owner) |
 | PT-32 | 2 | **Overpowered boats round up:** too much sail or a main sheeted hard in a gust makes the boat heel, the rudder loses grip and she turns into the wind by herself. Easing the main sheet stops it. | source-checked [23] ("the rudder loses grip": to-verify, candidate [17]) |
 | PT-33 | 5 | **Thrusters work at low speed:** a bow or stern thruster pushes the bow or stern sideways near the pier; at more than a few knots it has little effect. | to-verify |
@@ -60,6 +60,21 @@ Phase 2 rules are implemented from M6 on, each in the milestone named in [`PHASE
 | PT-36 | 2 | **Hull speed.** A heavy displacement boat hardly sails faster than about 1.34 × √(waterline length in feet) knots: about 8.9 kn for this boat. More wind then mostly makes more heel and a bigger wave, not more speed. | source-checked [25] (a rule of thumb for heavy displacement hulls; fine or planing hulls can exceed it) |
 | PT-37 | 2 | **On a run the mainsail blankets the jib:** with the wind from behind, the main takes the jib's wind and the jib collapses. | source-checked [24] (the main covering the jib on a run; how much force the jib keeps: assumption) |
 | PT-38 | 2 | **Flogging damages sails:** a sail left flapping hard in strong wind wears and can tear. | to-verify (candidates: North Sails, *The four F's of sail fatigue: flex, fiber compression, flogging and flutter* [26], whose search summary says flogging and leech flutter fatigue the cloth and that a ten-minute session can beat up to half the strength out of it; the page itself could not be opened in M13; Yachting Monthly *10 tips to make sails last longer*; sailmaker guides on leech flogging). The model's numbers (10 minutes at 20 kn tears a sail) are assumptions |
+
+## Phase 3 rules
+
+Implemented from M14 on, each in the milestone named in [`PHASE3_SPEC.md`](PHASE3_SPEC.md) 5. Sources read on 2026-10-13 while planning (numbers below). "How to see it" links work on the live site and on a PR preview (add the settings after the address).
+
+| Id | Rule | How to see it | Status |
+|---|---|---|---|
+| PT-39 | **Waves grow with the wind and with the fetch** (how far the wind has blown over open water), and they take time to build up. For a given wind there is a largest size, the *fully developed sea*. (M14) | `?wd=90&ws=15` → Wind tab → Waves: Coastal says about 0.7 m; tap Open sea: about 1.5 m; Sheltered: about 0.3 m. Set 25 kn: the waves grow over a few minutes. | source-checked [27], [28] (the growth formula's coefficients: to-verify, US Army Corps of Engineers manuals not reachable) |
+| PT-40 | **Waves make the boat heave, pitch and roll.** Waves from ahead or behind mostly pitch her (nose up and down); waves from the side mostly roll her. (M14) | `?wd=0&ws=15&held=1&cam=side-port`: she pitches. `?wd=90&ws=15&held=1&cam=bow`: she rolls. | source-checked [31] (the motions' names and axes); which waves cause which motion: general |
+| PT-41 | **Rocking moves the sails through the air**, so the wind the sails feel swings with every wave and the sails flick (PT-20). (M15) | `?wd=90&ws=15&ms=50&js=100` → Wind tab: the apparent-wind needle keeps swinging; with `&sea=flat` it is still. | general (vector sum of wind and motion, as PT-20 [21]) |
+| PT-42 | **Waves knock the bow off course**, most when they come from behind at an angle (a quartering sea); the helm, or the autopilot, has to keep correcting. (M15) | `?wd=135&ws=15&ms=100&js=100` → Ropes tab: the wheel (moved by the autopilot) keeps working; with `&sea=flat` it is still. | source-checked [32] (course keeping is hardest in bow, quartering and overtaking seas); the size of the push: assumption |
+| PT-43 | **Waves from ahead slow the boat most**; running with the waves costs little speed. (M15) | `?wd=45&ws=20&ms=20&js=0&sea=open` is about 0.9 kn slower than with `&sea=flat`; `?wd=135&ws=20&ms=100&js=100&sea=open` hardly slower. | to-verify (candidate: [32] names "involuntary speed reduction" as a seakeeping measure but does not compare headings; candidates: sailing-school texts on sailing upwind in a chop) |
+| PT-44 | **White horses** (breaking crests) first appear in a gentle breeze (Beaufort 3, 7–10 kn) and get more frequent and extensive as the wind rises. (M16) | `?wd=90&ws=6`: no white crests; `?wd=90&ws=22&sea=open`: many. | source-checked [30] |
+| PT-45 | **A gust shows on the water before it reaches you**: a darker, rougher patch moving downwind (a "cat's paw"). (M16) | `?wd=0&ws=12&wm=gusty&seed=7&cam=helm`: watch ahead for a dark patch; when it arrives the strip shows GUST. | to-verify (no reachable source yet; candidates: RYA Day Skipper or sailing-school pages on spotting gusts) |
+| PT-46 | **The sun rises in the east and sets in the west**; in the Adriatic it stands due south at local solar noon, rises and sets further north in June than in December, and the June day is much longer. (M17) | `?clk=202606010530&cam=bow` (sunrise) and `?clk=202612211200` (low winter sun); the clock card shows sunrise and sunset. | source-checked [33] (sunrise equation); directions and day length: general |
 
 ## Sources
 
@@ -109,3 +124,17 @@ M13 note (2026-10-14): every Phase 2 rule has a test named after its id (`tests/
 26. North Sails, *The four F's of sail fatigue: flex, fiber compression, flogging and flutter*. https://www.northsails.com/sailing/en/2018/04/four-fs-sail-fatigue-flex-fiber-compression-flogging-flutter. Candidate for PT-38 (not read, see the M13 note).
 
 When you add a source, add it here and point the rule's status to it. Prefer sailing-school material (RYA, ASA, NauticEd), manufacturer manuals (Seldén, Lewmar, Hanse) and textbooks over forums.
+
+Read on 2026-10-13 for Phase 3 (planning):
+
+27. Wikipedia, *Wind wave*. https://en.wikipedia.org/wiki/Wind_wave. Waves are limited by wind speed, duration, fetch and depth; a fully developed sea is the largest possible for a wind; significant wave height is the average of the highest third, and the largest single waves are somewhat less than twice it.
+28. Wikipedia, *Wind fetch*. https://en.wikipedia.org/wiki/Wind_fetch. The longer the fetch and the stronger the wind, the larger the resulting sea state.
+29. Wikipedia, *Significant wave height*. https://en.wikipedia.org/wiki/Significant_wave_height. Mean height of the highest third of the waves, usually four times the standard deviation of the surface elevation.
+30. Wikipedia, *Beaufort scale*. https://en.wikipedia.org/wiki/Beaufort_scale. Force 3 (7–10 kn): perhaps scattered white horses; 4 (11–16 kn): fairly frequent; 5 (17–21 kn): many; 6 (22–27 kn): white foam crests more extensive; 7: foam blown in streaks. Wave heights in the table are for the open ocean.
+31. Wikipedia, *Ship motions*. https://en.wikipedia.org/wiki/Ship_motions. Heave (up and down), roll (about the fore-and-aft axis), pitch (about the athwartships axis), yaw.
+32. Wikipedia, *Seakeeping*. https://en.wikipedia.org/wiki/Seakeeping. Course keeping matters particularly in bow and quartering seas and in overtaking seas, when the flow past the rudder may drop; involuntary speed reduction is a seakeeping measure.
+33. Wikipedia, *Sunrise equation*. https://en.wikipedia.org/wiki/Sunrise_equation. cos ω0 = −tan φ tan δ, corrected with h0 ≈ −0.833° for refraction and the sun's disc (Meeus); no solution in polar day or night; accuracy limited to about two minutes by refraction.
+34. Wikipedia, *Summer time in Europe*. https://en.wikipedia.org/wiki/Summer_time_in_Europe. EU summer time from 01:00 UTC on the last Sunday in March to 01:00 UTC on the last Sunday in October (2026: 29 March and 25 October); Croatia on CET/CEST.
+
+Not reachable on 2026-10-13: the US Army Corps of Engineers coastal manuals (JONSWAP growth formulas, PT-39 coefficients), NOAA's solar calculation page (gml.noaa.gov, the sun equations of PHASE3_SPEC 9.3), timeanddate.com (Split sunrise tables), and Wikipedia pages for *Broaching*, *Cat's paw* and *Added resistance* (not found).
+
