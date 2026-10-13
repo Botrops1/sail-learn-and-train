@@ -1284,6 +1284,16 @@
       "rollLagS": 0.5,
       "lagNote": "assumption: the hull's inertia as a 0.5 s first-order lag behind the water; true to size (owner: not exaggerated)"
     },
+    "waveFeedback": {
+      "$comment": "PHASE3_SPEC 7 (M15). How the waves act on the sailing. The rig's motion through the air uses the mainsail's centre of effort (sailForces ceHeights().main). Assumptions (BOAT_REFERENCE section 5).",
+      "yawDegPerDegRoll": 5,
+      "yawFactorByRelDeg": [[0, 0.1], [45, 0.4], [90, 0.3], [135, 1], [180, 0.5]],
+      "yawNote": "assumption: waves turn the boat like extra rudder, 5° per degree of wave roll, scaled by where the waves come from relative to the bow (0 = from ahead): most from behind at an angle (quartering, 135°), least head-on (PT-42)",
+      "addedResistanceCoefficient": 0.0017,
+      "addedResistanceByRelDeg": [[0, 1], [45, 0.9], [90, 0.35], [135, 0.1], [180, 0.05]],
+      "addedResistanceFullSpeedMps": 2,
+      "addedResistanceNote": "assumption: extra resistance in waves R = c·ρw·g·Hs·beam²·f(angle)·min(1, V / 2 m/s): about 0.24 kN in 0.7 m waves and 0.7 kN in 2 m waves from 45° off the bow, so she loses about 4 % of her speed close-hauled in Coastal waves and about 12 % in the Open sea (PT-43). A teaching fit, not a seakeeping calculation"
+    },
     "integration": {
       "maxStepS": 0.05,
       "solverAwaStepDeg": 0.1,

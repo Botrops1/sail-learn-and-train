@@ -19,8 +19,10 @@ import type { Vec3 } from './vec3';
  */
 
 /**
- * Boat motion: `velocity[0]` is the speed along the bow in m/s, the other components are 0
- * (PHASE2_SPEC 4.3). Zero in Phase 1 and while the boat is held still.
+ * Boat motion of the sails (PHASE2_SPEC 4.3, PHASE3_SPEC 7.3): `velocity[0]` is the speed of the
+ * sails along the bow in m/s (the boat's speed plus the rig's pitching), `velocity[2]` their
+ * sideways speed from rolling, + = to starboard; `velocity[1]` is 0. Zero in Phase 1 and while
+ * the boat is held still.
  */
 export interface BoatMotion {
   velocity: Vec3;
@@ -127,8 +129,11 @@ export function rigWind(
   const twsKn = wind?.twsKn ?? controls.ctl_wind_speed;
   const twaDeg = wrap180(dirDeg - motion.headingDeg);
   const speed = motion.velocity[0];
-  if (speed === 0 && !wind) return { awaDeg: twaDeg, awsKn: twsKn, twaDeg, twsKn };
-  const apparent = apparentWind(twsKn, twaDeg, speed, data);
+  const side = motion.velocity[2];
+  if (speed === 0 && side === 0 && !wind) {
+    return { awaDeg: twaDeg, awsKn: twsKn, twaDeg, twsKn };
+  }
+  const apparent = apparentWind(twsKn, twaDeg, speed, data, side);
   const { solverAwaStepDeg, solverAwsStepKn } = data.physics.integration;
   const awaPerStep = Math.round(1 / solverAwaStepDeg);
   const awsPerStep = Math.round(1 / solverAwsStepKn);

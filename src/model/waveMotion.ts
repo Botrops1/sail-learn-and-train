@@ -1,7 +1,8 @@
-import { DEG, lagTowards } from './angles';
+import { DEG, interpTable, lagTowards, wrap180 } from './angles';
 import { boat, type BoatData } from './boat';
 import { boatToMap, modulo } from './mapFrame';
-import { elevation, type WaveTrain } from './waves';
+import { ceHeights } from './sailForces';
+import { elevation, significantHeightM, type WaveTrain } from './waves';
 
 /**
  * How the boat follows the water (PHASE3_SPEC 6.3): the phases of the wave trains at the boat,
@@ -114,4 +115,70 @@ export function stepWaveMotion(
     rollDeg,
     rollRateDegS: (rollDeg - wm.rollDeg) / h,
   };
+}
+
+const mainCeHeights = new WeakMap<BoatData, number>();
+
+/** The mainsail's centre-of-effort height, computed once per data object. */
+function mainCeHeightM(data: BoatData): number {
+  let h = mainCeHeights.get(data);
+  if (h === undefined) {
+    h = ceHeights(data).main;
+    mainCeHeights.set(data, h);
+  }
+  return h;
+}
+
+/**
+ * How fast the sails move through the air because she pitches and rolls (m/s, boat frame;
+ * PHASE3_SPEC 7.3). Only the wave roll moves the rig sideways, not the heel's own rate.
+ */
+export function rigMotion(
+  wm: WaveMotion,
+  data: BoatData = boat,
+): { forwardMps: number; sideMps: number } {
+  const h = mainCeHeightM(data);
+  // Bow coming up: the rig swings aft. Rolling to starboard rail down: the rig swings to starboard.
+  return { forwardMps: -wm.pitchRateDegS * DEG * h, sideMps: wm.rollRateDegS * DEG * h };
+}
+
+/** How far the main wave train comes from relative to the bow, 0 = from ahead, [0, 180]. */
+function relativeWaveDeg(trains: readonly WaveTrain[], headingDeg: number): number {
+  const main = trains[0];
+  return main ? Math.abs(wrap180(main.fromDeg - headingDeg)) : 0;
+}
+
+/** The wave's push on the steering, as degrees of extra rudder (+ = turns her to starboard). */
+export function waveYawDeg(
+  wm: WaveMotion,
+  trains: readonly WaveTrain[],
+  headingDeg: number,
+  data: BoatData = boat,
+): number {
+  if (trains.length === 0) return 0;
+  const f = data.physics.waveFeedback;
+  const rel = relativeWaveDeg(trains, headingDeg);
+  return f.yawDegPerDegRoll * wm.rollDeg * interpTable(f.yawFactorByRelDeg, rel);
+}
+
+/** Extra resistance from the waves, N (≥ 0). */
+export function addedResistanceN(
+  speedMps: number,
+  headingDeg: number,
+  trains: readonly WaveTrain[],
+  data: BoatData = boat,
+): number {
+  if (trains.length === 0 || speedMps <= 0) return 0;
+  const f = data.physics.waveFeedback;
+  const c = data.physics.constants;
+  const rel = relativeWaveDeg(trains, headingDeg);
+  return (
+    f.addedResistanceCoefficient *
+    c.waterDensityKgM3 *
+    c.gravityMps2 *
+    significantHeightM(trains) *
+    data.dimensions.beam ** 2 *
+    interpTable(f.addedResistanceByRelDeg, rel) *
+    Math.min(1, speedMps / f.addedResistanceFullSpeedMps)
+  );
 }

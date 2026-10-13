@@ -37,7 +37,9 @@ import {
   waveTrains,
   type SeaSetting,
   type SeaState,
+  type WaveTrain,
 } from '../model/waves';
+import { rigMotion } from '../model/waveMotion';
 import {
   initialWindMode,
   isSeed,
@@ -171,6 +173,7 @@ function boatFor(
   overrides: Partial<BoatState> = {},
   wind?: WindNow,
   engine: EngineState = initialEngine(),
+  trains: readonly WaveTrain[] = [],
 ): BoatState {
   const mode = overrides.mode ?? 'sailing';
   const headingDeg = overrides.headingDeg ?? 0;
@@ -188,6 +191,7 @@ function boatFor(
   const steady = steadyState(controls, headingDeg, undefined, {
     heel: true,
     engineThrustN: engineThrustN(engine),
+    trains,
     ...(wind ? { windDirDeg: wind.dirDeg, twsKn: wind.twsKn } : {}),
   });
   const speedMps = overrides.speedMps ?? steady.speedMps;
@@ -195,8 +199,20 @@ function boatFor(
   return initialBoat({ ...overrides, mode, headingDeg, speedMps, heelDeg });
 }
 
+/**
+ * The sails' motion through the air (PHASE3_SPEC 7.3): the boat's speed plus the rig's pitching
+ * along the bow, and its rolling sideways. Held still: none, exactly Phase 1.
+ */
 function motionOf(boat: BoatState): BoatMotion {
-  return { velocity: [boat.speedMps, 0, 0], headingDeg: boat.headingDeg, heelDeg: boat.heelDeg };
+  if (boat.mode === 'held') {
+    return { velocity: [0, 0, 0], headingDeg: boat.headingDeg, heelDeg: boat.heelDeg };
+  }
+  const m = rigMotion(boat.waves);
+  return {
+    velocity: [boat.speedMps + m.forwardMps, 0, m.sideMps],
+    headingDeg: boat.headingDeg,
+    heelDeg: boat.heelDeg,
+  };
 }
 
 /** The true wind now for the controls' mean and a wind mode, at the rig clock `timeS`. */
@@ -231,7 +247,15 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
   // Steady wind: the controls are the wind (Phase 1 and the sailing of M6-M9 exactly).
   const patterned = windMode.mode !== 'steady';
   const engine = initialEngine(overrides.engine);
-  const boat = boatFor(controls, overrides.boat, patterned ? wind : undefined, engine);
+  // The sea first: a Sailing boat opens at the speed she settles at in these waves.
+  const sea = initialSea(overrides.sea ?? 'flat', wind);
+  const boat = boatFor(
+    controls,
+    overrides.boat,
+    patterned ? wind : undefined,
+    engine,
+    waveTrains(sea),
+  );
   return withTimeRule({
     controls,
     // A link opens with the rig already settled for the apparent wind: no swing on load.
@@ -256,7 +280,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     wind,
     sailDamage: NO_DAMAGE,
     engine,
-    sea: initialSea(overrides.sea ?? 'flat', wind),
+    sea,
   });
 }
 
