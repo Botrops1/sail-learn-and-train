@@ -597,7 +597,11 @@ What the spec left open (decided in the M15 PR):
 - **PT-43 source.** Tried again (a web search for added resistance of a sailing boat in head waves): only ship papers (added resistance is largest in head seas) and a forum thread turned up, nothing about a cruising yacht's heading. Status stays `to-verify`.
 - **Tests changed in older files** (7.6 item 9): only `tests/urlState.test.ts` (the two speed tests pass `trains: waveTrains(state.sea)` to `steadyState`) and M14's "does not change the sailing" test in `tests/physicsTruths3.test.ts` (deleted; the spec names `tests/waves.test.ts`, but M14 wrote it in `physicsTruths3.test.ts`). No Phase 1/2 test needed `&sea=flat`.
 
-Owner's answers: (none yet)
+Owner's answers (PR comment, "accept all" after the independent review):
+
+- **PT-43 stays `to-verify`**; the Sailing World article "sailing in chop" (Bill Gladstone, 2020) is added to its candidate sources in `PHYSICS_TRUTHS.md`. It supports only the first half of the rule (head seas slow her).
+- **Which way the waves turn the bow is unchecked** (review finding 1). The code turns the bow towards the side that rolls down (`yaw = +5 × roll × factor`, `waveYawDeg`), as the spec's prototype did. Sailors describe a wave from behind turning the bow towards the waves and the wind (a broach), which would be the opposite sign. No test depends on the sign and the phone shows only that the wheel moves. **To do before Phase 3 ends: `/plan` or a sailor checks the direction** (M19 should not sign off without it); if it is backwards, flip the sign of `waveYawDeg` and its tests.
+- Review findings 3 (PT-42's ranking 1.0 from behind against 0.4 from ahead stays a marked assumption), 4 (the Heeling-a-lot banner on the head-seas link is M8 heel physics) and 5 (the debug row's hyphen and `-0.0`) are left as they are.
 
 ---
 
@@ -1019,7 +1023,7 @@ The agent cannot measure a phone (headless software rendering says nothing about
 
 ### 11.5 Done when
 
-Every item of section 12 is ticked in the PR: the agent ticks what tests, CI and the browser checks show; the owner ticks the phone-only items ("smooth on the owner's phone", "the boat stays readable at night") from the checklist. CI `browser-checks` is green. No `Closes` line (#26 and #32 were closed by M17 and M14).
+Every item of section 12 is ticked in the PR: the agent ticks what tests, CI and the browser checks show; the owner ticks the phone-only items ("smooth on the owner's phone", "the boat stays readable at night") from the checklist. CI `browser-checks` is green. The direction the waves turn the bow (7.10, "Decided in the M15 PR") has been checked by `/plan` or a sailor. No `Closes` line (#26 and #32 were closed by M17 and M14).
 
 ## 12. Definition of Done (Phase 3)
 
