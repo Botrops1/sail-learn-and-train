@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { reduce, type AppState } from '../src/app/store';
+import { reduce } from '../src/app/store';
 import { stepBoat } from '../src/model/motion';
-import { act, initialState, run } from './motionHelpers';
+import { wrap180, mpsToKn } from '../src/model/angles';
+import { act, initialState, run, sampleRun, stdDev, mean } from './motionHelpers';
 
 /** Phase 3 physics truths (PHYSICS_TRUTHS.md), implemented from M14 on. */
 
@@ -53,38 +54,6 @@ describe('PT-40 the boat follows the waves', () => {
     expect(m.heave).toBeLessThan(1.0);
     expect(m.pitch).toBeGreaterThan(4.0);
     expect(m.pitch).toBeLessThan(6.0);
-  });
-});
-
-describe('M14 waves do not change the sailing yet', () => {
-  const sail = (sea: 'coastal' | 'flat'): AppState =>
-    run(
-      initialState({
-        sea,
-        controls: {
-          ctl_wind_dir: 135,
-          ctl_wind_speed: 15,
-          ctl_mainsheet: 100,
-          ctl_jib_sheet: 100,
-        },
-      }),
-      60,
-      30,
-    );
-
-  it('speed, heading, heel, position and the rig wind are identical to flat water', () => {
-    const coastal = sail('coastal');
-    const flat = sail('flat');
-    expect(coastal.boat.speedMps).toBe(flat.boat.speedMps);
-    expect(coastal.boat.headingDeg).toBe(flat.boat.headingDeg);
-    expect(coastal.boat.heelDeg).toBe(flat.boat.heelDeg);
-    expect(coastal.boat.eastM).toBe(flat.boat.eastM);
-    expect(coastal.boat.northM).toBe(flat.boat.northM);
-    expect(coastal.rig.wind).toEqual(flat.rig.wind);
-    expect(coastal.boat.waves.heaveM).not.toBe(0);
-    expect(
-      Math.abs(coastal.boat.waves.rollDeg) + Math.abs(coastal.boat.waves.pitchDeg),
-    ).toBeGreaterThan(0);
   });
 });
 
@@ -176,4 +145,85 @@ describe('the Waves setting', () => {
     expect(s.sea.setting).toBe('coastal');
     expect(s.sea.windKn).toBe(s.wind.twsKn);
   });
+});
+
+/** A 300 s Sailing run holding heading 0 (the autopilot), sampled from t = 100 s (PHASE3_SPEC 7.6). */
+function sail(
+  dir: number,
+  kn: number,
+  main: number,
+  jib: number,
+  sea: 'flat' | 'sheltered' | 'coastal' | 'open',
+  pick: (s: ReturnType<typeof initialState>) => number,
+): number[] {
+  return sampleRun(
+    initialState({
+      sea,
+      controls: {
+        ctl_wind_dir: dir,
+        ctl_wind_speed: kn,
+        ctl_mainsheet: main,
+        ctl_jib_sheet: jib,
+      },
+    }),
+    300,
+    30,
+    100,
+    pick,
+  );
+}
+
+const awa = (s: ReturnType<typeof initialState>) => s.rig.wind.awaDeg;
+const rudder = (s: ReturnType<typeof initialState>) => s.rig.applied.rudder;
+const heading = (s: ReturnType<typeof initialState>) => wrap180(s.boat.headingDeg);
+const speedKn = (s: ReturnType<typeof initialState>) => mpsToKn(s.boat.speedMps);
+
+describe('PT-41 the sails feel the rocking', () => {
+  it('PT-41 Coastal, 15 kn from 90: the apparent wind angle swings; Flat it is still', () => {
+    const coastal = sail(90, 15, 50, 100, 'coastal', awa);
+    expect(stdDev(coastal)).toBeGreaterThan(1.6);
+    expect(stdDev(coastal)).toBeLessThan(3.4);
+    expect(Math.max(...coastal) - Math.min(...coastal)).toBeGreaterThanOrEqual(6);
+    expect(stdDev(sail(90, 15, 50, 100, 'flat', awa))).toBeLessThan(0.05);
+  }, 120_000);
+
+  it('PT-41 Sheltered, 12 kn from 60: a smaller swing', () => {
+    const sd = stdDev(sail(60, 12, 20, 25, 'sheltered', awa));
+    expect(sd).toBeGreaterThan(1.4);
+    expect(sd).toBeLessThan(2.8);
+  }, 120_000);
+});
+
+describe('PT-42 waves knock her off course', () => {
+  it('PT-42 Coastal, 15 kn from 135: the rudder works and the heading wanders; Flat it does not', () => {
+    const rudderSd = stdDev(sail(135, 15, 100, 100, 'coastal', rudder));
+    expect(rudderSd).toBeGreaterThan(3.5);
+    expect(rudderSd).toBeLessThan(7);
+    const headingSd = stdDev(sail(135, 15, 100, 100, 'coastal', heading));
+    expect(headingSd).toBeGreaterThan(0.8);
+    expect(headingSd).toBeLessThan(2.2);
+    expect(stdDev(sail(135, 15, 100, 100, 'flat', rudder))).toBeLessThan(0.3);
+    // From ahead of the beam the push is much smaller than from behind at an angle.
+    expect(stdDev(sail(45, 15, 15, 0, 'coastal', rudder))).toBeLessThan(rudderSd / 2);
+  }, 120_000);
+});
+
+describe('PT-43 head seas slow her most', () => {
+  const loss = (dir: number, kn: number, main: number, jib: number, sea: 'coastal' | 'open') =>
+    mean(sail(dir, kn, main, jib, 'flat', speedKn)) - mean(sail(dir, kn, main, jib, sea, speedKn));
+
+  it('PT-43 Open sea, 20 kn: from 45 she loses about 0.9 kn, from 135 hardly any', () => {
+    const head = loss(45, 20, 20, 0, 'open');
+    expect(head).toBeGreaterThan(0.6);
+    expect(head).toBeLessThan(1.3);
+    const behind = loss(135, 20, 100, 100, 'open');
+    expect(behind).toBeLessThan(0.4);
+    expect(head).toBeGreaterThan(3 * behind);
+  }, 120_000);
+
+  it('PT-43 Coastal, 15 kn from 45: a smaller loss', () => {
+    const l = loss(45, 15, 15, 0, 'coastal');
+    expect(l).toBeGreaterThan(0.15);
+    expect(l).toBeLessThan(0.45);
+  }, 120_000);
 });

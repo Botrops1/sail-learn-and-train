@@ -20,4 +20,18 @@ describe('the cost of one simulated frame (M13)', () => {
     const meanMs = (performance.now() - started) / frames;
     expect(meanMs).toBeLessThan(3);
   });
+
+  it('stays under 3 ms on average in the Open sea, gusty wind at ×16 (M15)', () => {
+    let state = initialState({
+      sea: 'open',
+      controls: { ctl_wind_dir: 90, ctl_wind_speed: 16, ctl_mainsheet: 40, ctl_jib_sheet: 100 },
+    });
+    state = act(state, { type: 'setWindMode', mode: 'gusty' }, { type: 'setTimeScale', scale: 16 });
+    state = run(state, 10);
+    const frames = 600;
+    const started = performance.now();
+    for (let i = 0; i < frames; i += 1) state = act(state, { type: 'step', dt: 1 / 60 });
+    const meanMs = (performance.now() - started) / frames;
+    expect(meanMs).toBeLessThan(3);
+  });
 });

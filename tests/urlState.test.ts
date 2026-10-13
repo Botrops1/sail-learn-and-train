@@ -4,6 +4,7 @@ import { jibReachedParam, parseUrlState, serializeUrlState } from '../src/app/ur
 import { boat } from '../src/model/boat';
 import { knToMps, mpsToKn } from '../src/model/angles';
 import { steadyState } from '../src/model/motion';
+import { waveTrains } from '../src/model/waves';
 import { defaultControls, type Controls } from '../src/model/controls';
 import {
   CAMERA_PRESETS,
@@ -339,7 +340,11 @@ describe('URL state: the boat (M6: hdg, bs, held, ap, apt)', () => {
     expect(state.boat.headingDeg).toBe(0);
     expect(state.controls.ctl_wind_dir).toBe(90);
     expect(state.autopilot).toEqual({ mode: 'heading', targetDeg: 0, integralDeg: 0 });
-    const steady = steadyState(state.controls, 0, undefined, { heel: true }).speedMps;
+    // A link without `sea` opens in Coastal waves (M15): her steady speed includes their drag.
+    const steady = steadyState(state.controls, 0, undefined, {
+      heel: true,
+      trains: waveTrains(state.sea),
+    }).speedMps;
     expect(state.boat.speedMps).toBeCloseTo(steady, 9);
     expect(mpsToKn(steady)).toBeGreaterThan(5);
   });
@@ -358,7 +363,10 @@ describe('URL state: the boat (M6: hdg, bs, held, ap, apt)', () => {
     expect(mpsToKn(state.boat.speedMps)).toBeCloseTo(6.3, 9);
     expect(serializeUrlState(state)).toContain('bs=6.3');
     expect(mpsToKn(parseUrlState('?bs=-3.5').boat.speedMps)).toBeCloseTo(-3.5, 9);
-    const steady = steadyState(defaultControls(), 0, undefined, { heel: true }).speedMps;
+    const steady = steadyState(defaultControls(), 0, undefined, {
+      heel: true,
+      trains: waveTrains(parseUrlState('?bs=16').sea),
+    }).speedMps;
     expect(parseUrlState('?bs=16').boat.speedMps).toBeCloseTo(steady, 9);
     expect(parseUrlState('?bs=fast').boat.speedMps).toBeCloseTo(steady, 9);
     expect(serializeUrlState(parseUrlState('?bs=0'))).toContain('bs=0.0');

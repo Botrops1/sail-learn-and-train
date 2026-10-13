@@ -73,3 +73,31 @@ export function act(state: AppState, ...actions: Action[]): AppState {
 
 export { initialState };
 export type { InitialOverrides };
+
+/**
+ * One sample per frame of `pick(state)` from `fromS` seconds on (`t >= fromS`), for a run of
+ * `seconds` at `fps` (PHASE3_SPEC 7.6).
+ */
+export function sampleRun(
+  state: AppState,
+  seconds: number,
+  fps: number,
+  fromS: number,
+  pick: (s: AppState) => number,
+): number[] {
+  const samples: number[] = [];
+  run(state, seconds, fps, (s, t) => {
+    if (t >= fromS - 1e-9) samples.push(pick(s));
+    return s;
+  });
+  return samples;
+}
+
+export const mean = (values: readonly number[]): number =>
+  values.reduce((sum, v) => sum + v, 0) / values.length;
+
+/** Population standard deviation (divides by N). */
+export function stdDev(values: readonly number[]): number {
+  const m = mean(values);
+  return Math.sqrt(values.reduce((sum, v) => sum + (v - m) ** 2, 0) / values.length);
+}
