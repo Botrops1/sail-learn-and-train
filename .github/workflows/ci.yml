@@ -25,3 +25,59 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+
+  # The browser checks (scripts/shots.mjs): every milestone's scenes at phone size plus every
+  # live and tap check. Fails on console errors, wrong layouts, page scroll, unknown taps and
+  # failed live checks. Split into parallel parts (the slowest about 12 minutes on GitHub's
+  # runners, against 43 minutes in one go); a new milestone's live checks land in the
+  # "live, Phase 2 on" part by themselves.
+  browser-part:
+    name: browser (${{ matrix.part }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - part: scenes
+            env: SHOTS_NO_LIVE=1 SHOTS_NO_TAPS=1
+          - part: taps
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_LIVE=1
+          - part: live, M0-M4a
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=general
+          - part: live, M4b
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4b
+          - part: live, M4c
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4c
+          - part: live, Phase 2 on
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # The cloud sessions' default font (Inter), so text sizes match theirs.
+      - run: |
+          sudo apt-get install -y --no-install-recommends fonts-inter
+          mkdir -p ~/.config/fontconfig
+          cp .github/fontconfig.conf ~/.config/fontconfig/fonts.conf
+          fc-match sans-serif
+      - run: env SHOTS_SIZES=phone ${{ matrix.env }} npm run shots
+      # The PNGs are kept as a download only when a part fails.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: shots-${{ strategy.job-index }}
+          path: shots/
+          retention-days: 7
+
+  # One result for the branch protection rule: green only when every part passed.
+  browser-checks:
+    needs: browser-part
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: test "${{ needs.browser-part.result }}" = success

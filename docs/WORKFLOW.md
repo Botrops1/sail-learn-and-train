@@ -1,93 +1,76 @@
 # Workflow: building the app from a phone
 
-For the owner. How to run each milestone with Claude Code in the cloud, what to paste, and how to check the result without sailing knowledge.
+For the owner. How to run each milestone with Claude Code in the cloud, and how to check the result without sailing knowledge.
 
 Live site (what is merged into `main`): **https://botrops1.github.io/sail-learn-and-train/**
 
 Each open pull request (PR) also has its own **preview** at `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/` (`<N>` = the PR number). A bot comment on the PR carries the link and is updated on every push; the preview is deleted when the PR is merged or closed. Test there **before** merging.
 
-## 1. One-time setup (about 10 minutes)
+## 1. One-time setup
 
-1. **Merge the starter-pack PR** (this file arrives with it) in the GitHub app.
-2. **Turn on GitHub Pages.** The GitHub app may not show this setting, so use the mobile browser: github.com → `Botrops1/sail-learn-and-train` → **Settings** → **Pages** → *Build and deployment* → Source: **Deploy from a branch**, Branch: **gh-pages**, folder **/ (root)**, **Save**. (If the menu is hidden, use the browser's "Desktop site" option.) The `gh-pages` branch appears after the first deploy from `main` or the first PR preview; until it exists the branch is not in the list.
-3. **Claude app → Code tab:** make sure GitHub is connected and `Botrops1/sail-learn-and-train` is selectable. The default cloud environment is fine; nothing to configure.
+1. **GitHub Pages** (done): Settings → Pages → Deploy from a branch → `gh-pages`, `/ (root)`.
+2. **Claude app → Code tab:** GitHub connected and `Botrops1/sail-learn-and-train` selectable. The default cloud environment is fine.
+3. **Two GitHub settings** (about 3 minutes, in the phone's browser on github.com with "Desktop site" on, or on the PC). Do this once the PR that introduced this section has run its checks:
+   - **Merge only when the checks pass:** Settings → Branches → Add branch protection rule (or "Add classic branch protection rule") → Branch name pattern `main` → tick **Require status checks to pass before merging** → in the search box add `check` and `browser-checks` → **Create**. The Merge button then stays grey while a check is red or still running.
+   - **Tidy branches:** Settings → General → Pull Requests → tick **Automatically delete head branches**.
 
 ## 2. The loop for each milestone
 
-1. Start a **new** Code session on `Botrops1/sail-learn-and-train` (one session per milestone keeps it focused and saves usage).
-2. Set model and effort (table in section 4), then paste the milestone prompt from section 3.
-3. Wait. Claude works, runs the tests, takes screenshots and opens a PR. You can close the app meanwhile.
-4. In the PR (GitHub app): read "What changed", open the screenshots, check that CI is green.
-5. **Open the preview link in the PR comment** ("PR Preview Action"). It appears about 2 minutes after each push; pull to refresh the PR if it is not there yet. Check that the **version in the footer** matches the PR's latest commit (the first 7 characters, shown in the PR's Commits tab). The test links in the PR description already point at the preview.
-6. Go through the milestone checklist (section 5) on the preview. Tick what works.
-7. Problems? In the same session, describe them with the bug template (section 3.4). Claude pushes fixes to the same PR; the preview updates by itself.
-8. Optional for M2 and M3: run the **review prompt** (3.3) in a fresh session before merging. A second pair of eyes is cheap compared with debugging later.
-9. **Merge** when the preview works. About 2 minutes later the live site updates (footer shows the merged commit) and the preview is removed.
+1. Start a **new** Code session on `Botrops1/sail-learn-and-train`. Model: **Sonnet**, effort **high** (section 4).
+2. Type **`/milestone 11`** (the milestone's number). Nothing else to paste.
+3. Wait. Claude builds, tests, opens a PR and **watches it**. You can close the app meanwhile.
+4. In the PR (GitHub app): read "What changed", check that CI is green (`check`, `browser-checks`, `preview`).
+   **If the PR starts with "Independent review required"** (the spec marks physics milestones that way): start the review now, before testing: new session, **Opus**, high, type **`/review <PR number>`**. It posts one comment on the PR with findings marked fix now / fix later / leave (about 15–30 minutes). Test while it runs or after it.
+5. Open the preview from the bot comment. Check that the **version in the footer** matches the PR's latest commit (first 7 characters, PR → Commits).
+6. Go through the checklist links in the PR description. Tick what works.
+7. **Answer and report problems as one comment on the PR**, in the GitHub app: your answers to the questions, which review findings to fix (e.g. "review: fix 1 and 3"), and anything you found. Every question has a recommendation, so "accept all" is a valid answer, or "accept all except 2: …". For a bug, use the template in 3.2. The session picks the comment up by itself, fixes, records your answers in the decisions log and replies on the PR. No copying between sessions.
+8. Test again on the updated preview (the reply names the new footer version).
+9. **Merge** when the preview works and CI is green. About 2 minutes later the live site updates and the preview is removed.
+
+**One milestone at a time.** Two milestones in parallel edit the same files and need a third session to sort out the overlap. A planning or review session next to the milestone is fine.
 
 If a merge breaks the site, open the merged PR in the GitHub app and tap **Revert**. That creates a PR that undoes it; merge that.
 
-## 3. Prompts (copy and paste)
+## 3. Commands and templates
 
-### 3.1 First session (M0)
+### 3.1 Commands (type them in a Code session)
 
-```
-Read CLAUDE.md and every document it lists, then implement milestone M0 from docs/PHASE1_SPEC.md, and only M0.
-Work on a branch named m0-scaffold and open a PR when done.
-Before opening the PR: run typecheck, lint, tests and build; take screenshots with Playwright at the three viewport sizes and look at them; commit them to docs/screenshots/.
-In the PR, use the template in CLAUDE.md and copy the M0 checklist from docs/WORKFLOW.md.
-If anything in the spec is unclear or contradictory, list it in the PR instead of guessing.
-```
+| Command | When |
+|---|---|
+| `/milestone <N>` | Build milestone M<N> (section 2) |
+| `/review <PR number>` | Independent review of a PR, right after it opens and before you test (Opus). Required when the PR says so (physics milestones); optional otherwise |
+| `/bug <link> <what happened>` | A bug on the **live** site, after merge. Get the link from View tab → Share. Claude fixes it in a small PR and watches it |
+| `/plan <phase number>` | Before a new phase (Opus, high). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. After merging, start with `/milestone <N>` (Sonnet) |
 
-### 3.2 Each following milestone (replace N and the name)
+The commands live in `.claude/skills/` in the repo; Claude can change them if you ask.
 
-```
-Read CLAUDE.md and every document it lists. Milestones up to M<N-1> are merged.
-Implement milestone M<N> (<name>) from docs/PHASE1_SPEC.md, and only that milestone.
-Branch: m<N>-<short-name>. Same verification and PR rules as before (tests named after PHYSICS_TRUTHS ids, screenshots you have looked at, checklist from docs/WORKFLOW.md).
-List open questions in the PR instead of guessing.
-In the PR description, embed the 6–10 most important screenshots as images (https://github.com/Botrops1/sail-learn-and-train/blob/<branch>/docs/screenshots/<file>.png?raw=true), phone size first, so they show in the GitHub app.
-```
-
-### 3.3 Independent review (fresh session, optional)
+### 3.2 Bug report (as a PR comment, or after `/bug`)
 
 ```
-You are reviewing PR #<number> in this repo. Do not change code.
-Read CLAUDE.md, docs/PHASE1_SPEC.md and docs/PHYSICS_TRUTHS.md.
-Check the PR against the milestone's scope and Definition of Done, the conventions (frame, signs, ids, no magic numbers), and every physics truth relevant to this milestone.
-Look at the screenshots in docs/screenshots/.
-Report: (1) bugs or rule violations, ranked by severity, with file and line; (2) things that work but look wrong to a sailor; (3) scope creep. Be concrete and brief.
-Post the result as a comment on the PR.
-```
-
-### 3.4 Bug report (paste into the session)
-
-```
-Bug on the preview of PR #<N> or the live site (version <footer hash>), phone <model>, <portrait/landscape/unfolded>.
+Phone <model>, <portrait/landscape/unfolded>, footer version <hash>.
 Link that shows it: <copy link from View tab → Share>
 What I did: ...
 What I expected: ...
 What I saw: ...
-(Screenshot attached if useful.)
 ```
 
-### 3.5 Ask instead of build
+### 3.3 Ask instead of build
 
-When you are not sure whether something is right (for example "should the boom go that high?"), ask in the session: "Explain in plain words why the boom does X in this link, and which rule in PHYSICS_TRUTHS covers it. Do not change code." It is cheaper than a fix and you learn sailing on the way.
+When you are not sure whether something is right (for example "should the boom go that high?"), ask in a session or on the PR: "Explain in plain words why the boom does X in this link, and which rule in PHYSICS_TRUTHS covers it. Do not change code." It is cheaper than a fix and you learn sailing on the way.
 
 ## 4. Model and effort
 
 In a session you can type `/model opus` or `/model sonnet`, and `/effort high` or `/effort medium`.
 
-| Work | Model | Effort | Why |
-|---|---|---|---|
-| M0 scaffold, M1 boat model | Opus | high | Architecture and geometry decisions are expensive to redo |
-| M2 mainsail solver, M3 jib solver | Opus | high | The core maths; mistakes are subtle |
-| M4 clutch-bank panel | Sonnet | medium (switch to Opus if it struggles) | Mostly UI work |
-| M4b/M4c Realistic mode | Opus | high | Gestures plus a small physics model (capstan rule, loads) |
-| M5 polish, small fixes | Sonnet | medium | Fast, light on usage |
-| Reviews (3.3) | Opus | high | Finding subtle problems |
+| Work | Model | Effort |
+|---|---|---|
+| `/milestone` | Sonnet | high |
+| `/plan`, `/review` | Opus | high |
+| `/bug`, small doc changes | Sonnet | medium |
 
-Usage: cloud sessions share your plan's limits with normal chat. One session at a time is enough. If a session gets very long, type `/compact`.
+The commands also name their model (`/milestone` and `/bug` Sonnet, `/plan` and `/review` Opus), so a wrong model setting is corrected while the command runs. Still set the model and effort when you start the session: the later rounds (your PR comments) run on the session's own model, and effort is not set by the command.
+
+Usage: cloud sessions share your plan's limits with normal chat. What costs the most is a long session: every step re-reads everything said so far. So one session per milestone, and start a new one for unrelated work instead of continuing an old one.
 
 ## 5. Checklists (what to look for on the phone)
 
@@ -198,25 +181,13 @@ Every check is a full link: tap it, then do what the line says.
 
 - Ask a Russian-speaking sailor to look at `content/registry/parts.json` (or a printable list Claude can generate) and the clutch-bank screen. Mark reviewed terms `sailor-reviewed`.
 - Answer the open questions in `docs/BOAT_REFERENCE.md` if you get the chance.
-- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1. (Done 2026-10-10: [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and section 7 below.)
+- Then plan Phase 2 here in chat before starting it in Claude Code, the same way as Phase 1. (Done 2026-10-10: [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and section 7 below.) Later phases start with `/plan <N>` (section 3.1).
 
 ## 7. Phase 2
 
-Same loop as section 2: one session and one PR per milestone (M6 … M13, [`PHASE2_SPEC.md`](PHASE2_SPEC.md) section 5). The spec gives every formula, number and test, so **Sonnet at high effort** can build each milestone (`/model sonnet`, `/effort high`). For M6, M8 and M11 (the physics), an Opus review (prompt 3.3) before merging is worth it.
+Same loop as section 2: one session and one PR per milestone (M6 … M13, [`PHASE2_SPEC.md`](PHASE2_SPEC.md) section 5), started with `/milestone <N>`. The spec gives every formula, number and test, so **Sonnet at high effort** can build each milestone. M11 and M12 need a `/review` with Opus (the spec's milestones table has a review column; the PR reminds you).
 
-### 7.1 Prompt for each Phase 2 milestone (replace N and the name)
-
-```
-Read CLAUDE.md and every document it lists. Phase 1 is done; Phase 2 milestones before M<N> are merged.
-Implement milestone M<N> (<name>) from docs/PHASE2_SPEC.md, and only that milestone. Read sections 0–5 of the spec first, then section <N>.
-Follow the spec's formulas, data values and function signatures exactly. If a test band fails, follow section 0 (check the formulas first; tune only the keys marked tunable; report it).
-Branch: m<N>-<short-name>. Same verification and PR rules as before (tests named after PHYSICS_TRUTHS ids, screenshots you have looked at, the M<N> checklist from docs/WORKFLOW.md section 7.2 with every link pointing at this PR's preview).
-Write anything you decide that the spec leaves open into the milestone's section of docs/PHASE2_SPEC.md, marked "decided in the M<N> PR".
-List open questions in the PR instead of guessing.
-In the PR description, embed the 6–10 most important screenshots as images, phone size first.
-```
-
-### 7.2 Checklists
+### 7.1 Checklists
 
 New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, default 0), `wd` the true wind's compass direction (old links: heading 0, so the picture is the same), `held=1` boat held still, `bs` boat speed at the start (kn; without it the boat starts at her steady speed), `ap=off|hdg|wind` autopilot (default: holding the heading) with its target `apt`; M7 `cam=map`; M10 `wm`, `seed`, `wg`, `tx`, `tb=0`; M12 `eng=1`, `lv`. Replace `<N>` with the PR number.
 

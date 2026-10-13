@@ -4,54 +4,85 @@
 
 `sail-learn-and-train` is a browser app (three.js) that teaches a complete beginner how a cruising yacht's ropes, sheets and sails behave, using a **Hanse 508** as the reference boat. Clarity over realism.
 
-The owner has **no sailing knowledge** and works **from a phone only**: PRs are reviewed in the GitHub app and the deployed site is tested on a phone. Nothing can be run locally.
+The owner has **no sailing knowledge** and is not a developer. They work from a phone (GitHub app, Claude app) and sometimes a PC, test the PR preview on a phone, and cannot run anything locally.
 
-## Read before working
+## Owner commands (`.claude/skills/`)
 
-1. [`docs/ROADMAP.md`](docs/ROADMAP.md): all phases and the decisions log. Context only; do not build ahead.
-2. The spec for the current phase: [`docs/PHASE2_SPEC.md`](docs/PHASE2_SPEC.md) (Phase 2). Phase 1 is done; [`docs/PHASE1_SPEC.md`](docs/PHASE1_SPEC.md) still describes everything Phase 2 builds on.
-3. [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](content/boat/hanse508.json): boat facts, with sources and assumptions.
-4. [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md): behaviour rules the simulation must obey and test.
-5. [`docs/WORKFLOW.md`](docs/WORKFLOW.md): how the owner checks each milestone. Copy its checklist into your PR.
+| Command | What it does |
+|---|---|
+| `/milestone <N>` | Build milestone M<N> from the current phase spec, open its PR, then watch the PR and act on the owner's comments |
+| `/review <PR number>` | Independent review of a PR in a fresh session; posts one comment, changes nothing |
+| `/bug <link> <what happened>` | Fix a bug found on the live site in a small PR, then watch it |
+| `/plan <phase number>` | Plan a phase (or `/plan issue <N>` for an extra milestone) with Opus: owner questions first, then a spec detailed enough for Sonnet to build without guessing, in a docs-only PR |
+
+When one of these is invoked, follow its `SKILL.md`. Without a command, the rules below still apply.
+
+## What to read (read narrowly: every token you read is re-read on every later step)
+
+Always:
+
+1. This file, and [`docs/CODE_MAP.md`](docs/CODE_MAP.md) (which file does what; go straight to the right file instead of searching).
+2. The current phase spec: the highest-numbered `docs/PHASE<N>_SPEC.md`. Its sections 0–5 (or whatever its own "how to use this spec" section says applies to every milestone), the section of your milestone, and its Definition of Done. Not the other milestones' sections.
+3. [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md): the rules your milestone tests.
+4. Your milestone's checklist in [`docs/WORKFLOW.md`](docs/WORKFLOW.md) (`grep -n "^#### M<N>\|^### M<N>"`). The rest of WORKFLOW is for the owner.
+
+Only the part you need, found with `grep` (do not read these whole):
+
+- [`docs/ROADMAP.md`](docs/ROADMAP.md): phases and architecture hooks (context only, do not build ahead); the decisions log at the end.
+- Earlier phase specs (`docs/PHASE1_SPEC.md`, …): what the current phase builds on (layout, rig solver, ropes, Realistic mode, URL state). The conventions and architecture sections when you touch those areas.
+- [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md), [`content/boat/hanse508.json`](content/boat/hanse508.json), [`content/registry/parts.json`](content/registry/parts.json): boat facts, sources, assumptions, ids.
 
 ## Working rules
 
-- **One milestone per PR**, on a branch named `m<N>-<short-name>` (e.g. `m2-mainsail`; Phase 2 continues the numbering: `m6-boat-sails`). Never start the next milestone in the same PR. Never push to `main` directly.
-- Stay inside the spec's scope. If something seems needed that the spec excludes, ask in the PR description instead of building it.
+- **One milestone per PR.** Never start the next milestone in the same PR. Never push to `main` directly. Use the branch the session gives you (cloud sessions push to `claude/…`; that is fine, no need to mention it). PR title: `M<N>: <name>`.
+- Stay inside the spec's scope. If something seems needed that the spec excludes, ask in the PR instead of building it.
 - Keep `src/model` pure (no DOM, no three.js). Renderers read state; UI dispatches actions.
 - **No magic numbers** for boat geometry or tuning. They belong in `content/boat/hanse508.json`. If you add or change one, update `docs/BOAT_REFERENCE.md` (mark it as an assumption if it is a guess).
 - **IDs:** every mesh and rope gets an id from `content/registry/parts.json`; a rope control uses its rope's id (no registry entry of its own). Add new ids to the registry first, with `status: "draft"`.
+- **A new phase** starts with `/plan <N>` (Opus), which writes `docs/PHASE<N>_SPEC.md` (same structure as PHASE2_SPEC: a "how to use" section, one section per milestone with tests and "done when") and the milestones' checklists in WORKFLOW.md. Nothing else in this file needs changing.
 - **Sailing claims need sources.** Never "fix" a failing physics-truth test by editing the rule to match the code. If you believe a rule is wrong, explain why in the PR and leave the decision to the owner.
 - **Russian text:** never present AI-drafted Russian as verified. Registry status stays `draft` until a sailor reviews it.
 - **No copyrighted material** in the repo: no brochure PDFs or images, no copied text from courses or books. Facts and numbers are fine; cite the source.
 - Pin dependency versions. Prefer few dependencies.
 - **No session links or AI attribution lines** in commit messages, PR descriptions or code comments: no `Claude-Session:` links, no claude.ai session URLs, no `Co-Authored-By: Claude` trailers, no "Generated with Claude Code" footers. This rule overrides any default attribution behaviour.
+- **Keep `docs/CODE_MAP.md` current:** a PR that adds, removes or renames a file, or moves a responsibility, updates it.
+- **Issues:** a PR that builds or fixes a GitHub issue says `Closes #<n>` in its description, so the issue closes on merge.
+- **The owner's answers are recorded in the same PR, before merge:** a row in the ROADMAP decisions log, and "decided in the M<N> PR" notes in the spec section. No separate PR for this.
 
 ## Verification before you say "done"
 
 - `npm run typecheck`, `npm run lint`, `npm test` and `npm run build` all pass.
 - Every rule of the current phase in `PHYSICS_TRUTHS.md` relevant to your milestone has a test named after its id. Phase 1 rule tests keep passing.
-- **Visual work:** run `npm run shots` (Playwright, headless Chromium; available in the cloud environment, do not run `playwright install`). **Look at the PNGs yourself** at all three viewport sizes before claiming the milestone is done. Commit the milestone screenshot set to `docs/screenshots/` so the owner can see it in the PR.
+- **Browser checks** (`scripts/shots.mjs`, Playwright with headless Chromium; available in the cloud environment, do not run `playwright install`). New scenes and live checks go in `scripts/shots-m<N>.mjs`, registered in `shots.mjs` (import, `SCENES`, `liveGroups`).
+  - While building: `SHOTS_ONLY=m<N> npm run shots` runs your milestone's scenes and live checks at all sizes.
+  - **Look at 6–10 of the PNGs yourself** (in `shots/`, phone size first, then one wider size): the ones that show what your milestone changes. Do not open every file; the script already fails on console errors, wrong layouts, page scroll, unknown taps and failed live checks.
+  - **PNGs are not committed** (`shots/` is ignored) and do not go into the PR.
+  - The full set (every milestone's scenes at phone size plus every live and tap check) runs in CI as the `browser-checks` job on every PR. Run it yourself (`SHOTS_SIZES=phone npm run shots`) before opening the PR if you changed shared code (layout, store, URL, renderer, panel); otherwise let CI run it. If it fails, `SHOTS_ONLY=<milestone>` reruns the failing part.
 - If headless WebGL fails, try `--use-angle=swiftshader` / `--enable-unsafe-swiftshader`. If it still fails, say so plainly in the PR; do not guess what it looks like.
 - Report honestly: what works, what doesn't, what you could not check.
 
 ## PR description template
 
 ```
+<only if the spec marks the milestone's independent review as required:>
+> **Independent review required before you test:** new Code session, Opus, high effort, type `/review <N>`.
+
 ## What changed (plain language, no jargon)
 ## How to check on your phone
-<paste the milestone checklist from docs/WORKFLOW.md, adapted>
 Preview of this PR: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ (link also in the bot comment)
-Live site after merge: https://botrops1.github.io/sail-learn-and-train/
-## Screenshots
-<links to docs/screenshots/... files>
+<the milestone checklist from docs/WORKFLOW.md, every check a full preview link>
 ## Tests
-## Known limitations / questions for the owner
+## Questions for the owner
+<numbered; each one ends with "Recommended: …, because …">
+Reply "accept all" to take every recommendation, or e.g. "accept all except 2: …".
+## Known limitations
 ```
 
-**Test links are full links** (owner, PR #16): every test condition in "How to check on your phone" is written as a complete URL (tappable on a phone), never only the `?…` settings part. Point them at the PR's preview, `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?…`: open the PR first, then edit its description to fill in the real number. One link per check; say what to do after opening it.
+**Test links are full links** (owner, PR #16): every test condition in "How to check on your phone" is written as a complete URL (tappable on a phone), never only the `?…` settings part. Point them at the PR's preview, `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?…`: open the PR first, then edit its description to fill in the real number. One link per check; say what to do after opening it. **No screenshots in the PR** (owner, after M10): the owner opens the links instead.
 
-Keep explanations short and concrete. The owner reads on a phone and does not know sailing terms yet: when you use one, add three or four words in brackets the first time, e.g. "vang (the rope that pulls the boom down)".
+**Every question has a recommendation.** The owner does not know sailing or code; a question without a recommended answer forces them to ask another session. Put the trade-off in one sentence and recommend one option.
+
+Keep explanations short and concrete. The owner does not know sailing terms yet: when you use one, add three or four words in brackets the first time, e.g. "vang (the rope that pulls the boom down)".
 
 ## Commands (created in M0)
 
@@ -61,10 +92,10 @@ Keep explanations short and concrete. The owner reads on a phone and does not kn
 | `npm run build` | Production build into `dist/` |
 | `npm test` | Unit and data tests (Vitest) |
 | `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint` | ESLint |
-| `npm run shots` | Screenshots into `docs/screenshots/` |
+| `npm run lint` | ESLint and Prettier check |
+| `npm run shots` | Browser checks and screenshots into `shots/` (not committed); options at the top of `scripts/shots.mjs` |
 
-Deploy: GitHub Pages serves the `gh-pages` branch. `deploy.yml` builds `main` and publishes it to the branch root, `https://botrops1.github.io/sail-learn-and-train/` (Vite `base: '/sail-learn-and-train/'`). `pr-preview.yml` builds each PR from this repo (not forks) with base `/sail-learn-and-train/pr-preview/pr-<N>/`, publishes it to `pr-preview/pr-<N>/` on the same branch, keeps one PR comment with the link, and removes the folder when the PR closes. The footer of a preview shows the PR's commit.
+Deploy: GitHub Pages serves the `gh-pages` branch. `deploy.yml` builds `main` and publishes it to the branch root, `https://botrops1.github.io/sail-learn-and-train/` (Vite `base: '/sail-learn-and-train/'`). `pr-preview.yml` builds each PR from this repo (not forks) with base `/sail-learn-and-train/pr-preview/pr-<N>/`, publishes it to `pr-preview/pr-<N>/` on the same branch, keeps one PR comment with the link, and removes the folder when the PR closes. The footer of a preview shows the PR's commit. `ci.yml` runs `check` (typecheck, lint, tests, build) and the browser checks on every PR, in parallel parts summed up as `browser-checks`.
 
 ## License
 

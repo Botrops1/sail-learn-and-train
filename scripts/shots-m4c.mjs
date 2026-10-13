@@ -21,7 +21,7 @@ export const M4C_SCENES = [
   {
     name: 'starboard-handle-in-winch',
     query:
-      '?mode=realistic&st=starboard&hd=starboard.w&wsb=a5.4.t&wd=90&ws=25&js=30&sel=rope_jib_sheet&cam=helm',
+      '?mode=realistic&st=starboard&hd=starboard.w&wsb=a5.4.t&wd=90&ws=30&js=30&sel=rope_jib_sheet&cam=helm',
     centre: '[data-testid="station-drawing-starboard"] .real-drum',
   },
   {
@@ -142,12 +142,13 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 2. PT-19: the handle in the starboard winch, jib sheet heavily loaded (25 kn).
+  // 2. PT-19: the handle in the starboard winch, jib sheet heavily loaded (30 kn since M8, as
+  // the PT-19 unit test: the loads come from the sail forces).
   {
     const { context, page } = await openPage(
       phone,
       'm4c pt19',
-      '?mode=realistic&wd=90&ws=25&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w&sel=rope_jib_sheet&cam=helm',
+      '?mode=realistic&wd=90&ws=30&js=30&st=starboard&wsb=a5.4.t&hd=starboard.w&sel=rope_jib_sheet&cam=helm',
     );
     await page.waitForTimeout(600);
     const cdp = await context.newCDPSession(page);

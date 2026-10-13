@@ -99,7 +99,7 @@ Reference sketches generated from the data file (they show exactly what the 3D m
 - [`reference/hanse508-side.svg`](reference/hanse508-side.svg)
 - [`reference/hanse508-plan.svg`](reference/hanse508-plan.svg)
 
-`npm run shots` also renders the 3D model at the sketches' scale with the sketch laid on top (`docs/screenshots/<milestone>/compare-*-model-vs-sketch.png`), to check the proportions.
+`npm run shots` also renders the 3D model at the sketches' scale with the sketch laid on top (`shots/compare-*-model-vs-sketch.png`), to check the proportions.
 
 ## 4. Ropes, clutches and controls
 
