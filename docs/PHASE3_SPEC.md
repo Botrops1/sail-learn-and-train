@@ -441,7 +441,7 @@ Live checks (`liveM14Checks`):
 - Coastal link: the status line reads `Waves 0.7 m high, one every 3.8 s, from 090°`; after 2 s the debug overlay (`&debug=1`) shows a heave (`/heave (-?\d+\.\d+)/`) whose absolute value is above 0.005 at least once in 5 readings 0.5 s apart.
 - Tap `sea-open`: the status changes to a height of 1.5 m (15 kn over 150 km), the address bar gets `sea=open`; tap `sea-coastal`: `sea` disappears from the address bar.
 - Pause (#32): with `?wd=90&ws=15`, press Pause (`pause-button`), wait 300 ms, take two element screenshots of `canvas.scene-canvas` 1 s apart: the PNG buffers are identical.
-- `?wd=90&ws=15&held=1&debug=1`: Held still, the wave motion rows show a non-zero roll; the strip still says "Held still".
+- `?wd=90&ws=15&held=1&debug=1`: Held still, the wave motion rows show a non-zero roll; the top line (the instrument strip) still says "Held still", while the time bar shows Pause instead of its "Held still" chip (the water moves).
 - Tap on open water: the info card shows "Water surface".
 - Register in `shots.mjs`: import, `...M14_SCENES` with the `m14-` prefix, `liveGroups.m14`.
 - **Older scenes and checks keep their Phase 2 picture:** `openPage` in `shots.mjs` adds `sea=flat` to the link of every scene and check whose label does not match `/m1[4-9]/` and whose query has no `sea=` (the same way it adds `held=1` for the Phase 1 ones; skip it when the query already has `sea=`). Without it the boat would rock under the tap sweep and the Phase 2 checks. The general checks that compare the whole address bar (`expectUrl` in `shots.mjs`, the strings ending in `&held=1`) expect `sea=flat` in the place `serializeUrlState` writes it (after the boat and wind-mode parameters, so `…&held=1&sea=flat…`); any other check that compares `window.location.search` gets the same.
@@ -460,7 +460,7 @@ No feedback from the waves into the sailing (M15). No whitecaps, gust patches, b
 Open points decided while building (the owner's answers on the PR are added below when they come):
 
 - **Debug rows:** the two wave rows (`waves`, `wave motion`) come after the `Build` row, as "at the end of the list" says.
-- **Time bar in Held still with waves:** Pause shows (6.4), but the speed part (`timeSpeedAvailable`) is unchanged: with a steady wind in Held still it stays hidden, so the waves cannot be sped up there. Sailing, or any wind mode other than Steady, shows it as before. (Question 1 on the PR.)
+- **Time bar in Held still with waves:** Pause shows (6.4), but the speed part (`timeSpeedAvailable`) is unchanged: with a steady wind in Held still it stays hidden, so the waves cannot be sped up there. Sailing, or any wind mode other than Steady, shows it as before. (Owner, after the independent review: kept as it is; a version with speed buttons was tried and reverted.)
 - **Wake height:** `heightAt` is evaluated at each ribbon edge vertex (its own map offset from the boat), not once per ribbon point, so the ribbon lies on the waves across its width.
 - **`isSeaSetting`** takes the boat data as an optional second argument (like the other helpers), so the list of settings stays in `hanse508.json` (`waves.settings`).
 - **Tap plane:** the invisible pick plane is the old flat plane (turned flat, 600 m); the wave mesh and the grid are not tappable on their own.

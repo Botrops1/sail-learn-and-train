@@ -92,7 +92,7 @@ export async function liveM14Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // Held still: she still rolls on the waves; the time bar still says "Held still" in Flat only.
+  // Held still: she still rolls on the waves; the top line says "Held still"; the time bar shows Pause, and the "Held still" chip only in Flat.
   {
     const { context, page } = await openPage(phone, 'm14 held', '?wd=90&ws=15&held=1&debug=1');
     await page.waitForTimeout(3000);
@@ -107,6 +107,8 @@ export async function liveM14Checks({ openPage, viewports, outDir, prefix, probl
       rolls.some((value) => Math.abs(value) > 0.1),
       rolls.join(' '),
     );
+    const topLine = (await page.getByTestId('strip-speed').textContent())?.trim();
+    check('the top line says Held still', topLine === 'Held still', JSON.stringify(topLine));
     const pause = await page.getByTestId('pause-button').isVisible();
     const chip = await page.getByTestId('held-chip').isVisible();
     check('Held still with waves keeps Pause', pause && !chip, `pause ${pause}, chip ${chip}`);
