@@ -7,7 +7,14 @@ import { boatMassKg, hullResistance, type Resistance } from './hullResistance';
 import { sailForces, type SailForces } from './sailForces';
 import { initialRig, type RigState } from './sim';
 import type { SailDamage } from './trim';
-import { initialWaveMotion, stepWaveMotion, type WaveMotion } from './waveMotion';
+import {
+  addedResistanceN,
+  initialWaveMotion,
+  rigMotion,
+  stepWaveMotion,
+  waveYawDeg,
+  type WaveMotion,
+} from './waveMotion';
 import type { WaveTrain } from './waves';
 
 /**
@@ -69,7 +76,7 @@ export interface MotionInputs {
   rudderLimitDeg?: number;
   /** Flogging damage (M9): a torn sail gives less force. Missing = new sails. */
   damage?: SailDamage;
-  /** The wave trains now (M14); missing = none. Nothing in the physics reads them yet. */
+  /** The wave trains now (M14); missing = none (M15: they act on the sails, the steering and the speed). */
   trains?: readonly WaveTrain[];
 }
 
@@ -86,6 +93,13 @@ export interface MotionReport {
   effectiveRudderDeg: number;
   /** She is turning into the wind by herself (the alert stays set for 3 s). */
   roundUp: boolean;
+  /**
+   * The waves' action in the last substep (M15; 0 in Held still): extra resistance (N, raw), the
+   * extra rudder they give (degrees) and the sails' sideways speed from rolling (m/s).
+   */
+  waveResistanceN: number;
+  waveYawDeg: number;
+  rigSideMps: number;
 }
 
 const NO_TRAINS: readonly WaveTrain[] = [];
@@ -139,7 +153,15 @@ export function stepBoat(
   for (let i = 0; i < count; i += 1) {
     if (!held) waves = stepWaveMotion(waves, trains, speedMps, headingDeg, h, data);
     const twaDeg = wrap180(inputs.windDirDeg - headingDeg);
-    const wind = apparentWind(inputs.twsKn, twaDeg, speedMps, data);
+    // The rocking moves the sails through the air (M15): they feel it as a swing in the wind.
+    const rocking = held ? { forwardMps: 0, sideMps: 0 } : rigMotion(waves, data);
+    const wind = apparentWind(
+      inputs.twsKn,
+      twaDeg,
+      speedMps + rocking.forwardMps,
+      data,
+      rocking.sideMps,
+    );
     const forces = sailForces(
       inputs.rig,
       inputs.controls,
@@ -150,7 +172,13 @@ export function stepBoat(
       inputs.damage,
     );
     const resistance = hullResistance(speedMps, forces.sideN, heelDeg, inputs.rudderDeg, data);
-    const makeReport = (grip: number, effectiveRudderDeg: number, roundUp: boolean) => ({
+    const makeReport = (
+      grip: number,
+      effectiveRudderDeg: number,
+      roundUp: boolean,
+      waveResistance = 0,
+      waveYaw = 0,
+    ): MotionReport => ({
       forces,
       resistance,
       awsKn: wind.awsKn,
@@ -161,6 +189,9 @@ export function stepBoat(
       grip,
       effectiveRudderDeg,
       roundUp,
+      waveResistanceN: waveResistance,
+      waveYawDeg: waveYaw,
+      rigSideMps: held ? 0 : rocking.sideMps,
     });
     if (held) {
       report = makeReport(1, inputs.rudderDeg, false);
@@ -168,7 +199,8 @@ export function stepBoat(
     }
 
     const push = forces.driveN + forces.windageN + inputs.engineThrustN;
-    const acceleration = (push - Math.sign(speedMps) * resistance.totalN) / mEff;
+    const waveResistance = addedResistanceN(speedMps, headingDeg, trains, data);
+    const acceleration = (push - Math.sign(speedMps) * resistance.totalN - waveResistance) / mEff;
     const before = speedMps;
     speedMps += acceleration * h;
     if (before !== 0 && Math.sign(speedMps) !== Math.sign(before)) {
@@ -191,8 +223,11 @@ export function stepBoat(
 
     // Steering: the rudder loses grip as she heels, and the heel itself turns her to windward.
     const gripNow = interpTable(heelData.rudderGripByHeelDeg, Math.abs(heelDeg));
-    const turnRudderDeg = gripNow * inputs.rudderDeg - heelData.weatherHelmDegPerDegHeel * heelDeg;
-    const rTarget = (speedMps * Math.tan(turnRudderDeg * DEG)) / turnLengthM;
+    const effectiveRudderDeg =
+      gripNow * inputs.rudderDeg - heelData.weatherHelmDegPerDegHeel * heelDeg;
+    // The waves push on the bow like extra rudder (M15).
+    const waveYaw = waveYawDeg(waves, trains, headingDeg, data);
+    const rTarget = (speedMps * Math.tan((effectiveRudderDeg + waveYaw) * DEG)) / turnLengthM;
     const rNow = yawRateDegS * DEG;
     yawRateDegS = (rNow + (rTarget - rNow) * (1 - Math.exp(-h / yawLagS))) / DEG;
     headingDeg = wrap360(headingDeg + yawRateDegS * h);
@@ -206,7 +241,7 @@ export function stepBoat(
       Math.abs(heelDeg) >= heelData.roundUpMinHeelDeg && intoWind && rudderAgainst
         ? ROUND_UP_HOLD_S
         : Math.max(0, roundUpS - h);
-    report = makeReport(gripNow, turnRudderDeg, roundUpS > 0);
+    report = makeReport(gripNow, effectiveRudderDeg, roundUpS > 0, waveResistance, waveYaw);
   }
   if (!report) throw new Error('stepBoat: no substep ran');
   // Held still: the boat is returned as it is (the store has already zeroed its speed), with
@@ -243,13 +278,20 @@ export interface SteadyState {
  * (PHASE2_SPEC 6.3): for links without `bs`, Reset and the calibration tests. With `opts.heel`
  * she also heels until the righting moment balances the sails' heeling moment (M8), and the
  * heel takes drive away. `opts.engineThrustN` (M12) adds the engine's push, ahead only: a link
- * with the engine running opens at the speed it gives.
+ * with the engine running opens at the speed it gives. `opts.trains` (M15) adds the waves' extra
+ * resistance; the rocking is left out (it averages out).
  */
 export function steadyState(
   controls: Controls,
   headingDeg: number,
   data: BoatData = hanse508,
-  opts: { heel?: boolean; windDirDeg?: number; twsKn?: number; engineThrustN?: number } = {},
+  opts: {
+    heel?: boolean;
+    windDirDeg?: number;
+    twsKn?: number;
+    engineThrustN?: number;
+    trains?: readonly WaveTrain[];
+  } = {},
 ): SteadyState {
   const dirDeg = opts.windDirDeg ?? controls.ctl_wind_dir;
   const twsKn = opts.twsKn ?? controls.ctl_wind_speed;
@@ -286,7 +328,8 @@ export function steadyState(
         forces.driveN +
         forces.windageN +
         thrustN -
-        hullResistance(mid, forces.sideN, heelDeg, 0, data).totalN;
+        hullResistance(mid, forces.sideN, heelDeg, 0, data).totalN -
+        addedResistanceN(mid, headingDeg, opts.trains ?? NO_TRAINS, data);
       if (net > 0) low = mid;
       else high = mid;
     }

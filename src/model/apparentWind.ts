@@ -10,16 +10,19 @@ export interface ApparentWind {
 /**
  * The wind the moving boat feels (PHASE2_SPEC 6.3; PT-20): the true wind plus the headwind of
  * the boat's own speed. `twaDeg` is the true wind angle to the bow, + = from starboard.
+ * `sideMps` (M15) is the sails' own sideways speed from rolling, + = to starboard: moving to
+ * starboard, the wind seems to come more from starboard.
  */
 export function apparentWind(
   twsKn: number,
   twaDeg: number,
   speedMps: number,
   data: BoatData = boat,
+  sideMps = 0,
 ): ApparentWind {
   const tws = knToMps(twsKn, data);
   const ax = tws * Math.cos(twaDeg * DEG) + speedMps;
-  const az = tws * Math.sin(twaDeg * DEG);
+  const az = tws * Math.sin(twaDeg * DEG) + sideMps;
   const awsKn = mpsToKn(Math.hypot(ax, az), data);
   if (awsKn < 1e-6) return { awsKn, awaDeg: twaDeg };
   return { awsKn, awaDeg: Math.atan2(az, ax) / DEG };

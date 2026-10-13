@@ -584,7 +584,24 @@ No change to heel dynamics (the waves do not push the heel; the wave roll is dra
 
 ### 7.10 Decided in the M15 PR
 
-(Filled in by the M15 builder: what this section left open, and the owner's answers on the PR.)
+Built as specified; every test band passed on the first run with the spec's data, so no tunable key was touched. The measured values equal the prototype's: PT-41 standard deviation 2.42° (range 10.1°), Flat 3e-12°; Sheltered 2.07°; PT-42 rudder 5.15°, heading 1.35°, from 45: 0.93°, Flat 8e-7°; PT-43 loss 0.89 kn (Open sea, from 45), 0.13 kn (from 135), 0.27 kn (Coastal, from 45).
+
+What the spec left open (decided in the M15 PR):
+
+- **Where the heading comes from.** `waveYawDeg` and `addedResistanceN` use the heading at the start of the substep; `rigMotion` uses the wave motion after that substep's `stepWaveMotion`, as 7.3 says.
+- **Cached height.** `rigMotion` computes the mainsail's centre-of-effort height once per data object (a `WeakMap` in `waveMotion.ts`).
+- **Held still.** `motionOf` returns `velocity [0, 0, 0]` when `boat.mode === 'held'`; the three new `MotionReport` fields are 0 there.
+- **Debug row.** `wave push` writes a negative yaw with a true minus sign (`−1.2`) and a positive one with `+`.
+- **Test helpers.** `tests/motionHelpers.ts` gains `sampleRun` (as 7.6 asks), plus `mean` and `stdDev` (population).
+- **Browser checks.** The speed check opens the Open-sea and Flat pages side by side and reads both after the same 30 s; the strip's speed is parsed as the first decimal number in its text.
+- **PT-43 source.** Tried again (a web search for added resistance of a sailing boat in head waves): only ship papers (added resistance is largest in head seas) and a forum thread turned up, nothing about a cruising yacht's heading. Status stays `to-verify`.
+- **Tests changed in older files** (7.6 item 9): only `tests/urlState.test.ts` (the two speed tests pass `trains: waveTrains(state.sea)` to `steadyState`) and M14's "does not change the sailing" test in `tests/physicsTruths3.test.ts` (deleted; the spec names `tests/waves.test.ts`, but M14 wrote it in `physicsTruths3.test.ts`). No Phase 1/2 test needed `&sea=flat`.
+
+Owner's answers (PR comment, "accept all" after the independent review):
+
+- **PT-43 stays `to-verify`**; the Sailing World article "sailing in chop" (Bill Gladstone, 2020) is added to its candidate sources in `PHYSICS_TRUTHS.md`. It supports only the first half of the rule (head seas slow her).
+- **Which way the waves turn the bow is unchecked** (review finding 1). The code turns the bow towards the side that rolls down (`yaw = +5 × roll × factor`, `waveYawDeg`), as the spec's prototype did. Sailors describe a wave from behind turning the bow towards the waves and the wind (a broach), which would be the opposite sign. No test depends on the sign and the phone shows only that the wheel moves. **To do before Phase 3 ends: `/plan` or a sailor checks the direction** (M19 should not sign off without it); if it is backwards, flip the sign of `waveYawDeg` and its tests.
+- Review findings 3 (PT-42's ranking 1.0 from behind against 0.4 from ahead stays a marked assumption), 4 (the Heeling-a-lot banner on the head-seas link is M8 heel physics) and 5 (the debug row's hyphen and `-0.0`) are left as they are.
 
 ---
 
@@ -1006,7 +1023,7 @@ The agent cannot measure a phone (headless software rendering says nothing about
 
 ### 11.5 Done when
 
-Every item of section 12 is ticked in the PR: the agent ticks what tests, CI and the browser checks show; the owner ticks the phone-only items ("smooth on the owner's phone", "the boat stays readable at night") from the checklist. CI `browser-checks` is green. No `Closes` line (#26 and #32 were closed by M17 and M14).
+Every item of section 12 is ticked in the PR: the agent ticks what tests, CI and the browser checks show; the owner ticks the phone-only items ("smooth on the owner's phone", "the boat stays readable at night") from the checklist. CI `browser-checks` is green. The direction the waves turn the bow (7.10, "Decided in the M15 PR") has been checked by `/plan` or a sailor. No `Closes` line (#26 and #32 were closed by M17 and M14).
 
 ## 12. Definition of Done (Phase 3)
 
