@@ -1028,6 +1028,19 @@ Calm water (TWS 0), heading held, steady speed after 120 s:
 
 `m12-engine-easy`, `m12-engine-helm`, `m12-motoring` (`?ws=0&eng=1&lv=65`). Done when all M12 checks pass.
 
+### 12.7 Decided in the M12 PR
+
+Things the spec left open or did not foresee (each is "decided in the M12 PR"):
+
+- **Calibration (no tuning needed):** from rest in calm water with the wheel centred, after 120 s the boat reaches 3.01 kn at idle (lever 11), 7.87 kn at 1,850 rpm (lever 65.6), 9.28 kn at full ahead and 4.88 kn astern, all inside the bands of 12.5. Settled values (600 s) are 3.26, 7.87, 9.28 and −4.88 kn: the spec's prototype values (3.33, 7.97, 9.35, 5.1) are 1–2 % higher; idle is slow to settle (about 50 s time constant) and passes its lower band by 0.01 kn at 120 s. No data value was changed.
+- **A link opens settled, with the engine's push:** `steadyState` takes an optional `engineThrustN`, so `?eng=1&lv=66` opens at the 8 kn it gives instead of accelerating from 0 (as links without `bs` open at the sails' steady speed). Astern thrust is not part of it (the search is for speeds ahead): a link with the lever astern opens at rest and she backs away.
+- **The autopilot does not steer while she goes astern** (`speed < 0`): the rudder turns her the other way then, so a heading hold would turn her away (in the first run she circled). It stays in its mode and the Autopilot block says "The autopilot does not steer while she goes astern (backwards): you steer."
+- **Gearbox:** moving the lever into the neutral band shifts to neutral at once; going from one side straight to the other waits `gearShiftDelayS` in neutral; engaging from neutral (lever dragged slowly through the middle) is immediate. The rpm keeps following the lever in neutral (the engine revs, then the gear goes in with the thrust of those rpm).
+- **Held still:** the engine runs, the rpm shows, the boat stays put. Reset stops the engine and centres the lever.
+- **Where the lever is drawn:** the Helm lever is in `ui/enginePanel.ts` (`createEngineLever`) with the Easy-mode block (`createEnginePanel`), not in `ui/stationDrawing.ts`: the Helm station has no drawing there and the file is already very long. The lever is a vertical track (ahead at the top, astern at the bottom, the neutral band shaded), dragged with a finger, also a keyboard slider (arrows move it by the step; the Easy slider uses the same step).
+- **Strip:** `Engine 1,850 rpm` (rpm rounded to 10) sits in the strip's badge row, the third line, which shows only while a badge does.
+- **Tests:** `tests/engine.test.ts` (model, calm-water bands, shifting, motor-sailing, PT-35 engine cases, autopilot astern, store, link). Motor-sailing uses `steadyState` with heel and the sheet grid of 6.3: sails alone vs engine alone (sails furled) vs both.
+
 ---
 
 ## 13. M13: Polish and Phase 2 sign-off

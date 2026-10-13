@@ -6,7 +6,7 @@ Where things are, so a session can go straight to the right file instead of sear
 
 `src/main.ts` → `app/app.ts` builds the layout, the 3D scene and the panel, then runs the frame loop: each `requestAnimationFrame` dispatches `{ type: 'step', dt }` to the store (`app/store.ts`), which advances the pure model (`model/sim.ts` and the Phase 2 modules, order in PHASE2_SPEC 4.2), then the renderers and panels read the new state. UI code only dispatches actions; it never changes state directly. `app/urlSync.ts` writes the state into the address bar.
 
-Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `setCameraPreset`, `setDetail`, `setLabels`, `setLegend`, `setDebug`, `setStep`, `setPaused`, `setRopesMode`, `realistic` (Realistic-mode gestures), `setBoatMode` (Held still / Sailing), `autopilot`, `setWindMode`, `newWindPattern`, `setWindSize`, `setTimeBar`, `setTimeScale`, `repairSails`.
+Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `setCameraPreset`, `setDetail`, `setLabels`, `setLegend`, `setDebug`, `setStep`, `setPaused`, `setRopesMode`, `realistic` (Realistic-mode gestures), `setBoatMode` (Held still / Sailing), `autopilot`, `setWindMode`, `newWindPattern`, `setWindSize`, `setTimeBar`, `setTimeScale`, `repairSails`, `engine` (start, stop, lever).
 
 ## `content/` (data, no code)
 
@@ -45,6 +45,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `heel.ts`, `sheetLoads.ts` | Heel and weather helm; sheet loads from the sail forces. |
 | `autopilot.ts` | Standby / heading / wind-angle autopilot. |
 | `trim.ts` | Trim states (luffing, good, stalled, …), telltales, blanketing, flogging damage. |
+| `engine.ts` | Engine: lever → rpm and gear (through neutral), thrust along the bow. |
 | `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. |
 | `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying wind; time-bar scales. |
 | `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail, map frame, the track. |
@@ -73,6 +74,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `clutchDrawing.ts` | The clutch-bank drawing. |
 | `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: stations, gestures, Mast station, winch handle and strain bar. |
 | `windPanel.ts`, `windModePanel.ts`, `windIndicator.ts`, `windInstrument.ts` | Wind tab, wind modes, the alert stack over the 3D view (gybe, by the lee, heel, round-up), wind instrument dial. |
+| `enginePanel.ts` | Engine block of the Ropes tab (Start/Stop, lever slider, tachometer) and the lever at the Helm station. |
 | `gybeReport.ts` | The gybe report (boom speed, energy, peak main sheet load) in the alert stack. |
 | `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, autopilot, Sails block, time bar. |
 | `mapView.ts` | Bird's-eye map (`cam=map`). |

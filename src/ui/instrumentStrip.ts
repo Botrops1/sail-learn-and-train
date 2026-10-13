@@ -6,6 +6,7 @@ import { t } from './i18n';
 import { setText } from './stepper';
 import { sideLetter } from './autopilotPanel';
 import { boat as boatData } from '../model/boat';
+import { rpmNumber } from './enginePanel';
 
 /** Collapses the space left where a wind straight ahead or astern has no side letter. */
 function tidy(text: string): string {
@@ -44,6 +45,7 @@ export function createInstrumentStrip(
     t('instruments.gust'),
   ]);
   const timeScale = el('span', { class: 'strip-time', 'data-testid': 'strip-time' });
+  const engine = el('span', { class: 'strip-engine', 'data-testid': 'strip-engine', hidden: '' });
   const worn = el(
     'span',
     {
@@ -57,7 +59,7 @@ export function createInstrumentStrip(
   const trueWind = el('span', { 'data-testid': 'strip-true' });
   const apparent = el('span', { 'data-testid': 'strip-apparent' });
   // GUST and ×4 / ×16 (M10) get a row of their own, only while one shows: the first line is full.
-  const flags = el('span', { class: 'strip-line strip-flags' }, [worn, gust, timeScale]);
+  const flags = el('span', { class: 'strip-line strip-flags' }, [worn, gust, timeScale, engine]);
   const strip = el(
     'button',
     {
@@ -124,7 +126,11 @@ export function createInstrumentStrip(
       boatData.physics.trim.flogging.warnAt;
     if (worn.hidden === wearing) worn.hidden = !wearing;
     // The third row exists only while a badge shows (the first row is full on a phone).
-    const flagged = gusting || sped || wearing;
+    // The engine's rpm shows while it runs (M12).
+    const running = state.engine.running;
+    setText(engine, running ? t('instruments.engine', { rpm: rpmNumber(state.engine.rpm) }) : '');
+    engine.hidden = !running;
+    const flagged = gusting || sped || wearing || running;
     if (flags.hidden === flagged) flags.hidden = !flagged;
     const wind = rig.wind;
     setText(trueWind, windText('instruments.true', wind.twaDeg, wind.twsKn));
