@@ -181,14 +181,13 @@ describe('the gybe in the rig (PHASE2_SPEC 11.2)', () => {
     expect(sweep?.kind).toBe('sweep');
     expect(sweep?.fromDeg).toBeLessThan(-60);
     expect(sweep?.toDeg).toBeGreaterThan(60);
-    rig = run(rig, -165, 3.5);
+    rig = run(rig, -165, 3.2);
     expect(rig.gybing).toBe(false);
     // Just after: still shown, fading.
     const flash = dangerZone(rig);
-    if (flash) {
-      expect(flash.kind).toBe('sweep');
-      expect(flash.strength).toBeLessThan(1);
-    }
+    expect(flash).not.toBeNull();
+    expect(flash?.kind).toBe('sweep');
+    expect(flash?.strength).toBeLessThan(1);
     rig = run(rig, -165, boat.physics.gybe.dangerFlashS + 0.2);
     expect(dangerZone({ ...rig, solution: { ...rig.solution, byTheLee: false } })).toBeNull();
   });

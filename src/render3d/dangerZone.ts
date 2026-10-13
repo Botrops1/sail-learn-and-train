@@ -11,7 +11,7 @@ const DEG = Math.PI / 180;
  * The boom's danger zone (PHASE2_SPEC 11.3, `env_boom_danger_zone`): a translucent red fan at
  * the gooseneck's height from the angle the boom starts at to the angle where it stops, with the
  * boom's length as radius. Solid while the boom crosses and for `dangerFlashS` after; a faint
- * outline of the same fan while the boom is by the lee. It is a picture, not a tap target.
+ * fan with an outline while the boom is by the lee. It is a picture, not a tap target.
  */
 export interface DangerZoneView {
   object: THREE.Group;
@@ -105,9 +105,9 @@ export function buildDangerZone(): DangerZoneView {
       if (!zone) return;
       setSector(zone.fromDeg, zone.toDeg);
       const sweep = zone.kind === 'sweep';
-      fill.visible = sweep;
-      fillMaterial.opacity = c.fillOpacity * zone.strength;
-      outlineMaterial.opacity = sweep ? c.outlineOpacity * zone.strength : c.outlineOpacity * 0.6;
+      // By the lee the fan is faint but filled, so it can be seen on a phone; crossing it is solid.
+      fillMaterial.opacity = sweep ? c.fillOpacity * zone.strength : c.riskFillOpacity;
+      outlineMaterial.opacity = c.outlineOpacity * (sweep ? zone.strength : 1);
     },
   };
 }
