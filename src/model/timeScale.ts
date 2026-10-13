@@ -47,3 +47,16 @@ export function timeSpeedAvailable(
 ): boolean {
   return timeBar && (boatMode === 'sailing' || windMode !== 'steady');
 }
+
+/**
+ * Whether Pause means anything (issue #34): in Held still with a steady wind and Easy ropes
+ * nothing changes with time, so the bar shows a "Held still" chip instead. Realistic mode keeps
+ * Pause (winching and easing take time); Sailing and a changing wind need it too.
+ */
+export function pauseAvailable(
+  boatMode: 'sailing' | 'held',
+  windMode: WindModeId,
+  ropesMode: 'easy' | 'realistic',
+): boolean {
+  return boatMode === 'sailing' || windMode !== 'steady' || ropesMode === 'realistic';
+}

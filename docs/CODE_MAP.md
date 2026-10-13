@@ -47,7 +47,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `trim.ts` | Trim states (luffing, good, stalled, …), telltales, blanketing, flogging damage. |
 | `engine.ts` | Engine: lever → rpm and gear (through neutral), thrust along the bow. |
 | `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. In almost no wind the swing is handed to the normal boom spring (limits in `physics.gybe`). |
-| `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying wind; time-bar scales. |
+| `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying wind; time-bar scales, where the speed part shows, and where Pause is replaced by the "Held still" chip. |
 | `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail, map frame, the track. |
 
 ## `src/render3d/` (three.js; reads state, never changes it)
@@ -76,7 +76,7 @@ Store actions: `step`, `setControls`, `select`, `reset`, `load` (from a link), `
 | `windPanel.ts`, `windModePanel.ts`, `windIndicator.ts`, `windInstrument.ts` | Wind tab, wind modes, the alert stack over the 3D view (gybe, by the lee, heel, round-up), wind instrument dial. |
 | `enginePanel.ts` | Engine block of the Ropes tab (Start/Stop, lever slider, tachometer) and the lever at the Helm station. |
 | `gybeReport.ts` | The gybe report (boom speed, energy, peak main sheet load) in the alert stack. |
-| `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, autopilot, Sails block, time bar. |
+| `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, autopilot, Sails block, time bar (with the "Held still" chip in place of Pause). |
 | `mapView.ts` | Bird's-eye map (`cam=map`). |
 | `cameraBar.ts`, `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | Camera buttons, part card, 3D labels, debug overlay, error messages. |
 

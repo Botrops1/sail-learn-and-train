@@ -310,7 +310,8 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // The bar has nothing to do while held still with a steady wind: only Pause.
+  // The bar has nothing to do while held still with a steady wind: a "Held still" chip, no Pause
+  // (issue #34); a tap on the chip explains where to change it.
   {
     const { context, page } = await openPage(
       phone,
@@ -319,16 +320,110 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     );
     await page.waitForTimeout(500);
     check(
-      'held, steady: only Pause shows',
-      (await page.getByTestId('pause-button').isVisible()) &&
+      'held, steady: the "Held still" chip shows, no Pause, no time bar',
+      (await text(page, 'held-chip')) === 'Held still' &&
+        !(await page.getByTestId('pause-button').isVisible()) &&
         !(await page.getByTestId('time-fold').isVisible()) &&
         !(await page.getByTestId('time-fastest').isVisible()),
-      'only Pause',
+      'chip only',
     );
     check(
       'held, steady: no badge (the scale is 1)',
       !(await page.getByTestId('strip-time').isVisible()),
       'hidden',
+    );
+    check(
+      'held, steady: the note is closed at first',
+      !(await page.getByTestId('held-note').isVisible()),
+      'hidden',
+    );
+    await page.getByTestId('held-chip').click();
+    const note = (await page.getByTestId('held-note').textContent()) ?? '';
+    check(
+      'held chip: a tap opens the note that names the Wind tab',
+      (await page.getByTestId('held-note').isVisible()) && /Wind tab/.test(note),
+      note,
+    );
+    const noteBox = await page.evaluate(() => {
+      const box = document.querySelector('[data-testid="held-note"]').getBoundingClientRect();
+      return { left: box.left, right: box.right, width: window.innerWidth };
+    });
+    check(
+      'held chip: the note fits the screen',
+      noteBox.left >= 0 && noteBox.right <= noteBox.width,
+      JSON.stringify(noteBox),
+    );
+    await shot(page, 'live-phone-held-chip-note');
+    await page.getByTestId('held-chip').click();
+    check(
+      'held chip: a second tap closes the note',
+      !(await page.getByTestId('held-note').isVisible()),
+      'hidden',
+    );
+    // Switching to Sailing brings Pause back.
+    await page.getByRole('tab', { name: 'Wind' }).click();
+    await page.getByTestId('boat-mode').getByText('Sailing', { exact: true }).click();
+    await page.waitForTimeout(300);
+    check(
+      'held chip: Sailing brings Pause back',
+      (await page.getByTestId('pause-button').isVisible()) &&
+        !(await page.getByTestId('held-chip').isVisible()),
+      'Pause',
+    );
+    await context.close();
+  }
+
+  // Held still in Realistic mode keeps Pause (winching takes time).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm10 time bar held realistic',
+      '?mode=realistic&wd=60&ws=12&held=1',
+    );
+    await page.waitForTimeout(500);
+    check(
+      'held, Realistic: Pause stays, no chip',
+      (await page.getByTestId('pause-button').isVisible()) &&
+        !(await page.getByTestId('held-chip').isVisible()),
+      'Pause',
+    );
+    await context.close();
+  }
+
+  // The wind speed slider follows a wind mode (issue #33).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm10 wind slider follows',
+      '?wd=60&ws=8&held=1&wm=build&tx=16',
+    );
+    await page.getByRole('tab', { name: 'Wind' }).click();
+    await page.waitForTimeout(12000);
+    const read = await page.evaluate(() => ({
+      slider: Number(document.querySelector('#wind-speed').value),
+      now: document.querySelector('[data-testid="wind-now"]').textContent,
+      label: document.querySelector('label[for="wind-speed"]').parentElement.textContent,
+    }));
+    const nowKn = Number(/Wind now: (\d+) kn/.exec(read.now)?.[1]);
+    check('building: the slider is above the starting 8 kn', read.slider > 8, JSON.stringify(read));
+    check(
+      'building: the slider matches "Wind now" under the compass (±1 kn)',
+      Math.abs(read.slider - nowKn) <= 1 && read.label.includes(`${read.slider} kn`),
+      JSON.stringify(read),
+    );
+    check(
+      'building: the slider explains itself',
+      await page.getByTestId('wind-speed-hint').isVisible(),
+      'visible',
+    );
+    await shot(page, 'live-phone-wind-slider-building');
+    await page.getByText('Steady', { exact: true }).click();
+    await page.waitForTimeout(300);
+    check(
+      'steady: the slider shows the set 8 kn, no explanation',
+      (await page.locator('#wind-speed').inputValue()) === '8' &&
+        !(await page.getByTestId('wind-speed-hint').isVisible()),
+      await page.locator('#wind-speed').inputValue(),
     );
     await context.close();
   }

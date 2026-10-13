@@ -39,7 +39,7 @@ The idea Phase 3 must teach:
 - Winds that follow the clock (Maestral sea breeze), scripted wind, exercises (Phase 6). Time scales faster than ×16 (Phase 6, owner 2026-10-12).
 - Navigation lights and rules of the road (later "Navigation" module, owner). Swell from a distant storm (waves come from the local wind only). Breaking waves, spray, the boat's own bow wave, water on deck, seasickness.
 - Waves in shallow water (the model is for deep water). The camera does not ride the waves (as it does not heel since M8).
-- Issues **#33** (wind slider in changing wind) and **#34** (Pause button in Held still): fixed with `/bug` before M14, not in this phase (owner).
+- Issues **#33** (wind slider in changing wind) and **#34** (Pause button in Held still): fixed before Phase 3 (PR #42). M14 extends #34's rule for waves (6.4).
 
 If something here looks necessary, stop and ask in the PR.
 
@@ -185,7 +185,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 ### 6.1 Files
 
 New: `content/areas/adriatic.json`, `src/model/area.ts`, `src/model/waves.ts`, `src/model/waveMotion.ts`, `src/render3d/waterSurface.ts`, `src/ui/wavesPanel.ts`, `tests/waves.test.ts`, `tests/physicsTruths3.test.ts`, `scripts/shots-m14.mjs`.
-Changed: `content/boat/hanse508.json` (top-level `waves`, `physics.waveResponse`), `src/app/urlSync.ts`, `src/model/angles.ts` and `src/model/boomSolver.ts` (3.2), `src/model/mapFrame.ts` (`boatToMap`), `src/model/motion.ts` (`BoatState.waves`, `stepBoat`), `src/app/store.ts`, `src/app/urlState.ts`, `src/render3d/scene.ts`, `src/render3d/world.ts`, `src/render3d/wake.ts`, `src/render3d/sceneConfig.ts`, `src/ui/windPanel.ts`, `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `content/registry/parts.json`, `tests/urlState.test.ts` (and the tests allowed in 6.8 item 11), `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+Changed: `content/boat/hanse508.json` (top-level `waves`, `physics.waveResponse`), `src/app/urlSync.ts`, `src/model/angles.ts` and `src/model/boomSolver.ts` (3.2), `src/model/mapFrame.ts` (`boatToMap`), `src/model/timeScale.ts` (`pauseAvailable`), `src/ui/timeBar.ts` (its call), `tests/timeBar.test.ts` (new cases), `src/model/motion.ts` (`BoatState.waves`, `stepBoat`), `src/app/store.ts`, `src/app/urlState.ts`, `src/render3d/scene.ts`, `src/render3d/world.ts`, `src/render3d/wake.ts`, `src/render3d/sceneConfig.ts`, `src/ui/windPanel.ts`, `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `content/registry/parts.json`, `tests/urlState.test.ts` (and the tests allowed in 6.8 item 11), `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
 ### 6.2 Data
 
@@ -358,6 +358,7 @@ export function stepWaveMotion(wm: WaveMotion, trains: readonly WaveTrain[], spe
 - `step`: as 4.2 (items 3 and 7).
 - `reset`: `initialState({ settings: { debug, detail }, sea: defaultSeaSetting() })` (the rest as now).
 - `setBoatMode`: unchanged; the wave motion is kept.
+- **Pause in Held still** (extends issue #34, PR #42): `pauseAvailable(boatMode, windMode, ropesMode, seaSetting: SeaSetting = 'flat')` in `timeScale.ts` is also true when `seaSetting !== 'flat'` (the waves move, so Pause means something again; the "Held still" chip shows only with Flat water, a steady wind and Easy ropes). `store.ts` (`withTimeRule`) and `timeBar.ts` pass `state.sea.setting`; `setSeaSetting` goes through `withTimeRule` (switching to Flat while paused in Held still un-pauses, as #34's rule does). New cases in `tests/timeBar.test.ts`: `pauseAvailable('held', 'steady', 'easy', 'coastal')` true, `(…, 'flat')` false. The existing #34 browser checks open Flat (the `openPage` rule in 6.9), so they keep seeing the chip.
 - **URL** `sea` = `flat` | `sheltered` | `coastal` | `open`. Written only when not `coastal`, after the `windModeParams` and before the `engineParams` (`…&bs=6.8&sea=flat&debug=1`). A link without `sea`, or with an unknown value, opens **Coastal** (owner: old links open with Coastal waves). The time in the waves is not stored: a link starts the waves at their initial phases.
 - `parseUrlState` passes `sea: <the link's setting if isSeaSetting, else defaultSeaSetting()>` to `initialState`.
 - `urlSync.ts`: the early return ("nothing the link shows changed") also requires `state.sea.setting === previous.sea.setting`; otherwise tapping a Waves button would not reach the address bar.
@@ -840,7 +841,7 @@ export function daylighting(elevationDeg: number, azimuthDeg: number, headingDeg
 6. `sunPosition` at Split on 2026-06-01 (± 0.3°): 04:00 UTC elevation 6.15, azimuth 65.27; 06:00 → 27.06, 84.46; 10:00 → 66.01, 149.10; 14:00 → 45.86, 256.52; 18:00 → 3.63, 297.40; at `sunTimes(2026, 6, 1, …).noonUtcMs`: elevation 68.6.
 7. **PT-46 the sun's path**: Split 2026-06-01: the azimuth at sunrise is 45–90° (north-east to east), at sunset 270–315° (west to north-west), at noon 180° ± 1 (due south); the day on 2026-06-01 is more than 5 h longer than on 2026-12-21 (prototype 15 h 12 min vs 8 h 57 min).
 8. `daylight`: 10 → day, 3 → golden, −3 → twilight, −10 → night. `daylighting` at elevation 30: sun 1, sky 1, night 0; at −20: sun 0, sky 0.25, night 1; azimuth 180, elevation 10, heading 0 → `sunDirection.x < −0.9` (the sun astern when sailing north); heading 90 → `sunDirection.z > 0.9` (to starboard when sailing east).
-9. Store: 60 s of frames at 60 fps with ×16 advance the clock by 960 ± 1 s; paused: `state.clock` unchanged (the same object); Held still with Steady wind (time bar shows Pause only): it advances at ×1. `setClock` with NaN or year 2200 → unchanged. Reset → default clock.
+9. Store: 60 s of frames at 60 fps with ×16 advance the clock by 960 ± 1 s; paused: `state.clock` unchanged (the same object); Held still with Steady wind: it advances at ×1 (with Flat water the bar shows the "Held still" chip, PR #42, and the clock still runs). `setClock` with NaN or year 2200 → unchanged. Reset → default clock.
 10. **URL**: `?clk=202612211200` opens at 2026-12-21 11:00 UTC; round trip; the default writes no `clk`; 61 s after the default the link has `clk=202606011201`; `clock=0` round trip; an invalid `clk` opens the default.
 
 ### 9.9 Browser checks (`scripts/shots-m17.mjs`)

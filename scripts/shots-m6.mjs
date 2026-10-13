@@ -154,7 +154,7 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
   {
     const { context, page } = await openPage(phone, 'm6 switch', '?wd=90&ws=12&ms=40&js=100');
     await page.getByRole('tab', { name: 'Wind' }).click();
-    await page.getByText('Held still', { exact: true }).click();
+    await page.getByTestId('boat-mode').getByText('Held still', { exact: true }).click();
     await page.waitForTimeout(600);
     check(
       'switch to Held still',

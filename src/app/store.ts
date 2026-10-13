@@ -27,7 +27,7 @@ import {
 } from '../model/autopilot';
 import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../model/engine';
 import { appendTrack, type TrackPoint } from '../model/track';
-import { isTimeScale, timeSpeedAvailable } from '../model/timeScale';
+import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
 import {
   initialWindMode,
   isSeed,
@@ -191,10 +191,15 @@ function windNow(controls: Controls, windMode: WindModeState, timeS: number): Wi
  */
 function withTimeRule(state: AppState): AppState {
   const { settings } = state;
-  if (settings.timeScale === 1) return state;
+  // Where Pause is replaced by the "Held still" chip (issue #34) time must not stay frozen.
+  let next = state;
+  if (state.paused && !pauseAvailable(state.boat.mode, state.windMode.mode, settings.ropesMode)) {
+    next = { ...next, paused: false };
+  }
+  if (settings.timeScale === 1) return next;
   return timeSpeedAvailable(state.boat.mode, state.windMode.mode, settings.timeBar)
-    ? state
-    : { ...state, settings: { ...settings, timeScale: 1 } };
+    ? next
+    : { ...next, settings: { ...settings, timeScale: 1 } };
 }
 
 export function initialState(overrides: InitialOverrides = {}): AppState {
@@ -261,7 +266,7 @@ export function reduce(state: AppState, action: Action): AppState {
     case 'setDetail':
       return { ...state, settings: { ...state.settings, detail: action.detail } };
     case 'setRopesMode':
-      return { ...state, settings: { ...state.settings, ropesMode: action.mode } };
+      return withTimeRule({ ...state, settings: { ...state.settings, ropesMode: action.mode } });
     case 'setLegend':
       return { ...state, settings: { ...state.settings, legend: action.legend } };
     case 'setLabels':

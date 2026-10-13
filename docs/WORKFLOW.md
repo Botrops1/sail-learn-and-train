@@ -265,7 +265,7 @@ New link settings (PHASE2_SPEC 6.4 and later): `hdg` heading (compass °, defaul
 
 ## 8. Phase 3
 
-Same loop as section 2: one session and one PR per milestone (M14 … M19, [`PHASE3_SPEC.md`](PHASE3_SPEC.md) section 5), started with `/milestone <N>`. The spec gives every formula, number and test, so **Sonnet at high effort** can build each milestone. **M14, M15 and M17 need a `/review` with Opus** before you test them (the spec's milestones table has a review column; the PR reminds you). Before M14: fix issues #33 and #34 with `/bug`.
+Same loop as section 2: one session and one PR per milestone (M14 … M19, [`PHASE3_SPEC.md`](PHASE3_SPEC.md) section 5), started with `/milestone <N>`. The spec gives every formula, number and test, so **Sonnet at high effort** can build each milestone. **M14, M15 and M17 need a `/review` with Opus** before you test them (the spec's milestones table has a review column; the PR reminds you). (Issues #33 and #34 were fixed before M14, PR #42.)
 
 ### 8.1 Checklists
 
