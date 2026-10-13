@@ -275,7 +275,7 @@ New link settings (PHASE3_SPEC): M14 `sea=flat|sheltered|coastal|open` (default 
 
 - [ ] Waves: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&ms=50&js=100 — the boat sails across moving waves; she rises and falls and rolls a little. Wind tab → Waves: "Coastal" is pressed and the line says "Waves 0.7 m high, one every 3.8 s, from 090°". (PT-39)
 - [ ] Wave size: same link — tap "Open sea": bigger, longer waves (1.5 m); "Sheltered": small ripples (0.3 m); "Flat": flat water, as before.
-- [ ] Big waves from ahead: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=20&ms=20&js=0&sea=open&cam=bow — she pitches (nose up and down) clearly in 2 m waves.
+- [ ] Big waves from 45° off the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=20&ms=20&js=0&sea=open&cam=bow — she pitches (nose up and down) clearly in 2 m waves.
 - [ ] Pitch and roll, held still: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=15&held=1&cam=side-port — waves from ahead: she pitches. https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&held=1&cam=bow — waves from the side: she rolls. The strip still says "Held still". (PT-40)
 - [ ] Waves build slowly: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=8&ms=40&js=100&tx=16 — Wind tab → speed to 25 kn: the wave line grows over about half a minute (a few minutes at normal speed), not at once.
 - [ ] Pause freezes everything (issue #32): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15 — press Pause: the waves, the wind streaks and the ripples all stop. Resume: they move again.
@@ -293,8 +293,8 @@ New link settings (PHASE3_SPEC): M14 `sea=flat|sheltered|coastal|open` (default 
 #### M16: Wind on the water, buoys, horizon
 
 - [ ] Wind on the water: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=6&ms=50&js=100 — light wind: smooth, light water, no white crests. https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=22&ms=50&js=100&sea=open — strong wind: darker water and many white crests (white horses). (PT-44)
-- [ ] See the gust coming: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=12&js=0&wm=gusty&seed=7&cam=helm — watch the water ahead (where the wind comes from): a dark patch moves towards the boat; when it arrives "GUST" shows and she heels more. (PT-45)
-- [ ] Buoys in 3D: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&cam=helm — a yellow buoy with an X on top straight ahead, 200 m away, getting closer. Tap it: "Practice buoy".
+- [ ] See the gust coming: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=12&js=0&wm=gusty&seed=1&cam=helm — watch the water ahead (where the wind comes from); the first gust comes about half a minute after opening: a dark patch moves towards the boat; when it arrives "GUST" shows and she heels more. (PT-45)
+- [ ] Buoys in 3D: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&cam=helm — a small yellow buoy straight ahead, 200 m away, getting closer (the X on its top shows once she is within about 50 m). Tap it: "Practice buoy".
 - [ ] Buoys on the map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=map — tap − four times: four yellow dots N, E, S, W around the start. Tap one: "Practice buoy".
 - [ ] Horizon: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=side-starboard — the water reaches the hazy horizon; no edge of the water is visible.
 
@@ -303,16 +303,16 @@ New link settings (PHASE3_SPEC): M14 `sea=flat|sheltered|coastal|open` (default 
 - [ ] Clock: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100 — a small "12:00" over the 3D view. Tap it: "Monday 1 June 2026 · 12:00", "Adriatic (Split) · CEST (UTC+2)", "Sunrise 05:16 · Sunset 20:28", "Light: Day".
 - [ ] The clock runs with the time bar: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&tx=16 — the clock moves 16 times faster (about 4 minutes every 15 seconds); Pause stops it.
 - [ ] Set a time: open the clock, set 21 December 12:00, tap Set — "Sunrise 07:24 · Sunset 16:21", and the sun is low in the south. Tap "Noon, 1 June": back. Tap "Now": your current time in Croatia.
-- [ ] Low sun: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606012010&cam=side-starboard — warm, low light from the west-north-west. (PT-46)
+- [ ] Low sun: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606012010&cam=side-port — warm, low light from the west-north-west. (PT-46)
 - [ ] Night: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606012300&cam=side-starboard — dark, bluish light; the boat is still readable.
 - [ ] Clock switch: View tab → "Clock" off: the clock disappears; on: it comes back.
 
 #### M18: Sky through the day
 
-- [ ] Sunset: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606012028&cam=side-starboard — orange sky near the sun, warm glow; then https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606012028&cam=side-port — the other side of the sky is darker.
+- [ ] Sunset ahead: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=30&ws=12&ms=40&js=100&hdg=300&clk=202606012028&cam=helm — she sails towards the sunset: orange sky and a warm glow ahead; then https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=30&ws=12&ms=40&js=100&hdg=300&clk=202606012028&cam=bow — looking back past her stern the sky is darker.
 - [ ] Twilight: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606012050 — dark blue sky, a faint glow where the sun went down.
 - [ ] Night: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606012300 — stars; the boat is readable. Turn the boat (autopilot +10): the stars stay put over the sea.
-- [ ] Sunrise: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606010530&cam=bow — light coming from the east-north-east.
+- [ ] Sunrise ahead: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=150&ws=12&ms=40&js=100&hdg=60&clk=202606010530&cam=helm — she sails towards the east-north-east: the sky glows low ahead.
 - [ ] Time-lapse: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&clk=202606011945&tx=16 — the sun sets within a few minutes and the sky goes through orange to dark blue.
 
 #### M19: Phase 3 sign-off

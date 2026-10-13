@@ -56,7 +56,7 @@ If something here looks necessary, stop and ask in the PR.
 | Pitch | `waves.pitchDeg`, **+ = bow up**. In three.js: the holder's `rotation.z = pitchDeg · DEG` (a positive turn about +z moves +x, the bow, towards +y). |
 | Wave roll | `waves.rollDeg`, same sign as heel: **+ = starboard rail down**. The boat is drawn at heel + wave roll: `rotation.x = (heelDeg + rollDeg) · DEG`. The sails' heel factor (cos², M8) uses `heelDeg` only. |
 | Euler order | The holder keeps three.js's default order `'XYZ'`: `holder.rotation.set(rollRad, 0, pitchRad)`. |
-| Time | `step` stays the only clock: waves, buoys, streaks, ripples and the on-board clock all advance with the simulated `dt` (×16 speeds them up; paused, they stand still). Nothing in `src/render3d` reads `performance.now()` or the frame time for motion; the camera's preset transition (`cameraRig.ts`) is the one exception. |
+| Time | `step` stays the only clock: waves, buoys, streaks, ripples and the on-board clock all advance with the simulated `dt` (×16 speeds them up; paused, they stand still). Nothing in `src/render3d` reads `performance.now()` or the frame time for motion. Two exceptions, neither of them motion: the camera's preset transition (`cameraRig.ts`) and the throttle on regenerating reflections (M18). |
 | On-board clock | `AppState.clock.utcMs`, milliseconds since 1970-01-01 UTC. Shown in the area's local time (CET/CEST for the Adriatic). |
 | Sun | `elevationDeg` above the horizon (no refraction), `azimuthDeg` compass, 0 = north, clockwise. |
 | Units | Metres, seconds, degrees in the data and the state; radians only inside formulas; knots in the UI and in `ctl_wind_speed`. Wind speed in the wave formulas is in m/s (`knToMps`). |
@@ -185,7 +185,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 ### 6.1 Files
 
 New: `content/areas/adriatic.json`, `src/model/area.ts`, `src/model/waves.ts`, `src/model/waveMotion.ts`, `src/render3d/waterSurface.ts`, `src/ui/wavesPanel.ts`, `tests/waves.test.ts`, `tests/physicsTruths3.test.ts`, `scripts/shots-m14.mjs`.
-Changed: `content/boat/hanse508.json` (top-level `waves`, `physics.waveResponse`), `src/model/angles.ts` and `src/model/boomSolver.ts` (3.2), `src/model/mapFrame.ts` (`boatToMap`), `src/model/motion.ts` (`BoatState.waves`, `stepBoat`), `src/app/store.ts`, `src/app/urlState.ts`, `src/render3d/scene.ts`, `src/render3d/world.ts`, `src/render3d/wake.ts`, `src/render3d/picking.ts` (only the water target it is given), `src/render3d/sceneConfig.ts`, `src/ui/windPanel.ts`, `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `content/registry/parts.json`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+Changed: `content/boat/hanse508.json` (top-level `waves`, `physics.waveResponse`), `src/app/urlSync.ts`, `src/model/angles.ts` and `src/model/boomSolver.ts` (3.2), `src/model/mapFrame.ts` (`boatToMap`), `src/model/motion.ts` (`BoatState.waves`, `stepBoat`), `src/app/store.ts`, `src/app/urlState.ts`, `src/render3d/scene.ts`, `src/render3d/world.ts`, `src/render3d/wake.ts`, `src/render3d/sceneConfig.ts`, `src/ui/windPanel.ts`, `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `content/registry/parts.json`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
 ### 6.2 Data
 
@@ -275,7 +275,7 @@ export const area: AreaData = adriatic;
 }
 ```
 
-**Tunable in M14** (only if a band in 6.9 fails after an exact implementation): `heaveLagS`, `pitchLagS`, `rollLagS` (the same value for all three).
+**Tunable in M14** (only if a band in 6.8 fails after an exact implementation): `heaveLagS`, `pitchLagS`, `rollLagS` (the same value for all three).
 
 ### 6.3 Model
 
@@ -298,6 +298,8 @@ export interface WaveTrain {
   dirNorth: number;
 }
 export function isSeaSetting(value: string): value is SeaSetting;
+/** `waves.defaultSetting` as a SeaSetting (the JSON value is a plain string; falls back to 'coastal'). */
+export function defaultSeaSetting(data: BoatData = boat): SeaSetting;
 /** The area's fetch for a setting, km (`flat` → 0). */
 export function fetchKm(setting: SeaSetting, areaData: AreaData = area): number;
 export function seaSize(windKn: number, fetchKm: number, data: BoatData = boat): SeaSize;
@@ -316,7 +318,7 @@ export function elevationAndSlope(trains: readonly WaveTrain[], phases: readonly
 - `seaSize(windKn, F)`: `U = knToMps(windKn)`. If `F ≤ 0` or `U < 0.1`: `{ heightM: 0, periodS: minPeriodS, wavelengthM: g·minPeriodS²/(2π) }`. Else `X = g · F·1000 / U²`; `heightM = min(heightCoefficient·√X, fullyDevelopedHeight) · U²/g`; `periodS = max(minPeriodS, min(periodCoefficient·∛X, fullyDevelopedPeriod) · U/g)`; `wavelengthM = g·periodS²/(2π)` (deep water).
 - `waveTrains(sea)`: `F = fetchKm(sea.setting)`; `{ heightM: Hs, periodS: Tp } = seaSize(sea.windKn, F)`. If `Hs < minHeightM`: `[]`. Else `norm = 2√2 · √(Σ weight²)`, and for each row `i` of `waves.trains`: `amplitudeM = weight·Hs/norm`, `periodS = Tp·periodFactor`, `omega = 2π/periodS`, `k = omega²/g`, `fromDeg = wrap180(sea.dirDeg + dirOffsetDeg)`, `to = (fromDeg + 180)·DEG`, `dirEast = sin(to)`, `dirNorth = cos(to)`. Then `significantHeightM(trains) = Hs`.
 - `elevation(trains, phases, ΔE, ΔN) = Σ aᵢ · cos(phasesᵢ + kᵢ·(dirEastᵢ·ΔE + dirNorthᵢ·ΔN))`. `elevationAndSlope` also returns `dEast = −Σ aᵢ·kᵢ·dirEastᵢ·sin(argᵢ)` and `dNorth = −Σ aᵢ·kᵢ·dirNorthᵢ·sin(argᵢ)`.
-- `initialSea(setting, wind)`: `{ setting, windKn: wind.twsKn, dirDeg: wind.dirDeg }` (a link opens with waves already matching its wind; owner).
+- `initialSea(setting, wind)`: `{ setting, windKn: wind.twsKn, dirDeg: wrap180(wind.dirDeg) }` (a link opens with waves already matching its wind; owner).
 - `stepSea(sea, wind, dt)`: `dt === 0` → return `sea` (same object). Else `windKn = lagTowards(sea.windKn, wind.twsKn, dt, buildTimeS)`; `dirDeg = wrap180(sea.dirDeg + wrap180(wind.dirDeg − sea.dirDeg) · (1 − e^(−dt/buildTimeS)))`. The setting is kept. (Gusts last seconds, so they barely move the waves; a shift or a building wind does, over minutes.)
 - `setSeaSetting(sea, setting)`: the new setting at once, `windKn` and `dirDeg` kept (a different place, same wind: the waves change size at once).
 
@@ -354,23 +356,24 @@ export function stepWaveMotion(wm: WaveMotion, trains: readonly WaveTrain[], spe
 - `AppState.sea: SeaState`. `initialState`: `sea = initialSea(overrides.sea ?? 'flat', wind)` (4.1: tests default to flat). `boat.waves = initialWaveMotion()`.
 - Action `{ type: 'setSeaSetting'; setting: SeaSetting }` → `setSeaSetting`; unknown or unchanged → same state.
 - `step`: as 4.2 (items 3 and 7).
-- `reset`: `initialState({ settings: { debug, detail }, sea: boat.waves.defaultSetting })` (the rest as now).
+- `reset`: `initialState({ settings: { debug, detail }, sea: defaultSeaSetting() })` (the rest as now).
 - `setBoatMode`: unchanged; the wave motion is kept.
-- **URL** `sea` = `flat` | `sheltered` | `coastal` | `open`. Written only when not `coastal`, after the wind-mode parameters. A link without `sea`, or with an unknown value, opens **Coastal** (owner: old links open with Coastal waves). The time in the waves is not stored: a link starts the waves at their initial phases.
-- `parseUrlState` passes `sea: <the link's setting, or waves.defaultSetting>` to `initialState`.
+- **URL** `sea` = `flat` | `sheltered` | `coastal` | `open`. Written only when not `coastal`, after the `windModeParams` and before the `engineParams` (`…&bs=6.8&sea=flat&debug=1`). A link without `sea`, or with an unknown value, opens **Coastal** (owner: old links open with Coastal waves). The time in the waves is not stored: a link starts the waves at their initial phases.
+- `parseUrlState` passes `sea: <the link's setting if isSeaSetting, else defaultSeaSetting()>` to `initialState`.
+- `urlSync.ts`: the early return ("nothing the link shows changed") also requires `state.sea.setting === previous.sea.setting`; otherwise tapping a Waves button would not reach the address bar.
 
 ### 6.5 UI
 
-**Waves block** (`ui/wavesPanel.ts`, `createWavesPanel(store): HTMLElement`), in the Wind tab directly after the wind-change block (`...createWindModePanel(store)`) and before the presets (`createWindPanel`'s returned list). A `fieldset` with `class="field segmented"`, `data-part-id="env_water"`, `data-testid="sea-setting"`:
+**Waves block** (`ui/wavesPanel.ts`, `createWavesPanel(store): HTMLElement`), in the Wind tab directly after the wind-change block (`...createWindModePanel(store)`) and before the presets (`createWindPanel`'s returned list). A `fieldset` built exactly like the wind-mode block (`windModePanel.ts`: radio inputs inside `label.segment`, styled by `.segment:has(input:checked)`), `class="field segmented"`, `data-part-id="env_water"`, `data-testid="sea-setting"`:
 - Legend `Waves`.
-- Four buttons `Flat` `Sheltered` `Coastal` `Open sea` (`aria-pressed`, at least 44 px high, the same segmented style as the wind modes), each dispatching `setSeaSetting`.
+- Four radio segments `Flat` `Sheltered` `Coastal` `Open sea` (`name="sea-setting"`, `data-testid` `sea-flat`, `sea-sheltered`, `sea-coastal`, `sea-open`, at least 44 px high), each dispatching `setSeaSetting`.
 - Status line (`data-testid="sea-status"`, `aria-live="polite"`), updated only when its text changes:
   - Flat: `Flat water: no waves.`
   - No trains (wind too light): `Almost flat: the wind is too light to make waves.`
-  - Otherwise: `Waves 0.7 m high, one every 3.8 s, from 045°` (height: `significantHeightM(trains)` with 1 decimal; period: the main train's `periodS` with 1 decimal; direction: `compassDeg(sea.dirDeg)`, 3 digits).
+  - Otherwise: `Waves 0.7 m high, one every 3.8 s, from 045°` (height: `significantHeightM(trains)` with 1 decimal; period: the main train's `periodS` with 1 decimal; direction: `String(Math.round(compassDeg(sea.dirDeg)) % 360).padStart(3, '0')`, as `windPanel.ts` writes bearings).
 - Hint (`p.hint`): `How big the waves get depends on the wind and on how far it blows over open water: little in a sheltered bay, more along the coast, most in the open sea. The height is that of the bigger waves; single waves can be almost twice as high. Waves build up over a few minutes when the wind changes.`
 
-**Debug overlay**: two rows after the motion rows: `waves` `Hs 0.68 m · Tp 3.8 s · from 045°`; `wave motion` `heave 0.12 m · pitch 1.2° · roll 2.0°`.
+**Debug overlay**: two rows at the end of the list: `waves` `Hs 0.68 m · Tp 3.8 s · from 045°` (`–` with no trains); `wave motion` `heave 0.12 m · pitch 1.2° · roll 2.0°`.
 
 ### 6.6 3D
 
@@ -383,22 +386,24 @@ export interface WaterSurface {
   /** The flat invisible plane the picker hits (part id env_water). */
   pickTarget: THREE.Object3D;
   setDetail(detail: Detail): void;
-  /** Heights, normals and ripples for the state; `shift` is what world.update returned. */
-  update(state: AppState, shift: { x: number; z: number; centreEastM: number; centreNorthM: number }): void;
+  /** Heights, normals and ripples for the state; `shift` is what world.update returned; `trains` = waveTrains(state.sea), computed once per frame in scene.render. */
+  update(state: AppState, shift: { x: number; z: number; centreEastM: number; centreNorthM: number }, trains: readonly WaveTrain[]): void;
+  /** The drawn surface height at a map offset from the boat: elevation × the inner mesh's fade at that point (0 beyond the inner mesh), for the wake and (M16) the buoys. */
+  heightAt(dEastM: number, dNorthM: number): number;
 }
 export function buildWaterSurface(ripples: THREE.Texture): WaterSurface;
 ```
 
 - New `SCENE.water` keys: `waves: { cellM: 2, cellLowM: 4, halfSizeM: 100, fadeStartM: 70 }`, `stepM: 20`, `outerCellM: 20`. `SCENE.water.size` stays 600 (M16 changes it). `SCENE.grid.size` is removed (the grid is now the wave mesh's lines); `SCENE.grid.cellSize` is removed (it is the wave cell).
-- `world.update` shifts the water group by `waterShift(eastM, northM, SCENE.water.stepM)` (was the grid cell). Every vertex of both meshes then sits on a fixed map point (multiples of 2 m), so nothing swims when the group steps. `world.update` returns `{ x, z, centreEastM, centreNorthM }` (add `x`, `z`).
-- **Inner wave mesh**: a square grid of `(2·halfSizeM / cell + 1)²` vertices, `cell = cellM` at High detail and `cellLowM` at Low (rebuilt by `setDetail`). Vertex local position `(x, y, z)` with `x, z ∈ [−halfSizeM, halfSizeM]` (local x = north, z = east). Each frame, for each vertex: `ΔN = shift.x + x`, `ΔE = shift.z + z`; `f = 1 − smoothstep(fadeStartM, halfSizeM, max(|x|, |z|))`; `{eta, dEast, dNorth} = elevationAndSlope(trains, phases, ΔE, ΔN)`; `y = f·eta`; normal = normalize(`−f·dNorth`, 1, `−f·dEast`) in local (x, y, z). Write `position` and `normal` and set `needsUpdate`; `frustumCulled = false`. With no trains: set every y to 0 and every normal to (0, 1, 0) once, then skip the work until trains return. `trains = waveTrains(state.sea)`, `phases = state.boat.waves.phases`.
-- **UVs** for the ripple normal map (both meshes): `u = x / rippleTileM`, `v = −z / rippleTileM` (the plane's u runs north, its v runs west, as before); `ripples.repeat = (1, 1)`; the offset as now, from the plane centre's map position (`centreNorthM`, `centreEastM`) and the drift, with the drift's time from **`state.rig.timeS`** (was the frame time: issue #32).
+- `world.update` shifts the water group by `waterShift(eastM, northM, SCENE.water.stepM)` (was the grid cell). Every vertex of both meshes then sits on a fixed map point (multiples of 2 m), so nothing swims when the group steps. `world.update` returns `{ x, z, centreEastM, centreNorthM }` (the `waterShift` result; it used to return `{ northM, eastM }`: update `scene.ts`).
+- **Inner wave mesh**: a square grid of `(2·halfSizeM / cell + 1)²` vertices, `cell = cellM` at High detail and `cellLowM` at Low (rebuilt by `setDetail`). Vertex local position `(x, y, z)` with `x, z ∈ [−halfSizeM, halfSizeM]` (local x = north, z = east). Each frame, for each vertex: `ΔN = shift.x + x`, `ΔE = shift.z + z`; `f = 1 − smoothstep(fadeStartM, halfSizeM, max(|x|, |z|))`; `{eta, dEast, dNorth} = elevationAndSlope(trains, phases, ΔE, ΔN)`; `y = f·eta`; normal = normalize(`−f·dNorth`, 1, `−f·dEast`) in local (x, y, z). Write `position` and `normal` and set `needsUpdate`; `frustumCulled = false`. With no trains: set every y to 0 and every normal to (0, 1, 0) once, then skip the height work until trains return (`setDetail` rebuilds the mesh and clears that "already flat" flag). `heightAt(ΔE, ΔN)`: local `x = ΔN − shift.x`, `z = ΔE − shift.z`, the same fade `f`, `f · elevation(...)`. `trains = waveTrains(state.sea)`, `phases = state.boat.waves.phases`.
+- **UVs** for the ripple normal map (both meshes): `u = x / rippleTileM`, `v = −z / rippleTileM` (the plane's u runs north, its v runs west, as before); `ripples.repeat = (1, 1)`; the offset as now, from the plane centre's map position (`centreNorthM`, `centreEastM`) and the drift, with the drift's time from **`state.rig.timeS`** (was the frame time: issue #32). The ripple strength keeps scaling with the wind now (`state.wind.twsKn`, as M10 did).
 - **Grid lines**: `THREE.LineSegments` that share the inner mesh's `position` attribute, with an index joining neighbouring vertices along every row and every column (so the lines follow the waves and are 2 m apart at High, 4 m at Low). Same colour and opacities as the old grid (`SCENE.grid.color`, `opacity`, `opacityHigh`), `depthWrite: false`, `renderOrder` one higher than the water.
 - **Outer water**: a flat mesh at y = 0 covering `SCENE.water.size` in cells of `outerCellM`, built once, with the triangles of every cell whose centre lies inside the inner square (`max(|cx|, |cz|) < halfSizeM`) left out; same materials and UV rule as the inner mesh. Inner and outer meet at the square's edge, where the fade has brought the waves to y = 0.
 - Materials as before (`high` standard, `low` Lambert; colours, opacity, `depthWrite: false`); `receiveShadow` on the inner mesh. Both meshes and the grid carry `userData.partId = 'env_water'`.
-- **Pick target**: a flat `PlaneGeometry(SCENE.water.size, SCENE.water.size)` mesh at y = 0 with `new THREE.MeshBasicMaterial({ visible: false })` (the raycaster still hits it), part id `env_water`, in the water group. `createPicker(camera, holder, water.pickTarget)`.
+- **Pick target**: a flat `PlaneGeometry(SCENE.water.size, SCENE.water.size)` mesh at y = 0 with `new THREE.MeshBasicMaterial({ visible: false })` (the raycaster still hits it), part id `env_water`, in the water group. `createPicker(camera, holder, water.pickTarget)` (`picking.ts` itself needs no change).
 - **Boat**: `holder.position.y = boat.waves.heaveM`; `holder.rotation.set((boat.heelDeg + boat.waves.rollDeg)·DEG, 0, boat.waves.pitchDeg·DEG)`. The camera, the water, the wake and the streaks do not rock.
-- **Wake** (`wake.ts`): each ribbon point's `y = SCENE.wake.y + elevation(trains, phases, point.eastM − boat.eastM, point.northM − boat.northM)`. `Wake.update(state, timeS, heightAt)` gains `heightAt: (dEastM: number, dNorthM: number) => number`.
+- **Wake** (`wake.ts`): each ribbon point's `y = SCENE.wake.y + water.heightAt(point.eastM − boat.eastM, point.northM − boat.northM)`. `Wake.update(state, timeS, heightAt)` gains `heightAt: (dEastM: number, dNorthM: number) => number` (scene.ts passes `water.heightAt`).
 - **Wind streaks**: `streaks.update(awa, aws, state.rig.timeS)` (was the frame time: issue #32). With the ripples, nothing in the 3D view moves while paused except a camera move.
 
 ### 6.7 Strings and registry
@@ -411,17 +416,17 @@ Registry: `env_water` gets a new `short.en`: "The sea surface. Waves grow with t
 
 `tests/waves.test.ts`, `tests/physicsTruths3.test.ts`, URL cases in `tests/urlState.test.ts`. Prototype values in brackets.
 
-1. **PT-39 wave size** (`seaSize`, ±0.005 m, ±0.01 s): 15 kn, 30 km → 0.683 m, 3.832 s; 20 kn, 150 km → 2.036 m, 7.212 s; 12 kn, 5 km → 0.223 m, 1.958 s; 25 kn, 30 km → 1.138 m, 4.543 s; 30 kn, 10⁷ km (fully developed) → 5.907 m, 12.797 s; 0 kn or fetch 0 → height 0. Height strictly increases with the wind (fetch 30 km, 2 … 30 kn in 1 kn steps) and with the fetch (15 kn; 1, 5, 30, 150, 1000 km) until the fully developed cap.
+1. **PT-39 wave size** (`seaSize`, ±0.005 m, ±0.01 s): 15 kn, 30 km → 0.683 m, 3.832 s; 20 kn, 150 km → 2.036 m, 7.212 s; 12 kn, 5 km → 0.223 m, 1.958 s; 25 kn, 30 km → 1.138 m, 4.543 s; 30 kn, 10⁷ km (fully developed) → 5.907 m, 12.797 s; 0 kn or fetch 0 → height 0. Height strictly increases with the wind (fetch 30 km, 2 … 30 kn in 1 kn steps) and with the fetch at 15 kn over 1, 5 and 30 km; at 15 kn, 150 km and 1000 km give the same height, the fully developed `0.2433·U²/g` = 1.477 m (Open sea at 15 kn is already fully developed).
 2. `waveTrains`: Flat → `[]`; Coastal at 1 kn → `[]` (height 0.007 m); Coastal at 2 kn → 3 trains (0.026 m, period 1.0 s). `significantHeightM(waveTrains(...))` equals `seaSize(...).heightM` (1e-9). Main train `fromDeg` = `sea.dirDeg`; with `dirDeg` 0 the main train travels south (`dirEast` 0, `dirNorth` −1, 1e-12).
-3. **Phase at the boat** is the map-fixed wave: Coastal 15 kn, a boat sailing at 6 m/s on heading 30 for 60 s (60 fps, `stepWaveMotion`); then for 5 map points within 50 m of her, `elevation(trains, wm.phases, p − boat)` equals `Σ aᵢ cos(kᵢ·(dᵢ·p) − ωᵢ·60 + phaseRadᵢ)` within 1e-6 m (p in map coordinates from the start).
-4. `stepSea`: wind 10 → 20 kn at t = 0, after 180 s (60 fps) `windKn` = 16.32 ± 0.01; the same at 30 and 120 fps within 1e-6; direction 0 → 90 after 180 s: 56.9° ± 0.1; 170 → −170 after 180 s: −177.4° ± 0.1 (it turns 20° across ±180, not 340°); `dt = 0` returns the same object.
-5. **PT-40 the boat follows the waves** (store, `boat: { mode: 'held' }`, `sea: 'coastal'`, 30 fps, 120 s, measured as the largest absolute value between t = 40 s and 120 s): wind 15 kn from 0 (waves from ahead, heading 0): pitch 2.3–3.5° [2.90] and roll smaller than pitch [1.79]; wind 15 kn from 90 (beam on): roll 4.1–6.1° [5.08] and pitch smaller than roll [1.29]; `sea: 'open'`, wind 20 kn from 0: heave 0.65–1.0 m [0.83], pitch 4.0–6.0° [4.96].
+3. **Phase at the boat** is the map-fixed wave: `trains = waveTrains(initialSea('coastal', { dirDeg: 20, twsKn: 15 }))`, kept the same throughout; a boat starting at the map origin sails at 6 m/s on heading 30 for 60 s: 3,600 calls of `stepWaveMotion(wm, trains, 6, 30, 1/60)`, the test integrating her position itself (`east += 6·sin(30°)/60`, `north += 6·cos(30°)/60`). Then for the map points p = (0, 0), (30, −20), (−40, 10), (12, 45), (−25, −35) offset from her final position, `elevation(trains, wm.phases, p − boatPos)` equals `Σ aᵢ cos(kᵢ·(dᵢ·p) − ωᵢ·60 + phaseRadᵢ)` (p in map coordinates from the origin) within 1e-6 m.
+4. `stepSea`: start `initialSea('coastal', { dirDeg: 0, twsKn: 10 })`, then 10,800 calls `stepSea(sea, { dirDeg: 0, twsKn: 20 }, 1/60)`: `windKn` = 16.32 ± 0.01; the same at 30 and 120 fps within 1e-6; direction 0 → 90 after 180 s: 56.9° ± 0.1; 170 → −170 after 180 s: −177.4° ± 0.1 (it turns 20° across ±180, not 340°); `dt = 0` returns the same object.
+5. **PT-40 the boat follows the waves** (`initialState({ sea: 'coastal', boat: { mode: 'held' }, controls: { ctl_wind_dir, ctl_wind_speed } })`, then 3,600 `step` actions of `dt` 1/30 through `reduce`; the largest absolute value of `boat.waves.pitchDeg`, `rollDeg`, `heaveM` over the frames with t ≥ 40 s): wind 15 kn from 0 (waves from ahead, heading 0): pitch 2.3–3.5° [2.90] and roll smaller than pitch [1.79]; wind 15 kn from 90 (beam on): roll 4.1–6.1° [5.08] and pitch smaller than roll [1.29]; `sea: 'open'`, wind 20 kn from 0: heave 0.65–1.0 m [0.83], pitch 4.0–6.0° [4.96].
 6. **M14 does not change the sailing**: Sailing, wind 15 kn from 135, main sheet 100, jib sheet 100, autopilot heading, 60 s at 30 fps, once with `sea: 'coastal'` and once with `'flat'`: `speedMps`, `headingDeg`, `heelDeg`, `eastM`, `northM` and `rig.wind` are identical (`toBe` / `toEqual`); the coastal run's wave motion is not zero.
-7. **Flat**: 60 s Sailing and 60 s Held still with `sea: 'flat'`: the wave motion stays exactly 0 and the phases unchanged; Held still + Flat: `stepBoat` returns the same object.
-8. **Pause** (issue #32): with `paused: true`, 100 steps leave `sea` and `boat.waves` unchanged (same objects).
+7. **Flat**: 60 s Sailing and 60 s Held still with `sea: 'flat'`: the wave motion stays exactly 0 and the phases unchanged; Held still + Flat: `stepBoat(...).boat` is the input boat object (`toBe`).
+8. **Pause** (issue #32): `{ ...initialState({ sea: 'coastal' }), paused: true }`, 100 steps: `sea` and `boat.waves` are the same objects (`toBe`).
 9. Frame-rate independence of the motion: Held still, Coastal, wind 15 kn from 45, 60 s at 30, 60 and 120 fps: heave within 0.01 m, pitch and roll within 0.1° of each other at t = 60 s.
 10. **URL**: round trip of every setting; `?wd=60` → Coastal; `?sea=storm` → Coastal; Coastal writes no `sea`; Flat writes `sea=flat`. Reset → Coastal with `sea.windKn` = the wind now.
-11. All Phase 1 and Phase 2 tests green **unchanged** (they build states with `initialState`, which defaults to Flat). One allowed change: a URL test that compares a parsed old link with a state built by `initialState(...)` may add `sea: 'coastal'` to the overrides.
+11. All Phase 1 and Phase 2 tests green **unchanged** (they build states with `initialState`, which defaults to Flat). Allowed changes, nothing else: (a) a URL test that compares a parsed old link with a state built by `initialState(...)` may add `sea: 'coastal'` to the overrides; (b) a URL test that compares `serializeUrlState(initialState(...))` with an exact string (in `tests/urlState.test.ts`, about six) passes `sea: 'coastal'` to that `initialState`.
 
 ### 6.9 Browser checks (`scripts/shots-m14.mjs`)
 
@@ -432,13 +437,13 @@ Scenes (`M14_SCENES`, every size; labels contain "m14" so they open Sailing):
 - `waves-panel`: `?wd=90&ws=15`, Wind tab, scrolled to `[data-testid="sea-setting"]`.
 
 Live checks (`liveM14Checks`):
-- Coastal link: the status line reads `Waves 0.7 m high, one every 3.8 s, from 090°`; after 2 s the debug overlay (`&debug=1`) shows a non-zero heave.
-- Tap `Open sea`: the status changes to a height of 1.5 m (15 kn over 150 km), the address bar gets `sea=open`; tap `Coastal`: `sea` disappears from the address bar.
-- Pause (#32): with `?wd=90&ws=15&debug=1`, press Pause, take two screenshots 1 s apart: the canvases are pixel-identical (compare the PNG buffers).
+- Coastal link: the status line reads `Waves 0.7 m high, one every 3.8 s, from 090°`; after 2 s the debug overlay (`&debug=1`) shows a heave (`/heave (-?\d+\.\d+)/`) whose absolute value is above 0.005 at least once in 5 readings 0.5 s apart.
+- Tap `sea-open`: the status changes to a height of 1.5 m (15 kn over 150 km), the address bar gets `sea=open`; tap `sea-coastal`: `sea` disappears from the address bar.
+- Pause (#32): with `?wd=90&ws=15`, press Pause (`pause-button`), wait 300 ms, take two element screenshots of `canvas.scene-canvas` 1 s apart: the PNG buffers are identical.
 - `?wd=90&ws=15&held=1&debug=1`: Held still, the wave motion rows show a non-zero roll; the strip still says "Held still".
 - Tap on open water: the info card shows "Water surface".
 - Register in `shots.mjs`: import, `...M14_SCENES` with the `m14-` prefix, `liveGroups.m14`.
-- **Older scenes and checks keep their Phase 2 picture:** `openPage` in `shots.mjs` adds `sea=flat` to the link of every scene and check whose label does not match `/m1[4-9]/` and whose query has no `sea=` (the same way it adds `held=1` for the Phase 1 ones). Without it the boat would rock under the tap sweep and the Phase 2 checks.
+- **Older scenes and checks keep their Phase 2 picture:** `openPage` in `shots.mjs` adds `sea=flat` to the link of every scene and check whose label does not match `/m1[4-9]/` and whose query has no `sea=` (the same way it adds `held=1` for the Phase 1 ones; skip it when the query already has `sea=`). Without it the boat would rock under the tap sweep and the Phase 2 checks. The general checks that compare the whole address bar (`expectUrl` in `shots.mjs`, the strings ending in `&held=1`) expect `sea=flat` in the place `serializeUrlState` writes it (after the boat and wind-mode parameters, so `…&held=1&sea=flat…`); any other check that compares `window.location.search` gets the same.
 
 ### 6.10 Done when
 
@@ -446,7 +451,7 @@ All M14 checks in `WORKFLOW.md` (section 8) pass on the phone; the tests above p
 
 ### 6.11 Not in M14
 
-No feedback from the waves into the sailing (M15). No whitecaps, gust patches, buoys or horizon change (M16). No clock (M17).
+No feedback from the waves into the sailing (M15). No whitecaps, gust patches, buoys or horizon change (M16). No clock (M17). The camera does not ride the waves: in the Open sea the Helm view's eye can dip towards the cockpit at a crest (accepted, as with heel).
 
 ---
 
@@ -457,7 +462,7 @@ No feedback from the waves into the sailing (M15). No whitecaps, gust patches, b
 ### 7.1 Files
 
 New: `tests/waveFeedback.test.ts`, `scripts/shots-m15.mjs`.
-Changed: `content/boat/hanse508.json` (`physics.waveFeedback`), `src/model/apparentWind.ts`, `src/model/sim.ts` (`rigWind`), `src/model/waveMotion.ts`, `src/model/motion.ts` (`stepBoat`, `steadyState`, `MotionReport`), `src/app/store.ts` (`motionOf`, `boatFor`), `src/ui/wavesPanel.ts` (one hint sentence), `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `tests/physicsTruths3.test.ts`, `tests/stepCost.test.ts` (one new case), `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+Changed: `content/boat/hanse508.json` (`physics.waveFeedback`), `src/model/apparentWind.ts`, `src/model/sim.ts` (`rigWind`), `src/model/waveMotion.ts`, `src/model/motion.ts` (`stepBoat`, `steadyState`, `MotionReport`), `src/app/store.ts` (`initialState`, `motionOf`, `boatFor`), `src/ui/wavesPanel.ts` (one hint sentence), `src/ui/debugOverlay.ts`, `content/i18n/en.json`, `tests/motionHelpers.ts` (a statistics helper), `tests/physicsTruths3.test.ts`, `tests/stepCost.test.ts` (one new case), `tests/urlState.test.ts` and the Phase 1/2 tests named in 7.6 item 9, `scripts/shots.mjs`, `docs/PHYSICS_TRUTHS.md` (PT-43 status only if a source is found), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
 ### 7.2 Data (`hanse508.json` → `physics.waveFeedback`, new)
 
@@ -474,7 +479,7 @@ Changed: `content/boat/hanse508.json` (`physics.waveFeedback`), `src/model/appar
 }
 ```
 
-**Tunable in M15:** `yawDegPerDegRoll`, `addedResistanceCoefficient`.
+**Tunable in M15:** `yawDegPerDegRoll` (only for the rudder and heading bands of PT-42) and `addedResistanceCoefficient` (only for the speed bands of PT-43). The two angle tables are not tunable. PT-41's bands have no tunable key in M15: if they fail, stop and ask in the PR.
 
 ### 7.3 Model
 
@@ -485,19 +490,20 @@ export function apparentWind(twsKn: number, twaDeg: number, speedMps: number, da
 // ax = tws·cos(twa) + speedMps ; az = tws·sin(twa) + sideMps   (moving to starboard, the wind seems to come more from starboard)
 ```
 
-`rigWind` (`sim.ts`) uses `motion.velocity[2]` as `sideMps`. The exact (not quantised) path stays for `speed === 0 && side === 0 && !wind`, so Held still and a boat at rest are Phase 1 exactly. `BoatMotion`'s comment changes: `velocity[0]` is the speed of the sails along the bow (the boat's speed plus the rig's pitching), `velocity[2]` the sails' sideways speed from rolling, + = to starboard.
+`rigWind` (`sim.ts`) uses `motion.velocity[2]` as `sideMps`. The exact (not quantised) path stays for `speed === 0 && side === 0 && !wind`, so Held still (always `velocity [0, 0, 0]`) and a boat at rest on Flat water are Phase 1 exactly; a Sailing boat at speed 0 in waves takes the quantised path. `BoatMotion`'s comment changes: `velocity[0]` is the speed of the sails along the bow (the boat's speed plus the rig's pitching), `velocity[2]` the sails' sideways speed from rolling, + = to starboard.
 
 `waveMotion.ts` gains:
 
 ```ts
 /** How fast the sails move through the air because she pitches and rolls (m/s, boat frame). */
 export function rigMotion(wm: WaveMotion, data: BoatData = boat): { forwardMps: number; sideMps: number };
-// h = ceHeights(data).main (9.66 m above the waterline)
+// h = ceHeights(data).main (9.66 m above the waterline; compute it once per data object, not per substep)
 // forwardMps = −wm.pitchRateDegS·DEG·h   (bow coming up: the rig swings aft)
 // sideMps    = +wm.rollRateDegS·DEG·h    (rolling towards starboard rail down: the rig swings to starboard)
 /** The wave's push on the steering, as degrees of extra rudder (+ = turns her to starboard). */
 export function waveYawDeg(wm: WaveMotion, trains: readonly WaveTrain[], headingDeg: number, data: BoatData = boat): number;
-// no trains → 0; rel = |wrap180(trains[0].fromDeg − headingDeg)|; yawDegPerDegRoll · wm.rollDeg · interp(yawFactorByRelDeg, rel)
+// no trains → 0; rel = |wrap180(trains[0].fromDeg − headingDeg)| (trains[0] is the main train, dirOffsetDeg 0);
+// yawDegPerDegRoll · wm.rollDeg · interp(yawFactorByRelDeg, rel). The sign (+ roll → + yaw) is the prototype's: do not flip it.
 /** Extra resistance from the waves, N (≥ 0). */
 export function addedResistanceN(speedMps: number, headingDeg: number, trains: readonly WaveTrain[], data: BoatData = boat): number;
 // no trains or speedMps ≤ 0 → 0; Hs = significantHeightM(trains); rel as above;
@@ -511,18 +517,19 @@ Only the wave roll (`wm.rollRateDegS`) moves the rig sideways, not the heel's ow
 2. `wind = apparentWind(tws, twa, speedMps + forwardMps, data, sideMps)`; the forces from this wind (the sails flick with the rocking).
 3. `raw = addedResistanceN(speedMps, headingDeg, trains)`; `acceleration = (push − sign(V)·R.totalN − raw) / mEff`. The zero-crossing test is unchanged.
 4. Yaw: `turnRudderDeg = grip·rudderDeg − weatherHelmDegPerDegHeel·heelDeg + waveYawDeg(waves, trains, headingDeg)`.
-5. `MotionReport` gains `waveResistanceN` (raw), `waveYawDeg` and `rigSideMps` (sideMps) of the last substep (0 in Held still).
+5. `MotionReport` gains `waveResistanceN` (raw), `waveYawDeg` and `rigSideMps` (sideMps) of the last substep (0 in Held still). `effectiveRudderDeg` keeps its Phase 2 meaning (`grip·rudderDeg − weatherHelm·heelDeg`, without the wave term). The round-up test is unchanged (it may now also see the waves' yaw; it still needs the rudder at 90 % of its limit against the turn).
 
 **`steadyState`** gains `opts.trains?: readonly WaveTrain[]`: inside the speed bisection, `net −= addedResistanceN(mid, headingDeg, opts.trains)`. The rocking is left out (it averages out), so a link opens close to the speed she settles at.
 
 **Store:**
-- `motionOf(boat)`: Held still → `velocity [0, 0, 0]`; Sailing → `const m = rigMotion(boat.waves)`; `velocity [boat.speedMps + m.forwardMps, 0, m.sideMps]`.
-- `boatFor(...)` (Sailing) passes `trains: waveTrains(initialSea(setting, wind))` to `steadyState`.
+- `motionOf(boat)`: Held still → `velocity [0, 0, 0]`; Sailing → `const m = rigMotion(boat.waves)`; `velocity [boat.speedMps + m.forwardMps, 0, m.sideMps]`. `headingDeg` and `heelDeg` as now.
+- `initialState` computes `sea = initialSea(overrides.sea ?? 'flat', windNow(controls, windMode, 0))` first (every wind mode), then `trains = waveTrains(sea)`, and passes `trains` to `boatFor` as a new last parameter `trains: readonly WaveTrain[] = []`; `boatFor` (Sailing) passes it to `steadyState` as `opts.trains`. Held still ignores it.
 
 ### 7.4 UI
 
 - The Waves hint (6.5) gains a last sentence: `Waves rock the boat: the sails feel the rocking and flick, waves from behind at an angle knock the bow off course, and waves from ahead slow her down.` (`waves.effects`).
-- Debug overlay, new row `wave push`: `resistance 0.24 kN · yaw 1.2° · sails sideways 0.4 m/s` (from the report).
+- Debug overlay, new row `wave push`: `resistance 0.24 kN · yaw +1.2° · sails sideways 0.4 m/s` (from the report; kN with 2 decimals, yaw signed with 1, m/s with 1; the format is inline like the other rows).
+- `waves.effects` is its own string, appended to the same hint paragraph after a space.
 - Nothing else: the owner sees it in the sails, the wind instrument's needles, the wheel (autopilot) and the speed.
 
 ### 7.5 Strings
@@ -531,25 +538,26 @@ Only the wave roll (`wm.rollRateDegS`) moves the rig sideways, not the heel's ow
 
 ### 7.6 Tests
 
-`tests/waveFeedback.test.ts` and `tests/physicsTruths3.test.ts`. Runs through the store (`initialState({ controls: { ctl_wind_dir: TWA, ctl_wind_speed: TWS, ctl_mainsheet, ctl_jib_sheet }, sea })`: Sailing, heading 0, the autopilot holding 0), 30 fps for 300 s; statistics over the frames from t = 100 s to 300 s. Prototype values in brackets.
+Items 2–4 go in `tests/physicsTruths3.test.ts` (`it('PT-41 …')` etc.), the rest in `tests/waveFeedback.test.ts`. Runs go through the store: `initialState({ controls: { ctl_wind_dir: TWA, ctl_wind_speed: TWS, ctl_mainsheet, ctl_jib_sheet }, sea })` (Sailing, heading 0, the autopilot holding 0), stepped with `run` from `tests/motionHelpers.ts` at 30 fps for 300 s. **Statistics:** one sample per frame for the frames with 100 s ≤ t ≤ 300 s (600 s runs: t ≥ 200 s); standard deviation = population (÷ N); the heading is sampled as `wrap180(boat.headingDeg)` (she holds 0, so it never wraps); AWA = `rig.wind.awaDeg`, rudder = `rig.applied.rudder`, speed = `mpsToKn(boat.speedMps)`. Add a helper `sampleRun(state, seconds, fps, fromS, pick)` to `motionHelpers.ts` that returns the samples. Give each `it` a timeout of 120,000 ms. "Within x % of each other" means (max − min) / min ≤ x. Prototype values in brackets.
 
-1. Signs: `rigMotion` with pitch rate +10 °/s → `forwardMps` −1.686 ± 0.005; roll rate +10 °/s → `sideMps` +1.686 ± 0.005. `apparentWind(0, 0, 0, boat, 1)` → AWA +90, AWS 1.94 kn. No trains: `waveYawDeg` 0, `addedResistanceN` 0.
+1. Signs and values: `rigMotion` with pitch rate +10 °/s → `forwardMps` −1.686 ± 0.005; roll rate +10 °/s → `sideMps` +1.686 ± 0.005. `apparentWind(0, 0, 0, boat, 1)` → AWA 90 (1e-9), AWS 1.944 ± 0.005 kn. `addedResistanceN(6, 0, waveTrains(initialSea('coastal', { dirDeg: 45, twsKn: 15 })))` = 237 ± 3 N; 0 at speed 0 and −1, 0 with no trains. `waveYawDeg` with roll 2°, the main train from 135, heading 0 → +10.0° (1e-9). No trains: `waveYawDeg` 0.
 2. **PT-41 the sails feel the rocking**: Coastal, 15 kn from 90, main 50, jib 100: standard deviation of `rig.wind.awaDeg` 1.6–3.4° [2.42], max − min ≥ 6° [10.2]. The same with Flat: standard deviation < 0.05°. Sheltered, 12 kn from 60, main 20, jib 25: 1.4–2.8° [2.07].
 3. **PT-42 waves knock her off course**: Coastal, 15 kn from 135, main 100, jib 100: standard deviation of `rig.applied.rudder` 3.5–7° [5.16] and of the heading 0.8–2.2° [1.35]; with the wind from 45 (main 15, jib 0) the rudder's standard deviation is less than half of that at 135 [0.93]; Flat at 135: < 0.3°.
 4. **PT-43 head seas slow her most**: mean speed with Flat minus mean speed in the Open sea, 20 kn: from 45 (main 20, jib 0) 0.6–1.3 kn [0.89]; from 135 (main 100, jib 100) < 0.4 kn [0.13], and the loss at 45 is more than 3 × the loss at 135. Coastal, 15 kn from 45 (main 15, jib 0): 0.15–0.45 kn [0.27].
-5. **Held still ignores the waves**: Held still, Coastal vs Flat, wind 15 kn from 90, 30 s: the rig states are equal (`toEqual`); the wave motion differs.
-6. Frame-rate independence: Coastal, 15 kn from 135, main 100, jib 100, 600 s at 30, 60 and 120 fps: mean speed within 0.05 kn, rudder standard deviation within 10 % of each other [7.11 kn, 5.13° at all three]. Time ×16 at 10 fps (1.6 s steps): every value finite, |speed| < 12 kn, rudder standard deviation < 10° [6.98].
-7. `steadyState(trimmed(20, 45, 20, 0), 0, boat, { heel: true, trains: <Open, 20 kn from 45> })` is lower than without `trains`.
-8. `tests/stepCost.test.ts`: a new case, Open sea, Gusty 30 %, ×16, 60 fps, under the existing 3 ms limit.
-9. All Phase 1 and Phase 2 tests green (they default to Flat). **One allowed change:** the two URL tests in `tests/urlState.test.ts` that compare a parsed link's opening speed with `steadyState(…, { heel: true })` ("an old link opens … at her steady speed" and the `bs` fallback) pass `trains: waveTrains(state.sea)` to `steadyState`, because a link without `sea` now opens in Coastal waves.
+5. **Held still ignores the waves**: Held still, Coastal vs Flat, wind 15 kn from 90, default sheets, `run(state, 30, 60)`: the rig states are equal (`toEqual`); the wave motion differs.
+6. Frame-rate independence: Coastal, 15 kn from 135, main 100, jib 100, 600 s at 30, 60 and 120 fps, samples t ≥ 200 s: mean speed within 0.05 kn, rudder standard deviation within 10 % of each other [7.11 kn, 5.13° at all three]. Time ×16: the same state with `setTimeScale 16`, frames of `dt` 0.1 s (the store's cap, so 1.6 s of simulated time per frame) until 600 simulated seconds: `speedMps`, `headingDeg`, `heelDeg`, `rig.wind.*`, every field of `boat.waves` and of `sea` finite, |speed| < 12 kn, rudder standard deviation (t ≥ 200 s) < 10° [6.98].
+7. `steadyState(trimmed(20, 45, 20, 0), 0, boat, { heel: true, trains: waveTrains(initialSea('open', { dirDeg: 45, twsKn: 20 })) })` is lower than without `trains`.
+8. `tests/stepCost.test.ts`: a new case like the existing heaviest one but with `sea: 'open'`: `initialState({ sea: 'open', controls: { ctl_wind_dir: 90, ctl_wind_speed: 16, ctl_mainsheet: 40, ctl_jib_sheet: 100 } })`, `setWindMode gusty`, `setTimeScale 16`, a 10 s warm-up, then 600 frames at 1/60 s, under the existing 3 ms limit per frame.
+9. All Phase 1 and Phase 2 tests green. Tests built with `initialState` default to Flat and need nothing. **Allowed changes, nothing else:** (a) a Phase 1/2 test that opens a link with `parseUrlState` and then steps it or checks a speed gets `&sea=flat` appended to its link (run the whole suite to find them; candidates: `engine.test.ts`, `windModes.test.ts`, `realisticHandle.test.ts`, `map.test.ts`, `timeBar.test.ts`), and the PR lists every changed file; (b) the two URL tests in `tests/urlState.test.ts` that compare a parsed link's opening speed with `steadyState(…, { heel: true })` ("an old link opens … at her steady speed" and the `bs` fallback) pass `trains: waveTrains(state.sea)` to `steadyState`, because a link without `sea` now opens in Coastal waves.
 
 ### 7.7 Browser checks (`scripts/shots-m15.mjs`)
 
-Scenes: `feedback-quartering` (`?wd=135&ws=15&ms=100&js=100&cam=helm`, wait 3 s), `feedback-head` (`?wd=45&ws=20&ms=20&js=0&sea=open&cam=bow`, wait 3 s).
-Live checks (`liveM15Checks`):
-- `?wd=135&ws=15&ms=100&js=100&debug=1`: over 10 s the `rd` value in the address bar takes at least 3 different values (the autopilot keeps correcting); with `&sea=flat` it takes at most 2.
-- `?wd=90&ws=15&ms=50&js=100`: the "App" angle in the strip (`strip-apparent`) shows at least 3 different values over 10 s; with `&sea=flat` at most 2.
-- Speed: `?wd=45&ws=20&ms=20&js=0&sea=open` vs `&sea=flat`, after 30 s: the strip speed with Open sea is at least 0.5 kn lower.
+Scenes (`M15_SCENES`, labels with `m15`, registered in `shots.mjs` like M14: import, `m15-` prefix, `liveGroups.m15`): `feedback-quartering` (`?wd=135&ws=15&ms=100&js=100&cam=helm`, wait 3 s), `feedback-head` (`?wd=45&ws=20&ms=20&js=0&sea=open&cam=bow`, wait 3 s).
+Live checks (`liveM15Checks`; every sampling below: every 250 ms from 2 s to 12 s after the page loaded):
+- `?wd=135&ws=15&ms=100&js=100`: the `rd` value in the address bar takes at least 3 different values (the autopilot keeps correcting); the same link with `&sea=flat` at most 2.
+- `?wd=90&ws=15&ms=50&js=100`: the angle in the strip's "App" text (`strip-apparent`, parsed with `/App (-?\d+)°/`) takes at least 3 different values; with `&sea=flat` at most 2.
+- Speed: `?wd=45&ws=20&ms=20&js=0&sea=open` vs the same with `sea=flat`: the mean of 10 strip speeds read over 5 s starting 30 s after load is at least 0.5 kn lower with Open sea.
+- PT-43 is `to-verify`: try its candidate sources; if none is reachable or none supports it, leave the status and say so in the PR.
 
 ### 7.8 Done when
 
@@ -568,7 +576,7 @@ No change to heel dynamics (the waves do not push the heel; the wave roll is dra
 ### 8.1 Files
 
 New: `src/model/windOnWater.ts`, `src/render3d/marks.ts`, `tests/windOnWater.test.ts`, `scripts/shots-m16.mjs`.
-Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (`waves.whitecaps`, `windModes.gustPreview`), `src/render3d/waterSurface.ts` (vertex colours), `src/render3d/scene.ts` (marks, fog, debug hook), `src/render3d/picking.ts` (extra roots), `src/render3d/sceneConfig.ts`, `src/ui/mapView.ts` (buoys), `content/registry/parts.json`, `tests/map.test.ts`, `tests/physicsTruths3.test.ts`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (`waves.whitecaps`, `windModes.gustPreview`), `src/render3d/waterSurface.ts` (vertex colours), `src/render3d/scene.ts` (marks, fog, debug hook), `src/render3d/picking.ts` (extra roots), `src/render3d/sceneConfig.ts`, `src/ui/mapView.ts` (buoys), `content/registry/parts.json`, `content/i18n/en.json` (none needed unless the map label needs one), `tests/map.test.ts`, `tests/picking.test.ts`, `docs/PHYSICS_TRUTHS.md` (PT-45 status only if a source is found), `tests/physicsTruths3.test.ts`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
 ### 8.2 Data
 
@@ -591,6 +599,9 @@ Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (
 ```json
 "whitecaps": {
   "coverageByWindKn": [[0, 0], [7, 0], [10, 0.02], [16, 0.06], [21, 0.12], [27, 0.2], [33, 0.3], [40, 0.4]],
+  "crestEdgeFactor": 1.3,
+  "crestEdgeWidth": 0.1,
+  "crestNote": "assumption: a point is white where the surface height, as a fraction of the sum of the trains' amplitudes, is above hi = 1 − crestEdgeFactor·√coverage (soft over crestEdgeWidth below it); with three trains this whitens about the coverage fraction of the surface (checked by a test)",
   "source": "Beaufort scale (Wikipedia): perhaps scattered white horses at force 3 (7–10 kn), fairly frequent at 4 (11–16 kn), many at 5 (17–21 kn), more extensive at 6 (22–27 kn), blown in streaks at 7 (28–33 kn). The coverage fractions are a teaching assumption (PT-44)."
 }
 ```
@@ -602,6 +613,7 @@ Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (
   "fromM": -100,
   "toM": 300,
   "stepM": 20,
+  "minWindMps": 1,
   "note": "assumption: a gust or lull travels downwind at the mean wind speed, so the patch of water it darkens 300 m upwind reaches the boat 300 m / wind speed later (PT-45)"
 }
 ```
@@ -609,8 +621,10 @@ Changed: `content/areas/adriatic.json` (`marks`), `content/boat/hanse508.json` (
 ### 8.3 Model (`src/model/windOnWater.ts`)
 
 ```ts
-/** Fraction of the wave crests that break white, 0 … 1 (interp of whitecaps.coverageByWindKn). */
+/** Fraction of the sea surface that breaks white, 0 … 1 (interp of whitecaps.coverageByWindKn). */
 export function whitecapCoverage(twsKn: number, data: BoatData = boat): number;
+/** How white a point is, 0 … 1: hi = 1 − crestEdgeFactor·√coverage, lo = hi − crestEdgeWidth, smoothstep(lo, hi, eta / amplitudeSum). 0 when coverage or amplitudeSum is 0. */
+export function whitecapAmount(eta: number, amplitudeSum: number, coverage: number, data: BoatData = boat): number;
 /** How far upwind a map offset lies (m): + = towards where the wind comes from. */
 export function upwindDistanceM(dEastM: number, dNorthM: number, windDirDeg: number): number;
 // dEast·sin(windDir·DEG) + dNorth·cos(windDir·DEG)
@@ -620,16 +634,17 @@ export interface GustProfile { fromM: number; stepM: number; values: number[] }
  * −1 (deepest lull) … +1 (a full gust). Null for other wind modes or a mean wind under 1 m/s.
  */
 export function gustProfile(controls: Controls, windMode: WindModeState, timeS: number, data: BoatData = boat): GustProfile | null;
-// U = knToMps(ctl_wind_speed); for b = 0 … (toM − fromM)/stepM: u = fromM + b·stepM;
+// null unless windMode.mode === 'gusty' and U = knToMps(ctl_wind_speed) ≥ gustPreview.minWindMps;
+// for b = 0 … (toM − fromM)/stepM (21 values; index of u = (u − fromM)/stepM): u = fromM + b·stepM;
 // tws = windAt(ctl_wind_dir, ctl_wind_speed, windMode, timeS + u / U).twsKn;
 // values[b] = clamp((tws − ctl_wind_speed) / (ctl_wind_speed · windMode.size / 100), −1, 1)
-/** Linear interpolation in the profile, clamped at both ends. */
+/** Linear interpolation in the profile; outside fromM … toM it fades linearly to 0 over one stepM (so the far water is not tinted). */
 export function gustAt(profile: GustProfile, upwindM: number): number;
 /** Where each buoy is relative to the boat (map offset), with its id. */
 export function buoyOffsets(boatState: Pick<BoatState, 'eastM' | 'northM'>, areaData: AreaData = area): { id: string; dEastM: number; dNorthM: number }[];
 ```
 
-The value at `u = 0` is the gust at the boat now (the same `windAt` the store uses at `rig.timeS`); the value at `u = 120 m` is the wind the boat will feel `120 / U` seconds later. That is what the dark patch shows.
+The value at `u = 0` is the gust at the boat now (the same `windAt` the store uses at `rig.timeS`); the value at `u = 120 m` is the wind the boat will feel `120 / U` seconds later. That is what the dark patch shows. A strong gust saturates at +1 (amplitudes reach 1.3 × the size plus noise). Known limitation: the profile is measured from the boat, so on a moving boat the patch moves over the water at the wind speed plus her own speed towards it.
 
 ### 8.4 3D
 
@@ -637,38 +652,40 @@ The value at `u = 0` is the gust at the boat now (the same `windAt` the store us
 - **Vertex colours** on the inner and outer water meshes (`color` attribute, 3 floats; both materials get `vertexColors: true` and a white `color`; the detail's base colour, `SCENE.water.color` or `lowColor`, goes into the vertex colours). New `SCENE.water` keys: `windyColor: '#16586a'`, `windDarkFromKn: 4`, `windDarkToKn: 24`, `windDarkAmount: 0.5`, `gustColor: '#0b3442'`, `gustAmount: 0.45`, `lullColor: '#5aa7bd'`, `lullAmount: 0.3`, `whitecapColor: '#f2f6f7'`. Per vertex, every frame (colours mixed with `THREE.Color.lerp`):
   1. `c = base.lerp(windyColor, windDarkAmount · smoothstep(windDarkFromKn, windDarkToKn, state.wind.twsKn))` (more wind, darker water).
   2. `profile = gustProfile(state.controls, state.windMode, state.rig.timeS)`; if not null: `g = gustAt(profile, upwindDistanceM(ΔE, ΔN, state.controls.ctl_wind_dir))`; `g > 0`: `c.lerp(gustColor, gustAmount·g)`; `g < 0`: `c.lerp(lullColor, lullAmount·(−g))`. The profile is computed once per frame (21 `windAt` calls), not per vertex.
-  3. Inner mesh only: `cov = whitecapCoverage(state.wind.twsKn)`; if `cov > 0`: `A = Σ amplitudeM`; `w = f · smoothstep(1 − 2·cov, 1 − cov, eta / A)` (f = the fade of 6.6); `c.lerp(whitecapColor, w)`. The crests where the trains add up turn white, more of them in more wind.
-  - The outer mesh's colours are recomputed only when the profile is not null or `state.wind.twsKn` changed since the last frame.
-- **Buoys** (`render3d/marks.ts`, `buildMarks(areaData = area): Marks` with `object: THREE.Group` and `update(state: AppState, heightAt: (dE: number, dN: number) => number): void`), added to the **world group** (not the water group: they must not step with it). Each buoy: a sphere radius 0.6 m (16 × 12 segments), a pole (cylinder radius 0.04 m from y 0.5 to 1.9 m) and a topmark of two boxes 0.5 × 0.08 × 0.08 m crossing in an X at y 1.9 m (one turned +45° and one −45° about the buoy's local z axis). All `MeshStandardMaterial` colour `SCENE.marks.color` `'#f5c400'`, roughness 0.5. Every mesh `userData.partId = 'env_buoy'`; the sphere also gets `hitPoints: [[0, 0, 0]]` (the 24 px tap area of small parts, picking.ts), because 200 m away a buoy is only a few pixels on a phone. Each frame: local position `x = buoy.northM − boat.northM`, `z = buoy.eastM − boat.eastM` (world-group axes: x north, z east), `y = heightAt(ΔE, ΔN) + 0.2`; hidden beyond `SCENE.marks.maxDrawM` (1000 m). No collisions: the boat passes through.
+  3. Inner mesh only, when there are trains: `cov = whitecapCoverage(state.wind.twsKn)` (the wind now: crests whiten in a gust); `A = Σ amplitudeM`; `w = f · whitecapAmount(eta, A, cov)` (f = the fade of 6.6); `c.lerp(whitecapColor, w)`. The crests where the trains add up turn white, more of them in more wind. No trains: no whitecaps (steps 1 and 2 still apply, so the M14 "skip the height work" never skips the colours).
+  - Set `needsUpdate` on the `color` attribute when written. The outer mesh's colours are recomputed on the first frame, after `setDetail`, and when the profile is not null or `state.wind.twsKn` changed since the last frame.
+- **Buoys** (`render3d/marks.ts`, `buildMarks(areaData = area): Marks` with `object: THREE.Group`, `update(state: AppState, heightAt: (dE: number, dN: number) => number): void` and `buoyObject(id: string): THREE.Object3D | undefined`), `marks.object` added to the **world group** (not the water group: they must not step with it); `scene.ts` calls `marks.update(state, water.heightAt)` after `world.update`. New `SCENE.marks`: `{ color: '#f5c400', roughness: 0.5, sphereRadiusM: 0.6, poleRadiusM: 0.04, poleBottomY: 0.5, poleTopY: 1.9, topmarkLengthM: 0.5, topmarkThicknessM: 0.08, floatY: 0.2, maxDrawM: 1000 }`. Each buoy is a group named `buoy_<id>`: a sphere (16 × 12 segments), a pole (cylinder from `poleBottomY` to `poleTopY`) and a child group `topmark` at `poleTopY` with two boxes `topmarkLengthM × topmarkThicknessM × topmarkThicknessM` crossing in an X (one turned +45°, one −45° about the topmark's local z axis). All `MeshStandardMaterial` in `color`, `roughness`. Every mesh `userData.partId = 'env_buoy'`; the sphere also gets `hitPoints: [[0, 0, 0]]` (the 24 px tap area of small parts, picking.ts), because 200 m away a buoy is only a few pixels on a phone. Each frame: local position `x = buoy.northM − boat.northM`, `z = buoy.eastM − boat.eastM` (world-group axes: x north, z east), `y = heightAt(ΔE, ΔN) + floatY` (the drawn surface: beyond the inner wave mesh it is flat, so a far buoy floats still); `topmark.rotation.y = Math.atan2(ΔN, ΔE)` so the X faces the boat. Beyond `maxDrawM` each **mesh** gets `visible = false` (the raycaster ignores a parent's visibility). No collisions: the boat passes through.
 - **Picking**: `createPicker(camera, boatRoot, water, extraRoots: THREE.Object3D[] = [])`: `collect` also traverses `extraRoots`; the ray tests `[boatRoot, ...extraRoots, water]`. The scene passes `[marks.object]`.
-- **Debug hook** (`?debug=1`): `window.__sailWater = { gustProfile: () => GustProfile | null; buoyScreen: (id: string) => { x: number; y: number } | null }` (the profile of the last frame; a buoy's centre on the canvas in CSS px, null when behind the camera), for the browser checks.
+- **Debug hook** (`?debug=1`): `window.__sailWater = { gustProfile: () => GustProfile | null; buoyScreen: (id: string) => { x: number; y: number } | null }` (the profile of the last frame; a buoy's sphere centre, from `buoyObject(id)`'s world position projected with the camera, on the canvas in CSS px, null when behind the camera), for the browser checks.
 
 ### 8.5 UI: the map
 
-- `mapView.ts` draws the buoys after the track and before the no-go wedge: a filled circle, colour `#f5c400` (a `MAP` constant in `mapView.ts`), with a 1.5 px dark outline (`#3a3000`), radius `max(5, 0.6 · pxPerM)` px, and its letter (`N`, `E`, `S`, `W`, 12 px, bold) 8 px to the right. Buoys off the canvas are skipped.
-- `pickMap`: after the boat and the apparent-wind arrow, a tap within `MAP.hitPx` (22 px) of a buoy's centre returns `env_buoy`.
+- `mapView.ts` draws the buoys after the point-of-sail labels and before the boat (on top of the labels): a filled circle in `COLOURS.buoy` `'#f5c400'` with a 1.5 px outline `COLOURS.buoyOutline` `'#3a3000'`, radius `max(5, 0.6 · pxPerM)` px, and its letter (`N`, `E`, `S`, `W`, 12 px, bold) 8 px to the right. Buoys off the canvas are skipped.
+- `pickMap`, in this order: the boat, **a buoy** (a tap within `MAP.hitPx`, 22 px, of its centre → `env_buoy`), the apparent-wind arrow, the point-of-sail labels, the wedge.
 
 ### 8.6 Strings and registry
 
-Registry: `env_buoy` (kind `environment`, phase 3, names en "Practice buoy", ru "учебный буй", status en `draft`, ru `draft`, short en "A yellow buoy used as a fixed mark, 200 m north, east, south and west of where the boat started. Watch it to judge your speed, drift and turns. The boat passes through it: there are no collisions yet."). `env_water`'s short text gains: "Darker patches are stronger wind (in gusty wind you can see a gust coming); white crests (white horses) appear from about 7 knots and grow with the wind."
+Registry: `env_buoy` (kind `environment`, phase 3, names en "Practice buoy", ru "учебный буй", `aliases` `{ "en": ["mark"], "ru": [] }`, `sources: []`, status en `draft`, ru `draft`, short en "A yellow buoy used as a fixed mark, 200 m north, east, south and west of where the boat started. Watch it to judge your speed, drift and turns. The boat passes through it: there are no collisions yet."). `env_water`'s short text (M14's) gets this appended: "Darker patches are stronger wind (in gusty wind you can see a gust coming); white crests (white horses) appear from about 7 knots and grow with the wind."
 
 ### 8.7 Tests
 
 `tests/windOnWater.test.ts`, `tests/physicsTruths3.test.ts`, `tests/map.test.ts`.
 
-1. **PT-44 white horses**: `whitecapCoverage` is 0 at 0 and 6.9 kn, > 0 at 8 kn, 0.02 at 10 kn, 0.06 at 16 kn, 0.2 at 27 kn (1e-9), and strictly increases from 7 to 40 kn.
-2. **PT-45 a gust shows upwind before it arrives**: Gusty, seed 1, size 30, mean 12 kn from 0, `startS` 0. Take the first gust of `gustyEvents(1, 3600)` and its peak time `tp = atS + riseS + holdS / 2`. With `U = knToMps(12)`: `gustAt(gustProfile(..., tp − 120 / U), 120)` equals `gustAt(gustProfile(..., tp), 0)` (1e-9), and that value is > 0.5. `gustAt(profile, 0)` equals `(state.wind.twsKn − 12) / (12 · 0.3)` for a store stepped to the same time (1e-9). Steady, Shifty, Building, Dying → null; Gusty with mean 1.5 kn → null.
-3. `upwindDistanceM`: wind from 0, a point 100 m north → +100; wind from 90, 100 m east → +100; wind from 90, 100 m west → −100.
+1. **PT-44 white horses**: `whitecapCoverage` is 0 at 0 and 6.9 kn, > 0 at 8 kn, 0.02 at 10 kn, 0.06 at 16 kn, 0.2 at 27 kn (1e-9), and strictly increases from 7 to 40 kn. Share of the sea that is white: Coastal trains at 16 kn (`waveTrains(initialSea('coastal', { dirDeg: 0, twsKn: 16 }))`, initial phases), a 200 × 200 grid of map points 1 m apart: the fraction with `whitecapAmount(eta, A, 0.06) > 0.5` is 0.04–0.12 [0.082]; the same at 27 kn with coverage 0.2: 0.11–0.32 [0.216] (bands: prototype ± 50 %). (**Tunable** if this fails: `crestEdgeFactor`, `crestEdgeWidth`.) `whitecapAmount(…, A = 0, …)` = 0 (no NaN).
+2. **PT-45 a gust shows upwind before it arrives**: Gusty, seed 1, size 30, mean 12 kn from 0, `startS` 0. Take the first gust of `gustyEvents(1, 3600)` (it begins at 33.7 s) and its peak time `tp = atS + riseS + holdS / 2` (41.7 s). With `U = knToMps(12)`: `gustAt(gustProfile(..., tp − 120 / U), 120)` equals `gustAt(gustProfile(..., tp), 0)` (1e-9), and that value is 1 (the gust saturates: unclamped 1.37). For a store (`initialState` with these controls, `setWindMode gusty`, stepped 50 s at 60 fps): `gustAt(gustProfile(controls, windMode, state.rig.timeS), 0)` equals `clamp((state.wind.twsKn − 12) / (12 · 0.3), −1, 1)` (1e-9). Outside the range: `gustAt(profile, 320)` is half of `values[last]`, `gustAt(profile, 340)` = 0. Steady, Shifty, Building, Dying → null; Gusty with mean 1.5 kn → null.
+3. `upwindDistanceM` (`toBeCloseTo`): wind from 0, a point 100 m north → +100; wind from 90, 100 m east → +100; wind from 90, 100 m west → −100.
 4. `buoyOffsets` with the boat at east 50, north −20: N → (−50, 220), E → (150, 20).
-5. Map: at 4 m per pixel, North up, the boat at the start, `pickMap` 50 px above the boat's centre returns `env_buoy`; 30 px to the right of that returns `null` or another id, not `env_buoy`.
+5. Map (`tests/map.test.ts`, its `viewport({ metresPerPx: 4 })` helper, `initialState()` defaults): `pickMap` at (180, 160) (the N buoy, 50 px above the boat's centre) returns `env_buoy`; at (210, 160) it does not.
+6. Picking (`tests/picking.test.ts`): an object with `hitPoints` under an extra root passed to `createPicker` is found by a tap on it; with its mesh `visible = false` it is not.
 
 ### 8.8 Browser checks (`scripts/shots-m16.mjs`)
 
-Scenes: `water-windy` (`?wd=90&ws=22&ms=50&js=100&sea=open&cam=side-port`, wait 3 s: dark water, white crests), `water-light` (`?wd=90&ws=6&ms=50&js=100&cam=side-port`: no white horses), `buoy-ahead` (`?wd=90&ws=12&ms=40&js=100&cam=helm`, heading 0: the N buoy ahead), `horizon` (`?wd=90&ws=12&cam=side-starboard`).
+Scenes (`M16_SCENES`, labels with `m16`, registered like M14: import, `m16-` prefix, `liveGroups.m16`; every scene waits 3 s): `water-windy` (`?wd=90&ws=22&ms=50&js=100&sea=open&cam=side-port`: dark water, white crests), `water-light` (`?wd=90&ws=6&ms=50&js=100&cam=side-port`: no white horses), `buoy-ahead` (`?wd=90&ws=12&ms=40&js=100&held=1&cam=helm`: the N buoy ahead), `horizon` (`?wd=90&ws=12&cam=side-starboard`).
 Live checks (`liveM16Checks`):
-- Gust coming: `?wd=0&ws=12&ms=12&js=0&wm=gusty&seed=7&cam=helm&debug=1`: poll `__sailWater.gustProfile()` every 0.5 s (at most 120 s) until a value between 60 and 200 m upwind is > 0.5 while the value at 0 m is < 0.2; screenshot (`live-phone-gust-coming.png`); then within `200 m / U + 5 s` the strip shows `GUST`.
-- Buoy on the map: `?wd=90&ws=12&cam=map`, tap − four times (0.1 → 0.2 → 0.5 → 1 → 2 m/px), tap 100 px above the boat's centre: the info card says "Practice buoy".
-- Buoy in 3D: `?wd=90&ws=12&ms=40&js=100&cam=helm&debug=1`: `__sailWater.buoyScreen('N')` lies inside the canvas, and a tap there opens "Practice buoy".
+- Gust coming: `?wd=0&ws=12&ms=12&js=0&wm=gusty&seed=1&cam=helm&debug=1` (seed 1's first gust begins 33.7 s in): poll `__sailWater.gustProfile()` every 0.5 s (at most 60 s) until one of `values[8]` … `values[15]` (60–200 m upwind) is > 0.5 while `values[5]` (0 m) is < 0.2; screenshot (`live-phone-gust-coming.png`); then within 40 s the strip shows `GUST`.
+- Buoy on the map: `?wd=90&ws=12&held=1&cam=map`, tap − four times (0.1 → 0.2 → 0.5 → 1 → 2 m/px), tap 100 px above the boat's centre: the info card says "Practice buoy".
+- Buoy in 3D: `?wd=90&ws=12&held=1&debug=1`, then `__sailDebug.setView([6.5, 2.5, 0], [60, 0.5, 0])` (from the bow, looking ahead, nothing of the boat in the way), wait 0.5 s: `__sailWater.buoyScreen('N')` lies inside the canvas, and a tap there opens "Practice buoy".
+- PT-45 is `to-verify`: try to find a source; if none is reachable or none supports it, leave the status and say so in the PR.
 
 ### 8.9 Done when
 
@@ -687,7 +704,7 @@ No collisions with the buoys, no other marks or land (Phase 5). No streaks of fo
 ### 9.1 Files
 
 New: `src/model/clock.ts`, `src/model/sun.ts`, `src/render3d/daylight.ts`, `src/ui/clockPanel.ts`, `tests/clock.test.ts`, `tests/sun.test.ts`, `scripts/shots-m17.mjs`.
-Changed: `content/areas/adriatic.json` (`clock`), `src/model/settings.ts` (`Settings.clock`), `src/app/store.ts`, `src/app/urlState.ts`, `src/app/app.ts` (the clock in `.view-top`), `src/ui/panel.ts` (View tab switch), `src/render3d/scene.ts` (lights from the sun), `src/render3d/waterSurface.ts` (night water), `src/render3d/sceneConfig.ts`, `src/style.css`, `content/i18n/en.json`, `tests/physicsTruths3.test.ts`, `scripts/shots.mjs`, `scripts/a11y-audit.mjs` targets if needed, `docs/CODE_MAP.md`.
+Changed: `content/areas/adriatic.json` (`clock`), `src/model/settings.ts` (`Settings.clock`), `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts` (the clock in `.view-top`), `src/ui/panel.ts` (View tab switch), `src/ui/timeBar.ts` (`topClearance`), `src/ui/debugOverlay.ts`, `src/render3d/scene.ts` (lights from the sun), `src/render3d/environment.ts`, `src/render3d/waterSurface.ts` (night water), `src/render3d/sceneConfig.ts`, `src/style.css`, `content/i18n/en.json`, `tests/physicsTruths3.test.ts`, `tests/urlState.test.ts`, `scripts/shots.mjs`, `scripts/compare/main.ts`, `docs/CODE_MAP.md`. `docs/BOAT_REFERENCE.md`: no new rows (the clock and sun have no tuning keys; the area's row was added in planning).
 
 ### 9.2 Data (`content/areas/adriatic.json`, new key)
 
@@ -721,8 +738,10 @@ export function defaultClockUtcMs(areaData: AreaData = area): number;   // clock
 export function clockParam(utcMs: number, areaData: AreaData = area): string;
 /** A 'YYYYMMDDHHmm' local time → UTC ms, or null if it is not 12 digits or not a real date and time (year 1900–2100). */
 export function parseClockParam(value: string, areaData: AreaData = area): number | null;
+// rejects a date whose fields do not round-trip through Date.UTC (30 February), hour > 23, minute > 59
 export type Daylight = 'day' | 'golden' | 'twilight' | 'night';
 export function daylight(sunElevationDeg: number): Daylight;   // ≥ 6 day; ≥ 0 golden; ≥ −6 twilight; else night
+// the three edges are named constants in clock.ts (DAY_FROM_DEG 6, GOLDEN_FROM_DEG 0, TWILIGHT_FROM_DEG −6: civil twilight ends 6° below the horizon)
 ```
 
 `src/model/sun.ts` (the NOAA solar calculator's equations, after Meeus; `r = π/180`, all trig in radians):
@@ -743,9 +762,9 @@ export function sunTimes(year: number, month: number, day: number, latitudeDeg: 
 `δ = asin(sin ε · sin λ)` (declination); `y = tan²(ε/2)`;
 `EoT = 4·deg(y·sin 2L0 − 2e·sin M + 4e·y·sin M·cos 2L0 − ½y²·sin 4L0 − 1.25e²·sin 2M)` minutes.
 
-`sunPosition`: `minutes` = minutes since UTC midnight of `utcMs`; `TST = minutes + EoT + 4·longitude`; `HA = TST/4 − 180` (add 360 if < −180); `cos Z = sin φ sin δ + cos φ cos δ cos HA` (clamped to [−1, 1]); `elevationDeg = 90 − Z`; `azimuthDeg = wrap360(deg(atan2(sin HA, cos HA·sin φ − tan δ·cos φ)) + 180)`. No refraction correction.
+`sunPosition`: `minutes = modulo(utcMs, 86,400,000) / 60,000` (fractional, so the sun moves smoothly); `TST = minutes + EoT + 4·longitude`; `HA = wrap180(TST/4 − 180)`; `cos Z = sin φ sin δ + cos φ cos δ cos HA` (clamped to [−1, 1]); `elevationDeg = 90 − Z`; `azimuthDeg = wrap360(deg(atan2(sin HA, cos HA·sin φ − tan δ·cos φ)) + 180)`. No refraction correction.
 
-`sunTimes`: `day0 = Date.UTC(year, month − 1, day)`; `noon = 720 − 4·longitude` minutes, then twice: `noon = 720 − 4·longitude − EoT(day0 + noon·60,000)`. With `δ` at `day0 + noon`: `arg = cos(90.833°) / (cos φ cos δ) − tan φ tan δ`. `arg > 1` → `polar: 'night'`, both times null; `arg < −1` → `polar: 'day'`, both null; else `H = deg(acos arg)`, sunrise `= day0 + (noon − 4H)·60,000`, sunset `= day0 + (noon + 4H)·60,000`, `polar: 'none'`. (90.833° = the sun's disc fully below the horizon with refraction: Wikipedia, Sunrise equation.)
+`sunTimes`: `day0 = Date.UTC(year, month − 1, day)`; `noon = 720 − 4·longitude` minutes, then twice: `noon = 720 − 4·longitude − EoT(day0 + noon·60,000)`. With `δ` at `day0 + noon`: `arg = cos(90.833°) / (cos φ cos δ) − tan φ tan δ`. `arg > 1` → `polar: 'night'`, both times null; `arg < −1` → `polar: 'day'`, both null; else `H = deg(acos arg)`, sunrise `= day0 + (noon − 4H)·60,000`, sunset `= day0 + (noon + 4H)·60,000`, `polar: 'none'`. (90.833° = the sun's disc fully below the horizon with refraction: Wikipedia, Sunrise equation; a named constant `SUNRISE_ZENITH_DEG` in `sun.ts`.)
 
 ### 9.4 Store and URL
 
@@ -753,23 +772,27 @@ export function sunTimes(year: number, month: number, day: number, latitudeDeg: 
 - `step`: `clock = dt === 0 ? state.clock : { utcMs: state.clock.utcMs + dt·1000 }` (4.2 item 4): the clock runs with the time bar (×16 → 16 times faster) and stops when paused (owner). It runs in both boat modes.
 - Actions: `{ type: 'setClock'; utcMs: number }` (ignored unless finite and `localParts` gives a year 1900–2100) and `{ type: 'setClockShown'; shown: boolean }`. "Now" is read from the device by the UI (`Date.now()`) and dispatched as `setClock`: the reducer stays pure and the real clock is read only when the user taps Now (ROADMAP architecture hook).
 - `reset`: the default clock; `settings.clock` back to `true`.
-- **URL**: `clk` = `clockParam(state.clock.utcMs)`, written when it differs from `clockParam(defaultClockUtcMs())` (so a link stores the time on board when it was shared, to the minute, and opens with the same sky: owner); `clock=0` when the clock is hidden. Parse: `parseClockParam`; missing or invalid → the default. Old links open at noon, 1 June.
+- **URL**: `clk` = `clockParam(state.clock.utcMs)`, written when it differs from `clockParam(defaultClockUtcMs())` (so a link stores the time on board when it was shared, to the minute, and opens with the same sky: owner); `clock=0` when the clock is hidden. Both are written after the engine parameters and before the Realistic ones. Parse: `parseClockParam`; missing or invalid → the default. Old links open at noon, 1 June.
+- `urlSync.ts`: the early return also requires `clockParam(state.clock.utcMs) === clockParam(previous.clock.utcMs)` (compare the strings only when `state.clock !== previous.clock`), so a new minute, Now and Set reach the address bar. (`clock=0` is a setting, already covered.)
+- Known limitation: a time inside the spring-forward hour (`202603290230`) opens an hour later, and the second 02:xx of the autumn night is written as the first; both are one night a year.
 
 ### 9.5 UI
 
-**Clock chip** (`ui/clockPanel.ts`, `createClockPanel(top: HTMLElement, store): HTMLElement`, appended to `.view-top` after the time bar in `app.ts`):
-- A button `data-testid="clock-chip"`, class `clock-chip`, at least 44 × 44 px, text the local time `14:32` (24 h, from `localParts`), `aria-label` `Clock: 14:32, Monday 1 June 2026. Tap for the date, sunrise and sunset.` Hidden when `settings.clock` is false. It sits to the right of the time bar where the row has room, else it wraps under it aligned right (the `.view-top` flex row; `trackTopHeight` keeps the camera framing below it). The text is updated only when the minute changes.
-- Tapping the chip opens or closes the **clock card** (`data-testid="clock-card"`, a `section` with `aria-label="Clock"`), positioned under the top area (`top: calc(var(--view-top-h) + 4px)`, `right: 8px`, `max-width: min(320px, calc(100% - 16px))`, above the 3D view like the alerts). Its open state is not stored. Content, top to bottom:
+**Clock chip and card** (`ui/clockPanel.ts`, called in `app.ts` right after `createTimeBar`):
+- `createClockPanel(top: HTMLElement, view: HTMLElement, store): void`: the chip goes into `top` (`.view-top`), the card into `view` (the 3D view, where `--view-top-h` is set).
+- A button `data-testid="clock-chip"`, class `clock-chip`, at least 44 × 44 px, text the local time `14:32` (24 h, from `localParts`), `aria-label` `Clock: 14:32, Monday 1 June 2026. Tap for the date, sunrise and sunset.` Hidden when `settings.clock` is false. It sits to the right of the time bar where the row has room, else it wraps under it aligned right (the `.view-top` flex row; `trackTopHeight` keeps the camera framing below it). `topClearance` (`timeBar.ts`) changes to the bottom of the lowest child of `.view-top` that wraps under the strip (not only `.time-bar`), so a wrapped chip is cleared too. The text is updated only when the minute changes.
+- Tapping the chip opens or closes the **clock card** (`data-testid="clock-card"`, a `section` with `aria-label="Clock"`), positioned under the top area (`position: absolute; top: calc(var(--view-top-h) + 4px); right: 8px; max-width: min(320px, calc(100% - 16px)); z-index: 6; pointer-events: auto; overflow-wrap: anywhere`); while open it covers the debug box and the map's North up / Boat up switch (they sit in the same corner). Its open state is not stored. The chip toggles it; the `×` button and the Escape key close it. Content, top to bottom:
   1. `Monday 1 June 2026 · 14:32` (`data-testid="clock-date"`).
-  2. `Adriatic (Split) · CEST (UTC+2)` (area name from `names.en`, abbreviation and offset from `localParts`).
-  3. `Sunrise 05:16 · Sunset 20:28` (`data-testid="clock-sun"`, local times of `sunTimes` for the local date); polar day: `The sun does not set today.`; polar night: `The sun does not rise today.`
+  2. `Adriatic (Split) · CEST (UTC+2)` (area name from `names.en`; abbreviation `summerAbbreviation` or `standardAbbreviation` and `hours = offsetMin / 60` from `localParts`).
+  3. `Sunrise 05:16 · Sunset 20:28` (`data-testid="clock-sun"`, local times of `sunTimes` for the local date, each **rounded to the nearest minute** before `localParts`: `Math.round(ms / 60000) · 60000`; the chip and `clk` floor); polar day: `The sun does not set today.`; polar night: `The sun does not rise today.`
   4. `Light: Day` (`daylight(...)`: `Day`, `Low sun (sunrise or sunset light)`, `Twilight (the sun is just below the horizon)`, `Night`).
   5. Buttons `Now` (`clock-now`) and `Noon, 1 June` (`clock-default`), at least 44 px high.
-  6. `Set a time:` a date input (`type="date"`, `clock-date-input`) and a time input (`type="time"`, `step="60"`, `clock-time-input`), both filled with the current local date and time when the card opens, and a `Set` button (`clock-set`) → `setClock(utcFromLocal(...))`; empty or invalid inputs do nothing.
+  6. `Set a time:` a date input (`type="date"`, `min="1900-01-01"`, `max="2100-12-31"`, `aria-label` `Date`, `clock-date-input`) and a time input (`type="time"`, `step="60"`, `aria-label` `Time`, `clock-time-input`), both at least 44 px high with a 16 px font, filled with the current local date and time **when the card opens** (not overwritten while it is open), and a `Set` button (`clock-set`) → `setClock(utcFromLocal(...))`; empty or invalid inputs do nothing.
   7. Hint: `The clock runs with the time bar: ×16 makes the sun move 16 times faster, and Pause stops it.`
   8. A close button `×` (44 px, `aria-label` `Close the clock`).
-- **View tab**: a switch `Clock` (same component as the `Time bar` switch) with the hint `Shows the time on board over the 3D view.` → `setClockShown`.
-- Debug overlay row `sun`: `elev 68.6° az 180.0° · Day`.
+- **View tab**: a switch `Clock` directly after the `Time bar` switch in `panel.ts`, built the same way, `data-testid="clock-switch"`, with the hint `Shows the time on board over the 3D view.` → `setClockShown`.
+- The weekday and month names come from `t(`clock.weekday.${n}` as StringKey)` (a cast is fine).
+- Debug overlay row `sun` (`debugOverlay.ts`): `elev 68.6° az 180.0° · Day`.
 
 ### 9.6 3D: the sun's light (`render3d/daylight.ts`)
 
@@ -777,14 +800,14 @@ export function sunTimes(year: number, month: number, day: number, latitudeDeg: 
 export interface Daylighting { sunDirection: THREE.Vector3; sun: number; sky: number; warm: number; night: number }
 export function daylighting(elevationDeg: number, azimuthDeg: number, headingDeg: number): Daylighting;
 ```
-- Direction towards the sun in the boat frame: `east = sin(az)·cos(el)`, `north = cos(az)·cos(el)`, `up = sin(el)` (radians inside); `[x, z] = mapToBoat(east, north, heading)`; `sunDirection = (x, up, z)` normalised. For the light's position the elevation is never below 2° (`el' = max(el, 2°)`), so the shadow camera never looks up from below the water.
-- `sun = smoothstep(−1, 8, el)`, `sky = 0.25 + 0.75·smoothstep(−12, 10, el)`, `warm = 1 − smoothstep(2, 25, el)`, `night = 1 − smoothstep(−12, 0, el)`.
+- Direction towards the sun in the boat frame, using `el' = max(el, 2°)` (so the light and the shadow camera never come from below the water; `sunDirection` is always built from `el'`): `east = sin(az)·cos(el')`, `north = cos(az)·cos(el')`, `up = sin(el')` (radians inside); `[x, z] = mapToBoat(east, north, heading)`; `sunDirection = (x, up, z)` normalised.
+- `sun = smoothstep(−1, 8, el)`, `sky = 0.25 + 0.75·smoothstep(−12, 10, el)`, `warm = 1 − smoothstep(2, 25, el)`, `night = 1 − smoothstep(−12, 0, el)` (with the true `el`). These numbers and the colours below live in a new `SCENE.daylight` block: `{ sunFromDeg: −1, sunToDeg: 8, skyFloor: 0.25, skyFromDeg: −12, skyToDeg: 10, warmFromDeg: 2, warmToDeg: 25, nightFromDeg: −12, nightToDeg: 0, warmSun: '#ffb46b', moonColour: '#9fb3ff', nightWater: '#0b2230', nightWhitecapDim: 0.7, backgroundFloor: 0.15, backgroundFromDeg: −12, backgroundToDeg: 6 }`.
 - Each frame in `scene.render`: `{ elevationDeg, azimuthDeg } = sunPosition(state.clock.utcMs, area.position.latitudeDeg, area.position.longitudeDeg)`; then
-  - sun light: position = `SCENE.shadowCentre + sunDirection(el') · SCENE.shadows.distance`, target the shadow centre; intensity = the detail's sun intensity × `sun`; colour = white lerped to `SCENE.daylight.warmSun` (`'#ffb46b'`) by `warm`; `castShadow` only at High detail and while `sun > 0.05`. `configureSunShadow` no longer places the light (it keeps the camera box).
-  - hemisphere light intensity × `sky`; fill light intensity × `sky`, colour white lerped to `SCENE.daylight.moonColour` (`'#9fb3ff'`) by `night` (the moonlit night: owner).
-  - `scene.backgroundIntensity = 0.15 + 0.85·smoothstep(−12, 6, el)` and the fog colour = `SCENE.sky.horizon` × the same factor (until M18 replaces the sky).
-  - Water base colour (M16 vertex colours) lerped to `SCENE.daylight.nightWater` (`'#0b2230'`) by `night`.
-- `SCENE.light.sunDirection` is removed (the clock decides). The old sky texture still has its fixed sun glow until M18.
+  - sun light: position = `SCENE.shadowCentre + sunDirection · SCENE.shadows.distance`, target the shadow centre; intensity = the detail's sun intensity × `sun`; colour = white lerped to `SCENE.daylight.warmSun` by `warm`; `castShadow` only at High detail and while `sun > 0.05`. `configureSunShadow` no longer places the light (it keeps the camera box); `applyDetail` no longer sets `sun.castShadow` or the light intensities (`render` sets them every frame from the detail's base values).
+  - hemisphere light intensity × `sky`; fill light intensity × `sky`, colour white lerped to `SCENE.daylight.moonColour` by `night` (the moonlit night: owner); `scene.environmentIntensity = SCENE.light.environmentIntensity × sky` (otherwise the day-sky reflections light the boat at night at High detail).
+  - `scene.backgroundIntensity = backgroundFloor + (1 − backgroundFloor)·smoothstep(backgroundFromDeg, backgroundToDeg, el)` and the fog colour = `SCENE.sky.horizon` × the same factor (until M18 replaces the sky).
+  - Water: `waterSurface.update(state, shift, night)` gains the `night` value. The base colour of M16's step 1 is first lerped to `SCENE.daylight.nightWater` by `night` (`base = detailBase.lerp(nightWater, night)`, then the wind darkening); the white crests use `whitecapColor` lerped to `nightWater` by `nightWhitecapDim · night`. The outer mesh's colours are also recomputed when `night` changed since the last frame.
+- `SCENE.light.sunDirection` moves to `SCENE.sky.glowDirection` (same value): `environment.ts` reads it for the old sky texture's fixed glow (until M18), and `scene.ts` no longer imports `sunDirection()`. `scripts/compare/main.ts` (the model-vs-sketch comparison) uses `SCENE.sky.glowDirection` instead of `SCENE.light.sunDirection`.
 
 ### 9.7 Strings and registry
 
@@ -792,29 +815,30 @@ export function daylighting(elevationDeg: number, azimuthDeg: number, headingDeg
 
 ### 9.8 Tests
 
-`tests/clock.test.ts`, `tests/sun.test.ts`, `tests/physicsTruths3.test.ts`, URL cases in `tests/urlState.test.ts`. Sun values come from the prototype of these equations (2026-10-13); the equations' published accuracy is about 1–2 minutes.
+`tests/clock.test.ts` (items 1–4, 8, 9), `tests/sun.test.ts` (5, 6), `tests/physicsTruths3.test.ts` (7), URL cases in `tests/urlState.test.ts` (10). Sun values come from the prototype of these equations (2026-10-13); the equations' published accuracy is about 1–2 minutes.
 
 1. `lastSundayUtcMs(2026, 3)` = 2026-03-29 01:00 UTC (1,774,746,000,000); `(2026, 10)` = 2026-10-25 01:00 UTC; `(2027, 3)` = 2027-03-28; `(2027, 10)` = 2027-10-31.
 2. `localParts`: 2026-06-01 10:00 UTC → 12:00, Monday (weekday 1), offset 120, summer; 2026-12-21 11:00 UTC → 12:00, offset 60; one second before and at 2026-03-29 01:00 UTC → 01:59:59 CET and 03:00:00 CEST.
 3. `utcFromLocal`: (2026, 6, 1, 12, 0) = `defaultClockUtcMs()` = 1,780,308,000,000; (2026, 12, 21, 12, 0) = 2026-12-21 11:00 UTC; (2026, 3, 29, 2, 30) = 01:30 UTC; (2026, 10, 25, 2, 30) = 00:30 UTC. Round trip `localParts(utcFromLocal(...))` for every hour of 2026-06-01 and 2026-12-21.
-4. `parseClockParam`: `202612211200` → 2026-12-21 11:00 UTC; `202602301200`, `202613011200`, `202606012460`, `12`, `abc` → null; `clockParam(defaultClockUtcMs())` = `202606011200`.
+4. `parseClockParam`: `202612211200` → 2026-12-21 11:00 UTC; `202603290230` → 01:30 UTC (the spring-forward hour, see 9.4); `202602301200`, `202613011200`, `202606012460`, `12`, `abc` → null; `clockParam(defaultClockUtcMs())` = `202606011200`.
 5. `sunTimes` at Split (43.508, 16.44), each ± 2 min (UTC): 2026-06-01 sunrise 03:16, sunset 18:28, noon 10:52; 2026-06-21 03:13, 18:39; 2026-12-21 06:24, 15:21; 2026-03-20 04:57, 17:06, noon 11:02. Latitude 80, 2026-12-21 → `polar: 'night'`, times null (no NaN); latitude 80, 2026-06-21 → `polar: 'day'`.
-6. `sunPosition` at Split on 2026-06-01 (± 0.3°): 04:00 UTC elevation 6.15, azimuth 65.27; 06:00 → 27.06, 84.46; 10:00 → 66.01, 149.10; 14:00 → 45.86, 256.52; 18:00 → 3.63, 297.40; at the noon of test 5: elevation 68.6.
+6. `sunPosition` at Split on 2026-06-01 (± 0.3°): 04:00 UTC elevation 6.15, azimuth 65.27; 06:00 → 27.06, 84.46; 10:00 → 66.01, 149.10; 14:00 → 45.86, 256.52; 18:00 → 3.63, 297.40; at `sunTimes(2026, 6, 1, …).noonUtcMs`: elevation 68.6.
 7. **PT-46 the sun's path**: Split 2026-06-01: the azimuth at sunrise is 45–90° (north-east to east), at sunset 270–315° (west to north-west), at noon 180° ± 1 (due south); the day on 2026-06-01 is more than 5 h longer than on 2026-12-21 (prototype 15 h 12 min vs 8 h 57 min).
 8. `daylight`: 10 → day, 3 → golden, −3 → twilight, −10 → night. `daylighting` at elevation 30: sun 1, sky 1, night 0; at −20: sun 0, sky 0.25, night 1; azimuth 180, elevation 10, heading 0 → `sunDirection.x < −0.9` (the sun astern when sailing north); heading 90 → `sunDirection.z > 0.9` (to starboard when sailing east).
-9. Store: 60 s of frames at 60 fps with ×16 advance the clock by 960 ± 1 s; paused: unchanged (same object); Held still with Steady wind (time bar shows Pause only): it advances at ×1. `setClock` with NaN or year 2200 → unchanged. Reset → default clock.
+9. Store: 60 s of frames at 60 fps with ×16 advance the clock by 960 ± 1 s; paused: `state.clock` unchanged (the same object); Held still with Steady wind (time bar shows Pause only): it advances at ×1. `setClock` with NaN or year 2200 → unchanged. Reset → default clock.
 10. **URL**: `?clk=202612211200` opens at 2026-12-21 11:00 UTC; round trip; the default writes no `clk`; 61 s after the default the link has `clk=202606011201`; `clock=0` round trip; an invalid `clk` opens the default.
 
 ### 9.9 Browser checks (`scripts/shots-m17.mjs`)
 
-Scenes: `clock-chip` (`?wd=90&ws=12&ms=40&js=100`), `clock-card` (same, the chip tapped), `light-low-sun` (`?wd=90&ws=12&ms=40&js=100&clk=202606012010&cam=side-starboard`), `light-night` (`?wd=90&ws=12&ms=40&js=100&clk=202606012300&cam=side-starboard`).
+Scenes: `clock-chip` (`?wd=90&ws=12&ms=40&js=100`), `clock-card` (same, the chip tapped), `light-low-sun` (`?wd=90&ws=12&ms=40&js=100&clk=202606012010&cam=side-port&detail=low`: sailing north, the low sun is on her port bow), `light-night` (`?wd=90&ws=12&ms=40&js=100&clk=202606012300&cam=side-port&detail=low`).
+- `openPage` adds `clock=0` to the link of every scene and check whose label does not match `/m1[7-9]/` and whose query has no `clock=` (the tap sweep must not open the clock card).
 Live checks (`liveM17Checks`):
 - Default link: the chip reads `12:00`; tap it: the card shows `Sunrise 05:16 · Sunset 20:28` and `Light: Day`.
-- With `&tx=16`, after 15 s the chip reads `12:04` (± 1 minute); press Pause, wait 3 s: unchanged.
+- With `&tx=16`, poll until the chip reads `12:04` or later (at most 60 s: headless rendering can be slower than 10 fps, and a frame never advances more than 0.1 s × 16); press Pause, wait 3 s: unchanged.
 - In the card, set 2026-12-21 12:00 and tap Set: `Sunrise 07:24 · Sunset 16:21`, the address bar has `clk=202612211200`.
 - Tap Now: the address bar's `clk` changes to a valid 12-digit time.
 - View tab → Clock off: the chip disappears and the address bar has `clock=0`.
-- The night scene's canvas is darker than the noon scene's (mean luminance of the canvas below 50 % of noon's).
+- The night scene's canvas is darker than the noon scene's: mean luminance below 50 % of noon's, same viewport and `detail=low`. Recipe (used again in M18): `page.locator('canvas.scene-canvas').screenshot()`, then inside `page.evaluate` draw the PNG (as a `data:` URL) into a 2D canvas and average `0.2126·R + 0.7152·G + 0.0722·B` (0 … 1) over the area wanted.
 - Accessibility audit (`auditPage`) on the open clock card.
 
 ### 9.10 Done when
@@ -834,11 +858,11 @@ No new sky colours, stars or sun glow in the right place (M18). No moon. Winds d
 ### 10.1 Files
 
 New: `src/render3d/skyDome.ts`, `src/render3d/skyColours.ts`, `tests/skyColours.test.ts`, `scripts/shots-m18.mjs`.
-Changed: `src/render3d/scene.ts` (dome instead of the background texture, fog colour, reflections), `src/render3d/environment.ts` (`skyTexture` → `cloudTexture`), `src/render3d/sceneConfig.ts` (`SCENE.skyByElevation`), `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+Changed: `src/render3d/scene.ts` (the dome instead of the background texture, fog colour, reflections), `src/render3d/environment.ts` (`skyTexture` → `cloudTexture`; `srgbTable`, `toByte` and `sunDirection` removed), `src/render3d/daylight.ts` (`skyDirection`), `src/render3d/sceneConfig.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 10.2 Data (`sceneConfig.ts`, presentation)
 
-`SCENE.skyByElevation`, rows sorted by the sun's elevation (degrees); colours are interpolated between neighbouring rows in three.js's linear working space (`Color.lerp`), numbers linearly; below the first row and above the last the end row is used. The rows at 20° and 90° are today's sky (`SCENE.sky`):
+`SCENE.skyByElevation`: rows sorted by the sun's elevation (degrees). Colours are interpolated between neighbouring rows in three.js's linear working space (`Color.lerp`), numbers linearly; below the first row and above the last the end row is used. The rows at 20° and 90° reproduce today's sky.
 
 | elevDeg | zenith | horizon | glow | cloud | glowStrength | haloStrength | stars |
 |---|---|---|---|---|---|---|---|
@@ -846,54 +870,68 @@ Changed: `src/render3d/scene.ts` (dome instead of the background texture, fog co
 | −6 | `#0e1a3a` | `#3a3f63` | `#7a5a7a` | `#3a3a55` | 0.3 | 0.3 | 0.6 |
 | 0 | `#2c4a7a` | `#f0a070` | `#ffb070` | `#e0a090` | 1 | 1 | 0 |
 | 6 | `#4a7ab0` | `#f2c9a0` | `#ffd9a0` | `#f4e0d0` | 0.9 | 0.6 | 0 |
-| 20 | `#5f97c8` | `#d6e7f2` | `#fff6e0` | `#ffffff` | 0.8 | 0.15 | 0 |
-| 90 | `#5f97c8` | `#d6e7f2` | `#fff6e0` | `#ffffff` | 0.8 | 0.1 | 0 |
+| 20 | `#5f97c8` | `#d6e7f2` | `#fff6e0` | `#ffffff` | 0.8 | 0 | 0 |
+| 90 | `#5f97c8` | `#d6e7f2` | `#fff6e0` | `#ffffff` | 0.8 | 0 | 0 |
 
-Write it in `sceneConfig.ts` as an array of `{ elevDeg, zenith, horizon, glow, cloud, glowStrength, haloStrength, stars }`. `SCENE.sky.belowHorizon` stays; at night it is lerped to `'#030a10'` by M17's `night`.
+Write it as an array of `{ elevDeg, zenith, horizon, glow, cloud, glowStrength, haloStrength, stars }`. Other new keys: `SCENE.sky.domeRadiusM: 900`, `domeWidthSegments: 48`, `domeHeightSegments: 24`, `starThreshold: 0.99`, `starCellsPerDeg: 2`; `SCENE.daylight.nightBelow: '#030a10'` (`SCENE.sky.belowHorizon` is lerped to it by M17's `night`); `SCENE.reflections: { minTurnDeg: 5, minIntervalS: 2, size: 128 }`. Removed from `SCENE.sky` (now in the table or unused): `zenith`, `horizon`, `sunGlow`, `cloud`, `cloudCount`, `glowDirection`. Kept: `width`, `height`, `cloudOpacity`, `belowHorizon`.
 
 ### 10.3 Sky colours (`render3d/skyColours.ts`)
 
 ```ts
 export interface SkyColours { zenith: THREE.Color; horizon: THREE.Color; glow: THREE.Color; cloud: THREE.Color; glowStrength: number; haloStrength: number; stars: number }
+/** The sky for a sun elevation. Returns the same object every call (module-level colours, refilled): it runs every frame. */
 export function skyColours(elevationDeg: number): SkyColours;
 ```
 
 ### 10.4 The sky dome (`render3d/skyDome.ts`)
 
 ```ts
-export interface SkyDome { object: THREE.Mesh; update(camera: THREE.Camera, colours: SkyColours, sunDirection: THREE.Vector3, headingDeg: number, below: THREE.Color): void }
+export interface SkyDome {
+  object: THREE.Mesh;
+  /** After rig.update and camera.updateMatrixWorld. `skyDirection`: towards the sun at its true elevation, boat frame. */
+  update(camera: THREE.Camera, colours: SkyColours, skyDirection: THREE.Vector3, headingDeg: number, below: THREE.Color): void;
+}
 export function buildSkyDome(clouds: THREE.Texture): SkyDome;
 ```
-- `new THREE.SphereGeometry(900, 48, 24)` with a `THREE.ShaderMaterial` (`side: THREE.BackSide`, `depthWrite: false`, `depthTest: false`, `fog: false`), `renderOrder = −1`, `frustumCulled = false`. Each frame its position is copied from the camera, so the sky is always 900 m away in every direction (the camera's far plane is 1000).
-- Uniforms: `uZenith`, `uHorizon`, `uBelow`, `uGlow`, `uCloud` (vec3), `uSunDir` (vec3, boat frame, unit), `uGlowStrength`, `uHalo`, `uStars`, `uHeading` (radians), `uCloudOpacity` (`SCENE.sky.cloudOpacity`), `uClouds` (sampler2D).
-- Vertex shader: `vDir = position` (the sphere is centred on the camera); standard `gl_Position`.
-- Fragment shader, in this order:
-  1. `d = normalize(vDir)`; `el = asin(clamp(d.y, −1, 1))`.
-  2. Gradient as the old texture: `t = el < 0 ? min(1, −el / 0.25) : pow(max(0, sin(el)), 0.6)`; `col = mix(uHorizon, el < 0 ? uBelow : uZenith, t)`.
-  3. The direction on the map (clouds and stars stay fixed on the map while she turns; the world group turns the map by +heading about y, so undo it): `mx = d.x·cos(h) − d.z·sin(h)`, `mz = d.x·sin(h) + d.z·cos(h)`, `my = d.y`, with `h = uHeading`.
-  4. Clouds: `u = atan(mz, mx) / (2π) + 0.5`, `v = el / π + 0.5`; `a = texture2D(uClouds, vec2(u, v)).a`; `band = el > 0 ? sin(min(1, el / 0.9)·π) : 0`; `col = mix(col, uCloud, a·band·uCloudOpacity)`.
-  5. Sun: `s = max(0, dot(d, uSunDir))`; `col += uGlow·(pow(s, 48)·0.8·uGlowStrength + pow(s, 4)·0.25·uHalo)`.
-  6. Stars (only when `uStars > 0` and `el > 0`): `cell = floor(vec2(atan(mz, mx), asin(my)) · (180/π) · 2)` (half-degree cells); `n = fract(sin(dot(cell, vec2(12.9898, 78.233)))·43758.5453)`; `col += vec3(step(0.996, n)·uStars·smoothstep(0, 0.15, el))`.
-  7. `gl_FragColor = vec4(col, 1)`, followed by `#include <tonemapping_fragment>` and `#include <colorspace_fragment>` so it matches the rest of the scene.
-- `environment.ts`: `skyTexture()` becomes `cloudTexture()`: the same noise octaves and the same `smoothstep(0.5, 0.72, n / weight)` cloud amount, written as an RGBA `DataTexture` (1024 × 512, white, alpha = the cloud amount, no band and no colours), linear filtering, `RepeatWrapping` in u.
+- `new THREE.SphereGeometry(domeRadiusM, domeWidthSegments, domeHeightSegments)` with a `THREE.ShaderMaterial` (`side: THREE.BackSide`, `depthWrite: false`, `depthTest: false`, `fog: false`, **`toneMapped: false`**: like the old background texture, the sky is not tone-mapped, so it meets the fogged water at the same colour), `renderOrder = −1`, `frustumCulled = false`. Each frame its position is copied from the camera.
+- Uniforms: `uZenith`, `uHorizon`, `uBelow`, `uGlow`, `uCloud` (`THREE.Color`, linear), `uSunDir` (vec3, unit), `uGlowStrength`, `uHalo`, `uStars`, `uHeading` (radians: `headingDeg · DEG`), `uCloudOpacity` (`SCENE.sky.cloudOpacity`), `uStarThreshold`, `uStarCells` (`starCellsPerDeg`), `uClouds` (sampler2D).
+- Vertex shader (complete):
+  ```glsl
+  varying vec3 vDir;
+  void main() { vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+  ```
+- Fragment shader, in this order. **Every literal is a float** (`48.0`, `0.0`, `1.0`): three.js compiles GLSL ES 3.0, which does not turn integers into floats.
+  1. `vec3 d = normalize(vDir); float el = asin(clamp(d.y, -1.0, 1.0));`
+  2. Gradient as the old texture: `float t = el < 0.0 ? min(1.0, -el / 0.25) : pow(max(0.0, sin(el)), 0.6); vec3 col = mix(uHorizon, el < 0.0 ? uBelow : uZenith, t);`
+  3. The direction on the map (clouds and stars stay fixed over the sea while she turns; the world group turns the map by +heading about y, so undo it): `float mx = d.x * cos(uHeading) - d.z * sin(uHeading); float mz = d.x * sin(uHeading) + d.z * cos(uHeading);`
+  4. Clouds: `float u = atan(mz, mx) / 6.2831853 + 0.5; float v = el / 3.1415927 + 0.5; float a = texture2D(uClouds, vec2(u, v)).a; float band = el > 0.0 ? sin(min(1.0, el / 0.9) * 3.1415927) : 0.0; col = mix(col, uCloud, a * band * uCloudOpacity);`
+  5. Sun, mixed as the old texture did (at noon the result equals today's sky): `float s = max(0.0, dot(d, uSunDir)); col = mix(col, uGlow, clamp(pow(s, 48.0) * uGlowStrength + pow(s, 4.0) * 0.25 * uHalo, 0.0, 1.0));`
+  6. Stars (when `uStars > 0.0` and `el > 0.0`), with a hash that has no `sin` (the same field on every GPU) and cells that stay square towards the zenith: `vec2 g = vec2(degrees(atan(mz, mx)) * cos(el), degrees(el)) * uStarCells; vec2 cell = floor(g); vec2 p = fract(cell * vec2(0.1031, 0.1030)); p += dot(p, p.yx + 33.33); float n = fract((p.x + p.y) * p.x); float r = length(fract(g) - 0.5); col += vec3(step(uStarThreshold, n) * (1.0 - smoothstep(0.05, 0.15, r)) * uStars * smoothstep(0.0, 0.15, el));` (a small dot in one cell of a hundred).
+  7. `gl_FragColor = vec4(col, 1.0);` then `#include <colorspace_fragment>` (no tone-mapping include).
+- `environment.ts`: `skyTexture()` becomes `cloudTexture()`: 1024 × 512 (`SCENE.sky.width`, `height`), the same octaves and the same noise call as now (`elevation = ((y + 0.5) / height − 0.5)·π`, `v = elevation / (π/2)`, `n = Σ amplitude · noise(u · period, v · period · 0.5)`), alpha = `smoothstep(0.5, 0.72, n / weight)` for rows above the horizon and 0 below; RGB white. RGBA `DataTexture`, `colorSpace` `NoColorSpace`, `flipY` false, linear filtering, `wrapS = RepeatWrapping`.
 
 ### 10.5 Scene changes
 
-- `scene.background` is no longer set (the dome draws the sky); M17's `backgroundIntensity` line goes. Each frame: `colours = skyColours(el)`; `dome.update(camera, colours, daylighting.sunDirection, boat.headingDeg, below)`; `scene.fog.color.copy(colours.horizon)`.
-- **Reflections (High detail)**: `scene.environment` comes from a small scene holding a second mesh with the dome's geometry and material at the origin: `pmrem.fromScene(skyScene, 0, 0.1, 1000).texture`. It is regenerated when High detail is first used, and afterwards only when the sun's boat-frame direction has turned by 3° or more since the last one (heading changes count), at most once per second of real time (this throttle is the second allowed use of the frame time `now`, after the camera tween); the old render target is disposed. Low detail never makes one.
-- Night readability (owner): the M17 floor (`sky ≥ 0.25`, the moon-coloured fill light) stays; nothing else is needed.
+- `daylight.ts`: `Daylighting` gains `skyDirection` (towards the sun at its **true** elevation, same formula as `sunDirection` without the 2° clamp); the dome uses it, the light keeps `sunDirection`.
+- `scene.background` is no longer set (the dome draws the sky); M17's `backgroundIntensity` line goes. Each frame, after `rig.update(now)` and `camera.updateMatrixWorld()`: `colours = skyColours(el)`; `below = SCENE.sky.belowHorizon` lerped to `SCENE.daylight.nightBelow` by `night`; `dome.update(camera, colours, daylighting.skyDirection, boat.headingDeg, below)`; `scene.fog.color.copy(colours.horizon)`.
+- **Reflections (High detail only)**: a second mesh with the dome's geometry and material at the origin, in its own small `skyScene`. One `PMREMGenerator`, created at the first need and kept. `applyDetail` no longer makes reflections: at Low it sets `scene.environment = null`; at High it marks them stale. In `render`, at High, regenerate `pmrem.fromScene(skyScene, 0, 0.1, SCENE.sky.domeRadiusM + 10, { size: SCENE.reflections.size })` when they are stale, or when the boat-frame `skyDirection` has turned by `minTurnDeg` or more since the last one; never more often than every `minIntervalS` seconds of real time (the frame time `now`). Keep the returned `WebGLRenderTarget` and dispose the previous one; `scene.environment = target.texture`.
+- **Night readability** (owner): the browser check below must pass at both details. If the boat's square is too dark at High detail, raise `SCENE.daylight.skyFloor` (M17's 0.25) in steps of 0.05 until it passes, and report it in the PR.
+- From a camera 100 m or more up (zoomed far out) the edge of the 2,000 m water shows a few degrees below the horizon against the dome's "below" colour. Accepted.
 
 ### 10.6 Tests
 
-`tests/skyColours.test.ts`: `skyColours(20)` and `skyColours(90)` give today's zenith `#5f97c8` and horizon `#d6e7f2` (`getHexString`); `skyColours(−30).stars` = 1; `skyColours(3).glowStrength` = 0.95 (halfway between 0° and 6°); `skyColours(−6).horizon` = `#3a3f63`.
+`tests/skyColours.test.ts`: `skyColours(20)` and `skyColours(90)` give zenith `5f97c8` and horizon `d6e7f2` (`getHexString()`); `skyColours(−30).stars` = 1; `skyColours(3).glowStrength` = 0.95; `skyColours(−6).horizon` = `3a3f63`; `SCENE.skyByElevation` is sorted by `elevDeg`. `cloudTexture()`: 1024 × 512, alpha 0 in the bottom half, maximum alpha above 128.
 
 ### 10.7 Browser checks (`scripts/shots-m18.mjs`)
 
-Scenes (`cam=side-starboard` and `cam=helm`, link base `?wd=90&ws=12&ms=40&js=100`): `sky-noon` (no `clk`), `sky-low-sun` (`clk=202606012005`), `sky-sunset` (`clk=202606012028`), `sky-twilight` (`clk=202606012050`), `sky-night` (`clk=202606012300`), `sky-sunrise` (`clk=202606010530`).
-Live checks (`liveM18Checks`):
-- Night: the mean luminance of the top fifth of the canvas is below 25 % of noon's; at least 5 pixels of that area are brighter than its mean + 0.3 (stars); the mean luminance of a 60 × 60 px square at the canvas centre (the boat) is above 0.08 (readable).
-- Sunset (`clk=202606012028&debug=1`): the debug overlay's `sun` row shows an elevation between −1° and +1°; the mean luminance of the top fifth of the canvas is between the night's and noon's.
-- No console errors from the shader at both details.
+Luminance: as in M17 (screenshot of `canvas.scene-canvas`, drawn into a 2D canvas inside `page.evaluate`), 8-bit sRGB values, `(0.2126·R + 0.7152·G + 0.0722·B) / 255`, 0 … 1.
+
+Scenes (`M18_SCENES`, base `?wd=90&ws=12&ms=40&js=100&tb=0&clock=0`, each at `cam=side-starboard` and `cam=helm`, named `sky-<time>-side` / `sky-<time>-helm`): `noon` (no `clk`), `low-sun` (`clk=202606012005`), `sunset` (`clk=202606012028`), `twilight` (`clk=202606012050`), `night` (`clk=202606012300`), `sunrise` (`clk=202606010530`).
+Live checks (`liveM18Checks`, phone size):
+- **Sky only, noon vs night**: `?wd=90&ws=0&held=1&tb=0&clock=0&detail=low&debug=1` (no wind, so no waves; held, so the heading stays), then `__sailDebug.setView([-40, 2, 0], [-120, 40, 0])`, wait 1 s; once without `clk` and once with `clk=202606012300`. Night: mean luminance of the whole canvas below 25 % of noon's, and at least 10 pixels brighter than the night mean + 0.3 (stars).
+- **The boat at night**: `?wd=90&ws=12&ms=40&js=100&held=1&tb=0&clock=0&clk=202606012300&cam=side-starboard`, at `detail=low` and `detail=high`: the mean luminance of the 60 × 60 px square at the canvas centre is above 0.08.
+- **Sunset**: `?wd=90&ws=12&ms=40&js=100&clk=202606012028&debug=1`: the elevation parsed with `/elev (-?[\d.]+)/` from `[data-testid="debug-overlay"]` is between −1 and +1.
+- No console errors from the shader at both details (the script already fails on console errors).
 
 ### 10.8 Done when
 
@@ -901,7 +939,7 @@ All M18 checks in `WORKFLOW.md` pass on the phone; the scenes looked at (phone f
 
 ### 10.9 Not in M18
 
-No moon, no weather (rain, fog banks, cloud cover changes), no light pollution or coastline lights.
+No moon, no weather (rain, fog banks, changing cloud cover), no lights on land.
 
 ---
 
@@ -909,11 +947,32 @@ No moon, no weather (rain, fog banks, cloud cover changes), no light pollution o
 
 **Independent review: not needed** (polish and sign-off; the owner's phone check covers it).
 
-- **Performance on the owner's phone**, the heaviest case: `?wd=90&ws=20&ms=40&js=100&sea=open&wm=gusty&tx=16&clk=202606012030&debug=1` at Detail Low and High. Target as before: FPS 50 or more, "Slowest" never above 33 ms. If it misses, apply these in order and re-measure after each (each is a presentation value in `SCENE`): (1) Low detail: the outer water's colours every second frame; (2) Low detail: the inner wave mesh's `halfSizeM` 100 → 80 (fade 56 → 80); (3) High detail: reflections regenerated at most every 3 s. Report before/after in the PR.
-- **Accessibility audit** (`scripts/a11y-audit.mjs`): the Waves block, the clock chip and card, the View tab's Clock switch, the map with buoys.
-- `tests/stepCost.test.ts` keeps its 3 ms limit with the M15 case.
-- **Docs**: README describes Phase 3; `BOAT_REFERENCE.md` lists every Phase 3 assumption; `PHYSICS_TRUTHS.md` statuses updated from the sources read; ROADMAP Phase 3 status; `CODE_MAP.md` current.
-- **Done when:** every item of section 12 is ticked in the PR.
+### 11.1 Files
+
+New: `scripts/shots-m19.mjs` (`M19_SCENES` empty, `liveM19Checks`, registered as `liveGroups.m19`).
+Changed: `src/render3d/sceneConfig.ts` and `src/render3d/waterSurface.ts`, `scene.ts` (the performance switches below), `README.md`, `docs/BOAT_REFERENCE.md`, `docs/PHYSICS_TRUTHS.md`, `docs/ROADMAP.md`, `docs/PHASE3_SPEC.md` (status line, "Decided in the M19 PR"), `docs/CODE_MAP.md`.
+
+### 11.2 Performance
+
+The agent cannot measure a phone (headless software rendering says nothing about FPS, PHASE2_SPEC 13.1). So:
+- Add three switches to `SCENE`, **off by default**: `SCENE.performance = { outerColoursEveryNthFrame: 1, innerHalfSizeLowM: 100, fadeStartLowM: 70 }` (Low detail uses these for the inner mesh) and use `SCENE.reflections.minIntervalS` (M18). When `outerColoursEveryNthFrame` is 2, the outer water's colours, when they are recomputed (M16 8.4), are written only every second rendered frame.
+- `liveM19Checks`: the M13 guard on the new heaviest case `?wd=90&ws=20&ms=40&js=100&sea=open&wm=gusty&tx=16&clk=202606012030&debug=1` at both details: the debug overlay's `step` stays under 8 ms per frame.
+- The owner measures with the WORKFLOW M19 link and posts FPS and Slowest in the PR. If they miss the target (FPS 50 or more, Slowest never above 33 ms), apply one step per owner comment, in this order, and ask for a new measurement: (1) `outerColoursEveryNthFrame: 2`; (2) `innerHalfSizeLowM: 80, fadeStartLowM: 56`; (3) `SCENE.reflections.minIntervalS: 5`. Report each step's before/after in the PR.
+
+### 11.3 Accessibility audit
+
+`liveM19Checks` calls `auditPage` on: the Wind tab with the Waves block (`?wd=90&ws=12&sea=open`); the clock chip (default link) and the open clock card; the View tab with the Clock switch; the map with buoys (`cam=map`, zoomed out to 2 m/px). Fix whatever it reports.
+
+### 11.4 Docs
+
+- README: a "Phase 3" section in the same style as the Phase 2 one (what the learner sees: waves, rocking and its effects, wind on the water, buoys, clock and sky; the new link settings `sea`, `clk`, `clock`).
+- `BOAT_REFERENCE.md` section 5: one row for every Phase 3 key in `hanse508.json` (`waves`, `physics.waveResponse`, `physics.waveFeedback`, `windModes.gustPreview`) and `content/areas/adriatic.json`, with the value in use (tuned values updated).
+- `PHYSICS_TRUTHS.md`: try the candidate sources of PT-43 and PT-45 once more; change a status only if a source supports the rule, else leave `to-verify` and say so.
+- ROADMAP: Phase 3 status "Done (M19, PR #<n>)" once the owner signs off, and a decisions-log row; this spec's status line likewise.
+
+### 11.5 Done when
+
+Every item of section 12 is ticked in the PR: the agent ticks what tests, CI and the browser checks show; the owner ticks the phone-only items ("smooth on the owner's phone", "the boat stays readable at night") from the checklist. CI `browser-checks` is green. No `Closes` line (#26 and #32 were closed by M17 and M14).
 
 ## 12. Definition of Done (Phase 3)
 
