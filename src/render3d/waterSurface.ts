@@ -85,8 +85,12 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
     depthWrite: false,
   });
 
-  const half = w.waves.halfSizeM;
-  const fadeStart = w.waves.fadeStartM;
+  // High detail keeps the full wave mesh; Low detail uses SCENE.performance (M19).
+  let half: number = w.waves.halfSizeM;
+  let fadeStart: number = w.waves.fadeStartM;
+  let frame = 0;
+  /** True while the outer colours have changed but are not yet written (every Nth frame). */
+  let outerPending = false;
   let cell: number = w.waves.cellM;
   let perSide = 0;
   let innerPositions = new Float32Array(0);
@@ -258,6 +262,8 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
       outer.material = material;
       gridMaterial.opacity = detail === 'high' ? SCENE.grid.opacityHigh : SCENE.grid.opacity;
       cell = detail === 'high' ? w.waves.cellM : w.waves.cellLowM;
+      half = detail === 'high' ? w.waves.halfSizeM : SCENE.performance.innerHalfSizeLowM;
+      fadeStart = detail === 'high' ? w.waves.fadeStartM : SCENE.performance.fadeStartLowM;
       baseColour = new THREE.Color(detail === 'high' ? w.color : w.lowColor);
       buildInner();
       buildOuter();
@@ -322,7 +328,13 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
         else if (g < 0) colour.lerp(lullNow, w.lullAmount * -g);
       };
 
-      if (coloursStale || windChanged || profile) {
+      frame += 1;
+      outerPending = outerPending || windChanged || profile !== null;
+      if (
+        coloursStale ||
+        (outerPending && frame % SCENE.performance.outerColoursEveryNthFrame === 0)
+      ) {
+        outerPending = false;
         const next = outerColours;
         const side = Math.round(w.size / w.outerCellM) + 1;
         const outerOrigin = -w.size / 2;
