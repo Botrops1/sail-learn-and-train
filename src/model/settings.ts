@@ -68,6 +68,11 @@ export interface Settings {
   timeBar: boolean;
   /** The clock chip over the 3D view (View tab, M17). */
   clock: boolean;
+  /**
+   * The language of the whole app (a folder of content/lang; M23, PHASE4_SPEC 4.1). Changing it
+   * reloads the page. In the link as `lang` when not 'en'.
+   */
+  language: string;
 }
 
 export interface CameraState {
@@ -85,6 +90,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   timeScale: 1,
   timeBar: true,
   clock: true,
+  language: 'en',
 };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
 

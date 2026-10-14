@@ -8,7 +8,7 @@ import {
   webglAvailable,
 } from '../ui/errorBoundary';
 import { el } from '../ui/dom';
-import { t } from '../ui/i18n';
+import { currentLanguage, setLanguage, t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
@@ -29,10 +29,15 @@ const FPS_WINDOW_MS = 500;
 
 /** Wires store, layout, panel, 3D view and the main loop together. */
 export function startApp(host: HTMLElement): void {
-  document.title = t('app.title');
-  const store = createStore(
-    parseUrlState(window.location.search, defaultDetail(window.screen.width, window.screen.height)),
+  // The language first: every element below is built once with t() (PHASE4_SPEC 9.3).
+  const initial = parseUrlState(
+    window.location.search,
+    defaultDetail(window.screen.width, window.screen.height),
   );
+  setLanguage(initial.settings.language);
+  document.documentElement.lang = currentLanguage();
+  document.title = t('app.title');
+  const store = createStore(initial);
   startUrlSync(store);
 
   const layout = createLayout(host);

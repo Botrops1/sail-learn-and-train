@@ -2,7 +2,7 @@ import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import { gearOf } from '../model/engine';
 import { el } from './dom';
-import { t } from './i18n';
+import { formatThousands, t } from './i18n';
 import { setText, stepButton } from './stepper';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -29,7 +29,7 @@ const TACH = { maxRpm: 3000, width: 120, height: 70, radius: 50, needle: 44, cen
 
 /** "1,850": rpm rounded to 10 so the text does not change every frame. */
 export function rpmNumber(rpm: number): string {
-  return (Math.round(rpm / 10) * 10).toLocaleString('en-US');
+  return formatThousands(Math.round(rpm / 10) * 10);
 }
 
 /** "1,850 rpm". */
@@ -114,8 +114,8 @@ function createTach(): Tach {
         element,
         'aria-label',
         t('engine.tach', {
-          rpm: Math.round(rpm / 10) * 10,
-          max: ENGINE.maxRpm.toLocaleString('en-US'),
+          rpm: formatThousands(Math.round(rpm / 10) * 10),
+          max: formatThousands(ENGINE.maxRpm),
         }),
       );
     },

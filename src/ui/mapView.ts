@@ -615,7 +615,7 @@ export function createMapView(host: HTMLElement, store: Store): MapView {
     boatUpButton.setAttribute('aria-pressed', String(boatUp));
     const bar = scaleBar(ZOOM_LEVELS[zoomIndex] ?? 1);
     scaleLine.style.width = `${Math.round(bar.px)}px`;
-    setText(scaleText, `${bar.metres} m`);
+    setText(scaleText, t('map.scale', { metres: bar.metres }));
   };
   zoomIn.addEventListener('click', () => {
     zoomIndex = Math.max(0, zoomIndex - 1);
@@ -798,8 +798,14 @@ function drawBuoys(ctx: CanvasRenderingContext2D, state: AppState, view: MapView
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = COLOURS.buoyOutline;
     ctx.stroke();
-    haloText(ctx, buoy.id, buoy.x + radius + 8, buoy.y, { bold: true, size: 12 });
+    haloText(ctx, buoyLetter(buoy.id), buoy.x + radius + 8, buoy.y, { bold: true, size: 12 });
   }
+}
+
+/** The buoy's letter in the current language: the area file keeps N/E/S/W as ids (PHASE4_SPEC 9.3). */
+function buoyLetter(id: string): string {
+  const key = { N: 'north', E: 'east', S: 'south', W: 'west' }[id];
+  return key ? t(`wind.dial.${key}` as StringKey) : id;
 }
 
 function drawGrid(ctx: CanvasRenderingContext2D, view: MapViewport): void {

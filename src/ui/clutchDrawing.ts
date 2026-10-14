@@ -1,9 +1,8 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import { clutchSpots, entryFor, panelEntries, type ClutchSpot } from '../model/panelEntries';
-import { partInfo } from '../model/registry';
 import { SCENE } from '../render3d/sceneConfig';
-import { t, type StringKey } from './i18n';
+import { part, t, type StringKey } from './i18n';
 import { ropeColorKey, ROPE_DASH } from './ropeLegend';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -64,7 +63,7 @@ function fitFont(text: string, length: number): number {
 function tagFor(spot: ClutchSpot): string | null {
   if (spot.tail === 'furl') return t('clutch.tag.furlIn');
   if (spot.tail === 'unfurl') return t('clutch.tag.furlOut');
-  const name = partInfo(spot.ropeId)?.name ?? '';
+  const name = part(spot.ropeId)?.name ?? '';
   const plain = (text: string) =>
     text
       .toLowerCase()
@@ -75,7 +74,7 @@ function tagFor(spot: ClutchSpot): string | null {
 
 /** What a screen reader says for a clutch: label, our name, and which end of the rope. */
 function accessibleName(spot: ClutchSpot): string {
-  const name = partInfo(spot.ropeId)?.name ?? spot.ropeId;
+  const name = part(spot.ropeId)?.name ?? spot.ropeId;
   const tail = spot.tail ? `, ${t(`clutch.tail.${spot.tail}` as StringKey)}` : '';
   return `${t('clutch.aria', { label: spot.label, name })}${tail}`;
 }

@@ -21,7 +21,7 @@ const timeText = (parts: LocalParts) => `${pad2(parts.hour)}:${pad2(parts.minute
 function dateText(parts: LocalParts): string {
   const weekday = t(`clock.weekday.${parts.weekday}` as StringKey);
   const month = t(`clock.month.${parts.month}` as StringKey);
-  return `${weekday} ${parts.day} ${month} ${parts.year}`;
+  return t('clock.date', { weekday, day: parts.day, month, year: parts.year });
 }
 
 /** The local `HH:MM` of a time, rounded to the nearest minute (the chip and the link floor). */
@@ -148,7 +148,7 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
     const abbr = parts.summer
       ? area.timeZone.summerAbbreviation
       : area.timeZone.standardAbbreviation;
-    setText(zoneLine, t('clock.zone', { area: area.names.en, abbr, hours: parts.offsetMin / 60 }));
+    setText(zoneLine, t('clock.zone', { area: t(`area.${area.id}` as StringKey), abbr, hours: parts.offsetMin / 60 }));
     const { latitudeDeg, longitudeDeg } = area.position;
     const sun = sunTimes(parts.year, parts.month, parts.day, latitudeDeg, longitudeDeg);
     if (sun.polar === 'day') setText(sunLine, t('clock.polarDay'));

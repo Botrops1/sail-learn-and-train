@@ -1,0 +1,4 @@
+{
+  "$comment": "PHASE4_SPEC 9.2. Words in Latin letters allowed on a screen in a language with another script: instrument abbreviations, makers' names, buttons printed on the boat, time zones, the foreign words that alternative-name notes quote, and the two English words of term_starboard's memory aid (port, left). The words of every label on the boat (boatLabelsFor) are allowed too (added in code).",
+  "words": ["AWA", "AWS", "TWA", "TWS", "T", "English", "WebGL", "B&G", "Hanse", "Seldén", "Lewmar", "Furlex", "Allpa", "Rodkicker", "GitHub", "START", "STOP", "POWER", "IN", "OUT", "MAX", "RPM", "UTC", "CET", "CEST", "bakboord", "stuurboord", "noord", "oost", "zuid", "west", "broaching", "saildrive", "furling", "winch", "sprayhood", "outhaul", "kicker", "preventer", "port", "left"]
+}

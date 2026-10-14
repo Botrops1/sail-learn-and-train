@@ -1,13 +1,12 @@
 import type { AppState, Store } from '../app/store';
 import { entryFor, panelEntries, type PanelEntry } from '../model/panelEntries';
-import { partInfo } from '../model/registry';
 import { SCENE } from '../render3d/sceneConfig';
 import { ROPES_MODES } from '../model/settings';
 import { createAutopilotPanel } from './autopilotPanel';
 import { createEnginePanel } from './enginePanel';
 import { createClutchDrawing } from './clutchDrawing';
 import { el } from './dom';
-import { t, type StringKey } from './i18n';
+import { part, quoted, t, type StringKey } from './i18n';
 import {
   CONTROL_VIEWS,
   createControl,
@@ -95,7 +94,7 @@ function sharedHint(entry: PanelEntry): HTMLElement[] {
 
 /** What the rope does (the registry's one-liner) and the entry's longer hints, folded. */
 function moreAbout(store: Store, entry: PanelEntry, showLearn: () => void): HTMLElement {
-  const short = partInfo(entry.selectId)?.short ?? '';
+  const short = part(entry.selectId)?.short ?? '';
   const learn = el(
     'button',
     { type: 'button', class: 'action-button learn-more', 'data-testid': 'strip-learn' },
@@ -137,7 +136,7 @@ export function createRopesTab(store: Store, showLearn: () => void = () => undef
       block = control.element;
       refresh = control.refresh;
     } else {
-      const info = partInfo(entry.selectId);
+      const info = part(entry.selectId);
       name = info?.name ?? entry.selectId;
       const labels = info?.boatLabels ?? [];
       block = el('div', { class: 'control control-static', 'data-part-id': entry.selectId }, [
@@ -145,7 +144,7 @@ export function createRopesTab(store: Store, showLearn: () => void = () => undef
         ...(labels.length > 0
           ? [
               el('p', { class: 'control-boat-label' }, [
-                t('card.boatLabel', { labels: labels.map((label) => `“${label}”`).join(', ') }),
+                t('card.boatLabel', { labels: labels.map(quoted).join(', ') }),
               ]),
             ]
           : []),

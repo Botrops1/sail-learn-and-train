@@ -15,11 +15,10 @@ import {
   type TailReport,
   type TailSpec,
 } from '../model/realistic';
-import { partInfo } from '../model/registry';
 import { createAutopilotPanel } from './autopilotPanel';
 import { createEngineLever } from './enginePanel';
 import { el } from './dom';
-import { t, type StringKey } from './i18n';
+import { part, quoted, t, type StringKey } from './i18n';
 import {
   CONTROL_VIEWS,
   controlView,
@@ -49,12 +48,12 @@ function kn(newtons: number): string {
 
 /** "Genoa sheet (jib sheet)": the label on the boat and our name where it differs. */
 export function tailName(spec: TailSpec): string {
-  const name = partInfo(spec.ropeId)?.name ?? spec.ropeId;
+  const name = part(spec.ropeId)?.name ?? spec.ropeId;
   const tail = spec.tail ? t(`real.tailShort.${spec.tail}` as StringKey) : '';
   const plain = (text: string) => text.toLowerCase().replace(/\s+/g, '');
   const ours = plain(name) === plain(spec.label) ? '' : name.toLowerCase();
   const extra = [ours, tail].filter(Boolean).join(', ');
-  return extra ? `“${spec.label}” (${extra})` : `“${spec.label}”`;
+  return extra ? `${quoted(spec.label)} (${extra})` : quoted(spec.label);
 }
 
 /** Lines describing a rope end now: clutch, winch, load and what it is doing. */
@@ -119,7 +118,7 @@ function blockerLabels(keys: string[]): string {
   return keys
     .map((key) => tailSpecs().find((spec) => spec.key === key))
     .map((spec) =>
-      spec ? `“${spec.label}” (${t(`real.station.${spec.station}` as StringKey)})` : '',
+      spec ? `${quoted(spec.label)} (${t(`real.station.${spec.station}` as StringKey)})` : '',
     )
     .join(', ');
 }
@@ -617,7 +616,7 @@ export function createRealisticPanel(
       button.disabled = button.disabled || carried;
     }
     const moreText = more.querySelector('.real-more-text');
-    if (moreText) setText(moreText, partInfo(spec.ropeId)?.short ?? '');
+    if (moreText) setText(moreText, part(spec.ropeId)?.short ?? '');
   };
 
   /** The handle bar: where the handle is, what cranking does, the buttons that apply here. */

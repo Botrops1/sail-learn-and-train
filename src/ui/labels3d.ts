@@ -1,9 +1,9 @@
 import type { Store } from '../app/store';
 import { placeLabels, type ScreenBox } from '../model/labels3d';
 import { highlightIds } from '../model/panelEntries';
-import { partInfo } from '../model/registry';
 import type { ScreenPoint } from '../render3d/scene';
 import { el } from './dom';
+import { part } from './i18n';
 
 export interface Labels3d {
   /** Places the labels at this frame's points (does nothing while the labels are off). */
@@ -50,7 +50,7 @@ export function createLabels3d(view: HTMLElement, store: Store): Labels3d {
       const button = el(
         'button',
         { type: 'button', class: 'label3d', tabindex: '-1', 'data-part-id': id },
-        [partInfo(id)?.name ?? id],
+        [part(id)?.name ?? id],
       );
       button.addEventListener('click', () => store.dispatch({ type: 'select', partId: id }));
       layer.append(button);
