@@ -342,7 +342,7 @@ New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn 
 #### M21: Glossary and search
 
 - [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?held=1 — Learn tab: ten groups with counts ("Ropes (9)", "Sails and their parts (10)", …); open one and tap an entry; "‹ All entries" brings the list back.
-- [ ] Search: type "kicker": "Vang — also: kicker". Type "genoa": "Jib sheet — also: Genoa sheet" (the word on the clutch). Type "mast": every entry with "mast" in its name.
+- [ ] Search: type "kicker": "Vang — also: kicker". Type "genoa": "Jib sheet — also: Genoa sheet" (the word on the clutch). Type "mast": "Mast" comes first, then entries such as "In-mast furling gearbox" and "Masthead wind indicator".
 - [ ] New texts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_winch&held=1 — three typical mistakes; tap "Show me": Realistic mode at the starboard winch with the jib sheet on it; Back returns.
 - [ ] Engine: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=engine_control&held=1 — "Show me": the engine runs at about 1,850 rpm and she motors at about 8 kn.
 - [ ] Danger zone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=env_boom_danger_zone&held=1 — "Show me": she runs downwind, and after about 4 seconds the autopilot turns her through dead downwind: the boom crosses and the red area of its sweep is drawn.
@@ -362,7 +362,7 @@ New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn 
 - [ ] One language only: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&learn=term_north&held=1 — "север", "Также называют: норд (…), С (сокращение)", no English words except names printed on the boat (in « ») and instrument letters (AWA, TWS …). The line "This translation has not yet been checked by a sailor" appears in Russian.
 - [ ] Russian search: in the Learn tab type "бакборт": "левый борт".
 - [ ] Nothing cut off: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&mode=realistic&held=1 and https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&wd=90&ws=12 — look at every tab: no button or label text is cut off; long words wrap.
-- [ ] Engine numbers: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&ws=0&eng=1&lv=66&held=1 — the engine's rpm reads "1 850" (a space, not a comma).
+- [ ] Engine numbers: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&ws=0&eng=1&lv=66&held=1 — the engine's rpm reads "1 860" (a space, not a comma).
 - [ ] Back to English: View tab → "English": the page reloads in English.
 
 #### M24: Phase 4 sign-off
