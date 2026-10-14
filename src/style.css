@@ -2919,3 +2919,102 @@ html[data-layout='side'] .clock-chip {
   outline: 3px solid var(--focus);
   outline-offset: -3px;
 }
+
+/* Learn tab: search box, groups and results (PHASE4_SPEC 7.4). Everything at least 44 px high, 13 px text. */
+.learn-search-box {
+  margin-bottom: 8px;
+}
+
+.learn-search {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--touch);
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: inherit;
+  font: inherit;
+  font-size: 16px;
+}
+
+.learn-search {
+  text-overflow: ellipsis;
+}
+
+.learn-search::placeholder {
+  font-size: var(--font-small);
+}
+
+.learn-search:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.learn-groups,
+.learn-results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.learn-group {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.learn-group-summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--touch);
+  padding: 4px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.learn-group[open] > .learn-group-summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.learn-group-summary:focus-visible,
+.learn-list-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.learn-list-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--touch);
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.learn-results > .learn-list-button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.learn-hit-name {
+  font-weight: 700;
+}
+
+.learn-hit-matched {
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.learn-entry > .learn-button:first-child {
+  align-self: flex-start;
+  margin-bottom: 4px;
+}

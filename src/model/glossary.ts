@@ -131,3 +131,85 @@ export function sourceLink(key: string, repoUrl: string): SourceLink | undefined
   }
   return undefined;
 }
+
+/** The Learn list's groups, in the list's order (PHASE4_SPEC 7.2). Every registry entry has exactly one. */
+export const GROUPS = [
+  'ropes',
+  'sails',
+  'rig',
+  'hull',
+  'deck',
+  'cockpit',
+  'wind',
+  'directions',
+  'sailing',
+  'sea',
+] as const;
+export type GroupId = (typeof GROUPS)[number];
+
+/** Lower case, accents and other marks removed (NFD, then drop \p{M}), hyphens and dashes as spaces, runs of spaces as one, trimmed. ё → е and й → и follow from dropping the marks. */
+export function normalizeSearch(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/[-‐‑‒–—―_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export interface SearchHit {
+  id: string;
+  /** The entry's name in the language. */
+  name: string;
+  /** What matched when it was not the name: an alternative's term or a boat label, as written; null when the name matched. */
+  matched: string | null;
+}
+
+/** Entries whose name, alternatives (same language only) or boat labels contain the query. Empty query → []. */
+export function searchGlossary(query: string, language: string = SOURCE_LANGUAGE): SearchHit[] {
+  const q = normalizeSearch(query);
+  if (q === '') return [];
+  const entries = GLOSSARIES[language]?.entries ?? {};
+  const hits: { hit: SearchHit; rank: number }[] = [];
+  for (const entry of registry.entries) {
+    const text = entries[entry.id];
+    if (!text) continue;
+    const name = normalizeSearch(text.name);
+    let rank = -1;
+    let matched: string | null = null;
+    if (name.startsWith(q)) rank = 0;
+    else if (name.includes(q)) rank = 1;
+    else {
+      const alternative = text.alternatives.find((alt) => normalizeSearch(alt.term).includes(q));
+      if (alternative) {
+        rank = 2;
+        matched = alternative.term;
+      } else {
+        const label = boatLabelsFor(entry.id).find((l) => normalizeSearch(l).includes(q));
+        if (label !== undefined) {
+          rank = 3;
+          matched = label;
+        }
+      }
+    }
+    if (rank >= 0) hits.push({ hit: { id: entry.id, name: text.name, matched }, rank });
+  }
+  hits.sort((a, b) => a.rank - b.rank || a.hit.name.localeCompare(b.hit.name, language));
+  return hits.map((item) => item.hit);
+}
+
+const GROUP_OF: ReadonlyMap<string, string> = new Map(
+  (registry.entries as { id: string; group?: string }[]).flatMap((entry) =>
+    entry.group ? [[entry.id, entry.group] as const] : [],
+  ),
+);
+
+/** The ids of a group, sorted by their name in the language (localeCompare with the language code). */
+export function groupEntries(group: GroupId, language: string = SOURCE_LANGUAGE): string[] {
+  const nameOf = (id: string): string => glossaryText(id, language)?.name ?? id;
+  return registry.entries
+    .map((entry) => entry.id)
+    .filter((id) => GROUP_OF.get(id) === group)
+    .sort((a, b) => nameOf(a).localeCompare(nameOf(b), language));
+}

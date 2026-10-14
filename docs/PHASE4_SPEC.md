@@ -696,6 +696,20 @@ No list or search (M21). No Russian on screen (M23): the Russian glossary is wri
 
 (The builder adds what it decided here; the owner's answers on the PR are added below.)
 
+- **Russian texts (decided in the M21 PR).** The 55 Russian entries are drafts written from the English (3.3), with the names and alternatives of 7.2.2 copied by script; every one stays `textStatus: "draft"`. Nothing Russian is shown on screen before M23. Where an English text names a tab or a mode, the Russian names the tab «Концы», «Ветер» or «Вид» and the modes «Реалистичный режим», the stations «Мачта», «Левый борт», «Правый борт», and the autopilot's modes «Ожидание», «Курс», «Ветер», «Поворот»; M23 must use these exact words in the Russian UI strings (or change the entries to match). Numbers of four digits that are engine speeds are written with a no-break space (`1 850 об/мин`), as the engine panel will show them in M23.
+- **Search box placeholder (decided in the M21 PR, owner on PR #55).** The first text of `learn.searchPlaceholder` ("Search a name, another name or a word on the boat") did not fit the box on a phone. It is now "Search names and words on the boat" (7.5 changed); the placeholder is 14 px and would end in an ellipsis if a longer text is ever used. The label for screen readers is the short `learn.search`.
+- **An extra scene (decided in the M21 PR).** `scripts/shots-m21.mjs` has a fourth scene, `learn-winch` (`?learn=fit_winch`): an open entry with its Back button, at every size.
+- **Back button (decided in the M21 PR).** `learn-back` uses the existing `learn-button` style (44 px, blue) and sits above the entry's name, under the search box.
+- **Test bands (decided in the M21 PR).** All bands of 7.6 passed as given on the first run (danger zone: outline at 4.0–4.2 s and sweep at 6.0–7.0 s, rudder 25, engine 7.6–8.2 kn and 1,800–1,900 rpm, waves 2.03–2.04 m, car side −1); nothing was tuned.
+
+Owner's answers on PR #55 ("accept all open questions", and "fix 1, 2, 5 and 6" of the independent review):
+
+- **Wind direction in the `env_wind` mistake (owner, PR #55; review item 1).** 060° is east-north-east, not north-east. The fix now reads "A wind “from 060°” blows from the east-north-east towards the west-south-west." (7.2.1 and the English entry changed; the Russian says `дует с востоко-северо-востока на западо-юго-запад`).
+- **Russian terms (owner, PR #55; review item 2).** One name for the autopilot's control: «авторулевой» everywhere (the three places that said «автопилот» changed; «пульт автопилота» stays an alternative name of the entry), and «Однорычажное» is one word.
+- **Russian tab and mode names (owner, PR #55; answer to question 2).** Kept as written above: «Концы», «Ветер», «Вид», «Реалистичный режим», «Ожидание», «Курс», «Поворот»; M23 uses them in the Russian UI.
+- **Shorter search hint (owner, PR #55; answer to question 1; review item 6).** See the placeholder note above.
+- **Left as is (review items 3, 4 and 7).** The Russian term for "sailing by the lee" is a question for the sailor who reviews the Russian in M24 (3); "Rigid vang strut" before "Vang" under "kicker" follows the sort rule of 7.3 (4); the live checks' log prints their failure text next to passing checks (7).
+
 - **Info card height (decided in the M20 PR).** In the stacked layout the card's maximum height went from 104 px to 140 px, so the 44 px "More" button under a two-line one-liner is not cut off. A longer one-liner still scrolls inside the card.
 - **Russian text (decided in the M20 PR).** The 18 Russian entries are drafts written from the English, with the given names and alternatives; sentences that mention a sailing term that has its own Russian name use that name (`оттяжка гика`, `топенант`, `колдунчики`, `стопор`, `лебёдка`). All stay `textStatus: "draft"`. Nothing Russian is shown on screen before M23.
 - **Owner's answers on PR #54** (after the independent review, "accept open questions recommendations, accept 1 to 4"):
@@ -1263,7 +1277,7 @@ The group order (the list's order) is the table's order. In `glossary.ts`: `expo
   "short": "The air moving over the water; in the app you set it in the Wind tab.",
   "what": "The wind is described by where it comes from and by its speed in knots. The streaks in the 3D view show it. The Wind tab sets its direction (from 0° north, clockwise) and speed, and can make it gusty, shifty, building or dying.",
   "mistakes": [
-    { "mistake": "Reading a wind direction as where the wind blows to.", "fix": "A wind “from 060°” blows from the north-east towards the south-west." }
+    { "mistake": "Reading a wind direction as where the wind blows to.", "fix": "A wind “from 060°” blows from the east-north-east towards the west-south-west." }
   ],
   "showMe": "Wind 12 kn from 060°: the streaks show it blowing past the boat. Turn the dial in the Wind tab to change it.",
   "textStatus": "draft"
@@ -1400,7 +1414,7 @@ Below it:
 | Key | Text |
 |---|---|
 | `learn.search` | Search |
-| `learn.searchPlaceholder` | Search a name, another name or a word on the boat |
+| `learn.searchPlaceholder` | Search names and words on the boat |
 | `learn.matched` | also: {term} |
 | `learn.noMatch` | Nothing found. Try another word, or a word printed on the boat. |
 | `learn.back` | ‹ All entries |
