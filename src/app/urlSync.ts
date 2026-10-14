@@ -86,14 +86,19 @@ function sameRealisticLink(state: AppState, previous: AppState): boolean {
 
 /**
  * Opens a "Show me" scene (PHASE4_SPEC 6.5): the current link goes into the browser history first,
- * so the phone's Back button returns to it. Detail, debug and the open entry are kept.
+ * so the phone's Back button returns to it. Detail, debug and the open entry are kept. When the
+ * scene is already showing (Show me tapped twice), it starts again without a new history step, so
+ * one Back still returns to where the viewer was (owner, PR #54).
  */
 export function openScene(store: Store, query: string): void {
   const state = store.getState();
   const { detail, debug, step, legend, labels } = state.settings;
-  const here = `${window.location.pathname}${serializeUrlState(state)}${window.location.hash}`;
-  window.history.replaceState(null, '', here);
-  window.history.pushState(null, '', here);
+  const link = serializeUrlState(state);
+  if (!showsScene(link, query)) {
+    const here = `${window.location.pathname}${link}${window.location.hash}`;
+    window.history.replaceState(null, '', here);
+    window.history.pushState(null, '', here);
+  }
   const next = parseUrlState(query, detail);
   store.dispatch({
     type: 'load',
@@ -109,4 +114,13 @@ export function openScene(store: Store, query: string): void {
 export function shareLink(state: AppState): string {
   const { origin, pathname } = window.location;
   return `${origin}${pathname}${serializeUrlState(state)}`;
+}
+
+/** True if every setting of the scene's link has the same value in `link` (the scene is showing). */
+export function showsScene(link: string, query: string): boolean {
+  const current = new URLSearchParams(link);
+  for (const [key, value] of new URLSearchParams(query)) {
+    if (current.get(key) !== value) return false;
+  }
+  return true;
 }

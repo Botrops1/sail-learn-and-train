@@ -55,7 +55,7 @@ If something here looks necessary, stop and ask in the PR.
 | A language | One folder `content/lang/<code>/` with exactly two files: `ui.json` (every UI string, flat keys as today's `en.json`) and `glossary.json` (the Learn entries). A language is **available** when both files exist. Nothing else is needed to add a language (owner). |
 | One language at a time | The app shows one language. There is **no runtime fallback** from a missing glossary field to another language: a missing field hides its section (tests make sure nothing is missing). `t()` keeps a fallback to the English string only as a safety net that tests make unreachable. |
 | Alternative names | `alternatives` lists other names **in the same language** for the same thing (owner), each with an optional `note` in that language (where and by whom it is used, where it comes from). They never repeat the entry's `name` or a label printed on the boat. Other languages' words never appear as alternatives. |
-| Words printed on the boat | `boatLabel` in the registry (unchanged), shown in every language exactly as printed (they are English on this boat), in quotes, under "Written on the boat". They are facts about the boat, not translations. |
+| Words printed on the boat | The labels of the clutches in `content/boat/hanse508.json` (`boatLabelsFor(id)` in `src/model/boatLabels.ts`; decided in the M20 PR: the registry's old `boatLabel` copies were removed, owner on PR #54), shown in every language exactly as printed (they are English on this boat), in quotes, under "Written on the boat". They are facts about the boat, not translations. |
 | Fact status | `status` in the registry, one per entry (language-neutral): `draft`, `source-checked`, `photo-confirmed`, `sailor-reviewed` (the values of `statusValues`). |
 | Text status | `textStatus` per entry per language: `draft` (AI-written, not checked by a sailor in that language) or `sailor-reviewed`. Shown only for languages other than `en`. |
 | Show-me links | `showMe` in the registry: a query string starting with `?`, **canonical**: every `key=value` in it comes back unchanged from `serializeUrlState(parseUrlState(query))` (so `bs=6.0`, not `bs=6`; no default-only keys like `seed=1`). It never contains `learn`, `detail`, `debug` or `lang`; those are kept from the current state. |
@@ -73,7 +73,6 @@ If something here looks necessary, stop and ask in the PR.
   "kind": "rope",
   "phase": 1,
   "group": "ropes",
-  "boatLabel": ["Vang"],
   "status": "photo-confirmed",
   "sources": ["photo:clutch-bank-b", "photo:vang", "sailingworld:vang"],
   "controls": ["rope_vang"],
@@ -84,7 +83,7 @@ If something here looks necessary, stop and ask in the PR.
 
 | Key | Type | Meaning |
 |---|---|---|
-| `id`, `kind`, `phase`, `boatLabel`, `sources` | as today | unchanged (`boatLabel` optional) |
+| `id`, `kind`, `phase`, `sources` | as today | unchanged (`boatLabel` was removed in M20: the words on the boat come from the boat file, 3.1) |
 | `status` | string | the fact status (was `status.en`; `status.ru` moves to the Russian glossary as `textStatus`) |
 | `group` | string | the Learn list's group (added to every entry in M21, 7.2) |
 | `controls` | string[] (optional, default `[]`) | registry ids whose Ropes-tab control works this thing; each must satisfy `entryFor(id) !== undefined` (`src/model/panelEntries.ts`) |
@@ -181,7 +180,7 @@ export function learnEntry(id: string, language: string = SOURCE_LANGUAGE): Lear
 
 Loading: `import.meta.glob<GlossaryFile>('../../content/lang/*/glossary.json', { eager: true, import: 'default' })`; the code is the path segment after `lang/` (`/lang\/([^/]+)\/glossary\.json$/`). The same pattern loads every `ui.json` in `src/model/languages.ts` (M23), which `src/ui/i18n.ts` imports.
 
-`partInfo(id, language = 'en')` (`src/model/registry.ts`) keeps its signature and result; from M20 it takes `name` and `short` from `glossaryText(id, language)` (`''` when missing) and `boatLabels` from the registry.
+`partInfo(id, language = 'en')` (`src/model/registry.ts`) keeps its signature and result; from M20 it takes `name` and `short` from `glossaryText(id, language)` (`''` when missing) and `boatLabels` from `boatLabelsFor(id)` (the boat file, 3.1).
 
 ### 3.5 Show-me scenes in tests
 
@@ -271,7 +270,7 @@ Changed: `content/registry/parts.json` (v2, 6.2), `src/model/registry.ts`, `src/
 Do this with a one-off script (not committed) over `content/registry/parts.json`, then check the diff:
 
 1. `schemaVersion: 2`. Replace `$comment` with: `ID registry for everything the user can see, touch or learn about. Every 3D object (mesh.userData.partId) and every rope points to one id here. UI controls have no entries of their own: a rope control's data-part-id is its rope's id (decision 2026-10-08). Since schemaVersion 2 (PHASE4_SPEC 3.2) the registry holds language-neutral facts only; names and texts are in content/lang/<code>/glossary.json.`
-2. For every entry: `status` becomes the old `status.en` (a string). Remove `names`, `aliases`, `short`. Keep `id`, `kind`, `phase`, `boatLabel`, `sources` and the key order `id, kind, phase, boatLabel, status, sources` (then `controls`, `related`, `showMe` where given). Keep one entry per line, as now.
+2. For every entry: `status` becomes the old `status.en` (a string). Remove `names`, `aliases`, `short`. Keep `id`, `kind`, `phase`, `boatLabel`, `sources` and the key order `id, kind, phase, boatLabel, status, sources` (decided in the M20 PR, owner on PR #54: `boatLabel` was then removed too; the same words come from the boat file, 3.1) (then `controls`, `related`, `showMe` where given). Keep one entry per line, as now.
 3. Add `controls`, `related` and `showMe` to the 18 M20 entries exactly as in this table (other entries get theirs in M21 and M22):
 
 | id | controls | related | showMe |
@@ -447,7 +446,7 @@ Do this with a one-off script (not committed) over `content/registry/parts.json`
   "what": "The jib is set on the forestay in front of the mast. Its sheet runs to a car on a track across the deck, and the car slides to the other side by itself when the bow turns through the wind, so tacking needs no sheet work.",
   "onThisBoat": "51.5 m², on a Furlex roller furler at the bow. The track is short and straight, so the jib cannot be eased far out: fully eased it reaches about 30°. The clutch says “Genoa sheet”, but the sail is a jib, smaller than a genoa and not overlapping the mast.",
   "mistakes": [
-    { "mistake": "Keeping all of the jib out in strong wind.", "fix": "She heels too much. Roll part of the jib in first, then part of the main." },
+    { "mistake": "Keeping all of the jib out in strong wind.", "fix": "She heels too much and turns into the wind. Roll part of the main in first, then part of the jib if needed." },
     { "mistake": "Furling the jib with the sheet tight.", "fix": "Ease the sheet; then the jib rolls up." }
   ],
   "showMe": "Wind 30° from starboard: the jib’s car sits at the port end of its track. In the Wind tab, turn the wind to the other side of the bow: the car slides across by itself.",
@@ -535,7 +534,7 @@ Do this with a one-off script (not committed) over `content/registry/parts.json`
 
 ### 6.4 Model
 
-- `src/model/glossary.ts` as in 3.4. `learnEntry(id, language)`: `undefined` if the id is not in the registry or `glossaryText(id, language)` is undefined; otherwise the registry's `kind`, `status`, `sources`, `boatLabel ?? []`, `controls ?? []`, `related ?? []`, `showMe ?? null`, and the text.
+- `src/model/glossary.ts` as in 3.4. `learnEntry(id, language)`: `undefined` if the id is not in the registry or `glossaryText(id, language)` is undefined; otherwise the registry's `kind`, `status`, `sources`, `boatLabelsFor(id)`, `controls ?? []`, `related ?? []`, `showMe ?? null`, and the text.
 - `src/model/registry.ts`: `partInfo(id, language = 'en')` as in 3.4. Imports: `glossary.ts` imports `content/registry/parts.json` directly (not `registry.ts`); only `registry.ts` imports `glossary.ts`, so there is no import cycle. `KNOWN_IDS`, `isRegisteredPartId` and `requirePartId` unchanged.
 - **Source links** (pure, in `glossary.ts`, used by the Learn tab):
 
@@ -646,7 +645,7 @@ export function openScene(store: Store, query: string): void;
 
 `tests/glossary.test.ts` (keep a constant `COMPLETE_IDS` with the 18 M20 ids; M21 and M22 add theirs):
 1. Every registry id has an entry in every glossary file, and no glossary has an id the registry does not have. Each file's `language` equals its folder.
-2. Every entry, every language: non-empty `name`; `alternatives` is an array of `{ term }` with a non-empty `term` and, if present, a non-empty `note`; no term equals (ignoring case) the entry's name, another term of the same entry, or a `boatLabel`; `textStatus` is `draft` or `sailor-reviewed`.
+2. Every entry, every language: non-empty `name`; `alternatives` is an array of `{ term }` with a non-empty `term` and, if present, a non-empty `note`; no term equals (ignoring case) the entry's name, another term of the same entry, or a word on the boat (`boatLabelsFor`); `textStatus` is `draft` or `sailor-reviewed`.
 3. `en`: every entry has a non-empty `short`. Every id in `COMPLETE_IDS` is complete (3.2) in every language.
 4. For every entry with a registry `showMe`, every complete language has `showMe` text, and no language has `showMe` text for an entry without one.
 5. Registry: `schemaVersion` 2; `status` is one of `statusValues`; every source key is in `sourceKeys` and `sourceLink` returns a link for it; every `controls` id has `entryFor(id)`; every `related` id is a registry id other than the entry's own, with no repeats; no entry still has `names`, `aliases` or `short`.
@@ -699,6 +698,14 @@ No list or search (M21). No Russian on screen (M23): the Russian glossary is wri
 
 - **Info card height (decided in the M20 PR).** In the stacked layout the card's maximum height went from 104 px to 140 px, so the 44 px "More" button under a two-line one-liner is not cut off. A longer one-liner still scrolls inside the card.
 - **Russian text (decided in the M20 PR).** The 18 Russian entries are drafts written from the English, with the given names and alternatives; sentences that mention a sailing term that has its own Russian name use that name (`оттяжка гика`, `топенант`, `колдунчики`, `стопор`, `лебёдка`). All stay `textStatus: "draft"`. Nothing Russian is shown on screen before M23.
+- **Owner's answers on PR #54** (after the independent review, "accept open questions recommendations, accept 1 to 4"):
+  - Question 1: the stacked info card stays 140 px high (above).
+  - Question 2: opening an entry adds no step to the browser history; only Show me does (as 6.5 says).
+  - Review 1 and the owner's test: **"More", "Read more in Learn" (Ropes and Realistic strips) also open the Learn tab when that entry is already open.** The panel gives the card and the Ropes tab a `showLearn` callback; a live check covers it.
+  - Review 2: the jib's first mistake now says "She heels too much and turns into the wind. Roll part of the main in first, then part of the jib if needed." (6.3.1 changed, and the Russian with it), following the cited source on weather helm (PT-29, source [23]).
+  - Review 3: the Russian tack-corner sentence no longer says «галс» is the turn: «Галсом» также называют сторону, с которой дует ветер (см. «Правый галс»); сам поворот носа через ветер — «Поворот оверштаг». Still a draft.
+  - Review 4: **Show me tapped twice adds only one history step** (`openScene` pushes no new step when every setting of the scene is already in the link, `showsScene`), and Back clears the line "Showing it…".
+  - Owner's test: **the words written on the boat come from the boat file**: `boatLabelsFor(id)` (`src/model/boatLabels.ts`) reads the clutch labels in `content/boat/hanse508.json` (`cockpitHardware.clutchBanks`, `jibRollClutch`); the registry's `boatLabel` copies were removed (they were the same words, a test pins them). 3.1, 3.2, 3.4, 6.4, 6.8 and M23 (9.2) were updated.
 - **One-off migration.** The registry and both glossaries were produced from the old registry and the spec's text by a script that is not committed; the English entries of the 18 M20 ids are the spec's text unchanged (copied by the script, not retyped).
 
 ---
@@ -1508,7 +1515,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
 | `term_reef` | — | `rope_main_furling_line`, `rope_jib_furling_line`, `term_heel` | `?wd=90&ws=12&ms=40&mf=50&cam=side-port&held=1&sea=flat` |
 | `term_preventer` | — | `term_gybe`, `env_boom_danger_zone`, `part_boom` | — |
 
-**The 33 new ids** (insert after `term_preventer`, one per line; the statuses given here are backed by the cited sources and override CLAUDE.md's default `draft`; `"kind": "term"`, `"phase": 4`, no `boatLabel`, no `controls`):
+**The 33 new ids** (insert after `term_preventer`, one per line; the statuses given here are backed by the cited sources and override CLAUDE.md's default `draft`; `"kind": "term"`, `"phase": 4`, no `controls`):
 
 | id | group | status | sources | related | showMe |
 |---|---|---|---|---|---|
@@ -2161,7 +2168,7 @@ Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json`
 
 ```json
 {
-  "$comment": "PHASE4_SPEC 9.2. Words in Latin letters allowed on a screen in a language with another script: instrument abbreviations, makers' names, buttons printed on the boat, time zones, and the foreign words that alternative-name notes quote. The words of every registry boatLabel are allowed too (added in code).",
+  "$comment": "PHASE4_SPEC 9.2. Words in Latin letters allowed on a screen in a language with another script: instrument abbreviations, makers' names, buttons printed on the boat, time zones, and the foreign words that alternative-name notes quote. The words of every label on the boat (boatLabelsFor) are allowed too (added in code).",
   "words": ["AWA", "AWS", "TWA", "TWS", "T", "English", "WebGL", "B&G", "Hanse", "Seldén", "Lewmar", "Furlex", "Allpa", "Rodkicker", "GitHub", "START", "STOP", "POWER", "IN", "OUT", "MAX", "RPM", "UTC", "CET", "CEST", "bakboord", "stuurboord", "noord", "oost", "zuid", "west", "broaching", "saildrive", "furling", "winch", "sprayhood", "outhaul", "kicker", "preventer"]
 }
 ```
@@ -2179,7 +2186,7 @@ export const LANGUAGES: readonly string[];
 export function isLanguage(code: string): boolean;
 /** A language's own name (its ui.json "language.name"). */
 export function languageName(code: string): string;
-/** Allowed Latin words (latin-words.json plus every word of every registry boatLabel). */
+/** Allowed Latin words (latin-words.json plus every word of every label on the boat, boatLabelsFor). */
 export function latinAllowed(): ReadonlySet<string>;
 ```
 

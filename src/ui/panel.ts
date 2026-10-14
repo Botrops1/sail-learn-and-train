@@ -72,7 +72,7 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
     body.append(pane);
   }
 
-  panes.get('ropes')?.append(...createRopesTab(store));
+  panes.get('ropes')?.append(...createRopesTab(store, () => select('learn')));
   panes.get('wind')?.append(...createWindPanel(store));
   panes.get('view')?.append(...buildViewTab(store));
   panes.get('learn')?.append(...createLearnTab(store, (tab) => select(tab)));

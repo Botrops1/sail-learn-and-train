@@ -218,6 +218,12 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
     );
   };
 
+  // Back leaves the scene: "Showing it…" no longer applies.
+  window.addEventListener('popstate', () => {
+    for (const status of root.querySelectorAll('[data-testid="learn-status"]')) {
+      status.textContent = '';
+    }
+  });
   render(store.getState().learn);
   store.subscribe((state, previous) => {
     if (state.learn !== previous.learn) render(state.learn);

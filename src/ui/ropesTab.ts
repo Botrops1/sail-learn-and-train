@@ -94,14 +94,18 @@ function sharedHint(entry: PanelEntry): HTMLElement[] {
 }
 
 /** What the rope does (the registry's one-liner) and the entry's longer hints, folded. */
-function moreAbout(store: Store, entry: PanelEntry): HTMLElement {
+function moreAbout(store: Store, entry: PanelEntry, showLearn: () => void): HTMLElement {
   const short = partInfo(entry.selectId)?.short ?? '';
   const learn = el(
     'button',
     { type: 'button', class: 'action-button learn-more', 'data-testid': 'strip-learn' },
     [t('ropes.strip.learn')],
   );
-  learn.addEventListener('click', () => store.dispatch({ type: 'openLearn', id: entry.selectId }));
+  learn.addEventListener('click', () => {
+    store.dispatch({ type: 'openLearn', id: entry.selectId });
+    // Also when that entry is already open (nothing in the state changes then).
+    showLearn();
+  });
   return el('details', { class: 'strip-more' }, [
     el('summary', {}, [t('ropes.strip.more')]),
     ...(short ? [el('p', {}, [short])] : []),
@@ -110,7 +114,8 @@ function moreAbout(store: Store, entry: PanelEntry): HTMLElement {
   ]);
 }
 
-export function createRopesTab(store: Store): Element[] {
+/** `showLearn` opens the Learn tab (the "Read more in Learn" buttons). */
+export function createRopesTab(store: Store, showLearn: () => void = () => undefined): Element[] {
   const select = (entry: PanelEntry) => store.dispatch({ type: 'select', partId: entry.selectId });
 
   const ordered: PanelEntry[] = [
@@ -128,7 +133,7 @@ export function createRopesTab(store: Store): Element[] {
     if (view) {
       name = t(view.name);
       const control = createControl(store, view, sharedHint(entry));
-      control.element.append(moreAbout(store, entry));
+      control.element.append(moreAbout(store, entry, showLearn));
       block = control.element;
       refresh = control.refresh;
     } else {
@@ -147,7 +152,7 @@ export function createRopesTab(store: Store): Element[] {
         el('p', { class: 'static-note' }, [
           t(entry.staticNote ? `ropes.static.${entry.staticNote}` : 'ropes.static.none'),
         ]),
-        moreAbout(store, entry),
+        moreAbout(store, entry, showLearn),
       ]);
     }
     block.hidden = true;
@@ -243,7 +248,7 @@ export function createRopesTab(store: Store): Element[] {
 
   // Realistic mode (M4b): stations, clutches and winches worked by hand.
   const realistic = el('div', { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' }, [
-    ...createRealisticPanel(store),
+    ...createRealisticPanel(store, showLearn),
   ]);
   // Easy mode's legend sits after the list, before the explanations.
   const legendSpot = legend.nextSibling;

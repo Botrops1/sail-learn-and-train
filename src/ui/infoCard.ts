@@ -10,6 +10,8 @@ export interface InfoCardOptions {
    * strip). In the stacked layout the card then stays away, leaving the panel its room.
    */
   shownInPanel?: (partId: string) => boolean;
+  /** Opens the Learn tab ("More"), also when the entry is already open there. */
+  showLearn?: () => void;
 }
 
 export interface InfoCard {
@@ -39,7 +41,9 @@ export function createInfoCard(
   ]);
   more.addEventListener('click', () => {
     const id = store.getState().selection;
-    if (id) store.dispatch({ type: 'openLearn', id });
+    if (!id) return;
+    store.dispatch({ type: 'openLearn', id });
+    options.showLearn?.();
   });
   const close = el(
     'button',

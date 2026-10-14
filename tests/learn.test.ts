@@ -40,3 +40,14 @@ describe('the learn link key', () => {
     expect(parseUrlState(serializeUrlState(state), 'low').learn).toBe('sail_jib');
   });
 });
+
+describe('Show me tapped twice (owner, PR #54)', () => {
+  it('a scene that is already showing is recognised, so no second history step is added', async () => {
+    const { showsScene } = await import('../src/app/urlSync');
+    const scene = '?wd=90&ws=20&ms=40&vg=100&cam=side-port&sel=rope_vang&held=1&sea=flat';
+    const showing = serializeUrlState(parseUrlState(`${scene}&learn=rope_vang`, 'low'));
+    expect(showsScene(showing, scene)).toBe(true);
+    const before = serializeUrlState(parseUrlState('?learn=rope_vang&held=1', 'low'));
+    expect(showsScene(before, scene)).toBe(false);
+  });
+});

@@ -73,6 +73,7 @@ export function startApp(host: HTMLElement): void {
     shownInPanel: (partId) =>
       (panel.activeTab() === 'ropes' && ropesTabShows(partId)) ||
       (panel.activeTab() === 'learn' && store.getState().learn === partId),
+    showLearn: () => panel.showTab('learn'),
   });
   panel.onTabChange(() => card.refresh());
   // Whether the card stays away depends on the open entry (the Learn tab shows the same part).

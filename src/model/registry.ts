@@ -1,4 +1,5 @@
 import registry from '../../content/registry/parts.json';
+import { boatLabelsFor } from './boatLabels';
 import { glossaryText } from './glossary';
 
 /** Every id the app may attach to a mesh or rope (content/registry/parts.json). */
@@ -34,12 +35,11 @@ export interface PartInfo {
 export function partInfo(id: string, language = 'en'): PartInfo | undefined {
   const entry = registry.entries.find((candidate) => candidate.id === id);
   if (!entry) return undefined;
-  const labels = 'boatLabel' in entry ? entry.boatLabel : undefined;
   const text = glossaryText(id, language);
   return {
     id,
     name: text?.name ?? '',
-    boatLabels: Array.isArray(labels) ? [...labels] : [],
+    boatLabels: boatLabelsFor(id),
     short: text?.short ?? '',
   };
 }

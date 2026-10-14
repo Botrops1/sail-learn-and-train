@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import registry from '../content/registry/parts.json';
 import { mpsToKn } from '../src/model/angles';
+import { boatLabelsFor } from '../src/model/boatLabels';
 import {
   GLOSSARIES,
   glossaryText,
@@ -48,7 +49,6 @@ const textOf = (id: string, code: string): GlossaryText =>
 const entries = registry.entries as {
   id: string;
   kind: string;
-  boatLabel?: string[];
   status: string;
   sources: string[];
   controls?: string[];
@@ -91,7 +91,7 @@ describe('glossary files (PHASE4_SPEC 6.8)', () => {
         expect(Array.isArray(text.alternatives), where).toBe(true);
         const seen = new Set<string>([
           text.name.toLowerCase(),
-          ...(entry.boatLabel ?? []).map((label) => label.toLowerCase()),
+          ...boatLabelsFor(entry.id).map((label) => label.toLowerCase()),
         ]);
         for (const alt of text.alternatives) {
           expect(nonEmpty(alt.term), where).toBe(true);
@@ -146,7 +146,10 @@ describe('glossary files (PHASE4_SPEC 6.8)', () => {
         expect(idSet.has(id), `${entry.id} related ${id}`).toBe(true);
         expect(id, `${entry.id} relates to itself`).not.toBe(entry.id);
       }
-      for (const old of ['names', 'aliases', 'short']) expect(old in entry, entry.id).toBe(false);
+      // The words on the boat come from the boat file (owner, PR #54), not the registry.
+      for (const old of ['names', 'aliases', 'short', 'boatLabel']) {
+        expect(old in entry, entry.id).toBe(false);
+      }
     }
   });
 

@@ -49,6 +49,10 @@ export async function liveM20Checks({ openPage, viewports, outDir, prefix, probl
     );
     check('the address bar has learn=sail_main', await has(page, 'learn=sail_main'), 'missing');
     await shot(page, 'live-phone-m20-card-more-opened');
+    // More again on the entry that is already open (owner, PR #54): Learn opens all the same.
+    await page.locator('#tab-ropes').click();
+    await page.getByTestId('card-more').click();
+    check('More on the open entry opens the Learn tab again', await learnOpen(page), 'stayed');
     await context.close();
   }
 
@@ -71,6 +75,20 @@ export async function liveM20Checks({ openPage, viewports, outDir, prefix, probl
     check('Back leaves the scene', await hasNot(page, 'vg=100'), 'vg=100 still in the address bar');
     check('Back keeps the entry', await has(page, 'learn=rope_vang'), 'learn lost');
     check('Back shows the entry', (await learnName(page)) === 'Vang', await learnName(page));
+    const after = await page.getByTestId('learn-status').innerText();
+    check('Back clears "Showing it…"', after.trim() === '', after);
+    // Show me tapped twice: one Back still returns (owner, PR #54).
+    await page.getByTestId('learn-show-me').click();
+    await has(page, 'vg=100');
+    await page.waitForTimeout(400);
+    await page.getByTestId('learn-show-me').click();
+    await page.waitForTimeout(400);
+    await page.goBack();
+    check(
+      'Show me twice: one Back leaves the scene',
+      await hasNot(page, 'vg=100'),
+      'still the scene',
+    );
     await context.close();
   }
 
@@ -82,6 +100,14 @@ export async function liveM20Checks({ openPage, viewports, outDir, prefix, probl
     await page.locator(ROPES_STRIP_LEARN).click();
     check('the strip opens the Learn tab', await learnOpen(page), 'Learn tab not selected');
     check('the entry is the Vang', (await learnName(page)) === 'Vang', await learnName(page));
+    await page.getByTestId('learn-try-rope_vang').click();
+    // The strip's button on the entry that is already open (review finding 1). The fold is
+    // still open from before.
+    await page.locator('.rope-strip > :not([hidden]) details.strip-more').evaluate((fold) => {
+      fold.open = true;
+    });
+    await page.locator(ROPES_STRIP_LEARN).click();
+    check('the strip opens Learn on the open entry', await learnOpen(page), 'stayed on Ropes');
     await page.getByTestId('learn-try-rope_vang').click();
     const ropes = (await page.locator('#tab-ropes').getAttribute('aria-selected')) === 'true';
     check('Try it opens the Ropes tab', ropes, 'Ropes tab not selected');

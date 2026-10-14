@@ -182,7 +182,10 @@ function alertsFor(state: AppState): Alert[] {
   return alerts;
 }
 
-export function createRealisticPanel(store: Store): HTMLElement[] {
+export function createRealisticPanel(
+  store: Store,
+  showLearn: () => void = () => undefined,
+): HTMLElement[] {
   const dispatch = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
   let selected: string | null = null;
 
@@ -455,7 +458,9 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
   learnMore.addEventListener('click', () => {
     // Read when tapped: the fold is hidden with the strip when nothing is selected.
     const spec = selected ? tailSpecs().find((candidate) => candidate.key === selected) : undefined;
-    if (spec) store.dispatch({ type: 'openLearn', id: spec.ropeId });
+    if (!spec) return;
+    store.dispatch({ type: 'openLearn', id: spec.ropeId });
+    showLearn();
   });
   const more = el('details', { class: 'strip-more' }, [
     el('summary', {}, [t('ropes.strip.more')]),

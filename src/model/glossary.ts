@@ -1,4 +1,5 @@
 import registry from '../../content/registry/parts.json';
+import { boatLabelsFor } from './boatLabels';
 
 /** The facts' status (one per entry, language-neutral) and the text's (one per entry and language). */
 export type FactStatus = 'draft' | 'source-checked' | 'photo-confirmed' | 'sailor-reviewed';
@@ -81,7 +82,7 @@ export function learnEntry(id: string, language: string = SOURCE_LANGUAGE): Lear
     kind: entry.kind,
     status: entry.status as FactStatus,
     sources: [...entry.sources],
-    boatLabels: [...(('boatLabel' in entry ? entry.boatLabel : undefined) ?? [])],
+    boatLabels: boatLabelsFor(id),
     controls: [...(entry.controls ?? [])],
     related: [...(entry.related ?? [])],
     showMeQuery: entry.showMe ?? null,
