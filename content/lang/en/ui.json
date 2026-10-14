@@ -596,5 +596,20 @@
   "learn.sources": "Sources:",
   "learn.source.photo": "Photo: {name}",
   "learn.source.brochure": "Hanse 508 brochure (not in the app)",
-  "learn.source.owner": "The boat’s owner, checked on board"
+  "learn.source.owner": "The boat’s owner, checked on board",
+  "learn.search": "Search",
+  "learn.searchPlaceholder": "Search a name, another name or a word on the boat",
+  "learn.matched": "also: {term}",
+  "learn.noMatch": "Nothing found. Try another word, or a word printed on the boat.",
+  "learn.back": "‹ All entries",
+  "learn.group.ropes": "Ropes ({count})",
+  "learn.group.sails": "Sails and their parts ({count})",
+  "learn.group.rig": "Mast and rigging ({count})",
+  "learn.group.hull": "Hull and underwater ({count})",
+  "learn.group.deck": "On deck ({count})",
+  "learn.group.cockpit": "In the cockpit ({count})",
+  "learn.group.wind": "Wind and weather ({count})",
+  "learn.group.directions": "Directions and sides ({count})",
+  "learn.group.sailing": "Sailing and manoeuvres ({count})",
+  "learn.group.sea": "Water and waves ({count})"
 }

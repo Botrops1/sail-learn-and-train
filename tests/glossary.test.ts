@@ -6,17 +6,21 @@ import { mpsToKn } from '../src/model/angles';
 import { boatLabelsFor } from '../src/model/boatLabels';
 import {
   GLOSSARIES,
+  GROUPS,
   glossaryText,
+  groupEntries,
   learnEntry,
   NOT_DRAWN,
   sourceLink,
   type GlossaryText,
 } from '../src/model/glossary';
+import { dangerZone } from '../src/model/gybe';
 import { entryFor } from '../src/model/panelEntries';
+import { significantHeightM, waveTrains } from '../src/model/waves';
 import { reduce } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 
-/** The entries that are complete in every language (3.2): M20's 18; M21 and M22 add theirs. */
+/** The entries that are complete in every language (3.2): M20's 18 and M21's 55; M22 adds theirs. */
 const COMPLETE_IDS = [
   'rope_mainsheet',
   'rope_jib_sheet',
@@ -36,6 +40,61 @@ const COMPLETE_IDS = [
   'sailpart_luff',
   'sailpart_leech',
   'sailpart_foot',
+  'part_hull',
+  'part_bow',
+  'part_stern',
+  'part_deck',
+  'part_coachroof',
+  'part_cockpit',
+  'part_companionway',
+  'part_keel',
+  'part_rudder',
+  'part_saildrive',
+  'part_lifelines',
+  'part_mast',
+  'part_boom',
+  'part_gooseneck',
+  'part_spreader',
+  'part_shroud',
+  'part_forestay',
+  'part_backstay',
+  'part_windex',
+  'part_telltale',
+  'part_vang_strut',
+  'fit_sprayhood',
+  'part_main_furling_gearbox',
+  'part_jib_furler',
+  'fit_mainsheet_boom_blocks',
+  'fit_mainsheet_deck_blocks',
+  'fit_self_tacking_track',
+  'fit_self_tacking_car',
+  'fit_clutch',
+  'clutch_bank_a',
+  'clutch_bank_b',
+  'clutch_jib_roll',
+  'fit_rope_bin',
+  'fit_winch',
+  'winch_primary_port',
+  'winch_primary_starboard',
+  'part_winch_handle',
+  'winch_secondary_port',
+  'winch_secondary_starboard',
+  'helm_port',
+  'helm_starboard',
+  'fit_compass',
+  'engine_control',
+  'fit_mast_base_turning_blocks',
+  'fit_line_channels',
+  'fit_anchor_windlass',
+  'fit_bow_roller',
+  'fit_mooring_cleat',
+  'fit_autopilot_control',
+  'fit_instrument_display',
+  'env_water',
+  'env_wind',
+  'env_wake',
+  'env_boom_danger_zone',
+  'env_buoy',
 ];
 
 const LANGUAGES = Object.keys(GLOSSARIES);
@@ -251,6 +310,67 @@ describe('7. show-me scenes show what their text says', () => {
   it('sail_jib: the car is on the lee side, and crosses with the wind', () => {
     expect(scene(showMe('sail_jib')).rig.jibSolution.side).toBe(-1);
     expect(scene(showMe('sail_jib').replace('wd=30', 'wd=-30')).rig.jibSolution.side).toBe(1);
+  });
+});
+
+describe('M21 scenes (PHASE4_SPEC 7.6)', () => {
+  it('env_boom_danger_zone: the faint outline at about 4 s, the boom’s sweep at about 6.5 s', () => {
+    let state = parseUrlState(showMe('env_boom_danger_zone'), 'low');
+    const first: Record<string, number> = {};
+    for (let i = 1; i <= 8 * 60; i++) {
+      state = reduce(state, { type: 'step', dt: 1 / 60 });
+      const kind = dangerZone(state.rig)?.kind;
+      if (kind && !(kind in first)) first[kind] = i / 60;
+    }
+    between(first.risk ?? -1, 4.0, 4.2);
+    between(first.sweep ?? -1, 6.0, 7.0);
+  });
+
+  it('part_rudder: the wheel is at 25°', () => {
+    expect(scene(showMe('part_rudder')).rig.applied.rudder).toBe(25);
+  });
+
+  it('engine_control: after 30 s she motors at about 8 kn and 1,850 rpm', () => {
+    const state = scene(showMe('engine_control'), 30);
+    between(mpsToKn(state.boat.speedMps), 7.6, 8.2);
+    between(state.engine.rpm, 1800, 1900);
+  });
+
+  it('env_water: the waves are about 2.04 m high', () => {
+    between(significantHeightM(waveTrains(scene(showMe('env_water')).sea)), 2.03, 2.04);
+  });
+
+  it('fit_self_tacking_track: the car is on the lee side', () => {
+    expect(scene(showMe('fit_self_tacking_track')).rig.jibSolution.side).toBe(-1);
+  });
+});
+
+describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
+  it('every entry is in exactly one group, from GROUPS', () => {
+    for (const entry of entries as { id: string; group?: string }[]) {
+      expect(GROUPS as readonly string[], entry.id).toContain(entry.group);
+    }
+  });
+
+  it('the groups have the expected sizes and members', () => {
+    expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
+      9, 10, 13, 6, 12, 18, 3, 4, 20, 3,
+    ]);
+    const samples: Record<string, string> = {
+      rope_vang: 'ropes',
+      part_telltale: 'sails',
+      part_mast: 'rig',
+      part_keel: 'hull',
+      part_deck: 'deck',
+      fit_winch: 'cockpit',
+      env_wind: 'wind',
+      term_port: 'directions',
+      term_gybe: 'sailing',
+      env_water: 'sea',
+    };
+    for (const [id, group] of Object.entries(samples)) {
+      expect(groupEntries(group as (typeof GROUPS)[number]), id).toContain(id);
+    }
   });
 });
 

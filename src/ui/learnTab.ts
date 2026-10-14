@@ -2,8 +2,12 @@ import { REPO_URL } from '../app/buildInfo';
 import type { Store } from '../app/store';
 import { openScene } from '../app/urlSync';
 import {
+  GROUPS,
+  groupEntries,
   learnEntry,
+  normalizeSearch,
   NOT_DRAWN,
+  searchGlossary,
   sourceLink,
   SOURCE_LANGUAGE,
   type LearnEntry,
@@ -26,13 +30,36 @@ function textOf(tag: 'p' | 'div', testId: string, text: string, className = ''):
 }
 
 /**
- * The Learn tab (PHASE4_SPEC 6.6): one entry at a time, from the glossary text (what it is called,
- * what it does, how it works on this boat, mistakes and fixes) and the registry's facts (links,
- * sources, how sure we are). It shows the entry `state.learn` names; the info card's, the Ropes
- * strip's and the Realistic strip's "More" buttons open it.
+ * The Learn tab (PHASE4_SPEC 6.6, 7.4): a search box, then either the list of every entry in
+ * groups (or the search results) or one entry, from the glossary text (what it is called, what it
+ * does, how it works on this boat, mistakes and fixes) and the registry's facts (links, sources,
+ * how sure we are). It shows the entry `state.learn` names; the info card's, the Ropes strip's and
+ * the Realistic strip's "More" buttons open it.
  */
 export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTMLElement[] {
   const root = el('div', { class: 'learn' });
+  // The search box is created once: only the area below it is re-rendered, so typing keeps focus.
+  const searchInput = el('input', {
+    id: 'learn-search-input',
+    type: 'search',
+    class: 'learn-search',
+    'data-testid': 'learn-search',
+    placeholder: t('learn.searchPlaceholder'),
+    autocomplete: 'off',
+  });
+  const below = el('div', { class: 'learn-below' });
+  root.append(
+    el('div', { class: 'learn-search-box' }, [
+      el('label', { for: 'learn-search-input', class: 'visually-hidden' }, [t('learn.search')]),
+      searchInput,
+    ]),
+    below,
+  );
+  const results = el('div', {
+    class: 'learn-results',
+    'data-testid': 'learn-results',
+    'aria-live': 'polite',
+  });
 
   const button = (testId: string, text: string, onClick: () => void): HTMLButtonElement => {
     const node = el(
@@ -58,17 +85,74 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
 
   const render = (id: string | null) => {
     const entry = id ? learnEntry(id, LANGUAGE) : undefined;
-    if (!entry) {
-      root.replaceChildren(textOf('p', 'learn-empty', t('learn.empty'), 'hint'));
+    if (entry) {
+      below.replaceChildren(entryView(entry));
       return;
     }
-    root.replaceChildren(entryView(entry));
+    // The list: the groups, or the results of the search (the groups are closed on every rebuild).
+    const query = searchInput.value;
+    if (normalizeSearch(query) === '') {
+      results.replaceChildren();
+      below.replaceChildren(groupsView(), results);
+    } else {
+      results.replaceChildren(...resultsView(query));
+      below.replaceChildren(results);
+    }
   };
+
+  const openEntry = (id: string, testId: string, children: (Node | string)[]): HTMLElement => {
+    const node = el(
+      'button',
+      { type: 'button', class: 'learn-list-button', 'data-testid': testId },
+      children,
+    );
+    node.addEventListener('click', () => store.dispatch({ type: 'openLearn', id }));
+    return node;
+  };
+
+  const groupsView = (): HTMLElement =>
+    el(
+      'div',
+      { class: 'learn-groups', 'data-testid': 'learn-groups' },
+      GROUPS.map((group) => {
+        const ids = groupEntries(group, LANGUAGE);
+        return el('details', { class: 'learn-group', 'data-testid': `learn-group-${group}` }, [
+          el('summary', { class: 'learn-group-summary' }, [
+            t(`learn.group.${group}` as StringKey, { count: ids.length }),
+          ]),
+          ...ids.map((id) => openEntry(id, `learn-entry-${id}`, [nameOf(id)])),
+        ]);
+      }),
+    );
+
+  const resultsView = (query: string): HTMLElement[] => {
+    const hits = searchGlossary(query, LANGUAGE);
+    if (hits.length === 0) {
+      return [textOf('p', 'learn-no-match', t('learn.noMatch'), 'hint')];
+    }
+    return hits.map((hit) =>
+      openEntry(hit.id, `learn-hit-${hit.id}`, [
+        el('span', { class: 'learn-hit-name' }, [hit.name]),
+        ...(hit.matched !== null
+          ? [el('span', { class: 'learn-hit-matched' }, [t('learn.matched', { term: hit.matched })])]
+          : []),
+      ]),
+    );
+  };
+
+  searchInput.addEventListener('input', () => {
+    // A search while an entry is open shows the results: leaving the entry re-renders the list.
+    if (store.getState().learn !== null) store.dispatch({ type: 'openLearn', id: null });
+    else render(null);
+  });
 
   const entryView = (entry: LearnEntry): HTMLElement => {
     const { text } = entry;
     const nodes: (HTMLElement | undefined)[] = [];
 
+    nodes.push(
+      button('learn-back', t('learn.back'), () => store.dispatch({ type: 'openLearn', id: null })),
+    );
     nodes.push(
       el('div', { class: 'learn-title' }, [
         el('h2', { class: 'learn-name', 'data-testid': 'learn-name' }, [text.name]),
