@@ -271,6 +271,8 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Gust preview (Phase 3, M16) | a gust travels downwind at the mean wind speed; the water shows it up to 300 m upwind (`windModes.gustPreview`) | **Assumption** |
 | Practice buoys (Phase 3, M16) | four yellow buoys 200 m north, east, south and west of the start (`content/areas/adriatic.json` `marks`) | **Owner** (Phase 3 plan); not real buoys |
 | Sailing area (Phase 3, M14/M17) | Split, 43.508° N 16.44° E; CET/CEST with EU summer time; clock default noon, 1 June 2026 (`content/areas/adriatic.json`) | **Owner** (Split as the reference point; issue #26 default); position read off a map; time zone rule: PHYSICS_TRUTHS [34] |
+| Waves: default setting (Phase 3, M14) | links and Reset open on Coastal (`waves.defaultSetting` `coastal`); a state built without a setting is Flat so Phase 1 and 2 tests are unchanged | **Owner** (Phase 3 plan) |
+| Frame-rate keys (Phase 3, M19) | `SCENE.performance` in `src/render3d/sceneConfig.ts`: `outerColoursEveryNthFrame` 1, `innerHalfSizeLowM` 100, `fadeStartLowM` 70 (values that change nothing); fallback steps if the owner's phone misses 50 FPS, one per comment: 2 / 80 and 56 / `SCENE.reflections.minIntervalS` 5 | **Assumptions**; the agent cannot measure a phone, the owner measures (WORKFLOW M19): on the owner's phone, heaviest case, 60 FPS and slowest frame 17 ms (PR #51), so the values stay |
 
 ## 6. Open questions for the skipper / next time aboard
 

@@ -184,6 +184,19 @@ export const SCENE = {
     /** Foam never covers the water completely: the most a vertex turns white (owner, M16 PR). */
     whitecapMax: 0.85,
   },
+  /**
+   * Frame-rate keys (M19, PHASE3_SPEC 11.2). The values below change nothing visible: the owner
+   * measures on the phone and, if it misses 50 FPS, the steps are applied one per comment (the
+   * spec's order): `outerColoursEveryNthFrame: 2`; `innerHalfSizeLowM: 80` with
+   * `fadeStartLowM: 56`; `SCENE.reflections.minIntervalS: 5`.
+   */
+  performance: {
+    /** The outer water's colours, when they are recomputed, are written every Nth rendered frame. */
+    outerColoursEveryNthFrame: 1,
+    /** Low detail: half the side of the wave mesh and where its waves start to fade, metres. */
+    innerHalfSizeLowM: 100,
+    fadeStartLowM: 70,
+  },
   /** The practice buoys (M16, PHASE3_SPEC 8.4). */
   marks: {
     color: '#f5c400',
