@@ -1,6 +1,6 @@
 # Phase 3 specification: basic environment
 
-Status: **M14–M19 built** (M19 in PR #51), waiting for the owner's sign-off · Last updated: 2026-10-14
+Status: **done** (M14–M19; M19 in PR #51), signed off by the owner · Last updated: 2026-10-14
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1 and 2 are done; [`PHASE1_SPEC.md`](PHASE1_SPEC.md) and [`PHASE2_SPEC.md`](PHASE2_SPEC.md) still describe everything Phase 3 builds on (layout, rig solver, boat motion, heel, wind modes, time bar, URL state). This file says only what Phase 3 adds or changes. Boat facts: [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules: [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
