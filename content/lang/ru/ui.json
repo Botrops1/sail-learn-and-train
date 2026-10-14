@@ -216,7 +216,7 @@
   "real.clutch.closed": "закрыт",
   "real.clutch.openShort": "ОТКРЫТ",
   "real.clutch.closedShort": "закрыт",
-  "real.clutch.static": "остаётся закрытым",
+  "real.clutch.static": "заперт",
   "real.tailShort.port": "левый конец",
   "real.tailShort.starboard": "правый конец",
   "real.tailShort.furl": "закручивает грот",

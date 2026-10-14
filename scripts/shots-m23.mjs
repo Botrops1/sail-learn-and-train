@@ -103,7 +103,12 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
         const picture = svg.getBoundingClientRect();
         const box = text.getBoundingClientRect();
         if (box.width < 2 || picture.width < 2) continue;
-        if (box.right > picture.right + 1 || box.left < picture.left - 1) {
+        if (
+          box.right > picture.right + 1 ||
+          box.left < picture.left - 1 ||
+          box.bottom > picture.bottom + 1 ||
+          box.top < picture.top - 1
+        ) {
           found.push(`svg text "${text.textContent?.trim()}" runs past its picture`);
         }
       }
