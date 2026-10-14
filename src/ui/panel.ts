@@ -238,6 +238,22 @@ function buildViewTab(store: Store): HTMLElement[] {
     el('p', { class: 'hint' }, [t('view.timeBar.hint')]),
   ]);
 
+  const clockInput = el('input', {
+    type: 'checkbox',
+    id: 'clock-toggle',
+    'data-testid': 'clock-switch',
+  });
+  clockInput.addEventListener('change', () =>
+    store.dispatch({ type: 'setClockShown', shown: clockInput.checked }),
+  );
+  const clockField = el('div', { class: 'field' }, [
+    el('label', { class: 'toggle', for: 'clock-toggle' }, [
+      clockInput,
+      el('span', {}, [t('view.clock.label')]),
+    ]),
+    el('p', { class: 'hint' }, [t('view.clock.hint')]),
+  ]);
+
   const sync = (state = store.getState(), previous?: typeof state) => {
     if (previous && state.settings === previous.settings && state.camera === previous.camera) {
       return;
@@ -250,6 +266,7 @@ function buildViewTab(store: Store): HTMLElement[] {
     legendInput.checked = settings.legend;
     labelsInput.checked = settings.labels;
     timeBarInput.checked = settings.timeBar;
+    clockInput.checked = settings.clock;
   };
   store.subscribe(sync);
   sync();
@@ -258,6 +275,7 @@ function buildViewTab(store: Store): HTMLElement[] {
     cameraGroup,
     labelsField,
     timeBarField,
+    clockField,
     stepGroup,
     detailGroup,
     ...buildShareAndReset(store),

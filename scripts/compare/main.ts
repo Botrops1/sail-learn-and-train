@@ -52,7 +52,7 @@ scene.add(
   ),
 );
 const sun = new THREE.DirectionalLight(0xffffff, SCENE.light.sunIntensity);
-sun.position.set(...SCENE.light.sunDirection);
+sun.position.set(...SCENE.sky.glowDirection);
 const fill = new THREE.DirectionalLight(0xffffff, SCENE.light.fillIntensity);
 fill.position.set(...SCENE.light.fillDirection);
 // No wind and the topping lift holding the boom level: boom on the centreline at ψ = 0, as drawn.

@@ -29,5 +29,9 @@
       { "id": "S", "eastM": 0, "northM": -200 },
       { "id": "W", "eastM": -200, "northM": 0 }
     ]
+  },
+  "clock": {
+    "defaultLocal": "2026-06-01T12:00",
+    "note": "owner (issue #26, Phase 3 plan): without a time in the link the clock starts at noon, 1 June (local time)"
   }
 }

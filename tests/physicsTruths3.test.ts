@@ -5,6 +5,8 @@ import { wrap180, mpsToKn, knToMps } from '../src/model/angles';
 import { elevation, initialSea, waveTrains } from '../src/model/waves';
 import { gustAt, gustProfile, whitecapAmount, whitecapCoverage } from '../src/model/windOnWater';
 import { gustyEvents, initialWindMode } from '../src/model/windModes';
+import { area } from '../src/model/area';
+import { sunPosition, sunTimes } from '../src/model/sun';
 import { act, initialState, run, sampleRun, stdDev, mean } from './motionHelpers';
 
 /** Phase 3 physics truths (PHYSICS_TRUTHS.md), implemented from M14 on. */
@@ -304,5 +306,31 @@ describe('PT-45 a gust shows upwind before it arrives', () => {
     if (!profile) return;
     const expected = Math.min(1, Math.max(-1, (state.wind.twsKn - 12) / (12 * 0.3)));
     expect(gustAt(profile, 0)).toBeCloseTo(expected, 9);
+  });
+});
+
+describe("PT-46 the sun's path", () => {
+  const { latitudeDeg, longitudeDeg } = area.position;
+  const MIN = 60_000;
+
+  it('PT-46 at Split on 1 June it rises in the north-east, stands due south at noon and sets in the north-west', () => {
+    const t = sunTimes(2026, 6, 1, latitudeDeg, longitudeDeg);
+    const azimuthAt = (ms: number | null) =>
+      sunPosition(ms ?? Number.NaN, latitudeDeg, longitudeDeg).azimuthDeg;
+    const rise = azimuthAt(t.sunriseUtcMs);
+    const set = azimuthAt(t.sunsetUtcMs);
+    expect(rise).toBeGreaterThanOrEqual(45);
+    expect(rise).toBeLessThanOrEqual(90);
+    expect(set).toBeGreaterThanOrEqual(270);
+    expect(set).toBeLessThanOrEqual(315);
+    expect(Math.abs(azimuthAt(t.noonUtcMs) - 180)).toBeLessThan(1);
+  });
+
+  it('PT-46 the June day is more than 5 hours longer than the December day', () => {
+    const length = (month: number, day: number) => {
+      const t = sunTimes(2026, month, day, latitudeDeg, longitudeDeg);
+      return ((t.sunsetUtcMs ?? 0) - (t.sunriseUtcMs ?? 0)) / MIN / 60;
+    };
+    expect(length(6, 1) - length(12, 21)).toBeGreaterThan(5);
   });
 });

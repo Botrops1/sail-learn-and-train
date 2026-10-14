@@ -8,9 +8,9 @@ import { SCENE } from './sceneConfig';
  * three.js (PMREM), for reflections. The water gets a tiling ripple normal map.
  */
 
-/** Unit vector towards the sun (the same as the sun light). */
-export function sunDirection(): THREE.Vector3 {
-  return new THREE.Vector3(...SCENE.light.sunDirection).normalize();
+/** Unit vector towards the old sky texture's fixed glow (the sun light now follows the clock). */
+export function glowDirection(): THREE.Vector3 {
+  return new THREE.Vector3(...SCENE.sky.glowDirection).normalize();
 }
 
 /** Smooth value noise on a grid that wraps every `period` cells (tileable). */
@@ -62,7 +62,7 @@ export function skyTexture(): THREE.DataTexture {
   const below = rgb(s.belowHorizon);
   const glow = rgb(s.sunGlow);
   const cloud = rgb(s.cloud);
-  const sun = sunDirection();
+  const sun = glowDirection();
   const data = new Uint8Array(width * height * 4);
   const cosAz = Float32Array.from({ length: width }, (_, x) =>
     Math.cos(((x + 0.5) / width - 0.5) * 2 * Math.PI),

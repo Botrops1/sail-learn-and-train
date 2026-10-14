@@ -66,6 +66,8 @@ export interface Settings {
   timeScale: number;
   /** The time bar's speed part over the 3D view (View tab); off = only the Pause button. */
   timeBar: boolean;
+  /** The clock chip over the 3D view (View tab, M17). */
+  clock: boolean;
 }
 
 export interface CameraState {
@@ -82,6 +84,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   labels: true,
   timeScale: 1,
   timeBar: true,
+  clock: true,
 };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
 

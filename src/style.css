@@ -2656,3 +2656,102 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
 }
+
+/* The clock (M17, PHASE3_SPEC 9.5): a chip beside the time bar and a card under the top area. */
+.clock-chip {
+  flex: 0 0 auto;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgb(255 255 255 / 0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.clock-chip[hidden],
+.clock-card[hidden] {
+  display: none;
+}
+
+.clock-chip:focus-visible,
+.clock-button:focus-visible,
+.clock-close:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.clock-card {
+  position: absolute;
+  z-index: 6;
+  top: calc(var(--view-top-h, 64px) + 4px);
+  right: 8px;
+  max-width: min(320px, calc(100% - 16px));
+  padding: 10px 52px 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.97);
+  color: var(--text);
+  font-size: var(--font-small);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+  pointer-events: auto;
+  overflow-wrap: anywhere;
+}
+
+.clock-line {
+  margin: 0 0 4px;
+}
+
+.clock-set-label {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.clock-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.clock-button,
+.clock-input {
+  min-height: var(--touch);
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.clock-button {
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clock-hint {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.clock-close {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: var(--touch);
+  height: var(--touch);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}

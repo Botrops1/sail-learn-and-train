@@ -1,4 +1,5 @@
 import type { AppState, Store } from './store';
+import { clockParam } from '../model/clock';
 import { boatParams, realisticParams, serializeUrlState } from './urlState';
 
 /** At most one URL update per this long (PHASE1_SPEC 9.2); the sailing boat changes it all the time. */
@@ -30,6 +31,7 @@ export function startUrlSync(store: Store): void {
       state.sea.setting === previous.sea.setting &&
       state.selection === previous.selection &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
+      sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
       sameBoatLink(state, previous)
     ) {
@@ -47,6 +49,12 @@ export function startUrlSync(store: Store): void {
 function sameBoatLink(state: AppState, previous: AppState): boolean {
   if (state.boat === previous.boat && state.autopilot === previous.autopilot) return true;
   return boatParams(state).join('&') === boatParams(previous).join('&');
+}
+
+/** The clock changes every frame: the link stores it to the minute. */
+function sameClockLink(state: AppState, previous: AppState): boolean {
+  if (state.clock === previous.clock) return true;
+  return clockParam(state.clock.utcMs) === clockParam(previous.clock.utcMs);
 }
 
 /** Realistic mode changes every frame (drums, reports): compare only what the link stores. */

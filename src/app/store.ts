@@ -26,6 +26,7 @@ import {
   type AutopilotState,
 } from '../model/autopilot';
 import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../model/engine';
+import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
 import {
@@ -97,6 +98,8 @@ export interface AppState {
   engine: EngineState;
   /** The sea (M14): the Waves setting and the wind the waves are made by (lagged). */
   sea: SeaState;
+  /** The time on board (M17): UTC ms; runs with the simulated time, so Pause stops it. */
+  clock: ClockState;
 }
 
 /** Engine commands (PHASE2_SPEC 12.3): start, stop, or the lever (−100 … 100, whole numbers). */
@@ -137,6 +140,10 @@ export type Action =
   | { type: 'setTimeScale'; scale: number }
   /** The View tab's switch for the time bar's speed part. Off puts the time scale back to ×1. */
   | { type: 'setTimeBar'; timeBar: boolean }
+  /** Set the time on board (M17); "Now" is read from the device by the UI. */
+  | { type: 'setClock'; utcMs: number }
+  /** The View tab's switch for the clock chip. */
+  | { type: 'setClockShown'; shown: boolean }
   /** New sails: the flogging damage goes back to 0 (M9). */
   | { type: 'repairSails' }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
@@ -165,6 +172,8 @@ export interface InitialOverrides {
    * was; the app passes `waves.defaultSetting` (links and Reset).
    */
   sea?: SeaSetting;
+  /** The time on board (M17), UTC ms. Without it: the area's default (noon, 1 June). */
+  clockUtcMs?: number;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -281,6 +290,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     sailDamage: NO_DAMAGE,
     engine,
     sea,
+    clock: { utcMs: overrides.clockUtcMs ?? defaultClockUtcMs() },
   });
 }
 
@@ -420,6 +430,14 @@ export function reduce(state: AppState, action: Action): AppState {
       if (!isSeaSetting(action.setting) || action.setting === state.sea.setting) return state;
       return withTimeRule({ ...state, sea: setSeaSetting(state.sea, action.setting) });
     }
+    case 'setClock':
+      return isClockTime(action.utcMs) && action.utcMs !== state.clock.utcMs
+        ? { ...state, clock: { utcMs: action.utcMs } }
+        : state;
+    case 'setClockShown':
+      return state.settings.clock === action.shown
+        ? state
+        : { ...state, settings: { ...state.settings, clock: action.shown } };
     case 'newWindPattern': {
       if (state.windMode.mode === 'steady') return state;
       const seed = isSeed(action.seed) ? action.seed : state.windMode.seed;
@@ -466,6 +484,8 @@ export function reduce(state: AppState, action: Action): AppState {
       // The waves follow the wind slowly (M14); paused (dt = 0) they stay the same object.
       const sea = stepSea(state.sea, wind, dt);
       const trains = waveTrains(sea);
+      // The clock runs with the simulated time: ×16 is 16 times faster, paused it stands still.
+      const clock = dt === 0 ? state.clock : { utcMs: state.clock.utcMs + dt * 1000 };
       let controls = state.controls;
       let autopilot = state.autopilot;
       // The autopilot moves the wheel's target (not through setControls: it must not switch
@@ -522,6 +542,7 @@ export function reduce(state: AppState, action: Action): AppState {
         sailDamage: floggingDamage(state.sailDamage, rig, dt),
         engine,
         sea,
+        clock,
       };
     }
   }
