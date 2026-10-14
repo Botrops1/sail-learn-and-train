@@ -188,7 +188,22 @@ A scene test: boat speed in knots is `mpsToKn(state.boat.speedMps)` (`src/model/
 
 ### 3.6 Sources
 
-Phase 4 adds no rules to `PHYSICS_TRUTHS.md`. Entry facts cite registry `sources` (keys of `sourceKeys`); each milestone adds the keys it uses, exactly as given. Phase 4 entries also cite pages that earlier phases read and summarised in `PHYSICS_TRUTHS.md` (its sources [1], [19]–[25], [27]–[32]: *Point of sail*, *Forces on sails*, *Jibe*, *Weather helm*, *Hull speed*, *Wind wave*, *Wind fetch*, *Significant wave height*, *Ship motions*, *Seakeeping*); their `source-checked` statuses rest on those summaries. Pages read on 2026-10-14 for this plan: the Wikipedia pages *Broach (nautical)*, *Beaufort scale*, *Wind direction*, *Bora (wind)*, *Sirocco*, *Mistral (wind)* (section "Maestral … in the Adriatic"), *Points of the compass*, *Glossary of nautical terms (A–L)*. The Russian Wikipedia was not reachable from the cloud environment, so every statement about Russian usage (for example that `норд` comes from Dutch) is a draft for the Russian-speaking reviewer.
+Phase 4 adds no rules to `PHYSICS_TRUTHS.md`. Entry facts cite registry `sources` (keys of `sourceKeys`); each milestone adds the keys it uses, exactly as given. Phase 4 entries also cite pages that earlier phases read and summarised in `PHYSICS_TRUTHS.md` (its sources [1], [19]–[25], [27]–[32]: *Point of sail*, *Forces on sails*, *Jibe*, *Weather helm*, *Hull speed*, *Wind wave*, *Wind fetch*, *Significant wave height*, *Ship motions*, *Seakeeping*); their `source-checked` statuses rest on those summaries. Pages read on 2026-10-14 for this plan: the Wikipedia pages *Broach (nautical)*, *Beaufort scale*, *Wind direction*, *Bora (wind)*, *Sirocco*, *Mistral (wind)* (section "Maestral … in the Adriatic"), *Points of the compass*, *Glossary of nautical terms (A–L)*.
+
+**Russian terms** (checked on 2026-10-14, after the M20–M22 entries were written; the results are in 9.2.1 and 9.2.2). A Russian *name* counts as supported when one of these sources uses it for the same thing. The *texts* stay `textStatus: "draft"` (3.3) whatever the sources say; only a sailor's review changes that.
+
+| Key | Source | Use |
+|---|---|---|
+| [R1] | А. Б. Стекольщиков, А. О. Маслов, «Основы управления крейсерской парусной яхтой для начинающих яхтсменов», часть I (тихий, лёгкий, слабый ветер), 2-е изд., Москва, А.Б.С. Морская академия, 2019 | the usage of a Russian yacht school (names of sheets, halyards, furling, points of sail, manoeuvres) |
+| [R2] | the same authors, часть II (умеренный, свежий и сильный ветер), 2019; recommended as a textbook by the qualification commission of the Russian Sailing Federation | as [R1]; reefing, broaching |
+| [R3] | А. Б. Стекольщиков, часть III (сильный, крепкий и штормовой ветер), 2019; the same recommendation | as [R2]; the engine lever, storm sails |
+| [R4] | Russian Wikipedia articles, read 2026-10-14: *Шкот*, *Фал*, *Гик*, *Топенант*, *Ахтерштаг*, *Штаг*, *Ванты*, *Краспица*, *Стаксель*, *Грот (парус)*, *Геннакер*, *Генуя (парус)*, *Устройство паруса*, *Бегучий такелаж*, *Стоячий такелаж*, *Курс относительно ветра* (with *Галс*, *Левентик*, *Бейдевинд*, *Галфвинд*, *Фордевинд*), *Оверштаг*, *Брочинг*, *Вымпельный ветер*, *Истинный ветер*, *Качка*, *Крен*, *Румб*, *Штирборт*, *Шкала Бофорта*, *Бора (ветер)*, *Сирокко*, *Узел (единица измерения)*, *Брашпиль*, *Леер*, *Судовой руль*, *Авторулевой*, *Лебёдка*, *Срыв потока* | definitions, spellings, Dutch origins (бакборт, штирборт, шкот, фал, гик, топенант, штаг, ахтерштаг, оверштаг, фордевинд and others) |
+| [R5] | Russian Wikipedia, *Морские термины* (a glossary), read 2026-10-14 | шлаг, ходовой конец, травить, выбирать, траверз, перо руля, взятие рифов, кокпит, «ветер заходит — становится круче; ветер отходит — становится полнее» |
+| [R6] | К. И. Самойлов, «Морской словарь» (on dic.academic.ru) | завал-тали, раковина |
+| [R7] | Ushakov's and Ozhegov's dictionaries (on dic.academic.ru) | «рифление» means only making a surface rough or ribbed, with no sailing meaning |
+| [R8] | Russian Wiktionary, *норд*, *ост*, *зюйд*, *вест*, read 2026-10-14 | each «происходит от нидерл.» noord, oost, zuid, west: the Dutch notes of `term_north` … `term_west` are confirmed |
+
+The three textbooks [R1]–[R3] were given by the owner as PDFs. They are copyrighted and are **not in the repo**: cite them by key and page, never copy their text. Not reachable from the cloud environment (bot filters or connection resets): gramota.ru, itboat.com, yachtall.com, ru.ruwiki.ru, parusniy-sport.org (where the textbooks come from). Words that no source above uses (for example «твист», «колдунчики», «мёртвая зона», «стопор» for a rope clutch) are common yacht-club usage but stay unconfirmed; the sailor's review (M24) decides them.
 
 ### 3.7 Common mistakes (check these first when a test fails)
 
@@ -2172,7 +2187,7 @@ No Russian on screen (M23). No pictures. No rules of the road (later "Navigation
 ### 9.1 Files
 
 New: `content/lang/ru/ui.json`, `content/lang/latin-words.json`, `src/model/languages.ts`, `tests/languages.test.ts`, `scripts/shots-m23.mjs`.
-Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json` (`names`, `namesStatus` removed), `src/model/settings.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/i18n.ts`, `src/ui/panel.ts`, `src/ui/learnTab.ts`, `src/ui/clockPanel.ts`, `src/ui/enginePanel.ts`, every file in `src/ui` that calls `partInfo` (`clutchDrawing.ts`, `infoCard.ts`, `labels3d.ts`, `realisticPanel.ts`, `ropeControls.ts`, `ropesTab.ts`, `stationDrawing.ts`: 10 call sites in these 7 files, the complete set), `src/ui/mapView.ts` (scale and buoy letters, 9.3), `content/lang/ru/glossary.json` (only if the Latin rule of 9.6 finds something), `tests/urlState.test.ts` (new cases), `tests/i18n.test.ts` (iterates every language of `UI_STRINGS`), `scripts/shots.mjs`, `docs/CODE_MAP.md`. The `Language` type in `i18n.ts` is removed (codes are strings). `AreaData` (`typeof adriatic`) loses `names`; its only user is `clockPanel.ts`.
+Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json` (`names`, `namesStatus` removed), `src/model/settings.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/i18n.ts`, `src/ui/panel.ts`, `src/ui/learnTab.ts`, `src/ui/clockPanel.ts`, `src/ui/enginePanel.ts`, every file in `src/ui` that calls `partInfo` (`clutchDrawing.ts`, `infoCard.ts`, `labels3d.ts`, `realisticPanel.ts`, `ropeControls.ts`, `ropesTab.ts`, `stationDrawing.ts`: 10 call sites in these 7 files, the complete set), `src/ui/mapView.ts` (scale and buoy letters, 9.3), `content/lang/ru/glossary.json` (the name changes and added alternatives of 9.2.1, and anything the Latin rule of 9.6 finds), `tests/urlState.test.ts` (new cases), `tests/i18n.test.ts` (iterates every language of `UI_STRINGS`), `scripts/shots.mjs`, `docs/CODE_MAP.md`. The `Language` type in `i18n.ts` is removed (codes are strings). `AreaData` (`typeof adriatic`) loses `names`; its only user is `clockPanel.ts`.
 
 ### 9.2 Data
 
@@ -2186,6 +2201,114 @@ Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json`
   "words": ["AWA", "AWS", "TWA", "TWS", "T", "English", "WebGL", "B&G", "Hanse", "Seldén", "Lewmar", "Furlex", "Allpa", "Rodkicker", "GitHub", "START", "STOP", "POWER", "IN", "OUT", "MAX", "RPM", "UTC", "CET", "CEST", "bakboord", "stuurboord", "noord", "oost", "zuid", "west", "broaching", "saildrive", "furling", "winch", "sprayhood", "outhaul", "kicker", "preventer"]
 }
 ```
+
+#### 9.2.1 Russian names checked against sources: changes to make (copy exactly)
+
+The Russian names of M20–M22 were checked against the sources of 3.6 ([R1]–[R8]). Most are confirmed (list at the end of this section). Change the following in `content/lang/ru/glossary.json`. Keep every other field and the order of the entries. Then apply rule 3.3 (one term for one thing everywhere): in **every** Russian text field of every entry (`short`, `what`, `onThisBoat`, `mistakes`, `showMe`), replace the old words with the new ones in the right grammatical case, and change nothing else in those sentences.
+
+**Name changes** (the `alternatives` given here replace the old list completely):
+
+| id | old `name` | new `name` | new `alternatives` | why (source) |
+|---|---|---|---|---|
+| `sail_gennaker` | генакер | геннакер | `[{ "term": "генакер", "note": "другое написание" }]` | Russian Wikipedia's article is *Геннакер* [R4] |
+| `rope_spi_halyard` | фал генакера | фал геннакера | unchanged: `[{ "term": "спинакер-фал" }]` | follows `sail_gennaker` |
+| `rope_jib_furling_line` | закруточный конец стакселя | линь закрутки стакселя | `[]` | the yacht-school textbooks call it «линь закрутки стакселя» ([R1] p. 10, [R3] p. 13); «закруточный конец» is in no source |
+| `rope_main_furling_line` | закруточный конец грота | линь закрутки грота | `[]` | the same word for the mainsail's line (by analogy with [R1], [R3]: the textbooks describe only jib furling) |
+| `part_gooseneck` | гусёк | вертлюг гика | `[{ "term": "гусёк", "note": "так тоже говорят на яхтах" }]` | «вертлюг гика» is in Russian Wikipedia's *Устройство паруса* [R4]; in Russian dictionaries «гусёк» has no sailing meaning |
+| `term_reef` | рифление | взятие рифов | `[{ "term": "брать рифы" }]` | «взятие рифов», «взять рифы» [R5], «на гроте взяты рифы» ([R3] p. 22); «рифление» means roughening a surface [R7] |
+| `term_round_up` | приведение | брочинг | `[{ "term": "приведение", "note": "резкое неуправляемое приведение к ветру" }]` | Russian Wikipedia's *Брочинг*: sudden uncontrollable turns of the yacht towards the wind [R4]; the textbooks use «брочинг» ([R2] p. 33, [R3] pp. 27–28) |
+
+**Replacements in the texts** (all entries, every case form):
+
+| old | new | forms |
+|---|---|---|
+| генакер | геннакер | генакера → геннакера, генакером → геннакером and so on (the new alternative «генакер» itself stays) |
+| закруточный конец (грота / стакселя) | линь закрутки (грота / стакселя) | закруточного конца → линя закрутки; закруточному концу → линю закрутки; закруточным концом → линём закрутки |
+| закруточный стержень грота (in `part_main_furling_gearbox`) | вал закрутки грота | вала закрутки, валом закрутки |
+| гусёк (in `part_gooseneck`'s texts) | вертлюг гика | вертлюга гика, вертлюгом гика |
+| рифление (in `term_reef`'s texts) | взятие рифов | взятия рифов, взятием рифов |
+| приведение (in `term_round_up`'s texts only) | брочинг | брочинга, брочингом. «тенденция к приведению» (`term_weather_helm`) stays: that is a different thing |
+
+**Alternatives to add** (append at the end of the entry's `alternatives`, in this order):
+
+| id | add | source |
+|---|---|---|
+| `term_close_hauled` | `{ "term": "острый бейдевинд" }` | [R1] p. 30, [R2] p. 40, [R3] p. 47 |
+| `term_beam_reach` | `{ "term": "галфинд", "note": "другое написание" }`, then `{ "term": "полветра" }` | [R1] p. 22 («Галфвинд» или «Галфинд»); [R4] *Курс относительно ветра* |
+| `term_run` | `{ "term": "полный ветер", "note": "так говорят: «идти полным ветром»" }` | [R4] *Курс относительно ветра* |
+| `term_gybe` | `{ "term": "поворот через фордевинд" }` | [R1] p. 26, [R4] *Оверштаг*, [R5] |
+| `term_trim` | `{ "term": "добрать", "note": "выбрать до конца" }` | [R1] p. 8, [R2] p. 15 («полностью добран») |
+| `engine_control` | `{ "term": "РУД", "note": "ручка управления двигателем" }` | [R3] p. 6 |
+| `part_jib_furler` | `{ "term": "барабан закрутки", "note": "так называют нижнюю часть закрутки, на которую наматывается линь" }` | [R1] pp. 9–10, [R2] pp. 13–14, [R3] p. 13 |
+
+**Confirmed, no change** (for the record and the M24 reviewer; nothing to do): гика-шкот and стаксель-шкот ([R1] p. 4, [R4] *Шкот*); грота-фал ([R2] p. 15, [R3] p. 47); оттяжка гика, топенант, завал-тали ([R4] *Гик*, [R6]); оттяжка шкотового угла; закрутка стакселя ([R1] p. 29); штаг and форштаг, ахтерштаг, ванты, краспицы ([R4], [R1] p. 3); шкаторины and the corners фаловый, галсовый, шкотовый угол ([R4] *Устройство паруса*); перо руля ([R2] p. 5, [R5]); штурвал ([R1] p. 4); лебёдка ([R3] p. 43); левый and правый борт with бакборт and штирборт ([R4] *Штирборт*); наветренный, подветренный ([R3] p. 28); истинный and вымпельный ветер, «кажущийся ветер» as the alternative ([R4]); правый and левый галс, поворот оверштаг, поворот фордевинд, крутой and полный бейдевинд, галфвинд, бакштаг, фордевинд, левентик ([R1], [R2], [R4], [R5]); «ветер заходит / отходит» ([R5]); норд, ост, зюйд, вест ([R8]); румб, траверз, раковина ([R4], [R5], [R6]); узел and `уз` ([R4]); шкала Бофорта and баллы ([R4], [R3] p. 4); бора, сирокко ([R4]); крен, бортовая, килевая and вертикальная качка ([R4] *Качка*); срыв потока ([R4]); брашпиль, леер, кокпит, авторулевой ([R4], [R5]).
+
+#### 9.2.2 Words for the Russian UI (`content/lang/ru/ui.json`; use exactly)
+
+Translate every `ui.json` string sentence by sentence (3.3), but use these words for these things, changing only the grammatical case. The registry names of M20–M22 (with 9.2.1) win everywhere else: a rope, sail, part or sailing word in a UI string is called by its glossary `name`. Sources are given where one exists; the rest are this plan's choices (draft, for the sailor's review).
+
+| English in `ui.json` | Russian | source / note |
+|---|---|---|
+| rope (a line on the boat) | конец, концы | the tab is «Концы» (M22, `QUOTED_UI_LABELS`); where «конец» would be read as "end", write «снасть» |
+| tail, end of a rope (the part you hold) | ходовой конец | [R5] |
+| sheet / main sheet / jib sheet | шкот / гика-шкот / стаксель-шкот | [R1] p. 4 |
+| halyard | фал | [R4] |
+| haul in, pull in, trim | выбрать, выбирать | [R1] p. 11, [R5] |
+| ease, let out | потравить, травить | [R2] p. 21, [R5] |
+| paid out (rope let out) | вытравлено | write `Вытравлено: {m} м` (no noun after a number, 3.3) |
+| eased (a control in %) | потравлено | `Потравлено: {value} %` |
+| furl / roll in | закрутить (убрать) | [R1] p. 10: «закручивание (уборка)» |
+| unfurl / roll out | раскрутить (поставить) | [R1] p. 10: «раскручивание (постановка)» |
+| furling line | линь закрутки | 9.2.1 |
+| hoist | поднять | [R1] p. 8 |
+| taut / slack | выбран втугую / провис | `state.slackBy`: `провис, запас: {m} м` |
+| fighting (two ropes pulling against each other) | перетягивание | like a tug of war; `legend.fighting`: `Красный: этот конец тянет против другого (перетягивание)` |
+| clutch / clutch bank | стопор / блок стопоров | glossary names |
+| open / closed (clutch) | открыт / закрыт | `real.clutch.openShort`: `ОТКРЫТ` |
+| winch / winch handle / drum | лебёдка / ручка лебёдки / барабан | glossary names, [R3] p. 43 |
+| turn (of rope on a winch) | шлаг | [R5]; `{n} ↻ по часовой` (number before a symbol, not a noun) |
+| self-tailer, jaw | самостопорящий зажим | plan's choice |
+| winch in | выбрать лебёдкой | |
+| crank / 1st gear / 2nd gear | вращать ручку / 1-я скорость / 2-я скорость | |
+| cut out (electric winch) | отключилась | |
+| station (where you stand) | место | `real.stations.label`: `Где вы стоите`; Port / Starboard / Helm / Mast: `Левый борт` / `Правый борт` / `Штурвал` / `Мачта` |
+| side deck | боковая палуба | |
+| in-mast furling gearbox / socket / switch | редуктор закрутки грота / гнездо / переключатель | glossary name |
+| wheel / rudder | штурвал / перо руля | [R1] p. 4, [R2] p. 5 |
+| bow / stern | нос / корма | |
+| port / starboard (long) | левый борт / правый борт | |
+| Port / Stbd (camera short labels) | ЛБ / ПБ | |
+| P / S (instrument side letters) | Л / П | |
+| windward / leeward | наветренный / подветренный | [R3] p. 28 |
+| luff up (turn towards the wind) | привестись | [R1] p. 26 |
+| bear away | увалиться | [R1] p. 12 |
+| head to wind | левентик | `wind.preset.head`: `Левентик (носом на ветер)`; [R1] p. 7 |
+| points of sail `pos.*` | the glossary names, capitalised: `В мёртвой зоне`, `Крутой бейдевинд`, `Полный бейдевинд`, `Галфвинд`, `Бакштаг`, `Фордевинд` | `pos.no_go` is «in the zone» |
+| wind presets `wind.preset.*` | `Левентик (носом на ветер)`, `45° правого галса`, `Галфвинд правого галса`, `Бакштаг правого галса`, `Фордевинд (175°)` | «бейдевинд правого галса» [R1] p. 24 |
+| tack (manoeuvre) / gybe | поворот оверштаг / поворот фордевинд | the autopilot buttons: `Поворот` (pinned) and `Фордевинд` |
+| accidental / controlled gybe | неуправляемый / управляемый поворот фордевинд | |
+| by the lee | ветер с подветренного борта | `alert.byTheLee`: `Ветер с подветренного борта: опасность поворота фордевинд` |
+| GYBE! / ROUND-UP (alerts) | ФОРДЕВИНД! / БРОЧИНГ | capitals as in English; `ROUND-UP` follows 9.2.1 |
+| heel | крен | `Крен {deg}° {side}` |
+| heading / HDG | курс / КУРС | |
+| AUTO | АВТО | |
+| True / App (strip) | Ист. / Вымп. | |
+| true wind / apparent wind | истинный ветер / вымпельный ветер | [R4] |
+| no-go zone | мёртвая зона | glossary name |
+| telltales / streaming | колдунчики / вытянуты назад | glossary name |
+| luffing (a sail) / stalled / blanketed | полощет / срыв потока / в ветровой тени грота | [R4] *Курс относительно ветра* («полощут»), [R2] p. 38 («в ветровой тени грота») |
+| flogging / wear | полоскание / износ | |
+| kn | уз | 3.1 |
+| Beaufort {force} | `по Бофорту: {force}` | no noun after a number (3.3) |
+| gust / lull / shift | порыв / ослабление ветра / смена направления ветра | glossary names; `GUST` → `ПОРЫВ` (pinned) |
+| waves: Flat / Sheltered / Coastal / Open sea | Гладкая вода / Закрытая бухта / У берега / Открытое море | `Открытое море` pinned |
+| engine Ahead / Neutral / Astern | Вперёд / Нейтраль / Назад | `engine.gear.astern`: `Передача: задний ход, винт толкает яхту назад` |
+| engine lever / rpm | рукоятка газ-реверс / об/мин | glossary name; 3.1 |
+| propeller | гребной винт | [R1] p. 29 |
+| autopilot Standby / Heading / Wind | Ожидание / Курс / Ветер | |
+| Held still | Яхта стоит | |
+| tabs Ropes / Wind / View / Learn | Концы / Ветер / Вид / Обучение | `Концы` and `Ветер` pinned (M22); `Обучение`: this plan's choice |
+| Learn-tab labels | `learn.alternatives`: `Также называют: {terms}`; `learn.textDraft`: `Этот перевод ещё не проверен моряком.` | the M23 checklist in WORKFLOW quotes them |
 
 ### 9.3 Model and app
 
@@ -2271,6 +2394,7 @@ New keys in **both** `ui.json` files:
 5. Every `GROUPS` group has a `learn.group.<group>` key, every distinct registry `kind` a `learn.kind.<kind>` key, every key of the registry's `statusValues` a `learn.status.<status>` key, every area id (`AREAS`) an `area.<id>` key.
 6. `t()` after `setLanguage('ru')` returns the Russian text; `setLanguage('xx')` gives English; `part('rope_vang')` in `ru` has the name `оттяжка гика`; `formatThousands(2500)` is `2,500` in `en` and `2 500` in `ru`. Reset the language to `en` after each test.
 7. URL (`tests/urlState.test.ts`): `?lang=ru` → `settings.language` `ru`; `?lang=xx` → `en`; serialize writes `…&detail=low&lang=ru…` and nothing for `en`; `reset` keeps `ru`; existing URL tests pass unchanged.
+8. **Checked Russian names (9.2.1)** (`tests/languages.test.ts`): for the seven ids of the name-change table, `glossaryText(id, 'ru')` has the new `name` and exactly the given `alternatives`; each added alternative of 9.2.1 is in its entry's `alternatives` (same `term` and `note`). No Russian `name`, `short`, `what`, `onThisBoat`, `mistakes` or `showMe` of any entry matches `/генакер|закруточн|рифлени|гусёк/i` (the words may stay only as alternatives). For `close_hauled`, `close_reach`, `beam_reach`, `broad_reach` and `run`, the `ru` value of `pos.<key>` is the Russian `name` of `term_<key>` with its first letter in upper case; `tab.view` is `Вид` and `tab.learn` is `Обучение`.
 
 ### 9.7 Browser checks (`scripts/shots-m23.mjs`)
 
@@ -2281,8 +2405,9 @@ Live checks (`liveM23Checks`, phone):
 3. **Clipping:** in the same views (the map included), every `button`, `.segment`, `.tab` and `label` whose bounding box is at least 2 × 2 px, that is not inside `[hidden]` or `[aria-hidden="true"]` and is not `.visually-hidden`: `scrollWidth <= clientWidth + 1`.
 4. Open the View tab; click the `label.segment` that contains `[data-testid="language-en"]` (the radio itself is invisible) → the page reloads; the address bar has no `lang`; `#tab-ropes` reads "Ropes". Open the View tab again and choose Русский the same way → reloads with `lang=ru`.
 5. `?lang=ru&learn=term_north`: `learn-name` is `север`; `learn-alternatives` contains `норд`; `learn-text-status` is visible. Search `норд` from the groups → `learn-hit-term_north`.
-6. `?lang=ru&learn=rope_vang`: set `window.__m23 = 1`, tap `learn-show-me`, then Back → the address bar keeps `lang=ru` both times, and `window.__m23` is still 1 (no reload).
-7. `auditPage` on the Learn tab and the View tab in Russian: clean.
+6. `?lang=ru&learn=sail_gennaker`: `learn-name` is `геннакер`, `learn-alternatives` contains `генакер`; `?lang=ru&learn=term_round_up`: `learn-name` is `брочинг`.
+7. `?lang=ru&learn=rope_vang`: set `window.__m23 = 1`, tap `learn-show-me`, then Back → the address bar keeps `lang=ru` both times, and `window.__m23` is still 1 (no reload).
+8. `auditPage` on the Learn tab and the View tab in Russian: clean.
 
 ### 9.8 Done when
 
@@ -2376,4 +2501,4 @@ Decided in planning: the registry keeps only language-neutral facts and each lan
 
 **Phase 3 leftover (owner, Q11 accepted: checked by this plan).** M15 turns the bow towards the side the boat rolls down to (`waveYawDeg = +5 × roll × factor`, PHASE3_SPEC 7.10). Wikipedia, *Broach (nautical)* (read 2026-10-14): a broach is "an abrupt, involuntary change in a vessel's course, towards the wind", which happens "when the stern is lifted in the water by an overtaking wave", leaving the vessel "beam-on to the sea". With wind and waves from the starboard quarter, the crest under the starboard quarter lifts that side, so she rolls to port (port rail down), and the source says the bow then goes towards the wind, to starboard: towards the side rolling **up**. The heeled-boat rule of PT-29/PT-32 (a boat heeled to leeward turns towards the wind) points the same way. So the sign in `waveYawDeg` looks **backwards**. Recommended fix, outside Phase 4: a small `/bug` PR after M19 is merged that flips the sign of `waveYawDeg` (`src/model/waveMotion.ts`) and its value test in `tests/waveFeedback.test.ts` (+10.0° becomes −10.0°), runs the PT-42 band tests (they measure spreads, which the sign does not change), and adds `wiki:broach` as a source to PT-42 in `PHYSICS_TRUTHS.md`.
 
-Open (none blocks a milestone): every Russian name, alternative and note is a draft for a Russian-speaking sailor (the Russian Wikipedia was not reachable to check the Dutch origins); `term_ahead`, `term_astern`, `term_heading`, `term_knot`, `term_gust`, `term_lull`, `term_wind_shift`, `term_head_up`, `term_bear_away` have no source yet (fact status `draft`, shown as such).
+Open (none blocks a milestone): every Russian text is a draft for a Russian-speaking sailor. The Russian names were checked against a yacht school's textbooks, Russian Wikipedia and dictionaries on 2026-10-14 (3.6, 9.2.1), and the Dutch origins are confirmed; the names no source uses (for example «твист», «колдунчики», «мёртвая зона», «стопор») wait for the sailor; `term_ahead`, `term_astern`, `term_heading`, `term_knot`, `term_gust`, `term_lull`, `term_wind_shift`, `term_head_up`, `term_bear_away` have no source yet (fact status `draft`, shown as such).
