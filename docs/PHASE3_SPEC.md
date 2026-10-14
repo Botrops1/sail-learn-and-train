@@ -1,6 +1,6 @@
 # Phase 3 specification: basic environment
 
-Status: **planned**, owner's answers recorded (outline and planning PR #41, 2026-10-13) · Last updated: 2026-10-13
+Status: **M14–M19 built** (M19 in PR #51), waiting for the owner's sign-off · Last updated: 2026-10-14
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1 and 2 are done; [`PHASE1_SPEC.md`](PHASE1_SPEC.md) and [`PHASE2_SPEC.md`](PHASE2_SPEC.md) still describe everything Phase 3 builds on (layout, rig solver, boat motion, heel, wind modes, time bar, URL state). This file says only what Phase 3 adds or changes. Boat facts: [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md) and [`content/boat/hanse508.json`](../content/boat/hanse508.json). Behaviour rules: [`PHYSICS_TRUTHS.md`](PHYSICS_TRUTHS.md).
 
@@ -1066,7 +1066,8 @@ What the spec left open (decided in the M19 PR):
 1. **`SCENE.performance` is read in `waterSurface.ts`:** `half` and `fadeStart` are set per detail in `setDetail` (High keeps `SCENE.water.waves`, Low uses `innerHalfSizeLowM` and `fadeStartLowM`). The outer water's colours are recomputed when something changed (wind, night, a gust profile, a rebuild) and written on a frame whose counter is a multiple of `outerColoursEveryNthFrame`; a change that arrives on a skipped frame is kept (`outerPending`) and written on the next due frame. With the value 1 nothing differs from M18. `scene.ts` needed no change (the reflections already read `SCENE.reflections.minIntervalS`).
 2. **Browser checks:** no screenshot scenes (`M19_SCENES` is empty). `liveM19Checks` audits the Wind tab with the Waves block, the clock chip, the open clock card, the View tab with the Clock switch and the map zoomed out to 2 m/px (all clean on the first run, nothing to fix), and runs the 8 ms guard on the heaviest case at both details on the phone and the foldable size (step 1.2–1.6 ms).
 3. **PT-43 and PT-45 sources, tried again:** search summaries only; the pages could not be opened from the cloud environment (DNS failure on `glossary.ametsoc.org` and `baynature.org`), so both rules stay `to-verify` (PHYSICS_TRUTHS notes the new candidates).
-4. **Not done by the agent:** the phone measurement (FPS, Slowest), "the boat stays readable at night" and the direction the waves turn the bow (7.10) are left to the owner and to `/plan` or a sailor, as 11.5 says.
+4. **Owner's answers on the PR (2026-10-14):** the phone measures 60 FPS and 17 ms for the slowest frame in the heaviest case, so none of the three speed steps is applied (the values in 11.2 stay). The direction the waves turn the bow (7.10) stays as built until the skipper or `/plan` checks it; PT-43 and PT-45 stay `to-verify`; Phase 3 is Done when the owner has ticked the night check and said "Phase 3 signed off".
+5. **Not done by the agent:** the phone measurement (FPS, Slowest), "the boat stays readable at night" and the direction the waves turn the bow (7.10) are left to the owner and to `/plan` or a sailor, as 11.5 says.
 
 ---
 
