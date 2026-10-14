@@ -406,7 +406,7 @@
       "mistakes": [
         {
           "mistake": "Reading a wind direction as where the wind blows to.",
-          "fix": "A wind “from 060°” blows from the north-east towards the south-west."
+          "fix": "A wind “from 060°” blows from the east-north-east towards the west-south-west."
         }
       ],
       "showMe": "Wind 12 kn from 060°: the streaks show it blowing past the boat. Turn the dial in the Wind tab to change it.",
