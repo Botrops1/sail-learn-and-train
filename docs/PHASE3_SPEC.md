@@ -906,7 +906,17 @@ No new sky colours, stars or sun glow in the right place (M18). No moon. Winds d
 
 ### 9.12 Decided in the M17 PR
 
-(Filled in by the M17 builder: what this section left open, and the owner's answers on the PR.)
+What the spec left open (decided in the M17 PR):
+
+1. **`isClockTime(utcMs)`** (in `clock.ts`): what `setClock` checks (finite, inside JavaScript's date range, local year 1900–2100). The 9.3 list did not name it.
+2. **Night water keeps its wind colours dark.** 9.6 lerps only the base colour to `nightWater` and then darkens it towards `windyColor` (`#16586a`), which is lighter than `nightWater` and would light the water at night in wind. So the wind, gust and lull colours are lerped to `nightWater` by `night` too before they are applied (`waterSurface.ts`).
+3. **Two more `SCENE.daylight` keys:** `minLightElevationDeg: 2` (the 2° of 9.6) and `shadowMinSun: 0.05` (the "`sun > 0.05`" of 9.6), so no number is left in `scene.ts` or `daylight.ts`.
+4. **The clock card scrolls** (`max-height` to the bottom of the view, `overflow-y: auto`): on a phone in portrait the 3D view is about 430 px high and the card is taller.
+5. **Debug row `sun`** shows the short light name (`Day`, `Low sun`, `Twilight`, `Night`: the text before the bracket).
+6. **Browser check recipe:** the luminance is measured over the right-hand 30 % of the canvas (between the strip and the camera buttons), because a screenshot of the canvas also contains the DOM overlays on top of it (strip, chips, labels), which are equally bright by night and day.
+7. **`setClock` ignores a time equal to the current one** (the state stays the same object).
+
+Owner's answers on the PR: (none yet)
 
 ---
 

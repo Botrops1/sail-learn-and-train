@@ -33,6 +33,7 @@ import { liveM13Checks, M13_SCENES } from './shots-m13.mjs';
 import { liveM14Checks, M14_SCENES } from './shots-m14.mjs';
 import { liveM15Checks, M15_SCENES } from './shots-m15.mjs';
 import { liveM16Checks, M16_SCENES } from './shots-m16.mjs';
+import { liveM17Checks, M17_SCENES } from './shots-m17.mjs';
 
 const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
 const PREFIX = process.env.SHOTS_PREFIX ?? '';
@@ -158,6 +159,7 @@ const SCENES = [
   ...M14_SCENES.map((scene) => ({ ...scene, name: `m14-${scene.name}` })),
   ...M15_SCENES.map((scene) => ({ ...scene, name: `m15-${scene.name}` })),
   ...M16_SCENES.map((scene) => ({ ...scene, name: `m16-${scene.name}` })),
+  ...M17_SCENES.map((scene) => ({ ...scene, name: `m17-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -257,6 +259,11 @@ async function openPage(viewport, label, query) {
   // flat water (the boat would rock under the tap sweeps), unless it is about the waves itself.
   if (!/m1[4-9]/.test(label) && !/[?&]sea=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}sea=flat`;
+  }
+  // Since M17 the clock chip shows. Everything older hides it, so the tap sweeps do not open
+  // the clock card.
+  if (!/m1[7-9]/.test(label) && !/[?&]clock=/.test(query)) {
+    url += `${url.includes('?') ? '&' : '?'}clock=0`;
   }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
@@ -539,7 +546,7 @@ async function liveGeneralChecks() {
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
   await page.getByRole('button', { name: 'Top', exact: true }).click();
   // The phone-sized screen starts at low detail (M3b).
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1&sea=flat`);
+  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -547,20 +554,20 @@ async function liveGeneralChecks() {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1&sea=flat`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
   await page.getByRole('tab', { name: 'View' }).click();
   await page.getByText('Side (starboard)', { exact: true }).click();
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
   await expectUrl(
     'View tab',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&clock=0&debug=1`,
   );
   // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
   await page.getByText('High', { exact: true }).click();
   await expectUrl(
     'Detail high',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&held=1&sea=flat&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&held=1&sea=flat&clock=0&debug=1`,
   );
   await page.waitForTimeout(1500);
   const overlay = await page.getByTestId('debug-overlay').innerText();
@@ -573,7 +580,7 @@ async function liveGeneralChecks() {
   await page.getByText('Low', { exact: true }).click();
   await expectUrl(
     'Detail low',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&clock=0&debug=1`,
   );
   await context.close();
 
@@ -775,6 +782,7 @@ try {
     m14: () => liveM14Checks(live),
     m15: () => liveM15Checks(live),
     m16: () => liveM16Checks(live),
+    m17: () => liveM17Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

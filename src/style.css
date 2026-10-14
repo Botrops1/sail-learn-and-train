@@ -2660,6 +2660,8 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 /* The clock (M17, PHASE3_SPEC 9.5): a chip beside the time bar and a card under the top area. */
 .clock-chip {
   flex: 0 0 auto;
+  /* Alone on a row (under the time bar on a phone) it sits at the right. */
+  margin-left: auto;
   min-width: var(--touch);
   min-height: var(--touch);
   padding: 4px 12px;
@@ -2692,6 +2694,9 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   top: calc(var(--view-top-h, 64px) + 4px);
   right: 8px;
   max-width: min(320px, calc(100% - 16px));
+  /* A short phone view: the card scrolls instead of running past the view's bottom edge. */
+  max-height: calc(100% - var(--view-top-h, 64px) - 12px);
+  overflow-y: auto;
   padding: 10px 52px 10px 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
