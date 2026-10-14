@@ -218,7 +218,7 @@ html[data-layout='stacked'] .info-area {
 }
 
 html[data-layout='stacked'] .info-card {
-  max-height: 104px;
+  max-height: 140px;
   overflow-y: auto;
   border-bottom: 1px solid var(--line);
   background: var(--accent-soft);

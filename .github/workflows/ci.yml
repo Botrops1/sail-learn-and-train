@@ -50,7 +50,9 @@ jobs:
           - part: live, M4c
             env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4c
           - part: live, Phase 2 on
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c,m20,m21,m22,m23,m24
+          - part: live, Phase 4
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m20,m21,m22,m23,m24
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

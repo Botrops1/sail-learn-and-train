@@ -697,6 +697,10 @@ No list or search (M21). No Russian on screen (M23): the Russian glossary is wri
 
 (The builder adds what it decided here; the owner's answers on the PR are added below.)
 
+- **Info card height (decided in the M20 PR).** In the stacked layout the card's maximum height went from 104 px to 140 px, so the 44 px "More" button under a two-line one-liner is not cut off. A longer one-liner still scrolls inside the card.
+- **Russian text (decided in the M20 PR).** The 18 Russian entries are drafts written from the English, with the given names and alternatives; sentences that mention a sailing term that has its own Russian name use that name (`оттяжка гика`, `топенант`, `колдунчики`, `стопор`, `лебёдка`). All stay `textStatus: "draft"`. Nothing Russian is shown on screen before M23.
+- **One-off migration.** The registry and both glossaries were produced from the old registry and the spec's text by a script that is not committed; the English entries of the 18 M20 ids are the spec's text unchanged (copied by the script, not retyped).
+
 ---
 ## 7. M21: Glossary and search
 
