@@ -66,3 +66,19 @@ describe('groupEntries (PHASE4_SPEC 7.3, 7.6)', () => {
     expect(ids[ids.length - 1]).toBe('rope_vang');
   });
 });
+
+describe('searchGlossary, M22 words (PHASE4_SPEC 8.5)', () => {
+  it('Russian alternatives are found: норд → term_north, бакборт → term_port', () => {
+    const north = searchGlossary('норд', 'ru').find((hit) => hit.id === 'term_north');
+    expect(north?.matched).toBe('норд');
+    expect(searchGlossary('бакборт', 'ru').map((hit) => hit.id)).toContain('term_port');
+  });
+
+  it('"jibe" finds the gybe', () => {
+    expect(searchGlossary('jibe').map((hit) => hit.id)).toContain('term_gybe');
+  });
+
+  it('English words are not found in Russian', () => {
+    expect(searchGlossary('north', 'ru')).toEqual([]);
+  });
+});
