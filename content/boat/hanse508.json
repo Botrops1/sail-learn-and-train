@@ -1614,6 +1614,10 @@
       "coverageByWindKn": [[0, 0], [7, 0], [10, 0.02], [16, 0.06], [21, 0.12], [27, 0.2], [33, 0.3], [40, 0.4]],
       "crestEdgeFactor": 1.3,
       "crestEdgeWidth": 0.1,
+      "patchSizeM": 3,
+      "patchFrom": 0.6,
+      "patchTo": 0.72,
+      "patchNote": "assumption (owner, M16 PR: the crests looked far too big): real white horses are scattered foam patches a few metres across, not whole crest lines. The crest band above is only white where a fixed random pattern on the map (value noise, features about patchSizeM across, white above patchFrom … patchTo) lets it, so about a fifth of the band shows at any time. At Low detail the patches are at least 1.5 vertex cells across.",
       "crestNote": "assumption: a point is white where the surface height, as a fraction of the sum of the trains' amplitudes, is above hi = 1 − crestEdgeFactor·√coverage (soft over crestEdgeWidth below it); with three trains this whitens about the coverage fraction of the surface (checked by a test)",
       "source": "Beaufort scale (Wikipedia): perhaps scattered white horses at force 3 (7–10 kn), fairly frequent at 4 (11–16 kn), many at 5 (17–21 kn), more extensive at 6 (22–27 kn), blown in streaks at 7 (28–33 kn). The coverage fractions are a teaching assumption (PT-44)."
     }

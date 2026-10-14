@@ -68,6 +68,8 @@ export const SCENE = {
     lullColor: '#5aa7bd',
     lullAmount: 0.3,
     whitecapColor: '#f2f6f7',
+    /** Foam never covers the water completely: the most a vertex turns white (owner, M16 PR). */
+    whitecapMax: 0.85,
   },
   /** The practice buoys (M16, PHASE3_SPEC 8.4). */
   marks: {

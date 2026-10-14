@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { AppState } from '../app/store';
 import { smoothstep } from '../model/angles';
+import { boat } from '../model/boat';
 import { modulo } from '../model/mapFrame';
 import { requirePartId } from '../model/registry';
 import type { Detail } from '../model/settings';
@@ -11,6 +12,7 @@ import {
   upwindDistanceM,
   whitecapAmount,
   whitecapCoverage,
+  whitecapPatch,
   type GustProfile,
 } from '../model/windOnWater';
 import { SCENE } from './sceneConfig';
@@ -281,6 +283,10 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
       const windDir = state.controls.ctl_wind_dir;
       const coverage = trains.length > 0 ? whitecapCoverage(windKn) : 0;
       const amplitudeSum = trains.reduce((sum, train) => sum + train.amplitudeM, 0);
+      const boatEast = state.boat.eastM;
+      const boatNorth = state.boat.northM;
+      // Patches are never smaller than 1.5 vertex cells, or they could not be drawn.
+      const patchSizeM = Math.max(boat.waves.whitecaps.patchSizeM, 1.5 * cell);
       /** Writes the colour of the vertex at a map offset from the boat (before any crest). */
       const tint = (east: number, north: number) => {
         colour.copy(windy);
@@ -359,8 +365,15 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
             }
             tint(east, north);
             if (heights) {
-              const white = f * whitecapAmount(eta, amplitudeSum, coverage);
-              if (white > 0) colour.lerp(whitecapColour, white);
+              // Foam only in scattered patches fixed on the map, not along whole crest lines.
+              const crest = f * whitecapAmount(eta, amplitudeSum, coverage);
+              if (crest > 0) {
+                const white =
+                  w.whitecapMax *
+                  crest *
+                  whitecapPatch(boatEast + east, boatNorth + north, patchSizeM);
+                if (white > 0) colour.lerp(whitecapColour, white);
+              }
             }
             innerColours[i] = colour.r;
             innerColours[i + 1] = colour.g;

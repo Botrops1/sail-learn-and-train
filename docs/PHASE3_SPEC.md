@@ -745,6 +745,8 @@ What the spec left open (decided in the M16 PR):
 - **Browser check on the map** opens with `debug=1` to read the boat's centre.
 - **PT-45 source.** A web search found sailing and weather pages that describe a cat's paw as a dark patch of ruffled water made by a gust (among them the AMS Glossary entry), but the glossary page could not be opened from the cloud environment and the others were not read in full, so the status stays `to-verify`.
 
+Owner's feedback after trying the preview (PR comment, 2026-10-14): **the white crests were far too big** (bands several boat lengths wide) and "is it realistic?". Decided in the M16 PR: no, it was not. Real white horses are scattered foam patches a few metres across, and measured cover is about 1 % of the sea at 20 kn. Fix (`whitecaps.patchSizeM` 3, `patchFrom` 0.6, `patchTo` 0.72; `SCENE.water.whitecapMax` 0.85; `whitecapPatch` in `windOnWater.ts`): the crest band of 8.3 is unchanged (so the spec's PT-44 test bands and `coverageByWindKn` hold as written), but a vertex only turns white where a fixed noise pattern on the map allows it (about a quarter of the band; patches at least 1.5 vertex cells across, so 6 m at Low detail), and never fully white (85 %). The foam seen is about 2 % of the sea at 16 kn, 4 % at 22 kn, 6 % at 27 kn. New tests in `tests/windOnWater.test.ts`; new browser scenes `water-windy-top` and the live shot `live-phone-foam-wide`.
+
 Owner's answer (PR comment, "accept all"): **the map keeps opening zoomed in close** (0.1 m per pixel); the buoys show after zooming out with −. No code change.
 
 ---

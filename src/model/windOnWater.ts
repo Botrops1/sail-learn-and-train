@@ -32,6 +32,38 @@ export function whitecapAmount(
   return smoothstep(hi - crestEdgeWidth, hi, eta / amplitudeSum);
 }
 
+/** A fixed pseudo-random number in [0, 1) for an integer lattice point. */
+function lattice(ix: number, iy: number): number {
+  let h = Math.imul(ix, 374761393) + Math.imul(iy, 668265263);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+/**
+ * Where the crests may show foam, 0 … 1: value noise on the map (fixed, so the foam does not swim
+ * with the boat) with features about `sizeM` across, thresholded between `patchFrom` and
+ * `patchTo`. Real white horses are scattered patches a few metres across, not whole crest lines
+ * (owner, M16 PR). `sizeM` defaults to `whitecaps.patchSizeM`.
+ */
+export function whitecapPatch(
+  eastM: number,
+  northM: number,
+  sizeM?: number,
+  data: BoatData = boat,
+): number {
+  const w = data.waves.whitecaps;
+  const size = sizeM ?? w.patchSizeM;
+  const x = eastM / size;
+  const y = northM / size;
+  const ix = Math.floor(x);
+  const iy = Math.floor(y);
+  const fx = smoothstep(0, 1, x - ix);
+  const fy = smoothstep(0, 1, y - iy);
+  const top = lattice(ix, iy) + (lattice(ix + 1, iy) - lattice(ix, iy)) * fx;
+  const bottom = lattice(ix, iy + 1) + (lattice(ix + 1, iy + 1) - lattice(ix, iy + 1)) * fx;
+  return smoothstep(w.patchFrom, w.patchTo, top + (bottom - top) * fy);
+}
+
 /** How far upwind a map offset lies (m): + = towards where the wind comes from. */
 export function upwindDistanceM(dEastM: number, dNorthM: number, windDirDeg: number): number {
   return dEastM * Math.sin(windDirDeg * DEG) + dNorthM * Math.cos(windDirDeg * DEG);

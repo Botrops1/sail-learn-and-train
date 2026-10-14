@@ -8,6 +8,7 @@ import path from 'node:path';
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M16_SCENES = [
   { name: 'water-windy', query: '?wd=90&ws=22&ms=50&js=100&sea=open&cam=side-port', waitMs: 3000 },
+  { name: 'water-windy-top', query: '?wd=90&ws=22&ms=50&js=100&sea=open&cam=top', waitMs: 3000 },
   { name: 'water-light', query: '?wd=90&ws=6&ms=50&js=100&cam=side-port', waitMs: 3000 },
   { name: 'buoy-ahead', query: '?wd=90&ws=12&ms=40&js=100&held=1&cam=helm', waitMs: 3000 },
   { name: 'horizon', query: '?wd=90&ws=12&cam=side-starboard', waitMs: 3000 },
@@ -97,6 +98,25 @@ export async function liveM16Checks({ openPage, viewports, outDir, prefix, probl
       const name = await cardName(page);
       check('tap on the buoy in 3D', name === 'Practice buoy', JSON.stringify(name));
     }
+    await context.close();
+  }
+
+  // White horses are scattered patches, not big bands (owner, M16 PR): a wide view from above,
+  // for the eye. The check only makes sure the view could be taken.
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm16 foam wide',
+      '?wd=90&ws=22&ms=50&js=100&sea=open&debug=1',
+    );
+    await page.waitForTimeout(2500);
+    await page.evaluate(() => window.__sailDebug.setView([-40, 100, 80], [20, 0, -10]));
+    await page.waitForTimeout(800);
+    await page.evaluate(() => {
+      const overlay = document.querySelector('[data-testid="debug-overlay"]');
+      if (overlay) overlay.style.display = 'none';
+    });
+    await shot(page, 'live-phone-foam-wide');
     await context.close();
   }
 }

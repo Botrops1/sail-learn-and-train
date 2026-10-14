@@ -1,12 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { initialState } from '../src/app/store';
 import {
-  whitecapAmount,
   buoyOffsets,
   gustAt,
   gustProfile,
   upwindDistanceM,
+  whitecapAmount,
+  whitecapCoverage,
+  whitecapPatch,
 } from '../src/model/windOnWater';
+import { elevation, initialSea, waveTrains } from '../src/model/waves';
 import { initialWindMode } from '../src/model/windModes';
 
 /** M16 (PHASE3_SPEC 8.7): the model behind the wind on the water and the buoys. */
@@ -73,5 +76,71 @@ describe('buoyOffsets', () => {
     expect(offsets.map((o) => o.id)).toEqual(['N', 'E', 'S', 'W']);
     expect(offsets[0]).toMatchObject({ id: 'N', dEastM: -50, dNorthM: 220 });
     expect(offsets[1]).toMatchObject({ id: 'E', dEastM: 150, dNorthM: 20 });
+  });
+});
+
+describe('whitecapPatch (foam in scattered patches, owner M16 PR)', () => {
+  it('is always between 0 and 1 and the same for the same place', () => {
+    for (let i = 0; i < 500; i += 1) {
+      const east = ((i * 37.3) % 400) - 200;
+      const north = ((i * 91.7) % 400) - 200;
+      const value = whitecapPatch(east, north);
+      expect(value).toBeGreaterThanOrEqual(0);
+      expect(value).toBeLessThanOrEqual(1);
+      expect(whitecapPatch(east, north)).toBe(value);
+    }
+  });
+
+  it('lets foam show on about a fifth of the sea, in patches a few metres across', () => {
+    let shown = 0;
+    let total = 0;
+    for (let east = 0; east < 300; east += 0.5) {
+      for (let north = 0; north < 300; north += 0.5) {
+        total += 1;
+        if (whitecapPatch(east, north) > 0.5) shown += 1;
+      }
+    }
+    expect(shown / total).toBeGreaterThan(0.1);
+    expect(shown / total).toBeLessThan(0.3);
+    // Points 5 cm apart hardly differ: the patches have edges, they are not speckle.
+    let jump = 0;
+    for (let east = 0; east < 100; east += 1) {
+      jump = Math.max(jump, Math.abs(whitecapPatch(east, 10) - whitecapPatch(east + 0.05, 10)));
+    }
+    expect(jump).toBeLessThan(0.5);
+  });
+
+  it('a larger size makes larger patches', () => {
+    const run = (size: number) => {
+      let length = 0;
+      let longest = 0;
+      for (let east = 0; east < 600; east += 0.25) {
+        if (whitecapPatch(east, 5, size) > 0.5) length += 0.25;
+        else {
+          longest = Math.max(longest, length);
+          length = 0;
+        }
+      }
+      return longest;
+    };
+    expect(run(12)).toBeGreaterThan(run(3));
+  });
+
+  it('the visible foam in 22 kn Open sea waves is a few per cent of the sea', () => {
+    const trains = waveTrains(initialSea('open', { dirDeg: 0, twsKn: 22 }));
+    const phases = [0, 2.1, 4.2];
+    const sum = trains.reduce((total, train) => total + train.amplitudeM, 0);
+    const coverage = whitecapCoverage(22);
+    let white = 0;
+    for (let east = 0; east < 200; east += 1) {
+      for (let north = 0; north < 200; north += 1) {
+        const crest = whitecapAmount(elevation(trains, phases, east, north), sum, coverage);
+        if (crest * whitecapPatch(east, north) > 0.5) white += 1;
+      }
+    }
+    // Measured sea: about 1 to 2 % at this wind (Monahan and O'Muircheartaigh 1980, from
+    // search summaries; to-verify); the teaching sea shows a few times more so it can be seen.
+    expect(white / 40_000).toBeGreaterThan(0.015);
+    expect(white / 40_000).toBeLessThan(0.06);
   });
 });
