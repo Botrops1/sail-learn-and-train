@@ -691,7 +691,7 @@ All M20 checks in `WORKFLOW.md` (section 9) pass on the phone; the tests above p
 
 ### 6.11 Not in M20
 
-No list or search (M21). No Russian on screen (M23): the Russian glossary is written but not shown. No texts for other entries (M21, M22). `CLAUDE.md`: only the "IDs" bullet changes, to: `**IDs:** every mesh and rope gets an id from content/registry/parts.json; a rope control uses its rope's id (no registry entry of its own). Add new ids to the registry first, with status: "draft", and give them an entry in every content/lang/<code>/glossary.json.`
+No list or search (M21). No Russian on screen (M23): the Russian glossary is written but not shown. No texts for other entries (M21, M22). `CLAUDE.md`: only the "IDs" bullet changes, to: `**IDs:** every mesh and rope gets an id from content/registry/parts.json; a rope control uses its rope's id (no registry entry of its own). Add new ids to the registry first, with status: "draft" unless the spec gives a status backed by the sources it cites, and give them an entry in every content/lang/<code>/glossary.json.`
 
 ### 6.12 Decided in the M20 PR
 
@@ -1504,7 +1504,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
 | `term_reef` | — | `rope_main_furling_line`, `rope_jib_furling_line`, `term_heel` | `?wd=90&ws=12&ms=40&mf=50&cam=side-port&held=1&sea=flat` |
 | `term_preventer` | — | `term_gybe`, `env_boom_danger_zone`, `part_boom` | — |
 
-**The 33 new ids** (insert after `term_preventer`, one per line; `"kind": "term"`, `"phase": 4`, no `boatLabel`, no `controls`):
+**The 33 new ids** (insert after `term_preventer`, one per line; the statuses given here are backed by the cited sources and override CLAUDE.md's default `draft`; `"kind": "term"`, `"phase": 4`, no `boatLabel`, no `controls`):
 
 | id | group | status | sources | related | showMe |
 |---|---|---|---|---|---|
@@ -2100,7 +2100,7 @@ These are drafts for the Russian-speaking reviewer (M24). The notes on Dutch ori
 
 Russian notes may contain a Latin word only where it names the original foreign word: exactly the words of `content/lang/latin-words.json` (9.2) after `CEST`; M23's Latin-letter check allows exactly those.
 
-The Russian texts of these 58 entries are written by you (3.3). Several English texts quote UI labels (“Tack”, “Waves”, “Open sea”, GUST, the Ropes tab, the Wind tab); the Russian UI is written only in M23, so choose the Russian wording for each quoted label, use it the same way everywhere, and list it in "Decided in the M22 PR" (M23 must use the same words; its test checks it). `term_wind_shift`: the Russian alternatives (заходит / отходит: towards the bow / the stern) are not the same idea as the English veer / back (clockwise / anticlockwise); that is correct for each language, and the review document will show it.
+The Russian texts of these 58 entries are written by you (3.3). Several English texts quote UI labels (“Tack”, “Waves”, “Open sea”, GUST, the Ropes tab, the Wind tab); the Russian UI is written only in M23, so choose the Russian wording for each quoted label, use it the same way everywhere, and record it as an exported constant in `tests/glossary.test.ts`: `export const QUOTED_UI_LABELS: Record<string, string>` with the keys `autopilot.tack`, `waves.label`, `waves.open`, `instruments.gust`, `tab.ropes`, `tab.wind` and your Russian wording as values (check the exact key names in `content/lang/en/ui.json`; use the key whose English value is the quoted label). A test asserts that every Russian glossary text quoting one of these labels contains its wording. List it in "Decided in the M22 PR" too. `term_wind_shift`: the Russian alternatives (заходит / отходит: towards the bow / the stern) are not the same idea as the English veer / back (clockwise / anticlockwise); that is correct for each language, and the review document will show it.
 
 ### 8.5 Tests
 
@@ -2147,7 +2147,7 @@ No Russian on screen (M23). No pictures. No rules of the road (later "Navigation
 ### 9.1 Files
 
 New: `content/lang/ru/ui.json`, `content/lang/latin-words.json`, `src/model/languages.ts`, `tests/languages.test.ts`, `scripts/shots-m23.mjs`.
-Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json` (`names`, `namesStatus` removed), `src/model/settings.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/i18n.ts`, `src/ui/panel.ts`, `src/ui/learnTab.ts`, `src/ui/clockPanel.ts`, `src/ui/enginePanel.ts`, every file in `src/ui` that calls `partInfo` (`clutchDrawing.ts`, `infoCard.ts`, `labels3d.ts`, `realisticPanel.ts`, `ropeControls.ts`, `ropesTab.ts`, `stationDrawing.ts`: 8 call sites, the complete set), `src/ui/mapView.ts` (scale and buoy letters, 9.3), `content/lang/ru/glossary.json` (only if the Latin rule of 9.6 finds something), `tests/urlState.test.ts` (new cases), `tests/i18n.test.ts` (iterates every language of `UI_STRINGS`), `scripts/shots.mjs`, `docs/CODE_MAP.md`. The `Language` type in `i18n.ts` is removed (codes are strings). `AreaData` (`typeof adriatic`) loses `names`; its only user is `clockPanel.ts`.
+Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json` (`names`, `namesStatus` removed), `src/model/settings.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/i18n.ts`, `src/ui/panel.ts`, `src/ui/learnTab.ts`, `src/ui/clockPanel.ts`, `src/ui/enginePanel.ts`, every file in `src/ui` that calls `partInfo` (`clutchDrawing.ts`, `infoCard.ts`, `labels3d.ts`, `realisticPanel.ts`, `ropeControls.ts`, `ropesTab.ts`, `stationDrawing.ts`: 10 call sites in these 7 files, the complete set), `src/ui/mapView.ts` (scale and buoy letters, 9.3), `content/lang/ru/glossary.json` (only if the Latin rule of 9.6 finds something), `tests/urlState.test.ts` (new cases), `tests/i18n.test.ts` (iterates every language of `UI_STRINGS`), `scripts/shots.mjs`, `docs/CODE_MAP.md`. The `Language` type in `i18n.ts` is removed (codes are strings). `AreaData` (`typeof adriatic`) loses `names`; its only user is `clockPanel.ts`.
 
 ### 9.2 Data
 
@@ -2213,7 +2213,7 @@ export function formatThousands(value: number): string;
 - **Map:** the scale bar text uses a new key `map.scale` (`{metres} m` / `{metres} м`); the buoys' letters on the map are drawn through `wind.dial.north`, `wind.dial.east`, `wind.dial.south`, `wind.dial.west` (the area file keeps `N`/`E`/`S`/`W` as ids).
 - **Engine:** the tachometer's aria label also passes its `rpm` through `formatThousands`.
 - **Learn tab:** every call of `learnEntry`, `glossaryText`, `searchGlossary` and `groupEntries` in `learnTab.ts` passes `currentLanguage()`.
-- **Strings that must be translated, not kept:** every visible English word that is not in `latin-words.json` or a boat label, including the strip's `HDG`, `AUTO`, `App`, the alerts `GUST`, `GYBE`, `ROUND UP`, the `OPEN` badge, and `Beaufort`. **The debug overlay stays English** (a developer tool): its `debug.*` keys may stay English in `ru`, and the overlay is not scanned.
+- **Strings that must be translated, not kept:** every visible English word that is not in `latin-words.json` or a boat label, including the strip's `HDG`, `AUTO`, `App`, the strip's `GUST` (`instruments.gust`), the alerts `GYBE` and `ROUND-UP` (`alert.*`), the `OPEN` badge, and `Beaufort`. **The debug overlay stays English** (a developer tool): its `debug.*` keys may stay English in `ru`, and the overlay is not scanned.
 - `t(`area.${area.id}` as StringKey)` (a template key needs the cast, as elsewhere).
 
 ### 9.4 UI
@@ -2242,7 +2242,7 @@ New keys in **both** `ui.json` files:
 1. `LANGUAGES` is `['en', 'ru']`; `languageName('ru')` is `Русский`.
 2. Every language's `ui.json` has exactly the keys of `en`, every value non-empty (`trim()` for all keys except `number.thousandsSeparator`, which only needs `length > 0`: `trim()` removes U+00A0), and for every key the same set of `{placeholders}` as `en`. `tests/i18n.test.ts` applies its non-empty check the same way to every language.
 3. **Latin scan**, for every language whose `language.name` has no Latin letter (today `ru`): in every `ui.json` value except the `debug.*` keys, and every glossary text field (`name`, alternatives' `term` and `note`, `short`, `what`, `onThisBoat`, `mistakes`, `showMe`): remove `{placeholders}` (`/\{\w+\}/g`), normalise to NFC, then every run of 2 or more Latin letters (`/[A-Za-zÀ-ÿ&]{2,}/g`) must be in `latinAllowed()` (compared case-insensitively; boat-label words are `label.match(/[A-Za-zÀ-ÿ&]+/g)`). The `ru` values identical to English (`ui.json` only, `debug.*` not counted) are fewer than 20 and each is listed in the test with its reason (known: `view.step.option`, `instruments.timeScale`, `instrument.aws`, `instrument.tws`, `real.gearbox.in`, `real.gearbox.out`). If the scan finds Latin words in the M20–M22 Russian glossary texts, translate them; add a word to `latin-words.json` only for a quoted foreign word in an alternative's note or a maker's name, and list additions in 9.10.
-4. The Russian wording M22 chose for the UI labels its texts quote ("Decided in the M22 PR") occurs in the `ru` values of those labels' keys (`autopilot`'s Tack button, `waves.label`, `waves.open`, the GUST alert, `tab.ropes`, `tab.wind`); if a better Russian label is chosen in M23, change the glossary texts to match in the same PR.
+4. For every key of `QUOTED_UI_LABELS` (M22, `tests/glossary.test.ts`), the `ru` value of that key contains the recorded wording; if M23 chooses a better Russian label, it changes the constant and the glossary texts to match in the same PR.
 5. Every `GROUPS` group has a `learn.group.<group>` key, every distinct registry `kind` a `learn.kind.<kind>` key, every key of the registry's `statusValues` a `learn.status.<status>` key, every area id (`AREAS`) an `area.<id>` key.
 6. `t()` after `setLanguage('ru')` returns the Russian text; `setLanguage('xx')` gives English; `part('rope_vang')` in `ru` has the name `оттяжка гика`; `formatThousands(2500)` is `2,500` in `en` and `2 500` in `ru`. Reset the language to `en` after each test.
 7. URL (`tests/urlState.test.ts`): `?lang=ru` → `settings.language` `ru`; `?lang=xx` → `en`; serialize writes `…&detail=low&lang=ru…` and nothing for `en`; `reset` keeps `ru`; existing URL tests pass unchanged.
@@ -2252,8 +2252,8 @@ New keys in **both** `ui.json` files:
 Labels contain `m23` (so `openPage` adds `held=1&sea=flat&clock=0` unless the query has them). Scenes (`M23_SCENES`, every size, all with `lang=ru`; tabs opened with the scene loop's `tab` option, by the tab's Russian name): `ru-ropes` `?lang=ru&wd=90&ws=12&sel=rope_vang`; `ru-wind` `?lang=ru&wd=90&ws=12` on the Wind tab; `ru-view` the same on the View tab; `ru-map` `?lang=ru&wd=90&ws=12&cam=map`; `ru-learn` `?lang=ru&learn=rope_vang`; `ru-realistic` `?lang=ru&mode=realistic`; `ru-clock` `?lang=ru&clock=1`, then tap `clock-chip` (the card open). `clock=1` is not a link key (it is ignored), but its presence stops `openPage` from adding `clock=0`.
 Live checks (`liveM23Checks`, phone):
 1. `?lang=ru`: `html[lang="ru"]`; the four tabs read the `ru` values of `tab.*`; `language-ru` is checked.
-2. **Latin scan:** for each tab of `?lang=ru&wd=90&ws=12` (Ropes, Wind, View, Learn with `learn=rope_vang`), for `?lang=ru&mode=realistic` and for `?lang=ru&cam=map`: every visible text node not inside `a`, `input`, `textarea`, `[data-testid="build-version"]` or the debug overlay (debug off): each run of 2+ Latin letters is in the allowed set (`latin-words.json` plus the boat-label words, passed in from Node, compared case-insensitively). Also: no “ or ” (U+201C, U+201D) in any text node.
-3. **Clipping:** in the same views (the map included), every visible `button`, `.segment`, `.tab` and `label`: `scrollWidth <= clientWidth + 1`.
+2. **Latin scan:** for each tab of `?lang=ru&wd=90&ws=12` (Ropes, Wind, View, Learn with `learn=rope_vang`), for `?lang=ru&mode=realistic` and for `?lang=ru&cam=map`: every visible text node not inside `a`, `input`, `textarea`, `[data-testid="build-version"]` or the debug overlay (debug off): each run of 2+ Latin letters is in the allowed set (`latin-words.json` plus the boat-label words, passed in from Node, compared case-insensitively). Also: no “ or ” (U+201C, U+201D) in any text node. (The buoy letters on the map are drawn on the canvas, which the scan cannot read; the `wind.dial.*` keys' test covers them.)
+3. **Clipping:** in the same views (the map included), every `button`, `.segment`, `.tab` and `label` whose bounding box is at least 2 × 2 px, that is not inside `[hidden]` or `[aria-hidden="true"]` and is not `.visually-hidden`: `scrollWidth <= clientWidth + 1`.
 4. Open the View tab; click the `label.segment` that contains `[data-testid="language-en"]` (the radio itself is invisible) → the page reloads; the address bar has no `lang`; `#tab-ropes` reads "Ropes". Open the View tab again and choose Русский the same way → reloads with `lang=ru`.
 5. `?lang=ru&learn=term_north`: `learn-name` is `север`; `learn-alternatives` contains `норд`; `learn-text-status` is visible. Search `норд` from the groups → `learn-hit-term_north`.
 6. `?lang=ru&learn=rope_vang`: set `window.__m23 = 1`, tap `learn-show-me`, then Back → the address bar keeps `lang=ru` both times, and `window.__m23` is still 1 (no reload).
@@ -2279,8 +2279,8 @@ No third language. No decimal comma. The debug overlay stays English. The browse
 
 ### 10.1 Files
 
-New: `scripts/review-doc.mjs`, `docs/review/ru.md` (generated, committed), `docs/LANGUAGES.md`, `scripts/shots-m24.mjs`.
-Changed: `package.json` (script `review-doc`), `tests/glossary.test.ts` (the review document is up to date), `tests/languages.test.ts` (the Latin scan for every non-Latin language), `README.md`, `docs/ROADMAP.md`, `docs/PHASE4_SPEC.md` (status line, "Decided in the M24 PR"), `docs/CODE_MAP.md` (`scripts/review-doc.mjs`, `scripts/shots-m24.mjs`, `docs/LANGUAGES.md`, `docs/review/`), `scripts/shots.mjs`.
+New: `scripts/review-doc.mjs`, `scripts/review-doc.d.mts` (`export function buildReviewDoc(code: string): string;`, so the TypeScript test can import it), `docs/review/ru.md` (generated, committed), `docs/LANGUAGES.md`, `scripts/shots-m24.mjs`.
+Changed: `package.json` (script `review-doc`), `tests/glossary.test.ts` (the review document is up to date), `README.md`, `docs/ROADMAP.md`, `docs/PHASE4_SPEC.md` (status line, "Decided in the M24 PR"), `docs/CODE_MAP.md` (`scripts/review-doc.mjs` and its `.d.mts`, `scripts/shots-m24.mjs`, `docs/LANGUAGES.md`, `docs/review/`), `scripts/shots.mjs`.
 
 ### 10.2 The review document
 
@@ -2310,7 +2310,7 @@ Content, in this order (fixed `ru` wording in quotes, verbatim):
 `scripts/shots-m24.mjs`: no scenes (`M24_SCENES = []`), `liveM24Checks` only (label contains `m24`, so `openPage` adds `held=1&sea=flat&clock=0`). Run on the phone size, for `en` (`?`) and `ru` (`?lang=ru`), each in **one page**:
 1. Read `content/registry/parts.json` in Node: the expected ids (131), groups (10) and Show-me ids (60).
 2. Open the Learn tab. There are 10 group `details`. For each entry button `[data-testid^="learn-entry-"]` (131 in all): open its group first (`details.open = true` through `evaluate`, because the list is rebuilt after `learn-back`), tap it, wait for `learn-name` to read the expected name (from the language's glossary file), check every `h3` in the entry has a next sibling with non-empty text, then tap `learn-back`.
-3. In `en` only, inside the same loop, for each of the 60 entries with Show me: record `location.search`, tap `learn-show-me`, `waitForFunction` until `location.search` differs, then `page.goBack()` (not null) and wait until `location.search` equals the recorded value and `learn-name` shows the same name again.
+3. In `en` only, inside the same loop, for each of the 60 entries with Show me: `waitForFunction` until `location.search` contains `learn=<id>` (the link is written 300 ms after a change), record it, tap `learn-show-me`, `waitForFunction` until `location.search` differs, then call `page.goBack()` and ignore its return value (it is `null` for same-page history), and wait until `location.search` equals the recorded value and `learn-name` shows the same name again.
 4. No console error during the whole run.
 5. `auditPage` on: the entry with the most `h3` (found in the loop), the groups with one group open, and search results for `ma` (both languages): clean.
 
@@ -2319,7 +2319,6 @@ The Phase 4 browser checks run in their own CI part (added in M20, 6.9), which a
 ### 10.4 Docs
 
 - `docs/LANGUAGES.md` (new, short, plain words): how to add a language: copy `content/lang/en/` to `content/lang/<code>/`; translate both files following the rules of PHASE4_SPEC 3.3 adapted to the language (its own traditional alternative terms, never another language's); set every `textStatus` to `draft`; if the language does not use Latin letters, the Latin scan applies to it too and `latin-words.json` lists the allowed exceptions; run `npm test` (the tests list every missing or extra key and every incomplete entry); add the language's wording to `scripts/review-doc.mjs` and run `npm run review-doc -- <code>` for a reviewer. Nothing else changes: the Language setting lists the new language by itself.
-- `tests/languages.test.ts`: the Latin scan of 9.6 item 3 runs for every language whose `language.name` contains no Latin letter (today `ru`).
 - README: in "What you can do", a new item **Learn** (the Learn tab, More, Show me, search, how sure the app is) and an item **Language** (English or Russian, `lang=ru`); the line "Later phases add waves, a learning layer with Russian names, …" is rewritten to say that Phases 1–4 are done and name what later phases add (harbours and anchoring, exercises, more languages); the documents table gains `PHASE3_SPEC.md`, `PHASE4_SPEC.md` and `LANGUAGES.md`.
 - ROADMAP: Phase 4 status "Done (M24, PR #<n>), Russian text awaiting a sailor's review" once the owner signs off, and a decisions-log row; this spec's status line likewise.
 
