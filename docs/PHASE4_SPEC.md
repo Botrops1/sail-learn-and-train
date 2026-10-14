@@ -189,7 +189,7 @@ A scene test: boat speed in knots is `mpsToKn(state.boat.speedMps)` (`src/model/
 
 ### 3.6 Sources
 
-Phase 4 adds no rules to `PHYSICS_TRUTHS.md`. Entry facts cite registry `sources` (keys of `sourceKeys`); each milestone adds the keys it uses, exactly as given. Pages read on 2026-10-14 for this plan: the Wikipedia pages *Broach (nautical)*, *Beaufort scale*, *Wind direction*, *Bora (wind)*, *Sirocco*, *Mistral (wind)* (section "Maestral … in the Adriatic"), *Points of the compass*, *Glossary of nautical terms (A–L)*. The Russian Wikipedia was not reachable from the cloud environment, so every statement about Russian usage (for example that `норд` comes from Dutch) is a draft for the Russian-speaking reviewer.
+Phase 4 adds no rules to `PHYSICS_TRUTHS.md`. Entry facts cite registry `sources` (keys of `sourceKeys`); each milestone adds the keys it uses, exactly as given. Phase 4 entries also cite pages that earlier phases read and summarised in `PHYSICS_TRUTHS.md` (its sources [1], [19]–[25], [27]–[32]: *Point of sail*, *Forces on sails*, *Jibe*, *Weather helm*, *Hull speed*, *Wind wave*, *Wind fetch*, *Significant wave height*, *Ship motions*, *Seakeeping*); their `source-checked` statuses rest on those summaries. Pages read on 2026-10-14 for this plan: the Wikipedia pages *Broach (nautical)*, *Beaufort scale*, *Wind direction*, *Bora (wind)*, *Sirocco*, *Mistral (wind)* (section "Maestral … in the Adriatic"), *Points of the compass*, *Glossary of nautical terms (A–L)*. The Russian Wikipedia was not reachable from the cloud environment, so every statement about Russian usage (for example that `норд` comes from Dutch) is a draft for the Russian-speaking reviewer.
 
 ### 3.7 Common mistakes (check these first when a test fails)
 
@@ -782,7 +782,7 @@ The group order (the list's order) is the table's order. In `glossary.ts`: `expo
 | `env_water` | — | `env_wake`, `env_wind`, `env_buoy` | `?wd=90&ws=20&ms=40&js=100&cam=side-port&sel=env_water&sea=open` |
 | `env_wind` | — | `term_true_wind`, `term_apparent_wind`, `part_windex`, `fit_instrument_display` | `?wd=60&ws=12&cam=top&sel=env_wind&held=1&sea=flat` |
 | `env_wake` | — | `env_water`, `part_stern` | `?wd=90&ws=15&ms=40&js=100&cam=top&sel=env_wake&sea=flat` |
-| `env_boom_danger_zone` | — | `part_boom`, `term_gybe`, `term_preventer`, `term_run` | `?wd=175&ws=15&ms=100&js=100&cam=top&sel=env_boom_danger_zone&sea=flat` |
+| `env_boom_danger_zone` | — | `part_boom`, `term_gybe`, `term_preventer`, `term_run` | `?wd=175&ws=15&ms=100&js=100&cam=top&sel=env_boom_danger_zone&ap=hdg&apt=330&sea=flat` |
 | `env_buoy` | — | `env_water` | `?wd=90&ws=12&cam=map&sel=env_buoy` |
 
 #### 7.2.1 English entries (copy exactly; they replace the M20 placeholders)
@@ -1272,7 +1272,7 @@ The group order (the list's order) is the table's order. In `glossary.ts`: `expo
   "mistakes": [
     { "mistake": "Steering so far downwind that the wind gets behind the mainsail (sailing by the lee).", "fix": "The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet hauled in." }
   ],
-  "showMe": "Running with the wind almost dead behind: the red area shows where the boom would sweep if she gybed. Keep heads out of it.",
+  "showMe": "Running, the autopilot turns her through dead downwind with the mainsheet eased: an accidental gybe. The red area shows where the boom sweeps across. Keep heads out of it.",
   "textStatus": "draft"
 },
 "env_buoy": {
@@ -1402,7 +1402,7 @@ Below it:
 ### 7.6 Tests
 
 `tests/glossary.test.ts`: `COMPLETE_IDS` gains the 55 M21 ids (so items 1–6 of 6.8 cover them); every registry entry has a `group` from `GROUPS`; the groups hold exactly the ids of the 7.2 table (until M22 adds its own).
-Show-me scenes (3.5): `part_rudder`: `rig.applied.rudder` is 25 (exactly); `engine_control`: after 30 s (1,800 steps), boat speed 7.6–8.2 kn [7.9] and `engine.rpm` 1,800–1,900 [1,858]; `env_water`: `significantHeightM(waveTrains(state.sea))` 2.03–2.04 m [2.036]; `fit_self_tacking_track`: `rig.jibSolution.side` −1.
+Show-me scenes (3.5): `env_boom_danger_zone`: `dangerZone(state.rig)` (`src/model/gybe.ts`) is not null at some step within the first 10 s [first at 4.1 s]; `part_rudder`: `rig.applied.rudder` is 25 (exactly); `engine_control`: after 30 s (1,800 steps), boat speed 7.6–8.2 kn [7.9] and `engine.rpm` 1,800–1,900 [1,858]; `env_water`: `significantHeightM(waveTrains(state.sea))` 2.03–2.04 m [2.036]; `fit_self_tacking_track`: `rig.jibSolution.side` −1.
 
 `tests/search.test.ts`:
 1. `normalizeSearch('  Гика-Шкот ')` = `'гика шкот'`; `normalizeSearch('ЁЛКА')` = `'елка'`; `normalizeSearch('Seldén')` = `'selden'`.
@@ -1415,7 +1415,7 @@ Show-me scenes (3.5): `part_rudder`: `rig.applied.rudder` is 25 (exactly); `engi
 
 ### 7.7 Browser checks (`scripts/shots-m21.mjs`)
 
-Scenes (`M21_SCENES`, every size): `learn-groups` `?wd=90&ws=12` with the Learn tab open (click `#tab-learn`); `learn-search-vang` (type `vang`); `learn-danger-zone` `?learn=env_boom_danger_zone&wd=175&ws=15&ms=100&js=100&cam=top&sel=env_boom_danger_zone` (look at it: the red area must show; if it does not, say so in the PR).
+Scenes (`M21_SCENES`, every size): `learn-groups` `?wd=90&ws=12` with the Learn tab open (click `#tab-learn`); `learn-search-vang` (type `vang`); `learn-danger-zone`: `?learn=env_boom_danger_zone`, tap `learn-show-me`, wait 5 s (she gybes at about 4 s; look at it: the red area must show).
 Live checks (`liveM21Checks`, phone):
 1. Learn tab, no entry: 10 group `details`; open "Ropes (9)", tap `learn-entry-rope_vang` → `learn-name` "Vang"; tap `learn-back` → the groups again.
 2. Type `kicker` → `learn-hit-rope_vang` shows "also: kicker"; tap it → "Vang". Clear the box and type `kickerxx` → the `learn.noMatch` text.
@@ -1443,7 +1443,7 @@ No new ids and no texts for the sailing words (M22). No Russian on screen (M23).
 ### 8.1 Files
 
 New: `scripts/shots-m22.mjs`.
-Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of the existing terms), `content/lang/en/glossary.json`, `content/lang/ru/glossary.json`, `tests/glossary.test.ts` (`COMPLETE_IDS` += the M22 ids; scenes), `tests/search.test.ts` (new cases), `scripts/shots.mjs`, `docs/CODE_MAP.md` (only if a file is added).
+Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of the existing terms), `content/lang/en/glossary.json`, `content/lang/ru/glossary.json`, `tests/glossary.test.ts` (`COMPLETE_IDS` += the M22 ids; scenes), `tests/search.test.ts` (new cases), `scripts/shots.mjs` (no `CODE_MAP.md` change: it covers `shots-m<N>.mjs` already).
 
 ### 8.2 Data: the registry
 
@@ -1469,7 +1469,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
 "wiki:ship-motions": "https://en.wikipedia.org/wiki/Ship_motions"
 ```
 
-**The 25 existing sailing words** (`kind: "term"`): `status` and `sources` stay, except where this table gives new ones; `controls` none:
+**The 25 existing sailing words** (`kind: "term"`): `status` and `sources` stay, except where this table gives new ones (the cell lists the new status first, then the complete new sources list); `controls` none:
 
 | id | status, sources (only if changed) | related | showMe |
 |---|---|---|---|
@@ -1484,7 +1484,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
 | `term_starboard_tack` | — | `term_port_tack`, `term_starboard`, `term_tacking` | `?wd=90&ws=12&ms=40&cam=top&held=1&sea=flat` |
 | `term_port_tack` | — | `term_starboard_tack`, `term_port`, `term_tacking` | `?wd=-90&ws=12&ms=40&cam=top&held=1&sea=flat` |
 | `term_tacking` | — | `term_no_go_zone`, `term_in_irons`, `term_gybe`, `sail_jib` | `?wd=45&ws=12&ms=12&js=0&cam=top&ap=wind&sea=flat` |
-| `term_gybe` | `source-checked`, `wiki:point-of-sail`, `wiki:jibe` | `env_boom_danger_zone`, `term_run`, `term_preventer`, `term_tacking` | `?wd=175&ws=12&ms=100&js=100&cam=top&sea=flat` |
+| `term_gybe` | `source-checked`, `wiki:point-of-sail`, `wiki:jibe` | `env_boom_danger_zone`, `term_run`, `term_preventer`, `term_tacking` | `?wd=175&ws=15&ms=100&js=100&cam=top&ap=hdg&apt=330&sea=flat` |
 | `term_luffing` | — | `sailpart_luff`, `term_telltale`, `term_stall` | `?wd=60&ws=12&ms=100&js=50&cam=side-starboard&sea=flat` |
 | `term_ease` | — | `term_trim`, `term_sheet`, `rope_mainsheet` | — |
 | `term_trim` | — | `term_ease`, `term_sheet`, `term_telltale` | — |
@@ -1515,7 +1515,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
 | `term_heading` | `directions` | `draft` | — | `fit_compass`, `term_north`, `fit_autopilot_control` | `?wd=150&ws=12&ms=40&js=100&cam=map&hdg=60&sea=flat` |
 | `term_wind_direction` | `wind` | `source-checked` | `wiki:wind-direction` | `env_wind`, `term_north`, `term_true_wind` | `?wd=60&ws=12&cam=top&held=1&sea=flat` |
 | `term_knot` | `wind` | `draft` | — | `term_beaufort`, `env_wind` | — |
-| `term_beaufort` | `wind` | `source-checked` | `wiki:beaufort` | `term_knot`, `term_white_horses`, `term_gust` | `?wd=90&ws=8&ms=40&js=100&cam=side-port` |
+| `term_beaufort` | `wind` | `source-checked` | `wiki:beaufort` | `term_knot`, `term_white_horses`, `term_gust` | `?wd=90&ws=10&ms=40&js=100&cam=side-port` |
 | `term_gust` | `wind` | `draft` | — | `term_lull`, `term_heel`, `term_round_up` | `?wd=60&ws=12&ms=20&js=25&cam=helm&wm=gusty` |
 | `term_lull` | `wind` | `draft` | — | `term_gust`, `term_apparent_wind` | — |
 | `term_wind_shift` | `wind` | `draft` | — | `term_gust`, `term_head_up`, `term_bear_away` | `?wd=90&ws=12&ms=40&js=100&ap=wind&wm=shifty&wg=20` |
@@ -1648,7 +1648,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
     { "mistake": "Gybing with the mainsheet eased right out.", "fix": "The boom slams across. Haul the mainsheet in before turning, then ease it out on the new side." },
     { "mistake": "Steering too far downwind.", "fix": "The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind." }
   ],
-  "showMe": "Running with the wind almost dead behind: the red area shows the boom’s path in a gybe. Before any gybe, haul the mainsheet in.",
+  "showMe": "The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is hauled in first.",
   "textStatus": "draft"
 },
 "term_luffing": {
@@ -1861,7 +1861,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
   "alternatives": [{ "term": "force", "note": "as in “force 4”" }],
   "short": "Wind strength as a number from 0 to 12, judged by its effect on the sea.",
   "what": "The Beaufort scale names wind strengths from 0 (calm) to 12 (hurricane). Force 3 (7–10 kn) brings the first scattered white horses; force 4 (11–16 kn) fairly frequent ones; force 5 (17–21 kn) many.",
-  "showMe": "8 kn, force 3: the first scattered white horses. Raise the wind in the Wind tab to see more.",
+  "showMe": "10 kn, the top of force 3: the first scattered white horses. Raise the wind in the Wind tab to see more.",
   "textStatus": "draft"
 },
 "term_gust": {
@@ -2007,7 +2007,7 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
   "alternatives": [],
   "short": "The boat rising and falling on the waves.",
   "what": "Heave is the up-and-down motion as the waves pass under the boat.",
-  "showMe": "Open sea in 20 kn, the boat held still: she rises and falls by about 0.8 m.",
+  "showMe": "Open sea in 20 kn, the boat held still: she rises and falls by about 0.9 m each way.",
   "textStatus": "draft"
 },
 "term_pitch": {
@@ -2093,9 +2093,9 @@ These are drafts for the Russian-speaking reviewer (M24). The notes on Dutch ori
 | `term_pitch` | килевая качка | — |
 | `term_roll` | бортовая качка | — |
 
-Russian notes may contain a Latin word only where it names the original foreign word (`bakboord`, `noord`, `broaching`, `saildrive`, `furling`, `winch`, `sprayhood`, `outhaul`, `kicker`, `preventer`); M23's Latin-letter check allows exactly these.
+Russian notes may contain a Latin word only where it names the original foreign word: exactly the words of `content/lang/latin-words.json` (9.2) after `CEST`; M23's Latin-letter check allows exactly those.
 
-The Russian texts of these 58 entries are written by you (3.3).
+The Russian texts of these 58 entries are written by you (3.3). Several English texts quote UI labels (“Tack”, “Waves”, “Open sea”, GUST, the Ropes tab, the Wind tab); the Russian UI is written only in M23, so choose the Russian wording for each quoted label, use it the same way everywhere, and list it in "Decided in the M22 PR" (M23 must use the same words; its test checks it). `term_wind_shift`: the Russian alternatives (заходит / отходит: towards the bow / the stern) are not the same idea as the English veer / back (clockwise / anticlockwise); that is correct for each language, and the review document will show it.
 
 ### 8.5 Tests
 
@@ -2107,6 +2107,12 @@ The Russian texts of these 58 entries are written by you (3.3).
 - `term_white_horses`: `significantHeightM(waveTrains(state.sea))` 2.15–2.35 m [2.24].
 - `term_heading`: `boat.headingDeg` 60 at the start; after 20 s boat speed above 7 kn [8.18].
 - `term_port_tack`: `rig.solution.side` +1 (boom to starboard); `term_starboard_tack`: −1.
+- `term_gybe`: `dangerZone(state.rig)` not null at some step within 10 s [4.1 s].
+- `term_close_reach`: after 20 s, 7.2–7.8 kn [7.48].
+- `term_wave_height`: `significantHeightM` 0.65–0.72 m [0.683] and the main train's `periodS` 3.7–3.9 s [3.83].
+- Wave motion, the largest absolute value over the steps with 20 s < t ≤ 60 s: `term_heave` `boat.waves.heaveM` 0.80–1.05 m [0.92]; `term_pitch` `boat.waves.pitchDeg` 2.4–3.1° [2.76]; `term_roll` `boat.waves.rollDeg` 4.3–5.4° [4.84].
+- `term_beaufort`: `significantHeightM` above 0 (waves at 10 kn).
+All speeds are `mpsToKn(state.boat.speedMps)`.
 `tests/search.test.ts` new cases: `searchGlossary('норд', 'ru')` finds `term_north` with `matched` `'норд'`; `searchGlossary('бакборт', 'ru')` finds `term_port`; `searchGlossary('jibe')` finds `term_gybe`; `searchGlossary('north', 'ru')` is empty.
 
 Before you finish, run every M22 show-me link once in the scene helper and read the values the text claims (speeds, heel, wave height); report them in the PR. A text that the scene does not show is a finding for the owner, not something to rewrite.
@@ -2218,9 +2224,10 @@ New keys in **both** `ui.json` files:
 1. `LANGUAGES` is `['en', 'ru']`; `languageName('ru')` is `Русский`.
 2. Every language's `ui.json` has exactly the keys of `en`, every value non-empty (`number.thousandsSeparator` may be a single space character), and for every key the same set of `{placeholders}` as `en`.
 3. In `ru`, every value and every glossary text field (`name`, alternatives' `term` and `note`, `short`, `what`, `onThisBoat`, `mistakes`, `showMe`): every run of 2 or more Latin letters (`/[A-Za-zÀ-ÿ&]{2,}/g`, plus `B&G`) is in `latinAllowed()`. Fewer than 20 `ru` values are identical to the English value, and each of those is listed in the test with a reason (for example `{value} %`).
-4. Every `GROUPS` group has a `learn.group.<group>` key, every kind a `learn.kind.<kind>` key, every status a `learn.status.<status>` key, every area id (`AREAS`) an `area.<id>` key.
-5. `t()` after `setLanguage('ru')` returns the Russian text; `setLanguage('xx')` gives English; `part('rope_vang')` in `ru` has the name `оттяжка гика`; `formatThousands(2500)` is `2,500` in `en` and `2 500` in `ru`. Reset the language to `en` after each test.
-6. URL (`tests/urlState.test.ts`): `?lang=ru` → `settings.language` `ru`; `?lang=xx` → `en`; serialize writes `…&detail=low&lang=ru…` and nothing for `en`; `reset` keeps `ru`; existing URL tests pass unchanged.
+4. The Russian wording M22 chose for the UI labels its texts quote ("Decided in the M22 PR") occurs in the `ru` values of those labels' keys (`autopilot`'s Tack button, `waves.label`, `waves.open`, the GUST alert, `tab.ropes`, `tab.wind`); if a better Russian label is chosen in M23, change the glossary texts to match in the same PR.
+5. Every `GROUPS` group has a `learn.group.<group>` key, every kind a `learn.kind.<kind>` key, every status a `learn.status.<status>` key, every area id (`AREAS`) an `area.<id>` key.
+6. `t()` after `setLanguage('ru')` returns the Russian text; `setLanguage('xx')` gives English; `part('rope_vang')` in `ru` has the name `оттяжка гика`; `formatThousands(2500)` is `2,500` in `en` and `2 500` in `ru`. Reset the language to `en` after each test.
+7. URL (`tests/urlState.test.ts`): `?lang=ru` → `settings.language` `ru`; `?lang=xx` → `en`; serialize writes `…&detail=low&lang=ru…` and nothing for `en`; `reset` keeps `ru`; existing URL tests pass unchanged.
 
 ### 9.7 Browser checks (`scripts/shots-m23.mjs`)
 

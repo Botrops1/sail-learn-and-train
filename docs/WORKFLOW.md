@@ -345,7 +345,7 @@ New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn 
 - [ ] Search: type "kicker": "Vang — also: kicker". Type "genoa": "Jib sheet — also: Genoa sheet" (the word on the clutch). Type "mast": every entry with "mast" in its name.
 - [ ] New texts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_winch&held=1 — three typical mistakes; tap "Show me": Realistic mode at the starboard winch with the jib sheet on it; Back returns.
 - [ ] Engine: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=engine_control&held=1 — "Show me": the engine runs at about 1,850 rpm and she motors at about 8 kn.
-- [ ] Danger zone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=env_boom_danger_zone&held=1 — "Show me": running downwind, the red area of the boom's sweep is drawn.
+- [ ] Danger zone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=env_boom_danger_zone&held=1 — "Show me": she runs downwind, and after about 4 seconds the autopilot turns her through dead downwind: the boom crosses and the red area of its sweep is drawn.
 
 #### M22: Sailing words, directions and winds
 
@@ -353,7 +353,7 @@ New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn 
 - [ ] Port and starboard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_port&held=1 — "Also called: larboard (an old word, no longer used)", and the mistake with its fix.
 - [ ] Winds of the Adriatic: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_bora&held=1 — "Bora", from the north-east, gusty, "Checked against a written source"; also open "Jugo" and "Maestral" from "See also".
 - [ ] Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_heel&held=1 — "Show me": she heels about 30°; in the Ropes tab ease the main sheet: she stands up. Back returns.
-- [ ] In irons: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_in_irons&held=1 — "Show me": she points straight into the wind, slows down and stops within about half a minute.
+- [ ] In irons: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_in_irons&held=1 — "Show me": she points straight into the wind, slows down and stops within about 40 seconds.
 - [ ] Search: type "jibe": "Gybe — also: jibe".
 
 #### M23: The app in Russian
