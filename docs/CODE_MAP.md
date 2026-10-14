@@ -15,7 +15,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values. No numbers in code. |
 | `registry/parts.json` | `schemaVersion` 2 (M20): every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group` for the Learn list from M21, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
 | `lang/<code>/ui.json` | UI strings of one language, read through `t()` (`ui/i18n.ts`); `en` today (moved from `i18n/en.json` in M20). |
-| `lang/<code>/glossary.json` | The Learn entries of one language (names, other names, one-liner, what it does, on this boat, mistakes, show-me text), by registry id. `en` is the source language; `ru` is an AI draft (names for all ids, full text for the 18 M20 and 55 M21 entries). Read through `model/glossary.ts`. |
+| `lang/<code>/glossary.json` | The Learn entries of one language (names, other names, one-liner, what it does, on this boat, mistakes, show-me text), by registry id. `en` is the source language; `ru` is an AI draft (names and full text for every id: the M20, M21 and M22 entries). Read through `model/glossary.ts`. |
 | `areas/adriatic.json` | A sailing area (position, time zone, fetch per Waves setting, the practice buoys, the default clock), loaded by id (`model/area.ts`). |
 
 ## `src/app/` (state and wiring)

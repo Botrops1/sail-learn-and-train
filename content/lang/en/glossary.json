@@ -798,61 +798,105 @@
     "term_sheet": {
       "name": "Sheet",
       "alternatives": [],
-      "short": "A rope that controls the angle of a sail. Not a sail itself.",
+      "short": "A rope that sets a sail’s angle to the wind.",
+      "what": "A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a rope, not the sail.",
       "textStatus": "draft"
     },
     "term_halyard": {
       "name": "Halyard",
       "alternatives": [],
-      "short": "A rope that pulls a sail up.",
+      "short": "A rope that hoists a sail.",
+      "what": "A halyard pulls a sail’s head (its top corner) up the mast or the forestay and holds it there.",
+      "onThisBoat": "The main stays hoisted and rolls into the mast, and the jib rolls round the forestay, so the halyards are hardly ever touched; the gennaker halyard is parked.",
       "textStatus": "draft"
     },
     "term_port": {
       "name": "Port",
-      "alternatives": [],
-      "short": "Left side when facing the bow.",
+      "alternatives": [
+        {
+          "term": "larboard",
+          "note": "an old word, no longer used"
+        }
+      ],
+      "short": "The left side of the boat, looking forward.",
+      "what": "Port is the left side when you face the bow, whichever way you stand. Its navigation light is red.",
+      "mistakes": [
+        {
+          "mistake": "Saying “left” while facing the stern.",
+          "fix": "Port never changes: it is always the left side looking forward. Use port and starboard on board."
+        }
+      ],
       "textStatus": "draft"
     },
     "term_starboard": {
       "name": "Starboard",
       "alternatives": [],
-      "short": "Right side when facing the bow.",
+      "short": "The right side of the boat, looking forward.",
+      "what": "Starboard is the right side when you face the bow. Its navigation light is green.",
+      "mistakes": [
+        {
+          "mistake": "Mixing up port and starboard in a hurry.",
+          "fix": "A memory aid: “port” and “left” both have four letters."
+        }
+      ],
       "textStatus": "draft"
     },
     "term_windward": {
       "name": "Windward",
       "alternatives": [],
       "short": "The side the wind comes from.",
+      "what": "The windward side of the boat is the side the wind blows onto. Windward also means towards the wind.",
+      "showMe": "Wind from starboard: starboard is the windward side, and the boom has swung out to port, the leeward side.",
       "textStatus": "draft"
     },
     "term_leeward": {
       "name": "Leeward",
-      "alternatives": [],
-      "short": "The side the wind blows towards. The boom is on the leeward side.",
+      "alternatives": [
+        {
+          "term": "lee"
+        }
+      ],
+      "short": "The side away from the wind.",
+      "what": "Leeward (sailors say “loo-ard”) is the side the wind blows away from. The sails and the boom lie on the leeward side, and the boat heels towards it.",
+      "showMe": "Wind from starboard: the boom and the sails lie to port, the leeward side.",
       "textStatus": "draft"
     },
     "term_true_wind": {
       "name": "True wind",
       "alternatives": [],
-      "short": "Wind as felt by a boat that is not moving.",
+      "short": "The wind as it blows over the water, as a boat standing still feels it.",
+      "what": "The true wind is the wind’s own direction and speed over the water. The Wind tab sets it, and the instruments show it as TWA and TWS.",
+      "showMe": "The map shows the true wind and, while she sails, the apparent wind she feels.",
       "textStatus": "draft"
     },
     "term_apparent_wind": {
       "name": "Apparent wind",
       "alternatives": [],
-      "short": "Wind as felt on the moving boat: true wind plus the wind from the boat's own motion. This is what the sails feel.",
+      "short": "The wind the boat feels: the true wind plus the wind from her own speed.",
+      "what": "When the boat moves, her own speed adds a headwind. Together with the true wind it makes the apparent wind, which is what the sails feel and the masthead arrow shows. Sailing towards the wind or across it, the apparent wind comes from further ahead than the true wind and is stronger; running away from it, it is weaker.",
+      "mistakes": [
+        {
+          "mistake": "Trimming the sails to the true wind.",
+          "fix": "The sails feel the apparent wind, which comes from further ahead when she moves. Trim to the telltales and the masthead arrow."
+        }
+      ],
+      "showMe": "Sailing with the wind from the side: the map shows the apparent wind coming from further ahead than the true wind.",
       "textStatus": "draft"
     },
     "term_starboard_tack": {
       "name": "Starboard tack",
       "alternatives": [],
-      "short": "Sailing with the wind coming over the starboard side (boom on the port side).",
+      "short": "Sailing with the wind coming over the starboard side.",
+      "what": "On starboard tack the wind comes from the starboard side, and the boom and the sails are out to port.",
+      "showMe": "Wind from starboard, boom out to port: she is on starboard tack.",
       "textStatus": "draft"
     },
     "term_port_tack": {
       "name": "Port tack",
       "alternatives": [],
-      "short": "Sailing with the wind coming over the port side (boom on the starboard side).",
+      "short": "Sailing with the wind coming over the port side.",
+      "what": "On port tack the wind comes from the port side, and the boom and the sails are out to starboard.",
+      "showMe": "Wind from port, boom out to starboard: she is on port tack.",
       "textStatus": "draft"
     },
     "term_tacking": {
@@ -860,25 +904,57 @@
       "alternatives": [
         {
           "term": "going about"
+        },
+        {
+          "term": "coming about"
         }
       ],
-      "short": "Turning the bow through the wind so the wind comes from the other side.",
+      "short": "Turning the bow through the wind to the other side.",
+      "what": "To tack, the boat turns towards the wind, through the no-go zone and on until the wind comes over the other side. With a self-tacking jib only the wheel is needed: the jib and the main swing across by themselves.",
+      "mistakes": [
+        {
+          "mistake": "Turning too slowly.",
+          "fix": "She stops head to wind (in irons). Turn steadily and keep her moving."
+        }
+      ],
+      "showMe": "Close-hauled, the autopilot holding the wind angle: press “Tack” in the autopilot block of the Ropes tab and watch the bow turn through the wind and the jib cross by itself.",
       "textStatus": "draft"
     },
     "term_gybe": {
       "name": "Gybe",
       "alternatives": [
         {
-          "term": "jibe"
+          "term": "jibe",
+          "note": "American spelling"
         }
       ],
-      "short": "Turning the stern through the wind. The boom swings across the whole boat; uncontrolled it is dangerous.",
+      "short": "Turning the stern through the wind, so the boom crosses to the other side.",
+      "what": "In a gybe the stern turns through the wind and the boom swings across the whole boat. Done on purpose, the mainsheet is hauled in first so the boom crosses a short way, under control. By accident (an accidental gybe) it crosses fast and hard: it can injure people and break gear.",
+      "mistakes": [
+        {
+          "mistake": "Gybing with the mainsheet eased right out.",
+          "fix": "The boom slams across. Haul the mainsheet in before turning, then ease it out on the new side."
+        },
+        {
+          "mistake": "Steering too far downwind.",
+          "fix": "The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind."
+        }
+      ],
+      "showMe": "The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is hauled in first.",
       "textStatus": "draft"
     },
     "term_luffing": {
       "name": "Luffing (sail flapping)",
       "alternatives": [],
-      "short": "The sail flaps because it is aligned with the wind and not filled. Sheet in a little, or bear away.",
+      "short": "A sail flapping at its front edge because it is let out too far.",
+      "what": "When a sail is eased more than the wind angle needs, or the boat turns too close to the wind, the air reaches both sides of the front edge and the sail flaps. It no longer drives the boat, and long flapping in strong wind wears it out.",
+      "mistakes": [
+        {
+          "mistake": "Leaving a sail flapping in strong wind.",
+          "fix": "It wears and can tear. Haul it in, or roll it away."
+        }
+      ],
+      "showMe": "The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes tab) until the flapping just stops.",
       "textStatus": "draft"
     },
     "term_ease": {
@@ -888,7 +964,8 @@
           "term": "let out"
         }
       ],
-      "short": "Let a rope out.",
+      "short": "To let a rope out.",
+      "what": "Easing lets a rope out slowly and under control, so a sail can go further out or a load comes off.",
       "textStatus": "draft"
     },
     "term_trim": {
@@ -896,24 +973,30 @@
       "alternatives": [
         {
           "term": "sheet in"
-        },
-        {
-          "term": "pull in"
         }
       ],
-      "short": "Pull a rope in.",
+      "short": "To pull a rope in; also, setting the sails to the wind.",
+      "what": "Hauling in pulls a rope in. Trimming means setting each sail to the wind: haul in until it stops flapping, ease until it is not stalled.",
       "textStatus": "draft"
     },
     "term_twist": {
       "name": "Twist",
       "alternatives": [],
-      "short": "The top of the sail opening further than the bottom. Controlled by the vang (main) and by the sheet position (jib).",
+      "short": "How much the top of a sail opens out compared with its bottom.",
+      "what": "With twist, the top of the sail stands further out than the bottom. A little twist is normal; more twist spills power, which helps in strong wind. The vang controls it on the mainsail, the sheet on the jib.",
+      "showMe": "The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes tab) and the twist closes.",
       "textStatus": "draft"
     },
     "term_telltale": {
       "name": "Telltales",
-      "alternatives": [],
-      "short": "Short strips of yarn on the sails that show the airflow.",
+      "alternatives": [
+        {
+          "term": "tell-tales"
+        }
+      ],
+      "short": "Ribbons on the sails that show how the air flows.",
+      "what": "Telltales are short ribbons near the front of the sails. Both sides streaming straight back: good trim. The far side drooping: pulled in too far. The near side lifting: let out too far.",
+      "showMe": "Good trim: zoom in on the front of the mainsail; the telltales on both sides stream straight back.",
       "textStatus": "draft"
     },
     "part_telltale": {
@@ -937,62 +1020,478 @@
     },
     "term_no_go_zone": {
       "name": "No-go zone",
-      "alternatives": [
+      "alternatives": [],
+      "short": "The directions, about 45° either side of the wind, a sailing boat cannot sail in.",
+      "what": "No sailing boat can sail straight into the wind. Within about 45° of it (30–50°, depending on the boat) the sails flap and she slows to a stop. To get upwind she zigzags, tacking from one side to the other.",
+      "mistakes": [
         {
-          "term": "in irons"
+          "mistake": "Steering into the no-go zone.",
+          "fix": "The sails flap and she stops. Turn away from the wind until the sails fill."
         }
       ],
-      "short": "About 45 degrees either side of the wind. A sailing boat cannot sail there.",
+      "showMe": "The map shows the no-go zone as a wedge towards the wind. She is sailing just outside it, close-hauled.",
       "textStatus": "draft"
     },
     "term_close_hauled": {
       "name": "Close-hauled",
-      "alternatives": [],
-      "short": "Sailing as close to the wind as possible, sails trimmed in.",
+      "alternatives": [
+        {
+          "term": "beating",
+          "note": "sailing close-hauled to get upwind"
+        }
+      ],
+      "short": "Sailing as close to the wind as she can, about 45° off it.",
+      "what": "Close-hauled, the sails are pulled in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail.",
+      "showMe": "Close-hauled: the wind 45° off the bow, both sails pulled in; she heels about 17°.",
       "textStatus": "draft"
     },
     "term_close_reach": {
       "name": "Close reach",
       "alternatives": [],
-      "short": "Sailing with the wind forward of the beam but not as close as close-hauled, about 60° off the wind.",
+      "short": "Sailing with the wind about 60° off the bow, between close-hauled and a beam reach.",
+      "what": "On a close reach the sails are eased a little from close-hauled. She sails fast and still heels well.",
+      "showMe": "Close reach: the wind 60° off the bow, the sails eased a little; she sails at about 7.5 kn.",
       "textStatus": "draft"
     },
     "term_beam_reach": {
       "name": "Beam reach",
       "alternatives": [],
-      "short": "Wind from the side, 90 degrees.",
+      "short": "Sailing with the wind at right angles to the boat.",
+      "what": "On a beam reach the wind comes from the side, 90° off the bow, and the sails are eased about halfway. For many boats it is the fastest point of sail.",
+      "showMe": "Beam reach: the wind from the side, the sails eased about halfway; she sails at about 8 kn.",
       "textStatus": "draft"
     },
     "term_broad_reach": {
       "name": "Broad reach",
       "alternatives": [],
-      "short": "Wind from behind the side, sails eased well out.",
+      "short": "Sailing with the wind from behind the side, about 135° off the bow.",
+      "what": "On a broad reach the wind comes over the back corner of the boat. The sails are eased well out; she heels little and the ride is easy.",
+      "showMe": "Broad reach: the wind 135° off the bow, the sails eased right out; she hardly heels.",
       "textStatus": "draft"
     },
     "term_run": {
       "name": "Running",
       "alternatives": [
         {
-          "term": "dead run"
+          "term": "run"
+        },
+        {
+          "term": "running downwind"
         }
       ],
-      "short": "Wind from directly behind. Risk of an accidental gybe.",
+      "short": "Sailing with the wind from behind.",
+      "what": "Running, the wind comes from (almost) straight behind and the sails are eased right out. She is slower than on a reach, and the boom can gybe across if the wind gets behind the mainsail.",
+      "mistakes": [
+        {
+          "mistake": "Running dead downwind.",
+          "fix": "The boom can gybe by accident. Steer a little off dead downwind, so the wind stays clearly on one side."
+        }
+      ],
+      "showMe": "Running: the wind from almost straight behind, the sails right out; about 4.7 kn, slower than on a reach.",
       "textStatus": "draft"
     },
     "term_reef": {
       "name": "Reefing",
       "alternatives": [
         {
-          "term": "furling away"
+          "term": "reducing sail"
         }
       ],
-      "short": "Making a sail smaller for stronger wind. On the reference boat: partly furl the main and/or the jib.",
+      "short": "Making a sail smaller for strong wind.",
+      "what": "Reefing makes the sails smaller, so the boat heels less and is easier to control in strong wind. Reef early, before the wind is strong.",
+      "onThisBoat": "There are no reef lines: the main is made smaller by rolling part of it into the mast, and the jib by rolling part of it round the forestay; usually the jib first, then the main.",
+      "mistakes": [
+        {
+          "mistake": "Waiting until the wind is already strong.",
+          "fix": "Rolling sail away is harder and riskier under load. Make the sails smaller as soon as she heels too much."
+        }
+      ],
+      "showMe": "The mainsail is rolled halfway into the mast: half the sail, less push.",
       "textStatus": "draft"
     },
     "term_preventer": {
       "name": "Preventer",
       "alternatives": [],
-      "short": "A rope that stops the boom from swinging across in an accidental gybe.",
+      "short": "A line that holds the boom out so it cannot gybe across.",
+      "what": "A preventer runs from the end of the boom forward and back to the cockpit, holding the boom out when running, so it cannot swing across in an accidental gybe.",
+      "onThisBoat": "This boat carries none, so the app teaches the controlled gybe: the mainsheet hauled in first.",
+      "textStatus": "draft"
+    },
+    "term_north": {
+      "name": "North",
+      "alternatives": [
+        {
+          "term": "N",
+          "note": "short form"
+        }
+      ],
+      "short": "The direction 0° on the compass.",
+      "what": "North is 0° (or 360°) on the compass; east is 90°, south 180°, west 270°. Winds are named for where they come from, so a north wind blows from the north.",
+      "textStatus": "draft"
+    },
+    "term_east": {
+      "name": "East",
+      "alternatives": [
+        {
+          "term": "E",
+          "note": "short form"
+        }
+      ],
+      "short": "The direction 90° on the compass.",
+      "what": "East is 90° on the compass, where the sun rises. An east wind blows from the east.",
+      "textStatus": "draft"
+    },
+    "term_south": {
+      "name": "South",
+      "alternatives": [
+        {
+          "term": "S",
+          "note": "short form"
+        }
+      ],
+      "short": "The direction 180° on the compass.",
+      "what": "South is 180° on the compass. A south wind blows from the south.",
+      "textStatus": "draft"
+    },
+    "term_west": {
+      "name": "West",
+      "alternatives": [
+        {
+          "term": "W",
+          "note": "short form"
+        }
+      ],
+      "short": "The direction 270° on the compass.",
+      "what": "West is 270° on the compass, where the sun sets. A west wind blows from the west.",
+      "textStatus": "draft"
+    },
+    "term_compass_point": {
+      "name": "Compass point",
+      "alternatives": [
+        {
+          "term": "point"
+        }
+      ],
+      "short": "One of the 32 named directions of the compass, 11¼° apart.",
+      "what": "Before degrees, sailors named 32 directions: north, east, south and west, the four between them (north-east, south-east, south-west, north-west), and more between those. One point is 11¼°, so “two points off the bow” is about 22° to one side of straight ahead.",
+      "textStatus": "draft"
+    },
+    "term_ahead": {
+      "name": "Ahead",
+      "alternatives": [],
+      "short": "In front of the bow.",
+      "what": "Ahead means in the direction the bow points; “dead ahead” is straight in front. With the engine, going ahead means moving forwards.",
+      "textStatus": "draft"
+    },
+    "term_astern": {
+      "name": "Astern",
+      "alternatives": [],
+      "short": "Behind the boat; also, moving backwards.",
+      "what": "Astern means behind the stern. With the engine, going astern means moving backwards (reverse gear).",
+      "textStatus": "draft"
+    },
+    "term_abeam": {
+      "name": "Abeam",
+      "alternatives": [
+        {
+          "term": "on the beam"
+        }
+      ],
+      "short": "At right angles to the boat, straight out to one side.",
+      "what": "Something abeam is at 90° to the boat’s centreline, level with her middle, to port or to starboard. A wind from abeam makes a beam reach.",
+      "textStatus": "draft"
+    },
+    "term_quarter": {
+      "name": "Quarter",
+      "alternatives": [],
+      "short": "The back corners of the boat, between abeam and astern.",
+      "what": "The quarters are the back corners of the boat. Wind or waves “on the quarter” come from behind at an angle, about 135° off the bow; waves from there are the hardest to steer in.",
+      "showMe": "Wind and waves on the starboard quarter: watch the wheel (the autopilot) keep correcting as the waves push her off course.",
+      "textStatus": "draft"
+    },
+    "term_heading": {
+      "name": "Heading",
+      "alternatives": [
+        {
+          "term": "course",
+          "note": "strictly, the direction she moves over the ground"
+        }
+      ],
+      "short": "The compass direction the bow points.",
+      "what": "The heading is the direction the bow points, in degrees from north: 0 north, 90 east, 180 south, 270 west. The autopilot’s Heading mode holds it.",
+      "showMe": "The map shows her heading 060°, towards the north-east, with the wind from the side.",
+      "textStatus": "draft"
+    },
+    "term_wind_direction": {
+      "name": "Wind direction",
+      "alternatives": [],
+      "short": "Where the wind comes from, in degrees or compass names.",
+      "what": "A wind is named for where it comes from: a north wind (a northerly) blows from the north towards the south. In degrees, a wind “from 060°” comes from the north-east.",
+      "mistakes": [
+        {
+          "mistake": "Reading a wind “from 060°” as blowing towards 060°.",
+          "fix": "It blows from 060° towards 240°: look towards 060° to face it."
+        }
+      ],
+      "showMe": "Wind from 060° (north-east): the streaks blow from there across the boat.",
+      "textStatus": "draft"
+    },
+    "term_knot": {
+      "name": "Knot",
+      "alternatives": [
+        {
+          "term": "kn",
+          "note": "short form"
+        }
+      ],
+      "short": "One nautical mile per hour: how speed is measured at sea.",
+      "what": "Boat and wind speeds at sea are given in knots. One knot is one nautical mile (1,852 m) per hour, about 0.5 m/s or 1.85 km/h.",
+      "textStatus": "draft"
+    },
+    "term_beaufort": {
+      "name": "Beaufort scale",
+      "alternatives": [
+        {
+          "term": "force",
+          "note": "as in “force 4”"
+        }
+      ],
+      "short": "Wind strength as a number from 0 to 12, judged by its effect on the sea.",
+      "what": "The Beaufort scale names wind strengths from 0 (calm) to 12 (hurricane). Force 3 (7–10 kn) brings the first scattered white horses; force 4 (11–16 kn) fairly frequent ones; force 5 (17–21 kn) many.",
+      "showMe": "10 kn, the top of force 3: the first scattered white horses. Raise the wind in the Wind tab to see more.",
+      "textStatus": "draft"
+    },
+    "term_gust": {
+      "name": "Gust",
+      "alternatives": [
+        {
+          "term": "puff"
+        }
+      ],
+      "short": "A sudden, short increase in the wind.",
+      "what": "A gust is a burst of stronger wind lasting seconds, often from a slightly different direction. It can show on the water as a darker, rougher patch coming towards you. In a gust the boat heels more.",
+      "mistakes": [
+        {
+          "mistake": "Holding the mainsheet tight through a strong gust.",
+          "fix": "She heels hard and turns into the wind. Ease the main as the gust hits, and trim again when it has passed."
+        }
+      ],
+      "showMe": "Gusty wind: watch upwind for a dark patch on the water. When it arrives, the strip shows GUST and she heels more.",
+      "textStatus": "draft"
+    },
+    "term_lull": {
+      "name": "Lull",
+      "alternatives": [],
+      "short": "A short drop in the wind.",
+      "what": "A lull is a moment of weaker wind, often between gusts. The boat stands up and slows down, and the wind the sails feel comes from a little further ahead.",
+      "textStatus": "draft"
+    },
+    "term_wind_shift": {
+      "name": "Wind shift",
+      "alternatives": [
+        {
+          "term": "veer",
+          "note": "the wind turns clockwise"
+        },
+        {
+          "term": "back",
+          "note": "the wind turns anticlockwise"
+        }
+      ],
+      "short": "A change in the wind’s direction.",
+      "what": "The wind’s direction keeps changing a little. A shift that comes from further ahead is a header: she has to bear away, or the sails flap. One from further behind is a lift: she can point closer to the wind.",
+      "showMe": "Shifty wind with the autopilot holding the wind angle: watch her heading swing as the wind shifts.",
+      "textStatus": "draft"
+    },
+    "term_bora": {
+      "name": "Bora",
+      "alternatives": [
+        {
+          "term": "bura",
+          "note": "the Croatian name, also used by sailors there"
+        }
+      ],
+      "short": "A cold, very gusty wind from the north-east in the Adriatic.",
+      "what": "The bora blows from the north to north-east, down from the mountains onto the Adriatic coast, most often in winter. It comes in sudden, strong gusts and raises short, high waves with white crests.",
+      "textStatus": "draft"
+    },
+    "term_jugo": {
+      "name": "Jugo",
+      "alternatives": [
+        {
+          "term": "sirocco",
+          "note": "the Italian name for the same kind of wind"
+        }
+      ],
+      "short": "A warm, humid wind from the south-east in the Adriatic.",
+      "what": "The jugo blows from the south-east, warm and moist, and can bring rain and storms. Its name means “southern” in Croatian.",
+      "textStatus": "draft"
+    },
+    "term_maestral": {
+      "name": "Maestral",
+      "alternatives": [],
+      "short": "The summer sea breeze from the north-west on the Adriatic coast.",
+      "what": "On summer days, when the coast gets warmer than the sea, a mild wind blows in from the sea from the north-west: the maestral.",
+      "textStatus": "draft"
+    },
+    "term_heel": {
+      "name": "Heel",
+      "alternatives": [
+        {
+          "term": "heeling"
+        }
+      ],
+      "short": "The boat leaning over to one side.",
+      "what": "The wind’s push on the sails tips the boat over to leeward; the keel’s weight pulls her back. Some heel is normal; too much slows her and makes her hard to steer. Easing the sheets or making the sails smaller reduces it.",
+      "mistakes": [
+        {
+          "mistake": "Hauling the sheets in harder when she heels too much.",
+          "fix": "That makes more heel. Ease the mainsheet, or roll part of the sails in."
+        }
+      ],
+      "showMe": "20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes tab and she stands up.",
+      "textStatus": "draft"
+    },
+    "term_weather_helm": {
+      "name": "Weather helm",
+      "alternatives": [],
+      "short": "The boat’s pull to turn into the wind, felt on the wheel.",
+      "what": "A heeling boat wants to turn her bow into the wind. To keep a straight course, the wheel must be held turned away from the wind. A little is normal; a lot means too much heel or too much mainsail: ease the main.",
+      "showMe": "Heeled hard in 20 kn: the autopilot holds the wheel turned away from the wind to keep her straight. Ease the mainsheet and the wheel comes back towards the middle.",
+      "textStatus": "draft"
+    },
+    "term_round_up": {
+      "name": "Round-up",
+      "alternatives": [
+        {
+          "term": "broach",
+          "note": "a violent round-up, often with waves from behind"
+        }
+      ],
+      "short": "The boat turning into the wind by herself, and the wheel cannot stop her.",
+      "what": "Overpowered in a gust, the boat heels, the rudder loses its grip and she swings up into the wind with the sails flapping. Easing the mainsheet early stops it.",
+      "mistakes": [
+        {
+          "mistake": "Fighting it with the wheel alone.",
+          "fix": "A rudder turned hard over stops gripping. Ease the mainsheet: that takes away the force that turns her."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "term_in_irons": {
+      "name": "In irons",
+      "alternatives": [],
+      "short": "Stopped head to wind, with no steering.",
+      "what": "Turned straight into the wind, the boat loses her drive: the sails flap, she slows and stops, and with no water flowing past the rudder the wheel does nothing. To get out, let her drift backwards with the wheel turned until the bow falls off the wind, or use the engine.",
+      "showMe": "Heading straight into the wind at 6 kn: the sails flap, she slows down and stops, and the wheel no longer turns her.",
+      "textStatus": "draft"
+    },
+    "term_head_up": {
+      "name": "Head up",
+      "alternatives": [
+        {
+          "term": "luff up"
+        },
+        {
+          "term": "come up"
+        }
+      ],
+      "short": "To turn the bow towards the wind.",
+      "what": "Heading up turns the bow closer to the wind; the sails then need hauling in, or they flap. The opposite is bearing away.",
+      "textStatus": "draft"
+    },
+    "term_bear_away": {
+      "name": "Bear away",
+      "alternatives": [
+        {
+          "term": "bear off"
+        },
+        {
+          "term": "fall off"
+        }
+      ],
+      "short": "To turn the bow away from the wind.",
+      "what": "Bearing away turns the bow further from the wind; the sails then need easing out. Bearing away too far with the wind behind risks an accidental gybe.",
+      "textStatus": "draft"
+    },
+    "term_stall": {
+      "name": "Stall",
+      "alternatives": [],
+      "short": "A sail pulled in too far, so the air no longer flows smoothly round it.",
+      "what": "A stalled sail looks full but drives poorly and makes more heel; the telltales on its far side droop or spin. Ease the sheet until they stream.",
+      "showMe": "The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes tab and she speeds up.",
+      "textStatus": "draft"
+    },
+    "term_hull_speed": {
+      "name": "Hull speed",
+      "alternatives": [],
+      "short": "The speed a heavy boat can hardly go beyond: about 9 kn for this one.",
+      "what": "A heavy boat pushes a wave along with her. Near about 1.34 × √(waterline length in feet) knots she sits in that wave, and more power hardly makes her faster. For this boat that is about 8.9 kn.",
+      "showMe": "Full throttle, no wind: 2,500 rpm gives about 9.3 kn. With a third less throttle she still makes about 8 kn: the last of the power adds little speed.",
+      "textStatus": "draft"
+    },
+    "term_fetch": {
+      "name": "Fetch",
+      "alternatives": [],
+      "short": "How far the wind has blown over open water to reach you.",
+      "what": "The longer the fetch and the stronger the wind, the bigger the waves. In a sheltered bay the fetch is short and the sea stays small; in the open sea it is long.",
+      "showMe": "Sheltered water in 15 kn: small waves. Set “Waves” in the Wind tab to “Open sea”: the same wind makes much bigger waves.",
+      "textStatus": "draft"
+    },
+    "term_white_horses": {
+      "name": "White horses",
+      "alternatives": [
+        {
+          "term": "whitecaps"
+        }
+      ],
+      "short": "Breaking wave crests that show white.",
+      "what": "When the wind reaches about 7–10 kn (force 3), the first wave crests break into white foam; the stronger the wind, the more of them.",
+      "showMe": "22 kn in the open sea: white horses everywhere. At 6 kn there are none.",
+      "textStatus": "draft"
+    },
+    "term_wave_height": {
+      "name": "Wave height",
+      "alternatives": [
+        {
+          "term": "significant wave height"
+        }
+      ],
+      "short": "How high the bigger waves are, from trough to crest.",
+      "what": "The wave height given in forecasts is the average of the highest third of the waves; single waves can be almost twice as high. The Waves block in the Wind tab shows it.",
+      "showMe": "Coastal waves in 15 kn: the Waves block in the Wind tab says they are 0.7 m high, one every 3.8 s.",
+      "textStatus": "draft"
+    },
+    "term_heave": {
+      "name": "Heave",
+      "alternatives": [],
+      "short": "The boat rising and falling on the waves.",
+      "what": "Heave is the up-and-down motion as the waves pass under the boat.",
+      "showMe": "Open sea in 20 kn, the boat held still: she rises and falls by about 0.9 m each way.",
+      "textStatus": "draft"
+    },
+    "term_pitch": {
+      "name": "Pitch",
+      "alternatives": [
+        {
+          "term": "pitching"
+        }
+      ],
+      "short": "The bow rising and falling as the waves pass.",
+      "what": "Pitch is the boat tipping nose up and nose down. Waves from ahead or from behind make her pitch most.",
+      "showMe": "Waves from ahead: she pitches, bow up and down, by about 3°.",
+      "textStatus": "draft"
+    },
+    "term_roll": {
+      "name": "Roll",
+      "alternatives": [
+        {
+          "term": "rolling"
+        }
+      ],
+      "short": "The boat rocking from side to side.",
+      "what": "Roll is the boat tipping from side to side. Waves from the side make her roll most.",
+      "showMe": "Waves from the side: she rolls by about 5° each way.",
       "textStatus": "draft"
     },
     "part_vang_strut": {
