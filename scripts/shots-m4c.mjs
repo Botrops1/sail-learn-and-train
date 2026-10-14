@@ -568,12 +568,15 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 4. The same crank with the mouse at the foldable and desktop sizes.
+  // 4. The same crank with the mouse at the foldable and desktop sizes. Detail Low: at High each
+  // mouse step waits for a 3D frame of 400-700 ms on the runners (software WebGL), longer than
+  // the 200 ms after which the app takes a still handle as stopped, so the crank was on for only
+  // a few percent of the drag and the main moved 0-1 %. At Low a step takes about 100-150 ms.
   for (const viewport of viewports.slice(1, 3)) {
     const { context, page } = await openPage(
       viewport,
       `m4c mast ${viewport.name}`,
-      '?mode=realistic&st=mast&hd=mast.w&gb=in&co=a3,b3&wd=60&ws=20&cam=side-port',
+      '?mode=realistic&st=mast&hd=mast.w&gb=in&co=a3,b3&wd=60&ws=20&cam=side-port&detail=low',
     );
     await page.waitForTimeout(600);
     const md = drawing('mast');
@@ -586,10 +589,13 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     const grip = await where(`${md} .real-crank`);
     await page.mouse.move(grip.x, grip.y);
     await page.mouse.down();
-    for (const p of arc(centre, grip, 5)) {
+    const points = arc(centre, grip, 5);
+    const started = Date.now();
+    for (const p of points) {
       await page.mouse.move(p.x, p.y);
       await page.waitForTimeout(20);
     }
+    const stepMs = Math.round((Date.now() - started) / points.length);
     await shot(page, `live-${viewport.name}-mast-cranking-in`);
     await page.mouse.up();
     await settle(page);
@@ -597,7 +603,7 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     check(
       `${viewport.name}: mouse crank at the mast rolls the main in`,
       mf < 100,
-      `mf 100 → ${mf}`,
+      `mf 100 → ${mf} (${stepMs} ms a mouse step)`,
     );
     await context.close();
   }
