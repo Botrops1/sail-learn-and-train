@@ -94,6 +94,9 @@ export function parseUrlState(
   let selection: string | null = null;
   const sel = params.get('sel');
   if (sel !== null && isRegisteredPartId(sel)) selection = sel;
+  let learn: string | null = null;
+  const learnParam = params.get('learn');
+  if (learnParam !== null && isRegisteredPartId(learnParam)) learn = learnParam;
 
   let stepSize: StepSize | undefined;
   const step = params.get('step');
@@ -159,6 +162,7 @@ export function parseUrlState(
       ...(clockShown !== undefined ? { clock: clockShown } : {}),
     },
     selection,
+    learn,
     history,
     realistic,
     boat: boatState,
@@ -457,6 +461,7 @@ export function serializeUrlState(state: AppState): string {
   if (jr !== null) params.set('jr', String(jr));
   params.set('cam', state.camera.preset);
   if (state.selection) params.set('sel', state.selection);
+  if (state.learn) params.set('learn', state.learn);
   params.set('step', String(state.settings.step));
   params.set('detail', state.settings.detail);
   // Settings that are rarely changed are only written when they differ from the default.

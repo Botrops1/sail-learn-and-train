@@ -8,14 +8,6 @@ describe('part registry', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('every entry has an English name, a one-liner and a status', () => {
-    for (const entry of registry.entries) {
-      expect(entry.names.en.trim(), entry.id).not.toBe('');
-      expect(entry.short.en.trim(), entry.id).not.toBe('');
-      expect(Object.keys(registry.statusValues), entry.id).toContain(entry.status.en);
-    }
-  });
-
   it('an invented id fails loudly', () => {
     expect(() => requirePartId('part_made_up')).toThrow(/parts\.json/);
     expect(isRegisteredPartId('part_made_up')).toBe(false);

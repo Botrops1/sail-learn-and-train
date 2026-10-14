@@ -1,4 +1,5 @@
 import registry from '../../content/registry/parts.json';
+import { glossaryText } from './glossary';
 
 /** Every id the app may attach to a mesh or rope (content/registry/parts.json). */
 const KNOWN_IDS: ReadonlySet<string> = new Set(registry.entries.map((entry) => entry.id));
@@ -29,21 +30,16 @@ export interface PartInfo {
   short: string;
 }
 
-type Entry = (typeof registry.entries)[number];
-
-function pick(texts: Partial<Record<string, string>> | undefined, language: string): string {
-  return texts?.[language] ?? texts?.en ?? '';
-}
-
-/** Name, boat label and one-liner for a registered id, by language code (Phase 1: 'en'). */
+/** Name, boat label and one-liner for a registered id, by language code (names and one-liners from the glossary). */
 export function partInfo(id: string, language = 'en'): PartInfo | undefined {
-  const entry: Entry | undefined = registry.entries.find((candidate) => candidate.id === id);
+  const entry = registry.entries.find((candidate) => candidate.id === id);
   if (!entry) return undefined;
   const labels = 'boatLabel' in entry ? entry.boatLabel : undefined;
+  const text = glossaryText(id, language);
   return {
     id,
-    name: pick(entry.names, language),
+    name: text?.name ?? '',
     boatLabels: Array.isArray(labels) ? [...labels] : [],
-    short: pick('short' in entry ? entry.short : undefined, language),
+    short: text?.short ?? '',
   };
 }

@@ -70,9 +70,15 @@ export function startApp(host: HTMLElement): void {
   trackTopHeight(layout.view, top, () => reframe());
   createWindIndicator(layout.view, store);
   const card = createInfoCard(layout, store, {
-    shownInPanel: (partId) => panel.activeTab() === 'ropes' && ropesTabShows(partId),
+    shownInPanel: (partId) =>
+      (panel.activeTab() === 'ropes' && ropesTabShows(partId)) ||
+      (panel.activeTab() === 'learn' && store.getState().learn === partId),
   });
   panel.onTabChange(() => card.refresh());
+  // Whether the card stays away depends on the open entry (the Learn tab shows the same part).
+  store.subscribe((state, previous) => {
+    if (state.learn !== previous.learn) card.refresh();
+  });
   if (scene) {
     // The phone can take the graphics memory back (many tabs, low memory): say so until it
     // returns.

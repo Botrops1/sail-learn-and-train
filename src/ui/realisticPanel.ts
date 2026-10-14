@@ -436,10 +436,10 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
   practiceButton.addEventListener('click', () => {
     const scenario = boat.realisticMode.scenarios.find((s) => s.id === 'furlLineSlips');
     if (!scenario) return;
-    const now = store.getState().settings;
+    const { settings: now, learn } = store.getState();
     const next = parseUrlState(scenario.query, now.detail);
     const settings = { ...next.settings, debug: now.debug, step: now.step, legend: now.legend };
-    store.dispatch({ type: 'load', state: { ...next, settings } });
+    store.dispatch({ type: 'load', state: { ...next, settings, learn } });
   });
   const practice = el('details', { class: 'strip-more real-how', 'data-testid': 'practice' }, [
     el('summary', {}, [t('real.practice.title')]),
@@ -447,9 +447,20 @@ export function createRealisticPanel(store: Store): HTMLElement[] {
     practiceButton,
   ]);
 
+  const learnMore = el(
+    'button',
+    { type: 'button', class: 'action-button learn-more', 'data-testid': 'real-learn' },
+    [t('ropes.strip.learn')],
+  );
+  learnMore.addEventListener('click', () => {
+    // Read when tapped: the fold is hidden with the strip when nothing is selected.
+    const spec = selected ? tailSpecs().find((candidate) => candidate.key === selected) : undefined;
+    if (spec) store.dispatch({ type: 'openLearn', id: spec.ropeId });
+  });
   const more = el('details', { class: 'strip-more' }, [
     el('summary', {}, [t('ropes.strip.more')]),
     el('p', { class: 'real-more-text' }),
+    learnMore,
   ]);
   const strip = el(
     'section',

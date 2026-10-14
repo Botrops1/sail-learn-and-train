@@ -1,4 +1,5 @@
 import { boat as boatData } from '../model/boat';
+import { isRegisteredPartId } from '../model/registry';
 import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
 import {
   DEFAULT_CAMERA,
@@ -72,6 +73,8 @@ export interface AppState {
   settings: Settings;
   /** Registry id of the part shown in the info card, or null. */
   selection: string | null;
+  /** The entry the Learn tab shows (a registry id), or null for the list (M21) or the empty page (M20). In the link as `learn`. */
+  learn: string | null;
   /** Realistic mode (PHASE1_SPEC 7.2.2): stations, clutches, winches. Kept while in Easy mode. */
   realistic: RealisticState;
   /** Pause (both modes): time stands still; not stored in the URL. */
@@ -119,6 +122,8 @@ export type Action =
   | { type: 'reset' }
   | { type: 'setCameraPreset'; preset: CameraPreset }
   | { type: 'select'; partId: string | null }
+  /** Open an entry in the Learn tab, or go back to the list with null. Unknown ids are refused (PHASE4_SPEC 4.1). */
+  | { type: 'openLearn'; id: string | null }
   | { type: 'setControls'; values: Partial<Controls> }
   /** A clutch, winch or station action of Realistic mode. */
   | { type: 'realistic'; action: RealisticAction }
@@ -155,6 +160,7 @@ export interface InitialOverrides {
   camera?: Partial<CameraState>;
   settings?: Partial<Settings>;
   selection?: string | null;
+  learn?: string | null;
   /** From a shared link: rig history the controls alone do not give (see RigHistory). */
   history?: RigHistory;
   /** From a shared link: clutches, winch setup and station (Realistic mode). */
@@ -278,6 +284,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     camera: { ...DEFAULT_CAMERA, ...overrides.camera },
     settings: { ...DEFAULT_SETTINGS, ...overrides.settings },
     selection: overrides.selection ?? null,
+    learn: overrides.learn ?? null,
     realistic: overrides.realistic ?? initialRealistic(),
     paused: false,
     boat,
@@ -346,6 +353,10 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, camera: { ...state.camera, preset: action.preset } };
     case 'select':
       return { ...state, selection: action.partId };
+    case 'openLearn':
+      if (action.id === state.learn) return state;
+      if (action.id !== null && !isRegisteredPartId(action.id)) return state;
+      return { ...state, learn: action.id };
     case 'setControls': {
       const controls = withControls(state.controls, action.values);
       if (controls === state.controls) return state;

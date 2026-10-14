@@ -34,6 +34,13 @@ export function createInfoCard(
   const name = el('h2', { class: 'card-name' });
   const label = el('p', { class: 'card-label' });
   const short = el('p', { class: 'card-short' });
+  const more = el('button', { type: 'button', class: 'card-more', 'data-testid': 'card-more' }, [
+    t('card.more'),
+  ]);
+  more.addEventListener('click', () => {
+    const id = store.getState().selection;
+    if (id) store.dispatch({ type: 'openLearn', id });
+  });
   const close = el(
     'button',
     { type: 'button', class: 'card-close', 'aria-label': t('card.close') },
@@ -47,7 +54,7 @@ export function createInfoCard(
   const card = el(
     'section',
     { class: 'info-card', 'data-testid': 'info-card', 'aria-label': t('card.label') },
-    [close, el('div', { class: 'card-head' }, [name, label]), short],
+    [close, el('div', { class: 'card-head' }, [name, label]), short, more],
   );
   const live = el('div', { class: 'info-area', 'aria-live': 'polite' }, [card]);
 

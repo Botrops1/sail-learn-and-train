@@ -94,12 +94,19 @@ function sharedHint(entry: PanelEntry): HTMLElement[] {
 }
 
 /** What the rope does (the registry's one-liner) and the entry's longer hints, folded. */
-function moreAbout(entry: PanelEntry): HTMLElement {
+function moreAbout(store: Store, entry: PanelEntry): HTMLElement {
   const short = partInfo(entry.selectId)?.short ?? '';
+  const learn = el(
+    'button',
+    { type: 'button', class: 'action-button learn-more', 'data-testid': 'strip-learn' },
+    [t('ropes.strip.learn')],
+  );
+  learn.addEventListener('click', () => store.dispatch({ type: 'openLearn', id: entry.selectId }));
   return el('details', { class: 'strip-more' }, [
     el('summary', {}, [t('ropes.strip.more')]),
     ...(short ? [el('p', {}, [short])] : []),
     ...(ENTRY_HINTS[entry.key] ?? []).map((key) => el('p', {}, [t(key)])),
+    learn,
   ]);
 }
 
@@ -121,7 +128,7 @@ export function createRopesTab(store: Store): Element[] {
     if (view) {
       name = t(view.name);
       const control = createControl(store, view, sharedHint(entry));
-      control.element.append(moreAbout(entry));
+      control.element.append(moreAbout(store, entry));
       block = control.element;
       refresh = control.refresh;
     } else {
@@ -140,7 +147,7 @@ export function createRopesTab(store: Store): Element[] {
         el('p', { class: 'static-note' }, [
           t(entry.staticNote ? `ropes.static.${entry.staticNote}` : 'ropes.static.none'),
         ]),
-        moreAbout(entry),
+        moreAbout(store, entry),
       ]);
     }
     block.hidden = true;
