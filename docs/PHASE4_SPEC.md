@@ -1,6 +1,6 @@
 # Phase 4 specification: learning layer
 
-Status: **planned**, owner's answers recorded (planning chat, 2026-10-14) · Last updated: 2026-10-14
+Status: **planned**, owner's answers recorded (planning chat and planning PR #53, 2026-10-14) · Last updated: 2026-10-14
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1–3 are done; [`PHASE1_SPEC.md`](PHASE1_SPEC.md), [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and [`PHASE3_SPEC.md`](PHASE3_SPEC.md) still describe everything Phase 4 builds on (layout, panel and tabs, info card, registry ids, URL state, browser checks). This file says only what Phase 4 adds or changes. Phase 4 changes no physics.
 
@@ -2344,6 +2344,8 @@ Every item of section 11 is ticked in the PR. **The agent ticks** items 1, 4, 5,
 ## 12. Decisions and open questions
 
 **Owner's answers on the planning outline (2026-10-14, "accept all except Q4"):** the long explanation opens in a new **Learn** tab; **Show me** buttons with the phone's Back button returning; the app starts in English, the language is a setting stored in the link; the Russian is an AI draft marked "not yet checked by a sailor" until a Russian-speaking sailor reviews it from one document (M24); every entry says how sure the facts are, with sources; entries are short (about 30 seconds to read); the panel hints stay plain text; entries first, the Russian app last (M23); numbers keep the dot. **Q4 changed by the owner:** the screen shows **one language only**, never both; each language has its **own traditional alternative terms** (for example Russian sea words of Dutch origin such as норд, бакборт), never terms from other languages; switching the language switches the whole app; a new language is added by adding JSON files with a complete translation. Phase 4 starts at M20 (M19 is done, its PR waiting for CI).
+
+**Owner's answers on the planning PR (#53, 2026-10-14, "accept all"):** (1) the direction the waves turn the bow is fixed in a small `/bug` PR (flip the sign of `waveYawDeg`, as below); (2) in Russian mode the words printed on the boat stay as printed (English, in « ») and are found by search; (3) the wind instrument's abbreviations (AWA, AWS, TWA, TWS, the "T") stay as printed on the display, explained in Russian; (4) the debug overlay stays English; (5) Phase 4 may be marked Done while the Russian text waits for a sailor's review; the corrections come later in a `/bug` PR that sets `textStatus` to `sailor-reviewed`.
 
 Decided in planning: the registry keeps only language-neutral facts and each language is a folder of two files (`ui.json`, `glossary.json`), found by the code without a list, so a new language needs no code; there is no fallback between languages; the English texts of every entry are written in this spec (the builders translate them into Russian and write nothing new in English); Show me scenes are ordinary links run through `load`, with `pushState` so Back works, and they were run against the model for this plan (every link round-trips; the bands in the tests are the measured values); changing the language reloads the page.
 
