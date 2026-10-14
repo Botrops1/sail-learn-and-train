@@ -36,11 +36,15 @@ interface Target {
  * Steps 2 and 3 skip parts hidden behind the surface the ray hits. Wires and thin struts, and
  * surfaces the ray only grazes (a sail seen edge-on from above), hide nothing. The water is
  * see-through: parts under it (keel, rudder) are found through it.
+ *
+ * `extraRoots` (M16: the buoys) are searched like the boat; their parts need the same
+ * `partId` / `hitPoints` data.
  */
 export function createPicker(
   camera: THREE.Camera,
   boatRoot: THREE.Object3D,
   water: THREE.Object3D,
+  extraRoots: THREE.Object3D[] = [],
 ): Picker {
   const raycaster = new THREE.Raycaster();
   let segments: Target[] = [];
@@ -55,7 +59,7 @@ export function createPicker(
     segments = [];
     smallParts = [];
     smallIds.clear();
-    boatRoot.traverse((object) => {
+    const visit = (object: THREE.Object3D) => {
       const data = object.userData as Partial<PartUserData>;
       if (!data.partId || !object.visible) return;
       for (const [a, b] of data.pickSegments ?? []) {
@@ -71,7 +75,8 @@ export function createPicker(
         smallParts.push({ object, partId: data.partId, a: point, b: point });
         smallIds.add(data.partId);
       }
-    });
+    };
+    for (const root of [boatRoot, ...extraRoots]) root.traverse(visit);
   }
 
   const worldA = new THREE.Vector3();
@@ -117,7 +122,7 @@ export function createPicker(
       collect();
       const { tolerancePx, smallPartRadiusPx } = SCENE.picking;
       raycaster.setFromCamera(new THREE.Vector2((x / width) * 2 - 1, 1 - (y / height) * 2), camera);
-      const hits = raycaster.intersectObjects([boatRoot, water], true);
+      const hits = raycaster.intersectObjects([boatRoot, ...extraRoots, water], true);
       const boatHits = hits.filter(
         (hit) => hit.object.visible && partIdOf(hit.object) && !isWithin(hit.object, water),
       );

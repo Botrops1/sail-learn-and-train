@@ -324,6 +324,15 @@ describe('M7 map labels and taps (PHASE2_SPEC 7.4)', () => {
     expect(pickMap(state, view, width, 10, 400)).toBeNull();
   });
 
+  it('a tap on a practice buoy picks it, within a fingertip (M16)', () => {
+    const state = initialState();
+    const view = viewport({ metresPerPx: 4 });
+    // The N buoy is 200 m north: 50 px above the boat's centre.
+    expect(pickMap(state, view, width, 180, 160)).toBe('env_buoy');
+    expect(pickMap(state, view, width, 180 + 20, 160)).toBe('env_buoy');
+    expect(pickMap(state, view, width, 180 + 30, 160)).not.toBe('env_buoy');
+  });
+
   it('boat up turns the wedge with the boat', () => {
     const state = initialState({
       controls: { ctl_wind_dir: 100, ctl_wind_speed: 12 },

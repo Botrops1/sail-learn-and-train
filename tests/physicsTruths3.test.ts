@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { reduce } from '../src/app/store';
 import { stepBoat } from '../src/model/motion';
-import { wrap180, mpsToKn } from '../src/model/angles';
+import { wrap180, mpsToKn, knToMps } from '../src/model/angles';
+import { elevation, initialSea, waveTrains } from '../src/model/waves';
+import { gustAt, gustProfile, whitecapAmount, whitecapCoverage } from '../src/model/windOnWater';
+import { gustyEvents, initialWindMode } from '../src/model/windModes';
 import { act, initialState, run, sampleRun, stdDev, mean } from './motionHelpers';
 
 /** Phase 3 physics truths (PHYSICS_TRUTHS.md), implemented from M14 on. */
@@ -226,4 +229,80 @@ describe('PT-43 head seas slow her most', () => {
     expect(l).toBeGreaterThan(0.15);
     expect(l).toBeLessThan(0.45);
   }, 120_000);
+});
+
+describe('PT-44 white horses', () => {
+  it('PT-44 none in light wind, more of them as the wind rises', () => {
+    expect(whitecapCoverage(0)).toBe(0);
+    expect(whitecapCoverage(6.9)).toBe(0);
+    expect(whitecapCoverage(8)).toBeGreaterThan(0);
+    expect(whitecapCoverage(10)).toBeCloseTo(0.02, 9);
+    expect(whitecapCoverage(16)).toBeCloseTo(0.06, 9);
+    expect(whitecapCoverage(27)).toBeCloseTo(0.2, 9);
+    for (let kn = 7; kn < 40; kn += 1) {
+      expect(whitecapCoverage(kn + 1)).toBeGreaterThan(whitecapCoverage(kn));
+    }
+  });
+
+  /** The share of a 200 × 200 m patch of Coastal sea that is white (amount above 0.5). */
+  const whiteShare = (kn: number) => {
+    const trains = waveTrains(initialSea('coastal', { dirDeg: 0, twsKn: kn }));
+    const phases = trains.map((_, i) => [0, 2.1, 4.2][i] ?? 0);
+    const sum = trains.reduce((total, train) => total + train.amplitudeM, 0);
+    const coverage = whitecapCoverage(kn);
+    let white = 0;
+    for (let east = 0; east < 200; east += 1) {
+      for (let north = 0; north < 200; north += 1) {
+        const eta = elevation(trains, phases, east, north);
+        if (whitecapAmount(eta, sum, coverage) > 0.5) white += 1;
+      }
+    }
+    return white / 40_000;
+  };
+
+  it('PT-44 the white share of the sea grows with the wind (16 kn and 27 kn)', () => {
+    const light = whiteShare(16);
+    expect(light).toBeGreaterThan(0.04);
+    expect(light).toBeLessThan(0.12);
+    const strong = whiteShare(27);
+    expect(strong).toBeGreaterThan(0.11);
+    expect(strong).toBeLessThan(0.32);
+    expect(strong).toBeGreaterThan(light);
+  });
+});
+
+describe('PT-45 a gust shows upwind before it arrives', () => {
+  const controls = {
+    ...initialState().controls,
+    ctl_wind_dir: 0,
+    ctl_wind_speed: 12,
+  };
+  const windMode = initialWindMode({ mode: 'gusty', seed: 1, size: 30, startS: 0 });
+
+  it('PT-45 the patch 120 m upwind is the gust that reaches the boat 120 / U seconds later', () => {
+    const first = gustyEvents(1, 3600)[0];
+    expect(first?.gust).toBe(true);
+    const g = { riseS: 3 };
+    const peak = (first?.atS ?? 0) + g.riseS + (first?.holdS ?? 0) / 2;
+    const u = knToMps(12);
+    const early = gustProfile(controls, windMode, peak - 120 / u);
+    const atPeak = gustProfile(controls, windMode, peak);
+    expect(early && atPeak).toBeTruthy();
+    if (!early || !atPeak) return;
+    expect(gustAt(early, 120)).toBeCloseTo(gustAt(atPeak, 0), 9);
+    expect(gustAt(atPeak, 0)).toBeCloseTo(1, 9);
+  });
+
+  it('PT-45 the value at the boat is the wind the store shows', () => {
+    const start = act(initialState({ controls: { ctl_wind_dir: 0, ctl_wind_speed: 12 } }), {
+      type: 'setWindMode',
+      mode: 'gusty',
+    });
+    const state = run(start, 50, 60);
+    const profile = gustProfile(state.controls, state.windMode, state.rig.timeS);
+    expect(profile).not.toBeNull();
+    if (!profile) return;
+    const expected = Math.min(1, Math.max(-1, (state.wind.twsKn - 12) / (12 * 0.3)));
+    expect(gustAt(profile, 0)).toBeCloseTo(expected, 9);
+  });
 });

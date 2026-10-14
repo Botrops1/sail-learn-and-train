@@ -12,6 +12,7 @@ import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
 import { rippleNormalMap, skyTexture, sunDirection } from './environment';
+import { buildMarks } from './marks';
 import { buildWaterSurface } from './waterSurface';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
@@ -114,6 +115,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const water = buildWaterSurface(ripples);
   const streaks = buildWindStreaks();
   const world = createWorld(water.object);
+  const marks = buildMarks();
+  world.group.add(marks.object);
   const wake = buildWake();
   scene.add(holder, world.group, wake.object, streaks.object);
 
@@ -122,7 +125,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   rig.goTo(store.getState().camera.preset, false);
   rig.onUserMove(() => store.dispatch({ type: 'setCameraPreset', preset: 'free' }));
 
-  const picker = createPicker(camera, holder, water.pickTarget);
+  const picker = createPicker(camera, holder, water.pickTarget, [marks.object]);
   listenForTaps(renderer.domElement, (x, y) => {
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
@@ -174,6 +177,23 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           calls: renderer.info.render.calls,
           triangles: renderer.info.render.triangles,
         }),
+      },
+    });
+  }
+
+  // Debug only (`?debug=1`): the gust profile of the last frame and a buoy's place on the canvas.
+  if (store.getState().settings.debug) {
+    Object.assign(window, {
+      __sailWater: {
+        gustProfile: () => water.gustProfile(),
+        buoyScreen: (id: string) => {
+          const buoy = marks.buoyObject(id);
+          if (!buoy) return null;
+          const rect = renderer.domElement.getBoundingClientRect();
+          const ndc = buoy.getWorldPosition(new THREE.Vector3()).project(camera);
+          if (ndc.z > 1 || ndc.z < -1) return null;
+          return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
+        },
       },
     });
   }
@@ -269,6 +289,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       );
       const shift = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
       water.update(state, shift, waveTrains(state.sea));
+      marks.update(state, water.heightAt);
       wake.update(state, state.rig.timeS, water.heightAt);
       renderer.render(scene, camera);
     },

@@ -1,10 +1,20 @@
 import * as THREE from 'three';
 import type { AppState } from '../app/store';
 import { smoothstep } from '../model/angles';
+import { boat } from '../model/boat';
 import { modulo } from '../model/mapFrame';
 import { requirePartId } from '../model/registry';
 import type { Detail } from '../model/settings';
 import { elevation, type WaveTrain } from '../model/waves';
+import {
+  gustAt,
+  gustProfile,
+  upwindDistanceM,
+  whitecapAmount,
+  whitecapCoverage,
+  whitecapPatch,
+  type GustProfile,
+} from '../model/windOnWater';
 import { SCENE } from './sceneConfig';
 
 export interface WaterSurface {
@@ -27,6 +37,8 @@ export interface WaterSurface {
    * that point (0 beyond the inner mesh), for the wake and (M16) the buoys.
    */
   heightAt(dEastM: number, dNorthM: number): number;
+  /** The gust profile of the last frame (the debug hook of the browser checks), or null. */
+  gustProfile(): GustProfile | null;
 }
 
 /**
@@ -34,6 +46,10 @@ export interface WaterSurface {
  * the scale grid drawn along its edges, a flat outer mesh out to the edge of the water, and an
  * invisible flat plane to tap. The group steps along the map in whole `stepM` so every vertex
  * stays on a fixed map point; the ripples stay fixed on the map too. Local x is north, z is east.
+ *
+ * M16: both meshes carry vertex colours (the base colour of the detail level goes into them):
+ * darker water in more wind, a dark patch where a gust is about to arrive (and a light one for a
+ * lull), and white crests on the inner mesh (PHASE3_SPEC 8.4).
  */
 export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
   const w = SCENE.water;
@@ -43,7 +59,8 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
   ripples.repeat.set(1, 1);
 
   const high = new THREE.MeshStandardMaterial({
-    color: w.color,
+    color: 0xffffff,
+    vertexColors: true,
     roughness: w.roughness,
     metalness: 0,
     normalMap: ripples,
@@ -53,7 +70,8 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
     depthWrite: false,
   });
   const low = new THREE.MeshLambertMaterial({
-    color: w.lowColor,
+    color: 0xffffff,
+    vertexColors: true,
     transparent: true,
     opacity: w.lowOpacity,
     depthWrite: false,
@@ -71,6 +89,9 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
   let perSide = 0;
   let innerPositions = new Float32Array(0);
   let innerNormals = new Float32Array(0);
+  let innerColours = new Float32Array(0);
+  let outerPositions = new Float32Array(0);
+  let outerColours = new Float32Array(0);
   let innerGeometry = new THREE.BufferGeometry();
   const inner = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(innerGeometry, high);
   inner.receiveShadow = true;
@@ -98,6 +119,17 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
 
   /** True while the inner mesh is already flat, so the height work can be skipped. */
   let flat = false;
+  /** True after a rebuild: the colours of both meshes must be written again. */
+  let coloursStale = true;
+  let baseColour = new THREE.Color(w.color);
+  let lastWindKn = Number.NaN;
+  let lastProfile: GustProfile | null = null;
+  const windyColour = new THREE.Color(w.windyColor);
+  const gustColour = new THREE.Color(w.gustColor);
+  const lullColour = new THREE.Color(w.lullColor);
+  const whitecapColour = new THREE.Color(w.whitecapColor);
+  const colour = new THREE.Color();
+  const windy = new THREE.Color();
 
   /** The inner mesh for the current cell size, and the grid lines that share its positions. */
   const buildInner = () => {
@@ -105,6 +137,7 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
     const count = perSide * perSide;
     innerPositions = new Float32Array(count * 3);
     innerNormals = new Float32Array(count * 3);
+    innerColours = new Float32Array(count * 3);
     const uvs = new Float32Array(count * 2);
     for (let iz = 0; iz < perSide; iz += 1) {
       for (let ix = 0; ix < perSide; ix += 1) {
@@ -137,6 +170,9 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
     next.setAttribute('position', position);
     next.setAttribute('normal', normal);
     next.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    const colour = new THREE.BufferAttribute(innerColours, 3);
+    colour.setUsage(THREE.DynamicDrawUsage);
+    next.setAttribute('color', colour);
     next.setIndex(triangles);
     const lineGeometry = new THREE.BufferGeometry();
     lineGeometry.setAttribute('position', position);
@@ -147,40 +183,53 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
     innerGeometry.dispose();
     innerGeometry = next;
     flat = true;
+    coloursStale = true;
   };
 
-  /** The flat outer water: cells of `outerCellM` whose centres lie outside the inner square. */
+  /**
+   * The flat outer water: a grid of shared vertices `outerCellM` apart, with the triangles of the
+   * cells whose centres lie outside the inner square (so the inner mesh's waves meet it at y = 0).
+   */
   const buildOuter = () => {
     const cellM = w.outerCellM;
     const cells = Math.round(w.size / cellM);
+    const perSideOuter = cells + 1;
     const origin = -w.size / 2;
-    const positions: number[] = [];
-    const uvs: number[] = [];
-    const push = (x: number, z: number) => {
-      positions.push(x, 0, z);
-      uvs.push(x / w.rippleTileM, -z / w.rippleTileM);
-    };
+    outerPositions = new Float32Array(perSideOuter * perSideOuter * 3);
+    outerColours = new Float32Array(perSideOuter * perSideOuter * 3);
+    const normals = new Float32Array(perSideOuter * perSideOuter * 3);
+    const uvs = new Float32Array(perSideOuter * perSideOuter * 2);
+    for (let ix = 0; ix < perSideOuter; ix += 1) {
+      for (let iz = 0; iz < perSideOuter; iz += 1) {
+        const i = ix * perSideOuter + iz;
+        const x = origin + ix * cellM;
+        const z = origin + iz * cellM;
+        outerPositions.set([x, 0, z], i * 3);
+        normals[i * 3 + 1] = 1;
+        uvs.set([x / w.rippleTileM, -z / w.rippleTileM], i * 2);
+      }
+    }
+    const triangles: number[] = [];
     for (let ix = 0; ix < cells; ix += 1) {
       for (let iz = 0; iz < cells; iz += 1) {
         const x0 = origin + ix * cellM;
         const z0 = origin + iz * cellM;
         if (Math.max(Math.abs(x0 + cellM / 2), Math.abs(z0 + cellM / 2)) < half) continue;
-        push(x0, z0);
-        push(x0, z0 + cellM);
-        push(x0 + cellM, z0);
-        push(x0 + cellM, z0);
-        push(x0, z0 + cellM);
-        push(x0 + cellM, z0 + cellM);
+        const i = ix * perSideOuter + iz;
+        triangles.push(i, i + 1, i + perSideOuter, i + perSideOuter, i + 1, i + perSideOuter + 1);
       }
     }
-    const normals = new Float32Array((positions.length / 3) * 3);
-    for (let i = 0; i < normals.length; i += 3) normals[i + 1] = 1;
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setAttribute('position', new THREE.BufferAttribute(outerPositions, 3));
     geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
-    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+    geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+    const colour = new THREE.BufferAttribute(outerColours, 3);
+    colour.setUsage(THREE.DynamicDrawUsage);
+    geometry.setAttribute('color', colour);
+    geometry.setIndex(triangles);
     outer.geometry.dispose();
     outer.geometry = geometry;
+    coloursStale = true;
   };
 
   buildInner();
@@ -201,6 +250,7 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
       outer.material = material;
       gridMaterial.opacity = detail === 'high' ? SCENE.grid.opacityHigh : SCENE.grid.opacity;
       cell = detail === 'high' ? w.waves.cellM : w.waves.cellLowM;
+      baseColour = new THREE.Color(detail === 'high' ? w.color : w.lowColor);
       buildInner();
       buildOuter();
     },
@@ -222,8 +272,49 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
         modulo(drift * 0.6 - shift.centreEastM / w.rippleTileM, 1),
       );
 
-      if (trains.length === 0) {
-        if (flat) return;
+      // Colours (M16): darker in more wind, a dark patch where a gust will arrive, white crests.
+      const windKn = state.wind.twsKn;
+      const profile = gustProfile(state.controls, state.windMode, state.rig.timeS);
+      lastProfile = profile;
+      const windChanged = windKn !== lastWindKn;
+      lastWindKn = windKn;
+      const darkness = w.windDarkAmount * smoothstep(w.windDarkFromKn, w.windDarkToKn, windKn);
+      windy.copy(baseColour).lerp(windyColour, darkness);
+      const windDir = state.controls.ctl_wind_dir;
+      const coverage = trains.length > 0 ? whitecapCoverage(windKn) : 0;
+      const amplitudeSum = trains.reduce((sum, train) => sum + train.amplitudeM, 0);
+      const boatEast = state.boat.eastM;
+      const boatNorth = state.boat.northM;
+      // Patches are never smaller than 1.5 vertex cells, or they could not be drawn.
+      const patchSizeM = Math.max(boat.waves.whitecaps.patchSizeM, 1.5 * cell);
+      /** Writes the colour of the vertex at a map offset from the boat (before any crest). */
+      const tint = (east: number, north: number) => {
+        colour.copy(windy);
+        if (!profile) return;
+        const g = gustAt(profile, upwindDistanceM(east, north, windDir));
+        if (g > 0) colour.lerp(gustColour, w.gustAmount * g);
+        else if (g < 0) colour.lerp(lullColour, w.lullAmount * -g);
+      };
+
+      if (coloursStale || windChanged || profile) {
+        const next = outerColours;
+        const side = Math.round(w.size / w.outerCellM) + 1;
+        const outerOrigin = -w.size / 2;
+        for (let ix = 0; ix < side; ix += 1) {
+          const north = shift.x + outerOrigin + ix * w.outerCellM;
+          for (let iz = 0; iz < side; iz += 1) {
+            tint(shift.z + outerOrigin + iz * w.outerCellM, north);
+            const i = (ix * side + iz) * 3;
+            next[i] = colour.r;
+            next[i + 1] = colour.g;
+            next[i + 2] = colour.b;
+          }
+        }
+        outer.geometry.getAttribute('color').needsUpdate = true;
+      }
+
+      const heights = trains.length > 0;
+      if (!heights && !flat) {
         for (let i = 0; i < perSide * perSide; i += 1) {
           innerPositions[i * 3 + 1] = 0;
           innerNormals[i * 3] = 0;
@@ -231,15 +322,20 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
           innerNormals[i * 3 + 2] = 0;
         }
         flat = true;
-      } else {
-        flat = false;
-        const rows = trains.map((train, j) => ({
-          a: train.amplitudeM,
-          k: train.k,
-          dE: train.dirEast,
-          dN: train.dirNorth,
-          phase: lastPhases[j] ?? 0,
-        }));
+        inner.geometry.getAttribute('position').needsUpdate = true;
+        inner.geometry.getAttribute('normal').needsUpdate = true;
+      }
+      const rows = trains.map((train, j) => ({
+        a: train.amplitudeM,
+        k: train.k,
+        dE: train.dirEast,
+        dN: train.dirNorth,
+        phase: lastPhases[j] ?? 0,
+      }));
+      if (heights) flat = false;
+      // Without waves the inner colours only change with the wind, as the outer ones do.
+      const innerColoursChange = heights || coloursStale || windChanged || profile !== null;
+      if (heights || innerColoursChange) {
         for (let iz = 0; iz < perSide; iz += 1) {
           const z = -half + iz * cell;
           const east = shift.z + z;
@@ -247,29 +343,53 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
             const x = -half + ix * cell;
             const north = shift.x + x;
             const f = fadeAt(x, z);
-            let eta = 0;
-            let slopeEast = 0;
-            let slopeNorth = 0;
-            for (const r of rows) {
-              const arg = r.phase + r.k * (r.dE * east + r.dN * north);
-              eta += r.a * Math.cos(arg);
-              const slope = r.a * r.k * Math.sin(arg);
-              slopeEast -= slope * r.dE;
-              slopeNorth -= slope * r.dN;
-            }
             const i = (iz * perSide + ix) * 3;
-            innerPositions[i + 1] = f * eta;
-            const nx = -f * slopeNorth;
-            const nz = -f * slopeEast;
-            const length = Math.hypot(nx, 1, nz);
-            innerNormals[i] = nx / length;
-            innerNormals[i + 1] = 1 / length;
-            innerNormals[i + 2] = nz / length;
+            let eta = 0;
+            if (heights) {
+              let slopeEast = 0;
+              let slopeNorth = 0;
+              for (const r of rows) {
+                const arg = r.phase + r.k * (r.dE * east + r.dN * north);
+                eta += r.a * Math.cos(arg);
+                const slope = r.a * r.k * Math.sin(arg);
+                slopeEast -= slope * r.dE;
+                slopeNorth -= slope * r.dN;
+              }
+              innerPositions[i + 1] = f * eta;
+              const nx = -f * slopeNorth;
+              const nz = -f * slopeEast;
+              const length = Math.hypot(nx, 1, nz);
+              innerNormals[i] = nx / length;
+              innerNormals[i + 1] = 1 / length;
+              innerNormals[i + 2] = nz / length;
+            }
+            tint(east, north);
+            if (heights) {
+              // Foam only in scattered patches fixed on the map, not along whole crest lines.
+              const crest = f * whitecapAmount(eta, amplitudeSum, coverage);
+              if (crest > 0) {
+                const white =
+                  w.whitecapMax *
+                  crest *
+                  whitecapPatch(boatEast + east, boatNorth + north, patchSizeM);
+                if (white > 0) colour.lerp(whitecapColour, white);
+              }
+            }
+            innerColours[i] = colour.r;
+            innerColours[i + 1] = colour.g;
+            innerColours[i + 2] = colour.b;
           }
         }
+        if (heights) {
+          inner.geometry.getAttribute('position').needsUpdate = true;
+          inner.geometry.getAttribute('normal').needsUpdate = true;
+        }
+        inner.geometry.getAttribute('color').needsUpdate = true;
       }
-      inner.geometry.getAttribute('position').needsUpdate = true;
-      inner.geometry.getAttribute('normal').needsUpdate = true;
+      coloursStale = false;
+    },
+    gustProfile() {
+      return lastProfile;
     },
     heightAt(dEastM, dNorthM) {
       const x = dNorthM - lastShift.x;

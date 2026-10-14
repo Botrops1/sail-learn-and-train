@@ -734,7 +734,20 @@ No collisions with the buoys, no other marks or land (Phase 5). No streaks of fo
 
 ### 8.11 Decided in the M16 PR
 
-(Filled in by the M16 builder: what this section left open, and the owner's answers on the PR.)
+Built as specified; the model tests (PT-44 shares, PT-45 gust timing) passed on the first run with the spec's data, so no tunable key was touched.
+
+What the spec left open (decided in the M16 PR):
+
+- **Outer water is an indexed grid.** With 2000 m of water the old non-indexed cells would have been about 60,000 vertices to recolour; the outer mesh now shares its vertices (about 10,000), same cells and holes as before.
+- **Where the tests live.** PT-44 and PT-45 are in `tests/physicsTruths3.test.ts`; the other model tests are in `tests/windOnWater.test.ts`.
+- **Debug hook.** `__sailWater.gustProfile()` reads `water.gustProfile()` (a new method of the water surface that returns the last frame's profile); `buoyScreen` is in `scene.ts`.
+- **Map buoy circle.** Its radius uses the real scale (`0.6 m / metresPerPx`, at least 5 px), not the enlarged boat's scale.
+- **Browser check on the map** opens with `debug=1` to read the boat's centre.
+- **PT-45 source.** A web search found sailing and weather pages that describe a cat's paw as a dark patch of ruffled water made by a gust (among them the AMS Glossary entry), but the glossary page could not be opened from the cloud environment and the others were not read in full, so the status stays `to-verify`.
+
+Owner's feedback after trying the preview (PR comment, 2026-10-14): **the white crests were far too big** (bands several boat lengths wide) and "is it realistic?". Decided in the M16 PR: no, it was not. Real white horses are scattered foam patches a few metres across, and measured cover is about 1 % of the sea at 20 kn. Fix (`whitecaps.patchSizeM` 3, `patchFrom` 0.6, `patchTo` 0.72; `SCENE.water.whitecapMax` 0.85; `whitecapPatch` in `windOnWater.ts`): the crest band of 8.3 is unchanged (so the spec's PT-44 test bands and `coverageByWindKn` hold as written), but a vertex only turns white where a fixed noise pattern on the map allows it (about a quarter of the band; patches at least 1.5 vertex cells across, so 6 m at Low detail), and never fully white (85 %). The foam seen is about 2 % of the sea at 16 kn, 4 % at 22 kn, 6 % at 27 kn. New tests in `tests/windOnWater.test.ts`; new browser scenes `water-windy-top` and the live shot `live-phone-foam-wide`.
+
+Owner's answer (PR comment, "accept all"): **the map keeps opening zoomed in close** (0.1 m per pixel); the buoys show after zooming out with −. No code change.
 
 ---
 
