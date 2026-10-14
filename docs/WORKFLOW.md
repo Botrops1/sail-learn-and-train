@@ -319,3 +319,53 @@ New link settings (PHASE3_SPEC): M14 `sea=flat|sheltered|coastal|open` (default 
 
 - [ ] Frame rate on your phone, the heaviest case: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=20&ms=40&js=100&sea=open&wm=gusty&tx=16&clk=202606012030&debug=1 — FPS mostly 50 or more at Detail Low and High (View tab); note FPS and Slowest in the PR.
 - [ ] Every item of the Phase 3 Definition of Done (PHASE3_SPEC 12) is ticked in the PR.
+
+## 9. Phase 4
+
+Same loop as section 2: one session and one PR per milestone (M20 … M24, [`PHASE4_SPEC.md`](PHASE4_SPEC.md) section 5), started with `/milestone <N>`. The spec gives every English text, Russian name, link and test, so **Sonnet at high effort** can build each milestone. **M20, M21, M22 and M23 need a `/review` with Opus** before you test them (the spec's milestones table has a review column; the PR reminds you).
+
+### 9.1 Checklists
+
+New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn tab (for example `learn=rope_vang`); M23 `lang=ru` shows the app in Russian (without it: English). Replace `<N>` with the PR number.
+
+#### M20: Entries and the Learn tab
+
+- [ ] More on the card: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=sail_main&held=1 — the card at the top of the panel says "Mainsail"; tap "More": the Learn tab opens with the whole entry: other names, what it does, on this boat, typical mistakes, how sure we are.
+- [ ] A rope's entry: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=rope_vang&held=1 — "Vang", "Also called: kicker (British), kicking strap (British), boom vang", "Written on the boat: “Vang”", two typical mistakes, "Seen on the reference boat (photo)" with its sources.
+- [ ] Show me and Back: same link — tap "Show me": the boat changes (wind 20 kn, the boom end lifts, the top of the main twists open) and the Learn tab stays. Now press your phone's Back button: the boat goes back to how it was.
+- [ ] Try it: same link — tap "Vang" under "Try it in the Ropes tab": the Ropes tab opens with the vang's control.
+- [ ] See also and Show on the boat: same link — tap "Boom" under "See also": the Boom entry. Tap "Show on the boat": the boom lights up in 3D and the Learn tab stays open.
+- [ ] From the Ropes tab: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=rope_mainsheet&held=1 — open "What does it do?" under the slider, tap "Read more in Learn": the Mainsheet entry.
+- [ ] Other ropes and sails: open https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=rope_jib_sheet&held=1, https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=rope_main_furling_line&held=1 and https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=sail_jib&held=1, tap "Show me" on each and read whether the text matches what you see.
+- [ ] Old links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60 — opens as before, on the Ropes tab.
+
+#### M21: Glossary and search
+
+- [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?held=1 — Learn tab: ten groups with counts ("Ropes (9)", "Sails and their parts (10)", …); open one and tap an entry; "‹ All entries" brings the list back.
+- [ ] Search: type "kicker": "Vang — also: kicker". Type "genoa": "Jib sheet — also: Genoa sheet" (the word on the clutch). Type "mast": every entry with "mast" in its name.
+- [ ] New texts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_winch&held=1 — three typical mistakes; tap "Show me": Realistic mode at the starboard winch with the jib sheet on it; Back returns.
+- [ ] Engine: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=engine_control&held=1 — "Show me": the engine runs at about 1,850 rpm and she motors at about 8 kn.
+- [ ] Danger zone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=env_boom_danger_zone&held=1 — "Show me": running downwind, the red area of the boom's sweep is drawn.
+
+#### M22: Sailing words, directions and winds
+
+- [ ] Directions: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_north&held=1 — "North", "0° on the compass"; open the group "Directions and sides (14)" and look through it.
+- [ ] Port and starboard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_port&held=1 — "Also called: larboard (an old word, no longer used)", and the mistake with its fix.
+- [ ] Winds of the Adriatic: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_bora&held=1 — "Bora", from the north-east, gusty, "Checked against a written source"; also open "Jugo" and "Maestral" from "See also".
+- [ ] Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_heel&held=1 — "Show me": she heels about 30°; in the Ropes tab ease the main sheet: she stands up. Back returns.
+- [ ] In irons: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_in_irons&held=1 — "Show me": she points straight into the wind, slows down and stops within about half a minute.
+- [ ] Search: type "jibe": "Gybe — also: jibe".
+
+#### M23: The app in Russian
+
+- [ ] Switch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?held=1 — View tab → "Language": tap "Русский": the page reloads and everything is in Russian: tabs, buttons, hints, the names over the parts in 3D, the clock card.
+- [ ] One language only: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&learn=term_north&held=1 — "север", "Также называют: норд (…), С (сокращение)", no English words except names printed on the boat (in « ») and instrument letters (AWA, TWS …). The line "This translation has not yet been checked by a sailor" appears in Russian.
+- [ ] Russian search: in the Learn tab type "бакборт": "левый борт".
+- [ ] Nothing cut off: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&mode=realistic&held=1 and https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&wd=90&ws=12 — look at every tab: no button or label text is cut off; long words wrap.
+- [ ] Engine numbers: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&ws=0&eng=1&lv=66&held=1 — the engine's rpm reads "1 850" (a space, not a comma).
+- [ ] Back to English: View tab → "English": the page reloads in English.
+
+#### M24: Phase 4 sign-off
+
+- [ ] The review document: open the link to `docs/review/ru.md` in the PR and send it to a Russian-speaking sailor (your instructor) if you can.
+- [ ] Every item of the Phase 4 Definition of Done (PHASE4_SPEC 11) is ticked in the PR.
