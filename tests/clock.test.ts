@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { daylighting } from '../src/render3d/daylight';
+import { SCENE } from '../src/render3d/sceneConfig';
 import { act, initialState, run } from './motionHelpers';
 import {
   clockParam,
@@ -174,7 +175,7 @@ describe('daylighting', () => {
     const day = daylighting(30, 180, 0);
     expect([day.sun, day.sky, day.night]).toEqual([1, 1, 0]);
     const night = daylighting(-20, 180, 0);
-    expect([night.sun, night.sky, night.night]).toEqual([0, 0.25, 1]);
+    expect([night.sun, night.sky, night.night]).toEqual([0, SCENE.daylight.skyFloor, 1]);
   });
 
   it('puts the sun on the right side of the boat', () => {

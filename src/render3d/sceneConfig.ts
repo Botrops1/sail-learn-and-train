@@ -116,7 +116,7 @@ export const SCENE = {
     sunFromDeg: -1,
     sunToDeg: 8,
     /** The sky light never goes below this share; it rises to 1 between the two heights. */
-    skyFloor: 0.25,
+    skyFloor: 0.65,
     skyFromDeg: -12,
     skyToDeg: 10,
     /** The sun's light turns warm below `warmToDeg` and is fully warm at `warmFromDeg`. */
