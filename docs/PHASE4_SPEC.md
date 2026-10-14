@@ -524,6 +524,8 @@ Do this with a one-off script (not committed) over `content/registry/parts.json`
 
 #### 6.3.2 Russian names and alternatives (copy exactly)
 
+(Built as given. M23 changes some of these names after checking them against sources: see 9.2.1.)
+
 | id | `name` | `alternatives` (term — note) |
 |---|---|---|
 | `rope_mainsheet` | гика-шкот | грота-шкот; шкот грота |
@@ -1328,6 +1330,8 @@ The group order (the list's order) is the table's order. In `glossary.ts`: `expo
 
 #### 7.2.2 Russian names and alternatives (copy exactly)
 
+(Built as given. M23 changes some of these names after checking them against sources: see 9.2.1.)
+
 Same notation as 6.3.2: `;` separates alternatives, ` — ` starts a note, `—` alone means none.
 
 | id | `name` | `alternatives` (term — note) |
@@ -2075,6 +2079,8 @@ Changed: `content/registry/parts.json` (33 new entries, `sourceKeys`, fields of 
 
 ### 8.4 Data: Russian names and alternatives (copy exactly)
 
+(Built as given. M23 changes some of these names after checking them against sources: see 9.2.1.)
+
 These are drafts for the Russian-speaking reviewer (M24). The notes on Dutch origins could not be checked against a source from the cloud environment. Cells as in 6.3.2: alternatives are separated by `;`, and a ` — ` inside one separates its `term` from its `note`.
 
 | id | `name` | `alternatives` (term — note) |
@@ -2187,7 +2193,7 @@ No Russian on screen (M23). No pictures. No rules of the road (later "Navigation
 ### 9.1 Files
 
 New: `content/lang/ru/ui.json`, `content/lang/latin-words.json`, `src/model/languages.ts`, `tests/languages.test.ts`, `scripts/shots-m23.mjs`.
-Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json` (`names`, `namesStatus` removed), `src/model/settings.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/i18n.ts`, `src/ui/panel.ts`, `src/ui/learnTab.ts`, `src/ui/clockPanel.ts`, `src/ui/enginePanel.ts`, every file in `src/ui` that calls `partInfo` (`clutchDrawing.ts`, `infoCard.ts`, `labels3d.ts`, `realisticPanel.ts`, `ropeControls.ts`, `ropesTab.ts`, `stationDrawing.ts`: 10 call sites in these 7 files, the complete set), `src/ui/mapView.ts` (scale and buoy letters, 9.3), `content/lang/ru/glossary.json` (the name changes and added alternatives of 9.2.1, and anything the Latin rule of 9.6 finds), `tests/urlState.test.ts` (new cases), `tests/i18n.test.ts` (iterates every language of `UI_STRINGS`), `scripts/shots.mjs`, `docs/CODE_MAP.md`. The `Language` type in `i18n.ts` is removed (codes are strings). `AreaData` (`typeof adriatic`) loses `names`; its only user is `clockPanel.ts`.
+Changed: `content/lang/en/ui.json` (new keys 9.6), `content/areas/adriatic.json` (`names`, `namesStatus` removed), `src/model/settings.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/i18n.ts`, `src/ui/panel.ts`, `src/ui/learnTab.ts`, `src/ui/clockPanel.ts`, `src/ui/enginePanel.ts`, every file in `src/ui` that calls `partInfo` (`clutchDrawing.ts`, `infoCard.ts`, `labels3d.ts`, `realisticPanel.ts`, `ropeControls.ts`, `ropesTab.ts`, `stationDrawing.ts`: 10 call sites in these 7 files, the complete set), `src/ui/mapView.ts` (scale and buoy letters, 9.3), `content/lang/ru/glossary.json` (the name changes and added alternatives of 9.2.1, and anything the Latin rule of 9.6 finds), `tests/urlState.test.ts` (new cases), `tests/i18n.test.ts` (iterates every language of `UI_STRINGS`), `scripts/shots.mjs`, `docs/CODE_MAP.md`, `docs/BOAT_REFERENCE.md` (the Russian rope names in its tables follow 9.2.1). The `Language` type in `i18n.ts` is removed (codes are strings). `AreaData` (`typeof adriatic`) loses `names`; its only user is `clockPanel.ts`.
 
 ### 9.2 Data
 
@@ -2218,16 +2224,18 @@ The Russian names of M20–M22 were checked against the sources of 3.6 ([R1]–[
 | `term_reef` | рифление | взятие рифов | `[{ "term": "брать рифы" }]` | «взятие рифов», «взять рифы» [R5], «на гроте взяты рифы» ([R3] p. 22); «рифление» means roughening a surface [R7] |
 | `term_round_up` | приведение | брочинг | `[{ "term": "приведение", "note": "резкое неуправляемое приведение к ветру" }]` | Russian Wikipedia's *Брочинг*: sudden uncontrollable turns of the yacht towards the wind [R4]; the textbooks use «брочинг» ([R2] p. 33, [R3] pp. 27–28) |
 
-**Replacements in the texts** (all entries, every case form):
+**Replacements in the texts** (all entries, every case form; keep a capital letter where the old word had one: Геннакер, Линь закрутки, Вал закрутки, Вертлюг гика, Взятие рифов, Брочинг. A rope's name quoted as a button or label in `showMe`, such as «Закруточный конец грота», becomes the new name with a capital: «Линь закрутки грота»):
 
 | old | new | forms |
 |---|---|---|
 | генакер | геннакер | генакера → геннакера, генакером → геннакером and so on (the new alternative «генакер» itself stays) |
-| закруточный конец (грота / стакселя) | линь закрутки (грота / стакселя) | закруточного конца → линя закрутки; закруточному концу → линю закрутки; закруточным концом → линём закрутки |
-| закруточный стержень грота (in `part_main_furling_gearbox`) | вал закрутки грота | вала закрутки, валом закрутки |
+| закруточный конец (грота / стакселя) | линь закрутки (грота / стакселя) | закруточного конца → линя закрутки; закруточному концу → линю закрутки; закруточным концом → линём закрутки; закруточном конце → лине закрутки |
+| закруточный стержень грота, and any other «стержень» for the same thing (in `part_main_furling_gearbox`, for example «вращает стержень внутри мачты» → «вращает вал внутри мачты») | вал закрутки грота, вал | вала закрутки, валом закрутки |
 | гусёк (in `part_gooseneck`'s texts) | вертлюг гика | вертлюга гика, вертлюгом гика |
 | рифление (in `term_reef`'s texts) | взятие рифов | взятия рифов, взятием рифов |
 | приведение (in `term_round_up`'s texts only) | брочинг | брочинга, брочингом. «тенденция к приведению» (`term_weather_helm`) stays: that is a different thing |
+
+**One text to rewrite** (`term_starboard`, `mistakes[0].fix`): the English tip counts the letters of the English words “port” and “left”, which means nothing on a Russian screen (one language at a time, 3.1). Replace the Russian fix with exactly: `Подсказка: ночью левый борт показывает красный ходовой огонь, правый — зелёный.` (Russian Wikipedia, *Штирборт* [R4]: штирборт is marked by a green light at night, бакборт by a red one.) The English text stays as it is.
 
 **Alternatives to add** (append at the end of the entry's `alternatives`, in this order):
 
@@ -2276,14 +2284,14 @@ Translate every `ui.json` string sentence by sentence (3.3), but use these words
 | in-mast furling gearbox / socket / switch | редуктор закрутки грота / гнездо / переключатель | glossary name |
 | wheel / rudder | штурвал / перо руля | [R1] p. 4, [R2] p. 5 |
 | bow / stern | нос / корма | |
-| port / starboard (long) | левый борт / правый борт | |
-| Port / Stbd (camera short labels) | ЛБ / ПБ | |
-| P / S (instrument side letters) | Л / П | |
+| port / starboard (long) | левый борт / правый борт | `wind.side.*`, `wind.dial.port` / `wind.dial.starboard` (`левый борт` / `правый борт` in lower case), `real.station.*`, `cam.side-*` (`Борт (левый)` / `Борт (правый)`) |
+| Port / Stbd (camera short labels `cam.short.side-port` / `cam.short.side-starboard`) | ЛБ / ПБ | |
+| P / S (instrument side letters `instruments.side.p` / `instruments.side.s`) | Л / П | `instruments.label` explains them: `Л — левый борт, П — правый борт` |
 | windward / leeward | наветренный / подветренный | [R3] p. 28 |
 | luff up (turn towards the wind) | привестись | [R1] p. 26 |
 | bear away | увалиться | [R1] p. 12 |
 | head to wind | левентик | `wind.preset.head`: `Левентик (носом на ветер)`; [R1] p. 7 |
-| points of sail `pos.*` | the glossary names, capitalised: `В мёртвой зоне`, `Крутой бейдевинд`, `Полный бейдевинд`, `Галфвинд`, `Бакштаг`, `Фордевинд` | `pos.no_go` is «in the zone» |
+| points of sail `pos.*` | the glossary names, capitalised: `В мёртвой зоне`, `Крутой бейдевинд`, `Полный бейдевинд`, `Галфвинд`, `Бакштаг`, `Фордевинд` | `pos.no_go`: `В мёртвой зоне` |
 | wind presets `wind.preset.*` | `Левентик (носом на ветер)`, `45° правого галса`, `Галфвинд правого галса`, `Бакштаг правого галса`, `Фордевинд (175°)` | «бейдевинд правого галса» [R1] p. 24 |
 | tack (manoeuvre) / gybe | поворот оверштаг / поворот фордевинд | the autopilot buttons: `Поворот` (pinned) and `Фордевинд` |
 | accidental / controlled gybe | неуправляемый / управляемый поворот фордевинд | |
@@ -2296,12 +2304,12 @@ Translate every `ui.json` string sentence by sentence (3.3), but use these words
 | true wind / apparent wind | истинный ветер / вымпельный ветер | [R4] |
 | no-go zone | мёртвая зона | glossary name |
 | telltales / streaming | колдунчики / вытянуты назад | glossary name |
-| luffing (a sail) / stalled / blanketed | полощет / срыв потока / в ветровой тени грота | [R4] *Курс относительно ветра* («полощут»), [R2] p. 38 («в ветровой тени грота») |
+| luffing (a sail) / stalled / blanketed | полощет / срыв потока / в ветровой тени грота | a verb, so it differs from the entry name «заполаскивание» on purpose; [R4] *Курс относительно ветра* («полощут»), [R2] p. 38 («в ветровой тени грота») |
 | flogging / wear | полоскание / износ | |
 | kn | уз | 3.1 |
 | Beaufort {force} | `по Бофорту: {force}` | no noun after a number (3.3) |
 | gust / lull / shift | порыв / ослабление ветра / смена направления ветра | glossary names; `GUST` → `ПОРЫВ` (pinned) |
-| waves: Flat / Sheltered / Coastal / Open sea | Гладкая вода / Закрытая бухта / У берега / Открытое море | `Открытое море` pinned |
+| waves: Flat / Sheltered / Coastal / Open sea | Гладкая вода / Закрытая бухта / У берега / Открытое море | `Открытое море` pinned; `waves.label`: `Волны` (pinned) |
 | engine Ahead / Neutral / Astern | Вперёд / Нейтраль / Назад | `engine.gear.astern`: `Передача: задний ход, винт толкает яхту назад` |
 | engine lever / rpm | рукоятка газ-реверс / об/мин | glossary name; 3.1 |
 | propeller | гребной винт | [R1] p. 29 |
@@ -2389,7 +2397,7 @@ New keys in **both** `ui.json` files:
 `tests/languages.test.ts`:
 1. `LANGUAGES` is `['en', 'ru']`; `languageName('ru')` is `Русский`.
 2. Every language's `ui.json` has exactly the keys of `en`, every value non-empty (`trim()` for all keys except `number.thousandsSeparator`, which only needs `length > 0`: `trim()` removes U+00A0), and for every key the same set of `{placeholders}` as `en`. `tests/i18n.test.ts` applies its non-empty check the same way to every language.
-3. **Latin scan**, for every language whose `language.name` has no Latin letter (today `ru`): in every `ui.json` value except the `debug.*` keys, and every glossary text field (`name`, alternatives' `term` and `note`, `short`, `what`, `onThisBoat`, `mistakes`, `showMe`): remove `{placeholders}` (`/\{\w+\}/g`), normalise to NFC, then every run of 2 or more Latin letters (`/[A-Za-zÀ-ÿ&]{2,}/g`) must be in `latinAllowed()` (compared case-insensitively; boat-label words are `label.match(/[A-Za-zÀ-ÿ&]+/g)`). The `ru` values identical to English (`ui.json` only, `debug.*` not counted) are fewer than 20 and each is listed in the test with its reason (known: `view.step.option`, `instruments.timeScale`, `instrument.aws`, `instrument.tws`, `real.gearbox.in`, `real.gearbox.out`). If the scan finds Latin words in the M20–M22 Russian glossary texts, translate them; add a word to `latin-words.json` only for a quoted foreign word in an alternative's note or a maker's name, and list additions in 9.10.
+3. **Latin scan**, for every language whose `language.name` has no Latin letter (today `ru`): in every `ui.json` value except the `debug.*` keys, and every glossary text field (`name`, alternatives' `term` and `note`, `short`, `what`, `onThisBoat`, `mistakes`, `showMe`): remove `{placeholders}` (`/\{\w+\}/g`), normalise to NFC, then every run of 2 or more Latin letters (`/[A-Za-zÀ-ÿ&]{2,}/g`) must be in `latinAllowed()` (compared case-insensitively; boat-label words are `label.match(/[A-Za-zÀ-ÿ&]+/g)`). The same values and fields of a language other than `en` contain no “ or ” (U+201C, U+201D). The `ru` values identical to English (`ui.json` only, `debug.*` not counted) are fewer than 20 and each is listed in the test with its reason (known: `view.step.option`, `instruments.timeScale`, `instrument.aws`, `instrument.tws`, `real.gearbox.in`, `real.gearbox.out`). If the scan finds Latin words in the M20–M22 Russian glossary texts, translate them; add a word to `latin-words.json` only for a quoted foreign word in an alternative's note or a maker's name, and list additions in 9.10.
 4. For every key of `QUOTED_UI_LABELS` (M22, `tests/glossary.test.ts`), the `ru` value of that key contains the recorded wording; if M23 chooses a better Russian label, it changes the constant and the glossary texts to match in the same PR.
 5. Every `GROUPS` group has a `learn.group.<group>` key, every distinct registry `kind` a `learn.kind.<kind>` key, every key of the registry's `statusValues` a `learn.status.<status>` key, every area id (`AREAS`) an `area.<id>` key.
 6. `t()` after `setLanguage('ru')` returns the Russian text; `setLanguage('xx')` gives English; `part('rope_vang')` in `ru` has the name `оттяжка гика`; `formatThousands(2500)` is `2,500` in `en` and `2 500` in `ru`. Reset the language to `en` after each test.
