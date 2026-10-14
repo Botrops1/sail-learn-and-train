@@ -5,7 +5,7 @@ import { runningRopes, winchWraps } from '../model/realistic';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
-import { DEG, smoothstep } from '../model/angles';
+import { DEG } from '../model/angles';
 import { area } from '../model/area';
 import { sunPosition } from '../model/sun';
 import { waveTrains } from '../model/waves';
@@ -14,9 +14,10 @@ import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
 import { daylighting } from './daylight';
-import { rippleNormalMap, skyTexture } from './environment';
+import { cloudTexture, rippleNormalMap } from './environment';
 import { buildMarks } from './marks';
-import { buildSunDisc } from './sunDisc';
+import { buildSkyDome } from './skyDome';
+import { skyColours } from './skyColours';
 import { buildWaterSurface } from './waterSurface';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
@@ -80,20 +81,22 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   host.append(renderer.domElement);
 
   const scene = new THREE.Scene();
-  const sky = skyTexture();
-  scene.background = sky;
-  scene.fog = new THREE.Fog(SCENE.sky.horizon, SCENE.fogNear, SCENE.fogFar);
-  // The blurred sky for reflections is made the first time High detail is used (phones
-  // start on Low and skip the work).
-  let reflections: THREE.Texture | undefined;
-  const reflectionsOf = () => {
-    if (!reflections) {
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      reflections = pmrem.fromEquirectangular(sky).texture;
-      pmrem.dispose();
-    }
-    return reflections;
-  };
+  // The dome draws the sky; `render` sets the fog colour every frame.
+  const dome = buildSkyDome(cloudTexture());
+  scene.add(dome.object);
+  scene.fog = new THREE.Fog(0xffffff, SCENE.fogNear, SCENE.fogFar);
+  // The reflections: the dome seen from the boat, blurred by three.js (PMREM). Made at High
+  // detail only, the first time they are needed (phones start on Low and skip the work), and
+  // again when the sky has changed (PHASE3_SPEC 10.5).
+  const skyScene = new THREE.Scene();
+  const reflectionDome = new THREE.Mesh(dome.object.geometry, dome.object.material);
+  reflectionDome.frustumCulled = false;
+  skyScene.add(reflectionDome);
+  let pmrem: THREE.PMREMGenerator | undefined;
+  let reflections: THREE.WebGLRenderTarget | undefined;
+  let reflectionsStale = true;
+  let reflectionsAtMs = -Infinity;
+  const reflectionsSun = new THREE.Vector3();
   scene.environmentIntensity = SCENE.light.environmentIntensity;
 
   const hemisphere = new THREE.HemisphereLight(
@@ -107,7 +110,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const baseLight = { hemisphere: 0, sun: 0, fill: 0 };
   const warmSun = new THREE.Color(SCENE.daylight.warmSun);
   const moonColour = new THREE.Color(SCENE.daylight.moonColour);
-  const horizonColour = new THREE.Color(SCENE.sky.horizon);
+  const belowColour = new THREE.Color();
+  const belowNight = new THREE.Color(SCENE.daylight.nightBelow);
+  const belowDay = new THREE.Color(SCENE.sky.belowHorizon);
   fill.position.set(...SCENE.light.fillDirection);
   configureSunShadow(sun);
   scene.add(hemisphere, sun, sun.target, fill);
@@ -124,11 +129,10 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const water = buildWaterSurface(ripples);
   const streaks = buildWindStreaks();
   const world = createWorld(water.object);
-  const sunDisc = buildSunDisc();
   const marks = buildMarks();
   world.group.add(marks.object);
   const wake = buildWake();
-  scene.add(holder, world.group, wake.object, streaks.object, sunDisc.object);
+  scene.add(holder, world.group, wake.object, streaks.object);
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
@@ -198,9 +202,12 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         gustProfile: () => water.gustProfile(),
         /** Where the drawn sun lies on the canvas (CSS px), or null while it is not drawn. */
         sunScreen: () => {
-          if (!sunDisc.object.visible) return null;
+          if (!sunShown) return null;
           const rect = renderer.domElement.getBoundingClientRect();
-          const ndc = sunDisc.object.position.clone().project(camera);
+          const ndc = sunPoint
+            .copy(camera.position)
+            .addScaledVector(lastSkyDirection, SCENE.sky.domeRadiusM)
+            .project(camera);
           if (ndc.z > 1 || ndc.z < -1) return null;
           return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
@@ -233,7 +240,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     renderer.setPixelRatio(pixelRatio);
     renderer.setSize(size.width, size.height, false);
     renderer.shadowMap.enabled = high;
-    scene.environment = high ? reflectionsOf() : null;
+    // The reflections (High only) are made in `render`, when stale or when the sky has turned.
+    scene.environment = high ? (reflections?.texture ?? null) : null;
+    reflectionsStale = true;
     baseLight.hemisphere = high
       ? SCENE.light.hemisphereIntensityHigh
       : SCENE.light.hemisphereIntensity;
@@ -260,6 +269,26 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       applyDetail();
     } else if (state.selection !== previous.selection) highlight(highlightIds(state.selection));
   });
+
+  const lastSkyDirection = new THREE.Vector3(0, 1, 0);
+  const sunPoint = new THREE.Vector3();
+  let sunShown = false;
+  /** Makes the reflections of the sky (PHASE3_SPEC 10.5) when stale or the sky has turned. */
+  const updateReflections = (now: number, skyDirection: THREE.Vector3) => {
+    const turnedDeg = reflectionsSun.angleTo(skyDirection) / DEG;
+    const due = reflectionsStale || turnedDeg >= SCENE.reflections.minTurnDeg;
+    if (!due || (now - reflectionsAtMs) / 1000 < SCENE.reflections.minIntervalS) return;
+    pmrem ??= new THREE.PMREMGenerator(renderer);
+    const previousTarget = reflections;
+    reflections = pmrem.fromScene(skyScene, 0, 0.1, SCENE.sky.domeRadiusM + 10, {
+      size: SCENE.reflections.size,
+    });
+    previousTarget?.dispose();
+    scene.environment = reflections.texture;
+    reflectionsSun.copy(skyDirection);
+    reflectionsStale = false;
+    reflectionsAtMs = now;
+  };
 
   let canvasHeight = 1;
   return {
@@ -311,7 +340,6 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         area.position.longitudeDeg,
       );
       const light = daylighting(elevationDeg, azimuthDeg, boatState.headingDeg);
-      sunDisc.update(camera, elevationDeg, azimuthDeg, boatState.headingDeg, light.warm);
       sun.position
         .set(...SCENE.shadowCentre)
         .addScaledVector(light.sunDirection, SCENE.shadows.distance);
@@ -322,20 +350,24 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       fill.intensity = baseLight.fill * light.sky;
       fill.color.set(0xffffff).lerp(moonColour, light.night);
       scene.environmentIntensity = SCENE.light.environmentIntensity * light.sky;
-      const background =
-        SCENE.daylight.backgroundFloor +
-        (1 - SCENE.daylight.backgroundFloor) *
-          smoothstep(
-            SCENE.daylight.backgroundFromDeg,
-            SCENE.daylight.backgroundToDeg,
-            elevationDeg,
-          );
-      scene.backgroundIntensity = background;
-      (scene.fog as THREE.Fog).color.copy(horizonColour).multiplyScalar(background);
+      // The sky for this sun height: the dome, the fog that meets it and the reflections.
+      const colours = skyColours(elevationDeg);
+      belowColour.copy(belowDay).lerp(belowNight, light.night);
+      dome.update(camera, colours, light.skyDirection, boatState.headingDeg, belowColour);
+      (scene.fog as THREE.Fog).color.copy(colours.horizon);
+      lastSkyDirection.copy(light.skyDirection);
+      sunShown = elevationDeg > SCENE.sky.sunCore.fadeFromDeg;
       const shift = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
       water.update(state, shift, waveTrains(state.sea), light.night);
       marks.update(state, water.heightAt);
       wake.update(state, state.rig.timeS, water.heightAt);
+      // At night the wake and the wind streaks are dimmed (they ignore the light).
+      const dim = 1 - SCENE.daylight.nightLineDim * light.night;
+      (wake.object.material as THREE.MeshBasicMaterial).color.setScalar(dim);
+      (streaks.object.material as THREE.LineBasicMaterial).color
+        .set(SCENE.wind.color)
+        .multiplyScalar(dim);
+      if (detail === 'high') updateReflections(now, light.skyDirection);
       renderer.render(scene, camera);
     },
     stats() {

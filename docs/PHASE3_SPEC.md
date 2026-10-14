@@ -1016,7 +1016,15 @@ No moon, no weather (rain, fog banks, changing cloud cover), no lights on land.
 
 ### 10.10 Decided in the M18 PR
 
-(Filled in by the M18 builder: what this section left open, and the owner's answers on the PR.)
+What the spec left open (decided in the M18 PR):
+
+1. **The sun's disc is drawn in the dome.** 10.5 says M18 draws the sun in the dome, but the fragment shader of 10.4 only has the glow (a wide soft patch). So the shader has one more step after the glow: a bright core (`uSunCore`, `uSunCoreCos`) mixed towards a near-white version of the glow colour, between two angular radii, fading out as the sun sets. Presentation keys in `SCENE.sky.sunCore`: `innerDeg: 0.8`, `outerDeg: 1.8`, `fadeFromDeg: -1.5`, `fadeToDeg: 1` (the values of M17's sprite). `sunDisc.ts` and `SCENE.daylight.sunDisc` are deleted; the debug hook `__sailWater.sunScreen()` (used by the M17 browser check) now projects the dome's sun direction and is null once the sun is below −1.5°.
+2. **Night dimming of the wake, the wind streaks and the grid lines** (10.5, added in the M17 PR): their material colour is multiplied by `1 − nightLineDim · night`, `SCENE.daylight.nightLineDim: 0.8` (new key).
+3. **Night readability:** `SCENE.daylight.skyFloor` stays 0.25. The boat's centre square measured 0.434 at Low and 0.307 at High (limit 0.08), the sky alone 0.033 against 0.624 at noon.
+4. **Reflections:** `scene.environment` is `null` at High until the first regeneration in `render`, which happens in the frame that switches to High (the throttle starts at "never made"). Changing the detail marks them stale; the old render target is kept when going back to Low and disposed when the next one is made.
+5. **Browser check recipe:** the luminance is measured with the DOM overlays hidden (`.view > :not(canvas.scene-canvas)`), so the whole canvas can be used as 10.7 says; the 2D canvas is created with `willReadFrequently`, or Chromium warns on the console and the script fails.
+
+Owner's answers on the PR: (none yet)
 
 ---
 
