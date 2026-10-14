@@ -906,7 +906,19 @@ No new sky colours, stars or sun glow in the right place (M18). No moon. Winds d
 
 ### 9.12 Decided in the M17 PR
 
-(Filled in by the M17 builder: what this section left open, and the owner's answers on the PR.)
+What the spec left open (decided in the M17 PR):
+
+1. **`isClockTime(utcMs)`** (in `clock.ts`): what `setClock` checks (finite, inside JavaScript's date range, local year 1900–2100). The 9.3 list did not name it.
+2. **Night water keeps its wind colours dark.** 9.6 lerps only the base colour to `nightWater` and then darkens it towards `windyColor` (`#16586a`), which is lighter than `nightWater` and would light the water at night in wind. So the wind, gust and lull colours are lerped to `nightWater` by `night` too before they are applied (`waterSurface.ts`).
+3. **Two more `SCENE.daylight` keys:** `minLightElevationDeg: 2` (the 2° of 9.6) and `shadowMinSun: 0.05` (the "`sun > 0.05`" of 9.6), so no number is left in `scene.ts` or `daylight.ts`.
+4. **The clock card scrolls** (`max-height` to the bottom of the view, `overflow-y: auto`): on a phone in portrait the 3D view is about 430 px high and the card is taller.
+5. **Debug row `sun`** shows the short light name (`Day`, `Low sun`, `Twilight`, `Night`: the text before the bracket).
+6. **Browser check recipe:** the luminance is measured over the right-hand 30 % of the canvas (between the strip and the camera buttons), because a screenshot of the canvas also contains the DOM overlays on top of it (strip, chips, labels), which are equally bright by night and day.
+7. **`setClock` ignores a time equal to the current one** (the state stays the same object).
+8. **Review of the M17 PR (owner: "address corrections 2 to 7"):** the chip comes **before** the time bar in `.view-top`, so on a phone it sits at the right of the instrument strip's row (the top area stays 116 px high instead of 166); in the side-by-side layout CSS `order` puts it after the bar as in 9.5. The card's right padding for the × is only on its first line, the card's other padding is smaller, and the date and time boxes share a row with the Set button where they fit; the Set button lies inside the card without scrolling on a 390 px phone (checked in `shots-m17.mjs`). Night wake, streaks and grid lines: left for M18 (line added to 10.5). The wording of the PR's night question was corrected (the night sky is already dark grey; M18 adds the night blue, the stars and the sun's glow). The warm colour of the low sun is gentle at Detail Low (no shadows, direct light about a third at 2.5°): left as the spec's numbers give it. The date and time boxes follow the phone's own format: left.
+9. **The sun is drawn** (owner's bug on the preview: at 20:10 "the sun is not visible, but its glint on the water is"): the glint came from a fixed glow baked into the old sky texture (`SCENE.sky.glowDirection`), reflected in the water at High detail, unrelated to the clock. The baked glow is gone (`SCENE.sky.sunGlow` removed; `glowDirection` stays only for `scripts/compare`), and the sun is a soft disc on a sprite (`render3d/sunDisc.ts`, `SCENE.daylight.sunDisc`: 800 m away along the sun's real direction, 14° across with a bright core, warm when low, fading out between −1.5° and 1° of sun height). It is not reflected in the water: M18 does the glow and reflections.
+
+Owner's answers on the PR: (none yet)
 
 ---
 
@@ -975,6 +987,7 @@ export function buildSkyDome(clouds: THREE.Texture): SkyDome;
 - `scene.background` is no longer set (the dome draws the sky); M17's `backgroundIntensity` line goes. Each frame, after `rig.update(now)` and `camera.updateMatrixWorld()`: `colours = skyColours(el)`; `below = SCENE.sky.belowHorizon` lerped to `SCENE.daylight.nightBelow` by `night`; `dome.update(camera, colours, daylighting.skyDirection, boat.headingDeg, below)`; `scene.fog.color.copy(colours.horizon)`.
 - **Reflections (High detail only)**: a second mesh with the dome's geometry and material at the origin, in its own small `skyScene`. One `PMREMGenerator`, created at the first need and kept. `applyDetail` no longer makes reflections: at Low it sets `scene.environment = null`; at High it marks them stale. In `render`, at High, regenerate `pmrem.fromScene(skyScene, 0, 0.1, SCENE.sky.domeRadiusM + 10, { size: SCENE.reflections.size })` when they are stale, or when the boat-frame `skyDirection` has turned by `minTurnDeg` or more since the last one; never more often than every `minIntervalS` seconds of real time (the frame time `now`). Keep the returned `WebGLRenderTarget` and dispose the previous one; `scene.environment = target.texture`.
 - **Night readability** (owner): the browser check below must pass at both details. If the boat's square is too dark at High detail, raise `SCENE.daylight.skyFloor` (M17's 0.25) in steps of 0.05 until it passes, and report it in the PR.
+- **Added in the M17 PR (review point 4, owner's sun bug):** (a) M17 draws the sun as a sprite (`render3d/sunDisc.ts`, `SCENE.daylight.sunDisc`) and no longer bakes a fixed glow into the old sky texture; M18 deletes `sunDisc.ts` and its key and draws the sun in the dome instead (`daylight.ts` already has `sunDirectionAt(elevationDeg, azimuthDeg, headingDeg)`, the true-elevation direction `skyDirection` needs). (b) At night the wake (`wake.ts`), the wind streaks (`wind.ts`) and the water's grid lines (`waterSurface.ts`) are drawn with materials that ignore light and stay bright white on the dark water: give them the night dimming (a colour or opacity lerped by `night`), and include them in the night-readability check.
 - From a camera 100 m or more up (zoomed far out) the edge of the 2,000 m water shows a few degrees below the horizon against the dome's "below" colour. Accepted.
 
 ### 10.6 Tests

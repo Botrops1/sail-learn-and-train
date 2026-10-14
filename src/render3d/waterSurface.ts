@@ -25,12 +25,14 @@ export interface WaterSurface {
   setDetail(detail: Detail): void;
   /**
    * Heights, normals and ripples for the state; `shift` is what `world.update` returned;
-   * `trains` = waveTrains(state.sea), computed once per frame in scene.render.
+   * `trains` = waveTrains(state.sea), computed once per frame in scene.render; `night`
+   * (0 … 1, M17) takes the colours towards the dark night water.
    */
   update(
     state: AppState,
     shift: { x: number; z: number; centreEastM: number; centreNorthM: number },
     trains: readonly WaveTrain[],
+    night: number,
   ): void;
   /**
    * The drawn surface height at a map offset from the boat: elevation × the inner mesh's fade at
@@ -123,11 +125,17 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
   let coloursStale = true;
   let baseColour = new THREE.Color(w.color);
   let lastWindKn = Number.NaN;
+  let lastNight = Number.NaN;
   let lastProfile: GustProfile | null = null;
   const windyColour = new THREE.Color(w.windyColor);
   const gustColour = new THREE.Color(w.gustColor);
   const lullColour = new THREE.Color(w.lullColor);
   const whitecapColour = new THREE.Color(w.whitecapColor);
+  const nightWaterColour = new THREE.Color(SCENE.daylight.nightWater);
+  const crestColour = new THREE.Color();
+  const nightTint = new THREE.Color();
+  const gustNow = new THREE.Color();
+  const lullNow = new THREE.Color();
   const colour = new THREE.Color();
   const windy = new THREE.Color();
 
@@ -254,7 +262,7 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
       buildInner();
       buildOuter();
     },
-    update(state, shift, trains) {
+    update(state, shift, trains, night) {
       lastShift = shift;
       lastTrains = trains;
       lastPhases = state.boat.waves.phases;
@@ -276,10 +284,22 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
       const windKn = state.wind.twsKn;
       const profile = gustProfile(state.controls, state.windMode, state.rig.timeS);
       lastProfile = profile;
-      const windChanged = windKn !== lastWindKn;
+      const nightChanged = night !== lastNight;
+      const windChanged = windKn !== lastWindKn || nightChanged;
       lastWindKn = windKn;
+      lastNight = night;
       const darkness = w.windDarkAmount * smoothstep(w.windDarkFromKn, w.windDarkToKn, windKn);
-      windy.copy(baseColour).lerp(windyColour, darkness);
+      // At night the base colour goes dark first, then the wind darkens it (PHASE3_SPEC 9.6).
+      // The wind, gust and lull colours go dark with it, or they would light the night water.
+      windy
+        .copy(baseColour)
+        .lerp(nightWaterColour, night)
+        .lerp(nightTint.copy(windyColour).lerp(nightWaterColour, night), darkness);
+      gustNow.copy(gustColour).lerp(nightWaterColour, night);
+      lullNow.copy(lullColour).lerp(nightWaterColour, night);
+      crestColour
+        .copy(whitecapColour)
+        .lerp(nightWaterColour, SCENE.daylight.nightWhitecapDim * night);
       const windDir = state.controls.ctl_wind_dir;
       const coverage = trains.length > 0 ? whitecapCoverage(windKn) : 0;
       const amplitudeSum = trains.reduce((sum, train) => sum + train.amplitudeM, 0);
@@ -292,8 +312,8 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
         colour.copy(windy);
         if (!profile) return;
         const g = gustAt(profile, upwindDistanceM(east, north, windDir));
-        if (g > 0) colour.lerp(gustColour, w.gustAmount * g);
-        else if (g < 0) colour.lerp(lullColour, w.lullAmount * -g);
+        if (g > 0) colour.lerp(gustNow, w.gustAmount * g);
+        else if (g < 0) colour.lerp(lullNow, w.lullAmount * -g);
       };
 
       if (coloursStale || windChanged || profile) {
@@ -372,7 +392,7 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
                   w.whitecapMax *
                   crest *
                   whitecapPatch(boatEast + east, boatNorth + north, patchSizeM);
-                if (white > 0) colour.lerp(whitecapColour, white);
+                if (white > 0) colour.lerp(crestColour, white);
               }
             }
             innerColours[i] = colour.r;

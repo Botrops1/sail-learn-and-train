@@ -174,12 +174,17 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
  * How far down the 3D picture must start so that the time bar does not cover it, CSS px from
  * the view's top. Where the bar sits beside the strip (wide views, or folded to Pause) the
  * picture fills the view as before (the strip itself overlaps it, as it always did). Where the
- * bar wraps under the strip (phones in portrait) the camera frames the boat below the bar.
+ * bar (or the clock chip, M17) wraps under the strip (phones in portrait) the camera frames the
+ * boat below it.
  */
 export function topClearance(top: HTMLElement): number {
-  const bar = top.querySelector<HTMLElement>('.time-bar');
-  if (!bar || bar.offsetTop < 4) return 0;
-  return Math.ceil(top.offsetTop + bar.offsetTop + bar.offsetHeight + 4);
+  // The time bar or the clock chip, whichever wraps under the strip (a hidden chip has no height).
+  let bottom = 0;
+  for (const child of Array.from(top.children) as HTMLElement[]) {
+    if (child.offsetHeight === 0 || child.offsetTop < 4) continue;
+    bottom = Math.max(bottom, top.offsetTop + child.offsetTop + child.offsetHeight + 4);
+  }
+  return Math.ceil(bottom);
 }
 
 /**

@@ -3,9 +3,12 @@ import { compassDeg, mpsToKn, wrap180 } from '../model/angles';
 import { autopilotHeadingDeg } from '../model/autopilot';
 import type { RopeStatus } from '../model/boomSolver';
 import type { Store } from '../app/store';
+import { daylight } from '../model/clock';
+import { area } from '../model/area';
+import { sunPosition } from '../model/sun';
 import { significantHeightM, waveTrains } from '../model/waves';
 import { el } from './dom';
-import { t } from './i18n';
+import { t, type StringKey } from './i18n';
 import type { Viewport } from './layout';
 
 export interface PixelRatio {
@@ -71,6 +74,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
         windMode,
         engine,
         sea,
+        clock,
       } = store.getState();
       const trains = waveTrains(sea);
       const mainTrain = trains[0];
@@ -160,6 +164,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
             ? `Hs ${significantHeightM(trains).toFixed(2)} m · Tp ${mainTrain.periodS.toFixed(1)} s · from ${String(Math.round(compassDeg(sea.dirDeg)) % 360).padStart(3, '0')}°`
             : '–',
         ],
+        [t('debug.sun'), sunText(clock.utcMs)],
         [
           t('debug.waveMotion'),
           `heave ${boat.waves.heaveM.toFixed(2)} m · pitch ${boat.waves.pitchDeg.toFixed(1)}° · roll ${boat.waves.rollDeg.toFixed(1)}°`,
@@ -178,4 +183,14 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
       }
     },
   };
+}
+
+/** `elev 68.6° az 180.0° · Day`: where the sun is at the time on board. */
+function sunText(utcMs: number): string {
+  const { elevationDeg, azimuthDeg } = sunPosition(
+    utcMs,
+    area.position.latitudeDeg,
+    area.position.longitudeDeg,
+  );
+  return `elev ${elevationDeg.toFixed(1)}° az ${azimuthDeg.toFixed(1)}° · ${t(`clock.light.${daylight(elevationDeg)}` as StringKey).split(' (')[0] ?? ''}`;
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createStore, initialState, type AppState } from '../src/app/store';
 import { jibReachedParam, parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
+import { clockParam, defaultClockUtcMs } from '../src/model/clock';
 import { knToMps, mpsToKn } from '../src/model/angles';
 import { steadyState } from '../src/model/motion';
 import { waveTrains } from '../src/model/waves';
@@ -453,5 +454,44 @@ describe('M14: the Waves setting (sea)', () => {
     );
     expect(query.indexOf('&bs=')).toBeLessThan(query.indexOf('&sea=flat'));
     expect(query.indexOf('&sea=flat')).toBeLessThan(query.indexOf('&eng=1'));
+  });
+});
+
+describe('M17: the clock (clk, clock)', () => {
+  it('opens a link at the local time it names', () => {
+    expect(parseUrlState('?clk=202612211200').clock.utcMs).toBe(Date.UTC(2026, 11, 21, 11, 0));
+  });
+
+  it('round-trips, and the default writes no clk', () => {
+    const state = parseUrlState('?wd=60&clk=202612211200');
+    expect(serializeUrlState(state)).toContain('&clk=202612211200');
+    expect(parseUrlState(serializeUrlState(state)).clock.utcMs).toBe(state.clock.utcMs);
+    expect(serializeUrlState(initialState())).not.toContain('clk=');
+  });
+
+  it('61 s after the default the link has clk=202606011201', () => {
+    const state = { ...initialState(), clock: { utcMs: defaultClockUtcMs() + 61_000 } };
+    expect(clockParam(state.clock.utcMs)).toBe('202606011201');
+    expect(serializeUrlState(state)).toContain('&clk=202606011201');
+  });
+
+  it('clock=0 round-trips, and is written only when hidden', () => {
+    const hidden = parseUrlState('?clock=0');
+    expect(hidden.settings.clock).toBe(false);
+    expect(serializeUrlState(hidden)).toContain('&clock=0');
+    expect(serializeUrlState(initialState())).not.toContain('clock=');
+    expect(parseUrlState('?clock=1').settings.clock).toBe(true);
+  });
+
+  it('an invalid or missing clk opens the default (noon, 1 June)', () => {
+    for (const link of ['?wd=60', '?clk=abc', '?clk=202602301200', '?clk=12']) {
+      expect(parseUrlState(link).clock.utcMs, link).toBe(defaultClockUtcMs());
+    }
+  });
+
+  it('the clock is written after the engine and before Realistic mode', () => {
+    const query = serializeUrlState(parseUrlState('?eng=1&clk=202612211200&st=helm&co=a5'));
+    expect(query.indexOf('&eng=1')).toBeLessThan(query.indexOf('&clk='));
+    expect(query.indexOf('&clk=')).toBeLessThan(query.indexOf('&st='));
   });
 });

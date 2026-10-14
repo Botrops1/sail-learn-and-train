@@ -14,6 +14,7 @@ import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
 import { createPanel } from '../ui/panel';
+import { createClockPanel } from '../ui/clockPanel';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
 import { createInstrumentStrip } from '../ui/instrumentStrip';
@@ -63,6 +64,7 @@ export function startApp(host: HTMLElement): void {
   layout.view.append(top);
   createInstrumentStrip(top, store, () => panel.showTab('wind'));
   createTimeBar(top, store);
+  createClockPanel(top, layout.view, store);
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
   let reframe = () => {};
   trackTopHeight(layout.view, top, () => reframe());

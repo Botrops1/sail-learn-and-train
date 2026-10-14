@@ -8,11 +8,6 @@ import { SCENE } from './sceneConfig';
  * three.js (PMREM), for reflections. The water gets a tiling ripple normal map.
  */
 
-/** Unit vector towards the sun (the same as the sun light). */
-export function sunDirection(): THREE.Vector3 {
-  return new THREE.Vector3(...SCENE.light.sunDirection).normalize();
-}
-
 /** Smooth value noise on a grid that wraps every `period` cells (tileable). */
 function valueNoise(random: () => number, period: number): (x: number, y: number) => number {
   const grid = Array.from({ length: period * period }, () => random());
@@ -60,21 +55,12 @@ export function skyTexture(): THREE.DataTexture {
   const zenith = rgb(s.zenith);
   const horizon = rgb(s.horizon);
   const below = rgb(s.belowHorizon);
-  const glow = rgb(s.sunGlow);
   const cloud = rgb(s.cloud);
-  const sun = sunDirection();
   const data = new Uint8Array(width * height * 4);
-  const cosAz = Float32Array.from({ length: width }, (_, x) =>
-    Math.cos(((x + 0.5) / width - 0.5) * 2 * Math.PI),
-  );
-  const sinAz = Float32Array.from({ length: width }, (_, x) =>
-    Math.sin(((x + 0.5) / width - 0.5) * 2 * Math.PI),
-  );
   const base = [0, 0, 0];
   for (let y = 0; y < height; y += 1) {
     // Row 0 is the bottom of the texture (straight down), the last row straight up.
     const elevation = ((y + 0.5) / height - 0.5) * Math.PI;
-    const cosEl = Math.cos(elevation);
     const sinEl = Math.sin(elevation);
     const t = elevation < 0 ? Math.min(1, -elevation / 0.25) : Math.pow(Math.max(0, sinEl), 0.6);
     const far = elevation < 0 ? below : zenith;
@@ -97,14 +83,6 @@ export function skyTexture(): THREE.DataTexture {
         r += (cloud[0] - r) * amount;
         g += (cloud[1] - g) * amount;
         b += (cloud[2] - b) * amount;
-      }
-      const facing =
-        cosEl * (cosAz[x] ?? 0) * sun.x + sinEl * sun.y + cosEl * (sinAz[x] ?? 0) * sun.z;
-      if (facing > 0) {
-        const amount = Math.pow(facing, 48) * 0.8;
-        r += (glow[0] - r) * amount;
-        g += (glow[1] - g) * amount;
-        b += (glow[2] - b) * amount;
       }
       const i = (y * width + x) * 4;
       data[i] = toByte(r);

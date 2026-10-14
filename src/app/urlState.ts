@@ -1,6 +1,7 @@
 import { compassDeg, knToMps, mpsToKn, wrap180, wrap360 } from '../model/angles';
 import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
+import { clockParam, defaultClockUtcMs, parseClockParam } from '../model/clock';
 import { settledJibUnfurled } from '../model/jib';
 import { isRegisteredPartId } from '../model/registry';
 import {
@@ -129,6 +130,8 @@ export function parseUrlState(
   const timeScale = txParam !== null && DECIMAL.test(txParam) ? Number(txParam) : undefined;
   // `tb=0`: the time bar's speed part is off (then the time scale is 1: initialState).
   const timeBar = params.get('tb') === '0' ? false : undefined;
+  // `clock=0`: the clock chip is hidden.
+  const clockShown = params.get('clock') === '0' ? false : undefined;
   const { boat: boatState, autopilot } = parseBoat(params, controls.ctl_wind_dir ?? 60);
 
   // `jr`: how far the jib is out when that is less than the controls alone give (the sheet was
@@ -153,6 +156,7 @@ export function parseUrlState(
       ...(ropesMode !== undefined ? { ropesMode } : {}),
       ...(timeScale !== undefined && isTimeScale(timeScale) ? { timeScale } : {}),
       ...(timeBar !== undefined ? { timeBar } : {}),
+      ...(clockShown !== undefined ? { clock: clockShown } : {}),
     },
     selection,
     history,
@@ -162,7 +166,27 @@ export function parseUrlState(
     windMode,
     engine: parseEngine(params),
     sea: parseSea(params),
+    ...parseClock(params),
   });
+}
+
+/**
+ * The time on board (M17): `clk` = local `YYYYMMDDHHmm`. Missing or not a real time: the area's
+ * default (noon, 1 June), so old links open at noon.
+ */
+function parseClock(params: URLSearchParams): { clockUtcMs?: number } {
+  const value = params.get('clk');
+  const utcMs = value === null ? null : parseClockParam(value);
+  return utcMs === null ? {} : { clockUtcMs: utcMs };
+}
+
+/** The clock parameters: `clk` when the time is not the default minute, `clock=0` when hidden. */
+export function clockParams(state: AppState): [string, string][] {
+  const result: [string, string][] = [];
+  const written = clockParam(state.clock.utcMs);
+  if (written !== clockParam(defaultClockUtcMs())) result.push(['clk', written]);
+  if (state.settings.clock !== DEFAULT_SETTINGS.clock) result.push(['clock', '0']);
+  return result;
 }
 
 /**
@@ -449,6 +473,7 @@ export function serializeUrlState(state: AppState): string {
   for (const [name, value] of windModeParams(state)) params.set(name, value);
   for (const [name, value] of seaParams(state)) params.set(name, value);
   for (const [name, value] of engineParams(state)) params.set(name, value);
+  for (const [name, value] of clockParams(state)) params.set(name, value);
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
   // Commas need no escaping in a query (co=a5,b3 stays readable).

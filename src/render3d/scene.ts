@@ -5,14 +5,18 @@ import { runningRopes, winchWraps } from '../model/realistic';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
-import { DEG } from '../model/angles';
+import { DEG, smoothstep } from '../model/angles';
+import { area } from '../model/area';
+import { sunPosition } from '../model/sun';
 import { waveTrains } from '../model/waves';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
-import { rippleNormalMap, skyTexture, sunDirection } from './environment';
+import { daylighting } from './daylight';
+import { rippleNormalMap, skyTexture } from './environment';
 import { buildMarks } from './marks';
+import { buildSunDisc } from './sunDisc';
 import { buildWaterSurface } from './waterSurface';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
@@ -99,6 +103,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   );
   const sun = new THREE.DirectionalLight(0xffffff, SCENE.light.sunIntensity);
   const fill = new THREE.DirectionalLight(0xffffff, SCENE.light.fillIntensity);
+  // The detail's base light levels; `render` scales them by the time of day every frame.
+  const baseLight = { hemisphere: 0, sun: 0, fill: 0 };
+  const warmSun = new THREE.Color(SCENE.daylight.warmSun);
+  const moonColour = new THREE.Color(SCENE.daylight.moonColour);
+  const horizonColour = new THREE.Color(SCENE.sky.horizon);
   fill.position.set(...SCENE.light.fillDirection);
   configureSunShadow(sun);
   scene.add(hemisphere, sun, sun.target, fill);
@@ -115,10 +124,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const water = buildWaterSurface(ripples);
   const streaks = buildWindStreaks();
   const world = createWorld(water.object);
+  const sunDisc = buildSunDisc();
   const marks = buildMarks();
   world.group.add(marks.object);
   const wake = buildWake();
-  scene.add(holder, world.group, wake.object, streaks.object);
+  scene.add(holder, world.group, wake.object, streaks.object, sunDisc.object);
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
@@ -186,6 +196,14 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     Object.assign(window, {
       __sailWater: {
         gustProfile: () => water.gustProfile(),
+        /** Where the drawn sun lies on the canvas (CSS px), or null while it is not drawn. */
+        sunScreen: () => {
+          if (!sunDisc.object.visible) return null;
+          const rect = renderer.domElement.getBoundingClientRect();
+          const ndc = sunDisc.object.position.clone().project(camera);
+          if (ndc.z > 1 || ndc.z < -1) return null;
+          return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
+        },
         buoyScreen: (id: string) => {
           const buoy = marks.buoyObject(id);
           if (!buoy) return null;
@@ -215,13 +233,12 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     renderer.setPixelRatio(pixelRatio);
     renderer.setSize(size.width, size.height, false);
     renderer.shadowMap.enabled = high;
-    sun.castShadow = high;
     scene.environment = high ? reflectionsOf() : null;
-    hemisphere.intensity = high
+    baseLight.hemisphere = high
       ? SCENE.light.hemisphereIntensityHigh
       : SCENE.light.hemisphereIntensity;
-    sun.intensity = high ? SCENE.light.sunIntensityHigh : SCENE.light.sunIntensity;
-    fill.intensity = high ? SCENE.light.fillIntensityHigh : SCENE.light.fillIntensity;
+    baseLight.sun = high ? SCENE.light.sunIntensityHigh : SCENE.light.sunIntensity;
+    baseLight.fill = high ? SCENE.light.fillIntensityHigh : SCENE.light.fillIntensity;
     water.setDetail(detail);
   };
   applyDetail();
@@ -287,8 +304,36 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         0,
         boatState.waves.pitchDeg * DEG,
       );
+      // The sun from the clock: its light, the night and the sky light (PHASE3_SPEC 9.6).
+      const { elevationDeg, azimuthDeg } = sunPosition(
+        state.clock.utcMs,
+        area.position.latitudeDeg,
+        area.position.longitudeDeg,
+      );
+      const light = daylighting(elevationDeg, azimuthDeg, boatState.headingDeg);
+      sunDisc.update(camera, elevationDeg, azimuthDeg, boatState.headingDeg, light.warm);
+      sun.position
+        .set(...SCENE.shadowCentre)
+        .addScaledVector(light.sunDirection, SCENE.shadows.distance);
+      sun.intensity = baseLight.sun * light.sun;
+      sun.color.set(0xffffff).lerp(warmSun, light.warm);
+      sun.castShadow = detail === 'high' && light.sun > SCENE.daylight.shadowMinSun;
+      hemisphere.intensity = baseLight.hemisphere * light.sky;
+      fill.intensity = baseLight.fill * light.sky;
+      fill.color.set(0xffffff).lerp(moonColour, light.night);
+      scene.environmentIntensity = SCENE.light.environmentIntensity * light.sky;
+      const background =
+        SCENE.daylight.backgroundFloor +
+        (1 - SCENE.daylight.backgroundFloor) *
+          smoothstep(
+            SCENE.daylight.backgroundFromDeg,
+            SCENE.daylight.backgroundToDeg,
+            elevationDeg,
+          );
+      scene.backgroundIntensity = background;
+      (scene.fog as THREE.Fog).color.copy(horizonColour).multiplyScalar(background);
       const shift = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
-      water.update(state, shift, waveTrains(state.sea));
+      water.update(state, shift, waveTrains(state.sea), light.night);
       marks.update(state, water.heightAt);
       wake.update(state, state.rig.timeS, water.heightAt);
       renderer.render(scene, camera);
@@ -349,7 +394,6 @@ function configureSunShadow(sun: THREE.DirectionalLight): void {
   const s = SCENE.shadows;
   const centre = new THREE.Vector3(...SCENE.shadowCentre);
   sun.target.position.copy(centre);
-  sun.position.copy(centre).addScaledVector(sunDirection(), s.distance);
   sun.shadow.mapSize.set(s.mapSize, s.mapSize);
   const cam = sun.shadow.camera;
   cam.left = -s.halfExtent;

@@ -18,12 +18,46 @@ export const SCENE = {
     horizon: '#d6e7f2',
     /** What shows through the see-through water: deep water, not sky. */
     belowHorizon: '#14495a',
-    sunGlow: '#fff6e0',
     cloud: '#ffffff',
     cloudCount: 70,
     cloudOpacity: 0.55,
     width: 1024,
     height: 512,
+    /** Only the model-vs-sketch comparison (`scripts/compare`) still lights from here. */
+    glowDirection: [0.4, 1, -0.6] as const,
+  },
+  /** The sun's light through the day and night (M17, PHASE3_SPEC 9.6). */
+  daylight: {
+    /** `sun` rises from 0 to 1 between these sun heights, degrees. */
+    sunFromDeg: -1,
+    sunToDeg: 8,
+    /** The sky light never goes below this share; it rises to 1 between the two heights. */
+    skyFloor: 0.25,
+    skyFromDeg: -12,
+    skyToDeg: 10,
+    /** The sun's light turns warm below `warmToDeg` and is fully warm at `warmFromDeg`. */
+    warmFromDeg: 2,
+    warmToDeg: 25,
+    /** Night: fully on below `nightFromDeg`, off above `nightToDeg`. */
+    nightFromDeg: -12,
+    nightToDeg: 0,
+    warmSun: '#ffb46b',
+    moonColour: '#9fb3ff',
+    nightWater: '#0b2230',
+    nightWhitecapDim: 0.7,
+    backgroundFloor: 0.15,
+    backgroundFromDeg: -12,
+    backgroundToDeg: 6,
+    /**
+     * The drawn sun until M18's sky dome (decided in the M17 PR): a soft disc on a sprite
+     * `distanceM` away along the sun's real direction, `sizeDeg` across; it fades out between
+     * `fadeFromDeg` and `fadeToDeg` of sun height (it sets behind the horizon).
+     */
+    sunDisc: { distanceM: 800, sizeDeg: 14, fadeFromDeg: -1.5, fadeToDeg: 1, coreShare: 0.12 },
+    /** The light and the shadow camera never come from below this height, degrees. */
+    minLightElevationDeg: 2,
+    /** The sun casts a shadow only while `sun` is above this. */
+    shadowMinSun: 0.05,
   },
   water: {
     color: '#1f7a8c',
@@ -295,8 +329,6 @@ export const SCENE = {
     environmentIntensity: 0.9,
     sunIntensity: 1.6,
     sunIntensityHigh: 2.6,
-    /** Direction towards the sun. */
-    sunDirection: [0.4, 1, -0.6] as const,
     /** A weaker light from the other side, so the starboard side and sails are not grey. */
     fillIntensity: 0.9,
     fillIntensityHigh: 0.35,
