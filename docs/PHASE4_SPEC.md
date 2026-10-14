@@ -36,7 +36,7 @@ The idea Phase 4 must teach:
 
 ### Out of scope
 
-- Pictures or drawings per entry, sound, quizzes, guided exercises (Phase 6). Languages other than English and Russian (Phase 7; the architecture is ready).
+- Pictures or drawings per entry, sound, quizzes, guided exercises (Phase 8, renumbered 2026-10-14). Languages other than English and Russian (Phase 9; the architecture is ready).
 - Tappable sailing words inside the panel hints (owner: hints stay plain; only links inside the Learn entries).
 - Showing both languages at once (owner: one language at a time; alternatives are always in the same language).
 - Decimal commas: numbers keep the dot in every language (owner: `12.5 уз`).
