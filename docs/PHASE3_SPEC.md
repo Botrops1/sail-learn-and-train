@@ -745,6 +745,8 @@ What the spec left open (decided in the M16 PR):
 - **Browser check on the map** opens with `debug=1` to read the boat's centre.
 - **PT-45 source.** A web search found sailing and weather pages that describe a cat's paw as a dark patch of ruffled water made by a gust (among them the AMS Glossary entry), but the glossary page could not be opened from the cloud environment and the others were not read in full, so the status stays `to-verify`.
 
+Owner's answer (PR comment, "accept all"): **the map keeps opening zoomed in close** (0.1 m per pixel); the buoys show after zooming out with −. No code change.
+
 ---
 
 ## 9. M17: Clock and sailing area (issue #26)
