@@ -20,7 +20,7 @@ import { significantHeightM, waveTrains } from '../src/model/waves';
 import { reduce } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 
-/** The entries that are complete in every language (3.2): M20's 18 and M21's 55; M22 adds theirs. */
+/** The entries that are complete in every language (3.2): M20's 18, M21's 55 and M22's 58 (every registry id). */
 const COMPLETE_IDS = [
   'rope_mainsheet',
   'rope_jib_sheet',
@@ -95,6 +95,65 @@ const COMPLETE_IDS = [
   'env_wake',
   'env_boom_danger_zone',
   'env_buoy',
+  // M22: the 25 sailing words and the 33 new words
+  'term_sheet',
+  'term_halyard',
+  'term_port',
+  'term_starboard',
+  'term_windward',
+  'term_leeward',
+  'term_true_wind',
+  'term_apparent_wind',
+  'term_starboard_tack',
+  'term_port_tack',
+  'term_tacking',
+  'term_gybe',
+  'term_luffing',
+  'term_ease',
+  'term_trim',
+  'term_twist',
+  'term_telltale',
+  'term_no_go_zone',
+  'term_close_hauled',
+  'term_close_reach',
+  'term_beam_reach',
+  'term_broad_reach',
+  'term_run',
+  'term_reef',
+  'term_preventer',
+  'term_north',
+  'term_east',
+  'term_south',
+  'term_west',
+  'term_compass_point',
+  'term_ahead',
+  'term_astern',
+  'term_abeam',
+  'term_quarter',
+  'term_heading',
+  'term_wind_direction',
+  'term_knot',
+  'term_beaufort',
+  'term_gust',
+  'term_lull',
+  'term_wind_shift',
+  'term_bora',
+  'term_jugo',
+  'term_maestral',
+  'term_heel',
+  'term_weather_helm',
+  'term_round_up',
+  'term_in_irons',
+  'term_head_up',
+  'term_bear_away',
+  'term_stall',
+  'term_hull_speed',
+  'term_fetch',
+  'term_white_horses',
+  'term_wave_height',
+  'term_heave',
+  'term_pitch',
+  'term_roll',
 ];
 
 const LANGUAGES = Object.keys(GLOSSARIES);
@@ -345,6 +404,173 @@ describe('M21 scenes (PHASE4_SPEC 7.6)', () => {
   });
 });
 
+/** Runs a scene and returns the state at the given times (seconds), in order. */
+function sceneAt(query: string, times: number[]) {
+  let state = parseUrlState(query, 'low');
+  const out = [];
+  const last = Math.max(...times) * 60;
+  for (let i = 1; i <= last; i++) {
+    state = reduce(state, { type: 'step', dt: 1 / 60 });
+    if (times.some((t) => Math.round(t * 60) === i)) out.push(state);
+  }
+  return out;
+}
+const knots = (state: ReturnType<typeof scene>) => mpsToKn(state.boat.speedMps);
+
+describe('M22 scenes (PHASE4_SPEC 8.5)', () => {
+  it('term_heel: about 31° of heel with the main in, about 16° with it eased to 60 %', () => {
+    between(Math.abs(scene(showMe('term_heel'), 20).boat.heelDeg), 28, 34);
+    const eased = scene(showMe('term_heel').replace('ms=15', 'ms=60'), 20);
+    between(Math.abs(eased.boat.heelDeg), 13, 19);
+  });
+
+  it('term_in_irons: she is almost stopped after 40 s', () => {
+    expect(knots(scene(showMe('term_in_irons'), 40))).toBeLessThan(1.5);
+  });
+
+  it('term_hull_speed: about 9.3 kn at 2,500 rpm after 60 s', () => {
+    const state = scene(showMe('term_hull_speed'), 60);
+    between(knots(state), 9.1, 9.5);
+    expect(state.engine.rpm).toBe(2500);
+  });
+
+  it('term_close_hauled, term_beam_reach, term_run and term_close_reach: the speeds the texts quote', () => {
+    const close = scene(showMe('term_close_hauled'), 20);
+    between(knots(close), 6.0, 6.7);
+    between(Math.abs(close.boat.heelDeg), 15, 19);
+    between(knots(scene(showMe('term_beam_reach'), 20)), 7.9, 8.5);
+    between(knots(scene(showMe('term_run'), 20)), 4.4, 5.0);
+    between(knots(scene(showMe('term_close_reach'), 20)), 7.2, 7.8);
+  });
+
+  it('term_white_horses: the waves are about 2.24 m high', () => {
+    between(significantHeightM(waveTrains(scene(showMe('term_white_horses')).sea)), 2.15, 2.35);
+  });
+
+  it('term_heading: she starts on 060° and is under way at over 7 kn after 20 s', () => {
+    expect(parseUrlState(showMe('term_heading'), 'low').boat.headingDeg).toBe(60);
+    const [later] = sceneAt(showMe('term_heading'), [20]);
+    expect(knots(must(later, 'later'))).toBeGreaterThan(7);
+  });
+
+  it('term_port_tack and term_starboard_tack: the boom is out on the lee side', () => {
+    expect(scene(showMe('term_port_tack')).rig.solution.side).toBe(1);
+    expect(scene(showMe('term_starboard_tack')).rig.solution.side).toBe(-1);
+  });
+
+  it('term_gybe: the boom’s sweep is drawn at about 6.5 s', () => {
+    let state = parseUrlState(showMe('term_gybe'), 'low');
+    let first = -1;
+    for (let i = 1; i <= 8 * 60 && first < 0; i++) {
+      state = reduce(state, { type: 'step', dt: 1 / 60 });
+      if (dangerZone(state.rig)?.kind === 'sweep') first = i / 60;
+    }
+    between(first, 6.0, 7.0);
+  });
+
+  it('term_wave_height: 0.68 m waves, one every 3.8 s', () => {
+    const { sea } = scene(showMe('term_wave_height'));
+    const trains = waveTrains(sea);
+    between(significantHeightM(trains), 0.65, 0.72);
+    between(trains[0]?.periodS ?? -1, 3.7, 3.9);
+  });
+
+  it('term_heave, term_pitch and term_roll: the largest motion between 20 s and 60 s', () => {
+    const peak = (id: string, pick: (state: ReturnType<typeof scene>) => number) => {
+      let state = parseUrlState(showMe(id), 'low');
+      let best = 0;
+      for (let i = 1; i <= 60 * 60; i++) {
+        state = reduce(state, { type: 'step', dt: 1 / 60 });
+        if (i > 20 * 60) best = Math.max(best, Math.abs(pick(state)));
+      }
+      return best;
+    };
+    between(
+      peak('term_heave', (state) => state.boat.waves.heaveM),
+      0.8,
+      1.05,
+    );
+    between(
+      peak('term_pitch', (state) => state.boat.waves.pitchDeg),
+      2.4,
+      3.1,
+    );
+    between(
+      peak('term_roll', (state) => state.boat.waves.rollDeg),
+      4.3,
+      5.4,
+    );
+  });
+
+  it('term_beaufort: there are waves at 10 kn', () => {
+    expect(significantHeightM(waveTrains(scene(showMe('term_beaufort')).sea))).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * The Russian wording of the English UI labels that the glossary texts quote (PHASE4_SPEC 8.4).
+ * Keys are keys of content/lang/en/ui.json; M23 must use these words in the Russian UI.
+ */
+export const QUOTED_UI_LABELS: Record<string, string> = {
+  'autopilot.tack': 'Поворот',
+  'waves.label': 'Волны',
+  'waves.open': 'Открытое море',
+  'instruments.gust': 'ПОРЫВ',
+  'tab.ropes': 'Концы',
+  'tab.wind': 'Ветер',
+};
+
+describe('quoted UI labels (PHASE4_SPEC 8.4)', () => {
+  const ui = JSON.parse(readFileSync('content/lang/en/ui.json', 'utf8')) as Record<string, string>;
+  /** Where an English text quotes a label: the label in quotes, or as “Ropes tab”, or in capitals. */
+  const quoting = (text: string, key: string): boolean => {
+    const label = ui[key] ?? '';
+    if (key.startsWith('tab.')) return new RegExp(`\\b${label} tab\\b`).test(text);
+    if (key === 'instruments.gust') return new RegExp(`\\b${label}\\b`).test(text);
+    // “Tack” is also the name of a sail's corner (sailpart_tack): only the button counts.
+    if (key === 'autopilot.tack') return text.includes(`press “${label}”`);
+    return text.includes(`“${label}”`) || (key === 'waves.label' && /\bWaves block\b/.test(text));
+  };
+  const fields = (text: GlossaryText): string[] => [
+    text.short ?? '',
+    text.what ?? '',
+    text.onThisBoat ?? '',
+    text.showMe ?? '',
+    ...(text.mistakes ?? []).flatMap((item) => [item.mistake, item.fix]),
+  ];
+
+  it('the keys are real UI keys with the English labels the texts quote', () => {
+    expect(Object.keys(QUOTED_UI_LABELS).sort()).toEqual(
+      [
+        'autopilot.tack',
+        'instruments.gust',
+        'tab.ropes',
+        'tab.wind',
+        'waves.label',
+        'waves.open',
+      ].sort(),
+    );
+    for (const key of Object.keys(QUOTED_UI_LABELS)) expect(ui[key], key).toBeDefined();
+  });
+
+  it('every Russian text that belongs to an English text quoting a label uses the Russian wording', () => {
+    let checked = 0;
+    for (const id of REGISTRY_IDS) {
+      const en = textOf(id, 'en');
+      const ru = textOf(id, 'ru');
+      const english = [...fields(en)];
+      const russian = fields(ru).join('\n');
+      for (const [key, wording] of Object.entries(QUOTED_UI_LABELS)) {
+        if (english.some((text) => quoting(text, key))) {
+          checked++;
+          expect(russian, `ru/${id} quotes ${key}`).toContain(`«${wording}»`);
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(10);
+  });
+});
+
 describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
   it('every entry is in exactly one group, from GROUPS', () => {
     for (const entry of entries as { id: string; group?: string }[]) {
@@ -354,7 +580,7 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
 
   it('the groups have the expected sizes and members', () => {
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      9, 10, 13, 6, 12, 18, 3, 4, 20, 3,
+      9, 10, 13, 6, 12, 18, 12, 14, 28, 9,
     ]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',
@@ -367,6 +593,10 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
       term_port: 'directions',
       term_gybe: 'sailing',
       env_water: 'sea',
+      term_north: 'directions',
+      term_beaufort: 'wind',
+      term_heel: 'sailing',
+      term_fetch: 'sea',
     };
     for (const [id, group] of Object.entries(samples)) {
       expect(groupEntries(group as (typeof GROUPS)[number]), id).toContain(id);
