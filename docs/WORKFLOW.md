@@ -345,7 +345,7 @@ New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn 
 - [ ] Search: type "kicker": "Vang — also: kicker". Type "genoa": "Jib sheet — also: Genoa sheet" (the word on the clutch). Type "mast": "Mast" comes first, then entries such as "In-mast furling gearbox" and "Masthead wind indicator".
 - [ ] New texts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_winch&held=1 — three typical mistakes; tap "Show me": Realistic mode at the starboard winch with the jib sheet on it; Back returns.
 - [ ] Engine: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=engine_control&held=1 — "Show me": the engine runs at about 1,850 rpm and she motors at about 8 kn.
-- [ ] Danger zone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=env_boom_danger_zone&held=1 — "Show me": she runs downwind, and after about 4 seconds the autopilot turns her through dead downwind: the boom crosses and the red area of its sweep is drawn.
+- [ ] Danger zone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=env_boom_danger_zone&held=1 — "Show me": she runs downwind, and after about 6 seconds the autopilot has turned her through dead downwind: the boom crosses and the red area of its sweep is drawn.
 
 #### M22: Sailing words, directions and winds
 

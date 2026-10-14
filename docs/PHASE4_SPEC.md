@@ -587,7 +587,7 @@ export function openScene(store: Store, query: string): void;
   6. `h3` `learn.onThisBoat` and `onThisBoat` (`learn-on-this-boat`), only if present.
   7. `h3` `learn.mistakes` and a list (`learn-mistakes`), each item two lines: `learn.mistake` + the mistake, `learn.fix` + the fix. Only if present.
   8. **Show me** (only if `showMeQuery`): the text `showMe` (`learn-show-me-text`), then the button `learn.showMe` (`learn-show-me`) → `openScene(store, query)`; then the status line (`learn-status`, `aria-live="polite"`) says `learn.showMeDone`.
-  9. **Show on the boat** (every kind except `term`): button `learn.showOnBoat` (`learn-show-on-boat`) → `select` this id (the part lights up; the Learn tab stays).
+  9. **Show on the boat** (every kind except `term`, and not for the ids in `NOT_DRAWN`): button `learn.showOnBoat` (`learn-show-on-boat`) → `select` this id (the part lights up; the Learn tab stays). `glossary.ts` exports `NOT_DRAWN: ReadonlySet<string>` with exactly the ids that no mesh or rope carries: `sail_gennaker`, `sailpart_head`, `sailpart_tack`, `sailpart_clew`, `sailpart_luff`, `sailpart_leech`, `sailpart_foot`, `fit_clutch`, `fit_winch`, `fit_compass`, `fit_anchor_windlass`, `fit_bow_roller`, `fit_mooring_cleat`.
   10. **Try it in the Ropes tab** (only if `controls` is not empty): label `learn.tryIt`, then one button per control (`learn-try-<id>`), its text the glossary name of that id → `select` `entryFor(id).selectId`, then `showTab('ropes')`.
   11. **See also** (only if `related` is not empty): label `learn.related`, one button per id (`learn-related-<id>`), its text the glossary name → `openLearn` that id.
   12. **How sure we are**: `h3` `learn.howSure`; the line `learn.status.<status>` (`learn-fact-status`); for languages other than `en` with `textStatus` `draft` the line `learn.textDraft` (`learn-text-status`; never shown in M20); then `learn.sources` and the sources (`learn-sources`), one per line: a link (`target="_blank"`, `rel="noopener"`) for `url` (its text) and `photo` (`learn.source.photo` with `{name}`), plain text `learn.source.brochure` and `learn.source.owner`. Hidden when `sources` is empty.
@@ -664,6 +664,7 @@ export function openScene(store: Store, query: string): void;
 `tests/learn.test.ts`:
 9. `openLearn('rope_vang')` sets `learn`; `openLearn('part_made_up')` and opening the same id again return the same state object; `openLearn(null)` clears it; `reset` clears it.
 10. URL: `?learn=rope_vang` → `learn` `rope_vang`; `?learn=part_made_up` → null; serialize writes `learn` right after `sel` (`…&sel=rope_vang&learn=rope_vang&step=…`); a state without `learn` writes none; old links unchanged (the existing URL tests pass untouched).
+11. (`tests/glossary.test.ts`) `NOT_DRAWN`: every listed id is a registry id; every registry id that is not a term and not in `NOT_DRAWN` occurs in `src/` or `content/boat/` (a text search over the files), and no `NOT_DRAWN` id does.
 
 `tests/i18n.test.ts`: only its import path changes.
 
@@ -678,9 +679,9 @@ Scenes (`M20_SCENES`, every size): `learn-vang` `?learn=rope_vang&sel=rope_vang`
 Live checks (`liveM20Checks`, phone unless said). Every expectation about the address bar polls up to 1 s (`waitForFunction`), because the link is written 300 ms after a change:
 1. `?sel=sail_main`: tap `card-more` → `#tab-learn` has `aria-selected="true"`, `learn-name` reads "Mainsail", the address bar has `learn=sail_main`.
 2. `?learn=rope_vang`: the Learn tab is open; `learn-alternatives` contains "kicker (British)"; `learn-boat-label` contains “Vang”; `learn-fact-status` reads `learn.status.photo-confirmed`'s text. Tap `learn-show-me` → within 1 s the address bar contains `vg=100` and `learn=rope_vang`; `page.goBack()` → within 1 s the address bar no longer contains `vg=100`, still contains `learn=rope_vang`, and `learn-name` reads "Vang".
-3. `?sel=rope_vang`: open the Ropes strip's fold, tap the visible `strip-learn` (selector in 6.6) → Learn tab, "Vang". Then tap `learn-try-rope_vang` → `#tab-ropes` selected and the address bar has `sel=rope_vang`.
-4. `?learn=rope_vang`: tap `learn-related-part_boom` → `learn-name` reads "Boom". Tap `learn-show-on-boat` → the address bar has `sel=part_boom` and the Learn tab is still selected.
-5. `?sel=rope_mainsheet&mode=realistic`: open the Realistic strip's fold, tap `real-learn` → `#tab-learn` selected, `learn-name` "Mainsheet", the address bar has `learn=rope_mainsheet`.
+3. `?sel=rope_vang`: open the Ropes strip's fold (`.rope-strip > :not([hidden]) details.strip-more > summary`), tap the visible `strip-learn` (selector in 6.6) → Learn tab, "Vang". Then tap `learn-try-rope_vang` → `#tab-ropes` selected and the address bar has `sel=rope_vang`.
+4. `?learn=rope_vang`: tap `learn-show-on-boat` → the address bar has `sel=rope_vang` and `#tab-learn` still has `aria-selected="true"` (a rope selection must not switch to Ropes here). Then tap `learn-related-part_boom` → `learn-name` reads "Boom"; tap `learn-show-on-boat` → `sel=part_boom`.
+5. `?sel=rope_mainsheet&mode=realistic`: open the Realistic strip's fold (`[data-testid="real-strip"] details.strip-more > summary`), tap `real-learn` → `#tab-learn` selected, `learn-name` "Mainsheet", the address bar has `learn=rope_mainsheet`.
 6. Desktop size, `?sel=sail_jib`: the side-by-side info card shows `card-more`; tap it → Learn tab, "Self-tacking jib".
 7. Accessibility: `auditPage` (`scripts/a11y-audit.mjs`) on `?learn=rope_vang` with the Learn tab open, phone: clean.
 
@@ -1195,7 +1196,7 @@ The group order (the list's order) is the table's order. In `glossary.ts`: `expo
   "alternatives": [],
   "short": "The electric winch on the bow that lets the anchor chain out and pulls it in.",
   "what": "The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm.",
-  "onThisBoat": "On the foredeck behind the anchor roller. The app draws it; anchoring comes in a later phase.",
+  "onThisBoat": "On the foredeck behind the anchor roller. The app does not draw it yet; anchoring comes in a later phase.",
   "mistakes": [
     { "mistake": "Putting fingers or feet near the chain while the windlass runs.", "fix": "The chain can trap them. Keep clear, and stop the windlass before you touch the chain." }
   ],
@@ -1213,7 +1214,7 @@ The group order (the list's order) is the table's order. In `glossary.ts`: `expo
   "alternatives": [],
   "short": "A strong fitting for tying the mooring lines to.",
   "what": "Lines to a pier or a buoy are made fast round a cleat.",
-  "onThisBoat": "Cleats at the bow (photo); the app draws them there.",
+  "onThisBoat": "Cleats at the bow (photo). The app does not draw them yet.",
   "textStatus": "draft"
 },
 "fit_autopilot_control": {
@@ -1406,7 +1407,7 @@ Below it:
 ### 7.6 Tests
 
 `tests/glossary.test.ts`: `COMPLETE_IDS` gains the 55 M21 ids (so items 1–6 of 6.8 cover them); every registry entry has exactly one `group`, from `GROUPS`; the group sizes are, in `GROUPS` order, 9, 10, 13, 6, 12, 18, 3, 4, 20, 3 (M22 changes the last four), and `rope_vang`, `part_telltale`, `part_mast`, `part_keel`, `part_deck`, `fit_winch`, `env_wind`, `term_port`, `term_gybe`, `env_water` are in `ropes`, `sails`, `rig`, `hull`, `deck`, `cockpit`, `wind`, `directions`, `sailing`, `sea`.
-Show-me scenes (3.5): `env_boom_danger_zone`: `dangerZone(state.rig)` (`src/model/gybe.ts`) is not null at some step within the first 10 s [first at 4.1 s]; `part_rudder`: `rig.applied.rudder` is 25 (exactly); `engine_control`: after 30 s (1,800 steps), `mpsToKn(boat.speedMps)` 7.6–8.2 kn [7.87] and `engine.rpm` 1,800–1,900 [1,858]; `env_water`: `significantHeightM(waveTrains(state.sea))` 2.03–2.04 m [2.036]; `fit_self_tacking_track`: `rig.jibSolution.side` −1.
+Show-me scenes (3.5): `env_boom_danger_zone`: `dangerZone(state.rig)` (`src/model/gybe.ts`) has `kind` `'risk'` (the faint by-the-lee outline) first at 4.0–4.2 s [4.05] and `kind` `'sweep'` (the boom crossing) first at 6.0–7.0 s [6.52]; `part_rudder`: `rig.applied.rudder` is 25 (exactly); `engine_control`: after 30 s (1,800 steps), `mpsToKn(boat.speedMps)` 7.6–8.2 kn [7.87] and `engine.rpm` 1,800–1,900 [1,858]; `env_water`: `significantHeightM(waveTrains(state.sea))` 2.03–2.04 m [2.036]; `fit_self_tacking_track`: `rig.jibSolution.side` −1.
 
 `tests/search.test.ts`:
 1. `normalizeSearch('  Гика-Шкот ')` = `'гика шкот'`; `normalizeSearch('ЁЛКА')` = `'елка'`; `normalizeSearch('Seldén')` = `'selden'`.
@@ -1419,7 +1420,7 @@ Show-me scenes (3.5): `env_boom_danger_zone`: `dangerZone(state.rig)` (`src/mode
 
 ### 7.7 Browser checks (`scripts/shots-m21.mjs`)
 
-Scenes (`M21_SCENES`, every size; the scene loop's options): `learn-groups` `?wd=90&ws=12`, `tab: 'Learn'`; `learn-search-vang` the same with `type: { testId: 'learn-search', text: 'vang' }`; `learn-danger-zone` `?learn=env_boom_danger_zone`, `click: ['learn-show-me']`, wait 5,000 ms (she gybes at about 4 s; look at it: the red area should show; if it does not, say so in the PR).
+Scenes (`M21_SCENES`, every size; the scene loop's options): `learn-groups` `?wd=90&ws=12`, `tab: 'Learn'`; `learn-search-vang` the same with `type: { testId: 'learn-search', text: 'vang' }`; `learn-danger-zone` `?learn=env_boom_danger_zone`, `click: ['learn-show-me']`, wait 8,000 ms (she gybes at about 6.5 s; look at it: the red sweep should show; if it does not, say so in the PR).
 Live checks (`liveM21Checks`, phone):
 1. Learn tab, no entry: 10 group `details`; open "Ropes (9)", tap `learn-entry-rope_vang` → `learn-name` "Vang"; tap `learn-back` → the groups again.
 2. Type `kicker` → `learn-hit-rope_vang` shows "also: kicker"; tap it → "Vang". Clear the box and type `kickerxx` → the `learn.noMatch` text.
@@ -2111,7 +2112,7 @@ The Russian texts of these 58 entries are written by you (3.3). Several English 
 - `term_white_horses`: `significantHeightM(waveTrains(state.sea))` 2.15–2.35 m [2.24].
 - `term_heading`: `boat.headingDeg` 60 at the start; after 20 s boat speed above 7 kn [8.18].
 - `term_port_tack`: `rig.solution.side` +1 (boom to starboard); `term_starboard_tack`: −1.
-- `term_gybe`: `dangerZone(state.rig)` not null at some step within 10 s [4.1 s].
+- `term_gybe`: `dangerZone(state.rig)?.kind === 'sweep'` first at 6.0–7.0 s [6.52].
 - `term_close_reach`: after 20 s, 7.2–7.8 kn [7.48].
 - `term_wave_height`: `significantHeightM` 0.65–0.72 m [0.683] and the main train's `periodS` 3.7–3.9 s [3.83].
 - Wave motion, the largest absolute value over the steps with 20 s < t ≤ 60 s: `term_heave` `boat.waves.heaveM` 0.80–1.05 m [0.92]; `term_pitch` `boat.waves.pitchDeg` 2.4–3.1° [2.76]; `term_roll` `boat.waves.rollDeg` 4.3–5.4° [4.84].
