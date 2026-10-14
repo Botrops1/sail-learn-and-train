@@ -19,9 +19,12 @@ The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, G
 - **Wind modes** (Steady, Gusty, Shifty, Building, Dying), repeatable from a link, and a **time bar** (slow motion, pause, up to ×16).
 - **Gybes.** An accidental gybe shows the boom's speed, energy and the peak load on the main sheet, and a danger zone on the map; a controlled gybe (main sheet hauled in first) is gentle. The boat has no preventer.
 - **Engine:** Start/Stop, one lever from full astern to full ahead with neutral in the middle, rpm, and the engine's Helm-station lever in Realistic mode.
+- **Waves and the sky** (Phase 3). A **Waves** setting in the Wind tab (Flat, Sheltered, Coastal, Open sea): the waves grow with the wind and with the fetch (how far the wind has blown over open water) and build up over minutes. The boat heaves, pitches (nose up and down) and rolls on them; the rocking swings the wind the sails feel so they flick, waves from behind at an angle knock the bow off course so the helm keeps correcting, and waves from ahead slow her. Held still bobs but its sails ignore the rocking.
+- **Wind on the water.** The water darkens with the wind, white horses (white wave tops) appear from about 7 knots, and in gusty wind a gust shows as a dark patch upwind before it arrives. Four yellow practice buoys mark the start area, in 3D and on the map (tap one to learn what it is); the boat sails through them.
+- **Clock, sun and sky.** A clock and date chip over the 3D view (it folds; View tab switch) shows the time on board in Croatia (Adriatic, Split), runs with the time bar and starts now, at a time you set, or at noon on 1 June. Sunrise and sunset are right for the place; the sun lights the boat from the right side and the sky goes through day, sunset, twilight and night with stars (the boat stays readable at night).
 - **Share what you see:** the address (or View → Share) reproduces the exact state, useful for questions and bug reports.
 
-Phase 1 (this boat and its controls) ended with milestone M5, signed off by the owner after testing on a phone. Phase 2 (the moving boat, M6–M13) is built and waits for the owner's sign-off. Later phases add waves, a learning layer with Russian names, harbours and exercises: see [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Phase 1 (this boat and its controls) ended with milestone M5, signed off by the owner after testing on a phone. Phase 2 (the moving boat, M6–M13) is done. Phase 3 (waves, wind on the water, clock and sky, M14–M19) is built and waits for the owner's sign-off. Link settings added in Phase 3: `sea` (`flat`, `sheltered`, `coastal`, `open`), `clk` (the time on board, local time `YYYYMMDDHHMM`) and `clock` (`0` hides the clock chip). Later phases add a learning layer with Russian names, harbours and exercises: see [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## Documents
 
@@ -30,6 +33,7 @@ Phase 1 (this boat and its controls) ended with milestone M5, signed off by the 
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | All phases, architecture principles, decisions log |
 | [`docs/PHASE1_SPEC.md`](docs/PHASE1_SPEC.md) | What Phase 1 builds, how, and when it is done |
 | [`docs/PHASE2_SPEC.md`](docs/PHASE2_SPEC.md) | What Phase 2 builds (the moving boat), milestone by milestone, with the Definition of Done |
+| [`docs/PHASE3_SPEC.md`](docs/PHASE3_SPEC.md) | What Phase 3 builds (waves, wind on the water, clock and sky), milestone by milestone, with the Definition of Done |
 | [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md) | Facts about the boat, sources, assumptions, open questions |
 | [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md) | Sailing rules the simulation must obey, with sources and tests |
 | [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | How to build and check each milestone from a phone |

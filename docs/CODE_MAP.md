@@ -58,7 +58,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `re
 
 | File | What |
 |---|---|
-| `scene.ts`, `sceneConfig.ts` | Renderer, lights (the sun's from the clock), per-frame update; colours, sizes, camera framing. |
+| `scene.ts`, `sceneConfig.ts` | Renderer, lights (the sun's from the clock), per-frame update; colours, sizes, camera framing, frame-rate keys (`SCENE.performance`). |
 | `cameraRig.ts`, `cameraPresets.ts` | Camera control and the presets (Side, Top, Bow, Helm). |
 | `picking.ts` | Tap-to-identify hit testing. |
 | `environment.ts`, `world.ts`, `wake.ts`, `wind.ts` | The cloud texture and the water's ripple texture, the world group (steps the water along the map), the wake, wind streaks. |
