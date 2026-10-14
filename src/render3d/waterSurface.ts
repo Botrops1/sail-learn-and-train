@@ -285,6 +285,12 @@ export function buildWaterSurface(ripples: THREE.Texture): WaterSurface {
       const profile = gustProfile(state.controls, state.windMode, state.rig.timeS);
       lastProfile = profile;
       const nightChanged = night !== lastNight;
+      // The grid lines ignore the light: dimmed at night so they do not glow on the dark water.
+      if (nightChanged) {
+        gridMaterial.color
+          .set(SCENE.grid.color)
+          .multiplyScalar(1 - SCENE.daylight.nightLineDim * night);
+      }
       const windChanged = windKn !== lastWindKn || nightChanged;
       lastWindKn = windKn;
       lastNight = night;

@@ -10,6 +10,8 @@ import { SCENE } from './sceneConfig';
 export interface Daylighting {
   /** Unit vector towards the sun in the boat frame (x forward, y up, z starboard). */
   sunDirection: THREE.Vector3;
+  /** Unit vector towards the sun at its true height (also below the horizon), for the sky dome. */
+  skyDirection: THREE.Vector3;
   /** 0 … 1: how much direct sunlight there is. */
   sun: number;
   /** 0.25 … 1: how much sky light there is. */
@@ -43,6 +45,7 @@ export function daylighting(
   const lit = Math.max(elevationDeg, d.minLightElevationDeg);
   return {
     sunDirection: sunDirectionAt(lit, azimuthDeg, headingDeg),
+    skyDirection: sunDirectionAt(elevationDeg, azimuthDeg, headingDeg),
     sun: smoothstep(d.sunFromDeg, d.sunToDeg, elevationDeg),
     sky: d.skyFloor + (1 - d.skyFloor) * smoothstep(d.skyFromDeg, d.skyToDeg, elevationDeg),
     warm: 1 - smoothstep(d.warmFromDeg, d.warmToDeg, elevationDeg),

@@ -10,21 +10,105 @@ export const SCENE = {
   fogNear: 150,
   fogFar: 900,
   /**
-   * Procedural sky (M3b): a gradient from the zenith to a hazy horizon with soft clouds, used
-   * as the background and, blurred, for the reflections on metal, gelcoat and water.
+   * The sky dome (M3b, M18): colours come from `skyByElevation`, clouds from a procedural
+   * texture; the dome is the background and, rendered into a small cube map, the reflections.
    */
   sky: {
-    zenith: '#5f97c8',
-    horizon: '#d6e7f2',
     /** What shows through the see-through water: deep water, not sky. */
     belowHorizon: '#14495a',
-    cloud: '#ffffff',
-    cloudCount: 70,
     cloudOpacity: 0.55,
+    /** The cloud texture, pixels. */
     width: 1024,
     height: 512,
+    domeRadiusM: 900,
+    domeWidthSegments: 48,
+    domeHeightSegments: 24,
+    /** A star is a cell whose hash is above this (about one cell in a hundred). */
+    starThreshold: 0.99,
+    starCellsPerDeg: 2,
+    /**
+     * The sun itself (the soft disc M17 drew on a sprite, now in the dome): a bright core between
+     * these two angular radii; it fades out between these sun heights (it sets behind the horizon).
+     */
+    sunCore: { innerDeg: 0.8, outerDeg: 1.8, fadeFromDeg: -1.5, fadeToDeg: 1 },
     /** Only the model-vs-sketch comparison (`scripts/compare`) still lights from here. */
     glowDirection: [0.4, 1, -0.6] as const,
+  },
+  /**
+   * The sky for each sun height (M18, PHASE3_SPEC 10.2), sorted by `elevDeg`. Colours are mixed
+   * in the linear working space, numbers linearly; outside the rows the end row is used. The
+   * rows at 20° and 90° are the old fixed daytime sky.
+   */
+  skyByElevation: [
+    {
+      elevDeg: -18,
+      zenith: '#03060f',
+      horizon: '#0b1424',
+      glow: '#1a2440',
+      cloud: '#141a26',
+      glowStrength: 0,
+      haloStrength: 0,
+      stars: 1,
+    },
+    {
+      elevDeg: -6,
+      zenith: '#0e1a3a',
+      horizon: '#3a3f63',
+      glow: '#7a5a7a',
+      cloud: '#3a3a55',
+      glowStrength: 0.3,
+      haloStrength: 0.3,
+      stars: 0.6,
+    },
+    {
+      elevDeg: 0,
+      zenith: '#2c4a7a',
+      horizon: '#f0a070',
+      glow: '#ffb070',
+      cloud: '#e0a090',
+      glowStrength: 1,
+      haloStrength: 1,
+      stars: 0,
+    },
+    {
+      elevDeg: 6,
+      zenith: '#4a7ab0',
+      horizon: '#f2c9a0',
+      glow: '#ffd9a0',
+      cloud: '#f4e0d0',
+      glowStrength: 0.9,
+      haloStrength: 0.6,
+      stars: 0,
+    },
+    {
+      elevDeg: 20,
+      zenith: '#5f97c8',
+      horizon: '#d6e7f2',
+      glow: '#fff6e0',
+      cloud: '#ffffff',
+      glowStrength: 0.8,
+      haloStrength: 0,
+      stars: 0,
+    },
+    {
+      elevDeg: 90,
+      zenith: '#5f97c8',
+      horizon: '#d6e7f2',
+      glow: '#fff6e0',
+      cloud: '#ffffff',
+      glowStrength: 0.8,
+      haloStrength: 0,
+      stars: 0,
+    },
+  ],
+  /** The reflections of the sky on the boat and the water (High detail only, M18). */
+  reflections: {
+    /** Regenerated when the sun has turned this much in the boat frame, degrees … */
+    minTurnDeg: 5,
+    /** … but never more often than this, seconds of real time. */
+    minIntervalS: 2,
+    /** Cube-map face size, pixels. */
+    size: 128,
   },
   /** The sun's light through the day and night (M17, PHASE3_SPEC 9.6). */
   daylight: {
@@ -32,7 +116,7 @@ export const SCENE = {
     sunFromDeg: -1,
     sunToDeg: 8,
     /** The sky light never goes below this share; it rises to 1 between the two heights. */
-    skyFloor: 0.25,
+    skyFloor: 0.65,
     skyFromDeg: -12,
     skyToDeg: 10,
     /** The sun's light turns warm below `warmToDeg` and is fully warm at `warmFromDeg`. */
@@ -45,15 +129,10 @@ export const SCENE = {
     moonColour: '#9fb3ff',
     nightWater: '#0b2230',
     nightWhitecapDim: 0.7,
-    backgroundFloor: 0.15,
-    backgroundFromDeg: -12,
-    backgroundToDeg: 6,
-    /**
-     * The drawn sun until M18's sky dome (decided in the M17 PR): a soft disc on a sprite
-     * `distanceM` away along the sun's real direction, `sizeDeg` across; it fades out between
-     * `fadeFromDeg` and `fadeToDeg` of sun height (it sets behind the horizon).
-     */
-    sunDisc: { distanceM: 800, sizeDeg: 14, fadeFromDeg: -1.5, fadeToDeg: 1, coreShare: 0.12 },
+    /** What shows below the horizon at night. */
+    nightBelow: '#030a10',
+    /** The wake, wind streaks and grid lines are this much darker at full night (0 … 1). */
+    nightLineDim: 0.8,
     /** The light and the shadow camera never come from below this height, degrees. */
     minLightElevationDeg: 2,
     /** The sun casts a shadow only while `sun` is above this. */

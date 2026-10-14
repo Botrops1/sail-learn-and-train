@@ -3,9 +3,8 @@ import { seededRandom } from './boat/textures';
 import { SCENE } from './sceneConfig';
 
 /**
- * Sky and water (M3b), procedural: no image files. The sky is an equirectangular texture
- * (gradient, a soft glow round the sun, cloud patches) used as the background and, blurred by
- * three.js (PMREM), for reflections. The water gets a tiling ripple normal map.
+ * Clouds and water ripples (M3b, M18), procedural: no image files. The cloud texture is drawn
+ * by the sky dome; the water gets a tiling ripple normal map.
  */
 
 /** Smooth value noise on a grid that wraps every `period` cells (tileable). */
@@ -25,21 +24,12 @@ function valueNoise(random: () => number, period: number): (x: number, y: number
   };
 }
 
-/** Linear 0..1 → sRGB byte, through a lookup table (the sky has half a million pixels). */
-const SRGB_STEPS = 4096;
-const srgbTable = Uint8Array.from({ length: SRGB_STEPS + 1 }, (_, i) => {
-  const c = i / SRGB_STEPS;
-  const v = c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055;
-  return Math.round(Math.min(1, Math.max(0, v)) * 255);
-});
-function toByte(linear: number): number {
-  return srgbTable[Math.round(Math.min(1, Math.max(0, linear)) * SRGB_STEPS)] ?? 0;
-}
-
-export function skyTexture(): THREE.DataTexture {
-  const s = SCENE.sky;
-  const width = s.width;
-  const height = s.height;
+/**
+ * The cloud patches (M18): an equirectangular RGBA texture, white, whose alpha is the cloud
+ * amount (0 below the horizon). The sky dome (`skyDome.ts`) colours and places it.
+ */
+export function cloudTexture(): THREE.DataTexture {
+  const { width, height } = SCENE.sky;
   const random = seededRandom(2018);
   const octaves = [8, 16, 32].map((period, k) => ({
     period,
@@ -47,55 +37,30 @@ export function skyTexture(): THREE.DataTexture {
     noise: valueNoise(random, period),
   }));
   const weight = octaves.reduce((sum, o) => sum + o.amplitude, 0);
-  // Colours in the linear working space, as plain numbers.
-  const rgb = (hex: string) => {
-    const c = new THREE.Color(hex);
-    return [c.r, c.g, c.b] as const;
-  };
-  const zenith = rgb(s.zenith);
-  const horizon = rgb(s.horizon);
-  const below = rgb(s.belowHorizon);
-  const cloud = rgb(s.cloud);
   const data = new Uint8Array(width * height * 4);
-  const base = [0, 0, 0];
+  data.fill(255);
   for (let y = 0; y < height; y += 1) {
     // Row 0 is the bottom of the texture (straight down), the last row straight up.
     const elevation = ((y + 0.5) / height - 0.5) * Math.PI;
-    const sinEl = Math.sin(elevation);
-    const t = elevation < 0 ? Math.min(1, -elevation / 0.25) : Math.pow(Math.max(0, sinEl), 0.6);
-    const far = elevation < 0 ? below : zenith;
-    for (let k = 0; k < 3; k += 1) {
-      base[k] = (horizon[k] ?? 0) + ((far[k] ?? 0) - (horizon[k] ?? 0)) * t;
-    }
-    // Clouds thin out towards the horizon and the zenith.
-    const band = elevation > 0 ? Math.sin(Math.min(1, elevation / 0.9) * Math.PI) : 0;
     const v = elevation / (Math.PI / 2);
     for (let x = 0; x < width; x += 1) {
-      let r = base[0] ?? 0;
-      let g = base[1] ?? 0;
-      let b = base[2] ?? 0;
-      if (band > 0.01) {
+      let alpha = 0;
+      if (elevation > 0) {
         const u = (x + 0.5) / width;
         let n = 0;
         // Stretched along the horizon, so clouds near it look flatter.
         for (const o of octaves) n += o.amplitude * o.noise(u * o.period, v * o.period * 0.5);
-        const amount = THREE.MathUtils.smoothstep(n / weight, 0.5, 0.72) * band * s.cloudOpacity;
-        r += (cloud[0] - r) * amount;
-        g += (cloud[1] - g) * amount;
-        b += (cloud[2] - b) * amount;
+        alpha = THREE.MathUtils.smoothstep(n / weight, 0.5, 0.72);
       }
-      const i = (y * width + x) * 4;
-      data[i] = toByte(r);
-      data[i + 1] = toByte(g);
-      data[i + 2] = toByte(b);
-      data[i + 3] = 255;
+      data[(y * width + x) * 4 + 3] = Math.round(alpha * 255);
     }
   }
   const texture = new THREE.DataTexture(data, width, height);
-  texture.mapping = THREE.EquirectangularReflectionMapping;
-  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.colorSpace = THREE.NoColorSpace;
+  texture.flipY = false;
   texture.magFilter = THREE.LinearFilter;
   texture.minFilter = THREE.LinearFilter;
+  texture.wrapS = THREE.RepeatWrapping;
   texture.needsUpdate = true;
   return texture;
 }

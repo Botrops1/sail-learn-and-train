@@ -61,10 +61,10 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `re
 | `scene.ts`, `sceneConfig.ts` | Renderer, lights (the sun's from the clock), per-frame update; colours, sizes, camera framing. |
 | `cameraRig.ts`, `cameraPresets.ts` | Camera control and the presets (Side, Top, Bow, Helm). |
 | `picking.ts` | Tap-to-identify hit testing. |
-| `environment.ts`, `world.ts`, `wake.ts`, `wind.ts` | Sky and the ripple texture, the world group (steps the water along the map), the wake, wind streaks. |
+| `environment.ts`, `world.ts`, `wake.ts`, `wind.ts` | The cloud texture and the water's ripple texture, the world group (steps the water along the map), the wake, wind streaks. |
 | `waterSurface.ts` | The water: wave mesh with its grid lines, flat outer water out to the horizon, the tap plane; vertex colours (wind darkening, gust patch, white crests); `heightAt` for the wake and the buoys. |
-| `daylight.ts` | The sun's light from the clock: the direction in the boat frame and how strong the sun, the sky light and the night are. |
-| `sunDisc.ts` | The sun as a soft disc in the sky at its real direction (until M18's sky dome replaces it). |
+| `daylight.ts` | The sun's light from the clock: the direction in the boat frame (for the light, and at its true height for the sky) and how strong the sun, the sky light and the night are. |
+| `skyDome.ts`, `skyColours.ts` | Phase 3 (M18): the sky as a shader on a sphere round the camera (gradient, clouds fixed over the sea, the sun's glow and disc, stars) and the sky colours for a sun height (`SCENE.skyByElevation`). The same dome, rendered into a small cube map, gives the reflections at High detail. |
 | `marks.ts` | The four practice buoys (sphere, pole, X topmark) floating on the drawn water, tappable. |
 | `dangerZone.ts` | The red sector the boom sweeps in a gybe, and its faint outline by the lee. |
 | `boat/index.ts` | Builds the boat and applies the solved rig each frame. |
