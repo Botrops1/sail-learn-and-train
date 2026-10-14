@@ -110,8 +110,8 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 | Slot | Label on the boat | What it is | Russian (draft) | App control |
 |---|---|---|---|---|
 | 1 | Main sheet | Mainsheet, starboard end | гика-шкот | `ctl_mainsheet` |
-| 2 | Main furling (left) | Furling line: this tail rolls the main **in** | закруточный конец грота | `ctl_main_furl` |
-| 3 | Main furling (right) | Furling line: this tail rolls the main **out** (confirmed by the owner) | закруточный конец грота | `ctl_main_furl` |
+| 2 | Main furling (left) | Furling line: this tail rolls the main **in** | линь закрутки грота | `ctl_main_furl` |
+| 3 | Main furling (right) | Furling line: this tail rolls the main **out** (confirmed by the owner) | линь закрутки грота | `ctl_main_furl` |
 | 4 | Main halyard | Main halyard, stays up with in-mast furling | грота-фал | static |
 | 5 | Genoa sheet | **Jib sheet** of the self-tacking jib | стаксель-шкот | `ctl_jib_sheet` |
 
@@ -119,7 +119,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 
 | Slot | Label on the boat | What it is | Russian (draft) | App control |
 |---|---|---|---|---|
-| 1 | SPI HALYARD | Gennaker/spinnaker halyard, parked | фал генакера / спинакер-фал | static |
+| 1 | SPI HALYARD | Gennaker/spinnaker halyard, parked | фал геннакера / спинакер-фал | static |
 | 2 | Boom lift | Topping lift | топенант гика | `ctl_topping_lift` |
 | 3 | Main outhaul | Outhaul: pulls the sail out along the top of the boom; hauled with the "out" furling tail | оттяжка шкотового угла | `ctl_main_furl` (coupled) |
 | 4 | MAIN SHEET | Mainsheet, port end | гика-шкот | `ctl_mainsheet` |
@@ -129,7 +129,7 @@ Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts unt
 
 | Label | What it is | Russian (draft) | App control |
 |---|---|---|---|
-| JIB ROLL | Jib furling line | закруточный конец стакселя | `ctl_jib_furl` |
+| JIB ROLL | Jib furling line | линь закрутки стакселя | `ctl_jib_furl` |
 
 ### Other photos
 

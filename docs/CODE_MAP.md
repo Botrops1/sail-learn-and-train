@@ -14,7 +14,8 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 |---|---|
 | `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values. No numbers in code. |
 | `registry/parts.json` | `schemaVersion` 2 (M20): every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group` for the Learn list from M21, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
-| `lang/<code>/ui.json` | UI strings of one language, read through `t()` (`ui/i18n.ts`); `en` today (moved from `i18n/en.json` in M20). |
+| `lang/<code>/ui.json` | UI strings of one language, read through `t()` (`ui/i18n.ts`); `en` and `ru` (M23: same keys in the same order, tests list what is missing). |
+| `lang/latin-words.json` | M23: the Latin words allowed on a Russian screen (instrument letters, makers, the foreign words that alternative-name notes quote); the boat's label words are allowed too. Used by `tests/languages.test.ts` and the browser Latin scan. |
 | `lang/<code>/glossary.json` | The Learn entries of one language (names, other names, one-liner, what it does, on this boat, mistakes, show-me text), by registry id. `en` is the source language; `ru` is an AI draft (names and full text for every id: the M20, M21 and M22 entries). Read through `model/glossary.ts`. |
 | `areas/adriatic.json` | A sailing area (position, time zone, fetch per Waves setting, the practice buoys, the default clock), loaded by id (`model/area.ts`). |
 
@@ -25,7 +26,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `app.ts` | Builds everything, frame loop, FPS and frame times for the debug overlay. |
 | `store.ts` | The single store: `AppState`, all actions, the `step` order. |
 | `urlState.ts` | URL parameters ↔ state (schema version, defaults, old links). |
-| `urlSync.ts` | Debounced address-bar updates; Back (`popstate`) loads the link; `openScene` (Learn's "Show me": pushes the current link, then loads the scene). |
+| `urlSync.ts` | Debounced address-bar updates; Back (`popstate`) loads the link (or reloads the page if the link has another `lang`, M23); `openScene` (Learn's "Show me": pushes the current link, then loads the scene). |
 | `buildInfo.ts` | Commit hash and date for the footer. |
 
 ## `src/model/` (pure: no DOM, no three.js)
@@ -43,6 +44,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `realistic.ts`, `winch.ts` | Realistic mode: stations, clutches, wraps, self-tailer, handle, gearbox; capstan rule and winch physics. |
 | `labels3d.ts`, `registry.ts` | Where 3D labels sit; registry lookups (`partInfo`: name and one-liner from the glossary, words on the boat from `boatLabels.ts`). |
 | `boatLabels.ts` | Phase 4 (M20, owner on PR #54): the words printed on the boat for an id, from the clutch labels in the boat file (`boatLabelsFor`). |
+| `languages.ts` | Phase 4 (M23): the available languages (`UI_STRINGS` from every `content/lang/*/ui.json`, `LANGUAGES`, `isLanguage`, `languageName`) and `latinAllowed`. |
 | `glossary.ts` | Phase 4 (M20): the glossaries by language (`import.meta.glob`), `learnEntry` (registry facts plus text for the Learn tab), `NOT_DRAWN` (ids with no mesh), `sourceLink`; M21: `GROUPS`, `groupEntries`, `normalizeSearch` and `searchGlossary` (search over names, other names and the words on the boat in one language). |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
 | `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts` | Phase 2 sailing: apparent wind, lift/drag, resistance, speed/heading/position. |
@@ -79,8 +81,9 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 
 | File | What |
 |---|---|
-| `layout.ts`, `layoutMode.ts`, `dom.ts`, `i18n.ts` | Page layout (stacked / side by side), DOM helper, strings. |
-| `panel.ts` | The four tabs (Ropes, Wind, View, Learn) and the footer. |
+| `layout.ts`, `layoutMode.ts`, `dom.ts` | Page layout (stacked / side by side), DOM helper. |
+| `i18n.ts` | Strings (M23): `setLanguage`/`currentLanguage`, `t()`, `part()` (name and one-liner in the current language), `quoted()` (“ ” or « »), `formatThousands`. |
+| `panel.ts` | The four tabs (Ropes, Wind, View, Learn) and the footer; the View tab starts with the Language control (M23: choosing one reloads the page with `lang` in the link). |
 | `learnTab.ts` | Phase 4 (M20): the Learn tab: M21's search box and list of every entry in groups (or the search results), and one entry at a time (Back to the list, names, text, Show me, Show on the boat, Try it, See also, how sure we are). |
 | `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeLegend.ts` | Easy mode: rope sliders, − / + buttons, colour legend. |
 | `clutchDrawing.ts` | The clutch-bank drawing. |
@@ -95,7 +98,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 
 ## Tests and scripts
 
-- `tests/*.test.ts` (Vitest): one file per model area; `physicsTruths.test.ts` (Phase 1 rules) and `physicsTruths2.test.ts` (Phase 2 rules) and `physicsTruths3.test.ts` (Phase 3 rules) hold the tests named after PT ids; `motionHelpers.ts` and `geometry.ts` are shared helpers.
+- `tests/*.test.ts` (Vitest): one file per model area; `physicsTruths.test.ts` (Phase 1 rules) and `physicsTruths2.test.ts` (Phase 2 rules) and `physicsTruths3.test.ts` (Phase 3 rules) hold the tests named after PT ids; `languages.test.ts` (M23: every language's strings, the Latin scan, the checked Russian names) and `quotedLabels.ts` (the Russian wording of the labels the glossary quotes), `motionHelpers.ts` and `geometry.ts` are shared helpers.
 - `scripts/shots.mjs`: browser checks and screenshots (options at its top); `scripts/shots-m<N>.mjs`: each milestone's scenes and live checks; `scripts/a11y-audit.mjs`: accessibility audit; `scripts/visual-shots.mjs`: detail-level close-ups; `scripts/compare/`: model vs reference sketch.
 - `.github/workflows/`: `ci.yml` (`check`, `browser-checks`), `pr-preview.yml`, `deploy.yml`, `cleanup-branches.yml`, `strip-attribution.yml` (removes "Generated by Claude Code" footers and session links from PR and issue text after posting).
 - `.claude/skills/`: the owner's commands (`/milestone`, `/plan`, `/review`, `/bug`).

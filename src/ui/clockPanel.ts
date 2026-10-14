@@ -148,7 +148,14 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
     const abbr = parts.summer
       ? area.timeZone.summerAbbreviation
       : area.timeZone.standardAbbreviation;
-    setText(zoneLine, t('clock.zone', { area: t(`area.${area.id}` as StringKey), abbr, hours: parts.offsetMin / 60 }));
+    setText(
+      zoneLine,
+      t('clock.zone', {
+        area: t(`area.${area.id}` as StringKey),
+        abbr,
+        hours: parts.offsetMin / 60,
+      }),
+    );
     const { latitudeDeg, longitudeDeg } = area.position;
     const sun = sunTimes(parts.year, parts.month, parts.day, latitudeDeg, longitudeDeg);
     if (sun.polar === 'day') setText(sunLine, t('clock.polarDay'));
