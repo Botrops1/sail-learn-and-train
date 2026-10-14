@@ -367,5 +367,5 @@ New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn 
 
 #### M24: Phase 4 sign-off
 
-- [ ] The review document: open the link to `docs/review/ru.md` in the PR and send it to a Russian-speaking sailor (your instructor) if you can.
+- [ ] The review document: open the link to `docs/review/ru.md` in the PR description (after the merge it is at https://github.com/Botrops1/sail-learn-and-train/blob/main/docs/review/ru.md) and send it to a Russian-speaking sailor (your instructor) if you can. They answer by code, for example "term_north: ок".
 - [ ] Every item of the Phase 4 Definition of Done (PHASE4_SPEC 11) is ticked in the PR.

@@ -264,7 +264,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 
 New: `src/model/glossary.ts`, `src/ui/learnTab.ts`, `content/lang/en/glossary.json`, `content/lang/ru/glossary.json`, `tests/glossary.test.ts`, `tests/learn.test.ts`, `scripts/shots-m20.mjs`.
 Moved: `content/i18n/en.json` → `content/lang/en/ui.json` (`git mv`; update its imports in `src/ui/i18n.ts` and `tests/i18n.test.ts`).
-Changed: `content/registry/parts.json` (v2, 6.2), `src/model/registry.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/panel.ts`, `src/ui/infoCard.ts`, `src/ui/ropesTab.ts`, `src/ui/realisticPanel.ts`, `src/style.css`, `tests/registry.test.ts`, `tests/i18n.test.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`, `CLAUDE.md` (the "IDs" bullet only, 6.11).
+Changed: `content/registry/parts.json` (v2, 6.2), `src/model/registry.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts`, `src/app/app.ts`, `src/ui/panel.ts`, `src/ui/infoCard.ts`, `src/ui/ropesTab.ts`, `src/ui/realisticPanel.ts`, `src/style.css`, `tests/registry.test.ts`, `tests/i18n.test.ts`, `scripts/shots.mjs`, `.github/workflows/ci.yml` (a Phase 4 part, 6.9), `docs/CODE_MAP.md`, `CLAUDE.md` (the "IDs" bullet only, 6.11).
 
 ### 6.2 Data: the registry becomes version 2
 
@@ -663,6 +663,8 @@ export function openScene(store: Store, query: string): void;
 `tests/i18n.test.ts`: only its import path changes.
 
 ### 6.9 Browser checks (`scripts/shots-m20.mjs`)
+
+**CI:** add a matrix part to `.github/workflows/ci.yml` after "live, Phase 2 on": `part: live, Phase 4`, `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m20,m21,m22,m23,m24`, and add `m20,m21,m22,m23,m24` to the `SHOTS_SKIP` list of "live, Phase 2 on" (`SHOTS_ONLY` and `SHOTS_SKIP` simply match no group for names not registered yet, so later milestones need no CI change).
 
 Labels contain `m20`; `openPage` adds `held=1`, `sea=flat` and `clock=0` to queries without them (its regexes do not match `m2x`), which these checks want. Register in `shots.mjs` (import, `M20_SCENES` with the `m20-` prefix, `liveGroups.m20`).
 
@@ -2247,33 +2249,53 @@ No third language. No decimal comma. No right-to-left layout. No translation of 
 
 ### 10.1 Files
 
-New: `scripts/review-doc.mjs`, `docs/review/ru.md` (generated), `docs/LANGUAGES.md`, `scripts/shots-m24.mjs`.
-Changed: `package.json` (script `review-doc`), `README.md`, `docs/ROADMAP.md`, `docs/PHASE4_SPEC.md` (status line, "Decided in the M24 PR"), `docs/CODE_MAP.md`, `scripts/shots.mjs`.
+New: `scripts/review-doc.mjs`, `docs/review/ru.md` (generated, committed), `docs/LANGUAGES.md`, `scripts/shots-m24.mjs`.
+Changed: `package.json` (script `review-doc`), `tests/glossary.test.ts` (the review document is up to date), `tests/languages.test.ts` (the Latin scan for every non-Latin language), `README.md`, `docs/ROADMAP.md`, `docs/PHASE4_SPEC.md` (status line, "Decided in the M24 PR"), `docs/CODE_MAP.md` (`scripts/review-doc.mjs`, `scripts/shots-m24.mjs`, `docs/LANGUAGES.md`, `docs/review/`), `scripts/shots.mjs`.
 
 ### 10.2 The review document
 
-`npm run review-doc -- ru` runs `node scripts/review-doc.mjs ru` and writes `docs/review/ru.md` (overwritten each time; committed so the owner can send its link). Content, in this order:
-1. A heading `Review of the Russian text` and this paragraph (verbatim, in Russian): `Это черновой перевод, сделанный ИИ. Пожалуйста, проверьте названия, другие названия (варианты) и тексты. Для каждой записи напишите «ок» или как правильно. Особенно важно: принятые на яхтах русские термины и слова голландского происхождения.`
-2. For each group in `GROUPS` order, a `##` heading with the group's Russian label (without the count), then each entry in that group's Russian order: `### <Russian name>` with the id in backticks, then a table with the rows: English name; Название; Другие названия (term — note); Коротко; Что делает / что значит; На этой яхте; Типичные ошибки (mistake → fix, one per line); «Покажи»; Статус текста. English text in the first column for comparison, Russian in the second.
-3. A section `Кнопки и подсказки` with a table key | English | Русский for every `ui.json` key.
-The script reads the JSON files directly (no build), takes the language code as its only argument, and exits with an error for an unknown code (so a later language uses the same script).
+`scripts/review-doc.mjs` exports `buildReviewDoc(code)` (returns the Markdown text) and, when run as `node scripts/review-doc.mjs <code>` (`npm run review-doc -- ru`), writes `docs/review/<code>.md`. It reads the JSON files directly (no build) and holds a small **wording table** keyed by language code with the fixed texts below; it supports `ru` only, and for any other code exits with `no review wording for <code>; add one to scripts/review-doc.mjs` (a later language adds its wording there; `LANGUAGES.md` says so). The output is deterministic (no date or time in it).
+
+Content, in this order (fixed `ru` wording in quotes, verbatim):
+1. `# Проверка русского текста`, then the paragraph: `Это черновой перевод, сделанный ИИ. Пожалуйста, проверьте названия, другие названия (варианты) и тексты. Для каждой записи напишите «ок» или как правильно, указав её код (например: term_north — ок). Особенно важно: принятые на яхтах русские термины и слова голландского происхождения.`
+2. For each group in `GROUPS` order: `## <label>`, where the label is `learn.group.<group>` from `content/lang/ru/ui.json` with `/\s*\(?\{count\}\)?/` removed and trimmed. Then each entry whose registry `group` is that group, sorted by Russian `name` with `a.localeCompare(b, 'ru')`: `### <Russian name> (`<id>`)` and a three-column table `| Поле | English | Русский |` with these rows, always all of them, in this order:
+   - `Название` | English name | Russian name
+   - `Другие названия` | the English alternatives | the Russian ones; each written `term — note` or `term`, joined with `<br>`; none: `—`
+   - `Коротко` | `short` | `short`
+   - `Что делает / что значит` | `what` | `what`
+   - `На этой яхте` | `onThisBoat` | `onThisBoat`
+   - `Типичные ошибки` | each `mistake → fix`, joined with `<br>` | the same
+   - `«Покажи»` | `showMe` | `showMe`
+   - `Достоверность` | the fact status, as `learn.status.<status>` in English | the same key in Russian
+   - `Статус текста` | — | `черновик` for `draft`, `проверен моряком` for `sailor-reviewed`
+   - `Проверка (ок / как правильно)` | (empty) | (empty)
+   A field missing in both languages is written `—` in both cells. A field the English entry has but the Russian lacks is an error: the script exits with a non-zero code naming the id and field. In every cell, `|` becomes `\|` and a line break becomes `<br>`.
+3. `## Кнопки и подсказки` and a table `| key | English | Русский |` with every key in `ru/ui.json` order; a value that is only white space is written as its code point (`U+00A0`).
+4. The script fails (non-zero) if the result is larger than 450 KB (GitHub shows bigger Markdown files as raw text).
+
+`tests/glossary.test.ts` gains: `buildReviewDoc('ru')` equals the committed `docs/review/ru.md` (so a text change without regenerating the document fails CI; the message says to run `npm run review-doc -- ru`).
 
 ### 10.3 Checks
 
-`scripts/shots-m24.mjs`, `liveM24Checks` (phone), for `en` and `ru`:
-- Open the Learn tab, open every group, tap every entry button in turn: `learn-name` is not empty, every `h3` in the entry is followed by non-empty text, no console error; tap `learn-back`.
-- In `en` only: for every entry with a Show me, open `?learn=<id>`, tap `learn-show-me`, wait 500 ms, `page.goBack()`: the address bar again has `learn=<id>` and no console error.
-- `auditPage` on an entry with every section (`?learn=rope_mainsheet`, both languages), the groups, and search results: clean.
+`scripts/shots-m24.mjs`: no scenes (`M24_SCENES = []`), `liveM24Checks` only (label contains `m24`, so `openPage` adds `held=1&sea=flat&clock=0`). Run on the phone size, for `en` (`?`) and `ru` (`?lang=ru`), each in **one page**:
+1. Read `content/registry/parts.json` in Node: the expected ids (131), groups (10) and Show-me ids (60).
+2. Open the Learn tab. There are 10 group `details`. For each entry button `[data-testid^="learn-entry-"]` (131 in all): open its group first (`details.open = true` through `evaluate`, because the list is rebuilt after `learn-back`), tap it, wait for `learn-name` to read the expected name (from the language's glossary file), check every `h3` in the entry has a next sibling with non-empty text, then tap `learn-back`.
+3. In `en` only, inside the same loop, for each of the 60 entries with Show me: record `location.search`, tap `learn-show-me`, `waitForFunction` until `location.search` differs, then `page.goBack()` (not null) and wait until `location.search` equals the recorded value and `learn-name` shows the same name again.
+4. No console error during the whole run.
+5. `auditPage` on: the entry with the most `h3` (found in the loop), the groups with one group open, and search results for `ma` (both languages): clean.
+
+The Phase 4 browser checks run in their own CI part (added in M20, 6.9), which already lists `m24`.
 
 ### 10.4 Docs
 
-- `docs/LANGUAGES.md` (new, short, plain words): how to add a language: copy `content/lang/en/` to `content/lang/<code>/`, translate both files (rules as 3.3, adapted), set every `textStatus` to `draft`, add words to `latin-words.json` only if the new language does not use Latin letters, run `npm test` (the tests list every missing or extra key), run `npm run review-doc -- <code>` for a reviewer. Nothing else changes: the Language setting lists the new language by itself.
-- README: a "Phase 4" section (what the learner sees: the Learn tab, More, Show me, search, the language setting; link settings `learn`, `lang`).
-- ROADMAP: Phase 4 status "Done (M24, PR #<n>)" once the owner signs off, and a decisions-log row; this spec's status line likewise.
+- `docs/LANGUAGES.md` (new, short, plain words): how to add a language: copy `content/lang/en/` to `content/lang/<code>/`; translate both files following the rules of PHASE4_SPEC 3.3 adapted to the language (its own traditional alternative terms, never another language's); set every `textStatus` to `draft`; if the language does not use Latin letters, the Latin scan applies to it too and `latin-words.json` lists the allowed exceptions; run `npm test` (the tests list every missing or extra key and every incomplete entry); add the language's wording to `scripts/review-doc.mjs` and run `npm run review-doc -- <code>` for a reviewer. Nothing else changes: the Language setting lists the new language by itself.
+- `tests/languages.test.ts`: the Latin scan of 9.6 item 3 runs for every language whose `language.name` contains no Latin letter (today `ru`).
+- README: in "What you can do", a new item **Learn** (the Learn tab, More, Show me, search, how sure the app is) and an item **Language** (English or Russian, `lang=ru`); the line "Later phases add waves, a learning layer with Russian names, …" is rewritten to say that Phases 1–4 are done and name what later phases add (harbours and anchoring, exercises, more languages); the documents table gains `PHASE3_SPEC.md`, `PHASE4_SPEC.md` and `LANGUAGES.md`.
+- ROADMAP: Phase 4 status "Done (M24, PR #<n>), Russian text awaiting a sailor's review" once the owner signs off, and a decisions-log row; this spec's status line likewise.
 
 ### 10.5 Done when
 
-Every item of section 11 is ticked in the PR (the agent ticks what tests and checks show; the owner ticks the phone items); CI `browser-checks` green; `docs/review/ru.md` generated and linked in the PR description for the owner to send to a Russian-speaking sailor.
+Every item of section 11 is ticked in the PR. **The agent ticks** items 1, 4, 5, 6, 7, 8 and 10, and item 3 from the browser checks; **the owner ticks** item 2, item 3 on the phone, and item 9 ("smooth on the owner's phone"). CI `browser-checks` green. The PR description links `docs/review/ru.md` with a link to the PR's latest commit (`https://github.com/Botrops1/sail-learn-and-train/blob/<sha>/docs/review/ru.md`, since merged branches are deleted) and says that the reviewer answers by id (for example `term_north: ок`). The sailor's corrections come later, in a `/bug` PR that also sets their entries' `textStatus` to `sailor-reviewed`.
 
 ---
 
