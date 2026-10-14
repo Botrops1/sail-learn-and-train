@@ -1,4 +1,4 @@
-import en from '../../content/i18n/en.json';
+import en from '../../content/lang/en/ui.json';
 
 export type StringKey = keyof typeof en;
 export type Language = 'en';

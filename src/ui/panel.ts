@@ -5,16 +5,18 @@ import { entryFor } from '../model/panelEntries';
 import { CAMERA_PRESETS, DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
+import { createLearnTab } from './learnTab';
 import { createRopesTab } from './ropesTab';
 import { createWindPanel } from './windPanel';
 
-export const TAB_IDS = ['ropes', 'wind', 'view'] as const;
+export const TAB_IDS = ['ropes', 'wind', 'view', 'learn'] as const;
 export type TabId = (typeof TAB_IDS)[number];
 
 const TAB_LABELS: Record<TabId, StringKey> = {
   ropes: 'tab.ropes',
   wind: 'tab.wind',
   view: 'tab.view',
+  learn: 'tab.learn',
 };
 
 /**
@@ -70,9 +72,10 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
     body.append(pane);
   }
 
-  panes.get('ropes')?.append(...createRopesTab(store));
+  panes.get('ropes')?.append(...createRopesTab(store, () => select('learn')));
   panes.get('wind')?.append(...createWindPanel(store));
   panes.get('view')?.append(...buildViewTab(store));
+  panes.get('learn')?.append(...createLearnTab(store, (tab) => select(tab)));
 
   const footer = el('footer', { class: 'footer' }, [
     el('p', { class: 'disclaimer', 'data-testid': 'disclaimer' }, [t('footer.disclaimer')]),
@@ -85,10 +88,15 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
 
   host.append(tabList, body);
   select('ropes');
+  if (store.getState().learn !== null) select('learn');
 
   store.subscribe((state, previous) => {
+    // An entry was opened (also while the Learn tab is open: this scrolls it to the top).
+    if (state.learn !== previous.learn && state.learn !== null) select('learn');
+    // A rope or the wheel selected opens the Ropes tab, except from the Learn tab: "Show on the
+    // boat" lights the part up and stays there.
     if (state.selection === previous.selection || !entryFor(state.selection)) return;
-    if (active !== 'ropes') select('ropes');
+    if (active !== 'ropes' && active !== 'learn') select('ropes');
   });
 
   function select(id: TabId, focus = false): void {

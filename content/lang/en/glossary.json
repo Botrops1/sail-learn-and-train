@@ -1,0 +1,972 @@
+{
+  "$comment": "Learn entries in one language (PHASE4_SPEC 3.2). Keys are registry ids. English is the source language; other languages translate it.",
+  "language": "en",
+  "entries": {
+    "rope_mainsheet": {
+      "name": "Mainsheet",
+      "alternatives": [],
+      "short": "The rope that lets the boom and mainsail swing out, or pulls them back in.",
+      "what": "Easing (letting out) the mainsheet lets the wind push the boom further out; hauling it in pulls the boom back towards the middle. The rope only limits how far the boom can go: with the wind from ahead, easing it just makes it slack. Near the middle a little rope moves the boom a lot; far out, a lot of rope moves it only a little.",
+      "onThisBoat": "A German mainsheet: one rope with two ends, one at each side of the cockpit (the clutches say “Main sheet” and “MAIN SHEET”). It runs through three blocks under the boom and two spring-mounted blocks at the back of the coachroof. There is no traveller (a sliding car for the lower blocks).",
+      "mistakes": [
+        {
+          "mistake": "Easing it far more than the wind needs.",
+          "fix": "The mainsail flaps along its front edge. Haul in until the flapping just stops."
+        },
+        {
+          "mistake": "Keeping it hauled hard in a gust.",
+          "fix": "The boat heels a lot and turns into the wind by herself. Ease the mainsheet to let the gust out."
+        },
+        {
+          "mistake": "Opening its clutch under load with the rope not on a winch.",
+          "fix": "The rope runs out fast and the boom flies out. Put the rope on the winch first, then open the clutch."
+        }
+      ],
+      "showMe": "Wind from the side and the mainsheet eased to 60 %: the boom has swung well out. Tap “Mainsheet” below and haul it in: the boom comes back towards the middle.",
+      "textStatus": "draft"
+    },
+    "rope_jib_sheet": {
+      "name": "Jib sheet",
+      "alternatives": [
+        {
+          "term": "headsail sheet"
+        }
+      ],
+      "short": "The rope that sets how far the jib can swing out.",
+      "what": "Hauling the jib sheet in pulls the jib’s back corner towards the boat; easing it lets the wind push the jib out. On a self-tacking jib, easing mostly lets the top of the sail twist open rather than swinging the whole sail out.",
+      "onThisBoat": "One sheet runs from the jib’s back corner to a car on a short track in front of the mast, with a 2:1 purchase (a pulley system that halves the pull), then down the mast and aft to the starboard clutches. The clutch says “Genoa sheet”, but the sail is a jib. Fully eased, the jib only reaches about 30° out.",
+      "mistakes": [
+        {
+          "mistake": "Easing it on a reach and expecting the jib to swing far out.",
+          "fix": "A self-tacking jib cannot go far out; easing more only twists its top open. Ease until its telltales stream, no further."
+        },
+        {
+          "mistake": "Furling the jib with the sheet still tight.",
+          "fix": "The jib stops rolling up. Ease the jib sheet first, then pull the furling line."
+        },
+        {
+          "mistake": "Hauling it hard in with the wind from the side.",
+          "fix": "The jib stalls: the telltales on its far side droop. Ease until they stream."
+        }
+      ],
+      "showMe": "Wind from the side and the jib sheet fully eased: the jib is only about 30° out, but its top has twisted open. Tap “Jib sheet” below and haul it in to see the jib flatten.",
+      "textStatus": "draft"
+    },
+    "rope_vang": {
+      "name": "Vang",
+      "alternatives": [
+        {
+          "term": "kicker",
+          "note": "British"
+        },
+        {
+          "term": "kicking strap",
+          "note": "British"
+        },
+        {
+          "term": "boom vang"
+        }
+      ],
+      "short": "Pulls the boom down, which keeps the mainsail flatter and stops its top twisting open.",
+      "what": "The vang runs from low on the mast to the underside of the boom. Hauled, it holds the boom down, so the sail stays flatter with less twist. Eased, the boom end rises and the top of the sail twists open. Once the mainsheet is eased well out, the vang, not the sheet, decides how high the boom sits.",
+      "onThisBoat": "A rigid vang (a strut with a gas spring inside) with a rope tackle. The spring holds the boom up, so the boom does not drop when the vang is eased; the rope only pulls it down. Its clutch is on the port side, labelled “Vang”.",
+      "mistakes": [
+        {
+          "mistake": "Relying on the mainsheet to hold the boom down on a reach.",
+          "fix": "Far out, the sheet pulls sideways, not down, and the boom lifts. Haul the vang to hold it down."
+        },
+        {
+          "mistake": "Hauling the vang and the topping lift tight at the same time.",
+          "fix": "They pull against each other (both ropes turn red in the app). Ease the topping lift once the sail is set."
+        }
+      ],
+      "showMe": "Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and haul it in: the boom comes down and the sail flattens.",
+      "textStatus": "draft"
+    },
+    "rope_topping_lift": {
+      "name": "Topping lift",
+      "alternatives": [],
+      "short": "A line from the top of the mast to the end of the boom that can hold the boom up.",
+      "what": "The topping lift carries the boom when the sail is not holding it up, for example with the sail rolled away. Hauled tight while sailing, it fights the vang and spoils the sail’s shape, so it is eased once the sail is set.",
+      "onThisBoat": "Labelled “Boom lift” on the port clutches. The rigid vang’s spring already holds the boom up, so on this boat the topping lift only carries the boom when it is hauled higher than the spring holds it.",
+      "mistakes": [
+        {
+          "mistake": "Leaving it tight while sailing with the vang hauled.",
+          "fix": "The two ropes fight (both turn red in the app). Ease the topping lift."
+        }
+      ],
+      "showMe": "No wind, the topping lift and the vang both hauled tight: they pull against each other and both ropes turn red. Tap “Topping lift” below and ease it to end the fight.",
+      "textStatus": "draft"
+    },
+    "rope_outhaul": {
+      "name": "Outhaul",
+      "alternatives": [
+        {
+          "term": "clew outhaul"
+        }
+      ],
+      "short": "Pulls the mainsail’s back bottom corner (the clew) out along the boom.",
+      "what": "The outhaul pulls the clew towards the end of the boom. With in-mast furling it also pulls the sail out of the mast as it unrolls: it is hauled together with the furling line’s “out” tail, and eased when the sail is rolled in.",
+      "onThisBoat": "Labelled “Main outhaul” on the port clutches. In the app’s Easy mode it moves together with “Mainsail out”. How the rope runs inside the boom is not yet confirmed on the real boat.",
+      "mistakes": [
+        {
+          "mistake": "Rolling the main in without easing the outhaul.",
+          "fix": "The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line."
+        },
+        {
+          "mistake": "Unrolling the main without hauling the outhaul.",
+          "fix": "The sail comes out baggy and does not reach the end of the boom. Haul the outhaul together with the “out” line."
+        }
+      ],
+      "showMe": "Mainsail fully out: the outhaul holds its back corner at the end of the boom. Tap “Outhaul” below and roll the main in a little: the corner slides towards the mast.",
+      "textStatus": "draft"
+    },
+    "rope_main_furling_line": {
+      "name": "Main furling line",
+      "alternatives": [
+        {
+          "term": "furling line"
+        }
+      ],
+      "short": "Rolls the mainsail into the mast, or lets it out.",
+      "what": "In-mast furling rolls the mainsail up inside the mast like a blind. The furling line has two tails: hauling the “in” tail rolls the sail in; hauling the “out” tail, together with the outhaul, rolls it out while the “in” tail is eased. Rolling the sail partly in makes it smaller in strong wind (instead of reefing).",
+      "onThisBoat": "Two clutches on the starboard side, both labelled “Main furling”: the left one rolls the main in, the right one rolls it out. If the line slips, the main can be rolled in by hand with the winch handle in the gearbox at the foot of the mast (about 40 turns).",
+      "mistakes": [
+        {
+          "mistake": "Hauling the “in” tail without easing the “out” tail and the outhaul.",
+          "fix": "Nothing moves, or the line jams. Ease the other two first."
+        },
+        {
+          "mistake": "Rolling the main in while it is full of wind.",
+          "fix": "The load is heavy and the line can slip. Ease the mainsheet, or turn closer to the wind, so the sail is not pulling, then roll it in."
+        }
+      ],
+      "showMe": "Mainsail 30 % out: most of it is rolled inside the mast. Tap “Main furling line” below and set “Mainsail out” to 100 % to unroll it.",
+      "textStatus": "draft"
+    },
+    "rope_jib_furling_line": {
+      "name": "Jib furling line",
+      "alternatives": [
+        {
+          "term": "furling line"
+        }
+      ],
+      "short": "Rolls the jib up round the forestay, or lets it unroll.",
+      "what": "Pulling the line turns the drum at the bottom of the forestay and rolls the jib up around it. Easing it while pulling the sheet lets the jib unroll. A partly rolled jib is smaller, which helps in strong wind.",
+      "onThisBoat": "A Furlex furler at the bow. The line runs back along the port side deck through a single clutch labelled “JIB ROLL” to the port winch. The jib sheet must be eased for the jib to roll up.",
+      "mistakes": [
+        {
+          "mistake": "Pulling the furling line with the jib sheet tight.",
+          "fix": "The jib stops rolling. Ease the jib sheet, then keep furling."
+        },
+        {
+          "mistake": "Letting the line run free when unrolling in strong wind.",
+          "fix": "The jib flies out and flaps hard. Keep a turn of the line on the winch and let it out under control."
+        },
+        {
+          "mistake": "Leaving the jib flapping for a long time in strong wind.",
+          "fix": "The sail wears and can tear. Roll it in or sheet it in quickly."
+        }
+      ],
+      "showMe": "Jib 40 % out with its sheet eased: the rest is rolled round the forestay. Tap “Jib furling line” below and change “Jib out” to roll it in or out.",
+      "textStatus": "draft"
+    },
+    "rope_main_halyard": {
+      "name": "Main halyard",
+      "alternatives": [],
+      "short": "Holds the top of the mainsail up the mast.",
+      "what": "A halyard hoists a sail. The main halyard holds the mainsail’s top corner (the head) at the top of the mast.",
+      "onThisBoat": "With in-mast furling the sail stays hoisted inside the mast; it is rolled in and out instead of being lowered. The halyard’s clutch on the starboard side (“Main halyard”) normally stays shut. The app does not adjust it.",
+      "mistakes": [
+        {
+          "mistake": "Opening the main halyard clutch by mistake (it sits next to the sheets).",
+          "fix": "The sail’s head can slide down inside the mast. Leave this clutch shut, and read the label before opening any clutch."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "rope_spi_halyard": {
+      "name": "Gennaker halyard",
+      "alternatives": [
+        {
+          "term": "spinnaker halyard"
+        }
+      ],
+      "short": "The halyard for a gennaker; on this boat it is kept parked.",
+      "what": "A halyard for hoisting a gennaker (a large, light sail for wind from behind) to the top of the mast.",
+      "onThisBoat": "The boat has no gennaker on board, but the halyard is fitted; its clutch on the port side is labelled “SPI HALYARD”. The app draws its top end parked down the front of the mast (where it is really kept is not yet known).",
+      "mistakes": [
+        {
+          "mistake": "Leaving the parked halyard loose.",
+          "fix": "It slaps against the mast and can wrap round the forestay or the jib. Keep it parked and tight."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "part_hull": {
+      "name": "Hull",
+      "alternatives": [],
+      "short": "The body of the boat.",
+      "textStatus": "draft"
+    },
+    "part_bow": {
+      "name": "Bow",
+      "alternatives": [],
+      "short": "The front of the boat.",
+      "textStatus": "draft"
+    },
+    "part_stern": {
+      "name": "Stern",
+      "alternatives": [
+        {
+          "term": "transom (the flat back)"
+        }
+      ],
+      "short": "The back of the boat.",
+      "textStatus": "draft"
+    },
+    "part_deck": {
+      "name": "Deck",
+      "alternatives": [],
+      "short": "The top surface of the hull you walk on.",
+      "textStatus": "draft"
+    },
+    "part_coachroof": {
+      "name": "Coachroof",
+      "alternatives": [
+        {
+          "term": "cabin top"
+        },
+        {
+          "term": "deckhouse"
+        }
+      ],
+      "short": "The raised roof over the cabin, in front of the cockpit. The mast stands on it.",
+      "textStatus": "draft"
+    },
+    "part_cockpit": {
+      "name": "Cockpit",
+      "alternatives": [],
+      "short": "The open area at the back where the crew sits, steers and handles the ropes.",
+      "textStatus": "draft"
+    },
+    "part_companionway": {
+      "name": "Companionway",
+      "alternatives": [
+        {
+          "term": "hatch to the cabin"
+        }
+      ],
+      "short": "The entrance and steps from the cockpit down into the cabin.",
+      "textStatus": "draft"
+    },
+    "part_keel": {
+      "name": "Keel",
+      "alternatives": [
+        {
+          "term": "L-keel"
+        }
+      ],
+      "short": "Heavy fin under the boat. Stops the boat sliding sideways and keeps it upright. Draft 2.40 m.",
+      "textStatus": "draft"
+    },
+    "part_rudder": {
+      "name": "Rudder",
+      "alternatives": [],
+      "short": "Underwater blade at the stern that steers the boat. Turned by the wheels.",
+      "textStatus": "draft"
+    },
+    "part_saildrive": {
+      "name": "Saildrive and propeller",
+      "alternatives": [],
+      "short": "The engine's leg and 2-blade propeller under the hull.",
+      "textStatus": "draft"
+    },
+    "part_lifelines": {
+      "name": "Lifelines and stanchions",
+      "alternatives": [
+        {
+          "term": "railing"
+        }
+      ],
+      "short": "Safety wires around the deck held by vertical posts.",
+      "textStatus": "draft"
+    },
+    "env_water": {
+      "name": "Water surface",
+      "alternatives": [
+        {
+          "term": "waterline level"
+        }
+      ],
+      "short": "The sea surface. Waves grow with the wind and with how far it has blown over open water (Wind tab → Waves); the boat rises, pitches and rolls on them. See-through so the keel and rudder stay visible. Darker patches are stronger wind (in gusty wind you can see a gust coming); white crests (white horses) appear from about 7 knots and grow with the wind.",
+      "textStatus": "draft"
+    },
+    "part_mast": {
+      "name": "Mast",
+      "alternatives": [],
+      "short": "Vertical spar holding the sails. On the reference boat the mainsail rolls up inside it.",
+      "textStatus": "draft"
+    },
+    "part_boom": {
+      "name": "Boom",
+      "alternatives": [],
+      "short": "Horizontal spar along the bottom of the mainsail. Its angle is set by the wind and limited by the mainsheet. Watch your head.",
+      "textStatus": "draft"
+    },
+    "part_gooseneck": {
+      "name": "Gooseneck",
+      "alternatives": [],
+      "short": "The hinge joining the boom to the mast.",
+      "textStatus": "draft"
+    },
+    "part_spreader": {
+      "name": "Spreaders",
+      "alternatives": [],
+      "short": "Two sets of struts sticking out from the mast, swept back, that spread the shrouds.",
+      "textStatus": "draft"
+    },
+    "part_shroud": {
+      "name": "Shrouds",
+      "alternatives": [
+        {
+          "term": "side stays"
+        }
+      ],
+      "short": "Wires holding the mast up from the sides. The boom cannot swing past them.",
+      "textStatus": "draft"
+    },
+    "part_forestay": {
+      "name": "Forestay",
+      "alternatives": [],
+      "short": "Wire from the bow to the top of the mast. The jib is rolled around it.",
+      "textStatus": "draft"
+    },
+    "part_backstay": {
+      "name": "Backstay",
+      "alternatives": [],
+      "short": "Wire from the top of the mast to the stern.",
+      "textStatus": "draft"
+    },
+    "env_wind": {
+      "name": "Test wind",
+      "alternatives": [
+        {
+          "term": "true wind (while the boat is still)"
+        }
+      ],
+      "short": "The true wind (the wind over the water), set by hand in the Wind tab: the compass direction it comes from and how strong. A boat that is held still feels exactly this wind; a sailing boat feels the apparent wind. The light streaks show the wind the sails feel. Wind changes (Steady, Gusty, Shifty, Building, Dying) add a pattern on top of this average wind; the thin arrow on the dial is the wind right now.",
+      "textStatus": "draft"
+    },
+    "part_windex": {
+      "name": "Masthead wind indicator",
+      "alternatives": [
+        {
+          "term": "windex"
+        }
+      ],
+      "short": "Arrow at the top of the mast that points into the wind.",
+      "textStatus": "draft"
+    },
+    "part_main_furling_gearbox": {
+      "name": "In-mast furling gearbox",
+      "alternatives": [
+        {
+          "term": "furling drum"
+        }
+      ],
+      "short": "Drum and gearbox at the foot of the mast for the main furling line. A winch handle fits in it as a backup (IN/OUT arrow).",
+      "textStatus": "draft"
+    },
+    "part_jib_furler": {
+      "name": "Jib furler",
+      "alternatives": [
+        {
+          "term": "roller furler"
+        },
+        {
+          "term": "furling drum"
+        }
+      ],
+      "short": "Drum at the bottom of the forestay that rolls the jib up (Selden Furlex 404S on the reference boat).",
+      "textStatus": "draft"
+    },
+    "sail_main": {
+      "name": "Mainsail",
+      "alternatives": [
+        {
+          "term": "main"
+        }
+      ],
+      "short": "The sail behind the mast, held by the mast and the boom.",
+      "what": "The mainsail is set on the mast and the boom. The mainsheet sets its angle to the wind, the vang its twist, and the outhaul pulls it out along the boom. Trimmed right, it drives the boat; pulled in too far it stalls, let out too far it flaps.",
+      "onThisBoat": "61 m², rolled into the mast (in-mast furling), with no battens (stiffening strips). In strong wind it is made smaller by rolling part of it into the mast.",
+      "mistakes": [
+        {
+          "mistake": "Pulling it in too far for the wind angle.",
+          "fix": "It stalls: less drive and more heel, and the telltales on its far side droop. Ease until they stream."
+        },
+        {
+          "mistake": "Letting it out too far.",
+          "fix": "Its front edge flaps. Haul in until the flapping just stops."
+        },
+        {
+          "mistake": "Keeping all of it out as the wind gets strong.",
+          "fix": "The boat heels too much and turns into the wind by herself. Roll part of it in."
+        }
+      ],
+      "showMe": "Sailing 60° off the wind with the mainsail trimmed well: its telltales stream and it drives the boat at about 7 kn. Tap “Mainsheet” below and ease it fully: the front edge starts to flap and she slows down.",
+      "textStatus": "draft"
+    },
+    "sail_jib": {
+      "name": "Self-tacking jib",
+      "alternatives": [
+        {
+          "term": "jib"
+        },
+        {
+          "term": "headsail"
+        }
+      ],
+      "short": "The front sail; it changes sides by itself when the boat tacks.",
+      "what": "The jib is set on the forestay in front of the mast. Its sheet runs to a car on a track across the deck, and the car slides to the other side by itself when the bow turns through the wind, so tacking needs no sheet work.",
+      "onThisBoat": "51.5 m², on a Furlex roller furler at the bow. The track is short and straight, so the jib cannot be eased far out: fully eased it reaches about 30°. The clutch says “Genoa sheet”, but the sail is a jib, smaller than a genoa and not overlapping the mast.",
+      "mistakes": [
+        {
+          "mistake": "Keeping all of the jib out in strong wind.",
+          "fix": "She heels too much and turns into the wind. Roll part of the main in first, then part of the jib if needed."
+        },
+        {
+          "mistake": "Furling the jib with the sheet tight.",
+          "fix": "Ease the sheet; then the jib rolls up."
+        }
+      ],
+      "showMe": "Wind 30° from starboard: the jib’s car sits at the port end of its track. In the Wind tab, turn the wind to the other side of the bow: the car slides across by itself.",
+      "textStatus": "draft"
+    },
+    "sail_gennaker": {
+      "name": "Gennaker",
+      "alternatives": [
+        {
+          "term": "asymmetric spinnaker"
+        }
+      ],
+      "short": "A large, light sail for wind from behind; not on board this boat.",
+      "what": "A gennaker is a big, light, curved sail flown from the bow and the top of the mast when the wind comes from behind the side. It is set and taken down for each use.",
+      "onThisBoat": "Not on the reference boat; only its halyard (“SPI HALYARD”) is fitted. The manual gives 200 m² for the optional gennaker. The app does not show the sail.",
+      "textStatus": "draft"
+    },
+    "sailpart_head": {
+      "name": "Head",
+      "alternatives": [],
+      "short": "The top corner of a sail.",
+      "what": "The head is the corner the halyard pulls up.",
+      "onThisBoat": "The mainsail’s head stays at the top of the mast, inside the furling slot; the jib’s head is at the top of the forestay.",
+      "textStatus": "draft"
+    },
+    "sailpart_tack": {
+      "name": "Tack (corner)",
+      "alternatives": [],
+      "short": "The front bottom corner of a sail.",
+      "what": "The tack is fixed at the front bottom of the sail: the mainsail’s at the gooseneck (where the boom meets the mast), the jib’s at the furler drum on the bow. “Tack” also means turning the bow through the wind, and the side the wind comes from: see “Tacking” and “Starboard tack”.",
+      "textStatus": "draft"
+    },
+    "sailpart_clew": {
+      "name": "Clew",
+      "alternatives": [],
+      "short": "The back bottom corner of a sail, where the sheet pulls.",
+      "what": "The sheet pulls on the clew and so sets the sail’s angle to the wind. On the mainsail the outhaul also pulls the clew along the boom.",
+      "onThisBoat": "When the mainsail is rolled in, its clew moves along the boom to the mast; when the jib is rolled in, its clew moves forward round the forestay.",
+      "textStatus": "draft"
+    },
+    "sailpart_luff": {
+      "name": "Luff",
+      "alternatives": [
+        {
+          "term": "leading edge"
+        }
+      ],
+      "short": "The front edge of a sail.",
+      "what": "The wind meets the sail at the luff. When a sail is let out too far, the luff starts to flap first: that is “luffing”.",
+      "onThisBoat": "The mainsail’s luff runs up inside the mast’s furling slot; the jib’s runs along the forestay.",
+      "textStatus": "draft"
+    },
+    "sailpart_leech": {
+      "name": "Leech",
+      "alternatives": [
+        {
+          "term": "trailing edge"
+        }
+      ],
+      "short": "The back edge of a sail.",
+      "what": "The wind leaves the sail at the leech. Twist is how much the top of the leech falls away to the side; the vang controls it on the mainsail, the sheet on the jib.",
+      "textStatus": "draft"
+    },
+    "sailpart_foot": {
+      "name": "Foot",
+      "alternatives": [],
+      "short": "The bottom edge of a sail.",
+      "what": "The foot runs from the tack to the clew. The mainsail’s foot runs along the boom, and the outhaul stretches it.",
+      "textStatus": "draft"
+    },
+    "fit_mainsheet_boom_blocks": {
+      "name": "Mainsheet blocks on the boom",
+      "alternatives": [],
+      "short": "Three pulleys under the middle of the boom the mainsheet runs through.",
+      "textStatus": "draft"
+    },
+    "fit_mainsheet_deck_blocks": {
+      "name": "Mainsheet deck blocks",
+      "alternatives": [],
+      "short": "Two spring-mounted pulleys on the back of the coachroof, one each side. The German mainsheet runs from one, up to the boom and down to the other.",
+      "textStatus": "draft"
+    },
+    "fit_self_tacking_track": {
+      "name": "Self-tacking track",
+      "alternatives": [
+        {
+          "term": "jib track"
+        }
+      ],
+      "short": "Straight rail across the deck just in front of the mast. The jib sheet car slides along it.",
+      "textStatus": "draft"
+    },
+    "fit_self_tacking_car": {
+      "name": "Jib car",
+      "alternatives": [
+        {
+          "term": "track car"
+        },
+        {
+          "term": "traveller car"
+        }
+      ],
+      "short": "Slider on the self-tacking track. The jib sheet runs through it; it slides to the leeward side by itself.",
+      "textStatus": "draft"
+    },
+    "fit_clutch": {
+      "name": "Rope clutch",
+      "alternatives": [
+        {
+          "term": "jammer"
+        },
+        {
+          "term": "clutch"
+        }
+      ],
+      "short": "Lever that locks a rope so it does not need to stay on a winch. Open it only when the rope is on a winch or not loaded.",
+      "textStatus": "draft"
+    },
+    "clutch_bank_a": {
+      "name": "Clutch bank A",
+      "alternatives": [],
+      "short": "Main sheet, Main furling x2, Main halyard, Genoa sheet. Starboard side, in front of the winch.",
+      "textStatus": "draft"
+    },
+    "clutch_bank_b": {
+      "name": "Clutch bank B",
+      "alternatives": [],
+      "short": "SPI halyard, Boom lift, Main outhaul, MAIN SHEET, Vang. Port side, in front of the winch.",
+      "textStatus": "draft"
+    },
+    "clutch_jib_roll": {
+      "name": "Jib furling clutch",
+      "alternatives": [],
+      "short": "Single clutch on the port side deck next to the sprayhood, for the jib furling line.",
+      "textStatus": "draft"
+    },
+    "fit_rope_bin": {
+      "name": "Rope tail box",
+      "alternatives": [
+        {
+          "term": "rope bin"
+        },
+        {
+          "term": "tail bag"
+        }
+      ],
+      "short": "A box behind each winch where the loose ends (tails) of the ropes are stowed, so they do not lie in the cockpit.",
+      "textStatus": "draft"
+    },
+    "fit_winch": {
+      "name": "Winch",
+      "alternatives": [
+        {
+          "term": "self-tailing winch"
+        }
+      ],
+      "short": "Drum turned with a handle to pull a loaded rope. The reference boat has Lewmar 55 self-tailing winches by the wheels.",
+      "textStatus": "draft"
+    },
+    "winch_primary_port": {
+      "name": "Port winch",
+      "alternatives": [],
+      "short": "Winch on the port side by the wheel.",
+      "textStatus": "draft"
+    },
+    "winch_primary_starboard": {
+      "name": "Starboard winch",
+      "alternatives": [],
+      "short": "Winch on the starboard side by the wheel.",
+      "textStatus": "draft"
+    },
+    "part_winch_handle": {
+      "name": "Winch handle",
+      "alternatives": [
+        {
+          "term": "handle"
+        }
+      ],
+      "short": "The one crank handle on board. It fits the socket of the furling gearbox at the mast (to roll the main in by hand) and the top of each winch (a backup for the electric motor).",
+      "textStatus": "draft"
+    },
+    "winch_secondary_port": {
+      "name": "Port secondary winch (optional)",
+      "alternatives": [],
+      "short": "Optional extra winch from the brochure. Not on the reference boat.",
+      "textStatus": "draft"
+    },
+    "winch_secondary_starboard": {
+      "name": "Starboard secondary winch (optional)",
+      "alternatives": [],
+      "short": "Optional extra winch from the brochure. Not on the reference boat.",
+      "textStatus": "draft"
+    },
+    "helm_port": {
+      "name": "Port wheel",
+      "alternatives": [
+        {
+          "term": "helm"
+        }
+      ],
+      "short": "One of two steering wheels. Both turn the same rudder.",
+      "textStatus": "draft"
+    },
+    "helm_starboard": {
+      "name": "Starboard wheel",
+      "alternatives": [
+        {
+          "term": "helm"
+        }
+      ],
+      "short": "One of two steering wheels. Both turn the same rudder.",
+      "textStatus": "draft"
+    },
+    "fit_compass": {
+      "name": "Compass",
+      "alternatives": [],
+      "short": "Illuminated compass at each wheel.",
+      "textStatus": "draft"
+    },
+    "engine_control": {
+      "name": "Engine control lever",
+      "alternatives": [
+        {
+          "term": "throttle"
+        },
+        {
+          "term": "single-lever control"
+        }
+      ],
+      "short": "One lever for gear and throttle: forward = ahead, middle = neutral, back = astern. A sticker limits it to 2500 rpm.",
+      "textStatus": "draft"
+    },
+    "term_sheet": {
+      "name": "Sheet",
+      "alternatives": [],
+      "short": "A rope that controls the angle of a sail. Not a sail itself.",
+      "textStatus": "draft"
+    },
+    "term_halyard": {
+      "name": "Halyard",
+      "alternatives": [],
+      "short": "A rope that pulls a sail up.",
+      "textStatus": "draft"
+    },
+    "term_port": {
+      "name": "Port",
+      "alternatives": [],
+      "short": "Left side when facing the bow.",
+      "textStatus": "draft"
+    },
+    "term_starboard": {
+      "name": "Starboard",
+      "alternatives": [],
+      "short": "Right side when facing the bow.",
+      "textStatus": "draft"
+    },
+    "term_windward": {
+      "name": "Windward",
+      "alternatives": [],
+      "short": "The side the wind comes from.",
+      "textStatus": "draft"
+    },
+    "term_leeward": {
+      "name": "Leeward",
+      "alternatives": [],
+      "short": "The side the wind blows towards. The boom is on the leeward side.",
+      "textStatus": "draft"
+    },
+    "term_true_wind": {
+      "name": "True wind",
+      "alternatives": [],
+      "short": "Wind as felt by a boat that is not moving.",
+      "textStatus": "draft"
+    },
+    "term_apparent_wind": {
+      "name": "Apparent wind",
+      "alternatives": [],
+      "short": "Wind as felt on the moving boat: true wind plus the wind from the boat's own motion. This is what the sails feel.",
+      "textStatus": "draft"
+    },
+    "term_starboard_tack": {
+      "name": "Starboard tack",
+      "alternatives": [],
+      "short": "Sailing with the wind coming over the starboard side (boom on the port side).",
+      "textStatus": "draft"
+    },
+    "term_port_tack": {
+      "name": "Port tack",
+      "alternatives": [],
+      "short": "Sailing with the wind coming over the port side (boom on the starboard side).",
+      "textStatus": "draft"
+    },
+    "term_tacking": {
+      "name": "Tacking",
+      "alternatives": [
+        {
+          "term": "going about"
+        }
+      ],
+      "short": "Turning the bow through the wind so the wind comes from the other side.",
+      "textStatus": "draft"
+    },
+    "term_gybe": {
+      "name": "Gybe",
+      "alternatives": [
+        {
+          "term": "jibe"
+        }
+      ],
+      "short": "Turning the stern through the wind. The boom swings across the whole boat; uncontrolled it is dangerous.",
+      "textStatus": "draft"
+    },
+    "term_luffing": {
+      "name": "Luffing (sail flapping)",
+      "alternatives": [],
+      "short": "The sail flaps because it is aligned with the wind and not filled. Sheet in a little, or bear away.",
+      "textStatus": "draft"
+    },
+    "term_ease": {
+      "name": "Ease",
+      "alternatives": [
+        {
+          "term": "let out"
+        }
+      ],
+      "short": "Let a rope out.",
+      "textStatus": "draft"
+    },
+    "term_trim": {
+      "name": "Trim / haul in",
+      "alternatives": [
+        {
+          "term": "sheet in"
+        },
+        {
+          "term": "pull in"
+        }
+      ],
+      "short": "Pull a rope in.",
+      "textStatus": "draft"
+    },
+    "term_twist": {
+      "name": "Twist",
+      "alternatives": [],
+      "short": "The top of the sail opening further than the bottom. Controlled by the vang (main) and by the sheet position (jib).",
+      "textStatus": "draft"
+    },
+    "term_telltale": {
+      "name": "Telltales",
+      "alternatives": [],
+      "short": "Short strips of yarn on the sails that show the airflow.",
+      "textStatus": "draft"
+    },
+    "part_telltale": {
+      "name": "Telltale",
+      "alternatives": [
+        {
+          "term": "tell-tale"
+        }
+      ],
+      "short": "Short ribbons on the sail near its front edge that show the airflow (see Telltales). Both streaming aft: good trim. The windward one lifting: luffing. The leeward one hanging: stalled.",
+      "textStatus": "draft"
+    },
+    "term_no_go_zone": {
+      "name": "No-go zone",
+      "alternatives": [
+        {
+          "term": "in irons"
+        }
+      ],
+      "short": "About 45 degrees either side of the wind. A sailing boat cannot sail there.",
+      "textStatus": "draft"
+    },
+    "term_close_hauled": {
+      "name": "Close-hauled",
+      "alternatives": [],
+      "short": "Sailing as close to the wind as possible, sails trimmed in.",
+      "textStatus": "draft"
+    },
+    "term_close_reach": {
+      "name": "Close reach",
+      "alternatives": [],
+      "short": "Sailing with the wind forward of the beam but not as close as close-hauled, about 60° off the wind.",
+      "textStatus": "draft"
+    },
+    "term_beam_reach": {
+      "name": "Beam reach",
+      "alternatives": [],
+      "short": "Wind from the side, 90 degrees.",
+      "textStatus": "draft"
+    },
+    "term_broad_reach": {
+      "name": "Broad reach",
+      "alternatives": [],
+      "short": "Wind from behind the side, sails eased well out.",
+      "textStatus": "draft"
+    },
+    "term_run": {
+      "name": "Running",
+      "alternatives": [
+        {
+          "term": "dead run"
+        }
+      ],
+      "short": "Wind from directly behind. Risk of an accidental gybe.",
+      "textStatus": "draft"
+    },
+    "term_reef": {
+      "name": "Reefing",
+      "alternatives": [
+        {
+          "term": "furling away"
+        }
+      ],
+      "short": "Making a sail smaller for stronger wind. On the reference boat: partly furl the main and/or the jib.",
+      "textStatus": "draft"
+    },
+    "term_preventer": {
+      "name": "Preventer",
+      "alternatives": [],
+      "short": "A rope that stops the boom from swinging across in an accidental gybe.",
+      "textStatus": "draft"
+    },
+    "part_vang_strut": {
+      "name": "Rigid vang strut",
+      "alternatives": [
+        {
+          "term": "Rodkicker"
+        },
+        {
+          "term": "rigid kicker"
+        }
+      ],
+      "short": "Telescopic strut from the mast foot to the boom. Its gas spring holds the boom up; its rope tackle pulls it down.",
+      "textStatus": "draft"
+    },
+    "fit_mast_base_turning_blocks": {
+      "name": "Turning blocks at the mast foot",
+      "alternatives": [
+        {
+          "term": "deck organiser"
+        }
+      ],
+      "short": "Ring of pulleys at the foot of the mast where halyards and control lines turn and run aft to the cockpit.",
+      "textStatus": "draft"
+    },
+    "fit_line_channels": {
+      "name": "Line channels",
+      "alternatives": [
+        {
+          "term": "covered line channels"
+        },
+        {
+          "term": "line covers"
+        }
+      ],
+      "short": "Low covers on the coachroof and the cockpit coamings. The control lines run underneath them from the turning blocks at the foot of the mast to the clutches.",
+      "textStatus": "draft"
+    },
+    "fit_sprayhood": {
+      "name": "Sprayhood",
+      "alternatives": [
+        {
+          "term": "dodger"
+        }
+      ],
+      "short": "Fabric and window shelter at the front of the cockpit.",
+      "textStatus": "draft"
+    },
+    "fit_anchor_windlass": {
+      "name": "Anchor windlass",
+      "alternatives": [],
+      "short": "Electric drum on the foredeck that lifts the anchor chain.",
+      "textStatus": "draft"
+    },
+    "fit_bow_roller": {
+      "name": "Bow roller",
+      "alternatives": [
+        {
+          "term": "anchor roller"
+        }
+      ],
+      "short": "Fitting at the bow the anchor chain runs over.",
+      "textStatus": "draft"
+    },
+    "fit_mooring_cleat": {
+      "name": "Mooring cleat",
+      "alternatives": [],
+      "short": "Metal fitting on deck to tie mooring lines to.",
+      "textStatus": "draft"
+    },
+    "env_wake": {
+      "name": "Wake",
+      "alternatives": [],
+      "short": "The disturbed water the boat leaves behind; it grows with speed.",
+      "textStatus": "draft"
+    },
+    "env_boom_danger_zone": {
+      "name": "Boom danger zone",
+      "alternatives": [],
+      "short": "The area the boom sweeps through when it swings across. Keep heads and bodies out of it on a run.",
+      "textStatus": "draft"
+    },
+    "env_buoy": {
+      "name": "Practice buoy",
+      "alternatives": [
+        {
+          "term": "mark"
+        }
+      ],
+      "short": "A yellow buoy used as a fixed mark, 200 m north, east, south and west of where the boat started. Watch it to judge your speed, drift and turns. The boat passes through it: there are no collisions yet.",
+      "textStatus": "draft"
+    },
+    "fit_autopilot_control": {
+      "name": "Autopilot control",
+      "alternatives": [
+        {
+          "term": "autohelm"
+        }
+      ],
+      "short": "Buttons that let the autopilot steer: Standby (you steer), hold the compass heading, or hold the angle to the true wind. Tack or Gybe turns her through the wind (or away from it). Turning the wheel puts it back on Standby.",
+      "textStatus": "draft"
+    },
+    "fit_instrument_display": {
+      "name": "Instrument display",
+      "alternatives": [],
+      "short": "Screen at the helm. Here it shows boat speed, heading, the true wind (what blows over the water) and the apparent wind (what the sails feel), and the autopilot course.",
+      "textStatus": "draft"
+    }
+  }
+}

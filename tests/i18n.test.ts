@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import en from '../content/i18n/en.json';
+import en from '../content/lang/en/ui.json';
 import { t } from '../src/ui/i18n';
 
-describe('UI strings (content/i18n/en.json)', () => {
+describe('UI strings (content/lang/en/ui.json)', () => {
   it('every string is non-empty', () => {
     for (const [key, value] of Object.entries(en)) {
       expect(value.trim(), key).not.toBe('');

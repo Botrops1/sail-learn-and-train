@@ -1,6 +1,6 @@
 import type { AppState, Store } from './store';
 import { clockParam } from '../model/clock';
-import { boatParams, realisticParams, serializeUrlState } from './urlState';
+import { boatParams, parseUrlState, realisticParams, serializeUrlState } from './urlState';
 
 /** At most one URL update per this long (PHASE1_SPEC 9.2); the sailing boat changes it all the time. */
 const URL_UPDATE_DEBOUNCE_MS = 300;
@@ -23,6 +23,24 @@ export function startUrlSync(store: Store): void {
       window.history.replaceState(null, '', url);
     }
   };
+  // Back (PHASE4_SPEC 6.5): the link in the address bar is the state to show. `pending` is set
+  // first, so the debounced writer does not push the old link back.
+  window.addEventListener('popstate', () => {
+    const current = store.getState();
+    const next = parseUrlState(window.location.search, current.settings.detail);
+    pending = window.location.search;
+    store.dispatch({
+      type: 'load',
+      state: {
+        ...next,
+        settings: {
+          ...next.settings,
+          detail: current.settings.detail,
+          debug: current.settings.debug,
+        },
+      },
+    });
+  });
   store.subscribe((state, previous) => {
     if (
       state.controls === previous.controls &&
@@ -30,6 +48,7 @@ export function startUrlSync(store: Store): void {
       state.settings === previous.settings &&
       state.sea.setting === previous.sea.setting &&
       state.selection === previous.selection &&
+      state.learn === previous.learn &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
@@ -65,8 +84,43 @@ function sameRealisticLink(state: AppState, previous: AppState): boolean {
   );
 }
 
+/**
+ * Opens a "Show me" scene (PHASE4_SPEC 6.5): the current link goes into the browser history first,
+ * so the phone's Back button returns to it. Detail, debug and the open entry are kept. When the
+ * scene is already showing (Show me tapped twice), it starts again without a new history step, so
+ * one Back still returns to where the viewer was (owner, PR #54).
+ */
+export function openScene(store: Store, query: string): void {
+  const state = store.getState();
+  const { detail, debug, step, legend, labels } = state.settings;
+  const link = serializeUrlState(state);
+  if (!showsScene(link, query)) {
+    const here = `${window.location.pathname}${link}${window.location.hash}`;
+    window.history.replaceState(null, '', here);
+    window.history.pushState(null, '', here);
+  }
+  const next = parseUrlState(query, detail);
+  store.dispatch({
+    type: 'load',
+    state: {
+      ...next,
+      settings: { ...next.settings, detail, debug, step, legend, labels },
+      learn: state.learn,
+    },
+  });
+}
+
 /** The full link to what is shown now (View tab → Share). */
 export function shareLink(state: AppState): string {
   const { origin, pathname } = window.location;
   return `${origin}${pathname}${serializeUrlState(state)}`;
+}
+
+/** True if every setting of the scene's link has the same value in `link` (the scene is showing). */
+export function showsScene(link: string, query: string): boolean {
+  const current = new URLSearchParams(link);
+  for (const [key, value] of new URLSearchParams(query)) {
+    if (current.get(key) !== value) return false;
+  }
+  return true;
 }

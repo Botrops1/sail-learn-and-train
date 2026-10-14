@@ -218,7 +218,7 @@ html[data-layout='stacked'] .info-area {
 }
 
 html[data-layout='stacked'] .info-card {
-  max-height: 104px;
+  max-height: 140px;
   overflow-y: auto;
   border-bottom: 1px solid var(--line);
   background: var(--accent-soft);
@@ -2779,4 +2779,143 @@ html[data-layout='side'] .time-bar {
 html[data-layout='side'] .clock-chip {
   order: 2;
   margin-left: 0;
+}
+
+/* Learn tab and the "More" buttons (PHASE4_SPEC 6.6). Buttons are at least 44 px high. */
+.card-more,
+.learn-more,
+.learn-button {
+  min-height: var(--touch);
+  min-width: var(--touch);
+}
+
+.card-more {
+  margin-top: 4px;
+  padding: 6px 14px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.learn-more {
+  display: block;
+  margin-top: 6px;
+  flex: none;
+}
+
+.learn-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.learn-name {
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.learn-kind {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.learn-line {
+  margin: 0;
+  font-size: var(--font-small);
+}
+
+.learn-short {
+  margin: 4px 0 0;
+  font-weight: 700;
+}
+
+.learn-heading {
+  margin: 12px 0 2px;
+  font-size: 15px;
+}
+
+.learn-text {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.learn-mistakes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.learn-mistake {
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  border-left: 3px solid var(--line);
+}
+
+.learn-mistake p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.learn-show-me,
+.learn-links {
+  margin-top: 12px;
+}
+
+.learn-show-me .action-button {
+  width: 100%;
+  flex: none;
+}
+
+.learn-links-label,
+.learn-sources-label {
+  margin: 0 0 4px;
+}
+
+.learn-links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.learn-links-row .learn-button {
+  flex: 0 1 auto;
+}
+
+.learn-links > .learn-button {
+  width: 100%;
+}
+
+.learn-sources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--font-small);
+}
+
+.learn-source {
+  margin: 0;
+}
+
+.learn-source-link {
+  display: inline-flex;
+  align-items: center;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+
+.card-more:focus-visible,
+.learn-more:focus-visible,
+.learn-button:focus-visible,
+.learn-source-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
 }
