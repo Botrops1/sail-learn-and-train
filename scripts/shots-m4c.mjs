@@ -72,6 +72,28 @@ function arc(centre, from, turns) {
   });
 }
 
+/**
+ * Starts watching an element's text; the returned function says whether it has matched
+ * `pattern` at any moment since. For text that is only there while a finger keeps moving: on a
+ * slow runner a simulated finger is slower than the app's idle stop (200 ms), so the crank
+ * switches on and off during the drag and a single read can land in a gap.
+ */
+async function watchText(page, selector, pattern) {
+  const key = `__seen${Math.random().toString(36).slice(2)}`;
+  await page.evaluate(
+    ({ selector, source, key }) => {
+      const el = document.querySelector(selector);
+      const re = new RegExp(source);
+      window[key] = re.test(el.textContent ?? '');
+      new MutationObserver(() => {
+        if (re.test(el.textContent ?? '')) window[key] = true;
+      }).observe(el, { childList: true, characterData: true, subtree: true });
+    },
+    { selector, source: pattern.source, key },
+  );
+  return () => page.evaluate((k) => window[k] === true, key);
+}
+
 export async function liveM4cChecks({ openPage, viewports, outDir, prefix, problems }) {
   const check = (what, ok, detail) => {
     if (!ok) problems.push(`live M4c ${what}: ${detail}`);
@@ -159,9 +181,13 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
     const centre = await t.where(`${dr} .real-drum`);
     let grip = await t.where(`${dr} .real-crank`);
     // Clockwise (1st gear): the handle does not turn, the sheet stays.
+    const hintSeen = await watchText(
+      page,
+      '[data-testid="handle-bar"] .real-alert',
+      /Too heavy for 1st gear/,
+    );
     await f.down(grip);
     await f.moveThrough(arc(centre, grip, 3));
-    const alert = await page.getByTestId('handle-bar').innerText();
     await shot(page, 'live-phone-pt19-clockwise-stalls');
     await f.up(grip);
     await settle(page);
@@ -170,11 +196,8 @@ export async function liveM4cChecks({ openPage, viewports, outDir, prefix, probl
       (await param(page, 'js')) === '30',
       `js ${await param(page, 'js')}`,
     );
-    check(
-      'the handle bar says to crank the other way',
-      /Too heavy for 1st gear/.test(alert),
-      alert.split('\n').find((l) => l.includes('heavy')) ?? 'no hint',
-    );
+    const hinted = await hintSeen();
+    check('the handle bar says to crank the other way', hinted, hinted ? 'hint shown' : 'no hint');
     // Anticlockwise (2nd gear): it comes in slowly.
     grip = await t.where(`${dr} .real-crank`);
     await f.down(grip);
