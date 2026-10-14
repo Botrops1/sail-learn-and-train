@@ -185,7 +185,7 @@ Loading: `import.meta.glob<GlossaryFile>('../../content/lang/*/glossary.json', {
 
 ### 3.5 Show-me scenes in tests
 
-A scene test: `let state = parseUrlState(entry.showMe, 'low')`, then `state = reduce(state, { type: 'step', dt: 1 / 60 })` 300 times (5 s), unless the test says otherwise; read the values named. The round-trip test: for every `[key, value]` of `new URLSearchParams(query)`, `new URLSearchParams(serializeUrlState(parseUrlState(query, 'low'))).get(key) === value`.
+A scene test: boat speed in knots is `mpsToKn(state.boat.speedMps)` (`src/model/angles.ts`). `let state = parseUrlState(entry.showMe, 'low')`, then `state = reduce(state, { type: 'step', dt: 1 / 60 })` 300 times (5 s), unless the test says otherwise; read the values named. The round-trip test: for every `[key, value]` of `new URLSearchParams(query)`, `new URLSearchParams(serializeUrlState(parseUrlState(query, 'low'))).get(key) === value`.
 
 ### 3.6 Sources
 
@@ -270,7 +270,7 @@ Changed: `content/registry/parts.json` (v2, 6.2), `src/model/registry.ts`, `src/
 
 Do this with a one-off script (not committed) over `content/registry/parts.json`, then check the diff:
 
-1. `schemaVersion: 2`. Add to `$comment`: `Since schemaVersion 2 (PHASE4_SPEC 3.2) the registry holds language-neutral facts only; names and texts are in content/lang/<code>/glossary.json.`
+1. `schemaVersion: 2`. Replace `$comment` with: `ID registry for everything the user can see, touch or learn about. Every 3D object (mesh.userData.partId) and every rope points to one id here. UI controls have no entries of their own: a rope control's data-part-id is its rope's id (decision 2026-10-08). Since schemaVersion 2 (PHASE4_SPEC 3.2) the registry holds language-neutral facts only; names and texts are in content/lang/<code>/glossary.json.`
 2. For every entry: `status` becomes the old `status.en` (a string). Remove `names`, `aliases`, `short`. Keep `id`, `kind`, `phase`, `boatLabel`, `sources` and the key order `id, kind, phase, boatLabel, status, sources` (then `controls`, `related`, `showMe` where given). Keep one entry per line, as now.
 3. Add `controls`, `related` and `showMe` to the 18 M20 entries exactly as in this table (other entries get theirs in M21 and M22):
 
@@ -285,7 +285,7 @@ Do this with a one-off script (not committed) over `content/registry/parts.json`
 | `rope_jib_furling_line` | `rope_jib_furling_line` | `part_jib_furler`, `clutch_jib_roll`, `rope_jib_sheet` | `?wd=90&ws=12&js=100&jf=40&cam=bow&sel=rope_jib_furling_line&held=1&sea=flat` |
 | `rope_main_halyard` | `rope_main_halyard` | `term_halyard`, `sailpart_head` | — |
 | `rope_spi_halyard` | `rope_spi_halyard` | `sail_gennaker`, `term_halyard` | — |
-| `sail_main` | `rope_mainsheet`, `rope_vang`, `rope_outhaul`, `rope_main_furling_line` | `part_boom`, `part_mast`, `term_luffing`, `term_telltale` | `?wd=60&ws=12&ms=25&js=50&cam=side-starboard&sel=sail_main&sea=flat` |
+| `sail_main` | `rope_mainsheet`, `rope_vang`, `rope_main_furling_line` | `part_boom`, `part_mast`, `term_luffing`, `term_telltale` | `?wd=60&ws=12&ms=25&js=50&cam=side-starboard&sel=sail_main&sea=flat` |
 | `sail_jib` | `rope_jib_sheet`, `rope_jib_furling_line` | `fit_self_tacking_track`, `fit_self_tacking_car`, `part_jib_furler`, `part_forestay` | `?wd=30&ws=12&ms=10&js=0&cam=bow&sel=sail_jib&held=1&sea=flat` |
 | `sail_gennaker` | — | `rope_spi_halyard` | — |
 | `sailpart_head` | — | `rope_main_halyard`, `sailpart_tack`, `sailpart_clew` | — |
@@ -536,7 +536,7 @@ Do this with a one-off script (not committed) over `content/registry/parts.json`
 ### 6.4 Model
 
 - `src/model/glossary.ts` as in 3.4. `learnEntry(id, language)`: `undefined` if the id is not in the registry or `glossaryText(id, language)` is undefined; otherwise the registry's `kind`, `status`, `sources`, `boatLabel ?? []`, `controls ?? []`, `related ?? []`, `showMe ?? null`, and the text.
-- `src/model/registry.ts`: `partInfo(id, language = 'en')` as in 3.4. `KNOWN_IDS`, `isRegisteredPartId` and `requirePartId` unchanged.
+- `src/model/registry.ts`: `partInfo(id, language = 'en')` as in 3.4. Imports: `glossary.ts` imports `content/registry/parts.json` directly (not `registry.ts`); only `registry.ts` imports `glossary.ts`, so there is no import cycle. `KNOWN_IDS`, `isRegisteredPartId` and `requirePartId` unchanged.
 - **Source links** (pure, in `glossary.ts`, used by the Learn tab):
 
 ```ts
@@ -564,8 +564,10 @@ export function openScene(store: Store, query: string): void;
 
   1. `state = store.getState()`; `here = pathname + serializeUrlState(state) + hash`.
   2. `history.replaceState(null, '', here)` (writes the debounced link now), then `history.pushState(null, '', here)`.
-  3. `next = parseUrlState(query, state.settings.detail)`; dispatch `{ type: 'load', state: { ...next, settings: { ...next.settings, detail: state.settings.detail, debug: state.settings.debug }, learn: state.learn } }`. The URL sync then writes the scene's link over the pushed entry.
-- **Back** (`startUrlSync`): add a `popstate` listener: `next = parseUrlState(location.search, current detail)`; dispatch `load` with `settings.detail` and `settings.debug` kept from the current state, and set the sync's `pending` to `location.search` first so the debounced writer does not push the old link back.
+  3. `next = parseUrlState(query, state.settings.detail)`; dispatch `{ type: 'load', state: { ...next, settings: { ...next.settings, detail, debug, step, legend, labels }, learn: state.learn } }` with those five settings taken from the current state (the viewer's own preferences; everything else comes from the scene). The URL sync then writes the scene's link over the pushed entry.
+- **Opening an entry does not push history**: `openLearn` only replaces the link (as every other change does), so the phone's Back button leaves the Learn tab only through Show me's entries. This is intended.
+- The practice-scenario button in `realisticPanel.ts` (its `load` of a parsed link) also keeps `learn: state.learn`.
+- **Back** (`startUrlSync`): add a `popstate` listener: `next = parseUrlState(location.search, current detail)`; dispatch `load` with `settings.detail` and `settings.debug` kept from the current state (the other settings come from the link, which holds them), and set the sync's `pending` to `location.search` first so the debounced writer does not push the old link back.
 
 ### 6.6 UI
 
@@ -580,8 +582,8 @@ export function openScene(store: Store, query: string): void;
   1. Name, `h2` (`learn-name`), with the kind under it in small text (`learn-kind`, from `learn.kind.<kind>`).
   2. Alternatives (`learn-alternatives`, hidden when there are none): `learn.alternatives` with `{terms}` = the terms joined by `, `; a term with a note is written `learn.alternativeWithNote` (`{term} ({note})`).
   3. Written on the boat (`learn-boat-label`, hidden when none): `learn.boatLabel` with `{labels}` = the labels in quotes joined by `, `, as the info card writes them (“Vang”).
-  4. The one-liner `short` (`learn-short`), in bold.
-  5. `h3` `learn.what` ("What it does"; for kind `term`: `learn.whatTerm` "What it means") and `what` (`learn-what`).
+  4. The one-liner `short` (`learn-short`), in bold (hidden when missing).
+  5. `h3` `learn.what` ("What it does"; for kind `term`: `learn.whatTerm` "What it means") and `what` (`learn-what`), only if present (in M20 only the 18 M20 entries have it; the others show their name, the one-liner and the rest).
   6. `h3` `learn.onThisBoat` and `onThisBoat` (`learn-on-this-boat`), only if present.
   7. `h3` `learn.mistakes` and a list (`learn-mistakes`), each item two lines: `learn.mistake` + the mistake, `learn.fix` + the fix. Only if present.
   8. **Show me** (only if `showMeQuery`): the text `showMe` (`learn-show-me-text`), then the button `learn.showMe` (`learn-show-me`) → `openScene(store, query)`; then the status line (`learn-status`, `aria-live="polite"`) says `learn.showMeDone`.
@@ -593,7 +595,10 @@ export function openScene(store: Store, query: string): void;
 **More** buttons (each dispatches `openLearn` with the id; the panel then opens the Learn tab):
 - Info card (`infoCard.ts`): a button `card.more` (`data-testid="card-more"`) after the one-liner, for the selected id.
 - Ropes tab strip (`ropesTab.ts`, inside the `moreAbout` fold): a button `ropes.strip.learn` (`data-testid="strip-learn"`) for `entry.selectId`.
-- Realistic mode (`realisticPanel.ts`, inside the fold that holds `.real-more-text`): the same button (`data-testid="real-learn"`) for `spec.ropeId`.
+- Realistic mode (`realisticPanel.ts`, inside the fold that holds `.real-more-text`): the same button (`data-testid="real-learn"`); its click handler reads the currently selected tail's `spec.ropeId` at click time (the fold is hidden with the strip when nothing is selected).
+- Only one `strip-learn` is visible at a time (one per Ropes-tab entry, the others hidden); browser checks select it as `.rope-strip > :not([hidden]) [data-testid="strip-learn"]`.
+- **Accessibility (the existing audit, `scripts/a11y-audit.mjs`):** every button and link added here (`card-more`, `strip-learn`, `real-learn`, every Learn button, and the source links in `learn-sources`) is at least 44 × 44 px with text of at least 13 px, and has a visible `:focus-visible` outline in `style.css`; the kind line (`learn-kind`) is 13 px or more.
+- `app.ts`: `store.subscribe` also calls `card.refresh()` when `state.learn` changes (the card's hidden rule depends on it).
 - `app.ts`: `shownInPanel` also hides the card in the stacked layout while the Learn tab is active and `state.learn` equals the selected id.
 
 ### 6.7 Strings (`content/lang/en/ui.json`, new keys, exact text)
@@ -670,18 +675,18 @@ Labels contain `m20`; `openPage` adds `held=1`, `sea=flat` and `clock=0` to quer
 
 Scenes (`M20_SCENES`, every size): `learn-vang` `?learn=rope_vang&sel=rope_vang`; `learn-mainsail` `?learn=sail_main`; `card-more` `?sel=sail_main` (the info card with More).
 
-Live checks (`liveM20Checks`, phone unless said):
+Live checks (`liveM20Checks`, phone unless said). Every expectation about the address bar polls up to 1 s (`waitForFunction`), because the link is written 300 ms after a change:
 1. `?sel=sail_main`: tap `card-more` → `#tab-learn` has `aria-selected="true"`, `learn-name` reads "Mainsail", the address bar has `learn=sail_main`.
 2. `?learn=rope_vang`: the Learn tab is open; `learn-alternatives` contains "kicker (British)"; `learn-boat-label` contains “Vang”; `learn-fact-status` reads `learn.status.photo-confirmed`'s text. Tap `learn-show-me` → within 1 s the address bar contains `vg=100` and `learn=rope_vang`; `page.goBack()` → within 1 s the address bar no longer contains `vg=100`, still contains `learn=rope_vang`, and `learn-name` reads "Vang".
-3. `?sel=rope_vang`: open the Ropes strip's fold, tap `strip-learn` → Learn tab, "Vang". Then tap `learn-try-rope_vang` → `#tab-ropes` selected and the address bar has `sel=rope_vang`.
+3. `?sel=rope_vang`: open the Ropes strip's fold, tap the visible `strip-learn` (selector in 6.6) → Learn tab, "Vang". Then tap `learn-try-rope_vang` → `#tab-ropes` selected and the address bar has `sel=rope_vang`.
 4. `?learn=rope_vang`: tap `learn-related-part_boom` → `learn-name` reads "Boom". Tap `learn-show-on-boat` → the address bar has `sel=part_boom` and the Learn tab is still selected.
-5. `?learn=rope_mainsheet&mode=realistic`: tap `real-learn` in the open rope's fold (open it first if folded) → "Mainsheet" stays shown (same id) and the Learn tab is selected.
+5. `?sel=rope_mainsheet&mode=realistic`: open the Realistic strip's fold, tap `real-learn` → `#tab-learn` selected, `learn-name` "Mainsheet", the address bar has `learn=rope_mainsheet`.
 6. Desktop size, `?sel=sail_jib`: the side-by-side info card shows `card-more`; tap it → Learn tab, "Self-tacking jib".
 7. Accessibility: `auditPage` (`scripts/a11y-audit.mjs`) on `?learn=rope_vang` with the Learn tab open, phone: clean.
 
 ### 6.10 Done when
 
-All M20 checks in `WORKFLOW.md` (section 9) pass on the phone; the tests above pass; the scenes looked at (phone first); `CODE_MAP.md` updated (new files, the moved strings file, the registry's new role).
+All M20 checks in `WORKFLOW.md` (section 9) pass on the phone; the tests above pass; the scenes looked at (phone first); `CODE_MAP.md` updated (new files, the moved strings file, the registry's new role, `openLearn` in "Store actions").
 
 ### 6.11 Not in M20
 
