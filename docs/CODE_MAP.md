@@ -13,9 +13,9 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | File | What |
 |---|---|
 | `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values. No numbers in code. |
-| `registry/parts.json` | `schemaVersion` 2 (M20): every id a mesh, rope or control may carry, with language-neutral facts only (kind, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
+| `registry/parts.json` | `schemaVersion` 2 (M20): every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group` for the Learn list from M21, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
 | `lang/<code>/ui.json` | UI strings of one language, read through `t()` (`ui/i18n.ts`); `en` today (moved from `i18n/en.json` in M20). |
-| `lang/<code>/glossary.json` | The Learn entries of one language (names, other names, one-liner, what it does, on this boat, mistakes, show-me text), by registry id. `en` is the source language; `ru` is an AI draft (M20: names for all ids, full text for 18). Read through `model/glossary.ts`. |
+| `lang/<code>/glossary.json` | The Learn entries of one language (names, other names, one-liner, what it does, on this boat, mistakes, show-me text), by registry id. `en` is the source language; `ru` is an AI draft (names for all ids, full text for the 18 M20 and 55 M21 entries). Read through `model/glossary.ts`. |
 | `areas/adriatic.json` | A sailing area (position, time zone, fetch per Waves setting, the practice buoys, the default clock), loaded by id (`model/area.ts`). |
 
 ## `src/app/` (state and wiring)
@@ -43,7 +43,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `realistic.ts`, `winch.ts` | Realistic mode: stations, clutches, wraps, self-tailer, handle, gearbox; capstan rule and winch physics. |
 | `labels3d.ts`, `registry.ts` | Where 3D labels sit; registry lookups (`partInfo`: name and one-liner from the glossary, words on the boat from `boatLabels.ts`). |
 | `boatLabels.ts` | Phase 4 (M20, owner on PR #54): the words printed on the boat for an id, from the clutch labels in the boat file (`boatLabelsFor`). |
-| `glossary.ts` | Phase 4 (M20): the glossaries by language (`import.meta.glob`), `learnEntry` (registry facts plus text for the Learn tab), `NOT_DRAWN` (ids with no mesh), `sourceLink`. |
+| `glossary.ts` | Phase 4 (M20): the glossaries by language (`import.meta.glob`), `learnEntry` (registry facts plus text for the Learn tab), `NOT_DRAWN` (ids with no mesh), `sourceLink`; M21: `GROUPS`, `groupEntries`, `normalizeSearch` and `searchGlossary` (search over names, other names and the words on the boat in one language). |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
 | `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts` | Phase 2 sailing: apparent wind, lift/drag, resistance, speed/heading/position. |
 | `heel.ts`, `sheetLoads.ts` | Heel and weather helm; sheet loads from the sail forces. |
@@ -81,7 +81,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 |---|---|
 | `layout.ts`, `layoutMode.ts`, `dom.ts`, `i18n.ts` | Page layout (stacked / side by side), DOM helper, strings. |
 | `panel.ts` | The four tabs (Ropes, Wind, View, Learn) and the footer. |
-| `learnTab.ts` | Phase 4 (M20): the Learn tab, one entry at a time (names, text, Show me, Show on the boat, Try it, See also, how sure we are). |
+| `learnTab.ts` | Phase 4 (M20): the Learn tab: M21's search box and list of every entry in groups (or the search results), and one entry at a time (Back to the list, names, text, Show me, Show on the boat, Try it, See also, how sure we are). |
 | `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeLegend.ts` | Easy mode: rope sliders, − / + buttons, colour legend. |
 | `clutchDrawing.ts` | The clutch-bank drawing. |
 | `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: stations, gestures, Mast station, winch handle and strain bar. |

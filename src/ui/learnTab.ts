@@ -134,7 +134,11 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
       openEntry(hit.id, `learn-hit-${hit.id}`, [
         el('span', { class: 'learn-hit-name' }, [hit.name]),
         ...(hit.matched !== null
-          ? [el('span', { class: 'learn-hit-matched' }, [t('learn.matched', { term: hit.matched })])]
+          ? [
+              el('span', { class: 'learn-hit-matched' }, [
+                t('learn.matched', { term: hit.matched }),
+              ]),
+            ]
           : []),
       ]),
     );

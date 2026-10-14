@@ -2938,6 +2938,14 @@ html[data-layout='side'] .clock-chip {
   font-size: 16px;
 }
 
+.learn-search {
+  text-overflow: ellipsis;
+}
+
+.learn-search::placeholder {
+  font-size: var(--font-small);
+}
+
 .learn-search:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 1px;
