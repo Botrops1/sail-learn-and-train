@@ -73,11 +73,62 @@ export async function liveM17Checks({ openPage, viewports, outDir, prefix, probl
     check('sunrise and sunset', sun === 'Sunrise 05:16 · Sunset 20:28', JSON.stringify(sun));
     const text = (await card.textContent()) ?? '';
     check('the zone and the light', /CEST \(UTC\+2\)/.test(text) && /Light: Day/.test(text), text);
+    // Everything of the card is reachable on a phone: the Set button lies inside the view, the
+    // chip shares the strip's row (the top area stays one strip high, review of the M17 PR).
+    const fit = await page.evaluate(() => {
+      const view = document.querySelector('.view').getBoundingClientRect();
+      const card = document.querySelector('[data-testid="clock-card"]').getBoundingClientRect();
+      const set = document.querySelector('[data-testid="clock-set"]').getBoundingClientRect();
+      const chipBox = document.querySelector('[data-testid="clock-chip"]').getBoundingClientRect();
+      const strip = document.querySelector('.instrument-strip').getBoundingClientRect();
+      return {
+        setInside:
+          set.bottom <= card.bottom + 1 && set.top >= card.top && set.bottom <= view.bottom + 1,
+        chipOnStripRow: chipBox.top < strip.bottom && chipBox.left >= strip.right - 1,
+      };
+    });
+    check('the Set button lies inside the view', fit.setInside, JSON.stringify(fit));
+    check('the chip shares the strip row', fit.chipOnStripRow, JSON.stringify(fit));
     await shot(page, 'live-phone-clock-card');
     problems.push(...(await auditPage(page, 'm17 clock card')));
     await page.keyboard.press('Escape');
     check('Escape closes the card', !(await card.isVisible()), 'still open');
     await context.close();
+  }
+
+  // The sun is drawn: at 20:10 it is low in the west-north-west; sailing towards it (heading 290,
+  // looking ahead from the helm) it lies on the canvas just above the horizon, and by night it is
+  // not drawn (owner's bug report on the M17 preview: the sun's glint showed but not the sun).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm17 sun disc',
+      '?wd=30&ws=12&ms=40&js=100&hdg=290&clk=202606012010&cam=helm&detail=low&debug=1',
+    );
+    await page.waitForTimeout(1500);
+    // Looking ahead from above the stern, 2.5° up: where the sun is at 20:10.
+    await page.evaluate(() => window.__sailDebug.setView([-6, 3, 0], [94, 7.4, 0], 50));
+    await page.waitForTimeout(800);
+    await page.evaluate(() => {
+      const overlay = document.querySelector('[data-testid="debug-overlay"]');
+      if (overlay) overlay.style.display = 'none';
+    });
+    const spot = await page.evaluate(() => window.__sailWater.sunScreen());
+    const box = await page.locator('canvas.scene-canvas').boundingBox();
+    const inside =
+      spot !== null && spot.x >= 0 && spot.x <= box.width && spot.y >= 0 && spot.y <= box.height;
+    check('the low sun is drawn on the canvas', inside, JSON.stringify(spot));
+    await shot(page, 'live-phone-sun-disc');
+    await context.close();
+    const night = await openPage(
+      phone,
+      'm17 sun disc night',
+      '?wd=30&ws=12&ms=40&js=100&hdg=290&clk=202606012300&cam=helm&detail=low&debug=1',
+    );
+    await night.page.waitForTimeout(1500);
+    const gone = await night.page.evaluate(() => window.__sailWater.sunScreen());
+    check('no sun is drawn at night', gone === null, JSON.stringify(gone));
+    await night.context.close();
   }
 
   // The clock runs with the time bar and stops with Pause.

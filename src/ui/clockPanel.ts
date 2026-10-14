@@ -41,10 +41,15 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
     'data-testid': 'clock-chip',
     'aria-expanded': 'false',
   });
-  top.append(chip);
+  // Before the time bar: on a phone the chip then sits at the right of the instrument strip's
+  // row instead of taking a row of its own (the side-by-side layout puts it after the bar).
+  const bar = top.querySelector('.time-bar');
+  if (bar) top.insertBefore(chip, bar);
+  else top.append(chip);
 
   const text = (testId: string) => el('p', { class: 'clock-line', 'data-testid': testId });
   const dateLine = text('clock-date');
+  dateLine.classList.add('clock-first');
   const zoneLine = el('p', { class: 'clock-line' });
   const sunLine = text('clock-sun');
   const lightLine = el('p', { class: 'clock-line' });

@@ -16,6 +16,7 @@ import { buildBoat } from './boat';
 import { daylighting } from './daylight';
 import { rippleNormalMap, skyTexture } from './environment';
 import { buildMarks } from './marks';
+import { buildSunDisc } from './sunDisc';
 import { buildWaterSurface } from './waterSurface';
 import { createCameraRig } from './cameraRig';
 import { createPicker } from './picking';
@@ -123,10 +124,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const water = buildWaterSurface(ripples);
   const streaks = buildWindStreaks();
   const world = createWorld(water.object);
+  const sunDisc = buildSunDisc();
   const marks = buildMarks();
   world.group.add(marks.object);
   const wake = buildWake();
-  scene.add(holder, world.group, wake.object, streaks.object);
+  scene.add(holder, world.group, wake.object, streaks.object, sunDisc.object);
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
@@ -194,6 +196,14 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     Object.assign(window, {
       __sailWater: {
         gustProfile: () => water.gustProfile(),
+        /** Where the drawn sun lies on the canvas (CSS px), or null while it is not drawn. */
+        sunScreen: () => {
+          if (!sunDisc.object.visible) return null;
+          const rect = renderer.domElement.getBoundingClientRect();
+          const ndc = sunDisc.object.position.clone().project(camera);
+          if (ndc.z > 1 || ndc.z < -1) return null;
+          return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
+        },
         buoyScreen: (id: string) => {
           const buoy = marks.buoyObject(id);
           if (!buoy) return null;
@@ -301,6 +311,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         area.position.longitudeDeg,
       );
       const light = daylighting(elevationDeg, azimuthDeg, boatState.headingDeg);
+      sunDisc.update(camera, elevationDeg, azimuthDeg, boatState.headingDeg, light.warm);
       sun.position
         .set(...SCENE.shadowCentre)
         .addScaledVector(light.sunDirection, SCENE.shadows.distance);

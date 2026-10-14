@@ -20,6 +20,19 @@ export interface Daylighting {
   night: number;
 }
 
+/** Unit vector towards the sun in the boat frame (x forward, y up, z starboard). */
+export function sunDirectionAt(
+  elevationDeg: number,
+  azimuthDeg: number,
+  headingDeg: number,
+): THREE.Vector3 {
+  const el = elevationDeg * DEG;
+  const east = Math.sin(azimuthDeg * DEG) * Math.cos(el);
+  const north = Math.cos(azimuthDeg * DEG) * Math.cos(el);
+  const [x, z] = mapToBoat(east, north, headingDeg);
+  return new THREE.Vector3(x, Math.sin(el), z).normalize();
+}
+
 export function daylighting(
   elevationDeg: number,
   azimuthDeg: number,
@@ -27,12 +40,9 @@ export function daylighting(
 ): Daylighting {
   const d = SCENE.daylight;
   // The light and the shadow never come from below the water.
-  const lit = Math.max(elevationDeg, d.minLightElevationDeg) * DEG;
-  const east = Math.sin(azimuthDeg * DEG) * Math.cos(lit);
-  const north = Math.cos(azimuthDeg * DEG) * Math.cos(lit);
-  const [x, z] = mapToBoat(east, north, headingDeg);
+  const lit = Math.max(elevationDeg, d.minLightElevationDeg);
   return {
-    sunDirection: new THREE.Vector3(x, Math.sin(lit), z).normalize(),
+    sunDirection: sunDirectionAt(lit, azimuthDeg, headingDeg),
     sun: smoothstep(d.sunFromDeg, d.sunToDeg, elevationDeg),
     sky: d.skyFloor + (1 - d.skyFloor) * smoothstep(d.skyFromDeg, d.skyToDeg, elevationDeg),
     warm: 1 - smoothstep(d.warmFromDeg, d.warmToDeg, elevationDeg),
