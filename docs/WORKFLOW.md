@@ -370,3 +370,54 @@ New link settings (PHASE4_SPEC): M20 `learn=<id>` opens that entry in the Learn 
 
 - [ ] The review document: open the link to `docs/review/ru.md` in the PR description (after the merge it is at https://github.com/Botrops1/sail-learn-and-train/blob/main/docs/review/ru.md) and send it to a Russian-speaking sailor (your instructor) if you can. They answer by code, for example "term_north: ок".
 - [ ] Every item of the Phase 4 Definition of Done (PHASE4_SPEC 11) is ticked in the PR.
+
+## 10. Phase 5
+
+Same loop as section 2: one session and one PR per milestone (M25 … M29, [`PHASE5_SPEC.md`](PHASE5_SPEC.md) section 5), started with `/milestone <N>` after M24 is merged. The spec gives every size, string and test, so **Sonnet at high effort** can build each milestone. **M25, M26, M27 and M28 need a `/review` with Opus** before you test them (the spec's milestones table has a review column; the PR reminds you).
+
+### 10.1 Checklists
+
+New link settings (PHASE5_SPEC 4.2): M27 `m=learn` opens Learn mode (without it the mode follows `mode`: Easy, or Realistic with `mode=realistic`; an old link with `learn=<id>` opens in Learn); M28 `mm=0` hides the mini-map. Replace `<N>` with the PR number. "The sheet" is the panel that slides up from the bottom of the phone screen (from M26).
+
+#### M25: Settings menu and camera chip
+
+- [ ] Settings: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — there is no "View" tab any more. Tap the gear at the bottom right of the 3D view: "Settings" opens with Language, Labels in 3D, Time bar, Clock, Step size, Detail, Share, Reset, Rope colour legend, Debug overlay, and at the end "About" with the version. Turn "Labels in 3D" off and close with ×: the names over the boat are gone.
+- [ ] Camera: same link — the chip at the bottom left reads "Port ▾". Tap it: a menu with Side (port), Side (starboard), Top, Bow, Helm, Free, Map. Choose "Top": the view changes and the chip reads "Top ▾". Choose "Map": the map shows. Choose "Side (port)" to come back.
+- [ ] Free: drag the 3D view with a finger: the chip reads "Free ▾".
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&wd=60&ws=12 — the gear opens «Настройки»; nothing is cut off.
+
+#### M26: Phone layout with a pull-up sheet
+
+- [ ] Full screen: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the boat fills the screen; the panel covers the lower half, with a grey handle at its top.
+- [ ] Heights: tap the handle: the panel goes up to just below the instruments; tap again: it drops to a thin strip at the bottom (the boat is bigger now); tap again: half. Then drag the handle up and down with a finger and let go: it settles at the nearest of the three heights (a quick flick moves it one step).
+- [ ] The boat stays in view: at each height (thin and half), the whole boat is between the instruments at the top and the buttons above the panel.
+- [ ] Tapping a part: tap the boom: its card appears just above the buttons, not under the panel.
+- [ ] Map: tap the camera chip → Map: the map ends at the top of the panel; its + and − buttons are visible.
+- [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?debug=1&wd=60&ws=20&wm=gusty — the debug box shows 50 fps or more. Write the number in the PR.
+- [ ] Turn the phone sideways: the panel moves to the right side as before; turn it back: the sheet is where you left it.
+
+#### M27: Modes and sections
+
+- [ ] Modes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the chip at the bottom left reads "Easy ▾". Tap it: Learn, Easy, Realistic, each with one line about it. Choose "Realistic": the panel shows the places (Port, Starboard, Helm, Mast) and the clutches. Choose "Learn": the Learn list comes first. Choose "Easy" again: the boat has not changed at any point.
+- [ ] Blocks fold: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — in Easy, tap the title "Sails": it folds; tap again: it opens. Scroll down: Autopilot, Engine, Conditions, Learn, Rope colours are there, folded.
+- [ ] Explanations: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — open "Conditions" and tap its "?": the explanations appear; tap "?" again: they hide.
+- [ ] Instruments: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — tap the instrument box at the top left: the panel opens "Conditions" (wind direction and speed, waves).
+- [ ] Quick − / +: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=rope_mainsheet&ms=40&wd=60&ws=12 — tap the handle until the panel is a thin strip: it shows "Main sheet 40 % eased" with − and +. Tap +: 45 % eased, and the boom swings further out.
+- [ ] Old learn links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_north&held=1 — opens in Learn mode with "North".
+- [ ] More and Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=part_boom&wd=90&ws=12 — in the card tap "More": Learn mode with the Boom entry. Tap "Show me", then the phone's Back button: you are back on the Boom entry, still in Learn mode.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&wd=60&ws=12 — the mode chip reads «Простой ▾» and its menu «Обучение», «Простой», «Реалистичный»; open each block: nothing is cut off.
+
+#### M28: Mini-map
+
+- [ ] Mini-map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — a small map in the bottom right corner, above the gear: the boat in the middle, a wind arrow at the top left and an "N" at the top right; after about half a minute a track line behind her.
+- [ ] Full map: tap the mini-map: the full map opens. Tap "× Close" next to the gear: back to the same 3D view. Pull the panel up to full height: the mini-map hides; lower it: it is back.
+- [ ] Held still: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1 — no mini-map. Open "Conditions" and tap "Sailing": it appears.
+- [ ] Switch: Settings → "Mini-map" off: it disappears (the link gets `mm=0`); on: it is back.
+- [ ] Back button (decided on the planning PR #61): with the full map open, the phone's Back button does not close it (it would reset the boat); "× Close" and the camera chip do.
+
+#### M29: Phase 5 sign-off
+
+- [ ] Wide screen (a computer, window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the panel has two columns: the Easy blocks on the left, Conditions and Learn on the right. Make the window narrower: one column again.
+- [ ] Phone, all three modes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — switch Learn, Easy, Realistic and move the sheet to each height; nothing is cut off or hidden for good.
+- [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?debug=1&wd=60&ws=20&wm=gusty — 50 fps or more with the sheet at the thin strip and at half. Write the numbers in the PR.
+- [ ] Every item of the Phase 5 Definition of Done (PHASE5_SPEC 11) is ticked in the PR.
