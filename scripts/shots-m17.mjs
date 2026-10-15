@@ -3,7 +3,7 @@
 // chip shown (the older scenes get `clock=0` so the tap sweeps do not open the clock card).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { openSettings } from './ui.mjs';
+import { openSettings, setSheet } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M17_SCENES = [
@@ -27,6 +27,7 @@ export const M17_SCENES = [
  * a screenshot of the canvas also contains.
  */
 async function canvasLuminance(page) {
+  await setSheet(page, 'peek');
   const png = await page.locator('canvas.scene-canvas').screenshot();
   const url = `data:image/png;base64,${png.toString('base64')}`;
   return page.evaluate(async (src) => {

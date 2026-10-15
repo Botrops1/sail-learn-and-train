@@ -64,7 +64,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | File | What |
 |---|---|
 | `scene.ts`, `sceneConfig.ts` | Renderer, lights (the sun's from the clock), per-frame update; colours, sizes, camera framing, frame-rate keys (`SCENE.performance`). |
-| `cameraRig.ts`, `cameraPresets.ts` | Camera control and the presets (Side, Top, Bow, Helm). |
+| `cameraRig.ts`, `cameraPresets.ts` | Camera control and the presets (Side, Top, Bow, Helm). The rig frames the boat above the bottom inset (the sheet and the chip row) and below the top inset, clamped by `SCENE.camera.maxBottomInsetShare` / `maxTopInsetShare` / `minFreePx` (M26). |
 | `picking.ts` | Tap-to-identify hit testing. |
 | `environment.ts`, `world.ts`, `wake.ts`, `wind.ts` | The cloud texture and the water's ripple texture, the world group (steps the water along the map), the wake, wind streaks. |
 | `waterSurface.ts` | The water: wave mesh with its grid lines, flat outer water out to the horizon, the tap plane; vertex colours (wind darkening, gust patch, white crests); `heightAt` for the wake and the buoys. |
@@ -82,8 +82,9 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | File | What |
 |---|---|
 | `layout.ts`, `layoutMode.ts`, `dom.ts` | Page layout (stacked / side by side), DOM helper. |
+| `sheet.ts`, `sheetGeometry.ts` | M26: on a phone (stacked layout) the panel is a sheet with three heights (peek, half, full), moved by dragging, tapping or keys on its handle; it writes `--sheet-h` and `--view-bottom-inset` on the shell and tells the 3D view how much of the bottom the sheet covers. `sheetGeometry.ts` is the pure part (heights, snapping, thresholds; `SHEET`). |
 | `i18n.ts` | Strings (M23): `setLanguage`/`currentLanguage`, `t()`, `part()` (name and one-liner in the current language), `quoted()` (“ ” or « »), `formatThousands`. |
-| `panel.ts` | The three tabs (Ropes, Wind, Learn). M25 moved the View tab and the footer to `settingsMenu.ts` and the camera buttons to `cameraChip.ts`. |
+| `panel.ts` | The three tabs (Ropes, Wind, Learn), in the sheet's head from M26; choosing a tab raises a sheet at its lowest height. M25 moved the View tab and the footer to `settingsMenu.ts` and the camera buttons to `cameraChip.ts`. |
 | `settingsMenu.ts` | M25: the gear in the chip row and the settings dialog it opens (Language, Labels in 3D, Time bar, Clock, Step size, Detail, Share and Reset, legend, Debug overlay, About with the footer); the view and panel are `inert` while it is open. Choosing a language reloads the page (M23). |
 | `cameraChip.ts`, `chipMenu.ts` | M25: the chip row `.view-bottom` over the bottom of the 3D view, the camera chip ("Port ▾") and its menu; `chipMenu.ts` is the menu behaviour shared with M27's mode chip (items, arrow keys, Escape, outside tap, one open at a time). |
 | `learnTab.ts` | Phase 4 (M20): the Learn tab: M21's search box and list of every entry in groups (or the search results), and one entry at a time (Back to the list, names, text, Show me, Show on the boat, Try it, See also, how sure we are). |
@@ -96,12 +97,12 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, autopilot, Sails block, time bar (with the "Held still" chip in place of Pause). |
 | `clockPanel.ts` | The clock chip beside the time bar and the card it opens (date, area, sunrise and sunset, light, Now / Noon / Set a time). |
 | `mapView.ts` | Bird's-eye map (`cam=map`), with the four buoys. |
-| `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | Part card, 3D labels, debug overlay, error messages. |
+| `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | Part card (over the 3D view in both layouts, above the chip row on a phone), 3D labels, debug overlay, error messages. |
 
 ## Tests and scripts
 
 - `tests/*.test.ts` (Vitest): one file per model area; `physicsTruths.test.ts` (Phase 1 rules) and `physicsTruths2.test.ts` (Phase 2 rules) and `physicsTruths3.test.ts` (Phase 3 rules) hold the tests named after PT ids; `languages.test.ts` (M23: every language's strings, the Latin scan, the checked Russian names) and `quotedLabels.ts` (the Russian wording of the labels the glossary quotes), `motionHelpers.ts` and `geometry.ts` are shared helpers.
 - `scripts/review-doc.mjs` (and `review-doc.d.mts`, so tests can import it): M24's review document for a sailor who reads one language (`npm run review-doc -- ru` writes `docs/review/ru.md`; the wording of each language is a table inside it; `tests/glossary.test.ts` fails when the committed file is out of date). `docs/LANGUAGES.md`: how to add a language.
-- `scripts/ui.mjs`: M25's helpers for the browser checks (`showSection`, `openSettings`, `setCamera`, `viewBottom`, `waitForLink`, …): checks open the panel, the settings and the camera only through them; `scripts/shots.mjs`: browser checks and screenshots (options at its top); `scripts/shots-m<N>.mjs`: each milestone's scenes and live checks (`shots-m24.mjs`: all 131 Learn entries and 60 Show me buttons, in English and Russian); `scripts/a11y-audit.mjs`: accessibility audit; `scripts/visual-shots.mjs`: detail-level close-ups; `scripts/compare/`: model vs reference sketch.
+- `scripts/ui.mjs`: the helpers for the browser checks (`showSection`, `openSettings`, `setCamera`, `viewBottom`, `waitForLink`, and from M26 `setSheet`, `dragHandle`): checks open the panel, the settings and the camera only through them; `scripts/shots.mjs`: browser checks and screenshots (options at its top); `scripts/shots-m<N>.mjs`: each milestone's scenes and live checks (`shots-m24.mjs`: all 131 Learn entries and 60 Show me buttons, in English and Russian); `scripts/a11y-audit.mjs`: accessibility audit; `scripts/visual-shots.mjs`: detail-level close-ups; `scripts/compare/`: model vs reference sketch.
 - `.github/workflows/`: `ci.yml` (`check`, `browser-checks`), `pr-preview.yml`, `deploy.yml`, `cleanup-branches.yml`, `strip-attribution.yml` (removes "Generated by Claude Code" footers and session links from PR and issue text after posting).
 - `.claude/skills/`: the owner's commands (`/milestone`, `/plan`, `/review`, `/bug`).

@@ -1,7 +1,14 @@
 // M4a (clutch-bank panel, Easy mode): scenes and live checks for scripts/shots.mjs.
 // Kept in its own file so the shared screenshot script changes little.
 import path from 'node:path';
-import { closeSettings, openSettings, sectionShown, setCamera, showSection } from './ui.mjs';
+import {
+  closeSettings,
+  openSettings,
+  sectionShown,
+  setCamera,
+  setSheet,
+  showSection,
+} from './ui.mjs';
 
 /** What a link opens to, in the strip of the Ropes tab. */
 const strip = (partId) => `.rope-strip [data-part-id="${partId}"]`;
@@ -108,6 +115,8 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     // A rope tapped in 3D is selected in the panel, also when another tab is open.
     await showSection(page, 'conditions');
     await page.keyboard.press('Escape');
+    // The rope is tapped with the sheet at its lowest (the boat is framed largest there, M26).
+    await setSheet(page, 'peek');
     const canvas = await page.locator('canvas.scene-canvas').boundingBox();
     const point = await page.evaluate(() => window.__sailDebug.partPoint('rope_topping_lift', 0));
     if (point) await page.mouse.click(canvas.x + point.x, canvas.y + point.y);

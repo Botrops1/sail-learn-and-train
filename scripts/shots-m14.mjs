@@ -3,7 +3,7 @@
 // the older scenes. The 3D view is drawn by software in headless Chromium, so the checks look at
 // the numbers (status line, debug overlay) and at whether the picture moves, not at the speed.
 import path from 'node:path';
-import { showSection } from './ui.mjs';
+import { setSheet, showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M14_SCENES = [
@@ -124,6 +124,8 @@ export async function liveM14Checks({ openPage, viewports, outDir, prefix, probl
   // Tap on open water: the info card says "Water surface".
   {
     const { context, page } = await openPage(phone, 'm14 tap water', '?wd=90&ws=15&cam=top');
+    // At half height the tap point lies inside the chip row; at peek it is on the water.
+    await setSheet(page, 'peek');
     await page.waitForTimeout(2000);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     await page.mouse.click(box.x + box.width * 0.12, box.y + box.height * 0.45);
