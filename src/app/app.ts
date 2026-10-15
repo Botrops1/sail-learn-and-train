@@ -1,5 +1,5 @@
 import { createScene, type SceneView } from '../render3d/scene';
-import { createCameraBar } from '../ui/cameraBar';
+import { createCameraChip, createViewBottom } from '../ui/cameraChip';
 import { createDebugOverlay, type FrameTimes } from '../ui/debugOverlay';
 import {
   clearSceneError,
@@ -14,6 +14,7 @@ import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
 import { createPanel } from '../ui/panel';
+import { createSettingsMenu } from '../ui/settingsMenu';
 import { createClockPanel } from '../ui/clockPanel';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
@@ -61,8 +62,12 @@ export function startApp(host: HTMLElement): void {
   // Under the view's own buttons and cards.
   const labels: Labels3d | undefined = scene ? createLabels3d(layout.view, store) : undefined;
   // The bird's-eye map (M7) takes the 3D view's place while the camera is on Map. It needs no
-  // WebGL, but without the camera bar there is no way back, so it comes with the 3D view.
+  // WebGL, but without the camera chip there is no way back, so it comes with the 3D view.
   const map = scene ? createMapView(layout.view, store) : undefined;
+  // The chip row at the bottom of the view (M25): the gear always (the settings work without
+  // WebGL), the camera chip only with the 3D view.
+  const chipRow = createViewBottom(layout.view);
+  createSettingsMenu(chipRow, layout.root, store);
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
   const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
@@ -92,11 +97,11 @@ export function startApp(host: HTMLElement): void {
       showSceneError(layout.view, 'scene.lost'),
     );
     scene.canvas.addEventListener('webglcontextrestored', () => clearSceneError(layout.view));
-    const cameraBar = createCameraBar(layout.view, store);
+    createCameraChip(chipRow, store);
     const view = scene;
     const resize = () => {
       const viewBox = layout.view.getBoundingClientRect();
-      const inset = viewBox.bottom - cameraBar.getBoundingClientRect().top;
+      const inset = viewBox.bottom - chipRow.getBoundingClientRect().top;
       const stacked = layout.viewport().mode === 'stacked';
       view.resize(
         layout.view.clientWidth,

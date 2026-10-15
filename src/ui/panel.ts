@@ -1,30 +1,25 @@
-import { BUILD_INFO, REPO_URL } from '../app/buildInfo';
 import type { Store } from '../app/store';
-import { serializeUrlState } from '../app/urlState';
-import { shareLink } from '../app/urlSync';
-import { LANGUAGES, languageName } from '../model/languages';
 import { entryFor } from '../model/panelEntries';
-import { CAMERA_PRESETS, DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { createLearnTab } from './learnTab';
 import { createRopesTab } from './ropesTab';
 import { createWindPanel } from './windPanel';
 
-export const TAB_IDS = ['ropes', 'wind', 'view', 'learn'] as const;
+export const TAB_IDS = ['ropes', 'wind', 'learn'] as const;
 export type TabId = (typeof TAB_IDS)[number];
 
 const TAB_LABELS: Record<TabId, StringKey> = {
   ropes: 'tab.ropes',
   wind: 'tab.wind',
-  view: 'tab.view',
   learn: 'tab.learn',
 };
 
 /**
- * The panel: three tabs (Ropes, Wind, View) and the footer line (PHASE1_SPEC 5.2).
+ * The panel: three tabs (Ropes, Wind, Learn). The old View tab and the footer moved to the
+ * settings dialog and the camera to the camera chip (PHASE5_SPEC 6.4).
  * Ropes: the clutch-bank drawing and the rope controls (Easy mode). Wind: the test-wind dial,
- * speed and presets. View: camera presets, step size, legend and debug toggles, Share, Reset.
+ * speed and presets. Learn: the glossary.
  * Selecting a rope or the wheel anywhere (3D view, link) opens the Ropes tab.
  */
 export interface Panel {
@@ -55,6 +50,7 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
         role: 'tab',
         id: `tab-${id}`,
         class: 'tab',
+        'data-testid': `tab-${id}`,
         'aria-controls': `pane-${id}`,
       },
       [t(TAB_LABELS[id])],
@@ -76,17 +72,7 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
 
   panes.get('ropes')?.append(...createRopesTab(store, () => select('learn')));
   panes.get('wind')?.append(...createWindPanel(store));
-  panes.get('view')?.append(...buildViewTab(store));
   panes.get('learn')?.append(...createLearnTab(store, (tab) => select(tab)));
-
-  const footer = el('footer', { class: 'footer' }, [
-    el('p', { class: 'disclaimer', 'data-testid': 'disclaimer' }, [t('footer.disclaimer')]),
-    el('span', { class: 'version', 'data-testid': 'build-version' }, [
-      t('footer.version', { hash: BUILD_INFO.shortHash, date: BUILD_INFO.date }),
-    ]),
-    el('a', { href: REPO_URL, target: '_blank', rel: 'noopener' }, [t('footer.source')]),
-  ]);
-  body.append(footer);
 
   host.append(tabList, body);
   select('ropes');
@@ -140,267 +126,4 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
       select(next, true);
     }
   }
-}
-
-function buildViewTab(store: Store): HTMLElement[] {
-  // Language (M23, PHASE4_SPEC 9.4): every element is built once with t(), so choosing a language
-  // reloads the page on the same link with `lang` changed.
-  const languageGroup = el(
-    'fieldset',
-    { class: 'field segmented', 'data-testid': 'language-setting' },
-    [
-      el('legend', {}, [t('view.language.label')]),
-      el('p', { class: 'hint' }, [t('view.language.hint')]),
-    ],
-  );
-  const languageOptions = el('div', { class: 'segments' });
-  const languageInputs = LANGUAGES.map((code) => {
-    const input = el('input', {
-      type: 'radio',
-      name: 'language',
-      value: code,
-      'data-testid': `language-${code}`,
-    });
-    input.addEventListener('change', () => {
-      if (!input.checked) return;
-      const state = store.getState();
-      if (code === state.settings.language) return;
-      const link = serializeUrlState({ ...state, settings: { ...state.settings, language: code } });
-      window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
-    });
-    languageOptions.append(
-      el('label', { class: 'segment' }, [input, el('span', {}, [languageName(code)])]),
-    );
-    return { code, input };
-  });
-  languageGroup.append(languageOptions);
-
-  const cameraGroup = el('fieldset', { class: 'field segmented' }, [
-    el('legend', {}, [t('cam.label')]),
-    el('p', { class: 'hint' }, [t('cam.hint')]),
-  ]);
-  const cameraOptions = el('div', { class: 'segments segments-grid' });
-  const cameraInputs = CAMERA_PRESETS.map((preset) => {
-    const input = el('input', { type: 'radio', name: 'camera', value: preset });
-    input.addEventListener('change', () => {
-      if (input.checked) store.dispatch({ type: 'setCameraPreset', preset });
-    });
-    cameraOptions.append(
-      el('label', { class: 'segment' }, [input, el('span', {}, [t(`cam.${preset}` as StringKey)])]),
-    );
-    return { preset, input };
-  });
-  cameraGroup.append(cameraOptions);
-
-  const stepGroup = el('fieldset', { class: 'field segmented' }, [
-    el('legend', {}, [t('view.step.label')]),
-    el('p', { class: 'hint' }, [t('view.step.hint')]),
-  ]);
-  const stepOptions = el('div', { class: 'segments' });
-  const stepInputs = STEP_SIZES.map((step) => {
-    const input = el('input', { type: 'radio', name: 'step', value: String(step) });
-    input.addEventListener('change', () => {
-      if (input.checked) store.dispatch({ type: 'setStep', step });
-    });
-    stepOptions.append(
-      el('label', { class: 'segment' }, [
-        input,
-        el('span', {}, [t('view.step.option', { value: step })]),
-      ]),
-    );
-    return { step, input };
-  });
-  stepGroup.append(stepOptions);
-
-  const detailGroup = el('fieldset', { class: 'field segmented' }, [
-    el('legend', {}, [t('view.detail.label')]),
-    el('p', { class: 'hint' }, [t('view.detail.hint')]),
-  ]);
-  const detailOptions = el('div', { class: 'segments' });
-  const detailInputs = DETAIL_LEVELS.map((detail) => {
-    const input = el('input', { type: 'radio', name: 'detail', value: detail });
-    input.addEventListener('change', () => {
-      if (input.checked) store.dispatch({ type: 'setDetail', detail });
-    });
-    detailOptions.append(
-      el('label', { class: 'segment' }, [
-        input,
-        el('span', {}, [t(`view.detail.${detail}` as StringKey)]),
-      ]),
-    );
-    return { detail, input };
-  });
-  detailGroup.append(detailOptions);
-
-  const debugInput = el('input', { type: 'checkbox', id: 'debug-toggle' });
-  debugInput.addEventListener('change', () =>
-    store.dispatch({ type: 'setDebug', debug: debugInput.checked }),
-  );
-  const debugField = el('div', { class: 'field' }, [
-    el('label', { class: 'toggle', for: 'debug-toggle' }, [
-      debugInput,
-      el('span', {}, [t('view.debug.label')]),
-    ]),
-    el('p', { class: 'hint' }, [t('view.debug.hint')]),
-  ]);
-
-  const legendInput = el('input', { type: 'checkbox', id: 'legend-toggle' });
-  legendInput.addEventListener('change', () =>
-    store.dispatch({ type: 'setLegend', legend: legendInput.checked }),
-  );
-  const legendField = el('div', { class: 'field' }, [
-    el('label', { class: 'toggle', for: 'legend-toggle' }, [
-      legendInput,
-      el('span', {}, [t('view.legend.label')]),
-    ]),
-    el('p', { class: 'hint' }, [t('view.legend.hint')]),
-  ]);
-
-  const labelsInput = el('input', { type: 'checkbox', id: 'labels-toggle' });
-  labelsInput.addEventListener('change', () =>
-    store.dispatch({ type: 'setLabels', labels: labelsInput.checked }),
-  );
-  const labelsField = el('div', { class: 'field' }, [
-    el('label', { class: 'toggle', for: 'labels-toggle' }, [
-      labelsInput,
-      el('span', {}, [t('view.labels.label')]),
-    ]),
-    el('p', { class: 'hint' }, [t('view.labels.hint')]),
-  ]);
-
-  const timeBarInput = el('input', { type: 'checkbox', id: 'time-bar-toggle' });
-  timeBarInput.addEventListener('change', () =>
-    store.dispatch({ type: 'setTimeBar', timeBar: timeBarInput.checked }),
-  );
-  const timeBarField = el('div', { class: 'field' }, [
-    el('label', { class: 'toggle', for: 'time-bar-toggle' }, [
-      timeBarInput,
-      el('span', {}, [t('view.timeBar.label')]),
-    ]),
-    el('p', { class: 'hint' }, [t('view.timeBar.hint')]),
-  ]);
-
-  const clockInput = el('input', {
-    type: 'checkbox',
-    id: 'clock-toggle',
-    'data-testid': 'clock-switch',
-  });
-  clockInput.addEventListener('change', () =>
-    store.dispatch({ type: 'setClockShown', shown: clockInput.checked }),
-  );
-  const clockField = el('div', { class: 'field' }, [
-    el('label', { class: 'toggle', for: 'clock-toggle' }, [
-      clockInput,
-      el('span', {}, [t('view.clock.label')]),
-    ]),
-    el('p', { class: 'hint' }, [t('view.clock.hint')]),
-  ]);
-
-  const sync = (state = store.getState(), previous?: typeof state) => {
-    if (previous && state.settings === previous.settings && state.camera === previous.camera) {
-      return;
-    }
-    const { settings, camera } = state;
-    for (const { code, input } of languageInputs) input.checked = code === settings.language;
-    for (const { preset, input } of cameraInputs) input.checked = preset === camera.preset;
-    for (const { step, input } of stepInputs) input.checked = step === settings.step;
-    for (const { detail, input } of detailInputs) input.checked = detail === settings.detail;
-    debugInput.checked = settings.debug;
-    legendInput.checked = settings.legend;
-    labelsInput.checked = settings.labels;
-    timeBarInput.checked = settings.timeBar;
-    clockInput.checked = settings.clock;
-  };
-  store.subscribe(sync);
-  sync();
-
-  return [
-    languageGroup,
-    cameraGroup,
-    labelsField,
-    timeBarField,
-    clockField,
-    stepGroup,
-    detailGroup,
-    ...buildShareAndReset(store),
-    legendField,
-    debugField,
-  ];
-}
-
-/** How long Reset waits for the second tap, ms. */
-const RESET_ARM_MS = 4000;
-
-/**
- * Share copies a link to exactly what is shown (PHASE1_SPEC 9.2); if the browser does not allow
- * copying, the link is shown selected so it can be copied by hand. Reset asks for a second tap,
- * so a stray tap does not lose the settings.
- */
-function buildShareAndReset(store: Store): HTMLElement[] {
-  const status = el('p', { class: 'hint action-status', 'aria-live': 'polite' });
-  const linkField = el('input', {
-    type: 'text',
-    readonly: '',
-    class: 'share-link',
-    'aria-label': t('view.share.fieldLabel'),
-    'data-testid': 'share-link',
-    hidden: '',
-  });
-  const share = el(
-    'button',
-    { type: 'button', class: 'action-button', 'data-testid': 'share-button' },
-    [t('view.share.button')],
-  );
-  share.addEventListener('click', () => {
-    const link = shareLink(store.getState());
-    linkField.value = link;
-    const manual = () => {
-      linkField.hidden = false;
-      linkField.focus();
-      linkField.select();
-      status.textContent = t('view.share.manual');
-    };
-    if (!navigator.clipboard?.writeText) {
-      manual();
-      return;
-    }
-    navigator.clipboard.writeText(link).then(() => {
-      linkField.hidden = true;
-      status.textContent = t('view.share.copied');
-    }, manual);
-  });
-
-  const reset = el(
-    'button',
-    { type: 'button', class: 'action-button action-reset', 'data-testid': 'reset-button' },
-    [t('view.reset.button')],
-  );
-  let armed: number | undefined;
-  const disarm = () => {
-    window.clearTimeout(armed);
-    armed = undefined;
-    reset.textContent = t('view.reset.button');
-    reset.removeAttribute('data-armed');
-  };
-  reset.addEventListener('click', () => {
-    if (armed === undefined) {
-      reset.textContent = t('view.reset.confirm');
-      reset.setAttribute('data-armed', 'true');
-      armed = window.setTimeout(disarm, RESET_ARM_MS);
-      return;
-    }
-    disarm();
-    store.dispatch({ type: 'reset' });
-    linkField.hidden = true;
-    status.textContent = t('view.reset.done');
-  });
-
-  return [
-    el('div', { class: 'field' }, [
-      el('div', { class: 'actions' }, [share, reset]),
-      el('p', { class: 'hint' }, [t('view.share.hint')]),
-      linkField,
-      status,
-    ]),
-  ];
 }
