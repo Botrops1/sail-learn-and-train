@@ -232,7 +232,6 @@ describe('languages (PHASE4_SPEC 9.3)', () => {
       const name = glossaryText(`term_${key}`, 'ru')?.name ?? '';
       expect(UI_STRINGS.ru?.[`pos.${key}`], key).toBe(name.charAt(0).toUpperCase() + name.slice(1));
     }
-    expect(UI_STRINGS.ru?.['tab.view']).toBe('Вид');
     expect(UI_STRINGS.ru?.['tab.learn']).toBe('Обучение');
   });
 });

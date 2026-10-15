@@ -49,7 +49,7 @@ Each time the PR wakes you:
 - **CI red** (`check` or `browser-checks`): find the cause and push a fix. Do not ask the owner about red CI.
 - **A comment from the owner:** do what it says. "accept all" means apply every recommendation. Then:
   - record the answers in the same PR: a row in the ROADMAP decisions log, and "decided in the M$ARGUMENTS PR" notes in the spec section;
-  - run the checks again (section 3), push, and reply on the PR in a few lines: what changed, the new commit's first 7 characters (the preview footer shows it), anything left to check. Replies carry no footer or session link.
+  - run the checks again (section 3), push, and reply on the PR in a few lines: what changed, the new commit's first 7 characters (Settings → About in the preview shows it), anything left to check. Replies carry no footer or session link.
 - **A review comment** (it starts with "Independent review"): do not act on it by yourself. The owner replies with which items to fix.
 - **Review required but not done yet:** if the PR has no "Independent review" comment, end every reply on the PR with the reminder: "Reminder: this milestone needs `/review <PR number>` (Opus) before merging." Stop reminding once the review comment is there.
 - Bug reports from the owner usually carry a link from the app's Share button: open the same state in the browser checks to reproduce it before fixing.

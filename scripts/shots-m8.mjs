@@ -2,6 +2,7 @@
 // The boat leans, the strip says how far, the alerts, the rope loads in kN, the round-up.
 // Their labels contain "m8" so the script opens them Sailing (older scenes are held still).
 import path from 'node:path';
+import { showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each (the alert shows after 2 s). */
 export const M8_SCENES = [
@@ -110,7 +111,7 @@ export async function liveM8Checks({ openPage, viewports, outDir, prefix, proble
       `?wd=50&ws=18&ms=${main}&js=20&cam=bow`,
     );
     await page.waitForTimeout(3000);
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await setSlider(page, '#wind-speed', 28);
     let seen = false;
     for (let i = 0; i < 60 && !seen; i += 1) {

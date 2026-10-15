@@ -41,6 +41,8 @@ import { liveM21Checks, M21_SCENES } from './shots-m21.mjs';
 import { liveM22Checks, M22_SCENES } from './shots-m22.mjs';
 import { liveM23Checks, M23_SCENES } from './shots-m23.mjs';
 import { liveM24Checks, M24_SCENES } from './shots-m24.mjs';
+import { liveM25Checks, M25_SCENES } from './shots-m25.mjs';
+import { closeSettings, openSettings, setCamera, showSection, viewBottom } from './ui.mjs';
 
 const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
 const PREFIX = process.env.SHOTS_PREFIX ?? '';
@@ -150,7 +152,7 @@ const SCENES = [
     scrollTo: '.rope-strip',
   },
   { name: 'card-jib-sheet', query: '?wd=60&ws=12&cam=side-port&sel=rope_jib_sheet' },
-  { name: 'view-tab-debug', query: '?cam=top&debug=1', tab: 'View' },
+  { name: 'settings-debug', query: '?cam=top&debug=1', settings: true },
   ...M4A_SCENES.map((scene) => ({ ...scene, name: `m4a-${scene.name}` })),
   ...M4B_SCENES.map((scene) => ({ ...scene, name: `m4b-${scene.name}` })),
   ...M4C_SCENES.map((scene) => ({ ...scene, name: `m4c-${scene.name}` })),
@@ -174,6 +176,7 @@ const SCENES = [
   ...M22_SCENES.map((scene) => ({ ...scene, name: `m22-${scene.name}` })),
   ...M23_SCENES.map((scene) => ({ ...scene, name: `m23-${scene.name}` })),
   ...M24_SCENES.map((scene) => ({ ...scene, name: `m24-${scene.name}` })),
+  ...M25_SCENES.map((scene) => ({ ...scene, name: `m25-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -266,17 +269,17 @@ async function openPage(viewport, label, query) {
   page.on('pageerror', (error) => problems.push(`${label}: page error: ${error.message}`));
   // Since M6 the app opens Sailing. The older scenes and checks are about the ropes and sails,
   // so they open Held still (the Phase 1 picture); Phase 2 ones (label contains "m6" … "m19")
-  // sail.
-  const held = /m([6-9]|1\d)/.test(label) || /[?&]held=/.test(query);
+  // and Phase 5 ones ("m25" …) sail.
+  const held = /m([6-9]|1\d|2[5-9])/.test(label) || /[?&]held=/.test(query);
   let url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
   // Since M14 the water is Coastal by default. Everything older keeps its Phase 2 picture on
   // flat water (the boat would rock under the tap sweeps), unless it is about the waves itself.
-  if (!/m1[4-9]/.test(label) && !/[?&]sea=/.test(query)) {
+  if (!/m(1[4-9]|2[5-9])/.test(label) && !/[?&]sea=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}sea=flat`;
   }
   // Since M17 the clock chip shows. Everything older hides it, so the tap sweeps do not open
   // the clock card.
-  if (!/m1[7-9]/.test(label) && !/[?&]clock=/.test(query)) {
+  if (!/m(1[7-9]|2[5-9])/.test(label) && !/[?&]clock=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}clock=0`;
   }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
@@ -337,7 +340,7 @@ async function liveM2Checks() {
   // Gybe: wind 170 → 180 → −170 → −165 with the dial's keyboard (step 5).
   {
     const { context, page } = await openPage(phone, 'gybe', '?wd=170&ws=12&ms=100&cam=top');
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     const dial = page.getByTestId('wind-dial');
     await dial.focus();
     const gybeShown = () => page.getByTestId('gybe-label').isVisible();
@@ -363,7 +366,7 @@ async function liveM2Checks() {
   // Tack: wind 40 → −40 across the bow with the dial keys: "Tack", never "GYBE".
   {
     const { context, page } = await openPage(phone, 'tack', '?wd=40&ws=12&ms=20&cam=top');
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.getByTestId('wind-dial').focus();
     let sawGybe = false;
     let sawTack = false;
@@ -384,12 +387,12 @@ async function liveM2Checks() {
   // Presets, slider keyboard, held + button.
   {
     const { context, page } = await openPage(phone, 'controls', '?wd=0&ws=5&ms=30');
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.getByRole('button', { name: 'Beam, starboard' }).click();
     await page.waitForTimeout(500);
     let url = await page.evaluate(() => window.location.search);
     check('preset beam', url.includes('wd=90&ws=12'), url);
-    await page.getByRole('tab', { name: 'Ropes' }).click();
+    await showSection(page, 'ropes');
     await page.locator('[data-select="rope_mainsheet"]').click();
     await page.getByLabel('Main sheet', { exact: true }).focus();
     await page.keyboard.press('ArrowRight');
@@ -437,7 +440,7 @@ async function liveM3Checks() {
     const { context, page } = await openPage(phone, 'pt10', '?wd=30&ws=12&js=0&cam=top');
     const before = await controlMeta(page, 'rope_jib_sheet');
     check('car at port end at +30', before.includes('port end'), before.replace(/\n/g, ' | '));
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.getByTestId('wind-dial').focus();
     for (let i = 0; i < 12; i += 1) {
       await page.keyboard.press('ArrowLeft');
@@ -447,7 +450,7 @@ async function liveM3Checks() {
     const url = await page.evaluate(() => window.location.search);
     check('dial wd 30 → −30', url.includes('wd=-30'), url);
     await page.screenshot({ path: path.join(OUT_DIR, `${PREFIX}live-phone-pt10-after-wd-30.png`) });
-    await page.getByRole('tab', { name: 'Ropes' }).click();
+    await showSection(page, 'ropes');
     const after = await controlMeta(page, 'rope_jib_sheet');
     check(
       'car at starboard end at −30',
@@ -558,7 +561,7 @@ async function liveGeneralChecks() {
     console.log(`live ${what} -> ${search} ${ok ? 'ok' : 'WRONG'}`);
   };
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
-  await page.getByRole('button', { name: 'Top', exact: true }).click();
+  await setCamera(page, 'top');
   // The phone-sized screen starts at low detail (M3b).
   await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
@@ -569,8 +572,9 @@ async function liveGeneralChecks() {
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
   await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
-  await page.getByRole('tab', { name: 'View' }).click();
-  await page.getByText('Side (starboard)', { exact: true }).click();
+  // The view behind the settings dialog is inert, so the camera is set before it opens.
+  await setCamera(page, 'side-starboard');
+  await openSettings(page);
   await page.getByText('1 %', { exact: true }).click();
   await page.getByText('Debug overlay', { exact: true }).click();
   await expectUrl(
@@ -589,13 +593,14 @@ async function liveGeneralChecks() {
   if (!ok) problems.push(`live Detail high: overlay says ${overlay.replace(/\n/g, ' | ')}`);
   console.log(`live Detail high -> overlay ${ok ? 'ok' : 'WRONG'}`);
   await page.screenshot({
-    path: path.join(OUT_DIR, `${PREFIX}live-desktop-view-tab-detail-high.png`),
+    path: path.join(OUT_DIR, `${PREFIX}live-desktop-settings-detail-high.png`),
   });
   await page.getByText('Low', { exact: true }).click();
   await expectUrl(
     'Detail low',
     `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&clock=0&debug=1`,
   );
+  await closeSettings(page);
   await context.close();
 
   await liveM2Checks();
@@ -619,7 +624,8 @@ try {
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
-      if (scene.tab) await page.getByRole('tab', { name: scene.tab }).click();
+      if (scene.section) await showSection(page, scene.section);
+      if (scene.settings) await openSettings(page);
       if (scene.open) {
         await page.locator(`.rope-strip > :not([hidden]) ${scene.open} summary`).click();
       }
@@ -690,9 +696,7 @@ try {
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
     await page.waitForTimeout(800);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
-    const barTop = await page
-      .locator('.camera-bar')
-      .evaluate((bar) => bar.getBoundingClientRect().top);
+    const barTop = await viewBottom(page);
     const step = viewport.width < 500 ? 14 : 24;
     let taps = 0;
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
@@ -730,9 +734,7 @@ try {
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
       await page.waitForTimeout(800);
       const box = await page.locator('canvas.scene-canvas').boundingBox();
-      const barTop = await page
-        .locator('.camera-bar')
-        .evaluate((bar) => bar.getBoundingClientRect().top);
+      const barTop = await viewBottom(page);
       const centres = await page.evaluate(() => window.__sailDebug.hitCentres());
       const missing = [];
       for (const id of view.expected) {
@@ -806,6 +808,7 @@ try {
     m22: () => liveM22Checks(live),
     m23: () => liveM23Checks(live),
     m24: () => liveM24Checks(live),
+    m25: () => liveM25Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

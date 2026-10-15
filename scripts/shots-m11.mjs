@@ -4,6 +4,7 @@
 // boat turned to 350° and then 340°. Their labels contain "m11" so the script opens them Sailing.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M11_SCENES = [
@@ -137,7 +138,7 @@ export async function liveM11Checks({ openPage, viewports, outDir, prefix, probl
       'm11 held gybe',
       '?wd=170&ws=15&ms=100&js=100&held=1&cam=top',
     );
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.getByTestId('wind-dial').scrollIntoViewIfNeeded();
     const hasReport = await page.getByTestId('gybe-report').count();
     check('held: the report element exists, hidden', hasReport === 1, String(hasReport));

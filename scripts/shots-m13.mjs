@@ -8,6 +8,7 @@
 //   the overlay), which must stay small. Labels contain "m13" so the script opens them Sailing.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { showSection } from './ui.mjs';
 
 /** The heaviest case of the owner's checklist. */
 const HEAVY = '?wd=90&ws=16&ms=40&js=100&wm=gusty&tx=16&debug=1';
@@ -48,13 +49,23 @@ export async function liveM13Checks({ openPage, viewports, outDir, prefix, probl
   for (const [name, query, tab, scrollTo] of [
     ['autopilot', '?wd=60&ws=12&ms=30&js=100&ap=wind&cam=side-port', null, 'autopilot'],
     ['sails panel', '?wd=60&ws=12&ms=10&js=100&cam=side-port', null, 'sails-panel'],
-    ['wind tab: gusty, Held still / Sailing', '?wd=90&ws=16&ms=40&js=100&wm=gusty', 'Wind', null],
-    ['wind tab: shifty, time bar at ×4', '?wd=90&ws=12&ms=40&js=100&wm=shifty&tx=4', 'Wind', null],
+    [
+      'wind tab: gusty, Held still / Sailing',
+      '?wd=90&ws=16&ms=40&js=100&wm=gusty',
+      'conditions',
+      null,
+    ],
+    [
+      'wind tab: shifty, time bar at ×4',
+      '?wd=90&ws=12&ms=40&js=100&wm=shifty&tx=4',
+      'conditions',
+      null,
+    ],
     ['engine at Detail Low', '?ws=0&eng=1&lv=66&detail=low', null, 'engine-panel'],
   ]) {
     const { context, page } = await openPage(phone, `m13 a11y ${name}`, query);
     await page.waitForTimeout(800);
-    if (tab) await page.getByRole('tab', { name: tab }).click();
+    if (tab) await showSection(page, tab);
     if (scrollTo) {
       const target = page.locator(`[data-testid="${scrollTo}"], .${scrollTo}`).first();
       if ((await target.count()) > 0) await target.scrollIntoViewIfNeeded();

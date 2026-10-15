@@ -4,20 +4,21 @@
 // the script opens them Sailing (older scenes are held still).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { openSettings, showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M10_SCENES = [
   {
     name: 'wind-tab-gusty',
     query: '?wd=90&ws=12&ms=40&js=100&wm=gusty&seed=7&cam=side-port',
-    tab: 'Wind',
+    section: 'conditions',
     centre: '[data-testid="wind-modes"]',
     waitMs: 3000,
   },
   {
     name: 'wind-tab-shifty-dial',
     query: '?wd=90&ws=12&ms=40&js=100&wm=shifty&wg=30&seed=7&tx=16&ap=wind&cam=side-port',
-    tab: 'Wind',
+    section: 'conditions',
     centre: '[data-testid="wind-dial"]',
     waitMs: 2500,
   },
@@ -135,7 +136,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       'm10 wind tab',
       '?wd=90&ws=12&ms=40&js=100&cam=side-port',
     );
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     check(
       'steady: no size slider',
       !(await page.getByTestId('wind-size-field').isVisible()),
@@ -361,7 +362,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       'hidden',
     );
     // Switching to Sailing brings Pause back.
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.getByTestId('boat-mode').getByText('Sailing', { exact: true }).click();
     await page.waitForTimeout(300);
     check(
@@ -397,7 +398,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       'm10 wind slider follows',
       '?wd=60&ws=8&held=1&wm=build&tx=16',
     );
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.waitForTimeout(12000);
     const read = await page.evaluate(() => ({
       slider: Number(document.querySelector('#wind-speed').value),
@@ -438,23 +439,23 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
         !(await page.getByTestId('time-fastest').isVisible()),
       'only Pause',
     );
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.locator('#time-bar-toggle').check();
     await page.waitForTimeout(500);
     check(
-      'View tab: the switch brings the bar back',
+      'Settings: the switch brings the bar back',
       await page.getByTestId('time-fastest').isVisible(),
       'visible',
     );
     check(
-      'View tab: tb=0 leaves the link',
+      'Settings: tb=0 leaves the link',
       !(await search(page, /^(?!.*tb=0)/)).includes('tb=0'),
       await search(page),
     );
     await page.locator('#time-bar-toggle').uncheck();
     await page.waitForTimeout(500);
     check(
-      'View tab: the switch off writes tb=0',
+      'Settings: the switch off writes tb=0',
       (await search(page, /tb=0/)).includes('tb=0'),
       await search(page),
     );

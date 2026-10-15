@@ -2,14 +2,15 @@
 // Labels contain "m21", so openPage adds held=1, sea=flat and clock=0 to queries without them.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { showSection } from './ui.mjs';
 
 /** Every size: the groups, the search for "vang", an entry with its Back button, the danger zone's scene after the gybe. */
 export const M21_SCENES = [
-  { name: 'learn-groups', query: '?wd=90&ws=12', tab: 'Learn', waitMs: 800 },
+  { name: 'learn-groups', query: '?wd=90&ws=12', section: 'learn', waitMs: 800 },
   {
     name: 'learn-search-vang',
     query: '?wd=90&ws=12',
-    tab: 'Learn',
+    section: 'learn',
     type: { testId: 'learn-search', text: 'vang' },
     waitMs: 800,
   },
@@ -48,7 +49,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 1. The groups; open one, open an entry, come back.
   {
     const { context, page } = await openPage(phone, 'm21 groups', '?wd=90&ws=12');
-    await page.locator('#tab-learn').click();
+    await showSection(page, 'learn');
     await page.waitForTimeout(500);
     check('ten groups', (await groupCount(page)) === 10, String(await groupCount(page)));
     const summary = page.locator('[data-testid="learn-group-ropes"] > summary');
@@ -69,7 +70,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 2. Search by another name; no match; the text stays when an entry is opened.
   {
     const { context, page } = await openPage(phone, 'm21 search', '?wd=90&ws=12');
-    await page.locator('#tab-learn').click();
+    await showSection(page, 'learn');
     const search = page.getByTestId('learn-search');
     await search.fill('kicker');
     const hit = page.getByTestId('learn-hit-rope_vang');
@@ -98,7 +99,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 3. A word printed on the boat.
   {
     const { context, page } = await openPage(phone, 'm21 genoa', '?wd=90&ws=12');
-    await page.locator('#tab-learn').click();
+    await showSection(page, 'learn');
     await page.getByTestId('learn-search').fill('Genoa');
     const text = await page.getByTestId('learn-hit-rope_jib_sheet').innerText();
     check('Genoa finds the jib sheet', text.includes('also: Genoa sheet'), text);
@@ -120,7 +121,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 5. Accessibility: the groups, one group open, the results.
   {
     const { context, page } = await openPage(phone, 'm21 a11y', '?wd=90&ws=12');
-    await page.locator('#tab-learn').click();
+    await showSection(page, 'learn');
     await page.waitForTimeout(500);
     const clean = (what, found) =>
       check(

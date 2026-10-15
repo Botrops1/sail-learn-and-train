@@ -40,7 +40,7 @@ function writeFolded(folded: boolean): void {
  * back to normal speed. Pause freezes time, exactly as in Phase 1. The word "Time" folds the
  * bar to the Pause button (and a small "Time" to open it again); the fold is remembered on the
  * device. The speed part shows only where time changes something (Sailing, or a wind that
- * changes) and while the View tab's switch is on; otherwise only Pause shows. Where nothing
+ * changes) and while the switch in Settings is on; otherwise only Pause shows. Where nothing
  * changes with time at all (Held still, steady wind, Easy ropes; issue #34) Pause is replaced
  * by a "Held still" chip; a tap on it explains in a small note where to change that.
  */

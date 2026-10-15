@@ -3,6 +3,7 @@
 // the older scenes. The 3D view is drawn by software in headless Chromium, so the checks look at
 // the numbers (status line, debug overlay) and at whether the picture moves, not at the speed.
 import path from 'node:path';
+import { showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M14_SCENES = [
@@ -12,7 +13,7 @@ export const M14_SCENES = [
   {
     name: 'waves-panel',
     query: '?wd=90&ws=15',
-    tab: 'Wind',
+    section: 'conditions',
     scrollTo: '[data-testid="sea-setting"]',
     waitMs: 1500,
   },
@@ -37,7 +38,7 @@ export async function liveM14Checks({ openPage, viewports, outDir, prefix, probl
   // Coastal link: the status line and a heave that moves.
   {
     const { context, page } = await openPage(phone, 'm14 coastal status', '?wd=90&ws=15&debug=1');
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.waitForTimeout(2000);
     const line = await status(page);
     check(

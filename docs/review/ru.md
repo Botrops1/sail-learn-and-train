@@ -1996,16 +1996,15 @@
 | scene.unsupported | 3D not supported on this device | 3D не поддерживается на этом устройстве |
 | scene.unsupportedHint | This browser cannot draw the 3D boat (it needs WebGL). Everything in the panel still works: ropes, wind and settings. Try another browser, or turn on hardware acceleration in the browser's settings. | Этот браузер не может нарисовать 3D-яхту (нужен WebGL). Всё в панели по-прежнему работает: концы, ветер и настройки. Попробуйте другой браузер или включите аппаратное ускорение в настройках браузера. |
 | scene.failed | The 3D view stopped working | 3D-вид перестал работать |
-| scene.failedHint | Reload the page to try again. The panel still works. If it happens again, please report it with the link from View → Share. | Перезагрузите страницу, чтобы попробовать снова. Панель продолжает работать. Если это повторится, сообщите об этом со ссылкой из «Вид» → «Поделиться». |
+| scene.failedHint | Reload the page to try again. The panel still works. If it happens again, please report it with the link from Settings → Share. | Перезагрузите страницу, чтобы попробовать снова. Панель продолжает работать. Если это повторится, сообщите об этом со ссылкой из «Настройки» → «Поделиться». |
 | scene.lost | The 3D view is paused | 3D-вид приостановлен |
 | scene.lostHint | The phone took back the graphics memory (often when it is low on memory). It usually comes back by itself; if not, reload the page. | Телефон забрал графическую память (часто, когда памяти мало). Обычно вид возвращается сам; если нет, перезагрузите страницу. |
-| error.banner | Something went wrong. Reload the page; if it happens again, please report it with the link from View → Share. | Что-то пошло не так. Перезагрузите страницу; если это повторится, сообщите об этом со ссылкой из «Вид» → «Поделиться». |
+| error.banner | Something went wrong. Reload the page; if it happens again, please report it with the link from Settings → Share. | Что-то пошло не так. Перезагрузите страницу; если это повторится, сообщите об этом со ссылкой из «Настройки» → «Поделиться». |
 | error.details | Technical details | Технические подробности |
 | panel.label | Controls | Управление |
 | panel.tabsLabel | Panel sections | Разделы панели |
 | tab.ropes | Ropes | Концы |
 | tab.wind | Wind | Ветер |
-| tab.view | View | Вид |
 | view.step.label | Step size | Размер шага |
 | view.step.hint | How much one tap on − or + changes a rope. | На сколько один нажим на − или + меняет конец. |
 | view.step.option | {value} % | {value} % |
@@ -2037,8 +2036,6 @@
 | layout.stacked | stacked | друг над другом |
 | layout.side | side by side | рядом |
 | cam.label | Camera | Камера |
-| cam.hint | Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around: the camera then switches to Free. Map shows the boat from above, with the wind and the no-go zone (the directions she cannot sail); tap a shape on it to learn what it is. | Левый борт — левая сторона яхты, если смотреть на нос (вперёд); правый борт — правая. Перетащите 3D-вид, чтобы осмотреться: камера перейдёт в режим «Свободная». «Карта» показывает яхту сверху, с ветром и мёртвой зоной (направлениями, куда она не может идти); нажмите на фигуру на карте, чтобы узнать, что это. |
-| cam.barLabel | Camera views | Виды камеры |
 | cam.side-port | Side (port) | Борт (левый) |
 | cam.side-starboard | Side (starboard) | Борт (правый) |
 | cam.top | Top | Сверху |
@@ -2611,3 +2608,9 @@
 | area.adriatic | Adriatic (Split) | Адриатика (Сплит) |
 | quote.label | “{text}” | «{text}» |
 | map.scale | {metres} m | {metres} м |
+| settings.button | Settings | Настройки |
+| settings.title | Settings | Настройки |
+| settings.close | Close | Закрыть |
+| settings.about | About | О программе |
+| cam.chip | Camera: {name}. Tap to change the view. | Камера: {name}. Нажмите, чтобы сменить вид. |
+| cam.menuHint | Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around. | Левый борт — слева, если смотреть на нос (вперёд); правый борт — справа. Потяните 3D-вид, чтобы осмотреться. |

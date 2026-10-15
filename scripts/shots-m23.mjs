@@ -3,12 +3,13 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { closeSettings, openSettings, showSection } from './ui.mjs';
 
-/** Every size, all in Russian; the tab is opened by its Russian name. */
+/** Every size, all in Russian; the section is opened by its id. */
 export const M23_SCENES = [
   { name: 'ru-ropes', query: '?lang=ru&wd=90&ws=12&sel=rope_vang', waitMs: 800 },
-  { name: 'ru-wind', query: '?lang=ru&wd=90&ws=12', tab: 'Ветер', waitMs: 800 },
-  { name: 'ru-view', query: '?lang=ru&wd=90&ws=12', tab: 'Вид', waitMs: 800 },
+  { name: 'ru-wind', query: '?lang=ru&wd=90&ws=12', section: 'conditions', waitMs: 800 },
+  { name: 'ru-settings', query: '?lang=ru&wd=90&ws=12', settings: true, waitMs: 800 },
   { name: 'ru-map', query: '?lang=ru&wd=90&ws=12&cam=map', waitMs: 1000 },
   { name: 'ru-learn', query: '?lang=ru&learn=rope_vang', waitMs: 800 },
   { name: 'ru-realistic', query: '?lang=ru&mode=realistic', waitMs: 800 },
@@ -31,8 +32,8 @@ function allowedLatin() {
   return [...allowed];
 }
 
-/** The tabs in the page order, by their (Russian) names; Learn is opened by the link. */
-const TAB_NAMES = ['Концы', 'Ветер', 'Вид', 'Обучение'];
+/** The tabs in the page order, by their (Russian) names. */
+const TAB_NAMES = ['Концы', 'Ветер', 'Обучение'];
 
 export async function liveM23Checks({ openPage, viewports, outDir, prefix, problems }) {
   const check = (what, ok, detail) => {
@@ -115,7 +116,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       return found;
     });
 
-  // 1. The Russian page: html lang, the four tabs, the language control.
+  // 1. The Russian page: html lang, the three tabs, the language control.
   {
     const { context, page } = await openPage(phone, 'm23 basics', '?lang=ru');
     await page.waitForTimeout(500);
@@ -123,11 +124,11 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
     check('html lang is ru', lang === 'ru', lang);
     const tabs = await page.getByRole('tab').allInnerTexts();
     check(
-      'the four tabs in Russian',
+      'the three tabs in Russian',
       JSON.stringify(tabs.map((tab) => tab.trim())) === JSON.stringify(TAB_NAMES),
       tabs.join(' | '),
     );
-    await page.getByRole('tab', { name: 'Вид' }).click();
+    await openSettings(page);
     const checked = await page.getByTestId('language-ru').isChecked();
     check('the Russian segment is checked', checked, String(checked));
     await context.close();
@@ -136,16 +137,17 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
   // 2 and 3. The Latin scan and the clipping check, in every view.
   {
     const views = [
-      ['?lang=ru&wd=90&ws=12', ['Концы', 'Ветер', 'Вид']],
-      ['?lang=ru&wd=90&ws=12&learn=rope_vang', ['Обучение']],
-      ['?lang=ru&mode=realistic', ['Концы']],
-      ['?lang=ru&cam=map', ['Концы']],
+      ['?lang=ru&wd=90&ws=12', ['ropes', 'conditions', 'learn', 'settings']],
+      ['?lang=ru&wd=90&ws=12&learn=rope_vang', ['learn']],
+      ['?lang=ru&mode=realistic', ['ropes']],
+      ['?lang=ru&cam=map', ['ropes']],
     ];
     for (const [query, tabs] of views) {
       const { context, page } = await openPage(phone, `m23 scan ${query}`, query);
       await page.waitForTimeout(600);
       for (const tab of tabs) {
-        await page.getByRole('tab', { name: tab }).click();
+        if (tab === 'settings') await openSettings(page);
+        else await showSection(page, tab);
         await page.waitForTimeout(300);
         const latin = await scanText(page);
         check(
@@ -159,6 +161,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
           cut.length === 0,
           cut.length ? cut.join(' | ') : 'clean',
         );
+        if (tab === 'settings') await closeSettings(page);
       }
       if (query.includes('realistic')) {
         // The Mast and Helm stations have their own drawings and texts.
@@ -191,17 +194,17 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       'm23 switch to English',
       '?lang=ru&wd=90&ws=12',
     );
-    await page.getByRole('tab', { name: 'Вид' }).click();
+    await openSettings(page);
     await page.locator('label.segment', { has: page.getByTestId('language-en') }).click();
     await page.waitForURL((url) => !url.search.includes('lang='), { timeout: 5000 });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
-    const ropes = (await page.locator('#tab-ropes').innerText()).trim();
+    const ropes = (await page.getByTestId('tab-ropes').innerText()).trim();
     check('English: no lang in the address bar and the Ropes tab', ropes === 'Ropes', ropes);
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.locator('label.segment', { has: page.getByTestId('language-ru') }).click();
     await page.waitForURL((url) => url.search.includes('lang=ru'), { timeout: 5000 });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
-    const tabs = (await page.locator('#tab-ropes').innerText()).trim();
+    const tabs = (await page.getByTestId('tab-ropes').innerText()).trim();
     check('Russian again: the tab reads Концы', tabs === 'Концы', tabs);
     await context.close();
   }
@@ -222,7 +225,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
     await shot(page, 'live-phone-m23-north');
     await context.close();
     const search = await openPage(phone, 'm23 search', '?lang=ru&wd=90&ws=12');
-    await search.page.getByRole('tab', { name: 'Обучение' }).click();
+    await showSection(search.page, 'learn');
     await search.page.getByTestId('learn-search').fill('норд');
     const hit = await search.page.getByTestId('learn-hit-term_north').count();
     check('search "норд" finds term_north', hit === 1, String(hit));
@@ -262,7 +265,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 8. Accessibility of the Learn tab and the View tab in Russian.
+  // 8. Accessibility of the Learn tab and the settings in Russian.
   {
     const { context, page } = await openPage(phone, 'm23 a11y', '?lang=ru&learn=rope_vang');
     await page.waitForTimeout(500);
@@ -272,11 +275,11 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       learn.length === 0,
       learn.length ? learn.join(' | ') : 'clean',
     );
-    await page.getByRole('tab', { name: 'Вид' }).click();
+    await openSettings(page);
     await page.waitForTimeout(300);
-    const view = await auditPage(page, 'm23 a11y view');
+    const view = await auditPage(page, 'm23 a11y settings');
     check(
-      'accessibility: View in Russian',
+      'accessibility: Settings in Russian',
       view.length === 0,
       view.length ? view.join(' | ') : 'clean',
     );

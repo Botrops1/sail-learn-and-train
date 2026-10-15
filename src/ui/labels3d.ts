@@ -12,15 +12,15 @@ export interface Labels3d {
 
 /** Gap between two labels, and between a label and its point, CSS px. */
 const LABEL_GAP_PX = 4;
-/** How often the buttons over the view (wind chip, Pause, camera bar, card) are measured, ms. */
+/** How often the buttons over the view (wind chip, Pause, chip row, card) are measured, ms. */
 const BLOCKED_REFRESH_MS = 300;
 /** The view's own buttons and cards that labels must not cover. */
 const BLOCKING =
-  '.wind-chip, .time-bar, .camera-bar, .rig-alerts > :not([hidden]), .info-area .info-card:not([hidden]), .debug:not([hidden])';
+  '.wind-chip, .time-bar, .view-bottom, .rig-alerts > :not([hidden]), .info-area .info-card:not([hidden]), .debug:not([hidden])';
 
 /**
  * Labels in 3D (M5, PHASE1_SPEC 5.2): the registry name of each part and rope, over the 3D view,
- * just above its point on the boat. Turned on in the View tab (`lb=1`). Where labels would
+ * just above its point on the boat. Turned on in the settings (`lb=1`). Where labels would
  * overlap, the one higher in the data's list wins, and the selected part's label always shows
  * (highlighted); zooming in makes room for more. Tapping a label selects its part, as a tap on
  * the part itself does. A visual aid only: the same names are in the panel, so screen readers

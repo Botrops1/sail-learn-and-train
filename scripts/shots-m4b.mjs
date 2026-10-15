@@ -2,6 +2,7 @@
 // The live checks drive the WORKFLOW.md M4b checklist with real gestures where the app has
 // them (lever drags, tail onto the winch, circling the drum, the jaw, the button).
 import path from 'node:path';
+import { closeSettings, openSettings, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4B_SCENES = [
@@ -635,10 +636,11 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     );
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.waitForTimeout(500);
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.getByTestId('share-button').click();
     await page.waitForTimeout(300);
     const link = await page.evaluate(() => navigator.clipboard.readText());
+    await closeSettings(page);
     check(
       'share keeps mode, clutches, winch, station',
       /mode=realistic/.test(link) &&
@@ -661,7 +663,7 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       `${open} | ${turns}`,
     );
     await other.close();
-    await page.getByRole('tab', { name: 'Ropes' }).click();
+    await showSection(page, 'ropes');
     await page.getByText('Easy', { exact: true }).click();
     await page.waitForTimeout(400);
     const easyShown = await page.getByTestId('ropes-easy').isVisible();

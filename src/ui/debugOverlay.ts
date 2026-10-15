@@ -47,7 +47,7 @@ export interface DebugOverlay {
   ): void;
 }
 
-/** Debug overlay (PHASE1_SPEC 9.3). Off by default; `?debug=1` or the View tab turns it on. */
+/** Debug overlay (PHASE1_SPEC 9.3). Off by default; `?debug=1` or Settings turns it on. */
 export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverlay {
   const box = el('pre', { class: 'debug', 'data-testid': 'debug-overlay', 'aria-live': 'off' });
   host.append(box);

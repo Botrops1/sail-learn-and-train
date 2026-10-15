@@ -56,7 +56,7 @@ export interface Settings {
   ropesMode: RopesMode;
   /** Rope colour legend shown in the Ropes tab (PHASE1_SPEC 5.2, 7.3). */
   legend: boolean;
-  /** Names shown over the parts and ropes in the 3D view (View tab, M5). */
+  /** Names shown over the parts and ropes in the 3D view (Settings, M5). */
   labels: boolean;
   detail: Detail;
   /**
@@ -64,9 +64,9 @@ export interface Settings {
    * about the hands: only the world. Always 1 where the time bar has no speed part.
    */
   timeScale: number;
-  /** The time bar's speed part over the 3D view (View tab); off = only the Pause button. */
+  /** The time bar's speed part over the 3D view (Settings); off = only the Pause button. */
   timeBar: boolean;
-  /** The clock chip over the 3D view (View tab, M17). */
+  /** The clock chip over the 3D view (Settings, M17). */
   clock: boolean;
   /**
    * The language of the whole app (a folder of content/lang; M23, PHASE4_SPEC 4.1). Changing it

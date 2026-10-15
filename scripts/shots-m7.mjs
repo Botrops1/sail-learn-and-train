@@ -4,6 +4,7 @@
 // Sailing (older scenes are held still).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { setCamera, showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each (the track needs time). */
 export const M7_SCENES = [
@@ -50,21 +51,21 @@ export const M7_SCENES = [
   {
     name: 'instrument',
     query: '?wd=90&ws=12&ms=40&js=100&cam=side-port',
-    tab: 'Wind',
+    section: 'conditions',
     centre: '[data-testid="wind-instrument"]',
     waitMs: 3000,
   },
   {
     name: 'instrument-held',
     query: '?wd=90&ws=12&ms=40&js=100&held=1&cam=side-port',
-    tab: 'Wind',
+    section: 'conditions',
     centre: '[data-testid="wind-instrument"]',
     waitMs: 1500,
   },
   {
     name: 'instrument-run',
     query: '?wd=-150&ws=18&ms=100&js=100&hdg=20&cam=side-port',
-    tab: 'Wind',
+    section: 'conditions',
     centre: '[data-testid="wind-instrument"]',
     waitMs: 3000,
   },
@@ -209,7 +210,7 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
     await page.keyboard.press('Escape');
 
     // Back to 3D.
-    await page.getByRole('button', { name: 'Side (port)' }).click();
+    await setCamera(page, 'side-port');
     await page.waitForTimeout(800);
     check('back to 3D', !(await mapShown(page)) && (await sceneShown(page)), 'scene shown');
     check(
@@ -218,7 +219,7 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
       await search(page),
     );
     await shot(page, 'live-phone-back-to-3d');
-    await page.getByRole('button', { name: 'Map' }).click();
+    await setCamera(page, 'map');
     await page.waitForTimeout(600);
     check('Map button opens the map again', await mapShown(page), 'map');
     await context.close();
@@ -258,11 +259,11 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
   // Accessibility (names, touch targets, text size, keyboard) on the map and on the Wind tab.
   for (const [name, query, tab] of [
     ['map', '?wd=45&ws=12&ms=12&js=0&cam=map', null],
-    ['wind tab with the instrument', '?wd=90&ws=12&ms=40&js=100', 'Wind'],
+    ['wind tab with the instrument', '?wd=90&ws=12&ms=40&js=100', 'conditions'],
   ]) {
     const { context, page } = await openPage(phone, `m7 a11y ${name}`, query);
     await page.waitForTimeout(800);
-    if (tab) await page.getByRole('tab', { name: tab }).click();
+    if (tab) await showSection(page, tab);
     const found = await auditPage(page, `a11y ${name}`);
     check(`accessibility: ${name}`, found.length === 0, found.length ? found.join(' | ') : 'clean');
     await context.close();
@@ -271,7 +272,7 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
   // The wind instrument.
   {
     const { context, page } = await openPage(phone, 'm7 instrument', '?wd=90&ws=12&ms=40&js=100');
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.waitForTimeout(3000);
     const aws = parseFloat((await text(page, 'instrument-aws')).replace(/[^\d.]/g, ''));
     const tws = parseFloat((await text(page, 'instrument-tws')).replace(/[^\d.]/g, ''));
@@ -299,7 +300,7 @@ export async function liveM7Checks({ openPage, viewports, outDir, prefix, proble
       'm7 instrument held',
       '?wd=90&ws=12&ms=40&js=100&held=1',
     );
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.waitForTimeout(800);
     const awa = await page.getByTestId('needle-apparent').getAttribute('transform');
     const twa = await page.getByTestId('needle-true').getAttribute('transform');
