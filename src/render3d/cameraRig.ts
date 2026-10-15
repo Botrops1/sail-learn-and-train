@@ -142,8 +142,15 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       }
     },
     setViewport(width, height, bottomInset, presetOptions, topInset = 0) {
-      const inset = Math.min(Math.max(0, bottomInset), height * 0.4);
-      const top = Math.min(Math.max(0, topInset), height * 0.4);
+      let inset = Math.min(Math.max(0, bottomInset), height * cam.maxBottomInsetShare);
+      let top = Math.min(Math.max(0, topInset), height * cam.maxTopInsetShare);
+      // A small phone at half height: the boat still gets `minFreePx`; the top gives way first.
+      const shortBy = cam.minFreePx - (height - inset - top);
+      if (shortBy > 0) {
+        const fromTop = Math.min(top, shortBy);
+        top -= fromTop;
+        inset = Math.max(0, inset - (shortBy - fromTop));
+      }
       viewport = { width, height, inset, top };
       options = presetOptions;
       updateProjection();

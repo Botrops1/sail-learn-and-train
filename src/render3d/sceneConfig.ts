@@ -368,6 +368,12 @@ export const SCENE = {
     far: 1000,
     /** Extra room around the framed boat in the presets. */
     framingMargin: 1.12,
+    /** The camera keeps the boat above at most this share of the view's height at the bottom (a half sheet and the chip row cover 57 % on a phone, PHASE5_SPEC 3.3). */
+    maxBottomInsetShare: 0.62,
+    /** The same at the top (the instrument strip and the time bar), as before. */
+    maxTopInsetShare: 0.4,
+    /** The boat is always framed in at least this much height (small phones at half height). */
+    minFreePx: 120,
     /** Preset transition, seconds (PHASE1_SPEC 6.2). */
     transitionS: 0.5,
     /** Elevation of the side presets above the horizontal, degrees. */
