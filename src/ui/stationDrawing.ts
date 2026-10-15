@@ -657,7 +657,7 @@ export function createStationDrawing(
       out: false,
     };
     if (kind === 'button') dispatch({ type: 'button', winch: winchId, held: true });
-    if (kind === 'crank') crank.start(p.x, p.y, event.timeStamp);
+    if (kind === 'crank') crank.start(p.x, p.y, performance.now());
     // A clutch is selected when the press ends as a tap or a lever drag, not on touching it:
     // a finger that starts a scroll on a clutch body must not select it.
     if (kind === 'tail') options.onSelect(key);
@@ -674,7 +674,7 @@ export function createStationDrawing(
     if (drag.kind === 'crank') {
       // A finger outside the crank circle only stops the crank. The handle stays in the
       // socket; it comes out only when the grip is dropped on the slot (owner, after M4c).
-      drag.out = crank.move(p.x, p.y, event.timeStamp);
+      drag.out = crank.move(p.x, p.y, performance.now());
       slot.setTarget(drag.out);
     }
     if (
