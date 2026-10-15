@@ -1,6 +1,6 @@
 # Phase 4 specification: learning layer
 
-Status: **done** (M20–M24; M24 in PR #<n>), Russian text awaiting a sailor's review · Last updated: 2026-10-15
+Status: **done** (M20–M24; M24 in PR #60), Russian text awaiting a sailor's review · Last updated: 2026-10-15
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1–3 are done; [`PHASE1_SPEC.md`](PHASE1_SPEC.md), [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and [`PHASE3_SPEC.md`](PHASE3_SPEC.md) still describe everything Phase 4 builds on (layout, panel and tabs, info card, registry ids, URL state, browser checks). This file says only what Phase 4 adds or changes. Phase 4 changes no physics.
 
@@ -2494,7 +2494,7 @@ The Phase 4 browser checks run in their own CI part (added in M20, 6.9), which a
 
 - `docs/LANGUAGES.md` (new, short, plain words): how to add a language: copy `content/lang/en/` to `content/lang/<code>/`; translate both files following the rules of PHASE4_SPEC 3.3 adapted to the language (its own traditional alternative terms, never another language's); set every `textStatus` to `draft`; if the language does not use Latin letters, the Latin scan applies to it too and `latin-words.json` lists the allowed exceptions; run `npm test` (the tests list every missing or extra key and every incomplete entry); add the language's wording to `scripts/review-doc.mjs` and run `npm run review-doc -- <code>` for a reviewer. Nothing else changes: the Language setting lists the new language by itself.
 - README: in "What you can do", a new item **Learn** (the Learn tab, More, Show me, search, how sure the app is) and an item **Language** (English or Russian, `lang=ru`); the line "Later phases add waves, a learning layer with Russian names, …" is rewritten to say that Phases 1–4 are done and name what later phases add (harbours and anchoring, exercises, more languages); the documents table gains `PHASE3_SPEC.md`, `PHASE4_SPEC.md` and `LANGUAGES.md`.
-- ROADMAP: Phase 4 status "Done (M24, PR #<n>), Russian text awaiting a sailor's review" once the owner signs off, and a decisions-log row; this spec's status line likewise.
+- ROADMAP: Phase 4 status "Done (M24, PR #60), Russian text awaiting a sailor's review" once the owner signs off, and a decisions-log row; this spec's status line likewise.
 
 ### 10.5 Done when
 
