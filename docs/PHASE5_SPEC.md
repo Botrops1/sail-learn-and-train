@@ -1,6 +1,6 @@
 # Phase 5 specification: new layout and modes
 
-Status: **planned**, owner's answers recorded (planning chat, 2026-10-15) · Last updated: 2026-10-15
+Status: **planned**, owner's answers recorded (planning chat and planning PR #61, 2026-10-15) · Last updated: 2026-10-15
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1–4 are done (M24 is merged before M25 starts, owner's answer 1). [`LAYOUT_ANALYSIS.md`](LAYOUT_ANALYSIS.md) explains why the screen is rebuilt; this spec is what to build. The earlier specs still describe everything the app does; Phase 5 changes **where** things are drawn, not what they do. Phase 5 changes no physics and adds no sailing facts.
 
@@ -826,7 +826,7 @@ The mini-map (M28), the second column (M29), remembering folds.
 New: `src/ui/miniMap.ts`, `tests/miniMap.test.ts`, `scripts/shots-m28.mjs`.
 Changed: `src/model/settings.ts`, `src/app/store.ts` (new action `setMiniMap`), `src/app/urlState.ts`, `src/app/urlSync.ts` (`sceneSettings`), `src/ui/mapView.ts`, `src/ui/cameraChip.ts` (the Close-map chip), `src/ui/settingsMenu.ts`, `src/ui/labels3d.ts`, `src/app/app.ts`, `src/style.css`, both `ui.json`, `docs/review/ru.md`, `tests/urlState.test.ts`, `scripts/shots.mjs` (registration, `mm=0` in `openPage`, 3.6), `docs/CODE_MAP.md` (files, and `setMiniMap` in the store actions line).
 
-**Decided in planning:** the phone's Back button does not close the full map. Back reloads the previous link, which would put the boat back at the link's heading and the start position and empty her track. The **Close** chip and the camera chip return instead. The owner is asked to confirm this in the M28 PR (it differs from the planning outline).
+**Decided in planning:** the phone's Back button does not close the full map. Back reloads the previous link, which would put the boat back at the link's heading and the start position and empty her track. The **Close** chip and the camera chip return instead. Accepted by the owner on the planning PR #61 (it differs from the planning outline).
 
 ### 9.2 Data, settings and store
 
@@ -1028,5 +1028,6 @@ Harbour and Exercises modes (Phases 7, 8); remembering folds; any new section.
 
 **Decided in planning:** the chip row at the bottom of the 3D view (mode chip, camera chip, gear) is shared by every milestone; the sheet's height, folds and "?" states are not stored; `m=learn` is the only value of the new key, the ropes mode keeps `mode`; `learn` is written only in Learn mode; autopilot and engine are separate sections in Easy only (Realistic keeps them at the Helm station, unchanged); the mini-map has no history step (9.1); the camera keeps the half-height framing when the sheet is full.
 
-Open (each to confirm in its milestone's PR, with this recommendation):
-- M28: the phone's Back button does not close the full map (9.1). Recommended: accept, because Back reloads the link and would reset the boat's position and track.
+**Owner's answers on the planning PR (#61, 2026-10-15, "accept all"):** (1) the phone's Back button does not close the full map (9.1): the "× Close" chip and the camera chip do, because Back reloads the link and would reset the boat's position and track; (2) a full-height sheet stops 60 px below the top area (`SHEET.fullGapPx`, 3.3), so the chip row never covers the instruments.
+
+Open: none.

@@ -413,7 +413,7 @@ New link settings (PHASE5_SPEC 4.2): M27 `m=learn` opens Learn mode (without it 
 - [ ] Full map: tap the mini-map: the full map opens. Tap "× Close" next to the gear: back to the same 3D view. Pull the panel up to full height: the mini-map hides; lower it: it is back.
 - [ ] Held still: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1 — no mini-map. Open "Conditions" and tap "Sailing": it appears.
 - [ ] Switch: Settings → "Mini-map" off: it disappears (the link gets `mm=0`); on: it is back.
-- [ ] Back button (confirm the plan's decision): with the full map open, the phone's Back button does not close it (it would reset the boat); "× Close" and the camera chip do.
+- [ ] Back button (decided on the planning PR #61): with the full map open, the phone's Back button does not close it (it would reset the boat); "× Close" and the camera chip do.
 
 #### M29: Phase 5 sign-off
 
