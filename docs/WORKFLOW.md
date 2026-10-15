@@ -432,14 +432,14 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 
 #### M30: Hull and deck closed
 
-- [ ] The two places you circled: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=top — zoom in with two fingers on the back end of the coachroof (the raised cabin roof in front of the sprayhood). Where the covered rope channel comes down to the cockpit's edge on each side, it is now a solid white moulding: no teak and no water show underneath it.
+- [ ] The two places you circled: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=top&held=1&sea=flat — zoom in with two fingers on the back end of the coachroof (the raised cabin roof in front of the sprayhood). Where the covered rope channel comes down to the cockpit's edge on each side, it is now a solid white moulding: no teak and no water show underneath it.
 - [ ] Same link, drag the view round to look at it from the side and from behind, low over the deck: still no hole on either side.
-- [ ] The rim: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=side-starboard — a low raised rim (the toerail) runs along the deck edge from near the bow to the stern, without flickering, and the lifeline posts stand just inside it.
-- [ ] Settings → Detail → High, then Low: both look the same apart from shadows.
+- [ ] The rim: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=side-starboard&held=1&sea=flat — a low raised rim (the toerail) runs along the deck edge from near the bow to the stern, without flickering, and the lifeline posts stand against its inner side.
+- [ ] Detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=top&held=1&sea=flat&detail=high — the same places at Detail High: no hole, the rim without flicker. Then Settings → Detail → Low: the same.
 
 #### M31: Anchor and windlass
 
-- [ ] Anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&cam=bow&held=1&sea=flat — the anchor hangs in a steel roller in front of the bow, beside the jib's furling drum on the boat's right-hand side (starboard; on the left of the screen in this view from ahead), with a short chain back to the windlass, a small drum in a round dark hole in the foredeck.
+- [ ] Anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&cam=bow&sel=fit_anchor&held=1&sea=flat — the anchor hangs in a steel roller in front of the bow, beside the jib's furling drum on the boat's right-hand side (starboard; on the left of the screen in this view from ahead), with a short chain back to the windlass, a small drum in a round dark hole in the foredeck.
 - [ ] Tap the anchor: the card says "Anchor"; tap the chain: "Anchor chain"; tap the windlass: "Anchor windlass"; tap the roller: "Bow roller".
 - [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_anchor&m=learn — the Anchor entry. Tap "Show me": the bow view with the anchor; the phone's Back button returns to the entry.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&learn=fit_anchor&m=learn — the entry is «якорь», marked as not yet checked by a sailor.
@@ -453,7 +453,7 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 #### M33: Fenders and the Harbour gear block
 
 - [ ] Block: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1 — scroll to the bottom of the panel: a folded block "Harbour gear". Open it: "Fenders" with "In the locker" (chosen) and "Out". The boat has no fenders.
-- [ ] Tap "Out": eight dark fenders hang down both sides on thin lines, four a side, plus a big round one at the back left corner (looking forward) behind the wheel; the link now has `fd=1`. Tap "In the locker": they are gone.
+- [ ] Tap "Out": eight dark fenders hang down both sides on thin lines, four a side, plus a big round one hanging at the back corner on the left-hand (port) side; the link now has `fd=1`. Tap "In the locker": they are gone.
 - [ ] Hint: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&fd=1 — the boat is sailing with the fenders out: the Harbour gear block says "Bring the fenders in before you sail." Open Conditions and tap "Held still": the hint goes away.
 - [ ] Old links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&cam=side-port — no fenders.
 - [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_fender&m=learn — tap "Show me": the boat from the side with the fenders out; Back returns to the entry, and the fenders are back in the locker.
