@@ -621,5 +621,9 @@
   "settings.close": "Close",
   "settings.about": "About",
   "cam.chip": "Camera: {name}. Tap to change the view.",
-  "cam.menuHint": "Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around."
+  "cam.menuHint": "Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around.",
+  "sheet.handle": "Panel: {height}. Tap to change its height, or drag it.",
+  "sheet.height.peek": "low",
+  "sheet.height.half": "half height",
+  "sheet.height.full": "full height"
 }

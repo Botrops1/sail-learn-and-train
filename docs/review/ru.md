@@ -2614,3 +2614,7 @@
 | settings.about | About | О программе |
 | cam.chip | Camera: {name}. Tap to change the view. | Камера: {name}. Нажмите, чтобы сменить вид. |
 | cam.menuHint | Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around. | Левый борт — слева, если смотреть на нос (вперёд); правый борт — справа. Потяните 3D-вид, чтобы осмотреться. |
+| sheet.handle | Panel: {height}. Tap to change its height, or drag it. | Панель: {height}. Нажмите, чтобы изменить высоту, или потяните. |
+| sheet.height.peek | low | внизу |
+| sheet.height.half | half height | на полэкрана |
+| sheet.height.full | full height | во весь экран |
