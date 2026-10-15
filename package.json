@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "shots": "vite build && node scripts/shots.mjs"
+    "shots": "vite build && node scripts/shots.mjs",
+    "review-doc": "node scripts/review-doc.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
