@@ -402,18 +402,18 @@ New link settings (PHASE5_SPEC 4.2): M27 `m=learn` opens Learn mode (without it 
 - [ ] Blocks fold: in Easy, tap the title "Sails": it folds; tap again: it opens. Scroll down: Autopilot, Engine, Conditions, Learn, Rope colours are there, folded.
 - [ ] Explanations: open "Conditions" and tap its "?": the explanations appear; tap "?" again: they hide.
 - [ ] Instruments: tap the instrument box at the top left: the panel opens "Conditions" (wind direction and speed, waves).
-- [ ] Quick − / +: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=rope_mainsheet&ms=40&wd=60&ws=12 — tap the handle until the panel is a thin strip: it shows "Main sheet 40 %" with − and +. Tap +: 45 %, and the boom moves in.
+- [ ] Quick − / +: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=rope_mainsheet&ms=40&wd=60&ws=12 — tap the handle until the panel is a thin strip: it shows "Main sheet 40 % eased" with − and +. Tap +: 45 % eased, and the boom swings further out.
 - [ ] Old learn links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_north&held=1 — opens in Learn mode with "North".
 - [ ] More and Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=rope_vang&wd=90&ws=12 — in the card tap "More": Learn mode with the Vang entry. Tap "Show me", then the phone's Back button: you are back on the Vang entry, still in Learn mode.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&wd=60&ws=12 — the mode chip reads «Простой ▾» and its menu «Обучение», «Простой», «Реалистичный»; open each block: nothing is cut off.
 
 #### M28: Mini-map
 
-- [ ] Mini-map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — a small map in the bottom right corner, above the gear: the boat in the middle, a wind arrow and an "N" at the top; after a few seconds a track line behind her.
-- [ ] Full map: tap the mini-map: the full map opens. Tap × (top right): back to the same 3D view.
+- [ ] Mini-map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — a small map in the bottom right corner, above the gear: the boat in the middle, a wind arrow at the top left and an "N" at the top right; after about half a minute a track line behind her.
+- [ ] Full map: tap the mini-map: the full map opens. Tap "× Close" next to the gear: back to the same 3D view. Pull the panel up to full height: the mini-map hides; lower it: it is back.
 - [ ] Held still: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1 — no mini-map. Open "Conditions" and tap "Sailing": it appears.
 - [ ] Switch: Settings → "Mini-map" off: it disappears (the link gets `mm=0`); on: it is back.
-- [ ] Back button (confirm the plan's decision): with the full map open, the phone's Back button does not close it (it would reset the boat); × and the camera chip do.
+- [ ] Back button (confirm the plan's decision): with the full map open, the phone's Back button does not close it (it would reset the boat); "× Close" and the camera chip do.
 
 #### M29: Phase 5 sign-off
 
