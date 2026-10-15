@@ -8,7 +8,6 @@ import {
   type StationId,
   type TailSpec,
 } from '../model/realistic';
-import { partInfo } from '../model/registry';
 import { SCENE } from '../render3d/sceneConfig';
 import { el } from './dom';
 import {
@@ -19,7 +18,7 @@ import {
   slotMode,
   tapSlot,
 } from './handleDrawing';
-import { t, type StringKey } from './i18n';
+import { part, t, type StringKey } from './i18n';
 import { ropeColorKey, ROPE_DASH } from './ropeLegend';
 import { setText } from './stepper';
 
@@ -148,7 +147,7 @@ export interface StationDrawingOptions {
 
 /** Text of a clutch for screen readers: label, our name, open or closed. */
 export function clutchAriaLabel(spec: TailSpec, open: boolean): string {
-  const name = partInfo(spec.ropeId)?.name ?? spec.ropeId;
+  const name = part(spec.ropeId)?.name ?? spec.ropeId;
   const tail = spec.tail ? `, ${t(`clutch.tail.${spec.tail}` as StringKey)}` : '';
   return `${t('clutch.aria', { label: spec.label, name })}${tail}, ${t(
     open ? 'real.clutch.open' : 'real.clutch.closed',

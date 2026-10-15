@@ -14,15 +14,12 @@ import {
 } from '../model/glossary';
 import { entryFor } from '../model/panelEntries';
 import { el } from './dom';
-import { t, type StringKey } from './i18n';
+import { currentLanguage, quoted, t, type StringKey } from './i18n';
 import type { TabId } from './panel';
-
-/** The language of the entries; M23 passes the app's language here. */
-const LANGUAGE = SOURCE_LANGUAGE;
 
 /** The name an entry has in this language (the id itself if the entry has no text). */
 function nameOf(id: string): string {
-  return learnEntry(id, LANGUAGE)?.text.name ?? id;
+  return learnEntry(id, currentLanguage())?.text.name ?? id;
 }
 
 function textOf(tag: 'p' | 'div', testId: string, text: string, className = ''): HTMLElement {
@@ -84,7 +81,7 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
   };
 
   const render = (id: string | null) => {
-    const entry = id ? learnEntry(id, LANGUAGE) : undefined;
+    const entry = id ? learnEntry(id, currentLanguage()) : undefined;
     if (entry) {
       below.replaceChildren(entryView(entry));
       return;
@@ -115,7 +112,7 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
       'div',
       { class: 'learn-groups', 'data-testid': 'learn-groups' },
       GROUPS.map((group) => {
-        const ids = groupEntries(group, LANGUAGE);
+        const ids = groupEntries(group, currentLanguage());
         return el('details', { class: 'learn-group', 'data-testid': `learn-group-${group}` }, [
           el('summary', { class: 'learn-group-summary' }, [
             t(`learn.group.${group}` as StringKey, { count: ids.length }),
@@ -126,7 +123,7 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
     );
 
   const resultsView = (query: string): HTMLElement[] => {
-    const hits = searchGlossary(query, LANGUAGE);
+    const hits = searchGlossary(query, currentLanguage());
     if (hits.length === 0) {
       return [textOf('p', 'learn-no-match', t('learn.noMatch'), 'hint')];
     }
@@ -175,7 +172,7 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
       );
     }
     if (entry.boatLabels.length > 0) {
-      const labels = entry.boatLabels.map((label) => `“${label}”`).join(', ');
+      const labels = entry.boatLabels.map(quoted).join(', ');
       nodes.push(textOf('p', 'learn-boat-label', t('learn.boatLabel', { labels }), 'learn-line'));
     }
     if (text.short) nodes.push(textOf('p', 'learn-short', text.short, 'learn-short'));
@@ -274,7 +271,7 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
         'learn-text',
       ),
     ];
-    if (LANGUAGE !== SOURCE_LANGUAGE && text.textStatus === 'draft') {
+    if (currentLanguage() !== SOURCE_LANGUAGE && text.textStatus === 'draft') {
       howSure.push(textOf('p', 'learn-text-status', t('learn.textDraft'), 'learn-text'));
     }
     const sources = entry.sources.flatMap((key) => {

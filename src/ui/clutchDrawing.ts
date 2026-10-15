@@ -1,9 +1,8 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import { clutchSpots, entryFor, panelEntries, type ClutchSpot } from '../model/panelEntries';
-import { partInfo } from '../model/registry';
 import { SCENE } from '../render3d/sceneConfig';
-import { t, type StringKey } from './i18n';
+import { part, t, type StringKey } from './i18n';
 import { ropeColorKey, ROPE_DASH } from './ropeLegend';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -36,10 +35,12 @@ const D = {
   largeExtraTop: 10,
   sticker: { width: 15, inset: 11 },
   tailLength: 98,
+  /** Room left round a tag written along a tail (its start gap at the clutch and a margin). */
+  tagRoom: 2,
   ropeWidth: 4.5,
   font: { label: 12.5, minLabel: 11.6, tag: 12, caption: 12.5 },
   /** Approximate glyph widths (em) to fit a label on its sticker. */
-  glyphEm: { upper: 0.68, lower: 0.54 },
+  glyphEm: { upper: 0.68, lower: 0.54, cyrillic: 0.62 },
 } as const;
 
 function svg<K extends keyof SVGElementTagNameMap>(
@@ -60,11 +61,20 @@ function fitFont(text: string, length: number): number {
   return Math.max(D.font.minLabel, Math.min(D.font.label, length / em));
 }
 
+/** About how long a tag is when written along a tail, in drawing units (Cyrillic letters are wider). */
+function tagLength(text: string): number {
+  const em = [...text].reduce(
+    (sum, char) => sum + (/[\u0400-\u04ff]/.test(char) ? D.glyphEm.cyrillic : 0.5),
+    0,
+  );
+  return em * D.font.tag;
+}
+
 /** Our name for a clutch where it differs from the label on the boat (e.g. "jib sheet"). */
 function tagFor(spot: ClutchSpot): string | null {
   if (spot.tail === 'furl') return t('clutch.tag.furlIn');
   if (spot.tail === 'unfurl') return t('clutch.tag.furlOut');
-  const name = partInfo(spot.ropeId)?.name ?? '';
+  const name = part(spot.ropeId)?.name ?? '';
   const plain = (text: string) =>
     text
       .toLowerCase()
@@ -75,7 +85,7 @@ function tagFor(spot: ClutchSpot): string | null {
 
 /** What a screen reader says for a clutch: label, our name, and which end of the rope. */
 function accessibleName(spot: ClutchSpot): string {
-  const name = partInfo(spot.ropeId)?.name ?? spot.ropeId;
+  const name = part(spot.ropeId)?.name ?? spot.ropeId;
   const tail = spot.tail ? `, ${t(`clutch.tail.${spot.tail}` as StringKey)}` : '';
   return `${t('clutch.aria', { label: spot.label, name })}${tail}`;
 }
@@ -94,7 +104,13 @@ export interface ClutchDrawing {
 export function createClutchDrawing(store: Store): ClutchDrawing {
   const spots = clutchSpots();
   const bankWidth = (D.width - 2 * D.margin - D.bankGap) / 2;
-  const bottom = D.clutchTop + D.clutchHeight + D.tailLength;
+  // The tails are long enough for the longest tag written along them: a language with longer
+  // names (Russian) gets a taller drawing, English keeps D.tailLength.
+  const tailLength = Math.max(
+    D.tailLength,
+    ...spots.map((spot) => Math.ceil(tagLength(tagFor(spot) ?? '')) + D.tagRoom),
+  );
+  const bottom = D.clutchTop + D.clutchHeight + tailLength;
   const root = svg('svg', {
     viewBox: `0 0 ${D.width} ${bottom + 2}`,
     class: 'clutch-drawing',

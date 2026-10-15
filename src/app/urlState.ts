@@ -3,6 +3,7 @@ import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
 import { clockParam, defaultClockUtcMs, parseClockParam } from '../model/clock';
 import { settledJibUnfurled } from '../model/jib';
+import { isLanguage } from '../model/languages';
 import { isRegisteredPartId } from '../model/registry';
 import {
   DEFAULT_SETTINGS,
@@ -113,6 +114,9 @@ export function parseUrlState(
   if (debugParam === '1') debug = true;
   else if (debugParam === '0') debug = false;
 
+  const langParam = params.get('lang');
+  const language = langParam !== null && isLanguage(langParam) ? langParam : undefined;
+
   let legend: boolean | undefined;
   const legendParam = params.get('lg');
   if (legendParam === '1') legend = true;
@@ -154,6 +158,7 @@ export function parseUrlState(
       ...(stepSize !== undefined ? { step: stepSize } : {}),
       ...(debug !== undefined ? { debug } : {}),
       detail,
+      ...(language !== undefined ? { language } : {}),
       ...(legend !== undefined ? { legend } : {}),
       ...(labels !== undefined ? { labels } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
@@ -464,6 +469,9 @@ export function serializeUrlState(state: AppState): string {
   if (state.learn) params.set('learn', state.learn);
   params.set('step', String(state.settings.step));
   params.set('detail', state.settings.detail);
+  if (state.settings.language !== DEFAULT_SETTINGS.language) {
+    params.set('lang', state.settings.language);
+  }
   // Settings that are rarely changed are only written when they differ from the default.
   if (state.settings.legend !== DEFAULT_SETTINGS.legend) {
     params.set('lg', state.settings.legend ? '1' : '0');

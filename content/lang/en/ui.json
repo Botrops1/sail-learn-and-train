@@ -611,5 +611,12 @@
   "learn.group.wind": "Wind and weather ({count})",
   "learn.group.directions": "Directions and sides ({count})",
   "learn.group.sailing": "Sailing and manoeuvres ({count})",
-  "learn.group.sea": "Water and waves ({count})"
+  "learn.group.sea": "Water and waves ({count})",
+  "view.language.label": "Language",
+  "view.language.hint": "The whole app switches to this language. The page reloads.",
+  "number.thousandsSeparator": ",",
+  "clock.date": "{weekday} {day} {month} {year}",
+  "area.adriatic": "Adriatic (Split)",
+  "quote.label": "“{text}”",
+  "map.scale": "{metres} m"
 }

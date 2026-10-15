@@ -29,6 +29,12 @@ export function startUrlSync(store: Store): void {
     const current = store.getState();
     const next = parseUrlState(window.location.search, current.settings.detail);
     pending = window.location.search;
+    // Another language in the link (Back across a language change): the page is built once per
+    // language, so reload it (the address bar already holds the link).
+    if (next.settings.language !== current.settings.language) {
+      window.location.reload();
+      return;
+    }
     store.dispatch({
       type: 'load',
       state: {

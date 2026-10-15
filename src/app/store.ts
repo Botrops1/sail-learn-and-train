@@ -337,10 +337,11 @@ export function reduce(state: AppState, action: Action): AppState {
       return { ...state, settings: { ...state.settings, labels: action.labels } };
     case 'reset': {
       // The rig keeps moving from where it is, so the boom and sails swing back visibly. The
-      // debug overlay and the render detail suit the device, not what is shown: they stay.
-      const { debug, detail } = state.settings;
+      // debug overlay, the render detail and the language suit the device, not what is shown:
+      // they stay.
+      const { debug, detail, language } = state.settings;
       const defaults = initialState({
-        settings: { debug, detail },
+        settings: { debug, detail, language },
         sea: defaultSeaSetting(),
       });
       return {
@@ -482,7 +483,11 @@ export function reduce(state: AppState, action: Action): AppState {
     case 'setPaused':
       return state.paused === action.paused ? state : { ...state, paused: action.paused };
     case 'load':
-      return action.state;
+      // A link never changes the language of the page that is open (M23: changing it reloads).
+      return {
+        ...action.state,
+        settings: { ...action.state.settings, language: state.settings.language },
+      };
     case 'step': {
       // Paused: time stands still (dt = 0), but what was prepared is shown. The time speed-up
       // (M10) multiplies the step; the boat still substeps by `integration.maxStepS`.

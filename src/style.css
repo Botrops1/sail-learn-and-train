@@ -279,7 +279,7 @@ html[data-layout='stacked'] .info-card {
   flex: 0 1 64px;
   min-width: 0;
   min-height: var(--touch);
-  padding: 4px 6px;
+  padding: 4px 3px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgb(255 255 255 / 0.88);

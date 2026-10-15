@@ -1,7 +1,6 @@
 import type { Store } from '../app/store';
-import { partInfo } from '../model/registry';
 import { el } from './dom';
-import { t } from './i18n';
+import { part, quoted, t } from './i18n';
 import type { LayoutShell } from './layout';
 
 export interface InfoCardOptions {
@@ -68,7 +67,7 @@ export function createInfoCard(
   };
   const render = () => {
     const id = store.getState().selection;
-    const info = id ? partInfo(id) : undefined;
+    const info = id ? part(id) : undefined;
     const inPanel = Boolean(
       info && layout.viewport().mode === 'stacked' && options.shownInPanel?.(info.id),
     );
@@ -83,7 +82,7 @@ export function createInfoCard(
     name.textContent = info.name;
     label.hidden = info.boatLabels.length === 0;
     label.textContent = t('card.boatLabel', {
-      labels: info.boatLabels.map((text) => `“${text}”`).join(', '),
+      labels: info.boatLabels.map(quoted).join(', '),
     });
     short.textContent = info.short;
   };

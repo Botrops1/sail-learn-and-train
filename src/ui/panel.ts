@@ -1,6 +1,8 @@
 import { BUILD_INFO, REPO_URL } from '../app/buildInfo';
 import type { Store } from '../app/store';
+import { serializeUrlState } from '../app/urlState';
 import { shareLink } from '../app/urlSync';
+import { LANGUAGES, languageName } from '../model/languages';
 import { entryFor } from '../model/panelEntries';
 import { CAMERA_PRESETS, DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { el } from './dom';
@@ -141,6 +143,38 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
 }
 
 function buildViewTab(store: Store): HTMLElement[] {
+  // Language (M23, PHASE4_SPEC 9.4): every element is built once with t(), so choosing a language
+  // reloads the page on the same link with `lang` changed.
+  const languageGroup = el(
+    'fieldset',
+    { class: 'field segmented', 'data-testid': 'language-setting' },
+    [
+      el('legend', {}, [t('view.language.label')]),
+      el('p', { class: 'hint' }, [t('view.language.hint')]),
+    ],
+  );
+  const languageOptions = el('div', { class: 'segments' });
+  const languageInputs = LANGUAGES.map((code) => {
+    const input = el('input', {
+      type: 'radio',
+      name: 'language',
+      value: code,
+      'data-testid': `language-${code}`,
+    });
+    input.addEventListener('change', () => {
+      if (!input.checked) return;
+      const state = store.getState();
+      if (code === state.settings.language) return;
+      const link = serializeUrlState({ ...state, settings: { ...state.settings, language: code } });
+      window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
+    });
+    languageOptions.append(
+      el('label', { class: 'segment' }, [input, el('span', {}, [languageName(code)])]),
+    );
+    return { code, input };
+  });
+  languageGroup.append(languageOptions);
+
   const cameraGroup = el('fieldset', { class: 'field segmented' }, [
     el('legend', {}, [t('cam.label')]),
     el('p', { class: 'hint' }, [t('cam.hint')]),
@@ -267,6 +301,7 @@ function buildViewTab(store: Store): HTMLElement[] {
       return;
     }
     const { settings, camera } = state;
+    for (const { code, input } of languageInputs) input.checked = code === settings.language;
     for (const { preset, input } of cameraInputs) input.checked = preset === camera.preset;
     for (const { step, input } of stepInputs) input.checked = step === settings.step;
     for (const { detail, input } of detailInputs) input.checked = detail === settings.detail;
@@ -280,6 +315,7 @@ function buildViewTab(store: Store): HTMLElement[] {
   sync();
 
   return [
+    languageGroup,
     cameraGroup,
     labelsField,
     timeBarField,

@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import en from '../content/lang/en/ui.json';
+import { UI_STRINGS } from '../src/model/languages';
 import { t } from '../src/ui/i18n';
 
-describe('UI strings (content/lang/en/ui.json)', () => {
-  it('every string is non-empty', () => {
-    for (const [key, value] of Object.entries(en)) {
-      expect(value.trim(), key).not.toBe('');
+describe('UI strings (content/lang/<code>/ui.json)', () => {
+  it('every string of every language is non-empty', () => {
+    for (const [code, strings] of Object.entries(UI_STRINGS)) {
+      for (const [key, value] of Object.entries(strings)) {
+        // trim() removes U+00A0, so the thousands separator only needs a length.
+        if (key === 'number.thousandsSeparator')
+          expect(value.length, `${code}/${key}`).toBeGreaterThan(0);
+        else expect(value.trim(), `${code}/${key}`).not.toBe('');
+      }
     }
   });
 

@@ -1,8 +1,6 @@
 {
   "$comment": "Sailing area (ROADMAP architecture hook 'Sailing areas as data'): loaded by id, no area names or numbers in code. PHASE3_SPEC 6.2. Other areas later = other files with the same keys.",
   "id": "adriatic",
-  "names": { "en": "Adriatic (Split)", "ru": "Адриатика (Сплит)" },
-  "namesStatus": { "en": "draft", "ru": "draft" },
   "position": {
     "latitudeDeg": 43.508,
     "longitudeDeg": 16.44,

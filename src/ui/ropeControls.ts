@@ -6,11 +6,10 @@ import { mainFurlLengths } from '../model/mainFurl';
 import { jibFurlingLinePaidOut, jibSheetPaidOutFor } from '../model/jib';
 import { mainsheetPaidOut, sheetPctToClear } from '../model/mainsheet';
 import { toppingLiftPaidOut, vangPaidOut } from '../model/pitchLimits';
-import { partInfo } from '../model/registry';
 import { sheetLoads } from '../model/sheetLoads';
 import { wheelTurns } from '../model/steering';
 import { el } from './dom';
-import { t, type StringKey } from './i18n';
+import { part, quoted, t, type StringKey } from './i18n';
 import { setText, stepButton } from './stepper';
 
 /**
@@ -220,7 +219,7 @@ export function createControl(
   const spec = controlSpec(view.id);
   const name = t(view.name);
   const inputId = `control-${view.id}`;
-  const labels = partInfo(view.partId)?.boatLabels ?? [];
+  const labels = part(view.partId)?.boatLabels ?? [];
   const set = (value: number) =>
     store.dispatch({
       type: 'setControls',
@@ -252,7 +251,7 @@ export function createControl(
     ...(labels.length > 0
       ? [
           el('p', { class: 'control-boat-label' }, [
-            t('card.boatLabel', { labels: labels.map((label) => `“${label}”`).join(', ') }),
+            t('card.boatLabel', { labels: labels.map(quoted).join(', ') }),
           ]),
         ]
       : []),

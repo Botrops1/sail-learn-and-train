@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createStore, initialState, type AppState } from '../src/app/store';
+import { createStore, initialState, reduce, type AppState } from '../src/app/store';
 import { jibReachedParam, parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
 import { clockParam, defaultClockUtcMs } from '../src/model/clock';
@@ -47,6 +47,27 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(state.settings.debug).toBe(DEFAULT_SETTINGS.debug);
     expect(parseUrlState('?step=5.0').settings.step).toBe(DEFAULT_SETTINGS.step);
     expect(parseUrlState('?step=').settings.step).toBe(DEFAULT_SETTINGS.step);
+  });
+
+  it('M23: reads lang for an available language; unknown values give English', () => {
+    expect(parseUrlState('?lang=ru').settings.language).toBe('ru');
+    expect(parseUrlState('?lang=xx').settings.language).toBe('en');
+    expect(parseUrlState('?wd=90').settings.language).toBe('en');
+  });
+
+  it('M23: writes lang right after detail, and nothing for English', () => {
+    const russian = parseUrlState('?lang=ru');
+    expect(serializeUrlState(russian)).toContain('&detail=high&lang=ru&');
+    expect(serializeUrlState(parseUrlState('?lang=en'))).not.toContain('lang=');
+    expect(serializeUrlState(parseUrlState('?wd=90'))).not.toContain('lang=');
+  });
+
+  it('M23: reset keeps the language; a loaded link never changes it', () => {
+    const russian = parseUrlState('?lang=ru&wd=90');
+    expect(reduce(russian, { type: 'reset' }).settings.language).toBe('ru');
+    const loaded = reduce(russian, { type: 'load', state: parseUrlState('?wd=30') });
+    expect(loaded.settings.language).toBe('ru');
+    expect(loaded.controls.ctl_wind_dir).toBe(30);
   });
 
   it('M3b: reads detail=high|low; without it, the fallback (the screen-size default) is used', () => {
