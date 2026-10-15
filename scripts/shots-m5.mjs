@@ -148,6 +148,8 @@ export async function liveM5Checks({
     await page.waitForTimeout(800);
     const strip = page.getByTestId('real-strip');
     const press = async (name, times = 1) => {
+      // The close-ups are shot with the sheet at its lowest; the buttons are in the panel.
+      await setSheet(page, 'half');
       for (let i = 0; i < times; i += 1) {
         await strip.getByRole('button', { name, exact: true }).first().click();
         await page.waitForTimeout(150);

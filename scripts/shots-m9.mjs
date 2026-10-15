@@ -133,6 +133,7 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
     check('Repair button', await page.getByTestId('repair-sails').isVisible(), 'visible');
     await closeUp(page, TEAR_VIEW);
     await shot(page, 'torn-phone');
+    await setSheet(page, 'half');
     await page.getByTestId('repair-sails').scrollIntoViewIfNeeded();
     await page.getByTestId('repair-sails').click();
     await page.waitForTimeout(500);
