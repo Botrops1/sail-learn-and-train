@@ -5,6 +5,7 @@
 // the Mast station. The foldable and desktop sizes repeat the mast crank with the mouse.
 import path from 'node:path';
 import { line, touchTools } from './shots-m4b.mjs';
+import { setSheet } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4C_SCENES = [
@@ -94,7 +95,20 @@ async function watchText(page, selector, pattern) {
   return () => page.evaluate((k) => window[k] === true, key);
 }
 
-export async function liveM4cChecks({ openPage, viewports, outDir, prefix, problems }) {
+export async function liveM4cChecks({
+  openPage: openPlainPage,
+  viewports,
+  outDir,
+  prefix,
+  problems,
+}) {
+  // The winch drags need the drum, the crank and the buttons on screen together: a half-height
+  // sheet (M26) is too short for them, so on the phone these checks run with the sheet at full.
+  const openPage = async (viewport, label, query) => {
+    const opened = await openPlainPage(viewport, label, query);
+    await setSheet(opened.page, 'full');
+    return opened;
+  };
   const check = (what, ok, detail) => {
     if (!ok) problems.push(`live M4c ${what}: ${detail}`);
     console.log(`live M4c ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
