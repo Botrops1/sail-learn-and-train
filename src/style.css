@@ -533,42 +533,6 @@ html[data-layout='side'] .panel {
 }
 
 .panel-body {
-  visibility: hidden;
-}
-
-html[data-layout='stacked'] .sheet[data-dragging='true'] .panel-body {
-  visibility: visible;
-}
-
-html[data-layout='side'] .panel {
-  border-left: 1px solid var(--line);
-}
-
-.tabs {
-  display: flex;
-  flex: none;
-  border-bottom: 1px solid var(--line);
-}
-
-.tab {
-  flex: 1 1 0;
-  min-height: var(--touch);
-  padding: 8px 12px;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  background: none;
-  color: var(--muted);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.tab[aria-selected='true'] {
-  border-bottom-color: var(--accent);
-  color: var(--accent);
-}
-
-.panel-body {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;

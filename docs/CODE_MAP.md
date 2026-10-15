@@ -24,8 +24,9 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | File | What |
 |---|---|
 | `app.ts` | Builds everything, frame loop, FPS and frame times for the debug overlay. |
-| `store.ts` | The single store: `AppState`, all actions, the `step` order. |
-| `urlState.ts` | URL parameters ↔ state (schema version, defaults, old links). |
+| `store.ts` | The single store: `AppState`, all actions, the `step` order. M27: `appMode` and the `setAppMode` action (the invariant: Learn, or the ropes mode). |
+| `appMode.ts` | M27: `AppMode` (`learn`, `easy`, `realistic`), the mode chip's choices. |
+| `urlState.ts` | URL parameters ↔ state (schema version, defaults, old links). M27: `m=learn`; `learn=` is written only in Learn mode and an old link with `learn=` opens in Learn mode. |
 | `urlSync.ts` | Debounced address-bar updates; Back (`popstate`) loads the link (or reloads the page if the link has another `lang`, M23); `openScene` (Learn's "Show me": pushes the current link, then loads the scene). |
 | `buildInfo.ts` | Commit hash and date for Settings → About. |
 
@@ -84,17 +85,19 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `layout.ts`, `layoutMode.ts`, `dom.ts` | Page layout (stacked / side by side), DOM helper. |
 | `sheet.ts`, `sheetGeometry.ts` | M26: on a phone (stacked layout) the panel is a sheet with three heights (peek, half, full), moved by dragging, tapping or keys on its handle; it writes `--sheet-h` and `--view-bottom-inset` on the shell and tells the 3D view how much of the bottom the sheet covers. `sheetGeometry.ts` is the pure part (heights, snapping, thresholds; `SHEET`). |
 | `i18n.ts` | Strings (M23): `setLanguage`/`currentLanguage`, `t()`, `part()` (name and one-liner in the current language), `quoted()` (“ ” or « »), `formatThousands`. |
-| `panel.ts` | The three tabs (Ropes, Wind, Learn), in the sheet's head from M26; choosing a tab raises a sheet at its lowest height. M25 moved the View tab and the footer to `settingsMenu.ts` and the camera buttons to `cameraChip.ts`. |
+| `panel.ts` | M27: the panel is a list of sections (no tabs): builds the seven sections once, orders and opens them by the mode (`modes.ts`), `showSection`, `openLearnEntry`, shows the selected rope's strip. M25 moved the View tab and the footer to `settingsMenu.ts` and the camera buttons to `cameraChip.ts`. |
+| `modes.ts`, `sections.ts` | M27: `modes.ts` (pure) is the table of sections and what each mode does with them (order, open, open in the side layout, second column) and `sectionAvailable`; `sections.ts` is one section: fold header, "?" button for its `.explain` texts. |
+| `modeChip.ts`, `quickRow.ts` | M27: the mode chip ("Easy ▾") and its menu in the chip row; the quick row in the sheet's head, shown by CSS at the lowest height (the selected rope's − / + in Easy). |
 | `settingsMenu.ts` | M25: the gear in the chip row and the settings dialog it opens (Language, Labels in 3D, Time bar, Clock, Step size, Detail, Share and Reset, legend, Debug overlay, About with the footer); the view and panel are `inert` while it is open. Choosing a language reloads the page (M23). |
-| `cameraChip.ts`, `chipMenu.ts` | M25: the chip row `.view-bottom` over the bottom of the 3D view, the camera chip ("Port ▾") and its menu; `chipMenu.ts` is the menu behaviour shared with M27's mode chip (items, arrow keys, Escape, outside tap, one open at a time). |
-| `learnTab.ts` | Phase 4 (M20): the Learn tab: M21's search box and list of every entry in groups (or the search results), and one entry at a time (Back to the list, names, text, Show me, Show on the boat, Try it, See also, how sure we are). |
-| `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeLegend.ts` | Easy mode: rope sliders, − / + buttons, colour legend. |
+| `cameraChip.ts`, `chipMenu.ts` | M25: the chip row `.view-bottom` over the bottom of the 3D view, the camera chip ("Port ▾") and its menu; `chipMenu.ts` is the menu behaviour shared with the mode chip (`modeChip.ts`) (items, arrow keys, Escape, outside tap, one open at a time). |
+| `learnTab.ts` | Phase 4 (M20): the Learn section (a tab until M27; exports `nameOf`): M21's search box and list of every entry in groups (or the search results), and one entry at a time (Back to the list, names, text, Show me, Show on the boat, Try it, See also, how sure we are). |
+| `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeLegend.ts` | The Ropes section (Easy sliders and the clutch drawing, or the Realistic stations), − / + buttons, the Rope colours section's legend. |
 | `clutchDrawing.ts` | The clutch-bank drawing. |
 | `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: stations, gestures, Mast station, winch handle and strain bar. |
-| `windPanel.ts`, `windModePanel.ts`, `wavesPanel.ts`, `windIndicator.ts`, `windInstrument.ts` | Wind tab, wind modes, the alert stack over the 3D view (gybe, by the lee, heel, round-up), wind instrument dial. |
-| `enginePanel.ts` | Engine block of the Ropes tab (Start/Stop, lever slider, tachometer) and the lever at the Helm station. |
+| `windPanel.ts`, `windModePanel.ts`, `wavesPanel.ts`, `windIndicator.ts`, `windInstrument.ts` | The Conditions section (wind dial, speed, wind modes, waves, presets), the alert stack over the 3D view (gybe, by the lee, heel, round-up), wind instrument dial. |
+| `enginePanel.ts` | The Engine section (Start/Stop, lever slider, tachometer) and the lever at the Helm station. |
 | `gybeReport.ts` | The gybe report (boom speed, energy, peak main sheet load) in the alert stack. |
-| `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, autopilot, Sails block, time bar (with the "Held still" chip in place of Pause). |
+| `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, the Autopilot and Sails sections, time bar (with the "Held still" chip in place of Pause). |
 | `clockPanel.ts` | The clock chip beside the time bar and the card it opens (date, area, sunrise and sunset, light, Now / Noon / Set a time). |
 | `mapView.ts` | Bird's-eye map (`cam=map`), with the four buoys. |
 | `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | Part card (over the 3D view in both layouts, above the chip row on a phone), 3D labels, debug overlay, error messages. |
