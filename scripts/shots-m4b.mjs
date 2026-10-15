@@ -2,7 +2,7 @@
 // The live checks drive the WORKFLOW.md M4b checklist with real gestures where the app has
 // them (lever drags, tail onto the winch, circling the drum, the jaw, the button).
 import path from 'node:path';
-import { closeSettings, openSettings, showSection } from './ui.mjs';
+import { closeSettings, openSettings, setSheet, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4B_SCENES = [
@@ -57,6 +57,8 @@ const winchButton = (station) => `${drawing(station)} .real-button-disc`;
  * knob is still on screen, then returns both centres (page coordinates).
  */
 async function handAndClutch(page, where, station = 'port', key = 'b5') {
+  // The hand and the clutch must both be on screen: a half-height sheet is too short (M26).
+  await setSheet(page, 'full');
   await page.locator(`${drawing(station)} .real-drum`).scrollIntoViewIfNeeded();
   const clutchSel = `${drawing(station)} [data-key="${key}"] .clutch-body`;
   const top = await page.locator('.panel-body').evaluate((el) => el.getBoundingClientRect().top);
