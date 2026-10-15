@@ -12,6 +12,7 @@
 //   SHOTS_NO_SCENES=1    no scenes;  SHOTS_KEEP=1  keep the files already in the folder
 //   SHOTS_NO_TAPS=1      no tap sweep, small-parts taps or sketch comparison
 //   SHOTS_NO_LIVE=1      no live checks;  SHOTS_SKIP=general,m4b  skip these live-check groups
+//   SHOTS_SHARD=1/2      only every 2nd scene, starting with the 1st (CI's two scene parts)
 //   (CI splits the full run into parallel parts with these; see .github/workflows/ci.yml)
 //   SHOTS_OUT=<dir>      output folder (default shots/)
 import { mkdir, rm } from 'node:fs/promises';
@@ -262,14 +263,78 @@ await mkdir(OUT_DIR, { recursive: true });
 
 const problems = [];
 
-async function openPage(viewport, label, query) {
+/**
+ * The test clock (live checks of M4a, M4b and M4c; CLAUDE.md, "Running the browser checks"). The app's
+ * time (timers, animation frames, `performance.now`, `Date`) stands still and moves only when a
+ * check waits: `page.waitForTimeout(ms)` then moves it on by exactly `ms`, in animation frames of
+ * at most TEST_FRAME_MS. So a check gets the same app time on any machine: a busy runner is slower
+ * but no longer changes what the app did (the M4c crank check failed at random before, because
+ * its finger moves came slower than the app's 200 ms crank stop). The paused app also stops
+ * drawing between steps, which makes mouse and finger drags much faster.
+ */
+const TEST_CLOCK_START = Date.parse('2026-06-21T12:00:00Z');
+/** One animation frame per this many ms of app time: the app's longest step (MAX_STEP_S). */
+const TEST_FRAME_MS = 100;
+
+/**
+ * Moves the test clock on by `ms`, one animation frame per TEST_FRAME_MS (or less). Each frame is
+ * drawn to the end before the next one starts: nothing else paces the frames of a paused clock,
+ * and at desktop size a backlog of 3D frames made the next screenshot wait for over 15 s.
+ */
+async function runTestClock(page, ms) {
+  for (let left = ms; left > 0; left -= TEST_FRAME_MS) {
+    await page.clock.fastForward(Math.min(TEST_FRAME_MS, left));
+    await waitForGpu(page);
+  }
+}
+
+/**
+ * Waits until the GPU has done the 3D view's drawing so far (a WebGL fence, polled from here: the
+ * page's own timers stand still on the test clock; reading a pixel instead logs a warning).
+ */
+async function waitForGpu(page) {
+  const fenced = await page.evaluate(() => {
+    const gl = document.querySelector('canvas.scene-canvas')?.getContext('webgl2');
+    if (!gl) return false;
+    window.__testFence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    gl.flush();
+    return window.__testFence !== null;
+  });
+  while (fenced) {
+    const done = await page.evaluate(() => {
+      const gl = document.querySelector('canvas.scene-canvas')?.getContext('webgl2');
+      if (!gl || gl.getSyncParameter(window.__testFence, gl.SYNC_STATUS) === gl.SIGNALED) {
+        gl?.deleteSync(window.__testFence);
+        return true;
+      }
+      return false;
+    });
+    if (done) return;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
+
+/**
+ * Opens a page. `testClock: true` puts it on the test clock (above). A check that waits for
+ * something that does not depend on the app's time (a CSS transition) uses a real wait instead:
+ * `page.realWaitForTimeout(ms)`.
+ */
+async function openPage(viewport, label, query, { testClock = false } = {}) {
   const context = await browser.newContext({
     viewport: { width: viewport.width, height: viewport.height },
     deviceScaleFactor: 1,
     hasTouch: viewport.width < 1000,
     isMobile: false,
   });
+  if (testClock) {
+    await context.clock.install({ time: TEST_CLOCK_START });
+    await context.clock.pauseAt(TEST_CLOCK_START + 1000);
+  }
   const page = await context.newPage();
+  if (testClock) {
+    page.realWaitForTimeout = page.waitForTimeout.bind(page);
+    page.waitForTimeout = (ms) => runTestClock(page, ms);
+  }
   page.on('console', (message) => {
     if (message.type() === 'error' || message.type() === 'warning') {
       problems.push(`${label}: console ${message.type()}: ${message.text()}`);
@@ -296,6 +361,10 @@ async function openPage(viewport, label, query) {
   await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
   return { context, page };
 }
+
+/** `openPage` on the test clock (the M4a, M4b and M4c live checks). */
+const openOnTestClock = (viewport, label, query) =>
+  openPage(viewport, label, query, { testClock: true });
 
 const cardPart = (page) =>
   page.evaluate(() => {
@@ -531,6 +600,9 @@ const SKIP = (process.env.SHOTS_SKIP ?? '')
   .map((m) => m.trim().toLowerCase())
   .filter(Boolean);
 /** SHOTS_SIZES=phone: scenes at phone size only (CI). */
+// SHOTS_SHARD=1/2: every 2nd scene starting with the 1st (CI splits the scenes in two parts).
+const SHARD = /^(\d+)\/(\d+)$/.exec(process.env.SHOTS_SHARD ?? '');
+const inShard = (index) => !SHARD || index % Number(SHARD[2]) === Number(SHARD[1]) - 1;
 const SCENE_VIEWPORTS = process.env.SHOTS_SIZES === 'phone' ? [VIEWPORTS[0]] : VIEWPORTS;
 
 /**
@@ -615,7 +687,7 @@ async function liveGeneralChecks() {
   await liveM2Checks();
   await liveM3Checks();
   await liveM4aChecks({
-    openPage,
+    openPage: openOnTestClock,
     viewports: VIEWPORTS,
     outDir: OUT_DIR,
     prefix: PREFIX,
@@ -631,6 +703,7 @@ try {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       if (ONLY.length > 0 && !ONLY.some((m) => scene.name.startsWith(`${m}-`))) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
+      if (!inShard(SCENES.indexOf(scene))) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.section) await showSection(page, scene.section);
@@ -792,15 +865,16 @@ try {
     prefix: PREFIX,
     problems,
   };
+  const onTestClock = { ...live, openPage: openOnTestClock };
   /** Live checks per milestone; "general" covers M0–M4a (layout, camera, URL, M2–M4a). */
   const liveGroups = {
     general: () => liveGeneralChecks(),
     m4b: async () => {
-      await liveM4bChecks(live);
-      await liveM4bTouchChecks(live);
-      await liveM4bFixChecks(live);
+      await liveM4bChecks(onTestClock);
+      await liveM4bTouchChecks(onTestClock);
+      await liveM4bFixChecks(onTestClock);
     },
-    m4c: () => liveM4cChecks(live),
+    m4c: () => liveM4cChecks(onTestClock),
     m5: () => liveM5Checks(live),
     m6: () => liveM6Checks(live),
     m7: () => liveM7Checks(live),
@@ -827,9 +901,24 @@ try {
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
       if (SKIP.includes(name)) continue;
-      if (ONLY.length === 0 || ONLY.includes(name)) await run();
+      if (ONLY.length > 0 && !ONLY.includes(name)) continue;
+      // A check that throws (a button not found) is one problem; the other groups still run.
+      const started = Date.now();
+      try {
+        await run();
+      } catch (error) {
+        problems.push(`live ${name} stopped: ${error instanceof Error ? error.message : error}`);
+        console.log(`live ${name} STOPPED: ${error instanceof Error ? error.stack : error}`);
+        // The pages the failed check left open would keep drawing and slow the next groups.
+        for (const context of browser.contexts()) await context.close().catch(() => undefined);
+      }
+      console.log(`live group ${name}: ${Math.round((Date.now() - started) / 1000)} s`);
     }
   }
+} catch (error) {
+  // Anything else that throws (a scene, the tap sweep) ends this part, but the summary below
+  // still prints, so a watcher waiting for "problem(s)" is not left waiting.
+  problems.push(`stopped: ${error instanceof Error ? error.stack : error}`);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

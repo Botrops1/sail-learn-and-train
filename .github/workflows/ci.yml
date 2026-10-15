@@ -28,9 +28,10 @@ jobs:
 
   # The browser checks (scripts/shots.mjs): every milestone's scenes at phone size plus every
   # live and tap check. Fails on console errors, wrong layouts, page scroll, unknown taps and
-  # failed live checks. Split into parallel parts (the slowest about 12 minutes on GitHub's
-  # runners, against 43 minutes in one go); a new milestone's live checks land in the
-  # "live, Phase 2 on" part by themselves.
+  # failed live checks. Split into parallel parts of at most about 10 minutes on GitHub's runners
+  # (each live group prints its time, "live group m9: 120 s"; move groups when a part grows).
+  # The last part takes every live group not named in another one, so a new milestone's live
+  # checks land there by themselves.
   browser-part:
     name: browser (${{ matrix.part }})
     runs-on: ubuntu-latest
@@ -39,22 +40,24 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - part: scenes
-            env: SHOTS_NO_LIVE=1 SHOTS_NO_TAPS=1
+          - part: scenes 1/2
+            env: SHOTS_NO_LIVE=1 SHOTS_NO_TAPS=1 SHOTS_SHARD=1/2
+          - part: scenes 2/2
+            env: SHOTS_NO_LIVE=1 SHOTS_NO_TAPS=1 SHOTS_SHARD=2/2
           - part: taps
             env: SHOTS_NO_SCENES=1 SHOTS_NO_LIVE=1
           - part: live, M0-M4a
             env: SHOTS_NO_SCENES=1 SHOTS_ONLY=general
-          - part: live, M4b
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4b
-          - part: live, M4c
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4c
-          - part: live, Phase 2 on
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29
-          - part: live, Phase 4
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m20,m21,m22,m23,m24
-          - part: live, Phase 5
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m25,m26,m27,m28,m29
+          - part: live, M4b-M4c
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4b,m4c
+          - part: live, M5-M8
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m5,m6,m7,m8
+          - part: live, M9
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m9
+          - part: live, M10-M17
+            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m10,m11,m12,m13,m14,m15,m16,m17
+          - part: live, M18 on
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

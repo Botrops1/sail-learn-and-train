@@ -707,10 +707,9 @@ export async function liveM4bFixChecks({ openPage, viewports, outDir, prefix, pr
     );
     await dragPath(page, line(hand, clutch, 12));
     // Off the winch with its clutch open, the light sheet then creeps out slowly (under 1 % a
-    // second): read the link as soon as it shows the winch empty.
-    await page
-      .waitForFunction(() => !window.location.search.includes('wsb='), null, { timeout: 3000 })
-      .catch(() => undefined);
+    // second): read the link as soon as it is written (300 ms after a change; on the test clock
+    // this wait is exactly that long, where a real-time wait would see the app's time stand still).
+    await page.waitForTimeout(400);
     const wsb = await param(page, 'wsb');
     const js = Number(await param(page, 'js'));
     check(
