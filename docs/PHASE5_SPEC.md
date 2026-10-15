@@ -422,7 +422,13 @@ The sheet (M26), modes and sections (M27), the mini-map and its switch (M28).
 
 ### 6.12 Decided in the M25 PR
 
-(empty)
+- `createChipMenu`'s `options` also takes `testId` (the menu's `data-testid`, `camera-menu`) and `hintClass` (the hint's extra class, `camera-menu-hint`), so the shared code stays free of camera words. The hint paragraph sits inside the `role="menu"` element, after the items.
+- The settings dialog is a child of `.shell` (the layout's root), next to `.view` and `.panel`; `inert` is set on exactly `:scope > .view` and `:scope > .panel`, so the error banner stays reachable.
+- The camera chip's `aria-label` is the long form (`cam.chip`), its visible text the short word; the menu is placed again each time it opens and pushed left if it would pass the view's right edge.
+- The long Map and Free explanation of the old `cam.hint` is dropped with the key: the new `cam.menuHint` (spec text) is all the menu says.
+- Scene and screenshot names that said "view-tab" now say "settings" (`settings-debug`, `settings-labels-toggle`, `settings-share-reset`, `ru-settings`, `live-desktop-settings-detail-high`).
+- `scripts/ui.mjs` is added to the browser-globals block of `eslint.config.js` (its helpers run code inside the page).
+- Only the M25 behaviour of the helpers of 3.4 is written; `setSheet`, `dragHandle`, `setMode` and `openAllSections` come with M26 and M27.
 
 ---
 

@@ -21,10 +21,10 @@ Each open pull request (PR) also has its own **preview** at `https://botrops1.gi
 3. Wait. Claude builds, tests, opens a PR and **watches it**. You can close the app meanwhile.
 4. In the PR (GitHub app): read "What changed", check that CI is green (`check`, `browser-checks`, `preview`).
    **If the PR starts with "Independent review required"** (the spec marks physics milestones that way): start the review now, before testing: new session, **Opus**, high, type **`/review <PR number>`**. It posts one comment on the PR with findings marked fix now / fix later / leave (about 15–30 minutes). Test while it runs or after it.
-5. Open the preview from the bot comment. Check that the **version in the footer** matches the PR's latest commit (first 7 characters, PR → Commits).
+5. Open the preview from the bot comment. Check that the **version in Settings → About** matches the PR's latest commit (first 7 characters, PR → Commits).
 6. Go through the checklist links in the PR description. Tick what works.
 7. **Answer and report problems as one comment on the PR**, in the GitHub app: your answers to the questions, which review findings to fix (e.g. "review: fix 1 and 3"), and anything you found. Every question has a recommendation, so "accept all" is a valid answer, or "accept all except 2: …". For a bug, use the template in 3.2. The session picks the comment up by itself, fixes, records your answers in the decisions log and replies on the PR. No copying between sessions.
-8. Test again on the updated preview (the reply names the new footer version).
+8. Test again on the updated preview (the reply names the new version in Settings → About).
 9. **Merge** when the preview works and CI is green. About 2 minutes later the live site updates and the preview is removed.
 
 **One milestone at a time.** Two milestones in parallel edit the same files and need a third session to sort out the overlap. A planning or review session next to the milestone is fine.
@@ -39,7 +39,7 @@ If a merge breaks the site, open the merged PR in the GitHub app and tap **Rever
 |---|---|
 | `/milestone <N>` | Build milestone M<N> (section 2) |
 | `/review <PR number>` | Independent review of a PR, right after it opens and before you test (Opus). Required when the PR says so (physics milestones); optional otherwise |
-| `/bug <link> <what happened>` | A bug on the **live** site, after merge. Get the link from View tab → Share. Claude fixes it in a small PR and watches it |
+| `/bug <link> <what happened>` | A bug on the **live** site, after merge. Get the link from Settings → Share. Claude fixes it in a small PR and watches it |
 | `/plan <phase number>` | Before a new phase (Opus, high). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. After merging, start with `/milestone <N>` (Sonnet) |
 
 The commands live in `.claude/skills/` in the repo; Claude can change them if you ask.
@@ -47,8 +47,8 @@ The commands live in `.claude/skills/` in the repo; Claude can change them if yo
 ### 3.2 Bug report (as a PR comment, or after `/bug`)
 
 ```
-Phone <model>, <portrait/landscape/unfolded>, footer version <hash>.
-Link that shows it: <copy link from View tab → Share>
+Phone <model>, <portrait/landscape/unfolded>, version in Settings → About <hash>.
+Link that shows it: <copy link from Settings → Share>
 What I did: ...
 What I expected: ...
 What I saw: ...
