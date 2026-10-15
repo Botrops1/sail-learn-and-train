@@ -17,7 +17,7 @@ Everything we know about the real boat, where each fact comes from, and what is 
 | Steering | Twin wheels, emergency tiller, compass at each wheel; B&G instrument display and autopilot control at the helm | Brochure; photo `cockpit-winch-clutches.jpg` |
 | Engine | Diesel about 80 hp, saildrive, 2-blade fixed propeller; single-lever control; 2500 rpm limit sticker | Brochure; photo |
 | Winches | 2 × Lewmar self-tailing, **electric** (push button; owner), size about 55 per the brochure, **one per side** next to the wheel, with the clutch bank just in front of it. No secondary winches. Port winch takes bank B and JIB ROLL, starboard winch bank A, one rope at a time. Each side's ropes go to that side's winch (owner). One winch handle on board, used mainly at the mast furling gearbox (IN/OUT switch) to roll the main in by hand when the furling line slips; the model on the drum is not marked (owner), so the EVO 55 power ratios 13.8 / 54 are a stand-in. | Brochure; photo `cockpit-winch-clutches.jpg`; ratios: PHYSICS_TRUTHS source [7] |
-| Foredeck | Anchor windlass, bow roller with chain, mooring cleats (Phase 5) | Photo `bow-jib-furler.jpg` |
+| Foredeck | Anchor windlass, bow roller with chain, mooring cleats (drawn in Phase 6, working in Phase 7; renumbered 2026-10-14) | Photo `bow-jib-furler.jpg` |
 
 ## 2. Official figures
 
