@@ -2,6 +2,7 @@
 // Labels contain "m20", so openPage adds held=1, sea=flat and clock=0 to queries without them.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { sectionShown, showSection } from './ui.mjs';
 
 /** Every size: the Learn tab with an entry open, and the card with its More button. */
 export const M20_SCENES = [
@@ -33,8 +34,7 @@ export async function liveM20Checks({ openPage, viewports, outDir, prefix, probl
   const has = (page, text) => wait(page, (value) => location.search.includes(value), text);
   const hasNot = (page, text) => wait(page, (value) => !location.search.includes(value), text);
   const learnName = (page) => page.getByTestId('learn-name').innerText();
-  const learnOpen = async (page) =>
-    (await page.locator('#tab-learn').getAttribute('aria-selected')) === 'true';
+  const learnOpen = async (page) => await sectionShown(page, 'learn');
 
   // 1. More on the card opens the entry.
   {
@@ -50,7 +50,7 @@ export async function liveM20Checks({ openPage, viewports, outDir, prefix, probl
     check('the address bar has learn=sail_main', await has(page, 'learn=sail_main'), 'missing');
     await shot(page, 'live-phone-m20-card-more-opened');
     // More again on the entry that is already open (owner, PR #54): Learn opens all the same.
-    await page.locator('#tab-ropes').click();
+    await showSection(page, 'ropes');
     await page.getByTestId('card-more').click();
     check('More on the open entry opens the Learn tab again', await learnOpen(page), 'stayed');
     await context.close();
@@ -109,7 +109,7 @@ export async function liveM20Checks({ openPage, viewports, outDir, prefix, probl
     await page.locator(ROPES_STRIP_LEARN).click();
     check('the strip opens Learn on the open entry', await learnOpen(page), 'stayed on Ropes');
     await page.getByTestId('learn-try-rope_vang').click();
-    const ropes = (await page.locator('#tab-ropes').getAttribute('aria-selected')) === 'true';
+    const ropes = await sectionShown(page, 'ropes');
     check('Try it opens the Ropes tab', ropes, 'Ropes tab not selected');
     check('Try it selects the vang', await has(page, 'sel=rope_vang'), 'no sel=rope_vang');
     await context.close();

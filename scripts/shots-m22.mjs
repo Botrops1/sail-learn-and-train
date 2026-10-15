@@ -3,6 +3,7 @@
 // queries without them.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { showSection } from './ui.mjs';
 
 /** Every size: a side word (with an old alternative name), a compass word, the gybe entry. */
 export const M22_SCENES = [
@@ -34,7 +35,7 @@ export async function liveM22Checks({ openPage, viewports, outDir, prefix, probl
   // 1. The group "Directions and sides (14)": 14 buttons.
   {
     const { context, page } = await openPage(phone, 'm22 directions', '?wd=90&ws=12');
-    await page.locator('#tab-learn').click();
+    await showSection(page, 'learn');
     await page.waitForTimeout(500);
     const summary = page.locator('[data-testid="learn-group-directions"] > summary');
     check(
@@ -54,7 +55,7 @@ export async function liveM22Checks({ openPage, viewports, outDir, prefix, probl
   // 2. Search "force": the Beaufort scale, found through its other name.
   {
     const { context, page } = await openPage(phone, 'm22 force', '?wd=90&ws=12');
-    await page.locator('#tab-learn').click();
+    await showSection(page, 'learn');
     await page.getByTestId('learn-search').fill('force');
     const text = await page.getByTestId('learn-hit-term_beaufort').innerText();
     check('force finds the Beaufort scale', text.includes('also: force'), text);

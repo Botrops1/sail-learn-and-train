@@ -8,6 +8,7 @@
 // Labels contain "m19", so the script opens them Sailing, on Coastal water, with the clock shown.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { openSettings, showSection } from './ui.mjs';
 
 /** The heaviest case of the owner's checklist (WORKFLOW M19). */
 const HEAVY = '?wd=90&ws=20&ms=40&js=100&sea=open&wm=gusty&tx=16&clk=202606012030&debug=1';
@@ -31,7 +32,7 @@ export async function liveM19Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm19 a11y wind tab', '?wd=90&ws=12&sea=open');
     await page.waitForTimeout(800);
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     const block = page.getByTestId('sea-setting');
     if ((await block.count()) > 0) await block.first().scrollIntoViewIfNeeded();
     check('the Waves block is in the Wind tab', (await block.count()) > 0, 'no sea-setting');
@@ -48,12 +49,12 @@ export async function liveM19Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
   {
-    const { context, page } = await openPage(phone, 'm19 a11y view tab', '?wd=90&ws=12');
+    const { context, page } = await openPage(phone, 'm19 a11y settings', '?wd=90&ws=12');
     await page.waitForTimeout(800);
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     const toggle = page.getByTestId('clock-switch');
-    check('the Clock switch is in the View tab', (await toggle.count()) > 0, 'no clock-switch');
-    await audit(page, 'View tab with the Clock switch');
+    check('the Clock switch is in the settings', (await toggle.count()) > 0, 'no clock-switch');
+    await audit(page, 'Settings with the Clock switch');
     await context.close();
   }
   {

@@ -1,9 +1,10 @@
 // M5 (polish and Phase 1 sign-off): scenes and live checks for scripts/shots.mjs.
 // Labels in 3D, the halyards in 3D, Realistic mode's ropes wrapped on the winches, the error
 // boundary (no WebGL, a 3D view that fails, a lost graphics context, an uncaught error), the
-// accessibility audit, the footer disclaimer and the frame times in the debug overlay.
+// accessibility audit, the disclaimer in Settings → About and the frame times in the debug overlay.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { closeSettings, openSettings, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M5_SCENES = [
@@ -18,8 +19,13 @@ export const M5_SCENES = [
     name: 'realistic-rope-wrapped-helm',
     query: '?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h',
   },
-  { name: 'view-tab-labels-toggle', query: '?cam=side-port', tab: 'View' },
-  { name: 'footer-disclaimer', query: '?wd=60&ws=12', scrollTo: '[data-testid="disclaimer"]' },
+  { name: 'settings-labels-toggle', query: '?cam=side-port', settings: true },
+  {
+    name: 'footer-disclaimer',
+    query: '?wd=60&ws=12',
+    settings: true,
+    scrollTo: '[data-testid="disclaimer"]',
+  },
 ];
 
 /** Close-ups (boat coordinates: x forward, y up, z starboard) for the live checks. */
@@ -77,8 +83,9 @@ export async function liveM5Checks({
       String(selectedLabel),
     );
     await shot(page, `live-${viewport.name}-labels-mast-selected`);
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.getByText('Labels in 3D', { exact: true }).click();
+    await closeSettings(page);
     await waitUrl(page, () => window.location.search.includes('lb=0'));
     const hidden = await page.locator('[data-testid="labels3d"]').isHidden();
     check(
@@ -296,8 +303,8 @@ export async function liveM5Checks({
   // Accessibility audit (phone): names, text sizes, touch targets, keyboard focus.
   for (const [name, query, tab] of [
     ['ropes-easy', '?sel=rope_vang', null],
-    ['wind', '', 'Wind'],
-    ['view', '', 'View'],
+    ['wind', '', 'conditions'],
+    ['view', '', 'settings'],
     ['realistic-port', '?mode=realistic&sel=rope_vang', null],
     ['realistic-starboard', '?mode=realistic&st=starboard&wsb=a5.3.t&hd=starboard.w', null],
     ['realistic-helm', '?mode=realistic&st=helm', null],
@@ -305,7 +312,8 @@ export async function liveM5Checks({
   ]) {
     const { context, page } = await openPage(phone, `a11y ${name}`, query);
     await page.waitForTimeout(600);
-    if (tab) await page.getByRole('tab', { name: tab }).click();
+    if (tab === 'settings') await openSettings(page);
+    else if (tab) await showSection(page, tab);
     const found = await auditPage(page, `a11y ${name}`);
     check(`accessibility ${name}`, found.length === 0, found.length ? found.join(' | ') : 'clean');
     await context.close();
@@ -314,6 +322,7 @@ export async function liveM5Checks({
   // Footer: version, disclaimer and the source link.
   {
     const { context, page } = await openPage(phone, 'footer', '');
+    await openSettings(page);
     const text = await page.locator('footer.footer').innerText();
     check(
       'footer disclaimer',

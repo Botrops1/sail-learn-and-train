@@ -3,6 +3,7 @@
 // chip shown (the older scenes get `clock=0` so the tap sweeps do not open the clock card).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { openSettings } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M17_SCENES = [
@@ -187,14 +188,14 @@ export async function liveM17Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // The View tab's Clock switch.
+  // The Clock switch in the settings.
   {
     const { context, page } = await openPage(
       phone,
       'm17 clock switch',
       '?wd=90&ws=12&ms=40&js=100',
     );
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.getByTestId('clock-switch').uncheck();
     await page.waitForTimeout(600);
     check(

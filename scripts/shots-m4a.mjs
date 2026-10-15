@@ -1,6 +1,7 @@
 // M4a (clutch-bank panel, Easy mode): scenes and live checks for scripts/shots.mjs.
 // Kept in its own file so the shared screenshot script changes little.
 import path from 'node:path';
+import { closeSettings, openSettings, sectionShown, setCamera, showSection } from './ui.mjs';
 
 /** What a link opens to, in the strip of the Ropes tab. */
 const strip = (partId) => `.rope-strip [data-part-id="${partId}"]`;
@@ -27,7 +28,7 @@ export const M4A_SCENES = [
     query: '?js=30&jf=40&jr=40&sel=rope_jib_sheet&cam=bow',
   },
   { name: 'ropes-list-and-legend', query: '?cam=side-port', scrollTo: '.rope-legend' },
-  { name: 'view-tab-share-reset', query: '?cam=side-port', tab: 'View' },
+  { name: 'settings-share-reset', query: '?cam=side-port', settings: true },
 ];
 
 /**
@@ -105,13 +106,13 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     }
 
     // A rope tapped in 3D is selected in the panel, also when another tab is open.
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.keyboard.press('Escape');
     const canvas = await page.locator('canvas.scene-canvas').boundingBox();
     const point = await page.evaluate(() => window.__sailDebug.partPoint('rope_topping_lift', 0));
     if (point) await page.mouse.click(canvas.x + point.x, canvas.y + point.y);
     await waitUrl(page);
-    const ropesOpen = await page.getByRole('tab', { name: 'Ropes' }).getAttribute('aria-selected');
+    const ropesOpen = String(await sectionShown(page, 'ropes'));
     check(
       `${v} tap topping lift in 3D → panel`,
       (await search(page)).includes('sel=rope_topping_lift') &&
@@ -122,16 +123,18 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     await shot(page, `live-${v}-tap-topping-lift-in-3d`);
 
     // Step size: 1 % and 5 % for the + button; the wheel turns by the same step in degrees.
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.getByText('1 %', { exact: true }).click();
-    await page.getByRole('tab', { name: 'Ropes' }).click();
+    await closeSettings(page);
+    await showSection(page, 'ropes');
     await page.locator('[data-select="rope_vang"]').click();
     await page.getByRole('button', { name: 'More: Vang' }).click();
     await waitUrl(page);
     check(`${v} step 1 %`, (await search(page)).includes('vg=51'), await search(page));
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.getByText('5 %', { exact: true }).click();
-    await page.getByRole('tab', { name: 'Ropes' }).click();
+    await closeSettings(page);
+    await showSection(page, 'ropes');
     await page.getByRole('button', { name: 'More: Vang' }).click();
     await waitUrl(page);
     check(`${v} step 5 %`, (await search(page)).includes('vg=55'), await search(page));
@@ -140,7 +143,7 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     await page.getByRole('button', { name: 'Turn the wheel to starboard' }).click();
     await waitUrl(page);
     check(`${v} wheel +2 steps`, (await search(page)).includes('rd=10'), await search(page));
-    await page.getByRole('button', { name: 'Helm', exact: true }).click();
+    await setCamera(page, 'helm');
     await page.waitForTimeout(1200);
     await shot(page, `live-${v}-wheel-10-stbd-helm`);
     await context.close();
@@ -169,7 +172,7 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
       chipHere === 'fighting',
       `${chipHere} | ${metaHere.replace(/\n/g, ' | ')}`,
     );
-    await page.getByRole('tab', { name: 'View' }).click();
+    await openSettings(page);
     await page.getByTestId('share-button').click();
     await page.waitForTimeout(300);
     const link = await page.evaluate(() => navigator.clipboard.readText());

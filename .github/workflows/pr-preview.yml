@@ -26,7 +26,7 @@ jobs:
       # Always check out: the publish step needs a git folder, also when removing a preview.
       - uses: actions/checkout@v5
         with:
-          # The PR's own commit (not GitHub's temporary merge commit), so the footer matches it.
+          # The PR's own commit (not GitHub's temporary merge commit), so Settings → About matches it.
           # On close the default (the base branch) is enough.
           ref: ${{ github.event.action != 'closed' && github.event.pull_request.head.sha || '' }}
       - uses: actions/setup-node@v5

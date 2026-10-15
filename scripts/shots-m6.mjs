@@ -2,6 +2,7 @@
 // The strip, the apparent wind, the wake, Held still, the autopilot and the Wind tab compass.
 // Their labels contain "m6" so the script opens them Sailing (older scenes are held still).
 import path from 'node:path';
+import { showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each (the wake needs time). */
 export const M6_SCENES = [
@@ -18,7 +19,7 @@ export const M6_SCENES = [
   {
     name: 'wind-tab',
     query: '?wd=90&ws=12&ms=40&js=100&hdg=40&cam=side-port',
-    tab: 'Wind',
+    section: 'conditions',
     centre: '[data-testid="wind-dial"]',
     waitMs: 2000,
   },
@@ -142,7 +143,7 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
   // Wind presets are relative to the bow.
   {
     const { context, page } = await openPage(phone, 'm6 preset', '?wd=90&ws=12&hdg=40');
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.getByRole('button', { name: '45° starboard' }).click();
     await page.waitForTimeout(600);
     const url = await search(page);
@@ -153,7 +154,7 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
   // Boat mode switch.
   {
     const { context, page } = await openPage(phone, 'm6 switch', '?wd=90&ws=12&ms=40&js=100');
-    await page.getByRole('tab', { name: 'Wind' }).click();
+    await showSection(page, 'conditions');
     await page.getByTestId('boat-mode').getByText('Held still', { exact: true }).click();
     await page.waitForTimeout(600);
     check(
