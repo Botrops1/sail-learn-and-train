@@ -15,6 +15,7 @@ import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
 import { createPanel } from '../ui/panel';
 import { createSettingsMenu } from '../ui/settingsMenu';
+import { createSheet } from '../ui/sheet';
 import { createClockPanel } from '../ui/clockPanel';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
@@ -43,7 +44,11 @@ export function startApp(host: HTMLElement): void {
 
   const layout = createLayout(host);
   const reportError = installErrorBanner(layout.root);
-  const panel = createPanel(layout.panel, store);
+  // The top area (strip, time bar, clock) is built first: the sheet sizes itself below it. It
+  // joins the view further down, in its old place among the overlays.
+  const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
+  const sheet = createSheet(layout, layout.view, top);
+  const panel = createPanel(layout.panel, store, sheet);
   const debug = createDebugOverlay(layout.view, store);
 
   // Error boundary (M5): without WebGL, or if the 3D view fails, a message takes its place and
@@ -70,7 +75,6 @@ export function startApp(host: HTMLElement): void {
   createSettingsMenu(chipRow, layout.root, store);
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
-  const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
   layout.view.append(top);
   createInstrumentStrip(top, store, () => panel.showTab('wind'));
   createTimeBar(top, store);
@@ -83,9 +87,15 @@ export function startApp(host: HTMLElement): void {
     shownInPanel: (partId) =>
       (panel.activeTab() === 'ropes' && ropesTabShows(partId)) ||
       (panel.activeTab() === 'learn' && store.getState().learn === partId),
+    atPeek: sheet.atPeek,
+    atFull: sheet.atFull,
     showLearn: () => panel.showTab('learn'),
   });
   panel.onTabChange(() => card.refresh());
+  sheet.onChange(() => {
+    card.refresh();
+    reframe();
+  });
   // Whether the card stays away depends on the open entry (the Learn tab shows the same part).
   store.subscribe((state, previous) => {
     if (state.learn !== previous.learn) card.refresh();
@@ -101,8 +111,12 @@ export function startApp(host: HTMLElement): void {
     const view = scene;
     const resize = () => {
       const viewBox = layout.view.getBoundingClientRect();
-      const inset = viewBox.bottom - chipRow.getBoundingClientRect().top;
       const stacked = layout.viewport().mode === 'stacked';
+      // Stacked: the boat is framed above the sheet and the chip row (PHASE5_SPEC 3.3); side by
+      // side the panel is beside the view, so only the chip row covers it.
+      const inset = stacked
+        ? sheet.cameraInset()
+        : viewBox.bottom - chipRow.getBoundingClientRect().top;
       view.resize(
         layout.view.clientWidth,
         layout.view.clientHeight,

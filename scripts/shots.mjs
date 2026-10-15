@@ -43,7 +43,15 @@ import { liveM22Checks, M22_SCENES } from './shots-m22.mjs';
 import { liveM23Checks, M23_SCENES } from './shots-m23.mjs';
 import { liveM24Checks, M24_SCENES } from './shots-m24.mjs';
 import { liveM25Checks, M25_SCENES } from './shots-m25.mjs';
-import { closeSettings, openSettings, setCamera, showSection, viewBottom } from './ui.mjs';
+import { liveM26Checks, M26_SCENES } from './shots-m26.mjs';
+import {
+  closeSettings,
+  openSettings,
+  setCamera,
+  setSheet,
+  showSection,
+  viewBottom,
+} from './ui.mjs';
 
 const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
 const PREFIX = process.env.SHOTS_PREFIX ?? '';
@@ -178,6 +186,7 @@ const SCENES = [
   ...M23_SCENES.map((scene) => ({ ...scene, name: `m23-${scene.name}` })),
   ...M24_SCENES.map((scene) => ({ ...scene, name: `m24-${scene.name}` })),
   ...M25_SCENES.map((scene) => ({ ...scene, name: `m25-${scene.name}` })),
+  ...M26_SCENES.map((scene) => ({ ...scene, name: `m26-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -699,6 +708,7 @@ try {
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.section) await showSection(page, scene.section);
       if (scene.settings) await openSettings(page);
+      if (scene.sheet) await setSheet(page, scene.sheet);
       if (scene.open) {
         await page.locator(`.rope-strip > :not([hidden]) ${scene.open} summary`).click();
       }
@@ -767,6 +777,8 @@ try {
     const label = `taps ${viewport.name}/${cam}`;
     // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
+    // The boat is framed largest with the sheet at its lowest (M26).
+    await setSheet(page, 'peek');
     await page.waitForTimeout(800);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const barTop = await viewBottom(page);
@@ -805,6 +817,7 @@ try {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
+      await setSheet(page, 'peek');
       await page.waitForTimeout(800);
       const box = await page.locator('canvas.scene-canvas').boundingBox();
       const barTop = await viewBottom(page);
@@ -883,6 +896,7 @@ try {
     m23: () => liveM23Checks(live),
     m24: () => liveM24Checks(live),
     m25: () => liveM25Checks(live),
+    m26: () => liveM26Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

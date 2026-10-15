@@ -2,6 +2,7 @@
 // Labels contain "m18", so the script opens them Sailing and on Coastal water. The clock chip is
 // switched off in the scene queries (`clock=0`) so it does not cover the sky.
 import path from 'node:path';
+import { setSheet, viewBottom } from './ui.mjs';
 
 const BASE = '?wd=90&ws=12&ms=40&js=100&tb=0&clock=0';
 const TIMES = [
@@ -32,36 +33,48 @@ export const M18_SCENES = TIMES.flatMap(([time, clk]) =>
  * square at the centre; `bright` counts the pixels brighter than `mean + 0.3`.
  */
 async function canvasStats(page) {
+  await setSheet(page, 'peek');
+  // The boat is framed in the free area between the top area and the chip row, not at the
+  // canvas's centre: the square is centred there (measured before the overlays are hidden).
+  const canvasBox = await page.locator('canvas.scene-canvas').boundingBox();
+  const topBottom = await page
+    .getByTestId('view-top')
+    .evaluate((top) => top.getBoundingClientRect().bottom);
+  const centreY = Math.round((topBottom + (await viewBottom(page))) / 2 - canvasBox.y);
   await page.addStyleTag({
-    content: '.view > :not(canvas.scene-canvas) { visibility: hidden !important; }',
+    content:
+      '.view > :not(canvas.scene-canvas), [data-testid="sheet"] { visibility: hidden !important; }',
   });
   const png = await page.locator('canvas.scene-canvas').screenshot();
   const url = `data:image/png;base64,${png.toString('base64')}`;
-  return page.evaluate(async (src) => {
-    const image = new Image();
-    image.src = src;
-    await image.decode();
-    const canvas = document.createElement('canvas');
-    canvas.width = image.width;
-    canvas.height = image.height;
-    const context = canvas.getContext('2d', { willReadFrequently: true });
-    context.drawImage(image, 0, 0);
-    const luminance = (data, i) =>
-      (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255;
-    const all = context.getImageData(0, 0, canvas.width, canvas.height).data;
-    let sum = 0;
-    for (let i = 0; i < all.length; i += 4) sum += luminance(all, i);
-    const mean = sum / (all.length / 4);
-    let bright = 0;
-    for (let i = 0; i < all.length; i += 4) if (luminance(all, i) > mean + 0.3) bright += 1;
-    const half = 30;
-    const cx = Math.round(canvas.width / 2);
-    const cy = Math.round(canvas.height / 2);
-    const middle = context.getImageData(cx - half, cy - half, 2 * half, 2 * half).data;
-    let middleSum = 0;
-    for (let i = 0; i < middle.length; i += 4) middleSum += luminance(middle, i);
-    return { mean, bright, square: middleSum / (middle.length / 4) };
-  }, url);
+  return page.evaluate(
+    async ([src, centreY]) => {
+      const image = new Image();
+      image.src = src;
+      await image.decode();
+      const canvas = document.createElement('canvas');
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      context.drawImage(image, 0, 0);
+      const luminance = (data, i) =>
+        (0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]) / 255;
+      const all = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let sum = 0;
+      for (let i = 0; i < all.length; i += 4) sum += luminance(all, i);
+      const mean = sum / (all.length / 4);
+      let bright = 0;
+      for (let i = 0; i < all.length; i += 4) if (luminance(all, i) > mean + 0.3) bright += 1;
+      const half = 30;
+      const cx = Math.round(canvas.width / 2);
+      const cy = centreY;
+      const middle = context.getImageData(cx - half, cy - half, 2 * half, 2 * half).data;
+      let middleSum = 0;
+      for (let i = 0; i < middle.length; i += 4) middleSum += luminance(middle, i);
+      return { mean, bright, square: middleSum / (middle.length / 4) };
+    },
+    [url, centreY],
+  );
 }
 
 export async function liveM18Checks({ openPage, viewports, outDir, prefix, problems }) {

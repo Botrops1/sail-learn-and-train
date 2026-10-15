@@ -2,6 +2,7 @@
 // The Sails block of the Ropes tab, the telltales close up, the blanketed jib and a torn sail.
 // Their labels contain "m9" so the script opens them Sailing (older scenes are held still).
 import path from 'node:path';
+import { setSheet } from './ui.mjs';
 
 const SAILS = '.ropes-easy [data-testid="sails-panel"]';
 
@@ -63,6 +64,7 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
   const [phone, foldable, desktop] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
   const closeUp = async (page, view) => {
+    await setSheet(page, 'peek');
     await page.addStyleTag({
       content: '.debug, .label3d { display: none !important; }',
     });
@@ -131,6 +133,7 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
     check('Repair button', await page.getByTestId('repair-sails').isVisible(), 'visible');
     await closeUp(page, TEAR_VIEW);
     await shot(page, 'torn-phone');
+    await setSheet(page, 'half');
     await page.getByTestId('repair-sails').scrollIntoViewIfNeeded();
     await page.getByTestId('repair-sails').click();
     await page.waitForTimeout(500);

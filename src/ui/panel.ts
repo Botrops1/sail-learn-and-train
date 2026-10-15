@@ -4,6 +4,7 @@ import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { createLearnTab } from './learnTab';
 import { createRopesTab } from './ropesTab';
+import type { Sheet } from './sheet';
 import { createWindPanel } from './windPanel';
 
 export const TAB_IDS = ['ropes', 'wind', 'learn'] as const;
@@ -16,7 +17,7 @@ const TAB_LABELS: Record<TabId, StringKey> = {
 };
 
 /**
- * The panel: three tabs (Ropes, Wind, Learn). The old View tab and the footer moved to the
+ * The panel (the sheet on a phone, PHASE5_SPEC 7.5): three tabs (Ropes, Wind, Learn). The old View tab and the footer moved to the
  * settings dialog and the camera to the camera chip (PHASE5_SPEC 6.4).
  * Ropes: the clutch-bank drawing and the rope controls (Easy mode). Wind: the test-wind dial,
  * speed and presets. Learn: the glossary.
@@ -29,7 +30,11 @@ export interface Panel {
   onTabChange(listener: (tab: TabId) => void): void;
 }
 
-export function createPanel(host: HTMLElement, store: Store): Panel {
+export function createPanel(host: HTMLElement, store: Store, sheet: Sheet): Panel {
+  /** A tab the user chose raises a sheet that sits at its lowest height. */
+  const raiseSheet = () => {
+    if (sheet.atPeek()) sheet.setHeight('half');
+  };
   const tabList = el('div', {
     class: 'tabs',
     role: 'tablist',
@@ -62,7 +67,10 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
       'aria-labelledby': `tab-${id}`,
       tabindex: '0',
     });
-    tab.addEventListener('click', () => select(id));
+    tab.addEventListener('click', () => {
+      select(id);
+      raiseSheet();
+    });
     tab.addEventListener('keydown', (event) => onTabKey(event, id));
     tabs.set(id, tab);
     panes.set(id, pane);
@@ -74,7 +82,8 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
   panes.get('wind')?.append(...createWindPanel(store));
   panes.get('learn')?.append(...createLearnTab(store, (tab) => select(tab)));
 
-  host.append(tabList, body);
+  sheet.head.append(tabList);
+  host.append(body);
   select('ropes');
   if (store.getState().learn !== null) select('learn');
 
@@ -107,7 +116,10 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
 
   return {
     activeTab: () => active,
-    showTab: (id) => select(id),
+    showTab: (id) => {
+      select(id);
+      raiseSheet();
+    },
     onTabChange: (listener) => tabListeners.push(listener),
   };
 
@@ -124,6 +136,7 @@ export function createPanel(host: HTMLElement, store: Store): Panel {
     if (next) {
       event.preventDefault();
       select(next, true);
+      raiseSheet();
     }
   }
 }

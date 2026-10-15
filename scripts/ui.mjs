@@ -3,7 +3,7 @@
 // that a later change of the screen changes only this file. They take a Playwright `page` and find
 // things by data-testid, never by text, so they do not depend on the language.
 
-/** The tab that holds a section (M25: there are no section elements yet). */
+/** The tab that holds a section (there are no section elements before M27). */
 const TAB_OF_SECTION = {
   ropes: 'tab-ropes',
   sails: 'tab-ropes',
@@ -14,18 +14,98 @@ const TAB_OF_SECTION = {
   learn: 'tab-learn',
 };
 
-/** Opens a section. Ids: ropes, sails, autopilot, engine, legend, conditions, learn. */
+/** Opens a section; a sheet at its lowest height comes up to half (M26). Ids: ropes, sails, autopilot, engine, legend, conditions, learn. */
 export async function showSection(page, id) {
   const tab = TAB_OF_SECTION[id];
   if (!tab) throw new Error(`showSection: unknown section ${id}`);
   await page.getByTestId(tab).click();
+  if (await sheetAtPeek(page)) await setSheet(page, 'half');
 }
 
-/** True if the section's content is shown now (its tab selected). */
+/** True if the section's content is shown now (its tab selected, and the sheet not at peek). */
 export async function sectionShown(page, id) {
   const tab = TAB_OF_SECTION[id];
   if (!tab) throw new Error(`sectionShown: unknown section ${id}`);
+  if (await sheetAtPeek(page)) return false;
   return (await page.getByTestId(tab).getAttribute('aria-selected')) === 'true';
+}
+
+/** True in the stacked layout with the sheet at its lowest height ("at peek", PHASE5_SPEC 3.1). */
+async function sheetAtPeek(page) {
+  return page.evaluate(
+    () =>
+      document.documentElement.dataset.layout === 'stacked' &&
+      document.querySelector('[data-testid="sheet"]')?.getAttribute('data-sheet') === 'peek',
+  );
+}
+
+/** Waits until the sheet has finished moving (its height animation ended). */
+async function sheetSettled(page) {
+  await page.waitForFunction(
+    () =>
+      document.querySelector('[data-testid="sheet"]')?.getAttribute('data-sheet-moving') ===
+      'false',
+  );
+}
+
+/** M26: sets the sheet's height by tapping its handle (no-op in the side layout). */
+export async function setSheet(page, height) {
+  const sheet = page.getByTestId('sheet');
+  for (let taps = 0; taps <= 3; taps += 1) {
+    if (await page.evaluate(() => document.documentElement.dataset.layout !== 'stacked')) return;
+    if ((await sheet.getAttribute('data-sheet')) === height) break;
+    if (taps === 3) throw new Error(`setSheet: the sheet never reached ${height}`);
+    await page.getByTestId('sheet-handle').click();
+    await sheetSettled(page);
+  }
+  await sheetSettled(page);
+}
+
+/**
+ * M26: drags the sheet's handle by `dy` CSS px (negative = up) in `steps` moves, waiting `delayMs`
+ * between them (0 = a fling). With waits the mouse is used. A fling is sent as pointer events from
+ * inside the page, in one task: headless drawing makes every mouse move take ~100 ms, so a mouse
+ * "fling" would be slow in wall-clock time and the app would rightly not treat it as one.
+ */
+export async function dragHandle(page, dy, steps, delayMs) {
+  const box = await page.getByTestId('sheet-handle').boundingBox();
+  if (!box) throw new Error('dragHandle: the handle is not shown');
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  if (delayMs === 0) {
+    await page.evaluate(
+      ({ x, y, dy, steps }) => {
+        const handle = document.querySelector('[data-testid="sheet-handle"]');
+        const send = (type, clientY) =>
+          handle.dispatchEvent(
+            new PointerEvent(type, {
+              pointerId: 1,
+              pointerType: 'mouse',
+              isPrimary: true,
+              button: 0,
+              buttons: type === 'pointerup' ? 0 : 1,
+              clientX: x,
+              clientY,
+              bubbles: true,
+              cancelable: true,
+            }),
+          );
+        send('pointerdown', y);
+        for (let step = 1; step <= steps; step += 1) send('pointermove', y + (dy * step) / steps);
+        send('pointerup', y + dy);
+      },
+      { x, y, dy, steps },
+    );
+  } else {
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    for (let step = 1; step <= steps; step += 1) {
+      await page.mouse.move(x, y + (dy * step) / steps);
+      await page.waitForTimeout(delayMs);
+    }
+    await page.mouse.up();
+  }
+  await sheetSettled(page);
 }
 
 /** Opens the settings dialog. */

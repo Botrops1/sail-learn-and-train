@@ -4,6 +4,7 @@
 // live checks read numbers the page offers (the gust profile, the buoy's place on the canvas, the
 // info card) and do not judge colours.
 import path from 'node:path';
+import { setSheet } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M16_SCENES = [
@@ -48,8 +49,10 @@ export async function liveM16Checks({ openPage, viewports, outDir, prefix, probl
       seen ? seen.values.map((v) => v.toFixed(2)).join(' ') : 'no profile with a gust ahead',
     );
     await shot(page, 'live-phone-gust-coming');
+    // The simulation clock runs slower than the wall clock on a slow runner (the 3D picture now
+    // fills the whole phone screen, M26), so the strip gets up to 80 s of real time, not 40.
     let badge = false;
-    for (let i = 0; i < 80 && !badge; i += 1) {
+    for (let i = 0; i < 160 && !badge; i += 1) {
       badge = await page.getByTestId('strip-gust').isVisible();
       if (!badge) await page.waitForTimeout(500);
     }
@@ -83,6 +86,7 @@ export async function liveM16Checks({ openPage, viewports, outDir, prefix, probl
   // A buoy in 3D: from the bow, looking ahead; it lies on the canvas and a tap on it opens its card.
   {
     const { context, page } = await openPage(phone, 'm16 buoy 3d', '?wd=90&ws=12&held=1&debug=1');
+    await setSheet(page, 'peek');
     await page.waitForTimeout(1500);
     await page.evaluate(() => window.__sailDebug.setView([6.5, 2.5, 0], [60, 0.5, 0]));
     await page.waitForTimeout(500);
