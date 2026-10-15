@@ -13,6 +13,7 @@ import { createInfoCard } from '../ui/infoCard';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
+import { createModeChip } from '../ui/modeChip';
 import { createPanel } from '../ui/panel';
 import { createSettingsMenu } from '../ui/settingsMenu';
 import { createSheet } from '../ui/sheet';
@@ -48,7 +49,7 @@ export function startApp(host: HTMLElement): void {
   // joins the view further down, in its old place among the overlays.
   const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
   const sheet = createSheet(layout, layout.view, top);
-  const panel = createPanel(layout.panel, store, sheet);
+  const panel = createPanel(layout.panel, store, sheet, layout);
   const debug = createDebugOverlay(layout.view, store);
 
   // Error boundary (M5): without WebGL, or if the 3D view fails, a message takes its place and
@@ -73,10 +74,12 @@ export function startApp(host: HTMLElement): void {
   // WebGL), the camera chip only with the 3D view.
   const chipRow = createViewBottom(layout.view);
   createSettingsMenu(chipRow, layout.root, store);
+  // The mode chip comes first in the row, with or without WebGL.
+  createModeChip(chipRow, store);
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
   layout.view.append(top);
-  createInstrumentStrip(top, store, () => panel.showTab('wind'));
+  createInstrumentStrip(top, store, () => panel.showSection('conditions'));
   createTimeBar(top, store);
   createClockPanel(top, layout.view, store);
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
@@ -85,18 +88,18 @@ export function startApp(host: HTMLElement): void {
   createWindIndicator(layout.view, store);
   const card = createInfoCard(layout, store, {
     shownInPanel: (partId) =>
-      (panel.activeTab() === 'ropes' && ropesTabShows(partId)) ||
-      (panel.activeTab() === 'learn' && store.getState().learn === partId),
+      (panel.shows('ropes') && ropesTabShows(partId) && store.getState().appMode !== 'learn') ||
+      (panel.shows('learn') && store.getState().learn === partId),
     atPeek: sheet.atPeek,
     atFull: sheet.atFull,
-    showLearn: () => panel.showTab('learn'),
+    showLearn: panel.openLearnEntry,
   });
-  panel.onTabChange(() => card.refresh());
+  panel.onChange(() => card.refresh());
   sheet.onChange(() => {
     card.refresh();
     reframe();
   });
-  // Whether the card stays away depends on the open entry (the Learn tab shows the same part).
+  // Whether the card stays away depends on the open entry (the Learn section shows the same part).
   store.subscribe((state, previous) => {
     if (state.learn !== previous.learn) card.refresh();
   });

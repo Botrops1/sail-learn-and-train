@@ -1,33 +1,47 @@
-// Browser-check helpers for the panel, the settings and the camera (PHASE5_SPEC 3.4).
+// Browser-check helpers for the panel, the settings and the camera (PHASE5_SPEC 3.4; sections and modes from M27).
 // Every check that opens part of the panel, the settings or a camera view goes through these, so
 // that a later change of the screen changes only this file. They take a Playwright `page` and find
 // things by data-testid, never by text, so they do not depend on the language.
 
-/** The tab that holds a section (there are no section elements before M27). */
-const TAB_OF_SECTION = {
-  ropes: 'tab-ropes',
-  sails: 'tab-ropes',
-  autopilot: 'tab-ropes',
-  engine: 'tab-ropes',
-  legend: 'tab-ropes',
-  conditions: 'tab-wind',
-  learn: 'tab-learn',
-};
-
-/** Opens a section; a sheet at its lowest height comes up to half (M26). Ids: ropes, sails, autopilot, engine, legend, conditions, learn. */
+/** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, legend, conditions, learn. */
 export async function showSection(page, id) {
-  const tab = TAB_OF_SECTION[id];
-  if (!tab) throw new Error(`showSection: unknown section ${id}`);
-  await page.getByTestId(tab).click();
+  const section = page.getByTestId(`section-${id}`);
+  if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);
+  if ((await section.getAttribute('data-open')) === 'false') {
+    // A folded section's header may sit under a sheet at peek: raise the sheet first.
+    if (await sheetAtPeek(page)) await setSheet(page, 'half');
+    await page.getByTestId(`section-toggle-${id}`).click();
+  }
   if (await sheetAtPeek(page)) await setSheet(page, 'half');
+  await section.scrollIntoViewIfNeeded();
 }
 
-/** True if the section's content is shown now (its tab selected, and the sheet not at peek). */
+/** True if the section's content is shown now (open, not hidden, and the sheet not at peek). */
 export async function sectionShown(page, id) {
-  const tab = TAB_OF_SECTION[id];
-  if (!tab) throw new Error(`sectionShown: unknown section ${id}`);
   if (await sheetAtPeek(page)) return false;
-  return (await page.getByTestId(tab).getAttribute('aria-selected')) === 'true';
+  const section = page.getByTestId(`section-${id}`);
+  if ((await section.count()) === 0) throw new Error(`sectionShown: unknown section ${id}`);
+  return (
+    (await section.getAttribute('data-open')) === 'true' &&
+    !(await section.evaluate((node) => node.hidden))
+  );
+}
+
+/** M27: chooses a mode from the mode chip's menu (learn, easy, realistic). */
+export async function setMode(page, mode) {
+  await page.getByTestId('mode-chip').click();
+  await page.getByTestId(`mode-option-${mode}`).click();
+}
+
+/** M27: opens every available section (each visible `[data-section]` with `data-open="false"`), with the sheet at least half. */
+export async function openAllSections(page) {
+  if (await sheetAtPeek(page)) await setSheet(page, 'half');
+  const ids = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-section]')]
+      .filter((node) => !node.hidden && node.getAttribute('data-open') === 'false')
+      .map((node) => node.getAttribute('data-section')),
+  );
+  for (const id of ids) await page.getByTestId(`section-toggle-${id}`).click();
 }
 
 /** True in the stacked layout with the sheet at its lowest height ("at peek", PHASE5_SPEC 3.1). */

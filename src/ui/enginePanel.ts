@@ -194,10 +194,7 @@ export function createEnginePanel(store: Store): HTMLElement {
       'aria-label': t('engine.label'),
     },
     [
-      el('div', { class: 'engine-head' }, [
-        el('h3', { class: 'section-title' }, [t('engine.label')]),
-        startStop.button,
-      ]),
+      el('div', { class: 'engine-head' }, [startStop.button]),
       el('div', { class: 'engine-gauge' }, [
         tach.element,
         el('div', { class: 'engine-readout' }, [rpm, status]),
@@ -217,7 +214,7 @@ export function createEnginePanel(store: Store): HTMLElement {
         el('span', { class: 'engine-scale-neutral' }, [t('engine.neutral')]),
         el('span', {}, [t('engine.ahead')]),
       ]),
-      el('p', { class: 'hint' }, [t('engine.hint')]),
+      el('p', { class: 'hint explain' }, [t('engine.hint')]),
     ],
   );
 
