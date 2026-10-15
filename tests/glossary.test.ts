@@ -19,6 +19,7 @@ import { dangerZone } from '../src/model/gybe';
 import { entryFor } from '../src/model/panelEntries';
 import { significantHeightM, waveTrains } from '../src/model/waves';
 import { reduce } from '../src/app/store';
+import { buildReviewDoc } from '../scripts/review-doc.mjs';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 
 /** The entries that are complete in every language (3.2): M20's 18, M21's 55 and M22's 58 (every registry id). */
@@ -616,5 +617,42 @@ describe('11. NOT_DRAWN lists exactly the ids that no mesh or rope carries', () 
       const found = text.includes(`'${entry.id}'`) || text.includes(`"${entry.id}"`);
       expect(found, entry.id).toBe(!NOT_DRAWN.has(entry.id));
     }
+  });
+});
+
+describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
+  it('docs/review/ru.md is up to date', () => {
+    const committed = readFileSync('docs/review/ru.md', 'utf8');
+    expect(
+      buildReviewDoc('ru') === committed,
+      'a Russian text changed: run `npm run review-doc -- ru` and commit docs/review/ru.md',
+    ).toBe(true);
+  });
+
+  it('lists every entry once, under the groups of the Learn list', () => {
+    const doc = buildReviewDoc('ru');
+    for (const id of REGISTRY_IDS) {
+      expect(doc.split(`(\`${id}\`)`).length - 1, id).toBe(1);
+    }
+    const labels = [...doc.matchAll(/^## (.+)$/gm)].map((match) => match[1]);
+    const ui = JSON.parse(readFileSync('content/lang/ru/ui.json', 'utf8')) as Record<
+      string,
+      string
+    >;
+    const expected = GROUPS.map((group) =>
+      (ui[`learn.group.${group}`] ?? '').replace(/\s*\(?\{count\}\)?/, '').trim(),
+    );
+    expect(labels.slice(0, GROUPS.length)).toEqual(expected);
+    expect(labels.length).toBe(GROUPS.length + 1);
+  });
+
+  it('is smaller than GitHub shows as Markdown, and has no date', () => {
+    const doc = buildReviewDoc('ru');
+    expect(Buffer.byteLength(doc, 'utf8')).toBeLessThan(450 * 1024);
+    expect(doc).not.toMatch(/\d{4}-\d{2}-\d{2}/);
+  });
+
+  it('refuses a language that has no review wording', () => {
+    expect(() => buildReviewDoc('xx')).toThrow('no review wording for xx');
   });
 });
