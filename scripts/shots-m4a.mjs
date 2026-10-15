@@ -8,6 +8,7 @@ import {
   setCamera,
   setSheet,
   showSection,
+  waitForLink,
 } from './ui.mjs';
 
 /** What a link opens to, in the strip of the Ropes tab. */
@@ -211,8 +212,11 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     await page.getByTestId('reset-button').click();
     await waitUrl(page);
     check('reset: first tap only asks', /js=30/.test(await search(page)), await search(page));
-    await page.getByTestId('reset-button').click();
-    await page.waitForTimeout(800);
+    // The second tap comes straight after the first (Reset waits 4 s for it): with the 3D view
+    // filling the whole phone screen (M26) headless drawing is slow, and a normal click can
+    // wait several frames. The link is then waited for, not guessed with a fixed pause.
+    await page.getByTestId('reset-button').dispatchEvent('click');
+    await waitForLink(page, ['cam=side-port'], ['sel=']).catch(() => undefined);
     const reset = await search(page);
     check(
       'reset: defaults',
