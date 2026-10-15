@@ -49,8 +49,10 @@ export async function liveM16Checks({ openPage, viewports, outDir, prefix, probl
       seen ? seen.values.map((v) => v.toFixed(2)).join(' ') : 'no profile with a gust ahead',
     );
     await shot(page, 'live-phone-gust-coming');
+    // The simulation clock runs slower than the wall clock on a slow runner (the 3D picture now
+    // fills the whole phone screen, M26), so the strip gets up to 80 s of real time, not 40.
     let badge = false;
-    for (let i = 0; i < 80 && !badge; i += 1) {
+    for (let i = 0; i < 160 && !badge; i += 1) {
       badge = await page.getByTestId('strip-gust').isVisible();
       if (!badge) await page.waitForTimeout(500);
     }
