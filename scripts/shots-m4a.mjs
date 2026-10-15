@@ -121,6 +121,8 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     const point = await page.evaluate(() => window.__sailDebug.partPoint('rope_topping_lift', 0));
     if (point) await page.mouse.click(canvas.x + point.x, canvas.y + point.y);
     await waitUrl(page);
+    // The tap leaves the sheet where it is (at its lowest); raise it to read the tab.
+    await setSheet(page, 'half');
     const ropesOpen = String(await sectionShown(page, 'ropes'));
     check(
       `${v} tap topping lift in 3D → panel`,
