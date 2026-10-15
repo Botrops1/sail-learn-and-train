@@ -116,7 +116,7 @@ export function openScene(store: Store, query: string): void {
   });
 }
 
-/** The full link to what is shown now (View tab → Share). */
+/** The full link to what is shown now (Settings → Share). */
 export function shareLink(state: AppState): string {
   const { origin, pathname } = window.location;
   return `${origin}${pathname}${serializeUrlState(state)}`;

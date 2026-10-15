@@ -1026,7 +1026,7 @@
   "visual": {
     "$comment": "Teaching approximations for Phase 1. Not physics. Tune freely, keep them here.",
     "labels3d": {
-      "$comment": "M5: names shown over the 3D view (View tab, Labels in 3D). In priority order: where two labels would overlap on screen, the one higher in the list wins (the selected part's label always shows). 'at' is a point in boat coordinates, or: 'mainSail' / 'jibSail' (the middle of the sail as drawn), 'boom' (distance metres from the gooseneck, moves with the boom), 'rope' (fraction of the way along one strand of the rope as drawn), 'hardware' (the cockpit fitting with this id in cockpitHardware, lift metres above it). Points are estimates chosen to sit on or next to each part; only the drawing uses them.",
+      "$comment": "M5: names shown over the 3D view (Settings, Labels in 3D). In priority order: where two labels would overlap on screen, the one higher in the list wins (the selected part's label always shows). 'at' is a point in boat coordinates, or: 'mainSail' / 'jibSail' (the middle of the sail as drawn), 'boom' (distance metres from the gooseneck, moves with the boom), 'rope' (fraction of the way along one strand of the rope as drawn), 'hardware' (the cockpit fitting with this id in cockpitHardware, lift metres above it). Points are estimates chosen to sit on or next to each part; only the drawing uses them.",
       "list": [
         { "id": "sail_main", "at": "mainSail" },
         { "id": "sail_jib", "at": "jibSail" },

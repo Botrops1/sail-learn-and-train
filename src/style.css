@@ -366,6 +366,8 @@ html[data-layout='stacked'] .info-card {
   flex-direction: column;
   overflow-y: auto;
   overscroll-behavior: contain;
+  /* Clear of a notch, rounded corners and the home bar, as .shell is (the head takes the top). */
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   background: var(--surface);
 }
 
@@ -376,6 +378,7 @@ html[data-layout='stacked'] .info-card {
 html[data-layout='side'] .settings-dialog {
   inset: 0 0 0 auto;
   width: clamp(var(--panel-min), 30%, var(--panel-max));
+  padding-left: 0;
   border-left: 1px solid var(--line);
 }
 
@@ -388,7 +391,7 @@ html[data-layout='side'] .settings-dialog {
   align-items: center;
   justify-content: space-between;
   min-height: var(--touch);
-  padding: 0 0 0 16px;
+  padding: env(safe-area-inset-top) 0 0 16px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
@@ -1276,7 +1279,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   height: 10px;
 }
 
-/* View tab: Share and Reset. */
+/* Settings: Share and Reset. */
 .actions {
   display: flex;
   gap: 8px;

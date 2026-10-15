@@ -118,7 +118,7 @@ export type Action =
   | { type: 'setRopesMode'; mode: RopesMode }
   | { type: 'setLegend'; legend: boolean }
   | { type: 'setLabels'; labels: boolean }
-  /** Reset all (View tab): controls, camera, selection and settings back to the defaults. */
+  /** Reset all (Settings): controls, camera, selection and settings back to the defaults. */
   | { type: 'reset' }
   | { type: 'setCameraPreset'; preset: CameraPreset }
   | { type: 'select'; partId: string | null }
@@ -143,11 +143,11 @@ export type Action =
   | { type: 'newWindPattern'; seed: number }
   /** The time bar (M10, issue #25): a scale from `windModes.timeScales`; refused where the bar has no speed part. */
   | { type: 'setTimeScale'; scale: number }
-  /** The View tab's switch for the time bar's speed part. Off puts the time scale back to ×1. */
+  /** The Settings switch for the time bar's speed part. Off puts the time scale back to ×1. */
   | { type: 'setTimeBar'; timeBar: boolean }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
   | { type: 'setClock'; utcMs: number }
-  /** The View tab's switch for the clock chip. */
+  /** The Settings switch for the clock chip. */
   | { type: 'setClockShown'; shown: boolean }
   /** New sails: the flogging damage goes back to 0 (M9). */
   | { type: 'repairSails' }

@@ -428,6 +428,7 @@ The sheet (M26), modes and sections (M27), the mini-map and its switch (M28).
 - The long Map and Free explanation of the old `cam.hint` is dropped with the key: the new `cam.menuHint` (spec text) is all the menu says.
 - Scene and screenshot names that said "view-tab" now say "settings" (`settings-debug`, `settings-labels-toggle`, `settings-share-reset`, `ru-settings`, `live-desktop-settings-detail-high`).
 - `scripts/ui.mjs` is added to the browser-globals block of `eslint.config.js` (its helpers run code inside the page).
+- Owner's answers on PR #62 ("accept all questions", "fix 1 and 4 from independent review"): the camera menu keeps the short `cam.menuHint`; the tall menu on a phone is accepted until M26. The settings dialog is padded with `env(safe-area-inset-*)` (the head takes the top inset and stays pinned while the dialog scrolls; the side layout leaves the left inset out). Comments that said "View tab" now say Settings. Left for M29 (owner did not ask for them now): the chip showing the full view name instead of the short word ("Stbd"), and linking the menu hint with `aria-describedby`.
 - Only the M25 behaviour of the helpers of 3.4 is written; `setSheet`, `dragHandle`, `setMode` and `openAllSections` come with M26 and M27.
 
 ---

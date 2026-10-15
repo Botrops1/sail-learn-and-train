@@ -6,7 +6,7 @@ import type { RigState } from './sim';
 import { distance, vec3, type Vec3 } from './vec3';
 
 /**
- * Labels in 3D (M5, PHASE1_SPEC 5.2 View tab): where each label sits on the boat, as the rig is
+ * Labels in 3D (M5, PHASE1_SPEC 5.2, now in Settings): where each label sits on the boat, as the rig is
  * drawn now. Pure: the 3D view projects the points to the screen and the UI places the names.
  * The list and its order (the priority when labels overlap) come from `visual.labels3d`.
  */
