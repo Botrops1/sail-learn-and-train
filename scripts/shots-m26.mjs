@@ -236,10 +236,13 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm26 rotate', '?wd=60&ws=12');
     await setSheet(page, 'full');
+    const layoutIs = (layout) =>
+      page.waitForFunction((wanted) => document.documentElement.dataset.layout === wanted, layout);
     await page.setViewportSize({ width: 844, height: 390 });
-    await page.waitForTimeout(400);
+    await layoutIs('side');
     const side = await page.evaluate(() => document.documentElement.dataset.layout);
     await page.setViewportSize({ width: 390, height: 844 });
+    await layoutIs('stacked');
     await page.waitForTimeout(400);
     const box = await sheetBox(page);
     check(
