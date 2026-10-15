@@ -40,6 +40,7 @@ import { liveM20Checks, M20_SCENES } from './shots-m20.mjs';
 import { liveM21Checks, M21_SCENES } from './shots-m21.mjs';
 import { liveM22Checks, M22_SCENES } from './shots-m22.mjs';
 import { liveM23Checks, M23_SCENES } from './shots-m23.mjs';
+import { liveM24Checks, M24_SCENES } from './shots-m24.mjs';
 
 const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
 const PREFIX = process.env.SHOTS_PREFIX ?? '';
@@ -172,6 +173,7 @@ const SCENES = [
   ...M21_SCENES.map((scene) => ({ ...scene, name: `m21-${scene.name}` })),
   ...M22_SCENES.map((scene) => ({ ...scene, name: `m22-${scene.name}` })),
   ...M23_SCENES.map((scene) => ({ ...scene, name: `m23-${scene.name}` })),
+  ...M24_SCENES.map((scene) => ({ ...scene, name: `m24-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -803,6 +805,7 @@ try {
     m21: () => liveM21Checks(live),
     m22: () => liveM22Checks(live),
     m23: () => liveM23Checks(live),
+    m24: () => liveM24Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

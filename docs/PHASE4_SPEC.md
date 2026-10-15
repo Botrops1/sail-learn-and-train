@@ -1,6 +1,6 @@
 # Phase 4 specification: learning layer
 
-Status: **planned**, owner's answers recorded (planning chat and planning PR #53, 2026-10-14) · Last updated: 2026-10-14
+Status: **done** (M20–M24; M24 in PR #60), Russian text awaiting a sailor's review · Last updated: 2026-10-15
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1–3 are done; [`PHASE1_SPEC.md`](PHASE1_SPEC.md), [`PHASE2_SPEC.md`](PHASE2_SPEC.md) and [`PHASE3_SPEC.md`](PHASE3_SPEC.md) still describe everything Phase 4 builds on (layout, panel and tabs, info card, registry ids, URL state, browser checks). This file says only what Phase 4 adds or changes. Phase 4 changes no physics.
 
@@ -2494,11 +2494,18 @@ The Phase 4 browser checks run in their own CI part (added in M20, 6.9), which a
 
 - `docs/LANGUAGES.md` (new, short, plain words): how to add a language: copy `content/lang/en/` to `content/lang/<code>/`; translate both files following the rules of PHASE4_SPEC 3.3 adapted to the language (its own traditional alternative terms, never another language's); set every `textStatus` to `draft`; if the language does not use Latin letters, the Latin scan applies to it too and `latin-words.json` lists the allowed exceptions; run `npm test` (the tests list every missing or extra key and every incomplete entry); add the language's wording to `scripts/review-doc.mjs` and run `npm run review-doc -- <code>` for a reviewer. Nothing else changes: the Language setting lists the new language by itself.
 - README: in "What you can do", a new item **Learn** (the Learn tab, More, Show me, search, how sure the app is) and an item **Language** (English or Russian, `lang=ru`); the line "Later phases add waves, a learning layer with Russian names, …" is rewritten to say that Phases 1–4 are done and name what later phases add (harbours and anchoring, exercises, more languages); the documents table gains `PHASE3_SPEC.md`, `PHASE4_SPEC.md` and `LANGUAGES.md`.
-- ROADMAP: Phase 4 status "Done (M24, PR #<n>), Russian text awaiting a sailor's review" once the owner signs off, and a decisions-log row; this spec's status line likewise.
+- ROADMAP: Phase 4 status "Done (M24, PR #60), Russian text awaiting a sailor's review" once the owner signs off, and a decisions-log row; this spec's status line likewise.
 
 ### 10.5 Done when
 
 Every item of section 11 is ticked in the PR. **The agent ticks** items 1, 4, 5, 6, 7, 8 and 10, and item 3 from the browser checks; **the owner ticks** item 2, item 3 on the phone, and item 9 ("smooth on the owner's phone"). CI `browser-checks` green. The PR description links `docs/review/ru.md` with a link to the PR's latest commit (`https://github.com/Botrops1/sail-learn-and-train/blob/<sha>/docs/review/ru.md`, since merged branches are deleted) and says that the reviewer answers by id (for example `term_north: ок`). The sailor's corrections come later, in a `/bug` PR that also sets their entries' `textStatus` to `sailor-reviewed`.
+
+### 10.6 Decided in the M24 PR
+
+- **Alternatives may be empty in one language.** The review script's "English has it, Russian lacks it" error covers the text fields (`name`, `short`, `what`, `onThisBoat`, `showMe`) and the mistakes, not the alternative names: each language has its own traditional terms (owner, section 12), so 16 entries have English alternatives (for example "jammer", "puff") and none in Russian. The review document shows `—` for them; the sailor may add Russian ones.
+- **The groups of the review document** come from the order of the `learn.group.*` strings in `ru/ui.json`; a test pins that order to `GROUPS` (`src/model/glossary.ts`).
+- **The check opens `?`** as the spec says; `openPage` adds `held=1`, `sea=flat` and `clock=0`.
+- **Size:** `docs/review/ru.md` is about 320 KB, under the 450 KB limit.
 
 ---
 
