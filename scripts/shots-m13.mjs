@@ -25,14 +25,15 @@ export const M13_SCENES = [
     // Easy mode with everything of Phase 2 in the Ropes tab: autopilot on a wind angle.
     name: 'autopilot',
     query: '?wd=60&ws=12&ms=30&js=100&ap=wind&cam=side-port',
-    scrollTo: '.ropes-easy [data-testid="autopilot"]',
+    section: 'autopilot',
+    scrollTo: '[data-section="autopilot"] [data-testid="autopilot"]',
     waitMs: 1500,
   },
   {
     // The sails panel: trim chips and hints.
     name: 'sails',
     query: '?wd=60&ws=12&ms=10&js=100&cam=side-port',
-    scrollTo: '.ropes-easy [data-testid="sails-panel"]',
+    scrollTo: '[data-section="sails"] [data-testid="sails-panel"]',
     waitMs: 1500,
   },
 ];

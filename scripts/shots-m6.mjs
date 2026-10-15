@@ -26,7 +26,8 @@ export const M6_SCENES = [
   {
     name: 'autopilot',
     query: '?wd=90&ws=12&ms=40&js=100&cam=side-port',
-    scrollTo: '.ropes-easy [data-testid="autopilot"]',
+    section: 'autopilot',
+    scrollTo: '[data-section="autopilot"] [data-testid="autopilot"]',
     waitMs: 2000,
   },
   {
@@ -37,7 +38,8 @@ export const M6_SCENES = [
   {
     name: 'autopilot-wind',
     query: '?wd=45&ws=12&ms=12&js=0&ap=wind&cam=top',
-    scrollTo: '.ropes-easy [data-testid="autopilot"]',
+    section: 'autopilot',
+    scrollTo: '[data-section="autopilot"] [data-testid="autopilot"]',
     waitMs: 2000,
   },
 ];
@@ -114,7 +116,8 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
   {
     const { context, page } = await openPage(phone, 'm6 autopilot', '?wd=90&ws=12&ms=40&js=100');
     await page.waitForTimeout(1000);
-    await page.locator('.ropes-easy').getByTestId('autopilot-turn-10').click();
+    await showSection(page, 'autopilot');
+    await page.locator('[data-section="autopilot"]').getByTestId('autopilot-turn-10').click();
     check(
       'autopilot +10 target',
       (await text(page, 'strip-auto')) === 'AUTO 10°',

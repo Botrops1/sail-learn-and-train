@@ -5,6 +5,7 @@
 // them Sailing.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { showSection } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M12_SCENES = [
@@ -12,7 +13,8 @@ export const M12_SCENES = [
     // Easy mode: the Engine block under the autopilot, engine running at 65 %.
     name: 'engine-easy',
     query: '?ws=0&eng=1&lv=65&cam=side-port',
-    scrollTo: '.engine-panel',
+    section: 'engine',
+    scrollTo: '[data-section="engine"] [data-testid="engine-panel"]',
     waitMs: 1500,
   },
   {
@@ -40,7 +42,7 @@ export async function liveM12Checks({ openPage, viewports, outDir, prefix, probl
   const [phone] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
   const speedKn = async (page) => parseFloat(await text(page, 'strip-speed'));
-  const easy = (page) => page.locator('.ropes-easy');
+  const easy = (page) => page.locator('[data-section="engine"]');
 
   // Idle ahead: "Engine 8xx rpm", and the speed it settles at (a link opens settled).
   {
@@ -77,6 +79,7 @@ export async function liveM12Checks({ openPage, viewports, outDir, prefix, probl
   // Start and Stop, and the lever slider (Easy mode).
   {
     const { context, page } = await openPage(phone, 'm12 start stop', '?ws=0&cam=top');
+    await showSection(page, 'engine');
     const panel = easy(page).getByTestId('engine-panel');
     await panel.scrollIntoViewIfNeeded();
     check(
@@ -128,7 +131,10 @@ export async function liveM12Checks({ openPage, viewports, outDir, prefix, probl
       kn = await speedKn(page);
     }
     check('astern: the speed goes negative', kn < -1, String(kn));
-    const status = await easy(page).getByTestId('autopilot-status').textContent();
+    const status = await page
+      .locator('[data-section="autopilot"]')
+      .getByTestId('autopilot-status')
+      .textContent();
     check(
       'astern: the autopilot says it does not steer',
       /does not steer/.test(status ?? ''),
@@ -145,6 +151,7 @@ export async function liveM12Checks({ openPage, viewports, outDir, prefix, probl
       'm12 shifting',
       '?ws=0&eng=1&lv=100&tx=0.25&cam=top',
     );
+    await showSection(page, 'engine');
     const panel = easy(page).getByTestId('engine-panel');
     await panel.scrollIntoViewIfNeeded();
     await page.waitForTimeout(500);

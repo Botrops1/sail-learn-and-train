@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { closeSettings, openSettings, showSection } from './ui.mjs';
+import { closeSettings, openSettings, openAllSections, showSection } from './ui.mjs';
 
 /** Every size, all in Russian; the section is opened by its id. */
 export const M23_SCENES = [
@@ -32,8 +32,71 @@ function allowedLatin() {
   return [...allowed];
 }
 
-/** The tabs in the page order, by their (Russian) names. */
-const TAB_NAMES = ['Концы', 'Ветер', 'Обучение'];
+/** The section titles in Russian (M27: the tabs are sections). */
+const SECTION_NAMES = { ropes: 'Концы', conditions: 'Условия', learn: 'Обучение' };
+
+/** Latin runs not in the allowed set and curly quotes, in the visible text of the page. */
+export function scanLatin(page) {
+  const allowed = allowedLatin();
+  return page.evaluate((allowedWords) => {
+    const allowedSet = new Set(allowedWords);
+    const skip = 'a, input, textarea, [data-testid="build-version"], [data-testid="debug-overlay"]';
+    const found = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const element = node.parentElement;
+      if (!element || element.closest(skip) || ['SCRIPT', 'STYLE'].includes(element.tagName)) {
+        continue;
+      }
+      if (element.closest('[hidden], [aria-hidden="true"]')) continue;
+      if (element.getClientRects().length === 0) continue;
+      if (getComputedStyle(element).visibility === 'hidden') continue;
+      const text = (node.textContent ?? '').normalize('NFC');
+      for (const word of text.match(/[A-Za-zÀ-ÿ&]{2,}/g) ?? []) {
+        if (!allowedSet.has(word.toLowerCase())) found.push(`"${word}" in "${text.trim()}"`);
+      }
+      if (/[“”]/.test(text)) found.push(`curly quote in "${text.trim()}"`);
+    }
+    return found;
+  }, allowed);
+}
+
+/** Buttons, segments, section headers and labels whose text is wider than their box. */
+export function findClipped(page) {
+  return page.evaluate(() => {
+    const found = [];
+    for (const element of document.querySelectorAll('button, .segment, label')) {
+      if (element.closest('[hidden], [aria-hidden="true"], .visually-hidden')) continue;
+      if (element.classList.contains('visually-hidden')) continue;
+      const rect = element.getBoundingClientRect();
+      if (rect.width < 2 || rect.height < 2) continue;
+      if (element.scrollWidth > element.clientWidth + 1) {
+        const name = element.getAttribute('data-testid') ?? element.className;
+        found.push(`${element.tagName.toLowerCase()}[${name}] "${element.textContent?.trim()}"`);
+      }
+    }
+    // Text drawn inside a picture (SVG) is cut off at the picture's edge, which scrollWidth
+    // cannot see: its box must lie inside the picture's box.
+    for (const text of document.querySelectorAll('svg text')) {
+      if (text.closest('[hidden], [aria-hidden="true"], .visually-hidden')) continue;
+      if (getComputedStyle(text).visibility === 'hidden') continue;
+      const svg = text.ownerSVGElement;
+      if (!svg) continue;
+      const picture = svg.getBoundingClientRect();
+      const box = text.getBoundingClientRect();
+      if (box.width < 2 || picture.width < 2) continue;
+      if (
+        box.right > picture.right + 1 ||
+        box.left < picture.left - 1 ||
+        box.bottom > picture.bottom + 1 ||
+        box.top < picture.top - 1
+      ) {
+        found.push(`svg text "${text.textContent?.trim()}" runs past its picture`);
+      }
+    }
+    return found;
+  });
+}
 
 export async function liveM23Checks({ openPage, viewports, outDir, prefix, problems }) {
   const check = (what, ok, detail) => {
@@ -42,7 +105,6 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
   };
   const [phone] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
-  const allowed = allowedLatin();
 
   /** The address bar is written 300 ms after a change: poll up to 1 s. */
   const wait = async (page, test, text) => {
@@ -55,78 +117,25 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
   };
   const has = (page, text) => wait(page, (value) => location.search.includes(value), text);
 
-  /** Latin runs not in the allowed set and curly quotes, in the visible text of the page. */
-  const scanText = (page) =>
-    page.evaluate((allowedWords) => {
-      const allowedSet = new Set(allowedWords);
-      const skip =
-        'a, input, textarea, [data-testid="build-version"], [data-testid="debug-overlay"]';
-      const found = [];
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-        const element = node.parentElement;
-        if (!element || element.closest(skip) || ['SCRIPT', 'STYLE'].includes(element.tagName)) {
-          continue;
-        }
-        if (element.closest('[hidden], [aria-hidden="true"]')) continue;
-        if (element.getClientRects().length === 0) continue;
-        if (getComputedStyle(element).visibility === 'hidden') continue;
-        const text = (node.textContent ?? '').normalize('NFC');
-        for (const word of text.match(/[A-Za-zÀ-ÿ&]{2,}/g) ?? []) {
-          if (!allowedSet.has(word.toLowerCase())) found.push(`"${word}" in "${text.trim()}"`);
-        }
-        if (/[“”]/.test(text)) found.push(`curly quote in "${text.trim()}"`);
-      }
-      return found;
-    }, allowed);
+  const scanText = scanLatin;
+  const clipped = findClipped;
 
-  /** Buttons, segments, tabs and labels whose text is wider than their box. */
-  const clipped = (page) =>
-    page.evaluate(() => {
-      const found = [];
-      for (const element of document.querySelectorAll('button, .segment, .tab, label')) {
-        if (element.closest('[hidden], [aria-hidden="true"], .visually-hidden')) continue;
-        if (element.classList.contains('visually-hidden')) continue;
-        const rect = element.getBoundingClientRect();
-        if (rect.width < 2 || rect.height < 2) continue;
-        if (element.scrollWidth > element.clientWidth + 1) {
-          const name = element.getAttribute('data-testid') ?? element.className;
-          found.push(`${element.tagName.toLowerCase()}[${name}] "${element.textContent?.trim()}"`);
-        }
-      }
-      // Text drawn inside a picture (SVG) is cut off at the picture's edge, which scrollWidth
-      // cannot see: its box must lie inside the picture's box.
-      for (const text of document.querySelectorAll('svg text')) {
-        if (text.closest('[hidden], [aria-hidden="true"], .visually-hidden')) continue;
-        if (getComputedStyle(text).visibility === 'hidden') continue;
-        const svg = text.ownerSVGElement;
-        if (!svg) continue;
-        const picture = svg.getBoundingClientRect();
-        const box = text.getBoundingClientRect();
-        if (box.width < 2 || picture.width < 2) continue;
-        if (
-          box.right > picture.right + 1 ||
-          box.left < picture.left - 1 ||
-          box.bottom > picture.bottom + 1 ||
-          box.top < picture.top - 1
-        ) {
-          found.push(`svg text "${text.textContent?.trim()}" runs past its picture`);
-        }
-      }
-      return found;
-    });
-
-  // 1. The Russian page: html lang, the three tabs, the language control.
+  // 1. The Russian page: html lang, the section titles, the language control.
   {
     const { context, page } = await openPage(phone, 'm23 basics', '?lang=ru');
     await page.waitForTimeout(500);
     const lang = await page.evaluate(() => document.documentElement.lang);
     check('html lang is ru', lang === 'ru', lang);
-    const tabs = await page.getByRole('tab').allInnerTexts();
+    const titles = {};
+    for (const id of Object.keys(SECTION_NAMES)) {
+      titles[id] = (
+        await page.getByTestId(`section-toggle-${id}`).locator('.section-head-title').innerText()
+      ).trim();
+    }
     check(
-      'the three tabs in Russian',
-      JSON.stringify(tabs.map((tab) => tab.trim())) === JSON.stringify(TAB_NAMES),
-      tabs.join(' | '),
+      'the section titles in Russian',
+      JSON.stringify(titles) === JSON.stringify(SECTION_NAMES),
+      JSON.stringify(titles),
     );
     await openSettings(page);
     const checked = await page.getByTestId('language-ru').isChecked();
@@ -145,6 +154,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
     for (const [query, tabs] of views) {
       const { context, page } = await openPage(phone, `m23 scan ${query}`, query);
       await page.waitForTimeout(600);
+      await openAllSections(page);
       for (const tab of tabs) {
         if (tab === 'settings') await openSettings(page);
         else await showSection(page, tab);
@@ -198,14 +208,22 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
     await page.locator('label.segment', { has: page.getByTestId('language-en') }).click();
     await page.waitForURL((url) => !url.search.includes('lang='), { timeout: 5000 });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
-    const ropes = (await page.getByTestId('tab-ropes').innerText()).trim();
-    check('English: no lang in the address bar and the Ropes tab', ropes === 'Ropes', ropes);
+    const ropeTitle = (
+      await page.getByTestId('section-toggle-ropes').locator('.section-head-title').innerText()
+    ).trim();
+    check(
+      'English: no lang in the address bar and the Ropes section',
+      ropeTitle === 'Ropes',
+      ropeTitle,
+    );
     await openSettings(page);
     await page.locator('label.segment', { has: page.getByTestId('language-ru') }).click();
     await page.waitForURL((url) => url.search.includes('lang=ru'), { timeout: 5000 });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
-    const tabs = (await page.getByTestId('tab-ropes').innerText()).trim();
-    check('Russian again: the tab reads Концы', tabs === 'Концы', tabs);
+    const title = (
+      await page.getByTestId('section-toggle-ropes').locator('.section-head-title').innerText()
+    ).trim();
+    check('Russian again: the section reads Концы', title === 'Концы', title);
     await context.close();
   }
 
