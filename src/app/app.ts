@@ -88,6 +88,7 @@ export function startApp(host: HTMLElement): void {
       (panel.activeTab() === 'ropes' && ropesTabShows(partId)) ||
       (panel.activeTab() === 'learn' && store.getState().learn === partId),
     atPeek: sheet.atPeek,
+    atFull: sheet.atFull,
     showLearn: () => panel.showTab('learn'),
   });
   panel.onTabChange(() => card.refresh());

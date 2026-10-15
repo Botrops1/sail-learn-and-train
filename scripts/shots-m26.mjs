@@ -123,24 +123,25 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 5. Framing: the boat's origin and the masthead lie between the top area and the chip row.
+  // 5. Framing: the masthead and the bottom of the keel lie between the top area and the chip
+  // row (the whole boat is in view), at peek and at half.
   {
     const { context, page } = await openPage(phone, 'm26 framing', `${BOAT}&debug=1`);
     for (const height of ['peek', 'half']) {
       await setSheet(page, height);
       await page.waitForTimeout(800);
       const points = await page.evaluate(() => ({
-        origin: window.__sailDebug.project(0, 0, 0),
-        mast: window.__sailDebug.project(0, 10, 0),
+        masthead: window.__sailDebug.project(0, 22, 0),
+        keel: window.__sailDebug.project(0, -2.4, 0),
         top: document.querySelector('[data-testid="view-top"]').getBoundingClientRect().bottom,
       }));
       const canvas = await page.locator('canvas.scene-canvas').boundingBox();
       const bottom = await viewBottom(page);
       const inside = (point) => canvas.y + point.y > points.top && canvas.y + point.y < bottom;
       check(
-        `the boat is framed at ${height}`,
-        inside(points.origin) && inside(points.mast),
-        `origin y ${canvas.y + points.origin.y}, mast y ${canvas.y + points.mast.y}, free ${points.top}–${bottom}`,
+        `the whole boat is framed at ${height}`,
+        inside(points.masthead) && inside(points.keel),
+        `masthead y ${Math.round(canvas.y + points.masthead.y)}, keel y ${Math.round(canvas.y + points.keel.y)}, free ${Math.round(points.top)}–${Math.round(bottom)}`,
       );
       if (height === 'half') await shot(page, 'live-phone-m26-framing-half');
     }
@@ -175,6 +176,21 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     );
     await shot(second.page, 'live-phone-m26-card-peek');
     await second.context.close();
+    // At full the card would cover the instruments: it waits, and is back when the sheet comes down.
+    const third = await openPage(phone, 'm26 card full', '?sel=part_boom&wd=60&ws=12');
+    await setSheet(third.page, 'full');
+    check(
+      'at full the card is hidden',
+      await third.page.getByTestId('info-card').isHidden(),
+      'the card is still shown',
+    );
+    await setSheet(third.page, 'peek');
+    check(
+      'and it is back below full',
+      !(await third.page.getByTestId('info-card').isHidden()),
+      'the card is still hidden',
+    );
+    await third.context.close();
   }
 
   // 7. The map ends at the sheet's top; its zoom buttons are above it.

@@ -22,6 +22,8 @@ export interface Sheet {
   head: HTMLElement;
   /** Stacked layout and height 'peek' (PHASE5_SPEC 3.1). */
   atPeek(): boolean;
+  /** Stacked layout and height 'full': the sheet covers the boat and the room above the chip row. */
+  atFull(): boolean;
   /**
    * The bottom inset for the 3D framing: `cameraInsetPx(height, space)` plus the sheet's bottom
    * padding (the phone's safe area). Stacked layout only; 0 in the side layout.
@@ -145,11 +147,16 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
     if (event.target === sheet && event.propertyName === 'height') endMoving();
   });
   sheet.addEventListener('transitioncancel', (event) => {
-    if (event.target === sheet && event.propertyName === 'height') endMoving();
+    // A newer change cancels the slide it takes over from: that one is still moving, so only
+    // a cancel with nothing left animating ends it.
+    if (event.target !== sheet || event.propertyName !== 'height') return;
+    if (sheet.getAnimations().length === 0) endMoving();
   });
 
   // --- The handle: drag, tap, keys -------------------------------------------------------------
-  let drag: { startY: number; start: SheetHeight; px: number; samples: Sample[] } | undefined;
+  let drag:
+    | { startY: number; start: SheetHeight; startPx: number; px: number; samples: Sample[] }
+    | undefined;
 
   const bounds = () => {
     const current = space();
@@ -163,10 +170,20 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
     } catch {
       // The pointer is already gone: the drag still follows the events the handle gets.
     }
-    const px = sheetHeightPx(height, space());
+    let px = sheetHeightPx(height, space());
+    if (pending) {
+      // Grabbed in the middle of a slide: the drag starts from where the sheet is now, with the
+      // slide stopped there (a transition left on would make the sheet trail the finger).
+      px = sheet.offsetHeight - safeBottom();
+      changeId += 1;
+      pending = false;
+      setMoving(false);
+      writeSize(px + safeBottom());
+    }
     drag = {
       startY: event.clientY,
       start: height,
+      startPx: px,
       px,
       samples: [{ time: event.timeStamp, px }],
     };
@@ -175,8 +192,7 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
   handle.addEventListener('pointermove', (event) => {
     if (!drag) return;
     const { min, max } = bounds();
-    const start = sheetHeightPx(drag.start, space());
-    drag.px = Math.min(max, Math.max(min, start + (drag.startY - event.clientY)));
+    drag.px = Math.min(max, Math.max(min, drag.startPx + (drag.startY - event.clientY)));
     drag.samples.push({ time: event.timeStamp, px: drag.px });
     if (Math.abs(event.clientY - drag.startY) >= SHEET.tapMaxMovePx) {
       sheet.dataset.dragging = 'true';
@@ -251,6 +267,7 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
     onChange: (listener) => listeners.push(listener),
     head,
     atPeek: () => stacked() && height === 'peek',
+    atFull: () => stacked() && height === 'full',
     cameraInset: () => (stacked() ? cameraInsetPx(height, space()) + safeBottom() : 0),
   };
 }

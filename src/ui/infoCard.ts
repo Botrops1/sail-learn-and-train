@@ -11,6 +11,12 @@ export interface InfoCardOptions {
   shownInPanel?: (partId: string) => boolean;
   /** True while the phone sheet sits at its lowest height: the panel shows nothing then. */
   atPeek?: () => boolean;
+  /**
+   * True while the phone sheet is at full height: the boat is hidden and there is no room above
+   * the sheet for the card (it would cover the instruments), so the card waits until the sheet
+   * comes down.
+   */
+  atFull?: () => boolean;
   /** Opens the Learn tab ("More"), also when the entry is already open there. */
   showLearn?: () => void;
 }
@@ -73,7 +79,7 @@ export function createInfoCard(
       !options.atPeek?.() &&
       options.shownInPanel?.(info.id),
     );
-    card.hidden = !info || inPanel;
+    card.hidden = !info || inPanel || Boolean(options.atFull?.());
     // The selection is still the card's (a tap found it); the panel shows it instead.
     card.toggleAttribute('data-in-panel', inPanel);
     if (!info) {
