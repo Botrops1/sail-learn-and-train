@@ -124,11 +124,12 @@ export async function liveM14Checks({ openPage, viewports, outDir, prefix, probl
   // Tap on open water: the info card says "Water surface".
   {
     const { context, page } = await openPage(phone, 'm14 tap water', '?wd=90&ws=15&cam=top');
-    // At half height the tap point lies inside the chip row; at peek it is on the water.
+    // At peek the boat is framed larger: the sails and their labels now cover the left side, so
+    // the tap is on the open water to the right of the hull.
     await setSheet(page, 'peek');
     await page.waitForTimeout(2000);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
-    await page.mouse.click(box.x + box.width * 0.12, box.y + box.height * 0.45);
+    await page.mouse.click(box.x + box.width * 0.92, box.y + box.height * 0.45);
     await page.waitForTimeout(500);
     const name = await page.locator('[data-testid="info-card"] .card-name').first().textContent();
     check('tap on the water', name === 'Water surface', JSON.stringify(name));
