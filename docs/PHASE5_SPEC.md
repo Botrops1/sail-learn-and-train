@@ -947,7 +947,11 @@ The second column (M29).
 
 ### 9.10 Decided in the M28 PR
 
-(empty)
+- The link writes only `mm=0` (never `mm=1`): the default is on, and `mm=1` is accepted when read (as 9.2 says; written down so nobody adds a `1` branch).
+- `createCameraChip` is only created when the map view exists (`if (map)` in `app.ts`), since it now needs the map for the Close chip; the map is created whenever the 3D view is, so nothing changes for the owner.
+- A mini-map that has just appeared is drawn at the next frame, not after the 100 ms frame-rate pause, so it is never an empty box.
+- Extra live check 9 in `shots-m28.mjs`: the four chips (mode, camera, Close, gear) fit a 360 px phone in Russian with the map open (the CSS of 9.4 promises it).
+- Test 6 of 9.7 reads the centre pixel of the mini-map's canvas: the boat's hull colour (199, 202, 205), not the water.
 
 ---
 
