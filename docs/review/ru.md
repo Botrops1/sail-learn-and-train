@@ -612,6 +612,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### киповая планка (`fit_fairlead`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Fairlead | киповая планка |
+| Другие названия | — | — |
+| Коротко | A smooth guide on the deck edge that a mooring line runs through. | Гладкая направляющая на краю палубы, через которую проходит швартов. |
+| Что делает / что значит | A fairlead keeps a mooring line in place where it leaves the boat, so it does not rub on the deck edge or jump off. | Киповая планка удерживает швартов на месте там, где он выходит за борт, чтобы он не тёрся о край палубы и не соскакивал. |
+| На этой яхте | One on each side near the bow and near the stern, beside the cleats. Their exact places are a guess. | По одной с каждого борта у носа и у кормы, рядом с утками. Точные места угаданы. |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### козырёк кокпита (`fit_sprayhood`)
 
 | Поле | English | Русский |
@@ -740,7 +755,7 @@
 | Другие названия | — | утка |
 | Коротко | A strong fitting for tying the mooring lines to. | Прочная деталь, к которой привязывают швартовы. |
 | Что делает / что значит | Lines to a pier or a buoy are made fast round a cleat. | Швартовы к причалу или бую закрепляют вокруг утки. |
-| На этой яхте | Cleats at the bow (photo). The app does not draw them yet. | Утки на носу (фото). Приложение пока не рисует их. |
+| На этой яхте | Three on each side, on the raised rim at the deck edge: at the bow, in the middle and at the stern. The bow cleats are in a photo; the other places are partly a guess. | По три с каждого борта, на невысоком бортике по краю палубы: на носу, посередине и на корме. Носовые утки видны на фото, остальные места отчасти угаданы. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |

@@ -524,6 +524,12 @@ Russian: name `fit_fairlead` «киповая планка», `alternatives: []`
 Done when: 8.5 passes; the glossary tests pass; positions without a photo are assumptions in `BOAT_REFERENCE.md`.
 Not in this milestone: mooring lines on the cleats (Phase 7).
 
+### 8.8 Decided in the M32 PR
+
+- **`tests/picking.test.ts`, "an isolated small fitting still responds to a tap 20 px away"** (changed in M31 to the mainsheet boom blocks). With the cleats drawn, the port midship cleat's tap point lies close to the boom blocks' in the whole-boat phone side view, so a tap 14 px aside correctly finds the cleat and the boom blocks are no longer isolated there (found by running the test). The test now uses the masthead wind indicator (`part_windex`), a small fitting with nothing near it that passes all three offsets. This is a change to an existing test that 8.4 does not list; the cleat tap points stay as 8.3 gives them. Listed here for the owner to confirm.
+- **Tap check (`m32 tap`):** the spec asks for a tap on the starboard midship cleat. Because the six cleats share one mesh, the script takes the cleat hit point nearest the middle of the screen from `__sailDebug.hitCentres()` (the close-up looks at the starboard cleat), so the deck height is not copied into the script. A second tap check does the same for the bow fairlead (`cleat-bow` close-up), because the WORKFLOW checklist says "tap a fairlead: Fairlead".
+- **No `photo:cleat` source** was added to the registry: `sourceKeys` has no such key (the owner has not uploaded `cleat-closeup.jpg`).
+
 ---
 
 ## 9. M33: Fenders and the Harbour gear block

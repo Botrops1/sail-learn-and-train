@@ -92,6 +92,7 @@ const COMPLETE_IDS = [
   'fit_mooring_cleat',
   'fit_anchor',
   'fit_anchor_chain',
+  'fit_fairlead',
   'fit_autopilot_control',
   'fit_instrument_display',
   'env_water',
@@ -578,7 +579,7 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
 
   it('the groups have the expected sizes and members', () => {
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      9, 10, 13, 6, 14, 18, 12, 14, 28, 9,
+      9, 10, 13, 6, 15, 18, 12, 14, 28, 9,
     ]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',

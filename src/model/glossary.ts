@@ -102,7 +102,6 @@ export const NOT_DRAWN: ReadonlySet<string> = new Set([
   'fit_clutch',
   'fit_winch',
   'fit_compass',
-  'fit_mooring_cleat',
 ]);
 
 export type SourceLink =
