@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
-import { channelPath, sprayhoodHalfWidth, sprayhoodTopY } from '../../model/deckVolumes';
+import {
+  channelFairingRings,
+  channelPath,
+  sprayhoodHalfWidth,
+  sprayhoodTopY,
+} from '../../model/deckVolumes';
 import { halfBeamAt, sheerAt } from '../../model/hullShape';
 import type { Detail } from '../../model/settings';
 import type { Vec3 } from '../../model/vec3';
@@ -12,6 +17,7 @@ export function buildDeckGear(materials: BoatMaterials, detail: Detail = 'high')
   return [
     ...buildSprayhood(materials, detail),
     buildLineChannels(materials),
+    buildChannelFairings(materials),
     ...buildLifelines(materials, detail),
   ];
 }
@@ -102,6 +108,39 @@ function buildLineChannels(materials: BoatMaterials): THREE.Object3D {
     }
   }
   return partMesh('fit_line_channels', [triangles(positions)], materials.cover, segments);
+}
+
+/**
+ * Channel fairings (Phase 6): the solid moulding under each channel's slope from the
+ * coachroof's aft end down to the coaming, so no deck or cockpit shows under the cover. Quads
+ * between neighbouring rings (inner side, outer side, bottom) and an end cap at each end; the
+ * channel cover sits on top and closes it.
+ */
+function buildChannelFairings(materials: BoatMaterials): THREE.Object3D {
+  const positions: number[] = [];
+  for (const side of [1, -1] as const) {
+    const rings = channelFairingRings(side);
+    // Corners are [inner-bottom, inner-top, outer-top, outer-bottom]; the corner order of a
+    // quad only matters for the computed normal, so port is wound the other way.
+    const quad = (a: Vec3, b: Vec3, c: Vec3, d: Vec3) =>
+      side > 0 ? pushQuad(positions, a, b, c, d) : pushQuad(positions, d, c, b, a);
+    for (let i = 0; i < rings.length - 1; i += 1) {
+      const a = rings[i] as Vec3[];
+      const b = rings[i + 1] as Vec3[];
+      for (const [k, next] of [
+        [0, 1],
+        [2, 3],
+        [3, 0],
+      ] as const) {
+        quad(a[k] as Vec3, a[next] as Vec3, b[next] as Vec3, b[k] as Vec3);
+      }
+    }
+    const first = rings[0] as Vec3[];
+    const last = rings[rings.length - 1] as Vec3[];
+    quad(first[0] as Vec3, first[3] as Vec3, first[2] as Vec3, first[1] as Vec3);
+    quad(last[0] as Vec3, last[1] as Vec3, last[2] as Vec3, last[3] as Vec3);
+  }
+  return partMesh('part_coachroof', [triangles(positions)], materials.gelcoat);
 }
 
 /**

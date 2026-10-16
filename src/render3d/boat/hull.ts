@@ -1,6 +1,13 @@
 import type * as THREE from 'three';
 import { boat } from '../../model/boat';
-import { coachroofBaseY, coachroofHalfOutline } from '../../model/deckVolumes';
+import {
+  coachroofBaseY,
+  coachroofHalfOutline,
+  DECK_EPS,
+  DECK_OVERLAP,
+  sideDeckInnerHalfWidth,
+  toerailSection,
+} from '../../model/deckVolumes';
 import { halfBeamAt, sectionPoint, sheerAt } from '../../model/hullShape';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
@@ -10,10 +17,8 @@ import { boxAt, partMesh, pushQuad, triangles } from './parts';
 const SECTION_SAMPLES = 16;
 /** Longest gap between hull stations, metres (smoothness of the loft). */
 const MAX_STATION_GAP = 0.25;
-/** Small lift that keeps overlapping surfaces from flickering (z-fighting), metres. */
-const EPS = 0.01;
-/** How far a part reaches into its neighbour so no gap shows at the joint, metres. */
-const OVERLAP = 0.1;
+const EPS = DECK_EPS;
+const OVERLAP = DECK_OVERLAP;
 /** Thickness of thin panels (companionway door and hatch), metres. */
 const PANEL = 0.04;
 
@@ -34,6 +39,7 @@ export function buildHull(materials: BoatMaterials): THREE.Object3D[] {
     partMesh('part_stern', [endCap(boat.hull.transomX, -1)], materials.hull),
     partMesh('part_deck', [deck(stations, 'foredeck')], materials.deck),
     partMesh('part_deck', [deck(stations, 'sideDecks')], materials.teak),
+    partMesh('part_deck', [toerail(stations)], materials.gelcoat),
     ...coachroof(materials),
     ...cockpit(materials),
     companionway(materials),
@@ -127,16 +133,9 @@ function endCap(x: number, direction: number): THREE.BufferGeometry {
 function deck(stations: number[], part: 'foredeck' | 'sideDecks'): THREE.BufferGeometry {
   const { cockpit, aftPlatform, coachroof: roof } = boat.deck;
   const positions: number[] = [];
-  const outline = coachroofHalfOutline(roof.frontX);
-  const roofHalf = (x: number) => {
-    for (let i = 1; i < outline.length; i += 1) {
-      const [x0, w0] = outline[i - 1] as [number, number];
-      const [x1, w1] = outline[i] as [number, number];
-      if (x <= x1) return w0 + ((w1 - w0) * (x - x0)) / Math.max(1e-9, x1 - x0);
-    }
-    return roof.frontHalfWidth;
-  };
-  const deckStations = [...new Set([...stations, roof.frontX, roof.aftX])]
+  // The extra station just ahead of the cockpit front lets the inner edge step from the well's
+  // edge to the coachroof's within 2 cm, so no teak lies over the open well.
+  const deckStations = [...new Set([...stations, roof.frontX, roof.aftX, cockpit.frontX - 2 * EPS])]
     .filter((x) => x >= aftPlatform.frontX)
     .sort((a, b) => a - b);
   for (let i = 0; i < deckStations.length - 1; i += 1) {
@@ -154,10 +153,8 @@ function deck(stations: number[], part: 'foredeck' | 'sideDecks'): THREE.BufferG
       continue;
     }
     // Beside the coachroof (under it there is nothing to draw) or beside the cockpit well.
-    const inner = (x: number) =>
-      x >= roof.aftX - EPS ? roofHalf(x) - OVERLAP : cockpit.wellHalfWidth;
-    const w0 = Math.min(inner(x0), b0);
-    const w1 = Math.min(inner(x1), b1);
+    const w0 = Math.min(sideDeckInnerHalfWidth(x0), b0);
+    const w1 = Math.min(sideDeckInnerHalfWidth(x1), b1);
     for (const side of [1, -1]) {
       pushQuad(
         positions,
@@ -167,6 +164,38 @@ function deck(stations: number[], part: 'foredeck' | 'sideDecks'): THREE.BufferG
         [x1, y1, side * w1],
       );
     }
+  }
+  return triangles(positions);
+}
+
+/**
+ * Toerail (Phase 6): the low raised rim along the deck edge, covering the joint of hull and
+ * deck. `toerailSection` rings at every hull station between its two ends, four faces between
+ * neighbouring rings and a flat cap at each end, on both sides.
+ */
+function toerail(stations: number[]): THREE.BufferGeometry {
+  const { fwdX, aftX } = boat.deckFittings.toerail;
+  const xs = [...new Set([aftX, ...stations.filter((x) => x > aftX && x < fwdX), fwdX])].sort(
+    (a, b) => a - b,
+  );
+  const positions: number[] = [];
+  for (const side of [1, -1]) {
+    const ring = (x: number): Vec3[] => toerailSection(x).map(([y, z]): Vec3 => [x, y, side * z]);
+    // Quads wind counter-clockwise seen from outside on the starboard side; reversed for port.
+    const quad = (a: Vec3, b: Vec3, c: Vec3, d: Vec3) =>
+      side > 0 ? pushQuad(positions, a, b, c, d) : pushQuad(positions, d, c, b, a);
+    for (let i = 0; i < xs.length - 1; i += 1) {
+      const a = ring(xs[i] ?? 0);
+      const b = ring(xs[i + 1] ?? 0);
+      for (let k = 0; k < 4; k += 1) {
+        const next = (k + 1) % 4;
+        quad(a[k] as Vec3, a[next] as Vec3, b[next] as Vec3, b[k] as Vec3);
+      }
+    }
+    const first = ring(xs[0] ?? 0);
+    const last = ring(xs[xs.length - 1] ?? 0);
+    quad(first[0] as Vec3, first[3] as Vec3, first[2] as Vec3, first[1] as Vec3);
+    quad(last[0] as Vec3, last[1] as Vec3, last[2] as Vec3, last[3] as Vec3);
   }
   return triangles(positions);
 }
