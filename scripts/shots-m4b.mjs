@@ -327,6 +327,9 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       '?mode=realistic&wd=90&ws=12&cam=helm',
     );
     await page.waitForTimeout(600);
+    // The drawing's knobs and the winch must both be on screen: a half-height sheet is too short
+    // now that the Ropes section has a header of its own (M27).
+    await setSheet(page, 'full');
 
     // Three stations; only the chosen one is shown.
     const stations = await page.locator('.station-button').allInnerTexts();
