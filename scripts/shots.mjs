@@ -797,9 +797,9 @@ try {
         { viewport: VIEWPORTS[0], cam: 'side-port' },
         { viewport: VIEWPORTS[0], cam: 'bow' },
         { viewport: VIEWPORTS[0], cam: 'helm' },
-        // M32: the cleats and fairleads took part of the port winch's small catchment in the
-        // phone's port view; the desktop port view shows it larger.
-        { viewport: VIEWPORTS[2], cam: 'side-port' },
+        // M32: the port winch was found by a single tap in the starboard view before the cleats
+        // and fairleads came; from the helm on the desktop it is large on screen.
+        { viewport: VIEWPORTS[2], cam: 'helm' },
         { viewport: VIEWPORTS[2], cam: 'side-starboard' },
         { viewport: VIEWPORTS[2], cam: 'top' },
       ];
