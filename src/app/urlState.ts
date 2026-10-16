@@ -128,6 +128,12 @@ export function parseUrlState(
   if (labelsParam === '1') labels = true;
   else if (labelsParam === '0') labels = false;
 
+  // `mm=0` hides the mini-map; `mm=1` is the default and is accepted.
+  let miniMap: boolean | undefined;
+  const miniMapParam = params.get('mm');
+  if (miniMapParam === '1') miniMap = true;
+  else if (miniMapParam === '0') miniMap = false;
+
   let ropesMode: RopesMode | undefined;
   const mode = params.get('mode');
   if (mode !== null && isRopesMode(mode)) ropesMode = mode;
@@ -165,6 +171,7 @@ export function parseUrlState(
       ...(language !== undefined ? { language } : {}),
       ...(legend !== undefined ? { legend } : {}),
       ...(labels !== undefined ? { labels } : {}),
+      ...(miniMap !== undefined ? { miniMap } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
       ...(timeScale !== undefined && isTimeScale(timeScale) ? { timeScale } : {}),
       ...(timeBar !== undefined ? { timeBar } : {}),
@@ -485,6 +492,9 @@ export function serializeUrlState(state: AppState): string {
   }
   if (state.settings.labels !== DEFAULT_SETTINGS.labels) {
     params.set('lb', state.settings.labels ? '1' : '0');
+  }
+  if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) {
+    params.set('mm', '0');
   }
   if (state.settings.ropesMode !== DEFAULT_SETTINGS.ropesMode) {
     params.set('mode', state.settings.ropesMode);
