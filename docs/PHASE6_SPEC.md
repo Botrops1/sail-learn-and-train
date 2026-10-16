@@ -1,6 +1,6 @@
 # Phase 6 specification: boat details
 
-Status: **planned**, owner's answers recorded (planning chat, 2026-10-15) · Last updated: 2026-10-15
+Status: **built** (M30–M34; M34 signed off in its PR, pending the owner's phone checks) · Last updated: 2026-10-16
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. [`BOAT_DETAILS_ANALYSIS.md`](BOAT_DETAILS_ANALYSIS.md) explains why; this spec is what to build. **Phase 5 (M25–M29) is merged before M30 starts**: this spec uses Phase 5's sections, modes, chip row and browser-check helpers ([`PHASE5_SPEC.md`](PHASE5_SPEC.md) 3–4) by their real names. Phase 6 changes how the boat **looks**, adds the parts a marina needs (anchor, cleats, fenders), and one switch. It changes no physics and adds no PHYSICS_TRUTHS rule.
 
@@ -810,6 +810,12 @@ Worked values (tested): `coilLayers({ x: -7.58, z: 1.6 }, 32)` has 2 layers of 8
 
 Done when: 10.5 passes; the Phase 6 Definition of Done (11) is ticked in the PR.
 Not in this milestone: changing which ropes go into which box, or rope colours.
+
+**Decided in the M34 PR:**
+
+- `tests/boatData.test.ts` ("model detail: counts are whole numbers, positions lie on the boat, sizes are small") demanded every `modelDetail` number below 2.5, and the coil's `turns` is exactly 2.5. A count of turns is not a size in metres, so a path ending in `turns` is now only checked to be above 0 and at most 10 (the one change to an earlier test beyond 10.3). The data value stays 2.5.
+- The tests of 10.5 are numbered 1, 2, 4 and 3 in the spec; the file has them in the order coil, drums, sealed ends.
+- `ropes.ts` takes the end caps' uv `u` from the strand's own first and last ring (the first ring's is `feed / stripePeriodM`), as 10.2 says; no other value is open.
 
 ---
 
