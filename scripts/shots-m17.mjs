@@ -101,11 +101,17 @@ export async function liveM17Checks({ openPage, viewports, outDir, prefix, probl
   // The sun is drawn: at 20:10 it is low in the west-north-west; sailing towards it (heading 290,
   // looking ahead from the helm) it lies on the canvas just above the horizon, and by night it is
   // not drawn (owner's bug report on the M17 preview: the sun's glint showed but not the sun).
+  // The sun's direction is given in the boat's frame, so its place on the canvas follows the
+  // boat's heading while she sails: the result depends on how much app time has passed. The page
+  // is on the test clock (CLAUDE.md), so every machine reads it after the same app time (on a
+  // loaded runner the 15 frames a second of a free-running page gave 391 px, off the canvas, and
+  // a "stopped moving" test over real time stopped too early).
   {
     const { context, page } = await openPage(
       phone,
       'm17 sun disc',
       '?wd=30&ws=12&ms=40&js=100&hdg=290&clk=202606012010&cam=helm&detail=low&debug=1',
+      { testClock: true },
     );
     await page.waitForTimeout(1500);
     // Looking ahead from above the stern, 2.5° up: where the sun is at 20:10.
