@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
 import { sheerAt } from '../../model/hullShape';
+import { coilLayers } from '../../model/ropeCoil';
 import type { Detail } from '../../model/settings';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
@@ -46,7 +47,7 @@ export function buildCockpitHardware(
         1,
         materials,
       ),
-      ...buildRopeBins(materials),
+      ...buildRopeBins(materials, detail),
     ],
     wheelPivots: wheels.map((wheel) => wheel.pivot),
   };
@@ -170,9 +171,9 @@ function buildWinch(
 
 /**
  * The rope tail boxes behind the winches (M5, owner, PR #19): a dark opening in the coaming top
- * with a low rim, where the ropes' ends go in.
+ * with a low rim, where the ropes' ends go in. M34: a coil of spare rope lies in each box.
  */
-function buildRopeBins(materials: BoatMaterials): THREE.Object3D[] {
+function buildRopeBins(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
   const { ropeBins } = boat.cockpitHardware;
   const size = boat.modelDetail.ropeBin;
   const y = boat.deck.cockpit.coamingTopY;
@@ -186,9 +187,22 @@ function buildRopeBins(materials: BoatMaterials): THREE.Object3D[] {
       boxAt([box.x, y + h / 2, box.z - w / 2 + rim / 2], [l, h, rim]),
     ];
     const centre: Vec3 = [box.x, y + h, box.z];
+    const high = detail === 'high';
+    const ropeRadius = size.coil.ropeRadius;
+    const coil = coilLayers(box, high ? 32 : 16).map(
+      (points) =>
+        new THREE.TubeGeometry(
+          new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p))),
+          points.length - 1,
+          ropeRadius,
+          high ? 8 : 5,
+          false,
+        ),
+    );
     return [
       smallPartMesh(ropeBins.id, [opening], materials.dark, [centre]),
       smallPartMesh(ropeBins.id, walls, materials.gelcoat, [centre]),
+      smallPartMesh(ropeBins.id, coil, materials.coil, [centre]),
     ];
   });
 }

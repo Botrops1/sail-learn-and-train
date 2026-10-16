@@ -202,6 +202,10 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       } else if (/Deg$/.test(path)) {
         expect(value, path).toBeGreaterThan(0);
         expect(value, path).toBeLessThanOrEqual(360);
+      } else if (/turns$/.test(path)) {
+        // M34: the coil's turns are a count of turns, not a size in metres.
+        expect(value, path).toBeGreaterThan(0);
+        expect(value, path).toBeLessThanOrEqual(10);
       } else {
         expect(value, path).toBeGreaterThan(0);
         expect(value, path).toBeLessThan(path.includes('Exponent') ? 5 : 2.5);

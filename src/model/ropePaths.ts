@@ -493,7 +493,8 @@ export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = bo
   if (!winch) throw new Error(`Winch ${wrap.winchId} is missing from hanse508.json.`);
   const size = data.modelDetail.winch;
   const detail = data.modelDetail.winchRope;
-  const radius = data.visual.ropeRenderRadius;
+  // M34: the rope on a drum is drawn at its own, thinner size (the tails keep the visible one).
+  const radius = detail.drumRenderRadius;
   const r = size.diameter / 2 + radius;
   const inboard = -Math.sign(winch.z) || 1;
   const hand: Vec3 = [
@@ -543,6 +544,22 @@ export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = bo
       winch.z + jaw * Math.sin(jawAngle),
     ],
   ];
+}
+
+/**
+ * M34: true when `p` lies on a winch drum, where a rope is drawn thinner (`drumRenderRadius`):
+ * the helix of a wrap and the self-tailer's jaw point, for any winch that is on the boat.
+ */
+export function onWinchDrum(p: Vec3, data: BoatData = boat): boolean {
+  const { diameter, height } = data.modelDetail.winch;
+  const { drumRenderRadius, wrapBottomAboveBase } = data.modelDetail.winchRope;
+  return data.cockpitHardware.winches.some(
+    (winch) =>
+      (!('present' in winch) || winch.present !== false) &&
+      Math.hypot(p[0] - winch.x, p[2] - winch.z) <= diameter / 2 + drumRenderRadius + 1e-6 &&
+      winch.y + wrapBottomAboveBase - 1e-6 <= p[1] &&
+      p[1] <= winch.y + height,
+  );
 }
 
 /**

@@ -18,6 +18,7 @@ import { sub, type Vec3 } from '../src/model/vec3';
 import { buildBoat } from '../src/render3d/boat';
 
 const RADIUS = boat.visual.ropeRenderRadius;
+const DRUM_ROPE = boat.modelDetail.winchRope.drumRenderRadius;
 const DRUM = boat.modelDetail.winch.diameter / 2;
 const rig = initialRig(defaultControls());
 
@@ -38,7 +39,7 @@ function rope(drawings: RopeDrawing[], id: string): RopeDrawing {
 /** Signed angle turned round the winch axis by the points on the drum (+ = clockwise from above). */
 function turned(points: Vec3[], w: { x: number; z: number }): number {
   const onDrum = points.filter(
-    (p) => Math.abs(Math.hypot(p[0] - w.x, p[2] - w.z) - (DRUM + RADIUS)) < 1e-6,
+    (p) => Math.abs(Math.hypot(p[0] - w.x, p[2] - w.z) - (DRUM + DRUM_ROPE)) < 1e-6,
   );
   const angle = (p: Vec3) => Math.atan2(p[2] - w.z, p[0] - w.x);
   let sum = 0;
@@ -238,7 +239,7 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
               if (p[1] < w.y + boat.modelDetail.winch.height && p[1] > w.y) {
                 // The drawn wrap is a polygon: its straight pieces cut the circle by a hair.
                 expect(Math.hypot(p[0] - w.x, p[2] - w.z), name).toBeGreaterThan(
-                  (DRUM + RADIUS) * Math.cos(Math.PI / WINCH_WRAP_POINTS_PER_TURN) - 1e-6,
+                  (DRUM + DRUM_ROPE) * Math.cos(Math.PI / WINCH_WRAP_POINTS_PER_TURN) - 1e-6,
                 );
               }
               const { cockpit } = boat.deck;
@@ -278,7 +279,7 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
       [PORT.x + 0.4, PORT.y + 0.04, PORT.z],
     ).slice(0, -1);
     const rise = Math.max(...one.map((p) => p[1])) - Math.min(...one.map((p) => p[1]));
-    expect(rise).toBeCloseTo(2 * RADIUS, 6);
+    expect(rise).toBeCloseTo(2 * DRUM_ROPE, 6);
   });
 
   it('the 3D rope gets new buffers when it goes on the winch, and keeps working after', () => {
