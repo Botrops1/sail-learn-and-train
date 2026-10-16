@@ -440,7 +440,7 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 #### M31: Anchor and windlass
 
 - [ ] Anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&cam=bow&sel=fit_anchor&held=1&sea=flat — the anchor hangs in a steel roller in front of the bow, beside the jib's furling drum on the boat's right-hand side (starboard; on the left of the screen in this view from ahead), with a short chain back to the windlass, a small drum in a round dark hole in the foredeck.
-- [ ] Tap the anchor: the card says "Anchor"; tap the chain: "Anchor chain"; tap the windlass: "Anchor windlass"; tap the roller: "Bow roller".
+- [ ] Tapping: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&cam=side-starboard&held=1&sea=flat — zoom in on the bow with two fingers. Tap the anchor: the card says "Anchor"; the windlass: "Anchor windlass"; the roller: "Bow roller". The chain is thin: open Learn → Anchor chain → "Show on the boat" and it lights up.
 - [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_anchor&m=learn — the Anchor entry. Tap "Show me": the bow view with the anchor; the phone's Back button returns to the entry.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&learn=fit_anchor&m=learn — the entry is «якорь», marked as not yet checked by a sailor.
 

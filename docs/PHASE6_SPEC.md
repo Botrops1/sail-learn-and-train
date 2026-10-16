@@ -99,7 +99,7 @@ If something here looks necessary, stop and ask in the PR.
 
 ### 4.1 New data (`content/boat/hanse508.json`)
 
-One new top-level object **`deckFittings`**, after `modelDetail`, built up milestone by milestone (each section gives the keys it adds, verbatim). M34 adds keys to `modelDetail.winchRope` and `modelDetail.ropeBin` instead. `src/model/boat.ts` types the new keys (as the other blocks are typed there).
+One new top-level object **`deckFittings`**, after `modelDetail`, built up milestone by milestone (each section gives the keys it adds, verbatim). M34 adds keys to `modelDetail.winchRope` and `modelDetail.ropeBin` instead. `src/model/boat.ts` needs no change: `BoatData` is inferred from the JSON (`typeof hanse508`).
 
 ### 4.2 New state (M33 only)
 
@@ -141,11 +141,11 @@ Unchanged. Phase 6 adds no work to the `step` action.
 
 | Milestone | New | Changed |
 |---|---|---|
-| M30 | `tests/deckDetails.test.ts`, `scripts/shots-m30.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/model/deckVolumes.ts`, `src/render3d/boat/hull.ts`, `src/render3d/boat/deckGear.ts`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
-| M31 | `src/model/bowGear.ts`, `src/render3d/boat/bowGear.ts`, `tests/bowGear.test.ts`, `scripts/shots-m31.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/render3d/boat/index.ts`, `content/registry/parts.json`, both `glossary.json`, `src/model/glossary.ts` (`NOT_DRAWN`), `tests/glossary.test.ts` (group size, `COMPLETE_IDS`), `tests/boatModel.test.ts` (7.4), `docs/review/ru.md`, `scripts/shots.mjs`, `scripts/shots-m24.mjs` (counts), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
+| M30 | `tests/deckDetails.test.ts`, `scripts/shots-m30.mjs` | `content/boat/hanse508.json`, `src/model/deckVolumes.ts`, `src/render3d/boat/hull.ts`, `src/render3d/boat/deckGear.ts`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
+| M31 | `src/model/bowGear.ts`, `src/render3d/boat/bowGear.ts`, `tests/bowGear.test.ts`, `scripts/shots-m31.mjs` | `content/boat/hanse508.json`, `src/render3d/boat/index.ts`, `content/registry/parts.json`, both `glossary.json`, `src/model/glossary.ts` (`NOT_DRAWN`), `tests/glossary.test.ts` (group size, `COMPLETE_IDS`), `tests/boatModel.test.ts` (7.4), `docs/review/ru.md`, `scripts/shots.mjs`, `scripts/shots-m24.mjs` (counts), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
 | M32 | `src/model/mooringFittings.ts`, `src/render3d/boat/mooringFittings.ts`, `tests/mooringFittings.test.ts`, `scripts/shots-m32.mjs` | as M31, without `bowGear` and without `tests/boatModel.test.ts` |
-| M33 | `src/model/harbour.ts`, `src/render3d/boat/fenders.ts`, `src/ui/harbourPanel.ts`, `tests/harbour.test.ts`, `scripts/shots-m33.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/model/mooringFittings.ts` (fender placements), `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts` (the subscriber), `src/ui/modes.ts`, `src/ui/panel.ts`, `src/render3d/boat/index.ts`, `src/render3d/boat/materials.ts`, `src/render3d/scene.ts`, `src/style.css`, both `ui.json`, both `glossary.json`, `content/registry/parts.json`, `tests/glossary.test.ts`, `tests/boatModel.test.ts` (9.7), `scripts/shots-m24.mjs`, `scripts/shots-m27.mjs`, `scripts/shots-m29.mjs`, `tests/modes.test.ts`, `tests/urlState.test.ts`, `tests/mooringFittings.test.ts`, `docs/review/ru.md`, `scripts/ui.mjs`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
-| M34 | `src/model/ropeCoil.ts`, `tests/ropeEnds.test.ts`, `scripts/shots-m34.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/model/ropePaths.ts`, `src/render3d/boat/ropes.ts`, `src/render3d/boat/cockpitHardware.ts`, `src/render3d/boat/materials.ts`, `tests/m5Ropes.test.ts` (10.3 only), `scripts/shots.mjs`, `README.md`, `docs/ROADMAP.md`, `docs/BOAT_DETAILS_ANALYSIS.md`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`, this spec |
+| M33 | `src/model/harbour.ts`, `src/render3d/boat/fenders.ts`, `src/ui/harbourPanel.ts`, `tests/harbour.test.ts`, `scripts/shots-m33.mjs` | `content/boat/hanse508.json`, `src/model/mooringFittings.ts` (fender placements), `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts` (the subscriber), `src/ui/modes.ts`, `src/ui/panel.ts`, `src/render3d/boat/index.ts`, `src/render3d/boat/materials.ts`, `src/render3d/scene.ts`, `src/style.css`, both `ui.json`, both `glossary.json`, `content/registry/parts.json`, `tests/glossary.test.ts`, `tests/boatModel.test.ts` (9.7), `scripts/shots-m24.mjs`, `scripts/shots-m27.mjs`, `scripts/shots-m29.mjs`, `tests/modes.test.ts`, `tests/urlState.test.ts`, `tests/mooringFittings.test.ts`, `docs/review/ru.md`, `scripts/ui.mjs`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
+| M34 | `src/model/ropeCoil.ts`, `tests/ropeEnds.test.ts`, `scripts/shots-m34.mjs` | `content/boat/hanse508.json`, `src/model/ropePaths.ts`, `src/render3d/boat/ropes.ts`, `src/render3d/boat/cockpitHardware.ts`, `src/render3d/boat/materials.ts`, `tests/m5Ropes.test.ts` (10.3 only), `scripts/shots.mjs`, `README.md`, `docs/ROADMAP.md`, `docs/BOAT_DETAILS_ANALYSIS.md`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`, this spec |
 
 ## 5. Milestones overview
 
@@ -253,7 +253,7 @@ Close-ups (3.5), each at High and Low:
 
 Link: `?wd=60&ws=12&lb=0&debug=1&detail=<high|low>`. `M30_SCENES` is `[]`.
 
-Live check `m30 junction tap`: open `?wd=60&ws=12&lb=0&debug=1`, `closeUp` with position `[-2.0, 2.4, 3.2]`, target `[-3.3, 1.68, 1.41]`, fov 40, wait 1,500 ms; find the screen point of `[-3.3, 1.68, 1.41]` (on the fairing's outer side, below the channel cover and above the coaming) with `window.__sailDebug.project(x, y, z)` (CSS px inside the 3D canvas; add the canvas's page offset) and tap it: the info card's `data-part-id` is `part_coachroof` (the fairing), never `part_deck` or `part_cockpit`.
+Live check `m30 junction tap`: open `?wd=60&ws=12&lb=0&debug=1`, `closeUp` with position `[-2.0, 2.4, 3.2]`, target `[-3.3, 1.60, 1.41]`, fov 40, wait 1,500 ms; find the screen point of `[-3.3, 1.60, 1.41]` (on the fairing's outer side, just above the coaming top at 1.55 and 0.27 m below the channel's pick line) with `window.__sailDebug.project(x, y, z)` (CSS px inside the 3D canvas; add the canvas's page offset) and tap it: the info card's `data-part-id` is `part_coachroof` (the fairing) or `fit_line_channels` (the picker may prefer the channel's pick line), and never `part_deck`, `part_cockpit` or a rope (any of those would mean the tap went through a hole).
 
 **Look at** the `junction-*` and `deck-edge-midship` PNGs at both details: no deck or water shows under the channel's slope; the toerail is a continuous rim with no flicker.
 
@@ -395,6 +395,7 @@ Russian (`content/lang/ru/glossary.json`): names `fit_anchor` «якорь», `f
 - Scene `anchor-bow`: `?wd=0&ws=0&cam=bow&sel=fit_anchor&held=1&sea=flat` (the Show me link).
 - `M31_SCENES`: the scene below. Close-ups (3.5, High and Low, the default close-up link): `bow-from-above` position `[4.2, 3.4, 1.4]`, target `[6.2, 1.7, 0.15]`, fov 45; `bow-from-side` position `[6.6, 1.9, 2.6]`, target `[6.6, 1.6, 0.15]`, fov 45.
 - Live check `m31 show me anchor`: open `?learn=fit_anchor&m=learn`, the Learn entry shows "Anchor"; tap `learn-show-me` (the Show me button's test id from M20), the link contains `sel=fit_anchor` and `cam=bow`; the phone's Back (`page.goBack()`) returns to the entry.
+- Live check `m31 tap`: open the close-up link, `closeUp` as `bow-from-side`, then for `fit_anchor` (hit point `crown`), `fit_bow_roller` and `fit_anchor_windlass` (their hit points, 7.3) tap the projected point (`__sailDebug.project`, as in M30) and check the info card's `data-part-id`. The chain is not tapped (it is thin and lies between the others; the picker prefers small parts' hit areas).
 - Live check `m31 show on the boat`: in the `fit_bow_roller` and `fit_anchor_windlass` entries the "Show on the boat" button (`learn-show-on-boat`) is present (it was hidden while they were in `NOT_DRAWN`).
 
 **Look at** the `bow-*` PNGs: the anchor hangs in front of the stem to starboard of the furler drum, the chain lies in the roller channel and reaches the windlass, nothing cuts through the drum or the pulpit.
