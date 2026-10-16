@@ -14,6 +14,7 @@ import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
 import { buildHull } from './hull';
 import { createMaterials } from './materials';
+import { buildMooringFittings } from './mooringFittings';
 import { buildRig } from './rig';
 import { buildRopes, type RopeView } from './ropes';
 import { buildSailMesh } from './sailMesh';
@@ -80,6 +81,7 @@ export function buildBoat(
     ...hardware.objects,
     ...buildDeckGear(materials, detail),
     ...buildBowGear(materials, detail),
+    ...buildMooringFittings(materials, detail),
     mainSail.mesh,
     jibSail.mesh,
     ...ropes.objects,

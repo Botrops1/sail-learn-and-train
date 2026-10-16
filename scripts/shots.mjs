@@ -49,6 +49,7 @@ import { liveM28Checks, M28_SCENES } from './shots-m28.mjs';
 import { liveM29Checks } from './shots-m29.mjs';
 import { liveM30Checks, M30_SCENES } from './shots-m30.mjs';
 import { liveM31Checks, M31_SCENES } from './shots-m31.mjs';
+import { liveM32Checks, M32_SCENES } from './shots-m32.mjs';
 import {
   closeSettings,
   openSettings,
@@ -197,6 +198,7 @@ const SCENES = [
   ...M28_SCENES.map((scene) => ({ ...scene, name: `m28-${scene.name}` })),
   ...M30_SCENES.map((scene) => ({ ...scene, name: `m30-${scene.name}` })),
   ...M31_SCENES.map((scene) => ({ ...scene, name: `m31-${scene.name}` })),
+  ...M32_SCENES.map((scene) => ({ ...scene, name: `m32-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -795,6 +797,9 @@ try {
         { viewport: VIEWPORTS[0], cam: 'side-port' },
         { viewport: VIEWPORTS[0], cam: 'bow' },
         { viewport: VIEWPORTS[0], cam: 'helm' },
+        // M32: the port winch was found by a single tap in the starboard view before the cleats
+        // and fairleads came; from the helm on the desktop it is large on screen.
+        { viewport: VIEWPORTS[2], cam: 'helm' },
         { viewport: VIEWPORTS[2], cam: 'side-starboard' },
         { viewport: VIEWPORTS[2], cam: 'top' },
       ];
@@ -927,6 +932,7 @@ try {
     m29: () => liveM29Checks(live),
     m30: () => liveM30Checks(live),
     m31: () => liveM31Checks(live),
+    m32: () => liveM32Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

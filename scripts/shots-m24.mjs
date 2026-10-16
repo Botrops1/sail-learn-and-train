@@ -1,6 +1,6 @@
 // M24 (Phase 4 sign-off): live checks for scripts/shots.mjs (PHASE4_SPEC 10.3). No scenes. Labels
 // contain "m24", so openPage adds held=1, sea=flat and clock=0 to queries without them.
-// For each language (phone size, one page each) it opens all 133 Learn entries, checks that every
+// For each language (phone size, one page each) it opens all 134 Learn entries, checks that every
 // section heading has text under it, and (English only) runs all 61 "Show me" buttons and the
 // phone's Back button.
 import { readFileSync } from 'node:fs';
@@ -24,7 +24,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
   const registry = readJson('content/registry/parts.json').entries;
   const groups = new Set(registry.map((entry) => entry.group));
   const showMeIds = registry.filter((entry) => entry.showMe).map((entry) => entry.id);
-  check('the registry has 133 ids', registry.length === 133, String(registry.length));
+  check('the registry has 134 ids', registry.length === 134, String(registry.length));
   check('the registry has 10 groups', groups.size === 10, String(groups.size));
   check('the registry has 61 Show-me ids', showMeIds.length === 61, String(showMeIds.length));
 
@@ -47,7 +47,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
     const groupCount = await page.locator('[data-testid="learn-groups"] > details').count();
     check(`${code}: ten group lists`, groupCount === 10, String(groupCount));
     const buttonCount = await page.locator('[data-testid^="learn-entry-"]').count();
-    check(`${code}: 133 entry buttons`, buttonCount === 133, String(buttonCount));
+    check(`${code}: 134 entry buttons`, buttonCount === 134, String(buttonCount));
 
     /** Opens the entry's group first: the list is rebuilt, closed, after every Back. */
     const openEntry = async (entry) => {
@@ -112,7 +112,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
       await page.getByTestId('learn-back').click();
     }
     check(
-      `${code}: all 133 entries show their name`,
+      `${code}: all 134 entries show their name`,
       wrongName.length === 0,
       wrongName.length ? wrongName.slice(0, 5).join(' | ') : 'ok',
     );

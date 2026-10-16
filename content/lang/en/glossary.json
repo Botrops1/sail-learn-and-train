@@ -1561,7 +1561,7 @@
       "alternatives": [],
       "short": "A strong fitting for tying the mooring lines to.",
       "what": "Lines to a pier or a buoy are made fast round a cleat.",
-      "onThisBoat": "Cleats at the bow (photo). The app does not draw them yet.",
+      "onThisBoat": "Three on each side, on the raised rim at the deck edge: at the bow, in the middle and at the stern. The bow cleats are in a photo; the other places are partly a guess.",
       "textStatus": "draft"
     },
     "fit_anchor": {
@@ -1579,6 +1579,14 @@
       "short": "The chain that joins the anchor to the boat.",
       "what": "The chain runs from the anchor over the bow roller to the windlass, and from there down into the chain locker under the foredeck.",
       "onThisBoat": "A short piece shows between the windlass and the anchor; the rest is in the locker.",
+      "textStatus": "draft"
+    },
+    "fit_fairlead": {
+      "name": "Fairlead",
+      "alternatives": [],
+      "short": "A smooth guide on the deck edge that a mooring line runs through.",
+      "what": "A fairlead keeps a mooring line in place where it leaves the boat, so it does not rub on the deck edge or jump off.",
+      "onThisBoat": "One on each side near the bow and near the stern, beside the cleats. Their exact places are a guess.",
       "textStatus": "draft"
     },
     "env_wake": {

@@ -1073,6 +1073,28 @@
       "recessRadius": 0.14,
       "profile": [[0.11, 0.0], [0.11, 0.05], [0.075, 0.05], [0.075, 0.13], [0.09, 0.13], [0.06, 0.16], [0.0, 0.17]],
       "source": "photo bow-jib-furler.jpg (a vertical windlass in a round recess behind the roller) + assumption (sizes, position)"
+    },
+    "cleats": {
+      "stations": [5.0, -1.2, -7.5],
+      "length": 0.28,
+      "baseLength": 0.20,
+      "baseWidth": 0.05,
+      "baseThickness": 0.008,
+      "legSpacing": 0.13,
+      "legRadius": 0.012,
+      "legHeight": 0.045,
+      "hornHeight": 0.03,
+      "hornWidth": 0.035,
+      "source": "photo (owner, planning chat 2026-10-15: an open-base horn cleat on the toerail; bow cleat in bow-jib-furler.jpg; midship cleat behind the shrouds) + assumption (stern position, sizes)"
+    },
+    "fairleads": {
+      "stations": [5.25, -7.95],
+      "length": 0.14,
+      "width": 0.05,
+      "baseThickness": 0.01,
+      "jawHeight": 0.035,
+      "jawThickness": 0.012,
+      "source": "assumption (one fairlead forward of each bow cleat and aft of each stern cleat; no photo shows them)"
     }
   },
   "visual": {
