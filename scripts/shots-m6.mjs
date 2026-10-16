@@ -167,8 +167,12 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
     );
     check('link says held', (await search(page)).includes('held=1'), await search(page));
     await page.getByText('Sailing', { exact: true }).click();
-    await page.waitForTimeout(3000);
-    const speed = parseFloat(await text(page, 'strip-speed'));
+    // Wait for the result, not a fixed time: a slow runner draws fewer frames a second.
+    let speed = 0;
+    for (let i = 0; i < 60 && !(speed > 0.5); i += 1) {
+      await page.waitForTimeout(250);
+      speed = parseFloat(await text(page, 'strip-speed'));
+    }
     check('Sailing again accelerates', speed > 0.5, `${speed} kn`);
     await context.close();
   }
