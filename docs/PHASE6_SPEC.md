@@ -1,6 +1,6 @@
 # Phase 6 specification: boat details
 
-Status: **built** (M30–M34; M34 signed off in its PR, pending the owner's phone checks) · Last updated: 2026-10-16
+Status: **built** (M30–M34; M34 signed off in its PR, pending the owner's phone checks; the M34 rope box was redrawn on the owner's comments, see 10.8) · Last updated: 2026-10-16
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. [`BOAT_DETAILS_ANALYSIS.md`](BOAT_DETAILS_ANALYSIS.md) explains why; this spec is what to build. **Phase 5 (M25–M29) is merged before M30 starts**: this spec uses Phase 5's sections, modes, chip row and browser-check helpers ([`PHASE5_SPEC.md`](PHASE5_SPEC.md) 3–4) by their real names. Phase 6 changes how the boat **looks**, adds the parts a marina needs (anchor, cleats, fenders), and one switch. It changes no physics and adds no PHYSICS_TRUTHS rule.
 
@@ -813,9 +813,23 @@ Not in this milestone: changing which ropes go into which box, or rope colours.
 
 **Decided in the M34 PR:**
 
+- **The owner redrew the rope box on PR #81 (his photo from the helm); see 10.8, which replaces 10.1's `coil` data, 10.4 and the coil tests and close-ups of 10.5 and 10.6.**
 - `tests/boatData.test.ts` ("model detail: counts are whole numbers, positions lie on the boat, sizes are small") demanded every `modelDetail` number below 2.5, and the coil's `turns` is exactly 2.5. A count of turns is not a size in metres, so a path ending in `turns` is now only checked to be above 0 and at most 10 (the one change to an earlier test beyond 10.3). The data value stays 2.5.
 - The tests of 10.5 are numbered 1, 2, 4 and 3 in the spec; the file has them in the order coil, drums, sealed ends.
 - `ropes.ts` takes the end caps' uv `u` from the strand's own first and last ring (the first ring's is `feed / stripePeriodM`), as 10.2 says; no other value is open.
+
+### 10.8 The rope box redrawn (owner, PR #81; replaces 10.4's coils)
+
+The owner's photo from behind the wheel (starboard side) showed that the first M34 drawing had misread the boxes. The photo and answers (decided in the M34 PR):
+
+- **The box:** a solid block as wide as the coaming under the winch (0.55 m), flush with the coaming top, running back to the transom, with a **gap of 30 cm** between the coaming's end (4.4 cm behind the winch's base) and the box's front face (`modelDetail.ropeBin.length/width/gap`, `cockpitHardware.ropeBins.boxes` x, z = the box's centre). Lines drop into the gap and go in through a dark entry on the front face (`ropeBin.entry`). The old rim, opening and in-box coil are gone (`materials.coil` too).
+- **The floor is flat to the transom:** `deck.cockpit.aftX` is the transom's x (−8.6); the raised teak aft deck (`deck.aftPlatform`) is removed, the side decks run back to the transom, and the sole runs between the two boxes.
+- **Lines not in use** end inside the box, out of sight (`tailToBin`: along the coaming, down the coaming's end into the gap, along the deck, into the entry).
+- **A rope held in the hand** (a tail chosen with no turns) runs past the winch, crosses the gap and ends in a flat spiral coil on top of the box, in its own colour, as one piece with the rope (`inHandCoil`, `ropeBin.inHandCoil`: 2 turns, 6 to 16 cm from the box's centre, 16 points a turn).
+- **A rope on a winch** (any number of turns, in the self-tailer or in the hand) leaves the drum (over the self-tailer's top and its aft edge in the self-tailer) and ends in a **straight loose end 0.4 m long lying on top of the box**, starting 6 cm behind its front edge (`winchRope.looseEndLengthM`, `looseEndIntoBoxM`, `tailClearM`). `winchRope.handInboardM/handAftM/handAboveCoamingM` are gone.
+- **Tests** (`tests/ropeEnds.test.ts`, rewritten; `tests/m5Ropes.test.ts` where the jaw or the hand's end was the strand's last point; `tests/boatData.test.ts`: the cockpit's aft end is the transom, `pointsPerTurn` is a count): the box's faces and gap; every tail ends inside the box through the entry; the in-hand coil; the loose end on the box for every setup; the thin rope on the drums.
+- **Browser checks** (`scripts/shots-m34.mjs`): close-ups of the starboard box with lines not in use, in the hand and on the winch, and of the stern floor, at High and Low detail.
+- **Accepted:** the gap's floor is the teak side deck, only about 12 cm below the box top; the transom stays closed up to the deck edge (a 0.4 m wall at the back of the floor).
 
 ---
 
@@ -825,7 +839,7 @@ Not in this milestone: changing which ropes go into which box, or rope colours.
 - [ ] 2. The anchor in the bow roller with its chain to the windlass; tappable; Learn entries with Show me.
 - [ ] 3. Six cleats and four fairleads on the toerail; tappable; Learn entries.
 - [ ] 4. Harbour gear block with Fenders In the locker / Out (`fd=1`), eight fenders and a ball fender; the hint while Sailing; old links open with the fenders in the locker.
-- [ ] 5. Sealed rope ends, coils in the tail boxes, thinner rope on the winch drums.
+- [ ] 5. Sealed rope ends, the rope boxes with a gap, lines in the hand coiled on the box, loose ends on the box, thinner rope on the winch drums.
 - [ ] 6. Every earlier test and browser check passes; no console errors; accessibility audit clean; every new Russian name and string in `docs/review/ru.md`.
 - [ ] 7. Smooth on the owner's phone (50 fps or more with `fd=1` at Detail Low, gusty wind).
 - [ ] 8. Docs updated: README, ROADMAP, CODE_MAP, BOAT_REFERENCE (every new assumption), BOAT_DETAILS_ANALYSIS.

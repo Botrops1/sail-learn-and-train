@@ -9,40 +9,38 @@ import { setSheet, showSection } from './ui.mjs';
 export const M34_SCENES = [];
 
 const boat = JSON.parse(readFileSync('content/boat/hanse508.json', 'utf8'));
-const winch = boat.cockpitHardware.winches.find((w) => w.id === 'winch_primary_starboard');
 const bin = boat.cockpitHardware.ropeBins.boxes.find((b) => b.side === 'starboard');
-const rope = boat.modelDetail.winchRope;
 const add = (p, d) => p.map((v, i) => v + d[i]);
 
-/** The three close-ups, each taken at High and Low detail (PHASE6_SPEC 10.6). */
-const WRAPS_LINK = '?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h&lb=0&debug=1';
-const wrapsTarget = [winch.x, winch.y + rope.wrapTopAboveBase, winch.z];
-const handTarget = [
-  winch.x - rope.handAftM,
-  boat.deck.cockpit.coamingTopY + rope.handAboveCoamingM,
-  winch.z - rope.handInboardM,
-];
+/**
+ * The close-ups, each taken at High and Low detail (PHASE6_SPEC 10.6, changed on PR #81): the
+ * starboard rope box and the gap in front of it, from above and outboard of the winch, with the
+ * lines not in use (Easy), a rope held in the hand (no turns), and ropes on the winch.
+ */
+const BOX_VIEW = {
+  position: add([bin.x, 0, bin.z], [1.2, 2.1, 1.1]),
+  target: [bin.x + 0.25, 1.5, bin.z],
+  fov: 38,
+};
 const CLOSE_UPS = [
+  { name: 'box-idle', link: '?wd=90&ws=12&lb=0&debug=1', ...BOX_VIEW },
   {
-    name: 'tail-box',
+    name: 'box-in-hand',
+    link: '?mode=realistic&wd=90&ws=12&wsb=a5.0.h&lb=0&debug=1',
+    ...BOX_VIEW,
+  },
+  {
+    name: 'box-on-winch',
+    link: '?mode=realistic&wd=90&ws=12&wp=b5.3.t&wsb=a5.2.h&lb=0&debug=1',
+    ...BOX_VIEW,
+  },
+  {
+    // The whole stern from behind and above: the floor is flat to the transom.
+    name: 'stern-floor',
     link: '?wd=90&ws=12&lb=0&debug=1',
-    position: [-6.6, 2.4, 2.4],
-    target: [bin.x, 1.55, bin.z],
-    fov: 40,
-  },
-  {
-    name: 'winch-wraps',
-    link: WRAPS_LINK,
-    position: add(wrapsTarget, [0.7, 0.5, 0.9]),
-    target: wrapsTarget,
-    fov: 40,
-  },
-  {
-    name: 'rope-end-hand',
-    link: WRAPS_LINK,
-    position: add(handTarget, [0, 0.5, 0.8]),
-    target: handTarget,
-    fov: 40,
+    position: [-11.5, 4.2, 0],
+    target: [-7.8, 1.2, 0],
+    fov: 55,
   },
 ];
 

@@ -14,6 +14,7 @@ import {
   type WinchWrap,
 } from '../src/model/ropePaths';
 import { initialRig } from '../src/model/sim';
+import { ropeBinBox } from '../src/model/ropeBin';
 import { sub, type Vec3 } from '../src/model/vec3';
 import { buildBoat } from '../src/render3d/boat';
 
@@ -157,7 +158,7 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
     }
   });
 
-  it('the jib sheet on the starboard winch, 3 turns, tail in the self-tailer: wrapped 3 times clockwise and ends in the jaw', () => {
+  it('the jib sheet on the starboard winch, 3 turns, tail in the self-tailer: wrapped 3 times clockwise, through the jaw, and ends loose on the box (M34)', () => {
     const wraps = winchWraps(
       realisticWith('winch_primary_starboard', { tail: 'a5', turns: 3, selfTailer: true }),
     );
@@ -175,9 +176,14 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
     const angle = turned(points, STARBOARD);
     expect(angle).toBeGreaterThan(3 * 2 * Math.PI - 0.01);
     expect(angle).toBeLessThan(3 * 2 * Math.PI + 0.01);
-    const last = points.at(-1) as Vec3;
-    expect(Math.hypot(last[0] - STARBOARD.x, last[2] - STARBOARD.z)).toBeLessThan(DRUM);
-    expect(last[1]).toBeGreaterThan(STARBOARD.y + boat.modelDetail.winch.height * 0.8);
+    // The jaw is the fourth point from the end: inside the drum's radius, on top. Then the
+    // rope goes over the aft edge and ends loose on the rope tail box (M34, owner on PR #81).
+    const jaw = points.at(-4) as Vec3;
+    expect(Math.hypot(jaw[0] - STARBOARD.x, jaw[2] - STARBOARD.z)).toBeLessThan(DRUM);
+    expect(jaw[1]).toBeGreaterThan(STARBOARD.y + boat.modelDetail.winch.height * 0.8);
+    const tip = points.at(-1) as Vec3;
+    expect(tip[0]).toBeLessThan(ropeBinBox(1).frontX);
+    expect(tip[1]).toBeCloseTo(boat.deck.cockpit.coamingTopY + RADIUS, 9);
     // Nothing else is on a winch.
     expect(
       turned(rope(ropeDrawings(rig, boat, wraps), 'rope_vang').strands.at(-1)?.points ?? [], PORT),
@@ -191,10 +197,11 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
     const vang = rope(ropeDrawings(rig, boat, wraps), 'rope_vang');
     const points = vang.strands.at(-1)?.points ?? [];
     expect(turned(points, PORT)).toBeLessThan(-2 * 2 * Math.PI + 0.01);
-    // The tail goes to the hand: inboard of the winch, above the coaming.
-    const hand = points.at(-1) as Vec3;
-    expect(Math.abs(hand[2])).toBeLessThan(Math.abs(PORT.z));
-    expect(hand[1]).toBeGreaterThan(boat.deck.cockpit.coamingTopY);
+    // The end lies loose on the port rope tail box (M34, owner on PR #81).
+    const tip = points.at(-1) as Vec3;
+    expect(tip[0]).toBeLessThan(ropeBinBox(-1).frontX);
+    expect(tip[2]).toBeLessThan(0);
+    expect(tip[1]).toBeGreaterThan(boat.deck.cockpit.coamingTopY);
   });
 
   it('each end of a two-ended rope goes on the winch on its own; JIB ROLL goes to the port winch only when put on it', () => {
@@ -233,8 +240,9 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
             );
             const points = strand?.points ?? [];
             const name = `${key} on ${winchId}, ${turns} turns, ${selfTailer ? 'self-tailer' : 'hand'}`;
-            // Into the jaw the rope goes over the top of the drum: leave that last piece out.
-            const checked = selfTailer ? points.slice(0, -1) : points;
+            // Into the jaw the rope goes over the top of the drum, then over the aft edge to the box:
+            // leave those last pieces out (M34).
+            const checked = selfTailer ? points.slice(0, -4) : points.slice(0, -2);
             for (const p of samples(checked)) {
               if (p[1] < w.y + boat.modelDetail.winch.height && p[1] > w.y) {
                 // The drawn wrap is a polygon: its straight pieces cut the circle by a hair.
@@ -269,7 +277,7 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
       { winchId: PORT.id, ropeId: 'rope_vang', tail: null, turns: 5, selfTailer: true },
       [PORT.x + 0.4, PORT.y + 0.04, PORT.z],
     );
-    const onDrum = points.slice(0, -1);
+    const onDrum = points.slice(0, -4);
     const ys = onDrum.map((p) => p[1]);
     expect(Math.min(...ys)).toBeCloseTo(PORT.y + boat.modelDetail.winchRope.wrapBottomAboveBase, 6);
     expect(Math.max(...ys)).toBeCloseTo(PORT.y + boat.modelDetail.winchRope.wrapTopAboveBase, 6);
@@ -277,7 +285,7 @@ describe('M5: Realistic mode in 3D, the rope on a winch is wrapped on that winch
     const one = winchWrapPoints(
       { winchId: PORT.id, ropeId: 'rope_vang', tail: null, turns: 1, selfTailer: true },
       [PORT.x + 0.4, PORT.y + 0.04, PORT.z],
-    ).slice(0, -1);
+    ).slice(0, -4);
     const rise = Math.max(...one.map((p) => p[1])) - Math.min(...one.map((p) => p[1]));
     expect(rise).toBeCloseTo(2 * DRUM_ROPE, 6);
   });

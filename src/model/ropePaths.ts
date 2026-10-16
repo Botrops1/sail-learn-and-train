@@ -3,6 +3,7 @@ import type { RopeState } from './boomSolver';
 import { halfBeamAt, sheerAt } from './hullShape';
 import { carPoint, jibClew, jibFurlingLinePaidOut, jibSheetPaidOutFor, jibSheetSpan } from './jib';
 import { channelLane, cutsSprayhood, sprayhoodClearY } from './deckVolumes';
+import { gapFloorY, inHandCoil, ropeBinBox, tailLaneZ } from './ropeBin';
 import { mainFurlLengths } from './mainFurl';
 import { availableSheetLength, deckBlocks, mainsheetBlocks, mainsheetPaidOut } from './mainsheet';
 import {
@@ -153,30 +154,23 @@ function clutchPoint(bankId: BankId, slot: number, data: BoatData): Vec3 {
 
 /**
  * A rope's tail from where it leaves its clutch into the rope tail box behind the winch on its
- * side (M5, owner, PR #19): aft, past the winch drum on its inboard side in its own lane, then
- * into the box. `lane` 0 is closest to the drum.
+ * side (M5, owner, PR #19; M34, owner, PR #81): aft along the coaming, past the winch drum on
+ * its inboard side in its own lane, down into the gap between the coaming's end and the box,
+ * along the deck and into the box through the entry in its front face. `lane` 0 is closest to
+ * the drum.
  */
 export function tailToBin(side: 1 | -1, lane: number, from: Vec3, data: BoatData = boat): Vec3[] {
-  const bins = data.cockpitHardware.ropeBins;
-  const bin = bins.boxes.find((b) => Math.sign(b.z) === side);
-  const winch = data.cockpitHardware.winches.find(
-    (w) => Math.sign(w.z) === side && (!('present' in w) || w.present !== false),
-  );
-  if (!bin || !winch) throw new Error('No rope tail box or winch on this side in hanse508.json.');
+  const box = ropeBinBox(side, data);
   const size = data.modelDetail.ropeBin;
   const radius = data.visual.ropeRenderRadius;
-  const top = data.deck.cockpit.coamingTopY + radius;
-  const inboard = -side;
-  const laneZ =
-    winch.z +
-    inboard *
-      (data.modelDetail.winch.diameter / 2 + radius + size.passClearance + lane * size.laneSpacing);
-  const inBox = bin.z + inboard * (size.width / 2 - 2 * radius - lane * size.laneSpacing);
+  const top = box.topY + radius;
+  const laneZ = tailLaneZ(side, lane, data);
+  const floor = gapFloorY(box.bodyEndX, data) + radius;
   return [
     [from[0] - size.turnX, top, laneZ],
-    [bin.x + size.length / 2, top, laneZ],
-    [bin.x, top, inBox],
-    [bin.x, data.deck.cockpit.coamingTopY - size.drop, inBox],
+    [box.bodyEndX, top, laneZ],
+    [box.bodyEndX - radius - 0.005, floor, laneZ],
+    [box.frontX - size.entry.depthM, floor, laneZ],
   ];
 }
 
@@ -483,10 +477,13 @@ function halyards(lead: (rope: RopeId, tail?: string) => Vec3[], data: BoatData)
 }
 
 /**
- * A rope's way round a winch drum (M5): from `from` (where it leaves the clutch) onto the drum
- * at the tangent point, `|turns|` turns rising up the drum (clockwise seen from above for + turns,
- * the way a winch turns; anticlockwise for − turns, PT-17), then into the self-tailer's jaw on
- * top or off the drum to the hand. With no turns the rope runs straight to the hand.
+ * A rope's way round a winch drum (M5; its end changed in M34, owner on PR #81): from `from`
+ * (where it leaves the clutch) onto the drum at the tangent point, `|turns|` turns rising up the
+ * drum (clockwise seen from above for + turns, the way a winch turns; anticlockwise for − turns,
+ * PT-17), then off the drum, through the self-tailer's jaw on top if it is in it, to a short,
+ * straight loose end lying on top of the rope tail box behind the winch, whatever the number of
+ * turns. With no turns the rope is held in the hand: it runs past the winch, crosses the gap and
+ * ends in a flat coil on the box.
  */
 export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = boat): Vec3[] {
   const winch = data.cockpitHardware.winches.find((w) => w.id === wrap.winchId);
@@ -496,14 +493,19 @@ export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = bo
   // M34: the rope on a drum is drawn at its own, thinner size (the tails keep the visible one).
   const radius = detail.drumRenderRadius;
   const r = size.diameter / 2 + radius;
-  const inboard = -Math.sign(winch.z) || 1;
-  const hand: Vec3 = [
-    winch.x - detail.handAftM,
-    data.deck.cockpit.coamingTopY + detail.handAboveCoamingM,
-    winch.z + inboard * detail.handInboardM,
-  ];
+  const side: 1 | -1 = winch.z < 0 ? -1 : 1;
+  const box = ropeBinBox(side, data);
+  const lying = box.topY + data.visual.ropeRenderRadius;
   const turns = Math.min(Math.abs(wrap.turns), data.realisticMode.capstan.maxTurns);
-  if (turns === 0) return [hand];
+  if (turns === 0) {
+    return [
+      [from[0] - data.modelDetail.ropeBin.turnX, lying, tailLaneZ(side, 0, data)],
+      ...inHandCoil(side, data),
+    ];
+  }
+  // The loose end: it starts a little inside the box's front edge and lies straight aft.
+  const endStart: Vec3 = [box.frontX - detail.looseEndIntoBoxM, lying, box.centre.z];
+  const endStop: Vec3 = [endStart[0] - detail.looseEndLengthM, lying, box.centre.z];
   // Angles round the drum seen from above: 0 = forward (+x), +90° = starboard (+z). Increasing
   // angle is clockwise seen from above.
   const dir = wrap.turns > 0 ? 1 : -1;
@@ -511,12 +513,12 @@ export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = bo
   const reach = (p: Vec3) =>
     Math.acos(Math.min(1, r / Math.max(r, Math.hypot(p[0] - winch.x, p[2] - winch.z))));
   // The rope meets the drum where it runs on in the turning direction, and leaves it where the
-  // turning direction points at the hand.
+  // turning direction points at the loose end's start.
   const start = at(from) + dir * reach(from);
   const end = start + dir * 2 * Math.PI * turns;
   let total = 2 * Math.PI * turns;
   if (!wrap.selfTailer) {
-    const leave = at(hand) - dir * reach(hand);
+    const leave = at(endStart) - dir * reach(endStart);
     total += (((dir * (leave - end)) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
   }
   // Each turn lies one rope's width above the last, up to the top of the wrap.
@@ -532,10 +534,13 @@ export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = bo
       winch.z + r * Math.sin(a),
     ]);
   }
-  if (!wrap.selfTailer) return [...points, hand];
-  // Up over the rim into the jaw, a little further round, just inside the drum's edge.
+  if (!wrap.selfTailer) return [...points, endStart, endStop];
+  // Up over the rim into the jaw, a little further round, just inside the drum's edge; across
+  // the top and over the aft edge (clear of the drum by tailClearM), then down to the box.
   const jawAngle = start + dir * (total + (detail.jawAheadDeg * Math.PI) / 180);
   const jaw = size.diameter / 2 - radius;
+  const over = at(endStart);
+  const clear = size.diameter / 2 + detail.tailClearM;
   return [
     ...points,
     [
@@ -543,6 +548,13 @@ export function winchWrapPoints(wrap: WinchWrap, from: Vec3, data: BoatData = bo
       winch.y + size.height - radius,
       winch.z + jaw * Math.sin(jawAngle),
     ],
+    [
+      winch.x + clear * Math.cos(over),
+      winch.y + size.height - radius,
+      winch.z + clear * Math.sin(over),
+    ],
+    endStart,
+    endStop,
   ];
 }
 

@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
 import { sheerAt } from '../../model/hullShape';
-import { coilLayers } from '../../model/ropeCoil';
+import { DECK_OVERLAP } from '../../model/deckVolumes';
+import { ropeBinBox, ropeBinEntry } from '../../model/ropeBin';
 import type { Detail } from '../../model/settings';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
@@ -47,7 +48,7 @@ export function buildCockpitHardware(
         1,
         materials,
       ),
-      ...buildRopeBins(materials, detail),
+      ...buildRopeBins(materials),
     ],
     wheelPivots: wheels.map((wheel) => wheel.pivot),
   };
@@ -170,41 +171,32 @@ function buildWinch(
 }
 
 /**
- * The rope tail boxes behind the winches (M5, owner, PR #19): a dark opening in the coaming top
- * with a low rim, where the ropes' ends go in. M34: a coil of spare rope lies in each box.
+ * The rope tail boxes behind the winches (M5, owner, PR #19; redrawn in M34, owner on PR #81):
+ * a solid block as wide as the coaming, from the deck to the coaming top and back to the
+ * transom, with a dark entry in its front face where the lines go in.
  */
-function buildRopeBins(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
+function buildRopeBins(materials: BoatMaterials): THREE.Object3D[] {
   const { ropeBins } = boat.cockpitHardware;
-  const size = boat.modelDetail.ropeBin;
-  const y = boat.deck.cockpit.coamingTopY;
-  return ropeBins.boxes.flatMap((box) => {
-    const { length: l, width: w, rimHeight: h, rimWidth: rim } = size;
-    const opening = boxAt([box.x, y + 0.002, box.z], [l - 2 * rim, 0.004, w - 2 * rim]);
-    const walls = [
-      boxAt([box.x + l / 2 - rim / 2, y + h / 2, box.z], [rim, h, w]),
-      boxAt([box.x - l / 2 + rim / 2, y + h / 2, box.z], [rim, h, w]),
-      boxAt([box.x, y + h / 2, box.z + w / 2 - rim / 2], [l, h, rim]),
-      boxAt([box.x, y + h / 2, box.z - w / 2 + rim / 2], [l, h, rim]),
-    ];
-    const centre: Vec3 = [box.x, y + h, box.z];
-    const high = detail === 'high';
-    const ropeRadius = size.coil.ropeRadius;
-    const coil = coilLayers(box, high ? 32 : 16).map(
-      (points) =>
-        new THREE.TubeGeometry(
-          new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p))),
-          points.length - 1,
-          ropeRadius,
-          high ? 8 : 5,
-          false,
-        ),
-    );
-    return [
-      smallPartMesh(ropeBins.id, [opening], materials.dark, [centre]),
-      smallPartMesh(ropeBins.id, walls, materials.gelcoat, [centre]),
-      smallPartMesh(ropeBins.id, coil, materials.coil, [centre]),
-    ];
-  });
+  return ([1, -1] as const)
+    .map((side) => {
+      const box = ropeBinBox(side);
+      const entry = ropeBinEntry(side);
+      const bottom = Math.min(sheerAt(box.frontX), sheerAt(box.aftX)) - DECK_OVERLAP;
+      const block = boxAt(
+        [box.centre.x, (box.topY + bottom) / 2, box.centre.z],
+        [box.frontX - box.aftX, box.topY - bottom, Math.abs(box.outerZ - box.innerZ)],
+      );
+      const mouth = boxAt(
+        [box.frontX + 0.002, (entry.bottomY + entry.topY) / 2, (entry.innerZ + entry.outerZ) / 2],
+        [0.004, entry.topY - entry.bottomY, Math.abs(entry.outerZ - entry.innerZ)],
+      );
+      const hit: Vec3 = [box.centre.x, box.topY, box.centre.z];
+      return [
+        smallPartMesh(ropeBins.id, [block], materials.gelcoat, [hit]),
+        smallPartMesh(ropeBins.id, [mouth], materials.dark, [hit]),
+      ];
+    })
+    .flat();
 }
 
 /**

@@ -177,7 +177,7 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
   });
 
   it('coachroof and cockpit shapes are sane', () => {
-    const { coachroof, cockpit, aftPlatform } = hanse508.deck;
+    const { coachroof, cockpit } = hanse508.deck;
     expect(coachroof.frontHalfWidth).toBeLessThan(coachroof.halfWidth);
     expect(coachroof.maxHalfWidth).toBeGreaterThan(coachroof.halfWidth);
     expect(coachroof.maxHalfWidthFromX).toBeGreaterThan(coachroof.aftX);
@@ -188,13 +188,14 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
     expect(coachroof.chamferStartX).toBeLessThan(coachroof.frontX);
     expect(coachroof.topFrontX).toBeLessThan(coachroof.frontX);
     expect(cockpit.soleY).toBeLessThan(cockpit.coamingTopY);
-    expect(cockpit.aftX).toBe(aftPlatform.frontX);
+    // M34: the floor is flat to the transom.
+    expect(cockpit.aftX).toBe(hanse508.hull.transomX);
   });
 
   it('model detail: counts are whole numbers, positions lie on the boat, sizes are small', () => {
     const { transomX, bowFittingTipX } = hanse508.hull;
     for (const [path, value] of numbers(hanse508.modelDetail)) {
-      if (/(count|spokes)$/.test(path)) {
+      if (/(count|spokes|pointsPerTurn)$/.test(path)) {
         expect(Number.isInteger(value) && value >= 1, path).toBe(true);
       } else if (/X$/.test(path)) {
         expect(value, path).toBeGreaterThanOrEqual(transomX);
