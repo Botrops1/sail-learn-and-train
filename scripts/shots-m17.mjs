@@ -115,7 +115,17 @@ export async function liveM17Checks({ openPage, viewports, outDir, prefix, probl
       const overlay = document.querySelector('[data-testid="debug-overlay"]');
       if (overlay) overlay.style.display = 'none';
     });
-    const spot = await page.evaluate(() => window.__sailWater.sunScreen());
+    // Wait for the result, not a fixed time: the camera settles slower on a loaded runner, so
+    // read the sun until it stops moving (two reads 300 ms apart, up to 12 s).
+    let spot = await page.evaluate(() => window.__sailWater.sunScreen());
+    for (let i = 0; i < 40; i += 1) {
+      await page.waitForTimeout(300);
+      const next = await page.evaluate(() => window.__sailWater.sunScreen());
+      const still =
+        spot !== null && next !== null && Math.hypot(next.x - spot.x, next.y - spot.y) < 0.5;
+      spot = next;
+      if (still) break;
+    }
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const inside =
       spot !== null && spot.x >= 0 && spot.x <= box.width && spot.y >= 0 && spot.y <= box.height;

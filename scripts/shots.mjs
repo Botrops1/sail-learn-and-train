@@ -361,7 +361,9 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
-  await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
+  // A ceiling, not a pause: it returns as soon as the canvas is in the page (a loaded runner can
+  // take longer than 10 s to start a page while other pages are still drawing).
+  await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
   return { context, page };
 }
 
