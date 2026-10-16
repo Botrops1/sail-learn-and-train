@@ -108,8 +108,11 @@ export async function liveM17Checks({ openPage, viewports, outDir, prefix, probl
       '?wd=30&ws=12&ms=40&js=100&hdg=290&clk=202606012010&cam=helm&detail=low&debug=1',
     );
     await page.waitForTimeout(1500);
-    // Looking ahead from above the stern, 2.5° up: where the sun is at 20:10.
-    await page.evaluate(() => window.__sailDebug.setView([-6, 3, 0], [94, 7.4, 0], 50));
+    // Looking ahead from above the stern, 2.5° up, with a wide lens (90° high): the sun at 20:10
+    // lies about 12° right of ahead. Since M26 the phone's portrait view is narrow; at 50° it was
+    // only about 24° wide, so the sun sat on its right edge and the check passed or failed by a
+    // pixel. At 90° the view is about 50° wide and the sun lies well inside it.
+    await page.evaluate(() => window.__sailDebug.setView([-6, 3, 0], [94, 7.4, 0], 90));
     await page.waitForTimeout(800);
     await page.evaluate(() => {
       const overlay = document.querySelector('[data-testid="debug-overlay"]');
