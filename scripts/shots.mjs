@@ -44,10 +44,12 @@ import { liveM23Checks, M23_SCENES } from './shots-m23.mjs';
 import { liveM24Checks, M24_SCENES } from './shots-m24.mjs';
 import { liveM25Checks, M25_SCENES } from './shots-m25.mjs';
 import { liveM26Checks, M26_SCENES } from './shots-m26.mjs';
+import { liveM27Checks, M27_SCENES } from './shots-m27.mjs';
 import {
   closeSettings,
   openSettings,
   setCamera,
+  setMode,
   setSheet,
   showSection,
   viewBottom,
@@ -187,6 +189,7 @@ const SCENES = [
   ...M24_SCENES.map((scene) => ({ ...scene, name: `m24-${scene.name}` })),
   ...M25_SCENES.map((scene) => ({ ...scene, name: `m25-${scene.name}` })),
   ...M26_SCENES.map((scene) => ({ ...scene, name: `m26-${scene.name}` })),
+  ...M27_SCENES.map((scene) => ({ ...scene, name: `m27-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -358,7 +361,9 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
-  await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
+  // A ceiling, not a pause: it returns as soon as the canvas is in the page (a loaded runner can
+  // take longer than 10 s to start a page while other pages are still drawing).
+  await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
   return { context, page };
 }
 
@@ -706,6 +711,7 @@ try {
       if (!inShard(SCENES.indexOf(scene))) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
+      if (scene.mode) await setMode(page, scene.mode);
       if (scene.section) await showSection(page, scene.section);
       if (scene.settings) await openSettings(page);
       if (scene.sheet) await setSheet(page, scene.sheet);
@@ -897,6 +903,7 @@ try {
     m24: () => liveM24Checks(live),
     m25: () => liveM25Checks(live),
     m26: () => liveM26Checks(live),
+    m27: () => liveM27Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

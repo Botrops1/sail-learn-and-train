@@ -1,142 +1,186 @@
-import type { Store } from '../app/store';
+import type { AppState, Store } from '../app/store';
 import { entryFor } from '../model/panelEntries';
+import { createAutopilotPanel } from './autopilotPanel';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
+import type { LayoutShell } from './layout';
 import { createLearnTab } from './learnTab';
-import { createRopesTab } from './ropesTab';
+import { MODE_LAYOUTS, SECTION_IDS, sectionAvailable, type SectionId } from './modes';
+import { createEnginePanel } from './enginePanel';
+import { createQuickRow } from './quickRow';
+import { createRopeLegend } from './ropeLegend';
+import { createRopesTab, revealRopeStrip } from './ropesTab';
+import { createSailsPanel } from './sailsPanel';
+import { createSection, type SectionView } from './sections';
 import type { Sheet } from './sheet';
 import { createWindPanel } from './windPanel';
 
-export const TAB_IDS = ['ropes', 'wind', 'learn'] as const;
-export type TabId = (typeof TAB_IDS)[number];
-
-const TAB_LABELS: Record<TabId, StringKey> = {
+/** The title of each section (PHASE5_SPEC 8.4). */
+const SECTION_TITLES: Record<SectionId, StringKey> = {
   ropes: 'tab.ropes',
-  wind: 'tab.wind',
+  sails: 'trim.label',
+  autopilot: 'autopilot.label',
+  engine: 'engine.label',
+  conditions: 'section.conditions',
   learn: 'tab.learn',
+  legend: 'legend.title',
 };
 
 /**
- * The panel (the sheet on a phone, PHASE5_SPEC 7.5): three tabs (Ropes, Wind, Learn). The old View tab and the footer moved to the
- * settings dialog and the camera to the camera chip (PHASE5_SPEC 6.4).
- * Ropes: the clutch-bank drawing and the rope controls (Easy mode). Wind: the test-wind dial,
- * speed and presets. Learn: the glossary.
- * Selecting a rope or the wheel anywhere (3D view, link) opens the Ropes tab.
+ * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): no tabs since M27, but a list of
+ * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn and
+ * Rope colours. The mode (modes.ts) decides their order and which start open. Each section is
+ * built once and never copied. The settings and the camera are in the chip row (PHASE5_SPEC 6.4).
+ * Selecting a rope or the wheel anywhere (3D view, link) shows it in the Ropes section.
  */
 export interface Panel {
-  activeTab(): TabId;
-  /** Opens a tab (the instrument strip opens the Wind tab). */
-  showTab(id: TabId): void;
-  onTabChange(listener: (tab: TabId) => void): void;
+  /** Opens a section, raises a peek sheet to half, and scrolls the section to the top of the panel body. */
+  showSection(id: SectionId): void;
+  /** True if the section is open, available, and not at peek (PHASE5_SPEC 3.1). */
+  shows(id: SectionId): boolean;
+  /** setAppMode('learn'), openLearn(id), then showSection('learn'). */
+  openLearnEntry(id: string): void;
+  /** Runs after a section opens or folds, the mode changes, the sheet changes height, or the layout changes. */
+  onChange(listener: () => void): void;
 }
 
-export function createPanel(host: HTMLElement, store: Store, sheet: Sheet): Panel {
-  /** A tab the user chose raises a sheet that sits at its lowest height. */
-  const raiseSheet = () => {
-    if (sheet.atPeek()) sheet.setHeight('half');
-  };
-  const tabList = el('div', {
-    class: 'tabs',
-    role: 'tablist',
-    'aria-label': t('panel.tabsLabel'),
-  });
+export function createPanel(
+  host: HTMLElement,
+  store: Store,
+  sheet: Sheet,
+  layout: LayoutShell,
+): Panel {
   const body = el('div', { class: 'panel-body' });
+  const listeners: (() => void)[] = [];
+  const changed = () => listeners.forEach((listener) => listener());
 
-  const tabs = new Map<TabId, HTMLButtonElement>();
-  const panes = new Map<TabId, HTMLElement>();
-  const tabListeners: ((tab: TabId) => void)[] = [];
-  let active: TabId = 'ropes';
+  const openLearnEntry = (id: string) => {
+    store.dispatch({ type: 'setAppMode', mode: 'learn' });
+    store.dispatch({ type: 'openLearn', id });
+    showSection('learn');
+  };
 
-  for (const id of TAB_IDS) {
-    const tab = el(
-      'button',
-      {
-        type: 'button',
-        role: 'tab',
-        id: `tab-${id}`,
-        class: 'tab',
-        'data-testid': `tab-${id}`,
-        'aria-controls': `pane-${id}`,
-      },
-      [t(TAB_LABELS[id])],
-    );
-    const pane = el('div', {
-      role: 'tabpanel',
-      id: `pane-${id}`,
-      class: 'pane',
-      'aria-labelledby': `tab-${id}`,
-      tabindex: '0',
-    });
-    tab.addEventListener('click', () => {
-      select(id);
-      raiseSheet();
-    });
-    tab.addEventListener('keydown', (event) => onTabKey(event, id));
-    tabs.set(id, tab);
-    panes.set(id, pane);
-    tabList.append(tab);
-    body.append(pane);
+  const built: Record<SectionId, { content: HTMLElement[]; explain: boolean }> = {
+    ropes: { content: createRopesTab(store, openLearnEntry), explain: true },
+    sails: { content: [createSailsPanel(store)], explain: true },
+    autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
+    engine: { content: [createEnginePanel(store)], explain: true },
+    conditions: { content: createWindPanel(store), explain: true },
+    learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
+    legend: { content: [createRopeLegend()], explain: false },
+  };
+  const sections = new Map<SectionId, SectionView>();
+  for (const id of SECTION_IDS) {
+    const { content, explain } = built[id];
+    const section = createSection(id, t(SECTION_TITLES[id]), content, explain);
+    // After the section's own handler has folded or opened it.
+    section.element.querySelector('.section-toggle')?.addEventListener('click', () => changed());
+    sections.set(id, section);
   }
 
-  panes.get('ropes')?.append(...createRopesTab(store, () => select('learn')));
-  panes.get('wind')?.append(...createWindPanel(store));
-  panes.get('learn')?.append(...createLearnTab(store, (tab) => select(tab)));
-
-  sheet.head.append(tabList);
+  createQuickRow(sheet.head, store, sheet);
   host.append(body);
-  select('ropes');
-  if (store.getState().learn !== null) select('learn');
 
-  store.subscribe((state, previous) => {
-    // An entry was opened (also while the Learn tab is open: this scrolls it to the top).
-    if (state.learn !== previous.learn && state.learn !== null) select('learn');
-    // A rope or the wheel selected opens the Ropes tab, except from the Learn tab: "Show on the
-    // boat" lights the part up and stays there.
-    if (state.selection === previous.selection || !entryFor(state.selection)) return;
-    if (active !== 'ropes' && active !== 'learn') select('ropes');
-  });
+  const stacked = () => layout.viewport().mode === 'stacked';
+  let layoutKind = stacked();
 
-  function select(id: TabId, focus = false): void {
-    for (const tabId of TAB_IDS) {
-      const current = tabId === id;
-      const tab = tabs.get(tabId);
-      const pane = panes.get(tabId);
-      if (!tab || !pane) continue;
-      tab.setAttribute('aria-selected', String(current));
-      tab.tabIndex = current ? 0 : -1;
-      pane.hidden = !current;
-      if (current && focus) tab.focus();
+  /** Puts the sections in the mode's order and opens or folds them as the mode says. */
+  function applyMode(state: AppState): void {
+    const mode = MODE_LAYOUTS[state.appMode];
+    body.append(...mode.order.map((id) => sections.get(id)?.element as HTMLElement));
+    const open = stacked() ? mode.open : mode.openSide;
+    for (const id of SECTION_IDS) {
+      const section = sections.get(id);
+      section?.setOpen(open.includes(id));
+      section?.resetExplain();
     }
     body.scrollTop = 0;
-    if (id !== active) {
-      active = id;
-      tabListeners.forEach((listener) => listener(id));
+  }
+
+  function applyAvailable(state: AppState): void {
+    for (const id of SECTION_IDS) {
+      const section = sections.get(id);
+      if (section) section.element.hidden = !sectionAvailable(id, state);
     }
   }
+
+  /** The section's top at the top of the panel body (once the sheet has its new height). */
+  let scrollTarget: SectionId | null = null;
+  function scrollToSection(id: SectionId): void {
+    const section = sections.get(id);
+    if (!section || section.element.offsetParent === null) return;
+    const offset = section.element.getBoundingClientRect().top - body.getBoundingClientRect().top;
+    body.scrollTop += offset;
+  }
+
+  function showSection(id: SectionId): void {
+    const section = sections.get(id);
+    if (!section) return;
+    section.setOpen(true);
+    const raise = sheet.atPeek();
+    if (raise) sheet.setHeight('half');
+    scrollToSection(id);
+    // The sheet may still be growing: scroll again when it has finished.
+    scrollTarget = raise ? id : null;
+    changed();
+  }
+
+  applyAvailable(store.getState());
+  applyMode(store.getState());
+
+  store.subscribe((state, previous) => {
+    if (
+      state.settings.ropesMode !== previous.settings.ropesMode ||
+      state.settings.legend !== previous.settings.legend
+    ) {
+      applyAvailable(state);
+      changed();
+    }
+    if (state.appMode !== previous.appMode) {
+      applyMode(state);
+      changed();
+    }
+    // An entry was opened (also while the Learn section is open: this scrolls it to the top).
+    if (state.learn !== previous.learn && state.learn !== null && sections.get('learn')?.isOpen()) {
+      scrollToSection('learn');
+    }
+    // A rope or the wheel selected shows it in the Ropes section (Easy and Realistic mode; in
+    // Learn mode "Show on the boat" lights the part up and nothing moves). At peek the quick row
+    // shows it instead.
+    if (
+      state.selection !== previous.selection &&
+      entryFor(state.selection) &&
+      state.appMode !== 'learn' &&
+      !sheet.atPeek()
+    ) {
+      sections.get('ropes')?.setOpen(true);
+      revealRopeStrip();
+      changed();
+    }
+  });
+
+  sheet.onChange(() => {
+    if (scrollTarget) {
+      scrollToSection(scrollTarget);
+      scrollTarget = null;
+    }
+    changed();
+  });
+  layout.onChange(() => {
+    const now = stacked();
+    if (now === layoutKind) return;
+    layoutKind = now;
+    applyMode(store.getState());
+    changed();
+  });
 
   return {
-    activeTab: () => active,
-    showTab: (id) => {
-      select(id);
-      raiseSheet();
+    showSection,
+    shows: (id) => {
+      const section = sections.get(id);
+      return Boolean(section && section.isOpen() && !section.element.hidden && !sheet.atPeek());
     },
-    onTabChange: (listener) => tabListeners.push(listener),
+    openLearnEntry,
+    onChange: (listener) => listeners.push(listener),
   };
-
-  function onTabKey(event: KeyboardEvent, id: TabId): void {
-    const index = TAB_IDS.indexOf(id);
-    const last = TAB_IDS.length - 1;
-    const target: Record<string, number> = {
-      ArrowRight: index === last ? 0 : index + 1,
-      ArrowLeft: index === 0 ? last : index - 1,
-      Home: 0,
-      End: last,
-    };
-    const next = TAB_IDS[target[event.key] ?? -1];
-    if (next) {
-      event.preventDefault();
-      select(next, true);
-      raiseSheet();
-    }
-  }
 }

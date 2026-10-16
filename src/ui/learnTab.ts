@@ -15,10 +15,9 @@ import {
 import { entryFor } from '../model/panelEntries';
 import { el } from './dom';
 import { currentLanguage, quoted, t, type StringKey } from './i18n';
-import type { TabId } from './panel';
 
 /** The name an entry has in this language (the id itself if the entry has no text). */
-function nameOf(id: string): string {
+export function nameOf(id: string): string {
   return learnEntry(id, currentLanguage())?.text.name ?? id;
 }
 
@@ -27,13 +26,13 @@ function textOf(tag: 'p' | 'div', testId: string, text: string, className = ''):
 }
 
 /**
- * The Learn tab (PHASE4_SPEC 6.6, 7.4): a search box, then either the list of every entry in
+ * The Learn section (PHASE4_SPEC 6.6, 7.4; a tab until M27): a search box, then either the list of every entry in
  * groups (or the search results) or one entry, from the glossary text (what it is called, what it
  * does, how it works on this boat, mistakes and fixes) and the registry's facts (links, sources,
  * how sure we are). It shows the entry `state.learn` names; the info card's, the Ropes strip's and
  * the Realistic strip's "More" buttons open it.
  */
-export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTMLElement[] {
+export function createLearnTab(store: Store, openRopes: () => void): HTMLElement[] {
   const root = el('div', { class: 'learn' });
   // The search box is created once: only the area below it is re-rendered, so typing keeps focus.
   const searchInput = el('input', {
@@ -217,6 +216,10 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
         el('div', { class: 'learn-show-me' }, [
           ...(text.showMe ? [textOf('p', 'learn-show-me-text', text.showMe, 'learn-text')] : []),
           button('learn-show-me', t('learn.showMe'), () => {
+            // The link saved for Back must hold the open entry, and `learn=` is written only in
+            // Learn mode (an entry read in the folded Learn section of Easy has no mode): switch
+            // first, as "More" on the info card does (PHASE5_SPEC 8.3, review of PR #65).
+            store.dispatch({ type: 'setAppMode', mode: 'learn' });
             openScene(store, query);
             status.textContent = t('learn.showMeDone');
           }),
@@ -242,8 +245,10 @@ export function createLearnTab(store: Store, showTab: (tab: TabId) => void): HTM
           entry.controls.map((controlId) =>
             button(`learn-try-${controlId}`, nameOf(controlId), () => {
               const target = entryFor(controlId);
+              // Back to the boat: the ropes mode (Easy or Realistic) takes over from Learn.
+              store.dispatch({ type: 'setAppMode', mode: store.getState().settings.ropesMode });
               store.dispatch({ type: 'select', partId: target?.selectId ?? controlId });
-              showTab('ropes');
+              openRopes();
             }),
           ),
         ),

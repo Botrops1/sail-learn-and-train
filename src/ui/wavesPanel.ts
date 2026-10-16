@@ -56,7 +56,7 @@ export function createWavesPanel(store: Store): HTMLElement {
       el('legend', {}, [t('waves.label')]),
       options,
       status,
-      el('p', { class: 'hint' }, [`${t('waves.hint')} ${t('waves.effects')}`]),
+      el('p', { class: 'hint explain' }, [`${t('waves.hint')} ${t('waves.effects')}`]),
     ],
   );
 

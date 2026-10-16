@@ -17,9 +17,9 @@ const MODES = ['off', 'heading', 'wind'] as const;
 /**
  * The autopilot block (PHASE2_SPEC 6.5; owner: the boat's B&G holds the compass heading or the
  * true wind angle): Standby / Heading / Wind, then −10 −1 +1 +10 and Tack (Gybe when the wind
- * is behind). It sits in the Ropes tab under the wheel and at the Helm station.
+ * is behind). It is the Autopilot section (the Helm station has its own, with a heading).
  */
-export function createAutopilotPanel(store: Store): HTMLElement {
+export function createAutopilotPanel(store: Store, { heading = true } = {}): HTMLElement {
   const small = boat.physics.autopilot.smallStepDeg;
   const large = boat.physics.autopilot.largeStepDeg;
   const modeButtons = MODES.map((mode) => {
@@ -80,7 +80,7 @@ export function createAutopilotPanel(store: Store): HTMLElement {
       'aria-label': t('autopilot.label'),
     },
     [
-      el('h3', { class: 'section-title' }, [t('autopilot.label')]),
+      ...(heading ? [el('h3', { class: 'section-title' }, [t('autopilot.label')])] : []),
       el(
         'div',
         { class: 'segments autopilot-modes' },

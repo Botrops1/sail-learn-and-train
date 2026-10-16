@@ -5,7 +5,7 @@ import type { LayoutShell } from './layout';
 
 export interface InfoCardOptions {
   /**
-   * True if the panel already shows this part with its name and explanation (the Ropes tab's
+   * True if the panel already shows this part with its name and explanation (the Ropes section's
    * strip). In the stacked layout the card then stays away, leaving the panel its room.
    */
   shownInPanel?: (partId: string) => boolean;
@@ -17,12 +17,12 @@ export interface InfoCardOptions {
    * comes down.
    */
   atFull?: () => boolean;
-  /** Opens the Learn tab ("More"), also when the entry is already open there. */
-  showLearn?: () => void;
+  /** Opens the entry in the Learn section and Learn mode ("More"), also when it is already open there. */
+  showLearn?: (id: string) => void;
 }
 
 export interface InfoCard {
-  /** Shows or hides the card again (e.g. after the panel switched tabs). */
+  /** Shows or hides the card again (e.g. after a section opened or folded). */
   refresh(): void;
 }
 
@@ -33,7 +33,7 @@ export interface InfoCard {
  *
  * Both layouts: a small card over the 3D view, side by side from the top, stacked just above the
  * chip row (PHASE5_SPEC 7.5). Stacked, it stays away while the sheet shows the same part in the
- * Ropes tab (not at the sheet's lowest height, where the panel shows nothing).
+ * Ropes section (not at the sheet's lowest height, where the panel shows nothing).
  */
 export function createInfoCard(
   layout: LayoutShell,
@@ -49,8 +49,8 @@ export function createInfoCard(
   more.addEventListener('click', () => {
     const id = store.getState().selection;
     if (!id) return;
-    store.dispatch({ type: 'openLearn', id });
-    options.showLearn?.();
+    if (options.showLearn) options.showLearn(id);
+    else store.dispatch({ type: 'openLearn', id });
   });
   const close = el(
     'button',

@@ -4,7 +4,7 @@
 import path from 'node:path';
 import { setSheet } from './ui.mjs';
 
-const SAILS = '.ropes-easy [data-testid="sails-panel"]';
+const SAILS = '[data-section="sails"] [data-testid="sails-panel"]';
 
 /** Screenshots at every size (the Sails block in the Ropes tab; the 3D view is the usual one). */
 export const M9_SCENES = [

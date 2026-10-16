@@ -532,30 +532,6 @@ html[data-layout='side'] .panel {
   border-left: 1px solid var(--line);
 }
 
-.tabs {
-  display: flex;
-  flex: none;
-  border-bottom: 1px solid var(--line);
-}
-
-.tab {
-  flex: 1 1 0;
-  min-height: var(--touch);
-  padding: 8px 12px;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  background: none;
-  color: var(--muted);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.tab[aria-selected='true'] {
-  border-bottom-color: var(--accent);
-  color: var(--accent);
-}
-
 .panel-body {
   display: flex;
   flex: 1 1 auto;
@@ -566,11 +542,146 @@ html[data-layout='side'] .panel {
   -webkit-overflow-scrolling: touch;
 }
 
-.pane {
-  padding: 12px 16px;
+/* Sections (M27): a fold header, then the block. */
+.panel-section {
+  border-top: 1px solid var(--line);
 }
 
-.pane:focus-visible,
+.panel-section:first-child {
+  border-top: 0;
+}
+
+.panel-section[hidden],
+.section-body[hidden] {
+  display: none;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+}
+
+.section-toggle {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--touch);
+  padding: 8px 16px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-label);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.section-chevron {
+  color: var(--muted);
+}
+
+.panel-section[data-open='false'] .section-chevron {
+  transform: rotate(-90deg);
+}
+
+.section-explain {
+  flex: none;
+  width: var(--touch);
+  height: var(--touch);
+  margin-right: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.section-explain[aria-pressed='true'] {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.section-body {
+  padding: 0 16px 12px;
+}
+
+/* The "?" button shows and hides the explanations of its section. */
+.panel-section:not([data-explain='open']) .explain {
+  display: none;
+}
+
+/* The quick row (M27): shown only at the sheet's lowest height, under the handle. */
+.quick-row {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  height: 56px;
+  padding: 0 12px;
+  overflow: hidden;
+}
+
+html[data-layout='stacked'] .sheet[data-sheet='peek'] .quick-row {
+  display: flex;
+}
+
+.quick-row [hidden] {
+  display: none;
+}
+
+.quick-name {
+  font-weight: 600;
+}
+
+.quick-value {
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.quick-buttons {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.quick-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-small);
+  line-height: 1.25;
+}
+
+.quick-read {
+  flex: none;
+  margin-left: auto;
+}
+
+.mode-option-name,
+.mode-option-hint {
+  display: block;
+}
+
+.chip-menu [data-testid^='mode-option-'] {
+  min-height: 56px;
+}
+
+.mode-option-hint {
+  color: var(--muted);
+  font-size: var(--font-small);
+  font-weight: 400;
+}
+
+.chip-menu [aria-checked='true'] .mode-option-hint {
+  color: inherit;
+}
+
+.section-toggle:focus-visible,
+.section-explain:focus-visible,
 .step-button:focus-visible,
 .wind-dial:focus-visible,
 .preset:focus-visible,
@@ -579,7 +690,6 @@ input[type='range']:focus-visible,
 .chip-menu [role='menuitemradio']:focus-visible,
 .settings-close:focus-visible,
 .card-close:focus-visible,
-.tab:focus-visible,
 .segment:focus-within,
 .toggle:focus-within,
 .footer a:focus-visible {
@@ -1578,11 +1688,6 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-
-/* Ropes tab: Easy / Realistic switch. */
-.mode-switch {
-  margin-bottom: 8px;
 }
 
 .ropes-easy[hidden],

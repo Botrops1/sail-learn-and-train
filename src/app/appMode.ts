@@ -1,0 +1,11 @@
+/**
+ * The app's mode (PHASE5_SPEC 4.1): which sections of the panel come first and which start open.
+ * `learn` is its own mode; `easy` and `realistic` are the ropes modes (`settings.ropesMode`), so
+ * the invariant is: `appMode === 'learn'` or `appMode === settings.ropesMode`.
+ */
+export const APP_MODES = ['learn', 'easy', 'realistic'] as const;
+export type AppMode = (typeof APP_MODES)[number];
+
+export function isAppMode(value: string): value is AppMode {
+  return (APP_MODES as readonly string[]).includes(value);
+}

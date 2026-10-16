@@ -2,7 +2,7 @@
 // The live checks drive the WORKFLOW.md M4b checklist with real gestures where the app has
 // them (lever drags, tail onto the winch, circling the drum, the jaw, the button).
 import path from 'node:path';
-import { closeSettings, openSettings, setSheet, showSection } from './ui.mjs';
+import { closeSettings, openSettings, setMode, setSheet, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4B_SCENES = [
@@ -327,6 +327,9 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       '?mode=realistic&wd=90&ws=12&cam=helm',
     );
     await page.waitForTimeout(600);
+    // The drawing's knobs and the winch must both be on screen: a half-height sheet is too short
+    // now that the Ropes section has a header of its own (M27).
+    await setSheet(page, 'full');
 
     // Three stations; only the chosen one is shown.
     const stations = await page.locator('.station-button').allInnerTexts();
@@ -666,7 +669,7 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     );
     await other.close();
     await showSection(page, 'ropes');
-    await page.getByText('Easy', { exact: true }).click();
+    await setMode(page, 'easy');
     await page.waitForTimeout(400);
     const easyShown = await page.getByTestId('ropes-easy').isVisible();
     const slider = await page.getByLabel('Jib sheet', { exact: true }).isVisible();

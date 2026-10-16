@@ -826,7 +826,13 @@ The mini-map (M28), the second column (M29), remembering folds.
 
 ### 8.12 Decided in the M27 PR
 
-(empty)
+- **Section helpers** (8.4): `SectionView` also has `resetExplain()` (the panel closes the "?" texts when the mode changes). The engine block's own heading is removed from `.engine-head`, which now holds only the Start / Stop button (the Helm station's lever keeps its heading).
+- **`panel.showSection`** (8.5) scrolls the section's top to the top of the panel body at once and again when a raised sheet has finished growing (otherwise the scroll is cut short while the body is still small).
+- **The quick row's − / +** have the same accessible names as the strip's (`control.less` / `control.more`); they never exist twice for a reader, because the sheet body is `visibility: hidden` at peek and the quick row is `display: none` otherwise (3.5).
+- **"Try it"** (8.5) switches to the ropes mode first (`setAppMode(settings.ropesMode)`), then selects and shows the Ropes section, as the spec says; the Learn entry stays open in the state but is not written to the link in Easy or Realistic.
+- **The info card's "More"** calls `panel.openLearnEntry(id)`, which dispatches `setAppMode('learn')`, `openLearn(id)` and shows the Learn section (`InfoCardOptions.showLearn` takes the id).
+- **Owner's answers on PR #65 ("Accept all"):** in Easy only Ropes and Sails start open (the other sections start folded), and in Realistic the Autopilot and Engine sections are hidden, as 4.4 says.
+- **Browser checks** (8.9): besides the list there, `shots-m25.mjs` check 1 ("three tabs, no View tab") now says "no tabs, no View pane" (there are no tabs any more); `showSection` in `scripts/ui.mjs` raises a sheet at peek before it taps a folded section's header (the header may sit under the sheet's body). `shots-m6.mjs` and `shots-m11.mjs` open the Autopilot section before tapping its buttons; `shots-m12.mjs` opens the Engine section; the scenes of m6, m12 and m13 that scroll to the Autopilot or Engine block got `section:`.
 
 ---
 

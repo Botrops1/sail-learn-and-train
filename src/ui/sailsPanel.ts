@@ -58,8 +58,7 @@ export function createSailsPanel(store: Store): HTMLElement {
     'section',
     { class: 'sails-panel', 'data-testid': 'sails-panel', 'aria-label': t('trim.label') },
     [
-      el('h3', { class: 'section-title' }, [t('trim.label')]),
-      el('p', { class: 'hint trim-intro' }, [t('trim.intro')]),
+      el('p', { class: 'hint trim-intro explain' }, [t('trim.intro')]),
       ...rows.map((row) => row.root),
       repair,
     ],
