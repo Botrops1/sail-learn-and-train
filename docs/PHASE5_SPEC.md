@@ -1,6 +1,6 @@
 # Phase 5 specification: new layout and modes
 
-Status: **planned**, owner's answers recorded (planning chat and planning PR #61, 2026-10-15) · Last updated: 2026-10-15
+Status: **built**, M29 PR #71 waits for the owner's sign-off · Last updated: 2026-10-16
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1–4 are done (M24 is merged before M25 starts, owner's answer 1). [`LAYOUT_ANALYSIS.md`](LAYOUT_ANALYSIS.md) explains why the screen is rebuilt; this spec is what to build. The earlier specs still describe everything the app does; Phase 5 changes **where** things are drawn, not what they do. Phase 5 changes no physics and adds no sailing facts.
 
