@@ -10,7 +10,7 @@ The owner has **no sailing knowledge** and is not a developer. They work from a 
 
 | Command | What it does |
 |---|---|
-| `/milestone <N>` | Build milestone M<N> from the current phase spec, open its PR, then watch the PR and act on the owner's comments |
+| `/milestone <N>` | Build milestone M<N> from its phase spec, open its PR, then watch the PR and act on the owner's comments |
 | `/review <PR number>` | Independent review of a PR in a fresh session; posts one comment, changes nothing |
 | `/bug <link> <what happened>` | Fix a bug found on the live site in a small PR, then watch it |
 | `/plan <phase number>` | Plan a phase (or `/plan issue <N>` for an extra milestone) with Opus: owner questions first, then a spec detailed enough for Sonnet to build without guessing, in a docs-only PR |
@@ -22,7 +22,7 @@ When one of these is invoked, follow its `SKILL.md`. Without a command, the rule
 Always:
 
 1. This file, and [`docs/CODE_MAP.md`](docs/CODE_MAP.md) (which file does what; go straight to the right file instead of searching).
-2. The current phase spec: the highest-numbered `docs/PHASE<N>_SPEC.md`. Its sections 0–5 (or whatever its own "how to use this spec" section says applies to every milestone), the section of your milestone, and its Definition of Done. Not the other milestones' sections.
+2. **Your milestone's phase spec**: the `docs/PHASE<N>_SPEC.md` that has a section for M<N> (`grep -l "^## .*M<N>:" docs/PHASE*_SPEC.md`). A later phase may be planned ahead (Phase 7 was planned before Phases 5 and 6 were built), so the highest-numbered spec is not always the current one. Its sections 0–5 (or whatever its own "how to use this spec" section says applies to every milestone), the section of your milestone, and its Definition of Done. Not the other milestones' sections.
 3. [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md): the rules your milestone tests.
 4. Your milestone's checklist in [`docs/WORKFLOW.md`](docs/WORKFLOW.md) (`grep -n "^#### M<N>\|^### M<N>"`). The rest of WORKFLOW is for the owner.
 
@@ -39,7 +39,7 @@ Only the part you need, found with `grep` (do not read these whole):
 - Keep `src/model` pure (no DOM, no three.js). Renderers read state; UI dispatches actions.
 - **No magic numbers** for boat geometry or tuning. They belong in `content/boat/hanse508.json`. If you add or change one, update `docs/BOAT_REFERENCE.md` (mark it as an assumption if it is a guess).
 - **IDs:** every mesh and rope gets an id from `content/registry/parts.json`; a rope control uses its rope's id (no registry entry of its own). Add new ids to the registry first, with `status: "draft"` unless the spec gives a status backed by the sources it cites, and give them an entry in every `content/lang/<code>/glossary.json`.
-- **A new phase** starts with `/plan <N>` (Opus), which writes `docs/PHASE<N>_SPEC.md` (same structure as PHASE2_SPEC: a "how to use" section, one section per milestone with tests and "done when") and the milestones' checklists in WORKFLOW.md. Nothing else in this file needs changing.
+- **A new phase** starts with `/plan <N>` (Opus); a phase planned ahead gets `/plan <N> refresh` before its first milestone (it brings the spec up to date with what was built in between), which writes `docs/PHASE<N>_SPEC.md` (same structure as PHASE2_SPEC: a "how to use" section, one section per milestone with tests and "done when") and the milestones' checklists in WORKFLOW.md. Nothing else in this file needs changing.
 - **Sailing claims need sources.** Never "fix" a failing physics-truth test by editing the rule to match the code. If you believe a rule is wrong, explain why in the PR and leave the decision to the owner.
 - **Russian text:** never present AI-drafted Russian as verified. Registry status stays `draft` until a sailor reviews it.
 - **No copyrighted material** in the repo: no brochure PDFs or images, no copied text from courses or books. Facts and numbers are fine; cite the source.
