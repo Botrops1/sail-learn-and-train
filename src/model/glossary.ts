@@ -102,8 +102,6 @@ export const NOT_DRAWN: ReadonlySet<string> = new Set([
   'fit_clutch',
   'fit_winch',
   'fit_compass',
-  'fit_anchor_windlass',
-  'fit_bow_roller',
   'fit_mooring_cleat',
 ]);
 

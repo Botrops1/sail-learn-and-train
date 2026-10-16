@@ -9,6 +9,7 @@ import { initialRig, type RigState } from '../../model/sim';
 import { wheelTurnDeg } from '../../model/steering';
 import { buildWindex } from '../wind';
 import { buildKeel, buildRudder, buildSaildrive } from './appendages';
+import { buildBowGear } from './bowGear';
 import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
 import { buildHull } from './hull';
@@ -78,6 +79,7 @@ export function buildBoat(
     ...rigParts.objects,
     ...hardware.objects,
     ...buildDeckGear(materials, detail),
+    ...buildBowGear(materials, detail),
     mainSail.mesh,
     jibSail.mesh,
     ...ropes.objects,

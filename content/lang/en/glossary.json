@@ -1540,7 +1540,7 @@
       "alternatives": [],
       "short": "The electric winch on the bow that lets the anchor chain out and pulls it in.",
       "what": "The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm.",
-      "onThisBoat": "On the foredeck behind the anchor roller. The app does not draw it yet; anchoring comes in a later phase.",
+      "onThisBoat": "On the foredeck behind the anchor roller, in a round recess. It is drawn but does not work yet; anchoring comes later.",
       "mistakes": [
         {
           "mistake": "Putting fingers or feet near the chain while the windlass runs.",
@@ -1562,6 +1562,23 @@
       "short": "A strong fitting for tying the mooring lines to.",
       "what": "Lines to a pier or a buoy are made fast round a cleat.",
       "onThisBoat": "Cleats at the bow (photo). The app does not draw them yet.",
+      "textStatus": "draft"
+    },
+    "fit_anchor": {
+      "name": "Anchor",
+      "alternatives": [],
+      "short": "The heavy hook that holds the boat to the seabed.",
+      "what": "The anchor is let down on its chain until it lies on the seabed, where it digs in and holds the boat in one place.",
+      "onThisBoat": "It sits in the bow roller, to starboard of the jib furler, ready to let go. It is drawn but does not work yet; anchoring comes later.",
+      "showMe": "The bow from the front: the anchor hangs in its roller, with the chain running back to the windlass.",
+      "textStatus": "draft"
+    },
+    "fit_anchor_chain": {
+      "name": "Anchor chain",
+      "alternatives": [],
+      "short": "The chain that joins the anchor to the boat.",
+      "what": "The chain runs from the anchor over the bow roller to the windlass, and from there down into the chain locker under the foredeck.",
+      "onThisBoat": "A short piece shows between the windlass and the anchor; the rest is in the locker.",
       "textStatus": "draft"
     },
     "env_wake": {

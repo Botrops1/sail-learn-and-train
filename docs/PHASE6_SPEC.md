@@ -405,6 +405,11 @@ Russian (`content/lang/ru/glossary.json`): names `fit_anchor` «якорь», `f
 Done when: 7.5 passes; the glossary tests pass with the new counts; the Show me scene shows the anchor; `BOAT_REFERENCE.md` lists the anchor type and the windlass position as assumptions.
 Not in this milestone: a windlass remote at the helm (no photo shows one), the chain counter, anything that moves.
 
+### 7.8 Decided in the M31 PR
+
+- **`tests/picking.test.ts`, "an isolated small fitting still responds to a tap 20 px away"** used the jib furler drum. With the roller, anchor and windlass drawn, their tap points lie 8 to 12 px from the drum's in the whole-boat phone side view, so the drum is no longer an isolated fitting there and a tap 20 px from it can belong to a neighbour (found by running the test; the two other offsets still found the drum). The test now uses the mainsheet boom blocks, the only centreline fitting that still passes all three offsets; its comment says why. This is a change to an existing test that 7.4 does not list: the owner accepted this in the M31 PR ("accept all", PR #74): the bow tap points stay as 7.3 gives them.
+- **Tap check (`m31 tap`):** found by running it: in the `bow-from-side` close-up on a phone (a frame about 1 m wide) the windlass (x 5.40) is out of frame, and the roller's own tap point (the top centre between the cheeks) lies under the anchor's shank, so a tap there correctly finds the anchor. Each part is therefore tapped on a fresh page: the anchor at its tap point and the roller on its starboard cheek, both in `bow-from-side`; the windlass at its tap point in `bow-from-above`. The anchor's and the windlass's points come from `__sailDebug.hitCentres()` (no copy of the deck height in the script); the roller's cheek point is computed from `deckFittings.bowRoller`. The tap points themselves are unchanged (owner, PR #74, "accept all": leave them as they are).
+
 ---
 
 ## 8. M32: Cleats and fairleads

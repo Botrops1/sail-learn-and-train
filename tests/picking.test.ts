@@ -75,7 +75,8 @@ describe('tap-to-identify: small fittings', () => {
 
   it('an isolated small fitting still responds to a tap 20 px away (phone, side view)', () => {
     // Wind from port: the jib swings to starboard, away from the camera, so nothing covers the
-    // furler drum (with the default wind the jib's foot lies in front of it from the port side).
+    // fittings. M31: the furler drum is no longer isolated in this whole-boat phone view (the bow
+    // roller, anchor and windlass tap points lie 8 to 12 px from it), so the boom blocks are used.
     const fromPort = { ...defaultControls(), ctl_wind_dir: -60 };
     const clear = buildBoat(fromPort, initialRig(fromPort));
     const screen = SCREENS[0] ?? { width: 390, height: 380 };
@@ -89,18 +90,20 @@ describe('tap-to-identify: small fittings', () => {
     camera.lookAt(...pose.target);
     camera.updateMatrixWorld();
     const picker = createPicker(camera, clear.root, water);
-    const furler = picker
+    const fitting = picker
       .hitCentres(screen.width, screen.height)
-      .find((c) => c.partId === 'part_jib_furler');
-    expect(furler).toBeDefined();
+      .find((c) => c.partId === 'fit_mainsheet_boom_blocks');
+    expect(fitting).toBeDefined();
     for (const [dx, dy] of [
       [20, 0],
       [0, -20],
       [-14, 14],
     ] as const) {
-      const x = (furler?.x ?? 0) + dx;
-      const y = (furler?.y ?? 0) + dy;
-      expect(picker.pick(x, y, screen.width, screen.height), `${dx},${dy}`).toBe('part_jib_furler');
+      const x = (fitting?.x ?? 0) + dx;
+      const y = (fitting?.y ?? 0) + dy;
+      expect(picker.pick(x, y, screen.width, screen.height), `${dx},${dy}`).toBe(
+        'fit_mainsheet_boom_blocks',
+      );
     }
   });
 

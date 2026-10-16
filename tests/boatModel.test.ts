@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import registry from '../content/registry/parts.json';
 import { boat } from '../src/model/boat';
+import { anchorFluke } from '../src/model/bowGear';
 import { defaultControls } from '../src/model/controls';
 import { initialRig } from '../src/model/sim';
 import { buildBoat } from '../src/render3d/boat';
@@ -127,7 +128,10 @@ describe('boat model', () => {
 
   it('overall size matches the data: length overall, beam, draft and mast height', () => {
     const box = new THREE.Box3().setFromObject(model.root);
-    expect(box.max.x - box.min.x).toBeCloseTo(boat.hull.bowFittingTipX - boat.hull.transomX, 1);
+    expect(box.max.x - box.min.x).toBeCloseTo(
+      (anchorFluke()[0]?.[2][0] ?? 0) - boat.hull.transomX,
+      1,
+    );
     expect(box.max.z - box.min.z).toBeCloseTo(boat.dimensions.beam, 1);
     expect(-box.min.y).toBeCloseTo(boat.dimensions.draft, 1);
     // The masthead wind indicator stands just above the mast top.

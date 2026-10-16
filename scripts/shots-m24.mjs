@@ -1,7 +1,7 @@
 // M24 (Phase 4 sign-off): live checks for scripts/shots.mjs (PHASE4_SPEC 10.3). No scenes. Labels
 // contain "m24", so openPage adds held=1, sea=flat and clock=0 to queries without them.
-// For each language (phone size, one page each) it opens all 131 Learn entries, checks that every
-// section heading has text under it, and (English only) runs all 60 "Show me" buttons and the
+// For each language (phone size, one page each) it opens all 133 Learn entries, checks that every
+// section heading has text under it, and (English only) runs all 61 "Show me" buttons and the
 // phone's Back button.
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -24,9 +24,9 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
   const registry = readJson('content/registry/parts.json').entries;
   const groups = new Set(registry.map((entry) => entry.group));
   const showMeIds = registry.filter((entry) => entry.showMe).map((entry) => entry.id);
-  check('the registry has 131 ids', registry.length === 131, String(registry.length));
+  check('the registry has 133 ids', registry.length === 133, String(registry.length));
   check('the registry has 10 groups', groups.size === 10, String(groups.size));
-  check('the registry has 60 Show-me ids', showMeIds.length === 60, String(showMeIds.length));
+  check('the registry has 61 Show-me ids', showMeIds.length === 61, String(showMeIds.length));
 
   const search = (page) => page.evaluate(() => location.search);
 
@@ -47,7 +47,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
     const groupCount = await page.locator('[data-testid="learn-groups"] > details').count();
     check(`${code}: ten group lists`, groupCount === 10, String(groupCount));
     const buttonCount = await page.locator('[data-testid^="learn-entry-"]').count();
-    check(`${code}: 131 entry buttons`, buttonCount === 131, String(buttonCount));
+    check(`${code}: 133 entry buttons`, buttonCount === 133, String(buttonCount));
 
     /** Opens the entry's group first: the list is rebuilt, closed, after every Back. */
     const openEntry = async (entry) => {
@@ -112,7 +112,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
       await page.getByTestId('learn-back').click();
     }
     check(
-      `${code}: all 131 entries show their name`,
+      `${code}: all 133 entries show their name`,
       wrongName.length === 0,
       wrongName.length ? wrongName.slice(0, 5).join(' | ') : 'ok',
     );
@@ -125,9 +125,9 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
     );
     if (code === 'en') {
       check(
-        'en: all 60 Show me buttons open a scene and Back returns',
+        'en: all 61 Show me buttons open a scene and Back returns',
         showMeFailures.length === 0,
-        showMeFailures.length ? showMeFailures.join(' | ') : '60 ok',
+        showMeFailures.length ? showMeFailures.join(' | ') : '61 ok',
       );
     }
 
