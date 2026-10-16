@@ -154,6 +154,8 @@ export type Action =
   | { type: 'setClock'; utcMs: number }
   /** The Settings switch for the clock chip. */
   | { type: 'setClockShown'; shown: boolean }
+  /** The Settings switch for the mini-map over the 3D view (M28). */
+  | { type: 'setMiniMap'; miniMap: boolean }
   /** New sails: the flogging damage goes back to 0 (M9). */
   | { type: 'repairSails' }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
@@ -473,6 +475,10 @@ export function reduce(state: AppState, action: Action): AppState {
       return state.settings.clock === action.shown
         ? state
         : { ...state, settings: { ...state.settings, clock: action.shown } };
+    case 'setMiniMap':
+      return state.settings.miniMap === action.miniMap
+        ? state
+        : { ...state, settings: { ...state.settings, miniMap: action.miniMap } };
     case 'newWindPattern': {
       if (state.windMode.mode === 'steady') return state;
       const seed = isSeed(action.seed) ? action.seed : state.windMode.seed;

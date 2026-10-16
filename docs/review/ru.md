@@ -2626,3 +2626,8 @@
 | quick.realistic | Pull the panel up to work the clutches and winches. | Поднимите панель, чтобы работать стопорами и лебёдками. |
 | quick.learn | Tap any part of the boat to learn about it. | Нажмите на любую часть яхты, чтобы узнать о ней. |
 | quick.read | Read | Читать |
+| minimap.open | Mini-map: tap to open the full map. | Мини-карта: нажмите, чтобы открыть карту. |
+| map.close | Close the map | Закрыть карту |
+| map.closeShort | Close | Закрыть |
+| settings.miniMap.label | Mini-map | Мини-карта |
+| settings.miniMap.hint | A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map. | Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту. |

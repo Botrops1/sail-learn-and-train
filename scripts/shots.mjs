@@ -45,6 +45,7 @@ import { liveM24Checks, M24_SCENES } from './shots-m24.mjs';
 import { liveM25Checks, M25_SCENES } from './shots-m25.mjs';
 import { liveM26Checks, M26_SCENES } from './shots-m26.mjs';
 import { liveM27Checks, M27_SCENES } from './shots-m27.mjs';
+import { liveM28Checks, M28_SCENES } from './shots-m28.mjs';
 import {
   closeSettings,
   openSettings,
@@ -190,6 +191,7 @@ const SCENES = [
   ...M25_SCENES.map((scene) => ({ ...scene, name: `m25-${scene.name}` })),
   ...M26_SCENES.map((scene) => ({ ...scene, name: `m26-${scene.name}` })),
   ...M27_SCENES.map((scene) => ({ ...scene, name: `m27-${scene.name}` })),
+  ...M28_SCENES.map((scene) => ({ ...scene, name: `m28-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -358,6 +360,11 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   // the clock card.
   if (!/m(1[7-9]|2[5-9])/.test(label) && !/[?&]clock=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}clock=0`;
+  }
+  // Since M28 the mini-map shows while sailing. Everything but the M28 and M29 checks hides it,
+  // so it never changes an older picture or tap.
+  if (!/m(28|29)/.test(label) && !/[?&]mm=/.test(query)) {
+    url += `${url.includes('?') ? '&' : '?'}mm=0`;
   }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
@@ -649,7 +656,10 @@ async function liveGeneralChecks() {
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
   await setCamera(page, 'top');
   // The phone-sized screen starts at low detail (M3b).
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
+  await expectUrl(
+    'Top button',
+    `?v=1&${c}&cam=top&step=5&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0`,
+  );
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -657,7 +667,7 @@ async function liveGeneralChecks() {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0`);
   // The view behind the settings dialog is inert, so the camera is set before it opens.
   await setCamera(page, 'side-starboard');
   await openSettings(page);
@@ -665,13 +675,13 @@ async function liveGeneralChecks() {
   await page.getByText('Debug overlay', { exact: true }).click();
   await expectUrl(
     'View tab',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&clock=0&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0&debug=1`,
   );
   // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
   await page.getByText('High', { exact: true }).click();
   await expectUrl(
     'Detail high',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&held=1&sea=flat&clock=0&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&mm=0&held=1&sea=flat&clock=0&debug=1`,
   );
   await page.waitForTimeout(1500);
   const overlay = await page.getByTestId('debug-overlay').innerText();
@@ -684,7 +694,7 @@ async function liveGeneralChecks() {
   await page.getByText('Low', { exact: true }).click();
   await expectUrl(
     'Detail low',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&clock=0&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0&debug=1`,
   );
   await closeSettings(page);
   await context.close();
@@ -904,6 +914,7 @@ try {
     m25: () => liveM25Checks(live),
     m26: () => liveM26Checks(live),
     m27: () => liveM27Checks(live),
+    m28: () => liveM28Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

@@ -6,6 +6,7 @@ import { mapToBoat } from '../model/mapFrame';
 import { buoyOffsets } from '../model/windOnWater';
 import { pointOfSail } from '../model/pointsOfSail';
 import { requirePartId } from '../model/registry';
+import type { CameraPreset } from '../model/settings';
 import type { TrackPoint } from '../model/track';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
@@ -486,6 +487,11 @@ export interface MapView {
   update(nowMs: number): void;
   /** True while the map is what the view shows (`cam=map`). */
   shown(): boolean;
+  /**
+   * The camera view the map was opened from (M28), for the Close chip; undefined when the map
+   * was the first view (a link with `cam=map`).
+   */
+  before(): CameraPreset | undefined;
 }
 
 /**
@@ -672,8 +678,12 @@ export function createMapView(host: HTMLElement, store: Store): MapView {
     host.toggleAttribute('data-map', shown());
     if (shown()) drawNow();
   };
+  // The view the map was opened from (any path: mini-map, camera chip, a link loaded by `load`).
+  let before: CameraPreset | undefined;
   store.subscribe((state, previous) => {
-    if (state.camera.preset !== previous.camera.preset) sync();
+    if (state.camera.preset === previous.camera.preset) return;
+    if (state.camera.preset === 'map') before = previous.camera.preset;
+    sync();
   });
   syncButtons();
 
@@ -735,6 +745,7 @@ export function createMapView(host: HTMLElement, store: Store): MapView {
   sync();
   return {
     shown,
+    before: () => before,
     update(nowMs) {
       if (!shown() || nowMs - lastDrawMs < 1000 / MAP.maxFps) return;
       lastDrawMs = nowMs;
@@ -779,7 +790,13 @@ function buoyPoints(state: AppState, view: MapViewport): { id: string; x: number
 }
 
 /** The four practice buoys (M16): a yellow dot with its letter, on top of the labels. */
-function drawBuoys(ctx: CanvasRenderingContext2D, state: AppState, view: MapViewport): void {
+function drawBuoys(
+  ctx: CanvasRenderingContext2D,
+  state: AppState,
+  view: MapViewport,
+  options: { letters?: boolean } = {},
+): void {
+  const letters = options.letters ?? true;
   const radius = Math.max(5, 0.6 / view.metresPerPx);
   const margin = radius + 2;
   for (const buoy of buoyPoints(state, view)) {
@@ -798,7 +815,9 @@ function drawBuoys(ctx: CanvasRenderingContext2D, state: AppState, view: MapView
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = COLOURS.buoyOutline;
     ctx.stroke();
-    haloText(ctx, buoyLetter(buoy.id), buoy.x + radius + 8, buoy.y, { bold: true, size: 12 });
+    if (letters) {
+      haloText(ctx, buoyLetter(buoy.id), buoy.x + radius + 8, buoy.y, { bold: true, size: 12 });
+    }
   }
 }
 
@@ -981,7 +1000,10 @@ function drawBoat(
   state: AppState,
   view: MapViewport,
   layout: MapLayout,
+  options: { headingLine?: boolean; selection?: boolean } = {},
 ): void {
+  const headingLine = options.headingLine ?? true;
+  const useSelection = options.selection ?? true;
   const { centre, forward, starboard, pxPerM } = layout;
   // Boat frame (x forward, z starboard, metres) to the canvas.
   const at = (x: number, z: number): ScreenPoint => ({
@@ -989,18 +1011,20 @@ function drawBoat(
     y: centre.y + (forward.y * x + starboard.y * z) * pxPerM,
   });
   // Dashed heading line, 200 m ahead of the bow.
-  const bow = at(boat.hull.stemX, 0);
-  ctx.setLineDash([6, 6]);
-  ctx.strokeStyle = COLOURS.heading;
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(bow.x, bow.y);
-  ctx.lineTo(
-    bow.x + forward.x * (MAP.headingLineM / view.metresPerPx),
-    bow.y + forward.y * (MAP.headingLineM / view.metresPerPx),
-  );
-  ctx.stroke();
-  ctx.setLineDash([]);
+  if (headingLine) {
+    const bow = at(boat.hull.stemX, 0);
+    ctx.setLineDash([6, 6]);
+    ctx.strokeStyle = COLOURS.heading;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(bow.x, bow.y);
+    ctx.lineTo(
+      bow.x + forward.x * (MAP.headingLineM / view.metresPerPx),
+      bow.y + forward.y * (MAP.headingLineM / view.metresPerPx),
+    );
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
 
   // Hull outline from the deck plan, both sides.
   const edge = boat.hull.deckEdgeHalfBeam.points;
@@ -1018,7 +1042,7 @@ function drawBoat(
   ctx.closePath();
   ctx.fillStyle = COLOURS.hullFill;
   ctx.fill();
-  const selected = state.selection === 'part_hull';
+  const selected = useSelection && state.selection === 'part_hull';
   ctx.lineWidth = selected ? 3 : 1.5;
   ctx.strokeStyle = selected ? COLOURS.select : COLOURS.hullLine;
   ctx.stroke();
@@ -1071,4 +1095,76 @@ function drawApparent(ctx: CanvasRenderingContext2D, state: AppState, layout: Ma
   arrow(ctx, tail.x, tail.y, dir, Math.max(0, length - 8), 10);
   const label = layout.apparentLabel;
   haloText(ctx, label.text, label.x, label.y, { bold: true, colour: COLOURS.apparent });
+}
+
+/** Mini-map sizes and drawing (PHASE5_SPEC 9.3). */
+export const MINI_MAP = {
+  metresPerPx: 5,
+  /** The button's outer size, border included (CSS px). */
+  sizePx: { stacked: 96, side: 160 },
+  borderPx: 2,
+  maxFps: 10,
+  maxDpr: 2,
+  /** The true-wind arrow: centre, length and head size (CSS px). */
+  windArrow: { x: 14, y: 14, lengthPx: 18, headPx: 6, lineWidth: 2 },
+  /** The "N" at the top right: centre offset from the top-right corner, font size. */
+  north: { fromRightPx: 10, fromTopPx: 10, fontPx: 11 },
+} as const;
+
+/** The mini-map's viewport: north up, the boat in the middle of a square canvas `sizePx` wide. */
+export function miniMapViewport(state: AppState, sizePx: number): MapViewport {
+  return {
+    centreEastM: state.boat.eastM,
+    centreNorthM: state.boat.northM,
+    upDeg: 0,
+    metresPerPx: MINI_MAP.metresPerPx,
+    widthPx: sizePx,
+    heightPx: sizePx,
+    centreXPx: sizePx / 2,
+    centreYPx: sizePx / 2,
+  };
+}
+
+/**
+ * Draws the mini-map: water, grid, track, buoys (no letters), the boat (no heading line, no
+ * selection colour), the true-wind arrow and an "N". No labels, no no-go zone, no apparent wind.
+ */
+export function drawMiniMap(
+  ctx: CanvasRenderingContext2D,
+  state: AppState,
+  sizePx: number,
+  width: TextWidth,
+): void {
+  const view = miniMapViewport(state, sizePx);
+  ctx.clearRect(0, 0, sizePx, sizePx);
+  ctx.fillStyle = COLOURS.water;
+  ctx.fillRect(0, 0, sizePx, sizePx);
+  drawGrid(ctx, view);
+  drawTrack(ctx, state.track, state, view);
+  drawBuoys(ctx, state, view, { letters: false });
+  drawBoat(ctx, state, view, mapLayout(state, view, width), {
+    headingLine: false,
+    selection: false,
+  });
+  // The true wind, as an arrow towards where it blows (north up, so no rotation of the map).
+  const { windArrow, north } = MINI_MAP;
+  const dir = bearingToScreen(compassDeg(state.wind.dirDeg) + 180, view);
+  const half = windArrow.lengthPx / 2;
+  ctx.strokeStyle = COLOURS.text;
+  ctx.fillStyle = COLOURS.text;
+  ctx.lineWidth = windArrow.lineWidth;
+  ctx.lineCap = 'butt';
+  ctx.setLineDash([]);
+  arrow(
+    ctx,
+    windArrow.x - dir.x * half,
+    windArrow.y - dir.y * half,
+    dir,
+    windArrow.lengthPx,
+    windArrow.headPx,
+  );
+  haloText(ctx, t('wind.dial.north'), sizePx - north.fromRightPx, north.fromTopPx, {
+    bold: true,
+    size: north.fontPx,
+  });
 }

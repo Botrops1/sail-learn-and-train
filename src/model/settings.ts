@@ -68,6 +68,8 @@ export interface Settings {
   timeBar: boolean;
   /** The clock chip over the 3D view (Settings, M17). */
   clock: boolean;
+  /** The mini-map in the corner of the 3D view while Sailing (Settings, M28). In the link as `mm=0` when off. */
+  miniMap: boolean;
   /**
    * The language of the whole app (a folder of content/lang; M23, PHASE4_SPEC 4.1). Changing it
    * reloads the page. In the link as `lang` when not 'en'.
@@ -90,6 +92,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   timeScale: 1,
   timeBar: true,
   clock: true,
+  miniMap: true,
   language: 'en',
 };
 export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };

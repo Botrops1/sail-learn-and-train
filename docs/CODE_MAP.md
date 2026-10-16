@@ -6,7 +6,7 @@ Where things are, so a session can go straight to the right file instead of sear
 
 `src/main.ts` → `app/app.ts` builds the layout, the 3D scene and the panel, then runs the frame loop: each `requestAnimationFrame` dispatches `{ type: 'step', dt }` to the store (`app/store.ts`), which advances the pure model (`model/sim.ts` and the Phase 2 modules, order in PHASE2_SPEC 4.2), then the renderers and panels read the new state. UI code only dispatches actions; it never changes state directly. `app/urlSync.ts` writes the state into the address bar.
 
-Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `openLearn` (the Learn tab's entry, M20), `reset`, `load` (from a link), `setCameraPreset`, `setDetail`, `setLabels`, `setLegend`, `setDebug`, `setStep`, `setPaused`, `setRopesMode`, `realistic` (Realistic-mode gestures), `setBoatMode` (Held still / Sailing), `autopilot`, `setWindMode`, `newWindPattern`, `setWindSize`, `setTimeBar`, `setTimeScale`, `setSeaSetting`, `repairSails`, `engine` (start, stop, lever).
+Store actions: `step`, `setClock`, `setClockShown`, `setMiniMap` (M28), `setControls`, `select`, `openLearn` (the Learn tab's entry, M20), `reset`, `load` (from a link), `setCameraPreset`, `setDetail`, `setLabels`, `setLegend`, `setDebug`, `setStep`, `setPaused`, `setRopesMode`, `realistic` (Realistic-mode gestures), `setBoatMode` (Held still / Sailing), `autopilot`, `setWindMode`, `newWindPattern`, `setWindSize`, `setTimeBar`, `setTimeScale`, `setSeaSetting`, `repairSails`, `engine` (start, stop, lever).
 
 ## `content/` (data, no code)
 
@@ -26,8 +26,8 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `app.ts` | Builds everything, frame loop, FPS and frame times for the debug overlay. |
 | `store.ts` | The single store: `AppState`, all actions, the `step` order. M27: `appMode` and the `setAppMode` action (the invariant: Learn, or the ropes mode). |
 | `appMode.ts` | M27: `AppMode` (`learn`, `easy`, `realistic`), the mode chip's choices. |
-| `urlState.ts` | URL parameters ↔ state (schema version, defaults, old links). M27: `m=learn`; `learn=` is written only in Learn mode and an old link with `learn=` opens in Learn mode. |
-| `urlSync.ts` | Debounced address-bar updates; Back (`popstate`) loads the link (or reloads the page if the link has another `lang`, M23); `openScene` (Learn's "Show me": pushes the current link, then loads the scene). |
+| `urlState.ts` | URL parameters ↔ state (schema version, defaults, old links). M27: `m=learn`; `learn=` is written only in Learn mode and an old link with `learn=` opens in Learn mode. M28: `mm=0` (mini-map off). |
+| `urlSync.ts` | Debounced address-bar updates; Back (`popstate`) loads the link (or reloads the page if the link has another `lang`, M23); `openScene` (Learn's "Show me": pushes the current link, then loads the scene; `sceneSettings` is the pure part that keeps the viewer's own settings, M28 added the mini-map). |
 | `buildInfo.ts` | Commit hash and date for Settings → About. |
 
 ## `src/model/` (pure: no DOM, no three.js)
@@ -88,8 +88,8 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `panel.ts` | M27: the panel is a list of sections (no tabs): builds the seven sections once, orders and opens them by the mode (`modes.ts`), `showSection`, `openLearnEntry`, shows the selected rope's strip. M25 moved the View tab and the footer to `settingsMenu.ts` and the camera buttons to `cameraChip.ts`. |
 | `modes.ts`, `sections.ts` | M27: `modes.ts` (pure) is the table of sections and what each mode does with them (order, open, open in the side layout, second column) and `sectionAvailable`; `sections.ts` is one section: fold header, "?" button for its `.explain` texts. |
 | `modeChip.ts`, `quickRow.ts` | M27: the mode chip ("Easy ▾") and its menu in the chip row; the quick row in the sheet's head, shown by CSS at the lowest height (the selected rope's − / + in Easy). |
-| `settingsMenu.ts` | M25: the gear in the chip row and the settings dialog it opens (Language, Labels in 3D, Time bar, Clock, Step size, Detail, Share and Reset, legend, Debug overlay, About with the footer); the view and panel are `inert` while it is open. Choosing a language reloads the page (M23). |
-| `cameraChip.ts`, `chipMenu.ts` | M25: the chip row `.view-bottom` over the bottom of the 3D view, the camera chip ("Port ▾") and its menu; `chipMenu.ts` is the menu behaviour shared with the mode chip (`modeChip.ts`) (items, arrow keys, Escape, outside tap, one open at a time). |
+| `settingsMenu.ts` | M25: the gear in the chip row and the settings dialog it opens (Language, Labels in 3D, Time bar, Clock, Mini-map, Step size, Detail, Share and Reset, legend, Debug overlay, About with the footer); the view and panel are `inert` while it is open. Choosing a language reloads the page (M23). |
+| `cameraChip.ts`, `chipMenu.ts` | M25: the chip row `.view-bottom` over the bottom of the 3D view, the camera chip ("Port ▾") and its menu, and (M28) the Close-map chip that returns from the map; `chipMenu.ts` is the menu behaviour shared with the mode chip (`modeChip.ts`) (items, arrow keys, Escape, outside tap, one open at a time). |
 | `learnTab.ts` | Phase 4 (M20): the Learn section (a tab until M27; exports `nameOf`): M21's search box and list of every entry in groups (or the search results), and one entry at a time (Back to the list, names, text, Show me, Show on the boat, Try it, See also, how sure we are). |
 | `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeLegend.ts` | The Ropes section (Easy sliders and the clutch drawing, or the Realistic stations), − / + buttons, the Rope colours section's legend. |
 | `clutchDrawing.ts` | The clutch-bank drawing. |
@@ -99,7 +99,8 @@ Store actions: `step`, `setClock`, `setClockShown`, `setControls`, `select`, `op
 | `gybeReport.ts` | The gybe report (boom speed, energy, peak main sheet load) in the alert stack. |
 | `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, the Autopilot and Sails sections, time bar (with the "Held still" chip in place of Pause). |
 | `clockPanel.ts` | The clock chip beside the time bar and the card it opens (date, area, sunrise and sunset, light, Now / Noon / Set a time). |
-| `mapView.ts` | Bird's-eye map (`cam=map`), with the four buoys. |
+| `mapView.ts` | Bird's-eye map (`cam=map`), with the four buoys. M28: it remembers the view it was opened from (`before()`), and holds the mini-map's drawing (`MINI_MAP`, `miniMapViewport`, `drawMiniMap`). |
+| `miniMap.ts` | M28: the mini-map button in the corner of the 3D view while Sailing (north up, boat in the middle, true-wind arrow, "N", track, buoys); a tap opens the full map. Shown or hidden by one rule (setting, Sailing, not on the map, sheet not full). |
 | `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | Part card (over the 3D view in both layouts, above the chip row on a phone), 3D labels, debug overlay, error messages. |
 
 ## Tests and scripts

@@ -504,6 +504,24 @@ describe('M17: the clock (clk, clock)', () => {
     expect(parseUrlState('?clock=1').settings.clock).toBe(true);
   });
 
+  it('M28: mm=0 hides the mini-map; it is written only when off, right after lb', () => {
+    const off = parseUrlState('?mm=0', 'low');
+    expect(off.settings.miniMap).toBe(false);
+    expect(serializeUrlState(off)).toContain('&detail=low&mm=0');
+    const both = parseUrlState('?mm=0&lb=0', 'low');
+    expect(serializeUrlState(both)).toContain('&detail=low&lb=0&mm=0');
+    const on = parseUrlState('?', 'low');
+    expect(on.settings.miniMap).toBe(true);
+    expect(serializeUrlState(on)).not.toContain('mm=');
+    const one = parseUrlState('?mm=1', 'low');
+    expect(one.settings.miniMap).toBe(true);
+    expect(serializeUrlState(one)).not.toContain('mm=');
+    expect(parseUrlState('?mm=yes').settings.miniMap).toBe(true);
+    const store = createStore(off);
+    store.dispatch({ type: 'reset' });
+    expect(store.getState().settings.miniMap).toBe(true);
+  });
+
   it('an invalid or missing clk opens the default (noon, 1 June)', () => {
     for (const link of ['?wd=60', '?clk=abc', '?clk=202602301200', '?clk=12']) {
       expect(parseUrlState(link).clock.utcMs, link).toBe(defaultClockUtcMs());

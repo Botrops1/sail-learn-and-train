@@ -13,6 +13,7 @@ import { createInfoCard } from '../ui/infoCard';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
+import { createMiniMap, type MiniMap } from '../ui/miniMap';
 import { createModeChip } from '../ui/modeChip';
 import { createPanel } from '../ui/panel';
 import { createSettingsMenu } from '../ui/settingsMenu';
@@ -70,6 +71,10 @@ export function startApp(host: HTMLElement): void {
   // The bird's-eye map (M7) takes the 3D view's place while the camera is on Map. It needs no
   // WebGL, but without the camera chip there is no way back, so it comes with the 3D view.
   const map = scene ? createMapView(layout.view, store) : undefined;
+  // The mini-map (M28) sits over the 3D view while Sailing; it needs the 3D view and the sheet.
+  const miniMap: MiniMap | undefined = scene
+    ? createMiniMap(layout.view, store, layout, sheet)
+    : undefined;
   // The chip row at the bottom of the view (M25): the gear always (the settings work without
   // WebGL), the camera chip only with the 3D view.
   const chipRow = createViewBottom(layout.view);
@@ -110,7 +115,7 @@ export function startApp(host: HTMLElement): void {
       showSceneError(layout.view, 'scene.lost'),
     );
     scene.canvas.addEventListener('webglcontextrestored', () => clearSceneError(layout.view));
-    createCameraChip(chipRow, store);
+    if (map) createCameraChip(chipRow, store, map);
     const view = scene;
     const resize = () => {
       const viewBox = layout.view.getBoundingClientRect();
@@ -177,7 +182,16 @@ export function startApp(host: HTMLElement): void {
         // A 3D view that fails while running stops; the panel keeps working (M5).
         scene = undefined;
         labels?.update([]);
+        miniMap?.hide();
         showSceneError(layout.view, 'scene.failed', error);
+      }
+      try {
+        miniMap?.update(now);
+      } catch (error) {
+        // A mini-map that fails to draw goes away; the 3D view keeps working.
+        console.error(error);
+        reportError(error);
+        miniMap?.hide();
       }
     }
     sums.stepMs += stepped - start;
