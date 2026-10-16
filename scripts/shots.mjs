@@ -50,6 +50,7 @@ import { liveM29Checks } from './shots-m29.mjs';
 import { liveM30Checks, M30_SCENES } from './shots-m30.mjs';
 import { liveM31Checks, M31_SCENES } from './shots-m31.mjs';
 import { liveM32Checks, M32_SCENES } from './shots-m32.mjs';
+import { liveM33Checks, M33_SCENES } from './shots-m33.mjs';
 import {
   closeSettings,
   openSettings,
@@ -199,6 +200,7 @@ const SCENES = [
   ...M30_SCENES.map((scene) => ({ ...scene, name: `m30-${scene.name}` })),
   ...M31_SCENES.map((scene) => ({ ...scene, name: `m31-${scene.name}` })),
   ...M32_SCENES.map((scene) => ({ ...scene, name: `m32-${scene.name}` })),
+  ...M33_SCENES.map((scene) => ({ ...scene, name: `m33-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -933,6 +935,7 @@ try {
     m30: () => liveM30Checks(live),
     m31: () => liveM31Checks(live),
     m32: () => liveM32Checks(live),
+    m33: () => liveM33Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
