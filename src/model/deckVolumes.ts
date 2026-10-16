@@ -1,5 +1,5 @@
 import { boat, type BoatData } from './boat';
-import { sheerAt } from './hullShape';
+import { halfBeamAt, sheerAt } from './hullShape';
 import { vec3, type Vec3 } from './vec3';
 
 /**
@@ -8,7 +8,13 @@ import { vec3, type Vec3 } from './vec3';
  * Boat frame: x forward, y up, z starboard.
  */
 
-type Side = 1 | -1;
+/** +1 starboard, −1 port. */
+export type Side = 1 | -1;
+
+/** How far a part reaches into its neighbour so no gap shows at the joint, metres. */
+export const DECK_OVERLAP = 0.1;
+/** Small lift that keeps overlapping surfaces from flickering (z-fighting), metres. */
+export const DECK_EPS = 0.01;
 
 /**
  * Starboard half of the coachroof outline at the given front x, aft to front, as [x, half-width]:
@@ -167,4 +173,75 @@ export function sprayhoodClearY(
   const cx = Math.min(hood.frontX, Math.max(hood.aftX, x));
   const half = sprayhoodHalfWidth(cx, data);
   return sprayhoodTopY(cx, Math.max(-1, Math.min(1, z / half)), data) + radius;
+}
+
+/** Half-width of the coachroof outline at x (linear between its points; the front value beyond). */
+function roofHalfAt(x: number, data: BoatData): number {
+  const outline = coachroofHalfOutline(data.deck.coachroof.frontX, data);
+  for (let i = 1; i < outline.length; i += 1) {
+    const [x0, w0] = outline[i - 1] as [number, number];
+    const [x1, w1] = outline[i] as [number, number];
+    if (x <= x1) return w0 + ((w1 - w0) * (x - x0)) / Math.max(1e-9, x1 - x0);
+  }
+  return data.deck.coachroof.frontHalfWidth;
+}
+
+/**
+ * The side deck's inner edge (half-width, m) at station x, aft of the coachroof front: the
+ * coachroof's edge (less the overlap) down to the cockpit front, the well's edge aft of it.
+ */
+export function sideDeckInnerHalfWidth(x: number, data: BoatData = boat): number {
+  const { coachroof: roof, cockpit } = data.deck;
+  return x >= cockpit.frontX - DECK_EPS
+    ? roofHalfAt(Math.max(x, roof.aftX), data) - DECK_OVERLAP
+    : cockpit.wellHalfWidth;
+}
+
+/**
+ * The toerail's cross-section at station x, starboard, as [y, z]: outer-bottom, outer-top,
+ * inner-top, inner-bottom. Its outer face lies `outset` outside the hull shell.
+ */
+export function toerailSection(x: number, data: BoatData = boat): [number, number][] {
+  const t = data.deckFittings.toerail;
+  const b = halfBeamAt(x, data);
+  const s = sheerAt(x, data);
+  return [
+    [s - DECK_OVERLAP, b + t.outset],
+    [s + t.height, b + t.outset],
+    [s + t.height, b - t.width],
+    [s - DECK_EPS, b - t.width],
+  ];
+}
+
+/**
+ * The solid moulding under one channel's slope, as rings of [inner-bottom, inner-top,
+ * outer-top, outer-bottom] corners ([x, y, z]), forward ring first. It runs from just inside the
+ * coachroof's aft end to the point where the channel lies on the coaming top. The channel cover
+ * sits on it and closes its top.
+ */
+export function channelFairingRings(side: Side, data: BoatData = boat): Vec3[][] {
+  const { coachroof: roof, cockpit } = data.deck;
+  const channel = data.rig.lineLead.channel;
+  const path = channelPath(side, data);
+  const stations: Vec3[] = [pathAtX(path, roof.aftX + DECK_OVERLAP)];
+  for (const p of path) {
+    if (p[0] >= roof.aftX) continue;
+    stations.push(p);
+    if (p[1] <= cockpit.coamingTopY + DECK_EPS) break;
+  }
+  const h = channel.width / 2;
+  return stations.map(([x, y, z]) => {
+    const bottom = (cornerZ: number): number =>
+      x < cockpit.frontX && Math.abs(cornerZ) < cockpit.wellHalfWidth
+        ? cockpit.soleY
+        : sheerAt(x, data) - DECK_OVERLAP;
+    const inner = z - side * h;
+    const outer = z + side * h;
+    return [
+      [x, bottom(inner), inner],
+      [x, y, inner],
+      [x, y, outer],
+      [x, bottom(outer), outer],
+    ];
+  });
 }
