@@ -1,6 +1,7 @@
 // M31 (anchor and windlass): scenes and live checks for scripts/shots.mjs (PHASE6_SPEC 7.6).
 // Labels contain "m31", which matches none of openPage's label tests, so every page opens Held
 // still on flat water with the clock chip and the mini-map hidden (the Phase 1 picture).
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { setSheet } from './ui.mjs';
 
@@ -14,9 +15,6 @@ const CLOSE_UPS = [
   { name: 'bow-from-above', position: [4.2, 3.4, 1.4], target: [6.2, 1.7, 0.15], fov: 45 },
   { name: 'bow-from-side', position: [6.6, 1.9, 2.6], target: [6.6, 1.6, 0.15], fov: 45 },
 ];
-
-/** The parts a tap must find: the anchor's crown, the roller's top and the windlass's top (7.3). */
-const TAPS = ['fit_anchor', 'fit_bow_roller', 'fit_anchor_windlass'];
 
 export async function liveM31Checks({ openPage, viewports, outDir, prefix, problems }) {
   const check = (what, ok, detail) => {
@@ -47,28 +45,50 @@ export async function liveM31Checks({ openPage, viewports, outDir, prefix, probl
   }
 
   // Tapping the anchor, the roller and the windlass (not the chain: it is thin and lies between).
-  {
-    const { context, page } = await openPage(phone, 'm31 tap', closeUpLink('high'));
+  // The anchor and the windlass are tapped at their tap points (7.3); the windlass stands 1.2 m aft
+  // of the side close-up's frame, so it is tapped from above. The roller's own tap point (the top
+  // centre between the cheeks) lies under the anchor's shank, so the roller is tapped on its
+  // starboard cheek, which the shank does not cover.
+  const cheek = JSON.parse(readFileSync('content/boat/hanse508.json', 'utf8')).deckFittings
+    .bowRoller;
+  const TAPS = [
+    { id: 'fit_anchor', view: CLOSE_UPS[1] },
+    {
+      id: 'fit_bow_roller',
+      view: CLOSE_UPS[1],
+      point: [
+        (cheek.aftX + cheek.rollerX) / 2,
+        cheek.plateY + cheek.plateThickness + cheek.cheekHeight / 2,
+        cheek.centreZ + cheek.halfWidth,
+      ],
+    },
+    { id: 'fit_anchor_windlass', view: CLOSE_UPS[0] },
+  ];
+  for (const { id, view, point } of TAPS) {
+    const { context, page } = await openPage(phone, `m31 tap ${id}`, closeUpLink('high'));
     await page.waitForTimeout(1000);
-    await closeUp(page, CLOSE_UPS[1]);
+    await closeUp(page, view);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
-    for (const id of TAPS) {
-      const screen = await page.evaluate(
-        (partId) => window.__sailDebug.hitCentres().find((c) => c.partId === partId) ?? null,
-        id,
-      );
-      if (!screen) {
-        check(`tap ${id}`, false, 'no tap point on screen');
-        continue;
-      }
+    const screen = await page.evaluate(
+      ([partId, at]) =>
+        at
+          ? window.__sailDebug.project(...at)
+          : (window.__sailDebug.hitCentres().find((c) => c.partId === partId) ?? null),
+      [id, point ?? null],
+    );
+    const onScreen =
+      screen && screen.x > 0 && screen.y > 0 && screen.x < box.width && screen.y < box.height;
+    if (!onScreen) {
+      check(`tap ${id}`, false, `the tap point is off the screen: ${JSON.stringify(screen)}`);
+    } else {
       await page.mouse.click(box.x + screen.x, box.y + screen.y);
       await page.waitForTimeout(400);
       const got = await page.evaluate(() =>
         document.querySelector('[data-testid="info-card"]')?.getAttribute('data-part-id'),
       );
       check(`tap ${id}`, got === id, String(got));
-      await shot(page, `live-tap-${id}`);
     }
+    await shot(page, `live-tap-${id}`);
     await context.close();
   }
 
