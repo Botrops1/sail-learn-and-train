@@ -1,12 +1,12 @@
 # Phase 7 specification: detailed surroundings (marina and anchor)
 
-Status: **planned ahead** (owner's answers in the planning chat, 2026-10-15), written while Phase 5 (M25 done, M26–M29 to come) and Phase 6 (boat details, not planned yet) were unfinished · Last updated: 2026-10-15
+Status: **planned ahead** (owner's answers in the planning chat, 2026-10-15), written while Phase 5 (M25 done, M26–M29 to come) and Phase 6 (boat details) were unfinished; aligned with the Phase 6 plan (`PHASE6_SPEC.md`, merged first) on 2026-10-16 · Last updated: 2026-10-16
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phase 7 starts after Phase 6 is signed off. It builds on the slow-speed motion of Phase 2 (`src/model/motion.ts`, `src/model/engine.ts`), the area data of Phase 3 (`content/areas/adriatic.json`, `src/model/area.ts`), the mode and section system of Phase 5 (`src/ui/modes.ts`, M27) and the anchor, cleats and fenders drawn in Phase 6. The earlier specs still describe everything the app already does.
 
 ## 0. How to use this spec (for the coding agent)
 
-- **Before M40: the refresh check.** This spec was written before Phases 5 and 6 were built. Before the first Phase 7 milestone, the owner starts one Opus session with `/plan 7 refresh`. That session compares sections 3–4 and every "Phase 6 provides" and "Phase 5 provides" line of this spec with the code as it is then (`src/ui/modes.ts`, `src/ui/sections.ts`, `src/ui/quickRow.ts`, `src/ui/miniMap.ts`, the Phase 6 data in `content/boat/hanse508.json`, the registry), fixes every name, path, key and number that changed, and records the changes in section 15 under "Refresh". It opens a docs-only PR. **Do not build M40 from a spec that has no "Refresh" entry in section 15.**
+- **Before M40: the refresh check.** This spec was written before Phases 5 and 6 were built. Before the first Phase 7 milestone, the owner starts one Opus session with `/plan 7 refresh`. That session compares sections 3–4 and every "Phase 6 provides" and "Phase 5 provides" line of this spec with the code as it is then (`src/ui/modes.ts`, `src/ui/sections.ts`, `src/ui/quickRow.ts`, `src/ui/miniMap.ts`, `src/model/harbour.ts`, `src/model/mooringFittings.ts`, `src/ui/harbourPanel.ts`, the Phase 6 data (`deckFittings` in `content/boat/hanse508.json`), the registry), fixes every name, path, key and number that changed, and records the changes in section 15 under "Refresh". It opens a docs-only PR. **Do not build M40 from a spec that has no "Refresh" entry in section 15.**
 - Do **one milestone** (sections 6–13), on the branch your session gives you, in one PR titled `M<N>: <name>`. Read sections 0–5 first every time; they apply to all milestones. Then read only your milestone's section. Milestones are built in order (M40 → M47); each needs the ones before it merged.
 - Build order inside a milestone: data → pure model + tests → store/URL → UI → 3D → map → browser checks → docs.
 - **Numbers are final.** Every number in this spec was chosen or prototyped on 2026-10-15 against the real model code (section 3.5 says how). Boat and place numbers go into the data files named in each section, never into code. Numbers marked **tunable** may be changed only if a test band fails after you have checked your formulas against 3.4 "common mistakes": change the tunable key, report the before and after values in the PR, and never widen a band. A band that still fails after tuning is a question for the owner in the PR.
@@ -155,7 +155,7 @@ export interface ExternalForces { surgeN: number; sideN: number; momentNm: numbe
 // src/app/store.ts
 interface AppState {
   thrusters: ThrusterState;          // M41: { bow: -1 | 0 | 1; stern: -1 | 0 | 1 }
-  harbour: HarbourState;             // M42: { place: PlaceId; layout: MarinaLayoutId; traffic: TrafficId }
+  harbour: HarbourState;             // Phase 6 (M33, src/model/harbour.ts): { fendersOut }; M42 adds place, layout, traffic; M43 adds fendersLost, fenderOverSpeedS, fendersLostSinceSlow
   contact: ContactState;             // M43: { touching: Record<string, number>; reports: ContactReport[]; noticeUntilS: number } (9.4)
   lines: LinesState;                 // M44: { lines: MooringLine[]; crew: CrewTask | null; fouled: boolean }
   anchor: AnchorState;               // M46
@@ -164,19 +164,27 @@ interface AppState {
 // src/model/realistic.ts (M46): STATION_IDS = ['port', 'starboard', 'helm', 'mast', 'bow']
 ```
 
-**Phase 6 provides** (from the contract in `BOAT_DETAILS_ANALYSIS.md` section 6; the refresh check confirms the real names): `AppState.fenders: { out: boolean }`, the action `{ type: 'setFenders'; out: boolean }`, the link key `fd=1` (fenders out), the data `deck.cleats`, `deck.fenders`, `deck.anchor` (geometry), and the registry ids `fit_anchor`, `fit_anchor_chain`, `fit_fender`, `fit_mooring_cleat`, `fit_fairlead`, `fit_bow_roller`, `fit_anchor_windlass`. M43 adds `lost: string[]` to the fender state.
+**Phase 6 provides** (PHASE6_SPEC 4.1–4.3, 7.1, 8.1–8.2, 9.1–9.4; the refresh check confirms them against the code): `src/model/harbour.ts` with `HarbourState { fendersOut: boolean }`, `DEFAULT_HARBOUR` and `fenderHintShown`; `AppState.harbour`; the action `{ type: 'setFenders'; out: boolean }`; the link key `fd=1` (fenders out); the **Harbour gear** section (`SectionId` `'harbour'`, last in `SECTION_IDS` and in every mode's `order`; `src/ui/harbourPanel.ts`, `createHarbourPanel(store)`, title `harbour.title`; the Fenders choice with the test ids `fenders-stowed`, `fenders-out` and the hint `fenders-hint`); the data `deckFittings.bowRoller`, `anchor`, `chain`, `windlass`, `cleats`, `fairleads`, `fenders` and `ballFender`; the pure helpers `cleatPlaces()`, `fenderPlaces()` and `ballFenderPlace()` (`src/model/mooringFittings.ts`); and the registry ids `fit_anchor`, `fit_anchor_chain`, `fit_anchor_windlass`, `fit_bow_roller`, `fit_mooring_cleat`, `fit_fairlead`, `fit_fender`, `fit_fender_ball`. Phase 7 extends `HarbourState` (M42, M43) and adds the line controls to the Harbour gear section (M44, M45), as PHASE6_SPEC 4.2 foresees.
+
+**Points on our boat that Phase 7 uses**, all computed from that data (never copied as numbers into the code):
+
+- **Cleats:** `cleatPlaces()[i].base` (the top of the toerail under the cleat). Phase 7 names them `cleat_<role>_<side>`, role `bow`, `mid`, `stern` for the three stations in data order: `cleat_bow_starboard` is index 0, `cleat_bow_port` 1, `cleat_mid_starboard` 2, `cleat_mid_port` 3, `cleat_stern_starboard` 4, `cleat_stern_port` 5 (`cleatPlaces` lists starboard first at each station). These names are Phase 7's own; every cleat's registry id stays `fit_mooring_cleat`. `cleatPoint(id, data)` (`src/model/mooringLines.ts`, M44) returns the point in the boat frame. Starboard values (PHASE6_SPEC 8.2; port mirrors z): bow (5.0, 1.735, 0.579), mid (−1.2, 1.599, 2.2), stern (−7.5, 1.459, 2.085).
+- **Fenders:** the eight `fenderPlaces()` (their station x and side) and the ball fender (`ballFenderPlace()`), numbered 0–7 in `fenderPlaces` order and 8 for the ball fender. The fender's thickness in contact is `deckFittings.fenders.diameter` (0.24 m).
+- **The roller:** `rollerPoint(data)` (`src/model/anchor.ts`, M46) = `{ x: bowRoller.rollerX, y: bowRoller.plateY + bowRoller.plateThickness + 2·bowRoller.rollerRadius, z: bowRoller.centreZ }` = (6.92, 1.80, 0.20): where the chain leaves the top of the roller.
+
+If Phase 6 built any of this differently, the refresh check rewrites this list and the numbers that depend on it.
 
 ### 4.2 URL keys
 
 | Key | Milestone | Values | Default | Written |
 |---|---|---|---|---|
 | `m` | M41 | `harbour` (and Phase 5's `learn`) | none | right after `cam`, in Harbour mode |
-| `pl` | M42 | `marina`, `bay` (M45) | open water (no key) | after `engineParams` and before `clockParams`; `pl`, `ml`, `tr`, `fd` (once it exists), `pe`, `pn`, `ln`, `an`, `ax`, `as` form one group there, in this order (`m` is the exception, after `cam`), when the place is not open water |
+| `pl` | M42 | `marina`, `bay` (M45) | open water (no key) | after `engineParams` and before `clockParams`; `pl`, `ml`, `tr`, `pe`, `pn`, `ln`, `an`, `ax`, `as` form one group there, in this order (`m` is the exception, after `cam`), when the place is not open water |
 | `ml` | M42 | `tight`, `medium`, `spacious` | `medium` | after `pl`, only with `pl=marina`, when not `medium` |
 | `tr` | M42 | `busy`, `half`, `empty` | `half` | after `ml`, only with `pl=marina`, when not `half` |
-| `fd` | Phase 6 | `1` = fenders out | in | where Phase 6 put it (the refresh check names the place) |
+| `fd` | Phase 6 (M33) | `1` = fenders out | in the locker | after the clock keys and before the Realistic keys, only when out (PHASE6_SPEC 4.3); not part of the place group |
 | `pe`, `pn` | M42 | position east / north, metres, 1 decimal | — | after `tr`, only when `pl` is written |
-| `ln` | M44, M45 | lines: `sp:2.01,ss:2.01,ll:11.83` in the marina (10.4), `bl1:3.20`, `sl2:31.50` in the bay (11.4) | none | after `pn`, when a line is on |
+| `ln` | M44, M45 | lines: `sp:2.55,ss:2.55,ll:12.33` in the marina (10.4), `bl1:3.20`, `sl2:31.50` in the bay (11.4) | none | after `pn`, when a line is on |
 | `an`, `ax`, `as` | M46 | chain out (m, 1 decimal); anchor position `east,north` (1 decimal); `1` = set | anchor stowed | after `ln`, when the anchor is not stowed |
 
 Old links (none of these keys): open water, no lines, anchor stowed, sway 0, thrusters off: the same picture as today. `pe`/`pn` are not written in open water, so links of earlier phases keep their exact text. Wrong values are ignored (the default is used), as every other key.
@@ -194,27 +202,26 @@ The `step` action of `store.ts` keeps its order (CODE_MAP, PHASE2_SPEC 4.2); Pha
 
 ### 4.4 Sections and modes (adds to PHASE5_SPEC 4.4)
 
-Phase 5 provides `SECTION_IDS`, `MODE_LAYOUTS`, `sectionAvailable`, `createSection` (PHASE5_SPEC 4.4, 8.4). Phase 7 adds four sections and one mode:
+Phase 5 provides `SECTION_IDS`, `MODE_LAYOUTS`, `sectionAvailable`, `createSection` (PHASE5_SPEC 4.4, 8.4). Phase 7 adds three sections and one mode, and fills Phase 6's Harbour gear section (`harbour`: the fenders) with the fender status (M43) and the line rows (M44, M45); `harbour` stays always available and last in `SECTION_IDS`:
 
 | Section | Milestone | Content | `sectionAvailable` | Title key |
 |---|---|---|---|---|
 | `thrusters` | M41 | two joysticks (bow, stern) | `settings.ropesMode === 'easy'` | `thrusters.label` |
 | `place` | M42 | place chooser, marina layout and traffic, damage report (M43) | always | `place.label` |
-| `mooring` | M43 | fenders (M43), lines (M44, M45) | always | `mooring.label` |
 | `anchor` | M46 | windlass, chain counter, scope | `settings.ropesMode === 'easy'` | `anchor.label` |
 
 Final `MODE_LAYOUTS` after M46 (each milestone's section gives the table as it is after that milestone):
 
 | Mode | `order` | `open` | `openSide` | `second` |
 |---|---|---|---|---|
-| `easy` | ropes, sails, autopilot, engine, conditions, learn, legend, thrusters, place, mooring, anchor | ropes, sails | ropes, sails, autopilot, engine | conditions, learn |
-| `realistic` | ropes, sails, conditions, learn, legend, autopilot, engine, thrusters, place, mooring, anchor | ropes | ropes, sails | conditions, learn |
-| `learn` | learn, legend, ropes, sails, autopilot, engine, conditions, thrusters, place, mooring, anchor | learn | learn, legend | conditions, ropes |
-| `harbour` | engine, thrusters, mooring, anchor, place, conditions, sails, ropes, autopilot, learn, legend | engine, thrusters | engine, thrusters, mooring, anchor | place, conditions |
+| `easy` | ropes, sails, autopilot, engine, conditions, learn, legend, thrusters, place, anchor, harbour | ropes, sails | ropes, sails, autopilot, engine | conditions, learn |
+| `realistic` | ropes, sails, conditions, learn, legend, autopilot, engine, thrusters, place, anchor, harbour | ropes | ropes, sails | conditions, learn |
+| `learn` | learn, legend, ropes, sails, autopilot, engine, conditions, thrusters, place, anchor, harbour | learn | learn, legend | conditions, ropes |
+| `harbour` | engine, thrusters, harbour, anchor, place, conditions, sails, ropes, autopilot, learn, legend | engine, thrusters | engine, thrusters, harbour, anchor | place, conditions |
 
 **Harbour and the ropes mode.** Harbour keeps the ropes mode as it is (like Learn). The invariant of PHASE5_SPEC 3.1 becomes: `appMode` is `learn` or `harbour`, or equals `settings.ropesMode`. In Harbour with Realistic ropes, the engine, thruster and anchor sections are unavailable (they are at the Helm and Bow stations, as the engine already is); the panel then opens `ropes` (which holds the stations) in place of the unavailable `open` sections, and the quick row shows `t('quick.realistic')` as in Realistic mode. In Harbour a selection opens only the info card (no section moves).
 
-**Each milestone adds its sections at the end of `order` in Easy, Realistic and Learn** (closed), in the order of the table above; Harbour's row is given in full by each milestone (7.5, 8.5, 9.5, 12.5). `openSide` and `second` never share a section.
+**Each milestone adds its sections to `order` in Easy, Realistic and Learn just before `harbour`** (closed; Phase 6's Harbour gear stays last), in the order of the table above; Harbour's row is given in full by each milestone (7.5, 8.5, 9.5, 12.5). (The section `harbour` and the mode `harbour` share a name, as PHASE6_SPEC chose; the mode is `appMode`, the section a `SectionId`.) `openSide` and `second` never share a section.
 
 ### 4.5 Files by milestone
 
@@ -224,10 +231,10 @@ A summary; each milestone's own "Files" list (x.1) is the complete one and wins 
 |---|---|---|
 | M40 | `src/model/lowSpeed.ts`, `tests/lowSpeed.test.ts`, `tests/physicsTruths7.test.ts`, `scripts/shots-m40.mjs` | `src/model/motion.ts`, `content/boat/hanse508.json` (`physics.lowSpeed`), `src/ui/debugOverlay.ts`, `scripts/shots.mjs`, `.github/workflows/ci.yml`, both glossaries, `content/registry/parts.json`, `docs/review/ru.md`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
 | M41 | `src/model/thrusters.ts`, `src/model/harbourForces.ts`, `src/ui/thrusterPanel.ts`, `tests/thrusters.test.ts`, `scripts/shots-m41.mjs` | `src/app/appMode.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/modes.ts`, `src/ui/panel.ts`, `src/ui/quickRow.ts`, `src/ui/modeChip.ts`, `src/ui/realisticPanel.ts` (Helm station), `src/render3d/boat/` (thruster tunnels), `content/boat/hanse508.json` (`physics.thrusters`, `hull.thrusters`), `tests/modes.test.ts`, both `ui.json`, glossaries, registry, `scripts/ui.mjs` |
-| M42 | `src/model/places.ts`, `src/model/marina.ts`, `src/render3d/marina.ts`, `src/ui/placePanel.ts`, `tests/marina.test.ts`, `scripts/shots-m42.mjs` | `content/areas/adriatic.json`, `src/model/area.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/mapView.ts`, `src/ui/miniMap.ts`, `src/render3d/scene.ts`, `src/render3d/picking.ts`, `src/ui/modes.ts`, both `ui.json`, glossaries, registry, `scripts/ui.mjs` |
-| M43 | `src/model/contact.ts`, `src/ui/damageReport.ts`, `src/ui/mooringPanel.ts`, `tests/contact.test.ts`, `scripts/shots-m43.mjs` | `src/model/lowSpeed.ts` (`contacts`), `src/model/motion.ts` (`report.contacts`), `src/model/harbourForces.ts`, `src/app/store.ts`, `src/ui/placePanel.ts`, `src/ui/modes.ts`, `content/boat/hanse508.json` (`physics.contact`), both `ui.json`, glossaries, registry |
-| M44 | `src/model/mooringLines.ts`, `src/render3d/mooringLines.ts`, `tests/mooringLines.test.ts`, `scripts/shots-m44.mjs` | `src/model/harbourForces.ts`, `src/model/marina.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/mooringPanel.ts`, `src/ui/damageReport.ts`, `src/ui/enginePanel.ts`, `src/ui/ropeLegend.ts`, `src/render3d/sceneConfig.ts`, `content/boat/hanse508.json` (`physics.lines`), `content/areas/adriatic.json` (lazy lines), both `ui.json`, glossaries, registry, `scripts/ui.mjs` |
-| M45 | `src/model/seabed.ts`, `src/render3d/seabed.ts`, `src/render3d/bay.ts`, `tests/seabed.test.ts`, `scripts/shots-m45.mjs` | `content/areas/adriatic.json` (`bay`), `src/model/places.ts`, `src/model/mooringLines.ts`, `src/model/harbourForces.ts`, `src/ui/instrumentStrip.ts`, `src/ui/mapView.ts`, `src/ui/mooringPanel.ts`, `src/app/urlState.ts`, both `ui.json`, glossaries, registry |
+| M42 | `src/model/places.ts`, `src/model/marina.ts`, `src/render3d/marina.ts`, `src/ui/placePanel.ts`, `tests/marina.test.ts`, `scripts/shots-m42.mjs` | `content/areas/adriatic.json`, `src/model/area.ts`, `src/model/harbour.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/mapView.ts`, `src/ui/miniMap.ts`, `src/render3d/scene.ts`, `src/render3d/picking.ts`, `src/ui/modes.ts`, both `ui.json`, glossaries, registry, `scripts/ui.mjs` |
+| M43 | `src/model/contact.ts`, `src/ui/damageReport.ts`, `tests/contact.test.ts`, `scripts/shots-m43.mjs` | `src/model/lowSpeed.ts` (`contacts`), `src/model/motion.ts` (`report.contacts`), `src/model/harbourForces.ts`, `src/model/harbour.ts`, `src/ui/harbourPanel.ts`, `src/app/store.ts`, `src/ui/placePanel.ts`, `src/ui/modes.ts`, `content/boat/hanse508.json` (`physics.contact`), both `ui.json`, glossaries, registry |
+| M44 | `src/model/mooringLines.ts`, `src/render3d/mooringLines.ts`, `tests/mooringLines.test.ts`, `scripts/shots-m44.mjs` | `src/model/harbourForces.ts`, `src/model/marina.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/harbourPanel.ts`, `src/ui/damageReport.ts`, `src/ui/enginePanel.ts`, `src/ui/ropeLegend.ts`, `src/render3d/sceneConfig.ts`, `content/boat/hanse508.json` (`physics.lines`), `content/areas/adriatic.json` (lazy lines), both `ui.json`, glossaries, registry, `scripts/ui.mjs` |
+| M45 | `src/model/seabed.ts`, `src/render3d/seabed.ts`, `src/render3d/bay.ts`, `tests/seabed.test.ts`, `scripts/shots-m45.mjs` | `content/areas/adriatic.json` (`bay`), `src/model/places.ts`, `src/model/mooringLines.ts`, `src/model/harbourForces.ts`, `src/ui/instrumentStrip.ts`, `src/ui/mapView.ts`, `src/ui/harbourPanel.ts`, `src/app/urlState.ts`, both `ui.json`, glossaries, registry |
 | M46 | `src/model/anchor.ts`, `src/ui/anchorPanel.ts`, `src/render3d/anchorChain.ts`, `tests/anchor.test.ts`, `scripts/shots-m46.mjs` | `src/model/realistic.ts` (Bow station), `src/ui/realisticPanel.ts`, `src/ui/stationDrawing.ts`, `src/model/harbourForces.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/mapView.ts`, `src/ui/modes.ts`, `content/boat/hanse508.json` (`physics.anchor`, station `bow`), both `ui.json`, glossaries, registry, `scripts/ui.mjs` |
 | M47 | `scripts/shots-m47.mjs` | as 13.1 |
 
@@ -510,14 +517,14 @@ M41: `(boat) => thrusterForces(inputs.thrusters, boat, data)`.
 
 ### 7.5 Sections and modes (`src/ui/modes.ts`)
 
-`SECTION_IDS` gains `'thrusters'` (last). `sectionAvailable('thrusters')`: `settings.ropesMode === 'easy'`. `MODE_LAYOUTS` after M41:
+`SECTION_IDS` gains `'thrusters'` (after `'legend'`, before Phase 6's `'harbour'`, which stays last). `sectionAvailable('thrusters')`: `settings.ropesMode === 'easy'`. `MODE_LAYOUTS` after M41:
 
 | Mode | `order` | `open` | `openSide` | `second` |
 |---|---|---|---|---|
-| `easy` | ropes, sails, autopilot, engine, conditions, learn, legend, thrusters | ropes, sails | ropes, sails, autopilot, engine | conditions, learn |
-| `realistic` | ropes, sails, conditions, learn, legend, autopilot, engine, thrusters | ropes | ropes, sails | conditions, learn |
-| `learn` | learn, legend, ropes, sails, autopilot, engine, conditions, thrusters | learn | learn, legend | conditions, ropes |
-| `harbour` | engine, thrusters, conditions, sails, ropes, autopilot, learn, legend | engine, thrusters | engine, thrusters | conditions, learn |
+| `easy` | ropes, sails, autopilot, engine, conditions, learn, legend, thrusters, harbour | ropes, sails | ropes, sails, autopilot, engine | conditions, learn |
+| `realistic` | ropes, sails, conditions, learn, legend, autopilot, engine, thrusters, harbour | ropes | ropes, sails | conditions, learn |
+| `learn` | learn, legend, ropes, sails, autopilot, engine, conditions, thrusters, harbour | learn | learn, legend | conditions, ropes |
+| `harbour` | engine, thrusters, harbour, conditions, sails, ropes, autopilot, learn, legend | engine, thrusters | engine, thrusters | conditions, learn |
 
 `tests/modes.test.ts`: the existing checks (every id once in `order`, `second` has 2 entries, `open` ⊆ `order`) now run over four modes; add: Harbour keeps the ropes mode (`setAppMode('harbour')` from Realistic leaves `settings.ropesMode === 'realistic'`).
 
@@ -724,24 +731,24 @@ Worked values (medium: w 5.5, f 30): fairway north 1483, south 1453; south row s
 
 ```ts
 export type PlaceId = 'open' | 'marina';   // M45 adds 'bay'
-export interface HarbourState { place: PlaceId; layout: MarinaLayoutId; traffic: TrafficId }
-export const DEFAULT_HARBOUR: HarbourState; // { place: 'open', layout: 'medium', traffic: 'half' }
 export interface PlaceStart { eastM: number; northM: number; headingDeg: number; sea: SeaSetting | null }
 export function placeStart(h: HarbourState, areaData?: AreaData): PlaceStart;
 ```
+
+`src/model/harbour.ts` (Phase 6): `HarbourState` gains `place: PlaceId; layout: MarinaLayoutId; traffic: TrafficId` (type imports from `places.ts` and `marina.ts`), and `DEFAULT_HARBOUR` becomes `{ fendersOut: false, place: 'open', layout: 'medium', traffic: 'half' }`.
 
 `placeStart`: open water → the `open` entry's position and heading, `sea: null` (the sea is not changed); marina → `eastM = westEndEastM + startInsetM`, `northM = (fairway.north + fairway.south) / 2`, `headingDeg = 90`, `sea` = the `marina` entry's `sea` (`flat`).
 
 ### 8.4 Store and URL
 
-- `AppState.harbour: HarbourState`; `initialState` takes `overrides.harbour` (default `DEFAULT_HARBOUR`).
+- `AppState.harbour` (Phase 6) carries the new fields; `initialState` takes `overrides.harbour` (default `DEFAULT_HARBOUR`) and `reset` gives `DEFAULT_HARBOUR`, as Phase 6 does (open water, fenders in the locker).
 - Action `{ type: 'goToPlace'; place: PlaceId }`: builds a fresh state with `initialState({...})`, passing on unchanged: `settings`, `appMode`, `camera`, `windMode`, `clockUtcMs` (`state.clock.utcMs`), `learn`, `realistic` (the station, clutches and winches); and setting: `harbour: { ...state.harbour, place }`; `boat: { mode: 'sailing', eastM, northM, headingDeg, speedMps: 0 }` from `placeStart` (Held still becomes Sailing); `sea`: the place's (open water: the current one, which may be the flat water the marina set; accepted); for the marina (and the bay, M45) `controls: { ...state.controls, ctl_main_furl: 0, ctl_jib_furl: 0, ctl_jib_sheet: 100, ctl_rudder: 0 }` and `engine: { running: true, leverPct: 0 }`; for open water the current controls and engine. In every place the autopilot is then set to `off`. Dropped: the selection, the track, the thrusters (and from later milestones the contacts, lines and anchor). Choosing the place already chosen does the same (it puts the boat back at the start).
 - Actions `{ type: 'setMarinaLayout'; layout }` and `{ type: 'setTraffic'; traffic }`: set the field; if the place is the marina, then do `goToPlace('marina')` with the new value (the boat goes back to the start, so she is never inside a yacht); elsewhere only the field changes (the marina is drawn with it; it is not in the link outside the marina, so a reload there shows the defaults again; accepted).
 - **URL** (`harbourParams`, written after `engineParams` and before `clockParams`): `pl=marina` when the place is not open; when `pl` is written: `ml` if the layout is not `medium`, `tr` if the traffic is not `half`, then `pe` and `pn` (the boat's `eastM` / `northM`, `toFixed(1)`). **Parse:** `pl` a valid place → that place; `ml`, `tr` valid → those; `pe` and `pn` both matching `^-?\d{1,4}(\.\d)?$` → the position, otherwise (either missing or wrong) both from `placeStart`. Without `pl`, `pe`/`pn`/`ml`/`tr` are ignored. **A place link fills in its ready state for every key it does not give** (3.7): `hdg` → the place's heading; `bs` → 0; no `eng` → engine running, lever 0; no `ap` → off; no `mf`/`jf`/`js` → 0 / 0 / 100; no `sea` → the place's sea. Keys that are given win.
 
 ### 8.5 Sections and modes
 
-`SECTION_IDS` gains `'place'` (after `'thrusters'`), always available. `MODE_LAYOUTS` after M42: Easy, Realistic and Learn add `place` at the end of `order` (closed). Harbour: `order` engine, thrusters, place, conditions, sails, ropes, autopilot, learn, legend; `open` engine, thrusters; `openSide` engine, thrusters; `second` place, conditions.
+`SECTION_IDS` gains `'place'` (after `'thrusters'`), always available. `MODE_LAYOUTS` after M42: Easy, Realistic and Learn add `place` just before `harbour` (closed). Harbour: `order` engine, thrusters, harbour, place, conditions, sails, ropes, autopilot, learn, legend; `open` engine, thrusters; `openSide` engine, thrusters; `second` place, conditions.
 
 ### 8.6 UI
 
@@ -835,9 +842,9 @@ Bumping into anything (M43: in M42 the boat passes through the quay and the yach
 
 ### 9.1 Files
 
-New: `src/model/contact.ts`, `src/ui/damageReport.ts`, `src/ui/mooringPanel.ts`, `tests/contact.test.ts`, `scripts/shots-m43.mjs`. Changed: `src/model/lowSpeed.ts` (`ContactHit`, `contacts` in `ExternalForces` and `addForces`), `src/model/motion.ts` (`report.contacts`), `src/model/harbourForces.ts`, `src/model/marina.ts` (`marinaObstacles`), `src/app/store.ts`, `src/ui/placePanel.ts`, `src/ui/modes.ts`, `src/ui/panel.ts`, `src/ui/windIndicator.ts` (the alert stack gets the damage alert), `content/boat/hanse508.json` (`physics.contact`), `src/style.css` (`.rig-alert-report.is-hit`, the mooring section), `tests/physicsTruths7.test.ts`, `tests/modes.test.ts`, both `ui.json`, `docs/review/ru.md`, `docs/BOAT_REFERENCE.md`, `docs/PHYSICS_TRUTHS.md` (statuses), `docs/CODE_MAP.md`.
+New: `src/model/contact.ts`, `src/ui/damageReport.ts`, `tests/contact.test.ts`, `scripts/shots-m43.mjs`. Changed: `src/model/harbour.ts` (the fender-loss fields), `src/ui/harbourPanel.ts` (the fender status), `src/model/lowSpeed.ts` (`ContactHit`, `contacts` in `ExternalForces` and `addForces`), `src/model/motion.ts` (`report.contacts`), `src/model/harbourForces.ts`, `src/model/marina.ts` (`marinaObstacles`), `src/app/store.ts`, `src/ui/placePanel.ts`, `src/ui/modes.ts`, `src/ui/panel.ts`, `src/ui/windIndicator.ts` (the alert stack gets the damage alert), `content/boat/hanse508.json` (`physics.contact`), `src/style.css` (`.rig-alert-report.is-hit`), `tests/physicsTruths7.test.ts`, `tests/modes.test.ts`, both `ui.json`, `docs/review/ru.md`, `docs/BOAT_REFERENCE.md`, `docs/PHYSICS_TRUTHS.md` (statuses), `docs/CODE_MAP.md`.
 
-**Phase 6 provides** (refresh check): the fenders drawn on both sides, `AppState.fenders: { out: boolean }`, `setFenders`, link key `fd=1`, and `deck.fenders.points`: `[{ "id": "fender_port_1", "side": "port", "x": 1.0 }, { "id": "fender_port_2", "side": "port", "x": -1.5 }, { "id": "fender_port_3", "side": "port", "x": -4.0 }, and the same three for starboard]` (the contract in BOAT_DETAILS_ANALYSIS section 6; three per side, the last one at x −4.0, the listed spot nearest the widest part of the hull, x −3.77). If Phase 6 built them differently, the refresh check rewrites this paragraph; if it did not build them, M43 adds exactly this data, the state, the action, `fd=1` (in `urlState.ts`, after `tr` and before `pe`, written whenever the fenders are out, in any place), simple fenders (white cylinders, diameter 0.25 m, length 0.8 m, hanging from the deck edge at those x to 0.3 m above the water, id `fit_fender`, in `src/render3d/boat/fenders.ts`), the registry entry `fit_fender` (`fitting`, `deck`, draft) and its glossary entries.
+**Phase 6 provides** (4.1): the fenders drawn (eight and the ball fender, shown while `harbour.fendersOut`), `setFenders`, `fd=1`, the Harbour gear section with the Fenders choice, and `fenderPlaces()` / `ballFenderPlace()`. Phase 7 starts after Phase 6 is signed off; if any of this is missing, stop and ask in the PR.
 
 ### 9.2 Data (`content/boat/hanse508.json`, `physics.contact`, after `physics.thrusters`)
 
@@ -847,8 +854,7 @@ New: `src/model/contact.ts`, `src/ui/damageReport.ts`, `src/ui/mooringPanel.ts`,
   "hullDampingNsPerM": 40000,
   "fenderStiffnessNPerM": 100000,
   "fenderDampingNsPerM": 60000,
-  "fenderThicknessM": 0.25,
-  "fenderReachM": 1.0,
+  "fenderReachM": 1.5,
   "friction": 0.2,
   "nearM": 60,
   "separateS": 0.5,
@@ -857,7 +863,7 @@ New: `src/model/contact.ts`, `src/ui/damageReport.ts`, `src/ui/mooringPanel.ts`,
   "fenderLossSpeedMps": 2.6,
   "fenderLossAfterS": 30,
   "fenderLossEveryS": 20,
-  "note": "assumptions for teaching: a contact under 0.15 m/s (0.3 kn) is a touch, under 0.4 m/s (0.8 kn) a bump, under 0.8 m/s (1.6 kn) a knock, faster a hit; a fender takes a contact up to 0.5 m/s (1 kn); fenders left out above 5 kn are torn off after 30 s, then one every 20 s (PT-34)"
+  "note": "assumptions for teaching: a contact under 0.15 m/s (0.3 kn) is a touch, under 0.4 m/s (0.8 kn) a bump, under 0.8 m/s (1.6 kn) a knock, faster a hit; a fender takes a contact up to 0.5 m/s (1 kn) and covers 1.5 m of the hull each way from its station (half the largest gap, 3 m, between Phase 6's fender stations); fenders left out above 5 kn are torn off after 30 s, then one every 20 s (PT-34)"
 }
 ```
 
@@ -887,7 +893,7 @@ export interface ExternalForces { surgeN: number; sideN: number; momentNm: numbe
 
 ```ts
 export interface Obstacle { id: string; partId: string; polygon: [number, number][] /* map (east, north), convex, counter-clockwise */ }
-export interface FenderSet { out: boolean; lost: readonly string[] }
+export interface FenderSet { out: boolean; lost: readonly number[] /* fender numbers, 4.1 */ }
 /** Our hull's contact points, boat frame, with the part each belongs to. */
 export function hullContactPoints(data?: BoatData): { x: number; z: number; part: HullPart }[];
 /** Our hull's outline for inside tests, boat frame (x, z), 84 vertices (below). */
@@ -900,7 +906,7 @@ export function contactSeverity(approachMps: number, fender: boolean, data?: Boa
 
 - **Contact points:** every `[x, hb]` of `data.hull.deckEdgeHalfBeam.points` on both sides (`z = −hb` port, `+hb` starboard), plus `(bowFittingTipX, 0)` and `(transomX, 0)`: 86 points. Part: `bow` if `x ≥ 4.0`; `stern` if `x ≤ transomX + 1.0`; otherwise `port` (`z < 0`) or `starboard`. **Our hull polygon** (`hullPolygon(data)`, boat frame (x, z)): the 84 deck-edge points, starboard from bow to stern then port from stern to bow, without the tip and the transom middle. It is not strictly convex (tracing noise): inside tests use ray casting and the nearest edge, never half-planes. Outward normals of our hull are computed in the boat frame and turned into the map with `boatToMap`.
 - Only obstacles whose bounding box is within `nearM` of the boat's position are tested. Obstacle polygons are in the map, counter-clockwise, without a repeated first vertex; a rectangle is `[[W, S], [E, S], [E, N], [W, N]]`; a polygon whose signed area is negative is reversed. Depths `d` are clamped to at most 1.0 m (deeper contacts are not expected and would flip the nearest edge in the 3 m pontoon).
-- **Our point inside an obstacle.** For each point `(x, z)`: `fendered` = fenders out, part `port` or `starboard`, and a fender of that side not in `lost` with `|fender.x − x| ≤ fenderReachM`. The tested position is `pointToMap(boat, x, z')` with `z' = z ± fenderThicknessM` outward when fendered, `z' = z` otherwise. If it is inside the polygon: `d` = the smallest distance to the polygon's edges, `n` = that edge's outward normal (map, unit). `v = pointVelocity(boat, x, z)`, `vn = max(0, −(v·n))` (the speed into the obstacle). Normal force: fendered `F = fenderStiffness·min(d, t) + hullStiffness·max(0, d − t) + fenderDamping·vn` (`t` = fenderThicknessM); not fendered `F = hullStiffness·d + hullDamping·vn`. Friction: `vt = v − (v·n)·n`, `Ff = −friction·F·vt / max(|vt|, 0.05)` (smooth near zero, so a boat lying against the quay does not jitter). The fender offset is along the boat's z, not the hull's normal (accepted). The force `F·n + Ff` (map) is turned into the boat frame (`vectorToBoat`) and applied at `(x, z)` (`forceAt`). Hit: `{ key: id + ':' + part, obstacleId, partId, part, approachMps: vn, fender: fendered }`.
+- **Our point inside an obstacle.** For each point `(x, z)`: `fendered` = fenders out, part `port` or `starboard`, and one of the eight `fenderPlaces()` on that side, not in `lost`, with `|fender.top[0] − x| ≤ fenderReachM` (the ball fender, number 8, protects no point here: it hangs at the stern corner, where the points are part `stern`; accepted). With `t` = `deckFittings.fenders.diameter` (0.24), the tested position is `pointToMap(boat, x, z')` with `z' = z ± t` outward when fendered, `z' = z` otherwise. If it is inside the polygon: `d` = the smallest distance to the polygon's edges, `n` = that edge's outward normal (map, unit). `v = pointVelocity(boat, x, z)`, `vn = max(0, −(v·n))` (the speed into the obstacle). Normal force: fendered `F = fenderStiffness·min(d, t) + hullStiffness·max(0, d − t) + fenderDamping·vn` (`t` as above); not fendered `F = hullStiffness·d + hullDamping·vn`. Friction: `vt = v − (v·n)·n`, `Ff = −friction·F·vt / max(|vt|, 0.05)` (smooth near zero, so a boat lying against the quay does not jitter). The fender offset is along the boat's z, not the hull's normal (accepted). The force `F·n + Ff` (map) is turned into the boat frame (`vectorToBoat`) and applied at `(x, z)` (`forceAt`). Hit: `{ key: id + ':' + part, obstacleId, partId, part, approachMps: vn, fender: fendered }`.
 - **An obstacle's corner inside our hull** (a neighbour's pointed bow between two of our points), tested in the boat frame (`(xv, zv) = mapToBoat(V − position)`), skipping vertices that lie inside or on another obstacle (the quay and the wall share corners): for each polygon vertex `V` inside our hull polygon: `d` = the smallest distance to our hull's edges, `m` = that edge's outward normal (boat frame, turned into the map); `v = pointVelocity(boat, xv, zv)`, `vn = max(0, v·m)`; force `−(hullStiffness·d + hullDamping·vn)·m` at `(xv, zv)`; the part by `xv`, `zv` as above; `fender` false (fenders do not help here).
 - `contactSeverity`: `fender && approach ≤ fenderMaxMps` → `'fender'`; else `< touch` → `'touch'`, `< bump` → `'bump'`, `< knock` → `'knock'`, otherwise `'hit'`.
 
@@ -925,18 +931,18 @@ export interface ContactState {
 ```
 
 - `stepContact(contact, hits, timeS, dt): ContactState` (pure, in `contact.ts`), after `stepBoat`: every hit whose key is not in `touching` makes a new report (`impactMps = approachMps`, `severity = contactSeverity(...)`), `noticeUntilS = timeS + 8`; every hit sets its key's age to 0; keys not hit this step age by `dt` and are dropped after `separateS`.
-- Fenders (`AppState.fenders` from Phase 6, gains `lost: string[]`, `overSpeedS: number` and `lostSinceSlow: number`): `stepFenders(fenders, contact, speedMps, timeS, dt): { fenders, contact }`, after `stepContact` (4.3 step 6): while `out` and `|speedMps| > fenderLossSpeedMps`, `overSpeedS += dt`; otherwise `overSpeedS = 0` and `lostSinceSlow = 0`. In a loop (several losses can fall in one frame at ×16): while `overSpeedS ≥ (lostSinceSlow === 0 ? fenderLossAfterS : fenderLossEveryS)` and a fender is left, the next fender of `deck.fenders.points` (data order) not yet lost is added to `lost`, `overSpeedS` is reduced by that threshold, and a report `{ atS: timeS, obstacleId: 'fender', partId: 'fit_fender', part: <its side>, impactMps: 0, fender: false, severity: 'hit' }` is added with `noticeUntilS = timeS + 8`, and `lostSinceSlow` grows by 1. (So the first loss comes after 30 s at speed, the next ones every 20 s; slowing down restarts the 30 s.) `setFenders(true)` does not bring lost fenders back; `goToPlace` and `reset` do. `goToPlace` keeps `fenders.out` as it was (it clears only `lost`, `overSpeedS` and `lostSinceSlow`); `reset` takes them in.
+- Fenders: `HarbourState` (Phase 6) gains `fendersLost: number[]` (fender numbers, 4.1), `fenderOverSpeedS: number` and `fendersLostSinceSlow: number` (`[]`, 0, 0 in `DEFAULT_HARBOUR`). `stepFenders(harbour, contact, speedMps, timeS, dt): { harbour, contact }` (in `contact.ts`), after `stepContact` (4.3 step 6): while `fendersOut` and `|speedMps| > fenderLossSpeedMps`, `fenderOverSpeedS += dt`; otherwise `fenderOverSpeedS = 0` and `fendersLostSinceSlow = 0`. In a loop (several losses can fall in one frame at ×16): while `fenderOverSpeedS ≥ (fendersLostSinceSlow === 0 ? fenderLossAfterS : fenderLossEveryS)` and a fender is left, the lowest fender number not yet lost is added to `fendersLost`, `fenderOverSpeedS` is reduced by that threshold, a report `{ atS: timeS, obstacleId: 'fender', partId: 'fit_fender' (number 8: 'fit_fender_ball'), part: 'starboard' or 'port' (its side), impactMps: 0, fender: false, severity: 'hit' }` is added with `noticeUntilS = timeS + 8`, and `fendersLostSinceSlow` grows by 1. (So the first loss comes after 30 s at speed, the next ones every 20 s; slowing down restarts the 30 s.) `setFenders(true)` does not bring lost fenders back; `goToPlace` and `reset` do. `goToPlace` keeps `fendersOut` as it was (it clears only `fendersLost`, `fenderOverSpeedS` and `fendersLostSinceSlow`); `reset` gives `DEFAULT_HARBOUR` (Phase 6). Lost fenders are still drawn (Phase 6 merges all fenders into one mesh; accepted): the status line says how many are left.
 - Action `{ type: 'clearDamageReport' }`: `reports` empty.
 - Held still: no hits (stepBoat does nothing), and the fender timer stands still.
-- Not in the link (a link opens with no reports and no lost fenders).
+- Not in the link (a link opens with no reports and no lost fenders; `fd=1` still puts the fenders out, Phase 6).
 
 ### 9.5 Sections and modes
 
-`SECTION_IDS` gains `'mooring'` (after `'place'`), always available. Easy, Realistic and Learn add `mooring` at the end of `order`. Harbour: `order` engine, thrusters, mooring, place, conditions, sails, ropes, autopilot, learn, legend; `open` engine, thrusters; `openSide` engine, thrusters, mooring; `second` place, conditions.
+No new section: the fender status goes into Phase 6's `harbour` section. `MODE_LAYOUTS` after M43: Easy, Realistic and Learn as after M42. Harbour: `order` engine, thrusters, harbour, place, conditions, sails, ropes, autopilot, learn, legend; `open` engine, thrusters; `openSide` engine, thrusters, harbour; `second` place, conditions.
 
 ### 9.6 UI
 
-**Mooring section** (`src/ui/mooringPanel.ts`, `createMooringPanel(store): HTMLElement[]`; M44 and M45 add to it): a switch `fenders-toggle` (`role="switch"`, `aria-checked`, label `mooring.fenders`) that dispatches `setFenders`; a status line `fenders-status` (`mooring.fenders.in` / `mooring.fenders.out` with `{count}` = the fenders not lost / plus `mooring.fenders.lost` with `{count}` when some are lost); `p.explain` `mooring.fenders.hint`. If Phase 6 placed a fender switch elsewhere, it stays there too (both dispatch the same action).
+**Harbour gear section** (`src/ui/harbourPanel.ts`, `createHarbourPanel(store)` of Phase 6; M44 and M45 add to it): after Phase 6's Fenders choice and its hint, a status line `fenders-status`: in the locker → `harbour.fenders.status.in`; out → `harbour.fenders.status.out` with `{count}` = the fenders not lost (9 at most: eight and the ball fender), followed by a space and `harbour.fenders.status.lost` with `{count}` = the lost ones when there are any.
 
 **Damage report** (`src/ui/damageReport.ts`):
 - `createDamageAlert(alerts, store)`: `div.rig-alert.rig-alert-report` `data-testid="damage-alert"` in the alert stack (as `createGybeReport`), shown while `rig.timeS < contact.noticeUntilS`, text `damageText(reports[0])`; class `is-hit` for `knock` and `hit`.
@@ -947,12 +953,9 @@ export interface ContactState {
 
 | Key | English | Russian (draft) |
 |---|---|---|
-| `mooring.label` | Fenders and lines | Кранцы и швартовы |
-| `mooring.fenders` | Fenders out | Кранцы за бортом |
-| `mooring.fenders.in` | Fenders in (stowed). | Кранцы убраны. |
-| `mooring.fenders.out` | {count} fenders hanging over the side. | За бортом {count} кранцев. |
-| `mooring.fenders.lost` | {count} lost while sailing. | {count} потеряно на ходу. |
-| `mooring.fenders.hint` | Fenders (soft rubber buffers) hang between the hull and the quay or the next boat. Put them out before you come in; take them in before you sail, or they are torn off. | Кранцы (мягкие резиновые подушки) висят между корпусом и причалом или соседней лодкой. Вывешивайте их до захода; убирайте перед выходом, иначе их оторвёт. |
+| `harbour.fenders.status.in` | Fenders in the locker. | Кранцы в рундуке. |
+| `harbour.fenders.status.out` | {count} fenders over the side. | За бортом {count} кранцев. |
+| `harbour.fenders.status.lost` | {count} lost while sailing. | {count} потеряно на ходу. |
 | `damage.title` | Damage report ({count}) | Отчёт о повреждениях ({count}) |
 | `damage.none` | No contact yet. | Касаний пока не было. |
 | `damage.clear` | Clear | Очистить |
@@ -977,24 +980,24 @@ export interface ContactState {
 
 1. `hullContactPoints`: 86 points (42 × 2 + 2); parts at x 6.9 → bow, x −8.6 → stern, (0.33, −1.99) → port. `hullPolygon` has 84 vertices.
 2. `contactForces`, boat at rest, heading 0, `eastM = 0.52`, `northM = 0`, fenders in; the wall `[[2.875, −20], [10, −20], [10, 20], [2.875, 20]]`: exactly five starboard points are inside (x −3.03, −3.40, −3.77, −4.15, −4.52, depths 0.005, 0.015, 0.020, 0.015, 0.005): five hits, part `starboard`, `fender: false`, and `sideN` = −400,000 × 0.06 = −24,000 N (`toBeCloseTo`, ±1 %).
-3. Fenders out with the contract's points, `eastM = 0.27` (so the fender tips sit as deep as the hull did in test 2): the same five points, all within `fenderReachM` of the fender at x −4.0, give five hits with `fender: true` and `sideN` = −100,000 × 0.06 = −6,000 N (±1 %).
+3. Fenders out (Phase 6's fender places), `eastM = 0.28` (0.52 − the fender diameter 0.24, so the fender tips sit as deep as the hull did in test 2): the same five points, each within `fenderReachM` (1.5) of the starboard fender at x −2.5 or −5.5, give five hits with `fender: true` and `sideN` = −100,000 × 0.06 = −6,000 N (±1 %).
 4. `contactSeverity`: (0.1, false) touch; (0.3, false) bump; (0.6, false) knock; (0.9, false) hit; (0.3, true) fender; (0.6, true) knock.
 5. `stepContact`: a hit for 3 steps gives one report; gone for 0.6 s and back gives a second one; `clearDamageReport` empties the list.
 6. Fender loss (`stepFenders`, steps of 0.25 s): out, 3.0 m/s: no loss at 29.75 s; one at 30.0 s; two at 50.0 s; three at 70.0 s; slowing to 2.0 m/s for one step and back: the next loss 30 s later; one call with `dt` = 75 s: three losses; `out: false`: none.
 
 `tests/physicsTruths7.test.ts` (the test loops `stepBoat` directly at 60 fps with `MotionInputs` built from a `harbourStart` state without wind (the rig and controls of that state, `engineThrustN` 0), the boat at (0, 0) heading 0 with `swayMps` set by spreading `boat: { ...state.boat, swayMps }`, `external = (b) => contactForces(b, [wall], fenders)` with the wall of test 2, 4 s at 60 fps; "the first hit" is the merged hit of the first frame whose `report.contacts` is not empty; the depth of a point is recomputed from the boat's state each frame; prototype values in brackets):
 
-- **PT-50** fenders take a slow contact: `swayMps` 0.3 toward the wall, fenders in: the first hit's `approachMps` in [0.22, 0.28] (0.251), severity `bump`, and no point goes more than 0.03 m into the wall (0.019). Fenders out: every hit has `fender: true` (no hull contact), approach [0.24, 0.30] (0.274), severity `fender`. At 1.0 m/s with fenders out: approach [0.85, 0.97] (0.92), severity `hit`.
+- **PT-50** fenders take a slow contact: `swayMps` 0.3 toward the wall, fenders in: the first hit's `approachMps` in [0.22, 0.28] (0.251), severity `bump`, and no point goes more than 0.03 m into the wall (0.019). Fenders out: every hit has `fender: true` (no hull contact), approach [0.24, 0.30] (0.273), severity `fender`. At 1.0 m/s with fenders out: approach [0.85, 0.97] (0.917), severity `hit`.
 - **PT-34** fenders come in before sailing: `initialState({ engine: { running: true, leverPct: 66 } })` with no wind (she opens at her steady speed under engine, about 8 kn) and fenders out: after 29 s none lost, after 31 s one, after 71 s three; with fenders in, none.
 
 ### 9.9 Browser checks (`scripts/shots-m43.mjs`)
 
-Scenes: `damage-alert` (`?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=-90&ws=20&cam=top&tx=4` after 3 s: in our berth, the west wind pushes her onto the neighbour on the east side (berth 13, its west edge at east 6.1); the alert shows), `mooring-section` (`?pl=marina&m=harbour&fd=1` with the Fenders and lines section open).
+Scenes: `damage-alert` (`?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=-90&ws=20&cam=top&tx=4` after 3 s: in our berth, the west wind pushes her onto the neighbour on the east side (berth 13, its west edge at east 6.1); the alert shows), `harbour-gear` (`?pl=marina&m=harbour&fd=1` with the Harbour gear section open).
 
 Live checks:
 
 1. `m43 bump`: `?pl=marina&m=harbour&ws=0&cam=top&tx=16`; set the lever to ahead 60 % in the quick row (6 taps on `quick-lever-more`) and wait until the alert shows (at most 15 s): `damage-alert` is visible and the damage list has at least one item naming the quay (the boat ran east along the fairway into the wall, which is part of the quay).
-2. `m43 fenders`: tap `fenders-toggle`: the link gets `fd=1`; the status reads 6 fenders.
+2. `m43 fenders`: `showSection(page, 'harbour')`, click the `fenders-out` label (as PHASE6_SPEC 9.8 does): the link gets `fd=1`; `fenders-status` reads 9 fenders.
 3. `m43 lost`: `?ws=0&eng=1&lv=66&fd=1&tx=16`: within 6 s real time the alert reads that a fender was lost.
 
 ### 9.10 Done when
@@ -1017,9 +1020,9 @@ Lines (M44); damage that changes the boat (owner: out of scope); the neighbour m
 
 ### 10.1 Files
 
-New: `src/model/mooringLines.ts`, `src/render3d/mooringLines.ts`, `tests/mooringLines.test.ts`, `scripts/shots-m44.mjs`. Changed: `src/model/harbourForces.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/mooringPanel.ts`, `src/ui/damageReport.ts` (the fouled alert), `src/ui/enginePanel.ts` (Start is refused while fouled), `src/ui/ropeLegend.ts` (the mooring colour), `src/render3d/sceneConfig.ts` (`SCENE.ropes.colors.mooring`), `src/render3d/boat/ropes.ts` (export `radiusAt` and `RopeView` for the mooring lines), `src/render3d/scene.ts`, `src/model/marina.ts` (`ourRings`, `ourSinker`: the lazy-line sinker), `content/boat/hanse508.json` (`physics.lines`), `content/areas/adriatic.json` (`marina.lazyLineLengthM`), `tests/motionHelpers.ts` (`berthLines`, 10.7), `tests/physicsTruths7.test.ts`, `tests/urlState.test.ts`, both `ui.json`, both glossaries, `docs/review/ru.md`, the registry, `scripts/ui.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+New: `src/model/mooringLines.ts`, `src/render3d/mooringLines.ts`, `tests/mooringLines.test.ts`, `scripts/shots-m44.mjs`. Changed: `src/model/harbourForces.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/harbourPanel.ts`, `src/ui/damageReport.ts` (the fouled alert), `src/ui/enginePanel.ts` (Start is refused while fouled), `src/ui/ropeLegend.ts` (the mooring colour), `src/render3d/sceneConfig.ts` (`SCENE.ropes.colors.mooring`), `src/render3d/boat/ropes.ts` (export `radiusAt` and `RopeView` for the mooring lines), `src/render3d/scene.ts`, `src/model/marina.ts` (`ourRings`, `ourSinker`: the lazy-line sinker), `content/boat/hanse508.json` (`physics.lines`), `content/areas/adriatic.json` (`marina.lazyLineLengthM`), `tests/motionHelpers.ts` (`berthLines`, 10.7), `tests/physicsTruths7.test.ts`, `tests/urlState.test.ts`, both `ui.json`, both glossaries, `docs/review/ru.md`, the registry, `scripts/ui.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
-**Phase 6 provides** (refresh check): `deck.cleats`, each `{ "id", "role": "bow" | "mid" | "stern", "side": "port" | "starboard", "x", "y", "z" }`, with the contract's values `cleat_bow_port` (5.6, 1.75, −0.30), `cleat_bow_starboard` (5.6, 1.75, 0.30), `cleat_mid_port` (−1.0, 1.55, −2.05), `cleat_mid_starboard` (−1.0, 1.55, 2.05), `cleat_stern_port` (−8.2, 1.40, −1.85), `cleat_stern_starboard` (−8.2, 1.40, 1.85). If Phase 6 did not add them, M44 adds exactly these, draws them in `src/render3d/boat/deckGear.ts` as small dark boxes 0.25 × 0.05 × 0.08 m with id `fit_mooring_cleat`, and gives `fit_mooring_cleat` its glossary text if it has none. Cleat heights are above the still waterline (the marina's water is flat; no heave or heel is applied to them).
+**Phase 6 provides** (4.1): the six cleats (`cleatPlaces()`), named as in 4.1. Cleat heights are above the still waterline (the marina's water is flat; no heave or heel is applied to them).
 
 ### 10.2 Data
 
@@ -1054,7 +1057,10 @@ New: `src/model/mooringLines.ts`, `src/render3d/mooringLines.ts`, `tests/mooring
 ```ts
 export type LineCode = 'sp' | 'ss' | 'll';          // M45 adds 'bl' (bow line to a buoy) and 'sl' (shore line)
 export interface FarEnd { eastM: number; northM: number; heightM: number /* above the water; negative = on the bottom */ }
-export interface MooringLine { code: LineCode; cleatId: string; far: FarEnd; lengthM: number }
+export type CleatId = `cleat_${'bow' | 'mid' | 'stern'}_${'port' | 'starboard'}`;
+export interface MooringLine { code: LineCode; cleatId: CleatId; far: FarEnd; lengthM: number }
+/** A cleat's point in the boat frame (x, y, z): `cleatPlaces()[index].base`, index as 4.1. */
+export function cleatPoint(id: CleatId, data?: BoatData): [number, number, number];
 export interface CrewTask { kind: 'walkLazy'; code: LineCode; remainingS: number }   // M45 adds 'swimShore'
 export interface LinesState { lines: readonly MooringLine[]; crew: CrewTask | null; fouled: boolean; foulS: number }
 export const NO_LINES: LinesState;
@@ -1074,7 +1080,7 @@ export function lineCommand(code: LineCode, command: 'take' | 'tighten' | 'ease'
 export function stepLines(inputs: LinesInputs, dt: number, data?: BoatData): LinesState;
 ```
 
-- **Line tension.** The cleat in the map: `pointToMap(boat, cleat.x, cleat.z)` at height `cleat.y`. `d` = the 3D distance to `far` (`heightM` as the vertical coordinate). If `d ≤ lengthM`: 0. Otherwise, with `u` the horizontal unit vector from the cleat towards the far end and `v = pointVelocity(boat, cleat.x, cleat.z)`: `rate = −(v·u)` (how fast the cleat moves away, horizontal), `T = (lineEAN / lengthM)·(d − lengthM) + lineDampingNsPerM·max(0, rate)`. The horizontal part of the pull, `T·(horizontal distance / d)·u`, is applied at `(cleat.x, cleat.z)` with `vectorToBoat` and `forceAt`.
+- **Line tension.** The cleat (`cleatPoint(line.cleatId)`, called `cleat` below) in the map: `pointToMap(boat, cleat.x, cleat.z)` at height `cleat.y`. `d` = the 3D distance to `far` (`heightM` as the vertical coordinate). If `d ≤ lengthM`: 0. Otherwise, with `u` the horizontal unit vector from the cleat towards the far end and `v = pointVelocity(boat, cleat.x, cleat.z)`: `rate = −(v·u)` (how fast the cleat moves away, horizontal), `T = (lineEAN / lengthM)·(d − lengthM) + lineDampingNsPerM·max(0, rate)`. The horizontal part of the pull, `T·(horizontal distance / d)·u`, is applied at `(cleat.x, cleat.z)` with `vectorToBoat` and `forceAt`.
 - **Stern lines** `sp` (`cleat_stern_port`) and `ss` (`cleat_stern_starboard`): `sp` goes to whichever of `ourRings` is nearer to `cleat_stern_port` (in the berth, heading 180: the east ring), `ss` to the other one; `heightM = quayHeightM`. Take: `lengthM = d + takeSlackM`.
 - **Lazy line** `ll`: take starts the crew task `walkLazy` (`remainingS = lazyWalkS`). When the walk ends (`stepLines`), the line is made fast on the bow cleat nearer to `ourSinker` (horizontal distance, compared with a tolerance of 1e−6; `cleat_bow_port` on a tie), far end `ourSinker`, `lengthM = d + takeSlackM` (made fast with slack; the learner then tightens it). It is made fast even if the stern lines were let go meanwhile.
 - **`canTake`**, in this order (the first that fails gives the reason): the place is the marina (`lines.reason.place`); the line is not on and, for `ll`, no crew task is running (`lines.reason.busy`); for `ll` a stern line is on (`lines.reason.sternFirst`); the horizontal distance from the line's stern cleat (for `ll`: the nearer stern cleat) to its ring is at most `throwReachM` (`lines.reason.far`, with `params: { m: throwReachM }`; the UI shows `t(reason, params)`); the boat's speed `√(speedMps² + swayMps²)` is at most `takeMaxSpeedMps` (`lines.reason.fast`).
@@ -1085,18 +1091,18 @@ export function stepLines(inputs: LinesInputs, dt: number, data?: BoatData): Lin
 
 `harbourForces` inputs gain `lines: readonly MooringLine[]`; it adds `lineForces`.
 
-**Worked values** (medium layout; the boat in the berth at east 2.75, north 1490.4, heading 180): stern cleats at (4.60, 1498.60) port and (0.90, 1498.60) starboard; `sp` to the east ring (5.5, 1500), `ss` to the west ring (0, 1500), both `d` = 1.712 m, taken at 2.01 m. Bow cleats at (3.05, 1484.8) port and (2.45, 1484.8) starboard: a tie, so `cleat_bow_port`; `ourSinker` (2.75, 1475, −5); `d` = 11.90 m; hand tight `Lhand` = 11.83 m.
+**Worked values** (medium layout; the boat in the berth at east 2.75, north 1490.4, heading 180): stern cleats at (4.835, 1497.90) port and (0.665, 1497.90) starboard; `sp` to the east ring (5.5, 1500), `ss` to the west ring (0, 1500), both `d` = 2.250 m, taken at 2.55 m. Bow cleats at (3.329, 1485.40) port and (2.171, 1485.40) starboard: a tie, so `cleat_bow_port`; `ourSinker` (2.75, 1475, −5); `d` = 12.40 m; hand tight `Lhand` = 12.33 m.
 
 ### 10.4 Store and URL
 
 - `AppState.lines: LinesState` (`NO_LINES` at start, `reset`, `load` of a link without `ln`, `goToPlace`).
 - Action `{ type: 'line'; code: LineCode; command: 'take' | 'tighten' | 'ease' | 'letGo' }` → `lineCommand`; `clearPropeller`.
 - `step`: `stepLines` after `stepEngine` (4.3 step 2); if it sets `fouled`, the engine gets `running: false` in the same step, and the contact list gets a report `{ atS: timeS, obstacleId: 'propeller', partId: 'part_saildrive', part: 'stern', impactMps: 0, fender: false, severity: 'hit' }` with `noticeUntilS = timeS + 8`; `damageText` shows it as `t('damage.propeller')`.
-- **URL** `ln` (after `pn`): the lines that are on, in the order `sp`, `ss`, `ll`, as `<code>:<lengthM to 2 decimals>`, comma separated (`ln=sp:2.01,ss:2.01,ll:11.83`). The serializer un-escapes `%3A` to `:` as it does `%2C` to `,`. Parse (only with `pl=marina`, after `pl`, `ml`, `tr`, `pe`, `pn` and `hdg` are known): each valid code with a length from 0.5 to its maximum; the far ends and cleats come from the rules above (our berth); a line whose `d` would be more than `lengthM + 1.0` when the link opens is dropped (it would yank the boat). A crew task, `fouled` and `foulS` are not stored.
+- **URL** `ln` (after `pn`): the lines that are on, in the order `sp`, `ss`, `ll`, as `<code>:<lengthM to 2 decimals>`, comma separated (`ln=sp:2.55,ss:2.55,ll:12.33`). The serializer un-escapes `%3A` to `:` as it does `%2C` to `,`. Parse (only with `pl=marina`, after `pl`, `ml`, `tr`, `pe`, `pn` and `hdg` are known): each valid code with a length from 0.5 to its maximum; the far ends and cleats come from the rules above (our berth); a line whose `d` would be more than `lengthM + 1.0` when the link opens is dropped (it would yank the boat). A crew task, `fouled` and `foulS` are not stored.
 
 ### 10.5 UI
 
-**Mooring section** (after the fenders): an `h3` `lines.title`, then one row per line code available in the place (marina: `sp`, `ss`, `ll`), `div.line-row` `data-testid="line-<code>"` `data-part-id` = the rope id (10.6):
+**Harbour gear section** (after the fender status): an `h3` `lines.title`, then one row per line code available in the place (marina: `sp`, `ss`, `ll`), `div.line-row` `data-testid="line-<code>"` `data-part-id` = the rope id (10.6):
 
 - the name (`lines.name.<code>`) and a status `line-<code>-status`: off → `lines.off`; walking → `lines.walking` with `{seconds}` (whole seconds left, rounded up); on → `lines.on` with `{length}` (1 decimal) and `{kN}` (the tension in kN, 1 decimal);
 - off: a button `line-<code>-take` (`lines.take.<code>`), disabled when `canTake` says no, with the reason under it (`line-<code>-reason`, `t(reason)`);
@@ -1109,7 +1115,7 @@ Under the rows: `p.explain` `lines.hint`. While `fouled`: a status line `prop-fo
 
 ### 10.6 Strings and registry
 
-Registry (`phase: 7`, `status: "draft"`): `rope_stern_line_port`, `rope_stern_line_starboard` (`kind: "rope"`, `group: "harbour"`, related `env_quay_ring`, `term_med_mooring`), `rope_lazy_line` (`kind: "rope"`, `group: "harbour"`, related `term_med_mooring`, `env_quay`), `env_quay_ring` (`kind: "environment"`, `group: "harbour"`), `term_med_mooring` (`kind: "term"`, `group: "harbour"`, related `rope_lazy_line`, `rope_stern_line_port`, `env_quay`; `showMe`: `?cam=top&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.01,ss:2.01,ll:11.83`, canonical form, 3.7). `env_quay` gains `related` `term_med_mooring`.
+Registry (`phase: 7`, `status: "draft"`): `rope_stern_line_port`, `rope_stern_line_starboard` (`kind: "rope"`, `group: "harbour"`, related `env_quay_ring`, `term_med_mooring`), `rope_lazy_line` (`kind: "rope"`, `group: "harbour"`, related `term_med_mooring`, `env_quay`), `env_quay_ring` (`kind: "environment"`, `group: "harbour"`), `term_med_mooring` (`kind: "term"`, `group: "harbour"`, related `rope_lazy_line`, `rope_stern_line_port`, `env_quay`; `showMe`: `?cam=top&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55,ss:2.55,ll:12.33`, canonical form, 3.7). `env_quay` gains `related` `term_med_mooring`.
 
 | Key | English | Russian (draft) |
 |---|---|---|
@@ -1159,21 +1165,21 @@ Helper in `tests/motionHelpers.ts`: `berthLines(state: AppState, o: { sternSlack
 
 1. `lineTension`: a line 5 m long with its ends 5.1 m apart, at rest → 3,000 N (`toBeCloseTo`); 4.9 m apart → 0.
 2. `canTake('sp')` in the marina at the start (fairway) → `lines.reason.far`; with the boat in the berth (east 2.75, north 1490.4, heading 180, at rest) → ok; with `speedMps` 0.6 → `lines.reason.fast`. `canTake('ll')` without a stern line → `lines.reason.sternFirst`. `canTake('sp')` in open water → `lines.reason.place`.
-3. Lazy walk: take `sp`, then `ll` → `crew.remainingS` 20; after 80 steps of `stepLines` the lazy line is on `cleat_bow_port` with the far end (2.75, 1475, −5) and `lengthM` 12.20 (±0.01; 10.3 worked values).
-4. Tighten the lazy line repeatedly: it stops at 11.83 (±0.01) and `canTighten` is then false; ease stops at 40; let go removes it.
+3. Lazy walk: take `sp`, then `ll` → `crew.remainingS` 20; after 80 steps of `stepLines` the lazy line is on `cleat_bow_port` with the far end (2.75, 1475, −5) and `lengthM` 12.70 (±0.01; 10.3 worked values).
+4. Tighten the lazy line repeatedly: it stops at 12.33 (±0.01) and `canTighten` is then false; ease stops at 40; let go removes it.
 5. Fouling: a stern line with `lengthM = d + 2.0`, the engine running astern: `fouled` at 2.0 s, not at 1.75 s; with the engine in neutral never; with the engine stopped never.
-6. URL: with `pl=marina&pe=2.8&pn=1490.4&hdg=180`, `ln=sp:2.01,ss:2.01,ll:11.83` round-trips (the text keeps `:`); without `pl` it is ignored; `ln=sp:0.5` there is dropped (its `d` is more than 1.5).
+6. URL: with `pl=marina&pe=2.8&pn=1490.4&hdg=180`, `ln=sp:2.55,ss:2.55,ll:12.33` round-trips (the text keeps `:`); without `pl` it is ignored; `ln=sp:0.5` there is dropped (its `d` is more than 1.5).
 
 `tests/physicsTruths7.test.ts` (the place is the marina, layout `medium`, traffic `empty`; the boat in the berth as test 2, at rest, engine stopped (PT-52: running), autopilot off, flat water; `berthLines(state, { sternSlackM: 0.3, lazy: 'handTight' })`; `external` = `lineForces` of those lines only; wind from 90 (east), steady; 120 s at 60 fps; prototype values in brackets):
 
-- **PT-51** a lazy line holds the bow: 15 kn: the largest heading deviation from 180 is in [0, 12]° (7.3); 25 kn: [0, 15]° (9.7); the transom stays within 0.5 m of where it started (0.14 / 0.24 m). With `lazy: null` at 15 kn the bow swings more than 35° (47.6).
+- **PT-51** a lazy line holds the bow: 15 kn: the largest heading deviation from 180 is in [0, 12]° (8.7); 25 kn: [0, 15]° (11.2); at the end of the run the transom is within 1.0 m of where it started (0.43 / 0.69 m). With `lazy: null` at 15 kn the bow swings more than 35° (60.6).
 - **PT-52** a slack line fouls the propeller: in the berth with `berthLines(state, { sternSlackM: 2.0, lazy: null })` and the lever at −30: after 3 s the engine is stopped and `fouled` is true; with the lever in neutral, after 10 s not.
 
 ### 10.8 Browser checks (`scripts/shots-m44.mjs`)
 
-Helper `lineAction(page, code, action)`: `showSection(page, 'mooring')`, click `line-<code>-<action>`.
+Helper `lineAction(page, code, action)`: `showSection(page, 'harbour')`, click `line-<code>-<action>`.
 
-Scenes: `berth-lines` (the `term_med_mooring` `showMe` link: both stern lines and the lazy line drawn), `lines-section` (the same link with the Fenders and lines section open, side layout size too), `lazy-waiting` (`?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&cam=side-port`: the lazy line hanging at the quay).
+Scenes: `berth-lines` (the `term_med_mooring` `showMe` link: both stern lines and the lazy line drawn), `lines-section` (the same link with the Harbour gear section open, side layout size too), `lazy-waiting` (`?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&cam=side-port`: the lazy line hanging at the quay).
 
 Live checks:
 
@@ -1200,7 +1206,7 @@ Alongside mooring with springs (side-to; Phase 8 exercises may add it); the pass
 
 ### 11.1 Files
 
-New: `src/model/seabed.ts`, `src/render3d/seabed.ts`, `src/render3d/bay.ts`, `tests/seabed.test.ts`, `scripts/shots-m45.mjs`. Changed: `content/areas/adriatic.json` (`bay`, `marina.basin`, the `bay` place), `src/model/area.ts` (`BayData`), `src/model/places.ts`, `src/model/mooringLines.ts` (`bl`, `sl`), `src/model/harbourForces.ts` (ground, land), `src/model/contact.ts` (the `bottom` verdicts), `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/instrumentStrip.ts`, `src/ui/mapView.ts`, `src/ui/miniMap.ts`, `src/ui/placePanel.ts`, `src/ui/mooringPanel.ts`, `src/ui/damageReport.ts`, `src/render3d/mooringLines.ts` (bay lines), `src/render3d/picking.ts`, `src/render3d/scene.ts`, `src/render3d/sceneConfig.ts` (`SCENE.bay`), `src/style.css`, `content/boat/hanse508.json` (`physics.ground`, `physics.lines` additions), `tests/physicsTruths7.test.ts`, `tests/mooringLines.test.ts`, `tests/urlState.test.ts`, `tests/glossary.test.ts` (group sizes), both `ui.json`, both glossaries, `docs/review/ru.md`, the registry, `docs/BOAT_REFERENCE.md` (`physics.ground` rows), `docs/CODE_MAP.md`.
+New: `src/model/seabed.ts`, `src/render3d/seabed.ts`, `src/render3d/bay.ts`, `tests/seabed.test.ts`, `scripts/shots-m45.mjs`. Changed: `content/areas/adriatic.json` (`bay`, `marina.basin`, the `bay` place), `src/model/area.ts` (`BayData`), `src/model/places.ts`, `src/model/mooringLines.ts` (`bl`, `sl`), `src/model/harbourForces.ts` (ground, land), `src/model/contact.ts` (the `bottom` verdicts), `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/instrumentStrip.ts`, `src/ui/mapView.ts`, `src/ui/miniMap.ts`, `src/ui/placePanel.ts`, `src/ui/harbourPanel.ts`, `src/ui/damageReport.ts`, `src/render3d/mooringLines.ts` (bay lines), `src/render3d/picking.ts`, `src/render3d/scene.ts`, `src/render3d/sceneConfig.ts` (`SCENE.bay`), `src/style.css`, `content/boat/hanse508.json` (`physics.ground`, `physics.lines` additions), `tests/physicsTruths7.test.ts`, `tests/mooringLines.test.ts`, `tests/urlState.test.ts`, `tests/glossary.test.ts` (group sizes), both `ui.json`, both glossaries, `docs/review/ru.md`, the registry, `docs/BOAT_REFERENCE.md` (`physics.ground` rows), `docs/CODE_MAP.md`.
 
 ### 11.2 Data
 
@@ -1287,7 +1293,7 @@ export function groundForces(boat: BoatState, areaData?: AreaData, data?: BoatDa
 
 - **Place section:** `place-bay` (`place.bay`); status `place.status.bay`.
 - **Instrument strip:** a `strip-depth` item in the flags line (`strip-flags`, the first line is full on a phone) with `t('instruments.depth', { m: depth.toFixed(1) })`, where `depth = depthAt(pointToMap(boat, data.hull.saildrive.x, 0))` (the sounder under the hull); shown only while the place is not open water (also in Held still, with the depth where she lies); class `is-shallow` (red text, `src/style.css`) when below `dimensions.draft + 1.0` m.
-- **Mooring section:** in the bay, rows for `bl` and `sl` (10.5), with `line-sl-status` showing `lines.swimming` while the crew task runs. The bay uses `lines.hint.bay` in place of `lines.hint`.
+- **Harbour gear section:** in the bay, rows for `bl` and `sl` (10.5), with `line-sl-status` showing `lines.swimming` while the crew task runs. The bay uses `lines.hint.bay` in place of `lines.hint`.
 - **Damage report:** `damageText` uses `t('damage.ground.' + severity)` as the verdict for a hit on the `bottom` (`fender` never applies there).
 - **Map** (`mapView.ts`, an exported `drawSeabed(ctx, state, view, mini = false)` before `drawHarbour`): the depth as shaded cells (cell size `max(4 m, 4 px × metresPerPx)`; only cells in the view and only where `depthAt < openDepthM`), drawn into an offscreen canvas that is reused until the view (centre, zoom, rotation or size) changes: depth < `draft` → `#e9b7a8` (too shallow for us), < 5 m → `#cfe6f2`, < 10 m → `#a9d3ea`, < 20 m → `#86bfdf`; land `#d8cfa6`; the rocks as a black `+` with four dots (the chart symbol for a dangerous underwater rock), the rings as black dots (3 px), the buoys as orange dots (5 px). The mini-map draws the same with `mini = true` (cells of at least 8 px, no rings).
 - **3D** (`src/render3d/seabed.ts`): one terrain mesh over `[−2600, −1100] × [−1000, 1000]` (east × north) with vertices every 10 m (20 m at Detail Low), height `−depthAt` (land above the water, seabed below it), vertex colours sand `#d8c79a`, weed `#4f6b3a`, rock `#7a7066`, land `#8f9a5b` (above 6 m `#a39c8a`); the marina basin's bottom as a flat plane at −5 m in mud `#6b5b45`. Each is shown while the nearest point of its rectangle is within 1,000 m of the boat (the camera's far plane). Colours and sizes in `SCENE.bay`. `src/render3d/bay.ts`: the rings (a 1.0 m post with a 0.15 m torus on top, id `env_shore_ring`), the buoys (a white sphere of 0.35 m radius with a small ring on top, id `env_mooring_buoy`), floating on `heightAt` as the practice buoys do; both in the world group, placed as the marina (8.6).
@@ -1375,9 +1381,9 @@ The anchor (M46); tides; the dinghy; swimming crew in 3D.
 
 ### 12.1 Files
 
-New: `src/model/anchor.ts`, `src/ui/anchorPanel.ts`, `src/render3d/anchorChain.ts`, `tests/anchor.test.ts`, `scripts/shots-m46.mjs`. Changed: `src/model/realistic.ts` (`STATION_IDS` gains `'bow'`; `StationEntry` gains `windlass?: string`), `src/ui/realisticPanel.ts` (the Bow station; `noClutches` includes `'bow'`), `src/ui/stationDrawing.ts` (the Bow station and the helm remote), `src/ui/mooringPanel.ts` (the hint of M47 needs the anchor state; nothing else), `src/model/harbourForces.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/modes.ts`, `src/ui/panel.ts`, `src/ui/mapView.ts`, `src/ui/miniMap.ts`, `src/ui/damageReport.ts` (the alarm alert), `src/render3d/boat/index.ts` (the anchor mesh moves), `src/render3d/scene.ts`, `content/boat/hanse508.json` (`physics.anchor`, the `bow` station), `scripts/shots-m4b.mjs` (the station bar's text gains `Bow`), `scripts/shots-m23.mjs` (the Latin scan visits the Bow station), `tests/physicsTruths7.test.ts`, `tests/urlState.test.ts`, `tests/modes.test.ts`, `tests/glossary.test.ts` (group sizes), both `ui.json`, both glossaries, `docs/review/ru.md`, the registry, `scripts/ui.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+New: `src/model/anchor.ts`, `src/ui/anchorPanel.ts`, `src/render3d/anchorChain.ts`, `tests/anchor.test.ts`, `scripts/shots-m46.mjs`. Changed: `src/model/realistic.ts` (`STATION_IDS` gains `'bow'`; `StationEntry` gains `windlass?: string`), `src/ui/realisticPanel.ts` (the Bow station; `noClutches` includes `'bow'`), `src/ui/stationDrawing.ts` (the Bow station and the helm remote), `src/ui/harbourPanel.ts` (the hint of M47 needs the anchor state; nothing else), `src/model/harbourForces.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/modes.ts`, `src/ui/panel.ts`, `src/ui/mapView.ts`, `src/ui/miniMap.ts`, `src/ui/damageReport.ts` (the alarm alert), `src/render3d/boat/index.ts` (the anchor mesh moves), `src/render3d/scene.ts`, `content/boat/hanse508.json` (`physics.anchor`, the `bow` station), `scripts/shots-m4b.mjs` (the station bar's text gains `Bow`), `scripts/shots-m23.mjs` (the Latin scan visits the Bow station), `tests/physicsTruths7.test.ts`, `tests/urlState.test.ts`, `tests/modes.test.ts`, `tests/glossary.test.ts` (group sizes), both `ui.json`, both glossaries, `docs/review/ru.md`, the registry, `scripts/ui.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
 
-**Phase 6 provides** (refresh check): `deck.anchor` with `rollerTip: { x: 6.9, y: 1.7, z: 0 }` (where the chain leaves the bow roller), the anchor mesh (`fit_anchor`) stowed in the roller, a short chain mesh to the windlass (`fit_anchor_chain`), the windlass (`fit_anchor_windlass`). If they are missing, M46 adds `deck.anchor.rollerTip` with this value and draws the anchor as a dark grey plough shape (two triangles and a shank, 0.9 m long).
+**Phase 6 provides** (4.1): the roller (`rollerPoint`, 4.1), the anchor mesh (`fit_anchor`) stowed in the roller, the short chain to the windlass (`fit_anchor_chain`) and the windlass (`fit_anchor_windlass`).
 
 ### 12.2 Data (`content/boat/hanse508.json`)
 
@@ -1443,24 +1449,27 @@ export function chainForces(state: AnchorState, boat: BoatState, env: SeabedEnv,
 export function stepWindlass(state: AnchorState, boat: BoatState, env: SeabedEnv, dt: number, data?: BoatData): AnchorState;
 /** After the boat moved: dragging, setting, the alarm. */
 export function stepAnchor(state: AnchorState, boat: BoatState, env: SeabedEnv, dt: number, data?: BoatData): AnchorState;
+/** Where the chain leaves the roller, boat frame (4.1): (6.92, 1.80, 0.20). */
+export function rollerPoint(data?: BoatData): { x: number; y: number; z: number };
 /** PT-31: the chain the rules ask for here (m). */
 export function scopeNeededM(depthM: number, twsKn: number, data?: BoatData): number;
 /** Points of the chain from the roller to the anchor, map (east, north, height), for drawing. */
 export function chainPoints(state: AnchorState, boat: BoatState, env: SeabedEnv, count: number, data?: BoatData): [number, number, number][];
 ```
 
-- **Effective depth** `D` = `env.depthAt(anchor)` (on the bottom) or `env.depthAt(roller)` (hanging) `+ rollerTip.y`. If the water there is 0 or less (the anchor dragged or linked onto land), the chain pulls nothing and the anchor does not move further.
+- **The roller** `roller` = `rollerPoint(data)` below.
+- **Effective depth** `D` = `env.depthAt(anchor)` (on the bottom) or `env.depthAt(roller)` (hanging) `+ roller.y`. If the water there is 0 or less (the anchor dragged or linked onto land), the chain pulls nothing and the anchor does not move further.
 - **`chainPull(L, D, X)`** (`w = chainWeightNPerM`): `L ≤ D` → `{ pullN: 0, lifted: true, a: 0, s: L, spanM: 0 }`. `X0 = L − D`; `X ≤ X0` → `{ pullN: 0, lifted: false, a: 0, s: D, spanM: 0 }` (the chain hangs straight down and lies on the bottom). `aLift = (L² − D²) / (2D)`, `XLift = aLift·asinh(L / aLift)`; `X ≥ XLift` → `{ pullN: w·aLift + snubStiffnessNPerM·(X − XLift), lifted: true, a: aLift, s: L, spanM: XLift }`. Otherwise find `a` in `(1e−6, aLift)` with `X(a) = L − s + a·asinh(s / a)`, `s = √(D² + 2aD)`, equal to `X` (50 bisection steps; `X(a)` grows with `a`); `pullN = w·a`, `lifted: false`, `spanM = a·asinh(s / a)` (the suspended part's horizontal length). (Worked: L 30, D 6, w 18.77: X 27 → 68 N, X 29 → 869 N, X 29.5 → 7,484 N.)
 - **`holdingN`**: `massKg·g·holdingRatio[seabed]·interpTable(scopeHolding, chainOutM / D)·(lifted ? liftedHoldingShare : 1)·(phase === 'set' ? 1 : unsetHoldingShare)`.
-- **`chainForces`**: phases `bottom` and `set` only. The roller in the map `R = pointToMap(boat, rollerTip.x, 0)`; `X` = horizontal distance from `R` to the anchor; `pullN` from `chainPull(chainOutM, D, X)`; the force `pullN` towards the anchor (horizontal), applied at `(rollerTip.x, 0)`.
+- **`chainForces`**: phases `bottom` and `set` only. The roller in the map `R = pointToMap(boat, roller.x, roller.z)`; `X` = horizontal distance from `R` to the anchor; `pullN` from `chainPull(chainOutM, D, X)`; the force `pullN` towards the anchor (horizontal), applied at `(roller.x, roller.z)`.
 - **`stepWindlass`** (also in Held still):
   - `down`: `chainOutM += windlassDownMps·dt`, at most `chainLengthM` (then `windlass: 'off'`). Phase `stowed` → `hanging` as soon as `chainOutM > 0`.
   - `up`: the pull `P` (phases `bottom` / `set`: `chainPull` now; otherwise 0). If `P > windlassMaxPullN` → `windlass: 'off'`, `cutOut: true`. Otherwise `chainOutM −= windlassUpMps·max(0.2, 1 − P / windlassMaxPullN)·dt`. On the bottom and `chainOutM ≤ D + breakOutMarginM` → the anchor breaks out: `hanging`, with `draggedM`, `dragS`, `dragging` and `alarm` reset. `chainOutM ≤ 0` → `ANCHOR_STOWED`.
   - A `hanging` anchor lands at the point straight below the roller (`R`) as `bottom`, with `draggedM = 0`, when `chainOutM ≥ D` while the windlass is `down`, or at any time when `chainOutM ≥ D + breakOutMarginM` (she drifted into shallower water). So an anchor that has just broken out going up does not land again.
   - The action `windlass` with `down` or `up` clears `cutOut` and `alarm`; `off` (a release) changes neither. The alarm is silenced by its own action `{ type: 'silenceAnchorAlarm' }`.
 - **`stepAnchor`** (not in Held still; once per frame, after `stepBoat`): phases `bottom`/`set` only. `P`, `lifted` from `chainPull`; `H = holdingN(...)` with the seabed under the anchor. If `P > H`: the anchor moves towards `R` by `min(maxDragMps, (P − H) / dragResistanceNsPerM)·dt` (but not into water shallower than 0), `draggedM` grows by the same, `dragging: true`, `dragS += dt`; if the phase is `bottom`, the seabed is not `rock` and `draggedM ≥ setDistanceM` → `set`. Otherwise `dragging: false`, `dragS = 0`. `alarm` becomes true when `dragS ≥ alarmAfterS` and either the phase is `set`, or the phase is `bottom` and `draggedM ≥ 5 × setDistanceM` (an anchor that drags without ever setting, as on rock); it stays until a windlass press, `silenceAnchorAlarm`, `goToPlace` or `reset`.
-- **`scopeNeededM(depth, tws)`**: `max(4·(depth + rollerTip.y) + (tws ≥ strongWindKn ? 2·dimensions.loa : 0), 3·dimensions.loa)`, called with the depth at the anchor (on the bottom) or under the roller (hanging) and `tws` = the wind speed setting `controls.ctl_wind_speed` (not the gusting wind, so the check does not flicker).
-- **`chainPoints`**: hanging → from the roller straight down to the anchor at height `max(rollerTip.y − chainOutM, −depthAt(roller))`; on the bottom with `pullN = 0` → straight down from the roller to the bottom, then along the bottom to the anchor; otherwise the catenary from `R` (height `rollerTip.y`) over `spanM` towards the anchor (`count` points of `y(x) = a·(cosh(x/a) − 1)` measured from the touchdown) and a straight line on the bottom (`−depthAt`) to the anchor; when lifted with `X > spanM`, the last point is moved to the anchor.
+- **`scopeNeededM(depth, tws)`**: `max(4·(depth + roller.y) + (tws ≥ strongWindKn ? 2·dimensions.loa : 0), 3·dimensions.loa)`, called with the depth at the anchor (on the bottom) or under the roller (hanging) and `tws` = the wind speed setting `controls.ctl_wind_speed` (not the gusting wind, so the check does not flicker).
+- **`chainPoints`**: hanging → from the roller straight down to the anchor at height `max(roller.y − chainOutM, −depthAt(roller))`; on the bottom with `pullN = 0` → straight down from the roller to the bottom, then along the bottom to the anchor; otherwise the catenary from `R` (height `roller.y`) over `spanM` towards the anchor (`count` points of `y(x) = a·(cosh(x/a) − 1)` measured from the touchdown) and a straight line on the bottom (`−depthAt`) to the anchor; when lifted with `X > spanM`, the last point is moved to the anchor.
 
 `harbourForces` inputs gain `anchor: AnchorState` and `env: SeabedEnv` and add `chainForces`. The store passes `env = { depthAt, seabedAt }` (M45).
 
@@ -1473,7 +1482,7 @@ export function chainPoints(state: AnchorState, boat: BoatState, env: SeabedEnv,
 
 ### 12.5 Sections, stations and modes
 
-- `SECTION_IDS` gains `'anchor'` (last); `sectionAvailable('anchor')`: `settings.ropesMode === 'easy'`. `MODE_LAYOUTS` becomes the final table of 4.4.
+- `SECTION_IDS` gains `'anchor'` (after `'place'`, before Phase 6's `'harbour'`); `sectionAvailable('anchor')`: `settings.ropesMode === 'easy'`. `MODE_LAYOUTS` becomes the final table of 4.4.
 - **Realistic mode:** `STATION_IDS = ['port', 'starboard', 'helm', 'mast', 'bow']`; the station bar gets "Bow" (`real.station.bow`). The Bow station shows the windlass panel (12.6, `createAnchorPanel(store, '-bow', false)`) and, in the bay, the `bl` line row (`createLineRow(store, 'bl', '-bow')`, 10.5); it has no winch-handle slot (a link with `hd=bow.…` is ignored, the handle stays where it was). The Helm station gets the windlass remote (`createAnchorPanel(store, '-helm', true)`: the two buttons and the counter only) under the thruster joysticks. The link key `st=bow` works as the other stations.
 
 ### 12.6 UI
@@ -1483,7 +1492,7 @@ export function chainPoints(state: AnchorState, boat: BoatState, env: SeabedEnv,
 1. Two hold buttons (3.1) `windlass-down` (`anchor.down`) and `windlass-up` (`anchor.up`), 44 px tall, side by side, `data-part-id="fit_anchor_windlass"` (`fit_windlass_remote` at the helm).
 2. The chain counter `chain-counter`: `t('anchor.counter', { m: Math.round(chainOutM) })`, large digits (`font-size: 1.6rem`).
 3. A status line `anchor-status`: `anchor.phase.<phase>`, then, when dragging, `anchor.dragging`; when cut out, `anchor.cutOut`.
-4. The scope line `anchor-scope` (on the bottom or hanging): `t('anchor.scope', { depth, eff, ratio })` with `depth` = the water's depth used by `scopeNeededM` (1 decimal), `eff` = `depth + rollerTip.y` and `ratio` = `chainOutM / eff` (1 decimal); and the check `anchor-check`: `chainOutM ≥ scopeNeededM` → `anchor.enough`, otherwise `t('anchor.more', { m: Math.ceil(needed − chainOutM), need: Math.round(needed) })`.
+4. The scope line `anchor-scope` (on the bottom or hanging): `t('anchor.scope', { depth, eff, ratio })` with `depth` = the water's depth used by `scopeNeededM` (1 decimal), `eff` = `depth + roller.y` and `ratio` = `chainOutM / eff` (1 decimal); and the check `anchor-check`: `chainOutM ≥ scopeNeededM` → `anchor.enough`, otherwise `t('anchor.more', { m: Math.ceil(needed − chainOutM), need: Math.round(needed) })`.
 5. While `alarm`: `anchor-alarm` (`anchor.alarm`, red) with a button `alarm-silence` (`anchor.silence`) that dispatches `silenceAnchorAlarm`.
 6. `p.explain` `anchor.hint`.
 
@@ -1530,15 +1539,15 @@ Glossary (`English / Russian`):
 `tests/anchor.test.ts` (with a flat test environment: `env = { depthAt: () => 5, seabedAt: () => <type> }`):
 
 1. `chainWeightNPerM` = 18.77 (±0.01). `chainPull` worked values of 12.3 (±1 %); `X ≤ L − D` → 0; `L ≤ D` → lifted.
-2. `holdingN`: set, sand, scope 5.1, not lifted → 40·9.81·25·interp(5.1) (0.905) = 8,878 N (±1 %); unset → × 0.15; lifted → × 0.3.
-3. `stepWindlass` (the flat 5 m environment; `D` = 6.7): down for 10 s from stowed → 5.0 m, `hanging`; on reaching 6.7 m → `bottom` straight below the roller; up with L 30 and the anchor 29.4 m from the roller (a pull of about 9,000 N) → `cutOut`; up from 10.0 m with the anchor on the bottom at the roller's own map position (no pull) → `bottom` until the chain passes 7.2 m (5 + 1.7 + 0.5), then `hanging` (7 s), and stowed at 0 (18 s more).
-4. `scopeNeededM`: (5, 10) → 46.65; (15, 10) → 66.8; (5, 25) → 57.9 (= 26.8 + 31.1).
+2. `holdingN`: set, sand, scope 5.0 (34 / 6.8), not lifted → 40·9.81·25·interp(5.0) (0.900) = 8,829 N (±1 %); unset → × 0.15; lifted → × 0.3.
+3. `stepWindlass` (the flat 5 m environment; `D` = 6.8): down for 10 s from stowed → 5.0 m, `hanging`; on reaching 6.8 m → `bottom` straight below the roller; up with L 30 and the anchor 29.4 m from the roller (a pull of about 9,900 N) → `cutOut`; up from 10.0 m with the anchor on the bottom at the roller's own map position (no pull) → `bottom` until the chain passes 7.3 m (5 + 1.8 + 0.5), then `hanging` (7 s), and stowed at 0 (18 s more).
+4. `scopeNeededM`: (5, 10) → 46.65; (15, 10) → 67.2; (5, 25) → 58.3 (= 27.2 + 31.1).
 5. URL: `an=34.0&ax=-1606.0,0.0&as=1` with `pl=bay&pe=-1640.0&pn=0.0&hdg=90` round-trips; `an=5.0` alone → `hanging`; `ap=off` next to them is still the autopilot.
 
 `tests/physicsTruths7.test.ts` (the boat at (0, 0) heading 10 in sailing mode, sails away, autopilot off, engine running in neutral; wind from 0; the anchor on the bottom at (0, 0.8·L) with chain `L`, phase `bottom`; the flat environment of 5 m; the gusty runs use wind mode `gusty`, seed 1, the default size; every PT-54 run is 25 kn gusty; `external` = `chainForces` only; `stepAnchor` runs once per frame; 300 s at 60 fps; prototype values in brackets):
 
-- **PT-54** short scope drags: weed, L 20 (scope 3.0), 25 kn gusty: dragged [10, 30] m (18.5) and the alarm comes on; weed, L 47 (7.0): dragged less than 3 m (1.5); weed, L 34 (5.1): [1.5, 5] m (2.9).
-- **PT-55** the bottom matters: sand, L 20, 25 kn gusty: dragged less than 2 m (1.1); rock, L 34, 15 kn, lever −60 from 30 s to 50 s: never `set`, dragged [4, 12] m (7.7).
+- **PT-54** short scope drags: weed, L 20 (scope 2.9), 25 kn gusty: dragged [10, 30] m (19.3) and the alarm comes on; weed, L 47 (6.9): dragged less than 3 m (1.4); weed, L 34 (5.0): [1.5, 5] m (2.8).
+- **PT-55** the bottom matters: sand, L 20, 25 kn gusty: dragged less than 2 m (1.1); rock, L 34, 15 kn, lever −60 from 30 s to 50 s: never `set`, dragged [4, 12] m (7.6).
 - **PT-56** swings head to wind: sand, L 34, 15 kn steady: after 300 s `|wrap180(headingDeg − 0)|` ≤ 35° (24).
 - **PT-57** setting by backing down: sand, L 34, 15 kn steady: without the engine still `bottom` (not set) after 300 s; with the lever at −40 from 30 s to 50 s: `set` by 120 s, dragged [1.0, 2.0] m (1.3).
 - **PT-31** scope: `scopeNeededM` as test 4, and the Anchor section's check reads "Let out 13 m more" at 34 m in 5 m (needs 46.65 → 13).
@@ -1551,7 +1560,7 @@ Scenes: `anchored-top` (the `term_scope` `showMe` link), `anchored-map` (the sam
 
 Live checks:
 
-1. `m46 let go`: `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4` (head to the west wind; she drifts back east, into deeper water): `holdWindlass(page, 'down', 3000)` (×4: 12 s, 6 m of chain; the roller is at east −1646.9, 5.3 m deep, plus the 1.7 m roller makes 7.0 m, so the anchor still hangs: `anchor-status` reads hanging), then `holdWindlass(page, 'down', 10000)`: `anchor-status` reads on the bottom; `waitForLink(page, ['an=', 'ap='])`.
+1. `m46 let go`: `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4` (head to the west wind; she drifts back east, into deeper water): `holdWindlass(page, 'down', 3000)` (×4: 12 s, 6 m of chain; the roller is at east −1646.9, 5.3 m deep, plus the 1.80 m roller makes 7.1 m, so the anchor still hangs: `anchor-status` reads hanging), then `holdWindlass(page, 'down', 10000)`: `anchor-status` reads on the bottom; `waitForLink(page, ['an=', 'ap='])`.
 2. `m46 check`: the `term_scope` link: `anchor-check` reads "Let out 13 m more".
 3. `m46 bow station`: the `term_scope` link with `mode=realistic&st=bow`: the windlass buttons `windlass-down-bow` are there; the station bar's text is `Port|Starboard|Helm|Mast|Bow`.
 
@@ -1575,7 +1584,7 @@ Anchoring under sail; a second anchor; a snubber or bridle as separate lines; ch
 
 ### 13.1 Files
 
-New: `scripts/shots-m47.mjs`. Changed: `src/ui/mooringPanel.ts` (the hint, 13.2), `tests/physicsTruths7.test.ts` (13.4), `tests/stepCost.test.ts` (13.5), `scripts/a11y-audit.mjs` and its callers in `scripts/shots.mjs` (13.5), `scripts/shots.mjs` (register `shots-m47.mjs`), `.github/workflows/ci.yml` (the `phase7` part gets `m47`), both `ui.json`, `docs/review/ru.md`, `README.md`, `docs/ROADMAP.md`, `docs/CODE_MAP.md`, `docs/PHYSICS_TRUTHS.md` (statuses, 13.6), `docs/BOAT_REFERENCE.md` (check every Phase 7 assumption is listed), this spec (section 15).
+New: `scripts/shots-m47.mjs`. Changed: `src/ui/harbourPanel.ts` (the hint, 13.2), `tests/physicsTruths7.test.ts` (13.4), `tests/stepCost.test.ts` (13.5), `scripts/a11y-audit.mjs` and its callers in `scripts/shots.mjs` (13.5), `scripts/shots.mjs` (register `shots-m47.mjs`), `.github/workflows/ci.yml` (the `phase7` part gets `m47`), both `ui.json`, `docs/review/ru.md`, `README.md`, `docs/ROADMAP.md`, `docs/CODE_MAP.md`, `docs/PHYSICS_TRUTHS.md` (statuses, 13.6), `docs/BOAT_REFERENCE.md` (check every Phase 7 assumption is listed), this spec (section 15).
 
 ### 13.2 Stern-to with our own anchor
 
@@ -1584,7 +1593,7 @@ Two ways to lie stern-to with the anchor instead of a lazy line. Both already wo
 1. **At the marina quay** (as at a town quay without lazy lines): drop the anchor three to four boat lengths off the berth (the chain must be at least `scopeNeededM`, 46.65 m in 5 m of water), reverse in letting the chain out, take the stern lines, then take in chain until it is tight. With 47 m of chain the anchor lies under the south row's berths or the pontoon: the app does not model other boats' chains or the pontoon's moorings, so crossing them is ignored. Taking in chain against the stern lines raises the pull quickly; when the windlass cuts out (8 kN) the chain is too tight: ease the stern lines a little or let out 1 m. No rule changes: the chain holds the bow as the lazy line did.
 2. **In the bay with a shore line** (EXERCISES EX-B): anchor, back towards the shore, and take a shore line from the stern to a ring (M45).
 
-The Mooring section shows a hint `p.explain` with `data-testid="mooring-anchor-hint"`, placed after `lines.hint`, when `anchor.phase` is `bottom` or `set` and a line is on: in the marina (a line among `sp`, `ss`) `mooring.sternToAnchor`; in the bay (an `sl` line) `mooring.anchorShore`.
+The Harbour gear section shows a hint `p.explain` with `data-testid="mooring-anchor-hint"`, placed after `lines.hint`, when `anchor.phase` is `bottom` or `set` and a line is on: in the marina (a line among `sp`, `ss`) `mooring.sternToAnchor`; in the bay (an `sl` line) `mooring.anchorShore`.
 
 ### 13.3 Strings
 
@@ -1595,15 +1604,15 @@ The Mooring section shows a hint `p.explain` with `data-testid="mooring-anchor-h
 
 ### 13.4 Tests (`tests/physicsTruths7.test.ts`)
 
-**PT-51** (second case) the anchor and a shore line hold her: the place is the bay; `harbourStart({ windDirDeg: 0, twsKn, headingDeg: 90 })` moved to `eastM = −1665`, `northM = 0` (sails away, engine stopped, autopilot off, flat water); the anchor `{ phase: 'set', chainOutM: 60, eastM: −1605, northM: 0, windlass: 'off', cutOut: false, draggedM: 0, dragS: 0, dragging: false, alarm: false }` (sand, 9.5 m deep); a shore line built directly as `{ code: 'sl', cleatId: 'cleat_stern_port', far: { eastM: −1700, northM: 0, heightM: 1.0 }, lengthM: d + 0.5, farIndex: 1 }` with `d` the 3D distance from the cleat to the ring when the test starts (the two stern cleats are equally far from ring 1; port wins the tie); the full `harbourForces` (ground included: the keel stays in more than 3 m of water and the rudder in more than 2.4 m); steady wind; 300 s at 60 fps; the largest heading deviation from 90 over the whole run (prototype values in brackets): 15 kn: at most 10° (4.9); 25 kn: at most 14° (9.4); without the shore line at 15 kn: more than 20° (31.3).
+**PT-51** (second case) the anchor and a shore line hold her: the place is the bay; `harbourStart({ windDirDeg: 0, twsKn, headingDeg: 90 })` moved to `eastM = −1665`, `northM = 0` (sails away, engine stopped, autopilot off, flat water); the anchor `{ phase: 'set', chainOutM: 60, eastM: −1605, northM: 0, windlass: 'off', cutOut: false, draggedM: 0, dragS: 0, dragging: false, alarm: false }` (sand, 9.5 m deep); a shore line built directly as `{ code: 'sl', cleatId: 'cleat_stern_port', far: { eastM: −1700, northM: 0, heightM: 1.0 }, lengthM: d + 0.5, farIndex: 1 }` with `d` the 3D distance from the cleat to the ring when the test starts (the two stern cleats are equally far from ring 1; port wins the tie); the full `harbourForces` (ground included: the keel stays in more than 3 m of water and the rudder in more than 2.4 m); steady wind; 300 s at 60 fps; the largest heading deviation from 90 over the whole run (prototype values in brackets): 15 kn: at most 10° (4.6); 25 kn: at most 14° (9.0); without the shore line at 15 kn: more than 20° (31.7).
 
 ### 13.5 Checks, accessibility, frame rate
 
-**Scenes** (`scripts/shots-m47.mjs`): `marina-anchor` (`?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&ln=sp:2.01,ss:2.01&an=48.0&ax=2.8,1442.0&as=1&cam=top`: stern lines on, the anchor ahead under the south row, the hint shown), `bay-anchor-shore` (`?pl=bay&m=harbour&pe=-1665.0&pn=0.0&hdg=90&wd=0&ws=15&an=60.0&ax=-1605.0,0.0&as=1&ln=sl1:27.37&cam=top`: anchored with a shore line), `harbour-heavy` (`?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port`).
+**Scenes** (`scripts/shots-m47.mjs`): `marina-anchor` (`?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&ln=sp:2.55,ss:2.55&an=48.0&ax=2.8,1442.0&as=1&cam=top`: stern lines on, the anchor ahead under the south row, the hint shown), `bay-anchor-shore` (`?pl=bay&m=harbour&pe=-1665.0&pn=0.0&hdg=90&wd=0&ws=15&an=60.0&ax=-1605.0,0.0&as=1&ln=sl1:28.08&cam=top`: anchored with a shore line), `harbour-heavy` (`?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port`).
 
 **Live checks:**
 
-1. `m47 marina anchor`: the `marina-anchor` link: `mooring-anchor-hint` is visible after `showSection(page, 'mooring')`.
+1. `m47 marina anchor`: the `marina-anchor` link: `mooring-anchor-hint` is visible after `showSection(page, 'harbour')`.
 2. `m47 bay shore`: the `bay-anchor-shore` link with `tx=16`: after 5 s real time the heading on the strip is between 080° and 100°.
 3. `m47 keyboard`: the `harbour-mode` link of M41; focus `thruster-bow-starboard`, press Space down, wait 2 s, release: the heading has changed by 5° or more (the hold buttons work from the keyboard).
 
@@ -1654,8 +1663,8 @@ Exercises with scores and debriefs, scripted winds, the night time-lapse (Phase 
 
 1. Plan Phase 7 now, before Phases 5 and 6 are finished, with as little overlap as possible.
 2. The spec is `docs/PHASE7_SPEC.md`; CLAUDE.md and the `/milestone` and `/review` skills read "the spec that contains your milestone", so a spec planned ahead does not confuse the builders of Phases 5 and 6.
-3. Phase 7 milestones are M40–M47 (Phase 6 has M30–M39).
-4. Phase 7 sets what it needs from Phase 6 (BOAT_DETAILS_ANALYSIS section 6); a refresh check before M40 compares this spec with what Phases 5 and 6 built.
+3. Phase 7 milestones are M40–M47 (Phase 6 has M30–M34).
+4. Phase 7 was to set what it needs from Phase 6 (a contract in BOAT_DETAILS_ANALYSIS section 6). The Phase 6 plan (`PHASE6_SPEC.md`) was merged first, so on 2026-10-16 this spec was aligned with PHASE6_SPEC's names and numbers instead (4.1: the Harbour gear section, `HarbourState`, the cleats, fenders and roller) and the contract was withdrawn; the bands that depend on those points were prototyped again. A refresh check before M40 compares this spec with what Phases 5 and 6 built.
 5. The marina comes first, the bay and the anchor after.
 6. Other yachts are moored only; traffic is how many berths are taken.
 7. Lines are tap actions done by the crew, then tighten or ease.

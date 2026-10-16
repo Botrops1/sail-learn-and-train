@@ -71,56 +71,6 @@ Upload them to `docs/reference/photos/` (GitHub app or web: open the folder → 
 5. **Should the details show at Detail Low on a phone?**
    - Recommended: **yes, simplified** (fewer segments), because the anchor and cleats matter for learning, not only for looks.
 
-## 6. What Phase 7 needs from Phase 6 (contract; owner's answer 2026-10-15)
+## 6. What Phase 7 uses from Phase 6
 
-Phase 7 ([`PHASE7_SPEC.md`](PHASE7_SPEC.md)) was planned before Phase 6, so it states here what it expects Phase 6 to draw and store. **`/plan 6` follows this section** (keys, ids, positions). Where the owner's photos show different positions, Phase 6 uses the photos and writes the change in its spec's decisions; the `/plan 7 refresh` session before M40 then updates PHASE7_SPEC to match. Phase 6 draws these parts; it does not make them work (no forces, no windlass, no lines).
-
-**Data in `content/boat/hanse508.json`, `deck` block** (boat frame: x forward from the mast, y up from the waterline, z to starboard; metres):
-
-```json
-"cleats": [
-  { "id": "cleat_bow_port", "role": "bow", "side": "port", "x": 5.6, "y": 1.75, "z": -0.30 },
-  { "id": "cleat_bow_starboard", "role": "bow", "side": "starboard", "x": 5.6, "y": 1.75, "z": 0.30 },
-  { "id": "cleat_mid_port", "role": "mid", "side": "port", "x": -1.0, "y": 1.55, "z": -2.05 },
-  { "id": "cleat_mid_starboard", "role": "mid", "side": "starboard", "x": -1.0, "y": 1.55, "z": 2.05 },
-  { "id": "cleat_stern_port", "role": "stern", "side": "port", "x": -8.2, "y": 1.40, "z": -1.85 },
-  { "id": "cleat_stern_starboard", "role": "stern", "side": "starboard", "x": -8.2, "y": 1.40, "z": 1.85 }
-],
-"fenders": {
-  "diameterM": 0.25,
-  "lengthM": 0.8,
-  "hangBottomY": 0.3,
-  "points": [
-    { "id": "fender_port_1", "side": "port", "x": 1.0 },
-    { "id": "fender_port_2", "side": "port", "x": -1.5 },
-    { "id": "fender_port_3", "side": "port", "x": -4.0 },
-    { "id": "fender_starboard_1", "side": "starboard", "x": 1.0 },
-    { "id": "fender_starboard_2", "side": "starboard", "x": -1.5 },
-    { "id": "fender_starboard_3", "side": "starboard", "x": -4.0 }
-  ]
-},
-"anchor": {
-  "rollerTip": { "x": 6.9, "y": 1.7, "z": 0 }
-}
-```
-
-The positions are assumptions unless the photos settle them: the cleats just inside the deck edge (`hull.deckEdgeHalfBeam`), at deck height (`hull.sheerHeight`); three fenders per side, the last one near the widest part of the hull (x −3.77); the chain leaves the bow roller at its tip (`hull.bowFittingTipX` 6.9), at deck height.
-
-**State, action and link** (fenders only; the rest is static in Phase 6):
-- `AppState.fenders: { out: boolean }` (Phase 7 adds `lost`, `overSpeedS`, `lostSinceSlow`);
-- action `{ type: 'setFenders'; out: boolean }`;
-- link key `fd=1` when out (not written when in);
-- a "Fenders out" switch wherever `/plan 6` puts it. Phase 7 adds a second switch in its Fenders and lines section; both dispatch the same action.
-
-**Meshes and registry ids** (each mesh carries its id, as CLAUDE.md requires):
-- `fit_mooring_cleat`: all six cleats (exists, `photo-confirmed`);
-- `fit_fairlead`: if fairleads are drawn (new);
-- `fit_fender`: the fenders, hidden when in (new);
-- `fit_bow_roller` (exists);
-- `fit_anchor`: the anchor stowed in the roller (new);
-- `fit_anchor_chain`: the short chain from the roller to the windlass (new);
-- `fit_anchor_windlass` (exists).
-
-Phase 7 moves the anchor mesh to the seabed and draws the chain under water, so the anchor should be one mesh (or group) that can be moved as a whole.
-
-**Out of Phase 6** (Phase 7 does them): the windlass working, the chain running out, lines on the cleats, fenders being lost or protecting the hull.
+Phase 7 ([`PHASE7_SPEC.md`](PHASE7_SPEC.md)) was planned ahead, before Phase 6 was built. Its planning session first wrote a list of what it would need from Phase 6 here (a contract for `/plan 6`), but the Phase 6 plan ([`PHASE6_SPEC.md`](PHASE6_SPEC.md)) was merged first and decided these things itself. So on 2026-10-16 the contract was withdrawn and PHASE7_SPEC was aligned with PHASE6_SPEC instead (PHASE7_SPEC 4.1 lists what it uses): the Harbour gear section and `HarbourState` (`fendersOut`, link key `fd`), the cleats (`cleatPlaces()`), the fenders (`fenderPlaces()`, `ballFenderPlace()`), the bow roller, the anchor, the chain and the windlass (`deckFittings`), and their registry ids. **PHASE6_SPEC is the authority**; if Phase 6 builds something differently, the `/plan 7 refresh` session before M40 updates PHASE7_SPEC to match.
