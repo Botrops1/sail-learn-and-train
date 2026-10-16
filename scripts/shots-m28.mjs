@@ -185,6 +185,27 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
     await opened.context.close();
   }
 
+  // 10. Beside the panel the warnings (Gybe!, Round-up, …) sit above the mini-map, never under it
+  // (independent review of PR 68, finding 1): the alert stack's bottom edge is above its top.
+  for (const size of [
+    { name: 'foldable-820x1000', width: 820, height: 1000, layout: 'side' },
+    { name: 'tablet-1024x768', width: 1024, height: 768, layout: 'side' },
+  ]) {
+    const { context, page } = await openPage(size, `m28 alerts ${size.name}`, BOAT);
+    await page.waitForTimeout(500);
+    const box = await page.getByTestId('mini-map').boundingBox();
+    const alerts = await page.evaluate(() => {
+      const rect = document.querySelector('.rig-alerts').getBoundingClientRect();
+      return { bottom: rect.bottom };
+    });
+    check(
+      `${size.name}: warnings above the mini-map`,
+      box !== null && alerts.bottom <= box.y,
+      `alerts end at ${alerts.bottom}, mini-map starts at ${box?.y}`,
+    );
+    await context.close();
+  }
+
   // 9. Four chips fit a 360 px phone in Russian with the map open.
   {
     const small = { name: 'phone-360x740', width: 360, height: 740, layout: 'stacked' };

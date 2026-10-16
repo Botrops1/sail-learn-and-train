@@ -951,6 +951,7 @@ The second column (M29).
 - `createCameraChip` is only created when the map view exists (`if (map)` in `app.ts`), since it now needs the map for the Close chip; the map is created whenever the 3D view is, so nothing changes for the owner.
 - A mini-map that has just appeared is drawn at the next frame, not after the 100 ms frame-rate pause, so it is never an empty box.
 - Extra live check 9 in `shots-m28.mjs`: the four chips (mode, camera, Close, gear) fit a 360 px phone in Russian with the map open (the CSS of 9.4 promises it).
+- Independent review of PR 68, finding 1 (fixed after the merge): in the side layout the rig alerts (Gybe!, Round-up, Overpowered, autopilot took the wheel) sit centred 64 px above the view's bottom, which is where the 160 px mini-map is, so they were drawn under it at 820 × 1000 and 1024 × 768. While the mini-map shows, they move above it: `html[data-layout='side'] .view[data-mini-map] .rig-alerts { bottom: calc(60px + 160px + 8px); }`. Live check 10 in `shots-m28.mjs` measures it at those two sizes. The phone is unaffected (its alerts are at the top).
 - Test 6 of 9.7 reads the centre pixel of the mini-map's canvas: the boat's hull colour (199, 202, 205), not the water.
 
 ---
