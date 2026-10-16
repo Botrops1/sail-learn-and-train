@@ -1,6 +1,6 @@
 # Phase 5 specification: new layout and modes
 
-Status: **planned**, owner's answers recorded (planning chat and planning PR #61, 2026-10-15) · Last updated: 2026-10-15
+Status: **built**, M29 PR #71 waits for the owner's sign-off · Last updated: 2026-10-16
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phases 1–4 are done (M24 is merged before M25 starts, owner's answer 1). [`LAYOUT_ANALYSIS.md`](LAYOUT_ANALYSIS.md) explains why the screen is rebuilt; this spec is what to build. The earlier specs still describe everything the app does; Phase 5 changes **where** things are drawn, not what they do. Phase 5 changes no physics and adds no sailing facts.
 
@@ -1033,7 +1033,14 @@ Harbour and Exercises modes (Phases 7, 8); remembering folds; any new section.
 
 ### 10.8 Decided in the M29 PR
 
-(empty)
+- `scrollToSection(element)` is exported from `panel.ts`; the panel's own `showSection` and the scroll when a Learn entry opens call it through a small id-to-element wrapper. A section that is not shown (`offsetParent === null`) is not scrolled, as before.
+- The panel tells three kinds of layout apart (stacked, side, wide). A section is always placed by the current kind (so a resize never leaves one in the wrong column); open states are applied when the kind changes, except wide → side, as 10.2 says. Wide → stacked at once applies the stacked `open` list.
+- If the focus is inside a section that moves between columns, it is set again on the same element (`focus({ preventScroll: true })`).
+- The M28 review finding 4 (the mini-map read `canvas.clientWidth` on every frame) is fixed without a before/after measurement: headless Chromium draws at 7–8 frames a second with software drawing, so a layout read of a fraction of a millisecond cannot be seen in it. `miniMap.ts` now sizes its canvas only when it appears and from `layout.onChange` and `sheet.onChange`; the per-frame `update` only applies the visibility rule (no layout read). The mini-map's CSS size depends only on the layout (96 px on a phone, 160 px in the side layout), which `layout.onChange` already covers.
+- Frame figures (reported only, headless Chromium with software drawing, 390 × 844, Detail low, `?debug=1&wd=60&ws=20&wm=gusty`): at peek 7 fps, 3D work 6.7 ms a frame; at half 8 fps, 4.8 ms. The headless figure says nothing about a phone's graphics chip: the owner's 50 fps check (Definition of Done 7) is on the phone.
+- The M17 check "the low sun is drawn on the canvas" failed twice in CI on this PR (the sun at x = 390.9 on a 390 px canvas) and passed locally and on M28's CI. Cause: the sun's direction is given in the boat's frame, so its place on the canvas follows the boat's heading while she sails; the check read it after a real-time wait, and its "stopped moving" test over real time could pass early on a slow runner. `shots-m17.mjs` now opens that page on the test clock (CLAUDE.md), so every machine reads the sun after the same app time: 374.50 px on a normal run and on a run with the CPU slowed six times. The assertion is unchanged.
+- M29 has no scenes (10.3), so `shots-m29.mjs` exports only `liveM29Checks`; it is registered in `liveGroups` only. The last part of `ci.yml` takes it without a change.
+
 
 ---
 

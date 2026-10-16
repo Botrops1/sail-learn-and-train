@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutModeFor } from '../src/ui/layoutMode';
+import { isWide, layoutModeFor } from '../src/ui/layoutMode';
 
 describe('layout mode (PHASE1_SPEC 5.1)', () => {
   it('portrait phone 390×844 is stacked', () => {
@@ -33,5 +33,17 @@ describe('layout mode (PHASE1_SPEC 5.1)', () => {
   it('degenerate sizes fall back to stacked', () => {
     expect(layoutModeFor(0, 0)).toBe('stacked');
     expect(layoutModeFor(Number.NaN, 500)).toBe('stacked');
+  });
+});
+
+describe('wide layout (PHASE5_SPEC 10.2)', () => {
+  it('side by side from 1,280 px wide', () => {
+    expect(isWide(1440, 'side')).toBe(true);
+    expect(isWide(1280, 'side')).toBe(true);
+    expect(isWide(1279, 'side')).toBe(false);
+  });
+
+  it('never when stacked', () => {
+    expect(isWide(1440, 'stacked')).toBe(false);
   });
 });

@@ -14,3 +14,10 @@ export function layoutModeFor(width: number, height: number): LayoutMode {
   if (width / height < SIDE_BY_SIDE_MIN_ASPECT) return 'stacked';
   return 'side';
 }
+
+/** From this width a side-by-side layout is wide: the panel gets a second column (PHASE5_SPEC 10.2). */
+export const WIDE_MIN_WIDTH_PX = 1280;
+
+export function isWide(width: number, mode: LayoutMode): boolean {
+  return mode === 'side' && width >= WIDE_MIN_WIDTH_PX;
+}

@@ -1,11 +1,13 @@
 import { el } from './dom';
 import { t } from './i18n';
-import { layoutModeFor, type LayoutMode } from './layoutMode';
+import { isWide, layoutModeFor, type LayoutMode } from './layoutMode';
 
 export interface Viewport {
   width: number;
   height: number;
   mode: LayoutMode;
+  /** Side by side and 1,280 px or wider: the panel has a second column (PHASE5_SPEC 10.2). */
+  wide: boolean;
 }
 
 export interface LayoutShell {
@@ -34,15 +36,21 @@ export function createLayout(host: HTMLElement): LayoutShell {
   function measure(): Viewport {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    return { width, height, mode: layoutModeFor(width, height) };
+    const mode = layoutModeFor(width, height);
+    return { width, height, mode, wide: isWide(width, mode) };
   }
 
   function apply(): void {
     const next = measure();
     const changed =
-      next.width !== current.width || next.height !== current.height || next.mode !== current.mode;
+      next.width !== current.width ||
+      next.height !== current.height ||
+      next.mode !== current.mode ||
+      next.wide !== current.wide;
     current = next;
     document.documentElement.dataset.layout = next.mode;
+    if (next.wide) document.documentElement.dataset.wide = 'true';
+    else delete document.documentElement.dataset.wide;
     if (changed) listeners.forEach((listener) => listener(next));
   }
 

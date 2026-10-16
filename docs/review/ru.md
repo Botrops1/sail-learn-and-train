@@ -2631,3 +2631,4 @@
 | map.closeShort | Close | Закрыть |
 | settings.miniMap.label | Mini-map | Мини-карта |
 | settings.miniMap.hint | A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map. | Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту. |
+| panel.second | More sections | Ещё разделы |

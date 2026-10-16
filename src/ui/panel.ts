@@ -44,13 +44,31 @@ export interface Panel {
   onChange(listener: () => void): void;
 }
 
+type LayoutKind = 'stacked' | 'side' | 'wide';
+
+/** Scrolls the column that holds the element so that the element's top is at the column's top. */
+export function scrollToSection(element: HTMLElement): void {
+  const column = element.closest('.panel-scroll');
+  if (!column || element.offsetParent === null) return;
+  column.scrollTop += element.getBoundingClientRect().top - column.getBoundingClientRect().top;
+}
+
 export function createPanel(
   host: HTMLElement,
   store: Store,
   sheet: Sheet,
   layout: LayoutShell,
 ): Panel {
-  const body = el('div', { class: 'panel-body' });
+  const body = el('div', { class: 'panel-body panel-scroll' });
+  // The second column of the wide layout (PHASE5_SPEC 10.2): empty and hidden otherwise.
+  const second = el('div', {
+    class: 'panel-second panel-scroll',
+    'data-testid': 'second-column',
+    role: 'region',
+    'aria-label': t('panel.second'),
+    tabindex: '0',
+    hidden: '',
+  });
   const listeners: (() => void)[] = [];
   const changed = () => listeners.forEach((listener) => listener());
 
@@ -79,22 +97,60 @@ export function createPanel(
   }
 
   createQuickRow(sheet.head, store, sheet);
-  host.append(body);
+  host.append(body, second);
 
-  const stacked = () => layout.viewport().mode === 'stacked';
-  let layoutKind = stacked();
+  const layoutKindNow = (): LayoutKind => {
+    const { mode, wide } = layout.viewport();
+    return wide ? 'wide' : mode;
+  };
+  let layoutKind = layoutKindNow();
 
-  /** Puts the sections in the mode's order and opens or folds them as the mode says. */
-  function applyMode(state: AppState): void {
+  /**
+   * Puts each section where the layout says: in the wide layout the mode's `second` sections fill
+   * column 2 and the rest stay in column 1; otherwise everything is in column 1, in the mode's
+   * order. Moves the elements, never rebuilds them, and keeps the focus where it was.
+   */
+  function place(state: AppState): void {
     const mode = MODE_LAYOUTS[state.appMode];
-    body.append(...mode.order.map((id) => sections.get(id)?.element as HTMLElement));
-    const open = stacked() ? mode.open : mode.openSide;
+    const wide = layoutKind === 'wide';
+    const inSecond = wide ? mode.second : [];
+    const elementOf = (id: SectionId) => sections.get(id)?.element as HTMLElement;
+    const focused = document.activeElement;
+    const focusedInside =
+      focused instanceof HTMLElement &&
+      focused !== document.body &&
+      SECTION_IDS.some((id) => elementOf(id).contains(focused));
+
+    second.hidden = !wide;
+    second.append(...inSecond.map(elementOf));
+    body.append(...mode.order.filter((id) => !inSecond.includes(id)).map(elementOf));
+    if (focusedInside && document.activeElement !== focused) {
+      (focused as HTMLElement).focus({ preventScroll: true });
+    }
+  }
+
+  /** Opens or folds each section as the mode and the layout say (PHASE5_SPEC 10.2). */
+  function applyOpen(state: AppState): void {
+    const mode = MODE_LAYOUTS[state.appMode];
+    const open =
+      layoutKind === 'wide'
+        ? [...mode.second, ...mode.openSide]
+        : layoutKind === 'stacked'
+          ? mode.open
+          : mode.openSide;
     for (const id of SECTION_IDS) {
       const section = sections.get(id);
       section?.setOpen(open.includes(id));
       section?.resetExplain();
     }
     body.scrollTop = 0;
+    second.scrollTop = 0;
+  }
+
+  /** Puts the sections in place for the mode and opens or folds them as it says. */
+  function applyMode(state: AppState): void {
+    place(state);
+    applyOpen(state);
   }
 
   function applyAvailable(state: AppState): void {
@@ -104,13 +160,11 @@ export function createPanel(
     }
   }
 
-  /** The section's top at the top of the panel body (once the sheet has its new height). */
+  /** The section's top at the top of its column (once the sheet has its new height). */
   let scrollTarget: SectionId | null = null;
-  function scrollToSection(id: SectionId): void {
+  function scrollToId(id: SectionId): void {
     const section = sections.get(id);
-    if (!section || section.element.offsetParent === null) return;
-    const offset = section.element.getBoundingClientRect().top - body.getBoundingClientRect().top;
-    body.scrollTop += offset;
+    if (section) scrollToSection(section.element);
   }
 
   function showSection(id: SectionId): void {
@@ -119,7 +173,7 @@ export function createPanel(
     section.setOpen(true);
     const raise = sheet.atPeek();
     if (raise) sheet.setHeight('half');
-    scrollToSection(id);
+    scrollToId(id);
     // The sheet may still be growing: scroll again when it has finished.
     scrollTarget = raise ? id : null;
     changed();
@@ -142,7 +196,7 @@ export function createPanel(
     }
     // An entry was opened (also while the Learn section is open: this scrolls it to the top).
     if (state.learn !== previous.learn && state.learn !== null && sections.get('learn')?.isOpen()) {
-      scrollToSection('learn');
+      scrollToId('learn');
     }
     // A rope or the wheel selected shows it in the Ropes section (Easy and Realistic mode; in
     // Learn mode "Show on the boat" lights the part up and nothing moves). At peek the quick row
@@ -161,16 +215,20 @@ export function createPanel(
 
   sheet.onChange(() => {
     if (scrollTarget) {
-      scrollToSection(scrollTarget);
+      scrollToId(scrollTarget);
       scrollTarget = null;
     }
     changed();
   });
   layout.onChange(() => {
-    const now = stacked();
-    if (now === layoutKind) return;
+    const before = layoutKind;
+    const now = layoutKindNow();
+    if (now === before) return;
     layoutKind = now;
-    applyMode(store.getState());
+    // Sections always follow the layout; their open states change only when the kind of layout
+    // does, and not when the wide layout narrows to the side one (they keep theirs).
+    place(store.getState());
+    if (!(before === 'wide' && now === 'side')) applyOpen(store.getState());
     changed();
   });
 

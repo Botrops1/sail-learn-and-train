@@ -638,5 +638,6 @@
   "map.close": "Close the map",
   "map.closeShort": "Close",
   "settings.miniMap.label": "Mini-map",
-  "settings.miniMap.hint": "A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map."
+  "settings.miniMap.hint": "A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map.",
+  "panel.second": "More sections"
 }
