@@ -14,6 +14,7 @@ export const SECTION_IDS = [
   'conditions',
   'learn',
   'legend',
+  'harbour',
 ] as const;
 export type SectionId = (typeof SECTION_IDS)[number];
 
@@ -30,19 +31,19 @@ export interface ModeLayout {
 
 export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
   easy: {
-    order: ['ropes', 'sails', 'autopilot', 'engine', 'conditions', 'learn', 'legend'],
+    order: ['ropes', 'sails', 'autopilot', 'engine', 'conditions', 'learn', 'legend', 'harbour'],
     open: ['ropes', 'sails'],
     openSide: ['ropes', 'sails', 'autopilot', 'engine'],
     second: ['conditions', 'learn'],
   },
   realistic: {
-    order: ['ropes', 'sails', 'conditions', 'learn', 'legend', 'autopilot', 'engine'],
+    order: ['ropes', 'sails', 'conditions', 'learn', 'legend', 'autopilot', 'engine', 'harbour'],
     open: ['ropes'],
     openSide: ['ropes', 'sails'],
     second: ['conditions', 'learn'],
   },
   learn: {
-    order: ['learn', 'legend', 'ropes', 'sails', 'autopilot', 'engine', 'conditions'],
+    order: ['learn', 'legend', 'ropes', 'sails', 'autopilot', 'engine', 'conditions', 'harbour'],
     open: ['learn'],
     openSide: ['learn', 'legend'],
     second: ['conditions', 'ropes'],

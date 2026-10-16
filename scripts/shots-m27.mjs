@@ -15,9 +15,9 @@ import {
 
 const BOAT = '?wd=60&ws=12';
 const SECTION_ORDER = {
-  easy: ['ropes', 'sails', 'autopilot', 'engine', 'conditions', 'learn', 'legend'],
-  realistic: ['ropes', 'sails', 'conditions', 'learn', 'legend'],
-  learn: ['learn', 'legend', 'ropes', 'sails', 'autopilot', 'engine', 'conditions'],
+  easy: ['ropes', 'sails', 'autopilot', 'engine', 'conditions', 'learn', 'legend', 'harbour'],
+  realistic: ['ropes', 'sails', 'conditions', 'learn', 'legend', 'harbour'],
+  learn: ['learn', 'legend', 'ropes', 'sails', 'autopilot', 'engine', 'conditions', 'harbour'],
 };
 
 export const M27_SCENES = [
@@ -67,7 +67,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'Easy: Ropes and Sails open, the rest folded',
       opens.join() ===
-        'ropes:true,sails:true,autopilot:false,engine:false,conditions:false,learn:false,legend:false',
+        'ropes:true,sails:true,autopilot:false,engine:false,conditions:false,learn:false,legend:false,harbour:false',
       opens.join(),
     );
     const tabs = await page.locator('[role="tab"]').count();

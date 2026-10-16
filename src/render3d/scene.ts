@@ -122,6 +122,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   holder.name = 'boatHolder';
   let detail: Detail = initial.settings.detail;
   let boatModel = buildBoat(initial.controls, initial.rig, detail);
+  let fendersOut = initial.harbour.fendersOut;
+  boatModel.setFendersOut(fendersOut);
   holder.add(boatModel.root);
   const dangerZone = buildDangerZone();
   holder.add(dangerZone.object);
@@ -263,11 +265,17 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       holder.remove(boatModel.root);
       dispose(boatModel.root);
       boatModel = buildBoat(state.controls, state.rig, detail);
+      boatModel.setFendersOut(state.harbour.fendersOut);
       holder.add(boatModel.root);
       highlight = createHighlighter(boatModel.root);
       highlight(highlightIds(state.selection));
       applyDetail();
     } else if (state.selection !== previous.selection) highlight(highlightIds(state.selection));
+    // The fenders: a check of its own, since a Show me changes the selection and the fenders at once.
+    if (state.harbour.fendersOut !== fendersOut) {
+      fendersOut = state.harbour.fendersOut;
+      boatModel.setFendersOut(fendersOut);
+    }
   });
 
   const lastSkyDirection = new THREE.Vector3(0, 1, 0);

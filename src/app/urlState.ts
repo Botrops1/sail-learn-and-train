@@ -188,6 +188,8 @@ export function parseUrlState(
     engine: parseEngine(params),
     sea: parseSea(params),
     ...parseClock(params),
+    // `fd=1`: the fenders are out (M33); any other value leaves them in the locker.
+    harbour: { fendersOut: params.get('fd') === '1' },
   });
 }
 
@@ -504,6 +506,7 @@ export function serializeUrlState(state: AppState): string {
   for (const [name, value] of seaParams(state)) params.set(name, value);
   for (const [name, value] of engineParams(state)) params.set(name, value);
   for (const [name, value] of clockParams(state)) params.set(name, value);
+  if (state.harbour.fendersOut) params.set('fd', '1');
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
   // Commas need no escaping in a query (co=a5,b3 stays readable).

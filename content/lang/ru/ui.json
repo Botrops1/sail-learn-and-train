@@ -639,5 +639,11 @@
   "map.closeShort": "Закрыть",
   "settings.miniMap.label": "Мини-карта",
   "settings.miniMap.hint": "Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту.",
-  "panel.second": "Ещё разделы"
+  "panel.second": "Ещё разделы",
+  "harbour.title": "Для стоянки",
+  "harbour.fenders": "Кранцы",
+  "harbour.fenders.explain": "Резиновые подушки, которые вывешивают за борт, чтобы защитить корпус у причала. На ходу они лежат в рундуке.",
+  "harbour.fenders.stowed": "В рундуке",
+  "harbour.fenders.out": "За бортом",
+  "harbour.fenders.hint": "Уберите кранцы, прежде чем идти под парусами."
 }

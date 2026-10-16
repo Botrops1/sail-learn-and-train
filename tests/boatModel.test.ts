@@ -127,7 +127,14 @@ describe('boat model', () => {
   });
 
   it('overall size matches the data: length overall, beam, draft and mast height', () => {
-    const box = new THREE.Box3().setFromObject(model.root);
+    // The fenders in the locker are hidden but still counted by Box3: leave them out (M33).
+    const box = new THREE.Box3();
+    model.root.traverse((object) => {
+      const id = (object.userData as { partId?: string }).partId;
+      if (object instanceof THREE.Mesh && id !== 'fit_fender' && id !== 'fit_fender_ball') {
+        box.expandByObject(object);
+      }
+    });
     expect(box.max.x - box.min.x).toBeCloseTo(
       (anchorFluke()[0]?.[2][0] ?? 0) - boat.hull.transomX,
       1,

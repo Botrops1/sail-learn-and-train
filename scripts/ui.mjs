@@ -3,7 +3,7 @@
 // that a later change of the screen changes only this file. They take a Playwright `page` and find
 // things by data-testid, never by text, so they do not depend on the language.
 
-/** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, legend, conditions, learn. */
+/** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, legend, conditions, learn, harbour. */
 export async function showSection(page, id) {
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);

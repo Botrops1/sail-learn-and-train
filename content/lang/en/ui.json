@@ -639,5 +639,11 @@
   "map.closeShort": "Close",
   "settings.miniMap.label": "Mini-map",
   "settings.miniMap.hint": "A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map.",
-  "panel.second": "More sections"
+  "panel.second": "More sections",
+  "harbour.title": "Harbour gear",
+  "harbour.fenders": "Fenders",
+  "harbour.fenders.explain": "Rubber buffers hung over the side to protect the hull in a marina. They stay in a locker while sailing.",
+  "harbour.fenders.stowed": "In the locker",
+  "harbour.fenders.out": "Out",
+  "harbour.fenders.hint": "Bring the fenders in before you sail."
 }

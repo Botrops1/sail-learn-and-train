@@ -7,6 +7,7 @@ import type { LayoutShell } from './layout';
 import { createLearnTab } from './learnTab';
 import { MODE_LAYOUTS, SECTION_IDS, sectionAvailable, type SectionId } from './modes';
 import { createEnginePanel } from './enginePanel';
+import { createHarbourPanel } from './harbourPanel';
 import { createQuickRow } from './quickRow';
 import { createRopeLegend } from './ropeLegend';
 import { createRopesTab, revealRopeStrip } from './ropesTab';
@@ -24,12 +25,13 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
   conditions: 'section.conditions',
   learn: 'tab.learn',
   legend: 'legend.title',
+  harbour: 'harbour.title',
 };
 
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): no tabs since M27, but a list of
- * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn and
- * Rope colours. The mode (modes.ts) decides their order and which start open. Each section is
+ * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn,
+ * Rope colours and (M33) Harbour gear. The mode (modes.ts) decides their order and which start open. Each section is
  * built once and never copied. The settings and the camera are in the chip row (PHASE5_SPEC 6.4).
  * Selecting a rope or the wheel anywhere (3D view, link) shows it in the Ropes section.
  */
@@ -86,6 +88,7 @@ export function createPanel(
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
     legend: { content: [createRopeLegend()], explain: false },
+    harbour: { content: createHarbourPanel(store), explain: true },
   };
   const sections = new Map<SectionId, SectionView>();
   for (const id of SECTION_IDS) {

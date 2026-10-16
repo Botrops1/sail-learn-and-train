@@ -44,3 +44,53 @@ export function cleatPlaces(data: BoatData = boat): FittingPlace[] {
 export function fairleadPlaces(data: BoatData = boat): FittingPlace[] {
   return placesAt(data.deckFittings.fairleads.stations, data);
 }
+
+export interface FenderPlace {
+  /** Top of the fender (where its line is tied). */
+  top: Vec3;
+  /** Where the line is made fast: on top of the toerail at the same station. */
+  lineEnd: Vec3;
+  side: Side;
+}
+
+/** On top of the toerail at station x, on the given side (3.1: "on the toerail"). */
+function toerailTop(x: number, side: Side, data: BoatData): Vec3 {
+  const { height, width } = data.deckFittings.toerail;
+  return [x, sheerAt(x, data) + height, side * (halfBeamAt(x, data) - width / 2)];
+}
+
+/** Eight fender places (M33): per station, starboard then port. */
+export function fenderPlaces(data: BoatData = boat): FenderPlace[] {
+  const f = data.deckFittings.fenders;
+  return f.stations.flatMap((x) =>
+    ([1, -1] as const).map((side): FenderPlace => ({
+      top: [
+        x,
+        sheerAt(x, data) - f.topBelowSheer,
+        side * (halfBeamAt(x, data) + f.diameter / 2 + f.gap),
+      ],
+      lineEnd: toerailTop(x, side, data),
+      side,
+    })),
+  );
+}
+
+/** The ball fender (M33): its centre and where its line is made fast. */
+export function ballFenderPlace(data: BoatData = boat): {
+  centre: Vec3;
+  lineEnd: Vec3;
+  side: Side;
+} {
+  const b = data.deckFittings.ballFender;
+  const side: Side = b.side === 'port' ? -1 : 1;
+  const r = b.diameter / 2;
+  return {
+    centre: [
+      b.x,
+      sheerAt(b.x, data) - b.topBelowSheer - r,
+      side * (halfBeamAt(b.x, data) + r + data.deckFittings.fenders.gap),
+    ],
+    lineEnd: toerailTop(b.x, side, data),
+    side,
+  };
+}

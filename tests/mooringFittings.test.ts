@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { boat } from '../src/model/boat';
-import { halfBeamAt } from '../src/model/hullShape';
-import { cleatPlaces, fairleadPlaces } from '../src/model/mooringFittings';
+import { halfBeamAt, sectionPoint } from '../src/model/hullShape';
+import {
+  ballFenderPlace,
+  cleatPlaces,
+  fairleadPlaces,
+  fenderPlaces,
+} from '../src/model/mooringFittings';
 
 const g = boat.deckFittings;
 const must = <T>(value: T | undefined): T => {
@@ -77,5 +82,54 @@ describe('Phase 6, M32: cleats and fairleads', () => {
     const clearSideways = Math.abs(bow.base[2]) - g.fairleads.width / 2 > w.z + w.recessRadius;
     const clearForward = bow.base[0] - g.fairleads.length / 2 > w.x + w.recessRadius;
     expect(clearSideways || clearForward).toBe(true);
+  });
+});
+
+describe('Phase 6, M33: fenders', () => {
+  it('the worked values of the spec; port is starboard with z negated', () => {
+    const places = fenderPlaces();
+    expect(places).toHaveLength(8);
+    const tops = starboard(places).map((p) => p.top);
+    near(must(tops[0]), [3.0, 1.28, 1.431]);
+    near(must(tops[1]), [0.5, 1.23, 2.083]);
+    near(must(tops[2]), [-2.5, 1.176, 2.472]);
+    near(must(tops[3]), [-5.5, 1.111, 2.431]);
+    for (let i = 0; i < places.length; i += 2) {
+      const s = must(places[i]);
+      const p = must(places[i + 1]);
+      expect(s.side).toBe(1);
+      expect(p.side).toBe(-1);
+      near(p.top, [s.top[0], s.top[1], -s.top[2]]);
+      near(p.lineEnd, [s.lineEnd[0], s.lineEnd[1], -s.lineEnd[2]]);
+    }
+    const ball = ballFenderPlace();
+    near(ball.centre, [-8.2, 0.765, -2.32]);
+    expect(ball.side).toBe(-1);
+  });
+
+  it('the lowest fender hangs 0.311 m above the waterline; the lines end on the toerail', () => {
+    const lowest = must(starboard(fenderPlaces())[3]);
+    expect(lowest.top[1] - g.fenders.length).toBeCloseTo(0.311, 3);
+    for (const p of fenderPlaces()) {
+      const x = p.lineEnd[0];
+      expect(Math.abs(p.lineEnd[2])).toBeLessThanOrEqual(halfBeamAt(x));
+      expect(Math.abs(p.lineEnd[2])).toBeGreaterThanOrEqual(halfBeamAt(x) - g.toerail.width);
+    }
+  });
+
+  it('every fender clears the hull', () => {
+    for (const p of starboard(fenderPlaces())) {
+      const x = p.top[0];
+      const outer = Math.abs(p.top[2]) - g.fenders.diameter / 2;
+      const bottom = p.top[1] - g.fenders.length;
+      for (let y = bottom; y <= p.top[1]; y += 0.05) {
+        let widest = 0;
+        for (let i = 0; i <= 100; i++) {
+          const [sy, sz] = sectionPoint(x, i / 100);
+          if (Math.abs(sy - y) <= 0.02) widest = Math.max(widest, sz);
+        }
+        expect(outer, `x ${x}, y ${y.toFixed(2)}`).toBeGreaterThanOrEqual(widest);
+      }
+    }
   });
 });

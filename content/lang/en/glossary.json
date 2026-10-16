@@ -1589,6 +1589,30 @@
       "onThisBoat": "One on each side near the bow and near the stern, beside the cleats. Their exact places are a guess.",
       "textStatus": "draft"
     },
+    "fit_fender": {
+      "name": "Fender",
+      "alternatives": [],
+      "short": "A rubber buffer hung over the side to protect the hull.",
+      "what": "Fenders hang between the boat and a pier or another boat, so the hulls do not rub or bump. They are tied on before you come in and taken in before you sail.",
+      "onThisBoat": "Eight, four on each side, kept in a locker while sailing. Put them out in the Harbour gear block.",
+      "mistakes": [
+        {
+          "mistake": "Leaving the fenders hanging over the side while sailing.",
+          "fix": "They bounce against the hull and can be lost. Bring them in and stow them as soon as you are out of the harbour."
+        }
+      ],
+      "showMe": "The boat from the side with the fenders out, four on each side.",
+      "textStatus": "draft"
+    },
+    "fit_fender_ball": {
+      "name": "Ball fender",
+      "alternatives": [],
+      "short": "A big round fender for a corner of the boat.",
+      "what": "A ball fender protects a corner, where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier).",
+      "onThisBoat": "One, at the port corner of the stern behind the helm. It goes out and comes in with the other fenders.",
+      "showMe": "The boat from the port side with the fenders out: the ball fender hangs at the back corner.",
+      "textStatus": "draft"
+    },
     "env_wake": {
       "name": "Wake",
       "alternatives": [],
