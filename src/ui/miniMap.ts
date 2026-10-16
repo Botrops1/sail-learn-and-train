@@ -57,17 +57,9 @@ export function createMiniMap(
     );
   };
 
-  /** Applies the visibility rule, the `data-mini-map` attribute and the canvas size. */
-  const applyVisibility = () => {
-    const show = shouldShow();
-    if (show !== shown) {
-      shown = show;
-      button.hidden = !show;
-      view.toggleAttribute('data-mini-map', show);
-      // A mini-map that has just appeared is drawn at the next frame, not after the pause.
-      if (show) lastDrawMs = -Infinity;
-    }
-    if (!show) return;
+  /** Sizes the canvas to its CSS width. Reads the layout, so never once per frame. */
+  const resize = () => {
+    if (!shown) return;
     const width = canvas.clientWidth;
     dpr = Math.min(window.devicePixelRatio || 1, MINI_MAP.maxDpr);
     if (width > 0 && width !== sizedFor) {
@@ -75,6 +67,26 @@ export function createMiniMap(
       canvas.width = Math.max(1, Math.round(width * dpr));
       canvas.height = canvas.width;
     }
+  };
+
+  /** Applies the visibility rule and the `data-mini-map` attribute (no layout read). */
+  const applyVisibility = () => {
+    const show = shouldShow();
+    if (show === shown) return;
+    shown = show;
+    button.hidden = !show;
+    view.toggleAttribute('data-mini-map', show);
+    if (show) {
+      // A mini-map that has just appeared is drawn at the next frame, not after the pause.
+      lastDrawMs = -Infinity;
+      resize();
+    }
+  };
+
+  /** The size changes only with the layout or the sheet's height (PHASE5_SPEC 10.4). */
+  const refresh = () => {
+    applyVisibility();
+    resize();
   };
 
   store.subscribe((state, previous) => {
@@ -86,8 +98,8 @@ export function createMiniMap(
       applyVisibility();
     }
   });
-  layout.onChange(applyVisibility);
-  sheet.onChange(applyVisibility);
+  layout.onChange(refresh);
+  sheet.onChange(refresh);
 
   button.addEventListener('click', () => {
     store.dispatch({ type: 'setCameraPreset', preset: 'map' });

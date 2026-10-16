@@ -603,6 +603,40 @@ html[data-layout='side'] .panel {
   border-left: 1px solid var(--line);
 }
 
+/* Wide screens (M29): the panel has a second column for Conditions and Learn. */
+html[data-layout='side'] .sheet-head {
+  display: none;
+}
+
+html[data-layout='side'][data-wide='true'] .shell {
+  grid-template-columns: minmax(0, 1fr) 760px;
+}
+
+html[data-layout='side'][data-wide='true'] .panel {
+  flex-direction: row;
+}
+
+html[data-layout='side'][data-wide='true'] .panel-body {
+  flex: 0 0 400px;
+}
+
+.panel-second {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-left: 1px solid var(--line);
+}
+
+.panel-second[hidden] {
+  display: none;
+}
+
+html[data-wide='true'] .settings-dialog {
+  width: 760px;
+}
+
 .panel-body {
   display: flex;
   flex: 1 1 auto;
@@ -751,6 +785,7 @@ html[data-layout='stacked'] .sheet[data-sheet='peek'] .quick-row {
   color: inherit;
 }
 
+.panel-second:focus-visible,
 .section-toggle:focus-visible,
 .section-explain:focus-visible,
 .step-button:focus-visible,

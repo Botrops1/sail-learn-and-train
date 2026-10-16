@@ -258,7 +258,7 @@ export function createRopesTab(
 
 /** Scrolls the panel just enough to show the strip (it may sit below a tall drawing). */
 function revealStrip(strip: HTMLElement): void {
-  const body = strip.closest('.panel-body');
+  const body = strip.closest('.panel-scroll');
   if (!body || strip.offsetParent === null) return;
   const box = strip.getBoundingClientRect();
   const view = body.getBoundingClientRect();

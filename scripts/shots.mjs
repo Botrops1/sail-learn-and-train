@@ -46,6 +46,7 @@ import { liveM25Checks, M25_SCENES } from './shots-m25.mjs';
 import { liveM26Checks, M26_SCENES } from './shots-m26.mjs';
 import { liveM27Checks, M27_SCENES } from './shots-m27.mjs';
 import { liveM28Checks, M28_SCENES } from './shots-m28.mjs';
+import { liveM29Checks } from './shots-m29.mjs';
 import {
   closeSettings,
   openSettings,
@@ -746,8 +747,12 @@ try {
         innerHeight: window.innerHeight,
         sceneError: document.querySelector('.scene-error')?.textContent ?? null,
         panelOverflow: (() => {
-          const body = document.querySelector('.panel-body');
-          return body ? body.scrollWidth - body.clientWidth : 0;
+          return Math.max(
+            0,
+            ...[...document.querySelectorAll('.panel-scroll')].map(
+              (node) => node.scrollWidth - node.clientWidth,
+            ),
+          );
         })(),
         version: document.querySelector('[data-testid="build-version"]')?.textContent ?? null,
         url: window.location.search,
@@ -915,6 +920,7 @@ try {
     m26: () => liveM26Checks(live),
     m27: () => liveM27Checks(live),
     m28: () => liveM28Checks(live),
+    m29: () => liveM29Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
