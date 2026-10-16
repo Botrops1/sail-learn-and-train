@@ -272,6 +272,22 @@ function buildSettingsBody(store: Store): HTMLElement[] {
     el('p', { class: 'hint' }, [t('view.clock.hint')]),
   ]);
 
+  const miniMapInput = el('input', {
+    type: 'checkbox',
+    id: 'mini-map-toggle',
+    'data-testid': 'mini-map-switch',
+  });
+  miniMapInput.addEventListener('change', () =>
+    store.dispatch({ type: 'setMiniMap', miniMap: miniMapInput.checked }),
+  );
+  const miniMapField = el('div', { class: 'field' }, [
+    el('label', { class: 'toggle', for: 'mini-map-toggle' }, [
+      miniMapInput,
+      el('span', {}, [t('settings.miniMap.label')]),
+    ]),
+    el('p', { class: 'hint' }, [t('settings.miniMap.hint')]),
+  ]);
+
   const sync = (state = store.getState(), previous?: typeof state) => {
     if (previous && state.settings === previous.settings) return;
     const { settings } = state;
@@ -283,6 +299,7 @@ function buildSettingsBody(store: Store): HTMLElement[] {
     labelsInput.checked = settings.labels;
     timeBarInput.checked = settings.timeBar;
     clockInput.checked = settings.clock;
+    miniMapInput.checked = settings.miniMap;
   };
   store.subscribe(sync);
   sync();
@@ -292,6 +309,7 @@ function buildSettingsBody(store: Store): HTMLElement[] {
     labelsField,
     timeBarField,
     clockField,
+    miniMapField,
     stepGroup,
     detailGroup,
     ...buildShareAndReset(store),
