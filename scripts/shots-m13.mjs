@@ -48,7 +48,12 @@ export async function liveM13Checks({ openPage, viewports, outDir, prefix, probl
 
   // Accessibility of the Phase 2 controls (phone).
   for (const [name, query, tab, scrollTo] of [
-    ['autopilot', '?wd=60&ws=12&ms=30&js=100&ap=wind&cam=side-port', 'autopilot', 'section-autopilot'],
+    [
+      'autopilot',
+      '?wd=60&ws=12&ms=30&js=100&ap=wind&cam=side-port',
+      'autopilot',
+      'section-autopilot',
+    ],
     ['sails panel', '?wd=60&ws=12&ms=10&js=100&cam=side-port', null, 'sails-panel'],
     [
       'wind tab: gusty, Held still / Sailing',
