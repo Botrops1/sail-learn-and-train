@@ -41,6 +41,9 @@ export interface BoatMaterials {
   telltalePort: THREE.Material;
   telltaleStarboard: THREE.Material;
   tear: THREE.Material;
+  /** M33: the dark rubber of the fenders, and the pale line they hang on. */
+  fender: THREE.Material;
+  fenderLine: THREE.Material;
 }
 
 type Look = {
@@ -137,6 +140,8 @@ export function createMaterials(detail: Detail = 'high'): BoatMaterials {
     telltalePort: make({ color: SCENE.telltales.portColor, roughness: 0.9 }),
     telltaleStarboard: make({ color: SCENE.telltales.starboardColor, roughness: 0.9 }),
     tear: make({ color: SCENE.telltales.tear.color, roughness: 0.9 }),
+    fender: make({ color: boat.deckFittings.fenders.colour, roughness: 0.7 }),
+    fenderLine: make({ color: boat.deckFittings.fenders.lineColour, roughness: 0.9 }),
   };
 }
 

@@ -661,6 +661,10 @@ html[data-wide='true'] .settings-dialog {
   display: none;
 }
 
+[data-testid='fenders-hint'][hidden] {
+  display: none;
+}
+
 .section-head {
   display: flex;
   align-items: center;

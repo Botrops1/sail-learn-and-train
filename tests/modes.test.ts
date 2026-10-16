@@ -32,7 +32,7 @@ describe('sectionAvailable (8.8 test 2)', () => {
     expect(sectionAvailable('legend', reduce(noLegend, { type: 'setLegend', legend: true }))).toBe(
       true,
     );
-    for (const id of ['ropes', 'sails', 'conditions', 'learn'] as const) {
+    for (const id of ['ropes', 'sails', 'conditions', 'learn', 'harbour'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
       expect(sectionAvailable(id, real)).toBe(true);
     }

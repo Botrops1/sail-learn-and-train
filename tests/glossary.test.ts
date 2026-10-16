@@ -93,6 +93,8 @@ const COMPLETE_IDS = [
   'fit_anchor',
   'fit_anchor_chain',
   'fit_fairlead',
+  'fit_fender',
+  'fit_fender_ball',
   'fit_autopilot_control',
   'fit_instrument_display',
   'env_water',
@@ -371,6 +373,11 @@ describe('7. show-me scenes show what their text says', () => {
     between(mpsToKn(scene(showMe('sail_main'), 10).boat.speedMps), 6.8, 7.8);
   });
 
+  it('fit_fender and fit_fender_ball: the fenders are out', () => {
+    expect(scene(showMe('fit_fender')).harbour.fendersOut).toBe(true);
+    expect(scene(showMe('fit_fender_ball')).harbour.fendersOut).toBe(true);
+  });
+
   it('sail_jib: the car is on the lee side, and crosses with the wind', () => {
     expect(scene(showMe('sail_jib')).rig.jibSolution.side).toBe(-1);
     expect(scene(showMe('sail_jib').replace('wd=30', 'wd=-30')).rig.jibSolution.side).toBe(1);
@@ -579,7 +586,7 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
 
   it('the groups have the expected sizes and members', () => {
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      9, 10, 13, 6, 15, 18, 12, 14, 28, 9,
+      9, 10, 13, 6, 17, 18, 12, 14, 28, 9,
     ]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',

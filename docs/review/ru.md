@@ -642,6 +642,36 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### кранец (`fit_fender`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Fender | кранец |
+| Другие названия | — | — |
+| Коротко | A rubber buffer hung over the side to protect the hull. | Резиновая подушка, которую вывешивают за борт, чтобы защитить корпус. |
+| Что делает / что значит | Fenders hang between the boat and a pier or another boat, so the hulls do not rub or bump. They are tied on before you come in and taken in before you sail. | Кранцы висят между яхтой и причалом или другой яхтой, чтобы корпуса не тёрлись и не бились друг о друга. Их привязывают перед заходом в порт и убирают перед выходом под парусами. |
+| На этой яхте | Eight, four on each side, kept in a locker while sailing. Put them out in the Harbour gear block. | Восемь штук, по четыре с каждого борта; на ходу лежат в рундуке. Вывесить их можно в блоке «Для стоянки». |
+| Типичные ошибки | Leaving the fenders hanging over the side while sailing. → They bounce against the hull and can be lost. Bring them in and stow them as soon as you are out of the harbour. | Оставить кранцы за бортом, когда яхта идёт под парусами. → Они бьются о корпус и могут потеряться. Уберите их и закрепите, как только вышли из гавани. |
+| «Покажи» | The boat from the side with the fenders out, four on each side. | Яхта сбоку с вывешенными кранцами, по четыре с каждого борта. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### кранец-шар (`fit_fender_ball`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Ball fender | кранец-шар |
+| Другие названия | — | — |
+| Коротко | A big round fender for a corner of the boat. | Большой круглый кранец для угла яхты. |
+| Что делает / что значит | A ball fender protects a corner, where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier). | Кранец-шар защищает угол, где длинный кранец соскользнул бы, например корму, когда яхта швартуется кормой к причалу. |
+| На этой яхте | One, at the port corner of the stern behind the helm. It goes out and comes in with the other fenders. | Один, на левом (портовом) углу кормы за штурвалом. Он выходит за борт и убирается вместе с остальными кранцами. |
+| Типичные ошибки | — | — |
+| «Покажи» | The boat from the port side with the fenders out: the ball fender hangs at the back corner. | Яхта с левого борта с вывешенными кранцами: кранец-шар висит на кормовом углу. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### леера и леерные стойки (`part_lifelines`)
 
 | Поле | English | Русский |
@@ -2677,3 +2707,9 @@
 | settings.miniMap.label | Mini-map | Мини-карта |
 | settings.miniMap.hint | A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map. | Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту. |
 | panel.second | More sections | Ещё разделы |
+| harbour.title | Harbour gear | Для стоянки |
+| harbour.fenders | Fenders | Кранцы |
+| harbour.fenders.explain | Rubber buffers hung over the side to protect the hull in a marina. They stay in a locker while sailing. | Резиновые подушки, которые вывешивают за борт, чтобы защитить корпус у причала. На ходу они лежат в рундуке. |
+| harbour.fenders.stowed | In the locker | В рундуке |
+| harbour.fenders.out | Out | За бортом |
+| harbour.fenders.hint | Bring the fenders in before you sail. | Уберите кранцы, прежде чем идти под парусами. |

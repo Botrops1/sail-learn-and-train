@@ -29,6 +29,7 @@ import {
 } from '../model/autopilot';
 import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../model/engine';
 import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock';
+import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
 import {
@@ -106,6 +107,8 @@ export interface AppState {
   sea: SeaState;
   /** The time on board (M17): UTC ms; runs with the simulated time, so Pause stops it. */
   clock: ClockState;
+  /** Harbour gear (M33): the fenders. Phase 7 adds the windlass and the lines here. In the link as `fd`. */
+  harbour: HarbourState;
 }
 
 /** Engine commands (PHASE2_SPEC 12.3): start, stop, or the lever (−100 … 100, whole numbers). */
@@ -150,6 +153,8 @@ export type Action =
   | { type: 'setTimeScale'; scale: number }
   /** The Settings switch for the time bar's speed part. Off puts the time scale back to ×1. */
   | { type: 'setTimeBar'; timeBar: boolean }
+  /** The fenders out or in the locker (M33), in every mode. */
+  | { type: 'setFenders'; out: boolean }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
   | { type: 'setClock'; utcMs: number }
   /** The Settings switch for the clock chip. */
@@ -189,6 +194,8 @@ export interface InitialOverrides {
   sea?: SeaSetting;
   /** The time on board (M17), UTC ms. Without it: the area's default (noon, 1 June). */
   clockUtcMs?: number;
+  /** From a shared link (M33): the fenders. Without it they are in the locker. */
+  harbour?: HarbourState;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -309,6 +316,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     engine,
     sea,
     clock: { utcMs: overrides.clockUtcMs ?? defaultClockUtcMs() },
+    harbour: overrides.harbour ?? DEFAULT_HARBOUR,
   });
 }
 
@@ -509,6 +517,10 @@ export function reduce(state: AppState, action: Action): AppState {
       }
       return realistic === state.realistic ? state : { ...state, realistic };
     }
+    case 'setFenders':
+      return action.out === state.harbour.fendersOut
+        ? state
+        : { ...state, harbour: { ...state.harbour, fendersOut: action.out } };
     case 'setPaused':
       return state.paused === action.paused ? state : { ...state, paused: action.paused };
     case 'load':

@@ -12,6 +12,7 @@ import { buildKeel, buildRudder, buildSaildrive } from './appendages';
 import { buildBowGear } from './bowGear';
 import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
+import { buildFenders } from './fenders';
 import { buildHull } from './hull';
 import { createMaterials } from './materials';
 import { buildMooringFittings } from './mooringFittings';
@@ -43,6 +44,8 @@ export interface BoatModel {
   wheelPivots: THREE.Group[];
   /** The ropes as drawn by the last update (labels in 3D sit on them, M5). */
   ropeDrawings(): readonly RopeDrawing[];
+  /** M33: hangs the fenders over the side (true) or puts them back in the locker (false). */
+  setFendersOut(out: boolean): void;
 }
 
 /**
@@ -72,6 +75,7 @@ export function buildBoat(
   const ropes = buildRopes(drawings);
   const windex = buildWindex(materials);
   const telltales = buildTelltales(materials);
+  const fenders = buildFenders(materials, detail);
   root.add(
     ...buildHull(materials),
     buildKeel(materials),
@@ -82,6 +86,7 @@ export function buildBoat(
     ...buildDeckGear(materials, detail),
     ...buildBowGear(materials, detail),
     ...buildMooringFittings(materials, detail),
+    ...fenders.objects,
     mainSail.mesh,
     jibSail.mesh,
     ...ropes.objects,
@@ -141,5 +146,6 @@ export function buildBoat(
     rudderPivot,
     wheelPivots: hardware.wheelPivots,
     ropeDrawings: () => drawings,
+    setFendersOut: fenders.setOut,
   };
 }

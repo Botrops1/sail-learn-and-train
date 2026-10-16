@@ -71,7 +71,7 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForFunction(() => !document.documentElement.dataset.wide);
     check('1279 px: second column hidden', await secondColumn(page).isHidden(), 'hidden');
     const ids = await idsIn(page, '.panel-body');
-    check('1279 px: all seven sections in column 1', ids.length === 7, ids.join(', '));
+    check('1279 px: all eight sections in column 1', ids.length === 8, ids.join(', '));
     check(
       '1279 px: column 2 is empty',
       (await idsIn(page, '[data-testid="second-column"]')).length === 0,
@@ -87,9 +87,9 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForFunction(() => !document.documentElement.dataset.wide);
     check('1000 px: second column hidden', await secondColumn(page).isHidden(), 'hidden');
     check(
-      '1000 px: all seven sections in column 1',
-      (await idsIn(page, '.panel-body')).length === 7,
-      'seven',
+      '1000 px: all eight sections in column 1',
+      (await idsIn(page, '.panel-body')).length === 8,
+      'eight',
     );
     check(
       '1000 px: Conditions keeps its open state',

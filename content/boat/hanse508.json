@@ -1095,6 +1095,25 @@
       "jawHeight": 0.035,
       "jawThickness": 0.012,
       "source": "assumption (one fairlead forward of each bow cleat and aft of each stern cleat; no photo shows them)"
+    },
+    "fenders": {
+      "stations": [3.0, 0.5, -2.5, -5.5],
+      "diameter": 0.24,
+      "length": 0.80,
+      "topBelowSheer": 0.35,
+      "gap": 0.01,
+      "profile": [[0.0, 0.0], [0.07, 0.01], [0.11, 0.05], [0.12, 0.12], [0.12, 0.68], [0.11, 0.75], [0.07, 0.79], [0.0, 0.80]],
+      "lineRadius": 0.005,
+      "colour": "#1f2a38",
+      "lineColour": "#e8e4da",
+      "source": "photo (owner, planning chat 2026-10-15: dark fenders hung along the side at anchor) + owner (four a side, kept in a locker while sailing) + assumption (size, height, stations)"
+    },
+    "ballFender": {
+      "x": -8.2,
+      "side": "port",
+      "diameter": 0.55,
+      "topBelowSheer": 0.35,
+      "source": "owner (planning chat 2026-10-15: one big ball fender at the corner behind the helm) + assumption (side, size)"
     }
   },
   "visual": {
