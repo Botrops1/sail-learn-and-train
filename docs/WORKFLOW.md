@@ -422,7 +422,51 @@ New link settings (PHASE5_SPEC 4.2): M27 `m=learn` opens Learn mode (without it 
 - [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?debug=1&wd=60&ws=20&wm=gusty — 50 fps or more with the sheet at the thin strip and at half. Write the numbers in the PR.
 - [ ] Every item of the Phase 5 Definition of Done (PHASE5_SPEC 11) is ticked in the PR.
 
-## 11. Phase 7 (planned ahead)
+## 11. Phase 6
+
+Same loop as section 2: one session and one PR per milestone (M30 … M34, [`PHASE6_SPEC.md`](PHASE6_SPEC.md) section 5), started with `/milestone <N>` after Phase 5 (M29) is merged. **M31, M32 and M33 need a `/review` with Opus** before you test them (the spec's milestones table has a review column; the PR reminds you).
+
+### 11.1 Checklists
+
+New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it they are in the locker). Replace `<N>` with the PR number. Every check works at both Detail settings: for the High one, open Settings (the gear) → Detail → High.
+
+#### M30: Hull and deck closed
+
+- [ ] The two places you circled: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=top&held=1&sea=flat — zoom in with two fingers on the back end of the coachroof (the raised cabin roof in front of the sprayhood). Where the covered rope channel comes down to the cockpit's edge on each side, it is now a solid white moulding: no teak and no water show underneath it.
+- [ ] Same link, drag the view round to look at it from the side and from behind, low over the deck: still no hole on either side.
+- [ ] The rim: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=side-starboard&held=1&sea=flat — a low raised rim (the toerail) runs along the deck edge from near the bow to the stern, without flickering, and the lifeline posts stand against its inner side.
+- [ ] Detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lb=0&cam=top&held=1&sea=flat&detail=high — the same places at Detail High: no hole, the rim without flicker. Then Settings → Detail → Low: the same.
+
+#### M31: Anchor and windlass
+
+- [ ] Anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&cam=bow&sel=fit_anchor&held=1&sea=flat — the anchor hangs in a steel roller in front of the bow, beside the jib's furling drum on the boat's right-hand side (starboard; on the left of the screen in this view from ahead), with a short chain back to the windlass, a small drum in a round dark hole in the foredeck.
+- [ ] Tapping: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&cam=side-starboard&held=1&sea=flat — zoom in on the bow with two fingers. Tap the anchor: the card says "Anchor"; the windlass: "Anchor windlass"; the roller: "Bow roller". The chain is thin: open Learn → Anchor chain → "Show on the boat" and it lights up.
+- [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_anchor&m=learn — the Anchor entry. Tap "Show me": the bow view with the anchor; the phone's Back button returns to the entry.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&learn=fit_anchor&m=learn — the entry is «якорь», marked as not yet checked by a sailor.
+
+#### M32: Cleats and fairleads
+
+- [ ] Cleats: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&cam=side-starboard&held=1&sea=flat — zoom in: three steel cleats (two horns on two legs) stand on the rim on this side: near the bow, in the middle behind the mast's side wires, and near the stern. Turn to the other side (camera chip → Side (port)): three more.
+- [ ] Fairleads: next to the bow cleat (further forward) and the stern cleat (further aft), a small steel guide with a slot on the rim.
+- [ ] Tap a cleat: the card says "Mooring cleat"; tap a fairlead: "Fairlead". In Learn, the Mooring cleat entry's "Show on the boat" lights up all six.
+
+#### M33: Fenders and the Harbour gear block
+
+- [ ] Block: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1 — scroll to the bottom of the panel: a folded block "Harbour gear". Open it: "Fenders" with "In the locker" (chosen) and "Out". The boat has no fenders.
+- [ ] Tap "Out": eight dark fenders hang down both sides on thin lines, four a side, plus a big round one hanging at the back corner on the left-hand (port) side; the link now has `fd=1`. Tap "In the locker": they are gone.
+- [ ] Hint: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&fd=1 — the boat is sailing with the fenders out: the Harbour gear block says "Bring the fenders in before you sail." Open Conditions and tap "Held still": the hint goes away.
+- [ ] Old links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&cam=side-port — no fenders.
+- [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=fit_fender&m=learn — tap "Show me": the boat from the side with the fenders out; Back returns to the entry, and the fenders are back in the locker.
+- [ ] Every mode: in Learn, Easy and Realistic (the mode chip), "Harbour gear" is the last block.
+
+#### M34: Rope ends and Phase 6 sign-off
+
+- [ ] Rope boxes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=helm&held=1 — zoom in on the boxes behind each winch: a neat coil of rope lies in each.
+- [ ] Winches: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h — the turns of rope on the two winches are thinner than before and lie side by side; the end held in the hand has a closed, rounded tip, not an open tube.
+- [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?debug=1&wd=60&ws=20&wm=gusty&fd=1&detail=low — 50 fps or more. Write the number in the PR.
+- [ ] Every item of the Phase 6 Definition of Done (PHASE6_SPEC 11) is ticked in the PR.
+
+## 12. Phase 7 (planned ahead)
 
 Planned before Phases 5 and 6 were built. **Before M40, start one Opus session with `/plan 7 refresh`**: it brings [`PHASE7_SPEC.md`](PHASE7_SPEC.md) up to date with what Phases 5 and 6 built, in a small docs PR. Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.
 

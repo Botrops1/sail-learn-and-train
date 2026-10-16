@@ -2,7 +2,7 @@
 // The live checks drive the WORKFLOW.md M4b checklist with real gestures where the app has
 // them (lever drags, tail onto the winch, circling the drum, the jaw, the button).
 import path from 'node:path';
-import { closeSettings, openSettings, showSection } from './ui.mjs';
+import { closeSettings, openSettings, setMode, setSheet, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4B_SCENES = [
@@ -57,6 +57,8 @@ const winchButton = (station) => `${drawing(station)} .real-button-disc`;
  * knob is still on screen, then returns both centres (page coordinates).
  */
 async function handAndClutch(page, where, station = 'port', key = 'b5') {
+  // The hand and the clutch must both be on screen: a half-height sheet is too short (M26).
+  await setSheet(page, 'full');
   await page.locator(`${drawing(station)} .real-drum`).scrollIntoViewIfNeeded();
   const clutchSel = `${drawing(station)} [data-key="${key}"] .clutch-body`;
   const top = await page.locator('.panel-body').evaluate((el) => el.getBoundingClientRect().top);
@@ -325,6 +327,9 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       '?mode=realistic&wd=90&ws=12&cam=helm',
     );
     await page.waitForTimeout(600);
+    // The drawing's knobs and the winch must both be on screen: a half-height sheet is too short
+    // now that the Ropes section has a header of its own (M27).
+    await setSheet(page, 'full');
 
     // Three stations; only the chosen one is shown.
     const stations = await page.locator('.station-button').allInnerTexts();
@@ -664,7 +669,7 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     );
     await other.close();
     await showSection(page, 'ropes');
-    await page.getByText('Easy', { exact: true }).click();
+    await setMode(page, 'easy');
     await page.waitForTimeout(400);
     const easyShown = await page.getByTestId('ropes-easy').isVisible();
     const slider = await page.getByLabel('Jib sheet', { exact: true }).isVisible();
@@ -705,10 +710,9 @@ export async function liveM4bFixChecks({ openPage, viewports, outDir, prefix, pr
     );
     await dragPath(page, line(hand, clutch, 12));
     // Off the winch with its clutch open, the light sheet then creeps out slowly (under 1 % a
-    // second): read the link as soon as it shows the winch empty.
-    await page
-      .waitForFunction(() => !window.location.search.includes('wsb='), null, { timeout: 3000 })
-      .catch(() => undefined);
+    // second): read the link as soon as it is written (300 ms after a change; on the test clock
+    // this wait is exactly that long, where a real-time wait would see the app's time stand still).
+    await page.waitForTimeout(400);
     const wsb = await param(page, 'wsb');
     const js = Number(await param(page, 'js'));
     check(

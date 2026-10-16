@@ -1,4 +1,5 @@
 import { boat as boatData } from '../model/boat';
+import type { AppMode } from './appMode';
 import { isRegisteredPartId } from '../model/registry';
 import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
 import {
@@ -75,6 +76,8 @@ export interface AppState {
   selection: string | null;
   /** The entry the Learn tab shows (a registry id), or null for the list (M21) or the empty page (M20). In the link as `learn`. */
   learn: string | null;
+  /** The mode (PHASE5_SPEC 4.1): 'learn', or the ropes mode. In the link as `m=learn`. */
+  appMode: AppMode;
   /** Realistic mode (PHASE1_SPEC 7.2.2): stations, clutches, winches. Kept while in Easy mode. */
   realistic: RealisticState;
   /** Pause (both modes): time stands still; not stored in the URL. */
@@ -116,6 +119,8 @@ export type Action =
   | { type: 'setDebug'; debug: boolean }
   | { type: 'setDetail'; detail: Detail }
   | { type: 'setRopesMode'; mode: RopesMode }
+  /** Changes the mode; 'easy' and 'realistic' also set `settings.ropesMode` (PHASE5_SPEC 8.3). */
+  | { type: 'setAppMode'; mode: AppMode }
   | { type: 'setLegend'; legend: boolean }
   | { type: 'setLabels'; labels: boolean }
   /** Reset all (Settings): controls, camera, selection and settings back to the defaults. */
@@ -149,6 +154,8 @@ export type Action =
   | { type: 'setClock'; utcMs: number }
   /** The Settings switch for the clock chip. */
   | { type: 'setClockShown'; shown: boolean }
+  /** The Settings switch for the mini-map over the 3D view (M28). */
+  | { type: 'setMiniMap'; miniMap: boolean }
   /** New sails: the flogging damage goes back to 0 (M9). */
   | { type: 'repairSails' }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
@@ -161,6 +168,8 @@ export interface InitialOverrides {
   settings?: Partial<Settings>;
   selection?: string | null;
   learn?: string | null;
+  /** From a shared link: Learn mode (`m=learn`); otherwise the mode follows the ropes mode. */
+  appMode?: AppMode;
   /** From a shared link: rig history the controls alone do not give (see RigHistory). */
   history?: RigHistory;
   /** From a shared link: clutches, winch setup and station (Realistic mode). */
@@ -271,6 +280,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     engine,
     waveTrains(sea),
   );
+  const settings = { ...DEFAULT_SETTINGS, ...overrides.settings };
   return withTimeRule({
     controls,
     // A link opens with the rig already settled for the apparent wind: no swing on load.
@@ -282,9 +292,10 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
       patterned ? wind : undefined,
     ),
     camera: { ...DEFAULT_CAMERA, ...overrides.camera },
-    settings: { ...DEFAULT_SETTINGS, ...overrides.settings },
+    settings,
     selection: overrides.selection ?? null,
     learn: overrides.learn ?? null,
+    appMode: overrides.appMode === 'learn' ? 'learn' : settings.ropesMode,
     realistic: overrides.realistic ?? initialRealistic(),
     paused: false,
     boat,
@@ -330,7 +341,21 @@ export function reduce(state: AppState, action: Action): AppState {
     case 'setDetail':
       return { ...state, settings: { ...state.settings, detail: action.detail } };
     case 'setRopesMode':
-      return withTimeRule({ ...state, settings: { ...state.settings, ropesMode: action.mode } });
+      return withTimeRule({
+        ...state,
+        settings: { ...state.settings, ropesMode: action.mode },
+        // Out of Learn mode, the mode is the ropes mode (PHASE5_SPEC 3.1).
+        appMode: state.appMode === 'learn' ? 'learn' : action.mode,
+      });
+    case 'setAppMode': {
+      if (action.mode === state.appMode) return state;
+      if (action.mode === 'learn') return { ...state, appMode: 'learn' };
+      return withTimeRule({
+        ...state,
+        appMode: action.mode,
+        settings: { ...state.settings, ropesMode: action.mode },
+      });
+    }
     case 'setLegend':
       return { ...state, settings: { ...state.settings, legend: action.legend } };
     case 'setLabels':
@@ -450,6 +475,10 @@ export function reduce(state: AppState, action: Action): AppState {
       return state.settings.clock === action.shown
         ? state
         : { ...state, settings: { ...state.settings, clock: action.shown } };
+    case 'setMiniMap':
+      return state.settings.miniMap === action.miniMap
+        ? state
+        : { ...state, settings: { ...state.settings, miniMap: action.miniMap } };
     case 'newWindPattern': {
       if (state.windMode.mode === 'steady') return state;
       const seed = isSeed(action.seed) ? action.seed : state.windMode.seed;

@@ -341,8 +341,8 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     await page.getByTestId('held-chip').click();
     const note = (await page.getByTestId('held-note').textContent()) ?? '';
     check(
-      'held chip: a tap opens the note that names the Wind tab',
-      (await page.getByTestId('held-note').isVisible()) && /Wind tab/.test(note),
+      'held chip: a tap opens the note that names Conditions',
+      (await page.getByTestId('held-note').isVisible()) && /Conditions/.test(note),
       note,
     );
     const noteBox = await page.evaluate(() => {

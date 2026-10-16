@@ -8,5 +8,7 @@ export const QUOTED_UI_LABELS: Record<string, string> = {
   'waves.open': 'Открытое море',
   'instruments.gust': 'ПОРЫВ',
   'tab.ropes': 'Концы',
-  'tab.wind': 'Ветер',
+  'section.conditions': 'Условия',
+  'autopilot.label': 'Авторулевой',
+  'engine.label': 'Двигатель',
 };

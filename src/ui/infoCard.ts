@@ -5,16 +5,24 @@ import type { LayoutShell } from './layout';
 
 export interface InfoCardOptions {
   /**
-   * True if the panel already shows this part with its name and explanation (the Ropes tab's
+   * True if the panel already shows this part with its name and explanation (the Ropes section's
    * strip). In the stacked layout the card then stays away, leaving the panel its room.
    */
   shownInPanel?: (partId: string) => boolean;
-  /** Opens the Learn tab ("More"), also when the entry is already open there. */
-  showLearn?: () => void;
+  /** True while the phone sheet sits at its lowest height: the panel shows nothing then. */
+  atPeek?: () => boolean;
+  /**
+   * True while the phone sheet is at full height: the boat is hidden and there is no room above
+   * the sheet for the card (it would cover the instruments), so the card waits until the sheet
+   * comes down.
+   */
+  atFull?: () => boolean;
+  /** Opens the entry in the Learn section and Learn mode ("More"), also when it is already open there. */
+  showLearn?: (id: string) => void;
 }
 
 export interface InfoCard {
-  /** Shows or hides the card again (e.g. after the panel switched tabs). */
+  /** Shows or hides the card again (e.g. after a section opened or folded). */
   refresh(): void;
 }
 
@@ -23,9 +31,9 @@ export interface InfoCard {
  * on the boat (if any) and a one-line explanation from the registry. Closed with × or Escape;
  * tapping the sky closes it too.
  *
- * Side-by-side layout: a small card over the top of the 3D view. Stacked (portrait) layout: a
- * compact strip at the top of the panel, so it never covers the boat; not shown while the
- * Ropes tab shows the same rope. It moves when the layout switches.
+ * Both layouts: a small card over the 3D view, side by side from the top, stacked just above the
+ * chip row (PHASE5_SPEC 7.5). Stacked, it stays away while the sheet shows the same part in the
+ * Ropes section (not at the sheet's lowest height, where the panel shows nothing).
  */
 export function createInfoCard(
   layout: LayoutShell,
@@ -41,8 +49,8 @@ export function createInfoCard(
   more.addEventListener('click', () => {
     const id = store.getState().selection;
     if (!id) return;
-    store.dispatch({ type: 'openLearn', id });
-    options.showLearn?.();
+    if (options.showLearn) options.showLearn(id);
+    else store.dispatch({ type: 'openLearn', id });
   });
   const close = el(
     'button',
@@ -61,17 +69,17 @@ export function createInfoCard(
   );
   const live = el('div', { class: 'info-area', 'aria-live': 'polite' }, [card]);
 
-  const place = (mode: 'stacked' | 'side') => {
-    if (mode === 'stacked' && live.parentElement !== layout.panel) layout.panel.prepend(live);
-    if (mode === 'side' && live.parentElement !== layout.view) layout.view.append(live);
-  };
+  layout.view.append(live);
   const render = () => {
     const id = store.getState().selection;
     const info = id ? part(id) : undefined;
     const inPanel = Boolean(
-      info && layout.viewport().mode === 'stacked' && options.shownInPanel?.(info.id),
+      info &&
+      layout.viewport().mode === 'stacked' &&
+      !options.atPeek?.() &&
+      options.shownInPanel?.(info.id),
     );
-    card.hidden = !info || inPanel;
+    card.hidden = !info || inPanel || Boolean(options.atFull?.());
     // The selection is still the card's (a tap found it); the panel shows it instead.
     card.toggleAttribute('data-in-panel', inPanel);
     if (!info) {
@@ -86,11 +94,7 @@ export function createInfoCard(
     });
     short.textContent = info.short;
   };
-  place(layout.viewport().mode);
-  layout.onChange((viewport) => {
-    place(viewport.mode);
-    render();
-  });
+  layout.onChange(render);
   store.subscribe((state, previous) => {
     if (state.selection !== previous.selection) render();
   });

@@ -25,7 +25,8 @@ export async function liveM11Checks({ openPage, viewports, outDir, prefix, probl
   };
   const [phone] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
-  const turn = (page, deg) => page.locator('.ropes-easy').getByTestId(`autopilot-turn-${deg}`);
+  const turn = (page, deg) =>
+    page.locator('[data-section="autopilot"]').getByTestId(`autopilot-turn-${deg}`);
 
   /** Waits (real time) until the test id is visible; false after `ms`. */
   const appears = async (page, id, ms) => {
@@ -45,6 +46,7 @@ export async function liveM11Checks({ openPage, viewports, outDir, prefix, probl
       '?wd=175&ws=20&ms=100&js=100&tx=0.5&cam=top',
     );
     await page.waitForTimeout(1000);
+    await showSection(page, 'autopilot');
     await turn(page, -10).click();
     await turn(page, -10).click();
     const flash = await appears(page, 'gybe-label', 90_000);
@@ -83,6 +85,7 @@ export async function liveM11Checks({ openPage, viewports, outDir, prefix, probl
       '?wd=175&ws=20&ms=5&js=100&cam=top',
     );
     await page.waitForTimeout(1000);
+    await showSection(page, 'autopilot');
     await turn(page, -10).click();
     await turn(page, -10).click();
     const report = await appears(page, 'gybe-report', 90_000);
@@ -103,6 +106,7 @@ export async function liveM11Checks({ openPage, viewports, outDir, prefix, probl
       '?wd=175&ws=15&ms=100&js=100&cam=top',
     );
     await page.waitForTimeout(1000);
+    await showSection(page, 'autopilot');
     await turn(page, -10).click();
     const lee = await appears(page, 'by-the-lee-label', 60_000);
     check('by the lee: the warning shows', lee, String(lee));

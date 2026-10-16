@@ -54,7 +54,7 @@ export function createWindModePanel(store: Store): HTMLElement[] {
     { class: 'field segmented', 'data-part-id': 'env_wind', 'data-testid': 'wind-modes' },
     [
       el('legend', {}, [t('wind.modes.label')]),
-      el('p', { class: 'hint' }, [t('wind.modes.hint')]),
+      el('p', { class: 'hint explain' }, [t('wind.modes.hint')]),
       modeOptions,
       modeHint,
     ],
@@ -83,7 +83,7 @@ export function createWindModePanel(store: Store): HTMLElement[] {
   const sizeField = el('div', { class: 'field control', 'data-testid': 'wind-size-field' }, [
     el('div', { class: 'control-head' }, [sizeName]),
     el('div', { class: 'control-row' }, [size]),
-    el('p', { class: 'hint' }, [t('wind.newPattern.hint')]),
+    el('p', { class: 'hint explain' }, [t('wind.newPattern.hint')]),
     newPattern,
   ]);
 

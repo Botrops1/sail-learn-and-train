@@ -1,3 +1,4 @@
+import type { AppMode } from './appMode';
 import { compassDeg, knToMps, mpsToKn, wrap180, wrap360 } from '../model/angles';
 import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
@@ -127,9 +128,18 @@ export function parseUrlState(
   if (labelsParam === '1') labels = true;
   else if (labelsParam === '0') labels = false;
 
+  // `mm=0` hides the mini-map; `mm=1` is the default and is accepted.
+  let miniMap: boolean | undefined;
+  const miniMapParam = params.get('mm');
+  if (miniMapParam === '1') miniMap = true;
+  else if (miniMapParam === '0') miniMap = false;
+
   let ropesMode: RopesMode | undefined;
   const mode = params.get('mode');
   if (mode !== null && isRopesMode(mode)) ropesMode = mode;
+  // Learn mode: `m=learn`, or an old link with an open entry (Phase 4 opened the Learn tab).
+  const appMode: AppMode | undefined =
+    params.get('m') === 'learn' || learn !== null ? 'learn' : undefined;
 
   const realistic = parseRealistic(params);
   const windMode = parseWindMode(params);
@@ -161,6 +171,7 @@ export function parseUrlState(
       ...(language !== undefined ? { language } : {}),
       ...(legend !== undefined ? { legend } : {}),
       ...(labels !== undefined ? { labels } : {}),
+      ...(miniMap !== undefined ? { miniMap } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
       ...(timeScale !== undefined && isTimeScale(timeScale) ? { timeScale } : {}),
       ...(timeBar !== undefined ? { timeBar } : {}),
@@ -168,6 +179,7 @@ export function parseUrlState(
     },
     selection,
     learn,
+    ...(appMode !== undefined ? { appMode } : {}),
     history,
     realistic,
     boat: boatState,
@@ -465,8 +477,10 @@ export function serializeUrlState(state: AppState): string {
   const jr = jibReachedParam(state);
   if (jr !== null) params.set('jr', String(jr));
   params.set('cam', state.camera.preset);
+  if (state.appMode === 'learn') params.set('m', 'learn');
   if (state.selection) params.set('sel', state.selection);
-  if (state.learn) params.set('learn', state.learn);
+  // The open entry is written only in Learn mode: a link with `learn=` opens in Learn mode.
+  if (state.appMode === 'learn' && state.learn) params.set('learn', state.learn);
   params.set('step', String(state.settings.step));
   params.set('detail', state.settings.detail);
   if (state.settings.language !== DEFAULT_SETTINGS.language) {
@@ -478,6 +492,9 @@ export function serializeUrlState(state: AppState): string {
   }
   if (state.settings.labels !== DEFAULT_SETTINGS.labels) {
     params.set('lb', state.settings.labels ? '1' : '0');
+  }
+  if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) {
+    params.set('mm', '0');
   }
   if (state.settings.ropesMode !== DEFAULT_SETTINGS.ropesMode) {
     params.set('mode', state.settings.ropesMode);

@@ -1,9 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { entryFor, panelEntries, type PanelEntry } from '../model/panelEntries';
 import { SCENE } from '../render3d/sceneConfig';
-import { ROPES_MODES } from '../model/settings';
-import { createAutopilotPanel } from './autopilotPanel';
-import { createEnginePanel } from './enginePanel';
 import { createClutchDrawing } from './clutchDrawing';
 import { el } from './dom';
 import { part, quoted, t, type StringKey } from './i18n';
@@ -15,26 +12,26 @@ import {
   type ControlView,
 } from './ropeControls';
 import { createRealisticPanel } from './realisticPanel';
-import { createSailsPanel } from './sailsPanel';
-import { createRopeLegend, ropeColorKey, ROPE_DASH } from './ropeLegend';
+import { ropeColorKey, ROPE_DASH } from './ropeLegend';
 import { setText } from './stepper';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-/** True if the Ropes tab shows this selection in its strip (the info card can then stay away). */
+/** True if the Ropes section shows this selection in its strip (the info card can then stay away). */
 export function ropesTabShows(selection: string | null): boolean {
   return entryFor(selection) !== undefined;
 }
 
 /**
- * The Ropes tab (PHASE1_SPEC 7.2), Easy mode: the clutch-bank drawing; under it the strip for
- * the selected rope (its slider, or an info line for a rope that is not adjusted), sticky in the
- * stacked layout; then a compact list of all ropes, so every control is reachable without the
- * drawing; and the rope colour legend.
+ * The Ropes section (PHASE1_SPEC 7.2; a tab until M27), Easy mode: the clutch-bank drawing; under
+ * it the strip for the selected rope (its slider, or an info line for a rope that is not
+ * adjusted), sticky in the stacked layout; then a compact list of all ropes, so every control is
+ * reachable without the drawing. The Sails, Autopilot, Engine and Rope colours blocks are
+ * sections of their own (panel.ts).
  *
  * The selection is the store's: tapping a clutch, a list row or a rope in 3D selects the same
  * thing everywhere. Realistic mode (settings.ropesMode, M4b) shows the stations instead, with
- * clutches and winches worked by hand (realisticPanel.ts); the switch at the top changes mode.
+ * clutches and winches worked by hand (realisticPanel.ts); the mode chip changes mode.
  */
 
 /** Hints shown with an entry, besides its shared-control hint. */
@@ -93,18 +90,14 @@ function sharedHint(entry: PanelEntry): HTMLElement[] {
 }
 
 /** What the rope does (the registry's one-liner) and the entry's longer hints, folded. */
-function moreAbout(store: Store, entry: PanelEntry, showLearn: () => void): HTMLElement {
+function moreAbout(entry: PanelEntry, openEntry: (id: string) => void): HTMLElement {
   const short = part(entry.selectId)?.short ?? '';
   const learn = el(
     'button',
     { type: 'button', class: 'action-button learn-more', 'data-testid': 'strip-learn' },
     [t('ropes.strip.learn')],
   );
-  learn.addEventListener('click', () => {
-    store.dispatch({ type: 'openLearn', id: entry.selectId });
-    // Also when that entry is already open (nothing in the state changes then).
-    showLearn();
-  });
+  learn.addEventListener('click', () => openEntry(entry.selectId));
   return el('details', { class: 'strip-more' }, [
     el('summary', {}, [t('ropes.strip.more')]),
     ...(short ? [el('p', {}, [short])] : []),
@@ -113,8 +106,18 @@ function moreAbout(store: Store, entry: PanelEntry, showLearn: () => void): HTML
   ]);
 }
 
-/** `showLearn` opens the Learn tab (the "Read more in Learn" buttons). */
-export function createRopesTab(store: Store, showLearn: () => void = () => undefined): Element[] {
+/** Scrolls the panel to show the strip of the visible Ropes section (the panel calls it after a rope was selected). */
+export function revealRopeStrip(): void {
+  for (const strip of document.querySelectorAll<HTMLElement>('[data-testid="rope-strip"]')) {
+    if (strip.offsetParent !== null) revealStrip(strip);
+  }
+}
+
+/** `openEntry` opens an entry in the Learn section (the "Read more in Learn" buttons). */
+export function createRopesTab(
+  store: Store,
+  openEntry: (id: string) => void = () => undefined,
+): HTMLElement[] {
   const select = (entry: PanelEntry) => store.dispatch({ type: 'select', partId: entry.selectId });
 
   const ordered: PanelEntry[] = [
@@ -132,7 +135,7 @@ export function createRopesTab(store: Store, showLearn: () => void = () => undef
     if (view) {
       name = t(view.name);
       const control = createControl(store, view, sharedHint(entry));
-      control.element.append(moreAbout(store, entry, showLearn));
+      control.element.append(moreAbout(entry, openEntry));
       block = control.element;
       refresh = control.refresh;
     } else {
@@ -151,7 +154,7 @@ export function createRopesTab(store: Store, showLearn: () => void = () => undef
         el('p', { class: 'static-note' }, [
           t(entry.staticNote ? `ropes.static.${entry.staticNote}` : 'ropes.static.none'),
         ]),
-        moreAbout(store, entry, showLearn),
+        moreAbout(entry, openEntry),
       ]);
     }
     block.hidden = true;
@@ -184,15 +187,13 @@ export function createRopesTab(store: Store, showLearn: () => void = () => undef
   );
 
   const drawing = createClutchDrawing(store);
-  const sails = createSailsPanel(store);
-  const legend = createRopeLegend();
-  // The autopilot sits directly under the wheel's row (PHASE2_SPEC 6.5), the engine under it (12.3).
-  const rows: HTMLElement[] = views.flatMap((view) =>
-    view.entry.controlId === 'ctl_rudder'
-      ? [view.row, createAutopilotPanel(store), createEnginePanel(store)]
-      : [view.row],
+  // The wheel's row is followed by the autopilot and engine blocks in Phase 2; since M27 they are
+  // sections of their own (PHASE5_SPEC 8.4).
+  const list = el(
+    'div',
+    { class: 'rope-list' },
+    views.map((view) => view.row),
   );
-  const list = el('div', { class: 'rope-list' }, rows);
 
   const rowText = (view: EntryView, state: AppState): string => {
     if (!view.view) return t('ropes.list.static');
@@ -216,9 +217,6 @@ export function createRopesTab(store: Store, showLearn: () => void = () => undef
         if (previous) revealStrip(strip);
       }
     }
-    if (!previous || state.settings.legend !== previous.settings.legend) {
-      legend.hidden = !state.settings.legend;
-    }
     shown?.refresh(state);
     drawing.refresh(state, previous);
     for (const view of views) setText(view.rowValue, rowText(view, state));
@@ -227,83 +225,35 @@ export function createRopesTab(store: Store, showLearn: () => void = () => undef
   refresh(store.getState());
 
   // The drawing comes first, so it shows without scrolling on a phone; the longer
-  // explanations follow the list.
+  // explanations follow the list (and fold behind the section's "?").
   const easy = el('div', { class: 'ropes-easy', 'data-testid': 'ropes-easy' }, [
-    el('p', { class: 'hint mode-line', 'data-testid': 'ropes-mode' }, [
+    el('p', { class: 'hint mode-line explain', 'data-testid': 'ropes-mode' }, [
       el('strong', {}, [t('ropes.mode.easy')]),
       ' ',
       t('ropes.mode.easyShort'),
     ]),
     drawing.element,
     strip,
-    sails,
     el('h3', { class: 'section-title' }, [t('ropes.list.title')]),
     list,
-    legend,
-    el('h3', { class: 'section-title' }, [t('ropes.about.title')]),
-    el('p', { class: 'hint' }, [t('clutch.hint')]),
-    el('p', { class: 'hint' }, [t('ropes.mode.easyHint')]),
+    el('p', { class: 'hint explain' }, [t('clutch.hint')]),
+    el('p', { class: 'hint explain' }, [t('ropes.mode.easyHint')]),
   ]);
 
   // Realistic mode (M4b): stations, clutches and winches worked by hand.
   const realistic = el('div', { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' }, [
-    ...createRealisticPanel(store, showLearn),
+    ...createRealisticPanel(store, openEntry),
   ]);
-  // Easy mode's legend sits after the list, before the explanations.
-  const legendSpot = legend.nextSibling;
-  const sailsSpot = sails.nextSibling;
 
-  const modes = createModeSwitch(store);
   const showMode = (state: AppState, previous?: AppState) => {
-    if (previous && state.settings === previous.settings) return;
+    if (previous && state.settings.ropesMode === previous.settings.ropesMode) return;
     const real = state.settings.ropesMode === 'realistic';
     easy.hidden = real;
     realistic.hidden = !real;
-    // One legend: it moves to the mode that is shown.
-    if (real && legend.parentElement !== realistic) realistic.append(legend);
-    if (!real && legend.parentElement !== easy) easy.insertBefore(legend, legendSpot);
-    // One Sails block as well: at the end of the Realistic view (the stations and clutches stay
-    // where they were), or after the strip in Easy.
-    if (real && sails.parentElement !== realistic) realistic.append(sails);
-    if (!real && sails.parentElement !== easy) easy.insertBefore(sails, sailsSpot);
   };
   store.subscribe(showMode);
   showMode(store.getState());
-  return [modes, easy, realistic];
-}
-
-/** Easy / Realistic, always one tap away (PHASE1_SPEC 7.2.1, 7.2.2). */
-function createModeSwitch(store: Store): HTMLElement {
-  const group = el('fieldset', { class: 'field segmented mode-switch' }, [
-    el('legend', { class: 'visually-hidden' }, [t('ropes.mode.label')]),
-  ]);
-  const options = el('div', { class: 'segments' });
-  const inputs = ROPES_MODES.map((mode) => {
-    const input = el('input', {
-      type: 'radio',
-      name: 'ropes-mode',
-      value: mode,
-      'data-testid': `mode-${mode}`,
-    });
-    input.addEventListener('change', () => {
-      if (input.checked) store.dispatch({ type: 'setRopesMode', mode });
-    });
-    options.append(
-      el('label', { class: 'segment' }, [
-        input,
-        el('span', {}, [t(`ropes.mode.option.${mode}` as StringKey)]),
-      ]),
-    );
-    return { mode, input };
-  });
-  group.append(options);
-  const sync = (state: AppState, previous?: AppState) => {
-    if (previous && state.settings === previous.settings) return;
-    for (const { mode, input } of inputs) input.checked = mode === state.settings.ropesMode;
-  };
-  store.subscribe(sync);
-  sync(store.getState());
-  return group;
+  return [easy, realistic];
 }
 
 /** Scrolls the panel just enough to show the strip (it may sit below a tall drawing). */

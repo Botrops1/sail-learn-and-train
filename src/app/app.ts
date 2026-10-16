@@ -13,8 +13,11 @@ import { createInfoCard } from '../ui/infoCard';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
+import { createMiniMap, type MiniMap } from '../ui/miniMap';
+import { createModeChip } from '../ui/modeChip';
 import { createPanel } from '../ui/panel';
 import { createSettingsMenu } from '../ui/settingsMenu';
+import { createSheet } from '../ui/sheet';
 import { createClockPanel } from '../ui/clockPanel';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
@@ -43,7 +46,11 @@ export function startApp(host: HTMLElement): void {
 
   const layout = createLayout(host);
   const reportError = installErrorBanner(layout.root);
-  const panel = createPanel(layout.panel, store);
+  // The top area (strip, time bar, clock) is built first: the sheet sizes itself below it. It
+  // joins the view further down, in its old place among the overlays.
+  const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
+  const sheet = createSheet(layout, layout.view, top);
+  const panel = createPanel(layout.panel, store, sheet, layout);
   const debug = createDebugOverlay(layout.view, store);
 
   // Error boundary (M5): without WebGL, or if the 3D view fails, a message takes its place and
@@ -64,15 +71,20 @@ export function startApp(host: HTMLElement): void {
   // The bird's-eye map (M7) takes the 3D view's place while the camera is on Map. It needs no
   // WebGL, but without the camera chip there is no way back, so it comes with the 3D view.
   const map = scene ? createMapView(layout.view, store) : undefined;
+  // The mini-map (M28) sits over the 3D view while Sailing; it needs the 3D view and the sheet.
+  const miniMap: MiniMap | undefined = scene
+    ? createMiniMap(layout.view, store, layout, sheet)
+    : undefined;
   // The chip row at the bottom of the view (M25): the gear always (the settings work without
   // WebGL), the camera chip only with the 3D view.
   const chipRow = createViewBottom(layout.view);
   createSettingsMenu(chipRow, layout.root, store);
+  // The mode chip comes first in the row, with or without WebGL.
+  createModeChip(chipRow, store);
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
-  const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
   layout.view.append(top);
-  createInstrumentStrip(top, store, () => panel.showTab('wind'));
+  createInstrumentStrip(top, store, () => panel.showSection('conditions'));
   createTimeBar(top, store);
   createClockPanel(top, layout.view, store);
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
@@ -81,12 +93,18 @@ export function startApp(host: HTMLElement): void {
   createWindIndicator(layout.view, store);
   const card = createInfoCard(layout, store, {
     shownInPanel: (partId) =>
-      (panel.activeTab() === 'ropes' && ropesTabShows(partId)) ||
-      (panel.activeTab() === 'learn' && store.getState().learn === partId),
-    showLearn: () => panel.showTab('learn'),
+      (panel.shows('ropes') && ropesTabShows(partId) && store.getState().appMode !== 'learn') ||
+      (panel.shows('learn') && store.getState().learn === partId),
+    atPeek: sheet.atPeek,
+    atFull: sheet.atFull,
+    showLearn: panel.openLearnEntry,
   });
-  panel.onTabChange(() => card.refresh());
-  // Whether the card stays away depends on the open entry (the Learn tab shows the same part).
+  panel.onChange(() => card.refresh());
+  sheet.onChange(() => {
+    card.refresh();
+    reframe();
+  });
+  // Whether the card stays away depends on the open entry (the Learn section shows the same part).
   store.subscribe((state, previous) => {
     if (state.learn !== previous.learn) card.refresh();
   });
@@ -97,12 +115,16 @@ export function startApp(host: HTMLElement): void {
       showSceneError(layout.view, 'scene.lost'),
     );
     scene.canvas.addEventListener('webglcontextrestored', () => clearSceneError(layout.view));
-    createCameraChip(chipRow, store);
+    if (map) createCameraChip(chipRow, store, map);
     const view = scene;
     const resize = () => {
       const viewBox = layout.view.getBoundingClientRect();
-      const inset = viewBox.bottom - chipRow.getBoundingClientRect().top;
       const stacked = layout.viewport().mode === 'stacked';
+      // Stacked: the boat is framed above the sheet and the chip row (PHASE5_SPEC 3.3); side by
+      // side the panel is beside the view, so only the chip row covers it.
+      const inset = stacked
+        ? sheet.cameraInset()
+        : viewBox.bottom - chipRow.getBoundingClientRect().top;
       view.resize(
         layout.view.clientWidth,
         layout.view.clientHeight,
@@ -160,7 +182,16 @@ export function startApp(host: HTMLElement): void {
         // A 3D view that fails while running stops; the panel keeps working (M5).
         scene = undefined;
         labels?.update([]);
+        miniMap?.hide();
         showSceneError(layout.view, 'scene.failed', error);
+      }
+      try {
+        miniMap?.update(now);
+      } catch (error) {
+        // A mini-map that fails to draw goes away; the 3D view keeps working.
+        console.error(error);
+        reportError(error);
+        miniMap?.hide();
       }
     }
     sums.stepMs += stepped - start;

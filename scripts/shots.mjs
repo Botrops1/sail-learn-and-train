@@ -12,6 +12,7 @@
 //   SHOTS_NO_SCENES=1    no scenes;  SHOTS_KEEP=1  keep the files already in the folder
 //   SHOTS_NO_TAPS=1      no tap sweep, small-parts taps or sketch comparison
 //   SHOTS_NO_LIVE=1      no live checks;  SHOTS_SKIP=general,m4b  skip these live-check groups
+//   SHOTS_SHARD=1/2      only every 2nd scene, starting with the 1st (CI's two scene parts)
 //   (CI splits the full run into parallel parts with these; see .github/workflows/ci.yml)
 //   SHOTS_OUT=<dir>      output folder (default shots/)
 import { mkdir, rm } from 'node:fs/promises';
@@ -42,7 +43,18 @@ import { liveM22Checks, M22_SCENES } from './shots-m22.mjs';
 import { liveM23Checks, M23_SCENES } from './shots-m23.mjs';
 import { liveM24Checks, M24_SCENES } from './shots-m24.mjs';
 import { liveM25Checks, M25_SCENES } from './shots-m25.mjs';
-import { closeSettings, openSettings, setCamera, showSection, viewBottom } from './ui.mjs';
+import { liveM26Checks, M26_SCENES } from './shots-m26.mjs';
+import { liveM27Checks, M27_SCENES } from './shots-m27.mjs';
+import { liveM28Checks, M28_SCENES } from './shots-m28.mjs';
+import {
+  closeSettings,
+  openSettings,
+  setCamera,
+  setMode,
+  setSheet,
+  showSection,
+  viewBottom,
+} from './ui.mjs';
 
 const OUT_DIR = process.env.SHOTS_OUT ?? 'shots';
 const PREFIX = process.env.SHOTS_PREFIX ?? '';
@@ -177,6 +189,9 @@ const SCENES = [
   ...M23_SCENES.map((scene) => ({ ...scene, name: `m23-${scene.name}` })),
   ...M24_SCENES.map((scene) => ({ ...scene, name: `m24-${scene.name}` })),
   ...M25_SCENES.map((scene) => ({ ...scene, name: `m25-${scene.name}` })),
+  ...M26_SCENES.map((scene) => ({ ...scene, name: `m26-${scene.name}` })),
+  ...M27_SCENES.map((scene) => ({ ...scene, name: `m27-${scene.name}` })),
+  ...M28_SCENES.map((scene) => ({ ...scene, name: `m28-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -253,14 +268,78 @@ await mkdir(OUT_DIR, { recursive: true });
 
 const problems = [];
 
-async function openPage(viewport, label, query) {
+/**
+ * The test clock (live checks of M4a, M4b and M4c; CLAUDE.md, "Running the browser checks"). The app's
+ * time (timers, animation frames, `performance.now`, `Date`) stands still and moves only when a
+ * check waits: `page.waitForTimeout(ms)` then moves it on by exactly `ms`, in animation frames of
+ * at most TEST_FRAME_MS. So a check gets the same app time on any machine: a busy runner is slower
+ * but no longer changes what the app did (the M4c crank check failed at random before, because
+ * its finger moves came slower than the app's 200 ms crank stop). The paused app also stops
+ * drawing between steps, which makes mouse and finger drags much faster.
+ */
+const TEST_CLOCK_START = Date.parse('2026-06-21T12:00:00Z');
+/** One animation frame per this many ms of app time: the app's longest step (MAX_STEP_S). */
+const TEST_FRAME_MS = 100;
+
+/**
+ * Moves the test clock on by `ms`, one animation frame per TEST_FRAME_MS (or less). Each frame is
+ * drawn to the end before the next one starts: nothing else paces the frames of a paused clock,
+ * and at desktop size a backlog of 3D frames made the next screenshot wait for over 15 s.
+ */
+async function runTestClock(page, ms) {
+  for (let left = ms; left > 0; left -= TEST_FRAME_MS) {
+    await page.clock.fastForward(Math.min(TEST_FRAME_MS, left));
+    await waitForGpu(page);
+  }
+}
+
+/**
+ * Waits until the GPU has done the 3D view's drawing so far (a WebGL fence, polled from here: the
+ * page's own timers stand still on the test clock; reading a pixel instead logs a warning).
+ */
+async function waitForGpu(page) {
+  const fenced = await page.evaluate(() => {
+    const gl = document.querySelector('canvas.scene-canvas')?.getContext('webgl2');
+    if (!gl) return false;
+    window.__testFence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    gl.flush();
+    return window.__testFence !== null;
+  });
+  while (fenced) {
+    const done = await page.evaluate(() => {
+      const gl = document.querySelector('canvas.scene-canvas')?.getContext('webgl2');
+      if (!gl || gl.getSyncParameter(window.__testFence, gl.SYNC_STATUS) === gl.SIGNALED) {
+        gl?.deleteSync(window.__testFence);
+        return true;
+      }
+      return false;
+    });
+    if (done) return;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
+
+/**
+ * Opens a page. `testClock: true` puts it on the test clock (above). A check that waits for
+ * something that does not depend on the app's time (a CSS transition) uses a real wait instead:
+ * `page.realWaitForTimeout(ms)`.
+ */
+async function openPage(viewport, label, query, { testClock = false } = {}) {
   const context = await browser.newContext({
     viewport: { width: viewport.width, height: viewport.height },
     deviceScaleFactor: 1,
     hasTouch: viewport.width < 1000,
     isMobile: false,
   });
+  if (testClock) {
+    await context.clock.install({ time: TEST_CLOCK_START });
+    await context.clock.pauseAt(TEST_CLOCK_START + 1000);
+  }
   const page = await context.newPage();
+  if (testClock) {
+    page.realWaitForTimeout = page.waitForTimeout.bind(page);
+    page.waitForTimeout = (ms) => runTestClock(page, ms);
+  }
   page.on('console', (message) => {
     if (message.type() === 'error' || message.type() === 'warning') {
       problems.push(`${label}: console ${message.type()}: ${message.text()}`);
@@ -282,11 +361,22 @@ async function openPage(viewport, label, query) {
   if (!/m(1[7-9]|2[5-9])/.test(label) && !/[?&]clock=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}clock=0`;
   }
+  // Since M28 the mini-map shows while sailing. Everything but the M28 and M29 checks hides it,
+  // so it never changes an older picture or tap.
+  if (!/m(28|29)/.test(label) && !/[?&]mm=/.test(query)) {
+    url += `${url.includes('?') ? '&' : '?'}mm=0`;
+  }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
   // On the map (M7) the 3D canvas is hidden but still in the page.
-  await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
+  // A ceiling, not a pause: it returns as soon as the canvas is in the page (a loaded runner can
+  // take longer than 10 s to start a page while other pages are still drawing).
+  await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
   return { context, page };
 }
+
+/** `openPage` on the test clock (the M4a, M4b and M4c live checks). */
+const openOnTestClock = (viewport, label, query) =>
+  openPage(viewport, label, query, { testClock: true });
 
 const cardPart = (page) =>
   page.evaluate(() => {
@@ -522,6 +612,9 @@ const SKIP = (process.env.SHOTS_SKIP ?? '')
   .map((m) => m.trim().toLowerCase())
   .filter(Boolean);
 /** SHOTS_SIZES=phone: scenes at phone size only (CI). */
+// SHOTS_SHARD=1/2: every 2nd scene starting with the 1st (CI splits the scenes in two parts).
+const SHARD = /^(\d+)\/(\d+)$/.exec(process.env.SHOTS_SHARD ?? '');
+const inShard = (index) => !SHARD || index % Number(SHARD[2]) === Number(SHARD[1]) - 1;
 const SCENE_VIEWPORTS = process.env.SHOTS_SIZES === 'phone' ? [VIEWPORTS[0]] : VIEWPORTS;
 
 /**
@@ -563,7 +656,10 @@ async function liveGeneralChecks() {
   const c = 'ms=30&js=30&vg=50&tl=100&mf=100&jf=100&rd=0&wd=60&ws=12';
   await setCamera(page, 'top');
   // The phone-sized screen starts at low detail (M3b).
-  await expectUrl('Top button', `?v=1&${c}&cam=top&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
+  await expectUrl(
+    'Top button',
+    `?v=1&${c}&cam=top&step=5&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0`,
+  );
   const canvas = await page.locator('canvas.scene-canvas').boundingBox();
   const cx = canvas.x + canvas.width / 2;
   const cy = canvas.y + canvas.height / 3;
@@ -571,7 +667,7 @@ async function liveGeneralChecks() {
   await page.mouse.down();
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
-  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&held=1&sea=flat&clock=0`);
+  await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0`);
   // The view behind the settings dialog is inert, so the camera is set before it opens.
   await setCamera(page, 'side-starboard');
   await openSettings(page);
@@ -579,13 +675,13 @@ async function liveGeneralChecks() {
   await page.getByText('Debug overlay', { exact: true }).click();
   await expectUrl(
     'View tab',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&clock=0&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0&debug=1`,
   );
   // Detail: High rebuilds the boat with shadows and reflections; the overlay says so.
   await page.getByText('High', { exact: true }).click();
   await expectUrl(
     'Detail high',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&held=1&sea=flat&clock=0&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=high&lb=0&mm=0&held=1&sea=flat&clock=0&debug=1`,
   );
   await page.waitForTimeout(1500);
   const overlay = await page.getByTestId('debug-overlay').innerText();
@@ -598,7 +694,7 @@ async function liveGeneralChecks() {
   await page.getByText('Low', { exact: true }).click();
   await expectUrl(
     'Detail low',
-    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&held=1&sea=flat&clock=0&debug=1`,
+    `?v=1&${c}&cam=side-starboard&step=1&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0&debug=1`,
   );
   await closeSettings(page);
   await context.close();
@@ -606,7 +702,7 @@ async function liveGeneralChecks() {
   await liveM2Checks();
   await liveM3Checks();
   await liveM4aChecks({
-    openPage,
+    openPage: openOnTestClock,
     viewports: VIEWPORTS,
     outDir: OUT_DIR,
     prefix: PREFIX,
@@ -622,10 +718,13 @@ try {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
       if (ONLY.length > 0 && !ONLY.some((m) => scene.name.startsWith(`${m}-`))) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
+      if (!inShard(SCENES.indexOf(scene))) continue;
       const label = `${viewport.name}/${scene.name}`;
       const { context, page } = await openPage(viewport, label, scene.query);
+      if (scene.mode) await setMode(page, scene.mode);
       if (scene.section) await showSection(page, scene.section);
       if (scene.settings) await openSettings(page);
+      if (scene.sheet) await setSheet(page, scene.sheet);
       if (scene.open) {
         await page.locator(`.rope-strip > :not([hidden]) ${scene.open} summary`).click();
       }
@@ -694,6 +793,8 @@ try {
     const label = `taps ${viewport.name}/${cam}`;
     // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
+    // The boat is framed largest with the sheet at its lowest (M26).
+    await setSheet(page, 'peek');
     await page.waitForTimeout(800);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const barTop = await viewBottom(page);
@@ -732,6 +833,7 @@ try {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
+      await setSheet(page, 'peek');
       await page.waitForTimeout(800);
       const box = await page.locator('canvas.scene-canvas').boundingBox();
       const barTop = await viewBottom(page);
@@ -779,15 +881,16 @@ try {
     prefix: PREFIX,
     problems,
   };
+  const onTestClock = { ...live, openPage: openOnTestClock };
   /** Live checks per milestone; "general" covers M0–M4a (layout, camera, URL, M2–M4a). */
   const liveGroups = {
     general: () => liveGeneralChecks(),
     m4b: async () => {
-      await liveM4bChecks(live);
-      await liveM4bTouchChecks(live);
-      await liveM4bFixChecks(live);
+      await liveM4bChecks(onTestClock);
+      await liveM4bTouchChecks(onTestClock);
+      await liveM4bFixChecks(onTestClock);
     },
-    m4c: () => liveM4cChecks(live),
+    m4c: () => liveM4cChecks(onTestClock),
     m5: () => liveM5Checks(live),
     m6: () => liveM6Checks(live),
     m7: () => liveM7Checks(live),
@@ -809,13 +912,31 @@ try {
     m23: () => liveM23Checks(live),
     m24: () => liveM24Checks(live),
     m25: () => liveM25Checks(live),
+    m26: () => liveM26Checks(live),
+    m27: () => liveM27Checks(live),
+    m28: () => liveM28Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
       if (SKIP.includes(name)) continue;
-      if (ONLY.length === 0 || ONLY.includes(name)) await run();
+      if (ONLY.length > 0 && !ONLY.includes(name)) continue;
+      // A check that throws (a button not found) is one problem; the other groups still run.
+      const started = Date.now();
+      try {
+        await run();
+      } catch (error) {
+        problems.push(`live ${name} stopped: ${error instanceof Error ? error.message : error}`);
+        console.log(`live ${name} STOPPED: ${error instanceof Error ? error.stack : error}`);
+        // The pages the failed check left open would keep drawing and slow the next groups.
+        for (const context of browser.contexts()) await context.close().catch(() => undefined);
+      }
+      console.log(`live group ${name}: ${Math.round((Date.now() - started) / 1000)} s`);
     }
   }
+} catch (error) {
+  // Anything else that throws (a scene, the tap sweep) ends this part, but the summary below
+  // still prints, so a watcher waiting for "problem(s)" is not left waiting.
+  problems.push(`stopped: ${error instanceof Error ? error.stack : error}`);
 } finally {
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));

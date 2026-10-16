@@ -513,10 +513,13 @@ export { QUOTED_UI_LABELS };
 
 describe('quoted UI labels (PHASE4_SPEC 8.4)', () => {
   const ui = JSON.parse(readFileSync('content/lang/en/ui.json', 'utf8')) as Record<string, string>;
-  /** Where an English text quotes a label: the label in quotes, or as “Ropes tab”, or in capitals. */
+  /** Where an English text quotes a label: the label in quotes, or as “Ropes section”, or in capitals. */
   const quoting = (text: string, key: string): boolean => {
     const label = ui[key] ?? '';
-    if (key.startsWith('tab.')) return new RegExp(`\\b${label} tab\\b`).test(text);
+    if (key === 'tab.ropes') return /\bRopes section\b/.test(text);
+    if (key === 'section.conditions') return /\bConditions\b/.test(text);
+    if (key === 'autopilot.label') return /\bAutopilot section\b/.test(text);
+    if (key === 'engine.label') return /\bEngine section\b/.test(text);
     if (key === 'instruments.gust') return new RegExp(`\\b${label}\\b`).test(text);
     // “Tack” is also the name of a sail's corner (sailpart_tack): only the button counts.
     if (key === 'autopilot.tack') return text.includes(`press “${label}”`);
@@ -533,10 +536,12 @@ describe('quoted UI labels (PHASE4_SPEC 8.4)', () => {
   it('the keys are real UI keys with the English labels the texts quote', () => {
     expect(Object.keys(QUOTED_UI_LABELS).sort()).toEqual(
       [
+        'autopilot.label',
         'autopilot.tack',
+        'engine.label',
         'instruments.gust',
+        'section.conditions',
         'tab.ropes',
-        'tab.wind',
         'waves.label',
         'waves.open',
       ].sort(),

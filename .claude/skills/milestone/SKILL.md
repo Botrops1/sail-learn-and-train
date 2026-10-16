@@ -32,7 +32,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 - `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
 - Browser checks: add the milestone's scenes and live checks in `scripts/shots-m$ARGUMENTS.mjs`, register them in `scripts/shots.mjs`, run `SHOTS_ONLY=m$ARGUMENTS npm run shots`.
 - Look at 6–10 of the PNGs in `shots/` that show what changed (phone first, then one wider size). Do not commit them.
-- If you changed shared code (layout, store, URL, renderer, panel), also run `SHOTS_SIZES=phone npm run shots` (the full set; it takes a while, run it in the background). Otherwise CI runs it.
+- Follow "Running the browser checks in a session" in CLAUDE.md: background runs, only the groups your change touches, the test clock for checks that depend on app time. If you changed shared code (layout, store, URL, renderer, panel), also run the older groups most likely to be hit; CI runs the full set in parallel parts.
 
 ## 4. Open the PR
 

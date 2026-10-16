@@ -334,7 +334,7 @@
       "alternatives": [],
       "short": "The sea around the boat; its waves grow with the wind.",
       "what": "Waves grow with the wind’s strength and with the distance it blows over open water. The boat rises and falls, pitches and rolls on them; waves from ahead slow her, waves from behind at an angle push her off course. In the app the water is see-through, so the keel and rudder stay visible.",
-      "showMe": "Open sea in 20 kn of wind from the side: waves about 2 m high roll the boat. Change “Waves” in the Wind tab to compare.",
+      "showMe": "Open sea in 20 kn of wind from the side: waves about 2 m high roll the boat. Change “Waves” in Conditions to compare.",
       "textStatus": "draft"
     },
     "part_mast": {
@@ -401,15 +401,15 @@
     "env_wind": {
       "name": "Wind",
       "alternatives": [],
-      "short": "The air moving over the water; in the app you set it in the Wind tab.",
-      "what": "The wind is described by where it comes from and by its speed in knots. The streaks in the 3D view show it. The Wind tab sets its direction (from 0° north, clockwise) and speed, and can make it gusty, shifty, building or dying.",
+      "short": "The air moving over the water; in the app you set it in Conditions.",
+      "what": "The wind is described by where it comes from and by its speed in knots. The streaks in the 3D view show it. Conditions sets its direction (from 0° north, clockwise) and speed, and can make it gusty, shifty, building or dying.",
       "mistakes": [
         {
           "mistake": "Reading a wind direction as where the wind blows to.",
           "fix": "A wind “from 060°” blows from the east-north-east towards the west-south-west."
         }
       ],
-      "showMe": "Wind 12 kn from 060°: the streaks show it blowing past the boat. Turn the dial in the Wind tab to change it.",
+      "showMe": "Wind 12 kn from 060°: the streaks show it blowing past the boat. Turn the dial in Conditions to change it.",
       "textStatus": "draft"
     },
     "part_windex": {
@@ -506,7 +506,7 @@
           "fix": "Ease the sheet; then the jib rolls up."
         }
       ],
-      "showMe": "Wind 30° from starboard: the jib’s car sits at the port end of its track. In the Wind tab, turn the wind to the other side of the bow: the car slides across by itself.",
+      "showMe": "Wind 30° from starboard: the jib’s car sits at the port end of its track. In Conditions, turn the wind to the other side of the bow: the car slides across by itself.",
       "textStatus": "draft"
     },
     "sail_gennaker": {
@@ -596,7 +596,7 @@
       "short": "The short rail across the deck in front of the mast for the jib’s car.",
       "what": "The jib sheet’s car slides along this track. When the boat tacks, the wind pushes the jib across and the car runs to the other end by itself.",
       "onThisBoat": "Straight, about 2.8 m long, just in front of the mast. Because it is short, the jib cannot be eased far out.",
-      "showMe": "The car sits at the port end of the track, away from the wind. Turn the wind to the other side of the bow in the Wind tab and watch it slide across.",
+      "showMe": "The car sits at the port end of the track, away from the wind. Turn the wind to the other side of the bow in Conditions and watch it slide across.",
       "textStatus": "draft"
     },
     "fit_self_tacking_car": {
@@ -792,7 +792,7 @@
           "fix": "She moves off at once. Put the lever in neutral before you start."
         }
       ],
-      "showMe": "No wind, engine running with the lever two-thirds ahead: about 1,850 rpm and 8 kn. The engine block in the Ropes tab has the lever.",
+      "showMe": "No wind, engine running with the lever two-thirds ahead: about 1,850 rpm and 8 kn. The Engine section has the lever.",
       "textStatus": "draft"
     },
     "term_sheet": {
@@ -865,7 +865,7 @@
       "name": "True wind",
       "alternatives": [],
       "short": "The wind as it blows over the water, as a boat standing still feels it.",
-      "what": "The true wind is the wind’s own direction and speed over the water. The Wind tab sets it, and the instruments show it as TWA and TWS.",
+      "what": "The true wind is the wind’s own direction and speed over the water. Conditions sets it, and the instruments show it as TWA and TWS.",
       "showMe": "The map shows the true wind and, while she sails, the apparent wind she feels.",
       "textStatus": "draft"
     },
@@ -917,7 +917,7 @@
           "fix": "She stops head to wind (in irons). Turn steadily and keep her moving."
         }
       ],
-      "showMe": "Close-hauled, the autopilot holding the wind angle: press “Tack” in the autopilot block of the Ropes tab and watch the bow turn through the wind and the jib cross by itself.",
+      "showMe": "Close-hauled, the autopilot holding the wind angle: press “Tack” in the Autopilot section and watch the bow turn through the wind and the jib cross by itself.",
       "textStatus": "draft"
     },
     "term_gybe": {
@@ -954,7 +954,7 @@
           "fix": "It wears and can tear. Haul it in, or roll it away."
         }
       ],
-      "showMe": "The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes tab) until the flapping just stops.",
+      "showMe": "The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes section) until the flapping just stops.",
       "textStatus": "draft"
     },
     "term_ease": {
@@ -984,7 +984,7 @@
       "alternatives": [],
       "short": "How much the top of a sail opens out compared with its bottom.",
       "what": "With twist, the top of the sail stands further out than the bottom. A little twist is normal; more twist spills power, which helps in strong wind. The vang controls it on the mainsail, the sheet on the jib.",
-      "showMe": "The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes tab) and the twist closes.",
+      "showMe": "The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes section) and the twist closes.",
       "textStatus": "draft"
     },
     "term_telltale": {
@@ -1258,7 +1258,7 @@
       ],
       "short": "Wind strength as a number from 0 to 12, judged by its effect on the sea.",
       "what": "The Beaufort scale names wind strengths from 0 (calm) to 12 (hurricane). Force 3 (7–10 kn) brings the first scattered white horses; force 4 (11–16 kn) fairly frequent ones; force 5 (17–21 kn) many.",
-      "showMe": "10 kn, the top of force 3: the first scattered white horses. Raise the wind in the Wind tab to see more.",
+      "showMe": "10 kn, the top of force 3: the first scattered white horses. Raise the wind in Conditions to see more.",
       "textStatus": "draft"
     },
     "term_gust": {
@@ -1349,7 +1349,7 @@
           "fix": "That makes more heel. Ease the mainsheet, or roll part of the sails in."
         }
       ],
-      "showMe": "20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes tab and she stands up.",
+      "showMe": "20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes section and she stands up.",
       "textStatus": "draft"
     },
     "term_weather_helm": {
@@ -1419,7 +1419,7 @@
       "alternatives": [],
       "short": "A sail pulled in too far, so the air no longer flows smoothly round it.",
       "what": "A stalled sail looks full but drives poorly and makes more heel; the telltales on its far side droop or spin. Ease the sheet until they stream.",
-      "showMe": "The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes tab and she speeds up.",
+      "showMe": "The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes section and she speeds up.",
       "textStatus": "draft"
     },
     "term_hull_speed": {
@@ -1435,7 +1435,7 @@
       "alternatives": [],
       "short": "How far the wind has blown over open water to reach you.",
       "what": "The longer the fetch and the stronger the wind, the bigger the waves. In a sheltered bay the fetch is short and the sea stays small; in the open sea it is long.",
-      "showMe": "Sheltered water in 15 kn: small waves. Set “Waves” in the Wind tab to “Open sea”: the same wind makes much bigger waves.",
+      "showMe": "Sheltered water in 15 kn: small waves. Set “Waves” in Conditions to “Open sea”: the same wind makes much bigger waves.",
       "textStatus": "draft"
     },
     "term_white_horses": {
@@ -1458,8 +1458,8 @@
         }
       ],
       "short": "How high the bigger waves are, from trough to crest.",
-      "what": "The wave height given in forecasts is the average of the highest third of the waves; single waves can be almost twice as high. The Waves block in the Wind tab shows it.",
-      "showMe": "Coastal waves in 15 kn: the Waves block in the Wind tab says they are 0.7 m high, one every 3.8 s.",
+      "what": "The wave height given in forecasts is the average of the highest third of the waves; single waves can be almost twice as high. The Waves block in Conditions shows it.",
+      "showMe": "Coastal waves in 15 kn: the Waves block in Conditions says they are 0.7 m high, one every 3.8 s.",
       "textStatus": "draft"
     },
     "term_heave": {
@@ -1599,7 +1599,7 @@
       "alternatives": [],
       "short": "The control panel that lets the autopilot steer.",
       "what": "The autopilot steers for you. On Standby you steer; Heading holds the compass course; Wind holds the angle to the true wind. Tack turns the boat through the wind.",
-      "onThisBoat": "A B&G control at the helm. The autopilot block in the Ropes tab is the app’s version of it.",
+      "onThisBoat": "A B&G control at the helm. The Autopilot section is the app’s version of it.",
       "mistakes": [
         {
           "mistake": "Holding a compass heading and forgetting the wind.",
@@ -1610,7 +1610,7 @@
           "fix": "It goes to Standby (you took the wheel). Choose a mode again when you want it to steer."
         }
       ],
-      "showMe": "The autopilot is holding the angle to the wind. Its block is in the Ropes tab: change the angle with its buttons.",
+      "showMe": "The autopilot is holding the angle to the wind. Its section is called Autopilot: change the angle with its buttons.",
       "textStatus": "draft"
     },
     "fit_instrument_display": {

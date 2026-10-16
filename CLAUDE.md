@@ -57,8 +57,18 @@ Only the part you need, found with `grep` (do not read these whole):
   - While building: `SHOTS_ONLY=m<N> npm run shots` runs your milestone's scenes and live checks at all sizes.
   - **Look at 6–10 of the PNGs yourself** (in `shots/`, phone size first, then one wider size): the ones that show what your milestone changes. Do not open every file; the script already fails on console errors, wrong layouts, page scroll, unknown taps and failed live checks.
   - **PNGs are not committed** (`shots/` is ignored) and do not go into the PR.
-  - The full set (every milestone's scenes at phone size plus every live and tap check) runs in CI as the `browser-checks` job on every PR. Run it yourself (`SHOTS_SIZES=phone npm run shots`) before opening the PR if you changed shared code (layout, store, URL, renderer, panel); otherwise let CI run it. If it fails, `SHOTS_ONLY=<milestone>` reruns the failing part.
+  - The full set (every milestone's scenes at phone size plus every live and tap check) runs in CI as the `browser-checks` job on every PR, in parallel parts. Do not run it locally (one after the other it takes over an hour): if you changed shared code (layout, store, URL, renderer, panel), run locally the groups most likely to be hit (`SHOTS_ONLY=general,m4b,…`), push, and let CI run the rest. If it fails, `SHOTS_ONLY=<milestone>` reruns the failing part.
 - If headless WebGL fails, try `--use-angle=swiftshader` / `--enable-unsafe-swiftshader`. If it still fails, say so plainly in the PR; do not guess what it looks like.
+
+### Running the browser checks in a session
+
+Headless Chromium draws the 3D view without a graphics card, at about 15 frames a second, so the checks are slow and a check that waits a fixed real time gets less app time on a busy machine. These rules keep a session from losing hours to that:
+
+- **Test clock.** A check whose result depends on how much app time passes (a crank, a hold, a rope that eases) opens its page with `openPage(viewport, label, query, { testClock: true })`, as the M4a, M4b and M4c checks do. The app's time then stands still, and `page.waitForTimeout(ms)` moves it on by exactly `ms`, the same on every machine (a CSS transition still needs `page.realWaitForTimeout(ms)`). On such a page `page.waitForFunction` waits in real time while the app's time stands still: poll with `page.waitForTimeout` instead (as `waitForLink` in `scripts/ui.mjs` does). Never fix a flaky check by making a pause longer: put it on the test clock or wait for the result itself (`waitForLink`, `locator.waitFor`).
+- **Run in the background, wait for the end.** Start a run as a background command (`run_in_background`); you are told when it ends. Do not start it in the foreground (it hits the 2-minute command limit), do not chain `sleep`, and do not watch the log for a closing line.
+- **Run only what the change touches.** Locally: `SHOTS_ONLY=m<N>` for your milestone, plus the groups of the files you changed (a group crash prints `live <group> stopped`, and the other groups still run). Leave the full set to CI, which runs it in parallel parts in about 10 minutes; after a red `browser-checks`, read the failed part's log with the GitHub tools and rerun only that group locally. Each group prints its time (`live group m9: 120 s`): if a CI part gets over about 10 minutes, move a group to another part in `ci.yml`.
+- **Stop a run** with `pkill -f "node scripts/[s]hots.mjs"` (the brackets stop the command from matching, and killing, its own shell).
+- **Throwaway scripts** that import Playwright go in `scripts/_<name>.mjs` (ignored by git) and are deleted after: outside the repo, Node does not find `playwright`.
 - Report honestly: what works, what doesn't, what you could not check.
 
 ## PR description template

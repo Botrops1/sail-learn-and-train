@@ -168,7 +168,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
   const windNow = el('p', { class: 'hint wind-now', 'data-testid': 'wind-now' });
   const directionField = el('fieldset', { class: 'field' }, [
     el('legend', {}, [t('wind.dial.label')]),
-    el('p', { class: 'hint' }, [t('wind.dial.hint')]),
+    el('p', { class: 'hint explain' }, [t('wind.dial.hint')]),
     el('div', { class: 'dial-row' }, [
       stepButton('−', t('wind.less'), () => nudge(-1)),
       dial,
@@ -236,7 +236,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
   }
   const presetField = el('fieldset', { class: 'field' }, [
     el('legend', {}, [t('wind.presets.label')]),
-    el('p', { class: 'hint' }, [t('wind.presets.hint'), ' ', t('wind.presets.hint2')]),
+    el('p', { class: 'hint explain' }, [t('wind.presets.hint'), ' ', t('wind.presets.hint2')]),
     presets,
   ]);
 
@@ -286,7 +286,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
   refresh(store.getState());
 
   return [
-    el('p', { class: 'hint' }, [t('wind.hint')]),
+    el('p', { class: 'hint explain' }, [t('wind.hint')]),
     createBoatModeSwitch(store),
     createWindInstrument(store),
     directionField,
@@ -319,7 +319,7 @@ function createBoatModeSwitch(store: Store): HTMLElement {
   });
   const group = el('fieldset', { class: 'field segmented', 'data-testid': 'boat-mode' }, [
     el('legend', {}, [t('boat.mode.label')]),
-    el('p', { class: 'hint' }, [t('boat.mode.hint')]),
+    el('p', { class: 'hint explain' }, [t('boat.mode.hint')]),
     options,
   ]);
   const sync = (state: AppState, previous?: AppState) => {

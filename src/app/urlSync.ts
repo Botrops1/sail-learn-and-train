@@ -1,3 +1,4 @@
+import type { Settings } from '../model/settings';
 import type { AppState, Store } from './store';
 import { clockParam } from '../model/clock';
 import { boatParams, parseUrlState, realisticParams, serializeUrlState } from './urlState';
@@ -55,6 +56,7 @@ export function startUrlSync(store: Store): void {
       state.sea.setting === previous.sea.setting &&
       state.selection === previous.selection &&
       state.learn === previous.learn &&
+      state.appMode === previous.appMode &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
@@ -98,7 +100,7 @@ function sameRealisticLink(state: AppState, previous: AppState): boolean {
  */
 export function openScene(store: Store, query: string): void {
   const state = store.getState();
-  const { detail, debug, step, legend, labels } = state.settings;
+  const { detail } = state.settings;
   const link = serializeUrlState(state);
   if (!showsScene(link, query)) {
     const here = `${window.location.pathname}${link}${window.location.hash}`;
@@ -110,10 +112,20 @@ export function openScene(store: Store, query: string): void {
     type: 'load',
     state: {
       ...next,
-      settings: { ...next.settings, detail, debug, step, legend, labels },
+      settings: sceneSettings(state.settings, next.settings),
       learn: state.learn,
+      appMode: state.appMode === 'learn' ? 'learn' : next.appMode,
     },
   });
+}
+
+/**
+ * The settings after a scene opens: the scene's own, except the ones that suit the viewer and the
+ * device (detail, debug overlay, step size, legend, labels, mini-map), which stay.
+ */
+export function sceneSettings(current: Settings, next: Settings): Settings {
+  const { detail, debug, step, legend, labels, miniMap } = current;
+  return { ...next, detail, debug, step, legend, labels, miniMap };
 }
 
 /** The full link to what is shown now (Settings → Share). */

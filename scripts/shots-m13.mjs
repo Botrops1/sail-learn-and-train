@@ -25,14 +25,15 @@ export const M13_SCENES = [
     // Easy mode with everything of Phase 2 in the Ropes tab: autopilot on a wind angle.
     name: 'autopilot',
     query: '?wd=60&ws=12&ms=30&js=100&ap=wind&cam=side-port',
-    scrollTo: '.ropes-easy [data-testid="autopilot"]',
+    section: 'autopilot',
+    scrollTo: '[data-section="autopilot"] [data-testid="autopilot"]',
     waitMs: 1500,
   },
   {
     // The sails panel: trim chips and hints.
     name: 'sails',
     query: '?wd=60&ws=12&ms=10&js=100&cam=side-port',
-    scrollTo: '.ropes-easy [data-testid="sails-panel"]',
+    scrollTo: '[data-section="sails"] [data-testid="sails-panel"]',
     waitMs: 1500,
   },
 ];
@@ -47,7 +48,12 @@ export async function liveM13Checks({ openPage, viewports, outDir, prefix, probl
 
   // Accessibility of the Phase 2 controls (phone).
   for (const [name, query, tab, scrollTo] of [
-    ['autopilot', '?wd=60&ws=12&ms=30&js=100&ap=wind&cam=side-port', null, 'autopilot'],
+    [
+      'autopilot',
+      '?wd=60&ws=12&ms=30&js=100&ap=wind&cam=side-port',
+      'autopilot',
+      'section-autopilot',
+    ],
     ['sails panel', '?wd=60&ws=12&ms=10&js=100&cam=side-port', null, 'sails-panel'],
     [
       'wind tab: gusty, Held still / Sailing',
@@ -61,7 +67,7 @@ export async function liveM13Checks({ openPage, viewports, outDir, prefix, probl
       'conditions',
       null,
     ],
-    ['engine at Detail Low', '?ws=0&eng=1&lv=66&detail=low', null, 'engine-panel'],
+    ['engine at Detail Low', '?ws=0&eng=1&lv=66&detail=low', 'engine', 'engine-panel'],
   ]) {
     const { context, page } = await openPage(phone, `m13 a11y ${name}`, query);
     await page.waitForTimeout(800);

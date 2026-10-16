@@ -256,7 +256,7 @@
 | Что делает / что значит | The jib is set on the forestay in front of the mast. Its sheet runs to a car on a track across the deck, and the car slides to the other side by itself when the bow turns through the wind, so tacking needs no sheet work. | Стаксель ставится на штаге перед мачтой. Его шкот идёт к каретке на погоне поперёк палубы, и каретка сама переезжает на другой борт, когда нос проходит через ветер, поэтому при повороте не нужно работать со шкотом. |
 | На этой яхте | 51.5 m², on a Furlex roller furler at the bow. The track is short and straight, so the jib cannot be eased far out: fully eased it reaches about 30°. The clutch says “Genoa sheet”, but the sail is a jib, smaller than a genoa and not overlapping the mast. | 51.5 м², на закрутке Furlex на носу. Погон короткий и прямой, поэтому стаксель нельзя потравить далеко наружу: полностью потравленный, он уходит примерно на 30°. На стопоре написано «Genoa sheet», но парус — стаксель, меньше генуи и не заходит за мачту. |
 | Типичные ошибки | Keeping all of the jib out in strong wind. → She heels too much and turns into the wind. Roll part of the main in first, then part of the jib if needed.<br>Furling the jib with the sheet tight. → Ease the sheet; then the jib rolls up. | Держать весь стаксель выпущенным при сильном ветре. → Яхта слишком кренится и приводится к ветру. Сначала закрутите часть грота, потом, если нужно, часть стакселя.<br>Закручивать стаксель при туго выбранном шкоте. → Потравите шкот; тогда стаксель свернётся. |
-| «Покажи» | Wind 30° from starboard: the jib’s car sits at the port end of its track. In the Wind tab, turn the wind to the other side of the bow: the car slides across by itself. | Ветер 30° справа: каретка стакселя стоит у левого края погона. На вкладке «Ветер» поверните ветер на другую сторону от носа: каретка переедет сама. |
+| «Покажи» | Wind 30° from starboard: the jib’s car sits at the port end of its track. In Conditions, turn the wind to the other side of the bow: the car slides across by itself. | Ветер 30° справа: каретка стакселя стоит у левого края погона. В разделе «Условия» поверните ветер на другую сторону от носа: каретка переедет сама. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -697,7 +697,7 @@
 | Что делает / что значит | The jib sheet’s car slides along this track. When the boat tacks, the wind pushes the jib across and the car runs to the other end by itself. | Каретка стаксель-шкота скользит по этому погону. При повороте оверштаг ветер перекидывает стаксель, и каретка сама уходит к другому концу. |
 | На этой яхте | Straight, about 2.8 m long, just in front of the mast. Because it is short, the jib cannot be eased far out. | Прямой, около 2.8 м длиной, прямо перед мачтой. Из-за того, что он короткий, стаксель нельзя потравить далеко. |
 | Типичные ошибки | — | — |
-| «Покажи» | The car sits at the port end of the track, away from the wind. Turn the wind to the other side of the bow in the Wind tab and watch it slide across. | Каретка стоит у левого конца погона, в стороне от ветра. Поверните ветер на другую сторону носа на вкладке «Ветер» и посмотрите, как она переезжает. |
+| «Покажи» | The car sits at the port end of the track, away from the wind. Turn the wind to the other side of the bow in Conditions and watch it slide across. | Каретка стоит у левого конца погона, в стороне от ветра. Поверните ветер на другую сторону носа в разделе «Условия» и посмотрите, как она переезжает. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -952,9 +952,9 @@
 | Другие названия | — | пульт автопилота |
 | Коротко | The control panel that lets the autopilot steer. | Панель управления, которая позволяет авторулевому рулить. |
 | Что делает / что значит | The autopilot steers for you. On Standby you steer; Heading holds the compass course; Wind holds the angle to the true wind. Tack turns the boat through the wind. | Авторулевой рулит за вас. В режиме «Ожидание» рулите вы; «Курс» держит курс по компасу; «Ветер» держит угол к истинному ветру. «Поворот» поворачивает лодку через ветер. |
-| На этой яхте | A B&G control at the helm. The autopilot block in the Ropes tab is the app’s version of it. | Пульт B&G у штурвала. Блок авторулевого на вкладке «Концы» — это версия пульта в приложении. |
+| На этой яхте | A B&G control at the helm. The Autopilot section is the app’s version of it. | Пульт B&G у штурвала. Раздел «Авторулевой» — это версия пульта в приложении. |
 | Типичные ошибки | Holding a compass heading and forgetting the wind. → If the wind shifts, she can end up in the no-go zone or gybe. Watch the sails, or let the autopilot hold the wind angle.<br>Turning the wheel by hand with the autopilot on. → It goes to Standby (you took the wheel). Choose a mode again when you want it to steer. | Держать курс по компасу и забыть про ветер. → Если ветер сменится, яхта может оказаться в мёртвой зоне или сделать поворот фордевинд. Следите за парусами или пусть авторулевой держит угол к ветру.<br>Повернуть штурвал рукой при включённом авторулевом. → Он переходит в режим «Ожидание» (вы взяли штурвал). Выберите режим снова, когда захотите, чтобы он рулил. |
-| «Покажи» | The autopilot is holding the angle to the wind. Its block is in the Ropes tab: change the angle with its buttons. | Авторулевой держит угол к ветру. Его блок находится на вкладке «Концы»: меняйте угол его кнопками. |
+| «Покажи» | The autopilot is holding the angle to the wind. Its section is called Autopilot: change the angle with its buttons. | Авторулевой держит угол к ветру. Его раздел называется «Авторулевой»: меняйте угол его кнопками. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -969,7 +969,7 @@
 | Что делает / что значит | Pushed forward from the middle, the lever puts the engine in ahead gear, then gives more power; pulled back, astern. In the middle the engine is in neutral. Pause in neutral when you change direction. | Если сдвинуть рычаг вперёд от середины, двигатель включается на передний ход, а дальше добавляет мощность; назад — задний ход. В середине двигатель в нейтрали. Останавливайтесь в нейтрали, когда меняете направление. |
 | На этой яхте | An Allpa single-lever control with START, STOP and POWER buttons and a “MAX 2500 RPM” sticker. In the app the lever two-thirds ahead gives about 1,850 rpm and 8 kn; full ahead about 9.3 kn. | Однорычажное управление Allpa с кнопками «START», «STOP» и «POWER» и наклейкой «MAX 2500 RPM». В приложении рычаг на две трети вперёд даёт около 1 850 об/мин и 8 уз; полный вперёд — около 9.3 уз. |
 | Типичные ошибки | Moving the lever from ahead straight to astern. → The gearbox suffers. Stop in neutral for a moment, then go astern.<br>Starting the engine with the lever in gear. → She moves off at once. Put the lever in neutral before you start. | Переводить рычаг с переднего хода сразу на задний. → Коробке передач это вредно. Остановитесь на мгновение в нейтрали, потом включайте задний ход.<br>Запускать двигатель с рычагом, включённым на передачу. → Яхта сразу тронется с места. Поставьте рычаг в нейтраль перед запуском. |
-| «Покажи» | No wind, engine running with the lever two-thirds ahead: about 1,850 rpm and 8 kn. The engine block in the Ropes tab has the lever. | Безветрие, двигатель работает, рычаг на две трети вперёд: около 1 850 об/мин и 8 уз. Рычаг находится в блоке двигателя на вкладке «Концы». |
+| «Покажи» | No wind, engine running with the lever two-thirds ahead: about 1,850 rpm and 8 kn. The Engine section has the lever. | Безветрие, двигатель работает, рычаг на две трети вперёд: около 1 850 об/мин и 8 уз. Рычаг находится в разделе «Двигатель». |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1057,11 +1057,11 @@
 |---|---|---|
 | Название | Wind | ветер |
 | Другие названия | — | — |
-| Коротко | The air moving over the water; in the app you set it in the Wind tab. | Воздух, движущийся над водой; в приложении вы задаёте его на вкладке «Ветер». |
-| Что делает / что значит | The wind is described by where it comes from and by its speed in knots. The streaks in the 3D view show it. The Wind tab sets its direction (from 0° north, clockwise) and speed, and can make it gusty, shifty, building or dying. | Ветер описывается тем, откуда он дует, и его скоростью в узлах. Полосы в 3D-виде показывают его. На вкладке «Ветер» задаются его направление (от 0° — севера, по часовой стрелке) и скорость; ветер можно сделать порывистым, меняющим направление, крепчающим или стихающим. |
+| Коротко | The air moving over the water; in the app you set it in Conditions. | Воздух, движущийся над водой; в приложении вы задаёте его в разделе «Условия». |
+| Что делает / что значит | The wind is described by where it comes from and by its speed in knots. The streaks in the 3D view show it. Conditions sets its direction (from 0° north, clockwise) and speed, and can make it gusty, shifty, building or dying. | Ветер описывается тем, откуда он дует, и его скоростью в узлах. Полосы в 3D-виде показывают его. В разделе «Условия» задаются его направление (от 0° — севера, по часовой стрелке) и скорость; ветер можно сделать порывистым, меняющим направление, крепчающим или стихающим. |
 | На этой яхте | — | — |
 | Типичные ошибки | Reading a wind direction as where the wind blows to. → A wind “from 060°” blows from the east-north-east towards the west-south-west. | Читать направление ветра как то, куда ветер дует. → Ветер «от 060°» дует с востоко-северо-востока на западо-юго-запад. |
-| «Покажи» | Wind 12 kn from 060°: the streaks show it blowing past the boat. Turn the dial in the Wind tab to change it. | Ветер 12 уз от 060°: полосы показывают, как он дует мимо лодки. Поверните круг на вкладке «Ветер», чтобы изменить его. |
+| «Покажи» | Wind 12 kn from 060°: the streaks show it blowing past the boat. Turn the dial in Conditions to change it. | Ветер 12 уз от 060°: полосы показывают, как он дует мимо лодки. Поверните круг в разделе «Условия», чтобы изменить его. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1088,7 +1088,7 @@
 | Название | True wind | истинный ветер |
 | Другие названия | — | — |
 | Коротко | The wind as it blows over the water, as a boat standing still feels it. | Ветер над водой, каким его ощущает стоящая на месте лодка. |
-| Что делает / что значит | The true wind is the wind’s own direction and speed over the water. The Wind tab sets it, and the instruments show it as TWA and TWS. | Истинный ветер — это собственные направление и скорость ветра над водой. Его задаёт вкладка «Ветер», а приборы показывают его как TWA и TWS. |
+| Что делает / что значит | The true wind is the wind’s own direction and speed over the water. Conditions sets it, and the instruments show it as TWA and TWS. | Истинный ветер — это собственные направление и скорость ветра над водой. Его задаёт раздел «Условия», а приборы показывают его как TWA и TWS. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | The map shows the true wind and, while she sails, the apparent wind she feels. | На карте показан истинный ветер и, пока яхта идёт, вымпельный ветер, который она ощущает. |
@@ -1196,7 +1196,7 @@
 | Что делает / что значит | The Beaufort scale names wind strengths from 0 (calm) to 12 (hurricane). Force 3 (7–10 kn) brings the first scattered white horses; force 4 (11–16 kn) fairly frequent ones; force 5 (17–21 kn) many. | Шкала Бофорта называет силу ветра от 0 (штиль) до 12 (ураган). При 3 баллах (7–10 уз) появляются первые редкие барашки; при 4 баллах (11–16 уз) — довольно частые; при 5 баллах (17–21 уз) — многочисленные. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | 10 kn, the top of force 3: the first scattered white horses. Raise the wind in the Wind tab to see more. | 10 уз, верх 3 баллов: первые редкие барашки. Увеличьте ветер на вкладке «Ветер», чтобы увидеть больше. |
+| «Покажи» | 10 kn, the top of force 3: the first scattered white horses. Raise the wind in Conditions to see more. | 10 уз, верх 3 баллов: первые редкие барашки. Увеличьте ветер в разделе «Условия», чтобы увидеть больше. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1545,7 +1545,7 @@
 | Что делает / что значит | When a sail is eased more than the wind angle needs, or the boat turns too close to the wind, the air reaches both sides of the front edge and the sail flaps. It no longer drives the boat, and long flapping in strong wind wears it out. | Когда парус потравлен больше, чем нужно для угла к ветру, или яхта повёрнута слишком близко к ветру, воздух попадает на обе стороны передней кромки, и парус полощет. Он перестаёт тянуть яхту, а долгое полоскание при сильном ветре изнашивает его. |
 | На этой яхте | — | — |
 | Типичные ошибки | Leaving a sail flapping in strong wind. → It wears and can tear. Haul it in, or roll it away. | Оставлять парус полоскать при сильном ветре. → Он изнашивается и может порваться. Выберите его или уберите (закрутите). |
-| «Покажи» | The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes tab) until the flapping just stops. | Гика-шкот потравлен до конца: грот полощет по передней кромке. Выбирайте гика-шкот (вкладка «Концы»), пока полоскание не прекратится. |
+| «Покажи» | The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes section) until the flapping just stops. | Гика-шкот потравлен до конца: грот полощет по передней кромке. Выбирайте гика-шкот (раздел «Концы»), пока полоскание не прекратится. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1575,7 +1575,7 @@
 | Что делает / что значит | The wind’s push on the sails tips the boat over to leeward; the keel’s weight pulls her back. Some heel is normal; too much slows her and makes her hard to steer. Easing the sheets or making the sails smaller reduces it. | Давление ветра на паруса наклоняет яхту в подветренную сторону; вес киля возвращает её обратно. Некоторый крен — это нормально; слишком большой замедляет яхту и затрудняет управление. Потравливание шкотов или уменьшение парусов уменьшает его. |
 | На этой яхте | — | — |
 | Типичные ошибки | Hauling the sheets in harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Выбирать шкоты туже, когда яхта сильно кренится. → Это увеличивает крен. Потравите гика-шкот или закрутите часть парусов. |
-| «Покажи» | 20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes tab and she stands up. | 20 уз, паруса выбраны: крен около 30°. Потравите гика-шкот на вкладке «Концы», и яхта выпрямится. |
+| «Покажи» | 20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes section and she stands up. | 20 уз, паруса выбраны: крен около 30°. Потравите гика-шкот в разделе «Концы», и яхта выпрямится. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1650,7 +1650,7 @@
 | Что делает / что значит | To tack, the boat turns towards the wind, through the no-go zone and on until the wind comes over the other side. With a self-tacking jib only the wheel is needed: the jib and the main swing across by themselves. | Чтобы сделать поворот оверштаг, яхта поворачивает к ветру, проходит через мёртвую зону и поворачивает дальше, пока ветер не начнёт дуть с другого борта. С самоповоротным стакселем нужен только штурвал: стаксель и грот переходят на другую сторону сами. |
 | На этой яхте | — | — |
 | Типичные ошибки | Turning too slowly. → She stops head to wind (in irons). Turn steadily and keep her moving. | Поворачивать слишком медленно. → Яхта останавливается носом точно на ветер (в левентике). Поворачивайте плавно и не теряйте ход. |
-| «Покажи» | Close-hauled, the autopilot holding the wind angle: press “Tack” in the autopilot block of the Ropes tab and watch the bow turn through the wind and the jib cross by itself. | Крутой бейдевинд, авторулевой держит угол к ветру: нажмите «Поворот» в блоке авторулевого на вкладке «Концы» и смотрите, как нос проходит через ветер, а стаксель переходит на другую сторону сам. |
+| «Покажи» | Close-hauled, the autopilot holding the wind angle: press “Tack” in the Autopilot section and watch the bow turn through the wind and the jib cross by itself. | Крутой бейдевинд, авторулевой держит угол к ветру: нажмите «Поворот» в разделе «Авторулевой» и смотрите, как нос проходит через ветер, а стаксель переходит на другую сторону сам. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1755,7 +1755,7 @@
 | Что делает / что значит | A stalled sail looks full but drives poorly and makes more heel; the telltales on its far side droop or spin. Ease the sheet until they stream. | Парус со срывом потока выглядит наполненным, но тянет плохо и сильнее кренит яхту; колдунчики на его дальней стороне опускаются или крутятся. Потравливайте шкот, пока они не потянутся ровно. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes tab and she speeds up. | Гика-шкот выбран до конца при ветре в 60° от носа: на гроте срыв потока. Потравите его примерно до 25 % на вкладке «Концы», и яхта ускорится. |
+| «Покажи» | The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes section and she speeds up. | Гика-шкот выбран до конца при ветре в 60° от носа: на гроте срыв потока. Потравите его примерно до 25 % в разделе «Концы», и яхта ускорится. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1770,7 +1770,7 @@
 | Что делает / что значит | With twist, the top of the sail stands further out than the bottom. A little twist is normal; more twist spills power, which helps in strong wind. The vang controls it on the mainsail, the sheet on the jib. | При твисте верх паруса стоит дальше наружу, чем низ. Небольшой твист — это нормально; больший твист сбрасывает силу, что помогает при сильном ветре. На гроте его регулирует оттяжка гика, на стакселе — шкот. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes tab) and the twist closes. | Оттяжка гика потравлена до конца: верх грота раскрывается в твист. Выберите оттяжку гика (вкладка «Концы»), и твист закроется. |
+| «Покажи» | The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes section) and the twist closes. | Оттяжка гика потравлена до конца: верх грота раскрывается в твист. Выберите оттяжку гика (раздел «Концы»), и твист закроется. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1904,10 +1904,10 @@
 | Название | Wave height | высота волны |
 | Другие названия | significant wave height | значительная высота волны |
 | Коротко | How high the bigger waves are, from trough to crest. | Высота более крупных волн от подошвы до гребня. |
-| Что делает / что значит | The wave height given in forecasts is the average of the highest third of the waves; single waves can be almost twice as high. The Waves block in the Wind tab shows it. | Высота волны в прогнозах — это среднее из самой высокой трети волн; отдельные волны могут быть почти вдвое выше. Её показывает блок «Волны» на вкладке «Ветер». |
+| Что делает / что значит | The wave height given in forecasts is the average of the highest third of the waves; single waves can be almost twice as high. The Waves block in Conditions shows it. | Высота волны в прогнозах — это среднее из самой высокой трети волн; отдельные волны могут быть почти вдвое выше. Её показывает блок «Волны» в разделе «Условия». |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | Coastal waves in 15 kn: the Waves block in the Wind tab says they are 0.7 m high, one every 3.8 s. | Прибрежные волны при 15 уз: блок «Волны» на вкладке «Ветер» показывает высоту 0.7 м, одна волна за 3.8 с. |
+| «Покажи» | Coastal waves in 15 kn: the Waves block in Conditions says they are 0.7 m high, one every 3.8 s. | Прибрежные волны при 15 уз: блок «Волны» в разделе «Условия» показывает высоту 0.7 м, одна волна за 3.8 с. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1952,7 +1952,7 @@
 | Что делает / что значит | Waves grow with the wind’s strength and with the distance it blows over open water. The boat rises and falls, pitches and rolls on them; waves from ahead slow her, waves from behind at an angle push her off course. In the app the water is see-through, so the keel and rudder stay visible. | Волны растут с силой ветра и с расстоянием, которое он проходит над открытой водой. Лодка поднимается и опускается, качается и валится на них; волны спереди замедляют её, а волны сзади под углом сбивают с курса. В приложении вода прозрачная, так что киль и перо руля остаются видны. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | Open sea in 20 kn of wind from the side: waves about 2 m high roll the boat. Change “Waves” in the Wind tab to compare. | Открытое море, ветер 20 уз сбоку: волны высотой около 2 м качают лодку. Меняйте «Волны» на вкладке «Ветер», чтобы сравнить. |
+| «Покажи» | Open sea in 20 kn of wind from the side: waves about 2 m high roll the boat. Change “Waves” in Conditions to compare. | Открытое море, ветер 20 уз сбоку: волны высотой около 2 м качают лодку. Меняйте «Волны» в разделе «Условия», чтобы сравнить. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1967,7 +1967,7 @@
 | Что делает / что значит | The longer the fetch and the stronger the wind, the bigger the waves. In a sheltered bay the fetch is short and the sea stays small; in the open sea it is long. | Чем длиннее разгон и сильнее ветер, тем больше волны. В защищённой бухте разгон короткий, и море остаётся небольшим; в открытом море он длинный. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | Sheltered water in 15 kn: small waves. Set “Waves” in the Wind tab to “Open sea”: the same wind makes much bigger waves. | Защищённая вода при 15 уз: небольшие волны. Поставьте «Волны» на вкладке «Ветер» в положение «Открытое море»: тот же ветер даёт гораздо большие волны. |
+| «Покажи» | Sheltered water in 15 kn: small waves. Set “Waves” in Conditions to “Open sea”: the same wind makes much bigger waves. | Защищённая вода при 15 уз: небольшие волны. Поставьте «Волны» в разделе «Условия» в положение «Открытое море»: тот же ветер даёт гораздо большие волны. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -2002,9 +2002,7 @@
 | error.banner | Something went wrong. Reload the page; if it happens again, please report it with the link from Settings → Share. | Что-то пошло не так. Перезагрузите страницу; если это повторится, сообщите об этом со ссылкой из «Настройки» → «Поделиться». |
 | error.details | Technical details | Технические подробности |
 | panel.label | Controls | Управление |
-| panel.tabsLabel | Panel sections | Разделы панели |
 | tab.ropes | Ropes | Концы |
-| tab.wind | Wind | Ветер |
 | view.step.label | Step size | Размер шага |
 | view.step.hint | How much one tap on − or + changes a rope. | На сколько один нажим на − или + меняет конец. |
 | view.step.option | {value} % | {value} % |
@@ -2132,7 +2130,7 @@
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Штурвалы повёрнуты против часовой стрелки, оборотов: {turns}. Задняя кромка пера руля уходит к левому борту, поэтому яхта повернула бы к левому борту (влево). |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Штурвалы и перо руля (лопасть под кормой яхты) поворачиваются вместе. Яхта поворачивает, только пока движется: если её держат на месте или она остановилась, она не слушается штурвала. |
 | ropes.mode.easy | Easy mode: | Простой режим: |
-| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (switch at the top) works the ropes as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (переключатель вверху) работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
+| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it with the Mode button over the 3D view) works the ropes as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его кнопкой режима над 3D-видом) работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
 | clutch.hint | The clutches (locks that hold a rope) beside the wheels, seen from the helm looking forward: bank B on the port (left) side, bank A on the starboard (right) side. Tap one to work its rope. | Стопоры (замки, которые держат конец) рядом со штурвалами, вид с места рулевого вперёд: блок B слева (левый борт), блок A справа (правый борт). Нажмите на стопор, чтобы работать с его концом. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Блоки стопоров: нажмите на стопор, чтобы выбрать его конец |
 | clutch.bankB | Bank B · port | Блок B · левый борт |
@@ -2164,7 +2162,7 @@
 | legend.halyard | Halyards (hoist the sails) | Фалы (поднимают паруса) |
 | legend.fighting | Red: this rope pulls against another one (fighting) | Красный: этот конец тянет против другого (перетягивание) |
 | view.legend.label | Rope colour legend | Легенда цветов концов |
-| view.legend.hint | Shows what each rope colour means, at the bottom of the Ropes tab. | Показывает, что значит каждый цвет конца, внизу вкладки «Концы». |
+| view.legend.hint | Shows what each rope colour means, in the Rope colours section. | Показывает, что значит каждый цвет конца, в разделе «Цвета концов». |
 | view.share.button | Share: copy link | Поделиться: скопировать ссылку |
 | view.share.hint | The link opens exactly what you see now: ropes, wheel, wind, camera and the selected part. Paste it into a bug report. | Ссылка открывает ровно то, что вы видите сейчас: концы, штурвал, ветер, камеру и выбранную часть. Вставьте её в сообщение об ошибке. |
 | view.share.copied | Link copied. | Ссылка скопирована. |
@@ -2175,10 +2173,6 @@
 | view.reset.done | Everything is back to the start settings. | Всё вернулось к начальным настройкам. |
 | ropes.mode.easyShort | tap a clutch, then use its slider. | нажмите на стопор, затем двигайте его ползунок. |
 | ropes.strip.more | What does it do? | Что это делает? |
-| ropes.about.title | About this tab | Об этой вкладке |
-| ropes.mode.label | How the ropes are worked | Как работать с концами |
-| ropes.mode.option.easy | Easy | Простой |
-| ropes.mode.option.realistic | Realistic | Реалистичный |
 | pause.pause | Pause | Пауза |
 | pause.resume | Resume | Продолжить |
 | pause.pauseAria | Pause: freeze time | Пауза: остановить время |
@@ -2480,7 +2474,7 @@
 | time.group | Time | Время |
 | time.held | Held still | Яхта стоит |
 | time.held.aria | Held still: nothing changes with time. Tap to learn why. | Яхта стоит: со временем ничего не меняется. Нажмите, чтобы узнать почему. |
-| time.held.note | Held still is a boat setting, so there is nothing to pause. You can change it in the Wind tab, under Boat. | «Яхта стоит» — настройка яхты, поэтому ставить на паузу нечего. Её можно изменить на вкладке «Ветер», в блоке «Яхта». |
+| time.held.note | Held still is a boat setting, so there is nothing to pause. You can change it in Conditions, under Boat. | «Яхта стоит» — настройка яхты, поэтому ставить на паузу нечего. Её можно изменить в разделе «Условия», в блоке «Яхта». |
 | time.label | Time | Время |
 | time.fold | Fold the time bar: only Pause stays | Свернуть панель времени: останется только «Пауза» |
 | time.unfold | Open the time bar | Открыть панель времени |
@@ -2574,7 +2568,7 @@
 | learn.showMe | Show me | Покажи |
 | learn.showMeDone | Showing it. Your phone’s Back button takes you back to where you were. | Показываю. Кнопка «Назад» на телефоне вернёт вас туда, где вы были. |
 | learn.showOnBoat | Show on the boat | Показать на яхте |
-| learn.tryIt | Try it in the Ropes tab: | Попробуйте на вкладке «Концы»: |
+| learn.tryIt | Try it: | Попробуйте: |
 | learn.related | See also: | См. также: |
 | learn.howSure | How sure we are | Насколько мы уверены |
 | learn.status.draft | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
@@ -2614,3 +2608,26 @@
 | settings.about | About | О программе |
 | cam.chip | Camera: {name}. Tap to change the view. | Камера: {name}. Нажмите, чтобы сменить вид. |
 | cam.menuHint | Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around. | Левый борт — слева, если смотреть на нос (вперёд); правый борт — справа. Потяните 3D-вид, чтобы осмотреться. |
+| sheet.handle | Panel: {height}. Tap to change its height, or drag it. | Панель: {height}. Нажмите, чтобы изменить высоту, или потяните. |
+| sheet.height.peek | low | внизу |
+| sheet.height.half | half height | на полэкрана |
+| sheet.height.full | full height | во весь экран |
+| mode.label | Mode | Режим |
+| mode.chip | Mode: {name}. Tap to change it. | Режим: {name}. Нажмите, чтобы сменить. |
+| mode.learn | Learn | Обучение |
+| mode.easy | Easy | Простой |
+| mode.realistic | Realistic | Реалистичный |
+| mode.learn.hint | Names and explanations of every part and word. | Названия и объяснения всех частей и слов. |
+| mode.easy.hint | A slider for every rope. | Ползунок для каждого конца. |
+| mode.realistic.hint | Clutches and winches, as on the boat. | Стопоры и лебёдки, как на яхте. |
+| section.conditions | Conditions | Условия |
+| section.explain | Explain: {name} | Пояснение: {name} |
+| quick.easy | Tap a rope or a clutch: its − and + appear here. | Нажмите на конец или стопор: здесь появятся − и +. |
+| quick.realistic | Pull the panel up to work the clutches and winches. | Поднимите панель, чтобы работать стопорами и лебёдками. |
+| quick.learn | Tap any part of the boat to learn about it. | Нажмите на любую часть яхты, чтобы узнать о ней. |
+| quick.read | Read | Читать |
+| minimap.open | Mini-map: tap to open the full map. | Мини-карта: нажмите, чтобы открыть карту. |
+| map.close | Close the map | Закрыть карту |
+| map.closeShort | Close | Закрыть |
+| settings.miniMap.label | Mini-map | Мини-карта |
+| settings.miniMap.hint | A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map. | Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту. |

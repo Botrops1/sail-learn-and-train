@@ -16,8 +16,6 @@
   --font-small: 14px;
   --panel-min: 320px;
   --panel-max: 440px;
-  --view-share: 52%;
-  --view-min: 260px;
   color-scheme: light;
 }
 
@@ -59,9 +57,23 @@ body {
     env(safe-area-inset-left);
 }
 
+/*
+ * Stacked (phones, M26): the 3D view fills the shell and the panel is a sheet pulled up from the
+ * bottom (PHASE5_SPEC 7.5). sheet.ts sets --sheet-h and --view-bottom-inset on the shell.
+ */
 html[data-layout='stacked'] .shell {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(var(--view-min), var(--view-share)) minmax(0, 1fr);
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+}
+
+html[data-layout='stacked'] .view {
+  position: absolute;
+  top: env(safe-area-inset-top);
+  right: env(safe-area-inset-right);
+  bottom: 0;
+  left: env(safe-area-inset-left);
 }
 
 html[data-layout='side'] .shell {
@@ -213,15 +225,23 @@ html[data-layout='side'] .info-card {
   box-shadow: 0 2px 10px rgb(10 20 30 / 0.25);
 }
 
+/* Stacked: over the view, just above the chip row (and the sheet). */
 html[data-layout='stacked'] .info-area {
-  flex: none;
+  position: absolute;
+  right: 8px;
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  left: 8px;
+  display: flex;
+  justify-content: flex-start;
 }
 
 html[data-layout='stacked'] .info-card {
+  width: 100%;
   max-height: 140px;
   overflow-y: auto;
-  border-bottom: 1px solid var(--line);
-  background: var(--accent-soft);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.95);
+  box-shadow: 0 2px 10px rgb(10 20 30 / 0.25);
 }
 
 .card-head {
@@ -312,6 +332,77 @@ html[data-layout='stacked'] .info-card {
 
 .chip-caret {
   font-size: 12px;
+}
+
+/* Four chips (mode, camera, Close, gear) fit a 360 px phone, also in Russian (M28). */
+.view-bottom .view-chip {
+  flex: 0 1 auto;
+  min-width: var(--touch);
+}
+
+.chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The Close-map chip takes the gear's place at the right end while the map shows (M28). */
+.map-close {
+  margin-left: auto;
+}
+
+.map-close:not([hidden]) + .settings-button {
+  margin-left: 0;
+}
+
+.map-close[hidden] {
+  display: none;
+}
+
+/*
+ * The mini-map (M28, PHASE5_SPEC 9.4): a small north-up map just above the chip row's right end.
+ * 96 px on a phone, 160 px beside the panel; the border is included in the size.
+ */
+.mini-map {
+  position: absolute;
+  right: 8px;
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  z-index: 4;
+  box-sizing: border-box;
+  width: 96px;
+  height: 96px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid rgb(255 255 255 / 0.9);
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: 0 2px 8px rgb(10 20 30 / 0.3);
+  cursor: pointer;
+}
+
+html[data-layout='side'] .mini-map {
+  width: 160px;
+  height: 160px;
+}
+
+.mini-map[hidden] {
+  display: none;
+}
+
+.mini-map canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mini-map:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* The info card keeps clear of the mini-map on a phone. */
+html[data-layout='stacked'] .view[data-mini-map] .info-area {
+  right: calc(8px + 96px + 8px);
 }
 
 /* Chip menus (camera menu M25, mode menu M27). */
@@ -435,36 +526,81 @@ html[data-layout='side'] .settings-dialog {
   background: var(--surface);
 }
 
+/* The sheet (M26). */
 html[data-layout='stacked'] .panel {
-  border-top: 1px solid var(--line);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 7;
+  height: var(--sheet-h);
+  padding-bottom: env(safe-area-inset-bottom);
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -2px 10px rgb(10 20 30 / 0.18);
+}
+
+.shell[data-sheet-moving='true'] .sheet {
+  transition: height 200ms ease-out;
+}
+
+.shell[data-sheet-moving='true'] :is(.view-bottom, .info-area, .mini-map) {
+  transition: bottom 200ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell[data-sheet-moving='true'] .sheet,
+  .shell[data-sheet-moving='true'] :is(.view-bottom, .info-area, .mini-map) {
+    transition: none;
+  }
+}
+
+.sheet-handle {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--touch);
+  padding: 0;
+  border: 0;
+  border-radius: 14px 14px 0 0;
+  background: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.sheet-handle[hidden] {
+  display: none;
+}
+
+.sheet-handle::before {
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--line);
+  content: '';
+}
+
+.sheet-handle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.sheet-head {
+  flex: none;
+}
+
+/* At its lowest height only the handle (and from M27 the quick row) shows. */
+html[data-layout='stacked'] .sheet[data-sheet='peek'] .panel-body {
+  visibility: hidden;
+}
+
+html[data-layout='stacked'] .sheet[data-dragging='true'] .panel-body {
+  visibility: visible;
 }
 
 html[data-layout='side'] .panel {
   border-left: 1px solid var(--line);
-}
-
-.tabs {
-  display: flex;
-  flex: none;
-  border-bottom: 1px solid var(--line);
-}
-
-.tab {
-  flex: 1 1 0;
-  min-height: var(--touch);
-  padding: 8px 12px;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  background: none;
-  color: var(--muted);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.tab[aria-selected='true'] {
-  border-bottom-color: var(--accent);
-  color: var(--accent);
 }
 
 .panel-body {
@@ -477,11 +613,146 @@ html[data-layout='side'] .panel {
   -webkit-overflow-scrolling: touch;
 }
 
-.pane {
-  padding: 12px 16px;
+/* Sections (M27): a fold header, then the block. */
+.panel-section {
+  border-top: 1px solid var(--line);
 }
 
-.pane:focus-visible,
+.panel-section:first-child {
+  border-top: 0;
+}
+
+.panel-section[hidden],
+.section-body[hidden] {
+  display: none;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+}
+
+.section-toggle {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--touch);
+  padding: 8px 16px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-label);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.section-chevron {
+  color: var(--muted);
+}
+
+.panel-section[data-open='false'] .section-chevron {
+  transform: rotate(-90deg);
+}
+
+.section-explain {
+  flex: none;
+  width: var(--touch);
+  height: var(--touch);
+  margin-right: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.section-explain[aria-pressed='true'] {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.section-body {
+  padding: 0 16px 12px;
+}
+
+/* The "?" button shows and hides the explanations of its section. */
+.panel-section:not([data-explain='open']) .explain {
+  display: none;
+}
+
+/* The quick row (M27): shown only at the sheet's lowest height, under the handle. */
+.quick-row {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  height: 56px;
+  padding: 0 12px;
+  overflow: hidden;
+}
+
+html[data-layout='stacked'] .sheet[data-sheet='peek'] .quick-row {
+  display: flex;
+}
+
+.quick-row [hidden] {
+  display: none;
+}
+
+.quick-name {
+  font-weight: 600;
+}
+
+.quick-value {
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.quick-buttons {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.quick-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-small);
+  line-height: 1.25;
+}
+
+.quick-read {
+  flex: none;
+  margin-left: auto;
+}
+
+.mode-option-name,
+.mode-option-hint {
+  display: block;
+}
+
+.chip-menu [data-testid^='mode-option-'] {
+  min-height: 56px;
+}
+
+.mode-option-hint {
+  color: var(--muted);
+  font-size: var(--font-small);
+  font-weight: 400;
+}
+
+.chip-menu [aria-checked='true'] .mode-option-hint {
+  color: inherit;
+}
+
+.section-toggle:focus-visible,
+.section-explain:focus-visible,
 .step-button:focus-visible,
 .wind-dial:focus-visible,
 .preset:focus-visible,
@@ -490,7 +761,6 @@ input[type='range']:focus-visible,
 .chip-menu [role='menuitemradio']:focus-visible,
 .settings-close:focus-visible,
 .card-close:focus-visible,
-.tab:focus-visible,
 .segment:focus-within,
 .toggle:focus-within,
 .footer a:focus-visible {
@@ -1489,11 +1759,6 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-
-/* Ropes tab: Easy / Realistic switch. */
-.mode-switch {
-  margin-bottom: 8px;
 }
 
 .ropes-easy[hidden],
@@ -2597,7 +2862,8 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;
+  /* A canvas does not stretch between top and bottom; its box ends at the sheet's top. */
+  height: calc(100% - var(--view-bottom-inset, 0px));
   touch-action: manipulation;
 }
 
@@ -2687,7 +2953,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .view[data-map] .map-scale {
   position: absolute;
-  bottom: 60px;
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
   left: 8px;
   display: flex;
   flex-direction: column;
@@ -2743,17 +3009,17 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 }
 
 .view[data-map] .map-zoom[data-testid='map-zoom-in'] {
-  bottom: 108px;
+  bottom: calc(var(--view-bottom-inset, 0px) + 108px);
 }
 
 .view[data-map] .map-zoom[data-testid='map-zoom-out'] {
-  bottom: 60px;
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
 }
 
 .view[data-map] .map-hint {
   position: absolute;
   right: 64px;
-  bottom: 60px;
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
   left: 124px;
   display: block;
   max-width: 300px;
@@ -2820,7 +3086,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .clock-card {
   position: absolute;
-  z-index: 6;
+  z-index: 9;
   top: calc(var(--view-top-h, 64px) + 4px);
   right: 8px;
   max-width: min(320px, calc(100% - 16px));

@@ -255,6 +255,11 @@ const CRANK_SMOOTHING = 0.4;
 /** Cranking speed is sent in steps of this many turns per second. */
 const CRANK_STEP = 0.1;
 
+/**
+ * `timeMs` is `performance.now()` when the finger moved, not the pointer event's `timeStamp`: the
+ * cranking speed is then measured on the clock the app's steps run on (the same time on a phone;
+ * the browser checks' test clock moves only this one).
+ */
 export interface CrankTracker {
   start(x: number, y: number, timeMs: number): void;
   /**
