@@ -806,9 +806,13 @@ try {
         { viewport: VIEWPORTS[2], cam: 'helm' },
         { viewport: VIEWPORTS[2], cam: 'side-starboard' },
         { viewport: VIEWPORTS[2], cam: 'top' },
+        // M34: the backstay's two ends now run in a V over the starboard wheel in the top view,
+        // which is edge-on there (a thin line), so the 24 px sweep may miss it. A finer sweep
+        // of the same view finds it (5 taps at 12 px).
+        { viewport: VIEWPORTS[2], cam: 'top', step: 12 },
       ];
-  for (const { viewport, cam } of sweeps) {
-    const label = `taps ${viewport.name}/${cam}`;
+  for (const { viewport, cam, step: fixedStep } of sweeps) {
+    const label = `taps ${viewport.name}/${cam}${fixedStep ? ` (${fixedStep} px)` : ''}`;
     // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
     // The boat is framed largest with the sheet at its lowest (M26).
@@ -816,7 +820,7 @@ try {
     await page.waitForTimeout(800);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const barTop = await viewBottom(page);
-    const step = viewport.width < 500 ? 14 : 24;
+    const step = fixedStep ?? (viewport.width < 500 ? 14 : 24);
     let taps = 0;
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
       for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
