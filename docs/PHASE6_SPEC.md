@@ -725,6 +725,12 @@ Russian names: `fit_fender` «кранец», `fit_fender_ball` «кранец-�
 Done when: 9.7 passes; the Harbour gear block is last in every mode and folded; old links open with the fenders in the locker; `BOAT_REFERENCE.md` lists the fender sizes and stations as assumptions; CODE_MAP lists the new files and the `setFenders` action.
 Not in this milestone: fenders moving, bouncing or being lost (Phase 7), Harbour mode (Phase 7), fenders in other places (the stern platform), more than one ball fender.
 
+### 9.10 Decided in the M33 PR
+
+- **No `photo:fenders` source:** `sourceKeys` has no such key (the owner has not uploaded `side-at-anchor-fenders.jpg`), so `fit_fender` is `status: "draft"` with `sources: ["owner"]`, as 9.6 says for this case. Its `BOAT_REFERENCE.md` row already names the photo as the source of the shape.
+- **`tests/modes.test.ts`:** besides the new rows (taken from `MODE_LAYOUTS` itself), the "the rest always" list gained `harbour`.
+- **Eye and line sizes** are two constants in `src/render3d/boat/fenders.ts` (ring radius 0.02, tube 0.006, as 9.5 gives); the line's radius is `deckFittings.fenders.lineRadius`.
+
 ---
 
 ## 10. M34: Rope ends and Phase 6 sign-off
