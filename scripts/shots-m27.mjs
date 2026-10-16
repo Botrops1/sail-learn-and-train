@@ -67,7 +67,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'Easy: Ropes and Sails open, the rest folded',
       opens.join() ===
-        'ropes:true,sails:true,autopilot:false,engine:false,conditions:false,learn:false,legend:false',
+        'ropes:true,sails:true,autopilot:false,engine:false,conditions:false,learn:false,legend:false,harbour:false',
       opens.join(),
     );
     const tabs = await page.locator('[role="tab"]').count();
