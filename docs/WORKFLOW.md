@@ -457,7 +457,7 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 
 #### M43: Bumps, damage report, fenders
 
-- [ ] Bump: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=270&ws=20&cam=top&tx=4 — the west wind pushes her onto the yacht on her left. A report appears: what was hit, where on our hull, how fast, and how bad.
+- [ ] Bump: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=-90&ws=20&cam=top&tx=4 — the west wind pushes her onto the yacht on her left. A report appears: what was hit, where on our hull, how fast, and how bad.
 - [ ] Fenders (soft bumpers hung over the side): same link, turn "Fenders out" on in the Fenders and lines block first: the same bump now says "the fender took it".
 - [ ] Damage report: the Place block lists the contacts; "Clear" empties it.
 - [ ] Fenders left out: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=66&fd=1&tx=16 — motoring at 8 knots with the fenders out: after a moment a message says a fender was torn off.
@@ -466,7 +466,7 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 
 - [ ] Stern-to: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&tx=4 — she is in front of her berth. In Fenders and lines: "Throw it to the quay" for both stern lines, then "Pick it up" for the lazy line (a line from the quay to a weight on the bottom, taken to the bow): the crew walks it to the bow in 20 seconds. Tap "Tighten" on the lazy line until it says hand tight.
 - [ ] She holds: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=top&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.01,ss:2.01,ll:11.83&wd=90&ws=15&m=harbour — wind from the side: she stays in her berth, the bow moves only a little.
-- [ ] Without the lazy line: same link, "Let go" the lazy line: the bow swings towards the neighbour.
+- [ ] Without the lazy line: the same link with `&tr=busy` added, then "Let go" the lazy line: the bow swings towards the neighbour.
 - [ ] Line in the propeller: from the stern-to link, take one stern line, ease it 10 times, then put the engine astern: the engine stops and says a line is caught. "Clear the propeller" frees it.
 
 #### M45: The bay
@@ -478,15 +478,15 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 
 #### M46: Anchor and windlass
 
-- [ ] Anchoring: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=90&wd=270&ws=10&tx=4 — in the Anchor block hold "Chain out": the counter counts metres; the anchor hangs, then lands on the bottom. The check says how much more chain the rules want (scope: chain against depth).
+- [ ] Anchoring: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4 — she points into the wind. In the Anchor block hold "Chain out": the counter counts metres; the anchor hangs, then lands on the bottom. The check says how much more chain the rules want (scope: chain against depth).
 - [ ] Set it: let out enough chain, then put the engine a third astern for a few seconds: the status says the anchor is set.
-- [ ] Swinging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ap=-1606.0,0.0&as=1&m=harbour — she swings round to point into the wind.
-- [ ] Dragging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=25&wm=gusty&cam=map&pl=bay&pe=-1560.0&pn=-110.0&hdg=0&an=20.0&ap=-1560.0,-90.0&m=harbour&tx=4 — short chain on the sea grass in gusts: the anchor drags and the alarm goes off.
-- [ ] Bow station: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ap=-1606.0,0.0&as=1&mode=realistic&st=bow — Realistic mode has a fifth station, Bow, with the windlass buttons.
+- [ ] Swinging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=180&an=34.0&ax=-1606.0,0.0&as=1&m=harbour — she starts across the wind and swings round to point into it.
+- [ ] Dragging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=25&wm=gusty&cam=map&pl=bay&pe=-1560.0&pn=-70.0&hdg=0&an=20.0&ax=-1560.0,-50.0&m=harbour&tx=4 — short chain on the sea grass in gusts: the anchor drags and the alarm goes off.
+- [ ] Bow station: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1606.0,0.0&as=1&mode=realistic&st=bow — Realistic mode has a fifth station, Bow, with the windlass buttons.
 
 #### M47: Stern-to with the anchor, sign-off
 
-- [ ] Stern-to on your own anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&ln=sp:2.01,ss:2.01&an=48.0&ap=2.8,1442.0&as=1&cam=top — stern lines on, the anchor ahead holds the bow; the hint explains it.
-- [ ] Anchor and shore line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1665.0&pn=0.0&hdg=90&wd=0&ws=15&an=60.0&ap=-1605.0,0.0&as=1&ln=sl1:27.37&cam=top&tx=16 — she lies still with her stern to the shore.
+- [ ] Stern-to on your own anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&ln=sp:2.01,ss:2.01&an=48.0&ax=2.8,1442.0&as=1&cam=top — stern lines on, the anchor ahead holds the bow; the hint explains it.
+- [ ] Anchor and shore line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1665.0&pn=0.0&hdg=90&wd=0&ws=15&an=60.0&ax=-1605.0,0.0&as=1&ln=sl1:27.37&cam=top&tx=16 — she lies still with her stern to the shore.
 - [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1 — hold both thrusters: 50 fps or more. Write the numbers in the PR.
 - [ ] Every item of the Phase 7 Definition of Done (PHASE7_SPEC 14) is ticked in the PR.
