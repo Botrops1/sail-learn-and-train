@@ -216,6 +216,10 @@ export function createLearnTab(store: Store, openRopes: () => void): HTMLElement
         el('div', { class: 'learn-show-me' }, [
           ...(text.showMe ? [textOf('p', 'learn-show-me-text', text.showMe, 'learn-text')] : []),
           button('learn-show-me', t('learn.showMe'), () => {
+            // The link saved for Back must hold the open entry, and `learn=` is written only in
+            // Learn mode (an entry read in the folded Learn section of Easy has no mode): switch
+            // first, as "More" on the info card does (PHASE5_SPEC 8.3, review of PR #65).
+            store.dispatch({ type: 'setAppMode', mode: 'learn' });
             openScene(store, query);
             status.textContent = t('learn.showMeDone');
           }),

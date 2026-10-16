@@ -176,6 +176,30 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
+  // 5b. Show me after reading an entry in Easy mode's Learn section (review of PR #65): Back
+  // returns to the entry.
+  {
+    const { context, page } = await openPage(phone, 'm27 show me easy', BOAT);
+    await page.waitForTimeout(500);
+    await showSection(page, 'learn');
+    await page.getByTestId('learn-group-ropes').evaluate((node) => {
+      node.open = true;
+    });
+    await page.getByTestId('learn-entry-rope_vang').click();
+    await page.getByTestId('learn-show-me').click();
+    await page.waitForTimeout(800);
+    await page.goBack();
+    await page.waitForTimeout(800);
+    const back = await page.evaluate(() => window.location.search);
+    check(
+      'Show me from Easy: Back returns to the entry',
+      back.includes('m=learn') && back.includes('learn=rope_vang'),
+      back,
+    );
+    check('the Vang entry shows again', (await learnName(page)) === 'Vang', await learnName(page));
+    await context.close();
+  }
+
   // 6. More and Try it.
   {
     const { context, page } = await openPage(phone, 'm27 more', '?sel=part_boom&wd=60&ws=12');
