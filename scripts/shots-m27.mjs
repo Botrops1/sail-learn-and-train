@@ -17,7 +17,7 @@ const BOAT = '?wd=60&ws=12';
 const SECTION_ORDER = {
   easy: ['ropes', 'sails', 'autopilot', 'engine', 'conditions', 'learn', 'legend'],
   realistic: ['ropes', 'sails', 'conditions', 'learn', 'legend'],
-  learn: ['learn', 'legend', 'ropes', 'sails', 'conditions'],
+  learn: ['learn', 'legend', 'ropes', 'sails', 'autopilot', 'engine', 'conditions'],
 };
 
 export const M27_SCENES = [
@@ -162,13 +162,15 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm27 show me', '?m=learn&learn=rope_vang');
     await page.waitForTimeout(500);
-    const before = await page.evaluate(() => window.location.search);
+    // The boat's speed (`bs`) changes all the time: compare the rest of the link.
+    const link = () => page.evaluate(() => window.location.search.replace(/&bs=[^&]*/, ''));
+    const before = await link();
     await page.getByTestId('learn-show-me').click();
     await page.waitForTimeout(800);
     check('the chip still reads Learn', (await chipLabel(page)) === 'Learn', await chipLabel(page));
     await page.goBack();
     await page.waitForTimeout(800);
-    const after = await page.evaluate(() => window.location.search);
+    const after = await link();
     check('Back returns to the same link', after === before, `${before} | ${after}`);
     check('still Learn', (await chipLabel(page)) === 'Learn', await chipLabel(page));
     await context.close();
@@ -187,7 +189,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const tryIt = await openPage(phone, 'm27 try it', '?m=learn&learn=rope_vang&wd=60&ws=12');
     const tryPage = tryIt.page;
     await tryPage.waitForTimeout(500);
-    await tryPage.getByTestId('learn-try-ctl_vang').click();
+    await tryPage.getByTestId('learn-try-rope_vang').click();
     await waitForLink(tryPage, ['sel=rope_vang'], ['m=learn']);
     check('Try it: Easy', (await chipLabel(tryPage)) === 'Easy', await chipLabel(tryPage));
     check('the Ropes section is shown', await sectionShown(tryPage, 'ropes'), 'not shown');
