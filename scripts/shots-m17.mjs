@@ -3,7 +3,7 @@
 // chip shown (the older scenes get `clock=0` so the tap sweeps do not open the clock card).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { openSettings } from './ui.mjs';
+import { openSettings, setSheet } from './ui.mjs';
 
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M17_SCENES = [
@@ -27,6 +27,7 @@ export const M17_SCENES = [
  * a screenshot of the canvas also contains.
  */
 async function canvasLuminance(page) {
+  await setSheet(page, 'peek');
   const png = await page.locator('canvas.scene-canvas').screenshot();
   const url = `data:image/png;base64,${png.toString('base64')}`;
   return page.evaluate(async (src) => {
@@ -114,7 +115,17 @@ export async function liveM17Checks({ openPage, viewports, outDir, prefix, probl
       const overlay = document.querySelector('[data-testid="debug-overlay"]');
       if (overlay) overlay.style.display = 'none';
     });
-    const spot = await page.evaluate(() => window.__sailWater.sunScreen());
+    // Wait for the result, not a fixed time: the camera settles slower on a loaded runner, so
+    // read the sun until it stops moving (two reads 300 ms apart, up to 12 s).
+    let spot = await page.evaluate(() => window.__sailWater.sunScreen());
+    for (let i = 0; i < 40; i += 1) {
+      await page.waitForTimeout(300);
+      const next = await page.evaluate(() => window.__sailWater.sunScreen());
+      const still =
+        spot !== null && next !== null && Math.hypot(next.x - spot.x, next.y - spot.y) < 0.5;
+      spot = next;
+      if (still) break;
+    }
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const inside =
       spot !== null && spot.x >= 0 && spot.x <= box.width && spot.y >= 0 && spot.y <= box.height;

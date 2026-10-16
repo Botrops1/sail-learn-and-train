@@ -15,6 +15,6 @@ The owner typed `/bug $ARGUMENTS`. If it is unclear what went wrong, ask one sho
 1. `npm ci`. Read CLAUDE.md, then only the spec and PHYSICS_TRUTHS parts that cover the behaviour.
 2. **Reproduce it first:** open the owner's link state in the browser checks (a scene or live check in `scripts/shots.mjs`) or in a unit test. If you cannot reproduce it, say so and ask for the phone model, orientation and the version in Settings → About.
 3. If the behaviour is actually correct sailing, do not change code: explain in plain words why, with the rule from PHYSICS_TRUTHS, and stop.
-4. Fix it with the smallest change; add a test (or live check) that fails before and passes after. Run typecheck, lint, tests, build and the browser checks of the milestone involved.
+4. Fix it with the smallest change; add a test (or live check) that fails before and passes after. Run typecheck, lint, tests, build and the browser checks of the milestone involved (see "Running the browser checks in a session" in CLAUDE.md).
 5. Open a PR titled `Fix: <what>` (with `Closes #<n>` if the bug has an issue), using the CLAUDE.md template (a full preview link that shows the fix; questions with recommendations). Subscribe to its activity and act on the owner's comments as in `/milestone` section 5.
 6. Tell the owner in chat: the PR link and the one link to check.

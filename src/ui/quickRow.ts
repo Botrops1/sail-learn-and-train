@@ -1,0 +1,94 @@
+import type { AppState, Store } from '../app/store';
+import { snapControl, type ControlId } from '../model/controls';
+import { entryFor } from '../model/panelEntries';
+import { el } from './dom';
+import { t } from './i18n';
+import { nameOf } from './learnTab';
+import { controlView, valueText } from './ropeControls';
+import type { Sheet } from './sheet';
+import { setText, stepButton } from './stepper';
+
+/**
+ * The quick row in the sheet's head (PHASE5_SPEC 8.5): what the sheet shows at its lowest height,
+ * under the handle. Easy: the selected rope's name and value with − and + (same steps as the
+ * slider). Realistic and Learn: one line of advice, or in Learn the open entry with a Read
+ * button. CSS alone shows it at peek (`.quick-row` is `display: none` otherwise); the content
+ * follows the store.
+ */
+export function createQuickRow(head: HTMLElement, store: Store, sheet: Sheet): void {
+  const hint = el('p', { class: 'quick-hint', 'data-testid': 'quick-hint' });
+  const name = el('span', { class: 'quick-name', 'data-testid': 'quick-name' });
+  const value = el('span', { class: 'quick-value', 'data-testid': 'quick-value' });
+  const read = el(
+    'button',
+    { type: 'button', class: 'action-button quick-read', 'data-testid': 'quick-read' },
+    [t('quick.read')],
+  );
+  read.addEventListener('click', () => sheet.setHeight('half'));
+
+  let controlId: ControlId | null = null;
+  const nudge = (direction: 1 | -1) => {
+    if (!controlId) return;
+    const state = store.getState();
+    store.dispatch({
+      type: 'setControls',
+      values: {
+        [controlId]: snapControl(
+          controlId,
+          state.controls[controlId] + direction * state.settings.step,
+          state.settings.step,
+        ),
+      },
+    });
+  };
+  const less = stepButton('−', '', () => nudge(-1));
+  const more = stepButton('+', '', () => nudge(1));
+  const buttons = el('span', { class: 'quick-buttons' }, [less, more]);
+
+  const root = el('div', { class: 'quick-row', 'data-testid': 'quick-row' }, [
+    hint,
+    name,
+    value,
+    buttons,
+    read,
+  ]);
+  head.append(root);
+
+  const render = (state: AppState) => {
+    controlId = null;
+    let text = '';
+    let showControl = false;
+    let showRead = false;
+    if (state.appMode === 'easy') {
+      const id = entryFor(state.selection)?.controlId ?? null;
+      if (id) {
+        controlId = id;
+        showControl = true;
+        const view = controlView(id);
+        const label = t(view.name);
+        setText(name, label);
+        setText(value, valueText(view, state.controls[id]));
+        const wheel = view.unit === 'rudder';
+        less.setAttribute('aria-label', t(wheel ? 'wheel.less' : 'control.less', { name: label }));
+        more.setAttribute('aria-label', t(wheel ? 'wheel.more' : 'control.more', { name: label }));
+      } else {
+        text = t('quick.easy');
+      }
+    } else if (state.appMode === 'realistic') {
+      text = t('quick.realistic');
+    } else if (state.learn) {
+      showRead = true;
+      setText(name, nameOf(state.learn));
+    } else {
+      text = t('quick.learn');
+    }
+    hint.hidden = text === '';
+    setText(hint, text);
+    name.hidden = !showControl && !showRead;
+    value.hidden = !showControl;
+    buttons.hidden = !showControl;
+    read.hidden = !showRead;
+  };
+  store.subscribe(render);
+  render(store.getState());
+}

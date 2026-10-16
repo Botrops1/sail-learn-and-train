@@ -30,12 +30,12 @@ function windText(
 /**
  * The instrument strip over the 3D view (PHASE2_SPEC 6.5), top left, replacing Phase 1's wind
  * chip: speed, heading and the autopilot on the first line; true and apparent wind on the
- * second. A tap opens the Wind tab. The text changes only when a displayed value does.
+ * second. A tap opens the Conditions section. The text changes only when a displayed value does.
  */
 export function createInstrumentStrip(
   host: HTMLElement,
   store: Store,
-  openWindTab: () => void,
+  openConditions: () => void,
 ): void {
   const speed = el('span', { class: 'strip-speed', 'data-testid': 'strip-speed' });
   const heading = el('span', { class: 'strip-heading', 'data-testid': 'strip-heading' });
@@ -75,7 +75,7 @@ export function createInstrumentStrip(
       flags,
     ],
   );
-  strip.addEventListener('click', openWindTab);
+  strip.addEventListener('click', openConditions);
   host.append(strip);
 
   const refresh = (state: AppState) => {

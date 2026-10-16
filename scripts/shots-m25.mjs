@@ -32,18 +32,11 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     }
   };
 
-  // 1. Three tabs, no View tab.
+  // 1. No tabs (M27 replaced them by sections), no View tab.
   {
     const { context, page } = await openPage(phone, 'm25 tabs', '?wd=60&ws=12');
     const tabs = await page.getByRole('tab').count();
-    const ids = await page.evaluate(() =>
-      [...document.querySelectorAll('[role="tab"]')].map((tab) => tab.getAttribute('data-testid')),
-    );
-    check(
-      'the panel has three tabs',
-      tabs === 3 && ids.join() === 'tab-ropes,tab-wind,tab-learn',
-      ids.join(', '),
-    );
+    check('the panel has no tabs', tabs === 0, `${tabs} tab(s)`);
     const view = await page.locator('#pane-view').count();
     check('no View pane', view === 0, `${view} element(s) #pane-view`);
     await context.close();

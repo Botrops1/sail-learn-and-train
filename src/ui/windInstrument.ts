@@ -173,7 +173,7 @@ export function createWindInstrument(store: Store): HTMLElement {
       'data-testid': 'wind-instrument',
     },
     [
-      el('p', { class: 'hint' }, [t('instrument.hint')]),
+      el('p', { class: 'hint explain' }, [t('instrument.hint')]),
       el('div', { class: 'instrument-box' }, [dial]),
       under,
     ],

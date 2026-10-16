@@ -183,7 +183,7 @@ function alertsFor(state: AppState): Alert[] {
 
 export function createRealisticPanel(
   store: Store,
-  showLearn: () => void = () => undefined,
+  openEntry: (id: string) => void = () => undefined,
 ): HTMLElement[] {
   const dispatch = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
   let selected: string | null = null;
@@ -234,9 +234,9 @@ export function createRealisticPanel(
     if (to) dispatch({ type: 'handle', to });
   });
   const helm = el('div', { class: 'helm-station', 'data-testid': 'helm-station' }, [
-    el('p', { class: 'hint' }, [t('real.helm.hint')]),
+    el('p', { class: 'hint explain' }, [t('real.helm.hint')]),
     helmSlot.element,
-    el('p', { class: 'hint' }, [t('real.helm.slot')]),
+    el('p', { class: 'hint explain' }, [t('real.helm.slot')]),
     wheel.element,
     createAutopilotPanel(store),
     createEngineLever(store),
@@ -438,10 +438,14 @@ export function createRealisticPanel(
   practiceButton.addEventListener('click', () => {
     const scenario = boat.realisticMode.scenarios.find((s) => s.id === 'furlLineSlips');
     if (!scenario) return;
-    const { settings: now, learn } = store.getState();
+    const { settings: now, learn, appMode } = store.getState();
     const next = parseUrlState(scenario.query, now.detail);
     const settings = { ...next.settings, debug: now.debug, step: now.step, legend: now.legend };
-    store.dispatch({ type: 'load', state: { ...next, settings, learn } });
+    // Learn mode stays (PHASE5_SPEC 8.3); otherwise the scenario's own ropes mode is the mode.
+    store.dispatch({
+      type: 'load',
+      state: { ...next, settings, learn, appMode: appMode === 'learn' ? 'learn' : next.appMode },
+    });
   });
   const practice = el('details', { class: 'strip-more real-how', 'data-testid': 'practice' }, [
     el('summary', {}, [t('real.practice.title')]),
@@ -458,8 +462,7 @@ export function createRealisticPanel(
     // Read when tapped: the fold is hidden with the strip when nothing is selected.
     const spec = selected ? tailSpecs().find((candidate) => candidate.key === selected) : undefined;
     if (!spec) return;
-    store.dispatch({ type: 'openLearn', id: spec.ropeId });
-    showLearn();
+    openEntry(spec.ropeId);
   });
   const more = el('details', { class: 'strip-more' }, [
     el('summary', {}, [t('ropes.strip.more')]),

@@ -268,7 +268,7 @@ export function createMastDrawing(store: Store): MastDrawing {
     root.setPointerCapture(event.pointerId);
     const p = point(event);
     drag = { kind, start: p, moved: 0, out: false };
-    if (kind === 'crank') crank.start(p.x, p.y, event.timeStamp);
+    if (kind === 'crank') crank.start(p.x, p.y, performance.now());
   });
   root.addEventListener('pointermove', (event) => {
     if (!drag) return;
@@ -277,7 +277,7 @@ export function createMastDrawing(store: Store): MastDrawing {
     if (drag.kind === 'crank') {
       // A finger outside the crank circle only stops the crank. The handle stays in the
       // socket; it comes out only when the grip is dropped on the slot (owner, after M4c).
-      drag.out = crank.move(p.x, p.y, event.timeStamp);
+      drag.out = crank.move(p.x, p.y, performance.now());
       slot.setTarget(drag.out);
     }
     if (drag.kind === 'handle' || (drag.kind === 'crank' && drag.out)) {

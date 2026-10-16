@@ -577,7 +577,13 @@ Modes, sections, the quick row and the mode chip (M27). The tabs stay (they move
 
 ### 7.12 Decided in the M26 PR
 
-(empty)
+- **The end of a height change** (7.5): the 300 ms fallback timer re-arms itself while the sheet is still animating (`sheet.getAnimations()`), up to 2 s, so a busy main thread that starts the animation late (headless software drawing takes ~100 ms a frame) is not cut short and snapped to its end. A change to the same size, or with reduced motion, ends at once without a timer.
+- **The map canvas's box** (7.5): `height: calc(100% - var(--view-bottom-inset, 0px))`, not `height: auto; bottom: …`. A canvas is a replaced element: with `height: auto` it keeps the height of its own drawing buffer, which the map sets from its box, so it shrank on every resize.
+- **A drag from peek** keeps the panel body visible while the finger is down (`data-dragging` on the sheet), so the sheet does not rise empty.
+- **`setPointerCapture`** is wrapped in `try/catch` (a pointer that is already gone must not stop the drag).
+- **Browser checks** (7.8, 7.9): `dragHandle` sends a fling (`delayMs` 0) as pointer events from inside the page in one task, because every real mouse move takes ~100 ms in headless Chromium with software drawing, so a mouse "fling" is slow in wall-clock time and the app rightly does not treat it as a fling; slow drags still use the mouse. The drag checks (live check 3) open on `cam=map`, where frames are cheap. The tap sweeps and small-part taps call `setSheet(page, 'peek')` for every viewport (a no-op in the side layout).
+- `--view-share` and `--view-min` are removed from `style.css` (nothing uses them any more).
+- Owner's answers on PR #63 ("fix 1, 2, 3 and 4 from independent review", "agree with open question recommendation"): tapping empty water or sky does not lower the sheet. **Camera:** `cameraRig` raises `controls.maxDistance` to the distance a preset needs (`allowDistanceOf`) whenever a preset pose is applied, so the whole boat fits above a half-height sheet; hand zooming keeps `SCENE.camera.maxDistance` once a preset needs less. Live check 5 now tests the masthead (22 m) and the bottom of the keel (−2.4 m), not a point 10 m up the mast. **Info card:** hidden while the sheet is at full (`Sheet.atFull()`, `InfoCardOptions.atFull`), shown again when it comes down. **Slide:** `transitioncancel` ends a change only when nothing is animating any more; a pointer going down on the handle during a slide stops the slide where it is and the drag starts from that height.
 
 ---
 
@@ -820,7 +826,13 @@ The mini-map (M28), the second column (M29), remembering folds.
 
 ### 8.12 Decided in the M27 PR
 
-(empty)
+- **Section helpers** (8.4): `SectionView` also has `resetExplain()` (the panel closes the "?" texts when the mode changes). The engine block's own heading is removed from `.engine-head`, which now holds only the Start / Stop button (the Helm station's lever keeps its heading).
+- **`panel.showSection`** (8.5) scrolls the section's top to the top of the panel body at once and again when a raised sheet has finished growing (otherwise the scroll is cut short while the body is still small).
+- **The quick row's − / +** have the same accessible names as the strip's (`control.less` / `control.more`); they never exist twice for a reader, because the sheet body is `visibility: hidden` at peek and the quick row is `display: none` otherwise (3.5).
+- **"Try it"** (8.5) switches to the ropes mode first (`setAppMode(settings.ropesMode)`), then selects and shows the Ropes section, as the spec says; the Learn entry stays open in the state but is not written to the link in Easy or Realistic.
+- **The info card's "More"** calls `panel.openLearnEntry(id)`, which dispatches `setAppMode('learn')`, `openLearn(id)` and shows the Learn section (`InfoCardOptions.showLearn` takes the id).
+- **Owner's answers on PR #65 ("Accept all"):** in Easy only Ropes and Sails start open (the other sections start folded), and in Realistic the Autopilot and Engine sections are hidden, as 4.4 says.
+- **Browser checks** (8.9): besides the list there, `shots-m25.mjs` check 1 ("three tabs, no View tab") now says "no tabs, no View pane" (there are no tabs any more); `showSection` in `scripts/ui.mjs` raises a sheet at peek before it taps a folded section's header (the header may sit under the sheet's body). `shots-m6.mjs` and `shots-m11.mjs` open the Autopilot section before tapping its buttons; `shots-m12.mjs` opens the Engine section; the scenes of m6, m12 and m13 that scroll to the Autopilot or Engine block got `section:`.
 
 ---
 

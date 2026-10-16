@@ -110,6 +110,19 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     target: controls.target.toArray() as [number, number, number],
     fovDeg: camera.fov,
   });
+  /**
+   * A preset must be able to stand as far away as it needs to fit the boat in a small free area
+   * (a phone at half height), also beyond the orbit limit; the limit holds for hand zooming
+   * again as soon as a preset needs less.
+   */
+  const allowDistanceOf = (pose: CameraPose) => {
+    const distance = Math.hypot(
+      pose.position[0] - pose.target[0],
+      pose.position[1] - pose.target[1],
+      pose.position[2] - pose.target[2],
+    );
+    controls.maxDistance = Math.max(cam.maxDistance, distance * 1.001);
+  };
   const apply = (pose: CameraPose) => {
     camera.position.set(...pose.position);
     controls.target.set(...pose.target);
@@ -134,6 +147,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       if (currentPreset === 'free' && movedByHand) lastFreePose = currentPose();
       currentPreset = preset;
       const to = poseFor(preset);
+      allowDistanceOf(to);
       if (animate) tween = { from: currentPose(), to, start: performance.now() };
       else {
         tween = undefined;
@@ -142,8 +156,15 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       }
     },
     setViewport(width, height, bottomInset, presetOptions, topInset = 0) {
-      const inset = Math.min(Math.max(0, bottomInset), height * 0.4);
-      const top = Math.min(Math.max(0, topInset), height * 0.4);
+      let inset = Math.min(Math.max(0, bottomInset), height * cam.maxBottomInsetShare);
+      let top = Math.min(Math.max(0, topInset), height * cam.maxTopInsetShare);
+      // A small phone at half height: the boat still gets `minFreePx`; the top gives way first.
+      const shortBy = cam.minFreePx - (height - inset - top);
+      if (shortBy > 0) {
+        const fromTop = Math.min(top, shortBy);
+        top -= fromTop;
+        inset = Math.max(0, inset - (shortBy - fromTop));
+      }
       viewport = { width, height, inset, top };
       options = presetOptions;
       updateProjection();
@@ -159,6 +180,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       // default view opened by a `cam=free` link until the user moves the camera.
       if ((currentPreset !== 'free' || !movedByHand) && !interacting) {
         const to = presetPose(currentPreset, lens, options);
+        allowDistanceOf(to);
         if (tween) tween.to = to;
         else apply(to);
       }

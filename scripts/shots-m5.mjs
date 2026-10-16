@@ -4,7 +4,7 @@
 // accessibility audit, the disclaimer in Settings → About and the frame times in the debug overlay.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { closeSettings, openSettings, showSection } from './ui.mjs';
+import { closeSettings, openSettings, setSheet, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M5_SCENES = [
@@ -54,6 +54,7 @@ export async function liveM5Checks({
   const search = (page) => page.evaluate(() => window.location.search);
   /** A close-up from a boat position; the debug overlay (needed for the hook) is hidden. */
   const closeUp = async (page, view) => {
+    await setSheet(page, 'peek');
     await page.addStyleTag({ content: '.debug { display: none !important; }' });
     await page.evaluate((v) => window.__sailDebug.setView(v.position, v.target, v.fov), view);
     await page.waitForTimeout(800);
@@ -103,6 +104,7 @@ export async function liveM5Checks({
       'halyards',
       '?wd=60&ws=12&cam=side-port&debug=1&detail=high&lb=0',
     );
+    await setSheet(page, 'peek');
     await page.waitForTimeout(1000);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const tapAt = async (partId, fraction) => {
@@ -146,6 +148,8 @@ export async function liveM5Checks({
     await page.waitForTimeout(800);
     const strip = page.getByTestId('real-strip');
     const press = async (name, times = 1) => {
+      // The close-ups are shot with the sheet at its lowest; the buttons are in the panel.
+      await setSheet(page, 'half');
       for (let i = 0; i < times; i += 1) {
         await strip.getByRole('button', { name, exact: true }).first().click();
         await page.waitForTimeout(150);

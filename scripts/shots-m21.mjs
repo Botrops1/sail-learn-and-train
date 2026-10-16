@@ -2,7 +2,7 @@
 // Labels contain "m21", so openPage adds held=1, sea=flat and clock=0 to queries without them.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { showSection } from './ui.mjs';
+import { setMode, showSection } from './ui.mjs';
 
 /** Every size: the groups, the search for "vang", an entry with its Back button, the danger zone's scene after the gybe. */
 export const M21_SCENES = [
@@ -49,6 +49,8 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 1. The groups; open one, open an entry, come back.
   {
     const { context, page } = await openPage(phone, 'm21 groups', '?wd=90&ws=12');
+    await setMode(page, 'learn');
+    await setMode(page, 'learn');
     await showSection(page, 'learn');
     await page.waitForTimeout(500);
     check('ten groups', (await groupCount(page)) === 10, String(await groupCount(page)));
@@ -70,6 +72,8 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 2. Search by another name; no match; the text stays when an entry is opened.
   {
     const { context, page } = await openPage(phone, 'm21 search', '?wd=90&ws=12');
+    await setMode(page, 'learn');
+    await setMode(page, 'learn');
     await showSection(page, 'learn');
     const search = page.getByTestId('learn-search');
     await search.fill('kicker');
@@ -99,6 +103,8 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 3. A word printed on the boat.
   {
     const { context, page } = await openPage(phone, 'm21 genoa', '?wd=90&ws=12');
+    await setMode(page, 'learn');
+    await setMode(page, 'learn');
     await showSection(page, 'learn');
     await page.getByTestId('learn-search').fill('Genoa');
     const text = await page.getByTestId('learn-hit-rope_jib_sheet').innerText();
@@ -121,6 +127,8 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
   // 5. Accessibility: the groups, one group open, the results.
   {
     const { context, page } = await openPage(phone, 'm21 a11y', '?wd=90&ws=12');
+    await setMode(page, 'learn');
+    await setMode(page, 'learn');
     await showSection(page, 'learn');
     await page.waitForTimeout(500);
     const clean = (what, found) =>

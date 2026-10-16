@@ -66,7 +66,6 @@ export function createRopeLegend(): HTMLElement {
     el('li', {}, [swatch(SCENE.ropes.fighting, 'none'), el('span', {}, [t('legend.fighting')])]),
   );
   return el('section', { class: 'rope-legend', 'data-testid': 'rope-legend' }, [
-    el('h3', { class: 'section-title' }, [t('legend.title')]),
     el('ul', {}, items),
   ]);
 }

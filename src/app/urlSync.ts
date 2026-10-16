@@ -55,6 +55,7 @@ export function startUrlSync(store: Store): void {
       state.sea.setting === previous.sea.setting &&
       state.selection === previous.selection &&
       state.learn === previous.learn &&
+      state.appMode === previous.appMode &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
@@ -112,6 +113,7 @@ export function openScene(store: Store, query: string): void {
       ...next,
       settings: { ...next.settings, detail, debug, step, legend, labels },
       learn: state.learn,
+      appMode: state.appMode === 'learn' ? 'learn' : next.appMode,
     },
   });
 }

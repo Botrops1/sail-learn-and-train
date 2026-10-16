@@ -6,7 +6,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { showSection } from './ui.mjs';
+import { setMode, showSection } from './ui.mjs';
 
 export const M24_SCENES = [];
 
@@ -40,6 +40,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
     const label = `m24 ${code}`;
     const errorsBefore = problems.length;
     const { context, page } = await openPage(phone, label, code === 'en' ? '?' : '?lang=ru');
+    await setMode(page, 'learn');
     await showSection(page, 'learn');
     await page.waitForTimeout(500);
 
@@ -103,6 +104,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
           // Get back to the list so the next entry can be opened.
           await page.goto(page.url().split('?')[0] + '?held=1&sea=flat&clock=0');
           await page.waitForSelector('canvas.scene-canvas', { state: 'attached' });
+          await setMode(page, 'learn');
           await showSection(page, 'learn');
           continue;
         }
