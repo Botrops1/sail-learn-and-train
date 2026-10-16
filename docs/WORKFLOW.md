@@ -421,3 +421,72 @@ New link settings (PHASE5_SPEC 4.2): M27 `m=learn` opens Learn mode (without it 
 - [ ] Phone, all three modes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — switch Learn, Easy, Realistic and move the sheet to each height; nothing is cut off or hidden for good.
 - [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?debug=1&wd=60&ws=20&wm=gusty — 50 fps or more with the sheet at the thin strip and at half. Write the numbers in the PR.
 - [ ] Every item of the Phase 5 Definition of Done (PHASE5_SPEC 11) is ticked in the PR.
+
+## 11. Phase 7 (planned ahead)
+
+Planned before Phases 5 and 6 were built. **Before M40, start one Opus session with `/plan 7 refresh`**: it brings [`PHASE7_SPEC.md`](PHASE7_SPEC.md) up to date with what Phases 5 and 6 built, in a small docs PR. Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.
+
+### 11.1 Checklists
+
+New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=marina` or `pl=bay` puts the boat in that place, ready (M42, M45), with `ml=tight|medium|spacious` (the marina's layout), `tr=busy|half|empty` (how many other yachts) and `pe`/`pn` (where she is); `ln=` the mooring lines (M44); `an=`, `ap=`, `as=1` the anchor (M46). `tx=16` makes time run 16 times faster. Replace `<N>` with the PR number.
+
+#### M40: Slow-speed handling
+
+- [ ] Wind on the side: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&mf=0&jf=0&js=100&bs=0&ap=off&cam=top — the sails are rolled away and she stands still. Watch for 30 seconds: she slides sideways to the left (west) and her bow turns a little to the left, away from the wind.
+- [ ] The bow blows off: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=45&ws=15&mf=0&jf=0&js=100&bs=0&ap=off&cam=top — the wind comes from ahead and to the right. In 30 seconds the bow turns about 30° to the left (downwind).
+- [ ] Prop walk (the propeller pushing the stern sideways in reverse): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=-50&cam=top — no wind, engine half astern. She goes backwards and her bow slowly turns right (the stern goes left), about 6° in 15 seconds.
+- [ ] Kick ahead (a short push forward with the wheel turned): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&rd=35&cam=top — wheel hard right. In the Engine block push the lever to 60 % ahead for 3 seconds, then back to the middle. She turns right more than her speed would explain (the propeller blows water over the rudder).
+- [ ] She keeps going: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=4&eng=1&lv=0&ap=off&cam=top&tx=4 — 4 knots, engine in neutral. She coasts for a long way (more than 100 m) before she stops.
+- [ ] Sailing as before: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — sail for a minute: nothing has changed compared with the live site.
+
+#### M41: Thrusters and Harbour mode
+
+- [ ] Harbour mode: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&cam=top — tap the mode chip and choose "Harbour": the Engine and Thrusters blocks open first.
+- [ ] Bow thruster (a small sideways propeller in the bow): same link, Harbour mode — hold the Bow joystick to the right: the bow swings right, about 36° in 10 seconds. Let go: it stops pushing.
+- [ ] Spin and slide: hold Bow right and Stern left: she turns on the spot. Hold both right: she moves sideways.
+- [ ] Weak at speed: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour&wd=0&ws=0&mf=0&jf=0&js=100&bs=4&eng=1&lv=40&ap=off&cam=top — at 4 knots the bow thruster hardly turns her, and the status says "little effect at this speed".
+- [ ] The strip at the bottom (sheet pulled down): the engine − / + and two small joysticks are there and work.
+- [ ] Realistic mode: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&mode=realistic&st=helm&cam=helm — the two joysticks are under the engine lever.
+
+#### M42: Places and the marina
+
+- [ ] Go to the marina: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour&ws=0 — in the Place block tap "Marina": she is in the marina's fairway (the lane between the boats), sails away, engine running. The map shows the quay, the pontoon, the moored yachts and your berth in yellow.
+- [ ] Your berth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1480.0&hdg=180&cam=side-port — in front of your berth: the neighbours on both sides and the yellow stripe on the quay.
+- [ ] Layout and traffic: in the Place block choose Tight and Busy: the fairway is narrower, every berth but yours is taken, and she goes back to the start.
+- [ ] Share: tap Share and open the link in a new tab: the same place, layout, traffic and spot.
+
+#### M43: Bumps, damage report, fenders
+
+- [ ] Bump: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=270&ws=20&cam=top&tx=4 — the west wind pushes her onto the yacht on her left. A report appears: what was hit, where on our hull, how fast, and how bad.
+- [ ] Fenders (soft bumpers hung over the side): same link, turn "Fenders out" on in the Fenders and lines block first: the same bump now says "the fender took it".
+- [ ] Damage report: the Place block lists the contacts; "Clear" empties it.
+- [ ] Fenders left out: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=66&fd=1&tx=16 — motoring at 8 knots with the fenders out: after a moment a message says a fender was torn off.
+
+#### M44: Mooring lines (Med stern-to)
+
+- [ ] Stern-to: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&tx=4 — she is in front of her berth. In Fenders and lines: "Throw it to the quay" for both stern lines, then "Pick it up" for the lazy line (a line from the quay to a weight on the bottom, taken to the bow): the crew walks it to the bow in 20 seconds. Tap "Tighten" on the lazy line until it says hand tight.
+- [ ] She holds: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=top&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.01,ss:2.01,ll:11.83&wd=90&ws=15&m=harbour — wind from the side: she stays in her berth, the bow moves only a little.
+- [ ] Without the lazy line: same link, "Let go" the lazy line: the bow swings towards the neighbour.
+- [ ] Line in the propeller: from the stern-to link, take one stern line, ease it 10 times, then put the engine astern: the engine stops and says a line is caught. "Clear the propeller" frees it.
+
+#### M45: The bay
+
+- [ ] Go to the bay: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour — Place: "Bay". The depth shows on the instrument strip; the map shows the bay's depths, the rocks (a cross with dots) and three buoys.
+- [ ] Too shallow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1676.4&pn=0.0&hdg=270&bs=1.0&cam=side-port — the depth turns red and the keel touches the bottom: a report says so. Engine full astern: she comes off.
+- [ ] Mooring buoy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1457.0&pn=0.0&hdg=90&ws=0&cam=side-port — the bow is at a buoy: "Pick up the buoy". She is now tied to it.
+- [ ] Shore line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1665.0&pn=0.0&hdg=90&ws=0&tx=4 — "Take a line ashore": in 30 seconds the crew ties it to a ring on the rocks.
+
+#### M46: Anchor and windlass
+
+- [ ] Anchoring: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=90&wd=270&ws=10&tx=4 — in the Anchor block hold "Chain out": the counter counts metres; the anchor hangs, then lands on the bottom. The check says how much more chain the rules want (scope: chain against depth).
+- [ ] Set it: let out enough chain, then put the engine a third astern for a few seconds: the status says the anchor is set.
+- [ ] Swinging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ap=-1606.0,0.0&as=1&m=harbour — she swings round to point into the wind.
+- [ ] Dragging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=25&wm=gusty&cam=map&pl=bay&pe=-1560.0&pn=-110.0&hdg=0&an=20.0&ap=-1560.0,-90.0&m=harbour&tx=4 — short chain on the sea grass in gusts: the anchor drags and the alarm goes off.
+- [ ] Bow station: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ap=-1606.0,0.0&as=1&mode=realistic&st=bow — Realistic mode has a fifth station, Bow, with the windlass buttons.
+
+#### M47: Stern-to with the anchor, sign-off
+
+- [ ] Stern-to on your own anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&ln=sp:2.01,ss:2.01&an=48.0&ap=2.8,1442.0&as=1&cam=top — stern lines on, the anchor ahead holds the bow; the hint explains it.
+- [ ] Anchor and shore line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1665.0&pn=0.0&hdg=90&wd=0&ws=15&an=60.0&ap=-1605.0,0.0&as=1&ln=sl1:27.37&cam=top&tx=16 — she lies still with her stern to the shore.
+- [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1 — hold both thrusters: 50 fps or more. Write the numbers in the PR.
+- [ ] Every item of the Phase 7 Definition of Done (PHASE7_SPEC 14) is ticked in the PR.
