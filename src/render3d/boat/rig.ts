@@ -8,6 +8,7 @@ import {
   vangStrutEnds,
   type BoomPose,
 } from '../../model/rigGeometry';
+import { backstayRig } from '../../model/backstay';
 import { mainsheetBlocks } from '../../model/mainsheet';
 import { turningBlockPoint } from '../../model/ropePaths';
 import type { Detail } from '../../model/settings';
@@ -57,12 +58,7 @@ export function buildRig(materials: BoatMaterials, detail: Detail = 'high'): Rig
         vec3(boat.rig.forestay.top),
         materials,
       ),
-      buildStay(
-        'part_backstay',
-        vec3(boat.rig.backstay.top),
-        vec3(boat.rig.backstay.bottom),
-        materials,
-      ),
+      ...buildBackstay(materials, segments),
       boomPivot,
       ...vang.tubes,
       buildGooseneck(materials),
@@ -147,6 +143,38 @@ function buildStay(id: string, a: Vec3, b: Vec3, materials: BoatMaterials): THRE
       [a, b],
     ]),
   );
+}
+
+/**
+ * The backstay (M34, owner on PR #81): from the masthead to a block low on the stay, then two
+ * ends in a V down to the aft face of the rope boxes. One pick target for the three wires, one
+ * for the block; both are the backstay.
+ */
+function buildBackstay(materials: BoatMaterials, segments: number): THREE.Object3D[] {
+  const { top, block, legs } = backstayRig();
+  const radius = boat.modelDetail.wireRenderRadius;
+  const wires: [Vec3, Vec3][] = [
+    [top, block],
+    [block, legs[0]],
+    [block, legs[1]],
+  ];
+  return [
+    asThin(
+      partMesh(
+        'part_backstay',
+        wires.map(([a, b]) => cylinderBetween(a, b, radius, 6)),
+        materials.wire,
+        wires,
+      ),
+    ),
+    // Not a small fitting: a small mesh with this id would make every tap on the wires win over
+    // the small fittings near them in the top view (picking.ts, first rule).
+    partMesh(
+      'part_backstay',
+      sheaveBlock(block, [0, 0, 1], boat.modelDetail.block.radius, [0, 1, 0], segments),
+      materials.block,
+    ),
+  ];
 }
 
 /**

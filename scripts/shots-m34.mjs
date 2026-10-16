@@ -35,6 +35,14 @@ const CLOSE_UPS = [
     ...BOX_VIEW,
   },
   {
+    // The backstay's block and its two ends in a V down to the aft faces of the rope boxes.
+    name: 'backstay-v',
+    link: '?wd=90&ws=12&lb=0&debug=1',
+    position: [-15, 6.5, 3.5],
+    target: [-7, 4.2, 0],
+    fov: 50,
+  },
+  {
     // The whole stern from behind and above: the floor is flat to the transom.
     name: 'stern-floor',
     link: '?wd=90&ws=12&lb=0&debug=1',

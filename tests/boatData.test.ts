@@ -111,7 +111,7 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       ['forestay.bottom', hanse508.rig.forestay.bottom],
       ['forestay.top', hanse508.rig.forestay.top],
       ['backstay.top', hanse508.rig.backstay.top],
-      ['backstay.bottom', hanse508.rig.backstay.bottom],
+      ['backstay.block', hanse508.rig.backstay.block],
       ['boom.gooseneck', hanse508.rig.boom.gooseneck],
       ['vang.mastPoint', hanse508.rig.vang.mastPoint],
       ['toppingLift.mastExit', hanse508.rig.toppingLift.mastExit],
