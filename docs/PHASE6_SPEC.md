@@ -53,7 +53,7 @@ If something here looks necessary, stop and ask in the PR.
 | On the toerail | A fitting "on the toerail" at station x stands at `[x, sheerAt(x) + toerail.height, side × (halfBeamAt(x) − toerail.width / 2)]`, its length along x. |
 | Detail | `detail: 'high' \| 'low'` is passed to every new builder (as `buildDeckGear(materials, detail)` today). Segment counts per detail are in 3.3; nothing is hidden at Low (owner's answer 7). |
 | Ids | Every new mesh carries a registry id through `partMesh` / `smallPartMesh` (`src/render3d/boat/parts.ts`). Small fittings (cleats, fairleads, windlass) use `smallPartMesh` with one hit point per fitting (its top centre) so a fingertip finds them. Thin parts (chain, fender lines) are `asThin`. |
-| Materials | The existing materials of `src/render3d/boat/materials.ts` (`gelcoat`, `fitting`, `chrome`, `dark`, …), plus three new ones added to `BoatMaterials`: `fender` and `fenderLine` (M33) and `coil` (M34), each a `MeshLambertMaterial` of the colour its section gives, at both detail levels. |
+| Materials | The existing materials of `src/render3d/boat/materials.ts` (`gelcoat`, `fitting`, `chrome`, `dark`, …), plus three new ones added to `BoatMaterials`: `fender` and `fenderLine` (M33) and `coil` (M34), each made with the file's own `make({ color })` helper (double-sided, Lambert at Low, Standard at High, like the others) in the colour its section gives. |
 | Pure vs 3D | Every position, outline and count is computed in a pure function in `src/model` (tested); the `src/render3d` builder only turns those numbers into meshes. |
 | `hidden` | New DOM elements shown and hidden with the `hidden` attribute and a `display` rule get `<selector>[hidden] { display: none; }` (PHASE5_SPEC 3.1). |
 | Language | Every new visible string goes through `t()`, in both `ui.json` files (same keys, same order: appended at the end of each file in the order given). |
@@ -77,7 +77,7 @@ If something here looks necessary, stop and ask in the PR.
 
 - **Z-fighting** (flicker) where a new face lies exactly on an old one: the toerail's outer face is `toerail.outset` (4 mm) outside the hull shell; a part standing on a surface is raised by `DECK_EPS` or sunk into it by `DECK_OVERLAP`, never placed exactly on it.
 - **Port and starboard swapped:** z is **+ to starboard**. The anchor is on the **starboard** side of the furler; the ball fender on the **port** side.
-- **Faces seen from behind are invisible:** the materials are single-sided (three.js front faces only). `pushQuad(positions, a, b, c, d)` makes a face whose front is the side from which a → b → c → d runs **counter-clockwise**; list every new face's corners counter-clockwise as seen from outside the solid. A port part made by mirroring the starboard points (`z → −z`) must also reverse each face's corner order. Check it in the close-ups: a missing face shows as a hole. Thin slabs (the anchor's fluke) are closed solids, so both sides show.
+- **Face order:** the boat's materials are double-sided (`make()` in `materials.ts`), so a face's corner order never makes a hole; a hole in a close-up is a missing face. Still list each new face's corners counter-clockwise as seen from outside the solid (`pushQuad(positions, a, b, c, d)`), and reverse the order for a port part made by mirroring (`z → −z`), so computed normals point outwards.
 - **A new id not in the registry:** `requirePartId` throws at start. Add the registry entry and both glossary entries first.
 - **`NOT_DRAWN` out of step:** an id drawn for the first time leaves `NOT_DRAWN` (`src/model/glossary.ts`); `tests/glossary.test.ts` (11) fails otherwise.
 - **Glossary order:** the glossaries list the ids in registry order (test 1); insert a new id in both glossaries at the same place as in the registry.
@@ -142,9 +142,9 @@ Unchanged. Phase 6 adds no work to the `step` action.
 | Milestone | New | Changed |
 |---|---|---|
 | M30 | `tests/deckDetails.test.ts`, `scripts/shots-m30.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/model/deckVolumes.ts`, `src/render3d/boat/hull.ts`, `src/render3d/boat/deckGear.ts`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
-| M31 | `src/model/bowGear.ts`, `src/render3d/boat/bowGear.ts`, `tests/bowGear.test.ts`, `scripts/shots-m31.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/render3d/boat/index.ts`, `content/registry/parts.json`, both `glossary.json`, `src/model/glossary.ts` (`NOT_DRAWN`), `tests/glossary.test.ts` (group size, `COMPLETE_IDS`), `docs/review/ru.md`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
-| M32 | `src/model/mooringFittings.ts`, `src/render3d/boat/mooringFittings.ts`, `tests/mooringFittings.test.ts`, `scripts/shots-m32.mjs` | as M31 (without `bowGear`) |
-| M33 | `src/model/harbour.ts`, `src/render3d/boat/fenders.ts`, `src/ui/harbourPanel.ts`, `tests/harbour.test.ts`, `scripts/shots-m33.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/model/mooringFittings.ts` (fender placements), `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts` (the subscriber), `src/ui/modes.ts`, `src/ui/panel.ts`, `src/render3d/boat/index.ts`, `src/render3d/boat/materials.ts`, `src/render3d/scene.ts`, `src/style.css`, both `ui.json`, both `glossary.json`, `content/registry/parts.json`, `tests/glossary.test.ts`, `scripts/shots-m24.mjs`, `scripts/shots-m27.mjs`, `scripts/shots-m29.mjs`, `tests/modes.test.ts`, `tests/urlState.test.ts`, `tests/mooringFittings.test.ts`, `docs/review/ru.md`, `scripts/ui.mjs`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
+| M31 | `src/model/bowGear.ts`, `src/render3d/boat/bowGear.ts`, `tests/bowGear.test.ts`, `scripts/shots-m31.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/render3d/boat/index.ts`, `content/registry/parts.json`, both `glossary.json`, `src/model/glossary.ts` (`NOT_DRAWN`), `tests/glossary.test.ts` (group size, `COMPLETE_IDS`), `tests/boatModel.test.ts` (7.4), `docs/review/ru.md`, `scripts/shots.mjs`, `scripts/shots-m24.mjs` (counts), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
+| M32 | `src/model/mooringFittings.ts`, `src/render3d/boat/mooringFittings.ts`, `tests/mooringFittings.test.ts`, `scripts/shots-m32.mjs` | as M31, without `bowGear` and without `tests/boatModel.test.ts` |
+| M33 | `src/model/harbour.ts`, `src/render3d/boat/fenders.ts`, `src/ui/harbourPanel.ts`, `tests/harbour.test.ts`, `scripts/shots-m33.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/model/mooringFittings.ts` (fender placements), `src/app/store.ts`, `src/app/urlState.ts`, `src/app/urlSync.ts` (the subscriber), `src/ui/modes.ts`, `src/ui/panel.ts`, `src/render3d/boat/index.ts`, `src/render3d/boat/materials.ts`, `src/render3d/scene.ts`, `src/style.css`, both `ui.json`, both `glossary.json`, `content/registry/parts.json`, `tests/glossary.test.ts`, `tests/boatModel.test.ts` (9.7), `scripts/shots-m24.mjs`, `scripts/shots-m27.mjs`, `scripts/shots-m29.mjs`, `tests/modes.test.ts`, `tests/urlState.test.ts`, `tests/mooringFittings.test.ts`, `docs/review/ru.md`, `scripts/ui.mjs`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md` |
 | M34 | `src/model/ropeCoil.ts`, `tests/ropeEnds.test.ts`, `scripts/shots-m34.mjs` | `content/boat/hanse508.json`, `src/model/boat.ts`, `src/model/ropePaths.ts`, `src/render3d/boat/ropes.ts`, `src/render3d/boat/cockpitHardware.ts`, `src/render3d/boat/materials.ts`, `tests/m5Ropes.test.ts` (10.3 only), `scripts/shots.mjs`, `README.md`, `docs/ROADMAP.md`, `docs/BOAT_DETAILS_ANALYSIS.md`, `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`, this spec |
 
 ## 5. Milestones overview
@@ -188,7 +188,7 @@ The owner's two screenshots (planning chat) and the planning session's close-ups
 }
 ```
 
-These values are fixed (the tests use them). The lifelines are unchanged: the stanchion feet (`modelDetail.lifelines.inset` 0.06, foot radius 0.03) touch the toerail's inner face, as the posts stand against the rim on the boat.
+These values are fixed (the tests use them). The lifelines are unchanged: the stanchion feet (centred `modelDetail.lifelines.inset` 0.06 inside the deck edge, radius 0.03) stand 2 cm into the rim's inner side, so they look fixed to it; accepted.
 
 ### 6.3 Model (`src/model/deckVolumes.ts`)
 
@@ -548,7 +548,7 @@ Not in this milestone: mooring lines on the cleats (Phase 7).
 }
 ```
 
-`fenders.profile` is `[radius, distance down from the fender's top]` for a lathe (`LatheGeometry` takes `(radius, height)`: use height = −distance and place the lathe's origin at the fender's `top`). These values are fixed (the tests use them).
+`fenders.profile` is `[radius, distance down from the fender's top]` for a lathe (`LatheGeometry` takes `(radius, height)` points from bottom to top: use height = −distance, **reverse the list** so it runs bottom to top (otherwise the faces point inwards), and place the lathe's origin at the fender's `top`). These values are fixed (the tests use them).
 
 ### 9.2 Model
 
@@ -589,7 +589,7 @@ Worked values (tested, ±0.001): starboard fender tops `[3.0, 1.28, 1.431]`, `[0
 
 **Modes** (`src/ui/modes.ts`): `SECTION_IDS` gains `'harbour'` (last). In every row of `MODE_LAYOUTS` it is **last** in `order`, and is in none of `open`, `openSide`, `second`. `sectionAvailable('harbour', …)` is always true. `tests/modes.test.ts` is updated to the new rows (the only change allowed there).
 
-**Panel** (`panel.ts`): builds the section with `createSection('harbour', t('harbour.title'), createHarbourPanel(store), true)` (eight sections from now on).
+**Panel** (`panel.ts`): builds the section with `createSection('harbour', t('harbour.title'), createHarbourPanel(store), true)` in the same place and the same way as the seven sections of PHASE5_SPEC 8.5 (eight from now on); the ordering, the open states and `showSection('harbour')` then work from `MODE_LAYOUTS` with no other change. The Russian strings are Cyrillic only, so the M23 Latin scan passes.
 
 **Phase 5 browser checks that list the sections** are updated to eight, `harbour` last (an update, not a weakening): `scripts/shots-m27.mjs` (the check that the sections are in the order of PHASE5_SPEC 4.4: use `MODE_LAYOUTS`' new rows) and `scripts/shots-m29.mjs` (the checks that "all seven" `[data-section]` elements are children of `.panel-body`: eight). Nothing else in them changes.
 
@@ -630,9 +630,11 @@ New materials (3.1): `fender` (`MeshLambertMaterial`, `fenders.colour`) and `fen
 - **Ball fender** (`fit_fender_ball`): one mesh in `fender` (`SphereGeometry(diameter / 2, …)` per 3.3, at `centre`); one `asThin` mesh in `fenderLine` with the eye at `centre + [0, diameter / 2 + 0.02, 0]` and the line from `centre + [0, diameter / 2 + 0.04, 0]` to `lineEnd` (`lineRadius`). Both carry `fit_fender_ball`.
 - `setOut(out)` sets `visible` on every object. They start hidden.
 
-`buildBoat` (`index.ts`) adds them, and the `BoatModel` it returns gains `setFendersOut(out: boolean): void`. `scene.ts` calls it after **each** of its two `buildBoat` calls (the first build, and the rebuild when Detail changes) with the current `state.harbour.fendersOut`, and whenever that value changes (compare with the previous value; never every frame).
+`buildBoat` (`index.ts`) adds them, and the `BoatModel` it returns gains `setFendersOut(out: boolean): void`. `scene.ts` calls it after **each** of its two `buildBoat` calls (the first build, and the rebuild when Detail changes) with the current `state.harbour.fendersOut`, and whenever that value changes: a check of its own in the state subscriber, not a branch of the existing `if (detail changed) … else if (selection changed)` chain (a Show me changes the selection and the fenders at once). Compare with the previous value; never every frame.
 
-With the fenders in the locker, "Show on the boat" for a fender lights nothing (they are not on deck); the entry says where they are. A Show me scene loads its own link, so Show me on another entry puts out fenders back in the locker, like every other setting of the scene; Back restores them. Both are intended.
+With the fenders in the locker, "Show on the boat" for a fender lights nothing (they are not on deck); the entry says where they are. A Show me scene or a Realistic practice scenario (`realisticPanel.ts`) loads its own link, so it puts out fenders back in the locker, like every other setting of the scene; Back restores them after a Show me. All intended.
+
+**`tests/boatModel.test.ts`** "overall size matches the data": `Box3.setFromObject` counts hidden meshes, so the fenders would widen the boat. Compute the box over the meshes whose `userData.partId` is not `fit_fender` or `fit_fender_ball` (traverse the root and `expandByObject` each other mesh); nothing else in the test changes.
 
 ### 9.6 Registry and glossaries
 
@@ -736,15 +738,16 @@ These values are fixed. The coil rope has the drum's thickness: both are the rop
 
 Every strand gets a closed, rounded cap at both ends (a strand end that goes into a block or the mast is inside it, so its cap is never seen; the caps there cost nothing). No taper.
 
-- **Layout.** A strand with `n` points has `n × RADIAL` ring vertices (as today), then the **start centre** at index `base + n × RADIAL` and the **end centre** at `base + n × RADIAL + 1`. `buildGeometry`'s vertex count becomes `layout.reduce((sum, n) => sum + n * RADIAL + 2, 0)`; `update` advances `base` by `points.length * RADIAL + 2` per strand.
-- **Triangles** (added in `buildGeometry` after each strand's side quads), with `a(j)` = `base + j` (first ring) and `z(j)` = `base + (n − 1) × RADIAL + j` (last ring), `j` = 0 … RADIAL − 1, `j1 = (j + 1) % RADIAL`: start cap `(startCentre, a(j1), a(j))`, end cap `(endCentre, z(j), z(j1))`. (A ring's index runs anticlockwise seen from ahead of the tangent, `binormal = tangent × normal` in `writeStrand`, so these face outwards.)
-- **Positions** (`writeStrand`): the start centre at the first point minus `tangent × radius × 0.5`, the end centre at the last point plus `tangent × radius × 0.5` (a rounded tip), where `radius` is that end ring's radius as written (after `radiusAt`, so the on-screen minimum counts) and `tangent` is the end ring's tangent. Normals: `−tangent` and `+tangent`. `uv`: the end ring's `u`, v 0.5.
+- **Layout.** A strand with `n` points has `n × RADIAL` ring vertices (as today), then the **start centre** at index `base + n × RADIAL` and the **end centre** at `base + n × RADIAL + 1`. `buildGeometry`'s vertex count becomes `layout.reduce((sum, n) => sum + n * RADIAL + 2, 0)`, and both its own loop and `update` advance `base` by `n * RADIAL + 2` per strand.
+- **Triangles** (added in `buildGeometry` after each strand's side quads), with `a(j)` = `base + j` (first ring) and `z(j)` = `base + (n − 1) × RADIAL + j` (last ring), `j` = 0 … RADIAL − 1, `j1 = (j + 1) % RADIAL`: start cap `(startCentre, a(j1), a(j))`, end cap `(endCentre, z(j), z(j1))`. (A ring's index runs anticlockwise seen from ahead of the tangent, `binormal = tangent × normal` in `writeStrand`, so these face outwards. The existing side quads happen to face inwards; leave them, the rope material is drawn from both sides only through its own settings, and the caps are still to be wound as written here.)
+- **Positions** (`writeStrand`): the start centre at the first point minus `tangent × radius × 0.5`, the end centre at the last point plus `tangent × radius × 0.5` (a rounded tip), where `radius` is that end ring's radius as written (after `radiusAt`, so the on-screen minimum counts) and `tangent` is the end ring's tangent. `tangent` is a shared module-level vector overwritten for every point, so save the first ring's tangent and radius (copies) when writing point 0, and use the values of the last point after the loop. Normals: `−tangent` and `+tangent`. `uv`: the end ring's `u`, v 0.5.
 
 ### 10.3 Thinner rope on the winch drums
 
 - `src/model/ropePaths.ts` `winchWrapPoints`: the helix's radius, its rise and the jaw use `data.modelDetail.winchRope.drumRenderRadius` in place of `data.visual.ropeRenderRadius` (the local `radius`): `r = size.diameter / 2 + drumRenderRadius`, `top = min(winch.y + wrapTopAboveBase, bottom + 2 × drumRenderRadius × turns)`, jaw radius `size.diameter / 2 − drumRenderRadius` and jaw height `winch.y + size.height − drumRenderRadius`. Nothing else in it changes. This covers every rope on a winch, the JIB ROLL line too.
-- `ropePaths.ts` new export: `onWinchDrum(p: Vec3, data: BoatData = boat): boolean`: true when, for some winch of `cockpitHardware.winches`, `|hypot(p.x − winch.x, p.z − winch.z) − (diameter / 2 + drumRenderRadius)| < 1e-6` and `winch.y + wrapBottomAboveBase − 1e-6 ≤ p.y ≤ winch.y + wrapTopAboveBase + 1e-6`.
+- `ropePaths.ts` new export: `onWinchDrum(p: Vec3, data: BoatData = boat): boolean`: true when, for some **present** winch of `cockpitHardware.winches` (skip `present: false`, as `tailToBin` does), `hypot(p.x − winch.x, p.z − winch.z) ≤ modelDetail.winch.diameter / 2 + drumRenderRadius + 1e-6` and `winch.y + wrapBottomAboveBase − 1e-6 ≤ p.y ≤ winch.y + modelDetail.winch.height`. It is true for the helix points and for the self-tailer's jaw point (inside the drum's radius, below its top), so the rope going into the jaw is thin too; the tails never come that close (`tests/m5Ropes.test.ts` keeps them outside `1.2 × drum radius + ropeRenderRadius`).
 - `ropes.ts` `writeStrand`: a point with `onWinchDrum(p)` uses `drumRenderRadius` as its base radius in `radiusAt` (the on-screen minimum still applies); every other point keeps `ropeRenderRadius`. The tube narrows over the one segment from the last thick point to the first drum point (and widens again towards the hand): accepted.
+- **Known limitation (accepted):** the drum is drawn waisted (narrower in the middle), so the thin turns stand a few millimetres off its waist, and the top turns of a 5-turn wrap touch the self-tailer's ring. Note it in the PR; do not change the winch.
 - **Existing tests** (`tests/m5Ropes.test.ts`), the only changes allowed in this milestone: where a drum radius or a turn's rise is meant, `RADIUS` becomes `boat.modelDetail.winchRope.drumRenderRadius`: the `onDrum` filter in `turned()` (`DRUM + RADIUS`), the lower bound `(DRUM + RADIUS) × cos(π / WINCH_WRAP_POINTS_PER_TURN)`, and `expect(rise).toBeCloseTo(2 * RADIUS, 6)`. The coaming check (`p[1] - RADIUS`) and every other use of `RADIUS` stay. The test "wraps rise up the drum between the data heights" keeps its expected heights (5 turns still reach `wrapTopAboveBase`).
 
 ### 10.4 Coiled tails in the tail boxes
@@ -758,7 +761,7 @@ export function coilLayers(box: { x: number; z: number }, pointsPerTurn: number,
 
 Layer `k` (0-based) is a spiral from `innerRadius` out to `outerRadius` over `turns` turns: `r(θ) = innerRadius + (outerRadius − innerRadius) × θ / (2π × turns)`, θ from 0 to `2π × turns` in `round(turns × pointsPerTurn)` steps (that many + 1 points), at height `y = coamingTopY + 0.004 + ropeRadius + k × 2 × ropeRadius` (on the box's dark floor plate, which is 0.004 thick). Even layers: point `[box.x + r cos θ, y, box.z + r sin θ]`; odd layers: `[box.x + r cos θ, y, box.z − r sin θ]` (the same spiral wound the other way, so the two layers cross instead of lying exactly over each other).
 
-The tails keep their paths (`tailToBin`): they dive into the box through the coil, which reads as rope piled in the box; the top layer stands about 3 cm above the rim. Both are intended.
+The tails keep their paths (`tailToBin`): they dive into the box through the coil, which reads as rope piled in the box; the top layer stands about 3 cm above the rim. The coil's two tube ends are left open (they are hidden in the pile and at its edge). All three are intended.
 
 `cockpitHardware.ts`: `buildRopeBins(materials, detail)` (the new `detail` parameter is passed by `buildCockpitHardware`) adds, per box and layer, a `TubeGeometry(new THREE.CatmullRomCurve3(points), points.length − 1, ropeRadius, radial, false)` (radial and points per turn from 3.3), merged per box into one `smallPartMesh` with id `fit_rope_bin`, material `coil` (`MeshLambertMaterial`, `coil.colour`, 3.1) and the box's existing hit point.
 
@@ -767,7 +770,8 @@ Worked values (tested): `coilLayers({ x: -7.58, z: 1.6 }, 32)` has 2 layers of 8
 ### 10.5 Tests (`tests/ropeEnds.test.ts`)
 
 1. The worked values of 10.4.
-2. For each winch and 1 … 5 turns, self-tailer and hand (the same loop as `tests/m5Ropes.test.ts`'s wrap test, through `ropeDrawings` with `winchWraps(...)`): every point of the rope's strand with `onWinchDrum` true lies at distance `diameter / 2 + drumRenderRadius` (±1e-6) from the winch axis, and at least `round(turns × WINCH_WRAP_POINTS_PER_TURN)` points of the strand are on the drum. The same for the JIB ROLL line on the port winch (Realistic mode, JIB ROLL wrapped).
+2. For each winch and 1 … 5 turns, self-tailer and hand, with the tails port `b2`, `b3`, `b4`, `b5`, `r1` and starboard `a1`, `a2`, `a3`, `a5` (`r1` is JIB ROLL; copy the local helper `realisticWith` from `tests/m5Ropes.test.ts`, it is not exported), through `ropeDrawings(rig, boat, winchWraps(...))`: in the rope's strand, every `onWinchDrum` point except the jaw point (the last point with a self-tailer) lies at distance `diameter / 2 + drumRenderRadius` (±1e-6) from the winch axis, and at least `round(turns × WINCH_WRAP_POINTS_PER_TURN)` points are `onWinchDrum`.
+4. `buildRopes(ropeDrawings(rig))`: each rope mesh's position count is `Σ (points × RADIAL + 2)` over its strands, and its index count is `Σ ((points − 1) × RADIAL × 6 + 2 × RADIAL × 3)`.
 3. In Easy mode (`ropeDrawings(rig)` without winches) no point of any strand is `onWinchDrum`.
 
 ### 10.6 Browser checks (`scripts/shots-m34.mjs`) and the sign-off
