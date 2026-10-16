@@ -48,14 +48,14 @@ Phase 2 rules are implemented from M6 on, each in the milestone named in [`PHASE
 | PT-24 | 2 | **Accidental gybe energy:** the boom crosses fast; the shock load on the mainsheet and fittings is large, and a person in the boom's path can be seriously hurt. A preventer stops it (the reference boat has none, so the app teaches the controlled gybe: main sheet hauled in first). | source-checked [15], [22] |
 | PT-25 | 2 | **Heel grows with wind force on the sails.** Easing sheets or reducing sail area reduces heel. | source-checked [21], [23] |
 | PT-26 | 2 | **Running dead downwind carries a risk of an accidental gybe.** | source-checked [1], [24] (risk: [15], [24]) |
-| PT-27 | 5 | **Prop walk:** in reverse, a single propeller pushes the stern sideways (direction depends on rotation). | to-verify |
+| PT-27 | 7 | **Prop walk:** in reverse, a single propeller pushes the stern sideways (direction depends on rotation). | source-checked [35] (a right-handed propeller walks the stern to port; which way this boat's goes: skipper question 18; how strong on a saildrive: assumption) |
 | PT-28 | 2 | **Self-tacking jibs** need no sheet work when tacking, which is why they suit short-handed sailing. | source-checked [3] |
 | PT-29 | 2 | **Heel reduces drive.** A boat heeled too far sails slower and pulls harder on the helm (weather helm); easing the main reduces both. | source-checked [23], [21] |
 | PT-30 | 3 | **Waves grow with wind strength and fetch** and make the boat pitch and roll, which moves the apparent wind at the masthead and knocks the boat off course. | split into the testable rules PT-39 … PT-43 (Phase 3 rules below) |
-| PT-31 | 5 | **Anchoring needs scope:** all-chain, let out at least 4 × the effective depth (water depth plus bow-roller height), more in strong wind (add about 2 boat lengths). The owner's instructor rule, at least 3 boat lengths, is also checked; the larger wins. | source-checked [10] (instructor rule: owner) |
+| PT-31 | 7 | **Anchoring needs scope:** all-chain, let out at least 4 × the effective depth (water depth plus bow-roller height), more in strong wind (add about 2 boat lengths). The owner's instructor rule, at least 3 boat lengths, is also checked; the larger wins. | source-checked [10] (instructor rule: owner) |
 | PT-32 | 2 | **Overpowered boats round up:** too much sail or a main sheeted hard in a gust makes the boat heel, the rudder loses grip and she turns into the wind by herself. Easing the main sheet stops it. | source-checked [23] ("the rudder loses grip": to-verify, candidate [17]) |
-| PT-33 | 5 | **Thrusters work at low speed:** a bow or stern thruster pushes the bow or stern sideways near the pier; at more than a few knots it has little effect. | to-verify |
-| PT-34 | 5 | **Fenders come in before sailing:** left out at speed they bounce and can be torn off. | to-verify |
+| PT-33 | 7 | **Thrusters work at low speed:** a bow or stern thruster pushes the bow or stern sideways near the pier; at more than a few knots it has little effect. | source-checked [36] (the fall-off with speed in PHASE7_SPEC 7.2: assumption) |
+| PT-34 | 7 | **Fenders come in before sailing:** left out at speed they bounce and can be torn off. | to-verify |
 | PT-35 | 2 | **No speed, no steering.** The rudder only turns the boat while water flows past it; a stopped boat (for example in irons) does not answer the wheel. With the engine in gear the propeller gets her moving, and then the wheel turns her (M12). | general |
 | PT-36 | 2 | **Hull speed.** A heavy displacement boat hardly sails faster than about 1.34 × √(waterline length in feet) knots: about 8.9 kn for this boat. More wind then mostly makes more heel and a bigger wave, not more speed. | source-checked [25] (a rule of thumb for heavy displacement hulls; fine or planing hulls can exceed it) |
 | PT-37 | 2 | **On a run the mainsail blankets the jib:** with the wind from behind, the main takes the jib's wind and the jib collapses. | source-checked [24] (the main covering the jib on a run; how much force the jib keeps: assumption) |
@@ -75,6 +75,24 @@ Implemented from M14 on, each in the milestone named in [`PHASE3_SPEC.md`](PHASE
 | PT-44 | **White horses** (breaking crests) first appear in a gentle breeze (Beaufort 3, 7–10 kn) and get more frequent and extensive as the wind rises. (M16) | `?wd=90&ws=6`: no white crests; `?wd=90&ws=22&sea=open`: many. | source-checked [30] |
 | PT-45 | **A gust shows on the water before it reaches you**: a darker, rougher patch moving downwind (a "cat's paw"). (M16) | `?wd=0&ws=12&wm=gusty&seed=1&cam=helm`: watch ahead for a dark patch (the first gust comes about half a minute after opening); when it arrives the strip shows GUST. | to-verify (no reachable source yet; candidates: RYA Day Skipper or sailing-school pages on spotting gusts. Tried again in M19: search summaries of the AMS Glossary of Meteorology ("cat's paw": a dark-looking patch on a lake or the sea where a gust makes small ripples), Bay Nature ("how to read the wind like a sailor") and the Natural Navigator (cat's paws as a map of where the gusts are) agree with the rule, but the hosts could not be reached from the cloud environment (DNS failure), so the pages were not read and the rule stays `to-verify`; no RYA page was found) |
 | PT-46 | **The sun rises in the east and sets in the west**; in the Adriatic it stands due south at local solar noon, rises and sets further north in June than in December, and the June day is much longer. (M17) | `?clk=202606010530&cam=bow` (sunrise) and `?clk=202612211200` (low winter sun); the clock card shows sunrise and sunset. | source-checked [33] (sunrise equation); directions and day length: general |
+
+## Phase 7 rules
+
+Planned ahead on 2026-10-15/16 in [`PHASE7_SPEC.md`](PHASE7_SPEC.md) (M40–M47; built after Phase 6). Earlier-listed rules tested in Phase 7: PT-27 (M40), PT-33 (M41), PT-34 (M43), PT-31 (M46), in the table "Rules for Phase 2 and later phases". The "How to see it" links work once their milestone is merged.
+
+| Id | Rule | How to see it | Status |
+|---|---|---|---|
+| PT-47 | **Wind pushes a slow boat sideways and blows the bow off.** Below about two knots the keel no longer grips: a side wind pushes the boat sideways, and the high, light bow blows downwind faster than the stern until she lies about beam-on. (M40) | `?wd=45&ws=15&mf=0&jf=0&js=100&bs=0&ap=off&cam=top` (M40): the bow turns to port, about 30° in 30 s | to-verify (candidate: Yachting Monthly, *How would you tackle this windward berth?*, a source that says the bow blows off as soon as the boat slows; the site could not be opened from the build environment) |
+| PT-48 | **A burst ahead with the wheel over turns a stopped boat** ("kick ahead"): the propeller blows water over the rudder before she has way on. (M40) | `?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&rd=35&cam=top` (M40), then 3 s at lever 60 | to-verify (candidate: Sail Magazine, *Walking the prop*; not reachable from the build environment) |
+| PT-49 | **A heavy boat carries her way:** in neutral she keeps going a long way; astern stops her. (M40) | `?wd=0&ws=0&bs=4&eng=1&lv=0&ap=off&cam=top&tx=4` (M40) | general |
+| PT-50 | **Fenders take a slow contact:** a fender between the hull and the quay or the next boat absorbs a gentle bump; at speed it is squashed and the hull is hit. (M43) | `?pl=marina&tr=busy&m=harbour&fd=1&cam=top` (M43) | source-checked [37] (the speeds: assumption) |
+| PT-51 | **Stern-to, the bow must be held:** stern lines to the quay and a lazy line (or the anchor) at the bow hold her against a crosswind; without it the bow swings onto the neighbours. (M44, M47) | `?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&bs=0&ln=sp:2.55,ss:2.55,ll:12.33&wd=90&ws=15&cam=top` (M44) | source-checked [39] (stern lines to the pier with an anchor or mooring ahead); the lazy-line procedure: to-verify (candidates: Distant Shores, *Mooring stern-to with lazy lines*; RYA, *Med mooring stern-to*; not reachable from the build environment) |
+| PT-52 | **A slack line near the propeller fouls it** when the engine is in gear; keep the engine in neutral while lines are slack astern. (M44) | (M44) a stern line eased, the lever astern | to-verify (candidate: RYA, *Med mooring stern-to*; not reachable from the build environment) |
+| PT-53 | **The keel touches where the water is shallower than the draft** (2.4 m on this boat); touched gently she comes off astern, fast she sticks. (M45) | `?pl=bay&m=harbour&pe=-1676.4&pn=0.0&hdg=270&bs=1.0&eng=1&lv=0&cam=side-port` (M45) | general (the forces: assumption) |
+| PT-54 | **Too little scope drags:** with short chain the pull lifts the anchor's shank and it drags; more chain makes the pull flatter and the anchor holds. (M46) | (M46) the bay, short chain on the sea grass, gusty 25 kn | source-checked [10] |
+| PT-55 | **The bottom matters:** sand and mud hold an anchor well, weed and rock poorly. (M46) | (M46) the same chain on sand and on weed | source-checked [38] ("hard sand holds well"; how much better or worse each bottom holds: assumption; weed and rock: to-verify, candidate sailingissues.com *The seabed*, not reachable) |
+| PT-56 | **An anchored boat swings to the wind:** she turns round her anchor and lies with her bow towards the wind. (M46) | `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=180&bs=0&an=34.0&ax=-1606.0,0.0&as=1&wd=90&ws=15&cam=top` (M46) | source-checked [39] |
+| PT-57 | **An anchor must be set:** after it reaches the bottom, go gently astern to dig it in; on rock it does not set. (M46) | (M46) let the chain out, then a third astern | source-checked [38], [10] |
 
 ## Sources
 
@@ -138,3 +156,12 @@ Read on 2026-10-13 for Phase 3 (planning):
 
 Not reachable on 2026-10-13: the US Army Corps of Engineers coastal manuals (JONSWAP growth formulas, PT-39 coefficients), NOAA's solar calculation page (gml.noaa.gov, the sun equations of PHASE3_SPEC 9.3), timeanddate.com (Split sunrise tables), and Wikipedia pages for *Broaching*, *Cat's paw* and *Added resistance* (not found).
 
+Read on 2026-10-15/16 for Phase 7 (planning):
+
+35. Wikipedia, *Propeller walk*. https://en.wikipedia.org/wiki/Propeller_walk. In reverse the turning effect is much stronger and the opposite way: a right-handed propeller pushes the stern to port.
+36. Wikipedia, *Maneuvering thruster* (Bow thruster). https://en.wikipedia.org/wiki/Maneuvering_thruster. "The effectiveness of a thruster is curtailed by any forward motion due to the Coandă effect."
+37. Wikipedia, *Fender (boating)*. https://en.wikipedia.org/wiki/Fender_(boating). Fenders absorb the kinetic energy of a boat berthing against a jetty, quay wall or other vessel, and prevent damage.
+38. Wikipedia, *Anchor*. https://en.wikipedia.org/wiki/Anchor. "Hard sand holds well, shell holds poorly"; to set the anchor "the vessel should be gently forced astern".
+39. Wikipedia, *Mooring*. https://en.wikipedia.org/wiki/Mooring. Mediterranean mooring: an anchor set off the pier and lines to the pier; a boat on a single mooring "swings in a circle when the direction of wind or tide changes".
+
+Not reachable on 2026-10-15/16 (DNS failure from the build environment): sailmagazine.com, yachtingmonthly.com, distantshores.ca, rya.org.uk, sailingissues.com, marineinsight.com. The rules that name them stay `to-verify`.

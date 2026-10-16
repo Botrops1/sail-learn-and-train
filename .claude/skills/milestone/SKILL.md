@@ -1,6 +1,6 @@
 ---
 name: milestone
-description: Build one milestone of sail-learn-and-train from the current phase spec (e.g. "/milestone 11"), open its PR with full preview test links, then watch the PR and act on the owner's comments until it is merged.
+description: Build one milestone of sail-learn-and-train from its phase spec (e.g. "/milestone 11"), open its PR with full preview test links, then watch the PR and act on the owner's comments until it is merged.
 argument-hint: <milestone number, e.g. 11>
 disable-model-invocation: true
 model: sonnet
@@ -17,7 +17,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 - `npm ci` (the cloud container starts without `node_modules`).
 - Check that the milestone before M$ARGUMENTS is merged into `main` (`git log origin/main --oneline | head`, the spec's milestone table). If it is not, or a PR for M$ARGUMENTS is already open, stop and tell the owner in two sentences what to do first.
 - Find the milestone's **Independent review** marking (the line under its heading, or the review column of the spec's milestones table). Remember it for the PR and every reply.
-- Read narrowly, as CLAUDE.md "What to read" says: CLAUDE.md, `docs/CODE_MAP.md`, the current phase spec's general sections (0–5 in PHASE2_SPEC), the section of M$ARGUMENTS and the Definition of Done, the PHYSICS_TRUTHS rules your milestone tests, and the M$ARGUMENTS checklist in `docs/WORKFLOW.md`. Use `grep` for everything else; do not read whole files you only need a line of.
+- Read narrowly, as CLAUDE.md "What to read" says: CLAUDE.md, `docs/CODE_MAP.md`, the phase spec that contains M$ARGUMENTS (`grep -l "^## .*M$ARGUMENTS:" docs/PHASE*_SPEC.md`; not simply the highest-numbered one, a later phase may be planned ahead) and its general sections (0–5), the section of M$ARGUMENTS and the Definition of Done, the PHYSICS_TRUTHS rules your milestone tests, and the M$ARGUMENTS checklist in `docs/WORKFLOW.md`. Use `grep` for everything else; do not read whole files you only need a line of.
 
 ## 2. Build
 

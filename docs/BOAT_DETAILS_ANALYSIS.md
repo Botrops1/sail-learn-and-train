@@ -70,3 +70,7 @@ Upload them to `docs/reference/photos/` (GitHub app or web: open the folder → 
    - Recommended: **follow the photos**; if there are none, **six fenders, three per side**, marked as an assumption.
 5. **Should the details show at Detail Low on a phone?**
    - Recommended: **yes, simplified** (fewer segments), because the anchor and cleats matter for learning, not only for looks.
+
+## 6. What Phase 7 uses from Phase 6
+
+Phase 7 ([`PHASE7_SPEC.md`](PHASE7_SPEC.md)) was planned ahead, before Phase 6 was built. Its planning session first wrote a list of what it would need from Phase 6 here (a contract for `/plan 6`), but the Phase 6 plan ([`PHASE6_SPEC.md`](PHASE6_SPEC.md)) was merged first and decided these things itself. So on 2026-10-16 the contract was withdrawn and PHASE7_SPEC was aligned with PHASE6_SPEC instead (PHASE7_SPEC 4.1 lists what it uses): the Harbour gear section and `HarbourState` (`fendersOut`, link key `fd`), the cleats (`cleatPlaces()`), the fenders (`fenderPlaces()`, `ballFenderPlace()`), the bow roller, the anchor, the chain and the windlass (`deckFittings`), and their registry ids. **PHASE6_SPEC is the authority**; if Phase 6 builds something differently, the `/plan 7 refresh` session before M40 updates PHASE7_SPEC to match.
