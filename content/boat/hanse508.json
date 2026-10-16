@@ -1035,6 +1035,44 @@
     },
     "channelFairing": {
       "source": "photo (owner, planning chat 2026-10-15, view from the helm: the channel comes down from the coachroof inside a solid moulding) + assumption (shape: the channel's own width, down to the deck)"
+    },
+    "bowRoller": {
+      "aftX": 5.75,
+      "tipX": 6.97,
+      "centreZ": 0.20,
+      "halfWidth": 0.06,
+      "plateY": 1.71,
+      "plateThickness": 0.02,
+      "cheekHeight": 0.10,
+      "cheekThickness": 0.012,
+      "rollerX": 6.92,
+      "rollerRadius": 0.035,
+      "source": "photo bow-jib-furler.jpg (the chain runs in a stainless channel to starboard of the furler drum) + assumption (sizes)"
+    },
+    "anchor": {
+      "shackle": [6.0, 1.755, 0.20],
+      "crown": [6.99, 1.825, 0.20],
+      "shankWidth": 0.05,
+      "flukeTip": [0.03, -0.42, 0.0],
+      "flukeWing": [-0.10, -0.16, 0.17],
+      "flukeThickness": 0.02,
+      "source": "assumption (a plough anchor of about 25 kg, the usual type on boats of this size; the photo shows only the chain)"
+    },
+    "chain": {
+      "from": [5.475, 1.786, 0.20],
+      "to": [6.0, 1.755, 0.20],
+      "pitch": 0.045,
+      "linkLength": 0.06,
+      "linkWidth": 0.036,
+      "wireRadius": 0.007,
+      "source": "photo bow-jib-furler.jpg + assumption (drawn larger than a real 10 mm chain so it can be seen)"
+    },
+    "windlass": {
+      "x": 5.40,
+      "z": 0.20,
+      "recessRadius": 0.14,
+      "profile": [[0.11, 0.0], [0.11, 0.05], [0.075, 0.05], [0.075, 0.13], [0.09, 0.13], [0.06, 0.16], [0.0, 0.17]],
+      "source": "photo bow-jib-furler.jpg (a vertical windlass in a round recess behind the roller) + assumption (sizes, position)"
     }
   },
   "visual": {

@@ -755,10 +755,40 @@
 | Другие названия | — | брашпиль |
 | Коротко | The electric winch on the bow that lets the anchor chain out and pulls it in. | Электрическая лебёдка на носу, которая травит и выбирает якорную цепь. |
 | Что делает / что значит | The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm. | Лебёдка опускает якорь и поднимает его обратно; ею управляют выключателями на носу или пультом у штурвала. |
-| На этой яхте | On the foredeck behind the anchor roller. The app does not draw it yet; anchoring comes in a later phase. | На носовой палубе позади якорного роульса. Приложение пока не рисует её; якорная стоянка появится в одной из следующих фаз. |
+| На этой яхте | On the foredeck behind the anchor roller, in a round recess. It is drawn but does not work yet; anchoring comes later. | На носовой палубе позади якорного роульса, в круглом углублении. Она нарисована, но пока не работает; якорная стоянка появится позже. |
 | Типичные ошибки | Putting fingers or feet near the chain while the windlass runs. → The chain can trap them. Keep clear, and stop the windlass before you touch the chain. | Держать пальцы или ноги возле цепи, пока работает лебёдка. → Цепь может их зажать. Держитесь в стороне и останавливайте лебёдку, прежде чем трогать цепь. |
 | «Покажи» | — | — |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### якорная цепь (`fit_anchor_chain`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Anchor chain | якорная цепь |
+| Другие названия | — | — |
+| Коротко | The chain that joins the anchor to the boat. | Цепь, которая соединяет якорь с лодкой. |
+| Что делает / что значит | The chain runs from the anchor over the bow roller to the windlass, and from there down into the chain locker under the foredeck. | Цепь идёт от якоря через носовой роульс к лебёдке, а оттуда вниз, в цепной ящик под носовой палубой. |
+| На этой яхте | A short piece shows between the windlass and the anchor; the rest is in the locker. | Между лебёдкой и якорем видна короткая часть цепи; остальное лежит в ящике. |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### якорь (`fit_anchor`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Anchor | якорь |
+| Другие названия | — | — |
+| Коротко | The heavy hook that holds the boat to the seabed. | Тяжёлый крюк, который держит лодку на дне. |
+| Что делает / что значит | The anchor is let down on its chain until it lies on the seabed, where it digs in and holds the boat in one place. | Якорь опускают на цепи, пока он не ляжет на дно: там он зарывается и удерживает лодку на одном месте. |
+| На этой яхте | It sits in the bow roller, to starboard of the jib furler, ready to let go. It is drawn but does not work yet; anchoring comes later. | Он лежит в носовом роульсе, по правому борту от закрутки стакселя, готовый к отдаче. Он нарисован, но пока не работает; якорная стоянка появится позже. |
+| Типичные ошибки | — | — |
+| «Покажи» | The bow from the front: the anchor hangs in its roller, with the chain running back to the windlass. | Нос спереди: якорь висит в роульсе, а цепь идёт назад к лебёдке. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
