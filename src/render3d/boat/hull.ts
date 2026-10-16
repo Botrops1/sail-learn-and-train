@@ -31,7 +31,16 @@ export function buildHull(materials: BoatMaterials): THREE.Object3D[] {
   const stations = hullStations();
   return [
     partMesh('part_hull', [hullShell(stations), endCap(boat.hull.stemX, +1)], materials.hull),
-    partMesh('part_stern', [endCap(boat.hull.transomX, -1)], materials.hull),
+    partMesh(
+      'part_stern',
+      [
+        endCap(boat.hull.transomX, -1, {
+          soleY: boat.deck.cockpit.soleY,
+          wellHalfWidth: boat.deck.cockpit.wellHalfWidth,
+        }),
+      ],
+      materials.hull,
+    ),
     partMesh('part_deck', [deck(stations, 'foredeck')], materials.deck),
     partMesh('part_deck', [deck(stations, 'sideDecks')], materials.teak),
     partMesh('part_deck', [toerail(stations)], materials.gelcoat),
@@ -102,20 +111,36 @@ function hullShell(stations: number[]): THREE.BufferGeometry {
   return triangles(positions, indices);
 }
 
-/** Closes the hull at the stem (direction +1) or the transom (−1). */
-function endCap(x: number, direction: number): THREE.BufferGeometry {
+/**
+ * Closes the hull at the stem (direction +1) or the transom (−1). `open` (M34, owner on PR
+ * #81: the yacht is open from the back): above `soleY` the cap is left out between the two
+ * sides of the well (`|z| < wellHalfWidth`), so the cockpit opens to the stern; the sides
+ * outboard of the well (under the rope boxes and the side decks) stay closed.
+ */
+function endCap(
+  x: number,
+  direction: number,
+  open?: { soleY: number; wellHalfWidth: number },
+): THREE.BufferGeometry {
   const positions: number[] = [];
-  const offset = -direction * EPS;
+  const at = x - direction * EPS;
+  const strip = (ya: number, za: number, yb: number, zb: number) =>
+    pushQuad(positions, [at, ya, -za], [at, ya, za], [at, yb, zb], [at, yb, -zb]);
   for (let j = 0; j < SECTION_SAMPLES; j += 1) {
     const [y0, z0] = sectionPoint(x, j / SECTION_SAMPLES);
     const [y1, z1] = sectionPoint(x, (j + 1) / SECTION_SAMPLES);
-    pushQuad(
-      positions,
-      [x + offset, y0, -z0],
-      [x + offset, y0, z0],
-      [x + offset, y1, z1],
-      [x + offset, y1, -z1],
-    );
+    if (!open || y1 <= open.soleY) {
+      strip(y0, z0, y1, z1);
+      continue;
+    }
+    const zAt = (y: number) => z0 + ((z1 - z0) * (y - y0)) / (y1 - y0);
+    if (y0 < open.soleY) strip(y0, z0, open.soleY, zAt(open.soleY));
+    const yLow = Math.max(y0, open.soleY);
+    const zLow = zAt(yLow);
+    const inner = open.wellHalfWidth;
+    if (zLow <= inner || z1 <= inner) continue;
+    pushQuad(positions, [at, yLow, inner], [at, yLow, zLow], [at, y1, z1], [at, y1, inner]);
+    pushQuad(positions, [at, yLow, -zLow], [at, yLow, -inner], [at, y1, -inner], [at, y1, -z1]);
   }
   return triangles(positions);
 }

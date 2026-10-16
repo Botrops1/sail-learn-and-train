@@ -278,7 +278,8 @@
       "top": [-0.15, 21.96, 0.0],
       "block": [-5.52, 8.25, 0.0],
       "legDropM": 0.1,
-      "note": "M34 (owner, PR #81): the single backstay runs from the masthead down to a block two thirds of the way down (on the line to the old lower end at [-8.2, 1.4, 0.0]); from the block two ends go down in a V to the aft face of the two rope boxes (legDropM below their top, centred on each box). Before M34 it was a single stay ending in the air at [-8.2, 1.4, 0.0], where the aft deck used to be. The block's place and the V are an estimate: whether the reference boat's backstay is split is unknown."
+      "legInsetM": 0.15,
+      "note": "M34 (owner, PR #81): the single backstay runs from the masthead down to a block two thirds of the way down (on the line to the old lower end at [-8.2, 1.4, 0.0]); from the block two ends go down in a V into the top of the two rope boxes and end inside them (legInsetM forward of the box's aft face, legDropM below its top, centred on the box). Before M34 it was a single stay ending in the air at [-8.2, 1.4, 0.0], where the aft deck used to be. The block's place and the V are an estimate: whether the reference boat's backstay is split is unknown."
     },
     "boom": {
       "source": "manual (Hanse 508 owner's manual, German edition, rig and hull data pages; photographed by the owner, not stored in the repo) (BH 1.51 m above deck)",

@@ -15,19 +15,23 @@ describe('M34: the backstay splits in a V low down', () => {
     expect(block[0]).toBeCloseTo(top[0] + (-8.2 - top[0]) * t, 1);
   });
 
-  it('the two ends are on the aft face of the two rope boxes, a little below their top, one each side', () => {
+  it('the two ends are inside the two rope boxes, near their aft face and a little below their top, one each side', () => {
     expect(legs[0][2]).toBeGreaterThan(0);
     expect(legs[1][2]).toBeLessThan(0);
     legs.forEach((end, i) => {
       const box = ropeBinBox(i === 0 ? 1 : -1);
-      expect(end[0]).toBeCloseTo(box.aftX, 9);
+      expect(end[0]).toBeCloseTo(box.aftX + boat.rig.backstay.legInsetM, 9);
+      expect(end[0]).toBeGreaterThan(box.aftX);
       expect(end[2]).toBeCloseTo(box.centre.z, 9);
       expect(end[1]).toBeCloseTo(box.topY - boat.rig.backstay.legDropM, 9);
       // Down in a V: the ends are far below the block, and the legs clear the box tops.
       expect(end[1]).toBeLessThan(block[1] - 5);
-      const f = (box.frontX - end[0]) / (block[0] - end[0]);
-      const yOverFront = end[1] + (block[1] - end[1]) * (1 - f);
-      expect(yOverFront).toBeGreaterThan(box.topY);
+      // The leg clears the box's front edge and goes down into its top, not through its aft face.
+      const at = (x: number) => end[1] + ((block[1] - end[1]) * (x - end[0])) / (block[0] - end[0]);
+      expect(at(box.frontX)).toBeGreaterThan(box.topY);
+      const entry = end[0] + ((box.topY - end[1]) * (block[0] - end[0])) / (block[1] - end[1]);
+      expect(entry).toBeGreaterThan(box.aftX);
+      expect(entry).toBeLessThan(box.frontX);
     });
   });
 });

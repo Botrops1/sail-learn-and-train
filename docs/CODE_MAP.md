@@ -44,7 +44,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setMiniMap` (M28), `setFend
 | `jib.ts` | Self-tacking jib: car, sheet, furling. |
 | `sailShape.ts` | Sail surface grids for both sails. |
 | `ropePaths.ts`, `ropeLengths.ts` | Where each rope runs (polylines) and the manual's rope lengths. M34: the rope on a winch drum is drawn at `winchRope.drumRenderRadius` (`winchWrapPoints`), and `onWinchDrum` says which points are on a drum; a rope on a winch ends loose on the rope box, one held in the hand in a coil on it, an unused tail goes into the box through the gap (`tailToBin`). |
-| `backstay.ts` | M34 (owner, PR #81): where the backstay's block and its two ends stand (`backstayRig`; `tests/backstay.test.ts`). |
+| `backstay.ts` | M34 (owner, PR #81): where the backstay's block and its two ends (inside the rope boxes) stand (`backstayRig`; `tests/backstay.test.ts`). |
 | `ropeBin.ts` | M34 (owner, PR #81): the rope tail box behind each winch as numbers (`ropeBinBox`: faces, top, where the coaming ends; `ropeBinEntry`; `gapFloorY`; `tailLaneZ`) and the flat coil a rope held in the hand ends in (`inHandCoil`; `tests/ropeEnds.test.ts`). |
 | `panelEntries.ts` | What the Ropes tab offers, derived from the boat data. |
 | `realistic.ts`, `winch.ts` | Realistic mode: stations, clutches, wraps, self-tailer, handle, gearbox; capstan rule and winch physics. |

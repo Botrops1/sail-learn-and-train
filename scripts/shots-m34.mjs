@@ -43,6 +43,14 @@ const CLOSE_UPS = [
     fov: 50,
   },
   {
+    // The open stern from behind: the cockpit floor ends at the transom, nothing stands above it.
+    name: 'stern-open',
+    link: '?wd=90&ws=12&lb=0&debug=1',
+    position: [-14, 3.5, 0],
+    target: [-8.3, 1.6, 0],
+    fov: 40,
+  },
+  {
     // The whole stern from behind and above: the floor is flat to the transom.
     name: 'stern-floor',
     link: '?wd=90&ws=12&lb=0&debug=1',
