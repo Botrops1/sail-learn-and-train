@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
-import type { RopeDrawing } from '../../model/ropePaths';
+import { onWinchDrum, type RopeDrawing } from '../../model/ropePaths';
 import type { Vec3 } from '../../model/vec3';
 import { SCENE } from '../sceneConfig';
 import { asThin, partMesh, type PartUserData, type PickSegment } from './parts';
@@ -26,9 +26,14 @@ export interface RopeView {
   metresPerPixelAt1m: number;
 }
 
-/** Tube radius at a point: the data's radius, or more if that would be too thin on screen. */
+/**
+ * Tube radius at a point: the data's radius (the thinner `drumRenderRadius` on a winch drum,
+ * M34), or more if that would be too thin on screen.
+ */
 function radiusAt(p: Vec3, view: RopeView | undefined): number {
-  const radius = boat.visual.ropeRenderRadius;
+  const radius = onWinchDrum(p)
+    ? boat.modelDetail.winchRope.drumRenderRadius
+    : boat.visual.ropeRenderRadius;
   if (!view) return radius;
   const distanceToEye = Math.hypot(p[0] - view.eye[0], p[1] - view.eye[1], p[2] - view.eye[2]);
   const minimum = (SCENE.ropes.minScreenWidthPx / 2) * view.metresPerPixelAt1m * distanceToEye;
@@ -82,7 +87,8 @@ function buildGeometry(layout: number[]): {
   normals: Float32Array;
   uvs: Float32Array;
 } {
-  const vertexCount = layout.reduce((sum, n) => sum + n * RADIAL, 0);
+  // Each strand: its rings, then the centres of its two end caps (M34, sealed rope ends).
+  const vertexCount = layout.reduce((sum, n) => sum + n * RADIAL + 2, 0);
   const positions = new Float32Array(vertexCount * 3);
   const normals = new Float32Array(vertexCount * 3);
   const uvs = new Float32Array(vertexCount * 2);
@@ -98,7 +104,14 @@ function buildGeometry(layout: number[]): {
         indices.push(a, c, b, b, c, d);
       }
     }
-    base += count * RADIAL;
+    const startCentre = base + count * RADIAL;
+    const last = base + (count - 1) * RADIAL;
+    for (let j = 0; j < RADIAL; j += 1) {
+      const j1 = (j + 1) % RADIAL;
+      indices.push(startCentre, base + j1, base + j);
+      indices.push(startCentre + 1, last + j, last + j1);
+    }
+    base += count * RADIAL + 2;
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -112,6 +125,7 @@ const tangent = new THREE.Vector3();
 const normal = new THREE.Vector3();
 const binormal = new THREE.Vector3();
 const radial = new THREE.Vector3();
+const startTangent = new THREE.Vector3();
 
 /** Writes one strand's tube into the buffers, starting at vertex `base`. */
 function writeStrand(
@@ -123,6 +137,9 @@ function writeStrand(
 ): void {
   const period = SCENE.ropes.stripePeriodM;
   let arc = 0;
+  let startRadius = 0;
+  let radius = 0;
+  let u = 0;
   for (let i = 0; i < points.length; i += 1) {
     const p = points[i] as Vec3;
     const prev = points[Math.max(0, i - 1)] as Vec3;
@@ -133,8 +150,12 @@ function writeStrand(
     tangent.normalize();
     normal.crossVectors(tangent, Math.abs(tangent.dot(UP)) > 0.9 ? SIDE : UP).normalize();
     binormal.crossVectors(tangent, normal);
-    const u = (arc + feed) / period;
-    const radius = radiusAt(p, view);
+    u = (arc + feed) / period;
+    radius = radiusAt(p, view);
+    if (i === 0) {
+      startTangent.copy(tangent);
+      startRadius = radius;
+    }
     for (let j = 0; j < RADIAL; j += 1) {
       const angle = (2 * Math.PI * j) / RADIAL;
       radial
@@ -152,6 +173,22 @@ function writeStrand(
       rope.uvs[k * 2 + 1] = j / RADIAL;
     }
   }
+  // Sealed ends (M34): a centre vertex half a radius beyond each end ring makes a rounded tip.
+  const first = points[0] as Vec3;
+  const last = points[points.length - 1] as Vec3;
+  const startCentre = base + points.length * RADIAL;
+  const put = (k: number, p: Vec3, dir: THREE.Vector3, sign: number, r: number, uCoord: number) => {
+    rope.positions[k * 3] = p[0] + sign * dir.x * r * 0.5;
+    rope.positions[k * 3 + 1] = p[1] + sign * dir.y * r * 0.5;
+    rope.positions[k * 3 + 2] = p[2] + sign * dir.z * r * 0.5;
+    rope.normals[k * 3] = sign * dir.x;
+    rope.normals[k * 3 + 1] = sign * dir.y;
+    rope.normals[k * 3 + 2] = sign * dir.z;
+    rope.uvs[k * 2] = uCoord;
+    rope.uvs[k * 2 + 1] = 0.5;
+  };
+  put(startCentre, first, startTangent, -1, startRadius, feed / period);
+  put(startCentre + 1, last, tangent, 1, radius, u);
 }
 
 function pickSegments(drawing: RopeDrawing): PickSegment[] {
@@ -210,7 +247,7 @@ export function buildRopes(initial: RopeDrawing[]): RopeMeshes {
       let base = 0;
       drawing.strands.forEach((strand) => {
         writeStrand(rope, base, strand.points, strand.feed, view);
-        base += strand.points.length * RADIAL;
+        base += strand.points.length * RADIAL + 2;
       });
       const geometry = rope.mesh.geometry;
       for (const name of ['position', 'normal', 'uv'])

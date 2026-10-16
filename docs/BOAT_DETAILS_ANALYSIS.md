@@ -1,5 +1,7 @@
 # Boat details analysis (input for `/plan 6`)
 
+**Done in Phase 6** (M30–M34, [`PHASE6_SPEC.md`](PHASE6_SPEC.md)). Kept as the record of why.
+
 **Context for planning Phase 6 (boat details). Not a spec.** Written 2026-10-14 from the owner's request in a planning chat. `/plan 6` reads this in full, the open questions in [`BOAT_REFERENCE.md`](BOAT_REFERENCE.md), and the owner's new photos, then writes `docs/PHASE6_SPEC.md`.
 
 ## 1. The owner's request (2026-10-14)

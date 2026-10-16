@@ -201,18 +201,13 @@
     },
     "cockpit": {
       "frontX": -3.1,
-      "aftX": -7.7,
+      "aftX": -8.6,
+      "aftXNote": "M34 (owner, PR #81): the floor is flat to the transom; the sole runs back between the two rope boxes. Before M34 the well ended at -7.7 with a raised teak aft deck behind it.",
       "wellHalfWidth": 1.3,
       "soleY": 1.0,
       "soleYSource": "assumption",
       "coamingTopY": 1.55,
       "coamingTopYSource": "assumption"
-    },
-    "aftPlatform": {
-      "frontX": -7.7,
-      "aftX": -8.6,
-      "y": 1.33,
-      "note": "Teak aft deck over the fold-out bathing platform."
     },
     "companionway": {
       "x": -3.05,
@@ -279,10 +274,12 @@
       "top": [0.15, 20.67, 0.0]
     },
     "backstay": {
-      "source": "drawing + manual (masthead)",
+      "source": "drawing + manual (masthead); M34 (owner, PR #81): split low down",
       "top": [-0.15, 21.96, 0.0],
-      "bottom": [-8.2, 1.4, 0.0],
-      "note": "Drawn as a single backstay. Split or single on the reference boat: unknown."
+      "block": [-5.52, 8.25, 0.0],
+      "legDropM": 0.1,
+      "legInsetM": 0.15,
+      "note": "M34 (owner, PR #81): the single backstay runs from the masthead down to a block two thirds of the way down (on the line to the old lower end at [-8.2, 1.4, 0.0]); from the block two ends go down in a V into the top of the two rope boxes and end inside them (legInsetM forward of the box's aft face, legDropM below its top, centred on the box). Before M34 it was a single stay ending in the air at [-8.2, 1.4, 0.0], where the aft deck used to be. The block's place and the V are an estimate: whether the reference boat's backstay is split is unknown."
     },
     "boom": {
       "source": "manual (Hanse 508 owner's manual, German edition, rig and hull data pages; photographed by the owner, not stored in the repo) (BH 1.51 m above deck)",
@@ -717,12 +714,12 @@
     },
     "ropeBins": {
       "boxes": [
-        { "side": "port", "x": -7.58, "z": -1.6 },
-        { "side": "starboard", "x": -7.58, "z": 1.6 }
+        { "side": "port", "x": -8.175, "z": -1.575 },
+        { "side": "starboard", "x": -8.175, "z": 1.575 }
       ],
       "id": "fit_rope_bin",
-      "source": "owner (PR #19): the ends of all lines are stored in a box on each side, behind the winch; position estimated",
-      "note": "Every rope's tail leaves its clutch at the back and runs past the winch on its inboard side into the box on its side, unless it is put on the winch (Realistic mode)."
+      "source": "owner (PR #19): the ends of all lines are stored in a box on each side, behind the winch; M34 (owner, PR #81, photo from the helm): the box is as wide as the coaming under the winch and runs back to the transom, with a gap between the winch's block and the box; position and sizes estimated",
+      "note": "x, z: the centre of the box. Every rope's tail leaves its clutch at the back, runs past the winch on its inboard side, drops into the gap and goes into the box through its front face, unless it is put on the winch or held in the hand (Realistic mode): then it lies on top of the box."
     },
     "helmInstruments": {
       "note": "Photo of the starboard helm: magnetic compass, B&G multifunction display and B&G autopilot control next to the winch; rope tails stowed in a bin at the helm. Phase 2+.",
@@ -1003,25 +1000,31 @@
     },
     "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated.",
     "ropeBin": {
-      "length": 0.24,
-      "width": 0.3,
-      "rimHeight": 0.02,
-      "rimWidth": 0.02,
-      "drop": 0.1,
+      "length": 0.85,
+      "width": 0.55,
+      "gap": 0.3,
       "passClearance": 0.04,
       "laneSpacing": 0.016,
-      "turnX": 0.08
+      "turnX": 0.08,
+      "entry": { "height": 0.07, "margin": 0.02, "depthM": 0.2 },
+      "inHandCoil": {
+        "turns": 2,
+        "outerRadius": 0.16,
+        "innerRadius": 0.06,
+        "pointsPerTurn": 16
+      }
     },
-    "ropeBinNote": "M5 (owner, PR #19): the rope tail box behind each winch, drawn as an opening in the coaming top with a rim (length fore and aft, width across). Each tail runs aft from its clutch, turnX behind the clutch's aft face it turns to its lane beside the winch drum (passClearance outside the drum, lanes laneSpacing apart going inboard), then into the box and drop below its rim. Drawing only.",
+    "ropeBinNote": "M5 (owner, PR #19), redrawn in M34 (owner, PR #81): the rope tail box behind each winch is a solid block as wide as the coaming (width) from the deck up to the coaming top, from `gap` behind the coaming's end to the transom (length fore and aft). The coaming ends 4.4 cm behind the winch's base. Each tail runs aft from its clutch, turnX behind the clutch's aft face it turns to its lane beside the winch drum (passClearance outside the drum, lanes laneSpacing apart going inboard), drops into the gap and runs along the deck into the box through a dark entry on its front face. Held in the hand (no turns on the winch) the rope crosses the gap and ends in a flat coil on top of the box (inHandCoil). Drawing only.",
     "winchRope": {
       "wrapBottomAboveBase": 0.06,
       "wrapTopAboveBase": 0.17,
       "jawAheadDeg": 50,
-      "handInboardM": 0.5,
-      "handAftM": 0.15,
-      "handAboveCoamingM": 0.2
+      "looseEndLengthM": 0.4,
+      "looseEndIntoBoxM": 0.06,
+      "tailClearM": 0.03,
+      "drumRenderRadius": 0.011
     },
-    "winchRopeNote": "M5, Realistic mode in 3D: a rope put on a winch leaves its clutch at the clutch's aft face and wraps the drum with its turns (clockwise seen from above, or anticlockwise when wrapped the wrong way), rising from wrapBottomAboveBase to wrapTopAboveBase above the winch's base. In the self-tailer it ends in the jaw on top, jawAheadDeg further round the drum; in the hand it leaves the drum towards a hand handInboardM inboard of the winch, handAftM aft of it and handAboveCoamingM above the coaming top. Drawing only (not important)."
+    "winchRopeNote": "M5, Realistic mode in 3D (changed in M34, owner on PR #81): a rope put on a winch leaves its clutch at the clutch's aft face and wraps the drum with its turns (clockwise seen from above, or anticlockwise when wrapped the wrong way), rising from wrapBottomAboveBase to wrapTopAboveBase above the winch's base. Whatever the number of turns, its end leaves the drum (in the self-tailer's jaw on top, jawAheadDeg further round, or straight off the drum), clears the drum by tailClearM and lies straight on top of the rope tail box behind, looseEndLengthM long, starting looseEndIntoBoxM behind the box's front edge. A rope held in the hand (no turns) runs past the winch and crosses the gap to end in a coil on the box (ropeBin.inHandCoil). drumRenderRadius: the rope's thinner drawn radius on a drum. Drawing only (not important)."
   },
   "deckFittings": {
     "$comment": "Phase 6 (PHASE6_SPEC): deck details. Boat frame (x forward, y up, z starboard), metres. Starboard values; port is mirrored.",

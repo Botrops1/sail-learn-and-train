@@ -9,6 +9,7 @@ import {
   toerailSection,
 } from '../../model/deckVolumes';
 import { halfBeamAt, sectionPoint, sheerAt } from '../../model/hullShape';
+import { ropeBinBox } from '../../model/ropeBin';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import { boxAt, partMesh, pushQuad, triangles } from './parts';
@@ -30,13 +31,16 @@ export function buildHull(materials: BoatMaterials): THREE.Object3D[] {
   const stations = hullStations();
   return [
     partMesh('part_hull', [hullShell(stations), endCap(boat.hull.stemX, +1)], materials.hull),
-    partMesh('part_stern', [aftPlatform(stations)], materials.teak, [
+    partMesh(
+      'part_stern',
       [
-        [boat.hull.transomX, sheerAt(boat.hull.transomX), 0],
-        [boat.deck.aftPlatform.frontX, sheerAt(boat.deck.aftPlatform.frontX), 0],
+        endCap(boat.hull.transomX, -1, {
+          soleY: boat.deck.cockpit.soleY,
+          wellHalfWidth: boat.deck.cockpit.wellHalfWidth,
+        }),
       ],
-    ]),
-    partMesh('part_stern', [endCap(boat.hull.transomX, -1)], materials.hull),
+      materials.hull,
+    ),
     partMesh('part_deck', [deck(stations, 'foredeck')], materials.deck),
     partMesh('part_deck', [deck(stations, 'sideDecks')], materials.teak),
     partMesh('part_deck', [toerail(stations)], materials.gelcoat),
@@ -107,36 +111,52 @@ function hullShell(stations: number[]): THREE.BufferGeometry {
   return triangles(positions, indices);
 }
 
-/** Closes the hull at the stem (direction +1) or the transom (−1). */
-function endCap(x: number, direction: number): THREE.BufferGeometry {
+/**
+ * Closes the hull at the stem (direction +1) or the transom (−1). `open` (M34, owner on PR
+ * #81: the yacht is open from the back): above `soleY` the cap is left out between the two
+ * sides of the well (`|z| < wellHalfWidth`), so the cockpit opens to the stern; the sides
+ * outboard of the well (under the rope boxes and the side decks) stay closed.
+ */
+function endCap(
+  x: number,
+  direction: number,
+  open?: { soleY: number; wellHalfWidth: number },
+): THREE.BufferGeometry {
   const positions: number[] = [];
-  const offset = -direction * EPS;
+  const at = x - direction * EPS;
+  const strip = (ya: number, za: number, yb: number, zb: number) =>
+    pushQuad(positions, [at, ya, -za], [at, ya, za], [at, yb, zb], [at, yb, -zb]);
   for (let j = 0; j < SECTION_SAMPLES; j += 1) {
     const [y0, z0] = sectionPoint(x, j / SECTION_SAMPLES);
     const [y1, z1] = sectionPoint(x, (j + 1) / SECTION_SAMPLES);
-    pushQuad(
-      positions,
-      [x + offset, y0, -z0],
-      [x + offset, y0, z0],
-      [x + offset, y1, z1],
-      [x + offset, y1, -z1],
-    );
+    if (!open || y1 <= open.soleY) {
+      strip(y0, z0, y1, z1);
+      continue;
+    }
+    const zAt = (y: number) => z0 + ((z1 - z0) * (y - y0)) / (y1 - y0);
+    if (y0 < open.soleY) strip(y0, z0, open.soleY, zAt(open.soleY));
+    const yLow = Math.max(y0, open.soleY);
+    const zLow = zAt(yLow);
+    const inner = open.wellHalfWidth;
+    if (zLow <= inner || z1 <= inner) continue;
+    pushQuad(positions, [at, yLow, inner], [at, yLow, zLow], [at, y1, z1], [at, y1, inner]);
+    pushQuad(positions, [at, yLow, -zLow], [at, yLow, -inner], [at, y1, -inner], [at, y1, -z1]);
   }
   return triangles(positions);
 }
 
 /**
  * Flat deck at sheer height, in two parts: the non-slip foredeck forward of the coachroof, and
- * the teak side decks beside the coachroof and the cockpit (M3b, owner request). The cockpit
- * well is left open and the aft platform is drawn separately.
+ * the teak side decks beside the coachroof and the cockpit, back to the transom (M3b, owner
+ * request; M34: no raised aft deck behind the well any more). The cockpit well is left open.
  */
 function deck(stations: number[], part: 'foredeck' | 'sideDecks'): THREE.BufferGeometry {
-  const { cockpit, aftPlatform, coachroof: roof } = boat.deck;
+  const { cockpit, coachroof: roof } = boat.deck;
   const positions: number[] = [];
   // The extra station just ahead of the cockpit front lets the inner edge step from the well's
   // edge to the coachroof's within 2 cm, so no teak lies over the open well.
   const deckStations = [...new Set([...stations, roof.frontX, roof.aftX, cockpit.frontX - 2 * EPS])]
-    .filter((x) => x >= aftPlatform.frontX)
+    .filter((x) => x >= boat.hull.transomX)
     .sort((a, b) => a - b);
   for (let i = 0; i < deckStations.length - 1; i += 1) {
     const x0 = deckStations[i] ?? 0;
@@ -200,23 +220,6 @@ function toerail(stations: number[]): THREE.BufferGeometry {
   return triangles(positions);
 }
 
-/** Teak deck over the bathing platform, from the cockpit's aft end to the transom. */
-function aftPlatform(stations: number[]): THREE.BufferGeometry {
-  const { aftPlatform: platform } = boat.deck;
-  const positions: number[] = [];
-  const xs = stations.filter((x) => x <= platform.frontX + EPS);
-  for (let i = 0; i < xs.length - 1; i += 1) {
-    const x0 = xs[i] ?? 0;
-    const x1 = xs[i + 1] ?? 0;
-    const y0 = Math.max(sheerAt(x0), platform.y) + EPS;
-    const y1 = Math.max(sheerAt(x1), platform.y) + EPS;
-    const b0 = halfBeamAt(x0);
-    const b1 = halfBeamAt(x1);
-    pushQuad(positions, [x0, y0, -b0], [x0, y0, b0], [x1, y1, b1], [x1, y1, -b1]);
-  }
-  return triangles(positions);
-}
-
 /**
  * Coachroof: drawing width at the aft end, widening to maxHalfWidth at the mast (photo: the
  * self-tacking track ends at its edges), front corners cut, front face sloping back to
@@ -258,7 +261,11 @@ function coachroof(materials: BoatMaterials): THREE.Object3D[] {
   ];
 }
 
-/** Cockpit well (sole and walls) and the side coamings that carry winches and clutches. */
+/**
+ * Cockpit well (sole and walls) and the side coamings that carry winches and clutches. The sole
+ * is flat back to the transom (M34, owner on PR #81); the coamings end behind the winches, and
+ * the rope tail boxes (`cockpitHardware.ts`) stand behind them.
+ */
 function cockpit(materials: BoatMaterials): THREE.Object3D[] {
   const c = boat.deck.cockpit;
   const w = c.wellHalfWidth;
@@ -281,24 +288,28 @@ function cockpit(materials: BoatMaterials): THREE.Object3D[] {
       [c.aftX, c.coamingTopY, side * w],
     );
   }
-  // Front and aft walls up to the deck.
-  for (const x of [c.frontX, c.aftX]) {
-    const top = sheerAt(x) + EPS;
-    pushQuad(positions, [x, c.soleY, -w], [x, c.soleY, w], [x, top, w], [x, top, -w]);
-  }
+  // Front wall up to the deck (the transom closes the well at the back).
+  const front = sheerAt(c.frontX) + EPS;
+  pushQuad(
+    positions,
+    [c.frontX, c.soleY, -w],
+    [c.frontX, c.soleY, w],
+    [c.frontX, front, w],
+    [c.frontX, front, -w],
+  );
   const sole = triangles(positions.splice(0, 18));
   const well = triangles(positions);
 
   const coamingWidth = boat.modelDetail.coamingWidth;
-  const lowestDeck = Math.min(sheerAt(c.frontX), sheerAt(c.aftX));
-  const coamings = [1, -1].map((side) => {
-    const height = c.coamingTopY - (lowestDeck - OVERLAP);
+  const coamings = ([1, -1] as const).map((side) => {
+    const endX = ropeBinBox(side).bodyEndX;
+    const height = c.coamingTopY - (Math.min(sheerAt(c.frontX), sheerAt(endX)) - OVERLAP);
     const centre: Vec3 = [
-      (c.frontX + c.aftX) / 2,
+      (c.frontX + endX) / 2,
       c.coamingTopY - height / 2,
       side * (w + coamingWidth / 2),
     ];
-    return boxAt(centre, [c.frontX - c.aftX, height, coamingWidth]);
+    return boxAt(centre, [c.frontX - endX, height, coamingWidth]);
   });
   return [
     partMesh('part_cockpit', [sole], materials.teak),

@@ -51,6 +51,7 @@ import { liveM30Checks, M30_SCENES } from './shots-m30.mjs';
 import { liveM31Checks, M31_SCENES } from './shots-m31.mjs';
 import { liveM32Checks, M32_SCENES } from './shots-m32.mjs';
 import { liveM33Checks, M33_SCENES } from './shots-m33.mjs';
+import { liveM34Checks, M34_SCENES } from './shots-m34.mjs';
 import {
   closeSettings,
   openSettings,
@@ -201,6 +202,7 @@ const SCENES = [
   ...M31_SCENES.map((scene) => ({ ...scene, name: `m31-${scene.name}` })),
   ...M32_SCENES.map((scene) => ({ ...scene, name: `m32-${scene.name}` })),
   ...M33_SCENES.map((scene) => ({ ...scene, name: `m33-${scene.name}` })),
+  ...M34_SCENES.map((scene) => ({ ...scene, name: `m34-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -804,9 +806,13 @@ try {
         { viewport: VIEWPORTS[2], cam: 'helm' },
         { viewport: VIEWPORTS[2], cam: 'side-starboard' },
         { viewport: VIEWPORTS[2], cam: 'top' },
+        // M34: the backstay's two ends now run in a V over the starboard wheel in the top view,
+        // which is edge-on there (a thin line), so the 24 px sweep may miss it. A finer sweep
+        // of the same view finds it (5 taps at 12 px).
+        { viewport: VIEWPORTS[2], cam: 'top', step: 12 },
       ];
-  for (const { viewport, cam } of sweeps) {
-    const label = `taps ${viewport.name}/${cam}`;
+  for (const { viewport, cam, step: fixedStep } of sweeps) {
+    const label = `taps ${viewport.name}/${cam}${fixedStep ? ` (${fixedStep} px)` : ''}`;
     // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
     // The boat is framed largest with the sheet at its lowest (M26).
@@ -814,7 +820,7 @@ try {
     await page.waitForTimeout(800);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     const barTop = await viewBottom(page);
-    const step = viewport.width < 500 ? 14 : 24;
+    const step = fixedStep ?? (viewport.width < 500 ? 14 : 24);
     let taps = 0;
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
       for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
@@ -936,6 +942,7 @@ try {
     m31: () => liveM31Checks(live),
     m32: () => liveM32Checks(live),
     m33: () => liveM33Checks(live),
+    m34: () => liveM34Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

@@ -461,8 +461,9 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 
 #### M34: Rope ends and Phase 6 sign-off
 
-- [ ] Rope boxes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=helm&held=1 — zoom in on the boxes behind each winch: a neat coil of rope lies in each.
-- [ ] Winches: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h — the turns of rope on the two winches are thinner than before and lie side by side; the end held in the hand has a closed, rounded tip, not an open tube.
+- [ ] Rope boxes, lines not in use: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=helm&held=1 — look at the right-hand (starboard) winch from the helm: behind it a 30 cm gap, then a white box as wide as the block under the winch, running back to the stern. The lines drop into the gap and go into the box through a dark opening on its front face; nothing lies on top of the box. The floor is flat all the way back (no step).
+- [ ] Line in hand: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wd=90&ws=12&cam=helm&wsb=a5.0.h — one line (the jib sheet) comes past the winch, crosses the gap and ends in a coil on top of the box, in its own colour; it does not go into the box.
+- [ ] Lines on the winches: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h — the turns on both winches are thinner than before and lie side by side; each line then has a short straight loose end lying on top of its box, with a closed, rounded tip.
 - [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?debug=1&wd=60&ws=20&wm=gusty&fd=1&detail=low — 50 fps or more. Write the number in the PR.
 - [ ] Every item of the Phase 6 Definition of Done (PHASE6_SPEC 11) is ticked in the PR.
 

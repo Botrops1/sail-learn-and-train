@@ -111,7 +111,7 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       ['forestay.bottom', hanse508.rig.forestay.bottom],
       ['forestay.top', hanse508.rig.forestay.top],
       ['backstay.top', hanse508.rig.backstay.top],
-      ['backstay.bottom', hanse508.rig.backstay.bottom],
+      ['backstay.block', hanse508.rig.backstay.block],
       ['boom.gooseneck', hanse508.rig.boom.gooseneck],
       ['vang.mastPoint', hanse508.rig.vang.mastPoint],
       ['toppingLift.mastExit', hanse508.rig.toppingLift.mastExit],
@@ -177,7 +177,7 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
   });
 
   it('coachroof and cockpit shapes are sane', () => {
-    const { coachroof, cockpit, aftPlatform } = hanse508.deck;
+    const { coachroof, cockpit } = hanse508.deck;
     expect(coachroof.frontHalfWidth).toBeLessThan(coachroof.halfWidth);
     expect(coachroof.maxHalfWidth).toBeGreaterThan(coachroof.halfWidth);
     expect(coachroof.maxHalfWidthFromX).toBeGreaterThan(coachroof.aftX);
@@ -188,13 +188,14 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
     expect(coachroof.chamferStartX).toBeLessThan(coachroof.frontX);
     expect(coachroof.topFrontX).toBeLessThan(coachroof.frontX);
     expect(cockpit.soleY).toBeLessThan(cockpit.coamingTopY);
-    expect(cockpit.aftX).toBe(aftPlatform.frontX);
+    // M34: the floor is flat to the transom.
+    expect(cockpit.aftX).toBe(hanse508.hull.transomX);
   });
 
   it('model detail: counts are whole numbers, positions lie on the boat, sizes are small', () => {
     const { transomX, bowFittingTipX } = hanse508.hull;
     for (const [path, value] of numbers(hanse508.modelDetail)) {
-      if (/(count|spokes)$/.test(path)) {
+      if (/(count|spokes|pointsPerTurn)$/.test(path)) {
         expect(Number.isInteger(value) && value >= 1, path).toBe(true);
       } else if (/X$/.test(path)) {
         expect(value, path).toBeGreaterThanOrEqual(transomX);
@@ -202,6 +203,10 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       } else if (/Deg$/.test(path)) {
         expect(value, path).toBeGreaterThan(0);
         expect(value, path).toBeLessThanOrEqual(360);
+      } else if (/turns$/.test(path)) {
+        // M34: the coil's turns are a count of turns, not a size in metres.
+        expect(value, path).toBeGreaterThan(0);
+        expect(value, path).toBeLessThanOrEqual(10);
       } else {
         expect(value, path).toBeGreaterThan(0);
         expect(value, path).toBeLessThan(path.includes('Exponent') ? 5 : 2.5);
