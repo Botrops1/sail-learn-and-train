@@ -1066,6 +1066,11 @@ html[data-layout='side'] .rig-alerts {
   bottom: 64px;
 }
 
+/* Beside the panel the mini-map is 160 px and would cover the warnings: they sit above it (M28 review). */
+html[data-layout='side'] .view[data-mini-map] .rig-alerts {
+  bottom: calc(60px + 160px + 8px);
+}
+
 .rig-alert {
   padding: 4px 12px;
   border-radius: 8px;
