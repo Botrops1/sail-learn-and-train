@@ -951,7 +951,7 @@ The second column (M29).
 - `createCameraChip` is only created when the map view exists (`if (map)` in `app.ts`), since it now needs the map for the Close chip; the map is created whenever the 3D view is, so nothing changes for the owner.
 - A mini-map that has just appeared is drawn at the next frame, not after the 100 ms frame-rate pause, so it is never an empty box.
 - Extra live check 9 in `shots-m28.mjs`: the four chips (mode, camera, Close, gear) fit a 360 px phone in Russian with the map open (the CSS of 9.4 promises it).
-- Independent review of PR 68, finding 1 (fixed after the merge): in the side layout the rig alerts (Gybe!, Round-up, Overpowered, autopilot took the wheel) sit centred 64 px above the view's bottom, which is where the 160 px mini-map is, so they were drawn under it at 820 × 1000 and 1024 × 768. While the mini-map shows, they move above it: `html[data-layout='side'] .view[data-mini-map] .rig-alerts { bottom: calc(60px + 160px + 8px); }`. Live check 10 in `shots-m28.mjs` measures it at those two sizes. The phone is unaffected (its alerts are at the top).
+- Independent review of PR 68, finding 1 (fixed after the merge): in the side layout the rig alerts (Gybe!, Round-up, Overpowered, autopilot took the wheel) sit centred 64 px above the view's bottom, which is where the 160 px mini-map is, so they were drawn under it at 820 × 1000 and 1024 × 768. While the mini-map shows, they move above it: `html[data-layout='side'] .view[data-mini-map] .rig-alerts { bottom: calc(60px + 160px + 8px); }`. Live check 10 in `shots-m28.mjs` measures it at those two sizes. Findings 2–6 and the PR's two questions: accepted as recommended (2: the checklist ticks were removed; 3 and 5: leave as is; 4: M29, see 10.4; 6: noted; questions 1 and 2: keep the 5 m per pixel scale and hide the mini-map at full height). The phone is unaffected (its alerts are at the top).
 - Test 6 of 9.7 reads the centre pixel of the mini-map's canvas: the boat's hull colour (199, 202, 205), not the water.
 
 ---
@@ -1012,6 +1012,8 @@ No scenes (CI shoots scenes at phone size only, 3.6). Live checks, each at 1440 
 ### 10.4 Accessibility and frame rate (the sweep)
 
 `auditPage` (clean, no new exceptions in `a11y-audit.mjs`; if one seems needed, ask in the PR) on: the phone at peek, half and full in each of the three modes after `openAllSections`; the settings dialog, the camera menu and the mode menu; the mini-map; Russian (`lang=ru`) Easy at half after `openAllSections`; 1440 × 900 wide in each mode. (The audit's Tab walk stops after 150 stops; accepted.) Frame times as 7.9 check 11 (peek and half), reported in the PR only.
+
+**Carried from the M28 review (finding 4, owner: "fix later"):** `miniMap.ts` reads `canvas.clientWidth` on every frame (through `update` → `applyVisibility`), right after the 3D labels have moved, which forces an early layout every frame. The size only changes when the layout or the sheet height changes, and both already call `applyVisibility`. While measuring the frame rate here, compare with and without the per-frame read; if it costs, size the canvas only from `layout.onChange`, `sheet.onChange` and when the mini-map appears.
 
 ### 10.5 Docs
 
