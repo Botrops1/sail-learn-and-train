@@ -1,6 +1,6 @@
 # Layout analysis (input for `/plan 5`)
 
-**Planned in [`PHASE5_SPEC.md`](PHASE5_SPEC.md) (2026-10-15); the spec decides where it differs from this draft.** Context for planning Phase 5 (new layout and modes). Not a spec. Written 2026-10-14 after Phase 4's M22, from the owner's request and answers in a planning chat. `/plan 5` reads this in full, asks the open questions in section 8, and turns the chosen structure into `docs/PHASE5_SPEC.md`. No mockup was made; the plan describes the layout in words and the milestones' browser checks show it.
+**Built in Phase 5** ([PHASE5_SPEC](PHASE5_SPEC.md)); kept as the record of why. Context for planning Phase 5 (new layout and modes). Not a spec. Written 2026-10-14 after Phase 4's M22, from the owner's request and answers in a planning chat. `/plan 5` reads this in full, asks the open questions in section 8, and turns the chosen structure into `docs/PHASE5_SPEC.md`. No mockup was made; the plan describes the layout in words and the milestones' browser checks show it.
 
 ## 1. Why
 

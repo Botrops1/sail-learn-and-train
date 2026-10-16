@@ -1033,7 +1033,13 @@ Harbour and Exercises modes (Phases 7, 8); remembering folds; any new section.
 
 ### 10.8 Decided in the M29 PR
 
-(empty)
+- `scrollToSection(element)` is exported from `panel.ts`; the panel's own `showSection` and the scroll when a Learn entry opens call it through a small id-to-element wrapper. A section that is not shown (`offsetParent === null`) is not scrolled, as before.
+- The panel tells three kinds of layout apart (stacked, side, wide). A section is always placed by the current kind (so a resize never leaves one in the wrong column); open states are applied when the kind changes, except wide → side, as 10.2 says. Wide → stacked at once applies the stacked `open` list.
+- If the focus is inside a section that moves between columns, it is set again on the same element (`focus({ preventScroll: true })`).
+- The M28 review finding 4 (the mini-map read `canvas.clientWidth` on every frame) is fixed without a before/after measurement: headless Chromium draws at 7–8 frames a second with software drawing, so a layout read of a fraction of a millisecond cannot be seen in it. `miniMap.ts` now sizes its canvas only when it appears and from `layout.onChange` and `sheet.onChange`; the per-frame `update` only applies the visibility rule (no layout read). The mini-map's CSS size depends only on the layout (96 px on a phone, 160 px in the side layout), which `layout.onChange` already covers.
+- Frame figures (reported only, headless Chromium with software drawing, 390 × 844, Detail low, `?debug=1&wd=60&ws=20&wm=gusty`): at peek 7 fps, 3D work 6.7 ms a frame; at half 8 fps, 4.8 ms. The headless figure says nothing about a phone's graphics chip: the owner's 50 fps check (Definition of Done 7) is on the phone.
+- M29 has no scenes (10.3), so `shots-m29.mjs` exports only `liveM29Checks`; it is registered in `liveGroups` only. The last part of `ci.yml` takes it without a change.
+
 
 ---
 
