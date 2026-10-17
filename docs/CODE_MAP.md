@@ -105,7 +105,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setMiniMap` (M28), `setFend
 | `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: stations, gestures, Mast station, winch handle and strain bar. |
 | `windPanel.ts`, `windModePanel.ts`, `wavesPanel.ts`, `windIndicator.ts`, `windInstrument.ts` | The Conditions section (wind dial, speed, wind modes, waves, presets), the alert stack over the 3D view (gybe, by the lee, heel, round-up; M36 also writes each to the history, `alertCentre.ts`), wind instrument dial. |
 | `harbourPanel.ts` | M33: the Harbour gear section (last in every mode): Fenders In the locker / Out, and the hint "Bring the fenders in before you sail" while Sailing with them out. |
-| `alertCentre.ts` | M36: the Attention button in the top row (number badge, orange or red for a new warning or danger) and the history card: newest first, time, text and a "?" that opens the Learn entry; open at the start in a wide window, folded elsewhere. |
+| `alertCentre.ts` | M36: the Attention button (top row beside the panel, the bottom chip row on a phone; number badge, orange or red for a new warning or danger) and the history card: newest first, time, text and a "?" that opens the Learn entry without changing the mode (`panel.showLearnEntry`); open at the start in a wide window, folded elsewhere. |
 | `enginePanel.ts` | The Engine section (Start/Stop, lever slider, tachometer) and the lever at the Helm station. |
 | `gybeReport.ts` | The gybe report (boom speed, energy, peak main sheet load) in the alert stack. |
 | `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | Instrument strip, the Autopilot and Sails sections, time bar (with the "Held still" chip in place of Pause). |

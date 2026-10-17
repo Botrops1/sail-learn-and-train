@@ -35,7 +35,7 @@ export function alertText(entry: AlertEntry): string {
  * number of new entries) opens it as a card over the 3D view. In a wide window (1,280 px or more,
  * panel beside the view) it starts open, as a small overlay at the left; elsewhere it starts
  * folded into the button. Each entry has a "?"
- * that opens its Learn entry. The open state is not stored (not in the link).
+ * that opens its Learn entry (in the Learn section, where it is: the mode stays). The open state is not stored (not in the link).
  */
 export function createAlertCentre(
   top: HTMLElement,

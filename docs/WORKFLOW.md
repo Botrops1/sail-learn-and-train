@@ -480,7 +480,7 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 
 #### M36: Notification centre
 
-- [ ] Phone, at the start: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — at the top right, above the clock, there is a small round "!" button (the Attention button). No number on it, and nothing else is open.
+- [ ] Phone, at the start: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — at the bottom of the 3D view, between the "Port ▾" chip and the gear, there is a small round "!" button (the Attention button). No number on it, and nothing else is open.
 - [ ] Empty history: tap the "!" button: a small card opens under it saying "No alerts yet…". Tap the button again (or press Escape on a keyboard): it folds.
 - [ ] Reminder to bring the fenders in: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1&fd=1 — open "Conditions", choose "Sailing". The "!" button shows a "1". Tap it: the list has "Bring the fenders in before you sail." with the time and a "?" button. The number is gone.
 - [ ] The question mark: tap "?" on that line. The card folds and the Learn section shows the entry "Fender".

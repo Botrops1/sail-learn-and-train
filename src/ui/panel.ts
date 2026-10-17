@@ -44,6 +44,8 @@ export interface Panel {
   shows(id: SectionId): boolean;
   /** setAppMode('learn'), openLearn(id), then showSection('learn'). */
   openLearnEntry(id: string): void;
+  /** openLearn(id), then showSection('learn'): the mode and the places of the sections stay as they are (M36: the alert history's "?"). */
+  showLearnEntry(id: string): void;
   /** Runs after a section opens or folds, the mode changes, the sheet changes height, or the layout changes. */
   onChange(listener: () => void): void;
 }
@@ -77,6 +79,11 @@ export function createPanel(
 
   const openLearnEntry = (id: string) => {
     store.dispatch({ type: 'setAppMode', mode: 'learn' });
+    store.dispatch({ type: 'openLearn', id });
+    showSection('learn');
+  };
+
+  const showLearnEntry = (id: string) => {
     store.dispatch({ type: 'openLearn', id });
     showSection('learn');
   };
@@ -278,6 +285,7 @@ export function createPanel(
       return Boolean(section && section.isOpen() && !section.element.hidden && !sheet.atPeek());
     },
     openLearnEntry,
+    showLearnEntry,
     onChange: (listener) => listeners.push(listener),
   };
 }

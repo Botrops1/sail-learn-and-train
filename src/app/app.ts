@@ -142,7 +142,7 @@ export function startApp(host: HTMLElement): void {
   }
   // The history of the short alerts (M36, issue #80). After the camera chip, so that its button
   // stands between the camera chip and the gear in the chip row.
-  createAlertCentre(top, chipRow, layout.view, store, layout, panel.openLearnEntry);
+  createAlertCentre(top, chipRow, layout.view, store, layout, panel.showLearnEntry);
 
   let frames = 0;
   let windowStart = performance.now();
