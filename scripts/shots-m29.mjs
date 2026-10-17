@@ -178,7 +178,8 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     await page.getByTestId('mode-chip').click();
     await audit(page, 'mode menu');
     await page.keyboard.press('Escape');
-    // The mini-map (Sailing, sheet at half).
+    // The mini-map (Sailing, sheet at half: the sections above raised it to full).
+    await setSheet(page, 'half');
     check(
       'the mini-map is shown for its audit',
       await page.getByTestId('mini-map').isVisible(),

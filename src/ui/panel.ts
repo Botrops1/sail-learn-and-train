@@ -240,15 +240,14 @@ export function createPanel(
     }
     // A rope or the wheel selected shows it in the Ropes section (Easy and Realistic mode; in
     // Learn mode "Show on the boat" lights the part up and nothing moves). At peek the quick row
-    // shows it instead.
+    // shows it; Ropes still opens (M35: it is what the sheet shows when it is pulled up).
     if (
       state.selection !== previous.selection &&
       entryFor(state.selection) &&
-      state.appMode !== 'learn' &&
-      !sheet.atPeek()
+      state.appMode !== 'learn'
     ) {
       openOnly('ropes');
-      revealRopeStrip();
+      if (!sheet.atPeek()) revealRopeStrip();
       changed();
     }
   });
