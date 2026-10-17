@@ -52,7 +52,6 @@ const NON_LATIN = LANGUAGES.filter((code) => !HAS_LATIN.test(languageName(code))
  */
 const SAME_AS_ENGLISH: Record<string, string> = {
   'view.step.option': 'a number and a percent sign only',
-  'instruments.timeScale': 'a multiplication sign and a number only',
   'instrument.aws': 'printed on the boat’s instrument display',
   'instrument.tws': 'printed on the boat’s instrument display',
   'real.gearbox.in': 'printed on the gearbox switch',

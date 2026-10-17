@@ -226,7 +226,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm27 instruments', BOAT);
     await page.waitForTimeout(500);
-    await page.getByTestId('instrument-strip').click();
+    await page.getByTestId('strip-main').click();
     await page.waitForTimeout(500);
     const open = await dataOpen(page, 'conditions');
     check('Conditions is open', open === 'true', String(open));

@@ -38,8 +38,8 @@ function writeFolded(folded: boolean): void {
  * Pause button: `Time ×1  [«] [‹] [Pause] [›] [»]`. ‹ and › go one step down and up the list of
  * time scales (¼ … 16), « and » straight to the slowest and the fastest, a tap on the ×1 goes
  * back to normal speed. Pause freezes time, exactly as in Phase 1. The word "Time" folds the
- * bar to the Pause button (and a small "Time" to open it again); the fold is remembered on the
- * device. The speed part shows only where time changes something (Sailing, or a wind that
+ * bar to the Pause button; folded, the word "Time" has the current speed under it (M37, issue #87);
+ * the fold is remembered on the device. The speed part shows only where time changes something (Sailing, or a wind that
  * changes) and while the switch in Settings is on; otherwise only Pause shows. Where nothing
  * changes with time at all (Held still, steady wind, Easy ropes; issue #34) Pause is replaced
  * by a "Held still" chip; a tap on it explains in a small note where to change that.
@@ -68,7 +68,8 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     'data-testid': 'time-fold',
     'aria-expanded': 'true',
   });
-  fold.textContent = t('time.label');
+  const foldSpeed = el('span', { class: 'time-label-speed', 'data-testid': 'time-fold-speed' });
+  fold.append(el('span', {}, [t('time.label')]), foldSpeed);
   fold.addEventListener('click', () => {
     folded = !folded;
     writeFolded(folded);
@@ -83,11 +84,13 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
   const slowest = button('time-slowest', '«', t('time.slowest'), () =>
     setScale(slowestTimeScale()),
   );
+  slowest.classList.add('time-jump');
   const slower = button('time-slower', '‹', t('time.slower'), () => step(-1));
   const faster = button('time-faster', '›', t('time.faster'), () => step(1));
   const fastest = button('time-fastest', '»', t('time.fastest'), () =>
     setScale(fastestTimeScale()),
   );
+  fastest.classList.add('time-jump');
 
   // Pause is the Phase 1 button, as it was: the same test id, class and strings.
   const pause = el('button', {
@@ -154,7 +157,11 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     bar.dataset.open = String(open);
     fold.hidden = !speed;
     fold.setAttribute('aria-expanded', String(open));
-    fold.setAttribute('aria-label', t(open ? 'time.fold' : 'time.unfold'));
+    fold.setAttribute(
+      'aria-label',
+      open ? t('time.fold') : t('time.unfoldSpeed', { scale: timeScaleText(scale) }),
+    );
+    setText(foldSpeed, `×${timeScaleText(scale)}`);
     for (const part of [status, slowest, slower, faster, fastest]) part.hidden = !open;
     setText(status, `×${timeScaleText(scale)}`);
     status.setAttribute('aria-label', t('time.status', { scale: timeScaleText(scale) }));

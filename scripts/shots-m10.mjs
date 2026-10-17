@@ -79,10 +79,12 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     }
     check('GUST badge shows (×16)', seen, String(seen));
     if (seen) await shot(page, 'live-phone-gust');
+    // The speed of time shows in the time bar only (M37): the strip has no ×16 badge.
     check(
-      '×16 badge shows',
-      (await text(page, 'strip-time')) === '×16',
-      await text(page, 'strip-time'),
+      '×16 shows in the time bar, not in the strip',
+      (await text(page, 'time-status')) === '×16' &&
+        (await page.getByTestId('strip-time').count()) === 0,
+      await text(page, 'time-status'),
     );
     let gone = false;
     for (let i = 0; i < 400 && !gone; i += 1) {
@@ -257,9 +259,9 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       await search(page),
     );
     check(
-      'time bar: ×4 badge in the strip',
-      (await text(page, 'strip-time')) === '×4',
-      await text(page, 'strip-time'),
+      'time bar: no ×4 badge in the strip (M37)',
+      (await page.getByTestId('strip-time').count()) === 0,
+      'none',
     );
     await shot(page, 'live-phone-time-bar-x4');
     await page.getByTestId('time-slowest').click();
@@ -329,9 +331,9 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       'chip only',
     );
     check(
-      'held, steady: no badge (the scale is 1)',
-      !(await page.getByTestId('strip-time').isVisible()),
-      'hidden',
+      'held, steady: no badge in the strip',
+      (await page.getByTestId('strip-time').count()) === 0,
+      'none',
     );
     check(
       'held, steady: the note is closed at first',
