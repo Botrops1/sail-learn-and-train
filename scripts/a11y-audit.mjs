@@ -2,12 +2,16 @@
 // - every visible control has an accessible name;
 // - text is at least 13 px (secondary text; labels 15 px is checked by eye);
 // - touch targets are at least 44 × 44 px, except the compact clutch drawing of Easy mode,
-//   which the owner accepted narrower (ROADMAP decisions, M4a review);
+//   which the owner accepted narrower (ROADMAP decisions, M4a review), and the section headers
+//   on a phone, which the owner asked to be thinner lines (issue #79, M35);
 // - the Tab key reaches every control in order and never gets stuck.
 // Used by scripts/shots-m5.mjs; returns a list of problems (empty = fine).
 
-/** Controls that may be smaller than 44 px (owner decision after M4a: the compact clutches). */
-const SMALL_OK = ['.clutch-drawing .clutch'];
+/**
+ * Controls that may be smaller than 44 px (owner decisions: the compact clutches after M4a; the
+ * 34 px section headers and their "?" buttons on a phone, issue #79).
+ */
+const SMALL_OK = ['.clutch-drawing .clutch', '.section-toggle', '.section-explain'];
 
 /** Text that may be smaller than 13 px: none since M5 (owner, PR #19: taller clutches). */
 const SMALL_TEXT_OK = [];

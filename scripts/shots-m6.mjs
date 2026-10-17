@@ -127,6 +127,7 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
     const heading = parseInt((await text(page, 'strip-heading')).replace(/\D/g, ''), 10);
     check('autopilot turns her', heading >= 5 && heading <= 14, `HDG ${heading}`);
     await shot(page, 'live-phone-autopilot-plus10');
+    await showSection(page, 'ropes');
     await page.locator('[data-select="part_rudder"]').click();
     await page
       .locator('.ropes-easy')

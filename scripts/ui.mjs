@@ -7,12 +7,15 @@
 export async function showSection(page, id) {
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);
+  // A folded section's header may sit under a sheet at peek: raise the sheet first.
+  if (await sheetAtPeek(page)) await setSheet(page, 'half');
   if ((await section.getAttribute('data-open')) === 'false') {
-    // A folded section's header may sit under a sheet at peek: raise the sheet first.
-    if (await sheetAtPeek(page)) await setSheet(page, 'half');
     await page.getByTestId(`section-toggle-${id}`).click();
   }
-  if (await sheetAtPeek(page)) await setSheet(page, 'half');
+  // M35: with every title on screen a half-height sheet leaves the open section about 100 px, so
+  // (as the tap on a title does) the sheet goes to full. Checks that need the boat in view lower
+  // it again with `setSheet(page, 'half')`.
+  if ((await sheetHeightNow(page)) === 'half') await setSheet(page, 'full');
   await section.scrollIntoViewIfNeeded();
 }
 
@@ -33,15 +36,31 @@ export async function setMode(page, mode) {
   await page.getByTestId(`mode-option-${mode}`).click();
 }
 
-/** M27: opens every available section (each visible `[data-section]` with `data-open="false"`), with the sheet at least half. */
-export async function openAllSections(page) {
-  if (await sheetAtPeek(page)) await setSheet(page, 'half');
-  const ids = await page.evaluate(() =>
+/** M35: the ids of the sections that are shown now (open or folded), in page order, columns 1 then 2. */
+export async function sectionIds(page) {
+  return page.evaluate(() =>
     [...document.querySelectorAll('[data-section]')]
-      .filter((node) => !node.hidden && node.getAttribute('data-open') === 'false')
+      .filter((node) => !node.hidden)
       .map((node) => node.getAttribute('data-section')),
   );
-  for (const id of ids) await page.getByTestId(`section-toggle-${id}`).click();
+}
+
+/** M35: only one section is open at a time, so "every section open" is now "each section in turn": opens each available section and calls `visit(id)` while it is open, with the sheet at least half. */
+export async function eachSection(page, visit) {
+  if (await sheetAtPeek(page)) await setSheet(page, 'half');
+  for (const id of await sectionIds(page)) {
+    await showSection(page, id);
+    await visit(id);
+  }
+}
+
+/** The sheet's height ('peek', 'half', 'full') in the stacked layout, else null. */
+async function sheetHeightNow(page) {
+  return page.evaluate(() =>
+    document.documentElement.dataset.layout === 'stacked'
+      ? (document.querySelector('[data-testid="sheet"]')?.getAttribute('data-sheet') ?? null)
+      : null,
+  );
 }
 
 /** True in the stacked layout with the sheet at its lowest height ("at peek", PHASE5_SPEC 3.1). */

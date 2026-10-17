@@ -2,7 +2,7 @@
 // The Sails block of the Ropes tab, the telltales close up, the blanketed jib and a torn sail.
 // Their labels contain "m9" so the script opens them Sailing (older scenes are held still).
 import path from 'node:path';
-import { setSheet } from './ui.mjs';
+import { setSheet, showSection } from './ui.mjs';
 
 const SAILS = '[data-section="sails"] [data-testid="sails-panel"]';
 
@@ -118,6 +118,7 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
       '?wd=0&ws=25&held=1&cam=side-port&debug=1',
     );
     await page.waitForTimeout(2500);
+    await showSection(page, 'sails');
     check('no badge on new sails', await page.getByTestId('strip-sail').isHidden(), 'hidden');
     await page.evaluate(() => window.__sailDebug.setDamage(0.6, 0.2));
     await page.waitForTimeout(800);

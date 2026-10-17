@@ -467,6 +467,17 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 - [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?debug=1&wd=60&ws=20&wm=gusty&fd=1&detail=low — 50 fps or more. Write the number in the PR.
 - [ ] Every item of the Phase 6 Definition of Done (PHASE6_SPEC 11) is ticked in the PR.
 
+#### M35: Folded sections
+
+- [ ] Start folded: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the panel shows only thin title lines (Ropes, Sails, Autopilot, Engine, Conditions, Learn, Harbour gear); none is open.
+- [ ] One at a time: tap "Sails": it opens and the lines above (Ropes) stay at the top and the ones below (Autopilot … Harbour gear) sit at the bottom of the panel. Tap "Conditions": Sails folds, Conditions opens. Tap the open title: it folds.
+- [ ] Scroll inside: open "Ropes" (the panel rises to full height by itself) and scroll its content: only the content moves, the title lines above and below stay where they are.
+- [ ] A rope in the link: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=rope_mainsheet&wd=60&ws=12 — "Ropes" is open and shows the main sheet.
+- [ ] A Learn link: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_north&held=1 — opens in Learn mode with "North" shown.
+- [ ] Mode: open "Ropes", then tap the "Easy ▾" chip and choose "Realistic": "Ropes" stays open (now with the places Port, Starboard, Helm, Mast).
+- [ ] Sideways: turn the phone sideways (https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12): the lines are thin too and all are visible.
+- [ ] Computer (window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — two columns; open "Ropes" on the left and "Conditions" on the right: both stay open; the title lines are the normal, taller size.
+
 ## 12. Phase 7 (planned ahead)
 
 Planned before Phases 5 and 6 were built; brought up to date with what Phases 5 and 6 built by `/plan 7 refresh` (2026-10-16, PHASE7_SPEC 15). Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.

@@ -76,6 +76,7 @@ export async function liveM8Checks({ openPage, viewports, outDir, prefix, proble
     );
     await shot(page, 'live-phone-heeled');
     // Easing the main sheet to 60 reduces the heel (PT-25).
+    await showSection(page, 'ropes');
     await page.locator('[data-select="rope_mainsheet"]').click();
     await setSlider(page, '#control-ctl_mainsheet', 60);
     await page.waitForTimeout(6000);

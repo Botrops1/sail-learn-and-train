@@ -74,7 +74,12 @@ export async function liveM13Checks({ openPage, viewports, outDir, prefix, probl
     if (tab) await showSection(page, tab);
     if (scrollTo) {
       const target = page.locator(`[data-testid="${scrollTo}"], .${scrollTo}`).first();
-      if ((await target.count()) > 0) await target.scrollIntoViewIfNeeded();
+      if ((await target.count()) > 0) {
+        // Sections start folded (M35): open the one that holds the target.
+        const holder = await target.evaluate((el) => el.closest('[data-section]')?.dataset.section);
+        if (holder) await showSection(page, holder);
+        await target.scrollIntoViewIfNeeded();
+      }
     }
     const found = await auditPage(page, `a11y ${name}`);
     check(`accessibility: ${name}`, found.length === 0, found.length ? found.join(' | ') : 'clean');

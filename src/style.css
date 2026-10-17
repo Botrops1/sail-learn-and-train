@@ -12,6 +12,8 @@
   --accent-soft: #e2eef6;
   --focus: #e07b00;
   --touch: 44px;
+  /* The fold header of a panel section (M35): thinner on a phone, to save room. */
+  --section-head: 44px;
   --font-label: 16px;
   --font-small: 14px;
   --panel-min: 320px;
@@ -621,7 +623,9 @@ html[data-layout='side'][data-wide='true'] .panel-body {
 }
 
 .panel-second {
+  display: flex;
   flex: 1 1 0;
+  flex-direction: column;
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
@@ -647,9 +651,32 @@ html[data-wide='true'] .settings-dialog {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Sections (M27): a fold header, then the block. */
+/*
+ * Sections (M27): a fold header, then the block. M35: all start folded and one is open at a time
+ * per column. The open section takes the room the folded headers leave; its body scrolls on its
+ * own, so the headers above stay at the top and the ones below at the bottom.
+ */
 .panel-section {
+  display: flex;
+  flex: none;
+  flex-direction: column;
   border-top: 1px solid var(--line);
+}
+
+.panel-section[data-open='true'] {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Phones: stacked layout, and the side layout of a phone held sideways. */
+html[data-layout='stacked'] {
+  --section-head: 34px;
+}
+
+@media (max-height: 520px) {
+  html[data-layout='side'] {
+    --section-head: 34px;
+  }
 }
 
 .panel-section:first-child {
@@ -675,8 +702,8 @@ html[data-wide='true'] .settings-dialog {
   flex: 1 1 auto;
   align-items: center;
   justify-content: space-between;
-  min-height: var(--touch);
-  padding: 8px 16px;
+  min-height: var(--section-head);
+  padding: 4px 16px;
   border: 0;
   background: none;
   color: var(--text);
@@ -691,14 +718,18 @@ html[data-wide='true'] .settings-dialog {
   color: var(--muted);
 }
 
+.panel-section[data-open='true'] > .section-head {
+  background: var(--accent-soft);
+}
+
 .panel-section[data-open='false'] .section-chevron {
   transform: rotate(-90deg);
 }
 
 .section-explain {
   flex: none;
-  width: var(--touch);
-  height: var(--touch);
+  width: var(--section-head);
+  height: var(--section-head);
   margin-right: 8px;
   padding: 0;
   border: 0;
@@ -716,7 +747,12 @@ html[data-wide='true'] .settings-dialog {
 }
 
 .section-body {
-  padding: 0 16px 12px;
+  flex: 1 1 auto;
+  min-height: 120px;
+  padding: 8px 16px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* The "?" button shows and hides the explanations of its section. */

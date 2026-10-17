@@ -52,6 +52,7 @@ import { liveM31Checks, M31_SCENES } from './shots-m31.mjs';
 import { liveM32Checks, M32_SCENES } from './shots-m32.mjs';
 import { liveM33Checks, M33_SCENES } from './shots-m33.mjs';
 import { liveM34Checks, M34_SCENES } from './shots-m34.mjs';
+import { liveM35Checks, M35_SCENES } from './shots-m35.mjs';
 import {
   closeSettings,
   openSettings,
@@ -203,6 +204,7 @@ const SCENES = [
   ...M32_SCENES.map((scene) => ({ ...scene, name: `m32-${scene.name}` })),
   ...M33_SCENES.map((scene) => ({ ...scene, name: `m33-${scene.name}` })),
   ...M34_SCENES.map((scene) => ({ ...scene, name: `m34-${scene.name}` })),
+  ...M35_SCENES.map((scene) => ({ ...scene, name: `m35-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -382,6 +384,14 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   // A ceiling, not a pause: it returns as soon as the canvas is in the page (a loaded runner can
   // take longer than 10 s to start a page while other pages are still drawing).
   await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
+  // Since M35 every section starts folded. The checks older than that were written for the panel
+  // with Ropes (Learn mode: Learn) open, so they start from that; the M27, M29 and M35 checks are
+  // about the folded start and open what they need themselves.
+  if (!/m(27|29|35)/.test(label) && (await page.locator('[data-open="true"]').count()) === 0) {
+    await showSection(page, /[?&](m=learn|learn=)/.test(query) ? 'learn' : 'ropes');
+    // Opening raised a half-height sheet; the older checks start with it at half.
+    await setSheet(page, 'half');
+  }
   return { context, page };
 }
 
@@ -742,6 +752,20 @@ try {
       for (const id of scene.click ?? []) await page.getByTestId(id).click();
       // `type`: fill an input after the tab and click steps (M21's search box).
       if (scene.type) await page.getByTestId(scene.type.testId).fill(scene.type.text);
+      // Since M35 sections start folded: open the one that holds the target (the sheet goes
+      // back to the scene's height, since opening raises a half-height sheet).
+      for (const target of [scene.scrollTo, scene.centre]) {
+        const holder = target
+          ? await page
+              .locator(target)
+              .first()
+              .evaluate((el) => el.closest('[data-section]')?.dataset.section ?? null)
+          : null;
+        if (holder) {
+          await showSection(page, holder);
+          await setSheet(page, scene.sheet ?? 'half');
+        }
+      }
       if (scene.scrollTo) await page.locator(scene.scrollTo).scrollIntoViewIfNeeded();
       // `centre`: scroll the panel so this part sits in the middle of it (M4c).
       if (scene.centre) {
@@ -759,7 +783,7 @@ try {
         panelOverflow: (() => {
           return Math.max(
             0,
-            ...[...document.querySelectorAll('.panel-scroll')].map(
+            ...[...document.querySelectorAll('.panel-scroll, .section-body')].map(
               (node) => node.scrollWidth - node.clientWidth,
             ),
           );
@@ -943,6 +967,7 @@ try {
     m32: () => liveM32Checks(live),
     m33: () => liveM33Checks(live),
     m34: () => liveM34Checks(live),
+    m35: () => liveM35Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

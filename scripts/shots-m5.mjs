@@ -216,6 +216,7 @@ export async function liveM5Checks({
       message.includes('3D not supported on this device'),
       message.split('\n')[0],
     );
+    await showSection(page, 'ropes');
     await page.locator('[data-select="rope_vang"]').click();
     await page.getByRole('button', { name: 'More: Vang' }).click();
     await waitUrl(page, () => window.location.search.includes('vg=55'));
@@ -281,6 +282,7 @@ export async function liveM5Checks({
       failed.includes('The 3D view stopped working'),
       failed.split('\n')[0],
     );
+    await showSection(page, 'ropes');
     await page.locator('[data-select="rope_vang"]').click();
     await page.getByRole('button', { name: 'More: Vang' }).click();
     await waitUrl(page, () => window.location.search.includes('vg=55'));
