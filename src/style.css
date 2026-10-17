@@ -3257,6 +3257,191 @@ html[data-layout='side'] .clock-chip {
   margin-left: 0;
 }
 
+/* The notification centre (M36, issue #80): the Attention button in the top row and the history card. */
+.alert-chip {
+  position: relative;
+  flex: 0 0 auto;
+  /* On a phone the button and the clock chip sit together at the right of the strip's row. */
+  margin-left: auto;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: rgb(255 255 255 / 0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-small);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.alert-chip + .clock-chip {
+  margin-left: 0;
+}
+
+.alert-chip[aria-expanded='true'] {
+  background: var(--accent-soft);
+}
+
+.alert-chip[data-new='warning'] {
+  border-color: #b85c00;
+  background: #fff3e0;
+  color: #6b3a00;
+}
+
+.alert-chip[data-new='danger'] {
+  border-color: #c8102e;
+  background: #c8102e;
+  color: #ffffff;
+}
+
+.alert-badge {
+  display: inline-block;
+  min-width: 20px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: #8a3b00;
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.alert-badge[hidden] {
+  display: none;
+}
+
+.alert-chip:focus-visible,
+.alert-fold:focus-visible,
+.alert-learn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.alert-centre {
+  position: absolute;
+  z-index: 10;
+  top: calc(var(--view-top-h, 64px) + 4px);
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  width: min(340px, calc(100% - 16px));
+  /* The list scrolls inside the card; the card never runs past the view's bottom edge. */
+  max-height: min(60%, calc(100% - var(--view-top-h, 64px) - 12px));
+  padding: 4px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.95);
+  color: var(--text);
+  font-size: var(--font-small);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+  pointer-events: auto;
+  overflow-wrap: anywhere;
+}
+
+.alert-centre[hidden] {
+  display: none;
+}
+
+/* Side by side the card is a small overlay at the left, under the strip. */
+html[data-layout='side'] .alert-centre {
+  right: auto;
+  left: 8px;
+  max-height: min(40%, calc(100% - var(--view-top-h, 64px) - 12px));
+}
+
+.alert-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.alert-title {
+  margin: 0;
+  font-size: 15px;
+}
+
+.alert-fold {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.alert-empty {
+  margin: 0 0 4px;
+  color: var(--muted);
+}
+
+.alert-empty[hidden] {
+  display: none;
+}
+
+.alert-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-top: 1px solid var(--line);
+}
+
+.alert-time {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.alert-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.alert-item.is-warning .alert-text {
+  color: #8a3b00;
+}
+
+.alert-item.is-danger .alert-text {
+  color: #c8102e;
+}
+
+.alert-learn {
+  flex: 0 0 auto;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #ffffff;
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Side by side the Attention button comes last in the row, after the clock chip. */
+html[data-layout='side'] .alert-chip {
+  order: 3;
+  margin-left: 0;
+}
+
 /* Learn tab and the "More" buttons (PHASE4_SPEC 6.6). Buttons are at least 44 px high. */
 .card-more,
 .learn-more,

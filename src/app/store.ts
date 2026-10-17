@@ -29,6 +29,7 @@ import {
 } from '../model/autopilot';
 import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../model/engine';
 import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock';
+import { EMPTY_ALERTS, recordAlerts, type AlertLog } from '../model/alerts';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
@@ -109,6 +110,8 @@ export interface AppState {
   clock: ClockState;
   /** Harbour gear (M33): the fenders. Phase 7 adds the windlass and the lines here. In the link as `fd`. */
   harbour: HarbourState;
+  /** The alert history (M36, issue #80): what the short messages said, kept for the notification centre. Not in the link. */
+  alerts: AlertLog;
 }
 
 /** Engine commands (PHASE2_SPEC 12.3): start, stop, or the lever (−100 … 100, whole numbers). */
@@ -317,6 +320,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     sea,
     clock: { utcMs: overrides.clockUtcMs ?? defaultClockUtcMs() },
     harbour: overrides.harbour ?? DEFAULT_HARBOUR,
+    alerts: EMPTY_ALERTS,
   });
 }
 
@@ -340,7 +344,19 @@ const MAX_STEP_S = 0.1;
 /** How long "Autopilot on Standby: you took the wheel" shows, seconds. */
 const AUTOPILOT_NOTICE_S = 3;
 
+/**
+ * One action on the state. Whatever it does, a message that starts because of it (a step, the
+ * wheel turned, Sailing chosen with the fenders out) is written to the alert history (M36).
+ */
 export function reduce(state: AppState, action: Action): AppState {
+  const next = reduceAction(state, action);
+  // A link or Reset brings its own (empty) history.
+  if (next === state || action.type === 'load' || action.type === 'reset') return next;
+  const alerts = recordAlerts(next.alerts, state, next);
+  return alerts === next.alerts ? next : { ...next, alerts };
+}
+
+function reduceAction(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'setStep':
       return { ...state, settings: { ...state.settings, step: action.step } };

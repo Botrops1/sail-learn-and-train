@@ -1,10 +1,11 @@
 import type { AppState, Store } from '../app/store';
+import { boat } from '../model/boat';
 import { el } from './dom';
 import { createGybeReport } from './gybeReport';
 import { t } from './i18n';
 
-/** The heel alert shows after she has been over the limit this long, seconds. */
-const OVERPOWERED_AFTER_S = 2;
+/** The heel alert shows after she has been over the limit this long, seconds (also when it is written to the alert history). */
+const OVERPOWERED_AFTER_S = boat.physics.alerts.overpoweredAfterS;
 /** The by-the-lee warning gets stronger after this long, seconds (PHASE2_SPEC 11.3). */
 const BY_THE_LEE_STRONG_AFTER_S = 3;
 

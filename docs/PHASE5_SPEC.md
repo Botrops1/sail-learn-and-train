@@ -1089,3 +1089,41 @@ The owner (issue #79): at the start keep every section collapsed so the learner 
 
 **Not in this milestone.** Remembering the last open section; swipe gestures; changing the sheet's heights.
 
+
+## 14. M36: Notification centre (extra milestone, issue #80)
+
+**Independent review: not needed** (UI and a log of text; no physics, no URL keys, no change to what the boat does). The one shared change is a new `alerts` field in the app state, which nothing else reads.
+
+The owner (issue #80): a notification centre for the conditional messages (boom swing, the reminder to bring the harbour gear in, …). On a computer a small overlay on the 3D view that folds into a small Attention button; it keeps a history, because some messages show for a few seconds only and are missed when the view is folded. On a phone a small Attention button next to the time; a tap shows the history of alerts, scrolling. Each alert has a small question mark that jumps to its Learn entry.
+
+**Files.** New: `src/model/alerts.ts` (the log), `src/ui/alertCentre.ts` (button and card), `tests/alerts.test.ts`, `scripts/shots-m36.mjs` (registered in `shots.mjs`, which also adds 36 to the label rule that keeps `openPage` from opening Ropes). Changed: `src/app/store.ts` (`alerts` in `AppState`; `reduce` writes the log after every action except `load` and `reset`), `src/app/app.ts`, `src/ui/windIndicator.ts` (the heel threshold now comes from the boat file), `src/ui/labels3d.ts` (labels keep clear of the button and the card), `src/style.css`, both `ui.json`, `docs/review/ru.md`, `content/boat/hanse508.json` (`physics.alerts`), `docs/`.
+
+**What is written (the log).** A message is written to the history when it **starts**, not while it keeps showing. Seven kinds, each with the Learn entry its "?" opens:
+
+| Kind | Starts when | Text (existing string) | "?" opens |
+|---|---|---|---|
+| `gybe` | `rig.lastGybe` is a new report | `gybeReportText(report)` (accidental or controlled, with its numbers) | `term_gybe` |
+| `tack` | `rig.tackLabelS` goes above 0 | `alert.tack` | `term_tacking` |
+| `byTheLee` | `rig.solution.byTheLee` turns true | `alert.byTheLee` | `term_gybe` (there is no entry of its own) |
+| `overpowered` | `boat.overpoweredS` passes `physics.alerts.overpoweredAfterS` (2 s) | `alert.overpowered` | `term_heel` |
+| `roundUp` | `boat.roundUpS` goes above 0 | `alert.roundUp` | `term_round_up` |
+| `tookWheel` | `autopilotNoticeS` goes above 0 | `autopilot.tookWheel` | `fit_autopilot_control` |
+| `fendersOut` | Sailing with the fenders out begins (`fenderHintShown`) | `harbour.fenders.hint` | `fit_fender` |
+
+Colour: `gybe` accidental and `roundUp` are *danger* (red), `byTheLee` and `overpowered` *warning* (orange), the rest *info*. `byTheLee` and `overpowered` come and go every second near their limit, so each is written again only `physics.alerts.repeatGapS` (5 s of app time) after its last entry. The history keeps the last `physics.alerts.historyMax` (50) entries; `n` numbers every entry from 1 and is never reused. The time on an entry is the rig's clock as `m:ss` (`alertTimeText`); Pause stops it. The log is not in the link, and Reset or a link starts it empty. A condition that is already true when a link opens is not written (nothing changed after the page opened).
+
+**The centre (`createAlertCentre`).**
+
+- **Button** `alert-chip` in the top row, before the clock chip: the word "Attention" and, when entries came while the card was folded, a number badge (`alert-badge`). The button is orange when a new warning is waiting and red when a new danger is. 44 px high. On a phone it sits at the right of the strip's row beside the clock chip; side by side it comes last in the row.
+- **Card** `alert-centre`: title, a **−** button (`alert-fold`) and the list, newest first; each row has the time, the text and a **?** (`alert-learn`, 44 × 44 px). An empty history says "No alerts yet. Warnings that show for only a few seconds are kept here." The list scrolls inside the card.
+- **Where.** Phone (stacked): folded at the start; the button opens a card under the top row at the right; Escape or the button folds it (Escape in any window that is not wide); opening it closes the clock card. Wide window (side by side and 1,280 px or more, `viewport().wide`): **open at the start** as a small overlay under the top row at the left (at most 40 % of the view's height); the − button folds it into the Attention button. Narrower side-by-side windows (the foldable, a phone held sideways) start folded like a phone, so the card never hides the boat. Until the viewer folds or opens it, a resize between wide and not wide changes it to match; after that it stays as chosen. Not stored.
+- **"?"** calls `panel.openLearnEntry(learnId)` (Learn mode, the entry, the section; a sheet at peek rises). On a phone the card folds so the Learn section is seen; side by side it stays.
+- The short alerts over the view (`.rig-alerts`) are unchanged; the history is in addition to them.
+
+**Phase 7.** Its alerts (damage, fender lost, line in the propeller, anchor alarm; PHASE7_SPEC 9.6, 12.6) each add one kind: a name in `ALERT_KINDS`, a row in `ALERT_INFO` (Learn entry, colour), a branch in `started` and a case in `alertText` (`alertCentre.ts`). Nothing else changes.
+
+**Tests.** `tests/alerts.test.ts`: nothing started gives the same log; one entry per start; the repeat gap; the heel limit and round-up; a gybe keeps its report and the accidental one is a danger; the wheel notice and the fender reminder; the cap of 50 with numbers continuing; the store writes on `step` and on other actions and Reset or a link clears it; every kind has a registered Learn entry and every `alerts.*` string exists in Russian; `alertTimeText`. Browser checks (`scripts/shots-m36.mjs`): phone start (button 44 px high, beside the clock chip, card folded, no badge, no sideways scroll), empty history, Escape; the fender reminder (badge 1, list, ? opens "Fender" and folds the card), accessibility audit; an accidental gybe is kept after the live report is gone; desktop opens at the start, foldable and landscape phone start folded; each opens inside the view, − folds, the button reopens; Russian button.
+
+**Decided in the M36 PR** (proposed; the owner answers in the PR): see the PR's questions.
+
+**Not in this milestone.** The Realistic-mode notices in the panel (they answer the action just taken, next to the rope); sound or vibration; clearing the history; saving it between visits; alerts for events that do not exist yet (Phase 7 adds its own).

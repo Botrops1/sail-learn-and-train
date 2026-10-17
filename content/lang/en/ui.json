@@ -645,5 +645,13 @@
   "harbour.fenders.explain": "Rubber buffers hung over the side to protect the hull in a marina. They stay in a locker while sailing.",
   "harbour.fenders.stowed": "In the locker",
   "harbour.fenders.out": "Out",
-  "harbour.fenders.hint": "Bring the fenders in before you sail."
+  "harbour.fenders.hint": "Bring the fenders in before you sail.",
+  "alerts.title": "Attention",
+  "alerts.label": "Alert history",
+  "alerts.chipAria": "Attention: open the alert history",
+  "alerts.chipNewAria": "Attention: {count} new, open the alert history",
+  "alerts.collapse": "Fold the alert history into the Attention button",
+  "alerts.empty": "No alerts yet. Warnings that show for only a few seconds are kept here.",
+  "alerts.learn": "Learn about this alert",
+  "alerts.at": "at {time} on board"
 }

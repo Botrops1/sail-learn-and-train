@@ -18,6 +18,7 @@ import { createModeChip } from '../ui/modeChip';
 import { createPanel } from '../ui/panel';
 import { createSettingsMenu } from '../ui/settingsMenu';
 import { createSheet } from '../ui/sheet';
+import { createAlertCentre } from '../ui/alertCentre';
 import { createClockPanel } from '../ui/clockPanel';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
@@ -87,6 +88,8 @@ export function startApp(host: HTMLElement): void {
   createInstrumentStrip(top, store, () => panel.showSection('conditions'));
   createTimeBar(top, store);
   createClockPanel(top, layout.view, store);
+  // The history of the short alerts, with its button in the top row (M36, issue #80).
+  createAlertCentre(top, layout.view, store, layout, panel.openLearnEntry);
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
   let reframe = () => {};
   trackTopHeight(layout.view, top, () => reframe());
