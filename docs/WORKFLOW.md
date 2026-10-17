@@ -501,6 +501,17 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 - [ ] Worn sail in the Attention list: same link: open "Attention" (computer: it is open at the start): "The mainsail is worn out from flapping…" is in the list with a "?"; tap the "?": the same Learn entry opens. It is written once, not again and again.
 - [ ] GUST tap: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&wm=gusty&seed=7&wg=60&tx=16&cam=side-port — when "GUST" shows, tap it: the Learn section opens at "Gust".
 
+#### M38: Right column: Mode, Settings, corners
+
+- [ ] Mode section (computer, window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the first title in the right column is "Mode: Easy" and there is no "Easy" chip at the bottom of the 3D view. Tap the title: Learn, Easy and Realistic, each with a sentence under it. Tap Realistic: the title says "Mode: Realistic", the section stays open and the boat does not change.
+- [ ] Settings section: same link: the last title of the left column is "Settings" and there is no gear. Tap it: Language, Labels in 3D, Time bar, Clock, Mini-map, Step size, Detail, Share and Reset, Debug overlay and About are all there, in the column (no window over the page). Switch "Labels in 3D" off and on: the labels go and come back.
+- [ ] Language: same link, in Settings choose "Русский": the page reloads in Russian and the Settings section is open.
+- [ ] Corners: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&sel=part_hull — the small map is in the bottom-left corner of the 3D view and the View button ("Port ▾") in the bottom-right corner; the part card at the top does not touch them. Tap the View button: its menu opens above it, inside the view. Tap the small map: the full map opens; "× Close" sits beside the View button; tap it to come back.
+- [ ] No "Rope colours": https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — there is no "Rope colours" title in any mode; open "Ropes": every rope in the list has its colour. Open the "?" of Ropes: a line says what red means (a rope that fights another).
+- [ ] An old link: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lg=0 — opens like the first link (the old "Rope colours" switch is gone).
+- [ ] Smaller window (about 1,000 px wide, or a tablet): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the "Easy ▾" chip and the gear are back at the bottom of the 3D view and work as before; there is no Mode or Settings title.
+- [ ] Phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — nothing is different at the bottom except that "Rope colours" is gone from the sheet; tap "Easy ▾": each mode has a line under it. The gear still opens Settings over the page.
+
 ## 12. Phase 7 (planned ahead)
 
 Planned before Phases 5 and 6 were built; brought up to date with what Phases 5 and 6 built by `/plan 7 refresh` (2026-10-16, PHASE7_SPEC 15). Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.

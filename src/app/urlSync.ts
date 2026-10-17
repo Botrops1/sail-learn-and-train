@@ -122,11 +122,11 @@ export function openScene(store: Store, query: string): void {
 
 /**
  * The settings after a scene opens: the scene's own, except the ones that suit the viewer and the
- * device (detail, debug overlay, step size, legend, labels, mini-map), which stay.
+ * device (detail, debug overlay, step size, labels, mini-map), which stay.
  */
 export function sceneSettings(current: Settings, next: Settings): Settings {
-  const { detail, debug, step, legend, labels, miniMap } = current;
-  return { ...next, detail, debug, step, legend, labels, miniMap };
+  const { detail, debug, step, labels, miniMap } = current;
+  return { ...next, detail, debug, step, labels, miniMap };
 }
 
 /** The full link to what is shown now (Settings → Share). */

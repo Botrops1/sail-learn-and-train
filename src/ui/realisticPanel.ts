@@ -440,7 +440,7 @@ export function createRealisticPanel(
     if (!scenario) return;
     const { settings: now, learn, appMode } = store.getState();
     const next = parseUrlState(scenario.query, now.detail);
-    const settings = { ...next.settings, debug: now.debug, step: now.step, legend: now.legend };
+    const settings = { ...next.settings, debug: now.debug, step: now.step };
     // Learn mode stays (PHASE5_SPEC 8.3); otherwise the scenario's own ropes mode is the mode.
     store.dispatch({
       type: 'load',

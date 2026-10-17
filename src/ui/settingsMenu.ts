@@ -7,6 +7,7 @@ import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { closeOpenMenus } from './chipMenu';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
+import type { LayoutShell } from './layout';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -49,12 +50,59 @@ function gearIcon(): SVGSVGElement {
   return icon;
 }
 
+/** Set before the page reloads for a new language, so the Settings section is open again afterwards (M38). */
+const OPEN_AFTER_RELOAD_KEY = 'sail.openSectionAfterReload';
+
+/** The section to open at the start because the page reloaded from it (once), or null. */
+export function takeOpenAfterReload(): string | null {
+  try {
+    const id = window.sessionStorage.getItem(OPEN_AFTER_RELOAD_KEY);
+    window.sessionStorage.removeItem(OPEN_AFTER_RELOAD_KEY);
+    return id;
+  } catch {
+    return null;
+  }
+}
+
+function openAfterReload(id: string): void {
+  try {
+    window.sessionStorage.setItem(OPEN_AFTER_RELOAD_KEY, id);
+  } catch {
+    // Private windows may refuse storage: the section simply starts folded.
+  }
+}
+
 /**
- * The gear in the chip row and the settings dialog it opens (PHASE5_SPEC 6.4): everything the
- * View tab held except the camera, then About (disclaimer, version, source). While the dialog is
+ * Everything the settings hold (PHASE5_SPEC 6.4): the controls (everything the View tab held
+ * except the camera), then About (disclaimer, version, source). Built once. On the wide layout it
+ * is the body of the Settings section (M38, issue #93, `panel.ts`); elsewhere it is the body of
+ * the dialog the gear opens (`createSettingsMenu`).
+ */
+export function createSettingsContent(store: Store): HTMLElement {
+  return el('div', { class: 'settings-content', 'data-testid': 'settings-content' }, [
+    el('div', { class: 'settings-body' }, buildSettingsBody(store)),
+    el('h3', { class: 'settings-about' }, [t('settings.about')]),
+    el('footer', { class: 'footer' }, [
+      el('p', { class: 'disclaimer', 'data-testid': 'disclaimer' }, [t('footer.disclaimer')]),
+      el('span', { class: 'version', 'data-testid': 'build-version' }, [
+        t('footer.version', { hash: BUILD_INFO.shortHash, date: BUILD_INFO.date }),
+      ]),
+      el('a', { href: REPO_URL, target: '_blank', rel: 'noopener' }, [t('footer.source')]),
+    ]),
+  ]);
+}
+
+/**
+ * The gear in the chip row and the settings dialog it opens (PHASE5_SPEC 6.4), everywhere except
+ * the wide layout, where Settings is a section and the gear is gone (M38). While the dialog is
  * open, the view and the panel are inert, so it closes with the × or Escape.
  */
-export function createSettingsMenu(row: HTMLElement, root: HTMLElement, store: Store): void {
+export function createSettingsMenu(
+  row: HTMLElement,
+  root: HTMLElement,
+  content: HTMLElement,
+  layout: LayoutShell,
+): void {
   const gear = el(
     'button',
     {
@@ -94,15 +142,6 @@ export function createSettingsMenu(row: HTMLElement, root: HTMLElement, store: S
         el('h2', { id: 'settings-title' }, [t('settings.title')]),
         close,
       ]),
-      el('div', { class: 'settings-body' }, buildSettingsBody(store)),
-      el('h3', { class: 'settings-about' }, [t('settings.about')]),
-      el('footer', { class: 'footer' }, [
-        el('p', { class: 'disclaimer', 'data-testid': 'disclaimer' }, [t('footer.disclaimer')]),
-        el('span', { class: 'version', 'data-testid': 'build-version' }, [
-          t('footer.version', { hash: BUILD_INFO.shortHash, date: BUILD_INFO.date }),
-        ]),
-        el('a', { href: REPO_URL, target: '_blank', rel: 'noopener' }, [t('footer.source')]),
-      ]),
     ],
   );
   dialog.hidden = true;
@@ -133,6 +172,18 @@ export function createSettingsMenu(row: HTMLElement, root: HTMLElement, store: S
 
   gear.addEventListener('click', () => setOpen(true));
   close.addEventListener('click', () => setOpen(false));
+
+  // The content belongs to the dialog except on the wide layout, where the Settings section
+  // (panel.ts) holds it and the dialog stays closed.
+  const place = () => {
+    if (layout.viewport().wide) {
+      setOpen(false);
+      return;
+    }
+    if (content.parentElement !== dialog) dialog.append(content);
+  };
+  layout.onChange(place);
+  place();
 }
 
 function buildSettingsBody(store: Store): HTMLElement[] {
@@ -159,6 +210,8 @@ function buildSettingsBody(store: Store): HTMLElement[] {
       const state = store.getState();
       if (code === state.settings.language) return;
       const link = serializeUrlState({ ...state, settings: { ...state.settings, language: code } });
+      // In the Settings section the page comes back with it open (M38).
+      if (input.closest('[data-section="settings"]')) openAfterReload('settings');
       window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
     });
     languageOptions.append(
@@ -218,18 +271,6 @@ function buildSettingsBody(store: Store): HTMLElement[] {
       el('span', {}, [t('view.debug.label')]),
     ]),
     el('p', { class: 'hint' }, [t('view.debug.hint')]),
-  ]);
-
-  const legendInput = el('input', { type: 'checkbox', id: 'legend-toggle' });
-  legendInput.addEventListener('change', () =>
-    store.dispatch({ type: 'setLegend', legend: legendInput.checked }),
-  );
-  const legendField = el('div', { class: 'field' }, [
-    el('label', { class: 'toggle', for: 'legend-toggle' }, [
-      legendInput,
-      el('span', {}, [t('view.legend.label')]),
-    ]),
-    el('p', { class: 'hint' }, [t('view.legend.hint')]),
   ]);
 
   const labelsInput = el('input', { type: 'checkbox', id: 'labels-toggle' });
@@ -295,7 +336,6 @@ function buildSettingsBody(store: Store): HTMLElement[] {
     for (const { step, input } of stepInputs) input.checked = step === settings.step;
     for (const { detail, input } of detailInputs) input.checked = detail === settings.detail;
     debugInput.checked = settings.debug;
-    legendInput.checked = settings.legend;
     labelsInput.checked = settings.labels;
     timeBarInput.checked = settings.timeBar;
     clockInput.checked = settings.clock;
@@ -313,7 +353,6 @@ function buildSettingsBody(store: Store): HTMLElement[] {
     stepGroup,
     detailGroup,
     ...buildShareAndReset(store),
-    legendField,
     debugField,
   ];
 }

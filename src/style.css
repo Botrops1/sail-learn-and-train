@@ -1740,32 +1740,6 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   white-space: nowrap;
 }
 
-.rope-legend ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
-  margin: 0 0 8px;
-  padding: 0;
-  list-style: none;
-  font-size: var(--font-small);
-}
-
-.rope-legend li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.rope-legend[hidden] {
-  display: none;
-}
-
-.legend-swatch {
-  flex: none;
-  width: 36px;
-  height: 10px;
-}
-
 /* Settings: Share and Reset. */
 .actions {
   display: flex;
@@ -3911,4 +3885,82 @@ html[data-layout='side'] .alert-chip {
 .learn-entry > .learn-button:first-child {
   align-self: flex-start;
   margin-bottom: 4px;
+}
+
+/*
+ * M38 (issues #91, #92, #93): on the wide layout the Mode and Settings are sections of the right
+ * column, so the mode chip and the gear are gone from the chip row; the camera chip (View) sits in
+ * the bottom-right corner and the mini-map in the bottom-left one.
+ */
+html[data-wide='true'] .mode-chip,
+html[data-wide='true'] .settings-button {
+  display: none;
+}
+
+html[data-wide='true'] .view-bottom {
+  justify-content: flex-end;
+}
+
+html[data-wide='true'] .view-bottom .alert-chip,
+html[data-wide='true'] .map-close {
+  margin-left: 0;
+}
+
+/* While the map shows, the Close chip stands left of the View button, which stays in its corner. */
+html[data-wide='true'] .map-close {
+  order: -1;
+}
+
+html[data-wide='true'] .mini-map {
+  right: auto;
+  bottom: 8px;
+  left: 8px;
+}
+
+.mode-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px 12px;
+}
+
+.mode-choice {
+  display: block;
+  min-height: var(--touch);
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mode-choice .mode-option-name {
+  font-weight: 600;
+}
+
+.mode-choice[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.mode-choice[aria-checked='true'] .mode-option-hint {
+  color: inherit;
+}
+
+.mode-choice:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* The settings inside the Settings section: the same fields as in the dialog, in the column's width. */
+.section-body .settings-content .settings-body {
+  padding: 8px 12px 0;
+}
+
+.section-body .settings-content .settings-about {
+  margin: 8px 12px 0;
 }

@@ -3,7 +3,7 @@ import { boat } from '../model/boat';
 import { clutchSpots, entryFor, panelEntries, type ClutchSpot } from '../model/panelEntries';
 import { SCENE } from '../render3d/sceneConfig';
 import { part, t, type StringKey } from './i18n';
-import { ropeColorKey, ROPE_DASH } from './ropeLegend';
+import { ropeColorKey, ROPE_DASH } from './ropeColours';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 

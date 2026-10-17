@@ -3,7 +3,7 @@
 // that a later change of the screen changes only this file. They take a Playwright `page` and find
 // things by data-testid, never by text, so they do not depend on the language.
 
-/** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, legend, conditions, learn, harbour. */
+/** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, conditions, learn, harbour (M38: mode and settings on the wide layout). */
 export async function showSection(page, id) {
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);
@@ -30,8 +30,18 @@ export async function sectionShown(page, id) {
   );
 }
 
-/** M27: chooses a mode from the mode chip's menu (learn, easy, realistic). */
+/** M38: true on the wide layout (side by side, 1,280 px or wider), where Mode and Settings are sections and the mode chip and the gear are gone. */
+export async function isWide(page) {
+  return page.evaluate(() => document.documentElement.dataset.wide === 'true');
+}
+
+/** M27: chooses a mode (learn, easy, realistic): from the mode chip's menu, or (M38, wide layout) from the Mode section. */
 export async function setMode(page, mode) {
+  if (await isWide(page)) {
+    await showSection(page, 'mode');
+    await page.getByTestId(`mode-choice-${mode}`).click();
+    return;
+  }
   await page.getByTestId('mode-chip').click();
   await page.getByTestId(`mode-option-${mode}`).click();
 }
@@ -141,14 +151,25 @@ export async function dragHandle(page, dy, steps, delayMs) {
   await sheetSettled(page);
 }
 
-/** Opens the settings dialog. */
+/** Opens the settings: the dialog the gear opens, or (M38, wide layout) the Settings section. Either way `settings-content` is shown. */
 export async function openSettings(page) {
-  await page.getByTestId('settings-button').click();
-  await page.getByTestId('settings-dialog').waitFor({ state: 'visible' });
+  if (await isWide(page)) {
+    await showSection(page, 'settings');
+  } else {
+    await page.getByTestId('settings-button').click();
+  }
+  await page.getByTestId('settings-content').waitFor({ state: 'visible' });
 }
 
-/** Closes the settings dialog. */
+/** Closes the settings (the dialog's ×, or folds the Settings section). */
 export async function closeSettings(page) {
+  if (await isWide(page)) {
+    if ((await page.getByTestId('section-settings').getAttribute('data-open')) === 'true') {
+      await page.getByTestId('section-toggle-settings').click();
+    }
+    await page.getByTestId('settings-content').waitFor({ state: 'hidden' });
+    return;
+  }
   await page.getByTestId('settings-close').click();
   await page.getByTestId('settings-dialog').waitFor({ state: 'hidden' });
 }

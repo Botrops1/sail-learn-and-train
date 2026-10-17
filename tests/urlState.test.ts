@@ -213,23 +213,18 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(back).toEqual(state);
   });
 
-  it('legend (lg) and Ropes-tab mode (mode) are written only when not the default', () => {
-    expect(parseUrlState('?lg=0').settings.legend).toBe(false);
-    expect(parseUrlState('?lg=1').settings.legend).toBe(true);
-    expect(parseUrlState('?lg=no').settings.legend).toBe(DEFAULT_SETTINGS.legend);
+  it('M38: an old link with lg (the rope colour legend, removed) opens the same picture and is not written again', () => {
+    const plain = parseUrlState('');
+    expect(parseUrlState('?lg=0')).toEqual(plain);
+    expect(parseUrlState('?lg=1')).toEqual(plain);
+    expect(serializeUrlState(parseUrlState('?lg=0'))).not.toContain('lg=');
+  });
+
+  it('Ropes-tab mode (mode) is read; an unknown one falls back to Easy', () => {
     expect(parseUrlState('?mode=easy').settings.ropesMode).toBe('easy');
     expect(parseUrlState('?mode=realistic').settings.ropesMode).toBe('realistic');
     // An unknown mode falls back to Easy.
     expect(parseUrlState('?mode=hard').settings.ropesMode).toBe('easy');
-    const hidden = initialState({
-      settings: { legend: false },
-      boat: AT_6_8_KN,
-      sea: 'coastal',
-    });
-    expect(serializeUrlState(hidden)).toBe(
-      `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=side-port&step=5&detail=high&lg=0&${DEFAULT_BOAT_QUERY}`,
-    );
-    expect(parseUrlState(serializeUrlState(hidden))).toEqual(hidden);
   });
 
   it('M5: labels in 3D (lb) are on by default (owner, PR #19) and written only when off', () => {

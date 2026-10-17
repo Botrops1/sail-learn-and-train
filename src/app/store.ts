@@ -127,7 +127,6 @@ export type Action =
   | { type: 'setRopesMode'; mode: RopesMode }
   /** Changes the mode; 'easy' and 'realistic' also set `settings.ropesMode` (PHASE5_SPEC 8.3). */
   | { type: 'setAppMode'; mode: AppMode }
-  | { type: 'setLegend'; legend: boolean }
   | { type: 'setLabels'; labels: boolean }
   /** Reset all (Settings): controls, camera, selection and settings back to the defaults. */
   | { type: 'reset' }
@@ -380,8 +379,6 @@ function reduceAction(state: AppState, action: Action): AppState {
         settings: { ...state.settings, ropesMode: action.mode },
       });
     }
-    case 'setLegend':
-      return { ...state, settings: { ...state.settings, legend: action.legend } };
     case 'setLabels':
       return { ...state, settings: { ...state.settings, labels: action.labels } };
     case 'reset': {

@@ -36,10 +36,10 @@ export const M4A_SCENES = [
     query: '?js=30&jf=40&jr=40&sel=rope_jib_sheet&cam=bow',
   },
   {
-    name: 'ropes-list-and-legend',
+    name: 'ropes-list',
     query: '?cam=side-port',
-    section: 'legend',
-    scrollTo: '.rope-legend',
+    section: 'ropes',
+    scrollTo: '.rope-list',
   },
   { name: 'settings-share-reset', query: '?cam=side-port', settings: true },
 ];

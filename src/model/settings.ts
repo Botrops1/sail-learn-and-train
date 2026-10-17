@@ -54,8 +54,6 @@ export interface Settings {
   step: StepSize;
   debug: boolean;
   ropesMode: RopesMode;
-  /** Rope colour legend shown in the Ropes tab (PHASE1_SPEC 5.2, 7.3). */
-  legend: boolean;
   /** Names shown over the parts and ropes in the 3D view (Settings, M5). */
   labels: boolean;
   detail: Detail;
@@ -86,7 +84,6 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   debug: false,
   detail: 'high',
   ropesMode: 'easy',
-  legend: true,
   /** On by default (owner, PR #19). */
   labels: true,
   timeScale: 1,

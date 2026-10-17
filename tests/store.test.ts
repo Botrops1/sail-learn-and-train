@@ -69,10 +69,8 @@ describe('store', () => {
     expect(store.getState().rig.timeS).toBeCloseTo(0.1, 9);
   });
 
-  it('setLegend and setRopesMode change only their setting', () => {
+  it('setRopesMode changes only its setting', () => {
     const store = createStore(initialState());
-    store.dispatch({ type: 'setLegend', legend: false });
-    expect(store.getState().settings.legend).toBe(false);
     store.dispatch({ type: 'setRopesMode', mode: 'easy' });
     expect(store.getState().settings.ropesMode).toBe('easy');
   });
@@ -91,7 +89,7 @@ describe('store', () => {
       initialState({
         controls: { ctl_mainsheet: 90, ctl_rudder: -20, ctl_wind_dir: -120, ctl_jib_furl: 40 },
         camera: { preset: 'top' },
-        settings: { step: 1, debug: true, legend: false, detail: 'low' },
+        settings: { step: 1, debug: true, detail: 'low' },
         selection: 'rope_vang',
         boat: { mode: 'held' },
       }),

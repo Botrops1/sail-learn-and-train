@@ -158,7 +158,6 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
       'input[name="detail"]',
       '[data-testid="share-button"]',
       '[data-testid="reset-button"]',
-      '#legend-toggle',
       '#debug-toggle',
       '[data-testid="disclaimer"]',
       '[data-testid="build-version"]',

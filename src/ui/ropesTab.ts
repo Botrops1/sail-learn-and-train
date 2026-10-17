@@ -12,7 +12,7 @@ import {
   type ControlView,
 } from './ropeControls';
 import { createRealisticPanel } from './realisticPanel';
-import { ropeColorKey, ROPE_DASH } from './ropeLegend';
+import { ropeColorKey, ROPE_DASH } from './ropeColours';
 import { setText } from './stepper';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -26,7 +26,8 @@ export function ropesTabShows(selection: string | null): boolean {
  * The Ropes section (PHASE1_SPEC 7.2; a tab until M27), Easy mode: the clutch-bank drawing; under
  * it the strip for the selected rope (its slider, or an info line for a rope that is not
  * adjusted), sticky in the stacked layout; then a compact list of all ropes, so every control is
- * reachable without the drawing. The Sails, Autopilot, Engine and Rope colours blocks are
+ * reachable without the drawing (each row has its rope's colour; the red "fighting" colour is
+ * explained under the "?", M38). The Sails, Autopilot and Engine blocks are
  * sections of their own (panel.ts).
  *
  * The selection is the store's: tapping a clutch, a list row or a rope in 3D selects the same
@@ -238,11 +239,13 @@ export function createRopesTab(
     list,
     el('p', { class: 'hint explain' }, [t('clutch.hint')]),
     el('p', { class: 'hint explain' }, [t('ropes.mode.easyHint')]),
+    el('p', { class: 'hint explain' }, [t('ropes.fighting')]),
   ]);
 
   // Realistic mode (M4b): stations, clutches and winches worked by hand.
   const realistic = el('div', { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' }, [
     ...createRealisticPanel(store, openEntry),
+    el('p', { class: 'hint explain' }, [t('ropes.fighting')]),
   ]);
 
   const showMode = (state: AppState, previous?: AppState) => {
