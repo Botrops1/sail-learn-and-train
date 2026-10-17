@@ -71,6 +71,7 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
     check('hidden in Held still', !(await visible(page, 'mini-map')), 'hidden');
     await showSection(page, 'conditions');
     await page.getByTestId('boat-mode').getByText('Sailing', { exact: true }).click();
+    await setSheet(page, 'half');
     await page.waitForTimeout(300);
     check('shown after Sailing', await visible(page, 'mini-map'), 'visible');
     await context.close();

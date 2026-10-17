@@ -2,7 +2,7 @@
 // Labels contain "m20", so openPage adds held=1, sea=flat and clock=0 to queries without them.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { sectionShown, setMode } from './ui.mjs';
+import { sectionShown, setMode, showSection } from './ui.mjs';
 
 /** Every size: the Learn tab with an entry open, and the card with its More button. */
 export const M20_SCENES = [
@@ -51,6 +51,7 @@ export async function liveM20Checks({ openPage, viewports, outDir, prefix, probl
     await shot(page, 'live-phone-m20-card-more-opened');
     // More again on the entry that is already open (owner, PR #54): Learn opens all the same.
     await setMode(page, 'easy');
+    await showSection(page, 'ropes');
     await page.getByTestId('card-more').click();
     check('More on the open entry opens the Learn tab again', await learnOpen(page), 'stayed');
     await context.close();
