@@ -3348,7 +3348,7 @@ html[data-layout='side'] .alert-chip-icon {
 }
 
 .alert-chip:focus-visible,
-.alert-fold:focus-visible,
+.alert-close:focus-visible,
 .alert-learn:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
@@ -3405,14 +3405,18 @@ html[data-layout='side'] .alert-centre {
 
 .alert-title {
   margin: 0;
+  /* Clear of the × button (as the clock card's first line). */
+  padding-right: var(--touch);
   font-size: 15px;
 }
 
-.alert-fold {
-  min-width: var(--touch);
-  min-height: var(--touch);
+.alert-close {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: var(--touch);
+  height: var(--touch);
   border: 0;
-  border-radius: 22px;
   background: transparent;
   color: var(--text);
   font: inherit;

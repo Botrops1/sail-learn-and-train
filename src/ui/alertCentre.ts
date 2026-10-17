@@ -82,11 +82,11 @@ export function createAlertCentre(
 
   const fold = el('button', {
     type: 'button',
-    class: 'alert-fold',
-    'data-testid': 'alert-fold',
+    class: 'alert-close',
+    'data-testid': 'alert-close',
     'aria-label': t('alerts.collapse'),
   });
-  fold.textContent = '−';
+  fold.textContent = '×';
   const list = el('ol', { class: 'alert-list', 'data-testid': 'alert-list' });
   const empty = el('p', { class: 'alert-empty', 'data-testid': 'alert-empty' }, [
     t('alerts.empty'),

@@ -2717,7 +2717,7 @@
 | alerts.label | Alert history | История предупреждений |
 | alerts.chipAria | Attention: open the alert history | Внимание: открыть историю предупреждений |
 | alerts.chipNewAria | Attention: {count} new, open the alert history | Внимание: новых {count}, открыть историю предупреждений |
-| alerts.collapse | Fold the alert history into the Attention button | Свернуть историю предупреждений в кнопку «Внимание» |
+| alerts.collapse | Close the alert history | Закрыть историю предупреждений |
 | alerts.empty | No alerts yet. Warnings that show for only a few seconds are kept here. | Предупреждений пока нет. Сообщения, которые видны всего несколько секунд, сохраняются здесь. |
 | alerts.learn | Learn about this alert | Узнать об этом предупреждении |
 | alerts.at | at {time} on board | в {time} на борту |

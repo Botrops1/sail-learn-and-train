@@ -175,7 +175,7 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
   }
 
   // A wide window (computer): open at the start as a small overlay under the top row, at the
-  // left; the − button folds it into the Attention button. Narrower side-by-side windows (the
+  // left; the × button closes it to the Attention button. Narrower side-by-side windows (the
   // foldable, the phone held sideways) start folded.
   for (const [viewport, name, wide] of [
     [desktop, 'desktop', true],
@@ -203,15 +203,15 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
       JSON.stringify({ card, strip }),
     );
     await shot(page, `live-${name}-open`);
-    await page.getByTestId('alert-fold').click();
+    await page.getByTestId('alert-close').click();
     check(
-      `${name}: the − button folds it to the Attention button`,
+      `${name}: the × button closes it to the Attention button`,
       !(await cardOpen(page)),
       'alert-centre',
     );
     await page.getByTestId('alert-chip').click();
     check(`${name}: the button opens it again`, await cardOpen(page), 'alert-centre');
-    await page.getByTestId('alert-fold').click();
+    await page.getByTestId('alert-close').click();
     await shot(page, `live-${name}-folded`);
     problems.push(...(await auditPage(page, `m36 ${name}`)));
     await context.close();
