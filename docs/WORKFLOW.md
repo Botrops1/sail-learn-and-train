@@ -469,11 +469,11 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 
 ## 12. Phase 7 (planned ahead)
 
-Planned before Phases 5 and 6 were built. **Before M40, start one Opus session with `/plan 7 refresh`**: it brings [`PHASE7_SPEC.md`](PHASE7_SPEC.md) up to date with what Phases 5 and 6 built, in a small docs PR. Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.
+Planned before Phases 5 and 6 were built; brought up to date with what Phases 5 and 6 built by `/plan 7 refresh` (2026-10-16, PHASE7_SPEC 15). Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.
 
-### 11.1 Checklists
+### 12.1 Checklists
 
-New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=marina` or `pl=bay` puts the boat in that place, ready (M42, M45), with `ml=tight|medium|spacious` (the marina's layout), `tr=busy|half|empty` (how many other yachts) and `pe`/`pn` (where she is); `ln=` the mooring lines (M44); `an=`, `ap=`, `as=1` the anchor (M46). `tx=16` makes time run 16 times faster. Replace `<N>` with the PR number.
+New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=marina` or `pl=bay` puts the boat in that place, ready (M42, M45), with `ml=tight|medium|spacious` (the marina's layout), `tr=busy|half|empty` (how many other yachts) and `pe`/`pn` (where she is); `ln=` the mooring lines (M44); `an=` (chain out), `ax=` (where the anchor lies), `as=1` (set) the anchor (M46). `tx=16` makes time run 16 times faster. Replace `<N>` with the PR number.
 
 #### M40: Slow-speed handling
 
@@ -505,7 +505,7 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 - [ ] Bump: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=-90&ws=20&cam=top&tx=4 — the west wind pushes her onto the yacht on her left. A report appears: what was hit, where on our hull, how fast, and how bad.
 - [ ] Fenders (soft bumpers hung over the side): same link, in the Harbour gear block choose Fenders "Out" first: the same bump now says "the fender took it".
 - [ ] Damage report: the Place block lists the contacts; "Clear" empties it.
-- [ ] Fenders left out: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=66&fd=1&tx=16 — motoring at 8 knots with the fenders out: after a moment a message says a fender was torn off.
+- [ ] Fenders left out: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?ws=0&eng=1&lv=66&fd=1&tx=4 — motoring at 8 knots with the fenders out: after about 8 seconds a message says a fender was torn off, and the Harbour gear block says how many were lost.
 
 #### M44: Mooring lines (Med stern-to)
 
