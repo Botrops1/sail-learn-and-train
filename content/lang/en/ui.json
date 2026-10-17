@@ -357,6 +357,7 @@
   "instruments.heel": "Heel {deg}° {side}",
   "instruments.auto.heading": "AUTO {deg}°",
   "instruments.auto.wind": "AUTO wind {deg}° {side}",
+  "instruments.auto.windShort": "AUTO {deg}° {side}",
   "wind.compass": "True wind from {compass}° · {relative}",
   "wind.relative.ahead": "dead ahead",
   "wind.relative.astern": "dead astern",

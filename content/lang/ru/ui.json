@@ -357,6 +357,7 @@
   "instruments.heel": "Крен {deg}° {side}",
   "instruments.auto.heading": "АВТО {deg}°",
   "instruments.auto.wind": "АВТО ветер {deg}° {side}",
+  "instruments.auto.windShort": "АВТО {deg}° {side}",
   "wind.compass": "Истинный ветер с {compass}° · {relative}",
   "wind.relative.ahead": "прямо по носу",
   "wind.relative.astern": "прямо с кормы",

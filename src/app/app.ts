@@ -85,7 +85,13 @@ export function startApp(host: HTMLElement): void {
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
   layout.view.append(top);
-  createInstrumentStrip(top, store, () => panel.showSection('conditions'), panel.showLearnEntry);
+  createInstrumentStrip(
+    top,
+    store,
+    () => panel.showSection('conditions'),
+    panel.showLearnEntry,
+    layout,
+  );
   // Right of the strip (M37): the time bar, with the clock and Attention chips under it. On a
   // phone both wrappers vanish (`display: contents`) and their children join the top row.
   const topRight = el('div', { class: 'top-right', 'data-testid': 'top-right' });

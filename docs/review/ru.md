@@ -2424,6 +2424,7 @@
 | instruments.heel | Heel {deg}° {side} | Крен {deg}° {side} |
 | instruments.auto.heading | AUTO {deg}° | АВТО {deg}° |
 | instruments.auto.wind | AUTO wind {deg}° {side} | АВТО ветер {deg}° {side} |
+| instruments.auto.windShort | AUTO {deg}° {side} | АВТО {deg}° {side} |
 | wind.compass | True wind from {compass}° · {relative} | Истинный ветер с {compass}° · {relative} |
 | wind.relative.ahead | dead ahead | прямо по носу |
 | wind.relative.astern | dead astern | прямо с кормы |

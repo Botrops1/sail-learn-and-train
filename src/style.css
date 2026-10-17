@@ -1231,11 +1231,11 @@ html[data-layout='stacked'] .strip-ghost-wide {
 }
 
 html[data-layout='stacked'] .instrument-strip {
-  padding: 4px 6px;
+  padding: 4px 5px;
 }
 
 html[data-layout='stacked'] .strip-line {
-  column-gap: 5px;
+  column-gap: 4px;
 }
 
 html[data-layout='stacked'] .strip-auto,
@@ -3426,11 +3426,11 @@ html[data-layout='side'] .top-chips .alert-chip {
 }
 
 /*
- * The strip is 230 px wide and the bar 338 px with its two jump buttons (« »), 250 px without:
- * in a view 486 to 573 px wide (a 1,280 px window) the jump buttons are left out so the bar
- * fits beside the strip. ‹ and › still step through every speed.
+ * The strip is 227 px wide and the bar 344 px with its two jump buttons (« »), 256 px without:
+ * in a view 490 to 576 px wide (a 1,280 px window) the jump buttons are left out so the bar
+ * fits beside the strip. Narrower, the bar has a row of its own and room for them. ‹ and › still step through every speed.
  */
-@container view-top (min-width: 486px) and (max-width: 573px) {
+@container view-top (min-width: 490px) and (max-width: 576px) {
   html[data-layout='side'] .time-jump {
     display: none;
   }

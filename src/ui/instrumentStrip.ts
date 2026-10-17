@@ -7,6 +7,7 @@ import { setText } from './stepper';
 import { sideLetter } from './autopilotPanel';
 import { boat as boatData } from '../model/boat';
 import { rpmNumber } from './enginePanel';
+import type { LayoutShell } from './layout';
 
 /** Collapses the space left where a wind straight ahead or astern has no side letter. */
 function tidy(text: string): string {
@@ -78,6 +79,7 @@ export function createInstrumentStrip(
   store: Store,
   openConditions: () => void,
   showLearn: (id: string) => void,
+  layout: LayoutShell,
 ): void {
   const speed = el('span', { class: 'strip-speed', 'data-testid': 'strip-speed' });
   const heading = el('span', { class: 'strip-heading', 'data-testid': 'strip-heading' });
@@ -128,7 +130,7 @@ export function createInstrumentStrip(
         cell('00.0 kn', speed),
         cell('HDG 000°', heading),
         cell('Heel 00° S', heel),
-        cell('AUTO 000°', auto, 'AUTO wind 000° S'),
+        cell('AUTO 000° S', auto, 'AUTO wind 000° S'),
       ]),
       el('span', { class: 'strip-line strip-winds' }, [
         cell('True 000° S · 00 kn', trueWind),
@@ -176,7 +178,12 @@ export function createInstrumentStrip(
       badge = t('instruments.auto.heading', { deg: Math.round(autopilot.targetDeg) % 360 });
     } else if (autopilot.mode === 'wind') {
       const target = Math.round(autopilot.targetDeg);
-      badge = tidy(t('instruments.auto.wind', { deg: Math.abs(target), side: sideLetter(target) }));
+      // A phone's line is full: "AUTO 150° S" without the word "wind" (the side letter tells it from a heading).
+      const key =
+        layout.viewport().mode === 'stacked'
+          ? 'instruments.auto.windShort'
+          : 'instruments.auto.wind';
+      badge = tidy(t(key, { deg: Math.abs(target), side: sideLetter(target) }));
     }
     setText(auto, badge);
     auto.hidden = badge === '';
@@ -203,5 +210,6 @@ export function createInstrumentStrip(
     setText(apparent, windText('instruments.apparent', wind.awaDeg, wind.awsKn));
   };
   store.subscribe(refresh);
+  layout.onChange(() => refresh(store.getState()));
   refresh(store.getState());
 }
