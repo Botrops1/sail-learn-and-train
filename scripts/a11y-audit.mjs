@@ -9,9 +9,17 @@
 
 /**
  * Controls that may be smaller than 44 px (owner decisions: the compact clutches after M4a; the
- * 34 px section headers and their "?" buttons on a phone, issue #79).
+ * 34 px section headers and their "?" buttons on a phone, issue #79; M39: the narrow grip on a
+ * panel column's border).
  */
-const SMALL_OK = ['.clutch-drawing .clutch', '.section-toggle', '.section-explain'];
+const SMALL_OK = [
+  '.clutch-drawing .clutch',
+  '.section-toggle',
+  '.section-explain',
+  // M39: the 8 px grip on a column's border is a mouse drag handle; the keyboard has its arrow
+  // keys and the 44 px button folds the column.
+  '.col-grip',
+];
 
 /** Text that may be smaller than 13 px: none since M5 (owner, PR #19: taller clutches). */
 const SMALL_TEXT_OK = [];

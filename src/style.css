@@ -729,9 +729,13 @@ html[data-wide='true'] .col-handle {
   top: 56%;
 }
 
-/* Collapsed: the button fills the rail the column leaves. */
+/* Collapsed: the button fills the rail the column leaves (the panel's own 1 px border is in the second one). */
 .col-handle[data-collapsed='true'] .col-toggle {
   left: 0;
+}
+
+.col-handle[data-col='2'][data-collapsed='true'] .col-toggle {
+  left: -1px;
 }
 
 .col-toggle:hover::before {
