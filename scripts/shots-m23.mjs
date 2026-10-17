@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { closeSettings, openSettings, openAllSections, showSection } from './ui.mjs';
+import { closeSettings, openSettings, sectionIds, showSection } from './ui.mjs';
 
 /** Every size, all in Russian; the section is opened by its id. */
 export const M23_SCENES = [
@@ -146,15 +146,16 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
   // 2 and 3. The Latin scan and the clipping check, in every view.
   {
     const views = [
-      ['?lang=ru&wd=90&ws=12', ['ropes', 'conditions', 'learn', 'settings']],
-      ['?lang=ru&wd=90&ws=12&learn=rope_vang', ['learn']],
-      ['?lang=ru&mode=realistic', ['ropes']],
-      ['?lang=ru&cam=map', ['ropes']],
+      ['?lang=ru&wd=90&ws=12', ['settings']],
+      ['?lang=ru&wd=90&ws=12&learn=rope_vang', []],
+      ['?lang=ru&mode=realistic', []],
+      ['?lang=ru&cam=map', []],
     ];
-    for (const [query, tabs] of views) {
+    for (const [query, extra] of views) {
       const { context, page } = await openPage(phone, `m23 scan ${query}`, query);
       await page.waitForTimeout(600);
-      await openAllSections(page);
+      // One section is open at a time (M35): each section in turn, then the extras.
+      const tabs = [...(await sectionIds(page)), ...extra];
       for (const tab of tabs) {
         if (tab === 'settings') await openSettings(page);
         else await showSection(page, tab);

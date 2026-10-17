@@ -33,15 +33,22 @@ export async function setMode(page, mode) {
   await page.getByTestId(`mode-option-${mode}`).click();
 }
 
-/** M27: opens every available section (each visible `[data-section]` with `data-open="false"`), with the sheet at least half. */
-export async function openAllSections(page) {
-  if (await sheetAtPeek(page)) await setSheet(page, 'half');
-  const ids = await page.evaluate(() =>
+/** M35: the ids of the sections that are shown now (open or folded), in page order, columns 1 then 2. */
+export async function sectionIds(page) {
+  return page.evaluate(() =>
     [...document.querySelectorAll('[data-section]')]
-      .filter((node) => !node.hidden && node.getAttribute('data-open') === 'false')
+      .filter((node) => !node.hidden)
       .map((node) => node.getAttribute('data-section')),
   );
-  for (const id of ids) await page.getByTestId(`section-toggle-${id}`).click();
+}
+
+/** M35: only one section is open at a time, so "every section open" is now "each section in turn": opens each available section and calls `visit(id)` while it is open, with the sheet at least half. */
+export async function eachSection(page, visit) {
+  if (await sheetAtPeek(page)) await setSheet(page, 'half');
+  for (const id of await sectionIds(page)) {
+    await showSection(page, id);
+    await visit(id);
+  }
 }
 
 /** True in the stacked layout with the sheet at its lowest height ("at peek", PHASE5_SPEC 3.1). */

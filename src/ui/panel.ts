@@ -31,8 +31,10 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): no tabs since M27, but a list of
  * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn,
- * Rope colours and (M33) Harbour gear. The mode (modes.ts) decides their order and which start open. Each section is
- * built once and never copied. The settings and the camera are in the chip row (PHASE5_SPEC 6.4).
+ * Rope colours and (M33) Harbour gear. The mode (modes.ts) decides their order. Since M35 all
+ * start folded (so every title is on screen) and one opens at a time per column: the headers
+ * stay above and below the open section, whose body scrolls on its own. Each section is built
+ * once and never copied. The settings and the camera are in the chip row (PHASE5_SPEC 6.4).
  * Selecting a rope or the wheel anywhere (3D view, link) shows it in the Ropes section.
  */
 export interface Panel {
@@ -48,11 +50,10 @@ export interface Panel {
 
 type LayoutKind = 'stacked' | 'side' | 'wide';
 
-/** Scrolls the column that holds the element so that the element's top is at the column's top. */
+/** Scrolls the section's body to its top (the open section is the only part of a column that scrolls). */
 export function scrollToSection(element: HTMLElement): void {
-  const column = element.closest('.panel-scroll');
-  if (!column || element.offsetParent === null) return;
-  column.scrollTop += element.getBoundingClientRect().top - column.getBoundingClientRect().top;
+  const content = element.querySelector<HTMLElement>('.section-body');
+  if (content && element.offsetParent !== null) content.scrollTop = 0;
 }
 
 export function createPanel(
@@ -95,7 +96,15 @@ export function createPanel(
     const { content, explain } = built[id];
     const section = createSection(id, t(SECTION_TITLES[id]), content, explain);
     // After the section's own handler has folded or opened it.
-    section.element.querySelector('.section-toggle')?.addEventListener('click', () => changed());
+    section.element.querySelector('.section-toggle')?.addEventListener('click', () => {
+      if (section.isOpen()) {
+        openOnly(id);
+        // At half height the folded titles leave an open section about 100 px: a tapped title
+        // raises the sheet (selections and links keep the height, so the 3D view stays in sight).
+        if (layoutKind === 'stacked' && sheet.height() === 'half') sheet.setHeight('full');
+      }
+      changed();
+    });
     sections.set(id, section);
   }
 
@@ -132,28 +141,55 @@ export function createPanel(
     }
   }
 
-  /** Opens or folds each section as the mode and the layout say (PHASE5_SPEC 10.2). */
-  function applyOpen(state: AppState): void {
-    const mode = MODE_LAYOUTS[state.appMode];
-    const open =
-      layoutKind === 'wide'
-        ? [...mode.second, ...mode.openSide]
-        : layoutKind === 'stacked'
-          ? mode.open
-          : mode.openSide;
+  /** Opens `id` and folds the other sections of its column (M35: one open at a time). */
+  let openCount = 0;
+  const openedAt = new Map<SectionId, number>();
+  function openOnly(id: SectionId): void {
+    const section = sections.get(id);
+    if (!section) return;
+    section.setOpen(true);
+    openedAt.set(id, (openCount += 1));
+    for (const other of SECTION_IDS) {
+      const view = sections.get(other);
+      if (other !== id && view && view.element.parentElement === section.element.parentElement) {
+        view.setOpen(false);
+      }
+    }
+  }
+
+  /** After the layout moved sections between columns: in each column only the latest opened stays open. */
+  function keepOneOpenPerColumn(): void {
+    for (const column of [body, second]) {
+      const open = SECTION_IDS.filter((id) => {
+        const view = sections.get(id);
+        return view?.isOpen() && view.element.parentElement === column;
+      }).sort((a, b) => (openedAt.get(b) ?? 0) - (openedAt.get(a) ?? 0));
+      for (const id of open.slice(1)) sections.get(id)?.setOpen(false);
+    }
+  }
+
+  /**
+   * Folds every section (M35). On the first call a link that names something to look at opens the
+   * section that shows it: a Learn entry in Learn mode, a selected rope or the wheel otherwise.
+   */
+  function applyOpen(state: AppState, fromLink = false): void {
     for (const id of SECTION_IDS) {
       const section = sections.get(id);
-      section?.setOpen(open.includes(id));
+      section?.setOpen(false);
       section?.resetExplain();
+    }
+    if (fromLink) {
+      if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
+      else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
     }
     body.scrollTop = 0;
     second.scrollTop = 0;
   }
 
   /** Puts the sections in place for the mode and opens or folds them as it says. */
-  function applyMode(state: AppState): void {
+  function applyMode(state: AppState, fromLink = false): void {
     place(state);
-    applyOpen(state);
+    applyOpen(state, fromLink);
   }
 
   function applyAvailable(state: AppState): void {
@@ -173,7 +209,7 @@ export function createPanel(
   function showSection(id: SectionId): void {
     const section = sections.get(id);
     if (!section) return;
-    section.setOpen(true);
+    openOnly(id);
     const raise = sheet.atPeek();
     if (raise) sheet.setHeight('half');
     scrollToId(id);
@@ -183,7 +219,7 @@ export function createPanel(
   }
 
   applyAvailable(store.getState());
-  applyMode(store.getState());
+  applyMode(store.getState(), true);
 
   store.subscribe((state, previous) => {
     if (
@@ -210,7 +246,7 @@ export function createPanel(
       state.appMode !== 'learn' &&
       !sheet.atPeek()
     ) {
-      sections.get('ropes')?.setOpen(true);
+      openOnly('ropes');
       revealRopeStrip();
       changed();
     }
@@ -228,10 +264,10 @@ export function createPanel(
     const now = layoutKindNow();
     if (now === before) return;
     layoutKind = now;
-    // Sections always follow the layout; their open states change only when the kind of layout
-    // does, and not when the wide layout narrows to the side one (they keep theirs).
+    // Sections follow the layout and keep their open states (a phone turned sideways keeps the
+    // open section); only one stays open per column.
     place(store.getState());
-    if (!(before === 'wide' && now === 'side')) applyOpen(store.getState());
+    keepOneOpenPerColumn();
     changed();
   });
 

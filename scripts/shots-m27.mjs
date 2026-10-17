@@ -4,14 +4,7 @@
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
 import { findClipped, scanLatin } from './shots-m23.mjs';
-import {
-  openAllSections,
-  sectionShown,
-  setMode,
-  setSheet,
-  showSection,
-  waitForLink,
-} from './ui.mjs';
+import { eachSection, sectionShown, setMode, setSheet, showSection, waitForLink } from './ui.mjs';
 
 const BOAT = '?wd=60&ws=12';
 const SECTION_ORDER = {
@@ -65,9 +58,9 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const opens = [];
     for (const id of ids) opens.push(`${id}:${await dataOpen(page, id)}`);
     check(
-      'Easy: Ropes and Sails open, the rest folded',
+      'Easy: every section folded (M35)',
       opens.join() ===
-        'ropes:true,sails:true,autopilot:false,engine:false,conditions:false,learn:false,legend:false,harbour:false',
+        'ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,legend:false,harbour:false',
       opens.join(),
     );
     const tabs = await page.locator('[role="tab"]').count();
@@ -83,10 +76,11 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const ids = await sectionIds(page);
     check('Learn order', ids.join() === SECTION_ORDER.learn.join(), ids.join());
     check(
-      'Learn is open',
-      (await dataOpen(page, 'learn')) === 'true',
+      'Learn is folded until it is opened (M35)',
+      (await dataOpen(page, 'learn')) === 'false',
       String(await dataOpen(page, 'learn')),
     );
+    await showSection(page, 'learn');
     await page.getByTestId('learn-group-ropes').evaluate((node) => {
       node.open = true;
     });
@@ -248,12 +242,6 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm27 folding', BOAT);
     await page.waitForTimeout(500);
-    await page.getByTestId('section-toggle-sails').click();
-    check(
-      'Sails folds',
-      (await dataOpen(page, 'sails')) === 'false',
-      String(await dataOpen(page, 'sails')),
-    );
     check(
       'a folded body is hidden',
       await page.locator('#section-body-sails').evaluate((node) => node.hidden),
@@ -261,8 +249,14 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     );
     await page.getByTestId('section-toggle-sails').click();
     check(
-      'Sails opens again',
+      'Sails opens',
       (await dataOpen(page, 'sails')) === 'true',
+      String(await dataOpen(page, 'sails')),
+    );
+    await page.getByTestId('section-toggle-sails').click();
+    check(
+      'Sails folds again',
+      (await dataOpen(page, 'sails')) === 'false',
       String(await dataOpen(page, 'sails')),
     );
     await showSection(page, 'conditions');
@@ -319,11 +313,12 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
       latinMenu.join(' | ') || 'clean',
     );
     await page.keyboard.press('Escape');
-    await openAllSections(page);
-    const latin = await scanLatin(page);
-    check('Latin scan with every section open', latin.length === 0, latin.join(' | ') || 'clean');
-    const cut = await findClipped(page);
-    check('nothing clipped', cut.length === 0, cut.join(' | ') || 'clean');
+    await eachSection(page, async (id) => {
+      const latin = await scanLatin(page);
+      check(`Latin scan with ${id} open`, latin.length === 0, latin.join(' | ') || 'clean');
+      const cut = await findClipped(page);
+      check(`nothing clipped with ${id} open`, cut.length === 0, cut.join(' | ') || 'clean');
+    });
     await shot(page, 'live-phone-m27-ru');
     await context.close();
   }
@@ -338,8 +333,9 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
 
     opened = await openPage(phone, 'm27 a11y easy', BOAT);
     await opened.page.waitForTimeout(500);
-    await openAllSections(opened.page);
-    problems.push(...(await auditPage(opened.page, 'm27 easy, every section')));
+    await eachSection(opened.page, async (id) => {
+      problems.push(...(await auditPage(opened.page, `m27 easy, ${id} open`)));
+    });
     await opened.context.close();
 
     opened = await openPage(phone, 'm27 a11y learn', '?m=learn&learn=rope_vang&wd=60&ws=12');

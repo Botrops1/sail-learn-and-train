@@ -4,7 +4,7 @@
 import { auditPage } from './a11y-audit.mjs';
 import {
   closeSettings,
-  openAllSections,
+  eachSection,
   openSettings,
   setMode,
   setSheet,
@@ -56,8 +56,8 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     const ids = await idsIn(page, '[data-testid="second-column"]');
     const open = await openStates(page, '[data-testid="second-column"]');
     check(
-      `${mode}: column 2 holds ${expected.join(', ')}`,
-      same(ids, expected) && open.every((state) => state === 'true'),
+      `${mode}: column 2 holds ${expected.join(', ')}, folded (M35)`,
+      same(ids, expected) && open.every((state) => state === 'false'),
       `${ids.join(', ')} (${open.join(', ')})`,
     );
     await page.screenshot({ path: `${outDir}/${prefix}live-wide-${mode}.png` });
@@ -83,6 +83,7 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
   // 3. Wide → side keeps the open states; side → wide fills column 2 again; the dial still works.
   {
     const { context, page } = await openPage(desktop, 'm29 resize', BOAT);
+    await showSection(page, 'conditions');
     await page.setViewportSize({ width: 1000, height: 900 });
     await page.waitForFunction(() => !document.documentElement.dataset.wide);
     check('1000 px: second column hidden', await secondColumn(page).isHidden(), 'hidden');
@@ -104,6 +105,7 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
       same(ids, ['conditions', 'learn']),
       ids.join(', '),
     );
+    await showSection(page, 'conditions');
     const dial = page.getByTestId('wind-dial');
     await dial.scrollIntoViewIfNeeded();
     const box = await dial.boundingBox();
@@ -162,12 +164,12 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm29 audit phone', BOAT);
     for (const mode of MODES) {
       await setMode(page, mode);
-      await openAllSections(page);
       for (const height of ['peek', 'half', 'full']) {
         await setSheet(page, height);
-        await audit(page, `phone ${mode} ${height}`);
+        await audit(page, `phone ${mode} ${height}, all folded`);
       }
       await setSheet(page, 'half');
+      await eachSection(page, (id) => audit(page, `phone ${mode} ${id} open`));
     }
     // The camera menu and the mode menu, open.
     await page.getByTestId('camera-chip').click();
@@ -191,16 +193,15 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm29 audit russian', `${BOAT}&lang=ru`);
     await setSheet(page, 'half');
-    await openAllSections(page);
-    await audit(page, 'phone Russian easy half');
+    await eachSection(page, (id) => audit(page, `phone Russian easy ${id} open`));
     await context.close();
   }
   {
     const { context, page } = await openPage(desktop, 'm29 audit wide', BOAT);
     for (const mode of MODES) {
       await setMode(page, mode);
-      await openAllSections(page);
-      await audit(page, `wide ${mode}`);
+      await audit(page, `wide ${mode}, all folded`);
+      await eachSection(page, (id) => audit(page, `wide ${mode} ${id} open`));
     }
     await openSettings(page);
     await audit(page, 'wide settings dialog');

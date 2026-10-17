@@ -7,13 +7,11 @@ import { MODE_LAYOUTS, SECTION_IDS, sectionAvailable } from '../src/ui/modes';
 
 describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
   for (const mode of APP_MODES) {
-    it(`${mode}: every section once; open, openSide and second are subsets`, () => {
+    it(`${mode}: every section once; second is a subset`, () => {
       const layout = MODE_LAYOUTS[mode];
       expect([...layout.order].sort()).toEqual([...SECTION_IDS].sort());
       expect(new Set(layout.order).size).toBe(layout.order.length);
-      for (const list of [layout.open, layout.openSide, layout.second]) {
-        for (const id of list) expect(layout.order, `${mode}: ${id}`).toContain(id);
-      }
+      for (const id of layout.second) expect(layout.order, `${mode}: ${id}`).toContain(id);
       expect(layout.second).toHaveLength(2);
     });
   }
