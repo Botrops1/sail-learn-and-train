@@ -303,7 +303,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm27 ru', '?lang=ru&wd=60&ws=12');
     await page.waitForTimeout(500);
     await page.getByTestId('mode-chip').click();
-    const names = await page.locator('.mode-option-name').allInnerTexts();
+    const names = await page.locator('.chip-menu .mode-option-name').allInnerTexts();
     check(
       'the mode menu in Russian',
       names.map((n) => n.trim()).join() === 'Обучение,Простой,Реалистичный',
