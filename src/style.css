@@ -3280,10 +3280,6 @@ html[data-layout='stacked'] .alert-chip {
   padding: 4px 10px;
 }
 
-.alert-chip + .clock-chip {
-  margin-left: 0;
-}
-
 .alert-chip[aria-expanded='true'] {
   background: var(--accent-soft);
 }

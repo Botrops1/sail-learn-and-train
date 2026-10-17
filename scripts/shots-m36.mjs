@@ -51,12 +51,13 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
       `${chip?.height}`,
     );
     check(
-      'the Attention button is in the screen and clear of the clock chip',
+      'the Attention button is in the screen, with the clock chip right under it',
       !!chip &&
         !!clock &&
         chip.x >= 0 &&
         clock.x + clock.width <= phone.width &&
-        chip.x + chip.width <= clock.x + 1,
+        Math.abs(chip.x + chip.width - (clock.x + clock.width)) <= 2 &&
+        clock.y > chip.y,
       JSON.stringify({ chip, clock }),
     );
     check('the card is folded', !(await cardOpen(page)), 'alert-centre');
