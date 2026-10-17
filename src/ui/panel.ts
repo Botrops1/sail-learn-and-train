@@ -1,6 +1,7 @@
 import type { AppState, Store } from '../app/store';
 import { entryFor } from '../model/panelEntries';
 import { createAutopilotPanel } from './autopilotPanel';
+import { createColumnHandles } from './columnHandles';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
@@ -123,6 +124,8 @@ export function createPanel(
 
   createQuickRow(sheet.head, store, sheet);
   host.append(body, second);
+  // M39: on the wide layout the columns collapse and change width (columnHandles.ts).
+  const columns = createColumnHandles(host, [body, second], layout, () => changed());
 
   const layoutKindNow = (): LayoutKind => {
     const { mode, wide } = layout.viewport();
@@ -239,6 +242,8 @@ export function createPanel(
     const section = sections.get(id);
     if (!section) return;
     openOnly(id);
+    // Asked for by name (a link in the view, a "?"): a collapsed column opens to show it.
+    columns.reveal(section.element);
     const raise = sheet.atPeek();
     if (raise) sheet.setHeight('half');
     scrollToId(id);
@@ -303,7 +308,13 @@ export function createPanel(
     showSection,
     shows: (id) => {
       const section = sections.get(id);
-      return Boolean(section && section.isOpen() && !section.element.hidden && !sheet.atPeek());
+      return Boolean(
+        section &&
+        section.isOpen() &&
+        !section.element.hidden &&
+        !sheet.atPeek() &&
+        !columns.isCollapsed(section.element),
+      );
     },
     openLearnEntry,
     showLearnEntry,

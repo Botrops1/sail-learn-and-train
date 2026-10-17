@@ -56,6 +56,7 @@ import { liveM35Checks, M35_SCENES } from './shots-m35.mjs';
 import { liveM36Checks, M36_SCENES } from './shots-m36.mjs';
 import { liveM37Checks, M37_SCENES } from './shots-m37.mjs';
 import { liveM38Checks, M38_SCENES } from './shots-m38.mjs';
+import { liveM39Checks, M39_SCENES } from './shots-m39.mjs';
 import {
   closeSettings,
   openSettings,
@@ -211,6 +212,7 @@ const SCENES = [
   ...M36_SCENES.map((scene) => ({ ...scene, name: `m36-${scene.name}` })),
   ...M37_SCENES.map((scene) => ({ ...scene, name: `m37-${scene.name}` })),
   ...M38_SCENES.map((scene) => ({ ...scene, name: `m38-${scene.name}` })),
+  ...M39_SCENES.map((scene) => ({ ...scene, name: `m39-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -367,22 +369,22 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   page.on('pageerror', (error) => problems.push(`${label}: page error: ${error.message}`));
   // Since M6 the app opens Sailing. The older scenes and checks are about the ropes and sails,
   // so they open Held still (the Phase 1 picture); Phase 2 ones (label contains "m6" … "m19")
-  // Phase 5 ones ("m25" …) and the M36, M37 and M38 ones sail.
-  const held = /m([6-9]|1\d|2[5-9]|3[678])/.test(label) || /[?&]held=/.test(query);
+  // Phase 5 ones ("m25" …) and the M36 … M39 ones sail.
+  const held = /m([6-9]|1\d|2[5-9]|3[6-9])/.test(label) || /[?&]held=/.test(query);
   let url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
   // Since M14 the water is Coastal by default. Everything older keeps its Phase 2 picture on
   // flat water (the boat would rock under the tap sweeps), unless it is about the waves itself.
-  if (!/m(1[4-9]|2[5-9]|3[678])/.test(label) && !/[?&]sea=/.test(query)) {
+  if (!/m(1[4-9]|2[5-9]|3[6-9])/.test(label) && !/[?&]sea=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}sea=flat`;
   }
   // Since M17 the clock chip shows. Everything older hides it, so the tap sweeps do not open
   // the clock card.
-  if (!/m(1[7-9]|2[5-9]|3[678])/.test(label) && !/[?&]clock=/.test(query)) {
+  if (!/m(1[7-9]|2[5-9]|3[6-9])/.test(label) && !/[?&]clock=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}clock=0`;
   }
   // Since M28 the mini-map shows while sailing. Everything but the M28, M29 and M38 checks hides it,
   // so it never changes an older picture or tap.
-  if (!/m(28|29|38)/.test(label) && !/[?&]mm=/.test(query)) {
+  if (!/m(28|29|38|39)/.test(label) && !/[?&]mm=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}mm=0`;
   }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
@@ -394,7 +396,7 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   // with Ropes (Learn mode: Learn) open, so they start from that; the M27, M29, M35, M36, M37 and M38 checks are
   // about the folded start and open what they need themselves.
   if (
-    !/m(27|29|35|36|37|38)/.test(label) &&
+    !/m(27|29|35|36|37|38|39)/.test(label) &&
     (await page.locator('[data-open="true"]').count()) === 0
   ) {
     await showSection(page, /[?&](m=learn|learn=)/.test(query) ? 'learn' : 'ropes');
@@ -980,6 +982,7 @@ try {
     m36: () => liveM36Checks(onTestClock),
     m37: () => liveM37Checks(onTestClock),
     m38: () => liveM38Checks(onTestClock),
+    m39: () => liveM39Checks(onTestClock),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

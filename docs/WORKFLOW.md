@@ -512,6 +512,17 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 - [ ] Smaller window (about 1,000 px wide, or a tablet): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the "Easy ▾" chip and the gear are back at the bottom of the 3D view and work as before; there is no Mode or Settings title.
 - [ ] Phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — nothing is different at the bottom except that "Rope colours" is gone from the sheet; tap "Easy ▾": each mode has a line under it. The gear still opens Settings over the page.
 
+#### M39: Collapsible, resizable panel columns
+
+- [ ] Collapse (computer, window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — a small tab with an arrow (›) sits on the left edge of each of the two right-hand columns. Tap the one on the right-hand column: it folds into a thin strip, the 3D view gets wider and the boat stays in the middle of it. Tap the strip's tab (‹): the column comes back.
+- [ ] Both folded: same link — fold both columns: only two thin strips remain at the right edge and the 3D view fills the window. Tap the part of the boat (the hull) in the view: the part card shows over the view.
+- [ ] Drag: same link — put the mouse on the border between the 3D view and the left column (the cursor changes to ↔) and drag it to the left: the column gets wider, the view narrower, up to a limit. Drag the border between the two columns too.
+- [ ] Keys and reset: same link — click once on a border so it is selected (Tab also gets there); ← and → change the width (Shift: bigger steps, Home: narrowest, End: widest). Double-click the border: the original width is back.
+- [ ] Remembered: fold one column and drag the other, then reload the page: the same layout is back. Opening the link again in the same browser gives the same layout; it is not part of the link, so a friend who opens your shared link sees the normal layout.
+- [ ] The wind box opens a folded column: fold the right-hand column, then tap the wind and speed box at the top of the 3D view: the column opens with "Conditions".
+- [ ] Smaller window (about 1,000 px wide, or a tablet): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — no tabs and no borders to drag; the panel works as before.
+- [ ] Phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — nothing is different.
+
 ## 12. Phase 7 (planned ahead)
 
 Planned before Phases 5 and 6 were built; brought up to date with what Phases 5 and 6 built by `/plan 7 refresh` (2026-10-16, PHASE7_SPEC 15). Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.
