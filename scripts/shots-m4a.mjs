@@ -64,6 +64,9 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     const v = viewport.name;
     const { context, page } = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0');
     await page.waitForTimeout(600);
+    // The clutches sit in the open Ropes section, which at half height leaves it about 100 px
+    // (M35): the panel is used with the sheet at full, as a tapped title does. Desktop: no effect.
+    await setSheet(page, 'full');
 
     // Clutch "Vang" → vang selected, its slider shown.
     await clutch(page, 'Clutch “Vang”: Vang').click();
@@ -172,6 +175,7 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     const phone = viewports[0];
     const { context, page } = await openPage(phone, 'm4a share', '?wd=90&ws=12&js=100&cam=bow');
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await setSheet(page, 'full');
     await page.locator('[data-select="rope_jib_furling_line"]').click();
     const jibOut = page.getByLabel('Jib out', { exact: true });
     await jibOut.focus();
