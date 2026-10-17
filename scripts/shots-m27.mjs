@@ -160,8 +160,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     // The boat's speed (`bs`) and the rudder (`rd`, the autopilot moves it) change all the time:
     // compare the rest of the link.
-    const link = () =>
-      page.evaluate(() => window.location.search.replace(/&(bs|rd)=[^&]*/g, ''));
+    const link = () => page.evaluate(() => window.location.search.replace(/&(bs|rd)=[^&]*/g, ''));
     const before = await link();
     await page.getByTestId('learn-show-me').click();
     await page.waitForTimeout(800);
