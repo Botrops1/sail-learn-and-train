@@ -204,6 +204,8 @@ html[data-layout='side'] .shell {
 
 html[data-layout='side'] .info-area {
   position: absolute;
+  /* Above the Attention card (M36, z-index 10), which also sits at the left: the part card hides part of it while a part is selected. */
+  z-index: 11;
   /* Below the wind chip. */
   top: 48px;
   right: 8px;
