@@ -1,6 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import {
-  ALERT_INFO,
+  alertLearnId,
   alertTimeText,
   type AlertEntry,
   type AlertKind,
@@ -12,7 +12,7 @@ import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 
 /** The message of each kind: the same strings the short alerts over the view use. */
-const ALERT_TEXT: Readonly<Record<Exclude<AlertKind, 'gybe'>, StringKey>> = {
+const ALERT_TEXT: Readonly<Record<Exclude<AlertKind, 'gybe' | 'sailWorn'>, StringKey>> = {
   tack: 'alert.tack',
   byTheLee: 'alert.byTheLee',
   overpowered: 'alert.overpowered',
@@ -25,6 +25,9 @@ const ALERT_TEXT: Readonly<Record<Exclude<AlertKind, 'gybe'>, StringKey>> = {
 export function alertText(entry: AlertEntry): string {
   if (entry.kind === 'gybe') {
     return entry.report ? gybeReportText(entry.report) : t('alert.gybe');
+  }
+  if (entry.kind === 'sailWorn') {
+    return t(entry.sail === 'jib' ? 'alert.sailWorn.jib' : 'alert.sailWorn.main');
   }
   return t(ALERT_TEXT[entry.kind]);
 }
@@ -75,7 +78,7 @@ export function createAlertCentre(
         bottom.insertBefore(chip, gear);
       }
     } else if (chip.parentElement !== top) {
-      top.insertBefore(chip, top.querySelector('.clock-chip') ?? top.querySelector('.time-bar'));
+      top.insertBefore(chip, top.querySelector('.clock-chip'));
     }
   };
   place();
@@ -144,16 +147,17 @@ export function createAlertCentre(
     list.replaceChildren(
       ...[...entries].reverse().map((entry) => {
         const time = alertTimeText(entry.atS);
+        const learnId = alertLearnId(entry);
         const learn = el('button', {
           type: 'button',
           class: 'alert-learn',
           'data-testid': 'alert-learn',
-          'data-learn': ALERT_INFO[entry.kind].learnId,
+          'data-learn': learnId,
           'aria-label': t('alerts.learn'),
         });
         learn.textContent = '?';
         learn.addEventListener('click', () => {
-          showLearn(ALERT_INFO[entry.kind].learnId);
+          showLearn(learnId);
           // On a phone the card would cover the Learn section the sheet is about to show.
           if (stacked()) setOpen(false, true);
         });

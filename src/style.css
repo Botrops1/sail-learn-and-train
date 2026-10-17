@@ -1035,6 +1035,8 @@ button.segment {
   justify-content: space-between;
   gap: 6px;
   pointer-events: none;
+  /* The width the time bar's jump buttons are shown by (M37). */
+  container: view-top / inline-size;
 }
 
 .view-top > * {
@@ -1049,33 +1051,78 @@ button.segment {
   gap: 2px;
   min-width: 0;
   max-width: 100%;
-  padding: 4px 10px;
-  border: 0;
+  padding: 4px 8px;
   border-radius: 12px;
   background: rgb(255 255 255 / 0.88);
   color: var(--text);
-  font: inherit;
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+/* The strip's own button: the two lines of numbers; a tap opens Conditions. */
+.strip-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
-.instrument-strip:focus-visible {
+.strip-main:focus-visible,
+.strip-flags button:focus-visible {
   outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 .strip-line {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  column-gap: 10px;
+  column-gap: 8px;
   font-weight: 600;
 }
 
-.strip-speed {
+/* A cell keeps the width of its widest text (an invisible copy sits in the same place; M37). */
+.strip-cell {
+  display: inline-grid;
+  justify-items: start;
+  white-space: nowrap;
+}
+
+.strip-cell > * {
+  grid-area: 1 / 1;
+}
+
+.strip-ghost {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.strip-cell:has(.strip-speed) {
   font-size: 20px;
   font-weight: 800;
+}
+
+/* Held still has no heel and no autopilot: those cells go (the box is narrower there, as it was). */
+.instrument-strip.is-held .strip-cell-sailing {
+  display: none;
+}
+
+/* "Held still" is longer than a speed: smaller, so it fits the same cell. */
+.strip-speed.is-held {
+  font-size: 13px;
+}
+
+.strip-cell:has(.strip-auto) .strip-ghost {
+  padding: 0 6px;
 }
 
 .strip-heel[hidden] {
@@ -1093,34 +1140,122 @@ button.segment {
   display: none;
 }
 
+/* Badges that open their Learn entry (issues #88): GUST, the engine, a worn sail. */
 .strip-gust,
-.strip-time,
-.strip-engine {
-  padding: 0 6px;
-  border-radius: 6px;
-  background: #b45309;
+.strip-engine,
+.strip-sail {
+  /*
+   * The pill (::before) is 18 px high; the button around it is 44 px (its padding is transparent
+   * and the negative margin takes it back out of the row's height), so it can be tapped.
+   */
+  --chip-bg: #b45309;
+  position: relative;
+  z-index: 0;
+  min-height: 0;
+  margin: -13px 0;
+  padding: 13px 6px;
+  border: 0;
+  background: transparent;
   color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.strip-time {
-  background: var(--text);
+.strip-gust::before,
+.strip-engine::before,
+.strip-sail::before {
+  position: absolute;
+  z-index: -1;
+  inset: 13px 0;
+  border-radius: 6px;
+  background: var(--chip-bg);
+  content: '';
 }
 
 .strip-engine {
-  background: var(--accent);
+  --chip-bg: var(--accent);
+}
+
+.strip-sail {
+  --chip-bg: #fff1d6;
+  color: #7a4a00;
 }
 
 .strip-gust[hidden],
-.strip-time[hidden],
 .strip-engine[hidden],
+.strip-sail[hidden],
 .strip-flags[hidden] {
   display: none;
+}
+
+/* The badges' row never makes the box wider: it takes the width the numbers give it. */
+.strip-flags {
+  width: 0;
+  min-width: 100%;
+  row-gap: 2px;
 }
 
 .strip-winds {
   column-gap: 12px;
   color: var(--muted);
   font-weight: 600;
+}
+
+/* Beside the panel there is less room across: four short lines instead of two long ones. */
+html[data-layout='side'] .strip-primary {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+}
+
+html[data-layout='side'] .strip-primary > :nth-child(1) {
+  grid-area: 1 / 1;
+}
+
+html[data-layout='side'] .strip-primary > :nth-child(2) {
+  grid-area: 2 / 1;
+}
+
+html[data-layout='side'] .strip-primary > :nth-child(3) {
+  grid-area: 1 / 2;
+}
+
+html[data-layout='side'] .strip-primary > :nth-child(4) {
+  grid-area: 2 / 2;
+}
+
+html[data-layout='side'] .strip-winds {
+  display: grid;
+  row-gap: 0;
+}
+
+/* A phone: the strip shares its row with the clock chip, so the line is kept short. */
+html[data-layout='stacked'] .strip-ghost-wide {
+  display: none;
+}
+
+html[data-layout='stacked'] .instrument-strip {
+  padding: 4px 5px;
+}
+
+html[data-layout='stacked'] .strip-line {
+  column-gap: 4px;
+}
+
+html[data-layout='stacked'] .strip-auto,
+html[data-layout='stacked'] .strip-cell:has(.strip-auto) .strip-ghost {
+  padding: 0 4px;
+}
+
+html[data-layout='stacked'] .strip-cell:has(.strip-speed) {
+  /* The line keeps the height of a 20 px speed, so the top area is as tall as before M37. */
+  min-height: 28px;
+  font-size: 18px;
+}
+
+html[data-layout='stacked'] .clock-chip {
+  padding: 4px 6px;
 }
 
 .rig-alerts {
@@ -1683,9 +1818,10 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 /* Pause (PHASE1_SPEC 7.2.2, both modes): in the time bar, top right of the 3D view. */
 .pause-button {
-  min-width: var(--touch);
+  /* The width of "Resume", so the bar does not change width between Pause and Resume (M37). */
+  min-width: 74px;
   min-height: var(--touch);
-  padding: 4px 12px;
+  padding: 4px 8px;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: rgb(255 255 255 / 0.9);
@@ -1706,7 +1842,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 }
 
 .time-bar[data-speed='true'] {
-  padding: 0 4px;
+  padding: 0 2px;
   border: 1px solid var(--line);
   border-radius: 22px;
   background: rgb(255 255 255 / 0.9);
@@ -1784,8 +1920,28 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .time-label {
   min-width: var(--touch);
-  padding: 0 6px;
+  padding: 0 4px;
   color: var(--muted);
+}
+
+/* Folded: the speed shows under the word "Time" (M37, issue #87); open, the speed has its own button. */
+.time-label-speed {
+  display: none;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.time-bar[data-open='false'] .time-label:not([hidden]) {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+}
+
+.time-bar[data-open='false'] .time-label-speed {
+  display: block;
 }
 
 .time-label[aria-expanded='false'] {
@@ -2804,17 +2960,6 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   display: none;
 }
 
-.strip-sail[hidden] {
-  display: none;
-}
-
-.strip-sail {
-  padding: 0 6px;
-  border-radius: 6px;
-  background: #fff1d6;
-  color: #7a4a00;
-}
-
 /* Wind instrument (M7, PHASE2_SPEC 7.5): a dial with the bow at the top, in the Wind tab. */
 .instrument-box {
   display: flex;
@@ -3249,14 +3394,53 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   cursor: pointer;
 }
 
-/* Side by side (wide views): the strip, the time bar, then the clock chip. */
-html[data-layout='side'] .time-bar {
-  order: 1;
+/*
+ * The right of the top row (M37, issues #86, #87). A phone: the two wrappers vanish and the clock
+ * chip and the time bar join the row as before. Beside the panel: a column, the time bar on top,
+ * the Attention and clock chips under it, whether the bar is open or folded; the column sits beside
+ * the strip, or under it where the view is too narrow for both (both have fixed widths, so which
+ * one it is never depends on the numbers).
+ */
+.top-right,
+.top-chips {
+  display: contents;
 }
 
-html[data-layout='side'] .clock-chip {
-  order: 3;
+html[data-layout='side'] .top-right {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-left: auto;
+}
+
+html[data-layout='side'] .top-chips {
+  display: flex;
+  order: 2;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+html[data-layout='side'] .time-bar {
+  order: 1;
   margin-left: 0;
+}
+
+html[data-layout='side'] .clock-chip,
+html[data-layout='side'] .top-chips .alert-chip {
+  margin-left: 0;
+}
+
+/*
+ * The strip is 227 px wide and the bar 344 px with its two jump buttons (« »), 256 px without:
+ * in a view 490 to 576 px wide (a 1,280 px window) the jump buttons are left out so the bar
+ * fits beside the strip. Narrower, the bar has a row of its own and room for them. ‹ and › still step through every speed.
+ */
+@container view-top (min-width: 490px) and (max-width: 576px) {
+  html[data-layout='side'] .time-jump {
+    display: none;
+  }
 }
 
 /* The notification centre (M36, issue #80): the Attention button in the top row and the history card. */

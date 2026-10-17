@@ -18,6 +18,7 @@ export const ALERT_KINDS = [
   'roundUp',
   'tookWheel',
   'fendersOut',
+  'sailWorn',
 ] as const;
 export type AlertKind = (typeof ALERT_KINDS)[number];
 
@@ -38,7 +39,23 @@ export const ALERT_INFO: Readonly<Record<AlertKind, AlertKindInfo>> = {
   roundUp: { learnId: 'term_round_up', severity: 'danger' },
   tookWheel: { learnId: 'fit_autopilot_control', severity: 'info' },
   fendersOut: { learnId: 'fit_fender', severity: 'info' },
+  // The entry is the worn sail's own (`alertLearnId`); this one is the fallback.
+  sailWorn: { learnId: 'sail_main', severity: 'warning' },
 };
+
+/** The two sails that can wear out, and the Learn entry of each. */
+export type WornSail = 'main' | 'jib';
+export const SAIL_LEARN: Readonly<Record<WornSail, string>> = {
+  main: 'sail_main',
+  jib: 'sail_jib',
+};
+
+/** The sail that is worn out from flapping (the worse one if both are), or null (M37, issue #88). */
+export function wornSail(damage: Readonly<Record<WornSail, number>>): WornSail | null {
+  const warnAt = boat.physics.trim.flogging.warnAt;
+  if (Math.max(damage.main, damage.jib) < warnAt) return null;
+  return damage.main >= damage.jib ? 'main' : 'jib';
+}
 
 /** Warnings that can come and go every second: written again only after `repeatGapS`. */
 const FLICKERING: readonly AlertKind[] = ['byTheLee', 'overpowered'];
@@ -52,6 +69,15 @@ export interface AlertEntry {
   severity: AlertSeverity;
   /** Only for `gybe`: the numbers the report says. */
   report?: GybeReport;
+  /** Only for `sailWorn`: which sail wore out. */
+  sail?: WornSail;
+}
+
+/** The Learn entry an entry's "?" opens: a worn sail opens its own sail. */
+export function alertLearnId(entry: AlertEntry): string {
+  return entry.kind === 'sailWorn' && entry.sail
+    ? SAIL_LEARN[entry.sail]
+    : ALERT_INFO[entry.kind].learnId;
 }
 
 export interface AlertLog {
@@ -69,9 +95,11 @@ export interface AlertSource {
   boat: BoatState;
   autopilotNoticeS: number;
   harbour: HarbourState;
+  sailDamage: Readonly<Record<WornSail, number>>;
 }
 
 const { historyMax, repeatGapS, overpoweredAfterS } = boat.physics.alerts;
+const { warnAt } = boat.physics.trim.flogging;
 
 /** Severity of an entry: an accidental gybe is a danger, the other kinds follow `ALERT_INFO`. */
 function severityOf(kind: AlertKind, report: GybeReport | undefined): AlertSeverity {
@@ -97,6 +125,13 @@ function started(previous: AlertSource, next: AlertSource): AlertKind[] {
   return kinds;
 }
 
+/** The sails that wear out between two states: each one once as it passes `warnAt` (a repair, then wear again, is a new event). */
+function sailsWorn(previous: AlertSource, next: AlertSource): WornSail[] {
+  return (['main', 'jib'] as const).filter(
+    (sail) => previous.sailDamage[sail] < warnAt && next.sailDamage[sail] >= warnAt,
+  );
+}
+
 /**
  * The log after the step from `previous` to `next`: the same object when nothing started,
  * otherwise with the new entries added at the end and the oldest dropped past `historyMax`.
@@ -114,6 +149,11 @@ export function recordAlerts(log: AlertLog, previous: AlertSource, next: AlertSo
     written += 1;
     const entry: AlertEntry = { n: written, kind, atS, severity: severityOf(kind, report) };
     if (report) entry.report = report;
+    entries = [...entries, entry].slice(-historyMax);
+  }
+  for (const sail of sailsWorn(previous, next)) {
+    written += 1;
+    const entry: AlertEntry = { n: written, kind: 'sailWorn', atS, severity: 'warning', sail };
     entries = [...entries, entry].slice(-historyMax);
   }
   return written === log.written ? log : { entries, written };

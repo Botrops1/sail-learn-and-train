@@ -4,7 +4,10 @@ import {
   ALERT_INFO,
   ALERT_KINDS,
   EMPTY_ALERTS,
+  SAIL_LEARN,
+  alertLearnId,
   alertTimeText,
+  wornSail,
   recordAlerts,
   type AlertLog,
   type AlertSource,
@@ -148,5 +151,70 @@ describe('M36: the alert history (issue #80)', () => {
     expect(alertTimeText(42.9)).toBe('0:42');
     expect(alertTimeText(605)).toBe('10:05');
     expect(alertTimeText(-3)).toBe('0:00');
+  });
+});
+
+describe('M37: the worn-sail alert (issue #88)', () => {
+  const start = initialState();
+  const { warnAt } = boat.physics.trim.flogging;
+  const worn = (main: number, jib: number) => ({ sailDamage: { main, jib } });
+
+  it('1. a sail passing the warning level is written once, with its sail', () => {
+    const before = later(start, {}, {}, worn(warnAt - 0.01, 0));
+    const after = later(before, { timeS: 4 }, {}, worn(warnAt, 0));
+    const log = recordAlerts(EMPTY_ALERTS, before, after);
+    expect(log.entries).toHaveLength(1);
+    expect(log.entries[0]).toMatchObject({ kind: 'sailWorn', sail: 'main', severity: 'warning' });
+    // Still worn a moment later: nothing new.
+    const still = later(after, { timeS: 5 }, {}, worn(warnAt + 0.2, 0));
+    expect(recordAlerts(log, after, still)).toBe(log);
+  });
+
+  it('2. the second sail is its own entry; a repair and new wear is a new event', () => {
+    const one = later(start, {}, {}, worn(warnAt + 0.1, 0));
+    const both = later(one, {}, {}, worn(warnAt + 0.1, warnAt));
+    let log = recordAlerts(EMPTY_ALERTS, one, both);
+    expect(log.entries.map((e) => e.sail)).toEqual(['jib']);
+    const repaired = later(both, {}, {}, worn(0, 0));
+    expect(recordAlerts(log, both, repaired)).toBe(log);
+    log = recordAlerts(log, repaired, later(repaired, {}, {}, worn(warnAt, 0)));
+    expect(log.entries.map((e) => e.sail)).toEqual(['jib', 'main']);
+  });
+
+  it('3. already worn when the page opens: nothing is written', () => {
+    const state = later(start, {}, {}, worn(warnAt + 0.3, 0));
+    expect(recordAlerts(EMPTY_ALERTS, state, later(state, { timeS: 1 }))).toBe(EMPTY_ALERTS);
+  });
+
+  it('4. wornSail names the worse sail (the main when they are equal) or none', () => {
+    expect(wornSail({ main: warnAt - 0.01, jib: 0 })).toBeNull();
+    expect(wornSail({ main: warnAt, jib: warnAt })).toBe('main');
+    expect(wornSail({ main: warnAt, jib: warnAt + 0.2 })).toBe('jib');
+  });
+
+  it('5. the entry opens its sail in Learn and says which sail in both languages', () => {
+    const entry = (sail: 'main' | 'jib') =>
+      recordAlerts(
+        EMPTY_ALERTS,
+        later(start, {}, {}, worn(0, 0)),
+        later(start, {}, {}, worn(sail === 'main' ? warnAt : 0, sail === 'jib' ? warnAt : 0)),
+      ).entries[0];
+    const main = entry('main');
+    const jib = entry('jib');
+    expect(main && alertLearnId(main)).toBe('sail_main');
+    expect(jib && alertLearnId(jib)).toBe('sail_jib');
+    for (const id of Object.values(SAIL_LEARN)) expect(isRegisteredPartId(id), id).toBe(true);
+    expect(main && alertText(main)).toBe(en['alert.sailWorn.main']);
+    expect(jib && alertText(jib)).toBe(en['alert.sailWorn.jib']);
+    for (const key of ['alert.sailWorn.main', 'alert.sailWorn.jib'] as const) {
+      expect(key in ru, key).toBe(true);
+    }
+  });
+
+  it('6. the store state is a source: a step that wears a sail out writes the entry', () => {
+    const state: AppState = initialState();
+    const damaged: AppState = { ...state, sailDamage: { main: warnAt, jib: 0 } };
+    const log = recordAlerts(state.alerts, state, damaged);
+    expect(log.entries.map((e) => e.kind)).toEqual(['sailWorn']);
   });
 });

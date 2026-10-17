@@ -489,6 +489,18 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 - [ ] Computer, a message: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1&fd=1 — choose "Sailing" in Conditions: the reminder appears in the open card at once.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lang=ru — the card opens with Russian text ("Внимание" is its title).
 
+#### M37: Top row of the 3D view
+
+- [ ] The wind box keeps its width (computer, window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ms=100&js=100&vg=50&tl=100&mf=100&jf=100&rd=5&wd=175&ws=20&cam=top&step=5&detail=high&hdg=359&bs=7.2&ap=hdg&apt=0&tx=16&clk=202606011206 — watch the box at the top left for a minute while the numbers change (speed, heading, heel, AUTO): it does not get wider or narrower, and the time bar beside it stays where it is.
+- [ ] Time bar beside the box: same link, then tap "Pause" so it says "Resume": the bar does not change width and stays on the same row as the wind box. Tap "‹" and "›" through every speed (¼ to 16): it stays on the row. (In a window about 1,280 px wide the two jump buttons « » are left out so it fits; at 1,440 px and wider they show.)
+- [ ] Chips under the bar: same link: the clock (12:06) and "Attention" chips sit under the time bar, at the right.
+- [ ] Folded: same link, tap the word "Time" on the bar: the bar folds to "Time" with "×16" under it and the Pause button; the wind box has no "×16" badge in either state; the chips stay under it.
+- [ ] Narrow window: make the window about 800 px wide: the time bar moves under the wind box (with all its buttons) (it does not hop back and forth while the numbers change).
+- [ ] Phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the wind box has the same two-line look as before and does not get wider while you watch; the time bar and the clock chip sit under it as before; folded, "×16" shows under "Time" (try https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&tx=16).
+- [ ] Worn sail tap: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=30&ws=24&ms=100&js=100&mf=100&jf=100&tx=16&ap=off&hdg=0 — wait until "⚠ sail" shows in the wind box (the sails flap in a strong wind from ahead; at ×16 it takes up to a minute or two). Tap it: the Learn section opens at "Mainsail" (or "Self-tacking jib").
+- [ ] Worn sail in the Attention list: same link: open "Attention" (computer: it is open at the start): "The mainsail is worn out from flapping…" is in the list with a "?"; tap the "?": the same Learn entry opens. It is written once, not again and again.
+- [ ] GUST tap: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&wm=gusty&seed=7&wg=60&tx=16&cam=side-port — when "GUST" shows, tap it: the Learn section opens at "Gust".
+
 ## 12. Phase 7 (planned ahead)
 
 Planned before Phases 5 and 6 were built; brought up to date with what Phases 5 and 6 built by `/plan 7 refresh` (2026-10-16, PHASE7_SPEC 15). Then the same loop as section 2: one session and one PR per milestone (M40 … M47), started with `/milestone <N>`. **M40 to M46 need a `/review` with Opus** before you test them; M47 does not.

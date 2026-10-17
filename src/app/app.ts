@@ -85,9 +85,21 @@ export function startApp(host: HTMLElement): void {
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
   layout.view.append(top);
-  createInstrumentStrip(top, store, () => panel.showSection('conditions'));
-  createTimeBar(top, store);
-  createClockPanel(top, layout.view, store);
+  createInstrumentStrip(
+    top,
+    store,
+    () => panel.showSection('conditions'),
+    panel.showLearnEntry,
+    layout,
+  );
+  // Right of the strip (M37): the time bar, with the clock and Attention chips under it. On a
+  // phone both wrappers vanish (`display: contents`) and their children join the top row.
+  const topRight = el('div', { class: 'top-right', 'data-testid': 'top-right' });
+  const topChips = el('div', { class: 'top-chips' });
+  topRight.append(topChips);
+  top.append(topRight);
+  createTimeBar(topRight, store);
+  createClockPanel(topChips, layout.view, store);
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
   let reframe = () => {};
   trackTopHeight(layout.view, top, () => reframe());
@@ -142,7 +154,7 @@ export function startApp(host: HTMLElement): void {
   }
   // The history of the short alerts (M36, issue #80). After the camera chip, so that its button
   // stands between the camera chip and the gear in the chip row.
-  createAlertCentre(top, chipRow, layout.view, store, layout, panel.showLearnEntry);
+  createAlertCentre(topChips, chipRow, layout.view, store, layout, panel.showLearnEntry);
 
   let frames = 0;
   let windowStart = performance.now();

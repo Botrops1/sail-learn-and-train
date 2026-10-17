@@ -2424,6 +2424,7 @@
 | instruments.heel | Heel {deg}° {side} | Крен {deg}° {side} |
 | instruments.auto.heading | AUTO {deg}° | АВТО {deg}° |
 | instruments.auto.wind | AUTO wind {deg}° {side} | АВТО ветер {deg}° {side} |
+| instruments.auto.windShort | AUTO {deg}° {side} | АВТО {deg}° {side} |
 | wind.compass | True wind from {compass}° · {relative} | Истинный ветер с {compass}° · {relative} |
 | wind.relative.ahead | dead ahead | прямо по носу |
 | wind.relative.astern | dead astern | прямо с кормы |
@@ -2472,7 +2473,7 @@
 | trim.wearBar | Wear of the {sail}: {pct} % | Износ ({sail}): {pct} % |
 | trim.repair | Repair sails | Починить паруса |
 | trim.badge | ⚠ sail | ⚠ парус |
-| trim.badgeTitle | A sail is worn out from flapping (flogging) | Парус изношен от полоскания |
+| trim.badgeTitle | A sail is worn out from flapping (flogging). Tap to learn more. | Парус изношен от полоскания. Нажмите, чтобы узнать больше. |
 | trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is let out too far (luffing). The leeward one hanging: the sail is pulled in too far (stalled). | Колдунчик — короткая ленточка на парусе. Вытянут назад: поток хороший. Наветренный поднимается: парус потравлен слишком сильно (полощет). Подветренный висит: парус выбран слишком сильно (срыв потока). |
 | debug.motion | Boat V/yaw | Boat V/yaw |
 | debug.winds | TWA/TWS | TWA/TWS |
@@ -2544,7 +2545,6 @@
 | wind.now | Wind now: {speed} kn from {compass}° (thin arrow) | Ветер сейчас: {speed} уз с {compass}° (тонкая стрелка) |
 | wind.now.aria | The wind right now | Ветер прямо сейчас |
 | instruments.gust | GUST | ПОРЫВ |
-| instruments.timeScale | ×{scale} | ×{scale} |
 | debug.windMode | Wind mode | Wind mode |
 | time.group | Time | Время |
 | time.held | Held still | Яхта стоит |
@@ -2552,7 +2552,6 @@
 | time.held.note | Held still is a boat setting, so there is nothing to pause. You can change it in Conditions, under Boat. | «Яхта стоит» — настройка яхты, поэтому ставить на паузу нечего. Её можно изменить в разделе «Условия», в блоке «Яхта». |
 | time.label | Time | Время |
 | time.fold | Fold the time bar: only Pause stays | Свернуть панель времени: останется только «Пауза» |
-| time.unfold | Open the time bar | Открыть панель времени |
 | time.status | Time speed ×{scale}. Tap for normal speed. | Скорость времени ×{scale}. Нажмите для обычной скорости. |
 | time.slowest | Slowest time: ×¼ | Самое медленное время: ×¼ |
 | time.slower | Slower: one step down | Медленнее: на шаг вниз |
@@ -2720,4 +2719,9 @@
 | alerts.collapse | Close the alert history | Закрыть историю предупреждений |
 | alerts.empty | No alerts yet. Warnings that show for only a few seconds are kept here. | Предупреждений пока нет. Сообщения, которые видны всего несколько секунд, сохраняются здесь. |
 | alerts.learn | Learn about this alert | Узнать об этом предупреждении |
+| alert.sailWorn.main | The mainsail is worn out from flapping (flogging). Repair it under Sails. | Грот изношен от полоскания. Почините его в разделе «Паруса». |
+| alert.sailWorn.jib | The jib is worn out from flapping (flogging). Repair it under Sails. | Стаксель изношен от полоскания. Почините его в разделе «Паруса». |
+| instruments.gustTitle | Gust: the wind is well above its average. Tap to learn more. | Порыв: ветер заметно сильнее среднего. Нажмите, чтобы узнать больше. |
+| instruments.engineTitle | The engine is running. Tap to learn more. | Двигатель работает. Нажмите, чтобы узнать больше. |
+| time.unfoldSpeed | Open the time bar (speed ×{scale}) | Открыть панель времени (скорость ×{scale}) |
 | alerts.at | at {time} on board | в {time} на борту |
