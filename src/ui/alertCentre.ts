@@ -55,7 +55,12 @@ export function createAlertCentre(
       'aria-expanded': 'false',
       'aria-controls': 'alert-centre',
     },
-    [t('alerts.title'), badge],
+    [
+      el('span', { class: 'alert-chip-text' }, [t('alerts.title')]),
+      // On a phone the button is a round "!" so that it fits in the strip's row (M36).
+      el('span', { class: 'alert-chip-icon', 'aria-hidden': 'true' }, ['!']),
+      badge,
+    ],
   );
   // Before the clock chip: on a phone the two sit together at the right of the strip's row.
   const before = top.querySelector('.clock-chip') ?? top.querySelector('.time-bar');

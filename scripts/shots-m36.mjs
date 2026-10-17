@@ -208,7 +208,7 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
       testClock: true,
     });
     await page.getByTestId('alert-chip').click();
-    const label = await page.getByTestId('alert-chip').innerText();
+    const label = (await page.getByTestId('alert-chip').getAttribute('aria-label')) ?? '';
     check('the Russian button says Внимание', label.includes('Внимание'), label);
     await shot(page, 'live-phone-ru');
     await context.close();

@@ -3276,6 +3276,10 @@ html[data-layout='side'] .clock-chip {
   cursor: pointer;
 }
 
+html[data-layout='stacked'] .alert-chip {
+  padding: 4px 10px;
+}
+
 .alert-chip + .clock-chip {
   margin-left: 0;
 }
@@ -3294,6 +3298,28 @@ html[data-layout='side'] .clock-chip {
   border-color: #c8102e;
   background: #c8102e;
   color: #ffffff;
+}
+
+/* A phone: a round "!" (the word would not fit beside the strip and the clock); beside the panel: the word. */
+.alert-chip-text {
+  display: none;
+}
+
+.alert-chip-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+html[data-layout='side'] .alert-chip-text {
+  display: inline;
+}
+
+html[data-layout='side'] .alert-chip-icon {
+  display: none;
+}
+
+.alert-chip:has(.alert-badge:not([hidden])) .alert-chip-icon {
+  margin-right: 2px;
 }
 
 .alert-badge {

@@ -480,14 +480,14 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 
 #### M36: Notification centre
 
-- [ ] Phone, at the start: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — next to the clock at the top there is a small button "Attention". No number on it, and nothing else is open.
-- [ ] Empty history: tap "Attention": a small card opens under it saying "No alerts yet…". Tap the button again (or press Escape on a keyboard): it folds.
-- [ ] Reminder to bring the fenders in: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1&fd=1 — open "Conditions", choose "Sailing". The Attention button shows a "1". Tap it: the list has "Bring the fenders in before you sail." with the time and a "?" button. The number is gone.
+- [ ] Phone, at the start: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — next to the clock at the top there is a small round "!" button (the Attention button). No number on it, and nothing else is open.
+- [ ] Empty history: tap the "!" button: a small card opens under it saying "No alerts yet…". Tap the button again (or press Escape on a keyboard): it folds.
+- [ ] Reminder to bring the fenders in: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1&fd=1 — open "Conditions", choose "Sailing". The "!" button shows a "1". Tap it: the list has "Bring the fenders in before you sail." with the time and a "?" button. The number is gone.
 - [ ] The question mark: tap "?" on that line. The card folds and the Learn section shows the entry "Fender".
-- [ ] A gybe that is easy to miss: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=20&ms=100&js=100&tx=0.5&cam=top — open "Autopilot" and tap "−10°" twice. The boom swings across and a red "GYBE" shows for a few seconds. The Attention button turns red with a "1" or "2". Wait until the red message is gone, then tap "Attention": the gybe is still there, with its speed and load numbers.
+- [ ] A gybe that is easy to miss: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=175&ws=20&ms=100&js=100&tx=0.5&cam=top — open "Autopilot" and tap "−10°" twice. The boom swings across and a red "GYBE" shows for a few seconds. The "!" button turns red with a "1" or "2". Wait until the red message is gone, then tap the "!" button: the gybe is still there, with its speed and load numbers.
 - [ ] Computer (window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — a small card "Attention" is already open at the top left of the 3D view (on a window narrower than 1,280 px it starts folded: tap the button), saying "No alerts yet…". Tap "−": it folds into the "Attention" button; tap the button: it opens again.
 - [ ] Computer, a message: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&held=1&fd=1 — choose "Sailing" in Conditions: the reminder appears in the open card at once.
-- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lang=ru — the button says "Внимание" and the card opens with Russian text.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&lang=ru — the card opens with Russian text ("Внимание" is its title).
 
 ## 12. Phase 7 (planned ahead)
 
