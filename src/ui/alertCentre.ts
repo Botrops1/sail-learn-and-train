@@ -39,6 +39,7 @@ export function alertText(entry: AlertEntry): string {
  */
 export function createAlertCentre(
   top: HTMLElement,
+  bottom: HTMLElement,
   view: HTMLElement,
   store: Store,
   layout: LayoutShell,
@@ -57,15 +58,27 @@ export function createAlertCentre(
     },
     [
       el('span', { class: 'alert-chip-text' }, [t('alerts.title')]),
-      // On a phone the button is a round "!" so that it fits in the strip's row (M36).
+      // On a phone the button is a round "!" in the chip row at the bottom of the view (M36).
       el('span', { class: 'alert-chip-icon', 'aria-hidden': 'true' }, ['!']),
       badge,
     ],
   );
-  // Before the clock chip: on a phone the two sit together at the right of the strip's row.
-  const before = top.querySelector('.clock-chip') ?? top.querySelector('.time-bar');
-  if (before) top.insertBefore(chip, before);
-  else top.append(chip);
+  const stacked = () => layout.viewport().mode === 'stacked';
+  // Where the button sits: on a phone in the chip row at the bottom of the view, before the gear
+  // (a button in the top row would make the top area a row taller and shorten the sheet); beside
+  // the panel in the top row, before the clock chip.
+  const place = () => {
+    chip.classList.toggle('view-chip', stacked());
+    if (stacked()) {
+      const gear = bottom.querySelector('[data-testid="settings-button"]');
+      if (chip.parentElement !== bottom || chip.nextElementSibling !== gear) {
+        bottom.insertBefore(chip, gear);
+      }
+    } else if (chip.parentElement !== top) {
+      top.insertBefore(chip, top.querySelector('.clock-chip') ?? top.querySelector('.time-bar'));
+    }
+  };
+  place();
 
   const fold = el('button', {
     type: 'button',
@@ -98,7 +111,6 @@ export function createAlertCentre(
   card.hidden = true;
   view.append(card);
 
-  const stacked = () => layout.viewport().mode === 'stacked';
   // Open at the start only where there is room: a computer window (the wide layout). A phone held
   // sideways or a narrow side-by-side window starts folded, so the card never hides the boat.
   const roomy = () => layout.viewport().wide;
@@ -185,6 +197,7 @@ export function createAlertCentre(
     if (event.key === 'Escape' && open && !roomy()) setOpen(false, true);
   });
   layout.onChange(() => {
+    place();
     if (!touched) setOpen(roomy(), false);
   });
   store.subscribe((state) => render(state));

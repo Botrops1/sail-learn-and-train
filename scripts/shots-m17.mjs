@@ -86,12 +86,11 @@ export async function liveM17Checks({ openPage, viewports, outDir, prefix, probl
       return {
         setInside:
           set.bottom <= card.bottom + 1 && set.top >= card.top && set.bottom <= view.bottom + 1,
-        // M36: the Attention button takes the strip's row, so the chip sits under it, at the right edge.
-        chipOnStripRow: chipBox.right >= view.right - 12 && chipBox.top < strip.bottom + 60,
+        chipOnStripRow: chipBox.top < strip.bottom && chipBox.left >= strip.right - 1,
       };
     });
     check('the Set button lies inside the view', fit.setInside, JSON.stringify(fit));
-    check('the chip sits at the right, by the strip', fit.chipOnStripRow, JSON.stringify(fit));
+    check('the chip shares the strip row', fit.chipOnStripRow, JSON.stringify(fit));
     await shot(page, 'live-phone-clock-card');
     problems.push(...(await auditPage(page, 'm17 clock card')));
     await page.keyboard.press('Escape');

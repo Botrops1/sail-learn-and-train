@@ -353,7 +353,7 @@ html[data-layout='stacked'] .info-card {
   margin-left: auto;
 }
 
-.map-close:not([hidden]) + .settings-button {
+.map-close:not([hidden]) ~ .settings-button {
   margin-left: 0;
 }
 
@@ -3276,8 +3276,19 @@ html[data-layout='side'] .clock-chip {
   cursor: pointer;
 }
 
-html[data-layout='stacked'] .alert-chip {
-  padding: 4px 10px;
+/* In the chip row (a phone) it sits at the right end, before the gear, and hides while the map shows (M28's Close chip needs the room). */
+.view-bottom .alert-chip {
+  margin-left: auto;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.view-bottom .alert-chip + .settings-button {
+  margin-left: 8px;
+}
+
+.map-close:not([hidden]) ~ .alert-chip {
+  display: none;
 }
 
 .alert-chip[aria-expanded='true'] {
@@ -3296,7 +3307,7 @@ html[data-layout='stacked'] .alert-chip {
   color: #ffffff;
 }
 
-/* A phone: a round "!" (the word would not fit beside the strip and the clock); beside the panel: the word. */
+/* A phone: a round "!" in the chip row at the bottom; beside the panel: the word in the top row. */
 .alert-chip-text {
   display: none;
 }
@@ -3369,6 +3380,16 @@ html[data-layout='side'] .alert-chip-icon {
 }
 
 /* Side by side the card is a small overlay at the left, under the strip. */
+/* A phone: the card opens above the chip row, at the right, over the 3D view. */
+html[data-layout='stacked'] .alert-centre {
+  top: auto;
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  max-height: max(
+    120px,
+    calc(100% - var(--view-top-h, 64px) - var(--view-bottom-inset, 0px) - 76px)
+  );
+}
+
 html[data-layout='side'] .alert-centre {
   right: auto;
   left: 8px;

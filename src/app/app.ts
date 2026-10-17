@@ -88,8 +88,6 @@ export function startApp(host: HTMLElement): void {
   createInstrumentStrip(top, store, () => panel.showSection('conditions'));
   createTimeBar(top, store);
   createClockPanel(top, layout.view, store);
-  // The history of the short alerts, with its button in the top row (M36, issue #80).
-  createAlertCentre(top, layout.view, store, layout, panel.openLearnEntry);
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
   let reframe = () => {};
   trackTopHeight(layout.view, top, () => reframe());
@@ -142,6 +140,9 @@ export function startApp(host: HTMLElement): void {
     new ResizeObserver(resize).observe(layout.view);
     resize();
   }
+  // The history of the short alerts (M36, issue #80). After the camera chip, so that its button
+  // stands between the camera chip and the gear in the chip row.
+  createAlertCentre(top, chipRow, layout.view, store, layout, panel.openLearnEntry);
 
   let frames = 0;
   let windowStart = performance.now();

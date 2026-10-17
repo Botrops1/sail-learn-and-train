@@ -44,21 +44,23 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm36 phone start', BOAT);
     const chip = await box(page, 'alert-chip');
-    const clock = await box(page, 'clock-chip');
+    const camera = await box(page, 'camera-chip');
+    const gear = await box(page, 'settings-button');
     check(
       'the Attention button is high enough to tap',
-      !!chip && chip.height >= 44,
-      `${chip?.height}`,
+      !!chip && chip.height >= 44 && chip.width >= 44,
+      JSON.stringify(chip),
     );
     check(
-      'the Attention button is in the screen, with the clock chip right under it',
+      'the Attention button is in the chip row, between the camera chip and the gear',
       !!chip &&
-        !!clock &&
-        chip.x >= 0 &&
-        clock.x + clock.width <= phone.width &&
-        Math.abs(chip.x + chip.width - (clock.x + clock.width)) <= 2 &&
-        clock.y > chip.y,
-      JSON.stringify({ chip, clock }),
+        !!camera &&
+        !!gear &&
+        chip.x >= camera.x + camera.width &&
+        chip.x + chip.width <= gear.x &&
+        chip.x + chip.width <= phone.width &&
+        Math.abs(chip.y - gear.y) <= 2,
+      JSON.stringify({ chip, camera, gear }),
     );
     check('the card is folded', !(await cardOpen(page)), 'alert-centre');
     check(
@@ -77,6 +79,18 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
       'a tap opens the empty history',
       (await cardOpen(page)) && (await page.getByTestId('alert-empty').isVisible()),
       'empty',
+    );
+    const open = await box(page, 'alert-centre');
+    const row = await box(page, 'view-bottom');
+    check(
+      'the card opens above the chip row, inside the screen',
+      !!open &&
+        !!row &&
+        open.y + open.height <= row.y &&
+        open.y >= 0 &&
+        open.x >= 0 &&
+        open.x + open.width <= phone.width,
+      JSON.stringify({ open, row }),
     );
     await shot(page, 'live-phone-empty');
     await page.keyboard.press('Escape');
