@@ -612,8 +612,9 @@ html[data-layout='side'] .sheet-head {
   display: none;
 }
 
+/* The columns' widths (M39): columnHandles.ts sets --col1-w and --col2-w (a collapsed one is a rail). */
 html[data-layout='side'][data-wide='true'] .shell {
-  grid-template-columns: minmax(0, 1fr) 760px;
+  grid-template-columns: minmax(0, 1fr) calc(var(--col1-w, 400px) + var(--col2-w, 360px));
 }
 
 html[data-layout='side'][data-wide='true'] .panel {
@@ -621,7 +622,7 @@ html[data-layout='side'][data-wide='true'] .panel {
 }
 
 html[data-layout='side'][data-wide='true'] .panel-body {
-  flex: 0 0 400px;
+  flex: 0 0 var(--col1-w, 400px);
 }
 
 .panel-second {
@@ -641,6 +642,118 @@ html[data-layout='side'][data-wide='true'] .panel-body {
 
 html[data-wide='true'] .settings-dialog {
   width: 760px;
+}
+
+/*
+ * Collapsible, resizable columns (M39, issue #89). A handle sits on the left edge of each
+ * column: a grip to drag and a small button. Only on the wide layout.
+ */
+.col-handle {
+  display: none;
+}
+
+html[data-wide='true'] .col-handle {
+  position: relative;
+  z-index: 6;
+  display: block;
+  flex: none;
+  align-self: stretch;
+  width: 0;
+}
+
+.col-grip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.col-grip:hover,
+.shell[data-resizing='true'] .col-grip:active {
+  background: var(--accent-soft);
+}
+
+.col-grip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.col-handle[data-collapsed='true'] .col-grip {
+  display: none;
+}
+
+.shell[data-resizing='true'] {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.col-toggle {
+  position: absolute;
+  left: -22px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* The drawn tab is narrower than the 44 px the finger gets. */
+.col-toggle::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  content: attr(data-glyph);
+}
+
+.col-handle[data-col='1'] .col-toggle {
+  top: 30%;
+}
+
+.col-handle[data-col='2'] .col-toggle {
+  top: 56%;
+}
+
+/* Collapsed: the button fills the rail the column leaves (the panel's own 1 px border is in the second one). */
+.col-handle[data-collapsed='true'] .col-toggle {
+  left: 0;
+}
+
+.col-handle[data-col='2'][data-collapsed='true'] .col-toggle {
+  left: -1px;
+}
+
+.col-toggle:hover::before {
+  background: var(--accent-soft);
+}
+
+.col-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+html[data-wide='true'] :is(.panel-body, .panel-second)[data-collapsed='true'] > * {
+  display: none;
+}
+
+html[data-wide='true'] .panel-second[data-collapsed='true'],
+html[data-wide='true'] .panel-body[data-collapsed='true'] {
+  overflow: hidden;
 }
 
 .panel-body {
