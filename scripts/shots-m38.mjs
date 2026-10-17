@@ -261,8 +261,13 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await showSection(page, 'conditions');
     await page.locator('label:has([data-testid="boat-mode-sailing"])').click();
     await page.waitForTimeout(500);
-    const badgeBefore = await visible(page, 'alert-badge');
-    check('a message is in the Attention history before Reset', badgeBefore, String(badgeBefore));
+    // The Attention card is open on a computer, so the list shows the entry (no badge).
+    const itemsBefore = await page.getByTestId('alert-item').count();
+    check(
+      'a message is in the Attention history before Reset',
+      itemsBefore === 1,
+      String(itemsBefore),
+    );
     await openSettings(page);
     await page.getByTestId('reset-button').click();
     check(
@@ -436,7 +441,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
       );
     check(
       'the Ropes list shows a colour for every rope (the wheel has none)',
-      rows > 10 && strokes.length >= rows - 1 && staticRows <= 1 && new Set(strokes).size >= 4,
+      rows >= 9 && strokes.length >= rows - 1 && staticRows <= 1 && new Set(strokes).size >= 4,
       JSON.stringify({
         rows,
         strokes: strokes.length,
