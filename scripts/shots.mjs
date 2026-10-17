@@ -389,6 +389,8 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   // about the folded start and open what they need themselves.
   if (!/m(27|29|35)/.test(label) && (await page.locator('[data-open="true"]').count()) === 0) {
     await showSection(page, /[?&](m=learn|learn=)/.test(query) ? 'learn' : 'ropes');
+    // Opening raised a half-height sheet; the older checks start with it at half.
+    await setSheet(page, 'half');
   }
   return { context, page };
 }
