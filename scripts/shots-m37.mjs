@@ -179,7 +179,9 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // The same width for every set of numbers (separate pages: held, wind autopilot, big values).
+  // The same width for every set of numbers while sailing (separate pages: calm, wind autopilot,
+  // big values). Held still has no heel and no autopilot, so its box is narrower (as it was); on a
+  // phone that keeps the Pause chip beside it, so the top area stays one strip high.
   for (const viewport of [desktop, phone]) {
     const widths = [];
     for (const [label, query] of [
@@ -198,10 +200,16 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       widths.push({ label, w: b.strip?.w, h: b.strip?.h, view: b.top?.w });
       await context.close();
     }
-    // A phone's strip may be a line taller in wind-autopilot mode (its longer text); the width is the same.
+    const sailing = widths.filter((w) => w.label !== 'held');
+    const held = widths.find((w) => w.label === 'held');
     check(
-      `${viewport.name}: the wind box has one width in every state`,
-      new Set(widths.map((w) => w.w)).size === 1,
+      `${viewport.name}: the wind box has one width and height while sailing`,
+      new Set(sailing.map((w) => w.w)).size === 1 && new Set(sailing.map((w) => w.h)).size === 1,
+      JSON.stringify(widths),
+    );
+    check(
+      `${viewport.name}: Held still has a narrower box`,
+      !!held && held.w < sailing[0].w,
       JSON.stringify(widths),
     );
   }
@@ -256,6 +264,25 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       JSON.stringify(folded),
     );
     await shot(page, 'live-phone-folded');
+    await context.close();
+  }
+
+  // Phone, Held still: the Pause chip stays beside the box, as before (the top area is one strip high).
+  {
+    const { context, page } = await openPage(phone, 'm37 phone held', `${BOAT}&held=1&ms=60&js=60`);
+    await page.waitForTimeout(1000);
+    const b = await boxes(page);
+    check(
+      'phone, Held still: Pause is beside the box and the top area is one strip high',
+      !!b.top && !!b.strip && !!b.bar && b.bar.y < b.strip.y + b.strip.h && b.top.h <= 70,
+      JSON.stringify(b),
+    );
+    check(
+      'phone, Held still: no stray "Time" button',
+      (await page.getByTestId('time-fold').count()) === 0 ||
+        !(await page.getByTestId('time-fold').isVisible()),
+      'hidden',
+    );
     await context.close();
   }
 

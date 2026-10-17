@@ -1111,6 +1111,11 @@ button.segment {
   font-weight: 800;
 }
 
+/* Held still has no heel and no autopilot: those cells go (the box is narrower there, as it was). */
+.instrument-strip.is-held .strip-cell-sailing {
+  display: none;
+}
+
 /* "Held still" is longer than a speed: smaller, so it fits the same cell. */
 .strip-speed.is-held {
   font-size: 13px;
@@ -1925,7 +1930,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   line-height: 1.1;
 }
 
-.time-bar[data-open='false'] .time-label {
+.time-bar[data-open='false'] .time-label:not([hidden]) {
   display: inline-flex;
   flex-direction: column;
   align-items: center;

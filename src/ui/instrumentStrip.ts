@@ -32,8 +32,14 @@ function windText(
  * A cell of the strip that keeps its width: `ghost` is the widest text it can show (3-digit
  * angles, 2-digit speeds), drawn invisibly in the same place, so the box does not change width
  * when the numbers do (issue #86). `wideGhost` is a wider text that is reserved beside the panel only.
+ * `className` marks the cells that exist only while sailing (heel, autopilot): Held still hides them.
  */
-function cell(ghost: string, content: HTMLElement, wideGhost?: string): HTMLElement {
+function cell(
+  ghost: string,
+  content: HTMLElement,
+  wideGhost?: string,
+  className = '',
+): HTMLElement {
   const ghosts = [el('span', { class: 'strip-ghost', 'aria-hidden': 'true' }, [ghost])];
   // Reserved only where there is room (beside the panel); a phone's line is full.
   if (wideGhost) {
@@ -41,7 +47,7 @@ function cell(ghost: string, content: HTMLElement, wideGhost?: string): HTMLElem
       el('span', { class: 'strip-ghost strip-ghost-wide', 'aria-hidden': 'true' }, [wideGhost]),
     );
   }
-  return el('span', { class: 'strip-cell' }, [...ghosts, content]);
+  return el('span', { class: `strip-cell ${className}`.trim() }, [...ghosts, content]);
 }
 
 /**
@@ -129,8 +135,8 @@ export function createInstrumentStrip(
       el('span', { class: 'strip-line strip-primary' }, [
         cell('00.0 kn', speed),
         cell('HDG 000°', heading),
-        cell('Heel 00° S', heel),
-        cell('AUTO 000° S', auto, 'AUTO wind 000° S'),
+        cell('Heel 00° S', heel, undefined, 'strip-cell-sailing'),
+        cell('AUTO 000° S', auto, 'AUTO wind 000° S', 'strip-cell-sailing'),
       ]),
       el('span', { class: 'strip-line strip-winds' }, [
         cell('True 000° S · 00 kn', trueWind),
@@ -155,6 +161,7 @@ export function createInstrumentStrip(
     const kn = Math.round(mpsToKn(boat.speedMps) * 10) / 10;
     const held = boat.mode === 'held';
     speed.classList.toggle('is-held', held);
+    strip.classList.toggle('is-held', held);
     setText(
       speed,
       held
