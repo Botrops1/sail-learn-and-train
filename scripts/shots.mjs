@@ -750,6 +750,20 @@ try {
       for (const id of scene.click ?? []) await page.getByTestId(id).click();
       // `type`: fill an input after the tab and click steps (M21's search box).
       if (scene.type) await page.getByTestId(scene.type.testId).fill(scene.type.text);
+      // Since M35 sections start folded: open the one that holds the target (the sheet goes
+      // back to the scene's height, since opening raises a half-height sheet).
+      for (const target of [scene.scrollTo, scene.centre]) {
+        const holder = target
+          ? await page
+              .locator(target)
+              .first()
+              .evaluate((el) => el.closest('[data-section]')?.dataset.section ?? null)
+          : null;
+        if (holder) {
+          await showSection(page, holder);
+          await setSheet(page, scene.sheet ?? 'half');
+        }
+      }
       if (scene.scrollTo) await page.locator(scene.scrollTo).scrollIntoViewIfNeeded();
       // `centre`: scroll the panel so this part sits in the middle of it (M4c).
       if (scene.centre) {
