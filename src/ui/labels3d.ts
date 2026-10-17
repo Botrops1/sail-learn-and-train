@@ -16,7 +16,7 @@ const LABEL_GAP_PX = 4;
 const BLOCKED_REFRESH_MS = 300;
 /** The view's own buttons and cards that labels must not cover. */
 const BLOCKING =
-  '.wind-chip, .time-bar, .view-bottom, .mini-map:not([hidden]), .rig-alerts > :not([hidden]), .info-area .info-card:not([hidden]), .debug:not([hidden])';
+  '.wind-chip, .time-bar, .alert-centre:not([hidden]), .view-bottom, .mini-map:not([hidden]), .rig-alerts > :not([hidden]), .info-area .info-card:not([hidden]), .debug:not([hidden])';
 
 /**
  * Labels in 3D (M5, PHASE1_SPEC 5.2): the registry name of each part and rope, over the 3D view,

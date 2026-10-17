@@ -217,10 +217,13 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
     );
     await page.waitForTimeout(500);
     const boxes = await page.evaluate(() =>
-      [...document.querySelectorAll('[data-testid="view-bottom"] > :not([hidden])')].map((node) => {
-        const r = node.getBoundingClientRect();
-        return { id: node.getAttribute('data-testid'), left: r.left, right: r.right };
-      }),
+      // M36: the Attention button hides itself (CSS) while the map shows, so it has no box.
+      [...document.querySelectorAll('[data-testid="view-bottom"] > :not([hidden])')]
+        .filter((node) => node.getBoundingClientRect().width > 0)
+        .map((node) => {
+          const r = node.getBoundingClientRect();
+          return { id: node.getAttribute('data-testid'), left: r.left, right: r.right };
+        }),
     );
     const inside = boxes.every((b) => b.left >= 0 && b.right <= 360);
     const apart = boxes.every((b, i) => i === 0 || b.left >= boxes[i - 1].right - 0.5);

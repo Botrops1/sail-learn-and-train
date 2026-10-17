@@ -1646,6 +1646,12 @@
       "minMainOut": 0.02,
       "minReportJ": 50,
       "weakWindNote": "decided in the M13 PR: a main furled away below minMainOut (fraction out) has no sail to push the boom, so it moves on the normal spring; a swing not finished after maxSwingS (almost no wind) is handed to the normal spring too, and a bump below minReportJ is not reported (assumptions)"
+    },
+    "alerts": {
+      "historyMax": 50,
+      "repeatGapS": 5,
+      "overpoweredAfterS": 2,
+      "note": "assumption (M36, issue #80): the alert history keeps the last 50 entries; a warning that comes and goes (by the lee, heeling a lot) is written again only 5 s after the last time; the heel warning shows after 2 s over the limit (it was a constant in windIndicator.ts)"
     }
   },
   "windModes": {

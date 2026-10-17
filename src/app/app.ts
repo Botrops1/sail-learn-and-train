@@ -18,6 +18,7 @@ import { createModeChip } from '../ui/modeChip';
 import { createPanel } from '../ui/panel';
 import { createSettingsMenu } from '../ui/settingsMenu';
 import { createSheet } from '../ui/sheet';
+import { createAlertCentre } from '../ui/alertCentre';
 import { createClockPanel } from '../ui/clockPanel';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
@@ -139,6 +140,9 @@ export function startApp(host: HTMLElement): void {
     new ResizeObserver(resize).observe(layout.view);
     resize();
   }
+  // The history of the short alerts (M36, issue #80). After the camera chip, so that its button
+  // stands between the camera chip and the gear in the chip row.
+  createAlertCentre(top, chipRow, layout.view, store, layout, panel.showLearnEntry);
 
   let frames = 0;
   let windowStart = performance.now();
