@@ -169,27 +169,28 @@ export function createPanel(
   }
 
   /**
-   * Folds every section (M35). On the first call a link that names something to look at opens the
+   * Folds every section at the start (M35); a link that names something to look at opens the
    * section that shows it: a Learn entry in Learn mode, a selected rope or the wheel otherwise.
    */
   function applyOpen(state: AppState, fromLink = false): void {
-    for (const id of SECTION_IDS) {
-      const section = sections.get(id);
-      section?.setOpen(false);
-      section?.resetExplain();
-    }
+    for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
     if (fromLink) {
       if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
       else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
     }
-    body.scrollTop = 0;
-    second.scrollTop = 0;
   }
 
-  /** Puts the sections in place for the mode and opens or folds them as it says. */
-  function applyMode(state: AppState, fromLink = false): void {
+  /**
+   * Puts the sections in place for the mode. At the start every section is folded (M35); a mode
+   * chosen later keeps the open section, which moves with its place in the new order.
+   */
+  function applyMode(state: AppState, atStart = false): void {
     place(state);
-    applyOpen(state, fromLink);
+    for (const id of SECTION_IDS) sections.get(id)?.resetExplain();
+    if (atStart) applyOpen(state, true);
+    else keepOneOpenPerColumn();
+    body.scrollTop = 0;
+    second.scrollTop = 0;
   }
 
   function applyAvailable(state: AppState): void {

@@ -10,7 +10,11 @@ export async function showSection(page, id) {
   if ((await section.getAttribute('data-open')) === 'false') {
     // A folded section's header may sit under a sheet at peek: raise the sheet first.
     if (await sheetAtPeek(page)) await setSheet(page, 'half');
+    const before = await sheetHeightNow(page);
     await page.getByTestId(`section-toggle-${id}`).click();
+    // M35: a tapped title raises a half-height sheet to full. The checks work with the sheet
+    // where they left it (the boat in view), so put it back; the raise has its own check.
+    if (before === 'half' && (await sheetHeightNow(page)) === 'full') await setSheet(page, 'half');
   }
   if (await sheetAtPeek(page)) await setSheet(page, 'half');
   await section.scrollIntoViewIfNeeded();
@@ -49,6 +53,15 @@ export async function eachSection(page, visit) {
     await showSection(page, id);
     await visit(id);
   }
+}
+
+/** The sheet's height ('peek', 'half', 'full') in the stacked layout, else null. */
+async function sheetHeightNow(page) {
+  return page.evaluate(() =>
+    document.documentElement.dataset.layout === 'stacked'
+      ? (document.querySelector('[data-testid="sheet"]')?.getAttribute('data-sheet') ?? null)
+      : null,
+  );
 }
 
 /** True in the stacked layout with the sheet at its lowest height ("at peek", PHASE5_SPEC 3.1). */

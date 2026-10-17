@@ -384,6 +384,12 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   // A ceiling, not a pause: it returns as soon as the canvas is in the page (a loaded runner can
   // take longer than 10 s to start a page while other pages are still drawing).
   await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
+  // Since M35 every section starts folded. The checks older than that were written for the panel
+  // with Ropes (Learn mode: Learn) open, so they start from that; the M27, M29 and M35 checks are
+  // about the folded start and open what they need themselves.
+  if (!/m(27|29|35)/.test(label) && (await page.locator('[data-open="true"]').count()) === 0) {
+    await showSection(page, /[?&](m=learn|learn=)/.test(query) ? 'learn' : 'ropes');
+  }
   return { context, page };
 }
 

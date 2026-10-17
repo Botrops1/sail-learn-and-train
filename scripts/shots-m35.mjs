@@ -73,7 +73,7 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm35 accordion', BOAT);
     await page.waitForTimeout(500);
-    await showSection(page, 'ropes');
+    await page.getByTestId('section-toggle-ropes').click();
     check('Ropes is the only open section', (await openIds(page)).join() === 'ropes', '');
     const sheetHeight = await page.getByTestId('sheet').getAttribute('data-sheet');
     check('a tapped title raises the sheet from half to full', sheetHeight === 'full', sheetHeight);
@@ -114,14 +114,14 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 3. A new mode folds everything again.
+  // 3. A mode chosen later keeps the open section.
   {
     const { context, page } = await openPage(phone, 'm35 mode', BOAT);
     await page.waitForTimeout(500);
-    await showSection(page, 'sails');
+    await showSection(page, 'ropes');
     await setMode(page, 'realistic');
     const open = await openIds(page);
-    check('choosing a mode folds every section', open.length === 0, open.join() || 'none');
+    check('choosing a mode keeps the open section', open.join() === 'ropes', open.join() || 'none');
     await context.close();
   }
 
