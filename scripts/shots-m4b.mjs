@@ -61,9 +61,11 @@ async function handAndClutch(page, where, station = 'port', key = 'b5') {
   await setSheet(page, 'full');
   await page.locator(`${drawing(station)} .real-drum`).scrollIntoViewIfNeeded();
   const clutchSel = `${drawing(station)} [data-key="${key}"] .clutch-body`;
-  const top = await page.locator('.panel-body').evaluate((el) => el.getBoundingClientRect().top);
+  const top = await page
+    .locator('[data-open="true"] > .section-body')
+    .evaluate((el) => el.getBoundingClientRect().top);
   const body = await where(clutchSel);
-  await page.locator('.panel-body').evaluate(
+  await page.locator('[data-open="true"] > .section-body').evaluate(
     (el, delta) => {
       el.scrollTop += delta;
     },
@@ -273,7 +275,7 @@ export async function liveM4bTouchChecks({ openPage, viewports, outDir, prefix, 
 
   // The panel still scrolls when the finger starts on the body of a clutch (only its lever is
   // dragged), and that scroll does not select the clutch.
-  const body = page.locator('.panel-body');
+  const body = page.locator('[data-open="true"] > .section-body');
   await body.evaluate((el) => {
     el.scrollTop = 0;
   });

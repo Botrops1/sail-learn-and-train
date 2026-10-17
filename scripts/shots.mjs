@@ -767,7 +767,7 @@ try {
         panelOverflow: (() => {
           return Math.max(
             0,
-            ...[...document.querySelectorAll('.panel-scroll')].map(
+            ...[...document.querySelectorAll('.panel-scroll, .section-body')].map(
               (node) => node.scrollWidth - node.clientWidth,
             ),
           );

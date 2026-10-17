@@ -175,6 +175,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
         if (tab === 'settings') await closeSettings(page);
       }
       if (query.includes('realistic')) {
+        await showSection(page, 'ropes');
         // The Mast and Helm stations have their own drawings and texts.
         for (const station of ['starboard', 'helm', 'mast']) {
           await page.locator(`button.station-button[data-station="${station}"]`).click();

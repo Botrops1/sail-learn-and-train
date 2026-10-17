@@ -99,6 +99,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm27 realistic', BOAT);
     await setMode(page, 'realistic');
     await waitForLink(page, ['mode=realistic']);
+    await showSection(page, 'ropes');
     check(
       'the station bar shows in the Ropes section',
       await page.getByTestId('section-ropes').getByTestId('station-bar').isVisible(),
@@ -147,6 +148,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
       await chipLabel(opened.page),
     );
     await setMode(opened.page, 'realistic');
+    await showSection(opened.page, 'ropes');
     const stations = await opened.page.getByTestId('station-bar').isVisible();
     check('Realistic stations after choosing Realistic', stations, String(stations));
     await opened.context.close();

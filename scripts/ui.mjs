@@ -7,16 +7,15 @@
 export async function showSection(page, id) {
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);
-  if ((await section.getAttribute('data-open')) === 'false') {
-    // A folded section's header may sit under a sheet at peek: raise the sheet first.
-    if (await sheetAtPeek(page)) await setSheet(page, 'half');
-    const before = await sheetHeightNow(page);
-    await page.getByTestId(`section-toggle-${id}`).click();
-    // M35: a tapped title raises a half-height sheet to full. The checks work with the sheet
-    // where they left it (the boat in view), so put it back; the raise has its own check.
-    if (before === 'half' && (await sheetHeightNow(page)) === 'full') await setSheet(page, 'half');
-  }
+  // A folded section's header may sit under a sheet at peek: raise the sheet first.
   if (await sheetAtPeek(page)) await setSheet(page, 'half');
+  if ((await section.getAttribute('data-open')) === 'false') {
+    await page.getByTestId(`section-toggle-${id}`).click();
+  }
+  // M35: with every title on screen a half-height sheet leaves the open section about 100 px, so
+  // (as the tap on a title does) the sheet goes to full. Checks that need the boat in view lower
+  // it again with `setSheet(page, 'half')`.
+  if ((await sheetHeightNow(page)) === 'half') await setSheet(page, 'full');
   await section.scrollIntoViewIfNeeded();
 }
 
