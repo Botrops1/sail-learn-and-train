@@ -471,10 +471,10 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 
 - [ ] Start folded: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — the panel shows only thin title lines (Ropes, Sails, Autopilot, Engine, Conditions, Learn, Harbour gear); none is open.
 - [ ] One at a time: tap "Sails": it opens and the lines above (Ropes) stay at the top and the ones below (Autopilot … Harbour gear) sit at the bottom of the panel. Tap "Conditions": Sails folds, Conditions opens. Tap the open title: it folds.
-- [ ] Scroll inside: open "Ropes" and scroll its content: only the content moves, the title lines above and below stay where they are. Pull the panel up to full height for more room.
+- [ ] Scroll inside: open "Ropes" (the panel rises to full height by itself) and scroll its content: only the content moves, the title lines above and below stay where they are.
 - [ ] A rope in the link: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sel=rope_mainsheet&wd=60&ws=12 — "Ropes" is open and shows the main sheet.
 - [ ] A Learn link: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=term_north&held=1 — opens in Learn mode with "North" shown.
-- [ ] Mode: tap the "Easy ▾" chip, choose "Realistic": every line is folded again.
+- [ ] Mode: open "Ropes", then tap the "Easy ▾" chip and choose "Realistic": "Ropes" stays open (now with the places Port, Starboard, Helm, Mast).
 - [ ] Sideways: turn the phone sideways (https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12): the lines are thin too and all are visible.
 - [ ] Computer (window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — two columns; open "Ropes" on the left and "Conditions" on the right: both stay open; the title lines are the normal, taller size.
 
