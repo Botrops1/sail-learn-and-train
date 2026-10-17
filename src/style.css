@@ -1249,6 +1249,8 @@ html[data-layout='stacked'] .strip-cell:has(.strip-auto) .strip-ghost {
 }
 
 html[data-layout='stacked'] .strip-cell:has(.strip-speed) {
+  /* The line keeps the height of a 20 px speed, so the top area is as tall as before M37. */
+  min-height: 28px;
   font-size: 18px;
 }
 
