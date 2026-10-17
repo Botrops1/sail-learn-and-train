@@ -224,11 +224,9 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
     w = await widths(page);
     check('column 1 opens again at its old width', w.first === 400, JSON.stringify(w));
     check('Ropes is visible again', (await sectionVisible(page, 'ropes')) === true, 'ropes');
-    await page
-      .getByTestId('strip-main')
-      .first()
-      .click()
-      .catch(() => undefined);
+    // The part card sits over the wind box while a part is selected: close it first.
+    await page.locator('.info-card .card-close').click();
+    await page.getByTestId('strip-main').first().click();
     await page.waitForTimeout(500);
     w = await widths(page);
     check(
