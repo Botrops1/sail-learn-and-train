@@ -267,9 +267,14 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // Phone, Held still: the Pause chip stays beside the box, as before (the top area is one strip high).
+  // Phone, Held still, no clock chip: the Pause chip stays beside the box, as before (the top area
+  // is one strip high; with the clock chip shown it wraps under the box, as it did before M37).
   {
-    const { context, page } = await openPage(phone, 'm37 phone held', `${BOAT}&held=1&ms=60&js=60`);
+    const { context, page } = await openPage(
+      phone,
+      'm37 phone held',
+      `${BOAT}&held=1&ms=60&js=60&clock=0`,
+    );
     await page.waitForTimeout(1000);
     const b = await boxes(page);
     check(
