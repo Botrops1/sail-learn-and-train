@@ -16,7 +16,7 @@ import { createMapView } from '../ui/mapView';
 import { createMiniMap, type MiniMap } from '../ui/miniMap';
 import { createModeChip } from '../ui/modeChip';
 import { createPanel } from '../ui/panel';
-import { createSettingsMenu } from '../ui/settingsMenu';
+import { createSettingsContent, createSettingsMenu } from '../ui/settingsMenu';
 import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
 import { createClockPanel } from '../ui/clockPanel';
@@ -51,7 +51,10 @@ export function startApp(host: HTMLElement): void {
   // joins the view further down, in its old place among the overlays.
   const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
   const sheet = createSheet(layout, layout.view, top);
-  const panel = createPanel(layout.panel, store, sheet, layout);
+  // The settings are built once: the Settings section holds them on the wide layout (M38), the
+  // gear's dialog everywhere else.
+  const settingsContent = createSettingsContent(store);
+  const panel = createPanel(layout.panel, store, sheet, layout, settingsContent);
   const debug = createDebugOverlay(layout.view, store);
 
   // Error boundary (M5): without WebGL, or if the 3D view fails, a message takes its place and
@@ -77,9 +80,10 @@ export function startApp(host: HTMLElement): void {
     ? createMiniMap(layout.view, store, layout, sheet)
     : undefined;
   // The chip row at the bottom of the view (M25): the gear always (the settings work without
-  // WebGL), the camera chip only with the 3D view.
+  // WebGL), the camera chip only with the 3D view. On the wide layout (M38) the gear and the mode
+  // chip are hidden: Mode and Settings are sections of the panel there.
   const chipRow = createViewBottom(layout.view);
-  createSettingsMenu(chipRow, layout.root, store);
+  createSettingsMenu(chipRow, layout.root, settingsContent, layout);
   // The mode chip comes first in the row, with or without WebGL.
   createModeChip(chipRow, store);
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where

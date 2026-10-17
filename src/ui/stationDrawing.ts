@@ -19,7 +19,7 @@ import {
   tapSlot,
 } from './handleDrawing';
 import { part, t, type StringKey } from './i18n';
-import { ropeColorKey, ROPE_DASH } from './ropeLegend';
+import { ropeColorKey, ROPE_DASH } from './ropeColours';
 import { setText } from './stepper';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';

@@ -3,7 +3,7 @@ import { APP_MODES } from '../src/app/appMode';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { GROUPS, groupEntries, learnEntry } from '../src/model/glossary';
-import { MODE_LAYOUTS, SECTION_IDS, sectionAvailable } from '../src/ui/modes';
+import { MODE_LAYOUTS, SECTION_IDS, WIDE_ONLY_SECTIONS, sectionAvailable } from '../src/ui/modes';
 
 describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
   for (const mode of APP_MODES) {
@@ -18,23 +18,38 @@ describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
 });
 
 describe('sectionAvailable (8.8 test 2)', () => {
-  it('autopilot and engine only in Easy; legend follows its setting; the rest always', () => {
+  it('autopilot and engine only in Easy; Mode and Settings only on the wide layout (M38); the rest always', () => {
     const easy = initialState();
     const real = reduce(easy, { type: 'setAppMode', mode: 'realistic' });
     for (const id of ['autopilot', 'engine'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
       expect(sectionAvailable(id, real)).toBe(false);
     }
-    const noLegend = reduce(easy, { type: 'setLegend', legend: false });
-    expect(sectionAvailable('legend', noLegend)).toBe(false);
-    expect(sectionAvailable('legend', reduce(noLegend, { type: 'setLegend', legend: true }))).toBe(
-      true,
-    );
+    for (const id of ['mode', 'settings'] as const) {
+      expect(WIDE_ONLY_SECTIONS).toContain(id);
+      expect(sectionAvailable(id, easy)).toBe(false);
+      expect(sectionAvailable(id, easy, false)).toBe(false);
+      expect(sectionAvailable(id, easy, true)).toBe(true);
+      expect(sectionAvailable(id, real, true)).toBe(true);
+    }
     for (const id of ['ropes', 'sails', 'conditions', 'learn', 'harbour'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
       expect(sectionAvailable(id, real)).toBe(true);
     }
   });
+});
+
+describe('M38: Mode first and Settings last (issues #91, #93)', () => {
+  for (const mode of APP_MODES) {
+    it(`${mode}: Mode is the first section of column 1 and Settings the last; neither is in column 2; no Rope colours section`, () => {
+      const layout = MODE_LAYOUTS[mode];
+      expect(layout.order[0]).toBe('mode');
+      expect(layout.order[layout.order.length - 1]).toBe('settings');
+      expect(layout.second).not.toContain('mode');
+      expect(layout.second).not.toContain('settings');
+      expect(SECTION_IDS as readonly string[]).not.toContain('legend');
+    });
+  }
 });
 
 describe('the mode in the store (8.8 test 3)', () => {

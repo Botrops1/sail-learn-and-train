@@ -17,7 +17,7 @@ import {
   tapSlot,
 } from './handleDrawing';
 import { t, type StringKey } from './i18n';
-import { ropeColorKey, ROPE_DASH } from './ropeLegend';
+import { ropeColorKey, ROPE_DASH } from './ropeColours';
 import { SCENE } from '../render3d/sceneConfig';
 import { noticeText } from './stationDrawing';
 import { setText } from './stepper';

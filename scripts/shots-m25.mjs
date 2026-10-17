@@ -16,7 +16,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     if (!ok) problems.push(`live M25 ${what}: ${detail}`);
     console.log(`live M25 ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
   };
-  const [phone, , desktop] = viewports;
+  const [phone, foldable, desktop] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
   const chipLabel = (page) => page.getByTestId('camera-chip').locator('.chip-label').innerText();
   const focusedTestId = (page) =>
@@ -158,7 +158,6 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
       'input[name="detail"]',
       '[data-testid="share-button"]',
       '[data-testid="reset-button"]',
-      '#legend-toggle',
       '#debug-toggle',
       '[data-testid="disclaimer"]',
       '[data-testid="build-version"]',
@@ -264,9 +263,9 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 8. Side layout: the dialog covers the panel column only.
+  // 8. Side layout below 1,280 px (M38: from there Settings is a section): the dialog covers the panel column only.
   {
-    const { context, page } = await openPage(desktop, 'm25 side layout', '?wd=60&ws=12');
+    const { context, page } = await openPage(foldable, 'm25 side layout', '?wd=60&ws=12');
     await page.waitForTimeout(500);
     await openSettings(page);
     const dialog = await page.getByTestId('settings-dialog').boundingBox();

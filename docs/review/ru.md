@@ -2205,7 +2205,7 @@
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Штурвалы повёрнуты против часовой стрелки, оборотов: {turns}. Задняя кромка пера руля уходит к левому борту, поэтому яхта повернула бы к левому борту (влево). |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Штурвалы и перо руля (лопасть под кормой яхты) поворачиваются вместе. Яхта поворачивает, только пока движется: если её держат на месте или она остановилась, она не слушается штурвала. |
 | ropes.mode.easy | Easy mode: | Простой режим: |
-| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it with the Mode button over the 3D view) works the ropes as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его кнопкой режима над 3D-видом) работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
+| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его в разделе «Режим») работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
 | clutch.hint | The clutches (locks that hold a rope) beside the wheels, seen from the helm looking forward: bank B on the port (left) side, bank A on the starboard (right) side. Tap one to work its rope. | Стопоры (замки, которые держат конец) рядом со штурвалами, вид с места рулевого вперёд: блок B слева (левый борт), блок A справа (правый борт). Нажмите на стопор, чтобы работать с его концом. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Блоки стопоров: нажмите на стопор, чтобы выбрать его конец |
 | clutch.bankB | Bank B · port | Блок B · левый борт |
@@ -2229,15 +2229,7 @@
 | ropes.static.none | Not adjusted while sailing. | Во время хода не регулируется. |
 | ropes.list.title | All ropes and the wheel | Все концы и штурвал |
 | ropes.list.static | not adjusted | не регулируется |
-| legend.title | Rope colours | Цвета концов |
-| legend.mainsheet | Main sheet | Гика-шкот |
-| legend.jibsheet | Jib sheet | Стаксель-шкот |
-| legend.control | Vang and topping lift (hold the boom down or up) | Оттяжка гика и топенант (держат гик вниз или вверх) |
-| legend.furling | Furling lines and outhaul (roll the sails in and out) | Линь закрутки и оттяжка шкотового угла (закручивают и раскручивают паруса) |
-| legend.halyard | Halyards (hoist the sails) | Фалы (поднимают паруса) |
-| legend.fighting | Red: this rope pulls against another one (fighting) | Красный: этот конец тянет против другого (перетягивание) |
-| view.legend.label | Rope colour legend | Легенда цветов концов |
-| view.legend.hint | Shows what each rope colour means, in the Rope colours section. | Показывает, что значит каждый цвет конца, в разделе «Цвета концов». |
+| ropes.fighting | Red: this rope pulls against another one (fighting) | Красный: этот конец тянет против другого (перетягивание) |
 | view.share.button | Share: copy link | Поделиться: скопировать ссылку |
 | view.share.hint | The link opens exactly what you see now: ropes, wheel, wind, camera and the selected part. Paste it into a bug report. | Ссылка открывает ровно то, что вы видите сейчас: концы, штурвал, ветер, камеру и выбранную часть. Вставьте её в сообщение об ошибке. |
 | view.share.copied | Link copied. | Ссылка скопирована. |
@@ -2691,6 +2683,10 @@
 | mode.learn | Learn | Обучение |
 | mode.easy | Easy | Простой |
 | mode.realistic | Realistic | Реалистичный |
+| mode.section | Mode: {name} | Режим: {name} |
+| mode.learn.desc | For looking things up. The Learn list comes first; tap any part of the boat to read about it. | Для справки. Сначала список «Обучение»; нажмите на любую часть яхты, чтобы прочитать о ней. |
+| mode.easy.desc | For learning what each rope does. Every rope is a slider and the boat answers at once. | Чтобы понять, что делает каждый конец. Каждый конец — ползунок, яхта отвечает сразу. |
+| mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the ropes, as on the boat. | Для тренировки, как на палубе. Концами работают стопоры, лебёдки и ваша рука, как на яхте. |
 | mode.learn.hint | Names and explanations of every part and word. | Названия и объяснения всех частей и слов. |
 | mode.easy.hint | A slider for every rope. | Ползунок для каждого конца. |
 | mode.realistic.hint | Clutches and winches, as on the boat. | Стопоры и лебёдки, как на яхте. |

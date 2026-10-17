@@ -6,35 +6,39 @@ import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 import { createLearnTab } from './learnTab';
 import { MODE_LAYOUTS, SECTION_IDS, sectionAvailable, type SectionId } from './modes';
+import { createModeSection } from './modeSection';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
 import { createQuickRow } from './quickRow';
-import { createRopeLegend } from './ropeLegend';
 import { createRopesTab, revealRopeStrip } from './ropesTab';
 import { createSailsPanel } from './sailsPanel';
 import { createSection, type SectionView } from './sections';
+import { takeOpenAfterReload } from './settingsMenu';
 import type { Sheet } from './sheet';
 import { createWindPanel } from './windPanel';
 
 /** The title of each section (PHASE5_SPEC 8.4). */
 const SECTION_TITLES: Record<SectionId, StringKey> = {
+  mode: 'mode.label',
   ropes: 'tab.ropes',
   sails: 'trim.label',
   autopilot: 'autopilot.label',
   engine: 'engine.label',
   conditions: 'section.conditions',
   learn: 'tab.learn',
-  legend: 'legend.title',
   harbour: 'harbour.title',
+  settings: 'settings.title',
 };
 
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): no tabs since M27, but a list of
  * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn,
- * Rope colours and (M33) Harbour gear. The mode (modes.ts) decides their order. Since M35 all
+ * (M33) Harbour gear and, on the wide layout only (M38), Mode (first) and Settings (last). The
+ * mode (modes.ts) decides their order. Since M35 all
  * start folded (so every title is on screen) and one opens at a time per column: the headers
  * stay above and below the open section, whose body scrolls on its own. Each section is built
- * once and never copied. The settings and the camera are in the chip row (PHASE5_SPEC 6.4).
+ * once and never copied. Elsewhere the mode, the settings and the camera are in the chip row
+ * (PHASE5_SPEC 6.4).
  * Selecting a rope or the wheel anywhere (3D view, link) shows it in the Ropes section.
  */
 export interface Panel {
@@ -63,6 +67,7 @@ export function createPanel(
   store: Store,
   sheet: Sheet,
   layout: LayoutShell,
+  settingsContent: HTMLElement,
 ): Panel {
   const body = el('div', { class: 'panel-body panel-scroll' });
   // The second column of the wide layout (PHASE5_SPEC 10.2): empty and hidden otherwise.
@@ -89,14 +94,15 @@ export function createPanel(
   };
 
   const built: Record<SectionId, { content: HTMLElement[]; explain: boolean }> = {
+    mode: { content: createModeSection(store), explain: false },
     ropes: { content: createRopesTab(store, openLearnEntry), explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
     autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
     engine: { content: [createEnginePanel(store)], explain: true },
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
-    legend: { content: [createRopeLegend()], explain: false },
     harbour: { content: createHarbourPanel(store), explain: true },
+    settings: { content: [settingsContent], explain: false },
   };
   const sections = new Map<SectionId, SectionView>();
   for (const id of SECTION_IDS) {
@@ -141,6 +147,11 @@ export function createPanel(
       SECTION_IDS.some((id) => elementOf(id).contains(focused));
 
     second.hidden = !wide;
+    // The settings dialog (settingsMenu.ts) holds the content everywhere else.
+    const settingsBody = elementOf('settings').querySelector('.section-body');
+    if (wide && settingsBody && settingsContent.parentElement !== settingsBody) {
+      settingsBody.append(settingsContent);
+    }
     second.append(...inSecond.map(elementOf));
     body.append(...mode.order.filter((id) => !inSecond.includes(id)).map(elementOf));
     if (focusedInside && document.activeElement !== focused) {
@@ -185,6 +196,10 @@ export function createPanel(
       if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
       else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
     }
+    // A new language reloads the page: the Settings section it was chosen in is open again (M38).
+    if (fromLink && takeOpenAfterReload() === 'settings' && layoutKind === 'wide') {
+      openOnly('settings');
+    }
   }
 
   /**
@@ -203,8 +218,14 @@ export function createPanel(
   function applyAvailable(state: AppState): void {
     for (const id of SECTION_IDS) {
       const section = sections.get(id);
-      if (section) section.element.hidden = !sectionAvailable(id, state);
+      if (section) section.element.hidden = !sectionAvailable(id, state, layoutKind === 'wide');
     }
+  }
+
+  /** The Mode section's title names the mode in force ("Mode: Easy"), so it shows folded too. */
+  function applyModeTitle(state: AppState): void {
+    const name = t(`mode.${state.appMode}` as const);
+    sections.get('mode')?.setTitle(t('mode.section', { name }));
   }
 
   /** The section's top at the top of its column (once the sheet has its new height). */
@@ -227,17 +248,16 @@ export function createPanel(
   }
 
   applyAvailable(store.getState());
+  applyModeTitle(store.getState());
   applyMode(store.getState(), true);
 
   store.subscribe((state, previous) => {
-    if (
-      state.settings.ropesMode !== previous.settings.ropesMode ||
-      state.settings.legend !== previous.settings.legend
-    ) {
+    if (state.settings.ropesMode !== previous.settings.ropesMode) {
       applyAvailable(state);
       changed();
     }
     if (state.appMode !== previous.appMode) {
+      applyModeTitle(state);
       applyMode(state);
       changed();
     }
@@ -274,6 +294,7 @@ export function createPanel(
     // Sections follow the layout and keep their open states (a phone turned sideways keeps the
     // open section); only one stays open per column.
     place(store.getState());
+    applyAvailable(store.getState());
     keepOneOpenPerColumn();
     changed();
   });

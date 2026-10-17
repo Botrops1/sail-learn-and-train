@@ -118,10 +118,7 @@ export function parseUrlState(
   const langParam = params.get('lang');
   const language = langParam !== null && isLanguage(langParam) ? langParam : undefined;
 
-  let legend: boolean | undefined;
-  const legendParam = params.get('lg');
-  if (legendParam === '1') legend = true;
-  else if (legendParam === '0') legend = false;
+  // `lg` (the rope colour legend, until M38) is read by nobody now: an old link opens the same picture.
 
   let labels: boolean | undefined;
   const labelsParam = params.get('lb');
@@ -169,7 +166,6 @@ export function parseUrlState(
       ...(debug !== undefined ? { debug } : {}),
       detail,
       ...(language !== undefined ? { language } : {}),
-      ...(legend !== undefined ? { legend } : {}),
       ...(labels !== undefined ? { labels } : {}),
       ...(miniMap !== undefined ? { miniMap } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
@@ -489,9 +485,6 @@ export function serializeUrlState(state: AppState): string {
     params.set('lang', state.settings.language);
   }
   // Settings that are rarely changed are only written when they differ from the default.
-  if (state.settings.legend !== DEFAULT_SETTINGS.legend) {
-    params.set('lg', state.settings.legend ? '1' : '0');
-  }
   if (state.settings.labels !== DEFAULT_SETTINGS.labels) {
     params.set('lb', state.settings.labels ? '1' : '0');
   }

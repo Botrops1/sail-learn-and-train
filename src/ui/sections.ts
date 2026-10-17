@@ -10,6 +10,8 @@ export interface SectionView {
   isOpen(): boolean;
   /** Closes the "?" explanations again. */
   resetExplain(): void;
+  /** Changes the title in the fold header (M38: "Mode: Easy"). */
+  setTitle(title: string): void;
 }
 
 /**
@@ -38,6 +40,7 @@ export function createSection(
       el('span', { class: 'section-chevron', 'aria-hidden': 'true' }, ['▾']),
     ],
   );
+  const titleText = toggle.querySelector('.section-head-title') as HTMLElement;
   const head = el('div', { class: 'section-head' }, [toggle]);
   const content = el('div', { class: 'section-body', id: bodyId }, body);
   const element = el(
@@ -85,5 +88,9 @@ export function createSection(
     setOpen,
     isOpen: () => open,
     resetExplain: () => setExplain(false),
+    setTitle: (next) => {
+      titleText.textContent = next;
+      explain.setAttribute('aria-label', t('section.explain', { name: next }));
+    },
   };
 }
