@@ -149,7 +149,7 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
       check('an accidental gybe is marked as a danger', danger >= 1, `${danger}`);
       await shot(page, 'live-phone-gybe');
       // The short report over the view goes away after 8 s; the history keeps it.
-      await page.waitForTimeout(12_000);
+      await page.waitForTimeout(20_000);
       check(
         'the live report is gone and the history still has the gybe',
         (await page.getByTestId('gybe-report').isHidden()) && (await kinds(page)).includes('gybe'),

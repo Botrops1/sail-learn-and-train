@@ -3253,7 +3253,7 @@ html[data-layout='side'] .time-bar {
 }
 
 html[data-layout='side'] .clock-chip {
-  order: 2;
+  order: 3;
   margin-left: 0;
 }
 
@@ -3436,9 +3436,9 @@ html[data-layout='side'] .alert-centre {
   cursor: pointer;
 }
 
-/* Side by side the Attention button comes last in the row, after the clock chip. */
+/* Side by side the Attention button comes before the clock chip, so on a wrapped row it sits above its card at the left. */
 html[data-layout='side'] .alert-chip {
-  order: 3;
+  order: 2;
   margin-left: 0;
 }
 
