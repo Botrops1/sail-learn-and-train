@@ -1085,7 +1085,7 @@ The owner (issue #79): at the start keep every section collapsed so the learner 
 
 **Tests.** `tests/modes.test.ts`: every section once, `second` a subset. Browser checks (`scripts/shots-m35.mjs`): nothing open at the start, every header inside the panel and 34 px high; opening one folds the other and the headers above keep their place, the last header sits at the panel's bottom, and scrolling the body does not move the headers; a mode chosen later keeps the open section; the two links above; sideways headers; two columns on a computer; resize; accessibility audit folded and with Ropes open.
 
-**Decided in the M35 PR.** None yet (see the PR's questions).
+**Decided in the M35 PR** (owner, "accept all"): (1) a tapped title raises a half-height phone sheet to full, because at half the open section gets about 100 px; (2) a link that names a rope or a Learn entry opens the section that shows it on load; (3) a mode chosen later keeps the open section.
 
 **Not in this milestone.** Remembering the last open section; swipe gestures; changing the sheet's heights.
 
