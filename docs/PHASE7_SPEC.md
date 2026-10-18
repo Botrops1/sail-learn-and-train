@@ -247,7 +247,7 @@ A summary; each milestone's own "Files" list (x.1) is the complete one and wins 
 
 ## 5. Milestones overview
 
-Each milestone is one PR, small enough to check on a phone in 15 minutes. **Independent review: required** means the owner runs `/review <PR>` (new Code session, Opus, high effort) as soon as the PR opens, before testing it on the phone.
+Each milestone is one PR, small enough to check on a phone in 15 minutes. **Independent review: required** means the owner runs `/review <PR>` (new Code session, Opus, medium effort) as soon as the PR opens, before testing it on the phone.
 
 | Milestone | Section | What the owner sees | Rules tested | Depends on | Independent review |
 |---|---|---|---|---|---|

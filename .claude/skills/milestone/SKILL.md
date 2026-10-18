@@ -40,7 +40,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 - If the review is **required**, the description starts with the review line from the CLAUDE.md template, above everything else.
 - Use the template in CLAUDE.md: plain language; every check a full preview link with what to do after opening it; **no screenshots**; every question ends with "Recommended: …, because …" and the "accept all" line.
 - Then subscribe to the PR's activity (`subscribe_pr_activity`) so the owner's comments in the GitHub app reach this session.
-- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, high) now, before you test; then answer the review and your test findings in one comment."** Then end your turn.
+- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, medium) now, before you test; then answer the review and your test findings in one comment."** Then end your turn.
 
 ## 5. While the PR is open
 

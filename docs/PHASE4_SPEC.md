@@ -259,7 +259,7 @@ Tests go in `tests/` (flat): `tests/glossary.test.ts` (M20, extended by M21–M2
 
 ## 5. Milestones overview
 
-Each milestone is one PR, small enough to check on a phone in 15 minutes. **Independent review: required** means the owner runs `/review <PR>` (new Code session, Opus, high effort) as soon as the PR opens, before testing it on the phone.
+Each milestone is one PR, small enough to check on a phone in 15 minutes. **Independent review: required** means the owner runs `/review <PR>` (new Code session, Opus, medium effort) as soon as the PR opens, before testing it on the phone.
 
 | Milestone | Section | What the owner sees | Rules tested | Depends on | Independent review |
 |---|---|---|---|---|---|

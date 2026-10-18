@@ -1,9 +1,10 @@
 ---
 name: plan
-description: Plan a phase of sail-learn-and-train (e.g. "/plan 3") or an extra milestone (e.g. "/plan issue 26"). Run with Opus at high effort; writes a spec detailed enough for Sonnet at high effort to build each milestone without guessing, then opens a docs-only PR and watches it.
+description: Plan a phase of sail-learn-and-train (e.g. "/plan 3") or an extra milestone (e.g. "/plan issue 26"). Run with Opus at medium effort; writes a spec detailed enough for Sonnet at high effort to build each milestone without guessing, then opens a docs-only PR and watches it.
 argument-hint: <phase number> | issue <number> | <short description of an extra milestone>
 disable-model-invocation: true
 model: opus
+effort: medium
 ---
 
 # Plan: $ARGUMENTS

@@ -20,7 +20,7 @@ Each open pull request (PR) also has its own **preview** at `https://botrops1.gi
 2. Type **`/milestone 11`** (the milestone's number). Nothing else to paste.
 3. Wait. Claude builds, tests, opens a PR and **watches it**. You can close the app meanwhile.
 4. In the PR (GitHub app): read "What changed", check that CI is green (`check`, `browser-checks`, `preview`).
-   **If the PR starts with "Independent review required"** (the spec marks physics milestones that way): start the review now, before testing: new session, **Opus**, high, type **`/review <PR number>`**. It posts one comment on the PR with findings marked fix now / fix later / leave (about 15–30 minutes). Test while it runs or after it.
+   **If the PR starts with "Independent review required"** (the spec marks physics milestones that way): start the review now, before testing: new session, **Opus**, medium, type **`/review <PR number>`**. It posts one comment on the PR with findings marked fix now / fix later / leave (about 15–30 minutes). Test while it runs or after it.
 5. Open the preview from the bot comment. Check that the **version in Settings → About** matches the PR's latest commit (first 7 characters, PR → Commits).
 6. Go through the checklist links in the PR description. Tick what works.
 7. **Answer and report problems as one comment on the PR**, in the GitHub app: your answers to the questions, which review findings to fix (e.g. "review: fix 1 and 3"), and anything you found. Every question has a recommendation, so "accept all" is a valid answer, or "accept all except 2: …". For a bug, use the template in 3.2. The session picks the comment up by itself, fixes, records your answers in the decisions log and replies on the PR. No copying between sessions.
@@ -40,7 +40,7 @@ If a merge breaks the site, open the merged PR in the GitHub app and tap **Rever
 | `/milestone <N>` | Build milestone M<N> (section 2) |
 | `/review <PR number>` | Independent review of a PR, right after it opens and before you test (Opus). Required when the PR says so (physics milestones); optional otherwise |
 | `/bug <link> <what happened>` | A bug on the **live** site, after merge. Get the link from Settings → Share. Claude fixes it in a small PR and watches it |
-| `/plan <phase number>` | Before a new phase (Opus, high). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. After merging, start with `/milestone <N>` (Sonnet) |
+| `/plan <phase number>` | Before a new phase (Opus, medium). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. After merging, start with `/milestone <N>` (Sonnet) |
 
 The commands live in `.claude/skills/` in the repo; Claude can change them if you ask.
 
@@ -65,10 +65,10 @@ In a session you can type `/model opus` or `/model sonnet`, and `/effort high` o
 | Work | Model | Effort |
 |---|---|---|
 | `/milestone` | Sonnet | high |
-| `/plan`, `/review` | Opus | high |
+| `/plan`, `/review` | Opus | medium |
 | `/bug`, small doc changes | Sonnet | medium |
 
-The commands also name their model (`/milestone` and `/bug` Sonnet, `/plan` and `/review` Opus), so a wrong model setting is corrected while the command runs. Still set the model and effort when you start the session: the later rounds (your PR comments) run on the session's own model, and effort is not set by the command.
+The commands also name their model (`/milestone` and `/bug` Sonnet, `/plan` and `/review` Opus), so a wrong model setting is corrected while the command runs. Still set the model and effort when you start the session: the later rounds (your PR comments) run on the session's own model, and effort is only set by `/plan` and `/review` (medium), not by `/milestone` or `/bug`.
 
 Usage: cloud sessions share your plan's limits with normal chat. What costs the most is a long session: every step re-reads everything said so far. So one session per milestone, and start a new one for unrelated work instead of continuing an old one.
 

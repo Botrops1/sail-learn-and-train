@@ -75,7 +75,7 @@ Headless Chromium draws the 3D view without a graphics card, at about 15 frames 
 
 ```
 <only if the spec marks the milestone's independent review as required:>
-> **Independent review required before you test:** new Code session, Opus, high effort, type `/review <N>`.
+> **Independent review required before you test:** new Code session, Opus, medium effort, type `/review <N>`.
 
 ## What changed (plain language, no jargon)
 ## How to check on your phone

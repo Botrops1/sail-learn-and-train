@@ -4,6 +4,7 @@ description: Independent review of a sail-learn-and-train PR (e.g. "/review 32")
 argument-hint: <PR number>
 disable-model-invocation: true
 model: opus
+effort: medium
 ---
 
 # Review PR #$ARGUMENTS
