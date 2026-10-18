@@ -2708,6 +2708,8 @@
 | columns.hide.1 | Hide the left panel column | Скрыть левый столбец панели |
 | columns.show.1 | Show the left panel column | Показать левый столбец панели |
 | columns.hide.2 | Hide the right panel column | Скрыть правый столбец панели |
+| columns.name.1 | Controls | Управление |
+| columns.name.2 | More | Ещё |
 | columns.show.2 | Show the right panel column | Показать правый столбец панели |
 | harbour.title | Harbour gear | Для стоянки |
 | harbour.fenders | Fenders | Кранцы |

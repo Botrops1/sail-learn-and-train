@@ -37,6 +37,25 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
     const node = page.getByTestId(`section-toggle-${id}`).first();
     return (await node.count()) > 0 && (await node.isVisible());
   };
+  /** The chips over the view's right border: where they are, their arrow, and whether the name is vertical. */
+  const chipState = (page) =>
+    page.evaluate(() =>
+      [1, 2].map((n) => {
+        const chip = document.querySelector(`[data-testid="column-chip-${n}"]`);
+        const rect = chip.getBoundingClientRect();
+        const name = chip.querySelector('.col-chip-name');
+        return {
+          visible: rect.width > 0 && rect.height > 0,
+          right: Math.round(rect.right),
+          top: Math.round(rect.top),
+          bottom: Math.round(rect.bottom),
+          width: Math.round(rect.width),
+          arrow: chip.querySelector('.col-chip-arrow').textContent,
+          name: name.textContent,
+          vertical: getComputedStyle(name).writingMode.startsWith('vertical'),
+        };
+      }),
+    );
   const gripBox = async (page, n) => {
     const b = await page.getByTestId(`column-grip-${n}`).boundingBox();
     return b && { x: b.x + b.width / 2, y: b.y + b.height / 2 };
@@ -65,11 +84,11 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
       JSON.stringify(w),
     );
     check(
-      `${name}: both grips and both buttons show`,
+      `${name}: both grips and both chips show`,
       (await page.getByTestId('column-grip-1').isVisible()) &&
         (await page.getByTestId('column-grip-2').isVisible()) &&
-        (await page.getByTestId('column-toggle-1').isVisible()) &&
-        (await page.getByTestId('column-toggle-2').isVisible()),
+        (await page.getByTestId('column-chip-1').isVisible()) &&
+        (await page.getByTestId('column-chip-2').isVisible()),
       'handles',
     );
     problems.push(...(await auditPage(page, `m39 ${name} columns`)));
@@ -155,50 +174,60 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(desktop, 'm39 collapse', `${BOAT}&sel=part_hull`);
     await page.waitForTimeout(1200);
     const before = await widths(page);
-    await page.getByTestId('column-toggle-2').click();
+    await page.getByTestId('column-chip-2').click();
     await page.waitForTimeout(300);
     let w = await widths(page);
     check(
-      'column 2 collapses to a rail and the view takes the room',
-      w.second <= 46 && w.first === 400 && w.view > before.view + 300,
+      'column 2 collapses, takes no room, and the view takes it',
+      w.second === 0 && w.first === 400 && w.view > before.view + 300,
       JSON.stringify({ before, w }),
     );
     check(
-      'the sections of column 2 are out of reach, the rail button says "Show"',
+      'the sections of column 2 are out of reach, its chip says "Show"',
       !(await sectionVisible(page, 'conditions')) &&
-        (await page.getByTestId('column-toggle-2').getAttribute('aria-expanded')) === 'false' &&
+        (await page.getByTestId('column-chip-2').getAttribute('aria-expanded')) === 'false' &&
         (await page.getByTestId('second-column').getAttribute('inert')) !== null,
       'collapsed',
     );
     check('the camera follows', Math.abs(w.canvas - w.view) <= 1, JSON.stringify(w));
+    const chips = await chipState(page);
+    check(
+      'column 2 folded: both chips still show, over the right border of the view, arrows ‹ (folded) and › (open)',
+      chips.length === 2 &&
+        chips.every((c) => c.visible && Math.abs(c.right - w.view) <= 1 && c.vertical) &&
+        chips[0].arrow === '›' &&
+        chips[1].arrow === '‹',
+      JSON.stringify(chips),
+    );
+    check(
+      'the chips have vertical names and are at least 44 px wide, and do not overlap',
+      chips.every((c) => c.width >= 44 && c.name.length > 0) &&
+        (chips[0].bottom <= chips[1].top || chips[1].bottom <= chips[0].top),
+      JSON.stringify(chips),
+    );
     await shot(page, 'live-column2-collapsed');
-    await page.getByTestId('column-toggle-1').click();
+    await page.getByTestId('column-chip-1').click();
     await page.waitForTimeout(300);
     w = await widths(page);
     check(
-      'both collapsed: two rails, the view takes nearly the whole window',
-      w.panel <= 92 && w.view >= 1440 - 92 && !(await sectionVisible(page, 'ropes')),
+      'both collapsed: no panel is left, the view fills the window',
+      w.panel <= 1 && w.view >= 1440 - 1 && !(await sectionVisible(page, 'ropes')),
       JSON.stringify(w),
     );
     check(
-      'both buttons are inside the window and do not overlap',
+      'both chips are inside the window, at its right edge, and do not overlap',
       await page.evaluate(() => {
-        const a = document.querySelector('[data-testid="column-toggle-1"]').getBoundingClientRect();
-        const b = document.querySelector('[data-testid="column-toggle-2"]').getBoundingClientRect();
+        const a = document.querySelector('[data-testid="column-chip-1"]').getBoundingClientRect();
+        const b = document.querySelector('[data-testid="column-chip-2"]').getBoundingClientRect();
         return (
-          a.right <= window.innerWidth &&
-          b.right <= window.innerWidth &&
+          Math.abs(a.right - window.innerWidth) <= 1 &&
+          Math.abs(b.right - window.innerWidth) <= 1 &&
           (a.bottom <= b.top || b.bottom <= a.top)
         );
       }),
       'buttons',
     );
     // The part card is not hidden because the column that would show it is folded away.
-    await page
-      .getByTestId('part_hull')
-      .first()
-      .isVisible()
-      .catch(() => undefined);
     check(
       'with the columns folded the part card shows in the view',
       await page.getByTestId('info-card').first().isVisible(),
@@ -214,12 +243,12 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
     w = await widths(page);
     check(
       'both stay collapsed after a reload',
-      w.panel <= 92 && w.view >= 1440 - 92,
+      w.panel <= 1 && w.view >= 1440 - 1,
       JSON.stringify(w),
     );
 
     // A rope tapped in the view does not open a column; a call by name does (the wind box).
-    await page.getByTestId('column-toggle-1').click();
+    await page.getByTestId('column-chip-1').click();
     await page.waitForTimeout(300);
     w = await widths(page);
     check('column 1 opens again at its old width', w.first === 400, JSON.stringify(w));
@@ -250,8 +279,8 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'a window under 1,280 px has no grips and no buttons',
       !(await page.getByTestId('column-grip-1').isVisible()) &&
-        !(await page.getByTestId('column-toggle-1').isVisible()) &&
-        !(await page.getByTestId('column-toggle-2').isVisible()),
+        !(await page.getByTestId('column-chip-1').isVisible()) &&
+        !(await page.getByTestId('column-chip-2').isVisible()),
       'handles',
     );
     check(
@@ -270,7 +299,7 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForTimeout(500);
     let w = await widths(page);
-    check('wide again: the saved collapse applies', w.panel <= 92, JSON.stringify(w));
+    check('wide again: the saved collapse applies', w.panel <= 1, JSON.stringify(w));
     await page.setViewportSize({ width: 820, height: 1000 });
     await page.waitForTimeout(500);
     w = await widths(page);
@@ -296,7 +325,7 @@ export async function liveM39Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'the phone has no grips and no buttons',
       !(await page.getByTestId('column-grip-1').isVisible()) &&
-        !(await page.getByTestId('column-toggle-1').isVisible()),
+        !(await page.getByTestId('column-chip-1').isVisible()),
       'handles',
     );
     check(

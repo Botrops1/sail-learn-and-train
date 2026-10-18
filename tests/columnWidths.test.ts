@@ -4,7 +4,6 @@ import {
   COLUMN_DEFAULT_PX,
   COLUMN_MAX_PX,
   COLUMN_MIN_PX,
-  COLUMN_RAIL_PX,
   defaultColumns,
   effectiveWidths,
   maxColumnWidth,
@@ -33,12 +32,12 @@ describe('panel columns (M39, issue #89)', () => {
     expect(maxColumnWidth(900, 560)).toBe(COLUMN_MIN_PX);
   });
 
-  it('a collapsed column leaves its rail', () => {
+  it('a collapsed column takes no room', () => {
     const state = defaultColumns();
     state.collapsed = [false, true];
-    expect(effectiveWidths(state, 1440)).toEqual([400, COLUMN_RAIL_PX]);
+    expect(effectiveWidths(state, 1440)).toEqual([400, 0]);
     state.collapsed = [true, true];
-    expect(effectiveWidths(state, 1440)).toEqual([COLUMN_RAIL_PX, COLUMN_RAIL_PX]);
+    expect(effectiveWidths(state, 1440)).toEqual([0, 0]);
   });
 
   it('wide columns give way (the second first) when the window is too small', () => {

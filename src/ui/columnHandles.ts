@@ -41,10 +41,11 @@ export interface ColumnHandles {
 }
 
 /**
- * The two panel columns of the wide layout can be collapsed with a small button and dragged to a
- * new width (M39, issue #89; PHASE5_SPEC 17). A handle sits on the left edge of each column: a
- * grip (a separator that is dragged, moved with the arrow keys, reset by a double click) and the
- * button. Dragging a grip to the left widens the column to its right. The widths go to the shell
+ * The two panel columns of the wide layout can be collapsed with a chip over the 3D view's right
+ * border and dragged to a new width (M39, issue #89; PHASE5_SPEC 17). A handle sits on the left
+ * edge of each column: a grip (a separator that is dragged, moved with the arrow keys, reset by a
+ * double click). The chips (a vertical name and an arrow, one per column) fold and open the
+ * columns; a folded column takes no room. Dragging a grip to the left widens the column to its right. The widths go to the shell
  * as `--col1-w` and `--col2-w`, which the wide layout's CSS reads; the camera follows because the
  * view's size changes. Nothing here is visible below the wide layout.
  */
@@ -62,7 +63,8 @@ export function createColumnHandles(
     column: HTMLElement;
     handle: HTMLElement;
     grip: HTMLElement;
-    toggle: HTMLButtonElement;
+    chip: HTMLButtonElement;
+    arrow: HTMLElement;
   }
 
   const build = (index: 0 | 1, column: HTMLElement): Parts => {
@@ -76,14 +78,16 @@ export function createColumnHandles(
       'aria-label': t(`columns.resize.${name}`),
       title: t('columns.resize.hint'),
     });
-    const toggle = el('button', {
-      type: 'button',
-      class: 'col-toggle',
-      'data-testid': `column-toggle-${name}`,
-    });
-    const handle = el('div', { class: 'col-handle', 'data-col': name }, [grip, toggle]);
+    // The chip floats over the 3D view's right border (see `chips` below).
+    const arrow = el('span', { class: 'col-chip-arrow', 'aria-hidden': 'true' });
+    const chip = el(
+      'button',
+      { type: 'button', class: 'col-chip', 'data-testid': `column-chip-${name}` },
+      [arrow, el('span', { class: 'col-chip-name' }, [t(`columns.name.${name}`)])],
+    );
+    const handle = el('div', { class: 'col-handle', 'data-col': name }, [grip]);
 
-    toggle.addEventListener('click', () => {
+    chip.addEventListener('click', () => {
       state.collapsed[index] = !state.collapsed[index];
       commit();
     });
@@ -134,7 +138,7 @@ export function createColumnHandles(
       grip.addEventListener('pointerup', end);
       grip.addEventListener('pointercancel', end);
     });
-    return { column, handle, grip, toggle };
+    return { column, handle, grip, chip, arrow };
   };
 
   const parts: [Parts, Parts] = [build(0, columns[0]), build(1, columns[1])];
@@ -142,6 +146,9 @@ export function createColumnHandles(
   // Left to right: the view | grip 1 | column 1 | grip 2 | column 2.
   panel.insertBefore(parts[0].handle, columns[0]);
   columns[0].after(parts[1].handle);
+  // Two chips over the right border of the 3D view, one per column; a folded column leaves
+  // nothing but its chip, an open one folds with its chip.
+  layout.view.append(el('div', { class: 'col-chips' }, [parts[0].chip, parts[1].chip]));
 
   function apply(): void {
     const [first, second] = widths();
@@ -149,7 +156,7 @@ export function createColumnHandles(
     layout.root.style.setProperty('--col2-w', `${second}px`);
     // Only the wide layout has the columns side by side; elsewhere nothing is collapsed.
     const wide = layout.viewport().wide;
-    parts.forEach(({ column, handle, grip, toggle }, index) => {
+    parts.forEach(({ column, handle, grip, chip, arrow }, index) => {
       const name = index === 0 ? '1' : '2';
       const collapsed = wide && state.collapsed[index];
       column.dataset.collapsed = String(collapsed);
@@ -163,11 +170,13 @@ export function createColumnHandles(
       grip.setAttribute('aria-valuenow', String(own));
       grip.tabIndex = collapsed ? -1 : 0;
       const label = t(collapsed ? `columns.show.${name}` : `columns.hide.${name}`);
-      toggle.setAttribute('aria-label', label);
-      toggle.setAttribute('aria-expanded', String(!collapsed));
-      toggle.title = label;
-      toggle.dataset.glyph = collapsed ? '‹' : '›';
+      chip.setAttribute('aria-label', label);
+      chip.setAttribute('aria-expanded', String(!collapsed));
+      chip.title = label;
+      // The arrow shows where the column goes: out to the left when it is folded away.
+      arrow.textContent = collapsed ? '‹' : '›';
     });
+    panel.dataset.folded = String(wide && state.collapsed[0] && state.collapsed[1]);
   }
 
   function commit(): void {

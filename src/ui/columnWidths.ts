@@ -1,7 +1,7 @@
 /**
  * Widths of the two panel columns on the wide layout (M39, issue #89; PHASE5_SPEC 17): pure
  * rules, so the limits and the saved text are tested without a browser. A collapsed column keeps
- * a narrow rail (it holds the button that opens it again); the 3D view always keeps at least
+ * nothing (its chip over the 3D view opens it again); the 3D view always keeps at least
  * `VIEW_MIN_PX`.
  */
 
@@ -10,8 +10,6 @@ export const COLUMN_MIN_PX = 300;
 export const COLUMN_MAX_PX = 560;
 /** The 3D view keeps at least this much of the window, px. */
 export const VIEW_MIN_PX = 480;
-/** What a collapsed column leaves: a rail as wide as a finger, holding the open button, px. */
-export const COLUMN_RAIL_PX = 44;
 /** The widths before anything was dragged: they add up to the 760 px of M29. */
 export const COLUMN_DEFAULT_PX: readonly [number, number] = [400, 360];
 /** One arrow key press, and with Shift, px. */
@@ -34,14 +32,14 @@ export function defaultColumns(): ColumnState {
 const limit = (value: number): number => Math.min(COLUMN_MAX_PX, Math.max(COLUMN_MIN_PX, value));
 
 /**
- * What each column takes now: its chosen width within the limits, or the rail when collapsed.
+ * What each column takes now: its chosen width within the limits, or nothing when collapsed.
  * When the window leaves less than `VIEW_MIN_PX` for the 3D view, the second column gives way
  * first, then the first, never below the minimum (the saved widths are not changed).
  */
 export function effectiveWidths(state: ColumnState, windowWidth: number): [number, number] {
   const widths: [number, number] = [
-    state.collapsed[0] ? COLUMN_RAIL_PX : limit(state.widths[0]),
-    state.collapsed[1] ? COLUMN_RAIL_PX : limit(state.widths[1]),
+    state.collapsed[0] ? 0 : limit(state.widths[0]),
+    state.collapsed[1] ? 0 : limit(state.widths[1]),
   ];
   let excess = widths[0] + widths[1] - Math.max(0, windowWidth - VIEW_MIN_PX);
   for (const index of [1, 0] as const) {

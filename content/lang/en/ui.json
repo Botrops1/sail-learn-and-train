@@ -641,6 +641,8 @@
   "columns.hide.1": "Hide the left panel column",
   "columns.show.1": "Show the left panel column",
   "columns.hide.2": "Hide the right panel column",
+  "columns.name.1": "Controls",
+  "columns.name.2": "More",
   "columns.show.2": "Show the right panel column",
   "harbour.title": "Harbour gear",
   "harbour.fenders": "Fenders",

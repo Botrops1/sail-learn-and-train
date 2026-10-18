@@ -514,12 +514,12 @@ New link setting (PHASE6_SPEC 4.3): M33 `fd=1` puts the fenders out (without it 
 
 #### M39: Collapsible, resizable panel columns
 
-- [ ] Collapse (computer, window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — a small tab with an arrow (›) sits on the left edge of each of the two right-hand columns. Tap the one on the right-hand column: it folds into a thin strip, the 3D view gets wider and the boat stays in the middle of it. Tap the strip's tab (‹): the column comes back.
-- [ ] Both folded: same link — fold both columns: only two thin strips remain at the right edge and the 3D view fills the window. Tap the part of the boat (the hull) in the view: the part card shows over the view.
+- [ ] Collapse (computer, window 1,280 px or wider): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — two chips with vertical names ("Controls" and "More") and an arrow (›) float over the right border of the 3D view. Tap "More": the right-hand column disappears completely, the 3D view gets wider and the boat stays in the middle of it, and both chips are still there (its arrow is now ‹). Tap "More" again: the column comes back.
+- [ ] Both folded: same link — fold both columns with their chips: no panel is left, the 3D view fills the window and only the two chips remain at the right edge. Tap the part of the boat (the hull) in the view: the part card shows over the view.
 - [ ] Drag: same link — put the mouse on the border between the 3D view and the left column (the cursor changes to ↔) and drag it to the left: the column gets wider, the view narrower, up to a limit. Drag the border between the two columns too.
 - [ ] Keys and reset: same link — click once on a border so it is selected (Tab also gets there); ← and → change the width (Shift: bigger steps, Home: narrowest, End: widest). Double-click the border: the original width is back.
 - [ ] Remembered: fold one column and drag the other, then reload the page: the same layout is back. Opening the link again in the same browser gives the same layout; it is not part of the link, so a friend who opens your shared link sees the normal layout.
-- [ ] The wind box opens a folded column: fold the right-hand column, then tap the wind and speed box at the top of the 3D view: the column opens with "Conditions".
+- [ ] The wind box opens a folded column: fold the right-hand column, then close the part card and tap the wind and speed box at the top of the 3D view: the column opens with "Conditions".
 - [ ] Smaller window (about 1,000 px wide, or a tablet): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — no tabs and no borders to drag; the panel works as before.
 - [ ] Phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — nothing is different.
 
