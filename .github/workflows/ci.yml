@@ -56,8 +56,10 @@ jobs:
             env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m9
           - part: live, M10-M17
             env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m10,m11,m12,m13,m14,m15,m16,m17
-          - part: live, M18 on
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17
+          - part: live, M18-M29
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m18,m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29
+          - part: live, M30 on
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17,m18,m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
