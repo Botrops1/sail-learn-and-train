@@ -1595,6 +1595,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Заброс кормы (`term_prop_walk`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Prop walk | Заброс кормы |
+| Другие названия | paddle-wheel effect | эффект гребного винта |
+| Коротко | Going astern, the propeller pushes the stern sideways. | На заднем ходу винт уводит корму в сторону. |
+| Что делает / что значит | A propeller does not only push backwards: going astern it also pushes the stern to one side, most when she has no way on yet. Which side depends on which way the propeller turns. Skippers use it: with the stern walking to port, they come alongside port side to. | Винт не только толкает назад: на заднем ходу он уводит корму в сторону, сильнее всего, пока лодка ещё стоит. Сторона зависит от направления вращения винта. Шкиперы этим пользуются: если корму уводит влево, швартуются левым бортом. |
+| На этой яхте | A saildrive with a fixed two-blade propeller. In the app the stern walks to port going astern (an assumption until the skipper checks): about 6° of turn in 15 s at half astern. A saildrive walks less than a shaft drive. | Саилдрайв с фиксированным двухлопастным винтом. В приложении на заднем ходу корму уводит влево (предположение, пока шкипер не проверит): около 6° за 15 с на половине заднего хода. Саилдрайв даёт меньший заброс, чем вал. |
+| Типичные ошибки | Reversing straight into a berth and being surprised that she turns. → Expect the walk: start the turn early, or use a short burst ahead with the wheel over to correct. | Идти задним ходом прямо в место и удивляться, что лодку разворачивает. → Учитывайте заброс: начинайте поворот раньше или поправляйте коротким импульсом вперёд с переложенным рулём. |
+| «Покажи» | No wind, engine half astern from a standstill: watch the bow swing to starboard as the stern walks to port. | Без ветра, половина заднего хода с места: нос уходит вправо, корму уводит влево. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### завал-тали (`term_preventer`)
 
 | Поле | English | Русский |
@@ -1711,6 +1726,21 @@
 | На этой яхте | — | — |
 | Типичные ошибки | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet hauled in. | Рулить так далеко под ветер, что ветер оказывается позади грота (он дует на грот уже с той стороны, куда отведён гик). → Гик может перелететь в любой момент. Слегка приведитесь к ветру или сделайте поворот фордевинд намеренно, с выбранным гика-шкотом. |
 | «Покажи» | Running, the autopilot turns her through dead downwind with the mainsheet eased: an accidental gybe. The red area shows where the boom sweeps across. Keep heads out of it. | Фордевинд: авторулевой разворачивает яхту через точку точно по ветру при потравленном гика-шкоте — случайный поворот фордевинд. Красная область показывает, где гик пройдёт через кокпит. Держите головы вне её. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Парусность корпуса (`term_windage`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Windage | Парусность корпуса |
+| Другие названия | — | — |
+| Коротко | The wind's push on the hull, mast and furled sails. | Давление ветра на корпус, мачту и свёрнутые паруса. |
+| Что делает / что значит | Even with the sails rolled away, the wind pushes on everything above the water. With way on, the keel holds her straight. Below about two knots it no longer does: she slides sideways, and the bow, high and light, blows downwind faster than the stern, until she lies about beam-on. | Даже со свёрнутыми парусами ветер давит на всё, что над водой. На ходу киль держит лодку. Медленнее примерно двух узлов уже нет: лодку сносит боком, а высокий лёгкий нос уваливается под ветер быстрее кормы, пока она не встанет примерно лагом. |
+| На этой яхте | High topsides, a 20 m mast and the furled main inside it: in 15 kn on the beam she drifts sideways at about 0.6 kn; with the wind 45° on the bow, the bow falls off about 30° in 30 s. | Высокий борт, мачта 20 м и грот, свёрнутый внутри неё: при 15 узлах в борт её сносит лагом примерно на 0,6 узла; при ветре 45° к носу нос уваливается примерно на 30° за 30 с. |
+| Типичные ошибки | Stopping in the fairway to wait: the bow blows off and she drifts onto the moored boats. → Keep a little way on, or hold her with the engine and the thrusters. | Остановиться в проходе и ждать: нос уваливается, и лодку сносит на стоящие яхты. → Держите небольшой ход или удерживайте лодку двигателем и подруливающими устройствами. |
+| «Покажи» | Sails rolled away, wind 15 kn from 45° on the starboard bow, standing still: the bow blows off to port. | Паруса свёрнуты, ветер 15 узлов 45° справа по носу, лодка стоит: нос уваливается влево. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -2468,6 +2498,7 @@
 | trim.badgeTitle | A sail is worn out from flapping (flogging). Tap to learn more. | Парус изношен от полоскания. Нажмите, чтобы узнать больше. |
 | trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is let out too far (luffing). The leeward one hanging: the sail is pulled in too far (stalled). | Колдунчик — короткая ленточка на парусе. Вытянут назад: поток хороший. Наветренный поднимается: парус потравлен слишком сильно (полощет). Подветренный висит: парус выбран слишком сильно (срыв потока). |
 | debug.motion | Boat V/yaw | Boat V/yaw |
+| debug.lowSpeed | Low speed | Low speed |
 | debug.winds | TWA/TWS | TWA/TWS |
 | debug.apparent | AWA/AWS | AWA/AWS |
 | debug.forces | Drive/side/res | Drive/side/res |

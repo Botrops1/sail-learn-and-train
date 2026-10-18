@@ -1669,6 +1669,40 @@
       "what": "It shows the boat’s speed, her heading and the wind: AWA and AWS, the apparent wind’s angle and speed (what the sails feel), and TWA and TWS, the true wind’s.",
       "onThisBoat": "A B&G display at the helm. In the app, the strip at the top of the 3D view shows the same numbers; tap it for the wind dial.",
       "textStatus": "draft"
+    },
+    "term_prop_walk": {
+      "name": "Prop walk",
+      "alternatives": [
+        {
+          "term": "paddle-wheel effect"
+        }
+      ],
+      "short": "Going astern, the propeller pushes the stern sideways.",
+      "what": "A propeller does not only push backwards: going astern it also pushes the stern to one side, most when she has no way on yet. Which side depends on which way the propeller turns. Skippers use it: with the stern walking to port, they come alongside port side to.",
+      "onThisBoat": "A saildrive with a fixed two-blade propeller. In the app the stern walks to port going astern (an assumption until the skipper checks): about 6° of turn in 15 s at half astern. A saildrive walks less than a shaft drive.",
+      "mistakes": [
+        {
+          "mistake": "Reversing straight into a berth and being surprised that she turns.",
+          "fix": "Expect the walk: start the turn early, or use a short burst ahead with the wheel over to correct."
+        }
+      ],
+      "showMe": "No wind, engine half astern from a standstill: watch the bow swing to starboard as the stern walks to port.",
+      "textStatus": "draft"
+    },
+    "term_windage": {
+      "name": "Windage",
+      "alternatives": [],
+      "short": "The wind's push on the hull, mast and furled sails.",
+      "what": "Even with the sails rolled away, the wind pushes on everything above the water. With way on, the keel holds her straight. Below about two knots it no longer does: she slides sideways, and the bow, high and light, blows downwind faster than the stern, until she lies about beam-on.",
+      "onThisBoat": "High topsides, a 20 m mast and the furled main inside it: in 15 kn on the beam she drifts sideways at about 0.6 kn; with the wind 45° on the bow, the bow falls off about 30° in 30 s.",
+      "mistakes": [
+        {
+          "mistake": "Stopping in the fairway to wait: the bow blows off and she drifts onto the moored boats.",
+          "fix": "Keep a little way on, or hold her with the engine and the thrusters."
+        }
+      ],
+      "showMe": "Sails rolled away, wind 15 kn from 45° on the starboard bow, standing still: the bow blows off to port.",
+      "textStatus": "draft"
     }
   }
 }

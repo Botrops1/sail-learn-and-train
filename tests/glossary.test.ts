@@ -586,7 +586,7 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
 
   it('the groups have the expected sizes and members', () => {
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      9, 10, 13, 6, 17, 18, 12, 14, 28, 9,
+      9, 10, 13, 6, 17, 18, 12, 14, 30, 9,
     ]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',

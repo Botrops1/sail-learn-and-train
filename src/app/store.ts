@@ -217,6 +217,7 @@ function boatFor(
       headingDeg,
       speedMps: 0,
       yawRateDegS: 0,
+      swayMps: 0,
       heelDeg: 0,
     });
   }
@@ -423,6 +424,7 @@ function reduceAction(state: AppState, action: Action): AppState {
               mode: 'held',
               speedMps: 0,
               yawRateDegS: 0,
+              swayMps: 0,
               heelDeg: 0,
               heelRateDegS: 0,
               roundUpS: 0,
