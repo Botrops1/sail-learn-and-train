@@ -456,6 +456,7 @@ Thrusters, places, lines, anchor, contact (later milestones); any visible contro
 - **CI.** The new part `live, M40-M47` is added and `,m40,…,m47` appended to the skip list of `live, M30 on`, as 3.6 says.
 - **`shots-m24.mjs`** takes its counts from the registry (3.7): its checks now read "a list for every group" and "an entry button for every id", with the counts in the detail text.
 - **Group size** in `tests/glossary.test.ts`: `sailing` goes from 28 to 30 (the two new terms).
+- **Owner's answers on PR #98 ("accept all", for the PR's question and the independent review):** the stern keeps walking to port until a skipper checks (question 18); the three mirror tests check within 0.01° as the spec says (`toBeCloseTo(…, 2)`); PT-48 gets its source (PHYSICS_TRUTHS [40], Practical Sailor) and is `source-checked`, PT-47 stays `to-verify` (no reachable source), PT-49 stays `general`; with the sails up, the sails' own side force still does not slide her (she only heels): a limitation, not built here, noted for a later milestone; the strip's speed shows forward speed only (a drifting boat reads near 0, the sideways speed is in the debug row), kept as it is and said in the checklist.
 
 ---
 

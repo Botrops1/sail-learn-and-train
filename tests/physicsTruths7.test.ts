@@ -33,7 +33,7 @@ describe('PT-47 wind on a slow boat', () => {
     expect(heading).toBeGreaterThan(-40);
     expect(heading).toBeLessThan(-25);
     const mirror = run(harbourStart({ windDirDeg: -45, twsKn: 15 }), 30);
-    expect(wrap180(mirror.boat.headingDeg)).toBeCloseTo(-heading, 1);
+    expect(wrap180(mirror.boat.headingDeg)).toBeCloseTo(-heading, 2);
   });
 });
 
@@ -56,7 +56,7 @@ describe('PT-27 prop walk', () => {
     try {
       const normal = wrap180(astern(-50, 15).boat.headingDeg);
       lowSpeed.propWalkSide = -1;
-      expect(wrap180(astern(-50, 15).boat.headingDeg)).toBeCloseTo(-normal, 1);
+      expect(wrap180(astern(-50, 15).boat.headingDeg)).toBeCloseTo(-normal, 2);
     } finally {
       lowSpeed.propWalkSide = before;
     }
@@ -85,7 +85,7 @@ describe('PT-48 kick ahead', () => {
     expect(mpsToKn(s.boat.speedMps)).toBeGreaterThan(0.45);
     expect(mpsToKn(s.boat.speedMps)).toBeLessThan(0.75);
     expect(Math.abs(wrap180(kick(0).boat.headingDeg))).toBeLessThan(0.01);
-    expect(wrap180(kick(-35).boat.headingDeg)).toBeCloseTo(-wrap180(s.boat.headingDeg), 1);
+    expect(wrap180(kick(-35).boat.headingDeg)).toBeCloseTo(-wrap180(s.boat.headingDeg), 2);
   });
 
   it('PT-48 without the water over the rudder she turns much less', () => {
