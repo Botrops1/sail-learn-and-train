@@ -38,7 +38,10 @@ export async function liveM40Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(3000);
     const sway = await swayKn(page);
     check('drift: the sway is to port (negative)', sway < 0, String(sway));
-    const heading = parseFloat(await page.getByTestId('strip-heading').textContent());
+    const heading = parseInt(
+      ((await page.getByTestId('strip-heading').textContent()) ?? '').replace(/\D/g, ''),
+      10,
+    );
     check(
       'drift: the heading is between 330° and 359°',
       heading >= 330 && heading <= 359,
