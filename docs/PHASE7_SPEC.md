@@ -123,7 +123,7 @@ export async function holdWindlass(page, dir, ms, suffix = '') {}
 ```
 
 - A Phase 7 check that needs the boat to move for a while sets the time bar to ×16 through the link (`tx=16`) rather than waiting.
-- CI (`.github/workflows/ci.yml`): scenes at phone size in the two `scenes` parts (nothing to do); live checks in the parts. The M40 PR adds a part `live, M40-M47` with `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m40,m41,m42,m43,m44,m45,m46,m47` (the later groups join it as they appear; a name with no group yet is simply skipped) and appends `,m40,m41,m42,m43,m44,m45,m46,m47` to the `SHOTS_SKIP` list of the catch-all part `live, M18 on`. If the new part gets over about 10 minutes (each group prints its time), a later milestone splits it in two.
+- CI (`.github/workflows/ci.yml`): scenes at phone size in the two `scenes` parts (nothing to do); live checks in the parts. The M40 PR adds a part `live, M40-M47` with `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m40,m41,m42,m43,m44,m45,m46,m47` (the later groups join it as they appear; a name with no group yet is simply skipped) and appends `,m40,m41,m42,m43,m44,m45,m46,m47` to the `SHOTS_SKIP` list of the catch-all part `live, M30 on` (the M39 PR split the old `live, M18 on`, which had reached its 45-minute limit, into `live, M18-M29` and `live, M30 on`). If the new part gets over about 10 minutes (each group prints its time), a later milestone splits it in two.
 - A check that sets the time bar does it through the link (`tx=16`), never by tapping.
 
 ### 3.7 General rules for every milestone
@@ -1701,7 +1701,7 @@ Exercises with scores and debriefs, scripted winds, the night time-lapse (Phase 
 
 1. **Browser checks run on the test clock** (3.6; CLAUDE.md's rule from 2026-10-15, which the plan did not follow): Phase 7 live groups use `onTestClock`; "real time" waits are now app time; the helpers hold for app time.
 2. **`openPage` label tests** (3.6): the four regular expressions written out as they are today and as they become.
-3. **CI part** (3.6): `live, M40-M47` with its exact `env`, and the catch-all part is `live, M18 on` (Phase 5 got no part of its own, so "as M25 did" was wrong).
+3. **CI part** (3.6): `live, M40-M47` with its exact `env`, and the catch-all part is `live, M30 on` (the old `live, M18 on` was split in the M39 PR; Phase 5 got no part of its own, so "as M25 did" was wrong).
 4. **Counts in `shots-m24.mjs`** (3.7): today's numbers (136, 10, 63) and the group count, which M42 changes, are taken from the registry too.
 5. **Learn test 11 (`NOT_DRAWN`)** (3.7, 10.5, 11.5): every non-term id must appear in the code; the quay rings carry `env_quay_ring` from M44, and a tap on a rock's chart symbol gives `env_rock` (M45). Without this, M44 and M45 would fail that test.
 6. **Harbour mode in the code** (4.4): the files and conditions that decide the mode today (`initialState`, `setRopesMode`, `setAppMode`, the panel's selection rule, `quickRow` `render`, `openScene`, the Practice button in `realisticPanel.ts`).

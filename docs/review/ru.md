@@ -2702,6 +2702,15 @@
 | settings.miniMap.label | Mini-map | Мини-карта |
 | settings.miniMap.hint | A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map. | Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту. |
 | panel.second | More sections | Ещё разделы |
+| columns.resize.1 | Width of the left panel column | Ширина левого столбца панели |
+| columns.resize.2 | Width of the right panel column | Ширина правого столбца панели |
+| columns.resize.hint | Drag to change the width, or use the arrow keys. Double-click to reset. | Потяните, чтобы изменить ширину, или используйте стрелки. Двойной щелчок возвращает прежнюю ширину. |
+| columns.hide.1 | Hide the left panel column | Скрыть левый столбец панели |
+| columns.show.1 | Show the left panel column | Показать левый столбец панели |
+| columns.hide.2 | Hide the right panel column | Скрыть правый столбец панели |
+| columns.name.1 | Controls | Управление |
+| columns.name.2 | More | Ещё |
+| columns.show.2 | Show the right panel column | Показать правый столбец панели |
 | harbour.title | Harbour gear | Для стоянки |
 | harbour.fenders | Fenders | Кранцы |
 | harbour.fenders.explain | Rubber buffers hung over the side to protect the hull in a marina. They stay in a locker while sailing. | Резиновые подушки, которые вывешивают за борт, чтобы защитить корпус у причала. На ходу они лежат в рундуке. |
