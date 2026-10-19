@@ -207,3 +207,26 @@ export async function waitForLink(page, has, hasNot = []) {
     await page.waitForTimeout(50);
   }
 }
+
+/**
+ * M41: holds a thruster joystick (which: 'bow' | 'stern', dir: -1 | 1) for `ms` milliseconds of app
+ * time (page.waitForTimeout); via: 'section' (opens the Engine section first, where the thrusters are) | 'quick' | 'helm'.
+ * `during`, if given, runs once the joystick has been held for half of `ms`.
+ */
+export async function holdThruster(page, which, dir, ms, via = 'section', during = undefined) {
+  if (via === 'section') await showSection(page, 'engine');
+  const suffix = via === 'section' ? '' : `-${via}`;
+  const half = page.getByTestId(`thruster-${which}${suffix}-${dir < 0 ? 'port' : 'starboard'}`);
+  await half.scrollIntoViewIfNeeded();
+  const box = await half.boundingBox();
+  if (!box) throw new Error(`holdThruster: ${which} ${dir} has no box`);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  try {
+    await page.waitForTimeout(ms / 2);
+    if (during) await during();
+    await page.waitForTimeout(ms / 2);
+  } finally {
+    await page.mouse.up();
+  }
+}

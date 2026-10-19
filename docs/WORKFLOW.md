@@ -542,11 +542,12 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 
 #### M41: Thrusters and Harbour mode
 
-- [ ] Harbour mode: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&cam=top — tap the mode chip and choose "Harbour": the Engine and Thrusters blocks open first.
+- [ ] Harbour mode: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&cam=top — tap the mode chip and choose "Harbour": the Engine block opens, with the two thruster joysticks under the engine lever.
 - [ ] Bow thruster (a small sideways propeller in the bow): same link, Harbour mode — hold the Bow joystick to the right: the bow swings right, about 36° in 10 seconds. Let go: it stops pushing.
 - [ ] Spin and slide: hold Bow right and Stern left: she turns on the spot. Hold both right: she moves sideways.
 - [ ] Weak at speed: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour&wd=0&ws=0&mf=0&jf=0&js=100&bs=4&eng=1&lv=40&ap=off&cam=top — at 4 knots the bow thruster hardly turns her, and the status says "little effect at this speed".
-- [ ] The strip at the bottom (sheet pulled down): the engine − / + and two small joysticks are there and work.
+- [ ] The strip at the bottom (sheet pulled down): the engine − / + and two small joysticks are there, with the small tags "Engine" and "Thrusters", and work.
+- [ ] Keyboard (computer): in Harbour mode hold A or D (bow) and J or L (stern) together: both thrusters work at once.
 - [ ] Realistic mode: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&mode=realistic&st=helm&cam=helm — the two joysticks are under the engine lever.
 
 #### M42: Places and the marina

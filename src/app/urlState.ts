@@ -134,9 +134,15 @@ export function parseUrlState(
   let ropesMode: RopesMode | undefined;
   const mode = params.get('mode');
   if (mode !== null && isRopesMode(mode)) ropesMode = mode;
-  // Learn mode: `m=learn`, or an old link with an open entry (Phase 4 opened the Learn tab).
-  const appMode: AppMode | undefined =
-    params.get('m') === 'learn' || learn !== null ? 'learn' : undefined;
+  // Harbour mode (`m=harbour`, M41) wins over a `learn=` key, which is then dropped. Learn mode:
+  // `m=learn`, or an old link with an open entry (Phase 4 opened the Learn tab).
+  const harbourMode = params.get('m') === 'harbour';
+  if (harbourMode) learn = null;
+  const appMode: AppMode | undefined = harbourMode
+    ? 'harbour'
+    : params.get('m') === 'learn' || learn !== null
+      ? 'learn'
+      : undefined;
 
   const realistic = parseRealistic(params);
   const windMode = parseWindMode(params);
@@ -475,7 +481,7 @@ export function serializeUrlState(state: AppState): string {
   const jr = jibReachedParam(state);
   if (jr !== null) params.set('jr', String(jr));
   params.set('cam', state.camera.preset);
-  if (state.appMode === 'learn') params.set('m', 'learn');
+  if (state.appMode === 'learn' || state.appMode === 'harbour') params.set('m', state.appMode);
   if (state.selection) params.set('sel', state.selection);
   // The open entry is written only in Learn mode: a link with `learn=` opens in Learn mode.
   if (state.appMode === 'learn' && state.learn) params.set('learn', state.learn);

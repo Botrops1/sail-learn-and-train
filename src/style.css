@@ -779,7 +779,8 @@ html[data-wide='true'] .panel[data-folded='true'] {
 
 .panel-section[data-open='true'] {
   flex: 1 1 auto;
-  min-height: 0;
+  /* Never shorter than its header and the body's own minimum, so the body is not drawn under the next header (the panel scrolls instead). */
+  min-height: calc(var(--section-head) + 120px);
 }
 
 /* Phones: stacked layout, and the side layout of a phone held sideways. */
@@ -4075,4 +4076,179 @@ html[data-wide='true'] .mini-map {
 
 .section-body .settings-content .settings-about {
   margin: 8px 12px 0;
+}
+
+/* Thrusters (M41, PHASE7_SPEC 7.6): a left-right joystick for each end, held to act. */
+.thruster-joystick {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin: 0;
+}
+
+.joystick-label {
+  font-size: var(--font-small);
+  font-weight: 600;
+}
+
+.joystick-track {
+  position: relative;
+  display: flex;
+  flex: none;
+  /* 120 px, not the spec's 132: two fit side by side in the narrowest panel (320 px) (owner, PR #99). */
+  width: 120px;
+  height: var(--touch);
+  /* An inset line, not a border: the halves keep their full 44 px. */
+  box-shadow: inset 0 0 0 1px var(--line);
+  border-radius: 22px;
+  background: var(--accent-soft);
+  overflow: hidden;
+}
+
+.thruster-joystick-quick .joystick-track {
+  width: 88px;
+}
+
+.joystick-half {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 50%;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--font-small);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.joystick-half:first-child {
+  text-align: left;
+}
+
+.joystick-half:last-of-type {
+  text-align: right;
+}
+
+.joystick-half[aria-pressed='true'] {
+  color: #ffffff;
+}
+
+.joystick-half:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 9px;
+  left: calc(50% - 12px);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: transform 100ms ease-out;
+  pointer-events: none;
+}
+
+.thruster-joystick-section .joystick-track,
+.thruster-joystick-helm .joystick-track {
+  --knob-travel: 44px;
+}
+
+.thruster-joystick-quick .joystick-track {
+  --knob-travel: 28px;
+}
+
+.thruster-joystick[data-dir='-1'] .joystick-knob {
+  transform: translateX(calc(-1 * var(--knob-travel)));
+}
+
+.thruster-joystick[data-dir='1'] .joystick-knob {
+  transform: translateX(var(--knob-travel));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .joystick-knob {
+    transition: none;
+  }
+}
+
+.thrusters-block {
+  margin: 8px 0 4px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.thrusters-title {
+  margin: 0 0 4px;
+  font-size: var(--font-label);
+}
+
+.thrusters-status {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.thruster-helm {
+  grid-column: 1 / -1;
+  margin: 4px 0 6px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.thruster-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+/* The quick row in Harbour mode: engine lever − / +, then the two compact joysticks. */
+.quick-harbour {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.quick-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-group-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-tag {
+  height: 11px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 11px;
+}
+
+.quick-harbour[hidden] {
+  display: none;
+}
+
+.quick-lever-value {
+  flex: none;
+  width: 40px;
+  text-align: center;
+  font-size: var(--font-small);
 }

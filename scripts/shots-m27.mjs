@@ -306,7 +306,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const names = await page.locator('.chip-menu .mode-option-name').allInnerTexts();
     check(
       'the mode menu in Russian',
-      names.map((n) => n.trim()).join() === 'Обучение,Простой,Реалистичный',
+      names.map((n) => n.trim()).join() === 'Обучение,Простой,Реалистичный,Гавань',
       names.join(),
     );
     const latinMenu = await scanLatin(page);

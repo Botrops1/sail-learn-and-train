@@ -17,6 +17,7 @@ import {
 } from '../model/realistic';
 import { createAutopilotPanel } from './autopilotPanel';
 import { createEngineLever } from './enginePanel';
+import { createThrusterPair } from './thrusterPanel';
 import { el } from './dom';
 import { part, quoted, t, type StringKey } from './i18n';
 import {
@@ -240,6 +241,9 @@ export function createRealisticPanel(
     wheel.element,
     createAutopilotPanel(store),
     createEngineLever(store),
+    el('div', { class: 'thruster-helm', 'data-testid': 'thruster-helm' }, [
+      createThrusterPair(store, 'helm'),
+    ]),
   ]);
 
   // The strip for the selected clutch.
@@ -441,10 +445,16 @@ export function createRealisticPanel(
     const { settings: now, learn, appMode } = store.getState();
     const next = parseUrlState(scenario.query, now.detail);
     const settings = { ...next.settings, debug: now.debug, step: now.step };
-    // Learn mode stays (PHASE5_SPEC 8.3); otherwise the scenario's own ropes mode is the mode.
+    // Learn and Harbour mode stay (PHASE5_SPEC 8.3, PHASE7_SPEC 7.4); otherwise the scenario's own
+    // ropes mode is the mode.
     store.dispatch({
       type: 'load',
-      state: { ...next, settings, learn, appMode: appMode === 'learn' ? 'learn' : next.appMode },
+      state: {
+        ...next,
+        settings,
+        learn,
+        appMode: appMode === 'learn' || appMode === 'harbour' ? appMode : next.appMode,
+      },
     });
   });
   const practice = el('details', { class: 'strip-more real-how', 'data-testid': 'practice' }, [

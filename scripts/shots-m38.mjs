@@ -150,9 +150,9 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const names = await page.locator('.mode-choice .mode-option-name').allInnerTexts();
     const hints = await page.locator('.mode-choice .mode-option-hint').allInnerTexts();
     check(
-      'the Mode section lists Learn, Easy and Realistic, each with a description',
-      choices === 3 &&
-        names.join() === 'Learn,Easy,Realistic' &&
+      'the Mode section lists Learn, Easy, Realistic and Harbour, each with a description',
+      choices === 4 &&
+        names.join() === 'Learn,Easy,Realistic,Harbour' &&
         hints.every((hint) => hint.length > 30),
       JSON.stringify({ names, hints }),
     );
@@ -397,7 +397,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const hints = await page.locator('.chip-menu .mode-option-hint:visible').allInnerTexts();
     check(
       'phone: the chip menu has a line under each mode',
-      hints.length === 3 && hints.every((hint) => hint.length > 10),
+      hints.length === 4 && hints.every((hint) => hint.length > 10),
       JSON.stringify(hints),
     );
     await shot(page, 'live-phone-mode-menu');

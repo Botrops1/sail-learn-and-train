@@ -44,6 +44,10 @@ export interface BoatMaterials {
   /** M33: the dark rubber of the fenders, and the pale line they hang on. */
   fender: THREE.Material;
   fenderLine: THREE.Material;
+  /** M41: the dark inside of the thrusters' tunnels. */
+  thrusterTunnel: THREE.Material;
+  /** M41: the white water jet shown while a thruster runs. */
+  thrusterJet: THREE.Material;
 }
 
 type Look = {
@@ -142,6 +146,14 @@ export function createMaterials(detail: Detail = 'high'): BoatMaterials {
     tear: make({ color: SCENE.telltales.tear.color, roughness: 0.9 }),
     fender: make({ color: boat.deckFittings.fenders.colour, roughness: 0.7 }),
     fenderLine: make({ color: boat.deckFittings.fenders.lineColour, roughness: 0.9 }),
+    thrusterTunnel: make({ color: SCENE.thrusters.tunnelColour, roughness: 0.6 }),
+    thrusterJet: make({
+      color: SCENE.thrusters.jetColour,
+      roughness: 1,
+      transparent: true,
+      opacity: SCENE.thrusters.jetOpacity,
+      depthWrite: false,
+    }),
   };
 }
 

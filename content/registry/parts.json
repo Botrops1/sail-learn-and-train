@@ -182,6 +182,8 @@
     {"id": "fit_autopilot_control", "kind": "fitting", "phase": 2, "group": "cockpit", "status": "photo-confirmed", "sources": ["photo:cockpit"], "related": ["helm_port", "fit_compass", "fit_instrument_display"], "showMe": "?wd=90&ws=12&ms=40&js=100&sel=fit_autopilot_control&ap=wind&sea=flat"},
     {"id": "fit_instrument_display", "kind": "fitting", "phase": 2, "group": "cockpit", "status": "photo-confirmed", "sources": ["photo:cockpit"], "related": ["fit_autopilot_control", "term_apparent_wind", "term_true_wind", "part_windex"]},
     {"id": "term_prop_walk", "kind": "term", "phase": 7, "group": "sailing", "status": "draft", "sources": [], "related": ["part_saildrive", "engine_control"], "showMe": "?wd=0&ws=0&mf=0&jf=0&js=100&bs=0.0&ap=off&eng=1&lv=-50&cam=top&sea=flat"},
-    {"id": "term_windage", "kind": "term", "phase": 7, "group": "sailing", "status": "draft", "sources": [], "related": ["env_wind", "part_hull"], "showMe": "?wd=45&ws=15&mf=0&jf=0&js=100&bs=0.0&ap=off&cam=top&sea=flat"}
+    {"id": "term_windage", "kind": "term", "phase": 7, "group": "sailing", "status": "draft", "sources": [], "related": ["env_wind", "part_hull"], "showMe": "?wd=45&ws=15&mf=0&jf=0&js=100&bs=0.0&ap=off&cam=top&sea=flat"},
+    {"id": "part_bow_thruster", "kind": "part", "phase": 7, "group": "hull", "status": "draft", "sources": ["owner"], "related": ["part_stern_thruster", "part_bow"], "showMe": "?wd=0&ws=0&mf=0&jf=0&js=100&cam=top&sel=part_bow_thruster&bs=0.0&ap=off&eng=1"},
+    {"id": "part_stern_thruster", "kind": "part", "phase": 7, "group": "hull", "status": "draft", "sources": ["owner"], "related": ["part_bow_thruster", "part_stern"], "showMe": "?wd=0&ws=0&mf=0&jf=0&js=100&cam=top&sel=part_stern_thruster&bs=0.0&ap=off&eng=1"}
   ]
 }

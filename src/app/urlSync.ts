@@ -115,7 +115,8 @@ export function openScene(store: Store, query: string): void {
       ...next,
       settings: sceneSettings(state.settings, next.settings),
       learn: state.learn,
-      appMode: state.appMode === 'learn' ? 'learn' : next.appMode,
+      appMode:
+        state.appMode === 'learn' || state.appMode === 'harbour' ? state.appMode : next.appMode,
     },
   });
 }

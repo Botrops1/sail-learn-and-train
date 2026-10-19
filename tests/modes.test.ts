@@ -135,3 +135,18 @@ describe('Show me links (8.8 test 5)', () => {
     expect(checked).toBeGreaterThan(0);
   });
 });
+
+describe('Harbour mode (M41, PHASE7_SPEC 7.5)', () => {
+  it('keeps the ropes mode: choosing Harbour from Realistic leaves Realistic ropes', () => {
+    const real = reduce(initialState(), { type: 'setAppMode', mode: 'realistic' });
+    const harbour = reduce(real, { type: 'setAppMode', mode: 'harbour' });
+    expect(harbour.appMode).toBe('harbour');
+    expect(harbour.settings.ropesMode).toBe('realistic');
+  });
+
+  it('puts the engine (which holds the thrusters) first, then the harbour gear', () => {
+    const order = MODE_LAYOUTS.harbour.order.filter((id) => id !== 'mode');
+    expect(order[0]).toBe('engine');
+    expect(order[1]).toBe('harbour');
+  });
+});

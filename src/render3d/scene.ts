@@ -124,6 +124,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   let boatModel = buildBoat(initial.controls, initial.rig, detail);
   let fendersOut = initial.harbour.fendersOut;
   boatModel.setFendersOut(fendersOut);
+  let thrusters = initial.thrusters;
+  boatModel.setThrusters(thrusters);
   holder.add(boatModel.root);
   const dangerZone = buildDangerZone();
   holder.add(dangerZone.object);
@@ -266,6 +268,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       dispose(boatModel.root);
       boatModel = buildBoat(state.controls, state.rig, detail);
       boatModel.setFendersOut(state.harbour.fendersOut);
+      boatModel.setThrusters(state.thrusters);
       holder.add(boatModel.root);
       highlight = createHighlighter(boatModel.root);
       highlight(highlightIds(state.selection));
@@ -275,6 +278,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     if (state.harbour.fendersOut !== fendersOut) {
       fendersOut = state.harbour.fendersOut;
       boatModel.setFendersOut(fendersOut);
+    }
+    // The thrusters' water jets show while a joystick is held.
+    if (state.thrusters !== thrusters) {
+      thrusters = state.thrusters;
+      boatModel.setThrusters(thrusters);
     }
   });
 

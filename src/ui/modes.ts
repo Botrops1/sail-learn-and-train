@@ -77,6 +77,20 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
     ],
     second: ['conditions', 'ropes'],
   },
+  harbour: {
+    order: [
+      'mode',
+      'engine',
+      'harbour',
+      'conditions',
+      'sails',
+      'ropes',
+      'autopilot',
+      'learn',
+      'settings',
+    ],
+    second: ['conditions', 'learn'],
+  },
 };
 
 /**
