@@ -1041,6 +1041,10 @@ button.segment {
   cursor: pointer;
 }
 
+.toggle[hidden] {
+  display: none;
+}
+
 .toggle input {
   width: 22px;
   height: 22px;

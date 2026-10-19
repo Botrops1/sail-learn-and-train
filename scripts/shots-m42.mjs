@@ -23,7 +23,7 @@ export const M42_SCENES = [
   },
   {
     name: 'marina-arrow',
-    query: '?pl=marina&tr=busy&m=harbour&pe=-12.0&pn=1478.0&hdg=0&cam=side-port',
+    query: '?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1472.0&hdg=0&cam=helm',
     sheet: 'peek',
   },
   { name: 'marina-fairway', query: '?pl=marina&m=harbour&cam=bow', sheet: 'peek' },
