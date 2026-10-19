@@ -6,6 +6,8 @@ import { t } from './i18n';
 import { setText } from './stepper';
 import { sideLetter } from './autopilotPanel';
 import { boat as boatData } from '../model/boat';
+import { pointToMap } from '../model/lowSpeed';
+import { depthAt } from '../model/seabed';
 import { rpmNumber } from './enginePanel';
 import type { LayoutShell } from './layout';
 
@@ -122,7 +124,10 @@ export function createInstrumentStrip(
   const trueWind = el('span', { 'data-testid': 'strip-true' });
   const apparent = el('span', { 'data-testid': 'strip-apparent' });
   // The badges get a row of their own, only while one shows: the first line is full.
-  const flags = el('span', { class: 'strip-line strip-flags' }, [worn, gust, engine]);
+  // The depth under the hull (M45): shown in a place, red when it is less than the draft and a metre.
+  const depth = el('span', { class: 'strip-depth', 'data-testid': 'strip-depth' });
+  depth.hidden = true;
+  const flags = el('span', { class: 'strip-line strip-flags' }, [worn, gust, engine, depth]);
   const main = el(
     'button',
     {
@@ -210,7 +215,15 @@ export function createInstrumentStrip(
     const running = state.engine.running;
     setText(engine, running ? t('instruments.engine', { rpm: rpmNumber(state.engine.rpm) }) : '');
     engine.hidden = !running;
-    const flagged = gusting || wearing || running;
+    // The sounder under the hull shows in the marina and the bay, also held still (the depth where she lies).
+    const sounding = state.harbour.place !== 'open';
+    if (sounding) {
+      const metres = depthAt(...pointToMap(boat, boatData.hull.saildrive.x, 0));
+      setText(depth, t('instruments.depth', { m: metres.toFixed(1) }));
+      depth.classList.toggle('is-shallow', metres < boatData.dimensions.draft + 1.0);
+    }
+    depth.hidden = !sounding;
+    const flagged = gusting || wearing || running || sounding;
     if (flags.hidden === flagged) flags.hidden = !flagged;
     const wind = rig.wind;
     setText(trueWind, windText('instruments.true', wind.twaDeg, wind.twsKn));
