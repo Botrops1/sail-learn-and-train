@@ -115,11 +115,10 @@ export async function liveM41Checks({ openPage, viewports, outDir, prefix, probl
     check('quick row: every control is at least 44 × 44 px', small === 0, `${small} too small`);
     const value = async () => (await page.getByTestId('quick-lever-value').textContent()) ?? '';
     check('quick row: neutral reads N', /N/.test(await value()), await value());
-    await page.getByTestId('quick-lever-more').click();
-    await page.getByTestId('quick-lever-more').click();
-    check('quick row: + twice reads ▲20', (await value()).includes('▲20'), await value());
+    for (let i = 0; i < 4; i += 1) await page.getByTestId('quick-lever-more').click();
+    check('quick row: + four times reads ▲40', (await value()).includes('▲40'), await value());
     await page.getByTestId('quick-lever-less').click();
-    check('quick row: − once reads ▲10', (await value()).includes('▲10'), await value());
+    check('quick row: − once reads ▲30', (await value()).includes('▲30'), await value());
     await shot(page, 'm41-quick-row');
     const before = await heading(page);
     await holdThruster(page, 'bow', 1, 1000, 'quick');

@@ -4096,7 +4096,8 @@ html[data-wide='true'] .mini-map {
   flex: none;
   width: 132px;
   height: var(--touch);
-  border: 1px solid var(--line);
+  /* An inset line, not a border: the halves keep their full 44 px. */
+  box-shadow: inset 0 0 0 1px var(--line);
   border-radius: 22px;
   background: var(--accent-soft);
   overflow: hidden;
