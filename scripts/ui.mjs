@@ -236,3 +236,9 @@ export async function choosePlace(page, place) {
   await showSection(page, 'place');
   await page.getByTestId(`place-${place}`).click();
 }
+
+/** M44: taps a line action: code ('sp' | 'ss' | 'll'), action ('take' | 'tighten' | 'ease' | 'letGo'); the Harbour gear section is opened first. */
+export async function lineAction(page, code, action) {
+  await showSection(page, 'harbour');
+  await page.getByTestId(`line-${code}-${action}`).click();
+}
