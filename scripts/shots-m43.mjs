@@ -10,11 +10,11 @@ const BUMP = '?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=-90&ws=20
 
 export const M43_SCENES = [
   { name: 'damage-alert', query: `${BUMP}&tx=4`, waitMs: 3000, sheet: 'peek' },
-  { name: 'damage-list', query: `${BUMP}&tx=4`, waitMs: 4000, section: 'place', sheet: 'full' },
+  { name: 'damage-list', query: `${BUMP}&tx=4`, waitMs: 9000, section: 'place', sheet: 'full' },
   {
     name: 'damage-list-ru',
     query: `${BUMP}&tx=4&lang=ru`,
-    waitMs: 4000,
+    waitMs: 9000,
     section: 'place',
     sheet: 'full',
   },
@@ -49,6 +49,7 @@ export async function liveM43Checks({ openPage, viewports, outDir, prefix, probl
       '?pl=marina&m=harbour&ws=0&cam=top&tx=16',
       { testClock: true },
     );
+    await setSheet(page, 'peek');
     for (let i = 0; i < 6; i += 1) await page.getByTestId('quick-lever-more').click();
     const shown = await poll(page, async () => (await alertText(page)) !== '', 15_000);
     check('bump: the damage alert shows', shown, String(shown));
