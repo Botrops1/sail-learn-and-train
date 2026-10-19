@@ -174,6 +174,8 @@ export type Action =
   | { type: 'setMarinaLayout'; layout: MarinaLayoutId }
   /** M42: how many other yachts lie in the marina; in the marina she goes back to the start. */
   | { type: 'setTraffic'; traffic: TrafficId }
+  /** M42: the arrow over our berth in the marina on or off. */
+  | { type: 'setBerthArrow'; on: boolean }
   /** M41: a thruster joystick held to a side (-1 port, +1 starboard) or let go (0). */
   | { type: 'thruster'; which: 'bow' | 'stern'; dir: ThrustDir }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
@@ -612,6 +614,10 @@ function reduceAction(state: AppState, action: Action): AppState {
       const harbour = { ...state.harbour, traffic: action.traffic };
       return state.harbour.place === 'marina' ? inPlace(state, harbour) : { ...state, harbour };
     }
+    case 'setBerthArrow':
+      return action.on === state.harbour.berthArrow
+        ? state
+        : { ...state, harbour: { ...state.harbour, berthArrow: action.on } };
     case 'thruster': {
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };

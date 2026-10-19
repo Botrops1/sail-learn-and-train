@@ -256,6 +256,7 @@ describe('Phase 7, M42: the place keys in the link', () => {
       place: 'marina',
       layout: 'tight',
       traffic: 'busy',
+      berthArrow: true,
     });
     expect(back.boat.eastM).toBe(2.8);
     expect(back.boat.northM).toBe(1480);
@@ -335,6 +336,40 @@ describe('Phase 7, M42: the place keys in the link', () => {
   });
 });
 
+describe('Phase 7, M42: heading north and the berth arrow in the link (owner and review, PR #101)', () => {
+  it('23. a boat pointing north in the marina keeps her heading in a shared link', () => {
+    let state = reduce(initialState(), { type: 'goToPlace', place: 'marina' });
+    state = { ...state, boat: { ...state.boat, headingDeg: 0, eastM: 20, northM: 1445 } };
+    const link = serializeUrlState(state);
+    expect(link).toContain('hdg=0');
+    expect(parseUrlState(link).boat.headingDeg).toBe(0);
+    // Open water still leaves hdg out when she points north.
+    expect(serializeUrlState(initialState())).not.toContain('hdg=');
+  });
+
+  it('24. the arrow over our berth is on by default; ba=0 turns it off and round-trips', () => {
+    expect(DEFAULT_HARBOUR.berthArrow).toBe(true);
+    const marina = reduce(initialState(), { type: 'goToPlace', place: 'marina' });
+    expect(serializeUrlState(marina)).not.toContain('ba=');
+    const off = reduce(marina, { type: 'setBerthArrow', on: false });
+    expect(off.harbour.berthArrow).toBe(false);
+    expect(serializeUrlState(off)).toContain('ba=0');
+    expect(parseUrlState(serializeUrlState(off)).harbour.berthArrow).toBe(false);
+    expect(reduce(off, { type: 'setBerthArrow', on: false })).toBe(off);
+    expect(reduce(off, { type: 'setBerthArrow', on: true }).harbour.berthArrow).toBe(true);
+    // The arrow stays chosen when she changes place or layout.
+    expect(reduce(off, { type: 'setTraffic', traffic: 'busy' }).harbour.berthArrow).toBe(false);
+    expect(serializeUrlState(initialState())).not.toContain('ba=');
+  });
+
+  it('25. the Show me links put her in her berth with the quay and neighbours in view', () => {
+    const state = parseUrlState('?cam=map&sel=env_quay&pl=marina&pe=2.8&pn=1490.0&hdg=180');
+    expect(state.boat.eastM).toBe(2.8);
+    expect(state.boat.northM).toBe(1490);
+    expect(state.boat.headingDeg).toBe(180);
+  });
+});
+
 describe('Phase 7, M42: the marina in 3D', () => {
   const state = initialState({ harbour: { ...DEFAULT_HARBOUR, place: 'marina', traffic: 'busy' } });
   const marina = buildMarina();
@@ -385,5 +420,59 @@ describe('Phase 7, M42: the marina in 3D', () => {
     expect(marina.object.position.x).toBeCloseTo(-near.boat.northM, 6);
     expect(marina.object.position.z).toBeCloseTo(-near.boat.eastM, 6);
     expect(meshes.every((mesh) => mesh.visible)).toBe(true);
+  });
+});
+
+describe('Phase 7, M42: the arrow over our berth in 3D', () => {
+  const inMarina = initialState({ harbour: { ...DEFAULT_HARBOUR, place: 'marina' } });
+  // The boat stands in the marina's start, so the marina is near.
+  const near = reduce(inMarina, { type: 'goToPlace', place: 'marina' });
+  const arrowParts = (marina: ReturnType<typeof buildMarina>) => {
+    const parts: THREE.Mesh[] = [];
+    marina.object.traverse((node) => {
+      if (
+        node instanceof THREE.Mesh &&
+        (node.geometry instanceof THREE.ConeGeometry ||
+          (node.geometry instanceof THREE.CylinderGeometry &&
+            node.geometry.parameters.radiusTop === SCENE.harbour.arrowShaftRadiusM))
+      ) {
+        parts.push(node);
+      }
+    });
+    return parts;
+  };
+
+  it('26. it floats over the quay, never over the water, above our berth, pointing down', () => {
+    const marina = buildMarina();
+    marina.update(near);
+    marina.object.updateMatrixWorld(true);
+    const parts = arrowParts(marina);
+    expect(parts).toHaveLength(2);
+    const g = marinaGeometry('medium', 'half');
+    const box = new THREE.Box3();
+    for (const part of parts) box.union(new THREE.Box3().setFromObject(part));
+    // Scene frame: x = north, z = east, relative to the boat.
+    const { eastM, northM } = near.boat;
+    expect(box.min.x + northM).toBeGreaterThanOrEqual(g.quay.south);
+    expect(box.max.x + northM).toBeLessThanOrEqual(g.quay.north);
+    expect(box.min.z + eastM).toBeGreaterThanOrEqual(g.ourBerth.centreEastM - g.ourBerth.widthM);
+    expect(box.max.z + eastM).toBeLessThanOrEqual(g.ourBerth.centreEastM + g.ourBerth.widthM);
+    expect(box.min.y).toBeCloseTo(SCENE.harbour.arrowTipAboveM, 6);
+    // The cone is the wide part and sits under the shaft: the tip points down.
+    const cone = parts.find((part) => part.geometry instanceof THREE.ConeGeometry);
+    const shaft = parts.find((part) => !(part.geometry instanceof THREE.ConeGeometry));
+    expect(new THREE.Box3().setFromObject(cone as THREE.Mesh).max.y).toBeLessThanOrEqual(
+      new THREE.Box3().setFromObject(shaft as THREE.Mesh).min.y + 1e-6,
+    );
+  });
+
+  it('27. it shows only in the marina with the box ticked and the marina near', () => {
+    const marina = buildMarina();
+    marina.update(near);
+    expect(arrowParts(marina).every((part) => part.visible)).toBe(true);
+    marina.update(reduce(near, { type: 'setBerthArrow', on: false }));
+    expect(arrowParts(marina).every((part) => !part.visible)).toBe(true);
+    marina.update(reduce(near, { type: 'goToPlace', place: 'open' }));
+    expect(arrowParts(marina).every((part) => !part.visible)).toBe(true);
   });
 });

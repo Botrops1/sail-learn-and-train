@@ -21,6 +21,11 @@ export const M42_SCENES = [
     query: '?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1480.0&hdg=180&cam=side-port',
     sheet: 'peek',
   },
+  {
+    name: 'marina-arrow',
+    query: '?pl=marina&tr=busy&m=harbour&pe=-12.0&pn=1478.0&hdg=0&cam=side-port',
+    sheet: 'peek',
+  },
   { name: 'marina-fairway', query: '?pl=marina&m=harbour&cam=bow', sheet: 'peek' },
   { name: 'place-section', query: '?pl=marina&m=harbour', section: 'place', sheet: 'half' },
   {
@@ -99,21 +104,30 @@ export async function liveM42Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 3. Layout and traffic: Tight sends her back to the start (north 1472) and is in the link.
+  // 3. Choosing the same place again puts her back at the start (she begins away from it, so the
+  // link changes), then layout and traffic: Tight sends her to north 1472 and is in the link.
   {
-    const { context, page } = await openPage(phone, 'm42 layout', '?pl=marina&m=harbour&ws=0', {
-      testClock: true,
-    });
+    const { context, page } = await openPage(
+      phone,
+      'm42 layout',
+      '?pl=marina&m=harbour&ws=0&pe=-60.0&pn=1460.0',
+      { testClock: true },
+    );
     await showSection(page, 'place');
+    check(
+      'place: she starts away from the start',
+      (await page.evaluate(() => window.location.search)).includes('pn=1460.0'),
+      'pn=1460.0',
+    );
+    await page.getByTestId('place-marina').click();
+    const again = await waitForLink(page, ['pe=-95.0', 'pn=1468.0']);
+    check('place: choosing the same place again puts her back at the start', true, again);
     await page.getByTestId('marina-layout-tight').click();
     const link = await waitForLink(page, ['ml=tight', 'pn=1472.0']);
     check('layout: the link has ml=tight and pn=1472.0', true, link);
     await page.getByTestId('marina-traffic-busy').click();
     const busy = await waitForLink(page, ['tr=busy', 'ml=tight']);
     check('traffic: the link has tr=busy and keeps ml=tight', true, busy);
-    await page.getByTestId('place-marina').click();
-    await waitForLink(page, ['pn=1472.0']);
-    check('place: choosing the same place again keeps the start', true, 'pn=1472.0');
     await shot(page, 'm42-layout');
     await context.close();
   }
@@ -157,6 +171,51 @@ export async function liveM42Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(300);
     const back = await waitForLink(page, [], ['pl=', 'pe=', 'pn=']);
     check('old link: back in open water the place keys go', true, back);
+    await context.close();
+  }
+
+  // 6. The arrow over our berth: a box in the Place section (marina only), on by default, and `ba=0`
+  // in the link when it is off.
+  {
+    const { context, page } = await openPage(phone, 'm42 arrow', '?pl=marina&m=harbour&ws=0', {
+      testClock: true,
+    });
+    await showSection(page, 'place');
+    const box = page.getByTestId('berth-arrow');
+    check(
+      'arrow: the box is shown and ticked in the marina',
+      (await box.isChecked()) === true,
+      'ticked',
+    );
+    await box.uncheck();
+    const off = await waitForLink(page, ['ba=0']);
+    check('arrow: unticked, the link has ba=0', true, off);
+    await box.check();
+    await waitForLink(page, [], ['ba=']);
+    check('arrow: ticked again, ba is gone from the link', true, 'no ba');
+    await page.getByTestId('place-open').click();
+    await page.waitForTimeout(300);
+    check(
+      'arrow: the box is hidden in open water',
+      await page.getByTestId('berth-arrow-row').isHidden(),
+      'hidden',
+    );
+    await context.close();
+  }
+
+  // 7. A boat pointing north in the marina keeps her heading in the link (review of PR #101).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm42 north',
+      '?pl=marina&m=harbour&ws=0&hdg=0&pe=20.0&pn=1445.0',
+      { testClock: true },
+    );
+    await page.waitForTimeout(600);
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
+    const link = await waitForLink(page, ['pl=marina', 'hdg=0', 'pe=20.0', 'pn=1445.0']);
+    check('north: the heading 0 survives a reload', true, link);
     await context.close();
   }
 }

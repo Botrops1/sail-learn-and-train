@@ -223,6 +223,8 @@ function parseHarbour(params: URLSearchParams): HarbourState {
     place,
     layout: marina && ml !== null && isMarinaLayout(ml) ? ml : DEFAULT_HARBOUR.layout,
     traffic: marina && tr !== null && isTraffic(tr) ? tr : DEFAULT_HARBOUR.traffic,
+    // `ba=0`: no arrow over our berth (M42; only written in a place).
+    berthArrow: params.get('ba') !== '0',
   };
 }
 
@@ -241,16 +243,17 @@ function parsePosition(params: URLSearchParams, start: PlaceStart): Partial<Boat
 
 /**
  * The place parameters (PHASE7_SPEC 8.4), written when the place is not open water: `pl`, `ml`
- * (when not medium), `tr` (when not half), then the boat's position `pe`, `pn`.
+ * (when not medium), `tr` (when not half), `ba=0` (arrow over our berth off), then the boat's position `pe`, `pn`.
  */
 export function placeParams(state: AppState): [string, string][] {
-  const { place, layout, traffic } = state.harbour;
+  const { place, layout, traffic, berthArrow } = state.harbour;
   if (place === 'open') return [];
   const result: [string, string][] = [['pl', place]];
   if (place === 'marina') {
     if (layout !== DEFAULT_HARBOUR.layout) result.push(['ml', layout]);
     if (traffic !== DEFAULT_HARBOUR.traffic) result.push(['tr', traffic]);
   }
+  if (!berthArrow) result.push(['ba', '0']);
   const written = (metres: number) => {
     const clamped = Math.max(-9999.9, Math.min(9999.9, metres)).toFixed(1);
     return clamped === '-0.0' ? '0.0' : clamped;
@@ -436,7 +439,8 @@ export function boatParams(state: AppState): [string, string][] {
   const result: [string, string][] = [];
   const { boat: boatState, autopilot } = state;
   const heading = headingParam(boatState);
-  if (heading !== 0) result.push(['hdg', String(heading)]);
+  // In a place `hdg` is always written: a link without it opens at the place's heading (east in the marina).
+  if (heading !== 0 || state.harbour.place !== 'open') result.push(['hdg', String(heading)]);
   if (boatState.mode === 'held') result.push(['held', '1']);
   else {
     const kn = Math.round(mpsToKn(boatState.speedMps) * 10) / 10;

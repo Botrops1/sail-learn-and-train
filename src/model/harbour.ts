@@ -16,6 +16,8 @@ export interface HarbourState {
   layout: MarinaLayoutId;
   /** How many other yachts lie in the marina (M42). In the link as `tr`, only in the marina. */
   traffic: TrafficId;
+  /** A big arrow floats over our berth in the marina (M42, owner on PR #101). In the link as `ba=0` when off, only in a place. */
+  berthArrow: boolean;
 }
 
 export const DEFAULT_HARBOUR: Readonly<HarbourState> = {
@@ -23,6 +25,7 @@ export const DEFAULT_HARBOUR: Readonly<HarbourState> = {
   place: 'open',
   layout: 'medium',
   traffic: 'half',
+  berthArrow: true,
 };
 
 /** True when the "Bring the fenders in before you sail" hint shows: fenders out and Sailing. */

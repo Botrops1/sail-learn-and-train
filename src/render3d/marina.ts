@@ -42,6 +42,12 @@ export function buildMarina(areaData: AreaData = area): Marina {
     roughness: 0.5,
     metalness: 0.4,
   });
+  const arrowMaterial = new THREE.MeshStandardMaterial({
+    color: h.berthColour,
+    emissive: h.berthColour,
+    emissiveIntensity: 0.35,
+    roughness: 0.6,
+  });
   const berthMaterial = new THREE.MeshStandardMaterial({ color: h.berthColour, roughness: 0.7 });
   const hullMaterial = new THREE.MeshStandardMaterial({
     color: h.hullColour,
@@ -85,6 +91,8 @@ export function buildMarina(areaData: AreaData = area): Marina {
   let builtFor = '';
   let meshes: THREE.Object3D[] = [];
   let shown = true;
+  let arrowMeshes: THREE.Object3D[] = [];
+  let arrowOn = true;
 
   const rebuild = (geometry: MarinaGeometry, key: string) => {
     builtFor = key;
@@ -114,6 +122,29 @@ export function buildMarina(areaData: AreaData = area): Marina {
       add(ring, quayId, layoutGroup);
     }
 
+    // The arrow over our berth: a cone pointing down on a shaft, floating over the quay.
+    arrowMeshes = [];
+    {
+      const ours0 = geometry.ourBerth;
+      const east = ours0.centreEastM;
+      const north = m.quayFaceNorthM + h.arrowInsetM;
+      const head = new THREE.Mesh(
+        new THREE.ConeGeometry(h.arrowHeadRadiusM, h.arrowHeadM, 16),
+        arrowMaterial,
+      );
+      head.rotation.x = Math.PI; // the tip points down
+      head.position.set(north, h.arrowTipAboveM + h.arrowHeadM / 2, east);
+      const shaft = new THREE.Mesh(
+        new THREE.CylinderGeometry(h.arrowShaftRadiusM, h.arrowShaftRadiusM, h.arrowShaftM, 12),
+        arrowMaterial,
+      );
+      shaft.position.set(north, h.arrowTipAboveM + h.arrowHeadM + h.arrowShaftM / 2, east);
+      for (const part of [head, shaft]) {
+        add(part, quayId, layoutGroup);
+        arrowMeshes.push(part);
+      }
+    }
+
     // Our berth: a stripe along the quay edge between our two rings.
     const ours = geometry.ourBerth;
     const stripe = new THREE.Mesh(
@@ -133,6 +164,12 @@ export function buildMarina(areaData: AreaData = area): Marina {
       if (node !== layoutGroup) meshes.push(node);
     });
     for (const mesh of meshes) mesh.visible = shown;
+    showArrow();
+  };
+
+  /** The arrow shows in the marina only, when the marina is near and the Place section's box is ticked. */
+  const showArrow = () => {
+    for (const mesh of arrowMeshes) mesh.visible = shown && arrowOn;
   };
 
   const buildYacht = (yacht: MooredYacht) => {
@@ -185,9 +222,15 @@ export function buildMarina(areaData: AreaData = area): Marina {
       const { boat } = state;
       object.position.set(-boat.northM, 0, -boat.eastM);
       const near = distanceToRect(bounds, boat.eastM, boat.northM) <= h.maxDrawM;
+      const arrow = state.harbour.place === 'marina' && state.harbour.berthArrow;
       if (near !== shown) {
         shown = near;
         for (const mesh of meshes) mesh.visible = near;
+        showArrow();
+      }
+      if (arrow !== arrowOn) {
+        arrowOn = arrow;
+        showArrow();
       }
     },
   };

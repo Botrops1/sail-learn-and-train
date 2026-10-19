@@ -670,6 +670,7 @@
   "place.traffic.busy": "Busy",
   "place.traffic.half": "Half full",
   "place.traffic.empty": "Empty",
+  "place.berthArrow": "Show an arrow over my berth",
   "place.status.open": "Open water near the practice buoys.",
   "place.status.marina": "In the marina's fairway. Your berth is marked yellow on the quay: go in stern first (stern-to).",
   "place.hint": "Choosing a place puts the boat there, ready for harbour work: sails rolled away, engine running in neutral. Choosing it again puts her back at the start. The other yachts never move.",

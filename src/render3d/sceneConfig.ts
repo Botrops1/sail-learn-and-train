@@ -227,6 +227,14 @@ export const SCENE = {
     mastRadiusM: 0.075,
     quayBelowM: 1.0,
     pontoonBelowM: 0.3,
+    /** The arrow over our berth (owner, PR #101): it points down, floats over the quay (never over the water), metres. */
+    arrowTipAboveM: 3,
+    arrowHeadM: 2.5,
+    arrowHeadRadiusM: 1.1,
+    arrowShaftM: 2.5,
+    arrowShaftRadiusM: 0.4,
+    /** How far behind the quay's edge (towards the land) the arrow stands. */
+    arrowInsetM: 3,
     /** Beyond this distance from the boat the marina is not drawn or tappable, metres (the camera's far plane). */
     maxDrawM: 1000,
   },

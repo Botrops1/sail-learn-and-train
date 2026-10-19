@@ -46,7 +46,7 @@ function choiceRow<T extends string>(
 
 /**
  * The Place section (M42, PHASE7_SPEC 8.6): Open water or Marina, and in the marina its layout
- * and how many other yachts lie there. Choosing a place puts the boat there ready for harbour
+ * how many other yachts lie there, and the arrow over our berth. Choosing a place puts the boat there ready for harbour
  * work (also choosing the one she is in: back to the start). M43 adds the damage report here.
  */
 export function createPlacePanel(store: Store): HTMLElement[] {
@@ -74,6 +74,14 @@ export function createPlacePanel(store: Store): HTMLElement[] {
     (id) => t(`place.traffic.${id}`),
     (value) => store.dispatch({ type: 'setTraffic', traffic: value }),
   );
+  const arrowBox = el('input', { type: 'checkbox', 'data-testid': 'berth-arrow' });
+  arrowBox.addEventListener('change', () =>
+    store.dispatch({ type: 'setBerthArrow', on: arrowBox.checked }),
+  );
+  const arrow = el('label', { class: 'toggle', 'data-testid': 'berth-arrow-row' }, [
+    arrowBox,
+    el('span', {}, [t('place.berthArrow')]),
+  ]);
   const status = el('p', { class: 'hint', 'data-testid': 'place-status', 'aria-live': 'polite' });
   const hint = el('p', { class: 'hint explain' }, [t('place.hint')]);
 
@@ -85,9 +93,11 @@ export function createPlacePanel(store: Store): HTMLElement[] {
     traffic.sync(level);
     layouts.row.hidden = place !== 'marina';
     traffic.row.hidden = place !== 'marina';
+    arrow.hidden = place !== 'marina';
+    arrowBox.checked = state.harbour.berthArrow;
     status.textContent = t(`place.status.${place}`);
   };
   store.subscribe(sync);
   sync(store.getState());
-  return [places.row, layouts.row, traffic.row, status, hint];
+  return [places.row, layouts.row, traffic.row, arrow, status, hint];
 }

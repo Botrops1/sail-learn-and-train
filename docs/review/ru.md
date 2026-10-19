@@ -2829,6 +2829,7 @@
 | place.traffic.busy | Busy | Много |
 | place.traffic.half | Half full | Половина |
 | place.traffic.empty | Empty | Нет |
+| place.berthArrow | Show an arrow over my berth | Показывать стрелку над моим местом |
 | place.status.open | Open water near the practice buoys. | Открытая вода у тренировочных буёв. |
 | place.status.marina | In the marina's fairway. Your berth is marked yellow on the quay: go in stern first (stern-to). | В проходе марины. Ваше место отмечено жёлтым на причале: заходите кормой (кормой к причалу). |
 | place.hint | Choosing a place puts the boat there, ready for harbour work: sails rolled away, engine running in neutral. Choosing it again puts her back at the start. The other yachts never move. | Выбор места переносит лодку туда, готовой к манёврам в гавани: паруса свёрнуты, двигатель работает на нейтрали. Повторный выбор возвращает её к началу. Другие яхты не двигаются. |
