@@ -15,6 +15,7 @@ export const ROPE_DASH: Record<RopeColorKey, string> = {
   control: '2 3',
   furling: '7 3 2 3',
   halyard: '4 4',
+  mooring: '10 2',
 };
 
 export function ropeColorKey(ropeId: string): RopeColorKey {

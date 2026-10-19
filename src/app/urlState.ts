@@ -33,6 +33,7 @@ import type { RigHistory } from '../model/sim';
 import { boat } from '../model/boat';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { isMarinaLayout, isTraffic } from '../model/marina';
+import { isLineCode, linesFromLink, NO_LINES, type LineCode } from '../model/mooringLines';
 import type { BoatState } from '../model/motion';
 import { isPlace, placeStart, type PlaceStart } from '../model/places';
 import { isTimeScale } from '../model/timeScale';
@@ -177,7 +178,7 @@ export function parseUrlState(
     if (value >= asked && value <= 100) history.jibUnfurled = value / 100;
   }
 
-  return initialState({
+  const state = initialState({
     controls,
     camera: preset ? { preset } : {},
     settings: {
@@ -205,6 +206,9 @@ export function parseUrlState(
     ...parseClock(params),
     harbour,
   });
+  // The lines need the boat as she lies (the far ends are our berth's), so they come last (M44).
+  const lines = linesFromLink(parseLines(params), state.boat, state.harbour);
+  return lines.length === 0 ? state : { ...state, lines: { ...NO_LINES, lines } };
 }
 
 /**
@@ -245,6 +249,28 @@ function parsePosition(params: URLSearchParams, start: PlaceStart): Partial<Boat
   return { eastM: start.eastM, northM: start.northM };
 }
 
+/** `ln=sp:2.55,ss:2.55,ll:12.33` (M44): each entry a line code and its length in metres; wrong entries are left out. */
+function parseLines(params: URLSearchParams): { code: LineCode; lengthM: number }[] {
+  const ln = params.get('ln');
+  if (ln === null) return [];
+  const found: { code: LineCode; lengthM: number }[] = [];
+  for (const entry of ln.split(',')) {
+    const [code, length, ...rest] = entry.split(':');
+    if (code === undefined || length === undefined || rest.length > 0) continue;
+    if (!isLineCode(code) || !DECIMAL.test(length) || found.some((f) => f.code === code)) continue;
+    found.push({ code, lengthM: Number(length) });
+  }
+  return found;
+}
+
+/** The lines that are on, in the order sp, ss, ll, as `ln` (M44); nothing when none is on. */
+export function linesParams(state: AppState): [string, string][] {
+  if (state.harbour.place !== 'marina' || state.lines.lines.length === 0) return [];
+  return [
+    ['ln', state.lines.lines.map((line) => `${line.code}:${line.lengthM.toFixed(2)}`).join(',')],
+  ];
+}
+
 /**
  * The place parameters (PHASE7_SPEC 8.4), written when the place is not open water: `pl`, `ml`
  * (when not medium), `tr` (when not half), `ba=0` (arrow over our berth off), then the boat's position `pe`, `pn`.
@@ -263,6 +289,7 @@ export function placeParams(state: AppState): [string, string][] {
     return clamped === '-0.0' ? '0.0' : clamped;
   };
   result.push(['pe', written(state.boat.eastM)], ['pn', written(state.boat.northM)]);
+  result.push(...linesParams(state));
   return result;
 }
 
@@ -601,6 +628,6 @@ export function serializeUrlState(state: AppState): string {
   if (state.harbour.fendersOut) params.set('fd', '1');
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
-  // Commas need no escaping in a query (co=a5,b3 stays readable).
-  return `?${params.toString().replace(/%2C/g, ',')}`;
+  // Commas and colons need no escaping in a query (co=a5,b3 and ln=sp:2.55 stay readable).
+  return `?${params.toString().replace(/%2C/g, ',').replace(/%3A/g, ':')}`;
 }

@@ -36,6 +36,7 @@ import {
   NO_CONTACT,
   stepContact,
   stepFenders,
+  withPropellerReport,
   type ContactState,
   type Obstacle,
 } from '../model/contact';
@@ -47,6 +48,14 @@ import {
   type MarinaLayoutId,
   type TrafficId,
 } from '../model/marina';
+import {
+  clearPropeller,
+  lineCommand,
+  NO_LINES,
+  stepLines,
+  type LineCode,
+  type LinesState,
+} from '../model/mooringLines';
 import { isPlace, placeStart, type PlaceId } from '../model/places';
 import { THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
 import { appendTrack, type TrackPoint } from '../model/track';
@@ -132,6 +141,8 @@ export interface AppState {
   thrusters: ThrusterState;
   /** What the hull touched (M43): the damage report. Not in the link. */
   contact: ContactState;
+  /** The mooring lines, the crew task and a line round the propeller (M44). In the link as `ln` (the lines only). */
+  lines: LinesState;
   /** The alert history (M36, issue #80): what the short messages said, kept for the notification centre. Not in the link. */
   alerts: AlertLog;
 }
@@ -194,6 +205,10 @@ export type Action =
   | { type: 'setBerthArrow'; on: boolean }
   /** M43: empties the damage report. */
   | { type: 'clearDamageReport' }
+  /** M44: a command on one mooring line (take it, tighten, ease, let go). */
+  | { type: 'line'; code: LineCode; command: 'take' | 'tighten' | 'ease' | 'letGo' }
+  /** M44: a diver cuts the propeller free; the lines stay as they were. */
+  | { type: 'clearPropeller' }
   /** M41: a thruster joystick held to a side (-1 port, +1 starboard) or let go (0). */
   | { type: 'thruster'; which: 'bow' | 'stern'; dir: ThrustDir }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
@@ -364,6 +379,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     harbour: overrides.harbour ?? DEFAULT_HARBOUR,
     thrusters: THRUSTERS_OFF,
     contact: NO_CONTACT,
+    lines: NO_LINES,
     alerts: EMPTY_ALERTS,
   });
 }
@@ -422,6 +438,17 @@ function inPlace(state: AppState, placed: HarbourState): AppState {
     },
     autopilot: { mode: 'off', targetDeg: start.headingDeg, integralDeg: 0 },
   });
+}
+
+/** What the line commands and the crew task need (M44). The marina is the only place with lines. */
+function linesInputs(state: AppState) {
+  return {
+    lines: state.lines,
+    boat: state.boat,
+    harbour: state.harbour,
+    geometry: marinaGeometry(state.harbour.layout, state.harbour.traffic),
+    engine: state.engine,
+  };
 }
 
 /** Longest frame step, seconds: a background tab must not make the rig jump. */
@@ -553,6 +580,8 @@ function reduceAction(state: AppState, action: Action): AppState {
       const engine = state.engine;
       if (command === 'start' || command === 'stop') {
         const running = command === 'start';
+        // A line round the propeller: the engine will not start until a diver has cleared it (M44).
+        if (running && state.lines.fouled) return state;
         return engine.running === running ? state : { ...state, engine: { ...engine, running } };
       }
       if (!Number.isFinite(command.leverPct)) return state;
@@ -651,6 +680,15 @@ function reduceAction(state: AppState, action: Action): AppState {
       return state.contact.reports.length === 0
         ? state
         : { ...state, contact: { ...state.contact, reports: [], notice: null } };
+    case 'line': {
+      if (state.harbour.place !== 'marina') return state;
+      const lines = lineCommand(action.code, action.command, linesInputs(state));
+      return lines === state.lines ? state : { ...state, lines };
+    }
+    case 'clearPropeller': {
+      const lines = clearPropeller(state.lines);
+      return lines === state.lines ? state : { ...state, lines };
+    }
     case 'thruster': {
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };
@@ -697,7 +735,14 @@ function reduceAction(state: AppState, action: Action): AppState {
         realisticState = moved.state;
       }
       // The engine runs in Held still too (the boat just does not move).
-      const engine = stepEngine(state.engine, dt);
+      let engine = stepEngine(state.engine, dt);
+      // The crew's walk, and a slack line near the propeller with the engine in gear (M44).
+      let lines = state.lines;
+      if (lines.lines.length > 0 || lines.crew !== null || lines.foulS !== 0) {
+        lines = stepLines({ ...linesInputs(state), engine }, dt);
+      }
+      const justFouled = lines.fouled && !state.lines.fouled;
+      if (justFouled) engine = { ...engine, running: false };
       const rig = step({ controls, rig: state.rig }, dt, motionOf(state.boat), undefined, {
         instantRopes: realistic,
         wind: patterned ? wind : undefined,
@@ -729,6 +774,7 @@ function reduceAction(state: AppState, action: Action): AppState {
                       ? marinaObstacles(marinaGeometry(state.harbour.layout, state.harbour.traffic))
                       : NO_OBSTACLES,
                   fenders: { out: state.harbour.fendersOut, lost: state.harbour.fendersLost },
+                  lines: lines.lines,
                 })
               : undefined,
         },
@@ -744,6 +790,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         harbour = fenders.harbour;
         contact = fenders.contact;
       }
+      if (justFouled) contact = withPropellerReport(contact, rig.timeS);
       return {
         ...state,
         controls,
@@ -761,6 +808,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         clock,
         contact,
         harbour,
+        lines,
       };
     }
   }

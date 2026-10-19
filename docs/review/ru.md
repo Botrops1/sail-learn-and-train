@@ -2124,6 +2124,51 @@
 
 ## Гавань и якорная стоянка
 
+### Кормовой швартов, левый (`rope_stern_line_port`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Stern line, port | Кормовой швартов, левый |
+| Другие названия | — | — |
+| Коротко | A line from a stern cleat to a ring on the quay. | Конец с кормовой утки на рым причала. |
+| Что делает / что значит | The two stern lines hold the stern a short step from the quay. | Два кормовых швартова держат корму в шаге от причала. |
+| На этой яхте | Cleats on each quarter of the stern. | Утки на раковинах кормы. |
+| Типичные ошибки | Throwing them before the stern is close. → Wait until the stern is within about 4 m. | Подавать их, пока корма далеко. → Ждите, пока корма ближе примерно 4 м. |
+| «Покажи» | Both stern lines on the quay rings. | Оба кормовых швартова на рымах причала. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Кормовой швартов, правый (`rope_stern_line_starboard`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Stern line, starboard | Кормовой швартов, правый |
+| Другие названия | — | — |
+| Коротко | A line from a stern cleat to a ring on the quay. | Конец с кормовой утки на рым причала. |
+| Что делает / что значит | The two stern lines hold the stern a short step from the quay. | Два кормовых швартова держат корму в шаге от причала. |
+| На этой яхте | Cleats on each quarter of the stern. | Утки на раковинах кормы. |
+| Типичные ошибки | Throwing them before the stern is close. → Wait until the stern is within about 4 m. | Подавать их, пока корма далеко. → Ждите, пока корма ближе примерно 4 м. |
+| «Покажи» | Both stern lines on the quay rings. | Оба кормовых швартова на рымах причала. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Муринг (`rope_lazy_line`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Lazy line | Муринг |
+| Другие названия | mooring line | муринговый конец |
+| Коротко | A line from the quay to a weight on the bottom, taken to the bow. | Конец от причала к грузу на дне, заводимый на нос. |
+| Что делает / что значит | It lies on the bottom between berths; the crew lifts it with the boat hook at the stern, walks it forward along the side deck and makes it fast on a bow cleat, pulling it tight. | Он лежит на дне между местами; экипаж поднимает его отпорным крюком с кормы, ведёт вперёд по палубе и крепит на носовой утке, выбирая втугую. |
+| На этой яхте | In the app the crew takes 20 s to walk it forward. | В приложении экипаж ведёт его на нос 20 с. |
+| Типичные ошибки | Leaving it slack. → Pull it as tight as you can by hand, or the bow swings onto the neighbour. | Оставить слабым. → Выбирайте руками как можно туже, иначе нос сносит на соседа. |
+| «Покажи» | The lazy line tied at the bow and pulled tight. | Муринг, закреплённый на носу и выбранный втугую. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### Причал (`env_quay`)
 
 | Поле | English | Русский |
@@ -2135,6 +2180,36 @@
 | На этой яхте | The app's marina has a quay to the north and a pontoon to the south, with a fairway between them. | В марине приложения причал на севере и понтон на юге, между ними проход. |
 | Типичные ошибки | Coming in bow first like in a car park. → In the Mediterranean you go in stern first. | Заходить носом, как на парковку. → В Средиземноморье заходят кормой. |
 | «Покажи» | The marina from above. | Марина сверху. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Рым на причале (`env_quay_ring`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Quay ring | Рым на причале |
+| Другие названия | bollard | кнехт<br>тумба |
+| Коротко | A ring on the quay that lines are tied to. | Кольцо на причале, к которому крепят швартовы. |
+| Что делает / что значит | A ring on the quay that lines are tied to. | Кольцо на причале, к которому крепят швартовы. |
+| На этой яхте | One at each berth's edge in the app's marina. | По одному на краю каждого места в марине приложения. |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Швартовка кормой (`term_med_mooring`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Stern-to mooring | Швартовка кормой |
+| Другие названия | Med mooring | средиземноморская швартовка |
+| Коротко | Lying with the stern to the quay, held by stern lines and a lazy line or the anchor at the bow. | Стоянка кормой к причалу на кормовых швартовах и муринге или якоре с носа. |
+| Что делает / что значит | Boats lie side by side, stern to the quay, so many fit along it. Two stern lines go to rings on the quay; at the bow a lazy line (or your own anchor) holds her off the quay and against the wind. | Лодки стоят бок о бок кормой к причалу, так их помещается больше. Два кормовых швартова идут к рымам на причале; с носа муринг (или свой якорь) держит лодку от причала и против ветра. |
+| На этой яхте | Reverse in: the stern walks to port, so start the turn early. | Заходите задним ходом: корму уводит влево, начинайте поворот раньше. |
+| Типичные ошибки | Picking up the lazy line with the engine in gear. → Neutral first: a slack line near the propeller fouls it. | Поднимать муринг с включённой передачей. → Сначала нейтраль: слабый конец у винта наматывается. |
+| «Покажи» | In the berth with both stern lines and the lazy line tight. | На месте, оба кормовых швартова и муринг выбраны. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -2701,6 +2776,7 @@
 | engine.gear.neutral | In neutral: the propeller does not push | Нейтраль: винт не толкает |
 | engine.gear.shifting | Shifting through neutral… | Переключение через нейтраль… |
 | engine.hint | Single lever: forward = ahead, back = astern; further = more rpm. Through the middle the gearbox shifts through neutral. | Одна рукоятка: вперёд — передний ход, назад — задний ход; чем дальше, тем больше оборотов. При проходе через середину коробка передач переключается через нейтраль. |
+| engine.fouled | The propeller is fouled by a line: clear it first. | На винт намотан конец: сначала освободите винт. |
 | instruments.engine | Engine {rpm} rpm | Двигатель {rpm} об/мин |
 | autopilot.astern | The autopilot does not steer while she goes astern (backwards): you steer. | Авторулевой не рулит, пока яхта идёт кормой вперёд: рулите вы. |
 | language.name | English | Русский |
@@ -2786,7 +2862,7 @@
 | mode.learn.hint | Names and explanations of every part and word. | Названия и объяснения всех частей и слов. |
 | mode.easy.hint | A slider for every rope. | Ползунок для каждого конца. |
 | mode.realistic.hint | Clutches and winches, as on the boat. | Стопоры и лебёдки, как на яхте. |
-| mode.harbour.hint | Engine and thrusters first. | Сначала двигатель и подруливающие. |
+| mode.harbour.hint | Engine, thrusters, lines and anchor first. | Сначала двигатель, подруливающие, швартовы и якорь. |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a rope or a clutch: its − and + appear here. | Нажмите на конец или стопор: здесь появятся − и +. |
@@ -2851,6 +2927,29 @@
 | damage.severity.knock | a knock: gelcoat cracked, a repair job. | удар: трещины в гелькоуте, нужен ремонт. |
 | damage.severity.hit | a hard hit: the hull may be damaged. Check for water inside. | сильный удар: корпус может быть повреждён. Проверьте, нет ли воды внутри. |
 | damage.fenderLost | A {side} fender was torn off and lost (fenders out at speed). | Оторвало и потеряли кранец с {side} борта (кранцы за бортом на ходу). |
+| damage.propeller | A line got caught in the propeller and stopped the engine. | Конец намотался на винт и заглушил двигатель. |
+| lines.title | Lines | Швартовы |
+| lines.name.sp | Stern line, port | Кормовой швартов, левый |
+| lines.name.ss | Stern line, starboard | Кормовой швартов, правый |
+| lines.name.ll | Lazy line (to the bow) | Муринг (на нос) |
+| lines.off | Not tied. | Не закреплён. |
+| lines.walking | The crew is walking it to the bow… {seconds} s | Экипаж ведёт его на нос… {seconds} с |
+| lines.on | Tied: {length} m, pulling {kN} kN | Закреплён: {length} м, тянет {kN} кН |
+| lines.take.sp | Throw it to the quay | Подать на причал |
+| lines.take.ss | Throw it to the quay | Подать на причал |
+| lines.take.ll | Pick it up | Поднять |
+| lines.tighten | Tighten | Выбрать |
+| lines.ease | Ease | Потравить |
+| lines.letGo | Let go | Отдать |
+| lines.tooTight | Hand tight: it cannot be pulled tighter by hand. | Выбрано втугую: руками туже не выбрать. |
+| lines.reason.place | Only in the marina. | Только в марине. |
+| lines.reason.far | Come within {m} m of your yellow berth with the stern. | Подойдите кормой ближе {m} м к своему (жёлтому) месту. |
+| lines.reason.fast | Too fast: stop the boat first. | Слишком быстро: сначала остановите лодку. |
+| lines.reason.sternFirst | Tie a stern line first. | Сначала закрепите кормовой швартов. |
+| lines.reason.busy | The crew is busy. | Экипаж занят. |
+| lines.hint | Stern-to (the usual way in the Mediterranean): reverse slowly into the berth, throw both stern lines to the quay when the stern is close, then pick up the lazy line (a line from the quay to a weight on the bottom ahead of the boat), walk it to the bow and pull it tight. The lazy line holds the bow against the wind. Keep the engine in neutral while a line is slack near the propeller. | Кормой к причалу (обычно в Средиземноморье): медленно заходите задним ходом, подайте оба кормовых швартова на причал, когда корма близко, затем поднимите муринг (конец от причала к грузу на дне перед лодкой), проведите его на нос и выберите втугую. Муринг держит нос против ветра. Пока у винта слабый конец, держите двигатель на нейтрали. |
+| lines.fouled | A line is caught in the propeller. The engine has stopped. | Конец намотался на винт. Двигатель заглох. |
+| lines.clearProp | Clear the propeller (a diver frees it) | Освободить винт (водолаз снимает конец) |
 | side.port.gen | port | левого |
 | side.starboard.gen | starboard | правого |
 | thrusters.label | Thrusters | Подруливающие устройства |

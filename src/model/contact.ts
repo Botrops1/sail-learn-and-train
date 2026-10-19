@@ -484,3 +484,21 @@ export function stepFenders(
     contact: reports === contact.reports ? contact : { ...contact, reports, notice, noticeUntilS },
   };
 }
+
+/**
+ * A line wound round the propeller (M44, PHASE7_SPEC 10.4): a report in the damage list and the
+ * alert. Severity `hit` shows it in red; the report names the saildrive, at the stern.
+ */
+export function withPropellerReport(contact: ContactState, timeS: number): ContactState {
+  const report: ContactReport = {
+    atS: timeS,
+    obstacleId: 'propeller',
+    partId: 'part_saildrive',
+    part: 'stern',
+    impactMps: 0,
+    fender: false,
+    severity: 'hit',
+  };
+  const reports = [report, ...contact.reports].slice(0, MAX_REPORTS);
+  return { ...contact, reports, notice: report, noticeUntilS: timeS + NOTICE_S };
+}

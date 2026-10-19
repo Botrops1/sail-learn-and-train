@@ -1234,7 +1234,19 @@ Alongside mooring with springs (side-to; Phase 8 exercises may add it); the pass
 
 ### 10.11 Decided in the M44 PR
 
-(empty)
+- **No rope legend.** The "Rope colours" section was removed in M38 (issue #90), so there is no legend to add `legend.mooring` to; the string is not written. `ROPE_DASH` still gets `mooring: '10 2'` because its type is every key of `SCENE.ropes.colors`. `src/ui/ropeLegend.ts` does not exist.
+- **`screenRadius`, not `radiusAt`.** `src/render3d/boat/ropes.ts` exports `screenRadius(radius, point, view)` (the "at least `minScreenWidthPx` on screen" part of `radiusAt`) and `RopeView`; `radiusAt` stays private because it also asks whether a point is on a winch drum, which means nothing for a point on the map.
+- **Open water shows no rows.** The Lines block of the Harbour gear section shows `lines.reason.place` ("Only in the marina.") instead of the three rows and the hint when the place is not the marina.
+- **The waiting lazy line stays drawn while the crew walks it** and is replaced by the tied line when the walk ends (no half-drawn state).
+- **Hand tight uses the stretch only.** `canTighten` compares the elastic part of the tension (without the damping term) with `crewPullN`, so the button does not flicker while the boat moves; it allows 1e−3 N of float noise.
+- **`ln` is written by `placeParams`** (after `pn`) through an exported `linesParams(state)`; `parseUrlState` reads the lines last, once the boat is known (`linesFromLink`, which also sorts them sp, ss, ll). The serializer un-escapes `%3A` as well as `%2C`.
+- **Start is refused in the reducer too.** The `engine` action ignores `start` while `lines.fouled`; the Start buttons are disabled with `engine.fouled` beside them (`data-testid="engine-fouled"`).
+- **`HarbourInputs.lines` is optional**, so the M41 thruster tests that call `harbourForces` stay as they are.
+- **Registry and glossary order.** The five new ids are appended at the end of both files (the glossary test needs the same order); the Learn group `harbour` has 7 entries. `env_quay_ring` has no Show me; the other four open the berth with the lines on (`rope_lazy_line`: the lazy line waiting, side view).
+- **Text.** "(M40)" is left out of the `term_med_mooring` "on this boat" sentence (a learner does not know what M40 is).
+- **In the app the swing ends at the quay.** Without the lazy line, with contact on, the bow swings about 16° and then her stern touches the quay (three "Quay, at our stern" reports) and she stays there; PT-51's 60° is the lines-only test, which has no quay. The browser check expects more than 8° without the lazy line and at most 5° with it (1° measured).
+- **Owner's answers on PR #105 ("accept all").** The quay stops the swing when the lazy line is let go (kept); open water keeps "Only in the marina." in the Lines block (kept). Independent review: the PR text's link and the WORKFLOW check 3 use `&tr=busy` so the bow swings onto the neighbour as PT-51 says (about 17°, then the stern touches the quay and `yacht-0-11`); the `rope_lazy_line` Show me opens `?cam=top&sel=rope_lazy_line&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55,ss:2.55,ll:12.33` (the waiting line cannot be seen from the side); items 4–6 left as they are.
+- **Prototype check.** PT-51 gives 8.7° / 0.43 m at 15 kn, 11.2° / 0.68 m at 25 kn and 60.7° without the lazy line, as the prototype did; no number was tuned.
 
 ---
 

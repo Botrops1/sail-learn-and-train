@@ -1778,6 +1778,86 @@
       ],
       "showMe": "No wind, standing still: hold both joysticks to starboard: she moves sideways.",
       "textStatus": "draft"
+    },
+    "term_med_mooring": {
+      "name": "Stern-to mooring",
+      "alternatives": [
+        {
+          "term": "Med mooring"
+        }
+      ],
+      "short": "Lying with the stern to the quay, held by stern lines and a lazy line or the anchor at the bow.",
+      "what": "Boats lie side by side, stern to the quay, so many fit along it. Two stern lines go to rings on the quay; at the bow a lazy line (or your own anchor) holds her off the quay and against the wind.",
+      "onThisBoat": "Reverse in: the stern walks to port, so start the turn early.",
+      "mistakes": [
+        {
+          "mistake": "Picking up the lazy line with the engine in gear.",
+          "fix": "Neutral first: a slack line near the propeller fouls it."
+        }
+      ],
+      "showMe": "In the berth with both stern lines and the lazy line tight.",
+      "textStatus": "draft"
+    },
+    "rope_lazy_line": {
+      "name": "Lazy line",
+      "alternatives": [
+        {
+          "term": "mooring line"
+        }
+      ],
+      "short": "A line from the quay to a weight on the bottom, taken to the bow.",
+      "what": "It lies on the bottom between berths; the crew lifts it with the boat hook at the stern, walks it forward along the side deck and makes it fast on a bow cleat, pulling it tight.",
+      "onThisBoat": "In the app the crew takes 20 s to walk it forward.",
+      "mistakes": [
+        {
+          "mistake": "Leaving it slack.",
+          "fix": "Pull it as tight as you can by hand, or the bow swings onto the neighbour."
+        }
+      ],
+      "showMe": "The lazy line tied at the bow and pulled tight.",
+      "textStatus": "draft"
+    },
+    "rope_stern_line_port": {
+      "name": "Stern line, port",
+      "alternatives": [],
+      "short": "A line from a stern cleat to a ring on the quay.",
+      "what": "The two stern lines hold the stern a short step from the quay.",
+      "onThisBoat": "Cleats on each quarter of the stern.",
+      "mistakes": [
+        {
+          "mistake": "Throwing them before the stern is close.",
+          "fix": "Wait until the stern is within about 4 m."
+        }
+      ],
+      "showMe": "Both stern lines on the quay rings.",
+      "textStatus": "draft"
+    },
+    "rope_stern_line_starboard": {
+      "name": "Stern line, starboard",
+      "alternatives": [],
+      "short": "A line from a stern cleat to a ring on the quay.",
+      "what": "The two stern lines hold the stern a short step from the quay.",
+      "onThisBoat": "Cleats on each quarter of the stern.",
+      "mistakes": [
+        {
+          "mistake": "Throwing them before the stern is close.",
+          "fix": "Wait until the stern is within about 4 m."
+        }
+      ],
+      "showMe": "Both stern lines on the quay rings.",
+      "textStatus": "draft"
+    },
+    "env_quay_ring": {
+      "name": "Quay ring",
+      "alternatives": [
+        {
+          "term": "bollard"
+        }
+      ],
+      "short": "A ring on the quay that lines are tied to.",
+      "what": "A ring on the quay that lines are tied to.",
+      "onThisBoat": "One at each berth's edge in the app's marina.",
+      "textStatus": "draft"
     }
   }
 }

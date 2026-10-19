@@ -1462,6 +1462,36 @@ html[data-layout='side'] .view[data-mini-map] .rig-alerts {
   min-width: var(--touch);
 }
 
+/* The mooring lines in the Harbour gear section (M44). */
+.lines-title {
+  margin: 16px 0 4px;
+}
+
+.line-row {
+  margin: 0 0 12px;
+}
+
+.line-row[hidden],
+.line-row .segment[hidden],
+[data-testid='prop-clear'][hidden] {
+  display: none;
+}
+
+.line-name {
+  margin: 0 0 2px;
+  font-size: var(--font-small);
+  font-weight: 700;
+}
+
+.line-row .segments {
+  flex-wrap: wrap;
+}
+
+.line-row .segment {
+  flex: 1 1 28%;
+  min-width: var(--touch);
+}
+
 /* Rope controls (temporary list, M2). */
 .controls {
   display: flex;

@@ -1,6 +1,13 @@
 import { defaultControls, type Controls } from '../src/model/controls';
 import { steadyState } from '../src/model/motion';
 import { mpsToKn } from '../src/model/angles';
+import { boat } from '../src/model/boat';
+import {
+  linesFromLink,
+  lineTension,
+  type LineCode,
+  type MooringLine,
+} from '../src/model/mooringLines';
 
 export const MAIN_SHEETS = [0, 2, 4, 6, 8, 10, 12, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100];
 export const JIB_SHEETS = [0, 25, 50, 75, 100];
@@ -128,4 +135,31 @@ export function harbourStart(o: {
     ...(o.engine ? { engine: o.engine } : {}),
   });
   return { ...state, autopilot: { ...state.autopilot, mode: 'off' } };
+}
+
+/**
+ * The lines of our berth for the boat as she lies (PHASE7_SPEC 10.7): stern lines `sternSlackM`
+ * longer than the distance to their rings; the lazy line at hand tight (`'handTight'`), at its
+ * distance plus `lazy` metres, or none (`null`). "The transom" is the point `(transomX, 0)`.
+ */
+export function berthLines(
+  state: AppState,
+  o: { sternSlackM: number; lazy: 'handTight' | number | null },
+): MooringLine[] {
+  const wanted: { code: LineCode; lengthM: number }[] = [
+    { code: 'sp', lengthM: 30 },
+    { code: 'ss', lengthM: 30 },
+    ...(o.lazy === null ? [] : [{ code: 'll' as const, lengthM: 30 }]),
+  ];
+  const l = boat.physics.lines;
+  return linesFromLink(wanted, state.boat, state.harbour).map((line) => {
+    const d = lineTension(line, state.boat).distanceM;
+    const lengthM =
+      line.code !== 'll'
+        ? d + o.sternSlackM
+        : o.lazy === 'handTight'
+          ? (d * l.lineEAN) / (l.lineEAN + l.crewPullN)
+          : d + (o.lazy as number);
+    return { ...line, lengthM };
+  });
 }

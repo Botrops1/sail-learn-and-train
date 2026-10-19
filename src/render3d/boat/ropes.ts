@@ -34,6 +34,11 @@ function radiusAt(p: Vec3, view: RopeView | undefined): number {
   const radius = onWinchDrum(p)
     ? boat.modelDetail.winchRope.drumRenderRadius
     : boat.visual.ropeRenderRadius;
+  return screenRadius(radius, p, view);
+}
+
+/** `radius`, or more if that would be thinner than `minScreenWidthPx` on screen at point `p` (world frame). M44: the mooring lines use it too. */
+export function screenRadius(radius: number, p: Vec3, view: RopeView | undefined): number {
   if (!view) return radius;
   const distanceToEye = Math.hypot(p[0] - view.eye[0], p[1] - view.eye[1], p[2] - view.eye[2]);
   const minimum = (SCENE.ropes.minScreenWidthPx / 2) * view.metresPerPixelAt1m * distanceToEye;

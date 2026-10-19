@@ -12,7 +12,10 @@ import { DEFAULT_HARBOUR } from '../src/model/harbour';
 import type { ContactHit } from '../src/model/lowSpeed';
 import { pointToMap } from '../src/model/lowSpeed';
 import { stepBoat, type BoatState } from '../src/model/motion';
-import { act, harbourStart, initialState, run } from './motionHelpers';
+import { lineForces, NO_LINES } from '../src/model/mooringLines';
+import { initialEngine } from '../src/model/engine';
+import { reduce } from '../src/app/store';
+import { act, berthLines, harbourStart, initialState, run } from './motionHelpers';
 
 /** Phase 7 physics truths (PHYSICS_TRUTHS.md PT-47 … PT-49 and PT-27), from M40 on. */
 
@@ -281,5 +284,78 @@ describe('PT-34 fenders come in before sailing', () => {
 
   it('PT-34 fenders in the locker stay', () => {
     expect(run(motoring(false), 71).harbour.fendersLost).toHaveLength(0);
+  });
+});
+
+/** The boat in our berth (PHASE7_SPEC 10.7): the marina, medium layout, no other yachts, at rest. */
+function inBerth(engine = initialEngine({ running: false, leverPct: 0 })): AppState {
+  const state = reduce(harbourStart({}), { type: 'goToPlace', place: 'marina' });
+  return {
+    ...state,
+    harbour: { ...state.harbour, traffic: 'empty' },
+    engine,
+    boat: { ...state.boat, eastM: 2.75, northM: 1490.4, headingDeg: 180, speedMps: 0, swayMps: 0 },
+  };
+}
+
+describe('PT-51 stern-to, the bow must be held', () => {
+  /** 120 s at 60 fps with only the lines pulling; the wind from the east. */
+  function lie(twsKn: number, lazy: 'handTight' | null) {
+    const state = inBerth();
+    const lines = berthLines(state, { sternSlackM: 0.3, lazy });
+    const transom = () => pointToMap(boat, boatData.hull.transomX, 0);
+    let boat: BoatState = state.boat;
+    const start = transom();
+    const inputs = {
+      windDirDeg: 90,
+      twsKn,
+      rudderDeg: 0,
+      rig: state.rig,
+      controls: state.controls,
+      engineThrustN: 0,
+      external: (b: BoatState) => lineForces(lines, b),
+    };
+    let swing = 0;
+    for (let i = 0; i < 120 * 60; i += 1) {
+      boat = stepBoat(boat, inputs, 1 / 60).boat;
+      swing = Math.max(swing, Math.abs(wrap180(boat.headingDeg - 180)));
+    }
+    const end = transom();
+    return { swing, driftM: Math.hypot(end[0] - start[0], end[1] - start[1]) };
+  }
+
+  it('PT-51 a lazy line holds the bow: 15 kn swings her up to 12°, 25 kn up to 15°, and the transom stays within 1 m', () => {
+    const light = lie(15, 'handTight');
+    expect(light.swing).toBeLessThanOrEqual(12);
+    expect(light.driftM).toBeLessThan(1.0);
+    const strong = lie(25, 'handTight');
+    expect(strong.swing).toBeLessThanOrEqual(15);
+    expect(strong.driftM).toBeLessThan(1.0);
+  });
+
+  it('PT-51 without the lazy line the bow swings more than 35° at 15 kn', () => {
+    expect(lie(15, null).swing).toBeGreaterThan(35);
+  });
+});
+
+describe('PT-52 a slack line near the propeller fouls it', () => {
+  const slack = (leverPct: number) => {
+    const state = inBerth(initialEngine({ running: true, leverPct }));
+    return {
+      ...state,
+      lines: { ...NO_LINES, lines: berthLines(state, { sternSlackM: 2.0, lazy: null }) },
+    };
+  };
+
+  it('PT-52 with the lever astern the engine is stopped and fouled after 3 s', () => {
+    const after = run(slack(-30), 3);
+    expect(after.lines.fouled).toBe(true);
+    expect(after.engine.running).toBe(false);
+  });
+
+  it('PT-52 with the lever in neutral nothing is caught, even after 10 s', () => {
+    const after = run(slack(0), 10);
+    expect(after.lines.fouled).toBe(false);
+    expect(after.engine.running).toBe(true);
   });
 });
