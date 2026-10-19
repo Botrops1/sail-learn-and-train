@@ -106,7 +106,7 @@ export async function liveM41Checks({ openPage, viewports, outDir, prefix, probl
       () =>
         [
           ...document.querySelectorAll(
-            '[data-testid^="quick-lever-"], .thruster-joystick-quick button',
+            'button[data-testid^="quick-lever-"], .thruster-joystick-quick button',
           ),
         ]
           .map((node) => node.getBoundingClientRect())
