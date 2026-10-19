@@ -59,7 +59,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const second = await column(page, '[data-testid="second-column"]');
     check(
       `${name}: Easy, column 1 starts with Mode and ends with Settings`,
-      first.join() === 'mode,ropes,sails,autopilot,engine,harbour,settings' &&
+      first.join() === 'mode,ropes,sails,autopilot,engine,thrusters,harbour,settings' &&
         second.join() === 'conditions,learn',
       JSON.stringify({ first, second }),
     );
@@ -150,9 +150,9 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const names = await page.locator('.mode-choice .mode-option-name').allInnerTexts();
     const hints = await page.locator('.mode-choice .mode-option-hint').allInnerTexts();
     check(
-      'the Mode section lists Learn, Easy and Realistic, each with a description',
-      choices === 3 &&
-        names.join() === 'Learn,Easy,Realistic' &&
+      'the Mode section lists Learn, Easy, Realistic and Harbour, each with a description',
+      choices === 4 &&
+        names.join() === 'Learn,Easy,Realistic,Harbour' &&
         hints.every((hint) => hint.length > 30),
       JSON.stringify({ names, hints }),
     );
@@ -390,14 +390,14 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     );
     check(
       'phone: no Mode, Settings or Rope colours section',
-      ids.join() === 'ropes,sails,autopilot,engine,conditions,learn,harbour',
+      ids.join() === 'ropes,sails,autopilot,engine,conditions,learn,thrusters,harbour',
       ids.join(),
     );
     await page.getByTestId('mode-chip').click();
     const hints = await page.locator('.chip-menu .mode-option-hint:visible').allInnerTexts();
     check(
       'phone: the chip menu has a line under each mode',
-      hints.length === 3 && hints.every((hint) => hint.length > 10),
+      hints.length === 4 && hints.every((hint) => hint.length > 10),
       JSON.stringify(hints),
     );
     await shot(page, 'live-phone-mode-menu');
