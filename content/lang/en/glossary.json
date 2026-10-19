@@ -1814,7 +1814,7 @@
           "fix": "Pull it as tight as you can by hand, or the bow swings onto the neighbour."
         }
       ],
-      "showMe": "The berth's lazy line, waiting on the quay face.",
+      "showMe": "The lazy line tied at the bow and pulled tight.",
       "textStatus": "draft"
     },
     "rope_stern_line_port": {

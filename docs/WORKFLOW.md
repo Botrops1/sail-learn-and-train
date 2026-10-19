@@ -568,7 +568,7 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 
 - [ ] Stern-to: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&tx=4 — she is in front of her berth. In the Harbour gear block: "Throw it to the quay" for both stern lines, then "Pick it up" for the lazy line (a line from the quay to a weight on the bottom, taken to the bow): the crew walks it to the bow in 20 seconds. Tap "Tighten" on the lazy line until it says hand tight.
 - [ ] She holds: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=top&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55,ss:2.55,ll:12.33&wd=90&ws=15&m=harbour — wind from the side: she stays in her berth, the bow moves only a little.
-- [ ] Without the lazy line: the same link, then "Let go" the lazy line: the bow swings round about 15° until her stern touches the quay, and a damage report says so.
+- [ ] Without the lazy line: the same link with `&tr=busy` added, then "Let go" the lazy line: the bow swings towards the neighbour (and her stern touches the quay), and a damage report says so.
 - [ ] Line in the propeller: from the stern-to link, take one stern line, ease it 10 times, then put the engine astern: the engine stops and says a line is caught. "Clear the propeller" frees it.
 
 #### M45: The bay

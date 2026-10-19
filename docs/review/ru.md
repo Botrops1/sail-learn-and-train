@@ -2164,7 +2164,7 @@
 | Что делает / что значит | It lies on the bottom between berths; the crew lifts it with the boat hook at the stern, walks it forward along the side deck and makes it fast on a bow cleat, pulling it tight. | Он лежит на дне между местами; экипаж поднимает его отпорным крюком с кормы, ведёт вперёд по палубе и крепит на носовой утке, выбирая втугую. |
 | На этой яхте | In the app the crew takes 20 s to walk it forward. | В приложении экипаж ведёт его на нос 20 с. |
 | Типичные ошибки | Leaving it slack. → Pull it as tight as you can by hand, or the bow swings onto the neighbour. | Оставить слабым. → Выбирайте руками как можно туже, иначе нос сносит на соседа. |
-| «Покажи» | The berth's lazy line, waiting on the quay face. | Муринг вашего места у стенки причала. |
+| «Покажи» | The lazy line tied at the bow and pulled tight. | Муринг, закреплённый на носу и выбранный втугую. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
