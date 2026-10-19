@@ -53,7 +53,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
     await setMode(page, 'learn');
     await showSection(page, 'learn');
     await page.waitForTimeout(500);
-    check('ten groups', (await groupCount(page)) === 10, String(await groupCount(page)));
+    check('eleven groups', (await groupCount(page)) === 11, String(await groupCount(page)));
     const summary = page.locator('[data-testid="learn-group-ropes"] > summary');
     check('the first group is Ropes (9)', (await summary.innerText()) === 'Ropes (9)', '');
     await summary.click();
@@ -61,7 +61,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
     check('the entry opens', (await learnName(page)) === 'Vang', await learnName(page));
     check('the address bar has learn=rope_vang', await has(page, 'learn=rope_vang'), 'missing');
     await page.getByTestId('learn-back').click();
-    check('Back to the list shows the groups', (await groupCount(page)) === 10, 'no groups');
+    check('Back to the list shows the groups', (await groupCount(page)) === 11, 'no groups');
     const open = await page.locator('[data-testid="learn-groups"] > details[open]').count();
     check('the groups are closed again', open === 0, String(open));
     check('learn= leaves the address bar', await hasNot(page, 'learn='), 'learn= still there');
@@ -96,7 +96,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
     const none = await page.getByTestId('learn-results').innerText();
     check('kickerxx finds nothing', none.includes('Nothing found.'), none);
     await search.fill('   ');
-    check('spaces alone show the groups', (await groupCount(page)) === 10, 'no groups');
+    check('spaces alone show the groups', (await groupCount(page)) === 11, 'no groups');
     await context.close();
   }
 

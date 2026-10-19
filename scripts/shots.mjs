@@ -59,6 +59,7 @@ import { liveM38Checks, M38_SCENES } from './shots-m38.mjs';
 import { liveM39Checks, M39_SCENES } from './shots-m39.mjs';
 import { liveM40Checks, M40_SCENES } from './shots-m40.mjs';
 import { liveM41Checks, M41_SCENES } from './shots-m41.mjs';
+import { liveM42Checks, M42_SCENES } from './shots-m42.mjs';
 import {
   closeSettings,
   openSettings,
@@ -217,6 +218,7 @@ const SCENES = [
   ...M39_SCENES.map((scene) => ({ ...scene, name: `m39-${scene.name}` })),
   ...M40_SCENES.map((scene) => ({ ...scene, name: `m40-${scene.name}` })),
   ...M41_SCENES.map((scene) => ({ ...scene, name: `m41-${scene.name}` })),
+  ...M42_SCENES.map((scene) => ({ ...scene, name: `m42-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -989,6 +991,7 @@ try {
     m39: () => liveM39Checks(onTestClock),
     m40: () => liveM40Checks(onTestClock),
     m41: () => liveM41Checks(onTestClock),
+    m42: () => liveM42Checks(onTestClock),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

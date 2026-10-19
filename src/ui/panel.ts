@@ -10,6 +10,7 @@ import { MODE_LAYOUTS, SECTION_IDS, sectionAvailable, type SectionId } from './m
 import { createModeSection } from './modeSection';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
+import { createPlacePanel } from './placePanel';
 import { createQuickRow } from './quickRow';
 import { createRopesTab, revealRopeStrip } from './ropesTab';
 import { createSailsPanel } from './sailsPanel';
@@ -28,6 +29,7 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
   engine: 'engine.label',
   conditions: 'section.conditions',
   learn: 'tab.learn',
+  place: 'place.label',
   harbour: 'harbour.title',
   settings: 'settings.title',
 };
@@ -35,7 +37,7 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): no tabs since M27, but a list of
  * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn,
- * (M33) Harbour gear and, on the wide layout only (M38), Mode (first) and Settings (last). The
+ * (M42) Place, (M33) Harbour gear and, on the wide layout only (M38), Mode (first) and Settings (last). The
  * mode (modes.ts) decides their order. Since M35 all
  * start folded (so every title is on screen) and one opens at a time per column: the headers
  * stay above and below the open section, whose body scrolls on its own. Each section is built
@@ -103,6 +105,7 @@ export function createPanel(
     engine: { content: [createEnginePanel(store), createThrusterPanel(store)], explain: true },
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
+    place: { content: createPlacePanel(store), explain: true },
     harbour: { content: createHarbourPanel(store), explain: true },
     settings: { content: [settingsContent], explain: false },
   };

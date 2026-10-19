@@ -28,6 +28,84 @@
       { "id": "W", "eastM": -200, "northM": 0 }
     ]
   },
+  "openDepthM": 40,
+  "places": [
+    {
+      "id": "open",
+      "eastM": 0,
+      "northM": 0,
+      "headingDeg": 0
+    },
+    {
+      "id": "marina",
+      "sea": "flat"
+    }
+  ],
+  "marina": {
+    "$comment": "A made-up Mediterranean marina (PHASE7_SPEC 8.2). Boats lie stern-to: the north row with the stern to the quay, the south row with the stern to the pontoon; the fairway runs east-west and is open to the west.",
+    "quayFaceNorthM": 1500,
+    "quayWidthM": 15,
+    "quayHeightM": 1.0,
+    "westEndEastM": -110,
+    "eastEndEastM": 110,
+    "wallWidthM": 10,
+    "pontoonWidthM": 3,
+    "pontoonHeightM": 0.5,
+    "depthM": 5,
+    "berthsPerRow": 24,
+    "ourBerth": 12,
+    "sternGapM": 1.0,
+    "berthZoneM": 16,
+    "startInsetM": 15,
+    "layouts": {
+      "tight": {
+        "berthWidthM": 4.9,
+        "fairwayM": 22
+      },
+      "medium": {
+        "berthWidthM": 5.5,
+        "fairwayM": 30
+      },
+      "spacious": {
+        "berthWidthM": 6.5,
+        "fairwayM": 40
+      }
+    },
+    "yachts": [
+      {
+        "lengthM": 12.0,
+        "beamM": 3.9
+      },
+      {
+        "lengthM": 14.0,
+        "beamM": 4.3
+      },
+      {
+        "lengthM": 15.5,
+        "beamM": 4.75
+      }
+    ],
+    "traffic": {
+      "busy": "all",
+      "half": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        10,
+        13,
+        15,
+        16,
+        18,
+        20,
+        21,
+        23
+      ],
+      "empty": []
+    }
+  },
   "clock": {
     "defaultLocal": "2026-06-01T12:00",
     "note": "owner (issue #26, Phase 3 plan): without a time in the link the clock starts at noon, 1 June (local time)"

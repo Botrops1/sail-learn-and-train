@@ -31,7 +31,10 @@ import {
 } from '../model/realistic';
 import type { RigHistory } from '../model/sim';
 import { boat } from '../model/boat';
+import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
+import { isMarinaLayout, isTraffic } from '../model/marina';
 import type { BoatState } from '../model/motion';
+import { isPlace, placeStart, type PlaceStart } from '../model/places';
 import { isTimeScale } from '../model/timeScale';
 import { defaultSeaSetting, isSeaSetting } from '../model/waves';
 import {
@@ -87,6 +90,15 @@ export function parseUrlState(
     const spec = controlSpec(id);
     if (value < spec.min || value > spec.max) continue;
     controls[id] = id === 'ctl_wind_dir' ? normalizeWindFrom(value) : value;
+  }
+
+  // A link with `pl=` opens in that place's ready state for every key it does not give (M42).
+  const harbour = parseHarbour(params);
+  const start = harbour.place === 'open' ? null : placeStart(harbour);
+  if (start) {
+    controls.ctl_main_furl ??= 0;
+    controls.ctl_jib_furl ??= 0;
+    controls.ctl_jib_sheet ??= 100;
   }
 
   let preset: CameraPreset | undefined;
@@ -152,7 +164,8 @@ export function parseUrlState(
   const timeBar = params.get('tb') === '0' ? false : undefined;
   // `clock=0`: the clock chip is hidden.
   const clockShown = params.get('clock') === '0' ? false : undefined;
-  const { boat: boatState, autopilot } = parseBoat(params, controls.ctl_wind_dir ?? 60);
+  const { boat: boatState, autopilot } = parseBoat(params, controls.ctl_wind_dir ?? 60, start);
+  if (start) Object.assign(boatState, parsePosition(params, start));
 
   // `jr`: how far the jib is out when that is less than the controls alone give (the sheet was
   // hauled against a jib furled with the sheet released). Never less than "Jib out" asked for.
@@ -187,12 +200,66 @@ export function parseUrlState(
     boat: boatState,
     autopilot,
     windMode,
-    engine: parseEngine(params),
-    sea: parseSea(params),
+    engine: parseEngine(params, start !== null),
+    sea: parseSea(params, start),
     ...parseClock(params),
-    // `fd=1`: the fenders are out (M33); any other value leaves them in the locker.
-    harbour: { fendersOut: params.get('fd') === '1' },
+    harbour,
   });
+}
+
+/**
+ * The harbour keys (PHASE7_SPEC 8.4): `fd=1` the fenders are out (M33; any other value leaves them
+ * in the locker); `pl` the place, `ml` and `tr` the marina's layout and traffic (only with
+ * `pl=marina`). Wrong values give the defaults.
+ */
+function parseHarbour(params: URLSearchParams): HarbourState {
+  const pl = params.get('pl');
+  const place = pl !== null && isPlace(pl) ? pl : DEFAULT_HARBOUR.place;
+  const ml = params.get('ml');
+  const tr = params.get('tr');
+  const marina = place === 'marina';
+  return {
+    fendersOut: params.get('fd') === '1',
+    place,
+    layout: marina && ml !== null && isMarinaLayout(ml) ? ml : DEFAULT_HARBOUR.layout,
+    traffic: marina && tr !== null && isTraffic(tr) ? tr : DEFAULT_HARBOUR.traffic,
+    // `ba=0`: no arrow over our berth (M42; only written in a place).
+    berthArrow: params.get('ba') !== '0',
+  };
+}
+
+/** A position in the link: up to four digits and one decimal, e.g. `-95.0`. */
+const POSITION_M = /^-?\d{1,4}(\.\d)?$/;
+
+/** `pe` and `pn` (metres east and north): both valid, or both from the place's start. */
+function parsePosition(params: URLSearchParams, start: PlaceStart): Partial<BoatState> {
+  const pe = params.get('pe');
+  const pn = params.get('pn');
+  if (pe !== null && pn !== null && POSITION_M.test(pe) && POSITION_M.test(pn)) {
+    return { eastM: Number(pe), northM: Number(pn) };
+  }
+  return { eastM: start.eastM, northM: start.northM };
+}
+
+/**
+ * The place parameters (PHASE7_SPEC 8.4), written when the place is not open water: `pl`, `ml`
+ * (when not medium), `tr` (when not half), `ba=0` (arrow over our berth off), then the boat's position `pe`, `pn`.
+ */
+export function placeParams(state: AppState): [string, string][] {
+  const { place, layout, traffic, berthArrow } = state.harbour;
+  if (place === 'open') return [];
+  const result: [string, string][] = [['pl', place]];
+  if (place === 'marina') {
+    if (layout !== DEFAULT_HARBOUR.layout) result.push(['ml', layout]);
+    if (traffic !== DEFAULT_HARBOUR.traffic) result.push(['tr', traffic]);
+  }
+  if (!berthArrow) result.push(['ba', '0']);
+  const written = (metres: number) => {
+    const clamped = Math.max(-9999.9, Math.min(9999.9, metres)).toFixed(1);
+    return clamped === '-0.0' ? '0.0' : clamped;
+  };
+  result.push(['pe', written(state.boat.eastM)], ['pn', written(state.boat.northM)]);
+  return result;
 }
 
 /**
@@ -218,31 +285,45 @@ export function clockParams(state: AppState): [string, string][] {
  * The Waves setting (M14): `sea` = flat | sheltered | coastal | open. A link without it, or with
  * another value, opens with the default (Coastal): old links open with waves.
  */
-function parseSea(params: URLSearchParams) {
+function parseSea(params: URLSearchParams, start: PlaceStart | null = null) {
   const sea = params.get('sea');
-  return sea !== null && isSeaSetting(sea) ? sea : defaultSeaSetting();
+  return sea !== null && isSeaSetting(sea) ? sea : (start?.sea ?? defaultSeaSetting());
 }
 
-/** The Waves parameter: written only when the setting is not the default. */
+/**
+ * The Waves parameter: written only when the setting is not the default; in a place always (a
+ * place link without it opens with the place's own sea).
+ */
 export function seaParams(state: AppState): [string, string][] {
-  return state.sea.setting === defaultSeaSetting() ? [] : [['sea', state.sea.setting]];
+  return state.sea.setting === defaultSeaSetting() && state.harbour.place === 'open'
+    ? []
+    : [['sea', state.sea.setting]];
 }
 
 /**
  * The engine in the link (PHASE2_SPEC 12.3): `eng=1` running, `lv` the lever in % (−100 … 100,
  * whole numbers; absent = 0, neutral). Out-of-range values are left out.
  */
-function parseEngine(params: URLSearchParams): { running: boolean; leverPct: number } {
+function parseEngine(
+  params: URLSearchParams,
+  ready = false,
+): { running: boolean; leverPct: number } {
+  const eng = params.get('eng');
   return {
-    running: params.get('eng') === '1',
+    // A place link without `eng` opens with the engine running (M42); `eng=0` stops it.
+    running: eng === '1' || (ready && eng === null),
     leverPct: wholeNumber(params.get('lv'), -100, 100) ?? 0,
   };
 }
 
-/** The engine parameters for a state: `eng=1` while running, `lv` when the lever is not at 0. */
+/**
+ * The engine parameters for a state: `eng=1` while running, `lv` when the lever is not at 0. In a
+ * place a stopped engine is written `eng=0`, because a place link without `eng` runs it.
+ */
 export function engineParams(state: AppState): [string, string][] {
   const result: [string, string][] = [];
   if (state.engine.running) result.push(['eng', '1']);
+  else if (state.harbour.place !== 'open') result.push(['eng', '0']);
   if (state.engine.leverPct !== 0) result.push(['lv', String(Math.round(state.engine.leverPct))]);
   return result;
 }
@@ -313,8 +394,11 @@ const AUTOPILOT_PARAMS = { off: 'off', heading: 'hdg', wind: 'wind' } as const;
 function parseBoat(
   params: URLSearchParams,
   windDirDeg: number,
+  start: PlaceStart | null = null,
 ): { boat: Partial<BoatState>; autopilot: AutopilotState } {
-  const headingDeg = wholeNumber(params.get('hdg'), 0, 359) ?? 0;
+  // In a place (M42) what the link does not give is the place's ready state: its heading, at
+  // rest, autopilot off.
+  const headingDeg = wholeNumber(params.get('hdg'), 0, 359) ?? start?.headingDeg ?? 0;
   const boatState: Partial<BoatState> = { headingDeg };
   if (params.get('held') === '1') boatState.mode = 'held';
   else {
@@ -322,10 +406,11 @@ function parseBoat(
     const kn = raw !== null && SPEED_KN.test(raw) ? Number(raw) : undefined;
     if (kn !== undefined && kn >= BOAT_SPEED_KN.min && kn <= BOAT_SPEED_KN.max) {
       boatState.speedMps = knToMps(kn);
-    }
+    } else if (start) boatState.speedMps = 0;
   }
   const ap = params.get('ap');
-  const mode = ap === 'off' ? 'off' : ap === 'wind' ? 'wind' : 'heading';
+  const mode =
+    ap === 'off' ? 'off' : ap === 'wind' ? 'wind' : ap === null && start ? 'off' : 'heading';
   const apt = params.get('apt');
   const targetDeg =
     mode === 'wind'
@@ -354,7 +439,8 @@ export function boatParams(state: AppState): [string, string][] {
   const result: [string, string][] = [];
   const { boat: boatState, autopilot } = state;
   const heading = headingParam(boatState);
-  if (heading !== 0) result.push(['hdg', String(heading)]);
+  // In a place `hdg` is always written: a link without it opens at the place's heading (east in the marina).
+  if (heading !== 0 || state.harbour.place !== 'open') result.push(['hdg', String(heading)]);
   if (boatState.mode === 'held') result.push(['held', '1']);
   else {
     const kn = Math.round(mpsToKn(boatState.speedMps) * 10) / 10;
@@ -363,6 +449,8 @@ export function boatParams(state: AppState): [string, string][] {
   }
   const target = Math.round(autopilot.targetDeg);
   const holdsHeading = autopilot.mode === 'heading' && wrap360(target) % 360 === heading;
+  // In a place a link without `ap` means off, so a heading hold is written too.
+  if (holdsHeading && state.harbour.place !== 'open') result.push(['ap', 'hdg']);
   if (!holdsHeading) {
     result.push(['ap', AUTOPILOT_PARAMS[autopilot.mode]]);
     if (autopilot.mode === 'heading') result.push(['apt', String(compassDeg(target) % 360)]);
@@ -504,6 +592,7 @@ export function serializeUrlState(state: AppState): string {
   for (const [name, value] of windModeParams(state)) params.set(name, value);
   for (const [name, value] of seaParams(state)) params.set(name, value);
   for (const [name, value] of engineParams(state)) params.set(name, value);
+  for (const [name, value] of placeParams(state)) params.set(name, value);
   for (const [name, value] of clockParams(state)) params.set(name, value);
   if (state.harbour.fendersOut) params.set('fd', '1');
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);

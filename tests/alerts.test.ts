@@ -14,6 +14,7 @@ import {
 } from '../src/model/alerts';
 import { boat } from '../src/model/boat';
 import type { GybeReport } from '../src/model/gybe';
+import { DEFAULT_HARBOUR } from '../src/model/harbour';
 import { isRegisteredPartId } from '../src/model/registry';
 import { alertText } from '../src/ui/alertCentre';
 import en from '../content/lang/en/ui.json';
@@ -106,7 +107,12 @@ describe('M36: the alert history (issue #80)', () => {
   it('6. the autopilot notice and the fender reminder are written when they start', () => {
     const wheel = later(start, {}, {}, { autopilotNoticeS: 3 });
     expect(recordAlerts(EMPTY_ALERTS, start, wheel).entries[0]?.kind).toBe('tookWheel');
-    const out = later(start, {}, { mode: 'held' }, { harbour: { fendersOut: true } });
+    const out = later(
+      start,
+      {},
+      { mode: 'held' },
+      { harbour: { ...DEFAULT_HARBOUR, fendersOut: true } },
+    );
     expect(recordAlerts(EMPTY_ALERTS, start, out)).toBe(EMPTY_ALERTS);
     const sailing = later(out, {}, { mode: 'sailing' });
     expect(recordAlerts(EMPTY_ALERTS, out, sailing).entries[0]?.kind).toBe('fendersOut');

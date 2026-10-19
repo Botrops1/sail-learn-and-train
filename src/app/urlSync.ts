@@ -1,7 +1,13 @@
 import type { Settings } from '../model/settings';
 import type { AppState, Store } from './store';
 import { clockParam } from '../model/clock';
-import { boatParams, parseUrlState, realisticParams, serializeUrlState } from './urlState';
+import {
+  boatParams,
+  parseUrlState,
+  placeParams,
+  realisticParams,
+  serializeUrlState,
+} from './urlState';
 
 /** At most one URL update per this long (PHASE1_SPEC 9.2); the sailing boat changes it all the time. */
 const URL_UPDATE_DEBOUNCE_MS = 300;
@@ -58,6 +64,10 @@ export function startUrlSync(store: Store): void {
       state.learn === previous.learn &&
       state.appMode === previous.appMode &&
       state.harbour.fendersOut === previous.harbour.fendersOut &&
+      state.harbour.place === previous.harbour.place &&
+      state.harbour.layout === previous.harbour.layout &&
+      state.harbour.traffic === previous.harbour.traffic &&
+      state.harbour.berthArrow === previous.harbour.berthArrow &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
@@ -73,10 +83,11 @@ export function startUrlSync(store: Store): void {
   write();
 }
 
-/** The boat changes every frame: compare only what the link stores. */
+/** The boat changes every frame: compare only what the link stores (in a place also her position, M42). */
 function sameBoatLink(state: AppState, previous: AppState): boolean {
   if (state.boat === previous.boat && state.autopilot === previous.autopilot) return true;
-  return boatParams(state).join('&') === boatParams(previous).join('&');
+  const link = (s: AppState) => [...boatParams(s), ...placeParams(s)].join('&');
+  return link(state) === link(previous);
 }
 
 /** The clock changes every frame: the link stores it to the minute. */

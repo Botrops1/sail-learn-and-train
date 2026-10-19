@@ -15,6 +15,7 @@ export const SECTION_IDS = [
   'engine',
   'conditions',
   'learn',
+  'place',
   'harbour',
   'settings',
 ] as const;
@@ -44,6 +45,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'engine',
       'conditions',
       'learn',
+      'place',
       'harbour',
       'settings',
     ],
@@ -58,6 +60,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'learn',
       'autopilot',
       'engine',
+      'place',
       'harbour',
       'settings',
     ],
@@ -72,6 +75,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'autopilot',
       'engine',
       'conditions',
+      'place',
       'harbour',
       'settings',
     ],
@@ -82,6 +86,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'mode',
       'engine',
       'harbour',
+      'place',
       'conditions',
       'sails',
       'ropes',
@@ -89,7 +94,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'learn',
       'settings',
     ],
-    second: ['conditions', 'learn'],
+    second: ['place', 'conditions'],
   },
 };
 

@@ -15,6 +15,7 @@ import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
 import { daylighting } from './daylight';
 import { cloudTexture, rippleNormalMap } from './environment';
+import { buildMarina } from './marina';
 import { buildMarks } from './marks';
 import { buildSkyDome } from './skyDome';
 import { skyColours } from './skyColours';
@@ -135,6 +136,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const world = createWorld(water.object);
   const marks = buildMarks();
   world.group.add(marks.object);
+  const marina = buildMarina();
+  world.group.add(marina.object);
   const wake = buildWake();
   scene.add(holder, world.group, wake.object, streaks.object);
 
@@ -143,7 +146,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   rig.goTo(store.getState().camera.preset, false);
   rig.onUserMove(() => store.dispatch({ type: 'setCameraPreset', preset: 'free' }));
 
-  const picker = createPicker(camera, holder, water.pickTarget, [marks.object]);
+  const picker = createPicker(camera, holder, water.pickTarget, [marks.object, marina.object]);
   listenForTaps(renderer.domElement, (x, y) => {
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
@@ -376,6 +379,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       const shift = world.update(boatState.eastM, boatState.northM, boatState.headingDeg);
       water.update(state, shift, waveTrains(state.sea), light.night);
       marks.update(state, water.heightAt);
+      marina.update(state);
       wake.update(state, state.rig.timeS, water.heightAt);
       // At night the wake and the wind streaks are dimmed (they ignore the light).
       const dim = 1 - SCENE.daylight.nightLineDim * light.night;

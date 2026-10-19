@@ -780,7 +780,7 @@ html[data-wide='true'] .panel[data-folded='true'] {
 .panel-section[data-open='true'] {
   flex: 1 1 auto;
   /* Never shorter than its header and the body's own minimum, so the body is not drawn under the next header (the panel scrolls instead). */
-  min-height: calc(var(--section-head) + 120px);
+  min-height: calc(var(--section-head) + 121px);
 }
 
 /* Phones: stacked layout, and the side layout of a phone held sideways. */
@@ -791,6 +791,11 @@ html[data-layout='stacked'] {
 @media (max-height: 520px) {
   html[data-layout='side'] {
     --section-head: 34px;
+  }
+
+  /* A phone held sideways has room for ten headers only if the open body may be shorter (M42 added the Place section). */
+  html[data-layout='side'] .panel-section[data-open='true'] {
+    min-height: calc(var(--section-head) + 91px);
   }
 }
 
@@ -1034,6 +1039,10 @@ button.segment {
   min-height: var(--touch);
   font-weight: 600;
   cursor: pointer;
+}
+
+.toggle[hidden] {
+  display: none;
 }
 
 .toggle input {

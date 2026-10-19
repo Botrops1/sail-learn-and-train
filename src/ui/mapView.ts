@@ -1,8 +1,16 @@
 import type { AppState, Store } from '../app/store';
 import { DEG, compassDeg, wrap180 } from '../model/angles';
 import { boat } from '../model/boat';
+import { area } from '../model/area';
 import { jibClew } from '../model/jib';
 import { mapToBoat } from '../model/mapFrame';
+import {
+  distanceToRect,
+  insidePolygon,
+  marinaBounds,
+  marinaGeometry,
+  type Rect,
+} from '../model/marina';
 import { buoyOffsets } from '../model/windOnWater';
 import { pointOfSail } from '../model/pointsOfSail';
 import { requirePartId } from '../model/registry';
@@ -109,6 +117,12 @@ const COLOURS = {
   select: '#ff9f1c',
   buoy: '#f5c400',
   buoyOutline: '#3a3000',
+  quay: '#b9b4a8',
+  quayEdge: '#7b776d',
+  berthLine: '#d0d4d8',
+  yacht: '#ffffff',
+  yachtEdge: '#8a8f94',
+  ourBerth: '#f2c94c',
 } as const;
 
 /** The map as drawn: which map point is in the middle, what points up, and the canvas size. */
@@ -418,8 +432,8 @@ function distanceToSegment(p: ScreenPoint, a: ScreenPoint, b: ScreenPoint): numb
 }
 
 /**
- * What a tap at a canvas position hits (PHASE2_SPEC 7.4, M16): the boat, a practice buoy, the
- * apparent wind arrow, a point-of-sail label or the no-go wedge, in that order; null for open water. Returns the
+ * What a tap at a canvas position hits (PHASE2_SPEC 7.4, M16, M42): the boat, a practice buoy, a
+ * moored yacht or the quay, the apparent wind arrow, a point-of-sail label or the no-go wedge, in that order; null for open water. Returns the
  * registry id the info card shows. The boat comes first because the arrow starts at her side
  * and a fingertip on the boat must not land on the arrow's root.
  */
@@ -446,6 +460,16 @@ export function pickMap(
   // A practice buoy (M16): a tap within a fingertip of its centre.
   for (const buoy of buoyPoints(state, view)) {
     if (Math.hypot(x - buoy.x, y - buoy.y) <= MAP.hitPx) return requirePartId('env_buoy');
+  }
+  // The marina (M42): a moored yacht, then the quay, the wall and the pontoon.
+  const marina = marinaScreen(state, view);
+  if (marina) {
+    if (marina.yachts.some((outline) => containsPoint(outline, x, y))) {
+      return requirePartId('env_moored_yacht');
+    }
+    if (marina.quays.some((outline) => containsPoint(outline, x, y))) {
+      return requirePartId('env_quay');
+    }
   }
   if (distanceToSegment(p, layout.apparentHead, layout.apparentTail) <= MAP.hitPx / 2) {
     return requirePartId('term_apparent_wind');
@@ -739,6 +763,11 @@ export function createMapView(host: HTMLElement, store: Store): MapView {
           return { x: view.centreXPx, y: view.centreYPx };
         },
         currentPointOfSail: () => pointOfSail(store.getState().rig.wind.twaDeg).id,
+        /** Where a map point (metres east, north of the start) is on the canvas, CSS px (M42). */
+        toScreen: (eastM: number, northM: number) => {
+          const state = store.getState();
+          return mapToScreen(eastM, northM, viewport(state));
+        },
       },
     });
   }
@@ -772,6 +801,7 @@ function drawMap(
   ctx.fillRect(0, 0, w, h);
   drawGrid(ctx, view);
   drawWindField(ctx, state, view, timeS);
+  drawHarbour(ctx, state, view);
   drawTrack(ctx, state.track, state, view);
   const layout = mapLayout(state, view, width);
   drawNoGo(ctx, state, layout);
@@ -779,6 +809,119 @@ function drawMap(
   drawBuoys(ctx, state, view);
   drawBoat(ctx, state, view, layout);
   drawApparent(ctx, state, layout);
+}
+
+/** The marina's shapes on the canvas (CSS px), or null when it is further away than the canvas is wide. */
+function marinaScreen(
+  state: AppState,
+  view: MapViewport,
+): {
+  quays: ScreenPoint[][];
+  yachts: ScreenPoint[][];
+  geometry: ReturnType<typeof marinaGeometry>;
+} | null {
+  const { layout, traffic } = state.harbour;
+  const geometry = marinaGeometry(layout, traffic);
+  const reachM = Math.hypot(view.widthPx, view.heightPx) * view.metresPerPx;
+  if (distanceToRect(marinaBounds(geometry), view.centreEastM, view.centreNorthM) > reachM) {
+    return null;
+  }
+  const rect = (r: Rect): ScreenPoint[] =>
+    (
+      [
+        [r.west, r.south],
+        [r.east, r.south],
+        [r.east, r.north],
+        [r.west, r.north],
+      ] as const
+    ).map(([east, north]) => mapToScreen(east, north, view));
+  return {
+    geometry,
+    quays: [geometry.quay, geometry.wall, geometry.pontoon].map(rect),
+    yachts: geometry.yachts.map((yacht) =>
+      yacht.outline.map(([east, north]) => mapToScreen(east, north, view)),
+    ),
+  };
+}
+
+function containsPoint(outline: readonly ScreenPoint[], x: number, y: number): boolean {
+  return insidePolygon(
+    outline.map((point): [number, number] => [point.x, point.y]),
+    x,
+    y,
+  );
+}
+
+function tracePath(ctx: CanvasRenderingContext2D, points: readonly ScreenPoint[]): void {
+  ctx.beginPath();
+  points.forEach((point, i) =>
+    i === 0 ? ctx.moveTo(point.x, point.y) : ctx.lineTo(point.x, point.y),
+  );
+  ctx.closePath();
+}
+
+/**
+ * The marina (M42, PHASE7_SPEC 8.6): quay, wall and pontoon, the lines between the berths (not on
+ * the mini-map), the moored yachts and our berth outlined in yellow. Drawn only when it is near.
+ */
+export function drawHarbour(
+  ctx: CanvasRenderingContext2D,
+  state: AppState,
+  view: MapViewport,
+  mini = false,
+): void {
+  const marina = marinaScreen(state, view);
+  if (!marina) return;
+  const { geometry } = marina;
+  ctx.lineJoin = 'round';
+  ctx.setLineDash([]);
+  ctx.fillStyle = COLOURS.quay;
+  ctx.strokeStyle = COLOURS.quayEdge;
+  ctx.lineWidth = 1;
+  for (const outline of marina.quays) {
+    tracePath(ctx, outline);
+    ctx.fill();
+    ctx.stroke();
+  }
+  if (!mini) {
+    // The lines between the berths, from the stern end out to the berth zone.
+    const zone = area.marina.berthZoneM;
+    ctx.strokeStyle = COLOURS.berthLine;
+    ctx.beginPath();
+    for (const berth of geometry.berths) {
+      const outward = berth.row === 'north' ? -zone : zone;
+      for (const edge of [
+        berth.centreEastM - berth.widthM / 2,
+        berth.centreEastM + berth.widthM / 2,
+      ]) {
+        const a = mapToScreen(edge, berth.sternNorthM, view);
+        const b = mapToScreen(edge, berth.sternNorthM + outward, view);
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+      }
+    }
+    ctx.stroke();
+  }
+  ctx.fillStyle = COLOURS.yacht;
+  ctx.strokeStyle = COLOURS.yachtEdge;
+  for (const outline of marina.yachts) {
+    tracePath(ctx, outline);
+    ctx.fill();
+    ctx.stroke();
+  }
+  // Our berth, outlined in yellow.
+  const ours = geometry.ourBerth;
+  const north = area.marina.quayFaceNorthM;
+  const corners = [
+    [ours.centreEastM - ours.widthM / 2, north],
+    [ours.centreEastM + ours.widthM / 2, north],
+    [ours.centreEastM + ours.widthM / 2, ours.sternNorthM - area.marina.berthZoneM],
+    [ours.centreEastM - ours.widthM / 2, ours.sternNorthM - area.marina.berthZoneM],
+  ].map(([east, northM]) => mapToScreen(east as number, northM as number, view));
+  tracePath(ctx, corners);
+  ctx.strokeStyle = COLOURS.ourBerth;
+  ctx.lineWidth = 2;
+  ctx.stroke();
 }
 
 /** Where each practice buoy is on the canvas (CSS px), with its letter. */
@@ -1140,6 +1283,7 @@ export function drawMiniMap(
   ctx.fillStyle = COLOURS.water;
   ctx.fillRect(0, 0, sizePx, sizePx);
   drawGrid(ctx, view);
+  drawHarbour(ctx, state, view, true);
   drawTrack(ctx, state.track, state, view);
   drawBuoys(ctx, state, view, { letters: false });
   drawBoat(ctx, state, view, mapLayout(state, view, width), {

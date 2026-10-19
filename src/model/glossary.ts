@@ -141,6 +141,7 @@ export const GROUPS = [
   'directions',
   'sailing',
   'sea',
+  'harbour',
 ] as const;
 export type GroupId = (typeof GROUPS)[number];
 

@@ -230,3 +230,9 @@ export async function holdThruster(page, which, dir, ms, via = 'section', during
     await page.mouse.up();
   }
 }
+
+/** M42: chooses a place ('open' | 'marina' | 'bay') in the Place section (opened first). */
+export async function choosePlace(page, place) {
+  await showSection(page, 'place');
+  await page.getByTestId(`place-${place}`).click();
+}

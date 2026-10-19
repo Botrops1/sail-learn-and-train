@@ -8,9 +8,9 @@ import { eachSection, sectionShown, setMode, setSheet, showSection, waitForLink 
 
 const BOAT = '?wd=60&ws=12';
 const SECTION_ORDER = {
-  easy: ['ropes', 'sails', 'autopilot', 'engine', 'conditions', 'learn', 'harbour'],
-  realistic: ['ropes', 'sails', 'conditions', 'learn', 'harbour'],
-  learn: ['learn', 'ropes', 'sails', 'autopilot', 'engine', 'conditions', 'harbour'],
+  easy: ['ropes', 'sails', 'autopilot', 'engine', 'conditions', 'learn', 'place', 'harbour'],
+  realistic: ['ropes', 'sails', 'conditions', 'learn', 'place', 'harbour'],
+  learn: ['learn', 'ropes', 'sails', 'autopilot', 'engine', 'conditions', 'place', 'harbour'],
 };
 
 export const M27_SCENES = [
@@ -60,7 +60,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'Easy: every section folded (M35)',
       opens.join() ===
-        'ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,harbour:false',
+        'ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,place:false,harbour:false',
       opens.join(),
     );
     const tabs = await page.locator('[role="tab"]').count();

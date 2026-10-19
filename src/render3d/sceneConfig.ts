@@ -211,6 +211,33 @@ export const SCENE = {
     /** Beyond this distance from the boat a buoy is not drawn or tappable, metres. */
     maxDrawM: 1000,
   },
+  /** The marina (M42, PHASE7_SPEC 8.6): quay, pontoon, rings, our berth's stripe and the moored yachts. */
+  harbour: {
+    quayColour: '#b9b4a8',
+    pontoonColour: '#8a6a4a',
+    ringColour: '#2b2b2b',
+    ringRadiusM: 0.12,
+    ringTubeM: 0.025,
+    berthColour: '#f2c94c',
+    berthStripeM: 0.15,
+    hullColour: '#f4f4f2',
+    deckLineColour: '#9aa3ab',
+    hullBelowM: 0.2,
+    hullAboveM: 1.3,
+    mastRadiusM: 0.075,
+    quayBelowM: 1.0,
+    pontoonBelowM: 0.3,
+    /** The arrow over our berth (owner, PR #101): it points down, floats over the quay (never over the water), metres. */
+    arrowTipAboveM: 3,
+    arrowHeadM: 2.5,
+    arrowHeadRadiusM: 1.1,
+    arrowShaftM: 2.5,
+    arrowShaftRadiusM: 0.4,
+    /** How far behind the quay's edge (towards the land) the arrow stands. */
+    arrowInsetM: 3,
+    /** Beyond this distance from the boat the marina is not drawn or tappable, metres (the camera's far plane). */
+    maxDrawM: 1000,
+  },
   /** The scale grid is the wave mesh's lines, 2 m apart (4 m at Low detail). */
   grid: {
     color: '#ffffff',
