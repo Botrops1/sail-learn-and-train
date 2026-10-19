@@ -1624,7 +1624,23 @@
       "lazyWalkS": 20,
       "maxLengthM": { "stern": 30, "lazy": 40, "bow": 10, "shore": 60 },
       "slackInWaterM": 1.0,
-      "foulAfterS": 2.0
+      "foulAfterS": 2.0,
+      "shoreReachM": 40,
+      "shoreSwimS": 30,
+      "buoyReachM": 2.5,
+      "buoyMaxSpeedMps": 0.3,
+      "buoySlackM": 1.0,
+      "shoreSlackM": 0.5
+    },
+    "ground": {
+      "keelX": -1.4,
+      "keelNote": "assumption: the middle of the keel bulb (x -0.08 to -2.69), where the keel is deepest",
+      "stiffnessNPerM": 40000,
+      "friction": 0.5,
+      "dampingNsPerM": 2000,
+      "maxSlope": 1.0,
+      "gradientStepM": 0.5,
+      "note": "assumption for teaching: the bottom presses on the keel in proportion to how deep it is in; touching at 2 kn or less, full astern gets her off; at 3 kn she sticks"
     },
     "autopilot": {
       "kp": 2,

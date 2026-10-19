@@ -39,6 +39,13 @@
     {
       "id": "marina",
       "sea": "flat"
+    },
+    {
+      "id": "bay",
+      "eastM": -1250,
+      "northM": 0,
+      "headingDeg": 270,
+      "sea": "sheltered"
     }
   ],
   "marina": {
@@ -58,6 +65,8 @@
     "berthZoneM": 16,
     "startInsetM": 15,
     "lazyLineLengthM": 25,
+    "basin": { "west": -110, "east": 110, "south": 1420, "north": 1500 },
+    "seabed": "mud",
     "layouts": {
       "tight": {
         "berthWidthM": 4.9,
@@ -106,6 +115,29 @@
       ],
       "empty": []
     }
+  },
+  "bay": {
+    "$comment": "A made-up Croatian bay 1.3 km west of the start (PHASE7_SPEC 11.2), cut into a coast that runs north-south at east -1350: open to the east, sand with a patch of sea grass, rocky shores, three hidden rocks, rings on the shore for shore lines, three mooring buoys.",
+    "coast": [[-4000, -2000], [-1350, -2000], [-1350, -150], [-1700, -150], [-1700, 150], [-1350, 150], [-1350, 2000], [-4000, 2000]],
+    "landObstacles": [
+      { "west": -4000, "east": -1350, "south": 150, "north": 2000 },
+      { "west": -4000, "east": -1350, "south": -2000, "north": -150 },
+      { "west": -4000, "east": -1700, "south": -150, "north": 150 }
+    ],
+    "slope": 0.1,
+    "landSlope": 0.15,
+    "landMaxHeightM": 15,
+    "rocks": [
+      { "eastM": -1600, "northM": 120, "radiusM": 6, "topDepthM": 0.5 },
+      { "eastM": -1480, "northM": -60, "radiusM": 5, "topDepthM": 1.5 },
+      { "eastM": -1360, "northM": 140, "radiusM": 8, "topDepthM": 0.3 }
+    ],
+    "weed": [{ "eastM": -1560, "northM": -90, "radiusM": 50 }],
+    "rockShoreM": 15,
+    "rings": [[-1700, -60], [-1700, 0], [-1700, 60], [-1640, 150], [-1560, 150]],
+    "ringHeightM": 1.0,
+    "buoys": [[-1450, -100], [-1450, 0], [-1450, 100]],
+    "buoyRingHeightM": 0.3
   },
   "clock": {
     "defaultLocal": "2026-06-01T12:00",
