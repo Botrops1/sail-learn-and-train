@@ -4096,7 +4096,8 @@ html[data-wide='true'] .mini-map {
   position: relative;
   display: flex;
   flex: none;
-  width: 132px;
+  /* 120 px, not the spec's 132: two fit side by side in the narrowest panel (320 px) (owner, PR #99). */
+  width: 120px;
   height: var(--touch);
   /* An inset line, not a border: the halves keep their full 44 px. */
   box-shadow: inset 0 0 0 1px var(--line);
@@ -4159,7 +4160,7 @@ html[data-wide='true'] .mini-map {
 
 .thruster-joystick-section .joystick-track,
 .thruster-joystick-helm .joystick-track {
-  --knob-travel: 50px;
+  --knob-travel: 44px;
 }
 
 .thruster-joystick-quick .joystick-track {
