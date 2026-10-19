@@ -126,12 +126,13 @@ export async function liveM45Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 5. A tap on the map names a rock, a ring and a buoy.
+  // 5. A tap on the map names a rock, a ring and a buoy (she lies in the middle of the bay, so all
+  // three are within 1 m per pixel of the canvas).
   {
     const { context, page } = await openPage(
       phone,
       'm45 map taps',
-      '?pl=bay&m=harbour&ws=0&cam=map&debug=1',
+      '?pl=bay&m=harbour&ws=0&cam=map&debug=1&pe=-1560.0&pn=0.0&hdg=90',
       { testClock: true },
     );
     await setSheet(page, 'peek');
