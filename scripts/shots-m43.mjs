@@ -136,7 +136,18 @@ export async function liveM43Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 5. Held still: nothing touches anything.
+  // 5. A link with the fenders out opens with the status line filled in.
+  {
+    const { context, page } = await openPage(phone, 'm43 link', '?pl=marina&m=harbour&fd=1', {
+      testClock: true,
+    });
+    await showSection(page, 'harbour');
+    const text = ((await page.getByTestId('fenders-status').textContent()) ?? '').trim();
+    check('link: fd=1 opens with the status filled in', text === 'Fenders over the side: 9.', text);
+    await context.close();
+  }
+
+  // 6. Held still: nothing touches anything.
   {
     const { context, page } = await openPage(
       phone,
