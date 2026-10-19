@@ -6,6 +6,7 @@ import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../
 import { boat } from '../../model/boat';
 import type { Detail } from '../../model/settings';
 import { initialRig, type RigState } from '../../model/sim';
+import type { ThrusterState } from '../../model/thrusters';
 import { wheelTurnDeg } from '../../model/steering';
 import { buildWindex } from '../wind';
 import { buildKeel, buildRudder, buildSaildrive } from './appendages';
@@ -13,6 +14,7 @@ import { buildBowGear } from './bowGear';
 import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
 import { buildFenders } from './fenders';
+import { buildThrusters } from './thrusters';
 import { buildHull } from './hull';
 import { createMaterials } from './materials';
 import { buildMooringFittings } from './mooringFittings';
@@ -46,6 +48,8 @@ export interface BoatModel {
   ropeDrawings(): readonly RopeDrawing[];
   /** M33: hangs the fenders over the side (true) or puts them back in the locker (false). */
   setFendersOut(out: boolean): void;
+  /** M41: shows the water jets of the thrusters that run. */
+  setThrusters(t: ThrusterState): void;
 }
 
 /**
@@ -76,6 +80,7 @@ export function buildBoat(
   const windex = buildWindex(materials);
   const telltales = buildTelltales(materials);
   const fenders = buildFenders(materials, detail);
+  const thrusters = buildThrusters(materials, detail);
   root.add(
     ...buildHull(materials),
     buildKeel(materials),
@@ -87,6 +92,7 @@ export function buildBoat(
     ...buildBowGear(materials, detail),
     ...buildMooringFittings(materials, detail),
     ...fenders.objects,
+    ...thrusters.objects,
     mainSail.mesh,
     jibSail.mesh,
     ...ropes.objects,
@@ -147,5 +153,6 @@ export function buildBoat(
     wheelPivots: hardware.wheelPivots,
     ropeDrawings: () => drawings,
     setFendersOut: fenders.setOut,
+    setThrusters: thrusters.setState,
   };
 }

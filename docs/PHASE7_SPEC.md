@@ -647,7 +647,12 @@ Proportional thrusters, running-time limits, batteries; places and the marina (M
 
 ### 7.12 Decided in the M41 PR
 
-(empty)
+- **Built as written, with no tuning.** Every band of 7.8 passed on the first run with the data of 7.2 (bow +1 for 10 s turns her about 36°, both thrusters the same way slide her about 0.45 m/s, against 10 kn of wind they win, against 25 kn they lose).
+- **Panel opening (the spec's `open` lists went in M35).** Harbour mode has no `open` list: every section starts folded and one opens at a time. Choosing Harbour (from the chip, the Mode section, or a `m=harbour` link at the start) opens the Thrusters section; with Realistic ropes, where the engine and thrusters are at the Helm station, it opens Ropes instead. `MODE_LAYOUTS.harbour` has `mode` first and `settings` last like every mode (M38), `second` is `conditions, learn`.
+- **Harbour and selections.** In Harbour a tap on a rope or the wheel opens only the info card (no section moves, as in Learn): `panel.ts` and `app.ts` treat Harbour like Learn there.
+- **The 3D parts.** The tunnel's discs stand 0.02 m outside the hull so they are not drawn inside it; the pod's strut is a box 0.05 m (along x) × 0.3 m (tall) × 0.08 m (across); the jets are see-through cones (no shadow) that carry the thruster's registry id, so the parts list of the boat model stays complete. The tunnel and pod sit below the waterline.
+- **Helpers.** `bowTunnelPlace` and `sternPodPlace` are in `src/model/thrusters.ts` (pure), so the 3D builder and the tests read the same numbers; the bisection of 7.6 is in `bowTunnelPlace`. `holdThruster` has an optional sixth argument (`during`), called when half of the hold has passed, so a check can read the status line during the hold.
+- **Allowed test changes (3.7).** The `hull` group in `tests/glossary.test.ts` goes from 6 to 8 ids; `tests/languages.test.ts` lists `quick.harbour.short` ("{arrow}{n}") as the same in Russian and English (it has only placeholders); `docs/review/ru.md` is regenerated.
 
 ---
 

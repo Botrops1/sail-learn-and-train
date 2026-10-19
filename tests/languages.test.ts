@@ -58,6 +58,7 @@ const SAME_AS_ENGLISH: Record<string, string> = {
   'real.gearbox.out': 'printed on the gearbox switch',
   'clock.zone': 'only placeholders, a dot and the time-zone letters (UTC)',
   'learn.alternativeWithNote': 'only placeholders and brackets',
+  'quick.harbour.short': 'only placeholders',
 };
 
 afterEach(() => setLanguage(DEFAULT_LANGUAGE));

@@ -14,6 +14,7 @@ import { createQuickRow } from './quickRow';
 import { createRopesTab, revealRopeStrip } from './ropesTab';
 import { createSailsPanel } from './sailsPanel';
 import { createSection, type SectionView } from './sections';
+import { createThrusterPanel } from './thrusterPanel';
 import { takeOpenAfterReload } from './settingsMenu';
 import type { Sheet } from './sheet';
 import { createWindPanel } from './windPanel';
@@ -27,6 +28,7 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
   engine: 'engine.label',
   conditions: 'section.conditions',
   learn: 'tab.learn',
+  thrusters: 'thrusters.label',
   harbour: 'harbour.title',
   settings: 'settings.title',
 };
@@ -102,6 +104,7 @@ export function createPanel(
     engine: { content: [createEnginePanel(store)], explain: true },
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
+    thrusters: { content: createThrusterPanel(store), explain: true },
     harbour: { content: createHarbourPanel(store), explain: true },
     settings: { content: [settingsContent], explain: false },
   };
@@ -197,12 +200,22 @@ export function createPanel(
     for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
     if (fromLink) {
       if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
+      else if (state.appMode === 'harbour') openHarbourFirst(state);
       else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
     }
     // A new language reloads the page: the Settings section it was chosen in is open again (M38).
     if (fromLink && takeOpenAfterReload() === 'settings' && layoutKind === 'wide') {
       openOnly('settings');
     }
+  }
+
+  /**
+   * Harbour mode puts the engine and thrusters first (PHASE7_SPEC 7.5): the Thrusters section
+   * opens; with Realistic ropes, where the engine and thrusters are at the Helm station, Ropes
+   * opens in their place (decided in the M41 PR: one section is open at a time since M35).
+   */
+  function openHarbourFirst(state: AppState): void {
+    openOnly(sectionAvailable('thrusters', state) ? 'thrusters' : 'ropes');
   }
 
   /**
@@ -213,6 +226,7 @@ export function createPanel(
     place(state);
     for (const id of SECTION_IDS) sections.get(id)?.resetExplain();
     if (atStart) applyOpen(state, true);
+    else if (state.appMode === 'harbour') openHarbourFirst(state);
     else keepOneOpenPerColumn();
     body.scrollTop = 0;
     second.scrollTop = 0;
@@ -276,7 +290,8 @@ export function createPanel(
     if (
       state.selection !== previous.selection &&
       entryFor(state.selection) &&
-      state.appMode !== 'learn'
+      state.appMode !== 'learn' &&
+      state.appMode !== 'harbour'
     ) {
       openOnly('ropes');
       if (!sheet.atPeek()) revealRopeStrip();

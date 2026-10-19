@@ -4076,3 +4076,151 @@ html[data-wide='true'] .mini-map {
 .section-body .settings-content .settings-about {
   margin: 8px 12px 0;
 }
+
+/* Thrusters (M41, PHASE7_SPEC 7.6): a left-right joystick for each end, held to act. */
+.thruster-joystick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 12px;
+}
+
+.joystick-label {
+  min-width: 52px;
+  font-weight: 600;
+}
+
+.joystick-track {
+  position: relative;
+  display: flex;
+  flex: none;
+  width: 132px;
+  height: var(--touch);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--accent-soft);
+  overflow: hidden;
+}
+
+.thruster-joystick-quick {
+  margin: 0;
+}
+
+.thruster-joystick-quick .joystick-track {
+  width: 88px;
+}
+
+.joystick-half {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 50%;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--font-small);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.joystick-half:first-child {
+  text-align: left;
+}
+
+.joystick-half:last-of-type {
+  text-align: right;
+}
+
+.joystick-half[aria-pressed='true'] {
+  color: #ffffff;
+}
+
+.joystick-half:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 9px;
+  left: calc(50% - 12px);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  transition: transform 100ms ease-out;
+  pointer-events: none;
+}
+
+.thruster-joystick-section .joystick-track,
+.thruster-joystick-helm .joystick-track {
+  --knob-travel: 50px;
+}
+
+.thruster-joystick-quick .joystick-track {
+  --knob-travel: 28px;
+}
+
+.thruster-joystick[data-dir='-1'] .joystick-knob {
+  transform: translateX(calc(-1 * var(--knob-travel)));
+}
+
+.thruster-joystick[data-dir='1'] .joystick-knob {
+  transform: translateX(var(--knob-travel));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .joystick-knob {
+    transition: none;
+  }
+}
+
+.thrusters-status {
+  margin: 4px 12px;
+  color: var(--muted);
+  font-size: var(--font-small);
+}
+
+.thruster-helm {
+  grid-column: 1 / -1;
+  margin: 4px 0 6px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.thruster-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.thruster-pair .thruster-joystick {
+  margin: 4px 0;
+}
+
+/* The quick row in Harbour mode: engine lever − / +, then the two compact joysticks. */
+.quick-harbour {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.quick-harbour[hidden] {
+  display: none;
+}
+
+.quick-lever-value {
+  flex: none;
+  width: 40px;
+  text-align: center;
+  font-size: var(--font-small);
+}

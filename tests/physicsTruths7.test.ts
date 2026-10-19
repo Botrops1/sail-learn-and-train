@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { boat as boatData } from '../src/model/boat';
 import { mpsToKn, wrap180 } from '../src/model/angles';
+import type { AppState } from '../src/app/store';
 import { act, harbourStart, run } from './motionHelpers';
 
 /** Phase 7 physics truths (PHYSICS_TRUTHS.md PT-47 … PT-49 and PT-27), from M40 on. */
@@ -128,5 +129,50 @@ describe('PT-49 carrying way', () => {
     expect(r.t).toBeLessThan(30);
     expect(r.distanceM).toBeGreaterThan(20);
     expect(r.distanceM).toBeLessThan(29);
+  });
+});
+
+describe('PT-33 thrusters', () => {
+  const thrust = (bow: -1 | 0 | 1, stern: -1 | 0 | 1, s: AppState = harbourStart({})): AppState =>
+    act(
+      s,
+      { type: 'thruster', which: 'bow', dir: bow },
+      { type: 'thruster', which: 'stern', dir: stern },
+    );
+
+  it('PT-33 at rest the bow thruster turns her, the stern thruster the other way, together they spin her', () => {
+    const bow = run(thrust(1, 0), 10);
+    expect(wrap180(bow.boat.headingDeg)).toBeGreaterThan(28);
+    expect(wrap180(bow.boat.headingDeg)).toBeLessThan(44);
+    expect(bow.boat.swayMps).toBeGreaterThan(0);
+    const stern = run(thrust(0, 1), 10);
+    expect(wrap180(stern.boat.headingDeg)).toBeGreaterThan(-36);
+    expect(wrap180(stern.boat.headingDeg)).toBeLessThan(-22);
+    const spin = run(thrust(1, -1), 10);
+    expect(wrap180(spin.boat.headingDeg)).toBeGreaterThan(44);
+    expect(wrap180(spin.boat.headingDeg)).toBeLessThan(64);
+  });
+
+  it('PT-33 both the same way slide her sideways with little turn', () => {
+    const slide = run(thrust(1, 1), 10);
+    expect(Math.abs(wrap180(slide.boat.headingDeg))).toBeLessThan(16);
+    expect(slide.boat.swayMps).toBeGreaterThan(0.35);
+    expect(slide.boat.swayMps).toBeLessThan(0.55);
+  });
+
+  it('PT-33 at speed the bow thruster has little effect', () => {
+    const start = () => harbourStart({ speedKn: 4, engine: { running: true, leverPct: 40 } });
+    const rest = wrap180(run(thrust(1, 0), 10).boat.headingDeg);
+    const withThruster = wrap180(run(thrust(1, 0, start()), 10).boat.headingDeg);
+    const without = wrap180(run(start(), 10).boat.headingDeg);
+    expect(Math.abs(withThruster - without)).toBeLessThan(0.2 * rest);
+    expect(Math.abs(withThruster - without)).toBeGreaterThan(0);
+  });
+
+  it('PT-33 in 10 knots of wind from the west both thrusters win, in 25 knots the wind wins', () => {
+    const west = (tws: number) =>
+      run(thrust(-1, -1, harbourStart({ windDirDeg: -90, twsKn: tws })), 30);
+    expect(west(10).boat.eastM).toBeLessThan(0);
+    expect(west(25).boat.eastM).toBeGreaterThan(0);
   });
 });

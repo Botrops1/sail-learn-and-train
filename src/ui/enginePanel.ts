@@ -145,7 +145,7 @@ function startStopButton(store: Store): { button: HTMLButtonElement; update(s: A
 }
 
 /** A lever position as text, e.g. "Ahead 65 %", "Neutral", "Astern 40 %". */
-function leverText(leverPct: number): string {
+export function leverText(leverPct: number): string {
   const pct = Math.round(Math.abs(leverPct));
   if (gearOf(leverPct) === 'neutral') return t('engine.neutral');
   return `${t(leverPct > 0 ? 'engine.ahead' : 'engine.astern')} ${pct} %`;

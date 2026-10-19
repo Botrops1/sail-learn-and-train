@@ -15,6 +15,7 @@ export const SECTION_IDS = [
   'engine',
   'conditions',
   'learn',
+  'thrusters',
   'harbour',
   'settings',
 ] as const;
@@ -44,6 +45,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'engine',
       'conditions',
       'learn',
+      'thrusters',
       'harbour',
       'settings',
     ],
@@ -58,6 +60,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'learn',
       'autopilot',
       'engine',
+      'thrusters',
       'harbour',
       'settings',
     ],
@@ -72,10 +75,26 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'autopilot',
       'engine',
       'conditions',
+      'thrusters',
       'harbour',
       'settings',
     ],
     second: ['conditions', 'ropes'],
+  },
+  harbour: {
+    order: [
+      'mode',
+      'engine',
+      'thrusters',
+      'harbour',
+      'conditions',
+      'sails',
+      'ropes',
+      'autopilot',
+      'learn',
+      'settings',
+    ],
+    second: ['conditions', 'learn'],
   },
 };
 
@@ -88,6 +107,7 @@ export function sectionAvailable(id: SectionId, state: AppState, wide = false): 
   switch (id) {
     case 'autopilot':
     case 'engine':
+    case 'thrusters':
       return state.settings.ropesMode === 'easy';
     case 'mode':
     case 'settings':

@@ -1703,6 +1703,40 @@
       ],
       "showMe": "Sails rolled away, wind 15 kn from 45° on the starboard bow, standing still: the bow blows off to port.",
       "textStatus": "draft"
+    },
+    "part_bow_thruster": {
+      "name": "Bow thruster",
+      "alternatives": [
+        {
+          "term": "bow prop"
+        }
+      ],
+      "short": "A small propeller in a tunnel across the bow that pushes the bow sideways.",
+      "what": "It pushes the bow to port or starboard while the joystick is held. It is strong when the boat is nearly stopped and weak once she moves faster than about 2 knots, because the water flowing past carries its jet away.",
+      "onThisBoat": "A tunnel about 2 m behind the stem, worked with the left joystick at the helm (owner). In the app it pushes about 130 kgf (an assumption).",
+      "mistakes": [
+        {
+          "mistake": "Holding it at speed and wondering why nothing happens.",
+          "fix": "Slow down first, then use short bursts."
+        }
+      ],
+      "showMe": "No wind, standing still: hold the bow joystick to starboard and watch her turn.",
+      "textStatus": "draft"
+    },
+    "part_stern_thruster": {
+      "name": "Stern thruster",
+      "alternatives": [],
+      "short": "A small propeller under the stern that pushes the stern sideways.",
+      "what": "It moves the stern to port or starboard. Used with the bow thruster it turns the boat on the spot or moves her sideways towards the quay.",
+      "onThisBoat": "A pod under the hull aft (an assumption: the hull is too shallow there for a tunnel), worked with the right joystick at the helm (owner). About 100 kgf in the app.",
+      "mistakes": [
+        {
+          "mistake": "Counting on both thrusters against a strong crosswind.",
+          "fix": "In strong wind they are not enough: plan the approach so the wind helps, or keep way on."
+        }
+      ],
+      "showMe": "No wind, standing still: hold both joysticks to starboard: she moves sideways.",
+      "textStatus": "draft"
     }
   }
 }

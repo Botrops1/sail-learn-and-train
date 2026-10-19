@@ -31,6 +31,8 @@ import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../m
 import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock';
 import { EMPTY_ALERTS, recordAlerts, type AlertLog } from '../model/alerts';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
+import { harbourForces } from '../model/harbourForces';
+import { THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
 import {
@@ -78,7 +80,7 @@ export interface AppState {
   selection: string | null;
   /** The entry the Learn tab shows (a registry id), or null for the list (M21) or the empty page (M20). In the link as `learn`. */
   learn: string | null;
-  /** The mode (PHASE5_SPEC 4.1): 'learn', or the ropes mode. In the link as `m=learn`. */
+  /** The mode (PHASE5_SPEC 4.1): 'learn' or 'harbour' (M41), or the ropes mode. In the link as `m=learn` / `m=harbour`. */
   appMode: AppMode;
   /** Realistic mode (PHASE1_SPEC 7.2.2): stations, clutches, winches. Kept while in Easy mode. */
   realistic: RealisticState;
@@ -110,6 +112,8 @@ export interface AppState {
   clock: ClockState;
   /** Harbour gear (M33): the fenders. Phase 7 adds the windlass and the lines here. In the link as `fd`. */
   harbour: HarbourState;
+  /** The bow and stern thrusters (M41): held by the learner, so never in the link. */
+  thrusters: ThrusterState;
   /** The alert history (M36, issue #80): what the short messages said, kept for the notification centre. Not in the link. */
   alerts: AlertLog;
 }
@@ -157,6 +161,8 @@ export type Action =
   | { type: 'setTimeBar'; timeBar: boolean }
   /** The fenders out or in the locker (M33), in every mode. */
   | { type: 'setFenders'; out: boolean }
+  /** M41: a thruster joystick held to a side (-1 port, +1 starboard) or let go (0). */
+  | { type: 'thruster'; which: 'bow' | 'stern'; dir: ThrustDir }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
   | { type: 'setClock'; utcMs: number }
   /** The Settings switch for the clock chip. */
@@ -175,7 +181,7 @@ export interface InitialOverrides {
   settings?: Partial<Settings>;
   selection?: string | null;
   learn?: string | null;
-  /** From a shared link: Learn mode (`m=learn`); otherwise the mode follows the ropes mode. */
+  /** From a shared link: Learn or Harbour mode (`m=learn`, `m=harbour`); otherwise the mode follows the ropes mode. */
   appMode?: AppMode;
   /** From a shared link: rig history the controls alone do not give (see RigHistory). */
   history?: RigHistory;
@@ -305,7 +311,10 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     settings,
     selection: overrides.selection ?? null,
     learn: overrides.learn ?? null,
-    appMode: overrides.appMode === 'learn' ? 'learn' : settings.ropesMode,
+    appMode:
+      overrides.appMode === 'learn' || overrides.appMode === 'harbour'
+        ? overrides.appMode
+        : settings.ropesMode,
     realistic: overrides.realistic ?? initialRealistic(),
     paused: false,
     boat,
@@ -320,6 +329,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     sea,
     clock: { utcMs: overrides.clockUtcMs ?? defaultClockUtcMs() },
     harbour: overrides.harbour ?? DEFAULT_HARBOUR,
+    thrusters: THRUSTERS_OFF,
     alerts: EMPTY_ALERTS,
   });
 }
@@ -368,12 +378,16 @@ function reduceAction(state: AppState, action: Action): AppState {
       return withTimeRule({
         ...state,
         settings: { ...state.settings, ropesMode: action.mode },
-        // Out of Learn mode, the mode is the ropes mode (PHASE5_SPEC 3.1).
-        appMode: state.appMode === 'learn' ? 'learn' : action.mode,
+        // Out of Learn and Harbour mode, the mode is the ropes mode (PHASE5_SPEC 3.1, PHASE7_SPEC 4.4).
+        appMode:
+          state.appMode === 'learn' || state.appMode === 'harbour' ? state.appMode : action.mode,
       });
     case 'setAppMode': {
       if (action.mode === state.appMode) return state;
-      if (action.mode === 'learn') return { ...state, appMode: 'learn' };
+      // Learn and Harbour keep the ropes mode as it is.
+      if (action.mode === 'learn' || action.mode === 'harbour') {
+        return { ...state, appMode: action.mode };
+      }
       return withTimeRule({
         ...state,
         appMode: action.mode,
@@ -536,6 +550,10 @@ function reduceAction(state: AppState, action: Action): AppState {
       return action.out === state.harbour.fendersOut
         ? state
         : { ...state, harbour: { ...state.harbour, fendersOut: action.out } };
+    case 'thruster': {
+      if (state.thrusters[action.which] === action.dir) return state;
+      return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };
+    }
     case 'setPaused':
       return state.paused === action.paused ? state : { ...state, paused: action.paused };
     case 'load':
@@ -597,6 +615,11 @@ function reduceAction(state: AppState, action: Action): AppState {
           trains,
           rudderLimitDeg:
             autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
+          // Open-water sailing does no extra work: the hook is built only while a thruster runs.
+          external:
+            state.thrusters.bow !== 0 || state.thrusters.stern !== 0
+              ? harbourForces({ thrusters: state.thrusters })
+              : undefined,
         },
         dt,
       );

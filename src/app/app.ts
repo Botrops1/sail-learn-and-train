@@ -110,7 +110,10 @@ export function startApp(host: HTMLElement): void {
   createWindIndicator(layout.view, store);
   const card = createInfoCard(layout, store, {
     shownInPanel: (partId) =>
-      (panel.shows('ropes') && ropesTabShows(partId) && store.getState().appMode !== 'learn') ||
+      (panel.shows('ropes') &&
+        ropesTabShows(partId) &&
+        store.getState().appMode !== 'learn' &&
+        store.getState().appMode !== 'harbour') ||
       (panel.shows('learn') && store.getState().learn === partId),
     atPeek: sheet.atPeek,
     atFull: sheet.atFull,

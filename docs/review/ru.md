@@ -535,6 +535,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Кормовое подруливающее устройство (`part_stern_thruster`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Stern thruster | Кормовое подруливающее устройство |
+| Другие названия | — | — |
+| Коротко | A small propeller under the stern that pushes the stern sideways. | Небольшой винт под кормой, толкающий корму вбок. |
+| Что делает / что значит | It moves the stern to port or starboard. Used with the bow thruster it turns the boat on the spot or moves her sideways towards the quay. | Двигает корму влево или вправо. Вместе с носовым разворачивает лодку на месте или ведёт её лагом к причалу. |
+| На этой яхте | A pod under the hull aft (an assumption: the hull is too shallow there for a tunnel), worked with the right joystick at the helm (owner). About 100 kgf in the app. | Гондола под корпусом в корме (предположение: там корпус слишком мелкий для туннеля), управляется правым джойстиком у штурвала (владелец). В приложении около 100 кгс. |
+| Типичные ошибки | Counting on both thrusters against a strong crosswind. → In strong wind they are not enough: plan the approach so the wind helps, or keep way on. | Рассчитывать на оба подруливающих против сильного бокового ветра. → В сильный ветер их не хватает: заходите так, чтобы ветер помогал, или держите ход. |
+| «Покажи» | No wind, standing still: hold both joysticks to starboard: she moves sideways. | Без ветра, лодка стоит: держите оба джойстика вправо: лодка идёт лагом. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### корпус (`part_hull`)
 
 | Поле | English | Русский |
@@ -561,6 +576,21 @@
 | На этой яхте | The jib furler, the anchor roller and the anchor windlass sit on the bow. | На носу стоят закрутка стакселя, якорный роульс и якорная лебёдка. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Носовое подруливающее устройство (`part_bow_thruster`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Bow thruster | Носовое подруливающее устройство |
+| Другие названия | bow prop | подрулька |
+| Коротко | A small propeller in a tunnel across the bow that pushes the bow sideways. | Небольшой винт в туннеле поперёк носа, толкающий нос вбок. |
+| Что делает / что значит | It pushes the bow to port or starboard while the joystick is held. It is strong when the boat is nearly stopped and weak once she moves faster than about 2 knots, because the water flowing past carries its jet away. | Пока джойстик удерживается, оно толкает нос влево или вправо. Сильно, когда лодка почти стоит, и слабо, если она идёт быстрее примерно 2 узлов: набегающая вода сносит струю. |
+| На этой яхте | A tunnel about 2 m behind the stem, worked with the left joystick at the helm (owner). In the app it pushes about 130 kgf (an assumption). | Туннель примерно в 2 м за форштевнем, управляется левым джойстиком у штурвала (владелец). В приложении тяга около 130 кгс (предположение). |
+| Типичные ошибки | Holding it at speed and wondering why nothing happens. → Slow down first, then use short bursts. | Держать его на ходу и удивляться, что ничего не происходит. → Сначала сбросьте ход, затем используйте короткие импульсы. |
+| «Покажи» | No wind, standing still: hold the bow joystick to starboard and watch her turn. | Без ветра, лодка стоит: держите носовой джойстик вправо и смотрите, как она разворачивается. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -2714,19 +2744,24 @@
 | mode.learn | Learn | Обучение |
 | mode.easy | Easy | Простой |
 | mode.realistic | Realistic | Реалистичный |
+| mode.harbour | Harbour | Гавань |
 | mode.section | Mode: {name} | Режим: {name} |
 | mode.learn.desc | For looking things up. The Learn list comes first; tap any part of the boat to read about it. | Для справки. Сначала список «Обучение»; нажмите на любую часть яхты, чтобы прочитать о ней. |
 | mode.easy.desc | For learning what each rope does. Every rope is a slider and the boat answers at once. | Чтобы понять, что делает каждый конец. Каждый конец — ползунок, яхта отвечает сразу. |
 | mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the ropes, as on the boat. | Для тренировки, как на палубе. Концами работают стопоры, лебёдки и ваша рука, как на яхте. |
+| mode.harbour.desc | For bringing her in and out of a harbour. The engine and the thrusters come first. | Чтобы заходить в гавань и выходить из неё. Сначала двигатель и подруливающие. |
 | mode.learn.hint | Names and explanations of every part and word. | Названия и объяснения всех частей и слов. |
 | mode.easy.hint | A slider for every rope. | Ползунок для каждого конца. |
 | mode.realistic.hint | Clutches and winches, as on the boat. | Стопоры и лебёдки, как на яхте. |
+| mode.harbour.hint | Engine and thrusters first. | Сначала двигатель и подруливающие. |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a rope or a clutch: its − and + appear here. | Нажмите на конец или стопор: здесь появятся − и +. |
 | quick.realistic | Pull the panel up to work the clutches and winches. | Поднимите панель, чтобы работать стопорами и лебёдками. |
 | quick.learn | Tap any part of the boat to learn about it. | Нажмите на любую часть яхты, чтобы узнать о ней. |
 | quick.read | Read | Читать |
+| quick.harbour.short | {arrow}{n} | {arrow}{n} |
+| quick.harbour.engineOff | Engine off | Двигатель выключен |
 | minimap.open | Mini-map: tap to open the full map. | Мини-карта: нажмите, чтобы открыть карту. |
 | map.close | Close the map | Закрыть карту |
 | map.closeShort | Close | Закрыть |
@@ -2748,6 +2783,23 @@
 | harbour.fenders.stowed | In the locker | В рундуке |
 | harbour.fenders.out | Out | За бортом |
 | harbour.fenders.hint | Bring the fenders in before you sail. | Уберите кранцы, прежде чем идти под парусами. |
+| thrusters.label | Thrusters | Подруливающие устройства |
+| thrusters.bow | Bow | Нос |
+| thrusters.stern | Stern | Корма |
+| thrusters.bowGroup | Bow thruster | Носовое подруливающее устройство |
+| thrusters.sternGroup | Stern thruster | Кормовое подруливающее устройство |
+| thrusters.bowPortAria | Bow thruster: push the bow to port | Носовое подруливающее: нос влево |
+| thrusters.bowStarboardAria | Bow thruster: push the bow to starboard | Носовое подруливающее: нос вправо |
+| thrusters.sternPortAria | Stern thruster: push the stern to port | Кормовое подруливающее: корму влево |
+| thrusters.sternStarboardAria | Stern thruster: push the stern to starboard | Кормовое подруливающее: корму вправо |
+| thrusters.off | Thrusters off. Hold a joystick to the side you want that end to go. | Подруливающие выключены. Держите джойстик в ту сторону, куда должен пойти нос или корма. |
+| thrusters.on | Running: {parts} | Работают: {parts} |
+| thrusters.bowPort | bow to port | нос влево |
+| thrusters.bowStarboard | bow to starboard | нос вправо |
+| thrusters.sternPort | stern to port | корма влево |
+| thrusters.sternStarboard | stern to starboard | корма вправо |
+| thrusters.weak | (little effect at this speed) | (на такой скорости почти не действуют) |
+| thrusters.hint | A thruster is a propeller in a tunnel across the hull (thruster: a small sideways propeller). It pushes one end of the boat sideways while you hold the joystick. Bow and stern the same way move her sideways; opposite ways turn her on the spot. They only work well below 2 knots. | Подруливающее устройство: винт в туннеле поперёк корпуса. Пока вы держите джойстик, оно толкает нос или корму вбок. Нос и корма в одну сторону: лодка идёт лагом; в разные стороны: разворачивается на месте. Хорошо работают только медленнее 2 узлов. |
 | alerts.title | Attention | Внимание |
 | alerts.label | Alert history | История предупреждений |
 | alerts.chipAria | Attention: open the alert history | Внимание: открыть историю предупреждений |
