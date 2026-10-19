@@ -55,6 +55,10 @@ export interface MarinaGeometry {
   ourBerth: Berth;
   /** Quay rings (east, north): at every berth edge of the north row, on the quay face. */
   rings: [number, number][];
+  /** M44: the two rings at the edges of our berth, on the quay face (east, north). */
+  ourRings: { west: [number, number]; east: [number, number] };
+  /** M44: the lazy line's weight on the bottom ahead of our berth: east, north, height (negative = depth). */
+  ourSinker: [number, number, number];
   yachts: MooredYacht[];
 }
 
@@ -169,7 +173,17 @@ function buildMarina(
     });
   }
 
-  return { quay, pontoon, wall, fairway, berths, ourBerth, rings, yachts };
+  const ourRings = {
+    west: [ourBerth.centreEastM - w / 2, F] as [number, number],
+    east: [ourBerth.centreEastM + w / 2, F] as [number, number],
+  };
+  const ourSinker: [number, number, number] = [
+    ourBerth.centreEastM,
+    F - m.lazyLineLengthM,
+    -m.depthM,
+  ];
+
+  return { quay, pontoon, wall, fairway, berths, ourBerth, rings, ourRings, ourSinker, yachts };
 }
 
 /** The rectangle round the quay, the wall and the pontoon: what the scene tests for "near". */

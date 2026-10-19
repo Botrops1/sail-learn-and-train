@@ -1,8 +1,11 @@
 import { boat as hanse508, type BoatData } from './boat';
 import { contactForces, type FenderSet, type Obstacle } from './contact';
 import { addForces, type ExternalForces } from './lowSpeed';
+import { lineForces, type MooringLine } from './mooringLines';
 import type { BoatState } from './motion';
 import { thrusterForces, type ThrusterState } from './thrusters';
+
+const NO_LINES: readonly MooringLine[] = [];
 
 /** What pushes the boat from outside this frame (PHASE7_SPEC 4.3 step 4). Grows with each milestone. */
 export interface HarbourInputs {
@@ -11,11 +14,13 @@ export interface HarbourInputs {
   obstacles: readonly Obstacle[];
   /** M43: the fenders between the hull and an obstacle. */
   fenders: FenderSet;
+  /** M44: the mooring lines that are on (none when left out). */
+  lines?: readonly MooringLine[];
 }
 
 /**
  * The external force function for one frame, called every substep by `stepBoat`
- * (`MotionInputs.external`): the thrusters and contact now; lines, ground and chain join later.
+ * (`MotionInputs.external`): the thrusters, contact and mooring lines now; ground and chain join later.
  */
 export function harbourForces(
   inputs: HarbourInputs,
@@ -25,5 +30,6 @@ export function harbourForces(
     addForces(
       thrusterForces(inputs.thrusters, boat, data),
       contactForces(boat, inputs.obstacles, inputs.fenders, data),
+      lineForces(inputs.lines ?? NO_LINES, boat, data),
     );
 }

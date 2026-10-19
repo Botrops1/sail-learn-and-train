@@ -57,6 +57,7 @@
     "sternGapM": 1.0,
     "berthZoneM": 16,
     "startInsetM": 15,
+    "lazyLineLengthM": 25,
     "layouts": {
       "tight": {
         "berthWidthM": 4.9,

@@ -29,6 +29,8 @@ export interface MarinaData {
   sternGapM: number;
   berthZoneM: number;
   startInsetM: number;
+  /** M44: how far south of the quay face the lazy line's weight lies, on the bottom, on each north-row berth's centre line. */
+  lazyLineLengthM: number;
   layouts: Record<MarinaLayoutId, { berthWidthM: number; fairwayM: number }>;
   yachts: { lengthM: number; beamM: number }[];
   /** `busy` takes every berth; the others list the taken berth indices of each row. */

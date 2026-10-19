@@ -68,6 +68,7 @@ export function startUrlSync(store: Store): void {
       state.harbour.layout === previous.harbour.layout &&
       state.harbour.traffic === previous.harbour.traffic &&
       state.harbour.berthArrow === previous.harbour.berthArrow &&
+      state.lines.lines === previous.lines.lines &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
