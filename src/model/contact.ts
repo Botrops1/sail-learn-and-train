@@ -54,6 +54,10 @@ interface HullCache {
   polygon: [number, number][];
   /** The polygon runs counter-clockwise in the (x, z) plane. */
   ccw: boolean;
+  /** The farthest any contact point (a fender's thickness out) is from the boat's origin: an obstacle farther than this cannot touch. */
+  reachM: number;
+  /** The polygon's bounding box (boat frame), a cheap first cut for the inside test. */
+  box: { minX: number; maxX: number; maxZ: number };
 }
 
 const hullCache = new WeakMap<BoatData, HullCache>();
@@ -90,7 +94,15 @@ function hullOf(data: BoatData): HullCache {
     { x: data.hull.bowFittingTipX, z: 0, part: partOf(data.hull.bowFittingTipX, 0, data) },
     { x: data.hull.transomX, z: 0, part: partOf(data.hull.transomX, 0, data) },
   ];
-  const built = { points, polygon, ccw: signedArea(polygon) > 0 };
+  const fenderT = data.deckFittings.fenders.diameter;
+  const reachM = Math.max(...points.map((p) => Math.hypot(p.x, Math.abs(p.z) + fenderT)));
+  const xs = polygon.map((p) => p[0]);
+  const box = {
+    minX: Math.min(...xs),
+    maxX: Math.max(...xs),
+    maxZ: Math.max(...polygon.map((p) => Math.abs(p[1]))),
+  };
+  const built = { points, polygon, ccw: signedArea(polygon) > 0, reachM, box };
   hullCache.set(data, built);
   return built;
 }
@@ -170,6 +182,15 @@ function insideOrOn(polygon: readonly [number, number][], x: number, y: number):
   return insidePolygon(polygon, x, y) || nearestEdge(polygon, x, y, true).d < 1e-3;
 }
 
+const fenderCache = new WeakMap<BoatData, ReturnType<typeof fenderPlaces>>();
+
+/** The eight fender places, worked out once per boat file (contact asks for them every substep). */
+function fendersOf(data: BoatData): ReturnType<typeof fenderPlaces> {
+  let places = fenderCache.get(data);
+  if (!places) fenderCache.set(data, (places = fenderPlaces(data)));
+  return places;
+}
+
 /** The fender that covers the hull point (x, side), if any: its number. */
 function coveringFender(
   x: number,
@@ -178,7 +199,7 @@ function coveringFender(
   data: BoatData,
 ): number | undefined {
   const reach = data.physics.contact.fenderReachM;
-  const places = fenderPlaces(data);
+  const places = fendersOf(data);
   for (let i = 0; i < places.length; i += 1) {
     const place = places[i];
     if (!place || place.side !== side || fenders.lost.includes(i)) continue;
@@ -198,10 +219,17 @@ export function contactForces(
   data: BoatData = hanse508,
 ): ExternalForces {
   const c = data.physics.contact;
-  const near = obstacles.filter((o) => nearBox(boxOf(o), boat.eastM, boat.northM, c.nearM));
+  const hull = hullOf(data);
+  // `nearM` is the coarse cut; then only what is within the hull's own reach is worth testing.
+  const near = obstacles.filter((o) => {
+    const box = boxOf(o);
+    return (
+      nearBox(box, boat.eastM, boat.northM, c.nearM) &&
+      nearBox(box, boat.eastM, boat.northM, hull.reachM)
+    );
+  });
   if (near.length === 0) return NO_FORCES;
   const fenderT = data.deckFittings.fenders.diameter;
-  const hull = hullOf(data);
   const h = boat.headingDeg * DEG;
   const sinH = Math.sin(h);
   const cosH = Math.cos(h);
@@ -220,7 +248,8 @@ export function contactForces(
     for (const p of hull.points) {
       const side: Side = p.z < 0 ? -1 : 1;
       const sideways = p.part === 'port' || p.part === 'starboard';
-      const fendered = fenders.out && sideways && coveringFender(p.x, side, fenders, data) !== undefined;
+      const fendered =
+        fenders.out && sideways && coveringFender(p.x, side, fenders, data) !== undefined;
       const z = fendered ? p.z + side * fenderT : p.z;
       const east = boat.eastM + p.x * sinH + z * cosH;
       const north = boat.northM + p.x * cosH - z * sinH;
@@ -253,11 +282,14 @@ export function contactForces(
     }
     // A corner of the obstacle inside our hull (a neighbour's pointed bow between two of our points).
     for (const [vertexEast, vertexNorth] of o.polygon) {
-      const [xv, zv] = mapToBoat(vertexEast - boat.eastM, vertexNorth - boat.northM, boat.headingDeg);
+      const [xv, zv] = mapToBoat(
+        vertexEast - boat.eastM,
+        vertexNorth - boat.northM,
+        boat.headingDeg,
+      );
+      if (xv < hull.box.minX || xv > hull.box.maxX || Math.abs(zv) > hull.box.maxZ) continue;
       if (!insidePolygon(hull.polygon, xv, zv)) continue;
-      if (
-        near.some((other) => other !== o && insideOrOn(other.polygon, vertexEast, vertexNorth))
-      ) {
+      if (near.some((other) => other !== o && insideOrOn(other.polygon, vertexEast, vertexNorth))) {
         continue;
       }
       const edge = nearestEdge(hull.polygon, xv, zv, hull.ccw);
@@ -415,7 +447,12 @@ export function stepFenders(
     noticeUntilS = timeS + NOTICE_S;
   }
   return {
-    harbour: { ...harbour, fendersLost: lost, fenderOverSpeedS: over, fendersLostSinceSlow: sinceSlow },
+    harbour: {
+      ...harbour,
+      fendersLost: lost,
+      fenderOverSpeedS: over,
+      fendersLostSinceSlow: sinceSlow,
+    },
     contact: reports === contact.reports ? contact : { ...contact, reports, noticeUntilS },
   };
 }

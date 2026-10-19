@@ -2818,6 +2818,9 @@
 | harbour.fenders.stowed | In the locker | В рундуке |
 | harbour.fenders.out | Out | За бортом |
 | harbour.fenders.hint | Bring the fenders in before you sail. | Уберите кранцы, прежде чем идти под парусами. |
+| harbour.fenders.status.in | Fenders in the locker. | Кранцы в рундуке. |
+| harbour.fenders.status.out | Fenders over the side: {count}. | Кранцев за бортом: {count}. |
+| harbour.fenders.status.lost | Lost while sailing: {count}. | Потеряно на ходу: {count}. |
 | place.label | Place | Место |
 | place.open | Open water | Открытая вода |
 | place.marina | Marina | Марина |
@@ -2833,6 +2836,23 @@
 | place.status.open | Open water near the practice buoys. | Открытая вода у тренировочных буёв. |
 | place.status.marina | In the marina's fairway. Your berth is marked yellow on the quay: go in stern first (stern-to). | В проходе марины. Ваше место отмечено жёлтым на причале: заходите кормой (кормой к причалу). |
 | place.hint | Choosing a place puts the boat there, ready for harbour work: sails rolled away, engine running in neutral. Choosing it again puts her back at the start. The other yachts never move. | Выбор места переносит лодку туда, готовой к манёврам в гавани: паруса свёрнуты, двигатель работает на нейтрали. Повторный выбор возвращает её к началу. Другие яхты не двигаются. |
+| damage.title | Damage report ({count}) | Отчёт о повреждениях ({count}) |
+| damage.none | No contact yet. | Касаний пока не было. |
+| damage.clear | Clear | Очистить |
+| damage.line | {what}, at our {where}, {speed} kn: {verdict} | {what}, наш {where}, {speed} уз: {verdict} |
+| damage.part.bow | bow | нос |
+| damage.part.stern | stern | корма |
+| damage.part.port | port side | левый борт |
+| damage.part.starboard | starboard side | правый борт |
+| damage.part.keel | keel | киль |
+| damage.severity.fender | the fender took it. No damage. | кранец принял удар. Повреждений нет. |
+| damage.severity.touch | a touch. No damage. | касание. Повреждений нет. |
+| damage.severity.bump | a bump: scratched gelcoat. | толчок: поцарапан гелькоут. |
+| damage.severity.knock | a knock: gelcoat cracked, a repair job. | удар: трещины в гелькоуте, нужен ремонт. |
+| damage.severity.hit | a hard hit: the hull may be damaged. Check for water inside. | сильный удар: корпус может быть повреждён. Проверьте, нет ли воды внутри. |
+| damage.fenderLost | A {side} fender was torn off and lost (fenders out at speed). | Оторвало и потеряли кранец с {side} борта (кранцы за бортом на ходу). |
+| side.port.gen | port | левого |
+| side.starboard.gen | starboard | правого |
 | thrusters.label | Thrusters | Подруливающие устройства |
 | thrusters.bow | Bow | Нос |
 | thrusters.stern | Stern | Корма |

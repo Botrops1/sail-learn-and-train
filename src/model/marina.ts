@@ -238,13 +238,11 @@ export function marinaObstacles(geometry: MarinaGeometry): Obstacle[] {
     { id: 'quay', partId: 'env_quay', polygon: rectPolygon(geometry.quay) },
     { id: 'wall', partId: 'env_quay', polygon: rectPolygon(geometry.wall) },
     { id: 'pontoon', partId: 'env_quay', polygon: rectPolygon(geometry.pontoon) },
-    ...geometry.yachts.map(
-      (yacht): Obstacle => ({
-        id: yacht.id,
-        partId: 'env_moored_yacht',
-        polygon: counterClockwise(yacht.outline),
-      }),
-    ),
+    ...geometry.yachts.map((yacht): Obstacle => ({
+      id: yacht.id,
+      partId: 'env_moored_yacht',
+      polygon: counterClockwise(yacht.outline),
+    })),
   ];
   obstacleCache.set(geometry, built);
   return built;

@@ -1,6 +1,7 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import { el } from './dom';
+import { createDamageAlert } from './damageReport';
 import { createGybeReport } from './gybeReport';
 import { t } from './i18n';
 
@@ -46,6 +47,7 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
   ]);
   host.append(alerts);
   createGybeReport(alerts, store);
+  createDamageAlert(alerts, store);
 
   const refresh = (state: AppState) => {
     const flashing = state.rig.gybeLabelS > 0;

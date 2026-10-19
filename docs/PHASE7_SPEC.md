@@ -1038,7 +1038,13 @@ Lines (M44); damage that changes the boat (owner: out of scope); the neighbour m
 
 ### 9.12 Decided in the M43 PR
 
-(empty)
+- **The hull's reach cuts the work.** Besides the 60 m `nearM` cut, `contactForces` skips an obstacle that is farther from the boat's origin than the farthest contact point (plus a fender's thickness): nothing of the hull can reach it, so the forces are the same, but a busy marina no longer tests forty yachts every substep (about 3 ms per call before, under 0.1 ms after). A neighbour's corner is tested against the hull only when it lies inside the hull's bounding box.
+- **Reports start again with a place.** `goToPlace`, the layout and the traffic (all built with `initialState`) empty the damage report; so do Reset and a link. The fenders keep their place (out or in the locker) but the ones torn off come back (9.4).
+- **A bounce is a new report.** A contact that lets go for longer than `separateS` (0.5 s) and touches again is a second report, so a hard hit that bounces off the wall lists several lines, the first the hardest.
+- **A lost fender is a red alert.** Its report has the severity `hit`, so the alert uses the red look (`is-hit`) with the text of `damage.fenderLost`.
+- **Held still.** Nothing touches and the fender timer stands still (9.4); the report list stays as it was.
+- **The alert history (M36) does not record the damage alerts.** 9.1 does not list `alerts.ts`; the owner is asked in the PR whether it should.
+- **Statuses in PHYSICS_TRUTHS.** PT-50 is source-checked already (its speeds are assumptions); PT-34 stays "to-verify" because no source for the number of seconds exists yet. Both now have tests named after them (`tests/physicsTruths7.test.ts`).
 
 ---
 

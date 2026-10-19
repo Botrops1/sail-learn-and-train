@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { boat as boatData } from '../src/model/boat';
 import { mpsToKn, wrap180 } from '../src/model/angles';
 import type { AppState } from '../src/app/store';
-import { contactForces, contactSeverity, hullContactPoints, type Obstacle } from '../src/model/contact';
+import {
+  contactForces,
+  contactSeverity,
+  hullContactPoints,
+  type Obstacle,
+} from '../src/model/contact';
 import { DEFAULT_HARBOUR } from '../src/model/harbour';
 import type { ContactHit } from '../src/model/lowSpeed';
 import { pointToMap } from '../src/model/lowSpeed';
@@ -182,6 +187,9 @@ describe('PT-33 thrusters', () => {
   });
 });
 
+/** The west face of the wall in the PT-50 tests, metres east. */
+const WALL_WEST_M = 2.875;
+
 describe('PT-50 fenders take a slow contact', () => {
   const wall: Obstacle = {
     id: 'wall',
@@ -223,7 +231,7 @@ describe('PT-50 fenders take a slow contact', () => {
       // How far into the wall the hull goes: the deepest of its starboard points.
       for (const p of hullContactPoints()) {
         const [east] = pointToMap(boat, p.x, p.z + (out && p.z > 0 ? 0.24 : 0));
-        deepest = Math.max(deepest, east - wall.polygon[0]![0]);
+        deepest = Math.max(deepest, east - WALL_WEST_M);
       }
     }
     return { first, deepest };

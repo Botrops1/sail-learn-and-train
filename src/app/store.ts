@@ -32,7 +32,13 @@ import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock'
 import { EMPTY_ALERTS, recordAlerts, type AlertLog } from '../model/alerts';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { harbourForces } from '../model/harbourForces';
-import { NO_CONTACT, stepContact, stepFenders, type ContactState, type Obstacle } from '../model/contact';
+import {
+  NO_CONTACT,
+  stepContact,
+  stepFenders,
+  type ContactState,
+  type Obstacle,
+} from '../model/contact';
 import {
   isMarinaLayout,
   isTraffic,
@@ -713,14 +719,14 @@ function reduceAction(state: AppState, action: Action): AppState {
           // Open-water sailing does no extra work: the hook is built only while a thruster runs
           // or the boat is in a place with something to bump into.
           external:
-            state.thrusters.bow !== 0 || state.thrusters.stern !== 0 || state.harbour.place !== 'open'
+            state.thrusters.bow !== 0 ||
+            state.thrusters.stern !== 0 ||
+            state.harbour.place !== 'open'
               ? harbourForces({
                   thrusters: state.thrusters,
                   obstacles:
                     state.harbour.place === 'marina'
-                      ? marinaObstacles(
-                          marinaGeometry(state.harbour.layout, state.harbour.traffic),
-                        )
+                      ? marinaObstacles(marinaGeometry(state.harbour.layout, state.harbour.traffic))
                       : NO_OBSTACLES,
                   fenders: { out: state.harbour.fendersOut, lost: state.harbour.fendersLost },
                 })

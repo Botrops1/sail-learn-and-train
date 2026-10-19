@@ -136,10 +136,7 @@ describe('stepContact', () => {
       c = stepContact(c, [hit(`yacht-${i}:bow`)], i, 0.25);
     }
     expect(c.reports).toHaveLength(20);
-    const state = act(
-      { ...harbourStart({}), contact: c },
-      { type: 'clearDamageReport' },
-    );
+    const state = act({ ...harbourStart({}), contact: c }, { type: 'clearDamageReport' });
     expect(state.contact.reports).toHaveLength(0);
   });
 });
