@@ -47,7 +47,11 @@ describe('thrusterForces (test 2)', () => {
 
   it('harbourForces gives the same force through the hook', () => {
     const boat = still();
-    const hook = harbourForces({ thrusters: { bow: 1, stern: -1 } });
+    const hook = harbourForces({
+      thrusters: { bow: 1, stern: -1 },
+      obstacles: [],
+      fenders: { out: false, lost: [] },
+    });
     expect(hook(boat)).toEqual(thrusterForces({ bow: 1, stern: -1 }, boat));
   });
 });

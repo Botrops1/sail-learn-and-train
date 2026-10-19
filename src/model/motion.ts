@@ -7,10 +7,12 @@ import { boatMassKg, hullResistance, type Resistance } from './hullResistance';
 import {
   NO_FORCES,
   hullLowSpeedForces,
+  mergeHits,
   steerShare,
   swayMassKg,
   yawInertiaKgM2,
   yawQuadDragNm,
+  type ContactHit,
   type ExternalForces,
 } from './lowSpeed';
 import { sailForces, type SailForces } from './sailForces';
@@ -123,6 +125,8 @@ export interface MotionReport {
   lowSpeed: ExternalForces;
   /** What `inputs.external` returned in the last substep (M40; zero without one). */
   external: ExternalForces;
+  /** M43: what our hull touched during the step, one entry per obstacle and hull part (see `mergeHits`). */
+  contacts: ContactHit[];
 }
 
 const NO_TRAINS: readonly WaveTrain[] = [];
@@ -186,6 +190,7 @@ export function stepBoat(
     heelDeg = 0;
   }
   let report: MotionReport | undefined;
+  const hits = new Map<string, ContactHit>();
   for (let i = 0; i < count; i += 1) {
     if (!held) waves = stepWaveMotion(waves, trains, speedMps, headingDeg, h, data);
     const twaDeg = wrap180(inputs.windDirDeg - headingDeg);
@@ -202,6 +207,7 @@ export function stepBoat(
             northM,
           })
         : NO_FORCES;
+    if (ext.contacts) mergeHits(hits, ext.contacts);
     // The rocking moves the sails through the air (M15): they feel it as a swing in the wind.
     const rocking = held ? { forwardMps: 0, sideMps: 0 } : rigMotion(waves, data);
     const wind = apparentWind(
@@ -245,6 +251,7 @@ export function stepBoat(
       swayMps,
       lowSpeed: low,
       external: ext,
+      contacts: [],
     });
     if (held) {
       report = makeReport(1, inputs.rudderDeg, false);
@@ -331,6 +338,7 @@ export function stepBoat(
     report = makeReport(gripNow, effectiveRudderDeg, roundUpS > 0, waveResistance, waveYaw, low);
   }
   if (!report) throw new Error('stepBoat: no substep ran');
+  if (hits.size > 0) report = { ...report, contacts: [...hits.values()] };
   // Held still: the boat is returned as it is (the store has already zeroed its speed), with
   // the wave motion.
   const next: BoatState = held

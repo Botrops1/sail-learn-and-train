@@ -21,6 +21,25 @@ export interface ExternalForces {
   sideN: number;
   /** About the turning point (`lowSpeed.cgX`), N·m, + turns her to starboard. */
   momentNm: number;
+  /** M43: the contacts behind these forces, one per hull point touching something. */
+  contacts?: ContactHit[];
+}
+
+/** Which part of our hull touched something (M43). */
+export type HullPart = 'bow' | 'stern' | 'port' | 'starboard' | 'keel';
+
+/** One contact between one obstacle and one point of our hull (M43, PHASE7_SPEC 9.3). */
+export interface ContactHit {
+  /** `<obstacle id>:<part>`: one contact between one obstacle and one part of our hull. */
+  key: string;
+  obstacleId: string;
+  /** The registry id of what was hit: 'env_quay', 'env_moored_yacht', … */
+  partId: string;
+  part: HullPart;
+  /** How fast our hull moved into it at that point, m/s (≥ 0). */
+  approachMps: number;
+  /** A fender was between them. */
+  fender: boolean;
 }
 
 export const NO_FORCES: ExternalForces = { surgeN: 0, sideN: 0, momentNm: 0 };
@@ -40,17 +59,40 @@ export function forceAt(
   };
 }
 
-/** Sums the three components; `addForces()` is zero. */
+/** Sums the three components and joins the contacts; `addForces()` is zero. */
 export function addForces(...parts: ExternalForces[]): ExternalForces {
   let surgeN = 0;
   let sideN = 0;
   let momentNm = 0;
+  let contacts: ContactHit[] | undefined;
   for (const part of parts) {
     surgeN += part.surgeN;
     sideN += part.sideN;
     momentNm += part.momentNm;
+    if (part.contacts && part.contacts.length > 0) (contacts ??= []).push(...part.contacts);
   }
-  return { surgeN, sideN, momentNm };
+  return contacts ? { surgeN, sideN, momentNm, contacts } : { surgeN, sideN, momentNm };
+}
+
+/**
+ * Adds hits to a merged list, one entry per key: the largest approach speed, and `fender` true
+ * only if every point of that key was fendered (a bare point beside a fendered one is a hull
+ * contact). `stepBoat` merges the hits of all its substeps this way (M43).
+ */
+export function mergeHits(into: Map<string, ContactHit>, hits: readonly ContactHit[]): void {
+  for (const hit of hits) {
+    const old = into.get(hit.key);
+    into.set(
+      hit.key,
+      old
+        ? {
+            ...old,
+            approachMps: Math.max(old.approachMps, hit.approachMps),
+            fender: old.fender && hit.fender,
+          }
+        : hit,
+    );
+  }
 }
 
 /** Map position (east, north) of a boat point. */

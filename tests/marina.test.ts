@@ -257,6 +257,10 @@ describe('Phase 7, M42: the place keys in the link', () => {
       layout: 'tight',
       traffic: 'busy',
       berthArrow: true,
+      // M43: the fenders torn off are not in the link.
+      fendersLost: [],
+      fenderOverSpeedS: 0,
+      fendersLostSinceSlow: 0,
     });
     expect(back.boat.eastM).toBe(2.8);
     expect(back.boat.northM).toBe(1480);

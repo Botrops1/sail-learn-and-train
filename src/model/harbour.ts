@@ -4,8 +4,8 @@ import type { PlaceId } from './places';
 
 /**
  * Harbour gear and place (M33, PHASE6_SPEC 4.2; M42, PHASE7_SPEC 8.3): the fenders, and where the
- * boat is (open water or the marina) with the marina's layout and traffic. M43 adds the fender
- * losses next to them; the lines and the anchor have states of their own.
+ * boat is (open water or the marina) with the marina's layout and traffic; M43: the fenders torn
+ * off while sailing with them out. The lines and the anchor have states of their own.
  */
 export interface HarbourState {
   /** The fenders hang over the side (true) or are in the locker (false). In the link as `fd=1`. */
@@ -18,6 +18,12 @@ export interface HarbourState {
   traffic: TrafficId;
   /** A big arrow floats over our berth in the marina (M42, owner on PR #101). In the link as `ba=0` when off, only in a place. */
   berthArrow: boolean;
+  /** Fender numbers torn off at speed (M43; 0–7 in `fenderPlaces` order, 8 the ball fender). A new array on every change. Not in the link. */
+  fendersLost: readonly number[];
+  /** Seconds the fenders have been out above `fenderLossSpeedMps` (M43). Not in the link. */
+  fenderOverSpeedS: number;
+  /** Fenders lost since she last slowed down (M43): the first loss takes longer than the next ones. Not in the link. */
+  fendersLostSinceSlow: number;
 }
 
 export const DEFAULT_HARBOUR: Readonly<HarbourState> = {
@@ -26,6 +32,9 @@ export const DEFAULT_HARBOUR: Readonly<HarbourState> = {
   layout: 'medium',
   traffic: 'half',
   berthArrow: true,
+  fendersLost: [],
+  fenderOverSpeedS: 0,
+  fendersLostSinceSlow: 0,
 };
 
 /** True when the "Bring the fenders in before you sail" hint shows: fenders out and Sailing. */

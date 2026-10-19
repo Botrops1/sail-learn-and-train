@@ -1595,6 +1595,22 @@
       "speedFactorByKn": [[0, 1], [1, 0.9], [2, 0.6], [3, 0.4], [4, 0.3], [6, 0.2]],
       "speedFactorNote": "assumption (PT-33): a tunnel thruster loses most of its push once water flows past the hull"
     },
+    "contact": {
+      "hullStiffnessNPerM": 400000,
+      "hullDampingNsPerM": 40000,
+      "fenderStiffnessNPerM": 100000,
+      "fenderDampingNsPerM": 60000,
+      "fenderReachM": 1.5,
+      "friction": 0.2,
+      "nearM": 60,
+      "separateS": 0.5,
+      "severityMps": { "touch": 0.15, "bump": 0.4, "knock": 0.8 },
+      "fenderMaxMps": 0.5,
+      "fenderLossSpeedMps": 2.6,
+      "fenderLossAfterS": 30,
+      "fenderLossEveryS": 20,
+      "note": "assumptions for teaching: a contact under 0.15 m/s (0.3 kn) is a touch, under 0.4 m/s (0.8 kn) a bump, under 0.8 m/s (1.6 kn) a knock, faster a hit; a fender takes a contact up to 0.5 m/s (1 kn) and covers 1.5 m of the hull each way from its station (half the largest gap, 3 m, between Phase 6's fender stations); fenders left out above 5 kn are torn off after 30 s, then one every 20 s (PT-34)"
+    },
     "autopilot": {
       "kp": 2,
       "kdS": 5,

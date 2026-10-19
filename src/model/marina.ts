@@ -1,4 +1,5 @@
 import { area, type AreaData } from './area';
+import type { Obstacle } from './contact';
 import { boatToMap } from './mapFrame';
 
 /**
@@ -202,4 +203,49 @@ export function insidePolygon(polygon: readonly [number, number][], x: number, y
     if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
   }
   return inside;
+}
+
+const obstacleCache = new WeakMap<MarinaGeometry, Obstacle[]>();
+
+function rectPolygon(r: Rect): [number, number][] {
+  return [
+    [r.west, r.south],
+    [r.east, r.south],
+    [r.east, r.north],
+    [r.west, r.north],
+  ];
+}
+
+/** Counter-clockwise: a polygon with a negative signed area is reversed. */
+function counterClockwise(polygon: [number, number][]): [number, number][] {
+  let area2 = 0;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i, i += 1) {
+    const [xi, yi] = polygon[i] as [number, number];
+    const [xj, yj] = polygon[j] as [number, number];
+    area2 += xj * yi - xi * yj;
+  }
+  return area2 < 0 ? [...polygon].reverse() : polygon;
+}
+
+/**
+ * What the hull can bump into in the marina (M43): the quay, the wall (both `env_quay`), the
+ * pontoon and every moored yacht. The same list for the same geometry, so contact can cache.
+ */
+export function marinaObstacles(geometry: MarinaGeometry): Obstacle[] {
+  const found = obstacleCache.get(geometry);
+  if (found) return found;
+  const built: Obstacle[] = [
+    { id: 'quay', partId: 'env_quay', polygon: rectPolygon(geometry.quay) },
+    { id: 'wall', partId: 'env_quay', polygon: rectPolygon(geometry.wall) },
+    { id: 'pontoon', partId: 'env_quay', polygon: rectPolygon(geometry.pontoon) },
+    ...geometry.yachts.map(
+      (yacht): Obstacle => ({
+        id: yacht.id,
+        partId: 'env_moored_yacht',
+        polygon: counterClockwise(yacht.outline),
+      }),
+    ),
+  ];
+  obstacleCache.set(geometry, built);
+  return built;
 }
