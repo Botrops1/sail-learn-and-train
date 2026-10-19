@@ -60,7 +60,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'Easy: every section folded (M35)',
       opens.join() ===
-        'ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,harbour:false',
+        'ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,place:false,harbour:false',
       opens.join(),
     );
     const tabs = await page.locator('[role="tab"]').count();
