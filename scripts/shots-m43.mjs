@@ -87,6 +87,12 @@ export async function liveM43Checks({ openPage, viewports, outDir, prefix, probl
     check('fenders: the link has fd=1', link.includes('fd=1'), link);
     const text = (await status.textContent())?.trim() ?? '';
     check('fenders: the status counts nine', text === 'Fenders over the side: 9.', text);
+    check(
+      'fenders: the status line is on the screen',
+      await status.isVisible(),
+      String(await status.boundingBox().then((b) => JSON.stringify(b))),
+    );
+    await shot(page, 'm43-fenders-status');
     await context.close();
   }
 
