@@ -101,3 +101,31 @@ export function stdDev(values: readonly number[]): number {
   const m = mean(values);
   return Math.sqrt(values.reduce((sum, v) => sum + (v - m) ** 2, 0) / values.length);
 }
+
+/** A boat at rest (or at `speedKn`) with the sails away and the autopilot off (PHASE7_SPEC 6.7). */
+export function harbourStart(o: {
+  windDirDeg?: number;
+  twsKn?: number;
+  speedKn?: number;
+  rudderDeg?: number;
+  engine?: { running: boolean; leverPct: number };
+  headingDeg?: number;
+}): AppState {
+  const state = initialState({
+    controls: {
+      ctl_wind_dir: o.windDirDeg ?? 0,
+      ctl_wind_speed: o.twsKn ?? 0,
+      ctl_main_furl: 0,
+      ctl_jib_furl: 0,
+      ctl_jib_sheet: 100,
+      ctl_rudder: o.rudderDeg ?? 0,
+    },
+    boat: {
+      mode: 'sailing',
+      headingDeg: o.headingDeg ?? 0,
+      speedMps: (o.speedKn ?? 0) * 0.514444,
+    },
+    ...(o.engine ? { engine: o.engine } : {}),
+  });
+  return { ...state, autopilot: { ...state.autopilot, mode: 'off' } };
+}

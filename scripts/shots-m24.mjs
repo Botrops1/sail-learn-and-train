@@ -1,8 +1,8 @@
 // M24 (Phase 4 sign-off): live checks for scripts/shots.mjs (PHASE4_SPEC 10.3). No scenes. Labels
 // contain "m24", so openPage adds held=1, sea=flat and clock=0 to queries without them.
-// For each language (phone size, one page each) it opens all 136 Learn entries, checks that every
-// section heading has text under it, and (English only) runs all 63 "Show me" buttons and the
-// phone's Back button.
+// For each language (phone size, one page each) it opens every Learn entry, checks that every
+// section heading has text under it, and (English only) runs every "Show me" button and the
+// phone's Back button. The counts come from the registry, so a new id needs no change here.
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
@@ -24,9 +24,9 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
   const registry = readJson('content/registry/parts.json').entries;
   const groups = new Set(registry.map((entry) => entry.group));
   const showMeIds = registry.filter((entry) => entry.showMe).map((entry) => entry.id);
-  check('the registry has 136 ids', registry.length === 136, String(registry.length));
-  check('the registry has 10 groups', groups.size === 10, String(groups.size));
-  check('the registry has 63 Show-me ids', showMeIds.length === 63, String(showMeIds.length));
+  check('the registry has ids', registry.length > 0, String(registry.length));
+  check('the registry has groups', groups.size > 0, String(groups.size));
+  check('the registry has Show-me ids', showMeIds.length > 0, String(showMeIds.length));
 
   const search = (page) => page.evaluate(() => location.search);
 
@@ -45,9 +45,17 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
 
     const groupCount = await page.locator('[data-testid="learn-groups"] > details').count();
-    check(`${code}: ten group lists`, groupCount === 10, String(groupCount));
+    check(
+      `${code}: a list for every group`,
+      groupCount === groups.size,
+      `${groupCount} of ${groups.size}`,
+    );
     const buttonCount = await page.locator('[data-testid^="learn-entry-"]').count();
-    check(`${code}: 136 entry buttons`, buttonCount === 136, String(buttonCount));
+    check(
+      `${code}: an entry button for every id`,
+      buttonCount === registry.length,
+      `${buttonCount} of ${registry.length}`,
+    );
 
     /** Opens the entry's group first: the list is rebuilt, closed, after every Back. */
     const openEntry = async (entry) => {
@@ -112,7 +120,7 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
       await page.getByTestId('learn-back').click();
     }
     check(
-      `${code}: all 136 entries show their name`,
+      `${code}: all ${registry.length} entries show their name`,
       wrongName.length === 0,
       wrongName.length ? wrongName.slice(0, 5).join(' | ') : 'ok',
     );
@@ -125,9 +133,9 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
     );
     if (code === 'en') {
       check(
-        'en: all 63 Show me buttons open a scene and Back returns',
+        `en: all ${showMeIds.length} Show me buttons open a scene and Back returns`,
         showMeFailures.length === 0,
-        showMeFailures.length ? showMeFailures.join(' | ') : '63 ok',
+        showMeFailures.length ? showMeFailures.join(' | ') : `${showMeIds.length} ok`,
       );
     }
 

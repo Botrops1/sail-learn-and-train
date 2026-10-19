@@ -122,6 +122,12 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
           t('debug.motion'),
           `${mpsToKn(boat.speedMps).toFixed(2)} kn ${boat.yawRateDegS.toFixed(1)}°/s`,
         ],
+        [
+          t('debug.lowSpeed'),
+          motion
+            ? `sway ${mpsToKn(motion.swayMps).toFixed(1)} kn · yaw ${boat.yawRateDegS.toFixed(1)} °/s · ext ${(motion.external.surgeN / 1000).toFixed(1)}/${(motion.external.sideN / 1000).toFixed(1)} kN`
+            : '–',
+        ],
         [t('debug.winds'), `${rig.wind.twaDeg.toFixed(0)}° / ${rig.wind.twsKn.toFixed(1)} kn`],
         [
           t('debug.windMode'),

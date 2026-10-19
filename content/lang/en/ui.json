@@ -401,6 +401,7 @@
   "trim.badgeTitle": "A sail is worn out from flapping (flogging). Tap to learn more.",
   "trim.telltale.hint": "A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is let out too far (luffing). The leeward one hanging: the sail is pulled in too far (stalled).",
   "debug.motion": "Boat V/yaw",
+  "debug.lowSpeed": "Low speed",
   "debug.winds": "TWA/TWS",
   "debug.apparent": "AWA/AWS",
   "debug.forces": "Drive/side/res",

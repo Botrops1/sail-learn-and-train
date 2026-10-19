@@ -450,7 +450,13 @@ Thrusters, places, lines, anchor, contact (later milestones); any visible contro
 
 ### 6.11 Decided in the M40 PR
 
-(empty)
+- **Everything in 6.2 and 6.3 was built as written, with no tuning.** All bands of 6.6 passed on the first run; the values match the prototype's: side wind 15 kn after 30 s: sway −0.312 m/s, heading −13.1°, after 300 s the wind lies 106.4° off the bow; bow blows off −32.3°; prop walk 6.21° in 15 s; kick ahead 6.52° and 0.60 kn.
+- **`MotionReport` gets `swayMps`, `lowSpeed` and `external`** (6.3). `tests/motionHelpers.ts` gets `harbourStart` (6.7); it passes the engine through `initialState`, so the engine opens already in the gear its lever asks for.
+- **`openPage` label tests** (3.6) were appended as `|4[0-7]` to the forms the code has now (after M36–M39 they are `3[6-9]` and `28|29|38|39`, not the forms the refresh quoted); the comment above them names Phase 7's labels.
+- **CI.** The new part `live, M40-M47` is added and `,m40,…,m47` appended to the skip list of `live, M30 on`, as 3.6 says.
+- **`shots-m24.mjs`** takes its counts from the registry (3.7): its checks now read "a list for every group" and "an entry button for every id", with the counts in the detail text.
+- **Group size** in `tests/glossary.test.ts`: `sailing` goes from 28 to 30 (the two new terms).
+- **Owner's answers on PR #98 ("accept all", for the PR's question and the independent review):** the stern keeps walking to port until a skipper checks (question 18); the three mirror tests check within 0.01° as the spec says (`toBeCloseTo(…, 2)`); PT-48 gets its source (PHYSICS_TRUTHS [40], Practical Sailor) and is `source-checked`, PT-47 stays `to-verify` (no reachable source), PT-49 stays `general`; with the sails up, the sails' own side force still does not slide her (she only heels): a limitation, not built here, noted for a later milestone; the strip's speed shows forward speed only (a drifting boat reads near 0, the sideways speed is in the debug row), kept as it is and said in the checklist.
 
 ---
 

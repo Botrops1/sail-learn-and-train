@@ -4,6 +4,15 @@ import { boat as hanse508, type BoatData } from './boat';
 import { controlSpec, type Controls } from './controls';
 import { rightingMomentNm, rollDamping, rollInertia } from './heel';
 import { boatMassKg, hullResistance, type Resistance } from './hullResistance';
+import {
+  NO_FORCES,
+  hullLowSpeedForces,
+  steerShare,
+  swayMassKg,
+  yawInertiaKgM2,
+  yawQuadDragNm,
+  type ExternalForces,
+} from './lowSpeed';
 import { sailForces, type SailForces } from './sailForces';
 import { initialRig, type RigState } from './sim';
 import type { SailDamage } from './trim';
@@ -29,6 +38,8 @@ export interface BoatState {
   speedMps: number;
   /** + = heading increasing (turning to starboard). */
   yawRateDegS: number;
+  /** Sideways speed of the turning point (`lowSpeed.cgX`), m/s, + = to starboard. Not in the link (M40). */
+  swayMps: number;
   /** + = heeled to starboard. */
   heelDeg: number;
   heelRateDegS: number;
@@ -49,6 +60,7 @@ export function initialBoat(overrides: Partial<BoatState> = {}): BoatState {
     headingDeg: 0,
     speedMps: 0,
     yawRateDegS: 0,
+    swayMps: 0,
     heelDeg: 0,
     heelRateDegS: 0,
     roundUpS: 0,
@@ -78,6 +90,11 @@ export interface MotionInputs {
   damage?: SailDamage;
   /** The wave trains now (M14); missing = none (M15: they act on the sails, the steering and the speed). */
   trains?: readonly WaveTrain[];
+  /**
+   * Forces from outside the boat (thrusters, lines, chain, contact, ground), evaluated at the
+   * start of every substep with the boat as it stands then (M40).
+   */
+  external?: (boat: BoatState) => ExternalForces;
 }
 
 export interface MotionReport {
@@ -100,6 +117,12 @@ export interface MotionReport {
   waveResistanceN: number;
   waveYawDeg: number;
   rigSideMps: number;
+  /** Sideways speed of the turning point at the end of the step, m/s (M40). */
+  swayMps: number;
+  /** The hull's own low-speed forces (wind on the hull, prop walk, prop wash) in the last substep (M40). */
+  lowSpeed: ExternalForces;
+  /** What `inputs.external` returned in the last substep (M40; zero without one). */
+  external: ExternalForces;
 }
 
 const NO_TRAINS: readonly WaveTrain[] = [];
@@ -125,7 +148,11 @@ export function stepBoat(
   data: BoatData = hanse508,
 ): { boat: BoatState; report: MotionReport } {
   const { turnLengthM, yawLagS } = data.physics.steering;
+  const ls = data.physics.lowSpeed;
   const mEff = effectiveMassKg(data);
+  const swayMass = swayMassKg(data);
+  const yawInertia = yawInertiaKgM2(data);
+  const yawQuad = yawQuadDragNm(data);
   const held = boatState.mode === 'held';
   const count = held ? 1 : substepCount(dt, data);
   const h = held ? 0 : dt / count;
@@ -134,8 +161,16 @@ export function stepBoat(
   const inertia = rollInertia(data);
   const damping = rollDamping(data);
   const rudderLimit = inputs.rudderLimitDeg ?? controlSpec('ctl_rudder').max;
-  let { headingDeg, speedMps, yawRateDegS, heelDeg, heelRateDegS, roundUpS, overpoweredS } =
-    boatState;
+  let {
+    headingDeg,
+    speedMps,
+    yawRateDegS,
+    swayMps,
+    heelDeg,
+    heelRateDegS,
+    roundUpS,
+    overpoweredS,
+  } = boatState;
   let { eastM, northM, waves } = boatState;
   const trains = inputs.trains ?? NO_TRAINS;
   if (held) {
@@ -147,12 +182,26 @@ export function stepBoat(
   }
   if (held) {
     speedMps = 0;
+    swayMps = 0;
     heelDeg = 0;
   }
   let report: MotionReport | undefined;
   for (let i = 0; i < count; i += 1) {
     if (!held) waves = stepWaveMotion(waves, trains, speedMps, headingDeg, h, data);
     const twaDeg = wrap180(inputs.windDirDeg - headingDeg);
+    // Forces from outside, with the boat as it stands now (M40).
+    const ext =
+      !held && inputs.external
+        ? inputs.external({
+            ...boatState,
+            headingDeg,
+            speedMps,
+            yawRateDegS,
+            swayMps,
+            eastM,
+            northM,
+          })
+        : NO_FORCES;
     // The rocking moves the sails through the air (M15): they feel it as a swing in the wind.
     const rocking = held ? { forwardMps: 0, sideMps: 0 } : rigMotion(waves, data);
     const wind = apparentWind(
@@ -160,7 +209,7 @@ export function stepBoat(
       twaDeg,
       speedMps + rocking.forwardMps,
       data,
-      rocking.sideMps,
+      rocking.sideMps + swayMps,
     );
     const forces = sailForces(
       inputs.rig,
@@ -178,6 +227,7 @@ export function stepBoat(
       roundUp: boolean,
       waveResistance = 0,
       waveYaw = 0,
+      low: ExternalForces = NO_FORCES,
     ): MotionReport => ({
       forces,
       resistance,
@@ -192,13 +242,16 @@ export function stepBoat(
       waveResistanceN: waveResistance,
       waveYawDeg: waveYaw,
       rigSideMps: held ? 0 : rocking.sideMps,
+      swayMps,
+      lowSpeed: low,
+      external: ext,
     });
     if (held) {
       report = makeReport(1, inputs.rudderDeg, false);
       break;
     }
 
-    const push = forces.driveN + forces.windageN + inputs.engineThrustN;
+    const push = forces.driveN + forces.windageN + inputs.engineThrustN + ext.surgeN;
     const waveResistance = addedResistanceN(speedMps, headingDeg, trains, data);
     const acceleration = (push - Math.sign(speedMps) * resistance.totalN - waveResistance) / mEff;
     const before = speedMps;
@@ -228,11 +281,45 @@ export function stepBoat(
     // The waves push on the bow like extra rudder (M15).
     const waveYaw = waveYawDeg(waves, trains, headingDeg, data);
     const rTarget = (speedMps * Math.tan((effectiveRudderDeg + waveYaw) * DEG)) / turnLengthM;
-    const rNow = yawRateDegS * DEG;
-    yawRateDegS = (rNow + (rTarget - rNow) * (1 - Math.exp(-h / yawLagS))) / DEG;
+
+    // Slow speed (M40): the hull's own wind, prop walk and prop wash, then sway and yaw. Above
+    // the fade speeds these are all 0 and the yaw is exactly the steering above.
+    const low = hullLowSpeedForces(
+      speedMps,
+      swayMps,
+      inputs.twsKn,
+      twaDeg,
+      inputs.engineThrustN,
+      inputs.rudderDeg,
+      data,
+    );
+    const swayDrag =
+      (ls.keelLiftNPerMps2 * Math.abs(speedMps) + ls.swayLinearDragNPerMps) * swayMps +
+      0.5 *
+        data.physics.constants.waterDensityKgM3 *
+        ls.lateralDragCoefficient *
+        ls.lateralAreaM2 *
+        Math.abs(swayMps) *
+        swayMps;
+    swayMps += ((low.sideN + ext.sideN - swayDrag) / swayMass) * h;
+
+    const grip = steerShare(speedMps, data);
+    const loose = 1 - grip;
+    let r = yawRateDegS * DEG;
+    r += grip * (rTarget - r) * (1 - Math.exp(-h / yawLagS));
+    r +=
+      ((low.momentNm +
+        ext.momentNm -
+        loose * (ls.yawLinearDampingNmPerRadS * r + yawQuad * Math.abs(r) * r)) /
+        yawInertia) *
+      h;
+    yawRateDegS = r / DEG;
     headingDeg = wrap360(headingDeg + yawRateDegS * h);
-    eastM += speedMps * h * Math.sin(headingDeg * DEG);
-    northM += speedMps * h * Math.cos(headingDeg * DEG);
+    // The mast's own sideways speed: the turning point's sway plus the spin about it.
+    const mastSideMps = swayMps + r * -ls.cgX;
+    const psi = headingDeg * DEG;
+    eastM += (speedMps * Math.sin(psi) + mastSideMps * Math.cos(psi)) * h;
+    northM += (speedMps * Math.cos(psi) - mastSideMps * Math.sin(psi)) * h;
 
     // Round-up: heeled, turning into the wind, with the rudder (almost) hard over against it.
     const intoWind = yawRateDegS * Math.sign(twaDeg) > heelData.roundUpMinYawRateDegS;
@@ -241,7 +328,7 @@ export function stepBoat(
       Math.abs(heelDeg) >= heelData.roundUpMinHeelDeg && intoWind && rudderAgainst
         ? ROUND_UP_HOLD_S
         : Math.max(0, roundUpS - h);
-    report = makeReport(gripNow, effectiveRudderDeg, roundUpS > 0, waveResistance, waveYaw);
+    report = makeReport(gripNow, effectiveRudderDeg, roundUpS > 0, waveResistance, waveYaw, low);
   }
   if (!report) throw new Error('stepBoat: no substep ran');
   // Held still: the boat is returned as it is (the store has already zeroed its speed), with
@@ -255,6 +342,7 @@ export function stepBoat(
         headingDeg,
         speedMps,
         yawRateDegS,
+        swayMps,
         heelDeg,
         heelRateDegS,
         roundUpS,
