@@ -1643,6 +1643,47 @@
       "showMe": "The map from above: zoom out with − four times to see the four buoys round the start.",
       "textStatus": "draft"
     },
+    "env_quay": {
+      "name": "Quay",
+      "alternatives": [
+        {
+          "term": "pier"
+        },
+        {
+          "term": "pontoon"
+        }
+      ],
+      "short": "The fixed edge of the marina that boats tie up to.",
+      "what": "In a Mediterranean marina boats lie side by side with their sterns to the quay (stern-to), held by stern lines to the quay and a lazy line at the bow. A pontoon is a floating quay.",
+      "onThisBoat": "The app's marina has a quay to the north and a pontoon to the south, with a fairway between them.",
+      "mistakes": [
+        {
+          "mistake": "Coming in bow first like in a car park.",
+          "fix": "In the Mediterranean you go in stern first."
+        }
+      ],
+      "showMe": "The marina from above.",
+      "textStatus": "draft"
+    },
+    "env_moored_yacht": {
+      "name": "Moored yacht",
+      "alternatives": [
+        {
+          "term": "neighbour"
+        }
+      ],
+      "short": "Another boat in the marina; it never moves in the app.",
+      "what": "Your neighbours are the hardest part of a tight berth: their hulls are a few tens of centimetres away. Fenders on both sides protect both boats.",
+      "onThisBoat": "Busy: every berth taken but yours. Half full: one neighbour. Empty: none.",
+      "mistakes": [
+        {
+          "mistake": "Watching only the quay.",
+          "fix": "Watch the bows of the neighbours: the wind pushes your bow onto theirs."
+        }
+      ],
+      "showMe": "A busy marina from above.",
+      "textStatus": "draft"
+    },
     "fit_autopilot_control": {
       "name": "Autopilot control",
       "alternatives": [],

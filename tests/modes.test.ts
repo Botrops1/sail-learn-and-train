@@ -32,7 +32,7 @@ describe('sectionAvailable (8.8 test 2)', () => {
       expect(sectionAvailable(id, easy, true)).toBe(true);
       expect(sectionAvailable(id, real, true)).toBe(true);
     }
-    for (const id of ['ropes', 'sails', 'conditions', 'learn', 'harbour'] as const) {
+    for (const id of ['ropes', 'sails', 'conditions', 'learn', 'place', 'harbour'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
       expect(sectionAvailable(id, real)).toBe(true);
     }
@@ -148,5 +148,19 @@ describe('Harbour mode (M41, PHASE7_SPEC 7.5)', () => {
     const order = MODE_LAYOUTS.harbour.order.filter((id) => id !== 'mode');
     expect(order[0]).toBe('engine');
     expect(order[1]).toBe('harbour');
+  });
+
+  it('M42: the Place section comes just before the Harbour gear in the other modes, and second in Harbour', () => {
+    for (const mode of ['easy', 'realistic', 'learn'] as const) {
+      const order = MODE_LAYOUTS[mode].order;
+      expect(order.indexOf('place'), mode).toBe(order.indexOf('harbour') - 1);
+    }
+    const harbour = MODE_LAYOUTS.harbour;
+    expect(harbour.order.filter((id) => id !== 'mode').slice(0, 3)).toEqual([
+      'engine',
+      'harbour',
+      'place',
+    ]);
+    expect(harbour.second).toEqual(['place', 'conditions']);
   });
 });

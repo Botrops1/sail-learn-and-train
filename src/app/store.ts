@@ -32,6 +32,8 @@ import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock'
 import { EMPTY_ALERTS, recordAlerts, type AlertLog } from '../model/alerts';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { harbourForces } from '../model/harbourForces';
+import { isMarinaLayout, isTraffic, type MarinaLayoutId, type TrafficId } from '../model/marina';
+import { isPlace, placeStart, type PlaceId } from '../model/places';
 import { THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
@@ -110,7 +112,7 @@ export interface AppState {
   sea: SeaState;
   /** The time on board (M17): UTC ms; runs with the simulated time, so Pause stops it. */
   clock: ClockState;
-  /** Harbour gear (M33): the fenders. Phase 7 adds the windlass and the lines here. In the link as `fd`. */
+  /** Harbour gear and place (M33, M42): the fenders, and the place with the marina's layout and traffic. In the link as `fd`, `pl`, `ml`, `tr`. */
   harbour: HarbourState;
   /** The bow and stern thrusters (M41): held by the learner, so never in the link. */
   thrusters: ThrusterState;
@@ -161,6 +163,17 @@ export type Action =
   | { type: 'setTimeBar'; timeBar: boolean }
   /** The fenders out or in the locker (M33), in every mode. */
   | { type: 'setFenders'; out: boolean }
+  /**
+   * M42: puts the boat in a place, ready for harbour work (sails away, engine in neutral, autopilot
+   * off, Sailing at rest at the place's start), in a fresh state; the wind, the sea setting, the
+   * clock, the settings, the mode, the camera and Realistic mode's station and clutches stay.
+   * Choosing the place she is in puts her back at the start.
+   */
+  | { type: 'goToPlace'; place: PlaceId }
+  /** M42: the marina's layout; in the marina she goes back to the start. */
+  | { type: 'setMarinaLayout'; layout: MarinaLayoutId }
+  /** M42: how many other yachts lie in the marina; in the marina she goes back to the start. */
+  | { type: 'setTraffic'; traffic: TrafficId }
   /** M41: a thruster joystick held to a side (-1 port, +1 starboard) or let go (0). */
   | { type: 'thruster'; which: 'bow' | 'stern'; dir: ThrustDir }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
@@ -202,7 +215,7 @@ export interface InitialOverrides {
   sea?: SeaSetting;
   /** The time on board (M17), UTC ms. Without it: the area's default (noon, 1 June). */
   clockUtcMs?: number;
-  /** From a shared link (M33): the fenders. Without it they are in the locker. */
+  /** From a shared link (M33, M42): the fenders and the place. Without it: fenders in the locker, open water. */
   harbour?: HarbourState;
 }
 
@@ -346,6 +359,41 @@ function withControls(controls: Controls, values: Partial<Controls>): Controls {
     }
   }
   return changed ? next : controls;
+}
+
+/**
+ * Puts the boat in `harbour.place` (M42, PHASE7_SPEC 8.4) in a fresh state: what the learner set
+ * up (settings, mode, camera, wind, clock, Realistic mode) goes on unchanged; the selection, the
+ * track, the thrusters and the alert history start again.
+ */
+function inPlace(state: AppState, harbour: HarbourState): AppState {
+  const start = placeStart(harbour);
+  const marina = harbour.place === 'marina';
+  const controls = marina
+    ? { ...state.controls, ctl_main_furl: 0, ctl_jib_furl: 0, ctl_jib_sheet: 100, ctl_rudder: 0 }
+    : state.controls;
+  return initialState({
+    controls,
+    camera: state.camera,
+    settings: state.settings,
+    learn: state.learn,
+    appMode: state.appMode,
+    realistic: state.realistic,
+    // The fresh rig's clock starts at 0, so the wind pattern starts again too.
+    windMode: { ...state.windMode, startS: 0 },
+    engine: marina ? { running: true, leverPct: 0 } : state.engine,
+    sea: start.sea ?? state.sea.setting,
+    clockUtcMs: state.clock.utcMs,
+    harbour,
+    boat: {
+      mode: 'sailing',
+      eastM: start.eastM,
+      northM: start.northM,
+      headingDeg: start.headingDeg,
+      speedMps: 0,
+    },
+    autopilot: { mode: 'off', targetDeg: start.headingDeg, integralDeg: 0 },
+  });
 }
 
 /** Longest frame step, seconds: a background tab must not make the rig jump. */
@@ -550,6 +598,20 @@ function reduceAction(state: AppState, action: Action): AppState {
       return action.out === state.harbour.fendersOut
         ? state
         : { ...state, harbour: { ...state.harbour, fendersOut: action.out } };
+    case 'goToPlace':
+      return isPlace(action.place)
+        ? inPlace(state, { ...state.harbour, place: action.place })
+        : state;
+    case 'setMarinaLayout': {
+      if (!isMarinaLayout(action.layout) || action.layout === state.harbour.layout) return state;
+      const harbour = { ...state.harbour, layout: action.layout };
+      return state.harbour.place === 'marina' ? inPlace(state, harbour) : { ...state, harbour };
+    }
+    case 'setTraffic': {
+      if (!isTraffic(action.traffic) || action.traffic === state.harbour.traffic) return state;
+      const harbour = { ...state.harbour, traffic: action.traffic };
+      return state.harbour.place === 'marina' ? inPlace(state, harbour) : { ...state, harbour };
+    }
     case 'thruster': {
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };

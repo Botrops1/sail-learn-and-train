@@ -37,10 +37,10 @@ describe('Phase 6, M33: harbour gear (the fenders)', () => {
   });
 
   it('4. the hint shows only for fenders out and Sailing', () => {
-    expect(fenderHintShown({ fendersOut: true }, 'sailing')).toBe(true);
-    expect(fenderHintShown({ fendersOut: true }, 'held')).toBe(false);
-    expect(fenderHintShown({ fendersOut: false }, 'sailing')).toBe(false);
-    expect(fenderHintShown({ fendersOut: false }, 'held')).toBe(false);
+    expect(fenderHintShown({ ...DEFAULT_HARBOUR, fendersOut: true }, 'sailing')).toBe(true);
+    expect(fenderHintShown({ ...DEFAULT_HARBOUR, fendersOut: true }, 'held')).toBe(false);
+    expect(fenderHintShown({ ...DEFAULT_HARBOUR, fendersOut: false }, 'sailing')).toBe(false);
+    expect(fenderHintShown({ ...DEFAULT_HARBOUR, fendersOut: false }, 'held')).toBe(false);
   });
 
   describe('5. the link', () => {
