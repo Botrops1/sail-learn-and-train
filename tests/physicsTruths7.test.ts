@@ -2,7 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { boat as boatData } from '../src/model/boat';
 import { mpsToKn, wrap180 } from '../src/model/angles';
 import type { AppState } from '../src/app/store';
-import { act, harbourStart, run } from './motionHelpers';
+import {
+  contactForces,
+  contactSeverity,
+  hullContactPoints,
+  type Obstacle,
+} from '../src/model/contact';
+import { DEFAULT_HARBOUR } from '../src/model/harbour';
+import type { ContactHit } from '../src/model/lowSpeed';
+import { pointToMap } from '../src/model/lowSpeed';
+import { stepBoat, type BoatState } from '../src/model/motion';
+import { act, harbourStart, initialState, run } from './motionHelpers';
 
 /** Phase 7 physics truths (PHYSICS_TRUTHS.md PT-47 … PT-49 and PT-27), from M40 on. */
 
@@ -174,5 +184,102 @@ describe('PT-33 thrusters', () => {
       run(thrust(-1, -1, harbourStart({ windDirDeg: -90, twsKn: tws })), 30);
     expect(west(10).boat.eastM).toBeLessThan(0);
     expect(west(25).boat.eastM).toBeGreaterThan(0);
+  });
+});
+
+/** The west face of the wall in the PT-50 tests, metres east. */
+const WALL_WEST_M = 2.875;
+
+describe('PT-50 fenders take a slow contact', () => {
+  const wall: Obstacle = {
+    id: 'wall',
+    partId: 'env_quay',
+    polygon: [
+      [2.875, -20],
+      [10, -20],
+      [10, 20],
+      [2.875, 20],
+    ],
+  };
+
+  /** Pushes the boat into the wall at `swayMps` (4 s at 60 fps) and returns the first hit and the deepest point. */
+  function bump(swayMps: number, out: boolean) {
+    const state = harbourStart({});
+    let boat: BoatState = {
+      ...state.boat,
+      eastM: 0,
+      northM: 0,
+      headingDeg: 0,
+      swayMps,
+    };
+    const fenders = { out, lost: [] as number[] };
+    const inputs = {
+      windDirDeg: 0,
+      twsKn: 0,
+      rudderDeg: 0,
+      rig: state.rig,
+      controls: state.controls,
+      engineThrustN: 0,
+      external: (b: BoatState) => contactForces(b, [wall], fenders),
+    };
+    let first: ContactHit[] | null = null;
+    let deepest = 0;
+    for (let i = 0; i < 240; i += 1) {
+      const moved = stepBoat(boat, inputs, 1 / 60);
+      boat = moved.boat;
+      if (moved.report.contacts.length > 0) first ??= moved.report.contacts;
+      // How far into the wall the hull goes: the deepest of its starboard points.
+      for (const p of hullContactPoints()) {
+        const [east] = pointToMap(boat, p.x, p.z + (out && p.z > 0 ? 0.24 : 0));
+        deepest = Math.max(deepest, east - WALL_WEST_M);
+      }
+    }
+    return { first, deepest };
+  }
+
+  it('PT-50 a gentle bump with fenders in is a bump, and the hull goes in only a little', () => {
+    const { first, deepest } = bump(0.3, false);
+    const approach = Math.max(...(first ?? []).map((h) => h.approachMps));
+    expect(approach).toBeGreaterThan(0.22);
+    expect(approach).toBeLessThan(0.28);
+    expect(contactSeverity(approach, false)).toBe('bump');
+    expect(deepest).toBeLessThan(0.03);
+  });
+
+  it('PT-50 fenders out take the same bump: no hull contact, "the fender took it"', () => {
+    const { first } = bump(0.3, true);
+    expect(first?.every((h) => h.fender)).toBe(true);
+    const approach = Math.max(...(first ?? []).map((h) => h.approachMps));
+    expect(approach).toBeGreaterThan(0.24);
+    expect(approach).toBeLessThan(0.3);
+    expect(contactSeverity(approach, true)).toBe('fender');
+  });
+
+  it('PT-50 at 1.0 m/s (about 2 knots) even the fenders do not help: a hard hit', () => {
+    const { first } = bump(1.0, true);
+    const approach = Math.max(...(first ?? []).map((h) => h.approachMps));
+    expect(approach).toBeGreaterThan(0.85);
+    expect(approach).toBeLessThan(0.97);
+    expect(contactSeverity(approach, true)).toBe('hit');
+  });
+});
+
+describe('PT-34 fenders come in before sailing', () => {
+  const motoring = (fd: boolean) =>
+    initialState({
+      engine: { running: true, leverPct: 66 },
+      harbour: { ...DEFAULT_HARBOUR, fendersOut: fd },
+      controls: { ctl_wind_speed: 0 },
+    });
+
+  it('PT-34 fenders left out at speed are torn off, the first after 30 s, then every 20 s', () => {
+    const lost = (seconds: number) => run(motoring(true), seconds).harbour.fendersLost.length;
+    expect(lost(29)).toBe(0);
+    expect(lost(31)).toBe(1);
+    expect(lost(71)).toBe(3);
+  });
+
+  it('PT-34 fenders in the locker stay', () => {
+    expect(run(motoring(false), 71).harbour.fendersLost).toHaveLength(0);
   });
 });

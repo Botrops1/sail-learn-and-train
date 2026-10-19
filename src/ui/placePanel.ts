@@ -1,6 +1,7 @@
 import type { AppState, Store } from '../app/store';
 import { MARINA_LAYOUT_IDS, TRAFFIC_IDS } from '../model/marina';
 import { PLACE_IDS } from '../model/places';
+import { createDamageList } from './damageReport';
 import { el } from './dom';
 import { t } from './i18n';
 
@@ -99,5 +100,5 @@ export function createPlacePanel(store: Store): HTMLElement[] {
   };
   store.subscribe(sync);
   sync(store.getState());
-  return [places.row, layouts.row, traffic.row, arrow, status, hint];
+  return [places.row, layouts.row, traffic.row, arrow, status, createDamageList(store), hint];
 }

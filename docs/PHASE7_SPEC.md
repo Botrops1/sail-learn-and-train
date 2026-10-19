@@ -953,7 +953,9 @@ export interface ContactState {
   touching: Readonly<Record<string, number>>;
   /** Newest first, at most 20. */
   reports: readonly ContactReport[];
-  /** Simulated time (rig.timeS) until which the alert shows the newest report. */
+  /** The report the alert shows (null: none yet); decided in the M43 PR: a weaker new report does not replace it while it shows. */
+  notice: ContactReport | null;
+  /** Simulated time (rig.timeS) until which the alert shows `notice`. */
   noticeUntilS: number;
 }
 ```
@@ -1038,7 +1040,14 @@ Lines (M44); damage that changes the boat (owner: out of scope); the neighbour m
 
 ### 9.12 Decided in the M43 PR
 
-(empty)
+- **The hull's reach cuts the work.** Besides the 60 m `nearM` cut, `contactForces` skips an obstacle that is farther from the boat's origin than the farthest contact point (plus a fender's thickness): nothing of the hull can reach it, so the forces are the same, but a busy marina no longer tests forty yachts every substep (about 3 ms per call before, under 0.1 ms after). A neighbour's corner is tested against the hull only when it lies inside the hull's bounding box.
+- **Reports start again with a place.** `goToPlace`, the layout and the traffic (all built with `initialState`) empty the damage report; so do Reset and a link. The fenders keep their place (out or in the locker) but the ones torn off come back (9.4).
+- **A bounce is a new report, but not a new message** (owner accepted the independent review's item 1, PR #104). A contact that lets go for longer than `separateS` (0.5 s) and touches again is a second report in the list. The message over the 3D view shows `contact.notice`: a new report replaces it only when nothing is showing or the new one is at least as bad (`fender` < `touch` < `bump` < `knock` < `hit`), so the red "hard hit" is not wiped out by the touches after it; the list keeps every line. Clear empties both.
+- **Left for later** (owner accepted the review's recommendations, PR #104): the wall bounces her back too much (hull damping 40,000 is the spec's number; a follow-up through `/plan`: more damping or one report per obstacle and part over a few seconds), the Russian wording "наш корма" (in the Russian review), a fender protecting the stern corner (raised when M44 starts), and a hand-edited link that puts her inside a yacht (not fixed). The damage messages in the Attention history (question 1) also come later.
+- **A lost fender is a red alert.** Its report has the severity `hit`, so the alert uses the red look (`is-hit`) with the text of `damage.fenderLost`.
+- **Held still.** Nothing touches and the fender timer stands still (9.4); the report list stays as it was.
+- **The alert history (M36) does not record the damage alerts.** 9.1 does not list `alerts.ts`; the owner accepted adding them in a later small change (PR #104, question 1).
+- **Statuses in PHYSICS_TRUTHS.** PT-50 is source-checked already (its speeds are assumptions); PT-34 stays "to-verify" because no source for the number of seconds exists yet. Both now have tests named after them (`tests/physicsTruths7.test.ts`).
 
 ---
 

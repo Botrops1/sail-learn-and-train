@@ -32,7 +32,21 @@ import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock'
 import { EMPTY_ALERTS, recordAlerts, type AlertLog } from '../model/alerts';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { harbourForces } from '../model/harbourForces';
-import { isMarinaLayout, isTraffic, type MarinaLayoutId, type TrafficId } from '../model/marina';
+import {
+  NO_CONTACT,
+  stepContact,
+  stepFenders,
+  type ContactState,
+  type Obstacle,
+} from '../model/contact';
+import {
+  isMarinaLayout,
+  isTraffic,
+  marinaGeometry,
+  marinaObstacles,
+  type MarinaLayoutId,
+  type TrafficId,
+} from '../model/marina';
 import { isPlace, placeStart, type PlaceId } from '../model/places';
 import { THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
 import { appendTrack, type TrackPoint } from '../model/track';
@@ -116,6 +130,8 @@ export interface AppState {
   harbour: HarbourState;
   /** The bow and stern thrusters (M41): held by the learner, so never in the link. */
   thrusters: ThrusterState;
+  /** What the hull touched (M43): the damage report. Not in the link. */
+  contact: ContactState;
   /** The alert history (M36, issue #80): what the short messages said, kept for the notification centre. Not in the link. */
   alerts: AlertLog;
 }
@@ -176,6 +192,8 @@ export type Action =
   | { type: 'setTraffic'; traffic: TrafficId }
   /** M42: the arrow over our berth in the marina on or off. */
   | { type: 'setBerthArrow'; on: boolean }
+  /** M43: empties the damage report. */
+  | { type: 'clearDamageReport' }
   /** M41: a thruster joystick held to a side (-1 port, +1 starboard) or let go (0). */
   | { type: 'thruster'; which: 'bow' | 'stern'; dir: ThrustDir }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
@@ -345,6 +363,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     clock: { utcMs: overrides.clockUtcMs ?? defaultClockUtcMs() },
     harbour: overrides.harbour ?? DEFAULT_HARBOUR,
     thrusters: THRUSTERS_OFF,
+    contact: NO_CONTACT,
     alerts: EMPTY_ALERTS,
   });
 }
@@ -368,7 +387,14 @@ function withControls(controls: Controls, values: Partial<Controls>): Controls {
  * up (settings, mode, camera, wind, clock, Realistic mode) goes on unchanged; the selection, the
  * track, the thrusters and the alert history start again.
  */
-function inPlace(state: AppState, harbour: HarbourState): AppState {
+function inPlace(state: AppState, placed: HarbourState): AppState {
+  // The fenders keep their place (out or in the locker); the ones torn off come back (M43).
+  const harbour: HarbourState = {
+    ...placed,
+    fendersLost: DEFAULT_HARBOUR.fendersLost,
+    fenderOverSpeedS: 0,
+    fendersLostSinceSlow: 0,
+  };
   const start = placeStart(harbour);
   const marina = harbour.place === 'marina';
   const controls = marina
@@ -400,6 +426,9 @@ function inPlace(state: AppState, harbour: HarbourState): AppState {
 
 /** Longest frame step, seconds: a background tab must not make the rig jump. */
 const MAX_STEP_S = 0.1;
+
+/** Nothing to bump into (open water). */
+const NO_OBSTACLES: readonly Obstacle[] = [];
 
 /** How long "Autopilot on Standby: you took the wheel" shows, seconds. */
 const AUTOPILOT_NOTICE_S = 3;
@@ -618,6 +647,10 @@ function reduceAction(state: AppState, action: Action): AppState {
       return action.on === state.harbour.berthArrow
         ? state
         : { ...state, harbour: { ...state.harbour, berthArrow: action.on } };
+    case 'clearDamageReport':
+      return state.contact.reports.length === 0
+        ? state
+        : { ...state, contact: { ...state.contact, reports: [], notice: null } };
     case 'thruster': {
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };
@@ -683,14 +716,34 @@ function reduceAction(state: AppState, action: Action): AppState {
           trains,
           rudderLimitDeg:
             autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
-          // Open-water sailing does no extra work: the hook is built only while a thruster runs.
+          // Open-water sailing does no extra work: the hook is built only while a thruster runs
+          // or the boat is in a place with something to bump into.
           external:
-            state.thrusters.bow !== 0 || state.thrusters.stern !== 0
-              ? harbourForces({ thrusters: state.thrusters })
+            state.thrusters.bow !== 0 ||
+            state.thrusters.stern !== 0 ||
+            state.harbour.place !== 'open'
+              ? harbourForces({
+                  thrusters: state.thrusters,
+                  obstacles:
+                    state.harbour.place === 'marina'
+                      ? marinaObstacles(marinaGeometry(state.harbour.layout, state.harbour.traffic))
+                      : NO_OBSTACLES,
+                  fenders: { out: state.harbour.fendersOut, lost: state.harbour.fendersLost },
+                })
               : undefined,
         },
         dt,
       );
+      // After the boat moved: the damage report, then the fenders torn off at speed (4.3 step 6).
+      // Held still: nothing touches anything and the fender timer stands still.
+      let contact = state.contact;
+      let harbour = state.harbour;
+      if (sailing) {
+        contact = stepContact(contact, moving.report.contacts, rig.timeS, dt);
+        const fenders = stepFenders(harbour, contact, moving.boat.speedMps, rig.timeS, dt);
+        harbour = fenders.harbour;
+        contact = fenders.contact;
+      }
       return {
         ...state,
         controls,
@@ -706,6 +759,8 @@ function reduceAction(state: AppState, action: Action): AppState {
         engine,
         sea,
         clock,
+        contact,
+        harbour,
       };
     }
   }

@@ -225,6 +225,10 @@ function parseHarbour(params: URLSearchParams): HarbourState {
     traffic: marina && tr !== null && isTraffic(tr) ? tr : DEFAULT_HARBOUR.traffic,
     // `ba=0`: no arrow over our berth (M42; only written in a place).
     berthArrow: params.get('ba') !== '0',
+    // The fenders torn off are not in the link (M43): a link opens with all of them on board.
+    fendersLost: DEFAULT_HARBOUR.fendersLost,
+    fenderOverSpeedS: 0,
+    fendersLostSinceSlow: 0,
   };
 }
 
