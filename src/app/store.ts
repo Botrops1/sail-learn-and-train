@@ -31,6 +31,7 @@ import { engineThrustN, initialEngine, stepEngine, type EngineState } from '../m
 import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock';
 import { EMPTY_ALERTS, recordAlerts, type AlertLog } from '../model/alerts';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
+import { area } from '../model/area';
 import { harbourForces } from '../model/harbourForces';
 import {
   NO_CONTACT,
@@ -412,7 +413,8 @@ function inPlace(state: AppState, placed: HarbourState): AppState {
     fendersLostSinceSlow: 0,
   };
   const start = placeStart(harbour);
-  const marina = harbour.place === 'marina';
+  // The marina and the bay both start ready for harbour work (M42, M45).
+  const marina = harbour.place !== 'open';
   const controls = marina
     ? { ...state.controls, ctl_main_furl: 0, ctl_jib_furl: 0, ctl_jib_sheet: 100, ctl_rudder: 0 }
     : state.controls;
@@ -448,6 +450,7 @@ function linesInputs(state: AppState) {
     harbour: state.harbour,
     geometry: marinaGeometry(state.harbour.layout, state.harbour.traffic),
     engine: state.engine,
+    area,
   };
 }
 
@@ -681,7 +684,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         ? state
         : { ...state, contact: { ...state.contact, reports: [], notice: null } };
     case 'line': {
-      if (state.harbour.place !== 'marina') return state;
+      if (state.harbour.place === 'open') return state;
       const lines = lineCommand(action.code, action.command, linesInputs(state));
       return lines === state.lines ? state : { ...state, lines };
     }
@@ -769,6 +772,7 @@ function reduceAction(state: AppState, action: Action): AppState {
             state.harbour.place !== 'open'
               ? harbourForces({
                   thrusters: state.thrusters,
+                  place: state.harbour.place,
                   obstacles:
                     state.harbour.place === 'marina'
                       ? marinaObstacles(marinaGeometry(state.harbour.layout, state.harbour.traffic))
