@@ -1244,6 +1244,7 @@ Alongside mooring with springs (side-to; Phase 8 exercises may add it); the pass
 - **`HarbourInputs.lines` is optional**, so the M41 thruster tests that call `harbourForces` stay as they are.
 - **Registry and glossary order.** The five new ids are appended at the end of both files (the glossary test needs the same order); the Learn group `harbour` has 7 entries. `env_quay_ring` has no Show me; the other four open the berth with the lines on (`rope_lazy_line`: the lazy line waiting, side view).
 - **Text.** "(M40)" is left out of the `term_med_mooring` "on this boat" sentence (a learner does not know what M40 is).
+- **In the app the swing ends at the quay.** Without the lazy line, with contact on, the bow swings about 16° and then her stern touches the quay (three "Quay, at our stern" reports) and she stays there; PT-51's 60° is the lines-only test, which has no quay. The browser check expects more than 8° without the lazy line and at most 5° with it (1° measured).
 - **Prototype check.** PT-51 gives 8.7° / 0.43 m at 15 kn, 11.2° / 0.68 m at 25 kn and 60.7° without the lazy line, as the prototype did; no number was tuned.
 
 ---

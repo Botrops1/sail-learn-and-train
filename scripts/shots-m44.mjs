@@ -175,13 +175,13 @@ export async function liveM44Checks({ openPage, viewports, outDir, prefix, probl
     await setSheet(page, 'peek');
     await page.waitForTimeout(4000);
     const off = async () => Math.abs((((await heading(page)) - 180 + 540) % 360) - 180);
-    // Without the lazy line the bow keeps swinging out: wait (at most 12 s of app time) until it has.
-    if (!lazy) await poll(page, async () => (await off()) > 25, 12_000, 500);
+    // Without the lazy line the bow swings out until her stern touches the quay (about 16°; with no quay, PT-51's lines-only test, 60°).
+    if (!lazy) await poll(page, async () => (await off()) > 8, 12_000, 500);
     else await page.waitForTimeout(500);
     const swing = await off();
     check(
-      `hold (${label}): the bow ${lazy ? 'stays within 15°' : 'swings more than 25°'}`,
-      lazy ? swing <= 15 : swing > 25,
+      `hold (${label}): the bow ${lazy ? 'stays within 5°' : 'swings out more than 8°'}`,
+      lazy ? swing <= 5 : swing > 8,
       `${swing}° off 180`,
     );
     await shot(page, `m44-hold-${lazy ? 'lazy' : 'no-lazy'}`);
