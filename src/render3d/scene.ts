@@ -16,6 +16,7 @@ import { buildBoat } from './boat';
 import { daylighting } from './daylight';
 import { cloudTexture, rippleNormalMap } from './environment';
 import { buildMarina } from './marina';
+import { buildMooringLines } from './mooringLines';
 import { buildMarks } from './marks';
 import { buildSkyDome } from './skyDome';
 import { skyColours } from './skyColours';
@@ -138,6 +139,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   world.group.add(marks.object);
   const marina = buildMarina();
   world.group.add(marina.object);
+  const mooringLines = buildMooringLines();
+  world.group.add(mooringLines.object);
   const wake = buildWake();
   scene.add(holder, world.group, wake.object, streaks.object);
 
@@ -146,7 +149,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   rig.goTo(store.getState().camera.preset, false);
   rig.onUserMove(() => store.dispatch({ type: 'setCameraPreset', preset: 'free' }));
 
-  const picker = createPicker(camera, holder, water.pickTarget, [marks.object, marina.object]);
+  const picker = createPicker(camera, holder, water.pickTarget, [
+    marks.object,
+    marina.object,
+    mooringLines.object,
+  ]);
   listenForTaps(renderer.domElement, (x, y) => {
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
@@ -327,13 +334,14 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       rig.update(now);
       camera.updateMatrixWorld();
       // Pixel size at 1 m: the projection's vertical scale over the canvas height (CSS px).
+      const ropeView = {
+        eye: camera.position.toArray() as [number, number, number],
+        metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
+      };
       boatModel.update(
         state.rig,
         state.controls,
-        {
-          eye: camera.position.toArray() as [number, number, number],
-          metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
-        },
+        ropeView,
         flashingRopes(state),
         state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
         state.sailDamage,
@@ -380,6 +388,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       water.update(state, shift, waveTrains(state.sea), light.night);
       marks.update(state, water.heightAt);
       marina.update(state);
+      mooringLines.update(state, ropeView);
       wake.update(state, state.rig.timeS, water.heightAt);
       // At night the wake and the wind streaks are dimmed (they ignore the light).
       const dim = 1 - SCENE.daylight.nightLineDim * light.night;

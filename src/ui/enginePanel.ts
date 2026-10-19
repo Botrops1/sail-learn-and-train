@@ -122,7 +122,14 @@ function createTach(): Tach {
   };
 }
 
-function startStopButton(store: Store): { button: HTMLButtonElement; update(s: AppState): void } {
+function startStopButton(store: Store): {
+  button: HTMLButtonElement;
+  /** M44: "The propeller is fouled by a line: clear it first.", beside the button while a line is round the propeller. */
+  note: HTMLElement;
+  update(s: AppState): void;
+} {
+  const note = el('p', { class: 'hint', 'data-testid': 'engine-fouled' }, [t('engine.fouled')]);
+  note.hidden = true;
   const button = el('button', {
     type: 'button',
     class: 'engine-startstop',
@@ -136,10 +143,15 @@ function startStopButton(store: Store): { button: HTMLButtonElement; update(s: A
   );
   return {
     button,
+    note,
     update(state) {
       const running = state.engine.running;
       setAttr(button, 'aria-pressed', String(running));
       setText(button, t(running ? 'engine.stop' : 'engine.start'));
+      // A line round the propeller: Start waits until a diver has cleared it (M44).
+      const fouled = state.lines.fouled;
+      if (button.disabled !== (fouled && !running)) button.disabled = fouled && !running;
+      if (note.hidden === fouled) note.hidden = !fouled;
     },
   };
 }
@@ -194,7 +206,7 @@ export function createEnginePanel(store: Store): HTMLElement {
       'aria-label': t('engine.label'),
     },
     [
-      el('div', { class: 'engine-head' }, [startStop.button]),
+      el('div', { class: 'engine-head' }, [startStop.button, startStop.note]),
       el('div', { class: 'engine-gauge' }, [
         tach.element,
         el('div', { class: 'engine-readout' }, [rpm, status]),
@@ -376,6 +388,7 @@ export function createEngineLever(store: Store): HTMLElement {
         lever,
         el('div', { class: 'engine-helm-side' }, [
           startStop.button,
+          startStop.note,
           tach.element,
           rpm,
           value,

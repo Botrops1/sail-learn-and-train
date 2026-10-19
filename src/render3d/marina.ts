@@ -31,6 +31,7 @@ export function buildMarina(areaData: AreaData = area): Marina {
   const object = new THREE.Group();
   object.name = 'marina';
   const quayId = requirePartId('env_quay');
+  const ringId = requirePartId('env_quay_ring');
   const yachtId = requirePartId('env_moored_yacht');
   const quayMaterial = new THREE.MeshStandardMaterial({ color: h.quayColour, roughness: 0.9 });
   const pontoonMaterial = new THREE.MeshStandardMaterial({
@@ -119,7 +120,7 @@ export function buildMarina(areaData: AreaData = area): Marina {
       const ring = new THREE.Mesh(ringGeometry, ringMaterial);
       ring.rotation.x = Math.PI / 2;
       ring.position.set(north, m.quayHeightM + h.ringTubeM, east);
-      add(ring, quayId, layoutGroup);
+      add(ring, ringId, layoutGroup);
     }
 
     // The arrow over our berth: a cone pointing down on a shaft, floating over the quay.

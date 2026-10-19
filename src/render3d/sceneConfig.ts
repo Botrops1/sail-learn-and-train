@@ -235,6 +235,8 @@ export const SCENE = {
     arrowShaftRadiusM: 0.4,
     /** How far behind the quay's edge (towards the land) the arrow stands. */
     arrowInsetM: 3,
+    /** M44, mooring lines: a slack line sags by `sagPerSlack` of its slack, at most `sagMaxM`; the lazy line waiting on the bottom is drawn at `waitingOpacity`; `segments` points along a curve. */
+    lines: { sagPerSlack: 0.5, sagMaxM: 1.5, waitingOpacity: 0.5, segments: 14 },
     /** Beyond this distance from the boat the marina is not drawn or tappable, metres (the camera's far plane). */
     maxDrawM: 1000,
   },
@@ -332,6 +334,8 @@ export const SCENE = {
       control: '#cc79a7',
       furling: '#0072b2',
       halyard: '#4b545c',
+      /** M44: the mooring lines of the marina (sky blue, from the same colour-blind-safe set; not in the boat's rope list). */
+      mooring: '#56b4e9',
     },
     fighting: '#e8112d',
     /** A rope running out (Realistic mode, PHASE1_SPEC 7.2.2) flashes between its colour and this. */

@@ -14,6 +14,7 @@ export function damageText(r: ContactReport): string {
       side: t(r.part === 'port' ? 'side.port.gen' : 'side.starboard.gen'),
     });
   }
+  if (r.obstacleId === 'propeller') return t('damage.propeller');
   return t('damage.line', {
     what: part(r.partId)?.name ?? r.partId,
     where: t(`damage.part.${r.part}`),
