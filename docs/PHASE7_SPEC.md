@@ -853,7 +853,12 @@ Bumping into anything (M43: in M42 the boat passes through the quay and the yach
 
 ### 8.12 Decided in the M42 PR
 
-(empty)
+- **No `thrusters` section.** The owner moved the thrusters into the Engine section in the M41 PR, so there is no `thrusters` id to put the Place section after. `place` sits just before `harbour` in Easy, Realistic and Learn, and Harbour's order is `mode`, `engine`, `harbour`, `place`, `conditions`, `sails`, `ropes`, `autopilot`, `learn`, `settings`, with `place` and `conditions` in the second column (8.5, adjusted).
+- **A place link round-trips.** 8.4 says a place link without `eng`, `sea` or `ap` opens with the engine running, the place's sea and the autopilot off. To make a shared link give back the state it was made from, a state in a place also writes what would otherwise be lost: `eng=0` for a stopped engine, `sea=` for the Waves setting (also when it is the default), and `ap=hdg` for a heading hold. Open water writes none of these, so old links keep their exact text.
+- **The address bar follows her position.** `pe` and `pn` change while she moves, so the link is rewritten (debounced) when they change, in the same check as the heading and speed.
+- **A fresh state on choosing.** `goToPlace`, `setMarinaLayout` and `setTraffic` in the marina build a new state with `initialState`: the wind pattern starts again (its start time is the new rig's 0), the alert history is empty, the rig starts settled for the sails-away controls. What stays: settings, mode, camera, Realistic mode's station and clutches, the clock, the wind and the sea setting (the marina sets flat water).
+- **Types.** `AreaData` keeps the JSON's shape except `places` and `marina`, which have the explicit interfaces `PlaceData` and `MarinaData` (8.2).
+- **Marina geometry is cached** per layout and traffic (`marinaGeometry`), because the map calls it every frame.
 
 ---
 

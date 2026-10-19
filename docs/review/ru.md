@@ -2122,6 +2122,38 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+## Гавань и якорная стоянка
+
+### Причал (`env_quay`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Quay | Причал |
+| Другие названия | pier<br>pontoon | пирс<br>понтон<br>стенка |
+| Коротко | The fixed edge of the marina that boats tie up to. | Неподвижный край марины, к которому швартуются лодки. |
+| Что делает / что значит | In a Mediterranean marina boats lie side by side with their sterns to the quay (stern-to), held by stern lines to the quay and a lazy line at the bow. A pontoon is a floating quay. | В средиземноморской марине лодки стоят бок о бок кормой к причалу, на кормовых швартовах и муринге с носа. Понтон: плавучий причал. |
+| На этой яхте | The app's marina has a quay to the north and a pontoon to the south, with a fairway between them. | В марине приложения причал на севере и понтон на юге, между ними проход. |
+| Типичные ошибки | Coming in bow first like in a car park. → In the Mediterranean you go in stern first. | Заходить носом, как на парковку. → В Средиземноморье заходят кормой. |
+| «Покажи» | The marina from above. | Марина сверху. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Яхта у причала (`env_moored_yacht`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Moored yacht | Яхта у причала |
+| Другие названия | neighbour | сосед |
+| Коротко | Another boat in the marina; it never moves in the app. | Другая лодка в марине; в приложении она не двигается. |
+| Что делает / что значит | Your neighbours are the hardest part of a tight berth: their hulls are a few tens of centimetres away. Fenders on both sides protect both boats. | Соседи: самое трудное в тесном месте: их борта в нескольких десятках сантиметров. Кранцы с обеих сторон защищают обе лодки. |
+| На этой яхте | Busy: every berth taken but yours. Half full: one neighbour. Empty: none. | Много: заняты все места, кроме вашего. Половина: один сосед. Нет: никого. |
+| Типичные ошибки | Watching only the quay. → Watch the bows of the neighbours: the wind pushes your bow onto theirs. | Смотреть только на причал. → Следите за носами соседей: ветер сносит ваш нос на них. |
+| «Покажи» | A busy marina from above. | Полная марина сверху. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ## Кнопки и подсказки
 
 | key | English | Русский |
@@ -2722,6 +2754,7 @@
 | learn.group.directions | Directions and sides ({count}) | Направления и стороны ({count}) |
 | learn.group.sailing | Sailing and manoeuvres ({count}) | Ход под парусами и манёвры ({count}) |
 | learn.group.sea | Water and waves ({count}) | Вода и волны ({count}) |
+| learn.group.harbour | Harbour and anchoring ({count}) | Гавань и якорная стоянка ({count}) |
 | view.language.label | Language | Язык |
 | view.language.hint | The whole app switches to this language. The page reloads. | Всё приложение переходит на этот язык. Страница перезагрузится. |
 | number.thousandsSeparator | , | U+00A0 |
@@ -2785,6 +2818,20 @@
 | harbour.fenders.stowed | In the locker | В рундуке |
 | harbour.fenders.out | Out | За бортом |
 | harbour.fenders.hint | Bring the fenders in before you sail. | Уберите кранцы, прежде чем идти под парусами. |
+| place.label | Place | Место |
+| place.open | Open water | Открытая вода |
+| place.marina | Marina | Марина |
+| place.layout | Marina layout | Планировка марины |
+| place.layout.tight | Tight | Тесная |
+| place.layout.medium | Medium | Средняя |
+| place.layout.spacious | Spacious | Просторная |
+| place.traffic | Other yachts | Другие яхты |
+| place.traffic.busy | Busy | Много |
+| place.traffic.half | Half full | Половина |
+| place.traffic.empty | Empty | Нет |
+| place.status.open | Open water near the practice buoys. | Открытая вода у тренировочных буёв. |
+| place.status.marina | In the marina's fairway. Your berth is marked yellow on the quay: go in stern first (stern-to). | В проходе марины. Ваше место отмечено жёлтым на причале: заходите кормой (кормой к причалу). |
+| place.hint | Choosing a place puts the boat there, ready for harbour work: sails rolled away, engine running in neutral. Choosing it again puts her back at the start. The other yachts never move. | Выбор места переносит лодку туда, готовой к манёврам в гавани: паруса свёрнуты, двигатель работает на нейтрали. Повторный выбор возвращает её к началу. Другие яхты не двигаются. |
 | thrusters.label | Thrusters | Подруливающие устройства |
 | thrusters.bow | Bow | Нос |
 | thrusters.stern | Stern | Корма |
