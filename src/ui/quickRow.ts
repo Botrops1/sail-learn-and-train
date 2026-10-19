@@ -3,7 +3,7 @@ import { snapControl, type ControlId } from '../model/controls';
 import { gearOf } from '../model/engine';
 import { entryFor } from '../model/panelEntries';
 import { el } from './dom';
-import { t } from './i18n';
+import { t, type StringKey } from './i18n';
 import { leverText } from './enginePanel';
 import { nameOf } from './learnTab';
 import { controlView, valueText } from './ropeControls';
@@ -63,12 +63,18 @@ export function createQuickRow(head: HTMLElement, store: Store, sheet: Sheet): v
   leverLess.dataset.testid = 'quick-lever-less';
   leverMore.dataset.testid = 'quick-lever-more';
   const leverValue = el('span', { class: 'quick-lever-value', 'data-testid': 'quick-lever-value' });
+  // A small tag over each group names it (owner, PR #99).
+  const tagged = (tag: StringKey, testId: string, parts: HTMLElement[]) =>
+    el('div', { class: 'quick-group', 'data-testid': testId }, [
+      el('span', { class: 'quick-tag' }, [t(tag)]),
+      el('div', { class: 'quick-group-row' }, parts),
+    ]);
   const harbour = el('div', { class: 'quick-harbour', 'data-testid': 'quick-harbour' }, [
-    leverLess,
-    leverValue,
-    leverMore,
-    createThrusterJoystick(store, 'bow', 'quick'),
-    createThrusterJoystick(store, 'stern', 'quick'),
+    tagged('quick.harbour.engine', 'quick-engine', [leverLess, leverValue, leverMore]),
+    tagged('quick.harbour.thrusters', 'quick-thrusters', [
+      createThrusterJoystick(store, 'bow', 'quick'),
+      createThrusterJoystick(store, 'stern', 'quick'),
+    ]),
   ]);
 
   const root = el('div', { class: 'quick-row', 'data-testid': 'quick-row' }, [

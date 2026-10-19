@@ -1,4 +1,5 @@
-// M41 (thrusters and Harbour mode, PHASE7_SPEC 7.9): scenes and live checks for scripts/shots.mjs.
+// M41 (thrusters and Harbour mode, PHASE7_SPEC 7.9; owner's changes on PR #99: the thrusters are in the
+// Engine section, the strip has tags, the keyboard works both at once): scenes and live checks for scripts/shots.mjs.
 // Labels contain "m41", so openPage lets the app open as it does without a link (Sailing, default
 // waves). The live checks run on the test clock (shots.mjs passes `onTestClock`): waitForTimeout
 // moves the app's time on, so "2.5 s" is 2.5 s of app time on every machine.
@@ -172,6 +173,72 @@ export async function liveM41Checks({ openPage, viewports, outDir, prefix, probl
       `${before}° → ${after}°`,
     );
     await shot(page, 'm41-helm');
+    await context.close();
+  }
+
+  // 7. The strip names its two groups (owner, PR #99).
+  {
+    const { context, page } = await openPage(phone, 'm41 tags', `?m=harbour&${AWAY}`);
+    await setSheet(page, 'peek');
+    const engine = (await page.getByTestId('quick-engine').textContent()) ?? '';
+    const thrusters = (await page.getByTestId('quick-thrusters').textContent()) ?? '';
+    check('tags: the engine group is named', /Engine/.test(engine), engine);
+    check('tags: the thruster group is named', /Thrusters/.test(thrusters), thrusters);
+    await context.close();
+  }
+
+  // 8. The keyboard works both thrusters at once, in Harbour mode only.
+  {
+    const { context, page } = await openPage(phone, 'm41 keys', `?m=harbour&${AWAY}&tx=4`, {
+      testClock: true,
+    });
+    await page.keyboard.down('KeyA');
+    await page.keyboard.down('KeyL');
+    await page.waitForTimeout(500);
+    const both = [await dir(page, 'thruster-bow'), await dir(page, 'thruster-stern')];
+    check(
+      'keys: A and L together push the bow to port and the stern to starboard',
+      both.join() === '-1,1',
+      both.join(),
+    );
+    await page.keyboard.up('KeyA');
+    await page.waitForTimeout(100);
+    const stern = [await dir(page, 'thruster-bow'), await dir(page, 'thruster-stern')];
+    check('keys: letting go of A stops only the bow', stern.join() === '0,1', stern.join());
+    await page.keyboard.up('KeyL');
+    await page.waitForTimeout(100);
+    check('keys: both let go', (await dir(page, 'thruster-stern')) === '0', 'data-dir');
+    await context.close();
+    const other = await openPage(phone, 'm41 keys easy', `?${AWAY}&tx=4`, { testClock: true });
+    await other.page.keyboard.down('KeyA');
+    await other.page.waitForTimeout(300);
+    check(
+      'keys: in Easy mode the keys do nothing',
+      (await dir(other.page, 'thruster-bow')) === '0',
+      'data-dir',
+    );
+    await other.page.keyboard.up('KeyA');
+    await other.context.close();
+  }
+
+  // 9. On a phone with the sheet at half, the open block does not reach under the next header.
+  for (const [what, query] of [
+    ['harbour', `?m=harbour&${AWAY}`],
+    ['easy with a rope', '?wd=0&ws=0&sel=rope_mainsheet'],
+  ]) {
+    const { context, page } = await openPage(phone, `m41 overlap ${what}`, query);
+    await setSheet(page, 'half');
+    const over = await page.evaluate(() => {
+      const section = document.querySelector('.panel-section[data-open="true"]');
+      const body = section?.querySelector('.section-body');
+      if (!section || !body) return null;
+      return body.getBoundingClientRect().bottom - section.getBoundingClientRect().bottom;
+    });
+    check(
+      `overlap (${what}): the body stays inside its block`,
+      over !== null && over <= 0.5,
+      String(over),
+    );
     await context.close();
   }
 }

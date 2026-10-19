@@ -187,13 +187,12 @@
       {
         "id": "part_stern_thruster",
         "end": "stern",
-        "kind": "pod",
+        "kind": "tunnel",
         "x": -6.2,
-        "diameter": 0.25,
-        "podLength": 0.6
+        "diameter": 0.2
       }
     ],
-    "thrustersSource": "owner (one at each end, two left-right joysticks at the helm, 2026-10-15); places and sizes: assumption"
+    "thrustersSource": "owner (one at each end, two left-right joysticks at the helm, 2026-10-15; both drawn as a tunnel through the hull with a hole on each side, PR #99); places and sizes: assumption"
   },
   "deck": {
     "source": "drawing",

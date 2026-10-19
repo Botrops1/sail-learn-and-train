@@ -4,8 +4,7 @@ import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat as boatData } from '../src/model/boat';
 import { harbourForces } from '../src/model/harbourForces';
 import {
-  bowTunnelPlace,
-  sternPodPlace,
+  thrusterTunnelPlace,
   THRUSTERS_OFF,
   thrusterForces,
   thrusterSpeedFactor,
@@ -53,16 +52,18 @@ describe('thrusterForces (test 2)', () => {
   });
 });
 
-describe('where they are (PHASE7_SPEC 7.2)', () => {
-  it('the tunnel is halfway to the hull bottom, the pod hangs under the hull', () => {
-    const bow = bowTunnelPlace();
+describe('where they are (PHASE7_SPEC 7.2; owner: both are tunnels, PR #99)', () => {
+  it('each tunnel is halfway to the hull bottom and has a hole on each side', () => {
+    const bow = thrusterTunnelPlace('bow');
     expect(bow.x).toBe(4.3);
     expect(bow.y).toBeCloseTo(-0.15, 1);
     expect(bow.halfWidthM).toBeGreaterThan(0.1);
     expect(bow.halfWidthM).toBeLessThan(1);
-    const pod = sternPodPlace();
-    expect(pod.x).toBe(-6.2);
-    expect(pod.y).toBeCloseTo(pod.hullY - 0.15, 9);
+    const stern = thrusterTunnelPlace('stern');
+    expect(stern.x).toBe(-6.2);
+    expect(stern.y).toBeLessThan(0);
+    expect(stern.y - stern.diameter / 2).toBeGreaterThan(-0.3);
+    expect(stern.halfWidthM).toBeGreaterThan(0.1);
     expect(boatData.hull.thrusters.map((t) => t.id)).toEqual([
       'part_bow_thruster',
       'part_stern_thruster',

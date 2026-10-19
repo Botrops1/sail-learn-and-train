@@ -541,9 +541,9 @@
 |---|---|---|
 | Название | Stern thruster | Кормовое подруливающее устройство |
 | Другие названия | — | — |
-| Коротко | A small propeller under the stern that pushes the stern sideways. | Небольшой винт под кормой, толкающий корму вбок. |
+| Коротко | A small propeller in a tunnel across the stern that pushes the stern sideways. | Небольшой винт в туннеле поперёк кормы, толкающий корму вбок. |
 | Что делает / что значит | It moves the stern to port or starboard. Used with the bow thruster it turns the boat on the spot or moves her sideways towards the quay. | Двигает корму влево или вправо. Вместе с носовым разворачивает лодку на месте или ведёт её лагом к причалу. |
-| На этой яхте | A pod under the hull aft (an assumption: the hull is too shallow there for a tunnel), worked with the right joystick at the helm (owner). About 100 kgf in the app. | Гондола под корпусом в корме (предположение: там корпус слишком мелкий для туннеля), управляется правым джойстиком у штурвала (владелец). В приложении около 100 кгс. |
+| На этой яхте | A tunnel across the hull aft (an assumption: the hull is shallow there, so the tunnel is small), with a hole on each side, worked with the right joystick at the helm (owner). About 100 kgf in the app. | Туннель поперёк корпуса в корме (предположение: там корпус мелкий, поэтому туннель небольшой), с отверстием по каждому борту, управляется правым джойстиком у штурвала (владелец). В приложении около 100 кгс. |
 | Типичные ошибки | Counting on both thrusters against a strong crosswind. → In strong wind they are not enough: plan the approach so the wind helps, or keep way on. | Рассчитывать на оба подруливающих против сильного бокового ветра. → В сильный ветер их не хватает: заходите так, чтобы ветер помогал, или держите ход. |
 | «Покажи» | No wind, standing still: hold both joysticks to starboard: she moves sideways. | Без ветра, лодка стоит: держите оба джойстика вправо: лодка идёт лагом. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
@@ -2762,6 +2762,8 @@
 | quick.read | Read | Читать |
 | quick.harbour.short | {arrow}{n} | {arrow}{n} |
 | quick.harbour.engineOff | Engine off | Двигатель выключен |
+| quick.harbour.engine | Engine | Двигатель |
+| quick.harbour.thrusters | Thrusters | Подруливающие |
 | minimap.open | Mini-map: tap to open the full map. | Мини-карта: нажмите, чтобы открыть карту. |
 | map.close | Close the map | Закрыть карту |
 | map.closeShort | Close | Закрыть |
@@ -2799,7 +2801,7 @@
 | thrusters.sternPort | stern to port | корма влево |
 | thrusters.sternStarboard | stern to starboard | корма вправо |
 | thrusters.weak | (little effect at this speed) | (на такой скорости почти не действуют) |
-| thrusters.hint | A thruster is a propeller in a tunnel across the hull (thruster: a small sideways propeller). It pushes one end of the boat sideways while you hold the joystick. Bow and stern the same way move her sideways; opposite ways turn her on the spot. They only work well below 2 knots. | Подруливающее устройство: винт в туннеле поперёк корпуса. Пока вы держите джойстик, оно толкает нос или корму вбок. Нос и корма в одну сторону: лодка идёт лагом; в разные стороны: разворачивается на месте. Хорошо работают только медленнее 2 узлов. |
+| thrusters.hint | A thruster is a propeller in a tunnel across the hull (thruster: a small sideways propeller). It pushes one end of the boat sideways while you hold the joystick. Bow and stern the same way move her sideways; opposite ways turn her on the spot. They only work well below 2 knots. On a computer in Harbour mode hold A / D for the bow and J / L for the stern: both can work at once. | Подруливающее устройство: винт в туннеле поперёк корпуса. Пока вы держите джойстик, оно толкает нос или корму вбок. Нос и корма в одну сторону: лодка идёт лагом; в разные стороны: разворачивается на месте. Хорошо работают только медленнее 2 узлов. На компьютере в режиме «Гавань» держите A / D для носа и J / L для кормы: можно управлять обоими сразу. |
 | alerts.title | Attention | Внимание |
 | alerts.label | Alert history | История предупреждений |
 | alerts.chipAria | Attention: open the alert history | Внимание: открыть историю предупреждений |

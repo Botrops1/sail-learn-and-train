@@ -45,16 +45,22 @@ export function thrusterForces(
   );
 }
 
-/** Where the bow tunnel is, boat frame: halfway between the waterline and the hull bottom. */
-export function bowTunnelPlace(data: BoatData = hanse508): {
+/**
+ * Where a thruster's tunnel is, boat frame: halfway between the waterline and the hull bottom at
+ * its x (owner, PR #99: both thrusters are tunnels through the hull, a hole on each side).
+ */
+export function thrusterTunnelPlace(
+  end: 'bow' | 'stern',
+  data: BoatData = hanse508,
+): {
   x: number;
   y: number;
   diameter: number;
   /** Half the hull's width at the tunnel's height: the tunnel's openings are at z = ±halfWidth. */
   halfWidthM: number;
 } {
-  const tunnel = data.hull.thrusters.find((thruster) => thruster.end === 'bow');
-  if (!tunnel) throw new Error('no bow thruster in the boat data');
+  const tunnel = data.hull.thrusters.find((thruster) => thruster.end === end);
+  if (!tunnel) throw new Error(`no ${end} thruster in the boat data`);
   const y = keelLineAt(tunnel.x, data) / 2;
   // sectionPoint runs from the keel line (s = 0) up to the deck edge (s = 1): find the s at y.
   let low = 0;
@@ -69,26 +75,5 @@ export function bowTunnelPlace(data: BoatData = hanse508): {
     y,
     diameter: tunnel.diameter,
     halfWidthM: sectionPoint(tunnel.x, (low + high) / 2, data)[1],
-  };
-}
-
-/** Where the stern pod hangs, boat frame: 0.15 m below the hull bottom on the centreline. */
-export function sternPodPlace(data: BoatData = hanse508): {
-  x: number;
-  y: number;
-  diameter: number;
-  lengthM: number;
-  /** The hull bottom above it, where its strut ends. */
-  hullY: number;
-} {
-  const pod = data.hull.thrusters.find((thruster) => thruster.end === 'stern');
-  if (!pod || pod.kind !== 'pod') throw new Error('no stern thruster pod in the boat data');
-  const hullY = keelLineAt(pod.x, data);
-  return {
-    x: pod.x,
-    y: hullY - 0.15,
-    diameter: pod.diameter,
-    lengthM: pod.podLength ?? 0.6,
-    hullY,
   };
 }

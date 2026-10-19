@@ -18,10 +18,10 @@ describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
 });
 
 describe('sectionAvailable (8.8 test 2)', () => {
-  it('autopilot, engine and thrusters only in Easy; Mode and Settings only on the wide layout (M38); the rest always', () => {
+  it('autopilot and engine only in Easy; Mode and Settings only on the wide layout (M38); the rest always', () => {
     const easy = initialState();
     const real = reduce(easy, { type: 'setAppMode', mode: 'realistic' });
-    for (const id of ['autopilot', 'engine', 'thrusters'] as const) {
+    for (const id of ['autopilot', 'engine'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
       expect(sectionAvailable(id, real)).toBe(false);
     }
@@ -144,9 +144,9 @@ describe('Harbour mode (M41, PHASE7_SPEC 7.5)', () => {
     expect(harbour.settings.ropesMode).toBe('realistic');
   });
 
-  it('puts the engine and the thrusters first', () => {
-    const order = MODE_LAYOUTS.harbour.order;
-    expect(order.indexOf('engine')).toBeLessThan(order.indexOf('sails'));
-    expect(order.indexOf('thrusters')).toBe(order.indexOf('engine') + 1);
+  it('puts the engine (which holds the thrusters) first, then the harbour gear', () => {
+    const order = MODE_LAYOUTS.harbour.order.filter((id) => id !== 'mode');
+    expect(order[0]).toBe('engine');
+    expect(order[1]).toBe('harbour');
   });
 });

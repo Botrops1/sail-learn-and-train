@@ -249,10 +249,9 @@ export const SCENE = {
       stripeTopY: 0.1,
     },
   },
-  /** The thrusters (M41, PHASE7_SPEC 7.6): the dark tunnel and grey pod, and the jet shown while one runs. */
+  /** The thrusters (M41, PHASE7_SPEC 7.6): the dark tunnels, and the jet shown while one runs. */
   thrusters: {
     tunnelColour: '#1d2329',
-    podColour: '#6b7177',
     jetColour: '#ffffff',
     jetOpacity: 0.5,
     jetLengthM: 0.8,

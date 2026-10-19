@@ -779,7 +779,8 @@ html[data-wide='true'] .panel[data-folded='true'] {
 
 .panel-section[data-open='true'] {
   flex: 1 1 auto;
-  min-height: 0;
+  /* Never shorter than its header and the body's own minimum, so the body is not drawn under the next header (the panel scrolls instead). */
+  min-height: calc(var(--section-head) + 120px);
 }
 
 /* Phones: stacked layout, and the side layout of a phone held sideways. */
@@ -4080,13 +4081,14 @@ html[data-wide='true'] .mini-map {
 /* Thrusters (M41, PHASE7_SPEC 7.6): a left-right joystick for each end, held to act. */
 .thruster-joystick {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 4px 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin: 0;
 }
 
 .joystick-label {
-  min-width: 52px;
+  font-size: var(--font-small);
   font-weight: 600;
 }
 
@@ -4101,10 +4103,6 @@ html[data-wide='true'] .mini-map {
   border-radius: 22px;
   background: var(--accent-soft);
   overflow: hidden;
-}
-
-.thruster-joystick-quick {
-  margin: 0;
 }
 
 .thruster-joystick-quick .joystick-track {
@@ -4182,8 +4180,21 @@ html[data-wide='true'] .mini-map {
   }
 }
 
+.thrusters-block {
+  margin: 8px 0 4px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.thrusters-title {
+  margin: 0 0 4px;
+  font-size: var(--font-label);
+}
+
 .thrusters-status {
-  margin: 4px 12px;
+  margin: 6px 0 0;
   color: var(--muted);
   font-size: var(--font-small);
 }
@@ -4203,16 +4214,31 @@ html[data-wide='true'] .mini-map {
   gap: 4px 12px;
 }
 
-.thruster-pair .thruster-joystick {
-  margin: 4px 0;
-}
-
 /* The quick row in Harbour mode: engine lever − / +, then the two compact joysticks. */
 .quick-harbour {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 8px;
   width: 100%;
+}
+
+.quick-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-group-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-tag {
+  height: 11px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 11px;
 }
 
 .quick-harbour[hidden] {

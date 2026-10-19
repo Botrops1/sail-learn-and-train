@@ -1726,9 +1726,9 @@
     "part_stern_thruster": {
       "name": "Stern thruster",
       "alternatives": [],
-      "short": "A small propeller under the stern that pushes the stern sideways.",
+      "short": "A small propeller in a tunnel across the stern that pushes the stern sideways.",
       "what": "It moves the stern to port or starboard. Used with the bow thruster it turns the boat on the spot or moves her sideways towards the quay.",
-      "onThisBoat": "A pod under the hull aft (an assumption: the hull is too shallow there for a tunnel), worked with the right joystick at the helm (owner). About 100 kgf in the app.",
+      "onThisBoat": "A tunnel across the hull aft (an assumption: the hull is shallow there, so the tunnel is small), with a hole on each side, worked with the right joystick at the helm (owner). About 100 kgf in the app.",
       "mistakes": [
         {
           "mistake": "Counting on both thrusters against a strong crosswind.",

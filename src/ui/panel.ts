@@ -28,7 +28,6 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
   engine: 'engine.label',
   conditions: 'section.conditions',
   learn: 'tab.learn',
-  thrusters: 'thrusters.label',
   harbour: 'harbour.title',
   settings: 'settings.title',
 };
@@ -101,10 +100,9 @@ export function createPanel(
     ropes: { content: createRopesTab(store, openLearnEntry), explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
     autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
-    engine: { content: [createEnginePanel(store)], explain: true },
+    engine: { content: [createEnginePanel(store), createThrusterPanel(store)], explain: true },
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
-    thrusters: { content: createThrusterPanel(store), explain: true },
     harbour: { content: createHarbourPanel(store), explain: true },
     settings: { content: [settingsContent], explain: false },
   };
@@ -210,12 +208,12 @@ export function createPanel(
   }
 
   /**
-   * Harbour mode puts the engine and thrusters first (PHASE7_SPEC 7.5): the Thrusters section
-   * opens; with Realistic ropes, where the engine and thrusters are at the Helm station, Ropes
-   * opens in their place (decided in the M41 PR: one section is open at a time since M35).
+   * Harbour mode puts the engine and thrusters first (PHASE7_SPEC 7.5): the Engine section, which
+   * holds the thrusters under the lever (owner, PR #99), opens; with Realistic ropes, where the
+   * engine and thrusters are at the Helm station, Ropes opens in its place.
    */
   function openHarbourFirst(state: AppState): void {
-    openOnly(sectionAvailable('thrusters', state) ? 'thrusters' : 'ropes');
+    openOnly(sectionAvailable('engine', state) ? 'engine' : 'ropes');
   }
 
   /**

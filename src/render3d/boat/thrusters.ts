@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { bowTunnelPlace, sternPodPlace, type ThrusterState } from '../../model/thrusters';
+import { thrusterTunnelPlace, type ThrusterState } from '../../model/thrusters';
 import type { Detail } from '../../model/settings';
 import { SCENE } from '../sceneConfig';
 import type { BoatMaterials } from './materials';
@@ -16,41 +16,29 @@ export interface Thrusters {
 }
 
 /**
- * The bow tunnel (two flat dark discs in the hull's sides and the tunnel between them) and the
- * stern pod (a cylinder under the hull on a strut), and the white water jets (M41). A jet is a
+ * The two thrusters (owner, PR #99): each is a tunnel through the hull, drawn as two flat dark
+ * discs (a hole on each side) and the tunnel between them, plus the white water jets. A jet is a
  * cone from the opening on the side opposite to the push: pushing the bow to starboard blows
  * water out to port. Hidden jets are neither drawn nor found by a tap.
  */
 export function buildThrusters(materials: BoatMaterials, detail: Detail = 'high'): Thrusters {
-  const high = detail === 'high';
-  const radial = high ? 16 : 8;
+  const radial = detail === 'high' ? 16 : 8;
   const cfg = SCENE.thrusters;
 
-  const bow = bowTunnelPlace();
-  const r = bow.diameter / 2;
-  const z0 = bow.halfWidthM;
-  const discs = [1, -1].map((side) =>
-    new THREE.CircleGeometry(r, radial)
-      .rotateY(side === 1 ? 0 : Math.PI)
-      .translate(bow.x, bow.y, side * (z0 + DISC_OFFSET_M)),
-  );
-  const tunnel = cylinderBetween([bow.x, bow.y, -z0], [bow.x, bow.y, z0], r, radial);
-  const bowMesh = partMesh('part_bow_thruster', [...discs, tunnel], materials.thrusterTunnel);
-
-  const pod = sternPodPlace();
-  const podBody = cylinderBetween(
-    [pod.x, pod.y, -pod.lengthM / 2],
-    [pod.x, pod.y, pod.lengthM / 2],
-    pod.diameter / 2,
-    radial,
-  );
-  const strutHeight = pod.hullY - pod.y;
-  const strut = new THREE.BoxGeometry(0.05, strutHeight, 0.08).translate(
-    pod.x,
-    pod.y + strutHeight / 2,
-    0,
-  );
-  const sternMesh = partMesh('part_stern_thruster', [podBody, strut], materials.thrusterPod);
+  const tunnelMesh = (end: 'bow' | 'stern', partId: string) => {
+    const place = thrusterTunnelPlace(end);
+    const r = place.diameter / 2;
+    const z0 = place.halfWidthM;
+    const discs = [1, -1].map((side) =>
+      new THREE.CircleGeometry(r, radial)
+        .rotateY(side === 1 ? 0 : Math.PI)
+        .translate(place.x, place.y, side * (z0 + DISC_OFFSET_M)),
+    );
+    const tunnel = cylinderBetween([place.x, place.y, -z0], [place.x, place.y, z0], r, radial);
+    return { place, mesh: partMesh(partId, [...discs, tunnel], materials.thrusterTunnel) };
+  };
+  const bow = tunnelMesh('bow', 'part_bow_thruster');
+  const stern = tunnelMesh('stern', 'part_stern_thruster');
 
   /** A cone with its point at (x, y, z) widening over `jetLengthM` towards `outward` (+1: starboard). */
   const jet = (partId: string, x: number, y: number, z: number, outward: 1 | -1): THREE.Mesh => {
@@ -69,12 +57,12 @@ export function buildThrusters(materials: BoatMaterials, detail: Detail = 'high'
   // Pushing to port (-1) blows the water out to starboard (+z), and the other way round.
   const jets = {
     bow: {
-      [-1]: jet('part_bow_thruster', bow.x, bow.y, z0, 1),
-      [1]: jet('part_bow_thruster', bow.x, bow.y, -z0, -1),
+      [-1]: jet('part_bow_thruster', bow.place.x, bow.place.y, bow.place.halfWidthM, 1),
+      [1]: jet('part_bow_thruster', bow.place.x, bow.place.y, -bow.place.halfWidthM, -1),
     },
     stern: {
-      [-1]: jet('part_stern_thruster', pod.x, pod.y, pod.lengthM / 2, 1),
-      [1]: jet('part_stern_thruster', pod.x, pod.y, -pod.lengthM / 2, -1),
+      [-1]: jet('part_stern_thruster', stern.place.x, stern.place.y, stern.place.halfWidthM, 1),
+      [1]: jet('part_stern_thruster', stern.place.x, stern.place.y, -stern.place.halfWidthM, -1),
     },
   };
 
@@ -86,7 +74,7 @@ export function buildThrusters(materials: BoatMaterials, detail: Detail = 'high'
   };
   setState({ bow: 0, stern: 0 });
   return {
-    objects: [bowMesh, sternMesh, ...Object.values(jets).flatMap((pair) => [pair[-1], pair[1]])],
+    objects: [bow.mesh, stern.mesh, ...Object.values(jets).flatMap((pair) => [pair[-1], pair[1]])],
     setState,
   };
 }

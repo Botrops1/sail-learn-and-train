@@ -8,8 +8,9 @@ import { setText } from './stepper';
  * The thrusters (M41, PHASE7_SPEC 7.6): a left-right joystick for the bow and one for the stern.
  * A thruster acts only while its joystick is held (3.1: pointer down, or Space / Enter on the
  * keyboard) and stops when it is let go, when the page loses focus or goes to the background.
- * The same joystick sits in the Thrusters section, the quick row and the Helm station; all follow
- * `state.thrusters`.
+ * The same joystick sits in the Engine section (under the engine lever), the quick row and the
+ * Helm station; all follow `state.thrusters`. In Harbour mode the keyboard works both at once
+ * (owner, PR #99): A / D push the bow to port / starboard, J / L the stern.
  */
 export type JoystickVariant = 'section' | 'quick' | 'helm';
 
@@ -21,6 +22,10 @@ const GROUP_LABELS: Record<End, StringKey> = {
   stern: 'thrusters.sternGroup',
 };
 const END_LABELS: Record<End, StringKey> = { bow: 'thrusters.bow', stern: 'thrusters.stern' };
+const KEY_NAMES: Record<End, Record<'port' | 'starboard', string>> = {
+  bow: { port: 'A', starboard: 'D' },
+  stern: { port: 'J', starboard: 'L' },
+};
 const ARIA: Record<End, Record<'port' | 'starboard', StringKey>> = {
   bow: { port: 'thrusters.bowPortAria', starboard: 'thrusters.bowStarboardAria' },
   stern: { port: 'thrusters.sternPortAria', starboard: 'thrusters.sternStarboardAria' },
@@ -28,6 +33,14 @@ const ARIA: Record<End, Record<'port' | 'starboard', StringKey>> = {
 const STATUS_PARTS: Record<End, Record<'port' | 'starboard', StringKey>> = {
   bow: { port: 'thrusters.bowPort', starboard: 'thrusters.bowStarboard' },
   stern: { port: 'thrusters.sternPort', starboard: 'thrusters.sternStarboard' },
+};
+
+/** The keys of Harbour mode: [thruster, direction] by `KeyboardEvent.code`. */
+const KEYS: Record<string, readonly [End, ThrustDir]> = {
+  KeyA: ['bow', -1],
+  KeyD: ['bow', 1],
+  KeyJ: ['stern', -1],
+  KeyL: ['stern', 1],
 };
 
 /** Stores that already let go of both thrusters when the page is hidden or loses focus. */
@@ -43,7 +56,43 @@ function guardPage(store: Store): void {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') release();
   });
-  window.addEventListener('blur', release);
+  window.addEventListener('blur', () => {
+    held.clear();
+    release();
+  });
+
+  // Keyboard, Harbour mode only: the keys held now give each thruster's direction, so both can
+  // work at once. Typing in a field, or a key with Ctrl, Alt or Meta, is left alone.
+  const held = new Set<string>();
+  const apply = (end: End) => {
+    let dir = 0;
+    for (const code of held) {
+      const key = KEYS[code];
+      if (key && key[0] === end) dir += key[1];
+    }
+    store.dispatch({ type: 'thruster', which: end, dir: Math.sign(dir) as ThrustDir });
+  };
+  document.addEventListener('keydown', (event) => {
+    if (!(event.code in KEYS) || event.repeat) return;
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
+    if (store.getState().appMode !== 'harbour') return;
+    const target = event.target;
+    if (
+      target instanceof HTMLElement &&
+      (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+    ) {
+      return;
+    }
+    event.preventDefault();
+    held.add(event.code);
+    const key = KEYS[event.code];
+    if (key) apply(key[0]);
+  });
+  document.addEventListener('keyup', (event) => {
+    if (!held.delete(event.code)) return;
+    const key = KEYS[event.code];
+    if (key) apply(key[0]);
+  });
 }
 
 /** One end's joystick. `variant` picks the size and the test ids (`-quick`, `-helm`). */
@@ -65,6 +114,7 @@ export function createThrusterJoystick(
         class: 'joystick-half',
         'data-testid': `thruster-${which}${suffix}-${side}`,
         'aria-label': t(ARIA[which][side]),
+        'aria-keyshortcuts': KEY_NAMES[which][side],
         'aria-pressed': 'false',
       },
       [side === 'port' ? '◀' : '▶'],
@@ -149,8 +199,11 @@ export function createThrusterPair(store: Store, variant: JoystickVariant): HTML
   ]);
 }
 
-/** The Thrusters section: both joysticks, the status line and the explanation. */
-export function createThrusterPanel(store: Store): HTMLElement[] {
+/**
+ * The Thrusters block under the engine lever in the Engine section (owner, PR #99): a heading,
+ * both joysticks side by side, the status line and the explanation.
+ */
+export function createThrusterPanel(store: Store): HTMLElement {
   const status = el('p', {
     class: 'thrusters-status',
     'data-testid': 'thrusters-status',
@@ -159,10 +212,10 @@ export function createThrusterPanel(store: Store): HTMLElement[] {
   const refresh = (state: AppState) => setText(status, thrusterStatusText(state));
   store.subscribe(refresh);
   refresh(store.getState());
-  return [
-    createThrusterJoystick(store, 'bow', 'section'),
-    createThrusterJoystick(store, 'stern', 'section'),
+  return el('section', { class: 'thrusters-block', 'data-testid': 'thrusters-block' }, [
+    el('h3', { class: 'thrusters-title' }, [t('thrusters.label')]),
+    createThrusterPair(store, 'section'),
     status,
     el('p', { class: 'hint explain' }, [t('thrusters.hint')]),
-  ];
+  ]);
 }

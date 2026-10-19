@@ -44,9 +44,8 @@ export interface BoatMaterials {
   /** M33: the dark rubber of the fenders, and the pale line they hang on. */
   fender: THREE.Material;
   fenderLine: THREE.Material;
-  /** M41: the bow thruster's dark tunnel and the stern thruster's grey pod. */
+  /** M41: the dark inside of the thrusters' tunnels. */
   thrusterTunnel: THREE.Material;
-  thrusterPod: THREE.Material;
   /** M41: the white water jet shown while a thruster runs. */
   thrusterJet: THREE.Material;
 }
@@ -155,7 +154,6 @@ export function createMaterials(detail: Detail = 'high'): BoatMaterials {
       opacity: SCENE.thrusters.jetOpacity,
       depthWrite: false,
     }),
-    thrusterPod: make({ color: SCENE.thrusters.podColour, roughness: 0.5, metalness: 0.2 }),
   };
 }
 
