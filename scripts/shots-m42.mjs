@@ -208,13 +208,13 @@ export async function liveM42Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(
       phone,
       'm42 north',
-      '?pl=marina&m=harbour&ws=0&hdg=0&pe=20.0&pn=1445.0',
+      '?pl=marina&m=harbour&ws=0&hdg=0&pe=20.0&pn=1468.0',
       { testClock: true },
     );
     await page.waitForTimeout(600);
     await page.reload({ waitUntil: 'networkidle' });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
-    const link = await waitForLink(page, ['pl=marina', 'hdg=0', 'pe=20.0', 'pn=1445.0']);
+    const link = await waitForLink(page, ['pl=marina', 'hdg=0', 'pe=20.0', 'pn=1468.0']);
     check('north: the heading 0 survives a reload', true, link);
     await context.close();
   }
