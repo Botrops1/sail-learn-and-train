@@ -1421,7 +1421,14 @@ The anchor (M46); tides; the dinghy; swimming crew in 3D.
 
 ### 11.11 Decided in the M45 PR
 
-(empty)
+- **`ln` in the bay:** an entry is the line code followed by the index of its buoy or ring, written in the order `sp`, `ss`, `ll`, `bl`, `sl` (`ln=bl1:3.20,sl1:28.08`); `parseLines` reads `[a-z]{2}\d*` and `linesFromLink` takes `index?: number | null` (marina lines have none, bay lines need one in range). The worked values: from the bow tip 0.1 m from buoy 1 the bow line is `bl1:3.53` (the distance from the port bow cleat to the buoy's ring is 2.53 m, plus `buoySlackM`); from the stern 27.5 m from the ring at (−1700, 0) the shore line is `sl1:28.08` (the M47 link already used this number).
+- **`harbourForces`:** `HarbourInputs.place` is optional (open water when left out), so every existing caller and test stays as it was; in the bay `harbourForces` adds `landObstacles(area)` to the obstacles it is given and calls `groundForces`; the store still passes the marina's obstacles only in the marina.
+- **The depth on the strip** shows in the marina too (the place is not open water): 5.0 m inside the basin, 40 m outside it, never red there.
+- **Map chart cells** sit on a grid of the map (multiples of the cell size), so they do not shift while the view moves; the offscreen canvas is rebuilt whenever the boat moves (the map follows her), so the cost is one pass over the cells in the view (at most about 7,000 at the widest zoom) per drawn frame; nothing is drawn when the view is further than 400 m (`openDepthM / slope`) from the bay and the basin.
+- **The terrain is two meshes** that share their vertices (so a tap names what it hits): the cells whose four corners average above the water are the land (`env_shore`), the others the bottom (`env_seabed`).
+- **Let go** of the shore line while the crew is swimming it ashore calls the crew back (the same button as for the lazy line).
+- **The damage text of a hit on the bottom** is `damage.line` with the verdict `damage.ground.<severity>` (so it reads "Seabed, at our keel, 1.0 kn: the keel struck the bottom: have the keel checked.").
+- **PT-53 prototype values reproduced** (1 kn: 0.105 m too deep, impact 0.507 m/s, `knock`, back 49.5 m, off by 4.8 m; 3 kn: 0.314 m too deep, impact 1.53 m/s, `hit`, back 1.9 m, still 0.20 m too deep at 45 s); no tunable value was changed.
 
 ---
 
