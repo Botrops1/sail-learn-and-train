@@ -650,7 +650,7 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'clearDamageReport':
       return state.contact.reports.length === 0
         ? state
-        : { ...state, contact: { ...state.contact, reports: [] } };
+        : { ...state, contact: { ...state.contact, reports: [], notice: null } };
     case 'thruster': {
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };

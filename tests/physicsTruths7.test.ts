@@ -255,7 +255,7 @@ describe('PT-50 fenders take a slow contact', () => {
     expect(contactSeverity(approach, true)).toBe('fender');
   });
 
-  it('PT-50 at 1 knot (1.0 m/s) even the fenders do not help: a hard hit', () => {
+  it('PT-50 at 1.0 m/s (about 2 knots) even the fenders do not help: a hard hit', () => {
     const { first } = bump(1.0, true);
     const approach = Math.max(...(first ?? []).map((h) => h.approachMps));
     expect(approach).toBeGreaterThan(0.85);

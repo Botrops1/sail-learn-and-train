@@ -130,6 +130,29 @@ describe('stepContact', () => {
     expect(c.reports).toHaveLength(2);
   });
 
+  it('a weaker report does not replace the alert while a worse one shows (PR #104 review)', () => {
+    let c: ContactState = NO_CONTACT;
+    c = stepContact(c, [hit('wall:bow', 1.2)], 10, 0.25);
+    expect(c.notice?.severity).toBe('hit');
+    c = stepContact(c, [], 11, 0.25);
+    c = stepContact(c, [], 11.5, 0.25);
+    c = stepContact(c, [], 12, 0.25);
+    c = stepContact(c, [hit('wall:bow', 0.1)], 13, 0.25);
+    expect(c.reports[0]?.severity).toBe('touch');
+    expect(c.notice?.severity).toBe('hit');
+    expect(c.noticeUntilS).toBe(18);
+    // After the 8 s are over the next report is shown, however weak.
+    c = stepContact(c, [], 18.5, 0.25);
+    c = stepContact(c, [], 19, 0.25);
+    c = stepContact(c, [], 19.25, 0.25);
+    c = stepContact(c, [hit('wall:bow', 0.1)], 19.5, 0.25);
+    expect(c.notice?.severity).toBe('touch');
+    // An equally bad or worse one replaces it and starts the 8 s again.
+    c = stepContact(c, [hit('wall:stern', 0.3)], 20, 0.25);
+    expect(c.notice?.severity).toBe('bump');
+    expect(c.noticeUntilS).toBe(28);
+  });
+
   it('the list keeps 20 reports and Clear empties it', () => {
     let c: ContactState = NO_CONTACT;
     for (let i = 0; i < 25; i += 1) {

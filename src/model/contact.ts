@@ -343,11 +343,39 @@ export interface ContactState {
   touching: Readonly<Record<string, number>>;
   /** Newest first, at most `MAX_REPORTS`. */
   reports: readonly ContactReport[];
-  /** Simulated time (rig.timeS) until which the alert shows the newest report. */
+  /** The report the alert shows (null: none yet). A weaker new report does not replace it while it shows (PR #104 review). */
+  notice: ContactReport | null;
+  /** Simulated time (rig.timeS) until which the alert shows `notice`. */
   noticeUntilS: number;
 }
 
-export const NO_CONTACT: Readonly<ContactState> = { touching: {}, reports: [], noticeUntilS: 0 };
+export const NO_CONTACT: Readonly<ContactState> = {
+  touching: {},
+  reports: [],
+  notice: null,
+  noticeUntilS: 0,
+};
+
+/** How bad a report is, for deciding which one the alert shows. */
+const SEVERITY_RANK: Record<Severity, number> = { fender: 0, touch: 1, bump: 2, knock: 3, hit: 4 };
+
+/**
+ * The alert's report after a new one: the new report replaces the showing one only when nothing
+ * is showing or it is at least as bad, so a hard hit's red message is not wiped out by the
+ * touches that follow it as she bounces. The list keeps every report either way.
+ */
+function withNotice(
+  notice: ContactReport | null,
+  noticeUntilS: number,
+  report: ContactReport,
+  timeS: number,
+): { notice: ContactReport; noticeUntilS: number } {
+  const showing = notice !== null && timeS < noticeUntilS;
+  if (showing && SEVERITY_RANK[report.severity] < SEVERITY_RANK[notice.severity]) {
+    return { notice, noticeUntilS };
+  }
+  return { notice: report, noticeUntilS: timeS + NOTICE_S };
+}
 
 const MAX_REPORTS = 20;
 /** The alert shows the newest report this long, simulated seconds. */
@@ -368,7 +396,7 @@ export function stepContact(
   if (hits.length === 0 && touchingNow.length === 0) return contact;
   const touching: Record<string, number> = {};
   let reports = contact.reports;
-  let noticeUntilS = contact.noticeUntilS;
+  let { notice, noticeUntilS } = contact;
   const seen = new Set<string>();
   for (const hit of hits) {
     seen.add(hit.key);
@@ -384,7 +412,7 @@ export function stepContact(
         severity: contactSeverity(hit.approachMps, hit.fender, data),
       };
       reports = [report, ...reports].slice(0, MAX_REPORTS);
-      noticeUntilS = timeS + NOTICE_S;
+      ({ notice, noticeUntilS } = withNotice(notice, noticeUntilS, report, timeS));
     }
   }
   for (const key of touchingNow) {
@@ -392,7 +420,7 @@ export function stepContact(
     const age = (contact.touching[key] ?? 0) + dt;
     if (age <= data.physics.contact.separateS) touching[key] = age;
   }
-  return { touching, reports, noticeUntilS };
+  return { touching, reports, notice, noticeUntilS };
 }
 
 /** The ball fender's number: after the eight at the stations (4.1). */
@@ -422,7 +450,7 @@ export function stepFenders(
   let sinceSlow = harbour.fendersLostSinceSlow;
   let lost = harbour.fendersLost;
   let reports = contact.reports;
-  let noticeUntilS = contact.noticeUntilS;
+  let { notice, noticeUntilS } = contact;
   const total = BALL_FENDER + 1;
   for (;;) {
     const threshold = sinceSlow === 0 ? c.fenderLossAfterS : c.fenderLossEveryS;
@@ -444,7 +472,7 @@ export function stepFenders(
       severity: 'hit',
     };
     reports = [report, ...reports].slice(0, MAX_REPORTS);
-    noticeUntilS = timeS + NOTICE_S;
+    ({ notice, noticeUntilS } = withNotice(notice, noticeUntilS, report, timeS));
   }
   return {
     harbour: {
@@ -453,6 +481,6 @@ export function stepFenders(
       fenderOverSpeedS: over,
       fendersLostSinceSlow: sinceSlow,
     },
-    contact: reports === contact.reports ? contact : { ...contact, reports, noticeUntilS },
+    contact: reports === contact.reports ? contact : { ...contact, reports, notice, noticeUntilS },
   };
 }

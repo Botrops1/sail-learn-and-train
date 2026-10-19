@@ -24,7 +24,7 @@ export function damageText(r: ContactReport): string {
 
 /**
  * The damage alert in the alert stack over the 3D view: shows the newest report for a few seconds
- * after a contact (or a lost fender); red for a knock or a hard hit.
+ * after a contact (or a lost fender), the worst one of those that came while it showed; red for a knock or a hard hit.
  */
 export function createDamageAlert(alerts: HTMLElement, store: Store): void {
   const note = el('div', {
@@ -36,7 +36,7 @@ export function createDamageAlert(alerts: HTMLElement, store: Store): void {
 
   let shown: ContactReport | undefined;
   const refresh = (state: AppState) => {
-    const newest = state.contact.reports[0];
+    const newest = state.contact.notice ?? undefined;
     const visible = newest !== undefined && state.rig.timeS < state.contact.noticeUntilS;
     if (note.hidden === visible) note.hidden = !visible;
     if (visible && newest !== shown) {
