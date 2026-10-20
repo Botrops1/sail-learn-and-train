@@ -177,7 +177,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       if (query.includes('realistic')) {
         await showSection(page, 'ropes');
         // The Mast and Helm stations have their own drawings and texts.
-        for (const station of ['starboard', 'helm', 'mast']) {
+        for (const station of ['starboard', 'helm', 'mast', 'bow']) {
           await page.locator(`button.station-button[data-station="${station}"]`).click();
           await page.waitForTimeout(300);
           const latin = await scanText(page);

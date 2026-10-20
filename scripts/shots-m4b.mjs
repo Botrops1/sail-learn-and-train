@@ -336,7 +336,11 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     // Three stations; only the chosen one is shown.
     const stations = await page.locator('.station-button').allInnerTexts();
     // M4c added the Mast station.
-    check(`${v} stations`, stations.join('|') === 'Port|Starboard|Helm|Mast', stations.join('|'));
+    check(
+      `${v} stations`,
+      stations.join('|') === 'Port|Starboard|Helm|Mast|Bow',
+      stations.join('|'),
+    );
 
     // PT-15: drag the Vang lever up (open) and down (closed).
     await page.locator(drawing('port')).scrollIntoViewIfNeeded();

@@ -1634,7 +1634,14 @@ Anchoring under sail; a second anchor; a snubber or bridle as separate lines; ch
 
 ### 12.12 Decided in the M46 PR
 
-(empty)
+- **Sections:** since PR #99 the thrusters sit in the Engine section, so there is no `thrusters` section to put the Anchor section after: it comes after Place and before Harbour gear in Easy, Realistic and Learn, and in Harbour mode after Harbour gear (`engine, harbour, anchor, place, …`); only Easy ropes show it (`sectionAvailable`); Realistic ropes have the windlass at the Bow station and the helm remote.
+- **Where the link keeps the anchor:** `an`, `ax` and `as` are written by `anchorParams` (`urlState.ts`) after `ln`, inside `placeParams`, so only in a place (as 4.2 says): an anchor let go in open water works but is not in the link. In open water the chain still uses the bay's depth model (`depthAt`: `openDepthM` away from the coast).
+- **The alarm is also an alert kind:** `anchorAlarm` in `ALERT_KINDS` (red, Learn entry `term_scope`, text `anchor.alarm`), as PHASE5_SPEC 14 asks of every Phase 7 alert; the alert stack shows `anchor-alarm-alert` while it sounds.
+- **Bow station:** `stationsOf` entries gain `windlass`; `stationWinch` and `socketAt` read only `winch` and `gearbox`, so the Bow station has no socket; the handle bar is hidden there and `hd=bow.…` is ignored in the link.
+- **Map:** a tap on the anchor sign names the anchor (`fit_anchor`); the dashed circle and the line are drawn on the map and the mini-map.
+- **3D:** the second anchor is built once, at the detail the page started with.
+- **Browser check 1** waits for `an=` and `ax=` in the link (the spec said `ap=`, which is the autopilot's key and is always there in a place); two more checks (helm remote, dragging alarm) were added.
+- **Test numbers against the prototype** (12.8): PT-54 weed L 20: 20.9 m (prototype 19.3); L 47: 1.4 (1.4); L 34: 2.8 (2.8); PT-55 sand L 20: 1.1 (1.1); rock: **12.0** (7.6, the band's upper edge is 12; the same run without the engine drags 7.4); PT-56: 23.9° (24); PT-57: set at 46.9 s, 1.35 m (1.3). Nothing was tuned. The rock run is on the band's edge.
 
 ---
 
