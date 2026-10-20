@@ -72,7 +72,7 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     check('1279 px: second column hidden', await secondColumn(page).isHidden(), 'hidden');
     const ids = await idsIn(page, '.panel-body');
     // M38: without the Mode and Settings sections (those are for the wide layout only).
-    check('1279 px: all eight sections in column 1', ids.length === 8, ids.join(', '));
+    check('1279 px: all nine sections in column 1', ids.length === 9, ids.join(', '));
     check(
       '1279 px: column 2 is empty',
       (await idsIn(page, '[data-testid="second-column"]')).length === 0,
@@ -89,9 +89,9 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForFunction(() => !document.documentElement.dataset.wide);
     check('1000 px: second column hidden', await secondColumn(page).isHidden(), 'hidden');
     check(
-      '1000 px: all eight sections in column 1',
-      (await idsIn(page, '.panel-body')).length === 8,
-      'eight',
+      '1000 px: all nine sections in column 1',
+      (await idsIn(page, '.panel-body')).length === 9,
+      'nine',
     );
     check(
       '1000 px: Conditions keeps its open state',
