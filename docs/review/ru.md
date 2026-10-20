@@ -3053,6 +3053,10 @@
 | damage.ground.bump | the keel touched the bottom: check the keel when you can. | киль задел дно: при случае осмотрите киль. |
 | damage.ground.knock | the keel struck the bottom: have the keel checked. | киль ударился о дно: нужно осмотреть киль. |
 | damage.ground.hit | the keel hit the bottom hard: have the keel and its bolts checked, and look for water inside. | сильный удар килем о дно: осмотрите киль и его болты, проверьте, нет ли воды внутри. |
+| damage.ground.rudder.touch | the rudder brushed the bottom. | руль коснулся дна. |
+| damage.ground.rudder.bump | the rudder touched the bottom: check the rudder when you can. | руль задел дно: при случае осмотрите руль. |
+| damage.ground.rudder.knock | the rudder struck the bottom: have the rudder checked. | руль ударился о дно: нужно осмотреть руль. |
+| damage.ground.rudder.hit | the rudder hit the bottom hard: have the rudder and its bearings checked, and look for water inside. | сильный удар рулём о дно: осмотрите руль и его подшипники, проверьте, нет ли воды внутри. |
 | damage.fenderLost | A {side} fender was torn off and lost (fenders out at speed). | Оторвало и потеряли кранец с {side} борта (кранцы за бортом на ходу). |
 | damage.propeller | A line got caught in the propeller and stopped the engine. | Конец намотался на винт и заглушил двигатель. |
 | lines.title | Lines | Швартовы |

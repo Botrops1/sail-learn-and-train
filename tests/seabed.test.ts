@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { area } from '../src/model/area';
 import { boat as boatData } from '../src/model/boat';
+import type { ContactReport } from '../src/model/contact';
+import { damageText } from '../src/ui/damageReport';
 import { insidePolygon } from '../src/model/marina';
 import { initialBoat, type BoatState } from '../src/model/motion';
 import {
@@ -122,5 +124,24 @@ describe('M45 groundForces', () => {
     const f = groundForces({ ...resting, eastM: -1500 });
     expect(f.contacts).toBeUndefined();
     expect(f.surgeN).toBe(0);
+  });
+});
+
+describe('M45 the bottom in the damage report', () => {
+  const report = (part: 'keel' | 'stern'): ContactReport => ({
+    atS: 1,
+    obstacleId: 'bottom',
+    partId: 'env_seabed',
+    part,
+    impactMps: 0.5,
+    fender: false,
+    severity: 'knock',
+  });
+
+  it('names the keel when the keel touched and the rudder when the rudder did', () => {
+    expect(damageText(report('keel'))).toContain('the keel struck the bottom');
+    const rudder = damageText(report('stern'));
+    expect(rudder).toContain('the rudder struck the bottom');
+    expect(rudder).not.toContain('keel');
   });
 });

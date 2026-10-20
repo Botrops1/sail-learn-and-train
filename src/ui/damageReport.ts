@@ -15,10 +15,11 @@ export function damageText(r: ContactReport): string {
     });
   }
   if (r.obstacleId === 'propeller') return t('damage.propeller');
-  // The bottom is the keel's (M45): its verdict names the keel, never a fender.
+  // The bottom is the keel's or, backing towards the shore, the rudder's (M45): the verdict names the part.
+  const severity = r.severity === 'fender' ? 'touch' : r.severity;
   const verdict =
     r.obstacleId === 'bottom'
-      ? t(`damage.ground.${r.severity === 'fender' ? 'touch' : r.severity}`)
+      ? t(r.part === 'stern' ? `damage.ground.rudder.${severity}` : `damage.ground.${severity}`)
       : t(`damage.severity.${r.severity}`);
   return t('damage.line', {
     what: part(r.partId)?.name ?? r.partId,

@@ -1026,9 +1026,15 @@ export function drawSeabed(
   ].join('/');
   let cached = seabedCache.get(mini);
   if (!cached || cached.key !== key) {
-    const canvas = document.createElement('canvas');
-    canvas.width = Math.max(1, Math.round(view.widthPx * scale));
-    canvas.height = Math.max(1, Math.round(view.heightPx * scale));
+    const width = Math.max(1, Math.round(view.widthPx * scale));
+    const height = Math.max(1, Math.round(view.heightPx * scale));
+    // The picture is redrawn while the boat moves: keep the canvas when its size is the same.
+    const canvas =
+      cached?.canvas && cached.canvas.width === width && cached.canvas.height === height
+        ? cached.canvas
+        : document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
     const target = canvas.getContext('2d');
     if (target) paintDepthCells(target, view, scale, mini, reach, regions);
     cached = { key, canvas: target ? canvas : null };
@@ -1038,6 +1044,42 @@ export function drawSeabed(
     ctx.drawImage(cached.canvas, 0, 0, view.widthPx, view.heightPx);
   }
   drawBaySymbols(ctx, view, mini);
+}
+
+/** The shade of each map cell (null: nothing to draw), remembered because the depth never changes; one table per cell size. */
+const shadeTables = new Map<number, Map<number, string | null>>();
+const MAX_REMEMBERED_CELLS = 400_000;
+
+function shadeCache(cellM: number): Map<number, string | null> {
+  let table = shadeTables.get(cellM);
+  if (!table) {
+    // The view changes its zoom level seldom: keep the tables of the last few cell sizes only.
+    if (shadeTables.size >= 4) shadeTables.clear();
+    table = new Map();
+    shadeTables.set(cellM, table);
+  }
+  if (table.size > MAX_REMEMBERED_CELLS) table.clear();
+  return table;
+}
+
+function shadeOfCell(
+  table: Map<number, string | null>,
+  i: number,
+  j: number,
+  ce: number,
+  cn: number,
+  regions: { west: number; east: number; south: number; north: number }[],
+): string | null {
+  const key = (i + 32768) * 65536 + (j + 32768);
+  const found = table.get(key);
+  if (found !== undefined) return found;
+  let shade: string | null = null;
+  if (regions.some((r) => ce >= r.west && ce <= r.east && cn >= r.south && cn <= r.north)) {
+    const depth = depthAt(ce, cn);
+    if (depth < area.openDepthM) shade = depthShade(depth);
+  }
+  table.set(key, shade);
+  return shade;
 }
 
 function paintDepthCells(
@@ -1063,26 +1105,49 @@ function paintDepthCells(
     o.y * scale,
   );
   // A little overlap hides the seams between cells.
-  const size = cellM + 0.6 * view.metresPerPx;
-  const firstE = Math.floor((view.centreEastM - reach) / cellM) * cellM;
-  const firstN = Math.floor((view.centreNorthM - reach) / cellM) * cellM;
-  for (let e = firstE; e <= view.centreEastM + reach; e += cellM) {
-    for (let n = firstN; n <= view.centreNorthM + reach; n += cellM) {
+  const overlap = 0.6 * view.metresPerPx;
+  const shades = shadeCache(cellM);
+  const firstI = Math.floor((view.centreEastM - reach) / cellM);
+  const lastI = Math.floor((view.centreEastM + reach) / cellM);
+  const firstJ = Math.floor((view.centreNorthM - reach) / cellM);
+  const lastJ = Math.floor((view.centreNorthM + reach) / cellM);
+  // Row by row: neighbouring cells of one shade are painted as one rectangle.
+  for (let j = firstJ; j <= lastJ; j += 1) {
+    const n = j * cellM;
+    let runStart = 0;
+    let runShade: string | null = null;
+    let runEnd = 0;
+    const flush = () => {
+      if (runShade === null) return;
+      target.fillStyle = runShade;
+      target.fillRect(
+        runStart - view.centreEastM,
+        n - view.centreNorthM,
+        runEnd - runStart + overlap,
+        cellM + overlap,
+      );
+      runShade = null;
+    };
+    for (let i = firstI; i <= lastI; i += 1) {
+      const e = i * cellM;
       const ce = e + cellM / 2;
       const cn = n + cellM / 2;
-      if (!regions.some((r) => ce >= r.west && ce <= r.east && cn >= r.south && cn <= r.north)) {
-        continue;
-      }
-      const depth = depthAt(ce, cn);
-      if (depth >= area.openDepthM) continue;
-      const shade = depthShade(depth);
-      if (shade === null) continue;
-      // Only the cells in the view are drawn.
+      // The cheap tests come first: a cell outside the canvas or outside the charted regions costs no depth look-up.
       const s = mapToScreen(ce, cn, view);
-      if (s.x < -50 || s.y < -50 || s.x > view.widthPx + 50 || s.y > view.heightPx + 50) continue;
-      target.fillStyle = shade;
-      target.fillRect(e - view.centreEastM, n - view.centreNorthM, size, size);
+      const shade =
+        s.x < -50 || s.y < -50 || s.x > view.widthPx + 50 || s.y > view.heightPx + 50
+          ? null
+          : shadeOfCell(shades, i, j, ce, cn, regions);
+      if (shade !== runShade) {
+        flush();
+        if (shade !== null) {
+          runStart = e;
+          runShade = shade;
+        }
+      }
+      if (shade !== null) runEnd = e + cellM;
     }
+    flush();
   }
   target.setTransform(1, 0, 0, 1, 0, 0);
 }
