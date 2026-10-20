@@ -12,9 +12,18 @@ import { DEFAULT_HARBOUR } from '../src/model/harbour';
 import type { ContactHit } from '../src/model/lowSpeed';
 import { pointToMap } from '../src/model/lowSpeed';
 import { stepBoat, type BoatState } from '../src/model/motion';
-import { depthAt } from '../src/model/seabed';
+import { depthAt, type SeabedType } from '../src/model/seabed';
 import { lineForces, NO_LINES } from '../src/model/mooringLines';
-import { initialEngine } from '../src/model/engine';
+import {
+  ANCHOR_STOWED,
+  chainForces,
+  scopeNeededM,
+  stepAnchor,
+  type AnchorState,
+  type SeabedEnv,
+} from '../src/model/anchor';
+import { engineThrustN, initialEngine, stepEngine } from '../src/model/engine';
+import { initialWindMode, windAt } from '../src/model/windModes';
 import { reduce } from '../src/app/store';
 import { act, berthLines, harbourStart, initialState, run } from './motionHelpers';
 
@@ -428,5 +437,113 @@ describe('PT-53 the keel touches where the water is shallower than the draft', (
     expect(fast.impact?.severity).toBe('hit');
     expect(fast.offBy).toBeLessThan(0);
     expect(fast.backM).toBeLessThan(3);
+  });
+});
+
+describe('the anchor (PT-31, PT-54 … PT-57)', () => {
+  const flat = (seabed: SeabedType): SeabedEnv => ({ depthAt: () => 5, seabedAt: () => seabed });
+
+  /**
+   * 300 s at 60 fps: the boat at (0, 0) heading 10, sails away, the engine running in neutral
+   * (or the lever as `lever` says between 30 s and 50 s), the wind from the north, the anchor
+   * on the bottom 0.8·L ahead of her; only the chain pulls (PHASE7_SPEC 12.8).
+   */
+  function lie(o: {
+    seabed: SeabedType;
+    chainM: number;
+    twsKn: number;
+    gusty?: boolean;
+    lever?: number;
+    set?: boolean;
+  }) {
+    const state = harbourStart({ headingDeg: 10, engine: { running: true, leverPct: 0 } });
+    const env = flat(o.seabed);
+    const windMode = initialWindMode(o.gusty ? { mode: 'gusty', seed: 1 } : {});
+    let boat: BoatState = { ...state.boat, eastM: 0, northM: 0, headingDeg: 10 };
+    let anchor: AnchorState = {
+      ...ANCHOR_STOWED,
+      phase: o.set ? 'set' : 'bottom',
+      chainOutM: o.chainM,
+      eastM: 0,
+      northM: 0.8 * o.chainM,
+    };
+    let engine = initialEngine({ running: true, leverPct: 0 });
+    let timeS = 0;
+    let setAtS: number | null = null;
+    let swing = 0;
+    for (let i = 0; i < 300 * 60; i += 1) {
+      const dt = 1 / 60;
+      if (o.lever !== undefined) {
+        engine = { ...engine, leverPct: timeS >= 30 && timeS < 50 ? o.lever : 0 };
+      }
+      engine = stepEngine(engine, dt);
+      const wind = windAt(0, o.twsKn, windMode, timeS);
+      const anchored = anchor;
+      boat = stepBoat(
+        boat,
+        {
+          windDirDeg: wind.dirDeg,
+          twsKn: wind.twsKn,
+          rudderDeg: 0,
+          rig: state.rig,
+          controls: state.controls,
+          engineThrustN: engineThrustN(engine),
+          external: (b: BoatState) => chainForces(anchored, b, env),
+        },
+        dt,
+      ).boat;
+      anchor = stepAnchor(anchor, boat, env, dt);
+      timeS += dt;
+      if (setAtS === null && anchor.phase === 'set') setAtS = timeS;
+      swing = wrap180(boat.headingDeg - 0);
+    }
+    return { anchor, headingErrDeg: Math.abs(swing), setAtS };
+  }
+
+  it('PT-54 a short scope on weed in 25 knots of gusts drags, with the alarm', () => {
+    const short = lie({ seabed: 'weed', chainM: 20, twsKn: 25, gusty: true });
+    expect(short.anchor.draggedM).toBeGreaterThanOrEqual(10);
+    expect(short.anchor.draggedM).toBeLessThanOrEqual(30);
+    expect(short.anchor.alarm).toBe(true);
+  });
+
+  it('PT-54 more chain holds: 47 m (scope 6.9) drags less than 3 m, 34 m (scope 5.0) 1.5 to 5 m', () => {
+    expect(
+      lie({ seabed: 'weed', chainM: 47, twsKn: 25, gusty: true }).anchor.draggedM,
+    ).toBeLessThan(3);
+    const middle = lie({ seabed: 'weed', chainM: 34, twsKn: 25, gusty: true }).anchor.draggedM;
+    expect(middle).toBeGreaterThanOrEqual(1.5);
+    expect(middle).toBeLessThanOrEqual(5);
+  });
+
+  it('PT-55 the bottom matters: sand holds the short chain, rock drags and never sets', () => {
+    expect(
+      lie({ seabed: 'sand', chainM: 20, twsKn: 25, gusty: true }).anchor.draggedM,
+    ).toBeLessThan(2);
+    const rock = lie({ seabed: 'rock', chainM: 34, twsKn: 15, lever: -60 });
+    expect(rock.anchor.phase).toBe('bottom');
+    expect(rock.anchor.draggedM).toBeGreaterThanOrEqual(4);
+    expect(rock.anchor.draggedM).toBeLessThanOrEqual(12);
+  });
+
+  it('PT-56 an anchored boat swings to the wind: after 300 s her bow is within 35° of it', () => {
+    const swung = lie({ seabed: 'sand', chainM: 34, twsKn: 15, set: true });
+    expect(swung.headingErrDeg).toBeLessThanOrEqual(35);
+  });
+
+  it('PT-57 the anchor has to be set: without the engine it stays unset, a third astern for 20 s sets it', () => {
+    expect(lie({ seabed: 'sand', chainM: 34, twsKn: 15 }).anchor.phase).toBe('bottom');
+    const backed = lie({ seabed: 'sand', chainM: 34, twsKn: 15, lever: -40 });
+    expect(backed.anchor.phase).toBe('set');
+    expect(backed.setAtS).not.toBeNull();
+    expect(backed.setAtS as number).toBeLessThanOrEqual(120);
+    expect(backed.anchor.draggedM).toBeGreaterThanOrEqual(1);
+    expect(backed.anchor.draggedM).toBeLessThanOrEqual(2);
+  });
+
+  it('PT-31 the rules ask for 4 × the depth with the roller (more in a strong wind), and not less than 3 boat lengths', () => {
+    expect(scopeNeededM(5, 10)).toBeCloseTo(46.65, 2);
+    expect(scopeNeededM(15, 10)).toBeCloseTo(67.2, 1);
+    expect(scopeNeededM(5, 25)).toBeCloseTo(58.3, 1);
   });
 });

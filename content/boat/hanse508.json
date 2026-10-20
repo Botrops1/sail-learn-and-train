@@ -1276,6 +1276,10 @@
       {
         "id": "mast",
         "gearbox": "part_main_furling_gearbox"
+      },
+      {
+        "id": "bow",
+        "windlass": "fit_anchor_windlass"
       }
     ],
     "stationsSource": "owner (2026-10-09): each side's ropes go to that side's winch; one person works one station at a time. M4c: the Mast station has the in-mast furling gearbox (photo mast-furling-gearbox.jpg)",
@@ -1641,6 +1645,30 @@
       "maxSlope": 1.0,
       "gradientStepM": 0.5,
       "note": "assumption for teaching: the bottom presses on the keel in proportion to how deep it is in; touching at 2 kn or less, full astern gets her off; at 3 kn she sticks"
+    },
+    "anchor": {
+      "massKg": 40,
+      "chainLengthM": 70,
+      "chainKgPerM": 2.2,
+      "steelDensityKgM3": 7850,
+      "anchorNote": "assumption: a 40 kg plough-type anchor and 70 m of 10 mm chain (skipper questions 19 and 20)",
+      "windlassDownMps": 0.5,
+      "windlassUpMps": 0.4,
+      "windlassMaxPullN": 8000,
+      "windlassNote": "assumption: an electric windlass of about 1,500 W (skipper question 21)",
+      "holdingRatio": { "sand": 25, "mud": 15, "weed": 5, "rock": 2 },
+      "holdingNote": "assumption (PT-55): how many times its own weight the set anchor holds on each bottom",
+      "scopeHolding": [[1, 0], [2, 0.4], [3, 0.65], [4, 0.8], [5, 0.9], [7, 1.0]],
+      "scopeNote": "assumption (PT-54): the share of the holding at a scope (chain out / effective depth)",
+      "liftedHoldingShare": 0.3,
+      "unsetHoldingShare": 0.15,
+      "setDistanceM": 1.0,
+      "dragResistanceNsPerM": 4000,
+      "maxDragMps": 0.5,
+      "snubStiffnessNPerM": 20000,
+      "breakOutMarginM": 0.5,
+      "alarmAfterS": 5,
+      "strongWindKn": 20
     },
     "autopilot": {
       "kp": 2,
