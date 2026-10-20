@@ -50,6 +50,8 @@ export interface BoatModel {
   setFendersOut(out: boolean): void;
   /** M41: shows the water jets of the thrusters that run. */
   setThrusters(t: ThrusterState): void;
+  /** M46: shows the anchor in the bow roller (true) or hides it while the anchor is down (false). */
+  setAnchorStowed(stowed: boolean): void;
 }
 
 /**
@@ -137,6 +139,10 @@ export function buildBoat(
     root.updateMatrixWorld(true);
   };
   update(rig, controls);
+  const anchorMeshes: THREE.Object3D[] = [];
+  root.traverse((object) => {
+    if ((object.userData as { partId?: string }).partId === 'fit_anchor') anchorMeshes.push(object);
+  });
   // Sun shadows (drawn at high detail only): everything casts; thin ropes and see-through
   // windows do not catch shadows.
   root.traverse((object) => {
@@ -154,5 +160,8 @@ export function buildBoat(
     ropeDrawings: () => drawings,
     setFendersOut: fenders.setOut,
     setThrusters: thrusters.setState,
+    setAnchorStowed: (stowed) => {
+      for (const mesh of anchorMeshes) mesh.visible = stowed;
+    },
   };
 }

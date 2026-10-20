@@ -240,6 +240,8 @@ export const SCENE = {
     /** Beyond this distance from the boat the marina is not drawn or tappable, metres (the camera's far plane). */
     maxDrawM: 1000,
   },
+  /** The anchor chain on the seabed (M46, PHASE7_SPEC 12.6): a dark grey tube of `chainRadiusM` through `points` points. */
+  anchor: { chainColour: '#3b4046', chainRadiusM: 0.03, points: 24 },
   /** The bay (M45, PHASE7_SPEC 11.5): the terrain over the bay, the marina basin's bottom, the shore rings and the mooring buoys. */
   bay: {
     /** The terrain's rectangle (east × north, metres), and its vertex spacing (High, Low). */

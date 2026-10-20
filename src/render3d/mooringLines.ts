@@ -38,13 +38,18 @@ const WAITING_FACE_SEGMENTS = 4;
 const WAITING_BOTTOM_SEGMENTS = 8;
 const WAITING_POINTS = WAITING_FACE_SEGMENTS + WAITING_BOTTOM_SEGMENTS + 1;
 
-/** A tube along a list of points: positions and normals are rewritten in place each frame. */
-interface Tube {
+/** A tube along a list of points: positions and normals are rewritten in place each frame. (M46: the anchor chain reuses it.) */
+export interface Tube {
   mesh: THREE.Mesh<THREE.BufferGeometry>;
   pointCount: number;
 }
 
-function createTube(code: LineCode, pointCount: number, opacity: number): Tube {
+export function createTube(
+  partId: string,
+  pointCount: number,
+  opacity: number,
+  color: string | number = SCENE.ropes.colors.mooring,
+): Tube {
   const geometry = new THREE.BufferGeometry();
   const vertices = pointCount * RADIAL;
   geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices * 3), 3));
@@ -59,14 +64,12 @@ function createTube(code: LineCode, pointCount: number, opacity: number): Tube {
   }
   geometry.setIndex(indices);
   const material = new THREE.MeshLambertMaterial({
-    color: SCENE.ropes.colors.mooring,
+    color,
     transparent: opacity < 1,
     opacity,
     depthWrite: opacity >= 1,
   });
-  const mesh = asThin(
-    partMesh(ROPE_IDS[code], [geometry], material),
-  ) as THREE.Mesh<THREE.BufferGeometry>;
+  const mesh = asThin(partMesh(partId, [geometry], material)) as THREE.Mesh<THREE.BufferGeometry>;
   mesh.renderOrder = 2;
   // The points change every frame and the mesh is far from the group's origin: never cull it by a stale sphere.
   mesh.frustumCulled = false;
@@ -80,11 +83,12 @@ const UP = new THREE.Vector3(0, 1, 0);
 const ACROSS = new THREE.Vector3(1, 0, 0);
 
 /** Writes the tube round `points` (group-local) with the radius each point needs to stay visible. */
-function writeTube(
+export function writeTube(
   tube: Tube,
   points: readonly Vec3[],
   offset: Vec3,
   view: RopeView | undefined,
+  baseRadius: number = boat.visual.ropeRenderRadius,
 ): void {
   const positions = tube.mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
   const normals = tube.mesh.geometry.getAttribute('normal') as THREE.BufferAttribute;
@@ -98,7 +102,7 @@ function writeTube(
     side.crossVectors(axis, Math.abs(axis.y) > 0.9 ? ACROSS : UP).normalize();
     up.crossVectors(side, axis).normalize();
     const radius = screenRadius(
-      boat.visual.ropeRenderRadius,
+      baseRadius,
       [p[0] + offset[0], p[1] + offset[1], p[2] + offset[2]],
       view,
     );
@@ -135,13 +139,13 @@ export function buildMooringLines(areaData: AreaData = area): MooringLines {
   object.name = 'mooringLines';
   const tubes = new Map<LineCode, Tube>();
   for (const code of LINE_CODES) {
-    const tube = createTube(code, h.segments + 1, 1);
+    const tube = createTube(ROPE_IDS[code], h.segments + 1, 1);
     tube.mesh.visible = false;
     tubes.set(code, tube);
     object.add(tube.mesh);
   }
   // The lazy line waiting: down the quay face, then along the bottom to its weight.
-  const waiting = createTube('ll', WAITING_POINTS, h.waitingOpacity);
+  const waiting = createTube(ROPE_IDS.ll, WAITING_POINTS, h.waitingOpacity);
   waiting.mesh.visible = false;
   object.add(waiting.mesh);
 
@@ -233,7 +237,7 @@ export function buildMooringLines(areaData: AreaData = area): MooringLines {
   };
 }
 
-function pickSegments(points: readonly Vec3[]): [Vec3, Vec3][] {
+export function pickSegments(points: readonly Vec3[]): [Vec3, Vec3][] {
   const segments: [Vec3, Vec3][] = [];
   for (let i = 0; i + 1 < points.length; i += 1) {
     segments.push([points[i] as Vec3, points[i + 1] as Vec3]);

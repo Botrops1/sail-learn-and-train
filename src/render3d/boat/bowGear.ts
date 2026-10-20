@@ -76,7 +76,8 @@ function flukeSlab(tri: readonly [Vec3, Vec3, Vec3], thickness: number): THREE.B
   return triangles(positions);
 }
 
-function buildAnchor(materials: BoatMaterials, detail: Detail): THREE.Object3D {
+/** The anchor in boat coordinates, the shackle at `deckFittings.anchor.shackle` (M46 builds a second one at the end of the chain). */
+export function buildAnchor(materials: BoatMaterials, detail: Detail): THREE.Object3D {
   const { anchor, chain } = boat.deckFittings;
   const shackle = vec3(anchor.shackle);
   const crown = vec3(anchor.crown);
