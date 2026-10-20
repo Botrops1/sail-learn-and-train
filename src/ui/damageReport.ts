@@ -56,6 +56,30 @@ export function createDamageAlert(alerts: HTMLElement, store: Store): void {
   refresh(store.getState());
 }
 
+/**
+ * The anchor alarm in the same stack (M46, PHASE7_SPEC 12.6): red while the anchor drags, until
+ * the learner silences it in the Anchor section or presses a windlass button.
+ */
+export function createAnchorAlarmAlert(alerts: HTMLElement, store: Store): void {
+  const note = el(
+    'div',
+    {
+      class: 'rig-alert rig-alert-report is-hit',
+      'data-testid': 'anchor-alarm-alert',
+      role: 'alert',
+    },
+    [t('anchor.alarm')],
+  );
+  note.hidden = true;
+  alerts.prepend(note);
+  const refresh = (state: AppState) => {
+    const on = state.anchor.alarm;
+    if (note.hidden === on) note.hidden = !on;
+  };
+  store.subscribe(refresh);
+  refresh(store.getState());
+}
+
 /** The Place section's damage report: the newest few contacts, and a Clear button. */
 export function createDamageList(store: Store): HTMLElement {
   const title = el('h3', { class: 'damage-title' });

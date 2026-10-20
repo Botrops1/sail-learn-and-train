@@ -168,11 +168,11 @@
     {"id": "fit_mast_base_turning_blocks", "kind": "fitting", "phase": 1, "group": "rig", "status": "photo-confirmed", "sources": ["photo:mast-base"], "related": ["part_mast", "fit_line_channels"]},
     {"id": "fit_line_channels", "kind": "fitting", "phase": 1, "group": "deck", "status": "draft", "sources": ["photo:mast-base", "photo:cockpit"], "related": ["fit_mast_base_turning_blocks", "clutch_bank_a", "clutch_bank_b", "part_coachroof"]},
     {"id": "fit_sprayhood", "kind": "part", "phase": 1, "group": "deck", "status": "photo-confirmed", "sources": ["photo:mainsheet"], "related": ["part_cockpit", "part_companionway", "part_coachroof"]},
-    {"id": "fit_anchor_windlass", "kind": "fitting", "phase": 6, "group": "deck", "status": "photo-confirmed", "sources": ["photo:bow"], "related": ["fit_bow_roller", "part_bow"]},
-    {"id": "fit_bow_roller", "kind": "fitting", "phase": 6, "group": "deck", "status": "photo-confirmed", "sources": ["photo:bow"], "related": ["fit_anchor_windlass", "part_bow"]},
+    {"id": "fit_anchor_windlass", "kind": "fitting", "phase": 6, "group": "deck", "status": "photo-confirmed", "sources": ["photo:bow"], "related": ["fit_bow_roller", "part_bow", "term_scope"]},
+    {"id": "fit_bow_roller", "kind": "fitting", "phase": 6, "group": "deck", "status": "photo-confirmed", "sources": ["photo:bow"], "related": ["fit_anchor_windlass", "part_bow", "term_scope"]},
     {"id": "fit_mooring_cleat", "kind": "fitting", "phase": 6, "group": "deck", "status": "photo-confirmed", "sources": ["photo:bow"], "related": ["part_bow", "part_stern", "fit_fairlead"]},
-    {"id": "fit_anchor", "kind": "fitting", "phase": 6, "group": "deck", "status": "draft", "sources": ["owner"], "related": ["fit_bow_roller", "fit_anchor_chain", "fit_anchor_windlass"], "showMe": "?wd=0&ws=0&cam=bow&sel=fit_anchor&held=1&sea=flat"},
-    {"id": "fit_anchor_chain", "kind": "fitting", "phase": 6, "group": "deck", "status": "photo-confirmed", "sources": ["photo:bow"], "related": ["fit_anchor", "fit_anchor_windlass", "fit_bow_roller"]},
+    {"id": "fit_anchor", "kind": "fitting", "phase": 6, "group": "deck", "status": "draft", "sources": ["owner"], "related": ["fit_bow_roller", "fit_anchor_chain", "fit_anchor_windlass", "term_scope"], "showMe": "?wd=0&ws=0&cam=bow&sel=fit_anchor&held=1&sea=flat"},
+    {"id": "fit_anchor_chain", "kind": "fitting", "phase": 6, "group": "deck", "status": "photo-confirmed", "sources": ["photo:bow"], "related": ["fit_anchor", "fit_anchor_windlass", "fit_bow_roller", "term_scope"]},
     {"id": "fit_fairlead", "kind": "fitting", "phase": 6, "group": "deck", "status": "draft", "sources": [], "related": ["fit_mooring_cleat", "part_deck"]},
     {"id": "fit_fender", "kind": "fitting", "phase": 6, "group": "deck", "status": "draft", "sources": ["owner"], "related": ["fit_fender_ball", "fit_mooring_cleat", "part_lifelines"], "showMe": "?wd=0&ws=0&cam=side-port&sel=fit_fender&held=1&sea=flat&fd=1"},
     {"id": "fit_fender_ball", "kind": "fitting", "phase": 6, "group": "deck", "status": "draft", "sources": ["owner"], "related": ["fit_fender", "part_stern"], "showMe": "?wd=0&ws=0&cam=side-port&sel=fit_fender_ball&held=1&sea=flat&fd=1"},
@@ -199,6 +199,8 @@
     {"id": "env_mooring_buoy", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
     {"id": "rope_bow_line", "kind": "rope", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_mooring_buoy"]},
     {"id": "rope_shore_line", "kind": "rope", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_shore_ring"]},
-    {"id": "term_grounding", "kind": "term", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_seabed", "fit_instrument_display"], "showMe": "?cam=side-port&pl=bay&pe=-1676.4&pn=0.0&hdg=270&bs=1.0"}
+    {"id": "term_grounding", "kind": "term", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_seabed", "fit_instrument_display"], "showMe": "?cam=side-port&pl=bay&pe=-1676.4&pn=0.0&hdg=270&bs=1.0"},
+    {"id": "fit_windlass_remote", "kind": "fitting", "phase": 7, "group": "cockpit", "status": "draft", "sources": [], "related": ["fit_anchor_windlass"]},
+    {"id": "term_scope", "kind": "term", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["fit_anchor_chain", "fit_anchor", "env_seabed"], "showMe": "?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1606.0,0.0&as=1"}
   ]
 }

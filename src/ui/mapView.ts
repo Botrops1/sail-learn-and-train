@@ -1,8 +1,10 @@
 import type { AppState, Store } from '../app/store';
 import { DEG, compassDeg, wrap180 } from '../model/angles';
+import { rollerPoint } from '../model/anchor';
 import { boat } from '../model/boat';
 import { area } from '../model/area';
 import { jibClew } from '../model/jib';
+import { pointToMap } from '../model/lowSpeed';
 import { mapToBoat } from '../model/mapFrame';
 import {
   distanceToRect,
@@ -128,6 +130,8 @@ const COLOURS = {
   land: '#d8cfa6',
   chartSymbol: '#000000',
   mooringBuoy: '#f28c28',
+  anchor: '#1d2a36',
+  anchorCircle: 'rgb(29 42 54 / 0.55)',
   berthLine: '#d0d4d8',
   yacht: '#ffffff',
   yachtEdge: '#8a8f94',
@@ -469,6 +473,11 @@ export function pickMap(
   // A practice buoy (M16): a tap within a fingertip of its centre.
   for (const buoy of buoyPoints(state, view)) {
     if (Math.hypot(x - buoy.x, y - buoy.y) <= MAP.hitPx) return requirePartId('env_buoy');
+  }
+  // The anchor (M46): its sign on the chart.
+  const anchored = anchorPoint(state, view);
+  if (anchored && Math.hypot(x - anchored.x, y - anchored.y) <= MAP.hitPx) {
+    return requirePartId('fit_anchor');
   }
   // The bay (M45): a rock's chart symbol, a ring on the shore, a mooring buoy.
   for (const { x: px, y: py, id } of bayPoints(view)) {
@@ -817,6 +826,7 @@ function drawMap(
   drawSeabed(ctx, state, view);
   drawHarbour(ctx, state, view);
   drawTrack(ctx, state.track, state, view);
+  drawAnchor(ctx, state, view);
   const layout = mapLayout(state, view, width);
   drawNoGo(ctx, state, layout);
   drawLabels(ctx, layout, state.selection);
@@ -1201,6 +1211,77 @@ function drawBaySymbols(ctx: CanvasRenderingContext2D, view: MapViewport, mini: 
 }
 
 /** Where each practice buoy is on the canvas (CSS px), with its letter. */
+/** Where the anchor lies on the canvas while it is on the bottom (M46), else null. */
+function anchorPoint(state: AppState, view: MapViewport): ScreenPoint | null {
+  const { anchor } = state;
+  if (anchor.phase !== 'bottom' && anchor.phase !== 'set') return null;
+  return mapToScreen(anchor.eastM, anchor.northM, view);
+}
+
+/**
+ * The anchor on the chart (M46, PHASE7_SPEC 12.6): a line from the bow to the anchor, a dashed
+ * circle round it where the boat can swing (the chain's reach along the bottom plus a boat
+ * length), and an anchor sign on top.
+ */
+function drawAnchor(
+  ctx: CanvasRenderingContext2D,
+  state: AppState,
+  view: MapViewport,
+  mini = false,
+): void {
+  const point = anchorPoint(state, view);
+  if (point === null) return;
+  const { anchor } = state;
+  const roller = rollerPoint();
+  const [rollerEast, rollerNorth] = pointToMap(state.boat, roller.x, roller.z);
+  const bow = mapToScreen(rollerEast, rollerNorth, view);
+  const effective = depthAt(anchor.eastM, anchor.northM) + roller.y;
+  const swingM =
+    Math.sqrt(Math.max(0, anchor.chainOutM ** 2 - effective ** 2)) + boat.dimensions.loa;
+  ctx.save();
+  ctx.strokeStyle = COLOURS.anchorCircle;
+  ctx.lineWidth = mini ? 1 : 1.5;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(bow.x, bow.y);
+  ctx.lineTo(point.x, point.y);
+  ctx.stroke();
+  ctx.setLineDash([6, 5]);
+  ctx.beginPath();
+  ctx.arc(point.x, point.y, swingM / view.metresPerPx, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+  drawAnchorSign(ctx, point.x, point.y, mini ? 6 : 10);
+}
+
+/**
+ * An anchor sign drawn as lines (a font may not have the anchor character): a ring on top, the
+ * shank, the stock across it and the two arms curving up at the bottom. `r` is half its height.
+ */
+function drawAnchorSign(ctx: CanvasRenderingContext2D, x: number, y: number, r: number): void {
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.setLineDash([]);
+  const draw = (width: number, colour: string) => {
+    ctx.strokeStyle = colour;
+    ctx.lineWidth = width;
+    ctx.beginPath();
+    ctx.arc(x, y - r * 0.8, r * 0.22, 0, Math.PI * 2);
+    ctx.moveTo(x, y - r * 0.58);
+    ctx.lineTo(x, y + r * 0.9);
+    ctx.moveTo(x - r * 0.45, y - r * 0.3);
+    ctx.lineTo(x + r * 0.45, y - r * 0.3);
+    ctx.moveTo(x - r * 0.85, y + r * 0.2);
+    ctx.quadraticCurveTo(x - r * 0.7, y + r * 0.95, x, y + r * 0.9);
+    ctx.quadraticCurveTo(x + r * 0.7, y + r * 0.95, x + r * 0.85, y + r * 0.2);
+    ctx.stroke();
+  };
+  draw(4.5, COLOURS.halo);
+  draw(2, COLOURS.anchor);
+  ctx.restore();
+}
+
 function buoyPoints(state: AppState, view: MapViewport): { id: string; x: number; y: number }[] {
   return buoyOffsets(state.boat).map((offset) => ({
     id: offset.id,
@@ -1562,6 +1643,7 @@ export function drawMiniMap(
   drawSeabed(ctx, state, view, true);
   drawHarbour(ctx, state, view, true);
   drawTrack(ctx, state.track, state, view);
+  drawAnchor(ctx, state, view, true);
   drawBuoys(ctx, state, view, { letters: false });
   drawBoat(ctx, state, view, mapLayout(state, view, width), {
     headingLine: false,

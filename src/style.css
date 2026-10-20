@@ -4327,3 +4327,68 @@ html[data-wide='true'] .mini-map {
   text-align: center;
   font-size: var(--font-small);
 }
+
+/* The Anchor section and the Bow station (M46, PHASE7_SPEC 12.6). */
+.windlass-buttons {
+  margin: 4px 0;
+}
+
+.windlass-button {
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+.chain-counter {
+  margin: 4px 0 8px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.anchor-check {
+  margin: 0 0 8px;
+  font-size: var(--font-small);
+  font-weight: 700;
+  color: #1b6b36;
+}
+
+.anchor-check.is-short {
+  color: #8a4b00;
+}
+
+.anchor-alarm-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+
+.anchor-alarm-row[hidden],
+.anchor-check[hidden] {
+  display: none;
+}
+
+.anchor-alarm {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #c8102e;
+  color: #ffffff;
+  font-size: var(--font-small);
+  font-weight: 700;
+}
+
+.bow-station,
+.helm-windlass {
+  margin: 4px 0 6px;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.bow-station[hidden],
+.helm-windlass[hidden] {
+  display: none;
+}

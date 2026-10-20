@@ -1540,7 +1540,7 @@
       "alternatives": [],
       "short": "The electric winch on the bow that lets the anchor chain out and pulls it in.",
       "what": "The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm.",
-      "onThisBoat": "On the foredeck behind the anchor roller, in a round recess. It is drawn but does not work yet; anchoring comes later.",
+      "onThisBoat": "On the foredeck behind the anchor roller, in a round recess. Hold \"Chain out\" or \"Chain in\" in the Anchor block (at the Bow station or the helm in Realistic mode).",
       "mistakes": [
         {
           "mistake": "Putting fingers or feet near the chain while the windlass runs.",
@@ -1569,7 +1569,7 @@
       "alternatives": [],
       "short": "The heavy hook that holds the boat to the seabed.",
       "what": "The anchor is let down on its chain until it lies on the seabed, where it digs in and holds the boat in one place.",
-      "onThisBoat": "It sits in the bow roller, to starboard of the jib furler, ready to let go. It is drawn but does not work yet; anchoring comes later.",
+      "onThisBoat": "It sits in the bow roller, to starboard of the jib furler, ready to let go. Let the chain out in the Anchor block and it goes down to the bottom.",
       "showMe": "The bow from the front: the anchor hangs in its roller, with the chain running back to the windlass.",
       "textStatus": "draft"
     },
@@ -1944,6 +1944,29 @@
         }
       ],
       "showMe": "Coming in slowly towards the shallow end of the bay.",
+      "textStatus": "draft"
+    },
+    "fit_windlass_remote": {
+      "name": "Windlass remote",
+      "alternatives": [],
+      "short": "Buttons at the helm that run the windlass.",
+      "what": "Lets the helmsman let the chain out or bring it in without going forward.",
+      "onThisBoat": "At the helm (EXERCISES.md 5, owner).",
+      "textStatus": "draft"
+    },
+    "term_scope": {
+      "name": "Scope",
+      "alternatives": [],
+      "short": "How much chain is out compared with the depth.",
+      "what": "The more chain, the flatter it pulls on the anchor, and the better the anchor holds; the chain's weight also softens the jerks. With too little chain the pull lifts the anchor's shank and it drags.",
+      "onThisBoat": "70 m of chain (an assumption). In 5 m of water the instructor's rule (3 boat lengths, 47 m) is more than 4 × the effective depth (27 m).",
+      "mistakes": [
+        {
+          "mistake": "Letting out just the depth and switching off.",
+          "fix": "Let out what the check asks for, then set the anchor by going gently astern."
+        }
+      ],
+      "showMe": "Anchored in the bay with 34 m of chain, wind 15 kn.",
       "textStatus": "draft"
     }
   }

@@ -1,5 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { entryFor } from '../model/panelEntries';
+import { createAnchorPanel } from './anchorPanel';
 import { createAutopilotPanel } from './autopilotPanel';
 import { createColumnHandles } from './columnHandles';
 import { el } from './dom';
@@ -30,6 +31,7 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
   conditions: 'section.conditions',
   learn: 'tab.learn',
   place: 'place.label',
+  anchor: 'anchor.label',
   harbour: 'harbour.title',
   settings: 'settings.title',
 };
@@ -37,7 +39,7 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): no tabs since M27, but a list of
  * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn,
- * (M42) Place, (M33) Harbour gear and, on the wide layout only (M38), Mode (first) and Settings (last). The
+ * (M42) Place, (M46) Anchor, (M33) Harbour gear and, on the wide layout only (M38), Mode (first) and Settings (last). The
  * mode (modes.ts) decides their order. Since M35 all
  * start folded (so every title is on screen) and one opens at a time per column: the headers
  * stay above and below the open section, whose body scrolls on its own. Each section is built
@@ -106,6 +108,7 @@ export function createPanel(
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
     place: { content: createPlacePanel(store), explain: true },
+    anchor: { content: createAnchorPanel(store), explain: true },
     harbour: { content: createHarbourPanel(store), explain: true },
     settings: { content: [settingsContent], explain: false },
   };
