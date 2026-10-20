@@ -317,6 +317,38 @@ describe('the anchor in the store', () => {
     expect(reduce(silenced, { type: 'silenceAnchorAlarm' })).toBe(silenced);
   });
 
+  it('OK silences the alarm of an anchor that keeps dragging until it has dragged another 5 s', () => {
+    const [east, north] = [0.2, 6.92];
+    const dragging: AppState = {
+      ...bay(),
+      boat: { ...bay().boat, eastM: 0, northM: 0, headingDeg: 0, speedMps: 0, swayMps: 0 },
+      anchor: {
+        ...ANCHOR_STOWED,
+        phase: 'set',
+        chainOutM: 30,
+        eastM: east,
+        northM: north + 29.2,
+        alarm: true,
+        dragging: true,
+        dragS: 6,
+      },
+    };
+    const silenced = reduce(dragging, { type: 'silenceAnchorAlarm' });
+    expect(silenced.anchor).toMatchObject({ alarm: false, dragS: 0 });
+    // One more frame of dragging does not bring it back at once …
+    const next = stepAnchor(silenced.anchor, dragging.boat, flat(), 1 / 60);
+    expect(next.alarm).toBe(false);
+    // … only after the alarm time has run again.
+    let state = silenced.anchor;
+    let seconds = 0;
+    while (!state.alarm && seconds < 30) {
+      state = stepAnchor({ ...state, northM: north + 29.2 }, dragging.boat, flat(), 0.1);
+      seconds += 0.1;
+    }
+    expect(state.alarm).toBe(true);
+    expect(seconds).toBeGreaterThanOrEqual(5 - 1e-9);
+  });
+
   it('the alarm is written to the alert history once, when it starts', () => {
     const quiet = bay();
     const loud: AppState = { ...quiet, anchor: { ...quiet.anchor, alarm: true } };

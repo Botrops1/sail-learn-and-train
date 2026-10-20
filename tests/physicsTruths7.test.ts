@@ -454,7 +454,6 @@ describe('the anchor (PT-31, PT-54 … PT-57)', () => {
     twsKn: number;
     gusty?: boolean;
     lever?: number;
-    set?: boolean;
   }) {
     const state = harbourStart({ headingDeg: 10, engine: { running: true, leverPct: 0 } });
     const env = flat(o.seabed);
@@ -462,7 +461,7 @@ describe('the anchor (PT-31, PT-54 … PT-57)', () => {
     let boat: BoatState = { ...state.boat, eastM: 0, northM: 0, headingDeg: 10 };
     let anchor: AnchorState = {
       ...ANCHOR_STOWED,
-      phase: o.set ? 'set' : 'bottom',
+      phase: 'bottom',
       chainOutM: o.chainM,
       eastM: 0,
       northM: 0.8 * o.chainM,
@@ -527,7 +526,7 @@ describe('the anchor (PT-31, PT-54 … PT-57)', () => {
   });
 
   it('PT-56 an anchored boat swings to the wind: after 300 s her bow is within 35° of it', () => {
-    const swung = lie({ seabed: 'sand', chainM: 34, twsKn: 15, set: true });
+    const swung = lie({ seabed: 'sand', chainM: 34, twsKn: 15 });
     expect(swung.headingErrDeg).toBeLessThanOrEqual(35);
   });
 

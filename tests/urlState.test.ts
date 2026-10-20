@@ -602,6 +602,13 @@ describe('M46: the anchor (an, ax, as)', () => {
     expect(parseUrlState('?pl=bay&an=abc').anchor.phase).toBe('stowed');
   });
 
+  it('the Swinging link of the checklist (across the wind, 30 m from the bow) opens set', () => {
+    const state = parseUrlState(
+      '?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=180&an=34.0&ax=-1610.0,-6.9&as=1&m=harbour',
+    );
+    expect(state.anchor).toMatchObject({ phase: 'set', eastM: -1610, northM: -6.9 });
+  });
+
   it('ap=off next to them is still the autopilot', () => {
     const state = parseUrlState(`?${SET}&ap=off`);
     expect(state.autopilot.mode).toBe('off');

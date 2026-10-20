@@ -721,12 +721,15 @@ function reduceAction(state: AppState, action: Action): AppState {
         anchor: {
           ...anchor,
           windlass: action.motion,
-          ...(pressed ? { cutOut: false, alarm: false } : {}),
+          ...(pressed ? { cutOut: false, alarm: false, dragS: 0 } : {}),
         },
       };
     }
     case 'silenceAnchorAlarm':
-      return state.anchor.alarm ? { ...state, anchor: { ...state.anchor, alarm: false } } : state;
+      // The drag timer starts again, so the alarm comes back only after another stretch of dragging.
+      return state.anchor.alarm
+        ? { ...state, anchor: { ...state.anchor, alarm: false, dragS: 0 } }
+        : state;
     case 'thruster': {
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };
