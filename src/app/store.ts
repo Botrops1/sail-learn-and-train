@@ -32,7 +32,14 @@ import { defaultClockUtcMs, isClockTime, type ClockState } from '../model/clock'
 import { EMPTY_ALERTS, recordAlerts, type AlertLog } from '../model/alerts';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { area } from '../model/area';
-import { harbourForces } from '../model/harbourForces';
+import {
+  ANCHOR_STOWED,
+  stepAnchor,
+  stepWindlass,
+  type AnchorState,
+  type WindlassMotion,
+} from '../model/anchor';
+import { harbourForces, SEABED_ENV } from '../model/harbourForces';
 import {
   NO_CONTACT,
   stepContact,
@@ -144,6 +151,8 @@ export interface AppState {
   contact: ContactState;
   /** The mooring lines, the crew task and a line round the propeller (M44). In the link as `ln` (the lines only). */
   lines: LinesState;
+  /** The anchor, its chain and the windlass (M46). In the link as `an`, `ax`, `as` (the chain out, where it lies, set). */
+  anchor: AnchorState;
   /** The alert history (M36, issue #80): what the short messages said, kept for the notification centre. Not in the link. */
   alerts: AlertLog;
 }
@@ -210,6 +219,10 @@ export type Action =
   | { type: 'line'; code: LineCode; command: 'take' | 'tighten' | 'ease' | 'letGo' }
   /** M44: a diver cuts the propeller free; the lines stay as they were. */
   | { type: 'clearPropeller' }
+  /** M46: the windlass button held down or up (hold-to-act: `off` on release). */
+  | { type: 'windlass'; motion: WindlassMotion }
+  /** M46: the anchor alarm is silenced (it comes back if the anchor starts dragging again). */
+  | { type: 'silenceAnchorAlarm' }
   /** M41: a thruster joystick held to a side (-1 port, +1 starboard) or let go (0). */
   | { type: 'thruster'; which: 'bow' | 'stern'; dir: ThrustDir }
   /** Set the time on board (M17); "Now" is read from the device by the UI. */
@@ -381,6 +394,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     thrusters: THRUSTERS_OFF,
     contact: NO_CONTACT,
     lines: NO_LINES,
+    anchor: ANCHOR_STOWED,
     alerts: EMPTY_ALERTS,
   });
 }
@@ -692,6 +706,27 @@ function reduceAction(state: AppState, action: Action): AppState {
       const lines = clearPropeller(state.lines);
       return lines === state.lines ? state : { ...state, lines };
     }
+    case 'windlass': {
+      if (action.motion !== 'off' && action.motion !== 'down' && action.motion !== 'up') {
+        return state;
+      }
+      const anchor = state.anchor;
+      // A press clears the "stopped under load" notice and the alarm; a release changes neither.
+      const pressed = action.motion !== 'off';
+      if (anchor.windlass === action.motion && (!pressed || (!anchor.cutOut && !anchor.alarm))) {
+        return state;
+      }
+      return {
+        ...state,
+        anchor: {
+          ...anchor,
+          windlass: action.motion,
+          ...(pressed ? { cutOut: false, alarm: false } : {}),
+        },
+      };
+    }
+    case 'silenceAnchorAlarm':
+      return state.anchor.alarm ? { ...state, anchor: { ...state.anchor, alarm: false } } : state;
     case 'thruster': {
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };
@@ -746,6 +781,11 @@ function reduceAction(state: AppState, action: Action): AppState {
       }
       const justFouled = lines.fouled && !state.lines.fouled;
       if (justFouled) engine = { ...engine, running: false };
+      // The windlass lets the chain out or brings it in (Held still too); a hanging anchor lands (M46).
+      const anchored = state.anchor.phase !== 'stowed' || state.anchor.windlass !== 'off';
+      const windlassed = anchored
+        ? stepWindlass(state.anchor, state.boat, SEABED_ENV, dt)
+        : state.anchor;
       const rig = step({ controls, rig: state.rig }, dt, motionOf(state.boat), undefined, {
         instantRopes: realistic,
         wind: patterned ? wind : undefined,
@@ -769,9 +809,12 @@ function reduceAction(state: AppState, action: Action): AppState {
           external:
             state.thrusters.bow !== 0 ||
             state.thrusters.stern !== 0 ||
-            state.harbour.place !== 'open'
+            state.harbour.place !== 'open' ||
+            windlassed.phase === 'bottom' ||
+            windlassed.phase === 'set'
               ? harbourForces({
                   thrusters: state.thrusters,
+                  anchor: windlassed,
                   place: state.harbour.place,
                   obstacles:
                     state.harbour.place === 'marina'
@@ -795,6 +838,8 @@ function reduceAction(state: AppState, action: Action): AppState {
         contact = fenders.contact;
       }
       if (justFouled) contact = withPropellerReport(contact, rig.timeS);
+      // The anchor drags, sets or sounds the alarm from the pull at the end of the frame (not in Held still).
+      const anchor = sailing ? stepAnchor(windlassed, moving.boat, SEABED_ENV, dt) : windlassed;
       return {
         ...state,
         controls,
@@ -813,6 +858,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         contact,
         harbour,
         lines,
+        anchor,
       };
     }
   }

@@ -50,7 +50,7 @@ import {
  * can push).
  */
 
-export const STATION_IDS = ['port', 'starboard', 'helm', 'mast'] as const;
+export const STATION_IDS = ['port', 'starboard', 'helm', 'mast', 'bow'] as const;
 export type StationId = (typeof STATION_IDS)[number];
 
 export function isStationId(value: string): value is StationId {
@@ -118,6 +118,8 @@ interface RopeEntry {
 
 interface StationEntry {
   id: string;
+  /** The Bow station's windlass (M46): the anchor's, not one of the winches that take a rope. */
+  windlass?: string;
   winch?: string;
   gearbox?: string;
   clutches?: string[];

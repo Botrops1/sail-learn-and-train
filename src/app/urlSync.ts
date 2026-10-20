@@ -2,6 +2,7 @@ import type { Settings } from '../model/settings';
 import type { AppState, Store } from './store';
 import { clockParam } from '../model/clock';
 import {
+  anchorParams,
   boatParams,
   parseUrlState,
   placeParams,
@@ -69,6 +70,7 @@ export function startUrlSync(store: Store): void {
       state.harbour.traffic === previous.harbour.traffic &&
       state.harbour.berthArrow === previous.harbour.berthArrow &&
       state.lines.lines === previous.lines.lines &&
+      sameAnchorLink(state, previous) &&
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
@@ -88,6 +90,13 @@ export function startUrlSync(store: Store): void {
 function sameBoatLink(state: AppState, previous: AppState): boolean {
   if (state.boat === previous.boat && state.autopilot === previous.autopilot) return true;
   const link = (s: AppState) => [...boatParams(s), ...placeParams(s)].join('&');
+  return link(state) === link(previous);
+}
+
+/** The chain counter changes every frame it runs: compare what the link stores (to 0.1 m, the anchor's position, set). */
+function sameAnchorLink(state: AppState, previous: AppState): boolean {
+  if (state.anchor === previous.anchor) return true;
+  const link = (s: AppState) => anchorParams(s).join('&');
   return link(state) === link(previous);
 }
 

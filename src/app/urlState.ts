@@ -30,6 +30,7 @@ import {
   type StationId,
 } from '../model/realistic';
 import type { RigHistory } from '../model/sim';
+import { ANCHOR_STOWED, rollerPoint, type AnchorState } from '../model/anchor';
 import { boat } from '../model/boat';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { isMarinaLayout, isTraffic } from '../model/marina';
@@ -40,8 +41,10 @@ import {
   type LineCode,
   type MooringLine,
 } from '../model/mooringLines';
+import { pointToMap } from '../model/lowSpeed';
 import type { BoatState } from '../model/motion';
 import { isPlace, placeStart, type PlaceStart } from '../model/places';
+import { depthAt } from '../model/seabed';
 import { isTimeScale } from '../model/timeScale';
 import { defaultSeaSetting, isSeaSetting } from '../model/waves';
 import {
@@ -212,9 +215,13 @@ export function parseUrlState(
     ...parseClock(params),
     harbour,
   });
-  // The lines need the boat as she lies (the far ends are our berth's), so they come last (M44).
+  // The lines need the boat as she lies (the far ends are our berth's), so they come last (M44),
+  // and so does the anchor, whose chain must reach from her bow (M46).
   const lines = linesFromLink(parseLines(params), state.boat, state.harbour);
-  return lines.length === 0 ? state : { ...state, lines: { ...NO_LINES, lines } };
+  const anchor = start ? parseAnchor(params, state.boat) : ANCHOR_STOWED;
+  return lines.length === 0 && anchor === ANCHOR_STOWED
+    ? state
+    : { ...state, anchor, lines: lines.length === 0 ? state.lines : { ...NO_LINES, lines } };
 }
 
 /**
@@ -285,6 +292,63 @@ function parseLines(
   return found;
 }
 
+/**
+ * `an` (chain out, metres), `ax` (where the anchor lies, `east,north`) and `as=1` (set), M46. An
+ * `an` alone is an anchor hanging under the bow; the anchor lies on the bottom only where the
+ * water is deep enough for the chain and the chain can reach it from her bow, otherwise it
+ * hangs. Wrong values leave the anchor stowed.
+ */
+function parseAnchor(params: URLSearchParams, boatState: BoatState): AnchorState {
+  const an = params.get('an');
+  if (an === null || !DECIMAL.test(an)) return ANCHOR_STOWED;
+  const chainOutM = Number(an);
+  if (!(chainOutM > 0) || chainOutM > boat.physics.anchor.chainLengthM) return ANCHOR_STOWED;
+  const hanging: AnchorState = { ...ANCHOR_STOWED, phase: 'hanging', chainOutM };
+  const ax = params.get('ax');
+  const [east, north, ...rest] = ax === null ? [] : ax.split(',');
+  if (
+    east === undefined ||
+    north === undefined ||
+    rest.length > 0 ||
+    !POSITION_M.test(east) ||
+    !POSITION_M.test(north)
+  ) {
+    return hanging;
+  }
+  const eastM = Number(east);
+  const northM = Number(north);
+  const r = rollerPoint();
+  const [re, rn] = pointToMap(boatState, r.x, r.z);
+  const depthM = depthAt(eastM, northM);
+  const effectiveM = depthM + r.y;
+  if (
+    depthM <= 0 ||
+    chainOutM < effectiveM ||
+    Math.hypot(eastM - re, northM - rn) > Math.sqrt(chainOutM ** 2 - effectiveM ** 2) + 1
+  ) {
+    return hanging;
+  }
+  return { ...hanging, phase: params.get('as') === '1' ? 'set' : 'bottom', eastM, northM };
+}
+
+/** `an`, `ax` and `as` while the anchor is down (M46); nothing when it is stowed or in open water. */
+export function anchorParams(state: AppState): [string, string][] {
+  const { anchor } = state;
+  if (state.harbour.place === 'open' || anchor.phase === 'stowed') return [];
+  const result: [string, string][] = [['an', anchor.chainOutM.toFixed(1)]];
+  if (anchor.phase === 'bottom' || anchor.phase === 'set') {
+    result.push(['ax', `${metresWritten(anchor.eastM)},${metresWritten(anchor.northM)}`]);
+    if (anchor.phase === 'set') result.push(['as', '1']);
+  }
+  return result;
+}
+
+/** A position written to one decimal, within the four digits a link can read. */
+function metresWritten(metres: number): string {
+  const clamped = Math.max(-9999.9, Math.min(9999.9, metres)).toFixed(1);
+  return clamped === '-0.0' ? '0.0' : clamped;
+}
+
 /** The lines that are on, in the order sp, ss, ll, bl, sl, as `ln` (M44, M45); nothing when none is on. */
 export function linesParams(state: AppState): [string, string][] {
   if (state.harbour.place === 'open' || state.lines.lines.length === 0) return [];
@@ -306,12 +370,8 @@ export function placeParams(state: AppState): [string, string][] {
     if (traffic !== DEFAULT_HARBOUR.traffic) result.push(['tr', traffic]);
   }
   if (!berthArrow) result.push(['ba', '0']);
-  const written = (metres: number) => {
-    const clamped = Math.max(-9999.9, Math.min(9999.9, metres)).toFixed(1);
-    return clamped === '-0.0' ? '0.0' : clamped;
-  };
-  result.push(['pe', written(state.boat.eastM)], ['pn', written(state.boat.northM)]);
-  result.push(...linesParams(state));
+  result.push(['pe', metresWritten(state.boat.eastM)], ['pn', metresWritten(state.boat.northM)]);
+  result.push(...linesParams(state), ...anchorParams(state));
   return result;
 }
 
@@ -564,7 +624,8 @@ function parseHandle(value: string | null, station: StationId): HandleState | nu
   if (value === 'c') return { ...start, station, place: 'carried' };
   const match = /^([a-z]+)\.([sw])$/.exec(value);
   const at = match?.[1] ?? '';
-  if (!match || !isStationId(at)) return null;
+  // The Bow station has no slot for the handle (M46): a link that puts it there is ignored.
+  if (!match || !isStationId(at) || at === 'bow') return null;
   if (match[2] === 'w' && !socketAt(at)) return null;
   return { ...start, station: at, place: match[2] === 'w' ? 'socket' : 'stowed' };
 }

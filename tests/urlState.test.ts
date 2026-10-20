@@ -562,3 +562,54 @@ describe('M45: the bay place (pl=bay)', () => {
     expect(state.sea.setting).toBe('sheltered');
   });
 });
+
+describe('M46: the anchor (an, ax, as)', () => {
+  const SET = 'pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1606.0,0.0&as=1';
+
+  it('a set anchor round-trips: chain, place and set', () => {
+    const state = parseUrlState(`?${SET}`);
+    expect(state.anchor).toMatchObject({
+      phase: 'set',
+      chainOutM: 34,
+      eastM: -1606,
+      northM: 0,
+    });
+    const written = serializeUrlState(state);
+    expect(written).toContain('an=34.0&ax=-1606.0,0.0&as=1');
+    expect(serializeUrlState(parseUrlState(written))).toBe(written);
+  });
+
+  it('without as=1 the anchor lies on the bottom, not set', () => {
+    const state = parseUrlState('?pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1606.0,0.0');
+    expect(state.anchor.phase).toBe('bottom');
+    expect(serializeUrlState(state)).not.toContain('as=');
+  });
+
+  it('an alone is an anchor hanging under the bow', () => {
+    const state = parseUrlState('?pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=5.0');
+    expect(state.anchor).toMatchObject({ phase: 'hanging', chainOutM: 5 });
+    expect(serializeUrlState(state)).toContain('an=5.0');
+    expect(serializeUrlState(state)).not.toContain('ax=');
+  });
+
+  it('an anchor the chain cannot reach, on land, or with a wrong value is ignored or hangs', () => {
+    const far = parseUrlState('?pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1500.0,0.0&as=1');
+    expect(far.anchor.phase).toBe('hanging');
+    const land = parseUrlState('?pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1900.0,0.0&as=1');
+    expect(land.anchor.phase).toBe('hanging');
+    expect(parseUrlState('?pl=bay&an=0.0').anchor.phase).toBe('stowed');
+    expect(parseUrlState('?pl=bay&an=99.0').anchor.phase).toBe('stowed');
+    expect(parseUrlState('?pl=bay&an=abc').anchor.phase).toBe('stowed');
+  });
+
+  it('ap=off next to them is still the autopilot', () => {
+    const state = parseUrlState(`?${SET}&ap=off`);
+    expect(state.autopilot.mode).toBe('off');
+    expect(state.anchor.phase).toBe('set');
+  });
+
+  it('no anchor is written for a stowed anchor, and none in open water', () => {
+    expect(serializeUrlState(parseUrlState('?pl=bay'))).not.toContain('an=');
+    expect(serializeUrlState(parseUrlState('?an=34.0&ax=-1606.0,0.0&as=1'))).not.toContain('an=');
+  });
+});
