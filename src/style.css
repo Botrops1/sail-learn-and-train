@@ -793,9 +793,9 @@ html[data-layout='stacked'] {
     --section-head: 34px;
   }
 
-  /* A phone held sideways has room for ten headers only if the open body may be shorter (M42 added the Place section). */
+  /* A phone held sideways has room for eleven headers only if the open body may be shorter (M42 added the Place section, M46 the Anchor section). */
   html[data-layout='side'] .panel-section[data-open='true'] {
-    min-height: calc(var(--section-head) + 91px);
+    min-height: calc(var(--section-head) + 70px);
   }
 }
 
