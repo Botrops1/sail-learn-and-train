@@ -529,3 +529,36 @@ describe('M17: the clock (clk, clock)', () => {
     expect(query.indexOf('&clk=')).toBeLessThan(query.indexOf('&st='));
   });
 });
+
+describe('M45: the bay place (pl=bay)', () => {
+  it('a bay link fills in the ready state: the bay start, sheltered water, sails away, engine in neutral', () => {
+    const state = parseUrlState('?pl=bay');
+    expect(state.harbour.place).toBe('bay');
+    expect(state.boat.eastM).toBe(-1250);
+    expect(state.boat.northM).toBe(0);
+    expect(state.boat.headingDeg).toBe(270);
+    expect(state.sea.setting).toBe('sheltered');
+    expect(state.engine).toMatchObject({ running: true, leverPct: 0 });
+    expect(state.controls.ctl_jib_sheet).toBe(100);
+    expect(state.autopilot.mode).toBe('off');
+  });
+
+  it('the place and the position are written and read back; the marina keys are ignored in the bay', () => {
+    const state = parseUrlState('?pl=bay&pe=-1640.0&pn=-40.0&hdg=90&ml=tight&tr=busy');
+    expect(state.harbour).toMatchObject({ place: 'bay', layout: 'medium', traffic: 'half' });
+    const written = serializeUrlState(state);
+    expect(written).toContain('pl=bay');
+    expect(written).toContain('pe=-1640.0');
+    expect(written).toContain('pn=-40.0');
+    expect(written).not.toContain('ml=');
+    expect(serializeUrlState(parseUrlState(written))).toBe(written);
+  });
+
+  it('goToPlace bay puts her at the bay start, sails away, engine in neutral', () => {
+    const state = reduce(initialState(), { type: 'goToPlace', place: 'bay' });
+    expect(state.harbour.place).toBe('bay');
+    expect(state.boat).toMatchObject({ mode: 'sailing', eastM: -1250, northM: 0, headingDeg: 270 });
+    expect(state.engine).toMatchObject({ running: true, leverPct: 0 });
+    expect(state.sea.setting).toBe('sheltered');
+  });
+});

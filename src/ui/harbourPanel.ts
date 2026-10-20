@@ -1,10 +1,12 @@
 import type { AppState, Store } from '../app/store';
+import { area } from '../model/area';
 import { fenderHintShown } from '../model/harbour';
 import { marinaGeometry } from '../model/marina';
 import {
+  BAY_LINE_CODES,
   canTake,
   canTighten,
-  LINE_CODES,
+  MARINA_LINE_CODES,
   lineTension,
   type LineCode,
   type LinesInputs,
@@ -83,6 +85,8 @@ const LINE_ROPE_IDS: Record<LineCode, string> = {
   sp: 'rope_stern_line_port',
   ss: 'rope_stern_line_starboard',
   ll: 'rope_lazy_line',
+  bl: 'rope_bow_line',
+  sl: 'rope_shore_line',
 };
 
 function linesInputs(state: AppState): LinesInputs {
@@ -92,6 +96,7 @@ function linesInputs(state: AppState): LinesInputs {
     harbour: state.harbour,
     geometry: marinaGeometry(state.harbour.layout, state.harbour.traffic),
     engine: state.engine,
+    area,
   };
 }
 
@@ -156,7 +161,12 @@ export function createLineRow(store: Store, code: LineCode, suffix = ''): HTMLEl
       );
       if (!canTighten(code, inputs)) reasonText = t('lines.tooTight');
     } else if (walking) {
-      setText(status, t('lines.walking', { seconds: Math.ceil(walking.remainingS - 1e-9) }));
+      setText(
+        status,
+        t(code === 'sl' ? 'lines.swimming' : 'lines.walking', {
+          seconds: Math.ceil(walking.remainingS - 1e-9),
+        }),
+      );
     } else {
       setText(status, t('lines.off'));
       const can = canTake(code, inputs);
@@ -176,11 +186,15 @@ export function createLineRow(store: Store, code: LineCode, suffix = ''): HTMLEl
   return row;
 }
 
-/** The Lines block of the Harbour gear section: a row per line in the marina, the fouled propeller (M44). */
+/** The Lines block of the Harbour gear section: a row per line of the place (the marina's three, the bay's two), the fouled propeller (M44, M45). */
 function createLinesBlock(store: Store): HTMLElement[] {
   const title = el('h3', { class: 'lines-title' }, [t('lines.title')]);
-  const rows = LINE_CODES.map((code) => createLineRow(store, code));
+  const marinaRows = MARINA_LINE_CODES.map((code) => createLineRow(store, code));
+  const bayRows = BAY_LINE_CODES.map((code) => createLineRow(store, code));
   const hint = el('p', { class: 'hint explain', 'data-testid': 'lines-hint' }, [t('lines.hint')]);
+  const bayHint = el('p', { class: 'hint explain', 'data-testid': 'lines-hint-bay' }, [
+    t('lines.hint.bay'),
+  ]);
   const notHere = el('p', { class: 'hint', 'data-testid': 'lines-place' }, [
     t('lines.reason.place'),
   ]);
@@ -200,13 +214,16 @@ function createLinesBlock(store: Store): HTMLElement[] {
       return;
     }
     const marina = state.harbour.place === 'marina';
-    for (const row of rows) row.hidden = !marina;
+    const bay = state.harbour.place === 'bay';
+    for (const row of marinaRows) row.hidden = !marina;
+    for (const row of bayRows) row.hidden = !bay;
     hint.hidden = !marina;
-    notHere.hidden = marina;
+    bayHint.hidden = !bay;
+    notHere.hidden = marina || bay;
     fouled.hidden = !state.lines.fouled;
     clear.hidden = !state.lines.fouled;
   };
   store.subscribe(sync);
   sync(store.getState());
-  return [title, notHere, ...rows, hint, fouled, clear];
+  return [title, notHere, ...marinaRows, ...bayRows, hint, bayHint, fouled, clear];
 }

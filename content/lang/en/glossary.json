@@ -1858,6 +1858,93 @@
       "what": "A ring on the quay that lines are tied to.",
       "onThisBoat": "One at each berth's edge in the app's marina.",
       "textStatus": "draft"
+    },
+    "env_seabed": {
+      "name": "Seabed",
+      "alternatives": [
+        {
+          "term": "bottom"
+        }
+      ],
+      "short": "What the bottom is made of: sand, mud, weed or rock.",
+      "what": "It decides how well an anchor holds: sand and mud hold well, weed and rock poorly.",
+      "onThisBoat": "The bay has sand, a patch of sea grass and rocky shores.",
+      "textStatus": "draft"
+    },
+    "env_shore": {
+      "name": "Shore",
+      "alternatives": [],
+      "short": "The land around the bay.",
+      "what": "The land around the bay.",
+      "textStatus": "draft"
+    },
+    "env_rock": {
+      "name": "Underwater rock",
+      "alternatives": [],
+      "short": "A rock that does not show above the water.",
+      "what": "The chart marks it with a cross and four dots.",
+      "onThisBoat": "Three in the bay: two near the north shore and one hidden in the southern half.",
+      "textStatus": "draft"
+    },
+    "env_shore_ring": {
+      "name": "Shore ring",
+      "alternatives": [],
+      "short": "A ring fixed in the rock for a shore line.",
+      "what": "A ring fixed in the rock for a shore line.",
+      "onThisBoat": "Five rings on the back and the north shore.",
+      "textStatus": "draft"
+    },
+    "env_mooring_buoy": {
+      "name": "Mooring buoy",
+      "alternatives": [
+        {
+          "term": "buoy"
+        }
+      ],
+      "short": "A buoy fixed to a weight on the bottom that you tie your bow to.",
+      "what": "Come up to it slowly into the wind, pick it up with the boat hook at the bow and tie a bow line through its ring.",
+      "onThisBoat": "Three buoys at the mouth of the bay.",
+      "mistakes": [
+        {
+          "mistake": "Approaching downwind.",
+          "fix": "Come up into the wind so you can stop at it."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "rope_bow_line": {
+      "name": "Bow line",
+      "alternatives": [],
+      "short": "A line from a bow cleat.",
+      "what": "A line from a bow cleat.",
+      "textStatus": "draft"
+    },
+    "rope_shore_line": {
+      "name": "Shore line",
+      "alternatives": [],
+      "short": "A line from the stern to a ring or a rock on the shore.",
+      "what": "Used with the anchor so the boat lies with her stern to the shore and does not swing.",
+      "onThisBoat": "The crew takes it ashore in 30 s in the app.",
+      "textStatus": "draft"
+    },
+    "term_grounding": {
+      "name": "Running aground",
+      "alternatives": [
+        {
+          "term": "touching the bottom"
+        }
+      ],
+      "short": "The keel touches the bottom where the water is shallower than the draft.",
+      "what": "The keel goes deepest: 2.4 m on this boat. Touch gently and full astern usually gets you off the way you came; come in fast and she sticks. Watch the depth before it is too late.",
+      "onThisBoat": "Draft 2.4 m (standard keel). The depth on the strip turns red under 3.4 m. In the app a touch at 2 kn or less comes off with full astern; at 3 kn she sticks.",
+      "mistakes": [
+        {
+          "mistake": "Motoring into a bay at cruising speed.",
+          "fix": "Slow down near the shore and watch the depth."
+        }
+      ],
+      "showMe": "Coming in slowly towards the shallow end of the bay.",
+      "textStatus": "draft"
     }
   }
 }

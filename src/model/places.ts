@@ -4,12 +4,12 @@ import { marinaGeometry } from './marina';
 import type { HarbourState } from './harbour';
 
 /**
- * Places the boat can be put in (M42, PHASE7_SPEC 8.3): open water near the practice buoys, the
- * marina (and, from M45, the bay). Pure.
+ * Places the boat can be put in (M42, M45, PHASE7_SPEC 8.3, 11.3): open water near the practice
+ * buoys, the marina and the bay. Pure.
  */
-export type PlaceId = 'open' | 'marina'; // M45 adds 'bay'
+export type PlaceId = 'open' | 'marina' | 'bay';
 
-export const PLACE_IDS: readonly PlaceId[] = ['open', 'marina'];
+export const PLACE_IDS: readonly PlaceId[] = ['open', 'marina', 'bay'];
 
 export function isPlace(value: string): value is PlaceId {
   return (PLACE_IDS as readonly string[]).includes(value);
@@ -33,6 +33,16 @@ export function placeStart(h: HarbourState, areaData: AreaData = area): PlaceSta
       eastM: areaData.marina.westEndEastM + areaData.marina.startInsetM,
       northM: (fairway.north + fairway.south) / 2,
       headingDeg: 90,
+      sea: sea !== undefined && isSeaSetting(sea) ? sea : null,
+    };
+  }
+  if (h.place === 'bay') {
+    const entry = areaData.places.find((place) => place.id === 'bay');
+    const sea = entry?.sea;
+    return {
+      eastM: entry?.eastM ?? 0,
+      northM: entry?.northM ?? 0,
+      headingDeg: entry?.headingDeg ?? 0,
       sea: sea !== undefined && isSeaSetting(sea) ? sea : null,
     };
   }

@@ -12,6 +12,7 @@ import { DEFAULT_HARBOUR } from '../src/model/harbour';
 import type { ContactHit } from '../src/model/lowSpeed';
 import { pointToMap } from '../src/model/lowSpeed';
 import { stepBoat, type BoatState } from '../src/model/motion';
+import { depthAt } from '../src/model/seabed';
 import { lineForces, NO_LINES } from '../src/model/mooringLines';
 import { initialEngine } from '../src/model/engine';
 import { reduce } from '../src/app/store';
@@ -357,5 +358,75 @@ describe('PT-52 a slack line near the propeller fouls it', () => {
     const after = run(slack(0), 10);
     expect(after.lines.fouled).toBe(false);
     expect(after.engine.running).toBe(true);
+  });
+});
+
+describe('PT-53 the keel touches where the water is shallower than the draft', () => {
+  /** The bay, heading 270 (west, towards the shore), the keel 1 m east of the line where the depth is 2.4 m. */
+  function inBay(speedKn: number): AppState {
+    const state = reduce(harbourStart({}), { type: 'goToPlace', place: 'bay' });
+    return {
+      ...state,
+      boat: {
+        ...state.boat,
+        eastM: -1676.4,
+        northM: 0,
+        headingDeg: 270,
+        speedMps: speedKn * 0.514444,
+        swayMps: 0,
+      },
+    };
+  }
+
+  /** 45 s at 60 fps; at 15 s the lever goes full astern. */
+  function touch(speedKn: number) {
+    let state = inBay(speedKn);
+    const draft = boatData.dimensions.draft;
+    const keelDepth = (s: AppState) => {
+      const [east, north] = pointToMap(s.boat, boatData.physics.ground.keelX, 0);
+      return depthAt(east, north);
+    };
+    let tooDeep = 0;
+    let impact: { part: string; impactMps: number; severity: string } | undefined;
+    let astern = state.boat.eastM;
+    for (let i = 0; i < 45 * 60; i += 1) {
+      if (i === 15 * 60) {
+        state = reduce(state, { type: 'engine', command: { leverPct: -100 } });
+        astern = state.boat.eastM;
+      }
+      state = reduce(state, { type: 'step', dt: 1 / 60 });
+      tooDeep = Math.max(tooDeep, draft - keelDepth(state));
+      const first = state.contact.reports.at(-1);
+      if (first && !impact && first.obstacleId === 'bottom') {
+        impact = { part: first.part, impactMps: first.impactMps, severity: first.severity };
+      }
+    }
+    return {
+      tooDeep,
+      impact,
+      backM: state.boat.eastM - astern,
+      offBy: keelDepth(state) - draft,
+    };
+  }
+
+  it('PT-53 touching at 1 kn: the keel goes a little too deep, the report names the keel, full astern gets her off', () => {
+    const gentle = touch(1);
+    expect(gentle.tooDeep).toBeGreaterThanOrEqual(0.07);
+    expect(gentle.tooDeep).toBeLessThanOrEqual(0.14);
+    expect(gentle.impact?.part).toBe('keel');
+    expect(gentle.impact?.impactMps).toBeGreaterThanOrEqual(0.4);
+    expect(gentle.impact?.impactMps).toBeLessThanOrEqual(0.53);
+    expect(gentle.impact?.severity).toBe('knock');
+    expect(gentle.offBy).toBeGreaterThanOrEqual(0);
+    expect(gentle.backM).toBeGreaterThan(20);
+  });
+
+  it('PT-53 touching at 3 kn: deeper in, severity hit, still aground after 45 s', () => {
+    const fast = touch(3);
+    expect(fast.tooDeep).toBeGreaterThanOrEqual(0.25);
+    expect(fast.tooDeep).toBeLessThanOrEqual(0.37);
+    expect(fast.impact?.severity).toBe('hit');
+    expect(fast.offBy).toBeLessThan(0);
+    expect(fast.backM).toBeLessThan(3);
   });
 });

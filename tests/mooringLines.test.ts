@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { reduce, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
+import { area } from '../src/model/area';
 import { DEFAULT_HARBOUR } from '../src/model/harbour';
 import { marinaGeometry } from '../src/model/marina';
 import {
@@ -40,6 +41,7 @@ function inputsOf(state: AppState, lines: LinesState = state.lines): LinesInputs
     harbour: state.harbour,
     geometry: marinaGeometry(state.harbour.layout, state.harbour.traffic),
     engine: state.engine,
+    area,
   };
 }
 
@@ -58,6 +60,7 @@ describe('M44 line tension', () => {
       cleatId: 'cleat_stern_port',
       far: { eastM: cleatEast + apart, northM: cleatNorth, heightM: y },
       lengthM: 5,
+      farIndex: -1,
     });
     expect(lineTension(line(5.1), state.boat).tensionN).toBeCloseTo(3000, 0);
     expect(lineTension(line(5.1), state.boat).distanceM).toBeCloseTo(5.1, 6);
@@ -267,5 +270,123 @@ describe('M44 the marina geometry', () => {
     expect(g.ourRings.west).toEqual([0, 1500]);
     expect(g.ourRings.east).toEqual([5.5, 1500]);
     expect(g.ourSinker).toEqual([2.75, 1475, -5]);
+  });
+});
+
+/** M45 (PHASE7_SPEC 11.3, 11.7): the bay's bow line to a buoy and shore line to a ring. */
+describe('M45 bay lines', () => {
+  /** In the bay with the mast at `east` (north 0), heading east, the bow 6.9 m east of it. */
+  function bayState(east: number, speedMps = 0): AppState {
+    const state = reduce(harbourStart({}), { type: 'goToPlace', place: 'bay' });
+    return {
+      ...state,
+      boat: { ...state.boat, eastM: east, northM: 0, headingDeg: 90, speedMps, swayMps: 0 },
+    };
+  }
+  const BUOY = -1457.0; // the bow tip is 0.1 m west of buoy 1 (east -1450)
+  const SHORE = -1665.0; // the stern is 27.5 m from the ring at (-1700, 0)
+
+  it('bl: taken with the bow tip 0.1 m from buoy 1 at 0.2 m/s; at 0.4 m/s it is too fast', () => {
+    const slow = bayState(BUOY, 0.2);
+    expect(canTake('bl', inputsOf(slow))).toEqual({ ok: true });
+    const lines = lineCommand('bl', 'take', inputsOf(slow));
+    const line = lines.lines[0];
+    expect(line?.code).toBe('bl');
+    expect(line?.farIndex).toBe(1);
+    expect(line?.cleatId).toBe('cleat_bow_port');
+    const distance = lineTension(line as MooringLine, slow.boat).distanceM;
+    expect(line?.lengthM).toBeCloseTo(distance + 1.0, 6);
+    const fast = bayState(BUOY, 0.4);
+    expect(canTake('bl', inputsOf(fast))).toMatchObject({ ok: false, reason: 'lines.reason.fast' });
+  });
+
+  it('bl: too far from every buoy, one at a time, and only in the bay', () => {
+    expect(canTake('bl', inputsOf(bayState(-1250)))).toMatchObject({
+      reason: 'lines.reason.buoyFar',
+    });
+    const state = bayState(BUOY);
+    const tied = lineCommand('bl', 'take', inputsOf(state));
+    expect(canTake('bl', inputsOf(state, tied))).toMatchObject({ reason: 'lines.reason.busy' });
+    expect(canTake('bl', inputsOf(marinaState(false)))).toMatchObject({
+      reason: 'lines.reason.bay',
+    });
+    expect(canTake('sp', inputsOf(state))).toMatchObject({ reason: 'lines.reason.place' });
+  });
+
+  it('sl: starts a 30 s crew task and ends with the line on the stern cleat that was nearer the ring', () => {
+    const state = bayState(SHORE);
+    expect(canTake('sl', inputsOf(state))).toEqual({ ok: true });
+    let lines = lineCommand('sl', 'take', inputsOf(state));
+    expect(lines.lines).toHaveLength(0);
+    expect(lines.crew).toMatchObject({
+      kind: 'swimShore',
+      code: 'sl',
+      remainingS: 30,
+      ringIndex: 1,
+      cleatId: 'cleat_stern_port',
+    });
+    expect(canTake('sl', inputsOf(state, lines))).toMatchObject({ reason: 'lines.reason.busy' });
+    for (let t = 0; t < 29.75; t += STEP) lines = stepLines(inputsOf(state, lines), STEP);
+    expect(lines.crew).not.toBeNull();
+    lines = stepLines(inputsOf(state, lines), STEP);
+    expect(lines.crew).toBeNull();
+    const line = lines.lines[0];
+    expect(line).toMatchObject({ code: 'sl', cleatId: 'cleat_stern_port', farIndex: 1 });
+    expect(line?.lengthM).toBeCloseTo(28.08, 2);
+  });
+
+  it('sl: too far from every ring; a swimming crew can be called back', () => {
+    expect(canTake('sl', inputsOf(bayState(-1250)))).toMatchObject({
+      reason: 'lines.reason.shoreFar',
+    });
+    const state = bayState(SHORE);
+    const swimming = lineCommand('sl', 'take', inputsOf(state));
+    expect(lineCommand('sl', 'letGo', inputsOf(state, swimming)).crew).toBeNull();
+  });
+
+  it('a shore line in the water counts as slack for the propeller, a bow line does not', () => {
+    const base = bayState(SHORE);
+    const geared = initialEngine({ running: true, leverPct: -30 });
+    const swimming = lineCommand('sl', 'take', inputsOf(base));
+    let state = swimming;
+    for (let t = 0; t < 3; t += STEP) {
+      state = stepLines({ ...inputsOf(base, state), engine: geared }, STEP);
+    }
+    expect(state.fouled).toBe(true);
+    const buoyState = bayState(BUOY);
+    let tied = lineCommand('bl', 'take', inputsOf(buoyState));
+    for (let t = 0; t < 5; t += STEP) {
+      tied = stepLines({ ...inputsOf(buoyState, tied), engine: geared }, STEP);
+    }
+    expect(tied.fouled).toBe(false);
+  });
+
+  it('the bay links: bl1 and sl1 are written and read back; wrong ones are dropped', () => {
+    const buoyLink = '?pl=bay&pe=-1457.0&pn=0.0&hdg=90&ws=0&ln=bl1:3.20';
+    const state = parseUrlState(buoyLink);
+    expect(state.lines.lines.map((l) => [l.code, l.farIndex, l.lengthM])).toEqual([['bl', 1, 3.2]]);
+    const written = serializeUrlState(state);
+    expect(written).toContain('ln=bl1:3.20');
+    expect(serializeUrlState(parseUrlState(written))).toBe(written);
+
+    const shore = parseUrlState('?pl=bay&pe=-1665.0&pn=0.0&hdg=90&ws=0&ln=sl1:28.08');
+    expect(shore.lines.lines[0]).toMatchObject({
+      code: 'sl',
+      farIndex: 1,
+      cleatId: 'cleat_stern_port',
+    });
+    expect(serializeUrlState(shore)).toContain('ln=sl1:28.08');
+
+    const dropped = (link: string) => parseUrlState(link).lines.lines.length;
+    expect(dropped('?pl=bay&pe=-1457.0&pn=0.0&hdg=90&ln=bl:3.20')).toBe(0); // no index
+    expect(dropped('?pl=bay&pe=-1457.0&pn=0.0&hdg=90&ln=bl7:3.20')).toBe(0); // no such buoy
+    expect(dropped('?pl=bay&pe=-1457.0&pn=0.0&hdg=90&ln=sp:3.20')).toBe(0); // a marina line
+    expect(dropped('?pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=bl1:3.20')).toBe(0); // a bay line
+    expect(dropped('?pl=bay&pe=-1250.0&pn=0.0&hdg=90&ln=bl1:3.20')).toBe(0); // far away
+  });
+
+  it('choosing a place clears the bay lines', () => {
+    const state = parseUrlState('?pl=bay&pe=-1457.0&pn=0.0&hdg=90&ws=0&ln=bl1:3.20');
+    expect(reduce(state, { type: 'goToPlace', place: 'bay' }).lines.lines).toHaveLength(0);
   });
 });

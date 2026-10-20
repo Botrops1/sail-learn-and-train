@@ -221,7 +221,7 @@ export function insidePolygon(polygon: readonly [number, number][], x: number, y
 
 const obstacleCache = new WeakMap<MarinaGeometry, Obstacle[]>();
 
-function rectPolygon(r: Rect): [number, number][] {
+export function rectPolygon(r: Rect): [number, number][] {
   return [
     [r.west, r.south],
     [r.east, r.south],

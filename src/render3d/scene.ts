@@ -15,7 +15,9 @@ import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
 import { daylighting } from './daylight';
 import { cloudTexture, rippleNormalMap } from './environment';
+import { buildBay } from './bay';
 import { buildMarina } from './marina';
+import { buildSeabed } from './seabed';
 import { buildMooringLines } from './mooringLines';
 import { buildMarks } from './marks';
 import { buildSkyDome } from './skyDome';
@@ -139,6 +141,10 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   world.group.add(marks.object);
   const marina = buildMarina();
   world.group.add(marina.object);
+  const seabed = buildSeabed(undefined, detail);
+  world.group.add(seabed.object);
+  const bay = buildBay();
+  world.group.add(bay.object);
   const mooringLines = buildMooringLines();
   world.group.add(mooringLines.object);
   const wake = buildWake();
@@ -152,6 +158,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const picker = createPicker(camera, holder, water.pickTarget, [
     marks.object,
     marina.object,
+    seabed.object,
+    bay.object,
     mooringLines.object,
   ]);
   listenForTaps(renderer.domElement, (x, y) => {
@@ -263,6 +271,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     baseLight.sun = high ? SCENE.light.sunIntensityHigh : SCENE.light.sunIntensity;
     baseLight.fill = high ? SCENE.light.fillIntensityHigh : SCENE.light.fillIntensity;
     water.setDetail(detail);
+    seabed.setDetail(detail);
   };
   applyDetail();
 
@@ -388,6 +397,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       water.update(state, shift, waveTrains(state.sea), light.night);
       marks.update(state, water.heightAt);
       marina.update(state);
+      seabed.update(state);
+      bay.update(state, water.heightAt);
       mooringLines.update(state, ropeView);
       wake.update(state, state.rig.timeS, water.heightAt);
       // At night the wake and the wind streaks are dimmed (they ignore the light).

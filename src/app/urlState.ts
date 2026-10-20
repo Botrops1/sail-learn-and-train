@@ -33,7 +33,13 @@ import type { RigHistory } from '../model/sim';
 import { boat } from '../model/boat';
 import { DEFAULT_HARBOUR, type HarbourState } from '../model/harbour';
 import { isMarinaLayout, isTraffic } from '../model/marina';
-import { isLineCode, linesFromLink, NO_LINES, type LineCode } from '../model/mooringLines';
+import {
+  isLineCode,
+  linesFromLink,
+  NO_LINES,
+  type LineCode,
+  type MooringLine,
+} from '../model/mooringLines';
 import type { BoatState } from '../model/motion';
 import { isPlace, placeStart, type PlaceStart } from '../model/places';
 import { isTimeScale } from '../model/timeScale';
@@ -249,26 +255,42 @@ function parsePosition(params: URLSearchParams, start: PlaceStart): Partial<Boat
   return { eastM: start.eastM, northM: start.northM };
 }
 
-/** `ln=sp:2.55,ss:2.55,ll:12.33` (M44): each entry a line code and its length in metres; wrong entries are left out. */
-function parseLines(params: URLSearchParams): { code: LineCode; lengthM: number }[] {
+/** A line in the link: its code, then the buoy's or ring's index in the bay (`bl1`, `sl2`), e.g. `sp`, `bl1`. */
+const LINE_HEAD = /^([a-z]{2})(\d+)?$/;
+
+/**
+ * `ln=sp:2.55,ss:2.55,ll:12.33` (M44) or `ln=bl1:3.20,sl2:31.50` (M45): each entry a line code
+ * (in the bay followed by the index of its buoy or ring) and its length in metres; wrong entries
+ * are left out.
+ */
+function parseLines(
+  params: URLSearchParams,
+): { code: LineCode; index: number | null; lengthM: number }[] {
   const ln = params.get('ln');
   if (ln === null) return [];
-  const found: { code: LineCode; lengthM: number }[] = [];
+  const found: { code: LineCode; index: number | null; lengthM: number }[] = [];
   for (const entry of ln.split(',')) {
-    const [code, length, ...rest] = entry.split(':');
-    if (code === undefined || length === undefined || rest.length > 0) continue;
-    if (!isLineCode(code) || !DECIMAL.test(length) || found.some((f) => f.code === code)) continue;
-    found.push({ code, lengthM: Number(length) });
+    const [head, length, ...rest] = entry.split(':');
+    if (head === undefined || length === undefined || rest.length > 0) continue;
+    const match = LINE_HEAD.exec(head);
+    const code = match?.[1];
+    if (code === undefined || !isLineCode(code) || !DECIMAL.test(length)) continue;
+    if (found.some((f) => f.code === code)) continue;
+    found.push({
+      code,
+      index: match?.[2] === undefined ? null : Number(match[2]),
+      lengthM: Number(length),
+    });
   }
   return found;
 }
 
-/** The lines that are on, in the order sp, ss, ll, as `ln` (M44); nothing when none is on. */
+/** The lines that are on, in the order sp, ss, ll, bl, sl, as `ln` (M44, M45); nothing when none is on. */
 export function linesParams(state: AppState): [string, string][] {
-  if (state.harbour.place !== 'marina' || state.lines.lines.length === 0) return [];
-  return [
-    ['ln', state.lines.lines.map((line) => `${line.code}:${line.lengthM.toFixed(2)}`).join(',')],
-  ];
+  if (state.harbour.place === 'open' || state.lines.lines.length === 0) return [];
+  const entry = (line: MooringLine) =>
+    `${line.code}${line.farIndex >= 0 ? line.farIndex : ''}:${line.lengthM.toFixed(2)}`;
+  return [['ln', state.lines.lines.map(entry).join(',')]];
 }
 
 /**

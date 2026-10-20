@@ -191,6 +191,14 @@
     {"id": "rope_lazy_line", "kind": "rope", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["term_med_mooring", "env_quay"], "showMe": "?cam=top&sel=rope_lazy_line&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55,ss:2.55,ll:12.33"},
     {"id": "rope_stern_line_port", "kind": "rope", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_quay_ring", "term_med_mooring"], "showMe": "?cam=top&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55,ss:2.55,ll:12.33"},
     {"id": "rope_stern_line_starboard", "kind": "rope", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_quay_ring", "term_med_mooring"], "showMe": "?cam=top&pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55,ss:2.55,ll:12.33"},
-    {"id": "env_quay_ring", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_quay", "term_med_mooring"]}
+    {"id": "env_quay_ring", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_quay", "term_med_mooring"]},
+    {"id": "env_seabed", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
+    {"id": "env_shore", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
+    {"id": "env_rock", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
+    {"id": "env_shore_ring", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
+    {"id": "env_mooring_buoy", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
+    {"id": "rope_bow_line", "kind": "rope", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_mooring_buoy"]},
+    {"id": "rope_shore_line", "kind": "rope", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_shore_ring"]},
+    {"id": "term_grounding", "kind": "term", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_seabed", "fit_instrument_display"], "showMe": "?cam=side-port&pl=bay&pe=-1676.4&pn=0.0&hdg=270&bs=1.0"}
   ]
 }

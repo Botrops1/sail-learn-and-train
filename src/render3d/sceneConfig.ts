@@ -240,6 +240,33 @@ export const SCENE = {
     /** Beyond this distance from the boat the marina is not drawn or tappable, metres (the camera's far plane). */
     maxDrawM: 1000,
   },
+  /** The bay (M45, PHASE7_SPEC 11.5): the terrain over the bay, the marina basin's bottom, the shore rings and the mooring buoys. */
+  bay: {
+    /** The terrain's rectangle (east × north, metres), and its vertex spacing (High, Low). */
+    terrain: { west: -2600, east: -1100, south: -1000, north: 1000 },
+    cellM: { high: 10, low: 20 },
+    sandColour: '#d8c79a',
+    weedColour: '#4f6b3a',
+    rockColour: '#7a7066',
+    landColour: '#8f9a5b',
+    /** Land higher than this above the water is rock-grey. */
+    highLandM: 6,
+    highLandColour: '#a39c8a',
+    mudColour: '#6b5b45',
+    /** The ring: a post as high as `bay.ringHeightM` with a torus on top. */
+    ringColour: '#2b2b2b',
+    postRadiusM: 0.04,
+    ringRadiusM: 0.15,
+    ringTubeM: 0.025,
+    /** The buoy: a white sphere with a small ring on top, floating (the sphere's centre this far above the water). */
+    buoyColour: '#ffffff',
+    buoyRadiusM: 0.35,
+    buoyFloatY: 0.1,
+    buoyRingRadiusM: 0.1,
+    buoyRingTubeM: 0.02,
+    /** Beyond this distance from the boat a part of the bay is not drawn or tappable, metres (the camera's far plane). */
+    maxDrawM: 1000,
+  },
   /** The scale grid is the wave mesh's lines, 2 m apart (4 m at Low detail). */
   grid: {
     color: '#ffffff',

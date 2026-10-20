@@ -11,6 +11,7 @@ import {
   marinaGeometry,
   type Rect,
 } from '../model/marina';
+import { depthAt } from '../model/seabed';
 import { buoyOffsets } from '../model/windOnWater';
 import { pointOfSail } from '../model/pointsOfSail';
 import { requirePartId } from '../model/registry';
@@ -119,6 +120,14 @@ const COLOURS = {
   buoyOutline: '#3a3000',
   quay: '#b9b4a8',
   quayEdge: '#7b776d',
+  // The bay's chart (M45): shaded depths, land, and the symbols for rocks, rings and buoys.
+  tooShallow: '#e9b7a8',
+  depth5: '#cfe6f2',
+  depth10: '#a9d3ea',
+  depth20: '#86bfdf',
+  land: '#d8cfa6',
+  chartSymbol: '#000000',
+  mooringBuoy: '#f28c28',
   berthLine: '#d0d4d8',
   yacht: '#ffffff',
   yachtEdge: '#8a8f94',
@@ -461,6 +470,10 @@ export function pickMap(
   for (const buoy of buoyPoints(state, view)) {
     if (Math.hypot(x - buoy.x, y - buoy.y) <= MAP.hitPx) return requirePartId('env_buoy');
   }
+  // The bay (M45): a rock's chart symbol, a ring on the shore, a mooring buoy.
+  for (const { x: px, y: py, id } of bayPoints(view)) {
+    if (Math.hypot(x - px, y - py) <= MAP.hitPx) return requirePartId(id);
+  }
   // The marina (M42): a moored yacht, then the quay, the wall and the pontoon.
   const marina = marinaScreen(state, view);
   if (marina) {
@@ -801,6 +814,7 @@ function drawMap(
   ctx.fillRect(0, 0, w, h);
   drawGrid(ctx, view);
   drawWindField(ctx, state, view, timeS);
+  drawSeabed(ctx, state, view);
   drawHarbour(ctx, state, view);
   drawTrack(ctx, state.track, state, view);
   const layout = mapLayout(state, view, width);
@@ -922,6 +936,268 @@ export function drawHarbour(
   ctx.strokeStyle = COLOURS.ourBerth;
   ctx.lineWidth = 2;
   ctx.stroke();
+}
+
+/** The rocks, shore rings and mooring buoys of the bay on the canvas (CSS px), with the registry id each stands for. */
+function bayPoints(
+  view: MapViewport,
+): { x: number; y: number; id: string; kind: 'rock' | 'ring' | 'buoy' }[] {
+  const bay = area.bay;
+  return [
+    ...bay.rocks.map((rock) => ({
+      ...mapToScreen(rock.eastM, rock.northM, view),
+      id: 'env_rock',
+      kind: 'rock' as const,
+    })),
+    ...bay.rings.map(([east, north]) => ({
+      ...mapToScreen(east, north, view),
+      id: 'env_shore_ring',
+      kind: 'ring' as const,
+    })),
+    ...bay.buoys.map(([east, north]) => ({
+      ...mapToScreen(east, north, view),
+      id: 'env_mooring_buoy',
+      kind: 'buoy' as const,
+    })),
+  ];
+}
+
+/** The shade of a depth cell (m; ≤ 0 = land), or null where the water is deep enough to show nothing. */
+function depthShade(metres: number): string | null {
+  if (metres <= 0) return COLOURS.land;
+  if (metres < boat.dimensions.draft) return COLOURS.tooShallow;
+  if (metres < 5) return COLOURS.depth5;
+  if (metres < 10) return COLOURS.depth10;
+  if (metres < 20) return COLOURS.depth20;
+  return null;
+}
+
+/** Where the depth is not simply `openDepthM`: the bay's coast plus the distance it takes to reach it, and the marina's basin. */
+function chartRegions(): { west: number; east: number; south: number; north: number }[] {
+  const { bay, marina, openDepthM } = area;
+  const xs = bay.coast.map((p) => p[0]);
+  const ys = bay.coast.map((p) => p[1]);
+  const reach = openDepthM / bay.slope;
+  return [
+    {
+      west: Math.min(...xs) - reach,
+      east: Math.max(...xs) + reach,
+      south: Math.min(...ys) - reach,
+      north: Math.max(...ys) + reach,
+    },
+    marina.basin,
+  ];
+}
+
+/** The shaded depth cells, drawn into an offscreen canvas that is reused until the view changes (one per map and mini-map). */
+const seabedCache = new Map<boolean, { key: string; canvas: HTMLCanvasElement | null }>();
+
+/**
+ * The bay's chart (M45, PHASE7_SPEC 11.5): the depth as shaded cells (too shallow for us, under
+ * 5 m, 10 m, 20 m; land beige) and the rocks (a black cross with four dots), the shore rings
+ * (black dots) and the mooring buoys (orange dots). The mini-map has bigger cells and no rings.
+ */
+export function drawSeabed(
+  ctx: CanvasRenderingContext2D,
+  state: AppState,
+  view: MapViewport,
+  mini = false,
+): void {
+  void state;
+  const reach = (Math.hypot(view.widthPx, view.heightPx) / 2) * view.metresPerPx;
+  const regions = chartRegions();
+  const near = regions.some(
+    (r) =>
+      view.centreEastM + reach >= r.west &&
+      view.centreEastM - reach <= r.east &&
+      view.centreNorthM + reach >= r.south &&
+      view.centreNorthM - reach <= r.north,
+  );
+  if (!near) return;
+  const scale = ctx.getTransform().a || 1;
+  const key = [
+    view.centreEastM,
+    view.centreNorthM,
+    view.upDeg,
+    view.metresPerPx,
+    view.widthPx,
+    view.heightPx,
+    scale,
+  ].join('/');
+  let cached = seabedCache.get(mini);
+  if (!cached || cached.key !== key) {
+    const width = Math.max(1, Math.round(view.widthPx * scale));
+    const height = Math.max(1, Math.round(view.heightPx * scale));
+    // The picture is redrawn while the boat moves: keep the canvas when its size is the same.
+    const canvas =
+      cached?.canvas && cached.canvas.width === width && cached.canvas.height === height
+        ? cached.canvas
+        : document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const target = canvas.getContext('2d');
+    if (target) paintDepthCells(target, view, scale, mini, reach, regions);
+    cached = { key, canvas: target ? canvas : null };
+    seabedCache.set(mini, cached);
+  }
+  if (cached.canvas) {
+    ctx.drawImage(cached.canvas, 0, 0, view.widthPx, view.heightPx);
+  }
+  drawBaySymbols(ctx, view, mini);
+}
+
+/** The shade of each map cell (null: nothing to draw), remembered because the depth never changes; one table per cell size. */
+const shadeTables = new Map<number, Map<number, string | null>>();
+const MAX_REMEMBERED_CELLS = 400_000;
+
+function shadeCache(cellM: number): Map<number, string | null> {
+  let table = shadeTables.get(cellM);
+  if (!table) {
+    // The view changes its zoom level seldom: keep the tables of the last few cell sizes only.
+    if (shadeTables.size >= 4) shadeTables.clear();
+    table = new Map();
+    shadeTables.set(cellM, table);
+  }
+  if (table.size > MAX_REMEMBERED_CELLS) table.clear();
+  return table;
+}
+
+function shadeOfCell(
+  table: Map<number, string | null>,
+  i: number,
+  j: number,
+  ce: number,
+  cn: number,
+  regions: { west: number; east: number; south: number; north: number }[],
+): string | null {
+  const key = (i + 32768) * 65536 + (j + 32768);
+  const found = table.get(key);
+  if (found !== undefined) return found;
+  let shade: string | null = null;
+  if (regions.some((r) => ce >= r.west && ce <= r.east && cn >= r.south && cn <= r.north)) {
+    const depth = depthAt(ce, cn);
+    if (depth < area.openDepthM) shade = depthShade(depth);
+  }
+  table.set(key, shade);
+  return shade;
+}
+
+function paintDepthCells(
+  target: CanvasRenderingContext2D,
+  view: MapViewport,
+  scale: number,
+  mini: boolean,
+  reach: number,
+  regions: { west: number; east: number; south: number; north: number }[],
+): void {
+  // Cells are on a grid of the map (so they do not shift as the view moves), at least 4 m and
+  // 4 px (8 px on the mini-map) across.
+  const cellM = Math.max(4, (mini ? 8 : 4) * view.metresPerPx);
+  const o = mapToScreen(view.centreEastM, view.centreNorthM, view);
+  const ex = mapToScreen(view.centreEastM + 1, view.centreNorthM, view);
+  const ey = mapToScreen(view.centreEastM, view.centreNorthM + 1, view);
+  target.setTransform(
+    (ex.x - o.x) * scale,
+    (ex.y - o.y) * scale,
+    (ey.x - o.x) * scale,
+    (ey.y - o.y) * scale,
+    o.x * scale,
+    o.y * scale,
+  );
+  // A little overlap hides the seams between cells.
+  const overlap = 0.6 * view.metresPerPx;
+  const shades = shadeCache(cellM);
+  const firstI = Math.floor((view.centreEastM - reach) / cellM);
+  const lastI = Math.floor((view.centreEastM + reach) / cellM);
+  const firstJ = Math.floor((view.centreNorthM - reach) / cellM);
+  const lastJ = Math.floor((view.centreNorthM + reach) / cellM);
+  // Row by row: neighbouring cells of one shade are painted as one rectangle.
+  for (let j = firstJ; j <= lastJ; j += 1) {
+    const n = j * cellM;
+    let runStart = 0;
+    let runShade: string | null = null;
+    let runEnd = 0;
+    const flush = () => {
+      if (runShade === null) return;
+      target.fillStyle = runShade;
+      target.fillRect(
+        runStart - view.centreEastM,
+        n - view.centreNorthM,
+        runEnd - runStart + overlap,
+        cellM + overlap,
+      );
+      runShade = null;
+    };
+    for (let i = firstI; i <= lastI; i += 1) {
+      const e = i * cellM;
+      const ce = e + cellM / 2;
+      const cn = n + cellM / 2;
+      // The cheap tests come first: a cell outside the canvas or outside the charted regions costs no depth look-up.
+      const s = mapToScreen(ce, cn, view);
+      const shade =
+        s.x < -50 || s.y < -50 || s.x > view.widthPx + 50 || s.y > view.heightPx + 50
+          ? null
+          : shadeOfCell(shades, i, j, ce, cn, regions);
+      if (shade !== runShade) {
+        flush();
+        if (shade !== null) {
+          runStart = e;
+          runShade = shade;
+        }
+      }
+      if (shade !== null) runEnd = e + cellM;
+    }
+    flush();
+  }
+  target.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function drawBaySymbols(ctx: CanvasRenderingContext2D, view: MapViewport, mini: boolean): void {
+  const margin = 12;
+  ctx.setLineDash([]);
+  for (const p of bayPoints(view)) {
+    if (
+      p.x < -margin ||
+      p.y < -margin ||
+      p.x > view.widthPx + margin ||
+      p.y > view.heightPx + margin
+    ) {
+      continue;
+    }
+    if (p.kind === 'ring') {
+      if (mini) continue;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = COLOURS.chartSymbol;
+      ctx.fill();
+    } else if (p.kind === 'buoy') {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = COLOURS.mooringBuoy;
+      ctx.fill();
+    } else {
+      // The chart symbol for a dangerous underwater rock: a cross with four dots.
+      ctx.strokeStyle = COLOURS.chartSymbol;
+      ctx.fillStyle = COLOURS.chartSymbol;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(p.x - 4, p.y);
+      ctx.lineTo(p.x + 4, p.y);
+      ctx.moveTo(p.x, p.y - 4);
+      ctx.lineTo(p.x, p.y + 4);
+      ctx.stroke();
+      for (const [dx, dy] of [
+        [-4, -4],
+        [4, -4],
+        [-4, 4],
+        [4, 4],
+      ] as const) {
+        ctx.beginPath();
+        ctx.arc(p.x + dx, p.y + dy, 1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
 }
 
 /** Where each practice buoy is on the canvas (CSS px), with its letter. */
@@ -1283,6 +1559,7 @@ export function drawMiniMap(
   ctx.fillStyle = COLOURS.water;
   ctx.fillRect(0, 0, sizePx, sizePx);
   drawGrid(ctx, view);
+  drawSeabed(ctx, state, view, true);
   drawHarbour(ctx, state, view, true);
   drawTrack(ctx, state.track, state, view);
   drawBuoys(ctx, state, view, { letters: false });

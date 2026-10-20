@@ -1311,6 +1311,19 @@ button.segment {
   display: none;
 }
 
+/* The depth under the hull (M45): plain text in the badges' row, red when it is under the draft and a metre. */
+.strip-depth {
+  font-weight: 600;
+}
+
+.strip-depth.is-shallow {
+  color: #c8102e;
+}
+
+.strip-depth[hidden] {
+  display: none;
+}
+
 /* The badges' row never makes the box wider: it takes the width the numbers give it. */
 .strip-flags {
   width: 0;

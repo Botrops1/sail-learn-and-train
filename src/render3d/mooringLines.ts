@@ -27,6 +27,8 @@ const ROPE_IDS: Record<LineCode, string> = {
   sp: 'rope_stern_line_port',
   ss: 'rope_stern_line_starboard',
   ll: 'rope_lazy_line',
+  bl: 'rope_bow_line',
+  sl: 'rope_shore_line',
 };
 
 const RADIAL = 6;
@@ -123,7 +125,7 @@ function writeTube(
 const world = (east: number, north: number, height: number): Vec3 => [north, height, east];
 
 /**
- * The mooring lines in 3D (M44, PHASE7_SPEC 10.5): each line that is on, as a sky-blue rope from
+ * The mooring lines in 3D (M44, M45, PHASE7_SPEC 10.5, 11.5): each line that is on, as a sky-blue rope from
  * its cleat to its far end (slack ones sag as a parabola, taut ones are straight), and our
  * berth's lazy line waiting on the quay face and the bottom at half opacity until it is taken.
  */
@@ -186,8 +188,10 @@ export function buildMooringLines(areaData: AreaData = area): MooringLines {
         onCodes.add(line.code);
         const tube = tubes.get(line.code);
         if (!tube) continue;
-        tube.mesh.visible = near;
-        if (near) {
+        // The bay's lines only exist in the bay, so they are always near.
+        const here = line.code === 'bl' || line.code === 'sl' || near;
+        tube.mesh.visible = here;
+        if (here) {
           const curve = lineCurve(line, state);
           writeTube(tube, curve, offset, view);
           (tube.mesh.userData as PartUserData).pickSegments = pickSegments(curve);
