@@ -242,3 +242,22 @@ export async function lineAction(page, code, action) {
   await showSection(page, 'harbour');
   await page.getByTestId(`line-${code}-${action}`).click();
 }
+
+/**
+ * M46: holds the windlass button ('down' | 'up') for `ms` milliseconds of app time
+ * (page.waitForTimeout); `suffix` '' (the Anchor section, opened first), '-bow' or '-helm'.
+ */
+export async function holdWindlass(page, dir, ms, suffix = '') {
+  if (suffix === '') await showSection(page, 'anchor');
+  const button = page.getByTestId(`windlass-${dir}${suffix}`);
+  await button.scrollIntoViewIfNeeded();
+  const box = await button.boundingBox();
+  if (!box) throw new Error(`holdWindlass: ${dir}${suffix} has no box`);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  try {
+    await page.waitForTimeout(ms);
+  } finally {
+    await page.mouse.up();
+  }
+}

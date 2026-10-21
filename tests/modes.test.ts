@@ -150,15 +150,17 @@ describe('Harbour mode (M41, PHASE7_SPEC 7.5)', () => {
     expect(order[1]).toBe('harbour');
   });
 
-  it('M42: the Place section comes just before the Harbour gear in the other modes, and second in Harbour', () => {
+  it('M42, M46: the Place and Anchor sections come just before the Harbour gear in the other modes, and after it in Harbour', () => {
     for (const mode of ['easy', 'realistic', 'learn'] as const) {
       const order = MODE_LAYOUTS[mode].order;
-      expect(order.indexOf('place'), mode).toBe(order.indexOf('harbour') - 1);
+      expect(order.indexOf('place'), mode).toBe(order.indexOf('harbour') - 2);
+      expect(order.indexOf('anchor'), mode).toBe(order.indexOf('harbour') - 1);
     }
     const harbour = MODE_LAYOUTS.harbour;
-    expect(harbour.order.filter((id) => id !== 'mode').slice(0, 3)).toEqual([
+    expect(harbour.order.filter((id) => id !== 'mode').slice(0, 4)).toEqual([
       'engine',
       'harbour',
+      'anchor',
       'place',
     ]);
     expect(harbour.second).toEqual(['place', 'conditions']);

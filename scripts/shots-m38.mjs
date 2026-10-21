@@ -59,7 +59,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const second = await column(page, '[data-testid="second-column"]');
     check(
       `${name}: Easy, column 1 starts with Mode and ends with Settings`,
-      first.join() === 'mode,ropes,sails,autopilot,engine,place,harbour,settings' &&
+      first.join() === 'mode,ropes,sails,autopilot,engine,place,anchor,harbour,settings' &&
         second.join() === 'conditions,learn',
       JSON.stringify({ first, second }),
     );
@@ -390,7 +390,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     );
     check(
       'phone: no Mode, Settings or Rope colours section',
-      ids.join() === 'ropes,sails,autopilot,engine,conditions,learn,place,harbour',
+      ids.join() === 'ropes,sails,autopilot,engine,conditions,learn,place,anchor,harbour',
       ids.join(),
     );
     await page.getByTestId('mode-chip').click();

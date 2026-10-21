@@ -16,6 +16,7 @@ export const SECTION_IDS = [
   'conditions',
   'learn',
   'place',
+  'anchor',
   'harbour',
   'settings',
 ] as const;
@@ -46,6 +47,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'conditions',
       'learn',
       'place',
+      'anchor',
       'harbour',
       'settings',
     ],
@@ -61,6 +63,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'autopilot',
       'engine',
       'place',
+      'anchor',
       'harbour',
       'settings',
     ],
@@ -76,6 +79,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'engine',
       'conditions',
       'place',
+      'anchor',
       'harbour',
       'settings',
     ],
@@ -86,6 +90,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'mode',
       'engine',
       'harbour',
+      'anchor',
       'place',
       'conditions',
       'sails',
@@ -100,13 +105,15 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
 
 /**
  * True if the section is shown at all in this state. The autopilot and the engine have their own
- * sections only in Easy (in Realistic they are at the Helm station); the Mode and Settings
+ * sections only in Easy (in Realistic they are at the Helm station), the anchor too (M46: the
+ * windlass is at the Bow station); the Mode and Settings
  * sections only on the wide layout (`wide`).
  */
 export function sectionAvailable(id: SectionId, state: AppState, wide = false): boolean {
   switch (id) {
     case 'autopilot':
     case 'engine':
+    case 'anchor':
       return state.settings.ropesMode === 'easy';
     case 'mode':
     case 'settings':

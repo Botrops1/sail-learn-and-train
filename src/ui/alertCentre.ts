@@ -19,6 +19,7 @@ const ALERT_TEXT: Readonly<Record<Exclude<AlertKind, 'gybe' | 'sailWorn'>, Strin
   roundUp: 'alert.roundUp',
   tookWheel: 'autopilot.tookWheel',
   fendersOut: 'harbour.fenders.hint',
+  anchorAlarm: 'anchor.alarm',
 };
 
 /** What an entry says (an accidental or controlled gybe says its report). */

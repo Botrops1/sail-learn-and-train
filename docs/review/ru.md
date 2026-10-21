@@ -830,7 +830,7 @@
 | Другие названия | — | брашпиль |
 | Коротко | The electric winch on the bow that lets the anchor chain out and pulls it in. | Электрическая лебёдка на носу, которая травит и выбирает якорную цепь. |
 | Что делает / что значит | The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm. | Лебёдка опускает якорь и поднимает его обратно; ею управляют выключателями на носу или пультом у штурвала. |
-| На этой яхте | On the foredeck behind the anchor roller, in a round recess. It is drawn but does not work yet; anchoring comes later. | На носовой палубе позади якорного роульса, в круглом углублении. Она нарисована, но пока не работает; якорная стоянка появится позже. |
+| На этой яхте | On the foredeck behind the anchor roller, in a round recess. Hold "Chain out" or "Chain in" in the Anchor block (at the Bow station or the helm in Realistic mode). | На носовой палубе позади якорного роульса, в круглом углублении. Держите «Травить цепь» или «Выбирать цепь» в блоке «Якорь» (в реалистичном режиме: на носу или у штурвала). |
 | Типичные ошибки | Putting fingers or feet near the chain while the windlass runs. → The chain can trap them. Keep clear, and stop the windlass before you touch the chain. | Держать пальцы или ноги возле цепи, пока работает лебёдка. → Цепь может их зажать. Держитесь в стороне и останавливайте лебёдку, прежде чем трогать цепь. |
 | «Покажи» | — | — |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
@@ -860,7 +860,7 @@
 | Другие названия | — | — |
 | Коротко | The heavy hook that holds the boat to the seabed. | Тяжёлый крюк, который держит лодку на дне. |
 | Что делает / что значит | The anchor is let down on its chain until it lies on the seabed, where it digs in and holds the boat in one place. | Якорь опускают на цепи, пока он не ляжет на дно: там он зарывается и удерживает лодку на одном месте. |
-| На этой яхте | It sits in the bow roller, to starboard of the jib furler, ready to let go. It is drawn but does not work yet; anchoring comes later. | Он лежит в носовом роульсе, по правому борту от закрутки стакселя, готовый к отдаче. Он нарисован, но пока не работает; якорная стоянка появится позже. |
+| На этой яхте | It sits in the bow roller, to starboard of the jib furler, ready to let go. Let the chain out in the Anchor block and it goes down to the bottom. | Он лежит в носовом роульсе, по правому борту от закрутки стакселя, готовый к отдаче. Травите цепь в блоке «Якорь», и он уходит на дно. |
 | Типичные ошибки | — | — |
 | «Покажи» | The bow from the front: the anchor hangs in its roller, with the chain running back to the windlass. | Нос спереди: якорь висит в роульсе, а цепь идёт назад к лебёдке. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
@@ -1061,6 +1061,21 @@
 | Типичные ошибки | Holding a compass heading and forgetting the wind. → If the wind shifts, she can end up in the no-go zone or gybe. Watch the sails, or let the autopilot hold the wind angle.<br>Turning the wheel by hand with the autopilot on. → It goes to Standby (you took the wheel). Choose a mode again when you want it to steer. | Держать курс по компасу и забыть про ветер. → Если ветер сменится, яхта может оказаться в мёртвой зоне или сделать поворот фордевинд. Следите за парусами или пусть авторулевой держит угол к ветру.<br>Повернуть штурвал рукой при включённом авторулевом. → Он переходит в режим «Ожидание» (вы взяли штурвал). Выберите режим снова, когда захотите, чтобы он рулил. |
 | «Покажи» | The autopilot is holding the angle to the wind. Its section is called Autopilot: change the angle with its buttons. | Авторулевой держит угол к ветру. Его раздел называется «Авторулевой»: меняйте угол его кнопками. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Пульт брашпиля (`fit_windlass_remote`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Windlass remote | Пульт брашпиля |
+| Другие названия | — | — |
+| Коротко | Buttons at the helm that run the windlass. | Кнопки у штурвала, управляющие брашпилем. |
+| Что делает / что значит | Lets the helmsman let the chain out or bring it in without going forward. | Позволяют рулевому травить или выбирать цепь, не уходя на нос. |
+| На этой яхте | At the helm (EXERCISES.md 5, owner). | У штурвала (владелец). |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
@@ -2169,6 +2184,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Длина вытравленной цепи (`term_scope`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Scope | Длина вытравленной цепи |
+| Другие названия | — | — |
+| Коротко | How much chain is out compared with the depth. | Сколько цепи вытравлено по сравнению с глубиной. |
+| Что делает / что значит | The more chain, the flatter it pulls on the anchor, and the better the anchor holds; the chain's weight also softens the jerks. With too little chain the pull lifts the anchor's shank and it drags. | Чем больше цепи, тем более горизонтально она тянет якорь и тем лучше он держит; вес цепи ещё и смягчает рывки. При короткой цепи тяга поднимает веретено якоря, и он ползёт. |
+| На этой яхте | 70 m of chain (an assumption). In 5 m of water the instructor's rule (3 boat lengths, 47 m) is more than 4 × the effective depth (27 m). | 70 м цепи (предположение). На глубине 5 м правило инструктора (3 длины корпуса, 47 м) больше, чем 4 эффективные глубины (27 м). |
+| Типичные ошибки | Letting out just the depth and switching off. → Let out what the check asks for, then set the anchor by going gently astern. | Вытравить цепь на глубину и успокоиться. → Вытравите сколько требует проверка, затем заставьте якорь забрать малым задним ходом. |
+| «Покажи» | Anchored in the bay with 34 m of chain, wind 15 kn. | На якоре в бухте, 34 м цепи, ветер 15 узлов. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### Кормовой швартов, левый (`rope_stern_line_port`)
 
 | Поле | English | Русский |
@@ -3122,3 +3152,21 @@
 | instruments.engineTitle | The engine is running. Tap to learn more. | Двигатель работает. Нажмите, чтобы узнать больше. |
 | time.unfoldSpeed | Open the time bar (speed ×{scale}) | Открыть панель времени (скорость ×{scale}) |
 | alerts.at | at {time} on board | в {time} на борту |
+| anchor.label | Anchor | Якорь |
+| anchor.down | Chain out ▼ | Травить цепь ▼ |
+| anchor.up | Chain in ▲ | Выбирать цепь ▲ |
+| anchor.counter | {m} m | {m} м |
+| anchor.phase.stowed | Anchor in the bow roller. | Якорь в носовом ролике. |
+| anchor.phase.hanging | Anchor hanging under the bow. | Якорь висит под носом. |
+| anchor.phase.bottom | Anchor on the bottom, not set yet. | Якорь на грунте, ещё не забрал. |
+| anchor.phase.set | Anchor set (dug in). | Якорь забрал (зарылся в грунт). |
+| anchor.dragging | Dragging! | Ползёт! |
+| anchor.cutOut | The windlass stopped: too much load. Motor gently towards the anchor. | Брашпиль остановился: слишком большая нагрузка. Подойдите малым ходом к якорю. |
+| anchor.scope | Depth {depth} m (with the roller {eff} m) · scope {ratio} : 1 | Глубина {depth} м (с роликом {eff} м) · цепь {ratio} : 1 |
+| real.station.bow | Bow | Нос |
+| real.bow.hint | At the bow: the windlass lets the anchor chain out and brings it in. Hold a button; let go to stop. | На носу: брашпиль травит и выбирает якорную цепь. Держите кнопку; отпустите, чтобы остановить. |
+| anchor.enough | Enough chain for the rules. | Цепи достаточно по правилам. |
+| anchor.more | Let out {m} m more (the rules ask for {need} m). | Вытравите ещё {m} м (по правилам нужно {need} м). |
+| anchor.alarm | Anchor alarm: the anchor is dragging. | Якорная тревога: якорь ползёт. |
+| anchor.silence | OK | ОК |
+| anchor.hint | To anchor: head into the wind and stop, let the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | Постановка на якорь: встаньте носом к ветру, остановитесь, травите цепь, пока лодку сносит назад, до отметки «достаточно» (длина цепи к глубине: не меньше 4 глубин с высотой ролика или 3 длин корпуса, что больше), затем дайте малый назад (на треть) на несколько секунд, чтобы якорь зарылся. Песок и ил держат хорошо, трава и камень плохо. |

@@ -19,6 +19,7 @@ export const ALERT_KINDS = [
   'tookWheel',
   'fendersOut',
   'sailWorn',
+  'anchorAlarm',
 ] as const;
 export type AlertKind = (typeof ALERT_KINDS)[number];
 
@@ -41,6 +42,7 @@ export const ALERT_INFO: Readonly<Record<AlertKind, AlertKindInfo>> = {
   fendersOut: { learnId: 'fit_fender', severity: 'info' },
   // The entry is the worn sail's own (`alertLearnId`); this one is the fallback.
   sailWorn: { learnId: 'sail_main', severity: 'warning' },
+  anchorAlarm: { learnId: 'term_scope', severity: 'danger' },
 };
 
 /** The two sails that can wear out, and the Learn entry of each. */
@@ -96,6 +98,8 @@ export interface AlertSource {
   autopilotNoticeS: number;
   harbour: HarbourState;
   sailDamage: Readonly<Record<WornSail, number>>;
+  /** M46: the anchor; its alarm is an alert. */
+  anchor?: { alarm: boolean };
 }
 
 const { historyMax, repeatGapS, overpoweredAfterS } = boat.physics.alerts;
@@ -122,6 +126,7 @@ function started(previous: AlertSource, next: AlertSource): AlertKind[] {
   if (previous.autopilotNoticeS <= 0 && next.autopilotNoticeS > 0) kinds.push('tookWheel');
   const hint = (s: AlertSource) => fenderHintShown(s.harbour, s.boat.mode);
   if (!hint(previous) && hint(next)) kinds.push('fendersOut');
+  if (!previous.anchor?.alarm && next.anchor?.alarm) kinds.push('anchorAlarm');
   return kinds;
 }
 

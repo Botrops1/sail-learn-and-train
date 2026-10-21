@@ -15,6 +15,7 @@ import type { RenderStats } from '../ui/debugOverlay';
 import { buildBoat } from './boat';
 import { daylighting } from './daylight';
 import { cloudTexture, rippleNormalMap } from './environment';
+import { buildAnchorChain } from './anchorChain';
 import { buildBay } from './bay';
 import { buildMarina } from './marina';
 import { buildSeabed } from './seabed';
@@ -130,6 +131,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   boatModel.setFendersOut(fendersOut);
   let thrusters = initial.thrusters;
   boatModel.setThrusters(thrusters);
+  let anchorStowed = initial.anchor.phase === 'stowed';
+  boatModel.setAnchorStowed(anchorStowed);
   holder.add(boatModel.root);
   const dangerZone = buildDangerZone();
   holder.add(dangerZone.object);
@@ -147,6 +150,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   world.group.add(bay.object);
   const mooringLines = buildMooringLines();
   world.group.add(mooringLines.object);
+  const anchorChain = buildAnchorChain(detail);
+  world.group.add(anchorChain.object);
   const wake = buildWake();
   scene.add(holder, world.group, wake.object, streaks.object);
 
@@ -161,6 +166,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     seabed.object,
     bay.object,
     mooringLines.object,
+    anchorChain.object,
   ]);
   listenForTaps(renderer.domElement, (x, y) => {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -288,6 +294,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       boatModel = buildBoat(state.controls, state.rig, detail);
       boatModel.setFendersOut(state.harbour.fendersOut);
       boatModel.setThrusters(state.thrusters);
+      boatModel.setAnchorStowed(anchorStowed);
       holder.add(boatModel.root);
       highlight = createHighlighter(boatModel.root);
       highlight(highlightIds(state.selection));
@@ -297,6 +304,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     if (state.harbour.fendersOut !== fendersOut) {
       fendersOut = state.harbour.fendersOut;
       boatModel.setFendersOut(fendersOut);
+    }
+    // The boat's own anchor is hidden while the anchor is down (the chain draws it at its end).
+    if ((state.anchor.phase === 'stowed') !== anchorStowed) {
+      anchorStowed = state.anchor.phase === 'stowed';
+      boatModel.setAnchorStowed(anchorStowed);
     }
     // The thrusters' water jets show while a joystick is held.
     if (state.thrusters !== thrusters) {
@@ -400,6 +412,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       seabed.update(state);
       bay.update(state, water.heightAt);
       mooringLines.update(state, ropeView);
+      anchorChain.update(state, ropeView);
       wake.update(state, state.rig.timeS, water.heightAt);
       // At night the wake and the wind streaks are dimmed (they ignore the light).
       const dim = 1 - SCENE.daylight.nightLineDim * light.night;

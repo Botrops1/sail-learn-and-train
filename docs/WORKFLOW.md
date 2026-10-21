@@ -582,7 +582,7 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 
 - [ ] Anchoring: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4 — she points into the wind. In the Anchor block hold "Chain out": the counter counts metres; the anchor hangs, then lands on the bottom. The check says how much more chain the rules want (scope: chain against depth).
 - [ ] Set it: let out enough chain, then put the engine a third astern for a few seconds: the status says the anchor is set.
-- [ ] Swinging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=180&an=34.0&ax=-1606.0,0.0&as=1&m=harbour — she starts across the wind and swings round to point into it.
+- [ ] Swinging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=180&an=34.0&ax=-1610.0,-6.9&as=1&m=harbour — she starts across the wind and swings round to point into it.
 - [ ] Dragging: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=25&wm=gusty&cam=map&pl=bay&pe=-1560.0&pn=-70.0&hdg=0&an=20.0&ax=-1560.0,-50.0&m=harbour&tx=4 — short chain on the sea grass in gusts: the anchor drags and the alarm goes off.
 - [ ] Bow station: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1606.0,0.0&as=1&mode=realistic&st=bow — Realistic mode has a fifth station, Bow, with the windlass buttons.
 

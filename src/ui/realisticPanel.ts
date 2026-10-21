@@ -15,8 +15,10 @@ import {
   type TailReport,
   type TailSpec,
 } from '../model/realistic';
+import { createAnchorPanel } from './anchorPanel';
 import { createAutopilotPanel } from './autopilotPanel';
 import { createEngineLever } from './enginePanel';
+import { createLineRow } from './harbourPanel';
 import { createThrusterPair } from './thrusterPanel';
 import { el } from './dom';
 import { part, quoted, t, type StringKey } from './i18n';
@@ -244,6 +246,18 @@ export function createRealisticPanel(
     el('div', { class: 'thruster-helm', 'data-testid': 'thruster-helm' }, [
       createThrusterPair(store, 'helm'),
     ]),
+    // The windlass remote (M46): the helmsman lets the chain out without going forward.
+    el(
+      'div',
+      { class: 'helm-windlass', 'data-testid': 'windlass-helm' },
+      createAnchorPanel(store, '-helm', true),
+    ),
+  ]);
+  // The Bow station (M46): the windlass and, in the bay, the bow line to a buoy. It has no slot for the winch handle.
+  const bow = el('div', { class: 'bow-station', 'data-testid': 'bow-station' }, [
+    el('p', { class: 'hint explain' }, [t('real.bow.hint')]),
+    ...createAnchorPanel(store, '-bow', false),
+    createLineRow(store, 'bl', '-bow'),
   ]);
 
   // The strip for the selected clutch.
@@ -549,6 +563,7 @@ export function createRealisticPanel(
       if (id === station) drawing.refresh(state, selected);
     }
     helm.hidden = station !== 'helm';
+    bow.hidden = station !== 'bow';
     if (station === 'helm') wheel.refresh(state);
     helmSlot.update(slotMode(real.handle, 'helm'));
     mast.element.hidden = station !== 'mast';
@@ -557,7 +572,7 @@ export function createRealisticPanel(
 
     // The strip (the clutches' stations only).
     const spec = selected ? tailSpecs().find((s) => s.key === selected) : undefined;
-    const noClutches = station === 'helm' || station === 'mast';
+    const noClutches = station === 'helm' || station === 'mast' || station === 'bow';
     strip.hidden = noClutches;
     empty.hidden = noClutches || Boolean(spec) || Boolean(state.selection && !spec);
     const otherStation =
@@ -660,6 +675,8 @@ export function createRealisticPanel(
     crankCw.hidden = !inHere || atGearbox;
     crankCcw.hidden = !inHere || atGearbox;
     crankOne.hidden = !inHere || !atGearbox;
+    // The Bow station has no slot for the winch handle (M46).
+    handleBar.hidden = station === 'bow';
     const crank = handle.crank;
     crankCw.classList.toggle('is-pressed', inHere && crank > 0 && !atGearbox);
     crankCcw.classList.toggle('is-pressed', inHere && crank < 0);
@@ -703,6 +720,7 @@ export function createRealisticPanel(
     ...[...drawings.values()].map((drawing) => drawing.element),
     mast.element,
     helm,
+    bow,
     empty,
     strip,
     handleBar,
