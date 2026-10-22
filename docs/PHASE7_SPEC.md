@@ -1709,21 +1709,26 @@ Exercises with scores and debriefs, scripted winds, the night time-lapse (Phase 
 
 ### 13.9 Decided in the M47 PR
 
-(empty)
+- The hint (`mooring-anchor-hint`) is a paragraph made in `createLinesBlock` (`src/ui/harbourPanel.ts`); its text is set when the anchor phase or the lines change.
+- Like every `p.explain`, the hint shows when the section's "?" button is tapped (`section-explain-harbour`); the checks tap it first.
+- The Thrusters are in the Engine section (M41), so the accessibility check of the `harbour-mode` link opens the Engine section only.
+- The model-cost case runs `step` on a state built with `goToPlace` (marina), then the tight layout and busy traffic set on the state, both thrusters +1.
+- PT-51's second case passes the spec's bands (see the PR for the values). The `to-verify` sources still do not open from the cloud environment (PHYSICS_TRUTHS, M47 note).
+- **Owner's answers on PR #108 ("Accept all"):** frame rate 60 fps on the phone in the heavy cases; Phase 7 is marked done in the ROADMAP; the M46 leftovers (the anchor sign under the wind label on the map, arrow keys on the windlass buttons) wait for Phase 8.
 
 ---
 
 ## 14. Definition of Done (Phase 7)
 
 - [ ] M40–M47 merged, each with its WORKFLOW checklist ticked by the owner.
-- [ ] Every Phase 7 rule (PT-27, PT-31, PT-33, PT-34, PT-47 … PT-57) has a test named after it in `tests/physicsTruths7.test.ts`; every Phase 1–3 rule test passes unchanged.
-- [ ] Old links open the same picture (the URL tests of every phase pass unchanged).
-- [ ] Harbour mode in the mode chip and the link; the place chooser with open water, the marina and the bay.
-- [ ] Contact, the damage report and fenders; mooring lines with the line-in-the-propeller rule; depth, grounding, shore lines and buoys; the anchor with the windlass, the scope check and the alarm; the Bow station and the helm remote.
-- [ ] The model-cost test, the accessibility audit of 13.5 and CI's `browser-checks` (the full set at phone size) pass.
-- [ ] The frame-rate check on the owner's phone in the heaviest cases (13.5).
-- [ ] New Russian strings are drafts (status `draft`); the review document regenerated.
-- [ ] `docs/BOAT_REFERENCE.md` lists every Phase 7 assumption and the skipper questions 18–21.
+- [x] Every Phase 7 rule (PT-27, PT-31, PT-33, PT-34, PT-47 … PT-57) has a test named after it in `tests/physicsTruths7.test.ts`; every Phase 1–3 rule test passes unchanged.
+- [x] Old links open the same picture (the URL tests of every phase pass unchanged).
+- [x] Harbour mode in the mode chip and the link; the place chooser with open water, the marina and the bay.
+- [x] Contact, the damage report and fenders; mooring lines with the line-in-the-propeller rule; depth, grounding, shore lines and buoys; the anchor with the windlass, the scope check and the alarm; the Bow station and the helm remote.
+- [x] The model-cost test, the accessibility audit of 13.5 and CI's `browser-checks` (the full set at phone size) pass.
+- [x] The frame-rate check on the owner's phone in the heaviest cases (13.5).
+- [x] New Russian strings are drafts (status `draft`); the review document regenerated.
+- [x] `docs/BOAT_REFERENCE.md` lists every Phase 7 assumption and the skipper questions 18–21.
 
 ## 15. Decisions and open questions
 
