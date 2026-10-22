@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { reduce } from '../src/app/store';
 import { act, initialState, run } from './motionHelpers';
 
 /**
@@ -33,5 +34,20 @@ describe('the cost of one simulated frame (M13)', () => {
     for (let i = 0; i < frames; i += 1) state = act(state, { type: 'step', dt: 1 / 60 });
     const meanMs = (performance.now() - started) / frames;
     expect(meanMs).toBeLessThan(3);
+  });
+
+  it('stays under 6 ms on average in the tight marina fairway with both thrusters on at ×16 (M47)', () => {
+    let state = reduce(initialState({}), { type: 'goToPlace', place: 'marina' });
+    state = {
+      ...state,
+      harbour: { ...state.harbour, layout: 'tight', traffic: 'busy' },
+      thrusters: { bow: 1, stern: 1 },
+    };
+    state = act(state, { type: 'setTimeScale', scale: 16 });
+    const frames = 300;
+    const started = performance.now();
+    for (let i = 0; i < frames; i += 1) state = act(state, { type: 'step', dt: 0.1 });
+    const meanMs = (performance.now() - started) / frames;
+    expect(meanMs).toBeLessThan(6);
   });
 });

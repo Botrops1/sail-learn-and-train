@@ -195,6 +195,7 @@ function createLinesBlock(store: Store): HTMLElement[] {
   const bayHint = el('p', { class: 'hint explain', 'data-testid': 'lines-hint-bay' }, [
     t('lines.hint.bay'),
   ]);
+  const anchorHint = el('p', { class: 'hint explain', 'data-testid': 'mooring-anchor-hint' });
   const notHere = el('p', { class: 'hint', 'data-testid': 'lines-place' }, [
     t('lines.reason.place'),
   ]);
@@ -209,7 +210,9 @@ function createLinesBlock(store: Store): HTMLElement[] {
     if (
       previous &&
       state.lines.fouled === previous.lines.fouled &&
-      state.harbour.place === previous.harbour.place
+      state.harbour.place === previous.harbour.place &&
+      state.lines.lines === previous.lines.lines &&
+      state.anchor.phase === previous.anchor.phase
     ) {
       return;
     }
@@ -220,10 +223,18 @@ function createLinesBlock(store: Store): HTMLElement[] {
     hint.hidden = !marina;
     bayHint.hidden = !bay;
     notHere.hidden = marina || bay;
+    // M47: stern-to on our own anchor, in the marina (stern lines) or the bay (shore line).
+    const onBottom = state.anchor.phase === 'bottom' || state.anchor.phase === 'set';
+    const has = (...codes: string[]) => state.lines.lines.some((line) => codes.includes(line.code));
+    const sternToAnchor = onBottom && marina && has('sp', 'ss');
+    const anchorShore = onBottom && bay && has('sl');
+    anchorHint.hidden = !(sternToAnchor || anchorShore);
+    if (sternToAnchor) setText(anchorHint, t('mooring.sternToAnchor'));
+    if (anchorShore) setText(anchorHint, t('mooring.anchorShore'));
     fouled.hidden = !state.lines.fouled;
     clear.hidden = !state.lines.fouled;
   };
   store.subscribe(sync);
   sync(store.getState());
-  return [title, notHere, ...marinaRows, ...bayRows, hint, bayHint, fouled, clear];
+  return [title, notHere, ...marinaRows, ...bayRows, hint, bayHint, anchorHint, fouled, clear];
 }

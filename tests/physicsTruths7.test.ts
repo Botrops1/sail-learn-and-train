@@ -22,6 +22,9 @@ import {
   type AnchorState,
   type SeabedEnv,
 } from '../src/model/anchor';
+import { harbourForces } from '../src/model/harbourForces';
+import { cleatPoint, type MooringLine } from '../src/model/mooringLines';
+import { THRUSTERS_OFF } from '../src/model/thrusters';
 import { engineThrustN, initialEngine, stepEngine } from '../src/model/engine';
 import { initialWindMode, windAt } from '../src/model/windModes';
 import { reduce } from '../src/app/store';
@@ -345,6 +348,65 @@ describe('PT-51 stern-to, the bow must be held', () => {
 
   it('PT-51 without the lazy line the bow swings more than 35° at 15 kn', () => {
     expect(lie(15, null).swing).toBeGreaterThan(35);
+  });
+});
+
+describe('PT-51 stern-to on the anchor and a shore line (bay)', () => {
+  /** 300 s at 60 fps (PHASE7_SPEC 13.4); returns the largest heading deviation from 90°. */
+  function lie(twsKn: number, shore: boolean): number {
+    const state = harbourStart({ windDirDeg: 0, twsKn, headingDeg: 90 });
+    let boat: BoatState = { ...state.boat, eastM: -1665, northM: 0, headingDeg: 90 };
+    let anchor: AnchorState = {
+      ...ANCHOR_STOWED,
+      phase: 'set',
+      chainOutM: 60,
+      eastM: -1605,
+      northM: 0,
+    };
+    const lines: MooringLine[] = [];
+    if (shore) {
+      const [x, y, z] = cleatPoint('cleat_stern_port');
+      const [e, n] = pointToMap(boat, x, z);
+      const far = { eastM: -1700, northM: 0, heightM: 1.0 };
+      const d = Math.hypot(e - far.eastM, n - far.northM, y - far.heightM);
+      lines.push({ code: 'sl', cleatId: 'cleat_stern_port', far, lengthM: d + 0.5, farIndex: 1 });
+    }
+    const forces = (a: AnchorState) =>
+      harbourForces({
+        thrusters: THRUSTERS_OFF,
+        obstacles: [],
+        fenders: { out: false, lost: [] },
+        lines,
+        place: 'bay',
+        anchor: a,
+      });
+    let swing = 0;
+    for (let i = 0; i < 300 * 60; i += 1) {
+      const dt = 1 / 60;
+      const held = anchor;
+      boat = stepBoat(
+        boat,
+        {
+          windDirDeg: 0,
+          twsKn,
+          rudderDeg: 0,
+          rig: state.rig,
+          controls: state.controls,
+          engineThrustN: 0,
+          external: forces(held),
+        },
+        dt,
+      ).boat;
+      anchor = stepAnchor(anchor, boat, { depthAt, seabedAt: () => 'sand' }, dt);
+      swing = Math.max(swing, Math.abs(wrap180(boat.headingDeg - 90)));
+    }
+    return swing;
+  }
+
+  it('PT-51 the anchor and a shore line hold her: 15 kn up to 10°, 25 kn up to 14°, without the line more than 20°', () => {
+    expect(lie(15, true)).toBeLessThanOrEqual(10);
+    expect(lie(25, true)).toBeLessThanOrEqual(14);
+    expect(lie(15, false)).toBeGreaterThan(20);
   });
 });
 

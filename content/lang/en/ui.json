@@ -734,6 +734,8 @@
   "lines.reason.shoreFar": "A ring on the shore must be within 40 m of the stern.",
   "lines.hint": "Stern-to (the usual way in the Mediterranean): reverse slowly into the berth, throw both stern lines to the quay when the stern is close, then pick up the lazy line (a line from the quay to a weight on the bottom ahead of the boat), walk it to the bow and pull it tight. The lazy line holds the bow against the wind. Keep the engine in neutral while a line is slack near the propeller.",
   "lines.hint.bay": "In a bay: pick up a mooring buoy with the bow, or anchor and take a shore line from the stern to a ring on the rocks, so she cannot swing. Keep the engine in neutral while a line is slack near the propeller.",
+  "mooring.sternToAnchor": "Stern-to on your own anchor: the chain holds the bow as a lazy line would. Take in chain until it is tight, and keep the stern a step from the quay.",
+  "mooring.anchorShore": "Anchor ahead, shore line astern: she cannot swing. Keep the shore line tight enough that the stern stays clear of the rocks.",
   "lines.fouled": "A line is caught in the propeller. The engine has stopped.",
   "lines.clearProp": "Clear the propeller (a diver frees it)",
   "side.port.gen": "port",

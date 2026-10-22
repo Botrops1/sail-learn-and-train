@@ -1709,7 +1709,11 @@ Exercises with scores and debriefs, scripted winds, the night time-lapse (Phase 
 
 ### 13.9 Decided in the M47 PR
 
-(empty)
+- The hint (`mooring-anchor-hint`) is a paragraph made in `createLinesBlock` (`src/ui/harbourPanel.ts`); its text is set when the anchor phase or the lines change.
+- Like every `p.explain`, the hint shows when the section's "?" button is tapped (`section-explain-harbour`); the checks tap it first.
+- The Thrusters are in the Engine section (M41), so the accessibility check of the `harbour-mode` link opens the Engine section only.
+- The model-cost case runs `step` on a state built with `goToPlace` (marina), then the tight layout and busy traffic set on the state, both thrusters +1.
+- PT-51's second case passes the spec's bands (see the PR for the values). The `to-verify` sources still do not open from the cloud environment (PHYSICS_TRUTHS, M47 note).
 
 ---
 

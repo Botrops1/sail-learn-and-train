@@ -64,6 +64,7 @@ import { liveM43Checks, M43_SCENES } from './shots-m43.mjs';
 import { liveM44Checks, M44_SCENES } from './shots-m44.mjs';
 import { liveM45Checks, M45_SCENES } from './shots-m45.mjs';
 import { liveM46Checks, M46_SCENES } from './shots-m46.mjs';
+import { liveM47Checks, M47_SCENES } from './shots-m47.mjs';
 import {
   closeSettings,
   openSettings,
@@ -227,6 +228,7 @@ const SCENES = [
   ...M44_SCENES.map((scene) => ({ ...scene, name: `m44-${scene.name}` })),
   ...M45_SCENES.map((scene) => ({ ...scene, name: `m45-${scene.name}` })),
   ...M46_SCENES.map((scene) => ({ ...scene, name: `m46-${scene.name}` })),
+  ...M47_SCENES.map((scene) => ({ ...scene, name: `m47-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -1004,6 +1006,7 @@ try {
     m44: () => liveM44Checks(onTestClock),
     m45: () => liveM45Checks(onTestClock),
     m46: () => liveM46Checks(onTestClock),
+    m47: () => liveM47Checks(onTestClock),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
