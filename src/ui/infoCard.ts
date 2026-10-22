@@ -17,7 +17,7 @@ export interface InfoCardOptions {
    * comes down.
    */
   atFull?: () => boolean;
-  /** Opens the entry in the Learn section and Learn mode ("More"), also when it is already open there. */
+  /** Opens the entry in the Learn section ("More"; the app keeps Harbour mode), also when it is already open there. */
   showLearn?: (id: string) => void;
 }
 
