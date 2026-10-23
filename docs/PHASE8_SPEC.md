@@ -1157,7 +1157,7 @@ Issue #111. Owner's answer 9: the file holds what the link holds (the boat, the 
 
 ### 14.1 Files
 
-New: `src/app/setupFile.ts` (pure), `src/ui/deviceSettings.ts`, `src/ui/files.ts`, `tests/setupFile.test.ts`, `scripts/shots-m56.mjs`. Changed: `src/ui/settingsMenu.ts`, both `ui.json`, `docs/review/ru.md`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `src/app/setupFile.ts` (pure), `src/ui/deviceSettings.ts`, `src/ui/files.ts`, `tests/setupFile.test.ts`, `scripts/shots-m56.mjs`. Changed: `src/ui/settingsMenu.ts`, `src/ui/columnWidths.ts` (exports `COLUMNS_KEY = 'sail-learn.columns'`, moved from `columnHandles.ts`), `src/ui/columnHandles.ts` (imports it), `src/ui/timeBar.ts` (exports its `FOLD_KEY`, `'sail-learn.timeBarFolded'`), both `ui.json`, `docs/review/ru.md`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 14.2 The file
 
@@ -1176,33 +1176,38 @@ New: `src/app/setupFile.ts` (pure), `src/ui/deviceSettings.ts`, `src/ui/files.ts
 }
 ```
 
-- `link` is `serializeUrlState(state)` (it holds `lang` when not English, and every key of the boat, the wind and the place). `device.columns` is the parsed `sail-learn.columns` value (`serializeColumns` shape), `timeBarFolded` the boolean of `sail-learn.timeBarFolded`, `layout` the parsed `sail-learn.layout` or `null` when none is saved.
+- `link` is `serializeUrlState(state)` (it holds `lang` when not English, and every key of the boat, the wind and the place).
+- **The file holds the stored shapes**, as above: `device.columns` is `JSON.parse(serializeColumns(columns))` (`{ w, c }`), `device.timeBarFolded` a boolean, `device.layout` `JSON.parse(serializeLayout(layout))` (`{ v, c }`) or `null` when no layout is saved. In memory (`DeviceSettings`, 14.3) they are `ColumnState` and `SectionLayout`.
+- Storage formats (as today): `sail-learn.columns` holds `serializeColumns(…)`; `sail-learn.timeBarFolded` holds `'1'` (folded) or `'0'`, anything else reads as not folded; `sail-learn.layout` holds `serializeLayout(…)`.
 - The file name: `sail-setup-YYYY-MM-DD.json` (the device's local date).
 
 ### 14.3 Pure helpers (`src/app/setupFile.ts`)
 
 ```ts
 export const SETUP_VERSION = 1;
+/** In memory. */
 export interface DeviceSettings { columns: ColumnState; timeBarFolded: boolean; layout: SectionLayout | null }
-export interface SetupFile { app: 'sail-learn-and-train'; kind: 'setup'; version: number; savedAt: string; link: string; device: DeviceSettings }
+/** As written in the file (14.2). */
+export interface SetupFile { app: 'sail-learn-and-train'; kind: 'setup'; version: number; savedAt: string; link: string; device: { columns: unknown; timeBarFolded: boolean; layout: unknown | null } }
 export type SetupProblem = 'notJson' | 'notSetup' | 'newer' | 'badLink';
 export function makeSetupFile(link: string, device: DeviceSettings, savedAtIso: string): SetupFile;
 export function setupFileName(date: Date): string;  // local date
-/** Checks a file's text. The device part is cleaned with parseColumns / parseLayout (bad parts become the defaults, never an error). */
-export function readSetupFile(text: string): { ok: true; setup: SetupFile } | { ok: false; problem: SetupProblem };
+/** Checks a file's text and returns the link and the device settings in memory. The device part is cleaned with parseColumns / parseLayout (bad or missing parts become the defaults, never an error). */
+export function readSetupFile(text: string): { ok: true; link: string; device: DeviceSettings } | { ok: false; problem: SetupProblem };
 ```
 
 - `notJson`: `JSON.parse` throws. `notSetup`: not an object, or `app`/`kind` differ. `newer`: `version` > `SETUP_VERSION` or not a number. `badLink`: `link` is not a string starting with `?` or is longer than 8,000 characters.
-- `device`: `columns` through `parseColumns(JSON.stringify(columns))`, `timeBarFolded === true`, `layout` through `parseLayout(JSON.stringify(layout))` (null when absent or bad).
+- `device` (missing → all defaults): `columns` → `parseColumns(columns === undefined ? null : JSON.stringify(columns))`; `timeBarFolded === true`; `layout` → `layout === undefined || layout === null ? null : parseLayout(JSON.stringify(layout))`.
+- `setupFile.ts` touches no `window` or storage (the tests run in Node).
 
-`src/ui/deviceSettings.ts`: `readDeviceSettings(): DeviceSettings` and `writeDeviceSettings(device: DeviceSettings): void` (the three keys; `layout: null` removes `sail-learn.layout`). Both in `try/catch`.
+`src/ui/deviceSettings.ts`: `readDeviceSettings(): DeviceSettings` and `writeDeviceSettings(device: DeviceSettings): void`, using `COLUMNS_KEY`, `FOLD_KEY` and `LAYOUT_KEY` and the formats of 14.2; `layout: null` removes `sail-learn.layout` (intended: loading a setup saved on a phone puts a computer back to the default layout, because the file "puts everything back"). Both in `try/catch`.
 
 ### 14.4 UI (Settings, after Detail and the Layout row, before Share and Reset)
 
 A field "Your setup" (`t('setup.label')`): two buttons `setup-save` `t('setup.save')` "Save to a file" and `setup-load` `t('setup.load')` "Load from a file", a hidden `<input type="file" data-testid="setup-file" accept=".json,application/json">`, the hint `t('setup.hint')`, a status line `setup-status` (`aria-live="polite"`).
 
 - **Save:** `downloadJson(setupFileName(new Date()), makeSetupFile(serializeUrlState(state), readDeviceSettings(), new Date().toISOString()))`; status `t('setup.saved', { name })`.
-- **Load:** clicks the file input; `pickJsonFile` → `'tooBig'` → status `t('setup.problem.tooBig')`; text → `readSetupFile`; a problem → status `t('setup.problem.<problem>')`; ok → `writeDeviceSettings(setup.device)`, then `window.location.assign(window.location.pathname + setup.link)` (a full load: the device settings are read at the start).
+- **Load:** the `setup-load` button only calls `input.click()`. The input has **one permanent `change` listener** (so a file given to it directly, as the browser check does, works too): `pickJsonFile(input)` (reads `input.files?.[0]`; none → `null`; `size > 1_000_000` → `'tooBig'`; else `await file.text()`; then `input.value = ''` so the same file can be chosen again) → `'tooBig'` → status `t('setup.problem.tooBig')`; text → `readSetupFile`; a problem → status `t(('setup.problem.' + problem) as StringKey)`; ok → `writeDeviceSettings(device)`, then `window.location.replace(window.location.pathname + link)` (a full load, no history entry: the device settings are read at the start).
 
 ### 14.5 Strings
 
@@ -1223,19 +1228,21 @@ New, in this order, after the `layout.*` keys.
 
 ### 14.6 Tests (`tests/setupFile.test.ts`)
 
-1. `makeSetupFile` then `JSON.stringify` then `readSetupFile` gives the same link and device.
+1. `makeSetupFile` then `JSON.stringify` then `readSetupFile` gives the same link and device, with non-default columns (`widths: [450, 320]`, column 2 folded), `timeBarFolded: true` and a moved layout; the file's `device.columns` is `{ w: [450, 320], c: [0, 1] }` and `device.layout.v` is 1.
 2. `setupFileName(new Date(2026, 9, 3))` is `sail-setup-2026-10-03.json`.
 3. `'{'` → `notJson`; `'{"app":"x","kind":"setup","version":1}'` → `notSetup`; version 2 → `newer`; `link: 'v=1'` → `badLink`.
-4. A file whose `device.columns` is `"garbage"` reads ok with the default columns; a missing `layout` reads as null.
+4. A file whose `device.columns` is `"garbage"` reads ok with the default columns; a file without `device.columns` and `device.layout` reads ok with the default columns and `layout` null.
 5. The link of `initialState()` survives: `parseUrlState(readSetupFile(…).setup.link)` gives the same `serializeUrlState` text.
 
 ### 14.7 Browser checks (`scripts/shots-m56.mjs`)
 
 Playwright's `page.waitForEvent('download')` and `setInputFiles`.
 
-1. **Save:** `?wd=90&ws=16&lang=ru&cam=top`, on the wide layout move Conditions to column 1 (`moveSectionBy`), fold the time bar; open the settings, tap `setup-save` → a download named `sail-setup-<today>.json`; its JSON has `kind: 'setup'`, a link with `wd=90`, `ws=16`, `lang=ru`, and `device.layout.c[0]` containing `conditions`.
-2. **Load in a fresh page:** a new context (empty storage), `setInputFiles` with that file on `setup-file` → the page reloads; the link has `wd=90` and `lang=ru`; the columns show Conditions in column 1; the time bar is folded.
-3. **Bad files:** a text file `nope` → `setup-status` reads the notJson text; a JSON `{"app":"x"}` → the notSetup text; the page did not reload.
+Every `openPage` makes a new browser context (empty storage, downloads allowed).
+
+1. **Save** (wide 1,440 × 900): `?wd=90&ws=16&lang=ru&cam=top`; move Conditions to column 1 (`moveSectionBy(page, 'conditions', 'other')`); fold the time bar (tap `time-fold`; it is folded when `time-fold` has `aria-expanded="false"`); `openSettings(page)`; `const download = page.waitForEvent('download')`, tap `setup-save` → the download's name is `sail-setup-<today>.json`; read it (`download.path()`): `kind: 'setup'`, the link has `wd=90`, `ws=16`, `lang=ru`, `device.layout.c[0]` contains `conditions`, `device.timeBarFolded` is true. Close this context.
+2. **Load in a fresh page:** a second `openPage` (wide, `?`), `openSettings(page)`, `setInputFiles` on `setup-file` with the saved file, wait for the reload (`page.waitForURL(/wd=90/)`, then the canvas) → the link has `wd=90` and `lang=ru`; `columnSections` shows `conditions` in column 1; `time-fold` has `aria-expanded="false"`.
+3. **Bad files** (a fresh English page, phone): set `window.__m56 = 1`; `setInputFiles` with `{ name: 'nope.json', mimeType: 'application/json', buffer: Buffer.from('nope') }` → `setup-status` reads "This file cannot be read: it is not a setup file."; `{"app":"x"}` → "This is not a setup file of this app."; `Buffer.alloc(1_000_001)` → "This file is too big to be a setup file."; `window.__m56` is still 1 (no reload).
 4. On the phone the two buttons are 44 px high and inside the Settings tab.
 5. `auditPage` with the field shown: no problems.
 
