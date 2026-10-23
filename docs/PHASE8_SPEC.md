@@ -252,19 +252,19 @@ Issue #113. Owner's answer 2 (planning chat): "Make Learn and Easy mode ropes th
 In `createRopesTab` (`src/ui/ropesTab.ts`):
 
 - `showMode(state, previous)` runs when `appMode` **or** `ropesMode` changes (today only `ropesMode`). The Easy block (`ropes-easy`) shows when `ropesMode === 'easy' || appMode === 'learn'`; the Realistic block (`ropes-realistic`) shows when `ropesMode === 'realistic' && appMode !== 'learn'`.
-- The drawing (`drawing.element`, test id `clutch-drawing`) and the explain paragraph with `clutch.hint` are hidden unless `appMode === 'harbour'`. Keep calling `drawing.refresh` (it is cheap; it keeps the drawing right when Harbour shows it).
+- The drawing (`drawing.element`, test id `clutch-drawing`, an SVG element, which has no `hidden` property) and the explain paragraph with `clutch.hint` go into one wrapper `<div class="clutch-block" data-testid="clutch-block">`; the wrapper's `hidden` is set unless `appMode === 'harbour'`. Keep calling `drawing.refresh` (it is cheap; it keeps the drawing right when Harbour shows it).
 - The empty strip's text (`.strip-empty`) is `t('ropes.strip.emptyList')` when the drawing is hidden and `t('ropes.strip.empty')` when it shows.
-- The explain line `ropes-mode` ("Easy mode: tap a clutch, then use its slider.") gets the new text `ropes.mode.easyShort` (6.4) and is hidden while the read-only note (6.3) shows.
+- The explain line `ropes-mode` ("Easy mode: tap a clutch, then use its slider.") shows `ropes.mode.easyShortList` (new, 6.4) while the drawing is hidden and `ropes.mode.easyShort` (unchanged) while it shows (Harbour); it is hidden while the read-only note (6.3) shows.
 
 ### 6.3 Read-only in Learn mode with Realistic ropes
 
 With Realistic ropes the clutches, winches and hands move the ropes every step (`stepRealistic`), so a slider would be pulled back at once. In Learn mode with `ropesMode === 'realistic'`:
 
-- every `input` and `button` inside the strip (`.rope-strip`) is `disabled`, except the "Read more in Learn" button (`strip-learn`); the `details`/`summary` stay usable;
+- every `input` and `button` inside the local `strip` element that `createRopesTab` builds (not the Realistic panel's `real-strip`) is `disabled`, except the "Read more in Learn" button (`strip-learn`); the `details`/`summary` stay usable;
 - a note shows under the strip: `<p class="hint" data-testid="ropes-learn-realistic">` with `t('ropes.learnRealistic')`;
 - the list rows still select (a tap lights the rope up in 3D and shows its strip with the value).
 
-Switching to Easy ropes, or out of Learn mode, removes `disabled` and hides the note. Use one function `setReadOnly(on: boolean)` in `ropesTab.ts`, called from `showMode`.
+Switching to Easy ropes, or out of Learn mode, removes `disabled` and hides the note. Use one function `setReadOnly(on: boolean)` in `ropesTab.ts`, called from `showMode` (nothing else in `ropeControls.ts` or `stepper.ts` sets `disabled`, so `setReadOnly(false)` may enable every control of the strip).
 
 ### 6.4 Strings
 
@@ -272,14 +272,14 @@ Switching to Easy ropes, or out of Learn mode, removes `disabled` and hides the 
 |---|---|---|
 | `ropes.strip.emptyList` (new, after `ropes.strip.empty`) | Tap a rope in the 3D view or in the list below to work it. | Нажмите на конец в 3D-виде или в списке ниже, чтобы работать с ним. |
 | `ropes.learnRealistic` (new, after `ropes.strip.emptyList`) | Realistic ropes: you work this rope at its station. Choose Realistic mode to work it. | Реалистичные концы: с этим концом работают на его месте. Выберите реалистичный режим, чтобы работать с ним. |
-| `ropes.mode.easyShort` (changed) | tap a rope in the list, then use its slider. | нажмите на конец в списке, затем двигайте его ползунок. |
+| `ropes.mode.easyShortList` (new, after `ropes.mode.easyShort`) | tap a rope in the list, then use its slider. | нажмите на конец в списке, затем двигайте его ползунок. |
 | `quick.easy` (changed) | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
 
-`ropes.strip.empty` and `clutch.hint` stay (Harbour mode uses them).
+`ropes.strip.empty`, `ropes.mode.easyShort` and `clutch.hint` stay (Harbour mode uses them).
 
 ### 6.5 Older checks to change
 
-- `scripts/shots-m4a.mjs`, the first live block (the loop over `[viewports[0], viewports[2]]`): the clutch part (from "Clutch "Vang" → vang selected" to the static ropes' info lines) needs the drawing, which now shows only in Harbour mode. Open that part's page with `'?cam=side-port&debug=1&lb=0&m=harbour'`, call `await showSection(page, 'ropes')` before the first clutch tap (the `setSheet(page, 'full')` stays), and close the context after the static ropes. Open a second page with today's query (`'?cam=side-port&debug=1&lb=0'`) for the rest (the 3D tap on the topping lift, the step size, the wheel), unchanged.
+- `scripts/shots-m4a.mjs` (`liveM4aChecks`, run by the live group `general`), the first live block (the loop over `[viewports[0], viewports[2]]`): the clutch part (from "Clutch "Vang" → vang selected" to the static ropes' info lines) needs the drawing, which now shows only in Harbour mode. Inside the same loop iteration: open that part's page with `'?cam=side-port&debug=1&lb=0&m=harbour'` (same `openPage` options as today), call `await showSection(page, 'ropes')` before the first clutch tap (the `setSheet(page, 'full')` stays), and close its context after the static ropes. Then open a second page in the same iteration with today's query (`'?cam=side-port&debug=1&lb=0'`) for the rest (the 3D tap on the topping lift, the step size, the wheel), which keeps its lines unchanged (it starts with `showSection(page, 'conditions')` and `setSheet(page, 'peek')` as today). The "Share" block after the loop is untouched.
 - `scripts/a11y-audit.mjs`: no change (`.clutch-drawing .clutch` still exists in Harbour mode).
 
 ### 6.6 Tests
@@ -288,13 +288,13 @@ No unit test changes (the section is DOM). `npm test` stays green.
 
 ### 6.7 Browser checks (`scripts/shots-m48.mjs`)
 
-Scenes (phone and desktop): `easy-ropes-list` `?sel=rope_vang&cam=side-port` (Ropes opened by the scene's `click: ['section-toggle-ropes']`), `learn-realistic-ropes` `?mode=realistic&m=learn&sel=rope_vang&cam=side-port` (Ropes opened the same way).
+Scenes (phone and desktop): `easy-ropes-list` `?sel=rope_vang&cam=side-port` and `learn-realistic-ropes` `?mode=realistic&m=learn&sel=rope_vang&cam=side-port`, each with `section: 'ropes'` in its entry (as the `m4a-ropes-list` scene does: it raises the sheet before opening).
 
-Live checks (phone, then the 1,440 × 900 desktop; `showSection(page, 'ropes')` first in each):
+Live checks (registered as `m48: () => liveM48Checks(live)`: no app-time dependence; phone, then the 1,440 × 900 desktop; `showSection(page, 'ropes')` first in each):
 
-1. **Easy, no drawing:** `?cam=side-port`: `clutch-drawing` is hidden, `ropes-easy` is visible, the list has at least 10 `.rope-item` rows; tap `[data-select="rope_vang"]` → `waitForLink(page, ['sel=rope_vang'])`, the Vang slider (`getByLabel('Vang', { exact: true })`) is visible; the empty-strip text before the tap is "Tap a rope in the 3D view or in the list below to work it.".
-2. **Learn with Easy ropes:** `?m=learn&sel=rope_vang`: no drawing; tap the strip's + button (`getByRole('button', { name: 'More: Vang' })`) → the link has `vg=` with a value 5 higher than before.
-3. **Learn with Realistic ropes:** `?mode=realistic&m=learn&sel=rope_vang`: `ropes-easy` visible, `ropes-realistic` hidden, `ropes-learn-realistic` visible, the + button is disabled; then `setMode(page, 'easy')` (choosing Easy also sets the ropes mode to Easy) → the note is hidden and the + button is enabled.
+1. **Easy, no drawing:** `?cam=side-port`: `clutch-drawing` is hidden, `ropes-easy` is visible, the list has at least 10 `.rope-item` rows; tap `[data-select="rope_vang"]` → `waitForLink(page, ['sel=rope_vang'])`, the Vang slider (`getByLabel('Vang', { exact: true })`) is visible; the empty-strip text before the tap (`[data-testid="ropes-easy"] .strip-empty`) is "Tap a rope in the 3D view or in the list below to work it.".
+2. **Learn with Easy ropes:** `?m=learn&sel=rope_vang&vg=50`: no drawing; tap the strip's + button (`getByRole('button', { name: 'More: Vang' })`) → `waitForLink(page, ['vg=55'])` (the default step is 5 %).
+3. **Learn with Realistic ropes:** `?mode=realistic&m=learn&sel=rope_vang`: `ropes-easy` visible, `ropes-realistic` hidden, `ropes-learn-realistic` visible, the + button is disabled; then `setMode(page, 'easy')` (choosing Easy also sets the ropes mode to Easy) and `showSection(page, 'ropes')` again → the note is hidden and the + button is enabled.
 4. **Harbour keeps the drawing:** `?m=harbour`: `clutch-drawing` visible after `showSection(page, 'ropes')`.
 5. **Realistic keeps the stations:** `?mode=realistic`: `ropes-realistic` visible, `clutch-drawing` hidden.
 6. **Quick row (phone only):** `?cam=side-port`, `setSheet(page, 'peek')`: the quick row's text is "Tap a rope: its − and + appear here.".
@@ -302,7 +302,7 @@ Live checks (phone, then the 1,440 × 900 desktop; `showSection(page, 'ropes')` 
 
 ### 6.8 Done when
 
-The table of 6.2 holds in all six rows on a phone and a computer; the M4a checks pass in their new form; typecheck, lint, tests, build and `SHOTS_ONLY=m4a,m48,m27,m35` pass.
+The table of 6.2 holds in all six rows on a phone and a computer; the M4a checks pass in their new form; typecheck, lint, tests, build and `SHOTS_ONLY=general,m48,m27,m35` pass (`general` runs the M4a checks).
 
 ### 6.9 Not in M48
 
@@ -1412,13 +1412,18 @@ export function storedBoats(): BoatProfile[];
 /** Adds or replaces (same id) a checked profile. */
 export function saveBoat(profile: BoatProfile): 'ok' | 'builtIn' | 'full' | 'storage';
 export function removeBoat(id: string): void;
-export function chosenBoat(): string;            // 'hanse508' when nothing is stored
+/** The id chosen last, if it matches BOAT_ID_PATTERN; else 'hanse508'. */
+export function chosenBoat(): string;
 export function setChosenBoat(id: string): void;
-/** The boat to start with: the link's `boat=` when the address has a query (no `boat=` = 'hanse508'), else the one chosen last. */
+/** Pure: the boat a link names: a valid `boat=` (BOAT_ID_PATTERN), else 'hanse508'. */
+export function linkBoatId(search: string): string;
+/** The boat to start with: linkBoatId(search) when the address has a query; with no query, chosenBoat() if it is among storedBoats(), else 'hanse508'. */
 export function startBoatId(search: string): string;
 ```
 
-`'builtIn'` for the id `hanse508`; `'full'` when 10 other boats are stored; `'storage'` when `localStorage` refuses (a full or private store). All through `globalThis.localStorage` in `try/catch`, so the tests can put a stand-in on `globalThis`.
+Only the boat select (16.5) and a loaded setup file (16.6) call `setChosenBoat`; opening a link does not.
+
+`boatStore.ts` imports only `../model/boat` and `../model/boatProfile`, and `boatProfile.ts` imports only `./boat` (and types): the static import graph of `main.ts` must not reach any module that reads `boat` at load time (`alerts.ts`, `gybeReport.ts` …). `'builtIn'` for the id `hanse508`; `'full'` when 10 other boats are stored; `'storage'` when `localStorage` refuses (a full or private store). All through `globalThis.localStorage` in `try/catch`, so the tests can put a stand-in on `globalThis`.
 
 ### 16.3 Startup (`src/main.ts`, `src/app/app.ts`)
 
@@ -1430,32 +1435,40 @@ const host = document.getElementById('app');
 const id = startBoatId(window.location.search);
 const profile = id === 'hanse508' ? undefined : storedBoats().find((p) => p.id === id);
 if (profile) useBoat(profile.id, profile.name, profile.boat);
-void import('./app/app').then(({ startApp }) => {
-  if (host) startApp(host, { missingBoat: id !== 'hanse508' && !profile ? id : null });
-});
+void import('./app/app')
+  .then(({ startApp }) => {
+    if (host) startApp(host, { missingBoat: id !== 'hanse508' && !profile ? id : null });
+  })
+  .catch((error: unknown) => {
+    console.error(error);
+    if (host) host.textContent = 'The app could not load. Please reload the page.';
+  });
 ```
+
+(`id !== 'hanse508' && !profile` can happen only when the link names a boat with `boat=`: with no query, `startBoatId` already fell back to the Hanse 508.)
 
 `main.ts` imports nothing else: every other module is loaded by the dynamic import, after `useBoat`, so the module constants that read the boat (`gybeReport.ts`, `enginePanel.ts`, …) read the chosen one. `boatStore.ts` imports only `boat.ts` and `boatProfile.ts`.
 
-`startApp(host, options: { missingBoat?: string | null } = {})`: with a `missingBoat`, a note shows over the top of the 3D view under the time bar (`div.boat-note[role=status]`, `data-testid="boat-missing"`, a × button `boat-missing-close` 44 px): `t('boat.missing', { id })`. The link is then written without `boat=` (the Hanse 508 is shown).
+`startApp(host, options: { missingBoat?: string | null } = {})`: with a `missingBoat`, a note is appended to the 3D view's element after its top area: `div.boat-note[role=status]`, `data-testid="boat-missing"`, `position: absolute`, left and right 8 px, its top at the top area's bottom plus 8 px (the `--view-top-h` value the time bar keeps up to date, `trackTopHeight`), above the 3D view and below the cards (z-index as the info card); white card look; text `t('boat.missing', { id })` and a × button `boat-missing-close` (44 px, `aria-label` `t('settings.close')`) that only removes the note. The link is then written without `boat=` (the Hanse 508 is shown).
 
 ### 16.4 Link (`src/app/urlState.ts`, `urlSync.ts`)
 
 - `serializeUrlState` writes `boat=<boatId>` right after `v=1` when `boatId !== 'hanse508'`. `parseUrlState` ignores `boat` (main.ts reads it).
-- Back (`popstate`): a link whose `boat=` (or its absence) names another boat than `boatId` reloads the page, as a language change does.
+- Back (`popstate`): when `linkBoatId(location.search) !== boatId`, reload the page, before the `load` dispatch, as the language branch does. (No loop: the first write of `startUrlSync` drops a `boat=` that could not be loaded.)
 - `openScene` (Learn's "Show it working") keeps the boat: the scene's link has no `boat=`, the page is not reloaded, and the address bar then gets `boat=` again from `serializeUrlState`.
 
 ### 16.5 UI (Settings → Boat, extends M57's field)
 
-- A `<select data-testid="boat-select">` (`aria-label` `t('boat.label')`): "Hanse 508" first (`t('boat.builtIn', { name: 'Hanse 508' })` "Hanse 508 (built in)"), then the stored boats by name. Choosing one: `setChosenBoat(id)`, then `window.location.assign(window.location.pathname + '?v=1' + (id === 'hanse508' ? '' : \`&boat=${id}\`) + (lang !== 'en' ? \`&lang=${lang}\` : ''))`: the app starts fresh on that boat (nothing of the old boat's state carries over).
-- `boat-import` `t('boat.import')` "Import a boat profile" with a hidden `<input type="file" data-testid="boat-file" accept=".json,application/json">`: `pickJsonFile` → `'tooBig'` → `t('boat.problem.tooBig')`; not JSON → `t('boat.problem.notJson')`; `checkBoatProfile` problems → `t('boat.problem.check', { count })` and a list (`ul[data-testid="boat-problems"]`) of the first 5 as `path: detail`; `saveBoat` → `builtIn` / `full` / `storage` → `t('boat.problem.<result>')`; ok → `t('boat.imported', { name })`, and the select gains it (not chosen yet).
+- A `<select data-testid="boat-select">` (`aria-label` `t('boat.label')`): "Hanse 508" first (`t('boat.builtIn', { name: 'Hanse 508' })` "Hanse 508 (built in)"), then the stored boats by name. Choosing one: `setChosenBoat(id)`, `openAfterReload('settings')` (as the language choice does), then `window.location.assign(window.location.pathname + '?v=1' + (id === 'hanse508' ? '' : '&boat=' + id) + (language !== 'en' ? '&lang=' + language : ''))` with `language = store.getState().settings.language`: the app starts fresh on that boat, on purpose: nothing of the old boat's state or the other link settings carries over, only the language.
+- `boat-import` `t('boat.import')` "Import a boat profile" with a hidden `<input type="file" data-testid="boat-file" accept=".json,application/json">` that has one permanent `change` listener (as M56's setup input; the button only calls `input.click()`). Every message below goes into `<p data-testid="boat-status" aria-live="polite">`: `pickJsonFile` → `'tooBig'` → `t('boat.problem.tooBig')`; not JSON → `t('boat.problem.notJson')`; `checkBoatProfile` problems → `t('boat.problem.check', { count })` and a list (`ul[data-testid="boat-problems"]`) of the first 5 as `path: detail`; `saveBoat` → `builtIn` / `full` / `storage` → `t('boat.problem.<result>')`; ok → `t('boat.imported', { name })`, and the select gains it (not chosen yet); **if the imported id is the boat in use** (`boatId`, a re-import after editing), the page reloads on it at once (`openAfterReload('settings')`, `window.location.reload()`), so the new numbers are used.
 - While an imported boat is in use, `boat-remove` `t('boat.remove')` "Remove this boat" with the two-tap confirm of Reset (`t('boat.removeConfirm')`): removes it, chooses the Hanse 508 and reloads as above.
 - M57's download, hint and guide link stay.
 
 ### 16.6 Learn note and the setup file
 
-- `learnTab.ts`: while `boatId !== 'hanse508'`, an entry's "On this boat" block ends with `<p class="hint" data-testid="learn-boat-note">` `t('learn.writtenFor', { name: 'Hanse 508' })` (owner's answer 13).
-- `setupFile.ts` (M56): `SetupFile` gets an optional `boatProfile?: BoatProfile`. `makeSetupFile` gets it as a fourth argument (the profile in use when `boatId !== 'hanse508'`, from `storedBoats()`); `readSetupFile` checks it with `checkBoatProfile` (a failure is the new problem `badBoat`, `t('setup.problem.badBoat')`); loading a file with one saves it (`saveBoat`) and chooses it (`setChosenBoat`) before the page loads the link.
+- `learnTab.ts`: while `boatId !== 'hanse508'`, an entry's "On this boat" block (only entries that have one; add none to the others) ends with `<p class="hint" data-testid="learn-boat-note">` `t('learn.writtenFor', { name: 'Hanse 508' })` (owner's answer 13).
+- `setupFile.ts` (M56, stays pure): `SetupFile` gets an optional `boatProfile?: BoatProfile`. `makeSetupFile(link, device, savedAtIso, boatProfile?)` takes it as a fourth argument (the profile in use when `boatId !== 'hanse508'`, from `storedBoats()`); `readSetupFile` returns it (`{ ok: true, link, device, boatProfile? }`) after `checkBoatProfile`; the new problem `badBoat` (`t('setup.problem.badBoat')`) when the check fails, when its `id` is `hanse508`, or when it differs from `linkBoatId(link)`.
+- The Load handler (`settingsMenu.ts`): with a `boatProfile`, `saveBoat` it first; `builtIn` / `full` / `storage` → show `t('boat.problem.<result>')` in `setup-status` and stop (no reload); ok → `setChosenBoat(id)`, then the device settings and the reload as M56.
 
 ### 16.7 Strings
 
@@ -1488,19 +1501,21 @@ void import('./app/app').then(({ startApp }) => {
 4. A stored entry that fails the checks (edit it in storage) is dropped by `storedBoats()`.
 5. `startBoatId('')` → `chosenBoat()`; `startBoatId('?v=1')` → `hanse508`; `startBoatId('?v=1&boat=test-boat')` → `test-boat`; `startBoatId('?boat=Bad%20Id')` → `hanse508`.
 
-`tests/urlState.test.ts`: with `useBoat('test-boat', 'Test', clone)`, `serializeUrlState(initialState())` starts `v=1&boat=test-boat`; with the Hanse 508 no `boat=` is written and every existing link test is unchanged.
+`tests/urlState.test.ts`: with `useBoat('test-boat', 'Test', clone)` (restored with `useBoat('hanse508', 'Hanse 508', HANSE_508)` in `finally`), `serializeUrlState(initialState())` starts `v=1&boat=test-boat`; with the Hanse 508 no `boat=` is written and every existing link test is unchanged.
 
-`tests/setupFile.test.ts`: a file with a valid `boatProfile` reads ok and keeps it; a broken one → `badBoat`.
+`tests/boatStore.test.ts` also: `linkBoatId('?v=1&boat=a-b')` is `a-b`, `linkBoatId('?v=1')` and `linkBoatId('?boat=A B')` are `hanse508`; with no query and a chosen id that is not stored, `startBoatId('')` is `hanse508`; the import lines of `src/app/boatStore.ts` and `src/model/boatProfile.ts` (read as text) name only the modules allowed in 16.2.
+
+`tests/setupFile.test.ts`: a file with a valid `boatProfile` whose id matches the link's `boat=` reads ok and keeps it; a broken one, one with id `hanse508`, and one whose id differs from the link → `badBoat`.
 
 ### 16.9 Browser checks (`scripts/shots-m58.mjs`)
 
-The checks make a test profile in the page: download the Hanse profile as in M57, change `id` to `test-light`, `name` to "Test light", `dimensions.loa` to 14, remove the stern thruster, and give it to `boat-file` with `setInputFiles` (a buffer).
+The checks make a test profile in Node: read `content/boat/hanse508.json`, wrap it as `{ app: 'sail-learn-and-train', kind: 'boatProfile', version: 1, id: 'test-light', name: 'Test light', boat }` with `dimensions.loa` 14 and `hull.thrusters` the bow one only, and give it with `page.waitForEvent('filechooser')` + a tap on `boat-import` + `chooser.setFiles({ name, mimeType: 'application/json', buffer })`. Pages that reload are not on the test clock; after each reload wait for `canvas.scene-canvas` and use `waitForLink`. Checks 1, 2, 3 and 7 run in **one** context (the boat lives in that context's storage); checks 4 and 6 open fresh contexts.
 
-1. **Import:** the status reads "Imported Test light. …"; the select has "Test light".
+1. **Import:** `boat-status` reads "Imported Test light. Choose it above to sail it."; the select has "Test light".
 2. **Choose:** select it → the page reloads; the link has `boat=test-light`; `boat-name` reads "Test light"; Harbour mode (`setMode`) shows only the bow joystick.
-3. **Learn note:** `?boat=test-light&m=learn&learn=rope_vang` shows `learn-boat-note`.
+3. **Learn note:** on the same page, `page.goto` the link `?v=1&boat=test-light&m=learn&learn=rope_vang` → `learn-boat-note` is shown.
 4. **Missing boat:** a fresh context (empty storage) opening `?v=1&boat=test-light` → `boat-missing` visible with "test-light"; the link has no `boat=`.
-5. **Bad profile:** a profile with `dimensions.loa: 40` → `boat-problems` lists `boat.dimensions.loa: 6 to 25`; nothing stored.
+5. **Bad profile:** a profile with `dimensions.loa: 40` → `boat-problems` lists `boat.dimensions.loa: 6 to 25` (M57's `detail` text for that range); nothing stored.
 6. **Setup with the boat:** with Test light in use, save the setup (M56); in a fresh context load it → the page opens on Test light.
 7. **Remove:** `boat-remove` twice → the page reloads on the Hanse 508 and the select no longer lists Test light.
 8. `auditPage` with the Boat field and a problem list shown: no problems.
