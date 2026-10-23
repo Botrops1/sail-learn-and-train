@@ -2523,7 +2523,6 @@
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Штурвалы и перо руля (лопасть под кормой яхты) поворачиваются вместе. Яхта поворачивает, только пока движется: если её держат на месте или она остановилась, она не слушается штурвала. |
 | ropes.mode.easy | Easy mode: | Простой режим: |
 | ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его в разделе «Режим») работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
-| clutch.hint | The clutches (locks that hold a rope) beside the wheels, seen from the helm looking forward: bank B on the port (left) side, bank A on the starboard (right) side. Tap one to work its rope. | Стопоры (замки, которые держат конец) рядом со штурвалами, вид с места рулевого вперёд: блок B слева (левый борт), блок A справа (правый борт). Нажмите на стопор, чтобы работать с его концом. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Блоки стопоров: нажмите на стопор, чтобы выбрать его конец |
 | clutch.bankB | Bank B · port | Блок B · левый борт |
 | clutch.bankA | Bank A · starboard | Блок A · правый борт |
@@ -2536,7 +2535,8 @@
 | clutch.tail.unfurl | the tail that rolls the mainsail out | хвост, который раскручивает грот |
 | clutch.aria | Clutch “{label}”: {name} | Стопор «{label}»: {name} |
 | ropes.strip.label | Selected rope | Выбранный конец |
-| ropes.strip.empty | Tap a clutch in the drawing, a rope in the 3D view, or a name in the list below to work that rope. | Нажмите на стопор на рисунке, на конец в 3D-виде или на название в списке ниже, чтобы работать с этим концом. |
+| ropes.strip.emptyList | Tap a rope in the 3D view or in the list below to work it. | Нажмите на конец в 3D-виде или в списке ниже, чтобы работать с ним. |
+| ropes.learnRealistic | Realistic ropes: you work this rope at its station. Choose Realistic mode to work it. | Реалистичные концы: с этим концом работают на его месте. Выберите реалистичный режим, чтобы работать с ним. |
 | ropes.shared.twoEnds | One rope, two ends. | Одна снасть, два конца. |
 | ropes.shared.workAgainst | These work against each other. | Они тянут друг против друга. |
 | ropes.sharedDetail.ctl_mainsheet | The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same rope, so it can be worked from either side. | Стопор «Main sheet» (правый борт) и стопор «MAIN SHEET» (левый борт) держат два конца одной снасти, поэтому с ней можно работать с любого борта. |
@@ -2555,7 +2555,7 @@
 | view.reset.button | Reset all | Сбросить всё |
 | view.reset.confirm | Tap again to reset | Нажмите ещё раз, чтобы сбросить |
 | view.reset.done | Everything is back to the start settings. | Всё вернулось к начальным настройкам. |
-| ropes.mode.easyShort | tap a clutch, then use its slider. | нажмите на стопор, затем двигайте его ползунок. |
+| ropes.mode.easyShortList | tap a rope in the list, then use its slider. | нажмите на конец в списке, затем двигайте его ползунок. |
 | ropes.strip.more | What does it do? | Что это делает? |
 | pause.pause | Pause | Пауза |
 | pause.resume | Resume | Продолжить |
@@ -3016,7 +3016,7 @@
 | mode.harbour.hint | Engine, thrusters, lines and anchor first. | Сначала двигатель, подруливающие, швартовы и якорь. |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
-| quick.easy | Tap a rope or a clutch: its − and + appear here. | Нажмите на конец или стопор: здесь появятся − и +. |
+| quick.easy | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
 | quick.realistic | Pull the panel up to work the clutches and winches. | Поднимите панель, чтобы работать стопорами и лебёдками. |
 | quick.learn | Tap any part of the boat to learn about it. | Нажмите на любую часть яхты, чтобы узнать о ней. |
 | quick.read | Read | Читать |

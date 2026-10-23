@@ -1,7 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { entryFor, panelEntries, type PanelEntry } from '../model/panelEntries';
 import { SCENE } from '../render3d/sceneConfig';
-import { createClutchDrawing } from './clutchDrawing';
 import { el } from './dom';
 import { part, quoted, t, type StringKey } from './i18n';
 import {
@@ -23,14 +22,14 @@ export function ropesTabShows(selection: string | null): boolean {
 }
 
 /**
- * The Ropes section (PHASE1_SPEC 7.2; a tab until M27), Easy mode: the clutch-bank drawing; under
- * it the strip for the selected rope (its slider, or an info line for a rope that is not
+ * The Ropes section (PHASE1_SPEC 7.2; a tab until M27), Easy and Learn: the strip for the
+ * selected rope (its slider, or an info line for a rope that is not
  * adjusted), sticky in the stacked layout; then a compact list of all ropes, so every control is
- * reachable without the drawing (each row has its rope's colour; the red "fighting" colour is
+ * reachable (since M48 there is no clutch-bank drawing; each row has its rope's colour; the red "fighting" colour is
  * explained under the "?", M38). The Sails, Autopilot and Engine blocks are
  * sections of their own (panel.ts).
  *
- * The selection is the store's: tapping a clutch, a list row or a rope in 3D selects the same
+ * The selection is the store's: tapping a list row or a rope in 3D selects the same
  * thing everywhere. Realistic mode (settings.ropesMode, M4b) shows the stations instead, with
  * clutches and winches worked by hand (realisticPanel.ts); the mode chip changes mode.
  */
@@ -180,14 +179,26 @@ export function createRopesTab(
     return { entry, view, name, block, refresh, row, rowValue };
   });
 
-  const empty = el('p', { class: 'strip-empty' }, [t('ropes.strip.empty')]);
+  const empty = el('p', { class: 'strip-empty' }, [t('ropes.strip.emptyList')]);
+  const learnRealistic = el('p', { class: 'hint', 'data-testid': 'ropes-learn-realistic' }, [
+    t('ropes.learnRealistic'),
+  ]);
   const strip = el(
     'section',
     { class: 'rope-strip', 'data-testid': 'rope-strip', 'aria-label': t('ropes.strip.label') },
     [empty, ...views.map((view) => view.block)],
   );
 
-  const drawing = createClutchDrawing(store);
+  /** Learn mode with Realistic ropes: the strip shows the rope's value but cannot move it (6.3). */
+  const setReadOnly = (on: boolean) => {
+    for (const control of strip.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
+      'input, button',
+    )) {
+      control.disabled = on && control.getAttribute('data-testid') !== 'strip-learn';
+    }
+    learnRealistic.hidden = !on;
+  };
+
   // The wheel's row is followed by the autopilot and engine blocks in Phase 2; since M27 they are
   // sections of their own (PHASE5_SPEC 8.4).
   const list = el(
@@ -219,25 +230,25 @@ export function createRopesTab(
       }
     }
     shown?.refresh(state);
-    drawing.refresh(state, previous);
     for (const view of views) setText(view.rowValue, rowText(view, state));
   };
   store.subscribe(refresh);
   refresh(store.getState());
 
-  // The drawing comes first, so it shows without scrolling on a phone; the longer
+  // The strip and the list come first; the longer
   // explanations follow the list (and fold behind the section's "?").
+  // Since M48 no mode draws the clutch banks: the list and the selected rope's strip are the way in.
+  const modeParagraph = el('p', { class: 'hint mode-line explain', 'data-testid': 'ropes-mode' }, [
+    el('strong', {}, [t('ropes.mode.easy')]),
+    ' ',
+    t('ropes.mode.easyShortList'),
+  ]);
   const easy = el('div', { class: 'ropes-easy', 'data-testid': 'ropes-easy' }, [
-    el('p', { class: 'hint mode-line explain', 'data-testid': 'ropes-mode' }, [
-      el('strong', {}, [t('ropes.mode.easy')]),
-      ' ',
-      t('ropes.mode.easyShort'),
-    ]),
-    drawing.element,
+    modeParagraph,
     strip,
+    learnRealistic,
     el('h3', { class: 'section-title' }, [t('ropes.list.title')]),
     list,
-    el('p', { class: 'hint explain' }, [t('clutch.hint')]),
     el('p', { class: 'hint explain' }, [t('ropes.mode.easyHint')]),
     el('p', { class: 'hint explain' }, [t('ropes.fighting')]),
   ]);
@@ -249,17 +260,26 @@ export function createRopesTab(
   ]);
 
   const showMode = (state: AppState, previous?: AppState) => {
-    if (previous && state.settings.ropesMode === previous.settings.ropesMode) return;
+    if (
+      previous &&
+      state.settings.ropesMode === previous.settings.ropesMode &&
+      state.appMode === previous.appMode
+    ) {
+      return;
+    }
+    const learn = state.appMode === 'learn';
     const real = state.settings.ropesMode === 'realistic';
-    easy.hidden = real;
-    realistic.hidden = !real;
+    easy.hidden = real && !learn;
+    realistic.hidden = !real || learn;
+    setReadOnly(real && learn);
+    modeParagraph.hidden = real && learn;
   };
   store.subscribe(showMode);
   showMode(store.getState());
   return [easy, realistic];
 }
 
-/** Scrolls the open section just enough to show the strip (it may sit below a tall drawing). */
+/** Scrolls the open section just enough to show the strip. */
 function revealStrip(strip: HTMLElement): void {
   const body = strip.closest('.section-body');
   if (!body || strip.offsetParent === null) return;
