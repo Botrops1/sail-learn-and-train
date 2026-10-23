@@ -106,7 +106,7 @@ export function createPanel(
     autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
     engine: { content: [createEnginePanel(store), createThrusterPanel(store)], explain: true },
     conditions: { content: createWindPanel(store), explain: true },
-    learn: { content: createLearnTab(store, () => showSection('ropes')), explain: false },
+    learn: { content: createLearnTab(store, () => showSection('ropes'), sheet), explain: false },
     place: { content: createPlacePanel(store), explain: true },
     anchor: { content: createAnchorPanel(store), explain: true },
     harbour: { content: createHarbourPanel(store), explain: true },

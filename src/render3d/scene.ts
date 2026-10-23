@@ -12,6 +12,7 @@ import { waveTrains } from '../model/waves';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
+import { endSpotlight, onSpotlight, spotlightNow, type Spotlight } from '../ui/spotlight';
 import { buildBoat } from './boat';
 import { daylighting } from './daylight';
 import { cloudTexture, rippleNormalMap } from './environment';
@@ -82,6 +83,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = SCENE.light.toneMappingExposure;
   renderer.shadowMap.type = THREE.PCFShadowMap;
+  // M49: the spotlight draws a frame in three passes; the debug overlay counts all of them.
+  renderer.info.autoReset = false;
   renderer.domElement.classList.add('scene-canvas');
   host.append(renderer.domElement);
 
@@ -169,6 +172,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     anchorChain.object,
   ]);
   listenForTaps(renderer.domElement, (x, y) => {
+    // A tap on the 3D view ends the spotlight; its glide back starts after OrbitControls' 'start'.
+    stopSpotlight(true);
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
     store.dispatch({ type: 'select', partId });
@@ -213,6 +218,23 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         setDamage: (main: number, jib: number) => {
           const state = store.getState();
           store.dispatch({ type: 'load', state: { ...state, sailDamage: { main, jib } } });
+        },
+        /** M49: the spotlight now and the camera's distance to its target. */
+        spotlight: () => {
+          const now = spotlightNow();
+          if (!now) return null;
+          const pose = rig.pose();
+          const [p, t] = [pose.position, pose.target];
+          return {
+            partId: now.partId,
+            kind: now.kind,
+            distanceM: Math.hypot(p[0] - t[0], p[1] - t[1], p[2] - t[2]),
+          };
+        },
+        /** M49: where the camera is now. */
+        cameraPose: () => {
+          const pose = rig.pose();
+          return { position: pose.position, target: pose.target };
         },
         /** Draw calls and triangles of the last frame. */
         stats: () => ({
@@ -285,7 +307,18 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     const preset = state.camera.preset;
     // The map leaves the 3D camera where it is: going back to the same view needs no move.
     if (preset !== 'map' && preset !== previous.camera.preset && preset !== rig.preset) {
+      // (A preset chosen drops the focus itself: its own glide runs.)
+      stopSpotlight(null);
       rig.goTo(preset);
+    }
+    // M49: the spotlight ends, and the camera stays, when something else is chosen.
+    if (
+      spot &&
+      ((state.selection !== previous.selection && state.selection !== null) ||
+        state.appMode !== previous.appMode ||
+        state.settings.detail !== previous.settings.detail)
+    ) {
+      stopSpotlight(false);
     }
     if (state.settings.detail !== detail) {
       detail = state.settings.detail;
@@ -336,6 +369,161 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     reflectionsStale = false;
     reflectionsAtMs = now;
   };
+
+  // M49 (issue #77): the spotlight of "Where is it?" and "Show it working" (PHASE8_SPEC 7.4).
+  // The camera glides close to the part, a veil darkens the frame and the part is drawn again
+  // over it. It lasts until a tap, Escape, a drag or another choice; the store never knows.
+  interface ActiveSpot {
+    meshes: THREE.Mesh[];
+    lit: THREE.Object3D[];
+    removeListeners: () => void;
+  }
+  let spot: ActiveSpot | null = null;
+  let veil: { scene: THREE.Scene; camera: THREE.OrthographicCamera } | undefined;
+  const SPOT_LAYER = 1;
+
+  /** Ends the spotlight; `glide` true glides the camera back, false leaves it, null leaves the focus to the caller. */
+  function stopSpotlight(glide: boolean | null): void {
+    if (!spot) return;
+    if (glide !== null) rig.endFocus(glide);
+    endSpotlight();
+  }
+
+  function clearSpot(): void {
+    if (!spot) return;
+    for (const object of spot.lit) object.layers.disable(SPOT_LAYER);
+    spot.removeListeners();
+    spot = null;
+  }
+
+  function visibleUpTree(object: THREE.Object3D): boolean {
+    for (let o: THREE.Object3D | null = object; o; o = o.parent) if (!o.visible) return false;
+    return true;
+  }
+
+  function startSpotlight(request: Spotlight): void {
+    const ids = new Set(highlightIds(request.partId));
+    boatModel.root.updateWorldMatrix(true, true);
+    const meshes: THREE.Mesh[] = [];
+    boatModel.root.traverse((object) => {
+      const data = object.userData as { partId?: string };
+      if (
+        object instanceof THREE.Mesh &&
+        data.partId &&
+        ids.has(data.partId) &&
+        visibleUpTree(object)
+      ) {
+        meshes.push(object);
+      }
+    });
+    if (meshes.length === 0) {
+      // A part in the world group (the quay) or a hidden one: only today's selection.
+      endSpotlight();
+      return;
+    }
+    const box = new THREE.Box3();
+    const instance = new THREE.Vector3();
+    const half = SCENE.spotlight.instanceHalfM;
+    for (const mesh of meshes) {
+      const points = (mesh.userData as { hitPoints?: Vec3[] }).hitPoints ?? [];
+      if (points.length > 1) {
+        // Drawn several times in one mesh (cleats, fenders): the instance nearest to the camera.
+        let best = Infinity;
+        const nearest = new THREE.Vector3();
+        for (const point of points) {
+          instance.set(...point).applyMatrix4(mesh.matrixWorld);
+          const d = instance.distanceToSquared(camera.position);
+          if (d < best) {
+            best = d;
+            nearest.copy(instance);
+          }
+        }
+        box.expandByPoint(nearest.clone().subScalar(half));
+        box.expandByPoint(nearest.clone().addScalar(half));
+      } else {
+        box.union(new THREE.Box3().setFromObject(mesh));
+      }
+    }
+    const where = request.kind === 'where';
+    rig.focus(
+      { min: box.min.toArray() as Vec3, max: box.max.toArray() as Vec3 },
+      where ? SCENE.spotlight.whereFill : SCENE.spotlight.showFill,
+      SCENE.camera.maxDistance,
+      // "Show it working" only ever comes closer than the pose the camera is at or gliding to.
+      !where,
+    );
+    // The meshes and every light go on layer 1, so the part can be drawn again over the veil.
+    const lit: THREE.Object3D[] = [...meshes];
+    scene.traverse((object) => {
+      if ((object as THREE.Light).isLight) lit.push(object);
+    });
+    for (const object of lit) object.layers.enable(SPOT_LAYER);
+    // The tap that started it must not end it: the listeners come on the next frame.
+    let armed = 0;
+    let cancelled = false;
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.target !== renderer.domElement) stopSpotlight(true);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') stopSpotlight(true);
+    };
+    const onPopState = () => stopSpotlight(false);
+    armed = requestAnimationFrame(() => {
+      if (cancelled) return;
+      document.addEventListener('pointerdown', onPointerDown, true);
+    });
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('popstate', onPopState);
+    spot = {
+      meshes,
+      lit,
+      removeListeners: () => {
+        cancelled = true;
+        cancelAnimationFrame(armed);
+        document.removeEventListener('pointerdown', onPointerDown, true);
+        document.removeEventListener('keydown', onKey);
+        window.removeEventListener('popstate', onPopState);
+      },
+    };
+  }
+
+  onSpotlight((request) => {
+    clearSpot();
+    if (request) startSpotlight(request);
+  });
+  rig.onUserDrag(() => stopSpotlight(false));
+
+  /** A frame with the spotlight: the scene, the veil, then the spotlit meshes again (7.4). */
+  function renderSpotlit(): void {
+    if (!veil) {
+      const quad = new THREE.Mesh(
+        new THREE.PlaneGeometry(2, 2),
+        new THREE.MeshBasicMaterial({
+          color: SCENE.spotlight.dimColor,
+          transparent: true,
+          opacity: SCENE.spotlight.dimOpacity,
+          depthTest: false,
+          depthWrite: false,
+          toneMapped: false,
+        }),
+      );
+      quad.frustumCulled = false;
+      const veilScene = new THREE.Scene();
+      veilScene.add(quad);
+      veil = { scene: veilScene, camera: new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1) };
+    }
+    renderer.autoClear = false;
+    renderer.clear();
+    renderer.render(scene, camera);
+    renderer.render(veil.scene, veil.camera);
+    camera.layers.set(SPOT_LAYER);
+    const shadowAuto = renderer.shadowMap.autoUpdate;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.render(scene, camera);
+    camera.layers.set(0);
+    renderer.shadowMap.autoUpdate = shadowAuto;
+    renderer.autoClear = true;
+  }
 
   let canvasHeight = 1;
   return {
@@ -421,7 +609,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         .set(SCENE.wind.color)
         .multiplyScalar(dim);
       if (detail === 'high') updateReflections(now, light.skyDirection);
-      renderer.render(scene, camera);
+      renderer.info.reset();
+      if (spot) renderSpotlit();
+      else renderer.render(scene, camera);
     },
     stats() {
       return { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };

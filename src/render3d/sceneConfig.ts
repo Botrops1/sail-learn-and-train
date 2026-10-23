@@ -430,6 +430,21 @@ export const SCENE = {
   },
   /** Tint of the part shown in the info card. */
   highlight: { color: '#ff9f1c', intensity: 0.55 },
+  /** M49 (issue #77): the spotlight of "Where is it?" and "Show it working". */
+  spotlight: {
+    /** The veil over everything else. */
+    dimColor: '#06121c',
+    dimOpacity: 0.62,
+    /** Share of the free view the part's box takes: "Where is it?" (closer) and "Show it working". */
+    whereFill: 0.8,
+    showFill: 0.25,
+    /** Never closer than this, metres (the orbit's own limit is SCENE.camera.minDistance, 3 m). */
+    minDistanceM: 1.2,
+    /** A part drawn several times in one mesh (cleats, fenders): the box around the nearest one, half-size in metres. */
+    instanceHalfM: 0.15,
+    /** Labels in 3D of other parts fade to this opacity. */
+    otherLabelOpacity: 0.25,
+  },
   camera: {
     verticalFovDeg: 40,
     near: 0.1,
