@@ -1614,15 +1614,17 @@ Owner's answer 14 (a)–(c): the anchor sign hidden under the map's wind label a
 
 ### 17.1 Files
 
-`src/ui/mapView.ts`, `src/ui/anchorPanel.ts`, `src/model/harbour.ts`, `src/model/alerts.ts`, `src/ui/harbourPanel.ts`, `src/ui/alertCentre.ts`, both `ui.json`, `docs/review/ru.md`, `tests/harbour.test.ts`, `tests/alerts.test.ts`, new `scripts/shots-m59.mjs`, `scripts/shots.mjs`, docs (17.6).
+`src/ui/mapView.ts`, `src/ui/anchorPanel.ts`, `src/model/harbour.ts`, `src/model/area.ts` (the type of the new marina key), `content/areas/adriatic.json`, `src/model/alerts.ts`, `src/ui/harbourPanel.ts`, `src/ui/alertCentre.ts`, both `ui.json`, `docs/review/ru.md`, `tests/harbour.test.ts`, `tests/alerts.test.ts`, new `scripts/shots-m59.mjs`, `scripts/shots.mjs`, `docs/BOAT_REFERENCE.md` (the Phase 8 fenders-hint row: mark it built), `docs/CODE_MAP.md`, docs (17.6).
 
 ### 17.2 The anchor sign on top (`src/ui/mapView.ts`)
 
-`drawAnchor` is split: the line from the bow and the dashed circle stay where they are drawn today; the anchor sign (`drawAnchorSign`) is drawn last, after `drawApparent`, in `drawMap` and in the mini-map's drawing, so no label or arrow covers it. The tap order is unchanged.
+`drawAnchor` is split: the line from the bow and the dashed circle stay where they are drawn today; a new `drawAnchorMark(ctx, state, view, mini: boolean)` (it calls `anchorPoint` and `drawAnchorSign` with r = mini ? 6 : 10, the sizes used today) is drawn **last**: in `drawMap` after `drawApparent`, in `drawMiniMap` after the wind arrow and the "N". The tap order is unchanged.
+
+With `debug=1`, `drawMap` records the names of its steps in order for the last frame (`'grid'`, `'windField'`, `'seabed'`, `'harbour'`, `'track'`, `'anchor'`, `'noGo'`, `'labels'`, `'buoys'`, `'boat'`, `'apparent'`, `'anchorMark'`), returned by a new `__sailMap.drawOrder()`.
 
 ### 17.3 Arrow keys on the windlass buttons (`src/ui/anchorPanel.ts`, `holdButton`)
 
-On either windlass button (Anchor section, Bow station, helm remote): ArrowDown held = chain out (`motion: 'down'`), ArrowUp held = chain in (`'up'`), whichever button has the focus; keyup of that arrow lets go (`'off'`); `preventDefault` so the panel does not scroll. Space and Enter keep working on the button's own motion.
+On either windlass button (Anchor section, Bow station, helm remote): ArrowDown held = chain out (`motion: 'down'`), ArrowUp held = chain in (`'up'`), whichever button has the focus; keydown acts only when `!event.repeat`; keyup of that arrow lets go (`'off'`); `preventDefault` so the panel does not scroll. Space and Enter keep working on the button's own motion.
 
 ### 17.4 Fenders hint when backing in (`src/model/harbour.ts`, alerts, Harbour gear)
 
@@ -1631,10 +1633,10 @@ On either windlass button (Anchor section, Bow station, helm remote): ArrowDown 
 export function fendersInHintShown(state: { harbour: HarbourState; boat: BoatState }, data?: BoatData, area?: AreaData): boolean;
 ```
 
-`true` when `harbour.place === 'marina'`, `!harbour.fendersOut`, `boat.speedMps < -0.1` and the distance from the stern point (`pointToMap(boat, hull.transomX, 0)`) to the midpoint of `marinaGeometry(layout, traffic).ourRings.west` and `.east` is at most `physics.contact.fendersHintM` (new data key, after the `physics.contact` keys: `"fendersHintM": 15`, **tunable**, with `"fendersHintNote": "M59: the 'put the fenders out' hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker (assumption)"`).
+`true` when `harbour.place === 'marina'`, `!harbour.fendersOut`, `boat.speedMps < -0.1` (surge is negative astern) and the distance from the stern point (`pointToMap(boat, hull.transomX, 0)`; with heading 180 the stern is at `northM + 8.6`) to the midpoint of `marinaGeometry(layout, traffic).ourRings.west` and `.east` (both on the quay face) is at most `area.marina.fendersHintM`. The number is **area data, not boat data** (so boat profiles made before M59 stay valid): `content/areas/adriatic.json`, in `marina`, after its last key: `"fendersHintM": 15`, **tunable**, `"fendersHintNote": "M59: the 'put the fenders out' hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker (assumption)"`; its type in `src/model/area.ts`. `harbour.ts` then imports `marina.ts`, `lowSpeed.ts`, `boat.ts` and `area.ts` as values (no import cycle: only `alerts`, `contact`, `mooringLines` and `places` import `harbour`). A boat backing out near the rings with the fenders in also gets the hint (accepted).
 
 - Harbour gear shows `<p class="hint" data-testid="fenders-in-hint">` `t('harbour.fenders.inHint')` while it is true.
-- A new alert kind `fendersIn` (appended to `ALERT_KINDS`) starts when it becomes true: severity `info`, Learn id `fit_fender`, tag `gear`, text `t('harbour.fenders.inHint')`; written again only `physics.alerts.repeatGapS` after the last (add it to `FLICKERING`).
+- A new alert kind `fendersIn` (appended to `ALERT_KINDS`) starts when it becomes true (false → true between two states): severity `info`, Learn id `fit_fender` (`ALERT_INFO`), tag `gear` (`alertTag`), text `t('harbour.fenders.inHint')` (`ALERT_TEXT` in `alertCentre.ts`); written again only `physics.alerts.repeatGapS` (5 s) after the last (add it to `FLICKERING`).
 
 | Key | English | Russian (draft) |
 |---|---|---|
@@ -1644,12 +1646,18 @@ export function fendersInHintShown(state: { harbour: HarbourState; boat: BoatSta
 
 - `tests/harbour.test.ts`: `fendersInHintShown` false in open water, false with fenders out, false going ahead, true going astern 10 m from the rings, false 20 m away.
 - `tests/alerts.test.ts`: `fendersIn` written once when the hint starts, tag `gear`.
-- `scripts/shots-m59.mjs`: (1) the map with the anchor down (the M46 Swinging link) and the camera on `map`: the sign's pixel colour at `anchorPoint` is the sign's dark colour (`COLOURS.anchor`), not a label's; (2) focus `windlass-down`, hold ArrowDown 2 s (app time) → the chain counter grew; ArrowUp 1 s → it shrank; (3) the marina ready state (`?pl=marina&m=harbour&tx=4`), lever astern until the stern is within 15 m (or a link with `pe`, `pn` and `bs=-0.5` 12 m out), fenders in → `fenders-in-hint` visible and an Attention entry tagged Gear; (4) **the Phase 8 accessibility sweep:** `auditPage` on the phone tabs (each tab), the computer chips and both cards, a moved section's grip menu, the Status section with a filter pressed, the Settings Boat and Your setup fields: no problems; (5) **frame times** with the spotlight on (`?m=learn&learn=fit_winch` after "Where is it?") and in the busiest marina: the debug overlay's slowest frame is reported in the PR (the owner checks 60 fps on the phone).
+- `scripts/shots-m59.mjs` (phone unless stated):
+  1. **Anchor on top:** `?wd=90&ws=15&cam=map&pl=bay&pe=-1640.0&pn=0.0&hdg=180&an=34.0&ax=-1610.0,-6.9&as=1&m=harbour&debug=1` (the M46 "Swinging" link of WORKFLOW with the map) → `__sailMap.drawOrder()` ends with `'anchorMark'`.
+  2. **Windlass keys** (test clock): `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4` (M46's "let go" start); `showSection(page, 'anchor')`, focus `windlass-down`, `page.keyboard.down('ArrowDown')`, wait 2 s (app time), `keyboard.up` → the link's `an=` is at least 3.0; `keyboard.down('ArrowUp')` 1 s, `up` → `an=` is at least 1.0 smaller.
+  3. **Fenders hint** (test clock): `?pl=marina&m=harbour&pe=2.8&pn=1473.4&hdg=180&ws=0&bs=-0.5&tx=4` (the stern 18 m from the rings, backing in): poll with `page.waitForTimeout(500)` up to 30 s for `fenders-in-hint` visible (it crosses 15 m after about 12 s); tap `alert-chip` → an `alert-item` with an `alert-tag` reading "Gear".
+  4. **The Phase 8 accessibility sweep** (`auditPage`, no new `SMALL_OK` entries): phone: each tab after `showTab` (`m59 tab <name>`), the Status section with `status-filter-damage` pressed, the Settings tab scrolled to Boat and Your setup; desktop 1,440 × 900: the mode card and the settings card open (`m59 card mode`, `m59 card settings`), a grip menu open (`section-grip-sails` clicked).
+  5. **Frame times (report only)**, not on the test clock, desktop size: `?m=learn&learn=fit_winch&debug=1` after `learn-show-on-boat`, and `?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1`, each after 5 s: read the debug overlay's row "Slowest frame" (`t('debug.worstFrame')`) with `/(\d+) ms/` and print it. Headless drawing is slow (about 15 fps), so there is no threshold here; the owner's phone check (60 fps) is the criterion.
 
 ### 17.6 Docs and sign-off
 
-- `docs/ROADMAP.md`: Phase 8 marked **Done** when the owner signs off on the M59 PR (as Phase 7).
-- `docs/WORKFLOW.md`: the M59 checklist ticked by the owner.
+- `docs/ROADMAP.md`: in the same PR, a decisions-log row with the owner's answers and Phase 8 marked **Done** once the owner signs off on the M59 PR (as Phase 7); 17.9 gets the "Decided in the M59 PR" notes before merge.
+- `docs/WORKFLOW.md`: the owner ticks the M59 checklist on the phone.
+- The PR's "Questions for the owner" ask for the sign-off ("Recommended: sign Phase 8 off, because every Definition of Done item is ticked") and the frame rate on the phone; the headless frame times go under "Known limitations".
 - `docs/CODE_MAP.md`: complete for Phase 8.
 - The decisions of every Phase 8 PR are in section 19 and the ROADMAP decisions log.
 
