@@ -3,7 +3,7 @@
 // waves; a place link sets its own sea). The live checks run on the test clock (shots.mjs passes
 // `onTestClock`), but none of them needs app time to pass: the boat stands still (`ws=0`).
 import path from 'node:path';
-import { choosePlace, setCamera, setSheet, showSection, waitForLink } from './ui.mjs';
+import { choosePlace, sectionShown, setCamera, setSheet, showSection, waitForLink } from './ui.mjs';
 
 export const M42_SCENES = [
   {
@@ -216,6 +216,28 @@ export async function liveM42Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
     const link = await waitForLink(page, ['pl=marina', 'hdg=0', 'pe=20.0', 'pn=1468.0']);
     check('north: the heading 0 survives a reload', true, link);
+    await context.close();
+  }
+
+  // 8. "More" on a part's card in Harbour mode opens the Learn entry and stays in Harbour mode
+  // (issue #102).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm42 more',
+      '?pl=marina&m=harbour&ws=0&sel=sail_main',
+      { testClock: true },
+    );
+    await page.waitForTimeout(600);
+    await setSheet(page, 'half');
+    await page.getByTestId('card-more').click();
+    // The link is written 300 ms after a change: wait it out, then read it.
+    await page.waitForTimeout(600);
+    const link = await waitForLink(page, ['m=harbour'], ['m=learn']);
+    check('more: the link keeps m=harbour', true, link);
+    const entry = await page.getByTestId('learn-name').innerText();
+    check('more: the entry is the Mainsail', entry === 'Mainsail', entry);
+    check('more: the Learn section is open', await sectionShown(page, 'learn'), 'not shown');
     await context.close();
   }
 }

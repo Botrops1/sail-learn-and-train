@@ -117,7 +117,9 @@ export function startApp(host: HTMLElement): void {
       (panel.shows('learn') && store.getState().learn === partId),
     atPeek: sheet.atPeek,
     atFull: sheet.atFull,
-    showLearn: panel.openLearnEntry,
+    // Harbour mode stays (issue #102); the other modes still switch to Learn mode.
+    showLearn: (id) =>
+      store.getState().appMode === 'harbour' ? panel.showLearnEntry(id) : panel.openLearnEntry(id),
   });
   panel.onChange(() => card.refresh());
   sheet.onChange(() => {
