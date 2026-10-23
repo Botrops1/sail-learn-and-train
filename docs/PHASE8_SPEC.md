@@ -80,7 +80,7 @@ If something here looks necessary, stop and ask in the PR.
 | `createModePicker` | `src/ui/modePicker.ts` (M51) | `createModePicker(store: Store, onChosen?: () => void): HTMLElement` | The mode list (a button and a sentence per mode), shared by the phone's Mode tab (M51) and the computer's Mode card (M52). Replaces `src/ui/modeSection.ts`. |
 | `sectionLayout` helpers | `src/ui/sectionLayout.ts` (M54) | `parseLayout`, `serializeLayout`, `completeLayout`, `moveSection` | 12.3. |
 | `alertTag` | `src/model/alerts.ts` (M55) | `alertTag(entry: AlertEntry): AlertTag` | 13.3. |
-| `createAlertList` | `src/ui/alertCentre.ts` (M55) | `createAlertList(store: Store, showLearn: (id: string) => void, withFilter: boolean): HTMLElement` | The history list, used by the Attention card and the Status section. |
+| `createAlertList` | `src/ui/alertCentre.ts` (M55) | `createAlertList(store: Store, showLearn: (id: string) => void, options: { filter: boolean; idPrefix: 'alert' \| 'status-alert' }): HTMLElement` | The history list, used by the Attention card and the Status section. |
 | `downloadJson` / `pickJsonFile` | `src/ui/files.ts` (M56) | `downloadJson(fileName: string, value: unknown): void`, `pickJsonFile(input: HTMLInputElement): Promise<string \| 'tooBig' \| null>` | 3.1 "Files". `null` when nothing was chosen. |
 | `checkBoatProfile` | `src/model/boatProfile.ts` (M57) | `checkBoatProfile(raw: unknown, reference?: BoatData): ProfileCheck` | 15.3. |
 | `useBoat` | `src/model/boat.ts` (M57) | `useBoat(id: string, name: string, data: BoatData): void` | Puts another boat in place of the Hanse 508 before the app starts (15.3). |
@@ -1327,7 +1327,7 @@ Issue #112 (part 1). Owner's answers 10–12: a profile describes a boat laid ou
 
 ### 15.1 Files
 
-New: `src/model/boatProfile.ts` (pure), `tests/boatProfile.test.ts`, `docs/BOAT_PROFILE.md`, `scripts/shots-m57.mjs`. Changed: `src/model/boat.ts`, `content/boat/hanse508.json` (`meta.id`, `meta.name`), `src/model/thrusters.ts`, `src/model/harbourForces.ts` (only if it calls the thruster lookups), `src/app/store.ts` (the `thruster` action), `src/ui/thrusterPanel.ts`, `src/ui/quickRow.ts`, `src/render3d/boat/thrusters.ts`, `src/ui/settingsMenu.ts` (the Boat field), both `ui.json`, `docs/review/ru.md`, `tests/thrusters.test.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`, `docs/BOAT_REFERENCE.md` (one line pointing to `BOAT_PROFILE.md`).
+New: `src/model/boatProfile.ts` (pure), `tests/boatProfile.test.ts`, `docs/BOAT_PROFILE.md`, `scripts/shots-m57.mjs`. Changed: `src/model/boat.ts`, `content/boat/hanse508.json` (`meta.id`, `meta.name`), `src/model/thrusters.ts`, `src/app/store.ts` (the `thruster` action), `src/ui/thrusterPanel.ts`, `src/ui/quickRow.ts` (the `quick-thrusters` group), `src/ui/realisticPanel.ts` (the `thruster-helm` block in `createHelmStation`), `src/ui/panel.ts` (the Engine section's thruster block), `src/render3d/boat/thrusters.ts`, (`src/model/harbourForces.ts` is not touched: it only calls `thrusterForces`; this list wins over 4.4) `src/ui/settingsMenu.ts` (the Boat field), both `ui.json`, `docs/review/ru.md`, `tests/thrusters.test.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`, `docs/BOAT_REFERENCE.md` (one line pointing to `BOAT_PROFILE.md`).
 
 ### 15.2 Data
 
@@ -1344,13 +1344,13 @@ export type BoatData = typeof hanse508;
 export const HANSE_508: BoatData = hanse508;
 /** The boat in use: the Hanse 508 unless useBoat() ran before the app was loaded (M58). Read it at call time, never copy it into a module constant. */
 export let boat: BoatData = HANSE_508;
-export let boatId = 'hanse508';
-export let boatName = 'Hanse 508';
+export let boatId: string = HANSE_508.meta.id;     // 'hanse508'
+export let boatName: string = HANSE_508.meta.name; // 'Hanse 508'
 /** M57: puts another boat in place. Called once, before the app's modules are loaded (src/main.ts, M58), and by tests (which put the Hanse 508 back in `finally`). */
 export function useBoat(id: string, name: string, data: BoatData): void;
 ```
 
-(`export let` is a live binding: every `import { boat }` sees the new value. The caches keyed by `BoatData` (`WeakMap`s in `contact.ts`, `jib.ts`, `realistic.ts` …) work unchanged.)
+(`export let` is a live binding: every `import { boat }` sees the new value, also through `import { boat as hanse508 }` and default parameters `data: BoatData = hanse508`, which are read at call time. The caches keyed by `BoatData` (`WeakMap`s in `contact.ts`, `jib.ts`, `realistic.ts` …) work unchanged. Five modules copy boat values into module constants at load: `src/model/alerts.ts` (lines ~105–106), `src/ui/gybeReport.ts`, `src/ui/windIndicator.ts`, `src/ui/enginePanel.ts`, `src/ui/wavesPanel.ts`; they are right only because `useBoat` runs before the app's modules load (M58's `main.ts` imports the app dynamically). Leave them; new code reads at call time.)
 
 **`src/model/boatProfile.ts`:**
 
@@ -1361,6 +1361,7 @@ export type ProblemKind = 'header' | 'missing' | 'type' | 'ids' | 'length' | 'ra
 export interface ProfileProblem { path: string; kind: ProblemKind; detail: string }
 export type ProfileCheck = { ok: true; profile: BoatProfile } | { ok: false; problems: ProfileProblem[] };
 export const BOAT_ID_PATTERN = /^[a-z0-9-]{1,40}$/;
+/** Deep-clones `data` and writes `id` and `name` into its `meta.id` / `meta.name` too. */
 export function makeBoatProfile(id: string, name: string, data: BoatData): BoatProfile;
 export function checkBoatProfile(raw: unknown, reference: BoatData = HANSE_508): ProfileCheck;
 ```
@@ -1369,13 +1370,14 @@ export function checkBoatProfile(raw: unknown, reference: BoatData = HANSE_508):
 
 1. **Header** (`header`): an object; `app === 'sail-learn-and-train'`; `kind === 'boatProfile'`; `version` a number ≤ `BOAT_PROFILE_VERSION`; `id` matches `BOAT_ID_PATTERN`; `name` a string of 1–60 characters; `boat` an object. Stop after header problems.
 2. **Shape**, walking the reference and the profile together:
-   - reference object → the profile's value is an object and has every key of the reference (`missing` for each absent key); extra keys are allowed and kept;
+   - reference object → the profile's value is a plain object (not an array, not `null`) and has every key of the reference (`missing` for each absent key); extra keys are allowed and kept;
    - reference number → a finite number (`type`); string → string; boolean → boolean; `null` → `null` or a string (the ropes' `controlId`);
-   - reference array whose first element is an **object with `id`** → the same ids in the same order (`ids`), each element checked against the reference element with that id; **except `boat.hull.thrusters`**: 0, 1 or 2 elements, each with `end` `'bow'` or `'stern'`, no end twice (`thrusters`), each checked against the reference element with the same `end`;
+   - **strings that name things must equal the reference** (`ids`): the values of keys `id`, `key`, `ropeId`, `rope`, `bank`, `tail`, `side`, `end`, `partId`, `controlId`, and the members of the string arrays `clutches`, `controls`, `largeClutchRopes`, `settings`, `tails` (the code looks them up; a typo would stop the app). Free text (`source`, `note`, `$comment`, labels…) may change, and so may `boat.meta.id` and `boat.meta.name` (`makeBoatProfile` writes the profile's own id and name there; the check does not compare them with the header);
+   - reference array whose first element is an **object with `id`** → the same ids in the same order (`ids`), each element checked against the reference element with that id; **except `boat.hull.thrusters`**: 0, 1 or 2 elements, each with `end` `'bow'` or `'stern'`, no end twice (`thrusters`), each checked against the reference element with the same `end` (so its `id` must be that element's, `part_bow_thruster` or `part_stern_thruster`);
    - reference array whose first element is an **array** (a table, such as `physics.sails.liftByAoaDeg`) → at least 2 rows (`length`), each row the length of the reference's first row (`length`), all finite numbers (`type`);
    - reference array of **numbers** → the same length (`length`), all finite numbers;
-   - reference array of **strings** → any length, all strings;
-   - reference array of **other objects** (no `id`, such as `rig.spreaders.sets`, the clutches of a bank, `waves.trains`) → the same length (`length`), checked element by element;
+   - reference array of **strings** → all strings; any length, except the naming arrays above (equal);
+   - reference array of **other objects** (no `id`, such as `rig.spreaders.sets`, the clutches of a bank, `rig.lineLead.lines`, `cockpitHardware.ropeBins.boxes`, `waves.trains`) → the same length (`length`), checked element by element in the same order (the guide says: do not reorder);
    - an empty reference array → any array.
 3. **Ranges** (`range`; the boat must still be a cruising yacht the model can sail):
 
@@ -1388,13 +1390,20 @@ export function checkBoatProfile(raw: unknown, reference: BoatData = HANSE_508):
 | `dimensions.massesKg.lightCraftStandardKeel` | 500 to 60,000 kg |
 | `dimensions.engineHp` | 5 to 400 hp |
 | `rig.mast.topY` | 6 to 40 m |
-| `hull.stemX` − `hull.transomX` | 5 to 25 m |
+| `hull.stemX` − `hull.transomX` (reported at `boat.hull.stemX`) | 5 to 25 m |
 | `physics.thrusters.bowThrustN`, `sternThrustN` | 0 to 10,000 N |
 | `realisticMode.winchHandle.lengthM` | 0.15 to 0.4 m |
+| `physics.integration.maxStepS` | 0.005 to 0.1 s (0 would never end a step) |
+| `physics.integration.solverAwaStepDeg` | 0.01 to 5° |
+| `physics.integration.solverAwsStepKn` | 0.01 to 5 kn |
+| `physics.mass.payloadKg` | 0 to 20,000 kg |
+| `physics.mass.addedMassFraction` | 0 to 2 |
+
+A value that already has a `type` problem is not range-checked.
 
 `detail` is a short English text for the guide and the PR (`"expected a number"`, `"6 to 25"`, `"rope_vang missing"`); the Settings field shows `path` and `detail` as they are (they are file paths, not UI text).
 
-**Optional thrusters** (`src/model/thrusters.ts`): `hasThruster(end: 'bow' | 'stern', data = boat): boolean`. `thrusterX` and `thrusterTunnelPlace` keep throwing for a missing thruster but are only called after `hasThruster`; `thrusterForces` adds nothing for a missing one. The store's `thruster` action ignores an end the boat does not have (the state stays 0). `thrusterPanel.ts` builds a joystick only for a thruster the boat has (section, quick row, helm) and hides the Thrusters block and its status line when it has none; the 3D tunnels are built only for the ones it has.
+**Optional thrusters** (`src/model/thrusters.ts`): `hasThruster(end: 'bow' | 'stern', data: BoatData = hanse508): boolean` (the file imports the boat as `hanse508`, since `boat` is a `BoatState` parameter name there). `thrusterX` and `thrusterTunnelPlace` keep throwing for a missing thruster but are only called after `hasThruster`; `thrusterForces` adds nothing for a missing one. The store's `thruster` action ignores an end the boat does not have (the state stays 0). UI: every caller of `createThrusterPair`, `createThrusterJoystick` and `createThrusterPanel` (grep them) builds a joystick only for a thruster the boat has, and hides the empty wrappers when it has none (`thrusters-block` with its status line in the Engine section, `quick-thrusters` with its "Thrusters" tag in the quick row, `thruster-helm` at the Helm). 3D (`render3d/boat/thrusters.ts`): the tunnel and the jets are built per end behind `hasThruster`, `objects` holds only those, and `setState` skips a missing end. The strings `thrusters.hint` / `thrusters.off` (they name both ends and the J / L keys) stay as they are on a bow-only boat, and the Learn entry of a missing thruster stays (its "Where is it?" finds no mesh): known limitations for the PR.
 
 ### 15.4 UI (Settings)
 
@@ -1425,8 +1434,12 @@ Sections, in this order: **What a boat profile is** (one file, the Hanse 508's n
 6. `physics.sails.liftByAoaDeg` with 3 rows → ok; with 1 row → `length`; a row of the wrong length → `length`.
 7. `kind: 'setup'` → one `header` problem and nothing else; `id: 'My Boat'` → `header`.
 8. `boat: {}` → exactly 20 problems.
+Tests 1–8 are in `tests/boatProfile.test.ts`; 9, 10 and the `hasThruster` tests in `tests/thrusters.test.ts`. Every test that calls `useBoat` puts the Hanse 508 back in `finally`.
+
 9. **Another boat sails** (prototype, 3.5): a clone with `dimensions.massesKg.lightCraftStandardKeel` and `dimensions.displacementTonnes` × 0.6 and `hull.thrusters` = the bow one only; `useBoat('light-test', 'Light test', clone)`; `run(initialState(), 120, 30)` (from `tests/motionHelpers.ts`) → speed 6.6 to 7.2 kn (prototype 6.903), heel −11.0° to −8.6° (prototype −9.79), no NaN in `boat`; `finally` `useBoat('hanse508', 'Hanse 508', HANSE_508)`. The same run with the Hanse 508 still gives 6.810 kn ± 0.01 (nothing else changed).
-10. **No stern thruster:** with that clone in use, `harbourStart` (motionHelpers) and the action `{ type: 'thruster', which: 'stern', dir: 1 }` → `state.thrusters.stern` stays 0 and stepping 5 s does not throw; the bow thruster still pushes (`swayMps` ≠ 0 after 5 s with the bow held).
+10. **No stern thruster:** with that clone in use, `harbourStart` (motionHelpers) and the action `{ type: 'thruster', which: 'stern', dir: 1 }` → `state.thrusters.stern` stays 0; then `{ type: 'thruster', which: 'bow', dir: 1 }` and stepping 5 s does not throw and `swayMps` ≠ 0.
+11. **`hasThruster`:** true for both ends on the Hanse 508; on the clone true for the bow, false for the stern. `thrusterForces({ bow: 1, stern: 1 }, boatState, clone)` equals `thrusterForces({ bow: 1, stern: 0 }, boatState, clone)`; `harbourForces` with `thrusters: { bow: 1, stern: 1 }` and the clone does not throw. (Use the real signatures in `thrusters.ts` and `harbourForces.ts`.)
+12. `makeBoatProfile('light', 'Light', HANSE_508).boat.meta.id` is `'light'`, and `HANSE_508.meta.id` is still `'hanse508'` (a clone).
 
 (Use the `thruster` action's real shape from `store.ts`.)
 
