@@ -74,7 +74,7 @@ If something here looks necessary, stop and ask in the PR.
 | Helper | File | Signature | Behaviour |
 |---|---|---|---|
 | `fitDistance` | `src/render3d/cameraPresets.ts` (exists) | `fitDistance(box, target, direction, lens, margin?)` | Smallest camera distance along `direction` at which the box fits the lens with `margin`. M49 calls it with `margin = 1 / fill`, so the box takes `fill` of the view. |
-| `focusPose` | `src/render3d/cameraPresets.ts` (M49) | `focusPose(box: { min: Vec3; max: Vec3 }, from: CameraPose, lens: Lens, fill: number, maxDistanceM: number): CameraPose` | 6.3. |
+| `focusPose` | `src/render3d/cameraPresets.ts` (M49) | `focusPose(box: { min: Vec3; max: Vec3 }, from: CameraPose, lens: Lens, fill: number, maxDistanceM: number, fovDeg?: number): CameraPose` | 7.3. |
 | `requestSpotlight` / `onSpotlight` / `endSpotlight` / `spotlightNow` | `src/ui/spotlight.ts` (M49) | `requestSpotlight(partId: string, kind: 'where' \| 'show'): void`, `onSpotlight(listener: (s: Spotlight \| null) => void): void`, `endSpotlight(): void`, `spotlightNow(): Spotlight \| null` | A tiny event channel between the Learn section and the 3D view (6.3). |
 | `handlePose` | `src/model/handlePose.ts` (M50) | `handlePose(realistic: RealisticState, data?: BoatData): HandlePose \| null` | Where the handle is drawn, or null while carried (8.3). |
 | `createModePicker` | `src/ui/modePicker.ts` (M51) | `createModePicker(store: Store, onChosen?: () => void): HTMLElement` | The mode list (a button and a sentence per mode), shared by the phone's Mode tab (M51) and the computer's Mode card (M52). Replaces `src/ui/modeSection.ts`. |
@@ -392,13 +392,15 @@ focus(box: { min: Vec3; max: Vec3 }, fill: number, maxDistanceM: number): void;
  * stays; controls.minDistance goes back to SCENE.camera.minDistance only once the camera is that far out (until then it
  * stays at the current distance). No-op without a focus. */
 endFocus(glide: boolean): void;
-/** M49: runs on every hand gesture's start (OrbitControls 'start'), whatever the preset. */
+/** M49: runs once per hand gesture, on its first real movement (the first OrbitControls 'change' while interacting), whatever the preset. */
 onUserDrag(listener: () => void): void;
+/** M49: the pose now (position, target, field of view); the debug hooks read it. */
+pose(): CameraPose;
 ```
 
 - `focusPose` gets the rig's whole-boat `lens` (the one `setViewport` builds) and returns `fovDeg: SCENE.camera.verticalFovDeg`: the focus always uses the standard lens, also when it starts from the Helm view (64°).
 - `maxDistanceM`: "Where is it?" `SCENE.camera.maxDistance` (140 m); "Show it working" the distance of `from` (`|position − target|`), so it only ever comes closer.
-- **While a focus lasts**, `setViewport` (a sheet height change, a turned phone) recomputes `focusPose` with the stored box, fill and maxDistance from the current preset's new pose, instead of going back to the preset; `goTo` (a camera preset chosen) drops the focus without gliding back (its own glide runs) and does not write the focus pose into `lastFreePose`; `update` does not write `lastFreePose` while a focus lasts.
+- **While a focus lasts**, `setViewport` (a sheet height change, a turned phone) recomputes `focusPose` with the stored box, fill and maxDistance from the pose the camera would go back to (`poseFor(currentPreset)`: the preset's new pose, or `lastFreePose` for a free camera moved by hand), instead of going back to the preset; `goTo` (a camera preset chosen) drops the focus without gliding back (its own glide runs) and does not write the focus pose into `lastFreePose`; `update` does not write `lastFreePose` while a focus lasts.
 
 **The veil.** While a spotlight is on, each frame is drawn in three passes with `renderer.autoClear = false` (put it back afterwards):
 
@@ -408,9 +410,13 @@ onUserDrag(listener: () => void): void;
 
 `renderer.info.autoReset = false` with `renderer.info.reset()` at the start of each frame, so the debug overlay's draw calls count all passes. The highlight tint (`createHighlighter`) still applies to the selected part.
 
-**Labels in 3D** (`src/ui/labels3d.ts`): the labels' layer element gets the CSS variable `--label-faded` set to `SCENE.spotlight.otherLabelOpacity` when it is created; while a spotlight is on, every label whose id is not in `highlightIds(partId)` gets the class `label-faded` (CSS `opacity: var(--label-faded)`).
+**Labels in 3D** (`src/ui/labels3d.ts`): the labels' layer element gets the CSS variable `--label-faded` set to `SCENE.spotlight.otherLabelOpacity` when it is created; while a spotlight is on, every label whose id is not in `highlightIds(partId)` gets the class `label-faded` (CSS `opacity: var(--label-faded)`), also a label created while the spotlight is on. (Labels exist only with Labels in 3D on, `lb=1`.)
 
-**Ends.** The spotlight ends (`endSpotlight()`, the veil and the fading go) on: the next `pointerdown` anywhere in the page (a capture listener on `document`, added on the next animation frame after the spotlight starts so the tap that started it does not end it) or the Escape key, with `rig.endFocus(true)`; a hand gesture on the 3D view (`rig.onUserDrag`), with `rig.endFocus(false)`; and with no glide (the camera is moved anyway) on: a change of `state.selection` to another part, a change of `appMode`, a change of `settings.detail` (the boat model is rebuilt), `rig.goTo`, and a `popstate` event (Back).
+**Ends.** The spotlight ends (`endSpotlight()`, the veil and the fading go):
+
+- with `rig.endFocus(true)` (glide back): on the next `pointerdown` anywhere in the page **except on the 3D canvas** (a capture listener on `document`, added on the next animation frame after the spotlight starts so the tap that started it does not end it), on the Escape key, and on a **tap on the 3D canvas**: the tap callback of `listenForTaps` in `scene.ts` (it runs on `pointerup`, after OrbitControls' 'start', so the glide it begins is not cancelled) calls `endSpotlight()` and `rig.endFocus(true)` before it dispatches `select`;
+- with `rig.endFocus(false)` (stay): on a hand gesture on the 3D view (`rig.onUserDrag`, on its first real movement);
+- with no glide (the camera is moved anyway): a change of `state.selection` to a different, non-null part (a tap on the sky selects null: that is the canvas tap above), a change of `appMode`, a change of `settings.detail` (the boat model is rebuilt), `rig.goTo`, and a `popstate` event (Back).
 
 ### 7.5 UI (`src/ui/learnTab.ts`)
 
@@ -430,8 +436,8 @@ onUserDrag(listener: () => void): void;
 
 ### 7.7 Debug hooks (`window.__sailDebug`, `?debug=1` only)
 
-- `spotlight(): { partId: string; kind: 'where' | 'show'; distanceM: number } | null`: the spotlight now and the camera's distance to its target.
-- `cameraPose(): { position: Vec3; target: Vec3 }`: where the camera is now.
+- `spotlight(): { partId: string; kind: 'where' | 'show'; distanceM: number } | null`: the spotlight now and the camera's distance to its target (from `rig.pose()`).
+- `cameraPose(): { position: Vec3; target: Vec3 }`: where the camera is now (`rig.pose()`).
 
 ### 7.8 Tests (`tests/cameraPresets.test.ts`)
 
@@ -445,13 +451,13 @@ onUserDrag(listener: () => void): void;
 
 ### 7.9 Browser checks (`scripts/shots-m49.mjs`, test clock, `debug=1`)
 
-Scenes: `where-is-it-winch` (phone): `?m=learn&learn=winch_primary_starboard&debug=1&held=1&sea=flat`, after a click on `learn-show-on-boat` (scene `click: ['learn-show-on-boat'], waitMs: 1200`).
+Scenes: `where-is-it-winch` (phone): `?m=learn&learn=winch_primary_starboard&debug=1&held=1&sea=flat&lb=1`, after a click on `learn-show-on-boat` (scene `click: ['learn-show-on-boat'], waitMs: 1200`).
 
 Live (phone, then desktop):
 
 Every page here adds `held=1&sea=flat` (the boat does not rock, so the box stays put).
 
-1. `?m=learn&learn=winch_primary_starboard&debug=1&held=1&sea=flat`, `showSection(page, 'learn')`, then on the phone `setSheet(page, 'half')`; read `cameraPose()`; tap `learn-show-on-boat`; wait 1 s (app time) and `page.realWaitForTimeout(600)` for the glide → `__sailDebug.spotlight()` is `{ partId: 'winch_primary_starboard', kind: 'where' }` with `distanceM` between 1.15 and 3.0; `learn-spotlight-hint` visible; the link still has the camera it had (`cam=` unchanged, no `cam=free`); on the phone the sheet is at half; at least one 3D label has the class `label-faded`.
+1. `?m=learn&learn=winch_primary_starboard&debug=1&held=1&sea=flat&lb=1`, `showSection(page, 'learn')`, then on the phone `setSheet(page, 'half')`; read `cameraPose()`; tap `learn-show-on-boat`; wait 1 s (app time) and `page.realWaitForTimeout(600)` for the glide → `__sailDebug.spotlight()` is `{ partId: 'winch_primary_starboard', kind: 'where' }` with `distanceM` between 1.15 and 3.0; `learn-spotlight-hint` visible; the link still has the camera it had (`cam=` unchanged, no `cam=free`); on the phone the sheet is at half; at least one 3D label has the class `label-faded`.
 2. A tap on the 3D view (an empty point of the sky: the top-left of the canvas plus (20, 120) px) → `spotlight()` is null within 1 s; the hint is hidden; no label has `label-faded`; after `page.realWaitForTimeout(600)` `cameraPose()` is within 0.05 m of the pose read in step 1.
 3. **One instance of a part drawn several times:** `?m=learn&learn=fit_mooring_cleat&…`, tap `learn-show-on-boat` → `distanceM` between 1.15 and 3.0 (one cleat, not all six).
 4. `?m=learn&learn=rope_vang&debug=1&held=1&sea=flat`: tap `learn-show-me` → `waitForLink` for the scene's link; wait 1 s (app time) and `realWaitForTimeout(600)`; read `spotlight().distanceM`; press Escape, wait 1 s and `realWaitForTimeout(600)`; the distance from `cameraPose()` (position to target) is at least as large.
