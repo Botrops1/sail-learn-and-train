@@ -209,9 +209,8 @@ export async function liveM49Checks({ openPage, viewports, problems }) {
       await page.mouse.down();
       await page.mouse.move(x + 60, y, { steps: 6 });
       // Held still before letting go, so the orbit's damping has nothing left to carry on.
-      // (The damping slows the camera per drawn frame, so it needs real frames as well as app time.)
-      await page.waitForTimeout(800);
-      await page.realWaitForTimeout(1500);
+      // (The damping slows the camera per drawn frame; the test clock draws one per 100 ms: 40 frames.)
+      await page.waitForTimeout(4000);
       await page.mouse.up();
       const ended = await spotlight(page);
       const right = await pose(page);
