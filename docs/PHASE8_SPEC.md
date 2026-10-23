@@ -499,7 +499,7 @@ Replace `modelDetail.mainFurlingGearbox` (today `{ "foreAft": 0.18, "height": 0.
 }
 ```
 
-`rig.mainFurlingGearbox.position` ([−0.15, 2.5, −0.08]) becomes **the centre of the drum's front face, on the mast's aft face**: the drum is a cylinder along x from x = −0.15 to −0.15 − drum.depth (−0.24), centre y 2.5, z −0.08; the cap a disc on its aft face; the socket a darker disc on the cap's centre (its aft face at x = −0.24 − cap.depth − socket.depth = −0.258). The plate stands on the mast's aft face (x from −0.15 to −0.185), centred on z −0.08, from y = 2.5 + 0.29 down to 2.5 + 0.29 − 0.34 = 2.45 (it runs down behind the drum); the switch window is a lighter rectangle on its aft face, its top 0.11 below the plate's top. Update `rig.mainFurlingGearbox.note`: "M50: position is the centre of the drum's front face on the mast's aft face (photo)."
+`rig.mainFurlingGearbox.position` ([−0.15, 2.5, −0.08]) becomes **the centre of the drum's front face, on the mast's aft face**: the drum is a cylinder along x from x = −0.15 to −0.15 − drum.depth (−0.24), centre y 2.5, z −0.08; the cap a disc on its aft face; the socket a darker disc on the cap's centre (its aft face at x = −0.24 − cap.depth − socket.depth = −0.258). The plate stands on the plane x = −0.15 (the mast's aft-most face, as the M3b box did; the small gap and overhang against the mast's oval section at z −0.08 are accepted) (x from −0.15 to −0.185), centred on z −0.08, from y = 2.5 + 0.29 down to 2.5 + 0.29 − 0.34 = 2.45 (it runs down behind the drum); the switch window is a lighter rectangle on its aft face, its top 0.11 below the plate's top. Update `rig.mainFurlingGearbox.note`: "M50: position is the centre of the drum's front face on the mast's aft face (photo)."
 
 New block `modelDetail.winchHandle`, after `mainFurlingGearbox`:
 
@@ -547,17 +547,18 @@ export function handlePose(realistic: RealisticState, data: BoatData = boat): Ha
 | `carried` (any) | — returns `null` | | | |
 | `socket`, port or starboard | the station's winch (x, y + `modelDetail.winch.height`, z) | (cos a, 0, sin a) | (0, 1, 0) | the winch id |
 | `socket`, mast | `rig.mainFurlingGearbox.position` + (−(drum.depth + cap.depth + socket.depth), 0, 0) | (0, cos a, sin a) | (−1, 0, 0) | `'part_main_furling_gearbox'` |
-| `stowed`, port or starboard | x = (box.frontX + box.bodyEndX)/2 of `ropeBinBox(side)` (−7.60 on this boat), y = `gapFloorY(x)` + w.armThickness/2, z = winch.z + side·w.rest.sideGapCentreFromWinchZ − side·L/2 (so the arm's middle is at winch.z + side·0.08) | (0, 0, side) | (−1, 0, 0) | null |
-| `stowed`, mast | x = w.rest.mast.x − L/2, y = `deck.coachroof.topY` + w.armThickness/2, z = w.rest.mast.z | (1, 0, 0) | (0, 0, 1) | null |
-| `stowed`, helm | x = w.rest.helm.x − L/2, y = `deck.cockpit.soleY` + w.armThickness/2, z = w.rest.helm.z | (1, 0, 0) | (0, 0, 1) | null |
+| `stowed`, port or starboard | x = (box.frontX + box.bodyEndX)/2 of `ropeBinBox(side)` (−7.60 on this boat), y = `gapFloorY(x)` + w.gripDiameter/2 (the grip, the thickest part, lies on the floor), z = winch.z + side·w.rest.sideGapCentreFromWinchZ − side·L/2 (so the arm's middle is at winch.z + side·0.08) | (0, 0, side) | (−1, 0, 0) | null |
+| `stowed`, mast | x = w.rest.mast.x − L/2, y = `deck.coachroof.topY` + w.gripDiameter/2, z = w.rest.mast.z | (1, 0, 0) | (0, 0, 1) | null |
+| `stowed`, helm | x = w.rest.helm.x − L/2, y = `deck.cockpit.soleY` + w.gripDiameter/2, z = w.rest.helm.z | (1, 0, 0) | (0, 0, 1) | null |
 | `stowed`, bow | cannot happen (M46: the Bow station has no slot); return the helm pose | | | |
+| `socket` at the helm or the bow | cannot happen (no socket there); return the stowed pose of that station (the helm's for the bow) | | | |
 
 `side` is +1 for starboard, −1 for port; "the station's winch" is `socketAt(station)` (`src/model/realistic.ts`) looked up in `cockpitHardware.winches`.
 
 ### 8.4 3D (`src/render3d/boat/winchHandle.ts`, `index.ts`, `scene.ts`)
 
-- `buildWinchHandle(materials): THREE.Group`: built around its own origin (the spigot's end) like the self-tacking car, so moving it moves its hit area: a spigot cylinder (`spigotDiameter`, `spigotLength`) along −y from the origin's local frame, the arm (a box `L × armThickness × armWidth`) along +x local, the grip (a cylinder `gripDiameter × gripLength`) at the arm's end along +y local. All three are one part mesh with id `part_winch_handle` (`partMesh`/`smallPartMesh` as `rig.ts` does), material `materials.dark` for spigot and arm, a lighter grey for the grip (`materials.block`). Tap points: the arm's middle and the grip's middle.
-- `BoatModel.setHandle(pose: HandlePose | null, show: boolean)`: hidden when `pose` is null or `show` is false, by setting `visible = false` on the group **and on the part mesh itself** (`picking.ts` checks only the mesh's own `visible`, so a hidden group alone would still be tappable); otherwise the group's position is `pose.origin` and its rotation maps local +x to `pose.arm` and local +y to `pose.grip` (build a `Matrix4` from the basis `arm`, `grip`, `arm × grip`).
+- `buildWinchHandle(materials): THREE.Group`: built around its own origin (where the spigot meets the arm) like the self-tacking car, so moving it moves its hit area. Local geometry: the spigot a cylinder (`spigotDiameter`) from y 0 to y −`spigotLength` on the origin; the arm a box x 0…L, centred on y 0 and z 0 (`L × armThickness × armWidth`); the grip a cylinder (`gripDiameter`) on the axis x = L, from y 0 to y `gripLength`. **Two meshes with the same id** `part_winch_handle` (a part mesh takes one material, as `buildWinch` does): spigot and arm `materials.dark`, the grip `materials.block`; `smallPartMesh` with hit points in the group's local frame: the arm's middle (L/2, 0, 0) and the grip's middle (L, gripLength/2, 0). The group starts hidden (`visible = false` on the group and both meshes), so nothing shows at the origin before the first `setHandle`.
+- `BoatModel.setHandle(pose: HandlePose | null, show: boolean)`: hidden when `pose` is null or `show` is false, by setting `visible = false` on the group **and on both part meshes** (`picking.ts` checks only the mesh's own `visible`, so a hidden group alone would still be tappable); otherwise the group's position is `pose.origin` and its rotation maps local +x to `pose.arm` and local +y to `pose.grip` (build a `Matrix4` from the basis `arm`, `grip`, `arm × grip`).
 - `scene.ts` calls `setHandle(handlePose(state.realistic), show)` on build and whenever `state.realistic.handle` or `settings.ropesMode` changes, with `show = state.settings.ropesMode === 'realistic'`. While the handle is cranked, `handle.angle` changes every frame, so the check is on the handle object's identity (cheap).
 - `buildGearbox` (`rig.ts`) draws 8.2's plate, window, drum, cap and socket, all one part `part_main_furling_gearbox` (materials: plate and drum `materials.dark`, the window `materials.fitting`, the cap `materials.chrome`, the socket `materials.dark`); its tap point is the drum's centre.
 
@@ -590,26 +591,27 @@ No new strings. `part_winch_handle` (registry, exists) is now drawn: check that 
 With `initialRealistic()` and edits of its `handle`:
 
 1. Carried → `null`.
-2. Stowed at port (the start): `origin` x −7.600 ± 0.001 (`(frontX + bodyEndX)/2` of the port box: frontX = −8.175 + 0.425 = −7.75, bodyEndX = −7.45), z = −1.6 − 0.08 + 0.127 = −1.553 ± 0.001; `arm` (0, 0, −1); `socket` null.
+2. Stowed at port (the start): `origin` x −7.600 ± 0.001 (`(frontX + bodyEndX)/2` of the port box: frontX = −8.175 + 0.425 = −7.75, bodyEndX = −7.45), y = `gapFloorY(−7.6)` + 0.016 (1.432 ± 0.002), z = −1.6 − 0.08 + 0.127 = −1.553 ± 0.001; `arm` (0, 0, −1); `socket` null.
 3. Stowed at starboard: z = 1.6 + 0.08 − 0.127 = 1.553; `arm` (0, 0, 1).
 4. Socket at starboard, angle 0: `origin` (−7.25, 1.79, 1.6) ± 0.001, `arm` (1, 0, 0), `grip` (0, 1, 0), `socket` `'winch_primary_starboard'`; angle 90: `arm` (0, 0, 1) (`toBeCloseTo(…, 6)`).
 5. Socket at the mast, angle 0: `origin` (−0.258, 2.5, −0.08) ± 0.001, `arm` (0, 1, 0), `grip` (−1, 0, 0); angle 90: `arm` (0, 0, 1).
-6. Stowed at the mast: `origin` (−0.127, 1.966, 1.05) ± 0.001, `arm` (1, 0, 0).
-7. Stowed at the helm: `origin` (−7.327, 1.006, 0) ± 0.001.
-8. No pose's points (the origin, the arm's end `origin + arm·L`, the grip's end) for the mast rest lie within 0.3 m of the mast's centre in plan or at x ≥ 0.2 (clear of the track).
+6. Stowed at the mast: `origin` (−0.127, 1.976, 1.05) ± 0.001, `arm` (1, 0, 0).
+7. Stowed at the helm: `origin` (−7.327, 1.016, 0) ± 0.001.
+8. Mast rest clear of the rest: for the origin, the arm's end (`origin + arm·L`) and the grip's end (`origin + arm·L + grip·gripLength`): `hypot(x, z) > 0.3` (the turning blocks), `−0.7 < x ≤ 0.2` (the channels start at −0.7, the track is at 0.28), and `1.0 ≤ z ≤ 1.45` (inside the coachroof).
+9. A socket at the helm (an impossible state) gives the helm's stowed pose.
 
 ### 8.8 Browser checks (`scripts/shots-m50.mjs`, `debug=1`)
 
-Scenes (phone and desktop, close-ups with `__sailDebug.setView`): `handle-port-rest` (`?mode=realistic`), `handle-in-winch` (`?mode=realistic&hd=port.w`), `handle-mast-rest` (`?mode=realistic&hd=mast.s`), `handle-in-gearbox` (`?mode=realistic&hd=mast.w`), `handle-helm-rest` (`?mode=realistic&hd=helm.s`), `gearbox-close-up` (`?mode=realistic`, camera 1.2 m behind the drum). Choose each view's position and target so the handle fills about a third of the picture; write them into the scene entries.
+Close-ups (phone and desktop), taken **inside the live checks** with `__sailDebug.setView(position, target)` and `shot()`, as `scripts/shots-m30.mjs` does its close-ups (with `debug=1&held=1&sea=flat` and the debug overlay hidden as there): `handle-port-rest` (`?mode=realistic`), `handle-in-winch` (`hd=port.w`), `handle-mast-rest` (`hd=mast.s`), `handle-in-gearbox` (`hd=mast.w`), `handle-helm-rest` (`hd=helm.s`), `gearbox-close-up` (camera 1.2 m behind the drum). Choose each view so the handle fills about a third of the picture.
 
-Live (phone, then desktop; `?mode=realistic&debug=1&cam=side-port`, Ropes open):
+"Drawn" below means `__sailDebug.hitCentres().find((c) => c.partId === 'part_winch_handle')` is found (it skips hidden meshes; `partPoint` reads only rope segments and is not used). Live (phone, then desktop; every link adds `debug=1&held=1&sea=flat`, so tap points do not drift):
 
-1. `__sailDebug.partPoint('part_winch_handle', 0.5)` is not null (drawn at port).
-2. Tap it (canvas position from `partPoint`) → `waitForLink(page, ['sel=part_winch_handle'])`; the handle is still drawn.
-3. Tap it again → the link has `hd=c` (carried), `partPoint` returns null (hidden), the station bar shows Port pressed.
-4. `?mode=realistic&hd=mast.s&st=port&debug=1&cam=top`: tap the handle twice → the link has `st=mast` and `hd=c`.
-5. Easy ropes (`?debug=1&cam=side-port`): `partPoint('part_winch_handle', 0.5)` is null.
-6. The Winch handle entry's Show me (`?m=learn&learn=part_winch_handle`, tap `learn-show-me`) → after the scene loads, `partPoint` is not null.
+1. `?mode=realistic&cam=side-port`, Ropes open: the handle is drawn (at port).
+2. Tap it (the canvas position from `hitCentres`) → `waitForLink(page, ['sel=part_winch_handle'])`; it is still drawn.
+3. Tap it again → the link has `hd=c` (carried), it is not drawn, and `.station-button[data-station="port"][aria-pressed="true"]` exists.
+4. `?mode=realistic&hd=mast.s&st=port&cam=top`: tap the handle twice → the link has `st=mast` and `hd=c`.
+5. Easy ropes (`?cam=side-port`): not drawn.
+6. The Winch handle entry's Show it working (`?m=learn&learn=part_winch_handle`, tap `learn-show-me`) → after the scene loads, it is drawn.
 
 ### 8.9 Done when
 
@@ -621,7 +623,7 @@ Laying the handle down by a tap in 3D (it stays in the panel), dropping it by dr
 
 ### 8.11 Decided in the M50 PR
 
-(empty)
+- Decided in planning: the Winch handle entry's Show it working selects the handle, so the first tap on it afterwards takes it (accepted).
 
 ---
 
