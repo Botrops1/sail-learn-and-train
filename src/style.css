@@ -3925,12 +3925,12 @@ html[data-layout='side'] .alert-chip {
 }
 
 .learn-show-me,
-.learn-spotlight-hint[hidden] {
-  display: none;
-}
-
 .learn-links {
   margin-top: 12px;
+}
+
+.learn-spotlight-hint[hidden] {
+  display: none;
 }
 
 .learn-show-me .action-button {

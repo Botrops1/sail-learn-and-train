@@ -336,12 +336,12 @@ spotlight: {
   dimColor: '#06121c',
   dimOpacity: 0.62,
   /** Share of the free view the part's box takes: "Where is it?" (closer) and "Show it working". */
-  whereFill: 0.5,
+  whereFill: 0.8, // decided in the M49 PR (was 0.5), 7.12
   showFill: 0.25,
   /** Never closer than this, metres (the orbit's own limit is SCENE.camera.minDistance, 3 m). */
   minDistanceM: 1.2,
   /** A part drawn several times in one mesh (cleats, fenders): the box around the nearest one, half-size in metres. */
-  instanceHalfM: 0.3,
+  instanceHalfM: 0.15, // decided in the M49 PR (was 0.3), 7.12
   /** Labels in 3D of other parts fade to this opacity. */
   otherLabelOpacity: 0.25,
 },
@@ -381,7 +381,7 @@ export function onSpotlight(listener: (spotlight: Spotlight | null) => void): vo
 
 **Which meshes.** The spotlit meshes are the meshes **under `boatModel.root`** whose `userData.partId` is in `highlightIds(partId)` (`src/model/panelEntries.ts`, as the highlight uses) and that are visible (`object.visible` up the tree). If there are none (a part drawn in the world group, like `env_quay`, or a hidden part), the request does nothing beyond today's selection, and `spotlightNow()` is reset to null.
 
-**Box (world space; the camera works in world space).** For each spotlit mesh: if it has more than one `userData.hitPoints` (a part drawn several times in one mesh, such as the six cleats, the fenders, the fairleads), take the hit point nearest to the camera (the points are in the mesh's frame: apply `mesh.matrixWorld`) and a cube of half-size `SCENE.spotlight.instanceHalfM` (0.3 m) around it: one instance; otherwise the mesh's world box (`new THREE.Box3().setFromObject(mesh)`). The box is the union of these. It is computed **once** when the spotlight starts (and again on a viewport change, below); the boat's rocking afterwards is not followed.
+**Box (world space; the camera works in world space).** For each spotlit mesh: if it has more than one `userData.hitPoints` (a part drawn several times in one mesh, such as the six cleats, the fenders, the fairleads), take the hit point nearest to the camera (the points are in the mesh's frame: apply `mesh.matrixWorld`) and a cube of half-size `SCENE.spotlight.instanceHalfM` (0.15 m, tuned in the M49 PR) around it: one instance; otherwise the mesh's world box (`new THREE.Box3().setFromObject(mesh)`). The box is the union of these. It is computed **once** when the spotlight starts (and again on a viewport change, below); the boat's rocking afterwards is not followed.
 
 **Camera.** `CameraRig` gets:
 
@@ -483,6 +483,7 @@ A spotlight from the info card or a 3D tap, a spotlight for parts outside the bo
 - A spotlight that ends without a glide (a different part selected, a mode or detail change, Back, a drag) leaves the camera where it is (`endFocus(false)`); one ended by a preset change needs no call, since `goTo` drops the focus itself.
 - The hint line (`learn-spotlight-hint`) follows `spotlightNow()`, not the listener's argument, because a spotlight that finds nothing to light is ended inside its own request.
 - The veil's material is not tone-mapped, so its colour is the one in `SCENE.spotlight.dimColor`.
+- **Tuned (tunable keys, 0):** `whereFill` 0.5 → 0.8 and `instanceHalfM` 0.3 → 0.15. On a phone with the sheet at half the free view is only about 8.6° tall (the lens of 3.5 is 40°), so with the spec's values "Where is it?" stopped at 3.74 m from the primary winch and 9.24 m from a cleat, outside check 7.9's band (1.15–3.0 m). A cleat is about 0.25 m long, so a 0.3 m cube still holds it. The band was not changed; the new distances are in the PR.
 
 ---
 
