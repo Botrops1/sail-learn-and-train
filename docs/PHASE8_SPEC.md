@@ -752,9 +752,9 @@ Live:
 7. **Links:** `?m=learn&learn=rope_vang` opens on the Learn tab with the entry shown; `?sel=rope_vang` opens on Controls with Ropes open; the Attention card's "?" (make an entry: `?ws=22&wd=60` with the boat sailing until "Heeling a lot" is written, or any entry the M36 checks make) opens the Learn tab.
 8. **Drag from the tabs:** `dragHandle`-style drag starting on `panel-tab-controls` 200 px up → the sheet is at full and the selected tab did not change; a plain tap on it does not move the sheet.
 9. **Keyboard:** focus `panel-tab-controls`, ArrowRight → Conditions selected and focused; End → Settings.
-11. **Conditions stays open on its tab:** on the Conditions tab, tap `section-toggle-conditions` → `section-conditions` is still open.
-12. **Fits:** with `?lang=ru&mode=realistic` the tab row is inside the screen (no element of it beyond 390 px, the page does not scroll sideways) and `findClipped` (as the M27 Russian check uses) finds nothing in it.
-10. `auditPage` with each tab selected: no problems.
+10. **Conditions stays open on its tab:** on the Conditions tab, tap `section-toggle-conditions` → `section-conditions` is still open.
+11. **Fits:** with `?lang=ru&mode=realistic` the tab row is inside the screen (no element of it beyond 390 px, the page does not scroll sideways) and `findClipped` (as the M27 Russian check uses) finds nothing in it.
+12. `auditPage` with each tab selected: no problems.
 
 ### 9.10 Done when
 
