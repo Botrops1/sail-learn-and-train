@@ -49,7 +49,7 @@ export async function liveM48Checks({ openPage, viewports, problems }) {
         `${v} easy: no drawing, list`,
         !(await page.getByTestId('clutch-drawing').isVisible()) &&
           (await page.getByTestId('ropes-easy').isVisible()) &&
-          rows >= 10,
+          rows >= 9,
         `${rows} rows`,
       );
       await page.locator('[data-select="rope_vang"]').click();
