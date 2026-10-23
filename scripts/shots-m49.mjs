@@ -145,13 +145,13 @@ export async function liveM49Checks({ openPage, viewports, problems }) {
         onPhone ? 'half' : undefined,
       );
       await page.getByTestId('learn-show-me').click();
+      await glide(page);
       let link;
       try {
         link = await waitForLink(page, ['sel=rope_vang']);
       } catch (error) {
         link = String(error.message);
       }
-      await glide(page);
       const now = await spotlight(page);
       check(
         `${v} show: spotlight on the vang`,
@@ -190,12 +190,26 @@ export async function liveM49Checks({ openPage, viewports, problems }) {
       const { context, page } = await open(viewport, 'drag', WINCH, onPhone ? 'half' : undefined);
       await page.getByTestId('learn-show-on-boat').click();
       await glide(page);
-      const box = await page.locator('.scene-canvas').boundingBox();
-      const x = box.x + box.width / 2;
-      const y = box.y + 140;
+      // A point where the canvas itself is on top (not a 3D label or a button over it).
+      const start = await page.evaluate(() => {
+        const canvas = document.querySelector('.scene-canvas');
+        const r = canvas.getBoundingClientRect();
+        for (let y = r.top + 100; y < r.bottom - 100; y += 20) {
+          for (let x = r.left + 80; x < r.right - 160; x += 20) {
+            const free = [0, 20, 40, 60].every(
+              (dx) => document.elementFromPoint(x + dx, y) === canvas,
+            );
+            if (free) return { x, y };
+          }
+        }
+        return null;
+      });
+      const { x, y } = start ?? { x: 0, y: 0 };
       await page.mouse.move(x, y);
       await page.mouse.down();
-      await page.mouse.move(x + 60, y + 20, { steps: 6 });
+      await page.mouse.move(x + 60, y, { steps: 6 });
+      // Held still before letting go, so the orbit's damping has nothing left to carry on.
+      await page.waitForTimeout(800);
       await page.mouse.up();
       const ended = await spotlight(page);
       const right = await pose(page);
