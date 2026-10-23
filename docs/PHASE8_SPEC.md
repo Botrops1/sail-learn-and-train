@@ -322,7 +322,7 @@ Issue #77. Owner's answer 3: keep both buttons with clearer names; both zoom in 
 
 ### 7.1 Files
 
-New `src/ui/spotlight.ts`, `scripts/shots-m49.mjs`. Changed: `src/render3d/cameraPresets.ts` (`focusPose`), `src/render3d/cameraRig.ts` (`focus`, `endFocus`), `src/render3d/scene.ts` (spotlight drawing, debug hooks), `src/render3d/sceneConfig.ts` (`SCENE.spotlight`), `src/ui/learnTab.ts`, `src/ui/labels3d.ts` (fade the other labels), `src/ui/sheet.ts` only if needed for 7.5 (use the existing `setHeight`), `src/style.css`, both `ui.json`, `docs/review/ru.md`, `tests/cameraPresets.test.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New `src/ui/spotlight.ts`, `scripts/shots-m49.mjs`. Changed: `src/render3d/cameraPresets.ts` (`focusPose`), `src/render3d/cameraRig.ts` (`focus`, `endFocus`), `src/render3d/scene.ts` (spotlight drawing, debug hooks), `src/render3d/sceneConfig.ts` (`SCENE.spotlight`), `src/ui/learnTab.ts`, `src/ui/panel.ts` (passes the sheet to `createLearnTab`), `src/ui/labels3d.ts` (fade the other labels), `src/ui/sheet.ts` only if needed for 7.5 (use the existing `setHeight`), `src/style.css`, both `ui.json`, `docs/review/ru.md`, `tests/cameraPresets.test.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 7.2 Data (`src/render3d/sceneConfig.ts`, new block `SCENE.spotlight`, after `highlight`)
 
@@ -337,12 +337,14 @@ spotlight: {
   showFill: 0.25,
   /** Never closer than this, metres (the orbit's own limit is SCENE.camera.minDistance, 3 m). */
   minDistanceM: 1.2,
+  /** A part drawn several times in one mesh (cleats, fenders): the box around the nearest one, half-size in metres. */
+  instanceHalfM: 0.3,
   /** Labels in 3D of other parts fade to this opacity. */
   otherLabelOpacity: 0.25,
 },
 ```
 
-All five are presentation values (**tunable**, 0 §"Numbers are final").
+All six are presentation values (**tunable**, 0 §"Numbers are final").
 
 ### 7.3 Pure helper and the event channel
 
@@ -353,13 +355,13 @@ All five are presentation values (**tunable**, 0 §"Numbers are final").
  * M49: the camera pose that shows `box` filling `fill` of the view: the target moves to the box's
  * centre, the direction from the target to the camera stays as in `from`, the distance is
  * max(SCENE.spotlight.minDistanceM, fitDistance(box, centre, direction, lens, 1 / fill)),
- * at most `maxDistanceM`. The lens field of view is `from.fovDeg`.
+ * at most `maxDistanceM`.
  */
-export function focusPose(box, from: CameraPose, lens: Lens, fill: number, maxDistanceM: number): CameraPose
+export function focusPose(box, from: CameraPose, lens: Lens, fill: number, maxDistanceM: number, fovDeg: number = SCENE.camera.verticalFovDeg): CameraPose
 ```
 
 - `direction = normalize(from.position − from.target)`; if that length is below 1e−6 use `viewDirection(90, 6)` (the side view).
-- `position = centre + direction · distance`, `target = centre`, `fovDeg = from.fovDeg`.
+- `position = centre + direction · distance`, `target = centre`, `fovDeg` as given (the fit uses `lens`).
 
 `src/ui/spotlight.ts` (no DOM, no three.js):
 
@@ -376,37 +378,44 @@ export function onSpotlight(listener: (spotlight: Spotlight | null) => void): vo
 
 **Which meshes.** The spotlit meshes are the meshes **under `boatModel.root`** whose `userData.partId` is in `highlightIds(partId)` (`src/model/panelEntries.ts`, as the highlight uses) and that are visible (`object.visible` up the tree). If there are none (a part drawn in the world group, like `env_quay`, or a hidden part), the request does nothing beyond today's selection, and `spotlightNow()` is reset to null.
 
-**Box.** The world-space bounding box of those meshes (`THREE.Box3().expandByObject` for each), turned into the boat-holder frame that the camera rig works in (the same frame `presetPose` uses).
+**Box (world space; the camera works in world space).** For each spotlit mesh: if it has more than one `userData.hitPoints` (a part drawn several times in one mesh, such as the six cleats, the fenders, the fairleads), take the hit point nearest to the camera (the points are in the mesh's frame: apply `mesh.matrixWorld`) and a cube of half-size `SCENE.spotlight.instanceHalfM` (0.3 m) around it: one instance; otherwise the mesh's world box (`new THREE.Box3().setFromObject(mesh)`). The box is the union of these. It is computed **once** when the spotlight starts (and again on a viewport change, below); the boat's rocking afterwards is not followed.
 
-**Camera.** `CameraRig` gets two methods:
+**Camera.** `CameraRig` gets:
 
 ```ts
-/** M49: glides (SCENE.camera.transitionS) to focusPose(box, fromPose, lens, fill, maxDistance);
- * fromPose is the pose the camera is at or gliding to. Remembers that pose to go back to.
- * Lets the orbit come as close as the focus distance (controls.minDistance = min(camera.minDistance, d · 0.999)). */
-focus(box: { min: Vec3; max: Vec3 }, fill: number): void;
-/** M49: glides back to the remembered pose and puts the orbit limits back. No-op without a focus. */
-endFocus(): void;
+/** M49: glides (SCENE.camera.transitionS) to focusPose(box, from, lens, fill, maxDistanceM); `from` is the pose the
+ * camera is at or gliding to. Stores box, fill and maxDistanceM while the focus lasts. Lets the orbit come as close as
+ * the focus distance (controls.minDistance = min(SCENE.camera.minDistance, d · 0.999)). */
+focus(box: { min: Vec3; max: Vec3 }, fill: number, maxDistanceM: number): void;
+/** M49: ends the focus. glide = true: glides back to the pose of the current preset recomputed for the current lens
+ * (presetPose, or lastFreePose for a free camera), then puts the orbit limits back. glide = false (the user dragged):
+ * stays; controls.minDistance goes back to SCENE.camera.minDistance only once the camera is that far out (until then it
+ * stays at the current distance). No-op without a focus. */
+endFocus(glide: boolean): void;
+/** M49: runs on every hand gesture's start (OrbitControls 'start'), whatever the preset. */
+onUserDrag(listener: () => void): void;
 ```
 
-`maxDistance` for "Where is it?" is `SCENE.camera.maxDistance` (140 m); for "Show it working" it is the distance of the scene's preset pose (`|position − target|` of `fromPose`), so "Show it working" only ever comes closer. A user drag during a focus ends the spotlight (`endSpotlight()`); the camera then stays where the user left it (a free camera, as today's drag).
+- `focusPose` gets the rig's whole-boat `lens` (the one `setViewport` builds) and returns `fovDeg: SCENE.camera.verticalFovDeg`: the focus always uses the standard lens, also when it starts from the Helm view (64°).
+- `maxDistanceM`: "Where is it?" `SCENE.camera.maxDistance` (140 m); "Show it working" the distance of `from` (`|position − target|`), so it only ever comes closer.
+- **While a focus lasts**, `setViewport` (a sheet height change, a turned phone) recomputes `focusPose` with the stored box, fill and maxDistance from the current preset's new pose, instead of going back to the preset; `goTo` (a camera preset chosen) drops the focus without gliding back (its own glide runs) and does not write the focus pose into `lastFreePose`; `update` does not write `lastFreePose` while a focus lasts.
 
 **The veil.** While a spotlight is on, each frame is drawn in three passes with `renderer.autoClear = false` (put it back afterwards):
 
 1. the scene as today (`renderer.clear()`, then `renderer.render(scene, camera)`);
 2. a full-screen quad (its own `THREE.Scene` and an `OrthographicCamera(-1, 1, 1, -1, 0, 1)`), `MeshBasicMaterial({ color: SCENE.spotlight.dimColor, transparent: true, opacity: SCENE.spotlight.dimOpacity, depthTest: false, depthWrite: false })`;
-3. the spotlit meshes only, again: give them `layers.enable(1)` while spotlit, set `camera.layers.set(1)` for this pass, render the scene without clearing (the depth buffer of pass 1 keeps the parts of them that something hides hidden), then `camera.layers.set(0)` and `layers.disable(1)` when the spotlight ends.
+3. the spotlit meshes only, again: give them **and every light of the scene** (hemisphere, sun, fill and any other) `layers.enable(1)` while spotlit (three.js lights a mesh only with lights on the camera's layers), set `camera.layers.set(1)` and `renderer.shadowMap.autoUpdate = false` for this pass, render the scene without clearing (the depth buffer of pass 1 keeps the parts of them that something solid hides hidden; the water does not write depth, so a spotlit keel or rudder shows through it, which is wanted), then `camera.layers.set(0)`, `shadowMap.autoUpdate = true`, and `layers.disable(1)` on all of them when the spotlight ends.
 
-The highlight tint (`createHighlighter`) still applies to the selected part.
+`renderer.info.autoReset = false` with `renderer.info.reset()` at the start of each frame, so the debug overlay's draw calls count all passes. The highlight tint (`createHighlighter`) still applies to the selected part.
 
-**Labels in 3D** (`src/ui/labels3d.ts`): while a spotlight is on, every label whose id is not in `highlightIds(partId)` gets the class `label-faded` (CSS `opacity: var(--label-faded)`, set from `SCENE.spotlight.otherLabelOpacity`).
+**Labels in 3D** (`src/ui/labels3d.ts`): the labels' layer element gets the CSS variable `--label-faded` set to `SCENE.spotlight.otherLabelOpacity` when it is created; while a spotlight is on, every label whose id is not in `highlightIds(partId)` gets the class `label-faded` (CSS `opacity: var(--label-faded)`).
 
-**Ends.** The spotlight ends (`endSpotlight()`, then `rig.endFocus()`, the veil and the fading go) on: the next `pointerdown` anywhere in the page (a capture listener on `document`, added on the next animation frame after the spotlight starts so the tap that started it does not end it), the Escape key, a change of `state.selection` to another part, a change of `appMode`, `rig.goTo` (a camera preset chosen), and a load of another link (Back, a scene).
+**Ends.** The spotlight ends (`endSpotlight()`, the veil and the fading go) on: the next `pointerdown` anywhere in the page (a capture listener on `document`, added on the next animation frame after the spotlight starts so the tap that started it does not end it) or the Escape key, with `rig.endFocus(true)`; a hand gesture on the 3D view (`rig.onUserDrag`), with `rig.endFocus(false)`; and with no glide (the camera is moved anyway) on: a change of `state.selection` to another part, a change of `appMode`, a change of `settings.detail` (the boat model is rebuilt), `rig.goTo`, and a `popstate` event (Back).
 
 ### 7.5 UI (`src/ui/learnTab.ts`)
 
 - The button `learn-show-on-boat` is labelled `t('learn.whereIsIt')`. On a tap: `store.dispatch({ type: 'select', partId: entry.id })` (as today), then on a phone lower a sheet that is at full to half (`sheet.setHeight('half')`; `createLearnTab` gets the sheet's `setHeight` and `height` through a new last parameter `sheetControl?: { height(): SheetHeight; setHeight(h: SheetHeight): void }`, passed by `panel.ts`), then `requestSpotlight(entry.id, 'where')`.
-- The button `learn-show-me` is labelled `t('learn.showItWorking')`. On a tap: as today (`setAppMode` learn, `openScene`, the status text), then `requestSpotlight(entry.id, 'show')`. The scene's camera preset glides first; `focus` starts from the pose the camera is gliding to (7.4), so the order does not matter.
+- The button `learn-show-me` is labelled `t('learn.showItWorking')`. On a tap: as today (`setAppMode` learn, `openScene`, the status text), then on a phone lower a full sheet to half as above, then `requestSpotlight(entry.id, 'show')`. The scene's camera preset glides first; `focus` starts from the pose the camera is gliding to (7.4), so the order does not matter.
 - The scene subscribes with `onSpotlight` and does 7.4.
 
 ### 7.6 Strings
@@ -417,7 +426,7 @@ The highlight tint (`createHighlighter`) still applies to the selected part.
 | `learn.whereIsIt` (replaces `learn.showOnBoat`; same place) | Where is it? | Где это? |
 | `learn.spotlightHint` (new, after `learn.whereIsIt`) | Tap anywhere to see the whole boat again. | Нажмите в любом месте, чтобы снова увидеть всю яхту. |
 
-`learn.spotlightHint` shows as a small line under the two buttons (`<p class="hint" data-testid="learn-spotlight-hint">`) while a spotlight is on, hidden otherwise. Remove `learn.showMe` and `learn.showOnBoat` from both files; update the code comments that name "Show me" or "Show on the boat" in `learnTab.ts`. (Other files' comments and the earlier specs keep the old names: they describe history.)
+`learn.spotlightHint`: each rendered entry that has at least one of the two buttons gets one `<p class="hint" data-testid="learn-spotlight-hint" hidden>`, placed right after the last of the two button containers it has (`.learn-links`, else `.learn-show-me`). `createLearnTab` subscribes once (`onSpotlight`, outside `render`) and shows the current entry's hint while a spotlight is on. Remove `learn.showMe` and `learn.showOnBoat` from both files; update the code comments that name "Show me" or "Show on the boat" in `learnTab.ts`. (Other files' comments and the earlier specs keep the old names: they describe history.)
 
 ### 7.7 Debug hooks (`window.__sailDebug`, `?debug=1` only)
 
@@ -436,20 +445,24 @@ The highlight tint (`createHighlighter`) still applies to the selected part.
 
 ### 7.9 Browser checks (`scripts/shots-m49.mjs`, test clock, `debug=1`)
 
-Scenes: `where-is-it-cleat` (phone): `?m=learn&learn=fit_mooring_cleat&debug=1`, after a click on `learn-show-on-boat` (scene `click: ['learn-show-on-boat'], waitMs: 1200`).
+Scenes: `where-is-it-winch` (phone): `?m=learn&learn=winch_primary_starboard&debug=1&held=1&sea=flat`, after a click on `learn-show-on-boat` (scene `click: ['learn-show-on-boat'], waitMs: 1200`).
 
 Live (phone, then desktop):
 
-1. `?m=learn&learn=fit_mooring_cleat&debug=1`, `showSection(page, 'learn')`; tap `learn-show-on-boat`; wait 1 s (app time) and `page.realWaitForTimeout(600)` for the glide → `__sailDebug.spotlight()` is `{ partId: 'fit_mooring_cleat', kind: 'where' }` with `distanceM` between 1.15 and 3.0; `learn-spotlight-hint` visible; the link still has the camera it had (`cam=` unchanged, no `cam=free`); on the phone the sheet is at half.
-2. A tap on the 3D view (an empty point of the sky: the top-left of the canvas plus (20, 120) px) → `spotlight()` is null within 1 s; the hint is hidden; `cameraPose()` returns to within 0.05 m of the pose before step 1 (read it before tapping).
-3. `?m=learn&learn=rope_vang&debug=1`: tap `learn-show-me` → `waitForLink` for the scene's link; `spotlight()` has `kind: 'show'` and `distanceM` no larger than the scene preset's distance (read `cameraPose()` before the tap is not possible: compare with the distance after Escape ends it: after `page.keyboard.press('Escape')` the distance is at least as large).
-4. A part with no mesh on the boat (`?m=learn&learn=env_quay&pl=marina&debug=1`): `learn-show-on-boat` → `spotlight()` is null (the quay is in the world group).
-5. The buttons read "Where is it?" and "Show it working" (English) and «Где это?», «Показать в работе» with `lang=ru`.
-6. `auditPage` with the Learn entry open: no problems.
+Every page here adds `held=1&sea=flat` (the boat does not rock, so the box stays put).
+
+1. `?m=learn&learn=winch_primary_starboard&debug=1&held=1&sea=flat`, `showSection(page, 'learn')`, then on the phone `setSheet(page, 'half')`; read `cameraPose()`; tap `learn-show-on-boat`; wait 1 s (app time) and `page.realWaitForTimeout(600)` for the glide → `__sailDebug.spotlight()` is `{ partId: 'winch_primary_starboard', kind: 'where' }` with `distanceM` between 1.15 and 3.0; `learn-spotlight-hint` visible; the link still has the camera it had (`cam=` unchanged, no `cam=free`); on the phone the sheet is at half; at least one 3D label has the class `label-faded`.
+2. A tap on the 3D view (an empty point of the sky: the top-left of the canvas plus (20, 120) px) → `spotlight()` is null within 1 s; the hint is hidden; no label has `label-faded`; after `page.realWaitForTimeout(600)` `cameraPose()` is within 0.05 m of the pose read in step 1.
+3. **One instance of a part drawn several times:** `?m=learn&learn=fit_mooring_cleat&…`, tap `learn-show-on-boat` → `distanceM` between 1.15 and 3.0 (one cleat, not all six).
+4. `?m=learn&learn=rope_vang&debug=1&held=1&sea=flat`: tap `learn-show-me` → `waitForLink` for the scene's link; wait 1 s (app time) and `realWaitForTimeout(600)`; read `spotlight().distanceM`; press Escape, wait 1 s and `realWaitForTimeout(600)`; the distance from `cameraPose()` (position to target) is at least as large.
+5. A part with no mesh on the boat (`?m=learn&learn=env_quay&pl=marina&debug=1`): `learn-show-on-boat` → `spotlight()` is null (the quay is in the world group).
+6. A drag on the 3D view during a spotlight ends it, and the camera stays where the drag left it (no glide back: `cameraPose()` 1 s later is within 0.05 m of the pose right after the drag).
+7. The buttons read "Where is it?" and "Show it working" (English) and «Где это?», «Показать в работе» with `lang=ru`.
+8. `auditPage` with the Learn entry open: no problems.
 
 ### 7.10 Done when
 
-Both buttons spotlight their part on a phone and a computer, the veil and the hint go on the next tap, the camera comes back, and the link never changes because of a spotlight; typecheck, lint, tests, build and `SHOTS_ONLY=m49,m24,m31,m32` pass (M24 runs every Show me button).
+Both buttons spotlight their part on a phone and a computer, the veil and the hint go on the next tap, the camera comes back, and the link never changes because of a spotlight; typecheck, lint, tests, build and `SHOTS_ONLY=m49,m20,m21,m22,m23,m24,m27,m28,m31,m32,m33,m44,m45,m46` pass (they tap the two buttons; M24 runs every Show me button).
 
 ### 7.11 Not in M49
 
