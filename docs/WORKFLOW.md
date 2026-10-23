@@ -592,3 +592,106 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 - [ ] Anchor and shore line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour&pe=-1665.0&pn=0.0&hdg=90&wd=0&ws=15&an=60.0&ax=-1605.0,0.0&as=1&ln=sl1:28.08&cam=top&tx=16 — she lies still with her stern to the shore.
 - [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1 — hold both thrusters: 50 fps or more. Write the numbers in the PR.
 - [ ] Every item of the Phase 7 Definition of Done (PHASE7_SPEC 14) is ticked in the PR.
+
+## 13. Phase 8
+
+Panel, status and your own setup ([PHASE8_SPEC](PHASE8_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M48 … M59), started with `/milestone <N>`. **M50 to M58 need a `/review` with Opus** before you test them; M48, M49 and M59 do not. The mockup of the phone tabs and the computer chips ([`docs/mockups/phase8-panel.html`](mockups/phase8-panel.html)) was agreed on the planning PR #115.
+
+### 13.1 Checklists
+
+New link setting (PHASE8_SPEC 4.2): `boat=` names an imported boat (M58). Replace `<N>` with the PR number. Checks marked "computer" need a window at least 1,280 px wide (a PC, or a tablet held sideways).
+
+#### M48: Ropes as a list in Easy and Learn
+
+- [ ] Easy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — open Ropes: no drawing of the clutch banks, only the list of ropes. Tap "Vang": its slider appears at the top of the section.
+- [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&sel=rope_vang — open Ropes: the same list, the Vang slider works.
+- [ ] Learn with Realistic ropes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&m=learn&sel=rope_vang — open Ropes: the same list, the slider is greyed out, and a line says you work this rope at its station.
+- [ ] Harbour keeps the drawing: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour — open Ropes: the clutch-bank drawing is there.
+- [ ] Realistic keeps the stations: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic — open Ropes: Port, Starboard, Helm, Mast, Bow and the drawing of the station.
+
+#### M49: "Show it working" and "Where is it?"
+
+- [ ] Where is it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=fit_mooring_cleat — tap "Where is it?": the camera flies close to the cleats, everything else goes dark, a line says "Tap anywhere to see the whole boat again". Tap anywhere: the boat comes back as before.
+- [ ] Show it working: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=rope_vang — tap "Show it working": the scene loads, the vang is lit and the rest is darker; it does not come as close as "Where is it?". Your phone's Back button returns.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&m=learn&learn=fit_winch — the buttons read «Показать в работе» and «Где это?».
+
+#### M50: The winch handle in 3D
+
+- [ ] Lying at port: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&cam=helm — the handle lies between the port winch and the rope box.
+- [ ] In the winch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=port.w&cam=helm — the handle stands in the top of the port winch.
+- [ ] At the mast: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=mast.s&cam=top — the handle lies on the roof to the right of the mast, clear of the ropes. Zoom in on the mast: the gearbox looks like your photo (a grey plate with the IN/OUT window, a round black drum with a steel cap below it).
+- [ ] In the gearbox: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=mast.w&st=mast&cam=side-port — the handle sticks out of the drum's socket towards the back of the boat. Crank it in the Mast station: it turns.
+- [ ] Between the wheels: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=helm.s&cam=helm — the handle lies on the cockpit floor between the wheels.
+- [ ] Take it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=mast.s&cam=top — tap the handle (its card shows), tap it again: it disappears from the roof, the Ropes section shows you at the Mast with the handle in your hand.
+- [ ] Easy hides it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm — no handle.
+
+#### M51: Phone tabs
+
+- [ ] Tabs: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — under the grey stripe: Easy · Controls · Conditions · ? · gear, as in the mockup. The Easy and gear buttons over the 3D view are gone; Port and "!" stay.
+- [ ] Each tab: tap each one: Controls shows the sections, Conditions the wind and waves, "?" the Learn list, the gear the settings, Easy the four modes.
+- [ ] Lowest height: tap the grey stripe until the panel is lowest: the tabs and the rope's − and + are still there. Tap Conditions: the panel comes up to half.
+- [ ] Mode: tap Easy, choose Harbour: the tab reads Harbour and Controls opens with the Engine first.
+- [ ] Links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=rope_vang — opens on the "?" tab with the Vang entry.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru — the tabs fit and read in Russian.
+
+#### M52: Mode and Settings chips on the computer
+
+- [ ] Computer: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — no Mode or Settings section in the columns; at the bottom right of the 3D view: "Mode: Easy ▾", "Port ▾" and the gear.
+- [ ] Mode chip (computer): tap it, choose Realistic: the list closes and the chip reads "Mode: Realistic".
+- [ ] Settings chip (computer): tap the gear: the settings open in a card above it; tap the 3D view or × to close.
+- [ ] Tablet or narrow window (800 px): the same link: "Easy ▾" at the bottom left and the gear at the bottom right open the same cards.
+- [ ] Phone: the tabs of M51 are unchanged.
+
+#### M53: Realistic: the Helm section
+
+- [ ] At the helm: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=helm&cam=helm — the Helm section is open: wheel, autopilot, engine lever, thrusters and the anchor remote.
+- [ ] Stations: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic — Ropes shows Port, Starboard, Mast, Bow (no Helm). Open the Helm section: you walk to the helm.
+- [ ] The wheel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&sel=part_rudder — the Helm section opens.
+- [ ] Harbour with Realistic ropes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour&mode=realistic&pl=marina — the Helm section opens first.
+
+#### M54: Sections you can move (computer)
+
+- [ ] Grips (computer): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — each section title has a ⠿ grip on its left.
+- [ ] Drag (computer): drag Conditions by its grip to the top of the left column: it lands there. Reload the page: it is still there.
+- [ ] Menu (computer): tap the grip of Learn: Move up, Move down, Move to the other column. Try each.
+- [ ] Modes (computer): choose Harbour, then Learn: the sections stay where you put them.
+- [ ] Reset (computer): Settings → Reset layout, tap twice: the page reloads with the sections, the column widths and the time bar as at the start.
+- [ ] Phone: no grips.
+
+#### M55: Status section
+
+- [ ] Status: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — open Status: Sails ("Both sails are in good shape."), Gear (fenders, anchor, propeller), Damage, What happened.
+- [ ] Damage: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy — motor ahead into a moored yacht (Engine lever ahead 30 %): the damage report appears in Status (not in Place), and "What happened" has an entry with a "Damage" tag.
+- [ ] Filter: in What happened tap "Damage": only damage entries show; "All" brings the rest back.
+- [ ] Rope warning: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wd=60&ws=22&js=30 — at Starboard put the jib sheet on the winch with one turn and open its clutch: "Jib sheet: slipping on the winch drum. Add a turn." appears once, tagged "Rope", also in the "!" list.
+- [ ] Worn sail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=20&ms=100&cam=side-port&tx=16 — the main flaps; after a while its wear bar shows in Status, with Repair there.
+
+#### M56: Your setup in a file
+
+- [ ] Save: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=16&cam=top — Settings → Your setup → Save to a file: a file `sail-setup-<date>.json` downloads.
+- [ ] Load: open https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ (fresh), Settings → Load from a file, choose that file: the app reloads with the wind from 90° at 16 kn and the top view.
+- [ ] Layout (computer): move a section, save, Reset layout, load the file: the moved section is back where you put it.
+- [ ] Wrong file: load any other file (a photo): a message says it is not a setup file; nothing changes.
+
+#### M57: The boat profile file
+
+- [ ] Download: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — Settings → Boat: "Hanse 508". Tap "Download this boat's profile": a file `hanse508.boat.json` downloads.
+- [ ] Guide: tap "How to make a boat profile": the guide opens on GitHub and reads clearly to you.
+- [ ] Harbour still works: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour&pl=marina — both thruster joysticks push her as before.
+
+#### M58: Choose and import a boat
+
+- [ ] Make a test boat: open the file from M57 in a text editor, change `"id": "hanse508"` to `"id": "test-light"`, `"name": "Hanse 508"` to `"name": "Test light"`, and save it (a PC is easiest).
+- [ ] Import: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — Settings → Boat → Import a boat profile, choose the file: "Imported Test light".
+- [ ] Choose it: pick "Test light" in the list: the app reloads, Settings → Boat reads "Test light", the link has `boat=test-light`.
+- [ ] Learn note: open any Learn entry with an "On this boat" part: it ends with "Written for the Hanse 508."
+- [ ] Bad file: change `"loa": 15.55` to `"loa": 40` in a copy and import it: a list of problems shows `boat.dimensions.loa: 6 to 25`.
+- [ ] Remove: with Test light chosen, "Remove this boat", tap twice: back on the Hanse 508.
+
+#### M59: Leftovers and sign-off
+
+- [ ] Anchor on the map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=15&cam=map&pl=bay&pe=-1640.0&pn=0.0&hdg=180&an=34.0&ax=-1610.0,-6.9&as=1&m=harbour — zoom with + and −: the anchor sign stays on top of the labels and the wind arrow.
+- [ ] Windlass keys (computer): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&m=harbour — open Anchor, press Tab until a windlass button is focused, hold the down arrow: the chain runs out; the up arrow brings it in.
+- [ ] Fenders hint: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour — reverse slowly towards your berth (the yellow arrow) with the fenders in: "Put the fenders out before you back into the berth." shows in Harbour gear and in the "!" list.
+- [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1 — open Status and hold both thrusters: 50 fps or more. Write the numbers in the PR.
+- [ ] Every item of the Phase 8 Definition of Done (PHASE8_SPEC 18) is ticked in the PR.
