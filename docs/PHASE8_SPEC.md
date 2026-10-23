@@ -714,10 +714,11 @@ Only the lines named; each keeps its purpose.
 
 - `scripts/shots-m25.mjs`: the dialog checks ("m25 settings", "m25 settings use", "m25 settings escape", "m25 russian" (the gear's label)) open on the `foldable` viewport (side layout, where the gear and the dialog stay until M52) instead of `phone`. "m25 menu escape" (the camera menu) stays on the phone.
 - `scripts/shots-m26.mjs`: "full → peek" expects `near(box.height, 128)` (was 100); the scenes are unchanged.
-- `scripts/shots-m27.mjs`: the scene `mode-menu-open` clicks `panel-tab-mode` (it shows the picker); "the mode menu in Russian" (block 10) reads `[data-testid="mode-choices"] .mode-option-name` after `showTab(page, 'mode')`; block 11's "m27 a11y menu" audits the Mode tab after `showTab(page, 'mode')`.
+- `scripts/shots-m27.mjs`: "the mode menu in Russian" (block 10) reads `[data-testid="mode-choices"] .mode-option-name` after `showTab(page, 'mode')`; block 11's "m27 a11y menu" audits the Mode tab after `showTab(page, 'mode')`.
 - `scripts/shots-m29.mjs`: the phone's "mode menu" audit (`getByTestId('mode-chip').click()`) becomes `showTab(page, 'mode')` and audits that; the Escape after it becomes `showTab(page, 'controls')`.
 - `scripts/shots-m36.mjs`: "the Attention button is in the chip row, between the camera chip and the gear" becomes "…, at the right end of the chip row, after the camera chip" (its right edge within 16 px of the chip row's right edge; no gear).
-- `scripts/shots-m38.mjs`: unchanged (it checks the wide and the 820 px layouts).
+- `scripts/shots-m38.mjs`: its **phone** block (about lines 372–395: the chip row's order with `mode-chip`, the section ids, `.chip-menu`) is rewritten for the tabs: the chip row holds the camera chip and "!", the mode list is under the Mode tab; the wide and 820 px blocks stay (M52 changes them).
+- `scripts/shots-m27.mjs`: the scene `mode-menu-open` is removed (the M51 scene `tabs-mode` replaces it; scenes run at every size locally and the tab exists only on the phone).
 - `scripts/shots-m41.mjs`: "after a reload the chip reads "Harbour"" reads the Mode tab (`panel-tab-mode`) text on the phone.
 - `scripts/a11y-audit.mjs`: add `.sheet-handle` to `SMALL_OK` with the comment "M51: 27 px handle strip; the tabs row under it also drags the sheet".
 - Any other check that fails because a section is under another tab: it must go through `showSection`/`openSettings`/`setMode` (3.6); fix it that way and list it in the PR.
@@ -761,7 +762,7 @@ Issue #100 item 6. The mockup's computer frame (`docs/mockups/phase8-panel.html`
 
 ### 10.1 Files
 
-New: `src/ui/chipCard.ts`, `scripts/shots-m52.mjs`. Changed: `src/ui/modeChip.ts`, `src/ui/settingsMenu.ts`, `src/ui/cameraChip.ts` (the chip row's order on the wide layout), `src/ui/panel.ts`, `src/ui/modes.ts`, `src/style.css`, both `ui.json`, `scripts/ui.mjs`, the older checks of 10.8, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `src/ui/chipCard.ts`, `scripts/shots-m52.mjs`. Changed: `src/app/app.ts` (builds the chips; reads `takeOpenAfterReload` once), `src/ui/modeChip.ts`, `src/ui/settingsMenu.ts`, `src/ui/chipMenu.ts` (one open overlay at a time, 10.3), `src/ui/panel.ts`, `src/ui/modes.ts`, `src/ui/labels3d.ts` (the card is an obstacle for labels), `src/style.css`, both `ui.json`, `scripts/ui.mjs`, the older checks of 10.8, `scripts/shots.mjs`, `docs/CODE_MAP.md`. (`cameraChip.ts` needs no change: the row is already mode chip, camera chip, gear.)
 
 ### 10.2 What changes
 
@@ -772,7 +773,11 @@ New: `src/ui/chipCard.ts`, `scripts/shots-m52.mjs`. Changed: `src/ui/modeChip.ts
 | wide | the chip **"Mode: Easy ▾"** in the bottom-right chip group; a tap opens the mode card | the gear in the same group; a tap opens the settings card |
 
 - On the wide layout the bottom chip row's right end holds, left to right: the mode chip, the camera chip, the gear (8 px apart, 8 px from the 3D view's right and bottom edges, as the mockup). The mini-map stays bottom-left. The mode chip's label there is `t('mode.section', { name })` ("Mode: Easy"); on the side layout it stays `t('mode.<id>')` ("Easy").
-- The `mode` and `settings` sections are available only on `stacked` (4.3); `place()` puts `settingsContent` into the Settings section on `stacked` and into the settings card elsewhere.
+- The `mode` and `settings` sections are available only on `stacked` (4.3). **One** settings element (`settingsContent`) and **one** mode picker element (`createModePicker`, built once in `app.ts`) exist; `place()` moves each into its section on `stacked` and into its card's body elsewhere (two pickers would duplicate the `mode-choice-*` test ids). The picker's `onChosen` looks at the layout when it runs: on `stacked` it selects the tab (M51), elsewhere it closes the mode card.
+- Signatures: `createModeChip(row: HTMLElement, store: Store, layout: LayoutShell, picker: HTMLElement): void` (the label is "Mode: Easy" on `wide` and "Easy" on `side`, updated on a mode change **and** a layout change); `createSettingsMenu(row: HTMLElement, settingsContent: HTMLElement, layout: LayoutShell, reopen: boolean): void` (the `root` argument goes). `app.ts` calls `takeOpenAfterReload()` **once** (`const reopen = takeOpenAfterReload() === 'settings'`) and passes `reopen` to the panel (opens the Settings tab on `stacked`) and to the settings menu (opens the card on `side`/`wide`); `panel.ts` no longer calls `takeOpenAfterReload` itself.
+- The language choice marks the reopen when it was made inside the Settings section **or a card** (`input.closest('[data-section="settings"], .chip-card')`).
+- CSS removed: the rules that hide `.mode-chip` and `.settings-button` on the wide layout, and the `.settings-dialog`, `.settings-head`, `.settings-close`, `html[data-wide] .settings-dialog` and `.chip-menu [data-testid^='mode-option-']` rules (the card's header gets its own `.chip-card-head` rules). On the wide layout the bottom chip row is right-aligned (mode chip, camera chip, gear); the mini-map stays bottom-left.
+- The spec wins over the mockup where they differ: on `side` the chip reads "Easy" (the mockup shows "Mode: Easy" everywhere).
 - **The settings dialog is removed** (`settings-dialog`, `settings-close`, the `inert` handling): the card replaces it.
 - The chip menu of the mode chip (`chipMenu` items `mode-option-<id>`) is removed: the mode card replaces it. `chipMenu.ts` stays for the camera chip.
 
@@ -789,8 +794,11 @@ export interface ChipCard {
 export function createChipCard(chip: HTMLButtonElement, title: string, body: HTMLElement, testId: string): ChipCard;
 ```
 
-- Opens above the chip, its right edge at the chip group's right edge (wide) or its own chip's edge (side), its bottom 8 px above the chip row; width `min(380px, view width − 16px)`, max height `min(640px, view height − top area − 76px)`; the body scrolls. Look as the mockup: white, 1 px `--line` border, 12 px radius, shadow `0 8px 28px rgb(0 0 0 / 0.22)`, a sticky header with the title (bold) and a 44 × 44 × button (`aria-label` `t('settings.close')`).
-- One card open at a time (opening one closes the other, and closes the camera menu: `closeOpenMenus()`); a tap outside the card and its chip, Escape, or × closes it and returns the focus to its chip. The chip has `aria-expanded` and `aria-controls`.
+- Placed by CSS only (no measuring): `position: absolute` in the 3D view, `bottom: calc(var(--view-bottom-inset, 0px) + 60px)`; on `wide` both cards `right: 8px`; on `side` the mode card `left: 8px` and the settings card `right: 8px`; width `min(380px, 100% − 16px)`, max height `min(640px, 100% − var(--view-top-h, 0px) − 76px)`; the body scrolls; `z-index: 13` (above the alert centre, 10, and the chip menus, 12). Closed, the card has `hidden`. Look as the mockup: white, 1 px `--line` border, 12 px radius, shadow `0 8px 28px rgb(0 0 0 / 0.22)`, a sticky header with the title (bold) and a 44 × 44 × button (`aria-label` `t('settings.close')`).
+- One overlay open at a time: `chipMenu.ts` exports `registerOverlay(close: () => void): () => void` (it shares the slot `closeOpenMenus()` uses), so opening a card closes any chip menu or the other card, and opening a chip menu (by tap or key) closes an open card.
+- On open the focus goes to the × (`<testId>-close`, so `settings-card-close`) for the settings card and to the checked `mode-choice-*` for the mode card. Escape (a capture-phase `keydown` on `document`, with `stopPropagation`, as `chipMenu` does, so the info card does not also drop the selection) and × call `close(true)` (focus back to the chip); a `pointerdown` outside the card and its chip calls `close(false)` (the tapped thing keeps the focus). A layout change closes both cards.
+- The chip has `aria-expanded` and `aria-controls`; the card has `aria-labelledby` its title, whose id is `settings-title` for the settings card (the M25 check reads it) and `mode-card-title` for the mode card.
+- `labels3d.ts` adds `.chip-card:not([hidden])` to the elements labels keep clear of.
 - Not modal: the 3D view and the panel stay usable while a card is open.
 - **Mode card:** test id `mode-card`, title `t('mode.label')`, body `createModePicker(store, () => card.close(true))`: choosing a mode closes the card and the chip shows the new name.
 - **Settings card:** test id `settings-card`, title `t('settings.title')`, body `settingsContent`. A language change reloads the page and reopens the card (`openAfterReload('settings')` when the change was made in the card; `takeOpenAfterReload()` opens the card on `side`/`wide`, the tab on `stacked`).
@@ -805,8 +813,8 @@ No new keys. `mode.chip` ("Mode: {name}. Tap to change it.") stays the chip's `a
 
 ### 10.6 Helpers (`scripts/ui.mjs`)
 
-- `openSettings(page)`: stacked → as M51; side and wide → click `settings-button`, wait for `settings-card` visible. `closeSettings(page)`: side and wide → the card's × (`settings-card` `[aria-label="Close"]`… use the button inside the card's header), wait for the card hidden.
-- `setMode(page, mode)`: stacked → as M51; side and wide → click `mode-chip`, then `mode-choice-<mode>` inside `mode-card`.
+- `openSettings(page)`: stacked → as M51; side and wide → if `settings-card` is already visible, return; else click `settings-button` and wait for `settings-card` visible. `closeSettings(page)`: side and wide → if the card is visible, click `settings-card-close`; wait for it hidden.
+- `setMode(page, mode)`: stacked → as M51; side and wide → unless `mode-card` is visible, click `mode-chip`; then `mode-choice-<mode>`.
 - `isWide(page)` stays.
 
 ### 10.7 Browser checks (`scripts/shots-m52.mjs`)
@@ -824,10 +832,12 @@ Live (wide 1,440 × 900, then side 820 × 1000):
 
 ### 10.8 Older checks to change
 
-- `scripts/shots-m25.mjs`: the dialog checks (moved to the foldable in M51) check the **card** instead: `settings-card` in place of `settings-dialog`; the focus after Escape is on `settings-button`; "inert while open" is removed (the card is not modal; replace it by "the 3D view still takes a tap while the card is open"); the "m25 side layout" check of the dialog's place checks the card's place (inside the view, above the chip row).
-- `scripts/shots-m27.mjs`, `scripts/shots-m29.mjs`: any remaining `mode-chip` menu use (`.chip-menu .mode-option-*`) on the side or wide layout reads `mode-card` instead.
-- `scripts/shots-m38.mjs`: rewritten in the parts that check the Mode and Settings **sections** on the wide layout: they check the chips and cards (the purposes stay: the mode is changed from the right side; the settings are reachable; a language change comes back to them). Its "a window below 1,280 px keeps the mode chip and the gear" check stays; "the gear opens the dialog" becomes "the gear opens the card".
+- `scripts/shots-m25.mjs` (the dialog checks moved to the foldable in M51): `settings-card` in place of `settings-dialog` (lines with `settings-dialog`, about 167–193 and 229); the focus after opening is on `settings-card-close`, after Escape on `settings-button`; "inert while open" and "nothing is inert after closing" (about 197–203) are replaced by "the 3D view still takes a tap while the card is open"; `#settings-title` stays (the card's title keeps that id); the "m25 side layout" check of the dialog's place checks the card's place (inside the view, above the chip row).
+- `scripts/shots-m27.mjs`, `scripts/shots-m29.mjs` (about lines 179–210): any remaining chip-menu mode use (`.chip-menu .mode-option-*`) on the side or wide layout reads inside `mode-card`; wide audits that open the settings close the card before going on.
+- `scripts/shots-m36.mjs` (about line 245, "the ? keeps the mode", desktop): reads `mode-chip` and expects "Mode: Easy" instead of the Mode section's title.
+- `scripts/shots-m38.mjs`: lines 66–70 ("the mode chip and the gear are gone") flip to "visible"; line 77 (the Mode section's title) reads the chip; the corner checks (about 104–141: the camera chip bottom-right, the Close chip left of it) use the gear as the corner chip; the Mode-section choice checks (about 148–190) and "Russian: Settings section open" (about 307–316) check the mode card and the settings card; the narrow block's "turning wide moves the settings into the section" (about 350–368) becomes "turning wide closes the card".
 - `scripts/shots-m39.mjs`: if a check counts the sections of column 1 (it expected `mode` first and `settings` last), remove those two from its expected lists.
+- `scripts/shots.mjs` (about line 721): the comment about the inert view behind the settings dialog is updated.
 - Others failing for the same reason: go through the helpers (3.6) and list them in the PR.
 
 ### 10.9 Done when
