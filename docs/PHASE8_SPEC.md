@@ -310,7 +310,8 @@ Removing the drawing's code (Harbour uses it), changing the list's look, the Rea
 
 ### 6.10 Decided in the M48 PR
 
-(empty)
+- The ropes-mode explain line is one paragraph (`ropes-mode`) whose text part is swapped in `showMode`; the whole paragraph is hidden while the read-only note shows (decided in the M48 PR).
+- `showMode` also sets the empty-strip text and the drawing wrapper, so a mode change (not only a ropes-mode change) updates the section (decided in the M48 PR).
 
 ---
 
