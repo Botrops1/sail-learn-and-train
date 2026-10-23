@@ -108,13 +108,16 @@ export async function liveM48Checks({ openPage, viewports, problems }) {
       await context.close();
     }
 
-    // 4. Harbour keeps the drawing.
+    // 4. Harbour with Easy ropes: the same list, no drawing (owner's change on the PR).
     {
       const { context, page } = await open('harbour', '?m=harbour');
+      const rows = await page.locator('.rope-item').count();
       check(
-        `${v} harbour: drawing`,
-        await page.getByTestId('clutch-drawing').isVisible(),
-        'clutch-drawing visible',
+        `${v} harbour: list, no drawing`,
+        (await page.getByTestId('ropes-easy').isVisible()) &&
+          !(await page.getByTestId('clutch-drawing').isVisible()) &&
+          rows >= 9,
+        `${rows} rows`,
       );
       await context.close();
     }

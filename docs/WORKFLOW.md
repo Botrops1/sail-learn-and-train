@@ -606,7 +606,7 @@ New link setting (PHASE8_SPEC 4.2): `boat=` names an imported boat (M58). Replac
 - [ ] Easy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — open Ropes: no drawing of the clutch banks, only the list of ropes. Tap "Vang": its slider appears at the top of the section.
 - [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&sel=rope_vang — open Ropes: the same list, the Vang slider works.
 - [ ] Learn with Realistic ropes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&m=learn&sel=rope_vang — open Ropes: the same list, the slider is greyed out, and a line says you work this rope at its station.
-- [ ] Harbour keeps the drawing: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour — open Ropes: the clutch-bank drawing is there.
+- [ ] Harbour too (owner's change on the PR): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour — open Ropes: the same list as in Easy, no clutch-bank drawing.
 - [ ] Realistic keeps the stations: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic — open Ropes: Port, Starboard, Helm, Mast, Bow and the drawing of the station.
 
 #### M49: "Show it working" and "Where is it?"

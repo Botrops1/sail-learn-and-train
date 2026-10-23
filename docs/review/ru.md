@@ -2523,7 +2523,6 @@
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Штурвалы и перо руля (лопасть под кормой яхты) поворачиваются вместе. Яхта поворачивает, только пока движется: если её держат на месте или она остановилась, она не слушается штурвала. |
 | ropes.mode.easy | Easy mode: | Простой режим: |
 | ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его в разделе «Режим») работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
-| clutch.hint | The clutches (locks that hold a rope) beside the wheels, seen from the helm looking forward: bank B on the port (left) side, bank A on the starboard (right) side. Tap one to work its rope. | Стопоры (замки, которые держат конец) рядом со штурвалами, вид с места рулевого вперёд: блок B слева (левый борт), блок A справа (правый борт). Нажмите на стопор, чтобы работать с его концом. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Блоки стопоров: нажмите на стопор, чтобы выбрать его конец |
 | clutch.bankB | Bank B · port | Блок B · левый борт |
 | clutch.bankA | Bank A · starboard | Блок A · правый борт |
@@ -2536,7 +2535,6 @@
 | clutch.tail.unfurl | the tail that rolls the mainsail out | хвост, который раскручивает грот |
 | clutch.aria | Clutch “{label}”: {name} | Стопор «{label}»: {name} |
 | ropes.strip.label | Selected rope | Выбранный конец |
-| ropes.strip.empty | Tap a clutch in the drawing, a rope in the 3D view, or a name in the list below to work that rope. | Нажмите на стопор на рисунке, на конец в 3D-виде или на название в списке ниже, чтобы работать с этим концом. |
 | ropes.strip.emptyList | Tap a rope in the 3D view or in the list below to work it. | Нажмите на конец в 3D-виде или в списке ниже, чтобы работать с ним. |
 | ropes.learnRealistic | Realistic ropes: you work this rope at its station. Choose Realistic mode to work it. | Реалистичные концы: с этим концом работают на его месте. Выберите реалистичный режим, чтобы работать с ним. |
 | ropes.shared.twoEnds | One rope, two ends. | Одна снасть, два конца. |
@@ -2557,7 +2555,6 @@
 | view.reset.button | Reset all | Сбросить всё |
 | view.reset.confirm | Tap again to reset | Нажмите ещё раз, чтобы сбросить |
 | view.reset.done | Everything is back to the start settings. | Всё вернулось к начальным настройкам. |
-| ropes.mode.easyShort | tap a clutch, then use its slider. | нажмите на стопор, затем двигайте его ползунок. |
 | ropes.mode.easyShortList | tap a rope in the list, then use its slider. | нажмите на конец в списке, затем двигайте его ползунок. |
 | ropes.strip.more | What does it do? | Что это делает? |
 | pause.pause | Pause | Пауза |

@@ -57,77 +57,59 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
   };
   const search = (page) => page.evaluate(() => window.location.search);
   const waitUrl = (page) => page.waitForTimeout(500);
-  const clutch = (page, name) => page.getByRole('button', { name, exact: true });
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
 
   for (const viewport of [viewports[0], viewports[2]]) {
     const v = viewport.name;
-    // Since M48 the clutch drawing shows only in Harbour mode.
-    const harbour = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0&m=harbour');
-    let { context, page } = harbour;
+    const { context, page } = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0');
     await page.waitForTimeout(600);
-    await showSection(page, 'ropes');
-    // The clutches sit in the open Ropes section, which at half height leaves it about 100 px
+    // The list sits in the open Ropes section, which at half height leaves it about 100 px
     // (M35): the panel is used with the sheet at full, as a tapped title does. Desktop: no effect.
     await setSheet(page, 'full');
+    const row = (id) => page.locator(`[data-select="${id}"]`);
 
-    // Clutch "Vang" → vang selected, its slider shown.
-    await clutch(page, 'Clutch “Vang”: Vang').click();
+    // Since M48 there is no clutch drawing: a rope's list row selects it. Vang → its slider.
+    await row('rope_vang').click();
     await waitUrl(page);
-    check(`${v} clutch Vang`, (await search(page)).includes('sel=rope_vang'), await search(page));
+    check(`${v} row Vang`, (await search(page)).includes('sel=rope_vang'), await search(page));
     check(
       `${v} Vang slider shown`,
       await page.getByLabel('Vang', { exact: true }).isVisible(),
       'slider visible',
     );
 
-    // Either main sheet clutch → the same rope, "one rope, two ends".
-    for (const name of [
-      'Clutch “Main sheet”: Mainsheet, starboard end',
-      'Clutch “MAIN SHEET”: Mainsheet, port end',
-    ]) {
-      await clutch(page, name).click();
-      await waitUrl(page);
-      const hint = await page.locator(`${strip('rope_mainsheet')} .shared-hint`).innerText();
-      check(
-        `${v} ${name.split(':')[0]}`,
-        (await search(page)).includes('sel=rope_mainsheet') && /one rope, two ends/i.test(hint),
-        `${await search(page)} | ${hint}`,
-      );
-    }
-    const pressed = await page.locator('.clutch[aria-pressed="true"]').count();
-    check(`${v} both main sheet clutches lit`, pressed === 2, `${pressed} clutches`);
-
-    // Furling: both "Main furling" clutches and "Main outhaul" light up together.
-    await clutch(page, 'Clutch “Main outhaul”: Outhaul').click();
+    // The main sheet: one rope, two ends.
+    await row('rope_mainsheet').click();
     await waitUrl(page);
-    const lit = await page.locator('.clutch[aria-pressed="true"]').count();
+    const hint = await page.locator(`${strip('rope_mainsheet')} .shared-hint`).innerText();
+    check(
+      `${v} row Main sheet`,
+      (await search(page)).includes('sel=rope_mainsheet') && /one rope, two ends/i.test(hint),
+      `${await search(page)} | ${hint}`,
+    );
+    const pressed = await page.locator('.rope-item[aria-pressed="true"]').count();
+    check(`${v} one row lit`, pressed === 1, `${pressed} rows`);
+
+    // Furling: the furling line and the outhaul work against each other.
+    await row('rope_main_furling_line').click();
+    await waitUrl(page);
     const furlHint = await page
       .locator(`${strip('rope_main_furling_line')} .shared-hint`)
       .innerText();
-    check(
-      `${v} outhaul + furling together`,
-      lit === 3 && /against each other/i.test(furlHint),
-      `${lit} clutches | ${furlHint}`,
-    );
+    check(`${v} outhaul + furling together`, /against each other/i.test(furlHint), furlHint);
 
     // Static ropes: an info line, no slider.
-    for (const [name, id, text] of [
-      ['Clutch “Main halyard”: Main halyard', 'rope_main_halyard', 'stays hoisted'],
-      ['Clutch “SPI HALYARD”: Gennaker halyard', 'rope_spi_halyard', 'no gennaker'],
+    for (const [id, text] of [
+      ['rope_main_halyard', 'stays hoisted'],
+      ['rope_spi_halyard', 'no gennaker'],
     ]) {
-      await clutch(page, name).click();
+      await row(id).click();
       await page.waitForTimeout(200);
       const block = page.locator(strip(id));
       const note = await block.innerText();
       const sliders = await block.locator('input[type="range"]').count();
       check(`${v} ${id} info line`, note.includes(text) && sliders === 0, note.split('\n')[2]);
     }
-
-    await context.close();
-
-    ({ context, page } = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0'));
-    await page.waitForTimeout(600);
 
     // A rope tapped in 3D is selected in the panel, also when another tab is open.
     await showSection(page, 'conditions');

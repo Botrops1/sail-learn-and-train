@@ -91,7 +91,7 @@ This phase adds no sailing rule and no PHYSICS_TRUTHS entry. Boat numbers that a
 
 ### 3.4 Common mistakes (check these first when something fails)
 
-- **The mode decides the Ropes section's look, not only the ropes mode** (M48): Easy and Learn show the list; Harbour with Easy ropes shows the drawing; Realistic ropes outside Learn show the stations.
+- **The mode decides the Ropes section's look, not only the ropes mode** (M48): Easy, Learn and Harbour with Easy ropes show the list (no drawing in any mode); Realistic ropes outside Learn show the stations.
 - **A section moved, not rebuilt.** Sections are built once and moved between columns and tabs (M29, M51, M54). Building one twice duplicates test ids and listeners.
 - **The spotlight is temporary.** It never changes the store's camera preset or the link; when it ends the camera glides back to the pose it left (M49).
 - **Hidden meshes are not tappable.** The handle is hidden while carried and in Easy ropes; a hidden mesh must not be picked (`picking.ts` skips invisible objects; check it does for the handle's group).
@@ -245,7 +245,7 @@ Issue #113. Owner's answer 2 (planning chat): "Make Learn and Easy mode ropes th
 | `easy` | `easy` | the strip and the list (**no drawing**) |
 | `learn` | `easy` | the strip and the list (**no drawing**) |
 | `learn` | `realistic` | the strip and the list, **read-only** (6.3), no drawing, no stations |
-| `harbour` | `easy` | the drawing, the strip and the list (as today) |
+| `harbour` | `easy` | the strip and the list (**no drawing**; owner's change on the M48 PR) |
 | `harbour` | `realistic` | the stations (as today) |
 | `realistic` | `realistic` | the stations (as today) |
 
@@ -310,6 +310,7 @@ Removing the drawing's code (Harbour uses it), changing the list's look, the Rea
 
 ### 6.10 Decided in the M48 PR
 
+- **Owner's answer on PR #116:** "in harbour mode clutch-bank drawing to be removed, it should be aligned with Easy and Learn. Accepted open question." So **no mode draws the clutch banks any more**: `clutchDrawing.ts` is deleted, and the keys `ropes.strip.empty`, `ropes.mode.easyShort` and `clutch.hint` are removed from both `ui.json` files. This replaces 6.2's Harbour row, 3.4's first bullet, the `clutch-block` wrapper and check 4 of 6.7 (Harbour now checks the list and no drawing), and 6.5: the M4a clutch checks click the list rows instead of the drawing, on one page and without `m=harbour`. The question about 9 rows is accepted (decided in the M48 PR).
 - The ropes-mode explain line is one paragraph (`ropes-mode`) whose text part is swapped in `showMode`; the whole paragraph is hidden while the read-only note shows (decided in the M48 PR).
 - The list has 9 `.rope-item` rows (the entries of `panelEntries()`), not 10 as 6.7 check 1 said; the check asks for at least 9 (decided in the M48 PR).
 - `showMode` also sets the empty-strip text and the drawing wrapper, so a mode change (not only a ropes-mode change) updates the section (decided in the M48 PR).
