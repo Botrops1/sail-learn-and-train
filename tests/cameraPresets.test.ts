@@ -5,6 +5,7 @@ import { sheerAt } from '../src/model/hullShape';
 import { cross, dot, normalize, sub, type Vec3 } from '../src/model/vec3';
 import {
   clampCameraPosition,
+  focusPose,
   framingBox,
   presetPose,
   viewDirection,
@@ -127,5 +128,51 @@ describe('camera clamp', () => {
 
   it('leaves a camera outside the boat alone', () => {
     expect(clampCameraPosition([0, 5, -30])).toEqual([0, 5, -30]);
+  });
+});
+
+describe('focusPose (M49, spotlight)', () => {
+  const lens = { verticalFovDeg: 40, aspect: 0.8 };
+  const from = { position: [0, 10, 30] as Vec3, target: [0, 5, 0] as Vec3, fovDeg: 40 };
+  const cleat = { min: [-0.1, 1.6, 2.1] as Vec3, max: [0.1, 1.7, 2.3] as Vec3 };
+  const winch = { min: [-7.38, 1.55, 1.47] as Vec3, max: [-7.12, 1.79, 1.73] as Vec3 };
+  const boom = { min: [-6.5, 2.4, -0.15] as Vec3, max: [0, 2.7, 0.15] as Vec3 };
+  const distanceOf = (pose: { position: Vec3; target: Vec3 }) =>
+    Math.hypot(...(sub(pose.position, pose.target) as Vec3));
+
+  it('a cleat at fill 0.5 stops at the minimum distance, at 0.25 at the fitted one', () => {
+    const near = focusPose(cleat, from, lens, 0.5, 140);
+    expect(distanceOf(near)).toBeCloseTo(1.2, 2);
+    expect(near.target[0]).toBeCloseTo(0, 2);
+    expect(near.target[1]).toBeCloseTo(1.65, 2);
+    expect(near.target[2]).toBeCloseTo(2.2, 2);
+    expect(distanceOf(focusPose(cleat, from, lens, 0.25, 140))).toBeCloseTo(1.481, 2);
+  });
+
+  it('a winch: 1.2 m at fill 0.5, 1.934 m at 0.25', () => {
+    expect(distanceOf(focusPose(winch, from, lens, 0.5, 140))).toBeCloseTo(1.2, 2);
+    expect(distanceOf(focusPose(winch, from, lens, 0.25, 140))).toBeCloseTo(1.934, 2);
+  });
+
+  it('a boom: 22.496 m at fill 0.5, and never farther than the limit', () => {
+    expect(distanceOf(focusPose(boom, from, lens, 0.5, 140))).toBeCloseTo(22.496, 2);
+    expect(distanceOf(focusPose(boom, from, lens, 0.25, 30.414))).toBeCloseTo(30.414, 2);
+  });
+
+  it('keeps the direction from the target to the camera and the given field of view', () => {
+    for (const box of [cleat, winch, boom]) {
+      const pose = focusPose(box, from, lens, 0.5, 140, 55);
+      const d = sub(pose.position, pose.target);
+      const n = distanceOf(pose);
+      expect(d[0] / n).toBeCloseTo(0, 4);
+      expect(d[1] / n).toBeCloseTo(0.1644, 4);
+      expect(d[2] / n).toBeCloseTo(0.9864, 4);
+      expect(pose.fovDeg).toBe(55);
+    }
+  });
+
+  it('a camera sitting on its target looks from the side', () => {
+    const pose = focusPose(cleat, { ...from, position: from.target }, lens, 0.5, 140);
+    expect(pose.position[2] - pose.target[2]).toBeLessThan(0);
   });
 });

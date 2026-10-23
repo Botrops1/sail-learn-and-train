@@ -2,8 +2,10 @@ import type { Store } from '../app/store';
 import { placeLabels, type ScreenBox } from '../model/labels3d';
 import { highlightIds } from '../model/panelEntries';
 import type { ScreenPoint } from '../render3d/scene';
+import { SCENE } from '../render3d/sceneConfig';
 import { el } from './dom';
 import { part } from './i18n';
+import { spotlightNow } from './spotlight';
 
 export interface Labels3d {
   /** Places the labels at this frame's points (does nothing while the labels are off). */
@@ -33,6 +35,8 @@ export function createLabels3d(view: HTMLElement, store: Store): Labels3d {
     'aria-hidden': 'true',
     hidden: '',
   });
+  // M49: while a spotlight is on, the labels of other parts fade to this opacity.
+  layer.style.setProperty('--label-faded', String(SCENE.spotlight.otherLabelOpacity));
   view.append(layer);
 
   interface Label {
@@ -42,6 +46,7 @@ export function createLabels3d(view: HTMLElement, store: Store): Labels3d {
     x: number;
     y: number;
     shown: boolean;
+    faded: boolean;
   }
   const labels = new Map<string, Label>();
   const labelFor = (id: string): Label => {
@@ -54,7 +59,7 @@ export function createLabels3d(view: HTMLElement, store: Store): Labels3d {
       );
       button.addEventListener('click', () => store.dispatch({ type: 'select', partId: id }));
       layer.append(button);
-      label = { button, width: 0, height: 0, x: NaN, y: NaN, shown: false };
+      label = { button, width: 0, height: 0, x: NaN, y: NaN, shown: false, faded: false };
       labels.set(id, label);
     }
     if (label.width === 0) {
@@ -110,7 +115,14 @@ export function createLabels3d(view: HTMLElement, store: Store): Labels3d {
       });
       const area = { x: 0, y: 0, width: view.clientWidth, height: view.clientHeight };
       const shown = placeLabels(boxes, area, blocked, highlightIds(state.selection), LABEL_GAP_PX);
+      const spotlight = spotlightNow();
+      const lit = spotlight ? new Set(highlightIds(spotlight.partId)) : null;
       for (const [id, label] of labels) {
+        const faded = lit !== null && !lit.has(id);
+        if (faded !== label.faded) {
+          label.faded = faded;
+          label.button.classList.toggle('label-faded', faded);
+        }
         const box = boxes.find((candidate) => candidate.id === id);
         const visible = box !== undefined && shown.has(id);
         // (A label not placed yet has NaN for its position: always moved.)

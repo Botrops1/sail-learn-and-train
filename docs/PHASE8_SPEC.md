@@ -479,7 +479,10 @@ A spotlight from the info card or a 3D tap, a spotlight for parts outside the bo
 
 ### 7.12 Decided in the M49 PR
 
-(empty)
+- `CameraRig.focus` has a fourth, optional parameter `onlyCloser` (default false): the rig caps `maxDistanceM` at the distance of its own `from` pose (the pose the camera is at or gliding to). "Show it working" passes it, because the scene cannot know where a glide started by the scene's preset is heading.
+- A spotlight that ends without a glide (a different part selected, a mode or detail change, Back, a drag) leaves the camera where it is (`endFocus(false)`); one ended by a preset change needs no call, since `goTo` drops the focus itself.
+- The hint line (`learn-spotlight-hint`) follows `spotlightNow()`, not the listener's argument, because a spotlight that finds nothing to light is ended inside its own request.
+- The veil's material is not tone-mapped, so its colour is the one in `SCENE.spotlight.dimColor`.
 
 ---
 

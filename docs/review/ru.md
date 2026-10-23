@@ -2951,9 +2951,10 @@
 | learn.mistakes | Typical mistakes | Типичные ошибки |
 | learn.mistake | Mistake: | Ошибка: |
 | learn.fix | Fix: | Как исправить: |
-| learn.showMe | Show me | Покажи |
+| learn.showItWorking | Show it working | Показать в работе |
 | learn.showMeDone | Showing it. Your phone’s Back button takes you back to where you were. | Показываю. Кнопка «Назад» на телефоне вернёт вас туда, где вы были. |
-| learn.showOnBoat | Show on the boat | Показать на яхте |
+| learn.whereIsIt | Where is it? | Где это? |
+| learn.spotlightHint | Tap anywhere to see the whole boat again. | Нажмите в любом месте, чтобы снова увидеть всю яхту. |
 | learn.tryIt | Try it: | Попробуйте: |
 | learn.related | See also: | См. также: |
 | learn.howSure | How sure we are | Насколько мы уверены |

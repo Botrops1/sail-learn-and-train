@@ -89,6 +89,29 @@ export function fitDistance(
 }
 
 /**
+ * M49: the camera pose that shows `box` filling `fill` of the view: the target moves to the box's
+ * centre, the direction from the target to the camera stays as in `from`, the distance is
+ * max(SCENE.spotlight.minDistanceM, fitDistance(box, centre, direction, lens, 1 / fill)),
+ * at most `maxDistanceM`.
+ */
+export function focusPose(
+  box: { min: Vec3; max: Vec3 },
+  from: CameraPose,
+  lens: Lens,
+  fill: number,
+  maxDistanceM: number,
+  fovDeg: number = SCENE.camera.verticalFovDeg,
+): CameraPose {
+  const centre: Vec3 = scale(add(box.min, box.max), 0.5);
+  const away = sub(from.position, from.target);
+  const length = Math.hypot(away[0], away[1], away[2]);
+  const direction = length < 1e-6 ? viewDirection(90, 6) : scale(away, 1 / length);
+  const fitted = fitDistance(box, centre, direction, lens, 1 / fill);
+  const distance = Math.min(maxDistanceM, Math.max(SCENE.spotlight.minDistanceM, fitted));
+  return { position: add(centre, scale(direction, distance)), target: centre, fovDeg };
+}
+
+/**
  * Camera pose for a preset. `free` and `map` return the default view (the free position is not
  * stored; the map shows no 3D scene).
  */
