@@ -879,13 +879,14 @@ Issue #100 item 5. Owner's answer 6: in Realistic mode the autopilot and the eng
 
 ### 11.3 The Helm section
 
-- `createHelmStation(store, openEntry): HTMLElement` in `realisticPanel.ts` returns today's `helm` block (test id `helm-station`: the hints, the handle slot, the wheel, `createAutopilotPanel(store)`, `createEngineLever(store)`, the thrusters `thruster-helm`, the windlass remote `windlass-helm`), moved unchanged, plus two new parts at its top:
+- `createHelmStation(store: Store): HTMLElement` in `realisticPanel.ts` (with its own `store.subscribe` for what `refresh()` does for the helm today: `wheel.refresh`, `helmSlot.update`, showing or hiding) returns today's `helm` block (test id `helm-station`: the hints, the handle slot, the wheel, `createAutopilotPanel(store)`, `createEngineLever(store)`, the thrusters `thruster-helm`, the windlass remote `windlass-helm`), moved unchanged, plus two new parts at its top:
   - `<p class="hint" data-testid="helm-away">` with `t('real.helm.away', { station })` ("You are at the Port station."; `station` = `t('real.station.<id>')`) and a button `helm-go` `t('real.helm.go')` ("Go to the helm"), shown only while `realistic.station !== 'helm'`; the button dispatches `{ type: 'realistic', action: { type: 'station', station: 'helm' } }`;
   - the rest of the block is shown only while `realistic.station === 'helm'` (one person, one place: as today, the helm's controls work only when you stand there).
-- **Opening the Helm section by its title walks to the helm:** the panel's title-tap handler (`panel.ts`) dispatches the station action `helm` when the Helm section opens and the station is not `helm`.
-- **The Ropes section's station bar** (`realisticPanel.ts`) shows Port, Starboard, Mast, Bow (no Helm button). While the station is `helm`, no station button is pressed and the Ropes section shows `<p class="hint" data-testid="real-at-helm">` with `t('real.atHelm')` ("You are at the helm. Choose a station to work the ropes.").
-- **Selections:** in Realistic ropes, selecting the wheel (`part_rudder`) opens the Helm section (in `panel.ts`'s selection rule, before the Ropes rule); the strip's "Go there" for a rope whose station is `helm` (only the wheel today: `realisticPanel.ts` line "if (entry?.controlId === 'ctl_rudder') return station === 'helm' ? null : 'helm';") walks to the helm and calls `showSection('helm')` (pass `showSection` into `createRealisticPanel` through `createRopesTab`).
-- **Links:** `st=helm` opens the Helm section at the start (`applyOpen`, when `fromLink`, Realistic ropes and `realistic.station === 'helm'`, after the Learn rule). In Harbour mode with Realistic ropes, `openHarbourFirst` opens `helm` (today `ropes`).
+- **Opening the Helm section by its title walks to the helm:** the panel's title-tap handler (`panel.ts`, a `helm` branch next to the `openOnly` call) dispatches the station action `helm` when the Helm section opens and the station is not `helm`. Only the title tap walks; `showSection('helm')` called from code (a selection, Harbour, a link) does not. `panel.ts` also gets the `helm` entries in `SECTION_TITLES` and `built`.
+- The Helm section also shows the station alerts and the paused line while you stand there: `createHelmStation` puts its own copy of the `station-alerts` strip behavior (the same alert texts for ropes running at another station) at its top, `data-testid="helm-alerts"`, so a rope running at Port is seen from the helm (the Helm button and its badge are gone from the bar).
+- **The Ropes section's station bar** (`realisticPanel.ts`) shows Port, Starboard, Mast, Bow (no Helm button: the bar, `stationButtons` and the badge logic skip `helm`; `STATION_IDS` keeps five). While the station is `helm`, no station button is pressed and the Ropes section shows, directly under the station bar, `<p class="hint" data-testid="real-at-helm">` with `t('real.atHelm')` ("You are at the helm. Choose a station to work the ropes."); the handle bar, Practice and "How to" stay in Ropes.
+- **Selections:** in Realistic ropes, selecting the wheel opens the Helm section. "The wheel" is `entryFor(state.selection)?.controlId === 'ctl_rudder'` (it covers `part_rudder` and the two wheel fittings `helm_port`, `helm_starboard`). Both places in `panel.ts` use it: the store subscriber's selection rule (before the Ropes rule) and `applyOpen`'s link rule. The strip's go-there button (`real.strip.go`, "Go to Helm") for the wheel (`realisticPanel.ts`: "if (entry?.controlId === 'ctl_rudder') return station === 'helm' ? null : 'helm';") walks to the helm and calls `showSection('helm')`: `createRopesTab(store, openEntry, showSection)` gets a third parameter and passes it to `createRealisticPanel`.
+- **Links:** `applyOpen` (at the start, from a link) checks in this order: Learn mode with an entry (Learn); Harbour (`openHarbourFirst`); a selection that is the wheel, with Realistic ropes (Helm); any other selection with an entry (Ropes); Realistic ropes with `realistic.station === 'helm'` (Helm). In Harbour mode with Realistic ropes, `openHarbourFirst` opens `helm` (today `ropes`).
 - The quick row's Realistic text (`quick.realistic`) is unchanged.
 
 ### 11.4 Strings
@@ -898,11 +899,11 @@ Issue #100 item 5. Owner's answer 6: in Realistic mode the autopilot and the eng
 
 ### 11.5 Tests
 
-`tests/modes.test.ts`: `helm` is available only with Realistic ropes; it follows `ropes` in the Easy, Learn and Realistic orders and `engine` in Harbour; `TAB_OF.helm` is `controls`.
+`tests/modes.test.ts` (new tests; the existing "autopilot/engine only in Easy" test stays as it is): `helm` is available only with Realistic ropes; it follows `ropes` in the Easy, Learn and Realistic orders and `engine` in Harbour; `TAB_OF.helm` is `controls`.
 
 ### 11.6 Helpers (`scripts/ui.mjs`)
 
-- `holdThruster(page, which, dir, ms, 'helm')`: opens the Helm section with `showSection(page, 'helm')` (which walks there) instead of the station button.
+- `holdThruster(page, which, dir, ms, 'helm')`: opens the Helm section with `showSection(page, 'helm')` instead of the station button, then, if `helm-go` is visible (an already open Helm section does not walk), clicks it.
 - `holdWindlass(page, dir, ms, '-helm')`: the same.
 
 ### 11.7 Browser checks (`scripts/shots-m53.mjs`, test clock)
@@ -913,22 +914,23 @@ Live (phone, then desktop):
 
 1. `?mode=realistic&st=helm`: `section-helm` open and shown, `helm-station` visible with the wheel, `engine-helm`, `thruster-helm`, `windlass-helm`; `helm-away` hidden.
 2. `?mode=realistic&st=port`: the station bar reads "Port|Starboard|Mast|Bow"; `showSection(page, 'helm')` → the link has `st=helm` and the helm's controls show.
-3. With the Helm section open, choose Port in the Ropes section's station bar (open Ropes, tap the Port button; on the desktop the two may be open at once only if they are in different columns) → open Helm again: on the phone the title tap walks back; on the desktop with Helm still open, `helm-away` shows "You are at the Port station." and `helm-go` walks back.
-4. In Realistic, tap the wheel row in the Ropes list or select `part_rudder` with a link `?mode=realistic&sel=part_rudder` → the Helm section is open.
-5. `?m=harbour&mode=realistic&pl=marina` → the Helm section is open (not Ropes).
+3. **Away from the helm:** `?mode=realistic&st=port&sel=part_rudder` → the Helm section is open (by the selection, without walking): `helm-away` reads "You are at the Port station.", the helm's controls are hidden; tap `helm-go` → `waitForLink(page, ['st=helm'])` and the controls show.
+4. The wheel tapped in 3D (`hitCentres` of `helm_starboard`, `?mode=realistic&debug=1&held=1&sea=flat&cam=helm`) → the Helm section is open.
+5. `?m=harbour&mode=realistic&pl=marina` → the Helm section is open (not Ropes), with `helm-away` shown (she starts at Port).
 6. Easy ropes: `section-helm` is hidden.
 7. `auditPage` with Helm open: no problems.
 
 ### 11.8 Older checks to change
 
 - `scripts/shots-m4b.mjs` (the "stations" check) and `scripts/shots-m46.mjs` ("bow station: the station bar"): expected `Port|Starboard|Mast|Bow`.
-- `scripts/shots-m23.mjs` (the Latin scan of the Realistic stations): for `helm` it opens the Helm section (`showSection(page, 'helm')`) instead of clicking a station button.
-- `scripts/shots-m12.mjs` "m12 helm lever": works as it is (`st=helm` opens the Helm section; `engine-helm` is inside). If its `scrollIntoViewIfNeeded` needs the section open first, add `showSection(page, 'helm')`.
-- `scripts/shots-m6.mjs`, `m5`, `m41`, `m46`, `m47`: their `st=helm` links and helm suffixes go through `holdThruster`/`holdWindlass` (11.6) or the link; fix any that clicked the Helm station button.
+- `scripts/shots-m4c.mjs` "helm slot" (about line 582): add `await showSection(page, 'ropes')` before the tap on the Starboard station button (Helm is open at the start with `st=helm`).
+- `scripts/shots-m23.mjs` (the Latin scan of the Realistic stations): the station loop becomes `['starboard', 'mast', 'bow']` with `showSection(page, 'ropes')` before it; the Helm is scanned separately with `showSection(page, 'helm')`. (Its first loop over `sectionIds` now also visits Helm and walks there; that is fine.)
+- `scripts/shots-m27.mjs`: `SECTION_ORDER.realistic` gets `'helm'` after `'ropes'`.
+- `scripts/shots-m12.mjs` "m12 helm lever" (about line 197), `scripts/shots-m41.mjs` "helm" block (about line 162), `scripts/shots-m46.mjs` "helm remote" (about line 119) and `scripts/shots-m47.mjs` (the `audit('helm thrusters', …, ['ropes'])` call, about lines 117–122): `showSection(page, 'ropes')` / `['ropes']` becomes `'helm'` / `['helm']`.
 
 ### 11.9 Done when
 
-The Helm section works as 11.3 on a phone and a computer, the station bar has four stations, `st=helm` links and Harbour with Realistic ropes open Helm; typecheck, lint, tests, build and `SHOTS_ONLY=m4b,m4c,m12,m23,m41,m46,m47,m53` pass, then CI.
+The Helm section works as 11.3 on a phone and a computer, the station bar has four stations, `st=helm` links and Harbour with Realistic ropes open Helm; typecheck, lint, tests, build and `SHOTS_ONLY=m4b,m4c,m5,m6,m12,m23,m27,m29,m35,m41,m46,m47,m53` pass, then CI.
 
 ### 11.10 Not in M53
 
