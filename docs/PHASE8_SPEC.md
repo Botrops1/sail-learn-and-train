@@ -950,38 +950,58 @@ Issue #110 (it replaces #103: sections no longer jump between the columns when t
 
 ### 12.1 Files
 
-New: `src/ui/sectionLayout.ts` (pure), `src/ui/sectionMove.ts` (DOM: grips, drag, menu, keys), `tests/sectionLayout.test.ts`, `scripts/shots-m54.mjs`. Changed: `src/ui/panel.ts` (`place()` on the wide layout), `src/ui/sections.ts` (the grip slot in the header), `src/ui/modes.ts` (`second` removed), `src/ui/settingsMenu.ts` (Reset layout), `src/style.css`, both `ui.json`, `docs/review/ru.md`, `tests/modes.test.ts`, the older checks of 12.8, `scripts/ui.mjs`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `src/ui/sectionLayout.ts` (pure), `src/ui/sectionMove.ts` (DOM: grips, drag, menu, keys), `tests/sectionLayout.test.ts`, `scripts/shots-m54.mjs`. Changed: `src/ui/panel.ts` (`place()` on the wide layout; owns the layout state), `src/ui/modes.ts` (`second` removed), `src/ui/settingsMenu.ts` (Reset layout; a small `createConfirmButton` helper extracted from Reset's two-tap code, used by Reset, Reset layout and later M58's Remove), `src/ui/columnWidths.ts` (exports `COLUMNS_KEY = 'sail-learn.columns'`, moved from `columnHandles.ts`), `src/ui/columnHandles.ts` (imports it), `src/ui/timeBar.ts` (exports `FOLD_KEY`), `src/style.css`, both `ui.json`, `docs/review/ru.md`, `tests/modes.test.ts`, the older checks of 12.8, `scripts/ui.mjs`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 12.2 Behaviour
 
-- On the **wide** layout the two columns hold the sections of the **saved layout**, or of `DEFAULT_WIDE_LAYOUT` when nothing is saved, **in every mode** (the mode no longer moves sections between columns; it still decides which section opens: Learn opens Learn, Harbour opens Engine or Helm). Unavailable sections stay in their place, hidden.
+- On the **wide** layout the two columns hold the sections of the **saved layout**, or of `DEFAULT_WIDE_LAYOUT` when nothing is saved, **in every mode** (the mode no longer moves sections between columns; what opens is unchanged). Unavailable sections stay in their place, hidden. `mode` and `settings` (unavailable on `wide` since M52) stay hidden in column 1.
+- **Who owns it:** `panel.ts` reads the layout once at the start (`completeLayout(parseLayout(localStorage.getItem(LAYOUT_KEY)))` in `try/catch`), keeps it, and writes it (`serializeLayout`) **only after a move**, never in `place()` (otherwise Reset layout would be undone). It passes the helpers to `createSectionMove` (12.3).
 - `MODE_LAYOUTS[mode].second` is removed; `order` stays (the phone's Controls tab and the side layout use it).
-- Each section header on the wide layout has a **grip** at its left: `button.section-grip`, 44 × 44 px, the icon "⠿" (`aria-hidden`), `data-testid="section-grip-<id>"`, `aria-label` `t('layout.grip', { name })`, `aria-describedby` a hidden hint `t('layout.gripHint')`. Not shown on `stacked` or `side` (CSS `html:not([data-wide='true']) .section-grip { display: none }`).
-- **Drag** (mouse, pen or touch): a `pointerdown` on the grip, then a move of more than 8 px, starts a drag: the section gets `.is-dragging` (opacity 0.6); a 3 px `--accent` line (`.drop-marker`) shows where it will land: in the column under the pointer (if the pointer is over the 3D view, the nearer column), before the first visible section whose header's vertical middle is below the pointer, else at the column's end. A column that is collapsed (M39) takes no drop. `pointerup` drops it there (`moveSection`), saves and places; Escape or `pointercancel` cancels. The page does not scroll sideways during a drag.
-- **Tap on the grip** (no drag): a small menu (the `chipMenu.ts` behaviour) with three items: `t('layout.up')` "Move up", `t('layout.down')` "Move down", `t('layout.other')` "Move to the other column" (test ids `layout-up`, `layout-down`, `layout-other`); an item that cannot apply (first visible in its column for "Move up", last for "Move down") is `aria-disabled="true"` and does nothing.
-- **Keys** on a focused grip: ArrowUp / ArrowDown move the section one visible place up or down in its column; ArrowLeft puts it in column 1, ArrowRight in column 2, at the same visible position (or the end); the focus stays on the grip; a polite live region (`.layout-live`, visually hidden) says `t('layout.moved', { name, column, position })` ("Ropes: column 2, place 1.").
-- **"Move to the other column"** inserts it at the end of the other column. "Move up/down" swaps it with the previous / next **visible** section.
-- Opening and folding still follows M35 (one open per column); a moved open section keeps its open state, and `keepOneOpenPerColumn()` runs after each move.
-- **Reset layout** (Settings, shown on the wide layout only, after Detail): a button `layout-reset` `t('layout.reset')` "Reset layout" with the two-tap confirm of Reset (`t('layout.resetConfirm')` "Tap again to reset the layout", the same `RESET_ARM_MS`), and the hint `t('layout.resetHint')`. The second tap removes `sail-learn.layout`, `sail-learn.columns` and `sail-learn.timeBarFolded` from `localStorage`, marks the Settings to reopen (`openAfterReload('settings')`) and reloads the page (`window.location.reload()`); the link (the boat) is kept.
+- Each section header on the wide layout has a **grip** at its left, put there by `sectionMove.ts` (`head.prepend(grip)` before `.section-toggle`): `button.section-grip`, 44 × 44 px, the icon "⠿" (`aria-hidden`), `data-testid="section-grip-<id>"`, `aria-label` `t('layout.grip', { name })`, `aria-describedby="layout-grip-hint"` (one visually hidden `<p id="layout-grip-hint">` with `t('layout.gripHint')` in the panel), `aria-haspopup="menu"`, `aria-expanded`, `touch-action: none`. Not shown on `stacked` or `side` (CSS `html:not([data-wide='true']) .section-grip { display: none }`).
+- **Drag** (mouse, pen or touch): a `pointerdown` on the grip, then a move of more than 8 px, starts a drag (the pointer is captured then): the section gets `.is-dragging` (opacity 0.6); a 3 px `--accent` line (`.drop-marker`, `position: fixed`, an overlay that does not move the headers) shows where it will land: in the column under the pointer (over the 3D view: the nearer column that is not collapsed; if both are collapsed, no marker and no drop), before the first visible section other than the dragged one whose header's vertical middle is below the pointer, else at the column's end. A collapsed column (M39) takes no drop. `pointerup` drops it there, saves and places; Escape or `pointercancel` cancels. A finished or cancelled drag swallows the `click` that follows (so the menu does not open). The page does not scroll sideways during a drag.
+- **Tap on the grip** (no drag; Enter and Space too, through `click`): a small menu built by `sectionMove.ts` itself (one shared `div[role=menu]` placed below the grip, inside the panel; `role="menuitem"` buttons; it calls `closeOpenMenus()` from `chipMenu.ts` before opening and closes on Escape, an outside tap or a choice), `aria-label` `t('layout.label')`, three items: `t('layout.up')` "Move up", `t('layout.down')` "Move down", `t('layout.other')` "Move to the other column" (test ids `layout-up`, `layout-down`, `layout-other`); an item that cannot apply (first visible in its column for "Move up", last for "Move down") is `aria-disabled="true"`, does nothing and leaves the menu open.
+- **Keys** on a focused grip (`preventDefault`, so the column does not scroll): ArrowUp / ArrowDown move the section one visible place up or down in its column; ArrowLeft puts it in column 1, ArrowRight in column 2, at the same visible position (clamped to the end); ArrowLeft in column 1, ArrowRight in column 2 and Up/Down at the ends do nothing and say nothing; the focus stays on the grip; a polite live region (`.layout-live`, visually hidden) says `t('layout.moved', { name, column, position })` ("Ropes: column 2, place 1.") after a move.
+- **"Move to the other column"** inserts it at the end of the other column. "Move up/down" swaps it with the previous / next **visible** section. Visible positions become array indexes with `layoutIndex` (12.3).
+- After any move into a collapsed column, `columns.reveal(section.element)` opens that column (after the DOM move) and the focus goes back to the grip. If the moved section was open, `openOnly(id)` runs (the moved section wins in its new column); otherwise `keepOneOpenPerColumn()`.
+- **Reset layout** (Settings, shown on the wide layout only, after Detail): a field (`div[data-testid="layout-field"]`, built always, hidden by CSS `html:not([data-wide='true']) [data-testid='layout-field'] { display: none }`) with the title `t('layout.label')`, a button `layout-reset` `t('layout.reset')` "Reset layout" with the two-tap confirm (`createConfirmButton`, `t('layout.resetConfirm')` "Tap again to reset the layout", the same `RESET_ARM_MS`), and the hint `t('layout.resetHint')`. The second tap removes `LAYOUT_KEY`, `COLUMNS_KEY` and `FOLD_KEY` from `localStorage`, marks the Settings to reopen (`openAfterReload('settings')`) and loads the page again with `window.location.replace(window.location.pathname + serializeUrlState(store.getState()) + window.location.hash)` (as the language change does: the address bar can lag the store by 300 ms).
 
 ### 12.3 Pure helpers (`src/ui/sectionLayout.ts`)
 
 ```ts
 export type WideSectionId = Exclude<SectionId, 'mode' | 'settings'>;
 export interface SectionLayout { columns: [WideSectionId[], WideSectionId[]] }
+/** What parseLayout reads: ids not yet checked. */
+export interface RawLayout { columns: [string[], string[]] }
 export const LAYOUT_KEY = 'sail-learn.layout';
 /** The first-time arrangement (the Easy mode's columns before M54). */
 export const DEFAULT_WIDE_LAYOUT: SectionLayout = {
   columns: [['ropes', 'helm', 'sails', 'autopilot', 'engine', 'place', 'anchor', 'harbour'], ['conditions', 'learn']],
 };
-/** Every wide section exactly once: unknown and repeated ids dropped (first kept), missing ones added at the end of the column DEFAULT_WIDE_LAYOUT puts them in. */
-export function completeLayout(layout: SectionLayout | null): SectionLayout;
-/** Takes `id` out and puts it at `index` (0…length, clamped) of `column`, counted after taking it out. Returns a new layout. */
+/** Every wide section exactly once: unknown and repeated ids dropped (first kept), missing ones added at the end of the column DEFAULT_WIDE_LAYOUT puts them in. Always returns new arrays (never DEFAULT_WIDE_LAYOUT itself). */
+export function completeLayout(layout: RawLayout | SectionLayout | null): SectionLayout;
+/** Takes `id` out and puts it at `index` (0…length, clamped) of `column`, counted after taking it out (also within the same column). Returns a new layout. */
 export function moveSection(layout: SectionLayout, id: WideSectionId, column: 0 | 1, index: number): SectionLayout;
+/**
+ * The array index in `column` (with `id` already taken out) for visible position `visiblePos` among `visibleIds`
+ * (the column's visible ids, without `id`): visiblePos < visibleIds.length ? column.indexOf(visibleIds[visiblePos]) : column.length.
+ */
+export function layoutIndex(column: readonly WideSectionId[], visibleIds: readonly WideSectionId[], visiblePos: number): number;
 /** `{"v":1,"c":[[…],[…]]}`. */
 export function serializeLayout(layout: SectionLayout): string;
-/** Null for anything that is not that shape with v = 1 and two arrays of strings (the ids are then checked by completeLayout). */
-export function parseLayout(raw: string | null): SectionLayout | null;
+/** Null unless the text is JSON `{ v: 1, c: [array, array] }` with exactly two arrays whose members are all strings. */
+export function parseLayout(raw: string | null): RawLayout | null;
+```
+
+`src/ui/sectionMove.ts`:
+
+```ts
+export function createSectionMove(options: {
+  sections: Map<SectionId, SectionView>;
+  columns: [HTMLElement, HTMLElement];          // .panel-body, .panel-second
+  layout(): SectionLayout;                       // panel.ts's current layout
+  apply(next: SectionLayout, moved: WideSectionId): void; // panel.ts: keep, save, place(), reveal, open rules, changed()
+  isCollapsed(element: HTMLElement): boolean;    // ColumnHandles.isCollapsed
+}): void;
 ```
 
 M55 adds `'status'` at the end of column 0 of `DEFAULT_WIDE_LAYOUT` (and so `completeLayout` adds it to a saved layout that lacks it).
@@ -1009,22 +1029,23 @@ All new, in this order, after the `settings.*` keys.
 2. `completeLayout({ columns: [['learn', 'ropes', 'ropes', 'bogus'], []] })` → column 0 starts `learn, ropes`, has no `bogus` and one `ropes`; `conditions` is in column 1; every wide section appears exactly once.
 3. `moveSection(DEFAULT_WIDE_LAYOUT, 'conditions', 0, 0)` → column 0 starts with `conditions`, column 1 is `['learn']`.
 4. `moveSection(…, 'ropes', 0, 99)` → `ropes` is last in column 0.
-5. `parseLayout(serializeLayout(x))` equals `x`; `parseLayout('{"v":2,"c":[[],[]]}')`, `parseLayout('[]')`, `parseLayout('nope')` and `parseLayout(null)` are null.
-6. `tests/modes.test.ts`: the `second` tests are removed.
+5. `parseLayout(serializeLayout(x))` equals `x`; `parseLayout('{"v":2,"c":[[],[]]}')`, `parseLayout('{"v":1,"c":[[]]}')`, `parseLayout('{"v":1,"c":[[1],[]]}')`, `parseLayout('[]')`, `parseLayout('nope')` and `parseLayout(null)` are null.
+6. `moveSection` within one column: `sails` to index 0 of column 0 → column 0 starts `sails, ropes`.
+7. `layoutIndex` with a hidden `helm` between `ropes` and `sails`: column `['ropes', 'helm', 'sails', 'autopilot']` without `autopilot`, visible `['ropes', 'sails']`: position 1 → 2 (before `sails`), position 2 → 3 (the end), position 0 → 0.
+8. `completeLayout(null) !== DEFAULT_WIDE_LAYOUT` and its arrays are new.
+9. `tests/modes.test.ts`: delete only the lines that read `.second` (14–15, 48–49, 166); the tests around them stay.
 
 ### 12.6 Helpers (`scripts/ui.mjs`)
 
-`moveSectionBy(page, id, how)`: clicks `section-grip-<id>`, then `layout-up` / `layout-down` / `layout-other`. `columnSections(page)`: the visible `[data-section]` ids of `.panel-body` and `.panel-second`, in page order.
+`moveSectionBy(page, id, how)`: clicks `section-grip-<id>`, then `layout-up` / `layout-down` / `layout-other`. `columnSections(page)`: `[string[], string[]]`, the displayed `[data-section]` ids of `.panel-body` and `.panel-second`, in page order.
 
 ### 12.7 Browser checks (`scripts/shots-m54.mjs`, wide 1,440 × 900)
 
-Each page starts with `localStorage.removeItem('sail-learn.layout')` (an init script, so earlier runs do not leak).
-
-Scenes: `layout-default`, `layout-dragging` (a drag held at the middle: draw the drop marker), `layout-moved` (after moving Conditions to column 1's top).
+Every `openPage` makes a new context, so the storage starts empty (no clearing needed; a reload keeps it). Scene: `layout-default`. Pictures of a drag held at the middle and of the moved layout are taken inside the live checks with `shot()` (as `shots-m39.mjs` does).
 
 Live:
 
-1. **Default:** `columnSections` = column 1 `ropes, sails, autopilot, engine, place, anchor, harbour` (`helm` hidden with Easy ropes), column 2 `conditions, learn`; the grips are visible and 44 px.
+1. **Default:** `columnSections` equals `completeLayout(null)` with the hidden sections left out (written as a list in the check: column 1 `ropes, sails, autopilot, engine, place, anchor, harbour`, column 2 `conditions, learn`; M55 adds `status` to this check); the grips are visible and 44 px.
 2. **Menu:** `moveSectionBy(page, 'conditions', 'other')` → column 1 ends with `conditions`, column 2 is `learn`; reload → the same (saved).
 3. **Mode does not move sections:** after 2, `setMode(page, 'harbour')` → `columnSections` unchanged; `setMode(page, 'learn')` → unchanged.
 4. **Drag:** drag `section-grip-learn` (mouse: down, move in 10 steps, up) onto the top of column 1 (above the `ropes` header's middle) → column 1 starts with `learn`.
@@ -1036,8 +1057,7 @@ Live:
 
 ### 12.8 Older checks to change
 
-- `scripts/shots-m29.mjs`, `scripts/shots-m39.mjs` and any check that expected the **mode's** second column on the wide layout (e.g. Learn mode putting `ropes` in column 2, Harbour putting `place` there): expect `DEFAULT_WIDE_LAYOUT` in every mode. Each such check starts with a cleared `sail-learn.layout`.
-- `scripts/shots-m42.mjs` and others that read "Place is in column 2 in Harbour mode": `place` is now in column 1.
+- `scripts/shots-m29.mjs` check 1: the tuple `['learn', '?m=learn&learn=rope_vang', ['conditions', 'ropes']]` becomes `['conditions', 'learn']`; its comments about the mode's second column are updated. No other check needs a change for this (m36, m39 and m42 assert nothing about which column a section is in; do not hunt there).
 
 ### 12.9 Done when
 
