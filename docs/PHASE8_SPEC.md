@@ -225,7 +225,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 | M58 | 16 | Settings: choose a boat, import a profile; the app reloads with it | #112 | M57 | **required** (startup, links, stored profiles) |
 | M59 | 17 | Leftovers and sign-off | — | M58 | not needed (small fixes, checks and docs) |
 
-**Before M51:** the owner agrees the mockup in the planning PR (owner's answer 5). The mockup is `docs/mockups/phase8-panel.html` (open it in a browser; the planning PR links the same page).
+**Mockup agreed:** the owner accepted the mockup on the planning PR #115 ("Accept all", 2026-10-23), so M51 can start once M50 is merged. The mockup is `docs/mockups/phase8-panel.html`.
 
 ---
 ## 6. M48: Ropes as a list in Easy and Learn
@@ -665,7 +665,7 @@ export function createPanelTabs(store: Store): PanelTabs;
 
 - Five buttons `button.panel-tab[role=tab]`, test ids `panel-tab-<tab>`, ids `panel-tab-<tab>`, `aria-selected`, `aria-controls="panel-body"`; a roving `tabindex` (the selected tab 0, the others −1). Arrow Left / Right move the focus and the choice between tabs, Home / End to the first / last (WAI-ARIA tabs). `.panel-tab:focus-visible` gets the app's focus outline (`3px solid var(--focus)`, offset −3px).
 - `.panel-body` gets `id="panel-body"`; on `stacked` also `role="tabpanel"` and `aria-labelledby` the selected tab's id (both removed on the other layouts).
-- Labels: **mode tab** the current mode's name, `` t(`mode.${appMode}` as const) `` ("Easy"), with `aria-label` `t('mode.section', { name })` ("Mode: Easy"); updates when the mode changes (this is the default; the planning PR asks the owner, and if the owner chooses the word "Mode" the planning PR changes this line to `t('mode.label')` before M51 starts); **controls** `t('tab.controls')`; **conditions** `t('section.conditions')`; **learn** a "?" in a 26 px circle (as the mockup) with `aria-label` `t('tab.learn')`; **settings** the gear icon (`gearIcon()` from `settingsMenu.ts`, exported) with `aria-label` `t('settings.title')`.
+- Labels: **mode tab** the current mode's name, `` t(`mode.${appMode}` as const) `` ("Easy"), with `aria-label` `t('mode.section', { name })` ("Mode: Easy"); updates when the mode changes (owner's answer on the planning PR #115: the mode's name, not the word "Mode"); **controls** `t('tab.controls')`; **conditions** `t('section.conditions')`; **learn** a "?" in a 26 px circle (as the mockup) with `aria-label` `t('tab.learn')`; **settings** the gear icon (`gearIcon()` from `settingsMenu.ts`, exported) with `aria-label` `t('settings.title')`.
 - Look (mockup; this section wins where they differ): a grid `grid-template-columns: auto auto auto 48px 48px; justify-content: space-between;`, each tab 44 px high, `padding: 0 6px; white-space: nowrap;`, 15 px semibold text in `--muted` (**tunable**: 14 px if the Russian "Реалистичный" does not fit at 390 px; the row never makes the page scroll sideways); the chosen tab in `--accent` with a 3 px bar at its bottom (10 px in from each side); a 1 px `--line` border above the row (counted in the 128 px) and the line under it drawn as `box-shadow: inset 0 -1px 0 var(--line)` (no extra height).
 
 `TAB_OF` in `src/ui/modes.ts` (replaces `WIDE_ONLY_SECTIONS`):
@@ -1721,10 +1721,11 @@ Anything new: ideas found while testing become issues for Phase 9 or later.
 13. Learn texts on another boat keep the Hanse 508's text with a note; **to be looked at further later** (16.6; ROADMAP "Later").
 14. All four extras: (a), (b), (c) in M59, (d) in M54.
 
-### Open for the owner on the planning PR
+### Owner's answers on the planning PR #115 ("Accept all", 2026-10-23)
 
-- **The first phone tab's label** (mockup toggle): the mode's name ("Easy", recommended, so the phone always shows the mode) or the word "Mode". The spec is written with the mode's name (9.3).
-- **The lowest sheet height** grows from 100 to 128 px to fit the tabs and keep the quick row (recommended, 9.2).
+- **The mockup** (`docs/mockups/phase8-panel.html`) is agreed: M51 builds it (9).
+- **The first phone tab** shows the mode's name ("Easy"), not the word "Mode" (9.3).
+- **The lowest sheet height** grows from 100 to 128 px to fit the tabs and keep the quick row (9.2).
 
 ### Refresh
 

@@ -595,7 +595,7 @@ New link settings (PHASE7_SPEC 4.2): `m=harbour` opens Harbour mode (M41); `pl=m
 
 ## 13. Phase 8
 
-Panel, status and your own setup ([PHASE8_SPEC](PHASE8_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M48 … M59), started with `/milestone <N>`. **M50 to M58 need a `/review` with Opus** before you test them; M48, M49 and M59 do not. **Before M51** you agree the mockup ([`docs/mockups/phase8-panel.html`](mockups/phase8-panel.html)) on the planning PR.
+Panel, status and your own setup ([PHASE8_SPEC](PHASE8_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M48 … M59), started with `/milestone <N>`. **M50 to M58 need a `/review` with Opus** before you test them; M48, M49 and M59 do not. The mockup of the phone tabs and the computer chips ([`docs/mockups/phase8-panel.html`](mockups/phase8-panel.html)) was agreed on the planning PR #115.
 
 ### 13.1 Checklists
 
