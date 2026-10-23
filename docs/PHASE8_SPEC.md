@@ -1081,7 +1081,7 @@ Issue #109. Owner's answer 8: move the sail wear and Repair (from Sails) and the
 
 ### 13.1 Files
 
-New: `src/ui/statusPanel.ts`, `scripts/shots-m55.mjs`. Changed: `src/model/alerts.ts`, `src/app/store.ts` (the `recordAlerts` call gets the new sources), `src/ui/alertCentre.ts` (`createAlertList`, texts and tags of the new kinds), `src/ui/sailsPanel.ts` (the wear rows and Repair move out: `createSailWear`), `src/ui/placePanel.ts` (the damage list moves out), `src/ui/panel.ts`, `src/ui/modes.ts`, `src/ui/sectionLayout.ts` (`status` in the default), `content/boat/hanse508.json` (`physics.alerts.ropeRepeatGapS`), both `ui.json`, `docs/review/ru.md`, `tests/alerts.test.ts`, `tests/modes.test.ts`, the older checks of 13.8, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `src/ui/statusPanel.ts`, `scripts/shots-m55.mjs`. Changed: `src/model/alerts.ts`, `src/app/store.ts` (the `recordAlerts` call gets the new sources), `src/ui/alertCentre.ts` (`createAlertList`, texts and tags of the new kinds), `src/ui/sailsPanel.ts` (the wear rows and Repair move out: `createSailWear`), `src/ui/placePanel.ts` (no longer calls `createDamageList`), `src/ui/damageReport.ts` (unchanged code; the list it builds moves), `src/ui/anchorPanel.ts` (`anchorStatusText`), `src/ui/harbourPanel.ts` (`fenderStatusText`), `src/style.css`, `src/ui/panel.ts`, `src/ui/modes.ts`, `src/ui/sectionLayout.ts` (`status` in the default), `content/boat/hanse508.json` (`physics.alerts.ropeRepeatGapS`), both `ui.json`, `docs/review/ru.md`, `tests/alerts.test.ts`, `tests/modes.test.ts`, the older checks of 13.8, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 13.2 Data
 
@@ -1093,12 +1093,14 @@ New kinds, appended to `ALERT_KINDS` in this order: `contact`, `ropeSlipping`, `
 
 | Kind | Starts when (between `previous` and `next`) | Entry extras | Severity | Learn id | Tag |
 |---|---|---|---|---|---|
-| `contact` | each report in `next.contact.reports` that is not in `previous.contact.reports` (compare by reference; the list is newest first, so take the new ones from the front, and write them oldest first) | `contact`: the report | `obstacleId === 'propeller'` → `danger`; `'fender'` (a fender torn off) → `warning`; otherwise `severity` `knock` or `hit` → `danger`, `fender`, `touch`, `bump` → `warning` | `part_saildrive` for `'propeller'`, else `fit_fender` | `damage` |
+| `contact` | the reports of `next.contact.reports` not in `previous.contact.reports` (skip at once when both lists are the same object; else `const known = new Set(previous.contact.reports)`, `next.contact.reports.filter((r) => !known.has(r)).reverse()`: oldest first; Clear or a new place empties the list and adds nothing) | `contact`: the report | `obstacleId === 'propeller'` → `danger`; `'fender'` (a fender torn off) → `warning`; otherwise `severity` `knock` or `hit` → `danger`, `touch` or `bump` → `warning`, `fender` (a fender took it) → `info` | `part_saildrive` for `'propeller'`, `term_grounding` for `'bottom'`, else `fit_fender` | `damage` |
 | `ropeSlipping` | a tail's `next.realistic.reports[key].note === 'slipping'` and its previous note was not | `rope`: that tail's rope id (`tailSpecs()` → `ropeId`) | `warning` | `fit_winch` | `rope` |
 | `winchCutOut` | a winch's `next.realistic.winches[id].cutOut` and not `previous…cutOut` | `winch`: the winch id | `warning` | `fit_winch` | `rope` |
-| `clutchOnRunning` | `next.realistic.notice?.key === 'closedOnRunning'` and the previous notice was not that one | `rope` (the notice's `tail` → rope id) when known | `warning` | `fit_clutch` | `rope` |
+| `clutchOnRunning` | `next.realistic.notice !== previous.realistic.notice && next.realistic.notice?.key === 'closedOnRunning'` (a new notice object, also when the old one had the same key; the store already clears the notice while paused) | `rope` (the notice's `tail` → `tailSpec(tail).ropeId`) when known | `warning` | `fit_clutch` | `rope` |
 
-- `ropeSlipping`, `winchCutOut` and `clutchOnRunning` are written again only `physics.alerts.ropeRepeatGapS` (10 s) after the last entry **of the same kind and the same rope or winch** (extend the `FLICKERING` rule: a second list `ROPE_REPEATING` with the 10 s gap and the extra key).
+- `ropeSlipping`, `winchCutOut` and `clutchOnRunning` are written again only `physics.alerts.ropeRepeatGapS` (10 s) after the last entry **of the same kind and the same key**, the key being `entry.rope ?? entry.winch ?? ''` (a second list `ROPE_REPEATING` next to `FLICKERING`, with that gap and key). A rope still slipping after the gap writes nothing new (the note is caught when it starts).
+- `started()` returns kinds only; the kinds that make one entry per report, tail or winch (`contact`, `ropeSlipping`, `winchCutOut`) get their own loops in `recordAlerts`, as `sailWorn` has.
+- `ALERT_INFO` (a `Record<AlertKind, …>`) gets an entry for each new kind (its `learnId` as the table, `contact` → `fit_fender` as the fallback; the registry test checks every `learnId` exists); `alertLearnId(entry)` special-cases `contact` (by `obstacleId`, as the table); `ALERT_TEXT` in `alertCentre.ts` excludes the four new kinds (their texts are built as 13.5 says).
 - `AlertSource` gains `contact: ContactState` and `realistic: RealisticState`; `AppState` has them, so the store passes the state as today.
 - **Tags:**
 
@@ -1115,13 +1117,15 @@ Tags of the existing kinds: `gybe` → `danger` if `report.accidental`, else `st
 
 `createStatusPanel(store, showLearn): HTMLElement[]`. `SectionId` `'status'`, title `t('status.label')`, `explain: true`, always available, `TAB_OF.status = 'controls'`; in every mode's `order` right after `harbour`; in `DEFAULT_WIDE_LAYOUT` at the end of column 0. Its body, top to bottom (each block an `h3.section-title` and its content):
 
-1. **Sails** (`t('status.sails')`): `createSailWear(store)` (moved from `sailsPanel.ts`: the two wear rows `trim-wear-main`, `trim-wear-jib` and the Repair button, with their test ids unchanged) and, while neither sail is worn, `<p class="hint" data-testid="status-sails-good">` `t('status.sailsGood')`.
+1. **Sails** (`t('status.sails')`): `createSailWear(store)` (moved from `sailsPanel.ts`: the two wear rows `trim-wear-main`, `trim-wear-jib`, each now with its sail's name in front, `<span class="trim-name">` `t('trim.main')` / `t('trim.jib')`, and the Repair button `repair-sails`, test ids unchanged; the wear and Repair part of `createSailsPanel`'s refresh moves into `createSailWear` with its own `store.subscribe`) and, while `sailDamage.main === 0 && sailDamage.jib === 0`, `<p class="hint" data-testid="status-sails-good">` `t('status.sailsGood')` (so it is hidden exactly when a wear row shows).
 2. **Gear** (`t('status.gear')`): three lines, `status-fenders`, `status-anchor`, `status-propeller`:
-   - fenders: `harbour.fenders.status.in` or `harbour.fenders.status.out` (the same strings and counts the Harbour gear section shows), plus `harbour.fenders.status.lost` when any were lost;
+   - fenders: the Harbour gear section's text, through a new exported `fenderStatusText(harbour: HarbourState): string` in `harbourPanel.ts` (the inline code there that picks `harbour.fenders.status.in` / `.out` and adds `.lost`, moved into it and used by both);
    - anchor: `t('status.anchor.stowed')` when the anchor is stowed, otherwise the Anchor section's own status text: move the code that builds it inside `createAnchorPanel` (the `text` array that `setText(status, text.join(' '))` writes) into an exported `anchorStatusText(state: AppState): string` in `anchorPanel.ts`, used by both;
    - propeller: `t('status.propeller.clear')`, or `lines.fouled`'s text (`t('lines.fouled')`) while fouled (the Clear the propeller button stays in Harbour gear).
-3. **Damage** (`t('status.damage')`): `createDamageList(store)` (moved from the Place section; test ids unchanged).
-4. **History** (`t('status.history')`): a filter row (`div.status-filter[role=group]`, `aria-label` `t('status.filter')`) of seven toggle buttons `status-filter-all`, `status-filter-danger`, … (`aria-pressed`; All pressed at the start; pressing a tag shows only entries with that tag; pressing All shows all), then `createAlertList(store, showLearn, true)`.
+3. **Damage** (`t('status.damage')`): `createDamageList(store)` (from `damageReport.ts`; the Place section no longer calls it; test ids unchanged). Its own title ("Damage report (N)") stays under the block's heading.
+4. **History** (`t('status.history')`): `createAlertList(store, showLearn, { filter: true, idPrefix: 'status-alert' })`. With `filter: true` the list builds its own filter row at its top (`div.status-filter[role=group]`, `aria-label` `t('status.filter')`) of seven toggle buttons, 44 px high, `status-filter-all`, `status-filter-danger`, … (`aria-pressed`; All pressed at the start; pressing a tag shows only entries with that tag; pressing All shows all), keeping the filter in a closure; when the filter leaves nothing, the list shows `t('status.filter.none')`. The Status list re-renders on every history change (whether or not the section is open) and never touches the Attention card's "seen" count or badge.
+
+`createAlertList(store, showLearn, options: { filter: boolean; idPrefix: 'alert' | 'status-alert' })`: the Attention card calls it with `{ filter: false, idPrefix: 'alert' }`, so its test ids stay `alert-list`, `alert-item`, `alert-empty`, `alert-learn` and its tag chips are `alert-tag`; the Status list's are `status-alert-list`, `status-alert-item`, `status-alert-empty`, `status-alert-learn`, `status-alert-tag` (the Status section is in the page even when folded, so the same ids twice would break the M36–M38 checks).
 
 Each history row (in the Status section **and** the Attention card) gets a tag chip after its time: `<span class="alert-tag alert-tag-<tag>" data-testid="alert-tag">` with `t('status.tag.<tag>')`. Tag colours: `danger` the alert red, `damage` orange, `sail` and `rope` the accent blue, `gear` and `steering` grey (CSS tokens of the alert card).
 
@@ -1153,14 +1157,14 @@ Each history row (in the Status section **and** the Attention card) gets a tag c
 | `alert.sailWorn.main` (changed) | The mainsail is worn out from flapping (flogging). Repair it under Status. | Грот изношен от хлопанья (заполаскивания). Почините его в разделе «Состояние». |
 | `alert.sailWorn.jib` (changed) | The jib is worn out from flapping (flogging). Repair it under Status. | Стаксель изношен от хлопанья (заполаскивания). Почините его в разделе «Состояние». |
 
-The `status.*` keys are new, after `settings.*`; the `alert.*` keys after `alert.tack`. `{rope}` is the rope's name (`part(ropeId).name`); `{side}` is `t('side.port.gen')` or `t('side.starboard.gen')` (the winch's side, as `damageText` names a fender's side). A `contact` entry's text is `damageText(entry.contact)` (a hit, a lost fender or the propeller, exactly as the damage alert says it).
+The `status.*` keys are new, after `settings.*` (with `status.filter.none` | Nothing with this tag yet. | Пока ничего с этой меткой. | after `status.filter.all`); the `alert.*` keys after `alert.tack`. `{rope}` is the rope's name (`part(ropeId).name`); `{side}` is `t('side.port.gen')` or `t('side.starboard.gen')`, the side of the station whose `stationWinch(station)` is the winch (`port` or `starboard`; with none, the text without a side is not needed: every winch belongs to one). A `contact` entry's text is `damageText(entry.contact)` (a hit, a lost fender or the propeller, exactly as the damage alert says it).
 
 ### 13.6 Tests (`tests/alerts.test.ts`)
 
 Build `previous`/`next` states from `initialState()` and edit the parts:
 
 1. A new contact report (`reports: [report]` with `severity: 'hit'`) → one `contact` entry, `danger`, tag `damage`, `entry.contact === report`.
-2. `severity: 'touch'` → `warning`.
+2. `severity: 'touch'` → `warning`; `severity: 'fender'` → `info`; `obstacleId: 'bottom'` → `alertLearnId` `term_grounding`; the list emptied (Clear) → no entry.
 3. Two new reports at once (a lost fender, `obstacleId: 'fender'`, then a hit) → two `contact` entries, oldest first, the fender one `warning`.
 4. A report with `obstacleId: 'propeller'` → `danger`, `alertLearnId` `part_saildrive`.
 5. A tail's note → `slipping` → one `ropeSlipping` with that rope; the same again 5 s later (`rig.timeS` + 5) → no new entry; 10 s later → a new one; a different rope 1 s later → a new one.
@@ -1179,15 +1183,16 @@ Live:
 2. **Sails moved:** with `__sailDebug.setDamage(0.9, 0)` (`?debug=1`): `trim-wear-main` is inside `section-status` and not inside `section-sails`; Repair (inside Status) clears it.
 3. **Damage moved:** in the marina, bump the quay as the M43 checks do (reuse their link and steps) → the damage list inside `section-status` has a row; `section-place` has no damage list; the history has an entry with the tag "Damage".
 4. **Filter:** press `status-filter-damage` → only rows tagged Damage are shown; `status-filter-all` → all rows.
-5. **Attention card:** the same entries with their tag chips show in the Attention card (`alert-chip`).
+5. **Attention card:** the same entries with their tag chips (`alert-tag`) show in the Attention card (`alert-chip`); the Status list has them as `status-alert-item` / `status-alert-tag`.
 6. **Rope warning:** Realistic mode, the slipping case of the M4b checks (a rope with too few turns under load; reuse its link) → an entry "…: slipping on the winch drum. Add a turn." tagged Rope; wait 5 s of app time → still one entry.
 7. `auditPage` with Status open, phone and desktop: no problems.
 
 ### 13.8 Older checks to change
 
-- Checks that look for the wear rows or Repair inside the Sails section (`scripts/shots-m9.mjs`, `m37`, …) or for the damage list inside the Place section (`m43`, `m44`, `m45`): look inside `section-status` (`showSection(page, 'status')`).
-- Checks that count the sections (`sectionIds`) or expect the last section to be `harbour`: `status` follows `harbour`.
-- `scripts/shots-m36.mjs` and `m37`: the worn-sail entry's text ends "Repair it under Status.".
+- `scripts/shots-m9.mjs` (about lines 128–139): the wear text and `repair-sails` are read after `showSection(page, 'status')`, the `trim-chip-main` lines after `showSection(page, 'sails')` (one section open at a time).
+- `scripts/shots-m43.mjs`: the scenes `damage-list` and `damage-list-ru` use `section: 'status'`; the damage list, `damage-clear` and `damage-none` checks (about lines 59–67) open Status instead of Place.
+- `scripts/shots-m27.mjs` (`SECTION_ORDER`, the "every section folded" string), `scripts/shots-m23.mjs` (about line 158), `scripts/shots-m35.mjs`, and `scripts/shots-m54.mjs` check 1: `status` follows `harbour` (column 1's end on the wide layout).
+- Checks using `eachSection` or the audit now also visit Status (its filter buttons are 44 px).
 
 ### 13.9 Done when
 
@@ -1211,7 +1216,7 @@ Issue #111. Owner's answer 9: the file holds what the link holds (the boat, the 
 
 ### 14.1 Files
 
-New: `src/app/setupFile.ts` (pure), `src/ui/deviceSettings.ts`, `src/ui/files.ts`, `tests/setupFile.test.ts`, `scripts/shots-m56.mjs`. Changed: `src/ui/settingsMenu.ts`, `src/ui/columnWidths.ts` (exports `COLUMNS_KEY = 'sail-learn.columns'`, moved from `columnHandles.ts`), `src/ui/columnHandles.ts` (imports it), `src/ui/timeBar.ts` (exports its `FOLD_KEY`, `'sail-learn.timeBarFolded'`), both `ui.json`, `docs/review/ru.md`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `src/app/setupFile.ts` (pure), `src/ui/deviceSettings.ts`, `src/ui/files.ts`, `tests/setupFile.test.ts`, `scripts/shots-m56.mjs`. Changed: `src/ui/settingsMenu.ts`, both `ui.json` (`COLUMNS_KEY`, `FOLD_KEY` and `LAYOUT_KEY` are exported since M54), `docs/review/ru.md`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 14.2 The file
 
