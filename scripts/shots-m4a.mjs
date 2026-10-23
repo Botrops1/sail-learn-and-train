@@ -62,8 +62,11 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
 
   for (const viewport of [viewports[0], viewports[2]]) {
     const v = viewport.name;
-    const { context, page } = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0');
+    // Since M48 the clutch drawing shows only in Harbour mode.
+    const harbour = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0&m=harbour');
+    let { context, page } = harbour;
     await page.waitForTimeout(600);
+    await showSection(page, 'ropes');
     // The clutches sit in the open Ropes section, which at half height leaves it about 100 px
     // (M35): the panel is used with the sheet at full, as a tapped title does. Desktop: no effect.
     await setSheet(page, 'full');
@@ -120,6 +123,11 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
       const sliders = await block.locator('input[type="range"]').count();
       check(`${v} ${id} info line`, note.includes(text) && sliders === 0, note.split('\n')[2]);
     }
+
+    await context.close();
+
+    ({ context, page } = await openPage(viewport, `m4a ${v}`, '?cam=side-port&debug=1&lb=0'));
+    await page.waitForTimeout(600);
 
     // A rope tapped in 3D is selected in the panel, also when another tab is open.
     await showSection(page, 'conditions');

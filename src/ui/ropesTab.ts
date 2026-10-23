@@ -181,11 +181,24 @@ export function createRopesTab(
   });
 
   const empty = el('p', { class: 'strip-empty' }, [t('ropes.strip.empty')]);
+  const learnRealistic = el('p', { class: 'hint', 'data-testid': 'ropes-learn-realistic' }, [
+    t('ropes.learnRealistic'),
+  ]);
   const strip = el(
     'section',
     { class: 'rope-strip', 'data-testid': 'rope-strip', 'aria-label': t('ropes.strip.label') },
     [empty, ...views.map((view) => view.block)],
   );
+
+  /** Learn mode with Realistic ropes: the strip shows the rope's value but cannot move it (6.3). */
+  const setReadOnly = (on: boolean) => {
+    for (const control of strip.querySelectorAll<HTMLInputElement | HTMLButtonElement>(
+      'input, button',
+    )) {
+      control.disabled = on && control.getAttribute('data-testid') !== 'strip-learn';
+    }
+    learnRealistic.hidden = !on;
+  };
 
   const drawing = createClutchDrawing(store);
   // The wheel's row is followed by the autopilot and engine blocks in Phase 2; since M27 they are
@@ -227,17 +240,24 @@ export function createRopesTab(
 
   // The drawing comes first, so it shows without scrolling on a phone; the longer
   // explanations follow the list (and fold behind the section's "?").
-  const easy = el('div', { class: 'ropes-easy', 'data-testid': 'ropes-easy' }, [
-    el('p', { class: 'hint mode-line explain', 'data-testid': 'ropes-mode' }, [
-      el('strong', {}, [t('ropes.mode.easy')]),
-      ' ',
-      t('ropes.mode.easyShort'),
-    ]),
+  // Since M48 only Harbour mode shows the drawing; Easy and Learn show the list.
+  const modeLine = el('span', {}, []);
+  const modeParagraph = el('p', { class: 'hint mode-line explain', 'data-testid': 'ropes-mode' }, [
+    el('strong', {}, [t('ropes.mode.easy')]),
+    ' ',
+    modeLine,
+  ]);
+  const clutchBlock = el('div', { class: 'clutch-block', 'data-testid': 'clutch-block' }, [
     drawing.element,
+    el('p', { class: 'hint explain' }, [t('clutch.hint')]),
+  ]);
+  const easy = el('div', { class: 'ropes-easy', 'data-testid': 'ropes-easy' }, [
+    modeParagraph,
+    clutchBlock,
     strip,
+    learnRealistic,
     el('h3', { class: 'section-title' }, [t('ropes.list.title')]),
     list,
-    el('p', { class: 'hint explain' }, [t('clutch.hint')]),
     el('p', { class: 'hint explain' }, [t('ropes.mode.easyHint')]),
     el('p', { class: 'hint explain' }, [t('ropes.fighting')]),
   ]);
@@ -249,10 +269,23 @@ export function createRopesTab(
   ]);
 
   const showMode = (state: AppState, previous?: AppState) => {
-    if (previous && state.settings.ropesMode === previous.settings.ropesMode) return;
+    if (
+      previous &&
+      state.settings.ropesMode === previous.settings.ropesMode &&
+      state.appMode === previous.appMode
+    ) {
+      return;
+    }
+    const learn = state.appMode === 'learn';
+    const showDrawing = state.appMode === 'harbour';
     const real = state.settings.ropesMode === 'realistic';
-    easy.hidden = real;
-    realistic.hidden = !real;
+    easy.hidden = real && !learn;
+    realistic.hidden = !real || learn;
+    clutchBlock.hidden = !showDrawing;
+    empty.textContent = t(showDrawing ? 'ropes.strip.empty' : 'ropes.strip.emptyList');
+    setText(modeLine, t(showDrawing ? 'ropes.mode.easyShort' : 'ropes.mode.easyShortList'));
+    setReadOnly(real && learn);
+    modeParagraph.hidden = real && learn;
   };
   store.subscribe(showMode);
   showMode(store.getState());
