@@ -40,7 +40,7 @@ If a merge breaks the site, open the merged PR in the GitHub app and tap **Rever
 | `/milestone <N>` | Build milestone M<N> (section 2) |
 | `/review <PR number>` | Independent review of a PR, right after it opens and before you test (Opus). Required when the PR says so (physics milestones); optional otherwise |
 | `/bug <link> <what happened>` | A bug on the **live** site, after merge. Get the link from Settings → Share. Claude fixes it in a small PR and watches it |
-| `/plan <phase number>` | Before a new phase (Opus, high). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. After merging, start with `/milestone <N>` (Sonnet) |
+| `/plan <phase number>` | Before a new phase (Opus, high). Claude asks you its questions first (each with a recommendation), then writes the spec and checklists in a docs-only PR. `/plan issue <N>` plans an extra milestone from an issue. A big phase (more than 6 milestones) is planned in parts: `/plan <N>b` in a new session for the next part. The planning session stops once the PR is open: answer in a PR comment, then type `/plan answers <PR number>` in a **new** session (Sonnet, medium) to record your answers. After merging, start with `/milestone <N>` (Sonnet) |
 
 The commands live in `.claude/skills/` in the repo; Claude can change them if you ask.
 
@@ -66,7 +66,7 @@ In a session you can type `/model opus` or `/model sonnet`, and `/effort high` o
 |---|---|---|
 | `/milestone` | Sonnet | high |
 | `/plan`, `/review` | Opus | high |
-| `/bug`, small doc changes | Sonnet | medium |
+| `/bug`, `/plan answers`, small doc changes | Sonnet | medium |
 
 The commands also name their model (`/milestone` and `/bug` Sonnet, `/plan` and `/review` Opus), so a wrong model setting is corrected while the command runs. Still set the model and effort when you start the session: the later rounds (your PR comments) run on the session's own model, and effort is not set by the command.
 

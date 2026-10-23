@@ -13,7 +13,7 @@ The owner has **no sailing knowledge** and is not a developer. They work from a 
 | `/milestone <N>` | Build milestone M<N> from its phase spec, open its PR, then watch the PR and act on the owner's comments |
 | `/review <PR number>` | Independent review of a PR in a fresh session; posts one comment, changes nothing |
 | `/bug <link> <what happened>` | Fix a bug found on the live site in a small PR, then watch it |
-| `/plan <phase number>` | Plan a phase (or `/plan issue <N>` for an extra milestone) with Opus: owner questions first, then a spec detailed enough for Sonnet to build without guessing, in a docs-only PR |
+| `/plan <phase number>` | Plan a phase (or `/plan issue <N>` for an extra milestone) with Opus: owner questions first, then a spec detailed enough for Sonnet to build without guessing, in a docs-only PR. A phase of more than 6 milestones is split into parts (`/plan <N>b`, …). The session ends at the PR; `/plan answers <PR>` records the owner's answers in a fresh session |
 
 When one of these is invoked, follow its `SKILL.md`. Without a command, the rules below still apply.
 
