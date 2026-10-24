@@ -62,6 +62,7 @@ Rules for every section:
 - One way to do each thing. If two approaches are possible, choose one and say why in one line.
 - Milestones are small enough to check on a phone in 15 minutes, each mergeable on its own, built in order.
 - Refer to existing code by real path and name.
+- **Visual design** (UI sections, mockups): name the app's existing styles to follow and the specific looks to avoid. A general "make it look modern" only swaps one default look for another.
 
 ### When a review is required
 

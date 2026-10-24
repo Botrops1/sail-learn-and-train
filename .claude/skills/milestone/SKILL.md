@@ -37,6 +37,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 - Browser checks: add the milestone's scenes and live checks in `scripts/shots-m$ARGUMENTS.mjs`, register them in `scripts/shots.mjs`, run `SHOTS_ONLY=m$ARGUMENTS npm run shots`.
 - Look at 6–10 of the PNGs in `shots/` that show what changed (phone first, then one wider size). Do not commit them.
 - Follow "Running the browser checks in a session" in CLAUDE.md: background runs, only the groups your change touches, the test clock for checks that depend on app time. If you changed shared code (layout, store, URL, renderer, panel), also run the older groups most likely to be hit; CI runs the full set in parallel parts.
+- **Gap check before the PR, only when the milestone's independent review is "not needed"** (a required `/review` covers this, so skip it there): start one subagent (`model: "sonnet"`, `effort: "medium"`) that reads only the milestone's spec section and its PHYSICS_TRUTHS rules (paths and headings, for it to read itself) and the diff (`git diff origin/main...HEAD`). Ask it for **only gaps that affect correctness or the spec's requirements** (a "done when" item, test, string, URL key or browser check missing or different; something built that the spec excludes), not style. Fix what it finds that is real; a reviewer asked for gaps usually finds some, so do not build for a far-fetched one.
 
 ## 4. Open the PR
 
@@ -45,7 +46,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 - Use the template in CLAUDE.md: plain language; every check a full preview link with what to do after opening it; **no screenshots**; every question ends with "Recommended: …, because …" and the "accept all" line.
 - **Record the recommended answers now**, in the same PR: a row in the ROADMAP decisions log and "decided in the M$ARGUMENTS PR (recommended; merging accepts it)" notes in the spec section. Merging the PR means "accept all"; only a changed answer needs another commit.
 - Then subscribe to the PR's activity (`subscribe_pr_activity`) so the owner's comments in the GitHub app reach this session.
-- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, high) now, before you test; then answer the review and your test findings in one comment."** Say that merging accepts every recommendation, so they comment only to change an answer or report a problem. Then end your turn.
+- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, medium) now, before you test; then answer the review and your test findings in one comment."** Say that merging accepts every recommendation, so they comment only to change an answer or report a problem. Then end your turn.
 
 ## 5. While the PR is open
 
