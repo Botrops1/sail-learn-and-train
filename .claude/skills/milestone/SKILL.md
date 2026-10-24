@@ -59,12 +59,15 @@ Each time the PR wakes you:
 - **A review comment** (it starts with "Independent review"): do not act on it by yourself. The owner replies with which items to fix.
 - **Review required but not done yet:** if the PR has no "Independent review" comment, end every reply on the PR with the reminder: "Reminder: this milestone needs `/review <PR number>` (Opus) before merging." Stop reminding once the review comment is there.
 - Bug reports from the owner usually carry a link from the app's Share button: open the same state in the browser checks to reproduce it before fixing.
-- **Merged or closed:** unsubscribe, cancel a pending check-in (`delete_trigger`) and stop. Do not start the next milestone.
+- **Merged or closed:** unsubscribe, cancel a pending check-in (`delete_trigger`) and stop. Do not start the next milestone. Do nothing else: this wake may be a cold-cache one, so every extra tool call re-reads the whole conversation.
 
-**Stop watching.** When CI is green on the latest commit and nothing waits on you (no owner comment unanswered), schedule one check-in 45 minutes later with `send_later` (it lands while the conversation is still cheap to re-read). Any new activity cancels it (`delete_trigger`), and you schedule a new one once you are idle again. When the check-in fires and nothing new has come in:
+**Stop watching.** Schedule the check-in with `send_later` (45 minutes, it lands while the conversation is still cheap to re-read) **every time you end a turn on this PR, whatever you are waiting for**: CI still running, CI green, a reply to the owner, anything. Never wait for "CI is green" or any other GitHub event before scheduling it: those events can fail to arrive (M51: the session ended a turn with "still waiting for CI", the green event never came, no check-in was scheduled, and the merge woke the session five hours later on a cold cache). Before ending a turn, if no check-in is pending, schedule one; this is the last thing you do. Any new activity cancels the pending one (`delete_trigger`) and you schedule a new one when you end that turn. When the check-in fires:
+
+- If CI on the latest commit is still running or red, or an owner comment is unanswered, handle it as in this section. Red CI is a fix, not a reason to stop. A CI run that is still going is not a reason to wait past one more check-in: at the second check-in with CI still running, stop as below and say so in the comment.
+- Otherwise (nothing new):
 
 1. Unsubscribe from the PR (`unsubscribe_pr_activity`).
 2. Post one comment on the PR, this exact text with the real number: "Stopped watching this PR. To continue (your answers, review fixes, problems found), comment here, then start a new session (Sonnet, high) and type `/milestone resume <PR number>`. If all is fine, merge: merging accepts every recommendation." No footer, no session link.
 3. Tell the owner the same in chat, in two lines, and stop.
 
-If `send_later` is not available, stop as soon as CI is green and nothing waits on you. A milestone whose review is required follows the same rule: if the review and the owner's reply come within the window, handle them here; if not, the owner continues with `/milestone resume`.
+If `send_later` is not available, stop as soon as CI is green and nothing waits on you. If CI is still running and you cannot schedule, say so in chat and stop; do not end a turn "waiting". A milestone whose review is required follows the same rule: if the review and the owner's reply come within the window, handle them here; if not, the owner continues with `/milestone resume`.
