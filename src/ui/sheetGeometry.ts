@@ -7,8 +7,8 @@ export type SheetHeight = (typeof SHEET_HEIGHTS)[number];
 
 /** Sheet sizes and gesture thresholds (PHASE5_SPEC 3.3). Presentation values, not boat data. */
 export const SHEET = {
-  /** The handle (44) and, from M27, the quick row (56). */
-  peekPx: 100,
+  /** M51: the handle strip (27), the tabs (44) with the rule above them (1) and the quick row (56). */
+  peekPx: 128,
   /** Half height: this share of the view's height. */
   halfShare: 0.5,
   /** A full sheet stops this far below the top area, so the chip row (3.2) fits between them. */

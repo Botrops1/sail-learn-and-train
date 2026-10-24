@@ -144,9 +144,9 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 5. The settings dialog holds the old View tab's controls and About.
+  // 5. (M51: the phone's settings are a tab now, so the dialog checks run on the side layout, where the gear and the dialog stay until M52.) The settings dialog holds the old View tab's controls and About.
   {
-    const { context, page } = await openPage(phone, 'm25 settings', '?wd=60&ws=12');
+    const { context, page } = await openPage(foldable, 'm25 settings', '?wd=60&ws=12');
     await page.waitForTimeout(500);
     await openSettings(page);
     const wanted = [
@@ -206,7 +206,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
 
   // 6. The settings work, and Escape closes only the dialog.
   {
-    const { context, page } = await openPage(phone, 'm25 settings use', '?wd=60&ws=12');
+    const { context, page } = await openPage(foldable, 'm25 settings use', '?wd=60&ws=12');
     await page.waitForTimeout(500);
     await openSettings(page);
     await page.getByText('1 %', { exact: true }).click();
@@ -222,7 +222,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     await linkHas('Labels off → lb=0', page, ['lb=0']);
     await context.close();
 
-    const selected = await openPage(phone, 'm25 settings escape', '?wd=60&ws=12&sel=part_boom');
+    const selected = await openPage(foldable, 'm25 settings escape', '?wd=60&ws=12&sel=part_boom');
     await selected.page.waitForTimeout(500);
     await openSettings(selected.page);
     await selected.page.keyboard.press('Escape');
@@ -251,7 +251,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
 
   // 7. Russian.
   {
-    const { context, page } = await openPage(phone, 'm25 russian', '?lang=ru&wd=60&ws=12');
+    const { context, page } = await openPage(foldable, 'm25 russian', '?lang=ru&wd=60&ws=12');
     await page.waitForTimeout(500);
     const label = await page.getByTestId('settings-button').getAttribute('aria-label');
     check('the gear is named «Настройки»', label === 'Настройки', String(label));

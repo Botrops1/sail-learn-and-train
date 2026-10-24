@@ -16,7 +16,7 @@ const C: SheetSpace = { viewHeightPx: 740, topAreaPx: 114 };
 describe('sheet geometry (M26)', () => {
   it('sheetHeightPx', () => {
     expect(['peek', 'half', 'full'].map((h) => sheetHeightPx(h as 'peek', A))).toEqual([
-      100, 422, 668,
+      128, 422, 668,
     ]);
     expect(sheetHeightPx('half', B)).toBe(370);
     expect(sheetHeightPx('full', B)).toBe(514);
@@ -24,11 +24,11 @@ describe('sheet geometry (M26)', () => {
     const tiny = { viewHeightPx: 300, topAreaPx: 200 };
     expect(sheetHeightPx('full', tiny)).toBe(150);
     expect(sheetHeightPx('half', tiny)).toBe(150);
-    expect(sheetHeightPx('half', { viewHeightPx: 160, topAreaPx: 40 })).toBe(100);
+    expect(sheetHeightPx('half', { viewHeightPx: 160, topAreaPx: 40 })).toBe(128);
   });
 
   it('cameraInsetPx keeps the half framing at full', () => {
-    expect(cameraInsetPx('peek', A)).toBe(160);
+    expect(cameraInsetPx('peek', A)).toBe(188);
     expect(cameraInsetPx('half', A)).toBe(482);
     expect(cameraInsetPx('full', A)).toBe(482);
   });
@@ -38,8 +38,8 @@ describe('sheet geometry (M26)', () => {
     expect(snapSheet('half', 430, -0.6, A)).toBe('peek');
     expect(snapSheet('peek', 150, 0.7, A)).toBe('half');
     expect(snapSheet('full', 700, -0.5, A)).toBe('half');
-    expect(snapSheet('peek', 261, 0, A)).toBe('half');
-    expect(snapSheet('peek', 260, 0, A)).toBe('peek');
+    expect(snapSheet('peek', 275, 0, A)).toBe('half');
+    expect(snapSheet('peek', 274, 0, A)).toBe('peek');
     expect(snapSheet('full', 800, 0.9, A)).toBe('full');
   });
 

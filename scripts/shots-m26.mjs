@@ -76,7 +76,7 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
       .evaluate((body) => getComputedStyle(body).visibility);
     check(
       'full → peek',
-      (await heightOf(page)) === 'peek' && near(box.height, 100),
+      (await heightOf(page)) === 'peek' && near(box.height, 128),
       `${box.height}`,
     );
     check('at peek the panel body is hidden', visibility === 'hidden', visibility);

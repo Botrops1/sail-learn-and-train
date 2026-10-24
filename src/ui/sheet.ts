@@ -18,8 +18,10 @@ export interface Sheet {
   setHeight(height: SheetHeight): void;
   /** Runs after a height change has finished animating (and on a layout change). */
   onChange(listener: (height: SheetHeight) => void): void;
-  /** The head row under the handle (M26: the tabs; M27: the quick row). */
+  /** The head row under the tabs (M26: the tabs; M27: the quick row). */
   head: HTMLElement;
+  /** M51: the empty row between the handle and the head, which `panel.ts` fills with the phone's tabs. */
+  readonly tabs: HTMLElement;
   /** Stacked layout and height 'peek' (PHASE5_SPEC 3.1). */
   atPeek(): boolean;
   /** Stacked layout and height 'full': the sheet covers the boat and the room above the chip row. */
@@ -58,8 +60,9 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
     class: 'sheet-handle',
     'data-testid': 'sheet-handle',
   });
+  const tabs = el('div', { class: 'sheet-tabs' });
   const head = el('div', { class: 'sheet-head' });
-  sheet.prepend(handle, head);
+  sheet.prepend(handle, tabs, head);
 
   let height: SheetHeight = 'half';
   const listeners: ((height: SheetHeight) => void)[] = [];
@@ -153,7 +156,7 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
     if (sheet.getAnimations().length === 0) endMoving();
   });
 
-  // --- The handle: drag, tap, keys -------------------------------------------------------------
+  // --- The handle and the tabs row: drag, tap, keys --------------------------------------------
   let drag:
     | { startY: number; start: SheetHeight; startPx: number; px: number; samples: Sample[] }
     | undefined;
@@ -163,68 +166,111 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
     return { min: sheetHeightPx('peek', current), max: sheetHeightPx('full', current) };
   };
 
-  handle.addEventListener('pointerdown', (event) => {
-    if (!stacked() || event.button > 0) return;
-    try {
-      handle.setPointerCapture(event.pointerId);
-    } catch {
-      // The pointer is already gone: the drag still follows the events the handle gets.
-    }
-    let px = sheetHeightPx(height, space());
-    if (pending) {
-      // Grabbed in the middle of a slide: the drag starts from where the sheet is now, with the
-      // slide stopped there (a transition left on would make the sheet trail the finger).
-      px = sheet.offsetHeight - safeBottom();
-      changeId += 1;
-      pending = false;
-      setMoving(false);
-      writeSize(px + safeBottom());
-    }
-    drag = {
-      startY: event.clientY,
-      start: height,
-      startPx: px,
-      px,
-      samples: [{ time: event.timeStamp, px }],
-    };
-  });
+  /**
+   * Makes `target` drag the sheet. The handle (`tapCycles: true`) captures the pointer at once and
+   * a tap cycles the height. The tabs row (`tapCycles: false`, M51) captures it only once it has
+   * moved more than a tap (capturing at pointerdown would send the click to the row instead of the
+   * tab), a tap is the tab's own click and puts the sheet back to its start height, and the click
+   * that follows a drag is cancelled.
+   */
+  function attachDrag(target: HTMLElement, options: { tapCycles: boolean }): void {
+    let mine = false;
+    let captured = false;
+    let suppressClick = false;
 
-  handle.addEventListener('pointermove', (event) => {
-    if (!drag) return;
-    const { min, max } = bounds();
-    drag.px = Math.min(max, Math.max(min, drag.startPx + (drag.startY - event.clientY)));
-    drag.samples.push({ time: event.timeStamp, px: drag.px });
-    if (Math.abs(event.clientY - drag.startY) >= SHEET.tapMaxMovePx) {
-      sheet.dataset.dragging = 'true';
-    }
-    writeSize(drag.px + safeBottom());
-  });
-
-  function release(event: PointerEvent, cancelled: boolean): void {
-    if (!drag) return;
-    const current = drag;
-    drag = undefined;
-    delete sheet.dataset.dragging;
-    if (handle.hasPointerCapture(event.pointerId)) handle.releasePointerCapture(event.pointerId);
-    if (!cancelled && Math.abs(event.clientY - current.startY) < SHEET.tapMaxMovePx) {
-      go(tapSheet(current.start));
-      return;
-    }
-    let velocity = 0;
-    if (!cancelled) {
-      // Rate of growth over the last `velocityWindowMs` of the drag (or since the start).
-      const old = current.samples.filter(
-        (sample) => sample.time <= event.timeStamp - SHEET.velocityWindowMs,
-      );
-      const from = old.length > 0 ? old[old.length - 1] : current.samples[0];
-      if (from) {
-        velocity = (current.px - from.px) / Math.max(1, event.timeStamp - from.time);
+    const capture = (event: PointerEvent) => {
+      try {
+        target.setPointerCapture(event.pointerId);
+      } catch {
+        // The pointer is already gone: the drag still follows the events the target gets.
       }
+      captured = true;
+    };
+
+    target.addEventListener('pointerdown', (event) => {
+      if (!stacked() || event.button > 0) return;
+      mine = true;
+      captured = false;
+      suppressClick = false;
+      if (options.tapCycles) capture(event);
+      let px = sheetHeightPx(height, space());
+      if (pending) {
+        // Grabbed in the middle of a slide: the drag starts from where the sheet is now, with the
+        // slide stopped there (a transition left on would make the sheet trail the finger).
+        px = sheet.offsetHeight - safeBottom();
+        changeId += 1;
+        pending = false;
+        setMoving(false);
+        writeSize(px + safeBottom());
+      }
+      drag = {
+        startY: event.clientY,
+        start: height,
+        startPx: px,
+        px,
+        samples: [{ time: event.timeStamp, px }],
+      };
+    });
+
+    target.addEventListener('pointermove', (event) => {
+      if (!drag || !mine) return;
+      const far = Math.abs(event.clientY - drag.startY) >= SHEET.tapMaxMovePx;
+      if (far && !captured) {
+        capture(event);
+        suppressClick = true;
+      }
+      const { min, max } = bounds();
+      drag.px = Math.min(max, Math.max(min, drag.startPx + (drag.startY - event.clientY)));
+      drag.samples.push({ time: event.timeStamp, px: drag.px });
+      if (far) sheet.dataset.dragging = 'true';
+      writeSize(drag.px + safeBottom());
+    });
+
+    function release(event: PointerEvent, cancelled: boolean): void {
+      if (!drag || !mine) return;
+      mine = false;
+      const current = drag;
+      drag = undefined;
+      delete sheet.dataset.dragging;
+      if (captured && target.hasPointerCapture(event.pointerId)) {
+        target.releasePointerCapture(event.pointerId);
+      }
+      if (!cancelled && Math.abs(event.clientY - current.startY) < SHEET.tapMaxMovePx) {
+        go(options.tapCycles ? tapSheet(current.start) : current.start);
+        return;
+      }
+      let velocity = 0;
+      if (!cancelled) {
+        // Rate of growth over the last `velocityWindowMs` of the drag (or since the start).
+        const old = current.samples.filter(
+          (sample) => sample.time <= event.timeStamp - SHEET.velocityWindowMs,
+        );
+        const from = old.length > 0 ? old[old.length - 1] : current.samples[0];
+        if (from) {
+          velocity = (current.px - from.px) / Math.max(1, event.timeStamp - from.time);
+        }
+      }
+      go(snapSheet(current.start, current.px, velocity, space()));
     }
-    go(snapSheet(current.start, current.px, velocity, space()));
+    target.addEventListener('pointerup', (event) => release(event, false));
+    target.addEventListener('pointercancel', (event) => release(event, true));
+
+    if (!options.tapCycles) {
+      // A drag that ends over a tab must not also choose it.
+      target.addEventListener(
+        'click',
+        (event) => {
+          if (!suppressClick) return;
+          suppressClick = false;
+          event.preventDefault();
+          event.stopPropagation();
+        },
+        true,
+      );
+    }
   }
-  handle.addEventListener('pointerup', (event) => release(event, false));
-  handle.addEventListener('pointercancel', (event) => release(event, true));
+  attachDrag(handle, { tapCycles: true });
+  attachDrag(tabs, { tapCycles: false });
 
   // Keyboard: Enter and Space arrive as a click without a pointer (`detail` 0); pointer taps are
   // handled on pointerup, so the click that follows them is ignored.
@@ -244,6 +290,7 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
   // --- Layout and size changes -----------------------------------------------------------------
   function onLayout(): void {
     handle.hidden = !stacked();
+    tabs.hidden = !stacked();
     place();
     listeners.forEach((listener) => listener(height));
   }
@@ -259,6 +306,7 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
   setMoving(false);
   labelHandle();
   handle.hidden = !stacked();
+  tabs.hidden = !stacked();
   place();
 
   return {
@@ -266,6 +314,7 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
     setHeight: go,
     onChange: (listener) => listeners.push(listener),
     head,
+    tabs,
     atPeek: () => stacked() && height === 'peek',
     atFull: () => stacked() && height === 'full',
     cameraInset: () => (stacked() ? cameraInsetPx(height, space()) + safeBottom() : 0),

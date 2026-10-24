@@ -3,7 +3,7 @@ import { APP_MODES } from '../src/app/appMode';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { GROUPS, groupEntries, learnEntry } from '../src/model/glossary';
-import { MODE_LAYOUTS, SECTION_IDS, WIDE_ONLY_SECTIONS, sectionAvailable } from '../src/ui/modes';
+import { MODE_LAYOUTS, SECTION_IDS, TAB_OF, sectionAvailable } from '../src/ui/modes';
 
 describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
   for (const mode of APP_MODES) {
@@ -18,7 +18,7 @@ describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
 });
 
 describe('sectionAvailable (8.8 test 2)', () => {
-  it('autopilot and engine only in Easy; Mode and Settings only on the wide layout (M38); the rest always', () => {
+  it('autopilot and engine only in Easy; Mode and Settings on the phone and the wide layout, not the side one (M51); the rest always', () => {
     const easy = initialState();
     const real = reduce(easy, { type: 'setAppMode', mode: 'realistic' });
     for (const id of ['autopilot', 'engine'] as const) {
@@ -26,16 +26,24 @@ describe('sectionAvailable (8.8 test 2)', () => {
       expect(sectionAvailable(id, real)).toBe(false);
     }
     for (const id of ['mode', 'settings'] as const) {
-      expect(WIDE_ONLY_SECTIONS).toContain(id);
+      expect(sectionAvailable(id, easy, 'stacked')).toBe(true);
+      expect(sectionAvailable(id, easy, 'side')).toBe(false);
       expect(sectionAvailable(id, easy)).toBe(false);
-      expect(sectionAvailable(id, easy, false)).toBe(false);
-      expect(sectionAvailable(id, easy, true)).toBe(true);
-      expect(sectionAvailable(id, real, true)).toBe(true);
+      expect(sectionAvailable(id, easy, 'wide')).toBe(true);
+      expect(sectionAvailable(id, real, 'wide')).toBe(true);
     }
     for (const id of ['ropes', 'sails', 'conditions', 'learn', 'place', 'harbour'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
       expect(sectionAvailable(id, real)).toBe(true);
     }
+  });
+});
+
+describe('TAB_OF (M51, 9.6)', () => {
+  it('every section has a tab; only mode, conditions, learn and settings are not under controls', () => {
+    for (const id of SECTION_IDS) expect(TAB_OF[id], id).toBeTruthy();
+    const apart = SECTION_IDS.filter((id) => TAB_OF[id] !== 'controls');
+    expect([...apart].sort()).toEqual(['conditions', 'learn', 'mode', 'settings']);
   });
 });
 

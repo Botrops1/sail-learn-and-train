@@ -66,7 +66,8 @@ export async function liveM41Checks({ openPage, viewports, outDir, prefix, probl
     check('mode link: the link has m=harbour', link.includes('m=harbour'), link);
     await page.reload({ waitUntil: 'networkidle' });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
-    const chip = (await page.getByTestId('mode-chip').textContent()) ?? '';
+    // M51: on the phone the mode is named on the Mode tab.
+    const chip = (await page.getByTestId('panel-tab-mode').textContent()) ?? '';
     check('mode link: after a reload the chip reads "Harbour"', /Harbour/.test(chip), chip.trim());
     await context.close();
   }

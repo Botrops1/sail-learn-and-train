@@ -2932,6 +2932,8 @@
 | autopilot.astern | The autopilot does not steer while she goes astern (backwards): you steer. | Авторулевой не рулит, пока яхта идёт кормой вперёд: рулите вы. |
 | language.name | English | Русский |
 | tab.learn | Learn | Обучение |
+| tab.controls | Controls | Управление |
+| tabs.label | Panel | Панель |
 | card.more | More | Подробнее |
 | ropes.strip.learn | Read more in Learn | Читать дальше в «Обучение» |
 | learn.empty | Tap any part of the boat, then “More” on its card, to read about it here. | Нажмите на любую часть яхты, затем «Подробнее» на её карточке, чтобы прочитать о ней здесь. |
