@@ -24,5 +24,5 @@ The review normally runs right after the PR opens, before the owner tests on the
 4. Post **one** comment on the PR. Start it with "**Independent review**", then:
    - one or two sentences: is it safe to merge?
    - numbered findings, most important first. Each one: what is wrong in plain words, where (file:line), and "Recommended: fix now / fix later / leave as is, because …";
-   - end with: "Reply e.g. 'fix 1 and 3' and the milestone session will do it." That is the last line: no footer, no session link, no attribution.
-5. Tell the owner in chat: the verdict in one line and the link to the comment.
+   - end with: "Reply e.g. 'fix 1 and 3'." Then, **right before posting, fetch the PR's comments again** (the builder may have stopped while you reviewed; do not rely on what you read in step 1). If they contain the builder's "Stopped watching this PR" line, add: "The milestone session has stopped watching: after replying, start a new session (Sonnet, high) and type `/milestone resume <PR number>`." Otherwise add: "The milestone session will pick your reply up while it is still watching; if it has stopped by then (it says so on the PR), use `/milestone resume <PR number>` in a new session." That is the last line: no footer, no session link, no attribution.
+5. Tell the owner in chat: the verdict in one line, the link to the comment, and which of the two ways to continue applies.
