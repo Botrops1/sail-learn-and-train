@@ -22,6 +22,8 @@ import { buildRig } from './rig';
 import { buildRopes, type RopeView } from './ropes';
 import { buildSailMesh } from './sailMesh';
 import { buildTelltales } from './telltales';
+import { buildWinchHandle } from './winchHandle';
+import type { HandlePose } from '../../model/handlePose';
 import { blanketFactor, NO_DAMAGE, type SailDamage } from '../../model/trim';
 
 export interface BoatModel {
@@ -52,6 +54,8 @@ export interface BoatModel {
   setThrusters(t: ThrusterState): void;
   /** M46: shows the anchor in the bow roller (true) or hides it while the anchor is down (false). */
   setAnchorStowed(stowed: boolean): void;
+  /** M50: draws the winch handle at `pose`; hidden when `pose` is null (carried) or `show` is false. */
+  setHandle(pose: HandlePose | null, show: boolean): void;
 }
 
 /**
@@ -83,6 +87,7 @@ export function buildBoat(
   const telltales = buildTelltales(materials);
   const fenders = buildFenders(materials, detail);
   const thrusters = buildThrusters(materials, detail);
+  const handle = buildWinchHandle(materials);
   root.add(
     ...buildHull(materials),
     buildKeel(materials),
@@ -95,6 +100,7 @@ export function buildBoat(
     ...buildMooringFittings(materials, detail),
     ...fenders.objects,
     ...thrusters.objects,
+    handle.group,
     mainSail.mesh,
     jibSail.mesh,
     ...ropes.objects,
@@ -160,6 +166,7 @@ export function buildBoat(
     ropeDrawings: () => drawings,
     setFendersOut: fenders.setOut,
     setThrusters: thrusters.setState,
+    setHandle: handle.set,
     setAnchorStowed: (stowed) => {
       for (const mesh of anchorMeshes) mesh.visible = stowed;
     },

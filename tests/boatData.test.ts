@@ -195,7 +195,10 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
   it('model detail: counts are whole numbers, positions lie on the boat, sizes are small', () => {
     const { transomX, bowFittingTipX } = hanse508.hull;
     for (const [path, value] of numbers(hanse508.modelDetail)) {
-      if (/(count|spokes|pointsPerTurn)$/.test(path)) {
+      if (/\.winchHandle\.rest\.\w+\.[xz]$/.test(path)) {
+        // M50: the handle's resting places are coordinates (they may be 0 or negative), not sizes.
+        expect(Math.abs(value), path).toBeLessThan(path.endsWith('.x') ? Math.abs(transomX) : 2.5);
+      } else if (/(count|spokes|pointsPerTurn)$/.test(path)) {
         expect(Number.isInteger(value) && value >= 1, path).toBe(true);
       } else if (/X$/.test(path)) {
         expect(value, path).toBeGreaterThanOrEqual(transomX);

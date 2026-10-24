@@ -372,7 +372,7 @@
     "mainFurlingGearbox": {
       "source": "photo (Selden manual in-mast furling gearbox with winch-handle socket and IN/OUT arrow) + owner",
       "position": [-0.15, 2.5, -0.08],
-      "note": "Two-line drive: one line furls (rolls the sail in), the other unfurls. Backup: turn the gearbox by hand with a winch handle at the mast. Exact height on the mast estimated. M3b: on the mast's aft face under the sail slot (the photo shows the slot above the gearbox), a little to port (side assumed, so it shows beside the boom from above); x is the aft face, the box sits behind it. Height estimated.",
+      "note": "M50: position is the centre of the drum's front face on the mast's aft face (photo). Two-line drive: one line furls (rolls the sail in), the other unfurls. Backup: turn the gearbox by hand with a winch handle at the mast. Exact height on the mast estimated. M3b: on the mast's aft face under the sail slot (the photo shows the slot above the gearbox), a little to port (side assumed, so it shows beside the boom from above); x is the aft face, the box sits behind it. Height estimated.",
       "lineTravelM": 8.0,
       "lineTravelSource": "assumption: metres of furling line that pass the clutch between fully furled and fully unfurled (about 20 turns of a drum of about 0.13 m). Only changes the 'metres paid out' shown for the furling tails."
     },
@@ -957,9 +957,27 @@
     },
     "jibFurlerDrumDiameter": 0.26,
     "mainFurlingGearbox": {
-      "foreAft": 0.18,
-      "height": 0.24,
-      "athwart": 0.16
+      "source": "photo (docs/reference/photos/mast-furling-gearbox.jpg: a grey plate on the mast's aft face with the IN/OUT switch window, and below it a round black drum with a steel cap and the star-shaped handle socket facing aft) + assumption (sizes)",
+      "plate": { "width": 0.1, "height": 0.34, "thickness": 0.035, "topAboveCentreM": 0.29 },
+      "switchWindow": { "width": 0.06, "height": 0.05, "belowPlateTopM": 0.11 },
+      "drum": { "diameter": 0.17, "depth": 0.09 },
+      "cap": { "diameter": 0.09, "depth": 0.012 },
+      "socket": { "diameter": 0.025, "depth": 0.006 }
+    },
+    "winchHandle": {
+      "source": "owner (issue #82: where the handle lies at each station) + assumption (sizes and exact places)",
+      "armWidth": 0.025,
+      "armThickness": 0.012,
+      "gripLength": 0.1,
+      "gripDiameter": 0.032,
+      "spigotLength": 0.04,
+      "spigotDiameter": 0.022,
+      "rest": {
+        "sideGapCentreFromWinchZ": 0.08,
+        "mast": { "x": 0.0, "z": 1.05 },
+        "helm": { "x": -7.2, "z": 0.0 }
+      },
+      "restNote": "Port and starboard: lying across the gap between the winch and the rope box, its centre on the gap's middle x, outboard of the winch's centre by sideGapCentreFromWinchZ (clear of the tails, which pass on the inboard side). Mast: on the coachroof abeam the mast to starboard, lying fore and aft, clear of the turning blocks (ring radius 0.3 m), the line channels (from x -0.7 m aft) and the self-tacking track (x 0.28 m). Helm: on the cockpit floor on the centreline between the wheels, lying fore and aft."
     },
     "mainsheetBoomBlockSpacing": 0.35,
     "mainsheetBoomBlockSpacingNote": "Three blocks under the boom (photo), centred on rig.mainsheet.boomDistance; spacing estimated.",

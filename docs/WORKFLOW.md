@@ -626,7 +626,7 @@ New link setting (PHASE8_SPEC 4.2): `boat=` names an imported boat (M58). Replac
 - [ ] At the mast: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=mast.s&cam=top — the handle lies on the roof to the right of the mast, clear of the ropes. Zoom in on the mast: the gearbox looks like your photo (a grey plate with the IN/OUT window, a round black drum with a steel cap below it).
 - [ ] In the gearbox: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=mast.w&st=mast&cam=side-port — the handle sticks out of the drum's socket towards the back of the boat. Crank it in the Mast station: it turns.
 - [ ] Between the wheels: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=helm.s&cam=helm — the handle lies on the cockpit floor between the wheels.
-- [ ] Take it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=mast.s&cam=top — tap the handle (its card shows), tap it again: it disappears from the roof, the Ropes section shows you at the Mast with the handle in your hand.
+- [ ] Take it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=mast.s&cam=top — tap the handle (its card shows), tap it again: it disappears from the roof, the Ropes section shows you at the Mast with the handle in your hand. (In Learn two taps only select it.)
 - [ ] Easy hides it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm — no handle.
 
 #### M51: Phone tabs

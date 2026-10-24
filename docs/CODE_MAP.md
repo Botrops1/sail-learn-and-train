@@ -55,6 +55,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setMiniMap` (M28), `setFend
 | `backstay.ts` | M34 (owner, PR #81): where the backstay's block and its two ends (inside the rope boxes) stand (`backstayRig`; `tests/backstay.test.ts`). |
 | `ropeBin.ts` | M34 (owner, PR #81): the rope tail box behind each winch as numbers (`ropeBinBox`: faces, top, where the coaming ends; `ropeBinEntry`; `gapFloorY`; `tailLaneZ`) and the flat coil a rope held in the hand ends in (`inHandCoil`; `tests/ropeEnds.test.ts`). |
 | `panelEntries.ts` | What the Ropes tab offers, derived from the boat data. |
+| `handlePose.ts` | M50: where the winch handle is drawn (`handlePose(realistic)`: lying at a station, in a winch's or the gearbox's socket, or null while carried). |
 | `realistic.ts`, `winch.ts` | Realistic mode: stations, clutches, wraps, self-tailer, handle, gearbox; capstan rule and winch physics. |
 | `labels3d.ts`, `registry.ts` | Where 3D labels sit; registry lookups (`partInfo`: name and one-liner from the glossary, words on the boat from `boatLabels.ts`). |
 | `boatLabels.ts` | Phase 4 (M20, owner on PR #54): the words printed on the boat for an id, from the clutch labels in the boat file (`boatLabelsFor`). |
@@ -97,6 +98,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setMiniMap` (M28), `setFend
 | `boat/thrusters.ts` | M41: each thruster's tunnel (two dark discs, a hole on each side of the hull, and the tunnel between them) and the white water jets shown while a joystick is held (`BoatModel.setThrusters`, called by `scene.ts` on build and whenever `state.thrusters` changes). |
 | `boat/fenders.ts` | M33: the eight fenders and the ball fender on their lines (`fit_fender`, `fit_fender_ball`); hidden in the locker, `setOut` shows them (`BoatModel.setFendersOut`, called by `scene.ts` on build and whenever `harbour.fendersOut` changes). |
 | `boat/sailMesh.ts`, `ropes.ts`, `telltales.ts` | Sails, ropes, telltales and the tear mark. M34: `ropes.ts` seals every rope end with a rounded cap and draws the rope on a winch drum thinner; `cockpitHardware.ts` draws the rope tail box (a solid block with a dark entry); `hull.ts` ends the coamings behind the winches and runs the cockpit floor flat to the transom; `rig.ts` draws the backstay with a block and two ends in a V (`buildBackstay`). |
+| `boat/winchHandle.ts` | M50: the one winch handle (`part_winch_handle`: spigot and arm, and the grip as a second mesh), built around its spigot; `BoatModel.setHandle(pose, show)` places it from `handlePose` and hides it (group and both meshes) when carried or in Easy ropes; `scene.ts` calls it on build and when `realistic.handle` or `ropesMode` changes. `rig.ts` draws the mast furling gearbox from the photo (grey plate, switch window, drum, cap, socket). In Learn a tap on the handle only selects it. |
 | `boat/materials.ts`, `textures.ts` | Materials and procedural textures. |
 
 ## `src/ui/` (DOM, no framework; dispatches actions)
