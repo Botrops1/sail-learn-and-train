@@ -548,6 +548,8 @@
   "autopilot.astern": "The autopilot does not steer while she goes astern (backwards): you steer.",
   "language.name": "English",
   "tab.learn": "Learn",
+  "tab.controls": "Controls",
+  "tabs.label": "Panel",
   "card.more": "More",
   "ropes.strip.learn": "Read more in Learn",
   "learn.empty": "Tap any part of the boat, then “More” on its card, to read about it here.",

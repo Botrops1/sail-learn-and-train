@@ -564,7 +564,7 @@ html[data-layout='stacked'] .panel {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: var(--touch);
+  height: var(--sheet-handle-h, var(--touch));
   padding: 0;
   border: 0;
   border-radius: 14px 14px 0 0;
@@ -592,6 +592,109 @@ html[data-layout='stacked'] .panel {
 
 .sheet-head {
   flex: none;
+}
+
+/*
+ * M51 (issue #100 item 7): the handle strip is 27 px and the tabs row below it (1 px rule, 44 px
+ * tabs) also drags the sheet; peek = 27 + 45 + the 56 px quick row = 128 (sheetGeometry.ts).
+ */
+html[data-layout='stacked'] .sheet-handle {
+  --sheet-handle-h: 27px;
+}
+
+.sheet-tabs {
+  flex: none;
+  touch-action: none;
+}
+
+.sheet-tabs[hidden] {
+  display: none;
+}
+
+.panel-tabs {
+  display: grid;
+  grid-template-columns: auto auto auto 48px 48px;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.panel-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  min-width: 0;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.panel-tab[aria-selected='true'] {
+  color: var(--accent);
+}
+
+.panel-tab[aria-selected='true']::after {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
+  left: 10px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  content: '';
+}
+
+.panel-tab:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+.panel-tab-q {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  font-size: 15px;
+}
+
+/* The mode and the settings are tabs on a phone (M51): their chips leave the chip row. */
+html[data-layout='stacked'] .mode-chip,
+html[data-layout='stacked'] .settings-button {
+  display: none;
+}
+
+/* M51: the sections the open tab does not show. */
+html[data-layout='stacked'] .panel-body[data-tab='mode'] > [data-section]:not([data-tab-of='mode']),
+html[data-layout='stacked']
+  .panel-body[data-tab='controls']
+  > [data-section]:not([data-tab-of='controls']),
+html[data-layout='stacked']
+  .panel-body[data-tab='conditions']
+  > [data-section]:not([data-tab-of='conditions']),
+html[data-layout='stacked']
+  .panel-body[data-tab='learn']
+  > [data-section]:not([data-tab-of='learn']),
+html[data-layout='stacked']
+  .panel-body[data-tab='settings']
+  > [data-section]:not([data-tab-of='settings']) {
+  display: none;
+}
+
+/* Mode, Learn and Settings are alone on their tab: no fold header (Conditions keeps its "?"). */
+html[data-layout='stacked']
+  :is([data-section='mode'], [data-section='learn'], [data-section='settings'])
+  > .section-head {
+  display: none;
 }
 
 /* At its lowest height only the handle (and from M27 the quick row) shows. */
@@ -3629,7 +3732,7 @@ html[data-layout='side'] .top-chips .alert-chip {
   cursor: pointer;
 }
 
-/* In the chip row (a phone) it sits at the right end, before the gear, and hides while the map shows (M28's Close chip needs the room). */
+/* In the chip row (a phone) it sits at the right end (M51: the gear is a tab now) and hides while the map shows (M28's Close chip needs the room). */
 .view-bottom .alert-chip {
   margin-left: auto;
   padding: 4px;

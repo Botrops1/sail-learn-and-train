@@ -21,7 +21,7 @@ function svg<K extends keyof SVGElementTagNameMap>(
 }
 
 /** The gear: eight teeth round a ring (PHASE5_SPEC 6.4). */
-function gearIcon(): SVGSVGElement {
+export function gearIcon(): SVGSVGElement {
   const icon = svg('svg', {
     viewBox: '-12 -12 24 24',
     width: '24',
@@ -173,10 +173,11 @@ export function createSettingsMenu(
   gear.addEventListener('click', () => setOpen(true));
   close.addEventListener('click', () => setOpen(false));
 
-  // The content belongs to the dialog except on the wide layout, where the Settings section
-  // (panel.ts) holds it and the dialog stays closed.
+  // The content belongs to the dialog only on the side layout. On the phone (M51: the Settings
+  // tab) and the wide layout the Settings section (panel.ts) holds it and the dialog stays closed.
   const place = () => {
-    if (layout.viewport().wide) {
+    const { mode, wide } = layout.viewport();
+    if (wide || mode === 'stacked') {
       setOpen(false);
       return;
     }

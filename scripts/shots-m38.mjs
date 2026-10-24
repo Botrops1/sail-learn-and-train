@@ -5,7 +5,7 @@
 // `onTestClock`): waitForTimeout moves the app's time on.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { closeSettings, isWide, openSettings, setMode, showSection } from './ui.mjs';
+import { closeSettings, isWide, openSettings, setMode, showSection, showTab } from './ui.mjs';
 
 const BOAT = '?wd=60&ws=12';
 
@@ -371,17 +371,21 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // Phone (issues #91, #93): the chip and the gear stay; the chip's menu has a line for each mode;
-  // no Mode, Settings or Rope colours section; the bottom row is as before.
+  // Phone (issues #91, #93; M51 rewrote this block): the mode chip and the gear are tabs now; the
+  // chip row holds the camera chip and "!"; the mode list (a line under each mode) is the Mode
+  // tab; the Mode and Settings sections are the Mode and Settings tabs; no Rope colours section.
   {
     const { context, page } = await openPage(phone, 'm38 phone', BOAT);
-    const mode = await box(page, 'mode-chip');
     const camera = await box(page, 'camera-chip');
-    const gear = await box(page, 'settings-button');
+    const alert = await box(page, 'alert-chip');
     check(
-      'phone: the mode chip, the View button and the gear are in the row, in that order',
-      !!mode && !!camera && !!gear && mode.x < camera.x && camera.x < gear.x,
-      JSON.stringify({ mode, camera, gear }),
+      'phone: the chip row holds the camera chip and the Attention button, no mode chip or gear',
+      !!camera &&
+        !!alert &&
+        camera.x < alert.x &&
+        !(await visible(page, 'mode-chip')) &&
+        !(await visible(page, 'settings-button')),
+      JSON.stringify({ camera, alert }),
     );
     const ids = await page.evaluate(() =>
       [...document.querySelectorAll('[data-section]')]
@@ -389,19 +393,22 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
         .map((node) => node.getAttribute('data-section')),
     );
     check(
-      'phone: no Mode, Settings or Rope colours section',
-      ids.join() === 'ropes,sails,autopilot,engine,conditions,learn,place,anchor,harbour',
+      'phone: the Mode and Settings sections are there (their tabs), no Rope colours section',
+      ids.join() ===
+        'mode,ropes,sails,autopilot,engine,conditions,learn,place,anchor,harbour,settings',
       ids.join(),
     );
-    await page.getByTestId('mode-chip').click();
-    const hints = await page.locator('.chip-menu .mode-option-hint:visible').allInnerTexts();
+    await showTab(page, 'mode');
+    const hints = await page
+      .locator('[data-testid="mode-choices"] .mode-option-hint:visible')
+      .allInnerTexts();
     check(
-      'phone: the chip menu has a line under each mode',
+      'phone: the Mode tab has a line under each mode',
       hints.length === 4 && hints.every((hint) => hint.length > 10),
       JSON.stringify(hints),
     );
     await shot(page, 'live-phone-mode-menu');
-    await page.keyboard.press('Escape');
+    await showTab(page, 'controls');
     const mini = await box(page, 'mini-map');
     check(
       'phone: the mini-map keeps its place at the right, above the chip row',

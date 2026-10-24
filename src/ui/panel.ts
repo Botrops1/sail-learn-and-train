@@ -7,8 +7,16 @@ import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 import { createLearnTab } from './learnTab';
-import { MODE_LAYOUTS, SECTION_IDS, sectionAvailable, type SectionId } from './modes';
-import { createModeSection } from './modeSection';
+import {
+  MODE_LAYOUTS,
+  SECTION_IDS,
+  TAB_OF,
+  sectionAvailable,
+  type LayoutKind,
+  type SectionId,
+} from './modes';
+import { createModePicker } from './modePicker';
+import { createPanelTabs, type PanelTab } from './panelTabs';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
 import { createPlacePanel } from './placePanel';
@@ -37,10 +45,12 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
 };
 
 /**
- * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): no tabs since M27, but a list of
- * sections that fold: Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn,
- * (M42) Place, (M46) Anchor, (M33) Harbour gear and, on the wide layout only (M38), Mode (first) and Settings (last). The
- * mode (modes.ts) decides their order. Since M35 all
+ * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): a list of sections that fold: Mode
+ * (first), Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn, (M42) Place,
+ * (M46) Anchor, (M33) Harbour gear and Settings (last). Mode and Settings are on the phone (M51)
+ * and the wide layout (M38), not the side layout. The mode (modes.ts) decides their order. On a
+ * phone (M51) five tabs under the sheet's handle (panelTabs.ts) decide which sections show
+ * (`TAB_OF` in modes.ts). Since M35 all
  * start folded (so every title is on screen) and one opens at a time per column: the headers
  * stay above and below the open section, whose body scrolls on its own. Each section is built
  * once and never copied. Elsewhere the mode, the settings and the camera are in the chip row
@@ -59,8 +69,6 @@ export interface Panel {
   /** Runs after a section opens or folds, the mode changes, the sheet changes height, or the layout changes. */
   onChange(listener: () => void): void;
 }
-
-type LayoutKind = 'stacked' | 'side' | 'wide';
 
 /** Scrolls the section's body to its top (the open section is the only part of a column that scrolls). */
 export function scrollToSection(element: HTMLElement): void {
@@ -85,6 +93,8 @@ export function createPanel(
     tabindex: '0',
     hidden: '',
   });
+  const tabs = createPanelTabs(store);
+  sheet.tabs.append(tabs.element);
   const listeners: (() => void)[] = [];
   const changed = () => listeners.forEach((listener) => listener());
 
@@ -100,7 +110,16 @@ export function createPanel(
   };
 
   const built: Record<SectionId, { content: HTMLElement[]; explain: boolean }> = {
-    mode: { content: createModeSection(store), explain: false },
+    mode: {
+      content: [
+        createModePicker(store, () => {
+          // The phone's Mode tab goes on to what the chosen mode is for.
+          if (layoutKind !== 'stacked') return;
+          tabs.select(store.getState().appMode === 'learn' ? 'learn' : 'controls', true);
+        }),
+      ],
+      explain: false,
+    },
     ropes: { content: createRopesTab(store, openLearnEntry), explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
     autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
@@ -116,8 +135,12 @@ export function createPanel(
   for (const id of SECTION_IDS) {
     const { content, explain } = built[id];
     const section = createSection(id, t(SECTION_TITLES[id]), content, explain);
+    section.element.dataset.tabOf = TAB_OF[id];
     // After the section's own handler has folded or opened it.
     section.element.querySelector('.section-toggle')?.addEventListener('click', () => {
+      // M51: a section that is alone on its tab stays open while its tab is shown.
+      if (layoutKind === 'stacked' && TAB_OF[id] !== 'controls') section.setOpen(true);
+      if (!section.isOpen() && lastControls === id) lastControls = null;
       if (section.isOpen()) {
         openOnly(id);
         // At half height the folded titles leave an open section about 100 px: a tapped title
@@ -139,6 +162,22 @@ export function createPanel(
     return wide ? 'wide' : mode;
   };
   let layoutKind = layoutKindNow();
+  /** M51: the Controls section that was open last (the Controls tab opens it again). */
+  let lastControls: SectionId | null = null;
+
+  /** M51: the tab state of the body (`data-tab`, which CSS reads, and the tabpanel's label). */
+  function syncBody(tab: PanelTab): void {
+    body.dataset.tab = tab;
+    if (layoutKind === 'stacked') {
+      body.setAttribute('role', 'tabpanel');
+      body.setAttribute('aria-labelledby', `panel-tab-${tab}`);
+    } else {
+      body.removeAttribute('role');
+      body.removeAttribute('aria-labelledby');
+    }
+  }
+  body.id = 'panel-body';
+  syncBody('controls');
 
   /**
    * Puts each section where the layout says: in the wide layout the mode's `second` sections fill
@@ -157,9 +196,10 @@ export function createPanel(
       SECTION_IDS.some((id) => elementOf(id).contains(focused));
 
     second.hidden = !wide;
-    // The settings dialog (settingsMenu.ts) holds the content everywhere else.
+    // M51: the Settings section holds the content on the phone and the wide layout; the settings
+    // dialog (settingsMenu.ts) takes it on the side layout.
     const settingsBody = elementOf('settings').querySelector('.section-body');
-    if (wide && settingsBody && settingsContent.parentElement !== settingsBody) {
+    if (layoutKind !== 'side' && settingsBody && settingsContent.parentElement !== settingsBody) {
       settingsBody.append(settingsContent);
     }
     second.append(...inSecond.map(elementOf));
@@ -177,6 +217,12 @@ export function createPanel(
     if (!section) return;
     section.setOpen(true);
     openedAt.set(id, (openCount += 1));
+    if (TAB_OF[id] === 'controls') lastControls = id;
+    // M51: the tab and the open section stay in step; the sheet does not move.
+    if (layoutKind === 'stacked') {
+      syncBody(TAB_OF[id]);
+      tabs.select(TAB_OF[id], false);
+    }
     for (const other of SECTION_IDS) {
       const view = sections.get(other);
       if (other !== id && view && view.element.parentElement === section.element.parentElement) {
@@ -208,7 +254,7 @@ export function createPanel(
       else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
     }
     // A new language reloads the page: the Settings section it was chosen in is open again (M38).
-    if (fromLink && takeOpenAfterReload() === 'settings' && layoutKind === 'wide') {
+    if (fromLink && takeOpenAfterReload() === 'settings' && layoutKind !== 'side') {
       openOnly('settings');
     }
   }
@@ -239,7 +285,7 @@ export function createPanel(
   function applyAvailable(state: AppState): void {
     for (const id of SECTION_IDS) {
       const section = sections.get(id);
-      if (section) section.element.hidden = !sectionAvailable(id, state, layoutKind === 'wide');
+      if (section) section.element.hidden = !sectionAvailable(id, state, layoutKind);
     }
   }
 
@@ -256,13 +302,41 @@ export function createPanel(
     if (section) scrollToSection(section.element);
   }
 
+  /**
+   * M51: a tab was chosen (a tap, a key, `showTab`, code that means "go there"). The tab's one
+   * section opens (Controls: the one open there last, or none), a sheet at peek goes to half.
+   */
+  function onTab(tab: PanelTab): void {
+    if (layoutKind !== 'stacked') return;
+    syncBody(tab);
+    if (tab === 'controls') {
+      if (lastControls && sectionAvailable(lastControls, store.getState(), layoutKind)) {
+        openOnly(lastControls);
+      } else {
+        for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
+      }
+    } else {
+      const only = SECTION_IDS.find((id) => TAB_OF[id] === tab);
+      if (only) openOnly(only);
+    }
+    if (sheet.atPeek()) sheet.setHeight('half');
+    body.scrollTop = 0;
+    for (const id of SECTION_IDS) {
+      if (TAB_OF[id] === tab) scrollToId(id);
+    }
+    changed();
+  }
+  tabs.onSelect(onTab);
+
   function showSection(id: SectionId): void {
     const section = sections.get(id);
     if (!section) return;
+    const raise = sheet.atPeek();
+    // M51: on a phone the section's tab is shown first.
+    if (layoutKind === 'stacked') tabs.select(TAB_OF[id], true);
     openOnly(id);
     // Asked for by name (a link in the view, a "?"): a collapsed column opens to show it.
     columns.reveal(section.element);
-    const raise = sheet.atPeek();
     if (raise) sheet.setHeight('half');
     scrollToId(id);
     // The sheet may still be growing: scroll again when it has finished.
@@ -273,6 +347,13 @@ export function createPanel(
   applyAvailable(store.getState());
   applyModeTitle(store.getState());
   applyMode(store.getState(), true);
+  if (layoutKind === 'stacked' && !SECTION_IDS.some((id) => sections.get(id)?.isOpen())) {
+    // M51: at the start the Learn tab shows an entry, else the Controls tab (nothing open).
+    const state = store.getState();
+    const tab = state.appMode === 'learn' && state.learn !== null ? 'learn' : 'controls';
+    syncBody(tab);
+    tabs.select(tab, false);
+  }
 
   store.subscribe((state, previous) => {
     if (state.settings.ropesMode !== previous.settings.ropesMode) {
@@ -320,6 +401,15 @@ export function createPanel(
     place(store.getState());
     applyAvailable(store.getState());
     keepOneOpenPerColumn();
+    if (now === 'stacked') {
+      // M51: the tab of the open section, or Controls.
+      const open = SECTION_IDS.find((id) => sections.get(id)?.isOpen());
+      const tab = open ? TAB_OF[open] : 'controls';
+      syncBody(tab);
+      tabs.select(tab, false);
+    } else {
+      syncBody(tabs.current());
+    }
     changed();
   });
 
@@ -332,6 +422,7 @@ export function createPanel(
         section.isOpen() &&
         !section.element.hidden &&
         !sheet.atPeek() &&
+        (layoutKind !== 'stacked' || tabs.current() === TAB_OF[id]) &&
         !columns.isCollapsed(section.element),
       );
     },

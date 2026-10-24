@@ -4,13 +4,14 @@ import { el } from './dom';
 import { t } from './i18n';
 
 /**
- * The Mode section (M38, issue #91): on the wide layout the mode picker is the first section of
- * the right column, in place of the mode chip over the 3D view. One button per mode with a
- * description under its name; the current one is checked. Choosing works exactly as the chip's
- * menu does (`setAppMode`). Adding a mode (Harbour, M41) is an entry in `APP_MODES`, its name and
- * its `mode.<id>.desc` strings.
+ * The mode list (M38, issue #91; M51 moved it here from `modeSection.ts`): one button per mode
+ * with a description under its name; the current one is checked. Choosing works exactly as the
+ * chip's menu does (`setAppMode`), then `onChosen` runs (the phone's Mode tab goes to Controls or
+ * Learn). It is the body of the Mode section (the phone's Mode tab and, until M52, the wide
+ * layout) and later of the computer's Mode card (M52). Adding a mode (Harbour, M41) is an entry
+ * in `APP_MODES`, its name and its `mode.<id>.desc` strings.
  */
-export function createModeSection(store: Store): HTMLElement[] {
+export function createModePicker(store: Store, onChosen?: () => void): HTMLElement {
   const buttons = APP_MODES.map((mode) => {
     const button = el(
       'button',
@@ -27,7 +28,10 @@ export function createModeSection(store: Store): HTMLElement[] {
         el('span', { class: 'mode-option-hint' }, [t(`mode.${mode}.desc` as const)]),
       ],
     );
-    button.addEventListener('click', () => store.dispatch({ type: 'setAppMode', mode }));
+    button.addEventListener('click', () => {
+      store.dispatch({ type: 'setAppMode', mode });
+      onChosen?.();
+    });
     return { mode, button };
   });
 
@@ -63,5 +67,5 @@ export function createModeSection(store: Store): HTMLElement[] {
     if (state.appMode !== previous.appMode) sync(state.appMode);
   });
   sync(store.getState().appMode);
-  return [group];
+  return group;
 }

@@ -68,7 +68,7 @@ export function createAlertCentre(
     ],
   );
   const stacked = () => layout.viewport().mode === 'stacked';
-  // Where the button sits: on a phone in the chip row at the bottom of the view, before the gear
+  // Where the button sits: on a phone in the chip row at the bottom of the view, at its right end (M51: the gear is a tab; it stays in the row, hidden)
   // (a button in the top row would make the top area a row taller and shorten the sheet); beside
   // the panel in the top row, before the clock chip.
   const place = () => {

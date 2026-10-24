@@ -4,11 +4,21 @@
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
 import { findClipped, scanLatin } from './shots-m23.mjs';
-import { eachSection, sectionShown, setMode, setSheet, showSection, waitForLink } from './ui.mjs';
+import {
+  eachSection,
+  sectionShown,
+  setMode,
+  setSheet,
+  showSection,
+  showTab,
+  waitForLink,
+} from './ui.mjs';
 
 const BOAT = '?wd=60&ws=12';
+// M51: on the phone Mode is the first section and Settings the last (they are the Mode and Settings tabs).
 const SECTION_ORDER = {
   easy: [
+    'mode',
     'ropes',
     'sails',
     'autopilot',
@@ -18,9 +28,11 @@ const SECTION_ORDER = {
     'place',
     'anchor',
     'harbour',
+    'settings',
   ],
-  realistic: ['ropes', 'sails', 'conditions', 'learn', 'place', 'harbour'],
+  realistic: ['mode', 'ropes', 'sails', 'conditions', 'learn', 'place', 'harbour', 'settings'],
   learn: [
+    'mode',
     'learn',
     'ropes',
     'sails',
@@ -30,11 +42,11 @@ const SECTION_ORDER = {
     'place',
     'anchor',
     'harbour',
+    'settings',
   ],
 };
 
 export const M27_SCENES = [
-  { name: 'mode-menu-open', query: BOAT, click: ['mode-chip'] },
   { name: 'learn-mode', query: `?m=learn${BOAT.replace('?', '&')}` },
   {
     name: 'easy-peek-selected',
@@ -57,7 +69,8 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
   };
   const [phone, , desktop] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
-  const chipLabel = (page) => page.getByTestId('mode-chip').locator('.chip-label').innerText();
+  // M51: the mode is named on the Mode tab.
+  const chipLabel = async (page) => (await page.getByTestId('panel-tab-mode').innerText()).trim();
   const dataOpen = (page, id) => page.getByTestId(`section-${id}`).getAttribute('data-open');
   /** The visible sections in page order. */
   const sectionIds = (page) =>
@@ -80,11 +93,11 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'Easy: every section folded (M35)',
       opens.join() ===
-        'ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,place:false,anchor:false,harbour:false',
+        'mode:false,ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,place:false,anchor:false,harbour:false,settings:false',
       opens.join(),
     );
     const tabs = await page.locator('[role="tab"]').count();
-    check('no tabs', tabs === 0, String(tabs));
+    check('five tabs', tabs === 5, String(tabs));
     await context.close();
   }
 
@@ -96,8 +109,8 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const ids = await sectionIds(page);
     check('Learn order', ids.join() === SECTION_ORDER.learn.join(), ids.join());
     check(
-      'Learn is folded until it is opened (M35)',
-      (await dataOpen(page, 'learn')) === 'false',
+      'the Learn tab opens its section',
+      (await dataOpen(page, 'learn')) === 'true',
       String(await dataOpen(page, 'learn')),
     );
     await showSection(page, 'learn');
@@ -322,8 +335,10 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm27 ru', '?lang=ru&wd=60&ws=12');
     await page.waitForTimeout(500);
-    await page.getByTestId('mode-chip').click();
-    const names = await page.locator('.chip-menu .mode-option-name').allInnerTexts();
+    await showTab(page, 'mode');
+    const names = await page
+      .locator('[data-testid="mode-choices"] .mode-option-name')
+      .allInnerTexts();
     check(
       'the mode menu in Russian',
       names.map((n) => n.trim()).join() === 'Обучение,Простой,Реалистичный,Гавань',
@@ -335,7 +350,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
       latinMenu.length === 0,
       latinMenu.join(' | ') || 'clean',
     );
-    await page.keyboard.press('Escape');
+    await showTab(page, 'controls');
     await eachSection(page, async (id) => {
       const latin = await scanLatin(page);
       check(`Latin scan with ${id} open`, latin.length === 0, latin.join(' | ') || 'clean');
@@ -350,7 +365,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
   {
     let opened = await openPage(phone, 'm27 a11y menu', BOAT);
     await opened.page.waitForTimeout(500);
-    await opened.page.getByTestId('mode-chip').click();
+    await showTab(opened.page, 'mode');
     problems.push(...(await auditPage(opened.page, 'm27 mode menu')));
     await opened.context.close();
 
