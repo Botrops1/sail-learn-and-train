@@ -3,7 +3,7 @@
 // without a link (Sailing, Coastal waves, the clock chip shown).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { sectionIds, setMode, setSheet, showSection } from './ui.mjs';
+import { setMode, setSheet, showSection } from './ui.mjs';
 
 const BOAT = '?wd=60&ws=12';
 
@@ -29,12 +29,19 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
         .filter((node) => !node.hidden)
         .map((node) => node.getAttribute('data-section')),
     );
-  /** The top and bottom of each shown section's header, by id. */
+  /** M51: the ids of the sections that are displayed now, in page order (on a phone only the open tab's). */
+  const sectionIds = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('[data-section]')]
+        .filter((node) => node.offsetParent !== null)
+        .map((node) => node.getAttribute('data-section')),
+    );
+  /** The top and bottom of each displayed section's header, by id. */
   const headBoxes = (page) =>
     page.evaluate(() =>
       Object.fromEntries(
         [...document.querySelectorAll('[data-section]')]
-          .filter((node) => !node.hidden)
+          .filter((node) => node.offsetParent !== null)
           .map((node) => {
             const box = node.querySelector('.section-toggle').getBoundingClientRect();
             return [node.getAttribute('data-section'), { top: box.top, bottom: box.bottom }];
@@ -77,14 +84,15 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
     check('Ropes is the only open section', (await openIds(page)).join() === 'ropes', '');
     const sheetHeight = await page.getByTestId('sheet').getAttribute('data-sheet');
     check('a tapped title raises the sheet from half to full', sheetHeight === 'full', sheetHeight);
-    await showSection(page, 'conditions');
+    // M51: Conditions is alone on its tab (and does not fold there), so Sails shows the stacking.
+    await showSection(page, 'sails');
     const open = await openIds(page);
-    check('opening Conditions folds Ropes', open.join() === 'conditions', open.join());
+    check('opening Sails folds Ropes', open.join() === 'sails', open.join());
     const heads = await headBoxes(page);
     const ids = await sectionIds(page);
-    const index = ids.indexOf('conditions');
+    const index = ids.indexOf('sails');
     const above = ids.slice(0, index + 1);
-    const column = await columnBox(page, 'conditions');
+    const column = await columnBox(page, 'sails');
     check(
       'the headers above and the open one are stacked at the top of the panel',
       Math.abs(heads[above[0]].top - column.top) < 2 &&
@@ -98,7 +106,7 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
       `${last.bottom} vs ${column.bottom}`,
     );
     // The open body scrolls on its own: the headers do not move.
-    const body = page.locator('#section-body-conditions');
+    const body = page.locator('#section-body-sails');
     await body.evaluate((node) => {
       node.scrollTop = 40;
     });
@@ -108,8 +116,8 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
       ids.every((id) => Math.abs(scrolled[id].top - heads[id].top) < 1),
       JSON.stringify(scrolled),
     );
-    await shot(page, 'live-phone-m35-conditions');
-    await page.getByTestId('section-toggle-conditions').click();
+    await shot(page, 'live-phone-m35-sails');
+    await page.getByTestId('section-toggle-sails').click();
     check('tapping the open header folds it', (await openIds(page)).length === 0, '');
     await context.close();
   }

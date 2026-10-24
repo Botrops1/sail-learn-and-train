@@ -45,22 +45,22 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm36 phone start', BOAT);
     const chip = await box(page, 'alert-chip');
     const camera = await box(page, 'camera-chip');
-    const gear = await box(page, 'settings-button');
+    const chipRow = await box(page, 'view-bottom');
     check(
       'the Attention button is high enough to tap',
       !!chip && chip.height >= 44 && chip.width >= 44,
       JSON.stringify(chip),
     );
+    // M51: the gear is a tab now; the button is at the right end of the chip row.
     check(
-      'the Attention button is in the chip row, between the camera chip and the gear',
+      'the Attention button is at the right end of the chip row, after the camera chip',
       !!chip &&
         !!camera &&
-        !!gear &&
+        !!chipRow &&
         chip.x >= camera.x + camera.width &&
-        chip.x + chip.width <= gear.x &&
         chip.x + chip.width <= phone.width &&
-        Math.abs(chip.y - gear.y) <= 2,
-      JSON.stringify({ chip, camera, gear }),
+        chipRow.x + chipRow.width - (chip.x + chip.width) <= 16,
+      JSON.stringify({ chip, camera, chipRow }),
     );
     check('the card is folded', !(await cardOpen(page)), 'alert-centre');
     check(

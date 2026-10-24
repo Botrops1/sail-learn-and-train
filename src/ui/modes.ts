@@ -1,5 +1,6 @@
 import type { AppMode } from '../app/appMode';
 import type { AppState } from '../app/store';
+import type { PanelTab } from './panelTabs';
 
 /**
  * The sections of the panel and what each mode does with them (PHASE5_SPEC 4.4). Pure: the table
@@ -30,11 +31,26 @@ export interface ModeLayout {
 }
 
 /**
- * M38 (issues #91, #93): on the wide layout the mode picker is the first section of column 1 and
- * Settings the last, in every mode; elsewhere the mode chip and the gear in the chip row do their
- * work and these two sections are not shown.
+ * M51 (issue #100 item 7): the phone tab each section is shown under. Mode, Conditions, Learn and
+ * Settings are alone on their tab; every other section is under Controls. (M38's `mode` first and
+ * `settings` last stay in every order; the wide layout shows them until M52.)
  */
-export const WIDE_ONLY_SECTIONS: readonly SectionId[] = ['mode', 'settings'];
+export const TAB_OF: Readonly<Record<SectionId, PanelTab>> = {
+  mode: 'mode',
+  ropes: 'controls',
+  sails: 'controls',
+  autopilot: 'controls',
+  engine: 'controls',
+  conditions: 'conditions',
+  learn: 'learn',
+  place: 'controls',
+  anchor: 'controls',
+  harbour: 'controls',
+  settings: 'settings',
+};
+
+/** The layouts of `src/ui/layoutMode.ts` (with the wide one told apart). */
+export type LayoutKind = 'stacked' | 'side' | 'wide';
 
 export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
   easy: {
@@ -106,10 +122,14 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
 /**
  * True if the section is shown at all in this state. The autopilot and the engine have their own
  * sections only in Easy (in Realistic they are at the Helm station), the anchor too (M46: the
- * windlass is at the Bow station); the Mode and Settings
- * sections only on the wide layout (`wide`).
+ * windlass is at the Bow station); the Mode and Settings sections (M51: the phone's Mode and
+ * Settings tabs, and on the wide layout until M52) everywhere except the side layout.
  */
-export function sectionAvailable(id: SectionId, state: AppState, wide = false): boolean {
+export function sectionAvailable(
+  id: SectionId,
+  state: AppState,
+  layout: LayoutKind = 'side',
+): boolean {
   switch (id) {
     case 'autopilot':
     case 'engine':
@@ -117,7 +137,7 @@ export function sectionAvailable(id: SectionId, state: AppState, wide = false): 
       return state.settings.ropesMode === 'easy';
     case 'mode':
     case 'settings':
-      return wide;
+      return layout !== 'side';
     default:
       return true;
   }

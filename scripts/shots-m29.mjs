@@ -10,6 +10,7 @@ import {
   setSheet,
   showSection,
   sectionShown,
+  showTab,
   waitForLink,
 } from './ui.mjs';
 
@@ -176,9 +177,10 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     await page.getByTestId('camera-chip').click();
     await audit(page, 'camera menu');
     await page.keyboard.press('Escape');
-    await page.getByTestId('mode-chip').click();
+    // M51: the mode list is the Mode tab on a phone.
+    await showTab(page, 'mode');
     await audit(page, 'mode menu');
-    await page.keyboard.press('Escape');
+    await showTab(page, 'controls');
     // The mini-map (Sailing, sheet at half: the sections above raised it to full).
     await setSheet(page, 'half');
     check(

@@ -3,10 +3,49 @@
 // that a later change of the screen changes only this file. They take a Playwright `page` and find
 // things by data-testid, never by text, so they do not depend on the language.
 
+/** M51: the phone tab each section is under: a copy of `TAB_OF` in src/ui/modes.ts (keep them in step). */
+const TAB_OF_JS = {
+  mode: 'mode',
+  ropes: 'controls',
+  sails: 'controls',
+  autopilot: 'controls',
+  engine: 'controls',
+  conditions: 'conditions',
+  learn: 'learn',
+  place: 'controls',
+  anchor: 'controls',
+  harbour: 'controls',
+  settings: 'settings',
+};
+
+/** M51: true on a phone (the stacked layout), where the panel has five tabs. */
+export async function isStacked(page) {
+  return page.evaluate(() => document.documentElement.dataset.layout === 'stacked');
+}
+
+/** M51: on a phone, taps a panel tab ('mode' | 'controls' | 'conditions' | 'learn' | 'settings'); elsewhere does nothing. */
+export async function showTab(page, tab) {
+  if (!(await isStacked(page))) return;
+  await page.getByTestId(`panel-tab-${tab}`).click();
+}
+
+/** M51: the open tab on a phone, or null elsewhere. */
+export async function tabNow(page) {
+  return page.evaluate(() =>
+    document.documentElement.dataset.layout === 'stacked'
+      ? (document
+          .querySelector('[data-testid^="panel-tab-"][aria-selected="true"]')
+          ?.getAttribute('data-tab') ?? null)
+      : null,
+  );
+}
+
 /** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, conditions, learn, harbour (M38: mode and settings on the wide layout). */
 export async function showSection(page, id) {
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);
+  // M51: on a phone the section's tab first (this also raises a sheet at peek).
+  await showTab(page, TAB_OF_JS[id]);
   // A folded section's header may sit under a sheet at peek: raise the sheet first.
   if (await sheetAtPeek(page)) await setSheet(page, 'half');
   if ((await section.getAttribute('data-open')) === 'false') {
@@ -35,8 +74,13 @@ export async function isWide(page) {
   return page.evaluate(() => document.documentElement.dataset.wide === 'true');
 }
 
-/** M27: chooses a mode (learn, easy, realistic): from the mode chip's menu, or (M38, wide layout) from the Mode section. */
+/** M27: chooses a mode (learn, easy, realistic, harbour): from the mode chip's menu, (M38, wide layout) from the Mode section, or (M51, phone) from the Mode tab. */
 export async function setMode(page, mode) {
+  if (await isStacked(page)) {
+    await showTab(page, 'mode');
+    await page.getByTestId(`mode-choice-${mode}`).click();
+    return;
+  }
   if (await isWide(page)) {
     await showSection(page, 'mode');
     await page.getByTestId(`mode-choice-${mode}`).click();
@@ -110,15 +154,15 @@ export async function setSheet(page, height) {
  * inside the page, in one task: headless drawing makes every mouse move take ~100 ms, so a mouse
  * "fling" would be slow in wall-clock time and the app would rightly not treat it as one.
  */
-export async function dragHandle(page, dy, steps, delayMs) {
-  const box = await page.getByTestId('sheet-handle').boundingBox();
-  if (!box) throw new Error('dragHandle: the handle is not shown');
+export async function dragHandle(page, dy, steps, delayMs, testId = 'sheet-handle') {
+  const box = await page.getByTestId(testId).boundingBox();
+  if (!box) throw new Error(`dragHandle: ${testId} is not shown`);
   const x = box.x + box.width / 2;
   const y = box.y + box.height / 2;
   if (delayMs === 0) {
     await page.evaluate(
-      ({ x, y, dy, steps }) => {
-        const handle = document.querySelector('[data-testid="sheet-handle"]');
+      ({ x, y, dy, steps, testId }) => {
+        const handle = document.querySelector(`[data-testid="${testId}"]`);
         const send = (type, clientY) =>
           handle.dispatchEvent(
             new PointerEvent(type, {
@@ -137,7 +181,7 @@ export async function dragHandle(page, dy, steps, delayMs) {
         for (let step = 1; step <= steps; step += 1) send('pointermove', y + (dy * step) / steps);
         send('pointerup', y + dy);
       },
-      { x, y, dy, steps },
+      { x, y, dy, steps, testId },
     );
   } else {
     await page.mouse.move(x, y);
@@ -151,9 +195,11 @@ export async function dragHandle(page, dy, steps, delayMs) {
   await sheetSettled(page);
 }
 
-/** Opens the settings: the dialog the gear opens, or (M38, wide layout) the Settings section. Either way `settings-content` is shown. */
+/** Opens the settings: the Settings tab (M51, phone), the Settings section (M38, wide layout) or the dialog the gear opens (side layout). Either way `settings-content` is shown. */
 export async function openSettings(page) {
-  if (await isWide(page)) {
+  if (await isStacked(page)) {
+    await showTab(page, 'settings');
+  } else if (await isWide(page)) {
     await showSection(page, 'settings');
   } else {
     await page.getByTestId('settings-button').click();
@@ -161,8 +207,13 @@ export async function openSettings(page) {
   await page.getByTestId('settings-content').waitFor({ state: 'visible' });
 }
 
-/** Closes the settings (the dialog's ×, or folds the Settings section). */
+/** Closes the settings (the dialog's ×, folds the Settings section, or on a phone (M51) goes back to the Controls tab). */
 export async function closeSettings(page) {
+  if (await isStacked(page)) {
+    await showTab(page, 'controls');
+    await page.getByTestId('settings-content').waitFor({ state: 'hidden' });
+    return;
+  }
   if (await isWide(page)) {
     if ((await page.getByTestId('section-settings').getAttribute('data-open')) === 'true') {
       await page.getByTestId('section-toggle-settings').click();

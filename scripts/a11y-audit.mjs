@@ -19,6 +19,8 @@ const SMALL_OK = [
   // M39: the 8 px grip on a column's border is a mouse drag handle; the keyboard has its arrow
   // keys and the 44 px button folds the column.
   '.col-grip',
+  // M51: 27 px handle strip; the tabs row under it also drags the sheet.
+  '.sheet-handle',
 ];
 
 /** Text that may be smaller than 13 px: none since M5 (owner, PR #19: taller clutches). */

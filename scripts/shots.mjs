@@ -68,6 +68,7 @@ import { liveM47Checks, M47_SCENES } from './shots-m47.mjs';
 import { liveM48Checks, M48_SCENES } from './shots-m48.mjs';
 import { liveM49Checks, M49_SCENES } from './shots-m49.mjs';
 import { liveM50Checks, M50_SCENES } from './shots-m50.mjs';
+import { liveM51Checks, M51_SCENES } from './shots-m51.mjs';
 import {
   closeSettings,
   openSettings,
@@ -75,6 +76,7 @@ import {
   setMode,
   setSheet,
   showSection,
+  showTab,
   viewBottom,
 } from './ui.mjs';
 
@@ -235,6 +237,7 @@ const SCENES = [
   ...M48_SCENES.map((scene) => ({ ...scene, name: `m48-${scene.name}` })),
   ...M49_SCENES.map((scene) => ({ ...scene, name: `m49-${scene.name}` })),
   ...M50_SCENES.map((scene) => ({ ...scene, name: `m50-${scene.name}` })),
+  ...M51_SCENES.map((scene) => ({ ...scene, name: `m51-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -777,6 +780,8 @@ try {
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.mode) await setMode(page, scene.mode);
       if (scene.section) await showSection(page, scene.section);
+      // M51: a phone tab (a no-op at the wider sizes).
+      if (scene.tab) await showTab(page, scene.tab);
       if (scene.settings) await openSettings(page);
       if (scene.sheet) await setSheet(page, scene.sheet);
       if (scene.open) {
@@ -883,6 +888,14 @@ try {
       for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
         await page.mouse.click(x, y);
         taps += 1;
+        // M51: a tap on the instrument strip opens Conditions and raises the sheet, whose tab row
+        // would then take the taps below it (the gear tab shows the language buttons): lower it again.
+        if (
+          viewport.layout === 'stacked' &&
+          (await page.getByTestId('sheet').getAttribute('data-sheet')) !== 'peek'
+        ) {
+          await setSheet(page, 'peek');
+        }
         const part = await cardPart(page);
         if (!part) continue;
         if (!part.id || !part.name) problems.push(`${label}: tap at ${x},${y} gave an empty card`);
@@ -1016,6 +1029,7 @@ try {
     m48: () => liveM48Checks(live),
     m49: () => liveM49Checks(onTestClock),
     m50: () => liveM50Checks(onTestClock),
+    m51: () => liveM51Checks(onTestClock),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
