@@ -888,6 +888,14 @@ try {
       for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
         await page.mouse.click(x, y);
         taps += 1;
+        // M51: a tap on the instrument strip opens Conditions and raises the sheet, whose tab row
+        // would then take the taps below it (the gear tab shows the language buttons): lower it again.
+        if (
+          viewport.layout === 'stacked' &&
+          (await page.getByTestId('sheet').getAttribute('data-sheet')) !== 'peek'
+        ) {
+          await setSheet(page, 'peek');
+        }
         const part = await cardPart(page);
         if (!part) continue;
         if (!part.id || !part.name) problems.push(`${label}: tap at ${x},${y} gave an empty card`);
