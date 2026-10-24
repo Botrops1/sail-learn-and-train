@@ -20,7 +20,7 @@ Each open pull request (PR) also has its own **preview** at `https://botrops1.gi
 2. Type **`/milestone 11`** (the milestone's number). Nothing else to paste.
 3. Wait. Claude builds, tests, opens a PR and **watches it** until CI is green and nothing waits on it, then stops (about 45 minutes later) and says so on the PR. You can close the app meanwhile.
 4. In the PR (GitHub app): read "What changed", check that CI is green (`check`, `browser-checks`, `preview`).
-   **If the PR starts with "Independent review required"** (the spec marks physics milestones that way): start the review now, before testing: new session, **Opus**, high, type **`/review <PR number>`**. It posts one comment on the PR with findings marked fix now / fix later / leave (about 15–30 minutes). Test while it runs or after it.
+   **If the PR starts with "Independent review required"** (the spec marks physics milestones that way): start the review now, before testing: new session, **Opus**, medium, type **`/review <PR number>`**. It posts one comment on the PR with findings marked fix now / fix later / leave (about 15–30 minutes). Test while it runs or after it.
 5. Open the preview from the bot comment. Check that the **version in Settings → About** matches the PR's latest commit (first 7 characters, PR → Commits).
 6. Go through the checklist links in the PR description. Tick what works.
 7. **Answer and report problems as one comment on the PR**, in the GitHub app: your answers to the questions, which review findings to fix (e.g. "review: fix 1 and 3"), and anything you found. Every question has a recommendation, so "accept all" is a valid answer, or "accept all except 2: …". For a bug, use the template in 3.2. The recommended answers are already recorded, so if everything works you just merge: **merging means "accept all"**. If the session is still watching, it picks your comment up by itself, fixes, records changed answers and replies on the PR. If the PR says **"Stopped watching"**, start a new session (Sonnet, high) and type **`/milestone resume <PR number>`**: it reads your comment from the PR and does the same. No copying between sessions.
@@ -66,8 +66,11 @@ In a session you can type `/model opus` or `/model sonnet`, and `/effort high` o
 | Work | Model | Effort |
 |---|---|---|
 | `/milestone` | Sonnet | high |
-| `/plan`, `/review` | Opus | high |
+| `/plan` | Opus | high |
+| `/review` | Opus | medium |
 | `/bug`, `/plan answers`, small doc changes | Sonnet | medium |
+
+Opus 5.5 at medium does as well as earlier Opus models at high on coding and code review, and at each level it thinks more than they did (Anthropic's prompting guide, 2026-10-24). So `/review` runs at medium; `/plan` stays at high because every gap in a spec becomes a builder's guess. Do not use `xhigh` or `max`: they cost more with no gain shown here. If a session thinks for too long, lower the effort; asking it in words to think less works less well.
 
 The commands also name their model (`/milestone` and `/bug` Sonnet, `/plan` and `/review` Opus), so a wrong model setting is corrected while the command runs. Still set the model and effort when you start the session: the later rounds (your PR comments) run on the session's own model, and effort is not set by the command.
 

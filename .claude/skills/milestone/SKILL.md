@@ -45,7 +45,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 - Use the template in CLAUDE.md: plain language; every check a full preview link with what to do after opening it; **no screenshots**; every question ends with "Recommended: …, because …" and the "accept all" line.
 - **Record the recommended answers now**, in the same PR: a row in the ROADMAP decisions log and "decided in the M$ARGUMENTS PR (recommended; merging accepts it)" notes in the spec section. Merging the PR means "accept all"; only a changed answer needs another commit.
 - Then subscribe to the PR's activity (`subscribe_pr_activity`) so the owner's comments in the GitHub app reach this session.
-- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, high) now, before you test; then answer the review and your test findings in one comment."** Say that merging accepts every recommendation, so they comment only to change an answer or report a problem. Then end your turn.
+- Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, medium) now, before you test; then answer the review and your test findings in one comment."** Say that merging accepts every recommendation, so they comment only to change an answer or report a problem. Then end your turn.
 
 ## 5. While the PR is open
 

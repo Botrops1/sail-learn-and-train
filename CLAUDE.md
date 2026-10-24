@@ -49,6 +49,14 @@ Only the part you need, found with `grep` (do not read these whole):
 - **Issues:** a PR that builds or fixes a GitHub issue says `Closes #<n>` in its description, so the issue closes on merge.
 - **The answers are recorded in the same PR, before merge:** a row in the ROADMAP decisions log, and "decided in the M<N> PR" notes in the spec section. The session records its recommended answers when it opens the PR, marked "recommended; merging accepts it"; merging means "accept all", and only an answer the owner changes needs another commit. No separate PR for this.
 
+## Long runs: finish the work, keep the owner posted
+
+From Anthropic's Opus 5.5 prompting guide (2026-10-24 decisions-log row); it helps every model.
+
+- **A turn that ends with text is a report, not the end of the work.** Do not end a turn with a summary that announces the next step instead of doing it, an offer to continue ("shall I…?"), a list of choices that do not block the work (those go into the PR as questions with a recommendation), or because one part is done or the turn is long. Stop only where your skill says to stop, or where nothing can move without the owner; then say exactly what you need.
+- **Keep the steps in a task list** (the to-do tool) and tick them as you go. Before ending a turn, nothing may be open without a stated blocker. A background run or subagent still going means the task is not done: wait for its result.
+- **One line before you start, a short recap at the end:** what you are about to do; then what you did, what you found, what you need from the owner.
+
 ## Verification before you say "done"
 
 - `npm run typecheck`, `npm run lint`, `npm test` and `npm run build` all pass.
@@ -56,6 +64,7 @@ Only the part you need, found with `grep` (do not read these whole):
 - **Browser checks** (`scripts/shots.mjs`, Playwright with headless Chromium; available in the cloud environment, do not run `playwright install`). New scenes and live checks go in `scripts/shots-m<N>.mjs`, registered in `shots.mjs` (import, `SCENES`, `liveGroups`).
   - While building: `SHOTS_ONLY=m<N> npm run shots` runs your milestone's scenes and live checks at all sizes.
   - **Look at 6–10 of the PNGs yourself** (in `shots/`, phone size first, then one wider size): the ones that show what your milestone changes. Do not open every file; the script already fails on console errors, wrong layouts, page scroll, unknown taps and failed live checks.
+  - **Too small to judge in a PNG** (a rope end, a label, an arrow's direction): take a close-up in a throwaway script (`locator.screenshot()`, or `page.screenshot({ clip })` with a higher `deviceScaleFactor`) instead of guessing.
   - **PNGs are not committed** (`shots/` is ignored) and do not go into the PR.
   - The full set (every milestone's scenes at phone size plus every live and tap check) runs in CI as the `browser-checks` job on every PR, in parallel parts. Do not run it locally (one after the other it takes over an hour): if you changed shared code (layout, store, URL, renderer, panel), run locally the groups most likely to be hit (`SHOTS_ONLY=general,m4b,…`), push, and let CI run the rest. If it fails, `SHOTS_ONLY=<milestone>` reruns the failing part.
 - If headless WebGL fails, try `--use-angle=swiftshader` / `--enable-unsafe-swiftshader`. If it still fails, say so plainly in the PR; do not guess what it looks like.
@@ -75,7 +84,7 @@ Headless Chromium draws the 3D view without a graphics card, at about 15 frames 
 
 ```
 <only if the spec marks the milestone's independent review as required:>
-> **Independent review required before you test:** new Code session, Opus, high effort, type `/review <N>`.
+> **Independent review required before you test:** new Code session, Opus, medium effort, type `/review <N>`.
 
 ## What changed (plain language, no jargon)
 ## How to check on your phone
