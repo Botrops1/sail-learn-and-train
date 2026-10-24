@@ -212,7 +212,15 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
       };
     });
 
-    target.addEventListener('pointermove', (event) => {
+    // The handle captures the pointer at once. The tabs row does not, so a mouse that leaves the
+    // row mid-drag is still followed: its move and up events are heard on the window.
+    const listen = (
+      type: 'pointermove' | 'pointerup' | 'pointercancel',
+      fn: (e: PointerEvent) => void,
+    ) =>
+      options.tapCycles ? target.addEventListener(type, fn) : window.addEventListener(type, fn);
+
+    listen('pointermove', (event) => {
       if (!drag || !mine) return;
       const far = Math.abs(event.clientY - drag.startY) >= SHEET.tapMaxMovePx;
       if (far && !captured) {
@@ -252,8 +260,8 @@ export function createSheet(layout: LayoutShell, view: HTMLElement, topArea: HTM
       }
       go(snapSheet(current.start, current.px, velocity, space()));
     }
-    target.addEventListener('pointerup', (event) => release(event, false));
-    target.addEventListener('pointercancel', (event) => release(event, true));
+    listen('pointerup', (event) => release(event, false));
+    listen('pointercancel', (event) => release(event, true));
 
     if (!options.tapCycles) {
       // A drag that ends over a tab must not also choose it.

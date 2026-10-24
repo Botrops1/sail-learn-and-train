@@ -126,6 +126,8 @@ export async function liveM51Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm51 mode tab', SIDE);
     await showTab(page, 'mode');
     await page.getByTestId('mode-choice-learn').click();
+    // The link is written 300 ms (app time) after a change.
+    await page.waitForTimeout(400);
     const link = await waitForLink(page, ['m=learn']);
     check('Learn: the link has m=learn', link.includes('m=learn'), link);
     check(
@@ -166,7 +168,7 @@ export async function liveM51Checks({ openPage, viewports, outDir, prefix, probl
       'hidden',
     );
     await shot(page, 'live-phone-m51-settings');
-    await page.getByTestId('language-ru').check();
+    await page.locator('label.segment', { has: page.getByTestId('language-ru') }).click();
     await page.waitForURL(/lang=ru/);
     await page.getByTestId('panel-tab-settings').waitFor();
     check(

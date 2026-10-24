@@ -32,11 +32,11 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     }
   };
 
-  // 1. No tabs (M27 replaced them by sections), no View tab.
+  // 1. No View tab (M27 replaced the old tabs by sections; M51 adds the phone's five panel tabs).
   {
     const { context, page } = await openPage(phone, 'm25 tabs', '?wd=60&ws=12');
     const tabs = await page.getByRole('tab').count();
-    check('the panel has no tabs', tabs === 0, `${tabs} tab(s)`);
+    check('the panel has only the five phone tabs of M51', tabs === 5, `${tabs} tab(s)`);
     const view = await page.locator('#pane-view').count();
     check('no View pane', view === 0, `${view} element(s) #pane-view`);
     await context.close();
