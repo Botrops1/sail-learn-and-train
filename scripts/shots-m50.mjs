@@ -158,6 +158,17 @@ export async function liveM50Checks({ openPage, viewports, outDir, prefix, probl
       await page.getByTestId('learn-show-me').click();
       await page.waitForTimeout(1500);
       check(`${v} Show it working: the handle is drawn`, Boolean(await handle(page)), 'hitCentres');
+      // In Learn two taps only select the handle (no stations to put it back): it stays drawn.
+      await setSheet(page, 'peek');
+      await lookDownAt(page, [-7.6, 1.43, -1.55]);
+      await tapHandle(page);
+      await tapHandle(page);
+      const learnLink = await page.evaluate(() => location.search);
+      check(
+        `${v} Learn: two taps do not take it`,
+        !learnLink.includes('hd=c') && Boolean(await handle(page)),
+        learnLink,
+      );
       await context.close();
     }
   }

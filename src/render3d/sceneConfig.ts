@@ -293,6 +293,8 @@ export const SCENE = {
     wire: '#b9bec3',
     fitting: '#d8dce0',
     chrome: '#eef0f2',
+    /** M50: the mast furling gearbox's mid-grey plate (the owner's photo). */
+    gearboxPlate: '#8a9096',
     block: '#25282c',
     fabric: '#3d4248',
     glass: '#1c2a33',

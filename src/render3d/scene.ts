@@ -189,11 +189,13 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
     const state = store.getState();
-    // M50: the first tap on the handle selects it; the second walks to its station and takes it.
+    // M50: the first tap on the handle selects it; the second walks to its station and takes it
+    // (not in Learn, where the Ropes section has no stations to put it back).
     if (
       partId === 'part_winch_handle' &&
       state.selection === 'part_winch_handle' &&
       state.settings.ropesMode === 'realistic' &&
+      state.appMode !== 'learn' &&
       state.realistic.handle.place !== 'carried'
     ) {
       store.dispatch({

@@ -252,7 +252,7 @@ function buildDeckBlocks(materials: BoatMaterials, segments: number): THREE.Obje
  * In-mast furling gearbox on the mast's aft face (M50, from the owner's photo): a grey plate with
  * the IN/OUT switch window, and below it a round drum with a steel cap and the handle socket
  * facing aft. `rig.mainFurlingGearbox.position` is the centre of the drum's front face. All
- * meshes are the one part; the first (plate and drum) carries the tap point, the drum's centre.
+ * meshes are the one part; the first (the drum) carries the tap point, its centre.
  */
 function buildGearbox(materials: BoatMaterials): THREE.Object3D[] {
   const p = vec3(boat.rig.mainFurlingGearbox.position);
@@ -272,14 +272,13 @@ function buildGearbox(materials: BoatMaterials): THREE.Object3D[] {
     p[2],
   ];
   return [
-    smallPartMesh(
+    smallPartMesh(id, [alongX(p[0], drumEnd, m.drum.diameter / 2)], materials.dark, [
+      [p[0] - m.drum.depth / 2, p[1], p[2]],
+    ]),
+    partMesh(
       id,
-      [
-        boxAt(plateCentre, [m.plate.thickness, m.plate.height, m.plate.width]),
-        alongX(p[0], drumEnd, m.drum.diameter / 2),
-      ],
-      materials.dark,
-      [[p[0] - m.drum.depth / 2, p[1], p[2]]],
+      [boxAt(plateCentre, [m.plate.thickness, m.plate.height, m.plate.width])],
+      materials.gearboxPlate,
     ),
     partMesh(
       id,
