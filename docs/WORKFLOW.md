@@ -74,7 +74,7 @@ Opus 5.5 at medium does as well as earlier Opus models at high on coding and cod
 
 The commands also name their model (`/milestone` and `/bug` Sonnet, `/plan` and `/review` Opus), so a wrong model setting is corrected while the command runs. Still set the model and effort when you start the session: the later rounds (your PR comments) run on the session's own model, and effort is not set by the command.
 
-Usage: cloud sessions share your plan's limits with normal chat. What costs the most is a long session: every step re-reads everything said so far. So one session per milestone, and start a new one for unrelated work instead of continuing an old one.
+Usage: cloud sessions share your plan's limits with normal chat. What costs the most is a long session: every step re-reads everything said so far. So one session per milestone, and start a new one for unrelated work instead of continuing an old one. If you have corrected a session twice on the same problem and it still gets it wrong, stop: start a new session and describe the problem once, completely (what you did, what you saw, what you expected, the Share link). A fresh session with a better message almost always does better than a long one full of corrections.
 
 ## 5. Checklists (what to look for on the phone)
 

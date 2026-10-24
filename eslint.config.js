@@ -13,7 +13,7 @@ export default defineConfig(
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ['scripts/**/*.{js,mjs}', 'tests/**/*.ts', '*.config.{js,ts}'],
+    files: ['scripts/**/*.{js,mjs}', 'tests/**/*.ts', '*.config.{js,ts}', '.claude/hooks/*.mjs'],
     languageOptions: { globals: globals.node },
   },
   {
