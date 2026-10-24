@@ -64,7 +64,7 @@ export function buildRig(materials: BoatMaterials, detail: Detail = 'high'): Rig
       buildGooseneck(materials),
       buildTurningBlocks(materials),
       buildDeckBlocks(materials, segments),
-      buildGearbox(materials),
+      ...buildGearbox(materials),
       buildJibFurler(materials),
       track.track,
       track.car,
@@ -248,17 +248,47 @@ function buildDeckBlocks(materials: BoatMaterials, segments: number): THREE.Obje
   return smallPartMesh('fit_mainsheet_deck_blocks', geometries, materials.block, points);
 }
 
-/** In-mast furling gearbox on the mast's aft face. */
-function buildGearbox(materials: BoatMaterials): THREE.Object3D {
+/**
+ * In-mast furling gearbox on the mast's aft face (M50, from the owner's photo): a grey plate with
+ * the IN/OUT switch window, and below it a round drum with a steel cap and the handle socket
+ * facing aft. `rig.mainFurlingGearbox.position` is the centre of the drum's front face. All
+ * meshes are the one part; the first (plate and drum) carries the tap point, the drum's centre.
+ */
+function buildGearbox(materials: BoatMaterials): THREE.Object3D[] {
   const p = vec3(boat.rig.mainFurlingGearbox.position);
-  const size = boat.modelDetail.mainFurlingGearbox;
-  const centre: Vec3 = [p[0] - size.foreAft / 2, p[1], p[2]];
-  return smallPartMesh(
-    'part_main_furling_gearbox',
-    [boxAt(centre, [size.foreAft, size.height, size.athwart])],
-    materials.dark,
-    [centre],
-  );
+  const m = boat.modelDetail.mainFurlingGearbox;
+  const id = 'part_main_furling_gearbox';
+  const alongX = (x0: number, x1: number, radius: number): THREE.BufferGeometry =>
+    cylinderBetween([x0, p[1], p[2]], [x1, p[1], p[2]], radius, 24);
+  const drumEnd = p[0] - m.drum.depth;
+  const capEnd = drumEnd - m.cap.depth;
+  const socketEnd = capEnd - m.socket.depth;
+  const plateTop = p[1] + m.plate.topAboveCentreM;
+  const plateAft = p[0] - m.plate.thickness;
+  const plateCentre: Vec3 = [p[0] - m.plate.thickness / 2, plateTop - m.plate.height / 2, p[2]];
+  const windowCentre: Vec3 = [
+    plateAft - 0.001,
+    plateTop - m.switchWindow.belowPlateTopM - m.switchWindow.height / 2,
+    p[2],
+  ];
+  return [
+    smallPartMesh(
+      id,
+      [
+        boxAt(plateCentre, [m.plate.thickness, m.plate.height, m.plate.width]),
+        alongX(p[0], drumEnd, m.drum.diameter / 2),
+      ],
+      materials.dark,
+      [[p[0] - m.drum.depth / 2, p[1], p[2]]],
+    ),
+    partMesh(
+      id,
+      [boxAt(windowCentre, [0.002, m.switchWindow.height, m.switchWindow.width])],
+      materials.fitting,
+    ),
+    partMesh(id, [alongX(drumEnd, capEnd, m.cap.diameter / 2)], materials.chrome),
+    partMesh(id, [alongX(capEnd, socketEnd, m.socket.diameter / 2)], materials.dark),
+  ];
 }
 
 function buildJibFurler(materials: BoatMaterials): THREE.Object3D {

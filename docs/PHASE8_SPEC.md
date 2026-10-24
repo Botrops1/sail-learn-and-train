@@ -637,6 +637,9 @@ Laying the handle down by a tap in 3D (it stays in the panel), dropping it by dr
 ### 8.11 Decided in the M50 PR
 
 - Decided in planning: the Winch handle entry's Show it working selects the handle, so the first tap on it afterwards takes it (accepted).
+- Decided in the M50 PR (recommended; merging accepts it): the generic "sizes are small" check of `tests/boatData.test.ts` treats `modelDetail.winchHandle.rest.*.x/z` as coordinates (they may be 0 or negative; they only have to lie on the boat), not as sizes; no other older test changed.
+- Decided in the M50 PR (recommended; merging accepts it): the tap checks (8.8 items 1 to 4) look straight down at the handle from 3 m (`__sailDebug.setView`) with the debug overlay hidden, and item 1 uses `cam=top`, not `cam=side-port`: from the side the toerail's cleat sits in front of the handle and takes the tap, and the debug overlay and the info card cover the lower canvas. The handle itself stays tappable from the side; only the check's view changed.
+- Decided in the M50 PR (recommended; merging accepts it): the gearbox is four meshes of the one part `part_main_furling_gearbox` (plate and drum with the tap point, window, cap, socket), as the winches are; `scene.ts` checks the handle in the render loop (an identity check) and rebuilds it after a detail change.
 
 ---
 

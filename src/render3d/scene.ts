@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
+import { handlePose } from '../model/handlePose';
 import { runningRopes, winchWraps } from '../model/realistic';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
@@ -136,6 +137,17 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   boatModel.setThrusters(thrusters);
   let anchorStowed = initial.anchor.phase === 'stowed';
   boatModel.setAnchorStowed(anchorStowed);
+  // M50: the winch handle is drawn in Realistic ropes only; the check is on the handle's identity.
+  let drawnHandle: AppState['realistic']['handle'] | null = null;
+  let drawnHandleShown: boolean | null = null;
+  const syncHandle = (state: AppState, force = false) => {
+    const show = state.settings.ropesMode === 'realistic';
+    if (!force && state.realistic.handle === drawnHandle && show === drawnHandleShown) return;
+    drawnHandle = state.realistic.handle;
+    drawnHandleShown = show;
+    boatModel.setHandle(show ? handlePose(state.realistic) : null, show);
+  };
+  syncHandle(initial, true);
   holder.add(boatModel.root);
   const dangerZone = buildDangerZone();
   holder.add(dangerZone.object);
@@ -176,6 +188,21 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     stopSpotlight(true);
     const rect = renderer.domElement.getBoundingClientRect();
     const partId = picker.pick(x, y, rect.width, rect.height);
+    const state = store.getState();
+    // M50: the first tap on the handle selects it; the second walks to its station and takes it.
+    if (
+      partId === 'part_winch_handle' &&
+      state.selection === 'part_winch_handle' &&
+      state.settings.ropesMode === 'realistic' &&
+      state.realistic.handle.place !== 'carried'
+    ) {
+      store.dispatch({
+        type: 'realistic',
+        action: { type: 'station', station: state.realistic.handle.station },
+      });
+      store.dispatch({ type: 'realistic', action: { type: 'handle', to: 'carry' } });
+      return;
+    }
     store.dispatch({ type: 'select', partId });
   });
 
@@ -328,6 +355,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       boatModel.setFendersOut(state.harbour.fendersOut);
       boatModel.setThrusters(state.thrusters);
       boatModel.setAnchorStowed(anchorStowed);
+      syncHandle(state, true);
       holder.add(boatModel.root);
       highlight = createHighlighter(boatModel.root);
       highlight(highlightIds(state.selection));
@@ -541,6 +569,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     render(now) {
       const state = store.getState();
       rig.update(now);
+      syncHandle(state);
       camera.updateMatrixWorld();
       // Pixel size at 1 m: the projection's vertical scale over the canvas height (CSS px).
       const ropeView = {
