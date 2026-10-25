@@ -390,8 +390,8 @@ export function createPanel(
     // M53 (owner, PR 124): with Realistic ropes the Helm camera also walks you to the helm, so the
     // view and the controls agree; the other camera views leave the station alone.
     if (
-      state.settings.cameraPreset === 'helm' &&
-      previous.settings.cameraPreset !== 'helm' &&
+      state.camera.preset === 'helm' &&
+      previous.camera.preset !== 'helm' &&
       state.settings.ropesMode === 'realistic' &&
       state.realistic.station !== 'helm'
     ) {
