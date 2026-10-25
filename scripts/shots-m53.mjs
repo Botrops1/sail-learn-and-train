@@ -60,6 +60,8 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
         .join('|');
       check(`${v} stations: the bar`, stations === 'Port|Starboard|Mast|Bow', stations);
       check(`${v} stations: real-at-helm hidden`, !(await visible(page, 'real-at-helm')), 'port');
+      // The sheet may still be moving (a CSS transition): let it settle before the title tap.
+      await page.realWaitForTimeout(500);
       await showSection(page, 'helm');
       const link = await waitForLink(page, ['st=helm']);
       check(`${v} stations: the title tap walks`, link.includes('st=helm'), link);
