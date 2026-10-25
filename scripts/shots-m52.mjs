@@ -154,7 +154,8 @@ export async function liveM52Checks({ openPage, viewports, outDir, prefix, probl
             await shot(page, `debug-${name}-${i}`);
             throw new Error(`gear did not open the card at try ${i}: ${await search(page)}`);
           });
-        const x = canvas.x + canvas.width * (0.3 + 0.05 * (i % 8));
+        // Left of the card (it stands at the right, 380 px wide).
+        const x = canvas.x + 20 + 10 * (i % 8);
         const y = canvas.y + canvas.height * (0.35 + 0.07 * Math.floor(i / 8));
         await page.mouse.click(x, y);
         await page.waitForTimeout(200);
