@@ -196,7 +196,7 @@ export async function liveM12Checks({ openPage, viewports, outDir, prefix, probl
       'm12 helm lever',
       '?mode=realistic&st=helm&ws=0&cam=side-port',
     );
-    await showSection(page, 'ropes');
+    await showSection(page, 'helm');
     const helm = page.getByTestId('engine-helm');
     await helm.scrollIntoViewIfNeeded();
     await helm.getByTestId('engine-startstop').click();

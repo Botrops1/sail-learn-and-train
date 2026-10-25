@@ -117,6 +117,7 @@ export function revealRopeStrip(): void {
 export function createRopesTab(
   store: Store,
   openEntry: (id: string) => void = () => undefined,
+  showSection: (id: 'helm') => void = () => undefined,
 ): HTMLElement[] {
   const select = (entry: PanelEntry) => store.dispatch({ type: 'select', partId: entry.selectId });
 
@@ -255,7 +256,7 @@ export function createRopesTab(
 
   // Realistic mode (M4b): stations, clutches and winches worked by hand.
   const realistic = el('div', { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' }, [
-    ...createRealisticPanel(store, openEntry),
+    ...createRealisticPanel(store, openEntry, showSection),
     el('p', { class: 'hint explain' }, [t('ropes.fighting')]),
   ]);
 

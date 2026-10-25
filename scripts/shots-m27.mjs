@@ -30,7 +30,17 @@ const SECTION_ORDER = {
     'harbour',
     'settings',
   ],
-  realistic: ['mode', 'ropes', 'sails', 'conditions', 'learn', 'place', 'harbour', 'settings'],
+  realistic: [
+    'mode',
+    'ropes',
+    'helm',
+    'sails',
+    'conditions',
+    'learn',
+    'place',
+    'harbour',
+    'settings',
+  ],
   learn: [
     'mode',
     'learn',

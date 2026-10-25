@@ -161,7 +161,7 @@ export async function liveM41Checks({ openPage, viewports, outDir, prefix, probl
       `?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&mode=realistic&st=helm&cam=top&tx=4`,
       { testClock: true },
     );
-    await showSection(page, 'ropes');
+    await showSection(page, 'helm');
     const block = page.getByTestId('thruster-helm');
     await block.scrollIntoViewIfNeeded();
     check('helm: the thruster block is shown', await block.isVisible(), 'thruster-helm');

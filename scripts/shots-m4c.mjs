@@ -5,7 +5,7 @@
 // the Mast station. The foldable and desktop sizes repeat the mast crank with the mouse.
 import path from 'node:path';
 import { line, touchTools } from './shots-m4b.mjs';
-import { setCamera, setSheet } from './ui.mjs';
+import { setCamera, setSheet, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4C_SCENES = [
@@ -579,6 +579,7 @@ export async function liveM4cChecks({
       `hd ${await param(page, 'hd')}`,
     );
     await shot(page, 'live-phone-helm-slot');
+    await showSection(page, 'ropes');
     await page.locator('.station-button[data-station="starboard"]').tap();
     await settle(page);
     const away = await page

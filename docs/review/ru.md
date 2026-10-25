@@ -2718,6 +2718,9 @@
 | real.handle.slotAria.socket | Winch handle slot: empty, the handle is in the socket. Drag the handle's grip onto this slot to take it out. | Место для ручки лебёдки: пусто, ручка в гнезде. Перетащите рукоятку ручки на это место, чтобы вынуть её. |
 | real.handle.slotAria.away | Winch handle slot: empty, the handle is at another place. | Место для ручки лебёдки: пусто, ручка на другом месте. |
 | real.helm.slot | The helm has a slot for the winch handle too. | На штурвале тоже есть место для ручки лебёдки. |
+| real.helm.away | You are at the {station} station. | Вы на месте «{station}». |
+| real.helm.go | Go to the helm | Перейти к штурвалу |
+| real.atHelm | You are at the helm. Choose a station to work the ropes. | Вы у штурвала. Выберите место, чтобы работать с концами. |
 | boat.mode.label | Boat | Яхта |
 | boat.mode.held | Held still | Яхта стоит |
 | boat.mode.sailing | Sailing | На ходу |

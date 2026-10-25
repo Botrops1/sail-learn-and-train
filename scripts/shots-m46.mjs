@@ -100,7 +100,7 @@ export async function liveM46Checks({ openPage, viewports, outDir, prefix, probl
     const stations = await page.locator('.station-button').allInnerTexts();
     check(
       'bow station: the station bar',
-      stations.join('|') === 'Port|Starboard|Helm|Mast|Bow',
+      stations.join('|') === 'Port|Starboard|Mast|Bow',
       stations.join('|'),
     );
     const handle = await page.getByTestId('handle-bar').isVisible();
@@ -117,7 +117,7 @@ export async function liveM46Checks({ openPage, viewports, outDir, prefix, probl
       `${LET_GO}&mode=realistic&st=helm`,
       { testClock: true },
     );
-    await showSection(page, 'ropes');
+    await showSection(page, 'helm');
     await holdWindlass(page, 'down', 2000, '-helm');
     const counter = await text(page, 'chain-counter-helm');
     check('helm remote: the chain goes out', /^[3-5] m$/.test(counter), counter);
