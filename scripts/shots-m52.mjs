@@ -147,7 +147,13 @@ export async function liveM52Checks({ openPage, viewports, outDir, prefix, probl
       let closedByTap = true;
       for (let i = 0; i < 24 && !selected; i += 1) {
         await page.getByTestId('settings-button').click();
-        await page.getByTestId('settings-card').waitFor({ state: 'visible' });
+        await page
+          .getByTestId('settings-card')
+          .waitFor({ state: 'visible', timeout: 3000 })
+          .catch(async () => {
+            await shot(page, `debug-${name}-${i}`);
+            throw new Error(`gear did not open the card at try ${i}: ${await search(page)}`);
+          });
         const x = canvas.x + canvas.width * (0.3 + 0.05 * (i % 8));
         const y = canvas.y + canvas.height * (0.35 + 0.07 * Math.floor(i / 8));
         await page.mouse.click(x, y);
