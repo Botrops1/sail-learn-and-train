@@ -387,6 +387,16 @@ export function createPanel(
       applyMode(state);
       changed();
     }
+    // M53 (owner, PR 124): with Realistic ropes the Helm camera also walks you to the helm, so the
+    // view and the controls agree; the other camera views leave the station alone.
+    if (
+      state.settings.cameraPreset === 'helm' &&
+      previous.settings.cameraPreset !== 'helm' &&
+      state.settings.ropesMode === 'realistic' &&
+      state.realistic.station !== 'helm'
+    ) {
+      store.dispatch({ type: 'realistic', action: { type: 'station', station: 'helm' } });
+    }
     // An entry was opened (also while the Learn section is open: this scrolls it to the top).
     if (state.learn !== previous.learn && state.learn !== null && sections.get('learn')?.isOpen()) {
       scrollToId('learn');

@@ -3,7 +3,7 @@
 // test clock (shots.mjs passes `onTestClock`), on the phone and then on the desktop.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { showSection, waitForLink } from './ui.mjs';
+import { setCamera, showSection, waitForLink } from './ui.mjs';
 
 export const M53_SCENES = [
   { name: 'helm-section', query: '?mode=realistic&st=helm&cam=helm' },
@@ -82,6 +82,19 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
       await waitForLink(page, ['st=helm']);
       check(`${v} away: Go to the helm shows the controls`, await visible(page, 'engine-helm'), '');
       check(`${v} away: helm-away hidden`, !(await visible(page, 'helm-away')), 'helm-away');
+      await context.close();
+    }
+
+    // 3b. The Helm camera walks to the helm (owner, PR 124); another camera leaves the station.
+    {
+      const { context, page } = await open('camera', '?mode=realistic&st=port&cam=side-port');
+      await setCamera(page, 'top');
+      await page.waitForTimeout(300);
+      const kept = await page.evaluate(() => window.location.search);
+      check(`${v} camera: another view keeps the station`, !kept.includes('st=helm'), kept);
+      await setCamera(page, 'helm');
+      const link = await waitForLink(page, ['st=helm', 'cam=helm']);
+      check(`${v} camera: the Helm view walks to the helm`, link.includes('st=helm'), link);
       await context.close();
     }
 
