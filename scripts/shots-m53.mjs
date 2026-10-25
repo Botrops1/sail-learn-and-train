@@ -26,7 +26,7 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
   for (const viewport of [viewports[0], viewports[2]]) {
     const v = viewport.name;
     const open = (what, query) =>
-      openPage(viewport, `m53 ${v} ${what}`, query, { testClock: true });
+      openPage(viewport, `m53 ${v} ${what}`, `${query}&detail=low`, { testClock: true });
 
     // 1. At the helm: the Helm section is open with the wheel and what the helmsman works.
     {
@@ -34,7 +34,8 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
       check(`${v} at helm: Helm is open`, await isOpen(page, 'helm'), 'section-helm');
       const ids = ['helm-station', 'engine-helm', 'thruster-helm', 'windlass-helm'];
       for (const id of ids) check(`${v} at helm: ${id} shown`, await visible(page, id), id);
-      check(`${v} at helm: the wheel`, await visible(page, 'ctl_rudder'), 'ctl_rudder');
+      const wheel = page.locator('[data-testid="helm-controls"] [data-part-id="part_rudder"]');
+      check(`${v} at helm: the wheel`, await wheel.isVisible(), 'wheel control');
       check(`${v} at helm: helm-away hidden`, !(await visible(page, 'helm-away')), 'helm-away');
       await shot(page, `live-${v}-helm-section`);
       // Ropes: four stations, none pressed, and the line that says where you are.
@@ -90,17 +91,18 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
         'wheel tap',
         '?mode=realistic&debug=1&held=1&sea=flat&cam=helm',
       );
-      await page.waitForTimeout(600);
-      const centre = await page.evaluate(
-        () => window.__sailDebug.hitCentres().find((c) => c.partId === 'helm_starboard') ?? null,
+      await page.addStyleTag({ content: '.debug { display: none !important; }' });
+      // Looking forward from behind the starboard wheel: its hub is clear of the winches.
+      await page.evaluate(() =>
+        window.__sailDebug.setView([-9.5, 2.0, 0.88], [-7.2, 1.85, 0.88], 40),
       );
-      check(`${v} wheel tap: the wheel can be hit`, Boolean(centre), 'hitCentres');
-      if (centre) {
-        const box = await page.locator('canvas.scene-canvas').boundingBox();
-        await page.mouse.click(box.x + centre.x, box.y + centre.y);
-        await page.waitForTimeout(400);
-        check(`${v} wheel tap: Helm is open`, await isOpen(page, 'helm'), 'section-helm');
-      }
+      await page.waitForTimeout(1500);
+      const hub = await page.evaluate(() => window.__sailDebug.project(-7.2, 1.85, 0.88));
+      const box = await page.locator('canvas.scene-canvas').boundingBox();
+      await page.mouse.click(box.x + hub.x, box.y + hub.y);
+      await waitForLink(page, ['sel=helm_starboard']);
+      await page.waitForTimeout(400);
+      check(`${v} wheel tap: Helm is open`, await isOpen(page, 'helm'), 'section-helm');
       await context.close();
     }
 
