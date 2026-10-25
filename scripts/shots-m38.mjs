@@ -342,7 +342,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
         (await page.getByTestId('section-settings').isHidden()),
       'sections',
     );
-    const chipText = (await page.getByTestId('mode-chip').innerText()).trim();
+    const chipText = (await page.getByTestId('mode-chip').innerText()).replace(/\s+/g, ' ').trim();
     check(
       'the mode chip reads "Easy" there',
       chipText === 'Easy ▾' || chipText === 'Easy',

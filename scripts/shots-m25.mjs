@@ -184,7 +184,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     const viewBox = await page.locator('canvas.scene-canvas').boundingBox();
     const hit = await page.evaluate(
       ([x, y]) => document.elementFromPoint(x, y)?.className ?? '',
-      [viewBox.x + viewBox.width / 2, viewBox.y + viewBox.height / 3],
+      [viewBox.x + 20, viewBox.y + viewBox.height / 3],
     );
     check('the 3D view is not covered or inert', String(hit).includes('scene-canvas'), String(hit));
     await shot(page, 'live-phone-m25-settings');
@@ -196,7 +196,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
       String(await focusedTestId(page)),
     );
     await openSettings(page);
-    await page.mouse.click(viewBox.x + viewBox.width / 2, viewBox.y + viewBox.height / 3);
+    await page.mouse.click(viewBox.x + 20, viewBox.y + viewBox.height / 3);
     await page.getByTestId('settings-card').waitFor({ state: 'hidden' });
     check('a tap on the 3D view closes the card', true, 'closed');
     await context.close();
