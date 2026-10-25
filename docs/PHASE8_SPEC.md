@@ -887,7 +887,10 @@ Moving the chips elsewhere, a card for the camera (it keeps its menu), the phone
 
 ### 10.11 Decided in the M52 PR
 
-(empty)
+- Decided in the M52 PR (recommended; merging accepts it): a card closes on a layout change only when the layout kind (`stacked`, `side`, `wide`) changes, not on every window resize, so a resize of the browser window or the on-screen keyboard does not close it; the mode chip's label is refreshed on the same event.
+- Decided in the M52 PR (recommended; merging accepts it): on open, a card focuses its checked `[aria-checked="true"]` element if the body has one (the mode picker's checked choice), else its ×; the settings body has no such element, so the focus goes to `settings-card-close` as 10.3 says.
+- Decided in the M52 PR (recommended; merging accepts it): the chip row is built in `app.ts` right after the sheet (before the debug overlay, the 3D view and the map), because the panel needs the two cards at creation; the row keeps its own z-index, so nothing in the view changes.
+- Decided in the M52 PR (recommended; merging accepts it): older checks changed: `shots-m25` (card in place of dialog; the inert checks became "the 3D view is not covered or inert" and "a tap on the 3D view closes the card"; the place check reads the card inside the view above the chip row), `shots-m29` (audit labels), `shots-m36` (the mode chip reads "Mode: Easy"), `shots-m38` (columns without Mode and Settings, the chips visible, the gear as the bottom-right corner chip, the mode card and the settings card in place of the sections, the narrow block, the old-link check), `scripts/shots.mjs` (comment, and the scene field `card`), `scripts/ui.mjs` (`openSettings`, `closeSettings`, `setMode`). `shots-m27`, `shots-m39` needed no change.
 
 ---
 

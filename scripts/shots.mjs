@@ -69,8 +69,10 @@ import { liveM48Checks, M48_SCENES } from './shots-m48.mjs';
 import { liveM49Checks, M49_SCENES } from './shots-m49.mjs';
 import { liveM50Checks, M50_SCENES } from './shots-m50.mjs';
 import { liveM51Checks, M51_SCENES } from './shots-m51.mjs';
+import { liveM52Checks, M52_SCENES } from './shots-m52.mjs';
 import {
   closeSettings,
+  isStacked,
   openSettings,
   setCamera,
   setMode,
@@ -238,6 +240,7 @@ const SCENES = [
   ...M49_SCENES.map((scene) => ({ ...scene, name: `m49-${scene.name}` })),
   ...M50_SCENES.map((scene) => ({ ...scene, name: `m50-${scene.name}` })),
   ...M51_SCENES.map((scene) => ({ ...scene, name: `m51-${scene.name}` })),
+  ...M52_SCENES.map((scene) => ({ ...scene, name: `m52-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -725,7 +728,7 @@ async function liveGeneralChecks() {
   for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
   await page.mouse.up();
   await expectUrl('drag', `?v=1&${c}&cam=free&step=5&detail=low&lb=0&mm=0&held=1&sea=flat&clock=0`);
-  // The view behind the settings dialog is inert, so the camera is set before it opens.
+  // The camera is set before the settings open (the card covers part of the view).
   await setCamera(page, 'side-starboard');
   await openSettings(page);
   await page.getByText('1 %', { exact: true }).click();
@@ -782,6 +785,10 @@ try {
       if (scene.section) await showSection(page, scene.section);
       // M51: a phone tab (a no-op at the wider sizes).
       if (scene.tab) await showTab(page, scene.tab);
+      // M52: the mode card (a no-op on the phone, which has the Mode tab).
+      if (scene.card === 'mode' && !(await isStacked(page))) {
+        await page.getByTestId('mode-chip').click();
+      }
       if (scene.settings) await openSettings(page);
       if (scene.sheet) await setSheet(page, scene.sheet);
       if (scene.open) {
@@ -1030,6 +1037,7 @@ try {
     m49: () => liveM49Checks(onTestClock),
     m50: () => liveM50Checks(onTestClock),
     m51: () => liveM51Checks(onTestClock),
+    m52: () => liveM52Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

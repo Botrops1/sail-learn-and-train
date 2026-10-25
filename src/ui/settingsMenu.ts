@@ -4,7 +4,7 @@ import { serializeUrlState } from '../app/urlState';
 import { shareLink } from '../app/urlSync';
 import { LANGUAGES, languageName } from '../model/languages';
 import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
-import { closeOpenMenus } from './chipMenu';
+import { createChipCard, type ChipCard } from './chipCard';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
@@ -50,7 +50,7 @@ export function gearIcon(): SVGSVGElement {
   return icon;
 }
 
-/** Set before the page reloads for a new language, so the Settings section is open again afterwards (M38). */
+/** Set before the page reloads for a new language, so the Settings tab or card is open again afterwards (M38, M52). */
 const OPEN_AFTER_RELOAD_KEY = 'sail.openSectionAfterReload';
 
 /** The section to open at the start because the page reloaded from it (once), or null. */
@@ -74,9 +74,9 @@ function openAfterReload(id: string): void {
 
 /**
  * Everything the settings hold (PHASE5_SPEC 6.4): the controls (everything the View tab held
- * except the camera), then About (disclaimer, version, source). Built once. On the wide layout it
- * is the body of the Settings section (M38, issue #93, `panel.ts`); elsewhere it is the body of
- * the dialog the gear opens (`createSettingsMenu`).
+ * except the camera), then About (disclaimer, version, source). Built once. On a phone it is the
+ * body of the Settings section (the Settings tab); elsewhere the body of the settings card the
+ * gear opens (`createSettingsMenu`). `panel.ts` moves it.
  */
 export function createSettingsContent(store: Store): HTMLElement {
   return el('div', { class: 'settings-content', 'data-testid': 'settings-content' }, [
@@ -93,16 +93,16 @@ export function createSettingsContent(store: Store): HTMLElement {
 }
 
 /**
- * The gear in the chip row and the settings dialog it opens (PHASE5_SPEC 6.4), everywhere except
- * the wide layout, where Settings is a section and the gear is gone (M38). While the dialog is
- * open, the view and the panel are inert, so it closes with the × or Escape.
+ * The gear in the chip row and the settings card it opens (PHASE5_SPEC 6.4; M52, PHASE8_SPEC
+ * 10.3) on the side and wide layouts; on a phone the gear is hidden (the Settings tab). The card
+ * is not modal. `reopen` opens it at the start (the page reloaded for a new language). Returns the
+ * card; `panel.ts` puts the settings into its body.
  */
 export function createSettingsMenu(
   row: HTMLElement,
-  root: HTMLElement,
-  content: HTMLElement,
   layout: LayoutShell,
-): void {
+  reopen: boolean,
+): ChipCard {
   const gear = el(
     'button',
     {
@@ -110,81 +110,22 @@ export function createSettingsMenu(
       class: 'view-chip settings-button',
       'data-testid': 'settings-button',
       'aria-label': t('settings.button'),
-      'aria-haspopup': 'dialog',
-      'aria-expanded': 'false',
     },
     [],
   );
   gear.append(gearIcon());
   row.append(gear);
+  const card = createChipCard(gear, t('settings.title'), 'settings-card', 'settings-title');
 
-  const close = el(
-    'button',
-    {
-      type: 'button',
-      class: 'settings-close',
-      'data-testid': 'settings-close',
-      'aria-label': t('settings.close'),
-    },
-    ['×'],
-  );
-  const dialog = el(
-    'div',
-    {
-      class: 'settings-dialog',
-      role: 'dialog',
-      'aria-modal': 'true',
-      'aria-labelledby': 'settings-title',
-      'data-testid': 'settings-dialog',
-    },
-    [
-      el('div', { class: 'settings-head' }, [
-        el('h2', { id: 'settings-title' }, [t('settings.title')]),
-        close,
-      ]),
-    ],
-  );
-  dialog.hidden = true;
-  root.append(dialog);
-
-  // The view and the panel stay behind the dialog: not tappable, not tabbable, not read out.
-  const behind = () => [...root.querySelectorAll(':scope > .view, :scope > .panel')];
-  const onKey = (event: KeyboardEvent) => {
-    if (event.key !== 'Escape') return;
-    event.stopPropagation();
-    setOpen(false);
-  };
-
-  function setOpen(open: boolean): void {
-    if (open === !dialog.hidden) return;
-    dialog.hidden = !open;
-    gear.setAttribute('aria-expanded', String(open));
-    for (const region of behind()) region.toggleAttribute('inert', open);
-    if (open) {
-      closeOpenMenus();
-      document.addEventListener('keydown', onKey, true);
-      close.focus();
-    } else {
-      document.removeEventListener('keydown', onKey, true);
-      gear.focus();
-    }
-  }
-
-  gear.addEventListener('click', () => setOpen(true));
-  close.addEventListener('click', () => setOpen(false));
-
-  // The content belongs to the dialog only on the side layout. On the phone (M51: the Settings
-  // tab) and the wide layout the Settings section (panel.ts) holds it and the dialog stays closed.
-  const place = () => {
-    const { mode, wide } = layout.viewport();
-    if (wide || mode === 'stacked') {
-      setOpen(false);
-      return;
-    }
-    if (content.parentElement !== dialog) dialog.append(content);
-  };
-  layout.onChange(place);
-  place();
+  // A layout change closes the card.
+  let kind = `${layout.viewport().mode}${layout.viewport().wide}`;
+  layout.onChange((viewport) => {
+    const now = `${viewport.mode}${viewport.wide}`;
+    if (now !== kind) card.close(false);
+    kind = now;
+  });
+  if (reopen && layout.viewport().mode !== 'stacked') card.open();
+  return card;
 }
 
 function buildSettingsBody(store: Store): HTMLElement[] {
@@ -211,8 +152,8 @@ function buildSettingsBody(store: Store): HTMLElement[] {
       const state = store.getState();
       if (code === state.settings.language) return;
       const link = serializeUrlState({ ...state, settings: { ...state.settings, language: code } });
-      // In the Settings section the page comes back with it open (M38).
-      if (input.closest('[data-section="settings"]')) openAfterReload('settings');
+      // In the Settings section or the card the page comes back with it open (M38, M52).
+      if (input.closest('[data-section="settings"], .chip-card')) openAfterReload('settings');
       window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
     });
     languageOptions.append(

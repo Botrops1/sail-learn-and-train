@@ -32,8 +32,8 @@ export interface ModeLayout {
 
 /**
  * M51 (issue #100 item 7): the phone tab each section is shown under. Mode, Conditions, Learn and
- * Settings are alone on their tab; every other section is under Controls. (M38's `mode` first and
- * `settings` last stay in every order; the wide layout shows them until M52.)
+ * Settings are alone on their tab; every other section is under Controls. (`mode` first and
+ * `settings` last stay in every order; they are shown on a phone only, M52.)
  */
 export const TAB_OF: Readonly<Record<SectionId, PanelTab>> = {
   mode: 'mode',
@@ -122,8 +122,8 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
 /**
  * True if the section is shown at all in this state. The autopilot and the engine have their own
  * sections only in Easy (in Realistic they are at the Helm station), the anchor too (M46: the
- * windlass is at the Bow station); the Mode and Settings sections (M51: the phone's Mode and
- * Settings tabs, and on the wide layout until M52) everywhere except the side layout.
+ * windlass is at the Bow station); the Mode and Settings sections only on a phone (M51: its Mode
+ * and Settings tabs; M52: elsewhere the mode chip and the gear open cards).
  */
 export function sectionAvailable(
   id: SectionId,
@@ -137,7 +137,7 @@ export function sectionAvailable(
       return state.settings.ropesMode === 'easy';
     case 'mode':
     case 'settings':
-      return layout !== 'side';
+      return layout === 'stacked';
     default:
       return true;
   }

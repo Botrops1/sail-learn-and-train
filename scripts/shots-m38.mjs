@@ -48,8 +48,8 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     return (await node.count()) > 0 && (await node.isVisible());
   };
 
-  // Computer windows (issues #91, #92, #93): Mode first, Settings last, no mode chip and no gear,
-  // the View button bottom-right and the mini-map bottom-left, nothing overlapping.
+  // Computer windows (issues #91, #92, #93; M52): no Mode and no Settings section, the mode chip,
+  // the View button and the gear bottom-right and the mini-map bottom-left, nothing overlapping.
   for (const viewport of [W1280, desktop, W1920]) {
     const name = viewport.name;
     const { context, page } = await openPage(viewport, `m38 wide ${name}`, `${BOAT}&sel=part_hull`);
@@ -58,14 +58,14 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const first = await column(page, '.panel-body');
     const second = await column(page, '[data-testid="second-column"]');
     check(
-      `${name}: Easy, column 1 starts with Mode and ends with Settings`,
-      first.join() === 'mode,ropes,sails,autopilot,engine,place,anchor,harbour,settings' &&
+      `${name}: Easy, column 1 has no Mode and no Settings section`,
+      first.join() === 'ropes,sails,autopilot,engine,place,anchor,harbour' &&
         second.join() === 'conditions,learn',
       JSON.stringify({ first, second }),
     );
     check(
-      `${name}: the mode chip and the gear are gone`,
-      !(await visible(page, 'mode-chip')) && !(await visible(page, 'settings-button')),
+      `${name}: the mode chip and the gear are in the chip row`,
+      (await visible(page, 'mode-chip')) && (await visible(page, 'settings-button')),
       'chips',
     );
     check(
@@ -74,14 +74,15 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
         (await page.getByTestId('rope-legend').count()) === 0,
       'legend',
     );
-    const title = await page.getByTestId('section-toggle-mode').innerText();
-    check(`${name}: the Mode section names the mode`, title.includes('Mode: Easy'), title);
+    const title = await page.getByTestId('mode-chip').innerText();
+    check(`${name}: the mode chip names the mode`, title.includes('Mode: Easy'), title);
 
     // The corners.
     const view = await box(page, 'view-top'); // only to know the view's left edge
     const viewBox = await page.locator('.view').first().boundingBox();
     const mini = await box(page, 'mini-map');
     const camera = await box(page, 'camera-chip');
+    const gear = await box(page, 'settings-button');
     const card = await box(page, 'info-card');
     const attention = await box(page, 'alert-centre');
     check(
@@ -93,11 +94,13 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
       JSON.stringify({ mini, viewBox }),
     );
     check(
-      `${name}: the View button is in the bottom-right corner`,
+      `${name}: the gear is in the bottom-right corner, the View button left of it`,
       !!camera &&
-        viewBox.x + viewBox.width - (camera.x + camera.w) <= 12 &&
-        viewBox.y + viewBox.height - (camera.y + camera.h) <= 12,
-      JSON.stringify({ camera, viewBox }),
+        !!gear &&
+        camera.x + camera.w <= gear.x &&
+        viewBox.x + viewBox.width - (gear.x + gear.w) <= 12 &&
+        viewBox.y + viewBox.height - (gear.y + gear.h) <= 12,
+      JSON.stringify({ camera, gear, viewBox }),
     );
     check(
       `${name}: nothing overlaps the corners`,
@@ -126,13 +129,15 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     const close = await box(page, 'map-close');
     const cameraOnMap = await box(page, 'camera-chip');
+    const gearOnMap = await box(page, 'settings-button');
     check(
-      `${name}: on the map the Close chip sits beside the View button, bottom-right`,
+      `${name}: on the map the Close chip sits left of the View button, the gear in the corner`,
       !!close &&
         !!cameraOnMap &&
         !overlap(close, cameraOnMap) &&
         close.x < cameraOnMap.x &&
-        viewBox.x + viewBox.width - (cameraOnMap.x + cameraOnMap.w) <= 12,
+        !!gearOnMap &&
+        viewBox.x + viewBox.width - (gearOnMap.x + gearOnMap.w) <= 12,
       JSON.stringify({ close, cameraOnMap }),
     );
     await page.getByTestId('map-close').click();
@@ -142,15 +147,16 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // The Mode section works as the chip did (issue #91), at 1,440 px.
+  // The mode card works as the chip's list did (issue #91; M52), at 1,440 px.
   {
-    const { context, page } = await openPage(desktop, 'm38 mode section', `${BOAT}&ms=40&vg=70`);
-    await showSection(page, 'mode');
+    const { context, page } = await openPage(desktop, 'm38 mode card', `${BOAT}&ms=40&vg=70`);
+    await page.getByTestId('mode-chip').click();
+    await page.getByTestId('mode-card').waitFor({ state: 'visible' });
     const choices = await page.locator('[data-testid^="mode-choice-"]').count();
     const names = await page.locator('.mode-choice .mode-option-name').allInnerTexts();
     const hints = await page.locator('.mode-choice .mode-option-hint').allInnerTexts();
     check(
-      'the Mode section lists Learn, Easy, Realistic and Harbour, each with a description',
+      'the mode card lists Learn, Easy, Realistic and Harbour, each with a description',
       choices === 4 &&
         names.join() === 'Learn,Easy,Realistic,Harbour' &&
         hints.every((hint) => hint.length > 30),
@@ -166,12 +172,12 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(300);
     let link = await search(page);
     check(
-      'Realistic: the link says so, the ropes keep their values, the Mode section stays open',
+      'Realistic: the link says so, the ropes keep their values, the card closes and the chip names the mode',
       link.includes('mode=realistic') &&
         link.includes('ms=40') &&
         link.includes('vg=70') &&
-        (await page.getByTestId('section-mode').getAttribute('data-open')) === 'true' &&
-        (await page.getByTestId('section-toggle-mode').innerText()).includes('Mode: Realistic') &&
+        (await page.getByTestId('mode-card').isHidden()) &&
+        (await page.getByTestId('mode-chip').innerText()).includes('Mode: Realistic') &&
         (await page.getByTestId('mode-choice-realistic').getAttribute('aria-checked')) === 'true',
       link,
     );
@@ -180,8 +186,10 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     link = await search(page);
     const learnColumn = await column(page, '.panel-body');
     check(
-      'Learn: the link has m=learn, Mode is still first, Settings last',
-      link.includes('m=learn') && learnColumn[0] === 'mode' && learnColumn.at(-1) === 'settings',
+      'Learn: the link has m=learn, column 1 has no Mode and no Settings',
+      link.includes('m=learn') &&
+        !learnColumn.includes('mode') &&
+        !learnColumn.includes('settings'),
       `${link} ${learnColumn.join()}`,
     );
     await setMode(page, 'easy');
@@ -193,19 +201,21 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
       link,
     );
     // Keyboard: arrow keys move between the choices.
+    await setMode(page, 'easy');
+    await page.getByTestId('mode-chip').click();
     await page.getByTestId('mode-choice-easy').focus();
     await page.keyboard.press('ArrowDown');
     const focused = await page.evaluate(() => document.activeElement?.getAttribute('data-mode'));
     check('the arrow keys move between the modes', focused === 'realistic', String(focused));
-    problems.push(...(await auditPage(page, 'm38 mode section open')));
+    problems.push(...(await auditPage(page, 'm38 mode card open')));
     await context.close();
   }
 
-  // The Settings section (issue #93), at 1,440 px.
+  // The settings card (issue #93; M52), at 1,440 px.
   {
     const { context, page } = await openPage(
       desktop,
-      'm38 settings section',
+      'm38 settings card',
       `${BOAT}&held=1&fd=1&lb=1`,
     );
     await openSettings(page);
@@ -225,12 +235,12 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     ];
     const missing = [];
     for (const selector of wanted) {
-      if ((await page.getByTestId('section-settings').locator(selector).count()) === 0) {
+      if ((await page.getByTestId('settings-card').locator(selector).count()) === 0) {
         missing.push(selector);
       }
     }
     check(
-      'the Settings section has every setting and About',
+      'the settings card has every setting and About',
       missing.length === 0,
       missing.length ? `missing ${missing.join(', ')}` : 'all there',
     );
@@ -240,14 +250,14 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
       'legend-toggle',
     );
     check(
-      'no dialog over the page, nothing inert',
-      !(await visible(page, 'settings-dialog')) &&
+      'no Settings section, nothing inert',
+      (await page.getByTestId('section-settings').isHidden()) &&
         (await page.evaluate(() => document.querySelectorAll('[inert]').length)) === 0,
-      'dialog',
+      'section',
     );
     await shot(page, 'live-wide-settings-open');
-    problems.push(...(await auditPage(page, 'm38 settings section open')));
-    // A setting works as in the dialog.
+    problems.push(...(await auditPage(page, 'm38 settings card open')));
+    // A setting works in the card.
     await page.locator('label[for="labels-toggle"]').click();
     await page.waitForTimeout(300);
     let link = await search(page);
@@ -284,17 +294,17 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
       !link.includes('lb=0') && itemsLeft === 0 && !(await visible(page, 'alert-badge')),
       `${link} items ${itemsLeft}`,
     );
-    // Folding the section.
+    // Closing the card.
     await closeSettings(page);
     check(
-      'the Settings section folds',
+      'the settings card closes',
       !(await visible(page, 'settings-content')),
       'settings-content',
     );
     await context.close();
   }
 
-  // A new language reloads the page and the Settings section is open afterwards.
+  // A new language reloads the page and the settings card is open afterwards.
   {
     const { context, page } = await openPage(desktop, 'm38 settings language', BOAT);
     await openSettings(page);
@@ -303,28 +313,26 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
       page.locator('label:has([data-testid="language-ru"])').click(),
     ]);
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached' });
-    const openAfter = await page.getByTestId('section-settings').getAttribute('data-open');
-    const heading = await page.getByTestId('section-toggle-settings').innerText();
+    const openAfter = await page.getByTestId('settings-card').isVisible();
+    const heading = await page.locator('#settings-title').innerText();
     check(
-      'Russian: the page reloaded and the Settings section is open, in Russian',
-      openAfter === 'true' &&
-        heading.includes('Настройки') &&
-        (await search(page)).includes('lang=ru'),
+      'Russian: the page reloaded and the settings card is open, in Russian',
+      openAfter && heading.includes('Настройки') && (await search(page)).includes('lang=ru'),
       `${openAfter} ${heading}`,
     );
-    const modeTitle = await page.getByTestId('section-toggle-mode').innerText();
-    check('Russian: the Mode section names the mode', modeTitle.includes('Режим'), modeTitle);
+    const modeTitle = await page.getByTestId('mode-chip').innerText();
+    check('Russian: the mode chip names the mode', modeTitle.includes('Режим'), modeTitle);
     problems.push(...(await auditPage(page, 'm38 settings Russian')));
     await shot(page, 'live-wide-settings-ru');
     await context.close();
   }
 
-  // Not wide (a foldable, 820 px): the chip, the gear and the dialog work as before M38; going
-  // wide and back moves the settings between the dialog and the section.
+  // Not wide (a foldable, 820 px; M52): "Easy ▾" bottom-left and the gear bottom-right open the same
+  // cards; going wide closes the card.
   {
     const { context, page } = await openPage(foldable, 'm38 narrow', BOAT);
     check(
-      'a window below 1,280 px keeps the mode chip and the gear',
+      'a window below 1,280 px has the mode chip and the gear',
       (await visible(page, 'mode-chip')) && (await visible(page, 'settings-button')),
       'chips',
     );
@@ -334,37 +342,38 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
         (await page.getByTestId('section-settings').isHidden()),
       'sections',
     );
+    const chipText = (await page.getByTestId('mode-chip').innerText()).replace(/\s+/g, ' ').trim();
+    check(
+      'the mode chip reads "Easy" there',
+      chipText === 'Easy ▾' || chipText === 'Easy',
+      chipText,
+    );
     await openSettings(page);
     check(
-      'the gear opens the dialog with the settings in it',
-      (await visible(page, 'settings-dialog')) &&
-        (await page.getByTestId('settings-dialog').locator('#labels-toggle').count()) === 1,
-      'dialog',
+      'the gear opens the card with the settings in it',
+      (await visible(page, 'settings-card')) &&
+        (await page.getByTestId('settings-card').locator('#labels-toggle').count()) === 1,
+      'card',
     );
     await closeSettings(page);
     await setMode(page, 'realistic');
     await page.waitForTimeout(300);
     check('the chip changes the mode', (await search(page)).includes('mode=realistic'), 'mode');
-    // Wide: the content moves into the section; the dialog is closed.
+    // Wide: the open card closes.
     await openSettings(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.waitForFunction(() => document.documentElement.dataset.wide === 'true');
     await page.waitForTimeout(300);
-    check(
-      'turning wide closes the dialog and the section holds the settings',
-      !(await visible(page, 'settings-dialog')) &&
-        (await page.getByTestId('section-settings').locator('#labels-toggle').count()) === 1,
-      'wide',
-    );
+    check('turning wide closes the card', !(await visible(page, 'settings-card')), 'wide');
     await openSettings(page);
-    check('the section opens', await visible(page, 'settings-content'), 'section');
+    check('the gear opens the card there too', await visible(page, 'settings-content'), 'card');
     await page.setViewportSize({ width: 820, height: 1000 });
     await page.waitForFunction(() => document.documentElement.dataset.wide !== 'true');
     await page.waitForTimeout(300);
     await openSettings(page);
     check(
-      'turning narrow again: the gear opens the dialog with the settings',
-      (await page.getByTestId('settings-dialog').locator('#labels-toggle').count()) === 1,
+      'turning narrow again: the gear opens the card with the settings',
+      (await page.getByTestId('settings-card').locator('#labels-toggle').count()) === 1,
       'narrow',
     );
     await closeSettings(page);
@@ -424,7 +433,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const ids = await column(page, '.panel-body');
     check(
       'an old link with lg=0 opens normally and the link no longer carries lg',
-      ids[0] === 'mode' && !(await search(page)).includes('lg='),
+      !ids.includes('mode') && !(await search(page)).includes('lg='),
       `${ids.join()} ${await search(page)}`,
     );
     await context.close();
