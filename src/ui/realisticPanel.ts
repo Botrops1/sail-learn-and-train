@@ -184,9 +184,66 @@ function alertsFor(state: AppState): Alert[] {
   return alerts;
 }
 
+/** The Helm section's block (M53): where you stand, and at the helm the wheel and what the helmsman works. */
+export function createHelmStation(store: Store): HTMLElement {
+  const dispatch = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
+  const wheel = createControl(store, controlView('ctl_rudder'));
+  // The helm has no socket, but the handle can be laid down there: it has a slot like the rest.
+  const helmSlot = createSlotView(() => {
+    const to = tapSlot(slotMode(store.getState().realistic.handle, 'helm'));
+    if (to) dispatch({ type: 'handle', to });
+  });
+  // One person, one place: the helm's controls work only when you stand there.
+  const away = el('p', { class: 'hint', 'data-testid': 'helm-away' });
+  const go = el('button', { type: 'button', class: 'action-button', 'data-testid': 'helm-go' }, [
+    t('real.helm.go'),
+  ]);
+  go.addEventListener('click', () => dispatch({ type: 'station', station: 'helm' }));
+  const controls = el('div', { class: 'helm-controls', 'data-testid': 'helm-controls' }, [
+    el('p', { class: 'hint explain' }, [t('real.helm.hint')]),
+    helmSlot.element,
+    el('p', { class: 'hint explain' }, [t('real.helm.slot')]),
+    wheel.element,
+    createAutopilotPanel(store),
+    createEngineLever(store),
+    el('div', { class: 'thruster-helm', 'data-testid': 'thruster-helm' }, [
+      createThrusterPair(store, 'helm'),
+    ]),
+    // The windlass remote (M46): the helmsman lets the chain out without going forward.
+    el(
+      'div',
+      { class: 'helm-windlass', 'data-testid': 'windlass-helm' },
+      createAnchorPanel(store, '-helm', true),
+    ),
+  ]);
+  const helm = el('div', { class: 'helm-station', 'data-testid': 'helm-station' }, [
+    away,
+    go,
+    controls,
+  ]);
+  const refresh = (state: AppState) => {
+    const real = state.realistic;
+    const here = real.station === 'helm';
+    away.hidden = here;
+    go.hidden = here;
+    controls.hidden = !here;
+    if (here) wheel.refresh(state);
+    else {
+      const where = t(`real.station.${real.station}` as StringKey);
+      setText(away, t('real.helm.away', { station: where }));
+    }
+    helmSlot.update(slotMode(real.handle, 'helm'));
+  };
+  store.subscribe(refresh);
+  refresh(store.getState());
+  return helm;
+}
+
+/** `showSection` shows another section of the panel (M53: the Helm section for the wheel). */
 export function createRealisticPanel(
   store: Store,
   openEntry: (id: string) => void = () => undefined,
+  showSection: (id: 'helm') => void = () => undefined,
 ): HTMLElement[] {
   const dispatch = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
   let selected: string | null = null;
@@ -198,7 +255,8 @@ export function createRealisticPanel(
     'aria-label': t('real.stations.label'),
     'data-testid': 'station-bar',
   });
-  const stationButtons = STATION_IDS.map((station) => {
+  // M53: the helm has its own section; the bar has the four places where ropes and the windlass are.
+  const stationButtons = STATION_IDS.filter((station) => station !== 'helm').map((station) => {
     const badge = el('span', { class: 'station-badge', hidden: '', 'aria-hidden': 'true' }, ['!']);
     const button = el(
       'button',
@@ -210,6 +268,9 @@ export function createRealisticPanel(
     return { station, button, badge };
   });
 
+  const atHelm = el('p', { class: 'hint', hidden: '', 'data-testid': 'real-at-helm' }, [
+    t('real.atHelm'),
+  ]);
   const alerts = el('div', {
     class: 'station-alerts',
     'aria-live': 'polite',
@@ -230,29 +291,6 @@ export function createRealisticPanel(
     drawings.set(station, createStationDrawing(store, station, { onSelect: select }));
   }
   const mast = createMastDrawing(store);
-  const wheel = createControl(store, controlView('ctl_rudder'));
-  // The helm has no socket, but the handle can be laid down there: it has a slot like the rest.
-  const helmSlot = createSlotView(() => {
-    const to = tapSlot(slotMode(store.getState().realistic.handle, 'helm'));
-    if (to) dispatch({ type: 'handle', to });
-  });
-  const helm = el('div', { class: 'helm-station', 'data-testid': 'helm-station' }, [
-    el('p', { class: 'hint explain' }, [t('real.helm.hint')]),
-    helmSlot.element,
-    el('p', { class: 'hint explain' }, [t('real.helm.slot')]),
-    wheel.element,
-    createAutopilotPanel(store),
-    createEngineLever(store),
-    el('div', { class: 'thruster-helm', 'data-testid': 'thruster-helm' }, [
-      createThrusterPair(store, 'helm'),
-    ]),
-    // The windlass remote (M46): the helmsman lets the chain out without going forward.
-    el(
-      'div',
-      { class: 'helm-windlass', 'data-testid': 'windlass-helm' },
-      createAnchorPanel(store, '-helm', true),
-    ),
-  ]);
   // The Bow station (M46): the windlass and, in the bay, the bow line to a buoy. It has no slot for the winch handle.
   const bow = el('div', { class: 'bow-station', 'data-testid': 'bow-station' }, [
     el('p', { class: 'hint explain' }, [t('real.bow.hint')]),
@@ -507,6 +545,7 @@ export function createRealisticPanel(
     const station = goThere.dataset.station;
     if (station === 'port' || station === 'starboard' || station === 'helm') {
       dispatch({ type: 'station', station });
+      if (station === 'helm') showSection('helm');
     }
   });
 
@@ -562,10 +601,8 @@ export function createRealisticPanel(
       drawing.element.hidden = id !== station;
       if (id === station) drawing.refresh(state, selected);
     }
-    helm.hidden = station !== 'helm';
+    atHelm.hidden = station !== 'helm';
     bow.hidden = station !== 'bow';
-    if (station === 'helm') wheel.refresh(state);
-    helmSlot.update(slotMode(real.handle, 'helm'));
     mast.element.hidden = station !== 'mast';
     if (station === 'mast') mast.refresh(state);
     refreshHandle(state);
@@ -715,11 +752,11 @@ export function createRealisticPanel(
 
   return [
     stationBar,
+    atHelm,
     alerts,
     pausedLine,
     ...[...drawings.values()].map((drawing) => drawing.element),
     mast.element,
-    helm,
     bow,
     empty,
     strip,

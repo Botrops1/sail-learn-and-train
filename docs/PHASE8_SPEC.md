@@ -972,7 +972,13 @@ Changing the helm's controls themselves, a helm drawing, the autopilot or engine
 
 ### 11.11 Decided in the M53 PR
 
-(empty)
+- Decided in the M53 PR (recommended; merging accepts it): the Helm section's block is `helm-station` with three children: `helm-away` (the line), `helm-go` (the button) and a new `helm-controls` wrapper (test id `helm-controls`) around today's controls; only the wrapper is hidden away from the helm, so a check can tell the two states apart.
+- Decided in the M53 PR (recommended; merging accepts it): the two `applyOpen` rules that open Helm (the wheel selected, and `st=helm`) apply outside Learn mode only, as the Ropes rule always did; in Learn mode a link opens the Learn entry or nothing.
+- Decided in the M53 PR (recommended; merging accepts it): the two Harbour tests of `tests/modes.test.ts` that read the order "engine, harbour gear, anchor, place" now leave `helm` out of the list they compare, because 11.2 puts Helm right after the engine in Harbour.
+- Decided in the M53 PR (recommended; merging accepts it): older checks changed as 11.8 says: `shots-m4b` and `shots-m46` (the station bar), `shots-m4c` (Ropes opened before the Starboard tap; `showSection` imported), `shots-m23` (the station loop and a separate Helm scan), `shots-m27` (the Realistic order), `shots-m12`, `shots-m41`, `shots-m46` and `shots-m47` (the helm checks open Helm). `scripts/ui.mjs` gets `goToHelm`, used by `holdThruster(…, 'helm')` and `holdWindlass(…, '-helm')`.
+- Decided in the M53 PR (owner's answer "A" on PR 124): in Realistic ropes, choosing the Helm camera (`cam=helm`, changed while the station is not Helm) also walks to the helm (`panel.ts`, store subscriber); the other camera views leave the station alone. A link that loads `cam=helm` with another station is not changed. Note for later (owner): the user's position (the station) and the camera are separate mechanics today; consider making the user's position clear and actionable as one idea (ROADMAP "Later").
+- Known limitation: in Learn mode with Realistic ropes the Helm section shows (spec 11.2) but Learn has no station bar, so the station cannot be seen or changed there.
+- Known limitation (decided in planning): at the helm the rope-running alerts are not in view; the badges on the Port, Starboard, Mast and Bow buttons are, in the Ropes section.
 
 ---
 

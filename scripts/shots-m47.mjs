@@ -117,6 +117,6 @@ export async function liveM47Checks({ openPage, viewports, outDir, prefix, probl
   await audit(
     'helm thrusters',
     '?wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&mode=realistic&st=helm&cam=helm',
-    ['ropes'],
+    ['helm'],
   );
 }

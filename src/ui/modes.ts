@@ -11,6 +11,7 @@ import type { PanelTab } from './panelTabs';
 export const SECTION_IDS = [
   'mode',
   'ropes',
+  'helm',
   'sails',
   'autopilot',
   'engine',
@@ -38,6 +39,7 @@ export interface ModeLayout {
 export const TAB_OF: Readonly<Record<SectionId, PanelTab>> = {
   mode: 'mode',
   ropes: 'controls',
+  helm: 'controls',
   sails: 'controls',
   autopilot: 'controls',
   engine: 'controls',
@@ -57,6 +59,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
     order: [
       'mode',
       'ropes',
+      'helm',
       'sails',
       'autopilot',
       'engine',
@@ -73,6 +76,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
     order: [
       'mode',
       'ropes',
+      'helm',
       'sails',
       'conditions',
       'learn',
@@ -90,6 +94,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'mode',
       'learn',
       'ropes',
+      'helm',
       'sails',
       'autopilot',
       'engine',
@@ -105,6 +110,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
     order: [
       'mode',
       'engine',
+      'helm',
       'harbour',
       'anchor',
       'place',
@@ -121,8 +127,8 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
 
 /**
  * True if the section is shown at all in this state. The autopilot and the engine have their own
- * sections only in Easy (in Realistic they are at the Helm station), the anchor too (M46: the
- * windlass is at the Bow station); the Mode and Settings sections only on a phone (M51: its Mode
+ * sections only in Easy (M53: in Realistic they are in the Helm section, which only Realistic
+ * ropes show), the anchor too (M46: the windlass is at the Bow station); the Mode and Settings sections only on a phone (M51: its Mode
  * and Settings tabs; M52: elsewhere the mode chip and the gear open cards).
  */
 export function sectionAvailable(
@@ -135,6 +141,8 @@ export function sectionAvailable(
     case 'engine':
     case 'anchor':
       return state.settings.ropesMode === 'easy';
+    case 'helm':
+      return state.settings.ropesMode === 'realistic';
     case 'mode':
     case 'settings':
       return layout === 'stacked';

@@ -21,6 +21,7 @@ import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
 import { createPlacePanel } from './placePanel';
 import { createQuickRow } from './quickRow';
+import { createHelmStation } from './realisticPanel';
 import { createRopesTab, revealRopeStrip } from './ropesTab';
 import { createSailsPanel } from './sailsPanel';
 import { createSection, type SectionView } from './sections';
@@ -32,6 +33,7 @@ import { createWindPanel } from './windPanel';
 const SECTION_TITLES: Record<SectionId, StringKey> = {
   mode: 'mode.label',
   ropes: 'tab.ropes',
+  helm: 'real.station.helm',
   sails: 'trim.label',
   autopilot: 'autopilot.label',
   engine: 'engine.label',
@@ -69,6 +71,14 @@ export interface Panel {
   modeChosen(): void;
   /** Runs after a section opens or folds, the mode changes, the sheet changes height, or the layout changes. */
   onChange(listener: () => void): void;
+}
+
+/** M53: the wheel (the rudder, or one of its two fittings) is selected, with Realistic ropes. */
+function wheelSelected(state: AppState): boolean {
+  return (
+    state.settings.ropesMode === 'realistic' &&
+    entryFor(state.selection)?.controlId === 'ctl_rudder'
+  );
 }
 
 /** Scrolls the section's body to its top (the open section is the only part of a column that scrolls). */
@@ -115,7 +125,8 @@ export function createPanel(
 
   const built: Record<SectionId, { content: HTMLElement[]; explain: boolean }> = {
     mode: { content: [modePicker], explain: false },
-    ropes: { content: createRopesTab(store, openLearnEntry), explain: true },
+    ropes: { content: createRopesTab(store, openLearnEntry, showSection), explain: true },
+    helm: { content: [createHelmStation(store)], explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
     autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
     engine: { content: [createEnginePanel(store), createThrusterPanel(store)], explain: true },
@@ -138,6 +149,10 @@ export function createPanel(
       if (!section.isOpen() && lastControls === id) lastControls = null;
       if (section.isOpen()) {
         openOnly(id);
+        // M53: opening the Helm section by its title walks to the helm (code that shows it does not).
+        if (id === 'helm' && store.getState().realistic.station !== 'helm') {
+          store.dispatch({ type: 'realistic', action: { type: 'station', station: 'helm' } });
+        }
         // At half height the folded titles leave an open section about 100 px: a tapped title
         // raises the sheet (selections and links keep the height, so the 3D view stays in sight).
         if (layoutKind === 'stacked' && sheet.height() === 'half') sheet.setHeight('full');
@@ -251,7 +266,15 @@ export function createPanel(
     if (fromLink) {
       if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
       else if (state.appMode === 'harbour') openHarbourFirst(state);
+      else if (state.appMode !== 'learn' && wheelSelected(state)) openOnly('helm');
       else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
+      else if (
+        state.appMode !== 'learn' &&
+        state.settings.ropesMode === 'realistic' &&
+        state.realistic.station === 'helm'
+      ) {
+        openOnly('helm');
+      }
     }
     // A new language reloads the page: the Settings tab it was chosen in is open again (M38, M52;
     // on the side and wide layouts the settings card reopens, settingsMenu.ts).
@@ -261,10 +284,10 @@ export function createPanel(
   /**
    * Harbour mode puts the engine and thrusters first (PHASE7_SPEC 7.5): the Engine section, which
    * holds the thrusters under the lever (owner, PR #99), opens; with Realistic ropes, where the
-   * engine and thrusters are at the Helm station, Ropes opens in its place.
+   * engine and thrusters are in the Helm section (M53), that opens in its place.
    */
   function openHarbourFirst(state: AppState): void {
-    openOnly(sectionAvailable('engine', state) ? 'engine' : 'ropes');
+    openOnly(sectionAvailable('engine', state) ? 'engine' : 'helm');
   }
 
   /**
@@ -364,12 +387,23 @@ export function createPanel(
       applyMode(state);
       changed();
     }
+    // M53 (owner, PR 124): with Realistic ropes the Helm camera also walks you to the helm, so the
+    // view and the controls agree; the other camera views leave the station alone.
+    if (
+      state.camera.preset === 'helm' &&
+      previous.camera.preset !== 'helm' &&
+      state.settings.ropesMode === 'realistic' &&
+      state.realistic.station !== 'helm'
+    ) {
+      store.dispatch({ type: 'realistic', action: { type: 'station', station: 'helm' } });
+    }
     // An entry was opened (also while the Learn section is open: this scrolls it to the top).
     if (state.learn !== previous.learn && state.learn !== null && sections.get('learn')?.isOpen()) {
       scrollToId('learn');
     }
-    // A rope or the wheel selected shows it in the Ropes section (Easy and Realistic mode; in
-    // Learn mode "Show on the boat" lights the part up and nothing moves). At peek the quick row
+    // A rope selected shows it in the Ropes section, the wheel (Realistic ropes) in the Helm
+    // section (M53). Easy and Realistic mode only; in Learn mode "Show on the boat" lights the
+    // part up and nothing moves. At peek the quick row
     // shows it; Ropes still opens (M35: it is what the sheet shows when it is pulled up).
     if (
       state.selection !== previous.selection &&
@@ -377,8 +411,11 @@ export function createPanel(
       state.appMode !== 'learn' &&
       state.appMode !== 'harbour'
     ) {
-      openOnly('ropes');
-      if (!sheet.atPeek()) revealRopeStrip();
+      if (wheelSelected(state)) openOnly('helm');
+      else {
+        openOnly('ropes');
+        if (!sheet.atPeek()) revealRopeStrip();
+      }
       changed();
     }
   });

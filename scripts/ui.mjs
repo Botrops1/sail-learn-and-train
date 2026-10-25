@@ -7,6 +7,7 @@
 const TAB_OF_JS = {
   mode: 'mode',
   ropes: 'controls',
+  helm: 'controls',
   sails: 'controls',
   autopilot: 'controls',
   engine: 'controls',
@@ -248,6 +249,13 @@ export async function waitForLink(page, has, hasNot = []) {
   }
 }
 
+/** M53: opens the Helm section (Realistic ropes) and, if "Go to the helm" shows, walks there. */
+export async function goToHelm(page) {
+  await showSection(page, 'helm');
+  const go = page.getByTestId('helm-go');
+  if (await go.isVisible()) await go.click();
+}
+
 /**
  * M41: holds a thruster joystick (which: 'bow' | 'stern', dir: -1 | 1) for `ms` milliseconds of app
  * time (page.waitForTimeout); via: 'section' (opens the Engine section first, where the thrusters are) | 'quick' | 'helm'.
@@ -255,6 +263,7 @@ export async function waitForLink(page, has, hasNot = []) {
  */
 export async function holdThruster(page, which, dir, ms, via = 'section', during = undefined) {
   if (via === 'section') await showSection(page, 'engine');
+  if (via === 'helm') await goToHelm(page);
   const suffix = via === 'section' ? '' : `-${via}`;
   const half = page.getByTestId(`thruster-${which}${suffix}-${dir < 0 ? 'port' : 'starboard'}`);
   await half.scrollIntoViewIfNeeded();
@@ -289,6 +298,7 @@ export async function lineAction(page, code, action) {
  */
 export async function holdWindlass(page, dir, ms, suffix = '') {
   if (suffix === '') await showSection(page, 'anchor');
+  if (suffix === '-helm') await goToHelm(page);
   const button = page.getByTestId(`windlass-${dir}${suffix}`);
   await button.scrollIntoViewIfNeeded();
   const box = await button.boundingBox();

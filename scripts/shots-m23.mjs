@@ -176,8 +176,9 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       }
       if (query.includes('realistic')) {
         await showSection(page, 'ropes');
-        // The Mast and Helm stations have their own drawings and texts.
-        for (const station of ['starboard', 'helm', 'mast', 'bow']) {
+        // The Mast and Bow stations have their own drawings and texts; the Helm is its own
+        // section since M53 (scanned after the loop).
+        for (const station of ['starboard', 'mast', 'bow']) {
           await page.locator(`button.station-button[data-station="${station}"]`).click();
           await page.waitForTimeout(300);
           const latin = await scanText(page);
@@ -193,6 +194,19 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
             cut.length ? cut.join(' | ') : 'clean',
           );
         }
+        await showSection(page, 'helm');
+        const helmLatin = await scanText(page);
+        check(
+          'Latin scan realistic helm',
+          helmLatin.length === 0,
+          helmLatin.length ? helmLatin.join(' | ') : 'clean',
+        );
+        const helmCut = await clipped(page);
+        check(
+          'nothing clipped realistic helm',
+          helmCut.length === 0,
+          helmCut.length ? helmCut.join(' | ') : 'clean',
+        );
         await shot(page, 'live-phone-m23-realistic-mast');
       }
       await context.close();
