@@ -241,9 +241,9 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
       before.learn === after.learn && before.ropes === after.ropes && before.learn && !before.ropes,
       JSON.stringify({ before, after }),
     );
-    // M38: on the wide layout the mode is named in the Mode section's title.
-    const chipText = await page.getByTestId('section-toggle-mode').innerText();
-    check('the ? keeps the mode', chipText.includes('Easy'), chipText);
+    // M52: on the wide layout the mode chip names the mode.
+    const chipText = await page.getByTestId('mode-chip').innerText();
+    check('the ? keeps the mode', chipText.includes('Mode: Easy'), chipText);
     const learnOpen = await page.getByTestId('section-learn').getAttribute('data-open');
     const name = await page.getByTestId('learn-name').innerText();
     check(

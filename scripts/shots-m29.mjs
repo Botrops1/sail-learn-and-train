@@ -190,7 +190,7 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     );
     await audit(page, 'mini-map');
     await openSettings(page);
-    await audit(page, 'settings dialog');
+    await audit(page, 'settings card');
     await closeSettings(page);
     await context.close();
   }
@@ -208,7 +208,7 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
       await eachSection(page, (id) => audit(page, `wide ${mode} ${id} open`));
     }
     await openSettings(page);
-    await audit(page, 'wide settings dialog');
+    await audit(page, 'wide settings card');
     await closeSettings(page);
     await context.close();
   }

@@ -30,9 +30,29 @@ const MENU_TOP_MARGIN_PX = 16;
 /** The one menu that is open now (only one at a time, PHASE5_SPEC 3.2). */
 let openMenu: { close(): void } | undefined;
 
-/** Closes whichever chip menu is open (the settings dialog calls it when it opens). */
+/** The chip card that holds the slot (M52): it closes when a chip menu or another card opens. */
+let overlay: { close: () => void } | undefined;
+
+/**
+ * Closes whichever chip menu is open, and the card that holds the overlay slot (M52). A chip menu
+ * runs it when it opens.
+ */
 export function closeOpenMenus(): void {
   openMenu?.close();
+  overlay?.close();
+}
+
+/**
+ * M52: a chip card takes the one overlay slot (one overlay open at a time). It first closes any
+ * chip menu and the card that held the slot; the returned function releases the slot again.
+ */
+export function registerOverlay(close: () => void): () => void {
+  closeOpenMenus();
+  const handle = { close };
+  overlay = handle;
+  return () => {
+    if (overlay === handle) overlay = undefined;
+  };
 }
 
 /**

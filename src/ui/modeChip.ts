@@ -1,17 +1,16 @@
-import { APP_MODES, type AppMode } from '../app/appMode';
 import type { Store } from '../app/store';
-import { createChipMenu } from './chipMenu';
+import { createChipCard, type ChipCard } from './chipCard';
 import { el } from './dom';
 import { t } from './i18n';
+import type { LayoutShell } from './layout';
 
 /**
- * The mode chip ("Easy ▾", PHASE5_SPEC 8.5): first in the chip row. Its menu lists Learn, Easy and
- * Realistic with a line about each. Created with or without WebGL.
+ * The mode chip (PHASE5_SPEC 8.5; M52, PHASE8_SPEC 10.2): first in the chip row, with or without
+ * WebGL. A tap opens the mode card, whose body holds the one mode picker (`panel.ts` puts it
+ * there). The label reads "Mode: Easy" on the wide layout and "Easy" on the side layout; on a
+ * phone the chip is hidden (the Mode tab does its job). Returns the card.
  */
-export function createModeChip(row: HTMLElement, store: Store): void {
-  const view = row.parentElement;
-  if (!view) return;
-
+export function createModeChip(row: HTMLElement, store: Store, layout: LayoutShell): ChipCard {
   const label = el('span', { class: 'chip-label' });
   const chip = el(
     'button',
@@ -19,29 +18,24 @@ export function createModeChip(row: HTMLElement, store: Store): void {
     [label, el('span', { class: 'chip-caret', 'aria-hidden': 'true' }, ['▾'])],
   );
   row.prepend(chip);
+  const card = createChipCard(chip, t('mode.label'), 'mode-card', 'mode-card-title');
 
-  const menu = createChipMenu(
-    view,
-    chip,
-    APP_MODES.map((mode) => ({
-      id: mode,
-      testId: `mode-option-${mode}`,
-      content: [
-        el('span', { class: 'mode-option-name' }, [t(`mode.${mode}` as const)]),
-        el('span', { class: 'mode-option-hint' }, [t(`mode.${mode}.hint` as const)]),
-      ],
-    })),
-    (id) => store.dispatch({ type: 'setAppMode', mode: id as AppMode }),
-    { label: t('mode.label'), testId: 'mode-menu' },
-  );
-
-  const sync = (state = store.getState(), previous?: typeof state) => {
-    if (previous && state.appMode === previous.appMode) return;
-    const name = t(`mode.${state.appMode}` as const);
-    label.textContent = name;
+  const sync = () => {
+    const name = t(`mode.${store.getState().appMode}` as const);
+    label.textContent = layout.viewport().wide ? t('mode.section', { name }) : name;
     chip.setAttribute('aria-label', t('mode.chip', { name }));
-    menu.setChecked(state.appMode);
   };
-  store.subscribe(sync);
+  store.subscribe((state, previous) => {
+    if (state.appMode !== previous.appMode) sync();
+  });
+  // A layout change closes the card and changes the label.
+  let kind = `${layout.viewport().mode}${layout.viewport().wide}`;
+  layout.onChange((viewport) => {
+    sync();
+    const now = `${viewport.mode}${viewport.wide}`;
+    if (now !== kind) card.close(false);
+    kind = now;
+  });
   sync();
+  return card;
 }

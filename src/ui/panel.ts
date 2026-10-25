@@ -15,7 +15,7 @@ import {
   type LayoutKind,
   type SectionId,
 } from './modes';
-import { createModePicker } from './modePicker';
+import type { ChipCard } from './chipCard';
 import { createPanelTabs, type PanelTab } from './panelTabs';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
@@ -25,7 +25,6 @@ import { createRopesTab, revealRopeStrip } from './ropesTab';
 import { createSailsPanel } from './sailsPanel';
 import { createSection, type SectionView } from './sections';
 import { createThrusterPanel } from './thrusterPanel';
-import { takeOpenAfterReload } from './settingsMenu';
 import type { Sheet } from './sheet';
 import { createWindPanel } from './windPanel';
 
@@ -47,8 +46,8 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): a list of sections that fold: Mode
  * (first), Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn, (M42) Place,
- * (M46) Anchor, (M33) Harbour gear and Settings (last). Mode and Settings are on the phone (M51)
- * and the wide layout (M38), not the side layout. The mode (modes.ts) decides their order. On a
+ * (M46) Anchor, (M33) Harbour gear and Settings (last). Mode and Settings are on the phone only
+ * (M51, M52); elsewhere their chips open cards. The mode (modes.ts) decides their order. On a
  * phone (M51) five tabs under the sheet's handle (panelTabs.ts) decide which sections show
  * (`TAB_OF` in modes.ts). Since M35 all
  * start folded (so every title is on screen) and one opens at a time per column: the headers
@@ -66,6 +65,8 @@ export interface Panel {
   openLearnEntry(id: string): void;
   /** openLearn(id), then showSection('learn'): the mode and the places of the sections stay as they are (M36: the alert history's "?"). */
   showLearnEntry(id: string): void;
+  /** The mode was chosen in the picker (M52): on a phone the Learn tab in Learn mode, else Controls. */
+  modeChosen(): void;
   /** Runs after a section opens or folds, the mode changes, the sheet changes height, or the layout changes. */
   onChange(listener: () => void): void;
 }
@@ -82,6 +83,9 @@ export function createPanel(
   sheet: Sheet,
   layout: LayoutShell,
   settingsContent: HTMLElement,
+  modePicker: HTMLElement,
+  cards: { mode: ChipCard; settings: ChipCard },
+  reopen: boolean,
 ): Panel {
   const body = el('div', { class: 'panel-body panel-scroll' });
   // The second column of the wide layout (PHASE5_SPEC 10.2): empty and hidden otherwise.
@@ -110,16 +114,7 @@ export function createPanel(
   };
 
   const built: Record<SectionId, { content: HTMLElement[]; explain: boolean }> = {
-    mode: {
-      content: [
-        createModePicker(store, () => {
-          // The phone's Mode tab goes on to what the chosen mode is for.
-          if (layoutKind !== 'stacked') return;
-          tabs.select(store.getState().appMode === 'learn' ? 'learn' : 'controls', true);
-        }),
-      ],
-      explain: false,
-    },
+    mode: { content: [modePicker], explain: false },
     ropes: { content: createRopesTab(store, openLearnEntry), explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
     autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
@@ -196,11 +191,16 @@ export function createPanel(
       SECTION_IDS.some((id) => elementOf(id).contains(focused));
 
     second.hidden = !wide;
-    // M51: the Settings section holds the content on the phone and the wide layout; the settings
-    // dialog (settingsMenu.ts) takes it on the side layout.
-    const settingsBody = elementOf('settings').querySelector('.section-body');
-    if (layoutKind !== 'side' && settingsBody && settingsContent.parentElement !== settingsBody) {
-      settingsBody.append(settingsContent);
+    // M52: the mode picker and the settings are built once. A phone shows them in the Mode and
+    // Settings sections (its tabs); elsewhere the cards of the mode chip and the gear hold them.
+    const stacked = layoutKind === 'stacked';
+    const home = (id: 'mode' | 'settings', card: ChipCard) =>
+      stacked ? elementOf(id).querySelector<HTMLElement>('.section-body') : card.body;
+    for (const [content, target] of [
+      [modePicker, home('mode', cards.mode)],
+      [settingsContent, home('settings', cards.settings)],
+    ] as const) {
+      if (target && content.parentElement !== target) target.append(content);
     }
     second.append(...inSecond.map(elementOf));
     body.append(...mode.order.filter((id) => !inSecond.includes(id)).map(elementOf));
@@ -253,10 +253,9 @@ export function createPanel(
       else if (state.appMode === 'harbour') openHarbourFirst(state);
       else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
     }
-    // A new language reloads the page: the Settings section it was chosen in is open again (M38).
-    if (fromLink && takeOpenAfterReload() === 'settings' && layoutKind !== 'side') {
-      openOnly('settings');
-    }
+    // A new language reloads the page: the Settings tab it was chosen in is open again (M38, M52;
+    // on the side and wide layouts the settings card reopens, settingsMenu.ts).
+    if (fromLink && reopen && layoutKind === 'stacked') openOnly('settings');
   }
 
   /**
@@ -428,6 +427,10 @@ export function createPanel(
     },
     openLearnEntry,
     showLearnEntry,
+    modeChosen: () => {
+      if (layoutKind !== 'stacked') return;
+      tabs.select(store.getState().appMode === 'learn' ? 'learn' : 'controls', true);
+    },
     onChange: (listener) => listeners.push(listener),
   };
 }

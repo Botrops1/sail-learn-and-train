@@ -15,8 +15,10 @@ import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
 import { createMiniMap, type MiniMap } from '../ui/miniMap';
 import { createModeChip } from '../ui/modeChip';
-import { createPanel } from '../ui/panel';
-import { createSettingsContent, createSettingsMenu } from '../ui/settingsMenu';
+import { createPanel, type Panel } from '../ui/panel';
+import { createSettingsContent, createSettingsMenu, takeOpenAfterReload } from '../ui/settingsMenu';
+import { createModePicker } from '../ui/modePicker';
+import type { ChipCard } from '../ui/chipCard';
 import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
 import { createClockPanel } from '../ui/clockPanel';
@@ -51,10 +53,30 @@ export function startApp(host: HTMLElement): void {
   // joins the view further down, in its old place among the overlays.
   const top = el('div', { class: 'view-top', 'data-testid': 'view-top' });
   const sheet = createSheet(layout, layout.view, top);
-  // The settings are built once: the Settings section holds them on the wide layout (M38), the
-  // gear's dialog everywhere else.
+  // The settings and the mode picker are built once (M52): a phone shows them in the Settings and
+  // Mode tabs, elsewhere the cards of the gear and the mode chip hold them (`panel.ts` moves them).
   const settingsContent = createSettingsContent(store);
-  const panel = createPanel(layout.panel, store, sheet, layout, settingsContent);
+  // The page may have reloaded for a new language: the Settings tab or card opens again (read once).
+  const reopen = takeOpenAfterReload() === 'settings';
+  // The chip row at the bottom of the view (M25): the gear always (the settings work without
+  // WebGL), the camera chip only with the 3D view. Not on a phone (M51: the Mode and Settings tabs).
+  const chipRow = createViewBottom(layout.view);
+  const modePicker = createModePicker(store, () =>
+    layout.viewport().mode === 'stacked' ? panel.modeChosen() : modeCard.close(true),
+  );
+  // The mode chip comes first in the row, with or without WebGL.
+  const modeCard: ChipCard = createModeChip(chipRow, store, layout);
+  const settingsCard = createSettingsMenu(chipRow, layout, reopen);
+  const panel: Panel = createPanel(
+    layout.panel,
+    store,
+    sheet,
+    layout,
+    settingsContent,
+    modePicker,
+    { mode: modeCard, settings: settingsCard },
+    reopen,
+  );
   const debug = createDebugOverlay(layout.view, store);
 
   // Error boundary (M5): without WebGL, or if the 3D view fails, a message takes its place and
@@ -79,13 +101,6 @@ export function startApp(host: HTMLElement): void {
   const miniMap: MiniMap | undefined = scene
     ? createMiniMap(layout.view, store, layout, sheet)
     : undefined;
-  // The chip row at the bottom of the view (M25): the gear always (the settings work without
-  // WebGL), the camera chip only with the 3D view. On the wide layout (M38) the gear and the mode
-  // chip are hidden: Mode and Settings are sections of the panel there.
-  const chipRow = createViewBottom(layout.view);
-  createSettingsMenu(chipRow, layout.root, settingsContent, layout);
-  // The mode chip comes first in the row, with or without WebGL.
-  createModeChip(chipRow, store);
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
   layout.view.append(top);

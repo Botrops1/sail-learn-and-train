@@ -40,7 +40,7 @@ export async function tabNow(page) {
   );
 }
 
-/** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, conditions, learn, harbour (M38: mode and settings on the wide layout). */
+/** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, conditions, learn, harbour (mode and settings on a phone only, M52). */
 export async function showSection(page, id) {
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);
@@ -69,25 +69,20 @@ export async function sectionShown(page, id) {
   );
 }
 
-/** M38: true on the wide layout (side by side, 1,280 px or wider), where Mode and Settings are sections and the mode chip and the gear are gone. */
+/** M38: true on the wide layout (side by side, 1,280 px or wider: two columns). */
 export async function isWide(page) {
   return page.evaluate(() => document.documentElement.dataset.wide === 'true');
 }
 
-/** M27: chooses a mode (learn, easy, realistic, harbour): from the mode chip's menu, (M38, wide layout) from the Mode section, or (M51, phone) from the Mode tab. */
+/** M27: chooses a mode (learn, easy, realistic, harbour): from the Mode tab (M51, phone) or the mode card the mode chip opens (M52, side and wide layouts). */
 export async function setMode(page, mode) {
   if (await isStacked(page)) {
     await showTab(page, 'mode');
-    await page.getByTestId(`mode-choice-${mode}`).click();
-    return;
+  } else if (!(await page.getByTestId('mode-card').isVisible())) {
+    await page.getByTestId('mode-chip').click();
+    await page.getByTestId('mode-card').waitFor({ state: 'visible' });
   }
-  if (await isWide(page)) {
-    await showSection(page, 'mode');
-    await page.getByTestId(`mode-choice-${mode}`).click();
-    return;
-  }
-  await page.getByTestId('mode-chip').click();
-  await page.getByTestId(`mode-option-${mode}`).click();
+  await page.getByTestId(`mode-choice-${mode}`).click();
 }
 
 /** M35: the ids of the sections that are shown now (open or folded), in page order, columns 1 then 2. */
@@ -195,34 +190,28 @@ export async function dragHandle(page, dy, steps, delayMs, testId = 'sheet-handl
   await sheetSettled(page);
 }
 
-/** Opens the settings: the Settings tab (M51, phone), the Settings section (M38, wide layout) or the dialog the gear opens (side layout). Either way `settings-content` is shown. */
+/** Opens the settings: the Settings tab (M51, phone) or the settings card the gear opens (M52, side and wide layouts). Either way `settings-content` is shown. */
 export async function openSettings(page) {
   if (await isStacked(page)) {
     await showTab(page, 'settings');
-  } else if (await isWide(page)) {
-    await showSection(page, 'settings');
-  } else {
+  } else if (!(await page.getByTestId('settings-card').isVisible())) {
     await page.getByTestId('settings-button').click();
+    await page.getByTestId('settings-card').waitFor({ state: 'visible' });
   }
   await page.getByTestId('settings-content').waitFor({ state: 'visible' });
 }
 
-/** Closes the settings (the dialog's ×, folds the Settings section, or on a phone (M51) goes back to the Controls tab). */
+/** Closes the settings (on a phone (M51) goes back to the Controls tab; elsewhere the card's ×). */
 export async function closeSettings(page) {
   if (await isStacked(page)) {
     await showTab(page, 'controls');
     await page.getByTestId('settings-content').waitFor({ state: 'hidden' });
     return;
   }
-  if (await isWide(page)) {
-    if ((await page.getByTestId('section-settings').getAttribute('data-open')) === 'true') {
-      await page.getByTestId('section-toggle-settings').click();
-    }
-    await page.getByTestId('settings-content').waitFor({ state: 'hidden' });
-    return;
+  if (await page.getByTestId('settings-card').isVisible()) {
+    await page.getByTestId('settings-card-close').click();
   }
-  await page.getByTestId('settings-close').click();
-  await page.getByTestId('settings-dialog').waitFor({ state: 'hidden' });
+  await page.getByTestId('settings-card').waitFor({ state: 'hidden' });
 }
 
 /** Chooses a camera preset from the camera chip's menu. */

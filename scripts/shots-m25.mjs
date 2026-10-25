@@ -144,7 +144,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 5. (M51: the phone's settings are a tab now, so the dialog checks run on the side layout, where the gear and the dialog stay until M52.) The settings dialog holds the old View tab's controls and About.
+  // 5. (M51: the phone settings are a tab, so the card checks run on the side layout; M52: the gear opens a card.) The settings card holds the old View tab's controls and About.
   {
     const { context, page } = await openPage(foldable, 'm25 settings', '?wd=60&ws=12');
     await page.waitForTimeout(500);
@@ -164,43 +164,41 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     ];
     const missing = [];
     for (const selector of wanted) {
-      if ((await page.getByTestId('settings-dialog').locator(selector).count()) === 0) {
+      if ((await page.getByTestId('settings-card').locator(selector).count()) === 0) {
         missing.push(selector);
       }
     }
     check(
-      'the dialog has every setting and About',
+      'the card has every setting and About',
       missing.length === 0,
       missing.length ? `missing ${missing.join(', ')}` : 'all there',
     );
-    const cameraInside = await page
-      .getByTestId('settings-dialog')
-      .locator('[name="camera"]')
-      .count();
-    check('no camera block in the dialog', cameraInside === 0, `${cameraInside} camera radios`);
+    const cameraInside = await page.getByTestId('settings-card').locator('[name="camera"]').count();
+    check('no camera block in the card', cameraInside === 0, `${cameraInside} camera radios`);
     check(
       'focus is on the close button',
-      (await focusedTestId(page)) === 'settings-close',
+      (await focusedTestId(page)) === 'settings-card-close',
       String(await focusedTestId(page)),
     );
-    const behind = await page.evaluate(() => ({
-      view: document.querySelector('.view')?.hasAttribute('inert'),
-      panel: document.querySelector('.panel')?.hasAttribute('inert'),
-    }));
-    check('the view and the panel are inert', behind.view && behind.panel, JSON.stringify(behind));
+    // M52: the card is not modal; the 3D view still takes a tap (a tap on it closes the card).
+    const viewBox = await page.locator('canvas.scene-canvas').boundingBox();
+    const hit = await page.evaluate(
+      ([x, y]) => document.elementFromPoint(x, y)?.className ?? '',
+      [viewBox.x + viewBox.width / 2, viewBox.y + viewBox.height / 3],
+    );
+    check('the 3D view is not covered or inert', String(hit).includes('scene-canvas'), String(hit));
     await shot(page, 'live-phone-m25-settings');
     await page.keyboard.press('Escape');
-    await page.getByTestId('settings-dialog').waitFor({ state: 'hidden' });
+    await page.getByTestId('settings-card').waitFor({ state: 'hidden' });
     check(
       'Escape closes it and focus is on the gear',
       (await focusedTestId(page)) === 'settings-button',
       String(await focusedTestId(page)),
     );
-    const after = await page.evaluate(() => ({
-      view: document.querySelector('.view')?.hasAttribute('inert'),
-      panel: document.querySelector('.panel')?.hasAttribute('inert'),
-    }));
-    check('nothing is inert after closing', !after.view && !after.panel, JSON.stringify(after));
+    await openSettings(page);
+    await page.mouse.click(viewBox.x + viewBox.width / 2, viewBox.y + viewBox.height / 3);
+    await page.getByTestId('settings-card').waitFor({ state: 'hidden' });
+    check('a tap on the 3D view closes the card', true, 'closed');
     await context.close();
   }
 
@@ -226,10 +224,10 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     await selected.page.waitForTimeout(500);
     await openSettings(selected.page);
     await selected.page.keyboard.press('Escape');
-    await selected.page.getByTestId('settings-dialog').waitFor({ state: 'hidden' });
+    await selected.page.getByTestId('settings-card').waitFor({ state: 'hidden' });
     await selected.page.waitForTimeout(600);
     check(
-      'Escape with a part selected closes only the dialog',
+      'Escape with a part selected closes only the card',
       (await link(selected.page)).includes('sel=part_boom'),
       await link(selected.page),
     );
@@ -257,23 +255,26 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     check('the gear is named «Настройки»', label === 'Настройки', String(label));
     await openSettings(page);
     const title = (await page.locator('#settings-title').innerText()).trim();
-    check('the dialog is titled «Настройки»', title === 'Настройки', title);
+    check('the card is titled «Настройки»', title === 'Настройки', title);
     await shot(page, 'live-phone-m25-settings-ru');
     await closeSettings(page);
     await context.close();
   }
 
-  // 8. Side layout below 1,280 px (M38: from there Settings is a section): the dialog covers the panel column only.
+  // 8. Side layout (M52): the settings card stands inside the view, above the chip row.
   {
     const { context, page } = await openPage(foldable, 'm25 side layout', '?wd=60&ws=12');
     await page.waitForTimeout(500);
     await openSettings(page);
-    const dialog = await page.getByTestId('settings-dialog').boundingBox();
-    const panel = await page.locator('.panel').boundingBox();
+    const card = await page.getByTestId('settings-card').boundingBox();
+    const view = await page.locator('.view').boundingBox();
+    const chips = await page.locator('.view-bottom').boundingBox();
     check(
-      'the dialog covers the panel column only',
-      dialog.x >= panel.x - 1,
-      `dialog x ${Math.round(dialog.x)}, panel x ${Math.round(panel.x)}`,
+      'the card stands inside the view, above the chip row',
+      card.x >= view.x - 1 &&
+        card.x + card.width <= view.x + view.width + 1 &&
+        card.y + card.height <= chips.y + 1,
+      `card ${Math.round(card.x)},${Math.round(card.y)} ${Math.round(card.width)}x${Math.round(card.height)}; chips y ${Math.round(chips.y)}`,
     );
     check(
       'the 3D view is still visible',

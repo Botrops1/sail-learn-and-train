@@ -3013,10 +3013,6 @@
 | mode.easy.desc | For learning what each rope does. Every rope is a slider and the boat answers at once. | Чтобы понять, что делает каждый конец. Каждый конец — ползунок, яхта отвечает сразу. |
 | mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the ropes, as on the boat. | Для тренировки, как на палубе. Концами работают стопоры, лебёдки и ваша рука, как на яхте. |
 | mode.harbour.desc | For bringing her in and out of a harbour. The engine and the thrusters come first. | Чтобы заходить в гавань и выходить из неё. Сначала двигатель и подруливающие. |
-| mode.learn.hint | Names and explanations of every part and word. | Названия и объяснения всех частей и слов. |
-| mode.easy.hint | A slider for every rope. | Ползунок для каждого конца. |
-| mode.realistic.hint | Clutches and winches, as on the boat. | Стопоры и лебёдки, как на яхте. |
-| mode.harbour.hint | Engine, thrusters, lines and anchor first. | Сначала двигатель, подруливающие, швартовы и якорь. |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |

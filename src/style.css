@@ -452,32 +452,40 @@ html[data-layout='stacked'] .view[data-mini-map] .info-area {
   border-top: 1px solid var(--line);
 }
 
-/* Settings dialog (M25): the old View tab and the footer, behind the gear. */
-.settings-dialog {
-  position: fixed;
-  inset: 0;
-  z-index: 20;
+/*
+ * Chip cards (M52, PHASE8_SPEC 10.3): the mode card and the settings card open above their chip over
+ * the 3D view. Placed by CSS only; not modal.
+ */
+.chip-card {
+  position: absolute;
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  z-index: 13;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  /* Clear of a notch, rounded corners and the home bar, as .shell is (the head takes the top). */
-  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  width: min(380px, calc(100% - 16px));
+  max-height: min(640px, calc(100% - var(--view-top-h, 0px) - 76px));
+  border: 1px solid var(--line);
+  border-radius: 12px;
   background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.22);
+  overflow: hidden;
 }
 
-.settings-dialog[hidden] {
+.chip-card[hidden] {
   display: none;
 }
 
-html[data-layout='side'] .settings-dialog {
-  inset: 0 0 0 auto;
-  width: clamp(var(--panel-min), 30%, var(--panel-max));
-  padding-left: 0;
-  border-left: 1px solid var(--line);
+html[data-layout='side'] .chip-card,
+html[data-wide='true'] .chip-card {
+  right: 8px;
 }
 
-.settings-head {
+html[data-layout='side']:not([data-wide='true']) .chip-card[data-testid='mode-card'] {
+  right: auto;
+  left: 8px;
+}
+
+.chip-card-head {
   position: sticky;
   top: 0;
   z-index: 1;
@@ -486,17 +494,17 @@ html[data-layout='side'] .settings-dialog {
   align-items: center;
   justify-content: space-between;
   min-height: var(--touch);
-  padding: env(safe-area-inset-top) 0 0 16px;
+  padding: 0 0 0 16px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
 }
 
-.settings-head h2 {
+.chip-card-head h2 {
   margin: 0;
   font-size: 18px;
 }
 
-.settings-close {
+.chip-card-close {
   width: var(--touch);
   height: var(--touch);
   border: 0;
@@ -505,6 +513,12 @@ html[data-layout='side'] .settings-dialog {
   font-size: 26px;
   line-height: 1;
   cursor: pointer;
+}
+
+.chip-card-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .settings-body {
@@ -516,7 +530,7 @@ html[data-layout='side'] .settings-dialog {
   font-size: 16px;
 }
 
-.settings-dialog .footer {
+.chip-card .footer {
   margin-top: 0;
   border-top: 0;
 }
@@ -741,10 +755,6 @@ html[data-layout='side'][data-wide='true'] .panel-body {
 
 .panel-second[hidden] {
   display: none;
-}
-
-html[data-wide='true'] .settings-dialog {
-  width: 760px;
 }
 
 /*
@@ -1034,10 +1044,6 @@ html[data-layout='stacked'] .sheet[data-sheet='peek'] .quick-row {
   display: block;
 }
 
-.chip-menu [data-testid^='mode-option-'] {
-  min-height: 56px;
-}
-
 .mode-option-hint {
   color: var(--muted);
   font-size: var(--font-small);
@@ -1057,7 +1063,7 @@ html[data-layout='stacked'] .sheet[data-sheet='peek'] .quick-row {
 input[type='range']:focus-visible,
 .view-chip:focus-visible,
 .chip-menu [role='menuitemradio']:focus-visible,
-.settings-close:focus-visible,
+.chip-card-close:focus-visible,
 .card-close:focus-visible,
 .segment:focus-within,
 .toggle:focus-within,
@@ -4188,13 +4194,11 @@ html[data-layout='side'] .alert-chip {
 }
 
 /*
- * M38 (issues #91, #92, #93): on the wide layout the Mode and Settings are sections of the right
- * column, so the mode chip and the gear are gone from the chip row; the camera chip (View) sits in
- * the bottom-right corner and the mini-map in the bottom-left one.
+ * M38, M52 (issues #91, #92, #93, #100): on the wide layout the chip row is right-aligned (mode
+ * chip, camera chip, gear) and the mini-map sits in the bottom-left corner.
  */
-html[data-wide='true'] .mode-chip,
 html[data-wide='true'] .settings-button {
-  display: none;
+  margin-left: 0;
 }
 
 html[data-wide='true'] .view-bottom {

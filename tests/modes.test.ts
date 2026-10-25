@@ -18,7 +18,7 @@ describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
 });
 
 describe('sectionAvailable (8.8 test 2)', () => {
-  it('autopilot and engine only in Easy; Mode and Settings on the phone and the wide layout, not the side one (M51); the rest always', () => {
+  it('autopilot and engine only in Easy; Mode and Settings on the phone only (M52: the chips open cards elsewhere); the rest always', () => {
     const easy = initialState();
     const real = reduce(easy, { type: 'setAppMode', mode: 'realistic' });
     for (const id of ['autopilot', 'engine'] as const) {
@@ -29,8 +29,8 @@ describe('sectionAvailable (8.8 test 2)', () => {
       expect(sectionAvailable(id, easy, 'stacked')).toBe(true);
       expect(sectionAvailable(id, easy, 'side')).toBe(false);
       expect(sectionAvailable(id, easy)).toBe(false);
-      expect(sectionAvailable(id, easy, 'wide')).toBe(true);
-      expect(sectionAvailable(id, real, 'wide')).toBe(true);
+      expect(sectionAvailable(id, easy, 'wide')).toBe(false);
+      expect(sectionAvailable(id, real, 'wide')).toBe(false);
     }
     for (const id of ['ropes', 'sails', 'conditions', 'learn', 'place', 'harbour'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
