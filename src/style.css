@@ -4474,6 +4474,24 @@ html[data-wide='true'] .mini-map {
   background: var(--surface);
 }
 
+/* A boat without thrusters hides these (M57); display values above must not win. */
+.thrusters-block[hidden],
+.thruster-helm[hidden],
+.quick-group[hidden] {
+  display: none;
+}
+
+.boat-name {
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.boat-guide {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch);
+}
+
 .thruster-pair {
   display: flex;
   flex-wrap: wrap;

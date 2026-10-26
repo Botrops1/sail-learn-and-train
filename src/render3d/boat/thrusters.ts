@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { thrusterTunnelPlace, type ThrusterState } from '../../model/thrusters';
+import { thrusterEnds, thrusterTunnelPlace, type ThrusterState } from '../../model/thrusters';
 import type { Detail } from '../../model/settings';
 import { SCENE } from '../sceneConfig';
 import type { BoatMaterials } from './materials';
@@ -37,8 +37,11 @@ export function buildThrusters(materials: BoatMaterials, detail: Detail = 'high'
     const tunnel = cylinderBetween([place.x, place.y, -z0], [place.x, place.y, z0], r, radial);
     return { place, mesh: partMesh(partId, [...discs, tunnel], materials.thrusterTunnel) };
   };
-  const bow = tunnelMesh('bow', 'part_bow_thruster');
-  const stern = tunnelMesh('stern', 'part_stern_thruster');
+  const ends = thrusterEnds();
+  const tunnels = ends.map((end) => ({
+    end,
+    ...tunnelMesh(end, end === 'bow' ? 'part_bow_thruster' : 'part_stern_thruster'),
+  }));
 
   /** A cone with its point at (x, y, z) widening over `jetLengthM` towards `outward` (+1: starboard). */
   const jet = (partId: string, x: number, y: number, z: number, outward: 1 | -1): THREE.Mesh => {
@@ -55,26 +58,27 @@ export function buildThrusters(materials: BoatMaterials, detail: Detail = 'high'
     return mesh;
   };
   // Pushing to port (-1) blows the water out to starboard (+z), and the other way round.
-  const jets = {
-    bow: {
-      [-1]: jet('part_bow_thruster', bow.place.x, bow.place.y, bow.place.halfWidthM, 1),
-      [1]: jet('part_bow_thruster', bow.place.x, bow.place.y, -bow.place.halfWidthM, -1),
-    },
-    stern: {
-      [-1]: jet('part_stern_thruster', stern.place.x, stern.place.y, stern.place.halfWidthM, 1),
-      [1]: jet('part_stern_thruster', stern.place.x, stern.place.y, -stern.place.halfWidthM, -1),
-    },
-  };
+  const jets = new Map<'bow' | 'stern', { [-1]: THREE.Mesh; [1]: THREE.Mesh }>();
+  for (const { end, place } of tunnels) {
+    const partId = end === 'bow' ? 'part_bow_thruster' : 'part_stern_thruster';
+    jets.set(end, {
+      [-1]: jet(partId, place.x, place.y, place.halfWidthM, 1),
+      [1]: jet(partId, place.x, place.y, -place.halfWidthM, -1),
+    });
+  }
 
   const setState = (t: ThrusterState) => {
-    for (const end of ['bow', 'stern'] as const) {
-      jets[end][-1].visible = t[end] === -1;
-      jets[end][1].visible = t[end] === 1;
+    for (const [end, pair] of jets) {
+      pair[-1].visible = t[end] === -1;
+      pair[1].visible = t[end] === 1;
     }
   };
   setState({ bow: 0, stern: 0 });
   return {
-    objects: [bow.mesh, stern.mesh, ...Object.values(jets).flatMap((pair) => [pair[-1], pair[1]])],
+    objects: [
+      ...tunnels.map((tunnel) => tunnel.mesh),
+      ...[...jets.values()].flatMap((pair) => [pair[-1], pair[1]]),
+    ],
     setState,
   };
 }

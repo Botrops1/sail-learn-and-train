@@ -1,15 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
-import { boat as boatData } from '../src/model/boat';
+import { boat as boatData, HANSE_508, useBoat, type BoatData } from '../src/model/boat';
 import { harbourForces } from '../src/model/harbourForces';
 import {
+  hasThruster,
   thrusterTunnelPlace,
   THRUSTERS_OFF,
   thrusterForces,
   thrusterSpeedFactor,
 } from '../src/model/thrusters';
-import { knToMps } from '../src/model/angles';
+import { knToMps, mpsToKn } from '../src/model/angles';
 import type { BoatState } from '../src/model/motion';
 import { act, harbourStart, run } from './motionHelpers';
 
@@ -150,5 +151,89 @@ describe('Harbour mode and the link (test 4)', () => {
     expect(back.appMode).toBe('harbour');
     expect(back.settings.ropesMode).toBe('easy');
     expect(reduce(harbour, { type: 'setAppMode', mode: 'easy' }).appMode).toBe('easy');
+  });
+});
+
+/** A lighter boat with only the bow thruster (PHASE8_SPEC 3.5, 15.7). */
+function lightBowOnly(): BoatData {
+  const clone = structuredClone(HANSE_508);
+  clone.dimensions.massesKg.lightCraftStandardKeel *= 0.6;
+  clone.dimensions.displacementTonnes *= 0.6;
+  clone.hull.thrusters = clone.hull.thrusters.filter((thruster) => thruster.end === 'bow');
+  return clone;
+}
+
+describe('hasThruster (M57 test 11)', () => {
+  it('both ends on the Hanse 508; only the bow on the light boat', () => {
+    expect(hasThruster('bow')).toBe(true);
+    expect(hasThruster('stern')).toBe(true);
+    const clone = lightBowOnly();
+    expect(hasThruster('bow', clone)).toBe(true);
+    expect(hasThruster('stern', clone)).toBe(false);
+  });
+
+  it('a missing thruster adds no force and does not throw', () => {
+    const clone = lightBowOnly();
+    const both = thrusterForces({ bow: 1, stern: 1 }, still(), clone);
+    expect(both).toEqual(thrusterForces({ bow: 1, stern: 0 }, still(), clone));
+    expect(both.sideN).toBeCloseTo(1300, 6);
+    const hook = harbourForces(
+      {
+        thrusters: { bow: 1, stern: 1 },
+        obstacles: [],
+        fenders: { out: false, lost: [] },
+      },
+      clone,
+    );
+    expect(() => hook(still())).not.toThrow();
+    const none = lightBowOnly();
+    none.hull.thrusters = [];
+    expect(thrusterForces({ bow: 1, stern: 1 }, still(), none)).toEqual(
+      thrusterForces(THRUSTERS_OFF, still(), none),
+    );
+  });
+});
+
+describe('another boat sails (M57 tests 9 and 10)', () => {
+  it('9. a lighter boat with a bow thruster only sails sensibly, the Hanse 508 as before', () => {
+    const reference = run(initialState(), 120, 30);
+    expect(mpsToKn(reference.boat.speedMps)).toBeCloseTo(6.81, 1);
+    expect(Math.abs(mpsToKn(reference.boat.speedMps) - 6.81)).toBeLessThan(0.01);
+    try {
+      useBoat('light-test', 'Light test', lightBowOnly());
+      const light = run(initialState(), 120, 30);
+      const speedKn = mpsToKn(light.boat.speedMps);
+      expect(speedKn).toBeGreaterThan(6.6);
+      expect(speedKn).toBeLessThan(7.2);
+      expect(light.boat.heelDeg).toBeGreaterThan(-11.0);
+      expect(light.boat.heelDeg).toBeLessThan(-8.6);
+      for (const value of Object.values(light.boat)) {
+        if (typeof value === 'number') expect(Number.isFinite(value)).toBe(true);
+      }
+    } finally {
+      useBoat('hanse508', 'Hanse 508', HANSE_508);
+    }
+    expect(mpsToKn(run(initialState(), 120, 30).boat.speedMps)).toBeCloseTo(
+      mpsToKn(reference.boat.speedMps),
+      9,
+    );
+  });
+
+  it('10. a boat without a stern thruster ignores its joystick and still works the bow one', () => {
+    try {
+      useBoat('light-test', 'Light test', lightBowOnly());
+      const start = harbourStart({});
+      const stern = reduce(start, { type: 'thruster', which: 'stern', dir: 1 });
+      expect(stern.thrusters.stern).toBe(0);
+      const bow = reduce(start, { type: 'thruster', which: 'bow', dir: 1 });
+      expect(bow.thrusters.bow).toBe(1);
+      let after = bow;
+      expect(() => {
+        after = run(bow, 5, 30);
+      }).not.toThrow();
+      expect(after.boat.swayMps).not.toBe(0);
+    } finally {
+      useBoat('hanse508', 'Hanse 508', HANSE_508);
+    }
   });
 });

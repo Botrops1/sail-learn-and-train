@@ -65,7 +65,7 @@ import {
   type LinesState,
 } from '../model/mooringLines';
 import { isPlace, placeStart, type PlaceId } from '../model/places';
-import { THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
+import { hasThruster, THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
 import {
@@ -731,6 +731,8 @@ function reduceAction(state: AppState, action: Action): AppState {
         ? { ...state, anchor: { ...state.anchor, alarm: false, dragS: 0 } }
         : state;
     case 'thruster': {
+      // A boat without that thruster ignores the joystick (M57).
+      if (!hasThruster(action.which)) return state;
       if (state.thrusters[action.which] === action.dir) return state;
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };
     }
