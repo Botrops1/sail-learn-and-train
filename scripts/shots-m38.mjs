@@ -59,7 +59,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const second = await column(page, '[data-testid="second-column"]');
     check(
       `${name}: Easy, column 1 has no Mode and no Settings section`,
-      first.join() === 'ropes,sails,autopilot,engine,place,anchor,harbour' &&
+      first.join() === 'ropes,sails,autopilot,engine,place,anchor,harbour,status' &&
         second.join() === 'conditions,learn',
       JSON.stringify({ first, second }),
     );
