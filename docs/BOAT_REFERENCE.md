@@ -1,6 +1,6 @@
 # Boat reference: Hanse 508 (the reference boat)
 
-Everything we know about the real boat, where each fact comes from, and what is still a guess. The machine-readable version is [`content/boat/hanse508.json`](../content/boat/hanse508.json); keep both in sync.
+Everything we know about the real boat, where each fact comes from, and what is still a guess. The machine-readable version is [`content/boat/hanse508.json`](../content/boat/hanse508.json); keep both in sync. Another boat of the same layout is described by a boat profile file: see [`BOAT_PROFILE.md`](BOAT_PROFILE.md).
 
 ## 1. Which boat, exactly
 

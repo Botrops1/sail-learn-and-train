@@ -1518,7 +1518,14 @@ Importing and choosing a boat (M58), the boat in the link (M58), other rigs.
 
 ### 15.11 Decided in the M57 PR
 
-(empty)
+- **Recommended; merging accepts it:** a name key (`id`, `controlId`, …) whose reference value is `null` must stay `null` in a profile (an `ids` problem otherwise), so a rope cannot gain a control by editing the file. Only the other `null` values follow the general rule "null or a string". The Hanse 508 has two such ropes (`controlId: null`).
+- **Recommended; merging accepts it:** a list of entries with `id` of a different length is one `ids` problem on the list (it names the expected ids); a list of the same length is checked entry by entry, so a swapped pair gives an `ids` problem on each swapped `id`.
+- **Recommended; merging accepts it:** `hull.stemX − hull.transomX` is reported at `boat.hull.stemX` with the detail "5 to 25 between stemX and transomX"; it is checked only when both numbers are fine.
+- **Recommended; merging accepts it:** `checkBoatProfile` hands back the file's own `boat` object (no copy); `makeBoatProfile` is the one that clones.
+- **Recommended; merging accepts it:** `thrusterEnds(data)` (bow first) is added to `thrusters.ts`, and `hasAnyThruster()` to `thrusterPanel.ts`; the 3D thrusters and every joystick block are built from them. `[hidden]` rules for `.thrusters-block`, `.thruster-helm` and `.quick-group` are added to the CSS, because their own `display` values would otherwise win.
+- **Recommended; merging accepts it:** the download name is `<id>.boat.json` and the profile is built when the button is tapped, from `boat`, `boatId` and `boatName` read at that moment.
+- **Recommended; merging accepts it:** the guide link is the whole line high (44 px) so it passes the touch-target audit.
+- The browser checks add two checks beyond 15.8: the Boat field on a phone (44 px high controls, audit) and the Hanse 508 still showing both quick-row joysticks in Harbour.
 
 ---
 
