@@ -77,7 +77,7 @@ export async function liveM55Checks({ openPage, viewports, outDir, prefix, probl
 
   // 2. The sails moved here.
   {
-    const { context, page } = await openPage(phone, 'm55 sails', '?cam=side-port&debug=1', {
+    const { context, page } = await openPage(phone, 'm55 sails', '?cam=side-port&ws=0&debug=1', {
       testClock: true,
     });
     await page.evaluate(() => window.__sailDebug.setDamage(0.9, 0));
