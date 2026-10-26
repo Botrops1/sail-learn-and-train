@@ -1368,7 +1368,13 @@ The imported boat in the file (M58 adds it), cloud saving, several named setups.
 
 ### 14.10 Decided in the M56 PR
 
-(empty)
+- **Recommended; merging accepts it:** Save builds the link from the store (`serializeUrlState(store.getState())`), not from the address bar, which can lag the store by 300 ms (as Reset layout does).
+- **Recommended; merging accepts it:** a file with `version` below 1 or a negative number is read as a version 1 file (only a version above 1, or one that is not a number, is `newer`).
+- **Recommended; merging accepts it:** `readDeviceSettings` returns the layout completed (`completeLayout`), so every wide section appears once; a missing or unreadable saved layout is `null`.
+- **Recommended; merging accepts it:** the hidden file input is also `aria-hidden` and out of the tab order; the Load button is the control that opens the file chooser.
+- **Recommended; merging accepts it:** after Load the Settings do not reopen (the spec's `window.location.replace(pathname + link)` is kept as written; only a change of language and Reset layout reopen them).
+- **Recommended; merging accepts it:** the download link is removed after the click and the object URL is released after one second.
+- The browser checks add two checks beyond 14.7: a file with `layout: null` puts a computer back to the default arrangement, and the same bad file can be chosen twice in a row.
 
 ---
 
