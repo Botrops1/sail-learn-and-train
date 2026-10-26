@@ -162,12 +162,9 @@ describe('Harbour mode (M41, PHASE7_SPEC 7.5)', () => {
       expect(order.indexOf('anchor'), mode).toBe(order.indexOf('harbour') - 1);
     }
     const harbour = MODE_LAYOUTS.harbour;
-    expect(harbour.order.filter((id) => id !== 'mode' && id !== 'helm').slice(0, 4)).toEqual([
-      'engine',
-      'harbour',
-      'anchor',
-      'place',
-    ]);
+    // M55: the Status section follows the Harbour gear in every mode; it is left out here.
+    const rest = harbour.order.filter((id) => id !== 'mode' && id !== 'helm' && id !== 'status');
+    expect(rest.slice(0, 4)).toEqual(['engine', 'harbour', 'anchor', 'place']);
   });
 });
 
@@ -192,5 +189,21 @@ describe('M53: the Helm section (11.5)', () => {
 
   it('is under the Controls tab', () => {
     expect(TAB_OF.helm).toBe('controls');
+  });
+});
+
+describe('M55: the Status section (13.4)', () => {
+  it('is always available, on the Controls tab, and follows the Harbour gear in every mode', () => {
+    const easy = initialState();
+    const real = reduce(easy, { type: 'setAppMode', mode: 'realistic' });
+    for (const layout of ['stacked', 'side', 'wide'] as const) {
+      expect(sectionAvailable('status', easy, layout)).toBe(true);
+      expect(sectionAvailable('status', real, layout)).toBe(true);
+    }
+    expect(TAB_OF.status).toBe('controls');
+    for (const mode of ['easy', 'realistic', 'learn', 'harbour'] as const) {
+      const order = MODE_LAYOUTS[mode].order;
+      expect(order.indexOf('status'), mode).toBe(order.indexOf('harbour') + 1);
+    }
   });
 });

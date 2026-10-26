@@ -3949,6 +3949,76 @@ html[data-layout='side'] .alert-centre {
   cursor: pointer;
 }
 
+/* The history list (M55): a box with an optional filter row, the empty line and the list. In the card the list scrolls inside it; in the Status section it grows with the section. */
+.alert-list-box {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.status-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.status-filter .segment {
+  flex: 1 1 28%;
+}
+
+.status-filter .segment[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+[data-testid='status-alert-box'] .alert-list {
+  overflow-y: visible;
+}
+
+.alert-tag {
+  flex: 0 0 auto;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--line);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.alert-tag-danger {
+  background: #fde3e7;
+  color: #c8102e;
+}
+
+.alert-tag-damage {
+  background: #ffe8d1;
+  color: #8a3b00;
+}
+
+.alert-tag-sail,
+.alert-tag-rope {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.alert-tag-gear,
+.alert-tag-steering {
+  background: var(--line);
+  color: var(--muted);
+}
+
+/* The Status section's gear lines (M55). */
+.status-line {
+  margin: 2px 0;
+}
+
+.sail-wear .trim-name {
+  flex: 0 0 5.5em;
+}
+
 /* Side by side the Attention button comes before the clock chip, so on a wrapped row it sits above its card at the left. */
 html[data-layout='side'] .alert-chip {
   order: 2;

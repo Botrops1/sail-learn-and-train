@@ -20,6 +20,7 @@ export const SECTION_IDS = [
   'place',
   'anchor',
   'harbour',
+  'status',
   'settings',
 ] as const;
 export type SectionId = (typeof SECTION_IDS)[number];
@@ -49,6 +50,7 @@ export const TAB_OF: Readonly<Record<SectionId, PanelTab>> = {
   place: 'controls',
   anchor: 'controls',
   harbour: 'controls',
+  status: 'controls',
   settings: 'settings',
 };
 
@@ -69,6 +71,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'place',
       'anchor',
       'harbour',
+      'status',
       'settings',
     ],
   },
@@ -85,6 +88,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'place',
       'anchor',
       'harbour',
+      'status',
       'settings',
     ],
   },
@@ -101,6 +105,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'place',
       'anchor',
       'harbour',
+      'status',
       'settings',
     ],
   },
@@ -110,6 +115,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'engine',
       'helm',
       'harbour',
+      'status',
       'anchor',
       'place',
       'conditions',

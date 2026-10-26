@@ -3,9 +3,11 @@ import { initialState, reduce, type AppState } from '../src/app/store';
 import {
   ALERT_INFO,
   ALERT_KINDS,
+  ALERT_TAGS,
   EMPTY_ALERTS,
   SAIL_LEARN,
   alertLearnId,
+  alertTag,
   alertTimeText,
   wornSail,
   recordAlerts,
@@ -14,9 +16,12 @@ import {
 } from '../src/model/alerts';
 import { boat } from '../src/model/boat';
 import type { GybeReport } from '../src/model/gybe';
+import type { ContactReport } from '../src/model/contact';
 import { DEFAULT_HARBOUR } from '../src/model/harbour';
+import { tailSpecs, winchIds, type TailReport, type WinchState } from '../src/model/realistic';
 import { isRegisteredPartId } from '../src/model/registry';
 import { alertText } from '../src/ui/alertCentre';
+import { damageText } from '../src/ui/damageReport';
 import en from '../content/lang/en/ui.json';
 import ru from '../content/lang/ru/ui.json';
 
@@ -222,5 +227,174 @@ describe('M37: the worn-sail alert (issue #88)', () => {
     const damaged: AppState = { ...state, sailDamage: { main: warnAt, jib: 0 } };
     const log = recordAlerts(state.alerts, state, damaged);
     expect(log.entries.map((e) => e.kind)).toEqual(['sailWorn']);
+  });
+});
+
+describe('M55: damage, rope and winch entries and the tags (issue #109)', () => {
+  const start = initialState();
+  const { ropeRepeatGapS } = boat.physics.alerts;
+  const hit = (obstacleId: string, severity: ContactReport['severity']): ContactReport => ({
+    atS: 4,
+    obstacleId,
+    partId: 'part_hull',
+    part: 'bow',
+    impactMps: 1.2,
+    fender: false,
+    severity,
+  });
+  const withReports = (s: AppState, reports: ContactReport[]): AppState => ({
+    ...s,
+    contact: { ...s.contact, reports },
+  });
+  const kinds = (log: AlertLog) => log.entries.map((e) => e.kind);
+
+  it('1. a new damage report is one contact entry: a danger tagged Damage, with the report', () => {
+    const r = hit('quay', 'hit');
+    const log = recordAlerts(EMPTY_ALERTS, start, withReports(start, [r]));
+    expect(log.entries).toHaveLength(1);
+    expect(log.entries[0]).toMatchObject({ kind: 'contact', severity: 'danger' });
+    expect(log.entries[0]?.contact).toBe(r);
+    expect(log.entries[0] && alertTag(log.entries[0])).toBe('damage');
+  });
+
+  it('2. the report decides the severity and the Learn entry; Clear writes nothing', () => {
+    const sev = (r: ContactReport) =>
+      recordAlerts(EMPTY_ALERTS, start, withReports(start, [r])).entries[0];
+    expect(sev(hit('quay', 'touch'))?.severity).toBe('warning');
+    expect(sev(hit('quay', 'bump'))?.severity).toBe('warning');
+    expect(sev(hit('quay', 'knock'))?.severity).toBe('danger');
+    expect(sev(hit('quay', 'fender'))?.severity).toBe('info');
+    const bottom = sev(hit('bottom', 'hit'));
+    expect(bottom && alertLearnId(bottom)).toBe('term_grounding');
+    const quay = sev(hit('quay', 'hit'));
+    expect(quay && alertLearnId(quay)).toBe('fit_fender');
+    const before = withReports(start, [hit('quay', 'hit')]);
+    expect(recordAlerts(EMPTY_ALERTS, before, withReports(start, []))).toBe(EMPTY_ALERTS);
+  });
+
+  it('3. two new reports at once are two entries, oldest first; a lost fender is a warning', () => {
+    const lost = hit('fender', 'touch');
+    const second = hit('quay', 'hit');
+    // `reports` is newest first.
+    const log = recordAlerts(EMPTY_ALERTS, start, withReports(start, [second, lost]));
+    expect(log.entries.map((e) => e.contact)).toEqual([lost, second]);
+    expect(log.entries[0]?.severity).toBe('warning');
+    // The one already known is not written again.
+    const more = hit('quay', 'bump');
+    const next = withReports(start, [more, second, lost]);
+    const again = recordAlerts(log, withReports(start, [second, lost]), next);
+    expect(again.entries.map((e) => e.contact)).toEqual([lost, second, more]);
+  });
+
+  it('4. a fouled propeller is a danger that opens the saildrive', () => {
+    const log = recordAlerts(EMPTY_ALERTS, start, withReports(start, [hit('propeller', 'touch')]));
+    expect(log.entries[0]?.severity).toBe('danger');
+    expect(log.entries[0] && alertLearnId(log.entries[0])).toBe('part_saildrive');
+  });
+
+  const tail = tailSpecs()[0];
+  const slipping = (s: AppState, on: boolean, timeS: number, key = tail?.key ?? ''): AppState => {
+    const report = {
+      ...(s.realistic.reports[key] ?? {}),
+      note: on ? 'slipping' : null,
+    } as TailReport;
+    return {
+      ...s,
+      rig: { ...s.rig, timeS },
+      realistic: { ...s.realistic, reports: { ...s.realistic.reports, [key]: report } },
+    };
+  };
+
+  it('5. a slipping rope is written once, again only after the gap, per rope', () => {
+    const a = slipping(start, true, 20);
+    let log = recordAlerts(EMPTY_ALERTS, start, a);
+    expect(log.entries).toHaveLength(1);
+    expect(log.entries[0]).toMatchObject({ kind: 'ropeSlipping', rope: tail?.ropeId });
+    expect(log.entries[0] && alertTag(log.entries[0])).toBe('rope');
+    // Still slipping: nothing new. Stops and starts 5 s later: still inside the gap.
+    expect(recordAlerts(log, a, slipping(a, true, 21))).toBe(log);
+    const off = slipping(a, false, 24);
+    expect(recordAlerts(log, a, off)).toBe(log);
+    const again5 = slipping(off, true, 20 + 5);
+    expect(recordAlerts(log, off, again5)).toBe(log);
+    const again10 = slipping(off, true, 20 + ropeRepeatGapS);
+    log = recordAlerts(log, off, again10);
+    expect(kinds(log)).toEqual(['ropeSlipping', 'ropeSlipping']);
+    // Another rope 1 s later is its own entry.
+    const other = tailSpecs().find((s) => s.ropeId !== tail?.ropeId);
+    expect(other).toBeDefined();
+    const second = slipping(again10, true, 20 + ropeRepeatGapS + 1, other?.key);
+    const log2 = recordAlerts(log, again10, second);
+    expect(log2.entries.at(-1)).toMatchObject({ kind: 'ropeSlipping', rope: other?.ropeId });
+  });
+
+  it('6. a winch cutting out is written with its id', () => {
+    const id = winchIds()[0] ?? '';
+    const winch = start.realistic.winches[id];
+    expect(winch).toBeDefined();
+    const next: AppState = {
+      ...start,
+      realistic: {
+        ...start.realistic,
+        winches: { ...start.realistic.winches, [id]: { ...(winch as WinchState), cutOut: true } },
+      },
+    };
+    const log = recordAlerts(EMPTY_ALERTS, start, next);
+    expect(log.entries[0]).toMatchObject({ kind: 'winchCutOut', winch: id, severity: 'warning' });
+    expect(recordAlerts(log, next, next)).toBe(log);
+  });
+
+  it('7. shutting a clutch on a running rope is written when the notice appears', () => {
+    const notice = { key: 'closedOnRunning', tail: tail?.key ?? null } as const;
+    const next: AppState = { ...start, realistic: { ...start.realistic, notice } };
+    const log = recordAlerts(EMPTY_ALERTS, start, next);
+    expect(log.entries[0]).toMatchObject({ kind: 'clutchOnRunning', rope: tail?.ropeId });
+    // The same notice object again: nothing.
+    expect(recordAlerts(log, next, { ...next, rig: { ...next.rig, timeS: 1 } })).toBe(log);
+    // Another notice with the same key within the gap: not written again.
+    const renewed: AppState = {
+      ...next,
+      rig: { ...next.rig, timeS: 3 },
+      realistic: { ...next.realistic, notice: { ...notice } },
+    };
+    expect(recordAlerts(log, next, renewed)).toBe(log);
+  });
+
+  it('9. the texts: a hit says its report, a rope its name, a winch its side; both languages', () => {
+    const r = hit('quay', 'hit');
+    const contact = recordAlerts(EMPTY_ALERTS, start, withReports(start, [r])).entries[0];
+    expect(contact && alertText(contact)).toBe(damageText(r));
+    const slip = recordAlerts(EMPTY_ALERTS, start, slipping(start, true, 20)).entries[0];
+    expect(slip && alertText(slip)).toContain(': slipping on the winch drum. Add a turn.');
+    expect(slip && alertText(slip).startsWith(': ')).toBe(false);
+    const sides = winchIds().map((winch) =>
+      alertText({ n: 1, kind: 'winchCutOut', atS: 0, severity: 'warning', winch }),
+    );
+    expect(sides.some((text) => text.includes('port winch'))).toBe(true);
+    expect(sides.some((text) => text.includes('starboard winch'))).toBe(true);
+    for (const key of [
+      'alert.ropeSlipping',
+      'alert.winchCutOut',
+      'alert.clutchOnRunning',
+    ] as const) {
+      expect(key in ru, key).toBe(true);
+    }
+  });
+
+  it('8. every kind has a tag; the tags of the kinds', () => {
+    const entry = (kind: (typeof ALERT_KINDS)[number], extra = {}) => ({
+      n: 1,
+      kind,
+      atS: 0,
+      severity: 'info' as const,
+      ...extra,
+    });
+    expect(alertTag(entry('gybe', { report: report(true) }))).toBe('danger');
+    expect(alertTag(entry('gybe', { report: report(false) }))).toBe('steering');
+    expect(alertTag(entry('overpowered'))).toBe('sail');
+    expect(alertTag(entry('fendersOut'))).toBe('gear');
+    expect(alertTag(entry('roundUp'))).toBe('danger');
+    expect(alertTag(entry('tack'))).toBe('steering');
+    for (const kind of ALERT_KINDS) expect(ALERT_TAGS).toContain(alertTag(entry(kind)));
   });
 });

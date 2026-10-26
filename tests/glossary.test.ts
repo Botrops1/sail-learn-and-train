@@ -616,9 +616,10 @@ describe('11. NOT_DRAWN lists exactly the ids that no mesh or rope carries', () 
       const path = join(dir, name);
       return statSync(path).isDirectory() ? files(path) : [path];
     });
-  // glossary.ts itself lists the NOT_DRAWN ids.
+  // glossary.ts itself lists the NOT_DRAWN ids; alerts.ts (M55) only names the Learn entry each alert opens, it draws nothing.
   const text = [...files('src'), ...files('content/boat')]
     .filter((path) => !path.endsWith(join('model', 'glossary.ts')))
+    .filter((path) => !path.endsWith(join('model', 'alerts.ts')))
     .map((path) => readFileSync(path, 'utf8'))
     .join('\n');
 

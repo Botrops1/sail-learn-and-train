@@ -28,6 +28,7 @@ const SECTION_ORDER = {
     'place',
     'anchor',
     'harbour',
+    'status',
     'settings',
   ],
   realistic: [
@@ -39,6 +40,7 @@ const SECTION_ORDER = {
     'learn',
     'place',
     'harbour',
+    'status',
     'settings',
   ],
   learn: [
@@ -52,6 +54,7 @@ const SECTION_ORDER = {
     'place',
     'anchor',
     'harbour',
+    'status',
     'settings',
   ],
 };
@@ -103,7 +106,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'Easy: every section folded (M35)',
       opens.join() ===
-        'mode:false,ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,place:false,anchor:false,harbour:false,settings:false',
+        'mode:false,ropes:false,sails:false,autopilot:false,engine:false,conditions:false,learn:false,place:false,anchor:false,harbour:false,status:false,settings:false',
       opens.join(),
     );
     const tabs = await page.locator('[role="tab"]').count();

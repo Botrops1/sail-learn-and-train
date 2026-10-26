@@ -123,6 +123,8 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
     await page.evaluate(() => window.__sailDebug.setDamage(0.6, 0.2));
     await page.waitForTimeout(800);
     check('badge from half worn', await page.getByTestId('strip-sail').isVisible(), 'visible');
+    // M55: the wear bars and Repair are in the Status section.
+    await showSection(page, 'status');
     check(
       'wear bar text',
       (await text(page, 'trim-wear-main')).includes('Flogging wears the sail'),
@@ -130,7 +132,9 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
     );
     await page.evaluate(() => window.__sailDebug.setDamage(1, 1));
     await page.waitForTimeout(800);
+    await showSection(page, 'sails');
     check('main chip says Torn', (await text(page, 'trim-chip-main')) === 'Torn', 'Torn');
+    await showSection(page, 'status');
     check('Repair button', await page.getByTestId('repair-sails').isVisible(), 'visible');
     await closeUp(page, TEAR_VIEW);
     await shot(page, 'torn-phone');
@@ -138,6 +142,7 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
     await page.getByTestId('repair-sails').scrollIntoViewIfNeeded();
     await page.getByTestId('repair-sails').click();
     await page.waitForTimeout(500);
+    await showSection(page, 'sails');
     check('repair clears Torn', (await text(page, 'trim-chip-main')) !== 'Torn', 'repaired');
     await context.close();
   }

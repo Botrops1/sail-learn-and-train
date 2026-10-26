@@ -8,7 +8,7 @@ import { closeSettings, columnSections, moveSectionBy, openSettings, setMode } f
 export const M54_SCENES = [{ name: 'layout-default', query: '?cam=side-port' }];
 
 const DEFAULT_COLUMNS = [
-  ['ropes', 'sails', 'autopilot', 'engine', 'place', 'anchor', 'harbour'],
+  ['ropes', 'sails', 'autopilot', 'engine', 'place', 'anchor', 'harbour', 'status'],
   ['conditions', 'learn'],
 ];
 

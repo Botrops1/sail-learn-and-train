@@ -157,11 +157,14 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
     const ids = await sectionIds(page);
     const height = heads[ids[0]].bottom - heads[ids[0]].top;
     check('sideways: headers are thin (34 px)', height >= 33 && height <= 36, String(height));
+    // M55: ten headers (Status is the tenth) no longer fit one sideways phone screen; the panel scrolls, so the last one is reached by scrolling.
+    await page.getByTestId(`section-${ids[ids.length - 1]}`).scrollIntoViewIfNeeded();
+    const reached = await headBoxes(page);
     const column = await columnBox(page, 'ropes');
     check(
-      'sideways: the last header is inside the panel',
-      heads[ids[ids.length - 1]].bottom <= column.bottom + 1,
-      JSON.stringify(heads[ids[ids.length - 1]]),
+      'sideways: the last header is inside the panel (after scrolling to it)',
+      reached[ids[ids.length - 1]].bottom <= column.bottom + 1,
+      JSON.stringify(reached[ids[ids.length - 1]]),
     );
     await shot(page, 'live-landscape-m35-ropes');
     await context.close();

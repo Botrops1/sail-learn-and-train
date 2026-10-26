@@ -1,6 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { area } from '../model/area';
-import { fenderHintShown } from '../model/harbour';
+import { fenderHintShown, type HarbourState } from '../model/harbour';
 import { marinaGeometry } from '../model/marina';
 import {
   BAY_LINE_CODES,
@@ -22,6 +22,19 @@ const FENDER_OPTIONS = [
   { value: 'stowed', out: false },
   { value: 'out', out: true },
 ] as const;
+
+/** The fenders' status line: how many are over the side and how many were torn off while sailing (M43; also the Status section, M55). */
+export function fenderStatusText(harbour: HarbourState): string {
+  const lost = harbour.fendersLost.length;
+  return harbour.fendersOut
+    ? [
+        t('harbour.fenders.status.out', { count: FENDER_COUNT - lost }),
+        lost > 0 ? t('harbour.fenders.status.lost', { count: lost }) : '',
+      ]
+        .join(' ')
+        .trim()
+    : t('harbour.fenders.status.in');
+}
 
 /**
  * The Harbour gear section (M33, PHASE6_SPEC 9.4): the fenders, In the locker or Out, and a hint
@@ -65,15 +78,7 @@ export function createHarbourPanel(store: Store): HTMLElement[] {
     }
     for (const { out, input } of inputs) input.checked = out === state.harbour.fendersOut;
     hint.hidden = !fenderHintShown(state.harbour, state.boat.mode);
-    const lost = state.harbour.fendersLost.length;
-    status.textContent = state.harbour.fendersOut
-      ? [
-          t('harbour.fenders.status.out', { count: FENDER_COUNT - lost }),
-          lost > 0 ? t('harbour.fenders.status.lost', { count: lost }) : '',
-        ]
-          .join(' ')
-          .trim()
-      : t('harbour.fenders.status.in');
+    status.textContent = fenderStatusText(state.harbour);
   };
   store.subscribe(sync);
   sync(store.getState());

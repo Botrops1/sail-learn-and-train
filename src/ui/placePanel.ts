@@ -1,7 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { MARINA_LAYOUT_IDS, TRAFFIC_IDS } from '../model/marina';
 import { PLACE_IDS } from '../model/places';
-import { createDamageList } from './damageReport';
 import { el } from './dom';
 import { t } from './i18n';
 
@@ -48,7 +47,7 @@ function choiceRow<T extends string>(
 /**
  * The Place section (M42, PHASE7_SPEC 8.6): Open water or Marina, and in the marina its layout
  * how many other yachts lie there, and the arrow over our berth. Choosing a place puts the boat there ready for harbour
- * work (also choosing the one she is in: back to the start). M43 adds the damage report here.
+ * work (also choosing the one she is in: back to the start). The damage report moved to the Status section (M55).
  */
 export function createPlacePanel(store: Store): HTMLElement[] {
   const places = choiceRow(
@@ -100,5 +99,5 @@ export function createPlacePanel(store: Store): HTMLElement[] {
   };
   store.subscribe(sync);
   sync(store.getState());
-  return [places.row, layouts.row, traffic.row, arrow, status, createDamageList(store), hint];
+  return [places.row, layouts.row, traffic.row, arrow, status, hint];
 }
