@@ -17,6 +17,15 @@ import {
 } from './modes';
 import type { ChipCard } from './chipCard';
 import { createPanelTabs, type PanelTab } from './panelTabs';
+import {
+  LAYOUT_KEY,
+  completeLayout,
+  parseLayout,
+  serializeLayout,
+  type SectionLayout,
+  type WideSectionId,
+} from './sectionLayout';
+import { createSectionMove } from './sectionMove';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
 import { createPlacePanel } from './placePanel';
@@ -85,6 +94,23 @@ function wheelSelected(state: AppState): boolean {
 export function scrollToSection(element: HTMLElement): void {
   const content = element.querySelector<HTMLElement>('.section-body');
   if (content && element.offsetParent !== null) content.scrollTop = 0;
+}
+
+/** M54: the arrangement saved on this device, completed; the default when nothing usable is saved. */
+function readArrangement(): SectionLayout {
+  try {
+    return completeLayout(parseLayout(window.localStorage.getItem(LAYOUT_KEY)));
+  } catch {
+    return completeLayout(null);
+  }
+}
+
+function writeArrangement(arrangement: SectionLayout): void {
+  try {
+    window.localStorage.setItem(LAYOUT_KEY, serializeLayout(arrangement));
+  } catch {
+    // Private window or blocked storage: the arrangement is just not remembered.
+  }
 }
 
 export function createPanel(
@@ -166,6 +192,8 @@ export function createPanel(
   host.append(body, second);
   // M39: on the wide layout the columns collapse and change width (columnHandles.ts).
   const columns = createColumnHandles(host, [body, second], layout, () => changed());
+  // M54: where the sections are on the wide layout. Read once here, written only after a move.
+  let arrangement = readArrangement();
 
   const layoutKindNow = (): LayoutKind => {
     const { mode, wide } = layout.viewport();
@@ -190,14 +218,14 @@ export function createPanel(
   syncBody('controls');
 
   /**
-   * Puts each section where the layout says: in the wide layout the mode's `second` sections fill
-   * column 2 and the rest stay in column 1; otherwise everything is in column 1, in the mode's
-   * order. Moves the elements, never rebuilds them, and keeps the focus where it was.
+   * Puts each section where the layout says: on the wide layout the two columns hold the saved
+   * arrangement (M54, the same in every mode; Mode and Settings are hidden there and stay in
+   * column 1); otherwise everything is in column 1, in the mode's order. Moves the elements,
+   * never rebuilds them, and keeps the focus where it was.
    */
   function place(state: AppState): void {
     const mode = MODE_LAYOUTS[state.appMode];
     const wide = layoutKind === 'wide';
-    const inSecond = wide ? mode.second : [];
     const elementOf = (id: SectionId) => sections.get(id)?.element as HTMLElement;
     const focused = document.activeElement;
     const focusedInside =
@@ -217,8 +245,14 @@ export function createPanel(
     ] as const) {
       if (target && content.parentElement !== target) target.append(content);
     }
-    second.append(...inSecond.map(elementOf));
-    body.append(...mode.order.filter((id) => !inSecond.includes(id)).map(elementOf));
+    if (wide) {
+      second.append(...arrangement.columns[1].map(elementOf));
+      body.append(
+        ...['mode', ...arrangement.columns[0], 'settings'].map((id) => elementOf(id as SectionId)),
+      );
+    } else {
+      body.append(...mode.order.map(elementOf));
+    }
     if (focusedInside && document.activeElement !== focused) {
       (focused as HTMLElement).focus({ preventScroll: true });
     }
@@ -256,6 +290,27 @@ export function createPanel(
       for (const id of open.slice(1)) sections.get(id)?.setOpen(false);
     }
   }
+
+  /** M54: a section was moved (a drag, the menu or the keys). Keeps and saves the arrangement, places the sections. */
+  function applyMove(next: SectionLayout, moved: WideSectionId): void {
+    arrangement = next;
+    writeArrangement(next);
+    place(store.getState());
+    const view = sections.get(moved);
+    if (!view) return;
+    columns.reveal(view.element);
+    // The moved section wins in its new column.
+    if (view.isOpen()) openOnly(moved);
+    else keepOneOpenPerColumn();
+    changed();
+  }
+  createSectionMove({
+    sections,
+    columns: [body, second],
+    layout: () => arrangement,
+    apply: applyMove,
+    isCollapsed: columns.isCollapsed,
+  });
 
   /**
    * Folds every section at the start (M35); a link that names something to look at opens the

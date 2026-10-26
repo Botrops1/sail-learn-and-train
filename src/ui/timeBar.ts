@@ -15,7 +15,7 @@ import { setText } from './stepper';
 const NOTE_SHOWN_MS = 6000;
 
 /** Where the fold of the bar is remembered on this device (not in the link). */
-const FOLD_KEY = 'sail-learn.timeBarFolded';
+export const FOLD_KEY = 'sail-learn.timeBarFolded';
 
 function readFolded(): boolean {
   try {

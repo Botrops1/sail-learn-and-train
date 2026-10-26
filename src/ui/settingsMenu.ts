@@ -5,9 +5,12 @@ import { shareLink } from '../app/urlSync';
 import { LANGUAGES, languageName } from '../model/languages';
 import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { createChipCard, type ChipCard } from './chipCard';
+import { COLUMNS_KEY } from './columnWidths';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
+import { LAYOUT_KEY } from './sectionLayout';
+import { FOLD_KEY } from './timeBar';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -294,13 +297,80 @@ function buildSettingsBody(store: Store): HTMLElement[] {
     miniMapField,
     stepGroup,
     detailGroup,
+    buildLayoutReset(store),
     ...buildShareAndReset(store),
     debugField,
   ];
 }
 
-/** How long Reset waits for the second tap, ms. */
+/** How long a two-tap button waits for the second tap, ms. */
 const RESET_ARM_MS = 4000;
+
+/**
+ * A button that asks for a second tap (M54: Reset, Reset layout; later M58's Remove): the first
+ * tap shows the confirm label and sets `data-armed="true"`, the second runs `onConfirm`; after
+ * `RESET_ARM_MS` without one the idle label comes back.
+ */
+export function createConfirmButton(
+  button: HTMLButtonElement,
+  labels: { idle: string; confirm: string },
+  onConfirm: () => void,
+): void {
+  let armed: number | undefined;
+  const disarm = () => {
+    window.clearTimeout(armed);
+    armed = undefined;
+    button.textContent = labels.idle;
+    button.removeAttribute('data-armed');
+  };
+  button.addEventListener('click', () => {
+    if (armed === undefined) {
+      button.textContent = labels.confirm;
+      button.setAttribute('data-armed', 'true');
+      armed = window.setTimeout(disarm, RESET_ARM_MS);
+      return;
+    }
+    disarm();
+    onConfirm();
+  });
+}
+
+/**
+ * M54 (PHASE8_SPEC 12.2): Reset layout puts the sections, the column widths and folds and the time
+ * bar back as at the start. Built always; CSS shows it on the wide layout only. The page loads
+ * again, as a change of language does, with the Settings reopened.
+ */
+function buildLayoutReset(store: Store): HTMLElement {
+  const button = el(
+    'button',
+    {
+      type: 'button',
+      class: 'action-button action-reset',
+      'data-testid': 'layout-reset',
+    },
+    [t('layout.reset')],
+  );
+  createConfirmButton(
+    button,
+    { idle: t('layout.reset'), confirm: t('layout.resetConfirm') },
+    () => {
+      try {
+        for (const key of [LAYOUT_KEY, COLUMNS_KEY, FOLD_KEY]) window.localStorage.removeItem(key);
+      } catch {
+        // Private window: nothing was remembered.
+      }
+      openAfterReload('settings');
+      // The address bar can lag the store by 300 ms, so the link is built from the store.
+      const link = serializeUrlState(store.getState());
+      window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
+    },
+  );
+  return el('div', { class: 'field', 'data-testid': 'layout-field' }, [
+    el('p', { class: 'field-title' }, [t('layout.label')]),
+    el('div', { class: 'actions' }, [button]),
+    el('p', { class: 'hint' }, [t('layout.resetHint')]),
+  ]);
+}
 
 /**
  * Share copies a link to exactly what is shown (PHASE1_SPEC 9.2); if the browser does not allow
@@ -346,25 +416,15 @@ function buildShareAndReset(store: Store): HTMLElement[] {
     { type: 'button', class: 'action-button action-reset', 'data-testid': 'reset-button' },
     [t('view.reset.button')],
   );
-  let armed: number | undefined;
-  const disarm = () => {
-    window.clearTimeout(armed);
-    armed = undefined;
-    reset.textContent = t('view.reset.button');
-    reset.removeAttribute('data-armed');
-  };
-  reset.addEventListener('click', () => {
-    if (armed === undefined) {
-      reset.textContent = t('view.reset.confirm');
-      reset.setAttribute('data-armed', 'true');
-      armed = window.setTimeout(disarm, RESET_ARM_MS);
-      return;
-    }
-    disarm();
-    store.dispatch({ type: 'reset' });
-    linkField.hidden = true;
-    status.textContent = t('view.reset.done');
-  });
+  createConfirmButton(
+    reset,
+    { idle: t('view.reset.button'), confirm: t('view.reset.confirm') },
+    () => {
+      store.dispatch({ type: 'reset' });
+      linkField.hidden = true;
+      status.textContent = t('view.reset.done');
+    },
+  );
 
   return [
     el('div', { class: 'field' }, [

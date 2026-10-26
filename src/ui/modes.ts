@@ -25,10 +25,11 @@ export const SECTION_IDS = [
 export type SectionId = (typeof SECTION_IDS)[number];
 
 export interface ModeLayout {
-  /** Every section exactly once, top to bottom (stacked layout, and column 1 of the side layout). */
+  /**
+   * Every section exactly once, top to bottom (stacked layout, and the side layout's column; the
+   * wide layout's two columns come from the saved layout, sectionLayout.ts, M54).
+   */
   order: readonly SectionId[];
-  /** Wide layout (M29): these leave column 1 and fill column 2, in this order. */
-  second: readonly SectionId[];
 }
 
 /**
@@ -70,7 +71,6 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'harbour',
       'settings',
     ],
-    second: ['conditions', 'learn'],
   },
   realistic: {
     order: [
@@ -87,7 +87,6 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'harbour',
       'settings',
     ],
-    second: ['conditions', 'learn'],
   },
   learn: {
     order: [
@@ -104,7 +103,6 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'harbour',
       'settings',
     ],
-    second: ['conditions', 'ropes'],
   },
   harbour: {
     order: [
@@ -121,7 +119,6 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'learn',
       'settings',
     ],
-    second: ['place', 'conditions'],
   },
 };
 

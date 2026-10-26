@@ -2,6 +2,7 @@ import { el } from './dom';
 import { t } from './i18n';
 import {
   clampColumnWidth,
+  COLUMNS_KEY,
   COLUMN_DEFAULT_PX,
   COLUMN_KEY_BIG_STEP_PX,
   COLUMN_KEY_STEP_PX,
@@ -13,9 +14,6 @@ import {
   type ColumnState,
 } from './columnWidths';
 import type { LayoutShell } from './layout';
-
-/** Where the widths and the folds are remembered on this device (not in the link). */
-const COLUMNS_KEY = 'sail-learn.columns';
 
 function readColumns(): ColumnState {
   try {
