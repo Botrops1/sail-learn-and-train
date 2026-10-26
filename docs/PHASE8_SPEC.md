@@ -1115,6 +1115,8 @@ Moving sections on a phone or the side layout, a layout per mode, moving the chi
 - Decided in the M54 PR (recommended; merging accepts it): `tests/modes.test.ts` loses the lines that read `.second` (12.5 test 9) and also the loop in "is under the Controls tab and never in the second column" (renamed "is under the Controls tab"), because `second` no longer exists; the TAB_OF assertion in it stays.
 - Decided in the M54 PR (recommended; merging accepts it): `scripts/shots-m29.mjs` changes as 12.8 says; its open states are read from every `[data-section]` child of column 2, hidden ones included (column 2 holds only `conditions` and `learn` by default).
 - Decided in the M54 PR (recommended; merging accepts it): `scripts/ui.mjs` gets `moveSectionBy` and `columnSections` (12.6).
+- Decided in the M54 PR (recommended; merging accepts it): a section dropped or moved into a column keeps its open state; if it was open it wins over the open section of its new column (`openOnly`), otherwise the "one open per column" rule (M35) folds all but the latest opened.
+- Decided in the M54 PR (recommended; merging accepts it): sections that are hidden in the current mode (for example Helm in Easy) keep their place in the saved arrangement and reappear there.
 
 ---
 
