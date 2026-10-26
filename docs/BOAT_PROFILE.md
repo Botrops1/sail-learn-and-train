@@ -45,6 +45,14 @@ These are planned as "nice to have" for later, after the main functions are poli
 6. To take a thruster away, delete its entry from the list `hull.thrusters` (keep the other one, or leave the list empty `[]` for a boat with none).
 7. Save the file. Check that it still reads as JSON: every number is a plain number (`15.55`, not `"15.55"`), commas between entries, none after the last one.
 
+## Using a boat profile in the app
+
+1. Open **Settings → Boat** and tap **Import a boat profile**; choose your file. If it passes the checks, the app says "Imported …" and the name appears in the list above. If not, the first five problems are listed as `path: detail` (see the checks below); nothing is kept.
+2. Choose the boat in the list. The app starts again on that boat (a fresh start: only the language carries over). The link now has `boat=<id>`.
+3. The boat stays on this device (up to 10 boats). **Remove this boat** (tap twice) takes the boat in use away and goes back to the Hanse 508.
+4. A link with `boat=<id>` opens that boat on a device that has it. On a device that does not, the app shows the Hanse 508 with a note. To move a boat to another device, send the profile file, or save your setup (**Settings → Your setup → Save**): the setup file carries the boat in use.
+5. To change a boat, edit the file and import it again; if it is the boat in use, the app starts again on the new numbers.
+
 ## The checks
 
 The app checks a profile before it uses it. A check names the place in the file, `boat.dimensions.loa` for example, and what is wrong.

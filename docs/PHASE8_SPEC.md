@@ -1453,8 +1453,8 @@ export function checkBoatProfile(raw: unknown, reference: BoatData = HANSE_508):
 | `physics.thrusters.bowThrustN`, `sternThrustN` | 0 to 10,000 N |
 | `realisticMode.winchHandle.lengthM` | 0.15 to 0.4 m |
 | `physics.integration.maxStepS` | 0.005 to 0.1 s (0 would never end a step) |
-| `physics.integration.solverAwaStepDeg` | 0.01 to 5° |
-| `physics.integration.solverAwsStepKn` | 0.01 to 5 kn |
+| `physics.integration.solverAwaStepDeg` | 0.01 to 2° (M58: was 5; see 16.12) |
+| `physics.integration.solverAwsStepKn` | 0.01 to 2 kn (M58: was 5; see 16.12) |
 | `physics.mass.payloadKg` | 0 to 20,000 kg |
 | `physics.mass.addedMassFraction` | 0 to 2 |
 
@@ -1675,7 +1675,20 @@ Built-in second boat, boat-specific Learn texts, editing a profile in the app, o
 - Browser checks with a bow-only boat and a boat with no thrusters (the Engine section's Thrusters block, the quick row's group, the Helm block, the 3D tunnels), because only M58 can load such a boat.
 - `checkBoatProfile` asks for a whole `version` of at least 1 and a `name` that is not blank (it is shown in the boat chooser).
 
-(empty)
+**Done in the M58 PR:**
+
+- `tests/boatExtremes.test.ts` sails nine profiles at the ends of their ranges (the smallest and the biggest boat, the coarsest and the finest solver and step, the heaviest and the lightest mass, sail-force tables all zero, thrusters at 10,000 N with one 100 m from the mast, no thrusters) for 60 s sailing and 10 s in Harbour with both thrusters held: no NaN in the boat state. **It found one real break:** `solverAwaStepDeg` or `solverAwsStepKn` above 2 gave `Math.round(1 / step)` = 0 sub-steps in `sim.ts` (NaN heading and speed at 3 or more; at 3 kn the speed collapsed). **Decided in the M58 PR (recommended; merging accepts it):** both ranges in `checkBoatProfile` now end at **2** (was 5), and `docs/BOAT_PROFILE.md` says so; the Hanse 508's values (0.1° and 0.05 kn) are unchanged. Nothing in `sim.ts` changed (no model formula).
+- The browser checks (`scripts/shots-m58.mjs`) load a bow-only boat and a boat with no thrusters: the quick row's group, the Engine section's Thrusters block, the Helm block and the 3D tunnels follow (the debug hook `__sailDebug.hasPart(partId)` was added for the tunnels).
+- `version` must be a whole number of at least 1; `name` must not be blank (`tests/boatProfile.test.ts`).
+
+**Decided in the M58 PR (recommended; merging accepts it):**
+
+- **A setup file's boat must be an imported one:** `readSetupFile` gives `badBoat` also when the file has a `boatProfile` but the link has no `boat=` (the check `id === linkBoatId(link)` covers it), so a file cannot carry a boat the link does not open.
+- **The chooser starts fresh:** choosing a boat, removing one and Back across boats all start the page again on `?v=1[&boat=…][&lang=…]` (16.5), so `debug=1` and every other setting are dropped; the browser checks open `debug=1` again with a full load.
+- **Import errors keep the last list:** a bad file leaves what is stored untouched and the select as it was; the problem list shows at most 5 lines (`path: detail`), and the status line counts all (at most 20).
+- **Re-importing the boat in use reloads the page** (16.5) with the Settings open again; importing any other boat only adds it to the list.
+- **A "missing boat" link** shows the note once; the first address-bar write drops `boat=`; × only removes the note.
+- Russian `boat.problem.builtIn` says "собственный идентификатор" instead of the Latin "id" (the Russian screens allow no stray Latin words, `tests/languages.test.ts`).
 
 ---
 
