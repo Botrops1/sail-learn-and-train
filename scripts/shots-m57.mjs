@@ -53,7 +53,9 @@ export async function liveM57Checks({ openPage, viewports, outDir, prefix, probl
       `${href} ${target}`,
     );
     problems.push(...(await auditPage(page, 'm57 desktop boat field')));
+    await field.scrollIntoViewIfNeeded();
     await shot(page, 'live-desktop');
+    await field.screenshot({ path: path.join(outDir, `${prefix}live-desktop-field.png`) });
     await context.close();
   }
 
@@ -73,6 +75,7 @@ export async function liveM57Checks({ openPage, viewports, outDir, prefix, probl
       );
     }
     problems.push(...(await auditPage(page, 'm57 phone boat field')));
+    await page.getByTestId('boat-field').scrollIntoViewIfNeeded();
     await shot(page, 'live-phone');
     await context.close();
   }
