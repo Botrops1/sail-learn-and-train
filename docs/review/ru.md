@@ -2993,6 +2993,10 @@
 | learn.group.harbour | Harbour and anchoring ({count}) | Гавань и якорная стоянка ({count}) |
 | view.language.label | Language | Язык |
 | view.language.hint | The whole app switches to this language. The page reloads. | Всё приложение переходит на этот язык. Страница перезагрузится. |
+| boat.label | Boat | Яхта |
+| boat.download | Download this boat's profile | Скачать профиль этой яхты |
+| boat.hint | A boat profile is a file with every number of a boat. Start from this one to describe a similar yacht. | Профиль яхты — файл со всеми её числами. Начните с этого, чтобы описать похожую яхту. |
+| boat.guide | How to make a boat profile | Как сделать профиль яхты |
 | number.thousandsSeparator | , | U+00A0 |
 | clock.date | {weekday} {day} {month} {year} | {weekday}, {day} {month} {year} |
 | area.adriatic | Adriatic (Split) | Адриатика (Сплит) |

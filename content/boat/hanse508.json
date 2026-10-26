@@ -1,6 +1,8 @@
 {
   "$comment": "Hanse 508 geometry for sail-learn-and-train. Single source of truth for the 3D model and the rig solver. Units: metres and degrees. See docs/BOAT_REFERENCE.md for how every number was obtained and how confident we are.",
   "meta": {
+    "id": "hanse508",
+    "name": "Hanse 508",
     "model": "Hanse 508",
     "variant": "Reference boat: in-mast furling main (manual, Selden, two-line furling drive), self-tacking jib on a Selden Furlex 404S manual furler, German mainsheet, rigid vang (Selden Rodkicker), single forestay, no gennaker rigged",
     "frame": {

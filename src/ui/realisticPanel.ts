@@ -19,7 +19,7 @@ import { createAnchorPanel } from './anchorPanel';
 import { createAutopilotPanel } from './autopilotPanel';
 import { createEngineLever } from './enginePanel';
 import { createLineRow } from './harbourPanel';
-import { createThrusterPair } from './thrusterPanel';
+import { createThrusterPair, hasAnyThruster } from './thrusterPanel';
 import { el } from './dom';
 import { part, quoted, t, type StringKey } from './i18n';
 import {
@@ -199,6 +199,11 @@ export function createHelmStation(store: Store): HTMLElement {
     t('real.helm.go'),
   ]);
   go.addEventListener('click', () => dispatch({ type: 'station', station: 'helm' }));
+  const thrusterHelm = el('div', { class: 'thruster-helm', 'data-testid': 'thruster-helm' }, [
+    createThrusterPair(store, 'helm'),
+  ]);
+  // A boat without thrusters has no thruster block at the Helm (M57).
+  thrusterHelm.hidden = !hasAnyThruster();
   const controls = el('div', { class: 'helm-controls', 'data-testid': 'helm-controls' }, [
     el('p', { class: 'hint explain' }, [t('real.helm.hint')]),
     helmSlot.element,
@@ -206,9 +211,7 @@ export function createHelmStation(store: Store): HTMLElement {
     wheel.element,
     createAutopilotPanel(store),
     createEngineLever(store),
-    el('div', { class: 'thruster-helm', 'data-testid': 'thruster-helm' }, [
-      createThrusterPair(store, 'helm'),
-    ]),
+    thrusterHelm,
     // The windlass remote (M46): the helmsman lets the chain out without going forward.
     el(
       'div',

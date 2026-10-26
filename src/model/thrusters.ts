@@ -24,6 +24,16 @@ export function thrusterSpeedFactor(speedMps: number, data: BoatData = hanse508)
   return interpTable(data.physics.thrusters.speedFactorByKn, mpsToKn(Math.abs(speedMps), data));
 }
 
+/** Whether this boat has a thruster at that end (`hull.thrusters` lists 0, 1 or 2 of them, M57). */
+export function hasThruster(end: 'bow' | 'stern', data: BoatData = hanse508): boolean {
+  return data.hull.thrusters.some((thruster) => thruster.end === end);
+}
+
+/** The ends this boat has a thruster at, bow first. */
+export function thrusterEnds(data: BoatData = hanse508): ('bow' | 'stern')[] {
+  return (['bow', 'stern'] as const).filter((end) => hasThruster(end, data));
+}
+
 /** The x of a thruster on the centreline, boat frame (from `hull.thrusters`). */
 export function thrusterX(end: 'bow' | 'stern', data: BoatData = hanse508): number {
   const found = data.hull.thrusters.find((thruster) => thruster.end === end);
@@ -31,7 +41,7 @@ export function thrusterX(end: 'bow' | 'stern', data: BoatData = hanse508): numb
   return found.x;
 }
 
-/** Both thrusters' push on the boat now (boat frame), at their x on the centreline. */
+/** The thrusters' push on the boat now (a missing one adds nothing), at their x on the centreline, boat frame. */
 export function thrusterForces(
   t: ThrusterState,
   boat: BoatState,
@@ -39,10 +49,14 @@ export function thrusterForces(
 ): ExternalForces {
   const { bowThrustN, sternThrustN } = data.physics.thrusters;
   const f = thrusterSpeedFactor(boat.speedMps, data);
-  return addForces(
-    forceAt(thrusterX('bow', data), 0, 0, t.bow * bowThrustN * f, data),
-    forceAt(thrusterX('stern', data), 0, 0, t.stern * sternThrustN * f, data),
-  );
+  const parts: ExternalForces[] = [];
+  if (hasThruster('bow', data)) {
+    parts.push(forceAt(thrusterX('bow', data), 0, 0, t.bow * bowThrustN * f, data));
+  }
+  if (hasThruster('stern', data)) {
+    parts.push(forceAt(thrusterX('stern', data), 0, 0, t.stern * sternThrustN * f, data));
+  }
+  return addForces(...parts);
 }
 
 /**

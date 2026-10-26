@@ -9,7 +9,8 @@ import { nameOf } from './learnTab';
 import { controlView, valueText } from './ropeControls';
 import type { Sheet } from './sheet';
 import { setText, stepButton } from './stepper';
-import { createThrusterJoystick } from './thrusterPanel';
+import { thrusterEnds } from '../model/thrusters';
+import { createThrusterJoystick, hasAnyThruster } from './thrusterPanel';
 
 /**
  * The quick row in the sheet's head (PHASE5_SPEC 8.5): what the sheet shows at its lowest height,
@@ -69,12 +70,16 @@ export function createQuickRow(head: HTMLElement, store: Store, sheet: Sheet): v
       el('span', { class: 'quick-tag' }, [t(tag)]),
       el('div', { class: 'quick-group-row' }, parts),
     ]);
+  const thrusterGroup = tagged(
+    'quick.harbour.thrusters',
+    'quick-thrusters',
+    thrusterEnds().map((end) => createThrusterJoystick(store, end, 'quick')),
+  );
+  // A boat without thrusters has no thruster group in the quick row (M57).
+  thrusterGroup.hidden = !hasAnyThruster();
   const harbour = el('div', { class: 'quick-harbour', 'data-testid': 'quick-harbour' }, [
     tagged('quick.harbour.engine', 'quick-engine', [leverLess, leverValue, leverMore]),
-    tagged('quick.harbour.thrusters', 'quick-thrusters', [
-      createThrusterJoystick(store, 'bow', 'quick'),
-      createThrusterJoystick(store, 'stern', 'quick'),
-    ]),
+    thrusterGroup,
   ]);
 
   const root = el('div', { class: 'quick-row', 'data-testid': 'quick-row' }, [

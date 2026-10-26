@@ -1518,7 +1518,15 @@ Importing and choosing a boat (M58), the boat in the link (M58), other rigs.
 
 ### 15.11 Decided in the M57 PR
 
-(empty)
+- **Recommended; merging accepts it:** a name key (`id`, `controlId`, …) whose reference value is `null` must stay `null` in a profile (an `ids` problem otherwise), so a rope cannot gain a control by editing the file. Only the other `null` values follow the general rule "null or a string". The Hanse 508 has two such ropes (`controlId: null`).
+- **Recommended; merging accepts it:** a list of entries with `id` of a different length is one `ids` problem on the list (it names the expected ids); a list of the same length is checked entry by entry, so a swapped pair gives an `ids` problem on each swapped `id`.
+- **Recommended; merging accepts it:** `hull.stemX − hull.transomX` is reported at `boat.hull.stemX` with the detail "5 to 25 between stemX and transomX"; it is checked only when both numbers are fine.
+- **Recommended; merging accepts it:** `checkBoatProfile` hands back the file's own `boat` object (no copy); `makeBoatProfile` is the one that clones.
+- **Recommended; merging accepts it:** `thrusterEnds(data)` (bow first) is added to `thrusters.ts`, and `hasAnyThruster()` to `thrusterPanel.ts`; the 3D thrusters and every joystick block are built from them. `[hidden]` rules for `.thrusters-block`, `.thruster-helm` and `.quick-group` are added to the CSS, because their own `display` values would otherwise win.
+- **Recommended; merging accepts it:** the download name is `<id>.boat.json` and the profile is built when the button is tapped, from `boat`, `boatId` and `boatName` read at that moment.
+- **Recommended; merging accepts it:** the guide link is the whole line high (44 px) so it passes the touch-target audit.
+- **Owner's answer on the M57 review (PR 128, "accept all from PR and review"):** the review's recommendations are accepted. Nothing changes in the M57 PR (review points 4 and 5 stay as they are); points 1 to 3 go to M58 (16.8, 16.9 and 16.12 below).
+- The browser checks add two checks beyond 15.8: the Boat field on a phone (44 px high controls, audit) and the Hanse 508 still showing both quick-row joysticks in Harbour.
 
 ---
 
@@ -1660,6 +1668,12 @@ A profile imported on a phone can be chosen, sailed, saved in a setup file, open
 Built-in second boat, boat-specific Learn texts, editing a profile in the app, other rigs.
 
 ### 16.12 Decided in the M58 PR
+
+**Carried over from the M57 review (owner accepted, PR 128); the M58 PR does these:**
+
+- A test that takes the Hanse 508's profile, sets a handful of numbers to the ends of their ranges (and a profile with a zeroed sail-force table, a thruster far from the mast), sails it with `useBoat` and finds no NaN in the boat state. `checkBoatProfile` may be tightened if the test shows a combination that breaks.
+- Browser checks with a bow-only boat and a boat with no thrusters (the Engine section's Thrusters block, the quick row's group, the Helm block, the 3D tunnels), because only M58 can load such a boat.
+- `checkBoatProfile` asks for a whole `version` of at least 1 and a `name` that is not blank (it is shown in the boat chooser).
 
 (empty)
 

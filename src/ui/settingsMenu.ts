@@ -3,6 +3,8 @@ import { makeSetupFile, readSetupFile, setupFileName } from '../app/setupFile';
 import type { Store } from '../app/store';
 import { serializeUrlState } from '../app/urlState';
 import { shareLink } from '../app/urlSync';
+import { boat, boatId, boatName } from '../model/boat';
+import { makeBoatProfile } from '../model/boatProfile';
 import { LANGUAGES, languageName } from '../model/languages';
 import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { createChipCard, type ChipCard } from './chipCard';
@@ -14,6 +16,10 @@ import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 import { LAYOUT_KEY } from './sectionLayout';
 import { FOLD_KEY } from './timeBar';
+
+/** The guide to making a boat profile (M57). */
+const BOAT_GUIDE_URL =
+  'https://github.com/Botrops1/sail-learn-and-train/blob/main/docs/BOAT_PROFILE.md';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -294,6 +300,7 @@ function buildSettingsBody(store: Store): HTMLElement[] {
 
   return [
     languageGroup,
+    buildBoatField(),
     labelsField,
     timeBarField,
     clockField,
@@ -337,6 +344,38 @@ export function createConfirmButton(
     disarm();
     onConfirm();
   });
+}
+
+/**
+ * M57 (PHASE8_SPEC 15.4): Boat. The boat's name, a button that downloads its profile (every
+ * number of the boat in one file) and a link to the guide for making a similar boat.
+ */
+function buildBoatField(): HTMLElement {
+  const download = el(
+    'button',
+    { type: 'button', class: 'action-button', 'data-testid': 'boat-download' },
+    [t('boat.download')],
+  );
+  download.addEventListener('click', () => {
+    downloadJson(`${boatId}.boat.json`, makeBoatProfile(boatId, boatName, boat));
+  });
+  return el('div', { class: 'field', 'data-testid': 'boat-field' }, [
+    el('p', { class: 'field-title' }, [t('boat.label')]),
+    el('p', { class: 'boat-name', 'data-testid': 'boat-name' }, [boatName]),
+    el('div', { class: 'actions' }, [download]),
+    el('p', { class: 'hint' }, [t('boat.hint')]),
+    el(
+      'a',
+      {
+        class: 'boat-guide',
+        href: BOAT_GUIDE_URL,
+        target: '_blank',
+        rel: 'noopener',
+        'data-testid': 'boat-guide',
+      },
+      [t('boat.guide')],
+    ),
+  ]);
 }
 
 /**

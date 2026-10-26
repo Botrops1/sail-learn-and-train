@@ -1,5 +1,5 @@
 import type { AppState, Store } from '../app/store';
-import { thrusterSpeedFactor, type ThrustDir } from '../model/thrusters';
+import { thrusterEnds, thrusterSpeedFactor, type ThrustDir } from '../model/thrusters';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { setText } from './stepper';
@@ -191,12 +191,21 @@ export function thrusterStatusText(state: AppState): string {
   return text;
 }
 
-/** Both joysticks side by side, as in the Helm station. */
+/**
+ * The joysticks of the thrusters this boat has, side by side, as in the Helm station (none when
+ * the boat has no thruster: callers hide their wrapper then, see `hasAnyThruster`).
+ */
 export function createThrusterPair(store: Store, variant: JoystickVariant): HTMLElement {
-  return el('div', { class: `thruster-pair thruster-pair-${variant}` }, [
-    createThrusterJoystick(store, 'bow', variant),
-    createThrusterJoystick(store, 'stern', variant),
-  ]);
+  return el(
+    'div',
+    { class: `thruster-pair thruster-pair-${variant}` },
+    thrusterEnds().map((end) => createThrusterJoystick(store, end, variant)),
+  );
+}
+
+/** Whether the boat has a thruster at all (M57): the blocks that hold joysticks hide when not. */
+export function hasAnyThruster(): boolean {
+  return thrusterEnds().length > 0;
 }
 
 /**
@@ -212,10 +221,12 @@ export function createThrusterPanel(store: Store): HTMLElement {
   const refresh = (state: AppState) => setText(status, thrusterStatusText(state));
   store.subscribe(refresh);
   refresh(store.getState());
-  return el('section', { class: 'thrusters-block', 'data-testid': 'thrusters-block' }, [
+  const block = el('section', { class: 'thrusters-block', 'data-testid': 'thrusters-block' }, [
     el('h3', { class: 'thrusters-title' }, [t('thrusters.label')]),
     createThrusterPair(store, 'section'),
     status,
     el('p', { class: 'hint explain' }, [t('thrusters.hint')]),
   ]);
+  block.hidden = !hasAnyThruster();
+  return block;
 }
