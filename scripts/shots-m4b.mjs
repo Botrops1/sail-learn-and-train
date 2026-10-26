@@ -363,7 +363,8 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     await shot(page, `live-${v}-pt15-open-the-clutch`);
 
     // Tail onto the winch, circle clockwise twice, then anticlockwise once.
-    await inView(page, `${drawing('port')} .real-tail`);
+    // M55: the Status header takes one more row off the open section, so the drum is centred (the knob lies just above it) in place of the tail's top.
+    await inView(page, drum('port'));
     p = await centre(page, knob('port', 'b5'));
     const d = await centre(page, drum('port'));
     await dragPath(page, [p, { x: (p.x + d.x) / 2, y: (p.y + d.y) / 2 }, d]);
