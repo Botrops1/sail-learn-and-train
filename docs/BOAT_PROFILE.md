@@ -74,8 +74,8 @@ Ranges:
 | `physics.thrusters.bowThrustN`, `sternThrustN` | 0 to 10,000 N |
 | `realisticMode.winchHandle.lengthM` | 0.15 to 0.4 m |
 | `physics.integration.maxStepS` | 0.005 to 0.1 s |
-| `physics.integration.solverAwaStepDeg` | 0.01 to 5° |
-| `physics.integration.solverAwsStepKn` | 0.01 to 5 kn |
+| `physics.integration.solverAwaStepDeg` | 0.01 to 2° (M58: a bigger step stopped the solver) |
+| `physics.integration.solverAwsStepKn` | 0.01 to 2 kn (M58: a bigger step stopped the solver) |
 | `physics.mass.payloadKg` | 0 to 20,000 kg |
 | `physics.mass.addedMassFraction` | 0 to 2 |
 
