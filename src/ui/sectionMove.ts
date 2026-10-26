@@ -313,6 +313,8 @@ export function createSectionMove(options: SectionMoveOptions): void {
     grip.addEventListener('pointerdown', (event) => {
       if (event.button !== 0 || pointerId !== null) return;
       pointerId = event.pointerId;
+      // Captured from the press, so a fast move that leaves the grip still reaches it.
+      grip.setPointerCapture(event.pointerId);
       startX = event.clientX;
       startY = event.clientY;
       dragging = false;
@@ -323,7 +325,6 @@ export function createSectionMove(options: SectionMoveOptions): void {
         if (Math.hypot(event.clientX - startX, event.clientY - startY) <= DRAG_START_PX) return;
         dragging = true;
         closeMenu();
-        grip.setPointerCapture(event.pointerId);
         section?.element.classList.add('is-dragging');
         document.addEventListener('keydown', onKey, true);
       }

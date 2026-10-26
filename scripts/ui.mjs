@@ -311,3 +311,20 @@ export async function holdWindlass(page, dir, ms, suffix = '') {
     await page.mouse.up();
   }
 }
+
+/** M54: moves a section on the wide layout with its grip menu: 'up' | 'down' | 'other'. */
+export async function moveSectionBy(page, id, how) {
+  await page.getByTestId(`section-grip-${id}`).click();
+  await page.getByTestId(`layout-${how}`).click();
+}
+
+/** M54: the section ids of column 1 and column 2 on the wide layout, top to bottom (hidden ones left out). */
+export async function columnSections(page) {
+  return page.evaluate(() =>
+    ['.panel-body', '.panel-second'].map((css) =>
+      [...document.querySelectorAll(`${css} > [data-section]`)]
+        .filter((node) => !node.hidden)
+        .map((node) => node.getAttribute('data-section')),
+    ),
+  );
+}
