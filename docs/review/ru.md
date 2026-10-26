@@ -3062,6 +3062,16 @@
 | layout.reset | Reset layout | Сбросить расположение |
 | layout.resetConfirm | Tap again to reset the layout | Нажмите ещё раз, чтобы сбросить расположение |
 | layout.resetHint | Puts the sections back in their columns, and the columns and the time bar as they were at the start. | Возвращает разделы в их колонки, а колонки и шкалу времени — как было в начале. |
+| setup.label | Your setup | Ваши настройки |
+| setup.save | Save to a file | Сохранить в файл |
+| setup.load | Load from a file | Загрузить из файла |
+| setup.hint | The boat, the wind, the place, every setting and the layout, in one file. Loading it puts everything back. | Яхта, ветер, место, все настройки и расположение — в одном файле. Загрузка возвращает всё как было. |
+| setup.saved | Saved as {name}. | Сохранено как {name}. |
+| setup.problem.tooBig | This file is too big to be a setup file. | Файл слишком большой для файла настроек. |
+| setup.problem.notJson | This file cannot be read: it is not a setup file. | Этот файл не читается: это не файл настроек. |
+| setup.problem.notSetup | This is not a setup file of this app. | Это не файл настроек этого приложения. |
+| setup.problem.newer | This setup file comes from a newer version of the app. | Этот файл настроек из более новой версии приложения. |
+| setup.problem.badLink | This setup file is damaged: its boat settings cannot be read. | Файл настроек повреждён: настройки яхты не читаются. |
 | panel.second | More sections | Ещё разделы |
 | columns.resize.1 | Width of the left panel column | Ширина левого столбца панели |
 | columns.resize.2 | Width of the right panel column | Ширина правого столбца панели |
