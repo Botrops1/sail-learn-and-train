@@ -1,18 +1,31 @@
 import type { AppState, Store } from '../app/store';
 import {
+  ALERT_TAGS,
   alertLearnId,
+  alertTag,
   alertTimeText,
   type AlertEntry,
   type AlertKind,
   type AlertSeverity,
+  type AlertTag,
 } from '../model/alerts';
+import { STATION_IDS, stationWinch } from '../model/realistic';
+import { damageText } from './damageReport';
 import { el } from './dom';
 import { gybeReportText } from './gybeReport';
-import { t, type StringKey } from './i18n';
+import { part, t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 
 /** The message of each kind: the same strings the short alerts over the view use. */
-const ALERT_TEXT: Readonly<Record<Exclude<AlertKind, 'gybe' | 'sailWorn'>, StringKey>> = {
+const ALERT_TEXT: Readonly<
+  Record<
+    Exclude<
+      AlertKind,
+      'gybe' | 'sailWorn' | 'contact' | 'ropeSlipping' | 'winchCutOut' | 'clutchOnRunning'
+    >,
+    StringKey
+  >
+> = {
   tack: 'alert.tack',
   byTheLee: 'alert.byTheLee',
   overpowered: 'alert.overpowered',
@@ -30,7 +43,152 @@ export function alertText(entry: AlertEntry): string {
   if (entry.kind === 'sailWorn') {
     return t(entry.sail === 'jib' ? 'alert.sailWorn.jib' : 'alert.sailWorn.main');
   }
-  return t(ALERT_TEXT[entry.kind]);
+  switch (entry.kind) {
+    case 'contact':
+      return entry.contact ? damageText(entry.contact) : t('damage.title', { count: 1 });
+    case 'ropeSlipping':
+      return t('alert.ropeSlipping', {
+        rope: entry.rope ? (part(entry.rope)?.name ?? entry.rope) : '',
+      });
+    case 'winchCutOut': {
+      const station = STATION_IDS.find((id) => stationWinch(id) === entry.winch);
+      return t('alert.winchCutOut', {
+        side: t(station === 'port' ? 'side.port.gen' : 'side.starboard.gen'),
+      });
+    }
+    case 'clutchOnRunning':
+      return t('alert.clutchOnRunning');
+    default:
+      return t(ALERT_TEXT[entry.kind]);
+  }
+}
+
+/** The history list (M55): used by the Attention card and the Status section. */
+export interface AlertListOptions {
+  /** A row of tag filter buttons at the top. */
+  filter: boolean;
+  /** The prefix of the test ids: `alert` (the card) or `status-alert` (the Status section). */
+  idPrefix: 'alert' | 'status-alert';
+  /** The list is drawn only while this is true (the card draws only while open); `refresh()` draws it now. */
+  renderWhen?: () => boolean;
+}
+
+export type AlertList = HTMLElement & { refresh(): void };
+
+/**
+ * The history as a list, newest first, each row with its time, its tag chip, its text and a "?"
+ * that opens its Learn entry (M55). With `filter` it has a row of buttons that show one tag only.
+ * It re-draws itself on every history change (when `renderWhen` allows) and when `refresh()` is called.
+ */
+export function createAlertList(
+  store: Store,
+  showLearn: (id: string) => void,
+  options: AlertListOptions,
+): AlertList {
+  const { filter, idPrefix, renderWhen } = options;
+  const empty = el('p', { class: 'alert-empty', 'data-testid': `${idPrefix}-empty` }, [
+    t('alerts.empty'),
+  ]);
+  const list = el('ol', { class: 'alert-list', 'data-testid': `${idPrefix}-list` });
+  let tag: AlertTag | null = null;
+  const filterButtons: { id: AlertTag | null; button: HTMLElement }[] = [];
+  const children: HTMLElement[] = [];
+  if (filter) {
+    for (const id of [null, ...ALERT_TAGS]) {
+      const button = el(
+        'button',
+        {
+          type: 'button',
+          class: 'segment status-filter-button',
+          'aria-pressed': String(id === null),
+          'data-testid': `status-filter-${id ?? 'all'}`,
+        },
+        [t(id === null ? 'status.filter.all' : `status.tag.${id}`)],
+      );
+      button.addEventListener('click', () => {
+        tag = id;
+        for (const entry of filterButtons) {
+          entry.button.setAttribute('aria-pressed', String(entry.id === tag));
+        }
+        draw(true);
+      });
+      filterButtons.push({ id, button });
+    }
+    children.push(
+      el(
+        'div',
+        {
+          class: 'status-filter',
+          role: 'group',
+          'aria-label': t('status.filter'),
+          'data-testid': 'status-filter',
+        },
+        filterButtons.map((entry) => entry.button),
+      ),
+    );
+  }
+  const root: AlertList = Object.assign(
+    el('div', { class: 'alert-list-box', 'data-testid': `${idPrefix}-box` }, [
+      ...children,
+      empty,
+      list,
+    ]),
+    { refresh: () => draw(true) },
+  );
+
+  let drawnEntries: object | null = null;
+  let drawnTag: AlertTag | null | undefined;
+  function draw(force: boolean): void {
+    if (renderWhen && !renderWhen()) return;
+    const { entries } = store.getState().alerts;
+    if (!force && drawnEntries === entries && drawnTag === tag) return;
+    drawnEntries = entries;
+    drawnTag = tag;
+    const shown = [...entries].reverse().filter((entry) => tag === null || alertTag(entry) === tag);
+    empty.hidden = shown.length > 0;
+    empty.textContent = entries.length === 0 ? t('alerts.empty') : t('status.filter.none');
+    list.replaceChildren(
+      ...shown.map((entry) => {
+        const time = alertTimeText(entry.atS);
+        const learnId = alertLearnId(entry);
+        const entryTag = alertTag(entry);
+        const learn = el('button', {
+          type: 'button',
+          class: 'alert-learn',
+          'data-testid': `${idPrefix}-learn`,
+          'data-learn': learnId,
+          'aria-label': t('alerts.learn'),
+        });
+        learn.textContent = '?';
+        learn.addEventListener('click', () => showLearn(learnId));
+        return el(
+          'li',
+          {
+            class: `alert-item is-${entry.severity}`,
+            'data-testid': `${idPrefix}-item`,
+            'data-kind': entry.kind,
+          },
+          [
+            el('span', { class: 'alert-time', 'aria-label': t('alerts.at', { time }) }, [time]),
+            el(
+              'span',
+              {
+                class: `alert-tag alert-tag-${entryTag}`,
+                'data-testid': `${idPrefix}-tag`,
+                'data-tag': entryTag,
+              },
+              [t(`status.tag.${entryTag}`)],
+            ),
+            el('span', { class: 'alert-text' }, [alertText(entry)]),
+            learn,
+          ],
+        );
+      }),
+    );
+  }
+  store.subscribe(() => draw(false));
+  draw(true);
+  return root;
 }
 
 /**
@@ -91,10 +249,16 @@ export function createAlertCentre(
     'aria-label': t('alerts.collapse'),
   });
   fold.textContent = '×';
-  const list = el('ol', { class: 'alert-list', 'data-testid': 'alert-list' });
-  const empty = el('p', { class: 'alert-empty', 'data-testid': 'alert-empty' }, [
-    t('alerts.empty'),
-  ]);
+  let open = false;
+  // Drawn only while the card is open; on a phone a "?" folds the card, the Learn section is under it.
+  const list = createAlertList(
+    store,
+    (id) => {
+      showLearn(id);
+      if (stacked()) setOpen(false, true);
+    },
+    { filter: false, idPrefix: 'alert', renderWhen: () => open },
+  );
   const card = el(
     'section',
     {
@@ -108,7 +272,6 @@ export function createAlertCentre(
         el('h2', { class: 'alert-title' }, [t('alerts.title')]),
         fold,
       ]),
-      empty,
       list,
     ],
   );
@@ -118,11 +281,9 @@ export function createAlertCentre(
   // Open at the start only where there is room: a computer window (the wide layout). A phone held
   // sideways or a narrow side-by-side window starts folded, so the card never hides the boat.
   const roomy = () => layout.viewport().wide;
-  let open = false;
   // Until the viewer folds or opens it, the layout decides (open in a wide window, folded otherwise).
   let touched = false;
   let seen = 0;
-  let drawn: object | null = null;
 
   const render = (state: AppState) => {
     const { entries, written } = state.alerts;
@@ -142,41 +303,6 @@ export function createAlertCentre(
       'aria-label',
       unread > 0 ? t('alerts.chipNewAria', { count: unread }) : t('alerts.chipAria'),
     );
-    if (!open || drawn === entries) return;
-    drawn = entries;
-    empty.hidden = entries.length > 0;
-    list.replaceChildren(
-      ...[...entries].reverse().map((entry) => {
-        const time = alertTimeText(entry.atS);
-        const learnId = alertLearnId(entry);
-        const learn = el('button', {
-          type: 'button',
-          class: 'alert-learn',
-          'data-testid': 'alert-learn',
-          'data-learn': learnId,
-          'aria-label': t('alerts.learn'),
-        });
-        learn.textContent = '?';
-        learn.addEventListener('click', () => {
-          showLearn(learnId);
-          // On a phone the card would cover the Learn section the sheet is about to show.
-          if (stacked()) setOpen(false, true);
-        });
-        return el(
-          'li',
-          {
-            class: `alert-item is-${entry.severity}`,
-            'data-testid': 'alert-item',
-            'data-kind': entry.kind,
-          },
-          [
-            el('span', { class: 'alert-time', 'aria-label': t('alerts.at', { time }) }, [time]),
-            el('span', { class: 'alert-text' }, [alertText(entry)]),
-            learn,
-          ],
-        );
-      }),
-    );
   };
 
   function setOpen(next: boolean, byViewer: boolean): void {
@@ -185,12 +311,12 @@ export function createAlertCentre(
     open = next;
     card.hidden = !open;
     chip.setAttribute('aria-expanded', String(open));
-    drawn = null;
     // On a phone the clock card would sit under this one.
     if (open && stacked()) {
       view.querySelector<HTMLElement>('.clock-card:not([hidden]) .clock-close')?.click();
     }
     render(store.getState());
+    list.refresh();
   }
 
   chip.addEventListener('click', () => setOpen(!open, true));

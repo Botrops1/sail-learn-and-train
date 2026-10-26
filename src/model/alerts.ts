@@ -1,7 +1,9 @@
 import { boat } from './boat';
+import type { ContactReport, ContactState } from './contact';
 import type { GybeReport } from './gybe';
 import { fenderHintShown, type HarbourState } from './harbour';
 import type { BoatState } from './motion';
+import { tailSpec, type RealisticState } from './realistic';
 import type { RigState } from './sim';
 
 /**
@@ -20,6 +22,10 @@ export const ALERT_KINDS = [
   'fendersOut',
   'sailWorn',
   'anchorAlarm',
+  'contact',
+  'ropeSlipping',
+  'winchCutOut',
+  'clutchOnRunning',
 ] as const;
 export type AlertKind = (typeof ALERT_KINDS)[number];
 
@@ -43,6 +49,11 @@ export const ALERT_INFO: Readonly<Record<AlertKind, AlertKindInfo>> = {
   // The entry is the worn sail's own (`alertLearnId`); this one is the fallback.
   sailWorn: { learnId: 'sail_main', severity: 'warning' },
   anchorAlarm: { learnId: 'term_scope', severity: 'danger' },
+  // M55: the entry's own learn id and severity come from its report (`alertLearnId`, `contactSeverity`); these are the fallbacks.
+  contact: { learnId: 'fit_fender', severity: 'warning' },
+  ropeSlipping: { learnId: 'fit_winch', severity: 'warning' },
+  winchCutOut: { learnId: 'fit_winch', severity: 'warning' },
+  clutchOnRunning: { learnId: 'fit_clutch', severity: 'warning' },
 };
 
 /** The two sails that can wear out, and the Learn entry of each. */
@@ -61,6 +72,12 @@ export function wornSail(damage: Readonly<Record<WornSail, number>>): WornSail |
 
 /** Warnings that can come and go every second: written again only after `repeatGapS`. */
 const FLICKERING: readonly AlertKind[] = ['byTheLee', 'overpowered'];
+/** M55: the rope and winch warnings of Realistic mode: written again only after `ropeRepeatGapS`, per kind and rope or winch. */
+const ROPE_REPEATING: readonly AlertKind[] = ['ropeSlipping', 'winchCutOut', 'clutchOnRunning'];
+
+/** M55: the tag chip of an entry (the Status section's filter and the chip on each row). */
+export const ALERT_TAGS = ['danger', 'damage', 'sail', 'rope', 'gear', 'steering'] as const;
+export type AlertTag = (typeof ALERT_TAGS)[number];
 
 export interface AlertEntry {
   /** 1, 2, 3 … in the order written; never reused, so the centre can tell what is new. */
@@ -73,13 +90,48 @@ export interface AlertEntry {
   report?: GybeReport;
   /** Only for `sailWorn`: which sail wore out. */
   sail?: WornSail;
+  /** Only for `contact` (M55): the damage report. */
+  contact?: ContactReport;
+  /** `ropeSlipping` and `clutchOnRunning` (M55): the rope's registry id. */
+  rope?: string;
+  /** Only for `winchCutOut` (M55): the winch id. */
+  winch?: string;
 }
 
-/** The Learn entry an entry's "?" opens: a worn sail opens its own sail. */
+/** The Learn entry an entry's "?" opens: a worn sail opens its own sail, a hit its own part or word. */
 export function alertLearnId(entry: AlertEntry): string {
-  return entry.kind === 'sailWorn' && entry.sail
-    ? SAIL_LEARN[entry.sail]
-    : ALERT_INFO[entry.kind].learnId;
+  if (entry.kind === 'sailWorn' && entry.sail) return SAIL_LEARN[entry.sail];
+  if (entry.kind === 'contact' && entry.contact) {
+    if (entry.contact.obstacleId === 'propeller') return 'part_saildrive';
+    if (entry.contact.obstacleId === 'bottom') return 'term_grounding';
+  }
+  return ALERT_INFO[entry.kind].learnId;
+}
+
+/** M55: the tag of an entry. */
+export function alertTag(entry: AlertEntry): AlertTag {
+  switch (entry.kind) {
+    case 'gybe':
+      return entry.report?.accidental ? 'danger' : 'steering';
+    case 'tack':
+    case 'tookWheel':
+      return 'steering';
+    case 'byTheLee':
+    case 'roundUp':
+    case 'anchorAlarm':
+      return 'danger';
+    case 'overpowered':
+    case 'sailWorn':
+      return 'sail';
+    case 'fendersOut':
+      return 'gear';
+    case 'contact':
+      return 'damage';
+    case 'ropeSlipping':
+    case 'winchCutOut':
+    case 'clutchOnRunning':
+      return 'rope';
+  }
 }
 
 export interface AlertLog {
@@ -100,10 +152,30 @@ export interface AlertSource {
   sailDamage: Readonly<Record<WornSail, number>>;
   /** M46: the anchor; its alarm is an alert. */
   anchor?: { alarm: boolean };
+  /** M55: the damage reports. */
+  contact: ContactState;
+  /** M55: the rope and winch warnings of Realistic mode. */
+  realistic: RealisticState;
 }
 
-const { historyMax, repeatGapS, overpoweredAfterS } = boat.physics.alerts;
+const { historyMax, repeatGapS, ropeRepeatGapS, overpoweredAfterS } = boat.physics.alerts;
 const { warnAt } = boat.physics.trim.flogging;
+
+/** M55: a damage report's severity: the propeller and a hard hit are dangers, a torn-off fender and a touch warnings, a fender that took it only news. */
+function contactSeverity(report: ContactReport): AlertSeverity {
+  if (report.obstacleId === 'propeller') return 'danger';
+  if (report.obstacleId === 'fender') return 'warning';
+  switch (report.severity) {
+    case 'knock':
+    case 'hit':
+      return 'danger';
+    case 'touch':
+    case 'bump':
+      return 'warning';
+    default:
+      return 'info';
+  }
+}
 
 /** Severity of an entry: an accidental gybe is a danger, the other kinds follow `ALERT_INFO`. */
 function severityOf(kind: AlertKind, report: GybeReport | undefined): AlertSeverity {
@@ -137,6 +209,42 @@ function sailsWorn(previous: AlertSource, next: AlertSource): WornSail[] {
   );
 }
 
+/** M55: the damage reports that are new, oldest first (Clear or a new place empties the list and adds nothing). */
+function newReports(previous: AlertSource, next: AlertSource): ContactReport[] {
+  if (previous.contact.reports === next.contact.reports) return [];
+  const known = new Set(previous.contact.reports);
+  return next.contact.reports.filter((r) => !known.has(r)).reverse();
+}
+
+/** M55: the ropes whose tail starts slipping on its winch drum. */
+function slippingRopes(previous: AlertSource, next: AlertSource): string[] {
+  if (previous.realistic.reports === next.realistic.reports) return [];
+  const ropes: string[] = [];
+  for (const [key, report] of Object.entries(next.realistic.reports)) {
+    if (report.note !== 'slipping' || previous.realistic.reports[key]?.note === 'slipping')
+      continue;
+    const rope = tailSpec(key)?.ropeId;
+    if (rope) ropes.push(rope);
+  }
+  return ropes;
+}
+
+/** M55: the winches whose motor cuts out under too much load. */
+function cutOutWinches(previous: AlertSource, next: AlertSource): string[] {
+  if (previous.realistic.winches === next.realistic.winches) return [];
+  return Object.entries(next.realistic.winches)
+    .filter(([id, winch]) => winch.cutOut && !previous.realistic.winches[id]?.cutOut)
+    .map(([id]) => id);
+}
+
+/** M55: a clutch was shut on a running rope (a new notice, also when the old one had the same key). */
+function closedOnRunningStarted(previous: AlertSource, next: AlertSource): boolean {
+  return (
+    next.realistic.notice !== previous.realistic.notice &&
+    next.realistic.notice?.key === 'closedOnRunning'
+  );
+}
+
 /**
  * The log after the step from `previous` to `next`: the same object when nothing started,
  * otherwise with the new entries added at the end and the oldest dropped past `historyMax`.
@@ -145,21 +253,49 @@ export function recordAlerts(log: AlertLog, previous: AlertSource, next: AlertSo
   const atS = next.rig.timeS;
   let entries = log.entries;
   let written = log.written;
-  for (const kind of started(previous, next)) {
-    if (FLICKERING.includes(kind)) {
-      const last = [...entries].reverse().find((entry) => entry.kind === kind);
-      if (last && atS - last.atS < repeatGapS) continue;
+  /** Adds an entry unless a repeating kind was written too recently (`gap` seconds, same key). */
+  const add = (entry: Omit<AlertEntry, 'n' | 'atS'>): void => {
+    const gap = FLICKERING.includes(entry.kind)
+      ? repeatGapS
+      : ROPE_REPEATING.includes(entry.kind)
+        ? ropeRepeatGapS
+        : 0;
+    if (gap > 0) {
+      const key = entry.rope ?? entry.winch ?? '';
+      const last = [...entries]
+        .reverse()
+        .find((e) => e.kind === entry.kind && (e.rope ?? e.winch ?? '') === key);
+      if (last && atS - last.atS < gap) return;
     }
-    const report = kind === 'gybe' ? (next.rig.lastGybe ?? undefined) : undefined;
     written += 1;
-    const entry: AlertEntry = { n: written, kind, atS, severity: severityOf(kind, report) };
+    entries = [...entries, { ...entry, n: written, atS }].slice(-historyMax);
+  };
+  for (const kind of started(previous, next)) {
+    const report = kind === 'gybe' ? (next.rig.lastGybe ?? undefined) : undefined;
+    const entry: Omit<AlertEntry, 'n' | 'atS'> = { kind, severity: severityOf(kind, report) };
     if (report) entry.report = report;
-    entries = [...entries, entry].slice(-historyMax);
+    add(entry);
+  }
+  for (const report of newReports(previous, next)) {
+    add({ kind: 'contact', severity: contactSeverity(report), contact: report });
+  }
+  for (const rope of slippingRopes(previous, next)) {
+    add({ kind: 'ropeSlipping', severity: 'warning', rope });
+  }
+  for (const winch of cutOutWinches(previous, next)) {
+    add({ kind: 'winchCutOut', severity: 'warning', winch });
+  }
+  if (closedOnRunningStarted(previous, next)) {
+    const tail = next.realistic.notice?.tail;
+    const rope = tail ? tailSpec(tail)?.ropeId : undefined;
+    add(
+      rope
+        ? { kind: 'clutchOnRunning', severity: 'warning', rope }
+        : { kind: 'clutchOnRunning', severity: 'warning' },
+    );
   }
   for (const sail of sailsWorn(previous, next)) {
-    written += 1;
-    const entry: AlertEntry = { n: written, kind: 'sailWorn', atS, severity: 'warning', sail };
-    entries = [...entries, entry].slice(-historyMax);
+    add({ kind: 'sailWorn', severity: 'warning', sail });
   }
   return written === log.written ? log : { entries, written };
 }

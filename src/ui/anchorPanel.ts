@@ -27,6 +27,15 @@ function guardPage(store: Store): void {
   window.addEventListener('blur', release);
 }
 
+/** The Anchor section's status line: the phase, and the extra words while she drags or the windlass has cut out (also the Status section, M55). */
+export function anchorStatusText(state: AppState): string {
+  const { anchor } = state;
+  const text = [t(`anchor.phase.${anchor.phase}`)];
+  if (anchor.dragging) text.push(t('anchor.dragging'));
+  if (anchor.cutOut) text.push(t('anchor.cutOut'));
+  return text.join(' ');
+}
+
 /** The depth the scope check uses: at the anchor on the bottom, under the roller otherwise. */
 function checkedDepthM(state: AppState): number {
   const { anchor } = state;
@@ -134,10 +143,7 @@ export function createAnchorPanel(store: Store, suffix = '', compact = false): H
     }
     if (compact) return;
     if (!moved && !wind && !(boatMoved && anchor.phase === 'hanging')) return;
-    const text = [t(`anchor.phase.${anchor.phase}`)];
-    if (anchor.dragging) text.push(t('anchor.dragging'));
-    if (anchor.cutOut) text.push(t('anchor.cutOut'));
-    setText(status, text.join(' '));
+    setText(status, anchorStatusText(state));
     const down1 = anchor.phase !== 'stowed';
     scope.hidden = !down1;
     check.hidden = !down1;

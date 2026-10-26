@@ -10,12 +10,12 @@ const BUMP = '?pl=marina&tr=busy&m=harbour&pe=2.8&pn=1490.4&hdg=180&wd=-90&ws=20
 
 export const M43_SCENES = [
   { name: 'damage-alert', query: `${BUMP}&tx=4`, waitMs: 3000, sheet: 'peek' },
-  { name: 'damage-list', query: `${BUMP}&tx=4`, waitMs: 9000, section: 'place', sheet: 'full' },
+  { name: 'damage-list', query: `${BUMP}&tx=4`, waitMs: 9000, section: 'status', sheet: 'full' },
   {
     name: 'damage-list-ru',
     query: `${BUMP}&tx=4&lang=ru`,
     waitMs: 9000,
-    section: 'place',
+    section: 'status',
     sheet: 'full',
   },
   { name: 'harbour-gear', query: '?pl=marina&m=harbour&fd=1', section: 'harbour', sheet: 'half' },
@@ -56,7 +56,8 @@ export async function liveM43Checks({ openPage, viewports, outDir, prefix, probl
     const text = await alertText(page);
     check('bump: it names the quay and where on our hull', /Quay, at our bow/.test(text), text);
     await shot(page, 'm43-bump');
-    await showSection(page, 'place');
+    // M55: the damage report moved from Place to Status.
+    await showSection(page, 'status');
     const items = await page.getByTestId('damage-list').locator('li.damage-item').allTextContents();
     check(
       'bump: the damage list names the quay',

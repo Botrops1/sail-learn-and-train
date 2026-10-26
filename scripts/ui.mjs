@@ -16,6 +16,7 @@ const TAB_OF_JS = {
   place: 'controls',
   anchor: 'controls',
   harbour: 'controls',
+  status: 'controls',
   settings: 'settings',
 };
 

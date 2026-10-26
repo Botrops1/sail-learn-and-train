@@ -1252,7 +1252,12 @@ Lasting damage, sounds or vibration, a history in the link, exporting the histor
 
 ### 13.11 Decided in the M55 PR
 
-(empty)
+- Decided in the M55 PR (recommended; merging accepts it): the Status section's history shows all its entries (the model keeps 50) with no "show more" button; the filter row is how the learner narrows it.
+- Decided in the M55 PR (recommended; merging accepts it): "Rope" and "Sail" share the accent blue, "Gear" and "Steering" the grey (as 13.4 says); the tag's word is always on the chip, so the colour only helps.
+- Decided in the M55 PR: `createAlertList` returns the list's `div` with a `refresh()` method (the Attention card calls it when it opens, since it draws only while open); the list subscribes to the store itself.
+- Decided in the M55 PR: the Harbour mode's order is `mode, engine, helm, harbour, status, anchor, …` (Status right after Harbour gear, as in every mode); `tests/modes.test.ts` filters `status` out where it checks the first four sections of Harbour mode.
+- Decided in the M55 PR: `tests/glossary.test.ts` test 11 (an id is "drawn" if its text appears in the code) no longer reads `src/model/alerts.ts`: it names `fit_clutch` as the Learn entry of an alert but draws nothing, so `fit_clutch` stays in `NOT_DRAWN`.
+- Decided in the M55 PR: the sail wear rows carry the sail's name in front in a `span.trim-name` inside `trim-wear-<sail>` (the "Sails" section's trim rows keep theirs).
 
 ---
 

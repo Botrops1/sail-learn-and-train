@@ -33,6 +33,7 @@ import { createQuickRow } from './quickRow';
 import { createHelmStation } from './realisticPanel';
 import { createRopesTab, revealRopeStrip } from './ropesTab';
 import { createSailsPanel } from './sailsPanel';
+import { createStatusPanel } from './statusPanel';
 import { createSection, type SectionView } from './sections';
 import { createThrusterPanel } from './thrusterPanel';
 import type { Sheet } from './sheet';
@@ -51,6 +52,7 @@ const SECTION_TITLES: Record<SectionId, StringKey> = {
   place: 'place.label',
   anchor: 'anchor.label',
   harbour: 'harbour.title',
+  status: 'status.label',
   settings: 'settings.title',
 };
 
@@ -161,6 +163,7 @@ export function createPanel(
     place: { content: createPlacePanel(store), explain: true },
     anchor: { content: createAnchorPanel(store), explain: true },
     harbour: { content: createHarbourPanel(store), explain: true },
+    status: { content: createStatusPanel(store, showLearnEntry), explain: true },
     settings: { content: [settingsContent], explain: false },
   };
   const sections = new Map<SectionId, SectionView>();

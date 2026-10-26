@@ -2496,6 +2496,9 @@
 | alert.overpowered | Heeling a lot: ease the main sheet or roll some sail away | Сильный крен: потравите гика-шкот или закрутите часть паруса |
 | alert.roundUp | ROUND-UP: she turned into the wind by herself. Ease the main sheet! | БРОЧИНГ: яхта сама повернула в ветер. Потравите гика-шкот! |
 | alert.tack | Tack: the boom moved across | Поворот оверштаг: гик перешёл на другой борт |
+| alert.ropeSlipping | {rope}: slipping on the winch drum. Add a turn. | {rope}: проскальзывает на барабане лебёдки. Добавьте шлаг. |
+| alert.winchCutOut | The {side} winch cut out: too much load. | Лебёдка {side} борта отключилась: слишком большая нагрузка. |
+| alert.clutchOnRunning | A clutch was shut on a running rope under load: it can be damaged. | Стопор закрыли на бегущем нагруженном конце: он может повредиться. |
 | control.jibSheet | Jib sheet | Стаксель-шкот |
 | control.jibFurl | Jib out | Стаксель наружу |
 | main.fightingLift | The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out. | Топенант держит гик наверху, поэтому гика-шкот тянет против него (оба красные). Потравите топенант или гика-шкот дальше отметки {pct} %, прежде чем гик сможет отойти в сторону. |
@@ -3031,6 +3034,24 @@
 | map.closeShort | Close | Закрыть |
 | settings.miniMap.label | Mini-map | Мини-карта |
 | settings.miniMap.hint | A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map. | Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту. |
+| status.label | Status | Состояние |
+| status.hint | The boat's condition in one place: the sails' wear, the gear, what was hit, and everything that happened, newest first. | Состояние яхты в одном месте: износ парусов, снаряжение, столкновения и всё, что произошло, сначала новое. |
+| status.sails | Sails | Паруса |
+| status.sailsGood | Both sails are in good shape. | Оба паруса в порядке. |
+| status.gear | Gear | Снаряжение |
+| status.anchor.stowed | Anchor: in the bow roller. | Якорь: в носовом ролике. |
+| status.propeller.clear | Propeller: clear. | Винт: свободен. |
+| status.damage | Damage | Повреждения |
+| status.history | What happened | Что произошло |
+| status.filter | Show | Показать |
+| status.filter.all | All | Все |
+| status.filter.none | Nothing with this tag yet. | Пока ничего с этой меткой. |
+| status.tag.danger | Danger | Опасность |
+| status.tag.damage | Damage | Повреждение |
+| status.tag.sail | Sail | Парус |
+| status.tag.rope | Rope | Конец |
+| status.tag.gear | Gear | Снаряжение |
+| status.tag.steering | Steering | Управление |
 | layout.grip | Move {name} | Переместить: {name} |
 | layout.gripHint | Drag to another place, or use the arrow keys. | Перетащите в другое место или используйте клавиши со стрелками. |
 | layout.up | Move up | Выше |
@@ -3160,8 +3181,8 @@
 | alerts.collapse | Close the alert history | Закрыть историю предупреждений |
 | alerts.empty | No alerts yet. Warnings that show for only a few seconds are kept here. | Предупреждений пока нет. Сообщения, которые видны всего несколько секунд, сохраняются здесь. |
 | alerts.learn | Learn about this alert | Узнать об этом предупреждении |
-| alert.sailWorn.main | The mainsail is worn out from flapping (flogging). Repair it under Sails. | Грот изношен от полоскания. Почините его в разделе «Паруса». |
-| alert.sailWorn.jib | The jib is worn out from flapping (flogging). Repair it under Sails. | Стаксель изношен от полоскания. Почините его в разделе «Паруса». |
+| alert.sailWorn.main | The mainsail is worn out from flapping (flogging). Repair it under Status. | Грот изношен от хлопанья (заполаскивания). Почините его в разделе «Состояние». |
+| alert.sailWorn.jib | The jib is worn out from flapping (flogging). Repair it under Status. | Стаксель изношен от хлопанья (заполаскивания). Почините его в разделе «Состояние». |
 | instruments.gustTitle | Gust: the wind is well above its average. Tap to learn more. | Порыв: ветер заметно сильнее среднего. Нажмите, чтобы узнать больше. |
 | instruments.engineTitle | The engine is running. Tap to learn more. | Двигатель работает. Нажмите, чтобы узнать больше. |
 | time.unfoldSpeed | Open the time bar (speed ×{scale}) | Открыть панель времени (скорость ×{scale}) |

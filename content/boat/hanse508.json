@@ -1792,8 +1792,9 @@
     "alerts": {
       "historyMax": 50,
       "repeatGapS": 5,
+      "ropeRepeatGapS": 10,
       "overpoweredAfterS": 2,
-      "note": "assumption (M36, issue #80): the alert history keeps the last 50 entries; a warning that comes and goes (by the lee, heeling a lot) is written again only 5 s after the last time; the heel warning shows after 2 s over the limit (it was a constant in windIndicator.ts)"
+      "note": "assumption (M36, issue #80): the alert history keeps the last 50 entries; a warning that comes and goes (by the lee, heeling a lot) is written again only 5 s after the last time; the heel warning shows after 2 s over the limit (it was a constant in windIndicator.ts). M55: the rope and winch warnings of Realistic mode are written again only 10 s after the last one of the same kind and rope or winch (owner, planning of Phase 8)."
     }
   },
   "windModes": {

@@ -404,7 +404,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'phone: the Mode and Settings sections are there (their tabs), no Rope colours section',
       ids.join() ===
-        'mode,ropes,sails,autopilot,engine,conditions,learn,place,anchor,harbour,settings',
+        'mode,ropes,sails,autopilot,engine,conditions,learn,place,anchor,harbour,status,settings',
       ids.join(),
     );
     await showTab(page, 'mode');
