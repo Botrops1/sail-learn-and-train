@@ -4,7 +4,7 @@
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { auditPage } from './a11y-audit.mjs';
-import { openSettings } from './ui.mjs';
+import { openSettings, setSheet } from './ui.mjs';
 
 export const M57_SCENES = [];
 
@@ -80,6 +80,7 @@ export async function liveM57Checks({ openPage, viewports, outDir, prefix, probl
   // 3. The Hanse 508 keeps both thrusters: the quick row (phone) shows both joysticks.
   {
     const { context, page } = await openPage(phone, 'm57 thrusters', '?m=harbour&pl=marina');
+    await setSheet(page, 'peek');
     for (const id of ['thruster-bow-quick', 'thruster-stern-quick']) {
       check(`thrusters: ${id} is shown`, await page.getByTestId(id).isVisible(), id);
     }
