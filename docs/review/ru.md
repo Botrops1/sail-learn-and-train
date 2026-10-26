@@ -2963,6 +2963,7 @@
 | learn.showMeDone | Showing it. Your phone’s Back button takes you back to where you were. | Показываю. Кнопка «Назад» на телефоне вернёт вас туда, где вы были. |
 | learn.whereIsIt | Where is it? | Где это? |
 | learn.spotlightHint | Tap anywhere to see the whole boat again. | Нажмите в любом месте, чтобы снова увидеть всю яхту. |
+| learn.writtenFor | Written for the {name}. | Написано для {name}. |
 | learn.tryIt | Try it: | Попробуйте: |
 | learn.related | See also: | См. также: |
 | learn.howSure | How sure we are | Насколько мы уверены |
@@ -2997,6 +2998,18 @@
 | boat.download | Download this boat's profile | Скачать профиль этой яхты |
 | boat.hint | A boat profile is a file with every number of a boat. Start from this one to describe a similar yacht. | Профиль яхты — файл со всеми её числами. Начните с этого, чтобы описать похожую яхту. |
 | boat.guide | How to make a boat profile | Как сделать профиль яхты |
+| boat.builtIn | {name} (built in) | {name} (встроенная) |
+| boat.import | Import a boat profile | Загрузить профиль яхты |
+| boat.imported | Imported {name}. Choose it above to sail it. | Загружено: {name}. Выберите её выше, чтобы ходить на ней. |
+| boat.remove | Remove this boat | Удалить эту яхту |
+| boat.removeConfirm | Tap again to remove it | Нажмите ещё раз, чтобы удалить |
+| boat.missing | This link is for the boat "{id}", which is not on this device. Showing the Hanse 508. | Эта ссылка для яхты «{id}», которой нет на этом устройстве. Показана Hanse 508. |
+| boat.problem.tooBig | This file is too big to be a boat profile. | Файл слишком большой для профиля яхты. |
+| boat.problem.notJson | This file cannot be read: it is not a boat profile. | Этот файл не читается: это не профиль яхты. |
+| boat.problem.check | This profile has {count} problems. The first ones: | В этом профиле проблем: {count}. Первые из них: |
+| boat.problem.builtIn | This is the built-in Hanse 508: give your boat its own id. | Это встроенная Hanse 508: дайте своей яхте собственный идентификатор. |
+| boat.problem.full | There are already 10 boats on this device: remove one first. | На этом устройстве уже 10 яхт: сначала удалите одну. |
+| boat.problem.storage | This browser did not let the app keep the boat (private window or full storage). | Браузер не дал приложению сохранить яхту (приватное окно или память заполнена). |
 | number.thousandsSeparator | , | U+00A0 |
 | clock.date | {weekday} {day} {month} {year} | {weekday}, {day} {month} {year} |
 | area.adriatic | Adriatic (Split) | Адриатика (Сплит) |
@@ -3076,6 +3089,7 @@
 | setup.problem.notSetup | This is not a setup file of this app. | Это не файл настроек этого приложения. |
 | setup.problem.newer | This setup file comes from a newer version of the app. | Этот файл настроек из более новой версии приложения. |
 | setup.problem.badLink | This setup file is damaged: its boat settings cannot be read. | Файл настроек повреждён: настройки яхты не читаются. |
+| setup.problem.badBoat | The boat in this setup file does not pass the profile checks. | Яхта в этом файле настроек не проходит проверку профиля. |
 | panel.second | More sections | Ещё разделы |
 | columns.resize.1 | Width of the left panel column | Ширина левого столбца панели |
 | columns.resize.2 | Width of the right panel column | Ширина правого столбца панели |

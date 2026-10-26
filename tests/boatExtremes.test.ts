@@ -65,8 +65,8 @@ const CASES: Array<[string, Edit]> = [
   [
     'sail-force tables that are all zero',
     (b) => {
-      b.physics.sails.liftByAoaDeg = b.physics.sails.liftByAoaDeg.map(([aoa]) => [aoa, 0]);
-      b.physics.sails.dragByAoaDeg = b.physics.sails.dragByAoaDeg.map(([aoa]) => [aoa, 0]);
+      b.physics.sails.liftByAoaDeg = b.physics.sails.liftByAoaDeg.map((row) => [row[0] ?? 0, 0]);
+      b.physics.sails.dragByAoaDeg = b.physics.sails.dragByAoaDeg.map((row) => [row[0] ?? 0, 0]);
     },
   ],
   [
@@ -74,7 +74,8 @@ const CASES: Array<[string, Edit]> = [
     (b) => {
       b.physics.thrusters.bowThrustN = 10000;
       b.physics.thrusters.sternThrustN = 10000;
-      b.hull.thrusters[0].x = 100;
+      const bow = b.hull.thrusters.find((thruster) => thruster.end === 'bow');
+      if (bow) bow.x = 100;
     },
   ],
   [

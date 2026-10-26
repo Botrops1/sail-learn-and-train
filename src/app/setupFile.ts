@@ -5,6 +5,9 @@
  * storage; `ui/deviceSettings.ts` does that.
  */
 import { parseColumns, serializeColumns, type ColumnState } from '../ui/columnWidths';
+import { HANSE_508 } from '../model/boat';
+import { checkBoatProfile, type BoatProfile } from '../model/boatProfile';
+import { linkBoatId } from './boatStore';
 import {
   completeLayout,
   parseLayout,
@@ -32,11 +35,18 @@ export interface SetupFile {
   savedAt: string;
   link: string;
   device: { columns: unknown; timeBarFolded: boolean; layout: unknown };
+  /** M58: the imported boat in use (not the Hanse 508), so the file carries it to another device. */
+  boatProfile?: BoatProfile;
 }
 
-export type SetupProblem = 'notJson' | 'notSetup' | 'newer' | 'badLink';
+export type SetupProblem = 'notJson' | 'notSetup' | 'newer' | 'badLink' | 'badBoat';
 
-export function makeSetupFile(link: string, device: DeviceSettings, savedAtIso: string): SetupFile {
+export function makeSetupFile(
+  link: string,
+  device: DeviceSettings,
+  savedAtIso: string,
+  boatProfile?: BoatProfile,
+): SetupFile {
   return {
     app: 'sail-learn-and-train',
     kind: 'setup',
@@ -48,6 +58,7 @@ export function makeSetupFile(link: string, device: DeviceSettings, savedAtIso: 
       timeBarFolded: device.timeBarFolded,
       layout: device.layout === null ? null : JSON.parse(serializeLayout(device.layout)),
     },
+    ...(boatProfile ? { boatProfile } : {}),
   };
 }
 
@@ -64,7 +75,9 @@ export function setupFileName(date: Date): string {
  */
 export function readSetupFile(
   text: string,
-): { ok: true; link: string; device: DeviceSettings } | { ok: false; problem: SetupProblem } {
+):
+  | { ok: true; link: string; device: DeviceSettings; boatProfile?: BoatProfile }
+  | { ok: false; problem: SetupProblem } {
   let data: unknown;
   try {
     data = JSON.parse(text);
@@ -85,6 +98,19 @@ export function readSetupFile(
   if (typeof link !== 'string' || !link.startsWith('?') || link.length > SETUP_LINK_MAX) {
     return { ok: false, problem: 'badLink' };
   }
+  let boatProfile: BoatProfile | undefined;
+  if (file.boatProfile !== undefined) {
+    const check = checkBoatProfile(file.boatProfile);
+    // The profile must be an imported one that the link names (a built-in id is never imported).
+    if (
+      !check.ok ||
+      check.profile.id === HANSE_508.meta.id ||
+      check.profile.id !== linkBoatId(link)
+    ) {
+      return { ok: false, problem: 'badBoat' };
+    }
+    boatProfile = check.profile;
+  }
   const device =
     typeof file.device === 'object' && file.device !== null && !Array.isArray(file.device)
       ? (file.device as Record<string, unknown>)
@@ -96,6 +122,7 @@ export function readSetupFile(
   return {
     ok: true,
     link,
+    ...(boatProfile ? { boatProfile } : {}),
     device: {
       columns: parseColumns(device.columns === undefined ? null : JSON.stringify(device.columns)),
       timeBarFolded: device.timeBarFolded === true,

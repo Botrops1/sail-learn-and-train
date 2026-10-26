@@ -4,6 +4,7 @@ import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
 import { clockParam, defaultClockUtcMs, parseClockParam } from '../model/clock';
 import { settledJibUnfurled } from '../model/jib';
+import { HANSE_508, boatId } from '../model/boat';
 import { isLanguage } from '../model/languages';
 import { isRegisteredPartId } from '../model/registry';
 import {
@@ -679,6 +680,8 @@ export function jibReachedParam(state: AppState): number | null {
 export function serializeUrlState(state: AppState): string {
   const params = new URLSearchParams();
   params.set('v', String(URL_STATE_VERSION));
+  // M58: the boat comes right after the version, only when it is not the Hanse 508 (`parseUrlState` ignores it).
+  if (boatId !== HANSE_508.meta.id) params.set('boat', boatId);
   for (const [key, id] of URL_CONTROLS) params.set(key, String(Math.round(state.controls[id])));
   const jr = jibReachedParam(state);
   if (jr !== null) params.set('jr', String(jr));

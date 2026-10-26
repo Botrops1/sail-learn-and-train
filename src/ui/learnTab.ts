@@ -12,6 +12,7 @@ import {
   SOURCE_LANGUAGE,
   type LearnEntry,
 } from '../model/glossary';
+import { HANSE_508, boatId } from '../model/boat';
 import { entryFor } from '../model/panelEntries';
 import { el } from './dom';
 import { currentLanguage, quoted, t, type StringKey } from './i18n';
@@ -210,6 +211,14 @@ export function createLearnTab(
           textOf('p', 'learn-on-this-boat', text.onThisBoat, 'learn-text'),
         ),
       );
+      // M58 (owner's answer 13): the texts describe the Hanse 508, whatever boat is in use.
+      if (boatId !== HANSE_508.meta.id) {
+        nodes.push(
+          el('p', { class: 'hint', 'data-testid': 'learn-boat-note' }, [
+            t('learn.writtenFor', { name: HANSE_508.meta.name }),
+          ]),
+        );
+      }
     }
     if (text.mistakes && text.mistakes.length > 0) {
       const list = el(

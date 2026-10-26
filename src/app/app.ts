@@ -35,7 +35,7 @@ import { startUrlSync } from './urlSync';
 const FPS_WINDOW_MS = 500;
 
 /** Wires store, layout, panel, 3D view and the main loop together. */
-export function startApp(host: HTMLElement): void {
+export function startApp(host: HTMLElement, options: { missingBoat?: string | null } = {}): void {
   // The language first: every element below is built once with t() (PHASE4_SPEC 9.3).
   const initial = parseUrlState(
     window.location.search,
@@ -104,6 +104,7 @@ export function startApp(host: HTMLElement): void {
   // The top of the view: the instrument strip and the time bar (Pause), side by side or, where
   // the view is too narrow for both, the bar under the strip.
   layout.view.append(top);
+  if (options.missingBoat) showMissingBoat(layout.view, options.missingBoat);
   createInstrumentStrip(
     top,
     store,
@@ -257,4 +258,24 @@ export function startApp(host: HTMLElement): void {
     );
   };
   requestAnimationFrame(loop);
+}
+
+/** M58: the link named a boat this device does not have; the Hanse 508 is shown instead (16.3). */
+function showMissingBoat(view: HTMLElement, id: string): void {
+  const close = el(
+    'button',
+    {
+      type: 'button',
+      class: 'boat-note-close',
+      'data-testid': 'boat-missing-close',
+      'aria-label': t('settings.close'),
+    },
+    ['×'],
+  );
+  const note = el('div', { class: 'boat-note', role: 'status', 'data-testid': 'boat-missing' }, [
+    el('p', {}, [t('boat.missing', { id })]),
+    close,
+  ]);
+  close.addEventListener('click', () => note.remove());
+  view.append(note);
 }

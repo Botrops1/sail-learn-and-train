@@ -59,7 +59,7 @@ describe('M58: boats kept on the device (PHASE8_SPEC 16.8)', () => {
     changed.name = 'Renamed';
     expect(saveBoat(changed)).toBe('ok');
     expect(storedBoats()).toHaveLength(1);
-    expect(storedBoats()[0].name).toBe('Renamed');
+    expect(storedBoats()[0]?.name).toBe('Renamed');
   });
 
   it('3. the built-in id, an eleventh boat and a refusing store', () => {
@@ -78,7 +78,8 @@ describe('M58: boats kept on the device (PHASE8_SPEC 16.8)', () => {
       id: string;
       boat: { dimensions: { loa: number } };
     }>;
-    list.find((b) => b.id === 'bad')!.boat.dimensions.loa = 99;
+    const bad = list.find((b) => b.id === 'bad');
+    if (bad) bad.boat.dimensions.loa = 99;
     fake.data.set(BOATS_KEY, JSON.stringify(list));
     expect(storedBoats().map((b) => b.id)).toEqual(['good']);
     fake.data.set(BOATS_KEY, 'not json');
@@ -125,7 +126,9 @@ describe('M58: boats kept on the device (PHASE8_SPEC 16.8)', () => {
 
   it('the start-up files import only the modules allowed (16.2)', () => {
     const imports = (file: string): string[] =>
-      [...readFileSync(file, 'utf8').matchAll(/^import[^;]*?from\s+'([^']+)'/gms)].map((m) => m[1]);
+      [...readFileSync(file, 'utf8').matchAll(/^import[^;]*?from\s+'([^']+)'/gms)].map(
+        (m) => m[1] ?? '',
+      );
     expect(imports('src/app/boatStore.ts').sort()).toEqual(
       ['../model/boat', '../model/boatProfile'].sort(),
     );
