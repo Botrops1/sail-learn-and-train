@@ -7,12 +7,10 @@ import { MODE_LAYOUTS, SECTION_IDS, TAB_OF, sectionAvailable } from '../src/ui/m
 
 describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
   for (const mode of APP_MODES) {
-    it(`${mode}: every section once; second is a subset`, () => {
+    it(`${mode}: every section once`, () => {
       const layout = MODE_LAYOUTS[mode];
       expect([...layout.order].sort()).toEqual([...SECTION_IDS].sort());
       expect(new Set(layout.order).size).toBe(layout.order.length);
-      for (const id of layout.second) expect(layout.order, `${mode}: ${id}`).toContain(id);
-      expect(layout.second).toHaveLength(2);
     });
   }
 });
@@ -53,8 +51,6 @@ describe('M38: Mode first and Settings last (issues #91, #93)', () => {
       const layout = MODE_LAYOUTS[mode];
       expect(layout.order[0]).toBe('mode');
       expect(layout.order[layout.order.length - 1]).toBe('settings');
-      expect(layout.second).not.toContain('mode');
-      expect(layout.second).not.toContain('settings');
       expect(SECTION_IDS as readonly string[]).not.toContain('legend');
     });
   }
@@ -172,7 +168,6 @@ describe('Harbour mode (M41, PHASE7_SPEC 7.5)', () => {
       'anchor',
       'place',
     ]);
-    expect(harbour.second).toEqual(['place', 'conditions']);
   });
 });
 
@@ -195,8 +190,7 @@ describe('M53: the Helm section (11.5)', () => {
     expect(harbour.indexOf('helm')).toBe(harbour.indexOf('engine') + 1);
   });
 
-  it('is under the Controls tab and never in the second column', () => {
+  it('is under the Controls tab', () => {
     expect(TAB_OF.helm).toBe('controls');
-    for (const mode of APP_MODES) expect(MODE_LAYOUTS[mode].second).not.toContain('helm');
   });
 });

@@ -3031,6 +3031,16 @@
 | map.closeShort | Close | Закрыть |
 | settings.miniMap.label | Mini-map | Мини-карта |
 | settings.miniMap.hint | A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map. | Маленькая карта в углу на ходу: яхта, ветер, её след и буи. Нажмите на неё, чтобы открыть полную карту. |
+| layout.grip | Move {name} | Переместить: {name} |
+| layout.gripHint | Drag to another place, or use the arrow keys. | Перетащите в другое место или используйте клавиши со стрелками. |
+| layout.up | Move up | Выше |
+| layout.down | Move down | Ниже |
+| layout.other | Move to the other column | В другую колонку |
+| layout.moved | {name}: column {column}, place {position}. | {name}: колонка {column}, место {position}. |
+| layout.label | Layout | Расположение |
+| layout.reset | Reset layout | Сбросить расположение |
+| layout.resetConfirm | Tap again to reset the layout | Нажмите ещё раз, чтобы сбросить расположение |
+| layout.resetHint | Puts the sections back in their columns, and the columns and the time bar as they were at the start. | Возвращает разделы в их колонки, а колонки и шкалу времени — как было в начале. |
 | panel.second | More sections | Ещё разделы |
 | columns.resize.1 | Width of the left panel column | Ширина левого столбца панели |
 | columns.resize.2 | Width of the right panel column | Ширина правого столбца панели |

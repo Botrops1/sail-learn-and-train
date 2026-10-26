@@ -12,6 +12,8 @@ export interface SectionView {
   resetExplain(): void;
   /** Changes the title in the fold header (M38: "Mode: Easy"). */
   setTitle(title: string): void;
+  /** The current title text (M54: the grip's label names the section). */
+  title(): string;
 }
 
 /**
@@ -88,6 +90,7 @@ export function createSection(
     setOpen,
     isOpen: () => open,
     resetExplain: () => setExplain(false),
+    title: () => titleText.textContent ?? '',
     setTitle: (next) => {
       titleText.textContent = next;
       explain.setAttribute('aria-label', t('section.explain', { name: next }));

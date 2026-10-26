@@ -12,6 +12,8 @@ export const COLUMN_MAX_PX = 560;
 export const VIEW_MIN_PX = 480;
 /** The widths before anything was dragged: they add up to the 760 px of M29. */
 export const COLUMN_DEFAULT_PX: readonly [number, number] = [400, 360];
+/** Where the widths and the folds are remembered on this device (not in the link). */
+export const COLUMNS_KEY = 'sail-learn.columns';
 /** One arrow key press, and with Shift, px. */
 export const COLUMN_KEY_STEP_PX = 16;
 export const COLUMN_KEY_BIG_STEP_PX = 64;

@@ -71,6 +71,7 @@ import { liveM50Checks, M50_SCENES } from './shots-m50.mjs';
 import { liveM51Checks, M51_SCENES } from './shots-m51.mjs';
 import { liveM52Checks, M52_SCENES } from './shots-m52.mjs';
 import { liveM53Checks, M53_SCENES } from './shots-m53.mjs';
+import { liveM54Checks, M54_SCENES } from './shots-m54.mjs';
 import {
   closeSettings,
   isStacked,
@@ -243,6 +244,7 @@ const SCENES = [
   ...M51_SCENES.map((scene) => ({ ...scene, name: `m51-${scene.name}` })),
   ...M52_SCENES.map((scene) => ({ ...scene, name: `m52-${scene.name}` })),
   ...M53_SCENES.map((scene) => ({ ...scene, name: `m53-${scene.name}` })),
+  ...M54_SCENES.map((scene) => ({ ...scene, name: `m54-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -1041,6 +1043,7 @@ try {
     m51: () => liveM51Checks(onTestClock),
     m52: () => liveM52Checks(live),
     m53: () => liveM53Checks(onTestClock),
+    m54: () => liveM54Checks(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {

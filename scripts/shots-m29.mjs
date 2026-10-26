@@ -45,11 +45,12 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
   const isWide = (page) => page.evaluate(() => document.documentElement.dataset.wide === 'true');
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
-  // 1. Column 2 holds the mode's `second` sections, open, in order; the pictures of the three modes.
-  for (const [mode, query, expected] of [
-    ['easy', `${BOAT}`, ['conditions', 'learn']],
-    ['learn', '?m=learn&learn=rope_vang', ['conditions', 'ropes']],
-    ['realistic', '?mode=realistic&st=port', ['conditions', 'learn']],
+  // 1. Column 2 holds the saved layout's sections (M54: the same in every mode); the pictures of the
+  // three modes. Which of them is open: the one a link names (Learn's entry), else none (M35).
+  for (const [mode, query, expected, expectedOpen] of [
+    ['easy', `${BOAT}`, ['conditions', 'learn'], ['false', 'false']],
+    ['learn', '?m=learn&learn=rope_vang', ['conditions', 'learn'], ['false', 'true']],
+    ['realistic', '?mode=realistic&st=port', ['conditions', 'learn'], ['false', 'false']],
   ]) {
     const { context, page } = await openPage(desktop, `m29 wide ${mode}`, query);
     await page.waitForTimeout(500);
@@ -57,8 +58,8 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     const ids = await idsIn(page, '[data-testid="second-column"]');
     const open = await openStates(page, '[data-testid="second-column"]');
     check(
-      `${mode}: column 2 holds ${expected.join(', ')}, folded (M35)`,
-      same(ids, expected) && open.every((state) => state === 'false'),
+      `${mode}: column 2 holds ${expected.join(', ')}, open states ${expectedOpen.join(', ')}`,
+      same(ids, expected) && same(open, expectedOpen),
       `${ids.join(', ')} (${open.join(', ')})`,
     );
     await page.screenshot({ path: `${outDir}/${prefix}live-wide-${mode}.png` });
