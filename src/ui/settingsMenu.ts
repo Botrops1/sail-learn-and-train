@@ -1,4 +1,5 @@
 import { BUILD_INFO, REPO_URL } from '../app/buildInfo';
+import { makeSetupFile, readSetupFile, setupFileName } from '../app/setupFile';
 import type { Store } from '../app/store';
 import { serializeUrlState } from '../app/urlState';
 import { shareLink } from '../app/urlSync';
@@ -6,7 +7,9 @@ import { LANGUAGES, languageName } from '../model/languages';
 import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { createChipCard, type ChipCard } from './chipCard';
 import { COLUMNS_KEY } from './columnWidths';
+import { readDeviceSettings, writeDeviceSettings } from './deviceSettings';
 import { el } from './dom';
+import { downloadJson, pickJsonFile } from './files';
 import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 import { LAYOUT_KEY } from './sectionLayout';
@@ -298,6 +301,7 @@ function buildSettingsBody(store: Store): HTMLElement[] {
     stepGroup,
     detailGroup,
     buildLayoutReset(store),
+    buildSetupFile(store),
     ...buildShareAndReset(store),
     debugField,
   ];
@@ -333,6 +337,74 @@ export function createConfirmButton(
     disarm();
     onConfirm();
   });
+}
+
+/**
+ * M56 (PHASE8_SPEC 14.4): Your setup. Save writes the link and what this device remembers into a
+ * file; Load reads one back, writes the device part to storage and loads the page again on the
+ * file's link (a full load, no history entry: the device settings are read at the start). The
+ * file input has one permanent `change` listener; the Load button only opens the file chooser.
+ */
+function buildSetupFile(store: Store): HTMLElement {
+  const status = el('p', {
+    class: 'hint',
+    role: 'status',
+    'aria-live': 'polite',
+    'data-testid': 'setup-status',
+  });
+  const save = el(
+    'button',
+    { type: 'button', class: 'action-button', 'data-testid': 'setup-save' },
+    [t('setup.save')],
+  );
+  const load = el(
+    'button',
+    { type: 'button', class: 'action-button', 'data-testid': 'setup-load' },
+    [t('setup.load')],
+  );
+  const input = el('input', {
+    type: 'file',
+    accept: '.json,application/json',
+    hidden: '',
+    tabindex: '-1',
+    'aria-hidden': 'true',
+    'data-testid': 'setup-file',
+  });
+
+  save.addEventListener('click', () => {
+    const now = new Date();
+    const name = setupFileName(now);
+    // The address bar can lag the store by 300 ms, so the link is built from the store.
+    const link = serializeUrlState(store.getState());
+    downloadJson(name, makeSetupFile(link, readDeviceSettings(), now.toISOString()));
+    status.textContent = t('setup.saved', { name });
+  });
+  load.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    void (async () => {
+      const text = await pickJsonFile(input);
+      if (text === null) return;
+      if (text === 'tooBig') {
+        status.textContent = t('setup.problem.tooBig');
+        return;
+      }
+      const read = readSetupFile(text);
+      if (!read.ok) {
+        status.textContent = t(`setup.problem.${read.problem}` as StringKey);
+        return;
+      }
+      writeDeviceSettings(read.device);
+      window.location.replace(`${window.location.pathname}${read.link}`);
+    })();
+  });
+
+  return el('div', { class: 'field', 'data-testid': 'setup-field' }, [
+    el('p', { class: 'field-title' }, [t('setup.label')]),
+    el('div', { class: 'actions' }, [save, load]),
+    input,
+    el('p', { class: 'hint' }, [t('setup.hint')]),
+    status,
+  ]);
 }
 
 /**
