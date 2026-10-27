@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createStore, initialState, reduce, type AppState } from '../src/app/store';
 import { jibReachedParam, parseUrlState, serializeUrlState } from '../src/app/urlState';
-import { boat } from '../src/model/boat';
+import { HANSE_508, boat, useBoat } from '../src/model/boat';
 import { clockParam, defaultClockUtcMs } from '../src/model/clock';
 import { knToMps, mpsToKn } from '../src/model/angles';
 import { steadyState } from '../src/model/motion';
@@ -618,5 +618,21 @@ describe('M46: the anchor (an, ax, as)', () => {
   it('no anchor is written for a stowed anchor, and none in open water', () => {
     expect(serializeUrlState(parseUrlState('?pl=bay'))).not.toContain('an=');
     expect(serializeUrlState(parseUrlState('?an=34.0&ax=-1606.0,0.0&as=1'))).not.toContain('an=');
+  });
+});
+
+describe('M58: boat= in the link (PHASE8_SPEC 16.4)', () => {
+  it('another boat is written first, right after v=1; the Hanse 508 writes no boat=', () => {
+    expect(serializeUrlState(initialState())).not.toContain('boat=');
+    try {
+      useBoat('test-boat', 'Test', structuredClone(HANSE_508));
+      expect(serializeUrlState(initialState()).startsWith('?v=1&boat=test-boat&')).toBe(true);
+    } finally {
+      useBoat('hanse508', 'Hanse 508', HANSE_508);
+    }
+  });
+
+  it('parseUrlState ignores boat=', () => {
+    expect(parseUrlState('?v=1&boat=test-boat&wd=90').controls.ctl_wind_dir).toBe(90);
   });
 });

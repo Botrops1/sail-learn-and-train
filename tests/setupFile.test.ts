@@ -6,6 +6,8 @@ import {
   setupFileName,
   type DeviceSettings,
 } from '../src/app/setupFile';
+import { HANSE_508 } from '../src/model/boat';
+import { makeBoatProfile } from '../src/model/boatProfile';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { defaultColumns } from '../src/ui/columnWidths';
 import { DEFAULT_WIDE_LAYOUT, moveSection } from '../src/ui/sectionLayout';
@@ -83,5 +85,44 @@ describe('M56: the setup file (PHASE8_SPEC 14.6)', () => {
     const read = readSetupFile(JSON.stringify(makeSetupFile(link, device(), SAVED_AT)));
     if (!read.ok) throw new Error('should read');
     expect(serializeUrlState(parseUrlState(read.link))).toBe(link);
+  });
+});
+
+describe('M58: the boat in a setup file (PHASE8_SPEC 16.6)', () => {
+  const text = (link: string, boatProfile: unknown): string =>
+    JSON.stringify({
+      ...makeSetupFile(link, { ...device(), layout: null }, SAVED_AT),
+      boatProfile,
+    });
+
+  it('a valid profile whose id matches the link reads ok and is kept', () => {
+    const profile = makeBoatProfile('test-boat', 'Test boat', HANSE_508);
+    const file = makeSetupFile('?v=1&boat=test-boat', device(), SAVED_AT, profile);
+    const read = readSetupFile(JSON.stringify(file));
+    expect(read.ok).toBe(true);
+    if (read.ok) expect(read.boatProfile?.id).toBe('test-boat');
+  });
+
+  it('a setup without a boat profile has none', () => {
+    const read = readSetupFile(JSON.stringify(makeSetupFile('?v=1', device(), SAVED_AT)));
+    expect(read.ok && read.boatProfile).toBeUndefined();
+  });
+
+  it('a broken profile, the built-in id, or an id the link does not name is badBoat', () => {
+    const good = makeBoatProfile('test-boat', 'Test boat', HANSE_508);
+    const broken = structuredClone(good);
+    broken.boat.dimensions.loa = 99;
+    expect(readSetupFile(text('?v=1&boat=test-boat', broken))).toEqual({
+      ok: false,
+      problem: 'badBoat',
+    });
+    const builtIn = makeBoatProfile('hanse508', 'Hanse 508', HANSE_508);
+    expect(readSetupFile(text('?v=1', builtIn))).toEqual({ ok: false, problem: 'badBoat' });
+    expect(readSetupFile(text('?v=1&boat=other', good))).toEqual({ ok: false, problem: 'badBoat' });
+    expect(readSetupFile(text('?v=1', good))).toEqual({ ok: false, problem: 'badBoat' });
+    expect(readSetupFile(text('?v=1&boat=test-boat', 'x'))).toEqual({
+      ok: false,
+      problem: 'badBoat',
+    });
   });
 });

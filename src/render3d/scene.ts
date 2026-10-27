@@ -216,6 +216,14 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           const rect = renderer.domElement.getBoundingClientRect();
           return picker.hitCentres(rect.width, rect.height);
         },
+        /** True if the boat has a mesh with this part id (M58: a boat without a thruster has no tunnel). */
+        hasPart: (partId: string) => {
+          let found = false;
+          boatModel.root.traverse((object) => {
+            if (object.userData.partId === partId) found = true;
+          });
+          return found;
+        },
         /** Canvas position (CSS px) of a point in boat coordinates. */
         project: (x: number, y: number, z: number) => {
           const rect = renderer.domElement.getBoundingClientRect();

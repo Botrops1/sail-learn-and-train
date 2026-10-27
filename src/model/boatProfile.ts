@@ -82,8 +82,8 @@ const RANGES: readonly Range[] = [
   { path: 'physics.thrusters.sternThrustN', min: 0, max: 10000 },
   { path: 'realisticMode.winchHandle.lengthM', min: 0.15, max: 0.4 },
   { path: 'physics.integration.maxStepS', min: 0.005, max: 0.1 },
-  { path: 'physics.integration.solverAwaStepDeg', min: 0.01, max: 5 },
-  { path: 'physics.integration.solverAwsStepKn', min: 0.01, max: 5 },
+  { path: 'physics.integration.solverAwaStepDeg', min: 0.01, max: 2 },
+  { path: 'physics.integration.solverAwsStepKn', min: 0.01, max: 2 },
   { path: 'physics.mass.payloadKg', min: 0, max: 20000 },
   { path: 'physics.mass.addedMassFraction', min: 0, max: 2 },
 ];
@@ -140,13 +140,22 @@ function checkHeader(raw: unknown, problems: Problems): void {
     problems.add('app', 'header', 'expected "sail-learn-and-train"');
   }
   if (raw.kind !== 'boatProfile') problems.add('kind', 'header', 'expected "boatProfile"');
-  if (!isFiniteNumber(raw.version) || raw.version > BOAT_PROFILE_VERSION) {
-    problems.add('version', 'header', `expected a number up to ${BOAT_PROFILE_VERSION}`);
+  if (
+    !isFiniteNumber(raw.version) ||
+    !Number.isInteger(raw.version) ||
+    raw.version < 1 ||
+    raw.version > BOAT_PROFILE_VERSION
+  ) {
+    problems.add('version', 'header', `expected a whole number from 1 to ${BOAT_PROFILE_VERSION}`);
   }
   if (typeof raw.id !== 'string' || !BOAT_ID_PATTERN.test(raw.id)) {
     problems.add('id', 'header', 'expected 1 to 40 small letters, digits or -');
   }
-  if (typeof raw.name !== 'string' || raw.name.length < 1 || raw.name.length > MAX_NAME_LENGTH) {
+  if (
+    typeof raw.name !== 'string' ||
+    raw.name.trim().length < 1 ||
+    raw.name.length > MAX_NAME_LENGTH
+  ) {
     problems.add('name', 'header', `expected a name of 1 to ${MAX_NAME_LENGTH} characters`);
   }
   if (!isPlainObject(raw.boat)) problems.add('boat', 'header', 'expected an object');

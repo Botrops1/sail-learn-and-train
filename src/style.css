@@ -4486,6 +4486,31 @@ html[data-wide='true'] .mini-map {
   font-weight: 600;
 }
 
+.boat-select {
+  width: 100%;
+  min-height: var(--touch);
+  margin: 0 0 6px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.boat-select:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* What is wrong with an imported profile: file paths and short English texts (M58). */
+.boat-problems {
+  margin: 0 0 6px;
+  padding-left: 20px;
+  font-size: var(--font-small);
+  overflow-wrap: anywhere;
+}
+
 .boat-guide {
   display: inline-flex;
   align-items: center;
@@ -4677,4 +4702,44 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
 .layout-menu [role='menuitem'][aria-disabled='true'] {
   color: var(--muted);
   cursor: default;
+}
+
+/* M58: the link named a boat this device does not have (PHASE8_SPEC 16.3). Over the 3D view, below the top area. */
+.boat-note {
+  position: absolute;
+  z-index: 11;
+  top: calc(var(--view-top-h, 64px) + 8px);
+  right: 8px;
+  left: 8px;
+  padding: 8px calc(var(--touch) + 4px) 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.97);
+  color: var(--text);
+  font-size: var(--font-small);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.2);
+  overflow-wrap: anywhere;
+}
+
+.boat-note p {
+  margin: 0;
+}
+
+.boat-note-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--touch);
+  height: var(--touch);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.boat-note-close:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
 }

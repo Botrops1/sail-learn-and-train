@@ -180,6 +180,13 @@ describe('checkBoatProfile (PHASE8_SPEC 15.7)', () => {
     expect(problemsOf(checkBoatProfile(null))[0]?.kind).toBe('header');
     expect(problemsOf(checkBoatProfile({ ...profile(), name: '' }))[0]?.path).toBe('name');
     expect(problemsOf(checkBoatProfile({ ...profile(), version: 99 }))[0]?.path).toBe('version');
+    // M58 (review of M57): a whole version of at least 1, and a name that is not blank.
+    for (const version of [0, -1, 1.5, '1', Number.NaN]) {
+      expect(problemsOf(checkBoatProfile({ ...profile(), version }))[0]?.path).toBe('version');
+    }
+    for (const name of ['   ', '\t\n']) {
+      expect(problemsOf(checkBoatProfile({ ...profile(), name }))[0]?.path).toBe('name');
+    }
   });
 
   it('8. an empty boat reports exactly 20 problems, then stops', () => {

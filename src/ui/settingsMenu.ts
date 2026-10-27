@@ -1,10 +1,11 @@
 import { BUILD_INFO, REPO_URL } from '../app/buildInfo';
+import { removeBoat, saveBoat, setChosenBoat, storedBoats } from '../app/boatStore';
 import { makeSetupFile, readSetupFile, setupFileName } from '../app/setupFile';
 import type { Store } from '../app/store';
 import { serializeUrlState } from '../app/urlState';
 import { shareLink } from '../app/urlSync';
-import { boat, boatId, boatName } from '../model/boat';
-import { makeBoatProfile } from '../model/boatProfile';
+import { HANSE_508, boat, boatId, boatName } from '../model/boat';
+import { checkBoatProfile, makeBoatProfile } from '../model/boatProfile';
 import { LANGUAGES, languageName } from '../model/languages';
 import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { createChipCard, type ChipCard } from './chipCard';
@@ -300,7 +301,7 @@ function buildSettingsBody(store: Store): HTMLElement[] {
 
   return [
     languageGroup,
-    buildBoatField(),
+    buildBoatField(store),
     labelsField,
     timeBarField,
     clockField,
@@ -346,11 +347,46 @@ export function createConfirmButton(
   });
 }
 
+/** How many problems of a bad profile the Boat field lists. */
+const BOAT_PROBLEMS_SHOWN = 5;
+
+/** Starts the app fresh on another boat: nothing of the old boat's state carries over, only the language (PHASE8_SPEC 16.5). */
+function startOnBoat(store: Store, id: string): void {
+  openAfterReload('settings');
+  const { language } = store.getState().settings;
+  const boatKey = id === HANSE_508.meta.id ? '' : `&boat=${id}`;
+  const langKey = language === 'en' ? '' : `&lang=${language}`;
+  window.location.assign(`${window.location.pathname}?v=1${boatKey}${langKey}`);
+}
+
 /**
- * M57 (PHASE8_SPEC 15.4): Boat. The boat's name, a button that downloads its profile (every
- * number of the boat in one file) and a link to the guide for making a similar boat.
+ * M57, M58 (PHASE8_SPEC 15.4, 16.5): Boat. The boat chooser (the Hanse 508 and the boats imported
+ * on this device), the boat's name, a button that downloads its profile (every number of the boat
+ * in one file), "Import a boat profile", "Remove this boat" for an imported boat in use, and a
+ * link to the guide for making a similar boat. The file input has one permanent `change`
+ * listener; the Import button only opens the file chooser.
  */
-function buildBoatField(): HTMLElement {
+function buildBoatField(store: Store): HTMLElement {
+  const select = el('select', {
+    class: 'boat-select',
+    'aria-label': t('boat.label'),
+    'data-testid': 'boat-select',
+  });
+  const fillSelect = () => {
+    select.replaceChildren(
+      el('option', { value: HANSE_508.meta.id }, [
+        t('boat.builtIn', { name: HANSE_508.meta.name }),
+      ]),
+      ...storedBoats().map((profile) => el('option', { value: profile.id }, [profile.name])),
+    );
+    select.value = boatId;
+  };
+  fillSelect();
+  select.addEventListener('change', () => {
+    setChosenBoat(select.value);
+    startOnBoat(store, select.value);
+  });
+
   const download = el(
     'button',
     { type: 'button', class: 'action-button', 'data-testid': 'boat-download' },
@@ -359,10 +395,104 @@ function buildBoatField(): HTMLElement {
   download.addEventListener('click', () => {
     downloadJson(`${boatId}.boat.json`, makeBoatProfile(boatId, boatName, boat));
   });
-  return el('div', { class: 'field', 'data-testid': 'boat-field' }, [
+
+  const status = el('p', {
+    class: 'hint',
+    role: 'status',
+    'aria-live': 'polite',
+    'data-testid': 'boat-status',
+  });
+  const problems = el('ul', { class: 'boat-problems', 'data-testid': 'boat-problems', hidden: '' });
+  const importButton = el(
+    'button',
+    { type: 'button', class: 'action-button', 'data-testid': 'boat-import' },
+    [t('boat.import')],
+  );
+  const input = el('input', {
+    type: 'file',
+    accept: '.json,application/json',
+    hidden: '',
+    tabindex: '-1',
+    'aria-hidden': 'true',
+    'data-testid': 'boat-file',
+  });
+  const say = (text: string, list: string[] = []) => {
+    status.textContent = text;
+    problems.replaceChildren(...list.map((line) => el('li', {}, [line])));
+    problems.hidden = list.length === 0;
+  };
+  importButton.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    void (async () => {
+      const text = await pickJsonFile(input);
+      if (text === null) return;
+      if (text === 'tooBig') {
+        say(t('boat.problem.tooBig'));
+        return;
+      }
+      let raw: unknown;
+      try {
+        raw = JSON.parse(text);
+      } catch {
+        say(t('boat.problem.notJson'));
+        return;
+      }
+      const check = checkBoatProfile(raw);
+      if (!check.ok) {
+        say(
+          t('boat.problem.check', { count: check.problems.length }),
+          check.problems
+            .slice(0, BOAT_PROBLEMS_SHOWN)
+            .map((problem) => `${problem.path}: ${problem.detail}`),
+        );
+        return;
+      }
+      const saved = saveBoat(check.profile);
+      if (saved !== 'ok') {
+        say(t(`boat.problem.${saved}` as StringKey));
+        return;
+      }
+      say(t('boat.imported', { name: check.profile.name }));
+      fillSelect();
+      // A boat edited and imported again while in use: start again on it, so its numbers are used.
+      if (check.profile.id === boatId) {
+        openAfterReload('settings');
+        window.location.reload();
+      }
+    })();
+  });
+
+  const field = el('div', { class: 'field', 'data-testid': 'boat-field' }, [
     el('p', { class: 'field-title' }, [t('boat.label')]),
+    select,
     el('p', { class: 'boat-name', 'data-testid': 'boat-name' }, [boatName]),
-    el('div', { class: 'actions' }, [download]),
+    el('div', { class: 'actions' }, [download, importButton]),
+    input,
+    status,
+    problems,
+  ]);
+  if (boatId !== HANSE_508.meta.id) {
+    const remove = el(
+      'button',
+      {
+        type: 'button',
+        class: 'action-button action-reset',
+        'data-testid': 'boat-remove',
+      },
+      [t('boat.remove')],
+    );
+    createConfirmButton(
+      remove,
+      { idle: t('boat.remove'), confirm: t('boat.removeConfirm') },
+      () => {
+        removeBoat(boatId);
+        setChosenBoat(HANSE_508.meta.id);
+        startOnBoat(store, HANSE_508.meta.id);
+      },
+    );
+    field.append(el('div', { class: 'actions' }, [remove]));
+  }
+  field.append(
     el('p', { class: 'hint' }, [t('boat.hint')]),
     el(
       'a',
@@ -375,7 +505,8 @@ function buildBoatField(): HTMLElement {
       },
       [t('boat.guide')],
     ),
-  ]);
+  );
+  return field;
 }
 
 /**
@@ -415,7 +546,9 @@ function buildSetupFile(store: Store): HTMLElement {
     const name = setupFileName(now);
     // The address bar can lag the store by 300 ms, so the link is built from the store.
     const link = serializeUrlState(store.getState());
-    downloadJson(name, makeSetupFile(link, readDeviceSettings(), now.toISOString()));
+    const profile =
+      boatId === HANSE_508.meta.id ? undefined : storedBoats().find((p) => p.id === boatId);
+    downloadJson(name, makeSetupFile(link, readDeviceSettings(), now.toISOString(), profile));
     status.textContent = t('setup.saved', { name });
   });
   load.addEventListener('click', () => input.click());
@@ -431,6 +564,15 @@ function buildSetupFile(store: Store): HTMLElement {
       if (!read.ok) {
         status.textContent = t(`setup.problem.${read.problem}` as StringKey);
         return;
+      }
+      // A setup with an imported boat puts the boat on this device first (M58, PHASE8_SPEC 16.6).
+      if (read.boatProfile) {
+        const saved = saveBoat(read.boatProfile);
+        if (saved !== 'ok') {
+          status.textContent = t(`boat.problem.${saved}` as StringKey);
+          return;
+        }
+        setChosenBoat(read.boatProfile.id);
       }
       writeDeviceSettings(read.device);
       window.location.replace(`${window.location.pathname}${read.link}`);

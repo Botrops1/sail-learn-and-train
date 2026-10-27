@@ -1,6 +1,8 @@
 import type { Settings } from '../model/settings';
 import type { AppState, Store } from './store';
+import { boatId } from '../model/boat';
 import { clockParam } from '../model/clock';
+import { linkBoatId } from './boatStore';
 import {
   anchorParams,
   boatParams,
@@ -39,7 +41,11 @@ export function startUrlSync(store: Store): void {
     pending = window.location.search;
     // Another language in the link (Back across a language change): the page is built once per
     // language, so reload it (the address bar already holds the link).
-    if (next.settings.language !== current.settings.language) {
+    // Another boat in the link (Back across a boat change, M58): the same, the app starts on it.
+    if (
+      next.settings.language !== current.settings.language ||
+      linkBoatId(window.location.search) !== boatId
+    ) {
       window.location.reload();
       return;
     }
