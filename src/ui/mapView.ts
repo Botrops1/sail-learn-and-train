@@ -769,6 +769,8 @@ export function createMapView(host: HTMLElement, store: Store): MapView {
     Object.assign(window, {
       __sailMap: {
         trackPoints: () => store.getState().track.length,
+        /** The names of the steps of the last map frame, in order (M59). */
+        drawOrder: () => [...lastDrawOrder],
         /** The middle of the blue arrow on the canvas, CSS px. */
         apparentMid: () => {
           const state = store.getState();
@@ -821,19 +823,31 @@ function drawMap(
   ctx.clearRect(0, 0, w, h);
   ctx.fillStyle = COLOURS.water;
   ctx.fillRect(0, 0, w, h);
-  drawGrid(ctx, view);
-  drawWindField(ctx, state, view, timeS);
-  drawSeabed(ctx, state, view);
-  drawHarbour(ctx, state, view);
-  drawTrack(ctx, state.track, state, view);
-  drawAnchor(ctx, state, view);
+  // Debug only: the names of the steps in order, for the last frame (M59).
+  const steps: string[] | null = state.settings.debug ? [] : null;
+  const step = (name: string, draw: () => void): void => {
+    steps?.push(name);
+    draw();
+  };
+  step('grid', () => drawGrid(ctx, view));
+  step('windField', () => drawWindField(ctx, state, view, timeS));
+  step('seabed', () => drawSeabed(ctx, state, view));
+  step('harbour', () => drawHarbour(ctx, state, view));
+  step('track', () => drawTrack(ctx, state.track, state, view));
+  step('anchor', () => drawAnchor(ctx, state, view));
   const layout = mapLayout(state, view, width);
-  drawNoGo(ctx, state, layout);
-  drawLabels(ctx, layout, state.selection);
-  drawBuoys(ctx, state, view);
-  drawBoat(ctx, state, view, layout);
-  drawApparent(ctx, state, layout);
+  step('noGo', () => drawNoGo(ctx, state, layout));
+  step('labels', () => drawLabels(ctx, layout, state.selection));
+  step('buoys', () => drawBuoys(ctx, state, view));
+  step('boat', () => drawBoat(ctx, state, view, layout));
+  step('apparent', () => drawApparent(ctx, state, layout));
+  // The anchor sign goes last so no label or arrow hides it (M59).
+  step('anchorMark', () => drawAnchorMark(ctx, state, view, false));
+  if (steps !== null) lastDrawOrder = steps;
 }
+
+/** The step names of the last `drawMap` call, filled only with `?debug=1` (M59). */
+let lastDrawOrder: readonly string[] = [];
 
 /** The marina's shapes on the canvas (CSS px), or null when it is further away than the canvas is wide. */
 function marinaScreen(
@@ -1221,7 +1235,7 @@ function anchorPoint(state: AppState, view: MapViewport): ScreenPoint | null {
 /**
  * The anchor on the chart (M46, PHASE7_SPEC 12.6): a line from the bow to the anchor, a dashed
  * circle round it where the boat can swing (the chain's reach along the bottom plus a boat
- * length), and an anchor sign on top.
+ * length). The anchor sign on top is `drawAnchorMark`, drawn last.
  */
 function drawAnchor(
   ctx: CanvasRenderingContext2D,
@@ -1251,6 +1265,17 @@ function drawAnchor(
   ctx.arc(point.x, point.y, swingM / view.metresPerPx, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
+}
+
+/** The anchor sign, drawn after everything else so nothing covers it (M59). */
+function drawAnchorMark(
+  ctx: CanvasRenderingContext2D,
+  state: AppState,
+  view: MapViewport,
+  mini: boolean,
+): void {
+  const point = anchorPoint(state, view);
+  if (point === null) return;
   drawAnchorSign(ctx, point.x, point.y, mini ? 6 : 10);
 }
 
@@ -1670,4 +1695,5 @@ export function drawMiniMap(
     bold: true,
     size: north.fontPx,
   });
+  drawAnchorMark(ctx, state, view, true);
 }

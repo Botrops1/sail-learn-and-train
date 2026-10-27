@@ -33,6 +33,7 @@ const ALERT_TEXT: Readonly<
   tookWheel: 'autopilot.tookWheel',
   fendersOut: 'harbour.fenders.hint',
   anchorAlarm: 'anchor.alarm',
+  fendersIn: 'harbour.fenders.inHint',
 };
 
 /** What an entry says (an accidental or controlled gybe says its report). */

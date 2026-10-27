@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { initialState, reduce } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
-import { DEFAULT_HARBOUR, fenderHintShown } from '../src/model/harbour';
+import { boat } from '../src/model/boat';
+import { DEFAULT_HARBOUR, fenderHintShown, fendersInHintShown } from '../src/model/harbour';
+import { marinaGeometry } from '../src/model/marina';
 
 describe('Phase 6, M33: harbour gear (the fenders)', () => {
   it('1. the fenders start in the locker', () => {
@@ -73,5 +75,53 @@ describe('Phase 6, M33: harbour gear (the fenders)', () => {
       expect(keys.indexOf('fd')).toBeGreaterThan(keys.indexOf('clock'));
       expect(keys.indexOf('st')).toBeGreaterThan(keys.indexOf('fd'));
     });
+  });
+});
+
+describe('Phase 8, M59: the fenders-in hint when backing into the berth', () => {
+  const { west, east } = marinaGeometry('medium', 'half').ourRings;
+  const ringsEast = (west[0] + east[0]) / 2;
+  const ringsNorth = west[1];
+  /** A boat heading south (stern to the quay) with its stern `sternM` metres from the rings. */
+  const backing = (
+    sternM: number,
+    fields: { place?: 'open' | 'marina'; out?: boolean; speed?: number },
+  ) => {
+    const state = initialState();
+    return {
+      harbour: {
+        ...state.harbour,
+        place: fields.place ?? 'marina',
+        fendersOut: fields.out ?? false,
+      },
+      boat: {
+        ...state.boat,
+        eastM: ringsEast,
+        northM: ringsNorth - sternM + boat.hull.transomX,
+        headingDeg: 180,
+        speedMps: fields.speed ?? -0.5,
+      },
+    };
+  };
+
+  it('is false in open water', () => {
+    expect(fendersInHintShown(backing(10, { place: 'open' }))).toBe(false);
+  });
+
+  it('is false with the fenders out', () => {
+    expect(fendersInHintShown(backing(10, { out: true }))).toBe(false);
+  });
+
+  it('is false going ahead or lying still', () => {
+    expect(fendersInHintShown(backing(10, { speed: 0.5 }))).toBe(false);
+    expect(fendersInHintShown(backing(10, { speed: -0.05 }))).toBe(false);
+  });
+
+  it('is true going astern 10 m from the rings', () => {
+    expect(fendersInHintShown(backing(10, {}))).toBe(true);
+  });
+
+  it('is false going astern 20 m from the rings', () => {
+    expect(fendersInHintShown(backing(20, {}))).toBe(false);
   });
 });

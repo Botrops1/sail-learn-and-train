@@ -114,7 +114,9 @@
         23
       ],
       "empty": []
-    }
+    },
+    "fendersHintM": 15,
+    "fendersHintNote": "M59: the 'put the fenders out' hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker (assumption)"
   },
   "bay": {
     "$comment": "A made-up Croatian bay 1.3 km west of the start (PHASE7_SPEC 11.2), cut into a coast that runs north-south at east -1350: open to the east, sand with a patch of sea grass, rocky shores, three hidden rocks, rings on the shore for shore lines, three mooring buoys.",

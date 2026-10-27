@@ -1,7 +1,7 @@
 import { boat } from './boat';
 import type { ContactReport, ContactState } from './contact';
 import type { GybeReport } from './gybe';
-import { fenderHintShown, type HarbourState } from './harbour';
+import { fendersInHintShown, fenderHintShown, type HarbourState } from './harbour';
 import type { BoatState } from './motion';
 import { tailSpec, type RealisticState } from './realistic';
 import type { RigState } from './sim';
@@ -26,6 +26,7 @@ export const ALERT_KINDS = [
   'ropeSlipping',
   'winchCutOut',
   'clutchOnRunning',
+  'fendersIn',
 ] as const;
 export type AlertKind = (typeof ALERT_KINDS)[number];
 
@@ -54,6 +55,8 @@ export const ALERT_INFO: Readonly<Record<AlertKind, AlertKindInfo>> = {
   ropeSlipping: { learnId: 'fit_winch', severity: 'warning' },
   winchCutOut: { learnId: 'fit_winch', severity: 'warning' },
   clutchOnRunning: { learnId: 'fit_clutch', severity: 'warning' },
+  // M59: backing into the berth with the fenders still in the locker.
+  fendersIn: { learnId: 'fit_fender', severity: 'info' },
 };
 
 /** The two sails that can wear out, and the Learn entry of each. */
@@ -71,7 +74,7 @@ export function wornSail(damage: Readonly<Record<WornSail, number>>): WornSail |
 }
 
 /** Warnings that can come and go every second: written again only after `repeatGapS`. */
-const FLICKERING: readonly AlertKind[] = ['byTheLee', 'overpowered'];
+const FLICKERING: readonly AlertKind[] = ['byTheLee', 'overpowered', 'fendersIn'];
 /** M55: the rope and winch warnings of Realistic mode: written again only after `ropeRepeatGapS`, per kind and rope or winch. */
 const ROPE_REPEATING: readonly AlertKind[] = ['ropeSlipping', 'winchCutOut', 'clutchOnRunning'];
 
@@ -124,6 +127,7 @@ export function alertTag(entry: AlertEntry): AlertTag {
     case 'sailWorn':
       return 'sail';
     case 'fendersOut':
+    case 'fendersIn':
       return 'gear';
     case 'contact':
       return 'damage';
@@ -198,6 +202,7 @@ function started(previous: AlertSource, next: AlertSource): AlertKind[] {
   if (previous.autopilotNoticeS <= 0 && next.autopilotNoticeS > 0) kinds.push('tookWheel');
   const hint = (s: AlertSource) => fenderHintShown(s.harbour, s.boat.mode);
   if (!hint(previous) && hint(next)) kinds.push('fendersOut');
+  if (!fendersInHintShown(previous) && fendersInHintShown(next)) kinds.push('fendersIn');
   if (!previous.anchor?.alarm && next.anchor?.alarm) kinds.push('anchorAlarm');
   return kinds;
 }

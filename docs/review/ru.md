@@ -3106,6 +3106,7 @@
 | harbour.fenders.stowed | In the locker | В рундуке |
 | harbour.fenders.out | Out | За бортом |
 | harbour.fenders.hint | Bring the fenders in before you sail. | Уберите кранцы, прежде чем идти под парусами. |
+| harbour.fenders.inHint | Put the fenders out before you back into the berth. | Вывесите кранцы, прежде чем входить в место кормой. |
 | harbour.fenders.status.in | Fenders in the locker. | Кранцы в рундуке. |
 | harbour.fenders.status.out | Fenders over the side: {count}. | Кранцев за бортом: {count}. |
 | harbour.fenders.status.lost | Lost while sailing: {count}. | Потеряно на ходу: {count}. |

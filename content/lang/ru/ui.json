@@ -722,6 +722,7 @@
   "harbour.fenders.stowed": "В рундуке",
   "harbour.fenders.out": "За бортом",
   "harbour.fenders.hint": "Уберите кранцы, прежде чем идти под парусами.",
+  "harbour.fenders.inHint": "Вывесите кранцы, прежде чем входить в место кормой.",
   "harbour.fenders.status.in": "Кранцы в рундуке.",
   "harbour.fenders.status.out": "Кранцев за бортом: {count}.",
   "harbour.fenders.status.lost": "Потеряно на ходу: {count}.",

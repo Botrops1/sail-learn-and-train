@@ -47,6 +47,12 @@ function checkedDepthM(state: AppState): number {
   return depthAt(east, north);
 }
 
+/** The arrow keys that work either windlass button (M59). */
+const ARROW_MOTION: Partial<Record<string, Exclude<WindlassMotion, 'off'>>> = {
+  ArrowDown: 'down',
+  ArrowUp: 'up',
+};
+
 function holdButton(
   store: Store,
   motion: Exclude<WindlassMotion, 'off'>,
@@ -82,12 +88,21 @@ function holdButton(
   button.addEventListener('blur', letGo);
   button.addEventListener('contextmenu', (event) => event.preventDefault());
   button.addEventListener('keydown', (event) => {
+    const arrow = ARROW_MOTION[event.key];
+    if (arrow !== undefined) {
+      // M59: ArrowDown pays the chain out and ArrowUp brings it in, on either button.
+      event.preventDefault();
+      if (!event.repeat) store.dispatch({ type: 'windlass', motion: arrow });
+      return;
+    }
     if (event.key !== ' ' && event.key !== 'Enter') return;
     event.preventDefault();
     if (!event.repeat) hold();
   });
   button.addEventListener('keyup', (event) => {
-    if (event.key === ' ' || event.key === 'Enter') letGo();
+    if (event.key === ' ' || event.key === 'Enter' || ARROW_MOTION[event.key] !== undefined) {
+      letGo();
+    }
   });
   return button;
 }

@@ -1,4 +1,7 @@
-import type { MarinaLayoutId, TrafficId } from './marina';
+import { area as adriatic, type AreaData } from './area';
+import { boat as hanse508, type BoatData } from './boat';
+import { pointToMap } from './lowSpeed';
+import { marinaGeometry, type MarinaLayoutId, type TrafficId } from './marina';
 import type { BoatState } from './motion';
 import type { PlaceId } from './places';
 
@@ -40,4 +43,21 @@ export const DEFAULT_HARBOUR: Readonly<HarbourState> = {
 /** True when the "Bring the fenders in before you sail" hint shows: fenders out and Sailing. */
 export function fenderHintShown(harbour: HarbourState, boatMode: BoatState['mode']): boolean {
   return harbour.fendersOut && boatMode === 'sailing';
+}
+
+/** M59: in the marina, fenders in the locker, going astern, our stern within 15 m of our berth's two rings: time to put the fenders out. */
+export function fendersInHintShown(
+  state: { harbour: HarbourState; boat: BoatState },
+  data: BoatData = hanse508,
+  areaData: AreaData = adriatic,
+): boolean {
+  const { harbour, boat } = state;
+  if (harbour.place !== 'marina' || harbour.fendersOut || boat.speedMps >= -0.1) return false;
+  const { west, east } = marinaGeometry(harbour.layout, harbour.traffic, areaData).ourRings;
+  const [sternEast, sternNorth] = pointToMap(boat, data.hull.transomX, 0);
+  const distanceM = Math.hypot(
+    sternEast - (west[0] + east[0]) / 2,
+    sternNorth - (west[1] + east[1]) / 2,
+  );
+  return distanceM <= areaData.marina.fendersHintM;
 }
