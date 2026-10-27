@@ -294,11 +294,11 @@ braid: { periodM: 0.025, aroundRepeats: 2, strength: 2.0, texelsAlong: 32, texel
 
 (`braid.periodM` and `braid.strength` are **tunable**.) `SCENE.ropes.radialSegments` is the only such key (`src/render3d/mooringLines.ts` has its own `RADIAL`, unchanged).
 
-- `buildRopes(initial: readonly RopeDrawing[], detail: Detail): RopeMeshes` (today `buildRopes(initial)`); `buildBoat` passes its `detail`. The module constant `RADIAL` becomes a value chosen once in `buildRopes` (`radialSegmentsHigh` or `radialSegmentsLow`) and passed to `buildGeometry` and `writeStrand`. The meshes are created from `smoothDrawings(initial)` (their buffer layout is the drawn point count), so the first `update` does not rebuild them. Both `buildGeometry` and the rebuild path in `update` add the `color` attribute.
+- `buildRopes(initial: readonly RopeDrawing[], detail: Detail): RopeMeshes` (today `buildRopes(initial)`); `buildBoat` passes its `detail`. The module constant `RADIAL` becomes a value chosen once in `buildRopes` (`radialSegmentsHigh` or `radialSegmentsLow`) and passed to `buildGeometry` and `writeStrand`. The meshes are created from `smoothDrawings(initial)` (their buffer layout is the drawn point count), so the first `update` does not rebuild them. Both `buildGeometry` and the rebuild path in `update` add the `color` attribute and write it once there (the whipped rings depend only on the layout); it is not rewritten on later updates.
 - `update(drawings, view?, flashing?)` keeps its signature and first calls `smoothDrawings(drawings)`; everything after works on the drawn strands. A strand's buffer layout (ring count) is `drawn.points.length`; it is rebuilt only when that count changes, as today.
 - **Rings:** at each drawn point `p` with frame `(t, n)` from `transportFrames` and `b = cross(t, n)`, the ring vertex `j` is `p + r·(cos θ_j·n + sin θ_j·b)`, `θ_j = 2πj/RADIAL`, and its normal `cos θ_j·n + sin θ_j·b`. `r` is `radiusAt(p, view)` as today (the thinner drum radius on a winch drum, the screen minimum far away). The end caps stay as M34 made them (a centre vertex `0.5·r` beyond the end ring along the end tangent, a fan), with the transported frame's rings.
 - **Whipping:** every rope mesh gets a `color` attribute (3 floats per vertex) and its material `vertexColors: true`. Vertices of rings with index ≥ `whipFrom`, and the end cap's centre vertex of a whipped strand (the second of the strand's two cap centres; the start cap stays white), get `SCENE.ropes.whipColour`; all others white (1, 1, 1). The flashing and fighting colours stay on the material colour, as today (multiplied). In Easy every tail ends 0.2 m inside its rope box, so no whipping shows; it shows in Realistic, on a rope lying on the box from a winch or held in a coil.
-- **UVs** stay: `u = (arc + feed)/stripePeriodM`, `v = j/RADIAL`, with `arc` measured along the drawn points.
+- **UVs**: `u = (arc + feed)/stripePeriodM`, `v = j/RADIAL`, with `arc` measured along the drawn points. Each ring gets one extra seam vertex, `j = RADIAL`, at the same place and normal as `j = 0` but with `v = 1`, so the braid does not squash round the last side (the triangle count is unchanged; a ring has `RADIAL + 1` vertices).
 - **Braid (High only):** `braidNormalTexture(): THREE.DataTexture` (`textures.ts`), RGBA, `texelsAlong × texelsAround` (32 × 16), `RepeatWrapping` both ways, `colorSpace` none (`THREE.NoColorSpace`). For texel `(i, k)` with `s = (i + 0.5)/32`, `q = (k + 0.5)/16`: height `h(i, k) = max(0.5 + 0.5·cos 2π(2s + q), 0.5 + 0.5·cos 2π(2s − q))` (two crossing sets of strands, two crossings per texture repeat along the rope); slopes **per texel** with wrap-around: `dx = (h(i+1, k) − h(i−1, k))/2`, `dy = (h(i, k+1) − h(i, k−1))/2`; normal `normalize(−strength·dx, −strength·dy, 1)` (a slope of at most about 0.4 with strength 2) written as `(x + 1)/2·255`, alpha 255. One texture repeat is `braid.periodM` long along the rope. Made once per boat build. At High each rope material gets `normalMap` = that texture (one shared texture), `normalMap.repeat.set(stripePeriodM / braid.periodM, braid.aroundRepeats)`; at Low no normal map. The material stays `MeshLambertMaterial` (it supports normal maps in the pinned three).
 - **Pick segments** are the drawn points' segments (more of them; `picking.ts` is unchanged).
 - `RopeMeshes` gains `stats(): RopeStats` and `BoatModel` gains `ropeStats(): RopeStats`:
@@ -312,7 +312,7 @@ export interface RopeStats { strands: number; points: number; whipped: number; r
 ### 6.5 Debug hooks (`src/render3d/scene.ts`, `window.__sailDebug`, `debug=1` only)
 
 - `ropeStats(): RopeStats` (6.4).
-- `partBox(partId: string): { min: Vec3; max: Vec3 } | null`: the box round every mesh with that `userData.partId` that is visible together with all its ancestors, in the boat model's root frame (`boatModel.root.worldToLocal`, the frame `project` takes), or null when none is. On flat sea and held still (every close-up's link) the root frame and the world frame that `setView` takes coincide, as the M50 close-ups rely on. Later milestones aim their close-ups with it.
+- `partBox(partId: string): { min: Vec3; max: Vec3 } | null`: the box round every mesh with that `userData.partId` that is visible together with all its ancestors, in boat coordinates, the frame `project` takes (the local frame of the group whose `matrixWorld` `project` applies: transform each mesh's world box by that matrix's inverse), or null when none is. On flat sea and held still (every close-up's link) the root frame and the world frame that `setView` takes coincide, as the M50 close-ups rely on. Later milestones aim their close-ups with it.
 
 `scripts/ui.mjs` gains:
 
@@ -332,7 +332,7 @@ export const ADDED_KEYS: readonly string[] = ['visual.ropeBend'];
 export function fillAddedKeys(boat: Record<string, unknown>, reference: BoatData): Record<string, unknown>;
 ```
 
-`checkBoatProfile` calls `fillAddedKeys(raw.boat, reference)` after the header check and walks, range-checks and returns **the filled copy** (`profile.boat`). A path whose parent object is missing is not filled (the walk then reports the parent as missing). A present value is never replaced: a wrong one fails as today. `checkRanges` gets rows for the new numbers in the same form as its existing rows: `visual.ropeBend.radiusM` 0.005–0.2, `arcPoints` a whole number 2–8, `maxShareOfSegment` 0.1–0.5, `whipLengthM` 0–0.2, `whipEdgeM` 0.0001–0.01. `BOAT_PROFILE_VERSION` stays 1. `boatStore.ts` checks every stored boat again at start (M58), so stored boats are filled too. Add one line to `docs/BOAT_PROFILE.md`: "Profiles saved before Phase 9 still work: the numbers added since are taken from the Hanse 508."
+`checkBoatProfile` calls `fillAddedKeys(raw.boat, reference)` after the header check and walks, range-checks and returns **the filled copy** (`profile.boat`). A path whose parent object is missing is not filled (the walk then reports the parent as missing). A present value is never replaced: a wrong one fails as today. `checkRanges` gets rows for the new numbers in the same form as its existing rows: `visual.ropeBend.radiusM` 0.005–0.2, `arcPoints` 2–8 and a whole number (add an optional `integer: true` to the range row type; a value that is not whole fails with kind `range`), `maxShareOfSegment` 0.1–0.5, `whipLengthM` 0–0.2, `whipEdgeM` 0.0001–0.01. `BOAT_PROFILE_VERSION` stays 1. `boatStore.ts` checks every stored boat again at start (M58), so stored boats are filled too. Add one line to `docs/BOAT_PROFILE.md`: "Profiles saved before Phase 9 still work: the numbers added since are taken from the Hanse 508."
 
 ### 6.7 Tests (`tests/ropeSmooth.test.ts`, `tests/boatProfile.test.ts`)
 
@@ -351,7 +351,7 @@ R = 0.045, K = 4, share = 0.45 unless stated; `toBeCloseTo(…, 9)` for coordina
 11. `smoothDrawings` leaves its input unchanged (deep equal to a `structuredClone` taken before).
 12. `tests/ropePaths.test.ts`: the M5/M34 expectations stay; add one test that `tailEnd` is true on exactly 11 strands of item 7's drawings.
 13. Profiles: `p = makeBoatProfile('test-boat', 'Test', HANSE_508)`, then `delete p.boat.visual.ropeBend`: `checkBoatProfile(p)` passes and `profile.boat.visual.ropeBend` deep-equals the Hanse 508's; with `p.boat.visual.ropeBend.radiusM = 'big'` it fails with a problem `boat.visual.ropeBend.radiusM`, kind `type`; with `arcPoints` 1 it fails with kind `range`; without `visual` at all it fails and one problem is `boat.visual` missing; every path of `ADDED_KEYS` exists in `HANSE_508`.
-14. `tests/ropeEnds.test.ts` (M34) changes where it counts vertices: `buildRopes(drawings, 'high')`, `RADIAL` = `SCENE.ropes.radialSegmentsHigh`, and the ring count from `smoothDrawings(drawings)` instead of the raw `points.length`; what it checks (sealed ends, the thin drum radius, the box and coil ends) stays.
+14. `tests/ropeEnds.test.ts` (M34) changes where it counts vertices: `buildRopes(drawings, 'high')`, `RADIAL` = `SCENE.ropes.radialSegmentsHigh`, `RADIAL + 1` vertices per ring (the seam vertex, 6.4), and the ring count from `smoothDrawings(drawings)` instead of the raw `points.length`; what it checks (sealed ends, the thin drum radius, the box and coil ends) stays.
 
 ### 6.8 Budget check (`scripts/budget.mjs`, group `budget`)
 
@@ -439,7 +439,7 @@ New block `modelDetail.edgeRadius`, after `block`:
 }
 ```
 
-`modelDetail.mastBaseTurningBlocks` (today `{ "blockDiameter": 0.09 }`) gains `"cheekGapM": 0.048` and `"cheekThicknessM": 0.004`: the ten turning blocks stand only 0.052 m apart on their ring (10° on 0.3 m), so they get thinner cheeks closer together and no shackle (7.3).
+`modelDetail.mastBaseTurningBlocks` (today `{ "blockDiameter": 0.09 }`) gains `"cheekGapM": 0.052` and `"cheekThicknessM": 0.002`: the ten turning blocks stand only 0.052 m apart on their ring (10° on 0.3 m), so they get thinner cheeks closer together and no shackle (7.3).
 
 All radii are **tunable**. `ADDED_KEYS` gains `'modelDetail.block.source'`, `'modelDetail.block.cheekThicknessM'`, `'modelDetail.block.cheekClearanceM'`, `'modelDetail.block.sheaveRadiusShare'`, `'modelDetail.block.sheaveInsetM'`, `'modelDetail.block.axleRadiusShare'`, `'modelDetail.block.axleOverhangM'`, `'modelDetail.block.shackleWireRadiusM'`, `'modelDetail.block.shackleRiseShare'`, `'modelDetail.mastBaseTurningBlocks.cheekGapM'`, `'modelDetail.mastBaseTurningBlocks.cheekThicknessM'`, `'modelDetail.edgeRadius'` (the `source` string is filled like any other key). Every new `modelDetail` number is between 0 and 2.5, so the generic check of `tests/boatData.test.ts` needs no change.
 
@@ -475,10 +475,10 @@ The four builders in `rig.ts` keep their centres, axles, radii, `towards`, side 
 
 | Builder | Part id | Radius | Extra |
 |---|---|---|---|
-| backstay block (`buildBackstay`) | `part_backstay` | `block.radius` | `{ pickSegments }` as today (not a small part: the comment in `rig.ts` says why) |
+| backstay block (`buildBackstay`) | `part_backstay` | `block.radius` | `{ pickSegments: [] }` (today's block mesh has none: the backstay is tapped along its wires; not a small part, the comment in `rig.ts` says why) |
 | `buildBoom` | `fit_mainsheet_boom_blocks` | `block.radius` | inside the boom's pivot group, as today |
 | `buildDeckBlocks` | `fit_mainsheet_deck_blocks` | `block.radius` | the post from the roof to the block goes into `cheeks` |
-| `buildTurningBlocks` | `fit_mast_base_turning_blocks` | `blockDiameter / 2` (0.045) | options `{ gapM: cheekGapM, cheekThicknessM, shackle: false }` from `mastBaseTurningBlocks` (blocks 0.056 m wide on a 0.052 m spacing: neighbours touch, like the sheaves of one lead organiser) |
+| `buildTurningBlocks` | `fit_mast_base_turning_blocks` | `blockDiameter / 2` (0.045) | options `{ gapM: cheekGapM, cheekThicknessM, shackle: false }` from `mastBaseTurningBlocks` (blocks 0.056 m wide on a 0.052 m spacing: neighbours touch, like the sheaves of one lead organiser; the 0.05 m rope fits the 0.052 m gap) |
 
 So each block set is three meshes (+8 draw calls in all). Low draws the same blocks (owner's answer 4).
 
@@ -488,7 +488,7 @@ So each block set is three meshes (+8 draw calls in all). Low draws the same blo
 
 | Where | Today | Radius |
 |---|---|---|
-| The two coamings (`hull.ts`, `cockpit()`: the `coamings` boxes; at High each box is `4·coamingM` longer, `2·coamingM` at each end, centre unchanged, so its rounded ends are hidden inside the coachroof and the rope box) | `boxAt` | `edgeRadius.coamingM` |
+| The two coamings (`hull.ts`, `cockpit()`: the `coamings` boxes; at High each box is `4·coamingM` longer, `2·coamingM` at each end, centre unchanged, so its rounded ends are hidden inside the coachroof and the rope box; its rounded bottom edges are below the deck, hidden as today) | `boxAt` | `edgeRadius.coamingM` |
 | The rope tail boxes (`cockpitHardware.ts`, `buildRopeBins`: the `block`; the dark `mouth` stays a box) | `boxAt` | `edgeRadius.ropeBinM` |
 | Each clutch body (`buildClutch`: `bodies`) | `boxAt` | `edgeRadius.clutchBodyM` |
 | Each clutch lever (`buildClutch`: the `lever`, before its `rotateZ` and `translate`) | `boxAt` | `edgeRadius.clutchLeverM` |
