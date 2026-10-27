@@ -150,7 +150,7 @@ export async function liveM59Checks({ openPage, realClockPage, viewports, proble
 
   // 5. Frame times, reported only (headless drawing is slow, about 15 fps: no threshold).
   for (const [name, query, open] of [
-    ['learn winch', '?m=learn&learn=fit_winch&debug=1', 'learn-show-on-boat'],
+    ['learn winch', '?m=learn&learn=winch_primary_starboard&debug=1', 'learn-show-on-boat'],
     [
       'busy marina',
       '?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1',
