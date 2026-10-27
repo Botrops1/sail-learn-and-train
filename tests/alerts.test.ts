@@ -398,3 +398,32 @@ describe('M55: damage, rope and winch entries and the tags (issue #109)', () => 
     for (const kind of ALERT_KINDS) expect(ALERT_TAGS).toContain(alertTag(entry(kind)));
   });
 });
+
+describe('Phase 8, M59: fendersIn', () => {
+  it('is written once when the hint starts, tagged gear, and not again at once', () => {
+    const base = initialState({
+      harbour: { ...DEFAULT_HARBOUR, place: 'marina' },
+      boat: { eastM: 2.8, northM: 1450, headingDeg: 180, speedMps: -0.5 },
+    });
+    // 1450 + the transom's offset is more than 15 m from the rings: no hint yet.
+    const far = base;
+    const near = {
+      ...far,
+      boat: { ...far.boat, northM: 1481.4 },
+    };
+    const log = recordAlerts(EMPTY_ALERTS, far, near);
+    expect(log.entries.map((e) => e.kind)).toEqual(['fendersIn']);
+    const [entry] = log.entries;
+    if (!entry) throw new Error('no entry');
+    expect(alertTag(entry)).toBe('gear');
+    expect(entry.severity).toBe('info');
+    expect(alertText(entry)).toBe(en['harbour.fenders.inHint']);
+    // Still true on the next step: nothing new.
+    expect(recordAlerts(log, near, near)).toBe(log);
+    // True again within repeatGapS: not written; after it: written.
+    const away = { ...near, boat: { ...near.boat, northM: 1450 } };
+    expect(recordAlerts(log, away, near).entries).toHaveLength(1);
+    const much = { ...near, rig: { ...near.rig, timeS: near.rig.timeS + repeatGapS + 1 } };
+    expect(recordAlerts(log, away, much).entries).toHaveLength(2);
+  });
+});

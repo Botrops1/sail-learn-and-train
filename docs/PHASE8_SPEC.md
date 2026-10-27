@@ -1757,7 +1757,13 @@ Anything new: ideas found while testing become issues for Phase 9 or later.
 
 ### 17.9 Decided in the M59 PR
 
-(empty)
+**Decided in the M59 PR (recommended; merging accepts it):**
+
+- **Phase 8 sign-off:** the owner signs Phase 8 off on this PR (merging accepts it); the ROADMAP marks Phase 8 **Done**. The frame rate on the phone is the owner's report (the "Smooth" check of the WORKFLOW).
+- **The fenders hint reads the boat's position every step**, not only when the fenders or the mode change, so the Harbour gear section updates `fenders-in-hint` on each store change; the check is cheap (the marina geometry is cached).
+- **`drawOrder()` lists the steps of `drawMap` only** (the full map); the mini-map draws `drawAnchorMark` last too but has no step list.
+- **The frame-time check's Learn page uses `learn=winch_primary_starboard`** (as M49's checks), not `fit_winch`: `fit_winch` is a general entry with no "Where is it?" button, so it cannot be spotlighted.
+- **The frame-time check opens its pages on the real clock** (`realClockPage` passed by `shots.mjs`), because the test clock does not draw frames.
 
 ---
 

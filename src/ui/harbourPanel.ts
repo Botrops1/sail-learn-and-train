@@ -1,6 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { area } from '../model/area';
-import { fenderHintShown, type HarbourState } from '../model/harbour';
+import { fenderHintShown, fendersInHintShown, type HarbourState } from '../model/harbour';
 import { marinaGeometry } from '../model/marina';
 import {
   BAY_LINE_CODES,
@@ -65,9 +65,16 @@ export function createHarbourPanel(store: Store): HTMLElement[] {
   const hint = el('p', { class: 'hint', 'data-testid': 'fenders-hint' }, [
     t('harbour.fenders.hint'),
   ]);
+  // M59: backing into the berth with the fenders still in the locker.
+  const inHint = el('p', { class: 'hint', 'data-testid': 'fenders-in-hint' }, [
+    t('harbour.fenders.inHint'),
+  ]);
+  inHint.hidden = true;
   // How many are over the side, and how many were torn off while sailing (M43).
   const status = el('p', { class: 'hint', 'data-testid': 'fenders-status', 'aria-live': 'polite' });
   const sync = (state: AppState, previous?: AppState) => {
+    const inShown = fendersInHintShown(state);
+    if (inHint.hidden === inShown) inHint.hidden = !inShown;
     if (
       previous &&
       state.harbour.fendersOut === previous.harbour.fendersOut &&
@@ -82,7 +89,7 @@ export function createHarbourPanel(store: Store): HTMLElement[] {
   };
   store.subscribe(sync);
   sync(store.getState());
-  return [group, hint, status, ...createLinesBlock(store)];
+  return [group, hint, inHint, status, ...createLinesBlock(store)];
 }
 
 /** The rope id (registry) of each line code: a row names it so a tap on the row can explain it. */

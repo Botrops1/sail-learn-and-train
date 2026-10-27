@@ -40,6 +40,9 @@ export interface MarinaData {
   yachts: { lengthM: number; beamM: number }[];
   /** `busy` takes every berth; the others list the taken berth indices of each row. */
   traffic: { busy: 'all'; half: number[]; empty: number[] };
+  /** M59: the "put the fenders out" hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker. */
+  fendersHintM: number;
+  fendersHintNote: string;
 }
 
 /** A round patch on the map: a hidden rock or a patch of sea grass (M45, PHASE7_SPEC 11.2). */
