@@ -1,8 +1,8 @@
 # Exercises, failure modes and wind modes (plan)
 
-**Context only. Do not build ahead.** (Phase numbers changed on 2026-10-23: the exercises are now **Phase 9**; Phase 8 is the panel, status and setup phase.) This is the catalogue the later phases draw from. Each item names the phase that makes it possible (the physics and scenery) and the phase that turns it into a guided exercise (Phase 9). Ideas from the owner (2026-10-09) are marked *owner*.
+**Context only. Do not build ahead.** (Phase numbers changed on 2026-10-27: the exercises are now **Phase 10**; Phase 9 is visual quality, Phase 8 the panel, status and setup phase.) This is the catalogue the later phases draw from. Each item names the phase that makes it possible (the physics and scenery) and the phase that turns it into a guided exercise (Phase 10). Ideas from the owner (2026-10-09) are marked *owner*.
 
-Every exercise uses the same format (ROADMAP Phase 9): **what you see → what is happening → the right action → the typical mistake**. Each one ends with a **debrief**: a short timeline of what the user did, what the boat did, and, if something went wrong, which action caused it (see "Failure modes").
+Every exercise uses the same format (ROADMAP Phase 10): **what you see → what is happening → the right action → the typical mistake**. Each one ends with a **debrief**: a short timeline of what the user did, what the boat did, and, if something went wrong, which action caused it (see "Failure modes").
 
 ## 1. Harbour and anchorage exercises
 
@@ -16,7 +16,7 @@ Every exercise uses the same format (ROADMAP Phase 9): **what you see → what i
 
 **Anchor scope rule.** The owner's instructor rule is "at least 3 boat lengths of chain" (about 47 m for this boat). The common written rule is **chain at least 4 × the effective depth** (water depth plus the bow roller's height above the water), more in strong wind (4 × depth plus 2 boat lengths in lively conditions). The app shows both and checks the larger; in a typical 5–10 m Croatian bay the instructor's rule is the larger, in 15 m or more the depth rule is. Source: PHYSICS_TRUTHS PT-31.
 
-## 2. Standard sailing exercises (EX-E, to be detailed in Phase 9)
+## 2. Standard sailing exercises (EX-E, to be detailed in Phase 10)
 
 - Trim through the points of sail: close-hauled → reach → run, sheets eased progressively (PT-22).
 - Tacking (self-tacking jib: just the wheel) and the no-go zone (PT-21).
@@ -31,7 +31,7 @@ Every exercise uses the same format (ROADMAP Phase 9): **what you see → what i
 
 ## 3. Failure modes: "how the boat gets out of control"
 
-The physics phases must make these **happen by themselves** from wrong actions, not as scripted animations. Phase 9 adds the debrief that explains them. Rules in PHYSICS_TRUTHS where they exist; the rest are `to-verify` until sourced.
+The physics phases must make these **happen by themselves** from wrong actions, not as scripted animations. Phase 10 adds the debrief that explains them. Rules in PHYSICS_TRUTHS where they exist; the rest are `to-verify` until sourced.
 
 | Failure | What causes it | What the user sees | Phase |
 |---|---|---|---|
