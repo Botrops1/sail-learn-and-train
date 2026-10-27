@@ -91,7 +91,7 @@ Costs are estimates. "Triangles" and "draw calls" are added on top of the High n
 | **Rounded hardware** | bevelled coamings, rope boxes, clutches (with their levers), cleats, pedestals | +8,000 | 0 | ½ milestone | — |
 | **Small fittings** | stanchion bases, pulpit and pushpit joints (the rails at bow and stern), turnbuckles on the shrouds (side wires), chainplates (where they meet the deck), mast step, boom-end fittings, deck hatches with frames, portlights (hull windows) | +15,000–25,000 | +5–10 | 1 milestone | no photos: marked assumptions (section 6) |
 | **Helm pedestal and panel** | moulded pedestal with a guard rail (the steel hoop to hold on to), wheel with a leather-look rim and proper hub, a control panel angled towards the middle (section 9) | +6,000 per helm | +4 | ½ milestone | no photo: assumptions |
-| **Live panel** | compass card turning with the heading; wind dial with apparent wind angle and speed; engine lever at its position and a tachometer needle; thruster joysticks while held; autopilot keypad with Standby / Auto and the set course (question 2 in section 10). The B&G multifunction display is not simulated (owner) | +2,000 | +4–8 | 1 milestone | new registry ids and Learn entries (English and a Russian draft); their pictures redraw a few times a second only while the camera is close |
+| **Live panel** | compass card turning with the heading; wind dial with apparent wind angle and speed; engine lever at its position and a tachometer needle; thruster joysticks while held; autopilot keypad with Standby / Auto and the set course (owner, section 10). The B&G multifunction display is not simulated (owner) | +2,000 | +4–8 | 1 milestone | new registry ids and Learn entries (English and a Russian draft); their pictures redraw a few times a second only while the camera is close |
 | **Corner shading** | slightly darker inside corners (painted into the shapes once, "baked") so parts sit on the deck instead of floating | 0 | 0 | small | — |
 
 **Totals if everything is built:** about **+60,000–75,000 triangles** and **+20–30 draw calls** at High, so about 160,000 triangles and 230 draw calls. The Helm view's instruments only add when the camera is near (they are hidden beyond a few metres), and Low keeps the cheaper versions (6-sided ropes, no braid map, fewer fittings). Per-frame work grows only in the ropes (about 800 points instead of 267, still well under a millisecond).
@@ -160,17 +160,19 @@ The owner has **no further photos** (2026-10-27). Every new part is drawn from g
 - Free orbit still works; dragging leaves the three directions, as dragging leaves a preset today.
 - In Realistic mode, walking to the Helm station (M53) uses the same camera.
 
-## 10. Remaining questions (the `/plan 9` session asks them, each with this recommendation)
+## 10. The last helm questions, answered (owner, 2026-10-27)
 
-1. **Panels at both wheels (section 9) instead of one in the middle?** Recommended: both wheels, because it keeps the way aft clear and matches the real boat; the camera works the same.
-2. **Autopilot remote on the panel?** The first request named it, the last list did not. Recommended: yes, a small keypad showing Standby / Auto and the set course from the existing autopilot, because the app already steers by autopilot and the photo shows a remote at the helm.
-3. **Do the panel's lever, joysticks and buttons work when tapped in 3D**, or only show what the panel below does? Recommended: show only in Phase 9 (taps open the part's Learn entry, as every part does), because working controls in a small 3D view are hard to hit on a phone; the Engine section and the quick row stay the controls.
+1. **Panel at each wheel, not one unit between the wheels** (section 9): the recommendation stands; the owner did not ask for the middle unit.
+2. **Autopilot remote on the panel:** yes. A small keypad showing Standby / Auto and the set course from the existing autopilot.
+3. **The panel's lever, joysticks and buttons only show** what the app's controls do; they do not work when tapped in 3D. A tap opens the part's Learn entry, as for every part; the Engine section, the Autopilot section and the quick row stay the controls.
+
+`/plan 9` has no helm questions left; it asks only what comes up while writing the spec.
 
 ## 11. Milestones (draft; `/plan 9` makes them final)
 
 1. **Ropes:** smooth bends round sheaves and fairleads, rounder tubes without pinches, ends tucked into blocks and boxes, whipped ends, braid surface at High; a browser check that holds the triangle and draw-call budget.
 2. **Blocks and rounded hardware:** real blocks (copies of one shape), bevelled coamings, boxes, clutches with levers, cleats.
-3. **Helm pedestals and control panels:** pedestal with guard rail, better wheels, the panel at each wheel (engine lever, tachometer, thruster joysticks, compass, wind data, the autopilot keypad if question 2 is yes), the handle holder; new registry ids and Learn entries (English and a Russian draft).
+3. **Helm pedestals and control panels:** pedestal with guard rail, better wheels, the panel at each wheel (engine lever, tachometer, thruster joysticks, compass, wind data, the autopilot keypad), the handle holder; new registry ids and Learn entries (English and a Russian draft).
 4. **Live panel:** compass card turning with the heading, wind needle and numbers, tachometer needle, lever position, joysticks while held, autopilot mode and course; redrawn a few times a second only while the camera is near.
 5. **Helm camera:** either wheel, Ahead / Panel / Ropes, Other wheel, smooth turns, link keys.
 6. **Small fittings, finish and sign-off:** stanchion bases, rail joints, turnbuckles, chainplates, hatches, portlights, corner shading; frame rate confirmed on the phone.
