@@ -742,7 +742,7 @@ New link settings (PHASE9_SPEC 4.2): `hw=s` puts the Helm camera at the starboar
 
 #### M64: Helm camera
 
-- [ ] Buttons: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat — three buttons at the top right: Ropes, Panel, Other wheel.
+- [ ] Buttons: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat — three buttons at the top left, under the instrument strip: Ropes, Panel, Other wheel.
 - [ ] Panel: tap Panel: the view turns down to the panel; tap Panel again: back to looking ahead.
 - [ ] Ropes: tap Ropes: the view turns to the winch and the clutches on your side.
 - [ ] Other wheel: tap Other wheel: you move to the right wheel, looking the same way.
