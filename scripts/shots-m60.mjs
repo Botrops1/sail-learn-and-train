@@ -115,11 +115,11 @@ export async function liveM60Checks({ openPage, viewports, outDir, prefix, probl
       // 4. Taps still work on the smoothed ropes.
       await setSheet(page, 'peek');
       await page.addStyleTag({ content: '.debug { display: none !important; }' });
-      const at = await page.evaluate(() => window.__sailDebug.partPoint('rope_vang', 0.25));
+      const at = await page.evaluate(() => window.__sailDebug.partPoint('rope_topping_lift', 0.25));
       const box = await page.locator('canvas.scene-canvas').boundingBox();
       await page.mouse.click(box.x + at.x, box.y + at.y);
-      const link = await waitForLink(page, ['sel=rope_vang']);
-      check(`${v} tap on the vang selects it`, true, link);
+      const link = await waitForLink(page, ['sel=rope_topping_lift']);
+      check(`${v} tap on the topping lift selects it`, true, link);
       await context.close();
     }
     {
