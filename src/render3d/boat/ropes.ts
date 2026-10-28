@@ -142,7 +142,7 @@ function buildGeometry(
         const b = a + 1;
         const c = a + stride;
         const d = b + stride;
-        indices.push(a, c, b, b, c, d);
+        indices.push(a, b, c, b, d, c);
       }
     }
     const startCentre = base + count * stride;

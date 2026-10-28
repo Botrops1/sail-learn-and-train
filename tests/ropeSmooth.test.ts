@@ -76,7 +76,7 @@ describe('roundCorners', () => {
     expect(roundCorners(five, R, K, SHARE)).toHaveLength(14);
   });
 
-  it('a 90° corner is an arc of the radius, inside the corner, from one segment to the next', () => {
+  it('a 90° corner is an arc of the radius whose middle passes through the corner', () => {
     const out = roundCorners(
       [
         [0, 0, 0],
@@ -89,12 +89,38 @@ describe('roundCorners', () => {
     );
     expect(out).toHaveLength(6);
     expectPoint(out[0], [0, 0, 0]);
-    expectPoint(out[1], [1 - R, 0, 0]);
-    expectPoint(out[4], [1, R, 0]);
     expectPoint(out[5], [1, 1, 0]);
+    // The plain fillet's centre is (1 − R, R); moving the arc outwards by R(1 − √2/2) along the
+    // diagonal puts the corner (1, 0) on the arc itself (owner, PR #135).
+    const half = (R * Math.SQRT2) / 2;
+    const centre: Vec3 = [1 - half, half, 0];
+    const s = R - half;
+    expectPoint(out[1], [1 - R + s, -s, 0]);
+    expectPoint(out[4], [1 + s, R - s, 0]);
     for (let k = 1; k <= 4; k += 1) {
-      expect(distance(out[k] as Vec3, [1 - R, R, 0])).toBeCloseTo(R, 9);
+      expect(distance(out[k] as Vec3, centre)).toBeCloseTo(R, 9);
     }
+    expect(distance([1, 0, 0], centre)).toBeCloseTo(R, 9);
+  });
+
+  it('a sharp 128° corner is never sunk into the corner: the arc passes within 4 mm of it', () => {
+    const turn = (128 * Math.PI) / 180;
+    const out = roundCorners(
+      [
+        [0, 0, 0],
+        [1, 0, 0],
+        [1 + Math.cos(turn), Math.sin(turn), 0],
+      ],
+      R,
+      K,
+      SHARE,
+    );
+    const chordMiddle: Vec3 = [
+      ((out[2] as Vec3)[0] + (out[3] as Vec3)[0]) / 2,
+      ((out[2] as Vec3)[1] + (out[3] as Vec3)[1]) / 2,
+      0,
+    ];
+    expect(distance(chordMiddle, [1, 0, 0])).toBeLessThan(0.004);
   });
 
   it('shrinks the arc on a short segment (at most the share of it)', () => {
@@ -108,8 +134,10 @@ describe('roundCorners', () => {
       K,
       SHARE,
     );
-    expectPoint(out[1], [0.0275, 0, 0]);
-    expectPoint(out[4], [0.05, 0.0225, 0]);
+    // t = 0.45 · 0.05 = 0.0225 (so r = 0.0225), then moved outwards by r(1 − √2/2).
+    const s = 0.0225 * (1 - Math.SQRT2 / 2);
+    expectPoint(out[1], [0.0275 + s, -s, 0]);
+    expectPoint(out[4], [0.05 + s, 0.0225 - s, 0]);
   });
 
   it('a straight corner still gets K points along the line', () => {
@@ -202,14 +230,14 @@ describe('smoothDrawings', () => {
     });
   });
 
-  it('stays close to the raw line: a bit shorter, every corner within a block radius, turns under 45°', () => {
+  it('stays close to the raw line: at most 4 cm longer, every corner within a block radius, turns under 45°', () => {
     const raw = easy.flatMap((rope) => rope.strands);
     raw.forEach((strand, index) => {
       const rb = boat.visual.ropeBend;
       const rounded = roundCorners(strand.points, rb.radiusM, rb.arcPoints, rb.maxShareOfSegment);
       const rawLength = lineLength(strand.points);
       const drawnLength = lineLength(rounded);
-      expect(drawnLength, `strand ${index}`).toBeLessThanOrEqual(rawLength + 1e-9);
+      expect(drawnLength, `strand ${index}`).toBeLessThanOrEqual(rawLength + 0.04);
       expect(drawnLength, `strand ${index}`).toBeGreaterThanOrEqual(rawLength - 0.14);
       for (let i = 1; i < strand.points.length - 1; i += 1) {
         const near = Math.min(

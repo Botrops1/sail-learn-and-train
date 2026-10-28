@@ -256,9 +256,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
          */
         partBox: (partId: string) => {
           const box = new THREE.Box3();
-          const inverse = holder.matrixWorld.clone().invert();
           let any = false;
           holder.updateMatrixWorld(true);
+          const inverse = holder.matrixWorld.clone().invert();
           boatModel.root.traverse((object) => {
             if (!(object instanceof THREE.Mesh) || object.userData.partId !== partId) return;
             for (let up: THREE.Object3D | null = object; up; up = up.parent) {

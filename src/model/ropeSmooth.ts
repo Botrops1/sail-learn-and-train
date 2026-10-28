@@ -24,9 +24,11 @@ const DEGENERATE_M = 1e-6;
 const STRAIGHT_RAD = 1e-4;
 
 /**
- * The line with each interior point replaced by `arcPoints` points on an arc inside the corner
- * (a fillet of radius `radiusM`, made smaller where a neighbouring segment is short: it uses at
- * most `maxShare` of each). The two ends stay. A line of n ≥ 2 points gives 2 + (n − 2)·K points.
+ * The line with each interior point replaced by `arcPoints` points on an arc (a fillet of radius
+ * `radiusM`, made smaller where a neighbouring segment is short: it uses at most `maxShare` of
+ * each), moved outwards so that its middle passes through the corner itself: a rope bent over an
+ * edge never sinks deeper into the part than the sharp corner did (M60, owner's PR #135). The
+ * two ends stay. A line of n ≥ 2 points gives 2 + (n − 2)·K points.
  */
 export function roundCorners(
   points: readonly Vec3[],
@@ -74,9 +76,11 @@ export function roundCorners(
     const t1 = sub(p, scale(u, t));
     const n = normalize(sub(v, scale(u, dot(u, v))));
     const centre = add(t1, scale(n, r));
+    const arcAt = (phi: number): Vec3 =>
+      add(sub(centre, scale(n, r * Math.cos(phi))), scale(u, r * Math.sin(phi)));
+    const outwards = sub(p, arcAt(turn / 2));
     for (let k = 0; k < arcPoints; k += 1) {
-      const phi = (turn * k) / steps;
-      out.push(add(sub(centre, scale(n, r * Math.cos(phi))), scale(u, r * Math.sin(phi))));
+      out.push(add(arcAt((turn * k) / steps), outwards));
     }
   }
   out.push(points[points.length - 1] as Vec3);
