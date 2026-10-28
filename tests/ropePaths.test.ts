@@ -148,3 +148,10 @@ describe('rope drawing (PHASE1_SPEC 8.7)', () => {
     );
   });
 });
+
+describe('M60: tails', () => {
+  it("exactly 11 strands end at the rope's own tail (they are whipped)", () => {
+    const strands = drawings({}).flatMap((rope) => rope.strands);
+    expect(strands.filter((strand) => strand.tailEnd === true)).toHaveLength(11);
+  });
+});

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HANSE_508, type BoatData } from '../src/model/boat';
 import {
+  ADDED_KEYS,
   BOAT_PROFILE_VERSION,
   checkBoatProfile,
   makeBoatProfile,
@@ -283,5 +284,36 @@ describe('makeBoatProfile (test 12)', () => {
     expect(HANSE_508.meta.name).toBe('Hanse 508');
     expect(made.boat).not.toBe(HANSE_508);
     expect(made.boat.hull.thrusters).not.toBe(HANSE_508.hull.thrusters);
+  });
+});
+
+describe('boat-file keys added after version 1 (M60, PHASE9_SPEC 6.6)', () => {
+  it("a profile without visual.ropeBend gets the Hanse 508's", () => {
+    const check = checkBoatProfile(broken((b) => delete b.visual.ropeBend));
+    if (!check.ok) throw new Error(JSON.stringify(check.problems));
+    expect(check.profile.boat.visual.ropeBend).toEqual(HANSE_508.visual.ropeBend);
+  });
+
+  it('a wrong value that is present is not replaced', () => {
+    const type = problemsOf(checkBoatProfile(broken((b) => (b.visual.ropeBend.radiusM = 'big'))));
+    expect(type[0]).toMatchObject({ path: 'boat.visual.ropeBend.radiusM', kind: 'type' });
+    const range = problemsOf(checkBoatProfile(broken((b) => (b.visual.ropeBend.arcPoints = 1))));
+    expect(range[0]).toMatchObject({ path: 'boat.visual.ropeBend.arcPoints', kind: 'range' });
+    const whole = problemsOf(checkBoatProfile(broken((b) => (b.visual.ropeBend.arcPoints = 3.5))));
+    expect(whole[0]).toMatchObject({ kind: 'range' });
+  });
+
+  it('a missing parent is not filled: it is reported', () => {
+    const problems = problemsOf(checkBoatProfile(broken((b) => delete b.visual)));
+    expect(problems.map((p) => p.path)).toContain('boat.visual');
+    expect(problems.find((p) => p.path === 'boat.visual')).toMatchObject({ kind: 'missing' });
+  });
+
+  it('every added key exists in the Hanse 508', () => {
+    for (const dotted of ADDED_KEYS) {
+      let at: unknown = HANSE_508;
+      for (const part of dotted.split('.')) at = (at as Record<string, unknown>)?.[part];
+      expect(at, dotted).toBeDefined();
+    }
   });
 });

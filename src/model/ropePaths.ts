@@ -44,6 +44,8 @@ export interface RopeStrand {
    * The renderer slides the rope's stripe pattern by it, so a hauled rope visibly moves.
    */
   feed: number;
+  /** M60: true when the strand's last point is the rope's own end (its tail): it is whipped. */
+  tailEnd?: true;
 }
 
 export interface RopeDrawing {
@@ -319,10 +321,12 @@ export function ropeDrawings(
       {
         points: [onRoof(deckPort), ...lead('rope_mainsheet', 'port')],
         feed: sheetOut,
+        tailEnd: true,
       },
       {
         points: [onRoof(deckStarboard), ...lead('rope_mainsheet', 'starboard')],
         feed: sheetOut,
+        tailEnd: true,
       },
     ],
   };
@@ -355,6 +359,7 @@ export function ropeDrawings(
       {
         points: [vangBottom, ...lead('rope_vang')],
         feed: vangPaidOut(rig.applied.vang, data),
+        tailEnd: true,
       },
     ],
   };
@@ -388,6 +393,7 @@ export function ropeDrawings(
       {
         points: [exitOf('rope_topping_lift'), ...lead('rope_topping_lift')],
         feed: toppingLiftPaidOut(rig.applied.toppingLift, data),
+        tailEnd: true,
       },
     ],
   };
@@ -418,6 +424,7 @@ export function ropeDrawings(
           ...lead('rope_outhaul'),
         ],
         feed: furl.outhaulPaidOut,
+        tailEnd: true,
       },
     ],
   };
@@ -427,7 +434,7 @@ export function ropeDrawings(
     const spec = lineSpec('rope_main_furling_line', name, data);
     const exit = mastExitPoint(spec);
     if (!exit) throw new Error('No drum exit for the main furling line in hanse508.json.');
-    return { points: [exit, ...lead('rope_main_furling_line', name)], feed };
+    return { points: [exit, ...lead('rope_main_furling_line', name)], feed, tailEnd: true };
   };
   const furlingLine: RopeDrawing = {
     id: 'rope_main_furling_line',
@@ -457,7 +464,7 @@ function halyards(lead: (rope: RopeId, tail?: string) => Vec3[], data: BoatData)
   const tail = (rope: RopeId): RopeStrand => {
     const exit = mastExitPoint(lineSpec(rope, undefined, data));
     if (!exit) throw new Error(`No mast exit for ${rope} in hanse508.json.`);
-    return { points: [exit, ...lead(rope)], feed: 0 };
+    return { points: [exit, ...lead(rope)], feed: 0, tailEnd: true };
   };
   const spi = lineSpec('rope_spi_halyard', undefined, data);
   if (!('parked' in spi) || !spi.parked) {
@@ -633,7 +640,7 @@ function jibRopes(
       part(1),
       part(-1),
       { points: [car, vec3(sheetEntry)], feed: sheetFeed },
-      { points: [sheetExit, ...lead('rope_jib_sheet')], feed: sheetFeed },
+      { points: [sheetExit, ...lead('rope_jib_sheet')], feed: sheetFeed, tailEnd: true },
     ],
   };
 
@@ -678,6 +685,7 @@ function jibRopes(
           ...jibRollPastClutch(winches, data),
         ],
         feed: jibFurlingLinePaidOut(jib.unfurled, data),
+        tailEnd: true,
       },
     ],
   };

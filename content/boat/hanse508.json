@@ -1202,6 +1202,14 @@
     "boomSmoothingNote": "Time constant of the critically damped spring that moves the drawn boom towards the solved pose (PHASE1_SPEC 8.3 step 5). The fill of the sails follows with the same time constant.",
     "gybeLabelS": 2.0,
     "ropeMaxSagM": 1.5,
+    "ropeBend": {
+      "$comment": "M60 (Phase 9): how ropes are drawn round their corners, for the picture only (rope paths and lengths do not change). Every corner of a rope's drawn line becomes an arc of radiusM (the turning blocks' sheave radius, modelDetail.mastBaseTurningBlocks.blockDiameter / 2), drawn with arcPoints points; on a short segment the arc is made smaller so it uses at most maxShareOfSegment of each segment next to it. Each rope's tail (the end in the rope box, on the box, or in a coil) is whipped: the last whipLengthM is drawn in the whipping colour.",
+      "radiusM": 0.045,
+      "arcPoints": 4,
+      "maxShareOfSegment": 0.45,
+      "whipLengthM": 0.03,
+      "whipEdgeM": 0.001
+    },
     "ropeSagSegments": 12,
     "solver": {
       "$comment": "Numbers from PHASE1_SPEC 8.1-8.4.",

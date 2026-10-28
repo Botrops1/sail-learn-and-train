@@ -137,3 +137,37 @@ export function sailSeamTexture(): THREE.DataTexture {
   seams = dataTexture(data, width, height, THREE.SRGBColorSpace);
   return seams;
 }
+
+let braid: THREE.DataTexture | undefined;
+
+/**
+ * M60: the braided surface of a rope as a normal map (High only): two crossing sets of strands,
+ * two crossings per repeat along the rope. One repeat is `SCENE.ropes.braid.periodM` long.
+ */
+export function braidNormalTexture(): THREE.DataTexture {
+  if (braid) return braid;
+  const { texelsAlong: along, texelsAround: around, strength } = SCENE.ropes.braid;
+  const height = (i: number, k: number): number => {
+    const s = ((((i % along) + along) % along) + 0.5) / along;
+    const q = ((((k % around) + around) % around) + 0.5) / around;
+    return Math.max(
+      0.5 + 0.5 * Math.cos(2 * Math.PI * (2 * s + q)),
+      0.5 + 0.5 * Math.cos(2 * Math.PI * (2 * s - q)),
+    );
+  };
+  const data = new Uint8Array(along * around * 4);
+  for (let k = 0; k < around; k += 1) {
+    for (let i = 0; i < along; i += 1) {
+      const dx = (height(i + 1, k) - height(i - 1, k)) / 2;
+      const dy = (height(i, k + 1) - height(i, k - 1)) / 2;
+      const length = Math.hypot(strength * dx, strength * dy, 1);
+      const index = (k * along + i) * 4;
+      data[index] = Math.round(((-strength * dx) / length + 1) * 0.5 * 255);
+      data[index + 1] = Math.round(((-strength * dy) / length + 1) * 0.5 * 255);
+      data[index + 2] = Math.round((1 / length + 1) * 0.5 * 255);
+      data[index + 3] = 255;
+    }
+  }
+  braid = dataTexture(data, along, around, THREE.NoColorSpace);
+  return braid;
+}

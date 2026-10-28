@@ -68,6 +68,8 @@ interface Range {
   path: string;
   min: number;
   max: number;
+  /** The value must be a whole number. */
+  integer?: true;
 }
 
 const RANGES: readonly Range[] = [
@@ -86,7 +88,43 @@ const RANGES: readonly Range[] = [
   { path: 'physics.integration.solverAwsStepKn', min: 0.01, max: 2 },
   { path: 'physics.mass.payloadKg', min: 0, max: 20000 },
   { path: 'physics.mass.addedMassFraction', min: 0, max: 2 },
+  { path: 'visual.ropeBend.radiusM', min: 0.005, max: 0.2 },
+  { path: 'visual.ropeBend.arcPoints', min: 2, max: 8, integer: true },
+  { path: 'visual.ropeBend.maxShareOfSegment', min: 0.1, max: 0.5 },
+  { path: 'visual.ropeBend.whipLengthM', min: 0, max: 0.2 },
+  { path: 'visual.ropeBend.whipEdgeM', min: 0.0001, max: 0.01 },
 ];
+
+/**
+ * Boat-file paths added after profile version 1 (Phase 9). A profile without one gets the
+ * reference's value. Each milestone appends the paths it adds (PHASE9_SPEC 4.3).
+ */
+export const ADDED_KEYS: readonly string[] = ['visual.ropeBend'];
+
+/**
+ * A copy of `boat` with every `ADDED_KEYS` path that is missing (its parent object present) set
+ * to a deep copy of the reference's value. A present value is never replaced.
+ */
+export function fillAddedKeys(
+  boat: Record<string, unknown>,
+  reference: BoatData,
+): Record<string, unknown> {
+  const filled = structuredClone(boat);
+  for (const dotted of ADDED_KEYS) {
+    const parts = dotted.split('.');
+    const last = parts.pop() as string;
+    let from: unknown = reference;
+    let into: unknown = filled;
+    for (const part of parts) {
+      from = isPlainObject(from) ? from[part] : undefined;
+      into = isPlainObject(into) ? into[part] : undefined;
+    }
+    if (isPlainObject(from) && isPlainObject(into) && !(last in into) && last in from) {
+      into[last] = structuredClone(from[last]);
+    }
+  }
+  return filled;
+}
 
 /** Deep-clones `data` and writes `id` and `name` into its `meta.id` / `meta.name` too. */
 export function makeBoatProfile(id: string, name: string, data: BoatData): BoatProfile {
@@ -333,6 +371,8 @@ function checkRanges(boat: unknown, problems: Problems): void {
     if (found === undefined) continue;
     if (found < range.min || found > range.max) {
       problems.add(path, 'range', `${range.min} to ${range.max}`);
+    } else if (range.integer && !Number.isInteger(found)) {
+      problems.add(path, 'range', `a whole number from ${range.min} to ${range.max}`);
     }
   }
   const stemX = numberAt(boat, 'hull.stemX');
@@ -361,8 +401,9 @@ export function checkBoatProfile(raw: unknown, reference: BoatData = HANSE_508):
   if (problems.list.length > 0 || !isPlainObject(raw)) {
     return { ok: false, problems: problems.list };
   }
-  walk(reference, raw.boat, 'boat', 'boat', problems);
-  checkRanges(raw.boat, problems);
+  const boat = fillAddedKeys(raw.boat as Record<string, unknown>, reference);
+  walk(reference, boat, 'boat', 'boat', problems);
+  checkRanges(boat, problems);
   if (problems.list.length > 0) return { ok: false, problems: problems.list };
   return {
     ok: true,
@@ -372,7 +413,7 @@ export function checkBoatProfile(raw: unknown, reference: BoatData = HANSE_508):
       version: raw.version as number,
       id: raw.id as string,
       name: raw.name as string,
-      boat: raw.boat as BoatData,
+      boat: boat as BoatData,
     },
   };
 }

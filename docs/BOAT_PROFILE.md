@@ -86,11 +86,17 @@ Ranges:
 | `physics.integration.solverAwsStepKn` | 0.01 to 2 kn (M58: a bigger step stopped the solver) |
 | `physics.mass.payloadKg` | 0 to 20,000 kg |
 | `physics.mass.addedMassFraction` | 0 to 2 |
+| `visual.ropeBend.radiusM` | 0.005 to 0.2 m (how round a rope's corners are drawn) |
+| `visual.ropeBend.arcPoints` | a whole number, 2 to 8 |
+| `visual.ropeBend.maxShareOfSegment` | 0.1 to 0.5 |
+| `visual.ropeBend.whipLengthM` | 0 to 0.2 m |
+| `visual.ropeBend.whipEdgeM` | 0.0001 to 0.01 m |
 
 At most 20 problems are listed; fix them and check again.
 
 ## Good to know
 
+- Profiles saved before Phase 9 still work: the numbers added since are taken from the Hanse 508.
 - The app was checked with the Hanse 508 only. A boat whose numbers pass the checks will sail, but nobody has verified that it sails like the real yacht.
 - Speeds, heel and loads all come from your numbers (the weights, the sail areas, the keel, the thrust). If a number is a guess, the boat is a guess.
 - The Learn texts ("On this boat") describe the Hanse 508, whatever boat you use.

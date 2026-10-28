@@ -329,3 +329,28 @@ export async function columnSections(page) {
     ),
   );
 }
+
+/**
+ * M60: aims the camera at a part (debug=1): hides `.debug` and lowers the sheet to peek (as
+ * scripts/shots-m50.mjs does), target = the middle of partBox(partId), camera `distanceM` from it
+ * along normalize(`from`) (a boat-frame direction from the part to the camera), lens `fovDeg`,
+ * then waits 800 ms. Returns false when the part is not drawn; the caller then records a problem.
+ */
+export async function closeUpOn(page, partId, from, distanceM, fovDeg = 40) {
+  await setSheet(page, 'peek');
+  await page.addStyleTag({ content: '.debug { display: none !important; }' });
+  const aimed = await page.evaluate(
+    ({ id, direction, distance, fov }) => {
+      const box = window.__sailDebug.partBox(id);
+      if (!box) return false;
+      const target = box.min.map((value, i) => (value + box.max[i]) / 2);
+      const length = Math.hypot(...direction);
+      const position = target.map((value, i) => value + (direction[i] / length) * distance);
+      window.__sailDebug.setView(position, target, fov);
+      return true;
+    },
+    { id: partId, direction: from, distance: distanceM, fov: fovDeg },
+  );
+  if (aimed) await page.waitForTimeout(800);
+  return aimed;
+}
