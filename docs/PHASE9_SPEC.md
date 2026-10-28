@@ -399,6 +399,9 @@ Moving any rope's path (a rope that runs through a part stays so; M61 draws the 
 
 - Decided in planning (owner: "accept all" on PR #132, 2026-10-28): profiles saved before Phase 9 take the new keys from the Hanse 508 (6.6); no profile version change.
 - Decided in planning (owner: "accept all" on PR #132, 2026-10-28): the budget is High 300 draw calls and 250,000 triangles, Low 150 and 120,000, in every preset view, Easy and Realistic ropes (6.8).
+- Decided in the M60 PR (recommended; merging accepts it): a strand's buffers are rebuilt when its drawn point count **or** the index where its whipping starts changes (the layout key holds both), so the dark tail colours, written once at build, can never be stale.
+- Decided in the M60 PR (recommended; merging accepts it): measured with the built app, the budget view at High is 171–201 calls and 128,464–130,812 triangles (before M60: 88,888–91,236), at Low 79–107 calls and 55,338–57,158 triangles (before: 47,046–48,866), so both are well inside the limits.
+- Decided in the M60 PR: the vang tap check taps `partPoint('rope_vang', 0.25)`, because the 0.5 point lies on the turning blocks at the mast foot, which are tappable too. `scripts/budget.mjs` is added to the browser-script globals in `eslint.config.js`.
 
 ---
 
