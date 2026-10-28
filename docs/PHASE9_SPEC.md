@@ -1,14 +1,14 @@
 # Phase 9 specification: visual quality
 
-Status: **planned** (owner's answers in the visual quality study, 2026-10-27) · Last updated: 2026-10-27
+Status: **planned** (owner's answers in the visual quality study, 2026-10-27; M60b added 2026-10-28) · Last updated: 2026-10-28
 
-Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phase 9 builds on the 3D boat of Phases 1 and 6 (`src/render3d/boat/*.ts`, all shapes built by code from `content/boat/hanse508.json`, the M3b rule), the ropes of M5 and M34 (`src/model/ropePaths.ts`, `src/model/ropeBin.ts`, `src/render3d/boat/ropes.ts`), the camera presets (`src/render3d/cameraPresets.ts`, `src/render3d/cameraRig.ts`), the engine, autopilot and thrusters of Phases 2 and 7, and the boat profiles of M57 and M58 (`src/model/boatProfile.ts`). The owner's request, the approaches weighed and every answer are in [`VISUAL_QUALITY_ANALYSIS.md`](VISUAL_QUALITY_ANALYSIS.md); this spec turns its section 11 into six milestones. The earlier specs still describe everything the app already does.
+Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phase 9 builds on the 3D boat of Phases 1 and 6 (`src/render3d/boat/*.ts`, all shapes built by code from `content/boat/hanse508.json`, the M3b rule), the ropes of M5 and M34 (`src/model/ropePaths.ts`, `src/model/ropeBin.ts`, `src/render3d/boat/ropes.ts`), the camera presets (`src/render3d/cameraPresets.ts`, `src/render3d/cameraRig.ts`), the engine, autopilot and thrusters of Phases 2 and 7, and the boat profiles of M57 and M58 (`src/model/boatProfile.ts`). The owner's request, the approaches weighed and every answer are in [`VISUAL_QUALITY_ANALYSIS.md`](VISUAL_QUALITY_ANALYSIS.md); this spec turns its section 11 into six milestones, plus M60b (deck and coachroof shape, added by the owner on 2026-10-28 from three screenshots). The earlier specs still describe everything the app already does.
 
 **Phase numbers changed on 2026-10-27** (owner): this phase was inserted as Phase 9, so the exercises are now **Phase 10** and more languages **Phase 11** (ROADMAP).
 
 ## 0. How to use this spec (for the coding agent)
 
-- Do **one milestone** (sections 6–11), on the branch your session gives you, in one PR titled `M<N>: <name>`. Read sections 0–5 first every time; they apply to all milestones. Then read only your milestone's section. Milestones are built in order (M60 → M65); each needs the ones before it merged.
+- Do **one milestone** (sections 6, 6b, 7–11), on the branch your session gives you, in one PR titled `M<N>: <name>`. Read sections 0–5 first every time; they apply to all milestones. Then read only your milestone's section. Milestones are built in order (M60 → M60b → M61 → … → M65); each needs the ones before it merged.
 - Build order inside a milestone: data → pure helpers + tests → store/URL → 3D → UI → browser checks → docs.
 - **Numbers are final.** Every number in this spec was chosen or prototyped on 2026-10-27 against the real code (3.5 says how). Boat numbers go into `content/boat/hanse508.json`, presentation numbers into `src/render3d/sceneConfig.ts` (`SCENE`) or the CSS, as each section says; never into code as bare literals. A number marked **tunable** may be changed only if a check fails after you have checked your code against 3.4 "common mistakes", or if the picture on the phone is clearly wrong: change it, report the before and after values in the PR, and never widen a test band. A band that still fails is a question for the owner in the PR.
 - **Text is data.** Every English string in this spec is final: copy it exactly. Russian strings are AI drafts (CLAUDE.md): copy the ones given; where none is given, write a draft yourself following PHASE4_SPEC 3.3 and keep `textStatus: "draft"`. After any change to `content/lang/ru/*.json` run `npm run review-doc -- ru`.
@@ -31,11 +31,12 @@ What the learner should feel:
 ### In scope (Phase 9)
 
 1. **Ropes** (M60): every corner of every rope drawn as a smooth arc; rounder tubes at High (12 sides) without pinches or twists; a whipped end on every rope's tail; a braided surface at High; a triangle and draw-call budget, checked in every preset view; old imported boat profiles keep working when the boat file gains keys.
-2. **Blocks and rounded hardware** (M61): every rope block with two cheeks, a sheave and a shackle; rounded edges on the coamings, the rope tail boxes and the clutches with their levers (High).
-3. **Helm pedestals and panels** (M62): a pedestal at each wheel with a guard rail and a panel (compass, wind display, tachometer and engine lever, thruster joysticks, autopilot keypad); a better wheel; a rest for the winch handle between the wheels; their Learn entries.
-4. **Live panel** (M63): the panel's instruments show the app's values: the compass card turns with the heading, the wind display shows the apparent wind, the tachometer needle the rpm, the lever stands where the Engine section's lever is, the joysticks lean while a thruster is held, the keypad shows Standby / Auto / Wind and the set course.
-5. **Helm camera** (M64): the Helm view at either wheel, looking Ahead, at the Panel or at the Ropes, with three buttons over the 3D view and two link keys.
-6. **Small fittings, finish and sign-off** (M65): stanchion base plates, lifeline end sleeves, turnbuckles and chainplate plates on the shrouds, deck hatches with frames, hull portlights, soft contact shadows under the deck fittings (High); the frame rate confirmed on the phone.
+2. **Deck and coachroof shape** (M60b): the coachroof with rounded front corners, flaring smoothly into the cockpit coamings with no step sideways or down; the gap in front of the coachroof closed; teak on the foredeck, white non-slip only in the bow triangle.
+3. **Blocks and rounded hardware** (M61): every rope block with two cheeks, a sheave and a shackle; rounded edges on the coamings, the rope tail boxes and the clutches with their levers (High).
+4. **Helm pedestals and panels** (M62): a pedestal at each wheel with a guard rail and a panel (compass, wind display, tachometer and engine lever, thruster joysticks, autopilot keypad); a better wheel; a rest for the winch handle between the wheels; their Learn entries.
+5. **Live panel** (M63): the panel's instruments show the app's values: the compass card turns with the heading, the wind display shows the apparent wind, the tachometer needle the rpm, the lever stands where the Engine section's lever is, the joysticks lean while a thruster is held, the keypad shows Standby / Auto / Wind and the set course.
+6. **Helm camera** (M64): the Helm view at either wheel, looking Ahead, at the Panel or at the Ropes, with three buttons over the 3D view and two link keys.
+7. **Small fittings, finish and sign-off** (M65): stanchion base plates, lifeline end sleeves, turnbuckles and chainplate plates on the shrouds, deck hatches with frames, hull portlights, soft contact shadows under the deck fittings (High); the frame rate confirmed on the phone.
 
 ### Out of scope
 
@@ -43,7 +44,7 @@ What the learner should feel:
 - **The B&G multifunction display** (a touch-screen navigation unit) and any chart or map on the panel (owner, study answer 6: navigation is a later module; the mini-map stays in the interface).
 - **Working controls in 3D**: the panel's lever, joysticks and keys only show what the app's controls do; a tap opens the part's Learn entry (owner, study 10.3).
 - **One unit between the wheels** (owner, study 10.1: a panel at each wheel).
-- A pulpit and pushpit (the rails at the bow and stern; not drawn today), a bimini or sprayhood redesign, sails, the hull shape, the water and the sky.
+- A pulpit and pushpit (the rails at the bow and stern; not drawn today), a bimini or sprayhood redesign, sails, the hull shape (M60b changes only the deck surface, the coachroof and the channel moulding), the water and the sky.
 - The camera following a Realistic station walk (today walking to a station does not move the camera; that stays).
 - Exercises (Phase 10), new languages (Phase 11), any change to sailing, harbour or anchor physics.
 
@@ -117,7 +118,7 @@ This phase adds no sailing rule and no PHYSICS_TRUTHS entry. The owner has no fu
 - **What `openPage` adds:** Phase 9 labels (`m60` … `m65`) are treated like Phase 8 ones. The M60 PR appends `|6[0-5]` inside each of the five label groups of `openPage` (`scripts/shots.mjs`): the four default rules (`held`, `sea`, `clock`, `mm`) and the "older checks open Ropes" rule, giving for example `/m(1[4-9]|2[5-9]|3[6-9]|4[0-7]|4[89]|5\d|6[0-5])/` and `/m(27|29|35|36|37|38|39|4[89]|5\d|6[0-5])/`.
 - **Live checks run on the test clock** where app time matters (CLAUDE.md): `openPage(viewport, label, query, { testClock: true })` (M63's redraws, M64's glides).
 - Every close-up is taken at **both** detail levels (`detail=high`, `detail=low`) on the phone (390 × 844) and the 1,440 × 900 desktop, unless the section says otherwise. File names: `<prefix><name>-<detail>-<viewport label>.png`.
-- **CI** (`.github/workflows/ci.yml`): the M60 PR adds a part `live, M60-M65` with `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=budget,m60,m61,m62,m63,m64,m65` (a name with no group yet is skipped) and appends `,budget,m60,m61,m62,m63,m64,m65` to the `SHOTS_SKIP` list of the part `live, M30 on`.
+- **CI** (`.github/workflows/ci.yml`): the M60 PR adds a part `live, M60-M65` with `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=budget,m60,m60b,m61,m62,m63,m64,m65` (a name with no group yet is skipped) and appends `,budget,m60,m60b,m61,m62,m63,m64,m65` to the `SHOTS_SKIP` list of the part `live, M30 on`.
 - **The budget check runs on every PR from M60 on** (the `budget` group, 6.8), so every later milestone is held to it without new code.
 
 ### 3.7 General rules for every milestone
@@ -166,6 +167,7 @@ Both keys are read whatever `cam` is (a link with `hw=s` and another camera keep
 | Milestone | New keys (section) |
 |---|---|
 | M60 | `visual.ropeBend` (6.2) |
+| M60b | `deck.foredeck` (6b.2; `deck.coachroof.halfWidth` changes value) |
 | M61 | `modelDetail.block.source`, `cheekThicknessM`, `cheekClearanceM`, `sheaveRadiusShare`, `sheaveInsetM`, `axleRadiusShare`, `axleOverhangM`, `shackleWireRadiusM`, `shackleRiseShare`; `modelDetail.mastBaseTurningBlocks.cheekGapM`, `cheekThicknessM`; `modelDetail.edgeRadius` (7.2) |
 | M62 | `modelDetail.helmPedestal`, `modelDetail.wheel.hubCapRadiusM` (8.2) |
 | M65 | `deckFittings.hatches`, `deckFittings.portlights`, `modelDetail.lifelines.basePlate`, `modelDetail.lifelines.endSleeve`, `modelDetail.shroudFittings` (11.2) |
@@ -179,6 +181,7 @@ A summary; each milestone's own "Files" list is the complete one and wins where 
 | Milestone | New | Changed (main) |
 |---|---|---|
 | M60 | `src/model/ropeSmooth.ts`, `tests/ropeSmooth.test.ts`, `scripts/budget.mjs`, `scripts/shots-m60.mjs` | `content/boat/hanse508.json`, `src/model/ropePaths.ts` (`tailEnd`), `src/model/boatProfile.ts`, `src/render3d/boat/ropes.ts`, `src/render3d/boat/textures.ts`, `src/render3d/boat/index.ts`, `src/render3d/sceneConfig.ts`, `tests/boatProfile.test.ts`, `scripts/shots.mjs`, `.github/workflows/ci.yml` |
+| M60b | `tests/coachroofShape.test.ts`, `scripts/shots-m60b.mjs` | `content/boat/hanse508.json`, `src/model/deckVolumes.ts`, `src/model/boatProfile.ts`, `src/render3d/boat/hull.ts`, `tests/deckDetails.test.ts`, `tests/boatData.test.ts`, `tests/boatProfile.test.ts`, `scripts/shots.mjs`, `.github/workflows/ci.yml` |
 | M61 | `tests/blocks.test.ts`, `scripts/shots-m61.mjs` | `content/boat/hanse508.json`, `src/render3d/boat/parts.ts`, `src/render3d/boat/rig.ts`, `src/render3d/boat/hull.ts`, `src/render3d/boat/cockpitHardware.ts`, `src/model/boatProfile.ts`, `src/render3d/sceneConfig.ts` |
 | M62 | `src/model/helmPedestal.ts`, `src/model/helmPanel.ts`, `src/render3d/boat/helmPedestal.ts`, `src/render3d/boat/panelFaces.ts`, `tests/helmPedestal.test.ts`, `scripts/shots-m62.mjs` | `content/boat/hanse508.json`, `content/registry/parts.json`, both `glossary.json`, `src/model/glossary.ts` (`NOT_DRAWN`), `src/render3d/boat/cockpitHardware.ts`, `src/render3d/boat/materials.ts`, `src/render3d/boat/index.ts`, `src/render3d/sceneConfig.ts`, `src/model/boatProfile.ts` |
 | M63 | `tests/helmPanel.test.ts`, `scripts/shots-m63.mjs` | `src/model/helmPanel.ts`, `src/render3d/boat/helmPedestal.ts`, `src/render3d/boat/index.ts`, `src/render3d/scene.ts`, `src/render3d/sceneConfig.ts`, both `glossary.json` |
@@ -192,7 +195,8 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 | Milestone | Section | What the owner sees | Depends on | Independent review |
 |---|---|---|---|---|
 | M60 | 6 | Ropes bend smoothly round blocks and edges, look round up close, have whipped ends and (High) a braided surface | Phase 8 | **required** (every rope's drawing, a new pure module, the boat profile check, the budget check every later PR runs) |
-| M61 | 7 | Blocks with cheeks, sheave and shackle; rounded coamings, rope boxes and clutches | M60 | not needed (shapes and materials only; ids and taps unchanged) |
+| M60b | 6b | The coachroof has rounded front corners and runs smoothly into the cockpit coamings (no step); no water shows in front of it; teak on the foredeck, white only at the bow | M60 | not needed (shapes and one key; rope paths unchanged, the rope route test guards the new roof) |
+| M61 | 7 | Blocks with cheeks, sheave and shackle; rounded coamings, rope boxes and clutches | M60b | not needed (shapes and materials only; ids and taps unchanged) |
 | M62 | 8 | A pedestal with a guard rail and a panel at each wheel; a better wheel; the handle's rest; their Learn entries | M61 | not needed (shapes, data and Learn texts; nothing in the store or the link) |
 | M63 | 9 | The panel shows live values: compass, wind, rpm, lever, joysticks, autopilot | M62 | **required** (reads shared state every frame in 3D; the redraw rule; a wrong reading teaches the wrong thing) |
 | M64 | 10 | Helm view at either wheel, looking Ahead, at the Panel or at the Ropes; two link keys | M63 | **required** (new state, URL keys and old links; the camera rig) |
@@ -395,6 +399,114 @@ Moving any rope's path (a rope that runs through a part stays so; M61 draws the 
 
 - Decided in planning (recommended; merging accepts it): profiles saved before Phase 9 take the new keys from the Hanse 508 (6.6); no profile version change.
 - Decided in planning (recommended; merging accepts it): the budget is High 300 draw calls and 250,000 triangles, Low 150 and 120,000, in every preset view, Easy and Realistic ropes (6.8).
+
+---
+
+## 6b. M60b: Deck and coachroof shape
+
+**Independent review: not needed** (shapes and one boat-file key; rope paths do not move, and `tests/ropeRoutes.test.ts` checks every rope against the new coachroof).
+
+Added on 2026-10-28 (owner, with three annotated screenshots, in the session that updated this plan; see "Decided in the M60b PR"). Built after M60 (it uses M60's `ADDED_KEYS`) and before M61 (M61 rounds the coamings this milestone joins to the coachroof; M65 puts a hatch on the new teak).
+
+What the owner asked for:
+
+1. **Coachroof** (the raised roof over the cabin): a smooth shape with **no step where it meets the sprayhood and the cockpit**. Today its sides narrow aft to 1.15 m, while the coaming (the raised edge round the cockpit, 0.55 m wide, top 0.41 m lower) reaches 1.85 m: a 0.7 m jog sideways and a drop next to the sprayhood. The front corners are cut off at an angle.
+2. **The gap at the coachroof's front** (purple on the owner's screenshot): found in the code. The front face slopes back from x 2.0 (below the deck) to 1.6 (at the roof top), so at deck height it stands at about x 1.865; the foredeck starts only at x 2.0 and the side decks stop at the roof's outline less 0.1 m. Between x 1.865 and 2.0, over most of the roof's width, nothing is drawn and the water shows through.
+3. **Teak further forward** (cyan): the teak covers the foredeck too; the white non-slip surface stays only at the very bow, the last 2 m (around the windlass and the bow roller), where the deck narrows to a point.
+
+### 6b.1 Files
+
+New: `tests/coachroofShape.test.ts`, `scripts/shots-m60b.mjs`. Changed: `content/boat/hanse508.json` (6b.2), `src/model/deckVolumes.ts` (6b.3), `src/model/boatProfile.ts` (`ADDED_KEYS`, a range row), `src/render3d/boat/hull.ts` (`deck()`, `coachroof()`), `tests/deckDetails.test.ts`, `tests/boatData.test.ts`, `tests/boatProfile.test.ts`, `scripts/shots.mjs` (register `m60b`), `.github/workflows/ci.yml` (`m60b` in the two lists of 3.6), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`.
+
+### 6b.2 Data (`content/boat/hanse508.json`)
+
+- `deck.coachroof.halfWidth`: **1.15 → 1.85**, the coaming's outer edge (`deck.cockpit.wellHalfWidth` 1.3 + `modelDetail.coamingWidth` 0.55). Its note becomes: "M60b (owner, 2026-10-28): the roof's half-width at its aft end, where its side runs straight on into the coaming's outer face; on this boat wellHalfWidth + coamingWidth (a test checks it)." `shapeNote` is rewritten to describe 6b.3 (cosine flare aft, quarter-ellipse front corners). No other coachroof key changes: `chamferStartX` and `frontHalfWidth` now bound the quarter-ellipse; the key names stay, so old profiles keep working.
+- New block `deck.foredeck`, after `deck.coachroof`:
+
+```json
+"foredeck": {
+  "nonSlipAftX": 4.3,
+  "note": "M60b (owner, 2026-10-28, screenshot): teak from the coachroof forward to nonSlipAftX; forward of it, to the bow, white non-slip (a triangle, as the deck narrows to the stem). 2.0 m from the stem (6.3), clear of the windlass (5.40) and the foredeck hatch of M65 (3.6, on the teak).",
+  "source": "owner (screenshot, 2026-10-28) + assumption (exact station)"
+}
+```
+
+`nonSlipAftX` is **tunable**. Add `'deck.foredeck'` to `ADDED_KEYS` (6.6) and a range row `deck.foredeck.nonSlipAftX` −20 to 20 in `checkRanges`. A boat whose `nonSlipAftX` is at or beyond its `hull.stemX` has no white foredeck; one whose value is aft of `coachroof.topFrontX` has a white foredeck from `topFrontX` (the drawing clamps, the data check does not).
+
+### 6b.3 Model (`src/model/deckVolumes.ts`)
+
+```ts
+/** Points on each curved part of the coachroof outline (M60b). */
+export const ROOF_CURVE_STEPS = 8;
+/** Starboard half-outline [x, half-width], aft to front, 2·ROOF_CURVE_STEPS + 2 points (M60b). */
+export function coachroofHalfOutline(frontX: number, data: BoatData = boat): [number, number][];
+/** x where the coachroof's sloping front face meets the deck (M60b). */
+export function roofFrontAtDeckX(data: BoatData = boat): number;
+/** The stations the deck is drawn on: the hull stations given, plus every outline x, topFrontX, frontX, aftX, nonSlipAftX (when between topFrontX and stemX) and cockpit.frontX − 2·DECK_EPS; from transomX forward, sorted, no duplicates (M60b; moved here from hull.ts). */
+export function deckStations(hullStations: readonly number[], data: BoatData = boat): number[];
+/** Where the white non-slip bow begins: clamp(nonSlipAftX, topFrontX, stemX) (M60b). */
+export function nonSlipAftX(data: BoatData = boat): number;
+```
+
+With `r = deck.coachroof`, `N = ROOF_CURVE_STEPS`:
+
+- **Aft flare** (points 0 … N): `t = k/N`, `x = r.aftX + (r.maxHalfWidthFromX − r.aftX)·t`, `w = r.halfWidth + (r.maxHalfWidth − r.halfWidth)·(1 − cos πt)/2`. The slope is zero at both ends, so the side meets the coaming's face (at the aft end) and the straight middle part (at the mast) without a corner.
+- **Front corner** (points N+1 … 2N+1): `θend = asin(min(1, (frontX − r.chamferStartX)/(r.frontX − r.chamferStartX)))`, `θ = θend·k/N`, `x = r.chamferStartX + (r.frontX − r.chamferStartX)·sin θ`, `w = r.frontHalfWidth + (r.maxHalfWidth − r.frontHalfWidth)·cos θ`. A quarter-ellipse for `frontX = r.frontX`; for the roof top (`frontX = r.topFrontX`) the same curve stops at θend = 30°, so the side faces stay vertical and only the front face slopes, as today. Sampling by angle keeps the points even round the tight end.
+- Between the two parts (from `maxHalfWidthFromX` to `chamferStartX`) the outline is straight at `maxHalfWidth`, as today.
+- `cutsCoachroof`, fore or aft of the outline: the half-width used is the outline's own end value (its first point aft, its last point forward), not `r.halfWidth` (which is now the aft value only). Prototyped: without this, `rope_jib_furling_line` falsely cuts the roof's front.
+- `roofFrontAtDeckX`: `r.frontX − (r.frontX − r.topFrontX)·(sheerAt(r.frontX) − coachroofBaseY())/(r.topY − coachroofBaseY())`. On this boat **1.865** (±0.005).
+- `channelFairingRings`: each ring's **outer** corners move to `z = side·max(|z| + h, r.halfWidth)` (`z` the channel centre, `h` half the channel width); inner corners, tops and bottoms are unchanged. The moulding under the channel then reaches out to the coachroof's side line, and its top (the channel floor, unchanged: 1.96 → 1.62 → 1.55 m) is the coachroof sloping down onto the coaming. So the outer face runs on at 1.85 m from the roof's side, over the slope, into the coaming's outer face: no step sideways, no step down. On a boat whose `halfWidth` is narrower than the channel's outer edge (an old profile with 1.15), nothing changes.
+- `sideDeckInnerHalfWidth` and `roofHalfAt` keep their code; they read the new outline.
+
+Values on this boat (`toBeCloseTo(…, 3)`): outline point 0 (−3.05, 1.85); point 4 (−1.525, 1.65); point 8 (0, 1.45); point 9 (1.2, 1.45); point 13 (1.766, 1.295); point 17 (2.0, 0.92). Top outline's last point (1.6, 1.379). The largest turn between neighbouring outline segments is 16.1°.
+
+### 6b.4 3D (`src/render3d/boat/hull.ts`)
+
+- **`deck(stations, part)`** uses `deckStations(stations)`. A strip between two stations with middle `mid` is: **white** (`'foredeck'`, `materials.deck`) when `mid ≥ nonSlipAftX()`; **teak, full width** (`'sideDecks'`, `materials.teak`) when `r.topFrontX ≤ mid < nonSlipAftX()`; otherwise the two **teak side strips** from `sideDeckInnerHalfWidth` out, as today. Starting the full-width deck at `topFrontX` (1.6), under the roof, closes the gap of item 2: the deck now runs under the front face, which meets it at 1.865. The teak's planks run fore and aft as on the side decks (same material and texture mapping; look at the close-up and say in the PR if the planks look wrong on the foredeck). Both still carry `part_deck`.
+- **`coachroof()`**: the side and front faces are built as today (quads between the base outline at `frontX` and the top outline at `topFrontX`, same point count). The roof top is no longer a fan (the outline is no longer convex: it narrows forward of the aft end): it is a strip of quads between each pair of mirrored points (port `−w`, starboard `+w`) at neighbouring outline indices, aft to front.
+- Both details build the same shapes (no `detail` parameter here).
+
+### 6b.5 Tests
+
+`tests/coachroofShape.test.ts` (new):
+
+1. `coachroofHalfOutline(frontX)` has 18 points, x strictly increasing, and the values of 6b.3; the top outline ends at (1.6, 1.379).
+2. Smooth: no turn between neighbouring segments over 17°; the first segment's slope and the segment ending at point 8 are flat (|dw/dx| < 0.05; they are 0.039).
+3. `boat.deck.coachroof.halfWidth` equals `deck.cockpit.wellHalfWidth + modelDetail.coamingWidth`.
+4. No gap at the front: `roofFrontAtDeckX()` ≈ 1.865, and the first full-width deck station (`deckStations` value `topFrontX`, 1.6) is aft of it.
+5. No gap beside the roof: for 400 x values from `aftX` to `topFrontX`, the side deck's inner edge, interpolated linearly between the two `deckStations` around x, is at most `roofHalfAt(x)` (it may lie under the roof, never outboard of its edge).
+6. `deckStations` contains every outline x, 1.6, 2.0, −3.05, 4.3 and `cockpit.frontX − 2·DECK_EPS`; `nonSlipAftX()` = 4.3; with `nonSlipAftX` 9 (a copy of the boat) it is `stemX` 6.3; with 0 it is 1.6.
+7. Fairing (starboard): every ring's outer corners at z 1.85; the inner corners as before (`z − 0.15`); the last ring's top at `coamingTopY` 1.55.
+
+Changed (only the lines that test the old shape, 3.7): `tests/deckDetails.test.ts`: `sideDeckInnerHalfWidth(−3.1)` and `(−3.0)` become 1.75 (the outline 1.85 less the 0.1 overlap; at −3.0 it is 1.7497, within `toBeCloseTo(1.75, 3)`), `(−3.2)` stays 1.3; the fairing rings' expected outer corners become ±1.85; "the fairing follows the channel path" checks the inner corners and the tops (the centre of a ring is no longer the channel's). `tests/boatData.test.ts`: "maxHalfWidth > halfWidth" becomes "halfWidth > maxHalfWidth" (the roof widens aft into the coaming). `tests/boatProfile.test.ts`: a profile without `deck.foredeck` imports and gets 4.3. `tests/ropeRoutes.test.ts` is **not** changed and must stay green (prototyped on 2026-10-28: it passes with the new outline and the `cutsCoachroof` end rule).
+
+### 6b.6 Browser checks (`scripts/shots-m60b.mjs`, `debug=1&held=1&sea=flat`)
+
+Close-ups as 3.6 (both details, phone and desktop), with `setView(position, target, 40)`:
+
+| Name | Target | Position | What it shows |
+|---|---|---|---|
+| `roof-front` | (1.9, 1.7, 0.6) | (3.6, 3.2, 1.8) | the front face meeting the teak, no slot (owner's purple) |
+| `roof-front-top` | (1.9, 1.6, 0) | (1.95, 5.5, 0.01) | from straight above: deck everywhere in front of the roof |
+| `roof-to-coaming` | (−3.4, 1.7, 1.7) | (−1.2, 3.0, 3.6) | the roof's side running into the coaming past the sprayhood (owner's red lines) |
+| `roof-plan` | (−1.5, 1.6, 0) | (−1.5, 9.0, 0.01) | the outline from above: rounded front, flaring sides, no jog at the coaming |
+| `foredeck` | (4.2, 1.65, 0) | (2.2, 3.4, 1.6) | teak to 4.3, white triangle to the bow |
+
+Live check `m60b front tap`, as `scripts/shots-m30.mjs` does its junction tap: on `?cam=top&held=1&sea=flat&debug=1`, `__sailDebug.project(1.93, 1.61, ±0.5)` gives the screen points; a tap on each selects `part_deck` or `part_coachroof`, never nothing and never the sea (that would be the slot). Run `SHOTS_ONLY=m60b,m30,m31,m34,m61` (M30 is the deck junction and channel moulding, M31 the bow, M34 the stern).
+
+### 6b.7 Done when
+
+The coachroof has rounded front corners and flares smoothly into the coamings with no step sideways or down; no water shows in front of the roof; teak covers the foredeck to 4.3 m and the bow is white; every rope test unchanged and green; typecheck, lint, tests, build, `SHOTS_ONLY=m60b,m30,m31,budget` pass.
+
+### 6b.8 Not in M60b
+
+Rounding the edges of the roof or the slope (M61 rounds the coamings; the roof's own edges stay sharp), the sprayhood's shape (it still rests on the channels, which do not move), a king plank or curved planks on the foredeck, an anchor locker lid, moving any rope or channel point, the hull shape.
+
+### 6b.9 Decided in the M60b PR
+
+- Decided in planning (owner, 2026-10-28, in chat): teak covers the foredeck full width; white only in the bow triangle (from x 4.3).
+- Decided in planning (owner, 2026-10-28, in chat): the coachroof blends into the coaming in width and in height (the slope is the channel moulding widened to the roof's side line).
+- Decided in planning (recommended; merging accepts it): a lettered milestone M60b between M60 and M61, so M61–M65 keep their numbers and the rope channels and every rope path stay as they are.
 
 ---
 
@@ -1247,8 +1359,9 @@ A pulpit and pushpit, a boarding gate, deck lights, solar panels, a bimini, a co
 
 The M65 builder ticks the items its own checks show (the code, data, tests and the `budget` group) and leaves the owner's items open with a note: the merges, the owner's checklists and the phone frame rates.
 
-- [ ] M60–M65 merged, each with its checklist in `docs/WORKFLOW.md` ticked by the owner.
+- [ ] M60, M60b and M61–M65 merged, each with its checklist in `docs/WORKFLOW.md` ticked by the owner.
 - [ ] Ropes: smooth bends everywhere they turn, 12 sides at High, whipped tails, braid at High; rope paths, lengths and every rope test unchanged.
+- [ ] Coachroof with rounded front corners, flaring into the coamings with no step; no gap in front of it; teak foredeck with a white bow triangle (from x 4.3).
 - [ ] Blocks with cheeks, sheave and shackle at both details; rounded coamings, boxes and clutches at High.
 - [ ] A pedestal, guard rail and panel at each wheel; the panel's five instruments show live values while the camera is near and are hidden beyond 6 m.
 - [ ] The Helm camera at either wheel with Ahead, Panel and Ropes; `hw` and `hl` in the link; old links open as before.

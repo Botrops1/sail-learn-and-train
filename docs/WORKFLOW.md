@@ -702,7 +702,7 @@ New link setting (PHASE8_SPEC 4.2): `boat=` names an imported boat (M58). Replac
 
 ## 14. Phase 9
 
-Visual quality ([PHASE9_SPEC](PHASE9_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M60 … M65), started with `/milestone <N>`. **M60, M63 and M64 need a `/review` with Opus** before you test them; M61, M62 and M65 do not. Zoom in with two fingers to see the details; "Detail" is in Settings (phones start on Low).
+Visual quality ([PHASE9_SPEC](PHASE9_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M60, M60b, M61 … M65), started with `/milestone <N>` (`/milestone 60b` for the deck). **M60, M63 and M64 need a `/review` with Opus** before you test them; M60b, M61, M62 and M65 do not. Zoom in with two fingers to see the details; "Detail" is in Settings (phones start on Low).
 
 ### 14.1 Checklists
 
@@ -715,6 +715,14 @@ New link settings (PHASE9_SPEC 4.2): `hw=s` puts the Helm camera at the starboar
 - [ ] Whipped ends: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wp=b5.3.t&cam=helm&held=1&sea=flat&detail=high — the rope on the port winch ends on the box with a short dark band at its tip.
 - [ ] Low detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&held=1&sea=flat&detail=low — the bends are smooth here too; the ropes may look a little flatter.
 - [ ] Taps: on the first link, tap the vang (the rope under the boom near the mast): its card shows.
+
+#### M60b: Deck and coachroof shape
+
+- [ ] Front of the coachroof: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=bow&held=1&sea=flat&detail=high — zoom in where the raised roof meets the deck in front of the mast: no dark or blue slot, the deck runs right up to it; the front corners are rounded, not cut off.
+- [ ] Coachroof into cockpit: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&held=1&sea=flat&detail=high — follow the roof's side edge back past the sprayhood (the fabric hood): it curves out and slopes down into the cockpit's raised edge in one line, with no step.
+- [ ] From above: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=top&held=1&sea=flat&detail=high — the roof's sides widen smoothly towards the cockpit; teak covers the foredeck, and only the pointed tip at the bow (about the last 2 m) is white.
+- [ ] Low detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=top&held=1&sea=flat&detail=low — the same shapes.
+- [ ] Taps: on the first link, tap the teak just in front of the roof: "Deck" shows.
 
 #### M61: Blocks and rounded hardware
 
