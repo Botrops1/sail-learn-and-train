@@ -699,3 +699,63 @@ New link setting (PHASE8_SPEC 4.2): `boat=` names an imported boat (M58). Replac
 - [ ] Fenders hint: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour — reverse slowly towards your berth (the yellow arrow) with the fenders in: "Put the fenders out before you back into the berth." shows in Harbour gear and in the "!" list.
 - [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1 — open Status and hold both thrusters: 50 fps or more. Write the numbers in the PR.
 - [ ] Every item of the Phase 8 Definition of Done (PHASE8_SPEC 18) is ticked in the PR.
+
+## 14. Phase 9
+
+Visual quality ([PHASE9_SPEC](PHASE9_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M60 … M65), started with `/milestone <N>`. **M60, M63 and M64 need a `/review` with Opus** before you test them; M61, M62 and M65 do not. Zoom in with two fingers to see the details; "Detail" is in Settings (phones start on Low).
+
+### 14.1 Checklists
+
+New link settings (PHASE9_SPEC 4.2): `hw=s` puts the Helm camera at the starboard wheel, `hl=p` (Panel) or `hl=r` (Ropes) turns it. Replace `<N>` with the PR number.
+
+#### M60: Ropes
+
+- [ ] Mast foot: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&held=1&sea=flat&detail=high — zoom in on the foot of the mast: the ropes curve round the blocks instead of bending at a sharp point, and look round, not six-sided.
+- [ ] Rope box: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat&detail=high — look at the ropes dropping from the clutches into the box behind the port winch: smooth bends, no "staircase".
+- [ ] Whipped ends: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&wp=b5.3.t&cam=helm&held=1&sea=flat&detail=high — the rope on the port winch ends on the box with a short dark band at its tip.
+- [ ] Low detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&held=1&sea=flat&detail=low — the bends are smooth here too; the ropes may look a little flatter.
+- [ ] Taps: on the first link, tap the vang (the rope under the boom near the mast): its card shows.
+
+#### M61: Blocks and rounded hardware
+
+- [ ] Blocks: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&held=1&sea=flat&detail=high — zoom in on the blocks under the boom and the two on the coachroof: each has two side plates, a grey wheel the rope sits in, and a small U-shaped shackle.
+- [ ] Rounded edges: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat&detail=high — the coamings (the raised cockpit sides), the rope boxes and the clutches have soft, rounded edges.
+- [ ] Low detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat&detail=low — the blocks look the same as at High; the edges are square as before.
+- [ ] Taps: on the first link, tap a block on the coachroof: "Mainsheet deck blocks" shows.
+
+#### M62: Helm pedestals and panels
+
+- [ ] Panels: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat — in front of each wheel stands a pedestal with a steel hoop and a white panel: the compass in the middle, the wind display on the left, the rev counter on the right, the autopilot keys and the engine lever below (and the two thruster sticks).
+- [ ] Both wheels: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat — turn the view to the right wheel (drag): the same panel there.
+- [ ] Leather wheel: on the same link, the wheel's rim is dark brown and the hub has a round steel cap.
+- [ ] Handle rest: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&hd=helm.s&cam=helm&held=1&sea=flat — the winch handle lies on a dark pad between the wheels, between two small stops.
+- [ ] Taps: tap the compass: "Compass" shows; tap the lever: "Engine control lever"; tap the panel: "Wheel pedestal".
+- [ ] Where is it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=fit_compass — tap "Where is it?": the camera flies to the compass.
+
+#### M63: Live panel
+
+- [ ] Compass turns: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&sea=flat&ws=12&wd=60&ap=hdg&hdg=90 — open the Autopilot section and tap "10° to port" a few times: the compass card turns, the keypad's line changes from "HDG 090°".
+- [ ] Engine: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat — open the Engine section, start the engine, move the lever ahead: the lever on the panel leans forward and the rev counter's needle rises.
+- [ ] Wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&sea=flat&ws=15&wm=gusty — the wind display's needle and AWS number move with the gusts.
+- [ ] Thrusters: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour&cam=helm&held=1&sea=flat — hold a thruster joystick in the quick row: the stick on the panel leans the same way; let go: it stands up.
+- [ ] Smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&detail=high&debug=1 — the frame rate stays as before (write the number in the PR).
+
+#### M64: Helm camera
+
+- [ ] Buttons: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat — three buttons at the top left, under the instrument strip: Ropes, Panel, Other wheel.
+- [ ] Panel: tap Panel: the view turns down to the panel; tap Panel again: back to looking ahead.
+- [ ] Ropes: tap Ropes: the view turns to the winch and the clutches on your side.
+- [ ] Other wheel: tap Other wheel: you move to the right wheel, looking the same way.
+- [ ] The link keeps it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&hw=s&hl=p&held=1&sea=flat — opens at the right wheel looking at the panel.
+- [ ] Old link: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm — the same Helm view as before this phase (behind the left wheel, looking ahead).
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?lang=ru&cam=helm — the buttons read «Тросы», «Панель», «Другой штурвал» and fit.
+
+#### M65: Small fittings, finish and sign-off
+
+- [ ] Fittings: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&held=1&sea=flat&detail=high — zoom in: the stanchions (lifeline posts) stand on round plates, the shrouds (side wires) end in a turnbuckle (a steel screw) at the deck, three dark windows in the hull side.
+- [ ] Hatches: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=top&held=1&sea=flat&detail=high — two hatches on the coachroof and one on the foredeck, each with a frame and a dark lid.
+- [ ] Shadows: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&held=1&sea=flat&detail=high — soft dark patches under the winches, the pedestals and the stanchions, so they sit on the deck.
+- [ ] Low unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&held=1&sea=flat&detail=low — none of these extras (as before).
+- [ ] Smooth at Low (phone): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&debug=1&detail=low — 50 fps or more; then https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&debug=1&detail=low. Write the numbers in the PR.
+- [ ] Smooth at High (phone): the same two links with `detail=high` — 50 fps or more. Write the numbers in the PR.
+- [ ] Every item of the Phase 9 Definition of Done (PHASE9_SPEC 12) is ticked in the PR.
