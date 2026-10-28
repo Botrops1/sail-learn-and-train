@@ -5,6 +5,8 @@ import {
   coachroofHalfOutline,
   DECK_EPS,
   DECK_OVERLAP,
+  deckStations,
+  nonSlipAftX,
   sideDeckInnerHalfWidth,
   toerailSection,
 } from '../../model/deckVolumes';
@@ -146,29 +148,28 @@ function endCap(
 }
 
 /**
- * Flat deck at sheer height, in two parts: the non-slip foredeck forward of the coachroof, and
- * the teak side decks beside the coachroof and the cockpit, back to the transom (M3b, owner
- * request; M34: no raised aft deck behind the well any more). The cockpit well is left open.
+ * Flat deck at sheer height, in two materials (M3b, owner request; M34: no raised aft deck behind
+ * the well; M60b, owner): white non-slip only in the bow triangle from `nonSlipAftX`, teak
+ * everywhere else: full width from the roof's top front edge (so the deck runs under the sloping
+ * front face and no gap shows) and two side strips beside the coachroof and the cockpit. The
+ * cockpit well is left open.
  */
 function deck(stations: number[], part: 'foredeck' | 'sideDecks'): THREE.BufferGeometry {
-  const { cockpit, coachroof: roof } = boat.deck;
+  const roof = boat.deck.coachroof;
+  const whiteFrom = nonSlipAftX();
   const positions: number[] = [];
-  // The extra station just ahead of the cockpit front lets the inner edge step from the well's
-  // edge to the coachroof's within 2 cm, so no teak lies over the open well.
-  const deckStations = [...new Set([...stations, roof.frontX, roof.aftX, cockpit.frontX - 2 * EPS])]
-    .filter((x) => x >= boat.hull.transomX)
-    .sort((a, b) => a - b);
-  for (let i = 0; i < deckStations.length - 1; i += 1) {
-    const x0 = deckStations[i] ?? 0;
-    const x1 = deckStations[i + 1] ?? 0;
+  const xs = deckStations(stations);
+  for (let i = 0; i < xs.length - 1; i += 1) {
+    const x0 = xs[i] ?? 0;
+    const x1 = xs[i + 1] ?? 0;
     const mid = (x0 + x1) / 2;
     const y0 = sheerAt(x0);
     const y1 = sheerAt(x1);
     const b0 = halfBeamAt(x0);
     const b1 = halfBeamAt(x1);
-    const forward = mid >= roof.frontX;
-    if (forward !== (part === 'foredeck')) continue;
-    if (forward) {
+    const white = mid >= whiteFrom;
+    if (white !== (part === 'foredeck')) continue;
+    if (mid >= roof.topFrontX) {
       pushQuad(positions, [x0, y0, -b0], [x0, y0, b0], [x1, y1, b1], [x1, y1, -b1]);
       continue;
     }
@@ -221,15 +222,15 @@ function toerail(stations: number[]): THREE.BufferGeometry {
 }
 
 /**
- * Coachroof: drawing width at the aft end, widening to maxHalfWidth at the mast (photo: the
- * self-tacking track ends at its edges), front corners cut, front face sloping back to
- * topFrontX. Non-slip top, smooth gelcoat sides. Its base sits a little below the deck so no
- * gap shows.
+ * Coachroof (M60b): flares from the coaming's outer edge at the aft end to maxHalfWidth at the
+ * mast (photo: the self-tacking track ends at its edges), rounded front corners, front face
+ * sloping back to topFrontX. Non-slip top, smooth gelcoat sides. Its base sits a little below the
+ * deck so no gap shows.
  */
 function coachroof(materials: BoatMaterials): THREE.Object3D[] {
   const r = boat.deck.coachroof;
   const baseY = coachroofBaseY();
-  // Port side from aft to front, then starboard from front to aft: a convex outline.
+  // Port side from aft to front, then starboard from front to aft.
   const outline = (frontX: number): [number, number][] => [
     ...coachroofHalfOutline(frontX).map(([x, z]): [number, number] => [x, -z]),
     ...coachroofHalfOutline(frontX)
@@ -247,13 +248,16 @@ function coachroof(materials: BoatMaterials): THREE.Object3D[] {
     const [tx1, tz1] = top[next] ?? [0, 0];
     pushQuad(sides, [bx0, baseY, bz0], [bx1, baseY, bz1], [tx1, r.topY, tz1], [tx0, r.topY, tz0]);
   }
-  // Roof top: a fan over the convex outline.
+  // Roof top: the outline is no longer convex, so a strip of quads between each mirrored pair of
+  // points (port at i, starboard at the mirror index), aft to front.
   const roof: number[] = [];
-  const [cx, cz] = top[0] ?? [0, 0];
-  for (let i = 1; i < top.length - 1; i += 1) {
-    const [x1, z1] = top[i] ?? [0, 0];
-    const [x2, z2] = top[i + 1] ?? [0, 0];
-    roof.push(cx, r.topY, cz, x1, r.topY, z1, x2, r.topY, z2);
+  const half = top.length / 2;
+  for (let i = 0; i < half - 1; i += 1) {
+    const [px0, pz0] = top[i] ?? [0, 0];
+    const [px1, pz1] = top[i + 1] ?? [0, 0];
+    const [sx0, sz0] = top[top.length - 1 - i] ?? [0, 0];
+    const [sx1, sz1] = top[top.length - 2 - i] ?? [0, 0];
+    pushQuad(roof, [px0, r.topY, pz0], [sx0, r.topY, sz0], [sx1, r.topY, sz1], [px1, r.topY, pz1]);
   }
   return [
     partMesh('part_coachroof', [triangles(roof)], materials.deck),

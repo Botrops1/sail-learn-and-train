@@ -14,8 +14,9 @@ const t = boat.deckFittings.toerail;
 describe('Phase 6, M30: hull and deck closed', () => {
   it('the side deck reaches the well edge aft of the cockpit front and closes the notch', () => {
     expect(sideDeckInnerHalfWidth(-3.2)).toBeCloseTo(1.3, 3);
-    expect(sideDeckInnerHalfWidth(-3.1)).toBeCloseTo(1.05, 3);
-    expect(sideDeckInnerHalfWidth(-3.0)).toBeCloseTo(1.055, 3);
+    // M60b: the roof's outline is 1.85 wide at its aft end, less the 0.1 overlap.
+    expect(sideDeckInnerHalfWidth(-3.1)).toBeCloseTo(1.75, 3);
+    expect(sideDeckInnerHalfWidth(-3.0)).toBeCloseTo(1.748, 3);
   });
 
   it('toerailSection at x = 0.5', () => {
@@ -51,10 +52,10 @@ describe('Phase 6, M30: hull and deck closed', () => {
     expect(stationXs).toHaveLength(4);
     [-2.95, -3.12, -3.48, -3.8].forEach((x, i) => expect(stationXs[i]).toBeCloseTo(x, 9));
     const expected = [
-      { inner: 0.839, outer: 1.139, top: 1.96, bottom: 1.418 },
-      { inner: 0.87, outer: 1.17, top: 1.96, bottom: 1.0 },
-      { inner: 1.35, outer: 1.65, top: 1.62, bottom: 1.409 },
-      { inner: 1.44, outer: 1.74, top: 1.55, bottom: 1.404 },
+      { inner: 0.839, outer: 1.85, top: 1.96, bottom: 1.418 },
+      { inner: 0.87, outer: 1.85, top: 1.96, bottom: 1.0 },
+      { inner: 1.35, outer: 1.85, top: 1.62, bottom: 1.409 },
+      { inner: 1.44, outer: 1.85, top: 1.55, bottom: 1.404 },
     ];
     rings.forEach((ring, i) => {
       const e = expected[i];
@@ -92,12 +93,16 @@ describe('Phase 6, M30: hull and deck closed', () => {
   it('the fairing follows the channel path of its side', () => {
     const path = channelPath(1);
     const rings = channelFairingRings(1);
-    // Ring centres lie on the path (the first one on the segment it was cut from).
+    // The inner corners lie half a channel width inside the path and the tops on its floor (the
+    // first ring on the segment it was cut from). Since M60b the outer corners reach the roof's
+    // side line instead of the path's outer edge.
+    const half = boat.rig.lineLead.channel.width / 2;
     for (const ring of rings.slice(1)) {
       const x = ring[0]?.[0] ?? 0;
       const point = path.find((p) => Math.abs(p[0] - x) < 1e-9);
       expect(point).toBeDefined();
-      expect(((ring[0]?.[2] ?? 0) + (ring[3]?.[2] ?? 0)) / 2).toBeCloseTo(point?.[2] ?? NaN, 9);
+      expect(ring[0]?.[2] ?? NaN).toBeCloseTo((point?.[2] ?? NaN) - half, 9);
+      expect(ring[1]?.[1] ?? NaN).toBeCloseTo(point?.[1] ?? NaN, 9);
     }
   });
 });

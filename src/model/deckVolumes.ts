@@ -16,21 +16,74 @@ export const DECK_OVERLAP = 0.1;
 /** Small lift that keeps overlapping surfaces from flickering (z-fighting), metres. */
 export const DECK_EPS = 0.01;
 
+/** Points on each curved part of the coachroof outline (M60b). */
+export const ROOF_CURVE_STEPS = 8;
+
 /**
- * Starboard half of the coachroof outline at the given front x, aft to front, as [x, half-width]:
- * the drawing's width at the aft end, widening to maxHalfWidth at the mast, front corners cut.
+ * Starboard half of the coachroof outline at the given front x, aft to front, as [x, half-width],
+ * 2·ROOF_CURVE_STEPS + 2 points (M60b): a cosine flare from the aft width (the coaming's outer
+ * edge) to maxHalfWidth at the mast, straight to chamferStartX, then a quarter-ellipse round the
+ * front corner. For the roof top (a smaller frontX) the same curve stops early.
  */
 export function coachroofHalfOutline(frontX: number, data: BoatData = boat): [number, number][] {
   const r = data.deck.coachroof;
-  const chamferAt = (x: number) =>
-    r.maxHalfWidth +
-    ((r.frontHalfWidth - r.maxHalfWidth) * (x - r.chamferStartX)) / (r.frontX - r.chamferStartX);
-  return [
-    [r.aftX, r.halfWidth],
-    [r.maxHalfWidthFromX, r.maxHalfWidth],
-    [r.chamferStartX, r.maxHalfWidth],
-    [frontX, chamferAt(frontX)],
+  const n = ROOF_CURVE_STEPS;
+  const points: [number, number][] = [];
+  for (let k = 0; k <= n; k += 1) {
+    const t = k / n;
+    points.push([
+      r.aftX + (r.maxHalfWidthFromX - r.aftX) * t,
+      r.halfWidth + (r.maxHalfWidth - r.halfWidth) * ((1 - Math.cos(Math.PI * t)) / 2),
+    ]);
+  }
+  const run = r.frontX - r.chamferStartX;
+  const end = Math.asin(Math.min(1, (frontX - r.chamferStartX) / run));
+  for (let k = 0; k <= n; k += 1) {
+    const theta = (end * k) / n;
+    points.push([
+      r.chamferStartX + run * Math.sin(theta),
+      r.frontHalfWidth + (r.maxHalfWidth - r.frontHalfWidth) * Math.cos(theta),
+    ]);
+  }
+  return points;
+}
+
+/** x where the coachroof's sloping front face meets the deck (M60b). */
+export function roofFrontAtDeckX(data: BoatData = boat): number {
+  const r = data.deck.coachroof;
+  const base = coachroofBaseY(data);
+  return r.frontX - ((r.frontX - r.topFrontX) * (sheerAt(r.frontX, data) - base)) / (r.topY - base);
+}
+
+/** Where the white non-slip bow begins: clamp(nonSlipAftX, topFrontX, stemX) (M60b). */
+export function nonSlipAftX(data: BoatData = boat): number {
+  return Math.min(
+    data.hull.stemX,
+    Math.max(data.deck.coachroof.topFrontX, data.deck.foredeck.nonSlipAftX),
+  );
+}
+
+/**
+ * The stations the deck is drawn on: the hull stations given, plus every outline x, topFrontX,
+ * frontX, aftX, nonSlipAftX (when between topFrontX and stemX) and the extra station just ahead of
+ * the cockpit front (it lets the inner edge step from the well's edge to the roof's within 2 cm,
+ * so no teak lies over the open well); from transomX forward, sorted, no duplicates (M60b).
+ */
+export function deckStations(hullStations: readonly number[], data: BoatData = boat): number[] {
+  const { cockpit, coachroof: roof, foredeck } = data.deck;
+  const extra = [
+    ...coachroofHalfOutline(roof.frontX, data).map(([x]) => x),
+    roof.topFrontX,
+    roof.frontX,
+    roof.aftX,
+    cockpit.frontX - 2 * DECK_EPS,
   ];
+  if (foredeck.nonSlipAftX > roof.topFrontX && foredeck.nonSlipAftX < data.hull.stemX) {
+    extra.push(foredeck.nonSlipAftX);
+  }
+  return [...new Set([...hullStations, ...extra])]
+    .filter((x) => x >= data.hull.transomX)
+    .sort((a, b) => a - b);
 }
 
 /** Base of the coachroof (a little below the deck, so no gap shows). */
@@ -63,11 +116,14 @@ export function cutsCoachroof(p: Vec3, radius: number, data: BoatData = boat): b
   if (y >= r.topY + radius - 1e-9 || y <= base - radius) return false;
   const height = Math.min(1, Math.max(0, (y - base) / (r.topY - base)));
   const frontX = r.frontX + (r.topFrontX - r.frontX) * height;
-  const half = halfWidthAt(coachroofHalfOutline(frontX, data), x);
+  const outline = coachroofHalfOutline(frontX, data);
+  const half = halfWidthAt(outline, x);
   if (half < 0) {
-    // Fore or aft of the outline: only the rope's radius can reach it.
+    // Fore or aft of the outline: only the rope's radius can reach it, and the half-width is the
+    // outline's own end value (the aft one is not the front one since M60b).
     const nearest = Math.min(Math.abs(x - r.aftX), Math.abs(x - frontX));
-    return nearest < radius && Math.abs(z) < r.halfWidth;
+    const end = x < r.aftX ? outline[0] : outline[outline.length - 1];
+    return nearest < radius && Math.abs(z) < (end?.[1] ?? 0);
   }
   return Math.abs(z) < half + radius - 1e-9;
 }
@@ -231,6 +287,9 @@ export function channelFairingRings(side: Side, data: BoatData = boat): Vec3[][]
   }
   const h = channel.width / 2;
   return stations.map(([x, y, z]) => {
+    // M60b: the outer face reaches the roof's side line; the bottoms stay where the channel's own
+    // outer edge puts them.
+    const roofSide = Math.max(Math.abs(z) + h, roof.halfWidth);
     const bottom = (cornerZ: number): number =>
       x < cockpit.frontX && Math.abs(cornerZ) < cockpit.wellHalfWidth
         ? cockpit.soleY
@@ -240,8 +299,8 @@ export function channelFairingRings(side: Side, data: BoatData = boat): Vec3[][]
     return [
       [x, bottom(inner), inner],
       [x, y, inner],
-      [x, y, outer],
-      [x, bottom(outer), outer],
+      [x, y, side * roofSide],
+      [x, bottom(outer), side * roofSide],
     ];
   });
 }

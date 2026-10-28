@@ -201,7 +201,8 @@
     "coachroof": {
       "frontX": 2.0,
       "aftX": -3.05,
-      "halfWidth": 1.15,
+      "halfWidth": 1.85,
+      "halfWidthNote": "M60b (owner, 2026-10-28): the roof's half-width at its aft end, where its side runs straight on into the coaming's outer face; on this boat wellHalfWidth + coamingWidth (a test checks it).",
       "topY": 1.96,
       "maxHalfWidth": 1.45,
       "maxHalfWidthFromX": 0.0,
@@ -209,8 +210,13 @@
       "frontHalfWidth": 0.92,
       "chamferStartX": 1.2,
       "topFrontX": 1.6,
-      "shapeNote": "Plan: halfWidth (drawing) at aftX, widening in a straight taper to maxHalfWidth at maxHalfWidthFromX (the mast), full width from there to chamferStartX, then the corners are cut to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. halfWidth, chamfer and front from the reference sketches; maxHalfWidth from the photo.",
+      "shapeNote": "M60b plan (half outline, starboard): from halfWidth at aftX the side flares in a cosine curve (zero slope at both ends) to maxHalfWidth at maxHalfWidthFromX (the mast), runs straight to chamferStartX, then a quarter-ellipse turns the front corner to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. frontHalfWidth and chamferStartX bound the quarter-ellipse; maxHalfWidth from the photo.",
       "topYSource": "manual (deck 1.96 m above waterline at the mast)"
+    },
+    "foredeck": {
+      "nonSlipAftX": 4.3,
+      "note": "M60b (owner, 2026-10-28, screenshot): teak from the coachroof forward to nonSlipAftX; forward of it, to the bow, white non-slip (a triangle, as the deck narrows to the stem). 2.0 m from the stem (6.3), clear of the windlass (5.40) and the foredeck hatch of M65 (3.6, on the teak).",
+      "source": "owner (screenshot, 2026-10-28) + assumption (exact station)"
     },
     "cockpit": {
       "frontX": -3.1,

@@ -515,6 +515,9 @@ Rounding the edges of the roof or the slope (M61 rounds the coamings; the roof's
 - Decided in planning (owner, 2026-10-28, in chat): teak covers the foredeck full width; white only in the bow triangle; from x 4.3 (owner: "accept all" on PR #133).
 - Decided in planning (owner, 2026-10-28, in chat): the coachroof blends into the coaming in width and in height (the slope is the channel moulding widened to the roof's side line).
 - Decided in planning (owner: "accept all" on PR #133, 2026-10-28): a lettered milestone M60b between M60 and M61, so M61–M65 keep their numbers and the rope channels and every rope path stay as they are.
+- Decided in the M60b PR (recommended; merging accepts it): two figures in 6b.3 / 6b.5 were slightly off and the formulas win: `roofFrontAtDeckX()` is **1.858** (the spec said about 1.865; the formula as written gives 1.8576, and the deck still starts at 1.6, well aft of it) and `sideDeckInnerHalfWidth(−3.0)` is **1.748** (the spec said 1.7497; the first outline segment's slope is the 0.039 the spec itself gives, so 0.05 m on gives 0.002). The tests use these values.
+- Decided in the M60b PR (recommended; merging accepts it): `channelFairingRings` moves only the outer corners' z to the roof's side line; their heights (the cockpit floor or the deck edge) still follow the channel's own outer edge, as 6b.3 says ("bottoms unchanged"). The new outer face is hidden inside the coaming there.
+- Decided in the M60b PR (recommended; merging accepts it): the roof's width note is a new key `deck.coachroof.halfWidthNote` (the existing keys had no note of their own).
 
 ---
 

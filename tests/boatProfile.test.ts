@@ -294,6 +294,12 @@ describe('boat-file keys added after version 1 (M60, PHASE9_SPEC 6.6)', () => {
     expect(check.profile.boat.visual.ropeBend).toEqual(HANSE_508.visual.ropeBend);
   });
 
+  it('a profile without deck.foredeck gets nonSlipAftX 4.3 (M60b)', () => {
+    const check = checkBoatProfile(broken((b) => delete b.deck.foredeck));
+    if (!check.ok) throw new Error(JSON.stringify(check.problems));
+    expect(check.profile.boat.deck.foredeck.nonSlipAftX).toBe(4.3);
+  });
+
   it('a wrong value that is present is not replaced', () => {
     const type = problemsOf(checkBoatProfile(broken((b) => (b.visual.ropeBend.radiusM = 'big'))));
     expect(type[0]).toMatchObject({ path: 'boat.visual.ropeBend.radiusM', kind: 'type' });
