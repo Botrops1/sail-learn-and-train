@@ -1,6 +1,6 @@
 # Phase 9 specification: visual quality
 
-Status: **planned** (owner's answers in the visual quality study, 2026-10-27; M60b added 2026-10-28) · Last updated: 2026-10-28
+Status: **planned, answers accepted** (owner's answers in the visual quality study, 2026-10-27; M60b added and every recommendation of PRs #132 and #133 accepted by the owner, 2026-10-28) · Last updated: 2026-10-28
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phase 9 builds on the 3D boat of Phases 1 and 6 (`src/render3d/boat/*.ts`, all shapes built by code from `content/boat/hanse508.json`, the M3b rule), the ropes of M5 and M34 (`src/model/ropePaths.ts`, `src/model/ropeBin.ts`, `src/render3d/boat/ropes.ts`), the camera presets (`src/render3d/cameraPresets.ts`, `src/render3d/cameraRig.ts`), the engine, autopilot and thrusters of Phases 2 and 7, and the boat profiles of M57 and M58 (`src/model/boatProfile.ts`). The owner's request, the approaches weighed and every answer are in [`VISUAL_QUALITY_ANALYSIS.md`](VISUAL_QUALITY_ANALYSIS.md); this spec turns its section 11 into six milestones, plus M60b (deck and coachroof shape, added by the owner on 2026-10-28 from three screenshots). The earlier specs still describe everything the app already does.
 
@@ -397,8 +397,8 @@ Moving any rope's path (a rope that runs through a part stays so; M61 draws the 
 
 ### 6.12 Decided in the M60 PR
 
-- Decided in planning (recommended; merging accepts it): profiles saved before Phase 9 take the new keys from the Hanse 508 (6.6); no profile version change.
-- Decided in planning (recommended; merging accepts it): the budget is High 300 draw calls and 250,000 triangles, Low 150 and 120,000, in every preset view, Easy and Realistic ropes (6.8).
+- Decided in planning (owner: "accept all" on PR #132, 2026-10-28): profiles saved before Phase 9 take the new keys from the Hanse 508 (6.6); no profile version change.
+- Decided in planning (owner: "accept all" on PR #132, 2026-10-28): the budget is High 300 draw calls and 250,000 triangles, Low 150 and 120,000, in every preset view, Easy and Realistic ropes (6.8).
 
 ---
 
@@ -504,9 +504,9 @@ Rounding the edges of the roof or the slope (M61 rounds the coamings; the roof's
 
 ### 6b.9 Decided in the M60b PR
 
-- Decided in planning (owner, 2026-10-28, in chat): teak covers the foredeck full width; white only in the bow triangle (from x 4.3).
+- Decided in planning (owner, 2026-10-28, in chat): teak covers the foredeck full width; white only in the bow triangle; from x 4.3 (owner: "accept all" on PR #133).
 - Decided in planning (owner, 2026-10-28, in chat): the coachroof blends into the coaming in width and in height (the slope is the channel moulding widened to the roof's side line).
-- Decided in planning (recommended; merging accepts it): a lettered milestone M60b between M60 and M61, so M61–M65 keep their numbers and the rope channels and every rope path stay as they are.
+- Decided in planning (owner: "accept all" on PR #133, 2026-10-28): a lettered milestone M60b between M60 and M61, so M61–M65 keep their numbers and the rope channels and every rope path stay as they are.
 
 ---
 
@@ -892,7 +892,7 @@ Live values (M63), the Helm camera's new directions (M64), the B&G multifunction
 
 ### 8.11 Decided in the M62 PR
 
-- Decided in planning (recommended; merging accepts it): both panels show the same instruments, the engine control included (study 9; on the real boat it is probably at one wheel only; a teaching simplification, written as an assumption in `BOAT_REFERENCE.md`).
+- Decided in planning (owner: "accept all" on PR #132, 2026-10-28): both panels show the same instruments, the engine control included (study 9; on the real boat it is probably at one wheel only; a teaching simplification, written as an assumption in `BOAT_REFERENCE.md`).
 
 ---
 
@@ -1024,7 +1024,7 @@ Working the controls by a tap in 3D (owner, 10.3), the B&G display, a depth or s
 
 ### 9.10 Decided in the M63 PR
 
-- Decided in planning (recommended; merging accepts it): the instrument faces carry their own English markings in every language (3.1), as real instruments do.
+- Decided in planning (owner: "accept all" on PR #132, 2026-10-28): the instrument faces carry their own English markings in every language (3.1), as real instruments do.
 
 ---
 
@@ -1178,7 +1178,7 @@ A camera that follows the Realistic station walk, a wheel turned by dragging in 
 
 ### 10.11 Decided in the M64 PR
 
-- Decided in planning (recommended; merging accepts it): the link keys are `hw` and `hl` (`hd` is the winch handle's); they are written only with `cam=helm`.
+- Decided in planning (owner: "accept all" on PR #132, 2026-10-28): the link keys are `hw` and `hl` (`hd` is the winch handle's); they are written only with `cam=helm`.
 
 ---
 
