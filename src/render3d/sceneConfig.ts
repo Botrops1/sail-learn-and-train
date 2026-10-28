@@ -378,7 +378,13 @@ export const SCENE = {
      * is used.
      */
     minScreenWidthPx: 2.5,
-    radialSegments: 6,
+    /** M60: sides of a rope tube at High and at Low. */
+    radialSegmentsHigh: 12,
+    radialSegmentsLow: 6,
+    /** M60: the whipping at each rope's tail (multiplied with the rope's colour). */
+    whipColour: '#2b2724',
+    /** M60: braided surface at High: one braid repeat along the rope, in metres, and the bump strength. */
+    braid: { periodM: 0.025, aroundRepeats: 2, strength: 2.0, texelsAlong: 32, texelsAround: 16 },
     /** Length of one stripe pattern along the rope, metres; it slides as the rope moves. */
     stripePeriodM: 0.3,
     stripeTexels: 8,

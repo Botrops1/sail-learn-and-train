@@ -22,6 +22,7 @@ export default defineConfig(
       'scripts/shots*.mjs',
       'scripts/ui.mjs',
       'scripts/visual-shots.mjs',
+      'scripts/budget.mjs',
       'scripts/a11y-audit.mjs',
     ],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },

@@ -248,6 +248,28 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           const ndc = found.project(camera);
           return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
+        /** M60: counts over the ropes as last drawn (points, whipped tails, sides, braid). */
+        ropeStats: () => boatModel.ropeStats(),
+        /**
+         * M60: the box round every mesh with this part id that is visible together with all its
+         * ancestors, in boat coordinates (the frame `project` takes), or null when none is.
+         */
+        partBox: (partId: string) => {
+          const box = new THREE.Box3();
+          const inverse = holder.matrixWorld.clone().invert();
+          let any = false;
+          holder.updateMatrixWorld(true);
+          boatModel.root.traverse((object) => {
+            if (!(object instanceof THREE.Mesh) || object.userData.partId !== partId) return;
+            for (let up: THREE.Object3D | null = object; up; up = up.parent) {
+              if (!up.visible) return;
+            }
+            const own = new THREE.Box3().setFromObject(object).applyMatrix4(inverse);
+            box.union(own);
+            any = true;
+          });
+          return any ? { min: box.min.toArray() as Vec3, max: box.max.toArray() as Vec3 } : null;
+        },
         /** Puts the camera at a position looking at a target (close-up screenshots). */
         setView: (position: Vec3, target: Vec3, fovDeg: number = SCENE.camera.verticalFovDeg) =>
           rig.setPose({ position, target, fovDeg }),

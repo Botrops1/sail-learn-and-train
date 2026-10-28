@@ -19,7 +19,7 @@ import { buildHull } from './hull';
 import { createMaterials } from './materials';
 import { buildMooringFittings } from './mooringFittings';
 import { buildRig } from './rig';
-import { buildRopes, type RopeView } from './ropes';
+import { buildRopes, type RopeStats, type RopeView } from './ropes';
 import { buildSailMesh } from './sailMesh';
 import { buildTelltales } from './telltales';
 import { buildWinchHandle } from './winchHandle';
@@ -48,6 +48,8 @@ export interface BoatModel {
   wheelPivots: THREE.Group[];
   /** The ropes as drawn by the last update (labels in 3D sit on them, M5). */
   ropeDrawings(): readonly RopeDrawing[];
+  /** M60: what the last update drew (a browser-check hook). */
+  ropeStats(): RopeStats;
   /** M33: hangs the fenders over the side (true) or puts them back in the locker (false). */
   setFendersOut(out: boolean): void;
   /** M41: shows the water jets of the thrusters that run. */
@@ -82,7 +84,7 @@ export function buildBoat(
   const mainSail = buildSailMesh('sail_main', materials, mainSailGrid(mainInput));
   const jibSail = buildSailMesh('sail_jib', materials, jibSailGrid(jibInput));
   let drawings = ropeDrawings(rig);
-  const ropes = buildRopes(drawings);
+  const ropes = buildRopes(drawings, detail);
   const windex = buildWindex(materials);
   const telltales = buildTelltales(materials);
   const fenders = buildFenders(materials, detail);
@@ -164,6 +166,7 @@ export function buildBoat(
     rudderPivot,
     wheelPivots: hardware.wheelPivots,
     ropeDrawings: () => drawings,
+    ropeStats: () => ropes.stats(),
     setFendersOut: fenders.setOut,
     setThrusters: thrusters.setState,
     setHandle: handle.set,

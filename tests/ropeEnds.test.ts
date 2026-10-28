@@ -10,6 +10,7 @@ import {
   tailToBin,
   WINCH_WRAP_POINTS_PER_TURN,
 } from '../src/model/ropePaths';
+import { smoothDrawings } from '../src/model/ropeSmooth';
 import { initialRig } from '../src/model/sim';
 import type { Vec3 } from '../src/model/vec3';
 import { buildRopes } from '../src/render3d/boat/ropes';
@@ -24,7 +25,7 @@ const rig = initialRig(defaultControls());
 const DRUM = boat.modelDetail.winch.diameter / 2;
 const DRUM_ROPE = boat.modelDetail.winchRope.drumRenderRadius;
 const LYING = boat.deck.cockpit.coamingTopY + boat.visual.ropeRenderRadius;
-const RADIAL = SCENE.ropes.radialSegments;
+const RADIAL = SCENE.ropes.radialSegmentsHigh;
 const SIDES = [1, -1] as const;
 
 function realisticWith(
@@ -251,8 +252,9 @@ describe('M34: thinner rope on the winch drums, and its loose end on the box', (
 describe('M34: sealed rope ends', () => {
   it('each rope mesh has two cap vertices and 2 × RADIAL cap triangles per strand', () => {
     const drawings = ropeDrawings(rig);
-    const meshes = buildRopes(drawings);
-    for (const drawing of drawings) {
+    const meshes = buildRopes(drawings, 'high');
+    const drawn = smoothDrawings(drawings);
+    for (const drawing of drawn) {
       const mesh = meshes.objects.find(
         (m) => (m.userData as { partId?: string }).partId === drawing.id,
       );
@@ -260,7 +262,7 @@ describe('M34: sealed rope ends', () => {
       const positions = mesh.geometry.getAttribute('position').count;
       const indices = mesh.geometry.getIndex()?.count ?? 0;
       expect(positions, drawing.id).toBe(
-        drawing.strands.reduce((sum, s) => sum + s.points.length * RADIAL + 2, 0),
+        drawing.strands.reduce((sum, s) => sum + s.points.length * (RADIAL + 1) + 2, 0),
       );
       expect(indices, drawing.id).toBe(
         drawing.strands.reduce(
