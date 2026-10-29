@@ -242,6 +242,8 @@ describe('M3b: detail levels', () => {
           types.add((object.material as THREE.Material).type);
         }
       });
+      // M62: the helm panel's faces are unlit (MeshBasicMaterial) at both details.
+      types.delete('MeshBasicMaterial');
       return types;
     };
     expect([...kinds('low')]).toEqual(['MeshLambertMaterial']);

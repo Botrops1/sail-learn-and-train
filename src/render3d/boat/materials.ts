@@ -33,6 +33,8 @@ export interface BoatMaterials {
   fitting: THREE.Material;
   /** Chrome winch tops. */
   chrome: THREE.Material;
+  /** M62: the wheel's leather-wrapped rim. */
+  leather: THREE.Material;
   /** M50: the mid-grey plate of the mast furling gearbox. */
   gearboxPlate: THREE.Material;
   block: THREE.Material;
@@ -129,6 +131,7 @@ export function createMaterials(detail: Detail = 'high'): BoatMaterials {
     wire: make({ color: c.wire, roughness: 0.3, metalness: 0.9 }),
     fitting: make({ color: c.fitting, roughness: 0.18, metalness: 1 }),
     chrome: make({ color: c.chrome, roughness: 0.08, metalness: 1 }),
+    leather: make({ color: c.leather, roughness: 0.85 }),
     gearboxPlate: make({ color: c.gearboxPlate, roughness: 0.5 }),
     block: make({ color: c.block, roughness: 0.5 }),
     sheave: make({ color: c.sheave, roughness: 0.55 }),

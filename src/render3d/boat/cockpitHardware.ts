@@ -32,7 +32,7 @@ export function buildCockpitHardware(
   const wheels = boat.cockpitHardware.helms.map((helm) => buildWheel(helm, materials));
   return {
     objects: [
-      ...wheels.flatMap((wheel) => [wheel.pivot, wheel.pedestal]),
+      ...wheels.map((wheel) => wheel.pivot),
       // Only the winches on the reference boat: the brochure's optional ones are `present: false`.
       ...boat.cockpitHardware.winches
         .filter((winch) => !('present' in winch) || winch.present !== false)
@@ -66,13 +66,14 @@ export function buildCockpitHardware(
 }
 
 /**
- * A wheel: rim, hub and spokes in the y–z plane (the helmsman faces forward), turning around
- * the x axis, on a pedestal standing on the cockpit sole just forward of it.
+ * A wheel: leather rim, hub, spokes and a chrome hub cap in the y–z plane (the helmsman faces
+ * forward), turning around the x axis. The pedestal in front of it is built by `helmPedestal.ts`
+ * (M62).
  */
 function buildWheel(
   helm: { id: string; x: number; z: number },
   materials: BoatMaterials,
-): { pivot: THREE.Group; pedestal: THREE.Object3D } {
+): { pivot: THREE.Group } {
   const hw = boat.cockpitHardware;
   const detail = boat.modelDetail.wheel;
   const radius = hw.wheelDiameter / 2 - detail.rimTubeRadius;
@@ -92,6 +93,10 @@ function buildWheel(
     detail.rimTubeRadius * 2,
     10,
   );
+  // M62: a chrome dome on the hub's aft end (its flat side towards the hub, the dome pointing aft).
+  const cap = new THREE.SphereGeometry(detail.hubCapRadiusM, 16, 8, 0, 2 * Math.PI, 0, Math.PI / 2)
+    .rotateZ(Math.PI / 2)
+    .translate(-detail.rimTubeRadius * 2, 0, 0);
   const rimSegments: PickSegment[] = Array.from({ length: 8 }, (_, i) => {
     const a = (2 * Math.PI * i) / 8;
     const b = (2 * Math.PI * (i + 1)) / 8;
@@ -103,28 +108,12 @@ function buildWheel(
   const pivot = new THREE.Group();
   pivot.name = `${helm.id}Pivot`;
   pivot.position.set(helm.x, hw.wheelHubY, helm.z);
-  pivot.add(partMesh(helm.id, [rim, ...spokes, hub], materials.dark, rimSegments));
-
-  const soleY = boat.deck.cockpit.soleY;
-  const pedestalX = helm.x + detail.pedestalWidth;
-  const pedestalHeight = hw.wheelHubY - soleY;
-  const pedestal = partMesh(
-    helm.id,
-    [
-      boxAt(
-        [pedestalX, soleY + pedestalHeight / 2, helm.z],
-        [detail.pedestalWidth, pedestalHeight + detail.pedestalWidth / 2, detail.pedestalWidth],
-      ),
-    ],
-    materials.dark,
-    [
-      [
-        [pedestalX, soleY, helm.z],
-        [pedestalX, hw.wheelHubY, helm.z],
-      ],
-    ],
+  pivot.add(
+    partMesh(helm.id, [rim], materials.leather, rimSegments),
+    partMesh(helm.id, [...spokes, hub], materials.dark, rimSegments),
+    partMesh(helm.id, [cap], materials.chrome, rimSegments),
   );
-  return { pivot, pedestal };
+  return { pivot };
 }
 
 /**

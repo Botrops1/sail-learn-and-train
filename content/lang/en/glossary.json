@@ -1711,6 +1711,33 @@
       "onThisBoat": "A B&G display at the helm. In the app, the strip at the top of the 3D view shows the same numbers; tap it for the wind dial.",
       "textStatus": "draft"
     },
+    "fit_helm_pedestal": {
+      "name": "Wheel pedestal",
+      "alternatives": [{ "term": "binnacle" }],
+      "short": "The column in front of each wheel that carries the compass and the controls.",
+      "what": "The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and ropes off the instruments.",
+      "onThisBoat": "One pedestal at each wheel, each with the same panel: the compass, the wind display, the engine lever and the rev counter, the thruster joysticks and the autopilot keys. The drawing is a guess: there is no photo of the pedestal yet.",
+      "showMe": "The view from behind the wheel: the pedestal with its panel and the steel guard rail stands in front of the wheel.",
+      "textStatus": "draft"
+    },
+    "fit_thruster_joysticks": {
+      "name": "Thruster joysticks",
+      "alternatives": [],
+      "short": "Two small sticks that push the bow or the stern sideways.",
+      "what": "While you push a stick to one side, its thruster (a propeller in a tunnel through the hull) pushes that end of the boat that way. One stick is for the bow thruster, one for the stern thruster. They help at low speed in a marina; at more than a few knots they do little.",
+      "onThisBoat": "Two joysticks at the helm, one for each thruster. In the app the Engine section and the quick row work the thrusters.",
+      "showMe": "The view from behind the wheel: the two small thruster sticks are at the bottom of the panel, to the right of the keypad.",
+      "textStatus": "draft"
+    },
+    "fit_winch_handle_rest": {
+      "name": "Winch handle rest",
+      "alternatives": [],
+      "short": "Where the winch handle lies at the helm.",
+      "what": "A winch handle left loose can slide away or go over the side, so it is kept in a holder or a pocket when it is not in a winch.",
+      "onThisBoat": "In the app the handle lies on a pad on the cockpit floor between the two wheels, between two small stops.",
+      "showMe": "Realistic ropes, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops.",
+      "textStatus": "draft"
+    },
     "term_prop_walk": {
       "name": "Prop walk",
       "alternatives": [

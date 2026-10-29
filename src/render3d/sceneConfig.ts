@@ -298,6 +298,8 @@ export const SCENE = {
     block: '#25282c',
     /** M61: the grey wheel a rope runs on inside a block. */
     sheave: '#6b7076',
+    /** M62: the wheel's leather-wrapped rim. */
+    leather: '#3a2b22',
     /** M61: sides of a rounded box's corners (High only). */
     roundedSegments: 3,
     /** M61: sides of a block's axle pin and shackle (tube, and arc). */
@@ -396,6 +398,14 @@ export const SCENE = {
     stripeTexels: 8,
     stripeDarkTexels: 3,
     stripeDarkness: 0.55,
+  },
+  helmPanel: {
+    /** M62: the panel's instruments are hidden when the camera is farther than this from the pod, metres. */
+    showWithinM: 6.0,
+    /** Canvas size of the round faces and the wind display, px (the keypad is 256 × 110). */
+    facePx: 256,
+    /** Sides of the round faces, the knobs (width, height segments) and the guard rail. */
+    segments: { round: 32, knob: [12, 8] as [number, number], railHigh: 8, railLow: 6 },
   },
   /** Wind streaks (PHASE1_SPEC 6.1): light lines drifting with the test wind. */
   wind: {

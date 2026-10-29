@@ -683,9 +683,9 @@ New block `modelDetail.helmPedestal`, after `modelDetail.wheel`:
 ```json
 "helmPedestal": {
   "source": "assumption (M62, Phase 9): no photo of the pedestal. A column just ahead of each wheel, a panel on top set a little towards the middle and facing the helmsman, a steel guard rail standing on the cockpit floor ahead of it; the same panel at both wheels (VISUAL_QUALITY_ANALYSIS 9 and 10). The engine control's look follows docs/reference/photos/engine-control.jpg.",
-  "column": { "aheadOfWheelM": 0.16, "lengthM": 0.16, "widthM": 0.2, "topAboveHubM": 0.1, "edgeRadiusM": 0.03 },
+  "column": { "aheadOfWheelM": 0.16, "lengthM": 0.16, "widthM": 0.2, "topAboveHubM": 0.06, "edgeRadiusM": 0.03 },
   "pod": {
-    "aboveColumnM": 0.06,
+    "aboveColumnM": 0.1,
     "inboardM": 0.12,
     "widthM": 0.4,
     "heightM": 0.24,
@@ -700,7 +700,7 @@ New block `modelDetail.helmPedestal`, after `modelDetail.wheel`:
     "wind": { "u": -0.13, "v": 0.045, "sizeM": 0.1 },
     "tachometer": { "u": 0.13, "v": 0.045, "diameterM": 0.09 },
     "keypad": { "u": -0.1, "v": -0.07, "widthM": 0.14, "heightM": 0.06 },
-    "lever": { "u": 0.14, "v": -0.07, "baseM": [0.05, 0.04, 0.02], "armLengthM": 0.1, "armRadiusM": 0.007, "knobRadiusM": 0.016, "maxDeg": 45 },
+    "lever": { "u": 0.14, "v": -0.07, "baseM": [0.05, 0.09, 0.012], "plateHeightM": 0.032, "plateWidthM": 0.014, "plateThicknessM": 0.004, "plateGapM": 0.012, "gripLengthM": 0.034, "gripRadiusM": 0.008, "maxDeg": 45 },
     "joysticks": {
       "bow": { "u": 0.02, "v": -0.075 },
       "stern": { "u": 0.08, "v": -0.075 },
@@ -751,7 +751,7 @@ export function handleRest(data: BoatData = boat): { pad: { centre: Vec3; size: 
 
 With `h` = the helm of `cockpitHardware.helms` with that id (throw if there is none), `p = modelDetail.helmPedestal`, `s = sign(h.z)` (+1 starboard), `hub = cockpitHardware.wheelHubY`, `sole = deck.cockpit.soleY`:
 
-- **Column:** `topY = hub + p.column.topAboveHubM` (1.95); centre `(h.x + p.column.aheadOfWheelM, (sole + topY)/2, h.z)`, size `(p.column.lengthM, topY − sole, p.column.widthM)`. Port: centre (−7.04, 1.475, −0.88), size (0.16, 0.95, 0.2).
+- **Column:** `topY = hub + p.column.topAboveHubM` (1.91, PR 139); centre `(h.x + p.column.aheadOfWheelM, (sole + topY)/2, h.z)`, size `(p.column.lengthM, topY − sole, p.column.widthM)`. Port: centre (−7.04, 1.455, −0.88), size (0.16, 0.91, 0.2).
 - **Pod:** centre `(h.x + p.column.aheadOfWheelM, topY + p.pod.aboveColumnM, h.z − s·p.pod.inboardM)` (port (−7.04, 2.01, −0.76)). With `e = faceElevationDeg`, `y = faceYawOutboardDeg`: `w = (−cos e·cos y, sin e, s·cos e·sin y)` (the face looks aft, up and a little outboard, at the helmsman behind the wheel), `u = normalize(cross([0,1,0], w))`, `v = cross(w, u)`. Size `(widthM, heightM, thicknessM)`.
 - **Face:** centre `pod.centre + w·thicknessM/2`.
 - **Instruments:** `framePoint(face, f.u, f.v)` for `compass`, `wind`, `tachometer`, `keypad`, `lever` and the two joysticks (`faces.joysticks.bow`, `.stern`).
@@ -810,7 +810,7 @@ Per helm (`helmPedestal(helm.id)`), in the order of `cockpitHardware.helms` (por
 | Wind face | `PlaneGeometry(sizeM, sizeM)` at `wind + w·proudM` | basic, `windTexture` | `fit_instrument_display` |
 | Tachometer face | `CircleGeometry(diameterM/2, segments.round)` at `tachometer + w·proudM` | basic, `tachTexture` | `engine_control` |
 | Keypad face | `PlaneGeometry(widthM, heightM)` at `keypad + w·proudM` | basic, `keypadTexture` | `fit_autopilot_control` |
-| Lever | a `THREE.Group` at `lever + w·proudM` whose quaternion maps its local x, y, z to `u`, `v`, `w` (`Matrix4.makeBasis(u, v, w)`); in local coordinates: a base box `baseM` centred at (0, 0, `baseM[2]/2`), and a pivot group at (0, 0, `baseM[2]`) (the top of the base) holding the mesh `arm`, built along its local +z (a cylinder of `armRadiusM` from z = 0 to `armLengthM`, a knob sphere of `knobRadiusM`, `SCENE.helmPanel.segments.knob` segments, at its end); the pivot's `rotation.x = −a·DEG` with `a = leverPct/100·maxDeg` (the arm then points along `cos a·w + sin a·v`: ahead leans it forward). M62: a = 0. | base and arm `materials.dark` | `engine_control` (base and arm each a `smallPartMesh` with a hit point at the knob, in the arm's local frame) |
+| Lever | a `THREE.Group` at `lever + w·proudM` with the same `(u, v, w)` basis; in local coordinates: a base box `baseM` (rounded at High) centred at (0, 0, `baseM[2]/2`), and a pivot group at (0, 0, `baseM[2]`) (the top of the base) holding two meshes built along local +z: `plates` (two boxes `plateThicknessM` × `plateWidthM` × `plateHeightM`, `plateGapM` apart in u, `materials.chrome`) and `grip` (a cylinder of `gripRadiusM` along u, `gripLengthM` long, at z = `plateHeightM`, `materials.dark`); the pivot's `rotation.x = −a·DEG` with `a = leverPct/100·maxDeg` (the lever swings ahead and astern in the v–w plane only). M62: a = 0. (PR 139 replaced the first design, a long arm with a ball, which reached the wheel.) | base `materials.dark` | `engine_control` (base, plates and grip each a `smallPartMesh` with a hit point at the grip: (0, 0, `baseM[2] + plateHeightM`) in the group frame for the base, (0, 0, `plateHeightM`) in the pivot frame for the other two) |
 | Joysticks | for each end the boat has (`hasThruster(end)`, M57) a `THREE.Group` at its point + `w·proudM` with the same basis as the lever: a base disc (`baseRadiusM`, `baseThicknessM` thick along local z) and a pivot group at (0, 0, `baseThicknessM`) holding the mesh `stick`, built along its local +z (a cylinder of `stickRadiusM` from z = 0 for `stickLengthM`, a knob sphere of `knobRadiusM` at its end); the pivot's `rotation.y = b·DEG` with `b = dir·maxTiltDeg` (the stick then leans along `cos b·w + sin b·u`: +1 to starboard, the helmsman's right). M62: b = 0. A boat without thrusters has none. | `materials.dark` | `fit_thruster_joysticks` (base and stick each a `smallPartMesh` with a hit point at the knob) |
 
 The four face materials share one `CanvasTexture` per instrument for **both** panels (drawn once, used twice). Their meshes get `renderOrder = 1` and the materials `polygonOffset: true, polygonOffsetFactor: −1`, so they never flicker on the pod. The column and the pod are surface parts (`partMesh`, no hit points: a tap on them hits their surface); the rail is a thin `partMesh` with pick segments; the four faces, the lever's two meshes, each joystick's two meshes and the handle rest are small parts (`smallPartMesh`): a face's hit point is its centre; the lever's knob at rest, given in each mesh's own frame: (0, 0, `baseM[2] + armLengthM`) for the base (group frame), (0, 0, `armLengthM`) for the arm (pivot frame); a joystick's likewise (0, 0, `baseThicknessM + stickLengthM`) and (0, 0, `stickLengthM`).
@@ -914,6 +914,11 @@ Live values (M63), the Helm camera's new directions (M64), the B&G multifunction
 ### 8.11 Decided in the M62 PR
 
 - Decided in planning (owner: "accept all" on PR #132, 2026-10-28): both panels show the same instruments, the engine control included (study 9; on the real boat it is probably at one wheel only; a teaching simplification, written as an assumption in `BOAT_REFERENCE.md`).
+- Decided in the M62 PR (recommended; merging accepts it):
+  1. The guard rail's top bar is 0.0147 m higher than 8.3's 2.19 m: M60's `roundCorners` (after the owner's PR #135) moves each arc outwards so its middle passes through the corner, which lifts the bar's ends. Test 7 therefore expects the top between 2.19 and 2.2047 m; the formula and the data are unchanged.
+  2. `fit_thruster_joysticks`'s show-me link is `?cam=helm&sel=fit_thruster_joysticks&held=1&sea=flat`, without 8.6's `m=harbour`: the older test "Show me links never carry m=" (`tests/modes.test.ts`) forbids it, and the joysticks are drawn in every mode.
+  3. Each of the three new Learn entries has a short "show me" text (the glossary test requires one wherever the registry has a scene); the Russian ones are drafts like the rest.
+  4. `PanelReadings.bow` / `.stern` use `ThrustDir` from `src/model/thrusters.ts` (re-exported by `helmPanel.ts`); the panel's meshes are all visible until the first `setPanelEye`, so a test that builds the boat sees them.
 
 ---
 
@@ -1392,3 +1397,8 @@ The M65 builder ticks the items its own checks show (the code, data, tests and t
 - [ ] Old imported boat profiles still import (`ADDED_KEYS`), and a boat without thrusters has no joysticks.
 - [ ] Every new id is in the registry and every glossary (`draft`), every new number in `BOAT_REFERENCE.md` marked as an assumption; `CODE_MAP.md` current.
 - [ ] Every Phase 1 to 8 test and browser check still passes.
+
+### Decided in the PR 139 review (owner's phone check of M62)
+
+- **Column and panel:** the column's top is now `hub + 0.06` (1.91) and the pod's centre `column top + 0.10` (still 2.01), so the panel's lowest corner (1.89) sits 0.02 m into the column's top and no instrument stands in front of the column. Test 1 (column centre 1.455, size 0.91) and test 6 (the pod rests on the column) follow; the pod, the face and the rail do not move (tests 2 to 5 and 7 unchanged).
+- **Engine lever:** the drawn lever is a short single lever as in the owner's photo of a ship's single-lever control: a low base (0.05 × 0.09 × 0.012 m) and two steel plates (0.032 m high) carrying a round grip across them, swinging about the base's middle ahead and astern only (`rotation.x = −a·DEG`, `a = leverPct/100·45`, as M63 expects). Nothing stands more than 0.052 m off the face (the old arm and ball reached 0.136 m and passed through the wheel). Test 6b checks the grip stays more than 0.01 m ahead of the wheel's rim at −45°, 0° and +45°. The lever keeps its tap target (`engine_control`).

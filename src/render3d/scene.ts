@@ -410,6 +410,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     }
   });
 
+  const panelEye = new THREE.Vector3();
   const lastSkyDirection = new THREE.Vector3(0, 1, 0);
   const sunPoint = new THREE.Vector3();
   let sunShown = false;
@@ -451,6 +452,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   function clearSpot(): void {
     if (!spot) return;
+    boatModel.revealPanels(false);
     for (const object of spot.lit) object.layers.disable(SPOT_LAYER);
     spot.removeListeners();
     spot = null;
@@ -463,6 +465,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   function startSpotlight(request: Spotlight): void {
     const ids = new Set(highlightIds(request.partId));
+    // M62: the panel's instruments show from anywhere while a spotlight looks for them.
+    boatModel.revealPanels(true);
     boatModel.root.updateWorldMatrix(true, true);
     const meshes: THREE.Mesh[] = [];
     boatModel.root.traverse((object) => {
@@ -630,6 +634,10 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         0,
         boatState.waves.pitchDeg * DEG,
       );
+      // M62: the panels' instruments hide when the camera is far (the last frame's matrices do).
+      panelEye.copy(camera.position);
+      boatModel.root.worldToLocal(panelEye);
+      boatModel.setPanelEye(panelEye.toArray() as Vec3);
       // The sun from the clock: its light, the night and the sky light (PHASE3_SPEC 9.6).
       const { elevationDeg, azimuthDeg } = sunPosition(
         state.clock.utcMs,

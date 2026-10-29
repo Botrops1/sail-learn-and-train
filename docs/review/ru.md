@@ -869,6 +869,21 @@
 
 ## В кокпите
 
+### джойстики подруливающих устройств (`fit_thruster_joysticks`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Thruster joysticks | джойстики подруливающих устройств |
+| Другие названия | — | — |
+| Коротко | Two small sticks that push the bow or the stern sideways. | Два маленьких джойстика, которые толкают нос или корму в сторону. |
+| Что делает / что значит | While you push a stick to one side, its thruster (a propeller in a tunnel through the hull) pushes that end of the boat that way. One stick is for the bow thruster, one for the stern thruster. They help at low speed in a marina; at more than a few knots they do little. | Пока вы держите джойстик в сторону, подруливающее устройство (винт в тоннеле поперёк корпуса) толкает этот конец лодки в ту же сторону. Один джойстик для носового устройства, другой для кормового. Они помогают на малой скорости в марине; быстрее нескольких узлов от них мало толку. |
+| На этой яхте | Two joysticks at the helm, one for each thruster. In the app the Engine section and the quick row work the thrusters. | Два джойстика у штурвала, по одному на каждое устройство. В приложении подруливающими устройствами управляют из раздела «Двигатель» и из быстрого ряда. |
+| Типичные ошибки | — | — |
+| «Покажи» | The view from behind the wheel: the two small thruster sticks are at the bottom of the panel, to the right of the keypad. | Вид из-за штурвала: два маленьких джойстика подруливающих устройств в нижней части панели, справа от клавиш автопилота. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### дисплей приборов (`fit_instrument_display`)
 
 | Поле | English | Русский |
@@ -925,6 +940,21 @@
 | На этой яхте | Two wheels at the back, one winch and one clutch bank on each side, the engine lever at the helm, and the instruments and the autopilot control by the wheels. | Два штурвала сзади, по лебёдке и по блоку стопоров с каждой стороны, рукоятка двигателя у штурвала, а приборы и пульт авторулевого — возле штурвалов. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### колонка штурвала (`fit_helm_pedestal`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Wheel pedestal | колонка штурвала |
+| Другие названия | binnacle | нактоуз |
+| Коротко | The column in front of each wheel that carries the compass and the controls. | Колонка перед каждым штурвалом, на которой стоят компас и органы управления. |
+| Что делает / что значит | The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and ropes off the instruments. | Ось штурвала входит в колонку. Сверху на ней небольшая панель с компасом и приборами, а перед ней стальная дуга: за неё можно держаться, и она не даёт коленям и концам задеть приборы. |
+| На этой яхте | One pedestal at each wheel, each with the same panel: the compass, the wind display, the engine lever and the rev counter, the thruster joysticks and the autopilot keys. The drawing is a guess: there is no photo of the pedestal yet. | У каждого штурвала своя колонка, и панель на всех одинаковая: компас, дисплей ветра, рычаг двигателя и тахометр, джойстики подруливающих устройств и клавиши автопилота. Рисунок — предположение: фотографии колонки пока нет. |
+| Типичные ошибки | — | — |
+| «Покажи» | The view from behind the wheel: the pedestal with its panel and the steel guard rail stands in front of the wheel. | Вид из-за штурвала: перед штурвалом стоит колонка с панелью и стальной дугой. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1001,6 +1031,21 @@
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### место для ручки лебёдки (`fit_winch_handle_rest`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Winch handle rest | место для ручки лебёдки |
+| Другие названия | — | — |
+| Коротко | Where the winch handle lies at the helm. | Место, где у штурвала лежит ручка лебёдки. |
+| Что делает / что значит | A winch handle left loose can slide away or go over the side, so it is kept in a holder or a pocket when it is not in a winch. | Ручка, оставленная где попало, может соскользнуть или упасть за борт, поэтому, пока она не в лебёдке, её держат в держателе или кармане. |
+| На этой яхте | In the app the handle lies on a pad on the cockpit floor between the two wheels, between two small stops. | В приложении ручка лежит на площадке на полу кокпита между двумя штурвалами, между двумя небольшими упорами. |
+| Типичные ошибки | — | — |
+| «Покажи» | Realistic ropes, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops. | Реалистичные тросы, ручка убрана у штурвала: она лежит на тёмной площадке между двумя штурвалами, между двумя упорами. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
