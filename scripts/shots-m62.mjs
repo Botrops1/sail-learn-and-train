@@ -102,8 +102,12 @@ export async function liveM62Checks({ openPage, viewports, outDir, prefix, probl
       await clean(page);
       await aim(page, VIEWS[0]);
       await page.waitForTimeout(800);
-      const box = await page.locator('canvas.scene-canvas').boundingBox();
       for (const id of TAPPED) {
+        // A tap opens the part's card and may move the layout: aim again before each one.
+        await clean(page);
+        await aim(page, VIEWS[0]);
+        await page.waitForTimeout(500);
+        const box = await page.locator('canvas.scene-canvas').boundingBox();
         const centres = await page.evaluate(
           (partId) => window.__sailDebug.hitCentres().filter((c) => c.partId === partId),
           id,
@@ -120,6 +124,10 @@ export async function liveM62Checks({ openPage, viewports, outDir, prefix, probl
         check(`tap ${id} ${detail} ${viewport.name}`, found, `${centres.length} hit areas`);
       }
       // The rail's top bar selects the pedestal.
+      await clean(page);
+      await aim(page, VIEWS[0]);
+      await page.waitForTimeout(500);
+      const box = await page.locator('canvas.scene-canvas').boundingBox();
       const bar = await page.evaluate(() => window.__sailDebug.partPoint('fit_helm_pedestal', 0.5));
       let railTapped = false;
       if (bar) {
