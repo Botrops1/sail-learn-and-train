@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
 import { sheerAt } from '../../model/hullShape';
-import { DECK_OVERLAP } from '../../model/deckVolumes';
 import { ropeBinBox, ropeBinEntry } from '../../model/ropeBin';
 import type { Detail } from '../../model/settings';
 import type { Vec3 } from '../../model/vec3';
@@ -14,6 +13,9 @@ import {
   smallPartMesh,
   type PickSegment,
 } from './parts';
+
+/** How far the rope box's aft face stands inside the transom, metres (no flush faces). */
+const ROPE_BIN_AFT_INSET = 0.004;
 
 export interface CockpitHardware {
   objects: THREE.Object3D[];
@@ -190,10 +192,14 @@ function buildRopeBins(materials: BoatMaterials, detail: Detail): THREE.Object3D
     .map((side) => {
       const box = ropeBinBox(side);
       const entry = ropeBinEntry(side);
-      const bottom = Math.min(sheerAt(box.frontX), sheerAt(box.aftX)) - DECK_OVERLAP;
+      // M61: the box stands on the cockpit sole (its inboard face is the cockpit's wall there;
+      // the rounded bottom edge is below the sole) and ends a hair inside the transom, so its
+      // aft face is not flush with the hull's.
+      const bottom = boat.deck.cockpit.soleY - 2 * boat.modelDetail.edgeRadius.ropeBinM;
+      const aftX = box.aftX + ROPE_BIN_AFT_INSET;
       const block = roundedBoxAt(
-        [box.centre.x, (box.topY + bottom) / 2, box.centre.z],
-        [box.frontX - box.aftX, box.topY - bottom, Math.abs(box.outerZ - box.innerZ)],
+        [(box.frontX + aftX) / 2, (box.topY + bottom) / 2, box.centre.z],
+        [box.frontX - aftX, box.topY - bottom, Math.abs(box.outerZ - box.innerZ)],
         boat.modelDetail.edgeRadius.ropeBinM,
         detail,
       );

@@ -298,14 +298,16 @@ function cockpit(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
     [c.frontX, c.soleY, w],
     [c.frontX, c.soleY, -w],
   );
-  // Side walls up to the coaming top.
-  for (const side of [1, -1]) {
+  // Side walls up to the coaming top. M61: aft of the rope box's front face the box itself is
+  // the wall (it stands on the sole), so the wall stops there and the box's rounded edges show.
+  for (const side of [1, -1] as const) {
+    const endX = ropeBinBox(side).frontX;
     pushQuad(
       positions,
-      [c.aftX, c.soleY, side * w],
+      [endX, c.soleY, side * w],
       [c.frontX, c.soleY, side * w],
       [c.frontX, c.coamingTopY, side * w],
-      [c.aftX, c.coamingTopY, side * w],
+      [endX, c.coamingTopY, side * w],
     );
   }
   // Front wall up to the deck (the transom closes the well at the back).
@@ -324,15 +326,16 @@ function cockpit(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
   const coamings = ([1, -1] as const).map((side) => {
     const endX = ropeBinBox(side).bodyEndX;
     const height = c.coamingTopY - (Math.min(sheerAt(c.frontX), sheerAt(endX)) - OVERLAP);
+    // M61: at High the forward end is 2 radii longer, so its rounded end hides inside the
+    // coachroof; the aft end stays at `endX` (the ropes drop down it into the gap, so nothing may
+    // stick out there); the rounded bottom edges are below the deck.
+    const radius = boat.modelDetail.edgeRadius.coamingM;
+    const extra = detail === 'high' ? 2 * radius : 0;
     const centre: Vec3 = [
-      (c.frontX + endX) / 2,
+      (c.frontX + endX) / 2 + extra / 2,
       c.coamingTopY - height / 2,
       side * (w + coamingWidth / 2),
     ];
-    // M61: at High the ends are 2 radii longer each side, so the rounded ends hide inside the
-    // coachroof and the rope box; the rounded bottom edges are below the deck.
-    const radius = boat.modelDetail.edgeRadius.coamingM;
-    const extra = detail === 'high' ? 4 * radius : 0;
     return roundedBoxAt(centre, [c.frontX - endX + extra, height, coamingWidth], radius, detail);
   });
   return [
