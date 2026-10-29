@@ -72,7 +72,10 @@ export async function liveM62Checks({ openPage, viewports, outDir, prefix, probl
   };
   const clean = async (page) => {
     await setSheet(page, 'peek');
-    await page.addStyleTag({ content: '.debug { display: none !important; }' });
+    // The 3D labels (the Keel's sits over the joysticks from here) would take the taps.
+    await page.addStyleTag({
+      content: '.debug, .label3d { display: none !important; }',
+    });
   };
   const aim = (page, view) =>
     page.evaluate((v) => window.__sailDebug.setView(v.position, v.target, v.fov), view);
@@ -106,7 +109,7 @@ export async function liveM62Checks({ openPage, viewports, outDir, prefix, probl
         // A tap opens the part's card and may move the layout: aim again before each one.
         await clean(page);
         await aim(page, VIEWS[0]);
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(1200);
         const box = await page.locator('canvas.scene-canvas').boundingBox();
         const centres = await page.evaluate(
           (partId) => window.__sailDebug.hitCentres().filter((c) => c.partId === partId),
