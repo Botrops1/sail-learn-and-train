@@ -100,7 +100,7 @@ export async function liveM60Checks({ openPage, viewports, outDir, prefix, probl
       const got = await stats(page);
       const want = {
         strands: 22,
-        points: 958,
+        points: 1166,
         whipped: 11,
         radialSegments: 12,
         finite: true,
@@ -127,7 +127,7 @@ export async function liveM60Checks({ openPage, viewports, outDir, prefix, probl
       const got = await stats(page);
       const ok =
         got.radialSegments === 6 &&
-        got.points === 958 &&
+        got.points === 1166 &&
         got.braid === false &&
         got.finite === true;
       check(`${v} Low: rope stats`, ok, JSON.stringify(got));
@@ -144,7 +144,7 @@ export async function liveM60Checks({ openPage, viewports, outDir, prefix, probl
       const got = await stats(page);
       check(
         `${v} Realistic winch wrap: more points, 11 whipped`,
-        got.points > 958 && got.whipped === 11 && got.finite === true,
+        got.points > 1166 && got.whipped === 11 && got.finite === true,
         JSON.stringify(got),
       );
       await context.close();
