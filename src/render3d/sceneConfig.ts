@@ -296,6 +296,12 @@ export const SCENE = {
     /** M50: the mast furling gearbox's mid-grey plate (the owner's photo). */
     gearboxPlate: '#8a9096',
     block: '#25282c',
+    /** M61: the grey wheel a rope runs on inside a block. */
+    sheave: '#6b7076',
+    /** M61: sides of a rounded box's corners (High only). */
+    roundedSegments: 3,
+    /** M61: sides of a block's axle pin and shackle (tube, and arc). */
+    blockSegments: { axle: 8, shackleTube: 6, shackleArc: 12 },
     fabric: '#3d4248',
     glass: '#1c2a33',
     glassOpacity: 0.55,

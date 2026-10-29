@@ -91,7 +91,7 @@ export function buildBoat(
   const thrusters = buildThrusters(materials, detail);
   const handle = buildWinchHandle(materials);
   root.add(
-    ...buildHull(materials),
+    ...buildHull(materials, detail),
     buildKeel(materials),
     rudderPivot,
     buildSaildrive(materials),

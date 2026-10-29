@@ -100,7 +100,22 @@ const RANGES: readonly Range[] = [
  * Boat-file paths added after profile version 1 (Phase 9). A profile without one gets the
  * reference's value. Each milestone appends the paths it adds (PHASE9_SPEC 4.3).
  */
-export const ADDED_KEYS: readonly string[] = ['visual.ropeBend', 'deck.foredeck'];
+export const ADDED_KEYS: readonly string[] = [
+  'visual.ropeBend',
+  'deck.foredeck',
+  'modelDetail.block.source',
+  'modelDetail.block.cheekThicknessM',
+  'modelDetail.block.cheekClearanceM',
+  'modelDetail.block.sheaveRadiusShare',
+  'modelDetail.block.sheaveInsetM',
+  'modelDetail.block.axleRadiusShare',
+  'modelDetail.block.axleOverhangM',
+  'modelDetail.block.shackleWireRadiusM',
+  'modelDetail.block.shackleRiseShare',
+  'modelDetail.mastBaseTurningBlocks.cheekGapM',
+  'modelDetail.mastBaseTurningBlocks.cheekThicknessM',
+  'modelDetail.edgeRadius',
+];
 
 /**
  * A copy of `boat` with every `ADDED_KEYS` path that is missing (its parent object present) set

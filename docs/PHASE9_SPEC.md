@@ -655,7 +655,14 @@ New blocks (the vang tackle, the outhaul sheave at the boom end, the jib car's s
 
 ### 7.9 Decided in the M61 PR
 
-(nothing yet)
+(recommended; merging accepts it)
+
+- **`RoundedBoxGeometry` is not indexed** in the pinned three (7.5 test 5 said indexed): the test counts triangles as `position.count / 3` instead; nothing else depends on it.
+- **The ten turning blocks include the ten flat guide blocks of M60c** (`buildTurningBlocks` draws both under the one id): all get the thinner cheeks, the 0.052 m gap and no shackle.
+- **Tap check:** `fit_mast_base_turning_blocks` has 20 blocks, and from the side some face away with a rope in front of their hit area; the check passes when at least one hit area of the part selects it (the three block parts have one hit area per block, tripled by the three meshes).
+- **Close-up views:** `turning-blocks` is a fixed view (target (0, 1.85, 0), 1.1 m from the port-forward-above side) because the middle of the part's box (the whole ring plus the guide blocks) points at the mast; `deck-block-port` looks from forward (direction (1, 0.8, −0.5)) because from aft the sprayhood hides the block.
+- **Rope box and coaming fixes (owner's report on PR #138):** at High the coaming is longer only at its forward end (2 radii, hidden in the coachroof); its aft end stays at the gap, so the ropes dropping into the gap no longer meet it. The rope box now stands on the cockpit sole (bottom 2 edge radii below it), its aft face is 4 mm inside the transom, and the cockpit's side wall stops at the box's front face, so the box's inboard face is the wall there: no coplanar faces, no slit below the box, no ledge under its rounded edge. In the gap between the coaming's end and the box the cockpit's side wall now reaches only the deck (it used to rise to the coaming top there as a flat plate with nothing beside it; second report). Not changed: the stern end of the toerail (the rim along the deck edge).
+- The 404 console error the browser check shows on the first page of a run in this container comes from the pre-installed Chromium (build 1243, launched by path because the repo's Playwright expects another build), not from the app; CI uses its own browser.
 
 ---
 

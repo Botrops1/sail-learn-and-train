@@ -36,6 +36,8 @@ export interface BoatMaterials {
   /** M50: the mid-grey plate of the mast furling gearbox. */
   gearboxPlate: THREE.Material;
   block: THREE.Material;
+  /** M61: the wheel a rope runs on inside a block. */
+  sheave: THREE.Material;
   fabric: THREE.Material;
   glass: THREE.Material;
   sail: THREE.Material;
@@ -129,6 +131,7 @@ export function createMaterials(detail: Detail = 'high'): BoatMaterials {
     chrome: make({ color: c.chrome, roughness: 0.08, metalness: 1 }),
     gearboxPlate: make({ color: c.gearboxPlate, roughness: 0.5 }),
     block: make({ color: c.block, roughness: 0.5 }),
+    sheave: make({ color: c.sheave, roughness: 0.55 }),
     fabric: make({ color: c.fabric, roughness: 0.9 }),
     glass: make({
       color: c.glass,

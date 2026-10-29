@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { boat } from '../../model/boat';
 import { requirePartId } from '../../model/registry';
+import type { Detail } from '../../model/settings';
+import { SCENE } from '../sceneConfig';
+import type { BoatMaterials } from './materials';
 import type { Vec3 } from '../../model/vec3';
 
 /**
@@ -200,40 +205,113 @@ export function pushQuad(out: number[], p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3):
   out.push(...p0, ...p1, ...p2, ...p0, ...p2, ...p3);
 }
 
+export interface BlockGeometry {
+  /** The two side plates (and, for the deck blocks, the post under them): materials.block. */
+  cheeks: THREE.BufferGeometry[];
+  /** The wheel the rope runs on: materials.sheave. */
+  sheave: THREE.BufferGeometry[];
+  /** The axle pin and the shackle: materials.chrome. */
+  fittings: THREE.BufferGeometry[];
+}
+
+export interface BlockOptions {
+  gapM?: number;
+  cheekThicknessM?: number;
+  shackle?: boolean;
+}
+
 /**
- * A rope block: a sheave between two cheeks, `radius` across, its axle along `axle` (the rope
- * runs in the plane at right angles to it), plus a small shackle on the side `towards` its
- * fixing point.
+ * A rope block (M61): two side plates with a gap for the rope, a sheave (the wheel) between
+ * them, an axle pin through both and, unless turned off, a half-ring shackle on the side
+ * `towards` its fixing point. The axle runs along `axle`; the rope runs in the plane at right
+ * angles to it, to the block's centre (its path does not change).
  */
-export function sheaveBlock(
+export function blockGeometry(
   centre: Vec3,
   axle: Vec3,
   radius: number,
   towards: Vec3,
   radialSegments = 16,
-): THREE.BufferGeometry[] {
-  const axis = v3(axle).normalize();
+  options: BlockOptions = {},
+): BlockGeometry {
+  const b = boat.modelDetail.block;
+  const seg = SCENE.boat.blockSegments;
+  const a = v3(axle).normalize();
+  const t = v3(towards);
+  const d = t.sub(a.clone().multiplyScalar(t.dot(a))).normalize();
   const c = v3(centre);
-  const half = radius * 0.32;
-  const cheeks = cylinderBetween(
-    c.clone().addScaledVector(axis, -half).toArray() as Vec3,
-    c.clone().addScaledVector(axis, half).toArray() as Vec3,
+  const gap = options.gapM ?? 2 * boat.visual.ropeRenderRadius + b.cheekClearanceM;
+  const ct = options.cheekThicknessM ?? b.cheekThicknessM;
+  const at = (k: number): Vec3 => c.clone().addScaledVector(a, k).toArray() as Vec3;
+  const cheeks = [1, -1].map((side) =>
+    cylinderBetween(at((side * gap) / 2), at(side * (gap / 2 + ct)), radius, radialSegments),
+  );
+  const half = gap / 2 - b.sheaveInsetM;
+  const sheave = [
+    cylinderBetween(at(-half), at(half), radius * b.sheaveRadiusShare, radialSegments),
+  ];
+  const reach = gap / 2 + ct + b.axleOverhangM;
+  const fittings = [cylinderBetween(at(-reach), at(reach), radius * b.axleRadiusShare, seg.axle)];
+  if (options.shackle !== false) {
+    const ringRadius = gap / 2 + ct + b.shackleWireRadiusM;
+    const ring = new THREE.TorusGeometry(
+      ringRadius,
+      b.shackleWireRadiusM,
+      seg.shackleTube,
+      seg.shackleArc,
+      Math.PI,
+    );
+    ring.applyMatrix4(new THREE.Matrix4().makeBasis(a, d, a.clone().cross(d)));
+    ring.translate(...c.addScaledVector(d, radius * b.shackleRiseShare).toArray());
+    fittings.push(ring);
+  }
+  return { cheeks, sheave, fittings };
+}
+
+/**
+ * One mesh per material (cheeks, sheave, fittings), all with `partId`. With `hitPoints` each is
+ * a small part with them; with `pickSegments`, a part with those.
+ */
+export function blockMeshes(
+  partId: string,
+  blocks: readonly BlockGeometry[],
+  materials: BoatMaterials,
+  pick: { hitPoints: Vec3[] } | { pickSegments: PickSegment[] },
+): THREE.Mesh[] {
+  const groups: [THREE.BufferGeometry[], THREE.Material][] = [
+    [blocks.flatMap((g) => g.cheeks), materials.block],
+    [blocks.flatMap((g) => g.sheave), materials.sheave],
+    [blocks.flatMap((g) => g.fittings), materials.chrome],
+  ];
+  return groups
+    .filter(([geometries]) => geometries.length > 0)
+    .map(([geometries, material]) =>
+      'hitPoints' in pick
+        ? smallPartMesh(partId, geometries, material, pick.hitPoints)
+        : partMesh(partId, geometries, material, pick.pickSegments),
+    );
+}
+
+/**
+ * A box with rounded edges at High (radius clamped to 0.45 × the smallest side); a plain box at
+ * Low. The uv attribute is dropped so `merge` box-maps it like the boxes around it.
+ */
+export function roundedBoxAt(
+  centre: Vec3,
+  size: Vec3,
+  radiusM: number,
+  detail: Detail,
+): THREE.BufferGeometry {
+  if (detail !== 'high') return boxAt(centre, size);
+  const radius = Math.min(radiusM, 0.45 * Math.min(...size));
+  const geometry = new RoundedBoxGeometry(
+    size[0],
+    size[1],
+    size[2],
+    SCENE.boat.roundedSegments,
     radius,
-    radialSegments,
   );
-  const hub = cylinderBetween(
-    c
-      .clone()
-      .addScaledVector(axis, -half * 1.5)
-      .toArray() as Vec3,
-    c
-      .clone()
-      .addScaledVector(axis, half * 1.5)
-      .toArray() as Vec3,
-    radius * 0.35,
-    8,
-  );
-  const shackleEnd = c.clone().addScaledVector(v3(towards).normalize(), radius * 1.6);
-  const shackle = cylinderBetween(centre, shackleEnd.toArray() as Vec3, radius * 0.2, 6);
-  return [cheeks, hub, shackle];
+  geometry.deleteAttribute('uv');
+  geometry.translate(centre[0], centre[1], centre[2]);
+  return geometry;
 }
