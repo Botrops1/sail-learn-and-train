@@ -23,14 +23,14 @@ describe('M61 blocks', () => {
     expect(cheeks.max.x).toBeCloseTo(0.07, 6);
     expect(cheeks.max.y).toBeCloseTo(0.07, 6);
     // Two plates with a gap between them.
-    const plate = box([g.cheeks[0]]);
+    const plate = box(g.cheeks.slice(0, 1));
     expect(plate.min.z).toBeCloseTo(0.028, 7);
     expect(plate.max.z).toBeCloseTo(0.036, 7);
     const sheave = box(g.sheave);
     expect(sheave.max.z).toBeCloseTo(0.027, 7);
     expect(sheave.max.x).toBeCloseTo(0.0546, 6);
     expect(sheave.max.y).toBeCloseTo(0.0546, 6);
-    const shackle = box([g.fittings[1]]);
+    const shackle = box(g.fittings.slice(1));
     expect(shackle.max.y).toBeGreaterThan(0.109);
     expect(shackle.max.y).toBeLessThan(0.113);
   });
@@ -42,7 +42,7 @@ describe('M61 blocks', () => {
 
   it('puts the shackle on the side it is told', () => {
     const side = blockGeometry([0, 0, 0], [0, 1, 0], 0.07, [1, 0, 0]);
-    expect(box([side.fittings[1]]).min.x).toBeGreaterThan(0);
+    expect(box(side.fittings.slice(1)).min.x).toBeGreaterThan(0);
   });
 
   it('makes one mesh per material with the part id, and no shackle when turned off', () => {
