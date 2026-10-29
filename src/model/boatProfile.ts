@@ -115,6 +115,8 @@ export const ADDED_KEYS: readonly string[] = [
   'modelDetail.mastBaseTurningBlocks.cheekGapM',
   'modelDetail.mastBaseTurningBlocks.cheekThicknessM',
   'modelDetail.edgeRadius',
+  'modelDetail.helmPedestal',
+  'modelDetail.wheel.hubCapRadiusM',
 ];
 
 /**

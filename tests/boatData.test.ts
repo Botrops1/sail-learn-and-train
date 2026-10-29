@@ -199,6 +199,9 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
       if (/\.winchHandle\.rest\.\w+\.[xz]$/.test(path)) {
         // M50: the handle's resting places are coordinates (they may be 0 or negative), not sizes.
         expect(Math.abs(value), path).toBeLessThan(path.endsWith('.x') ? Math.abs(transomX) : 2.5);
+      } else if (/\.helmPedestal\.faces\.(\w+\.)+[uv]$/.test(path)) {
+        // M62: a place on the panel's face (0 or negative), inside half the pod's width.
+        expect(Math.abs(value), path).toBeLessThan(0.25);
       } else if (/(count|spokes|pointsPerTurn)$/.test(path)) {
         expect(Number.isInteger(value) && value >= 1, path).toBe(true);
       } else if (/X$/.test(path)) {

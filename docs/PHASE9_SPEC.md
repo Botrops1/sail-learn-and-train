@@ -914,6 +914,11 @@ Live values (M63), the Helm camera's new directions (M64), the B&G multifunction
 ### 8.11 Decided in the M62 PR
 
 - Decided in planning (owner: "accept all" on PR #132, 2026-10-28): both panels show the same instruments, the engine control included (study 9; on the real boat it is probably at one wheel only; a teaching simplification, written as an assumption in `BOAT_REFERENCE.md`).
+- Decided in the M62 PR (recommended; merging accepts it):
+  1. The guard rail's top bar is 0.0147 m higher than 8.3's 2.19 m: M60's `roundCorners` (after the owner's PR #135) moves each arc outwards so its middle passes through the corner, which lifts the bar's ends. Test 7 therefore expects the top between 2.19 and 2.2047 m; the formula and the data are unchanged.
+  2. `fit_thruster_joysticks`'s show-me link is `?cam=helm&sel=fit_thruster_joysticks&held=1&sea=flat`, without 8.6's `m=harbour`: the older test "Show me links never carry m=" (`tests/modes.test.ts`) forbids it, and the joysticks are drawn in every mode.
+  3. Each of the three new Learn entries has a short "show me" text (the glossary test requires one wherever the registry has a scene); the Russian ones are drafts like the rest.
+  4. `PanelReadings.bow` / `.stern` use `ThrustDir` from `src/model/thrusters.ts` (re-exported by `helmPanel.ts`); the panel's meshes are all visible until the first `setPanelEye`, so a test that builds the boat sees them.
 
 ---
 
