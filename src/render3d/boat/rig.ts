@@ -19,7 +19,9 @@ import {
   boxAt,
   cylinderBetween,
   partMesh,
-  sheaveBlock,
+  blockGeometry,
+  type BlockGeometry,
+  blockMeshes,
   smallPartMesh,
   v3,
   type PickSegment,
@@ -62,8 +64,8 @@ export function buildRig(materials: BoatMaterials, detail: Detail = 'high'): Rig
       boomPivot,
       ...vang.tubes,
       buildGooseneck(materials),
-      buildTurningBlocks(materials),
-      buildDeckBlocks(materials, segments),
+      ...buildTurningBlocks(materials),
+      ...buildDeckBlocks(materials, segments),
       ...buildGearbox(materials),
       buildJibFurler(materials),
       track.track,
@@ -169,10 +171,11 @@ function buildBackstay(materials: BoatMaterials, segments: number): THREE.Object
     ),
     // Not a small fitting: a small mesh with this id would make every tap on the wires win over
     // the small fittings near them in the top view (picking.ts, first rule).
-    partMesh(
+    ...blockMeshes(
       'part_backstay',
-      sheaveBlock(block, [0, 0, 1], boat.modelDetail.block.radius, [0, 1, 0], segments),
-      materials.block,
+      [blockGeometry(block, [0, 0, 1], boat.modelDetail.block.radius, [0, 1, 0], segments)],
+      materials,
+      { pickSegments: [] },
     ),
   ];
 }
@@ -213,11 +216,11 @@ function buildBoom(materials: BoatMaterials, segments: number): THREE.Group {
     0,
   ]);
   pivot.add(
-    smallPartMesh(
+    ...blockMeshes(
       'fit_mainsheet_boom_blocks',
-      blocks.flatMap((p) => sheaveBlock(p, [0, 0, 1], blockRadius, [0, 1, 0])),
-      materials.block,
-      blocks,
+      blocks.map((p) => blockGeometry(p, [0, 0, 1], blockRadius, [0, 1, 0])),
+      materials,
+      { hitPoints: blocks },
     ),
   );
   return pivot;
@@ -233,7 +236,7 @@ function buildGooseneck(materials: BoatMaterials): THREE.Object3D {
  * Spring-mounted mainsheet deck blocks: each block stands on a short spring that keeps it
  * upright when the sheet is slack (photo mainsheet-german.jpg).
  */
-function buildDeckBlocks(materials: BoatMaterials, segments: number): THREE.Object3D {
+function buildDeckBlocks(materials: BoatMaterials, segments: number): THREE.Object3D[] {
   const d = boat.rig.mainsheet.deckBlocks;
   const radius = boat.modelDetail.block.radius;
   const roof = boat.deck.coachroof.topY;
@@ -241,11 +244,14 @@ function buildDeckBlocks(materials: BoatMaterials, segments: number): THREE.Obje
     [d.x, d.y, -d.halfZ],
     [d.x, d.y, d.halfZ],
   ];
-  const geometries = points.flatMap((p) => [
-    ...sheaveBlock(p, [0, 0, 1], radius, [0, -1, 0], segments),
-    cylinderBetween([p[0], roof, p[2]], [p[0], p[1] - radius, p[2]], radius * 0.45, 8),
-  ]);
-  return smallPartMesh('fit_mainsheet_deck_blocks', geometries, materials.block, points);
+  const blocks = points.map((p) => {
+    const block = blockGeometry(p, [0, 0, 1], radius, [0, -1, 0], segments);
+    block.cheeks.push(
+      cylinderBetween([p[0], roof, p[2]], [p[0], p[1] - radius, p[2]], radius * 0.45, 8),
+    );
+    return block;
+  });
+  return blockMeshes('fit_mainsheet_deck_blocks', blocks, materials, { hitPoints: points });
 }
 
 /**
@@ -385,19 +391,21 @@ function buildVangStrut(materials: BoatMaterials): {
  * coming down from the mast and leaving flat along the roof. M60c: at the end of that run each
  * line turns round a flat guide block (its sheave level, the axle upright) into the channel.
  */
-function buildTurningBlocks(materials: BoatMaterials): THREE.Object3D {
-  const radius = boat.modelDetail.mastBaseTurningBlocks.blockDiameter / 2;
+function buildTurningBlocks(materials: BoatMaterials): THREE.Object3D[] {
+  const { blockDiameter, cheekGapM, cheekThicknessM } = boat.modelDetail.mastBaseTurningBlocks;
+  const radius = blockDiameter / 2;
+  const options = { gapM: cheekGapM, cheekThicknessM, shackle: false };
   const points: Vec3[] = [];
-  const geometries: THREE.BufferGeometry[] = [];
+  const blocks: BlockGeometry[] = [];
   for (const line of boat.rig.lineLead.lines) {
     const p = turningBlockPoint(line);
     const heading = turningBlockHeading(line);
     const axle: Vec3 = [-heading[2], 0, heading[0]];
-    geometries.push(...sheaveBlock(p, axle, radius, [boat.rig.mast.x - p[0], 0, -p[2]], 12));
+    blocks.push(blockGeometry(p, axle, radius, [boat.rig.mast.x - p[0], 0, -p[2]], 12, options));
     points.push(p);
     const guide = guideBlockCentre(line);
-    geometries.push(...sheaveBlock(guide, [0, 1, 0], radius, [0, -1, 0], 12));
+    blocks.push(blockGeometry(guide, [0, 1, 0], radius, [0, -1, 0], 12, options));
     points.push(guide);
   }
-  return smallPartMesh('fit_mast_base_turning_blocks', geometries, materials.block, points);
+  return blockMeshes('fit_mast_base_turning_blocks', blocks, materials, { hitPoints: points });
 }

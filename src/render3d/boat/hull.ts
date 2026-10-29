@@ -1,4 +1,5 @@
 import type * as THREE from 'three';
+import type { Detail } from '../../model/settings';
 import { boat } from '../../model/boat';
 import {
   coachroofBaseY,
@@ -15,7 +16,7 @@ import { halfBeamAt, sectionPoint, sheerAt } from '../../model/hullShape';
 import { ropeBinBox } from '../../model/ropeBin';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
-import { boxAt, partMesh, pushQuad, triangles } from './parts';
+import { boxAt, partMesh, pushQuad, roundedBoxAt, triangles } from './parts';
 
 /** Points per half-section from the keel line to the deck edge. */
 const SECTION_SAMPLES = 16;
@@ -30,7 +31,7 @@ const PANEL = 0.04;
  * Hull, deck, coachroof, cockpit, companionway, stern platform and bow fitting
  * (PHASE1_SPEC 6.1), lofted from the plan outline, sheer and keel line in hanse508.json.
  */
-export function buildHull(materials: BoatMaterials): THREE.Object3D[] {
+export function buildHull(materials: BoatMaterials, detail: Detail = 'high'): THREE.Object3D[] {
   const stations = hullStations();
   return [
     partMesh('part_hull', [hullShell(stations), endCap(boat.hull.stemX, +1)], materials.hull),
@@ -48,7 +49,7 @@ export function buildHull(materials: BoatMaterials): THREE.Object3D[] {
     partMesh('part_deck', [deck(stations, 'sideDecks')], materials.teak),
     partMesh('part_deck', [toerail(stations)], materials.gelcoat),
     ...coachroof(materials),
-    ...cockpit(materials),
+    ...cockpit(materials, detail),
     companionway(materials),
     bowFitting(materials),
   ];
@@ -285,7 +286,7 @@ function coachroof(materials: BoatMaterials): THREE.Object3D[] {
  * is flat back to the transom (M34, owner on PR #81); the coamings end behind the winches, and
  * the rope tail boxes (`cockpitHardware.ts`) stand behind them.
  */
-function cockpit(materials: BoatMaterials): THREE.Object3D[] {
+function cockpit(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
   const c = boat.deck.cockpit;
   const w = c.wellHalfWidth;
   const positions: number[] = [];
@@ -328,7 +329,11 @@ function cockpit(materials: BoatMaterials): THREE.Object3D[] {
       c.coamingTopY - height / 2,
       side * (w + coamingWidth / 2),
     ];
-    return boxAt(centre, [c.frontX - endX, height, coamingWidth]);
+    // M61: at High the ends are 2 radii longer each side, so the rounded ends hide inside the
+    // coachroof and the rope box; the rounded bottom edges are below the deck.
+    const radius = boat.modelDetail.edgeRadius.coamingM;
+    const extra = detail === 'high' ? 4 * radius : 0;
+    return roundedBoxAt(centre, [c.frontX - endX + extra, height, coamingWidth], radius, detail);
   });
   return [
     partMesh('part_cockpit', [sole], materials.teak),

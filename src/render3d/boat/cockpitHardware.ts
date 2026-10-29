@@ -6,7 +6,14 @@ import { ropeBinBox, ropeBinEntry } from '../../model/ropeBin';
 import type { Detail } from '../../model/settings';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
-import { boxAt, cylinderBetween, partMesh, smallPartMesh, type PickSegment } from './parts';
+import {
+  boxAt,
+  cylinderBetween,
+  partMesh,
+  roundedBoxAt,
+  smallPartMesh,
+  type PickSegment,
+} from './parts';
 
 export interface CockpitHardware {
   objects: THREE.Object3D[];
@@ -35,6 +42,7 @@ export function buildCockpitHardware(
           boat.modelDetail.clutchBank,
           bank.clutches.length,
           materials,
+          detail,
         ),
       ),
       ...buildClutch(
@@ -47,8 +55,9 @@ export function buildCockpitHardware(
         boat.modelDetail.jibRollClutch,
         1,
         materials,
+        detail,
       ),
-      ...buildRopeBins(materials),
+      ...buildRopeBins(materials, detail),
     ],
     wheelPivots: wheels.map((wheel) => wheel.pivot),
   };
@@ -175,16 +184,18 @@ function buildWinch(
  * a solid block as wide as the coaming, from the deck to the coaming top and back to the
  * transom, with a dark entry in its front face where the lines go in.
  */
-function buildRopeBins(materials: BoatMaterials): THREE.Object3D[] {
+function buildRopeBins(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
   const { ropeBins } = boat.cockpitHardware;
   return ([1, -1] as const)
     .map((side) => {
       const box = ropeBinBox(side);
       const entry = ropeBinEntry(side);
       const bottom = Math.min(sheerAt(box.frontX), sheerAt(box.aftX)) - DECK_OVERLAP;
-      const block = boxAt(
+      const block = roundedBoxAt(
         [box.centre.x, (box.topY + bottom) / 2, box.centre.z],
         [box.frontX - box.aftX, box.topY - bottom, Math.abs(box.outerZ - box.innerZ)],
+        boat.modelDetail.edgeRadius.ropeBinM,
+        detail,
       );
       const mouth = boxAt(
         [box.frontX + 0.002, (entry.bottomY + entry.topY) / 2, (entry.innerZ + entry.outerZ) / 2],
@@ -211,8 +222,10 @@ function buildClutch(
   size: { length: number; width: number; height: number },
   count: number,
   materials: BoatMaterials,
+  detail: Detail,
 ): THREE.Object3D[] {
   const { cockpit } = boat.deck;
+  const edge = boat.modelDetail.edgeRadius;
   const coamingOuter = cockpit.wellHalfWidth + boat.modelDetail.coamingWidth;
   const onCoaming =
     position[0] <= cockpit.frontX &&
@@ -226,10 +239,20 @@ function buildClutch(
     const z = position[2] - size.width / 2 + each * (k + 0.5);
     const bodyHeight = size.height * 0.62;
     bodies.push(
-      boxAt([position[0], baseY + bodyHeight / 2, z], [size.length, bodyHeight, each * 0.9]),
+      roundedBoxAt(
+        [position[0], baseY + bodyHeight / 2, z],
+        [size.length, bodyHeight, each * 0.9],
+        edge.clutchBodyM,
+        detail,
+      ),
     );
     // Lever: the full length on top, its front end raised a little.
-    const lever = boxAt([0, 0, 0], [size.length * 0.92, size.height * 0.3, each * 0.8]);
+    const lever = roundedBoxAt(
+      [0, 0, 0],
+      [size.length * 0.92, size.height * 0.3, each * 0.8],
+      edge.clutchLeverM,
+      detail,
+    );
     lever.rotateZ(-0.06);
     lever.translate(position[0], baseY + bodyHeight + size.height * 0.15, z);
     bodies.push(lever);

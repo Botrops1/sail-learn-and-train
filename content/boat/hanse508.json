@@ -973,7 +973,23 @@
       "pedestalWidth": 0.16
     },
     "block": {
-      "radius": 0.07
+      "radius": 0.07,
+      "source": "assumption (M61, Phase 9: a block's two cheeks, its sheave and a shackle, sized for the drawn rope; no photo measured)",
+      "cheekThicknessM": 0.008,
+      "cheekClearanceM": 0.006,
+      "sheaveRadiusShare": 0.78,
+      "sheaveInsetM": 0.001,
+      "axleRadiusShare": 0.12,
+      "axleOverhangM": 0.004,
+      "shackleWireRadiusM": 0.006,
+      "shackleRiseShare": 0.9
+    },
+    "edgeRadius": {
+      "source": "assumption (M61, Phase 9: moulded and cast parts have rounded edges; radii estimated)",
+      "coamingM": 0.03,
+      "ropeBinM": 0.025,
+      "clutchBodyM": 0.01,
+      "clutchLeverM": 0.004
     },
     "selfTackingTrack": {
       "radius": 0.035
@@ -1029,7 +1045,9 @@
     "windexHeightAboveMast": 0.15,
     "vangStrutNote": "Rigid vang drawn as two telescoping tubes: the thick one from the mast point, the thin one from the boom point, each tubeFraction of the strut length at rest so they overlap.",
     "mastBaseTurningBlocks": {
-      "blockDiameter": 0.09
+      "blockDiameter": 0.09,
+      "cheekGapM": 0.052,
+      "cheekThicknessM": 0.002
     },
     "mastBaseTurningBlocksNote": "Ring of turning blocks around the mast foot (photos mast-base-turning-blocks*.jpg), one per line in rig.lineLead.lines; size estimated.",
     "sprayhood": {
