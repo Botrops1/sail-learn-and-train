@@ -216,9 +216,9 @@ describe('smoothDrawings', () => {
   const drawn = smoothDrawings(easy);
   const strands = drawn.flatMap((rope) => rope.strands);
 
-  it('in Easy mode: 22 strands, 958 points, 11 whipped tails ending in a rope box', () => {
+  it('in Easy mode: 22 strands, 1166 points, 11 whipped tails ending in a rope box', () => {
     expect(strands).toHaveLength(22);
-    expect(strands.reduce((sum, s) => sum + s.points.length, 0)).toBe(958);
+    expect(strands.reduce((sum, s) => sum + s.points.length, 0)).toBe(1166);
     expect(strands.filter((s) => s.whipFrom !== null)).toHaveLength(11);
     const raw = easy.flatMap((rope) => rope.strands);
     raw.forEach((strand, index) => {
@@ -259,11 +259,11 @@ describe('smoothDrawings', () => {
     });
   });
 
-  it('with ropes on the winches: 1,370 finite points', () => {
+  it('with ropes on the winches: 1,578 finite points', () => {
     const points = smoothDrawings(realistic).flatMap((rope) =>
       rope.strands.flatMap((s) => s.points),
     );
-    expect(points).toHaveLength(1370);
+    expect(points).toHaveLength(1578);
     expect(points.every((p) => p.every(Number.isFinite))).toBe(true);
   });
 

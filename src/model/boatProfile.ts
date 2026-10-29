@@ -88,6 +88,7 @@ const RANGES: readonly Range[] = [
   { path: 'physics.integration.solverAwsStepKn', min: 0.01, max: 2 },
   { path: 'physics.mass.payloadKg', min: 0, max: 20000 },
   { path: 'physics.mass.addedMassFraction', min: 0, max: 2 },
+  { path: 'deck.foredeck.nonSlipAftX', min: -20, max: 20 },
   { path: 'visual.ropeBend.radiusM', min: 0.005, max: 0.2 },
   { path: 'visual.ropeBend.arcPoints', min: 2, max: 8, integer: true },
   { path: 'visual.ropeBend.maxShareOfSegment', min: 0.1, max: 0.5 },
@@ -99,7 +100,7 @@ const RANGES: readonly Range[] = [
  * Boat-file paths added after profile version 1 (Phase 9). A profile without one gets the
  * reference's value. Each milestone appends the paths it adds (PHASE9_SPEC 4.3).
  */
-export const ADDED_KEYS: readonly string[] = ['visual.ropeBend'];
+export const ADDED_KEYS: readonly string[] = ['visual.ropeBend', 'deck.foredeck'];
 
 /**
  * A copy of `boat` with every `ADDED_KEYS` path that is missing (its parent object present) set

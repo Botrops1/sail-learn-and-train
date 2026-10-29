@@ -201,7 +201,8 @@
     "coachroof": {
       "frontX": 2.0,
       "aftX": -3.05,
-      "halfWidth": 1.15,
+      "halfWidth": 1.85,
+      "halfWidthNote": "M60b (owner, 2026-10-28): the roof's half-width at its aft end, where its side runs straight on into the coaming's outer face; on this boat wellHalfWidth + coamingWidth (a test checks it).",
       "topY": 1.96,
       "maxHalfWidth": 1.45,
       "maxHalfWidthFromX": 0.0,
@@ -209,8 +210,17 @@
       "frontHalfWidth": 0.92,
       "chamferStartX": 1.2,
       "topFrontX": 1.6,
-      "shapeNote": "Plan: halfWidth (drawing) at aftX, widening in a straight taper to maxHalfWidth at maxHalfWidthFromX (the mast), full width from there to chamferStartX, then the corners are cut to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. halfWidth, chamfer and front from the reference sketches; maxHalfWidth from the photo.",
+      "aftLip": {
+        "aftX": -3.22,
+        "note": "M60c (owner's screenshot of PR #137, purple circle): the roof's top carries on aft, over the cockpit's front wall, to this x, a little aft of the sprayhood's front edge (modelDetail.sprayhood.frontX -3.2), so no slit shows between the roof's aft face (aftX) and the hood, through which the cockpit floor was seen. As wide as the roof's aft end (halfWidth), top at topY, bottom at the deck. A test checks it. Assumption."
+      },
+      "shapeNote": "M60b plan (half outline, starboard): from halfWidth at aftX the side flares in a cosine curve (zero slope at both ends) to maxHalfWidth at maxHalfWidthFromX (the mast), runs straight to chamferStartX, then a quarter-ellipse turns the front corner to frontHalfWidth at frontX. Side: the front face slopes from frontX at the deck back to topFrontX at the roof top. frontHalfWidth and chamferStartX bound the quarter-ellipse; maxHalfWidth from the photo.",
       "topYSource": "manual (deck 1.96 m above waterline at the mast)"
+    },
+    "foredeck": {
+      "nonSlipAftX": 4.3,
+      "note": "M60b (owner, 2026-10-28, screenshot): teak from the coachroof forward to nonSlipAftX; forward of it, to the bow, white non-slip (a triangle, as the deck narrows to the stem). 2.0 m from the stem (6.3), clear of the windlass (5.40) and the foredeck hatch of M65 (3.6, on the teak).",
+      "source": "owner (screenshot, 2026-10-28) + assumption (exact station)"
     },
     "cockpit": {
       "frontX": -3.1,
@@ -388,16 +398,31 @@
       "laneSpacing": 0.045,
       "channel": {
         "path": [
-          [-0.7, 1.96, 0.8],
-          [-2.9, 1.96, 0.98],
-          [-3.12, 1.96, 1.02],
-          [-3.48, 1.62, 1.5],
+          [-0.85, 1.96, 1.252],
+          [-1.35, 1.96, 1.344],
+          [-1.85, 1.96, 1.446],
+          [-2.35, 1.96, 1.53],
+          [-2.9, 1.96, 1.578],
+          [-3.12, 1.96, 1.585],
+          [-3.48, 1.62, 1.59],
           [-3.8, 1.55, 1.59],
           [-6.3, 1.55, 1.59]
         ],
-        "pathNote": "Centre line of the starboard channel's floor, mast end first: on the coachroof from just aft of the mast foot to its aft end, then aft of the coachroof down onto the coaming top (cockpit.coamingTopY) and along it to just in front of the clutch bank. All estimates.",
+        "pathNote": "Centre line of the starboard channel's floor, mast end first (M60c, owner's screenshot of PR #137): on the coachroof it follows the roof's flared side, edgeInset inside it (z = the roof's half-width at x minus half the channel width minus edgeInset; a test checks it), so the channel runs straight on into the coaming's top with no sideways step; from the roof's aft end it goes down onto the coaming top (cockpit.coamingTopY) and along it to just in front of the clutch bank. Before M60c it ran along z 0.8 to 1.0 and jumped out to the coaming (z 1.59) behind the roof. All estimates.",
         "width": 0.3,
         "coverHeight": 0.075,
+        "edgeInset": 0.12,
+        "edgeInsetNote": "M60c: gap between the channel's outer edge and the roof's side line. Assumption (owner's screenshot: the channel runs along the roof's flared side).",
+        "swap": {
+          "startX": -1.4,
+          "length": 0.5,
+          "note": "M60c: where two lines swap lanes (frontLane to slot lane): all of it happens in this short stretch under the cover, one place, one line passing over the other, the rest of the way the lines run side by side. Assumption."
+        },
+        "guideBlocks": {
+          "firstX": -0.3,
+          "stagger": 0.1,
+          "note": "M60c (owner's screenshot): in front of the cover each line leaves its turning block in a straight run to a flat guide block (a block lying on the roof, its sheave level) on the channel's line, and turns there into the channel. The outermost lane's block is at firstX, each lane further in 'stagger' (m) further aft, so the blocks (0.09 m across) do not touch. Owner's request (screenshot of PR #137); the exact places are assumptions."
+        },
         "source": "photo (covered channels on the coachroof and along the coaming: self-tacking-track-full.jpg, cockpit-winch-clutches.jpg) + assumption (path and size)"
       },
       "lines": [
@@ -979,7 +1004,7 @@
         "mast": { "x": 0.0, "z": 1.05 },
         "helm": { "x": -7.2, "z": 0.0 }
       },
-      "restNote": "Port and starboard: lying across the gap between the winch and the rope box, its centre on the gap's middle x, outboard of the winch's centre by sideGapCentreFromWinchZ (clear of the tails, which pass on the inboard side). Mast: on the coachroof abeam the mast to starboard, lying fore and aft, clear of the turning blocks (ring radius 0.3 m), the line channels (from x -0.7 m aft) and the self-tacking track (x 0.28 m). Helm: on the cockpit floor on the centreline between the wheels, lying fore and aft."
+      "restNote": "Port and starboard: lying across the gap between the winch and the rope box, its centre on the gap's middle x, outboard of the winch's centre by sideGapCentreFromWinchZ (clear of the tails, which pass on the inboard side). Mast: on the coachroof abeam the mast to starboard, lying fore and aft, clear of the turning blocks (ring radius 0.3 m), the guide blocks and the line channels (from x -0.3 m aft) and the self-tacking track (x 0.28 m). Helm: on the cockpit floor on the centreline between the wheels, lying fore and aft."
     },
     "mainsheetBoomBlockSpacing": 0.35,
     "mainsheetBoomBlockSpacingNote": "Three blocks under the boom (photo), centred on rig.mainsheet.boomDistance; spacing estimated.",

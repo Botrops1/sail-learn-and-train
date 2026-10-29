@@ -179,7 +179,8 @@ describe('boat data (hanse508.json) and registry (parts.json)', () => {
   it('coachroof and cockpit shapes are sane', () => {
     const { coachroof, cockpit } = hanse508.deck;
     expect(coachroof.frontHalfWidth).toBeLessThan(coachroof.halfWidth);
-    expect(coachroof.maxHalfWidth).toBeGreaterThan(coachroof.halfWidth);
+    // M60b: the roof widens aft into the coaming.
+    expect(coachroof.halfWidth).toBeGreaterThan(coachroof.maxHalfWidth);
     expect(coachroof.maxHalfWidthFromX).toBeGreaterThan(coachroof.aftX);
     expect(coachroof.maxHalfWidthFromX).toBeLessThan(coachroof.chamferStartX);
     // The self-tacking track ends at the edges of the raised deck in front of the mast (photo).
