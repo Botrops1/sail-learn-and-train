@@ -14,8 +14,8 @@ import { buildBowGear } from './bowGear';
 import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
 import { buildFenders } from './fenders';
-import { buildHelmPedestals } from './helmPedestal';
-import { PANEL_AT_REST } from '../../model/helmPanel';
+import { buildHelmPedestals, type PanelStats } from './helmPedestal';
+import { PANEL_AT_REST, type PanelReadings } from '../../model/helmPanel';
 import type { Vec3 } from '../../model/vec3';
 import { buildThrusters } from './thrusters';
 import { buildHull } from './hull';
@@ -61,8 +61,10 @@ export interface BoatModel {
   setAnchorStowed(stowed: boolean): void;
   /** M50: draws the winch handle at `pose`; hidden when `pose` is null (carried) or `show` is false. */
   setHandle(pose: HandlePose | null, show: boolean): void;
-  /** M62: the camera's place in the boat frame; the panels' instruments hide when it is far (8.4). */
-  setPanelEye(eye: Vec3): void;
+  /** M63: once a frame: the panels' visibility, lever, joysticks and faces (9.4). `eye` is the camera in the boat frame. */
+  updatePanel(readings: PanelReadings, eye: Vec3, nowMs: number): void;
+  /** M63: what the panel last drew and posed (debug hook). */
+  panelStats(): PanelStats;
   /** M62: shows every panel instrument whatever the distance (the spotlight, 8.4); false hands it back. */
   revealPanels(on: boolean): void;
 }
@@ -180,7 +182,8 @@ export function buildBoat(
     setFendersOut: fenders.setOut,
     setThrusters: thrusters.setState,
     setHandle: handle.set,
-    setPanelEye: pedestals.setEye,
+    updatePanel: pedestals.update,
+    panelStats: pedestals.stats,
     revealPanels: pedestals.reveal,
     setAnchorStowed: (stowed) => {
       for (const mesh of anchorMeshes) mesh.visible = stowed;

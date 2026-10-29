@@ -406,6 +406,9 @@ export const SCENE = {
     facePx: 256,
     /** Sides of the round faces, the knobs (width, height segments) and the guard rail. */
     segments: { round: 32, knob: [12, 8] as [number, number], railHigh: 8, railLow: 6 },
+    /** M63: the faces are redrawn at most this often, and only while the camera is within liveWithinM of a pod. */
+    redrawHz: 5,
+    liveWithinM: 4.0,
   },
   /** Wind streaks (PHASE1_SPEC 6.1): light lines drifting with the test wind. */
   wind: {

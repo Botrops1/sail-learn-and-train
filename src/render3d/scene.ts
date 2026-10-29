@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
 import { handlePose } from '../model/handlePose';
+import { panelReadings } from '../model/helmPanel';
 import { runningRopes, winchWraps } from '../model/realistic';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
@@ -248,6 +249,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           const ndc = found.project(camera);
           return { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
         },
+        /** M63: what the helm panel last drew and posed. */
+        panelStats: () => boatModel.panelStats(),
         /** M60: counts over the ropes as last drawn (points, whipped tails, sides, braid). */
         ropeStats: () => boatModel.ropeStats(),
         /**
@@ -634,10 +637,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         0,
         boatState.waves.pitchDeg * DEG,
       );
-      // M62: the panels' instruments hide when the camera is far (the last frame's matrices do).
+      // M62/M63: the helm panels: instruments hide when the camera is far, the lever and joysticks
+      // follow the state, the faces redraw when near and changed (the last frame's matrices do).
       panelEye.copy(camera.position);
       boatModel.root.worldToLocal(panelEye);
-      boatModel.setPanelEye(panelEye.toArray() as Vec3);
+      boatModel.updatePanel(panelReadings(state), panelEye.toArray() as Vec3, now);
       // The sun from the clock: its light, the night and the sky light (PHASE3_SPEC 9.6).
       const { elevationDeg, azimuthDeg } = sunPosition(
         state.clock.utcMs,

@@ -1051,6 +1051,9 @@ Working the controls by a tap in 3D (owner, 10.3), the B&G display, a depth or s
 ### 9.10 Decided in the M63 PR
 
 - Decided in planning (owner: "accept all" on PR #132, 2026-10-28): the instrument faces carry their own English markings in every language (3.1), as real instruments do.
+- Decided in the M63 PR (recommended; merging accepts it): `STBY` and `AUTO`, which the keypad prints, join `content/lang/latin-words.json` so the Russian `fit_autopilot_control` text may name them (the other printed words were there already).
+- Decided in the M63 PR (recommended; merging accepts it): `panelReadings(state)` takes no `data` argument (it reads only the state); `PanelStats.pose` reports 0 for a joystick the boat lacks, and keeps its last values while the camera is beyond `showWithinM`.
+- Decided in the M63 PR (recommended; merging accepts it): the live checks run at the phone and the desktop size on the test clock; the two close-ups `live-panel-sailing` and `live-panel-harbour` are taken at both details at both sizes.
 
 ---
 

@@ -892,7 +892,7 @@
 | Другие названия | — | — |
 | Коротко | The screen at the helm that shows speed, heading and the wind. | Экран у штурвала, который показывает скорость, курс и ветер. |
 | Что делает / что значит | It shows the boat’s speed, her heading and the wind: AWA and AWS, the apparent wind’s angle and speed (what the sails feel), and TWA and TWS, the true wind’s. | Он показывает скорость лодки, её курс и ветер: AWA и AWS — угол и скорость вымпельного ветра (того, что чувствуют паруса), и TWA и TWS — истинного. |
-| На этой яхте | A B&G display at the helm. In the app, the strip at the top of the 3D view shows the same numbers; tap it for the wind dial. | Дисплей B&G у штурвала. В приложении полоса над 3D-видом показывает те же числа; нажмите на неё, чтобы увидеть круг ветра. |
+| На этой яхте | A B&G display at the helm. In the app each helm panel has a wind display with AWA and AWS, the wind the sails feel; the strip at the top of the 3D view shows the same numbers and more (tap it for the wind dial). | Дисплей B&G у штурвала. В приложении на каждой панели у штурвала есть дисплей ветра с AWA и AWS — ветром, который чувствуют паруса; полоса над 3D-видом показывает те же числа и не только (нажмите на неё, чтобы увидеть круг ветра). |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
@@ -967,7 +967,7 @@
 | Другие названия | — | — |
 | Коротко | Shows which way the boat is heading. | Показывает, куда направлена лодка. |
 | Что делает / что значит | The compass shows the boat’s heading in degrees: 0 north, 90 east, 180 south, 270 west. | Компас показывает курс лодки в градусах: 0 — север, 90 — восток, 180 — юг, 270 — запад. |
-| На этой яхте | One compass in front of each wheel. | Один компас перед каждым штурвалом. |
+| На этой яхте | One compass on the panel in front of each wheel. In the app its card turns as the boat turns: read the heading under the orange mark at the top. | Один компас на панели перед каждым штурвалом. В приложении его картушка поворачивается вместе с лодкой: курс читайте под оранжевой отметкой вверху. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
@@ -1102,7 +1102,7 @@
 | Другие названия | — | пульт автопилота |
 | Коротко | The control panel that lets the autopilot steer. | Панель управления, которая позволяет авторулевому рулить. |
 | Что делает / что значит | The autopilot steers for you. On Standby you steer; Heading holds the compass course; Wind holds the angle to the true wind. Tack turns the boat through the wind. | Авторулевой рулит за вас. В режиме «Ожидание» рулите вы; «Курс» держит курс по компасу; «Ветер» держит угол к истинному ветру. «Поворот» поворачивает лодку через ветер. |
-| На этой яхте | A B&G control at the helm. The Autopilot section is the app’s version of it. | Пульт B&G у штурвала. Раздел «Авторулевой» — это версия пульта в приложении. |
+| На этой яхте | A B&G control at the helm. On each helm panel of the app its keys show the mode (STBY lit on Standby, AUTO lit while it steers) and the line above them the course it holds. The Autopilot section is where you work it. | Пульт B&G у штурвала. На каждой панели у штурвала в приложении его клавиши показывают режим (STBY горит в режиме «Ожидание», AUTO — пока он рулит), а строка над ними — курс, который он держит. Работать с ним нужно в разделе «Авторулевой». |
 | Типичные ошибки | Holding a compass heading and forgetting the wind. → If the wind shifts, she can end up in the no-go zone or gybe. Watch the sails, or let the autopilot hold the wind angle.<br>Turning the wheel by hand with the autopilot on. → It goes to Standby (you took the wheel). Choose a mode again when you want it to steer. | Держать курс по компасу и забыть про ветер. → Если ветер сменится, яхта может оказаться в мёртвой зоне или сделать поворот фордевинд. Следите за парусами или пусть авторулевой держит угол к ветру.<br>Повернуть штурвал рукой при включённом авторулевом. → Он переходит в режим «Ожидание» (вы взяли штурвал). Выберите режим снова, когда захотите, чтобы он рулил. |
 | «Покажи» | The autopilot is holding the angle to the wind. Its section is called Autopilot: change the angle with its buttons. | Авторулевой держит угол к ветру. Его раздел называется «Авторулевой»: меняйте угол его кнопками. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
@@ -1132,7 +1132,7 @@
 | Другие названия | throttle<br>single-lever control | ручка газа<br>РУД — ручка управления двигателем |
 | Коротко | One lever for both the gear and the throttle. | Один рычаг для передачи и для газа. |
 | Что делает / что значит | Pushed forward from the middle, the lever puts the engine in ahead gear, then gives more power; pulled back, astern. In the middle the engine is in neutral. Pause in neutral when you change direction. | Если сдвинуть рычаг вперёд от середины, двигатель включается на передний ход, а дальше добавляет мощность; назад — задний ход. В середине двигатель в нейтрали. Останавливайтесь в нейтрали, когда меняете направление. |
-| На этой яхте | An Allpa single-lever control with START, STOP and POWER buttons and a “MAX 2500 RPM” sticker. In the app the lever two-thirds ahead gives about 1,850 rpm and 8 kn; full ahead about 9.3 kn. | Однорычажное управление Allpa с кнопками «START», «STOP» и «POWER» и наклейкой «MAX 2500 RPM». В приложении рычаг на две трети вперёд даёт около 1 850 об/мин и 8 уз; полный вперёд — около 9.3 уз. |
+| На этой яхте | An Allpa single-lever control with START, STOP and POWER buttons and a “MAX 2500 RPM” sticker. In the app the lever two-thirds ahead gives about 1,850 rpm and 8 kn; full ahead about 9.3 kn. On each helm panel the lever stands where the Engine section's lever is, and the rev counter beside it shows the rpm. | Однорычажное управление Allpa с кнопками «START», «STOP» и «POWER» и наклейкой «MAX 2500 RPM». В приложении рычаг на две трети вперёд даёт около 1 850 об/мин и 8 уз; полный вперёд — около 9.3 уз. На каждой панели у штурвала рычаг стоит там же, где рычаг раздела «Двигатель», а счётчик оборотов рядом показывает обороты. |
 | Типичные ошибки | Moving the lever from ahead straight to astern. → The gearbox suffers. Stop in neutral for a moment, then go astern.<br>Starting the engine with the lever in gear. → She moves off at once. Put the lever in neutral before you start. | Переводить рычаг с переднего хода сразу на задний. → Коробке передач это вредно. Остановитесь на мгновение в нейтрали, потом включайте задний ход.<br>Запускать двигатель с рычагом, включённым на передачу. → Яхта сразу тронется с места. Поставьте рычаг в нейтраль перед запуском. |
 | «Покажи» | No wind, engine running with the lever two-thirds ahead: about 1,850 rpm and 8 kn. The Engine section has the lever. | Безветрие, двигатель работает, рычаг на две трети вперёд: около 1 850 об/мин и 8 уз. Рычаг находится в разделе «Двигатель». |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
