@@ -158,7 +158,8 @@ export function buildHelmPedestals(materials: BoatMaterials, detail: Detail): He
       objects.push(mesh);
     }
 
-    // The engine lever: a base on the face and an arm that leans ahead (towards v) with the lever.
+    // The engine lever: a low base on the face and a short single lever (two plates and a round
+    // grip across them) that swings ahead and astern about the base's middle, towards v.
     const lv = p.faces.lever;
     const leverBase = vec3(lv.baseM);
     const lever = new THREE.Group();
@@ -166,28 +167,37 @@ export function buildHelmPedestals(materials: BoatMaterials, detail: Detail): He
     lever.applyMatrix4(frameMatrix(g, proud(g.lever)));
     const base = smallPartMesh(
       'engine_control',
-      [boxAt([0, 0, leverBase[2] / 2], leverBase)],
+      [roundedBoxAt([0, 0, leverBase[2] / 2], leverBase, p.pod.edgeRadiusM / 2, detail)],
       materials.dark,
-      [[0, 0, leverBase[2] + lv.armLengthM]],
+      [[0, 0, leverBase[2] + lv.plateHeightM]],
     );
     const pivot = new THREE.Group();
     pivot.position.set(0, 0, leverBase[2]);
-    const arm = smallPartMesh(
+    const plateU = (lv.plateGapM + lv.plateThicknessM) / 2;
+    const plates = smallPartMesh(
+      'engine_control',
+      [-plateU, plateU].map((x) =>
+        boxAt([x, 0, lv.plateHeightM / 2], [lv.plateThicknessM, lv.plateWidthM, lv.plateHeightM]),
+      ),
+      materials.chrome,
+      [[0, 0, lv.plateHeightM]],
+    );
+    const grip = smallPartMesh(
       'engine_control',
       [
-        cylinderBetween([0, 0, 0], [0, 0, lv.armLengthM], lv.armRadiusM, 8),
-        new THREE.SphereGeometry(lv.knobRadiusM, ...cfg.segments.knob).translate(
-          0,
-          0,
-          lv.armLengthM,
+        cylinderBetween(
+          [-lv.gripLengthM / 2, 0, lv.plateHeightM],
+          [lv.gripLengthM / 2, 0, lv.plateHeightM],
+          lv.gripRadiusM,
+          12,
         ),
       ],
       materials.dark,
-      [[0, 0, lv.armLengthM]],
+      [[0, 0, lv.plateHeightM]],
     );
-    pivot.add(arm);
+    pivot.add(plates, grip);
     lever.add(base, pivot);
-    panel.meshes.push(base, arm);
+    panel.meshes.push(base, plates, grip);
     panel.levers.push(pivot);
     objects.push(lever);
 

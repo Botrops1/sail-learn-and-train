@@ -20,8 +20,8 @@ describe('helmPedestal (M62)', () => {
   const starboard = helmPedestal('helm_starboard');
 
   it('1. the port column', () => {
-    near(port.column.centre, [-7.04, 1.475, -0.88]);
-    near(port.column.size, [0.16, 0.95, 0.2]);
+    near(port.column.centre, [-7.04, 1.455, -0.88]);
+    near(port.column.size, [0.16, 0.91, 0.2]);
   });
 
   it('2. the port pod and its frame', () => {
@@ -93,7 +93,38 @@ describe('helmPedestal (M62)', () => {
       }
     }
     expect(lowest).toBeCloseTo(1.89, 3);
-    expect(lowest).toBeLessThan(port.column.centre[1] + port.column.size[1] / 2);
+    // PR 139: the column ends just under the pod, so no instrument stands in front of it.
+    const columnTop = port.column.centre[1] + port.column.size[1] / 2;
+    expect(lowest).toBeLessThan(columnTop);
+    expect(columnTop - lowest).toBeLessThan(0.03);
+    for (const g of [port, starboard]) {
+      expect(g.face.centre[1] - (g.pod.size[1] / 2) * g.face.v[1]).toBeGreaterThan(
+        columnTop - 0.001,
+      );
+    }
+  });
+
+  it('6b. the engine lever stays well clear of the wheel (PR 139)', () => {
+    const lv = boat.modelDetail.helmPedestal.faces.lever;
+    const base = lv.baseM[2] ?? 0;
+    const reach = base + lv.plateHeightM + lv.gripRadiusM;
+    expect(reach).toBeLessThanOrEqual(0.052 + 1e-9);
+    const rim = boat.modelDetail.wheel.rimTubeRadius;
+    for (const g of [port, starboard]) {
+      const helm = boat.cockpitHardware.helms.find((h) => h.id === g.helmId);
+      if (!helm) throw new Error('no helm');
+      // The lever stands on the face; its highest point at any lever angle is at most `reach` along w.
+      for (const deg of [-lv.maxDeg, 0, lv.maxDeg]) {
+        const a = (deg * Math.PI) / 180;
+        const tip = framePoint(
+          g.face,
+          lv.u,
+          lv.v + (lv.plateHeightM + lv.gripRadiusM) * Math.sin(a),
+          base + (lv.plateHeightM + lv.gripRadiusM) * Math.cos(a),
+        );
+        expect(tip[0] - helm.x).toBeGreaterThan(rim + 0.01);
+      }
+    }
   });
 
   it('7. the guard rail stands ahead of the pod', () => {

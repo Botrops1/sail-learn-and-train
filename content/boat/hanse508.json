@@ -974,10 +974,10 @@
       "hubCapRadiusM": 0.05
     },
     "helmPedestal": {
-      "source": "assumption (M62, Phase 9): no photo of the pedestal. A column just ahead of each wheel, a panel on top set a little towards the middle and facing the helmsman, a steel guard rail standing on the cockpit floor ahead of it; the same panel at both wheels (VISUAL_QUALITY_ANALYSIS 9 and 10). The engine control's look follows docs/reference/photos/engine-control.jpg.",
-      "column": { "aheadOfWheelM": 0.16, "lengthM": 0.16, "widthM": 0.2, "topAboveHubM": 0.1, "edgeRadiusM": 0.03 },
+      "source": "assumption (M62, Phase 9): no photo of the pedestal. A column just ahead of each wheel, a panel on top set a little towards the middle and facing the helmsman, a steel guard rail standing on the cockpit floor ahead of it; the same panel at both wheels (VISUAL_QUALITY_ANALYSIS 9 and 10). The engine control's look follows docs/reference/photos/engine-control.jpg. PR 139 (owner): the lever is a short single lever (two steel plates and a round grip) swinging in one direction, ahead and astern, on a low base, no taller than 0.052 m so it never reaches the wheel; the column's top sits just under the pod so the panel stands on it.",
+      "column": { "aheadOfWheelM": 0.16, "lengthM": 0.16, "widthM": 0.2, "topAboveHubM": 0.06, "edgeRadiusM": 0.03 },
       "pod": {
-        "aboveColumnM": 0.06,
+        "aboveColumnM": 0.1,
         "inboardM": 0.12,
         "widthM": 0.4,
         "heightM": 0.24,
@@ -992,7 +992,7 @@
         "wind": { "u": -0.13, "v": 0.045, "sizeM": 0.1 },
         "tachometer": { "u": 0.13, "v": 0.045, "diameterM": 0.09 },
         "keypad": { "u": -0.1, "v": -0.07, "widthM": 0.14, "heightM": 0.06 },
-        "lever": { "u": 0.14, "v": -0.07, "baseM": [0.05, 0.04, 0.02], "armLengthM": 0.1, "armRadiusM": 0.007, "knobRadiusM": 0.016, "maxDeg": 45 },
+        "lever": { "u": 0.14, "v": -0.07, "baseM": [0.05, 0.09, 0.012], "plateHeightM": 0.032, "plateWidthM": 0.014, "plateThicknessM": 0.004, "plateGapM": 0.012, "gripLengthM": 0.034, "gripRadiusM": 0.008, "maxDeg": 45 },
         "joysticks": {
           "bow": { "u": 0.02, "v": -0.075 },
           "stern": { "u": 0.08, "v": -0.075 },
