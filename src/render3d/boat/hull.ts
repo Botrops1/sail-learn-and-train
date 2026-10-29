@@ -3,6 +3,7 @@ import { boat } from '../../model/boat';
 import {
   coachroofBaseY,
   coachroofHalfOutline,
+  roofAftLip,
   DECK_EPS,
   DECK_OVERLAP,
   deckStations,
@@ -259,9 +260,23 @@ function coachroof(materials: BoatMaterials): THREE.Object3D[] {
     const [sx1, sz1] = top[top.length - 2 - i] ?? [0, 0];
     pushQuad(roof, [px0, r.topY, pz0], [sx0, r.topY, sz0], [sx1, r.topY, sz1], [px1, r.topY, pz1]);
   }
+  // The aft lip (M60c): the roof top on over the cockpit's front wall to the sprayhood's front.
+  const lip = roofAftLip();
+  const lipTop: number[] = [];
+  pushQuad(
+    lipTop,
+    [lip.frontX, lip.topY, -lip.halfWidth],
+    [lip.frontX, lip.topY, lip.halfWidth],
+    [lip.aftX, lip.topY, lip.halfWidth],
+    [lip.aftX, lip.topY, -lip.halfWidth],
+  );
+  const lipBody = boxAt(
+    [(lip.frontX + lip.aftX) / 2, (lip.topY + lip.bottomY) / 2 - EPS, 0],
+    [lip.frontX - lip.aftX, lip.topY - lip.bottomY - 2 * EPS, 2 * lip.halfWidth],
+  );
   return [
-    partMesh('part_coachroof', [triangles(roof)], materials.deck),
-    partMesh('part_coachroof', [triangles(sides)], materials.gelcoat),
+    partMesh('part_coachroof', [triangles(roof), triangles(lipTop)], materials.deck),
+    partMesh('part_coachroof', [triangles(sides), lipBody], materials.gelcoat),
   ];
 }
 

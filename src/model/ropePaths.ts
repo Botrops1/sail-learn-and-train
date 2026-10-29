@@ -2,7 +2,14 @@ import { boat, type BoatData } from './boat';
 import type { RopeState } from './boomSolver';
 import { halfBeamAt, sheerAt } from './hullShape';
 import { carPoint, jibClew, jibFurlingLinePaidOut, jibSheetPaidOutFor, jibSheetSpan } from './jib';
-import { channelLane, cutsSprayhood, sprayhoodClearY } from './deckVolumes';
+import {
+  channelCentre,
+  channelLane,
+  cutsSprayhood,
+  laneOffset,
+  sprayhoodClearY,
+  type Side,
+} from './deckVolumes';
 import { gapFloorY, inHandCoil, ropeBinBox, tailLaneZ } from './ropeBin';
 import { mainFurlLengths } from './mainFurl';
 import { availableSheetLength, deckBlocks, mainsheetBlocks, mainsheetPaidOut } from './mainsheet';
@@ -209,17 +216,88 @@ export function mastExitPoint(spec: LineSpec): Vec3 | undefined {
   return 'exit' in spec && spec.exit ? vec3(spec.exit) : undefined;
 }
 
+function lineSide(spec: LineSpec): Side {
+  return spec.bank === 'clutch_bank_a' ? 1 : -1;
+}
+
+/** The lane a line is in where it enters the channel (frontLane, else its slot's lane). */
+function frontLaneOf(spec: LineSpec): number {
+  return 'frontLane' in spec && spec.frontLane ? spec.frontLane : spec.slot;
+}
+
 /**
- * From the turning block at the mast foot, flat aft into the covered channel on the clutch's
- * side, along it (under the sprayhood's edge, down onto the coaming) to the clutch.
+ * Where a line turns into its channel (M60c): the corner of its drawn line at its flat guide
+ * block, on the channel's line in front of the cover and on the line's front lane. The line with
+ * the outermost lane has the block nearest the mast, each lane further in is
+ * `channel.guideBlocks.stagger` further aft, so the blocks do not touch and the straight runs
+ * from the turning blocks do not cross.
+ */
+export function guideBlockCorner(spec: LineSpec, data: BoatData = boat): Vec3 {
+  const side = lineSide(spec);
+  const { guideBlocks } = data.rig.lineLead.channel;
+  const outer = (s: LineSpec): number => side * laneOffset(frontLaneOf(s), data);
+  const rank = data.rig.lineLead.lines.filter(
+    (other) => lineSide(other) === side && outer(other) > outer(spec),
+  ).length;
+  const x = guideBlocks.firstX - guideBlocks.stagger * rank;
+  const centre = channelCentre(side, x, data);
+  return [
+    x,
+    centre[1] + data.visual.ropeRenderRadius,
+    centre[2] + laneOffset(frontLaneOf(spec), data),
+  ];
+}
+
+/**
+ * The centre of the flat guide block a line turns round (M60c): the rope's drawn corner there is
+ * an arc of the block's radius whose middle passes through the corner point, so the sheave's centre
+ * lies one radius from the corner, inside the turn.
+ */
+export function guideBlockCentre(spec: LineSpec, data: BoatData = boat): Vec3 {
+  const corner = guideBlockCorner(spec, data);
+  const from = turningBlockPoint(spec, data);
+  const next = channelLane(
+    lineSide(spec),
+    spec.slot,
+    frontLaneOf(spec),
+    data.visual.ropeRenderRadius,
+    data,
+  )[0] as Vec3;
+  // In plan: the block is flat, its centre at the rope's height.
+  const flat = (d: Vec3): Vec3 => normalize([d[0], 0, d[2]]);
+  const u = flat(sub(corner, from));
+  const v = flat(sub(next, corner));
+  const inwards = normalize(sub(v, u));
+  const r = data.modelDetail.mastBaseTurningBlocks.blockDiameter / 2;
+  return add(corner, scale(inwards, r));
+}
+
+/**
+ * Plan-view direction of a line's straight run from its turning block to its guide block (unit,
+ * y = 0): the turning block's sheave is turned to it.
+ */
+export function turningBlockHeading(spec: LineSpec, data: BoatData = boat): Vec3 {
+  const d = sub(guideBlockCorner(spec, data), turningBlockPoint(spec, data));
+  return normalize([d[0], 0, d[2]]);
+}
+
+/**
+ * From the turning block at the mast foot, in a straight run across the roof to the line's flat
+ * guide block, where it turns into the covered channel on the clutch's side, along it (under the
+ * sprayhood's edge, down onto the coaming) to the clutch (M60c: the guide block is new).
  */
 function leadToClutch(spec: LineSpec, data: BoatData): Vec3[] {
   const bankId = spec.bank as BankId;
-  const side = bankId === 'clutch_bank_a' ? 1 : -1;
-  const frontLane = 'frontLane' in spec && spec.frontLane ? spec.frontLane : spec.slot;
   return [
     turningBlockPoint(spec, data),
-    ...channelLane(side, spec.slot, frontLane, data.visual.ropeRenderRadius, data),
+    guideBlockCorner(spec, data),
+    ...channelLane(
+      lineSide(spec),
+      spec.slot,
+      frontLaneOf(spec),
+      data.visual.ropeRenderRadius,
+      data,
+    ),
     clutchPoint(bankId, spec.slot, data),
   ];
 }

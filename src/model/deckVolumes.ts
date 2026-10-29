@@ -86,6 +86,27 @@ export function deckStations(hullStations: readonly number[], data: BoatData = b
     .sort((a, b) => a - b);
 }
 
+/**
+ * The roof's aft lip (M60c): the roof top carried on aft over the cockpit's front wall to just
+ * behind the sprayhood's front edge, so no slit shows between them. Box limits, boat frame.
+ */
+export function roofAftLip(data: BoatData = boat): {
+  frontX: number;
+  aftX: number;
+  halfWidth: number;
+  topY: number;
+  bottomY: number;
+} {
+  const r = data.deck.coachroof;
+  return {
+    frontX: r.aftX + DECK_OVERLAP / 2,
+    aftX: r.aftLip.aftX,
+    halfWidth: r.halfWidth,
+    topY: r.topY,
+    bottomY: Math.min(sheerAt(r.aftX, data), sheerAt(r.aftLip.aftX, data)) - DECK_OVERLAP,
+  };
+}
+
 /** Base of the coachroof (a little below the deck, so no gap shows). */
 export function coachroofBaseY(data: BoatData = boat): number {
   const r = data.deck.coachroof;
@@ -158,10 +179,17 @@ export function laneOffset(lane: number, data: BoatData = boat): number {
   return (lane - 3) * data.rig.lineLead.laneSpacing;
 }
 
+/** Stations (per side) a lane swap is drawn on, beyond the channel's own points (M60c). */
+const SWAP_STEPS = 5;
+/** How far (in rope radii) the line passing over another rises at the crossing (M60c). */
+const CROSS_LIFT = 0.8;
+
 /**
  * The centre line of one rope's lane through the channel: on the floor plus the rope's radius.
- * The lane moves from `frontLane` (mast end) to `lane` (clutch end) along the first stretch
- * of the channel, under its cover.
+ * A rope whose `frontLane` (mast end) is not its `lane` (clutch end) changes lanes in the short
+ * stretch `rig.lineLead.channel.swap`, under the cover (M60c): everywhere else the lines run
+ * side by side. The line that moves towards the lower lane number passes over the other, so the
+ * two never share the same space.
  */
 export function channelLane(
   side: Side,
@@ -170,10 +198,42 @@ export function channelLane(
   ropeRadius: number,
   data: BoatData = boat,
 ): Vec3[] {
-  return channelPath(side, data).map((p, i) => {
-    const offset = laneOffset(i === 0 ? frontLane : lane, data);
-    return [p[0], p[1] + ropeRadius, p[2] + offset];
-  });
+  const path = channelPath(side, data);
+  const { swap } = data.rig.lineLead.channel;
+  const from = laneOffset(frontLane, data);
+  const to = laneOffset(lane, data);
+  if (frontLane === lane) {
+    return path.map((p) => [p[0], p[1] + ropeRadius, p[2] + to]);
+  }
+  const stations = new Set<number>(path.map((p) => p[0]));
+  for (let k = 0; k <= SWAP_STEPS; k += 1)
+    stations.add(swap.startX - (swap.length * k) / SWAP_STEPS);
+  const lift = frontLane > lane ? CROSS_LIFT * ropeRadius : 0;
+  return [...stations]
+    .filter((x) => x <= (path[0] as Vec3)[0] + 1e-9 && x >= (path[path.length - 1] as Vec3)[0])
+    .sort((a, b) => b - a)
+    .map((x) => {
+      const p = pathAtX(path, x);
+      const s = smoothstep((swap.startX - x) / swap.length);
+      return [
+        p[0],
+        p[1] + ropeRadius + lift * Math.sin(Math.PI * s),
+        p[2] + from + (to - from) * s,
+      ];
+    });
+}
+
+/**
+ * Where the channel's centre line is at station x (m), also in front of its first point, where
+ * it carries on along its first stretch (M60c: the guide blocks stand there).
+ */
+export function channelCentre(side: Side, x: number, data: BoatData = boat): Vec3 {
+  const path = channelPath(side, data);
+  const a = path[0] as Vec3;
+  const b = path[1] as Vec3;
+  if (x <= a[0]) return pathAtX(path, x);
+  const t = (a[0] - x) / (a[0] - b[0]);
+  return [x, a[1], a[2] + (b[2] - a[2]) * t];
 }
 
 /** Sprayhood: half-width at x (its side edge rests on the channel's centre line). */

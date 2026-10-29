@@ -84,7 +84,7 @@ describe('M3b: rope routes', () => {
     expect(checked).toBe(7);
   });
 
-  it('the drawn ropes really go out of the mast, down to their block, and flat aft into the channel', () => {
+  it('the drawn ropes really go out of the mast, down to their block, and flat on to their guide block', () => {
     const ropes = drawings({});
     for (const line of boat.rig.lineLead.lines) {
       const rope = ropes.find((r) => r.id === line.rope);
@@ -100,7 +100,7 @@ describe('M3b: rope routes', () => {
       const at = points.findIndex((p) => Math.hypot(...sub(p, block)) < 1e-9);
       const exit = mastExitPoint(line);
       if (exit) expect(points[at - 1], name).toEqual(exit);
-      // From the block the rope runs flat to the channel mouth (within 3° of level).
+      // From the block the rope runs flat to its guide block (within 3° of level).
       const mouth = points[at + 1] as Vec3;
       const d = sub(mouth, block);
       const slope = (Math.atan2(Math.abs(d[1]), Math.hypot(d[0], d[2])) * 180) / Math.PI;
@@ -108,7 +108,7 @@ describe('M3b: rope routes', () => {
     }
   });
 
-  it('no diagonal shortcuts: between the mast foot and the clutch every line stays inside its covered channel', () => {
+  it('no diagonal shortcuts: from the channel mouth to the clutch every line stays inside its covered channel', () => {
     const ropes = drawings({});
     const channel = boat.rig.lineLead.channel;
     for (const line of boat.rig.lineLead.lines) {
@@ -130,6 +130,9 @@ describe('M3b: rope routes', () => {
       const clutchAt = points.findIndex((p, k) => k > at && Math.abs(p[0] - clutchFront) < 1e-9);
       const lead = points.slice(at + 1, clutchAt);
       for (const p of samples(lead)) {
+        // M60c: in front of the cover the line runs from its guide block to the channel's mouth
+        // (tests/channelRoute.test.ts looks at that stretch).
+        if (p[0] > front[0] + 1e-9) continue;
         // Where along the channel: the floor's centre line at this station.
         let centre: Vec3 = front;
         for (let i = 1; i < path.length; i += 1) {

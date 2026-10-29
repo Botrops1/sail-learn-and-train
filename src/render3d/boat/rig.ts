@@ -10,7 +10,7 @@ import {
 } from '../../model/rigGeometry';
 import { backstayRig } from '../../model/backstay';
 import { mainsheetBlocks } from '../../model/mainsheet';
-import { turningBlockPoint } from '../../model/ropePaths';
+import { guideBlockCentre, turningBlockHeading, turningBlockPoint } from '../../model/ropePaths';
 import type { Detail } from '../../model/settings';
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
@@ -381,8 +381,9 @@ function buildVangStrut(materials: BoatMaterials): {
 
 /**
  * Turning blocks around the mast foot, one per line (rig.lineLead.lines): each sheave stands
- * upright in the plane from the mast towards its line's lead aft, the line coming down from
- * the mast and leaving flat along the deck.
+ * upright in the plane from the mast down to the line's straight run to its guide block, the line
+ * coming down from the mast and leaving flat along the roof. M60c: at the end of that run each
+ * line turns round a flat guide block (its sheave level, the axle upright) into the channel.
  */
 function buildTurningBlocks(materials: BoatMaterials): THREE.Object3D {
   const radius = boat.modelDetail.mastBaseTurningBlocks.blockDiameter / 2;
@@ -390,10 +391,13 @@ function buildTurningBlocks(materials: BoatMaterials): THREE.Object3D {
   const geometries: THREE.BufferGeometry[] = [];
   for (const line of boat.rig.lineLead.lines) {
     const p = turningBlockPoint(line);
-    const outward: Vec3 = [p[0] - boat.rig.mast.x, 0, p[2]];
-    const axle: Vec3 = [-outward[2], 0, outward[0]];
-    geometries.push(...sheaveBlock(p, axle, radius, [-outward[0], 0, -outward[2]], 12));
+    const heading = turningBlockHeading(line);
+    const axle: Vec3 = [-heading[2], 0, heading[0]];
+    geometries.push(...sheaveBlock(p, axle, radius, [boat.rig.mast.x - p[0], 0, -p[2]], 12));
     points.push(p);
+    const guide = guideBlockCentre(line);
+    geometries.push(...sheaveBlock(guide, [0, 1, 0], radius, [0, -1, 0], 12));
+    points.push(guide);
   }
   return smallPartMesh('fit_mast_base_turning_blocks', geometries, materials.block, points);
 }

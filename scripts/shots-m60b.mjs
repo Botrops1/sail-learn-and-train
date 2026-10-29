@@ -1,4 +1,4 @@
-// M60b (deck and coachroof shape, PHASE9_SPEC 6b.6): live checks for scripts/shots.mjs. No scenes:
+// M60b (deck and coachroof shape, PHASE9_SPEC 6b.6, and the PR follow-up: channels, roof lip, guide blocks): live checks for scripts/shots.mjs. No scenes:
 // the close-ups are taken inside the live checks (as M50 and M60 do). Labels contain "m60b", so
 // openPage starts with every section folded. Every link adds debug=1&held=1&sea=flat.
 import path from 'node:path';
@@ -15,6 +15,15 @@ const CLOSE_UPS = [
   { name: 'roof-to-coaming', target: [-3.4, 1.7, 1.7], position: [-1.2, 3.0, 3.6] },
   { name: 'roof-plan', target: [-1.5, 1.6, 0], position: [-1.5, 9.0, 0.01] },
   { name: 'foredeck', target: [4.2, 1.65, 0], position: [2.2, 3.4, 1.6] },
+  // The follow-up on the PR (owner's marked screenshot): the channels along the roof's side (the
+  // red lines), the roof meeting the sprayhood with no slit (purple circle), and the lines turning
+  // at their flat guide blocks (blue circle), starboard and port.
+  { name: 'channel-star', target: [-2.0, 1.9, 0.9], position: [1.2, 6.0, 3.0] },
+  { name: 'channel-port', target: [-2.0, 1.9, -0.9], position: [1.2, 6.0, -3.0] },
+  { name: 'guide-blocks-star', target: [-0.7, 2.0, 1.0], position: [-0.2, 3.6, 3.2] },
+  { name: 'guide-blocks-port', target: [-0.7, 2.0, -1.0], position: [-0.2, 3.6, -3.2] },
+  { name: 'roof-hood', target: [-3.2, 1.9, 0.6], position: [-1.5, 4.0, 2.5] },
+  { name: 'roof-hood-top', target: [-3.4, 1.9, 0.4], position: [-1.0, 7.0, 0.4] },
 ];
 
 export async function liveM60bChecks({ openPage, viewports, outDir, prefix, problems }) {

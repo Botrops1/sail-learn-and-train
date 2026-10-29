@@ -52,10 +52,12 @@ describe('Phase 6, M30: hull and deck closed', () => {
     expect(stationXs).toHaveLength(4);
     [-2.95, -3.12, -3.48, -3.8].forEach((x, i) => expect(stationXs[i]).toBeCloseTo(x, 9));
     const expected = [
-      { inner: 0.839, outer: 1.85, top: 1.96, bottom: 1.418 },
-      { inner: 0.87, outer: 1.85, top: 1.96, bottom: 1.0 },
-      { inner: 1.35, outer: 1.85, top: 1.62, bottom: 1.409 },
-      { inner: 1.44, outer: 1.85, top: 1.55, bottom: 1.404 },
+      // M60c: the channel runs along the roof's flared side, so it no longer hangs over the well
+      // (its inner edge stays outside the well's 1.3), and every bottom is at the deck.
+      { inner: 1.43, outer: 1.85, top: 1.96, bottom: 1.418 },
+      { inner: 1.435, outer: 1.85, top: 1.96, bottom: 1.415 },
+      { inner: 1.44, outer: 1.85, top: 1.62, bottom: 1.409 },
+      { inner: 1.44, outer: 1.85, top: 1.55, bottom: 1.403 },
     ];
     rings.forEach((ring, i) => {
       const e = expected[i];
