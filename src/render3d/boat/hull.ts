@@ -301,13 +301,23 @@ function cockpit(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
   // Side walls up to the coaming top. M61: aft of the rope box's front face the box itself is
   // the wall (it stands on the sole), so the wall stops there and the box's rounded edges show.
   for (const side of [1, -1] as const) {
-    const endX = ropeBinBox(side).frontX;
+    const bin = ropeBinBox(side);
+    // In the gap between the box and the coaming's end the wall only reaches the deck: a wall up
+    // to the coaming top there would stand as a flat plate with nothing on either side of it.
+    const gapTop = (x: number) => sheerAt(x) + EPS;
     pushQuad(
       positions,
-      [endX, c.soleY, side * w],
+      [bin.frontX, c.soleY, side * w],
+      [bin.bodyEndX, c.soleY, side * w],
+      [bin.bodyEndX, gapTop(bin.bodyEndX), side * w],
+      [bin.frontX, gapTop(bin.frontX), side * w],
+    );
+    pushQuad(
+      positions,
+      [bin.bodyEndX, c.soleY, side * w],
       [c.frontX, c.soleY, side * w],
       [c.frontX, c.coamingTopY, side * w],
-      [endX, c.coamingTopY, side * w],
+      [bin.bodyEndX, c.coamingTopY, side * w],
     );
   }
   // Front wall up to the deck (the transom closes the well at the back).
