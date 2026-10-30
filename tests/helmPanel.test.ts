@@ -108,7 +108,7 @@ describe('helmPanel (M63)', () => {
   });
 
   it('8. the redraw cap holds (SCENE.helmPanel.redrawHz) and far away nothing is redrawn', () => {
-    const pod = helmPedestal(boat.cockpitHardware.helms[0]!.id).pod.centre;
+    const pod = helmPedestal(boat.cockpitHardware.helms.map((h) => h.id)[0] ?? '').pod.centre;
     const near: [number, number, number] = [pod[0], pod[1], pod[2] + 1];
     const far: [number, number, number] = [pod[0] + 50, pod[1], pod[2]];
     const frames = (eye: [number, number, number]) => {
