@@ -413,7 +413,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
       .allInnerTexts();
     check(
       'phone: the Mode tab has a line under each mode',
-      hints.length === 4 && hints.every((hint) => hint.length > 10),
+      hints.length === 5 && hints.every((hint) => hint.length > 10),
       JSON.stringify(hints),
     );
     await shot(page, 'live-phone-mode-menu');
