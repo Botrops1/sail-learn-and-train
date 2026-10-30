@@ -1,6 +1,6 @@
 # Exercises, failure modes and wind modes (plan)
 
-**Context only. Do not build ahead.** (Phase numbers changed on 2026-10-27: the exercises are now **Phase 10**; Phase 9 is visual quality, Phase 8 the panel, status and setup phase.) This is the catalogue the later phases draw from. Each item names the phase that makes it possible (the physics and scenery) and the phase that turns it into a guided exercise (Phase 10). Ideas from the owner (2026-10-09) are marked *owner*.
+**Context only. Do not build ahead.** (Phase numbers changed on 2026-10-27: the exercises are now **Phase 10**; Phase 9 is visual quality, Phase 8 the panel, status and setup phase.) This is the catalogue the later phases draw from. Each item names the phase that makes it possible (the physics and scenery) and the phase that turns it into a guided exercise (Phase 10). Ideas from the owner (2026-10-09) are marked *owner*. **Part 10a** (2026-10-30) turns section 2's sailing skills, the setting and furling of EX-C and the first failure modes into exercises: [PHASE10_SPEC](PHASE10_SPEC.md); EX-A, EX-B and EX-D come in part 10b, the scripted and Adriatic winds of section 4 in part 10c.
 
 Every exercise uses the same format (ROADMAP Phase 10): **what you see → what is happening → the right action → the typical mistake**. Each one ends with a **debrief**: a short timeline of what the user did, what the boat did, and, if something went wrong, which action caused it (see "Failure modes").
 

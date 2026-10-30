@@ -767,3 +767,58 @@ New link settings (PHASE9_SPEC 4.2): `hw=s` puts the Helm camera at the starboar
 - [ ] Smooth at Low (phone): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm&debug=1&detail=low — 50 fps or more; then https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&debug=1&detail=low. Write the numbers in the PR.
 - [ ] Smooth at High (phone): the same two links with `detail=high` — 50 fps or more. Write the numbers in the PR.
 - [ ] Every item of the Phase 9 Definition of Done (PHASE9_SPEC 12) is ticked in the PR.
+
+## 15. Phase 10, part a
+
+Exercises: the coach and the first sailing exercises ([PHASE10_SPEC](PHASE10_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M66 … M71), started with `/milestone <N>`. **M66, M67, M68, M69 and M71 need a `/review` with Opus** before you test them; M70 does not. Parts 10b (harbour and anchor) and 10c (wind and clock) are planned later with `/plan 10b` and `/plan 10c`.
+
+### 15.1 Checklists
+
+New link settings (PHASE10_SPEC 4.3): `m=exercise` opens Exercises mode; `ex=<exercise>` opens an exercise's setup card; `exw=<n>` starts it at a waypoint (with the boat as it was there); `exp=0` turns off "Pause when I make a mistake"; `exc=1` chooses With crew. Replace `<N>` with the PR number. In every exercise, "How?" tells you what to tap.
+
+#### M66: Exercises mode and the coach
+
+- [ ] Mode: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — the Exercises section lists "Trim through the points of sail" under "Sailing skills".
+- [ ] Setup: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — the card shows What you see, What is happening, The right action, The typical mistake, the Ropes choice (Easy pressed) and five steps. The boat stands still until you tap Start.
+- [ ] Run it: on the same link tap Start; a line appears at the top ("1/5 · Close-hauled …"). Tap How? and follow it for each step. Each step ticks itself off after a few seconds of holding it; at the end "Well done!" and a time.
+- [ ] Tick: tap Back to the list — the exercise shows "✓ best" and your time. Reload the page: the tick is still there.
+- [ ] Locked: during a run, open Conditions — it says "Set by the exercise." and the wind cannot be changed.
+- [ ] Stop: during a run tap "Stop the exercise" twice — back to the list.
+- [ ] Old links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — Easy mode as before, no exercise line.
+
+#### M67: Mistakes and waypoints
+
+- [ ] Pause on a mistake: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start, do the steps, and on the run step turn “10° to port” six times instead of three. Time stops and a card says what went wrong, why and what to do.
+- [ ] Back: on that card tap "Back to the start of step 5" — the boat is back where step 5 began and the card is gone.
+- [ ] Carry on: cause the mistake again and tap Carry on — time runs again.
+- [ ] Waypoint link: in the step card, under Waypoints, long-press "Link" of "Start of step 3" and open it — the card says "This link starts at step 3."; Start shows "3/5".
+- [ ] No pause: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail&exp=0 — the box "Pause when I make a mistake" is unticked; a mistake now shows for a few seconds in the top line and time goes on.
+
+#### M68: Debrief
+
+- [ ] Debrief: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail&exp=0 — finish the exercise with one mistake on the way (turn too far on the run, go back, finish). The done card shows "Debrief": the time, 5 of 5 steps, the mistakes, and under each mistake "Just before, you:" with what you did.
+- [ ] Your actions: tap "Show my actions" — every sheet change and autopilot turn appears in the list with its time.
+- [ ] So far: during a run tap "So far" — the debrief up to now.
+
+#### M69: Tacking, getting out of irons, gybing
+
+- [ ] Tacking: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=tacking — Start and follow How?: first the autopilot's Tack, then by hand with the wheel. Try centring the wheel too early once: she stops head to wind and the card explains "in irons".
+- [ ] Irons: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=irons — ease the sheets, wheel hard over, wait about a minute while she drifts back, then sail away.
+- [ ] Gybing: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gybing — haul the main in, Gybe, ease it out; the last step shows an accidental gybe on purpose, with the gybe report (boom speed and main sheet load).
+- [ ] Gybing wrong: on the same link tap the autopilot's Gybe without hauling the main in — the card explains the accidental gybe.
+
+#### M70: Gusts and too much wind
+
+- [ ] Gusts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gusts — ease the main each time GUST shows on the strip, sheet in after. Three gusts take about two and a half minutes (use the time bar's ×4 if you like).
+- [ ] Gusts held: on the same link do nothing — within a minute the card says she heeled too far.
+- [ ] Too much wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=reduce-sail — ease the jib sheet, roll the jib in to 40 %, roll the main in to 60 %, sheet the main to Good: the heel drops under 20°.
+
+#### M71: Setting and furling the sails, sign-off of part 10a
+
+- [ ] Setting, alone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails — Realistic ropes and Alone are chosen; after Start the Pause button is off. Follow How? at the starboard and port stations until the sails are set and the engine is off.
+- [ ] Setting, with crew: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails&exc=1 — With crew is chosen; Pause works during the exercise.
+- [ ] Off the wind: on the first link, after Start turn the autopilot "10° to port" six times, then roll the main out — the card says the main was rolled out with the wind on the side.
+- [ ] Furling: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=furl-sails — start the engine, roll the jib in, motor head to wind, roll the main in.
+- [ ] Easy choice: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails&mode=easy — Easy is chosen and the Crew row is hidden.
+- [ ] All eight exercises appear in the list in three groups and each can be finished once on the phone.
+- [ ] Every item of the part 10a Definition of Done (PHASE10_SPEC 12) is ticked in the PR.

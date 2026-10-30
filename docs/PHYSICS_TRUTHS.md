@@ -94,6 +94,15 @@ Planned ahead on 2026-10-15/16 in [`PHASE7_SPEC.md`](PHASE7_SPEC.md) (M40–M47;
 | PT-56 | **An anchored boat swings to the wind:** she turns round her anchor and lies with her bow towards the wind. (M46) | `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=180&bs=0&an=34.0&ax=-1610.0,-6.9&as=1&wd=90&ws=15&cam=top` (M46) | source-checked [39] |
 | PT-57 | **An anchor must be set:** after it reaches the bottom, go gently astern to dig it in; on rock it does not set. (M46) | `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4` (M46): let the chain out, then a third astern | source-checked [38], [10] |
 
+## Phase 10 rules
+
+Planned on 2026-10-30 in [`PHASE10_SPEC.md`](PHASE10_SPEC.md) (part 10a, M66–M71). The exercises of part 10a also test earlier rules: PT-22 (M66), PT-26 (M67), PT-28 and PT-35 (M69), PT-25 and PT-13 (M70), PT-12 (M71). The "How to see it" links work once their milestone is merged.
+
+| Id | Rule | How to see it | Status |
+|---|---|---|---|
+| PT-58 | **A controlled gybe starts with the main hauled in:** haul the main sheet in before the stern crosses the wind, so the boom only moves a short way, and ease it out once she is on the new tack. With the main left out the boom swings right across, fast, with a large load on the main sheet (PT-24). (M69) | `?m=exercise&ex=gybing` (M69): the exercise's steps, then its accidental gybe on purpose | source-checked [41] (hauling in first and easing on the new tack; how far in and the loads: the model, PT-24) |
+| PT-59 | **Roll an in-mast main out and in with the bow close to the wind** (head to wind or a little off), so the sail carries no load while it moves; with the wind on the side the half-rolled sail fills and strains the furling gear. (M71) | `?m=exercise&ex=set-sails` (M71): turn 60° off the wind, then roll the main out | to-verify (candidate: Seldén, *In-mast furling* user manual; seldenmast.com does not open from the build environment, 2026-10-30) |
+
 ## Sources
 
 1. Wikipedia, *Point of sail*. https://en.wikipedia.org/wiki/Point_of_sail. No-go zone about 45° (30–50°) either side of the wind; close-hauled about 45°; sails eased progressively when bearing away; gybing defined; "in irons".
@@ -164,6 +173,7 @@ Read on 2026-10-15/16 for Phase 7 (planning):
 38. Wikipedia, *Anchor*. https://en.wikipedia.org/wiki/Anchor. "Hard sand holds well, shell holds poorly"; to set the anchor "the vessel should be gently forced astern".
 39. Wikipedia, *Mooring*. https://en.wikipedia.org/wiki/Mooring. Mediterranean mooring: an anchor set off the pier and lines to the pier; a boat on a single mooring "swings in a circle when the direction of wind or tide changes".
 40. Practical Sailor, Drew Frye, *Rudder Mods for Low-speed Docking* (5 May 2025). https://www.practical-sailor.com/systems-propulsion/rudder-mods-for-low-speed-docking/. At low speed rudder lift is too weak, so skippers rely on prop walk or prop wash; nudging the stern sideways "by redirecting propwash with a sharply turned rudder" is a common docking tactic; it works less well when the rudder is far behind the propeller. Read by the independent review of the M40 PR (2026-10-18); supports PT-48.
+41. Wikipedia, *Jibe*. https://en.wikipedia.org/wiki/Jibe. "Bearing away, or turning downwind, and hauling in the sail(s) to begin the jibing maneuver"; "The mainsail sheet is tightened to limit the sudden movement from one side to the other and then eased out, once the boat is safely on the opposite tack"; "An uncontrolled, accidental jibe that allows the mainsail boom to swing across the cockpit may endanger crew and rigging." (Its technique section has no citations.)
 
 M47 note (2026-10-22): every Phase 7 rule (PT-27, 31, 33, 34, 47–57) has a test named after its id. The `to-verify` sources were tried again from the cloud environment: yachtingmonthly.com, rya.org.uk, distantshores.ca and sailmagazine.com still do not open (no connection), so PT-34, PT-47, PT-52 and the lazy-line part of PT-51 stay `to-verify`. PT-51 got a second test (the anchor and a shore line in the bay).
 
