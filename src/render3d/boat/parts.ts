@@ -24,6 +24,8 @@ export interface PartUserData {
   hitPoints?: Vec3[];
   /** A wire or thin strut: so thin on screen that it never hides a part behind it from a tap. */
   thin?: boolean;
+  /** M65: a soft patch that is never picked or hit-tested (contact shadows); the part under it is found instead. */
+  noPick?: boolean;
 }
 
 export function v3(p: Vec3): THREE.Vector3 {

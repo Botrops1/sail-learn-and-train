@@ -1105,7 +1105,18 @@
       "stanchionDiameter": 0.03,
       "footHeight": 0.06,
       "footDiameter": 0.06,
-      "wireRadius": 0.012
+      "wireRadius": 0.012,
+      "basePlate": { "diameterM": 0.09, "thicknessM": 0.008 },
+      "endSleeve": { "lengthM": 0.04, "radiusM": 0.009 }
+    },
+    "shroudFittings": {
+      "source": "assumption (M65, Phase 9): a stainless strap at each chainplate, a toggle and a turnbuckle (the screw that tensions the wire) at the foot of each shroud; sizes estimated for 10-12 mm wire",
+      "strapM": [0.04, 0.07, 0.01],
+      "strapAboveM": 0.02,
+      "toggleLengthM": 0.05,
+      "toggleRadiusM": 0.005,
+      "turnbuckleLengthM": 0.16,
+      "turnbuckleRadiusM": 0.012
     },
     "lifelinesNote": "Stanchions along both deck edges with an upper and a lower wire (photo side-deck-jib-roll.jpg); positions and heights estimated.",
     "ropeBin": {
@@ -1226,6 +1237,29 @@
       "diameter": 0.55,
       "topBelowSheer": 0.35,
       "source": "owner (planning chat 2026-10-15: one big ball fender at the corner behind the helm) + assumption (side, size)"
+    },
+    "hatches": {
+      "source": "assumption (M65, Phase 9): flush deck hatches with a raised frame and a tinted lid; places chosen clear of the mast, the self-tacking track, the line channels and the mainsheet blocks",
+      "frameWidthM": 0.04,
+      "frameHeightM": 0.03,
+      "lidThicknessM": 0.012,
+      "list": [
+        { "on": "coachroof", "x": 1.05, "z": 0, "lengthM": 0.55, "widthM": 0.55 },
+        { "on": "coachroof", "x": -1.6, "z": 0, "lengthM": 0.5, "widthM": 0.5 },
+        { "on": "foredeck", "x": 3.6, "z": 0, "lengthM": 0.6, "widthM": 0.6 }
+      ]
+    },
+    "portlights": {
+      "source": "assumption (M65, Phase 9): long tinted hull windows below the deck edge, the same on both sides",
+      "belowSheerM": 0.28,
+      "heightM": 0.11,
+      "proudM": 0.004,
+      "columns": 8,
+      "list": [
+        { "x": 1.7, "lengthM": 0.5 },
+        { "x": 0.4, "lengthM": 1.2 },
+        { "x": -1.2, "lengthM": 0.6 }
+      ]
     }
   },
   "visual": {

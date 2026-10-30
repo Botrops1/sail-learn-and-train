@@ -410,6 +410,19 @@ export const SCENE = {
     redrawHz: 5,
     liveWithinM: 4.0,
   },
+  /** M65: soft dark patches under deck fittings (High only), so they sit on the deck. */
+  contactShadow: {
+    opacity: 0.35,
+    texturePx: 64,
+    liftM: 0.002,
+    stanchionM: 0.16,
+    winchM: 0.45,
+    cleatM: [0.34, 0.16] as [number, number],
+    deckBlockM: 0.2,
+    pedestalM: [0.32, 0.36] as [number, number],
+  },
+  /** M65: rounding of the strap and the hatch frame (High only), metres. */
+  smallFittings: { strapEdgeM: 0.003, hatchEdgeM: 0.008 },
   /** Wind streaks (PHASE1_SPEC 6.1): light lines drifting with the test wind. */
   wind: {
     streakCount: 90,

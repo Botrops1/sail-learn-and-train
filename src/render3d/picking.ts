@@ -61,7 +61,7 @@ export function createPicker(
     smallIds.clear();
     const visit = (object: THREE.Object3D) => {
       const data = object.userData as Partial<PartUserData>;
-      if (!data.partId || !object.visible) return;
+      if (!data.partId || !object.visible || data.noPick) return;
       for (const [a, b] of data.pickSegments ?? []) {
         segments.push({
           object,
@@ -124,7 +124,11 @@ export function createPicker(
       raycaster.setFromCamera(new THREE.Vector2((x / width) * 2 - 1, 1 - (y / height) * 2), camera);
       const hits = raycaster.intersectObjects([boatRoot, ...extraRoots, water], true);
       const boatHits = hits.filter(
-        (hit) => hit.object.visible && partIdOf(hit.object) && !isWithin(hit.object, water),
+        (hit) =>
+          hit.object.visible &&
+          !isNoPick(hit.object) &&
+          partIdOf(hit.object) &&
+          !isWithin(hit.object, water),
       );
       const boatHit = boatHits[0];
       const waterHit = hits.find((hit) => isWithin(hit.object, water));
@@ -154,6 +158,10 @@ export function createPicker(
       return centres;
     },
   };
+}
+
+function isNoPick(object: THREE.Object3D): boolean {
+  return (object.userData as Partial<PartUserData>).noPick === true;
 }
 
 function isThin(object: THREE.Object3D): boolean {

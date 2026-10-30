@@ -117,6 +117,11 @@ export const ADDED_KEYS: readonly string[] = [
   'modelDetail.edgeRadius',
   'modelDetail.helmPedestal',
   'modelDetail.wheel.hubCapRadiusM',
+  'modelDetail.lifelines.basePlate',
+  'modelDetail.lifelines.endSleeve',
+  'modelDetail.shroudFittings',
+  'deckFittings.hatches',
+  'deckFittings.portlights',
 ];
 
 /**
