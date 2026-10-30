@@ -15,6 +15,7 @@ import {
   isStepSize,
   type CameraPreset,
   type Detail,
+  type HelmView,
   type RopesMode,
   type StepSize,
 } from '../model/settings';
@@ -115,6 +116,13 @@ export function parseUrlState(
   let preset: CameraPreset | undefined;
   const cam = params.get('cam');
   if (cam !== null && isCameraPreset(cam)) preset = cam;
+  // M64: the Helm camera's wheel and direction are read whatever `cam` is; unknown values give the defaults.
+  const hw = params.get('hw');
+  const hl = params.get('hl');
+  const helm: HelmView = {
+    wheel: hw === 's' ? 'starboard' : 'port',
+    look: hl === 'p' ? 'panel' : hl === 'r' ? 'ropes' : 'ahead',
+  };
 
   let selection: string | null = null;
   const sel = params.get('sel');
@@ -190,7 +198,7 @@ export function parseUrlState(
 
   const state = initialState({
     controls,
-    camera: preset ? { preset } : {},
+    camera: preset ? { preset, helm } : { helm },
     settings: {
       ...(stepSize !== undefined ? { step: stepSize } : {}),
       ...(debug !== undefined ? { debug } : {}),
@@ -686,6 +694,11 @@ export function serializeUrlState(state: AppState): string {
   const jr = jibReachedParam(state);
   if (jr !== null) params.set('jr', String(jr));
   params.set('cam', state.camera.preset);
+  if (state.camera.preset === 'helm') {
+    if (state.camera.helm.wheel === 'starboard') params.set('hw', 's');
+    if (state.camera.helm.look === 'panel') params.set('hl', 'p');
+    else if (state.camera.helm.look === 'ropes') params.set('hl', 'r');
+  }
   if (state.appMode === 'learn' || state.appMode === 'harbour') params.set('m', state.appMode);
   if (state.selection) params.set('sel', state.selection);
   // The open entry is written only in Learn mode: a link with `learn=` opens in Learn mode.

@@ -1,6 +1,7 @@
 import { boat, type BoatData } from '../model/boat';
 import { halfBeamAt, sheerAt } from '../model/hullShape';
-import type { CameraPreset } from '../model/settings';
+import { helmPedestal } from '../model/helmPedestal';
+import { DEFAULT_HELM_VIEW, type CameraPreset, type HelmView } from '../model/settings';
 import { add, cross, dot, normalize, scale, sub, type Vec3 } from '../model/vec3';
 import { SCENE } from './sceneConfig';
 
@@ -22,6 +23,8 @@ export interface PresetOptions {
    * points right, like docs/reference/hanse508-plan.svg (side-by-side layout).
    */
   topBowUp?: boolean;
+  /** M64: the Helm camera's wheel and direction. */
+  helm?: HelmView;
 }
 
 export interface Lens {
@@ -122,7 +125,7 @@ export function presetPose(
   data: BoatData = boat,
 ): CameraPose {
   const cam = SCENE.camera;
-  if (preset === 'helm') return helmPose(data);
+  if (preset === 'helm') return helmPose(options.helm ?? DEFAULT_HELM_VIEW, data);
   const box = framingBox(data, preset === 'top');
   const target: Vec3 = scale(add(box.min, box.max), 0.5);
   const direction = {
@@ -151,30 +154,51 @@ export function presetPose(
 }
 
 /**
- * Standing eye height behind the port wheel, looking forward, slightly down and a little to
- * port, with a wider lens: the wheel, the port winch and clutch bank are in the foreground,
- * the cockpit and coachroof ahead.
+ * Standing eye height behind a wheel (M64: either one), looking forward and down and a little
+ * towards the wheel's own side, with a wider lens (Ahead); or at the panel on the pedestal
+ * (Panel); or at the winch of that side (Ropes). The eye stays where it is for all three.
  */
-function helmPose(data: BoatData): CameraPose {
+export function helmPose(view: HelmView, data: BoatData = boat): CameraPose {
   const cam = SCENE.camera;
-  const helm = data.cockpitHardware.helms.find((h) => h.id === 'helm_port');
+  const helms = data.cockpitHardware.helms;
+  const helm = helms.find((h) => h.id === `helm_${view.wheel}`) ?? helms[0];
+  if (!helm) throw new Error('the boat data has no helm');
+  const side = helm.z >= 0 ? 1 : -1;
   const eye: Vec3 = [
-    (helm?.x ?? 0) - cam.helmBehindWheel,
+    helm.x - cam.helmBehindWheel,
     data.deck.cockpit.soleY + cam.helmEyeHeight,
-    helm?.z ?? 0,
+    helm.z,
   ];
   const down = cam.helmLookDownDeg * DEG;
   const yaw = cam.helmYawToPortDeg * DEG;
   const look: Vec3 = [
     Math.cos(down) * Math.cos(yaw),
     -Math.sin(down),
-    -Math.cos(down) * Math.sin(yaw),
+    side * Math.cos(down) * Math.sin(yaw),
   ];
-  return {
-    position: eye,
-    target: add(eye, scale(look, cam.helmTargetDistance)),
-    fovDeg: cam.helmVerticalFovDeg,
-  };
+  const ahead: Vec3 = add(eye, scale(look, cam.helmTargetDistance));
+  if (view.look === 'panel') {
+    return {
+      position: eye,
+      target: helmPedestal(helm.id, data).face.centre,
+      fovDeg: cam.helmPanelFovDeg,
+    };
+  }
+  if (view.look === 'ropes') {
+    let winch: (typeof data.cockpitHardware.winches)[number] | undefined;
+    for (const w of data.cockpitHardware.winches) {
+      if ((w as { present?: boolean }).present === false || Math.sign(w.z) !== side) continue;
+      if (!winch || Math.abs(w.x - helm.x) < Math.abs(winch.x - helm.x)) winch = w;
+    }
+    return {
+      position: eye,
+      target: winch
+        ? [winch.x + cam.helmRopesAheadOfWinchM, winch.y + cam.helmRopesAboveWinchM, winch.z]
+        : ahead,
+      fovDeg: cam.helmRopesFovDeg,
+    };
+  }
+  return { position: eye, target: ahead, fovDeg: cam.helmVerticalFovDeg };
 }
 
 /**

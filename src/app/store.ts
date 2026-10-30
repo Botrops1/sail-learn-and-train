@@ -4,10 +4,14 @@ import { isRegisteredPartId } from '../model/registry';
 import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
 import {
   DEFAULT_CAMERA,
+  DEFAULT_HELM_VIEW,
   DEFAULT_SETTINGS,
   type CameraPreset,
   type CameraState,
   type Detail,
+  type HelmLook,
+  type HelmView,
+  type HelmWheel,
   type RopesMode,
   type Settings,
   type StepSize,
@@ -174,6 +178,8 @@ export type Action =
   /** Reset all (Settings): controls, camera, selection and settings back to the defaults. */
   | { type: 'reset' }
   | { type: 'setCameraPreset'; preset: CameraPreset }
+  /** M64: the Helm camera's wheel and/or direction; the camera goes to Helm. */
+  | { type: 'setHelmView'; wheel?: HelmWheel; look?: HelmLook }
   | { type: 'select'; partId: string | null }
   /** Open an entry in the Learn tab, or go back to the list with null. Unknown ids are refused (PHASE4_SPEC 4.1). */
   | { type: 'openLearn'; id: string | null }
@@ -369,7 +375,11 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
       motionOf(boat),
       patterned ? wind : undefined,
     ),
-    camera: { ...DEFAULT_CAMERA, ...overrides.camera },
+    camera: {
+      ...DEFAULT_CAMERA,
+      ...overrides.camera,
+      helm: { ...DEFAULT_HELM_VIEW, ...overrides.camera?.helm },
+    },
     settings,
     selection: overrides.selection ?? null,
     learn: overrides.learn ?? null,
@@ -534,8 +544,22 @@ function reduceAction(state: AppState, action: Action): AppState {
         windMode: { ...defaults.windMode, startS: state.rig.timeS },
       };
     }
-    case 'setCameraPreset':
-      return { ...state, camera: { ...state.camera, preset: action.preset } };
+    case 'setCameraPreset': {
+      // Helm opens the last-used wheel looking Ahead; coming back from the map changes nothing.
+      const helm =
+        action.preset === 'helm' && state.camera.preset !== 'map'
+          ? { ...state.camera.helm, look: 'ahead' as const }
+          : state.camera.helm;
+      return { ...state, camera: { ...state.camera, preset: action.preset, helm } };
+    }
+    case 'setHelmView': {
+      const helm: HelmView = {
+        ...state.camera.helm,
+        ...(action.wheel ? { wheel: action.wheel } : {}),
+        ...(action.look ? { look: action.look } : {}),
+      };
+      return { ...state, camera: { ...state.camera, preset: 'helm', helm } };
+    }
     case 'select':
       return { ...state, selection: action.partId };
     case 'openLearn':

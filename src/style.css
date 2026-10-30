@@ -338,6 +338,32 @@ html[data-layout='stacked'] .info-card {
   font-size: 12px;
 }
 
+/* M64: the Helm camera's buttons, top left of the 3D view, under the instrument strip (the debug overlay is on the right). */
+.helm-views {
+  position: absolute;
+  top: calc(var(--view-top-h, 0px) + 8px);
+  left: 8px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.helm-views[hidden] {
+  display: none;
+}
+
+.helm-view-button {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  border-width: 2px;
+}
+
+.helm-view-button[aria-pressed='true'] {
+  border-color: var(--focus);
+}
+
 /* Four chips (mode, camera, Close, gear) fit a 360 px phone, also in Russian (M28). */
 .view-bottom .view-chip {
   flex: 0 1 auto;

@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { boat } from '../src/model/boat';
 import { CAMERA_PRESETS } from '../src/model/settings';
 import { sheerAt } from '../src/model/hullShape';
+import { helmPedestal } from '../src/model/helmPedestal';
 import { cross, dot, normalize, sub, type Vec3 } from '../src/model/vec3';
 import {
   clampCameraPosition,
   focusPose,
   framingBox,
+  helmPose,
   presetPose,
   viewDirection,
 } from '../src/render3d/cameraPresets';
@@ -174,5 +176,41 @@ describe('focusPose (M49, spotlight)', () => {
   it('a camera sitting on its target looks from the side', () => {
     const pose = focusPose(cleat, { ...from, position: from.target }, lens, 0.5, 140);
     expect(pose.position[2] - pose.target[2]).toBeLessThan(0);
+  });
+});
+
+describe('M64: the Helm camera (PHASE9_SPEC 10.7)', () => {
+  const near = (a: readonly number[], b: readonly number[]) =>
+    a.forEach((v, i) => expect(v).toBeCloseTo(b[i] ?? NaN, 3));
+
+  it("1: port Ahead is today's Helm pose, with or without the option", () => {
+    const pose = helmPose({ wheel: 'port', look: 'ahead' });
+    near(pose.position, [-8.2, 2.65, -0.88]);
+    near(pose.target, [-3.6042, 0.9399, -1.8569]);
+    expect(pose.fovDeg).toBe(64);
+    expect(presetPose('helm', PHONE)).toEqual(pose);
+  });
+
+  it('2: starboard Ahead is the mirror image', () => {
+    const pose = helmPose({ wheel: 'starboard', look: 'ahead' });
+    near(pose.position, [-8.2, 2.65, 0.88]);
+    near(pose.target, [-3.6042, 0.9399, 1.8569]);
+  });
+
+  it('3: port Panel looks straight at the face', () => {
+    const pose = helmPose({ wheel: 'port', look: 'panel' });
+    near(pose.position, [-8.2, 2.65, -0.88]);
+    near(pose.target, [-7.0663, 2.0241, -0.7628]);
+    expect(pose.fovDeg).toBe(44);
+    const away = sub(pose.position, pose.target);
+    expect(Math.hypot(...away)).toBeCloseTo(1.3003, 2);
+    expect(dot(normalize(away), helmPedestal('helm_port').face.w)).toBeGreaterThan(0.999);
+  });
+
+  it("4: Ropes looks at the winch of the wheel's side", () => {
+    const port = helmPose({ wheel: 'port', look: 'ropes' });
+    near(port.target, [-6.9, 1.6, -1.6]);
+    near(helmPose({ wheel: 'starboard', look: 'ropes' }).target, [-6.9, 1.6, 1.6]);
+    expect(port.fovDeg).toBe(56);
   });
 });

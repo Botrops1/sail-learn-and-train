@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createStore, initialState } from '../src/app/store';
+import { DEFAULT_HELM_VIEW } from '../src/model/settings';
+import { parseUrlState } from '../src/app/urlState';
 
 describe('store', () => {
   it('applies actions and notifies listeners with the previous state', () => {
@@ -112,5 +114,43 @@ describe('store', () => {
     expect(settled.applied).toEqual(defaults.rig.applied);
     expect(settled.solution.thetaDeg).toBeCloseTo(held.solution.thetaDeg, 6);
     expect(settled.jibSolution.unfurled).toBe(1);
+  });
+});
+
+describe('M64: the Helm camera (PHASE9_SPEC 10.2)', () => {
+  it('8: setHelmView, the map, other presets, reset and load', () => {
+    const store = createStore(initialState());
+    store.dispatch({ type: 'setHelmView', look: 'panel' });
+    expect(store.getState().camera).toMatchObject({
+      preset: 'helm',
+      helm: { wheel: 'port', look: 'panel' },
+    });
+    store.dispatch({ type: 'setHelmView', wheel: 'starboard' });
+    expect(store.getState().camera.helm).toEqual({ wheel: 'starboard', look: 'panel' });
+
+    // The map's Close goes back to the same view: the same object.
+    store.dispatch({ type: 'setCameraPreset', preset: 'map' });
+    const helm = store.getState().camera.helm;
+    store.dispatch({ type: 'setCameraPreset', preset: 'helm' });
+    expect(store.getState().camera.helm).toBe(helm);
+    expect(helm.look).toBe('panel');
+
+    // Another preset in between: Helm opens the last wheel, looking Ahead.
+    store.dispatch({ type: 'setCameraPreset', preset: 'side-port' });
+    expect(store.getState().camera.helm).toBe(helm);
+    store.dispatch({ type: 'setCameraPreset', preset: 'helm' });
+    expect(store.getState().camera.helm).toEqual({ wheel: 'starboard', look: 'ahead' });
+
+    store.dispatch({ type: 'setHelmView', wheel: 'starboard' });
+    const again = store.getState().camera.helm;
+    store.dispatch({ type: 'setHelmView', wheel: 'starboard' });
+    expect(store.getState().camera.helm).not.toBe(again);
+
+    store.dispatch({ type: 'reset' });
+    expect(store.getState().camera.helm).toEqual(DEFAULT_HELM_VIEW);
+    expect(store.getState().camera.helm).not.toBe(DEFAULT_HELM_VIEW);
+
+    store.dispatch({ type: 'load', state: parseUrlState('?cam=helm&hw=s') });
+    expect(store.getState().camera.helm.wheel).toBe('starboard');
   });
 });
