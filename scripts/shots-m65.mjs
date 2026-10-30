@@ -61,12 +61,16 @@ export async function liveM65Checks({ openPage, viewports, outDir, prefix, probl
       ['fit_deck_hatch', 'top'],
       ['fit_portlight', 'side-port'],
     ]) {
-      const { context, page } = await open(viewport, `tap ${partId}`, `detail=high&cam=${cam}`);
+      const { context, page } = await open(
+        viewport,
+        `tap ${partId}`,
+        `detail=high&cam=${cam}${cam === 'top' ? '&mf=0&jf=0' : ''}`,
+      );
       await page.addStyleTag({ content: '.debug { display: none !important; }' });
       const found = await centres(page, partId);
       check(`${v} ${partId} at High: has hit areas`, found.length > 0, `${found.length}`);
-      // Some hit areas are hidden (the mainsail over the first hatch from above, the far side's
-      // windows): the first one that selects the part is enough.
+      // Some hit areas are hidden (the far side's windows; from above the sails are furled so they
+      // do not cover the hatches): the first one that selects the part is enough.
       let link = '';
       for (const c of found) {
         await tapAt(page, c);
