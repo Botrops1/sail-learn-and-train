@@ -51,6 +51,7 @@ export async function liveM64Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(600);
 
       await helmView(page, 'panel');
+      await page.waitForTimeout(400);
       await waitForLink(page, ['hl=p']);
       await page.waitForTimeout(600);
       let p = await pose(page);
@@ -66,16 +67,19 @@ export async function liveM64Checks({ openPage, viewports, outDir, prefix, probl
       check(`Ropes: the eye stays ${name}`, near(p.position, EYE_PORT), `eye ${fmt(p.position)}`);
       await page.waitForTimeout(350);
       p = await pose(page);
+      await page.waitForTimeout(400);
       await waitForLink(page, ['hl=r']);
       check(`Ropes ${name}`, near(p.target, ROPES_PORT), `target ${fmt(p.target)}`);
 
       await helmView(page, 'ropes');
+      await page.waitForTimeout(400);
       await waitForLink(page, [], ['hl=']);
       await page.waitForTimeout(600);
       p = await pose(page);
       check(`Ropes again: Ahead ${name}`, near(p.target, AHEAD_PORT), `target ${fmt(p.target)}`);
 
       await helmView(page, 'other');
+      await page.waitForTimeout(400);
       await waitForLink(page, ['hw=s']);
       await page.waitForTimeout(600);
       p = await pose(page);
@@ -87,6 +91,7 @@ export async function liveM64Checks({ openPage, viewports, outDir, prefix, probl
 
       await setCamera(page, 'side-port');
       await setCamera(page, 'helm');
+      await page.waitForTimeout(400);
       const link = await waitForLink(page, ['hw=s'], ['hl=']);
       check(`Helm opens the last wheel, Ahead ${name}`, true, link);
 
@@ -98,6 +103,7 @@ export async function liveM64Checks({ openPage, viewports, outDir, prefix, probl
       await page.mouse.down();
       for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
       await page.mouse.up();
+      await page.waitForTimeout(400);
       await waitForLink(page, ['cam=free']);
       const chip = await page.getByTestId('camera-chip').locator('.chip-label').innerText();
       const shown = await page.getByTestId('helm-views').isVisible();
