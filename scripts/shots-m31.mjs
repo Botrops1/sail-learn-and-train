@@ -132,9 +132,8 @@ export async function liveM31Checks({ openPage, viewports, outDir, prefix, probl
     check(`${id}: the "Show on the boat" button is there`, visible, String(visible));
     if (visible) {
       await button.click();
-      await page.waitForTimeout(400);
-      const link = await search(page);
-      check(`${id}: Show on the boat selects it`, link.includes(`sel=${id}`), link);
+      const link = await waitForLinkOrEmpty(page, [`sel=${id}`]);
+      check(`${id}: Show on the boat selects it`, link.ok, link.text);
     }
     await context.close();
   }

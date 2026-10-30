@@ -766,7 +766,7 @@
       "alternatives": [],
       "short": "Shows which way the boat is heading.",
       "what": "The compass shows the boat’s heading in degrees: 0 north, 90 east, 180 south, 270 west.",
-      "onThisBoat": "One compass in front of each wheel.",
+      "onThisBoat": "One compass on the panel in front of each wheel. In the app its card turns as the boat turns: read the heading under the orange mark at the top.",
       "textStatus": "draft"
     },
     "engine_control": {
@@ -781,7 +781,7 @@
       ],
       "short": "One lever for both the gear and the throttle.",
       "what": "Pushed forward from the middle, the lever puts the engine in ahead gear, then gives more power; pulled back, astern. In the middle the engine is in neutral. Pause in neutral when you change direction.",
-      "onThisBoat": "An Allpa single-lever control with START, STOP and POWER buttons and a “MAX 2500 RPM” sticker. In the app the lever two-thirds ahead gives about 1,850 rpm and 8 kn; full ahead about 9.3 kn.",
+      "onThisBoat": "An Allpa single-lever control with START, STOP and POWER buttons and a “MAX 2500 RPM” sticker. In the app the lever two-thirds ahead gives about 1,850 rpm and 8 kn; full ahead about 9.3 kn. On each helm panel the lever stands where the Engine section's lever is, and the rev counter beside it shows the rpm.",
       "mistakes": [
         {
           "mistake": "Moving the lever from ahead straight to astern.",
@@ -1689,7 +1689,7 @@
       "alternatives": [],
       "short": "The control panel that lets the autopilot steer.",
       "what": "The autopilot steers for you. On Standby you steer; Heading holds the compass course; Wind holds the angle to the true wind. Tack turns the boat through the wind.",
-      "onThisBoat": "A B&G control at the helm. The Autopilot section is the app’s version of it.",
+      "onThisBoat": "A B&G control at the helm. On each helm panel of the app its keys show the mode (STBY lit on Standby, AUTO lit while it steers) and the line above them the course it holds. The Autopilot section is where you work it.",
       "mistakes": [
         {
           "mistake": "Holding a compass heading and forgetting the wind.",
@@ -1708,7 +1708,7 @@
       "alternatives": [],
       "short": "The screen at the helm that shows speed, heading and the wind.",
       "what": "It shows the boat’s speed, her heading and the wind: AWA and AWS, the apparent wind’s angle and speed (what the sails feel), and TWA and TWS, the true wind’s.",
-      "onThisBoat": "A B&G display at the helm. In the app, the strip at the top of the 3D view shows the same numbers; tap it for the wind dial.",
+      "onThisBoat": "A B&G display at the helm. In the app each helm panel has a wind display with AWA and AWS, the wind the sails feel; the strip at the top of the 3D view shows the same numbers and more (tap it for the wind dial).",
       "textStatus": "draft"
     },
     "fit_helm_pedestal": {

@@ -1,7 +1,13 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
 import { handleRest, helmPedestal, type HelmPedestalGeometry } from '../../model/helmPedestal';
-import type { PanelReadings } from '../../model/helmPanel';
+import {
+  joystickTiltDeg,
+  leverAngleDeg,
+  PANEL_AT_REST,
+  readingsKeys,
+  type PanelReadings,
+} from '../../model/helmPanel';
 import { thrusterEnds } from '../../model/thrusters';
 import type { Detail } from '../../model/settings';
 import { DEG } from '../../model/angles';
@@ -32,8 +38,23 @@ export interface HelmPedestals {
   setEye(eye: Vec3): void;
   /** Redraws the faces and poses the lever and joysticks (M62 calls it once with PANEL_AT_REST). */
   show(readings: PanelReadings): void;
+  /** M63: the live panel, once a frame (9.4): visibility, lever and joysticks, then the faces that changed. */
+  update(readings: PanelReadings, eye: Vec3, nowMs: number): void;
+  /** M63: what the last updates did (the debug hook reads it). */
+  stats(): PanelStats;
   /** While on, every instrument mesh is visible and setEye hides nothing; off hands visibility back to setEye. */
   reveal(on: boolean): void;
+}
+
+export interface PanelStats {
+  /** The readings passed in by the last update (PANEL_AT_REST before the first). */
+  latest: PanelReadings;
+  /** The readings the faces were last drawn with in a live redraw (PANEL_AT_REST until the first). */
+  drawn: PanelReadings;
+  /** Live redraw rounds since the boat was built (the build's show(PANEL_AT_REST) is not one). */
+  redraws: number;
+  /** The angles last applied: leverDeg ahead positive, bowDeg / sternDeg to starboard positive. */
+  pose: { leverDeg: number; bowDeg: number; sternDeg: number };
 }
 
 interface Instrument {
@@ -277,6 +298,38 @@ export function buildHelmPedestals(materials: BoatMaterials, detail: Detail): He
     source.texture.needsUpdate = true;
   };
 
+  let drawnKeys = readingsKeys(PANEL_AT_REST);
+  const state: PanelStats = {
+    latest: PANEL_AT_REST,
+    drawn: PANEL_AT_REST,
+    redraws: 0,
+    pose: { leverDeg: 0, bowDeg: 0, sternDeg: 0 },
+  };
+  let lastRedrawMs = -Infinity;
+
+  const paintFaces = (readings: PanelReadings): void => {
+    draw(compass, (ctx) => drawCompass(ctx, readings.headingDeg));
+    draw(wind, (ctx) => drawWind(ctx, readings.awaDeg, readings.awsKn));
+    draw(tach, (ctx) => drawTach(ctx, readings.rpm, readings.running));
+    draw(keypad, (ctx) => drawKeypad(ctx, readings.autopilot, readings.courseText));
+  };
+  const pose = (readings: PanelReadings): void => {
+    const lever = leverAngleDeg(readings.leverPct);
+    const bow = joystickTiltDeg(readings.bow);
+    const stern = joystickTiltDeg(readings.stern);
+    for (const panel of panels) {
+      for (const pivot of panel.levers) pivot.rotation.x = -lever * DEG;
+      for (const { end, pivot } of panel.joysticks) {
+        pivot.rotation.y = (end === 'bow' ? bow : stern) * DEG;
+      }
+    }
+    state.pose = {
+      leverDeg: lever,
+      bowDeg: panels.some((q) => q.joysticks.some((j) => j.end === 'bow')) ? bow : 0,
+      sternDeg: panels.some((q) => q.joysticks.some((j) => j.end === 'stern')) ? stern : 0,
+    };
+  };
+
   return {
     objects,
     setEye(eye) {
@@ -288,17 +341,44 @@ export function buildHelmPedestals(materials: BoatMaterials, detail: Detail): He
       apply();
     },
     show(readings) {
-      draw(compass, (ctx) => drawCompass(ctx, readings.headingDeg));
-      draw(wind, (ctx) => drawWind(ctx, readings.awaDeg, readings.awsKn));
-      draw(tach, (ctx) => drawTach(ctx, readings.rpm, readings.running));
-      draw(keypad, (ctx) => drawKeypad(ctx, readings.autopilot, readings.courseText));
-      const lever = (readings.leverPct / 100) * p.faces.lever.maxDeg;
+      paintFaces(readings);
+      pose(readings);
+    },
+    stats: () => state,
+    update(readings, eye, nowMs) {
+      state.latest = readings;
+      lastEye = eye;
+      apply();
+      let near = Infinity;
       for (const panel of panels) {
-        for (const pivot of panel.levers) pivot.rotation.x = -lever * DEG;
-        for (const { end, pivot } of panel.joysticks) {
-          pivot.rotation.y = readings[end] * p.faces.joysticks.maxTiltDeg * DEG;
-        }
+        near = Math.min(
+          near,
+          Math.hypot(eye[0] - panel.pod[0], eye[1] - panel.pod[1], eye[2] - panel.pod[2]),
+        );
       }
+      if (near <= cfg.showWithinM) pose(readings);
+      if (near > cfg.liveWithinM || nowMs - lastRedrawMs < 1000 / cfg.redrawHz) return;
+      const keys = readingsKeys(readings);
+      const changed = (['compass', 'wind', 'tachometer', 'keypad'] as const).filter(
+        (face) => keys[face] !== drawnKeys[face],
+      );
+      if (changed.length === 0) return;
+      if (changed.includes('compass')) {
+        draw(compass, (ctx) => drawCompass(ctx, readings.headingDeg));
+      }
+      if (changed.includes('wind')) {
+        draw(wind, (ctx) => drawWind(ctx, readings.awaDeg, readings.awsKn));
+      }
+      if (changed.includes('tachometer')) {
+        draw(tach, (ctx) => drawTach(ctx, readings.rpm, readings.running));
+      }
+      if (changed.includes('keypad')) {
+        draw(keypad, (ctx) => drawKeypad(ctx, readings.autopilot, readings.courseText));
+      }
+      drawnKeys = keys;
+      state.drawn = readings;
+      state.redraws += 1;
+      lastRedrawMs = nowMs;
     },
   };
 }
