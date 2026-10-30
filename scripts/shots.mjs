@@ -336,7 +336,10 @@ const server = await preview({ preview: { port: 4173, strictPort: false }, logLe
 const origin =
   server.resolvedUrls?.local[0]?.replace(/\/sail-learn-and-train\/?$/, '') ??
   'http://localhost:4173';
-const browser = await chromium.launch({ args: LAUNCH_ARGS });
+const browser = await chromium.launch({
+  args: LAUNCH_ARGS,
+  executablePath: process.env.SHOTS_CHROMIUM || undefined,
+});
 
 // SHOTS_KEEP=1 keeps the files already there (re-shooting one scene with SHOTS_SCENE).
 if (process.env.SHOTS_KEEP !== '1') await rm(OUT_DIR, { recursive: true, force: true });
@@ -1112,7 +1115,10 @@ try {
 // with the sketch laid on top. Served by the Vite dev server from scripts/compare/.
 const dev = await createServer({ server: { port: 5190, strictPort: false }, logLevel: 'warn' });
 await dev.listen();
-const compareBrowser = await chromium.launch({ args: LAUNCH_ARGS });
+const compareBrowser = await chromium.launch({
+  args: LAUNCH_ARGS,
+  executablePath: process.env.SHOTS_CHROMIUM || undefined,
+});
 try {
   for (const [view, width, height] of QUICK
     ? []
