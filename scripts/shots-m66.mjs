@@ -3,7 +3,7 @@
 // with every section folded and sails (no held=1).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, isStacked, setMode, setSheet, showSection } from './ui.mjs';
+import { exerciseLine, isStacked, setMode, setSheet, showSection, waitForLink } from './ui.mjs';
 
 const START = 'm=exercise&ex=points-of-sail';
 
@@ -167,6 +167,8 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
       await page.getByTestId('exercise-list').click();
       await page.waitForTimeout(300);
       const tick = await page.getByTestId('exercise-tick-points-of-sail').innerText();
+      // The address bar is written a moment after a change: reload only once it is the list's.
+      await waitForLink(page, ['m=exercise'], ['ex=']);
       await page.reload({ waitUntil: 'networkidle' });
       await page.waitForTimeout(800);
       if (await isStacked(page)) await showSection(page, 'exercises');
