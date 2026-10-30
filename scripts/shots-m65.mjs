@@ -80,7 +80,11 @@ export async function liveM65Checks({ openPage, viewports, outDir, prefix, probl
         link = await page.evaluate(() => location.search);
         if (link.includes(`sel=${partId}`)) break;
       }
-      check(`${v} ${partId}: a tap selects it`, link.includes(`sel=${partId}`), link);
+      check(
+        `${v} ${partId}: a tap selects it`,
+        link.includes(`sel=${partId}`),
+        `${link.slice(-60)} ${JSON.stringify(found.map((c) => [c.x | 0, c.y | 0]))}`,
+      );
       await context.close();
     }
 
