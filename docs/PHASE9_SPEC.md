@@ -1210,6 +1210,7 @@ A camera that follows the Realistic station walk, a wheel turned by dragging in 
 ### 10.11 Decided in the M64 PR
 
 - Decided in planning (owner: "accept all" on PR #132, 2026-10-28): the link keys are `hw` and `hl` (`hd` is the winch handle's); they are written only with `cam=helm`.
+- Decided in the M64 PR (recommended; merging accepts it): `initialState` always gives `camera.helm` as a fresh copy of `DEFAULT_HELM_VIEW`, so `reset` and `load` never share the constant. The older test `cam=free is kept as the preset` now expects `helm: DEFAULT_HELM_VIEW` next to `preset: 'free'` (the only older test line changed: it compares the whole camera object). `docs/review/ru.md` was regenerated for the seven new Russian strings. Pressing Panel or Ropes while it is already on turns back to Ahead (the buttons toggle), as 10.6 says.
 
 ---
 
