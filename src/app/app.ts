@@ -1,5 +1,6 @@
 import { createScene, type SceneView } from '../render3d/scene';
 import { createCameraChip, createViewBottom } from '../ui/cameraChip';
+import { createHelmViews } from '../ui/helmViews';
 import { createDebugOverlay, type FrameTimes } from '../ui/debugOverlay';
 import {
   clearSceneError,
@@ -153,7 +154,10 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
       showSceneError(layout.view, 'scene.lost'),
     );
     scene.canvas.addEventListener('webglcontextrestored', () => clearSceneError(layout.view));
-    if (map) createCameraChip(chipRow, store, map);
+    if (map) {
+      createCameraChip(chipRow, store, map);
+      createHelmViews(layout.view, store);
+    }
     const view = scene;
     const resize = () => {
       const viewBox = layout.view.getBoundingClientRect();

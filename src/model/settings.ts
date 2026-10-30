@@ -75,8 +75,17 @@ export interface Settings {
   language: string;
 }
 
+export type HelmWheel = 'port' | 'starboard';
+export type HelmLook = 'ahead' | 'panel' | 'ropes';
+export interface HelmView {
+  wheel: HelmWheel;
+  look: HelmLook;
+}
+
 export interface CameraState {
   preset: CameraPreset;
+  /** The Helm camera's wheel and direction (M64). Kept while another preset shows. */
+  helm: HelmView;
 }
 
 export const DEFAULT_SETTINGS: Readonly<Settings> = {
@@ -92,7 +101,11 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   miniMap: true,
   language: 'en',
 };
-export const DEFAULT_CAMERA: Readonly<CameraState> = { preset: 'side-port' };
+export const DEFAULT_HELM_VIEW: Readonly<HelmView> = { wheel: 'port', look: 'ahead' };
+export const DEFAULT_CAMERA: Readonly<CameraState> = {
+  preset: 'side-port',
+  helm: DEFAULT_HELM_VIEW,
+};
 
 export function isCameraPreset(value: string): value is CameraPreset {
   return (CAMERA_PRESETS as readonly string[]).includes(value);

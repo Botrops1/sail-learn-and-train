@@ -82,6 +82,7 @@ import { liveM60bChecks, M60B_SCENES } from './shots-m60b.mjs';
 import { liveM61Checks, M61_SCENES } from './shots-m61.mjs';
 import { liveM62Checks, M62_SCENES } from './shots-m62.mjs';
 import { liveM63Checks, M63_SCENES } from './shots-m63.mjs';
+import { liveM64Checks, M64_SCENES } from './shots-m64.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -266,6 +267,7 @@ const SCENES = [
   ...M61_SCENES.map((scene) => ({ ...scene, name: `m61-${scene.name}` })),
   ...M62_SCENES.map((scene) => ({ ...scene, name: `m62-${scene.name}` })),
   ...M63_SCENES.map((scene) => ({ ...scene, name: `m63-${scene.name}` })),
+  ...M64_SCENES.map((scene) => ({ ...scene, name: `m64-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -334,7 +336,10 @@ const server = await preview({ preview: { port: 4173, strictPort: false }, logLe
 const origin =
   server.resolvedUrls?.local[0]?.replace(/\/sail-learn-and-train\/?$/, '') ??
   'http://localhost:4173';
-const browser = await chromium.launch({ args: LAUNCH_ARGS });
+const browser = await chromium.launch({
+  args: LAUNCH_ARGS,
+  executablePath: process.env.SHOTS_CHROMIUM || undefined,
+});
 
 // SHOTS_KEEP=1 keeps the files already there (re-shooting one scene with SHOTS_SCENE).
 if (process.env.SHOTS_KEEP !== '1') await rm(OUT_DIR, { recursive: true, force: true });
@@ -1077,6 +1082,7 @@ try {
     m61: () => liveM61Checks(live),
     m62: () => liveM62Checks(live),
     m63: () => liveM63Checks(onTestClock),
+    m64: () => liveM64Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
@@ -1109,7 +1115,10 @@ try {
 // with the sketch laid on top. Served by the Vite dev server from scripts/compare/.
 const dev = await createServer({ server: { port: 5190, strictPort: false }, logLevel: 'warn' });
 await dev.listen();
-const compareBrowser = await chromium.launch({ args: LAUNCH_ARGS });
+const compareBrowser = await chromium.launch({
+  args: LAUNCH_ARGS,
+  executablePath: process.env.SHOTS_CHROMIUM || undefined,
+});
 try {
   for (const [view, width, height] of QUICK
     ? []

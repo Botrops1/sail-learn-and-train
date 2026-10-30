@@ -10,6 +10,7 @@ import { defaultControls, type Controls } from '../src/model/controls';
 import {
   CAMERA_PRESETS,
   DEFAULT_CAMERA,
+  DEFAULT_HELM_VIEW,
   DEFAULT_SETTINGS,
   defaultDetail,
 } from '../src/model/settings';
@@ -133,7 +134,7 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
   });
 
   it('cam=free is kept as the preset (the free position itself is not stored)', () => {
-    expect(parseUrlState('?cam=free').camera).toEqual({ preset: 'free' });
+    expect(parseUrlState('?cam=free').camera).toEqual({ preset: 'free', helm: DEFAULT_HELM_VIEW });
     expect(serializeUrlState(initialState({ camera: { preset: 'free' }, sea: 'coastal' }))).toBe(
       `?v=1&${DEFAULT_CONTROLS_QUERY}&cam=free&step=5&detail=high&${DEFAULT_BOAT_QUERY}`,
     );
@@ -634,5 +635,26 @@ describe('M58: boat= in the link (PHASE8_SPEC 16.4)', () => {
 
   it('parseUrlState ignores boat=', () => {
     expect(parseUrlState('?v=1&boat=test-boat&wd=90').controls.ctl_wind_dir).toBe(90);
+  });
+});
+
+describe('M64: the Helm camera in the link (PHASE9_SPEC 4.2)', () => {
+  it('5: hw and hl are read and written right after cam', () => {
+    const state = parseUrlState('?cam=helm&hw=s&hl=p');
+    expect(state.camera).toEqual({ preset: 'helm', helm: { wheel: 'starboard', look: 'panel' } });
+    expect(serializeUrlState(state)).toContain('cam=helm&hw=s&hl=p&');
+  });
+
+  it('6: a plain cam=helm has the defaults and writes neither key', () => {
+    const state = parseUrlState('?cam=helm');
+    expect(state.camera.helm).toEqual(DEFAULT_HELM_VIEW);
+    expect(serializeUrlState(state)).not.toMatch(/[?&]h[wl]=/);
+  });
+
+  it('7: unknown values give the defaults; hw is kept for another camera but not written', () => {
+    expect(parseUrlState('?cam=helm&hw=x&hl=q').camera.helm).toEqual(DEFAULT_HELM_VIEW);
+    const state = parseUrlState('?cam=side-port&hw=s');
+    expect(state.camera.helm.wheel).toBe('starboard');
+    expect(serializeUrlState(state)).not.toContain('hw=');
   });
 });

@@ -222,6 +222,15 @@ export async function setCamera(page, preset) {
   await page.getByTestId(`camera-option-${preset}`).click();
 }
 
+/** M64: taps a Helm-camera button: 'ropes' | 'panel' | 'other'. */
+export async function helmView(page, which) {
+  const id = { ropes: 'helm-look-ropes', panel: 'helm-look-panel', other: 'helm-other-wheel' }[
+    which
+  ];
+  if (!id) throw new Error(`helmView: unknown button ${which}`);
+  await page.getByTestId(id).click();
+}
+
 /** The y (CSS px from the page top) of the top of the chip row: taps on the 3D view stay above it. */
 export async function viewBottom(page) {
   const box = await page.getByTestId('view-bottom').boundingBox();

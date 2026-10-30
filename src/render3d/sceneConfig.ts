@@ -497,13 +497,19 @@ export const SCENE = {
     /** Helm preset: standing eye height above the cockpit sole, distance behind the wheel (m). */
     helmEyeHeight: 1.65,
     helmBehindWheel: 1.0,
-    /** Helm preset looks down and a little to port, so wheel, winch and clutch bank show. */
+    /** Helm preset looks down and a little towards the wheel's own side (to port at the port wheel), so wheel, winch and clutch bank show. */
     helmLookDownDeg: 20,
     helmYawToPortDeg: 12,
     /** Distance of the helm view's orbit centre in front of the eye, metres. */
     helmTargetDistance: 5,
     /** Wider lens for the helm view, so the cockpit fits on a portrait phone. */
     helmVerticalFovDeg: 64,
+    /** M64: the Helm camera looking at the panel / at the winch of its side (tunable). */
+    helmPanelFovDeg: 44,
+    helmRopesFovDeg: 56,
+    /** M64: the Ropes look aims this far ahead of and above the winch (m, tunable). */
+    helmRopesAheadOfWinchM: 0.35,
+    helmRopesAboveWinchM: 0.05,
     /** Orbit limits, metres. */
     minDistance: 3,
     maxDistance: 140,

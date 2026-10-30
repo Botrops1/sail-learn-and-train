@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import type { CameraPreset } from '../model/settings';
+import type { CameraPreset, HelmView } from '../model/settings';
 import type { Vec3 } from '../model/vec3';
 import {
   clampCameraPosition,
@@ -63,6 +63,12 @@ export interface CameraRig {
   onUserDrag(listener: () => void): void;
   /** M49: the pose now (position, target, field of view); the debug hooks read it. */
   pose(): CameraPose;
+  /**
+   * M64: stores the Helm camera's wheel and direction; never changes the current preset. While the preset is Helm it
+   * drops any spotlight focus (no glide back), lets the camera come close, and glides (`animate`, in straight lines: the
+   * eye stays, the head turns) or jumps to the new pose.
+   */
+  setHelmView(view: HelmView, animate: boolean): void;
 }
 
 /**
@@ -88,7 +94,8 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
   let movedByHand = false;
   let lastFreePose: CameraPose | undefined;
   let interacting = false;
-  let tween: { from: CameraPose; to: CameraPose; start: number } | undefined;
+  let tween:
+    { from: CameraPose; to: CameraPose; start: number; mode: 'orbit' | 'straight' } | undefined;
   const listeners: (() => void)[] = [];
   const dragListeners: (() => void)[] = [];
   /** M49: set while a spotlight's focus lasts. */
@@ -189,6 +196,12 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     controls.minDistance = Math.min(cam.minDistance, distance * 0.999);
   }
 
+  /** M64: the Helm poses are closer than the orbit's near limit: it comes back once the camera is 3 m out. */
+  function allowCloseHelm(to: CameraPose): void {
+    allowFocusDistance(to);
+    pendingMinDistance = true;
+  }
+
   return {
     camera,
     get preset() {
@@ -203,7 +216,8 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       currentPreset = preset;
       const to = poseFor(preset);
       allowDistanceOf(to);
-      if (animate) tween = { from: currentPose(), to, start: performance.now() };
+      if (preset === 'helm') allowCloseHelm(to);
+      if (animate) tween = { from: currentPose(), to, start: performance.now(), mode: 'orbit' };
       else {
         tween = undefined;
         apply(to);
@@ -221,7 +235,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         inset = Math.max(0, inset - (shortBy - fromTop));
       }
       viewport = { width, height, inset, top };
-      options = presetOptions;
+      options = { ...presetOptions, helm: options.helm };
       updateProjection();
       const tanHalf = Math.tan((cam.verticalFovDeg * Math.PI) / 360);
       const free = height - inset - top;
@@ -243,6 +257,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       } else if ((currentPreset !== 'free' || !movedByHand) && !interacting) {
         const to = presetPose(currentPreset, lens, options);
         allowDistanceOf(to);
+        if (currentPreset === 'helm') allowCloseHelm(to);
         if (tween) tween.to = to;
         else apply(to);
       }
@@ -250,7 +265,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     update(now) {
       if (tween) {
         const t = Math.min(1, (now - tween.start) / (cam.transitionS * 1000));
-        apply(interpolatePose(tween.from, tween.to, easeInOut(t)));
+        apply(interpolatePose(tween.from, tween.to, easeInOut(t), tween.mode));
         if (t >= 1) tween = undefined;
         return;
       }
@@ -287,7 +302,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       const to = focusTarget(from);
       allowDistanceOf(to);
       allowFocusDistance(to);
-      tween = { from: currentPose(), to, start: performance.now() };
+      tween = { from: currentPose(), to, start: performance.now(), mode: 'orbit' };
     },
     endFocus(glide) {
       if (!focus) return;
@@ -297,7 +312,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         const to = poseFor(currentPreset);
         allowDistanceOf(to);
         controls.minDistance = cam.minDistance;
-        tween = { from: currentPose(), to, start: performance.now() };
+        tween = { from: currentPose(), to, start: performance.now(), mode: 'orbit' };
       } else {
         // Stays where the hand left it; the orbit's own limit returns once the camera is that far out.
         const distance = camera.position.distanceTo(controls.target);
@@ -309,6 +324,20 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       dragListeners.push(listener);
     },
     pose: currentPose,
+    setHelmView(view, animate) {
+      options = { ...options, helm: view };
+      if (currentPreset !== 'helm') return;
+      focus = undefined;
+      const to = presetPose('helm', lens, options);
+      allowDistanceOf(to);
+      allowCloseHelm(to);
+      if (animate) tween = { from: currentPose(), to, start: performance.now(), mode: 'straight' };
+      else {
+        tween = undefined;
+        apply(to);
+        controls.update();
+      }
+    },
     setPose(pose) {
       tween = undefined;
       movedByHand = true;
@@ -326,9 +355,27 @@ function easeInOut(t: number): number {
 
 /**
  * Glides the orbit centre in a straight line and the camera around it (distance, height angle
- * and the shorter way round), so a preset change never cuts through the boat.
+ * and the shorter way round), so a preset change never cuts through the boat. `straight` (M64, Helm
+ * views): position, target and field of view each in a straight line.
  */
-function interpolatePose(from: CameraPose, to: CameraPose, t: number): CameraPose {
+function interpolatePose(
+  from: CameraPose,
+  to: CameraPose,
+  t: number,
+  mode: 'orbit' | 'straight' = 'orbit',
+): CameraPose {
+  if (mode === 'straight') {
+    const lerp = (a: Vec3, b: Vec3): Vec3 => [
+      a[0] + (b[0] - a[0]) * t,
+      a[1] + (b[1] - a[1]) * t,
+      a[2] + (b[2] - a[2]) * t,
+    ];
+    return {
+      position: lerp(from.position, to.position),
+      target: lerp(from.target, to.target),
+      fovDeg: from.fovDeg + (to.fovDeg - from.fovDeg) * t,
+    };
+  }
   const target = new THREE.Vector3(...from.target).lerp(new THREE.Vector3(...to.target), t);
   const a = new THREE.Spherical().setFromVector3(
     new THREE.Vector3(...from.position).sub(new THREE.Vector3(...from.target)),

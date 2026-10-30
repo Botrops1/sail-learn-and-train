@@ -3066,6 +3066,13 @@
 | settings.about | About | О программе |
 | cam.chip | Camera: {name}. Tap to change the view. | Камера: {name}. Нажмите, чтобы сменить вид. |
 | cam.menuHint | Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around. | Левый борт — слева, если смотреть на нос (вперёд); правый борт — справа. Потяните 3D-вид, чтобы осмотреться. |
+| helmView.group | Helm view | Вид от штурвала |
+| helmView.ropes | Ropes | Тросы |
+| helmView.ropesLabel | Look at this side's ropes and winch | Посмотреть на тросы и лебёдку этого борта |
+| helmView.panel | Panel | Панель |
+| helmView.panelLabel | Look at the panel on the pedestal | Посмотреть на панель на колонке |
+| helmView.otherWheel | Other wheel | Другой штурвал |
+| helmView.otherWheelLabel | Go to the other wheel | Перейти к другому штурвалу |
 | sheet.handle | Panel: {height}. Tap to change its height, or drag it. | Панель: {height}. Нажмите, чтобы изменить высоту, или потяните. |
 | sheet.height.peek | low | внизу |
 | sheet.height.half | half height | на полэкрана |

@@ -173,6 +173,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
+  rig.setHelmView(store.getState().camera.helm, false);
   rig.goTo(store.getState().camera.preset, false);
   rig.onUserMove(() => store.dispatch({ type: 'setCameraPreset', preset: 'free' }));
 
@@ -367,6 +368,16 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 
   store.subscribe((state, previous) => {
     const preset = state.camera.preset;
+    // M64: a new Helm view. Coming to Helm from another preset: stored first, the preset's own glide runs;
+    // a change that also leaves Helm (reset, load, back): only stored; otherwise it turns on the spot.
+    if (state.camera.helm !== previous.camera.helm) {
+      if (preset !== 'helm' || (preset !== previous.camera.preset && rig.preset !== 'helm')) {
+        rig.setHelmView(state.camera.helm, false);
+      } else {
+        stopSpotlight(null);
+        rig.setHelmView(state.camera.helm, true);
+      }
+    }
     // The map leaves the 3D camera where it is: going back to the same view needs no move.
     if (preset !== 'map' && preset !== previous.camera.preset && preset !== rig.preset) {
       // (A preset chosen drops the focus itself: its own glide runs.)
