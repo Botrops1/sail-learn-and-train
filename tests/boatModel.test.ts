@@ -227,7 +227,14 @@ describe('M3b: detail levels', () => {
   it('low detail draws the same parts as high detail, with fewer triangles', () => {
     const high = ids('high');
     const low = ids('low');
-    expect([...low.found].sort()).toEqual([...high.found].sort());
+    // M65: the hatches and hull windows are the only High-only parts.
+    const highOnly = new Set(['fit_deck_hatch', 'fit_portlight']);
+    expect([...high.found].filter((id) => highOnly.has(id)).sort()).toEqual([
+      'fit_deck_hatch',
+      'fit_portlight',
+    ]);
+    expect([...low.found].filter((id) => highOnly.has(id))).toEqual([]);
+    expect([...low.found].sort()).toEqual([...high.found].filter((id) => !highOnly.has(id)).sort());
     expect(low.triangles).toBeLessThan(high.triangles);
   });
 

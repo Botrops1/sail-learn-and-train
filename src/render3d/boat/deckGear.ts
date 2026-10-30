@@ -6,8 +6,8 @@ import {
   sprayhoodHalfWidth,
   sprayhoodTopY,
 } from '../../model/deckVolumes';
-import { halfBeamAt, sheerAt } from '../../model/hullShape';
 import type { Detail } from '../../model/settings';
+import { stanchionBases } from '../../model/smallFittings';
 import type { Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import { asThin, cylinderBetween, partMesh, pushQuad, triangles, type PickSegment } from './parts';
@@ -151,17 +151,13 @@ function buildChannelFairings(materials: BoatMaterials): THREE.Object3D {
 function buildLifelines(materials: BoatMaterials, detail: Detail): THREE.Object3D[] {
   const l = boat.modelDetail.lifelines;
   const radial = detail === 'high' ? 10 : 6;
-  const count = Math.max(2, Math.round((l.fwdX - l.aftX) / l.stanchionSpacing) + 1);
   const posts: THREE.BufferGeometry[] = [];
   const wires: THREE.BufferGeometry[] = [];
   const segments: PickSegment[] = [];
   const at = (p: Vec3, height: number): Vec3 => [p[0], p[1] + height, p[2]];
-  const sides = ([1, -1] as const).map((side) =>
-    Array.from({ length: count }, (_, i): Vec3 => {
-      const x = l.aftX + ((l.fwdX - l.aftX) * i) / (count - 1);
-      return [x, sheerAt(x), side * (halfBeamAt(x) - l.inset)];
-    }),
-  );
+  const all = stanchionBases();
+  const perSide = all.length / 2;
+  const sides = [all.slice(0, perSide), all.slice(perSide)];
   for (const bases of sides) {
     bases.forEach((basePoint, i) => {
       const topPoint = at(basePoint, l.height);
@@ -170,6 +166,38 @@ function buildLifelines(materials: BoatMaterials, detail: Detail): THREE.Object3
       posts.push(
         cylinderBetween(basePoint, at(basePoint, l.footHeight), l.footDiameter / 2, radial),
       );
+      if (detail === 'high') {
+        // M65: a round base plate under the foot, and a sleeve where each wire ends or passes.
+        posts.push(
+          cylinderBetween(
+            basePoint,
+            at(basePoint, l.basePlate.thicknessM),
+            l.basePlate.diameterM / 2,
+            16,
+          ),
+        );
+        const previous = bases[i - 1];
+        const next = bases[i + 1];
+        const from = previous ?? basePoint;
+        const to = next ?? basePoint;
+        const dir = new THREE.Vector3(
+          to[0] - from[0],
+          to[1] - from[1],
+          to[2] - from[2],
+        ).normalize();
+        for (const height of [l.height, l.lowerWireHeight]) {
+          const centre = at(basePoint, height);
+          const half = l.endSleeve.lengthM / 2;
+          posts.push(
+            cylinderBetween(
+              [centre[0] - dir.x * half, centre[1] - dir.y * half, centre[2] - dir.z * half],
+              [centre[0] + dir.x * half, centre[1] + dir.y * half, centre[2] + dir.z * half],
+              l.endSleeve.radiusM,
+              8,
+            ),
+          );
+        }
+      }
       segments.push([basePoint, topPoint]);
       const next = bases[i + 1];
       if (!next) return;

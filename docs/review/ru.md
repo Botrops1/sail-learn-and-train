@@ -595,6 +595,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### окно в корпусе (`fit_portlight`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Hull window | окно в корпусе |
+| Другие названия | portlight | иллюминатор |
+| Коротко | A long fixed window in the side of the hull. | Длинное неоткрывающееся окно в борту корпуса. |
+| Что делает / что значит | Hull windows give light and a view from the cabin. They do not open, and they are made strong enough for the waves that hit the side. | Окна в корпусе дают свет и вид из каюты. Они не открываются и достаточно прочны, чтобы выдерживать волны, бьющие в борт. |
+| На этой яхте | Three windows on each side in the app. Their sizes and places are a guess. At Detail Low they are not drawn. | В приложении по три окна с каждого борта. Их размеры и места выбраны наугад. При детализации «Низкая» они не рисуются. |
+| Типичные ошибки | — | — |
+| «Покажи» | From the side: three long dark windows below the deck edge. | Сбоку: три длинных тёмных окна под краем палубы. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### перо руля (`part_rudder`)
 
 | Поле | English | Русский |
@@ -759,6 +774,21 @@
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### палубный люк (`fit_deck_hatch`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Deck hatch | палубный люк |
+| Другие названия | — | — |
+| Коротко | A window in the deck that opens for light and air below. | Окно в палубе, которое открывается для света и воздуха внизу. |
+| Что делает / что значит | A hatch is a strong window in a frame, hinged so it can be opened. Closed and locked it keeps the water out; at sea it stays shut, because a wave over the deck pours in through an open hatch. | Люк — это прочное окно в раме на петлях, которое можно открыть. Закрытый и запертый, он не пропускает воду; в море его держат закрытым, потому что волна на палубе зальёт открытый люк. |
+| На этой яхте | Two hatches on the coachroof and one on the foredeck in the app. Their places are a guess. At Detail Low they are not drawn. | В приложении два люка на рубке и один на носовой палубе. Их места выбраны наугад. При детализации «Низкая» они не рисуются. |
+| Типичные ошибки | — | — |
+| «Покажи» | From above: two hatches on the coachroof and one on the foredeck, each a pale frame round a dark lid. | Сверху: два люка на рубке и один на носовой палубе, у каждого светлая рама вокруг тёмной крышки. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 

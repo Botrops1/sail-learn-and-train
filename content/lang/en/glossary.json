@@ -1738,6 +1738,28 @@
       "showMe": "Realistic ropes, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops.",
       "textStatus": "draft"
     },
+    "fit_deck_hatch": {
+      "name": "Deck hatch",
+      "alternatives": [],
+      "short": "A window in the deck that opens for light and air below.",
+      "what": "A hatch is a strong window in a frame, hinged so it can be opened. Closed and locked it keeps the water out; at sea it stays shut, because a wave over the deck pours in through an open hatch.",
+      "onThisBoat": "Two hatches on the coachroof and one on the foredeck in the app. Their places are a guess. At Detail Low they are not drawn.",
+      "showMe": "From above: two hatches on the coachroof and one on the foredeck, each a pale frame round a dark lid.",
+      "textStatus": "draft"
+    },
+    "fit_portlight": {
+      "name": "Hull window",
+      "alternatives": [
+        {
+          "term": "portlight"
+        }
+      ],
+      "short": "A long fixed window in the side of the hull.",
+      "what": "Hull windows give light and a view from the cabin. They do not open, and they are made strong enough for the waves that hit the side.",
+      "onThisBoat": "Three windows on each side in the app. Their sizes and places are a guess. At Detail Low they are not drawn.",
+      "showMe": "From the side: three long dark windows below the deck edge.",
+      "textStatus": "draft"
+    },
     "term_prop_walk": {
       "name": "Prop walk",
       "alternatives": [

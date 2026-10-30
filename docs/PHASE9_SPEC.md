@@ -1383,7 +1383,9 @@ A pulpit and pushpit, a boarding gate, deck lights, solar panels, a bimini, a co
 
 ### 11.10 Decided in the M65 PR
 
-(nothing yet)
+- **Show-me links without `detail=high`** (recommended; merging accepts it): the registry's `showMe` of `fit_deck_hatch` and `fit_portlight` is `?cam=top&sel=fit_deck_hatch&held=1&sea=flat` and `?cam=side-port&sel=fit_portlight&held=1&sea=flat`. An existing test (`tests/glossary.test.ts`, "every link is canonical and keeps the viewer's own keys out") forbids `detail` in a Show-me link, and changing that rule is outside this milestone. At Low "Where is it?" finds nothing visible, as 11.5 says for any hidden part.
+- **Portlight winding:** a starboard grid is wound top-left, bottom-left, bottom-right and a port grid the other way, so the normals point away from the hull on both sides.
+- **Shadow patches** use the sizes of 11.4 unchanged.
 
 ---
 

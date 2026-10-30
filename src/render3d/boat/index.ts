@@ -23,6 +23,7 @@ import { createMaterials } from './materials';
 import { buildMooringFittings } from './mooringFittings';
 import { buildRig } from './rig';
 import { buildRopes, type RopeStats, type RopeView } from './ropes';
+import { buildSmallFittings } from './smallFittings';
 import { buildSailMesh } from './sailMesh';
 import { buildTelltales } from './telltales';
 import { buildWinchHandle } from './winchHandle';
@@ -110,6 +111,7 @@ export function buildBoat(
     ...hardware.objects,
     ...pedestals.objects,
     ...buildDeckGear(materials, detail),
+    ...(detail === 'high' ? buildSmallFittings(materials) : []),
     ...buildBowGear(materials, detail),
     ...buildMooringFittings(materials, detail),
     ...fenders.objects,

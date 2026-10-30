@@ -137,3 +137,27 @@ describe('tap-to-identify: small fittings', () => {
     expect(picker.pick(centre?.x ?? 0, centre?.y ?? 0, screen.width, screen.height)).toBeNull();
   });
 });
+
+describe('M65: noPick', () => {
+  it('a mesh with noPick in front of another part is never picked (the part behind it is)', () => {
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    camera.position.set(0, 0, 5);
+    camera.lookAt(0, 0, 0);
+    camera.updateMatrixWorld(true);
+    const root = new THREE.Group();
+    const behind = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 0.2), new THREE.MeshBasicMaterial());
+    behind.userData = { partId: 'part_deck' };
+    const front = new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
+      new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }),
+    );
+    front.position.z = 1;
+    front.userData = { partId: 'part_hull', noPick: true };
+    root.add(behind, front);
+    root.updateMatrixWorld(true);
+    const picker = createPicker(camera, root, new THREE.Group());
+    expect(picker.pick(50, 50, 100, 100)).toBe('part_deck');
+    front.userData = { partId: 'part_hull' };
+    expect(picker.pick(50, 50, 100, 100)).toBe('part_hull');
+  });
+});
