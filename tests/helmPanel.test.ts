@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { initialState } from '../src/app/store';
+import { boat } from '../src/model/boat';
+import { helmPedestal } from '../src/model/helmPedestal';
+import { createMaterials } from '../src/render3d/boat/materials';
+import { buildHelmPedestals } from '../src/render3d/boat/helmPedestal';
+import { SCENE } from '../src/render3d/sceneConfig';
 import {
   courseText,
   joystickTiltDeg,
@@ -100,5 +105,23 @@ describe('helmPanel (M63)', () => {
     expect(tachNeedleRad(3000)).toBeCloseTo(0, 9);
     expect(tachNeedleRad(4000)).toBeCloseTo(0, 9);
     expect(tachNeedleRad(-50)).toBeCloseTo(Math.PI, 9);
+  });
+
+  it('8. the redraw cap holds (SCENE.helmPanel.redrawHz) and far away nothing is redrawn', () => {
+    const pod = helmPedestal(boat.cockpitHardware.helms[0]!.id).pod.centre;
+    const near: [number, number, number] = [pod[0], pod[1], pod[2] + 1];
+    const far: [number, number, number] = [pod[0] + 50, pod[1], pod[2]];
+    const frames = (eye: [number, number, number]) => {
+      const panel = buildHelmPedestals(createMaterials('low'), 'low');
+      // 2 s at 60 frames a second, a different heading every frame so a face always changed.
+      for (let i = 0; i < 120; i += 1) {
+        panel.update(reading({ headingDeg: 10 + 2 * i }), eye, i * 16);
+      }
+      return panel.stats().redraws;
+    };
+    const seconds = (120 * 16) / 1000;
+    expect(frames(near)).toBeGreaterThan(0);
+    expect(frames(near)).toBeLessThanOrEqual(Math.ceil(seconds * SCENE.helmPanel.redrawHz));
+    expect(frames(far)).toBe(0);
   });
 });
