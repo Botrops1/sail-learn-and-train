@@ -2,7 +2,7 @@
 // close-ups are taken inside the live checks with __sailDebug.setView, as M50 does. Every link adds
 // debug=1&held=1&sea=flat so tap points do not drift.
 import path from 'node:path';
-import { waitForLink } from './ui.mjs';
+import { setSheet } from './ui.mjs';
 
 export const M65_SCENES = [];
 
@@ -66,7 +66,9 @@ export async function liveM65Checks({ openPage, viewports, outDir, prefix, probl
         `tap ${partId}`,
         `detail=high&cam=${cam}${cam === 'top' ? '&mf=0&jf=0' : ''}`,
       );
+      await setSheet(page, 'peek');
       await page.addStyleTag({ content: '.debug { display: none !important; }' });
+      await page.waitForTimeout(600);
       const found = await centres(page, partId);
       check(`${v} ${partId} at High: has hit areas`, found.length > 0, `${found.length}`);
       // Some hit areas are hidden (the far side's windows; from above the sails are furled so they
