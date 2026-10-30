@@ -10,6 +10,7 @@ import type { PanelTab } from './panelTabs';
  */
 export const SECTION_IDS = [
   'mode',
+  'exercises',
   'ropes',
   'helm',
   'sails',
@@ -40,6 +41,7 @@ export interface ModeLayout {
  */
 export const TAB_OF: Readonly<Record<SectionId, PanelTab>> = {
   mode: 'mode',
+  exercises: 'controls',
   ropes: 'controls',
   helm: 'controls',
   sails: 'controls',
@@ -72,6 +74,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'anchor',
       'harbour',
       'status',
+      'exercises',
       'settings',
     ],
   },
@@ -89,6 +92,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'anchor',
       'harbour',
       'status',
+      'exercises',
       'settings',
     ],
   },
@@ -106,6 +110,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'anchor',
       'harbour',
       'status',
+      'exercises',
       'settings',
     ],
   },
@@ -123,6 +128,25 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'ropes',
       'autopilot',
       'learn',
+      'exercises',
+      'settings',
+    ],
+  },
+  exercise: {
+    order: [
+      'mode',
+      'exercises',
+      'ropes',
+      'helm',
+      'sails',
+      'autopilot',
+      'engine',
+      'learn',
+      'conditions',
+      'place',
+      'anchor',
+      'harbour',
+      'status',
       'settings',
     ],
   },
@@ -146,6 +170,8 @@ export function sectionAvailable(
       return state.settings.ropesMode === 'easy';
     case 'helm':
       return state.settings.ropesMode === 'realistic';
+    case 'exercises':
+      return state.appMode === 'exercise';
     case 'mode':
     case 'settings':
       return layout === 'stacked';

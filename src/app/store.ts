@@ -1,5 +1,6 @@
 import { boat as boatData } from '../model/boat';
-import type { AppMode } from './appMode';
+import { keepsRopesMode, type AppMode } from './appMode';
+import { startRun, stepExercise, type ExerciseCommand, type ExerciseRun } from './exerciseRun';
 import { isRegisteredPartId } from '../model/registry';
 import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
 import {
@@ -159,6 +160,8 @@ export interface AppState {
   anchor: AnchorState;
   /** The alert history (M36, issue #80): what the short messages said, kept for the notification centre. Not in the link. */
   alerts: AlertLog;
+  /** The exercise in progress (M66), or null. In the link as `ex`. */
+  exercise: ExerciseRun | null;
 }
 
 /** Engine commands (PHASE2_SPEC 12.3): start, stop, or the lever (−100 … 100, whole numbers). */
@@ -241,6 +244,8 @@ export type Action =
   | { type: 'repairSails' }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
   | { type: 'load'; state: AppState }
+  /** M66: start or stop the exercise, or choose its ropes mode (in setup). */
+  | { type: 'exercise'; command: ExerciseCommand }
   | { type: 'step'; dt: number };
 
 export interface InitialOverrides {
@@ -272,6 +277,8 @@ export interface InitialOverrides {
   clockUtcMs?: number;
   /** From a shared link (M33, M42): the fenders and the place. Without it: fenders in the locker, open water. */
   harbour?: HarbourState;
+  /** From an exercise link (M66): the run, in setup. */
+  exercise?: ExerciseRun | null;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -384,7 +391,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     selection: overrides.selection ?? null,
     learn: overrides.learn ?? null,
     appMode:
-      overrides.appMode === 'learn' || overrides.appMode === 'harbour'
+      overrides.appMode !== undefined && keepsRopesMode(overrides.appMode)
         ? overrides.appMode
         : settings.ropesMode,
     realistic: overrides.realistic ?? initialRealistic(),
@@ -406,6 +413,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     lines: NO_LINES,
     anchor: ANCHOR_STOWED,
     alerts: EMPTY_ALERTS,
+    exercise: overrides.exercise ?? null,
   });
 }
 
@@ -492,15 +500,60 @@ const AUTOPILOT_NOTICE_S = 3;
  * wheel turned, Sailing chosen with the fenders out) is written to the alert history (M36).
  */
 export function reduce(state: AppState, action: Action): AppState {
-  const next = reduceAction(state, action);
-  // A link or Reset brings its own (empty) history.
-  if (next === state || action.type === 'load' || action.type === 'reset') return next;
+  let next = reduceAction(state, action);
+  // A link or Reset brings its own (empty) history; an exercise command may restore another rig.
+  if (
+    next === state ||
+    action.type === 'load' ||
+    action.type === 'reset' ||
+    action.type === 'exercise'
+  ) {
+    return next;
+  }
   const alerts = recordAlerts(next.alerts, state, next);
-  return alerts === next.alerts ? next : { ...next, alerts };
+  if (alerts !== next.alerts) next = { ...next, alerts };
+  // The coach reads the state of this frame (PHASE10_SPEC 4.2).
+  if (action.type === 'step' && next.exercise?.status === 'running') {
+    next = stepExercise(state, next);
+  }
+  return next;
+}
+
+/** The actions that change the conditions: ignored while an exercise is set up or running (PHASE10_SPEC 4.2). */
+const LOCKED_DURING_EXERCISE: ReadonlySet<Action['type']> = new Set([
+  'setWindMode',
+  'setWindSize',
+  'newWindPattern',
+  'setSeaSetting',
+  'setClock',
+  'goToPlace',
+  'setMarinaLayout',
+  'setTraffic',
+  'setBoatMode',
+  'setRopesMode',
+]);
+
+function reduceExercise(state: AppState, command: ExerciseCommand): AppState {
+  if (command === 'start') return startRun(state);
+  if (command === 'stop') {
+    return state.exercise === null ? state : { ...state, exercise: null, paused: false };
+  }
+  if ('ropes' in command) {
+    if (state.exercise?.status !== 'setup') return state;
+    if (command.ropes === state.settings.ropesMode) return state;
+    return withTimeRule({
+      ...state,
+      settings: { ...state.settings, ropesMode: command.ropes },
+    });
+  }
+  return state;
 }
 
 function reduceAction(state: AppState, action: Action): AppState {
+  if (state.exercise !== null && LOCKED_DURING_EXERCISE.has(action.type)) return state;
   switch (action.type) {
+    case 'exercise':
+      return reduceExercise(state, action.command);
     case 'setStep':
       return { ...state, settings: { ...state.settings, step: action.step } };
     case 'setDebug':
@@ -512,18 +565,18 @@ function reduceAction(state: AppState, action: Action): AppState {
         ...state,
         settings: { ...state.settings, ropesMode: action.mode },
         // Out of Learn and Harbour mode, the mode is the ropes mode (PHASE5_SPEC 3.1, PHASE7_SPEC 4.4).
-        appMode:
-          state.appMode === 'learn' || state.appMode === 'harbour' ? state.appMode : action.mode,
+        appMode: keepsRopesMode(state.appMode) ? state.appMode : action.mode,
       });
     case 'setAppMode': {
       if (action.mode === state.appMode) return state;
-      // Learn and Harbour keep the ropes mode as it is.
-      if (action.mode === 'learn' || action.mode === 'harbour') {
-        return { ...state, appMode: action.mode };
+      // Learn, Harbour and Exercises keep the ropes mode as it is; any other mode ends a run.
+      if (keepsRopesMode(action.mode)) {
+        return { ...state, appMode: action.mode, exercise: null };
       }
       return withTimeRule({
         ...state,
         appMode: action.mode,
+        exercise: null,
         settings: { ...state.settings, ropesMode: action.mode },
       });
     }
@@ -567,7 +620,14 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (action.id !== null && !isRegisteredPartId(action.id)) return state;
       return { ...state, learn: action.id };
     case 'setControls': {
-      const controls = withControls(state.controls, action.values);
+      // The exercise sets the wind (PHASE10_SPEC 4.2).
+      let values = action.values;
+      if (state.exercise !== null) {
+        values = { ...values };
+        delete values.ctl_wind_dir;
+        delete values.ctl_wind_speed;
+      }
+      const controls = withControls(state.controls, values);
       if (controls === state.controls) return state;
       // Taking the wheel switches the autopilot to Standby.
       if (controls.ctl_rudder !== state.controls.ctl_rudder && state.autopilot.mode !== 'off') {

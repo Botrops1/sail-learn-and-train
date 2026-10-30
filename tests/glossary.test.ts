@@ -659,7 +659,8 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
       (ui[`learn.group.${group}`] ?? '').replace(/\s*\(?\{count\}\)?/, '').trim(),
     );
     expect(labels.slice(0, GROUPS.length)).toEqual(expected);
-    expect(labels.length).toBe(GROUPS.length + 1);
+    // The groups, the interface texts, and (M66) the exercise texts.
+    expect(labels.length).toBe(GROUPS.length + 2);
   });
 
   it('is smaller than GitHub shows as Markdown, and has no date', () => {

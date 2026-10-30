@@ -575,7 +575,12 @@ Mistakes, waypoints and their links (M67); the debrief (M68); any exercise other
 
 ### 6.11 Decided in the M66 PR
 
-(empty)
+Recommended; merging accepts it.
+
+- **`exercises` leads column 0 of `DEFAULT_WIDE_LAYOUT`**, so a layout saved before M66 gets the Exercises section at the end of column 0 (`completeLayout` appends it). Only `tests/sectionLayout.test.ts` changed for it (the first two sections after moving Sails to the top are now Sails and Exercises). The section is hidden outside Exercises mode.
+- **`tests/glossary.test.ts` and `tests/languages.test.ts`**: the review document has one more part (so the count of `##` headings is groups + 2), and `exercise.line` (only placeholders and a dot) joins the Russian strings that equal English.
+- **`:root[data-exercise]`** is set by `app.ts` while a run exists; one CSS rule hides what would load a scene (Learn's "Show it working" and "Try it", Realistic's Practice) through `data-hide-in-exercise`.
+- **The shots script** needs `SHOTS_CHROMIUM=/opt/pw-browsers/chromium` in this cloud environment (the repo's pinned Playwright looks for another browser build); CI is unchanged.
 
 ---
 

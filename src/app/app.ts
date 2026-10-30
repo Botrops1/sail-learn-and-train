@@ -23,6 +23,9 @@ import type { ChipCard } from '../ui/chipCard';
 import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
 import { createClockPanel } from '../ui/clockPanel';
+import { createExerciseLine } from '../ui/exerciseLine';
+import { twaSignedDeg } from '../model/exercises';
+import { mpsToKn } from '../model/angles';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
 import { createInstrumentStrip } from '../ui/instrumentStrip';
@@ -121,6 +124,37 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   top.append(topRight);
   createTimeBar(topRight, store);
   createClockPanel(topChips, layout.view, store);
+  createExerciseLine(top, store, () => panel.showSection('exercises'));
+  // CSS hides what would load a scene (and end the run) while an exercise exists.
+  const markExercise = () => {
+    document.documentElement.toggleAttribute('data-exercise', store.getState().exercise !== null);
+  };
+  markExercise();
+  store.subscribe(markExercise);
+  if (store.getState().settings.debug) {
+    // For the browser checks (PHASE10_SPEC 6.5): drive and read an exercise.
+    (window as unknown as Record<string, unknown>).__sailExercise = {
+      dispatch: (action: Parameters<typeof store.dispatch>[0]) => store.dispatch(action),
+      state: () => {
+        const run = store.getState().exercise;
+        return run ? { ...run, waypoints: run.waypoints.length } : null;
+      },
+      read: () => {
+        const s = store.getState();
+        return {
+          twsKn: s.wind.twsKn,
+          twaDeg: twaSignedDeg(s),
+          speedKn: mpsToKn(s.boat.speedMps),
+          heelDeg: s.boat.heelDeg,
+          controls: s.controls,
+          jibOutPct: 100 * s.rig.jibSolution.unfurled,
+          engineRunning: s.engine.running,
+          gear: s.engine.gear,
+          paused: s.paused,
+        };
+      },
+    };
+  }
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
   let reframe = () => {};
   trackTopHeight(layout.view, top, () => reframe());
@@ -136,7 +170,9 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
     atFull: sheet.atFull,
     // Harbour mode stays (issue #102); the other modes still switch to Learn mode.
     showLearn: (id) =>
-      store.getState().appMode === 'harbour' ? panel.showLearnEntry(id) : panel.openLearnEntry(id),
+      store.getState().appMode === 'harbour' || store.getState().appMode === 'exercise'
+        ? panel.showLearnEntry(id)
+        : panel.openLearnEntry(id),
   });
   panel.onChange(() => card.refresh());
   sheet.onChange(() => {

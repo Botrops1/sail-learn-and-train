@@ -59,6 +59,7 @@ const SAME_AS_ENGLISH: Record<string, string> = {
   'clock.zone': 'only placeholders, a dot and the time-zone letters (UTC)',
   'learn.alternativeWithNote': 'only placeholders and brackets',
   'quick.harbour.short': 'only placeholders',
+  'exercise.line': 'only placeholders and a dot (the step number, the total and the goal)',
 };
 
 afterEach(() => setLanguage(DEFAULT_LANGUAGE));

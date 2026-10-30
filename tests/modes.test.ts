@@ -207,3 +207,14 @@ describe('M55: the Status section (13.4)', () => {
     }
   });
 });
+
+describe('Exercises mode (M66)', () => {
+  it('the exercises section is available only in the exercise mode', () => {
+    const easy = initialState();
+    expect(sectionAvailable('exercises', easy)).toBe(false);
+    const exercise = reduce(easy, { type: 'setAppMode', mode: 'exercise' });
+    expect(sectionAvailable('exercises', exercise)).toBe(true);
+    expect(exercise.settings.ropesMode).toBe('easy');
+    expect(exercise.exercise).toBeNull();
+  });
+});

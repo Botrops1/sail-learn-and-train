@@ -3118,6 +3118,34 @@
 | mode.easy.desc | For learning what each rope does. Every rope is a slider and the boat answers at once. | Чтобы понять, что делает каждый конец. Каждый конец — ползунок, яхта отвечает сразу. |
 | mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the ropes, as on the boat. | Для тренировки, как на палубе. Концами работают стопоры, лебёдки и ваша рука, как на яхте. |
 | mode.harbour.desc | For bringing her in and out of a harbour. The engine and the thrusters come first. | Чтобы заходить в гавань и выходить из неё. Сначала двигатель и подруливающие. |
+| mode.exercise | Exercises | Упражнения |
+| mode.exercise.desc | For practising step by step. Pick an exercise: it sets up the boat and the wind, shows each step and ticks it off when you get it right. | Для тренировки по шагам. Выберите упражнение: оно подготовит яхту и ветер, покажет каждый шаг и отметит его, когда у вас получится. |
+| exercise.label | Exercises | Упражнения |
+| exercise.hint | Each exercise sets up the boat, the wind and the place, then shows one step at a time. A step ticks itself off when the boat shows you did it. | Каждое упражнение готовит яхту, ветер и место, потом показывает по одному шагу. Шаг отмечается сам, когда яхта показывает, что вы всё сделали. |
+| exercise.group.sailing | Sailing skills | Навыки хождения под парусом |
+| exercise.doneBest | ✓ best {time} | ✓ лучшее {time} |
+| exercise.see | What you see | Что вы видите |
+| exercise.happening | What is happening | Что происходит |
+| exercise.action | The right action | Правильное действие |
+| exercise.mistake | The typical mistake | Типичная ошибка |
+| exercise.ropes | Ropes | Снасти |
+| exercise.ropes.hint | Easy: every rope is a slider. Realistic: clutches and winches, as on the boat. | Простые: каждая снасть — ползунок. Реалистичные: стопоры и лебёдки, как на яхте. |
+| exercise.steps | Steps | Шаги |
+| exercise.start | Start | Начать |
+| exercise.list | Back to the list | К списку |
+| exercise.stepOf | Step {n} of {total} | Шаг {n} из {total} |
+| exercise.how | How? | Как? |
+| exercise.open | Show the controls | Показать органы управления |
+| exercise.hold | Good. Hold it: {s} s | Хорошо. Держите: {s} с |
+| exercise.stop | Stop the exercise | Остановить упражнение |
+| exercise.stopConfirm | Tap again to stop | Нажмите ещё раз, чтобы остановить |
+| exercise.locked | Set by the exercise. | Задано упражнением. |
+| exercise.finished | Well done! | Отлично! |
+| exercise.time | Time: {time} | Время: {time} |
+| exercise.again | Try again | Ещё раз |
+| exercise.line | {n}/{total} · {goal} | {n}/{total} · {goal} |
+| exercise.lineHold | · hold {s} s | · держите {s} с |
+| exercise.lineDone | Done ✓ {time} · tap for the summary | Готово ✓ {time} · нажмите, чтобы посмотреть итог |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
@@ -3316,3 +3344,34 @@
 | anchor.alarm | Anchor alarm: the anchor is dragging. | Якорная тревога: якорь ползёт. |
 | anchor.silence | OK | ОК |
 | anchor.hint | To anchor: head into the wind and stop, let the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | Постановка на якорь: встаньте носом к ветру, остановитесь, травите цепь, пока лодку сносит назад, до отметки «достаточно» (длина цепи к глубине: не меньше 4 глубин с высотой ролика или 3 длин корпуса, что больше), затем дайте малый назад (на треть) на несколько секунд, чтобы якорь зарылся. Песок и ил держат хорошо, трава и камень плохо. |
+
+## Упражнения
+
+| key | English | Русский |
+|---|---|---|
+| points-of-sail.title | Trim through the points of sail | Настройка парусов на всех курсах |
+| points-of-sail.summary | Turn from close to the wind to a run, easing the sails as you go. | Поворачивайте от крутого бейдевинда до фордевинда, потравливая паруса. |
+| points-of-sail.see | You are sailing close to the wind (close-hauled) on starboard tack: the wind comes over the right side of the bow. The front edge of the mainsail is flapping. | Вы идёте круто к ветру (крутой бейдевинд) правым галсом: ветер дует с правой стороны носа. Передняя кромка грота полощет. |
+| points-of-sail.happening | A sail works like a wing only when the wind meets it at the right angle. As you turn away from the wind (bear away), the wind comes more from the side and then from behind, so each sail has to be let out further. | Парус работает как крыло, только если ветер встречает его под правильным углом. Когда вы уваливаетесь (поворачиваете от ветра), ветер заходит сбоку, а потом сзади, и каждый парус нужно потравливать больше. |
+| points-of-sail.action | Each time you bear away, ease (let out) the sheets: the main until it stops being stalled, the jib all the way on a reach. On a run, let the main right out. | Каждый раз, уваливаясь, потравливайте шкоты: грот, пока он не перестанет срываться, стаксель — до конца на галфвинде. На фордевинде вытравите грот полностью. |
+| points-of-sail.mistake | Turning away without easing: the sails stall (the air stops flowing smoothly over them), she heels and slows. Turning too far on a run: the wind gets behind the main and throws the boom across (an accidental gybe). | Поворот от ветра без потравливания: паруса срываются (воздух перестаёт плавно обтекать их), яхта кренится и теряет скорость. Слишком глубокий поворот на фордевинде: ветер заходит за грот и перекидывает гик (случайный оверштаг через корму). |
+| points-of-sail.done | You sailed every point of sail from close-hauled to a run. The rule: the further from the wind, the further out the sails. | Вы прошли все курсы относительно ветра, от крутого бейдевинда до фордевинда. Правило: чем дальше от ветра, тем сильнее вытравлены паруса. |
+| points-of-sail.steps.close-hauled.goal | Close-hauled: haul the main in until it stops flapping. | Крутой бейдевинд: выберите грот, пока он не перестанет полоскать. |
+| points-of-sail.steps.close-hauled.how | In Ropes, tap − on Main sheet until it reads about 12 %. Watch the Sails section: both sails read Good when they are trimmed. | В разделе «Снасти» нажимайте − у шкота грота, пока не будет примерно 12 %. В разделе «Паруса» оба паруса показывают «Хорошо», когда настроены. |
+| points-of-sail.steps.close-reach.goal | Close reach: turn 20° away from the wind, then ease the main. | Крутой галфвинд: уйдите на 20° от ветра, затем потравите грот. |
+| points-of-sail.steps.close-reach.how | In Autopilot, tap “10° to port” twice: the wind comes from starboard, so port is away from it. Then ease Main sheet to about 25 %. | В автопилоте дважды нажмите «10° влево»: ветер справа, значит влево — от него. Затем потравите шкот грота примерно до 25 %. |
+| points-of-sail.steps.beam-reach.goal | Beam reach: wind from the side. Ease the main and let the jib sheet right out. | Галфвинд: ветер сбоку. Потравите грот и вытравите шкот стакселя до конца. |
+| points-of-sail.steps.beam-reach.how | Tap “10° to port” three more times. Ease Main sheet to about 50 % and Jib sheet to 100 %. On a reach the self-tacking jib (it changes sides by itself) cannot go out far enough to read Good: let its sheet right out. | Ещё три раза нажмите «10° влево». Потравите шкот грота примерно до 50 %, шкот стакселя — до 100 %. На галфвинде самоповоротный стаксель (он сам меняет борт) не может выйти достаточно далеко, чтобы показать «Хорошо»: вытравите его шкот до конца. |
+| points-of-sail.steps.broad-reach.goal | Broad reach: wind from behind the side. Let the main right out. | Широкий галфвинд (бакштаг): ветер сзади сбоку. Вытравите грот до конца. |
+| points-of-sail.steps.broad-reach.how | Tap “10° to port” four more times. Ease Main sheet to 85 % or more: the boom stops at the shrouds (the wires that hold the mast up), so the main cannot go further out. | Ещё четыре раза нажмите «10° влево». Потравите шкот грота до 85 % или больше: гик упирается в ванты (тросы, держащие мачту), дальше грот не уйдёт. |
+| points-of-sail.steps.run.goal | Run: wind from behind. Hold the course for 10 seconds without a gybe. | Фордевинд: ветер сзади. Держите курс 10 секунд без оверштага. |
+| points-of-sail.steps.run.how | Tap “10° to port” three more times, to about 165° from the wind. Do not go further: with the wind dead behind or on the other side, the boom can swing across by itself. | Ещё три раза нажмите «10° влево», примерно до 165° от ветра. Дальше не надо: если ветер строго сзади или с другой стороны, гик может перекинуться сам. |
+| points-of-sail.mistakes.accidental-gybe.what | The boom swung across by itself (an accidental gybe). | Гик сам перекинулся на другой борт (случайный оверштаг через корму). |
+| points-of-sail.mistakes.accidental-gybe.why | The wind got behind the mainsail from the other side: she turned past dead downwind. | Ветер зашёл за грот с другой стороны: яхта повернула дальше прямого фордевинда. |
+| points-of-sail.mistakes.accidental-gybe.fix | Turn back towards the wind until it is about 160° off the bow. On a run, never steer past dead downwind. | Поверните обратно к ветру, чтобы он был примерно 160° от носа. На фордевинде не уваливайтесь дальше прямого. |
+| points-of-sail.mistakes.by-the-lee.what | You are sailing by the lee: the wind comes from the side the boom is on. | Вы идёте «на подветре»: ветер дует с той стороны, где гик. |
+| points-of-sail.mistakes.by-the-lee.why | She turned past dead downwind, so the boom can gybe at any moment. | Яхта прошла дальше прямого фордевинда, поэтому гик может перекинуться в любой момент. |
+| points-of-sail.mistakes.by-the-lee.fix | Turn 10–20° back towards the wind straight away. | Сразу поверните на 10–20° обратно к ветру. |
+| points-of-sail.mistakes.in-irons.what | She has stopped, pointing into the wind (in irons). | Яхта остановилась носом в ветер (в мёртвой зоне). |
+| points-of-sail.mistakes.in-irons.why | She turned towards the wind instead of away from it: no sail works with the wind straight ahead. | Она повернула к ветру, а не от него: при ветре прямо в нос ни один парус не работает. |
+| points-of-sail.mistakes.in-irons.fix | Turn away from the wind with the Wind autopilot’s “10° to port”; if she does not answer, do the Getting out of irons exercise. | Уваливайтесь кнопкой «10° влево» автопилота по ветру; если не отвечает, пройдите упражнение «Выход из мёртвой зоны». |

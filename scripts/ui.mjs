@@ -6,6 +6,7 @@
 /** M51: the phone tab each section is under: a copy of `TAB_OF` in src/ui/modes.ts (keep them in step). */
 const TAB_OF_JS = {
   mode: 'mode',
+  exercises: 'controls',
   ropes: 'controls',
   helm: 'controls',
   sails: 'controls',
@@ -257,6 +258,12 @@ export async function waitForLink(page, has, hasNot = []) {
     }
     await page.waitForTimeout(50);
   }
+}
+
+/** M66: the text of the exercise line over the 3D view, or null while it is hidden. */
+export async function exerciseLine(page) {
+  const line = page.getByTestId('exercise-line');
+  return (await line.isVisible()) ? ((await line.textContent()) ?? '').trim() : null;
 }
 
 /** M53: opens the Helm section (Realistic ropes) and, if "Go to the helm" shows, walks there. */

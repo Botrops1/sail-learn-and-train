@@ -16,7 +16,18 @@ export const LAYOUT_KEY = 'sail-learn.layout';
 /** The first-time arrangement (the Easy mode's columns before M54). */
 export const DEFAULT_WIDE_LAYOUT: SectionLayout = {
   columns: [
-    ['ropes', 'helm', 'sails', 'autopilot', 'engine', 'place', 'anchor', 'harbour', 'status'],
+    [
+      'exercises',
+      'ropes',
+      'helm',
+      'sails',
+      'autopilot',
+      'engine',
+      'place',
+      'anchor',
+      'harbour',
+      'status',
+    ],
     ['conditions', 'learn'],
   ],
 };

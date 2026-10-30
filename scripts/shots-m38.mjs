@@ -156,9 +156,9 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const names = await page.locator('.mode-choice .mode-option-name').allInnerTexts();
     const hints = await page.locator('.mode-choice .mode-option-hint').allInnerTexts();
     check(
-      'the mode card lists Learn, Easy, Realistic and Harbour, each with a description',
-      choices === 4 &&
-        names.join() === 'Learn,Easy,Realistic,Harbour' &&
+      'the mode card lists Learn, Easy, Realistic, Harbour and Exercises, each with a description',
+      choices === 5 &&
+        names.join() === 'Learn,Easy,Realistic,Harbour,Exercises' &&
         hints.every((hint) => hint.length > 30),
       JSON.stringify({ names, hints }),
     );

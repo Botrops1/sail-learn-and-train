@@ -26,6 +26,7 @@ import {
   type WideSectionId,
 } from './sectionLayout';
 import { createSectionMove } from './sectionMove';
+import { createExercisePanel } from './exercisePanel';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
 import { createPlacePanel } from './placePanel';
@@ -42,6 +43,7 @@ import { createWindPanel } from './windPanel';
 /** The title of each section (PHASE5_SPEC 8.4). */
 const SECTION_TITLES: Record<SectionId, StringKey> = {
   mode: 'mode.label',
+  exercises: 'exercise.label',
   ropes: 'tab.ropes',
   helm: 'real.station.helm',
   sails: 'trim.label',
@@ -153,6 +155,10 @@ export function createPanel(
 
   const built: Record<SectionId, { content: HTMLElement[]; explain: boolean }> = {
     mode: { content: [modePicker], explain: false },
+    exercises: {
+      content: createExercisePanel(store, { showSection }, () => layoutKind, sheet),
+      explain: true,
+    },
     ropes: { content: createRopesTab(store, openLearnEntry, showSection), explain: true },
     helm: { content: [createHelmStation(store)], explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
@@ -322,7 +328,8 @@ export function createPanel(
   function applyOpen(state: AppState, fromLink = false): void {
     for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
     if (fromLink) {
-      if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
+      if (state.appMode === 'exercise') openOnly('exercises');
+      else if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
       else if (state.appMode === 'harbour') openHarbourFirst(state);
       else if (state.appMode !== 'learn' && wheelSelected(state)) openOnly('helm');
       else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
@@ -366,6 +373,26 @@ export function createPanel(
     for (const id of SECTION_IDS) {
       const section = sections.get(id);
       if (section) section.element.hidden = !sectionAvailable(id, state, layoutKind);
+    }
+  }
+
+  /** A run locks the wind and the place: their bodies are inert under a note (PHASE10_SPEC 6.5). */
+  const lockNotes = new Map<SectionId, HTMLElement>();
+  function applyLocked(state: AppState): void {
+    const locked = state.exercise !== null;
+    for (const id of ['conditions', 'place'] as const) {
+      const body = sections.get(id)?.element.querySelector<HTMLElement>('.section-body');
+      if (!body) continue;
+      let note = lockNotes.get(id);
+      if (!note) {
+        note = el('p', { class: 'hint', 'data-testid': `exercise-locked-${id}`, hidden: '' }, [
+          t('exercise.locked'),
+        ]);
+        lockNotes.set(id, note);
+        body.prepend(note);
+      }
+      note.hidden = !locked;
+      body.toggleAttribute('inert', locked);
     }
   }
 
@@ -425,6 +452,7 @@ export function createPanel(
   }
 
   applyAvailable(store.getState());
+  applyLocked(store.getState());
   applyModeTitle(store.getState());
   applyMode(store.getState(), true);
   if (layoutKind === 'stacked' && !SECTION_IDS.some((id) => sections.get(id)?.isOpen())) {
@@ -441,10 +469,22 @@ export function createPanel(
       changed();
     }
     if (state.appMode !== previous.appMode) {
+      applyAvailable(state);
       applyModeTitle(state);
       applyMode(state);
+      // Exercises mode opens its own section (PHASE10_SPEC 6.5).
+      if (state.appMode === 'exercise') showSection('exercises');
       changed();
     }
+    // An exercise link or a Try again loads a run in setup: show its card.
+    if (
+      state.appMode === 'exercise' &&
+      state.exercise?.status === 'setup' &&
+      previous.exercise?.status !== 'setup'
+    ) {
+      showSection('exercises');
+    }
+    applyLocked(state);
     // M53 (owner, PR 124): with Realistic ropes the Helm camera also walks you to the helm, so the
     // view and the controls agree; the other camera views leave the station alone.
     if (
