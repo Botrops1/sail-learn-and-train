@@ -59,8 +59,10 @@ If something here looks necessary, stop and ask in the PR.
 | Heel, boom | `heelDeg` checks `Math.abs(boat.heelDeg)`; `boomDeg` checks `Math.abs(rig.solution.thetaDeg)` (the boom's angle from the centreline). |
 | Trim | `sailTrim(sail, rig, motion.awaDeg).state` (`src/model/trim.ts`). With `motion === null` (the first frame after a load) every check fails. |
 | Rope values | `controls` (`ctl_*`, 0 = hauled in / rolled up, 100 = eased / rolled out; `ctl_rudder` −35 … 35, + = to starboard). Realistic mode moves `controls` too (`stepRealistic`), so the same checks work in both rope modes. **Main out** = `rig.applied.mainFurl` (what the rig has: in Easy ropes it follows the control with a 0.4 s lag, `visual.controlResponseTimeS`; in Realistic ropes it is the control); **jib out** = `100 × rig.jibSolution.unfurled` (what is reached: the jib sheet can stop the furl, PT-13). |
+| Start speed | A start link without `bs` starts her Sailing at her steady speed for that wind and trim (PHASE2_SPEC 6.4); `bs=0` starts her stopped. |
 | Time | An exercise has its own clock, `run.elapsedS`: the sum of `next.rig.timeS − previous.rig.timeS` over the frames since Start (0 while paused; the time bar's speed-up counts). Times shown as `m:ss` with `alertTimeText` (`src/model/alerts.ts`). |
-| Ranges | `[min, max]`, both ends included. |
+| Ranges | `[min, max]`, both ends included; `99` and `-99` stand for "no limit". |
+| Bands in tests | "Within N s" is app time from the step's start (`elapsedS − stepStartS`), stepping `reduce(state, { type: 'step', dt: 0.05 })` with real `step` actions; the actions of a step are dispatched at its start unless the test says "each frame". |
 | New alert entries | The entries of `next.alerts.entries` with `n > run.seenAlertN`; afterwards `run.seenAlertN = next.alerts.written`. Entries in the first `settings.settleS` (1 s) after Start or a Back are skipped (the rig settles after a load). |
 | Ids | Exercise, step and mistake ids are kebab-case (`points-of-sail`, `close-hauled`). They are data ids, not registry ids (they draw nothing). |
 | Steps in the UI | `run.step` is a 0-based index; the screen says "Step {n} of {total}" with n = index + 1. A **waypoint** is the state at the start of a step: waypoint 0 is Start. |
@@ -87,7 +89,7 @@ If something here looks necessary, stop and ask in the PR.
 
 ### 3.3 Sources
 
-The exercises follow the beginner syllabus topics named in ROADMAP Phase 10 (RYA Competent Crew, ASA 101): points of sail and sail trim, tacking, gybing (controlled and accidental), getting out of irons, gusts, reducing sail, setting and stowing sails. Every sailing statement in the exercise texts rests on a PHYSICS_TRUTHS rule: PT-21 (no-go zone, irons), PT-22 (easing as you bear away), PT-23 (stall), PT-24 and PT-26 (accidental gybe), PT-25, PT-29 and PT-32 (heel, easing, round-up), PT-28 (self-tacking jib), PT-13 (jib furling needs an eased sheet), PT-12 (in-mast furling), PT-35 (no speed, no steering; astern the rudder works the other way), PT-38 (flogging), PT-45 (a gust shows on the water). Two new rules come with this part: **PT-58** (M69: haul the main in before a gybe) and **PT-59** (M71: roll an in-mast main in and out with the bow close to the wind); see PHYSICS_TRUTHS.
+The exercises follow the beginner syllabus topics named in ROADMAP Phase 10 (RYA Competent Crew, ASA 101): points of sail and sail trim, tacking, gybing (controlled and accidental), getting out of irons, gusts, reducing sail, setting and stowing sails. Every sailing statement in the exercise texts rests on a PHYSICS_TRUTHS rule: PT-21 (no-go zone, irons), PT-22 (easing as you bear away), PT-23 (stall), PT-24 and PT-26 (accidental gybe), PT-25, PT-29 and PT-32 (heel, easing, round-up), PT-28 (self-tacking jib), PT-13 (jib furling needs an eased sheet), PT-12 (in-mast furling), PT-35 (no speed, no steering; astern the rudder works the other way), PT-38 (flogging), PT-45 (a gust shows on the water). Two new rules come with this part, added to `docs/PHYSICS_TRUTHS.md` ("Phase 10 rules") by the planning PR: **PT-58** (M69: haul the main in before a gybe; source-checked, Wikipedia *Jibe*) and **PT-59** (M71: roll an in-mast main in and out with the bow close to the wind; `to-verify`, the candidate Seldén manual does not open from the build environment). The milestone PRs add their tests and test links.
 
 ### 3.4 Common mistakes (check these first when something fails)
 
@@ -95,9 +97,10 @@ The exercises follow the beginner syllabus topics named in ROADMAP Phase 10 (RYA
 - **New alerts are `n > seenAlertN`,** not `>=` (the prototype counted one entry every frame with `>=`).
 - **The hold.** `holdS = passes ? holdS + dt : 0`; the step is done when `passes && holdS >= step.holdS`. A step with `holdS: 0` is done on the first frame it passes; a frame with `dt === 0` (paused) changes nothing.
 - **Motion is null after a load.** `checkPasses` returns false while `source.motion === null`; never read `motion!.awaDeg`.
-- **Paused is not stopped.** While paused `stepExercise` returns `next` unchanged (no time, no hold, no mistakes, no events), except that the step's `seenAlertN` is not advanced either.
+- **Paused is not stopped.** While paused (`dt === 0`) `stepExercise` returns `next` unchanged: no time, no hold, no mistakes, no events (and no alert can be written while time stands still).
+- **Actions in this spec are written short:** `setControls { ctl_mainsheet: 12 }` = `{ type: 'setControls', values: { ctl_mainsheet: 12 } }`; `autopilot { turnDeg: -10 }` = `{ type: 'autopilot', command: { turnDeg: -10 } }`; `autopilot 'tack'` = `{ type: 'autopilot', command: 'tack' }`; `engine 'stop'`, `engine { leverPct: 0 }` likewise; a Realistic gesture `clutch a2 open` = `{ type: 'realistic', action: { type: 'clutch', key: 'a2', open: true } }`; `start` = `{ type: 'exercise', command: 'start' }`.
 - **Locked actions.** While `state.exercise !== null`, the actions of 4.2 that change the conditions are ignored in `reduceAction`; `setControls` drops only the keys `ctl_wind_dir` and `ctl_wind_speed` and applies the rest.
-- **`m=exercise` keeps the ropes mode,** like Learn and Harbour. Every place that tests `appMode === 'learn' || appMode === 'harbour'` to mean "keeps the ropes mode" uses `keepsRopesMode(mode)` (4.1) instead.
+- **`m=exercise` keeps the ropes mode,** like Learn and Harbour. Only the places where `learn || harbour` means "keeps the ropes mode" use `keepsRopesMode(mode)` (4.1): `store.ts` (`initialState`'s `appMode` override, `setRopesMode`, `setAppMode`) and `urlState.ts` (parsing and writing `m`). Everywhere else (the info card's "shown in the panel" rule, `panel.ts`, `quickRow.ts`, `realisticPanel.ts`, `thrusterPanel.ts`, `urlSync.ts`) Exercises mode is neither Learn nor Harbour: the panel, the quick row and the stations behave as in the ropes mode itself (Easy or Realistic), with one exception: the info card's "More" (`showLearn` in `app.ts`) uses `panel.showLearnEntry` in Exercises mode as it does in Harbour, so reading an entry does not end the run. The Learn entry's **Try it** buttons (`learn-try-*`, which switch to the ropes mode) are hidden during a run, as "Show it working" is.
 - **A waypoint holds a whole `AppState`** with `exercise: null` (never a run inside a run). Restoring one keeps the viewer's own settings, the camera, the alert history and the run's log (7.3).
 - **The boat object is shared** (PHASE8_SPEC 3.4): read `boat.…` at call time.
 - **Russian drafts** go into `content/lang/ru/exercises.json` with every key of the English file; `tests/languages.test.ts` checks the keys (6.7 test 2).
@@ -113,7 +116,7 @@ A throwaway Vitest file (2026-10-30) opened each exercise's start link with `par
 | irons | 1.0, 52.9, 26.8 | 81 | none |
 | gybing | 3.3, 16.3, 5.0, 16.0 | 41 | `byTheLee`, `gybe` (controlled), `byTheLee`, `gybe` (accidental) |
 | gusts (ease 45 % while the wind is over 16.8 kn, else 25 %) | 141.0, 5.0 | 146 | none (with the policy kept in step 2) |
-| reduce-sail | 2.9, 2.0, 10.0 | 15 | none |
+| reduce-sail (start: heel 19.1°, main luffing; jib sheet back to 75 % with the main roll-in) | 2.9, 2.0, 10.0 | 15 | none (final heel 17.4°; jib sheet left at 100 %: 11.6°, but the jib flogs) |
 | set-sails (Realistic gestures) | 7.7, 20.3, 31.2, 45.8, 5.0 | 110 | rope warnings from the script's clumsy gestures (11.7) |
 | furl-sails (Realistic gestures) | 2.0, 31.2, 13.8, 21.4 | 68 | one `tack` (she swings through head to wind) |
 
@@ -131,10 +134,10 @@ What the prototype found about the model (the exercises are built around it; eac
 ### 3.6 Browser-check conventions (every milestone)
 
 - Each milestone has `scripts/shots-m<N>.mjs`, registered in `scripts/shots.mjs` (import, `SCENES`, `liveGroups`) with names written without the prefix, as Phases 5–9.
-- **What `openPage` adds:** Phase 10 labels (`m66` … `m71`) are treated like Phase 9 ones. The M66 PR appends `|6[6-9]|7[01]` inside each label group of `openPage` that M60 extended with `|6[0-5]` (the four default rules `held`, `sea`, `clock`, `mm`, and the "older checks open Ropes" rule).
+- **What `openPage` adds:** Phase 10 labels (`m66` … `m71`) are treated like Phase 9 ones. The M66 PR replaces `6[0-5]` with `6\d|7[01]` in each of the five regular expressions of `openPage` that contain it (`scripts/shots.mjs`: the `held`, `sea`, `clock` and `mm` defaults and the "older checks open Ropes" rule).
 - **Test clock** for every live check that waits for app time (CLAUDE.md): `openPage(viewport, label, query, { testClock: true })`; wait with `page.waitForTimeout`, never `waitForFunction`.
 - **Driving an exercise:** with `debug=1`, `app.ts` exposes `window.__sailExercise = { dispatch(action), state(), read() }` (M66, 6.5): `dispatch` is `store.dispatch`, `state` returns the run (waypoints as a count), `read` the boat's numbers. Checks use it for the boat-handling actions of a good run (rope values, autopilot, engine, Realistic gestures) and tap the exercise's own buttons (Start, How?, Carry on, Back, Stop) as a learner would. `scripts/ui.mjs` gets `TAB_OF_JS.exercises = 'controls'` and a helper `exerciseLine(page)` (the text of `exercise-line`).
-- **CI** (`.github/workflows/ci.yml`): the M66 PR adds a part `live, M66-M71` with `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m66,m67,m68,m69,m70,m71` (a name with no group yet is skipped) and appends `,m66,m67,m68,m69,m70,m71` to the `SHOTS_SKIP` list of the part `live, M30 on`. A good run of an exercise takes up to three minutes of app time; on the test clock `page.waitForTimeout` moves the app on at once, so this costs real time only for the frames drawn.
+- **CI** (`.github/workflows/ci.yml`): the M66 PR adds a matrix part `live, M66-M71` (after the last `live, M6…` part, same shape) with `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m66,m67,m68,m69,m70,m71` (a name with no group yet is skipped) and appends `,m66,m67,m68,m69,m70,m71` to the `SHOTS_SKIP` list of the part `live, M30 on`. A good run of an exercise takes up to three minutes of app time; on the test clock `page.waitForTimeout` moves the app on at once, so this costs real time only for the frames drawn.
 
 ### 3.7 General rules for every milestone
 
@@ -270,7 +273,7 @@ export type ExerciseCommand =
 - **Choosing an exercise** is a `load`: the UI dispatches `{ type: 'load', state: parseUrlState(exerciseStartLink(id, state, def.ropes), state.settings.detail) }`; the link puts the run in `setup` (4.3).
 - **Locked while `state.exercise !== null`** (ignored in `reduceAction`, returning `state`): `setWindMode`, `setWindSize`, `newWindPattern`, `setSeaSetting`, `setClock`, `goToPlace`, `setMarinaLayout`, `setTraffic`, `setBoatMode`, `setRopesMode`; `setControls` drops `ctl_wind_dir` and `ctl_wind_speed` (and returns `state` if nothing is left).
 - **Ending a run:** `setAppMode` to any mode but `exercise` sets `exercise: null`; `reset` gives `exercise: null` (its defaults); a `load` brings its own (`null` for an ordinary link).
-- **Order in `reduce`** (`src/app/store.ts`): `reduceAction` → `recordAlerts` (as today) → **if `action.type === 'step'` and `next.exercise?.status === 'running'`: `next = stepExercise(state, next)`** → (M68) **if `next.exercise` is running or in `mistake` and the action is one of 8.3's: `next = logAction(state, next, action)`** (`state` is the state before the action, for the `from` values).
+- **Order in `reduce`** (`src/app/store.ts`): `reduceAction` → `recordAlerts` (as today, but skipped for `exercise` actions, as for `load` and `reset`: a Back restores another rig and must not write a false gybe or tack) → **if `action.type === 'step'` and `next.exercise?.status === 'running'`: `next = stepExercise(state, next)`** → (M68) **if `next.exercise` is running or in `mistake` and the action is one of 8.3's: `next = logAction(state, next, action)`** (`state` is the state before the action, for the `from` values).
 - **Inside `stepExercise`**, per frame with `dt = next.rig.timeS − previous.rig.timeS > 0`: (1) `elapsedS += dt`; (2) new alert entries → (M68) `event` log entries, (M69) events, (M67) alert mistakes; (3) (M70) the gust counter; (4) (M67) condition mistakes; (5) if a mistake stopped the run, return; (6) the step's check and hold; on passing: log `step`, (M67) push a waypoint, next step (or `done`).
 
 ### 4.3 URL keys
@@ -284,8 +287,8 @@ export type ExerciseCommand =
 | `exp` | M67 | `0` | pause on mistakes (no key) | when `pauseOnMistake` is false |
 | `exc` | M71 | `1` | alone (no key) | when `crew === 'crew'` |
 
-- **The start link** (M66): `exerciseStartLink(id, state, ropes)` = `?v=1&m=exercise&ex=<id>&mode=<ropes>` followed by the viewer's own keys as `serializeUrlState` writes them for `state` (`cam`, and `hw`/`hl` with the Helm camera, `step`, `detail`, `lang` when not English, `lb`, `mm`, `debug`), and from M67 `exp`, from M71 `exc`. In M66, `serializeUrlState(state)` returns the start link (with the run's ropes and options) whenever `state.exercise !== null`; M67 changes this for a run that has waypoints (7.4).
-- **Parsing `ex`** (known id, no `exw`): the state is `parseUrlState(def.start + '&' + <the link's own cam, hw, hl, step, detail, lang, lb, mm, debug, mode>)` (the link's keys win), then `appMode: 'exercise'`, `paused: true`, `exercise: newRun(id, 0, options)`. An unknown id is ignored (an ordinary link; with `m=exercise` it opens the list).
+- **The start link** (M66): `exerciseStartLink(id, state, ropes)` is built key by key (not through `serializeUrlState`): `v=1`, then `boat=<id>` when the boat is not the Hanse 508 (as M58 writes it), `m=exercise`, `ex=<id>`, `mode=<ropes>`, then the viewer's own keys from `state` with the same rules as `serializeUrlState`: `cam` (and `hw`/`hl` with the Helm camera), `step`, `detail`, `lang` when not English, `lb` when not the default, `mm=0` when off, `debug=1` when on; from M67 `exp=0` and from M71 `exc=1` when the run's options say so (from the list, with no run yet, the defaults: no key). No `sel`, `learn` or boat-state keys. In M66, `serializeUrlState(state)` returns the start link (with the run's ropes and options) whenever `state.exercise !== null`; M67 changes this for a run that has waypoints (7.4).
+- **Parsing `ex`** (known id, no `exw`): start from `def.start`'s keys; for each of `cam`, `hw`, `hl`, `step`, `detail`, `lang`, `lb`, `mm`, `debug`, `mode` that the link has, set it (overriding `def.start`); with no `mode` in the link or `def.start`, the ropes mode is `def.ropes`. Parse that query, then `appMode: 'exercise'`, `paused: true`, `exercise: newRun(id, 0, options)` (`options` = `DEFAULT_OPTIONS`, changed by `exp`/`exc` from M67/M71). An unknown id is ignored (an ordinary link; with `m=exercise` it opens the list).
 - **Old links** have none of these keys: nothing changes. `m=exercise` alone opens Exercises mode with the list.
 
 ### 4.4 Data: `content/exercises/exercises.json` and the checks
@@ -300,7 +303,7 @@ One file, language-neutral, created in M66 with the `settings` and the first exe
     "settleS": 1,
     "mistakeRepeatGapS": 10,
     "mistakeShowS": 6,
-    "causeWindowS": 15,
+    "causeWindowS": 30,
     "causeMax": 3,
     "controlMergeS": 3,
     "logMax": 400,
@@ -367,7 +370,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 
 New: `content/exercises/exercises.json`, `content/lang/en/exercises.json`, `content/lang/ru/exercises.json`, `src/model/exercises.ts`, `src/app/exerciseRun.ts`, `src/app/exerciseProgress.ts`, `src/ui/exercisePanel.ts`, `src/ui/exerciseLine.ts`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/exerciseProgress.test.ts`, `scripts/shots-m66.mjs`.
 
-Changed: `src/app/appMode.ts` (`exercise`, `keepsRopesMode`), `src/app/store.ts` (`exercise` state, the action, locked actions, `stepExercise` in `reduce`, `setAppMode`), `src/app/urlState.ts` (`m=exercise`, `ex`, `exerciseStartLink`, the exercise link in `serializeUrlState`), `src/app/app.ts` (the step line, `__sailExercise`), `src/ui/modes.ts` (`exercises` section, the `exercise` mode row, `TAB_OF`, `sectionAvailable`), `src/ui/panel.ts` (builds the section; locked note on Conditions and Place), `src/ui/sectionLayout.ts` (`exercises` in `DEFAULT_WIDE_LAYOUT`), `src/ui/learnTab.ts` (no "Show it working" during a run), `src/ui/clockPanel.ts` (Now / Noon / Set a time disabled during a run), `src/ui/infoCard.ts` only if it tests `appMode` for Learn/Harbour as "keeps the ropes mode" (use `keepsRopesMode`), `src/style.css`, both `ui.json`, `scripts/review-doc.mjs` (an Exercises part), `docs/review/ru.md` (regenerated), `tests/modes.test.ts`, `tests/urlState.test.ts`, `tests/store.test.ts`, `tests/languages.test.ts`, `scripts/shots.mjs`, `scripts/ui.mjs`, `.github/workflows/ci.yml`, `docs/CODE_MAP.md`.
+Changed: `src/app/appMode.ts` (`exercise`, `keepsRopesMode`), `src/app/store.ts` (`exercise` state, the action, locked actions, `stepExercise` in `reduce`, `setAppMode`), `src/app/urlState.ts` (`m=exercise`, `ex`, `exerciseStartLink`, the exercise link in `serializeUrlState`), `src/app/app.ts` (the step line, `__sailExercise`), `src/ui/modes.ts` (`exercises` section, the `exercise` mode row, `TAB_OF`, `sectionAvailable`), `src/ui/panel.ts` (builds the section; locked note on Conditions and Place), `src/ui/sectionLayout.ts` (`exercises` in `DEFAULT_WIDE_LAYOUT`), `src/ui/learnTab.ts` (no "Show it working" during a run), `src/ui/clockPanel.ts` (Now / Noon / Set a time disabled during a run), `src/app/app.ts` (the info card's `showLearn` in Exercises mode, 3.4), `src/style.css`, both `ui.json`, `scripts/review-doc.mjs` (an Exercises part), `docs/review/ru.md` (regenerated), `tests/modes.test.ts`, `tests/urlState.test.ts`, `tests/store.test.ts`, `tests/languages.test.ts` (a test that both `exercises.json` files have the same keys in the same order), `content/lang/latin-words.json` (only if the Russian Latin scan flags a word the texts quote from the boat or the instruments, such as `JIB ROLL` or `GUST`), `scripts/shots.mjs`, `scripts/ui.mjs`, `.github/workflows/ci.yml`, `docs/CODE_MAP.md`. **Older checks that count the modes:** `scripts/shots-m38.mjs` (the picker's four choices and their names) and `scripts/shots-m27.mjs` (the Russian mode names) get the fifth mode, Exercises (`Упражнения` in the Russian draft), and nothing else changes in them.
 
 ### 6.2 Data
 
@@ -470,16 +473,16 @@ export function recordDone(id: string, elapsedS: number): ExerciseProgress; // r
 
 **Section.** `SectionId` `'exercises'` (appended to `SECTION_IDS` after `'mode'`), title `t('exercise.label')`, `TAB_OF.exercises = 'controls'`, `explain: true` with `<p class="hint explain">` `t('exercise.hint')`; `sectionAvailable('exercises', state)` is `state.appMode === 'exercise'`. Mode rows: the new row `exercise.order` is `['mode', 'exercises', 'ropes', 'helm', 'sails', 'autopilot', 'engine', 'learn', 'conditions', 'place', 'anchor', 'harbour', 'status', 'settings']`; every other row gets `'exercises'` just before `'settings'`. `DEFAULT_WIDE_LAYOUT`: `exercises` first in column 0 (`completeLayout` adds it to a saved layout; check that it does, and if it appends at the end, leave that). In Exercises mode the panel opens the Exercises section on entering the mode and on every `load` that carries a run (the phone shows the Controls tab).
 
-`createExercisePanel(store: Store, panel: { showSection(id: SectionId): void }): HTMLElement[]` builds one `div.exercise-panel` (`data-testid="exercise-panel"`) and re-renders it only when the **render key** changes: `${run?.id}|${run?.status}|${run?.step}|${Math.ceil(remaining hold s)}|${ropesMode}|${language}` (no re-render per frame). Its content by state (phone size first; the same in a column on a computer):
+`createExercisePanel(store: Store, panel: { showSection(id: SectionId): void }, layout: () => LayoutKind, sheet: Sheet): HTMLElement[]` (built once with the other sections when the app starts, so its `store.subscribe` always runs) builds one `div.exercise-panel` (`data-testid="exercise-panel"`) and re-renders it only when the **render key** changes: `${run?.id}|${run?.status}|${run?.step}|${Math.ceil(remaining hold s)}|${ropesMode}|${language}` (no re-render per frame). Its content by state (phone size first; the same in a column on a computer):
 
-1. **No run: the list.** For each group that has exercises, in the order `sailing`, `wind`, `sails`: `h3.section-title` `t('exercise.group.<group>')` and one row per exercise: a full-width button `exercise-item-<id>` (min height 44 px) holding the title (bold), the summary (`.hint`), and, when the device has it done, `<span class="exercise-tick" data-testid="exercise-tick-<id>">` `t('exercise.doneBest', { time })` ("✓ best 1:07"). A tap dispatches the `load` of 4.2.
-2. **`setup`: the setup card** (`exercise-setup`): `h3` title; the four parts as `h4` + `p`: `t('exercise.see')` / `see`, `t('exercise.happening')` / `happening`, `t('exercise.action')` / `action`, `t('exercise.mistake')` / `mistake`; **Ropes**: `t('exercise.ropes')` and two toggle buttons `exercise-ropes-easy`, `exercise-ropes-realistic` (`aria-pressed`, labels `t('mode.easy')`, `t('mode.realistic')`), dispatching `{ ropes }`, with `t('exercise.ropes.hint')` under them; **Steps**: an `ol.exercise-steps` of every step's goal; buttons **Start** (`exercise-start`, the accent style of the Repair and Share buttons) and **Back to the list** (`exercise-list`, dispatches `stop`).
-3. **`running`: the step card** (`exercise-step`): `t('exercise.stepOf', { n, total })`; `h3` the goal; while the check passes and the hold is not over, `<p data-testid="exercise-hold">` `t('exercise.hold', { s })` (`s` = `Math.ceil(holdS needed − holdS)`); **How?** (`exercise-how`, `aria-expanded`) shows `<p data-testid="exercise-how-text">` the step's `how` and a button **Show the controls** (`exercise-open`) that calls `panel.showSection(section)` with `section = step.opens`, except that `engine` and `autopilot` become `helm` when `sectionAvailable(step.opens, state, layout)` is false (in Realistic ropes both live in the Helm section); the steps as `ol.exercise-steps` with done steps ticked (`li.done`, "✓" before the text) and the current one bold; **Stop the exercise** (`exercise-stop`) as a two-tap button (`createConfirmButton` from `settingsMenu.ts`: `t('exercise.stop')`, `t('exercise.stopConfirm')`).
+1. **No run: the list.** For each group that has exercises, in the order `sailing`, `wind`, `sails`: `h3.section-title` `t('exercise.group.<group>')` and one row per exercise: a full-width button `exercise-item-<id>` (min height 44 px) holding the title (bold), the summary (`.hint`), and, when the device has it done, `<span class="exercise-tick" data-testid="exercise-tick-<id>">` `t('exercise.doneBest', { time })` ("✓ best 1:07"). A tap dispatches the `load` of 4.2 (the section stays open; on a phone the sheet stays where it is).
+2. **`setup`: the setup card** (`exercise-setup`): `h3` title; the four parts as `h4` + `p`: `t('exercise.see')` / `see`, `t('exercise.happening')` / `happening`, `t('exercise.action')` / `action`, `t('exercise.mistake')` / `mistake`; **Ropes**: `t('exercise.ropes')` and two toggle buttons `exercise-ropes-easy`, `exercise-ropes-realistic` (`aria-pressed`, labels `t('mode.easy')`, `t('mode.realistic')`), dispatching `{ ropes }`, with `t('exercise.ropes.hint')` under them; **Steps**: an `ol.exercise-steps` of every step's goal; buttons **Start** (`exercise-start`, the accent style of the Repair and Share buttons; on a phone it also lowers the sheet to peek with `sheet.setHeight('peek')`, so the boat shows) and **Back to the list** (`exercise-list`, dispatches `stop`).
+3. **`running`: the step card** (`exercise-step`): `t('exercise.stepOf', { n, total })`; `h3` the goal; while `run.holdS > 0` (the check passes and the hold is not over), `<p data-testid="exercise-hold">` `t('exercise.hold', { s })` (`s` = `Math.ceil(step.holdS − run.holdS)`; a step with `holdS: 0` never shows it); **How?** (`exercise-how`, `aria-expanded`) shows `<p data-testid="exercise-how-text">` the step's `how` and a button **Show the controls** (`exercise-open`) that calls `panel.showSection(section)` with `section = step.opens`, except that `engine` and `autopilot` become `helm` when `sectionAvailable(step.opens, state, layout())` is false (in Realistic ropes both live in the Helm section); the steps as `ol.exercise-steps` with done steps ticked (`li.done`, "✓" before the text) and the current one bold; **Stop the exercise** (`exercise-stop`) as a two-tap button (`createConfirmButton` from `settingsMenu.ts`: `t('exercise.stop')`, `t('exercise.stopConfirm')`).
 4. **`done`: the done card** (`exercise-done`): `h3` `t('exercise.finished')`; `t('exercise.time', { time })`; the exercise's `done` text; buttons **Try again** (`exercise-again`: in M66 dispatches the `load` of the start link again, with the run's ropes) and **Back to the list** (`exercise-list`, `stop`). When the run turns `done` the panel calls `recordDone(id, elapsedS)` once (on the transition, in its `store.subscribe`).
 
 **Locked sections.** While `state.exercise !== null`, the Conditions and Place sections' bodies get `inert` and, first in each, `<p class="hint" data-testid="exercise-locked-conditions">` (and `…-place`) `t('exercise.locked')`. The clock card's Now, Noon and Set a time buttons are `disabled` with the same text under them. In `learnTab.ts` the "Show it working" block (`learn-show-me`) is hidden while a run exists (it would load a scene and end the run).
 
-**Step line** (`createExerciseLine(top: HTMLElement, store: Store, onOpen: () => void): void`, `app.ts` calls it after `createClockPanel` with `top` = `.view-top` and `onOpen = () => panel.showSection('exercises')`): one `button.exercise-line` (`data-testid="exercise-line"`), appended last to `.view-top`, `flex: 1 1 100%` (a row of its own under the strip and the time bar), max two lines of text then an ellipsis, 15 px text on the strip's background and border, min height 44 px. Hidden (`hidden`) unless a run exists and its status is not `setup`. Text: running: `t('exercise.line', { n, total, goal })` ("2/5 · Close reach: turn 20° away …"), with `t('exercise.lineHold', { s })` appended while holding; done: `t('exercise.lineDone', { time })`. A tap calls `onOpen`. The line counts in `trackTopHeight` (the camera frames the boat below it), as everything in `.view-top` does.
+**Step line** (`createExerciseLine(top: HTMLElement, store: Store, onOpen: () => void): void`, `app.ts` calls it after `createClockPanel` with `top` = `.view-top` and `onOpen = () => panel.showSection('exercises')`): one `button.exercise-line` (`data-testid="exercise-line"`), appended last to `.view-top`, `flex: 1 1 100%` (a row of its own under the strip and the time bar), max two lines of text then an ellipsis (`display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden`), 15 px text on the strip's background and border, min height 44 px. Hidden (`hidden`) unless a run exists and its status is not `setup`. Text: running: `t('exercise.line', { n, total, goal })` ("2/5 · Close reach: turn 20° away …"), with `t('exercise.lineHold', { s })` appended while holding; done: `t('exercise.lineDone', { time })`. A tap calls `onOpen` (`panel.showSection('exercises')`, which on a phone chooses the Controls tab and raises a sheet at peek to half, as `showSection` does today). The line counts in `trackTopHeight` (the camera frames the boat below it), as everything in `.view-top` does.
 
 **Debug hook** (`app.ts`, only with `settings.debug`): `window.__sailExercise = { dispatch, state, read }`: `dispatch: (action) => store.dispatch(action)`; `state: () => store.getState().exercise` with `waypoints` replaced by their count (`{ ...run, waypoints: run.waypoints.length }`, so `page.evaluate` does not copy whole states); `read: () => ({ twsKn, twaDeg, speedKn, heelDeg, controls, jibOutPct, engineRunning, gear, paused })` from the current state (`twaDeg` = `twaSignedDeg`, `speedKn` signed, `jibOutPct` = `100 × rig.jibSolution.unfurled`).
 
@@ -518,14 +521,15 @@ Visual design: follow the Status section and the Learn entry (`h3.section-title`
 | `exercise.lineHold` | · hold {s} s |
 | `exercise.lineDone` | Done ✓ {time} · tap for the summary |
 
-Russian: drafts (section 0). `scripts/review-doc.mjs`: the review document gets a part "Exercises" listing every key of `exercises.json` with the English and the Russian text, in the file order, after the `ui.json` part; `docs/review/ru.md` regenerated.
+Russian: drafts (section 0). `scripts/review-doc.mjs`: the review document gets a part "Exercises" listing every key of `exercises.json` with the English and the Russian text, in the file order, after the `ui.json` part; `docs/review/ru.md` regenerated. The part's heading is "Exercises" in the English column and "Упражнения" in the Russian one (added to `review-doc.mjs`'s per-language wording).
+- **Pause during a run** is allowed in M66 (only M71's Alone blocks it); the time bar's speed-up is allowed too, and the exercise time is app time, so speeding up does not shorten it.
 
 ### 6.7 Tests
 
 `tests/exercises.test.ts`:
 
 1. **Data.** Ids unique; step ids unique per exercise; every `opens` is one of `ExerciseOpens`; every check and condition uses only the fields of 4.4 known so far, with ranges `[min, max]`, `min <= max`; every mistake's `alert` is in `ALERT_KINDS`; every `steps` filter names a step of that exercise; `group` and `ropes` valid; every `start` link parses and `parseUrlState(start)` gives `controls.ctl_wind_speed` and `ctl_wind_dir` equal to its `ws` and `wd`.
-2. **Texts.** Every exercise, step and mistake id has every text key in `en` and `ru`, and both files have the same keys in the same order (also in `tests/languages.test.ts`'s style); no text is empty.
+2. **Texts.** Every exercise, step and mistake id has every text key in `en` and `ru`, and both files have the same keys in the same order; no text is empty; an exercise with no mistakes has `"mistakes": {}`.
 3. **`twaSignedDeg`**: wind 0, heading 315 → +45; heading 45 → −45; heading 180 → 180.
 4. **`checkPasses`** table: `twaDeg` on the absolute value (−45 passes `[38, 52]`); `tack` by sign; trim from `sailTrim`; `controls` ranges inclusive at both ends; `speedKn` signed (−1 passes `[-99, 1]`, 2 does not); `motion: null` → false; an empty check `{}` → true when motion exists.
 
@@ -552,7 +556,7 @@ Live:
 
 1. **Mode:** open `?wd=60&ws=12`, choose Exercises in the mode picker (phone: Mode tab; computer: the mode chip) → the Exercises section shows `exercise-item-points-of-sail` with the title.
 2. **Setup:** tap it → `exercise-setup` shows the four headings and the five steps, `exercise-ropes-easy` pressed; the address bar has `ex=points-of-sail` and `mode=easy`; app time stands still (`__sailExercise.state().elapsedS` 0 after 3 s).
-3. **Locked:** Conditions shows `exercise-locked-conditions` and its wind speed control does not respond to a tap; `__sailExercise.dispatch({ type: 'setControls', values: { ctl_wind_speed: 20 } })` leaves the wind at 12 kn.
+3. **Locked:** Conditions shows `exercise-locked-conditions` and its body has the `inert` attribute; `__sailExercise.dispatch({ type: 'setControls', values: { ctl_wind_speed: 20 } })` leaves the wind at 12 kn.
 4. **Run:** tap `exercise-start` → `exercise-line` visible with "1/5 · Close-hauled: haul the main in until it stops flapping."; drive test 1's actions with `__sailExercise.dispatch`, waiting with `page.waitForTimeout` until the line shows the next step (at most the test-1 band per step); after step 5: `exercise-done` with "Well done!" and a time; `exercise-line` reads "Done ✓ …".
 5. **Tick:** tap `exercise-list` → `exercise-tick-points-of-sail` reads "✓ best m:ss"; reload the page → the tick is still there.
 6. **How?:** start again, tap `exercise-how` → `exercise-how-text` visible; tap `exercise-open` → the Ropes section is open (phone: the Controls tab is chosen).
@@ -594,13 +598,13 @@ None new: the `mistakes` of points-of-sail (6.2) start to work.
 **Mistakes in `stepExercise`** (after `elapsedS += dt`, before the step check; `stepId = def.steps[run.step].id`; a mistake **applies** when it has no `steps` or its `steps` include `stepId`; it **may fire** when `elapsedS − (lastMistakeS[id] ?? −Infinity) >= settings.mistakeRepeatGapS`):
 
 - **Alert mistakes:** skip all new entries while `elapsedS − settleFromS < settings.settleS`. Otherwise, for each new entry (oldest first) and each applying mistake with `on.alert === entry.kind` (and, when `on.accidental` is given, `entry.report?.accidental === on.accidental`) that may fire: fire it.
-- **Condition mistakes:** for each applying mistake with `on.condition`: if `checkPasses(on.condition, next, context)`: when `conditionS[id] >= 0`, `conditionS[id] += dt`, and when that reaches `on.forS` and it may fire, fire it and set `conditionS[id] = −1` (it fires once per spell); when `conditionS[id] === −1` it stays. If the condition does not hold: `conditionS[id] = 0`.
+- **Condition mistakes:** for each applying mistake with `on.condition`: if `checkPasses(on.condition, next, context)`: when `(conditionS[id] ?? 0) >= 0` (a missing entry counts as 0), `conditionS[id] = (conditionS[id] ?? 0) + dt`, and when that reaches `on.forS` and it may fire, fire it and set `conditionS[id] = −1` (it fires once per spell); when `conditionS[id] === −1` it stays. If the condition does not hold: `conditionS[id] = 0`.
 - **Fire:** `entry = { kind: 'mistake', atS: elapsedS, step: run.step, mistakeId: id, serious }`; push it to the log; `lastMistakeS[id] = elapsedS`; `run.mistake = entry`. Then, for the **first** mistake of the frame only: `serious` → `status 'failed'` and the state's `paused: true`; otherwise `options.pauseOnMistake` → `status 'mistake'` and `paused: true`; otherwise the status stays `running`. When the status changed, `stepExercise` returns without checking the step this frame.
 
 **Waypoints:**
 
 - `snapshot(s: AppState): AppState` = `{ ...s, exercise: null, paused: false }`.
-- At `start`: push `{ step: run.step, atS: elapsedS, state: snapshot(the started state) }`.
+- At `start` (after the `start` log entry): push `{ step: run.step, atS: elapsedS, state: snapshot(the started state) }`. A run has at most one waypoint per step, so at most `steps.length` waypoints.
 - When a step passes and another follows: push `{ step: <the new step>, atS: elapsedS, state: snapshot(next) }`. (No waypoint for `done`.)
 
 **Commands** (in `store.ts`, through `exerciseRun.ts`):
@@ -613,6 +617,10 @@ export function restoreWaypoint(state: AppState, step: number): AppState {
   // wp = run.waypoints.find((w) => w.step === step)
   return {
     ...wp.state,
+    // App time never runs backwards (the alert history's repeat gaps compare times): the rig keeps
+    // today's clock and the wind pattern is shifted so it replays as it was at the waypoint.
+    rig: { ...wp.state.rig, timeS: state.rig.timeS },
+    windMode: { ...wp.state.windMode, startS: wp.state.windMode.startS + (state.rig.timeS - wp.state.rig.timeS) },
     settings: state.settings,      // the viewer's settings (language, detail, time bar …); the ropes mode cannot change during a run
     camera: state.camera,
     selection: null,
@@ -623,7 +631,7 @@ export function restoreWaypoint(state: AppState, step: number): AppState {
     exercise: {
       ...run, status: 'running', step, holdS: 0,
       stepStartS: run.elapsedS, settleFromS: run.elapsedS, seenAlertN: state.alerts.written,
-      events: [], gusts: 0, gustArmed: true, conditionS: {}, mistake: null,
+      events: [], gusts: 0, gustArmed: true, conditionS: {}, lastMistakeS: {}, mistake: null,
       waypoints: run.waypoints.filter((w) => w.step <= step),
       log: [...run.log, { kind: 'back', atS: run.elapsedS, step }],
     },
@@ -632,24 +640,31 @@ export function restoreWaypoint(state: AppState, step: number): AppState {
 ```
 
 - **`{ options: { pauseOnMistake } }`** (only in `setup`): sets `run.options.pauseOnMistake`.
-- **Try again / Start again** = `{ back: run.waypoints[0].step }` (replaces M66's reload of the start link).
+- **Try again** (done card) and **Start again** (failed card) start a fresh run, as in M66: the UI dispatches the `load` of the run's setup link (`exerciseStartLink(id, state, ropes)` with the options when `startStep === 0`, else `waypointLink(state, run.waypoints[0])`), so `elapsedS` starts at 0 again. **Back** keeps `elapsedS` running (the time shown includes the detour).
+- **Progress** (`recordDone`) is written only for a run with `startStep === 0` (a run from a waypoint link did not do every step).
+- **Pause while a card decides:** `setPaused` returns `state` while the status is `mistake` or `failed` (the card's buttons decide; the time bar's Pause is `disabled` then); in `done` it works.
+- `reduce` skips `recordAlerts` for every `exercise` action (4.2).
 
 ### 7.4 URL
 
 - `export function waypointLink(state: AppState, wp: ExerciseWaypoint): string`: take `serializeUrlState({ ...wp.state, settings: state.settings, camera: state.camera, appMode: 'exercise', exercise: null, selection: null, learn: null })`, then set `ex=<run.id>`, `exw=<wp.step>`, `mode=<ropes>` and (when off) `exp=0` on it.
 - `serializeUrlState(state)` with a run: **with waypoints** → `waypointLink(state, <the last waypoint>)`; **in `setup` with `startStep > 0`** (a waypoint link was opened) → the same form built from the current state (`wp = { step: startStep, atS: 0, state }`); otherwise the start link of M66 (with `exp=0` when off).
-- **Parsing `exw=n`** (with a known `ex`, `n` a whole number, `0 <= n < steps.length`): the state is `parseUrlState` of the link's own keys (the waypoint's full state; `def.start` is not used), then `appMode: 'exercise'`, `paused: true`, `exercise: newRun(id, n, options)`. An `exw` out of range is ignored (the start link's behaviour). `exp=0` → `pauseOnMistake: false` in both forms.
+- **Parsing `exw=n`** (with a known `ex`, `n` a whole number, `0 <= n < steps.length`): the state is `parseUrlState` of the link's own keys (the waypoint's full state; `def.start` is not used), then `appMode: 'exercise'`, `paused: true`, `exercise: newRun(id, n, options)`. An `exw` out of range is ignored (the start link's behaviour). `exp=0` → `pauseOnMistake: false` in both forms. `exw` without a known `ex` is ignored. A waypoint link is the waypoint's state **as a link carries it** (the keys `serializeUrlState` writes): a wind pattern restarts at the waypoint (its `startS` is 0 there), sail wear and the alert history are not carried; in-session Back restores the exact state. Settings → Share and the address bar give this link during a run, by design.
 
 ### 7.5 UI
 
 - **Setup card:** a row with a native checkbox `exercise-pause-on-mistake` (checked by default, 44 px row, the label `t('exercise.pauseOnMistake')`) and `t('exercise.pauseHint')` under it, dispatching `{ options }`. For a run with `startStep > 0`, `<p data-testid="exercise-from-step">` `t('exercise.fromStep', { n: startStep + 1 })` above Start.
 - **Mistake card** (`status 'mistake'`; `exercise-mistake`, above the step card, with the warning colour of the alert card as its left border, 4 px): `h3` `t('exercise.wentWrong')`, then the mistake's `what`; `h4` `t('exercise.why')` and `why`; `h4` `t('exercise.fix')` and `fix`; buttons **Carry on** (`exercise-continue`, `continue`) and **Back** (`exercise-back`, label `t('exercise.backTo', { n: last.step + 1 })` or, for waypoint 0 of a run started at Start, `t('exercise.backToStart')`), dispatching `{ back: last.step }` (`last` = the last waypoint).
-- **Failed card** (`status 'failed'`; `exercise-failed`, the danger colour as its border): `h3` `t('exercise.stopped')`, then what / why / fix as above; buttons **Back** (`exercise-back`), **Start again** (`exercise-again`, `{ back: waypoints[0].step }`), **Back to the list** (`exercise-list`).
+- **Failed card** (`status 'failed'`; `exercise-failed`, the danger colour as its border; shown with the waypoints block and without the step card): `h3` `t('exercise.stopped')`, then what / why / fix as above; buttons **Back** (`exercise-back`), **Start again** (`exercise-restart`, `t('exercise.restart')`, the fresh run of 7.3), **Back to the list** (`exercise-list`).
+- **Colours:** "warning" is the `.alert-chip` warning colour (`#b85c00` on `#fff3e0`), "danger" its danger colour (`#c8102e`); define them once as CSS variables `--exercise-warning`, `--exercise-danger` and use those.
+- **Mistake card and step card together:** in `mistake` the mistake card is above the step card, whose hold text is frozen (time stands still).
 - **Not pausing:** while `run.mistake` exists and `elapsedS − run.mistake.atS < settings.mistakeShowS`, the line shows `t('exercise.lineMistake', { what })` with the class `exercise-line-mistake` (warning-colour border); the step card shows `<p data-testid="exercise-last-mistake">` `t('exercise.lastMistake', { what })` and a **Why?** button (`exercise-last-why`, `aria-expanded`) that shows why and fix.
 - **Line while paused by a mistake:** `t('exercise.linePaused', { what })` (class `exercise-line-paused`, the danger colour border); failed: `t('exercise.lineStopped', { what })`.
 - **Waypoints block** in the step card, the mistake card and the done card (after the steps list): `h4` `t('exercise.waypoints')` and one row per waypoint, newest first: its name (`t('exercise.waypointStart')` for step 0 of a run started at Start, else `t('exercise.waypointStep', { n: step + 1 })`), a button **Go back** (`exercise-waypoint-back-<step>`, `{ back: step }`, 44 px) and a link **Link** (`a`, `exercise-waypoint-link-<step>`, `href` = `location.origin + location.pathname + waypointLink(state, wp)`), so a long press on a phone copies it.
-- **Done card:** Try again (`exercise-again`) dispatches `{ back: waypoints[0].step }`.
-- The render key adds `waypoints.length`, `run.mistake?.atS` and `options.pauseOnMistake`.
+- **Done card:** Try again (`exercise-again`) starts the fresh run of 7.3.
+- **Accessible names:** each Go back button is named `t('exercise.waypointBackTo', { name })` and each Link `t('exercise.waypointLinkTo', { name })`, with `name` the row's name, so the rows can be told apart.
+- **Open/closed state** of How?, Why? and (M68) So far lives in the panel's closure, survives re-renders and resets when the step changes.
+- The render key adds `waypoints.length`, `run.mistake?.atS`, `options.pauseOnMistake` and whether the last mistake is still shown (`elapsedS − mistake.atS < mistakeShowS`).
 
 ### 7.6 Strings
 
@@ -675,19 +690,23 @@ export function restoreWaypoint(state: AppState, step: number): AppState {
 | `exercise.waypointStep` | Start of step {n} |
 | `exercise.waypointBack` | Go back |
 | `exercise.waypointLink` | Link |
+| `exercise.waypointBackTo` | Go back to: {name} |
+| `exercise.waypointLinkTo` | Link to: {name} |
+| `exercise.restart` | Start again |
 
 ### 7.7 Tests
 
 `tests/exerciseRun.test.ts` (as 6.7; "the good run" = 6.7 test 1's actions):
 
-1. **PT-26 by the lee and accidental gybe:** the good run's steps 1–4, then in step 5 `turnDeg -10` six times (to 195° from the wind's first side, 15° by the lee) → a `by-the-lee` mistake within **25 s** of the turn: `status 'mistake'`, `paused true`, `run.mistake.mistakeId 'by-the-lee'`; `continue` → `running`; an `accidental-gybe` mistake within **35 s** of the turn counted in app time (prototype, without the pause: `byTheLee` 13.1 s, the accidental `gybe` 21.4 s after the turn). Named "PT-26 running past dead downwind gybes the boom: the exercise reports by the lee, then the gybe".
+1. **PT-26 by the lee and accidental gybe:** the good run's steps 1–4, then in step 5 `turnDeg -10` six times (step 5's 10 s hold cannot pass on the way: the prototype turns through 155–170° in 3.3 s) (to 195° from the wind's first side, 15° by the lee) → a `by-the-lee` mistake within **25 s** of the turn: `status 'mistake'`, `paused true`, `run.mistake.mistakeId 'by-the-lee'`; `continue` → `running`; an `accidental-gybe` mistake within **35 s** of the turn counted in app time (prototype, without the pause: `byTheLee` 13.1 s, the accidental `gybe` 21.4 s after the turn). Named "PT-26 running past dead downwind gybes the boom: the exercise reports by the lee, then the gybe".
 2. **Without pausing:** the same with `{ options: { pauseOnMistake: false } }` in setup → `status` stays `running` and `paused` false throughout; the log has both mistakes; `run.mistake` is the gybe.
 3. **Repeat gap** (built states: `next` = `previous` with `rig.timeS + 0.05` and one more `byTheLee` entry): two entries 5 s of `elapsedS` apart → one mistake; 11 s apart → two.
 4. **Condition (in irons):** start, the good run's step 1, then `autopilot { turnDeg: 10 }` four times → `in-irons` within **[30, 60] s** (prototype 41.4 s).
 5. **Steps filter and serious** (a test `def` passed to `stepExercise`, steps `a` and `b` with checks that never pass, mistake `{ id: 'x', serious: true, steps: ['b'], on: { alert: 'tack' } }`): a `tack` entry in step `a` → nothing; with `run.step` 1 → `status 'failed'`, `paused true`; `continue` → no change.
 6. **Settle:** a new entry 0.5 s after `start` → ignored; 1.5 s after → counted.
 7. **Waypoints:** after `start` one waypoint (step 0); after step 1 passes, two (0 and 1), and waypoint 1's state has `ctl_mainsheet 12`. Go on to step 3, then `{ back: 1 }` → `step 1`, `ctl_mainsheet 12`, `|twaSignedDeg|` within 1° of the snapshot's, two waypoints, the log ends with `back`, `alerts` is the same object as before, `camera` and `settings.language` kept, `status 'running'`, `paused false`.
-8. `{ back: 4 }` with no such waypoint → the same state object; `{ back: 0 }` from `done` and from `failed` → `running` at step 0.
+8. `{ back: 4 }` with no such waypoint → the same state object; `{ back: 0 }` from `done` and from `failed` → `running` at step 0; after a Back `rig.timeS` is not smaller than before and no new alert entry was written by the Back itself; a `byTheLee` alert 2 s after the Back is written and fires the mistake (the history's 5 s repeat gap is not fooled by a rewind).
+9. **Pause:** in `mistake`, `setPaused false` returns the same state.
 
 `tests/urlState.test.ts`: a running run with two waypoints → the link has `exw=1`, `ms=12` and `mode=easy`; parsing it → `setup`, `step 1`, `startStep 1`, `ctl_mainsheet 12`, `paused true`; serializing that setup state gives the same `exw=1` link; `exp=0` round-trips; `exw=9` on points-of-sail → the start (step 0, main sheet 30).
 
@@ -702,7 +721,7 @@ Live:
 3. **Back:** tap `exercise-back` → step 5 again (`exercise-line` "5/5 · …"), the boat back at about 135° from the wind (`__sailExercise.read().twaDeg`), no card.
 4. **Waypoint link:** read `exercise-waypoint-link-3`'s `href`, open it in a new page → the setup card with `exercise-from-step` "This link starts at step 4."; Start → the line reads "4/5 · …".
 5. **Not pausing:** a new start with `exercise-pause-on-mistake` unticked; cause the by-the-lee mistake → the line shows "Mistake: …" with `exercise-line-mistake`, time goes on; after 6 s of app time the line shows the step again.
-6. **Try again** from the done card → step 1, a fresh start position (main sheet 30).
+6. **Try again** from the done card → setup at step 1 with the fresh start position (main sheet 30) and time 0:00 after Start.
 7. `auditPage` with the mistake card and the waypoint block shown (phone, desktop).
 
 ### 7.9 Done when
@@ -727,17 +746,17 @@ EXERCISES.md: every exercise ends with a debrief, "a short timeline of what the 
 
 ### 8.1 Files
 
-New: `src/model/debrief.ts`, `src/ui/exerciseDebrief.ts`, `tests/debrief.test.ts`, `scripts/shots-m68.mjs`. Changed: `content/exercises/exercises.json` (`settings.logMax`, if M66 left it out), `src/app/exerciseRun.ts` (`logAction`, event entries), `src/app/store.ts` (calls `logAction`), `src/ui/exercisePanel.ts` (the debrief in the cards, "So far"), `src/style.css`, both `ui.json`, `docs/review/ru.md`, `tests/exerciseRun.test.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `src/model/debrief.ts`, `src/ui/exerciseDebrief.ts`, `tests/debrief.test.ts`, `scripts/shots-m68.mjs`. Changed: `src/app/exerciseRun.ts` (`logAction`, event entries), `src/app/store.ts` (calls `logAction`), `src/ui/exercisePanel.ts` (the debrief in the cards, "So far"), `src/style.css`, both `ui.json`, `docs/review/ru.md`, `tests/exerciseRun.test.ts`, `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 8.2 Data
 
-`settings.logMax: 400` (4.4; **tunable**).
+None new: `settings.logMax` (400), `causeWindowS` (30), `causeMax` and `controlMergeS` exist since M66 (4.4; **tunable**). The cause window is 30 s because an accidental gybe can come 21 s after the turn that caused it (3.5, 7.7 test 1).
 
 ### 8.3 Model and app logic
 
 **Event entries** (`stepExercise`): every new alert entry that is not skipped by the settle rule (7.3) is logged as `{ kind: 'event', atS: elapsedS, entry }`, before the mistakes it may fire (so a mistake row follows its event).
 
-**`logAction(previous, next, action)`** (`src/app/exerciseRun.ts`; `reduce` calls it after `stepExercise` for every action but `step`, only when `next.exercise?.status` is `running` or `mistake`). `t = next.exercise.elapsedS`; `last` = the last log entry. Values are rounded to whole numbers.
+**`logAction(previous, next, action)`** (`src/app/exerciseRun.ts`; `reduce` calls it after `stepExercise` for every action but `step`, only when `next.exercise?.status` is `running` or `mistake`). `t = next.exercise.elapsedS`; `last` = the last log entry. Values are rounded to whole numbers before comparing. **Logged only if it changed something:** `setControls` per id whose rounded value changed; `autopilot` when `next.autopilot !== previous.autopilot`; `engine` when `next.engine !== previous.engine`; `realistic` when `next.controls !== previous.controls` or some key of `next.realistic` other than `notice` differs (`!==`) from `previous.realistic`'s (a refused gesture only sets a notice). `last` is the last log entry of any kind (an event or a step in between starts a new entry). A merged `control` that ends at its `from`, or a merged `turn` that sums to 0, is removed.
 
 | Action | Logged as | Merged into `last` when (`t − last.atS <= settings.controlMergeS`) |
 |---|---|---|
@@ -748,7 +767,7 @@ New: `src/model/debrief.ts`, `src/ui/exerciseDebrief.ts`, `tests/debrief.test.ts
 | `engine { leverPct }` | `{ type: 'engine', command: 'lever', leverPct }` | `last` is a `lever`: `leverPct` and `atS` replaced |
 | `realistic` (all but `clearNotice`) | `{ type: 'realistic', gesture: action.action.type, target, on }` with `target` = the action's `key`, `winch`, `station`, `to` or `null` (first that exists, in that order), `on` = `open` (clutch), `into` (self-tailer), `held` (button) or `undefined` | `last` is the same gesture with the same target and the same `on`: `atS` replaced |
 
-So `LoggedAction`'s realistic variant (4.1) gains `on?: boolean`. Nothing else is logged (camera, selection, Pause, sections). The action is logged only if the reducer changed the state (`next !== previous`). When the log is longer than `settings.logMax`, the oldest `action` entry is removed.
+So `LoggedAction`'s realistic variant (4.1) gains `on?: boolean`. Nothing else is logged (camera, selection, Pause, sections). When the log is longer than `settings.logMax`, the oldest `action` entry is removed (other entries are never removed; a run has few of them).
 
 **`src/model/debrief.ts`** (pure):
 
@@ -760,44 +779,45 @@ export interface DebriefRow {
 }
 export function debriefRows(log: readonly ExerciseLogEntry[], settings: ExerciseSettings = EXERCISE_SETTINGS): DebriefRow[];
 export interface DebriefSummary { timeS: number; stepsDone: number; total: number; mistakes: number }
-export function debriefSummary(log: readonly ExerciseLogEntry[], total: number): DebriefSummary;
+export function debriefSummary(log: readonly ExerciseLogEntry[], total: number, elapsedS: number): DebriefSummary;
 ```
 
 - `debriefRows`: one row per log entry, in log order; a mistake's `causes` are the `action` entries with `mistake.atS − causeWindowS <= atS <= mistake.atS`, the last `causeMax` of them.
-- `debriefSummary`: `timeS` = the `finish` entry's `atS`, else the last entry's; `stepsDone` = the number of different `step` values among `step` entries; `mistakes` = the number of `mistake` entries.
+- `debriefSummary`: `timeS` = the `finish` entry's `atS`, else `elapsedS` (the run's clock now); `stepsDone` = the number of different `step` values among `step` entries; `mistakes` = the number of `mistake` entries.
 
 ### 8.4 UI (`src/ui/exerciseDebrief.ts`, `src/ui/exercisePanel.ts`)
 
-`createDebrief(run: ExerciseRun, def: ExerciseDef): HTMLElement` (`div.exercise-debrief`, `data-testid="exercise-debrief"`):
+`createDebrief(run: ExerciseRun, def: ExerciseDef): HTMLElement` (texts in `currentLanguage()` through `t()` and `exerciseText`; times with `alertTimeText`) (`div.exercise-debrief`, `data-testid="exercise-debrief"`):
 
 - `h4` `t('debrief.title')`, then `<p data-testid="debrief-summary">` `t('debrief.summary', { time, done, total, mistakes })`.
-- A toggle **Show my actions** (`debrief-actions-toggle`, `aria-pressed`, off at first): off, the list shows every row but `action` rows; on, all rows.
+- A toggle **Show my actions** (`debrief-actions-toggle`, label `t('debrief.actions')`, `aria-pressed`, off at first; its state lives in the panel's closure and survives re-renders): off, the list shows every row but `action` rows; on, all rows.
 - `ol.debrief-list` (`data-testid="debrief-list"`), each row `<li data-testid="debrief-row" data-kind="<kind>">` with the time (`alertTimeText(atS)`, in a `span.debrief-time`) and the text:
 
 | Kind | Text | Look |
 |---|---|---|
 | `start` | `t('debrief.start')` (step 0) or `t('debrief.startAt', { n: step + 1 })` | plain |
-| `step` | `t('debrief.step', { n: step + 1, goal })` | "✓" in the accent colour |
+| `step` | `<span class="debrief-tick">✓</span>` (accent colour) then `t('debrief.step', { n: step + 1, goal })` | plain |
 | `finish` | `t('debrief.finish')` | bold |
 | `back` | `t('debrief.back', { n: step + 1 })` | plain |
 | `event` | `alertText(entry.entry)` (`src/ui/alertCentre.ts`) | grey |
 | `mistake` | the mistake's `what`, then a `p` with `why`, a `p` with `fix`, then `t('debrief.justBefore')` and a nested list of the causes' texts, or `t('debrief.noCause', { s: causeWindowS })` when there are none | left border in the warning colour (danger for a serious one) |
 | `action` | the action's text (below) | small, grey |
 
-Action texts: `control` → `t('debrief.control', { name, from, to })` with `name` = `t(<key>)`, keys `ctl_mainsheet` → `control.mainsheet`, `ctl_jib_sheet` → `control.jibSheet`, `ctl_vang` → `control.vang`, `ctl_topping_lift` → `control.toppingLift`, `ctl_main_furl` → `control.mainFurl`, `ctl_jib_furl` → `control.jibFurl`; `ctl_rudder` → `t('debrief.wheel', { from, to })`. `autopilot` → `t('debrief.ap.<command>')` for off, heading, wind, tack; `turn` → `t('debrief.ap.turnPort', { deg })` for `turnDeg < 0`, `t('debrief.ap.turnStarboard', { deg })` otherwise (`deg` = `Math.abs(turnDeg)`). `engine` → `t('debrief.engine.start' | '.stop')`, `t('debrief.engine.lever', { pct })`. `realistic` → `t('debrief.rope.<gesture>', { label, side, station })` (the gesture keys in 8.5), where `label` = `tailSpec(target)?.label` (the words printed on the boat), `side` = `t('side.port.gen')` / `t('side.starboard.gen')` from a winch id ending in `_port` / `_starboard`, `station` = `t('debrief.station.<id>')`.
+Action texts: `control` → `t('debrief.control', { name, from, to })` with `name` = `t(<key>)`, keys `ctl_mainsheet` → `control.mainsheet`, `ctl_jib_sheet` → `control.jibSheet`, `ctl_vang` → `control.vang`, `ctl_topping_lift` → `control.toppingLift`, `ctl_main_furl` → `control.mainFurl`, `ctl_jib_furl` → `control.jibFurl`; `ctl_rudder` → `t('debrief.wheel', { from, to })` with signed whole degrees (+ = to starboard, as the Wheel control shows them). `autopilot` → `t('debrief.ap.<command>')` for off, heading, wind, tack; `turn` → `t('debrief.ap.turnPort', { deg })` for `turnDeg < 0`, `t('debrief.ap.turnStarboard', { deg })` otherwise (`deg` = `Math.abs(turnDeg)`). `engine` → `t('debrief.engine.start' | '.stop')`, `t('debrief.engine.lever', { pct })`. `realistic` → the key by gesture: `station` → `debrief.rope.station`; `clutch` → `clutchOpen` / `clutchClose` by `on`; `onWinch`; `offWinch`; `turn`; `selfTailer` → `selfTailerIn` / `selfTailerOut`; `button` → `buttonHeld` / `buttonLet`; `ease`; `pull`; `handle`; `crank`; `gearbox` (all under `debrief.rope.`), with `{ label, side, station }`, where `label` = `tailSpec(target)?.label ?? target ?? ''` (the words printed on the boat), `side` = `t('side.port.gen')` / `t('side.starboard.gen')` from a winch id ending in `_port` / `_starboard`, `station` = `t('debrief.station.<id>')`.
 
-In the panel: the **done** and **failed** cards show `createDebrief` under their buttons; the **step card** and the **mistake card** get a button **So far** (`exercise-so-far`, `aria-expanded`) that shows `createDebrief` of the log until now. The debrief re-renders only with the panel's render key, which adds `run.log.length` while the debrief is shown.
+In the panel: the **done** and **failed** cards show `createDebrief` under their buttons; the **step card** and the **mistake card** get a button **So far** (`exercise-so-far`, `t('exercise.soFar')`, `aria-expanded`) that shows `createDebrief` of the log until now. The debrief re-renders only with the panel's render key, which adds `run.log.length` while the debrief is shown.
 
 ### 8.5 Strings
 
 | Key | English |
 |---|---|
+| `exercise.soFar` | So far |
 | `debrief.title` | Debrief |
 | `debrief.summary` | Time {time} · {done} of {total} steps · mistakes: {mistakes} |
 | `debrief.actions` | Show my actions |
 | `debrief.start` | Started |
 | `debrief.startAt` | Started at step {n} |
-| `debrief.step` | ✓ Step {n}: {goal} |
+| `debrief.step` | Step {n}: {goal} |
 | `debrief.finish` | Finished |
 | `debrief.back` | Went back to the start of step {n} |
 | `debrief.justBefore` | Just before, you: |
@@ -834,20 +854,26 @@ In the panel: the **done** and **failed** cards show `createDebrief` under their
 | `debrief.rope.crank` | Cranked the winch handle |
 | `debrief.rope.gearbox` | Turned the mast gearbox switch |
 
-`clutch` uses `clutchOpen` / `clutchClose` by `on`; `selfTailer` and `button` likewise; `pull` with no target uses `debrief.rope.pull` with `label` = `t('debrief.rope.nothing')` | "nothing (let go)". (Add `debrief.rope.nothing` after `debrief.rope.pull`.)
+`pull` with no target uses `debrief.rope.pull` with `label` = `t('debrief.rope.nothing')`.
+
+| Key | English |
+|---|---|
+| `debrief.rope.nothing` | nothing (let go) |
+
+(`exercise.soFar` goes after the other `exercise.*` keys; `debrief.rope.nothing` after `debrief.rope.pull`.)
 
 ### 8.6 Tests
 
 `tests/debrief.test.ts`:
 
-1. **Causes:** actions at 1, 5, 12 and 20 s and a mistake at 22 s (window 15, max 3) → causes at 12 and 20; actions at 8, 9, 10, 11 and a mistake at 12 → causes 9, 10, 11; a mistake with no action in the window → `causes` empty.
+1. **Causes** (window 15 and max 3 passed as `settings`): actions at 1, 5, 12 and 20 s and a mistake at 22 s → causes at 12 and 20; actions at 8, 9, 10, 11 and a mistake at 12 → causes 9, 10, 11; a mistake with no action in the window → `causes` empty.
 2. **Summary:** a log with `step` 0, `step` 1, `back` to 1, `step` 1 again, `finish` at 80 → `stepsDone` 2, `timeS` 80; two mistakes → `mistakes` 2.
 
 `tests/exerciseRun.test.ts`:
 
 3. **Merging:** during a run, `setControls { ctl_mainsheet: 25 }` then 1 s later `{ ctl_mainsheet: 20 }` (start 30) → one entry 30 → 20; 4 s later `{ ctl_mainsheet: 15 }` → a second entry 20 → 15; a wind key is never logged; six `autopilot { turnDeg: -10 }` in one frame → one entry `turnDeg −60`; a `realistic` clutch open on `a2` → `{ gesture: 'clutch', target: 'a2', on: true }`.
 4. **Not logged:** actions in `setup`, `done` or `failed`; `select`, `setCameraPreset`, `setPaused`; an action that changes nothing.
-5. **Causes in a real run:** M67 test 1's drive with `pauseOnMistake: false` → the log has `event` entries for `byTheLee` and the accidental `gybe`, each before its mistake; the `by-the-lee` row's causes (with `debriefRows`) end with the autopilot `turn` of −60.
+5. **Causes in a real run:** M67 test 1's drive with `pauseOnMistake: false` → the log has `event` entries for `byTheLee` and the accidental `gybe`, each before its mistake; with the default settings (30 s) the causes of **both** mistake rows end with the autopilot `turn` of −60 (the gybe comes about 21 s after it).
 6. **logMax:** 450 control changes 4 s apart → the log has 400 entries and still starts with `start`.
 
 ### 8.7 Browser checks (`scripts/shots-m68.mjs`, test clock)
@@ -856,7 +882,7 @@ Scenes: `exercise-debrief` (phone and desktop): live shot of the done card after
 
 Live:
 
-1. **Done with a mistake:** points-of-sail with `exercise-pause-on-mistake` unticked; the good run's steps 1–4, then in step 5 turn −10 six times (the `by-the-lee` and `accidental-gybe` mistakes of M67 test 1, about 22 s); tap `exercise-waypoint-back-4` ("Start of step 5") and finish with the good run's step 5 → the done card shows `debrief-summary` "… 5 of 5 steps · mistakes: 2"; the list has a `mistake` row with "Just before, you:" and "Autopilot: 60° to port", and a `back` row.
+1. **Done with a mistake:** points-of-sail with `exercise-pause-on-mistake` unticked; the good run's steps 1–4, then in step 5 turn −10 six times (the `by-the-lee` and `accidental-gybe` mistakes of M67 test 1, about 22 s); tap `exercise-waypoint-back-4` ("Start of step 5") and finish with the good run's step 5 → the done card shows `debrief-summary` "… 5 of 5 steps · mistakes: 2"; both `mistake` rows show "Just before, you:" and "Autopilot: 60° to port", and there is a `back` row.
 2. **Actions toggle:** `debrief-actions-toggle` → `action` rows appear ("Main sheet: 30 → 12 %").
 3. **So far:** during a run, `exercise-so-far` shows the debrief with the steps done.
 4. Russian: the done card in `lang=ru` has no overflow; `auditPage` with the debrief open (phone, desktop).
@@ -929,7 +955,7 @@ New: `tests/physicsTruths10.test.ts`, `scripts/shots-m69.mjs`. Changed: `content
 ### 9.3 Model and app logic
 
 - `checkPasses` gains `boomDeg` and `event` (4.4).
-- **Events** (`stepExercise`, with the new alert entries that pass the settle rule, before the mistakes): a `tack` entry adds `'tack'`, and also `'tackByHand'` when `next.autopilot.mode === 'off'`; a `gybe` entry adds `'accidentalGybe'` when `entry.report?.accidental`, else `'controlledGybe'`. `run.events` is emptied when a step passes, at `start` and at a Back (7.3 already does).
+- **Events** (`stepExercise`, with the new alert entries that pass the settle rule, before the mistakes; an entry inside the settle time is not an event either): a `tack` entry adds `'tack'`, and also `'tackByHand'` when `next.autopilot.mode === 'off'`; a `gybe` entry adds `'accidentalGybe'` when `entry.report?.accidental`, else `'controlledGybe'`. `run.events` is emptied when a step passes, at `start` and at a Back (7.3 already does). A tack "by hand" means with the autopilot on Standby; the step's text says so. `ExerciseEvent` exists as a type since M66 (4.1); M69 makes the events happen.
 
 ### 9.4 Texts (`content/lang/en/exercises.json`, appended)
 
@@ -979,7 +1005,7 @@ New: `tests/physicsTruths10.test.ts`, `scripts/shots-m69.mjs`. Changed: `content
     "haul-main": { "goal": "Haul the main in until the boom is near the centre.", "how": "In Ropes, set Main sheet to 5 %. The boom comes within 16° of the centre line." },
     "gybe": { "goal": "Gybe: turn until the wind is on the other side.", "how": "In Autopilot, tap Gybe (the Tack button reads Gybe on a run). She turns through the wind and the boom crosses a short way." },
     "ease-main": { "goal": "Let the main right out on the new side.", "how": "In Ropes, set Main sheet to 85 % or more." },
-    "accidental": { "goal": "Now see an accidental gybe on purpose: steer 30° past dead downwind.", "how": "In Autopilot, tap Heading, then “10° to starboard” three times. The wind gets behind the main from the wrong side and throws the boom across. Watch the gybe report: the boom’s speed and the load on the main sheet." }
+    "accidental": { "goal": "Now see an accidental gybe on purpose: turn 30° further from the wind, past dead downwind.", "how": "In Autopilot, tap Heading, then “10° to starboard” three times: she turns from 15° short of dead downwind to 15° past it. The wind gets behind the main from the wrong side and throws the boom across. Watch the gybe report: the boom’s speed and the load on the main sheet." }
   },
   "mistakes": {
     "accidental-gybe": { "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Haul the main in before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee." }
@@ -997,12 +1023,12 @@ PT-58 (added by the planning PR to `docs/PHYSICS_TRUTHS.md`, "Phase 10 rules", s
 
 `tests/physicsTruths10.test.ts`:
 
-1. **PT-58:** `?wd=0&ws=12&hdg=195&ms=5&js=50&ap=wind&apt=165&sea=flat`, 15 s, `autopilot 'tack'`, 30 s → `rig.lastGybe.accidental` false and `peakRopeN` below **1,000 N** (prototype 0.4 kN); the same with `ms=100` → `accidental` true and `peakRopeN` above **2,000 N** (prototype 3.0 kN).
+1. **PT-58:** `?wd=0&ws=12&hdg=195&ms=5&js=50&ap=wind&apt=165&sea=flat`, 15 s, `autopilot 'tack'`, 30 s → `rig.lastGybe` is not null, its `accidental` false and `peakRopeN` below **1,000 N** (prototype 0.4 kN); the same with `ms=100` → `accidental` true and `peakRopeN` above **2,000 N** (prototype 3.0 kN).
 
 `tests/exerciseRun.test.ts` (good runs as 6.7 test 1, each from its start link and `start`; bands are the prototype's times plus a margin):
 
 2. **PT-28 tacking good run:** (1) `autopilot 'tack'`; (2) `autopilot 'off'`, `setControls { ctl_rudder: -25 }`; (3) each frame, once `twaSignedDeg > 35` and the wheel is not 0, `setControls { ctl_rudder: 0 }`; (4) `autopilot 'wind'`, `autopilot { turnDeg: -10 }`. Steps within **90, 30, 75, 45 s** (prototype 57.3, 15.5, 47.7, 24.1); no mistake.
-3. **Tacking, centred too early:** step 2's actions, then `ctl_rudder 0` as soon as `|twaSignedDeg| < 5` → the `in-irons` mistake within **60 s** of centring (prototype: stuck at 10° from the wind, −1.0 kn).
+3. **Tacking, centred too early:** test 2's step 1, then step 2's actions, then `ctl_rudder 0` as soon as `|twaSignedDeg| < 5` → the `in-irons` mistake within **60 s** of centring (prototype: stuck at 10° from the wind, −1.0 kn).
 4. **PT-35 irons good run:** (1) `{ ctl_mainsheet: 60, ctl_jib_sheet: 60 }`; (2) `{ ctl_rudder: 30 }`; (3) `{ ctl_rudder: 0, ctl_mainsheet: 12, ctl_jib_sheet: 30 }`. Steps within **5, 80, 50 s** (prototype 1.0, 52.9, 26.8). Named "PT-35 no speed, no steering: going backwards with the wheel over, the bow falls off".
 5. **Irons without the wheel:** step 1's action, then 90 s with the wheel at 0 → still at step 1 (`wheel-over` not passed; prototype: she drifts straight back).
 6. **Gybing good run:** (1) `{ ctl_mainsheet: 5 }`; (2) `autopilot 'tack'`; (3) `{ ctl_mainsheet: 100 }`; (4) `autopilot 'heading'`, `autopilot { turnDeg: 10 }` three times. Steps within **10, 30, 15, 35 s** (prototype 3.3, 16.3, 5.0, 16.0); no mistake (the step-4 gybe is outside the mistake's `steps`).
@@ -1016,9 +1042,9 @@ Scenes: `exercise-tacking-setup`, `exercise-gybing-setup` (phone and desktop, `s
 
 Live (each from `?m=exercise&ex=<id>&debug=1`, Start, then the good run's actions with `__sailExercise.dispatch`):
 
-1. **Tacking:** the line steps through 1/4 … 4/4 and the done card shows; in step 2, How? names "Standby" and "−25°".
+1. **Tacking:** the line steps through 1/4 … 4/4 and the done card shows; in step 2, How? contains "Standby" and "−25°" (with the minus sign U+2212, as written in 9.4).
 2. **Irons:** the good run reaches the done card; after step 2 the boat's `|twa|` is 35° or more.
-3. **Gybing:** the good run reaches the done card; step 4 shows the gybe report in the alert stack (`gybe-report`) while the line still shows step 4.
+3. **Gybing:** the good run reaches the done card (step 4 passes the frame the gybe comes); the gybe report (`gybe-report`) is visible in the alert stack at the same time as the done card (it shows for `physics.gybe.reportS`, 8 s).
 4. **Gybing mistake:** a new run, `autopilot 'tack'` in step 1 → the mistake card names the accidental gybe.
 5. The list shows the three new exercises under "Sailing skills" in the data order; `auditPage` with each setup card; Russian setup cards fit.
 
@@ -1078,7 +1104,7 @@ New: `scripts/shots-m70.mjs`. Changed: `content/exercises/exercises.json` (two e
 ### 10.3 Model and app logic
 
 - `checkPasses` gains `gusts`, `mainOutPct`, `jibOutPct` (4.4).
-- **Gust counter** (`stepExercise`, every frame with `dt > 0`, before the mistakes): `mean = next.controls.ctl_wind_speed`; `rise = mean × (1 + gust.risePct / 100)`; `rearm = mean × (1 + gust.rearmPct / 100)`. If `gustArmed && next.wind.twsKn >= rise`: `gusts += 1`, `gustArmed = false`; else if `!gustArmed && next.wind.twsKn <= rearm`: `gustArmed = true`. At `start`, when a step passes and at a Back: `gusts = 0`, `gustArmed = next.wind.twsKn <= rearm` (a gust already blowing is not counted).
+- **Gust counter** (`stepExercise`, every frame with `dt > 0`, before the mistakes): `mean = next.controls.ctl_wind_speed`; `rise = mean × (1 + gust.risePct / 100)`; `rearm = mean × (1 + gust.rearmPct / 100)`. If `gustArmed && next.wind.twsKn >= rise`: `gusts += 1`, `gustArmed = false`; else if `!gustArmed && next.wind.twsKn <= rearm`: `gustArmed = true`. `newRun` sets `gusts: 0`, `gustArmed: true`. `startRun` (the `start` command, in `exerciseRun.ts`), the frame a step passes and `restoreWaypoint` set `gusts = 0`, `gustArmed = wind.twsKn <= rearm` from the state they produce (a gust already blowing is not counted); `continue` changes neither. The strip's GUST badge shows from `windModes.gustBadgeFraction` (1.1 × the mean, 16.5 kn here); the counter counts only gusts that reach 1.2 × the mean (18 kn), so a weak gust shows GUST and is not counted: the step's text asks for three gusts, and the line's step does not change until the third strong one has come. `store.ts` needs no change (the start and Back code live in `exerciseRun.ts`).
 
 ### 10.4 Texts (appended)
 
@@ -1092,7 +1118,7 @@ New: `scripts/shots-m70.mjs`. Changed: `content/exercises/exercises.json` (two e
   "mistake": "Holding the main sheet tight in a gust: she heels past 25°, slows down and can turn into the wind by herself (a round-up).",
   "done": "Easing the main in a gust keeps her upright and steering. The dark patch on the water warns you a few seconds before it arrives.",
   "steps": {
-    "three-gusts": { "goal": "Get through three gusts: ease the main in each one, sheet in after.", "how": "Watch the wind speed on the strip: GUST shows while a gust blows. In Ropes, set Main sheet to about 45 % when it hits, and back to about 25 % when it has passed." },
+    "three-gusts": { "goal": "Get through three gusts: ease the main in each one, sheet in after.", "how": "Watch the strip: GUST shows while a gust blows (from about 16.5 knots). In Ropes, set Main sheet to about 45 % when it shows, and back to about 25 % when it has gone. Three strong gusts take about two and a half minutes." },
     "trim-back": { "goal": "Trim both sails to Good.", "how": "Main sheet about 25 %, Jib sheet about 50 %. Both sails should read Good; ease the main again if a gust comes." }
   },
   "mistakes": {
@@ -1131,10 +1157,10 @@ New: `scripts/shots-m70.mjs`. Changed: `content/exercises/exercises.json` (two e
 
 `tests/exerciseRun.test.ts`:
 
-1. **PT-25 gusts good run:** every frame, `ctl_mainsheet` 45 while `wind.twsKn > 16.8` (15 × 1.12), else 25 (both steps). Step 1 passes between **130 and 160 s** (prototype 141.0; the gusts come at 35, 105, 141, 158 s with seed 1), step 2 within **20 s**; no mistake; the largest `|heelDeg|` stays below **24°** (prototype 22.5). Named "PT-25 heel grows with wind force: easing the main in the gusts keeps her under 25°".
-2. **Gusts, sheet held:** no actions for 240 s → at least one `overpowered` mistake (`pauseOnMistake: false`), the first within **60 s** (prototype 37 s); the largest heel above **30°** (prototype 36.6).
+1. **PT-25 gusts good run:** every frame, `ctl_mainsheet` 45 while `wind.twsKn > 16.5` (the GUST badge: 15 × `gustBadgeFraction`), else 25, in both steps (the prototype switched at 16.8 kn; easing earlier only lowers the heel). Step 1 passes between **130 and 160 s** (prototype 141.0; the gusts come at 35, 105, 141, 158 s with seed 1), step 2 within **20 s**; no mistake; the largest `|heelDeg|` stays below **24°** (prototype 22.5). Named "PT-25 heel grows with wind force: easing the main in the gusts keeps her under 25°".
+2. **Gusts, sheet held:** `pauseOnMistake: false`, no actions for 240 s → at least one `overpowered` mistake, the first within **60 s** of Start (prototype 37 s); the largest heel above **30°** (prototype 36.6). A `round-up` is not asserted (at 15 kn the prototype had none).
 3. **Gust counter** (built states): wind 15 → 18.1 (a gust: count 1) → 17.0 (still above 16.5: not re-armed) → 18.5 (no count) → 16.4 (re-armed) → 18.0 (count 2).
-4. **reduce-sail good run:** (1) `{ ctl_jib_sheet: 100 }`, then `{ ctl_jib_furl: 40 }`; (2) `{ ctl_main_furl: 60 }`; (3) `{ ctl_mainsheet: 35 }`. Steps within **10, 10, 20 s** (prototype 2.9, 2.0, 10.0); the final `|heelDeg|` below **15°** (prototype 11.3).
+4. **reduce-sail good run:** (1) `{ ctl_jib_sheet: 100 }`, then `{ ctl_jib_furl: 40 }`; (2) `{ ctl_jib_sheet: 75, ctl_main_furl: 60 }`; (3) `{ ctl_mainsheet: 35 }`. Steps within **10, 10, 20 s** (prototype 2.9, 2.0, 10.0); the final `|heelDeg|` below **19.5°** (prototype 17.4); no mistake.
 5. **PT-13 jib furling needs an eased sheet:** reduce-sail, `{ ctl_jib_furl: 40 }` with the sheet left at 30 %, 30 s → jib out (`100 × jibSolution.unfurled`) still **80 % or more** (prototype 88) and step 1 not passed.
 
 ### 10.7 Browser checks (`scripts/shots-m70.mjs`, test clock)
@@ -1145,12 +1171,12 @@ Live:
 
 1. **Gusts:** Start, drive the easing policy with `__sailExercise.dispatch` every 0.5 s of app time (reading `__sailExercise.read().twsKn`) → done card, no mistake row in the debrief.
 2. **Gusts, held:** a new run with the box ticked, no actions → the mistake card "She heeled too far (more than 25°)." within 60 s of app time.
-3. **reduce-sail:** the good run → done card; the debrief lists "Jib sheet: 30 → 100 %" with the actions toggle on.
+3. **reduce-sail:** the good run → done card; with the actions toggle on the debrief lists "Jib sheet: 30 → 100 %" and "Jib sheet: 100 → 75 %".
 4. The list shows "Wind and weather" with both; `auditPage` with each setup card; Russian fits.
 
 ### 10.8 Done when
 
-Both exercises work from their links on a phone and a computer; typecheck, lint, tests, build and `SHOTS_ONLY=m66,m69,m70` pass, then CI.
+Both exercises work from their links on a phone and a computer; typecheck, lint, tests, build and `SHOTS_ONLY=m66,m67,m68,m69,m70` pass, then CI.
 
 ### 10.9 Not in M70
 
@@ -1170,7 +1196,7 @@ Owner, answer 8 (2026-10-30): **Alone** means Pause is off during the exercise, 
 
 ### 11.1 Files
 
-New: `scripts/shots-m71.mjs`. Changed: `content/exercises/exercises.json` (two exercises), both `exercises.json` texts, `src/model/exercises.ts` (`engine`), `src/app/exerciseRun.ts` (`exercisePauseBlocked`, the `crew` option), `src/app/store.ts` (`setPaused` blocked), `src/app/urlState.ts` (`exc`), `src/ui/exercisePanel.ts` (the crew choice), `src/ui/timeBar.ts` (Pause off while blocked), both `ui.json`, `docs/review/ru.md`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/physicsTruths10.test.ts`, `tests/urlState.test.ts`, `docs/PHYSICS_TRUTHS.md` (PT-59's test), `scripts/shots.mjs`, `docs/CODE_MAP.md`, `docs/ROADMAP.md` (part 10a done).
+New: `scripts/shots-m71.mjs`. Changed: `content/exercises/exercises.json` (two exercises), both `exercises.json` texts, `src/model/exercises.ts` (`engine`), `src/app/exerciseRun.ts` (`exercisePauseBlocked`, the `crew` option), `src/app/store.ts` (`setPaused` blocked), `src/app/urlState.ts` (`exc`), `src/ui/exercisePanel.ts` (the crew choice), `src/ui/timeBar.ts` (Pause off while blocked), `src/style.css`, both `ui.json`, `docs/WORKFLOW.md` (ticks), `docs/review/ru.md`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/physicsTruths10.test.ts`, `tests/urlState.test.ts`, `docs/PHYSICS_TRUTHS.md` (PT-59's row exists since the planning PR, `to-verify`: the M71 PR adds the test file to its "How to see it"), `scripts/shots.mjs`, `docs/CODE_MAP.md`, `docs/ROADMAP.md` (part 10a done).
 
 ### 11.2 Data (appended to `exercises`)
 
@@ -1215,7 +1241,7 @@ The `opens` of these steps: `ropes` (the stations), `engine` and `autopilot` (in
 ### 11.3 Model and app logic
 
 - `checkPasses` gains `engine` (4.4).
-- **Crew option** `{ options: { crew } }` (only in `setup`, only when the def has `crew: true`).
+- **Crew option** `{ options: { crew } }` (only in `setup`; on a def with `crew: false` it changes nothing). `exc=1` on such a def is ignored. With Easy ropes the option is kept but has no effect.
 - `export function exercisePauseBlocked(state: AppState): boolean` = `state.exercise?.status === 'running' && state.exercise.options.crew === 'alone' && state.settings.ropesMode === 'realistic' && exerciseDef(state.exercise.id)?.crew === true`.
 - `store.ts`: `setPaused { paused: true }` returns `state` while `exercisePauseBlocked(state)` (`paused: false` is always allowed). The coach's own pause on a mistake (7.3) and the done card's pause still happen.
 
@@ -1226,7 +1252,7 @@ The `opens` of these steps: `ropes` (the stations), `engine` and `autopilot` (in
 ### 11.5 UI
 
 - **Setup card:** for a def with `crew: true` and Realistic ropes chosen, a row **Crew** (`t('exercise.crew')`) with two toggle buttons `exercise-crew-alone`, `exercise-crew-crew` (`aria-pressed`, `t('exercise.crew.alone')`, `t('exercise.crew.crew')`) and `t('exercise.crew.hint')`. With Easy ropes the row is hidden (and the option has no effect).
-- **Time bar** (`timeBar.ts`): while `exercisePauseBlocked(state)`, the Pause button is `disabled` with the accessible name and title `t('exercise.alonePause')`; it is enabled again when the run ends or turns to `mistake`, `failed` or `done`.
+- **Time bar** (`timeBar.ts`, importing `exercisePauseBlocked` from `src/app/exerciseRun.ts`; its refresh key gains `blocked`): while `exercisePauseBlocked(state) && !state.paused`, the Pause button is `disabled` with the accessible name and title `t('exercise.alonePause')`. While paused (for instance after a mistake card's pause, or a load) it stays the Resume button and is enabled, so time can always be restarted. The speed-up buttons stay as they are. In `mistake` and `failed` the button is disabled by M67's rule.
 - **Step card:** while blocked, `<p class="hint" data-testid="exercise-alone-note">` `t('exercise.aloneNote')` under the goal.
 
 ### 11.6 Texts and strings
@@ -1293,13 +1319,13 @@ Realistic gestures are `{ type: 'realistic', action }` with the winches `winch_p
 
 `tests/exerciseRun.test.ts`:
 
-1. **PT-12 set-sails good run (Realistic, alone):** (1) nothing; (2) `station starboard`, `clutch a2 open`, `a3` on W, `button W held`; each frame, once `ctl_main_furl >= 99`, `button W released`; (3) once `ctl_main_furl` is 100 or 5 s have passed: `clutch a2 closed`, `offWinch W`, `autopilot 'wind'`, `turnDeg −10` six times; (4) `station port`, `clutch r1 open`, `station starboard`, `a5` on W, `button W held`; each frame, once `ctl_jib_sheet < 50`, `button W released`; (5) `engine { leverPct: 0 }`, `engine 'stop'`. Steps within **15, 40, 60, 80, 10 s** (prototype 7.7, 20.3, 31.2, 45.8, 5.0); no `main-off-wind`. Rope warnings (`winch-cut-out`, `clutch-on-running`) may come from the script's timing: the test lists them in its name's comment and the PR says how many; if a cleaner order of the same gestures avoids them, use it and record it under 11.10.
-2. **furl-sails good run:** (1) `engine 'start'`; (2) `station starboard`, `clutch a5 open`, `station port`, `r1` on P, `button P held`; each frame, once `jibSolution.unfurled <= 0.01`, release; (3) `engine { leverPct: 30 }`, `autopilot 'heading'`, `turnDeg +10` six times; (4) `offWinch P`, `clutch b3 open`, `station starboard`, `clutch a3 open`, `a2` on W, `button W held`; each frame, once `ctl_main_furl <= 1`, release. Steps within **5, 60, 30, 45 s** (prototype 2.0, 31.2, 13.8, 21.4); no `main-off-wind`.
-3. **Alone blocks Pause:** set-sails, Realistic, alone, `start` → `setPaused true` returns the same state; `exercisePauseBlocked` true; after a mistake (status `mistake`, paused by the coach) → false; `continue` → true again. **With crew** (`{ options: { crew: 'crew' } }` in setup) → `setPaused true` pauses. In Easy ropes (`{ ropes: 'easy' }`) → never blocked.
+1. **PT-12 set-sails good run (Realistic, alone, `{ options: { pauseOnMistake: false } }` in setup, so a rope warning does not stop the script):** (1) nothing; (2) `station starboard`, `clutch a2 open`, `a3` on W, `button W held`; each frame, once `ctl_main_furl >= 99`, `button W released`; (3) once `ctl_main_furl` is 100 or 5 s of step 3 have passed: `clutch a2 closed`, `offWinch W`, `autopilot 'wind'` (it takes the angle she has, about 0°), `turnDeg −10` six times in the same frame (target 60°, starboard tack); (4) `station port`, `clutch r1 open`, `station starboard`, `a5` on W, `button W held`; each frame, once `ctl_jib_sheet < 50`, `button W released`; (5) `engine { leverPct: 0 }`, `engine 'stop'`. Steps within **15, 40, 60, 80, 10 s** (prototype 7.7, 20.3, 31.2, 45.8, 5.0); no `main-off-wind`. The script leaves JIB ROLL open (closing it is in the text, not in the test). Rope warnings (`winch-cut-out`, `clutch-on-running`) may come from the script's timing: the test lists them in its name's comment and the PR says how many; if a cleaner order of the same gestures avoids them, use it and record it under 11.10.
+2. **furl-sails good run** (`pauseOnMistake: false` as test 1): (1) `engine 'start'`; (2) `station starboard`, `clutch a5 open`, `station port`, `r1` on P, `button P held`; each frame, once `jibSolution.unfurled <= 0.01`, release; (3) `engine { leverPct: 30 }`, `autopilot 'heading'`, `turnDeg +10` six times; (4) `offWinch P`, `clutch b3 open`, `station starboard`, `clutch a3 open`, `a2` on W, `button W held`; each frame, once `ctl_main_furl <= 1`, release. Steps within **5, 60, 30, 45 s** (prototype 2.0, 31.2, 13.8, 21.4); no `main-off-wind`.
+3. **Alone blocks Pause:** set-sails, Realistic, alone, `start` → `setPaused true` returns the same state; `exercisePauseBlocked` true; after a mistake (a built `winchCutOut` entry passed to `stepExercise`, as M67 test 3 builds entries: status `mistake`, paused by the coach) → false; `continue` → true again. **With crew** (`{ options: { crew: 'crew' } }` in setup) → `setPaused true` pauses. In Easy ropes (`{ ropes: 'easy' }`) → never blocked.
 
 `tests/physicsTruths10.test.ts`:
 
-4. **PT-59:** set-sails, Realistic, `start`; once step 1 has passed, `autopilot 'heading'`, `turnDeg −60`, 20 s (about 60° from the wind), then step 2's gestures → the `main-off-wind` mistake within **10 s** of the button.
+4. **PT-59** (named "PT-59 roll the main out head to wind: rolling it out 60° off the wind is reported"): set-sails, Realistic, `start`; once step 1 has passed, `autopilot 'heading'`, `turnDeg −60`, 20 s (about 60° from the wind), then step 2's gestures → the `main-off-wind` mistake within **10 s** of the button.
 
 `tests/urlState.test.ts`: `exc=1` round-trips in the start and the waypoint form; `?m=exercise&ex=set-sails&mode=easy` opens set-sails with Easy ropes.
 
