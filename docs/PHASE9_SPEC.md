@@ -1383,6 +1383,7 @@ A pulpit and pushpit, a boarding gate, deck lights, solar panels, a bimini, a co
 
 ### 11.10 Decided in the M65 PR
 
+- **CI part split** (recommended; merging accepts it): the part `live, M60-M65` ran into the 45-minute limit of its job (M63 alone takes about 9 minutes, M64 about 5 on the desktop size), so `ci.yml` has two parts, `live, M60-M62` (`budget,m60,m60b,m61,m62`) and `live, M63-M65` (`m63,m64,m65`). Their groups are all in the "M30 on" part's skip list already.
 - **Show-me links without `detail=high`** (recommended; merging accepts it): the registry's `showMe` of `fit_deck_hatch` and `fit_portlight` is `?cam=top&sel=fit_deck_hatch&held=1&sea=flat` and `?cam=side-port&sel=fit_portlight&held=1&sea=flat`. An existing test (`tests/glossary.test.ts`, "every link is canonical and keeps the viewer's own keys out") forbids `detail` in a Show-me link, and changing that rule is outside this milestone. At Low "Where is it?" finds nothing visible, as 11.5 says for any hidden part.
 - **Portlight winding:** a starboard grid is wound top-left, bottom-left, bottom-right and a port grid the other way, so the normals point away from the hull on both sides.
 - **Shadow patches** use the sizes of 11.4 unchanged.
