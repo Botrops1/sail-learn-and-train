@@ -354,6 +354,13 @@ html[data-layout='stacked'] .info-card {
   display: none;
 }
 
+/* Side by side the alert card starts open at the left, under the strip: the buttons go to the right (decided in the M64 PR). */
+html[data-layout='side'] .helm-views {
+  left: auto;
+  right: 8px;
+  align-items: flex-end;
+}
+
 .helm-view-button {
   min-width: var(--touch);
   min-height: var(--touch);

@@ -93,7 +93,7 @@ export async function liveM64Checks({ openPage, viewports, outDir, prefix, probl
       // 7. Dragging switches to Free and hides the buttons.
       const canvas = await page.locator('canvas.scene-canvas').boundingBox();
       const cx = canvas.x + canvas.width / 2;
-      const cy = canvas.y + canvas.height / 2;
+      const cy = canvas.y + canvas.height / 3;
       await page.mouse.move(cx, cy);
       await page.mouse.down();
       for (let i = 1; i <= 10; i += 1) await page.mouse.move(cx + i * 15, cy + i * 4);
