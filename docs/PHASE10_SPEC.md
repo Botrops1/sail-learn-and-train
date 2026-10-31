@@ -575,7 +575,23 @@ Mistakes, waypoints and their links (M67); the debrief (M68); any exercise other
 
 ### 6.11 Decided in the M66 PR
 
-(empty)
+Recommended; merging accepts it.
+
+- **`exercises` leads column 0 of `DEFAULT_WIDE_LAYOUT`**, so a layout saved before M66 gets the Exercises section at the end of column 0 (`completeLayout` appends it). Only `tests/sectionLayout.test.ts` changed for it (the first two sections after moving Sails to the top are now Sails and Exercises). The section is hidden outside Exercises mode.
+- **`tests/glossary.test.ts` and `tests/languages.test.ts`**: the review document has one more part (so the count of `##` headings is groups + 2), and `exercise.line` (only placeholders and a dot) joins the Russian strings that equal English.
+- **`:root[data-exercise]`** is set by `app.ts` while a run exists; one CSS rule hides what would load a scene (Learn's "Show it working" and "Try it", Realistic's Practice) through `data-hide-in-exercise`.
+- **The shots script** needs `SHOTS_CHROMIUM=/opt/pw-browsers/chromium` in this cloud environment (the repo's pinned Playwright looks for another browser build); CI is unchanged.
+
+**After the owner's first test of the PR (comments of 2026-10-31).** Built in this PR:
+
+- **The part card stays away in Exercises mode** (`infoCard.ts`): it covered the step line and the wind. Tapping a part still selects it (the strip, the quick row).
+- **The wheel moved from the Ropes list to the Steering section** (Easy ropes; owner: "otherwise not logical"). The Autopilot section is now titled "Steering" (`steering.label`, the section id stays `autopilot`) and holds the wheel's slider with its − / + buttons above the autopilot block (`createSteeringPanel`). A wheel selected in the 3D view opens Steering in Easy ropes (it opens Helm in Realistic ropes, as before). `ropesTabShows` is false for the wheel. Older checks `shots-m4a.mjs` and `shots-m6.mjs` changed for this (they open the Steering section).
+- **The autopilot texts name the real buttons**: "tap −10" (its screen-reader name is "10° to port"), not "tap “10° to port”".
+- **A hint window over the 3D view** (`src/ui/exerciseCoach.ts`, under the step line): the step's How text and the targets to reach, one row per field of the step's check (`checkTargets`, `targetReading` in `model/exercises.ts`): "○ Wind 38–52° from the bow · now 45°", "✓ Mainsail: Good · now Good". A row turns ✓ while it holds. "Hide hint" folds it to one button; the choice is kept on this device (`sail-learn.coach`). The panel's How? stays. Only the fields M66 reads have a target row; M69–M71 add the rows for theirs (boom angle, events, gusts, how far each sail is out, the engine) with their strings.
+- **Unused sections are hidden while an exercise is loaded** (new data field `sections` on each exercise; `sectionAvailable` in `modes.ts`). Points of sail keeps Ropes, Helm, Sails, Autopilot (Steering), Conditions and Learn; Engine, Place, Anchor, Harbour gear and Status are hidden. The setup card says what is set by the exercise ("the wind, the waves and the clock") and lists the hidden sections. Conditions stays visible, locked, because it is where the wind is read (recommended; merging accepts it).
+- **Review items:** the Russian exercise texts are in the stray-Latin and curly-quote scan (`tests/languages.test.ts`); the accessibility audit also runs with the exercise list on screen. Item 1 (the Resume button during setup) goes to M67's pause work; items 4 and 5 stay as they are.
+
+Not built, answered in the PR: a picture of the target position per step (the live targets give the same help, see the PR question), and the owner's layout idea for the bottom row.
 
 ---
 

@@ -1,0 +1,36 @@
+{
+  "$comment": "PHASE10_SPEC 4.4: the exercises, language-neutral. Texts are in content/lang/<code>/exercises.json by the same ids. Start links are ordinary app links (urlState.ts keys); checks and mistakes are read by src/model/exercises.ts.",
+  "schemaVersion": 1,
+  "settings": {
+    "settleS": 1,
+    "mistakeRepeatGapS": 10,
+    "mistakeShowS": 6,
+    "causeWindowS": 30,
+    "causeMax": 3,
+    "controlMergeS": 3,
+    "logMax": 400,
+    "gust": { "risePct": 20, "rearmPct": 10 }
+  },
+  "exercises": [
+    {
+      "id": "points-of-sail",
+      "group": "sailing",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "helm", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=315&ms=30&js=30&ap=wind&apt=45&sea=flat",
+      "steps": [
+        { "id": "close-hauled", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [38, 52], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] } },
+        { "id": "close-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [58, 72], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] } },
+        { "id": "beam-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [85, 100], "tack": "starboard", "mainTrim": ["good"], "controls": { "ctl_jib_sheet": [90, 100] } } },
+        { "id": "broad-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [125, 145], "tack": "starboard", "controls": { "ctl_mainsheet": [85, 100], "ctl_jib_sheet": [90, 100] } } },
+        { "id": "run", "opens": "autopilot", "holdS": 10, "check": { "twaDeg": [155, 170], "tack": "starboard", "controls": { "ctl_mainsheet": [85, 100] } } }
+      ],
+      "mistakes": [
+        { "id": "accidental-gybe", "serious": false, "on": { "alert": "gybe", "accidental": true } },
+        { "id": "by-the-lee", "serious": false, "on": { "alert": "byTheLee" } },
+        { "id": "in-irons", "serious": false, "on": { "condition": { "twaDeg": [0, 20], "speedKn": [-99, 1] }, "forS": 5 } }
+      ]
+    }
+  ]
+}

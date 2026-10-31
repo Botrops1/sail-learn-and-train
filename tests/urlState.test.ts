@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createStore, initialState, reduce, type AppState } from '../src/app/store';
 import { jibReachedParam, parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { HANSE_508, boat, useBoat } from '../src/model/boat';
+import { twaSignedDeg } from '../src/model/exercises';
 import { clockParam, defaultClockUtcMs } from '../src/model/clock';
 import { knToMps, mpsToKn } from '../src/model/angles';
 import { steadyState } from '../src/model/motion';
@@ -656,5 +657,45 @@ describe('M64: the Helm camera in the link (PHASE9_SPEC 4.2)', () => {
     const state = parseUrlState('?cam=side-port&hw=s');
     expect(state.camera.helm.wheel).toBe('starboard');
     expect(serializeUrlState(state)).not.toContain('hw=');
+  });
+});
+
+describe('exercises in the link (M66, PHASE10_SPEC 4.3)', () => {
+  it('m=exercise round-trips and opens the list', () => {
+    const state = parseUrlState('?m=exercise');
+    expect(state.appMode).toBe('exercise');
+    expect(state.exercise).toBeNull();
+    expect(parseUrlState(serializeUrlState(state)).appMode).toBe('exercise');
+  });
+
+  it('ex= opens the exercise in setup, paused, with its own start', () => {
+    const state = parseUrlState('?m=exercise&ex=points-of-sail');
+    expect(state.exercise?.status).toBe('setup');
+    expect(state.exercise?.step).toBe(0);
+    expect(state.paused).toBe(true);
+    expect(state.controls.ctl_mainsheet).toBe(30);
+    expect(twaSignedDeg(state)).toBeCloseTo(45);
+  });
+
+  it('writes a run as its start link', () => {
+    const state = parseUrlState('?m=exercise&ex=points-of-sail');
+    const text = serializeUrlState(state);
+    expect(text).toContain('m=exercise');
+    expect(text).toContain('ex=points-of-sail');
+    expect(text).toContain('mode=easy');
+    expect(text).not.toContain('ms=');
+  });
+
+  it('keeps the ropes mode a link names, and ignores an unknown id', () => {
+    expect(parseUrlState('?m=exercise&ex=points-of-sail&mode=realistic').settings.ropesMode).toBe(
+      'realistic',
+    );
+    expect(parseUrlState('?m=exercise&ex=nonsense').exercise).toBeNull();
+  });
+
+  it('leaves an old link alone', () => {
+    const state = parseUrlState('?wd=60&ws=12');
+    expect(state.exercise).toBeNull();
+    expect(state.appMode).toBe('easy');
   });
 });

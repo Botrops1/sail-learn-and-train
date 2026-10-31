@@ -207,3 +207,37 @@ describe('M55: the Status section (13.4)', () => {
     }
   });
 });
+
+describe('Exercises mode (M66)', () => {
+  it('the exercises section is available only in the exercise mode', () => {
+    const easy = initialState();
+    expect(sectionAvailable('exercises', easy)).toBe(false);
+    const exercise = reduce(easy, { type: 'setAppMode', mode: 'exercise' });
+    expect(sectionAvailable('exercises', exercise)).toBe(true);
+    expect(exercise.settings.ropesMode).toBe('easy');
+    expect(exercise.exercise).toBeNull();
+  });
+});
+
+describe('an exercise hides the sections it does not use (owner, PR 144)', () => {
+  it('keeps Mode, Exercises, Settings and the listed sections, hides the rest', () => {
+    const setup = parseUrlState('?m=exercise&ex=points-of-sail');
+    expect(setup.exercise).not.toBeNull();
+    for (const id of ['ropes', 'sails', 'autopilot', 'conditions', 'learn', 'exercises'] as const) {
+      expect(sectionAvailable(id, setup), id).toBe(true);
+    }
+    for (const id of ['engine', 'place', 'anchor', 'harbour', 'status'] as const) {
+      expect(sectionAvailable(id, setup), id).toBe(false);
+    }
+    expect(sectionAvailable('mode', setup, 'stacked')).toBe(true);
+    expect(sectionAvailable('settings', setup, 'stacked')).toBe(true);
+  });
+
+  it('shows the sections again in the list, with no exercise loaded', () => {
+    const list = parseUrlState('?m=exercise');
+    expect(list.exercise).toBeNull();
+    for (const id of ['engine', 'place', 'anchor', 'harbour', 'status'] as const) {
+      expect(sectionAvailable(id, list), id).toBe(true);
+    }
+  });
+});

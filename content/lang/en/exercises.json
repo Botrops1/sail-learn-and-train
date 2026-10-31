@@ -1,0 +1,24 @@
+{
+  "$status": "source",
+  "points-of-sail": {
+    "title": "Trim through the points of sail",
+    "summary": "Turn from close to the wind to a run, easing the sails as you go.",
+    "see": "You are sailing close to the wind (close-hauled) on starboard tack: the wind comes over the right side of the bow. The front edge of the mainsail is flapping.",
+    "happening": "A sail works like a wing only when the wind meets it at the right angle. As you turn away from the wind (bear away), the wind comes more from the side and then from behind, so each sail has to be let out further.",
+    "action": "Each time you bear away, ease (let out) the sheets: the main until it stops being stalled, the jib all the way on a reach. On a run, let the main right out.",
+    "mistake": "Turning away without easing: the sails stall (the air stops flowing smoothly over them), she heels and slows. Turning too far on a run: the wind gets behind the main and throws the boom across (an accidental gybe).",
+    "done": "You sailed every point of sail from close-hauled to a run. The rule: the further from the wind, the further out the sails.",
+    "steps": {
+      "close-hauled": { "goal": "Close-hauled: haul the main in until it stops flapping.", "how": "In Ropes, tap − on Main sheet until it reads about 12 %. Watch the Sails section: both sails read Good when they are trimmed." },
+      "close-reach": { "goal": "Close reach: turn 20° away from the wind, then ease the main.", "how": "Open Steering (the Autopilot block) and tap −10 twice. Each tap turns her 10° to port (left), away from the wind, which comes over the starboard side. Then, in Ropes, ease Main sheet to about 25 %. With Realistic ropes the Autopilot is at the Helm station." },
+      "beam-reach": { "goal": "Beam reach: wind from the side. Ease the main and let the jib sheet right out.", "how": "In Steering, tap −10 three more times. Then, in Ropes, ease Main sheet to about 50 % and Jib sheet to 100 %. On a reach the self-tacking jib (it changes sides by itself) cannot go out far enough to read Good: let its sheet right out." },
+      "broad-reach": { "goal": "Broad reach: wind from behind the side. Let the main right out.", "how": "In Steering, tap −10 four more times. In Ropes, ease Main sheet to 85 % or more: the boom stops at the shrouds (the wires that hold the mast up), so the main cannot go further out." },
+      "run": { "goal": "Run: wind from behind. Hold the course for 10 seconds without a gybe.", "how": "In Steering, tap −10 three more times, to about 165° from the wind. Do not go further: with the wind dead behind or on the other side, the boom can swing across by itself." }
+    },
+    "mistakes": {
+      "accidental-gybe": { "what": "The boom swung across by itself (an accidental gybe).", "why": "The wind got behind the mainsail from the other side: she turned past dead downwind.", "fix": "Turn back towards the wind until it is about 160° off the bow. On a run, never steer past dead downwind." },
+      "by-the-lee": { "what": "You are sailing by the lee: the wind comes from the side the boom is on.", "why": "She turned past dead downwind, so the boom can gybe at any moment.", "fix": "Turn 10–20° back towards the wind straight away." },
+      "in-irons": { "what": "She has stopped, pointing into the wind (in irons).", "why": "She turned towards the wind instead of away from it: no sail works with the wind straight ahead.", "fix": "Turn away from the wind with −10 in Steering (Wind autopilot); if she does not answer, do the Getting out of irons exercise." }
+    }
+  }
+}

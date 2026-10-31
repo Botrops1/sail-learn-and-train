@@ -52,7 +52,7 @@ describe('M54: section layout (PHASE8_SPEC 12.5)', () => {
 
   it('moves a section within its column', () => {
     const next = moveSection(DEFAULT_WIDE_LAYOUT, 'sails', 0, 0);
-    expect(next.columns[0].slice(0, 2)).toEqual(['sails', 'ropes']);
+    expect(next.columns[0].slice(0, 2)).toEqual(['sails', 'exercises']);
   });
 
   it('layoutIndex skips hidden sections', () => {

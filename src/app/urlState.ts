@@ -1,4 +1,6 @@
-import type { AppMode } from './appMode';
+import { keepsRopesMode, type AppMode } from './appMode';
+import { exerciseDef, type ExerciseDef } from '../model/exercises';
+import { DEFAULT_OPTIONS, newRun } from './exerciseRun';
 import { compassDeg, knToMps, mpsToKn, wrap180, wrap360 } from '../model/angles';
 import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
@@ -94,6 +96,11 @@ export function parseUrlState(
 ): AppState {
   const params = new URLSearchParams(search);
 
+  // An exercise link (M66): the exercise's own start, plus the viewer's keys.
+  const exerciseId = params.get('ex');
+  const exercise = exerciseId === null ? undefined : exerciseDef(exerciseId);
+  if (exercise) return parseExercise(params, exercise, fallbackDetail);
+
   const controls: Partial<Controls> = {};
   for (const [key, id] of URL_CONTROLS) {
     const raw = params.get(key);
@@ -169,11 +176,16 @@ export function parseUrlState(
   // `m=learn`, or an old link with an open entry (Phase 4 opened the Learn tab).
   const harbourMode = params.get('m') === 'harbour';
   if (harbourMode) learn = null;
+  // Exercises mode (`m=exercise`, M66) opens the list; it drops `learn=` too.
+  const exerciseMode = !harbourMode && params.get('m') === 'exercise';
+  if (exerciseMode) learn = null;
   const appMode: AppMode | undefined = harbourMode
     ? 'harbour'
-    : params.get('m') === 'learn' || learn !== null
-      ? 'learn'
-      : undefined;
+    : exerciseMode
+      ? 'exercise'
+      : params.get('m') === 'learn' || learn !== null
+        ? 'learn'
+        : undefined;
 
   const realistic = parseRealistic(params);
   const windMode = parseWindMode(params);
@@ -231,6 +243,74 @@ export function parseUrlState(
   return lines.length === 0 && anchor === ANCHOR_STOWED
     ? state
     : { ...state, anchor, lines: lines.length === 0 ? state.lines : { ...NO_LINES, lines } };
+}
+
+/** The keys of an exercise link that belong to the viewer, not to the exercise (PHASE10_SPEC 4.3). */
+const VIEWER_KEYS = [
+  'cam',
+  'hw',
+  'hl',
+  'step',
+  'detail',
+  'lang',
+  'lb',
+  'mm',
+  'debug',
+  'mode',
+] as const;
+
+/**
+ * `ex=<id>` (PHASE10_SPEC 4.3): the exercise's start keys, overridden by the viewer's own keys; the
+ * ropes mode is the exercise's unless the link says one. Opens in `setup`, paused.
+ */
+function parseExercise(
+  params: URLSearchParams,
+  def: ExerciseDef,
+  fallbackDetail: Detail,
+): AppState {
+  const merged = new URLSearchParams(def.start);
+  for (const key of VIEWER_KEYS) {
+    const value = params.get(key);
+    if (value !== null) merged.set(key, value);
+  }
+  if (!merged.has('mode')) merged.set('mode', def.ropes);
+  const state = parseUrlState(`?${merged.toString()}`, fallbackDetail);
+  return {
+    ...state,
+    appMode: 'exercise',
+    paused: true,
+    exercise: newRun(def.id, 0, { ...DEFAULT_OPTIONS }),
+  };
+}
+
+/**
+ * The short link of an exercise's start (PHASE10_SPEC 4.3): built key by key, with the viewer's own
+ * keys from `state` and the given ropes mode.
+ */
+export function exerciseStartLink(id: string, state: AppState, ropes: RopesMode): string {
+  const params = new URLSearchParams();
+  params.set('v', String(URL_STATE_VERSION));
+  if (boatId !== HANSE_508.meta.id) params.set('boat', boatId);
+  params.set('m', 'exercise');
+  params.set('ex', id);
+  params.set('mode', ropes);
+  params.set('cam', state.camera.preset);
+  if (state.camera.preset === 'helm') {
+    if (state.camera.helm.wheel === 'starboard') params.set('hw', 's');
+    if (state.camera.helm.look === 'panel') params.set('hl', 'p');
+    else if (state.camera.helm.look === 'ropes') params.set('hl', 'r');
+  }
+  params.set('step', String(state.settings.step));
+  params.set('detail', state.settings.detail);
+  if (state.settings.language !== DEFAULT_SETTINGS.language) {
+    params.set('lang', state.settings.language);
+  }
+  if (state.settings.labels !== DEFAULT_SETTINGS.labels) {
+    params.set('lb', state.settings.labels ? '1' : '0');
+  }
+  if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) params.set('mm', '0');
+  if (state.settings.debug) params.set('debug', '1');
+  return `?${params.toString()}`;
 }
 
 /**
@@ -686,6 +766,9 @@ export function jibReachedParam(state: AppState): number | null {
 
 /** Writes the state as a readable query string (with the leading `?`). */
 export function serializeUrlState(state: AppState): string {
+  if (state.exercise !== null) {
+    return exerciseStartLink(state.exercise.id, state, state.settings.ropesMode);
+  }
   const params = new URLSearchParams();
   params.set('v', String(URL_STATE_VERSION));
   // M58: the boat comes right after the version, only when it is not the Hanse 508 (`parseUrlState` ignores it).
@@ -699,7 +782,7 @@ export function serializeUrlState(state: AppState): string {
     if (state.camera.helm.look === 'panel') params.set('hl', 'p');
     else if (state.camera.helm.look === 'ropes') params.set('hl', 'r');
   }
-  if (state.appMode === 'learn' || state.appMode === 'harbour') params.set('m', state.appMode);
+  if (keepsRopesMode(state.appMode)) params.set('m', state.appMode);
   if (state.selection) params.set('sel', state.selection);
   // The open entry is written only in Learn mode: a link with `learn=` opens in Learn mode.
   if (state.appMode === 'learn' && state.learn) params.set('learn', state.learn);

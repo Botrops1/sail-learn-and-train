@@ -512,11 +512,15 @@ export function createRealisticPanel(
       },
     });
   });
-  const practice = el('details', { class: 'strip-more real-how', 'data-testid': 'practice' }, [
-    el('summary', {}, [t('real.practice.title')]),
-    el('p', {}, [t('real.practice.text')]),
-    practiceButton,
-  ]);
+  const practice = el(
+    'details',
+    { class: 'strip-more real-how', 'data-testid': 'practice', 'data-hide-in-exercise': '' },
+    [
+      el('summary', {}, [t('real.practice.title')]),
+      el('p', {}, [t('real.practice.text')]),
+      practiceButton,
+    ],
+  );
 
   const learnMore = el(
     'button',

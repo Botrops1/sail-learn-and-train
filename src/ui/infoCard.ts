@@ -79,7 +79,9 @@ export function createInfoCard(
       !options.atPeek?.() &&
       options.shownInPanel?.(info.id),
     );
-    card.hidden = !info || inPanel || Boolean(options.atFull?.());
+    // Owner, PR 144: in Exercises mode the card covers the step line and the wind, so it stays away.
+    const inExercise = store.getState().appMode === 'exercise';
+    card.hidden = !info || inPanel || inExercise || Boolean(options.atFull?.());
     // The selection is still the card's (a tap found it); the panel shows it instead.
     card.toggleAttribute('data-in-panel', inPanel);
     if (!info) {
@@ -96,7 +98,7 @@ export function createInfoCard(
   };
   layout.onChange(render);
   store.subscribe((state, previous) => {
-    if (state.selection !== previous.selection) render();
+    if (state.selection !== previous.selection || state.appMode !== previous.appMode) render();
   });
   render();
   return { refresh: render };

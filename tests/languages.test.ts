@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import registry from '../content/registry/parts.json';
 import { AREAS } from '../src/model/area';
+import { EXERCISE_TEXTS } from '../src/model/exercises';
 import { GLOSSARIES, GROUPS, glossaryText, type GlossaryText } from '../src/model/glossary';
 import {
   DEFAULT_LANGUAGE,
@@ -59,7 +60,25 @@ const SAME_AS_ENGLISH: Record<string, string> = {
   'clock.zone': 'only placeholders, a dot and the time-zone letters (UTC)',
   'learn.alternativeWithNote': 'only placeholders and brackets',
   'quick.harbour.short': 'only placeholders',
+  'exercise.line': 'only placeholders and a dot (the step number, the total and the goal)',
+  'exercise.target.control': 'only placeholders, a dash and a percent sign',
+  'exercise.target.trim': 'only placeholders and a colon',
 };
+
+/** Every text of a language's exercises.json (M66 review: the same scans as the UI strings). */
+function exerciseStrings(code: string): [string, string][] {
+  const out: [string, string][] = [];
+  const walk = (node: unknown, label: string): void => {
+    if (typeof node === 'string') out.push([label, node]);
+    else if (node !== null && typeof node === 'object') {
+      for (const [key, child] of Object.entries(node)) {
+        if (key !== '$status') walk(child, `${label}.${key}`);
+      }
+    }
+  };
+  walk(EXERCISE_TEXTS[code], `${code}/exercises`);
+  return out;
+}
 
 afterEach(() => setLanguage(DEFAULT_LANGUAGE));
 
@@ -98,6 +117,7 @@ describe('languages (PHASE4_SPEC 9.3)', () => {
         for (const [label, value] of glossaryFields(id, text))
           values.push([`${code}/${label}`, value]);
       }
+      for (const [label, value] of exerciseStrings(code)) values.push([label, value]);
       for (const [label, value] of values) {
         const plain = value.replace(PLACEHOLDER, '').normalize('NFC');
         for (const word of plain.match(LATIN_RUN) ?? []) {
@@ -111,6 +131,9 @@ describe('languages (PHASE4_SPEC 9.3)', () => {
     for (const code of LANGUAGES.filter((c) => c !== DEFAULT_LANGUAGE)) {
       for (const [key, value] of uiEntries(code)) {
         expect(value, `${code}/ui/${key}`).not.toMatch(/[“”]/);
+      }
+      for (const [label, value] of exerciseStrings(code)) {
+        expect(value, label).not.toMatch(/[“”]/);
       }
       for (const [id, text] of Object.entries(GLOSSARIES[code]?.entries ?? {})) {
         for (const [label, value] of glossaryFields(id, text)) {
