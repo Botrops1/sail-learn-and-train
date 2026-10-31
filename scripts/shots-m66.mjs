@@ -310,7 +310,10 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
       const wheel = await page
         .locator('[data-section="autopilot"] [data-part-id="part_rudder"]')
         .isVisible();
-      const autopilot = await page.getByTestId('autopilot').isVisible();
+      const autopilot = await page
+        .locator('[data-section="autopilot"]')
+        .getByTestId('autopilot')
+        .isVisible();
       check(
         `the wheel is in the Steering section ${name}`,
         listed === 0 && wheel && autopilot,
