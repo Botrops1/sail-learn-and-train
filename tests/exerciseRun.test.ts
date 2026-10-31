@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { stepExercise } from '../src/app/exerciseRun';
+import { exerciseDef, twaSignedDeg, type ExerciseDef } from '../src/model/exercises';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 
@@ -123,3 +125,273 @@ describe('the coach (PHASE10_SPEC 6.7)', () => {
     expect(reduce(started, { type: 'exercise', command: { ropes: 'realistic' } })).toBe(started);
   });
 });
+
+/** The good run of the first four steps (6.7 test 1), leaving the run at step 5 (index 4). */
+function goodRunToStep5(): AppState {
+  let state = reduce(opened(), { type: 'exercise', command: 'start' });
+  const acts: (() => AppState)[] = [
+    () => controls(state, { ctl_mainsheet: 12 }),
+    () => controls(turn(state, 2), { ctl_mainsheet: 25 }),
+    () => controls(turn(state, 3), { ctl_mainsheet: 50, ctl_jib_sheet: 100 }),
+    () => controls(turn(state, 4), { ctl_mainsheet: 100 }),
+  ];
+  acts.forEach((act, index) => {
+    state = until(act(), index + 1, 40).state;
+  });
+  return state;
+}
+
+describe('mistakes and waypoints (PHASE10_SPEC 7.7)', () => {
+  it('PT-26 running past dead downwind gybes the boom: the exercise reports by the lee, then the gybe', () => {
+    let state = turn(goodRunToStep5(), 6);
+    expect(state.exercise?.step).toBe(4);
+    const from = state.exercise?.elapsedS ?? 0;
+    for (let i = 0; i < 25 / 0.05 && state.exercise?.status === 'running'; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+    }
+    expect(state.exercise?.status).toBe('mistake');
+    expect(state.paused).toBe(true);
+    expect(state.exercise?.mistake?.mistakeId).toBe('by-the-lee');
+    const lee = (state.exercise?.elapsedS ?? 0) - from;
+    expect(lee).toBeLessThan(25);
+    // Paused: time stands still.
+    const still = run(state, 3);
+    expect(still.exercise?.elapsedS).toBe(state.exercise?.elapsedS);
+    state = reduce(state, { type: 'exercise', command: 'continue' });
+    expect(state.exercise?.status).toBe('running');
+    expect(state.paused).toBe(false);
+    for (let i = 0; i < 35 / 0.05 && state.exercise?.status === 'running'; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+    }
+    expect(state.exercise?.mistake?.mistakeId).toBe('accidental-gybe');
+    expect((state.exercise?.elapsedS ?? 0) - from).toBeLessThan(35);
+  });
+
+  it('does not pause when the box is unticked', () => {
+    let state = reduce(
+      reduce(opened(), { type: 'exercise', command: { options: { pauseOnMistake: false } } }),
+      { type: 'exercise', command: 'start' },
+    );
+    const acts: (() => AppState)[] = [
+      () => controls(state, { ctl_mainsheet: 12 }),
+      () => controls(turn(state, 2), { ctl_mainsheet: 25 }),
+      () => controls(turn(state, 3), { ctl_mainsheet: 50, ctl_jib_sheet: 100 }),
+      () => controls(turn(state, 4), { ctl_mainsheet: 100 }),
+    ];
+    acts.forEach((act, index) => {
+      state = until(act(), index + 1, 40).state;
+    });
+    state = turn(state, 6);
+    for (let i = 0; i < 45 / 0.05; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+      expect(state.exercise?.status).not.toBe('mistake');
+      expect(state.paused).toBe(false);
+    }
+    const ids = (state.exercise?.log ?? [])
+      .filter((e) => e.kind === 'mistake')
+      .map((e) => (e.kind === 'mistake' ? e.mistakeId : ''));
+    expect(ids).toContain('by-the-lee');
+    expect(ids).toContain('accidental-gybe');
+    expect(state.exercise?.mistake?.mistakeId).toBe('accidental-gybe');
+  });
+
+  it('keeps a repeat gap between the same mistake', () => {
+    const base = reduce(goodRunToStep5(), { type: 'step', dt: 0.05 });
+    const feed = (gapS: number) => {
+      let state: AppState = { ...base, paused: false };
+      const lee = (n: number, atS: number) => ({
+        n,
+        kind: 'byTheLee' as const,
+        atS,
+        severity: 'warning' as const,
+      });
+      let written = state.alerts.written;
+      const step = (entries: ReturnType<typeof lee>[]) => {
+        const previous = state;
+        written += entries.length;
+        state = {
+          ...previous,
+          rig: { ...previous.rig, timeS: previous.rig.timeS + gapS / 2 },
+          alerts: { entries: [...previous.alerts.entries, ...entries], written },
+        };
+        state = stepExerciseOnce(previous, state);
+        if (state.exercise?.status === 'mistake') {
+          state = reduce(state, { type: 'exercise', command: 'continue' });
+        }
+      };
+      step([lee(written + 1, previousT(state))]);
+      step([]);
+      step([lee(written + 1, previousT(state))]);
+      return (state.exercise?.log ?? []).filter((e) => e.kind === 'mistake').length;
+    };
+    expect(feed(5)).toBe(1);
+    expect(feed(11)).toBe(2);
+  });
+
+  it('in irons: turning towards the wind stops her and the condition fires', () => {
+    let state = reduce(opened(), { type: 'exercise', command: 'start' });
+    state = until(controls(state, { ctl_mainsheet: 12 }), 1, 40).state;
+    const from = state.exercise?.elapsedS ?? 0;
+    state = reduce(state, { type: 'autopilot', command: { turnDeg: 10 } });
+    for (let i = 0; i < 3; i += 1)
+      state = reduce(state, { type: 'autopilot', command: { turnDeg: 10 } });
+    for (let i = 0; i < 70 / 0.05 && state.exercise?.status === 'running'; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+    }
+    expect(state.exercise?.mistake?.mistakeId).toBe('in-irons');
+    const took = (state.exercise?.elapsedS ?? 0) - from;
+    expect(took).toBeGreaterThanOrEqual(30);
+    expect(took).toBeLessThanOrEqual(60);
+  });
+
+  it('applies only to the steps a mistake names, and a serious one fails the run', () => {
+    const def: ExerciseDef = {
+      ...(exerciseDef('points-of-sail') as ExerciseDef),
+      steps: [
+        { id: 'a', opens: 'ropes', holdS: 0, check: { twaDeg: [300, 301] } },
+        { id: 'b', opens: 'ropes', holdS: 0, check: { twaDeg: [300, 301] } },
+      ],
+      mistakes: [{ id: 'x', serious: true, steps: ['b'], on: { alert: 'tack' } }],
+    };
+    const started = reduce(opened(), { type: 'exercise', command: 'start' });
+    const withTack = (state: AppState): [AppState, AppState] => {
+      const written = state.alerts.written + 1;
+      const next: AppState = {
+        ...state,
+        rig: { ...state.rig, timeS: state.rig.timeS + 5 },
+        alerts: {
+          entries: [
+            ...state.alerts.entries,
+            { n: written, kind: 'tack', atS: state.rig.timeS, severity: 'info' },
+          ],
+          written,
+        },
+      };
+      return [state, next];
+    };
+    const [p1, n1] = withTack(started);
+    expect(stepExercise(p1, n1, def).exercise?.status).toBe('running');
+    const atB: AppState = {
+      ...started,
+      exercise: started.exercise ? { ...started.exercise, step: 1 } : null,
+    };
+    const [p2, n2] = withTack(atB);
+    const failed = stepExercise(p2, n2, def);
+    expect(failed.exercise?.status).toBe('failed');
+    expect(failed.paused).toBe(true);
+    expect(reduce(failed, { type: 'exercise', command: 'continue' })).toBe(failed);
+  });
+
+  it('skips alerts in the first second after Start', () => {
+    const def = exerciseDef('points-of-sail') as ExerciseDef;
+    const started = reduce(opened(), { type: 'exercise', command: 'start' });
+    const lee = (state: AppState, dt: number): [AppState, AppState] => {
+      const written = state.alerts.written + 1;
+      return [
+        state,
+        {
+          ...state,
+          rig: { ...state.rig, timeS: state.rig.timeS + dt },
+          alerts: {
+            entries: [{ n: written, kind: 'byTheLee', atS: 0, severity: 'warning' }],
+            written,
+          },
+        },
+      ];
+    };
+    const [p1, n1] = lee(started, 0.5);
+    expect(stepExercise(p1, n1, def).exercise?.mistake).toBeNull();
+    const [p2, n2] = lee(started, 1.5);
+    expect(stepExercise(p2, n2, def).exercise?.mistake?.mistakeId).toBe('by-the-lee');
+  });
+
+  it('makes a waypoint at Start and at every step passed, and goes back to one', () => {
+    let state = reduce(opened(), { type: 'exercise', command: 'start' });
+    expect(state.exercise?.waypoints.map((w) => w.step)).toEqual([0]);
+    state = until(controls(state, { ctl_mainsheet: 12 }), 1, 40).state;
+    expect(state.exercise?.waypoints.map((w) => w.step)).toEqual([0, 1]);
+    const wp1 = state.exercise?.waypoints[1]?.state;
+    expect(wp1?.controls.ctl_mainsheet).toBe(12);
+    state = until(controls(turn(state, 2), { ctl_mainsheet: 25 }), 2, 40).state;
+    state = until(controls(turn(state, 3), { ctl_mainsheet: 50, ctl_jib_sheet: 100 }), 3, 40).state;
+    expect(state.exercise?.step).toBe(3);
+    const alerts = state.alerts;
+    const camera = { ...state.camera, preset: 'map' as const };
+    state = { ...state, camera };
+    const timeBefore = state.rig.timeS;
+    const back = reduce(state, { type: 'exercise', command: { back: 1 } });
+    expect(back.exercise?.step).toBe(1);
+    expect(back.controls.ctl_mainsheet).toBe(12);
+    const twa = (s: AppState) => Math.abs(twaSignedDeg(s));
+    expect(Math.abs(twa(back) - twa(wp1 as AppState))).toBeLessThan(1);
+    expect(back.exercise?.waypoints.length).toBe(2);
+    expect(back.exercise?.log.at(-1)?.kind).toBe('back');
+    expect(back.alerts).toBe(alerts);
+    expect(back.camera).toBe(camera);
+    expect(back.exercise?.status).toBe('running');
+    expect(back.paused).toBe(false);
+    expect(back.exercise?.mistake).toBeNull();
+    expect(back.rig.timeS).toBeGreaterThanOrEqual(timeBefore);
+    expect(back.alerts.written).toBe(alerts.written);
+  });
+
+  it('has no waypoint to go back to: same state; Back works from done and failed', () => {
+    const state = reduce(opened(), { type: 'exercise', command: 'start' });
+    expect(reduce(state, { type: 'exercise', command: { back: 4 } })).toBe(state);
+    const done: AppState = {
+      ...state,
+      paused: true,
+      exercise: state.exercise ? { ...state.exercise, status: 'done', step: 5 } : null,
+    };
+    const failed: AppState = {
+      ...done,
+      exercise: done.exercise ? { ...done.exercise, status: 'failed', step: 2 } : null,
+    };
+    for (const from of [done, failed]) {
+      const back = reduce(from, { type: 'exercise', command: { back: 0 } });
+      expect(back.exercise?.status).toBe('running');
+      expect(back.exercise?.step).toBe(0);
+    }
+  });
+
+  it('writes a new by-the-lee alert after a Back (app time never runs backwards)', () => {
+    let state = turn(goodRunToStep5(), 6);
+    for (let i = 0; i < 25 / 0.05 && state.exercise?.status === 'running'; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+    }
+    const lastLee = state.alerts.entries.filter((e) => e.kind === 'byTheLee').at(-1);
+    expect(lastLee).toBeDefined();
+    const timeBefore = state.rig.timeS;
+    state = reduce(state, { type: 'exercise', command: { back: 4 } });
+    expect(state.rig.timeS).toBeGreaterThanOrEqual(timeBefore);
+    state = turn(state, 6);
+    let found = false;
+    for (let i = 0; i < 40 / 0.05; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+      if (state.exercise?.mistake?.mistakeId === 'by-the-lee') {
+        found = true;
+        break;
+      }
+    }
+    expect(found).toBe(true);
+    const lees = state.alerts.entries.filter((e) => e.kind === 'byTheLee');
+    const newest = lees.at(-1);
+    expect(newest && lastLee ? newest.atS - lastLee.atS : 0).toBeGreaterThanOrEqual(6);
+  });
+
+  it('does not let Pause override a mistake card', () => {
+    let state = turn(goodRunToStep5(), 6);
+    for (let i = 0; i < 25 / 0.05 && state.exercise?.status === 'running'; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+    }
+    expect(state.exercise?.status).toBe('mistake');
+    expect(reduce(state, { type: 'setPaused', paused: false })).toBe(state);
+  });
+});
+
+function previousT(state: AppState): number {
+  return state.rig.timeS;
+}
+function stepExerciseOnce(previous: AppState, next: AppState): AppState {
+  return stepExercise(previous, next);
+}

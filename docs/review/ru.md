@@ -3164,6 +3164,29 @@
 | exercise.target.nowWord | now {value} | сейчас {value} |
 | exercise.sections.hidden | Hidden, not needed here: {list}. | Скрыто, здесь не нужно: {list}. |
 | exercise.sections.locked | Set by the exercise, cannot be changed: the wind, the waves and the clock. | Задано упражнением, менять нельзя: ветер, волны и часы. |
+| exercise.pauseOnMistake | Pause when I make a mistake | Остановить, когда я ошибусь |
+| exercise.pauseHint | Time stops and the card tells you what went wrong, so you can read it before you go on. | Время останавливается, и карточка объясняет, что пошло не так: можно спокойно прочитать и идти дальше. |
+| exercise.fromStep | This link starts at step {n}. | Эта ссылка начинается с шага {n}. |
+| exercise.wentWrong | What went wrong | Что пошло не так |
+| exercise.why | Why | Почему |
+| exercise.fix | What to do | Что делать |
+| exercise.continue | Carry on | Продолжить |
+| exercise.backTo | Back to the start of step {n} | Назад, к началу шага {n} |
+| exercise.backToStart | Back to the start | Назад, к началу |
+| exercise.stopped | The exercise stopped | Упражнение остановлено |
+| exercise.lineMistake | Mistake: {what} | Ошибка: {what} |
+| exercise.linePaused | Paused: {what} | Пауза: {what} |
+| exercise.lineStopped | Stopped: {what} | Остановлено: {what} |
+| exercise.lastMistake | Last mistake: {what} | Последняя ошибка: {what} |
+| exercise.lastWhy | Why? | Почему? |
+| exercise.waypoints | Waypoints | Контрольные точки |
+| exercise.waypointStart | Start | Старт |
+| exercise.waypointStep | Start of step {n} | Начало шага {n} |
+| exercise.waypointBack | Go back | Вернуться |
+| exercise.waypointLink | Link | Ссылка |
+| exercise.waypointBackTo | Go back to: {name} | Вернуться к: {name} |
+| exercise.waypointLinkTo | Link to: {name} | Ссылка на: {name} |
+| exercise.restart | Start again | Начать заново |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
