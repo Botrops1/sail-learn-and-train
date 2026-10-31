@@ -430,6 +430,10 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
       problems.push(`${label}: console ${message.type()}: ${message.text()}`);
     }
   });
+  page.on('response', (response) => {
+    if (response.status() >= 400)
+      console.log(`${label}: HTTP ${response.status()} ${response.url()}`);
+  });
   page.on('pageerror', (error) => problems.push(`${label}: page error: ${error.message}`));
   // Since M6 the app opens Sailing. The older scenes and checks are about the ropes and sails,
   // so they open Held still (the Phase 1 picture); Phase 2 ones (label contains "m6" … "m19")
