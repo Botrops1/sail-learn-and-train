@@ -456,8 +456,8 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
         (nodes) => nodes.filter((node) => !node.querySelector('.rope-item-swatch line')).length,
       );
     check(
-      'the Ropes list shows a colour for every rope (the wheel has none)',
-      rows >= 9 && strokes.length >= rows - 1 && staticRows <= 1 && new Set(strokes).size >= 4,
+      'the Ropes list shows a colour for every rope (the wheel is in Steering since PR 144)',
+      rows >= 8 && strokes.length === rows && staticRows === 0 && new Set(strokes).size >= 4,
       JSON.stringify({
         rows,
         strokes: strokes.length,
