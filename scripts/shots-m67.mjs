@@ -3,7 +3,7 @@
 // "m67", so openPage starts with every section folded and sails (no held=1).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, isStacked, showSection } from './ui.mjs';
+import { exerciseLine, isStacked, showSection, waitForLink } from './ui.mjs';
 
 const START = 'm=exercise&ex=points-of-sail';
 
@@ -236,7 +236,7 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
       await showExercises(page);
       await page.getByTestId('exercise-pause-on-mistake').uncheck();
       await page.waitForTimeout(300);
-      const search = await page.evaluate(() => window.location.search);
+      const search = await waitForLink(page, ['exp=0']);
       await page.getByTestId('exercise-start').click();
       await page.waitForTimeout(500);
       const reached = await toStep5(page);
