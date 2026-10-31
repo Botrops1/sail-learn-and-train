@@ -89,6 +89,12 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
     const utcMs = parseClockParam(`${date[1]}${date[2]}${date[3]}${time[1]}${time[2]}`);
     if (utcMs !== null) store.dispatch({ type: 'setClock', utcMs });
   });
+  // An exercise sets the time (PHASE10_SPEC 6.5).
+  const lockedNote = el(
+    'p',
+    { class: 'clock-hint', 'data-testid': 'exercise-locked-clock', hidden: '' },
+    [t('exercise.locked')],
+  );
   const close = el('button', {
     type: 'button',
     class: 'clock-close',
@@ -110,6 +116,7 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
       el('p', { class: 'clock-line clock-set-label' }, [t('clock.setLabel')]),
       el('div', { class: 'clock-row' }, [dateInput, timeInput, set]),
       el('p', { class: 'clock-hint' }, [t('clock.hint')]),
+      lockedNote,
     ],
   );
   card.hidden = true;
@@ -175,6 +182,9 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
 
   let chipKey = '';
   const refresh = (state: AppState) => {
+    const locked = state.exercise !== null;
+    for (const control of [now, noon, set, dateInput, timeInput]) control.disabled = locked;
+    lockedNote.hidden = !locked;
     const shown = state.settings.clock;
     chip.hidden = !shown;
     if (!shown) setOpen(false);

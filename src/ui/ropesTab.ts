@@ -18,8 +18,12 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 
 /** True if the Ropes section shows this selection in its strip (the info card can then stay away). */
 export function ropesTabShows(selection: string | null): boolean {
-  return entryFor(selection) !== undefined;
+  const entry = entryFor(selection);
+  return entry !== undefined && entry.controlId !== WHEEL;
 }
+
+/** The wheel is in the Steering section (owner, PR 144), not in the rope list. */
+const WHEEL = 'ctl_rudder';
 
 /**
  * The Ropes section (PHASE1_SPEC 7.2; a tab until M27), Easy and Learn: the strip for the
@@ -122,7 +126,7 @@ export function createRopesTab(
   const select = (entry: PanelEntry) => store.dispatch({ type: 'select', partId: entry.selectId });
 
   const ordered: PanelEntry[] = [
-    ...CONTROL_VIEWS.flatMap((view) =>
+    ...CONTROL_VIEWS.filter((view) => view.id !== WHEEL).flatMap((view) =>
       panelEntries().filter((entry) => entry.controlId === view.id),
     ),
     ...panelEntries().filter((entry) => entry.controlId === null),

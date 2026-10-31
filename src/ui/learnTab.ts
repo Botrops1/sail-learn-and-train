@@ -242,7 +242,7 @@ export function createLearnTab(
         'data-testid': 'learn-status',
         'aria-live': 'polite',
       });
-      showMeBlock = el('div', { class: 'learn-show-me' }, [
+      showMeBlock = el('div', { class: 'learn-show-me', 'data-hide-in-exercise': '' }, [
         ...(text.showMe ? [textOf('p', 'learn-show-me-text', text.showMe, 'learn-text')] : []),
         button('learn-show-me', t('learn.showItWorking'), () => {
           // The link saved for Back must hold the open entry, and `learn=` is written only in
@@ -282,20 +282,20 @@ export function createLearnTab(
     }
 
     if (entry.controls.length > 0) {
-      nodes.push(
-        buttonRow(
-          'learn.tryIt',
-          entry.controls.map((controlId) =>
-            button(`learn-try-${controlId}`, nameOf(controlId), () => {
-              const target = entryFor(controlId);
-              // Back to the boat: the ropes mode (Easy or Realistic) takes over from Learn.
-              store.dispatch({ type: 'setAppMode', mode: store.getState().settings.ropesMode });
-              store.dispatch({ type: 'select', partId: target?.selectId ?? controlId });
-              openRopes();
-            }),
-          ),
+      const tryRow = buttonRow(
+        'learn.tryIt',
+        entry.controls.map((controlId) =>
+          button(`learn-try-${controlId}`, nameOf(controlId), () => {
+            const target = entryFor(controlId);
+            // Back to the boat: the ropes mode (Easy or Realistic) takes over from Learn.
+            store.dispatch({ type: 'setAppMode', mode: store.getState().settings.ropesMode });
+            store.dispatch({ type: 'select', partId: target?.selectId ?? controlId });
+            openRopes();
+          }),
         ),
       );
+      tryRow.setAttribute('data-hide-in-exercise', '');
+      nodes.push(tryRow);
     }
 
     if (entry.related.length > 0) {

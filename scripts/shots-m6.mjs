@@ -127,10 +127,10 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
     const heading = parseInt((await text(page, 'strip-heading')).replace(/\D/g, ''), 10);
     check('autopilot turns her', heading >= 5 && heading <= 14, `HDG ${heading}`);
     await shot(page, 'live-phone-autopilot-plus10');
-    await showSection(page, 'ropes');
-    await page.locator('[data-select="part_rudder"]').click();
+    // Owner, PR 144: the wheel is in the Steering section (the autopilot's), not in the rope list.
+    await showSection(page, 'autopilot');
     await page
-      .locator('.ropes-easy')
+      .locator('[data-section="autopilot"]')
       .getByRole('button', { name: 'Turn the wheel to starboard' })
       .click();
     await page.waitForTimeout(400);

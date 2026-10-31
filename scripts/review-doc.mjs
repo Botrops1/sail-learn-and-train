@@ -36,6 +36,7 @@ const WORDING = {
     },
     textStatuses: { draft: 'черновик', 'sailor-reviewed': 'проверен моряком' },
     uiHeading: '## Кнопки и подсказки',
+    exercisesHeading: '## Упражнения',
     uiKey: 'key',
   },
 };
@@ -156,6 +157,29 @@ export function buildReviewDoc(code) {
   );
   for (const key of Object.keys(targetUi)) {
     lines.push(`| ${cell(key)} | ${uiCell(sourceUi[key])} | ${uiCell(targetUi[key])} |`);
+  }
+  lines.push('');
+
+  // The exercises (PHASE10_SPEC 6.6): every key of exercises.json, in the file's order.
+  const sourceEx = readJson(`content/lang/${SOURCE_LANGUAGE}/exercises.json`);
+  const targetEx = readJson(`content/lang/${code}/exercises.json`);
+  lines.push(
+    wording.exercisesHeading,
+    '',
+    `| ${wording.uiKey} | ${wording.english} | ${wording.translated} |`,
+    '|---|---|---|',
+  );
+  const flat = (object, prefix = '') =>
+    Object.entries(object).flatMap(([key, value]) =>
+      key.startsWith('$')
+        ? []
+        : typeof value === 'object' && value !== null
+          ? flat(value, `${prefix}${key}.`)
+          : [[`${prefix}${key}`, value]],
+    );
+  const sourceRows = new Map(flat(sourceEx));
+  for (const [key, value] of flat(targetEx)) {
+    lines.push(`| ${cell(key)} | ${uiCell(sourceRows.get(key) ?? '')} | ${uiCell(value)} |`);
   }
   lines.push('');
 

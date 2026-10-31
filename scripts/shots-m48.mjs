@@ -49,7 +49,7 @@ export async function liveM48Checks({ openPage, viewports, problems }) {
         `${v} easy: no drawing, list`,
         !(await page.getByTestId('clutch-drawing').isVisible()) &&
           (await page.getByTestId('ropes-easy').isVisible()) &&
-          rows >= 9,
+          rows >= 8,
         `${rows} rows`,
       );
       await page.locator('[data-select="rope_vang"]').click();
@@ -116,7 +116,7 @@ export async function liveM48Checks({ openPage, viewports, problems }) {
         `${v} harbour: list, no drawing`,
         (await page.getByTestId('ropes-easy').isVisible()) &&
           !(await page.getByTestId('clutch-drawing').isVisible()) &&
-          rows >= 9,
+          rows >= 8,
         `${rows} rows`,
       );
       await context.close();

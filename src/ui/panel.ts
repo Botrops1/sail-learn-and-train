@@ -1,15 +1,16 @@
 import type { AppState, Store } from '../app/store';
 import { entryFor } from '../model/panelEntries';
 import { createAnchorPanel } from './anchorPanel';
-import { createAutopilotPanel } from './autopilotPanel';
+import { createSteeringPanel } from './autopilotPanel';
 import { createColumnHandles } from './columnHandles';
 import { el } from './dom';
-import { t, type StringKey } from './i18n';
+import { t } from './i18n';
 import type { LayoutShell } from './layout';
 import { createLearnTab } from './learnTab';
 import {
   MODE_LAYOUTS,
   SECTION_IDS,
+  SECTION_TITLES,
   TAB_OF,
   sectionAvailable,
   type LayoutKind,
@@ -26,6 +27,7 @@ import {
   type WideSectionId,
 } from './sectionLayout';
 import { createSectionMove } from './sectionMove';
+import { createExercisePanel } from './exercisePanel';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
 import { createPlacePanel } from './placePanel';
@@ -38,23 +40,6 @@ import { createSection, type SectionView } from './sections';
 import { createThrusterPanel } from './thrusterPanel';
 import type { Sheet } from './sheet';
 import { createWindPanel } from './windPanel';
-
-/** The title of each section (PHASE5_SPEC 8.4). */
-const SECTION_TITLES: Record<SectionId, StringKey> = {
-  mode: 'mode.label',
-  ropes: 'tab.ropes',
-  helm: 'real.station.helm',
-  sails: 'trim.label',
-  autopilot: 'autopilot.label',
-  engine: 'engine.label',
-  conditions: 'section.conditions',
-  learn: 'tab.learn',
-  place: 'place.label',
-  anchor: 'anchor.label',
-  harbour: 'harbour.title',
-  status: 'status.label',
-  settings: 'settings.title',
-};
 
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): a list of sections that fold: Mode
@@ -84,12 +69,13 @@ export interface Panel {
   onChange(listener: () => void): void;
 }
 
-/** M53: the wheel (the rudder, or one of its two fittings) is selected, with Realistic ropes. */
-function wheelSelected(state: AppState): boolean {
-  return (
-    state.settings.ropesMode === 'realistic' &&
-    entryFor(state.selection)?.controlId === 'ctl_rudder'
-  );
+/**
+ * M53: the wheel (the rudder, or one of its two fittings) is selected; the section that shows it:
+ * the Helm section with Realistic ropes, the Steering section (owner, PR 144) with Easy ropes.
+ */
+function wheelSection(state: AppState): 'helm' | 'autopilot' | null {
+  if (entryFor(state.selection)?.controlId !== 'ctl_rudder') return null;
+  return state.settings.ropesMode === 'realistic' ? 'helm' : 'autopilot';
 }
 
 /** Scrolls the section's body to its top (the open section is the only part of a column that scrolls). */
@@ -153,10 +139,14 @@ export function createPanel(
 
   const built: Record<SectionId, { content: HTMLElement[]; explain: boolean }> = {
     mode: { content: [modePicker], explain: false },
+    exercises: {
+      content: createExercisePanel(store, { showSection }, () => layoutKind, sheet),
+      explain: true,
+    },
     ropes: { content: createRopesTab(store, openLearnEntry, showSection), explain: true },
     helm: { content: [createHelmStation(store)], explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
-    autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
+    autopilot: { content: createSteeringPanel(store), explain: false },
     engine: { content: [createEnginePanel(store), createThrusterPanel(store)], explain: true },
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes'), sheet), explain: false },
@@ -322,10 +312,12 @@ export function createPanel(
   function applyOpen(state: AppState, fromLink = false): void {
     for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
     if (fromLink) {
-      if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
+      if (state.appMode === 'exercise') openOnly('exercises');
+      else if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
       else if (state.appMode === 'harbour') openHarbourFirst(state);
-      else if (state.appMode !== 'learn' && wheelSelected(state)) openOnly('helm');
-      else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
+      else if (state.appMode !== 'learn' && wheelSection(state)) {
+        openOnly(wheelSection(state) ?? 'helm');
+      } else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
       else if (
         state.appMode !== 'learn' &&
         state.settings.ropesMode === 'realistic' &&
@@ -366,6 +358,26 @@ export function createPanel(
     for (const id of SECTION_IDS) {
       const section = sections.get(id);
       if (section) section.element.hidden = !sectionAvailable(id, state, layoutKind);
+    }
+  }
+
+  /** A run locks the wind and the place: their bodies are inert under a note (PHASE10_SPEC 6.5). */
+  const lockNotes = new Map<SectionId, HTMLElement>();
+  function applyLocked(state: AppState): void {
+    const locked = state.exercise !== null;
+    for (const id of ['conditions', 'place'] as const) {
+      const body = sections.get(id)?.element.querySelector<HTMLElement>('.section-body');
+      if (!body) continue;
+      let note = lockNotes.get(id);
+      if (!note) {
+        note = el('p', { class: 'hint', 'data-testid': `exercise-locked-${id}`, hidden: '' }, [
+          t('exercise.locked'),
+        ]);
+        lockNotes.set(id, note);
+        body.prepend(note);
+      }
+      note.hidden = !locked;
+      body.toggleAttribute('inert', locked);
     }
   }
 
@@ -425,6 +437,7 @@ export function createPanel(
   }
 
   applyAvailable(store.getState());
+  applyLocked(store.getState());
   applyModeTitle(store.getState());
   applyMode(store.getState(), true);
   if (layoutKind === 'stacked' && !SECTION_IDS.some((id) => sections.get(id)?.isOpen())) {
@@ -440,11 +453,28 @@ export function createPanel(
       applyAvailable(state);
       changed();
     }
-    if (state.appMode !== previous.appMode) {
-      applyModeTitle(state);
-      applyMode(state);
+    // An exercise loaded or ended hides or brings back the sections it does not use.
+    if (state.exercise?.id !== previous.exercise?.id) {
+      applyAvailable(state);
       changed();
     }
+    if (state.appMode !== previous.appMode) {
+      applyAvailable(state);
+      applyModeTitle(state);
+      applyMode(state);
+      // Exercises mode opens its own section (PHASE10_SPEC 6.5).
+      if (state.appMode === 'exercise') showSection('exercises');
+      changed();
+    }
+    // An exercise link or a Try again loads a run in setup: show its card.
+    if (
+      state.appMode === 'exercise' &&
+      state.exercise?.status === 'setup' &&
+      previous.exercise?.status !== 'setup'
+    ) {
+      showSection('exercises');
+    }
+    applyLocked(state);
     // M53 (owner, PR 124): with Realistic ropes the Helm camera also walks you to the helm, so the
     // view and the controls agree; the other camera views leave the station alone.
     if (
@@ -469,7 +499,8 @@ export function createPanel(
       state.appMode !== 'learn' &&
       state.appMode !== 'harbour'
     ) {
-      if (wheelSelected(state)) openOnly('helm');
+      const wheel = wheelSection(state);
+      if (wheel) openOnly(wheel);
       else {
         openOnly('ropes');
         if (!sheet.atPeek()) revealRopeStrip();
