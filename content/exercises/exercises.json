@@ -17,6 +17,7 @@
       "group": "sailing",
       "ropes": "easy",
       "crew": false,
+      "sections": ["ropes", "helm", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=315&ms=30&js=30&ap=wind&apt=45&sea=flat",
       "steps": [
         { "id": "close-hauled", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [38, 52], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] } },

@@ -148,7 +148,8 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     await page.getByRole('button', { name: 'More: Vang' }).click();
     await waitUrl(page);
     check(`${v} step 5 %`, (await search(page)).includes('vg=55'), await search(page));
-    await page.locator('[data-select="part_rudder"]').click();
+    // Owner, PR 144: the wheel is in the Steering section (the autopilot's), not in the rope list.
+    await showSection(page, 'autopilot');
     await page.getByRole('button', { name: 'Turn the wheel to starboard' }).click();
     await page.getByRole('button', { name: 'Turn the wheel to starboard' }).click();
     await waitUrl(page);

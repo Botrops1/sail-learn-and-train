@@ -1,15 +1,16 @@
 import type { AppState, Store } from '../app/store';
 import { entryFor } from '../model/panelEntries';
 import { createAnchorPanel } from './anchorPanel';
-import { createAutopilotPanel } from './autopilotPanel';
+import { createSteeringPanel } from './autopilotPanel';
 import { createColumnHandles } from './columnHandles';
 import { el } from './dom';
-import { t, type StringKey } from './i18n';
+import { t } from './i18n';
 import type { LayoutShell } from './layout';
 import { createLearnTab } from './learnTab';
 import {
   MODE_LAYOUTS,
   SECTION_IDS,
+  SECTION_TITLES,
   TAB_OF,
   sectionAvailable,
   type LayoutKind,
@@ -40,24 +41,6 @@ import { createThrusterPanel } from './thrusterPanel';
 import type { Sheet } from './sheet';
 import { createWindPanel } from './windPanel';
 
-/** The title of each section (PHASE5_SPEC 8.4). */
-const SECTION_TITLES: Record<SectionId, StringKey> = {
-  mode: 'mode.label',
-  exercises: 'exercise.label',
-  ropes: 'tab.ropes',
-  helm: 'real.station.helm',
-  sails: 'trim.label',
-  autopilot: 'autopilot.label',
-  engine: 'engine.label',
-  conditions: 'section.conditions',
-  learn: 'tab.learn',
-  place: 'place.label',
-  anchor: 'anchor.label',
-  harbour: 'harbour.title',
-  status: 'status.label',
-  settings: 'settings.title',
-};
-
 /**
  * The panel (the sheet on a phone, PHASE5_SPEC 7.5, 8.5): a list of sections that fold: Mode
  * (first), Ropes, Sails, Autopilot, Engine, Conditions (the old Wind tab), Learn, (M42) Place,
@@ -86,12 +69,13 @@ export interface Panel {
   onChange(listener: () => void): void;
 }
 
-/** M53: the wheel (the rudder, or one of its two fittings) is selected, with Realistic ropes. */
-function wheelSelected(state: AppState): boolean {
-  return (
-    state.settings.ropesMode === 'realistic' &&
-    entryFor(state.selection)?.controlId === 'ctl_rudder'
-  );
+/**
+ * M53: the wheel (the rudder, or one of its two fittings) is selected; the section that shows it:
+ * the Helm section with Realistic ropes, the Steering section (owner, PR 144) with Easy ropes.
+ */
+function wheelSection(state: AppState): 'helm' | 'autopilot' | null {
+  if (entryFor(state.selection)?.controlId !== 'ctl_rudder') return null;
+  return state.settings.ropesMode === 'realistic' ? 'helm' : 'autopilot';
 }
 
 /** Scrolls the section's body to its top (the open section is the only part of a column that scrolls). */
@@ -162,7 +146,7 @@ export function createPanel(
     ropes: { content: createRopesTab(store, openLearnEntry, showSection), explain: true },
     helm: { content: [createHelmStation(store)], explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
-    autopilot: { content: [createAutopilotPanel(store, { heading: false })], explain: false },
+    autopilot: { content: createSteeringPanel(store), explain: false },
     engine: { content: [createEnginePanel(store), createThrusterPanel(store)], explain: true },
     conditions: { content: createWindPanel(store), explain: true },
     learn: { content: createLearnTab(store, () => showSection('ropes'), sheet), explain: false },
@@ -331,8 +315,9 @@ export function createPanel(
       if (state.appMode === 'exercise') openOnly('exercises');
       else if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
       else if (state.appMode === 'harbour') openHarbourFirst(state);
-      else if (state.appMode !== 'learn' && wheelSelected(state)) openOnly('helm');
-      else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
+      else if (state.appMode !== 'learn' && wheelSection(state)) {
+        openOnly(wheelSection(state) ?? 'helm');
+      } else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
       else if (
         state.appMode !== 'learn' &&
         state.settings.ropesMode === 'realistic' &&
@@ -468,6 +453,11 @@ export function createPanel(
       applyAvailable(state);
       changed();
     }
+    // An exercise loaded or ended hides or brings back the sections it does not use.
+    if (state.exercise?.id !== previous.exercise?.id) {
+      applyAvailable(state);
+      changed();
+    }
     if (state.appMode !== previous.appMode) {
       applyAvailable(state);
       applyModeTitle(state);
@@ -509,7 +499,8 @@ export function createPanel(
       state.appMode !== 'learn' &&
       state.appMode !== 'harbour'
     ) {
-      if (wheelSelected(state)) openOnly('helm');
+      const wheel = wheelSection(state);
+      if (wheel) openOnly(wheel);
       else {
         openOnly('ropes');
         if (!sheet.atPeek()) revealRopeStrip();

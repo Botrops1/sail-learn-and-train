@@ -4892,3 +4892,54 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
 .exercise-line[hidden] {
   display: none;
 }
+
+/* The hint window under the step line (owner, PR 144): the step's How text and live targets. */
+.exercise-coach {
+  flex: 1 1 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.88);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.exercise-coach[hidden],
+.exercise-coach-body[hidden] {
+  display: none;
+}
+
+.exercise-coach-toggle {
+  display: block;
+  width: 100%;
+  min-height: var(--touch);
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+
+.exercise-coach-body {
+  padding: 0 12px 8px;
+}
+
+.exercise-coach-body p {
+  margin: 2px 0;
+}
+
+.exercise-coach-heading {
+  font-weight: 700;
+}
+
+.exercise-coach-targets {
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exercise-coach-targets li.ok {
+  color: var(--accent);
+}

@@ -23,6 +23,7 @@ import type { ChipCard } from '../ui/chipCard';
 import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
 import { createClockPanel } from '../ui/clockPanel';
+import { createExerciseCoach } from '../ui/exerciseCoach';
 import { createExerciseLine } from '../ui/exerciseLine';
 import { twaSignedDeg } from '../model/exercises';
 import { mpsToKn } from '../model/angles';
@@ -125,6 +126,7 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   createTimeBar(topRight, store);
   createClockPanel(topChips, layout.view, store);
   createExerciseLine(top, store, () => panel.showSection('exercises'));
+  createExerciseCoach(top, store);
   // CSS hides what would load a scene (and end the run) while an exercise exists.
   const markExercise = () => {
     document.documentElement.toggleAttribute('data-exercise', store.getState().exercise !== null);

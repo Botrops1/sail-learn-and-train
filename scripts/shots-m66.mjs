@@ -3,7 +3,15 @@
 // with every section folded and sails (no held=1).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, isStacked, setMode, setSheet, showSection, waitForLink } from './ui.mjs';
+import {
+  exerciseLine,
+  isStacked,
+  sectionIds,
+  setMode,
+  setSheet,
+  showSection,
+  waitForLink,
+} from './ui.mjs';
 
 const START = 'm=exercise&ex=points-of-sail';
 
@@ -58,6 +66,7 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
         (await item.isVisible()) && /Trim through/.test(await item.innerText()),
         await item.innerText(),
       );
+      problems.push(...(await auditPage(page, `m66 ${name} list`)));
 
       await item.click();
       await page.waitForTimeout(500);
@@ -226,6 +235,88 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
         listBack && noNote,
         JSON.stringify({ listBack, noNote }),
       );
+      await context.close();
+    }
+
+    // Owner, PR 144: unused sections hidden, the hint window with live targets, no part card, the
+    // wheel in the Steering section.
+    {
+      const { context, page } = await openPage(viewport, 'm66 coach', `?${START}&debug=1`, {
+        testClock: true,
+      });
+      await showSection(page, 'exercises');
+      const hiddenNote = await page.getByTestId('exercise-sections-hidden').innerText();
+      const lockedNote = await page.getByTestId('exercise-sections-locked').innerText();
+      const ids = await sectionIds(page);
+      check(
+        `unused sections are hidden ${name}`,
+        ['engine', 'anchor', 'harbour', 'place', 'status'].every((id) => !ids.includes(id)) &&
+          ['ropes', 'sails', 'autopilot', 'conditions', 'learn', 'exercises'].every((id) =>
+            ids.includes(id),
+          ) &&
+          /Engine/.test(hiddenNote) &&
+          /Anchor/.test(hiddenNote) &&
+          /wind/.test(lockedNote),
+        JSON.stringify({ ids, hiddenNote, lockedNote }),
+      );
+      await page.getByTestId('exercise-start').click();
+      await page.waitForTimeout(500);
+      if (await isStacked(page)) await setSheet(page, 'peek');
+      const coach = page.getByTestId('exercise-coach');
+      const howText = await page.getByTestId('exercise-coach-how').innerText();
+      const rows = () => page.getByTestId('exercise-coach-targets').locator('li').allInnerTexts();
+      const first = await rows();
+      check(
+        `hint window shows the step and its targets ${name}`,
+        (await coach.isVisible()) &&
+          /Main sheet/.test(howText) &&
+          first.length === 4 &&
+          /Wind 38–52° from the bow · now \d+°/.test(first[0] ?? '') &&
+          /starboard/.test(first[1] ?? ''),
+        JSON.stringify({ howText, first }),
+      );
+      await shot(page, `live-${name}-m66-coach`);
+      // The targets tick as the boat gets there.
+      await controls(page, { ctl_mainsheet: 12 });
+      let ticked = [];
+      for (let i = 0; i < 20; i += 1) {
+        await page.waitForTimeout(500);
+        ticked = await rows();
+        if (ticked.every((row) => row.startsWith('✓'))) break;
+      }
+      check(
+        `targets tick live ${name}`,
+        ticked.every((row) => row.startsWith('✓')),
+        JSON.stringify(ticked),
+      );
+      // Fold and open the window.
+      const toggle = page.getByTestId('exercise-coach-toggle');
+      await toggle.click();
+      const folded =
+        !(await page.getByTestId('exercise-coach-how').isVisible()) &&
+        (await toggle.innerText()) === 'Show hint';
+      await toggle.click();
+      const opened = await page.getByTestId('exercise-coach-how').isVisible();
+      check(`hint window folds ${name}`, folded && opened, JSON.stringify({ folded, opened }));
+      // No part card over the view in Exercises mode.
+      await showSection(page, 'ropes');
+      await page.locator('.rope-item').first().click();
+      await page.waitForTimeout(300);
+      const card = await page.getByTestId('info-card').isVisible();
+      check(`no part card in Exercises mode ${name}`, !card, String(card));
+      // The wheel is in Steering, not in the rope list.
+      const listed = await page.locator('[data-select="part_rudder"]').count();
+      await showSection(page, 'autopilot');
+      const wheel = await page
+        .locator('[data-section="autopilot"] [data-part-id="part_rudder"]')
+        .isVisible();
+      const autopilot = await page.getByTestId('autopilot').isVisible();
+      check(
+        `the wheel is in the Steering section ${name}`,
+        listed === 0 && wheel && autopilot,
+        JSON.stringify({ listed, wheel, autopilot }),
+      );
+      problems.push(...(await auditPage(page, `m66 ${name} hint window`)));
       await context.close();
     }
 

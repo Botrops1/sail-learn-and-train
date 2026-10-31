@@ -6,6 +6,8 @@ import {
   EXERCISES,
   EXERCISE_TEXTS,
   checkPasses,
+  checkTargets,
+  targetReading,
   twaSignedDeg,
   type CheckContext,
   type CheckSource,
@@ -163,5 +165,58 @@ describe('Russian exercise texts', () => {
           ? Object.entries(value).flatMap(([key, v]) => (key.startsWith('$') ? [] : strings(v)))
           : [];
     expect(strings(ru).filter((text) => /[A-Za-z]/.test(text))).toEqual([]);
+  });
+});
+
+describe('sections and targets (owner, PR 144)', () => {
+  const SECTIONS = [
+    'ropes',
+    'helm',
+    'sails',
+    'autopilot',
+    'engine',
+    'conditions',
+    'learn',
+    'place',
+    'anchor',
+    'harbour',
+    'status',
+  ];
+
+  it('every exercise names the sections it keeps, from the known ones, each once', () => {
+    for (const exercise of EXERCISES) {
+      expect(exercise.sections.length, exercise.id).toBeGreaterThan(0);
+      expect(new Set(exercise.sections).size).toBe(exercise.sections.length);
+      for (const id of exercise.sections) expect(SECTIONS, `${exercise.id}: ${id}`).toContain(id);
+    }
+  });
+
+  it('every step has at least one target row, in the order twa, tack, trim, controls', () => {
+    const points = EXERCISES.find((e) => e.id === 'points-of-sail');
+    expect(points).toBeDefined();
+    for (const step of points?.steps ?? []) {
+      expect(checkTargets(step.check).length, step.id).toBeGreaterThan(0);
+    }
+    const first = checkTargets(points?.steps[0]?.check ?? {});
+    expect(first.map((row) => row.kind)).toEqual(['twa', 'tack', 'trim', 'trim']);
+    const beam = checkTargets(points?.steps[2]?.check ?? {});
+    expect(beam.map((row) => row.kind)).toEqual(['twa', 'tack', 'trim', 'control']);
+  });
+
+  it('reads each row from the state: the wind angle, the tack, a control', () => {
+    let state = parseUrlState('?wd=0&ws=12&ms=12&js=30&hdg=315');
+    for (let i = 0; i < 20; i += 1) state = reduce(state, { type: 'step', dt: 0.05 });
+    const twa = targetReading({ kind: 'twa', range: [38, 52] }, state);
+    expect(twa).toEqual({ ok: true, value: 45 });
+    expect(targetReading({ kind: 'twa', range: [58, 72] }, state)?.ok).toBe(false);
+    expect(targetReading({ kind: 'tack', side: 'starboard' }, state)).toEqual({
+      ok: true,
+      value: 'starboard',
+    });
+    expect(targetReading({ kind: 'tack', side: 'port' }, state)?.ok).toBe(false);
+    expect(targetReading({ kind: 'control', id: 'ctl_mainsheet', range: [10, 14] }, state)).toEqual(
+      { ok: true, value: 12 },
+    );
+    expect(targetReading({ kind: 'twa', range: [0, 180] }, { ...state, motion: null })).toBeNull();
   });
 });

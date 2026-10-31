@@ -3,6 +3,7 @@ import { wrap180 } from '../model/angles';
 import { boat } from '../model/boat';
 import { el } from './dom';
 import { t } from './i18n';
+import { controlView, createControl } from './ropeControls';
 import { setText } from './stepper';
 
 /** S / P / nothing for a wind angle to the bow (straight ahead or astern has no side). */
@@ -13,6 +14,17 @@ export function sideLetter(angleDeg: number): string {
 }
 
 const MODES = ['off', 'heading', 'wind'] as const;
+
+/**
+ * The Steering section (Easy ropes; owner, PR 144: the wheel belongs with the autopilot, not with
+ * the ropes): the wheel's slider with its − / + buttons, then the autopilot block.
+ */
+export function createSteeringPanel(store: Store): HTMLElement[] {
+  const wheel = createControl(store, controlView('ctl_rudder'));
+  store.subscribe(wheel.refresh);
+  wheel.refresh(store.getState());
+  return [wheel.element, createAutopilotPanel(store, { heading: false })];
+}
 
 /**
  * The autopilot block (PHASE2_SPEC 6.5; owner: the boat's B&G holds the compass heading or the

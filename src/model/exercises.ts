@@ -49,11 +49,26 @@ export interface ExerciseMistake {
   steps?: readonly string[];
   on: MistakeTrigger;
 }
+/** The panel sections an exercise may keep (the Mode, Exercises and Settings sections always stay). */
+export type ExerciseSection =
+  | 'ropes'
+  | 'helm'
+  | 'sails'
+  | 'autopilot'
+  | 'engine'
+  | 'conditions'
+  | 'learn'
+  | 'place'
+  | 'anchor'
+  | 'harbour'
+  | 'status';
 export interface ExerciseDef {
   id: string;
   group: ExerciseGroup;
   ropes: RopesMode;
   crew: boolean;
+  /** Owner, PR 144: the sections the exercise shows; every other section is hidden while it runs. */
+  sections: readonly ExerciseSection[];
   start: string;
   steps: readonly ExerciseStep[];
   mistakes: readonly ExerciseMistake[];
@@ -176,6 +191,55 @@ export function checkPasses(
     if (check.engine.gear !== undefined && source.engine.gear !== check.engine.gear) return false;
   }
   return true;
+}
+
+/** One line of "what to reach" for a step (owner, PR 144), made from the step's check. */
+export type TargetRow =
+  | { kind: 'twa'; range: Range }
+  | { kind: 'tack'; side: 'port' | 'starboard' }
+  | { kind: 'trim'; sail: 'main' | 'jib'; states: readonly TrimState[] }
+  | { kind: 'control'; id: ControlId; range: Range };
+
+/** The rows of a check, in the order a learner reads them (the fields of M66). */
+export function checkTargets(check: ExerciseCheck): TargetRow[] {
+  const rows: TargetRow[] = [];
+  if (check.twaDeg) rows.push({ kind: 'twa', range: check.twaDeg });
+  if (check.tack) rows.push({ kind: 'tack', side: check.tack });
+  if (check.mainTrim) rows.push({ kind: 'trim', sail: 'main', states: check.mainTrim });
+  if (check.jibTrim) rows.push({ kind: 'trim', sail: 'jib', states: check.jibTrim });
+  for (const [id, range] of Object.entries(check.controls ?? {}) as [ControlId, Range][]) {
+    rows.push({ kind: 'control', id, range });
+  }
+  return rows;
+}
+
+/** What a target row reads now: whether it holds, and the number or word to show beside it. */
+export interface TargetReading {
+  ok: boolean;
+  /** The wind angle or control value, rounded; or the trim state or the tack side. */
+  value: number | string;
+}
+
+export function targetReading(row: TargetRow, source: CheckSource): TargetReading | null {
+  const { motion } = source;
+  if (motion === null) return null;
+  const twa = twaSignedDeg(source);
+  switch (row.kind) {
+    case 'twa':
+      return { ok: inRange(Math.abs(twa), row.range), value: Math.round(Math.abs(twa)) };
+    case 'tack': {
+      const side = twa > 0 ? 'starboard' : 'port';
+      return { ok: side === row.side, value: side };
+    }
+    case 'trim': {
+      const state = sailTrim(row.sail, source.rig, motion.awaDeg).state;
+      return { ok: row.states.includes(state), value: state };
+    }
+    case 'control': {
+      const value = source.controls[row.id];
+      return { ok: inRange(value, row.range), value: Math.round(value) };
+    }
+  }
 }
 
 const textFiles = import.meta.glob<Record<string, unknown>>('../../content/lang/*/exercises.json', {

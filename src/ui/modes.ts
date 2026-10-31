@@ -1,5 +1,7 @@
 import type { AppMode } from '../app/appMode';
 import type { AppState } from '../app/store';
+import { exerciseDef } from '../model/exercises';
+import type { StringKey } from './i18n';
 import type { PanelTab } from './panelTabs';
 
 /**
@@ -54,6 +56,24 @@ export const TAB_OF: Readonly<Record<SectionId, PanelTab>> = {
   harbour: 'controls',
   status: 'controls',
   settings: 'settings',
+};
+
+/** The title of each section (PHASE5_SPEC 8.4). */
+export const SECTION_TITLES: Record<SectionId, StringKey> = {
+  mode: 'mode.label',
+  exercises: 'exercise.label',
+  ropes: 'tab.ropes',
+  helm: 'real.station.helm',
+  sails: 'trim.label',
+  autopilot: 'steering.label',
+  engine: 'engine.label',
+  conditions: 'section.conditions',
+  learn: 'tab.learn',
+  place: 'place.label',
+  anchor: 'anchor.label',
+  harbour: 'harbour.title',
+  status: 'status.label',
+  settings: 'settings.title',
 };
 
 /** The layouts of `src/ui/layoutMode.ts` (with the wide one told apart). */
@@ -156,13 +176,19 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
  * True if the section is shown at all in this state. The autopilot and the engine have their own
  * sections only in Easy (M53: in Realistic they are in the Helm section, which only Realistic
  * ropes show), the anchor too (M46: the windlass is at the Bow station); the Mode and Settings sections only on a phone (M51: its Mode
- * and Settings tabs; M52: elsewhere the mode chip and the gear open cards).
+ * and Settings tabs; M52: elsewhere the mode chip and the gear open cards). Owner, PR 144: with an
+ * exercise loaded only the sections listed in its `sections` stay (besides those three).
  */
 export function sectionAvailable(
   id: SectionId,
   state: AppState,
   layout: LayoutKind = 'side',
 ): boolean {
+  // Owner, PR 144: while an exercise is loaded the sections it does not use are hidden.
+  if (state.exercise && id !== 'mode' && id !== 'exercises' && id !== 'settings') {
+    const kept = exerciseDef(state.exercise.id)?.sections;
+    if (kept && !kept.includes(id)) return false;
+  }
   switch (id) {
     case 'autopilot':
     case 'engine':

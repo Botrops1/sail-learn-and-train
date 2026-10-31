@@ -12,7 +12,13 @@ import {
 } from '../model/exercises';
 import { el } from './dom';
 import { currentLanguage, t } from './i18n';
-import { sectionAvailable, type LayoutKind, type SectionId } from './modes';
+import {
+  SECTION_IDS,
+  SECTION_TITLES,
+  sectionAvailable,
+  type LayoutKind,
+  type SectionId,
+} from './modes';
 import type { Sheet } from './sheet';
 import { createConfirmButton } from './settingsMenu';
 
@@ -115,6 +121,29 @@ export function createExercisePanel(
     return button;
   }
 
+  /** Owner, PR 144: which sections the exercise hides and what it sets for you. */
+  function sectionNotes(def: ExerciseDef): HTMLElement {
+    const hidden = SECTION_IDS.filter(
+      (id) =>
+        id !== 'mode' &&
+        id !== 'exercises' &&
+        id !== 'settings' &&
+        !(def.sections as readonly string[]).includes(id),
+    ).map((id) => t(SECTION_TITLES[id]));
+    return el('div', { class: 'exercise-sections' }, [
+      el('p', { class: 'hint', 'data-testid': 'exercise-sections-locked' }, [
+        t('exercise.sections.locked'),
+      ]),
+      ...(hidden.length > 0
+        ? [
+            el('p', { class: 'hint', 'data-testid': 'exercise-sections-hidden' }, [
+              t('exercise.sections.hidden', { list: hidden.join(', ') }),
+            ]),
+          ]
+        : []),
+    ]);
+  }
+
   function renderSetup(def: ExerciseDef, run: ExerciseRun, state: AppState): void {
     const text = exerciseText(def.id, currentLanguage());
     const card = el('div', { class: 'exercise-card', 'data-testid': 'exercise-setup' }, [
@@ -148,7 +177,7 @@ export function createExercisePanel(
       choices.append(button);
     }
     ropes.append(choices, el('p', { class: 'hint' }, [t('exercise.ropes.hint')]));
-    card.append(ropes, el('h4', {}, [t('exercise.steps')]), stepsList(def, run));
+    card.append(ropes, el('h4', {}, [t('exercise.steps')]), stepsList(def, run), sectionNotes(def));
     const start = el(
       'button',
       { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-start' },
