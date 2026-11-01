@@ -816,7 +816,7 @@ export interface DebriefSummary { timeS: number; stepsDone: number; total: numbe
 export function debriefSummary(log: readonly ExerciseLogEntry[], total: number, elapsedS: number): DebriefSummary;
 ```
 
-- `debriefRows`: one row per log entry, in log order; a mistake's `causes` are the `action` entries with `mistake.atS − causeWindowS <= atS <= mistake.atS`, the last `causeMax` of them.
+- `debriefRows`: one row per log entry, in log order; a mistake's `causes` are the `action` entries with `mistake.atS − causeWindowS <= atS` that stand before the mistake in the log (see 8.10), the last `causeMax` of them.
 - `debriefSummary`: `timeS` = the `finish` entry's `atS`, else `elapsedS` (the run's clock now); `stepsDone` = the number of different `step` values among `step` entries; `mistakes` = the number of `mistake` entries.
 
 ### 8.4 UI (`src/ui/exerciseDebrief.ts`, `src/ui/exercisePanel.ts`)
@@ -934,6 +934,7 @@ Saving or sharing a debrief; a debrief in the link (a link starts a run, it does
 - **One "So far" button at a time.** While a mistake card is shown the step card is shown under it; only the mistake card carries "So far" then, so there is one `exercise-so-far` on screen. The failed card shows the debrief itself.
 - **Open "So far" stays open** across steps and mistakes until the run ends or goes back to setup; "Show my actions" is kept the same way (in the panel's closure, so a new step does not reset it).
 - **`createDebrief(run, def, view?)`** takes an optional third argument, the switch's state (`{ showActions }`), so the panel can keep it; without it the switch starts off. The toggle re-draws only the list.
+- **Causes come from before the mistake in the log (owner, review items 1, 2 and 5).** `debriefRows` takes only actions that stand before the mistake's position in the log (and within the window), not every action with a time up to the mistake's: with "Pause when I make a mistake" the clock stands still, so what the learner does on the mistake card carries the mistake's time but is not its cause. "Show my actions" is reset to off when the run goes back to setup, like "So far". Test 4 also covers `done`.
 - **The wheel** is written with a sign (`+10` to starboard, `-10` to port); a control change from the Realistic ropes (`controls` moved by a gesture) is logged only as the gesture, because the log records what the learner did, not what the rope then did.
 - **The M66 test 1 line that lists the log's kinds** now ignores `action` entries (the run logs the sheet changes between the steps). No other older test changed.
 - **CI part split:** the part `live, M66-M71` ran over the 45-minute job limit (the M68 group alone takes about 20 minutes at its pace), so it is now two parts: `live, M66-M67` and `live, M68-M71` (milestones M69 to M71 may need their own part again).

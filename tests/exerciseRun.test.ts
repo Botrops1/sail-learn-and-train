@@ -464,6 +464,11 @@ describe('the debrief log (PHASE10_SPEC 8.6)', () => {
       exercise: state.exercise ? { ...state.exercise, status: 'failed' } : null,
     };
     expect(controls(failed, { ctl_mainsheet: 11 }).exercise?.log).toHaveLength(length);
+    const done: AppState = {
+      ...state,
+      exercise: state.exercise ? { ...state.exercise, status: 'done' } : null,
+    };
+    expect(controls(done, { ctl_mainsheet: 11 }).exercise?.log).toHaveLength(length);
   });
 
   it('PT-26 puts the events before their mistakes, and the turn among both causes', () => {

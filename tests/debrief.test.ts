@@ -28,6 +28,11 @@ describe('the debrief (PHASE10_SPEC 8.6)', () => {
     expect(c[0]?.causes).toEqual([]);
   });
 
+  it('ignores actions logged after a mistake that stopped the clock', () => {
+    const rows = debriefRows([action(5), mistake(10), action(10), action(10)], settings);
+    expect(rows[1]?.causes.map((c) => c.atS)).toEqual([5]);
+  });
+
   it('sums up the run', () => {
     const step = (n: number, atS: number): ExerciseLogEntry => ({
       kind: 'step',

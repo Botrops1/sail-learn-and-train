@@ -14,12 +14,13 @@ export function debriefRows(
   log: readonly ExerciseLogEntry[],
   settings: ExerciseSettings = EXERCISE_SETTINGS,
 ): DebriefRow[] {
-  return log.map((entry) => {
+  return log.map((entry, index) => {
     if (entry.kind !== 'mistake') return { entry, causes: [] };
     const causes = log
+      .slice(0, index)
       .filter(
         (e): e is Extract<ExerciseLogEntry, { kind: 'action' }> =>
-          e.kind === 'action' && e.atS >= entry.atS - settings.causeWindowS && e.atS <= entry.atS,
+          e.kind === 'action' && e.atS >= entry.atS - settings.causeWindowS,
       )
       .slice(-settings.causeMax);
     return { entry, causes };

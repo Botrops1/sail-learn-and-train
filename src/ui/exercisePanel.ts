@@ -517,7 +517,10 @@ export function createExercisePanel(
       howOpen = false;
       whyOpen = false;
     }
-    if (!run || run.status === 'setup') soFarOpen = false;
+    if (!run || run.status === 'setup') {
+      soFarOpen = false;
+      debriefView.showActions = false;
+    }
     if (!run || !def) renderList();
     else if (run.status === 'setup') renderSetup(def, run, state);
     else if (run.status === 'done') renderDone(def, run, state);
