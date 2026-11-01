@@ -570,23 +570,20 @@ describe('tacking, irons and gybing (PHASE10_SPEC 9.6)', () => {
     expect(state.exercise?.log.some((e) => e.kind === 'mistake')).toBe(false);
   });
 
-  it('tacking, centred too early: the wheel centred at head to wind leaves her in irons', () => {
+  it('tacking, centred too early: the wheel centred at head to wind leaves her in irons within 60 s', () => {
     let state = open('tacking');
     state = drive(pilot(state, 'tack'), 1, 90).state;
     state = rudder(pilot(state, 'off'), -25);
-    state = drive(state, 2, 30, (s) => (Math.abs(twaSignedDeg(s)) < 5 ? rudder(s, 0) : s)).state;
-    let centredAtS: number | null = null;
-    for (let i = 0; i < 60 / 0.05 && state.exercise?.status === 'running'; i += 1) {
-      if (centredAtS === null && state.controls.ctl_rudder === 0) {
-        centredAtS = state.exercise?.elapsedS ?? 0;
-      }
-      state = reduce(Math.abs(twaSignedDeg(state)) < 5 ? rudder(state, 0) : state, {
-        type: 'step',
-        dt: 0.05,
-      });
+    let guard = 0;
+    while (Math.abs(twaSignedDeg(state)) >= 5 && guard++ < 30 / 0.05) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
     }
+    expect(Math.abs(twaSignedDeg(state))).toBeLessThan(5);
+    const centredAtS = state.exercise?.elapsedS ?? 0;
+    state = drive(rudder(state, 0), 4, 60).state;
     expect(state.exercise?.status).toBe('mistake');
     expect(state.exercise?.mistake?.mistakeId).toBe('in-irons');
+    expect((state.exercise?.elapsedS ?? 0) - centredAtS).toBeLessThan(60);
   });
 
   it('PT-35 no speed, no steering: going backwards with the wheel over, the bow falls off, and she sails away', () => {
