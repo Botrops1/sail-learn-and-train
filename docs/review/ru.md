@@ -2837,6 +2837,10 @@
 | autopilot.standby | Standby: you steer | Ожидание: рулите вы |
 | autopilot.heldStill | The autopilot steers only while sailing. | Авторулевой рулит только на ходу. |
 | autopilot.tookWheel | Autopilot on Standby: you took the wheel | Авторулевой в режиме «Ожидание»: вы взяли штурвал |
+| autopilot.cap.minus10 | 10° port | 10° лев. |
+| autopilot.cap.minus1 | 1° port | 1° лев. |
+| autopilot.cap.plus1 | 1° stbd | 1° прав. |
+| autopilot.cap.plus10 | 10° stbd | 10° прав. |
 | autopilot.minus10 | 10° to port | 10° к левому борту |
 | autopilot.minus1 | 1° to port | 1° к левому борту |
 | autopilot.plus1 | 1° to starboard | 1° к правому борту |
@@ -3165,6 +3169,7 @@
 | exercise.sections.hidden | Hidden, not needed here: {list}. | Скрыто, здесь не нужно: {list}. |
 | exercise.sections.locked | Set by the exercise, cannot be changed: the wind, the waves and the clock. | Задано упражнением, менять нельзя: ветер, волны и часы. |
 | exercise.pauseOnMistake | Pause when I make a mistake | Остановить, когда я ошибусь |
+| exercise.pauseList | In this exercise: {list}. | В этом упражнении: {list}. |
 | exercise.pauseHint | Time stops and the card tells you what went wrong, so you can read it before you go on. | Время останавливается, и карточка объясняет, что пошло не так: можно спокойно прочитать и идти дальше. |
 | exercise.fromStep | This link starts at step {n}. | Эта ссылка начинается с шага {n}. |
 | exercise.wentWrong | What went wrong | Что пошло не так |
@@ -3407,12 +3412,15 @@
 | points-of-sail.steps.broad-reach.how | In Steering, tap −10 four more times. In Ropes, ease Main sheet to 85 % or more: the boom stops at the shrouds (the wires that hold the mast up), so the main cannot go further out. | В «Рулевом управлении» ещё четыре раза нажмите −10. В «Концах» потравите шкот грота до 85 % или больше: гик упирается в ванты (тросы, держащие мачту), дальше грот не уйдёт. |
 | points-of-sail.steps.run.goal | Run: wind from behind. Hold the course for 10 seconds without a gybe. | Фордевинд: ветер сзади. Держите курс 10 секунд без оверштага. |
 | points-of-sail.steps.run.how | In Steering, tap −10 three more times, to about 165° from the wind. Do not go further: with the wind dead behind or on the other side, the boom can swing across by itself. | В «Рулевом управлении» ещё три раза нажмите −10, примерно до 165° от ветра. Дальше не надо: если ветер строго сзади или с другой стороны, гик может перекинуться сам. |
+| points-of-sail.mistakes.accidental-gybe.name | an accidental gybe | случайный оверштаг |
 | points-of-sail.mistakes.accidental-gybe.what | The boom swung across by itself (an accidental gybe). | Гик сам перекинулся на другой борт (случайный оверштаг через корму). |
 | points-of-sail.mistakes.accidental-gybe.why | The wind got behind the mainsail from the other side: she turned past dead downwind. | Ветер зашёл за грот с другой стороны: яхта повернула дальше прямого фордевинда. |
-| points-of-sail.mistakes.accidental-gybe.fix | Turn back towards the wind until it is about 160° off the bow. On a run, never steer past dead downwind. | Поверните обратно к ветру, чтобы он был примерно 160° от носа. На фордевинде не уваливайтесь дальше прямого. |
+| points-of-sail.mistakes.accidental-gybe.fix | The boom is now on the other side, so this step cannot pass from here. Tap 'Back to the start of step 5' and turn only three times this time. | Гик теперь на другом борту, поэтому отсюда этот шаг не засчитать. Нажмите «Назад к началу шага 5» и на этот раз поверните только три раза. |
+| points-of-sail.mistakes.by-the-lee.name | sailing by the lee | ход на подветре |
 | points-of-sail.mistakes.by-the-lee.what | You are sailing by the lee: the wind comes from the side the boom is on. | Вы идёте «на подветре»: ветер дует с той стороны, где гик. |
 | points-of-sail.mistakes.by-the-lee.why | She turned past dead downwind, so the boom can gybe at any moment. | Яхта прошла дальше прямого фордевинда, поэтому гик может перекинуться в любой момент. |
-| points-of-sail.mistakes.by-the-lee.fix | Turn 10–20° back towards the wind straight away. | Сразу поверните на 10–20° обратно к ветру. |
+| points-of-sail.mistakes.by-the-lee.fix | Turn 10–20° back towards the wind straight away: tap +10 in Steering once or twice. | Сразу поверните на 10–20° обратно к ветру: нажмите +10 в «Рулевом управлении» один или два раза. |
+| points-of-sail.mistakes.in-irons.name | stopping head to wind | остановка носом в ветер |
 | points-of-sail.mistakes.in-irons.what | She has stopped, pointing into the wind (in irons). | Яхта остановилась носом в ветер (в мёртвой зоне). |
 | points-of-sail.mistakes.in-irons.why | She turned towards the wind instead of away from it: no sail works with the wind straight ahead. | Она повернула к ветру, а не от него: при ветре прямо в нос ни один парус не работает. |
 | points-of-sail.mistakes.in-irons.fix | Turn away from the wind with −10 in Steering (Wind autopilot); if she does not answer, do the Getting out of irons exercise. | Уваливайтесь кнопкой −10 в «Рулевом управлении» (автопилот по ветру); если не отвечает, пройдите упражнение «Выход из мёртвой зоны». |

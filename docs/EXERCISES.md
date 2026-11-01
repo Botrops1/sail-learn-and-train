@@ -29,6 +29,10 @@ Every exercise uses the same format (ROADMAP Phase 10): **what you see → what 
 - Coming alongside a pontoon with springs; leaving with a spring.
 - Sailing onto and off an anchor or buoy (later, advanced).
 
+### When an exercise pauses (M67)
+
+An exercise does **not** pause on every Attention alert. Each exercise lists its own mistakes in `content/exercises/exercises.json`, and only those can stop time. Trim through the points of sail has three: sailing by the lee (the wind comes from the side the boom is on), an accidental gybe (the boom swings across by itself) and stopping head to wind (bow within 20° of the wind and under 1 knot for 5 s, "in irons"). Other alerts, such as heeling or a stalled sail, never pause. The setup card names the exercise's mistakes under the "Pause when I make a mistake" box. The same mistake cannot pause again within 10 s, and nothing counts in the first second after Start or Back. With the box unticked, the mistake shows in the top line for six seconds and time goes on. A "serious" mistake (none yet; they come with the harbour exercises) ends the exercise instead.
+
 ## 3. Failure modes: "how the boat gets out of control"
 
 The physics phases must make these **happen by themselves** from wrong actions, not as scripted animations. Phase 10 adds the debrief that explains them. Rules in PHYSICS_TRUTHS where they exist; the rest are `to-verify` until sourced.

@@ -105,7 +105,7 @@ export interface ExerciseText {
   mistake: string;
   done: string;
   steps: Readonly<Record<string, { goal: string; how: string }>>;
-  mistakes: Readonly<Record<string, { what: string; why: string; fix: string }>>;
+  mistakes: Readonly<Record<string, { name: string; what: string; why: string; fix: string }>>;
 }
 
 export type LoggedAction =

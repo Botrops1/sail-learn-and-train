@@ -748,6 +748,14 @@ Live:
 
 Mistakes pause (or flash when the box is unticked) with what / why / what to do; Back to a waypoint and waypoint links work; the good run of M66 still passes; typecheck, lint, tests, build and `SHOTS_ONLY=m66,m67` pass, then CI.
 
+### 7.11 Decided in the M67 PR (owner test and independent review; the owner accepted every recommendation)
+
+- The four Steering buttons show a caption under the number ("10° port", "1° port", "1° stbd", "10° stbd"; Russian draft), so a learner can tell them apart.
+- Each mistake text has a `name` (en, ru draft). The setup card lists the exercise's mistakes under the "Pause when I make a mistake" box ("In this exercise: …"); EXERCISES.md has "When an exercise pauses".
+- The accidental-gybe "What to do" says the step cannot pass from there and to tap Back; the by-the-lee text names the +10 button.
+- The time bar's Pause button is dimmed when switched off (like the other time buttons).
+- Not built, later: a solid marina or a "too close to the harbour" mistake (`/plan 10b`); the autopilot line on the minimap (ROADMAP Ideas); a page icon in `index.html`.
+
 ### 7.10 Not in M67
 
 The action log and the debrief (M68); serious mistakes in the exercises' data (none in part 10a: the serious ones, a hard hit or running aground, come with the harbour exercises of part 10b); waypoints in the list (only in a run).

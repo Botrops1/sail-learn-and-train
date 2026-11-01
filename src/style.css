@@ -2166,7 +2166,26 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   background: transparent;
 }
 
-.time-bar[data-speed='true'] .pause-button.is-paused {
+.time-bar[data-speed='true'] .pause-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.autopilot-turn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  line-height: 1.1;
+}
+
+.autopilot-turn-caption {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.pause-button.is-paused {
   border-color: #b85c00;
   background: #ff9f1c;
 }

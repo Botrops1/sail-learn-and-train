@@ -220,6 +220,11 @@ export function createExercisePanel(
         el('span', {}, [t('exercise.pauseOnMistake')]),
       ]),
       el('p', { class: 'hint' }, [t('exercise.pauseHint')]),
+      el('p', { class: 'hint', 'data-testid': 'exercise-mistake-list' }, [
+        t('exercise.pauseList', {
+          list: def.mistakes.map((m) => text.mistakes[m.id]?.name ?? m.id).join(', '),
+        }),
+      ]),
     );
     if (run.startStep > 0) {
       card.append(
