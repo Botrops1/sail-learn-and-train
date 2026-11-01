@@ -359,6 +359,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 | M69 | 9 | Tacking, Getting out of irons, Gybing (controlled and accidental) | PT-21, PT-28, PT-35, PT-58 (new) | M68 | **required** (a new rule; the checks decide what counts as a good tack or gybe) |
 | M70 | 10 | Gusts: ease the main; Too much wind: roll the sails in | PT-25, PT-13 | M69 | not needed (data, texts and two check fields read from existing state; the rules are tested by earlier phases) |
 | M71 | 11 | Setting and furling the sails in Realistic ropes, Alone or With crew; sign-off of part 10a | PT-12, PT-59 (new) | M70 | **required** (a new rule; Pause blocked in a mode; Realistic gestures) |
+| M72 | 14 | The gybe's push follows the wind: the boom starts across slowly and speeds up once past the line of the wind; the accidental-gybe step and Learn say why (extra milestone, issue #149) | PT-60 (new), PT-05, PT-24, PT-26, PT-58 | M71 | **required** (a physics formula that four rules rest on, and a new rule) |
 
 ---
 
@@ -1445,3 +1446,150 @@ Both exercises work from their links on a phone and a computer, Alone and With c
 - In Easy ropes the main rolls out in about two seconds (the rig's 0.4 s lag), too fast for the 3-second `main-off-wind` rule: in Easy, a single jump of "Mainsail out" off the wind is not caught. Realistic ropes catch it.
 - The "How?" texts are written for the exercise's default ropes mode (Easy for the sailing exercises, Realistic for setting and furling). With the other mode chosen on the setup card the checks work the same, but a text such as "In Ropes, tap − on Main sheet" describes the other mode's controls (recommended; merging accepts it: one text per step keeps the texts short; texts per mode can come later if the owner wants them).
 - The exercises have no target marks in 3D; the strip's wind angle is the guide.
+
+---
+
+## 14. M72: What pushes the boom across in a gybe (extra milestone, issue #149)
+
+**Independent review: required** (it changes a physics formula, the gybe's push, which PT-05, PT-24, PT-26 and PT-58 rest on, and adds rule PT-60).
+
+**Build it after M71 is merged** (M70 and M71 change the same exercise texts and `tests/physicsTruths10.test.ts`). It is not part of part 10a's Definition of Done (section 12).
+
+**Why (issue #149, owner's screenshot on PR #148).** Today `src/model/gybe.ts` gives the swinging boom a push of fixed size **towards the new side**, whatever direction the wind comes from. On the map the wind arrow then points one way and the boom moves the other: with the boom let out and the wind a little by the lee (from the side the boom is on), the wind's real push on the sail is **outwards**, so it holds the boom out (pressure on a sail pushes it away from where the wind comes from; Wikipedia *Death roll* [42]: unstayed boats are steadier slightly by the lee). Real booms still come across: "rolling motion, slight changes in the boat heading or wind direction can cause an unexpected and surprising jibe" (Wikipedia *Jibe* [41]). Once the boom is past the **line of the wind** (the boom pointing straight at where the wind comes from), the wind does push it across.
+
+**What M72 builds.** The push on the swinging boom has two named parts: (1) **the wind's push**, worked out every substep from the apparent wind's angle to the boom, in its true direction; (2) **the start push**, which stands for the roll, wave, gust or small turn that starts a real gybe (the app does not simulate those), and acts only until the boom is 10° past the line of the wind. The trigger (15° by the lee, `visual.gybeHysteresisDeg`, `decideSide`) does not change. With the values below, every existing test passes unchanged (prototype: all 1,244 tests of `npm test` at commit 0bbaae3, with the test helper of 14.6 item 1) and PT-24's numbers stay as M11 made them. Two texts explain it to the learner.
+
+What the owner sees: the boom starts across more slowly (the first 57°, up to the line of the wind, take about 69 % of the swing) and then speeds up; the gybing exercise's accidental step and the Learn entry "Gybe" say why. The gybe report's numbers stay as they are.
+
+### 14.1 Files
+
+New: `scripts/shots-m72.mjs`. Changed: `src/model/gybe.ts`, `src/model/sim.ts` (one call), `src/app/app.ts` (two fields in the debug `read()`), `content/boat/hanse508.json` (`physics.gybe`), `content/lang/en/exercises.json`, `content/lang/ru/exercises.json`, `content/lang/en/glossary.json`, `content/lang/ru/glossary.json` (`term_gybe`), `tests/gybe.test.ts`, `tests/physicsTruths10.test.ts`, `scripts/shots.mjs` (register `m72`, and add `72` to every label regex in `openPage` that lists `7[01]`: five at commit 0bbaae3, lines 446–478, e.g. `7[01]` → `7[0-2]`; `grep -n "7\[01\]" scripts/shots.mjs`; M70 or M71 may have extended them already, so add 72 to whatever they list), `docs/PHYSICS_TRUTHS.md` (PT-60's status line only if the builder finds a source), `docs/BOAT_REFERENCE.md`, `docs/CODE_MAP.md`, `docs/review/ru.md` (`npm run review-doc -- ru`).
+
+### 14.2 Data (`content/boat/hanse508.json`, `physics.gybe`)
+
+Delete the keys `driveCoefficient`, `driveGain`, `driveFloor`, `driveStartFraction` and `driveNote` (only `gybe.ts` reads them). Keep `normalForceCoefficient` (1.2) and every other key. Add, directly after `normalForceCoefficient`:
+
+```json
+"sailShapeGain": 1.8,
+"startPushFactor": 0.85,
+"startPastLineDeg": 10,
+"pushNote": "assumption (M72, issue #149): the wind's push on the swinging main is worked out from the apparent wind's angle to the boom like a flat plate (normal force ½ρ·aws²·area·normalForceCoefficient·sin²(angle), pushing away from where the wind comes from), times sailShapeGain for what a flat plate leaves out (camber, twist, more wind higher up). By the lee with the boom let out, that push holds the boom out; startPushFactor (a share of the broadside push) stands for what starts a real gybe (a roll, a wave, a gust or a small turn; PT-60) and acts until the boom is startPastLineDeg past the line of the wind. Both tuned so that PT-24's numbers stay as in M11 (15 kn, ±72°: 2.1 s, 9.8 kJ, 12.2 kN). startPushFactor must stay above sin²(maxSwingDeg − gybeHysteresisDeg) = 0.70, or a boom let right out would not start across."
+```
+
+**Tunable** (only if a band of 14.6 fails after the formulas were checked against 14.3): `sailShapeGain` (1.6–2.0), `startPushFactor` (0.75–0.95), `startPastLineDeg` (5–15). Report before and after in the PR; never widen a band.
+
+### 14.3 Model (`src/model/gybe.ts`)
+
+Conventions (as in the rest of the rig): `thetaDeg` is the boom angle, + = to starboard, 0 = along the centreline aft (`RigState.theta`); `awaDeg` is the apparent wind angle to the bow, + = from starboard (`RigWind.awaDeg`), range (−180, 180]; torques in N·m, + = turning the boom towards starboard (θ growing). `aws` in the formulas is in m/s (`awsKn · physics.constants.knotMps`).
+
+New exports, each with a one-line comment:
+
+```ts
+/** The line of the wind: the boom angle that points straight at where the apparent wind comes from. */
+export function windLineDeg(awaDeg: number): number;
+// = wrap180(180 − awaDeg)   (wrap180 from './angles'); windLineDeg(165) = 15, windLineDeg(−165) = −15, windLineDeg(180) = 0
+
+/** The steady wind's push on the main about the mast (N·m, + = towards starboard). */
+export function windTorqueNm(awaDeg: number, thetaDeg: number, awsKn: number, mainOut: number, heelDeg: number, data: BoatData = boat): number;
+// k = ½ · ρ · modelledAreaM2 · mainOut · normalForceCoefficient · ceLever(mainOut) · cos²(heel)
+// x = (awaDeg + thetaDeg) · DEG
+// = −k · sailShapeGain · aws² · sin(x) · |sin(x)|
+
+/** The start push (PT-60): towards the new side until the boom is startPastLineDeg past the line of the wind, then 0 (N·m). */
+export function startTorqueNm(s: GybeSwing, awaDeg: number, awsKn: number, mainOut: number, heelDeg: number, data: BoatData = boat): number;
+// sign = Math.sign(s.stopDeg − s.startDeg) || Math.sign(s.stopDeg) || 1   (the same expression gybeStep uses today)
+// past = sign · (s.thetaDeg − windLineDeg(awaDeg))
+// = past < startPastLineDeg ? sign · startPushFactor · sailShapeGain · k · aws² : 0     (k as in windTorqueNm)
+```
+
+`gybeStep` gets the apparent wind angle as its **second** parameter (one way: the caller always knows it):
+
+```ts
+export function gybeStep(s: GybeSwing, awaDeg: number, awsKn: number, mainOut: number, heelDeg: number, h: number, data: BoatData = boat): GybeSwing;
+// moment = windTorqueNm(awaDeg, s.thetaDeg, …) + startTorqueNm(s, awaDeg, …) − cAir · ω · |ω|
+// cAir, ω, the semi-implicit Euler step and the returned object: unchanged from today
+```
+
+Delete `driveTorque` (and its doc comment). Update the doc comments of the file header and `gybeStep` to describe the two pushes (no mention of a fixed push towards the new side). `boomInertia`, `gybeArrived`, `gybeImpact`, `gybeImpactPullN`, `dangerZone` do not change.
+
+`src/model/sim.ts`, `stepGybe`: the one call becomes `gybeStep(swing, wind.awaDeg, wind.awsKn, mainOut, heelDeg, h, data)`. Nothing else in `sim.ts` changes (the trigger, `maxSwingS`, `minMainOut`, `minReportJ`, the weak-wind hand-over).
+
+Both the trigger (`decideSide(input.windFromDeg, …)`, fed `wind.awaDeg` in `sim.ts`) and the new pushes use the **apparent** wind, so at the trigger the line of the wind is 15° from the centreline on the boom's old side at any boat speed.
+
+Edge cases (all hold with the formulas as written; the tests of 14.6 check them): zero wind gives 0 for both pushes (the existing weak-wind hand-over finishes the swing); both directions are mirror images; heel reduces both pushes by cos²(heel); a main rolled part-way in (`mainOut` < 1) reduces both; paused (`dt` = 0) nothing moves. With the main hauled in (boom within 16° of the centreline) the boom starts within a few degrees of the line of the wind, so the start push acts over only a few degrees and the swing stays gentle (PT-58). The trigger angle is not changed by M72.
+
+Prototype values (commit 0bbaae3 with these formulas; `swing()` of `tests/gybe.test.ts` in 1 ms steps, heel 0, main out, `awaDeg` 15° by the lee towards the new side):
+
+| Case | Time | Energy | Peak rope | Boom end |
+|---|---|---|---|---|
+| 15 kn, +72° → −72° (today: 2.07 s, 9.73 kJ, 12.16 kN, 17.7 m/s) | 2.11 s | 9.78 kJ | 12.22 kN | 17.71 m/s |
+| 8 kn / 25 kn, ±72° | 3.97 s / 1.27 s | 2.78 kJ / 27.2 kJ | 3.48 / 34.0 kN | 9.4 / 29.5 m/s |
+| 15 kn, +10° → −10° (hauled in; today 1.04 kJ, 1.29 kN) | 0.57 s | 0.85 kJ | 1.06 kN | 5.2 m/s |
+| 15 kn, ±72°, heel 25° / main half out | 2.33 s / 4.05 s | 8.04 / 3.25 kJ | 10.0 / 4.07 kN | |
+| 15 kn, ±72°: reaching the line of the wind (+15°) | 1.454 s (0.688 of the swing) | boom rate there 112.5 °/s, at the end 162.3 °/s (ratio 0.693) | | |
+
+In the rig (`step`, boat at rest, wind −170 → −165, as `startGybe` in `tests/gybe.test.ts`): main out, 12 kn: 2.63 s, 6.25 kJ, accidental; main sheet 5 % (hauled in): 15 kn 0.60 s, 1.26 kJ; 12 kn 0.77 s, 0.81 kJ; 6 kn 1.53 s, 0.20 kJ (still above `minReportJ`, so the controlled gybe is still reported in light wind).
+
+### 14.4 Store, URL, UI
+
+No new state, actions or URL keys; old links open as before. The debug hook in `src/app/app.ts` (`__sailExercise.read()`, only with `debug=1`) gains two fields for the browser check: `boomDeg: s.rig.theta.value` and `gybing: s.rig.gybing`. No layout change.
+
+### 14.5 Texts and strings
+
+Exact replacements (the rest of each string stays as it is). Russian is AI-drafted: `textStatus` / `$status` stay `draft`.
+
+1. `content/lang/en/exercises.json`, `gybing.steps.accidental.how`: replace the sentence "The wind gets behind the main from the wrong side and throws the boom across." with: "At first the wind still holds the boom out; at sea a roll, a wave or a small turn starts it across (the app gives it that start), and once the boom is past the line of the wind (pointing straight at where the wind comes from), the wind throws it the rest of the way."
+2. `content/lang/ru/exercises.json`, the same key: replace "Ветер попадает в грот с неправильной стороны и перебрасывает гик." with: "Сначала ветер ещё удерживает гик снаружи; в море его сдвигает с места крен, волна или небольшой поворот (в приложении этот толчок задан), а когда гик проходит линию ветра (направлен прямо туда, откуда дует ветер), ветер перебрасывает его до конца."
+3. `content/lang/en/glossary.json`, `term_gybe.what`: append (after "…break gear."): " Why the boom crosses by itself: let out, it is at first held out by the wind; a roll, a wave or a small turn starts it across, and once it is past the line of the wind (pointing straight at where the wind comes from), the wind throws it."
+4. `content/lang/ru/glossary.json`, `term_gybe.what`: append (after "…сломать оборудование."): " Почему гик перелетает сам: когда грот потравлен, ветер сначала удерживает гик снаружи; крен, волна или небольшой поворот сдвигают его, а когда гик проходит линию ветра (направлен прямо туда, откуда дует ветер), ветер перебрасывает его."
+
+Then `npm run review-doc -- ru`. No new registry ids and no new `ui.json` keys.
+
+### 14.6 Tests
+
+1. **`tests/gybe.test.ts`, helper only:** the only `gybeStep` call in `tests/` is in `swing()` (line 21 at commit 0bbaae3). `swing()` computes `const awaDeg = stopDeg < startDeg ? 165 : -165;` (15° by the lee towards the new side, as at the trigger) and calls `gybeStep(s, awaDeg, awsKn, mainOut, heelDeg, 0.001)`. **No expectation or band in `tests/gybe.test.ts`, `tests/physicsTruths*.test.ts` or `tests/exerciseRun.test.ts` changes**; all must pass as they are (prototype: they do).
+2. **New, `tests/gybe.test.ts`, `describe('M72 the two pushes (PHASE10_SPEC 14)')`:**
+   - `windLineDeg`: 165 → 15, −165 → −15, 180 → 0, −90 → −90 (exact).
+   - `windTorqueNm(165, 72, 15, 1, 0)` is in 6,000–6,800 N·m [6,407] and positive; `windTorqueNm(-165, -72, 15, 1, 0)` is its negative (`toBeCloseTo(…, 6)`).
+   - `windTorqueNm(165, 72, 15, 1, 25)` / the upright value = cos²(25°) (`toBeCloseTo(0.8214, 3)`); with `awsKn` 0 it is 0; with `mainOut` 0.5 it is smaller than with 1.
+   - `startTorqueNm` for a swing `{ thetaDeg, omegaDegS: 0, startDeg: 72, stopDeg: -72 }` with `awaDeg` 165, 15 kn, main out, heel 0: at `thetaDeg` 6 (9° past the line) it equals `startPushFactor × windTorqueNm(165, -75, 15, 1, 0)` (the broadside push, x = 90°, which is negative) to 6 places (`toBeCloseTo(…, 6)`); at `thetaDeg` 4 (11° past the line) it is 0.
+   - Data: `startPushFactor` > sin²((`rig.boom.maxSwingDeg` − `visual.gybeHysteresisDeg`)°) (0.703); `sailShapeGain` > 0; `startPastLineDeg` between 0 and 30; the deleted keys are gone (`driveGain` is `undefined`).
+3. **New, `tests/physicsTruths10.test.ts` (PT-60):**
+   - `PT-60 by the lee with the boom let out, the steady wind holds the boom out`: `windTorqueNm(165, 72, 15, 1, 0)` > 0 (outwards, towards starboard, while the swing would go to port) and `windTorqueNm(-165, -72, 15, 1, 0)` < 0.
+   - `PT-60 without a start, a boom let out is not thrown across`: with data `{ ...boat, physics: { ...boat.physics, gybe: { ...boat.physics.gybe, startPushFactor: 0 } } }`, a swing from 72 to −72 with `awaDeg` 165 at 15 kn, run exactly 8,000 steps of 1 ms (no other stop): `gybeArrived` is false after every step and `thetaDeg` ≥ 72 at the end.
+   - `PT-60 once past the line of the wind, the wind throws the boom across`: `windTorqueNm(165, 10, 15, 1, 0)` < 0 and `windTorqueNm(165, -40, 15, 1, 0)` < 0 (towards port, the new side).
+   - `PT-60 the start is the slow part`: the 15 kn swing from 72 to −72 (`awaDeg` 165, 1 ms steps): the time to reach `thetaDeg` ≤ 15 divided by the whole swing's time is 0.62–0.76 [0.688]; the boom rate there divided by the rate at the end is 0.60–0.78 [0.693].
+
+### 14.7 Browser checks (`scripts/shots-m72.mjs`, test clock)
+
+Register in `scripts/shots.mjs` (import, `SCENES` with the `m72-` prefix, `liveGroups.m72`, and the label regexes of 14.1), as `shots-m69.mjs` is. Copy into `shots-m72.mjs` the small local helpers it needs from `shots-m69.mjs` (`check`, `shot`, `open`, `howText`, `read`, `act`) with the imports they use (`node:path`, `showSection` from `./ui.mjs`); do not export them from `shots-m69.mjs`.
+
+- **Scene** `gybing-accidental-step`: `?v=1&ms=85&js=50&vg=50&tl=100&mf=100&jf=100&rd=0&wd=0&ws=12&cam=side-port&m=exercise&step=5&detail=high&hdg=171&bs=4.8&ap=wind&apt=-171&sea=flat&clk=202606011202&ex=gybing&exw=3&mode=easy` (the waypoint link of the gybing exercise's accidental-gybe step, from issue #149; a waypoint link carries the whole state, so `exw` alone would not do).
+- **Live check `m72 swing`** (phone, `openPage(phone, 'm72 swing', '?wd=170&ws=15&ms=100&js=100&held=1&sea=flat&cam=top&debug=1', { testClock: true })`): `page.waitForTimeout(1500)`; read `boomDeg`: this is the **start value** (must be < −65). Dispatch `{ type: 'setControls', values: { ctl_wind_dir: -165 } }` through `window.__sailExercise.dispatch`. Then every 100 ms (`page.waitForTimeout(100)`, up to 6 s) read `boomDeg` and `gybing`. Times count from the dispatch (sample n is at n × 100 ms). Checks: `gybing` was true at some sample; `boomDeg` > 65 at some sample at or before 4 s; no sample has `boomDeg` < start value − 3 (no outward flick); (time of the first sample with `boomDeg` ≥ −15) / (time of the first sample with `boomDeg` ≥ 65) ≥ 0.55 (prototype 0.69; the 100 ms sampling costs at most about 0.05); the `gybe-report` test id becomes visible and its text starts with "Accidental gybe!". One PNG at the first sample with `boomDeg` ≥ 0.
+- **Live check `m72 texts`** (phone, test clock): open the scene's link, read How? with `howText`: its text contains "line of the wind". The same in Russian (`&lang=ru`): contains "линию ветра".
+- Run `SHOTS_ONLY=m11,m13,m69,m72 npm run shots` (the groups that test gybes); CI runs the rest.
+
+### 14.8 Other documents (in the M72 PR)
+
+- `docs/BOAT_REFERENCE.md`: replace the row "Gybe: the wind's push (M11)" with "Gybe: the two pushes (M72)": the formulas of 14.3, the keys `normalForceCoefficient`, `sailShapeGain`, `startPushFactor`, `startPastLineDeg`, **assumptions**, and the 15 kn results of 14.3's table. Add a row "Gybe trigger (Phase 1)": 15° by the lee (`visual.gybeHysteresisDeg`), **assumption**: no source gives an angle or a time (issue #149).
+- `docs/CODE_MAP.md`, the `gybe.ts` row: "Gybes: the boom's swing under the wind's push (worked out from the apparent wind's angle to the boom) and the start push that stands for a roll or wave (M72), impact energy and sheet load, the danger-zone sector. …" (keep the weak-wind sentence); add `scripts/shots-m72.mjs` to the scripts list.
+- `docs/PHYSICS_TRUTHS.md`: PT-60 is added by the planning PR; M72 changes nothing there unless it finds a source.
+- `docs/PHASE2_SPEC.md` keeps its M11 text about the deleted keys (it is history).
+
+### 14.9 Done when
+
+`npm run typecheck`, `npm run lint`, `npm test`, `npm run build` pass; every test of 14.6 passes and no existing expectation was changed; `SHOTS_ONLY=m11,m13,m69,m72` passes; the PR says `Closes #149`; the owner's checklist (WORKFLOW, M72) is in the PR with full links; the independent review is done.
+
+### 14.10 Not in M72
+
+- An arrow of the wind's push on the sail (option C of issue #149): during the start it would point against the boom's movement and needs its own explanation (Ideas, if the owner wants it).
+- Simulating the roll, wave or turn that starts a real gybe; a different trigger angle or delay (no source gives one); a hauled-in boom crossing as soon as the wind passes its line (today it waits for the 15° trigger like a let-out boom).
+- A preventer; the Chinese gybe (the top of the sail crossing first, [43]).
+
+### 14.11 Decided in the M72 planning PR (recommended; merging accepts it)
+
+- **Keep PT-24's numbers** with `sailShapeGain` 1.8: the first prototype, a plain flat plate that also counts the boom's own movement through the air, gave 3–7 kJ at 15 kn instead of 9.8, and Realistic mode's sheet slip, the gybe report and earlier checks rest on M11's numbers; no source says they are wrong.
+- **Keep the trigger at 15° by the lee and its wait** (about 5 s in the gybing exercise): no source gives an angle or a time; the owner may ask a sailor.
+- **The start push is a named stand-in**, not a simulation of rolling: it keeps the accidental gybe of the exercises, PT-05 and PT-26 as they are, and the texts say what it stands for.
+- **No force arrow in M72** (14.10).
+- **PT-60 is `to-verify`** until a sail-aerodynamics source confirms that the steady wind holds a let-out boom (the causes are source-checked [41]).
