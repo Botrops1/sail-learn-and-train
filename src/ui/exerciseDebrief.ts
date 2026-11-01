@@ -62,7 +62,11 @@ export function actionText(action: LoggedAction): string {
       const target = action.target;
       const label = (target !== null ? tailSpec(target)?.label : undefined) ?? target ?? '';
       const side = sideOf(target);
-      const station = target ? t(`debrief.station.${target}` as 'debrief.station.port') : '';
+      // Only a station gesture has a station as its target (a clutch's target is its key, `a2`).
+      const station =
+        action.gesture === 'station' && target
+          ? t(`debrief.station.${target}` as 'debrief.station.port')
+          : '';
       switch (action.gesture) {
         case 'station':
           return t('debrief.rope.station', { station });

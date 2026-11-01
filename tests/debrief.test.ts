@@ -52,3 +52,15 @@ describe('the debrief (PHASE10_SPEC 8.6)', () => {
     expect(debriefSummary([mistake(1), mistake(2)], 5, 7)).toMatchObject({ timeS: 7, mistakes: 2 });
   });
 });
+
+describe('the words for a Realistic gesture (M71)', () => {
+  it('names a clutch by its label and a station by its name, and never needs a station for a clutch', async () => {
+    const { actionText } = await import('../src/ui/exerciseDebrief');
+    expect(actionText({ type: 'realistic', gesture: 'clutch', target: 'a2', on: true })).toMatch(
+      /^Opened the clutch: .*Main furling/,
+    );
+    expect(actionText({ type: 'realistic', gesture: 'station', target: 'starboard' })).toBe(
+      'Went to the starboard station',
+    );
+  });
+});
