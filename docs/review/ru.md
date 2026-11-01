@@ -3171,6 +3171,9 @@
 | exercise.pauseOnMistake | Pause when I make a mistake | Остановить, когда я ошибусь |
 | exercise.pauseList | In this exercise: {list}. | В этом упражнении: {list}. |
 | exercise.pauseHint | Time stops and the card tells you what went wrong, so you can read it before you go on. | Время останавливается, и карточка объясняет, что пошло не так: можно спокойно прочитать и идти дальше. |
+| exercise.pauseOnStep | Pause after each step | Останавливать после каждого шага |
+| exercise.pauseOnStepHint | Time stops when a step is done, so you can read the next one. Press Resume to go on. | Время останавливается, когда шаг выполнен: можно прочитать следующий. Нажмите «Продолжить», чтобы идти дальше. |
+| exercise.linePausedStep | Step {n} done ✓ Paused: read the next step, then press Resume | Шаг {n} выполнен ✓ Пауза: прочитайте следующий шаг и нажмите «Продолжить» |
 | exercise.fromStep | This link starts at step {n}. | Эта ссылка начинается с шага {n}. |
 | exercise.wentWrong | What went wrong | Что пошло не так |
 | exercise.why | Why | Почему |
