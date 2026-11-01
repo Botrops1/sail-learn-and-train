@@ -1099,7 +1099,16 @@ A tack or gybe drill on time; tacking with a genoa on winches (this boat has a s
 
 ### 9.10 Decided in the M69 PR
 
-(empty)
+All recommended; merging accepts them.
+
+- **The wheel is in Steering, not Ropes** (recommended; merging accepts it): since PR 144 the Wheel sits in the Steering section with the autopilot. The wheel steps (`tack-by-hand`, `centre-wheel`, `wheel-over`) therefore open `autopilot` and their "How?" texts say "In Steering"; the sheet steps still say "In Ropes". Nothing else in 9.4 changed.
+- **Each exercise names its `sections`** (recommended; merging accepts it): `ropes, sails, autopilot, conditions, learn`, as PR 144 requires for every exercise.
+- **Each mistake has a `name`** (recommended; merging accepts it), as the points-of-sail mistakes do since M67: "stopping head to wind", "an accidental gybe".
+- **Events are made before the mistakes of the same frame** (`exerciseRun.ts`), from the new alert entries that pass the settle rule; a tack with the autopilot on Standby adds `tack` and `tackByHand`.
+- **The browser checks run the long good runs on the phone only** (recommended; merging accepts it): a desktop-size 3D frame is about ten times slower to draw, so one desktop tacking run took 25 minutes and the group over 50 (CI's limit is 45). The desktop runs the accidental-gybe card, the list, the Russian setup cards and the audits; the done card is the same component on both sizes (M66 checks it on desktop).
+- **Steps with only an event or a boom angle show fewer target rows** (known limitation): the target list in the hint window (PR 144) has no row kind for `event`, `boomDeg` or `speedKn`, so "Gybe" and "Accidental" show none and the other steps show only the wind angle and tack. The goal text carries the rest.
+- **Owner requests in PR 148** (decided in the M69 PR; recommended, merging accepts it): the step line shows the hold as a ring that fills with the seconds left, and flashes green for a second (with the hint window) when a step is done; a setup option "Pause after each step" (`pauseOnStep`, off by default, link key `exs=1`, `run.stepPause`) stops time when a step is done until Resume. Not in the spec; the owner asked for them. The "gybe moves against the wind" report could not be reproduced (see the ROADMAP row); the PR asks what was seen.
+- **Prototype times reproduced** in the browser (desktop): tacking steps 58, 15, 48, 24 s.
 
 ---
 

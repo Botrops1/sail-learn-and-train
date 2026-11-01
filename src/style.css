@@ -4902,10 +4902,63 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
   font: inherit;
   font-size: 15px;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.exercise-line-text {
+  flex: 1 1 auto;
+  min-width: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* The hold countdown: a ring that fills as the hold goes on, the seconds left in it. */
+.exercise-ring {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  background:
+    radial-gradient(closest-side, rgb(255 255 255) 74%, transparent 76%),
+    conic-gradient(var(--exercise-ok) var(--fill, 0%), rgb(0 0 0 / 0.14) 0);
+}
+
+.exercise-ring::before {
+  content: attr(data-s);
+}
+
+.exercise-ring[hidden] {
+  display: none;
+}
+
+.exercise-line-step-paused {
+  border-color: var(--exercise-ok);
+  border-width: 2px;
+}
+
+/* A step is done: the step line and the hint window flash green for a second. */
+.exercise-flash {
+  animation: exercise-flash 1s ease-out;
+}
+
+@keyframes exercise-flash {
+  0%,
+  40% {
+    background-color: var(--exercise-ok);
+    box-shadow: 0 0 0 4px var(--exercise-ok);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
 }
 
 .exercise-line-mistake {
@@ -4977,6 +5030,7 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
 :root {
   --exercise-warning: #b85c00;
   --exercise-danger: #c8102e;
+  --exercise-ok: #2e9e4f;
 }
 
 .exercise-mistake {

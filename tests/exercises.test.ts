@@ -19,16 +19,28 @@ import exercisesFile from '../content/exercises/exercises.json';
 const OPENS = ['ropes', 'autopilot', 'engine', 'sails'];
 const GROUPS = ['sailing', 'wind', 'sails'];
 // The check fields known so far (M66); later milestones add theirs and this list.
-const FIELDS = ['twaDeg', 'tack', 'mainTrim', 'jibTrim', 'controls', 'speedKn', 'heelDeg'];
+const FIELDS = [
+  'twaDeg',
+  'tack',
+  'mainTrim',
+  'jibTrim',
+  'controls',
+  'speedKn',
+  'heelDeg',
+  'boomDeg',
+  'event',
+];
+const EVENTS = ['tack', 'tackByHand', 'controlledGybe', 'accidentalGybe'];
 
 function checkProblems(check: ExerciseCheck): string[] {
   const problems: string[] = [];
   for (const [field, value] of Object.entries(check)) {
     if (!FIELDS.includes(field)) problems.push(`unknown field ${field}`);
+    if (field === 'event' && !EVENTS.includes(value as string)) problems.push('unknown event');
     const ranges: unknown[] =
       field === 'controls'
         ? Object.values(value as object)
-        : ['twaDeg', 'speedKn', 'heelDeg'].includes(field)
+        : ['twaDeg', 'speedKn', 'heelDeg', 'boomDeg'].includes(field)
           ? [value]
           : [];
     for (const range of ranges) {

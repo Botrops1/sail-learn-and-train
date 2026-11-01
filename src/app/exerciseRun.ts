@@ -19,9 +19,15 @@ import type { Action, AppState } from './store';
 export type RunStatus = 'setup' | 'running' | 'mistake' | 'failed' | 'done';
 export interface ExerciseOptions {
   pauseOnMistake: boolean;
+  /** Owner, PR 148: stop time when a step is done, until the learner presses Resume. */
+  pauseOnStep: boolean;
   crew: 'alone' | 'crew';
 }
-export const DEFAULT_OPTIONS: Readonly<ExerciseOptions> = { pauseOnMistake: true, crew: 'alone' };
+export const DEFAULT_OPTIONS: Readonly<ExerciseOptions> = {
+  pauseOnMistake: true,
+  pauseOnStep: false,
+  crew: 'alone',
+};
 export interface ExerciseWaypoint {
   step: number;
   atS: number;
@@ -40,6 +46,8 @@ export interface ExerciseRun {
   stepStartS: number;
   settleFromS: number;
   holdS: number;
+  /** True while time is stopped after a finished step (the `pauseOnStep` option). */
+  stepPause: boolean;
   seenAlertN: number;
   events: readonly ExerciseEvent[];
   gusts: number;
@@ -107,6 +115,7 @@ export function restoreWaypoint(state: AppState, step: number): AppState {
       status: 'running',
       step,
       holdS: 0,
+      stepPause: false,
       stepStartS: run.elapsedS,
       settleFromS: run.elapsedS,
       seenAlertN: state.alerts.written,
@@ -134,6 +143,7 @@ export function newRun(id: string, step: number, options: ExerciseOptions): Exer
     stepStartS: 0,
     settleFromS: 0,
     holdS: 0,
+    stepPause: false,
     seenAlertN: 0,
     events: [],
     gusts: 0,
@@ -159,6 +169,7 @@ export function startRun(state: AppState): AppState {
       stepStartS: run.elapsedS,
       settleFromS: run.elapsedS,
       holdS: 0,
+      stepPause: false,
       seenAlertN: state.alerts.written,
       log: [...run.log, { kind: 'start', atS: run.elapsedS, step: run.step }],
       waypoints: [{ step: run.step, atS: run.elapsedS, state: snapshot(started) }],
@@ -180,7 +191,7 @@ export function stepExercise(
   const step = def.steps[run.step];
   if (step === undefined) return next;
   const settings = EXERCISE_SETTINGS;
-  const context = { events: run.events, gusts: run.gusts };
+  let events = run.events;
 
   // Mistakes (PHASE10_SPEC 7.3): alerts that are new since the last frame, then conditions held.
   let log: ExerciseLogEntry[] = [...run.log];
@@ -208,6 +219,16 @@ export function stepExercise(
     for (const entry of fresh) {
       // The event first, so a mistake row follows its event (PHASE10_SPEC 8.3).
       log = [...log, { kind: 'event', atS: elapsedS, entry }];
+      // PHASE10_SPEC 9.3: a tack by hand is a tack with the autopilot on Standby.
+      if (entry.kind === 'tack') {
+        events = [
+          ...events,
+          'tack',
+          ...(next.autopilot.mode === 'off' ? (['tackByHand'] as const) : []),
+        ];
+      } else if (entry.kind === 'gybe') {
+        events = [...events, entry.report?.accidental ? 'accidentalGybe' : 'controlledGybe'];
+      }
       for (const m of def.mistakes) {
         if (!('alert' in m.on) || !applies(m) || m.on.alert !== entry.kind) continue;
         if (m.on.accidental !== undefined && entry.report?.accidental !== m.on.accidental) continue;
@@ -215,6 +236,7 @@ export function stepExercise(
       }
     }
   }
+  const context = { events, gusts: run.gusts };
   for (const m of def.mistakes) {
     if (!('condition' in m.on)) continue;
     if (applies(m) && checkPasses(m.on.condition, next, context)) {
@@ -239,7 +261,9 @@ export function stepExercise(
     ...run,
     elapsedS,
     seenAlertN: next.alerts.written,
+    events,
     holdS,
+    stepPause: false,
     log,
     lastMistakeS,
     conditionS,
@@ -266,7 +290,12 @@ export function stepExercise(
   };
   if (nextStep < def.steps.length) {
     const wp = { step: nextStep, atS: elapsedS, state: snapshot(next) };
-    return { ...next, exercise: { ...advanced, waypoints: [...run.waypoints, wp] } };
+    const stopTime = run.options.pauseOnStep;
+    return {
+      ...next,
+      paused: stopTime ? true : next.paused,
+      exercise: { ...advanced, stepPause: stopTime, waypoints: [...run.waypoints, wp] },
+    };
   }
   return {
     ...next,

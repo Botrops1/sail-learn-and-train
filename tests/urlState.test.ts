@@ -729,6 +729,18 @@ describe('waypoint links (M67, PHASE10_SPEC 7.4)', () => {
     expect(serializeUrlState(opened)).toContain('exw=1');
   });
 
+  it('round-trips exs=1 (pause after each step) in the start link and a waypoint link', () => {
+    const on = parseUrlState('?m=exercise&ex=points-of-sail&exs=1');
+    expect(on.exercise?.options.pauseOnStep).toBe(true);
+    expect(serializeUrlState(on)).toContain('exs=1');
+    expect(parseUrlState('?m=exercise&ex=points-of-sail').exercise?.options.pauseOnStep).toBe(
+      false,
+    );
+    const wp = parseUrlState(serializeUrlState(atStep2()) + '&exs=1');
+    expect(wp.exercise?.options.pauseOnStep).toBe(true);
+    expect(serializeUrlState(wp)).toContain('exs=1');
+  });
+
   it('round-trips exp=0 and ignores a step out of range', () => {
     const off = parseUrlState('?m=exercise&ex=points-of-sail&exp=0');
     expect(off.exercise?.options.pauseOnMistake).toBe(false);

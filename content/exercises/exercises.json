@@ -31,6 +31,54 @@
         { "id": "by-the-lee", "serious": false, "on": { "alert": "byTheLee" } },
         { "id": "in-irons", "serious": false, "on": { "condition": { "twaDeg": [0, 20], "speedKn": [-99, 1] }, "forS": 5 } }
       ]
+    },
+    {
+      "id": "tacking",
+      "group": "sailing",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=315&ms=12&js=30&ap=wind&apt=45&sea=flat",
+      "steps": [
+        { "id": "tack-autopilot", "opens": "autopilot", "holdS": 5, "check": { "event": "tack", "tack": "port", "twaDeg": [38, 55], "speedKn": [4, 99] } },
+        { "id": "tack-by-hand", "opens": "autopilot", "holdS": 0, "check": { "event": "tackByHand", "tack": "starboard" } },
+        { "id": "centre-wheel", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [30, 60], "speedKn": [2, 99], "controls": { "ctl_rudder": [-5, 5] } } },
+        { "id": "pick-up-speed", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [38, 55], "speedKn": [4, 99], "mainTrim": ["good"], "jibTrim": ["good"] } }
+      ],
+      "mistakes": [
+        { "id": "in-irons", "serious": false, "on": { "condition": { "twaDeg": [0, 20], "speedKn": [-99, 1] }, "forS": 5 } }
+      ]
+    },
+    {
+      "id": "irons",
+      "group": "sailing",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=0&bs=0&ms=10&js=10&ap=off&sea=flat",
+      "steps": [
+        { "id": "ease-sheets", "opens": "ropes", "holdS": 1, "check": { "controls": { "ctl_mainsheet": [40, 100], "ctl_jib_sheet": [40, 100] } } },
+        { "id": "wheel-over", "opens": "autopilot", "holdS": 0, "check": { "twaDeg": [35, 90] } },
+        { "id": "sail-away", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [30, 60], "speedKn": [3, 99], "mainTrim": ["good"], "jibTrim": ["good"], "controls": { "ctl_rudder": [-5, 5] } } }
+      ],
+      "mistakes": []
+    },
+    {
+      "id": "gybing",
+      "group": "sailing",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=195&ms=100&js=50&ap=wind&apt=165&sea=flat",
+      "steps": [
+        { "id": "haul-main", "opens": "ropes", "holdS": 2, "check": { "boomDeg": [0, 16], "tack": "starboard" } },
+        { "id": "gybe", "opens": "autopilot", "holdS": 3, "check": { "event": "controlledGybe", "tack": "port", "twaDeg": [150, 175] } },
+        { "id": "ease-main", "opens": "ropes", "holdS": 5, "check": { "tack": "port", "twaDeg": [150, 175], "controls": { "ctl_mainsheet": [85, 100] } } },
+        { "id": "accidental", "opens": "autopilot", "holdS": 0, "check": { "event": "accidentalGybe" } }
+      ],
+      "mistakes": [
+        { "id": "accidental-gybe", "serious": false, "steps": ["haul-main", "gybe", "ease-main"], "on": { "alert": "gybe", "accidental": true } }
+      ]
     }
   ]
 }
