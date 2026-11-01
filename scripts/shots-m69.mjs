@@ -98,6 +98,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       await pilot(page, 'wind');
       await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
       const s4 = await waitForStep(page, 4, 45);
+      const afterS4 = await run(page);
       await open(page);
       const done = await waitVisible(page, 'exercise-done');
       check(
@@ -111,7 +112,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
           s3 &&
           s4 &&
           done,
-        JSON.stringify({ first, line2, how2, s1, s2, s3, s4, done }),
+        JSON.stringify({ first, line2, how2, s1, s2, s3, s4, done, afterS4 }),
       );
       await shot(page, `live-${name}-m69-tacking-done`);
       problems.push(...(await auditPage(page, `m69 ${name} tacking done`)));
