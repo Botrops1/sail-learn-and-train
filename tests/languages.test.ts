@@ -63,6 +63,7 @@ const SAME_AS_ENGLISH: Record<string, string> = {
   'exercise.line': 'only placeholders and a dot (the step number, the total and the goal)',
   'exercise.target.control': 'only placeholders, a dash and a percent sign',
   'exercise.target.trim': 'only placeholders and a colon',
+  'debrief.control': 'only placeholders, an arrow and a percent sign',
 };
 
 /** Every text of a language's exercises.json (M66 review: the same scans as the UI strings). */

@@ -929,9 +929,14 @@ Every finished, stopped or running exercise can show its debrief, with the actio
 
 Saving or sharing a debrief; a debrief in the link (a link starts a run, it does not carry its history).
 
-### 8.10 Decided in the M68 PR
+### 8.10 Decided in the M68 PR (recommended; merging accepts it)
 
-(empty)
+- **One "So far" button at a time.** While a mistake card is shown the step card is shown under it; only the mistake card carries "So far" then, so there is one `exercise-so-far` on screen. The failed card shows the debrief itself.
+- **Open "So far" stays open** across steps and mistakes until the run ends or goes back to setup; "Show my actions" is kept the same way (in the panel's closure, so a new step does not reset it).
+- **`createDebrief(run, def, view?)`** takes an optional third argument, the switch's state (`{ showActions }`), so the panel can keep it; without it the switch starts off. The toggle re-draws only the list.
+- **The wheel** is written with a sign (`+10` to starboard, `-10` to port); a control change from the Realistic ropes (`controls` moved by a gesture) is logged only as the gesture, because the log records what the learner did, not what the rope then did.
+- **The M66 test 1 line that lists the log's kinds** now ignores `action` entries (the run logs the sheet changes between the steps). No other older test changed.
+- **Russian** debrief strings are AI drafts like all of `ui.json`; `docs/review/ru.md` is regenerated.
 
 ---
 
