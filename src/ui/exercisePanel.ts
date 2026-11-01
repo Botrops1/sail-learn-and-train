@@ -94,7 +94,7 @@ export function createExercisePanel(
     const left = run && step && run.holdS > 0 ? holdLeftS(run, step.holdS) : 0;
     const shown = run ? lastMistakeShown(run) : false;
     const debrief = run && (run.status === 'done' || run.status === 'failed' || soFarOpen);
-    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${shown}`;
+    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${shown}`;
   };
 
   function renderList(): void {
@@ -219,12 +219,25 @@ export function createExercisePanel(
     box.addEventListener('change', () =>
       store.dispatch({ type: 'exercise', command: { options: { pauseOnMistake: box.checked } } }),
     );
+    const stepBox = el('input', {
+      type: 'checkbox',
+      'data-testid': 'exercise-pause-on-step',
+    }) as HTMLInputElement;
+    stepBox.checked = run.options.pauseOnStep;
+    stepBox.addEventListener('change', () =>
+      store.dispatch({ type: 'exercise', command: { options: { pauseOnStep: stepBox.checked } } }),
+    );
     card.append(
       el('label', { class: 'exercise-check' }, [
         box,
         el('span', {}, [t('exercise.pauseOnMistake')]),
       ]),
       el('p', { class: 'hint' }, [t('exercise.pauseHint')]),
+      el('label', { class: 'exercise-check' }, [
+        stepBox,
+        el('span', {}, [t('exercise.pauseOnStep')]),
+      ]),
+      el('p', { class: 'hint' }, [t('exercise.pauseOnStepHint')]),
       el('p', { class: 'hint', 'data-testid': 'exercise-mistake-list' }, [
         t('exercise.pauseList', {
           list: def.mistakes.map((m) => text.mistakes[m.id]?.name ?? m.id).join(', '),

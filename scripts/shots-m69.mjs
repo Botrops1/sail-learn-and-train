@@ -200,6 +200,49 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       await context.close();
     }
 
+    // 4b. Pause after each step (owner, PR 148): the ring while holding, the pause, the green flash.
+    if (viewport === phone) {
+      const { context, page } = await openPage(
+        viewport,
+        'm69 pause on step',
+        '?m=exercise&ex=gybing&debug=1',
+        { testClock: true },
+      );
+      await open(page);
+      await page.getByTestId('exercise-pause-on-step').check();
+      await start(page);
+      await controls(page, { ctl_mainsheet: 5 });
+      let ring = false;
+      for (let i = 0; i < 60 && !ring; i += 1) {
+        ring = await page.getByTestId('exercise-ring').isVisible();
+        if (!ring) await page.waitForTimeout(250);
+      }
+      await waitForStep(page, 1, 15);
+      const after = await run(page);
+      const line = await exerciseLine(page);
+      const flashed = await page
+        .getByTestId('exercise-line')
+        .evaluate((n) => n.classList.contains('exercise-flash'));
+      const held = after.elapsedS;
+      await page.waitForTimeout(2000);
+      const still = (await run(page)).elapsedS === held && (await read(page)).paused;
+      await shot(page, `live-${name}-m69-step-paused`);
+      await act(page, { type: 'setPaused', paused: false });
+      await page.waitForTimeout(500);
+      const going = !(await read(page)).paused;
+      check(
+        `pause on step ${name}`,
+        ring &&
+          after.stepPause !== undefined &&
+          flashed &&
+          /Step 1 done/.test(line ?? '') &&
+          still &&
+          going,
+        JSON.stringify({ ring, flashed, line, still, going }),
+      );
+      await context.close();
+    }
+
     // 5. The list, and Russian setup cards.
     {
       const { context, page } = await openPage(viewport, 'm69 list', '?m=exercise', {

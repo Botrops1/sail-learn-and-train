@@ -92,6 +92,8 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
   top.append(root);
 
   let built = '';
+  let builtRun = '';
+  let builtStep = -1;
   let rows: { row: TargetRow; item: HTMLElement }[] = [];
 
   const showOpen = () => {
@@ -115,6 +117,14 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
       return;
     }
     if (root.hidden) root.hidden = false;
+    // Owner, PR 148: a green flash on the hint window when the step has changed.
+    if (run.id === builtRun && run.step > builtStep) {
+      root.classList.remove('exercise-flash');
+      void root.offsetWidth;
+      root.classList.add('exercise-flash');
+    }
+    builtRun = run.id;
+    builtStep = run.step;
     const key = `${run.id}|${run.step}|${currentLanguage()}`;
     if (key !== built) {
       built = key;

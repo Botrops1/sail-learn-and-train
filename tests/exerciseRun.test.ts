@@ -650,3 +650,32 @@ describe('tacking, irons and gybing (PHASE10_SPEC 9.6)', () => {
     expect(state.exercise?.mistake?.mistakeId).toBe('accidental-gybe');
   });
 });
+
+describe('pause after each step (owner, PR 148)', () => {
+  it('stops time when a step is done, and Resume carries on', () => {
+    let state = reduce(
+      reduce(opened(), { type: 'exercise', command: { options: { pauseOnStep: true } } }),
+      { type: 'exercise', command: 'start' },
+    );
+    state = until(controls(state, { ctl_mainsheet: 12 }), 1, 40).state;
+    expect(state.exercise?.step).toBe(1);
+    expect(state.exercise?.status).toBe('running');
+    expect(state.exercise?.stepPause).toBe(true);
+    expect(state.paused).toBe(true);
+    const held = state.exercise?.elapsedS;
+    state = run(state, 2);
+    expect(state.exercise?.elapsedS).toBe(held);
+    state = reduce(state, { type: 'setPaused', paused: false });
+    state = run(state, 0.5);
+    expect(state.paused).toBe(false);
+    expect(state.exercise?.stepPause).toBe(false);
+  });
+
+  it('does not stop time without the option', () => {
+    let state = reduce(opened(), { type: 'exercise', command: 'start' });
+    state = until(controls(state, { ctl_mainsheet: 12 }), 1, 40).state;
+    expect(state.exercise?.step).toBe(1);
+    expect(state.exercise?.stepPause).toBe(false);
+    expect(state.paused).toBe(false);
+  });
+});
