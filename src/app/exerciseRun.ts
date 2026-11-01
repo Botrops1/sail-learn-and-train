@@ -72,6 +72,25 @@ function snapshot(state: AppState): AppState {
   return { ...state, exercise: null, paused: false };
 }
 
+/** Is a gust not blowing now? A gust already blowing at a start or a new step is not counted. */
+function gustArmedAt(state: AppState): boolean {
+  const { rearmPct } = EXERCISE_SETTINGS.gust;
+  return state.wind.twsKn <= state.controls.ctl_wind_speed * (1 + rearmPct / 100);
+}
+
+/** The gust counter (PHASE10_SPEC 10.3): a gust is a rise to `risePct` above the mean wind. */
+export function countGusts(
+  gusts: number,
+  armed: boolean,
+  twsKn: number,
+  meanKn: number,
+): { gusts: number; gustArmed: boolean } {
+  const { risePct, rearmPct } = EXERCISE_SETTINGS.gust;
+  if (armed && twsKn >= meanKn * (1 + risePct / 100)) return { gusts: gusts + 1, gustArmed: false };
+  if (!armed && twsKn <= meanKn * (1 + rearmPct / 100)) return { gusts, gustArmed: true };
+  return { gusts, gustArmed: armed };
+}
+
 /** The 'continue' command: only from a mistake card; time runs again. */
 export function continueRun(state: AppState): AppState {
   const run = state.exercise;
@@ -121,7 +140,7 @@ export function restoreWaypoint(state: AppState, step: number): AppState {
       seenAlertN: state.alerts.written,
       events: [],
       gusts: 0,
-      gustArmed: true,
+      gustArmed: gustArmedAt(wp.state),
       conditionS: {},
       lastMistakeS: {},
       mistake: null,
@@ -171,6 +190,8 @@ export function startRun(state: AppState): AppState {
       holdS: 0,
       stepPause: false,
       seenAlertN: state.alerts.written,
+      gusts: 0,
+      gustArmed: gustArmedAt(started),
       log: [...run.log, { kind: 'start', atS: run.elapsedS, step: run.step }],
       waypoints: [{ step: run.step, atS: run.elapsedS, state: snapshot(started) }],
     },
@@ -236,7 +257,14 @@ export function stepExercise(
       }
     }
   }
-  const context = { events, gusts: run.gusts };
+  // The gust counter (PHASE10_SPEC 10.3): before the mistakes and the step's check.
+  const counted = countGusts(
+    run.gusts,
+    run.gustArmed,
+    next.wind.twsKn,
+    next.controls.ctl_wind_speed,
+  );
+  const context = { events, gusts: counted.gusts };
   for (const m of def.mistakes) {
     if (!('condition' in m.on)) continue;
     if (applies(m) && checkPasses(m.on.condition, next, context)) {
@@ -262,6 +290,8 @@ export function stepExercise(
     elapsedS,
     seenAlertN: next.alerts.written,
     events,
+    gusts: counted.gusts,
+    gustArmed: counted.gustArmed,
     holdS,
     stepPause: false,
     log,
@@ -286,6 +316,7 @@ export function stepExercise(
     stepStartS: elapsedS,
     events: [],
     gusts: 0,
+    gustArmed: gustArmedAt(next),
     log,
   };
   if (nextStep < def.steps.length) {
