@@ -262,6 +262,9 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
             'exercise-item-gybing',
             'exercise-item-gusts',
             'exercise-item-reduce-sail',
+            // M71 added the two sails exercises.
+            'exercise-item-set-sails',
+            'exercise-item-furl-sails',
           ]),
         JSON.stringify(ids),
       );
