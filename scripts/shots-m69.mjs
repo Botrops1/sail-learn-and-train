@@ -72,7 +72,21 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
     return false;
   };
 
-  for (const viewport of [phone, desktop]) {
+  const snap = async (page) => {
+    const r = await read(page);
+    const u = await run(page);
+    return JSON.stringify({
+      st: u.status,
+      step: u.step,
+      t: Math.round(u.elapsedS),
+      hold: Math.round(u.holdS),
+      ev: u.events,
+      twa: Math.round(r.twaDeg),
+      kn: Math.round(r.speedKn * 10) / 10,
+      rud: r.controls.ctl_rudder,
+    });
+  };
+  for (const viewport of process.env.M69_DESKTOP ? [desktop] : [phone, desktop]) {
     const name = viewport.name;
 
     // 1. Tacking.
@@ -87,6 +101,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       const first = await exerciseLine(page);
       await pilot(page, 'tack');
       const s1 = await waitForStep(page, 1, 90);
+      console.log('DBG s1', await snap(page));
       await pilot(page, 'off');
       await controls(page, { ctl_rudder: -25 });
       const line2 = await exerciseLine(page);
@@ -94,11 +109,18 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       const how2 = await howText(page);
       const each = centreWhenOver(page);
       const s2 = await waitForStep(page, 2, 30, each);
+      console.log('DBG s2', await snap(page));
       const s3 = await waitForStep(page, 3, 75, each);
+      console.log('DBG s3', await snap(page));
       await pilot(page, 'wind');
       await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
       const s4 = await waitForStep(page, 4, 45);
       const afterS4 = await run(page);
+      console.log('DBG s4', await snap(page));
+      if (process.env.M69_DESKTOP) {
+        await context.close();
+        continue;
+      }
       await open(page);
       const done = await waitVisible(page, 'exercise-done');
       check(
