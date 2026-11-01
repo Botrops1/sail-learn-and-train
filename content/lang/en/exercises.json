@@ -16,9 +16,9 @@
       "run": { "goal": "Run: wind from behind. Hold the course for 10 seconds without a gybe.", "how": "In Steering, tap −10 three more times, to about 165° from the wind. Do not go further: with the wind dead behind or on the other side, the boom can swing across by itself." }
     },
     "mistakes": {
-      "accidental-gybe": { "what": "The boom swung across by itself (an accidental gybe).", "why": "The wind got behind the mainsail from the other side: she turned past dead downwind.", "fix": "Turn back towards the wind until it is about 160° off the bow. On a run, never steer past dead downwind." },
-      "by-the-lee": { "what": "You are sailing by the lee: the wind comes from the side the boom is on.", "why": "She turned past dead downwind, so the boom can gybe at any moment.", "fix": "Turn 10–20° back towards the wind straight away." },
-      "in-irons": { "what": "She has stopped, pointing into the wind (in irons).", "why": "She turned towards the wind instead of away from it: no sail works with the wind straight ahead.", "fix": "Turn away from the wind with −10 in Steering (Wind autopilot); if she does not answer, do the Getting out of irons exercise." }
+      "accidental-gybe": { "name": "an accidental gybe", "what": "The boom swung across by itself (an accidental gybe).", "why": "The wind got behind the mainsail from the other side: she turned past dead downwind.", "fix": "The boom is now on the other side, so this step cannot pass from here. Tap 'Back to the start of step 5' and turn only three times this time." },
+      "by-the-lee": { "name": "sailing by the lee", "what": "You are sailing by the lee: the wind comes from the side the boom is on.", "why": "She turned past dead downwind, so the boom can gybe at any moment.", "fix": "Turn 10–20° back towards the wind straight away: tap +10 in Steering once or twice." },
+      "in-irons": { "name": "stopping head to wind", "what": "She has stopped, pointing into the wind (in irons).", "why": "She turned towards the wind instead of away from it: no sail works with the wind straight ahead.", "fix": "Turn away from the wind with −10 in Steering (Wind autopilot); if she does not answer, do the Getting out of irons exercise." }
     }
   }
 }

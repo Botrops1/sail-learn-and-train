@@ -1,10 +1,11 @@
 import { recordDone, readProgress } from '../app/exerciseProgress';
-import type { ExerciseRun } from '../app/exerciseRun';
-import { exerciseStartLink, parseUrlState } from '../app/urlState';
+import type { ExerciseRun, ExerciseWaypoint } from '../app/exerciseRun';
+import { exerciseStartLink, parseUrlState, waypointLink } from '../app/urlState';
 import type { AppState, Store } from '../app/store';
 import { alertTimeText } from '../model/alerts';
 import {
   EXERCISES,
+  EXERCISE_SETTINGS,
   exerciseDef,
   exerciseText,
   type ExerciseDef,
@@ -34,6 +35,32 @@ function groupTitle(group: ExerciseGroup): string {
   return t(`exercise.group.${group}` as 'exercise.group.sailing');
 }
 
+/** The load of a link (a start link, or a waypoint link for Try again from a waypoint run). */
+function loadLink(store: Store, link: string): void {
+  store.dispatch({
+    type: 'load',
+    state: parseUrlState(link, store.getState().settings.detail),
+  });
+}
+
+/** A fresh run of the same exercise (PHASE10_SPEC 7.3): from the start, or from the run's first waypoint. */
+export function restartLink(state: AppState): string | null {
+  const run = state.exercise;
+  if (!run) return null;
+  const first = run.waypoints[0];
+  if (run.startStep > 0 && first) return waypointLink(state, first);
+  return exerciseStartLink(run.id, state, state.settings.ropesMode);
+}
+
+/** True while the last mistake still shows in the line (the box "Pause" is unticked). */
+export function lastMistakeShown(run: ExerciseRun): boolean {
+  return (
+    run.status === 'running' &&
+    run.mistake !== null &&
+    run.elapsedS - run.mistake.atS < EXERCISE_SETTINGS.mistakeShowS
+  );
+}
+
 /** The load that opens an exercise's setup card (PHASE10_SPEC 4.2). */
 export function loadExercise(store: Store, id: string, ropes: ExerciseDef['ropes']): void {
   const state = store.getState();
@@ -61,7 +88,8 @@ export function createExercisePanel(
     const def = run ? exerciseDef(run.id) : undefined;
     const step = run && def ? def.steps[run.step] : undefined;
     const left = run && step && run.holdS > 0 ? holdLeftS(run, step.holdS) : 0;
-    return `${run?.id}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}`;
+    const shown = run ? lastMistakeShown(run) : false;
+    return `${run?.id}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${shown}`;
   };
 
   function renderList(): void {
@@ -178,6 +206,33 @@ export function createExercisePanel(
     }
     ropes.append(choices, el('p', { class: 'hint' }, [t('exercise.ropes.hint')]));
     card.append(ropes, el('h4', {}, [t('exercise.steps')]), stepsList(def, run), sectionNotes(def));
+    const box = el('input', {
+      type: 'checkbox',
+      'data-testid': 'exercise-pause-on-mistake',
+    }) as HTMLInputElement;
+    box.checked = run.options.pauseOnMistake;
+    box.addEventListener('change', () =>
+      store.dispatch({ type: 'exercise', command: { options: { pauseOnMistake: box.checked } } }),
+    );
+    card.append(
+      el('label', { class: 'exercise-check' }, [
+        box,
+        el('span', {}, [t('exercise.pauseOnMistake')]),
+      ]),
+      el('p', { class: 'hint' }, [t('exercise.pauseHint')]),
+      el('p', { class: 'hint', 'data-testid': 'exercise-mistake-list' }, [
+        t('exercise.pauseList', {
+          list: def.mistakes.map((m) => text.mistakes[m.id]?.name ?? m.id).join(', '),
+        }),
+      ]),
+    );
+    if (run.startStep > 0) {
+      card.append(
+        el('p', { 'data-testid': 'exercise-from-step' }, [
+          t('exercise.fromStep', { n: run.startStep + 1 }),
+        ]),
+      );
+    }
     const start = el(
       'button',
       { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-start' },
@@ -192,10 +247,113 @@ export function createExercisePanel(
     root.append(card);
   }
 
+  /** The name of a waypoint's row (PHASE10_SPEC 7.5). */
+  function waypointName(run: ExerciseRun, wp: ExerciseWaypoint): string {
+    return wp.step === 0 && run.startStep === 0
+      ? t('exercise.waypointStart')
+      : t('exercise.waypointStep', { n: wp.step + 1 });
+  }
+
+  /** The waypoints, newest first, each with Go back and a link to copy. */
+  function waypointsBlock(run: ExerciseRun, state: AppState): HTMLElement {
+    const block = el('div', { class: 'exercise-waypoints', 'data-testid': 'exercise-waypoints' }, [
+      el('h4', {}, [t('exercise.waypoints')]),
+    ]);
+    for (const wp of [...run.waypoints].reverse()) {
+      const name = waypointName(run, wp);
+      const back = el(
+        'button',
+        {
+          type: 'button',
+          class: 'exercise-button',
+          'aria-label': t('exercise.waypointBackTo', { name }),
+          'data-testid': `exercise-waypoint-back-${wp.step}`,
+        },
+        [t('exercise.waypointBack')],
+      );
+      back.addEventListener('click', () =>
+        store.dispatch({ type: 'exercise', command: { back: wp.step } }),
+      );
+      const link = el(
+        'a',
+        {
+          class: 'exercise-button exercise-link',
+          'aria-label': t('exercise.waypointLinkTo', { name }),
+          href: location.origin + location.pathname + waypointLink(state, wp),
+          'data-testid': `exercise-waypoint-link-${wp.step}`,
+        },
+        [t('exercise.waypointLink')],
+      );
+      block.append(el('div', { class: 'exercise-waypoint' }, [el('span', {}, [name]), back, link]));
+    }
+    return block;
+  }
+
+  /** The red/orange card of a mistake that stopped time, or of a serious one that stopped the run. */
+  function renderMistake(def: ExerciseDef, run: ExerciseRun, state: AppState): void {
+    const mistake = run.mistake;
+    if (!mistake) return;
+    const failed = run.status === 'failed';
+    const m = exerciseText(def.id, currentLanguage()).mistakes[mistake.mistakeId];
+    const last = run.waypoints[run.waypoints.length - 1];
+    const back = el(
+      'button',
+      { type: 'button', class: 'exercise-button', 'data-testid': 'exercise-back' },
+      [
+        last && last.step === 0 && run.startStep === 0
+          ? t('exercise.backToStart')
+          : t('exercise.backTo', { n: (last?.step ?? 0) + 1 }),
+      ],
+    );
+    back.addEventListener('click', () =>
+      store.dispatch({ type: 'exercise', command: { back: last?.step ?? 0 } }),
+    );
+    const card = el(
+      'div',
+      {
+        class: `exercise-card exercise-mistake${failed ? ' exercise-failed' : ''}`,
+        'data-testid': failed ? 'exercise-failed' : 'exercise-mistake',
+      },
+      [
+        el('h3', {}, [failed ? t('exercise.stopped') : t('exercise.wentWrong')]),
+        el('p', {}, [m?.what ?? mistake.mistakeId]),
+        el('h4', {}, [t('exercise.why')]),
+        el('p', {}, [m?.why ?? '']),
+        el('h4', {}, [t('exercise.fix')]),
+        el('p', {}, [m?.fix ?? '']),
+      ],
+    );
+    const buttons = el('div', { class: 'exercise-buttons' });
+    if (failed) {
+      const again = el(
+        'button',
+        { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-restart' },
+        [t('exercise.restart')],
+      );
+      again.addEventListener('click', () => {
+        const link = restartLink(store.getState());
+        if (link) loadLink(store, link);
+      });
+      buttons.append(back, again, listButton());
+    } else {
+      const go = el(
+        'button',
+        { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-continue' },
+        [t('exercise.continue')],
+      );
+      go.addEventListener('click', () => store.dispatch({ type: 'exercise', command: 'continue' }));
+      buttons.append(go, back);
+    }
+    card.append(buttons);
+    root.append(card);
+    if (failed) root.append(waypointsBlock(run, state));
+  }
+
   function renderRunning(def: ExerciseDef, run: ExerciseRun, state: AppState): void {
     const text = exerciseText(def.id, currentLanguage());
     const step = def.steps[run.step];
     if (!step) return;
+    if (run.status === 'mistake') renderMistake(def, run, state);
     const card = el('div', { class: 'exercise-card', 'data-testid': 'exercise-step' }, [
       el('p', { class: 'hint' }, [
         t('exercise.stepOf', { n: run.step + 1, total: def.steps.length }),
@@ -246,6 +404,36 @@ export function createExercisePanel(
       howOpen = !howOpen;
       render(store.getState(), true);
     });
+    if (lastMistakeShown(run) && run.mistake) {
+      const m = text.mistakes[run.mistake.mistakeId];
+      const why = el(
+        'button',
+        {
+          type: 'button',
+          class: 'exercise-button',
+          'aria-expanded': String(whyOpen),
+          'data-testid': 'exercise-last-why',
+        },
+        [t('exercise.lastWhy')],
+      );
+      why.addEventListener('click', () => {
+        whyOpen = !whyOpen;
+        render(store.getState(), true);
+      });
+      card.append(
+        el('p', { 'data-testid': 'exercise-last-mistake' }, [
+          t('exercise.lastMistake', { what: m?.what ?? run.mistake.mistakeId }),
+        ]),
+        why,
+      );
+      if (whyOpen) {
+        card.append(
+          el('p', { 'data-testid': 'exercise-last-why-text' }, [
+            `${m?.why ?? ''} ${m?.fix ?? ''}`.trim(),
+          ]),
+        );
+      }
+    }
     card.append(stepsList(def, run));
     const stop = el(
       'button',
@@ -258,8 +446,7 @@ export function createExercisePanel(
       () => store.dispatch({ type: 'exercise', command: 'stop' }),
     );
     card.append(stop);
-    void state;
-    root.append(card);
+    root.append(card, waypointsBlock(run, state));
   }
 
   function renderDone(def: ExerciseDef, run: ExerciseRun, state: AppState): void {
@@ -269,7 +456,10 @@ export function createExercisePanel(
       { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-again' },
       [t('exercise.again')],
     );
-    again.addEventListener('click', () => loadExercise(store, def.id, state.settings.ropesMode));
+    again.addEventListener('click', () => {
+      const link = restartLink(store.getState());
+      if (link) loadLink(store, link);
+    });
     root.append(
       el('div', { class: 'exercise-card', 'data-testid': 'exercise-done' }, [
         el('h3', {}, [t('exercise.finished')]),
@@ -277,12 +467,15 @@ export function createExercisePanel(
         el('p', {}, [text.done]),
         el('div', { class: 'exercise-buttons' }, [again, listButton()]),
       ]),
+      waypointsBlock(run, state),
     );
   }
 
   /** The How? text is open (a view state, not in the store); closed again at every new step. */
   let howOpen = false;
   let howStep = -1;
+  /** The Why? text of the last mistake is open; closed again at every new step. */
+  let whyOpen = false;
 
   function render(state: AppState, force = false): void {
     const next = keyOf(state);
@@ -294,17 +487,24 @@ export function createExercisePanel(
     if (run && def && run.step !== howStep) {
       howStep = run.step;
       howOpen = false;
+      whyOpen = false;
     }
     if (!run || !def) renderList();
     else if (run.status === 'setup') renderSetup(def, run, state);
     else if (run.status === 'done') renderDone(def, run, state);
+    else if (run.status === 'failed') renderMistake(def, run, state);
     else renderRunning(def, run, state);
   }
 
   render(store.getState(), true);
   store.subscribe((state, previous) => {
     // The tick is written once, when the run turns done.
-    if (state.exercise?.status === 'done' && previous.exercise?.status !== 'done') {
+    // A run from a waypoint link did not do every step: it leaves no tick (PHASE10_SPEC 7.3).
+    if (
+      state.exercise?.status === 'done' &&
+      previous.exercise?.status !== 'done' &&
+      state.exercise.startStep === 0
+    ) {
       recordDone(state.exercise.id, state.exercise.elapsedS);
     }
     render(state);

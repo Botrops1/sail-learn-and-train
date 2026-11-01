@@ -2166,7 +2166,26 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   background: transparent;
 }
 
-.time-bar[data-speed='true'] .pause-button.is-paused {
+.time-bar[data-speed='true'] .pause-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.autopilot-turn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  line-height: 1.1;
+}
+
+.autopilot-turn-caption {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pause-button.is-paused {
   border-color: #b85c00;
   background: #ff9f1c;
 }
@@ -4889,6 +4908,16 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
   overflow: hidden;
 }
 
+.exercise-line-mistake {
+  border-color: var(--exercise-warning);
+  border-width: 2px;
+}
+
+.exercise-line-paused {
+  border-color: var(--exercise-danger);
+  border-width: 2px;
+}
+
 .exercise-line[hidden] {
   display: none;
 }
@@ -4942,4 +4971,57 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
 
 .exercise-coach-targets li.ok {
   color: var(--accent);
+}
+
+/* Mistakes and waypoints (M67, PHASE10_SPEC 7.5). */
+:root {
+  --exercise-warning: #b85c00;
+  --exercise-danger: #c8102e;
+}
+
+.exercise-mistake {
+  border-left: 4px solid var(--exercise-warning);
+  padding-left: 10px;
+  margin-bottom: 12px;
+}
+
+.exercise-failed {
+  border-left-color: var(--exercise-danger);
+}
+
+.exercise-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--touch);
+}
+
+.exercise-check input {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.exercise-waypoints {
+  margin-top: 12px;
+}
+
+.exercise-waypoint {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: var(--touch);
+}
+
+.exercise-waypoint > span {
+  flex: 1 1 8em;
+}
+
+.exercise-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  min-width: var(--touch);
 }

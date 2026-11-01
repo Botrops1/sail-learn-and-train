@@ -146,7 +146,10 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
       state.settings.ropesMode,
       state.sea.setting,
     );
-    const key = [speed, open, scale, state.paused, pausable].join('|');
+    // A mistake or failed card (and the setup card, until Start) decides when time goes on (PHASE10_SPEC 7.3).
+    const runStatus = state.exercise?.status;
+    const blocked = runStatus === 'mistake' || runStatus === 'failed' || runStatus === 'setup';
+    const key = [speed, open, scale, state.paused, pausable, blocked].join('|');
     if (key === shown) return;
     shown = key;
     bar.dataset.speed = String(speed);
@@ -167,6 +170,7 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     status.setAttribute('aria-label', t('time.status', { scale: timeScaleText(scale) }));
     slowest.disabled = slower.disabled = scale <= slowestTimeScale();
     faster.disabled = fastest.disabled = scale >= fastestTimeScale();
+    pause.disabled = blocked;
     pause.setAttribute('aria-pressed', String(state.paused));
     pause.classList.toggle('is-paused', state.paused);
     setText(pause, t(state.paused ? 'pause.resume' : 'pause.pause'));

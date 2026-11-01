@@ -1,6 +1,11 @@
 import { keepsRopesMode, type AppMode } from './appMode';
 import { exerciseDef, type ExerciseDef } from '../model/exercises';
-import { DEFAULT_OPTIONS, newRun } from './exerciseRun';
+import {
+  DEFAULT_OPTIONS,
+  newRun,
+  type ExerciseOptions,
+  type ExerciseWaypoint,
+} from './exerciseRun';
 import { compassDeg, knToMps, mpsToKn, wrap180, wrap360 } from '../model/angles';
 import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
@@ -268,6 +273,23 @@ function parseExercise(
   def: ExerciseDef,
   fallbackDetail: Detail,
 ): AppState {
+  const options: ExerciseOptions = {
+    ...DEFAULT_OPTIONS,
+    pauseOnMistake: params.get('exp') !== '0',
+  };
+  // A waypoint link (M67): the link's own keys are the whole state; `def.start` is not used.
+  const exw = params.get('exw');
+  if (exw !== null && /^\d{1,3}$/.test(exw) && Number(exw) < def.steps.length) {
+    const rest = new URLSearchParams(params);
+    for (const key of ['ex', 'exw', 'exp']) rest.delete(key);
+    const wpState = parseUrlState(`?${rest.toString()}`, fallbackDetail);
+    return {
+      ...wpState,
+      appMode: 'exercise',
+      paused: true,
+      exercise: newRun(def.id, Number(exw), options),
+    };
+  }
   const merged = new URLSearchParams(def.start);
   for (const key of VIEWER_KEYS) {
     const value = params.get(key);
@@ -279,7 +301,7 @@ function parseExercise(
     ...state,
     appMode: 'exercise',
     paused: true,
-    exercise: newRun(def.id, 0, { ...DEFAULT_OPTIONS }),
+    exercise: newRun(def.id, 0, options),
   };
 }
 
@@ -310,7 +332,31 @@ export function exerciseStartLink(id: string, state: AppState, ropes: RopesMode)
   }
   if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) params.set('mm', '0');
   if (state.settings.debug) params.set('debug', '1');
+  if (state.exercise?.options.pauseOnMistake === false) params.set('exp', '0');
   return `?${params.toString()}`;
+}
+
+/**
+ * The link of a waypoint (PHASE10_SPEC 7.4): the waypoint's state as a link carries it, with the
+ * viewer's own settings and camera, plus `ex`, `exw`, `mode` and (when off) `exp=0`.
+ */
+export function waypointLink(state: AppState, wp: ExerciseWaypoint): string {
+  const run = state.exercise;
+  const link = serializeUrlState({
+    ...wp.state,
+    settings: state.settings,
+    camera: state.camera,
+    appMode: 'exercise',
+    exercise: null,
+    selection: null,
+    learn: null,
+  });
+  const params = new URLSearchParams(link.slice(1));
+  params.set('ex', run?.id ?? '');
+  params.set('exw', String(wp.step));
+  params.set('mode', state.settings.ropesMode);
+  if (run?.options.pauseOnMistake === false) params.set('exp', '0');
+  return `?${params.toString().replace(/%2C/g, ',').replace(/%3A/g, ':')}`;
 }
 
 /**
@@ -766,8 +812,14 @@ export function jibReachedParam(state: AppState): number | null {
 
 /** Writes the state as a readable query string (with the leading `?`). */
 export function serializeUrlState(state: AppState): string {
-  if (state.exercise !== null) {
-    return exerciseStartLink(state.exercise.id, state, state.settings.ropesMode);
+  const run = state.exercise;
+  if (run !== null) {
+    const last = run.waypoints[run.waypoints.length - 1];
+    if (last) return waypointLink(state, last);
+    if (run.status === 'setup' && run.startStep > 0) {
+      return waypointLink(state, { step: run.startStep, atS: 0, state });
+    }
+    return exerciseStartLink(run.id, state, state.settings.ropesMode);
   }
   const params = new URLSearchParams();
   params.set('v', String(URL_STATE_VERSION));

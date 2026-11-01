@@ -748,13 +748,27 @@ Live:
 
 Mistakes pause (or flash when the box is unticked) with what / why / what to do; Back to a waypoint and waypoint links work; the good run of M66 still passes; typecheck, lint, tests, build and `SHOTS_ONLY=m66,m67` pass, then CI.
 
+### 7.11 Decided in the M67 PR (owner test and independent review; the owner accepted every recommendation)
+
+- The four Steering buttons show a caption under the number ("10° port", "1° port", "1° stbd", "10° stbd"; Russian draft), so a learner can tell them apart.
+- Each mistake text has a `name` (en, ru draft). The setup card lists the exercise's mistakes under the "Pause when I make a mistake" box ("In this exercise: …"); EXERCISES.md has "When an exercise pauses".
+- The accidental-gybe "What to do" says the step cannot pass from there and to tap Back; the by-the-lee text names the +10 button.
+- The time bar's Pause button is dimmed when switched off (like the other time buttons).
+- Not built, later: a solid marina or a "too close to the harbour" mistake (`/plan 10b`); the autopilot line on the minimap (ROADMAP Ideas); a page icon in `index.html`.
+
 ### 7.10 Not in M67
 
 The action log and the debrief (M68); serious mistakes in the exercises' data (none in part 10a: the serious ones, a hard hit or running aground, come with the harbour exercises of part 10b); waypoints in the list (only in a run).
 
 ### 7.11 Decided in the M67 PR
 
-(empty)
+Recommended; merging accepts it.
+
+- **The time bar's Pause is also `disabled` in `setup`** (and `setPaused false` is ignored there): until Start, time stands still, so the "Resume" button cannot start the clock before the run (item 1 of the M66 review, which M66 left to this milestone). Pause itself still works in `running` and `done`.
+- **The panel's tick is written only for a run with `startStep === 0`** (a waypoint link's run did not do every step), as 7.3 says; it is the same `store.subscribe` that already wrote it.
+- **`exerciseStartLink` writes `exp=0`** from the current run's options, so Try again and Start again keep the box as it was; the list (no run) writes none.
+- **A waypoint run's Try again / Start again** loads the link of the run's first waypoint (`restartLink` in `exercisePanel.ts`).
+- **Mistakes with several in one frame:** every one is logged, only the first sets `run.mistake` and the status (7.3).
 
 ---
 

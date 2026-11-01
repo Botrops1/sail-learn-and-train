@@ -51,12 +51,12 @@ export function createAutopilotPanel(store: Store, { heading = true } = {}): HTM
 
   const turnButtons = (
     [
-      [-large, 'autopilot.minus10', `−${large}`],
-      [-small, 'autopilot.minus1', `−${small}`],
-      [small, 'autopilot.plus1', `+${small}`],
-      [large, 'autopilot.plus10', `+${large}`],
+      [-large, 'autopilot.minus10', `−${large}`, 'autopilot.cap.minus10'],
+      [-small, 'autopilot.minus1', `−${small}`, 'autopilot.cap.minus1'],
+      [small, 'autopilot.plus1', `+${small}`, 'autopilot.cap.plus1'],
+      [large, 'autopilot.plus10', `+${large}`, 'autopilot.cap.plus10'],
     ] as const
-  ).map(([turnDeg, label, text]) => {
+  ).map(([turnDeg, label, text, caption]) => {
     const button = el(
       'button',
       {
@@ -65,7 +65,10 @@ export function createAutopilotPanel(store: Store, { heading = true } = {}): HTM
         'aria-label': t(label),
         'data-testid': `autopilot-turn-${turnDeg}`,
       },
-      [text],
+      [
+        el('span', { class: 'autopilot-turn-value' }, [text]),
+        el('span', { class: 'autopilot-turn-caption' }, [t(caption)]),
+      ],
     );
     button.addEventListener('click', () =>
       store.dispatch({ type: 'autopilot', command: { turnDeg } }),

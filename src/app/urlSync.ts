@@ -80,7 +80,8 @@ export function startUrlSync(store: Store): void {
       state.rig.jibSolution.unfurled === previous.rig.jibSolution.unfurled &&
       sameClockLink(state, previous) &&
       sameRealisticLink(state, previous) &&
-      sameBoatLink(state, previous)
+      sameBoatLink(state, previous) &&
+      sameExerciseLink(state, previous)
     ) {
       return;
     }
@@ -90,6 +91,18 @@ export function startUrlSync(store: Store): void {
     if (timer === undefined) timer = window.setTimeout(write, URL_UPDATE_DEBOUNCE_MS);
   });
   write();
+}
+
+/** A run's link follows its options and its waypoints (M67: the address bar holds the last waypoint). */
+function sameExerciseLink(state: AppState, previous: AppState): boolean {
+  const a = state.exercise;
+  const b = previous.exercise;
+  return (
+    a?.id === b?.id &&
+    a?.options === b?.options &&
+    a?.waypoints === b?.waypoints &&
+    a?.startStep === b?.startStep
+  );
 }
 
 /** The boat changes every frame: compare only what the link stores (in a place also her position, M42). */

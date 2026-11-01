@@ -1,6 +1,14 @@
 import { boat as boatData } from '../model/boat';
 import { keepsRopesMode, type AppMode } from './appMode';
-import { startRun, stepExercise, type ExerciseCommand, type ExerciseRun } from './exerciseRun';
+import {
+  continueRun,
+  restoreWaypoint,
+  setRunOptions,
+  startRun,
+  stepExercise,
+  type ExerciseCommand,
+  type ExerciseRun,
+} from './exerciseRun';
 import { isRegisteredPartId } from '../model/registry';
 import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
 import {
@@ -535,6 +543,7 @@ const LOCKED_DURING_EXERCISE: ReadonlySet<Action['type']> = new Set([
 
 function reduceExercise(state: AppState, command: ExerciseCommand): AppState {
   if (command === 'start') return startRun(state);
+  if (command === 'continue') return continueRun(state);
   if (command === 'stop') {
     return state.exercise === null ? state : { ...state, exercise: null, paused: false };
   }
@@ -546,6 +555,8 @@ function reduceExercise(state: AppState, command: ExerciseCommand): AppState {
       settings: { ...state.settings, ropesMode: command.ropes },
     });
   }
+  if ('back' in command) return restoreWaypoint(state, command.back);
+  if ('options' in command) return setRunOptions(state, command.options);
   return state;
 }
 
@@ -821,6 +832,14 @@ function reduceAction(state: AppState, action: Action): AppState {
       return { ...state, thrusters: { ...state.thrusters, [action.which]: action.dir } };
     }
     case 'setPaused':
+      // A mistake or failed card decides when time goes on, and Start does in setup (PHASE10_SPEC 7.3).
+      if (
+        state.exercise?.status === 'mistake' ||
+        state.exercise?.status === 'failed' ||
+        (state.exercise?.status === 'setup' && !action.paused)
+      ) {
+        return state;
+      }
       return state.paused === action.paused ? state : { ...state, paused: action.paused };
     case 'load':
       // A link never changes the language of the page that is open (M23: changing it reloads).

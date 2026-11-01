@@ -85,6 +85,7 @@ import { liveM63Checks, M63_SCENES } from './shots-m63.mjs';
 import { liveM64Checks, M64_SCENES } from './shots-m64.mjs';
 import { liveM65Checks, M65_SCENES } from './shots-m65.mjs';
 import { liveM66Checks, M66_SCENES } from './shots-m66.mjs';
+import { liveM67Checks, M67_SCENES } from './shots-m67.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -272,6 +273,7 @@ const SCENES = [
   ...M64_SCENES.map((scene) => ({ ...scene, name: `m64-${scene.name}` })),
   ...M65_SCENES.map((scene) => ({ ...scene, name: `m65-${scene.name}` })),
   ...M66_SCENES.map((scene) => ({ ...scene, name: `m66-${scene.name}` })),
+  ...M67_SCENES.map((scene) => ({ ...scene, name: `m67-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -427,6 +429,10 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
     if (message.type() === 'error' || message.type() === 'warning') {
       problems.push(`${label}: console ${message.type()}: ${message.text()}`);
     }
+  });
+  page.on('response', (response) => {
+    if (response.status() >= 400)
+      console.log(`${label}: HTTP ${response.status()} ${response.url()}`);
   });
   page.on('pageerror', (error) => problems.push(`${label}: page error: ${error.message}`));
   // Since M6 the app opens Sailing. The older scenes and checks are about the ropes and sails,
@@ -1095,6 +1101,7 @@ try {
     m64: () => liveM64Checks(onTestClock),
     m65: () => liveM65Checks(live),
     m66: () => liveM66Checks(onTestClock),
+    m67: () => liveM67Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {

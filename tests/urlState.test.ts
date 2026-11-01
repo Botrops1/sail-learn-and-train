@@ -699,3 +699,46 @@ describe('exercises in the link (M66, PHASE10_SPEC 4.3)', () => {
     expect(state.appMode).toBe('easy');
   });
 });
+
+describe('waypoint links (M67, PHASE10_SPEC 7.4)', () => {
+  function atStep2(): AppState {
+    let state = reduce(parseUrlState('?m=exercise&ex=points-of-sail'), {
+      type: 'exercise',
+      command: 'start',
+    });
+    state = reduce(state, { type: 'setControls', values: { ctl_mainsheet: 12 } });
+    for (let i = 0; i < 40 / 0.05 && (state.exercise?.step ?? 0) < 1; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+    }
+    return state;
+  }
+
+  it('writes the last waypoint of a running run and opens it in setup at that step', () => {
+    const state = atStep2();
+    expect(state.exercise?.waypoints.length).toBe(2);
+    const link = serializeUrlState(state);
+    expect(link).toContain('exw=1');
+    expect(link).toContain('ms=12');
+    expect(link).toContain('mode=easy');
+    const opened = parseUrlState(link);
+    expect(opened.exercise?.status).toBe('setup');
+    expect(opened.exercise?.step).toBe(1);
+    expect(opened.exercise?.startStep).toBe(1);
+    expect(opened.controls.ctl_mainsheet).toBe(12);
+    expect(opened.paused).toBe(true);
+    expect(serializeUrlState(opened)).toContain('exw=1');
+  });
+
+  it('round-trips exp=0 and ignores a step out of range', () => {
+    const off = parseUrlState('?m=exercise&ex=points-of-sail&exp=0');
+    expect(off.exercise?.options.pauseOnMistake).toBe(false);
+    expect(serializeUrlState(off)).toContain('exp=0');
+    const wp = parseUrlState(serializeUrlState(atStep2()) + '&exp=0');
+    expect(wp.exercise?.options.pauseOnMistake).toBe(false);
+    expect(serializeUrlState(wp)).toContain('exp=0');
+    const out = parseUrlState('?m=exercise&ex=points-of-sail&exw=9');
+    expect(out.exercise?.step).toBe(0);
+    expect(out.controls.ctl_mainsheet).toBe(30);
+    expect(parseUrlState('?exw=1').exercise).toBeNull();
+  });
+});
