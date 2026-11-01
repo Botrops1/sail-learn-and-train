@@ -102,7 +102,26 @@ export function continueRun(state: AppState): AppState {
 export function setRunOptions(state: AppState, options: Partial<ExerciseOptions>): AppState {
   const run = state.exercise;
   if (run === null || run.status !== 'setup') return state;
-  return { ...state, exercise: { ...run, options: { ...run.options, ...options } } };
+  // The crew choice means something only for an exercise that has one (PHASE10_SPEC 11.3).
+  const { crew, ...rest } = options;
+  const kept: Partial<ExerciseOptions> =
+    crew !== undefined && exerciseDef(run.id)?.crew === true ? { ...rest, crew } : rest;
+  return { ...state, exercise: { ...run, options: { ...run.options, ...kept } } };
+}
+
+/**
+ * Alone (PHASE10_SPEC 11.3): while a Realistic exercise that has a crew choice runs Alone, the
+ * learner cannot pause: they set the autopilot before leaving the wheel, as a single-hander does.
+ * Only the running state blocks; the coach's own pauses (a mistake, a done step) still happen.
+ */
+export function exercisePauseBlocked(state: AppState): boolean {
+  const run = state.exercise;
+  return (
+    run?.status === 'running' &&
+    run.options.crew === 'alone' &&
+    state.settings.ropesMode === 'realistic' &&
+    exerciseDef(run.id)?.crew === true
+  );
 }
 
 /**

@@ -160,7 +160,24 @@ export function buildReviewDoc(code) {
   }
   lines.push('');
 
-  // The exercises (PHASE10_SPEC 6.6): every key of exercises.json, in the file's order.
+  const text = lines.join('\n');
+  const bytes = Buffer.byteLength(text, 'utf8');
+  if (bytes > MAX_BYTES) {
+    throw new Error(`the review document is ${bytes} bytes, more than ${MAX_BYTES}`);
+  }
+  return text;
+}
+
+/**
+ * The exercise texts (PHASE10_SPEC 6.6) as a second document: with them in `<code>.md` the file grew
+ * past what GitHub shows as Markdown (M71), so they are `<code>-exercises.md`.
+ */
+export function buildExercisesReviewDoc(code) {
+  const wording = WORDING[code];
+  if (!wording) {
+    throw new Error(`no review wording for ${code}; add one to scripts/review-doc.mjs`);
+  }
+  const lines = [wording.title, '', wording.intro, ''];
   const sourceEx = readJson(`content/lang/${SOURCE_LANGUAGE}/exercises.json`);
   const targetEx = readJson(`content/lang/${code}/exercises.json`);
   lines.push(
@@ -186,7 +203,7 @@ export function buildReviewDoc(code) {
   const text = lines.join('\n');
   const bytes = Buffer.byteLength(text, 'utf8');
   if (bytes > MAX_BYTES) {
-    throw new Error(`the review document is ${bytes} bytes, more than ${MAX_BYTES}`);
+    throw new Error(`the exercises review document is ${bytes} bytes, more than ${MAX_BYTES}`);
   }
   return text;
 }
@@ -200,6 +217,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     await mkdir(folder, { recursive: true });
     await writeFile(new URL(`${code}.md`, folder), text);
     console.log(`docs/review/${code}.md written (${Buffer.byteLength(text, 'utf8')} bytes)`);
+    const exercises = buildExercisesReviewDoc(code);
+    await writeFile(new URL(`${code}-exercises.md`, folder), exercises);
+    console.log(
+      `docs/review/${code}-exercises.md written (${Buffer.byteLength(exercises, 'utf8')} bytes)`,
+    );
   } catch (error) {
     console.error(error.message);
     process.exit(1);

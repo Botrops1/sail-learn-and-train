@@ -113,6 +113,47 @@
         { "id": "round-up", "serious": false, "on": { "alert": "roundUp" } },
         { "id": "sail-worn", "serious": false, "on": { "alert": "sailWorn" } }
       ]
+    },
+    {
+      "id": "set-sails",
+      "group": "sails",
+      "ropes": "realistic",
+      "crew": true,
+      "sections": ["ropes", "helm", "sails", "autopilot", "engine", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=0&bs=0&ms=30&js=100&mf=0&jf=0&eng=1&lv=30&ap=hdg&apt=0&sea=flat&mode=realistic",
+      "steps": [
+        { "id": "head-to-wind", "opens": "engine", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 5] } },
+        { "id": "main-out", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [90, 100] } },
+        { "id": "bear-away", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [50, 75], "mainTrim": ["good"] } },
+        { "id": "jib-out", "opens": "ropes", "holdS": 5, "check": { "jibOutPct": [90, 100], "jibTrim": ["good"] } },
+        { "id": "engine-off", "opens": "engine", "holdS": 5, "check": { "engine": { "running": false }, "speedKn": [4, 99] } }
+      ],
+      "mistakes": [
+        { "id": "main-off-wind", "serious": false, "steps": ["main-out"], "on": { "condition": { "twaDeg": [35, 180], "mainOutPct": [5, 95] }, "forS": 3 } },
+        { "id": "winch-cut-out", "serious": false, "on": { "alert": "winchCutOut" } },
+        { "id": "rope-slipping", "serious": false, "on": { "alert": "ropeSlipping" } },
+        { "id": "clutch-on-running", "serious": false, "on": { "alert": "clutchOnRunning" } }
+      ]
+    },
+    {
+      "id": "furl-sails",
+      "group": "sails",
+      "ropes": "realistic",
+      "crew": true,
+      "sections": ["ropes", "helm", "sails", "autopilot", "engine", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=300&ms=25&js=50&eng=0&ap=wind&apt=60&sea=flat&mode=realistic",
+      "steps": [
+        { "id": "engine-on", "opens": "engine", "holdS": 2, "check": { "engine": { "running": true, "gear": "neutral" } } },
+        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 5] } },
+        { "id": "head-to-wind", "opens": "autopilot", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 99] } },
+        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [0, 5], "twaDeg": [0, 30] } }
+      ],
+      "mistakes": [
+        { "id": "main-off-wind", "serious": false, "steps": ["main-in"], "on": { "condition": { "twaDeg": [35, 180], "mainOutPct": [5, 95] }, "forS": 3 } },
+        { "id": "winch-cut-out", "serious": false, "on": { "alert": "winchCutOut" } },
+        { "id": "rope-slipping", "serious": false, "on": { "alert": "ropeSlipping" } },
+        { "id": "clutch-on-running", "serious": false, "on": { "alert": "clutchOnRunning" } }
+      ]
     }
   ]
 }

@@ -5,6 +5,7 @@ import {
   restoreWaypoint,
   setRunOptions,
   startRun,
+  exercisePauseBlocked,
   logAction,
   stepExercise,
   type ExerciseCommand,
@@ -839,7 +840,9 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (
         state.exercise?.status === 'mistake' ||
         state.exercise?.status === 'failed' ||
-        (state.exercise?.status === 'setup' && !action.paused)
+        (state.exercise?.status === 'setup' && !action.paused) ||
+        // Alone: no Pause while the exercise runs (M71); Resume is always allowed.
+        (action.paused && exercisePauseBlocked(state))
       ) {
         return state;
       }

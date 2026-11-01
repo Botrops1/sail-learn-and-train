@@ -741,6 +741,24 @@ describe('waypoint links (M67, PHASE10_SPEC 7.4)', () => {
     expect(serializeUrlState(wp)).toContain('exs=1');
   });
 
+  it('round-trips exc=1 (With crew) in the start link and a waypoint link (M71)', () => {
+    const crew = parseUrlState('?m=exercise&ex=set-sails&exc=1');
+    expect(crew.exercise?.options.crew).toBe('crew');
+    expect(serializeUrlState(crew)).toContain('exc=1');
+    expect(parseUrlState('?m=exercise&ex=set-sails').exercise?.options.crew).toBe('alone');
+    expect(serializeUrlState(parseUrlState('?m=exercise&ex=set-sails'))).not.toContain('exc');
+    const started = reduce(crew, { type: 'exercise', command: 'start' });
+    const wp = parseUrlState(`${serializeUrlState(started)}&exw=1&exc=1`);
+    expect(wp.exercise?.options.crew).toBe('crew');
+    expect(serializeUrlState(wp)).toContain('exc=1');
+  });
+
+  it('opens set-sails with Easy ropes from ?mode=easy (M71)', () => {
+    const state = parseUrlState('?m=exercise&ex=set-sails&mode=easy');
+    expect(state.exercise?.id).toBe('set-sails');
+    expect(state.settings.ropesMode).toBe('easy');
+  });
+
   it('round-trips exp=0 and ignores a step out of range', () => {
     const off = parseUrlState('?m=exercise&ex=points-of-sail&exp=0');
     expect(off.exercise?.options.pauseOnMistake).toBe(false);

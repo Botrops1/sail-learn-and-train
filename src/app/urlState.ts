@@ -277,12 +277,13 @@ function parseExercise(
     ...DEFAULT_OPTIONS,
     pauseOnMistake: params.get('exp') !== '0',
     pauseOnStep: params.get('exs') === '1',
+    crew: params.get('exc') === '1' && def.crew ? 'crew' : 'alone',
   };
   // A waypoint link (M67): the link's own keys are the whole state; `def.start` is not used.
   const exw = params.get('exw');
   if (exw !== null && /^\d{1,3}$/.test(exw) && Number(exw) < def.steps.length) {
     const rest = new URLSearchParams(params);
-    for (const key of ['ex', 'exw', 'exp', 'exs']) rest.delete(key);
+    for (const key of ['ex', 'exw', 'exp', 'exs', 'exc']) rest.delete(key);
     const wpState = parseUrlState(`?${rest.toString()}`, fallbackDetail);
     return {
       ...wpState,
@@ -335,6 +336,7 @@ export function exerciseStartLink(id: string, state: AppState, ropes: RopesMode)
   if (state.settings.debug) params.set('debug', '1');
   if (state.exercise?.options.pauseOnMistake === false) params.set('exp', '0');
   if (state.exercise?.options.pauseOnStep) params.set('exs', '1');
+  if (state.exercise?.options.crew === 'crew') params.set('exc', '1');
   return `?${params.toString()}`;
 }
 
@@ -359,6 +361,7 @@ export function waypointLink(state: AppState, wp: ExerciseWaypoint): string {
   params.set('mode', state.settings.ropesMode);
   if (run?.options.pauseOnMistake === false) params.set('exp', '0');
   if (run?.options.pauseOnStep) params.set('exs', '1');
+  if (run?.options.crew === 'crew') params.set('exc', '1');
   return `?${params.toString().replace(/%2C/g, ',').replace(/%3A/g, ':')}`;
 }
 

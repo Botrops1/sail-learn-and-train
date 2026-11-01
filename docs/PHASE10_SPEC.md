@@ -1406,9 +1406,16 @@ Live:
 
 Both exercises work from their links on a phone and a computer, Alone and With crew; typecheck, lint, tests, build and `SHOTS_ONLY=m66,m67,m68,m69,m70,m71` pass, then CI; every item of section 12 is ticked in the PR; ROADMAP's Phase 10 row says "10a done, 10b and 10c planned".
 
-### 11.10 Decided in the M71 PR
+### 11.10 Decided in the M71 PR (recommended; merging accepts it)
 
-(empty)
+- **Panel sections.** The spec's data predates the `sections` field (PR 144). Both exercises keep `ropes`, `helm`, `sails`, `autopilot`, `engine`, `conditions` and `learn`: the Realistic stations and the Helm section are where the gestures happen, and Sails shows the trim the checks read.
+- **Mistake names.** Each mistake text has the short `name` the setup card's list uses (M67), e.g. "a winch cutting out".
+- **Rope warnings in the good run.** Test 1 waits 2 s after letting go of the main furling line before closing the clutch, which removes the `clutch-on-running` warning. Two `winch-cut-out` warnings remain while the Genoa sheet is winched (the model's load limit with the clutch closed); the script runs with `pauseOnMistake: false`, so they do not stop it. The steps took 7.8, 20.4, 30.8, 45.8 and 5.0 s (bands 15, 40, 60, 80, 10). Furl-sails has none; its steps took 2.0, 31.2, 13.8 and 21.4 s.
+- **The old Russian Latin-letters test** (`tests/exercises.test.ts`) now lets through the words printed on the boat (`latinAllowed()`, the list `languages.test.ts` already uses): the Russian texts name the JIB ROLL clutch as it is printed on the boat. Only this line changed.
+- **The test's `engine` field** was added to the known check fields of `tests/exercises.test.ts`, and a `checkPasses` test for `engine` (running, gear) was added.
+- **Pause while the coach has paused.** Alone blocks only the learner's Pause while time runs. Paused by the coach after a finished step ("Pause after each step"), the button is Resume and works.
+- **Review document split.** With the two new exercises `docs/review/ru.md` passed the 450 KiB that GitHub shows as Markdown (480 KB). The exercise texts moved to `docs/review/ru-exercises.md` (`buildExercisesReviewDoc` in `scripts/review-doc.mjs`, written by the same `npm run review-doc -- ru`); `tests/glossary.test.ts` checks both files are up to date and under the limit, and expects one heading fewer in `ru.md`.
+- **Crew choice ignored** for an exercise without one (`crew: false`) and `exc=1` on such a link.
 
 ---
 
