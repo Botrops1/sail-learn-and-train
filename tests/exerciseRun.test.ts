@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { stepExercise } from '../src/app/exerciseRun';
+import { countGusts, stepExercise } from '../src/app/exerciseRun';
 import { tailSpec } from '../src/model/realistic';
 import { debriefRows } from '../src/model/debrief';
 import { exerciseDef, twaSignedDeg, type ExerciseDef } from '../src/model/exercises';
@@ -777,13 +777,27 @@ describe('gusts and too much wind (PHASE10_SPEC 10.6)', () => {
   });
 
   it('does not count a gust that is already blowing when the step begins', () => {
-    const started = open('gusts');
-    const blowing: AppState = { ...started, wind: { ...started.wind, twsKn: 19 } };
-    const restarted = reduce(parseUrlState(exerciseStartLink('gusts', initialState(), 'easy')), {
-      type: 'load',
-      state: blowing,
-    });
-    expect(restarted.exercise?.gusts ?? 0).toBe(0);
+    const setup = parseUrlState(exerciseStartLink('gusts', initialState(), 'easy'));
+    const mean = setup.controls.ctl_wind_speed;
+    // 19 kn is above 1.2 x the 15 kn mean: a gust is blowing at the moment of the start.
+    const blowing: AppState = { ...setup, wind: { ...setup.wind, twsKn: 19 } };
+    const started = reduce(blowing, { type: 'exercise', command: 'start' });
+    expect(started.exercise?.status).toBe('running');
+    expect(started.exercise?.gustArmed).toBe(false);
+    expect(started.exercise?.gusts).toBe(0);
+    // Another frame at 19 kn does not count it; it is counted only after the wind has dropped
+    // below 1.1 x the mean and risen again.
+    const same = countGusts(0, false, 19, mean);
+    expect(same).toEqual({ gusts: 0, gustArmed: false });
+    const calm = countGusts(same.gusts, same.gustArmed, mean, mean);
+    expect(calm).toEqual({ gusts: 0, gustArmed: true });
+    expect(countGusts(calm.gusts, calm.gustArmed, 19, mean).gusts).toBe(1);
+    // A start in calm wind arms the counter.
+    const quiet = reduce(
+      { ...setup, wind: { ...setup.wind, twsKn: mean } },
+      { type: 'exercise', command: 'start' },
+    );
+    expect(quiet.exercise?.gustArmed).toBe(true);
   });
 
   it('reduce-sail good run: ease the jib sheet, roll the jib and the main in, sheet the main in', () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createStore, initialState } from '../src/app/store';
+import { createStore, initialState, type AppState } from '../src/app/store';
 import { DEFAULT_SETTINGS } from '../src/model/settings';
 import { sceneSettings } from '../src/app/urlSync';
 import { t } from '../src/ui/i18n';
@@ -88,5 +88,40 @@ describe('M28 mini-map', () => {
     drawMiniMap(ctx, initialState(), 92, (text) => text.length * 7);
     expect(texts).toEqual([t('wind.dial.north')]);
     expect(dashes.filter((dash) => dash.length > 0)).toEqual([]);
+  });
+  it('draws the gust bands only in gusty wind (owner, PR 151)', () => {
+    const fills = (state: AppState): string[] => {
+      const colours: string[] = [];
+      let current = '';
+      const ctx = new Proxy(
+        {},
+        {
+          get: (_target, name: string) => {
+            if (name === 'fill') return () => colours.push(current);
+            return () => undefined;
+          },
+          set: (_target, name: string, value: unknown) => {
+            if (name === 'fillStyle') current = String(value);
+            return true;
+          },
+        },
+      ) as unknown as CanvasRenderingContext2D;
+      drawMiniMap(ctx, state, 92, (text) => text.length * 7);
+      return colours;
+    };
+    const steady = initialState();
+    const gusty: AppState = {
+      ...steady,
+      windMode: { ...steady.windMode, mode: 'gusty', size: 40 },
+    };
+    const bandColour = 'rgb(8 38 96';
+    expect(fills(steady).filter((c) => c.startsWith(bandColour))).toEqual([]);
+    // Over a minute of the pattern at least one band is dark enough to be a gust.
+    let seen = 0;
+    for (let timeS = 0; timeS < 120; timeS += 5) {
+      const at: AppState = { ...gusty, rig: { ...gusty.rig, timeS } };
+      seen += fills(at).filter((c) => c.startsWith(bandColour)).length;
+    }
+    expect(seen).toBeGreaterThan(0);
   });
 });

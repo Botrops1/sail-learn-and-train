@@ -82,7 +82,7 @@
     "done": "Easing the main in a gust keeps her upright and steering. The dark patch on the water warns you a few seconds before it arrives.",
     "steps": {
       "three-gusts": { "goal": "Get through three gusts: ease the main in each one, sheet in after.", "how": "Watch the strip: GUST shows while a gust blows (from about 16.5 knots). In Ropes, set Main sheet to about 45 % when it shows, and back to about 25 % when it has gone. Three strong gusts take about two and a half minutes." },
-      "trim-back": { "goal": "Trim both sails to Good.", "how": "Main sheet about 25 %, Jib sheet about 50 %. Both sails should read Good; ease the main again if a gust comes." }
+      "trim-back": { "goal": "Trim both sails to Good.", "how": "When GUST has gone from the strip, set Main sheet to about 25 % and Jib sheet to about 50 %. Both sails should read Good; ease the main again if a gust comes." }
     },
     "mistakes": {
       "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "The main sheet was too tight for the wind: the sails pushed harder than the keel could hold her upright.", "fix": "Ease the main sheet as soon as the gust hits; sheet in again when it has passed." },

@@ -36,6 +36,43 @@ export async function liveM70Checks({ openPage, viewports, outDir, prefix, probl
   const rows = (page, kind) => page.locator(`[data-testid="debrief-row"][data-kind="${kind}"]`);
   // "Show the controls" folds the Exercises section in the side layout too, so always reopen it.
   const open = (page) => showSection(page, 'exercises');
+  // A gust coming (owner, PR 151): when a gust of seed 1 is 100-200 m upwind (found by waiting on the
+  // test clock), it shows on the 3D water (top view), as a band on the mini-map and
+  // on the full map. Pictures for the owner to look at, and the profile as a number.
+  {
+    const query = '?wd=0&ws=12&ms=12&js=0&wm=gusty&wg=60&seed=1&debug=1';
+    const { context, page } = await openPage(phone, 'm70 gust coming', `${query}&cam=top`, {
+      testClock: true,
+    });
+    // Wait (app time) until a gust is 100-200 m upwind (values 5-10 of the profile).
+    let near = 0;
+    for (let i = 0; i < 160 && near <= 0.5; i += 1) {
+      await page.waitForTimeout(500);
+      const profile = await page.evaluate(() => window.__sailWater?.gustProfile() ?? null);
+      near = profile ? Math.max(...profile.values.slice(5, 11)) : 0;
+    }
+    check(
+      'gust ahead in the profile',
+      near > 0.5,
+      `strongest value 100-200 m upwind ${near.toFixed(2)}`,
+    );
+    await shot(page, 'live-phone-m70-gust-coming-top');
+    await page.locator('.mini-map').screenshot({
+      path: path.join(outDir, `${prefix}live-phone-m70-gust-coming-minimap.png`),
+    });
+    await context.close();
+    const map = await openPage(phone, 'm70 gust coming map', `${query}&cam=map`, {
+      testClock: true,
+    });
+    for (let i = 0; i < 160; i += 1) {
+      await map.page.waitForTimeout(500);
+      const p = await map.page.evaluate(() => window.__sailWater?.gustProfile() ?? null);
+      if (p && Math.max(...p.values.slice(5, 11)) > 0.5) break;
+    }
+    await shot(map.page, 'live-phone-m70-gust-coming-map');
+    await map.context.close();
+  }
+
   const start = async (page) => {
     await open(page);
     await page.getByTestId('exercise-start').click();
