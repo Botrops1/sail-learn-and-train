@@ -770,7 +770,7 @@ New link settings (PHASE9_SPEC 4.2): `hw=s` puts the Helm camera at the starboar
 
 ## 15. Phase 10, part a
 
-Exercises: the coach and the first sailing exercises ([PHASE10_SPEC](PHASE10_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M66 … M71), started with `/milestone <N>`. **M66, M67, M68, M69 and M71 need a `/review` with Opus** before you test them; M70 does not. Parts 10b (harbour and anchor) and 10c (wind and clock) are planned later with `/plan 10b` and `/plan 10c`.
+Exercises: the coach and the first sailing exercises ([PHASE10_SPEC](PHASE10_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M66 … M71, then the extra milestone M72 for issue #149), started with `/milestone <N>`. **M66, M67, M68, M69 and M71 need a `/review` with Opus** before you test them; M70 does not. Parts 10b (harbour and anchor) and 10c (wind and clock) are planned later with `/plan 10b` and `/plan 10c`.
 
 ### 15.1 Checklists
 
@@ -822,3 +822,14 @@ New link settings (PHASE10_SPEC 4.3): `m=exercise` opens Exercises mode; `ex=<ex
 - [ ] Easy choice: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails&mode=easy — Easy is chosen and the Crew row is hidden.
 - [ ] All eight exercises appear in the list in three groups and each can be finished once on the phone.
 - [ ] Every item of the part 10a Definition of Done (PHASE10_SPEC 12) is ticked in the PR.
+
+#### M72: What pushes the boom across in a gybe (extra milestone, issue #149)
+
+Build after M71 is merged. **Needs a `/review` with Opus** before you test it (it changes the gybe's physics).
+
+- [ ] Accidental gybe in the exercise: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ms=85&js=50&vg=50&tl=100&mf=100&jf=100&rd=0&wd=0&ws=12&cam=side-port&m=exercise&step=5&detail=high&hdg=171&bs=4.8&ap=wind&apt=-171&sea=flat&clk=202606011202&ex=gybing&exw=3&mode=easy — the exercise opens at its last step. Follow How? (Steering, Heading, “10° to starboard” three times). Watch the boom in the map (Map ▾) and in 3D: it starts across slowly, then speeds up once it is past the stern; the gybe report still shows the boom's speed, the energy and the load.
+- [ ] The explanation: on the same link, How? says the wind first holds the boom out, a roll, a wave or a small turn starts it, and the wind throws it once past the line of the wind.
+- [ ] The same with the boat held still and the main let right out: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=170&ws=15&ms=100&js=100&held=1&sea=flat&cam=top — in Conditions turn the wind to 195°. The boom crosses in about two seconds, slow at first, fast at the end, with a red danger sector and the “Accidental gybe!” report.
+- [ ] A controlled gybe is still gentle: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gybing — do steps 1 to 3. With the main hauled in, the boom crosses a short way and the card ticks the gybe step.
+- [ ] Learn: on any link, open Learn and tap Gybe — the text ends with why the boom crosses by itself.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ms=85&js=50&vg=50&tl=100&mf=100&jf=100&rd=0&wd=0&ws=12&cam=side-port&m=exercise&step=5&detail=high&hdg=171&bs=4.8&ap=wind&apt=-171&sea=flat&clk=202606011202&ex=gybing&exw=3&mode=easy&lang=ru — How? mentions «линию ветра».
