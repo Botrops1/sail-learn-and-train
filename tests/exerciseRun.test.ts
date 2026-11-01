@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { countGusts, stepExercise } from '../src/app/exerciseRun';
-import { tailSpec } from '../src/model/realistic';
+import {
+  countGusts,
+  exercisePauseBlocked,
+  stepExercise,
+  type ExerciseOptions,
+} from '../src/app/exerciseRun';
+import { tailSpec, type RealisticAction } from '../src/model/realistic';
 import { debriefRows } from '../src/model/debrief';
 import { exerciseDef, twaSignedDeg, type ExerciseDef } from '../src/model/exercises';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
@@ -837,5 +842,197 @@ describe('gusts and too much wind (PHASE10_SPEC 10.6)', () => {
     );
     expect(100 * result.state.rig.jibSolution.unfurled).toBeGreaterThanOrEqual(80);
     expect(result.state.exercise?.step).toBe(0);
+  });
+});
+
+describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
+  const W = 'winch_primary_starboard';
+  const P = 'winch_primary_port';
+  const real = (state: AppState, action: RealisticAction): AppState =>
+    reduce(state, { type: 'realistic', action });
+  /** The key's tail on the winch of the station you are at: three turns, into the self-tailer. */
+  const onWinch = (state: AppState, key: string, winch: string): AppState => {
+    let next = real(state, { type: 'onWinch', key });
+    for (let i = 0; i < 3; i += 1) next = real(next, { type: 'turn', winch, delta: 1 });
+    return real(next, { type: 'selfTailer', winch, into: true });
+  };
+  const button = (state: AppState, winch: string, held: boolean): AppState =>
+    real(state, { type: 'button', winch, held });
+  /** Opens one of the two exercises with the options of a good run (a rope warning does not stop the script). */
+  function opens(id: string, options: Partial<ExerciseOptions> = {}): AppState {
+    const setup = parseUrlState(exerciseStartLink(id, initialState(), 'realistic'));
+    return reduce(setup, {
+      type: 'exercise',
+      command: { options: { pauseOnMistake: false, ...options } },
+    });
+  }
+  /** Steps until the run is on `step`, calling `each` after every frame; returns the app seconds it took. */
+  function playTo(state: AppState, step: number, limitS: number, each?: (s: AppState) => AppState) {
+    const from = state.exercise?.elapsedS ?? 0;
+    let next = state;
+    while ((next.exercise?.elapsedS ?? 0) - from < limitS && (next.exercise?.step ?? 0) < step) {
+      next = reduce(next, { type: 'step', dt: 0.05 });
+      if (each) next = each(next);
+    }
+    return { state: next, took: (next.exercise?.elapsedS ?? 0) - from };
+  }
+  const mistakes = (state: AppState): string[] =>
+    (state.exercise?.log ?? []).flatMap((e) => (e.kind === 'mistake' ? [e.mistakeId] : []));
+
+  it('PT-12 set-sails good run (Realistic, alone, pausing on mistakes as a learner has it): head to wind, main out, bear away, jib out, engine off', () => {
+    let s = reduce(opens('set-sails', { pauseOnMistake: true }), {
+      type: 'exercise',
+      command: 'start',
+    });
+    const t: number[] = [];
+    let r = playTo(s, 1, 15);
+    t.push(r.took);
+    // (2) the main: starboard station, left Main furling open, right one on the winch, hold the button.
+    s = real(r.state, { type: 'station', station: 'starboard' });
+    s = real(s, { type: 'clutch', key: 'a2', open: true });
+    s = button(onWinch(s, 'a3', W), W, true);
+    let held = true;
+    r = playTo(s, 2, 40, (n) => {
+      if (held && n.controls.ctl_main_furl >= 99) {
+        held = false;
+        return button(n, W, false);
+      }
+      return n;
+    });
+    t.push(r.took);
+    // (3) let the line stop, close the clutch, take the line off, Wind autopilot, six taps to port.
+    s = run(r.state, 2);
+    s = real(s, { type: 'clutch', key: 'a2', open: false });
+    s = real(s, { type: 'offWinch', winch: W });
+    s = reduce(s, { type: 'autopilot', command: 'wind' });
+    s = turn(s, 6);
+    r = playTo(s, 3, 60);
+    t.push(r.took);
+    // (4) the jib: JIB ROLL open at the port station, Genoa sheet on the starboard winch, hold.
+    s = real(r.state, { type: 'station', station: 'port' });
+    s = real(s, { type: 'clutch', key: 'r1', open: true });
+    s = real(s, { type: 'station', station: 'starboard' });
+    s = button(onWinch(s, 'a5', W), W, true);
+    held = true;
+    r = playTo(s, 4, 80, (n) => {
+      if (held && n.controls.ctl_jib_sheet < 50) {
+        held = false;
+        return button(n, W, false);
+      }
+      return n;
+    });
+    t.push(r.took);
+    // (5) the engine off.
+    s = reduce(r.state, { type: 'engine', command: { leverPct: 0 } });
+    s = reduce(s, { type: 'engine', command: 'stop' });
+    r = playTo(s, 5, 10);
+    t.push(r.took);
+    // Within 15, 40, 60, 80 and 10 s (prototype 7.8, 20.4, 30.8, 45.8, 5.0 s). The winch
+    // cuts out twice while the Genoa sheet is winched (the model); that is not reported as a mistake.
+    const limits = [15, 40, 60, 80, 10];
+    t.forEach((took, i) => expect(took).toBeLessThan(limits[i] ?? 0));
+    expect(r.state.exercise?.status).toBe('done');
+    // A learner who follows How? gets no mistake card (the winch cut-outs of the jib step are not
+    // reported: the winch model cuts out there, PR 152 review).
+    expect(mistakes(r.state)).toEqual([]);
+  });
+
+  it('furl-sails good run: engine on, jib in, head to wind, main in', () => {
+    let s = reduce(opens('furl-sails', { pauseOnMistake: true }), {
+      type: 'exercise',
+      command: 'start',
+    });
+    const t: number[] = [];
+    // (1) the engine.
+    s = reduce(s, { type: 'engine', command: 'start' });
+    let r = playTo(s, 1, 5);
+    t.push(r.took);
+    // (2) the jib: Genoa sheet clutch open at the starboard station, JIB ROLL on the port winch, hold.
+    s = real(r.state, { type: 'station', station: 'starboard' });
+    s = real(s, { type: 'clutch', key: 'a5', open: true });
+    s = real(s, { type: 'station', station: 'port' });
+    s = button(onWinch(s, 'r1', P), P, true);
+    let held = true;
+    r = playTo(s, 2, 60, (n) => {
+      if (held && n.rig.jibSolution.unfurled <= 0.01) {
+        held = false;
+        return button(n, P, false);
+      }
+      return n;
+    });
+    t.push(r.took);
+    // (3) slow ahead, Heading autopilot, six taps to starboard.
+    s = reduce(r.state, { type: 'engine', command: { leverPct: 30 } });
+    s = reduce(s, { type: 'autopilot', command: 'heading' });
+    for (let i = 0; i < 6; i += 1) {
+      s = reduce(s, { type: 'autopilot', command: { turnDeg: 10 } });
+    }
+    r = playTo(s, 3, 30);
+    t.push(r.took);
+    // (4) JIB ROLL off, the outhaul open, the main's "out" clutch open, the "in" line on the winch.
+    s = real(r.state, { type: 'offWinch', winch: P });
+    s = real(s, { type: 'clutch', key: 'b3', open: true });
+    s = real(s, { type: 'station', station: 'starboard' });
+    s = real(s, { type: 'clutch', key: 'a3', open: true });
+    s = button(onWinch(s, 'a2', W), W, true);
+    held = true;
+    r = playTo(s, 4, 45, (n) => {
+      if (held && n.controls.ctl_main_furl <= 1) {
+        held = false;
+        return button(n, W, false);
+      }
+      return n;
+    });
+    t.push(r.took);
+    const limits = [5, 60, 30, 45];
+    t.forEach((took, i) => expect(took).toBeLessThan(limits[i] ?? 0));
+    expect(r.state.exercise?.status).toBe('done');
+    expect(mistakes(r.state)).toEqual([]);
+  });
+
+  it('Alone blocks Pause; With crew and Easy ropes do not', () => {
+    const alone = reduce(opens('set-sails', { pauseOnMistake: true }), {
+      type: 'exercise',
+      command: 'start',
+    });
+    expect(exercisePauseBlocked(alone)).toBe(true);
+    expect(reduce(alone, { type: 'setPaused', paused: true })).toBe(alone);
+    // A mistake: the coach pauses, the block lifts, Continue brings it back.
+    const written = alone.alerts.written + 1;
+    const flagged = stepExercise(alone, {
+      ...alone,
+      rig: { ...alone.rig, timeS: alone.rig.timeS + 2 },
+      alerts: {
+        entries: [{ n: written, kind: 'winchCutOut', atS: 2, severity: 'warning' }],
+        written,
+      },
+    });
+    expect(flagged.exercise?.status).toBe('mistake');
+    expect(exercisePauseBlocked(flagged)).toBe(false);
+    const resumed = reduce(flagged, { type: 'exercise', command: 'continue' });
+    expect(exercisePauseBlocked(resumed)).toBe(true);
+
+    const crew = reduce(opens('set-sails', { crew: 'crew' }), {
+      type: 'exercise',
+      command: 'start',
+    });
+    expect(exercisePauseBlocked(crew)).toBe(false);
+    expect(reduce(crew, { type: 'setPaused', paused: true }).paused).toBe(true);
+
+    const easy = reduce(parseUrlState(exerciseStartLink('set-sails', initialState(), 'easy')), {
+      type: 'exercise',
+      command: 'start',
+    });
+    expect(exercisePauseBlocked(easy)).toBe(false);
+    expect(reduce(easy, { type: 'setPaused', paused: true }).paused).toBe(true);
+  });
+
+  it('the crew choice means nothing for an exercise without one', () => {
+    const setup = parseUrlState(exerciseStartLink('points-of-sail', initialState(), 'realistic'));
+    const next = reduce(setup, { type: 'exercise', command: { options: { crew: 'crew' } } });
+    expect(next.exercise?.options.crew).toBe('alone');
+    expect(parseUrlState('?m=exercise&ex=points-of-sail&exc=1').exercise?.options.crew).toBe(
+      'alone',
+    );
   });
 });

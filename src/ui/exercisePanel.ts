@@ -1,5 +1,5 @@
 import { recordDone, readProgress } from '../app/exerciseProgress';
-import type { ExerciseRun, ExerciseWaypoint } from '../app/exerciseRun';
+import { exercisePauseBlocked, type ExerciseRun, type ExerciseWaypoint } from '../app/exerciseRun';
 import { exerciseStartLink, parseUrlState, waypointLink } from '../app/urlState';
 import type { AppState, Store } from '../app/store';
 import { alertTimeText } from '../model/alerts';
@@ -94,7 +94,7 @@ export function createExercisePanel(
     const left = run && step && run.holdS > 0 ? holdLeftS(run, step.holdS) : 0;
     const shown = run ? lastMistakeShown(run) : false;
     const debrief = run && (run.status === 'done' || run.status === 'failed' || soFarOpen);
-    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${shown}`;
+    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${run?.options.crew}|${shown}`;
   };
 
   function renderList(): void {
@@ -210,7 +210,33 @@ export function createExercisePanel(
       choices.append(button);
     }
     ropes.append(choices, el('p', { class: 'hint' }, [t('exercise.ropes.hint')]));
-    card.append(ropes, el('h4', {}, [t('exercise.steps')]), stepsList(def, run), sectionNotes(def));
+    card.append(ropes);
+    // Alone or With crew (M71): only where the exercise has the choice and the ropes are Realistic.
+    if (def.crew && state.settings.ropesMode === 'realistic') {
+      const crew = el('div', { class: 'exercise-ropes', 'data-testid': 'exercise-crew' }, [
+        el('h4', {}, [t('exercise.crew')]),
+      ]);
+      const crewChoices = el('div', { class: 'exercise-ropes-choices' });
+      for (const choice of ['alone', 'crew'] as const) {
+        const button = el(
+          'button',
+          {
+            type: 'button',
+            class: 'exercise-button',
+            'aria-pressed': String(run.options.crew === choice),
+            'data-testid': `exercise-crew-${choice}`,
+          },
+          [t(`exercise.crew.${choice}`)],
+        );
+        button.addEventListener('click', () =>
+          store.dispatch({ type: 'exercise', command: { options: { crew: choice } } }),
+        );
+        crewChoices.append(button);
+      }
+      crew.append(crewChoices, el('p', { class: 'hint' }, [t('exercise.crew.hint')]));
+      card.append(crew);
+    }
+    card.append(el('h4', {}, [t('exercise.steps')]), stepsList(def, run), sectionNotes(def));
     const box = el('input', {
       type: 'checkbox',
       'data-testid': 'exercise-pause-on-mistake',
@@ -399,6 +425,12 @@ export function createExercisePanel(
       ]),
       el('h3', {}, [text.steps[step.id]?.goal ?? step.id]),
     ]);
+    // Alone (M71): why Pause is off.
+    if (exercisePauseBlocked(state)) {
+      card.append(
+        el('p', { class: 'hint', 'data-testid': 'exercise-alone-note' }, [t('exercise.aloneNote')]),
+      );
+    }
     if (run.holdS > 0 && step.holdS > 0) {
       card.append(
         el('p', { 'data-testid': 'exercise-hold' }, [

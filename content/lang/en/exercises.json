@@ -107,5 +107,48 @@
       "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away, then roll in more sail." },
       "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Sheet the flapping sail in until it stops, or roll it in." }
     }
+  },
+  "set-sails": {
+    "title": "Setting the sails",
+    "summary": "Motor head to wind, roll the main out, bear away, roll the jib out and stop the engine.",
+    "see": "You are motoring slowly with both sails rolled up and the bow pointing into the wind. The ropes are Realistic: clutches and winches, as on the boat.",
+    "happening": "The main rolls out of the mast. With the bow into the wind it comes out without filling, so it is easy to winch. Once it is out, turning away from the wind fills it. The jib unrolls round the forestay as its sheet is pulled.",
+    "action": "Keep her head to wind with the engine slow ahead; roll the main out; bear away to a close reach; roll the jib out with its sheet; stop the engine.",
+    "mistake": "Rolling the main out with the wind on the side: the half-unrolled sail fills and loads the furling gear. Or holding a winch button after the sail is out: the winch cuts out.",
+    "done": "The sails are set and the engine is off. The main comes out head to wind; then bear away and set the jib.",
+    "steps": {
+      "head-to-wind": { "goal": "Motor slowly with the bow into the wind (within 20°).", "how": "The engine runs slow ahead and the autopilot holds the heading. Nothing to do yet: watch the wind angle on the strip." },
+      "main-out": { "goal": "Roll the main out (90 % or more) while the bow points into the wind.", "how": "Go to the starboard station. Open the left “Main furling” clutch (the line that rolls the sail in) so it can run out. Put the right “Main furling” line on the winch: three turns, into the self-tailer, then hold the winch button. Let go when the main is out." },
+      "bear-away": { "goal": "Turn to a close reach (50–75° from the wind) with the main reading Good.", "how": "Close the left “Main furling” clutch and take the line off the winch. In the Helm section, set the autopilot to Wind and tap “10° to port” six times. The main sheet at 30 % is about right." },
+      "jib-out": { "goal": "Roll the jib out and sheet it to Good.", "how": "At the port station, open the JIB ROLL clutch. At the starboard station, put the Genoa sheet on the winch (three turns, self-tailer) and hold the button: the jib unrolls as the sheet comes in. Let go when the jib reads Good. Close JIB ROLL when the jib has stopped moving." },
+      "engine-off": { "goal": "Stop the engine and sail at 4 knots or more.", "how": "In the Helm section, put the engine lever in neutral, then tap Stop." }
+    },
+    "mistakes": {
+      "main-off-wind": { "name": "rolling the main out off the wind", "what": "The main was rolled out with the wind on the side.", "why": "With the bow 35° or more off the wind, the half-unrolled sail fills and loads the furling gear and the mast.", "fix": "Stop winching, turn back into the wind (within 20°), then roll it out the rest of the way." },
+      "winch-cut-out": { "name": "a winch cutting out", "what": "The winch cut out.", "why": "The button was held after the rope had stopped (the sail was fully out or in, or a clutch held the other line), or the load was too high.", "fix": "Let go of the button when the sail is out. Check that the line on the other side is free to run." },
+      "rope-slipping": { "name": "a rope slipping", "what": "A rope slipped on the winch drum.", "why": "Too few turns on the winch for the load.", "fix": "Add a turn on the winch." },
+      "clutch-on-running": { "name": "a clutch closed on a running rope", "what": "A clutch was closed on a running rope.", "why": "The rope was still moving under load, and the clutch can damage it.", "fix": "Let the rope stop first (let go of the button), then close the clutch." }
+    }
+  },
+  "furl-sails": {
+    "title": "Furling the sails",
+    "summary": "Start the engine, roll the jib in, turn head to wind and roll the main in.",
+    "see": "You are sailing on a close reach with both sails out and the engine off. The ropes are Realistic.",
+    "happening": "Rolling up is setting in reverse. The jib rolls round the forestay when its furling line is pulled and its sheet is free. The main rolls into the mast best with the bow into the wind, when it carries no load.",
+    "action": "Start the engine and leave it in neutral; free the jib sheet and winch the jib furling line in; motor slowly head to wind; free the outhaul and the main's “out” line, then winch its “in” line.",
+    "mistake": "Pulling a furling line while the sheet or the outhaul still holds the sail: it will not roll, and the winch strains or cuts out.",
+    "done": "Both sails are rolled up and you are motoring. Jib first, then the main head to wind.",
+    "steps": {
+      "engine-on": { "goal": "Start the engine and leave it in neutral.", "how": "In the Helm section, tap Start. Leave the lever in the middle (neutral)." },
+      "jib-in": { "goal": "Roll the jib in completely (5 % or less).", "how": "At the starboard station, open the Genoa sheet clutch so the sheet can run. At the port station, put JIB ROLL on the winch (three turns, self-tailer) and hold the button until the jib is rolled up." },
+      "head-to-wind": { "goal": "Motor slow ahead and turn the bow into the wind (within 20°).", "how": "Put the engine lever slow ahead (about 30 %). Set the autopilot to Heading and tap “10° to starboard” six times." },
+      "main-in": { "goal": "Roll the main into the mast (5 % or less) with the bow into the wind.", "how": "Take JIB ROLL off the port winch and open the Main outhaul clutch there. At the starboard station, open the right “Main furling” clutch (the line that lets the sail out), put the left “Main furling” line on the winch (three turns, self-tailer) and hold the button until the main is in." }
+    },
+    "mistakes": {
+      "main-off-wind": { "name": "rolling the main in off the wind", "what": "The main was rolled in with the wind on the side.", "why": "With the bow 35° or more off the wind the sail is loaded while it rolls, which strains the furling gear and can crease the sail inside the mast.", "fix": "Stop winching, turn back into the wind (within 20°), then roll it in the rest of the way." },
+      "winch-cut-out": { "name": "a winch cutting out", "what": "The winch cut out.", "why": "The button was held after the rope had stopped, or the sheet or outhaul still held the sail.", "fix": "Let go of the button; free the sheet or the outhaul, then winch again." },
+      "rope-slipping": { "name": "a rope slipping", "what": "A rope slipped on the winch drum.", "why": "Too few turns on the winch for the load.", "fix": "Add a turn on the winch." },
+      "clutch-on-running": { "name": "a clutch closed on a running rope", "what": "A clutch was closed on a running rope.", "why": "The rope was still moving under load, and the clutch can damage it.", "fix": "Let the rope stop first, then close the clutch." }
+    }
   }
 }

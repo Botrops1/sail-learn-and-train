@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { initialState, reduce } from '../src/app/store';
 import { parseUrlState } from '../src/app/urlState';
 import { ALERT_KINDS } from '../src/model/alerts';
+import { latinAllowed } from '../src/model/languages';
 import {
   EXERCISES,
   EXERCISE_TEXTS,
@@ -32,6 +33,7 @@ const FIELDS = [
   'gusts',
   'mainOutPct',
   'jibOutPct',
+  'engine',
 ];
 const EVENTS = ['tack', 'tackByHand', 'controlledGybe', 'accidentalGybe'];
 
@@ -168,6 +170,16 @@ describe('checkPasses (test 4)', () => {
     expect(checkPasses({}, { ...s, motion: null }, none)).toBe(false);
     expect(initialState().motion).toBeNull();
   });
+
+  it('reads the engine: running, and the gear (M71)', () => {
+    const s = motionOf(source(315, '?wd=0&ws=12&ms=12&js=30&eng=1&lv=30'));
+    expect(checkPasses({ engine: { running: true, gear: 'ahead' } }, s, none)).toBe(true);
+    expect(checkPasses({ engine: { running: false } }, s, none)).toBe(false);
+    expect(checkPasses({ engine: { gear: 'neutral' } }, s, none)).toBe(false);
+    const off = motionOf(source(315));
+    expect(checkPasses({ engine: { running: false } }, off, none)).toBe(true);
+    expect(checkPasses({ engine: { running: true } }, off, none)).toBe(false);
+  });
 });
 
 describe('Russian exercise texts', () => {
@@ -179,7 +191,12 @@ describe('Russian exercise texts', () => {
         : typeof value === 'object' && value !== null
           ? Object.entries(value).flatMap(([key, v]) => (key.startsWith('$') ? [] : strings(v)))
           : [];
-    expect(strings(ru).filter((text) => /[A-Za-z]/.test(text))).toEqual([]);
+    // M71: the clutch is printed JIB ROLL on the boat, so the words of the boat's labels stay (as in languages.test.ts).
+    const allowed = latinAllowed();
+    const stray = strings(ru).flatMap((text) =>
+      (text.match(/[A-Za-z]{2,}/g) ?? []).filter((word) => !allowed.has(word.toLowerCase())),
+    );
+    expect(stray).toEqual([]);
   });
 });
 

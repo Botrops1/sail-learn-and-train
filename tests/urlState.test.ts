@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { createStore, initialState, reduce, type AppState } from '../src/app/store';
-import { jibReachedParam, parseUrlState, serializeUrlState } from '../src/app/urlState';
+import {
+  jibReachedParam,
+  parseUrlState,
+  serializeUrlState,
+  waypointLink,
+} from '../src/app/urlState';
+import type { ExerciseWaypoint } from '../src/app/exerciseRun';
 import { HANSE_508, boat, useBoat } from '../src/model/boat';
 import { twaSignedDeg } from '../src/model/exercises';
 import { clockParam, defaultClockUtcMs } from '../src/model/clock';
@@ -739,6 +745,28 @@ describe('waypoint links (M67, PHASE10_SPEC 7.4)', () => {
     const wp = parseUrlState(serializeUrlState(atStep2()) + '&exs=1');
     expect(wp.exercise?.options.pauseOnStep).toBe(true);
     expect(serializeUrlState(wp)).toContain('exs=1');
+  });
+
+  it('round-trips exc=1 (With crew) in the start link and a waypoint link (M71)', () => {
+    const crew = parseUrlState('?m=exercise&ex=set-sails&exc=1');
+    expect(crew.exercise?.options.crew).toBe('crew');
+    expect(serializeUrlState(crew)).toContain('exc=1');
+    expect(parseUrlState('?m=exercise&ex=set-sails').exercise?.options.crew).toBe('alone');
+    expect(serializeUrlState(parseUrlState('?m=exercise&ex=set-sails'))).not.toContain('exc');
+    // The waypoint link itself (PR 152 review): made by waypointLink from a real waypoint.
+    const started = reduce(crew, { type: 'exercise', command: 'start' });
+    const waypoint = started.exercise?.waypoints[0];
+    expect(waypoint).toBeDefined();
+    const link = waypointLink(started, waypoint as ExerciseWaypoint);
+    expect(link).toContain('exc=1');
+    const wp = parseUrlState(link);
+    expect(wp.exercise?.options.crew).toBe('crew');
+  });
+
+  it('opens set-sails with Easy ropes from ?mode=easy (M71)', () => {
+    const state = parseUrlState('?m=exercise&ex=set-sails&mode=easy');
+    expect(state.exercise?.id).toBe('set-sails');
+    expect(state.settings.ropesMode).toBe('easy');
   });
 
   it('round-trips exp=0 and ignores a step out of range', () => {
