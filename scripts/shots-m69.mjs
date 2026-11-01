@@ -1,9 +1,10 @@
 // M69 (tacking, getting out of irons, gybing, PHASE10_SPEC 9.7): scenes and live checks for
 // scripts/shots.mjs, on the test clock (a run depends on app time). Labels contain "m69", so
-// openPage starts with every section folded and sails (no held=1).
+// openPage starts with every section folded and sails (no held=1). The long good runs are on the
+// phone only: a desktop-size 3D frame is ten times slower to draw, and the cards are the same.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, isStacked, showSection } from './ui.mjs';
+import { exerciseLine, showSection } from './ui.mjs';
 
 export const M69_SCENES = [
   {
@@ -44,9 +45,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(250);
     }
   };
-  const open = async (page) => {
-    if (await isStacked(page)) await showSection(page, 'exercises');
-  };
+  // "Show the controls" folds the Exercises section in the side layout too, so always reopen it.
+  const open = (page) => showSection(page, 'exercises');
   const start = async (page) => {
     await open(page);
     await page.getByTestId('exercise-start').click();
@@ -72,25 +72,11 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
     return false;
   };
 
-  const snap = async (page) => {
-    const r = await read(page);
-    const u = await run(page);
-    return JSON.stringify({
-      st: u.status,
-      step: u.step,
-      t: Math.round(u.elapsedS),
-      hold: Math.round(u.holdS),
-      ev: u.events,
-      twa: Math.round(r.twaDeg),
-      kn: Math.round(r.speedKn * 10) / 10,
-      rud: r.controls.ctl_rudder,
-    });
-  };
-  for (const viewport of process.env.M69_DESKTOP ? [desktop] : [phone, desktop]) {
+  for (const viewport of [phone, desktop]) {
     const name = viewport.name;
 
     // 1. Tacking.
-    {
+    if (viewport === phone) {
       const { context, page } = await openPage(
         viewport,
         'm69 tacking',
@@ -101,7 +87,6 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       const first = await exerciseLine(page);
       await pilot(page, 'tack');
       const s1 = await waitForStep(page, 1, 90);
-      console.log('DBG s1', await snap(page));
       await pilot(page, 'off');
       await controls(page, { ctl_rudder: -25 });
       const line2 = await exerciseLine(page);
@@ -109,18 +94,10 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       const how2 = await howText(page);
       const each = centreWhenOver(page);
       const s2 = await waitForStep(page, 2, 30, each);
-      console.log('DBG s2', await snap(page));
       const s3 = await waitForStep(page, 3, 75, each);
-      console.log('DBG s3', await snap(page));
       await pilot(page, 'wind');
       await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
       const s4 = await waitForStep(page, 4, 45);
-      const afterS4 = await run(page);
-      console.log('DBG s4', await snap(page));
-      if (process.env.M69_DESKTOP) {
-        await context.close();
-        continue;
-      }
       await open(page);
       const done = await waitVisible(page, 'exercise-done');
       check(
@@ -134,7 +111,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
           s3 &&
           s4 &&
           done,
-        JSON.stringify({ first, line2, how2, s1, s2, s3, s4, done, afterS4 }),
+        JSON.stringify({ first, line2, how2, s1, s2, s3, s4, done }),
       );
       await shot(page, `live-${name}-m69-tacking-done`);
       problems.push(...(await auditPage(page, `m69 ${name} tacking done`)));
@@ -142,7 +119,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
     }
 
     // 2. Irons.
-    {
+    if (viewport === phone) {
       const { context, page } = await openPage(
         viewport,
         'm69 irons',
@@ -170,7 +147,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
     }
 
     // 3. Gybing: the good run, and the gybe report beside the done card.
-    {
+    if (viewport === phone) {
       const { context, page } = await openPage(
         viewport,
         'm69 gybing',
