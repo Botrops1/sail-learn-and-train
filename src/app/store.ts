@@ -5,6 +5,7 @@ import {
   restoreWaypoint,
   setRunOptions,
   startRun,
+  logAction,
   stepExercise,
   type ExerciseCommand,
   type ExerciseRun,
@@ -524,6 +525,8 @@ export function reduce(state: AppState, action: Action): AppState {
   if (action.type === 'step' && next.exercise?.status === 'running') {
     next = stepExercise(state, next);
   }
+  // The learner's own actions go into the log the debrief is made from (PHASE10_SPEC 8.3).
+  if (action.type !== 'step' && next.exercise !== null) next = logAction(state, next, action);
   return next;
 }
 

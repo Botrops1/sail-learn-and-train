@@ -5,9 +5,12 @@ import {
   type ExerciseDef,
   type ExerciseEvent,
   type ExerciseLogEntry,
+  type LoggedAction,
 } from '../model/exercises';
+import type { ControlId } from '../model/controls';
+import type { RealisticAction } from '../model/realistic';
 import type { RopesMode } from '../model/settings';
-import type { AppState } from './store';
+import type { Action, AppState } from './store';
 
 /**
  * The coach (PHASE10_SPEC 4.1, 4.2, 6.3): the run of one exercise and its step each frame. Pure.
@@ -203,6 +206,8 @@ export function stepExercise(
   if (elapsedS - run.settleFromS >= settings.settleS) {
     const fresh = next.alerts.entries.filter((e) => e.n > run.seenAlertN);
     for (const entry of fresh) {
+      // The event first, so a mistake row follows its event (PHASE10_SPEC 8.3).
+      log = [...log, { kind: 'event', atS: elapsedS, entry }];
       for (const m of def.mistakes) {
         if (!('alert' in m.on) || !applies(m) || m.on.alert !== entry.kind) continue;
         if (m.on.accidental !== undefined && entry.report?.accidental !== m.on.accidental) continue;
@@ -272,4 +277,134 @@ export function stepExercise(
       log: [...log, { kind: 'finish', atS: elapsedS }],
     },
   };
+}
+
+/** Whole-number copy of a control value, so a drag of 0.3 % is not an action. */
+const whole = (value: number | undefined): number => Math.round(value ?? 0);
+
+/** The gesture's target: the first of key, winch, station, to that the action has (PHASE10_SPEC 8.3). */
+function gestureTarget(action: RealisticAction): string | null {
+  if ('key' in action && action.key !== null) return action.key;
+  if ('winch' in action) return action.winch;
+  if ('station' in action) return action.station;
+  if ('to' in action) return action.to;
+  return null;
+}
+
+function gestureOn(action: RealisticAction): boolean | undefined {
+  if (action.type === 'clutch') return action.open;
+  if (action.type === 'selfTailer') return action.into;
+  if (action.type === 'button') return action.held;
+  return undefined;
+}
+
+/** The learner's action in the log (PHASE10_SPEC 8.3), or null when nothing changed. */
+function loggedActions(previous: AppState, next: AppState, action: Action): LoggedAction[] {
+  switch (action.type) {
+    case 'setControls': {
+      const out: LoggedAction[] = [];
+      for (const id of Object.keys(action.values) as ControlId[]) {
+        if ((id as string) === 'ctl_wind_dir' || (id as string) === 'ctl_wind_speed') continue;
+        const from = whole(previous.controls[id]);
+        const to = whole(next.controls[id]);
+        if (from !== to) out.push({ type: 'control', id, from, to });
+      }
+      return out;
+    }
+    case 'autopilot': {
+      if (next.autopilot === previous.autopilot) return [];
+      const command = action.command;
+      if (typeof command === 'object') {
+        return [{ type: 'autopilot', command: 'turn', turnDeg: command.turnDeg }];
+      }
+      return [{ type: 'autopilot', command }];
+    }
+    case 'engine': {
+      if (next.engine === previous.engine) return [];
+      const command = action.command;
+      if (typeof command === 'object') {
+        return [{ type: 'engine', command: 'lever', leverPct: command.leverPct }];
+      }
+      return [{ type: 'engine', command }];
+    }
+    case 'realistic': {
+      if (action.action.type === 'clearNotice') return [];
+      const before = previous.realistic as unknown as Record<string, unknown>;
+      const after = next.realistic as unknown as Record<string, unknown>;
+      const changed =
+        next.controls !== previous.controls ||
+        Object.keys(after).some((key) => key !== 'notice' && after[key] !== before[key]);
+      if (!changed) return [];
+      const on = gestureOn(action.action);
+      return [
+        {
+          type: 'realistic',
+          gesture: action.action.type,
+          target: gestureTarget(action.action),
+          ...(on === undefined ? {} : { on }),
+        },
+      ];
+    }
+    default:
+      return [];
+  }
+}
+
+/** Does the new action continue the last log entry (same kind of change within controlMergeS)? */
+function merge(last: ExerciseLogEntry | undefined, act: LoggedAction, atS: number) {
+  if (last?.kind !== 'action' || atS - last.atS > EXERCISE_SETTINGS.controlMergeS) return null;
+  const old = last.action;
+  let merged: LoggedAction | null = null;
+  if (act.type === 'control' && old.type === 'control' && old.id === act.id) {
+    merged = { ...old, to: act.to };
+  } else if (act.type === 'autopilot' && act.command === 'turn') {
+    if (old.type === 'autopilot' && old.command === 'turn') {
+      merged = { ...old, turnDeg: old.turnDeg + act.turnDeg };
+    }
+  } else if (act.type === 'engine' && act.command === 'lever') {
+    if (old.type === 'engine' && old.command === 'lever') merged = act;
+  } else if (act.type === 'realistic') {
+    if (
+      old.type === 'realistic' &&
+      old.gesture === act.gesture &&
+      old.target === act.target &&
+      old.on === act.on
+    ) {
+      merged = old;
+    }
+  }
+  return merged;
+}
+
+/**
+ * Logs what the learner just did (PHASE10_SPEC 8.3). `previous` is the state before the action
+ * (for the `from` values). Only while the run is running or stopped on a mistake.
+ */
+export function logAction(previous: AppState, next: AppState, action: Action): AppState {
+  const run = next.exercise;
+  if (run === null || (run.status !== 'running' && run.status !== 'mistake')) return next;
+  const acts = loggedActions(previous, next, action);
+  if (acts.length === 0) return next;
+  const atS = run.elapsedS;
+  let log = [...run.log];
+  for (const act of acts) {
+    const last = log[log.length - 1];
+    const merged = merge(last, act, atS);
+    if (merged === null) {
+      log.push({ kind: 'action', atS, action: act });
+    } else {
+      const replaced = { kind: 'action' as const, atS, action: merged };
+      const gone =
+        (merged.type === 'control' && merged.from === merged.to) ||
+        (merged.type === 'autopilot' && merged.command === 'turn' && merged.turnDeg === 0);
+      log = gone ? log.slice(0, -1) : [...log.slice(0, -1), replaced];
+    }
+  }
+  const over = log.length - EXERCISE_SETTINGS.logMax;
+  for (let i = 0; i < over; i += 1) {
+    const index = log.findIndex((entry) => entry.kind === 'action');
+    if (index < 0) break;
+    log = [...log.slice(0, index), ...log.slice(index + 1)];
+  }
+  return { ...next, exercise: { ...run, log } };
 }

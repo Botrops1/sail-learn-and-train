@@ -12,6 +12,7 @@ import {
   type ExerciseGroup,
 } from '../model/exercises';
 import { el } from './dom';
+import { createDebrief, type DebriefView } from './exerciseDebrief';
 import { currentLanguage, t } from './i18n';
 import {
   SECTION_IDS,
@@ -82,6 +83,9 @@ export function createExercisePanel(
 ): HTMLElement[] {
   const root = el('div', { class: 'exercise-panel', 'data-testid': 'exercise-panel' });
   let key = '';
+  /** "So far" is open, and the debrief's "Show my actions" switch (view states, not in the store). */
+  let soFarOpen = false;
+  const debriefView: DebriefView = { showActions: false };
 
   const keyOf = (state: AppState): string => {
     const run = state.exercise;
@@ -89,7 +93,8 @@ export function createExercisePanel(
     const step = run && def ? def.steps[run.step] : undefined;
     const left = run && step && run.holdS > 0 ? holdLeftS(run, step.holdS) : 0;
     const shown = run ? lastMistakeShown(run) : false;
-    return `${run?.id}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${shown}`;
+    const debrief = run && (run.status === 'done' || run.status === 'failed' || soFarOpen);
+    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${shown}`;
   };
 
   function renderList(): void {
@@ -289,6 +294,25 @@ export function createExercisePanel(
     return block;
   }
 
+  /** The "So far" button and, when open, the debrief up to now (PHASE10_SPEC 8.4). */
+  function soFarBlock(def: ExerciseDef, run: ExerciseRun): HTMLElement[] {
+    const button = el(
+      'button',
+      {
+        type: 'button',
+        class: 'exercise-button',
+        'aria-expanded': String(soFarOpen),
+        'data-testid': 'exercise-so-far',
+      },
+      [t('exercise.soFar')],
+    );
+    button.addEventListener('click', () => {
+      soFarOpen = !soFarOpen;
+      render(store.getState(), true);
+    });
+    return soFarOpen ? [button, createDebrief(run, def, debriefView)] : [button];
+  }
+
   /** The red/orange card of a mistake that stopped time, or of a serious one that stopped the run. */
   function renderMistake(def: ExerciseDef, run: ExerciseRun, state: AppState): void {
     const mistake = run.mistake;
@@ -345,6 +369,8 @@ export function createExercisePanel(
       buttons.append(go, back);
     }
     card.append(buttons);
+    if (failed) card.append(createDebrief(run, def, debriefView));
+    else card.append(...soFarBlock(def, run));
     root.append(card);
     if (failed) root.append(waypointsBlock(run, state));
   }
@@ -434,6 +460,7 @@ export function createExercisePanel(
         );
       }
     }
+    if (run.status === 'running') card.append(...soFarBlock(def, run));
     card.append(stepsList(def, run));
     const stop = el(
       'button',
@@ -466,6 +493,7 @@ export function createExercisePanel(
         el('p', {}, [t('exercise.time', { time: alertTimeText(run.elapsedS) })]),
         el('p', {}, [text.done]),
         el('div', { class: 'exercise-buttons' }, [again, listButton()]),
+        createDebrief(run, def, debriefView),
       ]),
       waypointsBlock(run, state),
     );
@@ -488,6 +516,10 @@ export function createExercisePanel(
       howStep = run.step;
       howOpen = false;
       whyOpen = false;
+    }
+    if (!run || run.status === 'setup') {
+      soFarOpen = false;
+      debriefView.showActions = false;
     }
     if (!run || !def) renderList();
     else if (run.status === 'setup') renderSetup(def, run, state);

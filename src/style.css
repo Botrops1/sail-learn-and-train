@@ -5025,3 +5025,76 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
   text-decoration: none;
   min-width: var(--touch);
 }
+
+/* The debrief (M68, PHASE10_SPEC 8.4). */
+.exercise-debrief {
+  margin-top: 12px;
+}
+
+.debrief-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.debrief-list > li {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0 6px 8px;
+  border-left: 3px solid transparent;
+  overflow-wrap: anywhere;
+}
+
+.debrief-list > li p {
+  margin: 4px 0;
+}
+
+.debrief-time {
+  flex: 0 0 auto;
+  min-width: 3em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.debrief-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.debrief-list > li[data-kind='finish'] .debrief-body {
+  font-weight: 700;
+}
+
+.debrief-list > li[data-kind='event'],
+.debrief-list > li[data-kind='action'] {
+  color: var(--muted);
+}
+
+.debrief-list > li[data-kind='action'] {
+  font-size: var(--font-small);
+}
+
+.debrief-list > li.debrief-mistake {
+  border-left-color: var(--exercise-warning);
+}
+
+.debrief-list > li.debrief-serious {
+  border-left-color: var(--exercise-danger);
+}
+
+.debrief-tick {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.debrief-causes {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  font-size: var(--font-small);
+}
+
+.debrief-causes > li {
+  display: flex;
+  gap: 8px;
+}

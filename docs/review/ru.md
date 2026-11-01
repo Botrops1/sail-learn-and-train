@@ -3192,6 +3192,49 @@
 | exercise.waypointBackTo | Go back to: {name} | Вернуться к: {name} |
 | exercise.waypointLinkTo | Link to: {name} | Ссылка на: {name} |
 | exercise.restart | Start again | Начать заново |
+| exercise.soFar | So far | Пока что |
+| debrief.title | Debrief | Разбор |
+| debrief.summary | Time {time} · {done} of {total} steps · mistakes: {mistakes} | Время {time} · шагов {done} из {total} · ошибок: {mistakes} |
+| debrief.actions | Show my actions | Показать мои действия |
+| debrief.start | Started | Начало |
+| debrief.startAt | Started at step {n} | Начало с шага {n} |
+| debrief.step | Step {n}: {goal} | Шаг {n}: {goal} |
+| debrief.finish | Finished | Закончено |
+| debrief.back | Went back to the start of step {n} | Вернулись к началу шага {n} |
+| debrief.justBefore | Just before, you: | Незадолго до этого вы: |
+| debrief.noCause | You did nothing in the {s} seconds before: the wind or the boat's course did it. | За {s} с до этого вы ничего не делали: это сделали ветер или курс лодки. |
+| debrief.control | {name}: {from} → {to} % | {name}: {from} → {to} % |
+| debrief.wheel | Wheel: {from}° → {to}° | Штурвал: {from}° → {to}° |
+| debrief.ap.off | Autopilot: Standby (you steer) | Автопилот: Ожидание (вы рулите) |
+| debrief.ap.heading | Autopilot: Heading | Автопилот: Курс |
+| debrief.ap.wind | Autopilot: Wind | Автопилот: Ветер |
+| debrief.ap.tack | Autopilot: Tack | Автопилот: Поворот (оверштаг) |
+| debrief.ap.turnPort | Autopilot: {deg}° to port | Автопилот: {deg}° влево |
+| debrief.ap.turnStarboard | Autopilot: {deg}° to starboard | Автопилот: {deg}° вправо |
+| debrief.engine.start | Engine started | Двигатель запущен |
+| debrief.engine.stop | Engine stopped | Двигатель остановлен |
+| debrief.engine.lever | Engine lever: {pct} % | Рычаг двигателя: {pct} % |
+| debrief.station.port | port | левый борт |
+| debrief.station.starboard | starboard | правый борт |
+| debrief.station.helm | helm | у штурвала |
+| debrief.station.mast | mast | у мачты |
+| debrief.station.bow | bow | на носу |
+| debrief.rope.station | Went to the {station} station | Перешли на пост: {station} |
+| debrief.rope.clutchOpen | Opened the clutch: {label} | Открыли стопор: {label} |
+| debrief.rope.clutchClose | Closed the clutch: {label} | Закрыли стопор: {label} |
+| debrief.rope.onWinch | Put on the winch: {label} | Заложили на лебёдку: {label} |
+| debrief.rope.offWinch | Took the rope off the {side} winch | Сняли конец с лебёдки ({side} борта) |
+| debrief.rope.turn | Changed the turns on the {side} winch | Изменили число шлагов на лебёдке ({side} борта) |
+| debrief.rope.selfTailerIn | Into the self-tailer ({side} winch) | В самотравящий стопор (лебёдка {side} борта) |
+| debrief.rope.selfTailerOut | Out of the self-tailer ({side} winch) | Из самотравящего стопора (лебёдка {side} борта) |
+| debrief.rope.buttonHeld | Held the {side} winch button | Держали кнопку лебёдки {side} борта |
+| debrief.rope.buttonLet | Let go of the {side} winch button | Отпустили кнопку лебёдки {side} борта |
+| debrief.rope.ease | Eased: {label} | Потравили: {label} |
+| debrief.rope.pull | Pulled by hand: {label} | Выбрали руками: {label} |
+| debrief.rope.nothing | nothing (let go) | ничего (отпустили) |
+| debrief.rope.handle | Moved the winch handle | Переставили рукоятку лебёдки |
+| debrief.rope.crank | Cranked the winch handle | Покрутили рукоятку лебёдки |
+| debrief.rope.gearbox | Turned the mast gearbox switch | Повернули переключатель редуктора на мачте |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |

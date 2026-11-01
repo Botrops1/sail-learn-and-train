@@ -68,8 +68,10 @@ jobs:
             env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=budget,m60,m60b,m61,m62
           - part: live, M63-M65
             env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m63,m64,m65
-          - part: live, M66-M71
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m66,m67,m68,m69,m70,m71
+          - part: live, M66-M67
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m66,m67
+          - part: live, M68-M71
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m68,m69,m70,m71
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { stepExercise } from '../src/app/exerciseRun';
+import { tailSpec } from '../src/model/realistic';
+import { debriefRows } from '../src/model/debrief';
 import { exerciseDef, twaSignedDeg, type ExerciseDef } from '../src/model/exercises';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
@@ -59,7 +61,8 @@ describe('the coach (PHASE10_SPEC 6.7)', () => {
     expect(state.paused).toBe(true);
     expect(done.elapsedS).toBeGreaterThan(60);
     expect(done.elapsedS).toBeLessThan(100);
-    expect(done.log.map((e) => e.kind)).toEqual([
+    // M68 adds `action` entries between these; this test is about the steps.
+    expect(done.log.map((e) => e.kind).filter((kind) => kind !== 'action')).toEqual([
       'start',
       'step',
       'step',
@@ -395,3 +398,119 @@ function previousT(state: AppState): number {
 function stepExerciseOnce(previous: AppState, next: AppState): AppState {
   return stepExercise(previous, next);
 }
+
+describe('the debrief log (PHASE10_SPEC 8.6)', () => {
+  const started = (): AppState => reduce(opened(), { type: 'exercise', command: 'start' });
+  const actions = (state: AppState) =>
+    (state.exercise?.log ?? []).flatMap((e) => (e.kind === 'action' ? [e.action] : []));
+
+  it('merges quick changes of the same control, and never logs the wind', () => {
+    let state = controls(started(), { ctl_mainsheet: 30 });
+    state = run(state, 5);
+    state = controls(state, { ctl_mainsheet: 25 });
+    state = run(state, 1);
+    state = controls(state, { ctl_mainsheet: 20 });
+    expect(actions(state).at(-1)).toMatchObject({
+      type: 'control',
+      id: 'ctl_mainsheet',
+      from: 30,
+      to: 20,
+    });
+    const count = actions(state).length;
+    state = run(state, 4);
+    state = controls(state, { ctl_mainsheet: 15 });
+    expect(actions(state)).toHaveLength(count + 1);
+    expect(actions(state).at(-1)).toMatchObject({ from: 20, to: 15 });
+    state = controls(state, { ctl_wind_dir: 123 });
+    expect(actions(state)).toHaveLength(count + 1);
+    const before = actions(state).length;
+    state = turn(state, 6);
+    expect(actions(state)).toHaveLength(before + 1);
+    expect(actions(state).at(-1)).toMatchObject({ command: 'turn', turnDeg: -60 });
+  });
+
+  it('logs a Realistic clutch with its key and state', () => {
+    const real = reduce(opened('realistic'), { type: 'exercise', command: 'start' });
+    const station = tailSpec('a2')?.station ?? 'port';
+    const there = reduce(real, { type: 'realistic', action: { type: 'station', station } });
+    expect(actions(there).at(-1)).toMatchObject({ gesture: 'station', target: station });
+    const state = reduce(there, {
+      type: 'realistic',
+      action: { type: 'clutch', key: 'a2', open: true },
+    });
+    const logged = actions(state);
+    expect(logged.length).toBeGreaterThan(0);
+    expect(logged.at(-1)).toMatchObject({
+      type: 'realistic',
+      gesture: 'clutch',
+      target: 'a2',
+      on: true,
+    });
+  });
+
+  it('does not log in setup, done or failed, nor camera or a change of nothing', () => {
+    const setup = controls(opened(), { ctl_mainsheet: 20 });
+    expect(setup.exercise?.log).toEqual([]);
+    const state = started();
+    const length = state.exercise?.log.length ?? 0;
+    const same = controls(state, { ctl_mainsheet: state.controls.ctl_mainsheet });
+    expect(same.exercise?.log).toHaveLength(length);
+    const camera = reduce(state, { type: 'setCameraPreset', preset: 'top' } as Action);
+    expect(camera.exercise?.log).toHaveLength(length);
+    const paused = reduce(state, { type: 'setPaused', paused: true });
+    expect(paused.exercise?.log).toHaveLength(length);
+    const failed: AppState = {
+      ...state,
+      exercise: state.exercise ? { ...state.exercise, status: 'failed' } : null,
+    };
+    expect(controls(failed, { ctl_mainsheet: 11 }).exercise?.log).toHaveLength(length);
+    const done: AppState = {
+      ...state,
+      exercise: state.exercise ? { ...state.exercise, status: 'done' } : null,
+    };
+    expect(controls(done, { ctl_mainsheet: 11 }).exercise?.log).toHaveLength(length);
+  });
+
+  it('PT-26 puts the events before their mistakes, and the turn among both causes', () => {
+    let state = reduce(
+      reduce(opened(), { type: 'exercise', command: { options: { pauseOnMistake: false } } }),
+      { type: 'exercise', command: 'start' },
+    );
+    const acts: (() => AppState)[] = [
+      () => controls(state, { ctl_mainsheet: 12 }),
+      () => controls(turn(state, 2), { ctl_mainsheet: 25 }),
+      () => controls(turn(state, 3), { ctl_mainsheet: 50, ctl_jib_sheet: 100 }),
+      () => controls(turn(state, 4), { ctl_mainsheet: 100 }),
+    ];
+    acts.forEach((act, index) => {
+      state = until(act(), index + 1, 40).state;
+    });
+    state = turn(state, 6);
+    for (let i = 0; i < 45 / 0.05; i += 1) state = reduce(state, { type: 'step', dt: 0.05 });
+    const log = state.exercise?.log ?? [];
+    const lee = log.findIndex((e) => e.kind === 'mistake' && e.mistakeId === 'by-the-lee');
+    const gybe = log.findIndex((e) => e.kind === 'mistake' && e.mistakeId === 'accidental-gybe');
+    expect(lee).toBeGreaterThan(0);
+    expect(gybe).toBeGreaterThan(lee);
+    expect(log[lee - 1]).toMatchObject({ kind: 'event', entry: { kind: 'byTheLee' } });
+    const before = log[gybe - 1];
+    expect(before?.kind).toBe('event');
+    expect(before?.kind === 'event' && before.entry.kind).toBe('gybe');
+    const rows = debriefRows(log);
+    for (const index of [lee, gybe]) {
+      const last = rows[index]?.causes.at(-1)?.action;
+      expect(last).toMatchObject({ type: 'autopilot', command: 'turn', turnDeg: -60 });
+    }
+  });
+
+  it('keeps at most logMax entries and the start', () => {
+    let state = started();
+    for (let i = 0; i < 450; i += 1) {
+      state = run(state, 4);
+      state = controls(state, { ctl_vang: i % 2 === 0 ? 10 : 60 });
+    }
+    const log = state.exercise?.log ?? [];
+    expect(log).toHaveLength(400);
+    expect(log[0]?.kind).toBe('start');
+  });
+});

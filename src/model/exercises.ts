@@ -114,7 +114,7 @@ export type LoggedAction =
   | { type: 'autopilot'; command: 'turn'; turnDeg: number }
   | { type: 'engine'; command: 'start' | 'stop' }
   | { type: 'engine'; command: 'lever'; leverPct: number }
-  | { type: 'realistic'; gesture: RealisticAction['type']; target: string | null };
+  | { type: 'realistic'; gesture: RealisticAction['type']; target: string | null; on?: boolean };
 
 /** The log the debrief is made from (M66 writes start, step, finish; M67 mistake, back; M68 action, event). */
 export type ExerciseLogEntry =
