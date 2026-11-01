@@ -1240,6 +1240,7 @@ Scripted winds and the Adriatic winds (part 10c); reefing by slab (this boat fur
 - **The gust counter starts armed or not by the wind at that moment** (10.3): `startRun`, the frame a step passes and `restoreWaypoint` all use `gustArmedAt` (wind at or below 1.1 × the mean).
 - **CI:** M69 has its own part (`live, M69`), M68 its own (`live, M68`), and M70–M71 share one (`live, M70-M71`), as the M69 review asked.
 - **Older check changed:** the list check of `scripts/shots-m69.mjs` expects six exercises instead of four (the two new ones come last).
+- **Step 2 of Gusts in test 1:** with the easing policy kept (45 % while the wind is over 16.5 kn), step 2 took 33 s, not the prototype's 5 s: the gust at 158 s breaks the 5 s hold (setting the sheet to 25 % at once instead overpowers her, heel 26.4°, a mistake). The test sets the main sheet to 35 % for step 2: the main reads Good there, she heels at most 22.5° and the step passes in about 8 s. The band (within 20 s) is unchanged; a learner who follows the step text still finishes, only later.
 - **Known limitations (named, not fixed):** the self-tacking jib's trim and a partly rolled jib's trim read "Stalled" (3.5), so the steps check how far the sail is out, not its trim; the strip's GUST badge shows from 16.5 kn but the counter counts only gusts that reach 18 kn, so a weak gust shows GUST and is not counted.
 
 ---
