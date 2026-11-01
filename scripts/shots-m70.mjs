@@ -79,7 +79,10 @@ export async function liveM70Checks({ openPage, viewports, outDir, prefix, probl
       const policy = easeInGusts(page);
       const s1 = await waitForStep(page, 1, 200, policy);
       const line2 = await exerciseLine(page);
-      const s2 = await waitForStep(page, 2, 30, policy);
+      // Step 2: with the easing policy kept it takes 33 s (the fourth gust breaks the 5 s hold, PR
+      // note); the main reads Good at 35 % and she stays under 25° of heel.
+      await controls(page, { ctl_mainsheet: 35 });
+      const s2 = await waitForStep(page, 2, 30);
       await open(page);
       const done = await waitVisible(page, 'exercise-done');
       const mistakeRows = await rows(page, 'mistake').count();
