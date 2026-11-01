@@ -936,6 +936,7 @@ Saving or sharing a debrief; a debrief in the link (a link starts a run, it does
 - **`createDebrief(run, def, view?)`** takes an optional third argument, the switch's state (`{ showActions }`), so the panel can keep it; without it the switch starts off. The toggle re-draws only the list.
 - **The wheel** is written with a sign (`+10` to starboard, `-10` to port); a control change from the Realistic ropes (`controls` moved by a gesture) is logged only as the gesture, because the log records what the learner did, not what the rope then did.
 - **The M66 test 1 line that lists the log's kinds** now ignores `action` entries (the run logs the sheet changes between the steps). No other older test changed.
+- **CI part split:** the part `live, M66-M71` ran over the 45-minute job limit (the M68 group alone takes about 20 minutes at its pace), so it is now two parts: `live, M66-M67` and `live, M68-M71` (milestones M69 to M71 may need their own part again).
 - **Russian** debrief strings are AI drafts like all of `ui.json`; `docs/review/ru.md` is regenerated.
 
 ---
