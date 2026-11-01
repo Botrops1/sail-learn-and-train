@@ -180,7 +180,7 @@ export function stepExercise(
   const step = def.steps[run.step];
   if (step === undefined) return next;
   const settings = EXERCISE_SETTINGS;
-  const context = { events: run.events, gusts: run.gusts };
+  let events = run.events;
 
   // Mistakes (PHASE10_SPEC 7.3): alerts that are new since the last frame, then conditions held.
   let log: ExerciseLogEntry[] = [...run.log];
@@ -208,6 +208,16 @@ export function stepExercise(
     for (const entry of fresh) {
       // The event first, so a mistake row follows its event (PHASE10_SPEC 8.3).
       log = [...log, { kind: 'event', atS: elapsedS, entry }];
+      // PHASE10_SPEC 9.3: a tack by hand is a tack with the autopilot on Standby.
+      if (entry.kind === 'tack') {
+        events = [
+          ...events,
+          'tack',
+          ...(next.autopilot.mode === 'off' ? (['tackByHand'] as const) : []),
+        ];
+      } else if (entry.kind === 'gybe') {
+        events = [...events, entry.report?.accidental ? 'accidentalGybe' : 'controlledGybe'];
+      }
       for (const m of def.mistakes) {
         if (!('alert' in m.on) || !applies(m) || m.on.alert !== entry.kind) continue;
         if (m.on.accidental !== undefined && entry.report?.accidental !== m.on.accidental) continue;
@@ -215,6 +225,7 @@ export function stepExercise(
       }
     }
   }
+  const context = { events, gusts: run.gusts };
   for (const m of def.mistakes) {
     if (!('condition' in m.on)) continue;
     if (applies(m) && checkPasses(m.on.condition, next, context)) {
@@ -239,6 +250,7 @@ export function stepExercise(
     ...run,
     elapsedS,
     seenAlertN: next.alerts.written,
+    events,
     holdS,
     log,
     lastMistakeS,

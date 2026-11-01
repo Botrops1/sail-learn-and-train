@@ -514,3 +514,142 @@ describe('the debrief log (PHASE10_SPEC 8.6)', () => {
     expect(log[0]?.kind).toBe('start');
   });
 });
+
+describe('tacking, irons and gybing (PHASE10_SPEC 9.6)', () => {
+  const open = (id: string): AppState =>
+    reduce(parseUrlState(exerciseStartLink(id, initialState(), 'easy')), {
+      type: 'exercise',
+      command: 'start',
+    });
+  const pilot = (state: AppState, command: 'off' | 'heading' | 'wind' | 'tack'): AppState =>
+    reduce(state, { type: 'autopilot', command });
+  const rudder = (state: AppState, value: number): AppState =>
+    controls(state, { ctl_rudder: value });
+
+  /** Like `until`, with an action on every frame. */
+  function drive(
+    state: AppState,
+    step: number,
+    limitS: number,
+    each?: (state: AppState) => AppState,
+  ) {
+    const from = state.exercise?.elapsedS ?? 0;
+    let next = state;
+    while ((next.exercise?.elapsedS ?? 0) - from < limitS) {
+      if ((next.exercise?.step ?? 0) >= step || next.exercise?.status === 'mistake') break;
+      next = reduce(each ? each(next) : next, { type: 'step', dt: 0.05 });
+    }
+    return { state: next, took: (next.exercise?.elapsedS ?? 0) - from };
+  }
+
+  const centreWhenOver = (state: AppState): AppState =>
+    twaSignedDeg(state) > 35 && state.controls.ctl_rudder !== 0 ? rudder(state, 0) : state;
+
+  function tackingGoodRun() {
+    const times: number[] = [];
+    let state = open('tacking');
+    const steps: [() => AppState, number, ((s: AppState) => AppState)?][] = [
+      [() => pilot(state, 'tack'), 90],
+      [() => rudder(pilot(state, 'off'), -25), 30, centreWhenOver],
+      [() => state, 75, centreWhenOver],
+      [() => reduce(pilot(state, 'wind'), { type: 'autopilot', command: { turnDeg: -10 } }), 45],
+    ];
+    steps.forEach(([act, limit, each], index) => {
+      state = act();
+      const result = drive(state, index + 1, limit, each);
+      times.push(result.took);
+      state = result.state;
+    });
+    return { state, times };
+  }
+
+  it('PT-28 tacking: the self-tacking jib changes sides by itself, so a tack with the autopilot and then by hand passes all four steps', () => {
+    const { state, times } = tackingGoodRun();
+    expect(state.exercise?.status, `times ${times.join(', ')}`).toBe('done');
+    times.forEach((took, index) => expect(took).toBeLessThan([90, 30, 75, 45][index] ?? 0));
+    expect(state.exercise?.log.some((e) => e.kind === 'mistake')).toBe(false);
+  });
+
+  it('tacking, centred too early: the wheel centred at head to wind leaves her in irons', () => {
+    let state = open('tacking');
+    state = drive(pilot(state, 'tack'), 1, 90).state;
+    state = rudder(pilot(state, 'off'), -25);
+    state = drive(state, 2, 30, (s) => (Math.abs(twaSignedDeg(s)) < 5 ? rudder(s, 0) : s)).state;
+    let centredAtS: number | null = null;
+    for (let i = 0; i < 60 / 0.05 && state.exercise?.status === 'running'; i += 1) {
+      if (centredAtS === null && state.controls.ctl_rudder === 0) {
+        centredAtS = state.exercise?.elapsedS ?? 0;
+      }
+      state = reduce(Math.abs(twaSignedDeg(state)) < 5 ? rudder(state, 0) : state, {
+        type: 'step',
+        dt: 0.05,
+      });
+    }
+    expect(state.exercise?.status).toBe('mistake');
+    expect(state.exercise?.mistake?.mistakeId).toBe('in-irons');
+  });
+
+  it('PT-35 no speed, no steering: going backwards with the wheel over, the bow falls off, and she sails away', () => {
+    const times: number[] = [];
+    let state = open('irons');
+    const plan: [() => AppState, number][] = [
+      [() => controls(state, { ctl_mainsheet: 60, ctl_jib_sheet: 60 }), 5],
+      [() => rudder(state, 30), 80],
+      [() => controls(state, { ctl_rudder: 0, ctl_mainsheet: 12, ctl_jib_sheet: 30 }), 50],
+    ];
+    plan.forEach(([act, limit], index) => {
+      state = act();
+      const result = drive(state, index + 1, limit);
+      times.push(result.took);
+      expect(result.state.exercise?.step, `step ${index + 1} within ${limit} s: ${times}`).toBe(
+        index + 1,
+      );
+      state = result.state;
+      if (index === 1) expect(Math.abs(twaSignedDeg(state))).toBeGreaterThanOrEqual(35);
+    });
+    expect(state.exercise?.status).toBe('done');
+  });
+
+  it('irons without the wheel: with the wheel centred she drifts straight back and never falls off', () => {
+    let state = open('irons');
+    state = drive(controls(state, { ctl_mainsheet: 60, ctl_jib_sheet: 60 }), 1, 5).state;
+    state = run(state, 90);
+    expect(state.exercise?.step).toBe(1);
+  });
+
+  it('gybing good run: haul in, gybe, ease out, then an accidental gybe on purpose', () => {
+    const times: number[] = [];
+    let state = open('gybing');
+    const plan: [() => AppState, number][] = [
+      [() => controls(state, { ctl_mainsheet: 5 }), 10],
+      [() => pilot(state, 'tack'), 30],
+      [() => controls(state, { ctl_mainsheet: 100 }), 15],
+      [
+        () => {
+          let s = pilot(state, 'heading');
+          for (let i = 0; i < 3; i += 1)
+            s = reduce(s, { type: 'autopilot', command: { turnDeg: 10 } });
+          return s;
+        },
+        35,
+      ],
+    ];
+    plan.forEach(([act, limit], index) => {
+      state = act();
+      const result = drive(state, index + 1, limit);
+      times.push(result.took);
+      expect(result.state.exercise?.step, `step ${index + 1} within ${limit} s: ${times}`).toBe(
+        index + 1,
+      );
+      state = result.state;
+    });
+    expect(state.exercise?.status).toBe('done');
+    expect(state.exercise?.log.some((e) => e.kind === 'mistake')).toBe(false);
+  });
+
+  it('gybing with the main out: the gybe is accidental and the card names it', () => {
+    const state = drive(pilot(open('gybing'), 'tack'), 1, 30).state;
+    expect(state.exercise?.status).toBe('mistake');
+    expect(state.exercise?.mistake?.mistakeId).toBe('accidental-gybe');
+  });
+});

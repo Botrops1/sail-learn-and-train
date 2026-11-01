@@ -100,7 +100,7 @@ Planned on 2026-10-30 in [`PHASE10_SPEC.md`](PHASE10_SPEC.md) (part 10a, M66–M
 
 | Id | Rule | How to see it | Status |
 |---|---|---|---|
-| PT-58 | **A controlled gybe starts with the main hauled in:** haul the main sheet in before the stern crosses the wind, so the boom only moves a short way, and ease it out once she is on the new tack. With the main left out the boom swings right across, fast, with a large load on the main sheet (PT-24). (M69) | `?m=exercise&ex=gybing` (M69): the exercise's steps, then its accidental gybe on purpose | source-checked [41] (hauling in first and easing on the new tack; how far in and the loads: the model, PT-24) |
+| PT-58 | **A controlled gybe starts with the main hauled in:** haul the main sheet in before the stern crosses the wind, so the boom only moves a short way, and ease it out once she is on the new tack. With the main left out the boom swings right across, fast, with a large load on the main sheet (PT-24). (M69) | `?m=exercise&ex=gybing` (M69): the exercise's steps, then its accidental gybe on purpose; test: `tests/physicsTruths10.test.ts` | source-checked [41] (hauling in first and easing on the new tack; how far in and the loads: the model, PT-24) |
 | PT-59 | **Roll an in-mast main out and in with the bow close to the wind** (head to wind or a little off), so the sail carries no load while it moves; with the wind on the side the half-rolled sail fills and strains the furling gear. (M71) | `?m=exercise&ex=set-sails` (M71): turn 60° off the wind, then roll the main out | to-verify (candidate: Seldén, *In-mast furling* user manual; seldenmast.com does not open from the build environment, 2026-10-30) |
 
 ## Sources

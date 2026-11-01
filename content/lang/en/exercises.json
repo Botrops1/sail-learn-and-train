@@ -20,5 +20,56 @@
       "by-the-lee": { "name": "sailing by the lee", "what": "You are sailing by the lee: the wind comes from the side the boom is on.", "why": "She turned past dead downwind, so the boom can gybe at any moment.", "fix": "Turn 10–20° back towards the wind straight away: tap +10 in Steering once or twice." },
       "in-irons": { "name": "stopping head to wind", "what": "She has stopped, pointing into the wind (in irons).", "why": "She turned towards the wind instead of away from it: no sail works with the wind straight ahead.", "fix": "Turn away from the wind with −10 in Steering (Wind autopilot); if she does not answer, do the Getting out of irons exercise." }
     }
+  },
+  "tacking": {
+    "title": "Tacking",
+    "summary": "Turn the bow through the wind, first with the autopilot, then by hand.",
+    "see": "You are sailing close-hauled on starboard tack: the wind comes over the right side of the bow.",
+    "happening": "To reach a place upwind a sailing boat zigzags: she tacks (turns her bow through the wind) from one side to the other. The self-tacking jib changes sides by itself, so only the wheel is needed.",
+    "action": "Turn steadily and keep turning until the wind is about 40° on the other side of the bow, then straighten up and let her speed up before you point higher.",
+    "mistake": "Turning too slowly, or straightening up while the bow still points into the wind: she stops head to wind (in irons) and will not steer.",
+    "done": "You tacked with the autopilot and by hand. Keep the wheel over until the wind is well on the new side, then let her speed up.",
+    "steps": {
+      "tack-autopilot": {"goal": "Tack with the autopilot, then let her speed up to 4 knots.", "how": "In Steering, tap Tack. The autopilot turns her through the wind and holds the same angle on the other side. Wait until the speed on the strip reads 4 knots or more."},
+      "tack-by-hand": {"goal": "Now tack back by hand: autopilot to Standby, wheel hard to port.", "how": "In Steering, tap Standby (the autopilot stops steering), then set Wheel to −25° (to port: the wind now comes from port, so port is towards it) and keep it there while the bow crosses the wind."},
+      "centre-wheel": {"goal": "When the wind is 35° on the new side, centre the wheel.", "how": "Watch the wind angle on the strip. When it reads about 35° from starboard, set Wheel to 0° in Steering. Centring earlier leaves her stuck head to wind."},
+      "pick-up-speed": {"goal": "Sail close-hauled and let her speed up to 4 knots.", "how": "In Steering, tap Wind (it holds the angle she has now), then “10° to port” once, to about 45° from the wind. Both sails should read Good."}
+    },
+    "mistakes": {
+      "in-irons": {"name": "stopping head to wind", "what": "She has stopped head to wind (in irons).", "why": "The turn was too slow, or the wheel came back to the centre before the bow was through the wind. With the wind straight ahead no sail works, and with no speed the rudder does nothing.", "fix": "Ease both sheets, put the wheel hard over and wait while she drifts back: the Getting out of irons exercise shows how."}
+    }
+  },
+  "irons": {
+    "title": "Getting out of irons",
+    "summary": "She has stopped head to wind. Get her sailing again.",
+    "see": "The bow points straight into the wind. Both sails flap, she has no speed and the wheel does nothing.",
+    "happening": "With the wind straight ahead no sail can work (the no-go zone). The wind pushes her slowly backwards, and going backwards the rudder works the other way round: it turns the bow away from the wind.",
+    "action": "Let both sheets out, put the wheel hard over and hold it while she drifts back. When the wind is about 40° on the bow, centre the wheel and sheet in.",
+    "mistake": "Sheeting in hard, or waiting with the wheel in the middle: she stays head to wind.",
+    "done": "She is sailing again. Going backwards the rudder turns the bow the other way: hold the wheel over and be patient.",
+    "steps": {
+      "ease-sheets": {"goal": "Let both sheets out to 40 % or more.", "how": "In Ropes, set Main sheet and Jib sheet to about 60 %."},
+      "wheel-over": {"goal": "Put the wheel hard over and wait until the wind is 35° or more on the bow.", "how": "In Steering, set Wheel to +30° and keep it there. She drifts backwards and the bow slowly falls away from the wind. This takes about a minute."},
+      "sail-away": {"goal": "Centre the wheel, sheet in and sail away at 3 knots or more.", "how": "In Steering, set Wheel to 0°. In Ropes, set Main sheet to about 12 % and Jib sheet to about 30 %. Both sails should read Good."}
+    },
+    "mistakes": {}
+  },
+  "gybing": {
+    "title": "Gybing: controlled and accidental",
+    "summary": "Turn the stern through the wind with the main hauled in, then see what an accidental gybe does.",
+    "see": "You are on a run (the wind from behind) on starboard tack, with the main let right out.",
+    "happening": "In a gybe the stern crosses the wind and the boom swings to the other side. With the main let out, the boom crosses the whole cockpit fast and stops with a bang. Hauled in first, it only moves a little.",
+    "action": "Haul the main in until the boom is near the centre, turn until the wind is on the other side, then let the main out again.",
+    "mistake": "Turning through the wind with the main still out, or steering past dead downwind without meaning to: the boom slams across (an accidental gybe). This boat has no preventer (a line that would hold the boom out).",
+    "done": "A controlled gybe moves the boom a short way, slowly. An accidental one swings it across fast, with a big load on the main sheet and on anyone in its way. Haul in first.",
+    "steps": {
+      "haul-main": {"goal": "Haul the main in until the boom is near the centre.", "how": "In Ropes, set Main sheet to 5 %. The boom comes within 16° of the centre line."},
+      "gybe": {"goal": "Gybe: turn until the wind is on the other side.", "how": "In Steering, tap Gybe (the Tack button reads Gybe on a run). She turns through the wind and the boom crosses a short way."},
+      "ease-main": {"goal": "Let the main right out on the new side.", "how": "In Ropes, set Main sheet to 85 % or more."},
+      "accidental": {"goal": "Now see an accidental gybe on purpose: turn 30° further from the wind, past dead downwind.", "how": "In Steering, tap Heading, then “10° to starboard” three times: she turns from 15° short of dead downwind to 15° past it. The wind gets behind the main from the wrong side and throws the boom across. Watch the gybe report: the boom’s speed and the load on the main sheet."}
+    },
+    "mistakes": {
+      "accidental-gybe": {"name": "an accidental gybe", "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Haul the main in before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee."}
+    }
   }
 }
