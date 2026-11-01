@@ -130,8 +130,8 @@
       ],
       "mistakes": [
         { "id": "main-off-wind", "serious": false, "steps": ["main-out"], "on": { "condition": { "twaDeg": [35, 180], "mainOutPct": [5, 95] }, "forS": 3 } },
-        { "id": "winch-cut-out", "serious": false, "on": { "alert": "winchCutOut" } },
-        { "id": "rope-slipping", "serious": false, "on": { "alert": "ropeSlipping" } },
+        { "id": "winch-cut-out", "serious": false, "steps": ["head-to-wind", "main-out", "bear-away", "engine-off"], "on": { "alert": "winchCutOut" } },
+        { "id": "rope-slipping", "serious": false, "steps": ["head-to-wind", "main-out", "bear-away", "engine-off"], "on": { "alert": "ropeSlipping" } },
         { "id": "clutch-on-running", "serious": false, "on": { "alert": "clutchOnRunning" } }
       ]
     },

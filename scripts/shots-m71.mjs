@@ -109,7 +109,7 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
       const { context, page } = await openPage(
         phone,
         'm71 alone',
-        '?m=exercise&ex=set-sails&exp=0&debug=1',
+        '?m=exercise&ex=set-sails&debug=1',
         { testClock: true },
       );
       await start(page);
@@ -212,7 +212,7 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
       const { context, page } = await openPage(
         phone,
         'm71 furl',
-        '?m=exercise&ex=furl-sails&exp=0&debug=1',
+        '?m=exercise&ex=furl-sails&debug=1',
         { testClock: true },
       );
       await start(page);

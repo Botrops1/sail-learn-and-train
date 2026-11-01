@@ -879,8 +879,11 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
   const mistakes = (state: AppState): string[] =>
     (state.exercise?.log ?? []).flatMap((e) => (e.kind === 'mistake' ? [e.mistakeId] : []));
 
-  it('PT-12 set-sails good run (Realistic, alone): head to wind, main out, bear away, jib out, engine off', () => {
-    let s = reduce(opens('set-sails'), { type: 'exercise', command: 'start' });
+  it('PT-12 set-sails good run (Realistic, alone, pausing on mistakes as a learner has it): head to wind, main out, bear away, jib out, engine off', () => {
+    let s = reduce(opens('set-sails', { pauseOnMistake: true }), {
+      type: 'exercise',
+      command: 'start',
+    });
     const t: number[] = [];
     let r = playTo(s, 1, 15);
     t.push(r.took);
@@ -924,17 +927,21 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
     s = reduce(s, { type: 'engine', command: 'stop' });
     r = playTo(s, 5, 10);
     t.push(r.took);
-    // Within 15, 40, 60, 80 and 10 s (prototype 7.8, 20.4, 30.8, 45.8, 5.0 s). Two winch-cut-out warnings
-    // come from the script's winching of the Genoa sheet, as 11.7 allows; the PR says so.
+    // Within 15, 40, 60, 80 and 10 s (prototype 7.8, 20.4, 30.8, 45.8, 5.0 s). The winch
+    // cuts out twice while the Genoa sheet is winched (the model); that is not reported as a mistake.
     const limits = [15, 40, 60, 80, 10];
     t.forEach((took, i) => expect(took).toBeLessThan(limits[i] ?? 0));
     expect(r.state.exercise?.status).toBe('done');
-    expect(mistakes(r.state)).not.toContain('main-off-wind');
-    expect(mistakes(r.state).filter((m) => m !== 'winch-cut-out')).toEqual([]);
+    // A learner who follows How? gets no mistake card (the winch cut-outs of the jib step are not
+    // reported: the winch model cuts out there, PR 152 review).
+    expect(mistakes(r.state)).toEqual([]);
   });
 
   it('furl-sails good run: engine on, jib in, head to wind, main in', () => {
-    let s = reduce(opens('furl-sails'), { type: 'exercise', command: 'start' });
+    let s = reduce(opens('furl-sails', { pauseOnMistake: true }), {
+      type: 'exercise',
+      command: 'start',
+    });
     const t: number[] = [];
     // (1) the engine.
     s = reduce(s, { type: 'engine', command: 'start' });
@@ -980,7 +987,7 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
     const limits = [5, 60, 30, 45];
     t.forEach((took, i) => expect(took).toBeLessThan(limits[i] ?? 0));
     expect(r.state.exercise?.status).toBe('done');
-    expect(mistakes(r.state)).not.toContain('main-off-wind');
+    expect(mistakes(r.state)).toEqual([]);
   });
 
   it('Alone blocks Pause; With crew and Easy ropes do not', () => {
