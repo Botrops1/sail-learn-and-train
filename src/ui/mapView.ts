@@ -14,7 +14,7 @@ import {
   type Rect,
 } from '../model/marina';
 import { depthAt } from '../model/seabed';
-import { buoyOffsets } from '../model/windOnWater';
+import { buoyOffsets, gustAt, gustProfile } from '../model/windOnWater';
 import { pointOfSail } from '../model/pointsOfSail';
 import { requirePartId } from '../model/registry';
 import type { CameraPreset } from '../model/settings';
@@ -115,6 +115,9 @@ const COLOURS = {
   noGoText: '#8c1c1c',
   apparent: '#1565c0',
   windField: [40, 90, 130],
+  /** The gust bands (owner, PR 151): a dark blue patch for a gust, a pale one for a lull. */
+  gust: [8, 38, 96],
+  lull: [255, 255, 255],
   text: '#1d2a36',
   halo: 'rgb(255 255 255 / 0.9)',
   select: '#ff9f1c',
@@ -811,6 +814,64 @@ function rgba(colour: readonly number[], alpha: number): string {
   return `rgb(${colour[0]} ${colour[1]} ${colour[2]} / ${alpha})`;
 }
 
+/** The most a gust band darkens the map, and a lull band lightens it (0 … 1). */
+const GUST_BAND = { gustAlpha: 0.6, lullAlpha: 0.45, edgeAlpha: 0.9, edgeWidthPx: 1.5 } as const;
+
+/**
+ * Gusty wind only (owner, PR 151): the patches of stronger and weaker wind on the water, upwind of
+ * the boat, as bands across the wind that move towards her. The same profile as the dark patches
+ * on the 3D water, so a gust is seen coming on the map too.
+ */
+function drawGustBands(ctx: CanvasRenderingContext2D, state: AppState, view: MapViewport): void {
+  const profile = gustProfile(state.controls, state.windMode, state.rig.timeS);
+  if (!profile) return;
+  const wd = state.controls.ctl_wind_dir;
+  const along = { east: Math.sin(wd * DEG), north: Math.cos(wd * DEG) };
+  const across = { east: along.north, north: -along.east };
+  const reach = Math.hypot(view.widthPx, view.heightPx) * view.metresPerPx;
+  const point = (u: number, v: number): ScreenPoint =>
+    mapToScreen(
+      state.boat.eastM + along.east * u + across.east * v,
+      state.boat.northM + along.north * u + across.north * v,
+      view,
+    );
+  const steps = profile.values.length - 1;
+  ctx.save();
+  for (let i = 0; i < steps; i += 1) {
+    const from = profile.fromM + i * profile.stepM;
+    const to = from + profile.stepM;
+    const g = gustAt(profile, (from + to) / 2);
+    if (Math.abs(g) < 0.05) continue;
+    const corners = [point(from, -reach), point(to, -reach), point(to, reach), point(from, reach)];
+    ctx.fillStyle =
+      g > 0
+        ? rgba(COLOURS.gust, GUST_BAND.gustAlpha * g)
+        : rgba(COLOURS.lull, GUST_BAND.lullAlpha * -g);
+    ctx.beginPath();
+    corners.forEach((c, k) => (k === 0 ? ctx.moveTo(c.x, c.y) : ctx.lineTo(c.x, c.y)));
+    ctx.closePath();
+    ctx.fill();
+  }
+  // The front edge of each gust, the side that reaches the boat first (the smaller upwind
+  // distance): where the profile rises through 0.5 as the upwind distance grows.
+  ctx.lineWidth = GUST_BAND.edgeWidthPx;
+  ctx.strokeStyle = rgba(COLOURS.gust, GUST_BAND.edgeAlpha);
+  for (let i = 0; i < steps; i += 1) {
+    const a = profile.values[i] ?? 0;
+    const b = profile.values[i + 1] ?? 0;
+    if (a <= 0.5 && b > 0.5) {
+      const u = profile.fromM + (i + (0.5 - a) / Math.max(1e-6, b - a)) * profile.stepM;
+      const p = point(u, -reach);
+      const q = point(u, reach);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(q.x, q.y);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
 /** Draws the whole map for a state. */
 function drawMap(
   ctx: CanvasRenderingContext2D,
@@ -829,7 +890,10 @@ function drawMap(
     steps?.push(name);
     draw();
   };
-  step('grid', () => drawGrid(ctx, view));
+  step('grid', () => {
+    drawGrid(ctx, view);
+    drawGustBands(ctx, state, view);
+  });
   step('windField', () => drawWindField(ctx, state, view, timeS));
   step('seabed', () => drawSeabed(ctx, state, view));
   step('harbour', () => drawHarbour(ctx, state, view));
@@ -1665,6 +1729,7 @@ export function drawMiniMap(
   ctx.fillStyle = COLOURS.water;
   ctx.fillRect(0, 0, sizePx, sizePx);
   drawGrid(ctx, view);
+  drawGustBands(ctx, state, view);
   drawSeabed(ctx, state, view, true);
   drawHarbour(ctx, state, view, true);
   drawTrack(ctx, state.track, state, view);

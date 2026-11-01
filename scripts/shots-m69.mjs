@@ -260,6 +260,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
             'exercise-item-tacking',
             'exercise-item-irons',
             'exercise-item-gybing',
+            'exercise-item-gusts',
+            'exercise-item-reduce-sail',
           ]),
         JSON.stringify(ids),
       );

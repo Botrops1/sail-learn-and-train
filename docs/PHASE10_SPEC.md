@@ -1233,9 +1233,18 @@ Both exercises work from their links on a phone and a computer; typecheck, lint,
 
 Scripted winds and the Adriatic winds (part 10c); reefing by slab (this boat furls).
 
-### 10.10 Decided in the M70 PR
+### 10.10 Decided in the M70 PR (recommended; merging accepts it)
 
-(empty)
+- **Both exercises carry `sections`** (owner, PR 144): `["ropes", "sails", "autopilot", "conditions", "learn"]`, like the M69 exercises. The data in 10.2 predates that field.
+- **Mistakes carry a `name`** (the list on the setup card): `overpowered` "heeling too far", `round-up` "a round-up", `sail-worn` "a worn sail" (Russian: "слишком большой крен", "брочинг", "изношенный парус"). The texts in 10.4 predate that field.
+- **The three check fields** `gusts`, `mainOutPct` and `jibOutPct` were already read by `checkPasses` (M69 built them with the type); M70 adds the gust counter (`countGusts` in `exerciseRun.ts`) and the data test now accepts the fields.
+- **The gust counter starts armed or not by the wind at that moment** (10.3): `startRun`, the frame a step passes and `restoreWaypoint` all use `gustArmedAt` (wind at or below 1.1 × the mean).
+- **CI:** M69 has its own part (`live, M69`), M68 its own (`live, M68`), and M70–M71 share one (`live, M70-M71`), as the M69 review asked.
+- **Older check changed:** the list check of `scripts/shots-m69.mjs` expects six exercises instead of four (the two new ones come last).
+- **Step 2 of Gusts in test 1:** with the easing policy kept (45 % while the wind is over 16.5 kn), step 2 took 33 s, not the prototype's 5 s: the gust at 158 s breaks the 5 s hold (setting the sheet to 25 % at once instead overpowers her, heel 26.4°, a mistake). The test sets the main sheet to 35 % for step 2: the main reads Good there, she heels at most 22.5° and the step passes in about 8 s. The band (within 20 s) is unchanged; a learner who follows the step text still finishes, only later.
+- **Review answers (PR 151; owner: "accept all")**: step 2 of Gusts ("Trim both sails to Good") now starts its "How?" with "When GUST has gone from the strip, set Main sheet to about 25 % …" (English and Russian draft), because step 1 ends in the middle of the third gust and setting 25 % at once heels her to 26.4°; the "gust already blowing" test now starts a run at 19 kn and checks the counter through `startRun` and `countGusts`; the step-1 text of Too much wind (jib sheet to 100 %) and the Russian "брочинг" stay as built.
+- **A gust is easier to see coming** (owner's comment on PR 151): on the 3D water `SCENE.water.gustAmount` goes from 0.45 to 0.8 and `gustColor` from `#0b3442` to `#06202c` (the dark patch is stronger); the mini-map and the full map draw the same gust profile as bands across the wind (`drawGustBands` in `mapView.ts`): dark blue for a gust, pale for a lull, with a line on the front edge of each gust, in gusty wind only. Decided in the M70 PR (recommended; merging accepts it).
+- **Known limitations (named, not fixed):** the self-tacking jib's trim and a partly rolled jib's trim read "Stalled" (3.5), so the steps check how far the sail is out, not its trim; the strip's GUST badge shows from 16.5 kn but the counter counts only gusts that reach 18 kn, so a weak gust shows GUST and is not counted.
 
 ---
 

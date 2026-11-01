@@ -79,6 +79,40 @@
       "mistakes": [
         { "id": "accidental-gybe", "serious": false, "steps": ["haul-main", "gybe", "ease-main"], "on": { "alert": "gybe", "accidental": true } }
       ]
+    },
+    {
+      "id": "gusts",
+      "group": "wind",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=15&hdg=300&ms=25&js=50&ap=wind&apt=60&sea=flat&wm=gusty&seed=1&wg=40",
+      "steps": [
+        { "id": "three-gusts", "opens": "ropes", "holdS": 0, "check": { "gusts": 3 } },
+        { "id": "trim-back", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [50, 70], "mainTrim": ["good"], "jibTrim": ["good"] } }
+      ],
+      "mistakes": [
+        { "id": "overpowered", "serious": false, "on": { "alert": "overpowered" } },
+        { "id": "round-up", "serious": false, "on": { "alert": "roundUp" } }
+      ]
+    },
+    {
+      "id": "reduce-sail",
+      "group": "wind",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=22&hdg=300&ms=40&js=30&ap=wind&apt=60&sea=flat",
+      "steps": [
+        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 45] } },
+        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [50, 65] } },
+        { "id": "settle", "opens": "ropes", "holdS": 10, "check": { "mainOutPct": [50, 65], "jibOutPct": [0, 45], "mainTrim": ["good"], "heelDeg": [0, 20] } }
+      ],
+      "mistakes": [
+        { "id": "overpowered", "serious": false, "on": { "alert": "overpowered" } },
+        { "id": "round-up", "serious": false, "on": { "alert": "roundUp" } },
+        { "id": "sail-worn", "serious": false, "on": { "alert": "sailWorn" } }
+      ]
     }
   ]
 }

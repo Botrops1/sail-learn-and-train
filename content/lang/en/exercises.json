@@ -71,5 +71,41 @@
     "mistakes": {
       "accidental-gybe": {"name": "an accidental gybe", "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Haul the main in before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee."}
     }
+  },
+  "gusts": {
+    "title": "Gusts: ease the main",
+    "summary": "Keep her upright through three gusts by easing the main.",
+    "see": "You are on a close reach in 15 knots of wind with gusts. A gust shows on the water as a darker patch coming towards you.",
+    "happening": "In a gust the wind is stronger for a few seconds: the sails push harder, she heels more and wants to turn into the wind (weather helm). Easing the main spills the extra wind.",
+    "action": "When a gust hits, ease the main sheet by about 20 %; when it has passed, sheet in again.",
+    "mistake": "Holding the main sheet tight in a gust: she heels past 25°, slows down and can turn into the wind by herself (a round-up).",
+    "done": "Easing the main in a gust keeps her upright and steering. The dark patch on the water warns you a few seconds before it arrives.",
+    "steps": {
+      "three-gusts": { "goal": "Get through three gusts: ease the main in each one, sheet in after.", "how": "Watch the strip: GUST shows while a gust blows (from about 16.5 knots). In Ropes, set Main sheet to about 45 % when it shows, and back to about 25 % when it has gone. Three strong gusts take about two and a half minutes." },
+      "trim-back": { "goal": "Trim both sails to Good.", "how": "When GUST has gone from the strip, set Main sheet to about 25 % and Jib sheet to about 50 %. Both sails should read Good; ease the main again if a gust comes." }
+    },
+    "mistakes": {
+      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "The main sheet was too tight for the wind: the sails pushed harder than the keel could hold her upright.", "fix": "Ease the main sheet as soon as the gust hits; sheet in again when it has passed." },
+      "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel with a tight main: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away and she comes back under control. In the next gust, ease earlier." }
+    }
+  },
+  "reduce-sail": {
+    "title": "Too much wind: roll the sails in",
+    "summary": "In 22 knots, roll in part of the jib and the main until she sails upright.",
+    "see": "22 knots of wind on a close reach. The main is eased until it flaps, to keep her upright; she heels about 20°.",
+    "happening": "With full sails she heels too much in this wind. On this boat both sails roll up (the jib round the forestay, the main into the mast), so making them smaller takes a minute and nobody has to go on deck.",
+    "action": "Ease the jib sheet and roll the jib in to about 40 %; roll the main in to about 60 %; then sheet the main in until it works.",
+    "mistake": "Pulling the jib in with its sheet still tight: the jib will not roll. And sails left flapping in strong wind wear out quickly.",
+    "done": "Smaller sails, less heel, and she sails almost as fast. Roll in early, before the wind gets up.",
+    "steps": {
+      "jib-in": { "goal": "Roll the jib in to 45 % or less: ease its sheet first.", "how": "In Ropes, set Jib sheet to 100 %, then Jib out to 40 %. Then set Jib sheet to about 75 % so the jib stops flapping. With the sheet tight the jib stops rolling." },
+      "main-in": { "goal": "Roll the main in to between 50 and 65 %.", "how": "In Ropes, set Mainsail out to 60 %." },
+      "settle": { "goal": "Sheet the main in until it reads Good, with less than 20° of heel.", "how": "In Ropes, set Main sheet to about 35 % and hold it for 10 seconds. (A partly rolled jib reads Stalled in the app at any sheet: leave its sheet at about 75 %.)" }
+    },
+    "mistakes": {
+      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "Too much sail for this wind, or the main sheet pulled in too far.", "fix": "Ease the main sheet now, then roll in more sail." },
+      "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away, then roll in more sail." },
+      "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Sheet the flapping sail in until it stops, or roll it in." }
+    }
   }
 }

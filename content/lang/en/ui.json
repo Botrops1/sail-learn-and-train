@@ -669,6 +669,7 @@
   "exercise.label": "Exercises",
   "exercise.hint": "Each exercise sets up the boat, the wind and the place, then shows one step at a time. A step ticks itself off when the boat shows you did it.",
   "exercise.group.sailing": "Sailing skills",
+  "exercise.group.wind": "Wind and weather",
   "exercise.doneBest": "✓ best {time}",
   "exercise.see": "What you see",
   "exercise.happening": "What is happening",
