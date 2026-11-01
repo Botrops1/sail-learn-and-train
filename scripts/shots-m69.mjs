@@ -63,6 +63,14 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
     const now = await read(page);
     if (now.twaDeg > 35 && now.controls.ctl_rudder !== 0) await controls(page, { ctl_rudder: 0 });
   };
+  /** The UI redraws on the next animation frame; give it a few real retries before giving up. */
+  const waitVisible = async (page, testid, triesLeft = 20) => {
+    for (let i = 0; i < triesLeft; i += 1) {
+      if (await page.getByTestId(testid).isVisible()) return true;
+      await page.waitForTimeout(250);
+    }
+    return false;
+  };
 
   for (const viewport of [phone, desktop]) {
     const name = viewport.name;
@@ -90,9 +98,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       await pilot(page, 'wind');
       await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
       const s4 = await waitForStep(page, 4, 45);
-      await page.waitForTimeout(500);
       await open(page);
-      const done = await page.getByTestId('exercise-done').isVisible();
+      const done = await waitVisible(page, 'exercise-done');
       check(
         `tacking good run ${name}`,
         first?.startsWith('1/4 ·') &&
@@ -127,9 +134,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       const twa = Math.abs((await read(page)).twaDeg);
       await controls(page, { ctl_rudder: 0, ctl_mainsheet: 12, ctl_jib_sheet: 30 });
       const s3 = await waitForStep(page, 3, 50);
-      await page.waitForTimeout(500);
       await open(page);
-      const done = await page.getByTestId('exercise-done').isVisible();
+      const done = await waitVisible(page, 'exercise-done');
       check(
         `irons good run ${name}`,
         s1 && s2 && twa >= 35 && s3 && done,
@@ -160,9 +166,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
         await act(page, { type: 'autopilot', command: { turnDeg: 10 } });
       }
       const s4 = await waitForStep(page, 4, 35);
-      await page.waitForTimeout(500);
       await open(page);
-      const done = await page.getByTestId('exercise-done').isVisible();
+      const done = await waitVisible(page, 'exercise-done');
       const report = await page.getByTestId('gybe-report').isVisible();
       check(
         `gybing good run ${name}`,
@@ -185,7 +190,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       await start(page);
       await pilot(page, 'tack');
       await waitForStep(page, 1, 30);
-      await page.waitForTimeout(500);
+      await waitVisible(page, 'exercise-mistake');
       await open(page);
       const card = page.getByTestId('exercise-mistake');
       const text = (await card.innerText().catch(() => '')) ?? '';
