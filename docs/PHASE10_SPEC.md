@@ -1232,9 +1232,15 @@ Both exercises work from their links on a phone and a computer; typecheck, lint,
 
 Scripted winds and the Adriatic winds (part 10c); reefing by slab (this boat furls).
 
-### 10.10 Decided in the M70 PR
+### 10.10 Decided in the M70 PR (recommended; merging accepts it)
 
-(empty)
+- **Both exercises carry `sections`** (owner, PR 144): `["ropes", "sails", "autopilot", "conditions", "learn"]`, like the M69 exercises. The data in 10.2 predates that field.
+- **Mistakes carry a `name`** (the list on the setup card): `overpowered` "heeling too far", `round-up` "a round-up", `sail-worn` "a worn sail" (Russian: "слишком большой крен", "брочинг", "изношенный парус"). The texts in 10.4 predate that field.
+- **The three check fields** `gusts`, `mainOutPct` and `jibOutPct` were already read by `checkPasses` (M69 built them with the type); M70 adds the gust counter (`countGusts` in `exerciseRun.ts`) and the data test now accepts the fields.
+- **The gust counter starts armed or not by the wind at that moment** (10.3): `startRun`, the frame a step passes and `restoreWaypoint` all use `gustArmedAt` (wind at or below 1.1 × the mean).
+- **CI:** M69 has its own part (`live, M69`), M68 its own (`live, M68`), and M70–M71 share one (`live, M70-M71`), as the M69 review asked.
+- **Older check changed:** the list check of `scripts/shots-m69.mjs` expects six exercises instead of four (the two new ones come last).
+- **Known limitations (named, not fixed):** the self-tacking jib's trim and a partly rolled jib's trim read "Stalled" (3.5), so the steps check how far the sail is out, not its trim; the strip's GUST badge shows from 16.5 kn but the counter counts only gusts that reach 18 kn, so a weak gust shows GUST and is not counted.
 
 ---
 

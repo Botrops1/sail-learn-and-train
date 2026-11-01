@@ -3128,6 +3128,7 @@
 | exercise.label | Exercises | Упражнения |
 | exercise.hint | Each exercise sets up the boat, the wind and the place, then shows one step at a time. A step ticks itself off when the boat shows you did it. | Каждое упражнение готовит яхту, ветер и место, потом показывает по одному шагу. Шаг отмечается сам, когда яхта показывает, что вы всё сделали. |
 | exercise.group.sailing | Sailing skills | Навыки хождения под парусом |
+| exercise.group.wind | Wind and weather | Ветер и погода |
 | exercise.doneBest | ✓ best {time} | ✓ лучшее {time} |
 | exercise.see | What you see | Что вы видите |
 | exercise.happening | What is happening | Что происходит |
@@ -3521,3 +3522,47 @@
 | gybing.mistakes.accidental-gybe.what | The boom crossed by itself (an accidental gybe). | Гик перелетел сам (случайный фордевинд). |
 | gybing.mistakes.accidental-gybe.why | The main was still out when the stern crossed the wind, or she was steered past dead downwind. | Грот был потравлен, когда корма проходила через ветер, или яхта ушла дальше прямого фордевинда. |
 | gybing.mistakes.accidental-gybe.fix | Haul the main in before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee. | Выбирайте грот до поворота. На попутном ветре держите ветер с той стороны, где нет гика: не ходите на подветре (с ветром на стороне гика). |
+| gusts.title | Gusts: ease the main | Порывы: потравите грот |
+| gusts.summary | Keep her upright through three gusts by easing the main. | Удержите яхту прямо в трёх порывах, потравливая грот. |
+| gusts.see | You are on a close reach in 15 knots of wind with gusts. A gust shows on the water as a darker patch coming towards you. | Вы идёте крутым галфвиндом в ветре 15 узлов с порывами. Порыв виден на воде как тёмное пятно, которое движется к вам. |
+| gusts.happening | In a gust the wind is stronger for a few seconds: the sails push harder, she heels more and wants to turn into the wind (weather helm). Easing the main spills the extra wind. | В порыве ветер на несколько секунд сильнее: паруса давят сильнее, яхта кренится больше и стремится повернуть в ветер (тенденция к приведению). Если потравить грот, лишний ветер уйдёт мимо паруса. |
+| gusts.action | When a gust hits, ease the main sheet by about 20 %; when it has passed, sheet in again. | Когда приходит порыв, потравите шкот грота примерно на 20 %; когда порыв прошёл, выберите шкот обратно. |
+| gusts.mistake | Holding the main sheet tight in a gust: she heels past 25°, slows down and can turn into the wind by herself (a round-up). | Держать шкот грота туго в порыве: яхта кренится больше 25°, теряет скорость и может сама повернуть в ветер (брочинг). |
+| gusts.done | Easing the main in a gust keeps her upright and steering. The dark patch on the water warns you a few seconds before it arrives. | Если потравить грот в порыве, яхта остаётся прямой и слушается руля. Тёмное пятно на воде предупреждает вас за несколько секунд до порыва. |
+| gusts.steps.three-gusts.goal | Get through three gusts: ease the main in each one, sheet in after. | Пройдите три порыва: в каждом потравите грот, после порыва выберите шкот. |
+| gusts.steps.three-gusts.how | Watch the strip: GUST shows while a gust blows (from about 16.5 knots). In Ropes, set Main sheet to about 45 % when it shows, and back to about 25 % when it has gone. Three strong gusts take about two and a half minutes. | Следите за полосой: «ПОРЫВ» горит, пока дует порыв (примерно от 16,5 узла). В «Концах» поставьте шкот грота на 45 %, когда он загорелся, и обратно на 25 %, когда он погас. Три сильных порыва занимают около двух с половиной минут. |
+| gusts.steps.trim-back.goal | Trim both sails to Good. | Настройте оба паруса на «Хорошо». |
+| gusts.steps.trim-back.how | Main sheet about 25 %, Jib sheet about 50 %. Both sails should read Good; ease the main again if a gust comes. | Шкот грота около 25 %, шкот стакселя около 50 %. Оба паруса должны показывать «Хорошо»; снова потравите грот, если придёт порыв. |
+| gusts.mistakes.overpowered.name | heeling too far | слишком большой крен |
+| gusts.mistakes.overpowered.what | She heeled too far (more than 25°). | Яхта накренилась слишком сильно (больше 25°). |
+| gusts.mistakes.overpowered.why | The main sheet was too tight for the wind: the sails pushed harder than the keel could hold her upright. | Шкот грота был слишком туго выбран для такого ветра: паруса давили сильнее, чем киль мог удержать яхту прямо. |
+| gusts.mistakes.overpowered.fix | Ease the main sheet as soon as the gust hits; sheet in again when it has passed. | Потравите шкот грота, как только придёт порыв; когда он пройдёт, выберите шкот обратно. |
+| gusts.mistakes.round-up.name | a round-up | брочинг |
+| gusts.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Яхта сама повернула в ветер (брочинг). |
+| gusts.mistakes.round-up.why | Too much heel with a tight main: the rudder lost its grip and the sails turned her into the wind. | Слишком большой крен при тугом гроте: руль потерял хватку, и паруса повернули яхту в ветер. |
+| gusts.mistakes.round-up.fix | Ease the main straight away and she comes back under control. In the next gust, ease earlier. | Сразу потравите грот, и яхта снова станет управляемой. В следующем порыве травите раньше. |
+| reduce-sail.title | Too much wind: roll the sails in | Слишком много ветра: уберите паруса |
+| reduce-sail.summary | In 22 knots, roll in part of the jib and the main until she sails upright. | При 22 узлах закрутите часть стакселя и грота, пока яхта не пойдёт прямо. |
+| reduce-sail.see | 22 knots of wind on a close reach. The main is eased until it flaps, to keep her upright; she heels about 20°. | Ветер 22 узла, курс крутой галфвинд. Грот потравлен до хлопанья, чтобы яхта держалась прямо; крен около 20°. |
+| reduce-sail.happening | With full sails she heels too much in this wind. On this boat both sails roll up (the jib round the forestay, the main into the mast), so making them smaller takes a minute and nobody has to go on deck. | С полными парусами яхта в таком ветре кренится слишком сильно. На этой яхте оба паруса сворачиваются (стаксель вокруг штага, грот внутрь мачты), поэтому уменьшить их можно за минуту, и никому не нужно выходить на палубу. |
+| reduce-sail.action | Ease the jib sheet and roll the jib in to about 40 %; roll the main in to about 60 %; then sheet the main in until it works. | Потравите шкот стакселя и закрутите стаксель примерно до 40 %; закрутите грот примерно до 60 %; затем выбирайте шкот грота, пока парус не заработает. |
+| reduce-sail.mistake | Pulling the jib in with its sheet still tight: the jib will not roll. And sails left flapping in strong wind wear out quickly. | Закручивать стаксель при тугом шкоте: стаксель не будет сворачиваться. И паруса, которые хлопают на сильном ветру, быстро изнашиваются. |
+| reduce-sail.done | Smaller sails, less heel, and she sails almost as fast. Roll in early, before the wind gets up. | Паруса меньше, крен меньше, а скорость почти та же. Убирайте паруса заранее, пока ветер не усилился. |
+| reduce-sail.steps.jib-in.goal | Roll the jib in to 45 % or less: ease its sheet first. | Закрутите стаксель до 45 % и меньше: сначала потравите его шкот. |
+| reduce-sail.steps.jib-in.how | In Ropes, set Jib sheet to 100 %, then Jib out to 40 %. Then set Jib sheet to about 75 % so the jib stops flapping. With the sheet tight the jib stops rolling. | В «Концах» поставьте «Стаксель-шкот» на 100 %, затем «Стаксель наружу» на 40 %. Потом поставьте «Стаксель-шкот» примерно на 75 %, чтобы стаксель перестал хлопать. При тугом шкоте стаксель не сворачивается. |
+| reduce-sail.steps.main-in.goal | Roll the main in to between 50 and 65 %. | Закрутите грот до значения от 50 до 65 %. |
+| reduce-sail.steps.main-in.how | In Ropes, set Mainsail out to 60 %. | В «Концах» поставьте «Грот наружу» на 60 %. |
+| reduce-sail.steps.settle.goal | Sheet the main in until it reads Good, with less than 20° of heel. | Выбирайте шкот грота, пока он не станет «Хорошо», при крене меньше 20°. |
+| reduce-sail.steps.settle.how | In Ropes, set Main sheet to about 35 % and hold it for 10 seconds. (A partly rolled jib reads Stalled in the app at any sheet: leave its sheet at about 75 %.) | В «Концах» поставьте «Гика-шкот» примерно на 35 % и продержите 10 секунд. (Частично закрученный стаксель в приложении показывает «Срыв потока» при любом шкоте: оставьте его шкот около 75 %.) |
+| reduce-sail.mistakes.overpowered.name | heeling too far | слишком большой крен |
+| reduce-sail.mistakes.overpowered.what | She heeled too far (more than 25°). | Яхта накренилась слишком сильно (больше 25°). |
+| reduce-sail.mistakes.overpowered.why | Too much sail for this wind, or the main sheet pulled in too far. | Слишком много парусов для такого ветра или шкот грота выбран слишком туго. |
+| reduce-sail.mistakes.overpowered.fix | Ease the main sheet now, then roll in more sail. | Потравите шкот грота сейчас, затем уберите ещё часть парусов. |
+| reduce-sail.mistakes.round-up.name | a round-up | брочинг |
+| reduce-sail.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Яхта сама повернула в ветер (брочинг). |
+| reduce-sail.mistakes.round-up.why | Too much heel: the rudder lost its grip and the sails turned her into the wind. | Слишком большой крен: руль потерял хватку, и паруса повернули яхту в ветер. |
+| reduce-sail.mistakes.round-up.fix | Ease the main straight away, then roll in more sail. | Сразу потравите грот, затем уберите ещё часть парусов. |
+| reduce-sail.mistakes.sail-worn.name | a worn sail | изношенный парус |
+| reduce-sail.mistakes.sail-worn.what | A sail is worn from flapping. | Парус износился от хлопанья. |
+| reduce-sail.mistakes.sail-worn.why | A sail left flapping (flogging) in strong wind wears out fast. | Парус, который хлопает на сильном ветру, быстро изнашивается. |
+| reduce-sail.mistakes.sail-worn.fix | Sheet the flapping sail in until it stops, or roll it in. | Выберите шкот хлопающего паруса, пока он не перестанет хлопать, или закрутите его. |
