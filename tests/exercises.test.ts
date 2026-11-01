@@ -29,6 +29,9 @@ const FIELDS = [
   'heelDeg',
   'boomDeg',
   'event',
+  'gusts',
+  'mainOutPct',
+  'jibOutPct',
 ];
 const EVENTS = ['tack', 'tackByHand', 'controlledGybe', 'accidentalGybe'];
 
@@ -40,7 +43,7 @@ function checkProblems(check: ExerciseCheck): string[] {
     const ranges: unknown[] =
       field === 'controls'
         ? Object.values(value as object)
-        : ['twaDeg', 'speedKn', 'heelDeg', 'boomDeg'].includes(field)
+        : ['twaDeg', 'speedKn', 'heelDeg', 'boomDeg', 'mainOutPct', 'jibOutPct'].includes(field)
           ? [value]
           : [];
     for (const range of ranges) {

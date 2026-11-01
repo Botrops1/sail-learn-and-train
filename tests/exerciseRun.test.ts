@@ -679,3 +679,139 @@ describe('pause after each step (owner, PR 148)', () => {
     expect(state.paused).toBe(false);
   });
 });
+
+describe('gusts and too much wind (PHASE10_SPEC 10.6)', () => {
+  const open = (id: string, options?: { pauseOnMistake: boolean }): AppState => {
+    const opened = parseUrlState(exerciseStartLink(id, initialState(), 'easy'));
+    const set = options ? reduce(opened, { type: 'exercise', command: { options } }) : opened;
+    return reduce(set, { type: 'exercise', command: 'start' });
+  };
+
+  /** Steps with an action chosen every frame; stops when `stop` says so. */
+  function drive(
+    state: AppState,
+    limitS: number,
+    each: (state: AppState) => AppState,
+    stop: (state: AppState) => boolean,
+  ) {
+    const from = state.exercise?.elapsedS ?? 0;
+    let next = state;
+    let maxHeel = 0;
+    while ((next.exercise?.elapsedS ?? 0) - from < limitS && !stop(next)) {
+      next = reduce(each(next), { type: 'step', dt: 0.05 });
+      maxHeel = Math.max(maxHeel, Math.abs(next.boat.heelDeg));
+    }
+    return { state: next, took: (next.exercise?.elapsedS ?? 0) - from, maxHeel };
+  }
+
+  // The GUST badge shows above 1.1 x the mean wind (windModes.gustBadgeFraction): 16.5 kn here.
+  const easeInGusts = (state: AppState): AppState => {
+    const want = state.wind.twsKn > 16.5 ? 45 : 25;
+    return Math.round(state.controls.ctl_mainsheet) === want
+      ? state
+      : controls(state, { ctl_mainsheet: want });
+  };
+
+  it('PT-25 heel grows with wind force: easing the main in the gusts keeps her under 25°', () => {
+    const first = drive(
+      open('gusts'),
+      200,
+      easeInGusts,
+      (s) => (s.exercise?.step ?? 0) >= 1 || s.exercise?.status === 'mistake',
+    );
+    expect(first.state.exercise?.step, `step 1 after ${first.took} s`).toBe(1);
+    expect(first.took).toBeGreaterThan(130);
+    expect(first.took).toBeLessThan(160);
+    const second = drive(
+      first.state,
+      40,
+      easeInGusts,
+      (s) => s.exercise?.status === 'done' || s.exercise?.status === 'mistake',
+    );
+    expect(second.state.exercise?.status).toBe('done');
+    expect(second.took).toBeLessThan(20);
+    expect(first.state.exercise?.log.some((e) => e.kind === 'mistake')).toBe(false);
+    expect(second.state.exercise?.log.some((e) => e.kind === 'mistake')).toBe(false);
+    expect(Math.max(first.maxHeel, second.maxHeel)).toBeLessThan(24);
+  });
+
+  it('gusts with the sheet held: she heels too far and the card says so', () => {
+    const result = drive(
+      open('gusts', { pauseOnMistake: false }),
+      240,
+      (s) => s,
+      () => false,
+    );
+    const mistakes = (result.state.exercise?.log ?? []).filter((e) => e.kind === 'mistake');
+    expect(mistakes.length).toBeGreaterThan(0);
+    const firstMistake = mistakes[0];
+    expect(firstMistake?.kind === 'mistake' && firstMistake.mistakeId).toBe('overpowered');
+    expect(firstMistake?.atS).toBeLessThan(60);
+    expect(result.maxHeel).toBeGreaterThan(30);
+  });
+
+  it('counts a gust at 20 % above the mean and re-arms at 10 % above it', () => {
+    const base = open('gusts');
+    let state = base;
+    const counts: number[] = [];
+    for (const tws of [15, 18.1, 17.0, 18.5, 16.4, 18.0]) {
+      const next: AppState = {
+        ...state,
+        rig: { ...state.rig, timeS: state.rig.timeS + 0.05 },
+        wind: { ...state.wind, twsKn: tws },
+      };
+      state = stepExercise(state, next);
+      counts.push(state.exercise?.gusts ?? -1);
+    }
+    expect(counts).toEqual([0, 1, 1, 1, 1, 2]);
+  });
+
+  it('does not count a gust that is already blowing when the step begins', () => {
+    const started = open('gusts');
+    const blowing: AppState = { ...started, wind: { ...started.wind, twsKn: 19 } };
+    const restarted = reduce(parseUrlState(exerciseStartLink('gusts', initialState(), 'easy')), {
+      type: 'load',
+      state: blowing,
+    });
+    expect(restarted.exercise?.gusts ?? 0).toBe(0);
+  });
+
+  it('reduce-sail good run: ease the jib sheet, roll the jib and the main in, sheet the main in', () => {
+    const times: number[] = [];
+    let state = open('reduce-sail');
+    const plan: [() => AppState, number][] = [
+      [() => controls(controls(state, { ctl_jib_sheet: 100 }), { ctl_jib_furl: 40 }), 10],
+      [() => controls(state, { ctl_jib_sheet: 75, ctl_main_furl: 60 }), 10],
+      [() => controls(state, { ctl_mainsheet: 35 }), 20],
+    ];
+    plan.forEach(([act, limit], index) => {
+      state = act();
+      const result = drive(
+        state,
+        limit,
+        (s) => s,
+        (s) => (s.exercise?.step ?? 0) > index || s.exercise?.status === 'mistake',
+      );
+      times.push(result.took);
+      expect(result.state.exercise?.step, `step ${index + 1} within ${limit} s: ${times}`).toBe(
+        index + 1,
+      );
+      state = result.state;
+    });
+    expect(state.exercise?.status).toBe('done');
+    expect(state.exercise?.log.some((e) => e.kind === 'mistake')).toBe(false);
+    expect(Math.abs(state.boat.heelDeg)).toBeLessThan(19.5);
+  });
+
+  it('PT-13 jib furling needs an eased sheet: with the sheet at 30 % the jib stays out', () => {
+    const state = controls(open('reduce-sail'), { ctl_jib_furl: 40 });
+    const result = drive(
+      state,
+      30,
+      (s) => s,
+      () => false,
+    );
+    expect(100 * result.state.rig.jibSolution.unfurled).toBeGreaterThanOrEqual(80);
+    expect(result.state.exercise?.step).toBe(0);
+  });
+});
