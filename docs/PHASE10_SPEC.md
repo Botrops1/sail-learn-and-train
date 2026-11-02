@@ -2121,6 +2121,14 @@ Live checks: (1) `m74 level`: on `leave-setup` tap `exercise-level-hard`: the ad
 
 Leaving the berth works at every level on a phone; the outline shows on the 3D view and both maps; a knock ends the run with its card; the debrief names line, thruster and fender actions; old exercise links work as before; all checks pass.
 
+### 16.9a Owner request added in the M73 PR: the moored yachts' bow lines (to be specified by `/plan 10 refresh` before M74 is built)
+
+Owner (PR 157 chat): in a real marina every moored yacht lies on a bow line (the lazy line, a rope from her bow down into the water at about 45°), and these lines narrow the room to manoeuvre. Wanted in M74, not a later milestone:
+
+- **Drawn at both levels:** a thin line from each moored yacht's bow down into the water, about 45° (the instanced moored yachts of M73 are the place to add it). The M73 budget is tight (250 draw calls at High of 300; 110 at Low of 150), so the lines must share one instanced mesh and the budget cases must still pass.
+- **Counted in Hard only (the realistic version):** the lines are obstacles. The boat's bow can hit one, and the engine can suck one in (the existing `propeller` mistake of 16.2, which today covers the boat's own lines). In Easy the lines are only drawn and nothing happens.
+- **Open for the planner:** the line's obstacle shape and `obstacleKind` (`lazy-line`?), its glossary and registry entries (Russian stays draft), whether a touch is `touch` or its own mistake, and its test numbers. Nothing in this note is built yet.
+
 ### 16.10 Not in M74
 
 Texts per ropes mode (13.3 still applies: the How texts describe the Easy controls); moving boats; a score.
