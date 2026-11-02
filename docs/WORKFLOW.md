@@ -849,7 +849,7 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=map — the breakwater, the buildings and the two lights are drawn; tap the breakwater: the card says "Breakwater".
 - [ ] Taps: on the first link, tap the red light — the card says "Harbour entrance light"; on the second, tap a building — "Harbour buildings".
 - [ ] Solid from open water: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=map — sail north with the wind from the right (Steering: autopilot Heading, course 000) for about three and a half minutes (the time bar's ×16 makes it 15 seconds) until you reach the marina: she bumps into the breakwater and the Status section lists the damage. Before M73 she sailed straight through.
-- [ ] One bump, one report: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0 — Engine: lever astern (− four times) for 3 seconds, then Neutral. She bumps the quay; the Status section's damage list shows one line (two at most) for it.
+- [ ] One bump, one report: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0 — Engine: drag the lever about halfway towards Astern for 3 seconds, then back to Neutral. She bumps the quay; the Status section's damage list shows one line (two at most) for it.
 - [ ] Speed: on the second link, with Settings → Debug overlay on, the frame rate on your phone (write it in the PR).
 
 #### M74: The harbour coach, and leaving the berth
@@ -858,7 +858,7 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] Setup: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth — the card has a Level row (Easy pressed); the boat lies in her berth with the lines on.
 - [ ] Easy run: on the same link tap Start and follow How?: let go the lazy line, then the stern lines, motor out, turn west with both thrusters. Each step ticks off; a magenta outline shows the fairway; at the end "Well done!".
 - [ ] Hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=hard — Hard is pressed, every berth is taken, the wind is 14 kn. Leave the berth again (How? says to give a little more throttle).
-- [ ] A knock: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — Start, let go all the lines, then put the engine astern (− four times): she backs into the quay. A card says "A light touch" (time stops, Carry on or Back) or "A hard knock" (the exercise stops).
+- [ ] A knock: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — Start, let go all the lines, then drag the engine lever halfway towards Astern: she backs into the quay. A card says "A light touch" (time stops, Carry on or Back) or "A hard knock" (the exercise stops).
 - [ ] Debrief: after a finished run, the debrief lists "Lazy line (to the bow): Let go" and the thruster pushes.
 - [ ] Old exercise links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — as before, no Level row.
 
@@ -868,13 +868,13 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] Normal: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=normal — the same with boats on both sides and a side wind.
 - [ ] Hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=hard — every berth taken, 14 kn: fenders touching the neighbours are fine, a touch without a fender pauses.
 - [ ] Fenders in: on the first link, skip the fenders and back towards the berth — the card "Fenders still in".
+- [ ] Rope round the propeller: on the Normal link, when the crew is walking the lazy line to the bow, push the engine lever towards Ahead — the exercise stops with "A rope round the propeller".
 
 #### M76: Turning in her own length; picking up and leaving a mooring buoy
 
 - [ ] Turning: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=turn-own-length — Start: wheel hard right, short bursts ahead and astern until she points about 120°, then spin her with both thrusters to 270°, inside the magenta circle.
-- [ ] Out of the circle: on the same link, after Start give a long burst ahead (+ six times for ten seconds) — the card "Out of the circle".
+- [ ] Out of the circle: on the same link, after Start push the engine lever two thirds towards Ahead for ten seconds — the card "Out of the circle".
 - [ ] Buoy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=mooring-buoy — motor slowly into the wind to the middle buoy, pick it up, lie to it ten seconds, let go and back away.
-- [ ] Propeller: on the same link, after picking up the buoy, tap Ease on the bow line three times and put the engine ahead — the exercise stops with "A rope round the propeller".
 
 #### M77: Anchoring in the bay with a line ashore
 

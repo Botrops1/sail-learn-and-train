@@ -82,6 +82,7 @@ If something here looks necessary, stop and ask in the PR.
 | Boat points **(10b)** | `boatPoint(boat, 'bow' | 'stern' | 'centre')` (16.3): bow x = `transomX + loa` = 6.95 m, stern x = `transomX` = −8.6 m, centre = the boat's origin; a point at boat x is `(eastM + x·sin h, northM + x·cos h)`. |
 | Heading checks **(10b)** | `headingDeg: { to, within }` holds when `Math.abs(wrap180(heading − to)) ≤ within`. |
 | Thrusters and lever **(10b)** | Thruster `+1` pushes that end to starboard, `−1` to port (`thrusters.ts`). The engine lever is −100 … 100, neutral within ±10 (`neutralBandPct`); 15 is slow ahead (idle in gear, about 3.3 kn when she gets going). |
+| Lever in texts **(10b)** | The Engine section shows the lever as a slider with Astern, Neutral and Ahead and the gear in words, not a percentage, and its − / + move it by the step size (1 or 5 %); so the How texts name positions ("just past Neutral towards Ahead" = the pilots' 15, "about 40 % of the way towards Astern" = −40), never a number of taps. |
 | Levels **(10b)** | `easy` (the def's `start`), `normal`, `hard` (`levels`, replacing start keys); in the link as `exl`. |
 
 ### 3.2 Shared helpers
@@ -111,7 +112,7 @@ If something here looks necessary, stop and ask in the PR.
 
 The exercises follow the beginner syllabus topics named in ROADMAP Phase 10 (RYA Competent Crew, ASA 101): points of sail and sail trim, tacking, gybing (controlled and accidental), getting out of irons, gusts, reducing sail, setting and stowing sails. Every sailing statement in the exercise texts rests on a PHYSICS_TRUTHS rule: PT-21 (no-go zone, irons), PT-22 (easing as you bear away), PT-23 (stall), PT-24 and PT-26 (accidental gybe), PT-25, PT-29 and PT-32 (heel, easing, round-up), PT-28 (self-tacking jib), PT-13 (jib furling needs an eased sheet), PT-12 (in-mast furling), PT-35 (no speed, no steering; astern the rudder works the other way), PT-38 (flogging), PT-45 (a gust shows on the water). Two new rules come with this part, added to `docs/PHYSICS_TRUTHS.md` ("Phase 10 rules") by the planning PR: **PT-58** (M69: haul the main in before a gybe; source-checked, Wikipedia *Jibe*) and **PT-59** (M71: roll an in-mast main in and out with the bow close to the wind; `to-verify`, the candidate Seldén manual does not open from the build environment). The milestone PRs add their tests and test links.
 
-**(10b)** Part 10b's exercises test PT-27, PT-48, PT-33 (M76), PT-31, PT-53, PT-57 (M77), PT-50, PT-51, PT-52 (M75, M76, M78) through their good runs. Two new rules, added by the 10b planning PR: **PT-61** (M73: coming in from the sea, the red entrance light is on the left; source-checked, Wikipedia *Lateral mark* [44]) and **PT-62** (M76: pick up a mooring buoy heading into the wind, slowly, at the bow; `to-verify`, rya.org.uk and boatsafe.com do not open from the build environment, 2026-11-02).
+**(10b)** Part 10b's exercises test PT-50, PT-51, PT-52 (M75), PT-27, PT-48, PT-33 (M76), PT-31, PT-53, PT-57 (M77), PT-31 and PT-51 (M78) through their good runs. Two new rules, added by the 10b planning PR: **PT-61** (M73: coming in from the sea, the red entrance light is on the left; source-checked, Wikipedia *Lateral mark* [44]) and **PT-62** (M76: pick up a mooring buoy heading into the wind, slowly, at the bow; `to-verify`, rya.org.uk and boatsafe.com do not open from the build environment, 2026-11-02).
 
 ### 3.4 Common mistakes (check these first when something fails)
 
@@ -130,7 +131,7 @@ The exercises follow the beginner syllabus topics named in ROADMAP Phase 10 (RYA
 - **(10b) Never in gear while a line is slack or the crew is handling one** (PT-52, `stepLines`): `crew !== null` counts as slack, so the engine stays in neutral during the lazy line's walk and the shore line's swim.
 - **(10b) Pay the chain out as she backs.** Letting out a fixed amount and backing makes it either heap up or hold her (the anchor drags behind). The stern-to pilot pays out while `chainOutM < hypot(horizontal distance, depth + roller) + 4`.
 - **(10b) The tight berths fit this boat exactly** (4.9 m for a 4.9 m beam): with neighbours on both sides she is wedged. No exercise uses tight berths (22.2).
-- **(10b) `fender` is a severity, not a mistake.** A report with `severity: 'fender'` never matches a trigger with `severity` given (the lists of 16.2 never contain it).
+- **(10b) `fender` is a severity, not a mistake.** A report with `severity: 'fender'` never matches a trigger with `severity` given (the lists of 16.2 never contain it). The obstacle kind `fender` (a torn-off fender's report) is not in any list either.
 - **(10b) Mistake texts:** each exercise's `mistakes` object needs the texts of every mistake id its data lists (16.6's table plus its own); the loader check fails otherwise.
 
 ### 3.5 How the numbers were made
@@ -184,7 +185,7 @@ What the prototype found (each is built around, and named in its PR):
 - **What `openPage` adds:** Phase 10 labels (`m66` … `m71`) are treated like Phase 9 ones. The M66 PR replaces `6[0-5]` with `6\d|7[01]` in each of the five regular expressions of `openPage` that contain it (`scripts/shots.mjs`: the `held`, `sea`, `clock` and `mm` defaults and the "older checks open Ropes" rule).
 - **Test clock** for every live check that waits for app time (CLAUDE.md): `openPage(viewport, label, query, { testClock: true })`; wait with `page.waitForTimeout`, never `waitForFunction`.
 - **Driving an exercise:** with `debug=1`, `app.ts` exposes `window.__sailExercise = { dispatch(action), state(), read() }` (M66, 6.5): `dispatch` is `store.dispatch`, `state` returns the run (waypoints as a count), `read` the boat's numbers. Checks use it for the boat-handling actions of a good run (rope values, autopilot, engine, Realistic gestures) and tap the exercise's own buttons (Start, How?, Carry on, Back, Stop) as a learner would. `scripts/ui.mjs` gets `TAB_OF_JS.exercises = 'controls'` and a helper `exerciseLine(page)` (the text of `exercise-line`).
-- **(10b)** Labels `m73` … `m78`: the M73 PR replaces `6\d|7[01]` with `6\d|7\d` in the five regular expressions of `openPage` that contain it (as the M66 PR did), and adds the CI part `live, M73-M78` (15.8). The good runs of part 10b's exercises take up to six minutes of app time; they run on the phone only, as M69's.
+- **(10b)** Labels `m73` … `m78`: the M73 PR replaces `7[0-2]` with `7\d` in the five regular expressions of `openPage` (`scripts/shots.mjs`) that contain `6\d|7[0-2]` today, and adds the CI parts of 15.8. The good runs of part 10b's exercises take up to six minutes of app time; they run on the phone only, as M69's.
 - **CI** (`.github/workflows/ci.yml`): the M66 PR adds a matrix part `live, M66-M71` (after the last `live, M6…` part, same shape) with `env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m66,m67,m68,m69,m70,m71` (a name with no group yet is skipped) and appends `,m66,m67,m68,m69,m70,m71` to the `SHOTS_SKIP` list of the part `live, M30 on`. A good run of an exercise takes up to three minutes of app time; on the test clock `page.waitForTimeout` moves the app on at once, so this costs real time only for the frames drawn.
 
 ### 3.7 General rules for every milestone
@@ -415,9 +416,9 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 | M70 | 10 | Gusts: ease the main; Too much wind: roll the sails in | PT-25, PT-13 | M69 | not needed (data, texts and two check fields read from existing state; the rules are tested by earlier phases) |
 | M71 | 11 | Setting and furling the sails in Realistic ropes, Alone or With crew; sign-off of part 10a | PT-12, PT-59 (new) | M70 | **required** (a new rule; Pause blocked in a mode; Realistic gestures) |
 | M73 **(10b)** | 15 | A detailed marina (breakwater, entrance lights, quay furniture, buildings, yachts with cabin and rig); the marina and the bay are solid from open water; a bounce makes one damage report | PT-61 (new) | M72 | **required** (contact everywhere in the shared step; the report merge; new obstacles) |
-| M74 **(10b)** | 16 | "Harbour and anchor" group; Leaving the berth with Easy / Normal / Hard; a magenta target outline; touches pause, hard knocks end the run; harbour actions in the debrief | PT-33 | M73 | **required** (new checks on shared state; serious mistakes; `exl` in links; new logged actions) |
+| M74 **(10b)** | 16 | "Harbour and anchor" group; Leaving the berth with Easy / Normal / Hard; a magenta target outline; touches pause, hard knocks end the run; harbour actions in the debrief | — | M73 | **required** (new checks on shared state; serious mistakes; `exl` in links; new logged actions) |
 | M75 **(10b)** | 17 | Entering the berth stern-to at three levels | PT-50, PT-51, PT-52 | M74 | **required** (docking speeds and the engine in neutral near lines: safety teaching) |
-| M76 **(10b)** | 18 | Turning in her own length; picking up and leaving a mooring buoy | PT-27, PT-48, PT-33, PT-52, PT-62 (new) | M75 | **required** (a new rule; the propeller safety point) |
+| M76 **(10b)** | 18 | Turning in her own length; picking up and leaving a mooring buoy | PT-27, PT-48, PT-33, PT-62 (new) | M75 | **required** (a new rule; prop walk's side is an assumption, PT-27) |
 | M77 **(10b)** | 19 | Anchoring in the bay with a line ashore | PT-31, PT-53, PT-57 | M76 | **required** (anchoring safety: scope, setting) |
 | M78 **(10b)** | 20 | Stern-to on your own anchor; sign-off of part 10b | PT-51 | M77 | not needed (data, texts and checks of M74–M77) |
 | M72 | 14 | The gybe's push follows the wind: the boom starts across slowly and speeds up once past the line of the wind; the accidental-gybe step and Learn say why (extra milestone, issue #149) | PT-60 (new), PT-05, PT-24, PT-26, PT-58 | M71 | **required** (a physics formula that four rules rest on, and a new rule) |
@@ -1695,11 +1696,11 @@ What the owner sees: a rock breakwater round the marina with an entrance facing 
 
 ### 15.1 Files
 
-New: `src/render3d/harbourDetail.ts` (breakwater, lights, paved land, buildings, lamp posts, bollards, pontoon floats), `scripts/shots-m73.mjs`. Changed: `content/areas/adriatic.json` (`marina.basin.west`, `marina.breakwater`, `marina.buildings`), `content/boat/hanse508.json` (`physics.contact.mergeS`, `mergeNote`), `src/model/area.ts` (the new keys' types), `src/model/marina.ts` (breakwater, entrance, lights, land, buildings; obstacles; bounds), `src/model/places.ts` (`solidAround`), `src/model/contact.ts` (`ContactState.lastTouchS`, the merge in `stepContact`), `src/app/store.ts` (the external hook and the obstacles by `solidAround`; the initial `contact` gets `lastTouchS: {}`), `src/render3d/marina.ts` (instanced yachts), `src/render3d/sceneConfig.ts` (`SCENE.harbour` keys of 15.5), `src/render3d/scene.ts` (adds `harbourDetail`), `src/render3d/picking.ts` (only if instanced meshes need it, 15.5), `src/ui/mapView.ts` (`drawHarbour`: breakwater, land, buildings, lights; taps), `content/registry/parts.json` (three ids), both glossaries, `docs/review/ru.md`, `scripts/budget.mjs` (marina cases), `scripts/shots.mjs`, `.github/workflows/ci.yml` (15.8), `tests/marina.test.ts`, `tests/contact.test.ts`, `tests/places.test.ts` (new, or the existing file that tests `places.ts` if there is one: `grep -l placeStart tests/`), `tests/physicsTruths10.test.ts` (PT-61), `docs/PHYSICS_TRUTHS.md` (PT-61's test), `docs/BOAT_REFERENCE.md` (`mergeS` assumption; the breakwater and buildings as made-up area data), `docs/CODE_MAP.md`.
+New: `src/render3d/harbourDetail.ts` (breakwater, lights, paved land, buildings, lamp posts, bollards, pontoon floats), `scripts/shots-m73.mjs`. Changed: `content/areas/adriatic.json` (`marina.basin.west`, `marina.breakwater`, `marina.buildings`), `content/boat/hanse508.json` (`physics.contact.mergeS`, `mergeNote`), `src/model/area.ts` (the new keys' types), `src/model/marina.ts` (breakwater, entrance, lights, land, buildings; obstacles; bounds), `src/model/places.ts` (`solidAround`), `src/model/contact.ts` (`ContactState.lastTouchS`, the merge in `stepContact`), `src/app/store.ts` (the external hook and the obstacles by `solidAround`; the initial `contact` gets `lastTouchS: {}`), `src/render3d/marina.ts` (instanced yachts), `src/render3d/sceneConfig.ts` (`SCENE.harbour` keys of 15.5), `src/render3d/scene.ts` (adds `harbourDetail`; the debug hook `marinaPartScreen`, 15.8), `src/render3d/picking.ts` (only if instanced meshes need it, 15.5), `src/ui/mapView.ts` (`drawHarbour`: breakwater, land, buildings, lights; taps), `content/registry/parts.json` (three ids), both glossaries, `docs/review/ru.md`, `scripts/budget.mjs` (marina cases), `scripts/shots.mjs`, `.github/workflows/ci.yml` (15.8), `tests/marina.test.ts`, `tests/contact.test.ts`, `tests/places.test.ts` (new), `tests/physicsTruths10.test.ts` (PT-61), `docs/PHYSICS_TRUTHS.md` (PT-61's test), `docs/BOAT_REFERENCE.md` (`mergeS` assumption; the breakwater and buildings as made-up area data), `docs/CODE_MAP.md`.
 
 ### 15.2 Data
 
-`content/areas/adriatic.json`, in `marina`: `basin.west` changes from `-110` to `-150` (the outer harbour inside the breakwater is 5 m deep like the basin). New keys after `fendersHintNote`:
+`content/areas/adriatic.json`, in `marina`: `basin.west` changes from `-110` to `-150` (the outer harbour inside the breakwater is 5 m deep like the basin; `src/render3d/seabed.ts` draws the basin's flat bottom from it, so it follows; a test that reads `basin.west` changes with it, 3.7). New keys after `fendersHintNote`:
 
 ```json
 "breakwater": {
@@ -1764,8 +1765,8 @@ export function solidAround(
 
 `src/model/contact.ts`:
 
-- `ContactState` gains `lastTouchS: Readonly<Record<string, number>>` (key `obstacleId:part` → the app time of its latest touching frame); the initial contact state (`store.ts` and every place that builds one) has `{}`.
-- `stepContact`: for every hit this frame, `lastTouchS[hit.key] = timeS`. A **new** touch (key not in `touching`) is **merged** when `timeS − lastTouchS_before[key] ≤ physics.contact.mergeS` (the value before this frame) and a report with the same `obstacleId` and `part` is in `reports`: take the newest such report; if `rank(newSeverity) > rank(report.severity)` (`fender` 0 < `touch` 1 < `bump` 2 < `knock` 3 < `hit` 4), replace it in the list (same index) with `{ ...report, severity: newSeverity, impactMps: Math.max(report.impactMps, hit.approachMps), fender: hit.fender }` (a new object, so `recordAlerts` writes a `contact` entry, and `withNotice` as for a new report); otherwise change nothing. A new touch that is not merged makes a new report as today. Entries of `lastTouchS` older than `mergeS` are dropped each call. When `hits` and `touching` are both empty and `lastTouchS` is empty, return `contact` unchanged (as today's early return).
+- `ContactState` gains `lastTouchS: Readonly<Record<string, number>>` (key `obstacleId:part` → the app time of its latest touching frame); `NO_CONTACT` (`src/model/contact.ts`, the initial state every other place spreads or references) has `lastTouchS: {}`; a test or file that builds a `ContactState` literal without spreading `NO_CONTACT` adds the field.
+- `stepContact`: for every hit this frame, `lastTouchS[hit.key] = timeS`. A **new** touch (key not in `touching`) is **merged** when `timeS − lastTouchS_before[key] ≤ physics.contact.mergeS` (the value before this frame) and a report with the same `obstacleId` and `part` is in `reports`: take the newest such report; if `rank(newSeverity) > rank(report.severity)` (`fender` 0 < `touch` 1 < `bump` 2 < `knock` 3 < `hit` 4), replace it in the list (same index) with `{ ...report, severity: newSeverity, impactMps: Math.max(report.impactMps, hit.approachMps), fender: hit.fender }` (a new object, so `recordAlerts` writes a `contact` entry, and `withNotice` as for a new report); otherwise change nothing. A new touch that is not merged makes a new report as today. Entries with `timeS − lastTouchS[key] > mergeS` are dropped each call. When `hits`, `touching` and `lastTouchS` are all empty, return `contact` unchanged (today's early return); otherwise return a new object (dropping old entries is a change). A merged report that got worse is a new object, so the Attention history gets a second `contact` line for that bump (the escalation: a touch that became a knock); the damage list keeps one line.
 - `stepFenders` is unchanged (a lost fender is never merged).
 
 ### 15.4 Store and URL
@@ -1777,30 +1778,31 @@ No new keys or actions. `goToPlace`, the layout and the traffic (fresh states) s
 All sizes and colours go into `SCENE.harbour` (`src/render3d/sceneConfig.ts`), added after `pontoonBelowM`:
 
 ```ts
-breakwater: { colour: '#8f887b', topAboveM: 2.5, slopeM: 3, belowM: 3, shade: 0.08 },
+breakwater: { colour: '#8f887b', topAboveM: 2.5, belowM: 3, shade: 0.08 },
 light: { towerRadiusM: 0.6, towerM: 4, topM: 1, white: '#f2f2ee', red: '#d62828', green: '#1f9d55', emissive: 0.8 },
 land: { colour: '#cfc8b8' },
-building: { wall: '#efe9df', roof: '#b5523b', roofM: 2.2, windowColour: '#4a4f55', windowEveryM: 3 },
+building: { wall: '#efe9df', roof: '#b5523b', roofM: 2.2, windowColour: '#4a4f55', floorM: 3, windowEveryM: 3, windowWidthM: 1.2, windowHeightM: 1.0, windowSillM: 1.0 },
 lamp: { everyM: 20, insetM: 8, postM: 4.5, postRadiusM: 0.08, headM: 0.4, colour: '#3a3f44' },
 bollard: { radiusM: 0.15, heightM: 0.5, insetM: 1.2, colour: '#2b2b2b' },
-float: { everyM: 4, sizeM: 1.2, belowM: 0.4, colour: '#4a4f55' },
+float: { everyM: 4, lengthM: 1.2, widthM: 0.5, belowM: 0.5, outM: 0.2, colour: '#4a4f55' },
 yacht: { cabinFrom: 0.35, cabinTo: 0.7, cabinWidth: 0.6, cabinM: 0.6, mastAt: 0.55, mastShare: 1.45, boomShare: 0.35, boomAboveM: 2.2, jibRadiusM: 0.1, deckColour: '#c9c5bb', rigColour: '#9aa3ab', sailColour: '#ecebe4' },
 ```
 
 `src/render3d/harbourDetail.ts` (`buildHarbourDetail(areaData?): { object: THREE.Group; update(state: AppState): void }`, built and moved exactly like `marina.ts`: map positions in a group shifted with the boat each frame, rebuilt when layout or traffic change, each mesh hidden beyond `maxDrawM`):
 
-- **Breakwater** (`env_breakwater`): one mesh for the three moles. Each mole is a prism over its rect: the waterline footprint is the rect, the top face is the rect inset by `slopeM` on every side that faces water (all four sides; the north mole's north side meets the land, inset 0 there), at `topAboveM`, the bottom at `−belowM`. Vertex colours: `colour` times `1 ± shade` per vertex from `random.ts` with seed 73 (a rough rock look). Contact uses the rect (15.3); the drawn slope is outside it on no side (the footprint is the rect).
-- **Lights** (`env_harbour_light`): at `lights.red` and `lights.green`, on the mole top: a white cylinder (`towerRadiusM`, `towerM`) and a top band (radius + 0.05, `topM`) in red or green with `emissive` of the same colour at `emissive` intensity.
+- **Breakwater** (`env_breakwater`): one mesh for the three moles. **Each mole is a box** over its rect from `−belowM` to `topAboveM` (vertical sides; the three boxes overlap at the corners, which is fine with one material; `slopeM` is not used and is left out of `SCENE`). Vertex colours: `colour` times `1 + shade · (2r − 1)` per vertex with `r` from `mulberry32(73)` (`src/model/random.ts`), for a rough rock look. Contact uses the same rect (15.3).
+- **Lights** (`env_harbour_light`): at `lights.red` and `lights.green`, standing on the mole top (y = `breakwater.topAboveM`), no light source (the emissive colour only): a white cylinder (`towerRadiusM`, `towerM`) and a top band (radius + 0.05, `topM`) in red or green with `emissive` of the same colour at `emissive` intensity.
 - **Land** (`env_quay`): a box over `land`, top at `quayHeightM`, `land.colour`.
-- **Buildings** (`env_harbour_building`): walls one `InstancedMesh` of boxes (centre, width, depth, height from data, standing on the land's top); roofs one `InstancedMesh` of a pitched prism (ridge east–west, `roofM` high, `roof` colour); windows drawn on the walls by one shared canvas texture (dark rectangles `windowColour`, one row per `windowEveryM` of height; made like the textures in `src/render3d/boat/textures.ts`; at Low detail no texture, plain walls).
+- **Buildings** (`env_harbour_building`): walls one `InstancedMesh` of boxes (centre, width, depth, height from data, standing on the land's top); roofs one `InstancedMesh` of a pitched prism (ridge east–west, `roofM` high, `roof` colour); windows: one `InstancedMesh` of thin dark boxes (`windowColour`, 0.05 m thick) on each building's **south face** (towards the harbour): one row per floor (`floor(heightM / floorM)` rows, the row's sill `windowSillM` above the floor), one window every `windowEveryM` along the width starting `windowEveryM / 2` from the west corner, each `windowWidthM` × `windowHeightM`. No texture. At Low detail the windows are left out.
 - **Lamp posts** (`env_quay`): every `everyM` along the quay from `breakwater.westM + everyM / 2` to `eastEndEastM`, at `F + insetM` north: a post and a head (two `InstancedMesh`es).
 - **Bollards** (`env_quay`): one at each of `geometry.rings`, `insetM` north of the quay face (one `InstancedMesh`).
-- **Pontoon floats** (`env_quay`): boxes every `everyM` along the pontoon's south and north edges, from `−belowM` to the pontoon's underside (one `InstancedMesh`).
-- **Moored yachts** (`src/render3d/marina.ts`): the per-yacht meshes become **one `InstancedMesh` per yacht type** (three), each with one merged geometry in the yacht's own frame (x from the stern 0 … L, y up, z to starboard) with vertex colours: the hull (the `yachtOutline` extruded from `−hullBelowM` to `hullAboveM`, `hullColour`), the deck (its top face, `deckColour`), the cabin (a box from `cabinFrom·L` to `cabinTo·L`, `cabinWidth·B` wide, `cabinM` high, `hullColour`), the mast (a cylinder of `mastRadiusM`, 8 sides, at `mastAt·L`, `mastShare·L` high above the deck, `rigColour`), the boom (a cylinder of `mastRadiusM` from the mast aft by `boomShare·L`, `boomAboveM` above the deck), the rolled jib (a cylinder of `jibRadiusM` from the bow at deck height to 90 % of the mast's height, `sailColour`). Each instance's matrix places it at its berth (`berth.centreEastM`, `berth.sternNorthM`, `headingDeg`); `mesh.userData.partId = 'env_moored_yacht'` (a tap names "Moored yacht", as today). If `picking.ts` reads `userData` from the hit object only, nothing changes; if it needs the instance, it uses `hit.instanceId` only to keep the tap working (no per-yacht selection).
+- **Rings** (`src/render3d/marina.ts`, `env_quay_ring`): today 25 separate meshes; they become **one `InstancedMesh`** (same geometry, material and positions).
+- **Pontoon floats** (`env_quay`): boxes `lengthM` long (along the pontoon) and `widthM` wide, from `−belowM` up to the water line (y = 0), every `everyM` along both long edges of the pontoon, sticking out `outM` beyond the edge so they show from the side (one `InstancedMesh`).
+- **Moored yachts** (`src/render3d/marina.ts`): the per-yacht meshes become **one `InstancedMesh` per yacht type** (three), each with one merged geometry in the yacht's own frame (x from the stern 0 … L, y up, z to starboard) with vertex colours: the hull (the `yachtOutline` extruded from `−hullBelowM` to `hullAboveM`, `hullColour`), the deck (its top face, `deckColour`), the cabin (a box from `cabinFrom·L` to `cabinTo·L`, `cabinWidth·B` wide, `cabinM` high, `hullColour`), the mast (a cylinder of `mastRadiusM`, 8 sides, at `mastAt·L`, `mastShare·L` high above the deck, `rigColour`), the boom (a cylinder of `mastRadiusM` from the mast aft by `boomShare·L`, `boomAboveM` above the deck), the rolled jib (a cylinder of `jibRadiusM` from (x = L, y = `hullAboveM`) to (x = `mastAt·L`, y = `hullAboveM + 0.9·mastShare·L`), `sailColour`). The hull geometry is today's (`buildYacht`: the outline as a `THREE.Shape`, `ExtrudeGeometry` with no bevel, rotated to stand vertical); build each type's geometry once around its own outline at the origin (stern at 0, heading 0) and give each instance the translation and rotation that put it where today's `buildYacht` puts that yacht's hull (berth position, `headingDeg`). The deck line (`LineLoop`) is dropped (the deck colour shows the edge); `mesh.userData.partId = 'env_moored_yacht'` (a tap names "Moored yacht", as today). If `picking.ts` reads `userData` from the hit object only, nothing changes; if it needs the instance, it uses `hit.instanceId` only to keep the tap working (no per-yacht selection).
 
-**Maps** (`drawHarbour` in `src/ui/mapView.ts`, both the full map and the mini-map): before the quay, fill `land` with `land.colour` and each building's footprint with `building.roof`; fill the three breakwater rects with `breakwater.colour`; after everything of the harbour, a dot of 3 px radius at each light in its colour. A tap on a breakwater rect selects `env_breakwater`, on a light (within 6 px) `env_harbour_light`, on a building `env_harbour_building` (as the quay's tap does).
+**Maps** (`drawHarbour` in `src/ui/mapView.ts`, both the full map and the mini-map; `marinaScreen` gains the breakwater rects, the land, the buildings and the lights in screen coordinates; the colours are added to `mapView.ts`'s own `COLOURS` table with the hex values of `SCENE.harbour` — `breakwater` `#8f887b`, `land` `#cfc8b8`, `roof` `#b5523b`, `lightRed` `#d62828`, `lightGreen` `#1f9d55` — `mapView.ts` does not import `SCENE`): before the quay, fill `land` with `land.colour` and each building's footprint with `building.roof`; fill the three breakwater rects with `breakwater.colour`; after everything of the harbour, a dot of 3 px radius at each light in its colour. Taps, in this order: a light (within 6 px) selects `env_harbour_light`, a building `env_harbour_building`, a breakwater rect `env_breakwater`, then today's quay and yacht taps as they are, and last the land (`env_quay`), so the land never swallows a quay or yacht tap.
 
-**Budget** (`scripts/budget.mjs`): add cases with `extra` `&pl=marina&ml=tight&tr=busy` for the cameras `helm` and `side-port`, both details, against the same `BUDGET` (High 300 calls, 250,000 triangles; Low 150 calls, 120,000 triangles). Measured before M73 (2026-11-02, the planning session): `helm`, tight, busy: 356 calls at High, 228 at Low (already over: the 47 yachts are separate meshes); after M73 both must be within the budget.
+**Budget** (`scripts/budget.mjs`): add cases with `extra` `&pl=marina&ml=tight&tr=busy` for the cameras `helm` and `side-port`, both details, against the same `BUDGET` (High 300 calls, 250,000 triangles; Low 150 calls, 120,000 triangles). Measured before M73 (2026-11-02, the planning session): `helm`, tight, busy: 356 calls at High, 228 at Low (already over: 47 yachts × 2 meshes (hull, mast) and 25 ring meshes). Batching the yachts (3 calls) and the rings (1) removes about 115 calls; the new detail adds about 14 (breakwater 1, lights 4, land 1, building walls, roofs and windows 3, lamp posts 2, bollards 1, floats 1, the deck-line loops gone): expected about 255 at High and 127 at Low, within the budget. The cases: after the existing loop, a second loop over `detail` in `high`, `low` and `cam` in `helm`, `side-port`, Easy ropes only, query `?debug=1&held=1&sea=flat&clock=0&mm=0&cam=${cam}&detail=${detail}&pl=marina&ml=tight&tr=busy`, label `budget ${detail} ${cam} marina`, the same pass/fail lines as the existing cases.
 
 ### 15.6 Strings and registry
 
@@ -1812,7 +1814,7 @@ Registry (`content/registry/parts.json`, after `env_moored_yacht`, `status: "dra
 | `env_harbour_light` | `env_breakwater` | `?cam=helm&sel=env_harbour_light&pl=marina&pe=-200.0&pn=1476.0&hdg=90&ws=0` |
 | `env_harbour_building` | `env_quay` | `?cam=side-port&sel=env_harbour_building&pl=marina&pe=2.8&pn=1490.4&hdg=180` |
 
-Glossary (English final; Russian drafts in `content/lang/ru/glossary.json`, `textStatus: "draft"`):
+Glossary (English final; Russian drafts in `content/lang/ru/glossary.json`, `textStatus: "draft"`; a cell "—" is an empty array for `alternatives` and `mistakes`, and the key left out for `showMe`; the shape is today's entries', for example `env_quay`):
 
 | Id | name | alternatives | short | what | onThisBoat | mistakes | showMe |
 |---|---|---|---|---|---|---|---|
@@ -1827,17 +1829,17 @@ Russian drafts (each cell `English / Russian`): Breakwater / Волнолом (a
 1. `tests/marina.test.ts`: the breakwater, entrance, lights and land values of 15.3 for `medium`/`half`; the tight and spacious values (south mole north 1441 / 1423, entrance south 1461 / 1443). The existing `marinaBounds` expectation (line 143 as built) changes to `{ west: -150, east: 120, south: 1421, north: 1515 }` (3.7: this test checks what M73 changes). `marinaObstacles(marinaGeometry('medium', 'half'))` has `3 + 3 + 28` entries, the three new ids with `partId: 'env_breakwater'`.
 2. **PT-61** (`tests/physicsTruths10.test.ts`, "PT-61 coming in from the sea the red light is on the left"): for each layout, the entrance faces west, so a boat coming in heads east (090°); the red light is to port (north) of the entrance's middle and the green light to starboard (south): `red[1] > (entrance.southM + entrance.northM) / 2 > green[1]`, and both lights are within `moleWidthM` of the entrance line (`|light[0] − entrance.eastM| ≤ 12`).
 3. `tests/contact.test.ts`, the merge (`stepContact`, default data: `separateS` 0.5, `mergeS` 3; `dt` 0.1; key `quay:stern`, `obstacleId: 'quay'`, `part: 'stern'`, `fender: false`): t = 0 a hit at 0.10 m/s → one report, `touch`. No hits for ten frames (to t = 1.0): `touching` empty, one report. t = 1.1 a hit at 0.30 m/s → still one report, severity `bump`, `impactMps` 0.30, `atS` 0, and `reports[0]` is not the object of the first report. No hits to t = 2.2; t = 2.3 a hit at 0.05 → one report, the same object as after t = 1.1. No hits to t = 5.4; t = 5.5 a hit at 0.05 → two reports. A second obstacle (`yacht-0-11:port`) touched at t = 1.2 makes its own report (merging is per obstacle and part).
-4. `tests/places.test.ts` (or the existing file): `solidAround('open', 0, 0, g)` is `{ marina: false, bay: false }`; `('open', 0, 1405, g)` → `marina: true`; `('open', -1300, 0, g)` → `bay: true`; `('open', -1280, 0, g)` → `bay: false`; `('marina', 0, 0, g)` → `marina: true`; `('bay', 0, 0, g)` → `bay: true` (g = medium/half).
-5. **Solid from open water** (`tests/contact.test.ts` or `tests/store.test.ts`): `s = parseUrlState('?wd=0&ws=0&mf=0&jf=0&js=100&ap=off&sea=flat&eng=0')`, then `s = { ...s, boat: { ...s.boat, eastM: 0, northM: 1405, headingDeg: 0, speedMps: 1.0 } }`; stepping `reduce(s, { type: 'step', dt: 0.05 })`, within 30 s of app time a report with `obstacleId: 'breakwater-south'` is in `contact.reports` (the place stays `open`). The same with the boat at `eastM: −1330, northM: 300, headingDeg: 270, speedMps: 2.0`: within 30 s a report with `obstacleId` `bottom` or `land`. With the boat at (0, 0) heading 0 at 1.0 m/s for 30 s: no report, and the `external` hook is not built (spy not needed: check that `contact` is the same object after every frame).
+4. `tests/places.test.ts` (new): `solidAround('open', 0, 0, g)` is `{ marina: false, bay: false }`; `('open', 0, 1405, g)` → `marina: true`; `('open', -1300, 0, g)` → `bay: true`; `('open', -1280, 0, g)` → `bay: false`; `('marina', 0, 0, g)` → `marina: true`; `('bay', 0, 0, g)` → `bay: true` (g = medium/half).
+5. **Solid from open water** (`tests/store.test.ts`): `s = parseUrlState('?wd=0&ws=0&mf=0&jf=0&js=100&ap=off&sea=flat&eng=0')`, then `s = { ...s, boat: { ...s.boat, eastM: 0, northM: 1405, headingDeg: 0, speedMps: 2.0 } }` (the bow at north 1411.95, 9 m from the south mole's south face at 1421 for the default medium layout; with no engine she carries her way, PT-49); stepping `reduce(s, { type: 'step', dt: 0.05 })`, within 30 s of app time a report with `obstacleId: 'breakwater-south'` is in `contact.reports` (the place stays `open`). The same with the boat at `eastM: −1330, northM: 300, headingDeg: 270, speedMps: 2.0`: within 30 s a report with `obstacleId` `bottom` or `land`. With the boat at (0, 0) heading 0 at 1.0 m/s for 30 s: no report, and the `external` hook is not built (spy not needed: check that `contact` is the same object after every frame).
 6. Every existing test stays green (Phase 7's contact, lines, seabed and anchor tests; 3.7 for the one changed line).
 
 ### 15.8 Browser checks (`scripts/shots-m73.mjs`)
 
 Scenes (phone size first, as every milestone): `marina-entrance` (`?pl=marina&m=harbour&pe=-200.0&pn=1476.0&hdg=90&ws=0&cam=helm`: the entrance ahead, red light on the left), `marina-side` (`?pl=marina&m=harbour&tr=busy&cam=side-port&ws=0&detail=high`), `marina-map` (`?pl=marina&m=harbour&tr=busy&cam=map`), `marina-low` (`?pl=marina&m=harbour&tr=busy&cam=side-port&ws=0&detail=low`).
 
-Live checks: (1) `m73 tap breakwater`: on `marina-map`, tap the middle of the south mole on the map (`__sailMap.toScreen(-15, 1427)`): the info card names "Breakwater". (2) `m73 tap light`: on `marina-entrance`, tap the red light in 3D (find its screen point with the debug hook `partBox('env_harbour_light')` if it exists, else `closeUpOn(page, 'env_harbour_light')` from `scripts/ui.mjs`): the card names "Harbour entrance light". (3) `m73 yacht tap`: on `marina-side`, a tap on a moored yacht names "Moored yacht". (4) `m73 bump once`, test clock: `?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&tx=1` with `debug=1`; dispatch `engine { leverPct: -40 }` for 3 s then `{ leverPct: 0 }`, wait 6 s: the Status section's damage list has at most two lines for the quay (before M73 a bounce gave three or more; the PR reports the number). The accessibility audit runs on `?pl=marina&m=harbour` with the Place section open.
+Live checks: (1) `m73 tap breakwater`: on `marina-map`, tap the middle of the south mole on the map (`__sailMap.toScreen(-15, 1427)`): the info card names "Breakwater". (2) `m73 tap light`: on `marina-entrance`, tap the red light in 3D (its screen point from a new debug hook, added by M73 to `window.__sailDebug` in `src/render3d/scene.ts`: `marinaPartScreen(partId)` returns the CSS-pixel point of the centre of the first visible mesh (for an `InstancedMesh`, instance 0) carrying that `partId` in the marina or harbour-detail groups, projected with the current camera, or `null` when it is off screen): the card names "Harbour entrance light". (3) `m73 yacht tap`: on `marina-side`, tap `__sailDebug.marinaPartScreen('env_moored_yacht')` (`debug=1`): the card names "Moored yacht". (4) `m73 bump once`, test clock: `?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0&debug=1`; through `window.__sailExercise.dispatch` (it exists with `debug=1` in any mode) send `engine { leverPct: -40 }`, wait 3 s, send `{ leverPct: 0 }`, wait 6 s; `showSection(page, 'status')`: the damage list holds at most two `li.damage-item` (as `scripts/shots-m55.mjs` counts them; only the quay can be touched there) (before M73 a bounce gave three or more; the PR reports the number). The accessibility audit runs on `?pl=marina&m=harbour` with the Place section open.
 
-CI: add the part `live, M73-M78` to `ci.yml` (same shape as `live, M66-M71`) with `SHOTS_ONLY=m73,m74,m75,m76,m77,m78`, and append `,m73,m74,m75,m76,m77,m78` to the `SHOTS_SKIP` list of `live, M30 on`. The budget check runs on every PR already.
+CI (`.github/workflows/ci.yml`): after the part `live, M72`, add three parts of the same shape (`env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=…`): `live, M73-M74` (`m73,m74`), `live, M75-M76` (`m75,m76`), `live, M77-M78` (`m77,m78`) — a name with no group yet is skipped — and append `,m73,m74,m75,m76,m77,m78` after `m72` in the `SHOTS_SKIP` list of `live, M30 on`. The budget check runs on every PR already.
 
 ### 15.9 Done when
 
@@ -1857,7 +1859,7 @@ What the owner sees: a new group "Harbour and anchor" in the Exercises list with
 
 ### 16.1 Files
 
-New: `src/render3d/exerciseTarget.ts`, `tests/harbourPilot.ts` (the scripted good runs, 16.7; a helper, not a test file), `tests/harbourExercises.test.ts`, `scripts/shots-m74.mjs`. Changed: `content/exercises/exercises.json` (`leave-berth`), both `exercises.json` texts, `src/model/exercises.ts` (16.3), `src/app/exerciseRun.ts` (contact triggers, `level`, `shownTarget`, the new logged actions), `src/app/store.ts` (logging the new actions, 16.3), `src/app/urlState.ts` (`exl`, `levels`), `src/render3d/scene.ts` (adds the target), `src/ui/mapView.ts` (the target on both maps), `src/ui/exercisePanel.ts` (Level row; `opens` `harbour` and `anchor`; group), `src/ui/exerciseCoach.ts` (two new target rows), `src/ui/exerciseDebrief.ts` (`actionText` for the new actions), `src/style.css`, both `ui.json`, `content/registry/parts.json` (`env_exercise_target`), both glossaries, `docs/review/ru.md`, `docs/review/ru-exercises.md`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/urlState.test.ts`, `tests/debrief.test.ts`, `scripts/shots.mjs`, `scripts/ui.mjs` (`TAB_OF_JS` unchanged; a helper `exerciseLevel(page, level)` that taps `exercise-level-<level>`), `docs/EXERCISES.md` (EX-A "Leaving" now an exercise; the harbour mistakes in "When an exercise pauses"), `docs/CODE_MAP.md`.
+New: `src/render3d/exerciseTarget.ts` (and `SCENE.exerciseTarget` in `src/render3d/sceneConfig.ts`), `tests/harbourPilot.ts` (the scripted good runs, 16.7; a helper, not a test file), `tests/harbourExercises.test.ts`, `scripts/shots-m74.mjs`. Changed: `content/exercises/exercises.json` (`leave-berth`), both `exercises.json` texts, `src/model/exercises.ts` (16.3), `src/app/exerciseRun.ts` (contact triggers, `level`, `shownTarget`, the new logged actions), `src/app/urlState.ts` (`exl`, `levels`), `src/render3d/scene.ts` (adds the target), `src/ui/mapView.ts` (the target on both maps), `src/ui/exercisePanel.ts` (Level row; `opens` `harbour` and `anchor`; group), `src/ui/exerciseCoach.ts` (two new target rows), `src/ui/exerciseDebrief.ts` (`actionText` for the new actions), `src/style.css`, both `ui.json`, `content/registry/parts.json` (`env_exercise_target`), both glossaries, `docs/review/ru.md`, `docs/review/ru-exercises.md`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/urlState.test.ts`, `tests/debrief.test.ts`, `scripts/shots.mjs`, `scripts/ui.mjs` (`TAB_OF_JS` unchanged; a helper `exerciseLevel(page, level)` that taps `exercise-level-<level>`), `docs/WORKFLOW.md` (ticks), `src/app/app.ts` (`__sailExercise.read()` gains the fields of 16.8), `docs/EXERCISES.md` (EX-A "Leaving" now an exercise; the harbour mistakes in "When an exercise pauses"), `docs/CODE_MAP.md`.
 
 ### 16.2 Data
 
@@ -1920,7 +1922,7 @@ export interface ExerciseDef {
 }
 export interface CheckSource {
   wind: WindNow; boat: BoatState; motion: MotionReport | null; rig: RigState; controls: Controls; engine: EngineState;
-  harbour: HarbourState; lines: LinesState; anchor: AnchorState;   // M74
+  harbour?: HarbourState; lines?: LinesState; anchor?: AnchorState;   // M74: optional, so older hand-built test sources still compile; AppState has all three
 }
 export interface CheckContext { events: readonly ExerciseEvent[]; gusts: number; targets?: readonly ExerciseTarget[] }
 
@@ -1930,14 +1932,15 @@ export function boatPoint(boat: BoatState, point: BoatPoint, data?: BoatData): [
 export function obstacleKind(obstacleId: string): ObstacleKind;
 /** A target as a shape on the map for the state's layout. */
 export type ResolvedTarget = { shape: 'circle'; eastM: number; northM: number; radiusM: number } | { shape: 'rect'; rect: Rect };
-export function resolveTarget(target: ExerciseTarget, harbour: HarbourState, areaData?: AreaData): ResolvedTarget;
+export function resolveTarget(target: ExerciseTarget, harbour: HarbourState, areaData: AreaData = area): ResolvedTarget; // marinaGeometry(harbour.layout, harbour.traffic, areaData)
 export function insideTarget(target: ResolvedTarget, eastM: number, northM: number): boolean;
 ```
 
 - `boatPoint`: with `h = headingDeg` in radians, a point at boat x is `(eastM + x·sin h, northM + x·cos h)`; bow x = `hull.transomX + hull.loa` (−8.6 + 15.55 = 6.95), stern x = `hull.transomX` (−8.6), centre x = 0. Read `boat` at call time (3.4).
 - `obstacleKind`: `'yacht-…'` → `yacht`; `quay`, `wall`, `pontoon` and `breakwater-…` → `harbour`; `bottom`, `land` → `ground`; `propeller` → `propeller`; `fender` → `fender`; anything else → `harbour`.
 - `resolveTarget`: `circle` as given; `fairway` → `{ shape: 'rect', rect: marinaGeometry(harbour.layout, harbour.traffic).fairway }`; `berth` → the rect `{ west: c − w/2, east: c + w/2, south: F − g − Z, north: F − g }` with `c` = `ourBerth.centreEastM`, `w` = `ourBerth.widthM`, `F`, `g`, `Z` = `quayFaceNorthM`, `sternGapM`, `berthZoneM`. `insideTarget`: distance ≤ radius, or `insideRect`.
-- **`checkPasses`, the new fields** (all must hold; each false when its thing is missing):
+- **Where the numbers come from:** `quayFaceNorthM`, `sternGapM`, `berthZoneM` from `area.marina` (the module's `area` import from `./area`); `ourBerth` and `fairway` from `marinaGeometry(harbour.layout, harbour.traffic)`. `checkPasses` keeps its three parameters. Everything stays pure (`src/model` imports only `src/model`).
+- **`checkPasses`, the new fields** (all must hold; each false when the source lacks `harbour`, `lines` or `anchor` it needs):
 
 | Field | Holds when |
 |---|---|
@@ -1947,21 +1950,21 @@ export function insideTarget(target: ResolvedTarget, eastM: number, northM: numb
 | `berthOffsetM` | `harbour.place === 'marina'` and `|boatPoint(boat, 'stern')[0] − ourBerth.centreEastM|` in range |
 | `linesOn` | every code is in `lines.lines` |
 | `linesOff` | no code is in `lines.lines` and none is `lines.crew?.code` |
-| `linesTight` | every code is in `lines.lines` and `!canTighten(code, linesInputs)` (hand tight; `linesInputs` built as `store.ts` builds it for the `line` action, from the source's `lines`, `boat`, `harbour`, `engine`, the state's marina geometry and `area`) |
+| `linesTight` | every code is in `lines.lines` and `!canTighten(code, { lines, boat, harbour, geometry: marinaGeometry(harbour.layout, harbour.traffic), engine, area })` (hand tight; the same `LinesInputs` that `store.ts`'s private `linesInputs` builds, made here from the source) |
 | `fendersOut` | `harbour.fendersOut === fendersOut` |
 | `anchor.phase` | `anchor.phase` is in the list |
 | `anchor.chainOutM` | `anchor.chainOutM` in range |
 | `anchor.scopeOk` | `(phase is 'bottom' or 'set' and chainOutM ≥ scopeNeededM(depthAt(anchor.eastM, anchor.northM), wind.twsKn)) === scopeOk` |
 
 - The loader's check (6.7 test 1) accepts these fields, `show`, `levels` and `targets`; a step's `show` and a check's `target.id` must name a target of the def; `levels` keys only `normal`, `hard`.
-- **`checkTargets`** gains two rows after the control rows: `{ kind: 'heading'; to; within }` from `headingDeg` (reading: the heading rounded, ok as the check) and `{ kind: 'quayGap'; range }` from `quayGapM` (reading: the gap to 0.1 m, ok as the check).
+- **`checkTargets`** gains two rows after the control rows: `{ kind: 'heading'; to; within }` from `headingDeg` and `{ kind: 'quayGap'; range: Range }` from `quayGapM`; `TargetRow` gets both kinds, and `targetReading` two branches: `heading` → `{ ok: |wrap180(heading − to)| ≤ within, value: Math.round(((heading % 360) + 360) % 360) }`; `quayGap` → `{ ok: as the check, value: Math.round(gap · 10) / 10 }` (`null` outside the marina). `exerciseCoach.ts` adds the two labels and `nowText` branches (16.5).
 
 `src/app/exerciseRun.ts`:
 
-- `ExerciseOptions` gains `level: ExerciseLevel`; `DEFAULT_OPTIONS.level = 'easy'`. `{ options: { level } }` is **not** a store command: the level is chosen by loading the start link again (16.4, 16.5), because the marina is rebuilt.
+- `ExerciseOptions` gains `level: ExerciseLevel`; `DEFAULT_OPTIONS.level = 'easy'`. The level is chosen by loading the start link again (16.4, 16.5), because the marina is rebuilt: `setRunOptions` ignores a `level` key in `{ options }` (the run keeps its level). (The code's `ExerciseOptions.pauseOnStep` and `LoggedAction`'s realistic `on?` stay as built; 4.1's listing predates them.)
 - `stepExercise` passes `context.targets = def.targets ?? []` and the source is `next` (it has `harbour`, `lines`, `anchor`).
 - **Alert mistakes:** after today's `alert` and `accidental` tests, a trigger with `severity` matches only an entry with `entry.contact` whose `severity` is in the list; with `obstacle` only an entry with `entry.contact` whose `obstacleKind(entry.contact.obstacleId)` is in the list. (So `{ alert: 'contact', obstacle: ['propeller'] }` matches the propeller report.) Everything else (the repeat gap, `steps`, the settle second, serious ends the run) is M67's.
-- `export function shownTarget(state: AppState): ResolvedTarget | null`: with a run in `setup`, `running`, `mistake` or `failed` whose current step (`steps[run.step]`) has `show`, `resolveTarget(def.targets[show], state.harbour)`; otherwise `null`.
+- `export function shownTarget(state: AppState): ResolvedTarget | null`: with a run in `setup`, `running`, `mistake` or `failed` whose current step (`steps[run.step]`) has `show`, `resolveTarget(def.targets.find((t) => t.id === show), state.harbour)`; otherwise `null`.
 - **Logged actions** (`logAction`, M68 8.3), added to `LoggedAction`:
 
 ```ts
@@ -1971,7 +1974,7 @@ export function insideTarget(target: ResolvedTarget, eastM: number, northM: numb
 | { type: 'fenders'; out: boolean }
 ```
 
-  from the actions `line`, `thruster`, `windlass`, `setFenders` (added to the list in 4.2's order: logged while the run is running or in `mistake`). An action equal to the last logged entry's (same `type`, `code`/`which`/`motion`, `command`/`dir`) within `settings.controlMergeS` of it raises its `times` (from 1, absent = 1) instead of adding an entry. A refused action (the state did not change: `next.lines === state.lines` for `line`, likewise `thrusters`, `anchor.windlass`, `harbour.fendersOut`) is not logged.
+  from the actions `line`, `thruster`, `windlass`, `setFenders` (`store.ts` already calls `logAction` for every action while the run is running or in `mistake`; only `logAction`'s cases in `exerciseRun.ts` change). Merging: a `line` action whose `code` and `command` equal the last logged entry's, within `settings.controlMergeS` of it, raises that entry's `times` (from 1; absent = 1) instead of adding an entry; `thruster`, `windlass` and `fenders` entries never merge (each press is one entry). A different `code`, `command`, `which`, `dir`, `motion` or `out` is a new entry. A refused action (the state did not change: `next.lines === state.lines` for `line`, likewise `thrusters`, `anchor.windlass`, `harbour.fendersOut`) is not logged.
 
 `src/ui/exerciseDebrief.ts` `actionText`: `line` → `t('debrief.line', { line: t('lines.name.' + code), command })` with `command` = `t('lines.take.' + code)` for `take`, else `t('lines.' + command)`; then if `times > 1`, `t('debrief.times', { text, n: times })`. `thruster` → `t('debrief.thruster.' + which, { side: t(dir > 0 ? 'debrief.side.starboard' : 'debrief.side.port') })`. `windlass` → `t('debrief.windlass.' + motion)`. `fenders` → `t(out ? 'debrief.fenders.out' : 'debrief.fenders.in')`.
 
@@ -1982,17 +1985,17 @@ export function insideTarget(target: ResolvedTarget, eastM: number, northM: numb
 | `exl` | `normal`, `hard` | `easy` (no key) | in an exercise's start or waypoint link when the run's `level` is not `easy` |
 
 - **Parsing `ex` with `exl`** (no `exw`), a def with `levels`: start from `def.start`'s keys; the level's query keys replace or add keys (`levels[level]`); then the viewer's keys (4.3); `options.level = level`. A def without `levels`, or an unknown value: `level` stays `easy` and no keys change. With `exw` (a waypoint link) the waypoint's own keys are used and `exl` only sets the option.
-- `exerciseStartLink(id, state, ropes, options?: Partial<ExerciseOptions>)`: the fourth argument overrides the current run's options (used by the Level row); writes `exl` after `exc` when the level is not `easy`.
-- `store.ts`: the new logged actions (16.3) go through `logAction` as the others do; nothing else changes. The locked actions of 4.2 stay locked; `line`, `thruster`, `windlass`, `setFenders` and `clearPropeller` are the learner's and stay allowed.
+- `exerciseStartLink(id, state, ropes, options?: Partial<ExerciseOptions>)`: the options are the current run's (`state.exercise?.options`, else `DEFAULT_OPTIONS`) with the fourth argument over them (the Level row passes `{ level }`); so `serializeUrlState`'s existing three-argument call keeps the run's level. It writes `exl` last, after `exc`, when the level is not `easy`. `waypointLink` writes `exl` the same way (last); the waypoint branch of the parser adds `exl` to the keys it reads and deletes (`ex`, `exw`, `exp`, `exs`, `exc`, `exl`) before `parseUrlState` reads the rest.
+- `store.ts`: no change (16.3: `logAction` is already called for every action). The locked actions of 4.2 stay locked; `line`, `thruster`, `windlass`, `setFenders` and `clearPropeller` are the learner's and stay allowed.
 
 ### 16.5 UI and 3D
 
 - **List:** a fourth group heading `t('exercise.group.harbour')` after "Setting and furling the sails".
-- **Setup card:** for a def with `levels`, a row **Level** (`t('exercise.level')`) after the Ropes row: three toggle buttons `exercise-level-easy`, `exercise-level-normal`, `exercise-level-hard` (`aria-pressed` on the chosen one, `t('exercise.level.easy')` …) and `t('exercise.level.hint')`. A tap on another level dispatches the `load` of `exerciseStartLink(id, state, state.settings.ropesMode, { ...run.options, level })` (as `loadExercise` does). Style: the same segment buttons as the Ropes row (`.exercise-ropes-choices`), touch target ≥ 44 px.
-- **"Show the controls"** (6.5): `opens: 'harbour'` shows the Harbour gear section; `opens: 'anchor'` shows the Anchor section, or in Realistic ropes (where it is unavailable) the Ropes section (the Bow station), as `engine` maps to `helm` today.
-- **Hint window rows** (`exerciseCoach.ts`): `heading` → `t('exercise.target.heading', { to: pad3(to), within })` with the reading `t('exercise.target.nowDeg', { value })`; `quayGap` → `t('exercise.target.quayGap', { min, max })` with `t('exercise.target.nowM', { value })` (value with one decimal). `pad3` writes 270 as "270" and 90 as "090".
+- **Setup card:** for a def with `levels`, a row **Level** (`t('exercise.level')`) after the Ropes row: three toggle buttons `exercise-level-easy`, `exercise-level-normal`, `exercise-level-hard` (`aria-pressed` on the chosen one, `t('exercise.level.easy')` …) and `t('exercise.level.hint')`. A tap on another level calls `loadExercise(store, id, state.settings.ropesMode, { level })`; `loadExercise` gains the fourth parameter `options?: Partial<ExerciseOptions>` and passes it to `exerciseStartLink`. Style: the same segment buttons as the Ropes row (`.exercise-ropes-choices`), touch target ≥ 44 px.
+- **"Show the controls"** (6.5): `opens: 'harbour'` shows the Harbour gear section (available in both ropes modes); `opens: 'anchor'` shows the Anchor section, or, when `sectionAvailable('anchor', …)` is false (Realistic ropes), the Ropes section (the Bow station is there): add this remap beside today's `engine`/`autopilot` → `helm` remap in `exercisePanel.ts`.
+- **Hint window rows** (`exerciseCoach.ts`): `heading` → `t('exercise.target.heading', { to: pad3(to), within })` with the reading `t('exercise.target.nowDeg', { value: pad3(value) })`; `quayGap` → `t('exercise.target.quayGap', { min, max })` with `t('exercise.target.nowM', { value })` (one decimal). `pad3(n)` is a private function in `exerciseCoach.ts`: `String(Math.round(((n % 360) + 360) % 360)).padStart(3, '0')` (270 → "270", 90 → "090").
 - **3D target** (`src/render3d/exerciseTarget.ts`, `buildExerciseTarget(): { object: THREE.Group; update(state: AppState): void }`, added to the world group like `marina.ts`): each frame reads `shownTarget(state)`; `null` hides it. A circle is a flat ring (`THREE.RingGeometry` from `radius − 0.15` to `radius`, 64 segments), a rect is four flat strips 0.3 m wide along its edges; both lie at `y = 0.12` above the still water level (the marina's `sea=flat`; the bay's `sheltered` waves are small), colour `SCENE.exerciseTarget.colour` `'#d63cff'`, `opacity` 0.85, `depthWrite: false`; `userData.partId = 'env_exercise_target'`. Rebuilt only when the resolved target changes (compare a key string of its numbers). Put `exerciseTarget: { colour: '#d63cff', opacity: 0.85, lineM: 0.3, aboveM: 0.12 }` into `SCENE`.
-- **Maps:** `mapView.ts` draws `shownTarget(state)` after the harbour and before the boat on both maps: a dashed line (`setLineDash([6, 4])`, 2 px, the same colour) round the circle or rect.
+- **Maps:** `mapView.ts` draws `shownTarget(state)` after the harbour and before the boat on both maps (`drawMap` and `drawMiniMap`), with the same map-to-screen transform each uses for the harbour (the mini-map's canvas clips what lies outside): a dashed line (`setLineDash([6, 4])`, 2 px, colour `#d63cff`) round the circle or rect.
 
 ### 16.6 Texts and strings
 
@@ -2010,7 +2013,7 @@ export function insideTarget(target: ResolvedTarget, eastM: number, northM: numb
   "steps": {
     "lazy-off": { "goal": "Let go the lazy line.", "how": "Open Harbour gear. Under Lines, tap Let go on \"Lazy line (to the bow)\". It sinks to the bottom, clear of the propeller." },
     "stern-off": { "goal": "Let go both stern lines.", "how": "In Harbour gear, tap Let go on both stern lines. Now only the engine and the thrusters hold her." },
-    "motor-out": { "goal": "Motor ahead until the stern is out of the berth, in the fairway (inside the magenta outline).", "how": "Open Engine. Tap + on the engine lever once or twice: just past Neutral, slow ahead. Keep the wheel straight. In a strong side wind give a bit more (+ three times) so she does not drift onto the boat next door." },
+    "motor-out": { "goal": "Motor ahead until the stern is out of the berth, in the fairway (inside the magenta outline).", "how": "Open Engine. Drag the engine lever just past Neutral towards Ahead (the line under it says \"In gear: ahead\"): slow ahead. Keep the wheel straight. In a strong side wind push it a little further (about a third of the way to Ahead) so she does not drift onto the boat next door." },
     "turn-out": { "goal": "Turn until she points west (270°, towards the entrance) and motor slowly ahead.", "how": "Lever back to Neutral. Hold the bow thruster to starboard and the stern thruster to port: she turns on the spot to the right. When the compass shows about 270°, let go of both and give slow ahead." }
   },
   "mistakes": { "touch": T, "hard-hit": T, "propeller": T }
@@ -2057,7 +2060,7 @@ Registry: `env_exercise_target` (`kind: "environment"`, `phase: 10`, `group: "ha
 
 ### 16.7 Tests
 
-**The pilots** (`tests/harbourPilot.ts`): a scripted learner per exercise, used by the good-run tests of M74–M78 (and the browser checks may copy their logic). Each is a factory returning `(s: AppState, t: number) => AppState`, called once per frame before `reduce(s, { type: 'step', dt: 0.05 })`; it reads `s.exercise!.step` and dispatches with `reduce`. Shared helpers (exact):
+**The pilots** (`tests/harbourPilot.ts`): a scripted learner per exercise, used by the good-run tests of M74–M78 (and the browser checks may copy their logic). Each is a factory returning `(s: AppState, t: number) => AppState`, called once per frame before `reduce(s, { type: 'step', dt: 0.05 })`; `t` is the test loop's app seconds since Start (the sum of the frames' `dt`); a pilot reads `s.exercise!.step` (or keeps its own phase, as `enterPilot` does) and dispatches with `reduce`. A pilot may send an action that is refused (it changes nothing). Shared helpers (exact; `boatPoint` and `wrap180` imported from `src/model/exercises.ts` and `src/model/angles.ts`):
 
 ```ts
 const A = (s: AppState, a: unknown) => reduce(s, a as Action);
@@ -2069,6 +2072,7 @@ export const thr = (s: AppState, which: 'bow' | 'stern', dir: -1 | 0 | 1) => (s.
 export const windlass = (s: AppState, motion: 'off' | 'down' | 'up') => (s.anchor.windlass === motion ? s : A(s, { type: 'windlass', motion }));
 const stern = (s: AppState) => boatPoint(s.boat, 'stern');
 const bow = (s: AppState) => boatPoint(s.boat, 'bow');
+const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
 ```
 
 M74's pilot, `leavePilot(level: ExerciseLevel)` (`lv = level === 'hard' ? 30 : 15`, `turned = false` in the closure): step 0 → `line(s, 'll', 'letGo')`; step 1 → let go `sp` and `ss`; step 2 → `lever(s, lv)`; step 3 → while `!turned && |H(s) − 270| > 10`: `thr(thr(rudder(lever(s, 0), 30), 'bow', 1), 'stern', -1)`; then `turned = true` and `thr(thr(rudder(lever(s, 15), 0), 'bow', 0), 'stern', 0)`.
@@ -2085,18 +2089,20 @@ The prototype found no contact other than `fender` in these runs (at Hard the ne
 
 Other tests:
 1. `tests/exercises.test.ts`: the loader accepts `leave-berth`; rejects a step `show` naming no target, an unknown check field, a `levels` key other than `normal`/`hard`.
-2. `checkPasses` per new field, on hand-built sources: `boatPoint` at heading 180 from (2.8, 1490.4): stern (2.8, 1499.0), bow (2.8, 1483.45); `quayGapM [0.5, 1.5]` holds there (gap 1.0) and fails with `place: 'open'`; `berthOffsetM [0, 0.1]` holds for medium (centre 2.75: offset 0.05); `linesOff ['ll']` fails while `crew.code === 'll'`; `anchor.scopeOk` true with `phase 'set'`, `chainOutM 50` at (−1600, 0) and 6 kn (needed 46.65 + …: compute with `scopeNeededM(depthAt(-1600, 0), 6)`, 47.2 m), false with 40 m; `target` `fairway`/`centre` holds at (−95, 1468) for medium, fails at (−95, 1490).
+2. `checkPasses` per new field, on hand-built sources: `boatPoint` at heading 180 from (2.8, 1490.4): stern (2.8, 1499.0), bow (2.8, 1483.45); `quayGapM [0.5, 1.5]` holds there (gap 1.0) and fails with `place: 'open'`; `berthOffsetM [0, 0.1]` holds for medium (centre 2.75: offset 0.05); `linesOff ['ll']` fails while `crew.code === 'll'`; `anchor.scopeOk` true with `phase 'set'`, `chainOutM 50`, the anchor at (−1600, 0) and 6 kn (needed `scopeNeededM(depthAt(-1600, 0), 6)` = 47.2 m: the depth there is 10.0 m), false with 40 m; `target` `fairway`/`centre` holds at (−95, 1468) for medium, fails at (−95, 1490).
 3. `obstacleKind`: `yacht-0-11` → yacht, `breakwater-west` → harbour, `quay` → harbour, `bottom` → ground, `land` → ground, `propeller` → propeller, `fender` → fender.
-4. `tests/exerciseRun.test.ts`: a `contact` alert entry with `severity: 'bump'`, `obstacleId: 'yacht-0-11'` fires `touch` (status `mistake`); `knock` fires `hard-hit` (status `failed`); `fender` fires nothing; `propeller` fires `propeller` (`failed`).
-5. Logging: `line ll letGo` logs `{ type: 'line', code: 'll', command: 'letGo' }`; five `line ll tighten` within 3 s log one entry with `times: 5`; `thruster bow 1` then `thruster bow 0` log one entry; a refused `line sp take` (too far) logs nothing. `actionText` gives "Lazy line (to the bow): Tighten ×5" and "Bow thruster to starboard".
+4. `tests/exerciseRun.test.ts` (an entry built as the existing tests build the gybe entries: `{ n: run.seenAlertN + 1, kind: 'contact', atS, severity: 'warning', contact: report }` added to `next.alerts.entries` with `written` raised, after the settle second): a `contact` alert entry with `severity: 'bump'`, `obstacleId: 'yacht-0-11'` fires `touch` (status `mistake`); `knock` fires `hard-hit` (status `failed`); `fender` fires nothing; `propeller` fires `propeller` (`failed`).
+5. Logging (on the started `leave-berth` run): `line ll letGo` logs `{ type: 'line', code: 'll', command: 'letGo' }`; three `line sp ease` within 3 s log one entry with `times: 3` (easing always works below the line's maximum length); `thruster bow 1` then `thruster bow 0` log one entry; on a started `enter-berth` run (no lines on, the stern 35 m from the quay) `line sp take` is refused and logs nothing. `actionText` gives "Stern line, port: Ease ×3" and "Bow thruster to starboard".
 6. `tests/urlState.test.ts`: `exl=hard` with `ex=leave-berth` opens `ml=medium`, `tr=busy`, `ws=14`, `options.level === 'hard'`; `exerciseStartLink` writes `exl=hard` and no `exl` for easy; `exl=hard` on `ex=points-of-sail` is ignored (`level 'easy'`, no change); an old exercise link is unchanged.
 7. `shownTarget`: in setup at step 2 of `leave-berth`, the fairway rect of the start's layout (spacious: `{ west: −110, east: 110, south: 1443, north: 1483 }`); at step 0 `null`.
 
 ### 16.8 Browser checks (`scripts/shots-m74.mjs`, test clock)
 
-Scenes: `leave-setup` (`?m=exercise&ex=leave-berth`), `leave-setup-hard` (`?m=exercise&ex=leave-berth&exl=hard`), `leave-target` (`?m=exercise&ex=leave-berth&exw=2`: the magenta fairway outline in 3D, `cam=top`), `leave-map` (the same with `cam=map`).
+`window.__sailExercise.read()` (`app.ts`) keeps its fields and gains `eastM`, `northM`, `headingDeg`, `speedMps` (`state.boat`), `leverPct` (`state.engine.leverPct`), `thrusters` (`{ bow: -1 | 0 | 1; stern: -1 | 0 | 1 }`, `state.thrusters`), `lines: string[]` (the codes on), `crew: string | null` (`lines.crew?.code`), `anchorPhase` and `chainOutM` (`state.anchor`) so the checks can run a pilot's logic.
 
-Live checks: (1) `m74 level`: on `leave-setup` tap `exercise-level-hard`: the address has `exl=hard`, the Hard button is pressed, the strip's true wind reads 14 kn. (2) `m74 good run` (phone only, as M69's long runs): Start, then drive the steps through `window.__sailExercise.dispatch` with `leavePilot('easy')`'s logic (port it to the page: poll `state()` every 0.25 s of app time with `page.waitForTimeout(250)`), until "Well done!"; the debrief shows "Lazy line (to the bow): Let go". (3) `m74 touch`: `?m=exercise&ex=leave-berth&exl=normal&debug=1`, Start, let go all lines, `engine { leverPct: -40 }` for 4 s (she backs into the quay): the mistake card shows "A light touch" or "A hard knock" (whichever the speed gives; the check accepts either). (4) The accessibility audit with the setup card (Level row) shown.
+Scenes: `leave-setup` (`?m=exercise&ex=leave-berth`), `leave-setup-hard` (`?m=exercise&ex=leave-berth&exl=hard`). The outline pictures are taken in live check (2): after steps 0–1 pass (step 2 shows the fairway), a screenshot `leave-target` with `cam=top` and `leave-map` with the map open (`setCamera`).
+
+Live checks: (1) `m74 level`: on `leave-setup` tap `exercise-level-hard`: the address has `exl=hard`, the Hard button is pressed, `read().twsKn` is 14. (2) `m74 good run` (phone only, as M69's long runs): Start, then drive the steps through `window.__sailExercise.dispatch` with `leavePilot('easy')`'s logic (port it to the page: poll `state()` every 0.25 s of app time with `page.waitForTimeout(250)`), until "Well done!"; the debrief shows "Lazy line (to the bow): Let go". (3) `m74 touch`: `?m=exercise&ex=leave-berth&exl=normal&debug=1`, Start, let go all lines, `engine { leverPct: -40 }` for 4 s (she backs into the quay with her transom, where no fender hangs): the mistake card shows "A light touch" or "A hard knock" (whichever the speed gives; the check accepts either). (4) The accessibility audit with the setup card (Level row) shown.
 
 ### 16.9 Done when
 
@@ -2151,14 +2157,14 @@ New: `scripts/shots-m75.mjs`. Changed: `content/exercises/exercises.json`, both 
   "title": "Entering the berth stern-to",
   "summary": "Fenders out, line up, back in slowly, stern lines, lazy line, tighten.",
   "see": "You are in the fairway, the lane between the two rows of boats, motoring slowly east. Your berth is the gap with the yellow stripe on the quay, on the left; the magenta outline marks it.",
-  "happening": "In the Mediterranean you go in stern first: the stern lines go to the quay and a lazy line from the quay holds the bow. Going astern, the propeller also pushes the stern to port (prop walk), and a side wind pushes a slow boat sideways.",
+  "happening": "In the Mediterranean you go in stern first: the stern lines go to the quay and a lazy line from the quay holds the bow. Going astern, the propeller also pushes the stern sideways (prop walk; in the app to port), and a side wind pushes a slow boat sideways.",
   "action": "Fenders out on both sides; motor just past the berth, stop, and turn her with the thrusters until the stern points at the berth; back in slowly, correcting with the thrusters; stop a step from the quay; the crew throws the stern lines, then picks up the lazy line and takes it to the bow; tighten it.",
   "mistake": "Coming in too fast: at more than walking pace you hit the quay or the boat next door. Or putting the engine in gear while the crew is handling a line: it can wrap round the propeller.",
   "done": "She is moored stern-to. Slow is the secret: stop first, then lines, then tighten the lazy line with the engine in neutral.",
   "steps": {
     "fenders": { "goal": "Put the fenders out.", "how": "Open Harbour gear and choose Fenders: Out. In a tight berth they take the knocks." },
-    "line-up": { "goal": "Stop past the berth and turn until the stern points at it (bow 180°, south), the stern within 3 m of the berth's middle.", "how": "Engine: slow ahead (+ once) until the bow is about 10 m past the berth, then astern (− twice) until she stops, then Neutral. Hold the bow thruster to starboard and the stern thruster to port until the compass shows 180°." },
-    "reverse-in": { "goal": "Back into the berth slowly and stop with the stern 0.5–2.8 m from the quay.", "how": "Engine slow astern (− once from Neutral). Keep her straight with the thrusters: if the stern drifts left, a short push of the stern thruster to starboard, and the other way round. Near the quay, Neutral, and a touch ahead to stop." },
+    "line-up": { "goal": "Stop past the berth and turn until the stern points at it (bow 180°, south), the stern within 3 m of the berth's middle.", "how": "Engine: lever just past Neutral towards Ahead (slow ahead) until the mast is about 10 m before the berth (she glides on), then just past Neutral towards Astern until she stops, then Neutral. Hold the bow thruster to starboard and the stern thruster to port until the compass shows 180°." },
+    "reverse-in": { "goal": "Back into the berth slowly and stop with the stern 0.5–2.8 m from the quay.", "how": "Engine slow astern: the lever just past Neutral towards Astern (\"In gear: astern\"). Keep her straight with the thrusters: if the stern drifts left, a short push of the stern thruster to starboard, and the other way round. Near the quay, Neutral, and a touch ahead to stop." },
     "stern-lines": { "goal": "Throw both stern lines to the quay.", "how": "Harbour gear → Lines: tap \"Throw it to the quay\" on both stern lines. The stern must be within 4 m and nearly stopped." },
     "lazy-line": { "goal": "Pick up the lazy line and take it to the bow.", "how": "Tap \"Pick it up\" on the lazy line. The crew walks it to the bow (about 20 s). Keep the engine in neutral meanwhile." },
     "made-fast": { "goal": "Tighten the lazy line until it is hand tight, engine in neutral.", "how": "Tap Tighten on the lazy line until it says hand tight. It holds the bow off, the stern lines hold the stern: she cannot swing." }
@@ -2178,11 +2184,11 @@ Nothing new: M74's fields, levels, targets and mistakes.
 
 `c` = our berth's centre for the level's layout (`marinaGeometry(s.harbour.layout, s.harbour.traffic).ourBerth.centreEastM`), `gap(s) = quayFaceNorthM − stern(s)[1]`, `phase = 0`, `lastT = 0`. `keep(s, lat = true)`: `e = stern(s)[0] − c`, `h = H(s) − 180`; stern thruster `lat ? (e > 0.3 ? 1 : e < −0.3 ? −1 : 0) : 0`, bow thruster `h > 2 ? −1 : h < −2 ? 1 : 0`. Per frame by phase:
 
-0: `setFenders { out: true }`, `lever 15`, phase 1. 1: when `boat.eastM > c − 10`: `lever −15`, phase 2. 2: when `boat.speedMps < 0.1`: `lever 0`, bow thruster 1, stern thruster −1, phase 3. 3: when `|H − 180| < 5`: both thrusters 0, phase 4. 4: `want = gap > 10 ? −0.6 : gap > 5 ? −0.3 : −0.12`; `keep`; `lever(v > want ? −15 : v < want − 0.15 ? 15 : 0)` with `v = boat.speedMps`; when `gap < 2.6`: phase 5. 5: `keep`; `lever(v < −0.03 ? 15 : 0)`; when `|v| < 0.03` and the lever is 0: phase 6. 6: `keep`; take `sp`, take `ss`; when both are on: take `ll`, phase 7. 7: `keep(s, false)`; when `ll` is on: bow thruster 0, phase 8. 8: every 0.5 s (`t − lastT > 0.5`) `line ll tighten`.
+0: `setFenders { out: true }`, `lever 15`, phase 1. 1: when `boat.eastM > c − 10`: `lever −15`, phase 2. 2: when `boat.speedMps < 0.1`: `lever 0`, bow thruster 1, stern thruster −1, phase 3. 3: when `|H − 180| < 5`: both thrusters 0, phase 4. 4: `want = gap > 10 ? −0.6 : gap > 5 ? −0.3 : −0.12`; `keep`; `lever(v > want ? −15 : v < want − 0.15 ? 15 : 0)` with `v = boat.speedMps`; when `gap < 2.6`: phase 5. 5: `keep`; `lever(v < −0.03 ? 15 : 0)`; when `|v| < 0.03` and the lever is 0: phase 6. 6: `keep`; take `sp`, take `ss`; when both are on: take `ll`, phase 7. 7: `keep(s, false)`; when `ll` is on: bow thruster 0, phase 8. 8: when `t − lastT > 0.5`: `lastT = t`, `line ll tighten`.
 
 ### 17.6 Tests (`tests/harbourExercises.test.ts`)
 
-Good runs (prototype values in brackets; limits = value × 1.3 + 5, rounded up; `line-up` and `reverse-in` share one limit because the pilot lines her up while it backs in):
+Good runs (prototype values in brackets; the limits are the prototype values plus a margin of about 30 %, final as written; `line-up` and `reverse-in` share one limit because the pilot lines her up while it backs in):
 
 | Level | fenders | line-up + reverse-in | stern-lines | lazy-line | made-fast |
 |---|---|---|---|---|---|
@@ -2190,11 +2196,11 @@ Good runs (prototype values in brackets; limits = value × 1.3 + 5, rounded up; 
 | normal | ≤ 3 (1.0) | ≤ 248 (109.9 + 75.9) | ≤ 4 (1.2) | ≤ 31 (20.0) | ≤ 54 (37.1) |
 | hard | ≤ 3 (1.0) | ≤ 265 (80.5 + 118.7) | ≤ 4 (1.0) | ≤ 31 (20.0) | ≤ 16 (7.7) |
 
-Named tests: **PT-51** ("PT-51 the entering exercise ends with the lazy line holding the bow": at the end of the normal run, 30 s more with the engine in neutral: the heading stays within 180 ± 15° and the stern gap within 0.3–3.0 m); **PT-50** ("PT-50 the hard level's fender contacts are not mistakes": the hard run's `contact.reports` may hold `fender` reports, and the log has no `mistake`). A run without the fenders step's action (skip phase 0's `setFenders`, the step never passes): within 120 s the log has `fenders-in` (the M59 alert fires backing in) — the run is `mistake` with pause on mistakes on.
+Named tests: `it('PT-51 the entering exercise ends with the lazy line holding the bow')`: after the normal run is `done`, 30 s more of `step` frames without the pilot (the engine stays in neutral): the heading stays within 180 ± 15° and the stern gap within 0.3–3.0 m. `it('PT-50 the hard level is finished with no mistake')`: the hard run ends `done` with no `mistake` entry (its `fender` reports, if any, are not mistakes). `it('PT-52 the engine in gear while the crew walks the lazy line fouls the propeller')`: in the normal run, once step 4 (`lazy-line`) begins (the crew walking: `lines.crew` set), dispatch `engine { leverPct: 30 }`: within 5 s the run is `failed` with `propeller` (`stepLines` fouls after `foulAfterS`, 2 s). A run that skips phase 0's `setFenders` (the fenders step never passes, so the pilot's later phases run with the coach still on step 0): the loop ends when the run is `mistake` or after 120 s; it must end `mistake` with `fenders-in` (the M59 alert fires backing within 15 m of the rings at more than 0.1 m/s astern).
 
 ### 17.7 Browser checks (`scripts/shots-m75.mjs`, test clock)
 
-Scenes: `enter-setup` (`?m=exercise&ex=enter-berth`), `enter-reverse` (`?m=exercise&ex=enter-berth&exw=2&cam=top`: the berth outline), `enter-map` (`…&cam=map`). Live: (1) `m75 good run` (phone only): `enterPilot('normal')`'s logic through `__sailExercise.dispatch`, until "Well done!". (2) `m75 fenders in`: Start, skip the fenders, back towards the berth (`engine -15` after turning with the thrusters as in the pilot): the card "Fenders still in". (3) Russian setup card has no overflow (`lang=ru`).
+Scenes: `enter-setup` (`?m=exercise&ex=enter-berth`). The berth outline pictures `enter-reverse` (`cam=top`) and `enter-map` are taken in live check (1) once step 1 shows the berth. Live: (1) `m75 good run` (phone only): `enterPilot('normal')`'s logic through `__sailExercise.dispatch`, until "Well done!". (2) `m75 fenders in`: Start, skip the fenders, back towards the berth (`engine -15` after turning with the thrusters as in the pilot): the card "Fenders still in". (3) Russian setup card has no overflow (`lang=ru`).
 
 ### 17.8 Done when / not in M75
 
@@ -2204,7 +2210,7 @@ Done: the three levels can be finished on a phone; the checks pass. Not in M75: 
 
 ## 18. M76: Turning in her own length; picking up and leaving a mooring buoy
 
-**Independent review: required** (a new rule, PT-62; the buoy exercise teaches a safety point, the rope round the propeller).
+**Independent review: required** (a new rule, PT-62; the texts state how this boat's prop walk turns her, an assumption of PT-27).
 
 ### 18.1 Files
 
@@ -2225,7 +2231,7 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
   "mistakes": [
     { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
     { "id": "hard-hit", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["yacht", "harbour"] } },
-    { "id": "left-circle", "serious": false, "on": { "condition": { "target": { "id": "circle", "point": "centre", "inside": false } }, "forS": 1 } }
+    { "id": "left-circle", "serious": false, "steps": ["kick", "spin"], "on": { "condition": { "target": { "id": "circle", "point": "centre", "inside": false } }, "forS": 1 } }
   ]
 },
 {
@@ -2245,27 +2251,26 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
   ],
   "mistakes": [
     { "id": "aground", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["ground"] } },
-    { "id": "aground-hard", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["ground"] } },
-    { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } }
+    { "id": "aground-hard", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["ground"] } }
   ]
 }
 ```
 
-The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be this close to pick it up). Of the bay's three buoys the middle one (−1450, 0) is the target; the wind blows out of the bay (from the west), so the approach is into the wind (PT-62).
+No `propeller` mistake here: the model never fouls the propeller with the buoy's bow line (`slackInWater` is false for `bl`, M45). The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be this close to pick it up). Of the bay's three buoys the middle one (−1450, 0) is the target; the start (−1380, 0) is inside the bay's mouth (the coast runs north–south at east −1350, the bay cut in west of it) in 15 m or more of water; the wind blows out of the bay (from the west), so the approach is into the wind (PT-62).
 
 ### 18.3 Texts (appended)
 
 ```json
 "turn-own-length": {
   "title": "Turning in her own length",
-  "summary": "Turn her round in the fairway without leaving a circle little bigger than the boat: a kick ahead, prop walk astern, then the thrusters.",
+  "summary": "Turn her round in the fairway inside a circle not much wider than her length: a kick ahead, prop walk astern, then the thrusters.",
   "see": "She is stopped in the fairway pointing east, with boats moored on both sides. The magenta circle is all the room you have.",
-  "happening": "A burst ahead with the wheel hard over turns her before she gathers speed (kick ahead). Going astern the propeller pushes the stern to port, which turns the bow to starboard: the same way (prop walk). The thrusters push the bow and the stern sideways: together, in opposite directions, they spin her on the spot.",
+  "happening": "A burst ahead with the wheel hard over turns her before she gathers speed (kick ahead). Going astern the propeller pushes the stern sideways (prop walk): on this boat the app has it push the stern to port (an assumption until a skipper confirms it, PT-27), which turns the bow to starboard, the same way. The thrusters push the bow and the stern sideways: together, in opposite directions, they spin her on the spot.",
   "action": "Wheel hard to starboard; short bursts ahead and astern until she points about 120°; then hold the bow thruster to starboard and the stern thruster to port until she points west (270°).",
   "mistake": "Long bursts: she gathers speed and leaves the circle towards the moored boats.",
   "done": "She turned in her own length. Short bursts keep her on the spot; the thrusters finish the job.",
   "steps": {
-    "kick": { "goal": "Turn her to about 120° (105°–135°) with the engine and the wheel, staying in the circle.", "how": "Steering: wheel hard to starboard (slider right to the end). Engine: three taps of + for a 3-second burst ahead, then Neutral; then three taps of − for a short burst astern until she starts moving back, then Neutral. Repeat once." },
+    "kick": { "goal": "Turn her to about 120° (105°–135°) with the engine and the wheel, staying in the circle.", "how": "Steering: wheel hard to starboard (slider right to the end). Engine: push the lever about two thirds towards Ahead for 3 seconds, then Neutral; after 4 seconds pull it about two thirds towards Astern until she starts moving back, then Neutral. Repeat once." },
     "spin": { "goal": "Spin her on the spot until she points west (260°–280°) and stop.", "how": "Wheel straight. Hold the bow thruster to starboard and the stern thruster to port. Let go when the compass shows 270°." }
   },
   "mistakes": {
@@ -2279,16 +2284,16 @@ The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be t
   "see": "You are motoring into the bay towards three white buoys; the magenta ring marks the middle one. The wind blows out of the bay, towards you.",
   "happening": "Into the wind the boat stops by herself as soon as you take the engine out of gear, so you can creep up to the buoy. The crew picks it up with the boat hook and makes the bow line fast. Lying to it, the wind keeps her bow towards the buoy.",
   "action": "Motor slowly straight at the buoy, into the wind; slow down to a crawl in the last boat length; pick it up at the bow; engine in neutral; to leave, let go and go gently astern away from it.",
-  "mistake": "Coming in fast or with the wind behind you: she runs over the buoy and its rope can wrap round the propeller.",
+  "mistake": "Coming in fast or with the wind behind you: she cannot stop and runs past or over the buoy.",
   "done": "You picked up the buoy and left it. Into the wind and at a crawl.",
   "steps": {
-    "approach": { "goal": "Bring the bow to the buoy (inside the small ring) at under half a knot.", "how": "Engine slow ahead (+ once) and steer straight at the buoy. About 10 m before it, Neutral; if she still runs on, one tap of − and back to Neutral." },
+    "approach": { "goal": "Bring the bow to the buoy (inside the small ring) at under half a knot.", "how": "Engine slow ahead (the lever just past Neutral towards Ahead) and steer straight at the buoy. About 10 m before it, Neutral; if she still runs on, a moment just past Neutral towards Astern, then Neutral again." },
     "bow-line": { "goal": "Pick up the buoy with the bow line.", "how": "Harbour gear → Lines: tap \"Pick up the buoy\". It works only with the bow within 2.5 m and almost stopped." },
-    "lie": { "goal": "Lie to the buoy for 10 seconds with the engine in neutral.", "how": "Lever to Neutral and wait. Never put the engine in gear with the bow line slack near the boat." },
+    "lie": { "goal": "Lie to the buoy for 10 seconds with the engine in neutral.", "how": "Lever to Neutral and wait: the wind keeps her bow to the buoy." },
     "let-go": { "goal": "Let go the bow line.", "how": "Harbour gear → Lines: Let go on \"Bow line to the buoy\"." },
-    "back-away": { "goal": "Back away until you are well clear of the buoy (outside the big ring).", "how": "Engine slow astern (− once from Neutral). The buoy stays ahead, clear of the propeller." }
+    "back-away": { "goal": "Back away until you are well clear of the buoy (outside the big ring).", "how": "Engine slow astern: the lever just past Neutral towards Astern (\"In gear: astern\"). The buoy stays ahead, clear of the propeller." }
   },
-  "mistakes": { "aground": T, "aground-hard": T, "propeller": T }
+  "mistakes": { "aground": T, "aground-hard": T }
 }
 ```
 
@@ -2296,7 +2301,7 @@ The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be t
 
 ### 18.4 PHYSICS_TRUTHS
 
-**PT-62** (new, written by the planning PR, `to-verify`): *Pick up a mooring buoy heading into the wind (or the current), slowly, with the buoy brought to the bow.* Test: `tests/physicsTruths10.test.ts` "PT-62 the buoy is picked up into the wind": `buoyPilot()`'s good run passes the `approach` step heading into the wind (the true wind within 30° of the bow at the moment the step passes); with the wind from behind (`wd=90`, the same start and pilot) the `approach` step does not pass within 140 s (she cannot creep up: the wind keeps her moving), or passes with the bow line refused (`lines.reason.fast`). The M76 PR records which of the two happens, with the numbers.
+**PT-62** (row written by the planning PR in `docs/PHYSICS_TRUTHS.md`, `to-verify`; M76 only adds the test file to its "How to see it"): *Pick up a mooring buoy heading into the wind (or the current), slowly, with the buoy brought to the bow.* Test: `tests/physicsTruths10.test.ts`, `it('PT-62 the buoy is picked up into the wind')`: in `buoyPilot()`'s good run, at the frame the `approach` step passes, `Math.abs(twaSignedDeg(s)) ≤ 30` and `mpsToKn(|speedMps|) ≤ 0.5`, and the next step's `line bl take` is accepted (the bow line is on one frame later).
 
 ### 18.5 Pilots
 
@@ -2311,15 +2316,15 @@ The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be t
 | turn-own-length | kick ≤ 28 (17.2); spin ≤ 50 (34.2); the centre never more than 10 m from (−40, 1468) (prototype: 5.0 m) |
 | mooring-buoy | approach ≤ 137 (100.8); bow-line ≤ 3 (1.0); lie ≤ 15 (10.0); let-go ≤ 3 (1.0); back-away ≤ 92 (66.2) |
 
-**PT-27** and **PT-48** (exercise tests, "PT-27 PT-48 the kick step turns her to starboard"): during the `kick` step the heading only increases (to starboard) between the bursts (sample at the end of each ahead and each astern burst: each sample ≥ the one before). **PT-33**: the `spin` step finishes with the centre within 10 m of where it began. **PT-52**: in `mooring-buoy` at step 2, `engine { leverPct: 30 }` with the bow line slack (ease it three times first): within 10 s the run is `failed` with `propeller`.
+`it('PT-27 PT-48 the kick step turns her to starboard')`: the `kick` step passes (heading 105–135° from 090°) within 28 s with the wheel hard to starboard and only engine bursts (no thruster dispatched). `it('PT-33 the thrusters spin her on the spot')`: during the `spin` step the centre stays within 10 m of where it was when the step began.
 
 ### 18.7 Browser checks (`scripts/shots-m76.mjs`, test clock)
 
-Scenes: `turn-setup` (`?m=exercise&ex=turn-own-length`), `turn-circle` (`?m=exercise&ex=turn-own-length&cam=top`), `buoy-setup` (`?m=exercise&ex=mooring-buoy`), `buoy-ring` (`?m=exercise&ex=mooring-buoy&exw=0&cam=helm`). Live: `m76 turn` and `m76 buoy` good runs (phone only, the pilots' logic through `__sailExercise.dispatch`); `m76 left circle`: Start the turn, `engine { leverPct: 60 }` for 10 s: the card "Out of the circle".
+Scenes: `turn-setup` (`?m=exercise&ex=turn-own-length`), `turn-circle` (`?m=exercise&ex=turn-own-length&cam=top`), `buoy-setup` (`?m=exercise&ex=mooring-buoy`), `buoy-ring` (`?m=exercise&ex=mooring-buoy&cam=helm`) (step 0 shows the target, so the setup card's link shows it). Live: `m76 turn` and `m76 buoy` good runs (phone only, the pilots' logic through `__sailExercise.dispatch`); `m76 left circle`: Start the turn, `engine { leverPct: 60 }` for 10 s: the card "Out of the circle".
 
 ### 18.8 Done when / not in M76
 
-Done: both exercises can be finished on a phone; PT-62's test and its result recorded; checks pass. Not in M76: sailing onto a buoy (Ideas); a boat hook in 3D.
+Done: both exercises can be finished on a phone; PT-62's test passes; checks pass. Not in M76: sailing onto a buoy (Ideas); a boat hook in 3D.
 
 ---
 
@@ -2329,7 +2334,7 @@ Done: both exercises can be finished on a phone; PT-62's test and its result rec
 
 ### 19.1 Files
 
-New: `scripts/shots-m77.mjs`. Changed: `content/exercises/exercises.json`, both texts, `tests/harbourPilot.ts` (`anchorPilot`), `tests/harbourExercises.test.ts`, `docs/review/ru-exercises.md`, `docs/WORKFLOW.md`, `docs/EXERCISES.md` (EX-B; the night time-lapse stays for part 10c), `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `scripts/shots-m77.mjs`. Changed (run `npm run review-doc -- ru` after the Russian texts, section 0): `content/exercises/exercises.json`, both texts, `tests/harbourPilot.ts` (`anchorPilot`), `tests/harbourExercises.test.ts`, `docs/review/ru-exercises.md`, `docs/WORKFLOW.md`, `docs/EXERCISES.md` (EX-B; the night time-lapse stays for part 10c), `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 19.2 Data
 
@@ -2370,10 +2375,10 @@ The drop spot (−1600, 0) is sand, 10.0 m deep (`depthAt`); the chain needed is
   "mistake": "Too little chain: the anchor drags and she drifts onto the rocks. Or backing too far: the rudder and the keel touch the bottom near the shore.",
   "done": "She lies anchored with a line ashore. Enough chain, dig it in, then the shore line.",
   "steps": {
-    "to-spot": { "goal": "Back slowly until the bow is over the spot (inside the ring), nearly stopped.", "how": "Engine slow astern (− once from Neutral). Keep her straight with the bow thruster. Over the spot, Neutral, and a touch ahead to stop." },
+    "to-spot": { "goal": "Back slowly until the bow is over the spot (inside the ring), nearly stopped.", "how": "Engine slow astern: the lever just past Neutral towards Astern (\"In gear: astern\"). Keep her straight with the bow thruster. Over the spot, Neutral, and a touch ahead to stop." },
     "let-go-anchor": { "goal": "Let the anchor go to the bottom.", "how": "Open Anchor and hold \"Chain out ▼\". Watch the chain counter: the anchor reaches the bottom at about 12 m." },
     "scope": { "goal": "Let out enough chain (the Anchor section shows how much is needed: about 47 m).", "how": "Keep \"Chain out\" going (or hold it again) while the engine goes slow astern, so the chain lies along the bottom, not in a heap." },
-    "dig-in": { "goal": "Dig the anchor in.", "how": "Stop the chain. Engine astern a little harder (− four times from Neutral) for about half a minute: the chain comes tight and the anchor digs in. The Anchor section then says it is set." },
+    "dig-in": { "goal": "Dig the anchor in.", "how": "Stop the chain. Engine astern a little harder (the lever about 40 % of the way towards Astern) for about half a minute: the chain comes tight and the anchor digs in. The Anchor section then says it is set." },
     "shore-line": { "goal": "Back towards the shore and take a line to a ring.", "how": "Let out chain again and go slowly astern until the stern is within about 35 m of the shore, then Neutral. Harbour gear → Lines: \"Take a line ashore\". The crew swims it to a ring (about 30 s)." },
     "settled": { "goal": "Tighten the shore line and lie still with the engine in neutral.", "how": "Tap Tighten on the shore line until it is hand tight. The anchor holds the bow, the line the stern." }
   },
@@ -2386,13 +2391,12 @@ The drop spot (−1600, 0) is sand, 10.0 m deep (`depthAt`); the chain needed is
 
 ### 19.4 Pilot (`anchorPilot()`)
 
-`hold(s)` = bow thruster `H − 90 > 3 ? −1 : H − 90 < −3 ? 1 : 0`; `d` = distance from `bow(s)` to (−1600, 0); `v = boat.speedMps`; `more = false`, `lastT = 0`. Step 0: `hold`; `lever(d > 3 ? (v > −0.3 ? −15 : 0) : (v < −0.05 ? 15 : 0))`. Step 1: `lever 0`, `windlass down`. Step 2: `hold`, `lever(v > −0.25 ? −15 : 0)` (the windlass keeps going). Step 3: `windlass off`, `hold`, `lever −40`. Step 4: while `!more`: `windlass down`, `hold`, `lever(v > −0.2 ? −15 : 0)`; when `stern(s)[0] < −1665`: `windlass off`, `lever 0`, bow thruster 0, `line sl take`, `more = true`. Step 5: every 0.5 s `line sl tighten`.
+`hold(s)` = bow thruster `H − 90 > 3 ? −1 : H − 90 < −3 ? 1 : 0`; `d` = distance from `bow(s)` to (−1600, 0); `v = boat.speedMps`; `more = false`, `lastT = 0`. Step 0: `hold`; `lever(d > 3 ? (v > −0.3 ? −15 : 0) : (v < −0.05 ? 15 : 0))`. Step 1: `lever 0`, `windlass down`. Step 2: `hold`, `lever(v > −0.25 ? −15 : 0)` (the windlass keeps going). Step 3: `windlass off`, `hold`, `lever −40`. Step 4: while `!more`: `windlass down`, `hold`, `lever(v > −0.2 ? −15 : 0)`; when `stern(s)[0] < −1665`: `windlass off`, `lever 0`, bow thruster 0, `more = true`; then every frame while `sl` is not on and `lines.crew` is null: `line sl take` (the crew takes it once she is slow enough: `takeMaxSpeedMps`, and the nearest ring within `shoreReachM` 40 m, ring (−1700, 0)). Step 5: when `t − lastT > 0.5`: `lastT = t`, `line sl tighten`.
 
 ### 19.5 Tests (good run; prototype in brackets)
 
-to-spot ≤ 105 (76.9); let-go-anchor ≤ 37 (24.2); scope ≤ 97 (70.1); dig-in ≤ 59 (41.1); shore-line ≤ 82 (59.1); settled ≤ 107 (78.0); at the end the chain is 55–70 m (61.2) and the anchor `set`. **PT-31**: the `scope` step passes only once `chainOutM ≥ 47.2` (assert the chain at the moment it passes). **PT-57**: before step 3's astern the anchor is `bottom`, not `set` (assert at the start of `dig-in`). **PT-53**: none of the run's reports has `obstacleId` `bottom`.
+to-spot ≤ 105 (76.9); let-go-anchor ≤ 37 (24.2); scope ≤ 97 (70.1); dig-in ≤ 59 (41.1); shore-line ≤ 82 (59.1); settled ≤ 107 (78.0); at the end the chain is 55–70 m (61.2) and the anchor `set`. `it('PT-31 the scope step needs the chain the rules ask for')`: at the frame the `scope` step passes, `chainOutM ≥ scopeNeededM(depthAt(anchor.eastM, anchor.northM), 6)` (the anchor lies anywhere in the ring, 9.5–10.5 m deep: 45.2–49.2 m), and one frame earlier it was less. `it('PT-57 the anchor is set only after going astern')`: at the start of `dig-in` the anchor is `bottom`, not `set`. `it('PT-53 the good run never touches the bottom')`: no report in the run has `obstacleKind(report.obstacleId) === 'ground'`.
 
-A short-chain run: the same pilot, but in step 2 stop the windlass at 25 m and go on to step 3's `lever −40` for 60 s: the anchor does not reach `set` within 60 s or the log has `dragging` (the M77 PR records which, with the numbers; not a band).
 
 ### 19.6 Browser checks (`scripts/shots-m77.mjs`, test clock)
 
@@ -2410,7 +2414,7 @@ Done: the exercise can be finished on a phone and the checks pass. Not in M77: t
 
 ### 20.1 Files
 
-New: `scripts/shots-m78.mjs`. Changed: `content/exercises/exercises.json`, both texts, `tests/harbourPilot.ts` (`sternAnchorPilot`), `tests/harbourExercises.test.ts`, `docs/review/ru-exercises.md`, `docs/WORKFLOW.md`, `docs/EXERCISES.md`, `docs/ROADMAP.md` (part 10b done), `README.md` (one sentence: harbour and anchor exercises), `scripts/shots.mjs`, `docs/CODE_MAP.md`.
+New: `scripts/shots-m78.mjs`. Changed (run `npm run review-doc -- ru` after the Russian texts, section 0): `content/exercises/exercises.json`, both texts, `tests/harbourPilot.ts` (`sternAnchorPilot`), `tests/harbourExercises.test.ts`, `docs/review/ru-exercises.md`, `docs/WORKFLOW.md`, `docs/EXERCISES.md`, `docs/ROADMAP.md` (the Phase 10 row's status cell: "**10b specified** (M73–M78 …)" becomes "10b done (M73–M78, PHASE10_SPEC 15–22)"), `README.md` (after the sentence about Exercises mode add: "Harbour and anchor exercises (leaving and entering a berth stern-to, turning in a tight space, a mooring buoy, anchoring with a line ashore) work in a marina with a breakwater and in the bay."), `scripts/shots.mjs`, `docs/CODE_MAP.md`.
 
 ### 20.2 Data
 
@@ -2439,7 +2443,7 @@ New: `scripts/shots-m78.mjs`. Changed: `content/exercises/exercises.json`, both 
 }
 ```
 
-The drop spot is in the empty berth opposite ours (south row, index 12: free at half traffic), 4 m off the pontoon: from there to the bow of the moored boat is about 43 m, so the chain ends at about 41–48 m. The 3-boat-lengths rule (46.65 m) is for swinging at anchor; stern-to the stern lines hold her and the check asks for 30 m or more, which is more than 4 × (5 + 1.8) = 27.2 m (PT-31's depth rule).
+The drop spot is in the empty berth opposite ours (south row, index 12: the `half` list of berth indices applies to both rows and has no 12, nor 11 or 14), 6 m off the pontoon's north face (1436): from there to the bow of our boat moored (north 1483.45) is about 41.5 m, so the chain ends at about 41–43 m (prototype 41.1 m). The 3-boat-lengths rule (46.65 m) is for swinging at anchor; stern-to the stern lines hold her and the check asks for 30 m or more, which is more than 4 × (5 + 1.8) = 27.2 m (PT-31's depth rule).
 
 ### 20.3 Texts (appended)
 
@@ -2453,7 +2457,7 @@ The drop spot is in the empty berth opposite ours (south row, index 12: free at 
   "mistake": "Not letting out chain as you back: the anchor drags behind you and holds nothing. Or taking in chain so hard that it pulls the stern off the quay: the windlass cuts out.",
   "done": "She is stern-to on her own anchor. Lay the chain out as you back in, then tighten it.",
   "steps": {
-    "to-spot": { "goal": "Motor slowly forward until the bow is over the ring, nearly stopped.", "how": "Engine slow ahead (+ once), steer straight south into the empty berth across the fairway. Neutral over the ring, a touch astern to stop." },
+    "to-spot": { "goal": "Motor slowly forward until the bow is over the ring, nearly stopped.", "how": "Engine slow ahead (the lever just past Neutral towards Ahead); she already points south at the empty berth across the fairway: keep her straight with the thrusters. Neutral over the ring, a touch astern to stop." },
     "let-go-anchor": { "goal": "Let the anchor go to the bottom (5 m).", "how": "Anchor: hold \"Chain out ▼\" until the anchor is on the bottom." },
     "reverse-in": { "goal": "Back into your berth, letting out chain, and stop with the stern 0.5–2.8 m from the quay.", "how": "Engine slow astern. Tap \"Chain out\" whenever the chain counter is less than the distance to the anchor plus a few metres, so the chain is never tight while you move. Keep her straight with the thrusters. Neutral near the quay." },
     "stern-lines": { "goal": "Throw both stern lines to the quay.", "how": "Harbour gear → Lines: \"Throw it to the quay\" on both stern lines." },
@@ -2467,11 +2471,11 @@ The drop spot is in the empty berth opposite ours (south row, index 12: free at 
 
 ### 20.4 Pilot (`sternAnchorPilot()`)
 
-`c` = our berth's centre (2.75), `gap`, `keep` as `enterPilot`; `phase = 0`. Step 0: `keep`; `lever(d > 3 ? (v < 0.3 ? 15 : 0) : (v > 0.05 ? −15 : 0))` with `d` from `bow(s)` to (c, 1442). Step 1: `lever 0`, `keep`, `windlass down`. Step 2: while `phase === 0`: `far` = horizontal distance from `bow(s)` to the anchor; `windlass(chainOutM < hypot(far, 6.8) + 4 ? 'down' : 'off')` (6.8 = 5 m depth + 1.8 m roller); `want = gap > 10 ? −0.4 : gap > 5 ? −0.25 : −0.12`; `keep`; `lever(v > want ? −15 : v < want − 0.15 ? 15 : 0)`; when `gap < 2.6`: `windlass off`, `phase = 1`. Then `keep`, `lever(v < −0.03 ? 15 : 0)`. Step 3: `lever 0`, `keep`, take `sp` and `ss`. Step 4: while the anchor is not `set` and not `cutOut`: `keep`, `windlass up`; then `windlass off`, both thrusters 0.
+`c` = our berth's centre (2.75), `gap`, `keep` as `enterPilot`; `phase = 0`. Step 0: `keep`; `lever(d > 3 ? (v < 0.3 ? 15 : 0) : (v > 0.05 ? −15 : 0))` with `d` from `bow(s)` to (c, 1442). Step 1: `lever 0`, `keep`, `windlass down`. Step 2: while `phase === 0`: `far` = horizontal distance from `bow(s)` to the anchor; `windlass(chainOutM < hypot(far, 6.8) + 4 ? 'down' : 'off')` (6.8 = 5 m depth + 1.8 m roller); `want = gap > 10 ? −0.4 : gap > 5 ? −0.25 : −0.12`; `keep`; `lever(v > want ? −15 : v < want − 0.15 ? 15 : 0)`; when `gap < 2.6`: `windlass off`, `phase = 1`. Then `keep`, `lever(v < −0.03 ? 15 : 0)` until the step passes by itself (the coach moves on when its check holds). Step 3: `lever 0`, `keep`, take `sp` and `ss`. Step 4: while the anchor is not `set` and not `cutOut`: `keep`, `windlass up`; then `windlass off`, both thrusters 0.
 
 ### 20.5 Tests (good run; prototype in brackets)
 
-to-spot ≤ 79 (56.6); let-go-anchor ≤ 24 (14.5); reverse-in ≤ 206 (154.5); stern-lines ≤ 3 (1.0); chain-tight ≤ 29 (18.0); the chain at the end 38–48 m (41.1), no `mistake` in the log. **PT-51** (exercise test "PT-51 the anchor holds the bow stern-to"): after `done`, 30 s more in neutral: heading within 180 ± 10°, stern gap 0.3–3.0 m.
+to-spot ≤ 79 (56.6); let-go-anchor ≤ 24 (14.5); reverse-in ≤ 206 (154.5); stern-lines ≤ 3 (1.0); chain-tight ≤ 29 (18.0); the chain at the end 38–46 m (41.1), no `mistake` in the log. `it('PT-31 stern-to the chain is more than four times the depth')`: at the end `chainOutM ≥ 4 × (5 + 1.8)` = 27.2. **PT-51** (`it('PT-51 the anchor holds the bow stern-to')`): after `done`, 30 s more in neutral: heading within 180 ± 10°, stern gap 0.3–3.0 m.
 
 ### 20.6 Browser checks (`scripts/shots-m78.mjs`, test clock)
 
@@ -2490,7 +2494,7 @@ The exercise can be finished on a phone; every item of section 21 is ticked in t
 - [ ] Six harbour exercises in the "Harbour and anchor" group, each finished on a phone at least once (Leaving and Entering at all three levels) (M74–M78).
 - [ ] The target outline shows in 3D and on both maps; the Level row works and is kept in links (`exl`) (M74).
 - [ ] A touch pauses with its card; a hard knock, a hard grounding and a rope round the propeller end the run; the debrief lists line, thruster, windlass and fender actions (M74).
-- [ ] PT-61 and PT-62 have tests named after them; the exercise tests named after PT-27, PT-31, PT-33, PT-48, PT-50, PT-51, PT-52, PT-53 and PT-57 pass; every earlier test passes.
+- [ ] PT-61 and PT-62 have tests named after them; the exercise tests named after PT-27, PT-31, PT-33, PT-48, PT-50, PT-51, PT-52, PT-53 and PT-57 (M75–M78) pass; every earlier test passes.
 - [ ] Russian texts of the new exercises and strings are drafts (`draft`), in the review documents.
 - [ ] `docs/EXERCISES.md`, `docs/CODE_MAP.md`, `docs/WORKFLOW.md` and `docs/ROADMAP.md` are current.
 
@@ -2513,7 +2517,7 @@ The exercise can be finished on a phone; every item of section 21 is ticked in t
 - **Easy is the default level** (recommended; merging accepts it): a beginner starts with room and a light wind.
 - **The side wind blows from the west** (from the open side, along the fairway's exit) in Leaving and Entering (recommended; merging accepts it): with the wind from the east the prototype's careful learner touched a neighbour once at Normal.
 - **The breakwater's entrance faces west**, where the fairway is already open; the boat starts inside, as today's marina place does (recommended; merging accepts it). Exercises that start outside the harbour can come later.
-- **Stern-to with the anchor checks 30 m of chain or more**, not the 3-boat-lengths rule (recommended; merging accepts it): the rule is for swinging at anchor; across a 30 m fairway the chain can be about 43 m at most, and the stern lines hold her (20.2).
+- **Stern-to with the anchor checks 30 m of chain or more**, not the 3-boat-lengths rule (recommended; merging accepts it): the rule is for swinging at anchor; from the berth opposite to our moored bow is about 41.5 m, so the chain ends at about 41–43 m, and the stern lines hold her (20.2).
 - **The How texts describe the Easy controls** (13.3's known limitation stays).
 - **Part 10c outline** (unchanged): scripted wind; the Adriatic winds (sources needed); each exercise's own start time; the night time-lapse of the bay anchoring; the Exercises list grouped by place.
 
