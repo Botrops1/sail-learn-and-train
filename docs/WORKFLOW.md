@@ -770,7 +770,7 @@ New link settings (PHASE9_SPEC 4.2): `hw=s` puts the Helm camera at the starboar
 
 ## 15. Phase 10, part a
 
-Exercises: the coach and the first sailing exercises ([PHASE10_SPEC](PHASE10_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M66 … M71, then the extra milestone M72 for issue #149), started with `/milestone <N>`. **M66, M67, M68, M69 and M71 need a `/review` with Opus** before you test them; M70 does not. Parts 10b (harbour and anchor) and 10c (wind and clock) are planned later with `/plan 10b` and `/plan 10c`.
+Exercises: the coach and the first sailing exercises ([PHASE10_SPEC](PHASE10_SPEC.md)). The same loop as section 2: one session and one PR per milestone (M66 … M71, then the extra milestone M72 for issue #149), started with `/milestone <N>`. **M66, M67, M68, M69 and M71 need a `/review` with Opus** before you test them; M70 does not. Part 10b (harbour and anchor) is section 16 below; part 10c (wind and clock) is planned later with `/plan 10c`.
 
 ### 15.1 Checklists
 
@@ -833,3 +833,57 @@ Build after M71 is merged. **Needs a `/review` with Opus** before you test it (i
 - [ ] A controlled gybe is still gentle: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gybing — do steps 1 to 3. With the main hauled in, the boom crosses a short way and the card ticks the gybe step.
 - [ ] Learn: on any link, open Learn and tap Gybe — the text ends with why the boom crosses by itself.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ms=85&js=50&vg=50&tl=100&mf=100&jf=100&rd=0&wd=0&ws=12&cam=side-port&m=exercise&step=5&detail=high&hdg=171&bs=4.8&ap=wind&apt=-171&sea=flat&clk=202606011202&ex=gybing&exw=3&mode=easy&lang=ru — How? mentions «линию ветра».
+
+## 16. Phase 10, part b
+
+Harbour and anchor exercises, with a more detailed marina ([PHASE10_SPEC](PHASE10_SPEC.md) sections 15–22). The same loop: one session and one PR per milestone (M73 … M78), started with `/milestone <N>`. **M73, M74, M75, M76 and M77 need a `/review` with Opus** before you test them; M78 does not. Part 10c (wind and clock) is planned later with `/plan 10c`.
+
+### 16.1 Checklists
+
+New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exercise's level (Easy has no setting). Replace `<N>` with the PR number. In every exercise, "How?" tells you what to tap, and the magenta outline shows where to go.
+
+#### M73: A more detailed marina, solid from everywhere
+
+- [ ] The entrance: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=-200.0&pn=1476.0&hdg=90&ws=0&cam=helm — ahead, a gap in a grey rock wall (the breakwater), a red light on the left and a green one on the right.
+- [ ] The marina: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=side-port&ws=0&detail=high — moored yachts with a cabin, a mast, a boom and a rolled sail; lamp posts and bollards on the quay; low buildings with red roofs behind it. Drag the view round to look.
+- [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=map — the breakwater, the buildings and the two lights are drawn; tap the breakwater: the card says "Breakwater".
+- [ ] Taps: on the first link, tap the red light — the card says "Harbour entrance light"; on the second, tap a building — "Harbour buildings".
+- [ ] Solid from open water: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=map — sail north with the wind from the right (Steering: autopilot Heading, course 000) for about three and a half minutes (the time bar's ×16 makes it 15 seconds) until you reach the marina: she bumps into the breakwater and the Status section lists the damage. Before M73 she sailed straight through.
+- [ ] One bump, one report: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0 — Engine: drag the lever about halfway towards Astern for 3 seconds, then back to Neutral. She bumps the quay; the Status section's damage list shows one line (two at most) for it.
+- [ ] Speed: on the second link, with Settings → Debug overlay on, the frame rate on your phone (write it in the PR).
+
+#### M74: The harbour coach, and leaving the berth
+
+- [ ] List: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — a new group "Harbour and anchor" with "Leaving the berth".
+- [ ] Setup: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth — the card has a Level row (Easy pressed); the boat lies in her berth with the lines on.
+- [ ] Easy run: on the same link tap Start and follow How?: let go the lazy line, then the stern lines, motor out, turn west with both thrusters. Each step ticks off; a magenta outline shows the fairway; at the end "Well done!".
+- [ ] Hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=hard — Hard is pressed, every berth is taken, the wind is 14 kn. Leave the berth again (How? says to give a little more throttle).
+- [ ] A knock: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — Start, let go all the lines, then drag the engine lever halfway towards Astern: she backs into the quay. A card says "A light touch" (time stops, Carry on or Back) or "A hard knock" (the exercise stops).
+- [ ] Debrief: after a finished run, the debrief lists "Lazy line (to the bow): Let go" and the thruster pushes.
+- [ ] Old exercise links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — as before, no Level row.
+
+#### M75: Entering the berth stern-to
+
+- [ ] Easy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth — Start and follow How?: fenders out, stop past the berth, turn with the thrusters, back in slowly, stern lines, lazy line, tighten. The outline marks your berth. About four minutes (the time bar's ×4 helps while backing in).
+- [ ] Normal: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=normal — the same with boats on both sides and a side wind.
+- [ ] Hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=hard — every berth taken, 14 kn: fenders touching the neighbours are fine, a touch without a fender pauses.
+- [ ] Fenders in: on the first link, skip the fenders and back towards the berth — the card "Fenders still in".
+- [ ] Rope round the propeller: on the Normal link, when the crew is walking the lazy line to the bow, push the engine lever towards Ahead — the exercise stops with "A rope round the propeller".
+
+#### M76: Turning in her own length; picking up and leaving a mooring buoy
+
+- [ ] Turning: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=turn-own-length — Start: wheel hard right, short bursts ahead and astern until she points about 120°, then spin her with both thrusters to 270°, inside the magenta circle.
+- [ ] Out of the circle: on the same link, after Start push the engine lever two thirds towards Ahead for ten seconds — the card "Out of the circle".
+- [ ] Buoy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=mooring-buoy — motor slowly into the wind to the middle buoy, pick it up, lie to it ten seconds, let go and back away.
+
+#### M77: Anchoring in the bay with a line ashore
+
+- [ ] Anchoring: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=anchor-shore — Start and follow How?: back to the magenta ring, let the anchor go, let out about 47 m of chain while going astern, dig it in, back towards the rocks, take a line ashore, tighten. About six minutes (×4 helps).
+- [ ] Too little chain: on the same link, stop the chain at about 25 m and go astern hard — the anchor does not set, or the card "The anchor is dragging" appears.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=anchor-shore&lang=ru — the setup card reads well and nothing runs off the screen.
+
+#### M78: Stern-to on your own anchor, sign-off of part 10b
+
+- [ ] Stern-to with the anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=stern-to-anchor — Start: motor forward to the ring in the empty berth opposite, let the anchor go, back into your berth letting out chain, stern lines, take in chain until the anchor is set.
+- [ ] All six: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — the "Harbour and anchor" group lists six exercises; each can be finished once on the phone.
+- [ ] Every item of the part 10b Definition of Done (PHASE10_SPEC 21) is ticked in the PR.
