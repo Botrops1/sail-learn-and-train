@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
+import { boat } from '../src/model/boat';
+import { gybeArrived, gybeStep, windTorqueNm, type GybeSwing } from '../src/model/gybe';
 import type { RealisticAction } from '../src/model/realistic';
 
 function run(state: AppState, seconds: number): AppState {
@@ -64,5 +66,54 @@ describe('Phase 10 rules (PHASE10_SPEC 9.6)', () => {
     }
     expect(found).toBeGreaterThan(0);
     expect(found).toBeLessThan(10);
+  });
+});
+
+describe('PT-60 what pushes the boom across in a gybe (PHASE10_SPEC 14.6)', () => {
+  it('PT-60 by the lee with the boom let out, the steady wind holds the boom out', () => {
+    expect(windTorqueNm(165, 72, 15, 1, 0)).toBeGreaterThan(0);
+    expect(windTorqueNm(-165, -72, 15, 1, 0)).toBeLessThan(0);
+  });
+
+  it('PT-60 without a start, a boom let out is not thrown across', () => {
+    const noStart = {
+      ...boat,
+      physics: {
+        ...boat.physics,
+        gybe: { ...boat.physics.gybe, startPushFactor: 0 },
+      },
+    };
+    let s: GybeSwing = { thetaDeg: 72, omegaDegS: 0, startDeg: 72, stopDeg: -72 };
+    for (let i = 0; i < 8000; i += 1) {
+      s = gybeStep(s, 165, 15, 1, 0, 0.001, noStart);
+      expect(gybeArrived(s)).toBe(false);
+    }
+    expect(s.thetaDeg).toBeGreaterThanOrEqual(72);
+  });
+
+  it('PT-60 once past the line of the wind, the wind throws the boom across', () => {
+    expect(windTorqueNm(165, 10, 15, 1, 0)).toBeLessThan(0);
+    expect(windTorqueNm(165, -40, 15, 1, 0)).toBeLessThan(0);
+  });
+
+  it('PT-60 the start is the slow part', () => {
+    let s: GybeSwing = { thetaDeg: 72, omegaDegS: 0, startDeg: 72, stopDeg: -72 };
+    let t = 0;
+    let tLine = -1;
+    let omegaLine = 0;
+    while (!gybeArrived(s) && t < 30) {
+      s = gybeStep(s, 165, 15, 1, 0, 0.001);
+      t += 0.001;
+      if (tLine < 0 && s.thetaDeg <= 15) {
+        tLine = t;
+        omegaLine = s.omegaDegS;
+      }
+    }
+    const timeShare = tLine / t;
+    expect(timeShare).toBeGreaterThan(0.62);
+    expect(timeShare).toBeLessThan(0.76);
+    const rateShare = omegaLine / s.omegaDegS;
+    expect(rateShare).toBeGreaterThan(0.6);
+    expect(rateShare).toBeLessThan(0.78);
   });
 });

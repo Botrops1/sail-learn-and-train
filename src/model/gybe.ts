@@ -1,4 +1,4 @@
-import { DEG } from './angles';
+import { DEG, wrap180 } from './angles';
 import { boat, type BoatData } from './boat';
 import type { RigState } from './sim';
 
@@ -7,7 +7,10 @@ import type { RigState } from './sim';
  * what that costs in energy and in load on the main sheet. Pure.
  *
  * Phase 1's trigger stays (15° by the lee, `solution.gybe`); what changes is the crossing: the
- * wind's push swings the boom with inertia and air drag, instead of a fast spring.
+ * boom swings with inertia and air drag, under two pushes (M72, issue #149): the steady wind's
+ * push on the sail, worked out from the apparent wind's angle to the boom (it holds a boom that
+ * is let out and by the lee, and throws it once it is past the line of the wind), and a start
+ * push that stands for the roll, wave, gust or small turn that starts a real gybe.
  */
 
 /** The boom's swing about the mast: angle and rate, and the two sides of the crossing. */
@@ -66,51 +69,74 @@ export function boomInertia(data: BoatData = boat): number {
   return (g.boomMassKg * lb ** 2) / 3 + (g.sailMassKg * e ** 2) / 6 + airMass * dCE ** 2;
 }
 
-/**
- * The wind's push on the swinging boom, newtons·metre, towards the new side (`sign`).
- * `½ρ·aws²·A·driveCoefficient·dCE·cos²(heel)`, times a shape factor (data `physics.gybe.driveNote`):
- * wide swings are hit broadside, and the push builds as the sail comes round.
- */
-function driveTorque(
-  s: GybeSwing,
-  awsKn: number,
-  mainOut: number,
-  heelDeg: number,
-  data: BoatData,
-): number {
-  const g = data.physics.gybe;
-  const aws = awsKn * data.physics.constants.knotMps;
+/** The line of the wind: the boom angle that points straight at where the apparent wind comes from. */
+export function windLineDeg(awaDeg: number): number {
+  return wrap180(180 - awaDeg);
+}
+
+/** `½ρ · area · mainOut · normalForceCoefficient · lever · cos²(heel)`: the push per (m/s)². */
+function pushScale(mainOut: number, heelDeg: number, data: BoatData): number {
   const rho = data.physics.constants.airDensityKgM3;
-  const span = s.stopDeg - s.startDeg;
-  const done = span === 0 ? 1 : Math.min(1, Math.max(0, (s.thetaDeg - s.startDeg) / span));
-  const broadside = Math.abs(Math.sin(s.startDeg * DEG));
-  const shape =
-    g.driveGain *
-    (g.driveFloor + (1 - g.driveFloor) * broadside) *
-    (g.driveStartFraction + (1 - g.driveStartFraction) * done);
   const cosHeel = Math.cos(heelDeg * DEG);
   return (
     0.5 *
     rho *
-    aws *
-    aws *
     sailArea(data) *
     mainOut *
-    g.driveCoefficient *
+    data.physics.gybe.normalForceCoefficient *
     ceLever(mainOut, data) *
     cosHeel *
-    cosHeel *
-    shape
+    cosHeel
   );
+}
+
+/** The steady wind's push on the main about the mast (N·m, + = towards starboard). */
+export function windTorqueNm(
+  awaDeg: number,
+  thetaDeg: number,
+  awsKn: number,
+  mainOut: number,
+  heelDeg: number,
+  data: BoatData = boat,
+): number {
+  const g = data.physics.gybe;
+  const aws = awsKn * data.physics.constants.knotMps;
+  const x = (awaDeg + thetaDeg) * DEG;
+  return (
+    -pushScale(mainOut, heelDeg, data) *
+    g.sailShapeGain *
+    aws *
+    aws *
+    Math.sin(x) *
+    Math.abs(Math.sin(x))
+  );
+}
+
+/** The start push (PT-60): towards the new side until the boom is startPastLineDeg past the line of the wind, then 0 (N·m). */
+export function startTorqueNm(
+  s: GybeSwing,
+  awaDeg: number,
+  awsKn: number,
+  mainOut: number,
+  heelDeg: number,
+  data: BoatData = boat,
+): number {
+  const g = data.physics.gybe;
+  const sign = Math.sign(s.stopDeg - s.startDeg) || Math.sign(s.stopDeg) || 1;
+  const past = sign * (s.thetaDeg - windLineDeg(awaDeg));
+  if (past >= g.startPastLineDeg) return 0;
+  const aws = awsKn * data.physics.constants.knotMps;
+  return sign * g.startPushFactor * g.sailShapeGain * pushScale(mainOut, heelDeg, data) * aws * aws;
 }
 
 /**
  * Advances the swing by `h` seconds (semi-implicit Euler; use `h` of 0.005 s or less):
- * `M = sign · drive − cAir · ω|ω|`, `ω += M / I · h`, `θ += ω · h`, with
+ * `M = wind's push + start push − cAir · ω|ω|`, `ω += M / I · h`, `θ += ω · h`, with
  * `cAir = ½ρ·A·normalForceCoefficient·dCE³` (the sail pushing through the air).
  */
 export function gybeStep(
   s: GybeSwing,
+  awaDeg: number,
   awsKn: number,
   mainOut: number,
   heelDeg: number,
@@ -119,12 +145,13 @@ export function gybeStep(
 ): GybeSwing {
   const g = data.physics.gybe;
   const rho = data.physics.constants.airDensityKgM3;
-  const sign = Math.sign(s.stopDeg - s.startDeg) || Math.sign(s.stopDeg) || 1;
   const lever = ceLever(mainOut, data);
   const cAir = 0.5 * rho * sailArea(data) * mainOut * g.normalForceCoefficient * lever ** 3;
   const omega = s.omegaDegS * DEG;
   const moment =
-    sign * driveTorque(s, awsKn, mainOut, heelDeg, data) - cAir * omega * Math.abs(omega);
+    windTorqueNm(awaDeg, s.thetaDeg, awsKn, mainOut, heelDeg, data) +
+    startTorqueNm(s, awaDeg, awsKn, mainOut, heelDeg, data) -
+    cAir * omega * Math.abs(omega);
   const nextOmega = omega + (moment / boomInertia(data)) * h;
   return {
     ...s,

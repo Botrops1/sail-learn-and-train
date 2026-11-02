@@ -8,6 +8,9 @@ import {
   gybeImpact,
   gybeImpactPullN,
   gybeStep,
+  startTorqueNm,
+  windLineDeg,
+  windTorqueNm,
   type GybeSwing,
 } from '../src/model/gybe';
 import { AT_REST, initialRig, step, type RigState } from '../src/model/sim';
@@ -16,9 +19,11 @@ import { gybeReportText } from '../src/ui/gybeReport';
 /** Swings the boom from `startDeg` to `stopDeg` in 1 ms steps: main fully out, heel 0. */
 function swing(awsKn: number, startDeg: number, stopDeg: number, heelDeg = 0, mainOut = 1) {
   let s: GybeSwing = { thetaDeg: startDeg, omegaDegS: 0, startDeg, stopDeg };
+  // 15° by the lee towards the new side, as at the trigger.
+  const awaDeg = stopDeg < startDeg ? 165 : -165;
   let t = 0;
   while (!gybeArrived(s) && t < 30) {
-    s = gybeStep(s, awsKn, mainOut, heelDeg, 0.001);
+    s = gybeStep(s, awaDeg, awsKn, mainOut, heelDeg, 0.001);
     t += 0.001;
   }
   return { timeS: t, report: gybeImpact(s, t), swing: s };
@@ -238,5 +243,54 @@ describe('the gybe in the rig (PHASE2_SPEC 11.2)', () => {
     expect(controlled).toMatch(
       /^Controlled gybe: boom end \d\.\d m\/s · peak main sheet load \d\.\d kN\.$/,
     );
+  });
+});
+
+describe('M72 the two pushes (PHASE10_SPEC 14)', () => {
+  it('windLineDeg: the boom angle that points at where the wind comes from', () => {
+    expect(windLineDeg(165)).toBe(15);
+    expect(windLineDeg(-165)).toBe(-15);
+    expect(windLineDeg(180)).toBe(0);
+    expect(windLineDeg(-90)).toBe(-90);
+  });
+
+  it('the steady wind pushes a boom let out and by the lee outwards, mirrored to the other side', () => {
+    const t = windTorqueNm(165, 72, 15, 1, 0);
+    expect(t).toBeGreaterThan(6000);
+    expect(t).toBeLessThan(6800);
+    expect(windTorqueNm(-165, -72, 15, 1, 0)).toBeCloseTo(-t, 6);
+  });
+
+  it('heel, no wind and a rolled-in main reduce the wind push', () => {
+    const upright = windTorqueNm(165, 72, 15, 1, 0);
+    expect(windTorqueNm(165, 72, 15, 1, 25) / upright).toBeCloseTo(0.8214, 3);
+    expect(windTorqueNm(165, 72, 0, 1, 0)).toBe(0);
+    expect(windTorqueNm(165, 72, 15, 0.5, 0)).toBeLessThan(upright);
+  });
+
+  it('the start push acts until the boom is startPastLineDeg past the line of the wind', () => {
+    const g = boat.physics.gybe;
+    const at = (thetaDeg: number): GybeSwing => ({
+      thetaDeg,
+      omegaDegS: 0,
+      startDeg: 72,
+      stopDeg: -72,
+    });
+    expect(startTorqueNm(at(6), 165, 15, 1, 0)).toBeCloseTo(
+      g.startPushFactor * windTorqueNm(165, -75, 15, 1, 0),
+      6,
+    );
+    expect(startTorqueNm(at(6), 165, 15, 1, 0)).toBeLessThan(0);
+    expect(startTorqueNm(at(4), 165, 15, 1, 0)).toBe(0);
+  });
+
+  it('the data: the start push is strong enough to start a boom let right out; the old keys are gone', () => {
+    const g = boat.physics.gybe;
+    const reach = (boat.rig.boom.maxSwingDeg - boat.visual.gybeHysteresisDeg) * (Math.PI / 180);
+    expect(g.startPushFactor).toBeGreaterThan(Math.sin(reach) ** 2);
+    expect(g.sailShapeGain).toBeGreaterThan(0);
+    expect(g.startPastLineDeg).toBeGreaterThan(0);
+    expect(g.startPastLineDeg).toBeLessThan(30);
+    expect((g as Record<string, unknown>).driveGain).toBeUndefined();
   });
 });

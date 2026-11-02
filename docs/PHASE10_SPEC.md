@@ -1613,3 +1613,9 @@ Register in `scripts/shots.mjs` (import, `SCENES` with the `m72-` prefix, `liveG
 - **The start push is a named stand-in**, not a simulation of rolling: it keeps the accidental gybe of the exercises, PT-05 and PT-26 as they are, and the texts say what it stands for.
 - **No force arrow in M72** (14.10).
 - **PT-60 is `to-verify`** until a sail-aerodynamics source confirms that the steady wind holds a let-out boom (the causes are source-checked [41]).
+
+### 14.12 Decided in the M72 PR (recommended; merging accepts it)
+
+- **Built exactly as 14.2–14.7 say**: the formulas, the five data values and the tests, with no tuning. The prototype's numbers came out again (15 kn, ±72°: 2.11 s, 9.78 kJ, 12.22 kN, 17.7 m/s; 8 / 25 kn: 3.96 s and 1.27 s; hauled in ±10°: 0.57 s, 0.85 kJ, 1.06 kN; heel 25°: 2.33 s, 8.04 kJ; main half out: 4.05 s, 3.25 kJ). No existing expectation changed; the only edit to an older test is the `swing()` helper in `tests/gybe.test.ts`, which now passes the apparent wind angle.
+- **CI**: M72 has its own part `live, M72` (`SHOTS_ONLY=m72`) and `m72` is added to the `SHOTS_SKIP` list of the part `live, M30 on`.
+- **PT-60 stays `to-verify`**: no sail-aerodynamics source was found in the build environment (the planning PR's reasoning stands).

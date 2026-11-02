@@ -155,6 +155,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
           engineRunning: s.engine.running,
           gear: s.engine.gear,
           paused: s.paused,
+          boomDeg: s.rig.theta.value,
+          gybing: s.rig.gybing,
         };
       },
     };
