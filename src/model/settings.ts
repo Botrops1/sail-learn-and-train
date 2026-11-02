@@ -115,6 +115,23 @@ export function isStepSize(value: number): value is StepSize {
   return (STEP_SIZES as readonly number[]).includes(value);
 }
 
+/**
+ * Whether the names over the parts show by default in a ropes mode (owner, PR 152): on in Easy,
+ * off in Realistic, where the 3D view is full of real hardware. A link or a setting can differ.
+ */
+export function defaultLabels(ropes: RopesMode): boolean {
+  return ropes !== 'realistic';
+}
+
+/**
+ * The settings after the ropes mode changed: the labels follow the new mode's default, so
+ * entering Realistic hides them (owner, PR 152). The same mode changes nothing.
+ */
+export function withRopesMode(settings: Settings, ropes: RopesMode): Settings {
+  if (ropes === settings.ropesMode) return settings;
+  return { ...settings, ropesMode: ropes, labels: defaultLabels(ropes) };
+}
+
 export function isRopesMode(value: string): value is RopesMode {
   return (ROPES_MODES as readonly string[]).includes(value);
 }

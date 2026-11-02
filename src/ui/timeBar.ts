@@ -7,6 +7,7 @@ import {
   timeScaleText,
   timeSpeedAvailable,
 } from '../model/timeScale';
+import { exercisePauseBlocked } from '../app/exerciseRun';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
@@ -149,7 +150,9 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     // A mistake or failed card (and the setup card, until Start) decides when time goes on (PHASE10_SPEC 7.3).
     const runStatus = state.exercise?.status;
     const blocked = runStatus === 'mistake' || runStatus === 'failed' || runStatus === 'setup';
-    const key = [speed, open, scale, state.paused, pausable, blocked].join('|');
+    // Alone (M71): no Pause while the exercise runs; once paused, Resume stays enabled.
+    const alone = exercisePauseBlocked(state) && !state.paused;
+    const key = [speed, open, scale, state.paused, pausable, blocked, alone].join('|');
     if (key === shown) return;
     shown = key;
     bar.dataset.speed = String(speed);
@@ -170,11 +173,16 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     status.setAttribute('aria-label', t('time.status', { scale: timeScaleText(scale) }));
     slowest.disabled = slower.disabled = scale <= slowestTimeScale();
     faster.disabled = fastest.disabled = scale >= fastestTimeScale();
-    pause.disabled = blocked;
+    pause.disabled = blocked || alone;
     pause.setAttribute('aria-pressed', String(state.paused));
     pause.classList.toggle('is-paused', state.paused);
     setText(pause, t(state.paused ? 'pause.resume' : 'pause.pause'));
-    pause.setAttribute('aria-label', t(state.paused ? 'pause.resumeAria' : 'pause.pauseAria'));
+    const pauseName = alone
+      ? t('exercise.alonePause')
+      : t(state.paused ? 'pause.resumeAria' : 'pause.pauseAria');
+    pause.setAttribute('aria-label', pauseName);
+    if (alone) pause.title = pauseName;
+    else pause.removeAttribute('title');
   };
   store.subscribe((state) => refresh(state));
   refresh(store.getState());

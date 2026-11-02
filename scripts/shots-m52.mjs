@@ -73,9 +73,10 @@ export async function liveM52Checks({ openPage, viewports, outDir, prefix, probl
         );
       } else if (mode && camera && gear) {
         check(
-          'side: mode chip at the left, camera chip, gear at the right',
-          mode.x - view.x <= 12 &&
-            mode.x < camera.x &&
+          // Owner, PR 152: beside the panel the chip row is right-aligned too (the mini-map is
+          // at the left): mode chip, camera chip, gear from left to right, the gear in the corner.
+          'side: mode chip, camera chip, gear from left to right, the group at the right',
+          mode.x < camera.x &&
             camera.x < gear.x &&
             view.x + view.width - (gear.x + gear.width) <= 12,
           JSON.stringify({ mode, camera, gear }),

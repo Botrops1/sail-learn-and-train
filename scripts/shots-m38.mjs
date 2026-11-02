@@ -420,8 +420,12 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await showTab(page, 'controls');
     const mini = await box(page, 'mini-map');
     check(
-      'phone: the mini-map keeps its place at the right, above the chip row',
-      !!mini && !!camera && mini.x + mini.w > 390 - 20 && mini.y + mini.h <= camera.y,
+      'phone: the mini-map is in the bottom-left corner, left of the camera chip (owner, PR 152)',
+      !!mini &&
+        !!camera &&
+        mini.x <= 12 &&
+        mini.x + mini.w <= camera.x &&
+        mini.y + mini.h >= camera.y,
       JSON.stringify({ mini, camera }),
     );
     await context.close();

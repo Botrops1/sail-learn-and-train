@@ -77,6 +77,17 @@ describe('store', () => {
     expect(store.getState().settings.ropesMode).toBe('easy');
   });
 
+  it('PR 152: the labels in 3D follow the ropes mode: Realistic hides them, Easy shows them', () => {
+    const store = createStore(initialState());
+    store.dispatch({ type: 'setRopesMode', mode: 'realistic' });
+    expect(store.getState().settings.labels).toBe(false);
+    store.dispatch({ type: 'setLabels', labels: true });
+    store.dispatch({ type: 'setRopesMode', mode: 'realistic' });
+    expect(store.getState().settings.labels).toBe(true);
+    store.dispatch({ type: 'setRopesMode', mode: 'easy' });
+    expect(store.getState().settings.labels).toBe(true);
+  });
+
   it('M5: setLabels turns the labels in 3D off and on; Reset turns them on again', () => {
     const store = createStore(initialState());
     store.dispatch({ type: 'setLabels', labels: false });

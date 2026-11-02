@@ -19,7 +19,7 @@ import { dangerZone } from '../src/model/gybe';
 import { entryFor } from '../src/model/panelEntries';
 import { significantHeightM, waveTrains } from '../src/model/waves';
 import { reduce } from '../src/app/store';
-import { buildReviewDoc } from '../scripts/review-doc.mjs';
+import { buildExercisesReviewDoc, buildReviewDoc } from '../scripts/review-doc.mjs';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 
 /** The entries that are complete in every language (3.2): M20's 18, M21's 55 and M22's 58 (every registry id). */
@@ -645,6 +645,14 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
     ).toBe(true);
   });
 
+  it('docs/review/ru-exercises.md (the exercise texts) is up to date', () => {
+    const committed = readFileSync('docs/review/ru-exercises.md', 'utf8');
+    expect(
+      buildExercisesReviewDoc('ru') === committed,
+      'a Russian exercise text changed: run `npm run review-doc -- ru` and commit docs/review/ru-exercises.md',
+    ).toBe(true);
+  });
+
   it('lists every entry once, under the groups of the Learn list', () => {
     const doc = buildReviewDoc('ru');
     for (const id of REGISTRY_IDS) {
@@ -659,14 +667,17 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
       (ui[`learn.group.${group}`] ?? '').replace(/\s*\(?\{count\}\)?/, '').trim(),
     );
     expect(labels.slice(0, GROUPS.length)).toEqual(expected);
-    // The groups, the interface texts, and (M66) the exercise texts.
-    expect(labels.length).toBe(GROUPS.length + 2);
+    // The groups and the interface texts (the exercise texts are in ru-exercises.md since M71).
+    expect(labels.length).toBe(GROUPS.length + 1);
   });
 
   it('is smaller than GitHub shows as Markdown, and has no date', () => {
     const doc = buildReviewDoc('ru');
     expect(Buffer.byteLength(doc, 'utf8')).toBeLessThan(450 * 1024);
     expect(doc).not.toMatch(/\d{4}-\d{2}-\d{2}/);
+    const exercises = buildExercisesReviewDoc('ru');
+    expect(Buffer.byteLength(exercises, 'utf8')).toBeLessThan(450 * 1024);
+    expect(exercises).not.toMatch(/\d{4}-\d{2}-\d{2}/);
   });
 
   it('refuses a language that has no review wording', () => {
