@@ -2244,6 +2244,36 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Волнолом (`env_breakwater`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Breakwater | Волнолом |
+| Другие названия | mole<br>harbour wall | мол<br>оградительная стена |
+| Коротко | The rock wall that keeps the waves out of the harbour. | Каменная стена, которая не пускает волны в гавань. |
+| Что делает / что значит | A breakwater is a long pile of rocks or a concrete wall round a harbour. Inside it the water stays calm, so boats can moor. Boats come in and go out through a gap in it, the entrance. | Волнолом — длинная насыпь из камней или бетонная стена вокруг гавани. За ним вода остаётся спокойной, и лодки могут швартоваться. Лодки заходят и выходят через проём в нём — вход. |
+| На этой яхте | The app's marina has a breakwater on the south and west with the entrance facing west, and the quay carried on as a north mole. | В марине приложения волнолом с юга и запада, вход обращён на запад, а причал продолжен на запад как северный мол. |
+| Типичные ошибки | Cutting close round the end of the breakwater. → Keep well off: rocks spread out under the water near its foot. | Срезать угол у края волнолома. → Держитесь подальше: камни расходятся под водой у его подножия. |
+| «Покажи» | The breakwater from above. | Волнолом сверху. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Входной огонь гавани (`env_harbour_light`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Harbour entrance light | Входной огонь гавани |
+| Другие названия | entrance light | огонь входа |
+| Коротко | The red or green light on each side of a harbour entrance. | Красный или зелёный огонь с каждой стороны входа в гавань. |
+| Что делает / что значит | In Europe (IALA region A) a boat coming in from the sea keeps the red light on her left (port) side and the green light on her right (starboard) side. At night they flash, so you can find the gap. | В Европе (район A по системе IALA) лодка, входящая с моря, оставляет красный огонь слева (по левому борту), а зелёный справа (по правому борту). Ночью огни мигают, и по ним находят проход. |
+| На этой яхте | Red on the north mole, green on the west arm: coming in heading east, red is on the left. | Красный на северном моле, зелёный на западном: входя курсом на восток, красный слева. |
+| Типичные ошибки | Passing the lights the wrong way round. → Coming in from the sea, red stays on the left. | Пройти огни наоборот. → Входя с моря, красный остаётся слева. |
+| «Покажи» | The entrance from the helm. | Вход со стороны штурвала. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### Грунт (`env_seabed`)
 
 | Поле | English | Русский |
@@ -2345,6 +2375,21 @@
 | На этой яхте | Three in the bay: two near the north shore and one hidden in the southern half. | Три в бухте: два у северного берега и один скрытый в южной половине. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Портовые здания (`env_harbour_building`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Harbour buildings | Портовые здания |
+| Другие названия | — | — |
+| Коротко | The houses behind the quay: the harbour office, cafés, shops. | Дома за причалом: контора порта, кафе, магазины. |
+| Что делает / что значит | A marina's office (where you check in and pay) is usually on the quay, with showers, cafés and shops nearby. | Контора марины (где регистрируются и платят) обычно на причале, рядом душевые, кафе и магазины. |
+| На этой яхте | Drawn only: six low buildings behind the quay. | Только нарисованы: шесть низких зданий за причалом. |
+| Типичные ошибки | — | — |
+| «Покажи» | The buildings from the boat. | Здания с лодки. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
