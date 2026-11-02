@@ -237,6 +237,8 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
         }),
     );
     const inside = boxes.every((b) => b.left >= 0 && b.right <= 360);
+    // Left to right (the Close chip stands left of the View button since PR 152: `order: -1`).
+    boxes.sort((a, b) => a.left - b.left);
     const apart = boxes.every((b, i) => i === 0 || b.left >= boxes[i - 1].right - 0.5);
     check('chips inside 360 px', inside && apart, JSON.stringify(boxes));
     await page.screenshot({ path: path.join(outDir, `${prefix}live-m28-russian-chips.png`) });
