@@ -359,7 +359,7 @@ function stepGybe(
   let timeS = rig.timeS;
   while (swing && remaining > 1e-12) {
     const h = Math.min(remaining, substep);
-    swing = gybeStep(swing, wind.awsKn, mainOut, heelDeg, h, data);
+    swing = gybeStep(swing, wind.awaDeg, wind.awsKn, mainOut, heelDeg, h, data);
     remaining -= h;
     timeS += h;
     elapsedS += h;

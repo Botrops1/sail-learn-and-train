@@ -79,7 +79,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setMiniMap` (M28), `setFend
 | `autopilot.ts` | Standby / heading / wind-angle autopilot. |
 | `trim.ts` | Trim states (luffing, good, stalled, …), telltales, blanketing, flogging damage. |
 | `engine.ts` | Engine: lever → rpm and gear (through neutral), thrust along the bow. |
-| `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. In almost no wind the swing is handed to the normal boom spring (limits in `physics.gybe`). |
+| `gybe.ts` | Gybes: the boom's swing under the wind's push (worked out from the apparent wind's angle to the boom) and the start push that stands for a roll or wave (M72), impact energy and sheet load, the danger-zone sector to draw. In almost no wind the swing is handed to the normal boom spring (limits in `physics.gybe`). |
 | `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying wind; time-bar scales, where the speed part shows, and where Pause is replaced by the "Held still" chip. |
 | `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail, map frame (`mapToBoat`/`boatToMap`, water shift), the track. |
 | `waves.ts`, `waveMotion.ts`, `area.ts` | Phase 3 waves: size from wind and fetch, the three wave trains and the surface height; heave, pitch and roll of the boat on them (phases at the boat), and (M15) what the rocking does to the sails (`rigMotion`), the steering (`waveYawDeg`) and the speed (`addedResistanceN`); the area's data. |
@@ -162,6 +162,7 @@ Store actions: `step`, `setClock`, `setClockShown`, `setMiniMap` (M28), `setFend
 - `scripts/shots-m67.mjs` (M67): live checks of mistakes and waypoints (the pause card, Carry on, Back, a waypoint link, not pausing, Try again), on the test clock.
 - `scripts/shots-m70.mjs` (M70): the Gusts and Too much wind setup scenes and live checks (the gust-easing run, the held sheet's heel card, the reduce-sail run and its actions in the debrief, the list group, Russian setup cards), on the test clock.
 - `scripts/shots-m71.mjs` (M71): the Setting and Furling setup scenes and live checks (the Crew choice, Alone's disabled Pause, the set-sails and furl-sails good runs with Realistic gestures and the actions in the debrief, With crew's Pause, the list of eight, Russian setup cards), on the test clock.
+- `scripts/shots-m72.mjs` (M72): the accidental-gybe step scene and the live checks (the boom starts across slowly and speeds up, then the Accidental gybe report; How? says why in English and Russian), on the test clock.
 - `scripts/shots-m69.mjs` (M69): the Tacking, Irons and Gybing setup scenes and live checks (good runs, the accidental-gybe card, the gybe report, Russian setup cards), on the test clock.
 - `scripts/shots-m68.mjs` (M68): live checks of the debrief (a run with two mistakes and a Back, Show my actions, So far, the Russian debrief without overflow).
 - `scripts/shots-m66.mjs` (M66): the Exercises scenes and live checks (mode, setup, locked, a full run of Trim through the points of sail, tick, How?, Stop, mode change), on the test clock.
