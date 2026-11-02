@@ -235,6 +235,17 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
     expect(parseUrlState('?mode=hard').settings.ropesMode).toBe('easy');
   });
 
+  it('PR 152: labels in 3D are off by default in Realistic ropes and follow the link', () => {
+    expect(parseUrlState('?mode=realistic').settings.labels).toBe(false);
+    expect(parseUrlState('?mode=realistic&lb=1').settings.labels).toBe(true);
+    expect(parseUrlState('?mode=easy').settings.labels).toBe(true);
+    const realistic = parseUrlState('?mode=realistic');
+    expect(serializeUrlState(realistic)).not.toContain('lb=');
+    const shown = { ...realistic, settings: { ...realistic.settings, labels: true } };
+    expect(serializeUrlState(shown)).toContain('lb=1');
+    expect(parseUrlState(serializeUrlState(shown)).settings.labels).toBe(true);
+  });
+
   it('M5: labels in 3D (lb) are on by default (owner, PR #19) and written only when off', () => {
     expect(parseUrlState('').settings.labels).toBe(true);
     expect(parseUrlState('?lb=1').settings.labels).toBe(true);

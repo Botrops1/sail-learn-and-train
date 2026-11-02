@@ -16,6 +16,7 @@ import { isLanguage } from '../model/languages';
 import { isRegisteredPartId } from '../model/registry';
 import {
   DEFAULT_SETTINGS,
+  defaultLabels,
   isCameraPreset,
   isDetail,
   isRopesMode,
@@ -221,7 +222,12 @@ export function parseUrlState(
       ...(debug !== undefined ? { debug } : {}),
       detail,
       ...(language !== undefined ? { language } : {}),
-      ...(labels !== undefined ? { labels } : {}),
+      // No `lb`: the labels follow the ropes mode's default (off in Realistic).
+      ...(labels !== undefined
+        ? { labels }
+        : ropesMode !== undefined
+          ? { labels: defaultLabels(ropesMode) }
+          : {}),
       ...(miniMap !== undefined ? { miniMap } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
       ...(timeScale !== undefined && isTimeScale(timeScale) ? { timeScale } : {}),
@@ -329,7 +335,7 @@ export function exerciseStartLink(id: string, state: AppState, ropes: RopesMode)
   if (state.settings.language !== DEFAULT_SETTINGS.language) {
     params.set('lang', state.settings.language);
   }
-  if (state.settings.labels !== DEFAULT_SETTINGS.labels) {
+  if (state.settings.labels !== defaultLabels(state.settings.ropesMode)) {
     params.set('lb', state.settings.labels ? '1' : '0');
   }
   if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) params.set('mm', '0');
@@ -850,7 +856,7 @@ export function serializeUrlState(state: AppState): string {
     params.set('lang', state.settings.language);
   }
   // Settings that are rarely changed are only written when they differ from the default.
-  if (state.settings.labels !== DEFAULT_SETTINGS.labels) {
+  if (state.settings.labels !== defaultLabels(state.settings.ropesMode)) {
     params.set('lb', state.settings.labels ? '1' : '0');
   }
   if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) {

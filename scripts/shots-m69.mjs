@@ -227,9 +227,13 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(2000);
       const still = (await run(page)).elapsedS === held && (await read(page)).paused;
       await shot(page, `live-${name}-m69-step-paused`);
-      await act(page, { type: 'setPaused', paused: false });
+      // Owner, PR 152: the Resume button over the 3D view ends the pause.
+      const resume = page.getByTestId('exercise-resume');
+      const resumeText = (await resume.isVisible()) ? await resume.innerText() : '';
+      await resume.click();
       await page.waitForTimeout(500);
-      const going = !(await read(page)).paused;
+      const going = !(await read(page)).paused && !(await resume.isVisible());
+      check(`Resume over the 3D view ${name}`, resumeText === 'Resume' && going, resumeText);
       check(
         `pause on step ${name}`,
         ring &&

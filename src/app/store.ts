@@ -16,6 +16,7 @@ import { clampControl, defaultControls, type ControlId, type Controls } from '..
 import {
   DEFAULT_CAMERA,
   DEFAULT_HELM_VIEW,
+  withRopesMode,
   DEFAULT_SETTINGS,
   type CameraPreset,
   type CameraState,
@@ -556,7 +557,7 @@ function reduceExercise(state: AppState, command: ExerciseCommand): AppState {
     if (command.ropes === state.settings.ropesMode) return state;
     return withTimeRule({
       ...state,
-      settings: { ...state.settings, ropesMode: command.ropes },
+      settings: withRopesMode(state.settings, command.ropes),
     });
   }
   if ('back' in command) return restoreWaypoint(state, command.back);
@@ -578,7 +579,7 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'setRopesMode':
       return withTimeRule({
         ...state,
-        settings: { ...state.settings, ropesMode: action.mode },
+        settings: withRopesMode(state.settings, action.mode),
         // Out of Learn and Harbour mode, the mode is the ropes mode (PHASE5_SPEC 3.1, PHASE7_SPEC 4.4).
         appMode: keepsRopesMode(state.appMode) ? state.appMode : action.mode,
       });
@@ -592,7 +593,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         ...state,
         appMode: action.mode,
         exercise: null,
-        settings: { ...state.settings, ropesMode: action.mode },
+        settings: withRopesMode(state.settings, action.mode),
       });
     }
     case 'setLabels':

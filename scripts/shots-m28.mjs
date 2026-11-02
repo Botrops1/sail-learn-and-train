@@ -9,7 +9,6 @@ import {
   setCamera,
   setSheet,
   showSection,
-  viewBottom,
   waitForLink,
 } from './ui.mjs';
 
@@ -48,9 +47,21 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
       Math.abs(box.width - 96) <= 1 && Math.abs(box.height - 96) <= 1,
       `${box.width} x ${box.height}`,
     );
-    const rowTop = await viewBottom(page);
-    const gap = rowTop - (box.y + box.height);
-    check('8 px above the chip row', Math.abs(gap - 8) <= 1, `${gap} px`);
+    // Owner, PR 152: bottom-left corner, in the chip row's row (its bottom edge on the row's).
+    const row = await page.getByTestId('view-bottom').boundingBox();
+    const viewBox = await page.locator('.view').first().boundingBox();
+    check(
+      'in the bottom-left corner, level with the chip row',
+      Math.abs(box.x - viewBox.x - 8) <= 1 &&
+        Math.abs(box.y + box.height - (row.y + row.height)) <= 1,
+      `x ${box.x - viewBox.x}, bottom ${box.y + box.height}, row bottom ${row.y + row.height}`,
+    );
+    const camera = await page.getByTestId('camera-chip').boundingBox();
+    check(
+      'the chips stand right of it',
+      camera.x >= box.x + box.width + 4,
+      `chip ${camera.x}, map ends ${box.x + box.width}`,
+    );
     const sheet = await page.getByTestId('sheet').boundingBox();
     check(
       'above the sheet',
