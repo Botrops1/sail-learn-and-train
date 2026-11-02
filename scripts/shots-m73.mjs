@@ -82,7 +82,7 @@ export async function liveM73Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(150);
     }
     await page.waitForTimeout(500);
-    const point = await page.evaluate(() => window.__sailMap.toScreen(5, 1530));
+    const point = await page.evaluate(() => window.__sailMap.toScreen(-90, 1528));
     await tapAt(page, 'map-canvas', point);
     const name = (await cardName(page))?.trim();
     check(
