@@ -85,7 +85,11 @@ export async function liveM73Checks({ openPage, viewports, outDir, prefix, probl
     const point = await page.evaluate(() => window.__sailMap.toScreen(5, 1530));
     await tapAt(page, 'map-canvas', point);
     const name = (await cardName(page))?.trim();
-    check('tap building: the card names it', name === 'Harbour buildings', JSON.stringify(name));
+    check(
+      'tap building: the card names it',
+      name === 'Harbour buildings',
+      JSON.stringify({ name, point }),
+    );
     await context.close();
   }
 
