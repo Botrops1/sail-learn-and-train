@@ -844,7 +844,7 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 
 #### M73: A more detailed marina, solid from everywhere
 
-- [ ] The entrance: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=-200.0&pn=1476.0&hdg=90&ws=0&cam=helm — ahead, a gap in a grey rock wall (the breakwater), a red light on the left and a green one on the right.
+- [ ] The entrance: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=-230.0&pn=1476.0&hdg=270&ws=0&cam=bow — ahead, a gap in a grey rock wall (the breakwater), a red light on the left and a green one on the right.
 - [ ] The marina: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=side-port&ws=0&detail=high&pe=-30.0&pn=1468.0&hdg=90 — moored yachts with a cabin, a mast, a boom and a rolled sail; lamp posts and bollards on the quay; low buildings with red roofs behind it. Drag the view round to look.
 - [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=map — the breakwater, the buildings and the two lights are drawn; tap the breakwater: the card says "Breakwater".
 - [ ] Taps: on the first link, tap the red light — the card says "Harbour entrance light"; on the second, tap a moored yacht — "Moored yacht"; on the map link, tap a red-roofed building — "Harbour buildings".

@@ -5,7 +5,7 @@ import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
 import { setSheet, showSection } from './ui.mjs';
 
-const ENTRANCE = '?pl=marina&m=harbour&pe=-200.0&pn=1476.0&hdg=90&ws=0&cam=helm';
+const ENTRANCE = '?pl=marina&m=harbour&pe=-230.0&pn=1476.0&hdg=270&ws=0&cam=bow';
 // The start at the fairway's west end has no yacht near (the first berth is 29 m east of her), so the
 // side view starts in the middle of the fairway (decided in the M73 PR).
 // The red light straight ahead, clear of the buttons over the 3D view (from the entrance scene's start the
@@ -65,6 +65,27 @@ export async function liveM73Checks({ openPage, viewports, outDir, prefix, probl
     const name = (await cardName(page))?.trim();
     await shot(page, 'm73-tap-breakwater');
     check('tap breakwater: the card names it', name === 'Breakwater', JSON.stringify(name));
+    await context.close();
+  }
+
+  // 1b. A tap on a building names the buildings, not the land behind it.
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm73 tap building',
+      '?pl=marina&m=harbour&tr=busy&cam=map&ws=0&debug=1',
+      { testClock: true },
+    );
+    await setSheet(page, 'peek');
+    for (let i = 0; i < 2; i += 1) {
+      await page.getByTestId('map-zoom-out').click();
+      await page.waitForTimeout(150);
+    }
+    await page.waitForTimeout(500);
+    const point = await page.evaluate(() => window.__sailMap.toScreen(5, 1530));
+    await tapAt(page, 'map-canvas', point);
+    const name = (await cardName(page))?.trim();
+    check('tap building: the card names it', name === 'Harbour buildings', JSON.stringify(name));
     await context.close();
   }
 
