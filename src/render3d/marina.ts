@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import type { AppState } from '../app/store';
 import { area, type AreaData } from '../model/area';
 import {
@@ -7,10 +8,43 @@ import {
   marinaGeometry,
   type MarinaGeometry,
   type MooredYacht,
+  yachtOutline,
   type Rect,
 } from '../model/marina';
 import { requirePartId } from '../model/registry';
 import { SCENE } from './sceneConfig';
+
+/** A copy of `geometry` (position and normal only, not indexed) with every vertex painted `colour`: parts of one mesh get their colours from the vertices. */
+export function painted(geometry: THREE.BufferGeometry, colour: string): THREE.BufferGeometry {
+  const flat = geometry.index ? geometry.toNonIndexed() : geometry.clone();
+  for (const name of Object.keys(flat.attributes)) {
+    if (name !== 'position' && name !== 'normal') flat.deleteAttribute(name);
+  }
+  flat.clearGroups();
+  const c = new THREE.Color(colour);
+  const count = flat.getAttribute('position').count;
+  const colours = new Float32Array(count * 3);
+  for (let i = 0; i < count; i += 1) c.toArray(colours, i * 3);
+  flat.setAttribute('color', new THREE.BufferAttribute(colours, 3));
+  return flat;
+}
+
+/** A cylinder from point `a` to point `b` (any frame). */
+export function cylinderBetween(
+  a: THREE.Vector3,
+  b: THREE.Vector3,
+  radius: number,
+  sides = 8,
+): THREE.BufferGeometry {
+  const length = a.distanceTo(b);
+  const geometry = new THREE.CylinderGeometry(radius, radius, length, sides);
+  const direction = b.clone().sub(a).normalize();
+  geometry.applyQuaternion(
+    new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction),
+  );
+  geometry.translate(...a.clone().add(b).multiplyScalar(0.5).toArray());
+  return geometry;
+}
 
 export interface Marina {
   /** Added to the world group: its position is set each frame so the meshes can sit at map positions. */
@@ -50,12 +84,12 @@ export function buildMarina(areaData: AreaData = area): Marina {
     roughness: 0.6,
   });
   const berthMaterial = new THREE.MeshStandardMaterial({ color: h.berthColour, roughness: 0.7 });
-  const hullMaterial = new THREE.MeshStandardMaterial({
-    color: h.hullColour,
+  const yachtMaterial = new THREE.MeshStandardMaterial({
+    color: '#ffffff',
+    vertexColors: true,
     roughness: 0.4,
     side: THREE.DoubleSide,
   });
-  const deckLineMaterial = new THREE.LineBasicMaterial({ color: h.deckLineColour });
 
   const m = areaData.marina;
   let bounds: Rect = marinaBounds(marinaGeometry('medium', 'half', areaData));
@@ -114,13 +148,22 @@ export function buildMarina(areaData: AreaData = area): Marina {
       layoutGroup,
     );
 
-    // Rings: tori lying flat on the quay's edge.
-    const ringGeometry = new THREE.TorusGeometry(h.ringRadiusM, h.ringTubeM, 8, 16);
-    for (const [east, north] of geometry.rings) {
-      const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-      ring.rotation.x = Math.PI / 2;
-      ring.position.set(north, m.quayHeightM + h.ringTubeM, east);
-      add(ring, ringId, layoutGroup);
+    // Rings: tori lying flat on the quay's edge, one instanced mesh.
+    {
+      const ringGeometry = new THREE.TorusGeometry(h.ringRadiusM, h.ringTubeM, 8, 16);
+      const rings = new THREE.InstancedMesh(ringGeometry, ringMaterial, geometry.rings.length);
+      const matrix = new THREE.Matrix4();
+      const turn = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));
+      geometry.rings.forEach(([east, north], i) => {
+        matrix.compose(
+          new THREE.Vector3(north, m.quayHeightM + h.ringTubeM, east),
+          turn,
+          new THREE.Vector3(1, 1, 1),
+        );
+        rings.setMatrixAt(i, matrix);
+      });
+      rings.instanceMatrix.needsUpdate = true;
+      add(rings, ringId, layoutGroup);
     }
 
     // The arrow over our berth: a cone pointing down on a shaft, floating over the quay.
@@ -159,7 +202,7 @@ export function buildMarina(areaData: AreaData = area): Marina {
     );
     add(stripe, quayId, layoutGroup);
 
-    for (const yacht of geometry.yachts) buildYacht(yacht);
+    buildYachts(geometry.yachts);
     meshes = [];
     layoutGroup.traverse((node) => {
       if (node !== layoutGroup) meshes.push(node);
@@ -173,45 +216,126 @@ export function buildMarina(areaData: AreaData = area): Marina {
     for (const mesh of arrowMeshes) mesh.visible = shown && arrowOn;
   };
 
-  const buildYacht = (yacht: MooredYacht) => {
-    // The hull in the (north, −east) plane, extruded along its local z, then turned so z is up:
-    // local (x, y, z) → world (x, z, −y), so a point (north, −east) lands at x = north, z = east.
+  /**
+   * The moored yachts: one instanced mesh per yacht type (length and beam), each with one merged
+   * geometry in the yacht's own frame (x from the stern to the bow, y up, z to starboard) and
+   * vertex colours (PHASE10_SPEC 15.5).
+   */
+  const yachtGeometry = (lengthM: number, beamM: number): THREE.BufferGeometry => {
+    const y = h.yacht;
+    const L = lengthM;
+    const B = beamM;
+    const parts: THREE.BufferGeometry[] = [];
+    // The hull: the outline extruded from under the water to the deck. The extrusion's caps
+    // (group 0) are the deck, its sides (group 1) the hull.
     const shape = new THREE.Shape();
-    yacht.outline.forEach(([east, north], i) => {
-      if (i === 0) shape.moveTo(north, -east);
-      else shape.lineTo(north, -east);
+    yachtOutline(L, B).forEach(([x, z], i) => {
+      if (i === 0) shape.moveTo(x, -z);
+      else shape.lineTo(x, -z);
     });
     shape.closePath();
-    const depth = h.hullBelowM + h.hullAboveM;
-    const hull = new THREE.Mesh(
-      new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false }),
-      hullMaterial,
-    );
-    hull.rotation.x = -Math.PI / 2;
-    hull.position.y = -h.hullBelowM;
-    add(hull, yachtId, layoutGroup);
+    const extruded = new THREE.ExtrudeGeometry(shape, {
+      depth: h.hullBelowM + h.hullAboveM,
+      bevelEnabled: false,
+    });
+    extruded.rotateX(-Math.PI / 2);
+    extruded.translate(0, -h.hullBelowM, 0);
+    const deck = new THREE.Color(y.deckColour);
+    const hullColour = new THREE.Color(h.hullColour);
+    const colours = new Float32Array(extruded.getAttribute('position').count * 3);
+    for (const group of extruded.groups) {
+      const colour = group.materialIndex === 0 ? deck : hullColour;
+      for (let i = group.start; i < group.start + group.count; i += 1)
+        colour.toArray(colours, i * 3);
+    }
+    extruded.setAttribute('color', new THREE.BufferAttribute(colours, 3));
+    extruded.clearGroups();
+    extruded.deleteAttribute('uv');
+    parts.push(extruded);
 
-    // The deck line: the outline again, at deck height.
-    const points = yacht.outline.map(
-      ([east, north]) => new THREE.Vector3(north, h.hullAboveM, east),
-    );
-    const line = new THREE.LineLoop(
-      new THREE.BufferGeometry().setFromPoints(points),
-      deckLineMaterial,
-    );
-    add(line, yachtId, layoutGroup);
+    const deckY = h.hullAboveM;
+    const cabin = new THREE.BoxGeometry((y.cabinTo - y.cabinFrom) * L, y.cabinM, y.cabinWidth * B);
+    cabin.translate(((y.cabinFrom + y.cabinTo) / 2) * L, deckY + y.cabinM / 2, 0);
+    parts.push(painted(cabin, h.hullColour));
 
-    // The mast, 0.4 L forward of the stern on the centreline.
-    const sternEast = yacht.berth.centreEastM;
-    const sternNorth = yacht.berth.sternNorthM;
-    const forward = yacht.berth.headingDeg === 180 ? -1 : 1;
-    const mastHeight = 0.9 * yacht.lengthM + 2;
-    const mast = new THREE.Mesh(
-      new THREE.CylinderGeometry(h.mastRadiusM, h.mastRadiusM, mastHeight, 8),
-      hullMaterial,
+    const mastX = y.mastAt * L;
+    const mastTop = deckY + y.mastShare * L;
+    parts.push(
+      painted(
+        cylinderBetween(
+          new THREE.Vector3(mastX, deckY, 0),
+          new THREE.Vector3(mastX, mastTop, 0),
+          h.mastRadiusM,
+        ),
+        y.rigColour,
+      ),
+      painted(
+        cylinderBetween(
+          new THREE.Vector3(mastX, deckY + y.boomAboveM, 0),
+          new THREE.Vector3(mastX - y.boomShare * L, deckY + y.boomAboveM, 0),
+          h.mastRadiusM,
+        ),
+        y.rigColour,
+      ),
+      painted(
+        cylinderBetween(
+          new THREE.Vector3(L, deckY, 0),
+          new THREE.Vector3(mastX, deckY + 0.9 * y.mastShare * L, 0),
+          y.jibRadiusM,
+        ),
+        y.sailColour,
+      ),
     );
-    mast.position.set(sternNorth + forward * 0.4 * yacht.lengthM, mastHeight / 2, sternEast);
-    add(mast, yachtId, layoutGroup);
+    const merged = mergeGeometries(parts.map((part) => (part.index ? part.toNonIndexed() : part)));
+    for (const part of parts) part.dispose();
+    if (!merged) throw new Error('the yacht parts do not merge');
+    return merged;
+  };
+
+  const buildYachts = (yachts: MooredYacht[]) => {
+    const byType = new Map<string, MooredYacht[]>();
+    for (const yacht of yachts) {
+      const key = `${yacht.lengthM}/${yacht.beamM}`;
+      byType.set(key, [...(byType.get(key) ?? []), yacht]);
+    }
+    const matrix = new THREE.Matrix4();
+    for (const group of byType.values()) {
+      const first = group[0] as MooredYacht;
+      const mesh = new THREE.InstancedMesh(
+        yachtGeometry(first.lengthM, first.beamM),
+        yachtMaterial,
+        group.length,
+      );
+      group.forEach((yacht, i) => {
+        // Local x (towards the bow) → (north, east) = (cos h, sin h); local z (starboard) →
+        // (−sin h, cos h); the scene's x is north and z is east.
+        const heading = (yacht.berth.headingDeg * Math.PI) / 180;
+        const c = Math.cos(heading);
+        const s = Math.sin(heading);
+        matrix.set(
+          c,
+          0,
+          -s,
+          yacht.berth.sternNorthM,
+          0,
+          1,
+          0,
+          0,
+          s,
+          0,
+          c,
+          yacht.berth.centreEastM,
+          0,
+          0,
+          0,
+          1,
+        );
+        mesh.setMatrixAt(i, matrix);
+      });
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.computeBoundingSphere();
+      add(mesh, yachtId, layoutGroup);
+    }
   };
 
   return {

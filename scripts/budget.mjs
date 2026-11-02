@@ -37,4 +37,24 @@ export async function checkBudget({ openPage, problems }) {
       }
     }
   }
+  // M73 (PHASE10_SPEC 15.5): the busy tight marina, the most crowded picture, Easy ropes only.
+  for (const detail of ['high', 'low']) {
+    for (const cam of ['helm', 'side-port']) {
+      const query = `?debug=1&held=1&sea=flat&clock=0&mm=0&cam=${cam}&detail=${detail}&pl=marina&ml=tight&tr=busy`;
+      const { context, page } = await openPage(viewport, `budget ${detail} ${cam} marina`, query);
+      await page.waitForTimeout(2500);
+      const { calls, triangles } = await page.evaluate(() => window.__sailDebug.stats());
+      const limit = BUDGET[detail];
+      const ok = calls <= limit.calls && triangles <= limit.triangles;
+      console.log(
+        `budget ${detail} ${cam} marina: ${calls} calls, ${triangles} triangles ${ok ? 'ok' : 'OVER'}`,
+      );
+      if (!ok) {
+        problems.push(
+          `budget ${detail} ${cam} marina: ${calls} calls (max ${limit.calls}), ${triangles} triangles (max ${limit.triangles})`,
+        );
+      }
+      await context.close();
+    }
+  }
 }

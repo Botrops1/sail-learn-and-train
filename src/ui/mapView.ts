@@ -101,6 +101,12 @@ export const LABEL_ANGLES_DEG: Readonly<Record<string, number>> = {
 
 const COLOURS = {
   water: '#d9ebf6',
+  // M73 (PHASE10_SPEC 15.5): the hex values of SCENE.harbour (this file does not import SCENE).
+  breakwater: '#8f887b',
+  harbourLand: '#cfc8b8',
+  roof: '#b5523b',
+  lightRed: '#d62828',
+  lightGreen: '#1f9d55',
   gridFine: 'rgb(60 110 150 / 0.09)',
   gridMinor: 'rgb(60 110 150 / 0.14)',
   gridMajor: 'rgb(60 110 150 / 0.3)',
@@ -486,15 +492,26 @@ export function pickMap(
   for (const { x: px, y: py, id } of bayPoints(view)) {
     if (Math.hypot(x - px, y - py) <= MAP.hitPx) return requirePartId(id);
   }
-  // The marina (M42): a moored yacht, then the quay, the wall and the pontoon.
+  // The marina (M42): a light, a building, the breakwater (M73), a moored yacht, then the quay,
+  // the wall and the pontoon, and last the land behind the quay.
   const marina = marinaScreen(state, view);
   if (marina) {
+    if (marina.lights.some((light) => Math.hypot(x - light.x, y - light.y) <= 6)) {
+      return requirePartId('env_harbour_light');
+    }
+    if (marina.buildings.some((outline) => containsPoint(outline, x, y))) {
+      return requirePartId('env_harbour_building');
+    }
+    if (marina.breakwater.some((outline) => containsPoint(outline, x, y))) {
+      return requirePartId('env_breakwater');
+    }
     if (marina.yachts.some((outline) => containsPoint(outline, x, y))) {
       return requirePartId('env_moored_yacht');
     }
     if (marina.quays.some((outline) => containsPoint(outline, x, y))) {
       return requirePartId('env_quay');
     }
+    if (containsPoint(marina.land, x, y)) return requirePartId('env_quay');
   }
   if (distanceToSegment(p, layout.apparentHead, layout.apparentTail) <= MAP.hitPx / 2) {
     return requirePartId('term_apparent_wind');
@@ -920,6 +937,10 @@ function marinaScreen(
 ): {
   quays: ScreenPoint[][];
   yachts: ScreenPoint[][];
+  breakwater: ScreenPoint[][];
+  land: ScreenPoint[];
+  buildings: ScreenPoint[][];
+  lights: { x: number; y: number; colour: string }[];
   geometry: ReturnType<typeof marinaGeometry>;
 } | null {
   const { layout, traffic } = state.harbour;
@@ -940,6 +961,24 @@ function marinaScreen(
   return {
     geometry,
     quays: [geometry.quay, geometry.wall, geometry.pontoon].map(rect),
+    breakwater: [
+      geometry.breakwater.south,
+      geometry.breakwater.west,
+      geometry.breakwater.north,
+    ].map(rect),
+    land: rect(geometry.land),
+    buildings: geometry.buildings.map((b) =>
+      rect({
+        west: b.eastM - b.widthM / 2,
+        east: b.eastM + b.widthM / 2,
+        south: b.northM - b.depthM / 2,
+        north: b.northM + b.depthM / 2,
+      }),
+    ),
+    lights: [
+      { at: geometry.lights.red, colour: COLOURS.lightRed },
+      { at: geometry.lights.green, colour: COLOURS.lightGreen },
+    ].map(({ at, colour }) => ({ ...mapToScreen(at[0], at[1], view), colour })),
     yachts: geometry.yachts.map((yacht) =>
       yacht.outline.map(([east, north]) => mapToScreen(east, north, view)),
     ),
@@ -977,6 +1016,20 @@ export function drawHarbour(
   const { geometry } = marina;
   ctx.lineJoin = 'round';
   ctx.setLineDash([]);
+  // M73: the land and the buildings' roofs, then the breakwater, under the quay.
+  ctx.fillStyle = COLOURS.harbourLand;
+  tracePath(ctx, marina.land);
+  ctx.fill();
+  ctx.fillStyle = COLOURS.roof;
+  for (const outline of marina.buildings) {
+    tracePath(ctx, outline);
+    ctx.fill();
+  }
+  ctx.fillStyle = COLOURS.breakwater;
+  for (const outline of marina.breakwater) {
+    tracePath(ctx, outline);
+    ctx.fill();
+  }
   ctx.fillStyle = COLOURS.quay;
   ctx.strokeStyle = COLOURS.quayEdge;
   ctx.lineWidth = 1;
@@ -1024,6 +1077,13 @@ export function drawHarbour(
   ctx.strokeStyle = COLOURS.ourBerth;
   ctx.lineWidth = 2;
   ctx.stroke();
+  // The two entrance lights, last.
+  for (const light of marina.lights) {
+    ctx.fillStyle = light.colour;
+    ctx.beginPath();
+    ctx.arc(light.x, light.y, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 /** The rocks, shore rings and mooring buoys of the bay on the canvas (CSS px), with the registry id each stands for. */
