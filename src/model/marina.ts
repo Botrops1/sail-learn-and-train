@@ -60,6 +60,15 @@ export interface MarinaGeometry {
   /** M44: the lazy line's weight on the bottom ahead of our berth: east, north, height (negative = depth). */
   ourSinker: [number, number, number];
   yachts: MooredYacht[];
+  /** PHASE10_SPEC 15.3: the rock breakwater round the marina: a south mole, a west arm and the north mole. */
+  breakwater: { south: Rect; west: Rect; north: Rect };
+  /** The gap between the west arm's tip and the north mole; it faces west. */
+  entrance: { eastM: number; southM: number; northM: number };
+  /** The lights on the two heads: red on the north mole (port hand coming in from the sea), green on the arm. */
+  lights: { red: [number, number]; green: [number, number] };
+  /** The paved land behind the quay. */
+  land: Rect;
+  buildings: { eastM: number; northM: number; widthM: number; depthM: number; heightM: number }[];
 }
 
 /** A moored yacht's outline in its own frame (x from the stern centre towards the bow, z to its starboard). */
@@ -183,12 +192,65 @@ function buildMarina(
     -m.depthM,
   ];
 
-  return { quay, pontoon, wall, fairway, berths, ourBerth, rings, ourRings, ourSinker, yachts };
+  const b = m.breakwater;
+  const southMole: Rect = {
+    west: b.westM,
+    east: m.eastEndEastM + m.wallWidthM,
+    south: pontoon.south - b.moleWidthM,
+    north: pontoon.south,
+  };
+  const breakwater = {
+    south: southMole,
+    west: {
+      west: b.westM,
+      east: b.westM + b.moleWidthM,
+      south: southMole.south,
+      north: fairway.south,
+    },
+    north: { west: b.westM, east: m.westEndEastM, south: F, north: F + m.quayWidthM },
+  };
+  const entrance = { eastM: b.westM, southM: fairway.south, northM: F };
+  const lights: MarinaGeometry['lights'] = {
+    red: [b.westM + b.lightInsetM, F + b.lightInsetM],
+    green: [b.westM + b.moleWidthM / 2, fairway.south - b.lightInsetM],
+  };
+  const land: Rect = {
+    west: b.westM,
+    east: m.eastEndEastM + m.wallWidthM,
+    south: F + m.quayWidthM,
+    north: F + m.quayWidthM + b.landDepthM,
+  };
+  const buildings = m.buildings.map(([eastM, northM, widthM, depthM, heightM]) => ({
+    eastM,
+    northM,
+    widthM,
+    depthM,
+    heightM,
+  }));
+
+  return {
+    quay,
+    pontoon,
+    wall,
+    fairway,
+    berths,
+    ourBerth,
+    rings,
+    ourRings,
+    ourSinker,
+    yachts,
+    breakwater,
+    entrance,
+    lights,
+    land,
+    buildings,
+  };
 }
 
-/** The rectangle round the quay, the wall and the pontoon: what the scene tests for "near". */
+/** The rectangle round the quay, the wall, the pontoon and the breakwater: what the scene tests for "near". */
 export function marinaBounds(geometry: MarinaGeometry): Rect {
-  const parts = [geometry.quay, geometry.wall, geometry.pontoon];
+  const { south, west, north } = geometry.breakwater;
+  const parts = [geometry.quay, geometry.wall, geometry.pontoon, south, west, north];
   return {
     west: Math.min(...parts.map((r) => r.west)),
     east: Math.max(...parts.map((r) => r.east)),
@@ -252,6 +314,21 @@ export function marinaObstacles(geometry: MarinaGeometry): Obstacle[] {
     { id: 'quay', partId: 'env_quay', polygon: rectPolygon(geometry.quay) },
     { id: 'wall', partId: 'env_quay', polygon: rectPolygon(geometry.wall) },
     { id: 'pontoon', partId: 'env_quay', polygon: rectPolygon(geometry.pontoon) },
+    {
+      id: 'breakwater-south',
+      partId: 'env_breakwater',
+      polygon: rectPolygon(geometry.breakwater.south),
+    },
+    {
+      id: 'breakwater-west',
+      partId: 'env_breakwater',
+      polygon: rectPolygon(geometry.breakwater.west),
+    },
+    {
+      id: 'breakwater-north',
+      partId: 'env_breakwater',
+      polygon: rectPolygon(geometry.breakwater.north),
+    },
     ...geometry.yachts.map((yacht): Obstacle => ({
       id: yacht.id,
       partId: 'env_moored_yacht',

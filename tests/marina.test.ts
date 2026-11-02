@@ -10,11 +10,13 @@ import {
   insidePolygon,
   marinaBounds,
   marinaGeometry,
+  marinaObstacles,
   yachtOutline,
   type Rect,
 } from '../src/model/marina';
 import { placeStart } from '../src/model/places';
 import { isSeaSetting } from '../src/model/waves';
+import { buildHarbourDetail } from '../src/render3d/harbourDetail';
 import { buildMarina } from '../src/render3d/marina';
 import { SCENE } from '../src/render3d/sceneConfig';
 
@@ -141,9 +143,9 @@ describe('Phase 7, M42: the marina (geometry)', () => {
     const entry = area.places.find((place) => place.id === 'marina');
     expect(entry?.sea !== undefined && isSeaSetting(entry.sea)).toBe(true);
     expect(marinaBounds(marinaGeometry('medium', 'half'))).toEqual({
-      west: -110,
+      west: -150,
       east: 120,
-      south: 1433,
+      south: 1421,
       north: 1515,
     });
   });
@@ -378,35 +380,59 @@ describe('Phase 7, M42: the marina in 3D', () => {
   const state = initialState({ harbour: { ...DEFAULT_HARBOUR, place: 'marina', traffic: 'busy' } });
   const marina = buildMarina();
   marina.update(state);
-  const hulls: THREE.Mesh[] = [];
+  const yachtMeshes: THREE.InstancedMesh[] = [];
   marina.object.traverse((node) => {
-    if (node instanceof THREE.Mesh && node.geometry instanceof THREE.ExtrudeGeometry) {
-      hulls.push(node);
+    if (node instanceof THREE.InstancedMesh && node.userData.partId === 'env_moored_yacht') {
+      yachtMeshes.push(node);
     }
   });
 
-  it('21. one hull per yacht; each stands on the map where the model puts it (winding and up)', () => {
+  it('21. M73: one instanced mesh per yacht type, one instance per yacht; each stands on the map where the model puts it (winding and up)', () => {
     const { yachts } = marinaGeometry('medium', 'busy');
-    expect(hulls).toHaveLength(yachts.length);
+    expect(yachtMeshes).toHaveLength(3);
+    expect(yachtMeshes.reduce((sum, mesh) => sum + mesh.count, 0)).toBe(yachts.length);
     marina.object.updateMatrixWorld(true);
     const yacht = yachts.find((y) => y.id === 'yacht-0-11');
     const north = yacht?.outline.map((p) => p[1]) ?? [];
     const east = yacht?.outline.map((p) => p[0]) ?? [];
     // The scene frame: x = north, z = east, relative to the boat, which is at (0, 0) here. A hull
-    // built the wrong way round (mirrored east, or lying down) matches no yacht.
+    // built the wrong way round (mirrored east, or lying down) matches no yacht. The hull is the
+    // extruded outline: its vertices below the rig (y <= hullAboveM).
     const near = (a: number, b: number) => Math.abs(a - b) < 1e-6;
-    const match = hulls.some((hull) => {
-      const box = new THREE.Box3().setFromObject(hull);
-      return (
-        near(box.min.x, Math.min(...north)) &&
-        near(box.max.x, Math.max(...north)) &&
-        near(box.min.z, Math.min(...east)) &&
-        near(box.max.z, Math.max(...east)) &&
-        near(box.min.y, -SCENE.harbour.hullBelowM) &&
-        near(box.max.y, SCENE.harbour.hullAboveM)
-      );
-    });
+    const matrix = new THREE.Matrix4();
+    const point = new THREE.Vector3();
+    let match = false;
+    for (const mesh of yachtMeshes) {
+      const positions = mesh.geometry.getAttribute('position');
+      for (let i = 0; i < mesh.count; i += 1) {
+        mesh.getMatrixAt(i, matrix);
+        const box = new THREE.Box3();
+        for (let v = 0; v < positions.count; v += 1) {
+          point.fromBufferAttribute(positions, v);
+          if (point.y > SCENE.harbour.hullAboveM + 1e-9) continue;
+          box.expandByPoint(point.applyMatrix4(matrix));
+        }
+        match ||=
+          near(box.min.x, Math.min(...north)) &&
+          near(box.max.x, Math.max(...north)) &&
+          near(box.min.z, Math.min(...east)) &&
+          near(box.max.z, Math.max(...east)) &&
+          near(box.min.y, -SCENE.harbour.hullBelowM) &&
+          near(box.max.y, SCENE.harbour.hullAboveM);
+      }
+    }
     expect(match).toBe(true);
+  });
+
+  it('21b. M73: the rings are one instanced mesh', () => {
+    const rings: THREE.InstancedMesh[] = [];
+    marina.object.traverse((node) => {
+      if (node instanceof THREE.InstancedMesh && node.userData.partId === 'env_quay_ring') {
+        rings.push(node);
+      }
+    });
+    expect(rings).toHaveLength(1);
+    expect(rings[0]?.count).toBe(marinaGeometry('medium', 'busy').rings.length);
   });
 
   it('22. the group follows the boat, and the meshes hide when the marina is far', () => {
@@ -478,5 +504,80 @@ describe('Phase 7, M42: the arrow over our berth in 3D', () => {
     expect(arrowParts(marina).every((part) => !part.visible)).toBe(true);
     marina.update(reduce(near, { type: 'goToPlace', place: 'open' }));
     expect(arrowParts(marina).every((part) => !part.visible)).toBe(true);
+  });
+});
+
+describe('M73: the breakwater, the entrance, the lights and the land (PHASE10_SPEC 15.3)', () => {
+  it('medium/half values', () => {
+    const g = marinaGeometry('medium', 'half');
+    expect(g.breakwater.south).toEqual({ west: -150, east: 120, south: 1421, north: 1433 });
+    expect(g.breakwater.west).toEqual({ west: -150, east: -138, south: 1421, north: 1453 });
+    expect(g.breakwater.north).toEqual({ west: -150, east: -110, south: 1500, north: 1515 });
+    expect(g.entrance).toEqual({ eastM: -150, southM: 1453, northM: 1500 });
+    expect(g.lights.red).toEqual([-147, 1503]);
+    expect(g.lights.green).toEqual([-144, 1450]);
+    expect(g.land).toEqual({ west: -150, east: 120, south: 1515, north: 1575 });
+    expect(g.buildings).toHaveLength(6);
+    expect(g.buildings[0]).toEqual({
+      eastM: -125,
+      northM: 1530,
+      widthM: 18,
+      depthM: 12,
+      heightM: 7,
+    });
+  });
+
+  it('tight and spacious layouts', () => {
+    expect(marinaGeometry('tight', 'half').breakwater.south.north).toBe(1441);
+    expect(marinaGeometry('tight', 'half').entrance.southM).toBe(1461);
+    expect(marinaGeometry('spacious', 'half').breakwater.south.north).toBe(1423);
+    expect(marinaGeometry('spacious', 'half').entrance.southM).toBe(1443);
+  });
+
+  it('obstacles: 3 + 3 + 28 for medium/half, the new ones are the breakwater', () => {
+    const o = marinaObstacles(marinaGeometry('medium', 'half'));
+    expect(o).toHaveLength(3 + 3 + 28);
+    expect(o.filter((x) => x.partId === 'env_breakwater').map((x) => x.id)).toEqual([
+      'breakwater-south',
+      'breakwater-west',
+      'breakwater-north',
+    ]);
+  });
+});
+
+describe('M73: the harbour detail in 3D (PHASE10_SPEC 15.5)', () => {
+  const near = reduce(initialState({}), { type: 'goToPlace', place: 'marina' });
+  const detail = buildHarbourDetail();
+  detail.update(near);
+  const byPart = (partId: string) => {
+    const found: THREE.Mesh[] = [];
+    detail.object.traverse((node) => {
+      if (node instanceof THREE.Mesh && node.userData.partId === partId) found.push(node);
+    });
+    return found;
+  };
+
+  it('has the breakwater as one mesh, two lights (red north of green) and the buildings', () => {
+    expect(byPart('env_breakwater')).toHaveLength(1);
+    const lights = byPart('env_harbour_light');
+    expect(lights).toHaveLength(4);
+    const g = marinaGeometry('medium', 'half');
+    detail.object.updateMatrixWorld(true);
+    // Scene x = north: the first tower is the red one, on the north mole.
+    expect((lights[0] as THREE.Mesh).position.x).toBeCloseTo(g.lights.red[1], 6);
+    expect((lights[2] as THREE.Mesh).position.x).toBeCloseTo(g.lights.green[1], 6);
+    const buildings = byPart('env_harbour_building') as THREE.InstancedMesh[];
+    expect(buildings[0]?.count).toBe(6);
+  });
+
+  it('windows only at High detail; everything hides when far', () => {
+    const windows = (byPart('env_harbour_building') as THREE.InstancedMesh[])[2] as THREE.Mesh;
+    detail.update({ ...near, settings: { ...near.settings, detail: 'high' } });
+    expect(windows.visible).toBe(true);
+    detail.update({ ...near, settings: { ...near.settings, detail: 'low' } });
+    expect(windows.visible).toBe(false);
+    expect((byPart('env_breakwater')[0] as THREE.Mesh).visible).toBe(true);
+    detail.update({ ...near, boat: { ...near.boat, eastM: 0, northM: 0 } });
+    expect((byPart('env_breakwater')[0] as THREE.Mesh).visible).toBe(false);
   });
 });

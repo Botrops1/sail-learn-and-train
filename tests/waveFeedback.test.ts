@@ -91,6 +91,8 @@ describe('the sailing does not depend on the frame rate', () => {
 
   it('at ×16 everything stays finite and bounded', () => {
     let s = act(state(), { type: 'setTimeScale', scale: 16 });
+    // M73: the marina is solid from open water now; start far enough south that ten minutes of sailing north stay in open water.
+    s = { ...s, boat: { ...s.boat, northM: -1500 } };
     const rudders: number[] = [];
     // Frames of dt 0.1 s (the store's cap): 1.6 s of simulated time per frame.
     while (s.rig.timeS < 600) {

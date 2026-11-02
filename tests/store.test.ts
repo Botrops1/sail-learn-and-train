@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createStore, initialState } from '../src/app/store';
+import { createStore, initialState, reduce, type AppState } from '../src/app/store';
 import { DEFAULT_HELM_VIEW } from '../src/model/settings';
 import { parseUrlState } from '../src/app/urlState';
 
@@ -163,5 +163,36 @@ describe('M64: the Helm camera (PHASE9_SPEC 10.2)', () => {
 
     store.dispatch({ type: 'load', state: parseUrlState('?cam=helm&hw=s') });
     expect(store.getState().camera.helm.wheel).toBe('starboard');
+  });
+});
+
+describe('M73: the marina and the bay are solid from open water (PHASE10_SPEC 15.7 test 5)', () => {
+  const start = (eastM: number, northM: number, headingDeg: number, speedMps: number): AppState => {
+    const s = parseUrlState('?wd=0&ws=0&mf=0&jf=0&js=100&ap=off&sea=flat&eng=0');
+    return { ...s, boat: { ...s.boat, eastM, northM, headingDeg, speedMps } };
+  };
+  const reportIds = (s0: AppState, seconds: number): string[] => {
+    let s = s0;
+    for (let i = 0; i < seconds * 20 && s.contact.reports.length === 0; i += 1) {
+      s = reduce(s, { type: 'step', dt: 0.05 });
+    }
+    expect(s.harbour.place).toBe('open');
+    return s.contact.reports.map((r) => r.obstacleId);
+  };
+
+  it('sailing north into the south mole bumps it', () => {
+    expect(reportIds(start(0, 1405, 0, 2.0), 30)).toContain('breakwater-south');
+  });
+  it('sailing west into the bay shore or bottom bumps it', () => {
+    const ids = reportIds(start(-1330, 300, 270, 2.0), 30);
+    expect(ids.some((id) => id === 'bottom' || id === 'land')).toBe(true);
+  });
+  it('far from both: no report, and contact stays the same object', () => {
+    let s = start(0, 0, 0, 1.0);
+    const contact = s.contact;
+    for (let i = 0; i < 30 * 20; i += 1) {
+      s = reduce(s, { type: 'step', dt: 0.05 });
+      expect(s.contact).toBe(contact);
+    }
   });
 });

@@ -393,6 +393,8 @@ describe('M10 the autopilot in a shifting wind', () => {
       windMode: { mode: 'shifty', seed: 7, size: 20 },
     });
     state = act(state, { type: 'autopilot', command: 'wind' });
+    // M73: the marina is solid from open water now; start far enough south that ten minutes of sailing north stay in open water.
+    state = { ...state, boat: { ...state.boat, northM: -1500 } };
     // The target is the angle she is sailing at when the autopilot is switched on.
     const target = state.autopilot.targetDeg;
     expect(Math.abs(target - 90)).toBeLessThanOrEqual(20);

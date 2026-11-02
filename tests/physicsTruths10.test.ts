@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
+import { MARINA_LAYOUT_IDS, marinaGeometry } from '../src/model/marina';
 import { gybeArrived, gybeStep, windTorqueNm, type GybeSwing } from '../src/model/gybe';
 import type { RealisticAction } from '../src/model/realistic';
 
@@ -115,5 +116,19 @@ describe('PT-60 what pushes the boom across in a gybe (PHASE10_SPEC 14.6)', () =
     const rateShare = omegaLine / s.omegaDegS;
     expect(rateShare).toBeGreaterThan(0.6);
     expect(rateShare).toBeLessThan(0.78);
+  });
+});
+
+describe('PT-61', () => {
+  it('PT-61 coming in from the sea the red light is on the left', () => {
+    for (const layout of MARINA_LAYOUT_IDS) {
+      const g = marinaGeometry(layout, 'half');
+      // The entrance faces west, so a boat coming in heads east (090): north is on her left.
+      const middle = (g.entrance.southM + g.entrance.northM) / 2;
+      expect(g.lights.red[1]).toBeGreaterThan(middle);
+      expect(g.lights.green[1]).toBeLessThan(middle);
+      expect(Math.abs(g.lights.red[0] - g.entrance.eastM)).toBeLessThanOrEqual(12);
+      expect(Math.abs(g.lights.green[0] - g.entrance.eastM)).toBeLessThanOrEqual(12);
+    }
   });
 });

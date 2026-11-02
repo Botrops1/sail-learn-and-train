@@ -22,6 +22,8 @@ export interface HarbourInputs {
   lines?: readonly MooringLine[];
   /** M45: the place; the bay adds the bottom and the land (the marina's obstacles come in `obstacles`). Open water when left out. */
   place?: PlaceId;
+  /** PHASE10_SPEC 15.3: the bay's land and bottom act (from any place, when the boat is near them). Falls back to `place === 'bay'`. */
+  bay?: boolean;
   /** M46: the anchor; its chain pulls once the anchor is on the bottom. Stowed when left out. */
   anchor?: AnchorState;
   /** M46: the depth and bottom the chain works in. The bay's seabed when left out. */
@@ -44,7 +46,7 @@ export function harbourForces(
   data: BoatData = hanse508,
   areaData: AreaData = area,
 ): (boat: BoatState) => ExternalForces {
-  const bay = inputs.place === 'bay';
+  const bay = inputs.bay ?? inputs.place === 'bay';
   const obstacles = bay ? [...inputs.obstacles, ...landObstacles(areaData)] : inputs.obstacles;
   const anchor = inputs.anchor;
   const env = inputs.env ?? SEABED_ENV;

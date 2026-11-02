@@ -65,7 +65,7 @@
     "berthZoneM": 16,
     "startInsetM": 15,
     "lazyLineLengthM": 25,
-    "basin": { "west": -110, "east": 110, "south": 1420, "north": 1500 },
+    "basin": { "west": -150, "east": 110, "south": 1420, "north": 1500 },
     "seabed": "mud",
     "layouts": {
       "tight": {
@@ -116,7 +116,23 @@
       "empty": []
     },
     "fendersHintM": 15,
-    "fendersHintNote": "M59: the 'put the fenders out' hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker (assumption)"
+    "fendersHintNote": "M59: the 'put the fenders out' hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker (assumption)",
+    "breakwater": {
+      "$comment": "PHASE10_SPEC 15.2: a made-up rock breakwater round the marina, for teaching. A south mole behind the pontoon, a west arm whose tip lines up with the fairway's south edge, and the quay carried west as a north mole. The entrance, between the arm's tip and the north mole, faces west. Lights on the two heads: red on the north mole (on the left, port hand, coming in from the sea), green on the arm (IALA region A, PT-61).",
+      "westM": -150,
+      "moleWidthM": 12,
+      "lightInsetM": 3,
+      "landDepthM": 60
+    },
+    "buildings": [
+      [-125, 1530, 18, 12, 7],
+      [-90, 1528, 14, 10, 9],
+      [-45, 1532, 22, 12, 6],
+      [5, 1530, 16, 12, 10],
+      [50, 1529, 20, 10, 7],
+      [95, 1531, 18, 12, 8]
+    ],
+    "buildingsNote": "PHASE10_SPEC 15.2: made-up low harbour buildings behind the quay, each [east, north, width east-west, depth north-south, wall height], metres"
   },
   "bay": {
     "$comment": "A made-up Croatian bay 1.3 km west of the start (PHASE7_SPEC 11.2), cut into a coast that runs north-south at east -1350: open to the east, sand with a patch of sea grass, rocky shores, three hidden rocks, rings on the shore for shore lines, three mooring buoys.",
