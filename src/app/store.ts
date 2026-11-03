@@ -65,10 +65,14 @@ import {
   type Obstacle,
 } from '../model/contact';
 import {
+  bowLineHits,
+  bowLines,
+  bowLinesUnder,
   isMarinaLayout,
   isTraffic,
   marinaGeometry,
   marinaObstacles,
+  NO_CATCHES,
   type MarinaLayoutId,
   type TrafficId,
 } from '../model/marina';
@@ -890,9 +894,21 @@ function reduceAction(state: AppState, action: Action): AppState {
       // The engine runs in Held still too (the boat just does not move).
       let engine = stepEngine(state.engine, dt);
       // The crew's walk, and a slack line near the propeller with the engine in gear (M44).
+      const solidGeometry = marinaGeometry(state.harbour.layout, state.harbour.traffic);
+      const solid = solidAround(
+        state.harbour.place,
+        state.boat.eastM,
+        state.boat.northM,
+        solidGeometry,
+      );
+      // On Hard, the neighbours' bow lines (PHASE10_SPEC 17.4): the propeller over one in gear
+      // fouls like a slack line; the keel or rudder over one is a contact report.
+      const hardLines = solid.marina && state.exercise?.options.level === 'hard';
+      const catches = hardLines ? bowLinesUnder(state.boat, bowLines(solidGeometry)) : NO_CATCHES;
+      const overBowLine = catches.some((c) => c.part === 'saildrive');
       let lines = state.lines;
-      if (lines.lines.length > 0 || lines.crew !== null || lines.foulS !== 0) {
-        lines = stepLines({ ...linesInputs(state), engine }, dt);
+      if (lines.lines.length > 0 || lines.crew !== null || lines.foulS !== 0 || overBowLine) {
+        lines = stepLines({ ...linesInputs(state), engine, overBowLine }, dt);
       }
       const justFouled = lines.fouled && !state.lines.fouled;
       if (justFouled) engine = { ...engine, running: false };
@@ -906,13 +922,6 @@ function reduceAction(state: AppState, action: Action): AppState {
         wind: patterned ? wind : undefined,
         damage: state.sailDamage,
       });
-      const solidGeometry = marinaGeometry(state.harbour.layout, state.harbour.traffic);
-      const solid = solidAround(
-        state.harbour.place,
-        state.boat.eastM,
-        state.boat.northM,
-        solidGeometry,
-      );
       const moving = stepBoat(
         state.boat,
         {
@@ -954,7 +963,14 @@ function reduceAction(state: AppState, action: Action): AppState {
       let contact = state.contact;
       let harbour = state.harbour;
       if (sailing) {
-        contact = stepContact(contact, moving.report.contacts, rig.timeS, dt);
+        contact = stepContact(
+          contact,
+          catches.length === 0
+            ? moving.report.contacts
+            : [...moving.report.contacts, ...bowLineHits(catches)],
+          rig.timeS,
+          dt,
+        );
         const fenders = stepFenders(harbour, contact, moving.boat.speedMps, rig.timeS, dt);
         harbour = fenders.harbour;
         contact = fenders.contact;

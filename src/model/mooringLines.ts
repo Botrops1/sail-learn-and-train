@@ -83,6 +83,8 @@ export interface LinesInputs {
   engine: EngineState;
   /** The buoys and rings of the bay (M45). */
   area: AreaData;
+  /** PHASE10_SPEC 17.4: on Hard, the propeller is over a moored yacht's bow line. */
+  overBowLine?: boolean;
 }
 
 const ROLES = ['bow', 'mid', 'stern'] as const;
@@ -527,7 +529,10 @@ export function stepLines(inputs: LinesInputs, dt: number, data: BoatData = hans
 
   const { engine, boat } = inputs;
   const inGear = engine.running && engine.gear !== 'neutral';
-  const slack = crew !== null || state.lines.some((line) => slackInWater(line, boat, data));
+  const slack =
+    crew !== null ||
+    inputs.overBowLine === true ||
+    state.lines.some((line) => slackInWater(line, boat, data));
   const fouling = inGear && slack && boat.mode === 'sailing' && !state.fouled;
   let foulS = fouling ? state.foulS + dt : 0;
   let fouled = state.fouled;
