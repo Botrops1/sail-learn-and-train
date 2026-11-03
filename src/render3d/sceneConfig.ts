@@ -268,6 +268,8 @@ export const SCENE = {
       rigColour: '#9aa3ab',
       sailColour: '#ecebe4',
     },
+    /** M74 (owner, PR 157): each moored yacht's bow line runs from her bow `runM` ahead and `runM` down (45°), one instanced mesh. */
+    bowLine: { runM: 8, radiusM: 0.025, colour: '#d8d2c0' },
     /** The arrow over our berth (owner, PR #101): it points down, floats over the quay (never over the water), metres. */
     arrowTipAboveM: 3,
     arrowHeadM: 2.5,
