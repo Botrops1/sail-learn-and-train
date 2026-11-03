@@ -844,12 +844,12 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 
 #### M73: A more detailed marina, solid from everywhere
 
-- [ ] The entrance: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=-200.0&pn=1476.0&hdg=90&ws=0&cam=helm — ahead, a gap in a grey rock wall (the breakwater), a red light on the left and a green one on the right.
-- [ ] The marina: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=side-port&ws=0&detail=high — moored yachts with a cabin, a mast, a boom and a rolled sail; lamp posts and bollards on the quay; low buildings with red roofs behind it. Drag the view round to look.
+- [ ] The entrance: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=-230.0&pn=1476.0&hdg=270&ws=0&cam=bow — ahead, a gap in a grey rock wall (the breakwater), a red light on the left and a green one on the right.
+- [ ] The marina: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=side-port&ws=0&detail=high&pe=-30.0&pn=1468.0&hdg=90 — moored yachts with a cabin, a mast, a boom and a rolled sail; lamp posts and bollards on the quay; low buildings with red roofs behind it. Drag the view round to look.
 - [ ] The map: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&tr=busy&cam=map — the breakwater, the buildings and the two lights are drawn; tap the breakwater: the card says "Breakwater".
-- [ ] Taps: on the first link, tap the red light — the card says "Harbour entrance light"; on the second, tap a building — "Harbour buildings".
-- [ ] Solid from open water: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=map — sail north with the wind from the right (Steering: autopilot Heading, course 000) for about three and a half minutes (the time bar's ×16 makes it 15 seconds) until you reach the marina: she bumps into the breakwater and the Status section lists the damage. Before M73 she sailed straight through.
-- [ ] One bump, one report: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0 — Engine: drag the lever about halfway towards Astern for 3 seconds, then back to Neutral. She bumps the quay; the Status section's damage list shows one line (two at most) for it.
+- [ ] Taps: on the first link, tap the red light — the card says "Harbour entrance light"; on the second, tap a moored yacht — "Moored yacht"; on the map link, tap a red-roofed building — "Harbour buildings".
+- [ ] Solid from open water: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&cam=map — sail north with the wind from the right (Steering: autopilot Heading, course 000) for about six minutes (the time bar's ×16 makes it about 25 seconds) until you reach the marina: she bumps into the breakwater and the Status section lists the damage. Before M73 she sailed straight through.
+- [ ] One bump, one report: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&m=harbour&pe=2.8&pn=1490.4&hdg=180&ws=0 — Engine: drag the lever about halfway towards Astern, wait about 6 seconds, then back to Neutral. After about 8 seconds she touches the quay; the Status section's damage list shows one line (two at most) for it.
 - [ ] Speed: on the second link, with Settings → Debug overlay on, the frame rate on your phone (write it in the PR).
 
 #### M74: The harbour coach, and leaving the berth
@@ -861,6 +861,7 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] A knock: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — Start, let go all the lines, then drag the engine lever halfway towards Astern: she backs into the quay. A card says "A light touch" (time stops, Carry on or Back) or "A hard knock" (the exercise stops).
 - [ ] Debrief: after a finished run, the debrief lists "Lazy line (to the bow): Let go" and the thruster pushes.
 - [ ] Old exercise links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — as before, no Level row.
+- [ ] Bow lines (owner request, PHASE10_SPEC 16.9a; wording to be settled by `/plan 10 refresh`): moored yachts show a line from the bow down into the water; on Hard the bow or the engine can catch one (a mistake card), on Easy they are only drawn.
 
 #### M75: Entering the berth stern-to
 

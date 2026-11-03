@@ -43,6 +43,10 @@ export interface MarinaData {
   /** M59: the "put the fenders out" hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker. */
   fendersHintM: number;
   fendersHintNote: string;
+  /** PHASE10_SPEC 15.2: a made-up rock breakwater round the marina. */
+  breakwater: { westM: number; moleWidthM: number; lightInsetM: number; landDepthM: number };
+  /** Made-up low buildings behind the quay: [east, north, width, depth, wall height], metres. */
+  buildings: readonly (readonly [number, number, number, number, number])[];
 }
 
 /** A round patch on the map: a hidden rock or a patch of sea grass (M45, PHASE7_SPEC 11.2). */

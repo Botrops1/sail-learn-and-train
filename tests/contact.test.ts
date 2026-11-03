@@ -126,7 +126,15 @@ describe('stepContact', () => {
     expect(Object.keys(c.touching)).toHaveLength(1);
     c = stepContact(c, [], 12, 0.25);
     expect(Object.keys(c.touching)).toHaveLength(0);
+    // M73 (PHASE10_SPEC 15.3, 3.7): back within `mergeS` (3 s) is the same bounce, so still one report.
     c = stepContact(c, [hit()], 12.5, 0.25);
+    expect(c.reports).toHaveLength(1);
+    // Gone for more than 3 s and back: a second report.
+    c = stepContact(c, [], 13, 0.25);
+    c = stepContact(c, [], 13.25, 0.25);
+    c = stepContact(c, [], 13.5, 0.25);
+    c = stepContact(c, [], 17, 0.25);
+    c = stepContact(c, [hit()], 17.5, 0.25);
     expect(c.reports).toHaveLength(2);
   });
 
@@ -137,7 +145,7 @@ describe('stepContact', () => {
     c = stepContact(c, [], 11, 0.25);
     c = stepContact(c, [], 11.5, 0.25);
     c = stepContact(c, [], 12, 0.25);
-    c = stepContact(c, [hit('wall:bow', 0.1)], 13, 0.25);
+    c = stepContact(c, [hit('wall:bow', 0.1)], 14, 0.25);
     expect(c.reports[0]?.severity).toBe('touch');
     expect(c.notice?.severity).toBe('hit');
     expect(c.noticeUntilS).toBe(18);
@@ -233,9 +241,16 @@ describe('the marina as obstacles', () => {
   it('has the quay, the wall, the pontoon and the yachts, counter-clockwise, cached', () => {
     const g = marinaGeometry('medium', 'busy');
     const o = marinaObstacles(g);
-    expect(o).toHaveLength(3 + g.yachts.length);
+    expect(o).toHaveLength(3 + 3 + g.yachts.length);
     expect(marinaObstacles(g)).toBe(o);
-    expect(o.slice(0, 3).map((x) => x.partId)).toEqual(['env_quay', 'env_quay', 'env_quay']);
+    expect(o.slice(0, 6).map((x) => x.partId)).toEqual([
+      'env_quay',
+      'env_quay',
+      'env_quay',
+      'env_breakwater',
+      'env_breakwater',
+      'env_breakwater',
+    ]);
     for (const obstacle of o) {
       let sum = 0;
       const p = obstacle.polygon;
@@ -249,5 +264,44 @@ describe('the marina as obstacles', () => {
 
   it('the contact data is in the boat file', () => {
     expect(boatData.physics.contact.fenderReachM).toBe(1.5);
+  });
+});
+
+describe('M73: one bounce is one report (PHASE10_SPEC 15.7 test 3)', () => {
+  const h = (key: string, approachMps: number): ContactHit => ({
+    key,
+    obstacleId: key.split(':')[0] as string,
+    partId: 'env_quay',
+    part: key.split(':')[1] as ContactHit['part'],
+    approachMps,
+    fender: false,
+  });
+
+  it('merges touches of the same obstacle and part within mergeS into the worst one', () => {
+    let c: ContactState = NO_CONTACT;
+    c = stepContact(c, [h('quay:stern', 0.1)], 0, 0.1);
+    expect(c.reports).toHaveLength(1);
+    expect(c.reports[0]?.severity).toBe('touch');
+    const first = c.reports[0];
+    for (let i = 1; i <= 10; i += 1) c = stepContact(c, [], i * 0.1, 0.1);
+    expect(Object.keys(c.touching)).toHaveLength(0);
+    expect(c.reports).toHaveLength(1);
+    c = stepContact(c, [h('quay:stern', 0.3)], 1.1, 0.1);
+    expect(c.reports).toHaveLength(1);
+    expect(c.reports[0]?.severity).toBe('bump');
+    expect(c.reports[0]?.impactMps).toBeCloseTo(0.3, 9);
+    expect(c.reports[0]?.atS).toBe(0);
+    expect(c.reports[0]).not.toBe(first);
+    const afterBump = c.reports[0];
+    // Another obstacle merges only with itself.
+    c = stepContact(c, [h('yacht-0-11:port', 0.1)], 1.2, 0.1);
+    expect(c.reports).toHaveLength(2);
+    for (let t = 1.3; t < 2.25; t += 0.1) c = stepContact(c, [], t, 0.1);
+    c = stepContact(c, [h('quay:stern', 0.05)], 2.3, 0.1);
+    expect(c.reports).toHaveLength(2);
+    expect(c.reports.find((r) => r.obstacleId === 'quay')).toBe(afterBump);
+    for (let t = 2.4; t < 5.45; t += 0.1) c = stepContact(c, [], t, 0.1);
+    c = stepContact(c, [h('quay:stern', 0.05)], 5.5, 0.1);
+    expect(c.reports.filter((r) => r.obstacleId === 'quay')).toHaveLength(2);
   });
 });

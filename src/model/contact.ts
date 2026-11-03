@@ -347,6 +347,8 @@ export interface ContactState {
   notice: ContactReport | null;
   /** Simulated time (rig.timeS) until which the alert shows `notice`. */
   noticeUntilS: number;
+  /** PHASE10_SPEC 15.3: key `obstacleId:part` → the simulated time of its latest touching frame, for merging a bounce into one report. */
+  lastTouchS: Readonly<Record<string, number>>;
 }
 
 export const NO_CONTACT: Readonly<ContactState> = {
@@ -354,6 +356,7 @@ export const NO_CONTACT: Readonly<ContactState> = {
   reports: [],
   notice: null,
   noticeUntilS: 0,
+  lastTouchS: {},
 };
 
 /** How bad a report is, for deciding which one the alert shows. */
@@ -382,8 +385,9 @@ const MAX_REPORTS = 20;
 const NOTICE_S = 8;
 
 /**
- * After the boat moved: every hit whose key was not touching makes a report; keys not hit this
- * step age by `dt` and are dropped after `separateS`.
+ * After the boat moved: every hit whose key was not touching makes a report, unless the same
+ * obstacle and part were touched within `mergeS` (a bounce): then the worst of them is the one
+ * report (PHASE10_SPEC 15.3). Keys not hit this step age by `dt` and are dropped after `separateS`.
  */
 export function stepContact(
   contact: ContactState,
@@ -393,8 +397,16 @@ export function stepContact(
   data: BoatData = hanse508,
 ): ContactState {
   const touchingNow = Object.keys(contact.touching);
-  if (hits.length === 0 && touchingNow.length === 0) return contact;
+  const lastBefore = contact.lastTouchS;
+  if (hits.length === 0 && touchingNow.length === 0 && Object.keys(lastBefore).length === 0) {
+    return contact;
+  }
+  const mergeS = data.physics.contact.mergeS;
   const touching: Record<string, number> = {};
+  const lastTouchS: Record<string, number> = {};
+  for (const [key, at] of Object.entries(lastBefore)) {
+    if (timeS - at <= mergeS) lastTouchS[key] = at;
+  }
   let reports = contact.reports;
   let { notice, noticeUntilS } = contact;
   const seen = new Set<string>();
@@ -402,25 +414,46 @@ export function stepContact(
     seen.add(hit.key);
     touching[hit.key] = 0;
     if (!(hit.key in contact.touching)) {
-      const report: ContactReport = {
-        atS: timeS,
-        obstacleId: hit.obstacleId,
-        partId: hit.partId,
-        part: hit.part,
-        impactMps: hit.approachMps,
-        fender: hit.fender,
-        severity: contactSeverity(hit.approachMps, hit.fender, data),
-      };
-      reports = [report, ...reports].slice(0, MAX_REPORTS);
-      ({ notice, noticeUntilS } = withNotice(notice, noticeUntilS, report, timeS));
+      const severity = contactSeverity(hit.approachMps, hit.fender, data);
+      const before = lastBefore[hit.key];
+      const mergeAt =
+        before !== undefined && timeS - before <= mergeS
+          ? reports.findIndex((r) => r.obstacleId === hit.obstacleId && r.part === hit.part)
+          : -1;
+      if (mergeAt >= 0) {
+        const old = reports[mergeAt] as ContactReport;
+        if (SEVERITY_RANK[severity] > SEVERITY_RANK[old.severity]) {
+          const worse: ContactReport = {
+            ...old,
+            severity,
+            impactMps: Math.max(old.impactMps, hit.approachMps),
+            fender: hit.fender,
+          };
+          reports = reports.map((r, i) => (i === mergeAt ? worse : r));
+          ({ notice, noticeUntilS } = withNotice(notice, noticeUntilS, worse, timeS));
+        }
+      } else {
+        const report: ContactReport = {
+          atS: timeS,
+          obstacleId: hit.obstacleId,
+          partId: hit.partId,
+          part: hit.part,
+          impactMps: hit.approachMps,
+          fender: hit.fender,
+          severity,
+        };
+        reports = [report, ...reports].slice(0, MAX_REPORTS);
+        ({ notice, noticeUntilS } = withNotice(notice, noticeUntilS, report, timeS));
+      }
     }
+    lastTouchS[hit.key] = timeS;
   }
   for (const key of touchingNow) {
     if (seen.has(key)) continue;
     const age = (contact.touching[key] ?? 0) + dt;
     if (age <= data.physics.contact.separateS) touching[key] = age;
   }
-  return { touching, reports, notice, noticeUntilS };
+  return { touching, reports, notice, noticeUntilS, lastTouchS };
 }
 
 /** The ball fender's number: after the eight at the stations (4.1). */

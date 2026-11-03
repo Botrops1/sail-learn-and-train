@@ -80,7 +80,7 @@ import {
   type LineCode,
   type LinesState,
 } from '../model/mooringLines';
-import { isPlace, placeStart, type PlaceId } from '../model/places';
+import { isPlace, placeStart, solidAround, type PlaceId } from '../model/places';
 import { hasThruster, THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
 import { appendTrack, type TrackPoint } from '../model/track';
 import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
@@ -906,6 +906,13 @@ function reduceAction(state: AppState, action: Action): AppState {
         wind: patterned ? wind : undefined,
         damage: state.sailDamage,
       });
+      const solidGeometry = marinaGeometry(state.harbour.layout, state.harbour.traffic);
+      const solid = solidAround(
+        state.harbour.place,
+        state.boat.eastM,
+        state.boat.northM,
+        solidGeometry,
+      );
       const moving = stepBoat(
         state.boat,
         {
@@ -919,22 +926,22 @@ function reduceAction(state: AppState, action: Action): AppState {
           trains,
           rudderLimitDeg:
             autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
-          // Open-water sailing does no extra work: the hook is built only while a thruster runs
-          // or the boat is in a place with something to bump into.
+          // Open-water sailing does no extra work: the hook is built only while a thruster runs,
+          // the boat is near the marina or the bay (from any place, PHASE10_SPEC 15.3) or the
+          // anchor is on the bottom.
           external:
             state.thrusters.bow !== 0 ||
             state.thrusters.stern !== 0 ||
-            state.harbour.place !== 'open' ||
+            solid.marina ||
+            solid.bay ||
             windlassed.phase === 'bottom' ||
             windlassed.phase === 'set'
               ? harbourForces({
                   thrusters: state.thrusters,
                   anchor: windlassed,
                   place: state.harbour.place,
-                  obstacles:
-                    state.harbour.place === 'marina'
-                      ? marinaObstacles(marinaGeometry(state.harbour.layout, state.harbour.traffic))
-                      : NO_OBSTACLES,
+                  bay: solid.bay,
+                  obstacles: solid.marina ? marinaObstacles(solidGeometry) : NO_OBSTACLES,
                   fenders: { out: state.harbour.fendersOut, lost: state.harbour.fendersLost },
                   lines: lines.lines,
                 })

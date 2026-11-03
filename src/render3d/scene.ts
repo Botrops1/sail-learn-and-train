@@ -20,6 +20,7 @@ import { daylighting } from './daylight';
 import { cloudTexture, rippleNormalMap } from './environment';
 import { buildAnchorChain } from './anchorChain';
 import { buildBay } from './bay';
+import { buildHarbourDetail } from './harbourDetail';
 import { buildMarina } from './marina';
 import { buildSeabed } from './seabed';
 import { buildMooringLines } from './mooringLines';
@@ -160,6 +161,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   world.group.add(marks.object);
   const marina = buildMarina();
   world.group.add(marina.object);
+  const harbourDetail = buildHarbourDetail();
+  world.group.add(harbourDetail.object);
   const seabed = buildSeabed(undefined, detail);
   world.group.add(seabed.object);
   const bay = buildBay();
@@ -180,6 +183,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const picker = createPicker(camera, holder, water.pickTarget, [
     marks.object,
     marina.object,
+    harbourDetail.object,
     seabed.object,
     bay.object,
     mooringLines.object,
@@ -224,6 +228,41 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           boatModel.root.traverse((object) => {
             if (object.userData.partId === partId) found = true;
           });
+          return found;
+        },
+        /**
+         * M73: canvas position (CSS px) of a tap point on the first visible marina or harbour
+         * detail mesh with this part id that is on screen (an instanced mesh: the first instance
+         * that is), or null when none is. The point is the middle of the mesh's box, no higher
+         * than 1.5 m above its foot: a yacht's mast and a light's top are thin, so the middle of
+         * the hull and of the tower is the point to tap.
+         */
+        marinaPartScreen: (partId: string) => {
+          const rect = renderer.domElement.getBoundingClientRect();
+          const instance = new THREE.Matrix4();
+          let found: { x: number; y: number } | null = null;
+          for (const root of [marina.object, harbourDetail.object]) {
+            root.updateMatrixWorld(true);
+            root.traverse((object) => {
+              if (found || !(object instanceof THREE.Mesh)) return;
+              if (object.userData.partId !== partId || !object.visible) return;
+              object.geometry.computeBoundingBox();
+              const box = object.geometry.boundingBox as THREE.Box3;
+              const centre = box.getCenter(new THREE.Vector3());
+              centre.y = Math.min(centre.y, box.min.y + 1.5);
+              const count = object instanceof THREE.InstancedMesh ? object.count : 1;
+              for (let i = 0; i < count && !found; i += 1) {
+                const world = centre.clone();
+                if (object instanceof THREE.InstancedMesh) {
+                  object.getMatrixAt(i, instance);
+                  world.applyMatrix4(instance);
+                }
+                const ndc = world.applyMatrix4(object.matrixWorld).project(camera);
+                if (Math.abs(ndc.x) > 1 || Math.abs(ndc.y) > 1 || ndc.z > 1) continue;
+                found = { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
+              }
+            });
+          }
           return found;
         },
         /** Canvas position (CSS px) of a point in boat coordinates. */
@@ -681,6 +720,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       water.update(state, shift, waveTrains(state.sea), light.night);
       marks.update(state, water.heightAt);
       marina.update(state);
+      harbourDetail.update(state);
       seabed.update(state);
       bay.update(state, water.heightAt);
       mooringLines.update(state, ropeView);

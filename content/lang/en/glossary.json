@@ -1684,6 +1684,57 @@
       "showMe": "A busy marina from above.",
       "textStatus": "draft"
     },
+    "env_breakwater": {
+      "name": "Breakwater",
+      "alternatives": [
+        {
+          "term": "mole"
+        },
+        {
+          "term": "harbour wall"
+        }
+      ],
+      "short": "The rock wall that keeps the waves out of the harbour.",
+      "what": "A breakwater is a long pile of rocks or a concrete wall round a harbour. Inside it the water stays calm, so boats can moor. Boats come in and go out through a gap in it, the entrance.",
+      "onThisBoat": "The app's marina has a breakwater on the south and west with the entrance facing west, and the quay carried on as a north mole.",
+      "mistakes": [
+        {
+          "mistake": "Cutting close round the end of the breakwater.",
+          "fix": "Keep well off: rocks spread out under the water near its foot."
+        }
+      ],
+      "showMe": "The breakwater from above.",
+      "textStatus": "draft"
+    },
+    "env_harbour_light": {
+      "name": "Harbour entrance light",
+      "alternatives": [
+        {
+          "term": "entrance light"
+        }
+      ],
+      "short": "The red or green light on each side of a harbour entrance.",
+      "what": "In Europe (IALA region A) a boat coming in from the sea keeps the red light on her left (port) side and the green light on her right (starboard) side. At night they flash, so you can find the gap.",
+      "onThisBoat": "Red on the north mole, green on the west arm: coming in heading east, red is on the left.",
+      "mistakes": [
+        {
+          "mistake": "Passing the lights the wrong way round.",
+          "fix": "Coming in from the sea, red stays on the left."
+        }
+      ],
+      "showMe": "The entrance from the helm.",
+      "textStatus": "draft"
+    },
+    "env_harbour_building": {
+      "name": "Harbour buildings",
+      "alternatives": [],
+      "short": "The houses behind the quay: the harbour office, cafés, shops.",
+      "what": "A marina's office (where you check in and pay) is usually on the quay, with showers, cafés and shops nearby.",
+      "onThisBoat": "Drawn only: six low buildings behind the quay.",
+      "mistakes": [],
+      "showMe": "The buildings from the boat.",
+      "textStatus": "draft"
+    },
     "fit_autopilot_control": {
       "name": "Autopilot control",
       "alternatives": [],
