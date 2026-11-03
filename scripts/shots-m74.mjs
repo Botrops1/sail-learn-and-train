@@ -118,7 +118,13 @@ export async function liveM74Checks({ openPage, viewports, outDir, prefix, probl
     }
     await open(page);
     const done = await waitVisible(page, 'exercise-done');
-    const text = done ? await page.getByTestId('exercise-done').innerText() : '';
+    let text = done ? await page.getByTestId('exercise-done').innerText() : '';
+    const toggle = page.getByTestId('debrief-actions-toggle');
+    if (await toggle.isVisible().catch(() => false)) await toggle.click();
+    text += await page
+      .getByTestId('exercise-debrief')
+      .innerText()
+      .catch(() => '');
     await shot(page, 'm74-leave-done');
     check(
       'good run',
@@ -157,7 +163,11 @@ export async function liveM74Checks({ openPage, viewports, outDir, prefix, probl
         .innerText()
         .catch(() => '')) ?? '';
     await shot(page, 'm74-leave-touch');
-    check('touch', /A light touch|A hard knock/.test(text), text.slice(0, 120));
+    check(
+      'touch',
+      /touched another boat or the quay|hit another boat or the quay/.test(text),
+      text.slice(0, 120),
+    );
     await context.close();
   }
 }
