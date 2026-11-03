@@ -15,7 +15,7 @@ Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phase 10 builds on everyt
 - **Signatures, test ids, CSS classes.** Function names, signatures, `data-testid`s and classes named here are required, so milestones fit together and the browser checks find things. Keep them; add private helpers freely.
 - **Write back.** If you decide something this spec leaves open, write it into your milestone's section under "Decided in the M<N> PR".
 - **Everything earlier keeps working.** Every unit test stays green, every PHYSICS_TRUTHS test passes, every old link opens the same boat, wind, place and camera. Outside Exercises mode nothing changes.
-- **No sailing physics changes in this phase.** No formula of `src/model` that moves the boat, the rig or the ropes changes. **(10b)** Two exceptions, both in M73 and both owner answers (22.1): the marina's and the bay's obstacles and bottom act wherever the boat is near them (`solidAround`, 15.3), and touches of the same obstacle with the same part within 3 s are one damage report (15.3). No force formula changes. The exercises only **read** the state the model already makes; where the model shows something a sailor would not expect, the exercise works with it and the PR names it (3.5 lists what the prototype found).
+- **No sailing physics changes in this phase.** No formula of `src/model` that moves the boat, the rig or the ropes changes. **(10b)** Two exceptions, both in M73 and both owner answers (22.1): the marina's and the bay's obstacles and bottom act wherever the boat is near them (`solidAround`, 15.3), and touches of the same obstacle with the same part within 3 s are one damage report (15.3). A third, added by the refresh before M75 (owner request, 16.9a): on the Hard level the moored yachts' bow lines foul our propeller when it is over one in gear and make a report when our keel or rudder is over one (17.4). No force formula changes. The exercises only **read** the state the model already makes; where the model shows something a sailor would not expect, the exercise works with it and the PR names it (3.5 lists what the prototype found).
 - Sailing terms in UI text get a short explanation the first time they appear on a screen (CLAUDE.md); the texts given here already do.
 
 ## 1. Goal
@@ -105,6 +105,7 @@ If something here looks necessary, stop and ask in the PR.
 | `solidAround` **(10b)** | `src/model/places.ts` (M73) | `solidAround(place, eastM, northM, geometry, areaData?, data?): { marina: boolean; bay: boolean }` | Which surroundings act this frame (15.3). |
 | `stepContact` merge **(10b)** | `src/model/contact.ts` (M73) | as today; `ContactState.lastTouchS` | One report per obstacle and part within `mergeS` (15.3). |
 | `boatPoint`, `obstacleKind`, `resolveTarget`, `insideTarget` **(10b)** | `src/model/exercises.ts` (M74) | 16.3 | Boat points, the kind of a report's obstacle, targets as shapes. |
+| `bowLines`, `bowLinesUnder`, `bowLineHits` **(10b)** | `src/model/marina.ts` (M75) | 17.4 | The moored yachts' bow lines on the map, the parts of our hull over one, and those as contact hits. |
 | `shownTarget` **(10b)** | `src/app/exerciseRun.ts` (M74) | `shownTarget(state: AppState): ResolvedTarget \| null` | The outline drawn for the current step (16.3). |
 | Pilots **(10b)** | `tests/harbourPilot.ts` (M74–M78) | `leavePilot(level)`, `enterPilot(level)`, `turnPilot()`, `buoyPilot()`, `anchorPilot()`, `sternAnchorPilot()` → `(s, t) => AppState` | The scripted good runs of the tests (16.7). |
 
@@ -131,6 +132,8 @@ The exercises follow the beginner syllabus topics named in ROADMAP Phase 10 (RYA
 - **(10b) Never in gear while a line is slack or the crew is handling one** (PT-52, `stepLines`): `crew !== null` counts as slack, so the engine stays in neutral during the lazy line's walk and the shore line's swim.
 - **(10b) Pay the chain out as she backs.** Letting out a fixed amount and backing makes it either heap up or hold her (the anchor drags behind). The stern-to pilot pays out while `chainOutM < hypot(horizontal distance, depth + roller) + 4`.
 - **(10b) The tight berths fit this boat exactly** (4.9 m for a 4.9 m beam): with neighbours on both sides she is wedged. No exercise uses tight berths (22.2).
+- **(10b) Downwind she glides.** With the wind behind her, slow astern does not stop her: in the west wind of Entering the berth she needs the lever a third astern (−30), started 18 m before the berth (17.5; the first pilot, slow astern from 10 m, slid 21 m past and backed into the neighbour).
+- **(10b) The bow lines count on Hard only** and only through `bowLinesUnder` (17.4): no force, no obstacle polygon. Easy and Normal draw them and nothing else.
 - **(10b) `fender` is a severity, not a mistake.** A report with `severity: 'fender'` never matches a trigger with `severity` given (the lists of 16.2 never contain it). The obstacle kind `fender` (a torn-off fender's report) is not in any list either.
 - **(10b) Mistake texts:** each exercise's `mistakes` object needs the texts of every mistake id its data lists (16.6's table plus its own); the loader check fails otherwise.
 
@@ -160,7 +163,7 @@ What the prototype found about the model (the exercises are built around it; eac
 - **Gusts** (15 kn mean, `wm=gusty&seed=1&wg=40`, close reach, main sheet 25 %): gusts over 18 kn (20 % above the mean) start at 35, 105, 141 and 158 s. Holding the sheet: heel up to 36.6° and five `overpowered` alerts in 240 s; easing to 45 % while the wind is over 16.8 kn: heel at most 22.5°, no alert.
 - **In irons from close-hauled**: turning the Wind autopilot 40° towards the wind stops her; the `in-irons` condition (true wind within 20°, speed 1 kn or less, for 5 s) fires 41.4 s after the turn.
 
-**(10b) Part 10b's numbers** (2026-11-02): a throwaway Vitest file opened each start link with `parseUrlState`, stepped `reduce(state, { type: 'step', dt: 0.05 })`, ran the scripted learner that `tests/harbourPilot.ts` writes down (16.7 and each milestone's pilot), and evaluated the new check fields exactly as 16.3 says. App seconds per step:
+**(10b) Part 10b's numbers** (2026-11-02; measured again on 2026-11-03 by the refresh, 22.4, because the `wd=270` of the marina and buoy links had been dropped and those runs had the wind from 60°): a throwaway Vitest file opened each start link with `parseUrlState`, stepped `reduce(state, { type: 'step', dt: 0.05 })`, ran the scripted learner that `tests/harbourPilot.ts` writes down (16.7 and each milestone's pilot), and evaluated the new check fields exactly as 16.3 says. App seconds per step:
 
 | Exercise | Steps (seconds) | Total | Contacts other than `fender` |
 |---|---|---|---|
@@ -400,7 +403,7 @@ A summary; each milestone's own "Files" list is the complete one and wins where 
 | M70 | `scripts/shots-m70.mjs` | `content/exercises/exercises.json`, both `exercises.json` texts, `src/model/exercises.ts`, `src/app/exerciseRun.ts`, both `ui.json`, `tests/exercises.test.ts` |
 | M73 **(10b)** | `src/render3d/harbourDetail.ts`, `scripts/shots-m73.mjs` | `content/areas/adriatic.json`, `content/boat/hanse508.json`, `src/model/area.ts`, `src/model/marina.ts`, `src/model/places.ts`, `src/model/contact.ts`, `src/app/store.ts`, `src/render3d/marina.ts`, `src/render3d/sceneConfig.ts`, `src/render3d/scene.ts`, `src/ui/mapView.ts`, registry, glossaries, `scripts/budget.mjs`, `.github/workflows/ci.yml`, tests (15.1) |
 | M74 **(10b)** | `src/render3d/exerciseTarget.ts`, `tests/harbourPilot.ts`, `tests/harbourExercises.test.ts`, `scripts/shots-m74.mjs` | `content/exercises/exercises.json`, both texts, `src/model/exercises.ts`, `src/app/exerciseRun.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/render3d/scene.ts`, `src/ui/mapView.ts`, `src/ui/exercisePanel.ts`, `src/ui/exerciseCoach.ts`, `src/ui/exerciseDebrief.ts`, `src/style.css`, both `ui.json`, registry, glossaries, tests (16.1) |
-| M75–M78 **(10b)** | `scripts/shots-m75.mjs` … `scripts/shots-m78.mjs` | `content/exercises/exercises.json`, both texts, `tests/harbourPilot.ts`, `tests/harbourExercises.test.ts`; M76 `tests/physicsTruths10.test.ts`, `docs/PHYSICS_TRUTHS.md`; M78 `docs/ROADMAP.md`, `README.md` |
+| M75–M78 **(10b)** | `scripts/shots-m75.mjs` … `scripts/shots-m78.mjs` | `content/exercises/exercises.json`, both texts, `tests/harbourPilot.ts`, `tests/harbourExercises.test.ts`; M75 also the bow lines on Hard (17.1); M76 `tests/physicsTruths10.test.ts`, `docs/PHYSICS_TRUTHS.md`; M78 `docs/ROADMAP.md`, `README.md` |
 | M71 | `scripts/shots-m71.mjs` | `content/exercises/exercises.json`, both `exercises.json` texts, `src/model/exercises.ts`, `src/app/exerciseRun.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/exercisePanel.ts`, `src/ui/timeBar.ts`, both `ui.json`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/physicsTruths10.test.ts`, `docs/PHYSICS_TRUTHS.md` |
 
 ## 5. Milestones overview
@@ -417,7 +420,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 | M71 | 11 | Setting and furling the sails in Realistic ropes, Alone or With crew; sign-off of part 10a | PT-12, PT-59 (new) | M70 | **required** (a new rule; Pause blocked in a mode; Realistic gestures) |
 | M73 **(10b)** | 15 | A detailed marina (breakwater, entrance lights, quay furniture, buildings, yachts with cabin and rig); the marina and the bay are solid from open water; a bounce makes one damage report | PT-61 (new) | M72 | **required** (contact everywhere in the shared step; the report merge; new obstacles) |
 | M74 **(10b)** | 16 | "Harbour and anchor" group; Leaving the berth with Easy / Normal / Hard; a magenta target outline; touches pause, hard knocks end the run; harbour actions in the debrief | — | M73 | **required** (new checks on shared state; serious mistakes; `exl` in links; new logged actions) |
-| M75 **(10b)** | 17 | Entering the berth stern-to at three levels | PT-50, PT-51, PT-52 | M74 | **required** (docking speeds and the engine in neutral near lines: safety teaching) |
+| M75 **(10b)** | 17 | Entering the berth stern-to at three levels; on Hard the neighbours' bow lines catch the keel and foul the propeller | PT-50, PT-51, PT-52 | M74 | **required** (docking speeds and the engine in neutral near lines: safety teaching; the bow lines change the shared step) |
 | M76 **(10b)** | 18 | Turning in her own length; picking up and leaving a mooring buoy | PT-27, PT-48, PT-33, PT-62 (new) | M75 | **required** (a new rule; prop walk's side is an assumption, PT-27) |
 | M77 **(10b)** | 19 | Anchoring in the bay with a line ashore | PT-31, PT-53, PT-57 | M76 | **required** (anchoring safety: scope, setting) |
 | M78 **(10b)** | 20 | Stern-to on your own anchor; sign-off of part 10b | PT-51 | M77 | not needed (data, texts and checks of M74–M77) |
@@ -2121,13 +2124,13 @@ Live checks: (1) `m74 level`: on `leave-setup` tap `exercise-level-hard`: the ad
 
 Leaving the berth works at every level on a phone; the outline shows on the 3D view and both maps; a knock ends the run with its card; the debrief names line, thruster and fender actions; old exercise links work as before; all checks pass.
 
-### 16.9a Owner request added in the M73 PR: the moored yachts' bow lines (drawn in M74; the Hard obstacle still to be specified by `/plan 10 refresh`)
+### 16.9a Owner request added in the M73 PR: the moored yachts' bow lines (drawn in M74; the Hard obstacle is built in M75, 17.4)
 
 Owner (PR 157 chat): in a real marina every moored yacht lies on a bow line (the lazy line, a rope from her bow down into the water at about 45°), and these lines narrow the room to manoeuvre. Wanted in M74, not a later milestone:
 
 - **Drawn at both levels:** a thin line from each moored yacht's bow down into the water, about 45° (the instanced moored yachts of M73 are the place to add it). The M73 budget is tight (250 draw calls at High of 300; 110 at Low of 150), so the lines must share one instanced mesh and the budget cases must still pass.
 - **Counted in Hard only (the realistic version):** the lines are obstacles. The boat's bow can hit one, and the engine can suck one in (the existing `propeller` mistake of 16.2, which today covers the boat's own lines). In Easy the lines are only drawn and nothing happens.
-- **Open for the planner:** the line's obstacle shape and `obstacleKind` (`lazy-line`?), its glossary and registry entries (Russian stays draft), whether a touch is `touch` or its own mistake, and its test numbers. Nothing in this note is built yet.
+- **Settled by the refresh before M75 (22.4):** no obstacle shape and no force: a line is a slope in the water ahead of each moored yacht's bow; on Hard our propeller over one in gear fouls (the `propeller` mistake), our keel or rudder over one makes a `touch` report of kind `lazy-line` and its own mistake, `lazy-line`; the part id is `rope_lazy_line` (no new registry or glossary entry). Built in M75 (17.4).
 
 ### 16.11 Decided in the M74 PR (recommended; merging accepts it)
 
@@ -2144,13 +2147,15 @@ Texts per ropes mode (13.3 still applies: the How texts describe the Easy contro
 
 ## 17. M75: Entering the berth stern-to
 
-**Independent review: required** (it teaches docking speeds and when the engine must stay in neutral near a line, PT-52: a wrong text teaches an unsafe habit).
+**Independent review: required** (it teaches docking speeds and when the engine must stay in neutral near a line, PT-52: a wrong text teaches an unsafe habit; on Hard the neighbours' bow lines change the shared step, 17.4).
 
-What the owner sees: **Entering the berth stern-to**, with the three levels: fenders out, line up in front of the berth, back in slowly, stern lines, lazy line, tighten it; the stern stops a step from the quay.
+What the owner sees: **Entering the berth stern-to**, with the three levels: fenders out, line up in front of the berth, back in slowly, stern lines, lazy line, tighten it; the stern stops a step from the quay. On Hard the neighbours' bow lines count (owner, 16.9a): the keel or rudder over one pauses with "Over a neighbour's lazy line", the propeller over one in gear ends the run with "A rope round the propeller".
 
 ### 17.1 Files
 
-New: `scripts/shots-m75.mjs`. Changed: `content/exercises/exercises.json`, both `exercises.json` texts, `tests/harbourPilot.ts` (`enterPilot`), `tests/harbourExercises.test.ts`, `tests/physicsTruths7.test.ts` (no change: PT-50 and PT-51 keep their own tests; 17.6 adds exercise tests named after them in `tests/harbourExercises.test.ts`), `docs/review/ru-exercises.md`, `docs/WORKFLOW.md` (ticks), `docs/CODE_MAP.md`, `scripts/shots.mjs`.
+New: `scripts/shots-m75.mjs`. Changed: `content/exercises/exercises.json` (`enter-berth`; the `lazy-line` mistake appended to `leave-berth`), both `exercises.json` texts (`enter-berth`; the `lazy-line` mistake text in `leave-berth`), `tests/harbourPilot.ts` (`enterPilot`), `tests/harbourExercises.test.ts`, `tests/physicsTruths7.test.ts` (no change: PT-50 and PT-51 keep their own tests; 17.6 adds exercise tests named after them in `tests/harbourExercises.test.ts`), `docs/review/ru-exercises.md`, `docs/WORKFLOW.md` (ticks), `docs/CODE_MAP.md`, `scripts/shots.mjs`.
+
+The bow lines on Hard (17.4): `content/areas/adriatic.json` (`marina.bowLine`, `marina.bowLineNote`), `src/model/area.ts` (their types), `src/model/marina.ts` (`bowLines`, `bowLinesUnder`, `bowLineHits`), `src/model/mooringLines.ts` (`LinesInputs.overBowLine`), `src/model/alerts.ts` (`alertLearnId`), `src/app/store.ts` (the `step` case), `src/ui/damageReport.ts` (`damageText`), `content/lang/en/ui.json` and `content/lang/ru/ui.json` (two damage strings), `docs/review/ru.md` (the two Russian strings), `tests/marina.test.ts`, `tests/mooringLines.test.ts`, `tests/alerts.test.ts`, `docs/BOAT_REFERENCE.md` (the `bowLine` row is already there, added by the refresh: no change unless a value changes). `docs/PHYSICS_TRUTHS.md` needs no change. CI (`ci.yml`, part `live, M75-M76`) and `shots.mjs`'s group matching already cover `m75`: register the new file in `shots.mjs` (import, `SCENES`, `liveGroups`) as 3.6 says, nothing else.
 
 ### 17.2 Data
 
@@ -2158,7 +2163,7 @@ New: `scripts/shots-m75.mjs`. Changed: `content/exercises/exercises.json`, both 
 {
   "id": "enter-berth", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=marina&ml=spacious&tr=empty&pe=-31.8&pn=1463.0&hdg=90&bs=0.5&wd=270&ws=4&eng=1&lv=0&ap=off&sea=flat",
+  "start": "?pl=marina&ml=spacious&tr=empty&pe=-31.8&pn=1463.0&hdg=90&bs=0.5&wd=-90&ws=4&eng=1&lv=0&ap=off&sea=flat",
   "levels": { "normal": "?ml=medium&tr=half&pe=-32.3&pn=1468.0&ws=8", "hard": "?ml=medium&tr=busy&pe=-32.3&pn=1468.0&ws=14" },
   "targets": [{ "id": "berth", "shape": "berth" }],
   "steps": [
@@ -2173,10 +2178,22 @@ New: `scripts/shots-m75.mjs`. Changed: `content/exercises/exercises.json`, both 
     { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
     { "id": "hard-hit", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["yacht", "harbour"] } },
     { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } },
+    { "id": "lazy-line", "serious": false, "on": { "alert": "contact", "obstacle": ["lazy-line"] } },
     { "id": "fenders-in", "serious": false, "on": { "alert": "fendersIn" } }
   ]
 }
 ```
+
+`wd=-90`, not `wd=270` (refresh, 22.4): the wind control runs from −180 to 180 and drops 270, as M74 found. −90 is the west wind of 22.2. `leave-berth` (built in M74) gets the same `lazy-line` mistake appended at the end of its `mistakes`.
+
+`content/areas/adriatic.json`, `marina`, after `fendersHintNote`:
+
+```json
+"bowLine": { "deckAboveM": 1.3, "slope": 1, "catchM": 0.3 },
+"bowLineNote": "assumption (owner, PR 157; PHASE10_SPEC 17.4): each moored yacht's lazy line leaves her bow 1.3 m above the water and runs straight ahead, 1 m down for every metre ahead (45°), as drawn (SCENE.harbour.hullAboveM, bowLine.runM); a part of our hull catches it when it is within 0.3 m to the side of the line (half the propeller's 0.5 m, plus the rope) where the line is not deeper than that part"
+```
+
+**Tunable:** none. `deckAboveM` must equal `SCENE.harbour.hullAboveM` (1.3) and `slope` must be 1 (the drawn rod runs `bowLine.runM` ahead and the same down), so the line the model uses is the one on the screen; a test checks both (17.6).
 
 ### 17.3 Texts (appended; `touch`, `hard-hit`, `propeller` as 16.6)
 
@@ -2185,54 +2202,138 @@ New: `scripts/shots-m75.mjs`. Changed: `content/exercises/exercises.json`, both 
   "title": "Entering the berth stern-to",
   "summary": "Fenders out, line up, back in slowly, stern lines, lazy line, tighten.",
   "see": "You are in the fairway, the lane between the two rows of boats, motoring slowly east. Your berth is the gap with the yellow stripe on the quay, on the left; the magenta outline marks it.",
-  "happening": "In the Mediterranean you go in stern first: the stern lines go to the quay and a lazy line from the quay holds the bow. Going astern, the propeller also pushes the stern sideways (prop walk; in the app to port), and a side wind pushes a slow boat sideways.",
+  "happening": "In the Mediterranean you go in stern first: the stern lines go to the quay and a lazy line from the quay holds the bow. Going astern, the propeller also pushes the stern sideways (prop walk; in the app to port), and a side wind pushes a slow boat sideways. On Hard the other boats' lazy lines count too: each runs from a boat's bow down into the fairway, so keep your keel and propeller clear of their bows.",
   "action": "Fenders out on both sides; motor just past the berth, stop, and turn her with the thrusters until the stern points at the berth; back in slowly, correcting with the thrusters; stop a step from the quay; the crew throws the stern lines, then picks up the lazy line and takes it to the bow; tighten it.",
   "mistake": "Coming in too fast: at more than walking pace you hit the quay or the boat next door. Or putting the engine in gear while the crew is handling a line: it can wrap round the propeller.",
   "done": "She is moored stern-to. Slow is the secret: stop first, then lines, then tighten the lazy line with the engine in neutral.",
   "steps": {
     "fenders": { "goal": "Put the fenders out.", "how": "Open Harbour gear and choose Fenders: Out. In a tight berth they take the knocks." },
-    "line-up": { "goal": "Stop past the berth and turn until the stern points at it (bow 180°, south), the stern within 3 m of the berth's middle.", "how": "Engine: lever just past Neutral towards Ahead (slow ahead) until the mast is about 10 m before the berth (she glides on), then just past Neutral towards Astern until she stops, then Neutral. Hold the bow thruster to starboard and the stern thruster to port until the compass shows 180°." },
+    "line-up": { "goal": "Stop past the berth and turn until the stern points at it (bow 180°, south), the stern within 3 m of the berth's middle.", "how": "Engine: lever just past Neutral towards Ahead (slow ahead) until the mast is about 18 m before the berth, then the lever a third of the way towards Astern until she stops (the wind is behind her, so she glides further than you expect), then Neutral. Hold the bow thruster to starboard and the stern thruster to port until the compass shows 180°." },
     "reverse-in": { "goal": "Back into the berth slowly and stop with the stern 0.5–2.8 m from the quay.", "how": "Engine slow astern: the lever just past Neutral towards Astern (\"In gear: astern\"). Keep her straight with the thrusters: if the stern drifts left, a short push of the stern thruster to starboard, and the other way round. Near the quay, Neutral, and a touch ahead to stop." },
     "stern-lines": { "goal": "Throw both stern lines to the quay.", "how": "Harbour gear → Lines: tap \"Throw it to the quay\" on both stern lines. The stern must be within 4 m and nearly stopped." },
     "lazy-line": { "goal": "Pick up the lazy line and take it to the bow.", "how": "Tap \"Pick it up\" on the lazy line. The crew walks it to the bow (about 20 s). Keep the engine in neutral meanwhile." },
     "made-fast": { "goal": "Tighten the lazy line until it is hand tight, engine in neutral.", "how": "Tap Tighten on the lazy line until it says hand tight. It holds the bow off, the stern lines hold the stern: she cannot swing." }
   },
   "mistakes": {
-    "touch": T, "hard-hit": T, "propeller": T,
+    "touch": T, "hard-hit": T, "propeller": T, "lazy-line": L,
+    // T: copy the object of that id from leave-berth's "mistakes" in the same file; L: the object below. Both in the Russian file too.
     "fenders-in": { "name": "Fenders still in", "what": "You are backing into the berth with the fenders in the locker.", "why": "Without fenders the first touch of the boat next door scratches both hulls.", "fix": "Harbour gear → Fenders: Out, before you come close." }
   }
 }
 ```
 
-### 17.4 Model, store, UI
+`L`, the `lazy-line` mistake's text, the same in `enter-berth` and `leave-berth` (`content/lang/en/exercises.json`; the Russian is drafted by the builder, `draft`, and listed in `docs/review/ru-exercises.md`):
 
-Nothing new: M74's fields, levels, targets and mistakes.
+```json
+"lazy-line": {
+  "name": "Over a neighbour's lazy line",
+  "what": "Your keel or rudder is over the lazy line of a boat next door, where the rope is still shallow.",
+  "why": "The rope can catch on the keel or the rudder and pull her bow off; if the propeller turns over it, it winds round the propeller.",
+  "fix": "Engine in neutral and let her drift clear. Then keep further from the other boats' bows: their lazy lines run out from there into the fairway."
+}
+```
+
+`content/lang/en/ui.json`, after `damage.ground.rudder.hit`: `"damage.lazyLine.keel": "A neighbour's lazy line is under our keel: it can catch. Neutral, and drift clear."` and `"damage.lazyLine.rudder": "A neighbour's lazy line is under our rudder: it can catch. Neutral, and drift clear."`. Russian drafts in `content/lang/ru/ui.json`, listed in `docs/review/ru.md`.
+
+### 17.4 Model, store, UI: the neighbours' bow lines on Hard (16.9a)
+
+Everything else is M74's fields, levels, targets and mistakes. No new state, no new link key: the level is already in the run (`state.exercise.options.level`, link key `exl`). No force: a sunk rope does not stop a 15 t yacht, it catches on what is under her (22.4).
+
+`src/model/marina.ts`:
+
+```ts
+/** A moored yacht's bow line (PHASE10_SPEC 17.4): from her bow straight ahead and down. */
+export interface BowLine {
+  /** The yacht's id with `yacht` replaced by `lazy-line`: `lazy-line-0-11`. */
+  id: string;
+  bowEastM: number;
+  bowNorthM: number;
+  /** The yacht's heading (her berth's `headingDeg`): the line runs this way from her bow. */
+  headingDeg: number;
+}
+/** One per moored yacht, in `geometry.yachts` order; the same array for the same geometry (a WeakMap cache, as `marinaObstacles`). */
+export function bowLines(geometry: MarinaGeometry): BowLine[];
+
+export type BowLinePart = 'saildrive' | 'keel' | 'rudder';
+export interface BowLineCatch { lineId: string; part: BowLinePart }
+/** The parts of our hull over a bow line where it is not deeper than they are. */
+export function bowLinesUnder(
+  boat: BoatState,
+  lines: readonly BowLine[],
+  areaData: AreaData = area,
+  data: BoatData = hanse508,
+): readonly BowLineCatch[];
+/** Shared empty result. */
+export const NO_CATCHES: readonly BowLineCatch[];
+/** The keel's and the rudder's catches as contact hits (the saildrive's make none). */
+export function bowLineHits(catches: readonly BowLineCatch[]): ContactHit[];
+```
+
+New imports in `src/model/marina.ts`: `import { boat as hanse508, type BoatData } from './boat'`, `import type { ContactHit } from './lowSpeed'`, `import type { BoatState } from './motion'` (`area`, `AreaData` and `boatToMap` are imported already). In `src/app/store.ts`, add `bowLines`, `bowLinesUnder`, `bowLineHits` and `NO_CATCHES` to the existing import from `'../model/marina'`.
+
+- `bowLines`: for each yacht, `h = yacht.berth.headingDeg` in radians; `bowEastM = berth.centreEastM + lengthM·sin h`, `bowNorthM = berth.sternNorthM + lengthM·cos h` (the point `src/render3d/marina.ts` `buildBowLines` draws from).
+- `bowLinesUnder`: four points of our hull on its centreline (boat frame x, z = 0), each with its depth below the water `d`: the saildrive (`hull.saildrive.x` −4.4, `d = −hull.saildrive.bottomY` 1.45), the keel bulb's front (`hull.keel.bulb.fwdX` −0.08) and back (`bulb.aftX` −2.69, both `d = −bulb.bottomY` 2.4), the rudder (`hull.rudder.stockX` −7.75, `d = −hull.rudder.bottomY` 1.95). Map point `P = (boat.eastM, boat.northM) + boatToMap(x, 0, boat.headingDeg)` (`src/model/mapFrame.ts`). For each line, `fe = sin(H)`, `fn = cos(H)` with `H` the line's heading in radians, `de = Pe − bowEastM`, `dn = Pn − bowNorthM`: `along = de·fe + dn·fn` (metres ahead of the bow), `side = |de·fn − dn·fe|`, `reach = (d + bowLine.deckAboveM) / bowLine.slope` (saildrive 2.75 m, keel 3.7 m, rudder 3.25 m). The point is over the line when `0 ≤ along ≤ reach` and `side ≤ bowLine.catchM`. Result: lines in order, and within a line `saildrive`, `keel`, `rudder`; one entry per line and part (the two keel points make one `keel`). None: `NO_CATCHES`.
+- `bowLineHits`: a `keel` catch → `{ key: '<lineId>:keel', obstacleId: lineId, partId: 'rope_lazy_line', part: 'keel', approachMps: 0, fender: false }`; a `rudder` catch → the same with `part: 'stern'` and key `'<lineId>:stern'`. `approachMps: 0` makes the report a `touch` (`contactSeverity`), and `stepContact` keeps it one report while she stays over the line (the key stays in `touching`) and merges a return within `mergeS`.
+
+`src/model/mooringLines.ts`: `LinesInputs` gains `/** PHASE10_SPEC 17.4: on Hard, the propeller is over a moored yacht's bow line. */ overBowLine?: boolean`. In `stepLines`, `slack = crew !== null || inputs.overBowLine === true || state.lines.some(…)` (the rest as today: in gear for `foulAfterS`, 2 s, fouls it).
+
+`src/app/store.ts`, the `step` case: move the two lines that compute `solidGeometry` and `solid` up, before "The crew's walk" (they read only `state`). Then:
+
+```ts
+const hardLines = solid.marina && state.exercise?.options.level === 'hard';
+const catches = hardLines ? bowLinesUnder(state.boat, bowLines(solidGeometry)) : NO_CATCHES;
+const overBowLine = catches.some((c) => c.part === 'saildrive');
+if (lines.lines.length > 0 || lines.crew !== null || lines.foulS !== 0 || overBowLine) {
+  lines = stepLines({ ...linesInputs(state), engine, overBowLine }, dt);
+}
+```
+
+and where `stepContact` is called: `stepContact(contact, catches.length === 0 ? moving.report.contacts : [...moving.report.contacts, ...bowLineHits(catches)], rig.timeS, dt)`. The catches use the boat before the frame's move (as `stepLines` does). Easy, Normal, free sailing and the bay: `catches` is `NO_CATCHES`, nothing changes.
+
+`src/model/alerts.ts`, `alertLearnId`: a contact entry whose `obstacleId` starts with `lazy-line` → `'rope_lazy_line'`. `src/ui/damageReport.ts`, `damageText`: a report whose `obstacleId` starts with `lazy-line` → `t(r.part === 'stern' ? 'damage.lazyLine.rudder' : 'damage.lazyLine.keel')` (before the general line; the speed of 0.0 kn would mislead). `obstacleKind` already returns `lazy-line` for these ids (M74).
+
+UI and 3D: nothing new; the lines are drawn at every level since M74.
 
 ### 17.5 Pilot (`enterPilot(level)`, `tests/harbourPilot.ts`)
 
 `c` = our berth's centre for the level's layout (`marinaGeometry(s.harbour.layout, s.harbour.traffic).ourBerth.centreEastM`), `gap(s) = quayFaceNorthM − stern(s)[1]`, `phase = 0`, `lastT = 0`. `keep(s, lat = true)`: `e = stern(s)[0] − c`, `h = H(s) − 180`; stern thruster `lat ? (e > 0.3 ? 1 : e < −0.3 ? −1 : 0) : 0`, bow thruster `h > 2 ? −1 : h < −2 ? 1 : 0`. Per frame by phase:
 
-0: `setFenders { out: true }`, `lever 15`, phase 1. 1: when `boat.eastM > c − 10`: `lever −15`, phase 2. 2: when `boat.speedMps < 0.1`: `lever 0`, bow thruster 1, stern thruster −1, phase 3. 3: when `|H − 180| < 5`: both thrusters 0, phase 4. 4: `want = gap > 10 ? −0.6 : gap > 5 ? −0.3 : −0.12`; `keep`; `lever(v > want ? −15 : v < want − 0.15 ? 15 : 0)` with `v = boat.speedMps`; when `gap < 2.6`: phase 5. 5: `keep`; `lever(v < −0.03 ? 15 : 0)`; when `|v| < 0.03` and the lever is 0: phase 6. 6: `keep`; take `sp`, take `ss`; when both are on: take `ll`, phase 7. 7: `keep(s, false)`; when `ll` is on: bow thruster 0, phase 8. 8: when `t − lastT > 0.5`: `lastT = t`, `line ll tighten`.
+`boat.eastM` is the boat's middle (`boatPoint` `centre`), near the mast, as the How text says; `lever` sets `s.engine.leverPct` (the engine runs from the link's `eng=1`); phase 5's "the lever is 0" is `s.engine.leverPct === 0`; phase 8 tightens until the run is `done` (the run's end stops the loop). 0: `setFenders { out: true }`, `lever 15`, phase 1. 1: when `boat.eastM > c − 18`: `lever −30`, phase 2 (refresh, 22.4: with the west wind behind her, `lever −15` from `c − 10` slid her 21 m past the berth and she backed into `yacht-0-13`; −30 from 14, 18 or 22 m all finish the three levels). 2: when `boat.speedMps < 0.1`: `lever 0`, bow thruster 1, stern thruster −1, phase 3. 3: when `|H − 180| < 5`: both thrusters 0, phase 4. 4: `want = gap > 10 ? −0.6 : gap > 5 ? −0.3 : −0.12`; `keep`; `lever(v > want ? −15 : v < want − 0.15 ? 15 : 0)` with `v = boat.speedMps`; when `gap < 2.6`: phase 5. 5: `keep`; `lever(v < −0.03 ? 15 : 0)`; when `|v| < 0.03` and the lever is 0: phase 6. 6: `keep`; take `sp`, take `ss`; when both are on: take `ll`, phase 7. 7: `keep(s, false)`; when `ll` is on: bow thruster 0, phase 8. 8: when `t − lastT > 0.5`: `lastT = t`, `line ll tighten`.
 
 ### 17.6 Tests (`tests/harbourExercises.test.ts`)
 
-Good runs (prototype values in brackets; the limits are the prototype values plus a margin of about 30 %, final as written; `line-up` and `reverse-in` share one limit because the pilot lines her up while it backs in):
+Good runs (prototype values in brackets, refresh 2026-11-03 with `wd=-90` and the pilot of 17.5; the limits are the prototype values plus 30 %, rounded up, final as written; `line-up` and `reverse-in` share one limit because the pilot lines her up while it backs in). Use `goodRun` of `tests/harbourExercises.test.ts` with `limitS` 400 (the runs take 180–200 s), and compare `durations[1] + durations[2]` with the shared limit. Every run ends `done` with no mistake; on Hard no report has `obstacleKind` `lazy-line` (the prototype's closest approach of the saildrive, keel and rudder to a line's catching part: 4.9 m):
 
 | Level | fenders | line-up + reverse-in | stern-lines | lazy-line | made-fast |
 |---|---|---|---|---|---|
-| easy | ≤ 3 (1.0) | ≤ 260 (182.7 + 12.9) | ≤ 4 (1.3) | ≤ 31 (20.0) | ≤ 41 (27.1) |
-| normal | ≤ 3 (1.0) | ≤ 248 (109.9 + 75.9) | ≤ 4 (1.2) | ≤ 31 (20.0) | ≤ 54 (37.1) |
-| hard | ≤ 3 (1.0) | ≤ 265 (80.5 + 118.7) | ≤ 4 (1.0) | ≤ 31 (20.0) | ≤ 16 (7.7) |
+| easy | ≤ 3 (1.0) | ≤ 216 (83.1 + 82.6) | ≤ 4 (1.3) | ≤ 31 (20.0) | ≤ 34 (26.1) |
+| normal | ≤ 3 (1.0) | ≤ 206 (72.1 + 85.9) | ≤ 4 (1.3) | ≤ 31 (20.0) | ≤ 27 (20.1) |
+| hard | ≤ 3 (1.0) | ≤ 225 (75.0 + 97.8) | ≤ 4 (1.3) | ≤ 31 (20.0) | ≤ 12 (8.6) |
 
-Named tests: `it('PT-51 the entering exercise ends with the lazy line holding the bow')`: after the normal run is `done`, 30 s more of `step` frames without the pilot (the engine stays in neutral): the heading stays within 180 ± 15° and the stern gap within 0.3–3.0 m. `it('PT-50 the hard level is finished with no mistake')`: the hard run ends `done` with no `mistake` entry (its `fender` reports, if any, are not mistakes). `it('PT-52 the engine in gear while the crew walks the lazy line fouls the propeller')`: in the normal run, once step 4 (`lazy-line`) begins (the crew walking: `lines.crew` set), dispatch `engine { leverPct: 30 }`: within 5 s the run is `failed` with `propeller` (`stepLines` fouls after `foulAfterS`, 2 s). A run that skips phase 0's `setFenders` (the fenders step never passes, so the pilot's later phases run with the coach still on step 0): the loop ends when the run is `mistake` or after 120 s; it must end `mistake` with `fenders-in` (the M59 alert fires backing within 15 m of the rings at more than 0.1 m/s astern).
+M74's `leave-berth` good runs keep passing unchanged at all three levels (Hard: the prototype's closest approach to a line's catching part is 1.76 m, the keel bulb's front).
+
+Named tests: `it('PT-51 the entering exercise ends with the lazy line holding the bow')`: after the normal run is `done`, 30 s more of `step` frames without the pilot (the engine stays in neutral): the heading stays within 180 ± 15° and the stern gap within 0.3–3.0 m. `it('PT-50 the hard level is finished with no mistake')`: the hard run ends `done` with no `mistake` entry (its `fender` reports, if any, are not mistakes). `it('PT-52 the engine in gear while the crew walks the lazy line fouls the propeller')`: in the normal run, once step 4 (`lazy-line`) begins (the crew walking: `lines.crew` set), dispatch `engine { leverPct: 30 }` and stop calling the pilot: within 5 s the run is `failed` with `propeller` (`stepLines` fouls after `foulAfterS`, 2 s; prototype 2.0 s). A run that skips phase 0's `setFenders` (the fenders step never passes, so the pilot's later phases run with the coach still on step 0): the loop ends when the run is `mistake` or after 170 s; it must end `mistake` with `fenders-in` (the M59 alert fires backing within 15 m of the rings at more than 0.1 m/s astern; prototype 128.7 s).
+
+**The bow lines on Hard** (medium layout; `yacht-0-11`'s bow is at (−2.75, 1483.5), heading 180; `yacht-0-13`'s, taken at Normal, at (8.25, 1485.0)):
+
+1. `tests/marina.test.ts`: `bowLines(marinaGeometry('medium', 'busy'))` has 47 entries; `lazy-line-0-11` is `{ bowEastM: -2.75, bowNorthM: 1483.5, headingDeg: 180 }`; `lazy-line-1-11` is `{ bowEastM: -2.75, bowNorthM: 1449, headingDeg: 0 }`; a second call returns the same array; `bowLines(marinaGeometry('spacious', 'empty'))` is empty. `area.marina.bowLine.deckAboveM === SCENE.harbour.hullAboveM` and `area.marina.bowLine.slope === 1` (`SCENE` from `src/render3d/sceneConfig.ts`).
+2. `tests/marina.test.ts`, `bowLinesUnder(boat, bowLines(marinaGeometry('medium', 'busy')))` with `boat = { ...initialState().boat, eastM, northM, headingDeg: 90 }`: (1.65, 1480.9) → `[{ lineId: 'lazy-line-0-11', part: 'saildrive' }]` (the propeller 2.6 m ahead of the bow, on the line); (−2.67, 1480.0) → `[{ lineId: 'lazy-line-0-11', part: 'keel' }]` (3.5 m ahead ≤ 3.7); (5.0, 1481.0) → `[{ lineId: 'lazy-line-0-11', part: 'rudder' }]` (2.5 m ≤ 3.25); (1.65, 1480.0) → empty (the propeller 3.5 m ahead, where the line is deeper than it); (2.0, 1480.9) → empty (0.35 m to the side). `bowLineHits` of the keel and rudder catches: the two hits of 17.4, parts `keel` and `stern`; of the saildrive catch: empty.
+3. `tests/mooringLines.test.ts`: `stepLines` with no lines, `crew: null`, the engine running in gear ahead and `overBowLine: true`: `fouled` after 2.0 s of 0.05 s frames (not at 1.95 s); with the gear in neutral: the same state object back every frame.
+4. `tests/alerts.test.ts`: `alertLearnId` of a `contact` entry with `obstacleId: 'lazy-line-0-11'` is `rope_lazy_line`.
+5. `tests/harbourExercises.test.ts`, the store (helper: the level's start link, `exercise start`, 1.2 s of `step` frames, so the settle second (`settleS` 1 s) is over before the boat is placed, then `boat = { ...s.boat, eastM, northM, headingDeg: 90, speedMps: 0 }`, `engine { leverPct }`, then `step` frames of 0.05 s; the prototype's boat drifted at most 0.15 m in 5 s at these places and touched nothing else):
+   - `it('PT-52 a neighbour\'s lazy line under the propeller in gear fouls it (Hard)')`: hard, (1.65, 1480.9), lever 15: after 1.5 s `lines.fouled` is false; after 3.0 s it is true (in gear after the 0.5 s gear delay, fouled 2 s later), the newest report is `propeller`, the run is `failed` with `propeller`.
+   - hard, (1.65, 1480.9), lever 0, 5 s: not fouled, no report, the run `running` (in neutral over a line nothing happens: PT-52's lesson).
+   - normal, (12.65, 1482.4) (the propeller 2.6 m ahead of `yacht-0-13`'s bow), lever 15, 3 s: not fouled, no report, `running` (Normal only draws the lines).
+   - hard, (−2.67, 1480.0), lever 0, 3 s: exactly one report, `{ obstacleId: 'lazy-line-0-11', partId: 'rope_lazy_line', part: 'keel', severity: 'touch' }`; the run is `mistake` with one `lazy-line` entry.
+   - hard, (5.0, 1481.0), lever 0, 3 s: one report with `part: 'stern'`; the run `mistake` with `lazy-line`.
 
 ### 17.7 Browser checks (`scripts/shots-m75.mjs`, test clock)
 
-Scenes: `enter-setup` (`?m=exercise&ex=enter-berth`). The berth outline pictures `enter-reverse` (`cam=top`) and `enter-map` are taken in live check (1) once step 1 shows the berth. Live: (1) `m75 good run` (phone only): `enterPilot('normal')`'s logic through `__sailExercise.dispatch`, until "Well done!". (2) `m75 fenders in`: Start, skip the fenders, back towards the berth (`engine -15` after turning with the thrusters as in the pilot): the card "Fenders still in". (3) Russian setup card has no overflow (`lang=ru`).
+Scenes: `enter-setup` (`?m=exercise&ex=enter-berth`). The berth outline pictures `enter-reverse` (`cam=top`) and `enter-map` are taken in live check (1) once step 1 shows the berth. Live: (1) `m75 good run` (phone only): `enterPilot('normal')`'s logic through `__sailExercise.dispatch`, until "Well done!". (2) `m75 fenders in`: Start, skip the fenders, back towards the berth (`engine -15` after turning with the thrusters as in the pilot): the card "Fenders still in". (3) Russian setup card has no overflow (`lang=ru`). Scene `enter-hard-lines` (`?m=exercise&ex=enter-berth&exl=hard&cam=top`): the bow lines of the busy marina. The bow-line mistakes are checked by the store tests of 17.6 (a link cannot place the boat during a run).
 
 ### 17.8 Done when / not in M75
 
-Done: the three levels can be finished on a phone; the checks pass. Not in M75: coming alongside (Ideas), our own anchor (M78), moving boats.
+Done: the three levels can be finished on a phone; on Hard the keel over a neighbour's bow line pauses and the propeller over one in gear ends the run; the checks pass. Not in M75: coming alongside (Ideas), our own anchor (M78), moving boats; a bow line that pulls the boat or the neighbour (no force, 22.4); bow lines outside the Hard level.
 
 ---
 
@@ -2250,7 +2351,7 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
 {
   "id": "turn-own-length", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=marina&ml=medium&tr=half&pe=-40.0&pn=1468.0&hdg=90&bs=0&wd=270&ws=8&eng=1&lv=0&ap=off&sea=flat",
+  "start": "?pl=marina&ml=medium&tr=half&pe=-40.0&pn=1468.0&hdg=90&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=flat",
   "targets": [{ "id": "circle", "shape": "circle", "eastM": -40, "northM": 1468, "radiusM": 10 }],
   "steps": [
     { "id": "kick", "opens": "engine", "holdS": 1, "show": "circle", "check": { "headingDeg": { "to": 120, "within": 15 }, "target": { "id": "circle", "point": "centre" } } },
@@ -2265,7 +2366,7 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
 {
   "id": "mooring-buoy", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=bay&pe=-1380.0&pn=0.0&hdg=270&bs=0&wd=270&ws=8&eng=1&lv=0&ap=off&sea=sheltered",
+  "start": "?pl=bay&pe=-1380.0&pn=0.0&hdg=270&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=sheltered",
   "targets": [
     { "id": "buoy", "shape": "circle", "eastM": -1450, "northM": 0, "radiusM": 2.5 },
     { "id": "clear", "shape": "circle", "eastM": -1450, "northM": 0, "radiusM": 15 }
@@ -2284,7 +2385,7 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
 }
 ```
 
-No `propeller` mistake here: the model never fouls the propeller with the buoy's bow line (`slackInWater` is false for `bl`, M45). The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be this close to pick it up). Of the bay's three buoys the middle one (−1450, 0) is the target; the start (−1380, 0) is inside the bay's mouth (the coast runs north–south at east −1350, the bay cut in west of it) in 15 m or more of water; the wind blows out of the bay (from the west), so the approach is into the wind (PT-62).
+No `propeller` mistake here: the model never fouls the propeller with the buoy's bow line (`slackInWater` is false for `bl`, M45). The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be this close to pick it up). Of the bay's three buoys the middle one (−1450, 0) is the target; the start (−1380, 0) is inside the bay's mouth (the coast runs north–south at east −1350, the bay cut in west of it) in 15 m or more of water; the wind blows out of the bay (from the west, `wd=-90`: the link drops `wd=270`, refresh 22.4), so the approach is into the wind (PT-62). Both links of M76 use `wd=-90`.
 
 ### 18.3 Texts (appended)
 
@@ -2298,7 +2399,7 @@ No `propeller` mistake here: the model never fouls the propeller with the buoy's
   "mistake": "Long bursts: she gathers speed and leaves the circle towards the moored boats.",
   "done": "She turned in her own length. Short bursts keep her on the spot; the thrusters finish the job.",
   "steps": {
-    "kick": { "goal": "Turn her to about 120° (105°–135°) with the engine and the wheel, staying in the circle.", "how": "Steering: wheel hard to starboard (slider right to the end). Engine: push the lever about two thirds towards Ahead for 3 seconds, then Neutral; after 4 seconds pull it about two thirds towards Astern until she starts moving back, then Neutral. Repeat once." },
+    "kick": { "goal": "Turn her to about 120° (105°–135°) with the engine and the wheel, staying in the circle.", "how": "Steering: wheel hard to starboard (slider right to the end). Engine: push the lever about two thirds towards Ahead for 2 seconds, then Neutral; after 4 seconds pull it about two thirds towards Astern until she starts moving back, then Neutral. Repeat once." },
     "spin": { "goal": "Spin her on the spot until she points west (260°–280°) and stop.", "how": "Wheel straight. Hold the bow thruster to starboard and the stern thruster to port. Let go when the compass shows 270°." }
   },
   "mistakes": {
@@ -2333,7 +2434,7 @@ No `propeller` mistake here: the model never fouls the propeller with the buoy's
 
 ### 18.5 Pilots
 
-`turnPilot()`: step 0, with `st` = app seconds since the step began and `k = st % 15`: `rudder 35`, lever `k < 3 ? 60 : k < 7 ? 0 : (k < 11 && boat.speedMps > −0.3) ? −60 : 0`. Step 1: `rudder 0`, `lever 0`, both thrusters `|H − 270| > 5 ? (bow 1, stern −1) : 0`.
+`turnPilot()`: step 0, with `st` = app seconds since the step began and `k = st % 15`: `rudder 35`, lever `k < 2 ? 60 : k < 7 ? 0 : (k < 11 && boat.speedMps > −0.3) ? −60 : 0` (refresh, 22.4: with 3 s bursts the west wind behind her carried her 10.3 m from the centre, out of the circle; with 2 s she stays within 3.7 m). Step 1: `rudder 0`, `lever 0`, both thrusters `|H − 270| > 5 ? (bow 1, stern −1) : 0`.
 
 `buoyPilot()`: step 0: `d` = distance from `bow(s)` to (−1450, 0); `want = d > 30 ? 1.0 : d > 8 ? 0.5 : 0.15` (m/s); `brg` = the bearing from the boat to the buoy (`atan2(−1450 − eastM, 0 − northM)` in degrees); `rudder(clamp(2 · wrap180(brg − headingDeg), −20, 20))`; `lever(v < want − 0.05 ? 15 : v > want + 0.1 ? −15 : 0)`. Step 1: `lever 0`, `rudder 0`, `line bl take`. Step 2: nothing. Step 3: `line bl letGo`. Step 4: `lever −15`.
 
@@ -2341,8 +2442,10 @@ No `propeller` mistake here: the model never fouls the propeller with the buoy's
 
 | Exercise | Limits per step |
 |---|---|
-| turn-own-length | kick ≤ 28 (17.2); spin ≤ 50 (34.2); the centre never more than 10 m from (−40, 1468) (prototype: 5.0 m) |
-| mooring-buoy | approach ≤ 137 (100.8); bow-line ≤ 3 (1.0); lie ≤ 15 (10.0); let-go ≤ 3 (1.0); back-away ≤ 92 (66.2) |
+| turn-own-length | kick ≤ 28 (21.6); spin ≤ 50 (34.1); the centre never more than 10 m from (−40, 1468) (prototype: 3.7 m) |
+| mooring-buoy | approach ≤ 137 (115.1); bow-line ≤ 3 (1.0); lie ≤ 15 (10.0); let-go ≤ 3 (1.0); back-away ≤ 92 (38.8) |
+
+Prototype values from the refresh (2026-11-03, `wd=-90`); the limits are the planning PR's and still hold. PT-62's run: at the pick-up the wind is 0.5° off the bow and she makes 0.33 kn. PT-33's spin: the centre moves 3.7 m.
 
 `it('PT-27 PT-48 the kick step turns her to starboard')`: the `kick` step passes (heading 105–135° from 090°) within 28 s with the wheel hard to starboard and only engine bursts (no thruster dispatched). `it('PT-33 the thrusters spin her on the spot')`: during the `spin` step the centre stays within 10 m of where it was when the step began.
 
@@ -2423,7 +2526,7 @@ The drop spot (−1600, 0) is sand, 10.0 m deep (`depthAt`); the chain needed is
 
 ### 19.5 Tests (good run; prototype in brackets)
 
-to-spot ≤ 105 (76.9); let-go-anchor ≤ 37 (24.2); scope ≤ 97 (70.1); dig-in ≤ 59 (41.1); shore-line ≤ 82 (59.1); settled ≤ 107 (78.0); at the end the chain is 55–70 m (61.2) and the anchor `set`. `it('PT-31 the scope step needs the chain the rules ask for')`: at the frame the `scope` step passes, `chainOutM ≥ scopeNeededM(depthAt(anchor.eastM, anchor.northM), 6)` (the anchor lies anywhere in the ring, 9.5–10.5 m deep: 45.2–49.2 m), and one frame earlier it was less. `it('PT-57 the anchor is set only after going astern')`: at the start of `dig-in` the anchor is `bottom`, not `set`. `it('PT-53 the good run never touches the bottom')`: no report in the run has `obstacleKind(report.obstacleId) === 'ground'`.
+to-spot ≤ 105 (76.9); let-go-anchor ≤ 37 (24.2); scope ≤ 97 (70.1); dig-in ≤ 59 (41.1); shore-line ≤ 82 (59.3); settled ≤ 107 (78.7); at the end the chain is 55–70 m (61.3; refresh 2026-11-03, the link's `wd=90` was always read) and the anchor `set`. `it('PT-31 the scope step needs the chain the rules ask for')`: at the frame the `scope` step passes, `chainOutM ≥ scopeNeededM(depthAt(anchor.eastM, anchor.northM), 6)` (the anchor lies anywhere in the ring, 9.5–10.5 m deep: 45.2–49.2 m), and while `chainOutM` was less than that the run was still at the `scope` step (the step passes after its 1 s hold, so the frame before the pass already has enough chain: prototype 47.12 m one frame before, 46.62 m 1.1 s before, need 46.65 m). `it('PT-57 the anchor is set only after going astern')`: at the start of `dig-in` the anchor is `bottom`, not `set`. `it('PT-53 the good run never touches the bottom')`: no report in the run has `obstacleKind(report.obstacleId) === 'ground'`.
 
 
 ### 19.6 Browser checks (`scripts/shots-m77.mjs`, test clock)
@@ -2450,7 +2553,7 @@ New: `scripts/shots-m78.mjs`. Changed (run `npm run review-doc -- ru` after the 
 {
   "id": "stern-to-anchor", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "anchor", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=marina&ml=medium&tr=half&pe=2.8&pn=1466.0&hdg=180&bs=0&wd=270&ws=8&eng=1&lv=0&ap=off&sea=flat&fd=1",
+  "start": "?pl=marina&ml=medium&tr=half&pe=2.8&pn=1466.0&hdg=180&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=flat&fd=1",
   "targets": [
     { "id": "drop", "shape": "circle", "eastM": 2.75, "northM": 1442, "radiusM": 3 },
     { "id": "berth", "shape": "berth" }
@@ -2503,7 +2606,7 @@ The drop spot is in the empty berth opposite ours (south row, index 12: the `hal
 
 ### 20.5 Tests (good run; prototype in brackets)
 
-to-spot ≤ 79 (56.6); let-go-anchor ≤ 24 (14.5); reverse-in ≤ 206 (154.5); stern-lines ≤ 3 (1.0); chain-tight ≤ 29 (18.0); the chain at the end 38–46 m (41.1), no `mistake` in the log. `it('PT-31 stern-to the chain is more than four times the depth')`: at the end `chainOutM ≥ 4 × (5 + 1.8)` = 27.2. **PT-51** (`it('PT-51 the anchor holds the bow stern-to')`): after `done`, 30 s more in neutral: heading within 180 ± 10°, stern gap 0.3–3.0 m.
+to-spot ≤ 79 (57.1); let-go-anchor ≤ 24 (14.6); reverse-in ≤ 206 (146.6); stern-lines ≤ 3 (1.0); chain-tight ≤ 29 (17.6); the chain at the end 38–46 m (41.1), no `mistake` in the log (prototype values from the refresh, 2026-11-03, `wd=-90`; the limits still hold). PT-51's 30 s: heading 176.7°, gap 2.51 m. `it('PT-31 stern-to the chain is more than four times the depth')`: at the end `chainOutM ≥ 4 × (5 + 1.8)` = 27.2. **PT-51** (`it('PT-51 the anchor holds the bow stern-to')`): after `done`, 30 s more in neutral: heading within 180 ± 10°, stern gap 0.3–3.0 m.
 
 ### 20.6 Browser checks (`scripts/shots-m78.mjs`, test clock)
 
@@ -2554,3 +2657,14 @@ The exercise can be finished on a phone; every item of section 21 is ticked in t
 - Turning in her own length with the engine alone (back-and-filling without thrusters) did not work in the prototype: long bursts drift her 30 m onto the moored boats. The exercise teaches the kick ahead and prop walk for the first 30° and the thrusters for the rest.
 - The anchor chain of other boats and the pontoon's moorings are not modelled (as M47).
 - The buoy's pick-up does not draw a boat hook.
+- (Refresh, 2026-11-03) A neighbour's bow line has no force: the keel over one makes a report and the mistake, but she does not stop or swing, and the neighbour's bow does not move. Fouling over a neighbour's line takes the same 2 s in gear as a slack line of our own (`foulAfterS`).
+
+### 22.4 Refresh (2026-11-03, `/plan 10 refresh` before M75: the Hard bow lines, and the wind of M75–M78)
+
+Checked against what M73 and M74 built (16.11 and the M74 PR, where the owner accepted deferring question 1 to this refresh). Changed:
+
+1. **The Hard obstacle of the bow lines is settled** (16.9a, built in M75, 17.4). No obstacle polygon and no force: a sunk rope does not stop a 15 t yacht, the danger is what it catches on under her. A line is a slope ahead of each moored yacht's bow (out of the deck 1.3 m above the water, 45° down, as drawn). On Hard only, through the level the run already has (`exercise.options.level`, link key `exl`; no new state or key): our **propeller** over a line, not deeper than 1.45 m, with the engine in gear fouls it after 2 s, as a slack line of our own does (PT-52; the existing `propeller` mistake ends the run); our **keel or rudder** over a line makes a `touch` report of kind `lazy-line` (part id `rope_lazy_line`, no new registry or glossary entry) and its own mistake, **`lazy-line`, "Over a neighbour's lazy line"**, not serious (it pauses and explains). Added to Entering the berth and to Leaving the berth (built in M74). Recommended; merging accepts it.
+2. **M75's start link: `wd=-90`, not `wd=270`.** The link drops 270 (the control runs from −180 to 180, as M74 found), so the first prototype ran with the wind from 60° and its numbers did not hold. With the west wind of 22.2, the first pilot's slow astern could not stop her downwind (she slid 21 m past the berth and backed into `yacht-0-13`, a hard hit at Normal). The pilot now starts stopping 18 m before the berth with the lever a third astern (−30); 14, 18 and 22 m all finish every level. The How text of `line-up` says so. The good-run limits, the PT-51 and PT-52 checks and the fenders-in limit (170 s) were measured again (17.6). The good runs stay at least 4.9 m from any line's catching part, M74's Hard run 1.76 m.
+3. **M76 and M78 had the same `wd=270`** (M76's turn and buoy links, M78's link; M77's `wd=90` was always read). All now `wd=-90`, and their pilots were run again on today's model (same session, after the owner asked for it). Every limit of 18.6 and 20.5 still holds; only the prototype values change. Two fixes: **Turning in her own length** left the circle with 3 s ahead bursts in the west wind (10.3 m from the centre), so the bursts are 2 s (pilot and How text; 3.7 m). **Picking up a mooring buoy** needed the west wind anyway: with the wind from 60° she picked the buoy up downwind (147.6° off the bow), against PT-62; now 0.5°. M77's PT-31 test wording is fixed: the step passes after a 1 s hold, so the frame before the pass already has enough chain.
+
+Not changed: everything else of 15–21 (names, paths, keys, ids and signatures used by M75 exist as built: `obstacleKind` with `lazy-line`, `ExerciseOptions.level`, `exl`, `boatPoint`, `marinaGeometry(...).ourBerth`, `stepLines`, `withPropellerReport`, `SCENE.harbour.bowLine`, `rope_lazy_line`).

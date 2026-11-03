@@ -870,6 +870,9 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] Hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=hard — every berth taken, 14 kn: fenders touching the neighbours are fine, a touch without a fender pauses.
 - [ ] Fenders in: on the first link, skip the fenders and back towards the berth — the card "Fenders still in".
 - [ ] Rope round the propeller: on the Normal link, when the crew is walking the lazy line to the bow, push the engine lever towards Ahead — the exercise stops with "A rope round the propeller".
+- [ ] Neighbours' bow lines, keel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=hard — Start, motor slowly east along the fairway until you are level with the magenta outline of your berth, lever to Neutral, then hold both thrusters to port so she drifts sideways towards the bows of the boats on the left; stop when her side is about a metre from their bows (do not let her touch) — the card "Over a neighbour's lazy line" (the thin lines from their bows run down into the water there).
+- [ ] Neighbours' bow lines, propeller: on the same link, Start again, go to the same place the same way, then push the lever just past Neutral towards Ahead — after about 3 seconds the exercise stops with "A rope round the propeller".
+- [ ] Only on Hard: on the Normal link, drift close to the left-hand boats' bows in the same way — nothing happens, the lines are only drawn.
 
 #### M76: Turning in her own length; picking up and leaving a mooring buoy
 
