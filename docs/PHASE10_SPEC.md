@@ -163,7 +163,7 @@ What the prototype found about the model (the exercises are built around it; eac
 - **Gusts** (15 kn mean, `wm=gusty&seed=1&wg=40`, close reach, main sheet 25 %): gusts over 18 kn (20 % above the mean) start at 35, 105, 141 and 158 s. Holding the sheet: heel up to 36.6° and five `overpowered` alerts in 240 s; easing to 45 % while the wind is over 16.8 kn: heel at most 22.5°, no alert.
 - **In irons from close-hauled**: turning the Wind autopilot 40° towards the wind stops her; the `in-irons` condition (true wind within 20°, speed 1 kn or less, for 5 s) fires 41.4 s after the turn.
 
-**(10b) Part 10b's numbers** (2026-11-02): a throwaway Vitest file opened each start link with `parseUrlState`, stepped `reduce(state, { type: 'step', dt: 0.05 })`, ran the scripted learner that `tests/harbourPilot.ts` writes down (16.7 and each milestone's pilot), and evaluated the new check fields exactly as 16.3 says. App seconds per step:
+**(10b) Part 10b's numbers** (2026-11-02; measured again on 2026-11-03 by the refresh, 22.4, because the `wd=270` of the marina and buoy links had been dropped and those runs had the wind from 60°): a throwaway Vitest file opened each start link with `parseUrlState`, stepped `reduce(state, { type: 'step', dt: 0.05 })`, ran the scripted learner that `tests/harbourPilot.ts` writes down (16.7 and each milestone's pilot), and evaluated the new check fields exactly as 16.3 says. App seconds per step:
 
 | Exercise | Steps (seconds) | Total | Contacts other than `fender` |
 |---|---|---|---|
@@ -2339,8 +2339,6 @@ Done: the three levels can be finished on a phone; on Hard the keel over a neigh
 
 ## 18. M76: Turning in her own length; picking up and leaving a mooring buoy
 
-> **Refresh note (2026-11-03, 22.4): not ready to build.** The start link has `wd=270`, which the link drops (the wind then blows from 60°), and this section's numbers were measured that way. Run `/plan 10 refresh` for M76 before building it: it chooses the wind (the west wind the link meant, 22.2, or the 60° the numbers were made with) and measures the numbers again where they change.
-
 **Independent review: required** (a new rule, PT-62; the texts state how this boat's prop walk turns her, an assumption of PT-27).
 
 ### 18.1 Files
@@ -2353,7 +2351,7 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
 {
   "id": "turn-own-length", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=marina&ml=medium&tr=half&pe=-40.0&pn=1468.0&hdg=90&bs=0&wd=270&ws=8&eng=1&lv=0&ap=off&sea=flat",
+  "start": "?pl=marina&ml=medium&tr=half&pe=-40.0&pn=1468.0&hdg=90&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=flat",
   "targets": [{ "id": "circle", "shape": "circle", "eastM": -40, "northM": 1468, "radiusM": 10 }],
   "steps": [
     { "id": "kick", "opens": "engine", "holdS": 1, "show": "circle", "check": { "headingDeg": { "to": 120, "within": 15 }, "target": { "id": "circle", "point": "centre" } } },
@@ -2368,7 +2366,7 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
 {
   "id": "mooring-buoy", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=bay&pe=-1380.0&pn=0.0&hdg=270&bs=0&wd=270&ws=8&eng=1&lv=0&ap=off&sea=sheltered",
+  "start": "?pl=bay&pe=-1380.0&pn=0.0&hdg=270&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=sheltered",
   "targets": [
     { "id": "buoy", "shape": "circle", "eastM": -1450, "northM": 0, "radiusM": 2.5 },
     { "id": "clear", "shape": "circle", "eastM": -1450, "northM": 0, "radiusM": 15 }
@@ -2387,7 +2385,7 @@ New: `scripts/shots-m76.mjs`. Changed: `content/exercises/exercises.json` (two e
 }
 ```
 
-No `propeller` mistake here: the model never fouls the propeller with the buoy's bow line (`slackInWater` is false for `bl`, M45). The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be this close to pick it up). Of the bay's three buoys the middle one (−1450, 0) is the target; the start (−1380, 0) is inside the bay's mouth (the coast runs north–south at east −1350, the bay cut in west of it) in 15 m or more of water; the wind blows out of the bay (from the west), so the approach is into the wind (PT-62).
+No `propeller` mistake here: the model never fouls the propeller with the buoy's bow line (`slackInWater` is false for `bl`, M45). The buoy circle's radius is `physics.lines.buoyReachM` (2.5 m: the bow must be this close to pick it up). Of the bay's three buoys the middle one (−1450, 0) is the target; the start (−1380, 0) is inside the bay's mouth (the coast runs north–south at east −1350, the bay cut in west of it) in 15 m or more of water; the wind blows out of the bay (from the west, `wd=-90`: the link drops `wd=270`, refresh 22.4), so the approach is into the wind (PT-62). Both links of M76 use `wd=-90`.
 
 ### 18.3 Texts (appended)
 
@@ -2401,7 +2399,7 @@ No `propeller` mistake here: the model never fouls the propeller with the buoy's
   "mistake": "Long bursts: she gathers speed and leaves the circle towards the moored boats.",
   "done": "She turned in her own length. Short bursts keep her on the spot; the thrusters finish the job.",
   "steps": {
-    "kick": { "goal": "Turn her to about 120° (105°–135°) with the engine and the wheel, staying in the circle.", "how": "Steering: wheel hard to starboard (slider right to the end). Engine: push the lever about two thirds towards Ahead for 3 seconds, then Neutral; after 4 seconds pull it about two thirds towards Astern until she starts moving back, then Neutral. Repeat once." },
+    "kick": { "goal": "Turn her to about 120° (105°–135°) with the engine and the wheel, staying in the circle.", "how": "Steering: wheel hard to starboard (slider right to the end). Engine: push the lever about two thirds towards Ahead for 2 seconds, then Neutral; after 4 seconds pull it about two thirds towards Astern until she starts moving back, then Neutral. Repeat once." },
     "spin": { "goal": "Spin her on the spot until she points west (260°–280°) and stop.", "how": "Wheel straight. Hold the bow thruster to starboard and the stern thruster to port. Let go when the compass shows 270°." }
   },
   "mistakes": {
@@ -2436,7 +2434,7 @@ No `propeller` mistake here: the model never fouls the propeller with the buoy's
 
 ### 18.5 Pilots
 
-`turnPilot()`: step 0, with `st` = app seconds since the step began and `k = st % 15`: `rudder 35`, lever `k < 3 ? 60 : k < 7 ? 0 : (k < 11 && boat.speedMps > −0.3) ? −60 : 0`. Step 1: `rudder 0`, `lever 0`, both thrusters `|H − 270| > 5 ? (bow 1, stern −1) : 0`.
+`turnPilot()`: step 0, with `st` = app seconds since the step began and `k = st % 15`: `rudder 35`, lever `k < 2 ? 60 : k < 7 ? 0 : (k < 11 && boat.speedMps > −0.3) ? −60 : 0` (refresh, 22.4: with 3 s bursts the west wind behind her carried her 10.3 m from the centre, out of the circle; with 2 s she stays within 3.7 m). Step 1: `rudder 0`, `lever 0`, both thrusters `|H − 270| > 5 ? (bow 1, stern −1) : 0`.
 
 `buoyPilot()`: step 0: `d` = distance from `bow(s)` to (−1450, 0); `want = d > 30 ? 1.0 : d > 8 ? 0.5 : 0.15` (m/s); `brg` = the bearing from the boat to the buoy (`atan2(−1450 − eastM, 0 − northM)` in degrees); `rudder(clamp(2 · wrap180(brg − headingDeg), −20, 20))`; `lever(v < want − 0.05 ? 15 : v > want + 0.1 ? −15 : 0)`. Step 1: `lever 0`, `rudder 0`, `line bl take`. Step 2: nothing. Step 3: `line bl letGo`. Step 4: `lever −15`.
 
@@ -2444,8 +2442,10 @@ No `propeller` mistake here: the model never fouls the propeller with the buoy's
 
 | Exercise | Limits per step |
 |---|---|
-| turn-own-length | kick ≤ 28 (17.2); spin ≤ 50 (34.2); the centre never more than 10 m from (−40, 1468) (prototype: 5.0 m) |
-| mooring-buoy | approach ≤ 137 (100.8); bow-line ≤ 3 (1.0); lie ≤ 15 (10.0); let-go ≤ 3 (1.0); back-away ≤ 92 (66.2) |
+| turn-own-length | kick ≤ 28 (21.6); spin ≤ 50 (34.1); the centre never more than 10 m from (−40, 1468) (prototype: 3.7 m) |
+| mooring-buoy | approach ≤ 137 (115.1); bow-line ≤ 3 (1.0); lie ≤ 15 (10.0); let-go ≤ 3 (1.0); back-away ≤ 92 (38.8) |
+
+Prototype values from the refresh (2026-11-03, `wd=-90`); the limits are the planning PR's and still hold. PT-62's run: at the pick-up the wind is 0.5° off the bow and she makes 0.33 kn. PT-33's spin: the centre moves 3.7 m.
 
 `it('PT-27 PT-48 the kick step turns her to starboard')`: the `kick` step passes (heading 105–135° from 090°) within 28 s with the wheel hard to starboard and only engine bursts (no thruster dispatched). `it('PT-33 the thrusters spin her on the spot')`: during the `spin` step the centre stays within 10 m of where it was when the step began.
 
@@ -2460,8 +2460,6 @@ Done: both exercises can be finished on a phone; PT-62's test passes; checks pas
 ---
 
 ## 19. M77: Anchoring in the bay with a line ashore
-
-> **Refresh note (2026-11-03, 22.4): not ready to build.** The start link has `wd=270`, which the link drops (the wind then blows from 60°), and this section's numbers were measured that way. Run `/plan 10 refresh` for M77 before building it: it chooses the wind (the west wind the link meant, 22.2, or the 60° the numbers were made with) and measures the numbers again where they change.
 
 **Independent review: required** (anchoring teaches safety: scope, setting, a line to the rocks; checks on the anchor's state).
 
@@ -2528,7 +2526,7 @@ The drop spot (−1600, 0) is sand, 10.0 m deep (`depthAt`); the chain needed is
 
 ### 19.5 Tests (good run; prototype in brackets)
 
-to-spot ≤ 105 (76.9); let-go-anchor ≤ 37 (24.2); scope ≤ 97 (70.1); dig-in ≤ 59 (41.1); shore-line ≤ 82 (59.1); settled ≤ 107 (78.0); at the end the chain is 55–70 m (61.2) and the anchor `set`. `it('PT-31 the scope step needs the chain the rules ask for')`: at the frame the `scope` step passes, `chainOutM ≥ scopeNeededM(depthAt(anchor.eastM, anchor.northM), 6)` (the anchor lies anywhere in the ring, 9.5–10.5 m deep: 45.2–49.2 m), and one frame earlier it was less. `it('PT-57 the anchor is set only after going astern')`: at the start of `dig-in` the anchor is `bottom`, not `set`. `it('PT-53 the good run never touches the bottom')`: no report in the run has `obstacleKind(report.obstacleId) === 'ground'`.
+to-spot ≤ 105 (76.9); let-go-anchor ≤ 37 (24.2); scope ≤ 97 (70.1); dig-in ≤ 59 (41.1); shore-line ≤ 82 (59.3); settled ≤ 107 (78.7); at the end the chain is 55–70 m (61.3; refresh 2026-11-03, the link's `wd=90` was always read) and the anchor `set`. `it('PT-31 the scope step needs the chain the rules ask for')`: at the frame the `scope` step passes, `chainOutM ≥ scopeNeededM(depthAt(anchor.eastM, anchor.northM), 6)` (the anchor lies anywhere in the ring, 9.5–10.5 m deep: 45.2–49.2 m), and while `chainOutM` was less than that the run was still at the `scope` step (the step passes after its 1 s hold, so the frame before the pass already has enough chain: prototype 47.12 m one frame before, 46.62 m 1.1 s before, need 46.65 m). `it('PT-57 the anchor is set only after going astern')`: at the start of `dig-in` the anchor is `bottom`, not `set`. `it('PT-53 the good run never touches the bottom')`: no report in the run has `obstacleKind(report.obstacleId) === 'ground'`.
 
 
 ### 19.6 Browser checks (`scripts/shots-m77.mjs`, test clock)
@@ -2543,8 +2541,6 @@ Done: the exercise can be finished on a phone and the checks pass. Not in M77: t
 
 ## 20. M78: Stern-to on your own anchor (sign-off of part 10b)
 
-> **Refresh note (2026-11-03, 22.4): not ready to build.** The start link has `wd=270`, which the link drops (the wind then blows from 60°), and this section's numbers were measured that way. Run `/plan 10 refresh` for M78 before building it: it chooses the wind (the west wind the link meant, 22.2, or the 60° the numbers were made with) and measures the numbers again where they change.
-
 **Independent review: not needed** (data, texts and checks of M74–M77; PT-51's second case is tested since M47).
 
 ### 20.1 Files
@@ -2557,7 +2553,7 @@ New: `scripts/shots-m78.mjs`. Changed (run `npm run review-doc -- ru` after the 
 {
   "id": "stern-to-anchor", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "anchor", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=marina&ml=medium&tr=half&pe=2.8&pn=1466.0&hdg=180&bs=0&wd=270&ws=8&eng=1&lv=0&ap=off&sea=flat&fd=1",
+  "start": "?pl=marina&ml=medium&tr=half&pe=2.8&pn=1466.0&hdg=180&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=flat&fd=1",
   "targets": [
     { "id": "drop", "shape": "circle", "eastM": 2.75, "northM": 1442, "radiusM": 3 },
     { "id": "berth", "shape": "berth" }
@@ -2610,7 +2606,7 @@ The drop spot is in the empty berth opposite ours (south row, index 12: the `hal
 
 ### 20.5 Tests (good run; prototype in brackets)
 
-to-spot ≤ 79 (56.6); let-go-anchor ≤ 24 (14.5); reverse-in ≤ 206 (154.5); stern-lines ≤ 3 (1.0); chain-tight ≤ 29 (18.0); the chain at the end 38–46 m (41.1), no `mistake` in the log. `it('PT-31 stern-to the chain is more than four times the depth')`: at the end `chainOutM ≥ 4 × (5 + 1.8)` = 27.2. **PT-51** (`it('PT-51 the anchor holds the bow stern-to')`): after `done`, 30 s more in neutral: heading within 180 ± 10°, stern gap 0.3–3.0 m.
+to-spot ≤ 79 (57.1); let-go-anchor ≤ 24 (14.6); reverse-in ≤ 206 (146.6); stern-lines ≤ 3 (1.0); chain-tight ≤ 29 (17.6); the chain at the end 38–46 m (41.1), no `mistake` in the log (prototype values from the refresh, 2026-11-03, `wd=-90`; the limits still hold). PT-51's 30 s: heading 176.7°, gap 2.51 m. `it('PT-31 stern-to the chain is more than four times the depth')`: at the end `chainOutM ≥ 4 × (5 + 1.8)` = 27.2. **PT-51** (`it('PT-51 the anchor holds the bow stern-to')`): after `done`, 30 s more in neutral: heading within 180 ± 10°, stern gap 0.3–3.0 m.
 
 ### 20.6 Browser checks (`scripts/shots-m78.mjs`, test clock)
 
@@ -2663,12 +2659,12 @@ The exercise can be finished on a phone; every item of section 21 is ticked in t
 - The buoy's pick-up does not draw a boat hook.
 - (Refresh, 2026-11-03) A neighbour's bow line has no force: the keel over one makes a report and the mistake, but she does not stop or swing, and the neighbour's bow does not move. Fouling over a neighbour's line takes the same 2 s in gear as a slack line of our own (`foulAfterS`).
 
-### 22.4 Refresh (2026-11-03, `/plan 10 refresh` before M75; focused on the Hard bow lines)
+### 22.4 Refresh (2026-11-03, `/plan 10 refresh` before M75: the Hard bow lines, and the wind of M75–M78)
 
 Checked against what M73 and M74 built (16.11 and the M74 PR, where the owner accepted deferring question 1 to this refresh). Changed:
 
 1. **The Hard obstacle of the bow lines is settled** (16.9a, built in M75, 17.4). No obstacle polygon and no force: a sunk rope does not stop a 15 t yacht, the danger is what it catches on under her. A line is a slope ahead of each moored yacht's bow (out of the deck 1.3 m above the water, 45° down, as drawn). On Hard only, through the level the run already has (`exercise.options.level`, link key `exl`; no new state or key): our **propeller** over a line, not deeper than 1.45 m, with the engine in gear fouls it after 2 s, as a slack line of our own does (PT-52; the existing `propeller` mistake ends the run); our **keel or rudder** over a line makes a `touch` report of kind `lazy-line` (part id `rope_lazy_line`, no new registry or glossary entry) and its own mistake, **`lazy-line`, "Over a neighbour's lazy line"**, not serious (it pauses and explains). Added to Entering the berth and to Leaving the berth (built in M74). Recommended; merging accepts it.
 2. **M75's start link: `wd=-90`, not `wd=270`.** The link drops 270 (the control runs from −180 to 180, as M74 found), so the first prototype ran with the wind from 60° and its numbers did not hold. With the west wind of 22.2, the first pilot's slow astern could not stop her downwind (she slid 21 m past the berth and backed into `yacht-0-13`, a hard hit at Normal). The pilot now starts stopping 18 m before the berth with the lever a third astern (−30); 14, 18 and 22 m all finish every level. The How text of `line-up` says so. The good-run limits, the PT-51 and PT-52 checks and the fenders-in limit (170 s) were measured again (17.6). The good runs stay at least 4.9 m from any line's catching part, M74's Hard run 1.76 m.
-3. **M76, M77 and M78 have the same `wd=270`** (and M77's bay link). Not changed here (the owner asked for a focused refresh, and their pilots do not exist yet): each section carries a note that it is not ready to build until a refresh measures it again with the wind chosen.
+3. **M76 and M78 had the same `wd=270`** (M76's turn and buoy links, M78's link; M77's `wd=90` was always read). All now `wd=-90`, and their pilots were run again on today's model (same session, after the owner asked for it). Every limit of 18.6 and 20.5 still holds; only the prototype values change. Two fixes: **Turning in her own length** left the circle with 3 s ahead bursts in the west wind (10.3 m from the centre), so the bursts are 2 s (pilot and How text; 3.7 m). **Picking up a mooring buoy** needed the west wind anyway: with the wind from 60° she picked the buoy up downwind (147.6° off the bow), against PT-62; now 0.5°. M77's PT-31 test wording is fixed: the step passes after a 1 s hold, so the frame before the pass already has enough chain.
 
 Not changed: everything else of 15–21 (names, paths, keys, ids and signatures used by M75 exist as built: `obstacleKind` with `lazy-line`, `ExerciseOptions.level`, `exl`, `boatPoint`, `marinaGeometry(...).ourBerth`, `stepLines`, `withPropellerReport`, `SCENE.harbour.bowLine`, `rope_lazy_line`).
