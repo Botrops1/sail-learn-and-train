@@ -202,7 +202,7 @@ export async function liveM75Checks({ openPage, viewports, outDir, prefix, probl
       .innerText()
       .catch(() => '');
     await shot(page, 'm75-enter-fenders-in');
-    check('fenders in', /Fenders still in/.test(text), text.slice(0, 120));
+    check('fenders in', /fenders in the locker/.test(text), text.slice(0, 120));
     await context.close();
   }
 
