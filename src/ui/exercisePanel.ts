@@ -1,5 +1,10 @@
 import { recordDone, readProgress } from '../app/exerciseProgress';
-import { exercisePauseBlocked, type ExerciseRun, type ExerciseWaypoint } from '../app/exerciseRun';
+import {
+  exercisePauseBlocked,
+  type ExerciseOptions,
+  type ExerciseRun,
+  type ExerciseWaypoint,
+} from '../app/exerciseRun';
 import { exerciseStartLink, parseUrlState, waypointLink } from '../app/urlState';
 import type { AppState, Store } from '../app/store';
 import { alertTimeText } from '../model/alerts';
@@ -24,7 +29,7 @@ import {
 import type { Sheet } from './sheet';
 import { createConfirmButton } from './settingsMenu';
 
-const GROUPS: readonly ExerciseGroup[] = ['sailing', 'wind', 'sails'];
+const GROUPS: readonly ExerciseGroup[] = ['sailing', 'wind', 'sails', 'harbour'];
 
 /** Whole seconds left of a step's hold (PHASE10_SPEC 6.5). */
 export function holdLeftS(run: ExerciseRun, holdS: number): number {
@@ -63,11 +68,16 @@ export function lastMistakeShown(run: ExerciseRun): boolean {
 }
 
 /** The load that opens an exercise's setup card (PHASE10_SPEC 4.2). */
-export function loadExercise(store: Store, id: string, ropes: ExerciseDef['ropes']): void {
+export function loadExercise(
+  store: Store,
+  id: string,
+  ropes: ExerciseDef['ropes'],
+  options?: Partial<ExerciseOptions>,
+): void {
   const state = store.getState();
   store.dispatch({
     type: 'load',
-    state: parseUrlState(exerciseStartLink(id, state, ropes), state.settings.detail),
+    state: parseUrlState(exerciseStartLink(id, state, ropes, options), state.settings.detail),
   });
 }
 
@@ -94,7 +104,7 @@ export function createExercisePanel(
     const left = run && step && run.holdS > 0 ? holdLeftS(run, step.holdS) : 0;
     const shown = run ? lastMistakeShown(run) : false;
     const debrief = run && (run.status === 'done' || run.status === 'failed' || soFarOpen);
-    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${run?.options.crew}|${shown}`;
+    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${run?.options.crew}|${run?.options.level}|${shown}`;
   };
 
   function renderList(): void {
@@ -211,6 +221,33 @@ export function createExercisePanel(
     }
     ropes.append(choices, el('p', { class: 'hint' }, [t('exercise.ropes.hint')]));
     card.append(ropes);
+    // Level (M74): only for an exercise with levels; a tap loads the start link again.
+    if (def.levels) {
+      const level = el('div', { class: 'exercise-ropes', 'data-testid': 'exercise-level' }, [
+        el('h4', {}, [t('exercise.level')]),
+      ]);
+      const levelChoices = el('div', { class: 'exercise-ropes-choices' });
+      const current = run.options.level;
+      for (const choice of ['easy', 'normal', 'hard'] as const) {
+        const button = el(
+          'button',
+          {
+            type: 'button',
+            class: 'exercise-button',
+            'aria-pressed': String(current === choice),
+            'data-testid': `exercise-level-${choice}`,
+          },
+          [t(`exercise.level.${choice}` as 'exercise.level.easy')],
+        );
+        button.addEventListener('click', () => {
+          if (choice !== current)
+            loadExercise(store, def.id, state.settings.ropesMode, { level: choice });
+        });
+        levelChoices.append(button);
+      }
+      level.append(levelChoices, el('p', { class: 'hint' }, [t('exercise.level.hint')]));
+      card.append(level);
+    }
     // Alone or With crew (M71): only where the exercise has the choice and the ropes are Realistic.
     if (def.crew && state.settings.ropesMode === 'realistic') {
       const crew = el('div', { class: 'exercise-ropes', 'data-testid': 'exercise-crew' }, [
@@ -463,6 +500,10 @@ export function createExercisePanel(
           !sectionAvailable(section, store.getState(), layout())
         ) {
           section = 'helm';
+        }
+        // The Anchor section is not in Realistic ropes: the Bow station (Ropes) holds the windlass.
+        if (section === 'anchor' && !sectionAvailable('anchor', store.getState(), layout())) {
+          section = 'ropes';
         }
         panel.showSection(section);
       });

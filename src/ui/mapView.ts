@@ -1,3 +1,4 @@
+import { shownTarget } from '../app/exerciseRun';
 import type { AppState, Store } from '../app/store';
 import { DEG, compassDeg, wrap180 } from '../model/angles';
 import { rollerPoint } from '../model/anchor';
@@ -914,6 +915,7 @@ function drawMap(
   step('windField', () => drawWindField(ctx, state, view, timeS));
   step('seabed', () => drawSeabed(ctx, state, view));
   step('harbour', () => drawHarbour(ctx, state, view));
+  step('exerciseTarget', () => drawExerciseTarget(ctx, state, view));
   step('track', () => drawTrack(ctx, state.track, state, view));
   step('anchor', () => drawAnchor(ctx, state, view));
   const layout = mapLayout(state, view, width);
@@ -1005,6 +1007,37 @@ function tracePath(ctx: CanvasRenderingContext2D, points: readonly ScreenPoint[]
  * The marina (M42, PHASE7_SPEC 8.6): quay, wall and pontoon, the lines between the berths (not on
  * the mini-map), the moored yachts and our berth outlined in yellow. Drawn only when it is near.
  */
+/** The dashed magenta outline of the exercise step's target (PHASE10_SPEC 16.5). */
+export function drawExerciseTarget(
+  ctx: CanvasRenderingContext2D,
+  state: AppState,
+  view: MapViewport,
+): void {
+  const target = shownTarget(state);
+  if (target === null) return;
+  ctx.save();
+  ctx.strokeStyle = '#d63cff';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  if (target.shape === 'circle') {
+    const c = mapToScreen(target.eastM, target.northM, view);
+    ctx.arc(c.x, c.y, target.radiusM / view.metresPerPx, 0, Math.PI * 2);
+  } else {
+    const { west, east, south, north } = target.rect;
+    const corners = [
+      mapToScreen(west, south, view),
+      mapToScreen(east, south, view),
+      mapToScreen(east, north, view),
+      mapToScreen(west, north, view),
+    ];
+    corners.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
+    ctx.closePath();
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
 export function drawHarbour(
   ctx: CanvasRenderingContext2D,
   state: AppState,
@@ -1792,6 +1825,7 @@ export function drawMiniMap(
   drawGustBands(ctx, state, view);
   drawSeabed(ctx, state, view, true);
   drawHarbour(ctx, state, view, true);
+  drawExerciseTarget(ctx, state, view);
   drawTrack(ctx, state.track, state, view);
   drawAnchor(ctx, state, view, true);
   drawBuoys(ctx, state, view, { letters: false });

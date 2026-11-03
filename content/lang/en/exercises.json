@@ -150,5 +150,25 @@
       "rope-slipping": { "name": "a rope slipping", "what": "A rope slipped on the winch drum.", "why": "Too few turns on the winch for the load.", "fix": "Add a turn on the winch." },
       "clutch-on-running": { "name": "a clutch closed on a running rope", "what": "A clutch was closed on a running rope.", "why": "The rope was still moving under load, and the clutch can damage it.", "fix": "Let the rope stop first, then close the clutch." }
     }
+  },
+  "leave-berth": {
+    "title": "Leaving the berth",
+    "summary": "Let go the lazy line and the stern lines, motor out of the berth and turn towards the entrance.",
+    "see": "She lies stern-to in her berth: two stern lines to the quay, the lazy line (a sunk rope from the quay) holding the bow, the engine running in neutral. Other yachts may lie on both sides.",
+    "happening": "Once the lines are off, nothing holds her. A side wind pushes a slow boat sideways and blows the bow off, so go out at a steady pace and turn as soon as the stern is clear of the other boats' bows.",
+    "action": "Let go the lazy line first, then both stern lines; motor slowly ahead out of the berth; when the stern is clear, stop and turn her with both thrusters until she points west to the entrance; then motor ahead.",
+    "mistake": "Turning too early: the stern swings sideways into the boat next door. Or going too fast and hitting the boats across the fairway (the lane between the rows).",
+    "done": "You are out of the berth and heading for the entrance. Lazy line first, stern lines next, out slowly, and turn only when the stern is clear.",
+    "steps": {
+      "lazy-off": {"goal": "Let go the lazy line.", "how": "Open Harbour gear. Under Lines, tap Let go on \"Lazy line (to the bow)\". It sinks to the bottom, clear of the propeller."},
+      "stern-off": {"goal": "Let go both stern lines.", "how": "In Harbour gear, tap Let go on both stern lines. Now only the engine and the thrusters hold her."},
+      "motor-out": {"goal": "Motor ahead until the stern is out of the berth, in the fairway (inside the magenta outline).", "how": "Open Engine. Drag the engine lever just past Neutral towards Ahead (the line under it says \"In gear: ahead\"): slow ahead. Keep the wheel straight. In a strong side wind push it a little further (about a third of the way to Ahead) so she does not drift onto the boat next door."},
+      "turn-out": {"goal": "Turn until she points west (270°, towards the entrance) and motor slowly ahead.", "how": "Lever back to Neutral. Hold the bow thruster to starboard and the stern thruster to port: she turns on the spot to the right. When the compass shows about 270°, let go of both and give slow ahead."}
+    },
+    "mistakes": {
+      "touch": {"name": "A light touch", "what": "She touched another boat or the quay without a fender between.", "why": "Slow boats drift with the wind; a touch at walking pace scratches the gelcoat but rarely does more.", "fix": "Slow down, use the thrusters to hold her off, and put the fenders out on the side that is close."},
+      "hard-hit": {"name": "A hard knock", "what": "She hit another boat or the quay hard. The exercise stops here.", "why": "At more than about one knot, ten tonnes of boat dents a hull or breaks a rail, even with fenders.", "fix": "Go slower near other boats and the quay: in a harbour, never faster than you would walk. Tap Try again."},
+      "propeller": {"name": "A rope round the propeller", "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.", "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.", "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."}
+    }
   }
 }

@@ -21,6 +21,7 @@ import { cloudTexture, rippleNormalMap } from './environment';
 import { buildAnchorChain } from './anchorChain';
 import { buildBay } from './bay';
 import { buildHarbourDetail } from './harbourDetail';
+import { buildExerciseTarget } from './exerciseTarget';
 import { buildMarina } from './marina';
 import { buildSeabed } from './seabed';
 import { buildMooringLines } from './mooringLines';
@@ -161,6 +162,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   world.group.add(marks.object);
   const marina = buildMarina();
   world.group.add(marina.object);
+  const exerciseTarget = buildExerciseTarget();
+  world.group.add(exerciseTarget.object);
   const harbourDetail = buildHarbourDetail();
   world.group.add(harbourDetail.object);
   const seabed = buildSeabed(undefined, detail);
@@ -721,6 +724,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       marks.update(state, water.heightAt);
       marina.update(state);
       harbourDetail.update(state);
+      exerciseTarget.update(state);
       seabed.update(state);
       bay.update(state, water.heightAt);
       mooringLines.update(state, ropeView);

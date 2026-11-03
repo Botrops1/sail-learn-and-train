@@ -1725,6 +1725,15 @@
       "showMe": "The entrance from the helm.",
       "textStatus": "draft"
     },
+    "env_exercise_target": {
+      "name": "Exercise target",
+      "alternatives": [],
+      "short": "Where the exercise wants the boat to go: a magenta outline on the water and on the map.",
+      "what": "Drawn only while an exercise step needs it. It is not on the real water: it is the app's way of pointing.",
+      "onThisBoat": "—",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
     "env_harbour_building": {
       "name": "Harbour buildings",
       "alternatives": [],

@@ -2,7 +2,16 @@ import data from '../../content/exercises/exercises.json';
 import { mpsToKn, wrap180 } from './angles';
 import type { AlertEntry, AlertKind } from './alerts';
 import type { Controls, ControlId } from './controls';
+import type { AnchorPhase, AnchorState } from './anchor';
+import { scopeNeededM } from './anchor';
+import { boat as hanse508, type BoatData } from './boat';
 import type { EngineState } from './engine';
+import type { HarbourState } from './harbour';
+import { insideRect, marinaGeometry, type Rect } from './marina';
+import { canTighten, type LineCode, type LinesState } from './mooringLines';
+import { area, type AreaData } from './area';
+import type { Severity } from './contact';
+import { depthAt } from './seabed';
 import type { BoatState, MotionReport } from './motion';
 import type { RealisticAction } from './realistic';
 import type { RopesMode } from './settings';
@@ -15,9 +24,16 @@ import type { WindNow } from './windModes';
  * content/exercises/exercises.json, the checks that read the app's state, and the texts. Pure.
  */
 export type Range = readonly [number, number];
-export type ExerciseGroup = 'sailing' | 'wind' | 'sails';
+export type ExerciseGroup = 'sailing' | 'wind' | 'sails' | 'harbour';
 /** The section "Show the controls" opens (a subset of the panel's section ids). */
-export type ExerciseOpens = 'ropes' | 'autopilot' | 'engine' | 'sails';
+export type ExerciseOpens = 'ropes' | 'autopilot' | 'engine' | 'sails' | 'harbour' | 'anchor';
+export type ExerciseLevel = 'easy' | 'normal' | 'hard';
+export type BoatPoint = 'bow' | 'stern' | 'centre';
+export type ObstacleKind = 'yacht' | 'harbour' | 'ground' | 'propeller' | 'fender' | 'lazy-line';
+export type ExerciseTarget =
+  | { id: string; shape: 'circle'; eastM: number; northM: number; radiusM: number }
+  | { id: string; shape: 'fairway' }
+  | { id: string; shape: 'berth' };
 export type ExerciseEvent = 'tack' | 'tackByHand' | 'controlledGybe' | 'accidentalGybe';
 
 export interface ExerciseCheck {
@@ -34,15 +50,31 @@ export interface ExerciseCheck {
   mainOutPct?: Range;
   jibOutPct?: Range;
   engine?: { running?: boolean; gear?: 'ahead' | 'neutral' | 'astern' };
+  target?: { id: string; point: BoatPoint; inside?: boolean };
+  headingDeg?: { to: number; within: number };
+  quayGapM?: Range;
+  berthOffsetM?: Range;
+  linesOn?: readonly LineCode[];
+  linesOff?: readonly LineCode[];
+  linesTight?: readonly LineCode[];
+  fendersOut?: boolean;
+  anchor?: { phase?: readonly AnchorPhase[]; chainOutM?: Range; scopeOk?: boolean };
 }
 export interface ExerciseStep {
   id: string;
   opens: ExerciseOpens;
   holdS: number;
+  show?: string;
   check: ExerciseCheck;
 }
 export type MistakeTrigger =
-  { alert: AlertKind; accidental?: boolean } | { condition: ExerciseCheck; forS: number };
+  | {
+      alert: AlertKind;
+      accidental?: boolean;
+      severity?: readonly Severity[];
+      obstacle?: readonly ObstacleKind[];
+    }
+  | { condition: ExerciseCheck; forS: number };
 export interface ExerciseMistake {
   id: string;
   serious: boolean;
@@ -70,6 +102,9 @@ export interface ExerciseDef {
   /** Owner, PR 144: the sections the exercise shows; every other section is hidden while it runs. */
   sections: readonly ExerciseSection[];
   start: string;
+  /** Query keys that replace the start's for that level; the start is Easy. */
+  levels?: Partial<Record<'normal' | 'hard', string>>;
+  targets?: readonly ExerciseTarget[];
   steps: readonly ExerciseStep[];
   mistakes: readonly ExerciseMistake[];
 }
@@ -91,10 +126,15 @@ export interface CheckSource {
   rig: RigState;
   controls: Controls;
   engine: EngineState;
+  /** Optional so older hand-built sources compile; AppState has all three. */
+  harbour?: HarbourState;
+  lines?: LinesState;
+  anchor?: AnchorState;
 }
 export interface CheckContext {
   events: readonly ExerciseEvent[];
   gusts: number;
+  targets?: readonly ExerciseTarget[];
 }
 export interface ExerciseText {
   title: string;
@@ -114,7 +154,11 @@ export type LoggedAction =
   | { type: 'autopilot'; command: 'turn'; turnDeg: number }
   | { type: 'engine'; command: 'start' | 'stop' }
   | { type: 'engine'; command: 'lever'; leverPct: number }
-  | { type: 'realistic'; gesture: RealisticAction['type']; target: string | null; on?: boolean };
+  | { type: 'realistic'; gesture: RealisticAction['type']; target: string | null; on?: boolean }
+  | { type: 'line'; code: LineCode; command: 'take' | 'tighten' | 'ease' | 'letGo'; times?: number }
+  | { type: 'thruster'; which: 'bow' | 'stern'; dir: -1 | 1 }
+  | { type: 'windlass'; motion: 'down' | 'up' }
+  | { type: 'fenders'; out: boolean };
 
 /** The log the debrief is made from (M66 writes start, step, finish; M67 mistake, back; M68 action, event). */
 export type ExerciseLogEntry =
@@ -145,6 +189,149 @@ export function twaSignedDeg(source: Pick<CheckSource, 'wind' | 'boat'>): number
 
 function inRange(value: number, range: Range): boolean {
   return value >= range[0] && value <= range[1];
+}
+
+/** A point of the boat on the map (PHASE10_SPEC 16.3): bow = the stem end, stern = the transom's middle, centre = the origin. */
+export function boatPoint(
+  boat: BoatState,
+  point: BoatPoint,
+  data: BoatData = hanse508,
+): [number, number] {
+  const x =
+    point === 'centre'
+      ? 0
+      : point === 'stern'
+        ? data.hull.transomX
+        : data.hull.transomX + data.dimensions.loa;
+  const h = (boat.headingDeg * Math.PI) / 180;
+  return [boat.eastM + x * Math.sin(h), boat.northM + x * Math.cos(h)];
+}
+
+/** The kind of thing a damage report's obstacle is. */
+export function obstacleKind(obstacleId: string): ObstacleKind {
+  if (obstacleId.startsWith('yacht-')) return 'yacht';
+  if (obstacleId === 'bottom' || obstacleId === 'land') return 'ground';
+  if (obstacleId === 'propeller') return 'propeller';
+  if (obstacleId === 'fender') return 'fender';
+  if (obstacleId.startsWith('lazy-line')) return 'lazy-line';
+  return 'harbour';
+}
+
+export type ResolvedTarget =
+  | { shape: 'circle'; eastM: number; northM: number; radiusM: number }
+  | { shape: 'rect'; rect: Rect };
+
+export function resolveTarget(
+  target: ExerciseTarget,
+  harbour: HarbourState,
+  areaData: AreaData = area,
+): ResolvedTarget {
+  if (target.shape === 'circle') {
+    return { shape: 'circle', eastM: target.eastM, northM: target.northM, radiusM: target.radiusM };
+  }
+  const geometry = marinaGeometry(harbour.layout, harbour.traffic, areaData);
+  if (target.shape === 'fairway') return { shape: 'rect', rect: geometry.fairway };
+  const m = areaData.marina;
+  const c = geometry.ourBerth.centreEastM;
+  const w = geometry.ourBerth.widthM;
+  const f = m.quayFaceNorthM;
+  return {
+    shape: 'rect',
+    rect: {
+      west: c - w / 2,
+      east: c + w / 2,
+      south: f - m.sternGapM - m.berthZoneM,
+      north: f - m.sternGapM,
+    },
+  };
+}
+
+export function insideTarget(target: ResolvedTarget, eastM: number, northM: number): boolean {
+  if (target.shape === 'circle') {
+    return Math.hypot(eastM - target.eastM, northM - target.northM) <= target.radiusM;
+  }
+  return insideRect(target.rect, eastM, northM);
+}
+
+function quayGap(source: CheckSource): number | null {
+  const { harbour } = source;
+  if (!harbour || harbour.place !== 'marina') return null;
+  return area.marina.quayFaceNorthM - boatPoint(source.boat, 'stern')[1];
+}
+
+function berthOffset(source: CheckSource): number | null {
+  const { harbour } = source;
+  if (!harbour || harbour.place !== 'marina') return null;
+  const geometry = marinaGeometry(harbour.layout, harbour.traffic);
+  return Math.abs(boatPoint(source.boat, 'stern')[0] - geometry.ourBerth.centreEastM);
+}
+
+function harbourFieldsPass(
+  check: ExerciseCheck,
+  source: CheckSource,
+  context: CheckContext,
+): boolean {
+  const { harbour, lines, anchor } = source;
+  if (check.target) {
+    const entry = context.targets?.find((t) => t.id === check.target?.id);
+    if (!entry || !harbour) return false;
+    const [e, n] = boatPoint(source.boat, check.target.point);
+    if (insideTarget(resolveTarget(entry, harbour), e, n) !== (check.target.inside ?? true)) {
+      return false;
+    }
+  }
+  if (check.headingDeg) {
+    if (Math.abs(wrap180(source.boat.headingDeg - check.headingDeg.to)) > check.headingDeg.within) {
+      return false;
+    }
+  }
+  if (check.quayGapM) {
+    const gap = quayGap(source);
+    if (gap === null || !inRange(gap, check.quayGapM)) return false;
+  }
+  if (check.berthOffsetM) {
+    const off = berthOffset(source);
+    if (off === null || !inRange(off, check.berthOffsetM)) return false;
+  }
+  if (check.linesOn) {
+    if (!lines) return false;
+    const have = lines.lines.map((l) => l.code);
+    if (!check.linesOn.every((c) => have.includes(c))) return false;
+  }
+  if (check.linesOff) {
+    if (!lines) return false;
+    const have = lines.lines.map((l) => l.code);
+    if (check.linesOff.some((c) => have.includes(c) || lines.crew?.code === c)) return false;
+  }
+  if (check.linesTight) {
+    if (!lines || !harbour) return false;
+    const have = lines.lines.map((l) => l.code);
+    const inputs = {
+      lines,
+      boat: source.boat,
+      harbour,
+      geometry: marinaGeometry(harbour.layout, harbour.traffic),
+      engine: source.engine,
+      area,
+    };
+    if (!check.linesTight.every((c) => have.includes(c) && !canTighten(c, inputs))) return false;
+  }
+  if (check.fendersOut !== undefined) {
+    if (!harbour || harbour.fendersOut !== check.fendersOut) return false;
+  }
+  if (check.anchor) {
+    if (!anchor) return false;
+    if (check.anchor.phase && !check.anchor.phase.includes(anchor.phase)) return false;
+    if (check.anchor.chainOutM && !inRange(anchor.chainOutM, check.anchor.chainOutM)) return false;
+    if (check.anchor.scopeOk !== undefined) {
+      const held = anchor.phase === 'bottom' || anchor.phase === 'set';
+      const ok =
+        held &&
+        anchor.chainOutM >= scopeNeededM(depthAt(anchor.eastM, anchor.northM), source.wind.twsKn);
+      if (ok !== check.anchor.scopeOk) return false;
+    }
+  }
+  return true;
 }
 
 /** True when every field of the check holds (PHASE10_SPEC 4.4); false while there is no motion yet. */
@@ -190,7 +377,7 @@ export function checkPasses(
     }
     if (check.engine.gear !== undefined && source.engine.gear !== check.engine.gear) return false;
   }
-  return true;
+  return harbourFieldsPass(check, source, context);
 }
 
 /** One line of "what to reach" for a step (owner, PR 144), made from the step's check. */
@@ -198,7 +385,9 @@ export type TargetRow =
   | { kind: 'twa'; range: Range }
   | { kind: 'tack'; side: 'port' | 'starboard' }
   | { kind: 'trim'; sail: 'main' | 'jib'; states: readonly TrimState[] }
-  | { kind: 'control'; id: ControlId; range: Range };
+  | { kind: 'control'; id: ControlId; range: Range }
+  | { kind: 'heading'; to: number; within: number }
+  | { kind: 'quayGap'; range: Range };
 
 /** The rows of a check, in the order a learner reads them (the fields of M66). */
 export function checkTargets(check: ExerciseCheck): TargetRow[] {
@@ -210,6 +399,8 @@ export function checkTargets(check: ExerciseCheck): TargetRow[] {
   for (const [id, range] of Object.entries(check.controls ?? {}) as [ControlId, Range][]) {
     rows.push({ kind: 'control', id, range });
   }
+  if (check.headingDeg) rows.push({ kind: 'heading', ...check.headingDeg });
+  if (check.quayGapM) rows.push({ kind: 'quayGap', range: check.quayGapM });
   return rows;
 }
 
@@ -238,6 +429,18 @@ export function targetReading(row: TargetRow, source: CheckSource): TargetReadin
     case 'control': {
       const value = source.controls[row.id];
       return { ok: inRange(value, row.range), value: Math.round(value) };
+    }
+    case 'heading': {
+      const heading = source.boat.headingDeg;
+      return {
+        ok: Math.abs(wrap180(heading - row.to)) <= row.within,
+        value: Math.round(((heading % 360) + 360) % 360),
+      };
+    }
+    case 'quayGap': {
+      const gap = quayGap(source);
+      if (gap === null) return null;
+      return { ok: inRange(gap, row.range), value: Math.round(gap * 10) / 10 };
     }
   }
 }

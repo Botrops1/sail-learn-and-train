@@ -2454,6 +2454,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Цель упражнения (`env_exercise_target`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Exercise target | Цель упражнения |
+| Другие названия | — | — |
+| Коротко | Where the exercise wants the boat to go: a magenta outline on the water and on the map. | Куда упражнение просит привести яхту: пурпурный контур на воде и на карте. |
+| Что делает / что значит | Drawn only while an exercise step needs it. It is not on the real water: it is the app's way of pointing. | Рисуется только пока шаг упражнения его требует. На настоящей воде его нет: так приложение показывает направление. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### Швартовка кормой (`term_med_mooring`)
 
 | Поле | English | Русский |
@@ -3175,6 +3190,7 @@
 | exercise.group.sailing | Sailing skills | Навыки хождения под парусом |
 | exercise.group.wind | Wind and weather | Ветер и погода |
 | exercise.group.sails | Setting and furling the sails | Постановка и уборка парусов |
+| exercise.group.harbour | Harbour and anchor | Гавань и якорь |
 | exercise.doneBest | ✓ best {time} | ✓ лучшее {time} |
 | exercise.see | What you see | Что вы видите |
 | exercise.happening | What is happening | Что происходит |
@@ -3182,6 +3198,11 @@
 | exercise.mistake | The typical mistake | Типичная ошибка |
 | exercise.ropes | Ropes | Снасти |
 | exercise.ropes.hint | Easy: every rope is a slider. Realistic: clutches and winches, as on the boat. | Простые: каждая снасть — ползунок. Реалистичные: стопоры и лебёдки, как на яхте. |
+| exercise.level | Level | Уровень |
+| exercise.level.easy | Easy | Лёгкий |
+| exercise.level.normal | Normal | Обычный |
+| exercise.level.hard | Hard | Трудный |
+| exercise.level.hint | Easy: wide berths, an empty marina, a light wind. Normal: medium berths, half full, a moderate side wind. Hard: every berth taken and a strong side wind. | Лёгкий: широкие места, пустая марина, слабый ветер. Обычный: средние места, наполовину заполнена, умеренный боковой ветер. Трудный: все места заняты, сильный боковой ветер. |
 | exercise.crew | Crew | Экипаж |
 | exercise.crew.alone | Alone | Один |
 | exercise.crew.crew | With crew | С экипажем |
@@ -3218,6 +3239,9 @@
 | exercise.target.control | {name}: {min}–{max} % | {name}: {min}–{max} % |
 | exercise.target.nowDeg | now {value}° | сейчас {value}° |
 | exercise.target.nowPct | now {value} % | сейчас {value} % |
+| exercise.target.heading | Heading {to}° (±{within}°) | Курс {to}° (±{within}°) |
+| exercise.target.quayGap | Stern {min}–{max} m from the quay | Корма в {min}–{max} м от причала |
+| exercise.target.nowM | now {value} m | сейчас {value} м |
 | exercise.target.nowWord | now {value} | сейчас {value} |
 | exercise.sections.hidden | Hidden, not needed here: {list}. | Скрыто, здесь не нужно: {list}. |
 | exercise.sections.locked | Set by the exercise, cannot be changed: the wind, the waves and the clock. | Задано упражнением, менять нельзя: ветер, волны и часы. |
@@ -3291,6 +3315,16 @@
 | debrief.rope.handle | Moved the winch handle | Переставили рукоятку лебёдки |
 | debrief.rope.crank | Cranked the winch handle | Покрутили рукоятку лебёдки |
 | debrief.rope.gearbox | Turned the mast gearbox switch | Повернули переключатель редуктора на мачте |
+| debrief.line | {line}: {command} | {line}: {command} |
+| debrief.times | {text} ×{n} | {text} ×{n} |
+| debrief.thruster.bow | Bow thruster {side} | Носовой подруливающий {side} |
+| debrief.thruster.stern | Stern thruster {side} | Кормовой подруливающий {side} |
+| debrief.side.port | to port | влево |
+| debrief.side.starboard | to starboard | вправо |
+| debrief.windlass.down | Chain out | Цепь вниз |
+| debrief.windlass.up | Chain in | Цепь вверх |
+| debrief.fenders.out | Fenders out | Кранцы за борт |
+| debrief.fenders.in | Fenders in | Кранцы убраны |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
