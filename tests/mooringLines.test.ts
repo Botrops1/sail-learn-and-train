@@ -390,3 +390,29 @@ describe('M45 bay lines', () => {
     expect(reduce(state, { type: 'goToPlace', place: 'bay' }).lines.lines).toHaveLength(0);
   });
 });
+
+describe('M75: a bow line under the propeller (PHASE10_SPEC 17.4, 17.6)', () => {
+  const state = marinaState(true);
+  const run = (leverPct: number, seconds: number) => {
+    const engine = initialEngine({ running: true, leverPct });
+    let lines: LinesState = NO_LINES;
+    for (let i = 0; i < seconds / 0.05; i += 1) {
+      lines = stepLines({ ...inputsOf(state, lines), engine, overBowLine: true }, 0.05);
+      if (lines.fouled) return { lines, at: (i + 1) * 0.05 };
+    }
+    return { lines, at: null };
+  };
+
+  it('in gear over the line it fouls after 2.0 s, not at 1.95 s', () => {
+    const fouled = run(15, 5);
+    expect(fouled.lines.fouled).toBe(true);
+    expect(fouled.at).toBeGreaterThanOrEqual(2.0 - 1e-6);
+    expect(run(15, 1.95).lines.fouled).toBe(false);
+  });
+
+  it('in neutral over the line it changes nothing', () => {
+    const engine = initialEngine({ running: true, leverPct: 0 });
+    const lines = stepLines({ ...inputsOf(state, NO_LINES), engine, overBowLine: true }, 0.05);
+    expect(lines).toBe(NO_LINES);
+  });
+});

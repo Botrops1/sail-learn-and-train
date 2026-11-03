@@ -292,6 +292,15 @@ describe('M55: damage, rope and winch entries and the tags (issue #109)', () => 
     expect(log.entries[0] && alertLearnId(log.entries[0])).toBe('part_saildrive');
   });
 
+  it("4b. a neighbour's lazy line opens the lazy line (M75)", () => {
+    const log = recordAlerts(
+      EMPTY_ALERTS,
+      start,
+      withReports(start, [hit('lazy-line-0-11', 'touch')]),
+    );
+    expect(log.entries[0] && alertLearnId(log.entries[0])).toBe('rope_lazy_line');
+  });
+
   const tail = tailSpecs()[0];
   const slipping = (s: AppState, on: boolean, timeS: number, key = tail?.key ?? ''): AppState => {
     const report = {

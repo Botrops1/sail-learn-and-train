@@ -93,6 +93,7 @@ import { liveM71Checks, M71_SCENES } from './shots-m71.mjs';
 import { liveM72Checks, M72_SCENES } from './shots-m72.mjs';
 import { liveM73Checks, M73_SCENES } from './shots-m73.mjs';
 import { liveM74Checks, M74_SCENES } from './shots-m74.mjs';
+import { liveM75Checks, M75_SCENES } from './shots-m75.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -288,6 +289,7 @@ const SCENES = [
   ...M72_SCENES.map((scene) => ({ ...scene, name: `m72-${scene.name}` })),
   ...M73_SCENES.map((scene) => ({ ...scene, name: `m73-${scene.name}` })),
   ...M74_SCENES.map((scene) => ({ ...scene, name: `m74-${scene.name}` })),
+  ...M75_SCENES.map((scene) => ({ ...scene, name: `m75-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -1120,6 +1122,7 @@ try {
     m72: () => liveM72Checks(onTestClock),
     m73: () => liveM73Checks(onTestClock),
     m74: () => liveM74Checks(onTestClock),
+    m75: () => liveM75Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {

@@ -7,6 +7,9 @@ import { DEFAULT_HARBOUR } from '../src/model/harbour';
 import {
   MARINA_LAYOUT_IDS,
   TRAFFIC_IDS,
+  bowLineHits,
+  bowLines,
+  bowLinesUnder,
   insidePolygon,
   marinaBounds,
   marinaGeometry,
@@ -579,5 +582,66 @@ describe('M73: the harbour detail in 3D (PHASE10_SPEC 15.5)', () => {
     expect((byPart('env_breakwater')[0] as THREE.Mesh).visible).toBe(true);
     detail.update({ ...near, boat: { ...near.boat, eastM: 0, northM: 0 } });
     expect((byPart('env_breakwater')[0] as THREE.Mesh).visible).toBe(false);
+  });
+});
+
+describe("M75: the neighbours' bow lines on Hard (PHASE10_SPEC 17.4, 17.6)", () => {
+  const busy = marinaGeometry('medium', 'busy');
+  const lines = bowLines(busy);
+  const at = (eastM: number, northM: number) => ({
+    ...initialState().boat,
+    eastM,
+    northM,
+    headingDeg: 90,
+  });
+
+  it('one line per moored yacht, at her bow, cached', () => {
+    expect(lines).toHaveLength(47);
+    const l0 = lines.find((l) => l.id === 'lazy-line-0-11');
+    expect(l0?.bowEastM).toBeCloseTo(-2.75, 2);
+    expect(l0?.bowNorthM).toBeCloseTo(1483.5, 2);
+    expect(l0?.headingDeg).toBe(180);
+    const l1 = lines.find((l) => l.id === 'lazy-line-1-11');
+    expect(l1?.bowEastM).toBeCloseTo(-2.75, 2);
+    expect(l1?.bowNorthM).toBeCloseTo(1449, 2);
+    expect(l1?.headingDeg).toBe(0);
+    expect(bowLines(busy)).toBe(lines);
+    expect(bowLines(marinaGeometry('spacious', 'empty'))).toEqual([]);
+  });
+
+  it('the model line is the drawn line', () => {
+    expect(area.marina.bowLine.deckAboveM).toBe(SCENE.harbour.hullAboveM);
+    expect(area.marina.bowLine.slope).toBe(1);
+  });
+
+  it('the saildrive, keel and rudder catch where the line is not deeper than they are', () => {
+    expect(bowLinesUnder(at(1.65, 1480.9), lines)).toEqual([
+      { lineId: 'lazy-line-0-11', part: 'saildrive' },
+    ]);
+    expect(bowLinesUnder(at(-2.67, 1480.0), lines)).toEqual([
+      { lineId: 'lazy-line-0-11', part: 'keel' },
+    ]);
+    expect(bowLinesUnder(at(5.0, 1481.0), lines)).toEqual([
+      { lineId: 'lazy-line-0-11', part: 'rudder' },
+    ]);
+    expect(bowLinesUnder(at(1.65, 1480.0), lines)).toEqual([]);
+    expect(bowLinesUnder(at(2.0, 1480.9), lines)).toEqual([]);
+  });
+
+  it('the keel and rudder make contact hits, the saildrive none', () => {
+    const keel = bowLineHits(bowLinesUnder(at(-2.67, 1480.0), lines));
+    expect(keel).toEqual([
+      {
+        key: 'lazy-line-0-11:keel',
+        obstacleId: 'lazy-line-0-11',
+        partId: 'rope_lazy_line',
+        part: 'keel',
+        approachMps: 0,
+        fender: false,
+      },
+    ]);
+    const rudder = bowLineHits(bowLinesUnder(at(5.0, 1481.0), lines));
+    expect(rudder.map((h) => [h.key, h.part])).toEqual([['lazy-line-0-11:stern', 'stern']]);
+    expect(bowLineHits(bowLinesUnder(at(1.65, 1480.9), lines))).toEqual([]);
   });
 });
