@@ -1882,7 +1882,7 @@ Append to `exercises` (`content/exercises/exercises.json`):
 {
   "id": "leave-berth", "group": "harbour", "ropes": "easy", "crew": false,
   "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
-  "start": "?pl=marina&ml=spacious&tr=empty&pe=3.3&pn=1490.4&hdg=180&ln=sp:2.6,ss:2.6,ll:12.33&wd=270&ws=4&eng=1&lv=0&ap=off&sea=flat&fd=1&bs=0",
+  "start": "?pl=marina&ml=spacious&tr=empty&pe=3.3&pn=1490.4&hdg=180&ln=sp:2.6,ss:2.6,ll:12.33&wd=-90&ws=4&eng=1&lv=0&ap=off&sea=flat&fd=1&bs=0",
   "levels": { "normal": "?ml=medium&tr=half&pe=2.8&ws=8", "hard": "?ml=medium&tr=busy&pe=2.8&ws=14" },
   "targets": [{ "id": "fairway", "shape": "fairway" }],
   "steps": [
@@ -2121,13 +2121,20 @@ Live checks: (1) `m74 level`: on `leave-setup` tap `exercise-level-hard`: the ad
 
 Leaving the berth works at every level on a phone; the outline shows on the 3D view and both maps; a knock ends the run with its card; the debrief names line, thruster and fender actions; old exercise links work as before; all checks pass.
 
-### 16.9a Owner request added in the M73 PR: the moored yachts' bow lines (to be specified by `/plan 10 refresh` before M74 is built)
+### 16.9a Owner request added in the M73 PR: the moored yachts' bow lines (drawn in M74; the Hard obstacle still to be specified by `/plan 10 refresh`)
 
 Owner (PR 157 chat): in a real marina every moored yacht lies on a bow line (the lazy line, a rope from her bow down into the water at about 45°), and these lines narrow the room to manoeuvre. Wanted in M74, not a later milestone:
 
 - **Drawn at both levels:** a thin line from each moored yacht's bow down into the water, about 45° (the instanced moored yachts of M73 are the place to add it). The M73 budget is tight (250 draw calls at High of 300; 110 at Low of 150), so the lines must share one instanced mesh and the budget cases must still pass.
 - **Counted in Hard only (the realistic version):** the lines are obstacles. The boat's bow can hit one, and the engine can suck one in (the existing `propeller` mistake of 16.2, which today covers the boat's own lines). In Easy the lines are only drawn and nothing happens.
 - **Open for the planner:** the line's obstacle shape and `obstacleKind` (`lazy-line`?), its glossary and registry entries (Russian stays draft), whether a touch is `touch` or its own mistake, and its test numbers. Nothing in this note is built yet.
+
+### 16.11 Decided in the M74 PR (recommended; merging accepts it)
+
+- **Built as 16.1–16.8 say**, with these differences: the start link of `leave-berth` has `wd=-90` instead of `wd=270` (the wind control runs from −180 to 180, so `wd=270` was ignored and the wind blew from 60°; −90 is the same west wind); the good-run limits of 16.7 held without tuning (measured step times in app seconds: easy 1.0, 1.0, 34.6, 25.3; normal 1.0, 1.0, 35.0, 26.1; hard 1.0, 1.0, 26.3, 26.4).
+- **New files not named in 16.1:** `tests/harbourChecks.test.ts` holds tests 2–7 of 16.7 (new check fields, `obstacleKind`, the contact mistakes, the logged actions, `exl`, `shownTarget`) instead of spreading them over four older test files; the loader test of `tests/exercises.test.ts` also checks that every `show` and check `target` names a target and that `levels` has only `normal` and `hard`. `tests/languages.test.ts` lists `debrief.line` and `debrief.times` as texts that are the same in Russian (placeholders only).
+- **16.9a, the bow lines:** drawn at both levels as one instanced mesh of thin rods (8 m ahead and 8 m down from each moored yacht's bow, `SCENE.harbour.bowLine`), carrying the part id of the lazy line (`rope_lazy_line`: a tap names it; no new registry entry). **Not built:** the Hard obstacle (the bow hits a line, the engine sucks one in). The model's obstacles depend only on the layout and the traffic, not on the exercise's level, so a Hard-only obstacle needs a new piece of state and a link key; the shape, the `lazy-line` kind (already in `ObstacleKind`) and whether a touch is a `touch` or its own mistake are for `/plan 10 refresh`. This is question 1 in the PR.
+- **`loadExercise` from the list** keeps the current run's level when it opens another exercise with levels (an exercise without levels ignores it).
 
 ### 16.10 Not in M74
 
