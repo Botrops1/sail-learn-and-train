@@ -211,9 +211,9 @@ export const SCENE = {
     /** Beyond this distance from the boat a buoy is not drawn or tappable, metres. */
     maxDrawM: 1000,
   },
-  /** The marina (M42, PHASE7_SPEC 8.6): quay, pontoon, rings, our berth's stripe and the moored yachts. */
   /** M74: the magenta outline an exercise step shows (PHASE10_SPEC 16.5). */
   exerciseTarget: { colour: '#d63cff', opacity: 0.85, lineM: 0.3, aboveM: 0.12 },
+  /** The marina (M42, PHASE7_SPEC 8.6): quay, pontoon, rings, our berth's stripe and the moored yachts. */
   harbour: {
     quayColour: '#b9b4a8',
     pontoonColour: '#8a6a4a',

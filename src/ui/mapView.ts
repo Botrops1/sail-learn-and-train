@@ -1003,10 +1003,6 @@ function tracePath(ctx: CanvasRenderingContext2D, points: readonly ScreenPoint[]
   ctx.closePath();
 }
 
-/**
- * The marina (M42, PHASE7_SPEC 8.6): quay, wall and pontoon, the lines between the berths (not on
- * the mini-map), the moored yachts and our berth outlined in yellow. Drawn only when it is near.
- */
 /** The dashed magenta outline of the exercise step's target (PHASE10_SPEC 16.5). */
 export function drawExerciseTarget(
   ctx: CanvasRenderingContext2D,
@@ -1038,6 +1034,10 @@ export function drawExerciseTarget(
   ctx.restore();
 }
 
+/**
+ * The marina (M42, PHASE7_SPEC 8.6): quay, wall and pontoon, the lines between the berths (not on
+ * the mini-map), the moored yachts and our berth outlined in yellow. Drawn only when it is near.
+ */
 export function drawHarbour(
   ctx: CanvasRenderingContext2D,
   state: AppState,
