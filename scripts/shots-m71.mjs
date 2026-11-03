@@ -277,7 +277,7 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
         /Setting and furling the sails/.test(body) &&
           ids.includes('exercise-item-set-sails') &&
           ids.includes('exercise-item-furl-sails') &&
-          ids.length === 8,
+          ids.length === 9, // M74 added Leaving the berth
         JSON.stringify(ids),
       );
       problems.push(...(await auditPage(page, `m71 ${name} list`)));
