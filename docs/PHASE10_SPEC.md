@@ -2666,6 +2666,8 @@ The exercise can be finished on a phone; every item of section 21 is ticked in t
 - The buoy's pick-up does not draw a boat hook.
 - (Refresh, 2026-11-03) A neighbour's bow line has no force: the keel over one makes a report and the mistake, but she does not stop or swing, and the neighbour's bow does not move. Fouling over a neighbour's line takes the same 2 s in gear as a slack line of our own (`foulAfterS`).
 
+- (Decided in the M75 PR, recommended; merging accepts it) The ball fender (M33) hangs in the middle of the stern, behind the transom, not at the port corner (owner's bug report on the M75 preview). The crew's lazy-line walk is drawn: a line trailing in the water from the quay's edge beside the hull to the crew's hand (`lazyWalk` in `src/model/mooringLines.ts`); the rule is as specified, a line the crew handles can foul the propeller. A neighbour's line under the rudder only reports; the propeller is about a metre ahead of the rudder, so it fouls only when the line passes under the propeller itself.
+
 ### 22.4 Refresh (2026-11-03, `/plan 10 refresh` before M75: the Hard bow lines, and the wind of M75–M78)
 
 Checked against what M73 and M74 built (16.11 and the M74 PR, where the owner accepted deferring question 1 to this refresh). Changed:

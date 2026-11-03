@@ -319,6 +319,25 @@ function sinkerEnd(geometry: MarinaGeometry): FarEnd {
   return { eastM, northM, heightM };
 }
 
+/**
+ * The crew walking the lazy line (M75 bug report): along which side, from the stern cleat to the bow
+ * cleat nearer to the weight, and how far (0 to 1). Null when nobody is walking it. The drawing
+ * uses it to show the line trailing in the water beside the hull, where the propeller can get it.
+ */
+export function lazyWalk(
+  state: LinesState,
+  boat: BoatState,
+  geometry: MarinaGeometry,
+  data: BoatData = hanse508,
+): { from: CleatId; to: CleatId; progress: number } | null {
+  const crew = state.crew;
+  if (!crew || crew.kind !== 'walkLazy') return null;
+  const to = bowCleatFor(boat, sinkerEnd(geometry), data);
+  const side = to.endsWith('port') ? 'port' : 'starboard';
+  const progress = Math.min(1, Math.max(0, 1 - crew.remainingS / data.physics.lines.lazyWalkS));
+  return { from: `cleat_stern_${side}`, to, progress };
+}
+
 function lineOf(lines: LinesState, code: LineCode): MooringLine | undefined {
   return lines.lines.find((line) => line.code === code);
 }

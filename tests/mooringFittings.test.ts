@@ -103,8 +103,9 @@ describe('Phase 6, M33: fenders', () => {
       near(p.lineEnd, [s.lineEnd[0], s.lineEnd[1], -s.lineEnd[2]]);
     }
     const ball = ballFenderPlace();
-    near(ball.centre, [-8.2, 0.765, -2.32]);
-    expect(ball.side).toBe(-1);
+    // M75 bug report: hung over the middle of the stern, behind the transom (x -8.6).
+    near(ball.centre, [-8.885, 0.765, 0]);
+    expect(ball.atStern).toBe(true);
   });
 
   it('the lowest fender hangs 0.311 m above the waterline; the lines end on the toerail', () => {

@@ -708,11 +708,11 @@
 |---|---|---|
 | Название | Ball fender | кранец-шар |
 | Другие названия | — | — |
-| Коротко | A big round fender for a corner of the boat. | Большой круглый кранец для угла яхты. |
-| Что делает / что значит | A ball fender protects a corner, where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier). | Кранец-шар защищает угол, где длинный кранец соскользнул бы, например корму, когда яхта швартуется кормой к причалу. |
-| На этой яхте | One, at the port corner of the stern behind the helm. It goes out and comes in with the other fenders. | Один, на левом (портовом) углу кормы за штурвалом. Он выходит за борт и убирается вместе с остальными кранцами. |
+| Коротко | A big round fender for the back of the boat. | Большой круглый кранец для кормы яхты. |
+| Что делает / что значит | A ball fender protects a place where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier). | Кранец-шар защищает место, где длинный кранец соскользнул бы, например корму, когда яхта швартуется кормой к причалу. |
+| На этой яхте | One, in the middle of the stern, hanging over the back. It goes out and comes in with the other fenders. | Один, посередине кормы, свисает за транец. Он выходит за борт и убирается вместе с остальными кранцами. |
 | Типичные ошибки | — | — |
-| «Покажи» | The boat from the port side with the fenders out: the ball fender hangs at the back corner. | Яхта с левого борта с вывешенными кранцами: кранец-шар висит на кормовом углу. |
+| «Покажи» | The boat from the port side with the fenders out: the ball fender hangs in the middle of the stern. | Яхта с левого борта с вывешенными кранцами: кранец-шар висит посередине кормы. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |

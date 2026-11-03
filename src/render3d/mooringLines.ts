@@ -7,6 +7,7 @@ import { distanceToRect, marinaBounds, marinaGeometry } from '../model/marina';
 import {
   cleatPoint,
   LINE_CODES,
+  lazyWalk,
   lineTension,
   type LineCode,
   type MooringLine,
@@ -149,6 +150,12 @@ export function buildMooringLines(areaData: AreaData = area): MooringLines {
   waiting.mesh.visible = false;
   object.add(waiting.mesh);
 
+  // The lazy line while the crew walks it: from the quay's edge, trailing in the water beside the
+  // hull, to the crew's hand on the deck (M75 bug report: it was not drawn there before).
+  const walking = createTube(ROPE_IDS.ll, h.segments + 1, 1);
+  walking.mesh.visible = false;
+  object.add(walking.mesh);
+
   const lineCurve = (line: MooringLine, state: AppState): Vec3[] => {
     const [x, y, z] = cleatPoint(line.cleatId);
     const [east, north] = pointToMap(state.boat, x, z);
@@ -206,6 +213,37 @@ export function buildMooringLines(areaData: AreaData = area): MooringLines {
           const tube = tubes.get(code);
           if (tube) tube.mesh.visible = false;
         }
+      }
+
+      const walk = near ? lazyWalk(state.lines, boatState, geometry) : null;
+      walking.mesh.visible = walk !== null;
+      if (walk) {
+        const m = areaData.marina;
+        const a = cleatPoint(walk.from);
+        const b = cleatPoint(walk.to);
+        const hand: Vec3 = [
+          a[0] + (b[0] - a[0]) * walk.progress,
+          a[1] + (b[1] - a[1]) * walk.progress,
+          a[2] + (b[2] - a[2]) * walk.progress,
+        ];
+        const [handEast, handNorth] = pointToMap(boatState, hand[0], hand[2]);
+        const start = world(geometry.ourSinker[0], m.quayFaceNorthM, m.quayHeightM);
+        const end = world(handEast, handNorth, hand[1]);
+        const path: Vec3[] = [];
+        for (let i = 0; i <= h.segments; i += 1) {
+          const s = i / h.segments;
+          // Down to the water within the first quarter, then trailing on it, up to the hand at the end.
+          const down = Math.min(1, s * 4);
+          const up = Math.max(0, (s - 0.85) / 0.15);
+          const height = start[1] * (1 - down) + (end[1] * up + 0.02 * (1 - up)) * down;
+          path.push([
+            start[0] + (end[0] - start[0]) * s,
+            height,
+            start[2] + (end[2] - start[2]) * s,
+          ]);
+        }
+        writeTube(walking, path, offset, view);
+        (walking.mesh.userData as PartUserData).pickSegments = pickSegments(path);
       }
 
       // The weight's line waits until the lazy line is on.

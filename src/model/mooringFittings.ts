@@ -75,22 +75,35 @@ export function fenderPlaces(data: BoatData = boat): FenderPlace[] {
   );
 }
 
-/** The ball fender (M33): its centre and where its line is made fast. */
+/**
+ * The ball fender (M33): its centre and where its line is made fast. Hung at the middle of the
+ * stern (`side: "stern"`, decided in the M75 PR after the owner's bug report: it protects the stern
+ * against the quay when she goes in stern-to) or, for another `side`, beside the hull at its corner.
+ */
 export function ballFenderPlace(data: BoatData = boat): {
   centre: Vec3;
   lineEnd: Vec3;
   side: Side;
+  atStern: boolean;
 } {
   const b = data.deckFittings.ballFender;
-  const side: Side = b.side === 'port' ? -1 : 1;
   const r = b.diameter / 2;
+  const y = sheerAt(b.x, data) - b.topBelowSheer - r;
+  if (b.side === 'stern') {
+    const x = data.hull.transomX;
+    const { height } = data.deckFittings.toerail;
+    return {
+      centre: [x - r - data.deckFittings.fenders.gap, y, 0],
+      lineEnd: [x, sheerAt(x, data) + height, 0],
+      side: 1,
+      atStern: true,
+    };
+  }
+  const side: Side = b.side === 'port' ? -1 : 1;
   return {
-    centre: [
-      b.x,
-      sheerAt(b.x, data) - b.topBelowSheer - r,
-      side * (halfBeamAt(b.x, data) + r + data.deckFittings.fenders.gap),
-    ],
+    centre: [b.x, y, side * (halfBeamAt(b.x, data) + r + data.deckFittings.fenders.gap)],
     lineEnd: toerailTop(b.x, side, data),
     side,
+    atStern: false,
   };
 }

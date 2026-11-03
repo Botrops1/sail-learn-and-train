@@ -870,9 +870,10 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] Hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=hard — every berth taken, 14 kn: fenders touching the neighbours are fine, a touch without a fender pauses.
 - [ ] Fenders in: on the first link, skip the fenders and back towards the berth — the card "Fenders still in".
 - [ ] Rope round the propeller: on the Normal link, when the crew is walking the lazy line to the bow, push the engine lever towards Ahead — the exercise stops with "A rope round the propeller".
-- [ ] Neighbours' bow lines, keel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=hard — Start, motor slowly east along the fairway until you are level with the magenta outline of your berth, lever to Neutral, then hold both thrusters to port so she drifts sideways towards the bows of the boats on the left; stop when her side is about a metre from their bows (do not let her touch) — the card "Over a neighbour's lazy line" (the thin lines from their bows run down into the water there).
-- [ ] Neighbours' bow lines, propeller: on the same link, Start again, go to the same place the same way, then push the lever just past Neutral towards Ahead — after about 3 seconds the exercise stops with "A rope round the propeller".
-- [ ] Only on Hard: on the Normal link, drift close to the left-hand boats' bows in the same way — nothing happens, the lines are only drawn.
+- [ ] Neighbours' bow lines, drawn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&exl=hard&cam=top — look closely at the bows of the boats beside your berth: a thin pale line runs from each bow into the water. (The keel and propeller cases are covered by the unit tests: a link cannot place the boat exactly.)
+- [ ] Lazy line while the crew walks it: on the Normal link, at the lazy-line step tap "Pick it up" and watch from above: the line now trails in the water from the quay beside the hull to the crew's hand, moving towards the bow (about 20 s).
+- [ ] Ball fender: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=enter-berth&cam=stern — after the fenders step the big ball hangs in the middle of the stern, over the back.
+- [ ] Only on Hard: on the Normal link the neighbours' lines are not drawn into the water as a danger: drifting next to the left-hand boats' bows does nothing.
 
 #### M76: Turning in her own length; picking up and leaving a mooring buoy
 

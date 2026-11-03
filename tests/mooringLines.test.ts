@@ -12,6 +12,7 @@ import {
   lineTension,
   NO_LINES,
   stepLines,
+  lazyWalk,
   type LinesInputs,
   type LinesState,
   type MooringLine,
@@ -414,5 +415,19 @@ describe('M75: a bow line under the propeller (PHASE10_SPEC 17.4, 17.6)', () => 
     const engine = initialEngine({ running: true, leverPct: 0 });
     const lines = stepLines({ ...inputsOf(state, NO_LINES), engine, overBowLine: true }, 0.05);
     expect(lines).toBe(NO_LINES);
+  });
+});
+
+describe('M75 bug report: the lazy line walk is drawn', () => {
+  it('lazyWalk names the stern and bow cleats on one side and how far the crew has got', () => {
+    const berth = marinaState(true);
+    const geometry = marinaGeometry(berth.harbour.layout, berth.harbour.traffic);
+    const crew = { kind: 'walkLazy' as const, code: 'll' as const, remainingS: 15 };
+    const walk = lazyWalk({ ...berth.lines, crew }, berth.boat, geometry);
+    expect(walk?.progress).toBeCloseTo(0.25, 3);
+    expect(walk?.from.startsWith('cleat_stern_')).toBe(true);
+    expect(walk?.to.startsWith('cleat_bow_')).toBe(true);
+    expect(walk?.from.split('_')[2]).toBe(walk?.to.split('_')[2]);
+    expect(lazyWalk({ ...berth.lines, crew: null }, berth.boat, geometry)).toBeNull();
   });
 });

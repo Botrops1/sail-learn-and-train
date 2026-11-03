@@ -1607,10 +1607,10 @@
     "fit_fender_ball": {
       "name": "Ball fender",
       "alternatives": [],
-      "short": "A big round fender for a corner of the boat.",
-      "what": "A ball fender protects a corner, where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier).",
-      "onThisBoat": "One, at the port corner of the stern behind the helm. It goes out and comes in with the other fenders.",
-      "showMe": "The boat from the port side with the fenders out: the ball fender hangs at the back corner.",
+      "short": "A big round fender for the back of the boat.",
+      "what": "A ball fender protects a place where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier).",
+      "onThisBoat": "One, in the middle of the stern, hanging over the back. It goes out and comes in with the other fenders.",
+      "showMe": "The boat from the port side with the fenders out: the ball fender hangs in the middle of the stern.",
       "textStatus": "draft"
     },
     "env_wake": {
