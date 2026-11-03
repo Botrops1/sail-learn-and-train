@@ -270,6 +270,12 @@ const VIEWER_KEYS = [
   'mode',
 ] as const;
 
+/** `exl` (PHASE10_SPEC 16.4): only a level the exercise has; anything else stays Easy. */
+function levelOf(value: string | null, def: ExerciseDef): ExerciseOptions['level'] {
+  if ((value === 'normal' || value === 'hard') && def.levels?.[value] !== undefined) return value;
+  return 'easy';
+}
+
 /**
  * `ex=<id>` (PHASE10_SPEC 4.3): the exercise's start keys, overridden by the viewer's own keys; the
  * ropes mode is the exercise's unless the link says one. Opens in `setup`, paused.
@@ -284,12 +290,13 @@ function parseExercise(
     pauseOnMistake: params.get('exp') !== '0',
     pauseOnStep: params.get('exs') === '1',
     crew: params.get('exc') === '1' && def.crew ? 'crew' : 'alone',
+    level: levelOf(params.get('exl'), def),
   };
   // A waypoint link (M67): the link's own keys are the whole state; `def.start` is not used.
   const exw = params.get('exw');
   if (exw !== null && /^\d{1,3}$/.test(exw) && Number(exw) < def.steps.length) {
     const rest = new URLSearchParams(params);
-    for (const key of ['ex', 'exw', 'exp', 'exs', 'exc']) rest.delete(key);
+    for (const key of ['ex', 'exw', 'exp', 'exs', 'exc', 'exl']) rest.delete(key);
     const wpState = parseUrlState(`?${rest.toString()}`, fallbackDetail);
     return {
       ...wpState,
@@ -299,6 +306,10 @@ function parseExercise(
     };
   }
   const merged = new URLSearchParams(def.start);
+  const levelKeys = options.level === 'easy' ? undefined : def.levels?.[options.level];
+  if (levelKeys !== undefined) {
+    for (const [key, value] of new URLSearchParams(levelKeys)) merged.set(key, value);
+  }
   for (const key of VIEWER_KEYS) {
     const value = params.get(key);
     if (value !== null) merged.set(key, value);
@@ -317,7 +328,13 @@ function parseExercise(
  * The short link of an exercise's start (PHASE10_SPEC 4.3): built key by key, with the viewer's own
  * keys from `state` and the given ropes mode.
  */
-export function exerciseStartLink(id: string, state: AppState, ropes: RopesMode): string {
+export function exerciseStartLink(
+  id: string,
+  state: AppState,
+  ropes: RopesMode,
+  over?: Partial<ExerciseOptions>,
+): string {
+  const options: ExerciseOptions = { ...DEFAULT_OPTIONS, ...state.exercise?.options, ...over };
   const params = new URLSearchParams();
   params.set('v', String(URL_STATE_VERSION));
   if (boatId !== HANSE_508.meta.id) params.set('boat', boatId);
@@ -340,9 +357,10 @@ export function exerciseStartLink(id: string, state: AppState, ropes: RopesMode)
   }
   if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) params.set('mm', '0');
   if (state.settings.debug) params.set('debug', '1');
-  if (state.exercise?.options.pauseOnMistake === false) params.set('exp', '0');
-  if (state.exercise?.options.pauseOnStep) params.set('exs', '1');
-  if (state.exercise?.options.crew === 'crew') params.set('exc', '1');
+  if (options.pauseOnMistake === false) params.set('exp', '0');
+  if (options.pauseOnStep) params.set('exs', '1');
+  if (options.crew === 'crew') params.set('exc', '1');
+  if (options.level !== 'easy') params.set('exl', options.level);
   return `?${params.toString()}`;
 }
 
@@ -368,6 +386,7 @@ export function waypointLink(state: AppState, wp: ExerciseWaypoint): string {
   if (run?.options.pauseOnMistake === false) params.set('exp', '0');
   if (run?.options.pauseOnStep) params.set('exs', '1');
   if (run?.options.crew === 'crew') params.set('exc', '1');
+  if (run && run.options.level !== 'easy') params.set('exl', run.options.level);
   return `?${params.toString().replace(/%2C/g, ',').replace(/%3A/g, ':')}`;
 }
 

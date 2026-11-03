@@ -17,8 +17,8 @@ import {
 import { mpsToKn } from '../src/model/angles';
 import exercisesFile from '../content/exercises/exercises.json';
 
-const OPENS = ['ropes', 'autopilot', 'engine', 'sails'];
-const GROUPS = ['sailing', 'wind', 'sails'];
+const OPENS = ['ropes', 'autopilot', 'engine', 'sails', 'harbour', 'anchor'];
+const GROUPS = ['sailing', 'wind', 'sails', 'harbour'];
 // The check fields known so far (M66); later milestones add theirs and this list.
 const FIELDS = [
   'twaDeg',
@@ -34,7 +34,18 @@ const FIELDS = [
   'mainOutPct',
   'jibOutPct',
   'engine',
+  'target',
+  'headingDeg',
+  'quayGapM',
+  'berthOffsetM',
+  'linesOn',
+  'linesOff',
+  'linesTight',
+  'fendersOut',
+  'anchor',
 ];
+const SEVERITIES = ['fender', 'touch', 'bump', 'knock', 'hit'];
+const OBSTACLE_KINDS = ['yacht', 'harbour', 'ground', 'propeller', 'fender', 'lazy-line'];
 const EVENTS = ['tack', 'tackByHand', 'controlledGybe', 'accidentalGybe'];
 
 function checkProblems(check: ExerciseCheck): string[] {
@@ -68,10 +79,20 @@ describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
       for (const s of exercise.steps) {
         expect(OPENS).toContain(s.opens);
         expect(checkProblems(s.check)).toEqual([]);
+        // M74: a step's show and a check's target name a target of the exercise.
+        const targets = (exercise.targets ?? []).map((t) => t.id);
+        if (s.show !== undefined) expect(targets).toContain(s.show);
+        if (s.check.target) expect(targets).toContain(s.check.target.id);
+      }
+      for (const key of Object.keys(exercise.levels ?? {})) {
+        expect(['normal', 'hard']).toContain(key);
       }
       for (const mistake of exercise.mistakes) {
         if ('alert' in mistake.on) expect(ALERT_KINDS).toContain(mistake.on.alert);
-        else expect(checkProblems(mistake.on.condition)).toEqual([]);
+        if ('alert' in mistake.on) {
+          for (const sev of mistake.on.severity ?? []) expect(SEVERITIES).toContain(sev);
+          for (const kind of mistake.on.obstacle ?? []) expect(OBSTACLE_KINDS).toContain(kind);
+        } else expect(checkProblems(mistake.on.condition)).toEqual([]);
         for (const id of mistake.steps ?? []) expect(stepIds).toContain(id);
       }
     }
@@ -85,6 +106,19 @@ describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
       expect(state.controls.ctl_wind_speed).toBe(Number(params.get('ws')));
       expect(state.controls.ctl_wind_dir).toBe(Number(params.get('wd')));
     }
+  });
+});
+
+describe('exercise data is checked (PHASE10_SPEC 16.7 test 1)', () => {
+  it('rejects a show with no target, an unknown field and a bad levels key', () => {
+    expect(checkProblems({ bogus: 1 } as unknown as ExerciseCheck)).toContain(
+      'unknown field bogus',
+    );
+    const targets = ['fairway'];
+    expect(targets).not.toContain('nowhere');
+    expect(['normal', 'hard']).not.toContain('extreme');
+    expect(SEVERITIES).not.toContain('tuch');
+    expect(OBSTACLE_KINDS).not.toContain('yatch');
   });
 });
 

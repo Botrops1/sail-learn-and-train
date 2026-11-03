@@ -157,6 +157,16 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
           paused: s.paused,
           boomDeg: s.rig.theta.value,
           gybing: s.rig.gybing,
+          eastM: s.boat.eastM,
+          northM: s.boat.northM,
+          headingDeg: s.boat.headingDeg,
+          speedMps: s.boat.speedMps,
+          leverPct: s.engine.leverPct,
+          thrusters: s.thrusters,
+          lines: s.lines.lines.map((l) => l.code),
+          crew: s.lines.crew?.code ?? null,
+          anchorPhase: s.anchor.phase,
+          chainOutM: s.anchor.chainOutM,
         };
       },
     };

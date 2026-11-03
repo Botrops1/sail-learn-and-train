@@ -2,10 +2,14 @@ import {
   checkPasses,
   EXERCISE_SETTINGS,
   exerciseDef,
+  obstacleKind,
+  resolveTarget,
   type ExerciseDef,
   type ExerciseEvent,
+  type ExerciseLevel,
   type ExerciseLogEntry,
   type LoggedAction,
+  type ResolvedTarget,
 } from '../model/exercises';
 import type { ControlId } from '../model/controls';
 import type { RealisticAction } from '../model/realistic';
@@ -22,11 +26,14 @@ export interface ExerciseOptions {
   /** Owner, PR 148: stop time when a step is done, until the learner presses Resume. */
   pauseOnStep: boolean;
   crew: 'alone' | 'crew';
+  /** PHASE10_SPEC 16.3: chosen by loading the start link again; the run keeps its level. */
+  level: ExerciseLevel;
 }
 export const DEFAULT_OPTIONS: Readonly<ExerciseOptions> = {
   pauseOnMistake: true,
   pauseOnStep: false,
   crew: 'alone',
+  level: 'easy',
 };
 export interface ExerciseWaypoint {
   step: number;
@@ -103,7 +110,9 @@ export function setRunOptions(state: AppState, options: Partial<ExerciseOptions>
   const run = state.exercise;
   if (run === null || run.status !== 'setup') return state;
   // The crew choice means something only for an exercise that has one (PHASE10_SPEC 11.3).
+  // The level changes the marina, so it comes only with the start link (16.3).
   const { crew, ...rest } = options;
+  delete rest.level;
   const kept: Partial<ExerciseOptions> =
     crew !== undefined && exerciseDef(run.id)?.crew === true ? { ...rest, crew } : rest;
   return { ...state, exercise: { ...run, options: { ...run.options, ...kept } } };
@@ -272,6 +281,14 @@ export function stepExercise(
       for (const m of def.mistakes) {
         if (!('alert' in m.on) || !applies(m) || m.on.alert !== entry.kind) continue;
         if (m.on.accidental !== undefined && entry.report?.accidental !== m.on.accidental) continue;
+        if (m.on.severity !== undefined) {
+          const sev = entry.contact?.severity;
+          if (sev === undefined || !m.on.severity.includes(sev)) continue;
+        }
+        if (m.on.obstacle !== undefined) {
+          const id = entry.contact?.obstacleId;
+          if (id === undefined || !m.on.obstacle.includes(obstacleKind(id))) continue;
+        }
         if (mayFire(m.id)) fire(m);
       }
     }
@@ -283,7 +300,7 @@ export function stepExercise(
     next.wind.twsKn,
     next.controls.ctl_wind_speed,
   );
-  const context = { events, gusts: counted.gusts };
+  const context = { events, gusts: counted.gusts, targets: def.targets ?? [] };
   for (const m of def.mistakes) {
     if (!('condition' in m.on)) continue;
     if (applies(m) && checkPasses(m.on.condition, next, context)) {
@@ -406,6 +423,22 @@ function loggedActions(previous: AppState, next: AppState, action: Action): Logg
       }
       return [{ type: 'engine', command }];
     }
+    case 'line': {
+      if (next.lines === previous.lines) return [];
+      return [{ type: 'line', code: action.code, command: action.command }];
+    }
+    case 'thruster': {
+      if (next.thrusters === previous.thrusters || action.dir === 0) return [];
+      return [{ type: 'thruster', which: action.which, dir: action.dir }];
+    }
+    case 'windlass': {
+      if (next.anchor.windlass === previous.anchor.windlass || action.motion === 'off') return [];
+      return [{ type: 'windlass', motion: action.motion }];
+    }
+    case 'setFenders': {
+      if (next.harbour.fendersOut === previous.harbour.fendersOut) return [];
+      return [{ type: 'fenders', out: action.out }];
+    }
     case 'realistic': {
       if (action.action.type === 'clearNotice') return [];
       const before = previous.realistic as unknown as Record<string, unknown>;
@@ -442,6 +475,10 @@ function merge(last: ExerciseLogEntry | undefined, act: LoggedAction, atS: numbe
     }
   } else if (act.type === 'engine' && act.command === 'lever') {
     if (old.type === 'engine' && old.command === 'lever') merged = act;
+  } else if (act.type === 'line') {
+    if (old.type === 'line' && old.code === act.code && old.command === act.command) {
+      merged = { ...old, times: (old.times ?? 1) + 1 };
+    }
   } else if (act.type === 'realistic') {
     if (
       old.type === 'realistic' &&
@@ -486,4 +523,15 @@ export function logAction(previous: AppState, next: AppState, action: Action): A
     log = [...log.slice(0, index), ...log.slice(index + 1)];
   }
   return { ...next, exercise: { ...run, log } };
+}
+
+/** The outline drawn for the current step (PHASE10_SPEC 16.3), or null. */
+export function shownTarget(state: AppState): ResolvedTarget | null {
+  const run = state.exercise;
+  if (run === null || run.status === 'done') return null;
+  const def = exerciseDef(run.id);
+  const show = def?.steps[run.step]?.show;
+  if (def === undefined || show === undefined) return null;
+  const target = def.targets?.find((t) => t.id === show);
+  return target === undefined ? null : resolveTarget(target, state.harbour);
 }

@@ -58,6 +58,25 @@ export function actionText(action: LoggedAction): string {
     case 'engine':
       if (action.command === 'lever') return t('debrief.engine.lever', { pct: action.leverPct });
       return t(action.command === 'start' ? 'debrief.engine.start' : 'debrief.engine.stop');
+    case 'line': {
+      const command =
+        action.command === 'take'
+          ? t(`lines.take.${action.code}` as 'lines.take.sp')
+          : t(`lines.${action.command}` as 'lines.ease');
+      const text = t('debrief.line', {
+        line: t(`lines.name.${action.code}` as 'lines.name.sp'),
+        command,
+      });
+      return (action.times ?? 1) > 1 ? t('debrief.times', { text, n: action.times ?? 1 }) : text;
+    }
+    case 'thruster':
+      return t(`debrief.thruster.${action.which}` as 'debrief.thruster.bow', {
+        side: t(action.dir > 0 ? 'debrief.side.starboard' : 'debrief.side.port'),
+      });
+    case 'windlass':
+      return t(`debrief.windlass.${action.motion}` as 'debrief.windlass.down');
+    case 'fenders':
+      return t(action.out ? 'debrief.fenders.out' : 'debrief.fenders.in');
     case 'realistic': {
       const target = action.target;
       const label = (target !== null ? tailSpec(target)?.label : undefined) ?? target ?? '';

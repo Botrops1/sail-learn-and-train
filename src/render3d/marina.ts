@@ -67,6 +67,7 @@ export function buildMarina(areaData: AreaData = area): Marina {
   const quayId = requirePartId('env_quay');
   const ringId = requirePartId('env_quay_ring');
   const yachtId = requirePartId('env_moored_yacht');
+  const lazyLineId = requirePartId('rope_lazy_line');
   const quayMaterial = new THREE.MeshStandardMaterial({ color: h.quayColour, roughness: 0.9 });
   const pontoonMaterial = new THREE.MeshStandardMaterial({
     color: h.pontoonColour,
@@ -203,6 +204,7 @@ export function buildMarina(areaData: AreaData = area): Marina {
     add(stripe, quayId, layoutGroup);
 
     buildYachts(geometry.yachts);
+    buildBowLines(geometry.yachts);
     meshes = [];
     layoutGroup.traverse((node) => {
       if (node !== layoutGroup) meshes.push(node);
@@ -336,6 +338,52 @@ export function buildMarina(areaData: AreaData = area): Marina {
       mesh.computeBoundingSphere();
       add(mesh, yachtId, layoutGroup);
     }
+  };
+
+  /** M74: every moored yacht's bow line, one instanced mesh: a thin rod from her bow ahead and down at 45° (owner, PR 157). */
+  const bowLineMaterial = new THREE.MeshStandardMaterial({
+    color: h.bowLine.colour,
+    roughness: 0.9,
+  });
+  const buildBowLines = (yachts: MooredYacht[]) => {
+    if (yachts.length === 0) return;
+    const { runM, radiusM } = h.bowLine;
+    const deckY = h.hullAboveM;
+    const rod = cylinderBetween(
+      new THREE.Vector3(0, deckY, 0),
+      new THREE.Vector3(runM, deckY - runM, 0),
+      radiusM,
+      4,
+    );
+    const mesh = new THREE.InstancedMesh(rod, bowLineMaterial, yachts.length);
+    const matrix = new THREE.Matrix4();
+    yachts.forEach((yacht, i) => {
+      const heading = (yacht.berth.headingDeg * Math.PI) / 180;
+      const c = Math.cos(heading);
+      const s = Math.sin(heading);
+      matrix.set(
+        c,
+        0,
+        -s,
+        yacht.berth.sternNorthM + yacht.lengthM * c,
+        0,
+        1,
+        0,
+        0,
+        s,
+        0,
+        c,
+        yacht.berth.centreEastM + yacht.lengthM * s,
+        0,
+        0,
+        0,
+        1,
+      );
+      mesh.setMatrixAt(i, matrix);
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.computeBoundingSphere();
+    add(mesh, lazyLineId, layoutGroup);
   };
 
   return {

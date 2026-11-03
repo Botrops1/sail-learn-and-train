@@ -269,6 +269,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
             // M71 added the two sails exercises.
             'exercise-item-set-sails',
             'exercise-item-furl-sails',
+            // M74 added Leaving the berth.
+            'exercise-item-leave-berth',
           ]),
         JSON.stringify(ids),
       );

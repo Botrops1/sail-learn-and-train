@@ -154,6 +154,27 @@
         { "id": "rope-slipping", "serious": false, "on": { "alert": "ropeSlipping" } },
         { "id": "clutch-on-running", "serious": false, "on": { "alert": "clutchOnRunning" } }
       ]
+    },
+    {
+      "id": "leave-berth",
+      "group": "harbour",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
+      "start": "?pl=marina&ml=spacious&tr=empty&pe=3.3&pn=1490.4&hdg=180&ln=sp:2.6,ss:2.6,ll:12.33&wd=-90&ws=4&eng=1&lv=0&ap=off&sea=flat&fd=1&bs=0",
+      "levels": { "normal": "?ml=medium&tr=half&pe=2.8&ws=8", "hard": "?ml=medium&tr=busy&pe=2.8&ws=14" },
+      "targets": [{ "id": "fairway", "shape": "fairway" }],
+      "steps": [
+        { "id": "lazy-off", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["ll"] } },
+        { "id": "stern-off", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["sp", "ss"] } },
+        { "id": "motor-out", "opens": "engine", "holdS": 1, "show": "fairway", "check": { "target": { "id": "fairway", "point": "stern" } } },
+        { "id": "turn-out", "opens": "engine", "holdS": 3, "show": "fairway", "check": { "target": { "id": "fairway", "point": "centre" }, "headingDeg": { "to": 270, "within": 15 }, "speedKn": [0.3, 4] } }
+      ],
+      "mistakes": [
+        { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "hard-hit", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } }
+      ]
     }
   ]
 }

@@ -861,7 +861,7 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] A knock: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — Start, let go all the lines, then drag the engine lever halfway towards Astern: she backs into the quay. A card says "A light touch" (time stops, Carry on or Back) or "A hard knock" (the exercise stops).
 - [ ] Debrief: after a finished run, the debrief lists "Lazy line (to the bow): Let go" and the thruster pushes.
 - [ ] Old exercise links: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — as before, no Level row.
-- [ ] Bow lines (owner request, PHASE10_SPEC 16.9a; wording to be settled by `/plan 10 refresh`): moored yachts show a line from the bow down into the water; on Hard the bow or the engine can catch one (a mistake card), on Easy they are only drawn.
+- [ ] Bow lines (owner request, PHASE10_SPEC 16.9a; the Hard obstacle is settled by `/plan 10 refresh` before M75): moored yachts show a line from the bow down into the water; they are only drawn; the Hard obstacle comes later.
 
 #### M75: Entering the berth stern-to
 

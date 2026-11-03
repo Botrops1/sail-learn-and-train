@@ -64,6 +64,8 @@ const SAME_AS_ENGLISH: Record<string, string> = {
   'exercise.target.control': 'only placeholders, a dash and a percent sign',
   'exercise.target.trim': 'only placeholders and a colon',
   'debrief.control': 'only placeholders, an arrow and a percent sign',
+  'debrief.line': 'only placeholders and a colon',
+  'debrief.times': 'only placeholders and a multiplication sign',
 };
 
 /** Every text of a language's exercises.json (M66 review: the same scans as the UI strings). */

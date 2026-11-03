@@ -50,12 +50,23 @@ export function targetText(row: TargetRow): string {
         min: row.range[0],
         max: row.range[1],
       });
+    case 'heading':
+      return t('exercise.target.heading', { to: pad3(row.to), within: row.within });
+    case 'quayGap':
+      return t('exercise.target.quayGap', { min: row.range[0], max: row.range[1] });
   }
+}
+
+/** 270 → "270", 90 → "090". */
+function pad3(n: number): string {
+  return String(Math.round(((n % 360) + 360) % 360)).padStart(3, '0');
 }
 
 /** What the boat shows now for a row ("now 61°"). */
 function nowText(row: TargetRow, value: number | string): string {
   if (row.kind === 'twa') return t('exercise.target.nowDeg', { value });
+  if (row.kind === 'heading') return t('exercise.target.nowDeg', { value: pad3(Number(value)) });
+  if (row.kind === 'quayGap') return t('exercise.target.nowM', { value });
   if (row.kind === 'control') return t('exercise.target.nowPct', { value });
   const word =
     row.kind === 'trim'

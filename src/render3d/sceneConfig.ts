@@ -211,6 +211,8 @@ export const SCENE = {
     /** Beyond this distance from the boat a buoy is not drawn or tappable, metres. */
     maxDrawM: 1000,
   },
+  /** M74: the magenta outline an exercise step shows (PHASE10_SPEC 16.5). */
+  exerciseTarget: { colour: '#d63cff', opacity: 0.85, lineM: 0.3, aboveM: 0.12 },
   /** The marina (M42, PHASE7_SPEC 8.6): quay, pontoon, rings, our berth's stripe and the moored yachts. */
   harbour: {
     quayColour: '#b9b4a8',
@@ -266,6 +268,8 @@ export const SCENE = {
       rigColour: '#9aa3ab',
       sailColour: '#ecebe4',
     },
+    /** M74 (owner, PR 157): each moored yacht's bow line runs from her bow `runM` ahead and `runM` down (45°), one instanced mesh. */
+    bowLine: { runM: 8, radiusM: 0.025, colour: '#d8d2c0' },
     /** The arrow over our berth (owner, PR #101): it points down, floats over the quay (never over the water), metres. */
     arrowTipAboveM: 3,
     arrowHeadM: 2.5,
