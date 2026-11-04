@@ -1,0 +1,35 @@
+name: Wrong or unclear sailing fact
+description: A name, an explanation or the boat's behaviour does not match how sailing really works.
+labels: [bug]
+title: 'Sailing fact: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for checking the sailing! Every sailing claim in the app needs a source, so please name one.
+  - type: input
+    id: where
+    attributes:
+      label: Where in the app?
+      description: The Learn entry, the part, or a link from Settings → Share.
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong or unclear?
+    validations:
+      required: true
+  - type: textarea
+    id: right
+    attributes:
+      label: What is right?
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: A book (title and page), a sailing course or school, a manual, a rule (e.g. COLREGs), or a web page. Your own experience is welcome too; please say so.
+    validations:
+      required: true

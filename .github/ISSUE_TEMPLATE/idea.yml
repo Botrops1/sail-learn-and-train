@@ -1,0 +1,16 @@
+name: Idea or wish
+description: Something the app could show, explain or let you practise.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: How would it help someone learning to sail?
+    validations:
+      required: false

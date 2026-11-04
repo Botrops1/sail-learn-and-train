@@ -1,7 +1,7 @@
 // M5 (polish and Phase 1 sign-off): scenes and live checks for scripts/shots.mjs.
 // Labels in 3D, the halyards in 3D, Realistic mode's ropes wrapped on the winches, the error
 // boundary (no WebGL, a 3D view that fails, a lost graphics context, an uncaught error), the
-// accessibility audit, the disclaimer in Settings → About and the frame times in the debug overlay.
+// accessibility audit, the disclaimer, privacy and maker notes and the report link in Settings → About and the frame times in the debug overlay.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
 import { closeSettings, openSettings, setSheet, showSection } from './ui.mjs';
@@ -334,6 +334,36 @@ export async function liveM5Checks({
       'footer disclaimer',
       text.includes('Learning aid, not a substitute for sailing instruction.'),
       text.replace(/\n/g, ' | '),
+    );
+    check(
+      'about: privacy and maker notes',
+      text.includes('the app collects nothing') &&
+        text.includes('not affiliated with Hanse Yachts'),
+      text.replace(/\n/g, ' | '),
+    );
+    const report = await page.getByTestId('report-link').getAttribute('href');
+    check(
+      'about: report link opens the issue forms',
+      report === 'https://github.com/Botrops1/sail-learn-and-train/issues/new/choose',
+      String(report),
+    );
+    // The icon and the link-preview picture are served, and the preview tags hold full addresses.
+    const head = await page.evaluate(async () => {
+      const href = (selector, attribute) =>
+        document.querySelector(selector)?.getAttribute(attribute);
+      const icon = document.querySelector('link[rel="icon"]')?.href;
+      const touch = document.querySelector('link[rel="apple-touch-icon"]')?.href;
+      const image = href('meta[property="og:image"]', 'content') ?? '';
+      const local = new URL(new URL(image).pathname, location.origin).href;
+      const ok = async (url) => (url ? (await fetch(url)).ok : false);
+      return { image, served: [await ok(icon), await ok(touch), await ok(local)] };
+    });
+    check(
+      'icons and link-preview picture',
+      /^https:\/\/botrops1\.github\.io\/sail-learn-and-train\/(pr-preview\/pr-\d+\/)?og-image\.jpg$/.test(
+        head.image,
+      ) && head.served.every(Boolean),
+      `${head.image} · served ${head.served.join(', ')}`,
     );
     await context.close();
   }

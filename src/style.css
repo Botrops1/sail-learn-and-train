@@ -1227,6 +1227,12 @@ button.segment {
   font-weight: 600;
 }
 
+.footer .about-note,
+.footer .report-link {
+  flex-basis: 100%;
+  margin: 0;
+}
+
 .footer a {
   display: inline-flex;
   align-items: center;

@@ -1,0 +1,33 @@
+name: Translation or language review
+description: Correct the app's text in a language, review the Russian draft, or offer a new language.
+labels: [documentation]
+title: 'Translation: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The Russian text is an AI draft until a sailor who speaks Russian checks it. The review document is docs/review/ru.md: you can answer by an entry's code, e.g. `term_north: ок`. To add a language, see docs/LANGUAGES.md.
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      placeholder: e.g. Russian
+    validations:
+      required: true
+  - type: textarea
+    id: text
+    attributes:
+      label: Corrections or answers
+      description: The entry code or where in the app, what it says now, and what it should say.
+    validations:
+      required: true
+  - type: dropdown
+    id: sailor
+    attributes:
+      label: Do you sail, and speak this language well?
+      options:
+        - Yes, both
+        - I speak it well, but I do not sail
+        - I sail, but I am still learning the language
+    validations:
+      required: false

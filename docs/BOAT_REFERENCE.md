@@ -103,7 +103,7 @@ Reference sketches generated from the data file (they show exactly what the 3D m
 
 ## 4. Ropes, clutches and controls
 
-Photos: [`reference/photos/`](reference/photos). Russian names are AI drafts until a sailor checks them.
+Photos: [`reference/photos/`](reference/photos) (the owner's own, CC BY-SA 4.0). Russian names are AI drafts until a sailor checks them.
 
 ### Clutch bank A: **starboard** side (confirmed by the owner). Photo: `clutch-bank-a.jpg`
 
