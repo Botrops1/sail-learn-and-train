@@ -227,7 +227,7 @@ export function buildMooringLines(areaData: AreaData = area): MooringLines {
           a[2] + (b[2] - a[2]) * walk.progress,
         ];
         const [handEast, handNorth] = pointToMap(boatState, hand[0], hand[2]);
-        const start = world(geometry.ourSinker[0], m.quayFaceNorthM, m.quayHeightM);
+        const start = world(walk.ring[0], walk.ring[1], m.quayHeightM);
         const end = world(handEast, handNorth, hand[1]);
         const path: Vec3[] = [];
         for (let i = 0; i <= h.segments; i += 1) {

@@ -428,6 +428,9 @@ describe('M75 bug report: the lazy line walk is drawn', () => {
     expect(walk?.from.startsWith('cleat_stern_')).toBe(true);
     expect(walk?.to.startsWith('cleat_bow_')).toBe(true);
     expect(walk?.from.split('_')[2]).toBe(walk?.to.split('_')[2]);
+    // It leaves the quay at the ring of that side's stern line (owner, PR 160), on the quay face.
+    expect(walk?.ring[1]).toBeCloseTo(geometry.ourRings.west[1], 6);
+    expect([geometry.ourRings.west[0], geometry.ourRings.east[0]]).toContain(walk?.ring[0]);
     expect(lazyWalk({ ...berth.lines, crew: null }, berth.boat, geometry)).toBeNull();
   });
 });
