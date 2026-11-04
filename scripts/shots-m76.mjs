@@ -1,5 +1,6 @@
 // M76 (turning in her own length; picking up a mooring buoy, PHASE10_SPEC 18.7): scenes and live
 // checks for scripts/shots.mjs, on the test clock. Labels contain "m76". The runs are phone only.
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { showSection } from './ui.mjs';
 
@@ -16,7 +17,10 @@ export const M76_SCENES = [
 ];
 
 // The boat's origin to the stem end: transomX + loa (content/boat/hanse508.json).
-const BOW_X = 6.95;
+const boatData = JSON.parse(
+  readFileSync(new URL('../content/boat/hanse508.json', import.meta.url), 'utf8'),
+);
+const BOW_X = boatData.hull.transomX + boatData.dimensions.loa;
 const BUOY = [-1450, 0];
 const TICK_S = 0.2;
 

@@ -2469,6 +2469,7 @@ Done: both exercises can be finished on a phone; PT-62's test passes; checks pas
 - Nothing in `src/` changed: both exercises use checks, targets, mistakes and the bow line that M74 and M75 built. The pilots, the data and the limits are exactly 18.2, 18.5 and 18.6; the good runs in `tests/harbourExercises.test.ts` took, per step: turn 21.6 s and 34.1 s (centre never more than 10 m from the start); buoy 115.1, 1.0, 10.0, 1.0 and 38.8 s.
 - PT-62 stays `to-verify` in `docs/PHYSICS_TRUTHS.md`: M76 only adds the test, no source could be opened (the planning PR's note stands). A sailor should confirm the texts' claims.
 - The Russian drafts call the buoy «бочка», as the app's `ui.json` already does («Взять бочку», «Носовой конец на бочку»); the exercise is «Швартовка к бочке». The text says "Try again" as «Ещё раз» like the other exercises.
+- (Review of the M76 PR, accepted.) The "Out of the circle" card's fix text names the button the screen shows: "Tap \"Back to the start…\" to try the step again." (Russian to match); the Russian drafts say «заброс кормы» for prop walk, the app's glossary term, also in M75's `enter-berth` text. Left as they are: the white buoys on the 3D scene against orange on the mini-map (older than M76), and the 4 s / 5 s wait in the kick step's "How?" against the pilot.
 - The live checks drive the pilots with `ctl_rudder` set through `setControls` (the debug hook has no rudder reading); they run on the test clock with one decision per 0.2 app seconds, like M75's.
 
 ---
