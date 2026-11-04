@@ -279,5 +279,66 @@
         "fix": "Watch the depth and come in slowly. Tap Try again."
       }
     }
+  },
+  "anchor-shore": {
+    "title": "Anchoring with a line ashore",
+    "summary": "Drop the anchor on the spot, let out enough chain, dig it in, then back towards the rocks and take a line ashore.",
+    "see": "You are in the bay, bow pointing out to sea, the rocky shore behind you. The magenta ring is where the anchor should go: sand, 10 m deep.",
+    "happening": "An anchor holds only with enough chain: at least four times the depth plus the height of the bow roller, and here three boat lengths (about 47 m) is the larger rule (PT-31). On the bottom it must be dug in by going gently astern (PT-57). A line from the stern to a ring on the rocks then stops her swinging, so she can lie close to the shore.",
+    "action": "Back slowly until the bow is over the spot; let the anchor go; keep going slowly astern while the chain runs out until it is long enough; stop the chain and go astern a little harder to dig it in; let out a little more, back towards the shore and send the crew ashore with the line; tighten it.",
+    "mistake": "Too little chain: the anchor drags and she drifts onto the rocks. Or backing too far: the rudder and the keel touch the bottom near the shore.",
+    "done": "She lies anchored with a line ashore. Enough chain, dig it in, then the shore line.",
+    "steps": {
+      "to-spot": {
+        "goal": "Back slowly until the bow is over the spot (inside the ring), nearly stopped.",
+        "how": "Engine slow astern: the lever just past Neutral towards Astern (\"In gear: astern\"). Keep her straight with the bow thruster. Over the spot, Neutral, and a touch ahead to stop."
+      },
+      "let-go-anchor": {
+        "goal": "Let the anchor go to the bottom.",
+        "how": "Open Anchor and hold \"Chain out ▼\". Watch the chain counter: the anchor reaches the bottom at about 12 m."
+      },
+      "scope": {
+        "goal": "Let out enough chain (the Anchor section shows how much is needed: about 47 m).",
+        "how": "Keep \"Chain out\" going (or hold it again) while the engine goes slow astern, so the chain lies along the bottom, not in a heap."
+      },
+      "dig-in": {
+        "goal": "Dig the anchor in.",
+        "how": "Stop the chain. Engine astern a little harder (the lever about 40 % of the way towards Astern) for about half a minute: the chain comes tight and the anchor digs in. The Anchor section then says it is set."
+      },
+      "shore-line": {
+        "goal": "Back towards the shore and take a line to a ring.",
+        "how": "Let out chain again and go slowly astern until the stern is within about 35 m of the shore, then Neutral. Harbour gear → Lines: \"Take a line ashore\". The crew swims it to a ring (about 30 s)."
+      },
+      "settled": {
+        "goal": "Tighten the shore line and lie still with the engine in neutral.",
+        "how": "Tap Tighten on the shore line until it is hand tight. The anchor holds the bow, the line the stern."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Touched the bottom",
+        "what": "The keel touched the bottom.",
+        "why": "The water there is shallower than her keel (2.4 m); watch the depth on the strip.",
+        "fix": "Go gently astern into deeper water and keep where the depth shows more than 3 m."
+      },
+      "aground-hard": {
+        "name": "Ran aground",
+        "what": "She ran onto the bottom or the rocks hard. The exercise stops here.",
+        "why": "Fast onto the bottom the keel sticks and the hull can be damaged (PT-53).",
+        "fix": "Watch the depth and come in slowly. Tap Try again."
+      },
+      "propeller": {
+        "name": "A rope round the propeller",
+        "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.",
+        "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.",
+        "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."
+      },
+      "dragging": {
+        "name": "The anchor is dragging",
+        "what": "The anchor alarm went off: the anchor is sliding along the bottom.",
+        "why": "With too little chain, or not dug in, the pull lifts the anchor out (PT-54).",
+        "fix": "Let out more chain, then dig it in again going gently astern."
+      }
+    }
   }
 }

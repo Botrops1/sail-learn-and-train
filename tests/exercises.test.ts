@@ -213,6 +213,9 @@ describe('checkPasses (test 4)', () => {
     const off = motionOf(source(315));
     expect(checkPasses({ engine: { running: false } }, off, none)).toBe(true);
     expect(checkPasses({ engine: { running: true } }, off, none)).toBe(false);
+    // A stopped engine counts as neutral (owner, PR 163).
+    expect(checkPasses({ engine: { gear: 'neutral' } }, off, none)).toBe(true);
+    expect(checkPasses({ engine: { gear: 'ahead' } }, off, none)).toBe(false);
   });
 });
 

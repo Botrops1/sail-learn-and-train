@@ -195,3 +195,54 @@ export function buoyPilot(): Pilot {
     }
   };
 }
+
+/** Where the anchor goes in Anchoring with a line ashore (PHASE10_SPEC 19.2). */
+const DROP: [number, number] = [-1600, 0];
+
+/**
+ * Anchoring with a line ashore (PHASE10_SPEC 19.4): back slowly to the spot, let the anchor go,
+ * keep going astern while the chain runs out, dig it in, let out more and back towards the shore,
+ * take a line ashore, then tighten it.
+ */
+export function anchorPilot(): Pilot {
+  let more = false;
+  let lastT = 0;
+  const hold = (s: AppState): AppState => {
+    const off = wrap180(H(s) - 90);
+    return thr(s, 'bow', off > 3 ? -1 : off < -3 ? 1 : 0);
+  };
+  return (s, t) => {
+    const run = s.exercise;
+    if (run === null) return s;
+    const v = s.boat.speedMps;
+    switch (run.step) {
+      case 0: {
+        const [be, bn] = bow(s);
+        const d = Math.hypot(be - DROP[0], bn - DROP[1]);
+        return lever(hold(s), d > 3 ? (v > -0.3 ? -15 : 0) : v < -0.05 ? 15 : 0);
+      }
+      case 1:
+        return windlass(lever(s, 0), 'down');
+      case 2:
+        return lever(hold(s), v > -0.25 ? -15 : 0);
+      case 3:
+        return lever(hold(windlass(s, 'off')), -40);
+      case 4: {
+        if (!more) {
+          if (stern(s)[0] < -1665) {
+            more = true;
+            return thr(lever(windlass(s, 'off'), 0), 'bow', 0);
+          }
+          return lever(hold(windlass(s, 'down')), v > -0.2 ? -15 : 0);
+        }
+        return hasLine(s, 'sl') || s.lines.crew !== null ? s : line(s, 'sl', 'take');
+      }
+      default:
+        if (t - lastT > 0.5) {
+          lastT = t;
+          return line(s, 'sl', 'tighten');
+        }
+        return s;
+    }
+  };
+}

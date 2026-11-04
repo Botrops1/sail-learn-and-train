@@ -2552,6 +2552,15 @@ Scenes: `anchor-setup` (`?m=exercise&ex=anchor-shore`), `anchor-ring` (`?m=exerc
 
 Done: the exercise can be finished on a phone and the checks pass. Not in M77: the wind changing over the night (part 10c), choosing the spot freely (the ring is fixed), two anchors.
 
+### 19.8 Decided in the M77 PR (recommended; merging accepts it)
+
+- Nothing in `src/` changed: the exercise uses the `anchor` and `linesTight` checks, the `anchorAlarm` mistake, the windlass and the shore line that M46, M74 and M75 built. The data, texts and pilot are exactly 19.2–19.4. The good run in `tests/harbourExercises.test.ts` took, per step: 76.9, 24.2, 70.1, 41.1, 59.3 and 78.7 s, the same as the prototype; at the end 61.3 m of chain, the anchor `set`, no report.
+- The mistake texts `aground`, `aground-hard` (as in M76's buoy) and `propeller` (as in M74's and M75's) are copied from the earlier exercises' words. In Russian the buttons are named as the app's `ui.json` has them: «Травить цепь ▼» and «Завести конец на берег»; the exercise is «Якорь и конец на берег». The Russian texts are AI drafts.
+- One test beyond 19.5: `too little chain` stops the chain at 25 m and goes astern hard (lever −60); the anchor sets after about 150 s and then drags, and the card "The anchor is dragging" appears (about 158 s). This is what the WORKFLOW's second check tells the owner to try.
+- PT-31, PT-53, PT-54 and PT-57 keep their status in `docs/PHYSICS_TRUTHS.md`: M77 adds only the exercise's tests. The texts' claims about scope (PT-31) and setting the anchor (PT-57) rest on those rows' sources.
+- **Owner's test findings (PR 163; decided in the M77 PR; recommended; merging accepts it):** (1) the crew taking the shore line ashore goes out in a small boat clear of the stern, so it no longer counts as a rope near the propeller: `stepLines` in `src/model/mooringLines.ts` counts only the crew walking the lazy line (`walkLazy`) as slack. A line already in the water that lies slack near the stern still fouls. This is a small change to the model that 19.8's first bullet did not expect. (2) A stopped engine counts as neutral in a `check.engine.gear` test (`checkPasses`), so the last step can end with the engine off or in neutral. Tests: `tests/mooringLines.test.ts` (crew ashore, no foul) and `tests/exercises.test.ts` (stopped engine is neutral).
+- The live check drives `anchorPilot`'s logic through `window.__sailExercise` (one decision per 0.2 app seconds, the windlass and the bow thruster only when they change), like M75's and M76's. The stern's position comes from the boat's data (`transomX`).
+
 ---
 
 ## 20. M78: Stern-to on your own anchor (sign-off of part 10b)
