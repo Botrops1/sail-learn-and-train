@@ -1,67 +1,83 @@
-# sail-learn-and-train
+# Sail: learn and train
 
-A free web app that shows a complete beginner how a cruising yacht's ropes, sheets and sails behave. It runs in the browser, on a phone first.
+![Sail: learn and train. See what every rope, sheet and sail of a cruising yacht does.](public/og-image.jpg)
 
-The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels, two electric winches). Clarity over realism: you set a test wind, work the ropes, and see what each rope does. Since Phase 2 the boat also sails: the wind pushes her, and what you do with the ropes, the wheel, the autopilot and the engine changes what she does.
+A free web app that shows a complete beginner what every rope, sheet and sail of a cruising yacht does, and lets you practise on a 3D model of a **Hanse 508**. It runs in the browser, nothing to install.
 
 ### ▶ [Try it in your browser](https://botrops1.github.io/sail-learn-and-train/)
 
-Free, nothing to install, made for a phone first: https://botrops1.github.io/sail-learn-and-train/
+**Who it is for:** someone who has never sailed (or is about to crew on a yacht) and wants to understand the boat before stepping on it. **How it works:** you set a wind, work the ropes, and see at once what the boat and the sails do. Clarity over realism: it teaches how things behave, it is not a simulator for racing.
+
+> **Honest limits today.** Built phone first, but the **exercises are still very hard on a normal phone** (the controls they need do not fit a small screen well; a tablet or a computer works much better). This is the next big job. The **Russian text is an AI draft** that no sailor has checked yet.
 
 ## What you can do
 
-- **Look at the boat in 3D.** The 3D view fills the screen. Drag to turn it, pinch to zoom, or use the camera chip at the bottom (port side, starboard side, top, bow, helm, map). Tap any part or rope to see its name, the label written on the boat and what it does. The names are also written on the boat itself (**Labels in 3D**, in Settings).
-- **Set a test wind** (the **Conditions** block): direction on a dial, speed in knots, five presets. The sails and the boom react; a sail that is let out too far flaps.
-- **Work the ropes** (the **Ropes** block). The two clutch banks are drawn as on the boat, with their real labels ("Genoa sheet" is the jib sheet).
-  - **Easy mode:** every rope is a slider (1 % or 5 % steps). The main idea: *ropes limit, wind pushes*: easing a sheet only lets the wind push the sail further.
-  - **Realistic mode:** one place at a time (port, starboard, helm, mast), clutches opened and closed, ropes wrapped on the electric winches with turns, the self-tailer, ropes that slip or run out when not held, the winch handle and the mast furling gearbox, and Pause.
-- **Sail her** (Phase 2). Held still / Sailing switch (Held still is the Phase 1 picture). The boat makes her own wind: the instrument strip and the wind dial show the true and the apparent wind (the wind you feel on board). The wheel turns her only while she moves; the **autopilot** (Standby, hold a heading, or hold a wind angle) tacks and gybes on a button.
-- **See what the trim does.** Sails show luffing (flapping), good or stalled trim, with telltales (short ribbons) on the sails; the boat heels, gets weather helm (pulls to windward) and can round up; the main blankets the jib on a run; a sail left flogging wears out. Loads on the sheets come from the real sail forces, in kN.
-- **Bird's-eye map** with the boat, her track, both winds, the no-go zone and the points of sail.
-- **Wind modes** (Steady, Gusty, Shifty, Building, Dying), repeatable from a link, and a **time bar** (slow motion, pause, up to ×16).
-- **Gybes.** An accidental gybe shows the boom's speed, energy and the peak load on the main sheet, and a danger zone on the map; a controlled gybe (main sheet hauled in first) is gentle. The boat has no preventer.
-- **Engine:** Start/Stop, one lever from full astern to full ahead with neutral in the middle, rpm, and the engine's Helm-station lever in Realistic mode.
-- **Waves and the sky** (Phase 3). A **Waves** setting in the Conditions block (Flat, Sheltered, Coastal, Open sea): the waves grow with the wind and with the fetch (how far the wind has blown over open water) and build up over minutes. The boat heaves, pitches (nose up and down) and rolls on them; the rocking swings the wind the sails feel so they flick, waves from behind at an angle knock the bow off course so the helm keeps correcting, and waves from ahead slow her. Held still bobs but its sails ignore the rocking.
-- **Wind on the water.** The water darkens with the wind, white horses (white wave tops) appear from about 7 knots, and in gusty wind a gust shows as a dark patch upwind before it arrives. Four yellow practice buoys mark the start area, in 3D and on the map (tap one to learn what it is); the boat sails through them.
-- **Clock, sun and sky.** A clock and date chip over the 3D view (it folds; a switch in Settings) shows the time on board in Croatia (Adriatic, Split), runs with the time bar and starts now, at a time you set, or at noon on 1 June. Sunrise and sunset are right for the place; the sun lights the boat from the right side and the sky goes through day, sunset, twilight and night with stars (the boat stays readable at night).
-- **Learn** (Phase 4). Every part, rope and sailing word has an entry in the **Learn** block: what it is called (and what else sailors call it), what it does, how it works on this boat, typical mistakes with their fixes, and how sure the app is of each fact (with sources). **More** on a part's card opens its entry, **Show me** sets up a ready scene (the phone's Back button returns), and a search finds names, other names and the words printed on the boat.
-- **Three modes, and a panel that fits the screen** (Phase 5). The chip at the bottom left ("Easy ▾") picks **Learn** (the Learn entries come first), **Easy** (sliders) or **Realistic** (the stations). A mode only decides which blocks come first and which start open; it never changes the boat or a setting, and every block can be reached from every mode. On a phone the panel is a **sheet** pulled up from the bottom (three heights: a thin strip, half, full) by its handle; at the thin strip a quick row has the selected rope's − and +. On a computer the panel is on the right; on a screen 1,280 px wide or more it has **two columns** (the mode's blocks on the left, Conditions and Learn on the right). Blocks fold; the "?" next to a block's name explains it.
-- **A finished-looking boat** (Phase 6). No holes in the deck, a rim (toerail) along the deck edge, the anchor in its roller with the chain to the windlass, six cleats and four fairleads, and a **Harbour gear** block at the end of the panel where the **fenders** go out or stay in the locker (link setting `fd=1`). Rope ends are sealed, the lines end in the rope boxes behind the winches (a line held in the hand lies coiled on its box), and the rope on a winch drum is drawn thinner. Every new part can be tapped and has a Learn entry.
-- **Mini-map.** While sailing, a small north-up map sits in a corner of the 3D view (the boat, the wind arrow, her track, the buoys). Tap it for the full map and "× Close" to come back; a switch in Settings turns it off.
-- **Settings** (the gear at the bottom right): language, labels in 3D, detail, the mini-map, the clock chip, Share, Reset and About.
-- **Language.** The whole app in English or in Russian, one at a time (Settings, or `lang=ru` in the link). The Russian text is an AI draft, marked as not yet checked by a sailor; `docs/review/ru.md` is the document a Russian-speaking sailor reviews.
-- **Share what you see:** the address (or Settings → Share) reproduces the exact state, useful for questions and bug reports.
+**Look and learn**
+- Look at the boat in 3D: drag to turn, pinch to zoom, or pick a view with the **camera chip** (port side, starboard side, top, bow, helm, map, free). Tap any part or rope to see its name, the label written on the boat and what it does.
+- Open the **Learn** tab: every part, rope and sailing word has an entry (what it is called, what it does, how it works on this boat, typical mistakes and fixes, how sure the app is, with sources). **Show it working** and **Where is it?** fly the camera to the part. A search finds names, other names and the words printed on the boat.
 
-- **Harbour work** (Phase 7). **Harbour mode** (the mode chip) shows the engine, the bow and stern thrusters, fenders, mooring lines and the windlass. The **Place** section moves the boat to open water, a made-up Mediterranean **marina** (tight, medium or spacious berths, busy or empty) or a **bay** with a depth map, rocks, shore rings and mooring buoys. Below about two knots the wind pushes her sideways and the propeller walks the stern; touching a quay, a yacht or the bottom gives a damage report. Stern-to in the marina: stern lines and a lazy line, or your own **anchor** dropped ahead. In the bay: a bow line to a buoy, or anchor and a shore line from the stern. The **Anchor** section (and the Bow station in Realistic mode) lets the chain out and in with the windlass, checks the scope (the chain length the rules ask for), and sounds an alarm if the anchor drags.
+**Work the ropes**
+- Set a test wind (direction on a dial, speed in knots, presets) and move the ropes. **Easy mode**: every rope is a slider. **Realistic mode**: you stand at one place on the boat (port, starboard, helm, mast), open and close the clutches (the levers that hold a rope), wrap ropes on the electric winches (the drums that pull them in), and use the winch handle. Ropes slip or run out when they are not held, and the loads on them come from the real sail forces.
+- The idea to keep: *ropes limit, wind pushes*. Easing a sheet (a rope that sets a sail's angle) only lets the wind push the sail further.
 
-Phase 1 (this boat and its controls) ended with milestone M5, signed off by the owner after testing on a phone. Phase 2 (the moving boat, M6–M13) is done. Phase 3 (waves, wind on the water, clock and sky, M14–M19), Phase 4 (the learning layer in English and Russian, M20–M24) and Phase 5 (the phone sheet, modes, settings menu, mini-map and the wide layout, M25–M29) Phase 6 (boat details, M30–M34) and Phase 7 (harbour work: marina, bay and anchor, M40–M47) are done; the Russian text waits for a sailor's review. Link settings added in Phase 3: `sea` (`flat`, `sheltered`, `coastal`, `open`), `clk` (the time on board, local time `YYYYMMDDHHMM`) and `clock` (`0` hides the clock chip). Link settings added in Phase 4: `learn` (opens that entry in Learn, for example `learn=rope_vang`) and `lang` (`ru` shows the app in Russian). Phase 5 (the new layout and modes, M25–M29) is built; its link settings are `m` (`learn` opens in Learn mode; the ropes mode stays `mode`) and `mm` (`0` hides the mini-map). Phase 6 adds `fd` (`1` puts the fenders out). Phase 10 adds Exercises mode, the coach that sets an exercise up, checks each step and explains mistakes. Harbour and anchor exercises (leaving and entering a berth stern-to, turning in a tight space, a mooring buoy, anchoring with a line ashore) work in a marina with a breakwater and in the bay. Later phases add more languages: see [`docs/ROADMAP.md`](docs/ROADMAP.md).
+**Sail**
+- Switch from *Held still* to *Sailing*: the wind pushes the boat, the wheel turns her only while she moves, and the **autopilot** holds a heading or a wind angle and tacks or gybes on a button.
+- See what your trim does: sails flap (luff) or work well or stall, with telltales (short ribbons), the boat heels and gets weather helm (pulls toward the wind), and can round up. A gybe (the stern passing through the wind) shows the boom's speed and the load on the main sheet.
+- Wind modes (steady, gusty, shifty, building, dying), waves sized by the wind, a clock and sun for Croatia (Split) with sunset, night and stars, and a time bar (slow motion, pause, up to ×16).
+- A bird's-eye **map** (and a mini-map in a corner) with the boat, her track, both winds and the no-go zone.
 
-## Documents
+**Harbour and anchor**
+- **Harbour mode**: engine lever (one lever, astern to ahead), bow and stern **thrusters**, fenders, mooring lines and the windlass (the anchor winch). Move the boat to open water, a made-up Mediterranean **marina** (tight, medium or spacious berths, busy or empty) or a **bay** with a depth map, rocks, shore rings and mooring buoys.
+- Slowly, the wind pushes her sideways and the propeller walks the stern; touching a quay, a yacht or the bottom gives a **damage report**. Go stern-to in the marina, take a bow line to a buoy, or **anchor** (chain out and in, scope, an alarm if the anchor drags, a line ashore).
 
-| File | What it is |
-|---|---|
-| [`docs/ROADMAP.md`](docs/ROADMAP.md) | All phases, architecture principles, decisions log |
-| [`docs/PHASE1_SPEC.md`](docs/PHASE1_SPEC.md) | What Phase 1 builds, how, and when it is done |
-| [`docs/PHASE2_SPEC.md`](docs/PHASE2_SPEC.md) | What Phase 2 builds (the moving boat), milestone by milestone, with the Definition of Done |
-| [`docs/PHASE3_SPEC.md`](docs/PHASE3_SPEC.md) | What Phase 3 builds (waves, wind on the water, clock and sky), milestone by milestone, with the Definition of Done |
-| [`docs/PHASE4_SPEC.md`](docs/PHASE4_SPEC.md) | What Phase 4 builds (the Learn entries, glossary and search, sailing words, the Russian app, the review document), milestone by milestone, with the Definition of Done |
-| [`docs/PHASE5_SPEC.md`](docs/PHASE5_SPEC.md) | What Phase 5 builds (settings menu, camera chip, phone sheet, modes and sections, mini-map, wide layout), milestone by milestone, with the Definition of Done |
-| [`docs/LAYOUT_ANALYSIS.md`](docs/LAYOUT_ANALYSIS.md) | Why the screen was rebuilt in Phase 5 (the record of the analysis) |
-| [`docs/LANGUAGES.md`](docs/LANGUAGES.md) | How to add a language (one folder of two JSON files) |
-| [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md) | Facts about the boat, sources, assumptions, open questions |
-| [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md) | Sailing rules the simulation must obey, with sources and tests |
-| [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | How to build and check each milestone from a phone |
-| [`docs/EXERCISES.md`](docs/EXERCISES.md) | Planned exercises, failure modes and wind modes (later phases) |
-| [`CLAUDE.md`](CLAUDE.md) | Instructions for the coding agent |
-| [`content/`](content) | Boat geometry and the term registry (data, not code) |
+**Helm panels and the status**
+- A control panel at each wheel (engine lever and tachometer, thruster joysticks, compass, wind data, autopilot keypad) with live values, and a **Helm camera** at either wheel looking ahead, at the panel or at the ropes.
+- A **Status** section: the sails, the gear, any damage and a tagged history of what happened.
+
+**Exercises**
+- **Exercises mode** gives guided tasks with a coach: a card with what you see, what is happening, the right action and the typical mistake; steps that tick themselves off; a step line over the 3D view; mistakes that can pause time and explain themselves; waypoints to go back to; and a **debrief** at the end.
+- Fourteen exercises today: trim through the points of sail, tacking, getting out of irons (head to wind and stuck), gybing (controlled and accidental), gusts, too much wind (reduce sail), setting and furling the sails (alone or with crew), leaving the berth, entering the berth stern-to, turning in her own length, picking up a mooring buoy, anchoring with a line ashore, and going stern-to on your own anchor.
+
+**Languages, sharing and your own setup**
+- The whole app in **English or Russian** (Settings). More languages can be added as data: [`docs/LANGUAGES.md`](docs/LANGUAGES.md).
+- **Share** (Settings → Share) copies a link that reproduces exactly what you see; useful for questions and bug reports. Your whole **setup can be saved to a file** and loaded again.
+- **Boat profiles**: download the boat's numbers as a file, edit them for a similar yacht and import it. See [`docs/BOAT_PROFILE.md`](docs/BOAT_PROFILE.md).
+
+**The screen.** On a phone the controls sit in a **sheet** pulled up from the bottom (with tabs for mode, controls, conditions, Learn and settings); on a computer they sit in columns on the right (two columns on a wide screen), with **Mode** and **Settings** chips. Three modes decide what comes first (**Learn**, **Easy**, **Realistic**), and there are **Harbour** and **Exercises**. A mode never changes the boat; every section can be reached from every mode.
+
+## Where the project stands
+
+Done: the boat and its controls, the moving boat, waves and sky, the Learn layer in English and Russian, the new layout and modes, boat details, harbour and anchor, panels/status/setup/profiles, the visual work, and the exercises: sailing ones (10a) and harbour and anchor ones (10b).
+
+Next: controls that work on a normal phone during an exercise (and for a computer), wind and clock exercises (10c), a launch plan (own release versions, a welcome for new visitors), a sailor's review of the Russian text, and more languages. Phases and decisions: [`docs/ROADMAP.md`](docs/ROADMAP.md). Public launch checklist: [issue #165](https://github.com/Botrops1/sail-learn-and-train/issues/165).
+
+Open limits: the frame rate on phones is still to be checked on real devices; a browser without WebGL shows the panel but not the 3D boat.
 
 ## How to help
 
 You do not need to write code: report a bug (Settings → Share gives a link to exactly what you see), correct a sailing fact (with a source), check the Russian text, add a language or describe your own boat. See [`CONTRIBUTING.md`](CONTRIBUTING.md); questions go to [Discussions](https://github.com/Botrops1/sail-learn-and-train/discussions). Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security problems privately ([`SECURITY.md`](SECURITY.md)).
 
-## How it is built
+## Privacy
 
-Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, TypeScript, three.js, Vitest; deployed with GitHub Actions to GitHub Pages.
+The app collects nothing and sends nothing anywhere. What you set (layout, imported boats, exercise ticks) stays in your browser on this device. The site is hosted on GitHub Pages ([GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)).
+
+## Disclaimer
+
+A learning aid for understanding, **not** a substitute for sailing instruction or the skipper's briefing. Geometry and behaviour are simplified. Terms marked "draft" have not been reviewed by a sailor yet.
+
+Hanse and Hanse 508 are names of their owner; this project is not affiliated with Hanse Yachts. No manufacturer material is included; boat figures are cited from the public specification.
+
+## License
+
+GPL-3.0-only. See [`LICENSE`](LICENSE).
+
+The photos in [`docs/reference/photos/`](docs/reference/photos) are the project owner's own, licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+---
+
+# For developers
+
+Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, TypeScript, three.js, Vitest; deployed with GitHub Actions to GitHub Pages. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to work on it and [`docs/CODE_MAP.md`](docs/CODE_MAP.md) for which file does what.
 
 ## Commands
 
@@ -77,18 +93,47 @@ Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, 
 
 Add `?debug=1` to the address to see the frame rate, the slowest frame and the work per frame (for performance reports).
 
-## Disclaimer
+## Link settings
 
-A learning aid for understanding, **not** a substitute for sailing instruction or the skipper's briefing. Geometry and behaviour are simplified. Terms marked "draft" have not been reviewed by a sailor yet.
+The address reproduces the state. The main keys (all of them are read in [`src/app/urlState.ts`](src/app/urlState.ts)):
 
-Hanse and Hanse 508 are names of their owner; this project is not affiliated with Hanse Yachts. No manufacturer material is included; boat figures are cited from the public specification.
+| Key | Meaning |
+|---|---|
+| `lang` | `ru` shows the app in Russian |
+| `m`, `mode` | the mode (`m=learn` opens Learn mode; the ropes mode stays `mode`) |
+| `sea` | waves: `flat`, `sheltered`, `coastal`, `open` |
+| `clk`, `clock` | time on board (local `YYYYMMDDHHMM`); `clock=0` hides the clock chip |
+| `learn` | opens that Learn entry, e.g. `learn=rope_vang` |
+| `mm` | `0` hides the mini-map |
+| `fd` | `1` puts the fenders out |
+| `ex`, `exw`, `exp` | an exercise by id, its start state and the coach (`exp=0` hides it) |
+| `debug` | `1` shows the frame-rate overlay |
 
-## Privacy
+Old links keep opening the same picture.
 
-The app collects nothing and sends nothing anywhere. What you set (layout, imported boats, exercise ticks) stays in your browser on this device. The site is hosted on GitHub Pages ([GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)).
+## Documents
 
-## License
-
-GPL-3.0-only. See [`LICENSE`](LICENSE).
-
-The photos in [`docs/reference/photos/`](docs/reference/photos) are the project owner's own, licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+| File | What it is |
+|---|---|
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | All phases, architecture principles, decisions log |
+| [`docs/PHASE1_SPEC.md`](docs/PHASE1_SPEC.md) | Phase 1: the boat and its controls |
+| [`docs/PHASE2_SPEC.md`](docs/PHASE2_SPEC.md) | Phase 2: the moving boat |
+| [`docs/PHASE3_SPEC.md`](docs/PHASE3_SPEC.md) | Phase 3: waves, wind on the water, clock and sky |
+| [`docs/PHASE4_SPEC.md`](docs/PHASE4_SPEC.md) | Phase 4: the Learn entries, glossary and search, the Russian app |
+| [`docs/PHASE5_SPEC.md`](docs/PHASE5_SPEC.md) | Phase 5: settings menu, camera chip, phone sheet, modes, mini-map, wide layout |
+| [`docs/PHASE6_SPEC.md`](docs/PHASE6_SPEC.md) | Phase 6: boat details (anchor, cleats, fairleads, fenders) |
+| [`docs/PHASE7_SPEC.md`](docs/PHASE7_SPEC.md) | Phase 7: marina, bay and anchor |
+| [`docs/PHASE8_SPEC.md`](docs/PHASE8_SPEC.md) | Phase 8: phone tabs, Status, setup file, boat profiles |
+| [`docs/PHASE9_SPEC.md`](docs/PHASE9_SPEC.md) | Phase 9: visual quality, helm panels, Helm camera |
+| [`docs/PHASE10_SPEC.md`](docs/PHASE10_SPEC.md) | Phase 10: Exercises mode, the coach and the exercises |
+| [`docs/EXERCISES.md`](docs/EXERCISES.md) | The exercise catalogue, failure modes and wind modes |
+| [`docs/LAYOUT_ANALYSIS.md`](docs/LAYOUT_ANALYSIS.md), [`docs/BOAT_DETAILS_ANALYSIS.md`](docs/BOAT_DETAILS_ANALYSIS.md), [`docs/VISUAL_QUALITY_ANALYSIS.md`](docs/VISUAL_QUALITY_ANALYSIS.md) | Records of the analyses behind Phases 5, 6 and 9 |
+| [`docs/LANGUAGES.md`](docs/LANGUAGES.md) | How to add a language (one folder of JSON files) |
+| [`docs/BOAT_PROFILE.md`](docs/BOAT_PROFILE.md) | How to make a boat profile |
+| [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md) | Facts about the boat, sources, assumptions, open questions |
+| [`docs/PHYSICS_TRUTHS.md`](docs/PHYSICS_TRUTHS.md) | Sailing rules the simulation must obey, with sources and tests |
+| [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | How to build and check each milestone from a phone |
+| [`docs/CODE_MAP.md`](docs/CODE_MAP.md) | Which file does what |
+| [`docs/review/ru.md`](docs/review/ru.md), [`docs/review/ru-exercises.md`](docs/review/ru-exercises.md) | What a Russian-speaking sailor reviews |
+| [`CLAUDE.md`](CLAUDE.md) | Instructions for the coding agent |
+| [`content/`](content) | Boat geometry, term registry, exercises and texts (data, not code) |
