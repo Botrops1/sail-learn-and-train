@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
+import { twaSignedDeg } from '../src/model/exercises';
+import { mpsToKn } from '../src/model/angles';
+import { buoyPilot } from './harbourPilot';
 import { MARINA_LAYOUT_IDS, marinaGeometry } from '../src/model/marina';
 import { gybeArrived, gybeStep, windTorqueNm, type GybeSwing } from '../src/model/gybe';
 import type { RealisticAction } from '../src/model/realistic';
@@ -130,5 +133,28 @@ describe('PT-61', () => {
       expect(Math.abs(g.lights.red[0] - g.entrance.eastM)).toBeLessThanOrEqual(12);
       expect(Math.abs(g.lights.green[0] - g.entrance.eastM)).toBeLessThanOrEqual(12);
     }
+  });
+});
+
+describe('PT-62', () => {
+  it('PT-62 the buoy is picked up into the wind', () => {
+    let s = parseUrlState(exerciseStartLink('mooring-buoy', initialState(), 'easy'));
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    const pilot = buoyPilot();
+    let t = 0;
+    let passed: AppState | null = null;
+    while (t < 400 && s.exercise?.status === 'running' && passed === null) {
+      s = pilot(s, t);
+      s = reduce(s, { type: 'step', dt: 0.05 });
+      t += 0.05;
+      if (s.exercise !== null && s.exercise.step > 0) passed = s;
+    }
+    expect(passed).not.toBeNull();
+    const at = passed as AppState;
+    expect(Math.abs(twaSignedDeg(at))).toBeLessThanOrEqual(30);
+    expect(mpsToKn(Math.abs(at.boat.speedMps))).toBeLessThanOrEqual(0.5);
+    // The next frame's `line bl take` is accepted: the bow line is on.
+    const next = reduce(pilot(at, t), { type: 'step', dt: 0.05 });
+    expect(next.lines.lines.some((l) => l.code === 'bl')).toBe(true);
   });
 });

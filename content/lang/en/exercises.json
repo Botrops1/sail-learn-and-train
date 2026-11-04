@@ -195,5 +195,89 @@
       "lazy-line": {"name": "Over a neighbour's lazy line", "what": "Your keel or rudder is over the lazy line of a boat next door, where the rope is still shallow.", "why": "The rope can catch on the keel or the rudder and pull her bow off; if the propeller turns over it, it winds round the propeller.", "fix": "Engine in neutral and let her drift clear. Then keep further from the other boats' bows: their lazy lines run out from there into the fairway."},
       "fenders-in": {"name": "Fenders still in", "what": "You are backing into the berth with the fenders in the locker.", "why": "Without fenders the first touch of the boat next door scratches both hulls.", "fix": "Harbour gear → Fenders: Out, before you come close."}
     }
+  },
+  "turn-own-length": {
+    "title": "Turning in her own length",
+    "summary": "Turn her round in the fairway inside a circle not much wider than her length: a kick ahead, prop walk astern, then the thrusters.",
+    "see": "She is stopped in the fairway pointing east, with boats moored on both sides. The magenta circle is all the room you have.",
+    "happening": "A burst ahead with the wheel hard over turns her before she gathers speed (kick ahead). Going astern the propeller pushes the stern sideways (prop walk): on this boat the app has it push the stern to port (an assumption until a skipper confirms it, PT-27), which turns the bow to starboard, the same way. The thrusters push the bow and the stern sideways: together, in opposite directions, they spin her on the spot.",
+    "action": "Wheel hard to starboard; short bursts ahead and astern until she points about 120°; then hold the bow thruster to starboard and the stern thruster to port until she points west (270°).",
+    "mistake": "Long bursts: she gathers speed and leaves the circle towards the moored boats.",
+    "done": "She turned in her own length. Short bursts keep her on the spot; the thrusters finish the job.",
+    "steps": {
+      "kick": {
+        "goal": "Turn her to about 120° (105°–135°) with the engine and the wheel, staying in the circle.",
+        "how": "Steering: wheel hard to starboard (slider right to the end). Engine: push the lever about two thirds towards Ahead for 2 seconds, then Neutral; after 4 seconds pull it about two thirds towards Astern until she starts moving back, then Neutral. Repeat once."
+      },
+      "spin": {
+        "goal": "Spin her on the spot until she points west (260°–280°) and stop.",
+        "how": "Wheel straight. Hold the bow thruster to starboard and the stern thruster to port. Let go when the compass shows 270°."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "A light touch",
+        "what": "She touched another boat or the quay without a fender between.",
+        "why": "Slow boats drift with the wind; a touch at walking pace scratches the gelcoat but rarely does more.",
+        "fix": "Slow down, use the thrusters to hold her off, and put the fenders out on the side that is close."
+      },
+      "hard-hit": {
+        "name": "A hard knock",
+        "what": "She hit another boat or the quay hard. The exercise stops here.",
+        "why": "At more than about one knot, ten tonnes of boat dents a hull or breaks a rail, even with fenders.",
+        "fix": "Go slower near other boats and the quay: in a harbour, never faster than you would walk. Tap Try again."
+      },
+      "left-circle": {
+        "name": "Out of the circle",
+        "what": "She left the circle.",
+        "why": "Long bursts build up speed; in a marina there is no room for that.",
+        "fix": "Shorter bursts, and Neutral as soon as she moves. Tap Back to try the step again."
+      }
+    }
+  },
+  "mooring-buoy": {
+    "title": "Picking up a mooring buoy",
+    "summary": "Approach the buoy into the wind at a crawl, pick it up at the bow, lie to it, then let go and back away.",
+    "see": "You are motoring into the bay towards three white buoys; the magenta ring marks the middle one. The wind blows out of the bay, towards you.",
+    "happening": "Into the wind the boat stops by herself as soon as you take the engine out of gear, so you can creep up to the buoy. The crew picks it up with the boat hook and makes the bow line fast. Lying to it, the wind keeps her bow towards the buoy.",
+    "action": "Motor slowly straight at the buoy, into the wind; slow down to a crawl in the last boat length; pick it up at the bow; engine in neutral; to leave, let go and go gently astern away from it.",
+    "mistake": "Coming in fast or with the wind behind you: she cannot stop and runs past or over the buoy.",
+    "done": "You picked up the buoy and left it. Into the wind and at a crawl.",
+    "steps": {
+      "approach": {
+        "goal": "Bring the bow to the buoy (inside the small ring) at under half a knot.",
+        "how": "Engine slow ahead (the lever just past Neutral towards Ahead) and steer straight at the buoy. About 10 m before it, Neutral; if she still runs on, a moment just past Neutral towards Astern, then Neutral again."
+      },
+      "bow-line": {
+        "goal": "Pick up the buoy with the bow line.",
+        "how": "Harbour gear → Lines: tap \"Pick up the buoy\". It works only with the bow within 2.5 m and almost stopped."
+      },
+      "lie": {
+        "goal": "Lie to the buoy for 10 seconds with the engine in neutral.",
+        "how": "Lever to Neutral and wait: the wind keeps her bow to the buoy."
+      },
+      "let-go": {
+        "goal": "Let go the bow line.",
+        "how": "Harbour gear → Lines: Let go on \"Bow line to the buoy\"."
+      },
+      "back-away": {
+        "goal": "Back away until you are well clear of the buoy (outside the big ring).",
+        "how": "Engine slow astern: the lever just past Neutral towards Astern (\"In gear: astern\"). The buoy stays ahead, clear of the propeller."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Touched the bottom",
+        "what": "The keel touched the bottom.",
+        "why": "The water there is shallower than her keel (2.4 m); watch the depth on the strip.",
+        "fix": "Go gently astern into deeper water and keep where the depth shows more than 3 m."
+      },
+      "aground-hard": {
+        "name": "Ran aground",
+        "what": "She ran onto the bottom or the rocks hard. The exercise stops here.",
+        "why": "Fast onto the bottom the keel sticks and the hull can be damaged (PT-53).",
+        "fix": "Watch the depth and come in slowly. Tap Try again."
+      }
+    }
   }
 }
