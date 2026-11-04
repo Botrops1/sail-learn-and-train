@@ -4,7 +4,9 @@ A free web app that shows a complete beginner how a cruising yacht's ropes, shee
 
 The reference boat is a **Hanse 508** (in-mast furling main, self-tacking jib, German mainsheet, twin wheels, two electric winches). Clarity over realism: you set a test wind, work the ropes, and see what each rope does. Since Phase 2 the boat also sails: the wind pushes her, and what you do with the ropes, the wheel, the autopilot and the engine changes what she does.
 
-**Live site:** https://botrops1.github.io/sail-learn-and-train/
+### ▶ [Try it in your browser](https://botrops1.github.io/sail-learn-and-train/)
+
+Free, nothing to install, made for a phone first: https://botrops1.github.io/sail-learn-and-train/
 
 ## What you can do
 
@@ -53,6 +55,10 @@ Phase 1 (this boat and its controls) ended with milestone M5, signed off by the 
 | [`CLAUDE.md`](CLAUDE.md) | Instructions for the coding agent |
 | [`content/`](content) | Boat geometry and the term registry (data, not code) |
 
+## How to help
+
+You do not need to write code: report a bug (Settings → Share gives a link to exactly what you see), correct a sailing fact (with a source), check the Russian text, add a language or describe your own boat. See [`CONTRIBUTING.md`](CONTRIBUTING.md); questions go to [Discussions](https://github.com/Botrops1/sail-learn-and-train/discussions). Please follow the [Code of Conduct](CODE_OF_CONDUCT.md), and report security problems privately ([`SECURITY.md`](SECURITY.md)).
+
 ## How it is built
 
 Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, TypeScript, three.js, Vitest; deployed with GitHub Actions to GitHub Pages.
@@ -77,6 +83,12 @@ A learning aid for understanding, **not** a substitute for sailing instruction o
 
 Hanse and Hanse 508 are names of their owner; this project is not affiliated with Hanse Yachts. No manufacturer material is included; boat figures are cited from the public specification.
 
+## Privacy
+
+The app collects nothing and sends nothing anywhere. What you set (layout, imported boats, exercise ticks) stays in your browser on this device. The site is hosted on GitHub Pages ([GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)).
+
 ## License
 
 GPL-3.0-only. See [`LICENSE`](LICENSE).
+
+The photos in [`docs/reference/photos/`](docs/reference/photos) are the project owner's own, licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).

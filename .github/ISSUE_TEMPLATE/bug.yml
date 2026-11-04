@@ -1,0 +1,43 @@
+name: Something does not work
+description: The app shows something wrong, breaks, or behaves strangely.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you! The more exactly we can see what you saw, the faster it gets fixed.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, step by step, and what you saw.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect instead?
+    validations:
+      required: false
+  - type: input
+    id: link
+    attributes:
+      label: Link to what you see
+      description: In the app, Settings → Share copies a link to exactly this state (the boat, the wind, the settings). Paste it here.
+      placeholder: https://botrops1.github.io/sail-learn-and-train/?v=1&...
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone or computer, and browser
+      placeholder: e.g. iPhone 13, Safari / Pixel 7, Chrome / Windows laptop, Firefox
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Settings → About shows it, e.g. "Version 7d969b5 · 2026-11-04".
+    validations:
+      required: false

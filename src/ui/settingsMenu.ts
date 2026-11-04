@@ -1,4 +1,4 @@
-import { BUILD_INFO, REPO_URL } from '../app/buildInfo';
+import { BUILD_INFO, ISSUES_URL, REPO_URL } from '../app/buildInfo';
 import { removeBoat, saveBoat, setChosenBoat, storedBoats } from '../app/boatStore';
 import { makeSetupFile, readSetupFile, setupFileName } from '../app/setupFile';
 import type { Store } from '../app/store';
@@ -87,7 +87,8 @@ function openAfterReload(id: string): void {
 
 /**
  * Everything the settings hold (PHASE5_SPEC 6.4): the controls (everything the View tab held
- * except the camera), then About (disclaimer, version, source). Built once. On a phone it is the
+ * except the camera), then About (disclaimer, privacy and maker notes, the report link, version,
+ * source). Built once. On a phone it is the
  * body of the Settings section (the Settings tab); elsewhere the body of the settings card the
  * gear opens (`createSettingsMenu`). `panel.ts` moves it.
  */
@@ -97,6 +98,19 @@ export function createSettingsContent(store: Store): HTMLElement {
     el('h3', { class: 'settings-about' }, [t('settings.about')]),
     el('footer', { class: 'footer' }, [
       el('p', { class: 'disclaimer', 'data-testid': 'disclaimer' }, [t('footer.disclaimer')]),
+      el('p', { class: 'about-note', 'data-testid': 'privacy-note' }, [t('footer.privacy')]),
+      el('p', { class: 'about-note', 'data-testid': 'maker-note' }, [t('footer.maker')]),
+      el(
+        'a',
+        {
+          class: 'report-link',
+          href: ISSUES_URL,
+          target: '_blank',
+          rel: 'noopener',
+          'data-testid': 'report-link',
+        },
+        [t('footer.report')],
+      ),
       el('span', { class: 'version', 'data-testid': 'build-version' }, [
         t('footer.version', { hash: BUILD_INFO.shortHash, date: BUILD_INFO.date }),
       ]),
