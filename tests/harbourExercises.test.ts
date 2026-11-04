@@ -3,7 +3,7 @@ import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { obstacleKind, type ExerciseLevel } from '../src/model/exercises';
 import { area } from '../src/model/area';
-import { enterPilot, H, leavePilot, stern, type Pilot } from './harbourPilot';
+import { buoyPilot, enterPilot, H, leavePilot, stern, turnPilot, type Pilot } from './harbourPilot';
 
 /** PHASE10_SPEC 16.7: a scripted good run; each step within its limit (app seconds from its start). */
 export function goodRun(id: string, level: ExerciseLevel, pilot: Pilot, limitS: number) {
@@ -203,5 +203,89 @@ describe("M75: the neighbours' bow lines in the store (PHASE10_SPEC 17.6)", () =
     expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'lazy-line')).toBe(
       true,
     );
+  });
+});
+
+describe('turn-own-length good run (PHASE10_SPEC 18.6)', () => {
+  it('ends done with no mistake, each step within its limit, the centre inside 10 m of the start', () => {
+    const base = turnPilot();
+    let far = 0;
+    const watched: Pilot = (s, t) => {
+      far = Math.max(far, Math.hypot(s.boat.eastM + 40, s.boat.northM - 1468));
+      return base(s, t);
+    };
+    const result = goodRun('turn-own-length', 'normal', watched, 200);
+    expect(result.status).toBe('done');
+    expect(result.mistakes).toEqual([]);
+    expect(result.durations[0] ?? Infinity, 'kick').toBeLessThanOrEqual(28);
+    expect(result.durations[1] ?? Infinity, 'spin').toBeLessThanOrEqual(50);
+    expect(far).toBeLessThanOrEqual(10);
+  });
+
+  it('PT-27 PT-48 the kick step turns her to starboard with only engine bursts', () => {
+    let s = parseUrlState(exerciseStartLink('turn-own-length', initialState(), 'easy'));
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    const pilot = turnPilot();
+    let t = 0;
+    let thrusterUsed = false;
+    while (s.exercise?.status === 'running' && s.exercise.step === 0 && t < 28) {
+      s = pilot(s, t);
+      if (s.thrusters.bow !== 0 || s.thrusters.stern !== 0) thrusterUsed = true;
+      s = reduce(s, { type: 'step', dt: 0.05 });
+      t += 0.05;
+    }
+    expect(s.exercise?.step).toBe(1);
+    expect(thrusterUsed).toBe(false);
+    const turned = ((s.boat.headingDeg - 90 + 540) % 360) - 180;
+    expect(turned).toBeGreaterThanOrEqual(15);
+    expect(turned).toBeLessThanOrEqual(45);
+  });
+
+  it('PT-33 the thrusters spin her on the spot', () => {
+    let s = parseUrlState(exerciseStartLink('turn-own-length', initialState(), 'easy'));
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    const pilot = turnPilot();
+    let t = 0;
+    while (s.exercise?.status === 'running' && s.exercise.step === 0 && t < 60) {
+      s = pilot(s, t);
+      s = reduce(s, { type: 'step', dt: 0.05 });
+      t += 0.05;
+    }
+    expect(s.exercise?.step).toBe(1);
+    const [e0, n0] = [s.boat.eastM, s.boat.northM];
+    let worst = 0;
+    while (s.exercise?.status === 'running' && s.exercise.step === 1 && t < 120) {
+      s = pilot(s, t);
+      s = reduce(s, { type: 'step', dt: 0.05 });
+      t += 0.05;
+      worst = Math.max(worst, Math.hypot(s.boat.eastM - e0, s.boat.northM - n0));
+    }
+    expect(s.exercise?.status).toBe('done');
+    expect(worst).toBeLessThanOrEqual(10);
+  });
+
+  it('long bursts leave the circle: the card "Out of the circle"', () => {
+    let s = parseUrlState(exerciseStartLink('turn-own-length', initialState(), 'easy'));
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    s = reduce(s, { type: 'engine', command: { leverPct: 60 } });
+    for (let i = 0; i < 400 && s.exercise?.status === 'running'; i += 1)
+      s = reduce(s, { type: 'step', dt: 0.05 });
+    expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'left-circle')).toBe(
+      true,
+    );
+  });
+});
+
+describe('mooring-buoy good run (PHASE10_SPEC 18.6)', () => {
+  it('ends done with no mistake, each step within its limit', () => {
+    const result = goodRun('mooring-buoy', 'normal', buoyPilot(), 400);
+    expect(result.status).toBe('done');
+    expect(result.mistakes).toEqual([]);
+    [137, 3, 15, 3, 92].forEach((limit, i) => {
+      expect(
+        result.durations[i] ?? Infinity,
+        `step ${i}: ${result.durations.join(', ')}`,
+      ).toBeLessThanOrEqual(limit);
+    });
   });
 });

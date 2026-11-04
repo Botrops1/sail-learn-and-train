@@ -201,6 +201,47 @@
         { "id": "lazy-line", "serious": false, "on": { "alert": "contact", "obstacle": ["lazy-line"] } },
         { "id": "fenders-in", "serious": false, "on": { "alert": "fendersIn" } }
       ]
+    },
+    {
+      "id": "turn-own-length",
+      "group": "harbour",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
+      "start": "?pl=marina&ml=medium&tr=half&pe=-40.0&pn=1468.0&hdg=90&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=flat",
+      "targets": [{ "id": "circle", "shape": "circle", "eastM": -40, "northM": 1468, "radiusM": 10 }],
+      "steps": [
+        { "id": "kick", "opens": "engine", "holdS": 1, "show": "circle", "check": { "headingDeg": { "to": 120, "within": 15 }, "target": { "id": "circle", "point": "centre" } } },
+        { "id": "spin", "opens": "engine", "holdS": 3, "show": "circle", "check": { "headingDeg": { "to": 270, "within": 10 }, "target": { "id": "circle", "point": "centre" }, "speedKn": [-0.5, 0.5] } }
+      ],
+      "mistakes": [
+        { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "hard-hit", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "left-circle", "serious": false, "steps": ["kick", "spin"], "on": { "condition": { "target": { "id": "circle", "point": "centre", "inside": false } }, "forS": 1 } }
+      ]
+    },
+    {
+      "id": "mooring-buoy",
+      "group": "harbour",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
+      "start": "?pl=bay&pe=-1380.0&pn=0.0&hdg=270&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=sheltered",
+      "targets": [
+        { "id": "buoy", "shape": "circle", "eastM": -1450, "northM": 0, "radiusM": 2.5 },
+        { "id": "clear", "shape": "circle", "eastM": -1450, "northM": 0, "radiusM": 15 }
+      ],
+      "steps": [
+        { "id": "approach", "opens": "engine", "holdS": 1, "show": "buoy", "check": { "target": { "id": "buoy", "point": "bow" }, "speedKn": [-0.5, 0.5] } },
+        { "id": "bow-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["bl"] } },
+        { "id": "lie", "opens": "engine", "holdS": 10, "check": { "linesOn": ["bl"], "engine": { "gear": "neutral" } } },
+        { "id": "let-go", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["bl"] } },
+        { "id": "back-away", "opens": "engine", "holdS": 2, "show": "clear", "check": { "target": { "id": "clear", "point": "centre", "inside": false } } }
+      ],
+      "mistakes": [
+        { "id": "aground", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["ground"] } },
+        { "id": "aground-hard", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["ground"] } }
+      ]
     }
   ]
 }

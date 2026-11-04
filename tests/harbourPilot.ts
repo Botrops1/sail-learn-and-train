@@ -137,3 +137,61 @@ export function enterPilot(_level: ExerciseLevel, opts: { skipFenders?: boolean 
     }
   };
 }
+
+/**
+ * Turning in her own length (PHASE10_SPEC 18.5). Step 0: wheel hard to starboard, a 15-second
+ * pattern of 2 s ahead, 5 s neutral, up to 4 s astern (while she is not yet going back), neutral.
+ * Step 1: wheel and lever off, both thrusters turn her until she points west.
+ */
+export function turnPilot(): Pilot {
+  let step = -1;
+  let stepStartT = 0;
+  return (s, t) => {
+    const run = s.exercise;
+    if (run === null) return s;
+    if (run.step !== step) {
+      step = run.step;
+      stepStartT = t;
+    }
+    if (run.step === 0) {
+      const k = (t - stepStartT) % 15;
+      const pct = k < 2 ? 60 : k < 7 ? 0 : k < 11 && s.boat.speedMps > -0.3 ? -60 : 0;
+      return lever(rudder(s, 35), pct);
+    }
+    const off = Math.abs(wrap180(H(s) - 270)) > 5;
+    return thr(thr(lever(rudder(s, 0), 0), 'bow', off ? 1 : 0), 'stern', off ? -1 : 0);
+  };
+}
+
+/** Where the bay's middle buoy is (PHASE10_SPEC 18.2). */
+const BUOY: [number, number] = [-1450, 0];
+
+/**
+ * Picking up a mooring buoy (PHASE10_SPEC 18.5): creep at the buoy into the wind, take the bow
+ * line, lie to it in neutral, let go, go astern.
+ */
+export function buoyPilot(): Pilot {
+  return (s) => {
+    const run = s.exercise;
+    if (run === null) return s;
+    switch (run.step) {
+      case 0: {
+        const [be, bn] = bow(s);
+        const d = Math.hypot(BUOY[0] - be, BUOY[1] - bn);
+        const want = d > 30 ? 1.0 : d > 8 ? 0.5 : 0.15;
+        const brg = (Math.atan2(BUOY[0] - s.boat.eastM, BUOY[1] - s.boat.northM) * 180) / Math.PI;
+        const v = s.boat.speedMps;
+        const steered = rudder(s, clamp(2 * wrap180(brg - s.boat.headingDeg), -20, 20));
+        return lever(steered, v < want - 0.05 ? 15 : v > want + 0.1 ? -15 : 0);
+      }
+      case 1:
+        return line(rudder(lever(s, 0), 0), 'bl', 'take');
+      case 2:
+        return s;
+      case 3:
+        return line(s, 'bl', 'letGo');
+      default:
+        return lever(s, -15);
+    }
+  };
+}
