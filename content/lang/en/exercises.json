@@ -340,5 +340,62 @@
         "fix": "Let out more chain, then dig it in again going gently astern."
       }
     }
+  },
+  "stern-to-anchor": {
+    "title": "Stern-to on your own anchor",
+    "summary": "Drop the anchor across the fairway, back into the berth letting the chain out, stern lines, then take in chain until it is tight.",
+    "see": "You are in the fairway in front of your berth, bow pointing south. This quay has no lazy lines, so your own anchor will hold the bow. The magenta ring is where to drop it: in the empty berth across the fairway.",
+    "happening": "The anchor and its chain do the lazy line's job: laid out ahead, then tightened, they hold the bow off the quay while the stern lines hold the stern.",
+    "action": "Motor slowly forward until the bow is over the ring; let the anchor go; back towards your berth, letting out chain as she goes; stop a step from the quay; stern lines; take in chain until it is tight and the anchor is set.",
+    "mistake": "Not letting out chain as you back: the anchor drags behind you and holds nothing. Or taking in chain so hard that it pulls the stern off the quay: the windlass cuts out.",
+    "done": "She is stern-to on her own anchor. Lay the chain out as you back in, then tighten it.",
+    "steps": {
+      "to-spot": {
+        "goal": "Motor slowly forward until the bow is over the ring, nearly stopped.",
+        "how": "Engine slow ahead (the lever just past Neutral towards Ahead); she already points south at the empty berth across the fairway: keep her straight with the thrusters. Neutral over the ring, a touch astern to stop."
+      },
+      "let-go-anchor": {
+        "goal": "Let the anchor go to the bottom (5 m).",
+        "how": "Anchor: hold \"Chain out ▼\" until the anchor is on the bottom."
+      },
+      "reverse-in": {
+        "goal": "Back into your berth, letting out chain, and stop with the stern 0.5–2.8 m from the quay.",
+        "how": "Engine slow astern. Tap \"Chain out\" whenever the chain counter is less than the distance to the anchor plus a few metres, so the chain is never tight while you move. Keep her straight with the thrusters. Neutral near the quay."
+      },
+      "stern-lines": {
+        "goal": "Throw both stern lines to the quay.",
+        "how": "Harbour gear → Lines: \"Throw it to the quay\" on both stern lines."
+      },
+      "chain-tight": {
+        "goal": "Take in chain until the anchor is set and the chain holds the bow, engine in neutral.",
+        "how": "Anchor: hold \"Chain in ▲\" until the section says the anchor is set. If the windlass cuts out, the chain is too tight: let out 1 m."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "A light touch",
+        "what": "She touched another boat or the quay without a fender between.",
+        "why": "Slow boats drift with the wind; a touch at walking pace scratches the gelcoat but rarely does more.",
+        "fix": "Slow down, use the thrusters to hold her off, and put the fenders out on the side that is close."
+      },
+      "hard-hit": {
+        "name": "A hard knock",
+        "what": "She hit another boat or the quay hard. The exercise stops here.",
+        "why": "At more than about one knot, ten tonnes of boat dents a hull or breaks a rail, even with fenders.",
+        "fix": "Go slower near other boats and the quay: in a harbour, never faster than you would walk. Tap Try again."
+      },
+      "propeller": {
+        "name": "A rope round the propeller",
+        "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.",
+        "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.",
+        "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."
+      },
+      "fenders-in": {
+        "name": "Fenders still in",
+        "what": "You are backing into the berth with the fenders in the locker.",
+        "why": "Without fenders the first touch of the boat next door scratches both hulls.",
+        "fix": "Harbour gear → Fenders: Out, before you come close."
+      }
+    }
   }
 }

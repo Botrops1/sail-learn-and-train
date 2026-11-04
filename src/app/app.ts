@@ -167,6 +167,9 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
           crew: s.lines.crew?.code ?? null,
           anchorPhase: s.anchor.phase,
           chainOutM: s.anchor.chainOutM,
+          anchorEastM: s.anchor.eastM,
+          anchorNorthM: s.anchor.northM,
+          anchorCutOut: s.anchor.cutOut,
         };
       },
     };
