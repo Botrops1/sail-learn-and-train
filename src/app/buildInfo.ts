@@ -16,3 +16,6 @@ export function makeBuildInfo(hash: string, date: string): BuildInfo {
 export const BUILD_INFO: BuildInfo = makeBuildInfo(__BUILD_HASH__, __BUILD_DATE__);
 
 export const REPO_URL = 'https://github.com/Botrops1/sail-learn-and-train';
+
+/** GitHub's form chooser: bug, wrong sailing fact, translation or review, idea (.github/ISSUE_TEMPLATE). */
+export const ISSUES_URL = `${REPO_URL}/issues/new/choose`;
