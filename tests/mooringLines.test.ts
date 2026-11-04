@@ -345,7 +345,7 @@ describe('M45 bay lines', () => {
     expect(lineCommand('sl', 'letGo', inputsOf(state, swimming)).crew).toBeNull();
   });
 
-  it('a shore line in the water counts as slack for the propeller, a bow line does not', () => {
+  it('a crew taking the shore line ashore does not foul the propeller (owner, PR 163); a bow line does not either', () => {
     const base = bayState(SHORE);
     const geared = initialEngine({ running: true, leverPct: -30 });
     const swimming = lineCommand('sl', 'take', inputsOf(base));
@@ -353,7 +353,8 @@ describe('M45 bay lines', () => {
     for (let t = 0; t < 3; t += STEP) {
       state = stepLines({ ...inputsOf(base, state), engine: geared }, STEP);
     }
-    expect(state.fouled).toBe(true);
+    expect(state.crew).not.toBeNull();
+    expect(state.fouled).toBe(false);
     const buoyState = bayState(BUOY);
     let tied = lineCommand('bl', 'take', inputsOf(buoyState));
     for (let t = 0; t < 5; t += STEP) {

@@ -551,8 +551,10 @@ export function stepLines(inputs: LinesInputs, dt: number, data: BoatData = hans
 
   const { engine, boat } = inputs;
   const inGear = engine.running && engine.gear !== 'neutral';
+  // A crew ashore with the shore line (`swimShore`) goes out clear of the stern (owner, PR 163): only
+  // the crew walking the lazy line on the quay handles a line that can reach the propeller.
   const slack =
-    crew !== null ||
+    crew?.kind === 'walkLazy' ||
     inputs.overBowLine === true ||
     state.lines.some((line) => slackInWater(line, boat, data));
   const fouling = inGear && slack && boat.mode === 'sailing' && !state.fouled;

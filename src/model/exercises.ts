@@ -375,7 +375,9 @@ export function checkPasses(
     if (check.engine.running !== undefined && source.engine.running !== check.engine.running) {
       return false;
     }
-    if (check.engine.gear !== undefined && source.engine.gear !== check.engine.gear) return false;
+    // An engine that is stopped drives nothing, so it counts as neutral (owner, PR 163).
+    const gear = source.engine.running ? source.engine.gear : 'neutral';
+    if (check.engine.gear !== undefined && gear !== check.engine.gear) return false;
   }
   return harbourFieldsPass(check, source, context);
 }
