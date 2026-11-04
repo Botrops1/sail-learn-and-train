@@ -170,7 +170,7 @@ export async function liveM76Checks({ openPage, viewports, outDir, prefix, probl
       .innerText()
       .catch(() => '');
     await shot(page, 'm76-turn-left-circle');
-    check('left the circle', /Out of the circle/.test(text), text.slice(0, 100));
+    check('left the circle', /She left the circle/.test(text), text.slice(0, 100));
     await context.close();
   }
 }
