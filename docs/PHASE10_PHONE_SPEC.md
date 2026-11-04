@@ -16,7 +16,7 @@ Extra milestones of Phase 10 for issue #165 item 1 (the launch blocker "exercise
 
 ## 1. Goal
 
-Every exercise works on a 390 × 844 phone in portrait, with no zooming and no folding of panel sections. During an exercise, the controls the current step needs sit in one **step bar** over the bottom of the 3D view (M79). The screen stays clear: on a phone the hint is folded, the time bar is folded, the 3D labels are off, and the camera keeps the yacht in the middle of the part of the 3D view left free, moving softly when something opens or closes (M80). Every exercise can also be **watched**: the app sails it step by step and stops after each step; and each step has **Show me**, which plays that one step and then rewinds so the learner can try it (M81). In Realistic ropes the bar shows the rope station's controls for *Setting the sails* and *Furling the sails* (M82).
+Every exercise works on a 390 × 844 phone in portrait, with no zooming and no folding of panel sections. During an exercise, the controls the current step needs sit in one **step bar** over the bottom of the 3D view (M79). The screen stays clear: on a phone the hint and the time bar are folded; on every screen the 3D labels are off in exercises; and the camera keeps the yacht in the middle of the part of the 3D view left free, moving softly when something opens or closes (M80). Every exercise can also be **watched**: the app sails it step by step and stops after each step; and each step has **Show me**, which plays that one step and then rewinds so the learner can try it (M81). In Realistic ropes the bar shows the rope station's controls for *Setting the sails* and *Furling the sails* (M82).
 
 ## 2. Scope
 
@@ -45,7 +45,7 @@ Every exercise works on a 390 × 844 phone in portrait, with no zooming and no f
 - **Touch targets:** every bar button at least 48 × 48 px (`--bar-touch: 48px`, owner: "normal").
 - **Control steps:** a control row's − / + move by `settings.step` (1 or 5) through `snapControl(id, value ± step, step)` (`src/model/controls.ts`), with press-and-hold repeat (`stepButton`, `src/ui/stepper.ts`). The engine row's lever moves by **5** % per tap (`BAR_LEVER_STEP_PCT = 5`, a constant in `exerciseBar.ts`; the neutral band is ±10 %, `physics.engine.neutralBandPct`, so two taps from neutral give slow ahead at 15 %, as the pilots use).
 - **Signs:** `ctl_rudder` −° = wheel to port; autopilot `{ turnDeg: −10 }` = 10° to port. Control values of sheets are % eased (− hauls in); furling controls are % unfurled (− rolls in).
-- **Time:** pilots read the run's own clock (`run.elapsedS`, `run.stepStartS`), never the frame time, so they act the same at every frame rate.
+- **Time:** pilots read the run's own clock (`run.elapsedS`, `run.stepStartS`), never the frame time; the app runs a demo in parts of at most 0.05 s (4.2), the step the pilots were tuned at.
 
 ### 3.2 Shared helpers (new)
 
@@ -69,7 +69,7 @@ No sailing facts are added. The pilots follow the steps' existing `how` texts an
 - A hold button that sticks: every hold row (thrusters, windlass, winch button) releases on `pointerup`, `pointercancel`, `pointerleave`, on `blur` of the window and on `visibilitychange`, as `thrusterPanel.ts` does.
 - The chip row, the mini-map, the Resume button or the info card hidden behind the bar: every CSS `bottom:` that uses `--view-bottom-inset` inside the 3D view also adds `var(--exercise-stack-h, 0px)` (6.5).
 - The camera framing the boat behind the bar: the stacked layout's bottom inset adds the stack's height (6.5); a ResizeObserver on the stack calls the app's `reframe`.
-- Keys stealing typing: the bar's keys ignore events whose target is an `input`, `select`, `textarea` or `[contenteditable]`, events with Ctrl, Alt or Meta, and do nothing while a chip card or menu is open (`chipMenu.ts` keeps the one open overlay).
+- Keys stealing typing or firing twice: the bar's keys ignore events whose target is an `input`, `select`, `textarea`, `button`, `a` or `[contenteditable]` (a focused button handles its own keys), events with Ctrl, Alt or Meta, and do nothing while a chip card or menu is open (a new `export function overlayOpen(): boolean` in `chipMenu.ts`, true while its one open menu or registered card is open).
 - A pilot that acts on frame time or keeps phases across steps: Show me starts a **fresh** pilot at a step's start (M81); a pilot must be able to start at any step (3.5).
 - Watch's own actions in the debrief or in the progress: they go through the `demo` action (M81), which `reduce` does not log; `recordDone` is skipped for a watched run.
 - Russian text: AI draft, `"$status"` stays `draft` where the file has one.
@@ -104,33 +104,40 @@ What the prototype found: `enterPilot` keeps a phase across steps, so a fresh pi
 
 ### 4.1 New state
 
-No new field in `AppState` (nothing new travels in links or waypoints). New UI state:
+**M81** adds three fields to `ExerciseRun` (`src/app/exerciseRun.ts`); they are not written to links (a loaded run has the defaults) and are kept by `restoreWaypoint` except as said in 4.2:
 
 ```ts
-// src/ui/exerciseDemo.ts (M81): what the app is playing, if anything. Not in the link.
-export type DemoKind = 'watch' | 'showMe';
-export interface DemoState {
-  kind: DemoKind;
-  /** showMe: the step being shown; watch: unused (-1). */
-  step: number;
-  pilot: Pilot;
-  /** The learner's own `pauseOnStep`, put back when the demo ends. */
-  learnerPauseOnStep: boolean;
-  /** The card over the bar: none, a finished step (watch), or "Now you" (showMe). */
-  card: 'none' | 'stepDone' | 'nowYou';
-}
+/** What the app is playing: null (the learner), 'watch' (the whole run) or 'showMe' (one step). */
+demo: 'watch' | 'showMe' | null;
+/** showMe: the step being shown; else -1. */
+demoStep: number;
+/** True once Show me or Watch was used in this run: no best time is recorded (the tick is, unless watched). */
+demoUsed: boolean;
 ```
 
-`src/app/exerciseProgress.ts` (M81): `ExerciseProgress` gets `watched: Readonly<Record<string, { at: string }>>` (a missing field reads as `{}`; `v` stays 1); `recordWatched(id: string): ExerciseProgress`.
+`newRun` sets `null`, `-1`, `false`. The pilot itself (a closure) is UI state in `src/ui/exerciseDemo.ts` (8.5), never in `AppState`.
+
+`src/app/exerciseProgress.ts` (M81): `ExerciseProgress` gets `watched: Readonly<Record<string, { at: string }>>`; `parseProgress` reads it (missing or bad → `{}`), and `withDone`, `recordDone` and the new `recordWatched(id: string): ExerciseProgress` all keep both maps (`v` stays 1). `recordDone` does not clear `watched`. `recordDone(id: string, elapsedS: number | null)`: `null` ticks the exercise without a time (an older best time stays).
 
 ### 4.2 Actions and the order of work
 
-- **M81:** a new action `{ type: 'demo'; actions: Action[] }`. `reduce` is split: the body of today's `reduce` without its last line (the `logAction` call) becomes `reduceUnlogged(state, action)`; `reduce(state, action)` = `reduceUnlogged` and then, as today, `logAction` for a non-`step` action while `next.exercise !== null`. `case 'demo'` (handled at the top of `reduce`, before anything else): `action.actions.reduce((s, a) => reduceUnlogged(s, a), state)`; a nested `demo` inside is ignored. Alerts are still recorded (inside `reduceUnlogged`).
-- **Frame order (M81):** in `app.ts`'s frame loop, `demoFrame(store)` runs **before** the `step` dispatch: when a demo exists, the run's status is `running`, `state.paused` is false and the step is the one being played, it dispatches `{ type: 'demo', actions: pilotActions(demo.pilot, state) }` when that list is not empty.
+- **M81, the `demo` action:** `{ type: 'demo'; actions: Action[] }`. Today's `reduce` is renamed `reduceUnlogged` with its last line (the `logAction` call) removed; everything else stays in it (the early return for `next === state`, `load`, `reset`, `exercise`; `recordAlerts`; `stepExercise` on `step`). The new `reduce(state, action)`: for `demo`, `action.actions.reduce((s, a) => (a.type === 'step' || a.type === 'demo' ? s : reduceUnlogged(s, a)), state)`; for every other action, `next = reduceUnlogged(state, action)` and then, as today, `logAction(state, next, action)` for a non-`step` action while `next.exercise !== null`.
+- **M81, the `demo` exercise command:** `{ type: 'exercise', command: { demo: 'watch' | 'showMe' | null } }`, handled in `reduceAction`'s `exercise` case:
+  - `'watch'`: only in `setup`: `demo = 'watch'`, `demoUsed = true` (the UI then dispatches `'start'`).
+  - `'showMe'`: only while `running`: `restoreWaypoint(state, run.step)` (back to the current step's start), then `demo = 'showMe'`, `demoStep = run.step`, `demoUsed = true`.
+  - `null`: in any status: `demo = null`, `demoStep = -1`.
+- **M81, the step pause of a demo:** in `stepExercise`, where a step is finished, `stopTime = run.options.pauseOnStep || run.demo !== null` (time stops after every step the app played; the learner's own option is untouched, so no `exs` appears in links).
+- **M81, frame order** (`app.ts`): while `run.demo !== null` and the run is `running`, the frame's `dt` (after the time scale) is split into `n = ceil(dt / 0.05)` equal parts; before each part's `step` dispatch, `demo.frame()` dispatches `{ type: 'demo', actions: pilotActions(pilot, state) }` when that list is not empty. The pilots were tuned at 0.05 s steps (3.5); at 0.25 s three harbour pilots failed in the prototype. While a demo runs, the time scale is capped at ×4 (a higher choice plays at ×4; the time bar shows the cap as it shows the M71 Alone rule).
 
 ### 4.3 URL keys
 
-No new keys. **Labels (M80, owner):** in Exercises mode the 3D labels are off by default: `defaultLabels(ropes, appMode)` (`src/model/settings.ts`) returns `false` when `appMode === 'exercise'`, else as today (`ropes !== 'realistic'`). `lb` is written when the labels differ from that default, as today. **Old links:** an exercise link without `lb` opened with labels on in Easy ropes; it now opens with them off (owner's decision); a link with `lb=1` keeps them on. Entering or leaving Exercises mode (`setAppMode`) sets `settings.labels` to the new mode's default, as `withRopesMode` does for the ropes mode.
+No new keys. **Labels (M80, owner):** in Exercises mode the 3D labels are off by default, on every layout. `defaultLabels(ropes: RopesMode, appMode: AppMode = 'easy')` (`src/model/settings.ts`) returns `false` when `appMode === 'exercise'`, else `ropes !== 'realistic'` as today. The rules, all in M80:
+
+- **Parse** (`parseUrlState`): after the state is built (both the normal branch and the `exw` waypoint branch), if `appMode === 'exercise'` and the link has no `lb`, `settings.labels = false`. Other links: as today.
+- **Serialize** (both places in `urlState.ts` that compare with `defaultLabels`, the exercise start link and `serializeUrlState`): compare with `defaultLabels(state.settings.ropesMode, state.appMode)`; `lb` is written when they differ.
+- **`setAppMode`** (`store.ts`): when the old or the new mode is `'exercise'`, the new settings' `labels` = `defaultLabels(ropesMode after the change, action.mode)`, in both branches (the `keepsRopesMode` branch and the `withRopesMode` branch); a manual choice is overwritten, as a ropes-mode change does today. Between other modes: as today.
+- **`withRopesMode(settings, ropes, appMode: AppMode = 'easy')`**: the labels follow `defaultLabels(ropes, appMode)`; `setRopesMode` passes `state.appMode` (in an exercise the ropes choice keeps the labels off).
+- **Old links:** an exercise link without `lb` opened with labels on in Easy ropes; it now opens with them off (owner's decision); a link with `lb=1` keeps them on. Links outside Exercises mode are unchanged.
 
 ### 4.4 Data (`content/exercises/exercises.json`)
 
@@ -141,11 +148,11 @@ Each step gets `"bar": BarRowId[]` (M79, required, 0–4 rows, the order shown t
 | Milestone | New | Changed |
 |---|---|---|
 | M79 | `src/app/exerciseBar.ts`, `src/ui/exerciseBar.ts`, `tests/exerciseBar.test.ts`, `scripts/shots-m79.mjs` | `content/exercises/exercises.json`, `src/model/exercises.ts`, `src/app/app.ts`, `src/ui/thrusterPanel.ts`, `src/ui/enginePanel.ts`, `src/style.css`, `content/lang/{en,ru}/ui.json`, `scripts/shots.mjs`, `.github/workflows/ci.yml`, `docs/CODE_MAP.md` |
-| M80 | `scripts/shots-m80.mjs` | `src/render3d/cameraRig.ts`, `src/render3d/sceneConfig.ts`, `src/render3d/scene.ts` (debug hook), `src/ui/exerciseCoach.ts`, `src/ui/timeBar.ts`, `src/model/settings.ts`, `src/app/urlState.ts`, `src/app/store.ts`, tests, `scripts/shots.mjs`, `ci.yml`, `docs/CODE_MAP.md` |
-| M81 | `src/app/exercisePilots.ts`, `src/ui/exerciseDemo.ts`, `tests/exercisePilots.test.ts`, `scripts/shots-m81.mjs` | `tests/harbourPilot.ts` (re-exports), `src/app/store.ts`, `src/app/app.ts`, `src/app/exerciseProgress.ts`, `src/ui/exercisePanel.ts`, `src/ui/exerciseLine.ts`, `src/ui/exerciseBar.ts`, `src/ui/exerciseResume.ts`, strings, `scripts/shots.mjs`, `ci.yml`, `docs/CODE_MAP.md` |
-| M82 | `scripts/shots-m82.mjs` | `exercises.json`, `src/app/exerciseBar.ts`, `src/ui/exerciseBar.ts`, `src/app/exercisePilots.ts`, tests, strings, `scripts/shots.mjs`, `ci.yml`, `docs/CODE_MAP.md`, issue #165 |
+| M80 | `scripts/shots-m80.mjs`, `tests/exerciseScreen.test.ts` | `src/render3d/cameraRig.ts`, `src/render3d/sceneConfig.ts`, `src/render3d/scene.ts` (debug hook), `src/ui/exerciseCoach.ts`, `src/ui/timeBar.ts`, `src/app/app.ts` (the two calls get `layout`), `src/model/settings.ts`, `src/app/urlState.ts`, `src/app/store.ts`, `scripts/shots.mjs`, `ci.yml`, `docs/CODE_MAP.md` |
+| M81 | `src/app/exercisePilots.ts`, `src/ui/exerciseDemo.ts`, `tests/exercisePilots.test.ts`, `scripts/shots-m81.mjs` | `tests/harbourPilot.ts` (re-exports, `goodRun`), `tests/harbourExercises.test.ts`, `src/app/store.ts`, `src/app/exerciseRun.ts`, `src/app/app.ts`, `src/ui/timeBar.ts` (the ×4 cap), `src/app/exerciseProgress.ts`, `src/ui/exercisePanel.ts`, `src/ui/exerciseLine.ts`, `src/ui/exerciseBar.ts`, `src/ui/exerciseResume.ts`, strings, `scripts/shots.mjs`, `ci.yml`, `docs/CODE_MAP.md` |
+| M82 | `scripts/shots-m82.mjs` | `exercises.json`, `src/model/exercises.ts`, `src/app/exerciseBar.ts`, `src/ui/exerciseBar.ts`, `src/app/exercisePilots.ts`, `tests/exerciseBar.test.ts`, `tests/exercisePilots.test.ts`, strings, `scripts/shots.mjs`, `ci.yml`, `docs/CODE_MAP.md` |
 
-Each milestone gets its **own CI part** in `ci.yml` (`SHOTS_ONLY=m<N>`, added to the first part's `SHOTS_SKIP` list), as M77/M78 do.
+Each milestone gets its **own CI part** in `ci.yml` (`SHOTS_ONLY=m<N>`, added to the first part's `SHOTS_SKIP` list), as M77/M78 do, and adds its group to the test-clock rules of `openPage` in `scripts/shots.mjs` where they list milestone groups (they match `m7\d` today; M80–M82 extend them to their own names).
 
 ## 5. Milestones overview
 
@@ -261,6 +268,25 @@ A step with no rows shows `p.bar-nothing` `t('exercise.bar.nothing')` under the 
 "exercise.bar.stations": "Stations"
 ```
 
+### 6.6a Details (decided in the planning PR after the builder check)
+
+1. **M78 first:** if `stern-to-anchor` is not in `exercises.json`, stop and say so in the session; do not build M79 without it.
+2. **Engine row:** small line `leverText(state.engine.leverPct)` and, while running, ` · ` + `rpmText(state.engine.rpm)`. `enginePanel.ts` exports `createStartStopButton(store: Store, suffix = '')`, returning what the private `startStopButton` returns today (`{ button, note, update }`, with `data-testid="engine-startstop${suffix}"`); the bar puts `button` last in the row, `note` under the row's small line, and calls `update` the way the Engine section does on each store change.
+3. **Fenders row:** `fenderStatusText(state.harbour)`.
+4. **Windlass row:** `anchorPanel.ts` exports its `holdButton` unchanged (add `anchorPanel.ts` to M79's files); the bar calls it with `'down'` / `'up'`, testids `windlass-down-bar` / `windlass-up-bar`, and the same `partId` the Anchor section passes; labels `t('anchor.down')`, `t('anchor.up')`.
+5. **All controls:** move the inline mapping of "Show the controls" in `exercisePanel.ts` into `export function controlsSectionFor(step: ExerciseStep, state: AppState, kind: LayoutKind): SectionId` (same file), used by the step card and the bar (add `exercisePanel.ts` to M79's files). The button is 44 px high.
+6. **Layout:** the parameter is the layout object `app.ts` holds (the type `createLayout` returns). Add `export function layoutKindOf(viewport: { mode: LayoutMode; wide: boolean }): LayoutKind` to `src/ui/modes.ts` (`wide ? 'wide' : mode`); `panel.ts`'s private `layoutKindNow` uses it.
+7. **`onStackResize`:** `app.ts` passes `() => reframe()` (its `reframe` is assigned later).
+8. **Autopilot rows:** heading text `Math.round(((targetDeg % 360) + 360) % 360)`; the turn buttons' text is built as `` `◀ ${L}°` `` and `` `${L}° ▶` `` (no string key: a character and a number); every autopilot button in the bar is disabled in Held still, as the Steering section does; in Realistic ropes the autopilot and engine rows work as in Easy (their actions need no station; the prototype ran them so).
+9. **Thrusters:** testids `thruster-bow-bar-port`, `thruster-bow-bar-starboard`, `thruster-stern-bar-port`, `thruster-stern-bar-starboard`; CSS: the `'quick'` variant's rules copied for `.thruster-pair-bar`, 48 px high. The row is not drawn on a boat with no thruster; `isBarRowId('thrusters')` is still true.
+10. **Keys per row** (each row object carries `keys: { left?(down: boolean): void; right?(down: boolean): void; space?(down: boolean): void }`, dispatching the row's actions directly, not synthetic clicks; `down` false only matters for holds): control ← − / → +; `autopilot:turn` ← ◀ / → ▶; `autopilot:mode` ← / → move the pressed mode one place (Standby, Heading, Wind); `autopilot:tack` Space; `engine` ← Astern / → Ahead / Space Start or Stop; `thrusters` none (A / D / J / L); `line:<code>` ← its first enabled button, → its last enabled one, Space the first; `fenders` ← In / → Out; `windlass` ← hold Chain out / → hold Chain in (keyup releases); `ropes` Space opens the stations. The selection goes back to row 1 at every render-key change and is clamped to the rows shown.
+11. **Thruster keys (6.4):** active while `barShown(state)` and `barRowsFor(def, run.step, ropesMode)` includes `thrusters`, whether or not the bar is visible.
+12. **CSS:** every `bottom:` declaration in `src/style.css` that uses `--view-bottom-inset` (the chip row in all its blocks, the mini-map, `.exercise-resume`, `.info-area`, the chip cards, the map's scale, zoom and hint) adds `+ var(--exercise-stack-h, 0px)`; `height:` rules that use it are left as they are. Tokens: `.exercise-stack { --bar-touch: 48px; }`; bar background `var(--surface)`, borders `var(--line)`, the selected row `var(--accent-soft)`, the hint colour `var(--muted)`.
+13. **Visibility on a phone** follows `sheet.onChange` (after the sheet has settled); when the bar hides, the stack's ResizeObserver sets the height to `0px` and calls `onStackResize`.
+14. **Aria strings** for the step buttons (appended to 6.6): `"exercise.bar.lessAria": "Less: {name}"`, `"exercise.bar.moreAria": "More: {name}"`, `"exercise.bar.asternAria": "Engine lever 5 % towards astern"`, `"exercise.bar.aheadAria": "Engine lever 5 % towards ahead"`.
+15. **`isBarRowId` in M79** accepts only the M79 forms (M82 adds `clutch:` and `winch:`). Test fixtures in `tests/` that build an `ExerciseStep` get `bar: []`.
+16. **Tap runs (6.8):** the links carry `step=1`; for each step tap − / + until the row's value reads the value the pilot sets (8.3), and ◀ / ▶ as many times as the pilot turns; the engine: three taps of Ahead give slow ahead (15 %). Limits: Points of sail 10, 21, 20, 22, 25 s per step (8.6); Leaving the berth 5, 5, 45, 34 s (8.7). The scenes of 6.8 are screenshots taken during these runs at the named steps (`m79-phone-pos-step2`, `m79-phone-leave-step4`), plus `m79-phone-anchor-step1` (Anchoring at its start), `m79-wide-pos-step1` (1440 × 900) and `m79-side-leave-step1` (the side viewport of `shots.mjs`). Check 5's Space on Leaving the berth step 1 presses the lazy line row's first enabled button, Let go (the start link has the lazy line on). Check 6's "fits": no element inside `exercise-bar` has `scrollWidth > clientWidth`.
+
 ### 6.7 Tests (`tests/exerciseBar.test.ts`)
 
 - Every step of every exercise has `bar` with 0–4 entries, each `isBarRowId`; no row twice in a step.
@@ -271,12 +297,7 @@ A step with no rows shows `p.bar-nothing` `t('exercise.bar.nothing')` under the 
 
 ### 6.8 Browser checks (`scripts/shots-m79.mjs`, test clock)
 
-Scenes (phone first; links are the exercise start links plus `debug=1`; Start tapped, then the step reached through `__sailExercise.dispatch` of the pilot-free actions of PHASE10_SPEC's checks):
-
-- `m79-phone-pos-step2`: Points of sail at step 2, 390 × 844.
-- `m79-phone-leave-step4`: Leaving the berth at step 4.
-- `m79-phone-anchor-step5`: Anchoring with a line ashore at step 5 (four rows).
-- `m79-wide-pos-step3` and `m79-side-leave-step4`.
+Scenes: as 6.6a item 16.
 
 Live checks (390 × 844 unless named):
 
@@ -311,41 +332,45 @@ As 4.5.
 
 ### 7.3 Camera (`src/render3d/cameraRig.ts`): the yacht in the middle of the free part, moving softly (owner)
 
-- Split `setViewport`'s body after the clamping into `applyViewport(width, height, inset, top)` (the projection, the lens and the preset or focus refit, exactly as today).
-- `setViewport(width, height, bottomInset, options, topInset)` clamps as today into `(inset, top)`; then: if `width` or `height` differs from the current viewport, or no viewport was applied yet, call `applyViewport` at once (a rotation or resize jumps, as today); else start an **ease** `{ from: { inset, top } now shown, to: the new pair, start: now }` (a new ease starts from the values shown at that moment).
-- `update(now)`: before the existing tween code, while an ease runs: `k = easeInOut(min(1, (now − start) / (viewportEaseS × 1000)))`, `applyViewport(width, height, lerp(from.inset, to.inset, k), lerp(from.top, to.top, k))`; the ease ends at `k = 1`. A preset view stays fitted throughout (applyViewport refits it); a camera moved by hand (`free` after a drag) keeps its pose, only the projection's centre moves.
-- The free area is everything the 3D view shows between the bottom of `.view-top` (the strip, the time bar, the step line and the hint when open) and the top of the lowest overlay stack (the sheet, the step bar, M81's card, the chip row) — the insets `app.ts` already passes, plus M79's stack. Nothing else changes in `app.ts` except that the hint's opening and closing (`.view-top` resizes) already calls `reframe` through `trackTopHeight`.
-- Debug hook (`scene.ts`, only with `debug=1`): `window.__sailCamera = { freeArea(): { top: number; bottom: number }, boatBox(): { top: number; bottom: number; left: number; right: number } }`: the eased area in CSS px from the view's top, and the hull and rig's projected bounding box (the boat group's `Box3` corners through the camera) in the same pixels.
+- **Split.** `setViewport`'s body after the clamping becomes `applyViewport(width: number, height: number, inset: number, top: number): void` (the projection, the lens and the preset or focus refit, exactly as today, including what it does today while `interacting`, while a `tween` runs, or with a `focus`). `options` (`{ ...presetOptions, helm }`) is set at once in `setViewport`, never eased.
+- **Ease.** `setViewport(width, height, bottomInset, options, topInset)` clamps as today (`maxBottomInsetShare`, `maxTopInsetShare`, `minFreePx`) into the pair `(inset, top)`; the ease always runs on these **clamped** values. A private flag `applied` (false until the first `applyViewport`). If `!applied`, or `width` or `height` differs from the viewport shown: cancel any ease and `applyViewport` at once (the first frame, a rotation or a resize jump, as today). Else start an ease `{ from: the (inset, top) shown now, to: the new pair, start: performance.now() }` (the same clock the tweens use; a new ease starts from the values shown at that moment).
+- **`update(now)`:** first, while an ease runs: `k = easeInOut(min(1, (now − start) / (SCENE.camera.viewportEaseS × 1000)))`, `applyViewport(width, height, lerp(from.inset, to.inset, k), lerp(from.top, to.top, k))`; at `k = 1` the ease ends. Then the existing tween code, unchanged. A preset view stays fitted throughout; a camera moved by hand keeps its pose, only the framing centre moves.
+- **What the free area is.** The insets `app.ts` already passes: the top is the bottom of `.view-top` (strip, time bar, step line, the hint when open); the bottom inset is, stacked, `sheet.cameraInset()` + M79's stack height (6.5), and, side and wide, `viewBox.bottom − chipRow.top`, where the chip row already sits above M79's stack. The hint opening resizes `.view-top`, whose `trackTopHeight` already calls `reframe`; a sheet snap calls it through `sheet.onChange` once per snap; the stack's ResizeObserver (6.5) calls it too. No other change in `app.ts` for the camera.
+- **New rig method** `freeArea(): { top: number; bottom: number }`: the eased area now shown, as y coordinates in CSS px from the view's top (`top`, and `height − inset`).
+- **Debug hook** (`scene.ts`, only with `debug=1`): `window.__sailCamera = { freeArea: () => rig.freeArea(), boatBox: () => … }`. `boatBox()` returns `{ top, bottom, left, right }` in the same CSS px: the eight corners of `new Box3().setFromObject(boatModel.root)` (the whole boat model: hull, rig, sails, ropes; the 3D labels are DOM and do not count) projected with the camera (`Vector3.project`, which includes the view offset), mapped to CSS px with the view's `clientWidth` / `clientHeight` (`y = (1 − ndc.y) / 2 × clientHeight`).
 
 ### 7.4 The hint folded on a phone (`src/ui/exerciseCoach.ts`, owner)
 
-On the stacked layout the hint window starts **folded** when a run starts and whenever the step changes; the learner's tap opens it until the next step; nothing is written to `sail-learn.coach` on the stacked layout. On side and wide nothing changes (the remembered choice, open by default).
+`createExerciseCoach(top: HTMLElement, store: Store, layout: Layout): void` (`app.ts` passes its `layout`). On the stacked layout the hint shows **folded** at a **run start** (the store moves `exercise.status` from `setup` to `running`, or a `load` brings a run that is already `running`) and at every **step change** (`run.step` differs from the previous state's); a tap opens it until the next of these; a `mistake` → `running` return keeps what it was. Nothing is written to `sail-learn.coach` on the stacked layout. On side and wide the remembered value (read once at creation, open by default) decides, as today; turning the device from stacked to side shows the remembered value, back to stacked the folded rule again. A language change reloads the page (M23), so it starts again from these rules.
 
 ### 7.5 The time bar folded during a run on a phone (`src/ui/timeBar.ts`)
 
-On the stacked layout, while a run is active, the bar shows **folded** (the existing folded form beside the strip) unless the learner unfolds it during this run; that choice is not written to `sail-learn.timeBarFolded` and is forgotten when the run ends or a new run starts. Outside a run, and on side and wide, the saved fold decides as today.
+`createTimeBar(host: HTMLElement, store: Store, layout: Layout): HTMLElement` (`app.ts` passes its `layout`). Only where the fold button exists today (the speed part is available; where it is not, nothing changes): on the stacked layout, while a run's status is `running` or `mistake`, the bar shows **folded** unless the learner has tapped it open during this run (a private flag, reset at every run start as 7.4 defines it and when the run ends); that tap is not written to `sail-learn.timeBarFolded`. Outside a run, and on side and wide, the saved fold decides as today.
 
-### 7.6 Labels off in exercises (4.3)
+### 7.6 Labels off in exercises
 
-`defaultLabels(ropes: RopesMode, appMode: AppMode = 'easy'): boolean` → `appMode === 'exercise' ? false : ropes !== 'realistic'`. Every caller passes the app mode (`urlState.ts` parse and serialize, `withRopesMode`, the new `setAppMode` rule). The Settings switch keeps working in an exercise (on → `lb=1` in the link).
+As 4.3 (all of it is M80).
 
-### 7.7 Tests
+### 7.7 Tests (`tests/exerciseScreen.test.ts`)
 
 - `defaultLabels`: `('easy','exercise')` false, `('easy','easy')` true, `('realistic','learn')` false.
-- Exercise start link of points-of-sail (no `lb`) parses with `settings.labels === false`; with `lb=1` true; serialize of an exercise state with labels on writes `lb=1`; `setAppMode` from exercise to easy turns them on (Easy ropes).
-- Every existing urlState test still passes (none of them is an exercise link with labels on; if one is, it gets `lb=1` and the PR says so).
+- The points-of-sail start link (no `lb`) parses with `settings.labels === false`; with `lb=1` true; a waypoint link (`exw=1`) without `lb` false; serializing an exercise state with labels on writes `lb=1`, with labels off writes no `lb`.
+- `setAppMode`: exercise → easy (Easy ropes) turns the labels on; easy → exercise turns them off; learn → harbour leaves them as they were; `setRopesMode` to Easy inside an exercise keeps them off.
+- `grep -rln "m=exercise" tests/` and run those files: any test whose expected link or state has labels on gets `lb=1` added; list each in the PR.
 
 ### 7.8 Browser checks (`scripts/shots-m80.mjs`, test clock)
 
-1. **Phone, Points of sail step 1:** the hint is folded (`exercise-coach-toggle` `aria-expanded="false"`), the time bar folded, no 3D label visible; `__sailCamera.boatBox()` lies inside `freeArea()`, its vertical centre within 15 % of the free area's height of the free area's centre.
-2. **Soft move:** tap the hint open; 100 ms later `freeArea().top` lies strictly between its value before and after; 500 ms later it equals the final value (±1 px) and check 1's centring holds again. The same when the sheet goes from peek to half and back.
-3. **Next step folds it again;** the time bar unfolded by a tap stays unfolded until the run ends; `localStorage['sail-learn.timeBarFolded']` unchanged.
-4. **Wide (1440 × 900):** the hint open by default, labels off, the boat centred in the free area above the bar.
-5. **Old links:** Easy mode link (no exercise) shows labels as before; the M64 Helm camera checks and the M26 sheet framing checks still pass (run `SHOTS_ONLY=m26,m64,m80`).
+1. **Phone, Points of sail step 1:** `exercise-coach-toggle` has `aria-expanded="false"`; `time-fold` has `aria-expanded="false"`; the 3D label layer of `src/ui/labels3d.ts` shows no label; `__sailCamera.boatBox()`'s vertical centre lies within 15 % of the free area's height of the free area's centre, and its top and bottom lie within the free area ±8 px.
+2. **Soft move:** read `freeArea().top`, tap the hint open; after `page.waitForTimeout(100)` it lies strictly between the old and the final value; after `page.waitForTimeout(500)` it equals the final value ±1 px, and check 1's centring holds. The same for `freeArea().bottom` with `setSheet(page, 'half')` and back to `'peek'` (`scripts/ui.mjs`).
+3. **Next step** folds the hint again. `time-fold` tapped open stays open until the run ends (Stop), and the next Start shows it folded; `localStorage['sail-learn.timeBarFolded']` is unchanged throughout.
+4. **Wide (1440 × 900):** the hint open, no label, the centring of check 1 above the bar.
+5. **Earlier checks:** run `SHOTS_ONLY=m26,m64,m80` locally (the sheet framing and the Helm camera checks); both keep passing.
+
+**Tunable:** if check 2's 100 ms reading is already final, raise `viewportEaseS` within 0.25–0.5; if 500 ms is not enough, lower it.
 
 ### 7.9 Done when / not in M80
 
-Checks pass; the framing eases in every mode on a sheet move and on the hint; nothing else of the camera changes. Not in M80: Watch's card (M81 puts it in the stack, so it is framed by the same rule).
+Checks and tests pass; the framing eases in every mode on a sheet snap and on the hint; nothing else of the camera changes. Not in M80: Watch's card (M81 puts it in the stack, so the same rule frames it).
 
 ---
 
@@ -355,7 +380,7 @@ Checks pass; the framing eases in every mode on a sheet move and on the hint; no
 
 ### 8.1 Files
 
-As 4.5. `tests/harbourPilot.ts` becomes `export * from '../src/app/exercisePilots';` so the existing tests keep their imports.
+As 4.5. `tests/harbourPilot.ts` keeps only test helpers: `export * from '../src/app/exercisePilots';` plus `goodRun` (moved there from `harbourExercises.test.ts`, which imports it from there), with the signature `goodRun(id: string, level: ExerciseLevel, pilot: Pilot, limitS: number, ropes: RopesMode = 'easy', options: Partial<ExerciseOptions> = {})` (options dispatched in `setup` before `start`, as `{ options }`).
 
 ### 8.2 Data
 
@@ -365,7 +390,7 @@ None. `content/exercises/exercises.json` is unchanged unless the coverage test (
 
 Move every helper and pilot from `tests/harbourPilot.ts` here unchanged (`Pilot`, `H`, `lever`, `rudder`, `line`, `thr`, `windlass`, `stern`, `bow`, `clamp`, `wrap180`, `setFenders`, `leavePilot`, `enterPilot`, `turnPilot`, `buoyPilot`, `anchorPilot`, M78's `sternAnchorPilot` and its constants), with two changes:
 
-1. **Recording.** The module's `A = (s, a) => { recording?.push(a); return reduce(s, a); }`, with `let recording: Action[] | null = null;` set and cleared only by `pilotActions` (3.2). Every helper goes through `A`.
+1. **Recording.** The module's `A = (s: AppState, a: Action): AppState => { const next = reduce(s, a); if (recording && next !== s) recording.push(a); return next; }` (an action the store refuses is not recorded), with `let recording: Action[] | null = null;` set and cleared only by `pilotActions` (3.2), which returns `[]` when `state.exercise` is null. Every helper goes through `A`. Imports: `reduce`, `Action`, `AppState`, `AutopilotCommand`, `EngineCommand` from `./store`; `ControlId` from `../model/controls`; `twaSignedDeg`, `boatPoint`, `ExerciseLevel` from `../model/exercises`; `RealisticAction` from `../model/realistic` (M82); the rest as `tests/harbourPilot.ts` imports today. The `16.5` in `gustsPilot` becomes `const GUSTS_EASE_ABOVE_KN = 16.5; // the GUST badge's threshold in this exercise (1.1 × 15 kn)` (a pilot's script value, not boat data).
 2. **Entry phase of `enterPilot`** (3.5): `let phase = -1;` and, first thing on the first call, `if (phase === -1) phase = [0, 0, 4, 6, 6, 8][s.exercise.step] ?? 0;`.
 
 **New: the sailing pilots (Easy ropes)**, verbatim from the prototype:
@@ -492,53 +517,45 @@ export function furlSailsPilot(): Pilot {
 
 `pilotFor(id, level, ropes)`: harbour exercises (group `harbour`) ignore `ropes`: `leave-berth` → `leavePilot(level)`, `enter-berth` → `enterPilot(level)`, `turn-own-length` → `turnPilot()`, `mooring-buoy` → `buoyPilot()`, `anchor-shore` → `anchorPilot()`, `stern-to-anchor` → `sternAnchorPilot()`. The eight others: with `ropes === 'easy'` the matching function above; with `'realistic'` `null` (M82 adds two). Unknown id → `null`.
 
-### 8.4 Store (`src/app/store.ts`)
+### 8.4 Store (`src/app/store.ts`, `src/app/exerciseRun.ts`)
 
-The `demo` action and the split of `reduce` as 4.2. `{ type: 'exercise', command: { back } }` must also work while the run's status is `done` (Show me on the last step, 8.5); if it does not today, accept it there, as for `running`.
+As 4.1 and 4.2: the three run fields, the `demo` action, the `demo` command, the step pause of a demo. `{ back }` already works in `done` (`restoreWaypoint` has no status check); `{ back }` keeps `demo` and `demoStep` (the UI ends a demo itself with `{ demo: null }`).
 
 ### 8.5 UI
 
-**`src/ui/exerciseDemo.ts`** (new): `createExerciseDemo(store: Store, layout: Layout): ExerciseDemo` with
+**Who builds what.** `app.ts` creates `const demo = createExerciseDemo(store)` before the bar and passes it to `createExerciseBar(…, demo)` (a new last parameter); the frame loop calls it (4.2). Everything else reads `run.demo` from the store, so the panel, the line and Resume need no new parameter.
+
+**`src/ui/exerciseDemo.ts`** (new):
 
 ```ts
 export interface ExerciseDemo {
-  /** The demo now, or null. */
-  now(): DemoState | null;
-  watch(): void;                 // from the setup card
-  showMe(): void;                // from the bar, while running
-  next(): void;                  // the card's Next step
-  tryIt(): void;                 // the card's Let me try it
-  nowYou(): void;                // the card's Back to the start of the step
-  end(): void;                   // put the learner's pauseOnStep back, card none, demo null
-  onChange(cb: () => void): void;
-  frame(): void;                 // demoFrame (4.2), called by app.ts each frame before `step`
+  /** Called by app.ts before each 0.05 s part of a frame while run.demo !== null (4.2). */
+  frame(): void;
+  /** The rows each dispatched demo batch worked (barRowOf of its actions), for the bar's flash. */
+  onActions(cb: (rows: BarRowId[]) => void): void;
 }
+export function createExerciseDemo(store: Store): ExerciseDemo;
 ```
 
-- `watch()`: `learnerPauseOnStep` = the run's option; dispatch `{ type: 'exercise', command: { options: { pauseOnStep: true } } }` then `'start'`; `demo = { kind: 'watch', step: -1, pilot: pilotFor(id, run.options.level, ropesMode), card: 'none' }`.
-- `frame()`: as 4.2; for `watch` every step is played; for `showMe` only `demo.step`.
-- When the store shows the run's step increase (or the status turn `done`) during a demo: `card = 'stepDone'` (watch) or `'nowYou'` (showMe). For watch on the last step, the status `done` ends the demo after `recordWatched(id)` (the done card shows, 8.5 below).
-- `next()`: card none; `setPaused false` (the step pause of `pauseOnStep` lets time go on; the next step plays).
-- `tryIt()` (watch, after step k is done): dispatch `{ back: k }` (k = the finished step), then `end()`: the learner does step k and goes on alone.
-- `showMe()` (running, step k, a pilot exists): `learnerPauseOnStep` = option; dispatch `{ options: { pauseOnStep: true } }`, `{ back: k }`; `demo = { kind: 'showMe', step: k, pilot: pilotFor(…), card: 'none' }`.
-- `nowYou()`: dispatch `{ back: demo.step }`, then `end()`.
-- `end()` dispatches `{ options: { pauseOnStep: learnerPauseOnStep } }`. Stop, a `load`, Try again, leaving Exercises mode or a status `failed` also call `end()` (no option dispatch after a load).
-- A mistake during a demo shows the normal mistake card; Carry on continues the demo.
+It keeps one `pilot: Pilot | null`. In its `store.subscribe`: when `run.demo` turns from null to non-null, or `run.demo === 'showMe'` and `demoStep` changed, it makes a fresh `pilotFor(run.id, run.options.level, state.settings.ropesMode)`; when `run.demo` turns null or the run ends, `pilot = null`. `frame()`: when `pilot`, the run is `running`, `!state.paused`, and (`demo === 'watch'` or `run.step === run.demoStep`): `actions = pilotActions(pilot, state)`; if not empty, dispatch `{ type: 'demo', actions }` and call the `onActions` listeners with the union of `barRowOf` of the actions.
 
-**Setup card** (`exercisePanel.ts`): a new button **Watch it** (`exercise-watch`, `t('exercise.watch')`, the accent style) beside Start, which now reads `t('exercise.start')` = "Do it myself" (English and Russian changed). Order: stacked: Watch it, Do it myself; side and wide: Do it myself, Watch it. Watch it is hidden when `pilotFor(id, level, ropes)` is null. On a phone Watch it lowers the sheet to peek, as Start does.
+**The cards are read from the state** (no card state of their own). `div.exercise-demo-card` (`data-testid="exercise-demo-card"`, first child of `.exercise-stack`, so the M80 framing counts it), styled like the step card (`h3`, `p`, buttons in the accent and plain styles):
 
-**Step line** (`exerciseLine.ts`): during a demo the text starts with `t('exercise.watching')` ("Watching · ", watch) or `t('exercise.showing')` ("Showing · ", showMe), in the accent colour (`span.exercise-line-demo`).
+- **Step done (Watch):** `run.demo === 'watch'`, status `running`, `run.stepPause`: `h3` `t('exercise.demo.stepDone', { n: run.step })` (the 1-based number of the step just finished), `p` that step's `how` text, buttons **Next step** (`exercise-demo-next`, `t('exercise.demo.next')`: `setPaused false`) and **Let me try it** (`exercise-demo-try`, `t('exercise.demo.try')`: `{ back: run.step − 1 }`, then `{ demo: null }`). When time goes on by any other way (Resume, the time bar), `stepPause` turns false and the card goes.
+- **Now you (Show me):** `run.demo === 'showMe'` and (`run.step > run.demoStep` or status `done`): `h3` `t('exercise.demo.nowYouTitle')`, `p` `t('exercise.demo.nowYou')`, button **Back to the start of the step** (`exercise-demo-back`, `t('exercise.demo.back')`: `{ back: run.demoStep }`, then `{ demo: null }`).
+- The stack shows when the bar shows **or** a card shows (so the Now-you card also shows on the last step, while the status is `done`; the panel's done card waits in the panel, and is replaced by the step card after Back). The Resume button over the 3D view (`exerciseResume.ts`) is hidden while a demo card shows.
 
-**Bar** (`src/ui/exerciseBar.ts`): the head gets a button **▶ Show me** (`exercise-bar-showme`, `t('exercise.bar.showMe')`) while a run is `running`, no demo runs and a pilot exists; side/wide key `Enter` presses it. During a demo the head's label reads `t('exercise.bar.demoLabel')`, every bar button is `disabled`, and each action the demo dispatches flashes its rows (`barRowOf`): class `bar-row-flash` for 600 ms (an outline of 3 px in the warning colour the Attention badge uses and a light fill of it; no animation beyond that).
+**Setup card** (`exercisePanel.ts`): a button **Watch it** (`exercise-watch`, `t('exercise.watch')`, accent style) beside Start, which now reads `t('exercise.start')` = "Do it myself" (English and Russian changed; `exercise.start` has no other caller than the two Start buttons, check with `grep`). Order: stacked: Watch it, Do it myself; side and wide: Do it myself, Watch it. Watch it dispatches `{ demo: 'watch' }` then `'start'` (and on a phone lowers the sheet to peek, as Start does). It is hidden when `pilotFor(id, level, ropes)` is null. A waypoint setup (`startStep > 0`) offers it too: the demo plays from that step.
 
-**Demo card** (`div.exercise-demo-card`, `data-testid="exercise-demo-card"`, first child of `.exercise-stack`, so it sits above the bar and is framed like it, M80): styled like the step card (`h3` and `p` and buttons):
+**Step line** (`exerciseLine.ts`): while `run.demo` is `'watch'` or `'showMe'`, every line text gets the prefix `t('exercise.watching')` or `t('exercise.showing')` in `span.exercise-line-demo` (accent colour), also before the paused-after-step and mistake texts.
 
-- `stepDone`: `h3` `t('exercise.demo.stepDone', { n })` ("✓ Step 2 done"); `p` the finished step's `how` text; buttons **Next step** (`exercise-demo-next`, accent; on the last step it is not shown because the done card follows) and **Let me try it** (`exercise-demo-try`).
-- `nowYou`: `h3` `t('exercise.demo.nowYouTitle')`; `p` `t('exercise.demo.nowYou')`; button **Back to the start of the step** (`exercise-demo-back`, accent).
+**Bar** (`src/ui/exerciseBar.ts`): the head gets **▶ Show me** (`exercise-bar-showme`, `t('exercise.bar.showMe')`: `{ demo: 'showMe' }`) while the run is `running`, `run.demo === null` and `pilotFor(…)` is not null; key `Enter` presses it on side and wide (with M79's key filter: not when focus is on a button). During a demo the head's label reads `t('exercise.bar.demoLabel')`, the row buttons are `disabled`, the bar's keys do nothing, and the head shows **Stop watching** (`exercise-bar-stopdemo`, `t('exercise.bar.stopDemo')`: `{ demo: null }` — the learner goes on by hand from where the boat is) in place of Show me. `demo.onActions(rows)`: each row whose id is in `rows` gets class `bar-row-flash` for 600 ms (outline 3 px `var(--exercise-warning)` and a light fill of it; no other animation); a rebuild drops it.
 
-The Resume button over the 3D view (`exerciseResume.ts`) is hidden while the demo card shows.
+**Mistakes during a demo:** the normal mistake card; Carry on lets the pilot go on from where the boat is; a `failed` run ends as any failed run (the stack hides; Try again loads a fresh run without a demo).
 
-**Done card and list.** A watched run's done card has `t('exercise.demo.doIt')` "Now do it myself" (`exercise-demo-doit`, accent: the `load` of Try again, without a demo) before Try again; no tick and no best time are recorded. The list shows `span.exercise-watched` (`data-testid="exercise-watched-<id>"`) `t('exercise.watched')` "Watched" (hint colour) for an exercise watched and not done (a done one shows only its tick).
+**Done and progress** (`exercisePanel.ts`, where it calls `recordDone` today): when the run turns `done`: `run.demo === 'watch'` → `recordWatched(id)` only; `run.demo === 'showMe'` → nothing (the learner has not done the last step; Back follows); else `recordDone(id, elapsedS)` but, when `run.demoUsed`, without a best time (the tick only: `recordDone(id, null)`; `withDone` keeps an older best time and treats `null` as "no time"). A watched run's done card has **Now do it myself** (`exercise-demo-doit`, `t('exercise.demo.doIt')`, accent: the `load` of Try again, which starts with `demo: null`) before Try again. The list shows `span.exercise-watched` (`data-testid="exercise-watched-<id>"`, `t('exercise.watched')`, hint colour) for an exercise in `watched` and not in `done`; the list is built again whenever it is shown (the run becomes null), so it reads the progress then.
+
+**Debrief:** the demo's own actions are not in the log (the `demo` action is not logged); the step, event and back entries of a demo are, and the debrief shows them as today (11.2, 6).
 
 ### 8.6 Strings and limits
 
@@ -550,6 +567,7 @@ The Resume button over the 3D view (`exerciseResume.ts`) is hidden while the dem
 "exercise.watched": "Watched",
 "exercise.bar.showMe": "▶ Show me",
 "exercise.bar.demoLabel": "The app is doing this step",
+"exercise.bar.stopDemo": "Stop watching",
 "exercise.demo.stepDone": "✓ Step {n} done",
 "exercise.demo.next": "Next step",
 "exercise.demo.try": "Let me try it",
@@ -577,17 +595,18 @@ The Resume button over the 3D view (`exerciseResume.ts`) is hidden while the dem
 ### 8.7 Tests (`tests/exercisePilots.test.ts`)
 
 - **Good runs:** for each of the eight sailing exercises (Easy, level easy), `goodRun` (move it from `harbourExercises.test.ts` into this file and export it) ends `done`, no mistake, each step within 8.6's limits. The existing harbour good-run tests keep passing with the moved pilots.
-- **Show me from every step:** for all 14 exercises (harbour at every level they have), run the pilot's good run keeping each step's starting state; from each, a fresh `pilotFor(…)` finishes that step within its limit with no mistake (harbour: the existing per-step limits, enter-berth Hard step 2 ≤ 121 s).
-- **Coverage** (the phone promise): during each good run, every action `pilotActions` returns maps through `barRowOf` to rows that are all in `barRowsFor(def, step, 'easy')` of the step it was sent in, or of the next step (a pilot may start the next step's work early: `enterPilot` takes the lazy line as soon as both stern lines are on). The prototype found no other miss with 6.2's rows. A miss fails with the exercise, step and row; fix it by adding the row to the step's `bar` (≤ 4 rows), and list it in the PR.
+- **Show me from every step:** for all 14 exercises (harbour at every level they have), run the good run and keep the state at each step's start; from each: `reduce(s, { type: 'exercise', command: { demo: 'showMe' } })`, a fresh `pilotFor(…)`, and the loop of `goodRun` until `run.step > k` or `done`: within the step's limit, no mistake, and `run.stepPause` true at the end. Harbour per-step limits (s, `ceil(1.2 × max(good run, fresh) + 3)` from 3.5): leave-berth easy 5, 5, 45, 34 / normal 5, 5, 45, 35 / hard 5, 5, 35, 35; enter-berth easy 5, 103, 103, 5, 27, 35 / normal 5, 90, 107, 5, 28, 28 / hard 5, 93, 121, 5, 27, 14; turn-own-length 29, 44; mooring-buoy 142, 5, 15, 5, 50; anchor-shore 96, 33, 88, 53, 75, 99; stern-to-anchor: measured in the M81 PR with the same formula and written under "Decided in the M81 PR". Sailing: 8.6.
+- **Commands:** `{ demo: 'watch' }` is refused outside `setup`; `{ demo: 'showMe' }` outside `running`; `showMe` puts the boat back at the current step's waypoint and sets `demoStep`; `stepExercise` with `demo !== null` sets `stepPause` and `paused` even with `pauseOnStep` false; `{ demo: null }` clears both fields; a link of a run with a demo has no new key.
+- **Coverage** (the phone promise): during each good run (driven through `pilotActions` and the `demo` action, as the app does), every action `pilotActions` returns maps through `barRowOf` to rows that are all in `barRowsFor(def, step, 'easy')` of the step it was sent in, or of the next step (a pilot may start the next step's work early: `enterPilot` takes the lazy line as soon as both stern lines are on). The prototype found no other miss with 6.2's rows. A miss fails with the exercise, step and row; fix it by adding the row to the step's `bar` (≤ 4 rows), and list it in the PR.
 - **The demo action:** `reduce(state, { type: 'demo', actions: [setControls] })` equals applying the action, but `run.log` gains no `action` entry; a normal `setControls` still logs.
-- **Progress:** `recordWatched` then `readProgress().watched[id]` is set; an old stored value without `watched` reads as `{}`; `done` unchanged.
+- **Progress:** `recordWatched` then `readProgress().watched[id]` is set; an old stored value without `watched` reads as `{}`; `recordDone` keeps `watched`; `recordDone(id, null)` ticks without changing a best time.
 - `pilotFor('points-of-sail', 'easy', 'realistic')` is null; `pilotFor('leave-berth', 'hard', 'realistic')` is not.
 
 ### 8.8 Browser checks (`scripts/shots-m81.mjs`, test clock, 390 × 844)
 
 1. **Watch Reduce sail:** Watch it; the step line starts "Watching ·"; after step 1 the demo card "✓ Step 1 done" with the step's How text; Next step twice more; the done card with "Now do it myself"; the list shows `exercise-watched-reduce-sail` and no tick.
-2. **Watch Gybing:** done within 70 s of app time; the bar flashed `bar-row-control-ctl_mainsheet` at least once (class seen).
-3. **Show me, Points of sail step 2:** Do it myself; finish step 1 by taps; Show me; the line starts "Showing ·"; the Now you card appears; Back to the start of the step → the run is at step 2, the main sheet back at the step's starting value, the bar enabled, Show me visible; the learner then finishes step 2 by taps.
+2. **Watch Gybing:** tap Next step after each card; done within 70 s of app time; polling every 200 ms with `page.waitForTimeout`, `bar-row-control-ctl_mainsheet` was seen with `bar-row-flash` at least once.
+3. **Show me, Points of sail step 2** (link with `step=1`): Do it myself; finish step 1 by taps (main sheet to 12); Show me; the line starts "Showing ·"; the Now you card appears; Back to the start of the step → the run is at step 2, `bar-row-control-ctl_mainsheet`'s value reads 12 % again, the bar enabled, Show me visible; the learner then finishes step 2 by taps.
 4. **Let me try it** in Watch Leaving the berth after step 1: the run is back at step 1 (the lazy line on again), no demo.
 5. **Debrief:** after check 3's run is done, "Show my actions" lists none of the demo's main-sheet moves of step 2 (only the learner's).
 6. Accessibility audit with the demo card shown; Russian card fits.
@@ -622,11 +641,24 @@ As 4.5.
 | Row | Name / small line | Buttons |
 |---|---|---|
 | `clutch:<station>:<key>` | the clutch's label as printed on the boat (`boatLabelsFor`, as the station drawing) / `t('exercise.bar.clutchOpen')` or `t('exercise.bar.clutchClosed')` | one button `t('exercise.bar.open')` / `t('exercise.bar.close')` (`bar-clutch-<key>`) → `{ type: 'clutch', key, open: !open }` |
-| `winch:<station>:<winch>:<key>` | the winch's name / what is on it: `t('exercise.bar.winchEmpty')`, or the rope's name + ` · ` + `t('exercise.bar.turns', { n })` + (tailed: ` · ` + `t('exercise.bar.tailed')`) | the next gesture the learner needs, as one or two buttons (testid `bar-winch-<winch>-<what>`): empty → `t('exercise.bar.onWinch', { rope })` (`onWinch { key }`); on, fewer than 3 turns → `t('exercise.bar.addTurn')` (`turn { winch, delta: 1 }`) and `t('exercise.bar.offWinch')` (`offWinch { winch }`); 3 turns or more, not tailed → `t('exercise.bar.tail')` (`selfTailer { winch, into: true }`); tailed → **hold** `t('exercise.bar.hold')` (`button { winch, held: true }`, release `held: false`, 3.4) and `t('exercise.bar.offWinch')`. A different rope on this winch than `key`: `t('exercise.bar.offWinch')` only |
+| `winch:<station>:<winch>:<key>` | the winch's name / what is on it: `t('real.winch.empty')`, or the rope's name + ` · ` + `t('exercise.bar.turns', { n })` + (tailed: ` · ` + `t('exercise.bar.tailed')`) | the next gesture the learner needs, as one or two buttons (testid `bar-winch-<winch>-<what>`): empty → `t('exercise.bar.onWinch', { rope })` (`onWinch { key }`); on, fewer than 3 turns → `t('exercise.bar.addTurn')` (`turn { winch, delta: 1 }`) and `t('exercise.bar.offWinch')` (`offWinch { winch }`); 3 turns or more, not tailed → `t('exercise.bar.tail')` (`selfTailer { winch, into: true }`); tailed → **hold** `t('exercise.bar.hold')` (`button { winch, held: true }`, release `held: false`, 3.4) and `t('exercise.bar.offWinch')`. A different rope on this winch than `key`: `t('exercise.bar.offWinch')` only |
 
 The rest of Realistic mode (the handle, easing by hand, the mast, the bow) stays in the panel.
 
 `barRowOf` (3.2) adds the `realistic` gestures. `pilotFor` returns, with `ropes === 'realistic'`, the Realistic pilots below for `set-sails` and `furl-sails`.
+
+### 9.3a Details (decided in the planning PR after the builder check)
+
+1. **Names:** a clutch row's name is the clutch's printed label plus, where the station drawing adds one, its tag (`real.tag.furl` "rolls in" / `real.tag.unfurl` "rolls out"), joined with ` · ` (so a2 and a3 differ: "Main furling · rolls in", "Main furling · rolls out"); the same text is `{rope}` in "Put {rope} on" and in the winch's small line. A winch's name: `t('real.winch.port')` or `t('real.winch.starboard')` by its station. The station toggles use `t('real.station.port')` and `t('real.station.starboard')`.
+2. **State:** a clutch is open when `state.realistic.open[key]`; the learner's station is `state.realistic.station`; a winch's state is `state.realistic.winches[winchId]` (`tail`, `turns`, `selfTailer`, `button`, `cutOut`). Every row dispatches `{ type: 'realistic', action: { … } }`; `turn` uses `delta: 1`.
+3. **Station switch:** shows both Port and Starboard whenever the step has a `clutch:` or `winch:` row; the dot (`var(--exercise-warning)`) on each that has a row this step and is not the learner's station; at the helm, mast or bow no toggle is pressed. Rows shown: the rope rows of the learner's station, then the other rows; `bar-nothing` with `t('exercise.bar.otherStation')` shows (above the other rows) only when the step has rope rows and none at the learner's station.
+4. **Winch row buttons** (testids `bar-winch-<winchId>-on`, `-turn`, `-off`, `-tail`, `-hold`; row testid by the 6.5 rule, e.g. `bar-row-winch-starboard-winch_primary_starboard-a3`): no rope → **Put {rope} on**; another rope than the row's → **Off**; the row's rope with `turns < 0` → **Off** only (it went on the wrong way: take it off and start again); `0 ≤ turns < 3` → **+ Turn** and **Off**; `turns ≥ 3`, not tailed → **Into the self-tailer** and **Off**; tailed → **Hold ▲** and **Off**. The 3 is `BAR_TURNS_BEFORE_TAILER = 3` in `exerciseBar.ts` (a teaching default of the bar, the turns PHASE1_SPEC's Realistic mode asks before tailing; not boat data). With `cutOut` the small line adds ` · ` + `t('exercise.bar.cutOut')`.
+5. **Keys:** a clutch row: Space toggles; a winch row: ← its first button, → its last, Space its first, a hold by keydown/keyup; the station switch has no key (the learner taps it, or uses the panel).
+6. **Notices:** while `state.realistic.notice` is not null, or the handle is carried, `p.bar-notice` under the rows shows the same text the Realistic panel shows (`noticeText(notice)` from `stationDrawing.ts`, or `t('real.notice.handleInHand')`).
+7. **`barRealistic: []`** (set-sails step 0) wins over the placeholder: the bar shows `bar-nothing` (the step needs nothing: the start state passes it).
+8. **Watch flash:** `barRowOf` maps a `station` gesture to the id `stations`; the bar flashes the station switch for it like a row.
+9. **Pilots' stations:** `setSailsRealisticPilot` step 2 first walks to starboard (`{ type: 'station', station: 'starboard' }` at the start of its once-block), and `furlSailsRealisticPilot` step 3 first walks to port, so Show me works from wherever the learner stood. Station changes act at once (the prototype walked and worked in the same frame). The pilots ignore the crew choice; the tests run Alone (`goodRun(…, 'realistic', { crew: 'alone' })`).
+10. **The PR** says `Part of #165` (not `Closes`: #165 is the whole launch checklist, closing it would close every other item); the agent does not edit the issue; the owner ticks item 1.
 
 ### 9.4 Realistic pilots (`src/app/exercisePilots.ts`, verbatim from the prototype)
 
@@ -650,7 +682,7 @@ export function setSailsRealisticPilot(): Pilot {
       }
       case 2:
         if (inStep(s) < 2) return s;
-        return once(s, 'b', (x) => turns(ap(real(real(x, { type: 'clutch', key: 'a2', open: false }), { type: 'offWinch', winch: W }), 'wind'), 6, -10));
+        return once(s, 'b', (x) => turns(ap(real(real(real(x, { type: 'station', station: 'starboard' }), { type: 'clutch', key: 'a2', open: false }), { type: 'offWinch', winch: W }), 'wind'), 6, -10));
       case 3: {
         s = once(s, 'c', (x) => real(onWinch(real(real(real(x, { type: 'station', station: 'port' }), { type: 'clutch', key: 'r1', open: true }), { type: 'station', station: 'starboard' }), 'a5', W), { type: 'button', winch: W, held: true }));
         if (s.controls.ctl_jib_sheet < 50) s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
@@ -673,7 +705,7 @@ export function furlSailsRealisticPilot(): Pilot {
       }
       case 2: return once(s, 'h', (x) => turns(ap(eng(x, { leverPct: 30 }), 'heading'), 6, 10));
       case 3: {
-        s = once(s, 'b', (x) => real(onWinch(real(real(real(real(x, { type: 'offWinch', winch: P }), { type: 'clutch', key: 'b3', open: true }), { type: 'station', station: 'starboard' }), { type: 'clutch', key: 'a3', open: true }), 'a2', W), { type: 'button', winch: W, held: true }));
+        s = once(s, 'b', (x) => real(onWinch(real(real(real(real(real(x, { type: 'station', station: 'port' }), { type: 'offWinch', winch: P }), { type: 'clutch', key: 'b3', open: true }), { type: 'station', station: 'starboard' }), { type: 'clutch', key: 'a3', open: true }), 'a2', W), { type: 'button', winch: W, held: true }));
         if (s.controls.ctl_main_furl <= 1) s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
         return s;
       }
@@ -693,8 +725,8 @@ export function furlSailsRealisticPilot(): Pilot {
 "exercise.bar.clutchClosed": "Closed: holds the rope",
 "exercise.bar.open": "Open",
 "exercise.bar.close": "Close",
-"exercise.bar.winchEmpty": "Nothing on the winch",
-"exercise.bar.turns": "{n} turns",
+"exercise.bar.turns": "Turns: {n}",
+"exercise.bar.cutOut": "the motor cut out: ease the load",
 "exercise.bar.tailed": "in the self-tailer",
 "exercise.bar.onWinch": "Put {rope} on",
 "exercise.bar.addTurn": "+ Turn",
@@ -712,8 +744,8 @@ export function furlSailsRealisticPilot(): Pilot {
 
 ### 9.7 Browser checks (`scripts/shots-m82.mjs`, test clock, 390 × 844) and sign-off
 
-1. **Setting the sails, Realistic, Alone, by taps only:** every step through the bar (the station switch, Open, Put … on, + Turn × 3, Into the self-tailer, hold, release when the strip's main reads 100 %, …); done; within the limits.
-2. **Watch Furling the sails, Realistic:** done; the station switch flashed.
+1. **Setting the sails, Realistic, Alone, by taps only:** every step through the bar (the station switch, Open, Put … on, + Turn × 3, Into the self-tailer, hold Hold ▲ and release when `__sailExercise.read().controls.ctl_main_furl >= 99` (step 2) or `ctl_jib_sheet < 50` (step 4), as the pilot does); done; within the limits.
+2. **Watch Furling the sails, Realistic:** tap Next step after each card; done; the station switch (`bar-stations`) was seen with `bar-row-flash`.
 3. **Sign-off of issue #165 item 1** (the issue's "done when"): a list in the PR, one line per exercise (14), naming the unit test that proves its good run through the bar's controls (8.7 coverage plus the good runs) and the browser check that ran it on a phone (M79 1–2, M81 1–3, M82 1–2); the owner's phone check of WORKFLOW's M82 list; the issue's box for item 1 is ticked in the PR description by "Closes" only if the owner agrees (it is a checklist issue, so the PR says `Part of #165`, not `Closes`).
 
 ### 9.8 Done when / not in M82
