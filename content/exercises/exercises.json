@@ -242,6 +242,29 @@
         { "id": "aground", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["ground"] } },
         { "id": "aground-hard", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["ground"] } }
       ]
+    },
+    {
+      "id": "anchor-shore",
+      "group": "harbour",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["engine", "anchor", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
+      "start": "?pl=bay&pe=-1585.0&pn=0.0&hdg=90&bs=0&wd=90&ws=6&eng=1&lv=0&ap=off&sea=sheltered",
+      "targets": [{ "id": "drop", "shape": "circle", "eastM": -1600, "northM": 0, "radiusM": 5 }],
+      "steps": [
+        { "id": "to-spot", "opens": "engine", "holdS": 2, "show": "drop", "check": { "target": { "id": "drop", "point": "bow" }, "speedKn": [-0.5, 0.5] } },
+        { "id": "let-go-anchor", "opens": "anchor", "holdS": 1, "check": { "anchor": { "phase": ["bottom", "set"] } } },
+        { "id": "scope", "opens": "anchor", "holdS": 1, "check": { "anchor": { "scopeOk": true } } },
+        { "id": "dig-in", "opens": "engine", "holdS": 2, "check": { "anchor": { "phase": ["set"] } } },
+        { "id": "shore-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sl"] } },
+        { "id": "settled", "opens": "harbour", "holdS": 10, "check": { "linesTight": ["sl"], "anchor": { "phase": ["set"] }, "engine": { "gear": "neutral" } } }
+      ],
+      "mistakes": [
+        { "id": "aground", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["ground"] } },
+        { "id": "aground-hard", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["ground"] } },
+        { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } },
+        { "id": "dragging", "serious": false, "on": { "alert": "anchorAlarm" } }
+      ]
     }
   ]
 }

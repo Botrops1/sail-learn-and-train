@@ -3,7 +3,18 @@ import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { obstacleKind, type ExerciseLevel } from '../src/model/exercises';
 import { area } from '../src/model/area';
-import { buoyPilot, enterPilot, H, leavePilot, stern, turnPilot, type Pilot } from './harbourPilot';
+import { scopeNeededM } from '../src/model/anchor';
+import { depthAt } from '../src/model/seabed';
+import {
+  anchorPilot,
+  buoyPilot,
+  enterPilot,
+  H,
+  leavePilot,
+  stern,
+  turnPilot,
+  type Pilot,
+} from './harbourPilot';
 
 /** PHASE10_SPEC 16.7: a scripted good run; each step within its limit (app seconds from its start). */
 export function goodRun(id: string, level: ExerciseLevel, pilot: Pilot, limitS: number) {
@@ -287,5 +298,111 @@ describe('mooring-buoy good run (PHASE10_SPEC 18.6)', () => {
         `step ${i}: ${result.durations.join(', ')}`,
       ).toBeLessThanOrEqual(limit);
     });
+  });
+});
+
+/** The anchor-shore good run, frame by frame (PHASE10_SPEC 19.5); `watch` sees every state. */
+function anchorRun(watch: (s: AppState, t: number) => void = () => undefined) {
+  let s = parseUrlState(exerciseStartLink('anchor-shore', initialState(), 'easy'));
+  s = reduce(s, { type: 'exercise', command: 'start' });
+  const pilot = anchorPilot();
+  const stepAt: number[] = [0];
+  let t = 0;
+  while (s.exercise !== null && s.exercise.status !== 'done' && t < 450) {
+    s = pilot(s, t);
+    s = reduce(s, { type: 'step', dt: 0.05 });
+    t += 0.05;
+    watch(s, t);
+    const run = s.exercise;
+    if (run !== null && run.step > stepAt.length - 1) stepAt.push(t);
+  }
+  const run = s.exercise;
+  return {
+    state: s,
+    status: run?.status,
+    durations: stepAt.map((at, i) => (stepAt[i + 1] ?? t) - at),
+    mistakes: run?.log.filter((e) => e.kind === 'mistake') ?? [],
+  };
+}
+
+describe('anchor-shore good run (PHASE10_SPEC 19.5)', () => {
+  it('ends done with no mistake, each step within its limit, 55-70 m of chain, anchor set', () => {
+    const result = anchorRun();
+    expect(result.status).toBe('done');
+    expect(result.mistakes).toEqual([]);
+    [105, 37, 97, 59, 82, 107].forEach((limit, i) => {
+      expect(
+        result.durations[i] ?? Infinity,
+        `step ${i}: ${result.durations.join(', ')}`,
+      ).toBeLessThanOrEqual(limit);
+    });
+    const { anchor } = result.state;
+    expect(anchor.chainOutM).toBeGreaterThanOrEqual(55);
+    expect(anchor.chainOutM).toBeLessThanOrEqual(70);
+    expect(anchor.phase).toBe('set');
+  });
+
+  it('PT-31 the scope step needs the chain the rules ask for', () => {
+    let stepBefore = 0;
+    let needed = 0;
+    let passed = false;
+    anchorRun((s) => {
+      const run = s.exercise;
+      if (run === null) return;
+      const a = s.anchor;
+      if (a.phase !== 'bottom' && a.phase !== 'set') return;
+      needed = scopeNeededM(depthAt(a.eastM, a.northM), 6);
+      // While the chain was shorter than the rules ask, the run was still at the scope step.
+      if (a.chainOutM < needed) expect(run.step).toBeLessThanOrEqual(2);
+      if (stepBefore === 2 && run.step === 3) {
+        passed = true;
+        expect(a.chainOutM).toBeGreaterThanOrEqual(needed);
+      }
+      stepBefore = run.step;
+    });
+    expect(passed).toBe(true);
+    expect(needed).toBeGreaterThanOrEqual(45.2);
+    expect(needed).toBeLessThanOrEqual(49.2);
+  });
+
+  it('PT-57 the anchor is set only after going astern', () => {
+    let stepBefore = 0;
+    let checked = false;
+    anchorRun((s) => {
+      const run = s.exercise;
+      if (run === null) return;
+      if (stepBefore === 2 && run.step === 3) {
+        checked = true;
+        expect(s.anchor.phase).toBe('bottom');
+      }
+      stepBefore = run.step;
+    });
+    expect(checked).toBe(true);
+  });
+
+  it('PT-53 the good run never touches the bottom', () => {
+    const result = anchorRun();
+    expect(
+      result.state.contact.reports.filter((r) => obstacleKind(r.obstacleId) === 'ground'),
+    ).toEqual([]);
+  });
+
+  it('too little chain: going astern hard drags the anchor and shows the card "The anchor is dragging"', () => {
+    let s = parseUrlState(exerciseStartLink('anchor-shore', initialState(), 'easy'));
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    const pilot = anchorPilot();
+    let stopped = false;
+    for (let t = 0; t < 250 && s.exercise?.status === 'running'; t += 0.05) {
+      s = pilot(s, t);
+      if (stopped || (s.exercise?.step === 2 && s.anchor.chainOutM > 25)) {
+        stopped = true;
+        s = reduce(s, { type: 'windlass', motion: 'off' });
+        s = reduce(s, { type: 'engine', command: { leverPct: -60 } });
+      }
+      s = reduce(s, { type: 'step', dt: 0.05 });
+    }
+    expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'dragging')).toBe(
+      true,
+    );
   });
 });
