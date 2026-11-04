@@ -269,9 +269,11 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
             // M71 added the two sails exercises.
             'exercise-item-set-sails',
             'exercise-item-furl-sails',
-            // M74 added Leaving the berth, M75 Entering the berth.
+            // M74 added Leaving the berth, M75 Entering the berth, M76 Turning and the buoy.
             'exercise-item-leave-berth',
             'exercise-item-enter-berth',
+            'exercise-item-turn-own-length',
+            'exercise-item-mooring-buoy',
           ]),
         JSON.stringify(ids),
       );
