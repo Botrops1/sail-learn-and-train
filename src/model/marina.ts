@@ -1,6 +1,9 @@
 import { area, type AreaData } from './area';
+import { boat as hanse508, type BoatData } from './boat';
 import type { Obstacle } from './contact';
+import type { ContactHit } from './lowSpeed';
 import { boatToMap } from './mapFrame';
+import type { BoatState } from './motion';
 
 /**
  * The marina as numbers (M42, PHASE7_SPEC 8.3): the quay, the pontoon, the fairway between the
@@ -337,4 +340,100 @@ export function marinaObstacles(geometry: MarinaGeometry): Obstacle[] {
   ];
   obstacleCache.set(geometry, built);
   return built;
+}
+
+/** A moored yacht's bow line (PHASE10_SPEC 17.4): from her bow straight ahead and down. */
+export interface BowLine {
+  /** The yacht's id with `yacht` replaced by `lazy-line`: `lazy-line-0-11`. */
+  id: string;
+  bowEastM: number;
+  bowNorthM: number;
+  /** The yacht's heading (her berth's `headingDeg`): the line runs this way from her bow. */
+  headingDeg: number;
+}
+
+const bowLineCache = new WeakMap<MarinaGeometry, BowLine[]>();
+
+/** One per moored yacht, in `geometry.yachts` order; the same array for the same geometry. */
+export function bowLines(geometry: MarinaGeometry): BowLine[] {
+  const found = bowLineCache.get(geometry);
+  if (found) return found;
+  const built = geometry.yachts.map((yacht): BowLine => {
+    const h = (yacht.berth.headingDeg * Math.PI) / 180;
+    return {
+      id: yacht.id.replace('yacht', 'lazy-line'),
+      bowEastM: yacht.berth.centreEastM + yacht.lengthM * Math.sin(h),
+      bowNorthM: yacht.berth.sternNorthM + yacht.lengthM * Math.cos(h),
+      headingDeg: yacht.berth.headingDeg,
+    };
+  });
+  bowLineCache.set(geometry, built);
+  return built;
+}
+
+export type BowLinePart = 'saildrive' | 'keel' | 'rudder';
+export interface BowLineCatch {
+  lineId: string;
+  part: BowLinePart;
+}
+
+/** Shared empty result. */
+export const NO_CATCHES: readonly BowLineCatch[] = [];
+
+/** The parts of our hull over a bow line where it is not deeper than they are. */
+export function bowLinesUnder(
+  boat: BoatState,
+  lines: readonly BowLine[],
+  areaData: AreaData = area,
+  data: BoatData = hanse508,
+): readonly BowLineCatch[] {
+  const { deckAboveM, slope, catchM } = areaData.marina.bowLine;
+  const hull = data.hull;
+  const points: { part: BowLinePart; x: number; depthM: number }[] = [
+    { part: 'saildrive', x: hull.saildrive.x, depthM: -hull.saildrive.bottomY },
+    { part: 'keel', x: hull.keel.bulb.fwdX, depthM: -hull.keel.bulb.bottomY },
+    { part: 'keel', x: hull.keel.bulb.aftX, depthM: -hull.keel.bulb.bottomY },
+    { part: 'rudder', x: hull.rudder.stockX, depthM: -hull.rudder.bottomY },
+  ];
+  const mapPoints = points.map((p) => {
+    const [de, dn] = boatToMap(p.x, 0, boat.headingDeg);
+    return { ...p, east: boat.eastM + de, north: boat.northM + dn };
+  });
+  const found: BowLineCatch[] = [];
+  for (const line of lines) {
+    const H = (line.headingDeg * Math.PI) / 180;
+    const fe = Math.sin(H);
+    const fn = Math.cos(H);
+    const parts = new Set<BowLinePart>();
+    for (const p of mapPoints) {
+      const de = p.east - line.bowEastM;
+      const dn = p.north - line.bowNorthM;
+      const along = de * fe + dn * fn;
+      const side = Math.abs(de * fn - dn * fe);
+      const reach = (p.depthM + deckAboveM) / slope;
+      if (along >= 0 && along <= reach && side <= catchM) parts.add(p.part);
+    }
+    for (const part of ['saildrive', 'keel', 'rudder'] as const) {
+      if (parts.has(part)) found.push({ lineId: line.id, part });
+    }
+  }
+  return found.length === 0 ? NO_CATCHES : found;
+}
+
+/** The keel's and the rudder's catches as contact hits (the saildrive's make none). */
+export function bowLineHits(catches: readonly BowLineCatch[]): ContactHit[] {
+  const hits: ContactHit[] = [];
+  for (const c of catches) {
+    if (c.part === 'saildrive') continue;
+    const part = c.part === 'keel' ? 'keel' : 'stern';
+    hits.push({
+      key: `${c.lineId}:${part}`,
+      obstacleId: c.lineId,
+      partId: 'rope_lazy_line',
+      part,
+      approachMps: 0,
+      fender: false,
+    });
+  }
+  return hits;
 }

@@ -1,5 +1,7 @@
 import { wrap180 } from '../src/model/angles';
 import { boatPoint, type ExerciseLevel } from '../src/model/exercises';
+import { area } from '../src/model/area';
+import { marinaGeometry } from '../src/model/marina';
 import type { LineCode } from '../src/model/mooringLines';
 import { reduce, type Action, type AppState } from '../src/app/store';
 
@@ -27,6 +29,9 @@ export const bow = (s: AppState) => boatPoint(s.boat, 'bow');
 export const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x));
 export { wrap180 };
 
+export const setFenders = (s: AppState, out: boolean) => A(s, { type: 'setFenders', out });
+const hasLine = (s: AppState, code: LineCode) => s.lines.lines.some((l) => l.code === code);
+
 /** Leaving the berth: lines off, slow ahead out of the berth, then turn west with the thrusters. */
 export function leavePilot(level: ExerciseLevel): Pilot {
   const lv = level === 'hard' ? 30 : 15;
@@ -48,6 +53,86 @@ export function leavePilot(level: ExerciseLevel): Pilot {
         turned = true;
         return thr(thr(rudder(lever(s, 15), 0), 'bow', 0), 'stern', 0);
       default:
+        return s;
+    }
+  };
+}
+
+/**
+ * Entering the berth stern-to (PHASE10_SPEC 17.5): fenders out, slow ahead past the berth, stop,
+ * turn with the thrusters until the stern points at it, back in slowly, stern lines, lazy line,
+ * tighten. `skipFenders` leaves out phase 0's fenders (the fenders-in mistake test).
+ */
+export function enterPilot(_level: ExerciseLevel, opts: { skipFenders?: boolean } = {}): Pilot {
+  let phase = 0;
+  let lastT = 0;
+  return (s, t) => {
+    if (s.exercise === null) return s;
+    const c = marinaGeometry(s.harbour.layout, s.harbour.traffic).ourBerth.centreEastM;
+    const gap = area.marina.quayFaceNorthM - stern(s)[1];
+    const v = s.boat.speedMps;
+    const keep = (state: AppState, lat = true): AppState => {
+      const e = stern(state)[0] - c;
+      const h = H(state) - 180;
+      const sternDir = lat ? (e > 0.3 ? 1 : e < -0.3 ? -1 : 0) : 0;
+      return thr(thr(state, 'stern', sternDir), 'bow', h > 2 ? -1 : h < -2 ? 1 : 0);
+    };
+    switch (phase) {
+      case 0:
+        phase = 1;
+        return lever(opts.skipFenders ? s : setFenders(s, true), 15);
+      case 1:
+        if (s.boat.eastM > c - 18) {
+          phase = 2;
+          return lever(s, -30);
+        }
+        return s;
+      case 2:
+        if (v < 0.1) {
+          phase = 3;
+          return thr(thr(lever(s, 0), 'bow', 1), 'stern', -1);
+        }
+        return s;
+      case 3:
+        if (Math.abs(wrap180(H(s) - 180)) < 5) {
+          phase = 4;
+          return thr(thr(s, 'bow', 0), 'stern', 0);
+        }
+        return s;
+      case 4: {
+        const want = gap > 10 ? -0.6 : gap > 5 ? -0.3 : -0.12;
+        const out = lever(keep(s), v > want ? -15 : v < want - 0.15 ? 15 : 0);
+        if (gap < 2.6) phase = 5;
+        return out;
+      }
+      case 5: {
+        const out = lever(keep(s), v < -0.03 ? 15 : 0);
+        if (Math.abs(v) < 0.03 && out.engine.leverPct === 0) phase = 6;
+        return out;
+      }
+      case 6: {
+        let out = keep(s);
+        out = hasLine(out, 'sp') ? out : line(out, 'sp', 'take');
+        out = hasLine(out, 'ss') ? out : line(out, 'ss', 'take');
+        if (hasLine(out, 'sp') && hasLine(out, 'ss')) {
+          out = line(out, 'll', 'take');
+          phase = 7;
+        }
+        return out;
+      }
+      case 7: {
+        const out = keep(s, false);
+        if (hasLine(out, 'll')) {
+          phase = 8;
+          return thr(out, 'bow', 0);
+        }
+        return out;
+      }
+      default:
+        if (t - lastT > 0.5) {
+          lastT = t;
+          return line(s, 'll', 'tighten');
+        }
         return s;
     }
   };

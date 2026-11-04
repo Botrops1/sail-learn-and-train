@@ -2331,6 +2331,13 @@ Named tests: `it('PT-51 the entering exercise ends with the lazy line holding th
 
 Scenes: `enter-setup` (`?m=exercise&ex=enter-berth`). The berth outline pictures `enter-reverse` (`cam=top`) and `enter-map` are taken in live check (1) once step 1 shows the berth. Live: (1) `m75 good run` (phone only): `enterPilot('normal')`'s logic through `__sailExercise.dispatch`, until "Well done!". (2) `m75 fenders in`: Start, skip the fenders, back towards the berth (`engine -15` after turning with the thrusters as in the pilot): the card "Fenders still in". (3) Russian setup card has no overflow (`lang=ru`). Scene `enter-hard-lines` (`?m=exercise&ex=enter-berth&exl=hard&cam=top`): the bow lines of the busy marina. The bow-line mistakes are checked by the store tests of 17.6 (a link cannot place the boat during a run).
 
+### 17.7a Decided in the M75 PR (recommended; merging accepts it)
+
+- **Built as 17.1–17.7 say.** The start link keeps `wd=-90`; the three Normal/Hard/Easy good runs finish with the pilot of 17.5 and the limits of 17.6 unchanged.
+- **Test names:** the three named tests of 17.6 (PT-51, PT-50, PT-52 for the exercise), the Hard bow-line store tests (PT-52 for the propeller) and the fenders-in run are in `tests/harbourExercises.test.ts`; the bow-line model tests are in `tests/marina.test.ts`, `tests/mooringLines.test.ts` and `tests/alerts.test.ts`.
+- **Browser checks:** the good run steps the app 0.2 s per decision on the test clock (the pilot's 0.05 s frames are too slow through the page); its result is the same card "Well done!".
+- **Russian texts** (the `enter-berth` card, the `lazy-line` mistake, the two damage strings) are AI drafts, `draft`, in the review documents. The Russian uses the buttons' own words (*Муринг*, *Подать на причал*, *За бортом*).
+
 ### 17.8 Done when / not in M75
 
 Done: the three levels can be finished on a phone; on Hard the keel over a neighbour's bow line pauses and the propeller over one in gear ends the run; the checks pass. Not in M75: coming alongside (Ideas), our own anchor (M78), moving boats; a bow line that pulls the boat or the neighbour (no force, 22.4); bow lines outside the Hard level.
@@ -2658,6 +2665,8 @@ The exercise can be finished on a phone; every item of section 21 is ticked in t
 - The anchor chain of other boats and the pontoon's moorings are not modelled (as M47).
 - The buoy's pick-up does not draw a boat hook.
 - (Refresh, 2026-11-03) A neighbour's bow line has no force: the keel over one makes a report and the mistake, but she does not stop or swing, and the neighbour's bow does not move. Fouling over a neighbour's line takes the same 2 s in gear as a slack line of our own (`foulAfterS`).
+
+- (Decided in the M75 PR, recommended; merging accepts it) The ball fender (M33) hangs in the middle of the stern, behind the transom, not at the port corner (owner's bug report on the M75 preview). The crew's lazy-line walk is drawn: a line trailing in the water from the quay's edge beside the hull to the crew's hand (`lazyWalk` in `src/model/mooringLines.ts`); the rule is as specified, a line the crew handles can foul the propeller. A neighbour's line under the rudder only reports; the propeller is about a metre ahead of the rudder, so it fouls only when the line passes under the propeller itself.
 
 ### 22.4 Refresh (2026-11-03, `/plan 10 refresh` before M75: the Hard bow lines, and the wind of M75–M78)
 

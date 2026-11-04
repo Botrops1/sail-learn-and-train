@@ -43,6 +43,9 @@ export interface MarinaData {
   /** M59: the "put the fenders out" hint shows when the stern is this close to our berth's rings, backing in with the fenders in the locker. */
   fendersHintM: number;
   fendersHintNote: string;
+  /** PHASE10_SPEC 17.4: a moored yacht's lazy line leaves her bow `deckAboveM` above the water and runs ahead and down (`slope` m down per m ahead); a part of our hull within `catchM` to the side of it catches it. */
+  bowLine: { deckAboveM: number; slope: number; catchM: number };
+  bowLineNote: string;
   /** PHASE10_SPEC 15.2: a made-up rock breakwater round the marina. */
   breakwater: { westM: number; moleWidthM: number; lightInsetM: number; landDepthM: number };
   /** Made-up low buildings behind the quay: [east, north, width, depth, wall height], metres. */

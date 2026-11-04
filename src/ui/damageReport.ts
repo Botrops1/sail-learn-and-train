@@ -15,6 +15,10 @@ export function damageText(r: ContactReport): string {
     });
   }
   if (r.obstacleId === 'propeller') return t('damage.propeller');
+  // A neighbour's lazy line (Hard, PHASE10_SPEC 17.4): the speed of 0.0 kn would mislead.
+  if (r.obstacleId.startsWith('lazy-line')) {
+    return t(r.part === 'stern' ? 'damage.lazyLine.rudder' : 'damage.lazyLine.keel');
+  }
   // The bottom is the keel's or, backing towards the shore, the rudder's (M45): the verdict names the part.
   const severity = r.severity === 'fender' ? 'touch' : r.severity;
   const verdict =

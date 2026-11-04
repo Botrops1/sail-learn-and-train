@@ -107,6 +107,7 @@ export function alertLearnId(entry: AlertEntry): string {
   if (entry.kind === 'contact' && entry.contact) {
     if (entry.contact.obstacleId === 'propeller') return 'part_saildrive';
     if (entry.contact.obstacleId === 'bottom') return 'term_grounding';
+    if (entry.contact.obstacleId.startsWith('lazy-line')) return 'rope_lazy_line';
   }
   return ALERT_INFO[entry.kind].learnId;
 }

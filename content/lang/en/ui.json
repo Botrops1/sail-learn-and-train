@@ -919,6 +919,8 @@
   "damage.ground.rudder.bump": "the rudder touched the bottom: check the rudder when you can.",
   "damage.ground.rudder.knock": "the rudder struck the bottom: have the rudder checked.",
   "damage.ground.rudder.hit": "the rudder hit the bottom hard: have the rudder and its bearings checked, and look for water inside.",
+  "damage.lazyLine.keel": "A neighbour's lazy line is under our keel: it can catch. Neutral, and drift clear.",
+  "damage.lazyLine.rudder": "A neighbour's lazy line is under our rudder: it can catch. Neutral, and drift clear.",
   "damage.fenderLost": "A {side} fender was torn off and lost (fenders out at speed).",
   "damage.propeller": "A line got caught in the propeller and stopped the engine.",
   "lines.title": "Lines",

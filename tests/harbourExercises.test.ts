@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
-import { initialState, reduce } from '../src/app/store';
-import type { ExerciseLevel } from '../src/model/exercises';
-import { leavePilot, type Pilot } from './harbourPilot';
+import { initialState, reduce, type AppState } from '../src/app/store';
+import { obstacleKind, type ExerciseLevel } from '../src/model/exercises';
+import { area } from '../src/model/area';
+import { enterPilot, H, leavePilot, stern, type Pilot } from './harbourPilot';
 
 /** PHASE10_SPEC 16.7: a scripted good run; each step within its limit (app seconds from its start). */
-function goodRun(id: string, level: ExerciseLevel, pilot: Pilot, limitS: number) {
+export function goodRun(id: string, level: ExerciseLevel, pilot: Pilot, limitS: number) {
   let s = parseUrlState(exerciseStartLink(id, initialState(), 'easy', { level }));
   s = reduce(s, { type: 'exercise', command: 'start' });
   const stepAt: number[] = [0];
@@ -41,4 +42,166 @@ describe('leave-berth good runs (PHASE10_SPEC 16.7)', () => {
       });
     });
   }
+});
+
+describe('enter-berth good runs (PHASE10_SPEC 17.6)', () => {
+  // [fenders, line-up + reverse-in together, stern-lines, lazy-line, made-fast]
+  const limits: Record<ExerciseLevel, number[]> = {
+    easy: [3, 216, 4, 31, 34],
+    normal: [3, 206, 4, 31, 27],
+    hard: [3, 225, 4, 31, 12],
+  };
+  for (const level of ['easy', 'normal', 'hard'] as const) {
+    it(`${level}: ends done with no mistake, each step within its limit`, () => {
+      const result = goodRun('enter-berth', level, enterPilot(level), 400);
+      expect(result.status).toBe('done');
+      expect(result.mistakes).toEqual([]);
+      const d = result.durations;
+      const got = [d[0], (d[1] ?? 0) + (d[2] ?? 0), d[3], d[4], d[5]];
+      limits[level].forEach((limit, i) => {
+        expect(got[i] ?? Infinity, `step ${i}: ${got.join(', ')}`).toBeLessThanOrEqual(limit);
+      });
+    });
+  }
+});
+
+/** Runs a pilot until `stop` says so (or `limitS`); returns the state and the app seconds. */
+function runUntil(
+  level: ExerciseLevel,
+  pilot: Pilot,
+  stop: (s: AppState, t: number) => boolean,
+  limitS: number,
+) {
+  let s = parseUrlState(exerciseStartLink('enter-berth', initialState(), 'easy', { level }));
+  s = reduce(s, { type: 'exercise', command: 'start' });
+  let t = 0;
+  while (t < limitS && !stop(s, t)) {
+    s = pilot(s, t);
+    s = reduce(s, { type: 'step', dt: 0.05 });
+    t += 0.05;
+  }
+  return { s, t };
+}
+const finished = (s: AppState) =>
+  s.exercise === null || ['done', 'failed', 'mistake'].includes(s.exercise.status);
+
+describe('enter-berth named tests (PHASE10_SPEC 17.6)', () => {
+  it('PT-51 the entering exercise ends with the lazy line holding the bow', () => {
+    let { s } = runUntil('normal', enterPilot('normal'), finished, 400);
+    expect(s.exercise?.status).toBe('done');
+    for (let i = 0; i < 600; i += 1) s = reduce(s, { type: 'step', dt: 0.05 });
+    const off = Math.abs(((H(s) - 180 + 540) % 360) - 180);
+    const gap = area.marina.quayFaceNorthM - stern(s)[1];
+    expect(off).toBeLessThanOrEqual(15);
+    expect(gap).toBeGreaterThanOrEqual(0.3);
+    expect(gap).toBeLessThanOrEqual(3.0);
+  });
+
+  it('PT-50 the hard level is finished with no mistake', () => {
+    const { s } = runUntil('hard', enterPilot('hard'), finished, 400);
+    expect(s.exercise?.status).toBe('done');
+    expect(s.exercise?.log.filter((e) => e.kind === 'mistake')).toEqual([]);
+    for (const r of s.contact.reports) expect(obstacleKind(r.obstacleId)).not.toBe('lazy-line');
+  });
+
+  it('PT-52 the engine in gear while the crew walks the lazy line fouls the propeller', () => {
+    const r = runUntil(
+      'normal',
+      enterPilot('normal'),
+      (st) => finished(st) || st.lines.crew !== null,
+      400,
+    );
+    expect(r.s.lines.crew).not.toBeNull();
+    let st = reduce(r.s, { type: 'engine', command: { leverPct: 30 } });
+    let elapsed = 0;
+    while (elapsed < 5 && st.exercise?.status === 'running') {
+      st = reduce(st, { type: 'step', dt: 0.05 });
+      elapsed += 0.05;
+    }
+    expect(st.exercise?.status).toBe('failed');
+    expect(st.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'propeller')).toBe(
+      true,
+    );
+  });
+
+  it('a run that skips the fenders ends with the fenders-in mistake (M59 alert)', () => {
+    const { s } = runUntil(
+      'easy',
+      enterPilot('easy', { skipFenders: true }),
+      (st) => finished(st),
+      170,
+    );
+    expect(s.exercise?.status).toBe('mistake');
+    expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'fenders-in')).toBe(
+      true,
+    );
+  });
+});
+
+describe("M75: the neighbours' bow lines in the store (PHASE10_SPEC 17.6)", () => {
+  /** The level's start, settled, the boat placed at rest, the lever set, then 0.05 s frames. */
+  function placed(level: ExerciseLevel, eastM: number, northM: number, leverPct: number) {
+    let s = parseUrlState(exerciseStartLink('enter-berth', initialState(), 'easy', { level }));
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    for (let i = 0; i < 24; i += 1) s = reduce(s, { type: 'step', dt: 0.05 });
+    s = { ...s, boat: { ...s.boat, eastM, northM, headingDeg: 90, speedMps: 0 } };
+    return reduce(s, { type: 'engine', command: { leverPct } });
+  }
+  const frames = (s: AppState, seconds: number) => {
+    for (let i = 0; i < Math.round(seconds / 0.05); i += 1)
+      s = reduce(s, { type: 'step', dt: 0.05 });
+    return s;
+  };
+
+  it("PT-52 a neighbour's lazy line under the propeller in gear fouls it (Hard)", () => {
+    const start = placed('hard', 1.65, 1480.9, 15);
+    expect(frames(start, 1.5).lines.fouled).toBe(false);
+    const s = frames(start, 3.0);
+    expect(s.lines.fouled).toBe(true);
+    expect(s.contact.reports[0]?.obstacleId).toBe('propeller');
+    expect(s.exercise?.status).toBe('failed');
+    expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'propeller')).toBe(
+      true,
+    );
+  });
+
+  it('in neutral over a bow line nothing happens', () => {
+    const s = frames(placed('hard', 1.65, 1480.9, 0), 5);
+    expect(s.lines.fouled).toBe(false);
+    expect(s.contact.reports).toEqual([]);
+    expect(s.exercise?.status).toBe('running');
+  });
+
+  it('Normal only draws the lines', () => {
+    const s = frames(placed('normal', 12.65, 1482.4, 15), 3);
+    expect(s.lines.fouled).toBe(false);
+    expect(s.contact.reports).toEqual([]);
+    expect(s.exercise?.status).toBe('running');
+  });
+
+  it('the keel over a line makes one touch report and the lazy-line mistake', () => {
+    const s = frames(placed('hard', -2.67, 1480.0, 0), 3);
+    expect(s.contact.reports).toHaveLength(1);
+    expect(s.contact.reports[0]).toMatchObject({
+      obstacleId: 'lazy-line-0-11',
+      partId: 'rope_lazy_line',
+      part: 'keel',
+      severity: 'touch',
+    });
+    expect(s.exercise?.status).toBe('mistake');
+    expect(s.exercise?.log.filter((e) => e.kind === 'mistake')).toHaveLength(1);
+    expect(s.exercise?.log.find((e) => e.kind === 'mistake')).toMatchObject({
+      mistakeId: 'lazy-line',
+    });
+  });
+
+  it('the rudder over a line reports part stern', () => {
+    const s = frames(placed('hard', 5.0, 1481.0, 0), 3);
+    expect(s.contact.reports).toHaveLength(1);
+    expect(s.contact.reports[0]?.part).toBe('stern');
+    expect(s.exercise?.status).toBe('mistake');
+    expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'lazy-line')).toBe(
+      true,
+    );
+  });
 });

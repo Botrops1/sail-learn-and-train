@@ -173,7 +173,33 @@
       "mistakes": [
         { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
         { "id": "hard-hit", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["yacht", "harbour"] } },
-        { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } }
+        { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } },
+        { "id": "lazy-line", "serious": false, "on": { "alert": "contact", "obstacle": ["lazy-line"] } }
+      ]
+    },
+    {
+      "id": "enter-berth",
+      "group": "harbour",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["engine", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
+      "start": "?pl=marina&ml=spacious&tr=empty&pe=-31.8&pn=1463.0&hdg=90&bs=0.5&wd=-90&ws=4&eng=1&lv=0&ap=off&sea=flat",
+      "levels": { "normal": "?ml=medium&tr=half&pe=-32.3&pn=1468.0&ws=8", "hard": "?ml=medium&tr=busy&pe=-32.3&pn=1468.0&ws=14" },
+      "targets": [{ "id": "berth", "shape": "berth" }],
+      "steps": [
+        { "id": "fenders", "opens": "harbour", "holdS": 1, "check": { "fendersOut": true } },
+        { "id": "line-up", "opens": "engine", "holdS": 2, "show": "berth", "check": { "headingDeg": { "to": 180, "within": 15 }, "berthOffsetM": [0, 3], "speedKn": [-0.6, 0.6] } },
+        { "id": "reverse-in", "opens": "engine", "holdS": 2, "show": "berth", "check": { "quayGapM": [0.5, 2.8], "berthOffsetM": [0, 1], "headingDeg": { "to": 180, "within": 10 }, "speedKn": [-0.2, 0.2] } },
+        { "id": "stern-lines", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sp", "ss"] } },
+        { "id": "lazy-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["ll"] } },
+        { "id": "made-fast", "opens": "harbour", "holdS": 5, "check": { "linesTight": ["ll"], "engine": { "gear": "neutral" }, "quayGapM": [0.3, 3.0], "headingDeg": { "to": 180, "within": 15 } } }
+      ],
+      "mistakes": [
+        { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "hard-hit", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } },
+        { "id": "lazy-line", "serious": false, "on": { "alert": "contact", "obstacle": ["lazy-line"] } },
+        { "id": "fenders-in", "serious": false, "on": { "alert": "fendersIn" } }
       ]
     }
   ]

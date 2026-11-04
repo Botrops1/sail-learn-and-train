@@ -490,8 +490,8 @@ export function stepFenders(
     if (over < threshold || lost.length >= total) break;
     let number = 0;
     while (lost.includes(number)) number += 1;
-    const side: Side =
-      number === BALL_FENDER ? ballFenderPlace(data).side : (fenderPlaces(data)[number]?.side ?? 1);
+    const ball = number === BALL_FENDER ? ballFenderPlace(data) : null;
+    const side: Side = ball ? ball.side : (fenderPlaces(data)[number]?.side ?? 1);
     lost = [...lost, number];
     over -= threshold;
     sinceSlow += 1;
@@ -499,7 +499,7 @@ export function stepFenders(
       atS: timeS,
       obstacleId: 'fender',
       partId: number === BALL_FENDER ? 'fit_fender_ball' : 'fit_fender',
-      part: sideName(side),
+      part: ball?.atStern ? 'stern' : sideName(side),
       impactMps: 0,
       fender: false,
       severity: 'hit',

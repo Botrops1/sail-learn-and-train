@@ -708,11 +708,11 @@
 |---|---|---|
 | Название | Ball fender | кранец-шар |
 | Другие названия | — | — |
-| Коротко | A big round fender for a corner of the boat. | Большой круглый кранец для угла яхты. |
-| Что делает / что значит | A ball fender protects a corner, where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier). | Кранец-шар защищает угол, где длинный кранец соскользнул бы, например корму, когда яхта швартуется кормой к причалу. |
-| На этой яхте | One, at the port corner of the stern behind the helm. It goes out and comes in with the other fenders. | Один, на левом (портовом) углу кормы за штурвалом. Он выходит за борт и убирается вместе с остальными кранцами. |
+| Коротко | A big round fender for the back of the boat. | Большой круглый кранец для кормы яхты. |
+| Что делает / что значит | A ball fender protects a place where a long fender would slip away, for example the stern when you moor stern-to (with the back of the boat to the pier). | Кранец-шар защищает место, где длинный кранец соскользнул бы, например корму, когда яхта швартуется кормой к причалу. |
+| На этой яхте | One, in the middle of the stern, hanging over the back. It goes out and comes in with the other fenders. | Один, посередине кормы, свисает за транец. Он выходит за борт и убирается вместе с остальными кранцами. |
 | Типичные ошибки | — | — |
-| «Покажи» | The boat from the port side with the fenders out: the ball fender hangs at the back corner. | Яхта с левого борта с вывешенными кранцами: кранец-шар висит на кормовом углу. |
+| «Покажи» | The boat from the port side with the fenders out: the ball fender hangs in the middle of the stern. | Яхта с левого борта с вывешенными кранцами: кранец-шар висит посередине кормы. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -3438,6 +3438,8 @@
 | damage.ground.rudder.bump | the rudder touched the bottom: check the rudder when you can. | руль задел дно: при случае осмотрите руль. |
 | damage.ground.rudder.knock | the rudder struck the bottom: have the rudder checked. | руль ударился о дно: нужно осмотреть руль. |
 | damage.ground.rudder.hit | the rudder hit the bottom hard: have the rudder and its bearings checked, and look for water inside. | сильный удар рулём о дно: осмотрите руль и его подшипники, проверьте, нет ли воды внутри. |
+| damage.lazyLine.keel | A neighbour's lazy line is under our keel: it can catch. Neutral, and drift clear. | Мунинг соседа под нашим килем: он может зацепиться. Нейтраль и дайте яхте отойти. |
+| damage.lazyLine.rudder | A neighbour's lazy line is under our rudder: it can catch. Neutral, and drift clear. | Мунинг соседа под нашим рулём: он может зацепиться. Нейтраль и дайте яхте отойти. |
 | damage.fenderLost | A {side} fender was torn off and lost (fenders out at speed). | Оторвало и потеряли кранец с {side} борта (кранцы за бортом на ходу). |
 | damage.propeller | A line got caught in the propeller and stopped the engine. | Конец намотался на винт и заглушил двигатель. |
 | lines.title | Lines | Швартовы |

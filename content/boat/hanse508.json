@@ -1233,10 +1233,10 @@
     },
     "ballFender": {
       "x": -8.2,
-      "side": "port",
+      "side": "stern",
       "diameter": 0.55,
       "topBelowSheer": 0.35,
-      "source": "owner (planning chat 2026-10-15: one big ball fender at the corner behind the helm) + assumption (side, size)"
+      "source": "owner (planning chat 2026-10-15: one big ball fender behind the helm; M75 bug report 2026-11-03: it belongs at the middle of the stern, where she touches the quay going in stern-to, not at a corner) + assumption (size, height)"
     },
     "hatches": {
       "source": "assumption (M65, Phase 9): flush deck hatches with a raised frame and a tinted lid; places chosen clear of the mast, the self-tacking track, the line channels and the mainsheet blocks",

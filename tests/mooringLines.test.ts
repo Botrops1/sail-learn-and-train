@@ -12,6 +12,7 @@ import {
   lineTension,
   NO_LINES,
   stepLines,
+  lazyWalk,
   type LinesInputs,
   type LinesState,
   type MooringLine,
@@ -388,5 +389,48 @@ describe('M45 bay lines', () => {
   it('choosing a place clears the bay lines', () => {
     const state = parseUrlState('?pl=bay&pe=-1457.0&pn=0.0&hdg=90&ws=0&ln=bl1:3.20');
     expect(reduce(state, { type: 'goToPlace', place: 'bay' }).lines.lines).toHaveLength(0);
+  });
+});
+
+describe('M75: a bow line under the propeller (PHASE10_SPEC 17.4, 17.6)', () => {
+  const state = marinaState(true);
+  const run = (leverPct: number, seconds: number) => {
+    const engine = initialEngine({ running: true, leverPct });
+    let lines: LinesState = NO_LINES;
+    for (let i = 0; i < seconds / 0.05; i += 1) {
+      lines = stepLines({ ...inputsOf(state, lines), engine, overBowLine: true }, 0.05);
+      if (lines.fouled) return { lines, at: (i + 1) * 0.05 };
+    }
+    return { lines, at: null };
+  };
+
+  it('in gear over the line it fouls after 2.0 s, not at 1.95 s', () => {
+    const fouled = run(15, 5);
+    expect(fouled.lines.fouled).toBe(true);
+    expect(fouled.at).toBeGreaterThanOrEqual(2.0 - 1e-6);
+    expect(run(15, 1.95).lines.fouled).toBe(false);
+  });
+
+  it('in neutral over the line it changes nothing', () => {
+    const engine = initialEngine({ running: true, leverPct: 0 });
+    const lines = stepLines({ ...inputsOf(state, NO_LINES), engine, overBowLine: true }, 0.05);
+    expect(lines).toBe(NO_LINES);
+  });
+});
+
+describe('M75 bug report: the lazy line walk is drawn', () => {
+  it('lazyWalk names the stern and bow cleats on one side and how far the crew has got', () => {
+    const berth = marinaState(true);
+    const geometry = marinaGeometry(berth.harbour.layout, berth.harbour.traffic);
+    const crew = { kind: 'walkLazy' as const, code: 'll' as const, remainingS: 15 };
+    const walk = lazyWalk({ ...berth.lines, crew }, berth.boat, geometry);
+    expect(walk?.progress).toBeCloseTo(0.25, 3);
+    expect(walk?.from.startsWith('cleat_stern_')).toBe(true);
+    expect(walk?.to.startsWith('cleat_bow_')).toBe(true);
+    expect(walk?.from.split('_')[2]).toBe(walk?.to.split('_')[2]);
+    // It leaves the quay at the ring of that side's stern line (owner, PR 160), on the quay face.
+    expect(walk?.ring[1]).toBeCloseTo(geometry.ourRings.west[1], 6);
+    expect([geometry.ourRings.west[0], geometry.ourRings.east[0]]).toContain(walk?.ring[0]);
+    expect(lazyWalk({ ...berth.lines, crew: null }, berth.boat, geometry)).toBeNull();
   });
 });
