@@ -318,7 +318,8 @@ Every exercise shows its bar at each step; checks 1–6 pass; `npm run typecheck
 3. **Rows are built once and kept** (a cache by row id); the render key only rebuilds the list, the numbers and the selection.
 4. **Held keys:** a tap row repeats while its key is held; the windlass hold starts once.
 5. **Windlass row** uses the Anchor section's part id (`fit_anchor_windlass`).
-6. **Browser checks:** the scenes of 6.6a item 16 are screenshots taken inside the live checks (`M79_SCENES` is empty); Chromium was started with `SHOTS_CHROMIUM=/opt/pw-browsers/chromium` in the cloud session.
+6. **Small text is 13 px**, not 12 px: the accessibility audit refuses text under 13 px.
+7. **Browser checks:** the scenes of 6.6a item 16 are screenshots taken inside the live checks (`M79_SCENES` is empty); Chromium was started with `SHOTS_CHROMIUM=/opt/pw-browsers/chromium` in the cloud session.
 
 ### 6.10 Not in M79
 

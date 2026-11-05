@@ -5247,7 +5247,7 @@ html[data-layout='wide'] .exercise-stack {
 .exercise-bar-label {
   flex: 1;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .exercise-bar-all {
@@ -5280,7 +5280,7 @@ html[data-layout='wide'] .exercise-stack {
   flex: none;
   width: 16px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
 }
 
@@ -5299,13 +5299,13 @@ html[data-layout='wide'] .exercise-stack {
 
 .bar-row-small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   overflow-wrap: anywhere;
 }
 
 .bar-row-name .hint {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .bar-buttons {
@@ -5368,7 +5368,7 @@ html[data-layout='wide'] .exercise-stack {
 .bar-keys {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .bar-nothing[hidden],
