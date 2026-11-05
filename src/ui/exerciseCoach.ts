@@ -8,6 +8,7 @@ import {
   type TargetRow,
 } from '../model/exercises';
 import { el } from './dom';
+import { SCENE } from '../render3d/sceneConfig';
 import { currentLanguage, t } from './i18n';
 import type { LayoutShell } from './layout';
 import { layoutKindOf } from './modes';
@@ -122,6 +123,25 @@ export function createExerciseCoach(top: HTMLElement, store: Store, layout: Layo
     body.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
     setText(toggle, t(open ? 'exercise.coach.hide' : 'exercise.coach.show'));
+    fit();
+  };
+  /**
+   * M80 (review): on a phone the open hint ends inside the share of the view the camera counts as
+   * covered (`maxTopInsetShare`), so the yacht never hides under it; its list scrolls inside.
+   */
+  const fit = () => {
+    const view = root.closest('.view');
+    if (!stacked() || body.hidden || root.hidden || !view) {
+      if (body.style.maxHeight !== '') body.style.maxHeight = '';
+      if (body.style.overflowY !== '') body.style.overflowY = '';
+      return;
+    }
+    const viewTop = view.getBoundingClientRect().top;
+    const limit = SCENE.camera.maxTopInsetShare * view.clientHeight;
+    const used = toggle.getBoundingClientRect().bottom - viewTop;
+    const height = `${Math.max(48, Math.floor(limit - used - 4))}px`;
+    if (body.style.maxHeight !== height) body.style.maxHeight = height;
+    body.style.overflowY = 'auto';
   };
   toggle.addEventListener('click', () => {
     if (stacked()) stackedOpen = !stackedOpen;
@@ -186,6 +206,8 @@ export function createExerciseCoach(top: HTMLElement, store: Store, layout: Layo
       item.classList.toggle('ok', reading?.ok === true);
     }
   };
+  // The strip and the time bar change height (a fold, a wrapped badge): the hint moves, so it fits again.
+  new ResizeObserver(() => requestAnimationFrame(fit)).observe(top);
   sync(store.getState());
   store.subscribe(sync);
   layout.onChange(() => {

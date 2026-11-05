@@ -274,6 +274,12 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       if (!applied || width !== viewport.width || height !== viewport.height) {
         ease = undefined;
         applyViewport(width, height, inset, top);
+      } else if (
+        ease
+          ? ease.to.inset === inset && ease.to.top === top
+          : viewport.inset === inset && viewport.top === top
+      ) {
+        // Nothing new: a glide under way keeps its course, an empty one is not started.
       } else {
         // M80: the framing follows a change of the free area softly (SCENE.camera.viewportEaseS).
         ease = {

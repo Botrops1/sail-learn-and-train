@@ -225,9 +225,11 @@ export function parseUrlState(
       // No `lb`: the labels follow the ropes mode's default (off in Realistic).
       ...(labels !== undefined
         ? { labels }
-        : ropesMode !== undefined
-          ? { labels: defaultLabels(ropesMode) }
-          : {}),
+        : appMode === 'exercise'
+          ? { labels: false }
+          : ropesMode !== undefined
+            ? { labels: defaultLabels(ropesMode) }
+            : {}),
       ...(miniMap !== undefined ? { miniMap } : {}),
       ...(ropesMode !== undefined ? { ropesMode } : {}),
       ...(timeScale !== undefined && isTimeScale(timeScale) ? { timeScale } : {}),

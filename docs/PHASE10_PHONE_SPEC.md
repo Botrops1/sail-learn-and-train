@@ -390,6 +390,7 @@ As 4.3 (all of it is M80).
 4. The hint folded on a phone uses `run.id`, `run.step` and the previous status; a `mistake` → `running` return at the same step keeps what the learner had.
 5. In the check the run is ended with the `stop` command (the Stop button asks twice) and started again from the exercise list.
 6. `shots.mjs` label rules (`held`, flat sea, clock chip, mini-map, …) get `8\d` so labels with "m80" and later behave like the Phase 10 ones.
+7. Independent review, owner: "fix all 5": (a) on a phone the open hint's body is limited to the share the camera counts as covered (`maxTopInsetShare`, 40 %) and its list scrolls inside, and the browser check also compares the yacht with the real lower edge of `.view-top`; (b) the `?m=exercise` link (no `ex=`) opens with the labels off too (the rule is in the general parse); (c) the PR description's links carry the real number; (d) `setViewport` does not restart a glide for the target it is already heading to; (e) WORKFLOW says "Show hint".
 
 ### 7.9 Done when / not in M80
 

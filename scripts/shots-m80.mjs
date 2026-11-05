@@ -34,11 +34,21 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
     const b = await box(page);
     const height = a.bottom - a.top;
     const centreOff = Math.abs((b.top + b.bottom) / 2 - (a.top + a.bottom) / 2);
-    const ok = centreOff <= 0.15 * height && b.top >= a.top - 8 && b.bottom <= a.bottom + 8;
+    // The boat must also clear the real lower edge of the top area (strip, bar, step line, hint).
+    const edge = await page.evaluate(() => {
+      const top = document.querySelector('[data-testid="view-top"]').getBoundingClientRect();
+      const view = document.querySelector('.view').getBoundingClientRect();
+      return top.bottom - view.top;
+    });
+    const ok =
+      centreOff <= 0.15 * height &&
+      b.top >= a.top - 8 &&
+      b.bottom <= a.bottom + 8 &&
+      b.top >= edge - 2;
     check(
       `${what}: boat centred in the free area`,
       ok,
-      `free ${Math.round(a.top)}–${Math.round(a.bottom)}, boat ${Math.round(b.top)}–${Math.round(b.bottom)}, off ${Math.round(centreOff)} px`,
+      `free ${Math.round(a.top)}–${Math.round(a.bottom)}, boat ${Math.round(b.top)}–${Math.round(b.bottom)}, top area ends ${Math.round(edge)}, off ${Math.round(centreOff)} px`,
     );
   };
   const near = (a, b, tol) => Math.abs(a - b) <= tol;

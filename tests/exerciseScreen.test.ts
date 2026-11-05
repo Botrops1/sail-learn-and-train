@@ -17,6 +17,14 @@ describe('M80 labels default in Exercises', () => {
     expect(parseUrlState(`${START}&lb=1`).settings.labels).toBe(true);
   });
 
+  it('the Exercises list link (no ex=) opens with labels off and writes no lb', () => {
+    const list = parseUrlState('?m=exercise');
+    expect(list.appMode).toBe('exercise');
+    expect(list.settings.labels).toBe(false);
+    expect(new URLSearchParams(serializeUrlState(list)).has('lb')).toBe(false);
+    expect(parseUrlState('?m=exercise&lb=1').settings.labels).toBe(true);
+  });
+
   it('a waypoint link without lb opens with labels off', () => {
     const run = parseUrlState(START);
     const wp = serializeUrlState({ ...run, settings: { ...run.settings, labels: true } });
