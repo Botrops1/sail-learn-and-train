@@ -348,6 +348,63 @@ export async function liveM79Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
+  // 5c. A computer (owner, PR 168): the bar does not push the chip row and the mini-map up. They
+  //     stay where they were before Start; on a big screen the bar stands in the same bottom row.
+  for (const size of [
+    { name: 'wide-1440x900', width: 1440, height: 900, row: false },
+    { name: 'big-2200x1000', width: 2200, height: 1000, row: true },
+  ]) {
+    const { context, page } = await openPage(
+      size,
+      `m79 bottom row ${size.name}`,
+      '?m=exercise&ex=points-of-sail&step=1&debug=1',
+      { testClock: true },
+    );
+    const bottoms = () =>
+      page.evaluate(() => {
+        const rect = (node) => {
+          if (!node || node.hidden || node.offsetParent === null) return null;
+          const r = node.getBoundingClientRect();
+          return {
+            l: Math.round(r.left),
+            t: Math.round(r.top),
+            r: Math.round(r.right),
+            b: Math.round(r.bottom),
+          };
+        };
+        const chips = [...document.querySelectorAll('.view-bottom > *')].map(rect).filter(Boolean);
+        return {
+          mini: rect(document.querySelector('[data-testid="mini-map"]')),
+          chipTop: chips.length ? Math.min(...chips.map((c) => c.t)) : null,
+          chipLeft: chips.length ? Math.min(...chips.map((c) => c.l)) : null,
+          bar: rect(document.querySelector('[data-testid="exercise-bar"]')),
+          place: document.querySelector('[data-testid="exercise-stack"]')?.dataset.place,
+        };
+      });
+    const before = await bottoms();
+    await start(page);
+    await page.waitForTimeout(500);
+    const after = await bottoms();
+    const sameRow =
+      JSON.stringify(before.mini) === JSON.stringify(after.mini) &&
+      before.chipTop === after.chipTop;
+    const hits = (a, b) => a && b && a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+    const clear =
+      after.bar &&
+      !hits(after.bar, after.mini) &&
+      !(after.chipLeft !== null && after.bar.r > after.chipLeft && after.bar.b > after.chipTop);
+    const placed = size.row
+      ? after.place === 'row' && after.bar && after.bar.b > after.chipTop
+      : after.place === 'above';
+    check(
+      `computer ${size.name}: the chip row and the mini-map stay at the bottom`,
+      Boolean(sameRow && clear && placed),
+      `before ${JSON.stringify(before)}, after ${JSON.stringify(after)}`,
+    );
+    await shot(page, `m79-${size.name}-bottom-row`);
+    await context.close();
+  }
+
   // 6. All controls opens the step's section; the Russian bar fits.
   {
     const { context, page } = await openPage(

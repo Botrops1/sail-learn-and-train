@@ -224,9 +224,15 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
       // side the panel is beside the view, so only the chip row covers it.
       // The step bar (M79) stands between the sheet and the chip row on a phone: its height counts.
       const stackPx = parseFloat(layout.view.style.getPropertyValue('--exercise-stack-h')) || 0;
+      // On a computer the bar may stand over the chip row, or beside it in the row (owner, PR 168).
+      const stackBox = layout.view.querySelector('[data-testid="exercise-stack"]');
+      const barTop =
+        stackBox instanceof HTMLElement && stackBox.offsetHeight > 0
+          ? stackBox.getBoundingClientRect().top
+          : Infinity;
       const inset = stacked
         ? sheet.cameraInset() + stackPx
-        : viewBox.bottom - chipRow.getBoundingClientRect().top;
+        : viewBox.bottom - Math.min(chipRow.getBoundingClientRect().top, barTop);
       view.resize(
         layout.view.clientWidth,
         layout.view.clientHeight,

@@ -5409,3 +5409,18 @@ html[data-layout='wide'] .exercise-stack {
   font-weight: 400;
   color: var(--muted);
 }
+
+/* A computer: the bar takes the bottom row between the mini-map and the chips (the JS sets left and
+   right), or stands over that row; the row itself never moves. */
+.exercise-stack[data-place='row'] {
+  transform: none;
+  width: auto;
+}
+
+.bar-row {
+  flex-wrap: wrap;
+}
+
+.bar-row-name {
+  flex: 1 1 110px;
+}

@@ -415,7 +415,11 @@ export function createExerciseBar(
       id: rowId,
       element: rowElement(rowId, block, [buttonsBox([down, up])]),
       keys: { left: motion('down'), right: motion('up') },
-      refresh: (state) => setText(line, anchorStatusText(state)),
+      refresh: (state) =>
+        setText(
+          line,
+          `${anchorStatusText(state)} · ${t('anchor.counter', { m: Math.round(state.anchor.chainOutM) })}`,
+        ),
     };
   };
 
@@ -534,13 +538,65 @@ export function createExerciseBar(
 
   // ---- height: the rest of the view keeps clear of the stack ---------------------------------
 
-  new ResizeObserver(() => {
+  // On a phone the stack stands over the sheet and the chip row and the mini-map move up above it
+  // (`--exercise-stack-h`). On a computer (owner, PR 168) nothing moves: the bar takes the bottom row
+  // between the mini-map and the chips when there is room (`data-place="row"`), else it stands
+  // over that row (`data-place="above"`), which stays where it is.
+  const ROW_MIN_PX = 400;
+  const visibleBox = (node: Element | null): DOMRect | null => {
+    if (!(node instanceof HTMLElement) || node.hidden || node.offsetParent === null) return null;
+    const rect = node.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0 ? rect : null;
+  };
+  let lastSignature = '';
+  const measure = () => {
+    const stacked = kind() === 'stacked';
+    let place = 'stacked';
+    let left = '';
+    let right = '';
+    let bottom = '';
+    if (!stacked) {
+      const box = view.getBoundingClientRect();
+      const mini = visibleBox(view.querySelector('[data-testid="mini-map"]'));
+      const chips = [...(view.querySelector('.view-bottom')?.children ?? [])]
+        .map((child) => visibleBox(child))
+        .filter((rect): rect is DOMRect => rect !== null);
+      const from = mini ? mini.right - box.left + 8 : 8;
+      const to =
+        chips.length > 0 ? Math.min(...chips.map((r) => r.left)) - box.left - 8 : box.width - 8;
+      if (to - from >= ROW_MIN_PX) {
+        place = 'row';
+        left = `${Math.round(from)}px`;
+        right = `${Math.round(box.width - to)}px`;
+      } else {
+        place = 'above';
+        const tops = [mini, ...chips].filter((rect): rect is DOMRect => rect !== null);
+        if (tops.length > 0)
+          bottom = `${Math.round(box.bottom - Math.min(...tops.map((r) => r.top)) + 8)}px`;
+      }
+    }
+    stack.dataset.place = place;
+    stack.style.left = left;
+    stack.style.right = right;
+    stack.style.bottom = bottom;
     const px = stack.offsetHeight > 0 ? stack.offsetHeight + 8 : 0;
-    const value = `${px}px`;
-    if (view.style.getPropertyValue('--exercise-stack-h') === value) return;
-    view.style.setProperty('--exercise-stack-h', value);
+    const value = stacked ? `${px}px` : '0px';
+    const signature = `${place}|${left}|${right}|${bottom}|${value}|${stack.offsetHeight}`;
+    if (view.style.getPropertyValue('--exercise-stack-h') !== value) {
+      view.style.setProperty('--exercise-stack-h', value);
+    }
+    if (signature === lastSignature) return;
+    lastSignature = signature;
     onStackResize();
-  }).observe(stack);
+  };
+  const watcher = new ResizeObserver(measure);
+  watcher.observe(stack);
+  watcher.observe(view);
+  const chipRow = view.querySelector('.view-bottom');
+  if (chipRow) watcher.observe(chipRow);
+  const miniMap = view.querySelector('[data-testid="mini-map"]');
+  if (miniMap) watcher.observe(miniMap);
+  layout.onChange(measure);
 
   // ---- keys (side and wide layouts) -----------------------------------------------------------
 
