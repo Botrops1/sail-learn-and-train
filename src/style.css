@@ -233,7 +233,7 @@ html[data-layout='side'] .info-card {
 html[data-layout='stacked'] .info-area {
   position: absolute;
   right: 8px;
-  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 60px);
   left: 8px;
   display: flex;
   justify-content: flex-start;
@@ -295,7 +295,7 @@ html[data-layout='stacked'] .info-card {
 .view-bottom {
   position: absolute;
   right: 8px;
-  bottom: calc(var(--view-bottom-inset, 0px) + 8px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 8px);
   left: 8px;
   z-index: 8;
   display: flex;
@@ -403,7 +403,7 @@ html[data-layout='side'] .helm-views {
 .mini-map {
   position: absolute;
   left: 8px;
-  bottom: calc(var(--view-bottom-inset, 0px) + 8px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 8px);
   z-index: 4;
   box-sizing: border-box;
   width: 96px;
@@ -499,7 +499,7 @@ html[data-layout='side'] .view[data-mini-map] .view-bottom {
  */
 .chip-card {
   position: absolute;
-  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 60px);
   z-index: 13;
   display: flex;
   flex-direction: column;
@@ -3526,7 +3526,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 
 .view[data-map] .map-scale {
   position: absolute;
-  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 60px);
   left: 8px;
   display: flex;
   flex-direction: column;
@@ -3582,17 +3582,17 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
 }
 
 .view[data-map] .map-zoom[data-testid='map-zoom-in'] {
-  bottom: calc(var(--view-bottom-inset, 0px) + 108px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 108px);
 }
 
 .view[data-map] .map-zoom[data-testid='map-zoom-out'] {
-  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 60px);
 }
 
 .view[data-map] .map-hint {
   position: absolute;
   right: 64px;
-  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 60px);
   left: 124px;
   display: block;
   max-width: 300px;
@@ -3915,7 +3915,7 @@ html[data-layout='side'] .alert-chip-icon {
 /* A phone: the card opens above the chip row, at the right, over the 3D view. */
 html[data-layout='stacked'] .alert-centre {
   top: auto;
-  bottom: calc(var(--view-bottom-inset, 0px) + 60px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 60px);
   max-height: max(
     120px,
     calc(100% - var(--view-top-h, 64px) - var(--view-bottom-inset, 0px) - 76px)
@@ -5168,7 +5168,7 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
  */
 .exercise-resume {
   position: absolute;
-  bottom: calc(var(--view-bottom-inset, 0px) + 8px);
+  bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 8px);
   left: calc(8px + 96px + 8px);
   z-index: 9;
   min-height: var(--touch);
@@ -5196,4 +5196,203 @@ html[data-layout='side'] .exercise-resume {
 
 .exercise-resume[hidden] {
   display: none;
+}
+
+/* The step bar (M79, PHASE10_PHONE_SPEC 6.5): the controls of the current exercise step over the
+   bottom of the 3D view. The chip row, the mini-map, Resume and the info card add
+   --exercise-stack-h to their bottom so they sit above it. */
+.exercise-stack {
+  --bar-touch: 48px;
+  position: absolute;
+  z-index: 8;
+  bottom: calc(var(--view-bottom-inset, 0px) + 8px);
+  left: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+html[data-layout='side'] .exercise-stack,
+html[data-layout='wide'] .exercise-stack {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 16px));
+}
+
+.exercise-bar {
+  pointer-events: auto;
+  padding: 6px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 2px 10px rgb(10 20 30 / 0.3);
+  font-size: 15px;
+}
+
+.exercise-bar[hidden] {
+  display: none;
+}
+
+.exercise-bar-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.exercise-bar-label {
+  flex: 1;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.exercise-bar-all {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: calc(var(--bar-touch) + 8px);
+  padding: 4px 0;
+  border-top: 1px solid var(--line);
+}
+
+.bar-row-selected {
+  background: var(--accent-soft);
+}
+
+.bar-key {
+  flex: none;
+  width: 16px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.bar-row-name {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bar-row-title {
+  font-size: 15px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.bar-row-small {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.bar-row-name .hint {
+  margin: 0;
+  font-size: 12px;
+}
+
+.bar-buttons {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.exercise-stack .step-button {
+  width: var(--bar-touch);
+  height: var(--bar-touch);
+  min-width: var(--bar-touch);
+}
+
+.exercise-stack .step-button.bar-wide {
+  width: auto;
+  padding: 0 10px;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.bar-value {
+  min-width: 64px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.exercise-stack .bar-mode,
+.exercise-stack .bar-text-button,
+.exercise-stack .engine-startstop {
+  min-width: var(--bar-touch);
+  min-height: var(--bar-touch);
+  padding: 0 10px;
+  font-size: 15px;
+}
+
+.exercise-stack .bar-text-button {
+  flex: none;
+}
+
+.exercise-stack .windlass-button {
+  min-height: var(--bar-touch);
+}
+
+.bar-row-line {
+  display: block;
+}
+
+.bar-row-line .line-row {
+  margin: 0;
+}
+
+.exercise-stack .bar-row-line .segment {
+  min-height: var(--bar-touch);
+}
+
+.bar-nothing,
+.bar-keys {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.bar-nothing[hidden],
+.bar-keys[hidden] {
+  display: none;
+}
+
+/* The thruster pair in the bar: the quick variant's look at 48 px high. */
+.thruster-pair-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.thruster-joystick-bar .joystick-track {
+  --knob-travel: 28px;
+  width: 88px;
+  height: var(--bar-touch);
+  border-radius: 24px;
+}
+
+.thruster-joystick-bar .joystick-half {
+  min-height: var(--bar-touch);
+}
+
+.thruster-joystick-bar .joystick-knob {
+  top: 12px;
 }

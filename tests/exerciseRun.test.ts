@@ -256,8 +256,8 @@ describe('mistakes and waypoints (PHASE10_SPEC 7.7)', () => {
     const def: ExerciseDef = {
       ...(exerciseDef('points-of-sail') as ExerciseDef),
       steps: [
-        { id: 'a', opens: 'ropes', holdS: 0, check: { twaDeg: [300, 301] } },
-        { id: 'b', opens: 'ropes', holdS: 0, check: { twaDeg: [300, 301] } },
+        { id: 'a', opens: 'ropes', holdS: 0, check: { twaDeg: [300, 301] }, bar: [] },
+        { id: 'b', opens: 'ropes', holdS: 0, check: { twaDeg: [300, 301] }, bar: [] },
       ],
       mistakes: [{ id: 'x', serious: true, steps: ['b'], on: { alert: 'tack' } }],
     };

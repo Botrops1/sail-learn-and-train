@@ -2,6 +2,7 @@ import type { AppMode } from '../app/appMode';
 import type { AppState } from '../app/store';
 import { exerciseDef } from '../model/exercises';
 import type { StringKey } from './i18n';
+import type { Viewport } from './layout';
 import type { PanelTab } from './panelTabs';
 
 /**
@@ -78,6 +79,11 @@ export const SECTION_TITLES: Record<SectionId, StringKey> = {
 
 /** The layouts of `src/ui/layoutMode.ts` (with the wide one told apart). */
 export type LayoutKind = 'stacked' | 'side' | 'wide';
+
+/** The layout kind of a viewport (the wide layout told apart from the side one). */
+export function layoutKindOf(viewport: Viewport): LayoutKind {
+  return viewport.wide ? 'wide' : viewport.mode;
+}
 
 export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
   easy: {

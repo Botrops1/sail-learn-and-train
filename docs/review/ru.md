@@ -3528,3 +3528,31 @@
 | anchor.alarm | Anchor alarm: the anchor is dragging. | Якорная тревога: якорь ползёт. |
 | anchor.silence | OK | ОК |
 | anchor.hint | To anchor: head into the wind and stop, let the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | Постановка на якорь: встаньте носом к ветру, остановитесь, травите цепь, пока лодку сносит назад, до отметки «достаточно» (длина цепи к глубине: не меньше 4 глубин с высотой ролика или 3 длин корпуса, что больше), затем дайте малый назад (на треть) на несколько секунд, чтобы якорь зарылся. Песок и ил держат хорошо, трава и камень плохо. |
+| exercise.bar.aria | Controls for this step | Управление на этом шаге |
+| exercise.bar.label | This step | Этот шаг |
+| exercise.bar.all | All controls | Всё управление |
+| exercise.bar.nothing | Nothing to do in this step: watch. | На этом шаге делать нечего: смотрите. |
+| exercise.bar.keys | Keys: 1–4 choose a row · ← → change it · Space: its first button | Клавиши: 1–4 выбор строки · ← → изменить · Пробел: первая кнопка |
+| exercise.bar.sheet | − hauls in · + lets out | − подобрать · + потравить |
+| exercise.bar.furl | − rolls in · + rolls out | − свернуть · + развернуть |
+| exercise.bar.rudder | − to port · + to starboard | − к левому борту · + к правому борту |
+| exercise.bar.autopilot | Autopilot | Автопилот |
+| exercise.bar.ap.off | Standby: you steer | Ожидание: вы рулите |
+| exercise.bar.ap.heading | Holds the heading {deg}° | Держит курс {deg}° |
+| exercise.bar.ap.wind | Holds the wind at {deg}° {side} | Держит ветер {deg}° {side} |
+| exercise.bar.ap.portAria | Turn {deg}° to port | Повернуть на {deg}° к левому борту |
+| exercise.bar.ap.starboardAria | Turn {deg}° to starboard | Повернуть на {deg}° к правому борту |
+| exercise.bar.engine | Engine | Двигатель |
+| exercise.bar.astern | ◀ Astern | ◀ Назад |
+| exercise.bar.ahead | Ahead ▶ | Вперёд ▶ |
+| exercise.bar.thrusters | Thrusters | Подруливающие |
+| exercise.bar.fenders | Fenders | Кранцы |
+| exercise.bar.fendersIn | In | В рундуке |
+| exercise.bar.fendersOut | Out | За бортом |
+| exercise.bar.windlass | Anchor chain | Якорная цепь |
+| exercise.bar.ropesRealistic | Ropes: work them at the stations | Снасти: работайте на постах |
+| exercise.bar.stations | Stations | Посты |
+| exercise.bar.lessAria | Less: {name} | Меньше: {name} |
+| exercise.bar.moreAria | More: {name} | Больше: {name} |
+| exercise.bar.asternAria | Engine lever 5 % towards astern | Рычаг двигателя на 5 % к заднему ходу |
+| exercise.bar.aheadAria | Engine lever 5 % towards ahead | Рычаг двигателя на 5 % к переднему ходу |

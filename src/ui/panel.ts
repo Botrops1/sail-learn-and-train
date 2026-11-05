@@ -12,6 +12,7 @@ import {
   SECTION_IDS,
   SECTION_TITLES,
   TAB_OF,
+  layoutKindOf,
   sectionAvailable,
   type LayoutKind,
   type SectionId,
@@ -188,10 +189,7 @@ export function createPanel(
   // M54: where the sections are on the wide layout. Read once here, written only after a move.
   let arrangement = readArrangement();
 
-  const layoutKindNow = (): LayoutKind => {
-    const { mode, wide } = layout.viewport();
-    return wide ? 'wide' : mode;
-  };
+  const layoutKindNow = (): LayoutKind => layoutKindOf(layout.viewport());
   let layoutKind = layoutKindNow();
   /** M51: the Controls section that was open last (the Controls tab opens it again). */
   let lastControls: SectionId | null = null;

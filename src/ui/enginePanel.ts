@@ -122,7 +122,10 @@ function createTach(): Tach {
   };
 }
 
-function startStopButton(store: Store): {
+export function createStartStopButton(
+  store: Store,
+  suffix = '',
+): {
   button: HTMLButtonElement;
   /** M44: "The propeller is fouled by a line: clear it first.", beside the button while a line is round the propeller. */
   note: HTMLElement;
@@ -133,7 +136,7 @@ function startStopButton(store: Store): {
   const button = el('button', {
     type: 'button',
     class: 'engine-startstop',
-    'data-testid': 'engine-startstop',
+    'data-testid': `engine-startstop${suffix}`,
   });
   button.addEventListener('click', () =>
     store.dispatch({
@@ -170,7 +173,7 @@ export function leverText(leverPct: number): string {
  */
 export function createEnginePanel(store: Store): HTMLElement {
   const sliderId = 'engine-lever';
-  const startStop = startStopButton(store);
+  const startStop = createStartStopButton(store);
   const tach = createTach();
   const rpm = el('span', { class: 'engine-rpm', 'data-testid': 'engine-rpm' });
   const status = el('p', { class: 'engine-status', 'data-testid': 'engine-status' });
@@ -267,7 +270,7 @@ function leverY(leverPct: number): number {
  * lever is also a keyboard slider (arrows, by the step).
  */
 export function createEngineLever(store: Store): HTMLElement {
-  const startStop = startStopButton(store);
+  const startStop = createStartStopButton(store);
   const tach = createTach();
   const rpm = el('span', { class: 'engine-rpm', 'data-testid': 'engine-rpm' });
   const status = el('p', { class: 'engine-status', 'data-testid': 'engine-status' });

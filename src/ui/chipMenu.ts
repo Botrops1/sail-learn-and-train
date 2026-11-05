@@ -42,6 +42,11 @@ export function closeOpenMenus(): void {
   overlay?.close();
 }
 
+/** True while a chip menu or a registered chip card is open (the exercise bar's keys wait then). */
+export function overlayOpen(): boolean {
+  return openMenu !== undefined || overlay !== undefined;
+}
+
 /**
  * M52: a chip card takes the one overlay slot (one overlay open at a time). It first closes any
  * chip menu and the card that held the slot; the returned function releases the slot again.

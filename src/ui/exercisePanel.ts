@@ -15,6 +15,7 @@ import {
   exerciseText,
   type ExerciseDef,
   type ExerciseGroup,
+  type ExerciseStep,
 } from '../model/exercises';
 import { el } from './dom';
 import { createDebrief, type DebriefView } from './exerciseDebrief';
@@ -30,6 +31,28 @@ import type { Sheet } from './sheet';
 import { createConfirmButton } from './settingsMenu';
 
 const GROUPS: readonly ExerciseGroup[] = ['sailing', 'wind', 'sails', 'harbour'];
+
+/**
+ * The panel section "Show the controls" (and the step bar's "All controls") opens for a step: the
+ * step's own section, or, where that section is not in the panel, the one that holds it: the
+ * Helm section for the autopilot and the engine in Realistic ropes, the Ropes section for the
+ * anchor (the Bow station holds the windlass).
+ */
+export function controlsSectionFor(
+  step: ExerciseStep,
+  state: AppState,
+  kind: LayoutKind,
+): SectionId {
+  let section: SectionId = step.opens;
+  if (
+    (section === 'engine' || section === 'autopilot') &&
+    !sectionAvailable(section, state, kind)
+  ) {
+    section = 'helm';
+  }
+  if (section === 'anchor' && !sectionAvailable('anchor', state, kind)) section = 'ropes';
+  return section;
+}
 
 /** Whole seconds left of a step's hold (PHASE10_SPEC 6.5). */
 export function holdLeftS(run: ExerciseRun, holdS: number): number {
@@ -493,19 +516,7 @@ export function createExercisePanel(
         [t('exercise.open')],
       );
       open.addEventListener('click', () => {
-        let section: SectionId = step.opens;
-        // In Realistic ropes the autopilot and the engine live in the Helm section.
-        if (
-          (section === 'engine' || section === 'autopilot') &&
-          !sectionAvailable(section, store.getState(), layout())
-        ) {
-          section = 'helm';
-        }
-        // The Anchor section is not in Realistic ropes: the Bow station (Ropes) holds the windlass.
-        if (section === 'anchor' && !sectionAvailable('anchor', store.getState(), layout())) {
-          section = 'ropes';
-        }
-        panel.showSection(section);
+        panel.showSection(controlsSectionFor(step, store.getState(), layout()));
       });
       card.append(
         el('p', { 'data-testid': 'exercise-how-text' }, [text.steps[step.id]?.how ?? '']),
