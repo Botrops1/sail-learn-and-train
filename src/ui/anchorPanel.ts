@@ -53,7 +53,7 @@ const ARROW_MOTION: Partial<Record<string, Exclude<WindlassMotion, 'off'>>> = {
   ArrowUp: 'up',
 };
 
-function holdButton(
+export function holdButton(
   store: Store,
   motion: Exclude<WindlassMotion, 'off'>,
   testId: string,

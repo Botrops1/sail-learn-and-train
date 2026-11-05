@@ -311,6 +311,20 @@ Live checks (390 × 844 unless named):
 
 Every exercise shows its bar at each step; checks 1–6 pass; `npm run typecheck`, `lint`, `test`, `build` pass; CODE_MAP lists the new files.
 
+### 6.11 Decided in the M79 PR (recommended; merging accepts it)
+
+1. **Space on a line row** takes the line when Take is shown, else lets it go (the row's one main action). The general rule "first enabled button" would press Ease on a line that is on, so the Space check of 6.8 (Leaving the berth step 1) would not let the lazy line go. ← and → keep the first and the last enabled button.
+2. **Leaving the berth tap run (6.8 check 2):** the engine lever goes back to neutral (three Astern taps) before the thrusters turn her, and three Ahead taps (15 %) follow, as `leavePilot` does; one tap (5 %) stays inside the neutral band. Measured seconds per step: 1, 1, 34, 2.8 (limits 5, 5, 45, 34). Points of sail: 5.2, 14.8, 14, 15.3, 18.2 (limits 10, 21, 20, 22, 25).
+3. **Rows are built once and kept** (a cache by row id); the render key only rebuilds the list, the numbers and the selection.
+4. **Held keys:** a tap row repeats while its key is held; the windlass hold starts once.
+5. **Windlass row** uses the Anchor section's part id (`fit_anchor_windlass`).
+6. **Small text is 13 px**, not 12 px: the accessibility audit refuses text under 13 px.
+7. **Browser checks:** the scenes of 6.6a item 16 are screenshots taken inside the live checks (`M79_SCENES` is empty); Chromium was started with `SHOTS_CHROMIUM=/opt/pw-browsers/chromium` in the cloud session.
+
+8. **Independent review and owner answers (PR 168; owner: "accept all from review")**: (a) the bar's two joysticks carry "Bow" / "Stern" under them, so a beginner knows which is which; (b) the phone's alert card (`.alert-centre`) `max-height` also subtracts the stack's height, so a long card never slides under the top strip; (c) the browser checks look at the bar in the side-by-side layout too (820 × 1000, `m79-side-leave-step1`), and the 1440 × 900 shot of Leaving the berth is `m79-wide-leave-step1`; (d) Space on the engine row and ← / → on a line row press the row's button instead of sending the action (same effect), left as it is; (e) the hint and the bar together crowd a phone's view until M80 folds the hint, left as it is.
+
+9. **Owner test on a computer (PR 168; recommended; merging accepts it):** (a) on the side and wide layouts the bar no longer pushes the chip row and the mini-map up: with room (at least 400 px between the mini-map and the chips, e.g. a 2200 px screen) the bar stands in the same bottom row between them (`data-place="row"`); with less room (a 1440 px screen) it stands over that row, which stays where it was (`data-place="above"`); `--exercise-stack-h` is 0 there, and the camera inset counts the bar's top; on a phone nothing changes; (b) the anchor chain row shows the length out ("Chain in the water · 12 m") as the Anchor section does; (c) the two thrusters on a phone are hard to hold with two thumbs while also steering: a global rework (latching thrusters) is a question for the owner (PR 168), not part of M79.
+
 ### 6.10 Not in M79
 
 The camera's soft movement, the folded hint and time bar, the labels default (M80); Watch and Show me (M81); Realistic rope rows (M82).

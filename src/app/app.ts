@@ -26,6 +26,7 @@ import { createClockPanel } from '../ui/clockPanel';
 import { createExerciseCoach } from '../ui/exerciseCoach';
 import { createExerciseLine } from '../ui/exerciseLine';
 import { createExerciseResume } from '../ui/exerciseResume';
+import { createExerciseBar } from '../ui/exerciseBar';
 import { twaSignedDeg } from '../model/exercises';
 import { mpsToKn } from '../model/angles';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
@@ -129,6 +130,9 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   createExerciseLine(top, store, () => panel.showSection('exercises'));
   createExerciseCoach(top, store);
   createExerciseResume(layout.view, store);
+  // The step bar over the bottom of the view; `reframe` is assigned further down (a no-op without 3D).
+  let reframe = () => {};
+  createExerciseBar(layout.view, store, layout, sheet, panel, () => reframe());
   // CSS hides what would load a scene (and end the run) while an exercise exists.
   const markExercise = () => {
     document.documentElement.toggleAttribute('data-exercise', store.getState().exercise !== null);
@@ -175,7 +179,6 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
     };
   }
   // The camera frames the boat below the time bar; `resize` is set once the scene exists.
-  let reframe = () => {};
   trackTopHeight(layout.view, top, () => reframe());
   createWindIndicator(layout.view, store);
   const card = createInfoCard(layout, store, {
@@ -219,9 +222,17 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
       const stacked = layout.viewport().mode === 'stacked';
       // Stacked: the boat is framed above the sheet and the chip row (PHASE5_SPEC 3.3); side by
       // side the panel is beside the view, so only the chip row covers it.
+      // The step bar (M79) stands between the sheet and the chip row on a phone: its height counts.
+      const stackPx = parseFloat(layout.view.style.getPropertyValue('--exercise-stack-h')) || 0;
+      // On a computer the bar may stand over the chip row, or beside it in the row (owner, PR 168).
+      const stackBox = layout.view.querySelector('[data-testid="exercise-stack"]');
+      const barTop =
+        stackBox instanceof HTMLElement && stackBox.offsetHeight > 0
+          ? stackBox.getBoundingClientRect().top
+          : Infinity;
       const inset = stacked
-        ? sheet.cameraInset()
-        : viewBox.bottom - chipRow.getBoundingClientRect().top;
+        ? sheet.cameraInset() + stackPx
+        : viewBox.bottom - Math.min(chipRow.getBoundingClientRect().top, barTop);
       view.resize(
         layout.view.clientWidth,
         layout.view.clientHeight,

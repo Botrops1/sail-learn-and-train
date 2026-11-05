@@ -66,6 +66,8 @@ export interface ExerciseStep {
   holdS: number;
   show?: string;
   check: ExerciseCheck;
+  /** M79 (PHASE10_PHONE_SPEC 4.4): the rows of the step bar (row ids as strings; `isBarRowId` checks them). */
+  bar: readonly string[];
 }
 export type MistakeTrigger =
   | {

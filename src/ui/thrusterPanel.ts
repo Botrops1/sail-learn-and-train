@@ -3,6 +3,8 @@ import { thrusterEnds, thrusterSpeedFactor, type ThrustDir } from '../model/thru
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { setText } from './stepper';
+import { barRowsFor, barShown } from '../app/exerciseBar';
+import { exerciseDef } from '../model/exercises';
 
 /**
  * The thrusters (M41, PHASE7_SPEC 7.6): a left-right joystick for the bow and one for the stern.
@@ -12,7 +14,7 @@ import { setText } from './stepper';
  * Helm station; all follow `state.thrusters`. In Harbour mode the keyboard works both at once
  * (owner, PR #99): A / D push the bow to port / starboard, J / L the stern.
  */
-export type JoystickVariant = 'section' | 'quick' | 'helm';
+export type JoystickVariant = 'section' | 'quick' | 'helm' | 'bar';
 
 type End = 'bow' | 'stern';
 
@@ -42,6 +44,20 @@ const KEYS: Record<string, readonly [End, ThrustDir]> = {
   KeyJ: ['stern', -1],
   KeyL: ['stern', 1],
 };
+
+/**
+ * The thruster keys work in Harbour mode, and (M79) while an exercise runs whose current step
+ * shows the thrusters row, whether or not the bar is on screen.
+ */
+function thrusterKeysOn(state: AppState): boolean {
+  if (state.appMode === 'harbour') return true;
+  const run = state.exercise;
+  if (run === null || !barShown(state)) return false;
+  const def = exerciseDef(run.id);
+  return (
+    def !== undefined && barRowsFor(def, run.step, state.settings.ropesMode).includes('thrusters')
+  );
+}
 
 /** Stores that already let go of both thrusters when the page is hidden or loses focus. */
 const guarded = new WeakSet<Store>();
@@ -75,7 +91,7 @@ function guardPage(store: Store): void {
   document.addEventListener('keydown', (event) => {
     if (!(event.code in KEYS) || event.repeat) return;
     if (event.ctrlKey || event.altKey || event.metaKey) return;
-    if (store.getState().appMode !== 'harbour') return;
+    if (!thrusterKeysOn(store.getState())) return;
     const target = event.target;
     if (
       target instanceof HTMLElement &&
@@ -162,7 +178,10 @@ export function createThrusterJoystick(
     },
     variant === 'quick'
       ? [track]
-      : [el('span', { class: 'joystick-label' }, [t(END_LABELS[which])]), track],
+      : variant === 'bar'
+        ? // The bar's joysticks have the quick look, with the end's name under each (M79 review).
+          [track, el('span', { class: 'joystick-label' }, [t(END_LABELS[which])])]
+        : [el('span', { class: 'joystick-label' }, [t(END_LABELS[which])]), track],
   );
 
   const refresh = (state: AppState) => {

@@ -20,11 +20,11 @@
       "sections": ["ropes", "helm", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=315&ms=30&js=30&ap=wind&apt=45&sea=flat",
       "steps": [
-        { "id": "close-hauled", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [38, 52], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] } },
-        { "id": "close-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [58, 72], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] } },
-        { "id": "beam-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [85, 100], "tack": "starboard", "mainTrim": ["good"], "controls": { "ctl_jib_sheet": [90, 100] } } },
-        { "id": "broad-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [125, 145], "tack": "starboard", "controls": { "ctl_mainsheet": [85, 100], "ctl_jib_sheet": [90, 100] } } },
-        { "id": "run", "opens": "autopilot", "holdS": 10, "check": { "twaDeg": [155, 170], "tack": "starboard", "controls": { "ctl_mainsheet": [85, 100] } } }
+        { "id": "close-hauled", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [38, 52], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] }, "bar": ["control:ctl_mainsheet"] },
+        { "id": "close-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [58, 72], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] }, "bar": ["autopilot:turn", "control:ctl_mainsheet"] },
+        { "id": "beam-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [85, 100], "tack": "starboard", "mainTrim": ["good"], "controls": { "ctl_jib_sheet": [90, 100] } }, "bar": ["autopilot:turn", "control:ctl_mainsheet", "control:ctl_jib_sheet"] },
+        { "id": "broad-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [125, 145], "tack": "starboard", "controls": { "ctl_mainsheet": [85, 100], "ctl_jib_sheet": [90, 100] } }, "bar": ["autopilot:turn", "control:ctl_mainsheet"] },
+        { "id": "run", "opens": "autopilot", "holdS": 10, "check": { "twaDeg": [155, 170], "tack": "starboard", "controls": { "ctl_mainsheet": [85, 100] } }, "bar": ["autopilot:turn", "control:ctl_mainsheet"] }
       ],
       "mistakes": [
         { "id": "accidental-gybe", "serious": false, "on": { "alert": "gybe", "accidental": true } },
@@ -40,10 +40,10 @@
       "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=315&ms=12&js=30&ap=wind&apt=45&sea=flat",
       "steps": [
-        { "id": "tack-autopilot", "opens": "autopilot", "holdS": 5, "check": { "event": "tack", "tack": "port", "twaDeg": [38, 55], "speedKn": [4, 99] } },
-        { "id": "tack-by-hand", "opens": "autopilot", "holdS": 0, "check": { "event": "tackByHand", "tack": "starboard" } },
-        { "id": "centre-wheel", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [30, 60], "speedKn": [2, 99], "controls": { "ctl_rudder": [-5, 5] } } },
-        { "id": "pick-up-speed", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [38, 55], "speedKn": [4, 99], "mainTrim": ["good"], "jibTrim": ["good"] } }
+        { "id": "tack-autopilot", "opens": "autopilot", "holdS": 5, "check": { "event": "tack", "tack": "port", "twaDeg": [38, 55], "speedKn": [4, 99] }, "bar": ["autopilot:tack"] },
+        { "id": "tack-by-hand", "opens": "autopilot", "holdS": 0, "check": { "event": "tackByHand", "tack": "starboard" }, "bar": ["autopilot:mode", "control:ctl_rudder"] },
+        { "id": "centre-wheel", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [30, 60], "speedKn": [2, 99], "controls": { "ctl_rudder": [-5, 5] } }, "bar": ["control:ctl_rudder"] },
+        { "id": "pick-up-speed", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [38, 55], "speedKn": [4, 99], "mainTrim": ["good"], "jibTrim": ["good"] }, "bar": ["autopilot:mode", "autopilot:turn"] }
       ],
       "mistakes": [
         { "id": "in-irons", "serious": false, "on": { "condition": { "twaDeg": [0, 20], "speedKn": [-99, 1] }, "forS": 5 } }
@@ -57,9 +57,9 @@
       "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=0&bs=0&ms=10&js=10&ap=off&sea=flat",
       "steps": [
-        { "id": "ease-sheets", "opens": "ropes", "holdS": 1, "check": { "controls": { "ctl_mainsheet": [40, 100], "ctl_jib_sheet": [40, 100] } } },
-        { "id": "wheel-over", "opens": "autopilot", "holdS": 0, "check": { "twaDeg": [35, 90] } },
-        { "id": "sail-away", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [30, 60], "speedKn": [3, 99], "mainTrim": ["good"], "jibTrim": ["good"], "controls": { "ctl_rudder": [-5, 5] } } }
+        { "id": "ease-sheets", "opens": "ropes", "holdS": 1, "check": { "controls": { "ctl_mainsheet": [40, 100], "ctl_jib_sheet": [40, 100] } }, "bar": ["control:ctl_mainsheet", "control:ctl_jib_sheet"] },
+        { "id": "wheel-over", "opens": "autopilot", "holdS": 0, "check": { "twaDeg": [35, 90] }, "bar": ["control:ctl_rudder"] },
+        { "id": "sail-away", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [30, 60], "speedKn": [3, 99], "mainTrim": ["good"], "jibTrim": ["good"], "controls": { "ctl_rudder": [-5, 5] } }, "bar": ["control:ctl_rudder", "control:ctl_mainsheet", "control:ctl_jib_sheet"] }
       ],
       "mistakes": []
     },
@@ -71,10 +71,10 @@
       "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=195&ms=100&js=50&ap=wind&apt=165&sea=flat",
       "steps": [
-        { "id": "haul-main", "opens": "ropes", "holdS": 2, "check": { "boomDeg": [0, 16], "tack": "starboard" } },
-        { "id": "gybe", "opens": "autopilot", "holdS": 3, "check": { "event": "controlledGybe", "tack": "port", "twaDeg": [150, 175] } },
-        { "id": "ease-main", "opens": "ropes", "holdS": 5, "check": { "tack": "port", "twaDeg": [150, 175], "controls": { "ctl_mainsheet": [85, 100] } } },
-        { "id": "accidental", "opens": "autopilot", "holdS": 0, "check": { "event": "accidentalGybe" } }
+        { "id": "haul-main", "opens": "ropes", "holdS": 2, "check": { "boomDeg": [0, 16], "tack": "starboard" }, "bar": ["control:ctl_mainsheet"] },
+        { "id": "gybe", "opens": "autopilot", "holdS": 3, "check": { "event": "controlledGybe", "tack": "port", "twaDeg": [150, 175] }, "bar": ["autopilot:tack"] },
+        { "id": "ease-main", "opens": "ropes", "holdS": 5, "check": { "tack": "port", "twaDeg": [150, 175], "controls": { "ctl_mainsheet": [85, 100] } }, "bar": ["control:ctl_mainsheet"] },
+        { "id": "accidental", "opens": "autopilot", "holdS": 0, "check": { "event": "accidentalGybe" }, "bar": ["autopilot:mode", "autopilot:turn"] }
       ],
       "mistakes": [
         { "id": "accidental-gybe", "serious": false, "steps": ["haul-main", "gybe", "ease-main"], "on": { "alert": "gybe", "accidental": true } }
@@ -88,8 +88,8 @@
       "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=15&hdg=300&ms=25&js=50&ap=wind&apt=60&sea=flat&wm=gusty&seed=1&wg=40",
       "steps": [
-        { "id": "three-gusts", "opens": "ropes", "holdS": 0, "check": { "gusts": 3 } },
-        { "id": "trim-back", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [50, 70], "mainTrim": ["good"], "jibTrim": ["good"] } }
+        { "id": "three-gusts", "opens": "ropes", "holdS": 0, "check": { "gusts": 3 }, "bar": ["control:ctl_mainsheet"] },
+        { "id": "trim-back", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [50, 70], "mainTrim": ["good"], "jibTrim": ["good"] }, "bar": ["control:ctl_mainsheet", "control:ctl_jib_sheet"] }
       ],
       "mistakes": [
         { "id": "overpowered", "serious": false, "on": { "alert": "overpowered" } },
@@ -104,9 +104,9 @@
       "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=22&hdg=300&ms=40&js=30&ap=wind&apt=60&sea=flat",
       "steps": [
-        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 45] } },
-        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [50, 65] } },
-        { "id": "settle", "opens": "ropes", "holdS": 10, "check": { "mainOutPct": [50, 65], "jibOutPct": [0, 45], "mainTrim": ["good"], "heelDeg": [0, 20] } }
+        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 45] }, "bar": ["control:ctl_jib_sheet", "control:ctl_jib_furl"] },
+        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [50, 65] }, "bar": ["control:ctl_jib_sheet", "control:ctl_main_furl"] },
+        { "id": "settle", "opens": "ropes", "holdS": 10, "check": { "mainOutPct": [50, 65], "jibOutPct": [0, 45], "mainTrim": ["good"], "heelDeg": [0, 20] }, "bar": ["control:ctl_mainsheet"] }
       ],
       "mistakes": [
         { "id": "overpowered", "serious": false, "on": { "alert": "overpowered" } },
@@ -122,11 +122,11 @@
       "sections": ["ropes", "helm", "sails", "autopilot", "engine", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=0&bs=0&ms=30&js=100&mf=0&jf=0&eng=1&lv=30&ap=hdg&apt=0&sea=flat&mode=realistic",
       "steps": [
-        { "id": "head-to-wind", "opens": "engine", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 5] } },
-        { "id": "main-out", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [90, 100] } },
-        { "id": "bear-away", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [50, 75], "mainTrim": ["good"] } },
-        { "id": "jib-out", "opens": "ropes", "holdS": 5, "check": { "jibOutPct": [90, 100], "jibTrim": ["good"] } },
-        { "id": "engine-off", "opens": "engine", "holdS": 5, "check": { "engine": { "running": false }, "speedKn": [4, 99] } }
+        { "id": "head-to-wind", "opens": "engine", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 5] }, "bar": [] },
+        { "id": "main-out", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [90, 100] }, "bar": ["control:ctl_main_furl"] },
+        { "id": "bear-away", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [50, 75], "mainTrim": ["good"] }, "bar": ["autopilot:mode", "autopilot:turn", "control:ctl_mainsheet"] },
+        { "id": "jib-out", "opens": "ropes", "holdS": 5, "check": { "jibOutPct": [90, 100], "jibTrim": ["good"] }, "bar": ["control:ctl_jib_furl", "control:ctl_jib_sheet"] },
+        { "id": "engine-off", "opens": "engine", "holdS": 5, "check": { "engine": { "running": false }, "speedKn": [4, 99] }, "bar": ["engine"] }
       ],
       "mistakes": [
         { "id": "main-off-wind", "serious": false, "steps": ["main-out"], "on": { "condition": { "twaDeg": [35, 180], "mainOutPct": [5, 95] }, "forS": 3 } },
@@ -143,10 +143,10 @@
       "sections": ["ropes", "helm", "sails", "autopilot", "engine", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=300&ms=25&js=50&eng=0&ap=wind&apt=60&sea=flat&mode=realistic",
       "steps": [
-        { "id": "engine-on", "opens": "engine", "holdS": 2, "check": { "engine": { "running": true, "gear": "neutral" } } },
-        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 5] } },
-        { "id": "head-to-wind", "opens": "autopilot", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 99] } },
-        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [0, 5], "twaDeg": [0, 30] } }
+        { "id": "engine-on", "opens": "engine", "holdS": 2, "check": { "engine": { "running": true, "gear": "neutral" } }, "bar": ["engine"] },
+        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 5] }, "bar": ["control:ctl_jib_sheet", "control:ctl_jib_furl"] },
+        { "id": "head-to-wind", "opens": "autopilot", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 99] }, "bar": ["engine", "autopilot:mode", "autopilot:turn"] },
+        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [0, 5], "twaDeg": [0, 30] }, "bar": ["control:ctl_main_furl"] }
       ],
       "mistakes": [
         { "id": "main-off-wind", "serious": false, "steps": ["main-in"], "on": { "condition": { "twaDeg": [35, 180], "mainOutPct": [5, 95] }, "forS": 3 } },
@@ -165,10 +165,10 @@
       "levels": { "normal": "?ml=medium&tr=half&pe=2.8&ws=8", "hard": "?ml=medium&tr=busy&pe=2.8&ws=14" },
       "targets": [{ "id": "fairway", "shape": "fairway" }],
       "steps": [
-        { "id": "lazy-off", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["ll"] } },
-        { "id": "stern-off", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["sp", "ss"] } },
-        { "id": "motor-out", "opens": "engine", "holdS": 1, "show": "fairway", "check": { "target": { "id": "fairway", "point": "stern" } } },
-        { "id": "turn-out", "opens": "engine", "holdS": 3, "show": "fairway", "check": { "target": { "id": "fairway", "point": "centre" }, "headingDeg": { "to": 270, "within": 15 }, "speedKn": [0.3, 4] } }
+        { "id": "lazy-off", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["ll"] }, "bar": ["line:ll"] },
+        { "id": "stern-off", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["sp", "ss"] }, "bar": ["line:sp", "line:ss"] },
+        { "id": "motor-out", "opens": "engine", "holdS": 1, "show": "fairway", "check": { "target": { "id": "fairway", "point": "stern" } }, "bar": ["engine", "control:ctl_rudder"] },
+        { "id": "turn-out", "opens": "engine", "holdS": 3, "show": "fairway", "check": { "target": { "id": "fairway", "point": "centre" }, "headingDeg": { "to": 270, "within": 15 }, "speedKn": [0.3, 4] }, "bar": ["engine", "thrusters", "control:ctl_rudder"] }
       ],
       "mistakes": [
         { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
@@ -187,12 +187,12 @@
       "levels": { "normal": "?ml=medium&tr=half&pe=-32.3&pn=1468.0&ws=8", "hard": "?ml=medium&tr=busy&pe=-32.3&pn=1468.0&ws=14" },
       "targets": [{ "id": "berth", "shape": "berth" }],
       "steps": [
-        { "id": "fenders", "opens": "harbour", "holdS": 1, "check": { "fendersOut": true } },
-        { "id": "line-up", "opens": "engine", "holdS": 2, "show": "berth", "check": { "headingDeg": { "to": 180, "within": 15 }, "berthOffsetM": [0, 3], "speedKn": [-0.6, 0.6] } },
-        { "id": "reverse-in", "opens": "engine", "holdS": 2, "show": "berth", "check": { "quayGapM": [0.5, 2.8], "berthOffsetM": [0, 1], "headingDeg": { "to": 180, "within": 10 }, "speedKn": [-0.2, 0.2] } },
-        { "id": "stern-lines", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sp", "ss"] } },
-        { "id": "lazy-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["ll"] } },
-        { "id": "made-fast", "opens": "harbour", "holdS": 5, "check": { "linesTight": ["ll"], "engine": { "gear": "neutral" }, "quayGapM": [0.3, 3.0], "headingDeg": { "to": 180, "within": 15 } } }
+        { "id": "fenders", "opens": "harbour", "holdS": 1, "check": { "fendersOut": true }, "bar": ["fenders", "engine"] },
+        { "id": "line-up", "opens": "engine", "holdS": 2, "show": "berth", "check": { "headingDeg": { "to": 180, "within": 15 }, "berthOffsetM": [0, 3], "speedKn": [-0.6, 0.6] }, "bar": ["engine", "thrusters"] },
+        { "id": "reverse-in", "opens": "engine", "holdS": 2, "show": "berth", "check": { "quayGapM": [0.5, 2.8], "berthOffsetM": [0, 1], "headingDeg": { "to": 180, "within": 10 }, "speedKn": [-0.2, 0.2] }, "bar": ["engine", "thrusters"] },
+        { "id": "stern-lines", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sp", "ss"] }, "bar": ["engine", "line:sp", "line:ss", "thrusters"] },
+        { "id": "lazy-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["ll"] }, "bar": ["line:ll", "thrusters"] },
+        { "id": "made-fast", "opens": "harbour", "holdS": 5, "check": { "linesTight": ["ll"], "engine": { "gear": "neutral" }, "quayGapM": [0.3, 3.0], "headingDeg": { "to": 180, "within": 15 } }, "bar": ["line:ll", "engine", "thrusters"] }
       ],
       "mistakes": [
         { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
@@ -211,8 +211,8 @@
       "start": "?pl=marina&ml=medium&tr=half&pe=-40.0&pn=1468.0&hdg=90&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=flat",
       "targets": [{ "id": "circle", "shape": "circle", "eastM": -40, "northM": 1468, "radiusM": 10 }],
       "steps": [
-        { "id": "kick", "opens": "engine", "holdS": 1, "show": "circle", "check": { "headingDeg": { "to": 120, "within": 15 }, "target": { "id": "circle", "point": "centre" } } },
-        { "id": "spin", "opens": "engine", "holdS": 3, "show": "circle", "check": { "headingDeg": { "to": 270, "within": 10 }, "target": { "id": "circle", "point": "centre" }, "speedKn": [-0.5, 0.5] } }
+        { "id": "kick", "opens": "engine", "holdS": 1, "show": "circle", "check": { "headingDeg": { "to": 120, "within": 15 }, "target": { "id": "circle", "point": "centre" } }, "bar": ["control:ctl_rudder", "engine"] },
+        { "id": "spin", "opens": "engine", "holdS": 3, "show": "circle", "check": { "headingDeg": { "to": 270, "within": 10 }, "target": { "id": "circle", "point": "centre" }, "speedKn": [-0.5, 0.5] }, "bar": ["control:ctl_rudder", "engine", "thrusters"] }
       ],
       "mistakes": [
         { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
@@ -232,11 +232,11 @@
         { "id": "clear", "shape": "circle", "eastM": -1450, "northM": 0, "radiusM": 15 }
       ],
       "steps": [
-        { "id": "approach", "opens": "engine", "holdS": 1, "show": "buoy", "check": { "target": { "id": "buoy", "point": "bow" }, "speedKn": [-0.5, 0.5] } },
-        { "id": "bow-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["bl"] } },
-        { "id": "lie", "opens": "engine", "holdS": 10, "check": { "linesOn": ["bl"], "engine": { "gear": "neutral" } } },
-        { "id": "let-go", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["bl"] } },
-        { "id": "back-away", "opens": "engine", "holdS": 2, "show": "clear", "check": { "target": { "id": "clear", "point": "centre", "inside": false } } }
+        { "id": "approach", "opens": "engine", "holdS": 1, "show": "buoy", "check": { "target": { "id": "buoy", "point": "bow" }, "speedKn": [-0.5, 0.5] }, "bar": ["engine", "control:ctl_rudder"] },
+        { "id": "bow-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["bl"] }, "bar": ["line:bl", "engine", "control:ctl_rudder"] },
+        { "id": "lie", "opens": "engine", "holdS": 10, "check": { "linesOn": ["bl"], "engine": { "gear": "neutral" } }, "bar": ["engine"] },
+        { "id": "let-go", "opens": "harbour", "holdS": 1, "check": { "linesOff": ["bl"] }, "bar": ["line:bl"] },
+        { "id": "back-away", "opens": "engine", "holdS": 2, "show": "clear", "check": { "target": { "id": "clear", "point": "centre", "inside": false } }, "bar": ["engine"] }
       ],
       "mistakes": [
         { "id": "aground", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["ground"] } },
@@ -252,12 +252,12 @@
       "start": "?pl=bay&pe=-1585.0&pn=0.0&hdg=90&bs=0&wd=90&ws=6&eng=1&lv=0&ap=off&sea=sheltered",
       "targets": [{ "id": "drop", "shape": "circle", "eastM": -1600, "northM": 0, "radiusM": 5 }],
       "steps": [
-        { "id": "to-spot", "opens": "engine", "holdS": 2, "show": "drop", "check": { "target": { "id": "drop", "point": "bow" }, "speedKn": [-0.5, 0.5] } },
-        { "id": "let-go-anchor", "opens": "anchor", "holdS": 1, "check": { "anchor": { "phase": ["bottom", "set"] } } },
-        { "id": "scope", "opens": "anchor", "holdS": 1, "check": { "anchor": { "scopeOk": true } } },
-        { "id": "dig-in", "opens": "engine", "holdS": 2, "check": { "anchor": { "phase": ["set"] } } },
-        { "id": "shore-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sl"] } },
-        { "id": "settled", "opens": "harbour", "holdS": 10, "check": { "linesTight": ["sl"], "anchor": { "phase": ["set"] }, "engine": { "gear": "neutral" } } }
+        { "id": "to-spot", "opens": "engine", "holdS": 2, "show": "drop", "check": { "target": { "id": "drop", "point": "bow" }, "speedKn": [-0.5, 0.5] }, "bar": ["engine", "thrusters"] },
+        { "id": "let-go-anchor", "opens": "anchor", "holdS": 1, "check": { "anchor": { "phase": ["bottom", "set"] } }, "bar": ["windlass", "engine"] },
+        { "id": "scope", "opens": "anchor", "holdS": 1, "check": { "anchor": { "scopeOk": true } }, "bar": ["windlass", "engine", "thrusters"] },
+        { "id": "dig-in", "opens": "engine", "holdS": 2, "check": { "anchor": { "phase": ["set"] } }, "bar": ["engine", "windlass", "thrusters"] },
+        { "id": "shore-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sl"] }, "bar": ["windlass", "engine", "thrusters", "line:sl"] },
+        { "id": "settled", "opens": "harbour", "holdS": 10, "check": { "linesTight": ["sl"], "anchor": { "phase": ["set"] }, "engine": { "gear": "neutral" } }, "bar": ["line:sl", "engine"] }
       ],
       "mistakes": [
         { "id": "aground", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["ground"] } },
@@ -278,11 +278,11 @@
         { "id": "berth", "shape": "berth" }
       ],
       "steps": [
-        { "id": "to-spot", "opens": "engine", "holdS": 2, "show": "drop", "check": { "target": { "id": "drop", "point": "bow" }, "speedKn": [-0.5, 0.5] } },
-        { "id": "let-go-anchor", "opens": "anchor", "holdS": 1, "check": { "anchor": { "phase": ["bottom", "set"] } } },
-        { "id": "reverse-in", "opens": "engine", "holdS": 2, "show": "berth", "check": { "quayGapM": [0.5, 2.8], "berthOffsetM": [0, 1], "headingDeg": { "to": 180, "within": 10 }, "speedKn": [-0.2, 0.2], "anchor": { "chainOutM": [30, 70] } } },
-        { "id": "stern-lines", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sp", "ss"] } },
-        { "id": "chain-tight", "opens": "anchor", "holdS": 5, "check": { "anchor": { "phase": ["set"] }, "linesOn": ["sp", "ss"], "quayGapM": [0.3, 3.0], "headingDeg": { "to": 180, "within": 10 }, "engine": { "gear": "neutral" } } }
+        { "id": "to-spot", "opens": "engine", "holdS": 2, "show": "drop", "check": { "target": { "id": "drop", "point": "bow" }, "speedKn": [-0.5, 0.5] }, "bar": ["engine", "thrusters"] },
+        { "id": "let-go-anchor", "opens": "anchor", "holdS": 1, "check": { "anchor": { "phase": ["bottom", "set"] } }, "bar": ["windlass"] },
+        { "id": "reverse-in", "opens": "engine", "holdS": 2, "show": "berth", "check": { "quayGapM": [0.5, 2.8], "berthOffsetM": [0, 1], "headingDeg": { "to": 180, "within": 10 }, "speedKn": [-0.2, 0.2], "anchor": { "chainOutM": [30, 70] } }, "bar": ["engine", "windlass", "thrusters"] },
+        { "id": "stern-lines", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sp", "ss"] }, "bar": ["line:sp", "line:ss", "thrusters"] },
+        { "id": "chain-tight", "opens": "anchor", "holdS": 5, "check": { "anchor": { "phase": ["set"] }, "linesOn": ["sp", "ss"], "quayGapM": [0.3, 3.0], "headingDeg": { "to": 180, "within": 10 }, "engine": { "gear": "neutral" } }, "bar": ["windlass", "thrusters"] }
       ],
       "mistakes": [
         { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
