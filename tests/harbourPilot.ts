@@ -246,3 +246,67 @@ export function anchorPilot(): Pilot {
     }
   };
 }
+
+/** The ring's north (20.2); its east is our berth's centre. */
+const STERN_DROP_NORTH_M = 1442;
+/** Depth of the water (5 m) plus the bow roller's height (1.8 m): the chain's slope (PHASE10_SPEC 20.4). */
+const CHAIN_DEPTH_M = 6.8;
+
+/**
+ * Stern-to on your own anchor (PHASE10_SPEC 20.4): motor ahead across the fairway to the ring in
+ * the empty berth opposite, let the anchor go, back into our berth paying the chain out as she
+ * goes, stern lines, then take in chain until the anchor is set.
+ */
+export function sternAnchorPilot(): Pilot {
+  let phase = 0;
+  return (s) => {
+    const run = s.exercise;
+    if (run === null) return s;
+    const c = marinaGeometry(s.harbour.layout, s.harbour.traffic).ourBerth.centreEastM;
+    const gap = area.marina.quayFaceNorthM - stern(s)[1];
+    const v = s.boat.speedMps;
+    const keep = (state: AppState): AppState => {
+      const e = stern(state)[0] - c;
+      const h = H(state) - 180;
+      const sternDir = e > 0.3 ? 1 : e < -0.3 ? -1 : 0;
+      return thr(thr(state, 'stern', sternDir), 'bow', h > 2 ? -1 : h < -2 ? 1 : 0);
+    };
+    switch (run.step) {
+      case 0: {
+        const [be, bn] = bow(s);
+        const d = Math.hypot(be - c, bn - STERN_DROP_NORTH_M);
+        return lever(keep(s), d > 3 ? (v < 0.3 ? 15 : 0) : v > 0.05 ? -15 : 0);
+      }
+      case 1:
+        return windlass(lever(keep(s), 0), 'down');
+      case 2: {
+        if (phase === 0) {
+          const [be, bn] = bow(s);
+          const far = Math.hypot(be - s.anchor.eastM, bn - s.anchor.northM);
+          const out = windlass(
+            s,
+            s.anchor.chainOutM < Math.hypot(far, CHAIN_DEPTH_M) + 4 ? 'down' : 'off',
+          );
+          const want = gap > 10 ? -0.4 : gap > 5 ? -0.25 : -0.12;
+          const moved = lever(keep(out), v > want ? -15 : v < want - 0.15 ? 15 : 0);
+          if (gap < 2.6) {
+            phase = 1;
+            return windlass(moved, 'off');
+          }
+          return moved;
+        }
+        return lever(keep(s), v < -0.03 ? 15 : 0);
+      }
+      case 3: {
+        let out = lever(keep(s), 0);
+        out = hasLine(out, 'sp') ? out : line(out, 'sp', 'take');
+        return hasLine(out, 'ss') ? out : line(out, 'ss', 'take');
+      }
+      default:
+        if (s.anchor.phase !== 'set' && !s.anchor.cutOut) {
+          return windlass(keep(s), 'up');
+        }
+        return thr(thr(windlass(s, 'off'), 'bow', 0), 'stern', 0);
+    }
+  };
+}
