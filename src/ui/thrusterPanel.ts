@@ -176,9 +176,12 @@ export function createThrusterJoystick(
       role: 'group',
       'aria-label': t(GROUP_LABELS[which]),
     },
-    variant === 'quick' || variant === 'bar'
+    variant === 'quick'
       ? [track]
-      : [el('span', { class: 'joystick-label' }, [t(END_LABELS[which])]), track],
+      : variant === 'bar'
+        ? // The bar's joysticks have the quick look, with the end's name under each (M79 review).
+          [track, el('span', { class: 'joystick-label' }, [t(END_LABELS[which])])]
+        : [el('span', { class: 'joystick-label' }, [t(END_LABELS[which])]), track],
   );
 
   const refresh = (state: AppState) => {

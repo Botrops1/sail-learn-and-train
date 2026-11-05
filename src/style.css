@@ -3918,7 +3918,10 @@ html[data-layout='stacked'] .alert-centre {
   bottom: calc(var(--view-bottom-inset, 0px) + var(--exercise-stack-h, 0px) + 60px);
   max-height: max(
     120px,
-    calc(100% - var(--view-top-h, 64px) - var(--view-bottom-inset, 0px) - 76px)
+    calc(
+      100% - var(--view-top-h, 64px) - var(--view-bottom-inset, 0px) -
+        var(--exercise-stack-h, 0px) - 76px
+    )
   );
 }
 
@@ -5395,4 +5398,14 @@ html[data-layout='wide'] .exercise-stack {
 
 .thruster-joystick-bar .joystick-knob {
   top: 12px;
+}
+
+.thruster-joystick-bar {
+  align-items: center;
+}
+
+.thruster-joystick-bar .joystick-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
 }

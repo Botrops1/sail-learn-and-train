@@ -288,7 +288,7 @@ export async function liveM79Checks({ openPage, viewports, outDir, prefix, probl
     );
     await start(leave.page);
     await leave.page.evaluate(() => document.activeElement?.blur());
-    await shot(leave.page, 'm79-side-leave-step1');
+    await shot(leave.page, 'm79-wide-leave-step1');
     const lines = (await read(leave.page)).lines;
     await leave.page.keyboard.press('Space');
     await leave.page.waitForTimeout(300);
@@ -300,6 +300,52 @@ export async function liveM79Checks({ openPage, viewports, outDir, prefix, probl
     );
     problems.push(...(await auditPage(leave.page, 'm79 wide bar')));
     await leave.context.close();
+  }
+
+  // 5b. The side-by-side layout (a tablet, a small laptop): the bar fits and clears the chip row
+  //     and the mini-map.
+  {
+    const side = viewports[1];
+    const { context, page } = await openPage(
+      side,
+      'm79 side layout',
+      '?m=exercise&ex=leave-berth&step=1&debug=1',
+      { testClock: true },
+    );
+    await start(page);
+    await shot(page, 'm79-side-leave-step1');
+    const fit = await page.evaluate(() => {
+      const box = (selector) => {
+        const node = document.querySelector(selector);
+        if (!node || node.hidden || node.offsetParent === null) return null;
+        const r = node.getBoundingClientRect();
+        return { l: r.left, t: r.top, r: r.right, b: r.bottom };
+      };
+      const bar = box('[data-testid="exercise-bar"]');
+      const others = ['[data-testid="view-bottom"]', '[data-testid="mini-map"]'].map(box);
+      const hits = (a, b) => a && b && a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+      const view = box('[data-testid="exercise-bar"]') && box('.view');
+      const node = document.querySelector('[data-testid="exercise-bar"]');
+      return {
+        bar,
+        view,
+        overlaps: others.some((o) => hits(bar, o)),
+        overflow: [...node.querySelectorAll('*')].some((n) => n.scrollWidth > n.clientWidth + 1),
+        scroll: document.documentElement.scrollWidth > window.innerWidth + 1,
+      };
+    });
+    const inside =
+      fit.bar &&
+      fit.view &&
+      fit.bar.l >= fit.view.l &&
+      fit.bar.r <= fit.view.r &&
+      fit.bar.b <= fit.view.b;
+    check(
+      'side layout: the bar fits the view and clears the chip row and the mini-map',
+      Boolean(inside && !fit.overlaps && !fit.overflow && !fit.scroll),
+      JSON.stringify(fit),
+    );
+    await context.close();
   }
 
   // 6. All controls opens the step's section; the Russian bar fits.

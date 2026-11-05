@@ -321,6 +321,8 @@ Every exercise shows its bar at each step; checks 1–6 pass; `npm run typecheck
 6. **Small text is 13 px**, not 12 px: the accessibility audit refuses text under 13 px.
 7. **Browser checks:** the scenes of 6.6a item 16 are screenshots taken inside the live checks (`M79_SCENES` is empty); Chromium was started with `SHOTS_CHROMIUM=/opt/pw-browsers/chromium` in the cloud session.
 
+8. **Independent review and owner answers (PR 168; owner: "accept all from review")**: (a) the bar's two joysticks carry "Bow" / "Stern" under them, so a beginner knows which is which; (b) the phone's alert card (`.alert-centre`) `max-height` also subtracts the stack's height, so a long card never slides under the top strip; (c) the browser checks look at the bar in the side-by-side layout too (820 × 1000, `m79-side-leave-step1`), and the 1440 × 900 shot of Leaving the berth is `m79-wide-leave-step1`; (d) Space on the engine row and ← / → on a line row press the row's button instead of sending the action (same effect), left as it is; (e) the hint and the bar together crowd a phone's view until M80 folds the hint, left as it is.
+
 ### 6.10 Not in M79
 
 The camera's soft movement, the folded hint and time bar, the labels default (M80); Watch and Show me (M81); Realistic rope rows (M82).
