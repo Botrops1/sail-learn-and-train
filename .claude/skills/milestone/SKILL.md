@@ -41,9 +41,15 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 
 ## 4. Open the PR
 
-- Push, open the PR against `main` (title `M$ARGUMENTS: <name>`), then edit the description to put the real PR number into every link. If the milestone builds a GitHub issue (the spec or the ROADMAP names it), add `Closes #<n>`.
-- If the review is **required**, the description starts with the review line from the CLAUDE.md template, above everything else.
-- Use the template in CLAUDE.md: plain language; every check a full preview link with what to do after opening it; **no screenshots**; every question ends with "Recommended: …, because …" and the "accept all" line.
+The PR number is not known until the PR exists, and the template and the WORKFLOW checklist carry `pr-<N>`. Do these three steps in this order, one right after the other, before anything else (PRs 162 and 169 skipped step 2 and went out with links that do not open):
+
+1. Push, then `create_pull_request` against `main`, title `M$ARGUMENTS: <name>`, with the one-line body "Description follows." (a hook blocks a body that still has `pr-<N>`).
+2. `update_pull_request` with the full description, from the template in CLAUDE.md:
+   - if the review is **required**, the review line first, with `/review <the real number>`;
+   - plain language; **every item of the M$ARGUMENTS checklist in `docs/WORKFLOW.md`**, each as a full preview link `…/pr-preview/pr-<the real number>/?…` with what to do after opening it; **no screenshots**;
+   - the Tests section with the commands run and their results; every question ends with "Recommended: …, because …", then the "accept all" line;
+   - `Closes #<n>` if the milestone builds a GitHub issue (the spec or the ROADMAP names it).
+3. Read it back (`pull_request_read`, method `get`) and check: no `<N>` left, the four sections there (What changed, How to check on your phone, Tests, Questions for the owner), every WORKFLOW checklist link there with the real number. The **PR description** CI check (`scripts/pr-body.mjs`) checks the same and fails until it is complete; a red one is yours to fix like any red CI.
 - **Record the recommended answers now**, in the same PR: a row in the ROADMAP decisions log and "decided in the M$ARGUMENTS PR (recommended; merging accepts it)" notes in the spec section. Merging the PR means "accept all"; only a changed answer needs another commit.
 - Then subscribe to the PR's activity (`subscribe_pr_activity`) so the owner's comments in the GitHub app reach this session.
 - Tell the owner in chat, in three or four lines: the PR link, what to check first, how many questions there are, and, if the review is required, **"Start `/review <PR number>` (new session, Opus, medium) now, before you test; then answer the review and your test findings in one comment."** Say that merging accepts every recommendation, so they comment only to change an answer or report a problem. Then end your turn.
