@@ -9,6 +9,8 @@ import {
 } from '../model/exercises';
 import { el } from './dom';
 import { currentLanguage, t } from './i18n';
+import type { LayoutShell } from './layout';
+import { layoutKindOf } from './modes';
 import { setText } from './stepper';
 
 /** Remembers on this device whether the hint window is open (a view setting, not in the link). */
@@ -81,8 +83,16 @@ function nowText(row: TargetRow, value: number | string): string {
  * ticked live. It stays open while the learner works the other controls; "Hide hint" folds it to
  * one button, and the choice is remembered on this device.
  */
-export function createExerciseCoach(top: HTMLElement, store: Store): void {
-  let open = readOpen();
+export function createExerciseCoach(top: HTMLElement, store: Store, layout: LayoutShell): void {
+  // The remembered choice (side and wide). On a phone (M80) the hint starts folded at every run
+  // start and step change; a tap opens it until the next of these and is not remembered.
+  let remembered = readOpen();
+  let stackedOpen = false;
+  const stacked = () => layoutKindOf(layout.viewport()) === 'stacked';
+  const isOpen = () => (stacked() ? stackedOpen : remembered);
+  let prevStatus = '';
+  let prevRun = '';
+  let prevStep = -1;
   const toggle = el('button', {
     type: 'button',
     class: 'exercise-coach-toggle',
@@ -108,20 +118,39 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
   let rows: { row: TargetRow; item: HTMLElement }[] = [];
 
   const showOpen = () => {
+    const open = isOpen();
     body.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
     setText(toggle, t(open ? 'exercise.coach.hide' : 'exercise.coach.show'));
   };
   toggle.addEventListener('click', () => {
-    open = !open;
-    writeOpen(open);
+    if (stacked()) stackedOpen = !stackedOpen;
+    else {
+      remembered = !remembered;
+      writeOpen(remembered);
+    }
     showOpen();
+    sync(store.getState());
   });
 
   const sync = (state: AppState) => {
     const run = state.exercise;
     const def = run ? exerciseDef(run.id) : undefined;
     const step = run && def ? def.steps[run.step] : undefined;
+    const status = run?.status ?? '';
+    if (status === 'running') {
+      const returning = prevStatus === 'mistake' && prevRun === run?.id && prevStep === run.step;
+      if (
+        !returning &&
+        (prevStatus !== 'running' || prevRun !== run?.id || prevStep !== run.step)
+      ) {
+        stackedOpen = false;
+        showOpen();
+      }
+    }
+    prevStatus = status;
+    prevRun = run?.id ?? '';
+    prevStep = run?.step ?? -1;
     if (!run || !def || !step || run.status !== 'running') {
       if (!root.hidden) root.hidden = true;
       built = '';
@@ -148,7 +177,7 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
       list.replaceChildren(...rows.map((entry) => entry.item));
       showOpen();
     }
-    if (!open) return;
+    if (!isOpen()) return;
     for (const { row, item } of rows) {
       const reading = targetReading(row, state);
       const mark = reading?.ok ? '✓' : '○';
@@ -159,4 +188,8 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
   };
   sync(store.getState());
   store.subscribe(sync);
+  layout.onChange(() => {
+    showOpen();
+    sync(store.getState());
+  });
 }

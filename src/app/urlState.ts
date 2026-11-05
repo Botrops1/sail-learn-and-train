@@ -300,6 +300,7 @@ function parseExercise(
     const wpState = parseUrlState(`?${rest.toString()}`, fallbackDetail);
     return {
       ...wpState,
+      settings: rest.has('lb') ? wpState.settings : { ...wpState.settings, labels: false },
       appMode: 'exercise',
       paused: true,
       exercise: newRun(def.id, Number(exw), options),
@@ -318,6 +319,8 @@ function parseExercise(
   const state = parseUrlState(`?${merged.toString()}`, fallbackDetail);
   return {
     ...state,
+    // M80 (owner): no `lb` in an exercise link means the 3D names are off.
+    settings: merged.has('lb') ? state.settings : { ...state.settings, labels: false },
     appMode: 'exercise',
     paused: true,
     exercise: newRun(def.id, 0, options),
@@ -352,7 +355,7 @@ export function exerciseStartLink(
   if (state.settings.language !== DEFAULT_SETTINGS.language) {
     params.set('lang', state.settings.language);
   }
-  if (state.settings.labels !== defaultLabels(state.settings.ropesMode)) {
+  if (state.settings.labels !== defaultLabels(state.settings.ropesMode, 'exercise')) {
     params.set('lb', state.settings.labels ? '1' : '0');
   }
   if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) params.set('mm', '0');
@@ -875,7 +878,7 @@ export function serializeUrlState(state: AppState): string {
     params.set('lang', state.settings.language);
   }
   // Settings that are rarely changed are only written when they differ from the default.
-  if (state.settings.labels !== defaultLabels(state.settings.ropesMode)) {
+  if (state.settings.labels !== defaultLabels(state.settings.ropesMode, state.appMode)) {
     params.set('lb', state.settings.labels ? '1' : '0');
   }
   if (state.settings.miniMap !== DEFAULT_SETTINGS.miniMap) {

@@ -98,6 +98,7 @@ import { liveM76Checks, M76_SCENES } from './shots-m76.mjs';
 import { liveM77Checks, M77_SCENES } from './shots-m77.mjs';
 import { liveM78Checks, M78_SCENES } from './shots-m78.mjs';
 import { liveM79Checks, M79_SCENES } from './shots-m79.mjs';
+import { liveM80Checks, M80_SCENES } from './shots-m80.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -298,6 +299,7 @@ const SCENES = [
   ...M77_SCENES.map((scene) => ({ ...scene, name: `m77-${scene.name}` })),
   ...M78_SCENES.map((scene) => ({ ...scene, name: `m78-${scene.name}` })),
   ...M79_SCENES.map((scene) => ({ ...scene, name: `m79-${scene.name}` })),
+  ...M80_SCENES.map((scene) => ({ ...scene, name: `m80-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -463,24 +465,28 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   // so they open Held still (the Phase 1 picture); Phase 2 ones (label contains "m6" … "m19")
   // Phase 5 ones ("m25" …), the M36 … M39 ones and Phase 7's ("m40" …) sail.
   const held =
-    /m([6-9]|1\d|2[5-9]|3[6-9]|4[0-7]|4[89]|5\d|6\d|7\d)/.test(label) || /[?&]held=/.test(query);
+    /m([6-9]|1\d|2[5-9]|3[6-9]|4[0-7]|4[89]|5\d|6\d|7\d|8\d)/.test(label) ||
+    /[?&]held=/.test(query);
   let url = held ? query : `${query}${query.includes('?') ? '&' : '?'}held=1`;
   // Since M14 the water is Coastal by default. Everything older keeps its Phase 2 picture on
   // flat water (the boat would rock under the tap sweeps), unless it is about the waves itself.
-  if (!/m(1[4-9]|2[5-9]|3[6-9]|4[0-7]|4[89]|5\d|6\d|7\d)/.test(label) && !/[?&]sea=/.test(query)) {
+  if (
+    !/m(1[4-9]|2[5-9]|3[6-9]|4[0-7]|4[89]|5\d|6\d|7\d|8\d)/.test(label) &&
+    !/[?&]sea=/.test(query)
+  ) {
     url += `${url.includes('?') ? '&' : '?'}sea=flat`;
   }
   // Since M17 the clock chip shows. Everything older hides it, so the tap sweeps do not open
   // the clock card.
   if (
-    !/m(1[7-9]|2[5-9]|3[6-9]|4[0-7]|4[89]|5\d|6\d|7\d)/.test(label) &&
+    !/m(1[7-9]|2[5-9]|3[6-9]|4[0-7]|4[89]|5\d|6\d|7\d|8\d)/.test(label) &&
     !/[?&]clock=/.test(query)
   ) {
     url += `${url.includes('?') ? '&' : '?'}clock=0`;
   }
   // Since M28 the mini-map shows while sailing. Everything but the M28, M29 and M38 checks hides it,
   // so it never changes an older picture or tap.
-  if (!/m(28|29|38|39|4[0-7]|4[89]|5\d|6\d|7\d)/.test(label) && !/[?&]mm=/.test(query)) {
+  if (!/m(28|29|38|39|4[0-7]|4[89]|5\d|6\d|7\d|8\d)/.test(label) && !/[?&]mm=/.test(query)) {
     url += `${url.includes('?') ? '&' : '?'}mm=0`;
   }
   await page.goto(`${origin}${BASE_PATH}${url}`, { waitUntil: 'networkidle' });
@@ -492,7 +498,7 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
   // with Ropes (Learn mode: Learn) open, so they start from that; the M27, M29, M35, M36, M37 and M38 checks are
   // about the folded start and open what they need themselves.
   if (
-    !/m(27|29|35|36|37|38|39|4[89]|5\d|6\d|7\d)/.test(label) &&
+    !/m(27|29|35|36|37|38|39|4[89]|5\d|6\d|7\d|8\d)/.test(label) &&
     !/^budget /.test(label) &&
     (await page.locator('[data-open="true"]').count()) === 0
   ) {
@@ -1135,6 +1141,7 @@ try {
     m77: () => liveM77Checks(onTestClock),
     m78: () => liveM78Checks(onTestClock),
     m79: () => liveM79Checks(onTestClock),
+    m80: () => liveM80Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {

@@ -540,6 +540,8 @@ export const SCENE = {
     maxTopInsetShare: 0.4,
     /** The boat is always framed in at least this much height (small phones at half height). */
     minFreePx: 120,
+    /** M80 (tunable, 0.25–0.5): seconds the framing takes to follow a change of the free area. */
+    viewportEaseS: 0.35,
     /** Preset transition, seconds (PHASE1_SPEC 6.2). */
     transitionS: 0.5,
     /** Elevation of the side presets above the horizontal, degrees. */

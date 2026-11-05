@@ -34,6 +34,8 @@ export interface CameraRig {
     options: PresetOptions,
     topInset?: number,
   ): void;
+  /** M80: the eased free area now shown, as y in CSS px from the view's top. */
+  freeArea(): { top: number; bottom: number };
   /** Call once per frame before rendering. */
   update(now: number): void;
   /** Called when the user moves the camera by hand (drag, pinch, wheel). */
@@ -127,6 +129,10 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
   });
 
   let viewport = { width: 1, height: 1, inset: 0, top: 0 };
+  let applied = false;
+  let ease:
+    | { from: { inset: number; top: number }; to: { inset: number; top: number }; start: number }
+    | undefined;
   let options: PresetOptions = {};
   /** The lens the whole-boat presets are fitted with: the area above the buttons. */
   let lens: Lens = { verticalFovDeg: cam.verticalFovDeg, aspect: 1 };
@@ -202,6 +208,36 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     pendingMinDistance = true;
   }
 
+  function applyViewport(width: number, height: number, inset: number, top: number): void {
+    applied = true;
+    viewport = { width, height, inset, top };
+    updateProjection();
+    const tanHalf = Math.tan((cam.verticalFovDeg * Math.PI) / 360);
+    const free = height - inset - top;
+    const virtualHeight =
+      2 * (Math.max(0, height - (top + height - inset)) + (top + height - inset) / 2);
+    lens = {
+      verticalFovDeg: (Math.atan((tanHalf * free) / virtualHeight) * 360) / Math.PI,
+      aspect: width / free,
+    };
+    // A preset keeps the whole boat in view when the screen rotates or folds; so does the
+    // default view opened by a `cam=free` link until the user moves the camera.
+    if (focus && !interacting) {
+      // The focus is fitted again from the pose the camera would go back to.
+      const to = focusTarget(poseFor(currentPreset));
+      allowDistanceOf(to);
+      allowFocusDistance(to);
+      if (tween) tween.to = to;
+      else apply(to);
+    } else if ((currentPreset !== 'free' || !movedByHand) && !interacting) {
+      const to = presetPose(currentPreset, lens, options);
+      allowDistanceOf(to);
+      if (currentPreset === 'helm') allowCloseHelm(to);
+      if (tween) tween.to = to;
+      else apply(to);
+    }
+  }
+
   return {
     camera,
     get preset() {
@@ -234,35 +270,33 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         top -= fromTop;
         inset = Math.max(0, inset - (shortBy - fromTop));
       }
-      viewport = { width, height, inset, top };
       options = { ...presetOptions, helm: options.helm };
-      updateProjection();
-      const tanHalf = Math.tan((cam.verticalFovDeg * Math.PI) / 360);
-      const free = height - inset - top;
-      const virtualHeight =
-        2 * (Math.max(0, height - (top + height - inset)) + (top + height - inset) / 2);
-      lens = {
-        verticalFovDeg: (Math.atan((tanHalf * free) / virtualHeight) * 360) / Math.PI,
-        aspect: width / free,
-      };
-      // A preset keeps the whole boat in view when the screen rotates or folds; so does the
-      // default view opened by a `cam=free` link until the user moves the camera.
-      if (focus && !interacting) {
-        // The focus is fitted again from the pose the camera would go back to.
-        const to = focusTarget(poseFor(currentPreset));
-        allowDistanceOf(to);
-        allowFocusDistance(to);
-        if (tween) tween.to = to;
-        else apply(to);
-      } else if ((currentPreset !== 'free' || !movedByHand) && !interacting) {
-        const to = presetPose(currentPreset, lens, options);
-        allowDistanceOf(to);
-        if (currentPreset === 'helm') allowCloseHelm(to);
-        if (tween) tween.to = to;
-        else apply(to);
+      if (!applied || width !== viewport.width || height !== viewport.height) {
+        ease = undefined;
+        applyViewport(width, height, inset, top);
+      } else {
+        // M80: the framing follows a change of the free area softly (SCENE.camera.viewportEaseS).
+        ease = {
+          from: { inset: viewport.inset, top: viewport.top },
+          to: { inset, top },
+          start: performance.now(),
+        };
       }
     },
+    freeArea() {
+      return { top: viewport.top, bottom: viewport.height - viewport.inset };
+    },
     update(now) {
+      if (ease) {
+        const k = easeInOut(Math.min(1, (now - ease.start) / (cam.viewportEaseS * 1000)));
+        applyViewport(
+          viewport.width,
+          viewport.height,
+          ease.from.inset + (ease.to.inset - ease.from.inset) * k,
+          ease.from.top + (ease.to.top - ease.from.top) * k,
+        );
+        if (k >= 1) ease = undefined;
+      }
       if (tween) {
         const t = Math.min(1, (now - tween.start) / (cam.transitionS * 1000));
         apply(interpolatePose(tween.from, tween.to, easeInOut(t), tween.mode));

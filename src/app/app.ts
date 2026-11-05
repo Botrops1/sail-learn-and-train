@@ -125,10 +125,10 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   const topChips = el('div', { class: 'top-chips' });
   topRight.append(topChips);
   top.append(topRight);
-  createTimeBar(topRight, store);
+  createTimeBar(topRight, store, layout);
   createClockPanel(topChips, layout.view, store);
   createExerciseLine(top, store, () => panel.showSection('exercises'));
-  createExerciseCoach(top, store);
+  createExerciseCoach(top, store, layout);
   createExerciseResume(layout.view, store);
   // The step bar over the bottom of the view; `reframe` is assigned further down (a no-op without 3D).
   let reframe = () => {};

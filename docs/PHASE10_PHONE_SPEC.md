@@ -382,6 +382,15 @@ As 4.3 (all of it is M80).
 
 **Tunable:** if check 2's 100 ms reading is already final, raise `viewportEaseS` within 0.25–0.5; if 500 ms is not enough, lower it.
 
+### 7.10 Decided in the M80 PR (recommended; merging accepts it)
+
+1. `defaultLabels` and `withRopesMode` take the app mode as a plain `string` (default `'easy'`), not `AppMode`: the lint rule keeps `src/model` from importing app code (PHASE1_SPEC 9.1).
+2. The exercise start link (`exerciseStartLink`) compares `lb` with the Exercises default whatever the mode of the state it is built from, so a link made from Easy mode with labels on still carries `lb=1`.
+3. The browser check reads the 100 ms framing from the test clock: the ease starts one frame after the tap (the hint's `ResizeObserver` fires on the next frame), so the 100 ms reading is only just past the start (230 → 231 px), the 600 ms reading is final. `viewportEaseS` stays at 0.35.
+4. The hint folded on a phone uses `run.id`, `run.step` and the previous status; a `mistake` → `running` return at the same step keeps what the learner had.
+5. In the check the run is ended with the `stop` command (the Stop button asks twice) and started again from the exercise list.
+6. `shots.mjs` label rules (`held`, flat sea, clock chip, mini-map, …) get `8\d` so labels with "m80" and later behave like the Phase 10 ones.
+
 ### 7.9 Done when / not in M80
 
 Checks and tests pass; the framing eases in every mode on a sheet snap and on the hint; nothing else of the camera changes. Not in M80: Watch's card (M81 puts it in the stack, so the same rule frames it).
