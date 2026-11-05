@@ -354,7 +354,14 @@ export function createExerciseBar(
       keys: {
         left: (down) => down && enabled()[0]?.click(),
         right: (down) => down && enabled().at(-1)?.click(),
-        space: (down) => down && enabled()[0]?.click(),
+        // Space: the line's one main action: take it, or let it go (decided in the M79 PR).
+        space: (down) =>
+          down &&
+          (
+            [`line-${code}-take-bar`, `line-${code}-letGo-bar`]
+              .map((id) => row.querySelector<HTMLButtonElement>(`[data-testid="${id}"]`))
+              .find((button) => button && !button.hidden && !button.disabled) ?? undefined
+          )?.click(),
       },
       refresh: () => {},
     };
