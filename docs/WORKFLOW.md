@@ -892,3 +892,43 @@ New link setting (PHASE10_SPEC 16.4): `exl=normal` or `exl=hard` chooses the exe
 - [ ] Stern-to with the anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=stern-to-anchor — Start: motor forward to the ring in the empty berth opposite, let the anchor go, back into your berth letting out chain, stern lines, take in chain until the anchor is set.
 - [ ] All six: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — the "Harbour and anchor" group lists six exercises; each can be finished once on the phone.
 - [ ] Every item of the part 10b Definition of Done (PHASE10_SPEC 21) is ticked in the PR.
+
+## 17. Exercises on a phone (issue #165 item 1)
+
+The step bar, Watch and Show me ([PHASE10_PHONE_SPEC](PHASE10_PHONE_SPEC.md)), agreed from the mockup [`docs/mockups/exercise-controls.html`](mockups/exercise-controls.html). The same loop: one session and one PR per milestone (M79 … M82), started with `/milestone <N>` after M78 is merged. **M79, M80 and M81 need a `/review` with Opus** before you test them; M82 does not.
+
+### 17.1 Checklists
+
+No new link settings. Replace `<N>` with the PR number. Test on your phone in portrait first, then on a computer where the list says so.
+
+#### M79: The step bar
+
+- [ ] Points of sail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start. Over the 3D view, just above the panel, a bar "This step" shows Main sheet with − and +. Finish all five steps using only the bar (− / + on the sheets, ◀ 10° on the autopilot); the panel never needs to open.
+- [ ] Leaving the berth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth — Start. Step 1 shows "Lazy line" with Let go; step 2 both stern lines; step 3 the engine (◀ Astern / Ahead ▶) and the wheel; step 4 adds the thrusters. Finish it from the bar only.
+- [ ] Anchoring: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=anchor-shore — Start and go to step 2: the bar shows "Anchor chain" with Chain out ▼ (hold it) and the engine. The Port ▾ and ! chips and the mini-map sit above the bar, never under it.
+- [ ] All controls: on any step tap "All controls" — the panel opens at the right section; drag the panel down to the bottom and the bar comes back.
+- [ ] Realistic ropes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail&mode=realistic — Start: the bar shows "Ropes: work them at the stations" with a Stations button (the rope rows for Realistic come in M82).
+- [ ] Computer: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start: the bar sits at the bottom of the 3D view with row numbers; press 1, then ← four times: the main sheet comes in.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&lang=ru — Start: the bar's text fits.
+
+#### M80: A clear exercise screen
+
+- [ ] Points of sail on the phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start: no name tags on the boat, the hint folded (tap ? on the step line to open it), the time bar folded beside the strip. The yacht sits in the middle of the free part of the screen.
+- [ ] Soft move: open and close the hint, and drag the panel up and down — the camera glides (no jump) and the yacht stays in the middle of what is left.
+- [ ] Next step: when step 1 ticks off, the hint is folded again.
+- [ ] Labels: in Settings turn Labels in 3D on during the exercise — the tags show; Stop the exercise and choose Easy mode — the tags are on as before.
+- [ ] Computer: same link on a computer — the hint is open, no tags, the yacht centred above the bar.
+
+#### M81: Watch and Show me
+
+- [ ] Watch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=reduce-sail — tap "Watch it". The line says "Watching ·", the bar's buttons light up as the app uses them, and after each step a card "✓ Step 1 done" waits for Next step. At the end: "Now do it myself"; back in the list the exercise shows "Watched", not a tick.
+- [ ] Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — tap "Do it myself", finish step 1, then tap "▶ Show me": the app does step 2, then "Now you"; tap "Back to the start of the step" and do step 2 yourself.
+- [ ] Let me try it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth — Watch it; after step 1 tap "Let me try it": the lazy line is on again and it is your turn.
+- [ ] A harbour one: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=turn-own-length — Watch it to the end (about one minute).
+
+#### M82: Realistic ropes in the bar (sign-off of issue #165 item 1)
+
+- [ ] Setting the sails: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails — Do it myself (Realistic, Alone). The bar shows Port / Starboard with an orange dot where this step needs you, the clutch with Open / Close, and the winch: Put … on, + Turn (three times), Into the self-tailer, then hold "Hold ▲". Finish all five steps from the bar.
+- [ ] Furling the sails: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=furl-sails — Watch it: the app works the stations and the winches; the bar lights up as it goes.
+- [ ] Every exercise once on the phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — each of the fourteen can be finished (Do it myself or Watch it) without zooming the page.
+- [ ] The PR's sign-off list (one line per exercise) is complete.
