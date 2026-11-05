@@ -9,6 +9,26 @@
             "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/no-attribution.mjs\""
           }
         ]
+      },
+      {
+        "matcher": "mcp__github__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pr-body.mjs\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__github__create_pull_request",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/pr-body.mjs\""
+          }
+        ]
       }
     ]
   }
