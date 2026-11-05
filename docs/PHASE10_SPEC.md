@@ -1,6 +1,6 @@
 # Phase 10 specification: exercises (part 10a: the coach and the first sailing exercises; part 10b: harbour and anchor)
 
-Status: **part 10a done (M66–M72); part 10b planned (M73–M78), recommended answers recorded; merging the planning PR accepts them** · Last updated: 2026-11-02
+Status: **part 10a done (M66–M72); part 10b done (M73–M78)** · Last updated: 2026-11-04
 
 Read [`ROADMAP.md`](ROADMAP.md) first, then this file. Phase 10 builds on everything the app already does: the sailing model of Phase 2 (`src/model/motion.ts`, `trim.ts`, `gybe.ts`, `autopilot.ts`, `windModes.ts`), Realistic mode (`src/model/realistic.ts`), the modes and sections of Phase 5 (`src/app/appMode.ts`, `src/ui/modes.ts`, `src/ui/panel.ts`), the harbour of Phase 7, the alert history of M36 and M55 (`src/model/alerts.ts`), and the link (`src/app/urlState.ts`). The catalogue of exercises and failure modes is [`EXERCISES.md`](EXERCISES.md); the owner's answers are in the ROADMAP decisions log (2026-10-30, "Phase 10 plan").
 
@@ -423,7 +423,7 @@ Each milestone is one PR, small enough to check on a phone in 15 minutes. **Inde
 | M75 **(10b)** | 17 | Entering the berth stern-to at three levels; on Hard the neighbours' bow lines catch the keel and foul the propeller | PT-50, PT-51, PT-52 | M74 | **required** (docking speeds and the engine in neutral near lines: safety teaching; the bow lines change the shared step) |
 | M76 **(10b)** | 18 | Turning in her own length; picking up and leaving a mooring buoy | PT-27, PT-48, PT-33, PT-62 (new) | M75 | **required** (a new rule; prop walk's side is an assumption, PT-27) |
 | M77 **(10b)** | 19 | Anchoring in the bay with a line ashore | PT-31, PT-53, PT-57 | M76 | **required** (anchoring safety: scope, setting) |
-| M78 **(10b)** | 20 | Stern-to on your own anchor; sign-off of part 10b | PT-51 | M77 | not needed (data, texts and checks of M74–M77) |
+| M78 **(10b)** | 20 | Stern-to on your own anchor; sign-off of part 10b | PT-31, PT-51 | M77 | not needed (data, texts and checks of M74–M77) |
 | M72 | 14 | The gybe's push follows the wind: the boom starts across slowly and speeds up once past the line of the wind; the accidental-gybe step and Learn say why (extra milestone, issue #149) | PT-60 (new), PT-05, PT-24, PT-26, PT-58 | M71 | **required** (a physics formula that four rules rest on, and a new rule) |
 
 ---
@@ -2639,6 +2639,15 @@ Scenes: `stern-anchor-setup`, `stern-anchor-ring` (`cam=top`), `harbour-list` (`
 ### 20.7 Done when, and sign-off of part 10b
 
 The exercise can be finished on a phone; every item of section 21 is ticked in the PR; ROADMAP's Phase 10 row says "10a and 10b done, 10c planned".
+
+### 20.8 Decided in the M78 PR (recommended; merging accepts it)
+
+- Nothing in `src/model` changed. The data, texts and pilot are exactly 20.2–20.4. The good run in `tests/harbourExercises.test.ts` took, per step: 57.1, 14.6, 146.6, 1.0 and 17.6 s, the same as the prototype; at the end 41.1 m of chain, the anchor `set`, no report.
+- The tests named in 20.5 are `PT-31 stern-to the chain is more than four times the depth` (chain at the end at least 27.2 m) and `PT-51 the anchor holds the bow stern-to` (30 s more in neutral: heading within 10° of 180°, stern gap 0.3–3.0 m). The PT-51 test keeps the engine lever in neutral for the 30 s, as the stern-to chain-tight step requires.
+- The mistake texts `touch`, `hard-hit`, `propeller` and `fenders-in` are copied from Entering the berth (16.6, 17.3), in English and Russian. In Russian the buttons are named as the app's `ui.json` has them: «Травить цепь ▼», «Выбирать цепь ▲», «Подать на причал»; the exercise is «Якорь и корма к причалу». The Russian texts are AI drafts.
+- The debug read-out of `window.__sailExercise.read()` (only with `debug=1`) gained `anchorEastM`, `anchorNorthM` and `anchorCutOut`, so the live good run can pay the chain out like `sternAnchorPilot` does. No other code in `src/` changed.
+- The Phase 10 row of the ROADMAP says "10a and 10b done, 10c planned"; the README's Phase 10 sentence names the harbour and anchor exercises.
+- Every item of section 21 is ticked in the PR description (the browser checks and the tests of M73–M78 are cited there).
 
 ---
 

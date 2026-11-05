@@ -265,6 +265,31 @@
         { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } },
         { "id": "dragging", "serious": false, "on": { "alert": "anchorAlarm" } }
       ]
+    },
+    {
+      "id": "stern-to-anchor",
+      "group": "harbour",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["engine", "anchor", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
+      "start": "?pl=marina&ml=medium&tr=half&pe=2.8&pn=1466.0&hdg=180&bs=0&wd=-90&ws=8&eng=1&lv=0&ap=off&sea=flat&fd=1",
+      "targets": [
+        { "id": "drop", "shape": "circle", "eastM": 2.75, "northM": 1442, "radiusM": 3 },
+        { "id": "berth", "shape": "berth" }
+      ],
+      "steps": [
+        { "id": "to-spot", "opens": "engine", "holdS": 2, "show": "drop", "check": { "target": { "id": "drop", "point": "bow" }, "speedKn": [-0.5, 0.5] } },
+        { "id": "let-go-anchor", "opens": "anchor", "holdS": 1, "check": { "anchor": { "phase": ["bottom", "set"] } } },
+        { "id": "reverse-in", "opens": "engine", "holdS": 2, "show": "berth", "check": { "quayGapM": [0.5, 2.8], "berthOffsetM": [0, 1], "headingDeg": { "to": 180, "within": 10 }, "speedKn": [-0.2, 0.2], "anchor": { "chainOutM": [30, 70] } } },
+        { "id": "stern-lines", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sp", "ss"] } },
+        { "id": "chain-tight", "opens": "anchor", "holdS": 5, "check": { "anchor": { "phase": ["set"] }, "linesOn": ["sp", "ss"], "quayGapM": [0.3, 3.0], "headingDeg": { "to": 180, "within": 10 }, "engine": { "gear": "neutral" } } }
+      ],
+      "mistakes": [
+        { "id": "touch", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "hard-hit", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["yacht", "harbour"] } },
+        { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } },
+        { "id": "fenders-in", "serious": false, "on": { "alert": "fendersIn" } }
+      ]
     }
   ]
 }

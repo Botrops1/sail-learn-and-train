@@ -12,6 +12,7 @@ import {
   H,
   leavePilot,
   stern,
+  sternAnchorPilot,
   turnPilot,
   type Pilot,
 } from './harbourPilot';
@@ -404,5 +405,67 @@ describe('anchor-shore good run (PHASE10_SPEC 19.5)', () => {
     expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'dragging')).toBe(
       true,
     );
+  });
+});
+
+/** The stern-to-anchor good run, frame by frame (PHASE10_SPEC 20.5); `watch` sees every state. */
+function sternAnchorRun(watch: (s: AppState, t: number) => void = () => undefined, afterDoneS = 0) {
+  let s = parseUrlState(exerciseStartLink('stern-to-anchor', initialState(), 'easy'));
+  s = reduce(s, { type: 'exercise', command: 'start' });
+  const pilot = sternAnchorPilot();
+  const stepAt: number[] = [0];
+  let t = 0;
+  while (s.exercise !== null && s.exercise.status !== 'done' && t < 450) {
+    s = pilot(s, t);
+    s = reduce(s, { type: 'step', dt: 0.05 });
+    t += 0.05;
+    watch(s, t);
+    const run = s.exercise;
+    if (run !== null && run.step > stepAt.length - 1) stepAt.push(t);
+  }
+  const run = s.exercise;
+  const result = {
+    state: s,
+    status: run?.status,
+    durations: stepAt.map((at, i) => (stepAt[i + 1] ?? t) - at),
+    mistakes: run?.log.filter((e) => e.kind === 'mistake') ?? [],
+  };
+  // PT-51: after `done`, the engine stays in neutral and the chain holds the bow.
+  for (let after = 0; after < afterDoneS; after += 0.05) {
+    s = reduce(s, { type: 'engine', command: { leverPct: 0 } });
+    s = reduce(s, { type: 'step', dt: 0.05 });
+  }
+  return { ...result, after: s };
+}
+
+describe('stern-to-anchor good run (PHASE10_SPEC 20.5)', () => {
+  it('ends done with no mistake, each step within its limit, 38-46 m of chain', () => {
+    const result = sternAnchorRun();
+    expect(result.status).toBe('done');
+    expect(result.mistakes).toEqual([]);
+    [79, 24, 206, 3, 29].forEach((limit, i) => {
+      expect(
+        result.durations[i] ?? Infinity,
+        `step ${i}: ${result.durations.join(', ')}`,
+      ).toBeLessThanOrEqual(limit);
+    });
+    const { anchor } = result.state;
+    expect(anchor.chainOutM).toBeGreaterThanOrEqual(38);
+    expect(anchor.chainOutM).toBeLessThanOrEqual(46);
+    expect(anchor.phase).toBe('set');
+  });
+
+  it('PT-31 stern-to the chain is more than four times the depth', () => {
+    const result = sternAnchorRun();
+    expect(result.state.anchor.chainOutM).toBeGreaterThanOrEqual(4 * (5 + 1.8));
+  });
+
+  it('PT-51 the anchor holds the bow stern-to', () => {
+    const result = sternAnchorRun(undefined, 30);
+    const s = result.after;
+    expect(Math.abs(((H(s) - 180 + 540) % 360) - 180)).toBeLessThanOrEqual(10);
+    const gap = area.marina.quayFaceNorthM - stern(s)[1];
+    expect(gap).toBeGreaterThanOrEqual(0.3);
+    expect(gap).toBeLessThanOrEqual(3.0);
   });
 });
