@@ -5412,7 +5412,7 @@ html[data-layout='wide'] .exercise-stack {
 
 /* A computer: the bar takes the bottom row between the mini-map and the chips (the JS sets left and
    right), or stands over that row; the row itself never moves. */
-.exercise-stack[data-place='row'] {
+html[data-layout] .exercise-stack[data-place='row'] {
   transform: none;
   width: auto;
 }
