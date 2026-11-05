@@ -20,7 +20,7 @@ The review normally runs right after the PR opens, before the owner tests on the
    - **Correctness:** the code against the spec's formulas, numbers and signatures; tests that really test the rule (not bands widened to pass); sign and frame conventions.
    - **Sailing sense:** does anything behave in a way a sailor would find wrong? Cite the rule or the source. Sources: every rule was checked once on 2026-10-12. Re-check only what the milestone touches: a rule it implements or whose behaviour it changes, and any still `to-verify`. Open the cited source (fetch it from the container with `curl`; the sailing sites are allowed in the cloud environment) and say per rule whether it still supports what the code now does; recommend status changes, do not edit them.
    - **Rules:** no magic numbers outside `hanse508.json`, ids from the registry, `src/model` pure, scope kept, docs updated.
-   - **The PR description:** the checklist links work and match the spec; every question has a recommendation.
+   - **The PR description:** the checklist links work and match the spec; every question has a recommendation. A link still carrying `pr-<N>`, a missing section or a missing checklist item is a "fix now" finding (the **PR description** CI check shows the same).
 4. Post **one** comment on the PR. Start it with "**Independent review**", then:
    - one or two sentences: is it safe to merge?
    - numbered findings, most important first. Each one: what is wrong in plain words, where (file:line), and "Recommended: fix now / fix later / leave as is, because …";

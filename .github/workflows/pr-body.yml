@@ -1,0 +1,44 @@
+name: PR description
+
+# Fails when a PR's description still has a `pr-<N>` placeholder and, for a milestone PR
+# (`M<N>: …`), when it is a stub, misses a section of the CLAUDE.md template, or misses a link of
+# its docs/WORKFLOW.md checklist (scripts/pr-body.mjs). It reruns on every edit of the description.
+# A milestone session treats a red check as its own to fix, and the owner sees the mark.
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-body-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-body:
+    name: PR description
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      # A new PR opens with a one-line body and gets its full description a moment later (that
+      # edit cancels this run and starts a new one).
+      - name: Wait for the full description
+        if: github.event.action == 'opened'
+        run: sleep 180
+      # The description is read fresh (not from the event), so a rerun sees the latest text. It
+      # is only ever treated as data.
+      - name: Check the description
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          gh api "repos/$REPO/pulls/$PR_NUMBER" > "$RUNNER_TEMP/pr.json"
+          node scripts/pr-body.mjs "$RUNNER_TEMP/pr.json"
