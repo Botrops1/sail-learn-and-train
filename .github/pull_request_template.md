@@ -17,7 +17,8 @@ Write each check as a full link with its settings, and say what to do after open
 
 ## Tests
 
-<!-- Evidence, not claims: each command and its result (e.g. "npm test: 812 passed"), the browser-check groups run, what could not be checked. -->
+<!-- Evidence, not claims: each command and its result (e.g. "npm test: 812 passed"), the browser-check groups run, what could not be checked.
+Optional line, read at the next push: `CI groups: m68, m75` adds those browser-check groups to this PR's checks; `CI groups: all` runs every group (use it after changing the store, the URL state, the layout shell or the scene setup). -->
 
 ## Questions for the owner
 
