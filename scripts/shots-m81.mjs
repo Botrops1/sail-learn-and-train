@@ -108,6 +108,12 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
       await tid(page, 'time-demo-capped').isVisible(),
       'time-demo-capped visible at ×16',
     );
+    await page.waitForTimeout(6500);
+    check(
+      'the ×4 note goes away after a few seconds',
+      !(await tid(page, 'time-demo-capped').isVisible()),
+      'time-demo-capped hidden after 6.5 s',
+    );
     let ok = true;
     const titles = [];
     for (let step = 1; step <= 2; step += 1) {
@@ -209,6 +215,12 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
       await tid(page, 'bar-ctl_mainsheet-less').isDisabled(),
       'bar-ctl_mainsheet-less disabled',
     );
+    const nowLine = (await exerciseLine(page)) ?? '';
+    check(
+      'the line points to the card and Resume is off',
+      /Now you: tap/.test(nowLine) && (await tid(page, 'pause-button').isDisabled()),
+      `"${nowLine}"`,
+    );
     await shot(page, 'm81-phone-now-you');
     await tid(page, 'exercise-demo-back').click();
     await page.waitForTimeout(400);
@@ -300,6 +312,39 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
       'Let me try it goes back to step 1 with no demo',
       r.step === 0 && r.demo === null && r.status === 'running' && lines.includes('ll'),
       `step ${r.step}, demo ${r.demo}, lines ${lines.join(',')}`,
+    );
+    await context.close();
+  }
+
+  // 7. Stop watching on a paused card keeps a row's own disabled buttons off (Tacking step 4: the
+  // autopilot is off, so its ±10° buttons stay disabled).
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm81 stop watching keeps disabled buttons',
+      '?m=exercise&ex=tacking&step=1&debug=1',
+      { testClock: true },
+    );
+    await watch(page);
+    await act(page, { type: 'setTimeScale', scale: 4 });
+    let reached = false;
+    for (let guard = 0; guard < 6; guard += 1) {
+      if (!(await untilCard(page, 700))) break;
+      if ((await run(page)).step === 3) {
+        reached = true;
+        break;
+      }
+      await tid(page, 'exercise-demo-next').click();
+      await page.waitForTimeout(300);
+    }
+    const lockedWhile = reached && (await tid(page, 'bar-ap-port').isDisabled());
+    if (reached) await tid(page, 'exercise-bar-stopdemo').click();
+    await page.waitForTimeout(300);
+    const r = await run(page);
+    check(
+      'Stop watching keeps the autopilot buttons off while the autopilot is off',
+      reached && lockedWhile && r.demo === null && (await tid(page, 'bar-ap-port').isDisabled()),
+      `reached step 4: ${reached}, demo ${r.demo}`,
     );
     await context.close();
   }

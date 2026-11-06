@@ -1,6 +1,7 @@
 import type { Store } from '../app/store';
 import { alertTimeText } from '../model/alerts';
 import { EXERCISE_SETTINGS, exerciseDef, exerciseText } from '../model/exercises';
+import { demoCardKind } from '../app/exerciseBar';
 import { el } from './dom';
 import { currentLanguage, t } from './i18n';
 
@@ -78,6 +79,11 @@ export function createExerciseLine(top: HTMLElement, store: Store, onOpen: () =>
         text = t('exercise.lineMistake', { what });
         kind = 'mistake';
       }
+    }
+    // M81: after Show me the card is the way on (the time bar's Resume is off), so the line says so.
+    if (demoCardKind(store.getState()) === 'nowYou') {
+      text = t('exercise.demo.lineNow');
+      kind = 'step-paused';
     }
     const holding = run.status === 'running' && run.holdS > 0;
     const stepNow = holding ? def.steps[run.step] : undefined;

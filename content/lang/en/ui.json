@@ -1051,5 +1051,6 @@
   "exercise.demo.nowYouTitle": "Now you",
   "exercise.demo.nowYou": "The boat goes back to where this step started. Then it is your turn.",
   "exercise.demo.back": "Back to the start of the step",
-  "exercise.demo.doIt": "Now do it myself"
+  "exercise.demo.doIt": "Now do it myself",
+  "exercise.demo.lineNow": "Done. Now you: tap “Back to the start of the step”."
 }

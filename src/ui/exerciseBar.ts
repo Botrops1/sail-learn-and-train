@@ -576,13 +576,18 @@ export function createExerciseBar(
     }
   });
 
-  /** While the app plays, the row buttons are disabled; the ones this switched off come back after. */
-  const disableRows = (on: boolean) => {
+  /**
+   * While the app plays, the row buttons are disabled. `releaseRows` gives back what this switched
+   * off (before the rows refresh, so a button a row switches off itself stays off); `lockRows`
+   * then switches off every button that is still on (after the rows refreshed).
+   */
+  const releaseRows = () => {
     for (const button of rowsBox.querySelectorAll<HTMLButtonElement>('button[data-demo-off]')) {
       button.disabled = false;
       delete button.dataset.demoOff;
     }
-    if (!on) return;
+  };
+  const lockRows = () => {
     for (const button of rowsBox.querySelectorAll<HTMLButtonElement>('button')) {
       if (button.disabled) continue;
       button.disabled = true;
@@ -677,8 +682,9 @@ export function createExerciseBar(
       run?.status !== 'running' ||
       pilotFor(run.id, run.options.level, state.settings.ropesMode) === null;
     stopDemo.hidden = !playing;
+    releaseRows();
     for (const row of shown) row.refresh(state);
-    disableRows(playing);
+    if (playing) lockRows();
   };
 
   store.subscribe(refresh);

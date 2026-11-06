@@ -1051,5 +1051,6 @@
   "exercise.demo.nowYouTitle": "Теперь вы",
   "exercise.demo.nowYou": "Лодка вернётся туда, где начался этот шаг. Потом ваша очередь.",
   "exercise.demo.back": "Назад, к началу шага",
-  "exercise.demo.doIt": "Теперь сам"
+  "exercise.demo.doIt": "Теперь сам",
+  "exercise.demo.lineNow": "Готово. Теперь вы: нажмите «Назад, к началу шага»."
 }

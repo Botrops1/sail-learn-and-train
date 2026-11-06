@@ -645,8 +645,8 @@ Checks and tests pass; Watch works for all 14 exercises in Easy ropes (the unit 
 
 1. **One row added to a bar (8.7 coverage):** the pilot of *Stern-to on your own anchor* sets the engine lever to neutral in the step "Take the stern lines" (it still holds the lever from the step before), a row that step's bar did not have. The step's `bar` is now `["engine", "line:sp", "line:ss", "thrusters"]` (four rows, like *Entering the berth*'s lines step). No other miss.
 2. **Show me limits of *Stern-to on your own anchor*** (measured with 3.5's formula, `ceil(1.2 × t + 3)`; fresh pilot from each step, level Easy; the good run is the same ±0.1 s): 57.1, 14.6, 146.5, 1.0, 17.6 s → **72, 21, 179, 5, 25**.
-3. **The ×4 note** (`exercise.demo.capped`) is a small card under the time bar (like the "Held still" note), shown whenever a demo runs and the speed is above ×4, whether the bar is folded or open. It does not move the bar.
-4. **Disabled rows:** while a demo runs (also on the "Now you" card, until Back), every row button is `disabled`; a row's own disabled state comes back after the demo, so no row stays switched off.
+3. **The ×4 note** (`exercise.demo.capped`) is a small card under the time bar (like the "Held still" note). It shows only while the bar is open, when a demo runs and the speed is above ×4, and goes away after 6 s (the same time as the "Held still" note), so it never hides the step line for long (independent review, item 2). It does not move the bar.
+4. **Disabled rows:** while a demo runs (also on the "Now you" card, until Back), every row button is `disabled`; a row's own disabled state is kept after the demo (the marks are cleared before the rows refresh and set after, so a button a row switched off stays off; review item 4).
 5. **No Watch where there is no pilot:** the setup card hides **Watch it** (and the bar hides **▶ Show me**) for the eight sailing exercises in Realistic ropes (M82 adds two).
 6. **`{ back }` ends a demo only when it went back** (a waypoint that does not exist changes nothing, so nothing ends).
 7. **A demo's holds are released** when it ends (Stop watching, Back, the run ends), not at the end of a step (Watch's next step goes on with the same hold): the bow and stern thrusters go to 0 and the windlass to off, in one `demo` batch with no log entry. The Realistic winch button is M82's.
@@ -831,3 +831,4 @@ Checks and tests pass; the PR has the sign-off list. Not in M82: Realistic rows 
 
 - The `how` texts still say "In Ropes …" or "Open Harbour gear …"; true, but on a phone the bar is quicker. A later text pass can shorten them.
 - Watch of the long harbour exercises takes minutes of app time (Anchoring with a line ashore about 6 minutes); the time bar's speed-up works during Watch.
+11. **After Show me (review item 3):** while the "Now you" card shows, the step line reads `exercise.demo.lineNow` ("Done. Now you: tap “Back to the start of the step”.", Russian draft) after the "Showing · " prefix, and the time bar's Pause / Resume is disabled, because going on from there ends in a boat sailing into the next step with every row disabled. Back is the way on.

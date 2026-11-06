@@ -3571,3 +3571,4 @@
 | exercise.demo.nowYou | The boat goes back to where this step started. Then it is your turn. | Лодка вернётся туда, где начался этот шаг. Потом ваша очередь. |
 | exercise.demo.back | Back to the start of the step | Назад, к началу шага |
 | exercise.demo.doIt | Now do it myself | Теперь сам |
+| exercise.demo.lineNow | Done. Now you: tap “Back to the start of the step”. | Готово. Теперь вы: нажмите «Назад, к началу шага». |
