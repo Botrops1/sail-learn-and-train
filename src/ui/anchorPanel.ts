@@ -70,8 +70,18 @@ export function holdButton(
     },
     [t(motion === 'down' ? 'anchor.down' : 'anchor.up')],
   );
-  const hold = () => store.dispatch({ type: 'windlass', motion });
-  const letGo = () => store.dispatch({ type: 'windlass', motion: 'off' });
+  // Only a button that started a hold ends it: a pointer leaving or a blur of a button nobody
+  // pressed (the step bar's rows are rebuilt under a resting pointer) must not stop the chain.
+  let holding = false;
+  const hold = () => {
+    holding = true;
+    store.dispatch({ type: 'windlass', motion });
+  };
+  const letGo = () => {
+    if (!holding) return;
+    holding = false;
+    store.dispatch({ type: 'windlass', motion: 'off' });
+  };
   button.addEventListener('pointerdown', (event) => {
     if (event.button > 0) return;
     event.preventDefault();
@@ -92,7 +102,10 @@ export function holdButton(
     if (arrow !== undefined) {
       // M59: ArrowDown pays the chain out and ArrowUp brings it in, on either button.
       event.preventDefault();
-      if (!event.repeat) store.dispatch({ type: 'windlass', motion: arrow });
+      if (!event.repeat) {
+        holding = true;
+        store.dispatch({ type: 'windlass', motion: arrow });
+      }
       return;
     }
     if (event.key !== ' ' && event.key !== 'Enter') return;

@@ -7,9 +7,11 @@ export const PROGRESS_KEY = 'sail-learn.exercises';
 export interface ExerciseProgress {
   v: 1;
   done: Readonly<Record<string, { bestS: number; at: string }>>;
+  /** M81: exercises the app played for the learner (Watch); not a tick. */
+  watched: Readonly<Record<string, { at: string }>>;
 }
 
-const EMPTY: ExerciseProgress = { v: 1, done: {} };
+const EMPTY: ExerciseProgress = { v: 1, done: {}, watched: {} };
 
 /** Junk or null give the empty progress. */
 export function parseProgress(text: string | null): ExerciseProgress {
@@ -17,9 +19,16 @@ export function parseProgress(text: string | null): ExerciseProgress {
   try {
     const parsed: unknown = JSON.parse(text);
     if (typeof parsed !== 'object' || parsed === null) return EMPTY;
-    const done = (parsed as { done?: unknown }).done;
-    if (typeof done !== 'object' || done === null) return EMPTY;
+    const { done: rawDone, watched: rawWatched } = parsed as { done?: unknown; watched?: unknown };
+    const done = typeof rawDone === 'object' && rawDone !== null ? rawDone : {};
     const kept: Record<string, { bestS: number; at: string }> = {};
+    const seen: Record<string, { at: string }> = {};
+    if (typeof rawWatched === 'object' && rawWatched !== null) {
+      for (const [id, value] of Object.entries(rawWatched)) {
+        const entry = value as { at?: unknown } | null;
+        if (entry) seen[id] = { at: typeof entry.at === 'string' ? entry.at : '' };
+      }
+    }
     for (const [id, value] of Object.entries(done)) {
       const entry = value as { bestS?: unknown; at?: unknown } | null;
       if (
@@ -31,7 +40,7 @@ export function parseProgress(text: string | null): ExerciseProgress {
         kept[id] = { bestS: entry.bestS, at: typeof entry.at === 'string' ? entry.at : '' };
       }
     }
-    return { v: 1, done: kept };
+    return { v: 1, done: kept, watched: seen };
   } catch {
     return EMPTY;
   }
@@ -46,7 +55,11 @@ export function withDone(
 ): ExerciseProgress {
   const old = progress.done[id];
   if (old && old.bestS <= elapsedS) return progress;
-  return { v: 1, done: { ...progress.done, [id]: { bestS: elapsedS, at: dateIso } } };
+  return {
+    v: 1,
+    done: { ...progress.done, [id]: { bestS: elapsedS, at: dateIso } },
+    watched: progress.watched,
+  };
 }
 
 export function readProgress(): ExerciseProgress {
@@ -59,11 +72,23 @@ export function readProgress(): ExerciseProgress {
 
 /** Reads, adds this run with today's date (YYYY-MM-DD), writes, returns. */
 export function recordDone(id: string, elapsedS: number): ExerciseProgress {
-  const next = withDone(readProgress(), id, elapsedS, new Date().toISOString().slice(0, 10));
+  return store(withDone(readProgress(), id, elapsedS, new Date().toISOString().slice(0, 10)));
+}
+
+/** Reads, adds the Watched mark with today's date, writes, returns (M81). */
+export function recordWatched(id: string): ExerciseProgress {
+  const old = readProgress();
+  return store({
+    ...old,
+    watched: { ...old.watched, [id]: { at: new Date().toISOString().slice(0, 10) } },
+  });
+}
+
+function store(next: ExerciseProgress): ExerciseProgress {
   try {
     globalThis.localStorage?.setItem(PROGRESS_KEY, JSON.stringify(next));
   } catch {
-    // Storage blocked: the tick is only for this visit.
+    // Storage blocked: the mark is only for this visit.
   }
   return next;
 }

@@ -7,7 +7,8 @@ import {
   timeScaleText,
   timeSpeedAvailable,
 } from '../model/timeScale';
-import { exercisePauseBlocked } from '../app/exerciseRun';
+import { demoCardKind } from '../app/exerciseBar';
+import { DEMO_MAX_SCALE, exercisePauseBlocked } from '../app/exerciseRun';
 import { el } from './dom';
 import type { LayoutShell } from './layout';
 import { layoutKindOf } from './modes';
@@ -145,10 +146,26 @@ export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShe
     if (event.key === 'Escape' && !note.hidden) showNote(false);
   });
 
+  // M81: while the app plays an exercise, time runs at ×4 at most; the bar says so.
+  const capped = el('p', { class: 'hint time-demo-capped', 'data-testid': 'time-demo-capped' }, [
+    t('exercise.demo.capped'),
+  ]);
+  capped.hidden = true;
+
+  let cappedTimer: number | undefined;
+  let cappedOn = false;
+  const showCapped = (on: boolean) => {
+    if (on === cappedOn) return;
+    cappedOn = on;
+    window.clearTimeout(cappedTimer);
+    capped.hidden = !on;
+    if (on) cappedTimer = window.setTimeout(() => (capped.hidden = true), NOTE_SHOWN_MS);
+  };
+
   const bar = el(
     'div',
     { class: 'time-bar', role: 'group', 'aria-label': t('time.group'), 'data-testid': 'time-bar' },
-    [fold, status, slowest, slower, pause, held, faster, fastest, note],
+    [fold, status, slowest, slower, pause, held, faster, fastest, note, capped],
   );
   host.append(bar);
 
@@ -172,12 +189,20 @@ export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShe
     );
     // A mistake or failed card (and the setup card, until Start) decides when time goes on (PHASE10_SPEC 7.3).
     const runStatus = state.exercise?.status;
-    const blocked = runStatus === 'mistake' || runStatus === 'failed' || runStatus === 'setup';
+    // M81: while Show me's "Now you" card shows, going on from here is a dead end: Back is the way.
+    const blocked =
+      runStatus === 'mistake' ||
+      runStatus === 'failed' ||
+      runStatus === 'setup' ||
+      demoCardKind(state) === 'nowYou';
     // Alone (M71): no Pause while the exercise runs; once paused, Resume stays enabled.
     const alone = exercisePauseBlocked(state) && !state.paused;
-    const key = [speed, open, scale, state.paused, pausable, blocked, alone].join('|');
+    const demoCapped = active && state.exercise?.demo != null && scale > DEMO_MAX_SCALE;
+    const key = [speed, open, scale, state.paused, pausable, blocked, alone, demoCapped].join('|');
     if (key === shown) return;
     shown = key;
+    // The note shows only while the bar is open, and for a few seconds: it must not hide the step line.
+    showCapped(demoCapped && open);
     bar.dataset.speed = String(speed);
     bar.dataset.held = String(!pausable);
     pause.hidden = !pausable;

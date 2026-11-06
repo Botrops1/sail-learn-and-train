@@ -1,4 +1,5 @@
-import { recordDone, readProgress } from '../app/exerciseProgress';
+import { recordDone, recordWatched, readProgress } from '../app/exerciseProgress';
+import { pilotFor } from '../app/exercisePilots';
 import {
   exercisePauseBlocked,
   type ExerciseOptions,
@@ -127,7 +128,7 @@ export function createExercisePanel(
     const left = run && step && run.holdS > 0 ? holdLeftS(run, step.holdS) : 0;
     const shown = run ? lastMistakeShown(run) : false;
     const debrief = run && (run.status === 'done' || run.status === 'failed' || soFarOpen);
-    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${run?.options.crew}|${run?.options.level}|${shown}`;
+    return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${run?.options.crew}|${run?.options.level}|${run?.demo}|${shown}`;
   };
 
   function renderList(): void {
@@ -151,6 +152,13 @@ export function createExercisePanel(
           item.append(
             el('span', { class: 'exercise-tick', 'data-testid': `exercise-tick-${def.id}` }, [
               t('exercise.doneBest', { time: alertTimeText(done.bestS) }),
+            ]),
+          );
+        }
+        if (progress.watched[def.id] && !done) {
+          item.append(
+            el('span', { class: 'exercise-watched', 'data-testid': `exercise-watched-${def.id}` }, [
+              t('exercise.watched'),
             ]),
           );
         }
@@ -347,7 +355,27 @@ export function createExercisePanel(
       // On a phone the sheet goes down so the boat shows.
       if (layout() === 'stacked') sheet.setHeight('peek');
     });
-    card.append(el('div', { class: 'exercise-buttons' }, [start, listButton()]));
+    // M81: Watch it plays the exercise for the learner; hidden where no pilot exists. A phone shows
+    // it first; on a computer the CSS puts it after Do it myself (the layout is not known yet here).
+    const buttons: HTMLElement[] = [start];
+    if (pilotFor(run.id, run.options.level, state.settings.ropesMode) !== null) {
+      const watch = el(
+        'button',
+        {
+          type: 'button',
+          class: 'exercise-start exercise-watch',
+          'data-testid': 'exercise-watch',
+        },
+        [t('exercise.watch')],
+      );
+      watch.addEventListener('click', () => {
+        store.dispatch({ type: 'exercise', command: { demo: 'watch' } });
+        store.dispatch({ type: 'exercise', command: 'start' });
+        if (layout() === 'stacked') sheet.setHeight('peek');
+      });
+      buttons.unshift(watch);
+    }
+    card.append(el('div', { class: 'exercise-buttons' }, [...buttons, listButton()]));
     root.append(card);
   }
 
@@ -584,12 +612,26 @@ export function createExercisePanel(
       const link = restartLink(store.getState());
       if (link) loadLink(store, link);
     });
+    // A watched run ends with "Now do it myself": the same load as Try again, which has no demo.
+    const doIt = el(
+      'button',
+      { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-demo-doit' },
+      [t('exercise.demo.doIt')],
+    );
+    doIt.addEventListener('click', () => {
+      const link = restartLink(store.getState());
+      if (link) loadLink(store, link);
+    });
     root.append(
       el('div', { class: 'exercise-card', 'data-testid': 'exercise-done' }, [
         el('h3', {}, [t('exercise.finished')]),
         el('p', {}, [t('exercise.time', { time: alertTimeText(run.elapsedS) })]),
         el('p', {}, [text.done]),
-        el('div', { class: 'exercise-buttons' }, [again, listButton()]),
+        el('div', { class: 'exercise-buttons' }, [
+          ...(run.demo === 'watch' ? [doIt] : []),
+          again,
+          listButton(),
+        ]),
         createDebrief(run, def, debriefView),
       ]),
       waypointsBlock(run, state),
@@ -634,7 +676,12 @@ export function createExercisePanel(
       previous.exercise?.status !== 'done' &&
       state.exercise.startStep === 0
     ) {
-      recordDone(state.exercise.id, state.exercise.elapsedS);
+      // A watched run only earns the Watched mark; Show me ends the run only on its last step,
+      // where the learner has not done the step (Back follows); else the tick as always.
+      if (state.exercise.demo === 'watch') recordWatched(state.exercise.id);
+      else if (state.exercise.demo === null) {
+        recordDone(state.exercise.id, state.exercise.elapsedS);
+      }
     }
     render(state);
   });

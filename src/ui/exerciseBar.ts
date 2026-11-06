@@ -1,8 +1,15 @@
-import { BAR_LEVER_STEP_PCT, barRowsFor, barShown, type BarRowId } from '../app/exerciseBar';
+import {
+  BAR_LEVER_STEP_PCT,
+  barRowsFor,
+  barShown,
+  demoCardKind,
+  type BarRowId,
+} from '../app/exerciseBar';
+import { pilotFor } from '../app/exercisePilots';
 import type { AppState, Store } from '../app/store';
 import { snapControl, type ControlId } from '../model/controls';
 import { boat } from '../model/boat';
-import { exerciseDef, type ExerciseDef } from '../model/exercises';
+import { exerciseDef, exerciseText, type ExerciseDef } from '../model/exercises';
 import type { LineCode } from '../model/mooringLines';
 import { anchorStatusText, holdButton } from './anchorPanel';
 import { sideLetter } from './autopilotPanel';
@@ -17,6 +24,7 @@ import { layoutKindOf, type SectionId } from './modes';
 import { controlView, valueText } from './ropeControls';
 import type { Sheet } from './sheet';
 import { setText, stepButton } from './stepper';
+import type { ExerciseDemo } from './exerciseDemo';
 import { createThrusterPair, hasAnyThruster, thrusterStatusText } from './thrusterPanel';
 
 /**
@@ -52,13 +60,23 @@ export function createExerciseBar(
   sheet: Sheet,
   panel: { showSection(id: SectionId): void },
   onStackResize: () => void,
+  demo: ExerciseDemo,
 ): void {
   const bar = el('section', {
     class: 'exercise-bar',
     'data-testid': 'exercise-bar',
     'aria-label': t('exercise.bar.aria'),
   });
-  const stack = el('div', { class: 'exercise-stack', 'data-testid': 'exercise-stack' }, [bar]);
+  // M81: the demo card stands first (above the bar); the stack's height counts it, so the framing does.
+  const card = el('div', {
+    class: 'exercise-demo-card',
+    'data-testid': 'exercise-demo-card',
+    hidden: '',
+  });
+  const stack = el('div', { class: 'exercise-stack', 'data-testid': 'exercise-stack' }, [
+    card,
+    bar,
+  ]);
   view.append(stack);
 
   const all = el(
@@ -66,10 +84,28 @@ export function createExerciseBar(
     { type: 'button', class: 'exercise-bar-all', 'data-testid': 'exercise-bar-all' },
     [t('exercise.bar.all')],
   );
-  const head = el('div', { class: 'exercise-bar-head' }, [
-    el('span', { class: 'exercise-bar-label' }, [t('exercise.bar.label')]),
-    all,
-  ]);
+  const headLabel = el('span', { class: 'exercise-bar-label' }, [t('exercise.bar.label')]);
+  const showMe = el(
+    'button',
+    {
+      type: 'button',
+      class: 'exercise-bar-showme',
+      'data-testid': 'exercise-bar-showme',
+      hidden: '',
+    },
+    [t('exercise.bar.showMe')],
+  );
+  const stopDemo = el(
+    'button',
+    {
+      type: 'button',
+      class: 'exercise-bar-stopdemo',
+      'data-testid': 'exercise-bar-stopdemo',
+      hidden: '',
+    },
+    [t('exercise.bar.stopDemo')],
+  );
+  const head = el('div', { class: 'exercise-bar-head' }, [headLabel, showMe, stopDemo, all]);
   const rowsBox = el('div', { class: 'bar-rows' });
   const nothing = el('p', { class: 'bar-nothing', 'data-testid': 'bar-nothing', hidden: '' }, [
     t('exercise.bar.nothing'),
@@ -507,8 +543,123 @@ export function createExerciseBar(
     select(0);
   };
 
-  const visible = (state: AppState) =>
-    barShown(state) && (kind() !== 'stacked' || sheet.height() === 'peek');
+  const atPeek = () => kind() !== 'stacked' || sheet.height() === 'peek';
+  const visible = (state: AppState) => barShown(state) && atPeek();
+
+  // ---- Watch and Show me (M81) ------------------------------------------------------------
+
+  const demoOn = () => store.getState().exercise?.demo != null;
+
+  /** The row the app just worked lights up for 600 ms; a rebuild drops it. */
+  const FLASH_MS = 600;
+  const flashes = new Map<string, number>();
+  const clearFlashes = () => {
+    for (const [id, timer] of flashes) {
+      window.clearTimeout(timer);
+      shown.find((row) => row.id === id)?.element.classList.remove('bar-row-flash');
+    }
+    flashes.clear();
+  };
+  demo.onActions((rows) => {
+    for (const id of rows) {
+      const row = shown.find((r) => r.id === id);
+      if (!row) continue;
+      window.clearTimeout(flashes.get(id));
+      row.element.classList.add('bar-row-flash');
+      flashes.set(
+        id,
+        window.setTimeout(() => {
+          row.element.classList.remove('bar-row-flash');
+          flashes.delete(id);
+        }, FLASH_MS),
+      );
+    }
+  });
+
+  /**
+   * While the app plays, the row buttons are disabled. `releaseRows` gives back what this switched
+   * off (before the rows refresh, so a button a row switches off itself stays off); `lockRows`
+   * then switches off every button that is still on (after the rows refreshed).
+   */
+  const releaseRows = () => {
+    for (const button of rowsBox.querySelectorAll<HTMLButtonElement>('button[data-demo-off]')) {
+      button.disabled = false;
+      delete button.dataset.demoOff;
+    }
+  };
+  const lockRows = () => {
+    for (const button of rowsBox.querySelectorAll<HTMLButtonElement>('button')) {
+      if (button.disabled) continue;
+      button.disabled = true;
+      button.dataset.demoOff = '1';
+    }
+  };
+
+  let cardKey = '';
+  const renderCard = (state: AppState) => {
+    const run = state.exercise;
+    const cardKind = atPeek() ? demoCardKind(state) : null;
+    const def = run ? exerciseDef(run.id) : undefined;
+    const key = `${cardKind}|${run?.id}|${run?.step}|${currentLanguage()}`;
+    card.hidden = cardKind === null || !run || !def;
+    if (cardKind === null || !run || !def) {
+      cardKey = '';
+      if (card.childElementCount > 0) card.replaceChildren();
+      return;
+    }
+    if (key === cardKey) return;
+    cardKey = key;
+    if (cardKind === 'stepDone') {
+      const finished = def.steps[run.step - 1];
+      const how = finished ? exerciseText(def.id, currentLanguage()).steps[finished.id]?.how : '';
+      const next = el(
+        'button',
+        {
+          type: 'button',
+          class: 'exercise-start',
+          'data-testid': 'exercise-demo-next',
+        },
+        [t('exercise.demo.next')],
+      );
+      next.addEventListener('click', () => store.dispatch({ type: 'setPaused', paused: false }));
+      const tryIt = el(
+        'button',
+        { type: 'button', class: 'exercise-button', 'data-testid': 'exercise-demo-try' },
+        [t('exercise.demo.try')],
+      );
+      tryIt.addEventListener('click', () => {
+        const now = store.getState().exercise;
+        if (now) store.dispatch({ type: 'exercise', command: { back: now.step - 1 } });
+      });
+      card.replaceChildren(
+        el('h3', {}, [t('exercise.demo.stepDone', { n: run.step })]),
+        el('p', {}, [how ?? '']),
+        el('div', { class: 'exercise-buttons' }, [next, tryIt]),
+      );
+    } else {
+      const back = el(
+        'button',
+        { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-demo-back' },
+        [t('exercise.demo.back')],
+      );
+      back.addEventListener('click', () => {
+        const now = store.getState().exercise;
+        if (now) store.dispatch({ type: 'exercise', command: { back: now.demoStep } });
+      });
+      card.replaceChildren(
+        el('h3', {}, [t('exercise.demo.nowYouTitle')]),
+        el('p', {}, [t('exercise.demo.nowYou')]),
+        el('div', { class: 'exercise-buttons' }, [back]),
+      );
+    }
+  };
+
+  showMe.addEventListener('click', () =>
+    store.dispatch({ type: 'exercise', command: { demo: 'showMe' } }),
+  );
+  stopDemo.addEventListener('click', () =>
+    store.dispatch({ type: 'exercise', command: { demo: null } }),
+  );
 
   const refresh = (state: AppState) => {
     const run = state.exercise;
@@ -517,12 +668,23 @@ export function createExerciseBar(
       : '';
     if (key !== renderKey) {
       renderKey = key;
+      clearFlashes();
       rebuild(state);
     }
+    renderCard(state);
     const show = visible(state);
     if (bar.hidden === show) bar.hidden = !show;
     if (!show) return;
+    const playing = run?.demo != null;
+    headLabel.textContent = playing ? t('exercise.bar.demoLabel') : t('exercise.bar.label');
+    showMe.hidden =
+      playing ||
+      run?.status !== 'running' ||
+      pilotFor(run.id, run.options.level, state.settings.ropesMode) === null;
+    stopDemo.hidden = !playing;
+    releaseRows();
     for (const row of shown) row.refresh(state);
+    if (playing) lockRows();
   };
 
   store.subscribe(refresh);
@@ -617,6 +779,13 @@ export function createExerciseBar(
   document.addEventListener('keydown', (event) => {
     if (event.ctrlKey || event.altKey || event.metaKey || typing(event.target)) return;
     if (!keysOn()) return;
+    // Enter presses Show me (M81); while the app plays, the bar's keys do nothing.
+    if (demoOn()) return;
+    if (event.key === 'Enter' && !showMe.hidden) {
+      event.preventDefault();
+      showMe.click();
+      return;
+    }
     if (/^[1-4]$/.test(event.key)) {
       if (Number(event.key) <= shown.length) {
         event.preventDefault();

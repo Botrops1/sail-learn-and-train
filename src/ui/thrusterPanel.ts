@@ -135,7 +135,17 @@ export function createThrusterJoystick(
       },
       [side === 'port' ? '◀' : '▶'],
     );
-    const letGo = () => set(0);
+    // Only a button that started a hold ends it (see holdButton in anchorPanel.ts).
+    let holding = false;
+    const press = () => {
+      holding = true;
+      set(dir);
+    };
+    const letGo = () => {
+      if (!holding) return;
+      holding = false;
+      set(0);
+    };
     button.addEventListener('pointerdown', (event) => {
       if (event.button > 0) return;
       event.preventDefault();
@@ -144,7 +154,7 @@ export function createThrusterJoystick(
       } catch {
         // A synthetic or already-ended pointer cannot be captured: the other events still end the hold.
       }
-      set(dir);
+      press();
     });
     for (const type of ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture']) {
       button.addEventListener(type, letGo);
@@ -154,7 +164,7 @@ export function createThrusterJoystick(
     button.addEventListener('keydown', (event) => {
       if (event.key !== ' ' && event.key !== 'Enter') return;
       event.preventDefault();
-      if (!event.repeat) set(dir);
+      if (!event.repeat) press();
     });
     button.addEventListener('keyup', (event) => {
       if (event.key === ' ' || event.key === 'Enter') letGo();

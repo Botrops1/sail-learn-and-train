@@ -130,7 +130,7 @@ export async function liveM77Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'anchor good run',
       done && /Well done/i.test(text),
-      `${text.slice(0, 100)} (status ${last?.status}, step ${last?.step})`,
+      `${text.slice(0, 100)} (status ${last?.status}, step ${last?.step}, mistake ${last?.mistake?.mistakeId ?? 'none'} at ${last?.elapsedS?.toFixed(1)} s)`,
     );
     await context.close();
   }

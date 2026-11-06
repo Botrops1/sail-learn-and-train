@@ -1,6 +1,7 @@
 import type { Store } from '../app/store';
 import { alertTimeText } from '../model/alerts';
 import { EXERCISE_SETTINGS, exerciseDef, exerciseText } from '../model/exercises';
+import { demoCardKind } from '../app/exerciseBar';
 import { el } from './dom';
 import { currentLanguage, t } from './i18n';
 
@@ -79,6 +80,11 @@ export function createExerciseLine(top: HTMLElement, store: Store, onOpen: () =>
         kind = 'mistake';
       }
     }
+    // M81: after Show me the card is the way on (the time bar's Resume is off), so the line says so.
+    if (demoCardKind(store.getState()) === 'nowYou') {
+      text = t('exercise.demo.lineNow');
+      kind = 'step-paused';
+    }
     const holding = run.status === 'running' && run.holdS > 0;
     const stepNow = holding ? def.steps[run.step] : undefined;
     if (stepNow && stepNow.holdS > 0) {
@@ -95,9 +101,19 @@ export function createExerciseLine(top: HTMLElement, store: Store, onOpen: () =>
     line.classList.toggle('exercise-line-mistake', kind === 'mistake');
     line.classList.toggle('exercise-line-step-paused', kind === 'step-paused');
     line.classList.toggle('exercise-line-paused', kind === 'paused');
-    if (text !== shown) {
-      shown = text;
-      label.textContent = text;
+    // M81: while the app plays (Watch, Show me) every text starts with what it is doing.
+    const prefix =
+      run.demo === 'watch'
+        ? t('exercise.watching')
+        : run.demo === 'showMe'
+          ? t('exercise.showing')
+          : '';
+    if (prefix + text !== shown) {
+      shown = prefix + text;
+      label.replaceChildren(
+        ...(prefix ? [el('span', { class: 'exercise-line-demo' }, [prefix])] : []),
+        text,
+      );
     }
     if (line.hidden) line.hidden = false;
   };
