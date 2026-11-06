@@ -263,6 +263,12 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(500);
       if (await isStacked(page)) await setSheet(page, 'peek');
       const coach = page.getByTestId('exercise-coach');
+      // M80: on a phone the hint starts folded at a start and at every step; open it first.
+      const hintToggle = page.getByTestId('exercise-coach-toggle');
+      const openHint = async () => {
+        if ((await hintToggle.getAttribute('aria-expanded')) !== 'true') await hintToggle.click();
+      };
+      await openHint();
       const howText = await page.getByTestId('exercise-coach-how').innerText();
       const rows = () => page.getByTestId('exercise-coach-targets').locator('li').allInnerTexts();
       const first = await rows();
@@ -290,7 +296,8 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
         JSON.stringify(ticked),
       );
       // Fold and open the window.
-      const toggle = page.getByTestId('exercise-coach-toggle');
+      const toggle = hintToggle;
+      await openHint();
       await toggle.click();
       const folded =
         !(await page.getByTestId('exercise-coach-how').isVisible()) &&

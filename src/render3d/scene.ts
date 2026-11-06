@@ -353,6 +353,33 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   // Debug only (`?debug=1`): the gust profile of the last frame and a buoy's place on the canvas.
   if (store.getState().settings.debug) {
     Object.assign(window, {
+      /** M80: the free area the camera frames and the whole boat model's box on the screen (CSS px). */
+      __sailCamera: {
+        freeArea: () => rig.freeArea(),
+        boatBox: () => {
+          const box = new THREE.Box3().setFromObject(boatModel.root);
+          const height = renderer.domElement.clientHeight;
+          const width = renderer.domElement.clientWidth;
+          let top = Infinity;
+          let bottom = -Infinity;
+          let left = Infinity;
+          let right = -Infinity;
+          for (const x of [box.min.x, box.max.x]) {
+            for (const y of [box.min.y, box.max.y]) {
+              for (const z of [box.min.z, box.max.z]) {
+                const ndc = new THREE.Vector3(x, y, z).project(camera);
+                const px = ((ndc.x + 1) / 2) * width;
+                const py = ((1 - ndc.y) / 2) * height;
+                top = Math.min(top, py);
+                bottom = Math.max(bottom, py);
+                left = Math.min(left, px);
+                right = Math.max(right, px);
+              }
+            }
+          }
+          return { top, bottom, left, right };
+        },
+      },
       __sailWater: {
         gustProfile: () => water.gustProfile(),
         /** Where the drawn sun lies on the canvas (CSS px), or null while it is not drawn. */

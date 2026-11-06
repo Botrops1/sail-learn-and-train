@@ -9,6 +9,8 @@ import {
 } from '../model/timeScale';
 import { exercisePauseBlocked } from '../app/exerciseRun';
 import { el } from './dom';
+import type { LayoutShell } from './layout';
+import { layoutKindOf } from './modes';
 import { t } from './i18n';
 import { setText } from './stepper';
 
@@ -45,8 +47,18 @@ function writeFolded(folded: boolean): void {
  * changes with time at all (Held still, steady wind, Easy ropes; issue #34) Pause is replaced
  * by a "Held still" chip; a tap on it explains in a small note where to change that.
  */
-export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
+export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShell): HTMLElement {
   let folded = readFolded();
+  // M80: during a run on a phone the bar is folded unless the learner opened it in this run;
+  // that tap is not saved, and the saved fold is not touched.
+  let runUnfolded = false;
+  let runActive = false;
+  const duringRun = (state: AppState) => {
+    const status = state.exercise?.status;
+    return status === 'running' || status === 'mistake';
+  };
+  const runFolds = (state: AppState) =>
+    layoutKindOf(layout.viewport()) === 'stacked' && duringRun(state);
 
   const button = (testId: string, label: string, aria: string, action: () => void) => {
     const node = el('button', {
@@ -72,9 +84,13 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
   const foldSpeed = el('span', { class: 'time-label-speed', 'data-testid': 'time-fold-speed' });
   fold.append(el('span', {}, [t('time.label')]), foldSpeed);
   fold.addEventListener('click', () => {
-    folded = !folded;
-    writeFolded(folded);
-    refresh(store.getState());
+    const state = store.getState();
+    if (runFolds(state)) runUnfolded = !runUnfolded;
+    else {
+      folded = !folded;
+      writeFolded(folded);
+    }
+    refresh(state);
   });
   const status = el('button', {
     type: 'button',
@@ -139,7 +155,14 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
   let shown = '';
   const refresh = (state: AppState) => {
     const speed = timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar);
-    const open = speed && !folded;
+    const active = duringRun(state);
+    if (active !== runActive) {
+      // A run starts (or a link brings one that is running), or it ends: the run's own fold resets.
+      runActive = active;
+      runUnfolded = false;
+    }
+    const runFolded = runFolds(state) && !runUnfolded;
+    const open = speed && !(runFolds(state) ? runFolded : folded);
     const scale = state.settings.timeScale;
     const pausable = pauseAvailable(
       state.boat.mode,
@@ -185,6 +208,7 @@ export function createTimeBar(host: HTMLElement, store: Store): HTMLElement {
     else pause.removeAttribute('title');
   };
   store.subscribe((state) => refresh(state));
+  layout.onChange(() => refresh(store.getState()));
   refresh(store.getState());
   return bar;
 }

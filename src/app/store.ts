@@ -16,6 +16,7 @@ import { clampControl, defaultControls, type ControlId, type Controls } from '..
 import {
   DEFAULT_CAMERA,
   DEFAULT_HELM_VIEW,
+  defaultLabels,
   withRopesMode,
   DEFAULT_SETTINGS,
   type CameraPreset,
@@ -561,7 +562,7 @@ function reduceExercise(state: AppState, command: ExerciseCommand): AppState {
     if (command.ropes === state.settings.ropesMode) return state;
     return withTimeRule({
       ...state,
-      settings: withRopesMode(state.settings, command.ropes),
+      settings: withRopesMode(state.settings, command.ropes, state.appMode),
     });
   }
   if ('back' in command) return restoreWaypoint(state, command.back);
@@ -583,22 +584,35 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'setRopesMode':
       return withTimeRule({
         ...state,
-        settings: withRopesMode(state.settings, action.mode),
+        settings: withRopesMode(state.settings, action.mode, state.appMode),
         // Out of Learn and Harbour mode, the mode is the ropes mode (PHASE5_SPEC 3.1, PHASE7_SPEC 4.4).
         appMode: keepsRopesMode(state.appMode) ? state.appMode : action.mode,
       });
     case 'setAppMode': {
       if (action.mode === state.appMode) return state;
+      // M80: leaving or entering Exercises sets the labels to that mode's default (a manual choice is overwritten).
+      const labelsFollow = (next: AppState): AppState =>
+        state.appMode === 'exercise' || action.mode === 'exercise'
+          ? {
+              ...next,
+              settings: {
+                ...next.settings,
+                labels: defaultLabels(next.settings.ropesMode, action.mode),
+              },
+            }
+          : next;
       // Learn, Harbour and Exercises keep the ropes mode as it is; any other mode ends a run.
       if (keepsRopesMode(action.mode)) {
-        return { ...state, appMode: action.mode, exercise: null };
+        return labelsFollow({ ...state, appMode: action.mode, exercise: null });
       }
-      return withTimeRule({
-        ...state,
-        appMode: action.mode,
-        exercise: null,
-        settings: withRopesMode(state.settings, action.mode),
-      });
+      return labelsFollow(
+        withTimeRule({
+          ...state,
+          appMode: action.mode,
+          exercise: null,
+          settings: withRopesMode(state.settings, action.mode),
+        }),
+      );
     }
     case 'setLabels':
       return { ...state, settings: { ...state.settings, labels: action.labels } };

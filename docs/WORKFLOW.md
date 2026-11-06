@@ -913,7 +913,7 @@ No new link settings. Replace `<N>` with the PR number. Test on your phone in po
 
 #### M80: A clear exercise screen
 
-- [ ] Points of sail on the phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start: no name tags on the boat, the hint folded (tap ? on the step line to open it), the time bar folded beside the strip. The yacht sits in the middle of the free part of the screen.
+- [ ] Points of sail on the phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start: no name tags on the boat, the hint folded (tap "Show hint" to open it), the time bar folded beside the strip. The yacht sits in the middle of the free part of the screen.
 - [ ] Soft move: open and close the hint, and drag the panel up and down — the camera glides (no jump) and the yacht stays in the middle of what is left.
 - [ ] Next step: when step 1 ticks off, the hint is folded again.
 - [ ] Labels: in Settings turn Labels in 3D on during the exercise — the tags show; Stop the exercise and choose Easy mode — the tags are on as before.

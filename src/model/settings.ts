@@ -2,7 +2,6 @@
  * App settings and camera state that live in the store and the URL.
  * Pure data: no DOM, no three.js (PHASE1_SPEC 9.1).
  */
-
 /**
  * Camera presets from PHASE1_SPEC 6.2. Only the preset is stored (in the store and the URL);
  * `free` means the user has moved the camera by hand. The free position itself is not stored.
@@ -118,8 +117,11 @@ export function isStepSize(value: number): value is StepSize {
 /**
  * Whether the names over the parts show by default in a ropes mode (owner, PR 152): on in Easy,
  * off in Realistic, where the 3D view is full of real hardware. A link or a setting can differ.
+ * M80: off in Exercises mode (`appMode` is the app's mode id as a string: `src/model` does not import app code).
  */
-export function defaultLabels(ropes: RopesMode): boolean {
+export function defaultLabels(ropes: RopesMode, appMode: string = 'easy'): boolean {
+  // M80 (owner): the 3D names are off in Exercises mode, whatever the ropes mode.
+  if (appMode === 'exercise') return false;
   return ropes !== 'realistic';
 }
 
@@ -127,9 +129,13 @@ export function defaultLabels(ropes: RopesMode): boolean {
  * The settings after the ropes mode changed: the labels follow the new mode's default, so
  * entering Realistic hides them (owner, PR 152). The same mode changes nothing.
  */
-export function withRopesMode(settings: Settings, ropes: RopesMode): Settings {
+export function withRopesMode(
+  settings: Settings,
+  ropes: RopesMode,
+  appMode: string = 'easy',
+): Settings {
   if (ropes === settings.ropesMode) return settings;
-  return { ...settings, ropesMode: ropes, labels: defaultLabels(ropes) };
+  return { ...settings, ropesMode: ropes, labels: defaultLabels(ropes, appMode) };
 }
 
 export function isRopesMode(value: string): value is RopesMode {

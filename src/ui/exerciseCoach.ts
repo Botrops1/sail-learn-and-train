@@ -8,7 +8,10 @@ import {
   type TargetRow,
 } from '../model/exercises';
 import { el } from './dom';
+import { SCENE } from '../render3d/sceneConfig';
 import { currentLanguage, t } from './i18n';
+import type { LayoutShell } from './layout';
+import { layoutKindOf } from './modes';
 import { setText } from './stepper';
 
 /** Remembers on this device whether the hint window is open (a view setting, not in the link). */
@@ -81,8 +84,16 @@ function nowText(row: TargetRow, value: number | string): string {
  * ticked live. It stays open while the learner works the other controls; "Hide hint" folds it to
  * one button, and the choice is remembered on this device.
  */
-export function createExerciseCoach(top: HTMLElement, store: Store): void {
-  let open = readOpen();
+export function createExerciseCoach(top: HTMLElement, store: Store, layout: LayoutShell): void {
+  // The remembered choice (side and wide). On a phone (M80) the hint starts folded at every run
+  // start and step change; a tap opens it until the next of these and is not remembered.
+  let remembered = readOpen();
+  let stackedOpen = false;
+  const stacked = () => layoutKindOf(layout.viewport()) === 'stacked';
+  const isOpen = () => (stacked() ? stackedOpen : remembered);
+  let prevStatus = '';
+  let prevRun = '';
+  let prevStep = -1;
   const toggle = el('button', {
     type: 'button',
     class: 'exercise-coach-toggle',
@@ -108,20 +119,58 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
   let rows: { row: TargetRow; item: HTMLElement }[] = [];
 
   const showOpen = () => {
+    const open = isOpen();
     body.hidden = !open;
     toggle.setAttribute('aria-expanded', String(open));
     setText(toggle, t(open ? 'exercise.coach.hide' : 'exercise.coach.show'));
+    fit();
+  };
+  /**
+   * M80 (review): on a phone the open hint ends inside the share of the view the camera counts as
+   * covered (`maxTopInsetShare`), so the yacht never hides under it; its list scrolls inside.
+   */
+  const fit = () => {
+    const view = root.closest('.view');
+    if (!stacked() || body.hidden || root.hidden || !view) {
+      if (body.style.maxHeight !== '') body.style.maxHeight = '';
+      if (body.style.overflowY !== '') body.style.overflowY = '';
+      return;
+    }
+    const viewTop = view.getBoundingClientRect().top;
+    const limit = SCENE.camera.maxTopInsetShare * view.clientHeight;
+    const used = toggle.getBoundingClientRect().bottom - viewTop;
+    const height = `${Math.max(48, Math.floor(limit - used - 4))}px`;
+    if (body.style.maxHeight !== height) body.style.maxHeight = height;
+    body.style.overflowY = 'auto';
   };
   toggle.addEventListener('click', () => {
-    open = !open;
-    writeOpen(open);
+    if (stacked()) stackedOpen = !stackedOpen;
+    else {
+      remembered = !remembered;
+      writeOpen(remembered);
+    }
     showOpen();
+    sync(store.getState());
   });
 
   const sync = (state: AppState) => {
     const run = state.exercise;
     const def = run ? exerciseDef(run.id) : undefined;
     const step = run && def ? def.steps[run.step] : undefined;
+    const status = run?.status ?? '';
+    if (status === 'running') {
+      const returning = prevStatus === 'mistake' && prevRun === run?.id && prevStep === run.step;
+      if (
+        !returning &&
+        (prevStatus !== 'running' || prevRun !== run?.id || prevStep !== run.step)
+      ) {
+        stackedOpen = false;
+        showOpen();
+      }
+    }
+    prevStatus = status;
+    prevRun = run?.id ?? '';
+    prevStep = run?.step ?? -1;
     if (!run || !def || !step || run.status !== 'running') {
       if (!root.hidden) root.hidden = true;
       built = '';
@@ -148,7 +197,7 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
       list.replaceChildren(...rows.map((entry) => entry.item));
       showOpen();
     }
-    if (!open) return;
+    if (!isOpen()) return;
     for (const { row, item } of rows) {
       const reading = targetReading(row, state);
       const mark = reading?.ok ? '✓' : '○';
@@ -157,6 +206,12 @@ export function createExerciseCoach(top: HTMLElement, store: Store): void {
       item.classList.toggle('ok', reading?.ok === true);
     }
   };
+  // The strip and the time bar change height (a fold, a wrapped badge): the hint moves, so it fits again.
+  new ResizeObserver(() => requestAnimationFrame(fit)).observe(top);
   sync(store.getState());
   store.subscribe(sync);
+  layout.onChange(() => {
+    showOpen();
+    sync(store.getState());
+  });
 }
