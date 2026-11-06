@@ -932,3 +932,37 @@ No new link settings. Replace `<N>` with the PR number. Test on your phone in po
 - [ ] Furling the sails: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=furl-sails — Watch it: the app works the stations and the winches; the bar lights up as it goes.
 - [ ] Every exercise once on the phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — each of the fourteen can be finished (Do it myself or Watch it) without zooming the page.
 - [ ] The PR's sign-off list (one line per exercise) is complete.
+
+## 18. Launch (issue #165)
+
+Faster CI, releases, the welcome and the launch texts ([PHASE_LAUNCH_SPEC](PHASE_LAUNCH_SPEC.md)). One session and one PR per milestone (M83 … M86), started with `/milestone <N>` after the one before is merged. **M83, M84 and M86 need a `/review` with Opus** before you test them; M85 does not. Between M84 and M85, fix issue #153 with `/bug` (PHASE_LAUNCH_SPEC 8 has the line to type) and run `/review` on that PR too. After M86, the launch steps are in PHASE_LAUNCH_SPEC 11.
+
+### 18.1 Checklists
+
+#### M83: Faster CI
+
+- [ ] The app is unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=easy opens as before.
+- [ ] On the PR's **Checks** tab: about 6–10 browser parts instead of 28, and `browser-checks` green within about 20 minutes of the last push.
+- [ ] The PR's Tests section shows two runs: the small PR set, and the full set (started with a `CI groups: all` line), each with its time.
+- [ ] After merging: Actions → Nightly → Run workflow (on github.com in the phone's browser) ends green. The next PR that only changes documents shows `browser-checks` green without browser parts.
+
+#### M84: Releases
+
+- [ ] The preview still works: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=easy — Settings → About shows "Version <commit> · <date>" as before.
+- [ ] After merging: https://botrops1.github.io/sail-learn-and-train/next/ opens the newest work, and Settings → About there says "Test version (next)". The normal address is unchanged until you publish a release.
+- [ ] The PR says whether a web address bought later would forward the old links (PHASE_LAUNCH_SPEC 7.9).
+
+#### M85: Welcome
+
+- [ ] First visit: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — open it in a private (incognito) tab on your phone. A card "Welcome aboard" with three buttons. Tap "Watch the first exercise": the app starts sailing Points of sail by itself.
+- [ ] Once only: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — open it again in the same tab: no card.
+- [ ] Look around: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — in a new private tab, tap "Look around the boat": the Learn list comes first.
+- [ ] Shared links never show it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=exercise&ex=tacking — no card, even in a new private tab.
+- [ ] Show it again: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=easy — Settings → About → "Show the welcome again".
+
+#### M86: Launch texts and the visitor counter
+
+- [ ] Before you start M86: create the free GoatCounter account with the code `sail-learn-and-train` (PHASE_LAUNCH_SPEC 10.1).
+- [ ] Privacy line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=easy — Settings → About says visits to the live site are counted anonymously with GoatCounter. The preview itself counts nothing.
+- [ ] Read the README on the PR's branch (Files changed → README.md → View file): the first screen says what the app is and links to it; nothing it claims is wrong when you try it.
+- [ ] Read `docs/BETA.md` and `docs/ANNOUNCE.md` on the PR: would you send them as they are?
