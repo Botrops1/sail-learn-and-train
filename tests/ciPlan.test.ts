@@ -116,7 +116,10 @@ describe('packParts', () => {
       const total = part.reduce((sum, name) => sum + secondsOf(name), 0);
       if (part.length > 1) expect(total).toBeLessThanOrEqual(FULL_CAP_S);
     }
-    expect(parts.find((part) => part.includes('m68'))).toEqual(['m68']);
+    // A group longer than the cap (m68 at M83's first numbers, m67 after the refresh) sits alone.
+    for (const name of groups.filter((n) => secondsOf(n) > FULL_CAP_S)) {
+      expect(parts.find((part) => part.includes(name))).toEqual([name]);
+    }
   });
 
   it('is deterministic and counts a missing time as 300 s', () => {
