@@ -194,7 +194,10 @@ Rewriting slow groups (m68 alone takes 23 minutes; a later PR may split its chec
 
 ### 6.10 Decided in the M83 PR (recommended; merging accepts it)
 
-(The builder writes here: A or B for the browser, the measured times.)
+- **Browser: option A** (the Playwright browser cached with `actions/cache@v4`, no `--with-deps`, no container). Chromium launched on the runner in the PR's first run without missing libraries; B was not needed. The fonts step now runs `sudo apt-get update` first, because `playwright install --with-deps` no longer does it. The test in `tests/ciPlan.test.ts` that compares the Playwright versions checks any `playwright:v<version>-` container in `ci.yml` (none today), so a later switch to B stays in step with `package.json`.
+- **Expressions:** `fetch-depth: ${{ … && '0' || '1' }}` uses strings, because `0` is false in a workflow expression and `&& 0 || 1` gave 1 (the first push of this PR failed in `plan` for that reason).
+- **Question 1 (recommended; merging accepts it):** the nightly run starts at 02:17 UTC, as written in 6.4.
+- **Measured times:** see the PR's Tests section (the PR set, the full set, push to green).
 
 ---
 
