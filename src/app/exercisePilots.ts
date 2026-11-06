@@ -499,6 +499,8 @@ export function furlSailsPilot(): Pilot {
 const real = (s: AppState, action: RealisticAction) => A(s, { type: 'realistic', action });
 const W = 'winch_primary_starboard';
 const P = 'winch_primary_port';
+/** M82: walk to the helm (the autopilot and the engine rows stand under Helm in the bar). */
+const atHelm = (s: AppState) => real(s, { type: 'station', station: 'helm' });
 /** Put a rope on the winch, three turns, into the self-tailer (PHASE10_PHONE_SPEC 9.4). */
 const onWinch = (s: AppState, key: string, winch: string) => {
   s = real(s, { type: 'onWinch', key });
@@ -538,12 +540,15 @@ export function setSailsRealisticPilot(): Pilot {
           turns(
             ap(
               real(
-                real(real(x, { type: 'station', station: 'starboard' }), {
-                  type: 'clutch',
-                  key: 'a2',
-                  open: false,
-                }),
-                { type: 'offWinch', winch: W },
+                real(
+                  real(real(x, { type: 'station', station: 'starboard' }), {
+                    type: 'clutch',
+                    key: 'a2',
+                    open: false,
+                  }),
+                  { type: 'offWinch', winch: W },
+                ),
+                { type: 'station', station: 'helm' },
               ),
               'wind',
             ),
@@ -574,7 +579,7 @@ export function setSailsRealisticPilot(): Pilot {
         return s;
       }
       case 4:
-        return once(s, 'e', (x) => eng(eng(x, { leverPct: 0 }), 'stop'));
+        return once(s, 'e', (x) => eng(eng(atHelm(x), { leverPct: 0 }), 'stop'));
       default:
         return s;
     }
@@ -586,7 +591,7 @@ export function furlSailsRealisticPilot(): Pilot {
   return (s) => {
     switch (s.exercise?.step) {
       case 0:
-        return once(s, 'e', (x) => eng(x, 'start'));
+        return once(s, 'e', (x) => eng(atHelm(x), 'start'));
       case 1: {
         s = once(s, 'a', (x) =>
           real(
@@ -610,7 +615,7 @@ export function furlSailsRealisticPilot(): Pilot {
         return s;
       }
       case 2:
-        return once(s, 'h', (x) => turns(ap(eng(x, { leverPct: 30 }), 'heading'), 6, 10));
+        return once(s, 'h', (x) => turns(ap(eng(atHelm(x), { leverPct: 30 }), 'heading'), 6, 10));
       case 3: {
         s = once(s, 'b', (x) =>
           real(

@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   barRowOf,
+  barRowStation,
+  barRowsAt,
   barRowsFor,
+  barStationsFor,
   barShown,
   isBarRowId,
   parseRealisticRow,
@@ -144,6 +147,50 @@ describe('M82 the Realistic rows (PHASE10_PHONE_SPEC 9.2, 9.6)', () => {
     expect(barRowsFor(def('set-sails'), 1, 'easy')).toEqual(['control:ctl_main_furl']);
     // Another exercise keeps the placeholder.
     expect(barRowsFor(def('points-of-sail'), 1, 'realistic')).toEqual(['autopilot:turn', 'ropes']);
+  });
+
+  it('the autopilot and engine rows stand under Helm, the ropes at their own station', () => {
+    expect(barRowStation('autopilot:mode')).toBe('helm');
+    expect(barRowStation('autopilot:turn')).toBe('helm');
+    expect(barRowStation('autopilot:tack')).toBe('helm');
+    expect(barRowStation('engine')).toBe('helm');
+    expect(barRowStation('clutch:starboard:a2')).toBe('starboard');
+    expect(barRowStation('winch:port:winch_primary_port:r1')).toBe('port');
+    expect(barRowStation('thrusters')).toBeNull();
+    expect(barRowStation('windlass')).toBeNull();
+    expect(barRowStation('line:' + 'x')).toBeNull();
+  });
+
+  it('barStationsFor lists the stations of a Realistic step, none elsewhere', () => {
+    // Setting the sails: start (nothing), main out (starboard), bear away (starboard + helm), jib out
+    // (port + starboard), engine off (helm).
+    const set = def('set-sails');
+    expect(barStationsFor(set, 0, 'realistic')).toEqual([]);
+    expect(barStationsFor(set, 1, 'realistic')).toEqual(['starboard']);
+    expect(barStationsFor(set, 2, 'realistic')).toEqual(['starboard', 'helm']);
+    expect(barStationsFor(set, 3, 'realistic')).toEqual(['port', 'starboard']);
+    expect(barStationsFor(set, 4, 'realistic')).toEqual(['helm']);
+    // Easy ropes, another exercise and the harbour have no stations in the bar.
+    expect(barStationsFor(set, 2, 'easy')).toEqual([]);
+    expect(barStationsFor(def('points-of-sail'), 1, 'realistic')).toEqual([]);
+    for (const ex of EXERCISES.filter((e) => e.group === 'harbour'))
+      ex.steps.forEach((_, i) => expect(barStationsFor(ex, i, 'realistic'), ex.id).toEqual([]));
+  });
+
+  it("barRowsAt shows the rows of the learner's station only, in a step with stations", () => {
+    const set = def('set-sails');
+    expect(barRowsAt(set, 2, 'realistic', 'starboard')).toEqual([
+      'clutch:starboard:a2',
+      'winch:starboard:winch_primary_starboard:a3',
+    ]);
+    expect(barRowsAt(set, 2, 'realistic', 'helm')).toEqual(['autopilot:mode', 'autopilot:turn']);
+    expect(barRowsAt(set, 2, 'realistic', 'port')).toEqual([]);
+    expect(barRowsAt(set, 4, 'realistic', 'helm')).toEqual(['engine']);
+    // A step without stations shows all its rows wherever the learner stands.
+    expect(barRowsAt(def('points-of-sail'), 1, 'realistic', 'helm')).toEqual(
+      barRowsFor(def('points-of-sail'), 1, 'realistic'),
+    );
+    expect(barRowsAt(set, 2, 'easy', 'port')).toEqual(barRowsFor(set, 2, 'easy'));
   });
 
   it('barRowOf maps the Realistic gestures', () => {

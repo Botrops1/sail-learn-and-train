@@ -1,8 +1,10 @@
 import {
   BAR_LEVER_STEP_PCT,
   BAR_TURNS_BEFORE_TAILER,
-  barRowsFor,
+  barRowStation,
+  barRowsAt,
   barShown,
+  barStationsFor,
   demoCardKind,
   parseRealisticRow,
   rowMatches,
@@ -113,7 +115,8 @@ export function createExerciseBar(
     [t('exercise.bar.stopDemo')],
   );
   const head = el('div', { class: 'exercise-bar-head' }, [headLabel, showMe, stopDemo, all]);
-  // M82: the station switch and its notes (Realistic ropes, Setting and Furling the sails).
+  // M82: the station switch and its notes (Realistic ropes, Setting and Furling the sails): Port,
+  // Starboard and Helm; the autopilot and engine rows stand under Helm.
   const stationsBox = el('div', {
     class: 'bar-stations',
     'data-row': 'stations',
@@ -123,7 +126,7 @@ export function createExerciseBar(
     hidden: '',
   });
   const stationButtons = new Map<string, { button: HTMLButtonElement; dot: HTMLElement }>();
-  for (const station of ['port', 'starboard'] as const) {
+  for (const station of ['port', 'starboard', 'helm'] as const) {
     const dot = el('span', { class: 'bar-station-dot', 'aria-hidden': 'true', hidden: '' });
     const button = el(
       'button',
@@ -712,17 +715,15 @@ export function createExerciseBar(
   const rebuild = (state: AppState) => {
     const run = state.exercise;
     currentDef = run ? exerciseDef(run.id) : undefined;
-    const all = run && currentDef ? barRowsFor(currentDef, run.step, state.settings.ropesMode) : [];
-    // M82: only the rope rows of the station the learner is at; the others always show.
     const here = state.realistic.station;
-    const ropeIds = all.filter((id) => parseRealisticRow(id) !== null);
-    stepStations = new Set(ropeIds.map((id) => parseRealisticRow(id)?.station ?? ''));
-    const ids = all.filter((id) => {
-      const parsed = parseRealisticRow(id);
-      return parsed === null || parsed.station === here;
-    });
-    stationsBox.hidden = ropeIds.length === 0;
-    otherStation.hidden = ropeIds.length === 0 || ids.some((id) => ropeIds.includes(id));
+    const stations =
+      run && currentDef ? barStationsFor(currentDef, run.step, state.settings.ropesMode) : [];
+    // M82: a step with stations shows only the rows of the station the learner is at.
+    const ids =
+      run && currentDef ? barRowsAt(currentDef, run.step, state.settings.ropesMode, here) : [];
+    stepStations = new Set<string>(stations);
+    stationsBox.hidden = stations.length === 0;
+    otherStation.hidden = stations.length === 0 || ids.some((id) => barRowStation(id) === here);
     const keyed = kind() !== 'stacked';
     releaseHolds();
     shown = [];
@@ -741,7 +742,7 @@ export function createExerciseBar(
       shown.push(row);
       rowsBox.append(row.element);
     });
-    nothing.hidden = shown.length > 0 || ropeIds.length > 0;
+    nothing.hidden = shown.length > 0 || stations.length > 0;
     keysHint.hidden = !keyed || shown.length === 0;
     select(0);
   };
@@ -902,15 +903,13 @@ export function createExerciseBar(
 
   const refresh = (state: AppState) => {
     const run = state.exercise;
-    // M82: a step with rope rows also rebuilds when the learner walks to the other station.
+    // M82: a step with stations also rebuilds when the learner walks to another station.
     const def = run ? exerciseDef(run.id) : undefined;
     const ropeStep =
       run !== undefined &&
       run !== null &&
       def !== undefined &&
-      barRowsFor(def, run.step, state.settings.ropesMode).some(
-        (id) => parseRealisticRow(id) !== null,
-      );
+      barStationsFor(def, run.step, state.settings.ropesMode).length > 0;
     const key = run
       ? `${run.id}|${run.step}|${state.settings.ropesMode}|${kind()}|${currentLanguage()}${
           ropeStep ? `|${state.realistic.station}` : ''

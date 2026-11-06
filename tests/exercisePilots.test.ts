@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { barRowOf, barRowsFor, rowMatches } from '../src/app/exerciseBar';
+import { barRowOf, barRowStation, barRowsFor, rowMatches } from '../src/app/exerciseBar';
 import {
   parseProgress,
   PROGRESS_KEY,
@@ -388,12 +388,23 @@ describe('M82 Realistic pilots (Setting and Furling the sails, Alone)', () => {
           ...(step + 1 < def.steps.length ? barRowsFor(def, step + 1, 'realistic') : []),
           'stations',
         ];
+        // The learner works a station's rows only while standing there (the Helm tab holds the
+        // autopilot and the engine); the station gesture moves them.
+        let stands = s.realistic.station;
         for (const action of actions) {
+          if (action.type === 'realistic' && action.action.type === 'station')
+            stands = action.action.station;
           for (const row of barRowOf(action)) {
             expect(
               allowed.some((shown) => rowMatches(shown, row)),
               `${id} step ${step + 1}: ${row}`,
             ).toBe(true);
+            const station =
+              row.startsWith('clutch:') || row.startsWith('winch:')
+                ? row.split(':')[1]
+                : barRowStation(row);
+            if (station)
+              expect(stands, `${id} step ${step + 1}: ${row} at ${stands}`).toBe(station);
           }
         }
         if (actions.length > 0) s = reduce(s, { type: 'demo', actions });

@@ -3572,7 +3572,7 @@
 | exercise.demo.back | Back to the start of the step | Назад, к началу шага |
 | exercise.demo.doIt | Now do it myself | Теперь сам |
 | exercise.demo.lineNow | Done. Now you: tap “Back to the start of the step”. | Готово. Теперь вы: нажмите «Назад, к началу шага». |
-| exercise.bar.otherStation | No rope work at this station for this step. The dot shows where to go. | С канатами на этом борту в этом шаге делать нечего. Точка показывает, куда идти. |
+| exercise.bar.otherStation | Nothing at this station for this step. The dot shows where to go. | На этом посту в этом шаге делать нечего. Точка показывает, куда идти. |
 | exercise.bar.clutchOpen | Open: the rope can run | Открыт: конец может идти |
 | exercise.bar.clutchClosed | Closed: holds the rope | Закрыт: держит конец |
 | exercise.bar.open | Open | Открыть |

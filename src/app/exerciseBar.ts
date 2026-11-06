@@ -67,6 +67,56 @@ export function parseRealisticRow(id: string): RealisticRow | null {
   return null;
 }
 
+/** M82: the rows the helm works (in the Realistic bar's stations they stand under Helm). */
+const HELM_ROWS: readonly string[] = [
+  'autopilot:turn',
+  'autopilot:mode',
+  'autopilot:tack',
+  'engine',
+];
+
+/**
+ * M82: the station a row of a stations step belongs to: a clutch or winch row's own station, the
+ * autopilot and engine rows' `helm`; null for any other row (always shown).
+ */
+export function barRowStation(id: BarRowId): StationId | null {
+  const parsed = parseRealisticRow(id);
+  if (parsed) return parsed.station;
+  return HELM_ROWS.includes(id) ? 'helm' : null;
+}
+
+/**
+ * M82: the stations that have a row in this step, in the order of the rows; empty unless the step
+ * has a `barRealistic` list in Realistic ropes (the other steps have no station switch).
+ */
+export function barStationsFor(def: ExerciseDef, step: number, ropes: RopesMode): StationId[] {
+  const rows = ropes === 'realistic' ? def.steps[step]?.barRealistic : undefined;
+  const out: StationId[] = [];
+  for (const row of rows ?? []) {
+    const station = barRowStation(row);
+    if (station !== null && !out.includes(station)) out.push(station);
+  }
+  return out;
+}
+
+/**
+ * M82: the rows the learner sees at `here`. A step with stations shows the rows of that station
+ * (and the rows without one); any other step shows all its rows.
+ */
+export function barRowsAt(
+  def: ExerciseDef,
+  step: number,
+  ropes: RopesMode,
+  here: StationId,
+): BarRowId[] {
+  const rows = barRowsFor(def, step, ropes);
+  if (barStationsFor(def, step, ropes).length === 0) return rows;
+  return rows.filter((id) => {
+    const station = barRowStation(id);
+    return station === null || station === here;
+  });
+}
+
 /**
  * True for every row form of the data with a known control id, line code, station, clutch key and
  * winch id.

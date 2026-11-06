@@ -132,6 +132,21 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(2200);
     await tap(page, 'bar-clutch-a2');
     await tap(page, `bar-winch-${W_STARBOARD}-off`);
+    // The autopilot stands under the Helm tab (owner, PR 174): not at Starboard, there at Helm.
+    check(
+      'step 3: no autopilot at Starboard, a dot at Helm',
+      (await tid(page, 'bar-ap-wind').count()) === 0 &&
+        (await tid(page, 'bar-station-helm').locator('.bar-station-dot').isVisible()),
+      `autopilot rows at Starboard: ${await tid(page, 'bar-ap-wind').count()}`,
+    );
+    await tap(page, 'bar-station-helm');
+    check(
+      'step 3 at Helm: the autopilot shows and the clutch rows go',
+      (await tid(page, 'bar-ap-wind').isVisible()) &&
+        (await tid(page, 'bar-clutch-a2').count()) === 0,
+      'autopilot row visible, clutch row gone',
+    );
+    await shot(page, 'm82-phone-set-step3-helm');
     await tap(page, 'bar-ap-wind');
     await tap(page, 'bar-ap-port', 6);
     await stepDone(2);
@@ -151,7 +166,8 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
     );
     await stepDone(3);
 
-    // Step 5: the engine to neutral and off.
+    // Step 5: the engine to neutral and off, at the helm.
+    await tap(page, 'bar-station-helm');
     await tap(page, 'bar-lever-astern', 6);
     await tap(page, 'engine-startstop-bar');
     await stepDone(4);
