@@ -791,6 +791,15 @@ export function furlSailsRealisticPilot(): Pilot {
 
 Checks and tests pass; the PR has the sign-off list. Not in M82: Realistic rows for other exercises; the handle, easing by hand, the mast and bow stations in the bar.
 
+### 9.9 Decided in the M82 PR (recommended; merging accepts it)
+
+1. **`barRowOf` for a winch gesture:** `onWinch` names its rope (`winch:<station>:<winch>:<key>`); `turn`, `selfTailer`, `button` and `offWinch` do not know the rope, so they give `winch:<station>:<winch>:*`. `rowMatches(shownRow, workedRow)` (in `src/app/exerciseBar.ts`) is true for equal ids or when `workedRow` ends in `:*` and the shown row is at that winch. The bar's flash and the coverage test use it.
+2. **The bar rebuilds when the learner walks:** for a step that has `clutch:` or `winch:` rows the render key (3.4) also carries `state.realistic.station`, so the rows of the other station leave the bar (they are not hidden: the keys 1–4 count the rows shown). Rows are cached, so a rebuild is cheap; it also lets go of a winch button held at that moment.
+3. **Test ids added:** `bar-other-station` (the `otherStation` note), `bar-notice` (the Realistic notice line, shown only while the station switch shows), `bar-stations` (the station switch), `bar-station-port` / `bar-station-starboard`, `bar-clutch-<key>`, `bar-winch-<winch>-on | -turn | -off | -tail | -hold`.
+4. **While the app plays,** the station toggles are disabled with the row buttons (same rule as 8.10 item 4). When a demo ends, a winch button the pilot was holding is let go in the same `demo` batch as the thrusters and the windlass (8.10 item 7).
+5. **Russian** (AI drafts, to be checked by a sailor): "Положить {rope}", "+ Шлаг", "Снять", "В самостопорящий зажим", "Держать ▲", "Открыть" / "Закрыть", "Шлагов: {n}".
+6. **Sign-off (9.7 item 3):** the list is in the PR description; no browser check runs the exercises other than Points of sail, Leaving the berth, Setting the sails and Furling the sails end to end on a phone by taps; the others are proved by the unit tests (the good runs and the coverage of the bar by the pilots, M81) and the phone layout checks of M79.
+
 ---
 
 ## 10. Definition of Done (M79–M82)
