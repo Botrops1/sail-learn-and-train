@@ -52,7 +52,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
+          fetch-depth: ${{ github.event_name == 'pull_request' && '0' || '1' }}
       - uses: actions/setup-node@v5
         with:
           node-version: 22
