@@ -3,6 +3,7 @@ import { keepsRopesMode, type AppMode } from './appMode';
 import {
   continueRun,
   restoreWaypoint,
+  setDemo,
   setRunOptions,
   startRun,
   exercisePauseBlocked,
@@ -262,6 +263,11 @@ export type Action =
   | { type: 'load'; state: AppState }
   /** M66: start or stop the exercise, or choose its ropes mode (in setup). */
   | { type: 'exercise'; command: ExerciseCommand }
+  /**
+   * M81: actions the app plays for the learner (Watch, Show me). Applied like the learner's own
+   * but never written to the exercise log (PHASE10_PHONE_SPEC 4.2).
+   */
+  | { type: 'demo'; actions: Action[] }
   | { type: 'step'; dt: number };
 
 export interface InitialOverrides {
@@ -503,7 +509,7 @@ function linesInputs(state: AppState) {
 }
 
 /** Longest frame step, seconds: a background tab must not make the rig jump. */
-const MAX_STEP_S = 0.1;
+export const MAX_STEP_S = 0.1;
 
 /** Nothing to bump into (open water). */
 const NO_OBSTACLES: readonly Obstacle[] = [];
@@ -515,7 +521,7 @@ const AUTOPILOT_NOTICE_S = 3;
  * One action on the state. Whatever it does, a message that starts because of it (a step, the
  * wheel turned, Sailing chosen with the fenders out) is written to the alert history (M36).
  */
-export function reduce(state: AppState, action: Action): AppState {
+function reduceUnlogged(state: AppState, action: Action): AppState {
   let next = reduceAction(state, action);
   // A link or Reset brings its own (empty) history; an exercise command may restore another rig.
   if (
@@ -532,9 +538,31 @@ export function reduce(state: AppState, action: Action): AppState {
   if (action.type === 'step' && next.exercise?.status === 'running') {
     next = stepExercise(state, next);
   }
-  // The learner's own actions go into the log the debrief is made from (PHASE10_SPEC 8.3).
-  if (action.type !== 'step' && next.exercise !== null) next = logAction(state, next, action);
   return next;
+}
+
+/**
+ * One action on the state. The learner's own actions go into the log the debrief is made from
+ * (PHASE10_SPEC 8.3); the app's own (`demo`, M81) do not.
+ */
+export function reduce(state: AppState, action: Action): AppState {
+  if (action.type === 'demo') {
+    return action.actions.reduce(
+      (s, a) => (a.type === 'step' || a.type === 'demo' ? s : reduceUnlogged(s, a)),
+      state,
+    );
+  }
+  const next = reduceUnlogged(state, action);
+  if (
+    next === state ||
+    action.type === 'load' ||
+    action.type === 'reset' ||
+    action.type === 'exercise' ||
+    action.type === 'step'
+  ) {
+    return next;
+  }
+  return next.exercise !== null ? logAction(state, next, action) : next;
 }
 
 /** The actions that change the conditions: ignored while an exercise is set up or running (PHASE10_SPEC 4.2). */
@@ -565,7 +593,14 @@ function reduceExercise(state: AppState, command: ExerciseCommand): AppState {
       settings: withRopesMode(state.settings, command.ropes, state.appMode),
     });
   }
-  if ('back' in command) return restoreWaypoint(state, command.back);
+  if ('back' in command) {
+    // Going back always ends a demo (M81).
+    const back = restoreWaypoint(state, command.back);
+    return back.exercise !== null && back !== state
+      ? { ...back, exercise: { ...back.exercise, demo: null, demoStep: -1 } }
+      : back;
+  }
+  if ('demo' in command) return setDemo(state, command.demo);
   if ('options' in command) return setRunOptions(state, command.options);
   return state;
 }
@@ -575,6 +610,8 @@ function reduceAction(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'exercise':
       return reduceExercise(state, action.command);
+    case 'demo':
+      return state; // handled by `reduce` (M81)
     case 'setStep':
       return { ...state, settings: { ...state.settings, step: action.step } };
     case 'setDebug':

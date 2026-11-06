@@ -83,6 +83,18 @@ export function barRowOf(action: Action): BarRowId[] {
 }
 
 /** A run is active: it is running or waiting on a mistake (3.1). */
+/**
+ * M81: which demo card the stack shows, from the state alone. 'stepDone': Watch has finished a step
+ * and time stands still. 'nowYou': Show me has played its step (or the last one, status done).
+ */
+export function demoCardKind(state: AppState): 'stepDone' | 'nowYou' | null {
+  const run = state.exercise;
+  if (run === null) return null;
+  if (run.demo === 'watch' && run.status === 'running' && run.stepPause) return 'stepDone';
+  if (run.demo === 'showMe' && (run.step > run.demoStep || run.status === 'done')) return 'nowYou';
+  return null;
+}
+
 export function barShown(state: AppState): boolean {
   const run = state.exercise;
   return run !== null && (run.status === 'running' || run.status === 'mistake');

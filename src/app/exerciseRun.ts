@@ -20,6 +20,10 @@ import type { Action, AppState } from './store';
  * The coach (PHASE10_SPEC 4.1, 4.2, 6.3): the run of one exercise and its step each frame. Pure.
  * M66 writes `start`, `step` and `finish`; the fields marked M67-M71 are created empty.
  */
+/** M81: a demo plays at ×4 at most, in parts of at most 0.05 app seconds (PHASE10_PHONE_SPEC 4.2). */
+export const DEMO_MAX_SCALE = 4;
+export const DEMO_PART_S = 0.05;
+
 export type RunStatus = 'setup' | 'running' | 'mistake' | 'failed' | 'done';
 export interface ExerciseOptions {
   pauseOnMistake: boolean;
@@ -55,6 +59,10 @@ export interface ExerciseRun {
   holdS: number;
   /** True while time is stopped after a finished step (the `pauseOnStep` option). */
   stepPause: boolean;
+  /** M81: what the app is playing: null (the learner), 'watch' (the whole run) or 'showMe' (one step). */
+  demo: 'watch' | 'showMe' | null;
+  /** M81, showMe: the step being shown; else -1. */
+  demoStep: number;
   seenAlertN: number;
   events: readonly ExerciseEvent[];
   gusts: number;
@@ -72,7 +80,29 @@ export type ExerciseCommand =
   | { ropes: RopesMode }
   | 'continue'
   | { back: number }
+  | { demo: 'watch' | 'showMe' | null }
   | { options: Partial<ExerciseOptions> };
+
+/**
+ * The `{ demo }` command (PHASE10_PHONE_SPEC 4.2). 'watch': only in setup. 'showMe': only while
+ * running, back to the current step's start. null: any status.
+ */
+export function setDemo(state: AppState, demo: 'watch' | 'showMe' | null): AppState {
+  const run = state.exercise;
+  if (run === null) return state;
+  if (demo === null) {
+    if (run.demo === null && run.demoStep === -1) return state;
+    return { ...state, exercise: { ...run, demo: null, demoStep: -1 } };
+  }
+  if (demo === 'watch') {
+    if (run.status !== 'setup') return state;
+    return { ...state, exercise: { ...run, demo: 'watch', demoStep: -1 } };
+  }
+  if (run.status !== 'running') return state;
+  const back = restoreWaypoint(state, run.step);
+  if (back === state || back.exercise === null) return state;
+  return { ...back, exercise: { ...back.exercise, demo: 'showMe', demoStep: run.step } };
+}
 
 /** A waypoint's state: the whole app state without the run, running (PHASE10_SPEC 7.3). */
 function snapshot(state: AppState): AppState {
@@ -191,6 +221,8 @@ export function newRun(id: string, step: number, options: ExerciseOptions): Exer
     settleFromS: 0,
     holdS: 0,
     stepPause: false,
+    demo: null,
+    demoStep: -1,
     seenAlertN: 0,
     events: [],
     gusts: 0,
@@ -357,7 +389,8 @@ export function stepExercise(
   };
   if (nextStep < def.steps.length) {
     const wp = { step: nextStep, atS: elapsedS, state: snapshot(next) };
-    const stopTime = run.options.pauseOnStep;
+    // M81: time stops after every step the app played (the learner's own option is untouched).
+    const stopTime = run.options.pauseOnStep || run.demo !== null;
     return {
       ...next,
       paused: stopTime ? true : next.paused,

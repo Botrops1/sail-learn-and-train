@@ -34,7 +34,9 @@ import { ropesTabShows } from '../ui/ropesTab';
 import { createInstrumentStrip } from '../ui/instrumentStrip';
 import { createWindIndicator } from '../ui/windIndicator';
 import { defaultDetail } from '../model/settings';
-import { createStore } from './store';
+import { createStore, MAX_STEP_S } from './store';
+import { DEMO_MAX_SCALE, DEMO_PART_S } from './exerciseRun';
+import { createExerciseDemo } from '../ui/exerciseDemo';
 import { parseUrlState } from './urlState';
 import { startUrlSync } from './urlSync';
 
@@ -132,7 +134,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   createExerciseResume(layout.view, store);
   // The step bar over the bottom of the view; `reframe` is assigned further down (a no-op without 3D).
   let reframe = () => {};
-  createExerciseBar(layout.view, store, layout, sheet, panel, () => reframe());
+  const demo = createExerciseDemo(store);
+  createExerciseBar(layout.view, store, layout, sheet, panel, () => reframe(), demo);
   // CSS hides what would load a scene (and end the run) while an exercise exists.
   const markExercise = () => {
     document.documentElement.toggleAttribute('data-exercise', store.getState().exercise !== null);
@@ -265,7 +268,21 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
     // The rig moves towards the controls (lagged ropes, smoothed boom), then it is drawn.
     const start = performance.now();
     try {
-      store.dispatch({ type: 'step', dt: last === undefined ? 0 : (now - last) / 1000 });
+      const raw = last === undefined ? 0 : (now - last) / 1000;
+      const { exercise: run, settings } = store.getState();
+      if (run !== null && run.demo !== null && run.status === 'running') {
+        // PHASE10_PHONE_SPEC 4.2: the pilots were tuned at 0.05 s, so a demo plays in parts of at
+        // most that, and at ×4 at most.
+        const scale = Math.min(settings.timeScale, DEMO_MAX_SCALE);
+        const appDt = Math.min(raw, MAX_STEP_S) * scale;
+        const parts = Math.max(1, Math.ceil(appDt / DEMO_PART_S));
+        for (let i = 0; i < parts; i += 1) {
+          demo.frame();
+          store.dispatch({ type: 'step', dt: appDt / parts / settings.timeScale });
+        }
+      } else {
+        store.dispatch({ type: 'step', dt: raw });
+      }
     } catch (error) {
       // Said once (console and banner), not every frame.
       if (!stepFailed) console.error(error);

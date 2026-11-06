@@ -9,6 +9,7 @@ import {
   anchorPilot,
   buoyPilot,
   enterPilot,
+  goodRun,
   H,
   leavePilot,
   stern,
@@ -16,27 +17,6 @@ import {
   turnPilot,
   type Pilot,
 } from './harbourPilot';
-
-/** PHASE10_SPEC 16.7: a scripted good run; each step within its limit (app seconds from its start). */
-export function goodRun(id: string, level: ExerciseLevel, pilot: Pilot, limitS: number) {
-  let s = parseUrlState(exerciseStartLink(id, initialState(), 'easy', { level }));
-  s = reduce(s, { type: 'exercise', command: 'start' });
-  const stepAt: number[] = [0];
-  let t = 0;
-  while (s.exercise !== null && s.exercise.status !== 'done' && t < limitS) {
-    s = pilot(s, t);
-    s = reduce(s, { type: 'step', dt: 0.05 });
-    t += 0.05;
-    const run = s.exercise;
-    if (run !== null && run.step > stepAt.length - 1) stepAt.push(t);
-  }
-  const run = s.exercise;
-  return {
-    status: run?.status,
-    durations: stepAt.map((at, i) => (stepAt[i + 1] ?? t) - at),
-    mistakes: run?.log.filter((e) => e.kind === 'mistake') ?? [],
-  };
-}
 
 describe('leave-berth good runs (PHASE10_SPEC 16.7)', () => {
   const limits: Record<ExerciseLevel, number[]> = {

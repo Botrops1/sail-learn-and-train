@@ -3,9 +3,9 @@ import { parseProgress, withDone } from '../src/app/exerciseProgress';
 
 describe('exercise progress (PHASE10_SPEC 6.7)', () => {
   it('reads null and junk as empty', () => {
-    expect(parseProgress(null)).toEqual({ v: 1, done: {} });
-    expect(parseProgress('not json')).toEqual({ v: 1, done: {} });
-    expect(parseProgress('{"done":5}')).toEqual({ v: 1, done: {} });
+    expect(parseProgress(null)).toEqual({ v: 1, done: {}, watched: {} });
+    expect(parseProgress('not json')).toEqual({ v: 1, done: {}, watched: {} });
+    expect(parseProgress('{"done":5}')).toEqual({ v: 1, done: {}, watched: {} });
   });
 
   it('keeps the smaller best time with its date', () => {
