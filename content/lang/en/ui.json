@@ -23,6 +23,8 @@
   "view.labels.label": "Labels in 3D",
   "view.labels.hint": "Names over the parts and ropes in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it.",
   "footer.version": "Version {hash} · {date}",
+  "footer.release": "Version {version} · {hash} · {date}",
+  "footer.next": "Test version (next) · {hash} · {date}",
   "footer.source": "Source on GitHub",
   "footer.disclaimer": "Learning aid, not a substitute for sailing instruction.",
   "footer.privacy": "Privacy: the app collects nothing and sends nothing anywhere. What you set stays on this device. The site is hosted on GitHub Pages.",

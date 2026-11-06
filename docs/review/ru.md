@@ -2542,6 +2542,8 @@
 | view.labels.label | Labels in 3D | Подписи в 3D |
 | view.labels.hint | Names over the parts and ropes in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Названия над частями и концами в 3D-виде. Если две подписи перекрываются, видна более важная: приблизьте вид, чтобы увидеть больше. Нажмите на название, чтобы выбрать его. |
 | footer.version | Version {hash} · {date} | Версия {hash} · {date} |
+| footer.release | Version {version} · {hash} · {date} | Версия {version} · {hash} · {date} |
+| footer.next | Test version (next) · {hash} · {date} | Тестовая версия (next) · {hash} · {date} |
 | footer.source | Source on GitHub | Исходный код на GitHub |
 | footer.disclaimer | Learning aid, not a substitute for sailing instruction. | Учебное пособие, а не замена обучению парусному делу. |
 | footer.privacy | Privacy: the app collects nothing and sends nothing anywhere. What you set stays on this device. The site is hosted on GitHub Pages. | Конфиденциальность: приложение ничего не собирает и никуда не отправляет. Ваши настройки остаются на этом устройстве. Сайт размещён на GitHub. |

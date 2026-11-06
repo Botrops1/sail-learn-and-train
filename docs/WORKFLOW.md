@@ -25,13 +25,15 @@ Each open pull request (PR) also has its own **preview** at `https://botrops1.gi
 6. Go through the checklist links in the PR description. Tick what works.
 7. **Answer and report problems as one comment on the PR**, in the GitHub app: your answers to the questions, which review findings to fix (e.g. "review: fix 1 and 3"), and anything you found. Every question has a recommendation, so "accept all" is a valid answer, or "accept all except 2: …". For a bug, use the template in 3.2. The recommended answers are already recorded, so if everything works you just merge: **merging means "accept all"**. If the session is still watching, it picks your comment up by itself, fixes, records changed answers and replies on the PR. If the PR says **"Stopped watching"**, start a new session (Sonnet, high) and type **`/milestone resume <PR number>`**: it reads your comment from the PR and does the same. No copying between sessions.
 8. Test again on the updated preview (the reply names the new version in Settings → About).
-9. **Merge** when the preview works and CI is green. About 2 minutes later the live site updates and the preview is removed.
+9. **Merge** when the preview works and CI is green. About 2 minutes later the newest work is at `https://botrops1.github.io/sail-learn-and-train/next/` and the preview is removed. The normal address changes only when you publish a release (below).
 
 **CI on a PR** (from M83): the browser checks run the smaller PR set (about 15 minutes); a PR that only changes documents runs none. The full set runs every night on `main` and before every release.
 
 An issue called *Nightly checks failed* means the full checks found a problem on `main` overnight. Open a new Code session and type the line the issue gives (`/bug …`).
 
 **One milestone at a time.** Two milestones in parallel edit the same files and need a third session to sort out the overlap. A planning or review session next to the milestone is fine.
+
+**How to publish a release** (M84). Do this on github.com in the phone's browser (the GitHub app may not show the button): Actions → **Release** → Run workflow → branch `main`, version without the v (e.g. `0.9.0`; the rule is in CONTRIBUTING: `0.9.0` quiet beta, `1.0.0` announcement day, `1.x.0` features, `1.x.y` fixes only) → Run. It takes about 35 minutes (the full checks run first, about 30 minutes, then the publish). When it is green: the live site shows the new version in Settings → About, and Releases lists it with its notes and a `.zip` of the site. If only the last step ("Create the release") fails, run it again with the same version. If a version number already exists, the run stops at once and says so.
 
 If a merge breaks the site, open the merged PR in the GitHub app and tap **Revert**. That creates a PR that undoes it; merge that.
 

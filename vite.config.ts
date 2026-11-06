@@ -1,6 +1,7 @@
 import { execSync } from 'node:child_process';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { parseBuildEnv } from './src/app/buildChannel';
 
 /** Where GitHub Pages serves the site; the base path (main or a PR preview) is added to it. */
 const SITE_ORIGIN = 'https://botrops1.github.io';
@@ -33,12 +34,17 @@ function commitHash(): string {
   }
 }
 
+/** APP_CHANNEL / APP_VERSION (PHASE_LAUNCH_SPEC 3.1): throws for a release without a valid version. */
+const build = parseBuildEnv(process.env.APP_CHANNEL, process.env.APP_VERSION);
+
 export default defineConfig({
   base: '/sail-learn-and-train/',
   plugins: [siteUrl()],
   define: {
     __BUILD_HASH__: JSON.stringify(commitHash()),
     __BUILD_DATE__: JSON.stringify(new Date().toISOString().slice(0, 10)),
+    __BUILD_CHANNEL__: JSON.stringify(build.channel),
+    __BUILD_VERSION__: JSON.stringify(build.version),
   },
   build: {
     target: 'es2022',

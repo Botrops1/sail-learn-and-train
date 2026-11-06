@@ -1,0 +1,90 @@
+name: Release
+
+# The owner runs this on github.com (Actions → Release → Run workflow → branch main, a version
+# like 0.9.0). It checks that the version is new, runs the full checks (ci.yml, scope full), then
+# publishes main to the root of the gh-pages branch (the live site) and creates the tag, the
+# release notes and a .zip (PHASE_LAUNCH_SPEC 7.5). pr-preview/ and next/ are kept.
+#
+# The deploy comes before the release: if "Create the release" fails, run the workflow again with
+# the same version (the tag does not exist yet).
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version without the v, e.g. 0.9.0'
+        type: string
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check the branch and the version
+        env:
+          VERSION: ${{ inputs.version }}
+          REF: ${{ github.ref }}
+        run: |
+          test "$REF" = "refs/heads/main" || { echo "Run Release on the main branch (this is $REF)."; exit 1; }
+          printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || { echo "Version must look like 0.9.0, without the v."; exit 1; }
+          if [ -n "$(git ls-remote --tags origin "refs/tags/v$VERSION")" ]; then
+            echo "v$VERSION already exists."
+            exit 1
+          fi
+
+  checks:
+    needs: validate
+    uses: ./.github/workflows/ci.yml
+    with:
+      scope: full
+    permissions:
+      contents: read
+
+  publish:
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build
+        env:
+          APP_CHANNEL: release
+          VERSION: ${{ inputs.version }}
+        run: APP_VERSION="v$VERSION" npm run build
+      # Serve the files as they are (no Jekyll processing on the gh-pages branch).
+      - run: touch dist/.nojekyll
+      - uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
+        with:
+          branch: gh-pages
+          folder: dist
+          clean: true
+          clean-exclude: |
+            pr-preview/
+            next/
+          force: false
+      - name: Zip the built site
+        env:
+          VERSION: ${{ inputs.version }}
+        run: (cd dist && zip -qr "../sail-learn-and-train-v$VERSION.zip" .)
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          gh release create "v$VERSION" "sail-learn-and-train-v$VERSION.zip" \
+            --target "$GITHUB_SHA" \
+            --title "v$VERSION" \
+            --generate-notes \
+            --notes "Live at https://botrops1.github.io/sail-learn-and-train/ . The .zip holds the built site; it expects to be served at /sail-learn-and-train/."
