@@ -243,4 +243,37 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
     problems.push(...(await auditPage(page, 'm82 phone realistic bar')));
     await context.close();
   }
+
+  // 4. The bar's keys on a computer still work after a click on a button (owner, PR 174): the click
+  // lets go of the focus, 2 selects the winch row, Space presses its first button.
+  {
+    const desktop = viewports[2];
+    const { context, page } = await openPage(
+      desktop,
+      'm82 keys after a click',
+      '?m=exercise&ex=set-sails&debug=1',
+      { testClock: true },
+    );
+    await showSection(page, 'exercises');
+    await tid(page, 'exercise-start').click();
+    await page.waitForTimeout(500);
+    await untilPast(page, 0, 13);
+    await tap(page, 'bar-station-starboard');
+    const focus = await page.evaluate(() => document.activeElement?.tagName ?? '');
+    check('a click leaves no button focused', focus !== 'BUTTON', `focus on ${focus}`);
+    const winchRow = page.locator('[data-row^="winch:starboard"]');
+    await page.keyboard.press('2');
+    const selected = await winchRow.evaluate((row) => row.classList.contains('bar-row-selected'));
+    check('key 2 selects the winch row after a click', selected, `selected: ${selected}`);
+    const before = await winchRow.innerText();
+    await page.keyboard.press(' ');
+    const after = await winchRow.innerText();
+    check(
+      "Space presses the winch row's first button",
+      before !== after,
+      `row text changed: ${before !== after}`,
+    );
+    await shot(page, 'm82-desktop-keys');
+    await context.close();
+  }
 }

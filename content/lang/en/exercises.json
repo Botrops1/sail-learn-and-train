@@ -119,9 +119,9 @@
     "steps": {
       "head-to-wind": { "goal": "Motor slowly with the bow into the wind (within 20°).", "how": "The engine runs slow ahead and the autopilot holds the heading. Nothing to do yet: watch the wind angle on the strip." },
       "main-out": { "goal": "Roll the main out (90 % or more) while the bow points into the wind.", "how": "Go to the starboard station. Open the left “Main furling” clutch (the line that rolls the sail in) so it can run out. Put the right “Main furling” line on the winch: three turns, into the self-tailer, then hold the winch button. Let go when the main is out." },
-      "bear-away": { "goal": "Turn to a close reach (50–75° from the wind) with the main reading Good.", "how": "Close the left “Main furling” clutch and take the line off the winch. In the Helm section, set the autopilot to Wind and tap “10° to port” six times. The main sheet at 30 % is about right." },
+      "bear-away": { "goal": "Turn to a close reach (50–75° from the wind) with the main reading Good.", "how": "Close the left “Main furling” clutch and take the line off the winch. In the bar’s Autopilot row (or the Helm section), set the autopilot to Wind and tap “10° to port” six times. The main sheet at 30 % is about right." },
       "jib-out": { "goal": "Roll the jib out and sheet it to Good.", "how": "At the port station, open the JIB ROLL clutch. At the starboard station, put the Genoa sheet on the winch (three turns, self-tailer) and hold the button: the jib unrolls as the sheet comes in. Let go when the jib reads Good. Close JIB ROLL when the jib has stopped moving." },
-      "engine-off": { "goal": "Stop the engine and sail at 4 knots or more.", "how": "In the Helm section, put the engine lever in neutral, then tap Stop." }
+      "engine-off": { "goal": "Stop the engine and sail at 4 knots or more.", "how": "In the bar’s Engine row (or the Helm section), put the engine lever in neutral, then tap Stop." }
     },
     "mistakes": {
       "main-off-wind": { "name": "rolling the main out off the wind", "what": "The main was rolled out with the wind on the side.", "why": "With the bow 35° or more off the wind, the half-unrolled sail fills and loads the furling gear and the mast.", "fix": "Stop winching, turn back into the wind (within 20°), then roll it out the rest of the way." },
@@ -139,7 +139,7 @@
     "mistake": "Pulling a furling line while the sheet or the outhaul still holds the sail: it will not roll, and the winch strains or cuts out.",
     "done": "Both sails are rolled up and you are motoring. Jib first, then the main head to wind.",
     "steps": {
-      "engine-on": { "goal": "Start the engine and leave it in neutral.", "how": "In the Helm section, tap Start. Leave the lever in the middle (neutral)." },
+      "engine-on": { "goal": "Start the engine and leave it in neutral.", "how": "In the bar’s Engine row (or the Helm section), tap Start. Leave the lever in the middle (neutral)." },
       "jib-in": { "goal": "Roll the jib in completely (5 % or less).", "how": "At the starboard station, open the Genoa sheet clutch so the sheet can run. At the port station, put JIB ROLL on the winch (three turns, self-tailer) and hold the button until the jib is rolled up." },
       "head-to-wind": { "goal": "Motor slow ahead and turn the bow into the wind (within 20°).", "how": "Put the engine lever slow ahead (about 30 %). Set the autopilot to Heading and tap “10° to starboard” six times." },
       "main-in": { "goal": "Roll the main into the mast (5 % or less) with the bow into the wind.", "how": "Take JIB ROLL off the port winch and open the Main outhaul clutch there. At the starboard station, open the right “Main furling” clutch (the line that lets the sail out), put the left “Main furling” line on the winch (three turns, self-tailer) and hold the button until the main is in." }

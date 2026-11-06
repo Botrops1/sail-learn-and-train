@@ -1013,6 +1013,15 @@ export function createExerciseBar(
 
   // ---- keys (side and wide layouts) -----------------------------------------------------------
 
+  // A mouse click leaves the focus on the button, and a focused button handles its own keys, so the
+  // bar's keys (1–4, ← →, Space) would do nothing after the first click (owner, PR 174). A click
+  // with a mouse or finger (`detail` > 0) lets go of the focus; a key press (`detail` 0) keeps it.
+  bar.addEventListener('click', (event) => {
+    if (event.detail > 0 && event.target instanceof Element) {
+      event.target.closest('button')?.blur();
+    }
+  });
+
   const typing = (target: EventTarget | null) =>
     target instanceof HTMLElement &&
     (target.isContentEditable || /^(INPUT|SELECT|TEXTAREA|BUTTON|A)$/.test(target.tagName));

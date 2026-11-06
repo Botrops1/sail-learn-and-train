@@ -3532,7 +3532,7 @@
 | exercise.bar.label | This step | Этот шаг |
 | exercise.bar.all | All controls | Всё управление |
 | exercise.bar.nothing | Nothing to do in this step: watch. | На этом шаге делать нечего: смотрите. |
-| exercise.bar.keys | Keys: 1–4 choose a row · ← → change it · Space: its first button | Клавиши: 1–4 выбор строки · ← → изменить · Пробел: первая кнопка |
+| exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button | Клавиши: 1–4 выбор строки · ← → первая или последняя кнопка строки · Пробел: первая кнопка |
 | exercise.bar.sheet | − hauls in · + lets out | − подобрать · + потравить |
 | exercise.bar.furl | − rolls in · + rolls out | − свернуть · + развернуть |
 | exercise.bar.rudder | − to port · + to starboard | − к левому борту · + к правому борту |
@@ -3572,7 +3572,7 @@
 | exercise.demo.back | Back to the start of the step | Назад, к началу шага |
 | exercise.demo.doIt | Now do it myself | Теперь сам |
 | exercise.demo.lineNow | Done. Now you: tap “Back to the start of the step”. | Готово. Теперь вы: нажмите «Назад, к началу шага». |
-| exercise.bar.otherStation | Nothing at this station for this step. The dot shows where to go. | На этом борту в этом шаге делать нечего. Точка показывает, куда идти. |
+| exercise.bar.otherStation | No rope work at this station for this step. The dot shows where to go. | С канатами на этом борту в этом шаге делать нечего. Точка показывает, куда идти. |
 | exercise.bar.clutchOpen | Open: the rope can run | Открыт: конец может идти |
 | exercise.bar.clutchClosed | Closed: holds the rope | Закрыт: держит конец |
 | exercise.bar.open | Open | Открыть |
