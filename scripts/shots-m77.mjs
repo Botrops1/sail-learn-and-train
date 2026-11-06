@@ -77,6 +77,10 @@ export async function liveM77Checks({ openPage, viewports, outDir, prefix, probl
       if (finished(r)) break;
       const t = i * TICK_S;
       const now = await read(page);
+      if (i % 50 === 0)
+        console.log(
+          `m77trace t=${t.toFixed(1)} step ${r.step} v=${now.speedMps.toFixed(2)} chain=${now.chainOutM.toFixed(1)} elapsed=${r.elapsedS.toFixed(2)}`,
+        );
       const h = (now.headingDeg * Math.PI) / 180;
       const v = now.speedMps;
       const off = wrap(now.headingDeg - 90);
