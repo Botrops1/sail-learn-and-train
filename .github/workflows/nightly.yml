@@ -1,0 +1,38 @@
+name: Nightly
+
+# The full browser checks on main every night, on demand, and (M84) before a release.
+# A failure opens one issue labelled "nightly" (or comments on the open one).
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  full:
+    uses: ./.github/workflows/ci.yml
+    with:
+      scope: full
+
+  report:
+    needs: full
+    if: failure()
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - run: |
+          gh label create nightly --color B60205 --force
+          body="The full checks failed on main (commit ${GITHUB_SHA:0:7}). Run: ${RUN_URL}. To fix it, open a new Code session and type /bug, then the link of this issue (copy it from the address bar), then: nightly checks failed"
+          open=$(gh issue list --label nightly --state open --json number --jq '.[0].number')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --body "$body"
+          else
+            gh issue create --title "Nightly checks failed" --label nightly --body "$body"
+          fi

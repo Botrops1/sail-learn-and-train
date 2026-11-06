@@ -27,6 +27,10 @@ Each open pull request (PR) also has its own **preview** at `https://botrops1.gi
 8. Test again on the updated preview (the reply names the new version in Settings → About).
 9. **Merge** when the preview works and CI is green. About 2 minutes later the live site updates and the preview is removed.
 
+**CI on a PR** (from M83): the browser checks run the smaller PR set (about 15 minutes); a PR that only changes documents runs none. The full set runs every night on `main` and before every release.
+
+An issue called *Nightly checks failed* means the full checks found a problem on `main` overnight. Open a new Code session and type the line the issue gives (`/bug …`).
+
 **One milestone at a time.** Two milestones in parallel edit the same files and need a third session to sort out the overlap. A planning or review session next to the milestone is fine.
 
 If a merge breaks the site, open the merged PR in the GitHub app and tap **Revert**. That creates a PR that undoes it; merge that.

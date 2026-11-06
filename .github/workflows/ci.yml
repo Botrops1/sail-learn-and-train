@@ -3,13 +3,25 @@ name: CI
 on:
   pull_request:
   workflow_dispatch:
+    inputs:
+      scope:
+        description: 'full = every browser check group; pr = the smaller set a pull request runs'
+        type: choice
+        options: [full, pr]
+        default: full
+  workflow_call:
+    inputs:
+      scope:
+        description: 'full or pr'
+        type: string
+        default: full
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check:
@@ -26,74 +38,50 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  # The browser checks (scripts/shots.mjs): every milestone's scenes at phone size plus every
-  # live and tap check. Fails on console errors, wrong layouts, page scroll, unknown taps and
-  # failed live checks. Split into parallel parts of at most about 10 minutes on GitHub's runners
-  # (each live group prints its time, "live group m9: 120 s"; move groups when a part grows).
-  # The last part takes every live group not named in another one, so a new milestone's live
-  # checks land there by themselves.
+  # Decides which browser checks run (scripts/ci-plan.mjs, PHASE_LAUNCH_SPEC 6): a pull request
+  # runs the scenes, the taps, "general", the group of its own milestone (from the title), the
+  # newest groups and any named in a "CI groups: m68, m75" line of its description ("CI groups: all"
+  # runs everything); a pull request that only changes documents runs none. The full set runs from
+  # nightly.yml and before a release. A change to the title or the description takes effect at the
+  # next push. The title and the description reach the script only through env:, never a run: line.
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      docs: ${{ steps.plan.outputs.docs }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: ${{ github.event_name == 'pull_request' && 0 || 1 }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Files changed by the pull request
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git diff --name-only "$BASE_SHA" HEAD > "$RUNNER_TEMP/changed.txt"
+      - id: plan
+        run: node scripts/ci-plan.mjs
+        env:
+          CI_SCOPE: ${{ github.event_name == 'pull_request' && 'pr' || inputs.scope }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          CHANGED_FILES: ${{ runner.temp }}/changed.txt
+
+  # The browser checks (scripts/shots.mjs): scenes at phone size, the taps and the live checks of
+  # the groups the plan names, packed into parts by recorded times (.github/ci-times.json). Fails
+  # on console errors, wrong layouts, page scroll, unknown taps and failed live checks. Each live
+  # group prints its time ("live group m9: 120 s"); refresh ci-times.json from those.
   browser-part:
     name: browser (${{ matrix.part }})
+    needs: plan
+    if: needs.plan.outputs.docs != 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 35
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - part: scenes 1/2
-            env: SHOTS_NO_LIVE=1 SHOTS_NO_TAPS=1 SHOTS_SHARD=1/2
-          - part: scenes 2/2
-            env: SHOTS_NO_LIVE=1 SHOTS_NO_TAPS=1 SHOTS_SHARD=2/2
-          - part: taps
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_LIVE=1
-          - part: live, M0-M4a
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=general
-          - part: live, M4b-M4c
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m4b,m4c
-          - part: live, M5-M8
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m5,m6,m7,m8
-          - part: live, M9
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m9
-          - part: live, M10-M17
-            env: SHOTS_NO_SCENES=1 SHOTS_ONLY=m10,m11,m12,m13,m14,m15,m16,m17
-          - part: live, M18-M29
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m18,m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29
-          - part: live, M30 on
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_SKIP=general,m4b,m4c,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17,m18,m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29,m40,m41,m42,m43,m44,m45,m46,m47,m48,m49,m50,m51,m52,m53,m54,m55,m56,m57,m58,m59,budget,m60,m60b,m61,m62,m63,m64,m65,m66,m67,m68,m69,m70,m71,m72,m73,m74,m75,m76,m77,m78,m79,m80,m81,m82
-          - part: live, M40-M47
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m40,m41,m42,m43,m44,m45,m46,m47
-          - part: live, M48-M59
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m48,m49,m50,m51,m52,m53,m54,m55,m56,m57,m58,m59
-          - part: live, M60-M62
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m60,m60b,m61,m62
-          - part: live, budget
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=budget
-          - part: live, M63-M65
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m63,m64,m65
-          - part: live, M66-M67
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m66,m67
-          - part: live, M68
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m68
-          - part: live, M69
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m69
-          - part: live, M70-M71
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m70,m71
-          - part: live, M72
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m72
-          - part: live, M73-M74
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m73,m74
-          - part: live, M75-M76
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m75,m76
-          - part: live, M77-M78
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m77,m78
-          - part: live, M79
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m79
-          - part: live, M80
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m80
-          - part: live, M81
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m81
-          - part: live, M82
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m82
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -101,9 +89,18 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      # The test browser is cached by Playwright's version (installing it took 8-19 minutes in
+      # four parts of PR 174's run); the install does nothing when the cache restored it.
+      - id: playwright
+        run: echo "version=$(node -p "require('playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+      - run: npx playwright install chromium
       # The cloud sessions' default font (Inter), so text sizes match theirs.
       - run: |
+          sudo apt-get update
           sudo apt-get install -y --no-install-recommends fonts-inter
           mkdir -p ~/.config/fontconfig
           cp .github/fontconfig.conf ~/.config/fontconfig/fonts.conf
@@ -117,10 +114,16 @@ jobs:
           path: shots/
           retention-days: 7
 
-  # One result for the branch protection rule: green only when every part passed.
+  # One result for the branch protection rule: green when the plan worked and every part passed
+  # (or none was needed, for a documents-only pull request).
   browser-checks:
-    needs: browser-part
+    needs: [plan, browser-part]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: test "${{ needs.browser-part.result }}" = success
+      - env:
+          PLAN: ${{ needs.plan.result }}
+          PARTS: ${{ needs.browser-part.result }}
+        run: |
+          test "$PLAN" = success
+          test "$PARTS" = success || test "$PARTS" = skipped
