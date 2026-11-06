@@ -1,8 +1,13 @@
 import {
   BAR_LEVER_STEP_PCT,
-  barRowsFor,
+  BAR_TURNS_BEFORE_TAILER,
+  barRowStation,
+  barRowsAt,
   barShown,
+  barStationsFor,
   demoCardKind,
+  parseRealisticRow,
+  rowMatches,
   type BarRowId,
 } from '../app/exerciseBar';
 import { pilotFor } from '../app/exercisePilots';
@@ -11,6 +16,7 @@ import { snapControl, type ControlId } from '../model/controls';
 import { boat } from '../model/boat';
 import { exerciseDef, exerciseText, type ExerciseDef } from '../model/exercises';
 import type { LineCode } from '../model/mooringLines';
+import { tailSpec, type RealisticAction, type StationId } from '../model/realistic';
 import { anchorStatusText, holdButton } from './anchorPanel';
 import { sideLetter } from './autopilotPanel';
 import { overlayOpen } from './chipMenu';
@@ -23,6 +29,7 @@ import type { LayoutShell } from './layout';
 import { layoutKindOf, type SectionId } from './modes';
 import { controlView, valueText } from './ropeControls';
 import type { Sheet } from './sheet';
+import { noticeText } from './stationDrawing';
 import { setText, stepButton } from './stepper';
 import type { ExerciseDemo } from './exerciseDemo';
 import { createThrusterPair, hasAnyThruster, thrusterStatusText } from './thrusterPanel';
@@ -46,6 +53,8 @@ interface Row {
   element: HTMLElement;
   keys: RowKeys;
   refresh(state: AppState): void;
+  /** M82: lets go of a hold this row started (the winch button); a rebuild and a blur call it. */
+  release?(): void;
 }
 
 const SAFE_ID = (id: string) => id.replace(/[^a-z0-9_]+/gi, '-');
@@ -106,6 +115,46 @@ export function createExerciseBar(
     [t('exercise.bar.stopDemo')],
   );
   const head = el('div', { class: 'exercise-bar-head' }, [headLabel, showMe, stopDemo, all]);
+  // M82: the station switch and its notes (Realistic ropes, Setting and Furling the sails): Port,
+  // Starboard and Helm; the autopilot and engine rows stand under Helm.
+  const stationsBox = el('div', {
+    class: 'bar-stations',
+    'data-row': 'stations',
+    'data-testid': 'bar-stations',
+    role: 'group',
+    'aria-label': t('real.stations.label'),
+    hidden: '',
+  });
+  const stationButtons = new Map<string, { button: HTMLButtonElement; dot: HTMLElement }>();
+  for (const station of ['port', 'starboard', 'helm'] as const) {
+    const dot = el('span', { class: 'bar-station-dot', 'aria-hidden': 'true', hidden: '' });
+    const button = el(
+      'button',
+      {
+        type: 'button',
+        class: 'segment bar-mode',
+        'aria-pressed': 'false',
+        'data-testid': `bar-station-${station}`,
+      },
+      [t(`real.station.${station}`), dot],
+    );
+    button.addEventListener('click', () =>
+      store.dispatch({ type: 'realistic', action: { type: 'station', station } }),
+    );
+    stationButtons.set(station, { button, dot });
+    stationsBox.append(button);
+  }
+  const otherStation = el(
+    'p',
+    { class: 'bar-nothing', 'data-testid': 'bar-other-station', hidden: '' },
+    [t('exercise.bar.otherStation')],
+  );
+  const noticeLine = el('p', {
+    class: 'bar-notice',
+    'data-testid': 'bar-notice',
+    'aria-live': 'polite',
+    hidden: '',
+  });
   const rowsBox = el('div', { class: 'bar-rows' });
   const nothing = el('p', { class: 'bar-nothing', 'data-testid': 'bar-nothing', hidden: '' }, [
     t('exercise.bar.nothing'),
@@ -113,7 +162,7 @@ export function createExerciseBar(
   const keysHint = el('p', { class: 'bar-keys', 'data-testid': 'bar-keys', hidden: '' }, [
     t('exercise.bar.keys'),
   ]);
-  bar.append(head, rowsBox, nothing, keysHint);
+  bar.append(head, stationsBox, otherStation, rowsBox, noticeLine, nothing, keysHint);
 
   const kind = () => layoutKindOf(layout.viewport());
 
@@ -459,6 +508,145 @@ export function createExerciseBar(
     };
   };
 
+  // ---- Realistic ropes: clutches and winches (M82, PHASE10_PHONE_SPEC 9.3) ---------------------
+
+  /** A rope end's name: the clutch's printed label and, where the station drawing adds one, its tag. */
+  const ropeName = (key: string): string => {
+    const spec = tailSpec(key);
+    if (!spec) return key;
+    const tag = spec.tail === 'furl' || spec.tail === 'unfurl' ? t(`real.tag.${spec.tail}`) : null;
+    return tag ? `${spec.label} · ${tag}` : spec.label;
+  };
+  const gesture = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
+  const textButton = (label: string, testId: string) =>
+    el(
+      'button',
+      { type: 'button', class: 'action-button bar-text-button', 'data-testid': testId },
+      [label],
+    );
+
+  const clutchRow = (station: StationId, key: string): Row => {
+    const rowId = `clutch:${station}:${key}`;
+    const line = small('');
+    const { block } = nameBlock(rowId, ropeName(key), line);
+    const button = textButton(t('exercise.bar.open'), `bar-clutch-${key}`);
+    const toggle = () =>
+      gesture({ type: 'clutch', key, open: !store.getState().realistic.open[key] });
+    button.addEventListener('click', toggle);
+    return {
+      id: rowId,
+      element: rowElement(rowId, block, [buttonsBox([button])]),
+      keys: { space: (down) => down && toggle() },
+      refresh(state) {
+        const open = state.realistic.open[key] === true;
+        setText(line, t(open ? 'exercise.bar.clutchOpen' : 'exercise.bar.clutchClosed'));
+        setText(button, t(open ? 'exercise.bar.close' : 'exercise.bar.open'));
+        button.setAttribute('aria-pressed', String(open));
+      },
+    };
+  };
+
+  const winchRow = (station: StationId, winchId: string, key: string): Row => {
+    const rowId = `winch:${station}:${winchId}:${key}`;
+    const line = small('');
+    const { block } = nameBlock(rowId, t(`real.winch.${station as 'port' | 'starboard'}`), line);
+    const on = textButton(
+      t('exercise.bar.onWinch', { rope: ropeName(key) }),
+      `bar-winch-${winchId}-on`,
+    );
+    const turn = textButton(t('exercise.bar.addTurn'), `bar-winch-${winchId}-turn`);
+    const off = textButton(t('exercise.bar.offWinch'), `bar-winch-${winchId}-off`);
+    const tail = textButton(t('exercise.bar.tail'), `bar-winch-${winchId}-tail`);
+    const hold = textButton(t('exercise.bar.hold'), `bar-winch-${winchId}-hold`);
+    on.addEventListener('click', () => gesture({ type: 'onWinch', key }));
+    turn.addEventListener('click', () => gesture({ type: 'turn', winch: winchId, delta: 1 }));
+    off.addEventListener('click', () => gesture({ type: 'offWinch', winch: winchId }));
+    tail.addEventListener('click', () =>
+      gesture({ type: 'selfTailer', winch: winchId, into: true }),
+    );
+    // The motor button is a hold. Only a press that started a hold ends it (as the windlass does).
+    let holding = false;
+    const press = () => {
+      holding = true;
+      gesture({ type: 'button', winch: winchId, held: true });
+    };
+    const letGo = () => {
+      if (!holding) return;
+      holding = false;
+      gesture({ type: 'button', winch: winchId, held: false });
+    };
+    hold.setAttribute('aria-pressed', 'false');
+    hold.addEventListener('pointerdown', (event) => {
+      if (event.button > 0) return;
+      event.preventDefault();
+      try {
+        hold.setPointerCapture(event.pointerId);
+      } catch {
+        // A synthetic or already-ended pointer cannot be captured: the other events still end the hold.
+      }
+      press();
+    });
+    for (const type of ['pointerup', 'pointercancel', 'pointerleave', 'lostpointercapture']) {
+      hold.addEventListener(type, letGo);
+    }
+    hold.addEventListener('blur', letGo);
+    hold.addEventListener('contextmenu', (event) => event.preventDefault());
+    hold.addEventListener('keydown', (event) => {
+      if ((event.key === ' ' || event.key === 'Enter') && !event.repeat) {
+        event.preventDefault();
+        press();
+      }
+    });
+    hold.addEventListener('keyup', (event) => {
+      if (event.key === ' ' || event.key === 'Enter') letGo();
+    });
+    const all = [on, turn, tail, hold, off];
+    const usable = () => all.filter((button) => !button.hidden && !button.disabled);
+    const act = (button: HTMLButtonElement | undefined, down: boolean) => {
+      if (!button) return;
+      if (button === hold) {
+        if (down) press();
+        else letGo();
+      } else if (down) button.click();
+    };
+    return {
+      id: rowId,
+      element: rowElement(rowId, block, [buttonsBox(all)]),
+      keys: {
+        left: (down) => act(usable()[0], down),
+        right: (down) => act(usable().at(-1), down),
+        space: (down) => act(usable()[0], down),
+      },
+      release: letGo,
+      refresh(state) {
+        const winch = state.realistic.winches[winchId];
+        const rope = winch?.tail ?? null;
+        const turns = winch?.turns ?? 0;
+        const mine = rope === key;
+        const parts =
+          rope === null
+            ? [t('real.winch.empty')]
+            : [ropeName(rope), t('exercise.bar.turns', { n: turns })];
+        if (rope !== null && winch?.selfTailer) parts.push(t('exercise.bar.tailed'));
+        if (winch?.cutOut) parts.push(t('exercise.bar.cutOut'));
+        setText(line, parts.join(' · '));
+        const wrongWay = mine && turns < 0;
+        const tailed = mine && !wrongWay && winch?.selfTailer === true;
+        const visible = new Set<HTMLButtonElement>();
+        if (rope === null) visible.add(on);
+        else if (!mine || wrongWay) visible.add(off);
+        else if (tailed) [hold, off].forEach((b) => visible.add(b));
+        else if (turns >= BAR_TURNS_BEFORE_TAILER) [tail, off].forEach((b) => visible.add(b));
+        else [turn, off].forEach((b) => visible.add(b));
+        for (const button of all) {
+          const show = visible.has(button);
+          if (button.hidden === show) button.hidden = !show;
+        }
+        hold.setAttribute('aria-pressed', String(winch?.button === true));
+      },
+    };
+  };
+
   const ropesRow = (): Row => {
     const rowId = 'ropes';
     const button = el(
@@ -497,6 +685,11 @@ export function createExerciseBar(
     else if (id === 'fenders') made = fendersRow();
     else if (id === 'windlass') made = windlassRow();
     else if (id === 'ropes') made = ropesRow();
+    else if (id.startsWith('clutch:') || id.startsWith('winch:')) {
+      const parsed = parseRealisticRow(id);
+      if (parsed?.kind === 'clutch') made = clutchRow(parsed.station, parsed.key);
+      else if (parsed?.kind === 'winch') made = winchRow(parsed.station, parsed.winch, parsed.key);
+    }
     if (made) cache.set(id, made);
     row = made ?? undefined;
     return row ?? null;
@@ -505,6 +698,8 @@ export function createExerciseBar(
   // ---- state ------------------------------------------------------------------------------
 
   let renderKey = '';
+  /** M82: the stations (port / starboard) that have a rope row in this step, for the dots. */
+  let stepStations = new Set<string>();
   let shown: Row[] = [];
   let selected = 0;
   let currentDef: ExerciseDef | undefined;
@@ -520,8 +715,17 @@ export function createExerciseBar(
   const rebuild = (state: AppState) => {
     const run = state.exercise;
     currentDef = run ? exerciseDef(run.id) : undefined;
-    const ids = run && currentDef ? barRowsFor(currentDef, run.step, state.settings.ropesMode) : [];
+    const here = state.realistic.station;
+    const stations =
+      run && currentDef ? barStationsFor(currentDef, run.step, state.settings.ropesMode) : [];
+    // M82: a step with stations shows only the rows of the station the learner is at.
+    const ids =
+      run && currentDef ? barRowsAt(currentDef, run.step, state.settings.ropesMode, here) : [];
+    stepStations = new Set<string>(stations);
+    stationsBox.hidden = stations.length === 0;
+    otherStation.hidden = stations.length === 0 || ids.some((id) => barRowStation(id) === here);
     const keyed = kind() !== 'stacked';
+    releaseHolds();
     shown = [];
     rowsBox.replaceChildren();
     ids.forEach((id) => {
@@ -538,9 +742,14 @@ export function createExerciseBar(
       shown.push(row);
       rowsBox.append(row.element);
     });
-    nothing.hidden = shown.length > 0;
+    nothing.hidden = shown.length > 0 || stations.length > 0;
     keysHint.hidden = !keyed || shown.length === 0;
     select(0);
+  };
+
+  /** Lets go of every hold a row started (the winch button): a rebuild, a blur, a hidden page. */
+  const releaseHolds = () => {
+    for (const row of cache.values()) row.release?.();
   };
 
   const atPeek = () => kind() !== 'stacked' || sheet.height() === 'peek';
@@ -552,27 +761,34 @@ export function createExerciseBar(
 
   /** The row the app just worked lights up for 600 ms; a rebuild drops it. */
   const FLASH_MS = 600;
-  const flashes = new Map<string, number>();
+  const flashes = new Map<string, { timer: number; element: HTMLElement }>();
   const clearFlashes = () => {
-    for (const [id, timer] of flashes) {
+    for (const { timer, element } of flashes.values()) {
       window.clearTimeout(timer);
-      shown.find((row) => row.id === id)?.element.classList.remove('bar-row-flash');
+      element.classList.remove('bar-row-flash');
     }
     flashes.clear();
   };
   demo.onActions((rows) => {
-    for (const id of rows) {
-      const row = shown.find((r) => r.id === id);
-      if (!row) continue;
-      window.clearTimeout(flashes.get(id));
-      row.element.classList.add('bar-row-flash');
-      flashes.set(
-        id,
-        window.setTimeout(() => {
-          row.element.classList.remove('bar-row-flash');
-          flashes.delete(id);
-        }, FLASH_MS),
-      );
+    for (const worked of rows) {
+      // M82: a winch gesture names the winch (`:*`), the station switch flashes for a walk.
+      const targets: Array<[string, HTMLElement]> =
+        worked === 'stations'
+          ? stationsBox.hidden
+            ? []
+            : [['stations', stationsBox]]
+          : shown.filter((r) => rowMatches(r.id, worked)).map((r) => [r.id, r.element]);
+      for (const [id, element] of targets) {
+        window.clearTimeout(flashes.get(id)?.timer);
+        element.classList.add('bar-row-flash');
+        flashes.set(id, {
+          element,
+          timer: window.setTimeout(() => {
+            element.classList.remove('bar-row-flash');
+            flashes.delete(id);
+          }, FLASH_MS),
+        });
+      }
     }
   });
 
@@ -582,16 +798,20 @@ export function createExerciseBar(
    * then switches off every button that is still on (after the rows refreshed).
    */
   const releaseRows = () => {
-    for (const button of rowsBox.querySelectorAll<HTMLButtonElement>('button[data-demo-off]')) {
-      button.disabled = false;
-      delete button.dataset.demoOff;
+    for (const box of [rowsBox, stationsBox]) {
+      for (const button of box.querySelectorAll<HTMLButtonElement>('button[data-demo-off]')) {
+        button.disabled = false;
+        delete button.dataset.demoOff;
+      }
     }
   };
   const lockRows = () => {
-    for (const button of rowsBox.querySelectorAll<HTMLButtonElement>('button')) {
-      if (button.disabled) continue;
-      button.disabled = true;
-      button.dataset.demoOff = '1';
+    for (const box of [rowsBox, stationsBox]) {
+      for (const button of box.querySelectorAll<HTMLButtonElement>('button')) {
+        if (button.disabled) continue;
+        button.disabled = true;
+        button.dataset.demoOff = '1';
+      }
     }
   };
 
@@ -661,10 +881,39 @@ export function createExerciseBar(
     store.dispatch({ type: 'exercise', command: { demo: null } }),
   );
 
+  /** The station switch (pressed = where the learner stands; a dot = a row waits at the other one) and the notice. */
+  const refreshStations = (state: AppState) => {
+    const at = state.realistic.station;
+    for (const [station, { button, dot }] of stationButtons) {
+      button.setAttribute('aria-pressed', String(at === station));
+      const wanted = stepStations.has(station) && at !== station;
+      if (dot.hidden === wanted) dot.hidden = !wanted;
+    }
+    const real = state.realistic;
+    const text =
+      real.notice !== null
+        ? noticeText(real.notice)
+        : real.handle.place === 'carried'
+          ? t('real.notice.handleInHand')
+          : '';
+    const wanted = text !== '' && !stationsBox.hidden;
+    setText(noticeLine, wanted ? text : '');
+    if (noticeLine.hidden === wanted) noticeLine.hidden = !wanted;
+  };
+
   const refresh = (state: AppState) => {
     const run = state.exercise;
+    // M82: a step with stations also rebuilds when the learner walks to another station.
+    const def = run ? exerciseDef(run.id) : undefined;
+    const ropeStep =
+      run !== undefined &&
+      run !== null &&
+      def !== undefined &&
+      barStationsFor(def, run.step, state.settings.ropesMode).length > 0;
     const key = run
-      ? `${run.id}|${run.step}|${state.settings.ropesMode}|${kind()}|${currentLanguage()}`
+      ? `${run.id}|${run.step}|${state.settings.ropesMode}|${kind()}|${currentLanguage()}${
+          ropeStep ? `|${state.realistic.station}` : ''
+        }`
       : '';
     if (key !== renderKey) {
       renderKey = key;
@@ -684,6 +933,7 @@ export function createExerciseBar(
     stopDemo.hidden = !playing;
     releaseRows();
     for (const row of shown) row.refresh(state);
+    refreshStations(state);
     if (playing) lockRows();
   };
 
@@ -762,6 +1012,15 @@ export function createExerciseBar(
 
   // ---- keys (side and wide layouts) -----------------------------------------------------------
 
+  // A mouse click leaves the focus on the button, and a focused button handles its own keys, so the
+  // bar's keys (1–4, ← →, Space) would do nothing after the first click (owner, PR 174). A click
+  // with a mouse or finger (`detail` > 0) lets go of the focus; a key press (`detail` 0) keeps it.
+  bar.addEventListener('click', (event) => {
+    if (event.detail > 0 && event.target instanceof Element) {
+      event.target.closest('button')?.blur();
+    }
+  });
+
   const typing = (target: EventTarget | null) =>
     target instanceof HTMLElement &&
     (target.isContentEditable || /^(INPUT|SELECT|TEXTAREA|BUTTON|A)$/.test(target.tagName));
@@ -812,6 +1071,7 @@ export function createExerciseBar(
   const releaseAll = () => {
     for (const end of down.values()) end();
     down.clear();
+    releaseHolds();
   };
   window.addEventListener('blur', releaseAll);
   document.addEventListener('visibilitychange', () => {

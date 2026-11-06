@@ -5525,3 +5525,56 @@ html[data-layout] .exercise-stack[data-place='row'] {
 .bar-row-name {
   flex: 1 1 110px;
 }
+
+/* M82: the station switch, the dots and the notice of the Realistic rope rows in the step bar. */
+.bar-stations {
+  display: flex;
+  gap: 6px;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+}
+
+.bar-stations .bar-mode {
+  position: relative;
+  flex: 1 1 0;
+}
+
+.bar-station-dot {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--exercise-warning, #b85c00);
+}
+
+.bar-station-dot[hidden] {
+  display: none;
+}
+
+.bar-notice {
+  margin: 6px 0 0;
+  color: var(--exercise-warning, #b85c00);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bar-notice[hidden] {
+  display: none;
+}
+
+.exercise-stack .bar-row .bar-buttons {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.bar-stations[hidden] {
+  display: none;
+}
+
+.bar-stations .bar-mode[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}

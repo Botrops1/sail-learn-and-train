@@ -68,6 +68,8 @@ export interface ExerciseStep {
   check: ExerciseCheck;
   /** M79 (PHASE10_PHONE_SPEC 4.4): the rows of the step bar (row ids as strings; `isBarRowId` checks them). */
   bar: readonly string[];
+  /** M82 (PHASE10_PHONE_SPEC 4.4): the rows in Realistic ropes (set-sails and furl-sails only); an empty list is a step that needs nothing. */
+  barRealistic?: readonly string[];
 }
 export type MistakeTrigger =
   | {

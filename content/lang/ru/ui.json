@@ -1013,7 +1013,7 @@
   "exercise.bar.label": "Этот шаг",
   "exercise.bar.all": "Всё управление",
   "exercise.bar.nothing": "На этом шаге делать нечего: смотрите.",
-  "exercise.bar.keys": "Клавиши: 1–4 выбор строки · ← → изменить · Пробел: первая кнопка",
+  "exercise.bar.keys": "Клавиши: 1–4 выбор строки · ← → первая или последняя кнопка строки · Пробел: первая кнопка",
   "exercise.bar.sheet": "− подобрать · + потравить",
   "exercise.bar.furl": "− свернуть · + развернуть",
   "exercise.bar.rudder": "− к левому борту · + к правому борту",
@@ -1052,5 +1052,18 @@
   "exercise.demo.nowYou": "Лодка вернётся туда, где начался этот шаг. Потом ваша очередь.",
   "exercise.demo.back": "Назад, к началу шага",
   "exercise.demo.doIt": "Теперь сам",
-  "exercise.demo.lineNow": "Готово. Теперь вы: нажмите «Назад, к началу шага»."
+  "exercise.demo.lineNow": "Готово. Теперь вы: нажмите «Назад, к началу шага».",
+  "exercise.bar.otherStation": "На этом посту в этом шаге делать нечего. Точка показывает, куда идти.",
+  "exercise.bar.clutchOpen": "Открыт: конец может идти",
+  "exercise.bar.clutchClosed": "Закрыт: держит конец",
+  "exercise.bar.open": "Открыть",
+  "exercise.bar.close": "Закрыть",
+  "exercise.bar.turns": "Шлагов: {n}",
+  "exercise.bar.cutOut": "мотор отключился: ослабьте нагрузку",
+  "exercise.bar.tailed": "в самостопорящем зажиме",
+  "exercise.bar.onWinch": "Положить {rope}",
+  "exercise.bar.addTurn": "+ Шлаг",
+  "exercise.bar.offWinch": "Снять",
+  "exercise.bar.tail": "В самостопорящий зажим",
+  "exercise.bar.hold": "Держать ▲"
 }

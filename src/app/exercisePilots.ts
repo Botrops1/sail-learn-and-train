@@ -3,6 +3,7 @@ import { area } from '../model/area';
 import type { ControlId } from '../model/controls';
 import { boatPoint, exerciseDef, twaSignedDeg, type ExerciseLevel } from '../model/exercises';
 import { marinaGeometry } from '../model/marina';
+import type { RealisticAction } from '../model/realistic';
 import type { LineCode } from '../model/mooringLines';
 import type { RopesMode } from '../model/settings';
 import {
@@ -495,9 +496,163 @@ export function furlSailsPilot(): Pilot {
   };
 }
 
+const real = (s: AppState, action: RealisticAction) => A(s, { type: 'realistic', action });
+const W = 'winch_primary_starboard';
+const P = 'winch_primary_port';
+/** M82: walk to the helm (the autopilot and the engine rows stand under Helm in the bar). */
+const atHelm = (s: AppState) => real(s, { type: 'station', station: 'helm' });
+/** Put a rope on the winch, three turns, into the self-tailer (PHASE10_PHONE_SPEC 9.4). */
+const onWinch = (s: AppState, key: string, winch: string) => {
+  s = real(s, { type: 'onWinch', key });
+  for (let i = 0; i < 3; i += 1) s = real(s, { type: 'turn', winch, delta: 1 });
+  return real(s, { type: 'selfTailer', winch, into: true });
+};
+/**
+ * Setting the sails in Realistic ropes (M82, PHASE10_PHONE_SPEC 9.4): the stations are worked as a
+ * learner does, Alone (one person walks between the stations; a station change acts at once).
+ */
+export function setSailsRealisticPilot(): Pilot {
+  const once = onceMaker();
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 1: {
+        s = once(s, 'a', (x) =>
+          real(
+            onWinch(
+              real(real(x, { type: 'station', station: 'starboard' }), {
+                type: 'clutch',
+                key: 'a2',
+                open: true,
+              }),
+              'a3',
+              W,
+            ),
+            { type: 'button', winch: W, held: true },
+          ),
+        );
+        if (s.controls.ctl_main_furl >= 99)
+          s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
+        return s;
+      }
+      case 2:
+        if (inStep(s) < 2) return s;
+        return once(s, 'b', (x) =>
+          turns(
+            ap(
+              real(
+                real(
+                  real(real(x, { type: 'station', station: 'starboard' }), {
+                    type: 'clutch',
+                    key: 'a2',
+                    open: false,
+                  }),
+                  { type: 'offWinch', winch: W },
+                ),
+                { type: 'station', station: 'helm' },
+              ),
+              'wind',
+            ),
+            6,
+            -10,
+          ),
+        );
+      case 3: {
+        s = once(s, 'c', (x) =>
+          real(
+            onWinch(
+              real(
+                real(real(x, { type: 'station', station: 'port' }), {
+                  type: 'clutch',
+                  key: 'r1',
+                  open: true,
+                }),
+                { type: 'station', station: 'starboard' },
+              ),
+              'a5',
+              W,
+            ),
+            { type: 'button', winch: W, held: true },
+          ),
+        );
+        if (s.controls.ctl_jib_sheet < 50)
+          s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
+        return s;
+      }
+      case 4:
+        return once(s, 'e', (x) => eng(eng(atHelm(x), { leverPct: 0 }), 'stop'));
+      default:
+        return s;
+    }
+  };
+}
+/** Furling the sails in Realistic ropes (M82, PHASE10_PHONE_SPEC 9.4). */
+export function furlSailsRealisticPilot(): Pilot {
+  const once = onceMaker();
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 0:
+        return once(s, 'e', (x) => eng(atHelm(x), 'start'));
+      case 1: {
+        s = once(s, 'a', (x) =>
+          real(
+            onWinch(
+              real(
+                real(real(x, { type: 'station', station: 'starboard' }), {
+                  type: 'clutch',
+                  key: 'a5',
+                  open: true,
+                }),
+                { type: 'station', station: 'port' },
+              ),
+              'r1',
+              P,
+            ),
+            { type: 'button', winch: P, held: true },
+          ),
+        );
+        if (100 * s.rig.jibSolution.unfurled <= 1)
+          s = once(s, 'r', (x) => real(x, { type: 'button', winch: P, held: false }));
+        return s;
+      }
+      case 2:
+        return once(s, 'h', (x) => turns(ap(eng(atHelm(x), { leverPct: 30 }), 'heading'), 6, 10));
+      case 3: {
+        s = once(s, 'b', (x) =>
+          real(
+            onWinch(
+              real(
+                real(
+                  real(
+                    real(real(x, { type: 'station', station: 'port' }), {
+                      type: 'offWinch',
+                      winch: P,
+                    }),
+                    { type: 'clutch', key: 'b3', open: true },
+                  ),
+                  { type: 'station', station: 'starboard' },
+                ),
+                { type: 'clutch', key: 'a3', open: true },
+              ),
+              'a2',
+              W,
+            ),
+            { type: 'button', winch: W, held: true },
+          ),
+        );
+        if (s.controls.ctl_main_furl <= 1)
+          s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
+        return s;
+      }
+      default:
+        return s;
+    }
+  };
+}
+
 /**
  * A fresh pilot (new closure state) for the exercise, or null where none exists (PHASE10_PHONE_SPEC
- * 8.3). Harbour exercises ignore the ropes mode; the others have a pilot in Easy ropes only.
+ * 8.3). Harbour exercises ignore the ropes mode; the others have a pilot in Easy ropes, and
+ * (M82) Setting and Furling the sails also in Realistic ropes.
  */
 export function pilotFor(id: string, level: ExerciseLevel, ropes: RopesMode): Pilot | null {
   if (exerciseDef(id)?.group === 'harbour') {
@@ -517,6 +672,12 @@ export function pilotFor(id: string, level: ExerciseLevel, ropes: RopesMode): Pi
       default:
         return null;
     }
+  }
+  if (ropes === 'realistic') {
+    // M82: the two exercises that run in Realistic ropes (PHASE10_PHONE_SPEC 9.3).
+    if (id === 'set-sails') return setSailsRealisticPilot();
+    if (id === 'furl-sails') return furlSailsRealisticPilot();
+    return null;
   }
   if (ropes !== 'easy') return null;
   switch (id) {

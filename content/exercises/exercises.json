@@ -122,11 +122,11 @@
       "sections": ["ropes", "helm", "sails", "autopilot", "engine", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=0&bs=0&ms=30&js=100&mf=0&jf=0&eng=1&lv=30&ap=hdg&apt=0&sea=flat&mode=realistic",
       "steps": [
-        { "id": "head-to-wind", "opens": "engine", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 5] }, "bar": [] },
-        { "id": "main-out", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [90, 100] }, "bar": ["control:ctl_main_furl"] },
-        { "id": "bear-away", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [50, 75], "mainTrim": ["good"] }, "bar": ["autopilot:mode", "autopilot:turn", "control:ctl_mainsheet"] },
-        { "id": "jib-out", "opens": "ropes", "holdS": 5, "check": { "jibOutPct": [90, 100], "jibTrim": ["good"] }, "bar": ["control:ctl_jib_furl", "control:ctl_jib_sheet"] },
-        { "id": "engine-off", "opens": "engine", "holdS": 5, "check": { "engine": { "running": false }, "speedKn": [4, 99] }, "bar": ["engine"] }
+        { "id": "head-to-wind", "opens": "engine", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 5] }, "bar": [], "barRealistic": [] },
+        { "id": "main-out", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [90, 100] }, "bar": ["control:ctl_main_furl"], "barRealistic": ["clutch:starboard:a2", "winch:starboard:winch_primary_starboard:a3"] },
+        { "id": "bear-away", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [50, 75], "mainTrim": ["good"] }, "bar": ["autopilot:mode", "autopilot:turn", "control:ctl_mainsheet"], "barRealistic": ["clutch:starboard:a2", "winch:starboard:winch_primary_starboard:a3", "autopilot:mode", "autopilot:turn"] },
+        { "id": "jib-out", "opens": "ropes", "holdS": 5, "check": { "jibOutPct": [90, 100], "jibTrim": ["good"] }, "bar": ["control:ctl_jib_furl", "control:ctl_jib_sheet"], "barRealistic": ["clutch:port:r1", "winch:starboard:winch_primary_starboard:a5"] },
+        { "id": "engine-off", "opens": "engine", "holdS": 5, "check": { "engine": { "running": false }, "speedKn": [4, 99] }, "bar": ["engine"], "barRealistic": ["engine"] }
       ],
       "mistakes": [
         { "id": "main-off-wind", "serious": false, "steps": ["main-out"], "on": { "condition": { "twaDeg": [35, 180], "mainOutPct": [5, 95] }, "forS": 3 } },
@@ -143,10 +143,10 @@
       "sections": ["ropes", "helm", "sails", "autopilot", "engine", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=300&ms=25&js=50&eng=0&ap=wind&apt=60&sea=flat&mode=realistic",
       "steps": [
-        { "id": "engine-on", "opens": "engine", "holdS": 2, "check": { "engine": { "running": true, "gear": "neutral" } }, "bar": ["engine"] },
-        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 5] }, "bar": ["control:ctl_jib_sheet", "control:ctl_jib_furl"] },
-        { "id": "head-to-wind", "opens": "autopilot", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 99] }, "bar": ["engine", "autopilot:mode", "autopilot:turn"] },
-        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [0, 5], "twaDeg": [0, 30] }, "bar": ["control:ctl_main_furl"] }
+        { "id": "engine-on", "opens": "engine", "holdS": 2, "check": { "engine": { "running": true, "gear": "neutral" } }, "bar": ["engine"], "barRealistic": ["engine"] },
+        { "id": "jib-in", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [0, 5] }, "bar": ["control:ctl_jib_sheet", "control:ctl_jib_furl"], "barRealistic": ["clutch:starboard:a5", "winch:port:winch_primary_port:r1"] },
+        { "id": "head-to-wind", "opens": "autopilot", "holdS": 3, "check": { "twaDeg": [0, 20], "engine": { "running": true, "gear": "ahead" }, "speedKn": [0.5, 99] }, "bar": ["engine", "autopilot:mode", "autopilot:turn"], "barRealistic": ["engine", "autopilot:mode", "autopilot:turn"] },
+        { "id": "main-in", "opens": "ropes", "holdS": 2, "check": { "mainOutPct": [0, 5], "twaDeg": [0, 30] }, "bar": ["control:ctl_main_furl"], "barRealistic": ["winch:port:winch_primary_port:r1", "clutch:port:b3", "clutch:starboard:a3", "winch:starboard:winch_primary_starboard:a2"] }
       ],
       "mistakes": [
         { "id": "main-off-wind", "serious": false, "steps": ["main-in"], "on": { "condition": { "twaDeg": [35, 180], "mainOutPct": [5, 95] }, "forS": 3 } },
