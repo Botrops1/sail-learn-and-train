@@ -798,7 +798,8 @@ Checks and tests pass; the PR has the sign-off list. Not in M82: Realistic rows 
 3. **Test ids added:** `bar-other-station` (the `otherStation` note), `bar-notice` (the Realistic notice line, shown only while the station switch shows), `bar-stations` (the station switch), `bar-station-port` / `bar-station-starboard`, `bar-clutch-<key>`, `bar-winch-<winch>-on | -turn | -off | -tail | -hold`.
 4. **While the app plays,** the station toggles are disabled with the row buttons (same rule as 8.10 item 4). When a demo ends, a winch button the pilot was holding is let go in the same `demo` batch as the thrusters and the windlass (8.10 item 7).
 5. **Russian** (AI drafts, to be checked by a sailor): "Положить {rope}", "+ Шлаг", "Снять", "В самостопорящий зажим", "Держать ▲", "Открыть" / "Закрыть", "Шлагов: {n}".
-6. **Sign-off (9.7 item 3):** the list is in the PR description; no browser check runs the exercises other than Points of sail, Leaving the berth, Setting the sails and Furling the sails end to end on a phone by taps; the others are proved by the unit tests (the good runs and the coverage of the bar by the pilots, M81) and the phone layout checks of M79.
+6. **The pressed station toggle** (`.bar-stations .bar-mode[aria-pressed='true']`) has the accent colour; the bar's other `bar-mode` buttons (autopilot mode, fenders) had no pressed colour in M79 and are left as they are.
+7. **Sign-off (9.7 item 3):** the list is in the PR description; no browser check runs the exercises other than Points of sail, Leaving the berth, Setting the sails and Furling the sails end to end on a phone by taps; the others are proved by the unit tests (the good runs and the coverage of the bar by the pilots, M81) and the phone layout checks of M79.
 
 ---
 
