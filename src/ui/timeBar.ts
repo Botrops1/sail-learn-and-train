@@ -7,7 +7,7 @@ import {
   timeScaleText,
   timeSpeedAvailable,
 } from '../model/timeScale';
-import { exercisePauseBlocked } from '../app/exerciseRun';
+import { DEMO_MAX_SCALE, exercisePauseBlocked } from '../app/exerciseRun';
 import { el } from './dom';
 import type { LayoutShell } from './layout';
 import { layoutKindOf } from './modes';
@@ -145,10 +145,16 @@ export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShe
     if (event.key === 'Escape' && !note.hidden) showNote(false);
   });
 
+  // M81: while the app plays an exercise, time runs at ×4 at most; the bar says so.
+  const capped = el('p', { class: 'hint time-demo-capped', 'data-testid': 'time-demo-capped' }, [
+    t('exercise.demo.capped'),
+  ]);
+  capped.hidden = true;
+
   const bar = el(
     'div',
     { class: 'time-bar', role: 'group', 'aria-label': t('time.group'), 'data-testid': 'time-bar' },
-    [fold, status, slowest, slower, pause, held, faster, fastest, note],
+    [fold, status, slowest, slower, pause, held, faster, fastest, note, capped],
   );
   host.append(bar);
 
@@ -175,9 +181,11 @@ export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShe
     const blocked = runStatus === 'mistake' || runStatus === 'failed' || runStatus === 'setup';
     // Alone (M71): no Pause while the exercise runs; once paused, Resume stays enabled.
     const alone = exercisePauseBlocked(state) && !state.paused;
-    const key = [speed, open, scale, state.paused, pausable, blocked, alone].join('|');
+    const demoCapped = active && state.exercise?.demo != null && scale > DEMO_MAX_SCALE;
+    const key = [speed, open, scale, state.paused, pausable, blocked, alone, demoCapped].join('|');
     if (key === shown) return;
     shown = key;
+    capped.hidden = !demoCapped;
     bar.dataset.speed = String(speed);
     bar.dataset.held = String(!pausable);
     pause.hidden = !pausable;

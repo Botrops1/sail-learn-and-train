@@ -95,9 +95,19 @@ export function createExerciseLine(top: HTMLElement, store: Store, onOpen: () =>
     line.classList.toggle('exercise-line-mistake', kind === 'mistake');
     line.classList.toggle('exercise-line-step-paused', kind === 'step-paused');
     line.classList.toggle('exercise-line-paused', kind === 'paused');
-    if (text !== shown) {
-      shown = text;
-      label.textContent = text;
+    // M81: while the app plays (Watch, Show me) every text starts with what it is doing.
+    const prefix =
+      run.demo === 'watch'
+        ? t('exercise.watching')
+        : run.demo === 'showMe'
+          ? t('exercise.showing')
+          : '';
+    if (prefix + text !== shown) {
+      shown = prefix + text;
+      label.replaceChildren(
+        ...(prefix ? [el('span', { class: 'exercise-line-demo' }, [prefix])] : []),
+        text,
+      );
     }
     if (line.hidden) line.hidden = false;
   };

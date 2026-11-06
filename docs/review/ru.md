@@ -3213,7 +3213,7 @@
 | exercise.alonePause | Alone: no Pause in this exercise | Один: в этом упражнении нет паузы |
 | exercise.aloneNote | Alone: one station at a time and no Pause. The autopilot steers while you work the ropes. | Один: вы у одного поста за раз, паузы нет. Автопилот ведёт яхту, пока вы работаете со снастями. |
 | exercise.steps | Steps | Шаги |
-| exercise.start | Start | Начать |
+| exercise.start | Do it myself | Сделаю сам |
 | exercise.list | Back to the list | К списку |
 | exercise.stepOf | Step {n} of {total} | Шаг {n} из {total} |
 | exercise.how | How? | Как? |
@@ -3556,3 +3556,18 @@
 | exercise.bar.moreAria | More: {name} | Больше: {name} |
 | exercise.bar.asternAria | Engine lever 5 % towards astern | Рычаг двигателя на 5 % к заднему ходу |
 | exercise.bar.aheadAria | Engine lever 5 % towards ahead | Рычаг двигателя на 5 % к переднему ходу |
+| exercise.watch | Watch it | Смотреть |
+| exercise.watching | Watching ·  | Смотрим ·  |
+| exercise.showing | Showing ·  | Показываю ·  |
+| exercise.watched | Watched | Просмотрено |
+| exercise.bar.showMe | ▶ Show me | ▶ Покажи |
+| exercise.bar.demoLabel | The app is doing this step | Приложение выполняет этот шаг |
+| exercise.bar.stopDemo | Stop watching | Перестать смотреть |
+| exercise.demo.capped | While the app plays the exercise, time runs at ×4 at most. | Пока приложение проходит упражнение, время идёт не быстрее ×4. |
+| exercise.demo.stepDone | ✓ Step {n} done | ✓ Шаг {n} выполнен |
+| exercise.demo.next | Next step | Следующий шаг |
+| exercise.demo.try | Let me try it | Попробую сам |
+| exercise.demo.nowYouTitle | Now you | Теперь вы |
+| exercise.demo.nowYou | The boat goes back to where this step started. Then it is your turn. | Лодка вернётся туда, где начался этот шаг. Потом ваша очередь. |
+| exercise.demo.back | Back to the start of the step | Назад, к началу шага |
+| exercise.demo.doIt | Now do it myself | Теперь сам |

@@ -1,3 +1,4 @@
+import { demoCardKind } from '../app/exerciseBar';
 import type { Store } from '../app/store';
 import { el } from './dom';
 import { t } from './i18n';
@@ -28,6 +29,8 @@ export function createExerciseResume(view: HTMLElement, store: Store): void {
     let next: typeof kind = null;
     if (run?.status === 'mistake') next = 'mistake';
     else if (run?.status === 'running' && run.stepPause && state.paused) next = 'step';
+    // A demo card (M81) has its own Next step button: no second button over the 3D view.
+    if (demoCardKind(state) !== null) next = null;
     if (next === kind) return;
     kind = next;
     button.hidden = next === null;
