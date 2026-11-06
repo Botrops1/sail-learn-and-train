@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { barRowOf, barRowsFor, barShown, isBarRowId, BAR_MAX_ROWS } from '../src/app/exerciseBar';
+import {
+  barRowOf,
+  barRowsFor,
+  barShown,
+  isBarRowId,
+  parseRealisticRow,
+  rowMatches,
+  BAR_MAX_ROWS,
+} from '../src/app/exerciseBar';
 import { initialState, type AppState } from '../src/app/store';
 import { EXERCISES, exerciseDef } from '../src/model/exercises';
 import type { ExerciseDef } from '../src/model/exercises';
@@ -80,5 +88,93 @@ describe('barShown', () => {
       ['mistake', true],
     ] as const)
       expect(barShown(run(status)), status).toBe(shown);
+  });
+});
+
+describe('M82 the Realistic rows (PHASE10_PHONE_SPEC 9.2, 9.6)', () => {
+  it('every barRealistic row is a known row, at most four, none twice', () => {
+    let seen = 0;
+    for (const ex of EXERCISES) {
+      for (const step of ex.steps) {
+        if (!step.barRealistic) continue;
+        seen += 1;
+        expect(['set-sails', 'furl-sails'], ex.id).toContain(ex.id);
+        expect(step.barRealistic.length).toBeLessThanOrEqual(BAR_MAX_ROWS);
+        for (const row of step.barRealistic)
+          expect(isBarRowId(row), `${ex.id}/${step.id}: ${row}`).toBe(true);
+        expect(new Set(step.barRealistic).size).toBe(step.barRealistic.length);
+      }
+    }
+    expect(seen).toBe(9);
+  });
+
+  it('isBarRowId checks the station, the clutch key and the winch id in the boat data', () => {
+    for (const id of [
+      'clutch:starboard:a2',
+      'clutch:port:r1',
+      'winch:port:winch_primary_port:r1',
+      'winch:starboard:winch_primary_starboard:a5',
+    ])
+      expect(isBarRowId(id), id).toBe(true);
+    for (const id of [
+      'clutch:port:a2', // a2 is at the starboard station
+      'clutch:starboard:zz',
+      'clutch:helm:a2',
+      'winch:port:winch_primary_starboard:a3',
+      'winch:starboard:winch_primary_port:a3',
+      'winch:starboard:winch_primary_starboard:zz',
+      'winch:starboard:winch_primary_starboard',
+      'stations',
+    ])
+      expect(isBarRowId(id), id).toBe(false);
+    expect(parseRealisticRow('clutch:starboard:a2')).toEqual({
+      kind: 'clutch',
+      station: 'starboard',
+      key: 'a2',
+    });
+  });
+
+  it('barRowsFor shows barRealistic as it is in Realistic ropes, bar in Easy', () => {
+    expect(barRowsFor(def('set-sails'), 0, 'realistic')).toEqual([]);
+    expect(barRowsFor(def('set-sails'), 1, 'realistic')).toEqual([
+      'clutch:starboard:a2',
+      'winch:starboard:winch_primary_starboard:a3',
+    ]);
+    expect(barRowsFor(def('furl-sails'), 3, 'realistic')).toHaveLength(4);
+    expect(barRowsFor(def('set-sails'), 1, 'easy')).toEqual(['control:ctl_main_furl']);
+    // Another exercise keeps the placeholder.
+    expect(barRowsFor(def('points-of-sail'), 1, 'realistic')).toEqual(['autopilot:turn', 'ropes']);
+  });
+
+  it('barRowOf maps the Realistic gestures', () => {
+    const real = (action: Parameters<typeof barRowOf>[0] & { type: 'realistic' }) =>
+      barRowOf(action);
+    expect(real({ type: 'realistic', action: { type: 'clutch', key: 'a2', open: true } })).toEqual([
+      'clutch:starboard:a2',
+    ]);
+    expect(real({ type: 'realistic', action: { type: 'onWinch', key: 'r1' } })).toEqual([
+      'winch:port:winch_primary_port:r1',
+    ]);
+    for (const action of [
+      { type: 'turn', winch: 'winch_primary_starboard', delta: 1 },
+      { type: 'selfTailer', winch: 'winch_primary_starboard', into: true },
+      { type: 'button', winch: 'winch_primary_starboard', held: true },
+      { type: 'offWinch', winch: 'winch_primary_starboard' },
+    ] as const)
+      expect(real({ type: 'realistic', action })).toEqual([
+        'winch:starboard:winch_primary_starboard:*',
+      ]);
+    expect(real({ type: 'realistic', action: { type: 'station', station: 'port' } })).toEqual([
+      'stations',
+    ]);
+    expect(real({ type: 'realistic', action: { type: 'clearNotice' } })).toEqual([]);
+  });
+
+  it('rowMatches lets a winch gesture name any rope on that winch', () => {
+    const shown = 'winch:starboard:winch_primary_starboard:a3';
+    expect(rowMatches(shown, 'winch:starboard:winch_primary_starboard:*')).toBe(true);
+    expect(rowMatches(shown, shown)).toBe(true);
+    expect(rowMatches(shown, 'winch:port:winch_primary_port:*')).toBe(false);
+    expect(rowMatches(shown, 'clutch:starboard:a3')).toBe(false);
   });
 });

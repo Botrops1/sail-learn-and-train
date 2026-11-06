@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { barRowOf, barRowsFor } from '../src/app/exerciseBar';
+import { barRowOf, barRowsFor, rowMatches } from '../src/app/exerciseBar';
 import {
   parseProgress,
   PROGRESS_KEY,
@@ -282,4 +282,128 @@ describe('M81 pilotFor', () => {
     expect(pilotFor('leave-berth', 'hard', 'realistic')).not.toBeNull();
     expect(pilotFor('nope', 'easy', 'easy')).toBeNull();
   });
+});
+
+/** PHASE10_PHONE_SPEC 9.6: Realistic ropes, Alone; step limits (s). */
+const REALISTIC_LIMITS: Record<string, number[]> = {
+  'set-sails': [13, 28, 43, 58, 9],
+  'furl-sails': [6, 41, 20, 29],
+};
+
+const realisticStart = (id: string, start = true): AppState => {
+  const link = exerciseStartLink(id, initialState(), 'realistic', { level: 'easy' });
+  let s = reduce(parseUrlState(link), {
+    type: 'exercise',
+    command: { options: { crew: 'alone' } },
+  });
+  if (start) s = reduce(s, { type: 'exercise', command: 'start' });
+  return s;
+};
+
+function realisticRunStates(id: string): { at: AppState[]; end: AppState } {
+  const pilot = pilotFor(id, 'easy', 'realistic') as Pilot;
+  let s = realisticStart(id);
+  const at: AppState[] = [s];
+  let t = 0;
+  while (s.exercise?.status === 'running' && t < 400) {
+    s = dt(pilot(s, t));
+    t += 0.05;
+    if (s.exercise !== null && s.exercise.step > at.length - 1 && s.exercise.status === 'running') {
+      at.push(s);
+    }
+  }
+  return { at, end: s };
+}
+
+describe('M82 Realistic pilots (Setting and Furling the sails, Alone)', () => {
+  it('pilotFor has them for these two and for no other sailing exercise', () => {
+    expect(pilotFor('set-sails', 'easy', 'realistic')).not.toBeNull();
+    expect(pilotFor('furl-sails', 'easy', 'realistic')).not.toBeNull();
+    expect(pilotFor('gybing', 'easy', 'realistic')).toBeNull();
+  });
+
+  for (const [id, limits] of Object.entries(REALISTIC_LIMITS)) {
+    it(`${id}: a good run is done, no mistake, each step within its limit`, () => {
+      const pilot = pilotFor(id, 'easy', 'realistic') as Pilot;
+      const total = limits.reduce((a, b) => a + b, 0) + 5;
+      const result = goodRun(id, 'easy', pilot, total, 'realistic', { crew: 'alone' });
+      expect(result.status).toBe('done');
+      expect(result.mistakes).toEqual([]);
+      limits.forEach((limit, i) => {
+        expect(result.durations[i] ?? Infinity, `step ${i + 1}`).toBeLessThanOrEqual(limit);
+      });
+    });
+
+    it(`${id}: Show me from every step ends within the limit with no mistake`, () => {
+      const { at } = realisticRunStates(id);
+      expect(at.length).toBe(limits.length);
+      at.forEach((base, k) => {
+        const shown = reduce(base, { type: 'exercise', command: { demo: 'showMe' } });
+        const result = runFrom(
+          shown,
+          pilotFor(id, 'easy', 'realistic') as Pilot,
+          (s) => (s.exercise?.step ?? 0) > k || s.exercise?.status === 'done',
+          600,
+        );
+        const run = result.state.exercise;
+        expect(run?.status === 'done' || run?.stepPause, `step ${k + 1} ends`).toBe(true);
+        expect(result.mistakes, `step ${k + 1} mistakes`).toBe(0);
+        expect(result.timeS, `step ${k + 1}`).toBeLessThanOrEqual(limits[k] ?? 0);
+      });
+    });
+
+    it(`${id}: Show me works from wherever the learner stood`, () => {
+      const { at } = realisticRunStates(id);
+      at.forEach((base, k) => {
+        for (const station of ['port', 'starboard', 'helm'] as const) {
+          const moved = reduce(base, {
+            type: 'realistic',
+            action: { type: 'station', station },
+          });
+          const shown = reduce(moved, { type: 'exercise', command: { demo: 'showMe' } });
+          const result = runFrom(
+            shown,
+            pilotFor(id, 'easy', 'realistic') as Pilot,
+            (s) => (s.exercise?.step ?? 0) > k || s.exercise?.status === 'done',
+            600,
+          );
+          const run = result.state.exercise;
+          expect(run?.status === 'done' || run?.stepPause, `${station} step ${k + 1}`).toBe(true);
+        }
+      });
+    });
+
+    it(`${id}: every pilot action is a row of this step's Realistic bar or the next`, () => {
+      const def = exerciseDef(id);
+      if (!def) throw new Error(id);
+      const pilot = pilotFor(id, 'easy', 'realistic') as Pilot;
+      let s = reduce(realisticStart(id, false), { type: 'exercise', command: { demo: 'watch' } });
+      s = reduce(s, { type: 'exercise', command: 'start' });
+      let frames = 0;
+      while (s.exercise?.status === 'running' && frames < 12000) {
+        const step = s.exercise.step;
+        const actions = pilotActions(pilot, s);
+        const allowed = [
+          ...barRowsFor(def, step, 'realistic'),
+          ...(step + 1 < def.steps.length ? barRowsFor(def, step + 1, 'realistic') : []),
+          'stations',
+        ];
+        for (const action of actions) {
+          for (const row of barRowOf(action)) {
+            expect(
+              allowed.some((shown) => rowMatches(shown, row)),
+              `${id} step ${step + 1}: ${row}`,
+            ).toBe(true);
+          }
+        }
+        if (actions.length > 0) s = reduce(s, { type: 'demo', actions });
+        s = dt(s);
+        if (s.paused && s.exercise?.status === 'running')
+          s = reduce(s, { type: 'setPaused', paused: false });
+        frames += 1;
+      }
+      expect(s.exercise?.status).toBe('done');
+      expect(s.exercise?.log.filter((e) => e.kind === 'mistake')).toEqual([]);
+    });
+  }
 });
