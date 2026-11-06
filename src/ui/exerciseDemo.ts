@@ -14,13 +14,19 @@ export interface ExerciseDemo {
   onActions(cb: (rows: BarRowId[]) => void): void;
 }
 
-/** One `demo` batch that lets go of every hold the pilot may have left (thrusters, windlass). */
+/** One `demo` batch that lets go of every hold the pilot may have left (thrusters, windlass, winch button). */
 function releases(state: AppState): Action[] {
   const out: Action[] = [];
   for (const which of ['bow', 'stern'] as const) {
     if (state.thrusters[which] !== 0) out.push({ type: 'thruster', which, dir: 0 });
   }
   if (state.anchor.windlass !== 'off') out.push({ type: 'windlass', motion: 'off' });
+  // M82: a Realistic winch button the pilot was holding.
+  for (const [winch, winchState] of Object.entries(state.realistic.winches)) {
+    if (winchState.button) {
+      out.push({ type: 'realistic', action: { type: 'button', winch, held: false } });
+    }
+  }
   return out;
 }
 

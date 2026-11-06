@@ -3572,3 +3572,16 @@
 | exercise.demo.back | Back to the start of the step | Назад, к началу шага |
 | exercise.demo.doIt | Now do it myself | Теперь сам |
 | exercise.demo.lineNow | Done. Now you: tap “Back to the start of the step”. | Готово. Теперь вы: нажмите «Назад, к началу шага». |
+| exercise.bar.otherStation | Nothing at this station for this step. The dot shows where to go. | На этом борту в этом шаге делать нечего. Точка показывает, куда идти. |
+| exercise.bar.clutchOpen | Open: the rope can run | Открыт: конец может идти |
+| exercise.bar.clutchClosed | Closed: holds the rope | Закрыт: держит конец |
+| exercise.bar.open | Open | Открыть |
+| exercise.bar.close | Close | Закрыть |
+| exercise.bar.turns | Turns: {n} | Шлагов: {n} |
+| exercise.bar.cutOut | the motor cut out: ease the load | мотор отключился: ослабьте нагрузку |
+| exercise.bar.tailed | in the self-tailer | в самостопорящем зажиме |
+| exercise.bar.onWinch | Put {rope} on | Положить {rope} |
+| exercise.bar.addTurn | + Turn | + Шлаг |
+| exercise.bar.offWinch | Off | Снять |
+| exercise.bar.tail | Into the self-tailer | В самостопорящий зажим |
+| exercise.bar.hold | Hold ▲ | Держать ▲ |

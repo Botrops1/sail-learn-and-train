@@ -1052,5 +1052,18 @@
   "exercise.demo.nowYou": "The boat goes back to where this step started. Then it is your turn.",
   "exercise.demo.back": "Back to the start of the step",
   "exercise.demo.doIt": "Now do it myself",
-  "exercise.demo.lineNow": "Done. Now you: tap “Back to the start of the step”."
+  "exercise.demo.lineNow": "Done. Now you: tap “Back to the start of the step”.",
+  "exercise.bar.otherStation": "Nothing at this station for this step. The dot shows where to go.",
+  "exercise.bar.clutchOpen": "Open: the rope can run",
+  "exercise.bar.clutchClosed": "Closed: holds the rope",
+  "exercise.bar.open": "Open",
+  "exercise.bar.close": "Close",
+  "exercise.bar.turns": "Turns: {n}",
+  "exercise.bar.cutOut": "the motor cut out: ease the load",
+  "exercise.bar.tailed": "in the self-tailer",
+  "exercise.bar.onWinch": "Put {rope} on",
+  "exercise.bar.addTurn": "+ Turn",
+  "exercise.bar.offWinch": "Off",
+  "exercise.bar.tail": "Into the self-tailer",
+  "exercise.bar.hold": "Hold ▲"
 }
