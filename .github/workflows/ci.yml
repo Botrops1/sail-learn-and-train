@@ -65,7 +65,9 @@ jobs:
           - part: live, M48-M59
             env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m48,m49,m50,m51,m52,m53,m54,m55,m56,m57,m58,m59
           - part: live, M60-M62
-            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=budget,m60,m60b,m61,m62
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m60,m60b,m61,m62
+          - part: live, budget
+            env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=budget
           - part: live, M63-M65
             env: SHOTS_NO_SCENES=1 SHOTS_NO_TAPS=1 SHOTS_ONLY=m63,m64,m65
           - part: live, M66-M67
