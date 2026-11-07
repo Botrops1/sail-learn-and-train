@@ -5649,6 +5649,25 @@ html[data-layout] .exercise-stack[data-place='row'] {
   min-height: var(--touch);
 }
 
+/* Each group's balance slider sits under its switch, indented like the switch. */
+.sound-setting .sound-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sound-setting .sound-slider .sound-volume {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+.sound-setting .sound-slider span {
+  min-width: 3.5em;
+  text-align: end;
+  white-space: nowrap;
+}
+
 .sound-chip {
   width: var(--touch);
   height: var(--touch);

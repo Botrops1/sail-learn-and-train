@@ -214,7 +214,7 @@ export async function liveM87Checks({ openPage, openPlain, viewports, outDir, pr
     const text = (await tid(page, 'sound-setting').textContent()) ?? '';
     check(
       'ru: block shows',
-      text.includes('Звук') && text.includes('Громкость'),
+      text.includes('Звук') && /громкость/i.test(text),
       text.slice(0, 60),
     );
     check('ru: no raw keys', !/sound\.[a-z]/i.test(text), text.slice(0, 60));

@@ -3602,7 +3602,8 @@
 | sound.surroundings.hint | Wind, waves, the marina and birds. | Ветер, волны, марина и птицы. |
 | sound.boat | Boat sounds | Звуки яхты |
 | sound.boat.hint | Sails, the engine, winches, the anchor chain and bumps. | Паруса, двигатель, лебёдки, якорная цепь и удары. |
-| sound.volume | Volume | Громкость |
+| sound.volume | Overall volume | Общая громкость |
+| sound.groupVolume | {name} volume | Громкость: {name} |
 | sound.volumeValue | {value} % | {value} % |
 | sound.unsupported | This browser cannot play the app's sound. | Этот браузер не может воспроизводить звук приложения. |
 | sound.chipOn | Sound on: tap to mute | Звук включён: нажмите, чтобы выключить |

@@ -53,7 +53,7 @@ A learner who switches Sound on hears the boat's world: wind that rises with the
 | Name | File | Signature | Behaviour |
 |---|---|---|---|
 | `SOUND` | `src/audio/soundData.ts` (pure) | `const SOUND: SoundData` | `content/audio/sounds.json`, typed (the type grows each milestone) |
-| `DEFAULT_SOUND_PREFS` | `src/audio/prefs.ts` (pure) | `SoundPrefs` | `{ on: false, music: true, surroundings: true, boat: true, volume: 70 }` |
+| `DEFAULT_SOUND_PREFS` | `src/audio/prefs.ts` (pure) | `SoundPrefs` | `{ on: false, music: true, surroundings: true, boat: true, volume: 50, musicVolume: 100, surroundingsVolume: 100, boatVolume: 100 }` (volume 70 and no group volumes until the M91 PR, owner request) |
 | `parseSoundPrefs` | `src/audio/prefs.ts` | `(text: string \| null) => SoundPrefs` | JSON → prefs; each missing or wrong-typed field takes its default; `volume` rounded and clamped to 0–100; bad JSON → defaults |
 | `getSoundPrefs` | `src/audio/prefs.ts` | `() => SoundPrefs` | The prefs now (read from storage once, on first call) |
 | `setSoundPrefs` | `src/audio/prefs.ts` | `(patch: Partial<SoundPrefs>) => SoundPrefs` | Merges, clamps, writes storage, then calls every listener **synchronously** (so the engine can start inside the same tap) |
@@ -67,7 +67,7 @@ A learner who switches Sound on hears the boat's world: wind that rises with the
 ```ts
 // src/audio/types.ts (pure; levels.ts, prefs.ts and soundData.ts import from here, so there is no import cycle)
 export type SoundGroup = 'music' | 'surroundings' | 'boat';
-export interface SoundPrefs { on: boolean; music: boolean; surroundings: boolean; boat: boolean; volume: number }
+export interface SoundPrefs { on: boolean; music: boolean; surroundings: boolean; boat: boolean; volume: number; musicVolume: number; surroundingsVolume: number; boatVolume: number } // the last three: M91 PR, owner request
 export interface VoiceTarget { gain: number; hz: number; rate: number } // unused fields are 0
 export const VOICE_IDS = ['wind', 'whistle', 'waves', 'hull'] as const; // M88–M90 append theirs, in their order
 export type VoiceId = (typeof VOICE_IDS)[number];
@@ -95,7 +95,7 @@ M87: `VOICE_GROUP` = all four `surroundings`; `VOICE_KIND` = all four `continuou
 ### 3.4 Shared formulas (M87)
 
 - `clamp01(x) = min(1, max(0, NaN-safe x))` (`NaN` → 0); `ramp(x, a, b) = clamp01((x − a) / (b − a))`.
-- **Groups:** `groups[g] = prefs.on && prefs[g] ? data.master.groupGain[g] · prefs.volume / 100 · pause(g) : 0`, where `pause('boat') = state.paused ? 0 : 1`, `pause('surroundings') = state.paused ? data.master.pausedSurroundings : 1`, `pause('music') = 1`.
+- **Groups:** `groups[g] = prefs.on && prefs[g] ? data.master.groupGain[g] · prefs.volume / 100 · prefs[g + 'Volume'] / 100 · pause(g) : 0` (the group volume factor: M91 PR, owner request), where `pause('boat') = state.paused ? 0 : 1`, `pause('surroundings') = state.paused ? data.master.pausedSurroundings : 1`, `pause('music') = 1`.
 - When `prefs.on` is false, `soundTargets` still returns every voice (the engine is suspended anyway); tests call it with `on: true`.
 - **`pulses(phase, rate, dtS)`:** `p = phase + rate · dtS`; one offset for every whole number crossed: for `k = 1 … floor(p)`, `offsetsS.push((k − phase) / rate)`; returns `phase: p − floor(p)`. `rate ≤ 0` or `dtS ≤ 0` → `{ offsetsS: [], phase }`. At most 40 offsets (a cap; the rest are dropped, the phase still advances).
 - **`poissonTimes(rng, rate, dtS)`:** events of a Poisson process within the frame: `t = −ln(1 − rng()) / rate`; while `t < dtS`, push `t` and add another `−ln(1 − rng()) / rate`. `rate ≤ 0` → `[]`. At most 8.
@@ -608,13 +608,14 @@ Run `SHOTS_ONLY=m91`. Add `"m91": 300`.
 
 ### 10.7 Done when / not in M91 (write "Decided in the M91 PR" notes under this heading)
 
-Checks and tests pass; on the phone: with Sound on, a quiet, slow music under the wind, never the same twice; Music off in Settings stops it within a few seconds while the rest goes on. The PR says `Closes #155`. Not in M91: a choice of tunes, a music volume of its own (the group gain is fixed at a third, `master.groupGain.music`).
+Checks and tests pass; on the phone: with Sound on, a quiet, slow music under the wind, never the same twice; Music off in Settings stops it within a few seconds while the rest goes on. The PR says `Closes #155`. Not in M91: a choice of tunes. (A volume of its own for the music was excluded here; the owner asked for one volume slider per group on the M91 PR, see below.)
 
 **Decided in the M91 PR** (recommended; merging accepts it):
 
 - The music is left as specified and tuned after the owner's phone test (no number is changed). `"m91"` in `ci-times.json` is the measured time (13 s), not 300.
 - `musicEvents` emits the chord at `chords[cursor.chord]` and then picks the next one, so the first chord of every visit is D (`chords[0]`); `START_CURSOR` is unchanged. The JSON pairs (`chordEveryS`, `noteEveryS`, `noteOctaves`) are typed `number[]` (a JSON import cannot be a tuple).
 - The music's one-shot nodes (pad oscillators and notes) are not counted towards `maxOneShots`: they are few, long and quiet, and counting them would let the music starve the gulls and the clicks.
+- **Owner request on the M91 PR (volume balance):** Settings → Sound has, under each of the three switches (Music, Surroundings, Boat sounds), its own 0–100 slider (`sound-music-volume`, `sound-surroundings-volume`, `sound-boat-volume`, each with `…-value` text), and the overall slider is now labelled "Overall volume" and starts at 50 (was 70). A group slider starts at 100 and multiplies on top of the overall volume and the group's fixed gain, so it can only turn a group down; the balance is set by turning the others down or the overall one up. A device that saved an overall volume earlier keeps it; the group sliders start at 100 there. Still a device preference: not in the link or the setup file.
 - `createMusic` takes a fifth argument, the look-ahead, defaulting to `master.lookaheadS`; a note due in the frame plays at `currentTime + (atS − clock)`.
 
 ---

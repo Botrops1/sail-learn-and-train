@@ -7,6 +7,7 @@ import { trimState, type SailName } from '../model/trim';
 import { fetchKm, seaSize, significantHeightM, waveTrains } from '../model/waves';
 import { SOUND, type SoundData } from './soundData';
 import {
+  GROUP_VOLUME_KEY,
   VOICE_IDS,
   type SoundEvent,
   type SoundGroup,
@@ -66,7 +67,9 @@ export function soundTargets(
             ? master.pausedSurroundings
             : 1
           : 1;
-    groups[g] = prefs.on && prefs[g] ? ((master.groupGain[g] * prefs.volume) / 100) * pause : 0;
+    const own = prefs[GROUP_VOLUME_KEY[g]] / 100;
+    groups[g] =
+      prefs.on && prefs[g] ? ((master.groupGain[g] * prefs.volume) / 100) * own * pause : 0;
   }
 
   const voices = {} as Record<VoiceId, VoiceTarget>;

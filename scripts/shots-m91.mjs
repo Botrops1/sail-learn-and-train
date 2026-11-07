@@ -21,6 +21,26 @@ export async function liveM91Checks({ openPage, viewports, problems }) {
     `heard ${heard.join(' ')}`,
   );
 
+  // The overall volume starts at 50; each group has its own slider that balances it (owner request).
+  await openSettings(page);
+  const overall = (await page.getByTestId('sound-volume-value').textContent())?.trim();
+  check('the overall volume starts at 50 %', overall === '50 %', String(overall));
+  const groupsBefore = (await soundProbe(page)).targets?.groups;
+  await page.getByTestId('sound-music-volume').fill('50');
+  await page.getByTestId('sound-boat-volume').fill('0');
+  const shown = (await page.getByTestId('sound-music-volume-value').textContent())?.trim();
+  await closeSettings(page);
+  await page.waitForTimeout(300);
+  const groupsAfter = (await soundProbe(page)).targets?.groups;
+  check(
+    'a group slider changes only its group',
+    shown === '50 %' &&
+      Math.abs((groupsAfter?.music ?? 0) - (groupsBefore?.music ?? 0) / 2) < 0.0005 &&
+      groupsAfter?.boat === 0 &&
+      Math.abs((groupsAfter?.surroundings ?? 0) - (groupsBefore?.surroundings ?? 1)) < 0.0005,
+    `before ${JSON.stringify(groupsBefore)} after ${JSON.stringify(groupsAfter)} shown ${shown}`,
+  );
+
   // Music off in Settings: nothing more is played, the wind goes on.
   await openSettings(page);
   await page.locator('[data-testid="sound-music"]').uncheck();
