@@ -1,9 +1,10 @@
 import { mulberry32 } from '../model/random';
-import { midiToHz, musicEvents, START_CURSOR, type MusicCursor } from './musicScore';
+import { midiToHz, musicEvents, musicShape, START_CURSOR, type MusicCursor } from './musicScore';
 import type { SoundData } from './soundData';
+import { smoothTo } from './voice';
 
 /**
- * The generated music (PHASE_AUDIO_SPEC 10.4): a slow pad of sines and triangles that changes
+ * The generated music (PHASE_AUDIO_SPEC 10.4, with the owner's variability request on the M91 PR): a slow pad of sines and triangles that changes
  * chord every 8–14 s, and now and then a single soft note, all through one low-pass filter and an
  * echo. The notes come from `musicEvents` (pure, in `musicScore.ts`); this file only plays them.
  * Web Audio: never imported by tests.
@@ -114,6 +115,8 @@ export function createMusic(
   return {
     frame(dtS) {
       const dt = Math.max(0, dtS);
+      // The sound slowly gets brighter and darker (a pure function of the music's own clock).
+      smoothTo(bus.frequency, musicShape(clockS, data).lowpassHz, ctx, 2);
       const result = musicEvents(rng, clockS, clockS + dt + lookaheadS, cursor, data);
       cursor = result.cursor;
       for (const event of result.events) {

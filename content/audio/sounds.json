@@ -56,6 +56,13 @@
     "delayS": 0.45,
     "delayFeedback": 0.35,
     "delayMix": 0.3,
-    "lowpassHz": 2500
+    "lowpassHz": 2500,
+    "lowpassMinHz": 900,
+    "brightnessPeriodsS": [83, 137],
+    "intervalScale": [0.6, 1.6],
+    "intervalPeriodS": 211,
+    "keys": [0, 5, 7, -2],
+    "keyEveryS": [150, 270],
+    "firstKeyChangeS": 180
   }
 }
