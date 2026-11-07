@@ -23,5 +23,14 @@
     "gain": { "fender": 0.25, "touch": 0.35, "bump": 0.6, "knock": 0.8, "hit": 1 },
     "decayS": { "fender": 0.25, "touch": 0.15, "bump": 0.25, "knock": 0.35, "hit": 0.5 },
     "squeakFromHz": 320, "squeakToHz": 210, "squeakS": 0.25, "squeakGain": 0.15
-  }
+  },
+  "winchMotor": { "gain": 0.22, "baseHz": 320, "speedHz": 900, "refSpeedMps": 0.5, "strainDrop": 0.25, "q": 4 },
+  "winchClicks": { "gain": 0.18, "perMetre": 30, "maxRate": 40, "gearboxPerTurn": 12, "clickHz": 3200, "clickS": 0.012 },
+  "easyRopes": { "refPctPerS": 20, "clicksPerPct": 1 },
+  "cutOut": { "gain": 0.3, "hz": 180, "s": 0.08 },
+  "ropeRun": { "gain": 0.2, "refSpeedMps": 1, "lowHz": 1500, "highHz": 3000, "q": 1.5 },
+  "windlass": { "gain": 0.25, "upHz": 120, "downHz": 140, "q": 3 },
+  "chain": { "gain": 0.3, "perMetre": 25, "maxRate": 30, "clickHz": 1400, "clickS": 0.03 },
+  "anchorClank": { "gain": 0.35, "hz": 900, "s": 0.3 },
+  "thruster": { "gain": 0.3, "bowHz": 240, "sternHz": 200, "q": 2, "rampS": 0.15 }
 }

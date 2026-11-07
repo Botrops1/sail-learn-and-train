@@ -474,6 +474,14 @@ Run `SHOTS_ONLY=m89`. Add `"m89": 300`.
 
 Checks and tests pass; on the phone: the winch hums and clicks when you press its button, the clicks speed with the drum, a sheet eased runs out with a hiss; in Easy the sheets' + and − give a short winch sound; the windlass hums and the chain rattles; the thrusters hum while held. Not in M89: the marina, birds, music.
 
+**Decided in the M89 PR** (recommended; merging accepts it):
+
+- The winch, rope, windlass, chain, anchor and thruster sounds are left as specified and tuned after the owner's phone test (nothing in the numbers is changed). `"m89"` in `ci-times.json` is the measured time, not 300 (see the PR).
+- `gearVoices.ts` exports its own `playEvent` for `cutOut`, `anchorDown` and `anchorUp`; `boatVoices.ts` keeps `engineStart` and `contact`; the engine hands each event to the file that owns it. Both count an event as one one-shot with the shared `track` helper, which moved to `voice.ts`.
+- A band voice keeps its last pitch while its target `hz` is 0 (the winch motor, the rope, the thrusters): only the gain falls to 0.
+- The winch motor and the thrusters share one band voice builder (an oscillator and/or noise through a bandpass); the windlass is the same without noise.
+- Browser check 2 (Easy) presses `More: Main sheet` in the quick row (sheet at `peek`; the button is not called "Mainsheet") and reads the probe every 50 ms of app time for 200 ms after each press and takes the largest value: the sheet moves only for a moment after a press, so a single read after 200 ms can miss it.
+
 ---
 
 ## 9. M90: Marina and birds

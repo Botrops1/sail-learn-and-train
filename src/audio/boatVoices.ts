@@ -1,6 +1,9 @@
 import type { SoundData } from './soundData';
 import { VOICE_IDS, type SoundEvent, type VoiceId } from './types';
-import { burst, loopingNoise, oneShots, smoothTo, type Voice, type VoiceFactory } from './voice';
+
+/** The events this file plays (the engine hands the others to gearVoices.ts). */
+export type BoatEvent = Extract<SoundEvent, { kind: 'contact' | 'engineStart' }>;
+import { burst, loopingNoise, smoothTo, track, type Voice, type VoiceFactory } from './voice';
 
 /**
  * The boat's voices that M88 builds (PHASE_AUDIO_SPEC 7.3): the sails flapping (pulses) or full
@@ -82,25 +85,12 @@ export const boatVoices: Partial<Record<VoiceId, VoiceFactory>> = {
   engine: engineVoice,
 };
 
-/** Counts the sound as one one-shot until the last of its nodes has ended. */
-function track(nodes: AudioScheduledSourceNode[]): void {
-  oneShots.active += 1;
-  let remaining = nodes.length;
-  for (const node of nodes) {
-    node.onended = () => {
-      node.disconnect();
-      remaining -= 1;
-      if (remaining === 0) oneShots.active -= 1;
-    };
-  }
-}
-
 /** Plays one event into `out` (the boat bus), starting after the engine's lookahead. */
 export function playEvent(
   ctx: AudioContext,
   out: AudioNode,
   noise: AudioBuffer,
-  event: SoundEvent,
+  event: BoatEvent,
   data: SoundData,
 ): void {
   const at = ctx.currentTime + data.master.lookaheadS;

@@ -14,15 +14,15 @@ import {
 const shotsSource = readFileSync('scripts/shots.mjs', 'utf8');
 const times = JSON.parse(readFileSync('.github/ci-times.json', 'utf8')) as Record<string, number>;
 const groups = liveGroupNames(shotsSource);
-const newest = ['m88', 'm87', 'm85', 'm82'];
+const newest = ['m89', 'm88', 'm87', 'm85'];
 
 describe('liveGroupNames', () => {
   it('reads the groups of the real scripts/shots.mjs', () => {
-    for (const name of ['general', 'm4b', 'm60b', 'budget', 'm87', 'm88'])
+    for (const name of ['general', 'm4b', 'm60b', 'budget', 'm87', 'm88', 'm89'])
       expect(groups).toContain(name);
     expect(new Set(groups).size).toBe(groups.length);
-    // Counted at M88: general, m4b, m4c, m5 to m82 with m60b, m85, m87, m88, and budget.
-    expect(groups.length).toBe(86);
+    // Counted at M89: general, m4b, m4c, m5 to m82 with m60b, m85, m87, m88, m89, and budget.
+    expect(groups.length).toBe(87);
   });
 
   it('throws when the object is not found', () => {

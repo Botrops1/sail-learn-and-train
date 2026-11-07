@@ -69,3 +69,16 @@ export function loopingNoise(
   source.start(0, (order.indexOf(id) * 0.37) % noise.duration);
   return source;
 }
+
+/** Counts a one-shot as one until the last of its nodes has ended, then frees the nodes. */
+export function track(nodes: AudioScheduledSourceNode[]): void {
+  oneShots.active += 1;
+  let remaining = nodes.length;
+  for (const node of nodes) {
+    node.onended = () => {
+      node.disconnect();
+      remaining -= 1;
+      if (remaining === 0) oneShots.active -= 1;
+    };
+  }
+}

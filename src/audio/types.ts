@@ -34,12 +34,24 @@ export const VOICE_IDS = [
   'fullMain',
   'fullJib',
   'engine',
+  'winchMotor',
+  'winchClicks',
+  'ropeRun',
+  'windlass',
+  'chain',
+  'thrusterBow',
+  'thrusterStern',
 ] as const;
 export type VoiceId = (typeof VOICE_IDS)[number];
 export type VoiceKind = 'continuous' | 'pulse' | 'poisson';
 
-/** A one-shot sound the engine plays once (M88: the engine's start and a hull contact). */
-export type SoundEvent = { kind: 'contact'; severity: Severity } | { kind: 'engineStart' };
+/** A one-shot sound the engine plays once (M88: the engine's start and a hull contact; M89: a winch cutting out, the anchor going down or up). */
+export type SoundEvent =
+  | { kind: 'contact'; severity: Severity }
+  | { kind: 'engineStart' }
+  | { kind: 'cutOut' }
+  | { kind: 'anchorDown' }
+  | { kind: 'anchorUp' };
 
 export interface SoundTargets {
   groups: Record<SoundGroup, number>;
@@ -58,6 +70,13 @@ export const VOICE_GROUP: Record<VoiceId, SoundGroup> = {
   fullMain: 'boat',
   fullJib: 'boat',
   engine: 'boat',
+  winchMotor: 'boat',
+  winchClicks: 'boat',
+  ropeRun: 'boat',
+  windlass: 'boat',
+  chain: 'boat',
+  thrusterBow: 'boat',
+  thrusterStern: 'boat',
 };
 
 /** How the engine drives each voice (PHASE_AUDIO_SPEC 3.6). */
@@ -71,6 +90,13 @@ export const VOICE_KIND: Record<VoiceId, VoiceKind> = {
   fullMain: 'continuous',
   fullJib: 'continuous',
   engine: 'continuous',
+  winchMotor: 'continuous',
+  winchClicks: 'pulse',
+  ropeRun: 'continuous',
+  windlass: 'continuous',
+  chain: 'pulse',
+  thrusterBow: 'continuous',
+  thrusterStern: 'continuous',
 };
 
 /** Poisson voices whose calls the probe records (M90: gulls → 'gull', smallBirds → 'chirp'). */

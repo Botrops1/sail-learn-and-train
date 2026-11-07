@@ -7,6 +7,7 @@ import { VOICE_GROUP, VOICE_IDS, VOICE_KIND, type SoundPrefs } from '../src/audi
 import type { AppState } from '../src/app/store';
 import type { ContactReport } from '../src/model/contact';
 import { mulberry32 } from '../src/model/random';
+import type { HandleReport } from '../src/model/realistic';
 import { trimState } from '../src/model/trim';
 import { initialState, run, trimmed } from './motionHelpers';
 
@@ -269,5 +270,168 @@ describe('events (M88)', () => {
   it('the line round the propeller has no thump', () => {
     const after = withReports(base, [report({ obstacleId: 'propeller' })]);
     expect(events(after, withReports(base, []))).toEqual([]);
+  });
+});
+
+describe('winches and ropes (M89)', () => {
+  type Winch = AppState['realistic']['winches'][string];
+  const winch = (over: Partial<Winch>): Winch => ({
+    tail: null,
+    turns: 0,
+    selfTailer: false,
+    button: false,
+    cutOut: false,
+    drumSpeed: 0,
+    drumAngle: 0,
+    strain: null,
+    ...over,
+  });
+  const realistic = (winches: Record<string, Winch>, extra: Partial<AppState['realistic']> = {}) =>
+    ({
+      ...base,
+      settings: { ...base.settings, ropesMode: 'realistic' },
+      realistic: { ...base.realistic, winches, reports: {}, handleReport: null, ...extra },
+    }) as AppState;
+  const easy = (mainsheet: number): AppState => ({
+    ...base,
+    settings: { ...base.settings, ropesMode: 'easy' },
+    rig: { ...base.rig, applied: { ...base.rig.applied, mainsheet } },
+  });
+  const at = (s: AppState, previous = s, dtS = 0.016) => soundTargets(s, previous, on, dtS);
+
+  it('a winch with its button held hums, lower under strain, and clicks with the drum', () => {
+    const s = realistic({ w: winch({ button: true, drumSpeed: 0.25, strain: 0.5 }) });
+    const v = at(s).voices;
+    expect(v.winchMotor.gain).toBeCloseTo(0.22, 4);
+    expect(Math.abs(v.winchMotor.hz - 673.75)).toBeLessThan(0.5);
+    expect(v.winchClicks.rate).toBeCloseTo(7.5, 4);
+    expect(v.winchClicks.gain).toBeCloseTo(0.18, 4);
+  });
+
+  it('a drum turning the wrong way does not click, the motor still hums', () => {
+    const s = realistic({ w: winch({ button: true, drumSpeed: -0.25, strain: 0.5 }) });
+    const v = at(s).voices;
+    expect(v.winchClicks.rate).toBe(0);
+    expect(v.winchClicks.gain).toBe(0);
+    expect(v.winchMotor.gain).toBeCloseTo(0.22, 4);
+  });
+
+  it('a stalled drum still hums at the base pitch; a cut-out or released button is silent', () => {
+    const stalled = realistic({ w: winch({ button: true }) });
+    expect(at(stalled).voices.winchMotor.hz).toBe(320);
+    expect(at(realistic({ w: winch({ button: true, cutOut: true }) })).voices.winchMotor.gain).toBe(
+      0,
+    );
+    expect(at(realistic({ w: winch({ drumSpeed: 0.3 }) })).voices.winchMotor.gain).toBe(0);
+  });
+
+  it('the fastest working winch sets the motor pitch', () => {
+    const s = realistic({
+      a: winch({ button: true, drumSpeed: 0.1, strain: 0 }),
+      b: winch({ button: true, drumSpeed: 0.5, strain: 0 }),
+    });
+    expect(at(s).voices.winchMotor.hz).toBeCloseTo(1220, 3);
+  });
+
+  it('cranking the gearbox clicks with the handle turns, capped at the maximum rate', () => {
+    const handleReport: HandleReport = {
+      at: 'gearbox',
+      gear: null,
+      forceN: 10,
+      stallN: 100,
+      turnsPerS: 1.5,
+      speedMps: 0,
+      note: null,
+      blockers: [],
+    };
+    expect(at(realistic({}, { handleReport })).voices.winchClicks.rate).toBeCloseTo(18, 4);
+    expect(
+      at(realistic({}, { handleReport: { ...handleReport, turnsPerS: 5 } })).voices.winchClicks
+        .rate,
+    ).toBe(40);
+  });
+
+  it('a rope running out hisses, higher and louder when faster; hauling is silent here', () => {
+    const report = (motion: 'running' | 'hauling', speedMps: number) => ({
+      loadN: 0,
+      haulLoadN: 0,
+      holdN: 0,
+      motion,
+      speedMps,
+      note: null,
+      blockers: [],
+    });
+    const run1 = at(realistic({}, { reports: { r: report('running', 0.5) } })).voices.ropeRun;
+    expect(run1.gain).toBeCloseTo(0.1, 4);
+    expect(run1.hz).toBeCloseTo(2250, 3);
+    expect(at(realistic({}, { reports: { r: report('hauling', 0.5) } })).voices.ropeRun.gain).toBe(
+      0,
+    );
+  });
+
+  it('a winch that newly cuts out gives one cut-out sound', () => {
+    const before = realistic({ w: winch({ button: true }) });
+    const after = realistic({ w: winch({ button: true, cutOut: true }) });
+    expect(at(after, before).events).toEqual([{ kind: 'cutOut' }]);
+    expect(at(after, after).events).toEqual([]);
+    expect(eventName({ kind: 'cutOut' })).toBe('cutOut');
+  });
+
+  it('Easy ropes: moving a sheet runs a short winch sound, standing still is silent', () => {
+    const v = at(easy(50.5), easy(50), 0.05).voices;
+    expect(v.winchMotor.gain).toBeCloseTo(0.11, 4);
+    expect(v.winchClicks.rate).toBeCloseTo(10, 4);
+    const still = at(easy(50), easy(50), 0.05).voices;
+    expect(still.winchMotor.gain).toBe(0);
+    expect(still.winchClicks.rate).toBe(0);
+    expect(still.winchClicks.gain).toBe(0);
+  });
+
+  it('Realistic ropes ignore the Easy movement rule', () => {
+    const moved = {
+      ...easy(50.5),
+      settings: { ...base.settings, ropesMode: 'realistic' },
+    } as AppState;
+    expect(at(moved, easy(50), 0.05).voices.winchMotor.gain).toBe(0);
+  });
+
+  it('the windlass hums while it runs and is silent after its cut-out', () => {
+    const up = { ...base, anchor: { ...base.anchor, windlass: 'up' } } as AppState;
+    const down = { ...base, anchor: { ...base.anchor, windlass: 'down' } } as AppState;
+    expect(at(up).voices.windlass).toEqual({ gain: 0.25, hz: 120, rate: 0 });
+    expect(at(down).voices.windlass.hz).toBe(140);
+    const cut = { ...up, anchor: { ...up.anchor, cutOut: true } } as AppState;
+    expect(at(cut).voices.windlass.gain).toBe(0);
+    expect(at(base).voices.windlass.gain).toBe(0);
+  });
+
+  it('the chain rattles with the speed it runs out, capped', () => {
+    const chain = (chainOutM: number): AppState => ({
+      ...base,
+      anchor: { ...base.anchor, chainOutM },
+    });
+    const v = at(chain(10.1), chain(10), 0.05).voices.chain;
+    expect(v.rate).toBe(30);
+    expect(v.gain).toBeCloseTo(0.3, 4);
+    expect(at(chain(10.02), chain(10), 0.05).voices.chain.rate).toBeCloseTo(10, 3);
+    expect(at(chain(10), chain(10), 0.05).voices.chain.gain).toBe(0);
+  });
+
+  it('the anchor clanks going down and coming home', () => {
+    const stowed = { ...base, anchor: { ...base.anchor, phase: 'stowed' } } as AppState;
+    const hanging = { ...base, anchor: { ...base.anchor, phase: 'hanging' } } as AppState;
+    expect(at(hanging, stowed).events).toEqual([{ kind: 'anchorDown' }]);
+    expect(at(stowed, hanging).events).toEqual([{ kind: 'anchorUp' }]);
+    expect(at(hanging, hanging).events).toEqual([]);
+    expect(eventName({ kind: 'anchorUp' })).toBe('anchorUp');
+  });
+
+  it('a held thruster hums at its own pitch', () => {
+    const bow = { ...base, thrusters: { bow: 1, stern: 0 } } as AppState;
+    const v = at(bow).voices;
+    expect(v.thrusterBow).toEqual({ gain: 0.3, hz: 240, rate: 0 });
+    expect(v.thrusterStern.gain).toBe(0);
+    const stern = { ...base, thrusters: { bow: 0, stern: -1 } } as AppState;
+    expect(at(stern).voices.thrusterStern.hz).toBe(200);
   });
 });
