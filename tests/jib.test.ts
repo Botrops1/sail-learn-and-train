@@ -16,6 +16,7 @@ import {
   minUnfurledFor,
   settledJibUnfurled,
   solveJib,
+  unfurledAfterSheetHaul,
   type JibSolution,
 } from '../src/model/jib';
 import { ropeDrawings } from '../src/model/ropePaths';
@@ -540,8 +541,8 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
 
   it('review of M3: the "fighting" chip clears as soon as the jib is out far enough for the hauled sheet', () => {
     let rig = initialRig(controls({ ctl_jib_sheet: 100 }));
-    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 20 }, 6);
-    rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 20 }, 2);
+    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 6);
+    rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 0 }, 2);
     expect(rig.jibSolution.sheet.state).toBe('fighting');
     rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 100 }, 2);
     expect(rig.jibSolution.unfurled).toBeGreaterThan(0.99);
@@ -556,12 +557,12 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     }
   });
 
-  it('decision after M3: hauling the sheet on a partly furled jib does not pull it out of its furl; the sheet fights the furling line', () => {
+  it('decision after M3: hauling the sheet on a furled jib does not pull it out of its furl; the sheet fights the furling line', () => {
     let rig = initialRig(controls({ ctl_jib_sheet: 100 }));
-    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 20 }, 6);
-    expect(rig.jibSolution.unfurled).toBeCloseTo(0.2, 2);
-    rig = run(rig, { ctl_jib_sheet: 95, ctl_jib_furl: 20 }, 3);
-    expect(rig.jibSolution.unfurled).toBeCloseTo(0.2, 2);
+    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 6);
+    expect(rig.jibSolution.unfurled).toBe(0);
+    rig = run(rig, { ctl_jib_sheet: 95, ctl_jib_furl: 0 }, 3);
+    expect(rig.jibSolution.unfurled).toBe(0);
     expect(rig.jibSolution.sheet.state).toBe('fighting');
     // Unfurling with the sheet hauled: the jib comes out as far as the sheet allows.
     rig = run(rig, { ctl_jib_sheet: 95, ctl_jib_furl: 100 }, 6);
@@ -569,15 +570,20 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     expect(rig.jibSolution.sheet.state).not.toBe('fighting');
   });
 
-  it('issue #153: a jib rolled right away has no sail to hold out, so its hauled sheet does not fight', () => {
-    let rig = initialRig(controls({ ctl_jib_sheet: 100 }));
-    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 6);
-    expect(rig.jibSolution.furled).toBe(true);
-    for (const sheet of [99.8, 95, 50, 0]) {
-      rig = run(rig, { ctl_jib_sheet: sheet, ctl_jib_furl: 0 }, 1);
-      expect(rig.jibSolution.unfurled, `sheet ${sheet}`).toBe(0);
-      expect(rig.jibSolution.sheet.state, `sheet ${sheet}`).not.toBe('fighting');
-    }
+  it("issue #153: rope hauled on a rolled jib's sheet unrolls it, by the working length it shortens", () => {
+    expect(unfurledAfterSheetHaul(0, 0)).toBe(0);
+    expect(unfurledAfterSheetHaul(1, 3)).toBe(1);
+    // More rope, more jib; enough rope and it is fully out.
+    const some = unfurledAfterSheetHaul(0, 2);
+    const more = unfurledAfterSheetHaul(0, 5);
+    expect(some).toBeGreaterThan(0);
+    expect(more).toBeGreaterThan(some);
+    expect(unfurledAfterSheetHaul(0, 100)).toBe(1);
+    // The working length fell by the rope hauled over the purchase.
+    expect(jibSheetSpan(0, some)).toBeCloseTo(
+      jibSheetSpan(0, 0) - 2 / boat.sails.jib.sheet.purchase,
+      6,
+    );
   });
 
   it('no NaN anywhere across all wind directions × jib control values', () => {
