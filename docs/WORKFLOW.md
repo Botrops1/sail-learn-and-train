@@ -972,3 +972,46 @@ Faster CI, releases, the welcome and the launch texts ([PHASE_LAUNCH_SPEC](PHASE
 - [ ] Privacy line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=easy — Settings → About says visits to the live site are counted anonymously with GoatCounter. The preview itself counts nothing.
 - [ ] Read the README on the PR's branch (Files changed → README.md → View file): the first screen says what the app is and links to it; nothing it claims is wrong when you try it.
 - [ ] Read `docs/BETA.md` and `docs/ANNOUNCE.md` on the PR: would you send them as they are?
+
+## 19. Sound (issue #155)
+
+Wind, waves, the boat, the surroundings with birds, and quiet music, all made by the app ([PHASE_AUDIO_SPEC](PHASE_AUDIO_SPEC.md)). One session and one PR per milestone (M87 … M91), started with `/milestone <N>` after the one before is merged. **M87 needs a `/review` with Opus** before you test it; M88–M91 do not. Use headphones or the phone's speaker; on an iPhone, sound plays only when the ring/silent switch is not on silent.
+
+### 19.1 Checklists
+
+#### M87: Sound on, wind and waves
+
+- [ ] Silent at first: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=12 — open it in a private (incognito) tab: no sound. Settings → Sound: the switch "Sound on" is off.
+- [ ] Switch it on: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=12 — Settings → Sound → "Sound on": you hear wind and the wash of waves. Move Volume down and up: it gets quieter and louder.
+- [ ] Strong wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=30&sea=open — the wind is louder and higher, with a thin whistle in the rigging, and the waves are louder.
+- [ ] Gusts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=15&wm=gusty — listen for a minute: the wind swells when the GUST badge shows.
+- [ ] Pause and background: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=15 — tap Pause in the time bar: the sound gets quieter. Switch to another app and back: the sound stopped while you were away and comes back.
+- [ ] Remembered: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=15 — in a normal tab, after switching Sound on once, open the link again: sound starts after your first tap on the screen.
+- [ ] Surroundings off: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=15 — Settings → Sound → switch "Surroundings" off: silence (nothing else plays yet).
+- [ ] Computer: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=15 — on a PC, a speaker button sits next to the gear over the 3D view; tap it: sound on (the icon shows waves), tap again: off (an ×). On the phone there is no such button.
+
+#### M88: Sails, engine and bumps
+
+- [ ] Flapping sail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=15 — switch Sound on, then in Controls let the mainsheet all the way out: you hear the sail flapping. Pull it in until the sail fills: the flapping stops and a soft rush stays.
+- [ ] Engine: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=0 — Engine → Start: a short start sound, then the engine. Push the lever forward: the engine sound rises with the revs. Stop: it runs down.
+- [ ] Bump: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&ws=0 — motor slowly into the pontoon: a thump. With the fenders out (Harbour gear → Out) the bump is softer, with a rubbery squeak.
+
+#### M89: Winches, ropes, anchor and thrusters
+
+- [ ] Winch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&mode=realistic&ws=15 — switch Sound on, then put a sheet on a winch and hold its button: the motor hums and the drum clicks. Open the clutch with load on the rope: you hear the rope run out.
+- [ ] Easy ropes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=15 — tap + on the mainsheet a few times: a short winch hum and clicks each time.
+- [ ] Anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=bay&ws=8 — hold Down in the Anchor section: a clank as the anchor leaves the bow, the windlass hums and the chain rattles. Hold Up: the same until it clanks home.
+- [ ] Thrusters: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&ws=0 — hold the bow thruster: a hum while you hold it, gone when you let go.
+
+#### M90: Marina and birds
+
+- [ ] Marina: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&tr=busy&ws=12 — switch Sound on: halyards tap on the masts, water laps; within a minute a gull calls and small birds chirp.
+- [ ] Empty marina: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&tr=empty&ws=12 — fewer taps than in the busy marina.
+- [ ] Open water: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=12 — no taps; only now and then a distant gull.
+- [ ] Night: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&ws=12&clk=202606020100 — no birds; the halyards and the water go on.
+
+#### M91: Music
+
+- [ ] Music: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=10 — switch Sound on and listen for two minutes: slow, quiet music under the wind, never jumping out; it does not repeat.
+- [ ] Music off: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=10 — Settings → Sound → switch "Music" off: the music fades within a few seconds; the wind goes on.
+- [ ] Everything together: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&tr=busy&ws=12 — sound on for five minutes while you motor out: is anything too loud, annoying or wrong? Say which sound in the PR.
