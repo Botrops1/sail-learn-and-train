@@ -1,0 +1,18 @@
+{
+  "master": {
+    "groupGain": { "music": 0.33, "surroundings": 1, "boat": 1 },
+    "pausedSurroundings": 0.5,
+    "smoothingS": 0.08,
+    "lookaheadS": 0.05,
+    "maxOneShots": 12,
+    "noiseSeed": 155
+  },
+  "wind": {
+    "minKn": 2, "maxKn": 35, "curve": 0.8, "gain": 0.5,
+    "lowHz": 300, "highHz": 1200, "q": 0.7,
+    "flutterHz": 0.23, "flutterDepth": 0.15
+  },
+  "whistle": { "fromKn": 20, "toKn": 35, "gain": 0.12, "lowHz": 900, "highHz": 1600, "q": 25 },
+  "waves": { "refHeightM": 3, "floor": 0.06, "gain": 0.45, "lowpassHz": 600, "swellDepth": 0.4 },
+  "hull": { "maxKn": 9, "gain": 0.3, "lowHz": 900, "highHz": 1500, "q": 0.8 }
+}
