@@ -1,5 +1,8 @@
 import type { AppState } from '../app/store';
+import { area } from '../model/area';
 import { boat } from '../model/boat';
+import { daylight } from '../model/clock';
+import { sunPosition } from '../model/sun';
 import { trimState, type SailName } from '../model/trim';
 import { fetchKm, seaSize, significantHeightM, waveTrains } from '../model/waves';
 import { SOUND, type SoundData } from './soundData';
@@ -219,6 +222,33 @@ export function soundTargets(
   if (state.thrusters.bow !== 0) voices.thrusterBow = { gain: th.gain, hz: th.bowHz, rate: 0 };
   if (state.thrusters.stern !== 0)
     voices.thrusterStern = { gain: th.gain, hz: th.sternHz, rate: 0 };
+
+  // The marina and the birds (M90): rates are calls per second, gain is the peak of one call.
+  const place = state.harbour.place;
+  const tws = state.wind.twsKn;
+  const ha = data.halyards;
+  const haRate =
+    place === 'marina' ? (ha.baseRate + ha.perKnRate * tws) * ha.traffic[state.harbour.traffic] : 0;
+  voices.halyards = { gain: haRate > 0 ? ha.gain : 0, hz: 0, rate: haRate };
+  const la = data.lapping;
+  const share = la.place[place];
+  voices.lapping = {
+    gain: la.gain * share,
+    hz: la.lowpassHz,
+    rate: share > 0 ? la.rate : 0,
+  };
+  const { latitudeDeg, longitudeDeg } = area.position;
+  const light =
+    data.birdLight[
+      daylight(sunPosition(state.clock.utcMs, latitudeDeg, longitudeDeg).elevationDeg)
+    ];
+  const windShare = tws > data.birdWind.fromKn ? data.birdWind.share : 1;
+  const gu = data.gulls;
+  const guRate = (gu.perMinute[place] / 60) * light * windShare;
+  voices.gulls = { gain: guRate > 0 ? gu.gain[place] : 0, hz: 0, rate: guRate };
+  const sb = data.smallBirds;
+  const sbRate = (sb.perMinute[place] / 60) * light * windShare;
+  voices.smallBirds = { gain: sbRate > 0 ? sb.gain : 0, hz: 0, rate: sbRate };
 
   // Events: a start, and a new contact report.
   if (state.engine.running && !previous.engine.running) events.push({ kind: 'engineStart' });

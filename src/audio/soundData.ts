@@ -1,5 +1,8 @@
 import data from '../../content/audio/sounds.json';
 import type { Severity } from '../model/contact';
+import type { PlaceId } from '../model/places';
+import type { TrafficId } from '../model/marina';
+import type { Daylight } from '../model/clock';
 import type { SoundGroup } from './types';
 
 /** `content/audio/sounds.json`, typed. Every number is tunable (PHASE_AUDIO_SPEC 6.2). The type grows each milestone. */
@@ -97,6 +100,48 @@ export interface SoundData {
   chain: { gain: number; perMetre: number; maxRate: number; clickHz: number; clickS: number };
   anchorClank: { gain: number; hz: number; s: number };
   thruster: { gain: number; bowHz: number; sternHz: number; q: number; rampS: number };
+  halyards: {
+    baseRate: number;
+    perKnRate: number;
+    traffic: Record<TrafficId, number>;
+    gain: number;
+    hzA: number;
+    hzB: number;
+    s: number;
+  };
+  lapping: {
+    place: Record<PlaceId, number>;
+    gain: number;
+    rate: number;
+    lowpassHz: number;
+    attackS: number;
+    s: number;
+  };
+  gulls: {
+    perMinute: Record<PlaceId, number>;
+    gain: Record<PlaceId, number>;
+    fromHz: number;
+    toHz: number;
+    noteS: number;
+    gapS: number;
+    notesMin: number;
+    notesMax: number;
+    bandHz: number;
+    q: number;
+    attackS: number;
+  };
+  smallBirds: {
+    perMinute: Record<PlaceId, number>;
+    gain: number;
+    fromHz: number;
+    toHz: number;
+    chirpS: number;
+    gapS: number;
+    chirpsMin: number;
+    chirpsMax: number;
+  };
+  birdLight: Record<Daylight, number>;
+  birdWind: { fromKn: number; share: number };
 }
 
 export const SOUND: SoundData = data;

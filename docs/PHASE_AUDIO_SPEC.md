@@ -538,6 +538,12 @@ Run `SHOTS_ONLY=m90`. Add `"m90": 300`.
 
 Checks and tests pass; on the phone: in the marina the halyards tap on the masts and the water laps, gulls call now and then, small birds chirp; in open water only a distant gull now and then; at night no birds. Not in M90: music; rain (out of scope).
 
+**Decided in the M90 PR** (recommended; merging accepts it):
+
+- The halyards, lapping, gull and small-bird sounds are left as specified and tuned after the owner's phone test (nothing in the numbers is changed). `"m90"` in `ci-times.json` is the measured time, not 300 (see the PR).
+- `placeVoices.ts` has the four Poisson voices; each call builds its own oscillators or noise source and counts as one one-shot with the shared `track` helper. The lapping slap reads a different piece of the shared noise each time (`start(at, offset)`, offset `rng() · 1.5` s).
+- Browser check 1 reads the probe once per second of app time for up to 90 s and stops at the first `gull` or `chirp`.
+
 ---
 
 ## 10. M91: Music
