@@ -321,6 +321,17 @@ Run `SHOTS_ONLY=general,m25,m38,m51,m52,m87` locally (the chip row, the alert ch
 
 Checks and tests pass; the owner hears on the phone: silence at first, then wind and waves after switching Sound on, louder in strong wind and swelling in gusts, quieter on Pause, stopped when the app is in the background. Not in M87: any boat sound, birds, the marina, music (later milestones; their switches are already there and simply have nothing to play yet).
 
+
+**Decided in the M87 PR** (recommended; merging accepts it):
+
+- The whistle's loudness: a narrow band of noise (Q 25) is quiet, so `whistle.gain` 0.12 gives about 0.09 at 25 kn. It is left as specified and tuned after the owner's phone test.
+- After a reload with Sound left on, nothing plays until the first tap or key press, and nothing says so (as 3.1 says). No banner.
+- The waves' low-pass filter keeps the Web Audio default Q (no number in the data for it); the other filters use their `q` from the data file.
+- `voice.ts` also exports `oneShots` (a counter a voice raises while a one-shot plays; the engine skips a `fire` at `maxOneShots`) and `loopingNoise` (the looping noise source at the voice's start offset). The engine already drives pulse and Poisson voices and the probe's recorder; no M87 voice uses them, so that code is first exercised in M88.
+- `soundTargets` takes `previous` and `dtS` as the spec says; M87 does not use them (the event voices of M88 do).
+- The browser checks open the pages that do not depend on app time on the real clock (`openPlain` = `openPage` of `shots.mjs`, passed with `onTestClock` to `liveM87Checks`), because the audio context runs in real time; the wind and Pause checks use the test clock. Headless Chromium started the audio context after a click without extra flags. `"m87"` in `ci-times.json` is 47 (measured), not 300.
+- `tests/languages.test.ts` lists `sound.volumeValue` among the Russian strings equal to English (a placeholder and a percent sign only).
+
 ---
 
 ## 7. M88: Sails, engine and bumps
