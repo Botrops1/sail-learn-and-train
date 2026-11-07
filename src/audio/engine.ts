@@ -1,6 +1,7 @@
 import type { Store } from '../app/store';
 import { mulberry32 } from '../model/random';
-import { boatVoices, playEvent } from './boatVoices';
+import { boatVoices, playEvent as playBoatEvent, type BoatEvent } from './boatVoices';
+import { gearVoices, playEvent as playGearEvent, type GearEvent } from './gearVoices';
 import { eventName, soundTargets } from './levels';
 import { noiseBuffer } from './noise';
 import { getSoundPrefs, onSoundPrefs } from './prefs';
@@ -41,7 +42,11 @@ interface SoundProbe {
 const GROUPS: readonly SoundGroup[] = ['music', 'surroundings', 'boat'];
 const PROBE_KEEP = 50;
 /** The voice files; the later milestones add theirs (boatVoices, gearVoices, placeVoices). */
-const FACTORIES: Partial<Record<VoiceId, VoiceFactory>> = { ...surroundingsVoices, ...boatVoices };
+const FACTORIES: Partial<Record<VoiceId, VoiceFactory>> = {
+  ...surroundingsVoices,
+  ...boatVoices,
+  ...gearVoices,
+};
 
 /**
  * The events a browser accepts as "the learner did something" for starting sound. A finger touching
@@ -194,7 +199,9 @@ export function createSoundEngine(store: Store): SoundEngine {
     // Events are played by the voice file that owns them, into the boat bus; one past the cap is dropped.
     for (const event of targets.events) {
       if (oneShots.active >= SOUND.master.maxOneShots || !noise) continue;
-      playEvent(ctx, groupNodes.boat, noise, event, SOUND);
+      if (event.kind === 'cutOut' || event.kind === 'anchorDown' || event.kind === 'anchorUp')
+        playGearEvent(ctx, groupNodes.boat, noise, event satisfies GearEvent, SOUND);
+      else playBoatEvent(ctx, groupNodes.boat, noise, event satisfies BoatEvent, SOUND);
       record(eventName(event));
     }
   }

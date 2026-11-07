@@ -36,15 +36,18 @@ export function eventName(event: SoundEvent): string {
   return event.kind === 'contact' ? `contact:${event.severity}` : event.kind;
 }
 
+/** The ropes whose movement the unseen electric winches of Easy ropes follow (AppliedControls, in %). */
+const EASY_KEYS = ['mainsheet', 'vang', 'toppingLift', 'mainFurl', 'jibSheet', 'jibFurl'] as const;
+
 /**
- * `previous` is for the events (a start, a new contact report); `dtS` is for the voices of later
- * milestones and is unused so far.
+ * `previous` is for the events (a start, a new contact report, a cut-out, the anchor) and for what
+ * moves (Easy ropes, the chain); `dtS` is the frame's real seconds.
  */
 export function soundTargets(
   state: AppState,
   previous: AppState,
   prefs: SoundPrefs,
-  _dtS: number,
+  dtS: number,
   data: SoundData = SOUND,
 ): SoundTargets {
   const master = data.master;
@@ -138,8 +141,86 @@ export function soundTargets(
     rate: 0,
   };
 
-  // Events: a start, and a new contact report.
+  // Winches and ropes (M89): by the ropes mode; the other mode's branch is silent.
   const events: SoundEvent[] = [];
+  const gear = data.winchClicks;
+  if (state.settings.ropesMode === 'realistic') {
+    const winches = Object.entries(state.realistic.winches);
+    const m = data.winchMotor;
+    // Motor: the working winch whose drum turns fastest (a stalled drum still hums at baseHz).
+    let best: (typeof winches)[number][1] | undefined;
+    for (const [, w] of winches)
+      if (w.button && !w.cutOut && (!best || Math.abs(w.drumSpeed) > Math.abs(best.drumSpeed)))
+        best = w;
+    if (best) {
+      const x = clamp01(Math.abs(best.drumSpeed) / m.refSpeedMps);
+      voices.winchMotor = {
+        gain: m.gain,
+        hz: (m.baseHz + m.speedHz * x) * (1 - m.strainDrop * clamp01(best.strain ?? 0)),
+        rate: 0,
+      };
+    }
+    // Clicks: the pawls click only when a drum turns the hauling way; the handle at the gearbox clicks too.
+    const hr = state.realistic.handleReport;
+    const drumRate = Math.min(
+      gear.maxRate,
+      winches.reduce((sum, [, w]) => sum + Math.max(0, w.drumSpeed), 0) * gear.perMetre,
+    );
+    const rate = Math.min(
+      gear.maxRate,
+      drumRate + (hr?.at === 'gearbox' ? Math.abs(hr.turnsPerS) * gear.gearboxPerTurn : 0),
+    );
+    voices.winchClicks = { gain: rate > 0 ? gear.gain : 0, hz: 0, rate };
+    // A rope running or easing out with a hiss.
+    const rr = data.ropeRun;
+    let fastest = 0;
+    for (const report of Object.values(state.realistic.reports))
+      if (report.motion === 'running' || report.motion === 'easing')
+        fastest = Math.max(fastest, Math.abs(report.speedMps));
+    const x = clamp01(fastest / rr.refSpeedMps);
+    voices.ropeRun = { gain: rr.gain * x, hz: rr.lowHz + (rr.highHz - rr.lowHz) * x, rate: 0 };
+    for (const [key, w] of winches)
+      if (w.cutOut && previous.realistic.winches[key]?.cutOut === false)
+        events.push({ kind: 'cutOut' });
+  } else if (state.settings.ropesMode === 'easy') {
+    // The electric winches are unseen: they follow how fast the controls move (real seconds, so Pause is silent).
+    let moved = 0;
+    for (const key of EASY_KEYS)
+      moved += Math.abs(state.rig.applied[key] - previous.rig.applied[key]);
+    const movePct = dtS > 0 ? moved / dtS : 0;
+    const x = clamp01(movePct / data.easyRopes.refPctPerS);
+    const m = data.winchMotor;
+    voices.winchMotor = { gain: m.gain * x, hz: m.baseHz + m.speedHz * x, rate: 0 };
+    const rate = Math.min(gear.maxRate, movePct * data.easyRopes.clicksPerPct);
+    voices.winchClicks = { gain: rate > 0 ? gear.gain : 0, hz: 0, rate };
+  }
+
+  // The anchor windlass and its chain (both ropes modes).
+  const a = state.anchor;
+  const wl = data.windlass;
+  voices.windlass = {
+    gain: a.windlass !== 'off' && !a.cutOut ? wl.gain : 0,
+    hz: a.windlass === 'up' ? wl.upHz : wl.downHz,
+    rate: 0,
+  };
+  const ch = data.chain;
+  const chainRate = Math.min(
+    ch.maxRate,
+    (dtS > 0 ? Math.abs(a.chainOutM - previous.anchor.chainOutM) / dtS : 0) * ch.perMetre,
+  );
+  voices.chain = { gain: chainRate > 0 ? ch.gain : 0, hz: 0, rate: chainRate };
+  if (previous.anchor.phase === 'stowed' && a.phase !== 'stowed')
+    events.push({ kind: 'anchorDown' });
+  else if (previous.anchor.phase !== 'stowed' && a.phase === 'stowed')
+    events.push({ kind: 'anchorUp' });
+
+  // The thrusters hum while held.
+  const th = data.thruster;
+  if (state.thrusters.bow !== 0) voices.thrusterBow = { gain: th.gain, hz: th.bowHz, rate: 0 };
+  if (state.thrusters.stern !== 0)
+    voices.thrusterStern = { gain: th.gain, hz: th.sternHz, rate: 0 };
+
+  // Events: a start, and a new contact report.
   if (state.engine.running && !previous.engine.running) events.push({ kind: 'engineStart' });
   const report = state.contact.reports[0];
   if (

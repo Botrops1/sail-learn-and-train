@@ -74,6 +74,29 @@ export interface SoundData {
     squeakS: number;
     squeakGain: number;
   };
+  winchMotor: {
+    gain: number;
+    baseHz: number;
+    speedHz: number;
+    refSpeedMps: number;
+    strainDrop: number;
+    q: number;
+  };
+  winchClicks: {
+    gain: number;
+    perMetre: number;
+    maxRate: number;
+    gearboxPerTurn: number;
+    clickHz: number;
+    clickS: number;
+  };
+  easyRopes: { refPctPerS: number; clicksPerPct: number };
+  cutOut: { gain: number; hz: number; s: number };
+  ropeRun: { gain: number; refSpeedMps: number; lowHz: number; highHz: number; q: number };
+  windlass: { gain: number; upHz: number; downHz: number; q: number };
+  chain: { gain: number; perMetre: number; maxRate: number; clickHz: number; clickS: number };
+  anchorClank: { gain: number; hz: number; s: number };
+  thruster: { gain: number; bowHz: number; sternHz: number; q: number; rampS: number };
 }
 
 export const SOUND: SoundData = data;
