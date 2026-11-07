@@ -3594,3 +3594,16 @@
 | exercise.bar.offWinch | Off | Снять |
 | exercise.bar.tail | Into the self-tailer | В самостопорящий зажим |
 | exercise.bar.hold | Hold ▲ | Держать ▲ |
+| sound.label | Sound | Звук |
+| sound.hint | Wind, waves, the boat and quiet music, all made by the app. Off until you switch it on; this device remembers it. | Ветер, волны, яхта и тихая музыка: всё это создаёт само приложение. Выключено, пока вы не включите; это устройство запомнит выбор. |
+| sound.on | Sound on | Звук включён |
+| sound.music | Music | Музыка |
+| sound.surroundings | Surroundings | Окружение |
+| sound.surroundings.hint | Wind, waves, the marina and birds. | Ветер, волны, марина и птицы. |
+| sound.boat | Boat sounds | Звуки яхты |
+| sound.boat.hint | Sails, the engine, winches, the anchor chain and bumps. | Паруса, двигатель, лебёдки, якорная цепь и удары. |
+| sound.volume | Volume | Громкость |
+| sound.volumeValue | {value} % | {value} % |
+| sound.unsupported | This browser cannot play the app's sound. | Этот браузер не может воспроизводить звук приложения. |
+| sound.chipOn | Sound on: tap to mute | Звук включён: нажмите, чтобы выключить |
+| sound.chipOff | Sound off: tap to play | Звук выключен: нажмите, чтобы включить |

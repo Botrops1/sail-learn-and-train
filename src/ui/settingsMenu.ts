@@ -17,6 +17,7 @@ import { downloadJson, pickJsonFile } from './files';
 import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 import { LAYOUT_KEY } from './sectionLayout';
+import { buildSoundField } from './soundSettings';
 import { FOLD_KEY } from './timeBar';
 
 /** The guide to making a boat profile (M57). */
@@ -324,6 +325,7 @@ function buildSettingsBody(store: Store): HTMLElement[] {
 
   return [
     languageGroup,
+    buildSoundField(),
     buildBoatField(store),
     labelsField,
     timeBarField,
