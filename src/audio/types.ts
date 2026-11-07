@@ -12,9 +12,20 @@ export interface SoundPrefs {
   music: boolean;
   surroundings: boolean;
   boat: boolean;
-  /** 0–100. */
+  /** The overall volume, 0–100. */
   volume: number;
+  /** The volume of each group, 0–100, on top of the overall one (a balance control). */
+  musicVolume: number;
+  surroundingsVolume: number;
+  boatVolume: number;
 }
+
+/** The `SoundPrefs` field that holds a group's volume. */
+export const GROUP_VOLUME_KEY = {
+  music: 'musicVolume',
+  surroundings: 'surroundingsVolume',
+  boat: 'boatVolume',
+} as const satisfies Record<SoundGroup, keyof SoundPrefs>;
 
 /** What one voice should do now; unused fields are 0. */
 export interface VoiceTarget {

@@ -212,11 +212,7 @@ export async function liveM87Checks({ openPage, openPlain, viewports, outDir, pr
     const { context, page } = await openPlain(phone, 'm87-ru', '?v=1&lang=ru');
     await openSettings(page);
     const text = (await tid(page, 'sound-setting').textContent()) ?? '';
-    check(
-      'ru: block shows',
-      text.includes('Звук') && text.includes('Громкость'),
-      text.slice(0, 60),
-    );
+    check('ru: block shows', text.includes('Звук') && /громкость/i.test(text), text.slice(0, 60));
     check('ru: no raw keys', !/sound\.[a-z]/i.test(text), text.slice(0, 60));
     await context.close();
   }

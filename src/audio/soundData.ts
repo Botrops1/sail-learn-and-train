@@ -142,6 +142,36 @@ export interface SoundData {
   };
   birdLight: Record<Daylight, number>;
   birdWind: { fromKn: number; share: number };
+  music: {
+    seed: number;
+    scale: number[];
+    chords: number[][];
+    chordEveryS: number[];
+    padAttackS: number;
+    padReleaseS: number;
+    padGain: number;
+    padDetuneCents: number;
+    noteEveryS: number[];
+    noteOctaves: number[];
+    noteGain: number;
+    noteDecayS: number;
+    restShare: number;
+    delayS: number;
+    delayFeedback: number;
+    delayMix: number;
+    lowpassHz: number;
+    /** The filter's darkest cutoff; `lowpassHz` is its brightest. */
+    lowpassMinHz: number;
+    /** Two slow periods (seconds) whose mix moves the cutoff between the two. */
+    brightnessPeriodsS: number[];
+    /** The note intervals are multiplied by a number that drifts between these (busy … sparse). */
+    intervalScale: number[];
+    intervalPeriodS: number;
+    /** Key changes: semitones from D, a different one each time. */
+    keys: number[];
+    keyEveryS: number[];
+    firstKeyChangeS: number;
+  };
 }
 
 export const SOUND: SoundData = data;

@@ -133,15 +133,37 @@ describe('groups (M87)', () => {
     expect(g).toEqual({ music: 0, surroundings: 0, boat: 0 });
   });
 
-  it('volume 70 scales the groups', () => {
+  it('the default overall volume is 50 and scales the groups', () => {
+    expect(on.volume).toBe(50);
     const g = targets(base).groups;
+    expect(g.surroundings).toBeCloseTo(0.5, 6);
+    expect(g.boat).toBeCloseTo(0.5, 6);
+    expect(g.music).toBeCloseTo(0.165, 6);
+  });
+
+  it('volume 70 scales the groups', () => {
+    const g = targets(base, { ...on, volume: 70 }).groups;
     expect(g.surroundings).toBeCloseTo(0.7, 6);
     expect(g.boat).toBeCloseTo(0.7, 6);
     expect(Math.abs(g.music - 0.231)).toBeLessThan(0.0005);
   });
 
+  it("each group's own volume balances it against the others (owner request, M91)", () => {
+    const g = targets(base, {
+      ...on,
+      musicVolume: 50,
+      surroundingsVolume: 20,
+      boatVolume: 0,
+    }).groups;
+    expect(g.music).toBeCloseTo(0.0825, 6);
+    expect(g.surroundings).toBeCloseTo(0.1, 6);
+    expect(g.boat).toBe(0);
+    // The other groups do not move.
+    expect(targets(base, { ...on, musicVolume: 0 }).groups.surroundings).toBeCloseTo(0.5, 6);
+  });
+
   it('Pause stops the boat, halves the surroundings, keeps the music', () => {
-    const g = targets({ ...base, paused: true }).groups;
+    const g = targets({ ...base, paused: true }, { ...on, volume: 70 }).groups;
     expect(g.surroundings).toBeCloseTo(0.35, 6);
     expect(g.boat).toBe(0);
     expect(Math.abs(g.music - 0.231)).toBeLessThan(0.0005);

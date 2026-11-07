@@ -8,8 +8,8 @@ import {
 
 describe('sound prefs (M87)', () => {
   it('a volume that is not a finite number takes the default', () => {
-    expect(parseSoundPrefs('{"volume":"loud"}').volume).toBe(70);
-    expect(parseSoundPrefs('{"volume":null}').volume).toBe(70);
+    expect(parseSoundPrefs('{"volume":"loud"}').volume).toBe(50);
+    expect(parseSoundPrefs('{"volume":null}').volume).toBe(50);
   });
 
   it('missing or bad text gives the defaults', () => {
@@ -40,9 +40,33 @@ describe('sound prefs (M87)', () => {
     expect(seen).toEqual([true]);
   });
 
+  it('the default overall volume is 50 and every group starts at 100', () => {
+    expect(DEFAULT_SOUND_PREFS).toMatchObject({
+      volume: 50,
+      musicVolume: 100,
+      surroundingsVolume: 100,
+      boatVolume: 100,
+    });
+  });
+
+  it('keeps the volume saved by an older version, and gives the group volumes their default', () => {
+    const old = parseSoundPrefs('{"on":true,"music":true,"volume":70}');
+    expect(old.volume).toBe(70);
+    expect(old.musicVolume).toBe(100);
+  });
+
+  it("clamps, rounds and defaults each group's volume", () => {
+    const p = parseSoundPrefs('{"musicVolume":42.6,"surroundingsVolume":-5,"boatVolume":"x"}');
+    expect(p.musicVolume).toBe(43);
+    expect(p.surroundingsVolume).toBe(0);
+    expect(p.boatVolume).toBe(100);
+    expect(setSoundPrefs({ musicVolume: 900 }).musicVolume).toBe(100);
+    setSoundPrefs({ musicVolume: 100 });
+  });
+
   it('setSoundPrefs clamps the volume', () => {
     expect(setSoundPrefs({ volume: 500 }).volume).toBe(100);
-    expect(setSoundPrefs({ volume: Number.NaN }).volume).toBe(70);
-    setSoundPrefs({ volume: 70 });
+    expect(setSoundPrefs({ volume: Number.NaN }).volume).toBe(50);
+    setSoundPrefs({ volume: 50 });
   });
 });

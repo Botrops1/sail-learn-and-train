@@ -13,7 +13,10 @@ export const DEFAULT_SOUND_PREFS: SoundPrefs = {
   music: true,
   surroundings: true,
   boat: true,
-  volume: 70,
+  volume: 50,
+  musicVolume: 100,
+  surroundingsVolume: 100,
+  boatVolume: 100,
 };
 
 function bool(value: unknown, fallback: boolean): boolean {
@@ -22,6 +25,10 @@ function bool(value: unknown, fallback: boolean): boolean {
 
 function clampVolume(value: number): number {
   return Math.min(100, Math.max(0, Math.round(value)));
+}
+
+function volume(value: unknown, fallback: number): number {
+  return typeof value === 'number' && Number.isFinite(value) ? clampVolume(value) : fallback;
 }
 
 /** JSON → prefs: each missing or wrong-typed field takes its default; bad JSON gives the defaults. */
@@ -40,10 +47,10 @@ export function parseSoundPrefs(text: string | null): SoundPrefs {
     music: bool(o.music, DEFAULT_SOUND_PREFS.music),
     surroundings: bool(o.surroundings, DEFAULT_SOUND_PREFS.surroundings),
     boat: bool(o.boat, DEFAULT_SOUND_PREFS.boat),
-    volume:
-      typeof o.volume === 'number' && Number.isFinite(o.volume)
-        ? clampVolume(o.volume)
-        : DEFAULT_SOUND_PREFS.volume,
+    volume: volume(o.volume, DEFAULT_SOUND_PREFS.volume),
+    musicVolume: volume(o.musicVolume, DEFAULT_SOUND_PREFS.musicVolume),
+    surroundingsVolume: volume(o.surroundingsVolume, DEFAULT_SOUND_PREFS.surroundingsVolume),
+    boatVolume: volume(o.boatVolume, DEFAULT_SOUND_PREFS.boatVolume),
   };
 }
 
@@ -72,9 +79,10 @@ export function setSoundPrefs(patch: Partial<SoundPrefs>): SoundPrefs {
     music: merged.music === true,
     surroundings: merged.surroundings === true,
     boat: merged.boat === true,
-    volume: Number.isFinite(merged.volume)
-      ? clampVolume(merged.volume)
-      : DEFAULT_SOUND_PREFS.volume,
+    volume: volume(merged.volume, DEFAULT_SOUND_PREFS.volume),
+    musicVolume: volume(merged.musicVolume, DEFAULT_SOUND_PREFS.musicVolume),
+    surroundingsVolume: volume(merged.surroundingsVolume, DEFAULT_SOUND_PREFS.surroundingsVolume),
+    boatVolume: volume(merged.boatVolume, DEFAULT_SOUND_PREFS.boatVolume),
   };
   try {
     globalThis.localStorage?.setItem(SOUND_KEY, JSON.stringify(current));
