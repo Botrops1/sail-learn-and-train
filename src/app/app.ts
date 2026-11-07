@@ -29,6 +29,7 @@ import { createExerciseResume } from '../ui/exerciseResume';
 import { createExerciseBar } from '../ui/exerciseBar';
 import { twaSignedDeg } from '../model/exercises';
 import { mpsToKn } from '../model/angles';
+import { createWelcome, shouldWelcome, welcomeSeen } from '../ui/welcome';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
 import { createInstrumentStrip } from '../ui/instrumentStrip';
@@ -45,6 +46,8 @@ const FPS_WINDOW_MS = 500;
 
 /** Wires store, layout, panel, 3D view and the main loop together. */
 export function startApp(host: HTMLElement, options: { missingBoat?: string | null } = {}): void {
+  // Before `startUrlSync` writes settings into the address bar: the welcome shows only without any.
+  const firstSearch = window.location.search;
   // The language first: every element below is built once with t() (PHASE4_SPEC 9.3).
   const initial = parseUrlState(
     window.location.search,
@@ -64,7 +67,12 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   const sheet = createSheet(layout, layout.view, top);
   // The settings and the mode picker are built once (M52): a phone shows them in the Settings and
   // Mode tabs, elsewhere the cards of the gear and the mode chip hold them (`panel.ts` moves them).
-  const settingsContent = createSettingsContent(store);
+  // `welcome` is assigned further down, once the panel and the 3D view exist (as `reframe` is).
+  let welcome: { open(): void } | undefined = undefined;
+  const settingsContent = createSettingsContent(store, () => {
+    if (layout.viewport().mode === 'stacked') sheet.setHeight('peek');
+    welcome?.open();
+  });
   // The page may have reloaded for a new language: the Settings tab or card opens again (read once).
   const reopen = takeOpenAfterReload() === 'settings';
   // The chip row at the bottom of the view (M25): the gear always (the settings work without
@@ -253,6 +261,12 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   // The history of the short alerts (M36, issue #80). After the camera chip, so that its button
   // stands between the camera chip and the gear in the chip row.
   createAlertCentre(topChips, chipRow, layout.view, store, layout, panel.showLearnEntry);
+
+  // The welcome (M85): a first visit to the bare address opens it; Settings → About opens it again.
+  welcome = createWelcome(store, layout, sheet, scene !== undefined, () =>
+    panel.showSection('learn'),
+  );
+  if (shouldWelcome(firstSearch, welcomeSeen())) welcome.open();
 
   let frames = 0;
   let windowStart = performance.now();

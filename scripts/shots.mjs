@@ -101,6 +101,7 @@ import { liveM79Checks, M79_SCENES } from './shots-m79.mjs';
 import { liveM80Checks, M80_SCENES } from './shots-m80.mjs';
 import { liveM81Checks, M81_SCENES } from './shots-m81.mjs';
 import { liveM82Checks, M82_SCENES } from './shots-m82.mjs';
+import { liveM85Checks } from './shots-m85.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -437,15 +438,25 @@ async function waitForGpu(page) {
 /**
  * Opens a page. `testClock: true` puts it on the test clock (above). A check that waits for
  * something that does not depend on the app's time (a CSS transition) uses a real wait instead:
- * `page.realWaitForTimeout(ms)`.
+ * `page.realWaitForTimeout(ms)`. `welcome: true` leaves the welcome card (M85) unmarked as seen.
  */
-async function openPage(viewport, label, query, { testClock = false } = {}) {
+async function openPage(viewport, label, query, { testClock = false, welcome = false } = {}) {
   const context = await browser.newContext({
     viewport: { width: viewport.width, height: viewport.height },
     deviceScaleFactor: 1,
     hasTouch: viewport.width < 1000,
     isMobile: false,
   });
+  if (!welcome) {
+    // The welcome card (M85) would cover older pages: mark it seen, as a returning visitor.
+    await context.addInitScript(() => {
+      try {
+        localStorage.setItem('sail-learn.welcome', '1');
+      } catch {
+        // Storage blocked: nothing to mark.
+      }
+    });
+  }
   if (testClock) {
     await context.clock.install({ time: TEST_CLOCK_START });
     await context.clock.pauseAt(TEST_CLOCK_START + 1000);
@@ -514,8 +525,8 @@ async function openPage(viewport, label, query, { testClock = false } = {}) {
 }
 
 /** `openPage` on the test clock (the M4a, M4b and M4c live checks). */
-const openOnTestClock = (viewport, label, query) =>
-  openPage(viewport, label, query, { testClock: true });
+const openOnTestClock = (viewport, label, query, options = {}) =>
+  openPage(viewport, label, query, { ...options, testClock: true });
 
 const cardPart = (page) =>
   page.evaluate(() => {
@@ -1148,6 +1159,7 @@ try {
     m80: () => liveM80Checks(onTestClock),
     m81: () => liveM81Checks(onTestClock),
     m82: () => liveM82Checks(onTestClock),
+    m85: () => liveM85Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
