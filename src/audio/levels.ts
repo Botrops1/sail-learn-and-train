@@ -1,4 +1,6 @@
 import type { AppState } from '../app/store';
+import { boat } from '../model/boat';
+import { trimState, type SailName } from '../model/trim';
 import { fetchKm, seaSize, significantHeightM, waveTrains } from '../model/waves';
 import { SOUND, type SoundData } from './soundData';
 import {
@@ -31,15 +33,16 @@ const silent = (): VoiceTarget => ({ gain: 0, hz: 0, rate: 0 });
 
 /** The name the probe records for an event (M88: its `kind`, and `contact:<severity>` for a contact). */
 export function eventName(event: SoundEvent): string {
-  return event;
+  return event.kind === 'contact' ? `contact:${event.severity}` : event.kind;
 }
 
 /**
- * `previous` and `dtS` are for the event voices of M88 and later; M87 has none, so they are unused.
+ * `previous` is for the events (a start, a new contact report); `dtS` is for the voices of later
+ * milestones and is unused so far.
  */
 export function soundTargets(
   state: AppState,
-  _previous: AppState,
+  previous: AppState,
   prefs: SoundPrefs,
   _dtS: number,
   data: SoundData = SOUND,
@@ -99,5 +102,54 @@ export function soundTargets(
     rate: 0,
   };
 
-  return { groups, voices, events: [] };
+  // Sails (M88): flap while luffing, a soft rush while full.
+  const sails: readonly [SailName, VoiceId, VoiceId][] = [
+    ['main', 'flapMain', 'fullMain'],
+    ['jib', 'flapJib', 'fullJib'],
+  ];
+  const windRamp = (a: number, b: number): number => ramp(aws, a, b);
+  for (const [sail, flapId, fullId] of sails) {
+    const ts = trimState(sail, state.rig, state.rig.wind.awaDeg);
+    const share =
+      sail === 'main' ? state.rig.applied.mainFurl / 100 : state.rig.jibSolution.unfurled;
+    if (ts === 'luffing') {
+      const f = data.flap;
+      voices[flapId] = {
+        gain: f.gain * windRamp(f.fromKn, f.toKn) * share,
+        hz: f.bandHz,
+        rate: f.baseHz + f.perKnHz * aws,
+      };
+    } else if (ts === 'good' || ts === 'stalled' || ts === 'pushed') {
+      const f = data.full;
+      voices[fullId] = { gain: f.gain * windRamp(f.fromKn, f.toKn) * share, hz: f.bandHz, rate: 0 };
+    }
+  }
+
+  // Engine (M88): the pitch follows the revs; idle and top revs come from the boat in use.
+  const { running, rpm } = state.engine;
+  const en = data.engine;
+  const { idleRpm, maxRpm } = boat.physics.engine;
+  const r = ramp(rpm, idleRpm, maxRpm);
+  voices.engine = {
+    gain: running
+      ? en.gain * (en.idleShare + (1 - en.idleShare) * r)
+      : en.gain * en.idleShare * clamp01(rpm / idleRpm),
+    hz: (rpm / 60) * en.firesPerRev,
+    rate: 0,
+  };
+
+  // Events: a start, and a new contact report.
+  const events: SoundEvent[] = [];
+  if (state.engine.running && !previous.engine.running) events.push({ kind: 'engineStart' });
+  const report = state.contact.reports[0];
+  if (
+    report &&
+    report.obstacleId !== 'propeller' &&
+    !previous.contact.reports.some(
+      (p) => p.atS === report.atS && p.obstacleId === report.obstacleId && p.part === report.part,
+    )
+  )
+    events.push({ kind: 'contact', severity: report.severity });
+
+  return { groups, voices, events };
 }

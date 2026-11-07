@@ -1,5 +1,6 @@
 import type { Store } from '../app/store';
 import { mulberry32 } from '../model/random';
+import { boatVoices, playEvent } from './boatVoices';
 import { eventName, soundTargets } from './levels';
 import { noiseBuffer } from './noise';
 import { getSoundPrefs, onSoundPrefs } from './prefs';
@@ -40,7 +41,7 @@ interface SoundProbe {
 const GROUPS: readonly SoundGroup[] = ['music', 'surroundings', 'boat'];
 const PROBE_KEEP = 50;
 /** The voice files; the later milestones add theirs (boatVoices, gearVoices, placeVoices). */
-const FACTORIES: Partial<Record<VoiceId, VoiceFactory>> = { ...surroundingsVoices };
+const FACTORIES: Partial<Record<VoiceId, VoiceFactory>> = { ...surroundingsVoices, ...boatVoices };
 
 /**
  * The events a browser accepts as "the learner did something" for starting sound. A finger touching
@@ -56,6 +57,7 @@ export function createSoundEngine(store: Store): SoundEngine {
   const recorded: string[] = [];
   let ctx: AudioContext | undefined;
   let groupNodes: Record<SoundGroup, GainNode> | undefined;
+  let noise: AudioBuffer | undefined;
   const voices = new Map<VoiceId, Voice>();
   const rngs = new Map<VoiceId, () => number>();
   const phases = new Map<VoiceId, number>();
@@ -95,7 +97,7 @@ export function createSoundEngine(store: Store): SoundEngine {
       nodes[g] = node;
     }
     groupNodes = nodes;
-    const noise = noiseBuffer(context);
+    noise = noiseBuffer(context);
     for (const id of VOICE_IDS) {
       const factory = FACTORIES[id];
       if (!factory) continue;
@@ -171,12 +173,12 @@ export function createSoundEngine(store: Store): SoundEngine {
         let rate = target.rate;
         const jitter = jitterOf(id);
         const rng = rngs.get(id);
-        if (jitter > 0 && rng) rate *= 1 + jitter * (2 * rng() - 1);
+        if (!rng) continue;
+        if (jitter > 0) rate *= 1 + jitter * (2 * rng() - 1);
         const result = pulses(phases.get(id) ?? 0, rate, dt);
         phases.set(id, result.phase);
         voice.set(target);
-        for (const offset of result.offsetsS)
-          voice.fire?.(now + offset, target, rng ?? Math.random);
+        for (const offset of result.offsetsS) voice.fire?.(now + offset, target, rng);
       } else {
         voice.set(target);
         const rng = rngs.get(id);
@@ -189,8 +191,12 @@ export function createSoundEngine(store: Store): SoundEngine {
         }
       }
     }
-    // Events (M88 and later) are played by the voice file that owns them.
-    for (const event of targets.events) record(eventName(event));
+    // Events are played by the voice file that owns them, into the boat bus; one past the cap is dropped.
+    for (const event of targets.events) {
+      if (oneShots.active >= SOUND.master.maxOneShots || !noise) continue;
+      playEvent(ctx, groupNodes.boat, noise, event, SOUND);
+      record(eventName(event));
+    }
   }
 
   return {
@@ -212,8 +218,7 @@ export function createSoundEngine(store: Store): SoundEngine {
   };
 }
 
-/** A voice's `jitter` (the flaps of M88), 0 when its data section has none. */
+/** A pulse voice's `jitter` (the two flaps share `flap.jitter`), 0 for the others. */
 function jitterOf(id: VoiceId): number {
-  const section = (SOUND as unknown as Record<string, { jitter?: number } | undefined>)[id];
-  return section?.jitter ?? 0;
+  return id === 'flapMain' || id === 'flapJib' ? SOUND.flap.jitter : 0;
 }

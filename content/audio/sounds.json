@@ -14,5 +14,14 @@
   },
   "whistle": { "fromKn": 20, "toKn": 35, "gain": 0.12, "lowHz": 900, "highHz": 1600, "q": 25 },
   "waves": { "refHeightM": 3, "floor": 0.06, "gain": 0.45, "lowpassHz": 600, "swellDepth": 0.4 },
-  "hull": { "maxKn": 9, "gain": 0.3, "lowHz": 900, "highHz": 1500, "q": 0.8 }
+  "hull": { "maxKn": 9, "gain": 0.3, "lowHz": 900, "highHz": 1500, "q": 0.8 },
+  "flap": { "fromKn": 3, "toKn": 25, "gain": 0.4, "baseHz": 2, "perKnHz": 0.15, "bandHz": 1800, "q": 1.2, "attackS": 0.005, "decayS": 0.06, "jitter": 0.2 },
+  "full": { "fromKn": 4, "toKn": 30, "gain": 0.12, "bandHz": 500, "q": 0.6 },
+  "engine": { "firesPerRev": 2, "gain": 0.35, "idleShare": 0.45, "lowpassBaseHz": 300, "lowpassPerHz": 6, "subGain": 0.5, "startS": 0.9, "startFromHz": 140, "startToHz": 220, "startGain": 0.25 },
+  "contact": {
+    "thumpHz": 65, "noiseLowpassHz": 400,
+    "gain": { "fender": 0.25, "touch": 0.35, "bump": 0.6, "knock": 0.8, "hit": 1 },
+    "decayS": { "fender": 0.25, "touch": 0.15, "bump": 0.25, "knock": 0.35, "hit": 0.5 },
+    "squeakFromHz": 320, "squeakToHz": 210, "squeakS": 0.25, "squeakGain": 0.15
+  }
 }

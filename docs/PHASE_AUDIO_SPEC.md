@@ -396,6 +396,15 @@ Run `SHOTS_ONLY=m88` (plus `m87` if `ui.mjs`'s helpers changed). Add `"m88": 300
 
 Checks and tests pass; on the phone: let the mainsheet out in 15 kn and hear the sail flap, sheet in and it goes quiet with a soft rush; start the engine and hear it rise with the lever; bump the pontoon and hear the thump. Not in M88: winches, ropes, the anchor, the thrusters (M89).
 
+**Decided in the M88 PR** (recommended; merging accepts it):
+
+- The flap, the engine and the thump are left as specified and tuned after the owner's phone test (nothing in the numbers is changed). `"m88"` in `ci-times.json` is 38 (measured), not 300.
+- `playEvent(ctx, out, noise, event, data)` starts the sound at `ctx.currentTime + data.master.lookaheadS` itself; the engine calls it into the boat bus, skips an event at `maxOneShots` (it is then not recorded) and records `eventName(event)` for each one played. An event, with its squeak, counts as one one-shot.
+- The two flap voices share `flap.jitter`; the engine looks it up by voice id (`jitterOf`), since the voice ids (`flapMain`, `flapJib`) are not data sections. A flap's filter keeps its last frequency while the sail is not luffing (target `hz` 0); the gain is 0 then.
+- The `rng ?? Math.random` fallback in the engine's pulse branch is gone (M87 review item 4): a voice without a generator is skipped.
+- The browser checks run on the test clock; the M87 `soundOn` and `soundProbe` helpers did not change.
+- Browser check 1 uses `?v=1&wd=90&ws=15&ms=100&mf=100` and `…&ms=40&mf=100` **without `jf=0`** (7.5 has it): with the jib rolled away the boat sails at about 1.2 kn and her apparent wind is 80°, and a main with the sheet all out is then `good`, not `luffing`; with the jib out, as in the unit-test states of 7.4, `ms` 100 luffs and `ms` 40 is `good`. The formulas are unchanged.
+
 ---
 
 ## 8. M89: Winches, ropes, anchor and thrusters

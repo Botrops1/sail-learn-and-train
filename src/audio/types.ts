@@ -3,6 +3,8 @@
  * no Web Audio, so levels.ts, prefs.ts and soundData.ts import from here without a cycle.
  */
 
+import type { Severity } from '../model/contact';
+
 export type SoundGroup = 'music' | 'surroundings' | 'boat';
 
 export interface SoundPrefs {
@@ -22,12 +24,22 @@ export interface VoiceTarget {
 }
 
 /** M88–M90 append their voices, in their order. */
-export const VOICE_IDS = ['wind', 'whistle', 'waves', 'hull'] as const;
+export const VOICE_IDS = [
+  'wind',
+  'whistle',
+  'waves',
+  'hull',
+  'flapMain',
+  'flapJib',
+  'fullMain',
+  'fullJib',
+  'engine',
+] as const;
 export type VoiceId = (typeof VOICE_IDS)[number];
 export type VoiceKind = 'continuous' | 'pulse' | 'poisson';
 
-/** M88 makes this a union of objects with `kind`. */
-export type SoundEvent = never;
+/** A one-shot sound the engine plays once (M88: the engine's start and a hull contact). */
+export type SoundEvent = { kind: 'contact'; severity: Severity } | { kind: 'engineStart' };
 
 export interface SoundTargets {
   groups: Record<SoundGroup, number>;
@@ -41,6 +53,11 @@ export const VOICE_GROUP: Record<VoiceId, SoundGroup> = {
   whistle: 'surroundings',
   waves: 'surroundings',
   hull: 'surroundings',
+  flapMain: 'boat',
+  flapJib: 'boat',
+  fullMain: 'boat',
+  fullJib: 'boat',
+  engine: 'boat',
 };
 
 /** How the engine drives each voice (PHASE_AUDIO_SPEC 3.6). */
@@ -49,6 +66,11 @@ export const VOICE_KIND: Record<VoiceId, VoiceKind> = {
   whistle: 'continuous',
   waves: 'continuous',
   hull: 'continuous',
+  flapMain: 'pulse',
+  flapJib: 'pulse',
+  fullMain: 'continuous',
+  fullJib: 'continuous',
+  engine: 'continuous',
 };
 
 /** Poisson voices whose calls the probe records (M90: gulls → 'gull', smallBirds → 'chirp'). */
