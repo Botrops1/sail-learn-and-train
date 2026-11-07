@@ -119,8 +119,8 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
       problems.push(...(await auditPage(page, `m67 ${name} mistake`)));
 
       // 2. Carry on: running; the next mistake (the gybe) shows the card again.
-      // Owner, PR 152: the button over the 3D view does the same as the card's Carry on.
-      const overView = page.getByTestId('exercise-resume');
+      // M92 (issue #172): the time widget's button says Carry on and does the same as the card's.
+      const overView = page.getByTestId('pause-button');
       const overViewText = (await overView.isVisible()) ? await overView.innerText() : '';
       check(
         `Carry on over the 3D view ${name}`,
@@ -131,8 +131,8 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(300);
       const running = (await run(page)).status === 'running';
       check(
-        `the button is gone once running ${name}`,
-        running && !(await overView.isVisible()),
+        `the button says Pause once running ${name}`,
+        running && (await overView.innerText()) === 'Pause',
         JSON.stringify({ running }),
       );
       const gotGybe = await waitForMistake(page, 'accidental-gybe', 35);

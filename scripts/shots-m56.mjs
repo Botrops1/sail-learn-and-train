@@ -36,15 +36,12 @@ export async function liveM56Checks({ openPage, viewports, outDir, prefix, probl
   };
   const canvasReady = (page) => page.waitForSelector('canvas.scene-canvas', { state: 'attached' });
 
-  // 1. Save, on the wide layout: the file holds the link, the layout and the folded time bar.
+  // 1. Save, on the wide layout: the file holds the link, the layout (M92: the time bar has no fold any more).
   let saved;
   {
     const { context, page } = await openPage(desktop, 'm56 save', '?wd=90&ws=16&lang=ru&cam=top');
     await page.getByTestId('section-grip-learn').waitFor();
     await moveSectionBy(page, 'conditions', 'other');
-    await page.getByTestId('time-fold').click();
-    const folded = await page.getByTestId('time-fold').getAttribute('aria-expanded');
-    check('save: the time bar is folded', folded === 'false', String(folded));
     await openSettings(page);
     const button = page.getByTestId('setup-save');
     await button.scrollIntoViewIfNeeded();
@@ -70,13 +67,14 @@ export async function liveM56Checks({ openPage, viewports, outDir, prefix, probl
       Array.isArray(file.device?.layout?.c?.[0]) && file.device.layout.c[0].includes('conditions'),
       JSON.stringify(file.device?.layout),
     );
-    check('save: the time bar is folded', file.device?.timeBarFolded === true, 'timeBarFolded');
+    // M92: the time widget has no fold any more; the file keeps the field (false).
+    check('save: timeBarFolded is false', file.device?.timeBarFolded === false, 'timeBarFolded');
     check('save: a status line', (await text(page, 'setup-status')).includes(today()), 'status');
     await shot(page, 'live-save');
     await context.close();
   }
 
-  // 2. Load into a fresh page: the page loads again on the file's link, with the layout and the fold.
+  // 2. Load into a fresh page: the page loads again on the file's link, with the layout.
   if (saved) {
     const { context, page } = await openPage(desktop, 'm56 load', '?');
     await page.getByTestId('section-grip-learn').waitFor();
@@ -98,8 +96,6 @@ export async function liveM56Checks({ openPage, viewports, outDir, prefix, probl
       columns[0].includes('conditions'),
       JSON.stringify(columns),
     );
-    const folded = await page.getByTestId('time-fold').getAttribute('aria-expanded');
-    check('load: the time bar is folded', folded === 'false', String(folded));
     await shot(page, 'live-load');
     await context.close();
   }

@@ -191,7 +191,6 @@ export async function liveM79Checks({ openPage, viewports, outDir, prefix, probl
           chips: rect('[data-testid="view-bottom"]'),
           mini: rect('[data-testid="mini-map"]'),
           sheet: rect('[data-testid="sheet"]'),
-          resume: rect('[data-testid="exercise-resume"]'),
           vw: window.innerWidth,
           vh: window.innerHeight,
           scroll:

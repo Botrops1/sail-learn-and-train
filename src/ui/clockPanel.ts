@@ -29,30 +29,38 @@ function roundedTime(utcMs: number): string {
   return timeText(localParts(Math.round(utcMs / 60_000) * 60_000));
 }
 
-/**
- * The clock (PHASE3_SPEC 9.5, issue #26): a chip with the local time over the 3D view (in `top`,
- * beside the time bar) and a card that the chip opens with the date, the area, sunrise and sunset,
- * the light, and buttons to set the time. The card's open state is not stored.
- */
-export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Store): void {
-  const chip = el('button', {
-    type: 'button',
-    class: 'clock-chip',
-    'data-testid': 'clock-chip',
-    'aria-expanded': 'false',
-  });
-  // Before the time bar: on a phone the chip then sits at the right of the instrument strip's
-  // row instead of taking a row of its own (the side-by-side layout puts it after the bar).
-  const bar = top.querySelector('.time-bar');
-  if (bar) top.insertBefore(chip, bar);
-  else top.append(chip);
+/** What the time widget (`timeBar.ts`) needs from the clock. */
+export interface ClockParts {
+  /** The local time, `12:00`, shown under the speed in the widget's left part. */
+  chip: HTMLElement;
+  /** The clock's part of the time card: the date, the area, sunrise and sunset, the light, the buttons. */
+  section: HTMLElement;
+  /** The card opens: the inputs start at the time on board. */
+  opened(): void;
+  /** Whether the clock shows (the Clock switch in Settings). */
+  shown(state: AppState): boolean;
+}
 
-  const text = (testId: string) => el('p', { class: 'clock-line', 'data-testid': testId });
-  const dateLine = text('clock-date');
-  dateLine.classList.add('clock-first');
-  const zoneLine = el('p', { class: 'clock-line' });
-  const sunLine = text('clock-sun');
-  const lightLine = el('p', { class: 'clock-line' });
+/**
+ * The clock (PHASE3_SPEC 9.5, issue #26; M92, issue #172): the local time in the time widget's
+ * left part, and the clock's part of the card that the widget opens: the date, the area, sunrise
+ * and sunset, the light, and the buttons to set the time (the date, the time and Set in one row,
+ * Now and Noon under them). The card's open state is not stored.
+ */
+export function createClockParts(store: Store): ClockParts {
+  const chip = el('span', { class: 'clock-chip', 'data-testid': 'clock-chip' });
+
+  const dateLine = el('p', { class: 'clock-line', 'data-testid': 'clock-date' });
+  const zoneText = el('span', {});
+  const sunText = el('span', { 'data-testid': 'clock-sun' });
+  const lightText = el('span', {});
+  const infoLine = el('p', { class: 'clock-line clock-info' }, [
+    zoneText,
+    ' · ',
+    sunText,
+    ' · ',
+    lightText,
+  ]);
 
   const button = (testId: string, label: string, action: () => void) => {
     const node = el('button', { type: 'button', class: 'clock-button', 'data-testid': testId });
@@ -69,7 +77,7 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
 
   const dateInput = el('input', {
     type: 'date',
-    class: 'clock-input',
+    class: 'clock-input clock-input-date',
     min: '1900-01-01',
     max: '2100-12-31',
     'aria-label': t('clock.dateAria'),
@@ -77,7 +85,7 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
   });
   const timeInput = el('input', {
     type: 'time',
-    class: 'clock-input',
+    class: 'clock-input clock-input-time',
     step: '60',
     'aria-label': t('clock.timeAria'),
     'data-testid': 'clock-time-input',
@@ -95,55 +103,20 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
     { class: 'clock-hint', 'data-testid': 'exercise-locked-clock', hidden: '' },
     [t('exercise.locked')],
   );
-  const close = el('button', {
-    type: 'button',
-    class: 'clock-close',
-    'data-testid': 'clock-close',
-    'aria-label': t('clock.close'),
-  });
-  close.textContent = '×';
 
-  const card = el(
+  const section = el(
     'section',
     { class: 'clock-card', 'data-testid': 'clock-card', 'aria-label': t('clock.label') },
     [
-      close,
+      el('h3', { class: 'time-card-heading' }, [t('clock.label')]),
       dateLine,
-      zoneLine,
-      sunLine,
-      lightLine,
+      infoLine,
+      el('div', { class: 'clock-row clock-row-set' }, [dateInput, timeInput, set]),
       el('div', { class: 'clock-row' }, [now, noon]),
-      el('p', { class: 'clock-line clock-set-label' }, [t('clock.setLabel')]),
-      el('div', { class: 'clock-row' }, [dateInput, timeInput, set]),
       el('p', { class: 'clock-hint' }, [t('clock.hint')]),
       lockedNote,
     ],
   );
-  card.hidden = true;
-  view.append(card);
-
-  let open = false;
-  const setOpen = (next: boolean) => {
-    if (open === next) return;
-    open = next;
-    card.hidden = !open;
-    chip.setAttribute('aria-expanded', String(open));
-    if (open) {
-      // The inputs start at the time on board when the card opens, and are left alone after.
-      const parts = localParts(store.getState().clock.utcMs);
-      dateInput.value = `${String(parts.year).padStart(4, '0')}-${pad2(parts.month)}-${pad2(parts.day)}`;
-      timeInput.value = timeText(parts);
-      refreshCard(store.getState());
-    }
-  };
-  chip.addEventListener('click', () => setOpen(!open));
-  close.addEventListener('click', () => {
-    setOpen(false);
-    chip.focus();
-  });
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && open) setOpen(false);
-  });
 
   let cardKey = '';
   const refreshCard = (state: AppState) => {
@@ -156,7 +129,7 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
       ? area.timeZone.summerAbbreviation
       : area.timeZone.standardAbbreviation;
     setText(
-      zoneLine,
+      zoneText,
       t('clock.zone', {
         area: t(`area.${area.id}` as StringKey),
         abbr,
@@ -165,41 +138,57 @@ export function createClockPanel(top: HTMLElement, view: HTMLElement, store: Sto
     );
     const { latitudeDeg, longitudeDeg } = area.position;
     const sun = sunTimes(parts.year, parts.month, parts.day, latitudeDeg, longitudeDeg);
-    if (sun.polar === 'day') setText(sunLine, t('clock.polarDay'));
-    else if (sun.polar === 'night') setText(sunLine, t('clock.polarNight'));
+    if (sun.polar === 'day') setText(sunText, t('clock.polarDay'));
+    else if (sun.polar === 'night') setText(sunText, t('clock.polarNight'));
     else if (sun.sunriseUtcMs !== null && sun.sunsetUtcMs !== null) {
       setText(
-        sunLine,
+        sunText,
         t('clock.sun', { rise: roundedTime(sun.sunriseUtcMs), set: roundedTime(sun.sunsetUtcMs) }),
       );
     }
     const { elevationDeg } = sunPosition(state.clock.utcMs, latitudeDeg, longitudeDeg);
     setText(
-      lightLine,
+      lightText,
       t('clock.light', { light: t(`clock.light.${daylight(elevationDeg)}` as StringKey) }),
     );
   };
 
   let chipKey = '';
+  let lockedShown: boolean | null = null;
   const refresh = (state: AppState) => {
     const locked = state.exercise !== null;
-    for (const control of [now, noon, set, dateInput, timeInput]) control.disabled = locked;
-    lockedNote.hidden = !locked;
-    const shown = state.settings.clock;
-    chip.hidden = !shown;
-    if (!shown) setOpen(false);
+    if (locked !== lockedShown) {
+      lockedShown = locked;
+      for (const control of [now, noon, set, dateInput, timeInput]) control.disabled = locked;
+      lockedNote.hidden = !locked;
+    }
     const key = clockParam(state.clock.utcMs);
     if (key !== chipKey) {
       chipKey = key;
-      const parts = localParts(state.clock.utcMs);
-      setText(chip, timeText(parts));
-      chip.setAttribute(
-        'aria-label',
-        t('clock.chipAria', { time: timeText(parts), date: dateText(parts) }),
-      );
+      setText(chip, timeText(localParts(state.clock.utcMs)));
     }
-    if (open) refreshCard(state);
+    if (!section.hidden) refreshCard(state);
   };
   store.subscribe((state) => refresh(state));
   refresh(store.getState());
+
+  return {
+    chip,
+    section,
+    opened: () => {
+      // The inputs start at the time on board when the card opens, and are left alone after.
+      const parts = localParts(store.getState().clock.utcMs);
+      dateInput.value = `${String(parts.year).padStart(4, '0')}-${pad2(parts.month)}-${pad2(parts.day)}`;
+      timeInput.value = timeText(parts);
+      cardKey = '';
+      refreshCard(store.getState());
+    },
+    shown: (state) => state.settings.clock,
+  };
+}
+
+/** The clock's words for the widget's name: `12:00, Monday 1 June 2026`. */
+export function clockAria(utcMs: number): string {
+  const parts = localParts(utcMs);
+  return t('clock.chipAria', { time: timeText(parts), date: dateText(parts) });
 }

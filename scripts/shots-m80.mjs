@@ -20,8 +20,6 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
   const box = (page) => page.evaluate(() => window.__sailCamera.boatBox());
   const labelsShown = (page) => page.locator('.label3d-shown').count();
   const fold = async (page, id) => (await tid(page, id).getAttribute('aria-expanded')) === 'true';
-  const fold1 = (page) => localStorageValue(page, 'sail-learn.timeBarFolded');
-  const localStorageValue = (page, key) => page.evaluate((k) => localStorage.getItem(k), key);
 
   const start = async (page) => {
     await showSection(page, 'exercises');
@@ -68,10 +66,11 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
       !(await fold(page, 'exercise-coach-toggle')),
       `aria-expanded ${await tid(page, 'exercise-coach-toggle').getAttribute('aria-expanded')}`,
     );
+    // M92: the time widget is always compact; its card is closed at the start.
     check(
-      'the time bar is folded at the start',
-      !(await fold(page, 'time-fold')),
-      `aria-expanded ${await tid(page, 'time-fold').getAttribute('aria-expanded')}`,
+      'the time card is closed at the start',
+      !(await fold(page, 'time-open')),
+      `aria-expanded ${await tid(page, 'time-open').getAttribute('aria-expanded')}`,
     );
     check('no 3D label shows', (await labelsShown(page)) === 0, `${await labelsShown(page)} shown`);
     await centred(page, 'phone, peek');
@@ -120,15 +119,11 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
       `bottom ${back.bottom.toFixed(1)} (was ${peek.bottom.toFixed(1)})`,
     );
 
-    // 3. The next step folds the hint again; the time bar stays as the learner left it.
-    const savedBefore = await fold1(page);
+    // 3. The next step folds the hint again. M92: the time card opens by a tap and closes again.
     await tid(page, 'exercise-coach-toggle').click();
-    await tid(page, 'time-fold').click();
-    check(
-      'the time bar opens by a tap',
-      await fold(page, 'time-fold'),
-      'aria-expanded after the tap',
-    );
+    await tid(page, 'time-open').click();
+    check('the time card opens by a tap', await fold(page, 'time-open'), 'aria-expanded');
+    await page.keyboard.press('Escape');
     await act(page, { type: 'setControls', values: { ctl_mainsheet: 12 } });
     for (let i = 0; i < 80 && (await run(page)).step === 0; i += 1) await page.waitForTimeout(250);
     check('step 1 is done', (await run(page)).step === 1, `step ${(await run(page)).step}`);
@@ -137,24 +132,14 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
       !(await fold(page, 'exercise-coach-toggle')),
       'aria-expanded after the step change',
     );
-    check(
-      'the time bar stays open during the run',
-      await fold(page, 'time-fold'),
-      'aria-expanded after the step change',
-    );
     await act(page, { type: 'exercise', command: 'stop' });
     await showSection(page, 'exercises');
     await tid(page, 'exercise-item-points-of-sail').click();
     await start(page);
     check(
-      'the next Start shows the time bar folded',
-      !(await fold(page, 'time-fold')),
+      'the next Start shows the time card closed',
+      !(await fold(page, 'time-open')),
       'aria-expanded after a new Start',
-    );
-    check(
-      'the saved fold is untouched',
-      (await fold1(page)) === savedBefore,
-      `${savedBefore} → ${await fold1(page)}`,
     );
     await context.close();
   }

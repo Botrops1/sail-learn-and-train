@@ -15,7 +15,8 @@ export const M37_SCENES = [
   { name: 'start', query: `${BOAT}&tx=16` },
   { name: 'big', query: BIG },
   { name: 'held', query: `${BOAT}&held=1` },
-  { name: 'folded', query: `${BOAT}&tx=16`, click: ['time-fold'] },
+  // M92: the time widget's left part opens the time card.
+  { name: 'card', query: `${BOAT}&tx=16`, click: ['time-open'] },
 ];
 
 /** The windows of the done-when list (issue #87): a small, a usual and a large computer window. */
@@ -49,9 +50,7 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
         bar: r('time-bar'),
         clock: r('clock-chip'),
         alert: r('alert-chip'),
-        fold: r('time-fold'),
-        foldSpeed: r('time-fold-speed'),
-        fastest: r('time-fastest'),
+        open: r('time-open'),
       };
     });
   const same = (list, key, field) => new Set(list.map((b) => b[key]?.[field])).size === 1;
@@ -94,23 +93,17 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       !!first.bar && !!first.top && first.bar.x + first.bar.w <= first.top.x + first.top.w,
       JSON.stringify(first),
     );
+    // M92: the clock is inside the time widget; the Attention chip is under it.
     check(
-      `${name}: the clock and Attention chips are under the bar`,
+      `${name}: the clock is in the widget and the Attention chip under it`,
       !!first.clock &&
         !!first.alert &&
         !!first.bar &&
-        first.clock.y >= first.bar.y + first.bar.h &&
+        first.clock.y >= first.bar.y &&
+        first.clock.y + first.clock.h <= first.bar.y + first.bar.h &&
         first.alert.y >= first.bar.y + first.bar.h &&
-        first.clock.x + first.clock.w <= first.bar.x + first.bar.w + 1 &&
         first.alert.x + first.alert.w <= first.bar.x + first.bar.w + 1,
       JSON.stringify(first),
-    );
-    // Jump buttons: left out only in a window about 1,280 px wide, where they would not fit.
-    const jumpShown = first.fastest !== null;
-    check(
-      `${name}: the jump buttons are ${name === 'w1280' ? 'left out' : 'shown'}`,
-      jumpShown === (name !== 'w1280'),
-      String(jumpShown),
     );
     check(
       `${name}: no ×16 badge in the wind box`,
@@ -133,14 +126,16 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
     );
     await page.getByTestId('pause-button').click();
     const scales = [];
-    for (let i = 0; i < 7; i += 1) {
+    // M92: the speeds are the time card's choices.
+    await page.getByTestId('time-open').click();
+    for (const value of [16, 8, 4, 2, 1, 0.5, 0.25]) {
+      await page.getByTestId(`time-scale-${value}`).click();
       const b = await boxes(page);
       scales.push({
         scale: await page.getByTestId('time-status').innerText(),
         bar: b.bar,
         beside: !!b.strip && !!b.bar && b.bar.y < b.strip.y + b.strip.h,
       });
-      if (i < 6) await page.getByTestId('time-slower').click();
     }
     check(
       `${name}: every speed step keeps the bar's size and row`,
@@ -151,30 +146,7 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       JSON.stringify(scales),
     );
     await shot(page, `live-${name}-open`);
-    // Folded: the speed shows under the word Time; the chips stay under the bar.
-    await page.getByTestId('time-fold').click();
-    const folded = await boxes(page);
-    const speedText = await page.getByTestId('time-fold-speed').innerText();
-    check(
-      `${name}: folded, the speed shows under "Time"`,
-      !!folded.fold &&
-        !!folded.foldSpeed &&
-        speedText === '×¼' &&
-        folded.foldSpeed.y >= folded.fold.y + 14 &&
-        folded.foldSpeed.y + folded.foldSpeed.h <= folded.fold.y + folded.fold.h,
-      JSON.stringify({ speedText, fold: folded.fold, speed: folded.foldSpeed }),
-    );
-    check(
-      `${name}: folded, the chips are still under the bar, and no jump`,
-      !!folded.bar &&
-        !!folded.clock &&
-        folded.clock.y >= folded.bar.y + folded.bar.h &&
-        same([first, folded], 'strip', 'w'),
-      JSON.stringify(folded),
-    );
-    await shot(page, `live-${name}-folded`);
-    // Back to open for the audit.
-    await page.getByTestId('time-fold').click();
+    await page.keyboard.press('Escape');
     if (name === 'desktop-1440x900') problems.push(...(await auditPage(page, 'm37 top row')));
     await context.close();
   }
@@ -233,18 +205,21 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       !!b.strip && b.strip.x + b.strip.w <= phone.width,
       JSON.stringify(b.strip),
     );
+    // M92 (issue #172): the time widget, with the clock in it, sits beside the wind box.
     check(
-      'phone: the time bar is under the wind box and the clock chip beside it, as before',
+      'phone: the time widget is beside the wind box, the clock in it',
       !!b.bar &&
         !!b.strip &&
         !!b.clock &&
-        b.bar.y >= b.strip.y + b.strip.h - 1 &&
-        b.clock.y < b.strip.y + b.strip.h,
+        b.bar.x >= b.strip.x + b.strip.w &&
+        b.bar.y < b.strip.y + b.strip.h &&
+        b.clock.y >= b.bar.y &&
+        b.clock.y + b.clock.h <= b.bar.y + b.bar.h,
       JSON.stringify(b),
     );
     check(
-      'phone: the top area is not taller than before (two lines and the bar)',
-      !!b.top && b.top.h <= 120,
+      'phone: the top area is lower than before M92 (108 px)',
+      !!b.top && b.top.h <= 80,
       JSON.stringify(b.top),
     );
     check(
@@ -253,17 +228,6 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       'scrollWidth',
     );
     await shot(page, 'live-phone-open');
-    await page.getByTestId('time-fold').click();
-    const folded = await boxes(page);
-    check(
-      'phone: folded, the speed shows under "Time"',
-      (await page.getByTestId('time-fold-speed').innerText()) === '×16' &&
-        !!folded.fold &&
-        !!folded.foldSpeed &&
-        folded.foldSpeed.y >= folded.fold.y + 14,
-      JSON.stringify(folded),
-    );
-    await shot(page, 'live-phone-folded');
     await context.close();
   }
 
@@ -284,8 +248,8 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
     );
     check(
       'phone, Held still: no stray "Time" button',
-      (await page.getByTestId('time-fold').count()) === 0 ||
-        !(await page.getByTestId('time-fold').isVisible()),
+      (await page.getByTestId('time-open').count()) === 0 ||
+        !(await page.getByTestId('time-open').isVisible()),
       'hidden',
     );
     await context.close();

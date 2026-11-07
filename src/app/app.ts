@@ -24,10 +24,8 @@ import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
 import { createSoundChip } from '../ui/soundChip';
 import { createSoundEngine } from '../audio/engine';
-import { createClockPanel } from '../ui/clockPanel';
 import { createExerciseCoach } from '../ui/exerciseCoach';
 import { createExerciseLine } from '../ui/exerciseLine';
-import { createExerciseResume } from '../ui/exerciseResume';
 import { createExerciseBar } from '../ui/exerciseBar';
 import { twaSignedDeg } from '../model/exercises';
 import { mpsToKn } from '../model/angles';
@@ -133,17 +131,16 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
     panel.showLearnEntry,
     layout,
   );
-  // Right of the strip (M37): the time bar, with the clock and Attention chips under it. On a
-  // phone both wrappers vanish (`display: contents`) and their children join the top row.
+  // Right of the strip (M37): the time widget (M92: the speed, the clock and Pause in one), with
+  // the Attention chip under it. On a phone both wrappers vanish (`display: contents`) and their
+  // children join the top row.
   const topRight = el('div', { class: 'top-right', 'data-testid': 'top-right' });
   const topChips = el('div', { class: 'top-chips' });
   topRight.append(topChips);
   top.append(topRight);
-  createTimeBar(topRight, store, layout);
-  createClockPanel(topChips, layout.view, store);
+  createTimeBar(topRight, layout.view, store, layout);
   createExerciseLine(top, store, () => panel.showSection('exercises'));
   createExerciseCoach(top, store, layout);
-  createExerciseResume(layout.view, store);
   // The step bar over the bottom of the view; `reframe` is assigned further down (a no-op without 3D).
   let reframe = () => {};
   const demo = createExerciseDemo(store);
