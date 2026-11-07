@@ -47,7 +47,7 @@ One rounded box (white at 90 %, 1 px `--line` border, 14 px radius, the look of 
 - The ×4 note of a played exercise (`time-demo-capped`, M81) shows under the widget for 6 s, now whether or not anything is open (the widget has no fold).
 - `data-speed`, `data-held` and `data-stopped` on `time-bar` say which parts show (for the checks).
 
-**Phone (stacked layout):** the widget sits at the right of the strip in the same row (`.view-top` does not wrap); the strip gives up the width: its first line wraps (AUTO goes under the speed) and the wind line is 12 px. Paddings are tight (strip 4 px, gap 4 px, text 13 px) so the widget is about 133 px wide and the wind line still fits one line: **the top area is 73 px high** in English (was 108), 90 px in Russian. **Beside the panel (side layout):** the widget is at the top of the right column, the Attention chip under it, as the bar was.
+**Phone (stacked layout):** the widget sits at the right of the strip in the same row (`.view-top` does not wrap); the strip gives up the width: its cells flow as one wrapping row (its two lines become `display: contents`): the speed, HDG and Heel; then AUTO and the true wind; then the apparent wind; a hidden AUTO takes no room. Text stays at 13 px at least (the accessibility audit's floor); paddings are tight (strip 4 px, gap 4 px) so the widget is about 133 px wide: **the top area is 76 px high** in English (was 108), 97 px in Russian. **Beside the panel (side layout):** the widget is at the top of the right column, the Attention chip under it, as the bar was.
 
 ### 1.4 The time card (`time-card`)
 
@@ -103,5 +103,5 @@ Not in this milestone: keyboard shortcuts for time (none exist); moving the Atte
 2. **The Resume / Carry on button over the 3D view (PR 152) is removed**: the widget's button now does both, so two buttons doing the same is what the issue asks to end. The mistake card keeps its own Carry on and Back.
 3. **The fold of the time bar (M37) is removed**: the widget is always compact. Setup files keep `device.timeBarFolded` (written as whatever the device still has, normally false) so old and new files read the same.
 4. **The Settings switches stay as they are** ("Time bar" hides the speed, "Clock" hides the clock; both off leave only Pause), so `tb=0` and `clock=0` links open as before.
-5. **On a phone the strip gives up width** (AUTO wraps under the speed, the wind line is 12 px instead of 13 px) rather than the widget taking a row: 73 px instead of 108 px at the top.
+5. **On a phone the strip gives up width** (its cells flow over three lines: speed, HDG, Heel / AUTO, true wind / apparent wind) rather than the widget taking a row: 76 px instead of 108 px at the top.
 6. **The card sits over the Attention card** on a computer (the learner just asked for it).

@@ -1544,16 +1544,29 @@ html[data-layout='stacked'] .strip-line {
 
 /*
  * M92 (issue #172): on a phone the time widget sits at the right of the strip, in the same row;
- * the strip gives up the width (its lines wrap: AUTO goes under the speed) instead of the widget
- * taking a row of its own. The wind line is a little smaller so it still fits on one line.
+ * the strip gives up the width instead of the widget taking a row of its own. Its cells flow as
+ * one wrapping row (the two lines vanish): the speed, HDG and Heel; then AUTO and the true wind;
+ * then the apparent wind. A hidden AUTO takes no room.
  */
 html[data-layout='stacked'] .view-top {
   flex-wrap: nowrap;
   gap: 4px;
 }
 
+html[data-layout='stacked'] .strip-main {
+  flex-flow: row wrap;
+  align-items: baseline;
+  column-gap: 4px;
+  row-gap: 2px;
+}
+
+html[data-layout='stacked'] .strip-primary,
 html[data-layout='stacked'] .strip-winds {
-  font-size: 12px;
+  display: contents;
+}
+
+html[data-layout='stacked'] .strip-cell:has(.strip-auto[hidden]) {
+  display: none;
 }
 
 html[data-layout='stacked'] .time-open {
