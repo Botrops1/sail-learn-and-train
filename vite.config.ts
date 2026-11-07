@@ -1,10 +1,16 @@
 import { execSync } from 'node:child_process';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
-import { parseBuildEnv } from './src/app/buildChannel';
+import { goatCounterTags, parseBuildEnv } from './src/app/buildChannel';
 
 /** Where GitHub Pages serves the site; the base path (main or a PR preview) is added to it. */
 const SITE_ORIGIN = 'https://botrops1.github.io';
+
+/** APP_CHANNEL / APP_VERSION (PHASE_LAUNCH_SPEC 3.1): throws for a release without a valid version. */
+const build = parseBuildEnv(process.env.APP_CHANNEL, process.env.APP_VERSION);
+
+/** The visitor counter's site code on goatcounter.com (PHASE_LAUNCH_SPEC 10.1, 10.2). */
+const GOATCOUNTER_CODE = 'sail-learn-and-train';
 
 /**
  * Link previews need full addresses (WhatsApp, Telegram and Facebook do not resolve relative
@@ -19,7 +25,10 @@ function siteUrl(): Plugin {
       base = config.base;
     },
     transformIndexHtml(html) {
-      return html.replaceAll('%SITE_URL%', `${SITE_ORIGIN}${base}`);
+      const counter = goatCounterTags(build.channel, GOATCOUNTER_CODE);
+      return html
+        .replaceAll('%SITE_URL%', `${SITE_ORIGIN}${base}`)
+        .replace('  </head>', counter === '' ? '  </head>' : `  ${counter}\n  </head>`);
     },
   };
 }
@@ -33,9 +42,6 @@ function commitHash(): string {
     return 'unknown';
   }
 }
-
-/** APP_CHANNEL / APP_VERSION (PHASE_LAUNCH_SPEC 3.1): throws for a release without a valid version. */
-const build = parseBuildEnv(process.env.APP_CHANNEL, process.env.APP_VERSION);
 
 export default defineConfig({
   base: '/sail-learn-and-train/',

@@ -2546,7 +2546,7 @@
 | footer.next | Test version (next) · {hash} · {date} | Тестовая версия (next) · {hash} · {date} |
 | footer.source | Source on GitHub | Исходный код на GitHub |
 | footer.disclaimer | Learning aid, not a substitute for sailing instruction. | Учебное пособие, а не замена обучению парусному делу. |
-| footer.privacy | Privacy: the app collects nothing and sends nothing anywhere. What you set stays on this device. The site is hosted on GitHub Pages. | Конфиденциальность: приложение ничего не собирает и никуда не отправляет. Ваши настройки остаются на этом устройстве. Сайт размещён на GitHub. |
+| footer.privacy | Privacy: the app sends nothing about you. Visits to the live site are counted anonymously with GoatCounter (no cookies, no personal data). What you set stays on this device. The site is hosted on GitHub Pages. | Конфиденциальность: приложение ничего не отправляет о вас. Посещения основного сайта считаются анонимно через GoatCounter (без куки и личных данных). Ваши настройки остаются на этом устройстве. Сайт размещён на GitHub. |
 | footer.maker | Hanse and Hanse 508 are names of their owner. This app is not affiliated with Hanse Yachts. | Hanse и Hanse 508 принадлежат их владельцу. Приложение не связано с верфью Hanse. |
 | footer.report | Report a problem or suggest an idea | Сообщить об ошибке или предложить идею |
 | welcome.title | Welcome aboard | Добро пожаловать на борт |

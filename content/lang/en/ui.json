@@ -27,7 +27,7 @@
   "footer.next": "Test version (next) · {hash} · {date}",
   "footer.source": "Source on GitHub",
   "footer.disclaimer": "Learning aid, not a substitute for sailing instruction.",
-  "footer.privacy": "Privacy: the app collects nothing and sends nothing anywhere. What you set stays on this device. The site is hosted on GitHub Pages.",
+  "footer.privacy": "Privacy: the app sends nothing about you. Visits to the live site are counted anonymously with GoatCounter (no cookies, no personal data). What you set stays on this device. The site is hosted on GitHub Pages.",
   "footer.maker": "Hanse and Hanse 508 are names of their owner. This app is not affiliated with Hanse Yachts.",
   "footer.report": "Report a problem or suggest an idea",
   "welcome.title": "Welcome aboard",

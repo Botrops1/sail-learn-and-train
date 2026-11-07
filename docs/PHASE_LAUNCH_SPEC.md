@@ -430,7 +430,14 @@ Tests pass; the owner reads the README, `BETA.md` and `ANNOUNCE.md` on the PR. N
 
 #### Decided in the M86 PR (recommended; merging accepts it)
 
-(The builder writes here, and adds a ROADMAP decisions row.)
+- **No `integrity` attribute** on the counter script, and the `path` setting is **not confirmed** against goatcounter.com/help/js: the page could not be reached from the building session (the host is blocked). The script is the versioned `count.v4.js`, and the setting is written as `window.goatcounter = { path: function () { return location.pathname; } };` as the spec says. Before releasing, the owner (or a session that can open the page) checks both and, if they differ, changes the one function `goatCounterTags`. The tests do not depend on it.
+- `goatCounterTags` also throws for an empty code (the pattern needs at least one character).
+- The counter tags are inserted by the existing `siteUrl` plugin's `transformIndexHtml` (no second plugin); nothing is inserted when the channel is not `release`, so `dist/index.html` of a preview or `/next/` build is unchanged.
+- README: the welcome line sits under the first paragraph (under Try it); "Next" names #145 and #161 as links. `docs/BETA.md` links to `/issues/new/choose`.
+- `docs/ANNOUNCE.md`: every text is within its word limit (r/sailing 150, the Show HN title 70 characters and its comment 94 words); the Russian section is a placeholder as the spec says.
+- Russian: the privacy line in `ru` is an AI draft like the rest; `docs/review/ru.md` regenerated.
+
+(The builder adds a ROADMAP decisions row: done.)
 
 ---
 
