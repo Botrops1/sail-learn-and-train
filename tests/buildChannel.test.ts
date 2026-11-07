@@ -84,6 +84,11 @@ describe('goatCounterTags (PHASE_LAUNCH_SPEC 10.2)', () => {
     expect(html).toContain('location.pathname');
   });
 
+  it('the release script carries its integrity hash', () => {
+    const html = goatCounterTags('release', 'sail-learn-and-train');
+    expect(html).toContain('integrity="sha384-');
+  });
+
   it('a code with anything but lowercase letters, digits and hyphens is refused', () => {
     for (const bad of ['', 'A', 'a b', 'a"b', 'a.b', 'a/b']) {
       expect(() => goatCounterTags('release', bad), bad).toThrow();
