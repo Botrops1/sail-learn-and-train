@@ -998,7 +998,7 @@ Wind, waves, the boat, the surroundings with birds, and quiet music, all made by
 
 #### M89: Winches, ropes, anchor and thrusters
 
-- [ ] Winch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=realistic&mode=realistic&ws=15 — switch Sound on, then put a sheet on a winch and hold its button: the motor hums and the drum clicks. Open the clutch with load on the rope: you hear the rope run out.
+- [ ] Winch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&mode=realistic&ws=15 — switch Sound on, then put a sheet on a winch and hold its button: the motor hums and the drum clicks. Open the clutch with load on the rope: you hear the rope run out.
 - [ ] Easy ropes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=easy&ws=15 — tap + on the mainsheet a few times: a short winch hum and clicks each time.
 - [ ] Anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=bay&ws=8 — hold Down in the Anchor section: a clank as the anchor leaves the bow, the windlass hums and the chain rattles. Hold Up: the same until it clanks home.
 - [ ] Thrusters: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&ws=0 — hold the bow thruster: a hum while you hold it, gone when you let go.
