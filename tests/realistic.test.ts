@@ -312,6 +312,49 @@ describe('PT-19a electric winch', () => {
     expect(s.realistic.winches[PORT]?.cutOut).toBe(false);
   });
 
+  it('issue #153 the winch hauls the Genoa sheet in with the jib rolled up: no cut-out, no slipping', () => {
+    for (const open of [false, true]) {
+      let s = start(
+        { ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_jib_furl: 0, ctl_jib_sheet: 100 },
+        'starboard',
+      );
+      s = run(s, 1);
+      expect(s.rig.jibSolution.furled).toBe(true);
+      s = onWinch(s, GENOA, 3);
+      if (open) s = act(s, { type: 'clutch', key: GENOA, open: true });
+      s = act(
+        s,
+        { type: 'selfTailer', winch: STBD, into: true },
+        { type: 'button', winch: STBD, held: true },
+      );
+      s = run(s, 2);
+      expect(s.controls.ctl_jib_sheet, `open ${open}`).toBeLessThan(80);
+      expect(s.realistic.winches[STBD]?.cutOut).toBe(false);
+      expect(s.realistic.reports[GENOA]?.motion).toBe('hauling');
+      expect(s.realistic.reports[GENOA]?.note).toBeNull();
+      expect(s.rig.jibSolution.unfurled).toBe(0);
+    }
+  });
+
+  it('issue #153 a partly furled jib still fights its hauled sheet: the winch cuts out (PT-19a)', () => {
+    let s = start(
+      { ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_jib_furl: 20, ctl_jib_sheet: 100 },
+      'starboard',
+    );
+    s = run(s, 6);
+    expect(s.rig.jibSolution.furled).toBe(false);
+    s = onWinch(s, GENOA, 3);
+    s = act(
+      s,
+      { type: 'selfTailer', winch: STBD, into: true },
+      { type: 'button', winch: STBD, held: true },
+    );
+    s = run(s, 2);
+    expect(s.rig.jibSolution.sheet.state).toBe('fighting');
+    expect(s.realistic.winches[STBD]?.cutOut).toBe(true);
+    expect(s.realistic.reports[GENOA]?.note).toBe('cutOutFighting');
+  });
+
   it('PT-19a hauling a light rope works, and stops at the end with the cut-out ("fully hauled")', () => {
     let s = start({ ctl_wind_dir: 90, ctl_wind_speed: 12, ctl_vang: 30 });
     s = onWinch(s, VANG, 3);

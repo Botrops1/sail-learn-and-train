@@ -329,6 +329,8 @@ export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = bo
   // point the furl stops where the sheet is too short. A jib already furled further (with the
   // sheet released) stays furled when the sheet is hauled: the furling line holds it, and the
   // sheet pulls against it (fighting). Released, the sheet runs out as far as the furl needs.
+  // A jib rolled right away has no sail left to hold out (issue #153): hauling its sheet only
+  // takes the rope in, so it does not fight (the winch must not cut out on it).
   const asked = Math.min(1, Math.max(0, input.unfurledPct / 100));
   const released = input.sheetReleased;
   const sailing = availableJibSheet(input.sheetPct, data);
@@ -337,10 +339,10 @@ export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = bo
   const furlBlocked = asked < unfurled - 1e-9;
   // Compared as lengths, with the same tolerance as the main sheet, so the chip clears as soon
   // as the jib is (visibly) out far enough for the sheet.
-  const sheetFights =
-    !released && jibSheetSpan(0, unfurled, data) > sailing + solver.tautToleranceM;
-  const releasedFurling = released && unfurled < 1;
   const furled = unfurled * 100 < solver.furledBelowPct;
+  const sheetFights =
+    !released && !furled && jibSheetSpan(0, unfurled, data) > sailing + solver.tautToleranceM;
+  const releasedFurling = released && unfurled < 1;
   const windy = input.windSpeedKn >= solver.minWindKn && !furled;
 
   const side = windy

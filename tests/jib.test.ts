@@ -540,8 +540,8 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
 
   it('review of M3: the "fighting" chip clears as soon as the jib is out far enough for the hauled sheet', () => {
     let rig = initialRig(controls({ ctl_jib_sheet: 100 }));
-    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 6);
-    rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 0 }, 2);
+    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 20 }, 6);
+    rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 20 }, 2);
     expect(rig.jibSolution.sheet.state).toBe('fighting');
     rig = run(rig, { ctl_jib_sheet: 0, ctl_jib_furl: 100 }, 2);
     expect(rig.jibSolution.unfurled).toBeGreaterThan(0.99);
@@ -556,17 +556,28 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     }
   });
 
-  it('decision after M3: hauling the sheet on a furled jib does not pull it out of its furl; the sheet fights the furling line', () => {
+  it('decision after M3: hauling the sheet on a partly furled jib does not pull it out of its furl; the sheet fights the furling line', () => {
     let rig = initialRig(controls({ ctl_jib_sheet: 100 }));
-    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 6);
-    expect(rig.jibSolution.unfurled).toBe(0);
-    rig = run(rig, { ctl_jib_sheet: 95, ctl_jib_furl: 0 }, 3);
-    expect(rig.jibSolution.unfurled).toBe(0);
+    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 20 }, 6);
+    expect(rig.jibSolution.unfurled).toBeCloseTo(0.2, 2);
+    rig = run(rig, { ctl_jib_sheet: 95, ctl_jib_furl: 20 }, 3);
+    expect(rig.jibSolution.unfurled).toBeCloseTo(0.2, 2);
     expect(rig.jibSolution.sheet.state).toBe('fighting');
     // Unfurling with the sheet hauled: the jib comes out as far as the sheet allows.
     rig = run(rig, { ctl_jib_sheet: 95, ctl_jib_furl: 100 }, 6);
     expect(rig.jibSolution.unfurled).toBe(1);
     expect(rig.jibSolution.sheet.state).not.toBe('fighting');
+  });
+
+  it('issue #153: a jib rolled right away has no sail to hold out, so its hauled sheet does not fight', () => {
+    let rig = initialRig(controls({ ctl_jib_sheet: 100 }));
+    rig = run(rig, { ctl_jib_sheet: 100, ctl_jib_furl: 0 }, 6);
+    expect(rig.jibSolution.furled).toBe(true);
+    for (const sheet of [99.8, 95, 50, 0]) {
+      rig = run(rig, { ctl_jib_sheet: sheet, ctl_jib_furl: 0 }, 1);
+      expect(rig.jibSolution.unfurled, `sheet ${sheet}`).toBe(0);
+      expect(rig.jibSolution.sheet.state, `sheet ${sheet}`).not.toBe('fighting');
+    }
   });
 
   it('no NaN anywhere across all wind directions × jib control values', () => {
