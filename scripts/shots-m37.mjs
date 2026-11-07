@@ -179,9 +179,11 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       new Set(sailing.map((w) => w.w)).size === 1 && new Set(sailing.map((w) => w.h)).size === 1,
       JSON.stringify(widths),
     );
+    // M92: on a phone the box's numbers flow into the room the time widget leaves, so Held still
+    // (no heel, no AUTO) makes the box lower there rather than narrower.
     check(
-      `${viewport.name}: Held still has a narrower box`,
-      !!held && held.w < sailing[0].w,
+      `${viewport.name}: Held still has a smaller box`,
+      !!held && (held.w < sailing[0].w || held.h < sailing[0].h),
       JSON.stringify(widths),
     );
   }
