@@ -48,6 +48,16 @@ export async function liveM87Checks({ openPage, openPlain, viewports, outDir, pr
     check('phone no context before a tap', (await soundProbe(page)).context === 'none', 'none');
     check('phone no speaker chip', !(await tid(page, 'sound-chip').isVisible()), 'hidden');
     await shot(page, 'm87-settings-phone');
+    // A tap on a fresh page (Sound never switched on) must not start anything or store anything.
+    await closeSettings(page);
+    await page.mouse.click(phone.width / 2, 150);
+    await page.waitForTimeout(300);
+    check('phone a tap does not start sound', (await soundProbe(page)).context === 'none', 'none');
+    check(
+      'phone nothing stored by a tap',
+      (await stored(page)) === null,
+      String(await stored(page)),
+    );
     await context.close();
   }
 
@@ -139,6 +149,17 @@ export async function liveM87Checks({ openPage, openPlain, viewports, outDir, pr
     check('reload: no context yet', (await soundProbe(page)).context === 'none', 'none');
     await page.mouse.click(phone.width / 2, 150);
     check('reload: a tap starts it', await waitContext(page, 'running'), 'running');
+    // A finger touching down does not count as a tap for the browser; the finger lifting does
+    // (M87 review). After another reload, a lone `pointerup` or `touchend` must start the sound.
+    for (const type of ['pointerup', 'touchend']) {
+      await page.reload({ waitUntil: 'networkidle' });
+      await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 30_000 });
+      await page.evaluate(
+        (name) => document.body.dispatchEvent(new Event(name, { bubbles: true })),
+        type,
+      );
+      check(`reload: a lone ${type} starts it`, await waitContext(page, 'running'), 'running');
+    }
     await context.close();
   }
 

@@ -42,6 +42,13 @@ const PROBE_KEEP = 50;
 /** The voice files; the later milestones add theirs (boatVoices, gearVoices, placeVoices). */
 const FACTORIES: Partial<Record<VoiceId, VoiceFactory>> = { ...surroundingsVoices };
 
+/**
+ * The events a browser accepts as "the learner did something" for starting sound. A finger touching
+ * down (`pointerdown`, `touchstart`) does not count on a phone, the finger lifting does (`pointerup`,
+ * `touchend`); a mouse press and a key press count (M87 review).
+ */
+const GESTURES = ['pointerdown', 'pointerup', 'touchend', 'keydown'] as const;
+
 const hidden = (): boolean => document.visibilityState === 'hidden';
 
 export function createSoundEngine(store: Store): SoundEngine {
@@ -129,8 +136,7 @@ export function createSoundEngine(store: Store): SoundEngine {
     if (want === listening) return;
     listening = want;
     const method = want ? 'addEventListener' : 'removeEventListener';
-    document[method]('pointerdown', onGesture, true);
-    document[method]('keydown', onGesture, true);
+    for (const type of GESTURES) document[method](type, onGesture, true);
   }
 
   if (supported) {
