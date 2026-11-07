@@ -270,7 +270,14 @@ No new group. The existing checks read `build-version` (`scripts/shots.mjs`, `sh
 
 #### Decided in the M84 PR (recommended; merging accepts it)
 
-(The builder writes here.)
+- **Built as written** (7.2–7.7): `src/app/buildChannel.ts`, the two `define` constants, the About line and the debug overlay's version, `footer.release` / `footer.next` (English final, Russian drafts, `docs/review/ru.md` regenerated), `deploy.yml` renamed **Deploy next** (nothing else referred to the old name), `release.yml`, the tests of 7.7. A release build was tried locally: `APP_CHANNEL=release` without a version fails with the spec's message; with `APP_VERSION=v0.9.0` the built app contains the version.
+- **A domain later: not checked: docs.github.com could not be reached** from the building session (the network allows only the repository's hosts; `docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages` is the page to read). So whether `botrops1.github.io/sail-learn-and-train/…` links forward to a custom domain with the path and query kept is unknown. It is the owner's question 1 in the PR.
+- **Full-set time for the owner's note:** the full set took 35 minutes with the first recorded times and about 30 with the refreshed ones (M83's PR); WORKFLOW says "about 35 minutes" for a release (30 + 5).
+- **`.nojekyll`:** the file at the root of `gh-pages` is now made by `release.yml` (it is part of `dist`, so the release's clean keeps it). `deploy.yml` no longer touches the root. The comment in `pr-preview.yml` names `release.yml`. On the first merge the root still has the file from the earlier deploys.
+- **`next` in the Latin-words list** (`content/lang/latin-words.json`): the Russian draft of `footer.next` keeps the address word `(next)` as the spec writes it, and the test that allows no stray Latin words in Russian screens failed on it, so the word is allowed there (it is the name of the `/next/` address, like `GitHub`).
+- **Review items (owner: "accept all", so the review's recommendations are taken):** item 1 fixed (`SECURITY.md` now says the live site is the latest release and fixes reach it with the next release); item 2 fixed with one sentence in WORKFLOW ("How to publish a release": do not merge while it runs; if it shows Cancelled, run it again with the same version); item 3 fixed (WORKFLOW: a bad merge breaks only `/next/`; a bad release is fixed by a revert plus a new release with the next number); items 4 (a lower version number is accepted) and 5 (Vite notice about the import without `.ts`) left as they are.
+- **Left out on purpose:** M83's review item 2 (`/bug` skill: name the failed group in `CI groups:` for a nightly issue) is not in M84's file list; it stays for a small docs PR.
+- **First run after the merge:** `main` goes to `/next/`; the root keeps the last site deployed from `main` until the owner runs **Release** (7.5).
 
 ### 7.10 Not in M84
 

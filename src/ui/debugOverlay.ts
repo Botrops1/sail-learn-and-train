@@ -163,7 +163,10 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
             ? `${engine.gear} ${engine.rpm.toFixed(0)} rpm lv ${engine.leverPct}`
             : 'stopped',
         ],
-        [t('debug.build'), `${BUILD_INFO.shortHash} ${BUILD_INFO.date}`],
+        [
+          t('debug.build'),
+          `${BUILD_INFO.version ? `${BUILD_INFO.version} ` : ''}${BUILD_INFO.shortHash} ${BUILD_INFO.date}`,
+        ],
         [
           t('debug.waves'),
           mainTrain

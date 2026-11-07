@@ -40,7 +40,7 @@ jobs:
       # fall back to `git rev-parse HEAD` (vite.config.ts), which is the PR commit checked out above.
       - name: Build for pr-preview/pr-${{ github.event.pull_request.number }}/
         if: github.event.action != 'closed'
-        # No .nojekyll here: the one at the gh-pages root (deploy.yml) covers the previews, and
+        # No .nojekyll here: the one at the gh-pages root (release.yml) covers the previews, and
         # a copy in the preview folder would be left behind when the preview is removed.
         run: env -u GITHUB_SHA npm run build -- --base="/sail-learn-and-train/pr-preview/pr-${PR_NUMBER}/"
         env:

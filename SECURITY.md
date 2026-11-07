@@ -12,8 +12,8 @@ Problems that still matter, for example:
 
 Please **do not open a public issue.** Report it privately: open the repository's **Security** tab and choose **Report a vulnerability** ([direct link](https://github.com/Botrops1/sail-learn-and-train/security/advisories/new)). Describe what you found and how to reproduce it.
 
-This is a one‑person hobby project, so a reply can take a few days. Fixes go to the live site as soon as they are merged.
+This is a one‑person hobby project, so a reply can take a few days. Fixes reach the live site with the next release.
 
 ## Supported version
 
-Only the live site, https://botrops1.github.io/sail-learn-and-train/, which is always the latest `main`.
+Only the live site, https://botrops1.github.io/sail-learn-and-train/, which always shows the latest release (Settings → About shows its version). The newest work, not yet released, is at https://botrops1.github.io/sail-learn-and-train/next/ and is not supported.

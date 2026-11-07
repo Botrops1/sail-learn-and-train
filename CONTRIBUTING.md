@@ -67,6 +67,10 @@ These are the same rules the coding agent follows ([`CLAUDE.md`](CLAUDE.md)); if
 - Pull requests from forks get no preview site (only branches of this repository do). Say clearly how to check your change; the owner may copy it to a branch here to get a preview.
 - Every outside pull request gets an independent code review before it is merged. Please be patient: the owner reviews from a phone.
 
+### Releases
+
+The live site is the latest **release**. Versions are `v0.9.0` for the quiet beta, `v1.0.0` on announcement day, `v1.x.0` for a batch of features and `v1.x.y` for fixes only. Only the owner publishes a release (the **Release** workflow). The latest work on `main` is at [`/next/`](https://botrops1.github.io/sail-learn-and-train/next/), for testing; Settings → About says which one you are looking at.
+
 ## Licence
 
 The code and texts are licensed under **GPL‑3.0‑only** ([`LICENSE`](LICENSE)); by contributing you agree that your contribution is licensed the same way. The photos in [`docs/reference/photos/`](docs/reference/photos) are the owner's own, licensed under **CC BY‑SA 4.0**.

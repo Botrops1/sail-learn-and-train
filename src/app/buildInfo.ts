@@ -1,19 +1,37 @@
+import type { BuildChannel } from './buildChannel';
+
 declare const __BUILD_HASH__: string;
 declare const __BUILD_DATE__: string;
+declare const __BUILD_CHANNEL__: BuildChannel;
+declare const __BUILD_VERSION__: string;
 
 export interface BuildInfo {
   /** First 7 characters of the commit hash, as GitHub shows it. */
   shortHash: string;
   /** Build date, YYYY-MM-DD (UTC). */
   date: string;
+  /** release (the live site), next (/next/) or preview (PR previews, local builds). */
+  channel: BuildChannel;
+  /** `v1.2.3` for a release, '' otherwise. */
+  version: string;
 }
 
-export function makeBuildInfo(hash: string, date: string): BuildInfo {
-  return { shortHash: hash.slice(0, 7), date };
+export function makeBuildInfo(
+  hash: string,
+  date: string,
+  channel: BuildChannel = 'preview',
+  version = '',
+): BuildInfo {
+  return { shortHash: hash.slice(0, 7), date, channel, version };
 }
 
 /** Injected at build time by vite.config.ts. */
-export const BUILD_INFO: BuildInfo = makeBuildInfo(__BUILD_HASH__, __BUILD_DATE__);
+export const BUILD_INFO: BuildInfo = makeBuildInfo(
+  __BUILD_HASH__,
+  __BUILD_DATE__,
+  __BUILD_CHANNEL__,
+  __BUILD_VERSION__,
+);
 
 export const REPO_URL = 'https://github.com/Botrops1/sail-learn-and-train';
 

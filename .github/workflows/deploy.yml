@@ -1,8 +1,9 @@
-name: Deploy to GitHub Pages
+name: Deploy next
 
-# Publishes main to the root of the gh-pages branch. GitHub Pages serves that branch
-# (Settings → Pages → Deploy from a branch → gh-pages, / (root)). Pull request previews live
-# in gh-pages under pr-preview/ (see pr-preview.yml) and are left untouched here.
+# Publishes main to /next/ on the gh-pages branch (PHASE_LAUNCH_SPEC 7.5). GitHub Pages serves that
+# branch (Settings → Pages → Deploy from a branch → gh-pages, / (root)). The root of the site is
+# the latest release (release.yml) and is not touched here; pull request previews live under
+# pr-preview/ (see pr-preview.yml). A manual run on another branch never publishes.
 
 on:
   push:
@@ -18,6 +19,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -30,13 +32,12 @@ jobs:
       - run: npm run lint
       - run: npm test
       # GITHUB_SHA is the commit on main, so the footer shows the merged commit.
-      - run: npm run build
-      # Serve the files as they are (no Jekyll processing on the gh-pages branch).
-      - run: touch dist/.nojekyll
+      - run: env APP_CHANNEL=next npm run build -- --base=/sail-learn-and-train/next/
+      # No .nojekyll here: the one at the root of gh-pages (made by release.yml) covers /next/.
       - uses: JamesIves/github-pages-deploy-action@fa24774553152dd7873cd16ebd8d959b010c5445 # v4.9.0
         with:
           branch: gh-pages
           folder: dist
+          target-folder: next
           clean: true
-          clean-exclude: pr-preview/
           force: false

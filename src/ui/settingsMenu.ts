@@ -1,4 +1,5 @@
 import { BUILD_INFO, ISSUES_URL, REPO_URL } from '../app/buildInfo';
+import { versionLine } from '../app/buildChannel';
 import { removeBoat, saveBoat, setChosenBoat, storedBoats } from '../app/boatStore';
 import { makeSetupFile, readSetupFile, setupFileName } from '../app/setupFile';
 import type { Store } from '../app/store';
@@ -93,6 +94,7 @@ function openAfterReload(id: string): void {
  * gear opens (`createSettingsMenu`). `panel.ts` moves it.
  */
 export function createSettingsContent(store: Store): HTMLElement {
+  const version = versionLine(BUILD_INFO);
   return el('div', { class: 'settings-content', 'data-testid': 'settings-content' }, [
     el('div', { class: 'settings-body' }, buildSettingsBody(store)),
     el('h3', { class: 'settings-about' }, [t('settings.about')]),
@@ -112,7 +114,7 @@ export function createSettingsContent(store: Store): HTMLElement {
         [t('footer.report')],
       ),
       el('span', { class: 'version', 'data-testid': 'build-version' }, [
-        t('footer.version', { hash: BUILD_INFO.shortHash, date: BUILD_INFO.date }),
+        t(version.key, version.params),
       ]),
       el('a', { href: REPO_URL, target: '_blank', rel: 'noopener' }, [t('footer.source')]),
     ]),
