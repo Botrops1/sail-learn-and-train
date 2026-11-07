@@ -103,6 +103,7 @@ import { liveM81Checks, M81_SCENES } from './shots-m81.mjs';
 import { liveM82Checks, M82_SCENES } from './shots-m82.mjs';
 import { liveM85Checks } from './shots-m85.mjs';
 import { liveM87Checks } from './shots-m87.mjs';
+import { liveM88Checks } from './shots-m88.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -1163,6 +1164,7 @@ try {
     m85: () => liveM85Checks(onTestClock),
     // M87 opens some pages on the real clock (the audio context runs in real time): `openPlain`.
     m87: () => liveM87Checks({ ...onTestClock, openPlain: openPage }),
+    m88: () => liveM88Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {

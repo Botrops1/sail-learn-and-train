@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_SOUND_PREFS } from '../src/audio/prefs';
 import { pulses, poissonTimes } from '../src/audio/pulses';
-import { clamp01, ramp, soundTargets } from '../src/audio/levels';
+import { clamp01, eventName, ramp, soundTargets } from '../src/audio/levels';
 import { SOUND } from '../src/audio/soundData';
 import { VOICE_GROUP, VOICE_IDS, VOICE_KIND, type SoundPrefs } from '../src/audio/types';
 import type { AppState } from '../src/app/store';
+import type { ContactReport } from '../src/model/contact';
 import { mulberry32 } from '../src/model/random';
-import { initialState } from './motionHelpers';
+import { trimState } from '../src/model/trim';
+import { initialState, run, trimmed } from './motionHelpers';
 
 const on: SoundPrefs = { ...DEFAULT_SOUND_PREFS, on: true };
 const base = initialState();
@@ -165,5 +167,107 @@ describe('pulses and Poisson times (M87)', () => {
       for (const t of times) expect(t >= 0 && t < 0.05).toBe(true);
     }
     expect(Math.abs(count - 100)).toBeLessThan(20);
+  });
+});
+
+/** Prototype states (PHASE_AUDIO_SPEC 7.4): wind 15 kn from 90°, main all out; `ms` is the mainsheet. */
+const sailing = (ms: number): AppState => {
+  const s = run(initialState({ controls: trimmed(15, 90, ms, 50) }), 3);
+  return withAws(s, 15);
+};
+
+describe('sails (M88)', () => {
+  it('a luffing main flaps, in time with the wind, and does not rush', () => {
+    const s = sailing(100);
+    expect(trimState('main', s.rig, s.rig.wind.awaDeg)).toBe('luffing');
+    const t = targets(s).voices;
+    expect(Math.abs(t.flapMain.gain - 0.4 * (12 / 22))).toBeLessThan(0.002);
+    expect(Math.abs(t.flapMain.rate - 4.25)).toBeLessThan(0.01);
+    expect(t.flapMain.hz).toBe(1800);
+    expect(t.fullMain.gain).toBe(0);
+  });
+
+  it('a well-trimmed main rushes softly and does not flap', () => {
+    const s = sailing(40);
+    expect(trimState('main', s.rig, s.rig.wind.awaDeg)).toBe('good');
+    const t = targets(s).voices;
+    expect(t.flapMain.gain).toBe(0);
+    expect(Math.abs(t.fullMain.gain - 0.12 * (11 / 26))).toBeLessThan(0.001);
+  });
+
+  it('a main rolled away makes no sail sound', () => {
+    const s = sailing(100);
+    const furled = { ...s, rig: { ...s.rig, applied: { ...s.rig.applied, mainFurl: 0 } } };
+    const t = targets(furled).voices;
+    expect(t.flapMain.gain).toBe(0);
+    expect(t.fullMain.gain).toBe(0);
+  });
+});
+
+describe('engine (M88)', () => {
+  const withEngine = (running: boolean, rpm: number): AppState => ({
+    ...base,
+    engine: { ...base.engine, running, rpm },
+  });
+
+  it('follows the revs while running', () => {
+    const idle = targets(withEngine(true, 800)).voices.engine;
+    expect(idle.gain).toBeCloseTo(0.1575, 4);
+    expect(Math.abs(idle.hz - 26.67)).toBeLessThan(0.01);
+    const top = targets(withEngine(true, 2500)).voices.engine;
+    expect(top.gain).toBeCloseTo(0.35, 4);
+    expect(Math.abs(top.hz - 83.33)).toBeLessThan(0.01);
+  });
+
+  it('runs down when stopped', () => {
+    expect(Math.abs(targets(withEngine(false, 400)).voices.engine.gain - 0.0788)).toBeLessThan(
+      0.0005,
+    );
+    expect(targets(withEngine(false, 0)).voices.engine.gain).toBe(0);
+  });
+});
+
+describe('events (M88)', () => {
+  const report = (over: Partial<ContactReport> = {}): ContactReport => ({
+    atS: 12,
+    obstacleId: 'pontoon-1',
+    partId: 'hull',
+    part: 'bow',
+    impactMps: 0.5,
+    fender: false,
+    severity: 'bump',
+    ...over,
+  });
+  const withReports = (s: AppState, reports: ContactReport[]): AppState => ({
+    ...s,
+    contact: { ...s.contact, reports },
+  });
+  const events = (s: AppState, previous: AppState) => soundTargets(s, previous, on, 0.016).events;
+
+  it('the engine starting gives one start sound, a steady state none', () => {
+    const stopped = { ...base, engine: { ...base.engine, running: false } };
+    const running = { ...base, engine: { ...base.engine, running: true } };
+    expect(events(running, stopped)).toEqual([{ kind: 'engineStart' }]);
+    expect(events(running, running)).toEqual([]);
+    expect(events(stopped, running)).toEqual([]);
+  });
+
+  it('a new contact report gives one thump of its severity', () => {
+    const before = withReports(base, []);
+    const after = withReports(base, [report()]);
+    expect(events(after, before)).toEqual([{ kind: 'contact', severity: 'bump' }]);
+    expect(eventName({ kind: 'contact', severity: 'bump' })).toBe('contact:bump');
+    expect(eventName({ kind: 'engineStart' })).toBe('engineStart');
+  });
+
+  it('a bounce merged into the old report gives no second thump, nor does Clear', () => {
+    const before = withReports(base, [report()]);
+    expect(events(withReports(base, [report({ severity: 'knock' })]), before)).toEqual([]);
+    expect(events(withReports(base, []), before)).toEqual([]);
+  });
+
+  it('the line round the propeller has no thump', () => {
+    const after = withReports(base, [report({ obstacleId: 'propeller' })]);
+    expect(events(after, withReports(base, []))).toEqual([]);
   });
 });
