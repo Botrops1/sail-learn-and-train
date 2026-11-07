@@ -351,7 +351,8 @@ export async function liveM5Checks({
     );
     check(
       'about: privacy and maker notes',
-      text.includes('the app collects nothing') &&
+      text.includes('the app sends nothing about you') &&
+        text.includes('counted anonymously with GoatCounter') &&
         text.includes('not affiliated with Hanse Yachts'),
       text.replace(/\n/g, ' | '),
     );

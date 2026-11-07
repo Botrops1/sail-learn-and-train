@@ -428,9 +428,16 @@ No new group. `npm run build` (preview) has no `goatcounter` in `dist/index.html
 
 Tests pass; the owner reads the README, `BETA.md` and `ANNOUNCE.md` on the PR. Not in M86: posting anything; the Russian announcement text.
 
-#### Decided in the M86 PR (recommended; merging accepts it)
+#### Decided in the M86 PR (owner accepted the review and the recommendations)
 
-(The builder writes here, and adds a ROADMAP decisions row.)
+- **`integrity` added and `path` confirmed** (decided in the M86 PR, after the independent review; the owner accepted it): the first build left out the hash and did not confirm the `path` setting because goatcounter.com could not be reached from the session. The review read GoatCounter's own source repository (arp242/goatcounter): its page of script versions gives `count.v4.js` the hash `sha384-nRw6qfbWyJha9LhsOtSb2YJDyZdKvvCFh0fJYlkquSFjUxp9FVNugbfy8q1jdxI+` (the same value as the hash of `public/count.v4.js` there), and its help page for the script confirms `path` is the page path (by default `location.pathname + location.search`, so without it the link's settings would be counted). `goatCounterTags` now writes the hash after `crossorigin`; a test checks it is there. The script still sends `location.search` to GoatCounter, which does not store it (it reads only `utm_source`, `ref`, `src`, `source`, `utm_campaign`, `campaign`, none of which the app's links use); the texts promise what is counted, not every byte sent. The owner's own GoatCounter snippet (`count.js`, unversioned, no hash) was not used: the versioned script with its hash is the safer form, and the counter address `https://sail-learn-and-train.goatcounter.com/count` is the same.
+- `goatCounterTags` also throws for an empty code (the pattern needs at least one character).
+- The counter tags are inserted by the existing `siteUrl` plugin's `transformIndexHtml` (no second plugin); nothing is inserted when the channel is not `release`, so `dist/index.html` of a preview or `/next/` build is unchanged.
+- README: the welcome line sits under the first paragraph (under Try it); "Next" names #145 and #161 as links. `docs/BETA.md` links to `/issues/new/choose`.
+- `docs/ANNOUNCE.md`: every text is within its word limit (r/sailing 150, the Show HN title 70 characters and its comment 94 words); the Russian section is a placeholder as the spec says.
+- Russian: the privacy line in `ru` is an AI draft like the rest; `docs/review/ru.md` regenerated.
+
+(The builder adds a ROADMAP decisions row: done.)
 
 ---
 

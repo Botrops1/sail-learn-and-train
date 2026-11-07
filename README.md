@@ -8,7 +8,9 @@ A free web app that shows a complete beginner what every rope, sheet and sail of
 
 **Who it is for:** someone who has never sailed (or is about to crew on a yacht) and wants to understand the boat before stepping on it. **How it works:** you set a wind, work the ropes, and see at once what the boat and the sails do. Clarity over realism: it teaches how things behave, it is not a simulator for racing.
 
-> **Honest limits today.** Built phone first, but the **exercises are still very hard on a normal phone** (the controls they need do not fit a small screen well; a tablet or a computer works much better). This is the next big job. The **Russian text is an AI draft** that no sailor has checked yet.
+On your first visit a short **welcome card** offers to start the first exercise for you, or to look around the boat. Settings → About shows it again.
+
+> **Honest limits today.** The **Russian text is an AI draft** that no sailor has checked yet.
 
 ## What you can do
 
@@ -35,7 +37,8 @@ A free web app that shows a complete beginner what every rope, sheet and sail of
 - A **Status** section: the sails, the gear, any damage and a tagged history of what happened.
 
 **Exercises**
-- **Exercises mode** gives guided tasks with a coach: a card with what you see, what is happening, the right action and the typical mistake; steps that tick themselves off; a step line over the 3D view; mistakes that can pause time and explain themselves; waypoints to go back to; and a **debrief** at the end.
+- **Exercises mode** gives guided tasks with a coach: a card with what you see, what is happening, the right action and the typical mistake; steps that tick themselves off; mistakes that can pause time and explain themselves; waypoints to go back to; and a **debrief** at the end.
+- Exercises work on a normal phone. A **step bar** over the 3D view holds the controls the current step needs. **Watch it** lets the app sail the exercise for you and stops after each step; **Show me** plays one step, then it is your turn.
 - Fourteen exercises today: trim through the points of sail, tacking, getting out of irons (head to wind and stuck), gybing (controlled and accidental), gusts, too much wind (reduce sail), setting and furling the sails (alone or with crew), leaving the berth, entering the berth stern-to, turning in her own length, picking up a mooring buoy, anchoring with a line ashore, and going stern-to on your own anchor.
 
 **Languages, sharing and your own setup**
@@ -47,9 +50,9 @@ A free web app that shows a complete beginner what every rope, sheet and sail of
 
 ## Where the project stands
 
-Done: the boat and its controls, the moving boat, waves and sky, the Learn layer in English and Russian, the new layout and modes, boat details, harbour and anchor, panels/status/setup/profiles, the visual work, and the exercises: sailing ones (10a) and harbour and anchor ones (10b).
+Done: the boat and its controls, the moving boat, waves and sky, the Learn layer in English and Russian, the new layout and modes, boat details, harbour and anchor, panels/status/setup/profiles, the visual work, the exercises (sailing ones, 10a, and harbour and anchor ones, 10b), exercises on a normal phone, releases and a welcome for new visitors.
 
-Next: controls that work on a normal phone during an exercise (and for a computer), wind and clock exercises (10c), a launch plan (own release versions, a welcome for new visitors), a sailor's review of the Russian text, and more languages. Phases and decisions: [`docs/ROADMAP.md`](docs/ROADMAP.md). Public launch checklist: [issue #165](https://github.com/Botrops1/sail-learn-and-train/issues/165).
+Next: wind and clock exercises (10c), the camera controls ([#145](https://github.com/Botrops1/sail-learn-and-train/issues/145)), the computer controls outside exercises ([#161](https://github.com/Botrops1/sail-learn-and-train/issues/161)), a sailor's review of the Russian text, and more languages. Phases and decisions: [`docs/ROADMAP.md`](docs/ROADMAP.md). Public launch checklist: [issue #165](https://github.com/Botrops1/sail-learn-and-train/issues/165).
 
 Open limits: the frame rate on phones is still to be checked on real devices; a browser without WebGL shows the panel but not the 3D boat.
 
@@ -59,7 +62,9 @@ You do not need to write code: report a bug (Settings → Share gives a link to 
 
 ## Privacy
 
-The app collects nothing and sends nothing anywhere. What you set (layout, imported boats, exercise ticks) stays in your browser on this device. The site is hosted on GitHub Pages ([GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)).
+The app sends nothing about you. Visits to the live site are counted anonymously with [GoatCounter](https://www.goatcounter.com): no cookies and no personal data ([how GoatCounter handles this](https://www.goatcounter.com/help/gdpr)). Test versions (`/next/` and PR previews) count nothing.
+
+What you set (layout, imported boats, exercise ticks, whether you have seen the welcome) stays in your browser on this device. The site is hosted on GitHub Pages ([GitHub's privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement)).
 
 ## Disclaimer
 
@@ -77,7 +82,7 @@ The photos in [`docs/reference/photos/`](docs/reference/photos) are the project 
 
 # For developers
 
-Developed with Claude Code in the cloud and reviewed from a phone. Stack: Vite, TypeScript, three.js, Vitest; deployed with GitHub Actions to GitHub Pages. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to work on it and [`docs/CODE_MAP.md`](docs/CODE_MAP.md) for which file does what.
+Developed with Claude Code in the cloud and reviewed from a phone. The live site (the address above) changes only when a release is published; the latest work is at `https://botrops1.github.io/sail-learn-and-train/next/` for testing. Stack: Vite, TypeScript, three.js, Vitest; deployed with GitHub Actions to GitHub Pages. See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to work on it and [`docs/CODE_MAP.md`](docs/CODE_MAP.md) for which file does what.
 
 ## Commands
 
@@ -126,6 +131,10 @@ Old links keep opening the same picture.
 | [`docs/PHASE8_SPEC.md`](docs/PHASE8_SPEC.md) | Phase 8: phone tabs, Status, setup file, boat profiles |
 | [`docs/PHASE9_SPEC.md`](docs/PHASE9_SPEC.md) | Phase 9: visual quality, helm panels, Helm camera |
 | [`docs/PHASE10_SPEC.md`](docs/PHASE10_SPEC.md) | Phase 10: Exercises mode, the coach and the exercises |
+| [`docs/PHASE10_PHONE_SPEC.md`](docs/PHASE10_PHONE_SPEC.md) | Exercises on a phone (M79–M82) |
+| [`docs/PHASE_LAUNCH_SPEC.md`](docs/PHASE_LAUNCH_SPEC.md) | Launch: faster CI, releases, the welcome, the launch texts (M83–M86) |
+| [`docs/BETA.md`](docs/BETA.md) | A one-page guide for the sailors of the quiet beta |
+| [`docs/ANNOUNCE.md`](docs/ANNOUNCE.md) | Drafts of the announcement texts |
 | [`docs/EXERCISES.md`](docs/EXERCISES.md) | The exercise catalogue, failure modes and wind modes |
 | [`docs/LAYOUT_ANALYSIS.md`](docs/LAYOUT_ANALYSIS.md), [`docs/BOAT_DETAILS_ANALYSIS.md`](docs/BOAT_DETAILS_ANALYSIS.md), [`docs/VISUAL_QUALITY_ANALYSIS.md`](docs/VISUAL_QUALITY_ANALYSIS.md) | Records of the analyses behind Phases 5, 6 and 9 |
 | [`docs/LANGUAGES.md`](docs/LANGUAGES.md) | How to add a language (one folder of JSON files) |

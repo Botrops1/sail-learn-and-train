@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makeBuildInfo } from '../src/app/buildInfo';
-import { parseBuildEnv, versionLine } from '../src/app/buildChannel';
+import { goatCounterTags, parseBuildEnv, versionLine } from '../src/app/buildChannel';
 import { t } from '../src/ui/i18n';
 
 describe('parseBuildEnv (PHASE_LAUNCH_SPEC 7.2)', () => {
@@ -68,5 +68,30 @@ describe('makeBuildInfo', () => {
       channel: 'release',
       version: 'v0.9.0',
     });
+  });
+});
+
+describe('goatCounterTags (PHASE_LAUNCH_SPEC 10.2)', () => {
+  it('previews, /next/ and local builds load no counter', () => {
+    expect(goatCounterTags('preview', 'x')).toBe('');
+    expect(goatCounterTags('next', 'x')).toBe('');
+  });
+
+  it('a release counts the page path on the site code, with the versioned script', () => {
+    const html = goatCounterTags('release', 'sail-learn-and-train');
+    expect(html).toContain('https://sail-learn-and-train.goatcounter.com/count');
+    expect(html).toContain('count.v4.js');
+    expect(html).toContain('location.pathname');
+  });
+
+  it('the release script carries its integrity hash', () => {
+    const html = goatCounterTags('release', 'sail-learn-and-train');
+    expect(html).toContain('integrity="sha384-');
+  });
+
+  it('a code with anything but lowercase letters, digits and hyphens is refused', () => {
+    for (const bad of ['', 'A', 'a b', 'a"b', 'a.b', 'a/b']) {
+      expect(() => goatCounterTags('release', bad), bad).toThrow();
+    }
   });
 });
