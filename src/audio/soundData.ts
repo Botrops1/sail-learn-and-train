@@ -142,6 +142,25 @@ export interface SoundData {
   };
   birdLight: Record<Daylight, number>;
   birdWind: { fromKn: number; share: number };
+  music: {
+    seed: number;
+    scale: number[];
+    chords: number[][];
+    chordEveryS: number[];
+    padAttackS: number;
+    padReleaseS: number;
+    padGain: number;
+    padDetuneCents: number;
+    noteEveryS: number[];
+    noteOctaves: number[];
+    noteGain: number;
+    noteDecayS: number;
+    restShare: number;
+    delayS: number;
+    delayFeedback: number;
+    delayMix: number;
+    lowpassHz: number;
+  };
 }
 
 export const SOUND: SoundData = data;

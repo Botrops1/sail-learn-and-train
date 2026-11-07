@@ -3,6 +3,7 @@ import { mulberry32 } from '../model/random';
 import { boatVoices, playEvent as playBoatEvent, type BoatEvent } from './boatVoices';
 import { gearVoices, playEvent as playGearEvent, type GearEvent } from './gearVoices';
 import { eventName, soundTargets } from './levels';
+import { createMusic, type Music } from './music';
 import { noiseBuffer } from './noise';
 import { placeVoices } from './placeVoices';
 import { getSoundPrefs, onSoundPrefs } from './prefs';
@@ -42,7 +43,7 @@ interface SoundProbe {
 
 const GROUPS: readonly SoundGroup[] = ['music', 'surroundings', 'boat'];
 const PROBE_KEEP = 50;
-/** The voice files; M91 adds the music. */
+/** The voice files (the music is built apart, in `music.ts`). */
 const FACTORIES: Partial<Record<VoiceId, VoiceFactory>> = {
   ...surroundingsVoices,
   ...boatVoices,
@@ -66,6 +67,7 @@ export function createSoundEngine(store: Store): SoundEngine {
   let groupNodes: Record<SoundGroup, GainNode> | undefined;
   let noise: AudioBuffer | undefined;
   const voices = new Map<VoiceId, Voice>();
+  let music: Music | undefined;
   const rngs = new Map<VoiceId, () => number>();
   const phases = new Map<VoiceId, number>();
   let previous = store.getState();
@@ -112,6 +114,7 @@ export function createSoundEngine(store: Store): SoundEngine {
       rngs.set(id, mulberry32(SOUND.master.noiseSeed + VOICE_IDS.indexOf(id)));
       phases.set(id, 0);
     }
+    music = createMusic(context, nodes.music, SOUND, record);
   }
 
   /** Create or resume the context. Only called from a tap, a key press, a setting change made in one, or the page coming back. */
@@ -170,6 +173,8 @@ export function createSoundEngine(store: Store): SoundEngine {
     previous = state;
     const t = SOUND.master.smoothingS;
     for (const g of GROUPS) smoothTo(groupNodes[g].gain, targets.groups[g], ctx, t);
+    // The music keeps its own clock; it stands still while its group is silent, so no notes pile up.
+    if (music && targets.groups.music > 0) music.frame(dt);
     const now = ctx.currentTime + SOUND.master.lookaheadS;
     for (const [id, voice] of voices) {
       const target = targets.voices[id];

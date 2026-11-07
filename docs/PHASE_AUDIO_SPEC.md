@@ -610,6 +610,13 @@ Run `SHOTS_ONLY=m91`. Add `"m91": 300`.
 
 Checks and tests pass; on the phone: with Sound on, a quiet, slow music under the wind, never the same twice; Music off in Settings stops it within a few seconds while the rest goes on. The PR says `Closes #155`. Not in M91: a choice of tunes, a music volume of its own (the group gain is fixed at a third, `master.groupGain.music`).
 
+**Decided in the M91 PR** (recommended; merging accepts it):
+
+- The music is left as specified and tuned after the owner's phone test (no number is changed). `"m91"` in `ci-times.json` is the measured time, not 300 (see the PR).
+- `musicEvents` emits the chord at `chords[cursor.chord]` and then picks the next one, so the first chord of every visit is D (`chords[0]`); `START_CURSOR` is unchanged. The JSON pairs (`chordEveryS`, `noteEveryS`, `noteOctaves`) are typed `number[]` (a JSON import cannot be a tuple).
+- The music's one-shot nodes (pad oscillators and notes) are not counted towards `maxOneShots`: they are few, long and quiet, and counting them would let the music starve the gulls and the clicks.
+- `createMusic` takes a fifth argument, the look-ahead, defaulting to `master.lookaheadS`; a note due in the frame plays at `currentTime + (atS − clock)`.
+
 ---
 
 ## 11. Planning decisions (owner, 2026-11-07: "accept all", plus birds and the computer's sound button)
