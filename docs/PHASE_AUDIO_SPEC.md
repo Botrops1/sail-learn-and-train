@@ -476,7 +476,7 @@ Checks and tests pass; on the phone: the winch hums and clicks when you press it
 
 **Decided in the M89 PR** (recommended; merging accepts it):
 
-- The winch, rope, windlass, chain, anchor and thruster sounds are left as specified and tuned after the owner's phone test (nothing in the numbers is changed). `"m89"` in `ci-times.json` is the measured time, not 300 (see the PR).
+- The winch, rope, windlass, chain, anchor and thruster sounds are left as specified and tuned after the owner's phone test (nothing in the numbers is changed). `"m89"` in `ci-times.json` is the measured time (13 s), not 300.
 - `gearVoices.ts` exports its own `playEvent` for `cutOut`, `anchorDown` and `anchorUp`; `boatVoices.ts` keeps `engineStart` and `contact`; the engine hands each event to the file that owns it. Both count an event as one one-shot with the shared `track` helper, which moved to `voice.ts`.
 - A band voice keeps its last pitch while its target `hz` is 0 (the winch motor, the rope, the thrusters): only the gain falls to 0.
 - The winch motor and the thrusters share one band voice builder (an oscillator and/or noise through a bandpass); the windlass is the same without noise.
@@ -540,7 +540,7 @@ Checks and tests pass; on the phone: in the marina the halyards tap on the masts
 
 **Decided in the M90 PR** (recommended; merging accepts it):
 
-- The halyards, lapping, gull and small-bird sounds are left as specified and tuned after the owner's phone test (nothing in the numbers is changed). `"m90"` in `ci-times.json` is the measured time, not 300 (see the PR).
+- The halyards, lapping, gull and small-bird sounds are left as specified and tuned after the owner's phone test (nothing in the numbers is changed). `"m90"` in `ci-times.json` is the measured time (13 s), not 300.
 - `placeVoices.ts` has the four Poisson voices; each call builds its own oscillators or noise source and counts as one one-shot with the shared `track` helper. The lapping slap reads a different piece of the shared noise each time (`start(at, offset)`, offset `rng() · 1.5` s).
 - Browser check 1 reads the probe once per second of app time for up to 90 s and stops at the first `gull` or `chirp`.
 
@@ -612,7 +612,7 @@ Checks and tests pass; on the phone: with Sound on, a quiet, slow music under th
 
 **Decided in the M91 PR** (recommended; merging accepts it):
 
-- The music is left as specified and tuned after the owner's phone test (no number is changed). `"m91"` in `ci-times.json` is the measured time, not 300 (see the PR).
+- The music is left as specified and tuned after the owner's phone test (no number is changed). `"m91"` in `ci-times.json` is the measured time (13 s), not 300.
 - `musicEvents` emits the chord at `chords[cursor.chord]` and then picks the next one, so the first chord of every visit is D (`chords[0]`); `START_CURSOR` is unchanged. The JSON pairs (`chordEveryS`, `noteEveryS`, `noteOctaves`) are typed `number[]` (a JSON import cannot be a tuple).
 - The music's one-shot nodes (pad oscillators and notes) are not counted towards `maxOneShots`: they are few, long and quiet, and counting them would let the music starve the gulls and the clicks.
 - `createMusic` takes a fifth argument, the look-ahead, defaulting to `master.lookaheadS`; a note due in the frame plays at `currentTime + (atS − clock)`.
