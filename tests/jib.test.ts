@@ -16,6 +16,7 @@ import {
   minUnfurledFor,
   settledJibUnfurled,
   solveJib,
+  unfurledAfterSheetHaul,
   type JibSolution,
 } from '../src/model/jib';
 import { ropeDrawings } from '../src/model/ropePaths';
@@ -567,6 +568,22 @@ describe('jib solver: general checks (PHASE1_SPEC 11)', () => {
     rig = run(rig, { ctl_jib_sheet: 95, ctl_jib_furl: 100 }, 6);
     expect(rig.jibSolution.unfurled).toBe(1);
     expect(rig.jibSolution.sheet.state).not.toBe('fighting');
+  });
+
+  it("issue #153: rope hauled on a rolled jib's sheet unrolls it, by the working length it shortens", () => {
+    expect(unfurledAfterSheetHaul(0, 0)).toBe(0);
+    expect(unfurledAfterSheetHaul(1, 3)).toBe(1);
+    // More rope, more jib; enough rope and it is fully out.
+    const some = unfurledAfterSheetHaul(0, 2);
+    const more = unfurledAfterSheetHaul(0, 5);
+    expect(some).toBeGreaterThan(0);
+    expect(more).toBeGreaterThan(some);
+    expect(unfurledAfterSheetHaul(0, 100)).toBe(1);
+    // The working length fell by the rope hauled over the purchase.
+    expect(jibSheetSpan(0, some)).toBeCloseTo(
+      jibSheetSpan(0, 0) - 2 / boat.sails.jib.sheet.purchase,
+      6,
+    );
   });
 
   it('no NaN anywhere across all wind directions × jib control values', () => {

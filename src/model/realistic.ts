@@ -7,6 +7,7 @@ import {
   jibSheetPaidOut,
   jibSheetReleased,
   minUnfurledFor,
+  unfurledAfterSheetHaul,
 } from './jib';
 import { mainFurlLengths } from './mainFurl';
 import { mainsheetPaidOut } from './mainsheet';
@@ -679,7 +680,13 @@ export function reduceRealistic(
 }
 
 /** The pull that tries to run a rope end out (newtons), from the solved rig and its sail forces. */
-function ropePullN(spec: TailSpec, controls: Controls, rig: RigState, data: BoatData): number {
+function ropePullN(
+  spec: TailSpec,
+  controls: Controls,
+  rig: RigState,
+  data: BoatData,
+  rollFree: boolean,
+): number {
   const loads = data.realisticMode.loads;
   const fixed = (loads.fixedN as Record<string, number | undefined>)[spec.ropeId] ?? 0;
   // The wind the rig was solved for (a gust or a dying wind counts), not the dial's mean.
@@ -695,6 +702,11 @@ function ropePullN(spec: TailSpec, controls: Controls, rig: RigState, data: Boat
         gybeImpactPullN(rig.lastGybe, rig.timeS, data)
       );
     case 'rope_jib_sheet':
+      // The sheet pulling a rolled jib's clew out only meets the light furling load while JIB
+      // ROLL is free to run out; held, it fights the furling line (issue #153).
+      if (rollFree && rig.jibSolution.sheet.state === 'fighting') {
+        return (loads.fixedN as Record<string, number | undefined>).rope_jib_furling_line ?? 0;
+      }
       return byState(rig.jibSolution.sheet, sheets.jibSheetRopeN);
     case 'rope_vang':
       return byState(rig.solution.vang, fixed);
@@ -774,6 +786,18 @@ function jibSheetForFurl(sheetPct: number, jibOutPct: number, data: BoatData): n
   return hi;
 }
 
+/** Is JIB ROLL free to run out: clutch open, not on a winch, not in a hand? */
+function jibRollFree(state: RealisticState, data: BoatData): boolean {
+  const roll = tailSpecs(data).find((t) => t.controlId === 'ctl_jib_furl');
+  if (!roll) return false;
+  return (
+    state.open[roll.key] === true &&
+    !winchOf(state, roll.key) &&
+    state.pull !== roll.key &&
+    !((state.ease[roll.key] ?? 0) > 0)
+  );
+}
+
 export interface RealisticStep {
   state: RealisticState;
   /** New control values for ropes that moved. */
@@ -796,6 +820,16 @@ export function stepRealistic(
   const hand = rm.hand;
 
   // 1. Each rope end on its own: what pulls it, what holds it, what the user does with it.
+  const rollFree = jibRollFree(state, data);
+  /**
+   * The jib sheet pulls a rolled jib's clew against JIB ROLL, which is free to run out (issue
+   * #153): hauling the sheet then unrolls the jib, as the exercise's How? says, instead of
+   * moving the sheet. Held, JIB ROLL makes the sheet fight (PT-19a).
+   */
+  const jibUnroll =
+    rollFree &&
+    (rig.jibSolution.sheet.state === 'fighting' ||
+      (rig.jibSolution.sheetReleased && rig.jibSolution.unfurled < 1));
   const work = new Map<string, TailWork>();
   for (const spec of tailSpecs(data)) {
     if (!spec.controlId) continue;
@@ -804,7 +838,7 @@ export function stepRealistic(
     const open = state.open[spec.key] === true;
     const easing = (state.ease[spec.key] ?? 0) > 0;
     const pulling = state.pull === spec.key;
-    const pull = ropePullN(spec, controls, rig, data);
+    const pull = ropePullN(spec, controls, rig, data, rollFree);
     const hold = winch
       ? holdingForceN(winch.turns, winch.selfTailer ? 'selfTailer' : 'hand', data)
       : easing || pulling
@@ -1067,6 +1101,8 @@ export function stepRealistic(
       let up = 0;
       let down = 0;
       for (const w of tails) {
+        // The sheet's haul unrolls the jib instead (below), the sheet itself stays put.
+        if (jibUnroll && id === 'ctl_jib_sheet' && w.haul > 0) continue;
         const rate = (w.out - w.haul) * w.spec.payOutSign; // m/s in the control's direction
         const pct = rate / w.spec.metresPerPct;
         if (w.haul > 0 && w.blockers.length > 0) continue;
@@ -1094,6 +1130,23 @@ export function stepRealistic(
     if (next !== value) {
       values[id] = next;
       moved.set(id, next - value);
+    }
+  }
+
+  // The jib sheet hauled against a free JIB ROLL line unrolls the jib (issue #153).
+  if (jibUnroll && dt > 0) {
+    const sheetTails = tailSpecs(data).filter((t) => t.controlId === 'ctl_jib_sheet');
+    const haulM = Math.max(0, ...sheetTails.map((t) => work.get(t.key)?.haul ?? 0)) * dt;
+    if (haulM > 0) {
+      const base = values.ctl_jib_furl ?? controls.ctl_jib_furl;
+      const to = Math.min(
+        100,
+        Math.max(base, unfurledAfterSheetHaul(rig.jibSolution.unfurled, haulM, data) * 100),
+      );
+      if (to !== controls.ctl_jib_furl) {
+        values.ctl_jib_furl = to;
+        moved.set('ctl_jib_furl', to - controls.ctl_jib_furl);
+      }
     }
   }
 
@@ -1140,7 +1193,10 @@ export function stepRealistic(
   for (const [key, w] of work) {
     const changed = w.spec.controlId ? (moved.get(w.spec.controlId) ?? 0) : 0;
     // A driver that the group rules stopped does not move: report it as held.
-    const moving = changed !== 0 || dt === 0;
+    // The jib sheet hauled to unroll the jib moves, though its own control stays put (#153).
+    const unrolling =
+      jibUnroll && w.spec.controlId === 'ctl_jib_sheet' && w.haul > 0 && moved.has('ctl_jib_furl');
+    const moving = changed !== 0 || dt === 0 || unrolling;
     let motion = w.motion;
     // While the gearbox turns the mandrel, the furling ends just follow it.
     const byGearbox = gearboxRate !== 0 && w.spec.controlId === gearbox.controlId;

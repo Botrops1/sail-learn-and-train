@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 import { boat } from '../src/model/boat';
+import { trimState } from '../src/model/trim';
 import type { Controls } from '../src/model/controls';
 import {
   initialRealistic,
@@ -310,6 +311,81 @@ describe('PT-19a electric winch', () => {
     // Letting go of the button resets it.
     s = act(s, { type: 'button', winch: PORT, held: false });
     expect(s.realistic.winches[PORT]?.cutOut).toBe(false);
+  });
+
+  /** The jib step of Setting the sails as How? says: JIB ROLL open (port), Genoa sheet on the winch (starboard). */
+  function jibStep(jibFurl: number, rollOpen: boolean, sheet = 100): AppState {
+    let s = start(
+      { ctl_wind_dir: 45, ctl_wind_speed: 12, ctl_jib_furl: jibFurl, ctl_jib_sheet: sheet },
+      'port',
+    );
+    s = run(s, 1);
+    if (rollOpen) s = act(s, { type: 'clutch', key: JIB_ROLL, open: true });
+    s = act(s, { type: 'station', station: 'starboard' });
+    s = onWinch(s, GENOA, 3);
+    return act(
+      s,
+      { type: 'selfTailer', winch: STBD, into: true },
+      { type: 'button', winch: STBD, held: true },
+    );
+  }
+
+  it('issue #153 following How?: JIB ROLL open, the Genoa sheet winched: the jib unrolls, the winch does not cut out', () => {
+    let s = jibStep(0, true);
+    expect(s.rig.jibSolution.furled).toBe(true);
+    let out = 0;
+    for (let t = 0; t < 40; t += 1) {
+      s = run(s, 1);
+      expect(s.realistic.winches[STBD]?.cutOut, `t ${t}`).toBe(false);
+      const note = s.realistic.reports[GENOA]?.note;
+      expect(note === 'cutOutFighting' || note === 'slipping', `t ${t} ${note}`).toBe(false);
+      out = s.rig.jibSolution.unfurled;
+      // While the jib comes out, the sheet itself stays eased and the rope is seen moving.
+      if (out < 0.9) {
+        expect(s.controls.ctl_jib_sheet).toBeGreaterThan(99);
+        expect(s.realistic.reports[GENOA]?.motion).toBe('hauling');
+      }
+      if (out >= 1) break;
+    }
+    expect(out).toBe(1);
+    // Once it is out, hauling trims the sheet as usual, until the jib reads Good (the step's goal:
+    // 90-100 % out and Good). The wind is 45 degrees off the bow (apparent wind on a close reach).
+    let good = false;
+    for (let t = 0; t < 200 && !good; t += 1) {
+      s = run(s, 0.1);
+      expect(s.realistic.winches[STBD]?.cutOut, `trim ${t}`).toBe(false);
+      good = trimState('jib', s.rig, 45) === 'good';
+    }
+    expect(good).toBe(true);
+    expect(s.rig.jibSolution.unfurled * 100).toBeGreaterThanOrEqual(90);
+    expect(s.controls.ctl_jib_sheet).toBeLessThan(100);
+  });
+
+  it('issue #153 the Genoa sheet clutch open as well: the rope does not slip', () => {
+    let s = jibStep(0, true);
+    s = act(s, { type: 'clutch', key: GENOA, open: true });
+    s = run(s, 5);
+    expect(s.realistic.reports[GENOA]?.note).not.toBe('slipping');
+    expect(s.realistic.reports[GENOA]?.motion).toBe('hauling');
+    expect(s.rig.jibSolution.unfurled).toBeGreaterThan(0.05);
+  });
+
+  it('issue #153 with JIB ROLL closed the rolled jib is held: the sheet fights it and the winch cuts out (PT-19a)', () => {
+    let s = jibStep(0, false);
+    s = run(s, 3);
+    expect(s.rig.jibSolution.sheet.state).toBe('fighting');
+    expect(s.realistic.winches[STBD]?.cutOut).toBe(true);
+    expect(s.realistic.reports[GENOA]?.note).toBe('cutOutFighting');
+    expect(s.rig.jibSolution.unfurled).toBe(0);
+  });
+
+  it('issue #153 a partly rolled jib held by JIB ROLL still fights its hauled sheet (PT-19a)', () => {
+    let s = jibStep(20, false);
+    s = run(s, 3);
+    expect(s.rig.jibSolution.furled).toBe(false);
+    expect(s.rig.jibSolution.sheet.state).toBe('fighting');
+    expect(s.realistic.winches[STBD]?.cutOut).toBe(true);
+    expect(s.realistic.reports[GENOA]?.note).toBe('cutOutFighting');
   });
 
   it('PT-19a hauling a light rope works, and stops at the end with the cut-out ("fully hauled")', () => {

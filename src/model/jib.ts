@@ -180,6 +180,31 @@ export function minUnfurledFor(available: number, data: BoatData = boat): number
 }
 
 /**
+ * The jib out (0..1) after `ropeHauledM` metres of jib sheet rope are hauled in while the sheet
+ * holds the clew and the furling line is free to run out (issue #153): the sheet pulls the clew
+ * back toward the car, so the jib unrolls. The working length falls by the rope hauled divided
+ * by the purchase; the jib is out far enough when the clew's distance from the car matches.
+ */
+export function unfurledAfterSheetHaul(
+  unfurled: number,
+  ropeHauledM: number,
+  data: BoatData = boat,
+): number {
+  if (ropeHauledM <= 0 || unfurled >= 1) return Math.min(1, Math.max(0, unfurled));
+  const target = jibSheetSpan(0, unfurled, data) - ropeHauledM / data.sails.jib.sheet.purchase;
+  // The span falls as the jib comes out along its foot (the clew moves toward the car).
+  if (jibSheetSpan(0, 1, data) >= target) return 1;
+  let lo = unfurled;
+  let hi = 1;
+  for (let i = 0; i < 40; i += 1) {
+    const mid = (lo + hi) / 2;
+    if (jibSheetSpan(0, mid, data) > target) lo = mid;
+    else hi = mid;
+  }
+  return hi;
+}
+
+/**
  * Jib out (0..1) once the ropes have arrived at the controls, starting from `reached`, the
  * fraction it has now (the same rule as in solveJib). A link without history starts fully out
  * (`reached` = 1): there, a furl the sheet does not allow is blocked. A jib already furled
