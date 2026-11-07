@@ -2549,6 +2549,13 @@
 | footer.privacy | Privacy: the app collects nothing and sends nothing anywhere. What you set stays on this device. The site is hosted on GitHub Pages. | Конфиденциальность: приложение ничего не собирает и никуда не отправляет. Ваши настройки остаются на этом устройстве. Сайт размещён на GitHub. |
 | footer.maker | Hanse and Hanse 508 are names of their owner. This app is not affiliated with Hanse Yachts. | Hanse и Hanse 508 принадлежат их владельцу. Приложение не связано с верфью Hanse. |
 | footer.report | Report a problem or suggest an idea | Сообщить об ошибке или предложить идею |
+| welcome.title | Welcome aboard | Добро пожаловать на борт |
+| welcome.body | This app shows a complete beginner what every rope, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Это приложение показывает новичку, что делает каждый трос, шкот и парус прогулочной яхты. Вы управляете снастями, а 3D-яхта показывает, что происходит. Знать парусный спорт не нужно. |
+| welcome.watch | Watch the first exercise | Посмотреть первое упражнение |
+| welcome.look | Look around the boat | Осмотреть яхту |
+| welcome.close | Close | Закрыть |
+| welcome.later | Settings → About shows this again. | Это окно снова можно открыть: Настройки → О программе. |
+| welcome.again | Show the welcome again | Показать приветствие снова |
 | debug.title | Debug | Debug |
 | debug.fps | FPS | FPS |
 | debug.worstFrame | Slowest | Slowest |

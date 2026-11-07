@@ -93,8 +93,14 @@ function openAfterReload(id: string): void {
  * body of the Settings section (the Settings tab); elsewhere the body of the settings card the
  * gear opens (`createSettingsMenu`). `panel.ts` moves it.
  */
-export function createSettingsContent(store: Store): HTMLElement {
+export function createSettingsContent(store: Store, showWelcome: () => void): HTMLElement {
   const version = versionLine(BUILD_INFO);
+  const welcomeAgain = el(
+    'button',
+    { type: 'button', class: 'about-button', 'data-testid': 'welcome-again' },
+    [t('welcome.again')],
+  );
+  welcomeAgain.addEventListener('click', showWelcome);
   return el('div', { class: 'settings-content', 'data-testid': 'settings-content' }, [
     el('div', { class: 'settings-body' }, buildSettingsBody(store)),
     el('h3', { class: 'settings-about' }, [t('settings.about')]),
@@ -113,6 +119,7 @@ export function createSettingsContent(store: Store): HTMLElement {
         },
         [t('footer.report')],
       ),
+      welcomeAgain,
       el('span', { class: 'version', 'data-testid': 'build-version' }, [
         t(version.key, version.params),
       ]),

@@ -104,6 +104,13 @@ async function open(viewport, label, query) {
     deviceScaleFactor: 1,
     hasTouch: viewport.width < 1000,
   });
+  await context.addInitScript(() => {
+    try {
+      localStorage.setItem('sail-learn.welcome', '1');
+    } catch {
+      // Storage blocked: nothing to mark.
+    }
+  });
   const page = await context.newPage();
   page.on('console', (message) => {
     if (message.type() === 'error') problems.push(`${label}: ${message.text()}`);

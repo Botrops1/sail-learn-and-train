@@ -5578,3 +5578,62 @@ html[data-layout] .exercise-stack[data-place='row'] {
   background: var(--accent-soft);
   color: var(--accent);
 }
+
+/* The welcome card (M85): over the whole window, on a first visit without a link. */
+.welcome-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.35);
+}
+
+.welcome-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 16px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.22);
+}
+
+.welcome-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.welcome-body,
+.welcome-later {
+  margin: 0;
+}
+
+.welcome-later {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.welcome-card .exercise-start,
+.welcome-card .exercise-button {
+  width: 100%;
+}
+
+.footer .about-button {
+  flex-basis: 100%;
+  min-height: var(--touch);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-align: start;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -195,6 +195,13 @@ export async function liveM5Checks({
       viewport: { width: viewport.width, height: viewport.height },
       hasTouch: viewport.width < 1000,
     });
+    await context.addInitScript(() => {
+      try {
+        localStorage.setItem('sail-learn.welcome', '1');
+      } catch {
+        // Storage blocked: nothing to mark.
+      }
+    });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
@@ -241,6 +248,13 @@ export async function liveM5Checks({
     const context = await browser.newContext({
       viewport: { width: 390, height: 844 },
       hasTouch: true,
+    });
+    await context.addInitScript(() => {
+      try {
+        localStorage.setItem('sail-learn.welcome', '1');
+      } catch {
+        // Storage blocked: nothing to mark.
+      }
     });
     const page = await context.newPage();
     await page.goto(`${origin}/sail-learn-and-train/?wd=90&ws=12`, { waitUntil: 'networkidle' });
