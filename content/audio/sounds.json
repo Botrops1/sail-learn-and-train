@@ -32,5 +32,11 @@
   "windlass": { "gain": 0.25, "upHz": 120, "downHz": 140, "q": 3 },
   "chain": { "gain": 0.3, "perMetre": 25, "maxRate": 30, "clickHz": 1400, "clickS": 0.03 },
   "anchorClank": { "gain": 0.35, "hz": 900, "s": 0.3 },
-  "thruster": { "gain": 0.3, "bowHz": 240, "sternHz": 200, "q": 2, "rampS": 0.15 }
+  "thruster": { "gain": 0.3, "bowHz": 240, "sternHz": 200, "q": 2, "rampS": 0.15 },
+  "halyards": { "baseRate": 0.3, "perKnRate": 0.08, "traffic": { "busy": 1, "half": 0.6, "empty": 0.25 }, "gain": 0.12, "hzA": 2100, "hzB": 3400, "s": 0.08 },
+  "lapping": { "place": { "marina": 1, "bay": 0.6, "open": 0 }, "gain": 0.15, "rate": 0.5, "lowpassHz": 700, "attackS": 0.15, "s": 0.6 },
+  "gulls": { "perMinute": { "marina": 3, "bay": 2.5, "open": 0.5 }, "gain": { "marina": 0.2, "bay": 0.18, "open": 0.1 }, "fromHz": 1500, "toHz": 950, "noteS": 0.22, "gapS": 0.1, "notesMin": 2, "notesMax": 4, "bandHz": 1800, "q": 2, "attackS": 0.02 },
+  "smallBirds": { "perMinute": { "marina": 2, "bay": 4, "open": 0 }, "gain": 0.08, "fromHz": 3800, "toHz": 5200, "chirpS": 0.06, "gapS": 0.07, "chirpsMin": 3, "chirpsMax": 6 },
+  "birdLight": { "day": 1, "golden": 1, "twilight": 0.5, "night": 0 },
+  "birdWind": { "fromKn": 25, "share": 0.3 }
 }

@@ -4,6 +4,7 @@ import { boatVoices, playEvent as playBoatEvent, type BoatEvent } from './boatVo
 import { gearVoices, playEvent as playGearEvent, type GearEvent } from './gearVoices';
 import { eventName, soundTargets } from './levels';
 import { noiseBuffer } from './noise';
+import { placeVoices } from './placeVoices';
 import { getSoundPrefs, onSoundPrefs } from './prefs';
 import { poissonTimes, pulses } from './pulses';
 import { SOUND } from './soundData';
@@ -41,11 +42,12 @@ interface SoundProbe {
 
 const GROUPS: readonly SoundGroup[] = ['music', 'surroundings', 'boat'];
 const PROBE_KEEP = 50;
-/** The voice files; the later milestones add theirs (boatVoices, gearVoices, placeVoices). */
+/** The voice files; M91 adds the music. */
 const FACTORIES: Partial<Record<VoiceId, VoiceFactory>> = {
   ...surroundingsVoices,
   ...boatVoices,
   ...gearVoices,
+  ...placeVoices,
 };
 
 /**

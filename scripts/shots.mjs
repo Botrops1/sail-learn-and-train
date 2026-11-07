@@ -105,6 +105,7 @@ import { liveM85Checks } from './shots-m85.mjs';
 import { liveM87Checks } from './shots-m87.mjs';
 import { liveM88Checks } from './shots-m88.mjs';
 import { liveM89Checks } from './shots-m89.mjs';
+import { liveM90Checks } from './shots-m90.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -1167,6 +1168,7 @@ try {
     m87: () => liveM87Checks({ ...onTestClock, openPlain: openPage }),
     m88: () => liveM88Checks(onTestClock),
     m89: () => liveM89Checks(onTestClock),
+    m90: () => liveM90Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {

@@ -41,6 +41,10 @@ export const VOICE_IDS = [
   'chain',
   'thrusterBow',
   'thrusterStern',
+  'halyards',
+  'lapping',
+  'gulls',
+  'smallBirds',
 ] as const;
 export type VoiceId = (typeof VOICE_IDS)[number];
 export type VoiceKind = 'continuous' | 'pulse' | 'poisson';
@@ -77,6 +81,10 @@ export const VOICE_GROUP: Record<VoiceId, SoundGroup> = {
   chain: 'boat',
   thrusterBow: 'boat',
   thrusterStern: 'boat',
+  halyards: 'surroundings',
+  lapping: 'surroundings',
+  gulls: 'surroundings',
+  smallBirds: 'surroundings',
 };
 
 /** How the engine drives each voice (PHASE_AUDIO_SPEC 3.6). */
@@ -97,7 +105,11 @@ export const VOICE_KIND: Record<VoiceId, VoiceKind> = {
   chain: 'pulse',
   thrusterBow: 'continuous',
   thrusterStern: 'continuous',
+  halyards: 'poisson',
+  lapping: 'poisson',
+  gulls: 'poisson',
+  smallBirds: 'poisson',
 };
 
 /** Poisson voices whose calls the probe records (M90: gulls → 'gull', smallBirds → 'chirp'). */
-export const PROBE_NAME: Partial<Record<VoiceId, string>> = {};
+export const PROBE_NAME: Partial<Record<VoiceId, string>> = { gulls: 'gull', smallBirds: 'chirp' };

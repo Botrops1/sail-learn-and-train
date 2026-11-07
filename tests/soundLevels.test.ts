@@ -3,10 +3,19 @@ import { DEFAULT_SOUND_PREFS } from '../src/audio/prefs';
 import { pulses, poissonTimes } from '../src/audio/pulses';
 import { clamp01, eventName, ramp, soundTargets } from '../src/audio/levels';
 import { SOUND } from '../src/audio/soundData';
-import { VOICE_GROUP, VOICE_IDS, VOICE_KIND, type SoundPrefs } from '../src/audio/types';
+import {
+  PROBE_NAME,
+  VOICE_GROUP,
+  VOICE_IDS,
+  VOICE_KIND,
+  type SoundPrefs,
+} from '../src/audio/types';
 import type { AppState } from '../src/app/store';
 import type { ContactReport } from '../src/model/contact';
+import { area } from '../src/model/area';
+import { daylight } from '../src/model/clock';
 import { mulberry32 } from '../src/model/random';
+import { sunPosition } from '../src/model/sun';
 import type { HandleReport } from '../src/model/realistic';
 import { trimState } from '../src/model/trim';
 import { initialState, run, trimmed } from './motionHelpers';
@@ -433,5 +442,84 @@ describe('winches and ropes (M89)', () => {
     expect(v.thrusterStern.gain).toBe(0);
     const stern = { ...base, thrusters: { bow: 0, stern: -1 } } as AppState;
     expect(at(stern).voices.thrusterStern.hz).toBe(200);
+  });
+});
+
+describe('the marina and the birds (M90)', () => {
+  const placed = (
+    place: 'open' | 'marina' | 'bay',
+    twsKn: number,
+    traffic: 'busy' | 'half' | 'empty' = 'busy',
+    utcMs = base.clock.utcMs,
+  ): AppState => ({
+    ...base,
+    harbour: { ...base.harbour, place, traffic },
+    wind: { ...base.wind, twsKn },
+    clock: { ...base.clock, utcMs },
+  });
+  const v = (s: AppState) => targets(s).voices;
+  const night = Date.UTC(2026, 5, 1, 23, 0);
+
+  it('the four voices are Poisson voices of the surroundings, two of them recorded as birds', () => {
+    for (const id of ['halyards', 'lapping', 'gulls', 'smallBirds'] as const) {
+      expect(VOICE_KIND[id]).toBe('poisson');
+      expect(VOICE_GROUP[id]).toBe('surroundings');
+    }
+    expect(PROBE_NAME).toEqual({ gulls: 'gull', smallBirds: 'chirp' });
+  });
+
+  it('halyards tap only in the marina, more with the wind and the traffic', () => {
+    expect(v(placed('marina', 10)).halyards.rate).toBeCloseTo(1.1, 3);
+    expect(v(placed('marina', 10)).halyards.gain).toBe(0.12);
+    expect(v(placed('marina', 10, 'empty')).halyards.rate).toBeCloseTo(0.275, 3);
+    expect(v(placed('open', 10)).halyards).toEqual({ gain: 0, hz: 0, rate: 0 });
+    expect(v(placed('bay', 10)).halyards.rate).toBe(0);
+  });
+
+  it('water laps by the place: marina full, bay 0.6, open water not at all', () => {
+    expect(v(placed('marina', 10)).lapping.gain).toBeCloseTo(0.15, 6);
+    expect(v(placed('bay', 10)).lapping.gain).toBeCloseTo(0.09, 6);
+    expect(v(placed('open', 10)).lapping.gain).toBe(0);
+    expect(v(placed('open', 10)).lapping.rate).toBe(0);
+    expect(v(placed('marina', 10)).lapping.hz).toBe(700);
+  });
+
+  it('birds by day: gulls everywhere, small birds near land', () => {
+    const noon = placed('marina', 10);
+    expect(
+      daylight(
+        sunPosition(noon.clock.utcMs, area.position.latitudeDeg, area.position.longitudeDeg)
+          .elevationDeg,
+      ),
+    ).toBe('day');
+    expect(v(noon).gulls.rate).toBeCloseTo(0.05, 4);
+    expect(v(noon).gulls.gain).toBe(0.2);
+    expect(v(noon).smallBirds.rate).toBeCloseTo(0.0333, 3);
+    expect(v(noon).smallBirds.gain).toBe(0.08);
+    const bay = v(placed('bay', 10));
+    expect(bay.gulls.rate).toBeCloseTo(0.0417, 3);
+    expect(bay.smallBirds.rate).toBeCloseTo(0.0667, 3);
+    const open = v(placed('open', 10));
+    expect(open.gulls.rate).toBeCloseTo(0.00833, 4);
+    expect(open.gulls.gain).toBe(0.1);
+    expect(open.smallBirds).toEqual({ gain: 0, hz: 0, rate: 0 });
+  });
+
+  it('no birds at night, but the halyards and the lapping go on', () => {
+    const s = placed('marina', 10, 'busy', night);
+    expect(
+      daylight(
+        sunPosition(night, area.position.latitudeDeg, area.position.longitudeDeg).elevationDeg,
+      ),
+    ).toBe('night');
+    expect(v(s).gulls).toEqual({ gain: 0, hz: 0, rate: 0 });
+    expect(v(s).smallBirds).toEqual({ gain: 0, hz: 0, rate: 0 });
+    expect(v(s).halyards.rate).toBeGreaterThan(0);
+    expect(v(s).lapping.gain).toBeGreaterThan(0);
+  });
+
+  it('fewer birds in strong wind', () => {
+    expect(v(placed('marina', 30)).gulls.rate).toBeCloseTo(0.015, 4);
+    expect(v(placed('marina', 25)).gulls.rate).toBeCloseTo(0.05, 4);
   });
 });
