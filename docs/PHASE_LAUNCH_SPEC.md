@@ -362,7 +362,12 @@ Run `SHOTS_ONLY=general,m5,m85` locally; put `CI groups: m5, m23, m38` in the PR
 
 #### Decided in the M85 PR (recommended; merging accepts it)
 
-(The builder writes here.)
+- **Everything built as 9.2–9.8 say**; the exact CSS, strings and test ids are the spec's. `shouldWelcome` and `welcomeSeen` (storage read in `try`/`catch`) are exported from `welcome.ts` next to `createWelcome`.
+- **The compare page is not changed:** `scripts/compare/index.html` (the compare browser's page in `shots.mjs`) is a stand-alone sketch page, not the app, so it never shows the card; only the contexts that open the app got the "seen" mark (`openPage`, the two in `shots-m5.mjs`, the one in `visual-shots.mjs`).
+- **`openOnTestClock` passes `welcome` on** (`(viewport, label, query, options)`), because the `m85` checks run on the test clock and need `welcome: true`.
+- **`tests/ciPlan.test.ts`** counts 84 groups now and lists `m85` among the newest four (the "newest" set moved on by one milestone).
+- **Russian strings are AI drafts** (`docs/review/ru.md` regenerated); registry statuses are unchanged (no new parts).
+- **Question 1 (recommended; merging accepts it):** no change to the card or to the case where storage is blocked (the card then shows on every visit to the bare address, and Close still works), because a visitor with blocked storage has no link settings either way and one tap closes it.
 
 ### 9.9 Done when / not in M85
 
