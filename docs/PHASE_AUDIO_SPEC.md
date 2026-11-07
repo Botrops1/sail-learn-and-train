@@ -111,21 +111,26 @@ export interface Voice {
   /** Pulse and Poisson voices: one burst or call starting at `at` (context time). */
   fire?(at: number, target: VoiceTarget, rng: () => number): void;
 }
-export type VoiceFactory = (ctx: AudioContext, out: AudioNode, noise: AudioBuffer, data: SoundData) => Voice;
-/** Moves `param` to `value` with setTargetAtTime(value, now, timeS) unless the change is under 0.5 % (3.1). */
+export type VoiceFactory = (ctx: AudioContext, out: AudioNode, noise: AudioBuffer, data: SoundData, id: VoiceId) => Voice;
+/**
+ * Moves `param` to `value` with setTargetAtTime(value, now, timeS), unless |value − last| ≤ 0.005 · max(1, |last|),
+ * where `last` is the value this function last set on that param (a module-level WeakMap<AudioParam, number>;
+ * AudioParam.value does not show automation). So a gain moves in steps of at least 0.005, a frequency or rate by at least 0.5 %.
+ */
 export function smoothTo(param: AudioParam, value: number, ctx: AudioContext, timeS: number): void;
 /** The one envelope of the app: 0 at `at`, linear to `peak` by `at + attackS`, then setTargetAtTime(0, at + attackS, decayS / 3). */
 export function burst(param: AudioParam, at: number, peak: number, attackS: number, decayS: number): void;
 ```
 
 - Each voice file exports one map, `surroundingsVoices`, `boatVoices`, `gearVoices`, `placeVoices: Partial<Record<VoiceId, VoiceFactory>>`; the engine merges them when it builds the graph (`out` = the voice's group bus) and skips an id with no factory.
+- The factory uses `id` for its noise start offset (`VOICE_IDS.indexOf(id) · 0.37 s`) and, for Poisson voices, nothing else (the engine owns the generators).
 - **continuous**: built once (sources started, `loop = true`), `set` moves its params with `smoothTo(…, data.master.smoothingS)` unless the voice's section says another time.
-- **pulse** (flap, winch clicks, chain): built once like a continuous voice (looping noise → filter → a gain at 0); the engine keeps the voice's `phase` (start 0) and, each running frame, calls `pulses(phase, rate, dt)` (rate after the voice's own jitter, if its section has one: one `rng()` draw per frame, `rate · (1 + jitter · (2 · rng() − 1))`), then `fire(now + lookaheadS + offset)` for each offset. `fire` calls `burst` on the voice's gain with `peak = target.gain`. Pulses create no nodes and do not count towards `maxOneShots`.
+- **pulse** (flap, winch clicks, chain): built once like a continuous voice (looping noise → filter → a gain at 0); the engine keeps the voice's `phase` (start 0) and, each running frame, calls `pulses(phase, rate, dt)` (rate after the voice's own jitter: only a voice whose data section has `jitter` (the flaps) draws one `rng()` per running frame, also when its rate is 0, and uses `rate · (1 + jitter · (2 · rng() − 1))`; the others draw nothing here), then `fire(now + lookaheadS + offset)` for each offset. `fire` calls `burst` on the voice's gain with `peak = target.gain`. Pulses create no nodes and do not count towards `maxOneShots`.
 - **poisson** (halyards, lapping, gulls, small birds): `set` only stores the target; each running frame the engine calls `poissonTimes(rng, target.rate, dt)` (the voice's generator), then `fire` for each time in order; each `fire` builds its own short nodes (from the shared noise buffer or oscillators) into the voice's out, peak = `target.gain` times the variation the section gives, and counts as **one** one-shot (a whole gull call is one) until its last node ends. At `maxOneShots` the fire is skipped (the rng draws still happen, so the sequence does not shift).
 - **Draw order per voice and frame:** the jitter draw, then `poissonTimes`' draws, then each `fire`'s own draws in time order.
 - **"Decay `s`"** in any section means `burst` with that `decayS` (attack 0.005 s unless the section gives one); nodes are stopped at `at + attackS + 2 · decayS`. A sweep is `exponentialRampToValueAtTime` (never to 0).
 - **Events** (`SoundEvent`) are one-shots too, played by the voice file that owns them (`playEvent(ctx, out, noise, event, data)` exported from the same file) and counted towards `maxOneShots`.
-- **The probe** records `eventName(event)` for every event played and `PROBE_NAME[id]` for every Poisson fire that has one (halyards and lapping are never recorded, so they cannot push the birds out of the last 50).
+- **The probe** has one recorder, `record(name)`, keeping the last 50; it records `eventName(event)` for every event played, `PROBE_NAME[id]` for every Poisson fire that has one (halyards and lapping are never recorded, so they cannot push the birds out of the list), and the music's names (M91 passes `record` as `onEvent`).
 
 ### 3.5 Common mistakes (check these first when something fails)
 
@@ -184,7 +189,7 @@ interface SoundProbe {
 ### 4.3 App wiring (`src/app/app.ts`, M87)
 
 - After `createSettingsMenu(…)`: `const sound = createSoundEngine(store);`.
-- After `createAlertCentre(…)` (the camera chip is made earlier, in the `scene` block): `if (sound.supported) createSoundChip(chipRow);` (it inserts itself before `[data-testid="settings-button"]`, so the row on a computer reads: mode chip, camera chip, sound chip, gear; on a phone the chip is in the row but hidden by CSS, and the alert chip, which M51 re-inserts before the gear, stays directly before it, so `.alert-chip + .settings-button` still matches).
+- After `createAlertCentre(…)` (the camera chip is made earlier, in the `scene` block): `if (sound.supported) createSoundChip(chipRow);` (it inserts itself before `[data-testid="settings-button"]`, so the row on a computer reads: mode chip, camera chip, sound chip, gear; on a phone the chip is in the row but hidden by CSS; it may sit between the alert chip and the hidden gear until the alert centre places its chip again, which is harmless because the gear is hidden there).
 - In `loop`: move `const raw = last === undefined ? 0 : (now - last) / 1000;` from inside the first `try` to the line right after `requestAnimationFrame(loop);` (the `try` keeps using it; `last = now` stays where it is). After the `debug.update(…)` call add `sound.frame(raw);`. `frame` catches its own errors.
 - `createSettingsContent(store, showWelcome)` keeps its signature. Whether the browser has Web Audio is one function, `soundSupported(): boolean` in `src/audio/support.ts` (pure apart from reading `window`: `typeof globalThis.AudioContext === 'function' || typeof (globalThis as { webkitAudioContext?: unknown }).webkitAudioContext === 'function'`), used by the engine (`supported`), by `buildSoundField` and by `app.ts` for the chip.
 
@@ -299,14 +304,14 @@ No registry ids (nothing is drawn or tappable in 3D).
 
 ### 6.8 Browser checks (`scripts/shots-m87.mjs`, group `m87`, registered in `shots.mjs`)
 
-Export `liveM87Checks(onTestClock)` (registered as `m87: () => liveM87Checks(onTestClock)`, as the M4b group is); no scenes. Every label starts with `m87-`. Add two helpers to `scripts/ui.mjs`, used by M87–M91: `soundProbe(page)` → `page.evaluate(() => { const p = window.__sailSound; return { context: p.context(), targets: p.targets(), events: p.events() }; })`, and `soundOn(page)` → `openSettings(page)`, check `sound-switch` if unchecked, `closeSettings(page)`, then poll (with `page.waitForTimeout(100)`, at most 30 times) until `soundProbe(page).context === 'running'`. Headless Chromium runs an `AudioContext` after a click without extra flags; if it does not, add `--autoplay-policy=no-user-gesture-required` to the launch in `shots.mjs` and say so in the PR.
+Export `liveM87Checks(onTestClock)` (registered as `m87: () => liveM87Checks(onTestClock)`, as the M4b group is; M88–M91 register theirs the same way); no scenes. **Labels:** `openPage` (`scripts/shots.mjs`) treats labels of the newer milestones by regexes whose alternation ends in `|8\d)` (lines 483–516); add `|9\d` after each `8\d` so `m90-` and `m91-` labels are treated as `m8x` ones (no `held=1`, `sea=flat`, … appended). Every label starts with `m87-`. Add two helpers to `scripts/ui.mjs`, used by M87–M91: `soundProbe(page)` → `page.evaluate(() => { const p = window.__sailSound; return { context: p.context(), targets: p.targets(), events: p.events() }; })`, and `soundOn(page)` → `openSettings(page)`, check `sound-switch` if unchecked, `closeSettings(page)`, then poll (with `page.waitForTimeout(100)`, at most 30 times) until `soundProbe(page).context === 'running'`. Headless Chromium runs an `AudioContext` after a click without extra flags; if it does not, add `--autoplay-policy=no-user-gesture-required` to the launch in `shots.mjs` and say so in the PR.
 
-1. **Phone 390 × 844**, `?v=1&m=easy`: open Settings (`openSettings(page)`, `scripts/ui.mjs`); `sound-setting` visible right after the Language block; `sound-switch` unchecked; `probe.context()` is `'none'`; screenshot `m87-settings-phone.png`. No `sound-chip` visible.
+1. **Phone 390 × 844**, `?v=1`: open Settings (`openSettings(page)`, `scripts/ui.mjs`); `sound-setting` visible right after the Language block; `sound-switch` unchecked; `probe.context()` is `'none'`; screenshot `m87-settings-phone.png`. No `sound-chip` visible.
 2. Tap `sound-switch`: within 2 s `probe.context()` is `'running'` and `targets()` is not null; `localStorage['sail-learn.sound']` has `"on":true`.
-3. **Wind follows the wind** (test clock): `?v=1&m=easy&ws=5` vs `?v=1&m=easy&ws=25` (`ws` is `ctl_wind_speed`), Sound switched on as in 2: after `page.waitForTimeout(1000)`, `targets().voices.wind.gain` is higher at 25 kn than at 5 kn, and `whistle.gain` is 0 at 5 kn and > 0 at 25 kn.
+3. **Wind follows the wind** (test clock): `?v=1&ws=5` vs `?v=1&ws=25` (`ws` is `ctl_wind_speed`), Sound switched on as in 2: after `page.waitForTimeout(1000)`, `targets().voices.wind.gain` is higher at 25 kn than at 5 kn, and `whistle.gain` is 0 at 5 kn and > 0 at 25 kn.
 4. **Pause:** with sound on, tap the time bar's Pause: `targets().groups.boat === 0`, `groups.surroundings` is half its value before.
 5. **Hidden:** `page.evaluate` a `visibilitychange` with `document.visibilityState` overridden to `'hidden'` (`Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true })`, then dispatch the event): `context()` becomes `'suspended'`; set it back to `'visible'` and dispatch: `'running'`.
-6. **Remembered:** a new page in the same context at `?v=1&m=easy`: `context()` is `'none'` until a tap anywhere on the 3D view; after the tap, `'running'`.
+6. **Remembered:** `page.reload()` (the stored setting survives, a new `AudioContext` does not): `context()` is `'none'` until a tap anywhere on the 3D view; after the tap, `'running'`.
 7. **Computer 1440 × 900:** `sound-chip` visible, directly before the gear, not overlapping it (boxes); `aria-pressed="false"` with sound off; tap it → `aria-pressed="true"`, `context()` `'running'`, and Settings' `sound-switch` checked. Screenshot `m87-chip-wide.png`. Same layout check at 1024 × 768.
 8. Russian (`lang=ru`): the Sound block shows, no missing-string marks.
 
@@ -424,9 +429,10 @@ Both modes:
 
 ### 8.4 Tests
 
+- Set `settings.ropesMode` by spreading: `'realistic'` for the Realistic cases, `'easy'` for the Easy ones.
 - Realistic: one winch with `button: true, cutOut: false, drumSpeed: 0.25, strain: 0.5` → `winchMotor.gain` 0.22, `hz` = (320 + 450) · 0.875 = 673.75 ± 0.5; `winchClicks.rate` 7.5; with `drumSpeed: −0.25` (easing) → `rate` 0, motor still on. `cutOut` false → true → one `cutOut` event.
 - Handle at the gearbox, `turnsPerS: 1.5` → `winchClicks.rate` 18.
-- A tail report `motion: 'running', speedMps: −0.5` → `ropeRun.gain` 0.1, `hz` 2250.
+- A tail report `motion: 'running', speedMps: 0.5` (+ = running out) → `ropeRun.gain` 0.1, `hz` 2250.
 - Easy: `mainsheet` moved by 0.5 % in `dtS` 0.05 → `movePct` 10 → `winchMotor.gain` 0.11, `winchClicks.rate` 10. No move → both 0.
 - Windlass `up` → `hz` 120, gain 0.25; `cutOut: true` → 0. Chain from 10.0 to 10.1 m in 0.05 s → 2 m/s → `rate` 30 (capped from 50).
 - `previous.anchor.phase` `stowed`, `state` `hanging` → `anchorDown`; `previous` `hanging`, `state` `stowed` → `anchorUp` (states set by spreading).
@@ -435,9 +441,9 @@ Both modes:
 ### 8.5 Browser checks (`scripts/shots-m89.mjs`, group `m89`)
 
 Phone 390 × 844, `soundOn(page)` and `soundProbe(page)` (M87).
-1. **Winch** (no test clock, as the M4c check): `?mode=realistic&wd=90&ws=20&js=30&st=starboard&wsb=a5.4.t&sel=rope_jib_sheet&cam=helm`; hold the starboard winch's button as `scripts/shots-m4c.mjs` lines 139–152 do (`touchTools` from `shots-m4b.mjs`, its `finger`, `centreOn` and `drawing` helpers: import them if exported, else copy), 700 ms: during the hold `voices.winchMotor.gain > 0` or `events` has `cutOut`; after `f.up` and 500 ms, `winchMotor.gain === 0`.
+1. **Winch** (opened and wrapped exactly as `scripts/shots-m4c.mjs` opens its phone winch checks, including the wrapper around line 110 that sets the sheet to `full` and the camera to `map`): `?mode=realistic&wd=90&ws=20&js=30&st=starboard&wsb=a5.4.t&sel=rope_jib_sheet&cam=helm`; hold the starboard winch's button as `scripts/shots-m4c.mjs` lines 139–152 do (import `touchTools` from `shots-m4b.mjs`; copy `finger`, `centreOn` and `drawing` from `shots-m4c.mjs`, they are not exported), 700 ms: during the hold `voices.winchMotor.gain > 0` or `events` has `cutOut`; after `f.up` and 500 ms, `winchMotor.gain === 0`.
 2. **Easy** (test clock): `?wd=90&ws=12&ms=40&sel=rope_mainsheet`; press `getByRole('button', { name: 'More: Mainsheet' })` five times, `page.waitForTimeout(200)` after each, reading `soundProbe` after each: `winchClicks.rate > 0` at least once.
-3. **Anchor** (test clock): the M46 `LET_GO` link `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4`; start `holdWindlass(page, 'down', 2000)` (`scripts/ui.mjs`) without awaiting it, `page.waitForTimeout(1000)`, read `soundProbe` (`voices.windlass.gain > 0`, `chain.rate > 0`), then await the hold: `events` has `anchorDown`. If the un-awaited hold proves flaky, keep only the `anchorDown` assertion and say so under "Decided".
+3. **Anchor** (test clock): the M46 `LET_GO` link `?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4`; `await holdWindlass(page, 'down', 2000)` (`scripts/ui.mjs`), then `soundProbe`: `events` has `anchorDown` (the windlass and chain levels are covered by 8.4; never run a second test-clock wait in parallel with the hold).
 4. **Thrusters** (test clock): `?m=harbour&wd=0&ws=0&mf=0&jf=0&js=100&bs=0&ap=off&eng=1&lv=0&cam=top&tx=4` (M41's `AWAY`); `holdThruster(page, 'bow', -1, 1000, 'section', async () => …)` reading `voices.thrusterBow.gain > 0` during the hold; 500 ms after, 0.
 
 Run `SHOTS_ONLY=m89`. Add `"m89": 300`.
