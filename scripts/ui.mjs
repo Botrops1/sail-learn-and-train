@@ -370,3 +370,23 @@ export async function closeUpOn(page, partId, from, distanceM, fovDeg = 40) {
   if (aimed) await page.waitForTimeout(800);
   return aimed;
 }
+
+/** M87: what the sound engine's check hook shows now (`window.__sailSound`, PHASE_AUDIO_SPEC 4.2). */
+export function soundProbe(page) {
+  return page.evaluate(() => {
+    const p = window.__sailSound;
+    return { context: p.context(), targets: p.targets(), events: p.events() };
+  });
+}
+
+/** M87: switches Sound on in Settings (if it is off) and waits until the audio context runs. */
+export async function soundOn(page) {
+  await openSettings(page);
+  const box = page.getByTestId('sound-switch');
+  if (!(await box.isChecked())) await box.check();
+  await closeSettings(page);
+  for (let i = 0; i < 30; i += 1) {
+    if ((await soundProbe(page)).context === 'running') return;
+    await page.waitForTimeout(100);
+  }
+}

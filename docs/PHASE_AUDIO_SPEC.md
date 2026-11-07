@@ -45,7 +45,7 @@ A learner who switches Sound on hears the boat's world: wind that rises with the
 - **The frame's real time.** The engine is driven with the frame's real seconds (`raw` in `app.ts`, capped at 0.1 s), not the simulation's `dt`: on Pause the wind still blows; at ×16 a click is still a click.
 - **Randomness** (gulls, halyard taps, music notes, flap jitter) comes from `mulberry32` (`src/model/random.ts`), never `Math.random`, so a browser check sees the same sequence: one generator per voice, `mulberry32(data.master.noiseSeed + VOICE_IDS.indexOf(id))`, made when the voice is built; the music has its own (`mulberry32(data.music.seed)`, M91).
 - **Storage.** The key is `sail-learn.sound` (JSON); every read and write is wrapped in `try`/`catch` through `globalThis.localStorage?.`, as `src/ui/timeBar.ts` does. A browser that blocks storage plays sound for the visit and starts silent on the next. The visibility test reads `document.visibilityState` (not `document.hidden`).
-- **Autoplay rule.** Browsers let a page start sound only inside a tap or key press. The `AudioContext` is created (or resumed) only in such a handler: the Sound switch, the speaker chip, or, when Sound was left on, the first `pointerdown` or `keydown` anywhere on the page. Until then nothing plays, and nothing says so (the switch shows On).
+- **Autoplay rule.** Browsers let a page start sound only inside a tap or key press. The `AudioContext` is created (or resumed) only in such a handler: the Sound switch, the speaker chip, or, when Sound was left on, the first `pointerdown`, `pointerup`, `touchend` or `keydown` anywhere on the page (M87 review: a finger touching down does not count as a tap on a phone, the finger lifting does). Until then nothing plays, and nothing says so (the switch shows On).
 - **iPhone silent switch.** Safari mutes Web Audio while the ring/silent switch is on silent. The app does not override it (no `navigator.audioSession`): the owner's checklists say so.
 
 ### 3.2 Shared helpers (new, M87)
@@ -172,7 +172,7 @@ export function createSoundEngine(store: Store): SoundEngine;
 - **Graph:** `ctx.destination ← master (GainNode, 1) ← DynamicsCompressorNode (threshold −18 dB, knee 12, ratio 4, attack 0.01, release 0.25: keeps many voices from clipping a phone speaker) ← three group GainNodes (music, surroundings, boat)`. Each voice connects to its group (`VOICE_GROUP`).
 - **Noise:** `src/audio/noise.ts` `noiseBuffer(ctx, seconds = 2, seed = data.master.noiseSeed)` fills one mono buffer with white noise from `mulberry32` once; every noise voice is an `AudioBufferSourceNode` with `loop = true` on that buffer, each started at a different offset (`voiceIndex · 0.37 s`) so they do not sound alike.
 - **The probe** (`window.__sailSound`, below) is set when `createSoundEngine` runs, before any start.
-- **Start:** `onSoundPrefs` and a capture-phase `pointerdown` and `keydown` listener on `document` (kept while `prefs.on` and the context is not `running`; removed once it runs). In the handler: if `prefs.on` and `supported` and not hidden: create the context the first time (`new (audioContextClass()!)()`), build the graph and the voices, then `ctx.resume()`. When `prefs.on` becomes false: `ctx.suspend()`.
+- **Start:** `onSoundPrefs` and a capture-phase `pointerdown`, `pointerup`, `touchend` and `keydown` listener on `document` (kept while `prefs.on` and the context is not `running`; removed once it runs). In the handler: if `prefs.on` and `supported` and not hidden: create the context the first time (`new (audioContextClass()!)()`), build the graph and the voices, then `ctx.resume()`. When `prefs.on` becomes false: `ctx.suspend()`.
 - **Hidden:** `document.addEventListener('visibilitychange', …)`: hidden → `suspend()`; visible and `prefs.on` → `resume()`.
 - **`frame(realDtS)`:** if there is no context, or it is not `running`, only keep `previous = store.getState()` and return (so the first running frame compares with the frame before, and a link that opens with the engine running plays no start sound). Else `dt = min(0.1, max(0, realDtS))`, `targets = soundTargets(state, previous, getSoundPrefs(), dt)`, set the group gains and voice params (3.1), schedule the frame's pulses and events, store `previous = state`. The whole body is in `try`/`catch`: on the first error, `console.error` once, suspend the context and stop updating (the app keeps running).
 - **One-shots:** at most `data.master.maxOneShots` playing at once; a new one past the cap is dropped.
@@ -320,6 +320,19 @@ Run `SHOTS_ONLY=general,m25,m38,m51,m52,m87` locally (the chip row, the alert ch
 ### 6.9 Done when / not in M87
 
 Checks and tests pass; the owner hears on the phone: silence at first, then wind and waves after switching Sound on, louder in strong wind and swelling in gusts, quieter on Pause, stopped when the app is in the background. Not in M87: any boat sound, birds, the marina, music (later milestones; their switches are already there and simply have nothing to play yet).
+
+
+**Decided in the M87 PR** (recommended; merging accepts it):
+
+- The whistle's loudness: a narrow band of noise (Q 25) is quiet, so `whistle.gain` 0.12 gives about 0.09 at 25 kn. It is left as specified and tuned after the owner's phone test.
+- After a reload with Sound left on, nothing plays until the first tap or key press, and nothing says so (as 3.1 says). No banner.
+- The waves' low-pass filter keeps the Web Audio default Q (no number in the data for it); the other filters use their `q` from the data file.
+- `voice.ts` also exports `oneShots` (a counter a voice raises while a one-shot plays; the engine skips a `fire` at `maxOneShots`) and `loopingNoise` (the looping noise source at the voice's start offset). The engine already drives pulse and Poisson voices and the probe's recorder; no M87 voice uses them, so that code is first exercised in M88.
+- `soundTargets` takes `previous` and `dtS` as the spec says; M87 does not use them (the event voices of M88 do).
+- The browser checks open the pages that do not depend on app time on the real clock (`openPlain` = `openPage` of `shots.mjs`, passed with `onTestClock` to `liveM87Checks`), because the audio context runs in real time; the wind and Pause checks use the test clock. Headless Chromium started the audio context after a click without extra flags. `"m87"` in `ci-times.json` is 47 (measured), not 300.
+- **Review (owner: accept all):** (1) the engine also listens for `pointerup` and `touchend` (a phone does not accept a finger touching down as a tap that may start sound; all four listeners are removed together once the sound runs), and a check does a lone `pointerup` and a lone `touchend` after a reload; (2) the result of the wider local run is in the PR's Tests section; (3) `smoothTo` stays as specified (a step of 0.005 or less is skipped; about −50 dB, not audible); (4) **to do in M88**, which builds the first pulse voices: drop the `rng ?? Math.random` fallback in `engine.ts` (the generator always exists, so the fallback is never used).
+- The old M52 check "mode chip, camera chip, gear, 8 px apart" now counts the speaker chip that sits between the camera chip and the gear on a computer.
+- `tests/languages.test.ts` lists `sound.volumeValue` among the Russian strings equal to English (a placeholder and a percent sign only).
 
 ---
 

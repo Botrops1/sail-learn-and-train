@@ -22,6 +22,8 @@ import { createModePicker } from '../ui/modePicker';
 import type { ChipCard } from '../ui/chipCard';
 import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
+import { createSoundChip } from '../ui/soundChip';
+import { createSoundEngine } from '../audio/engine';
 import { createClockPanel } from '../ui/clockPanel';
 import { createExerciseCoach } from '../ui/exerciseCoach';
 import { createExerciseLine } from '../ui/exerciseLine';
@@ -84,6 +86,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   // The mode chip comes first in the row, with or without WebGL.
   const modeCard: ChipCard = createModeChip(chipRow, store, layout);
   const settingsCard = createSettingsMenu(chipRow, layout, reopen);
+  // The sound (M87): off until the learner switches it on; the engine starts inside a tap.
+  const sound = createSoundEngine(store);
   const panel: Panel = createPanel(
     layout.panel,
     store,
@@ -261,6 +265,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   // The history of the short alerts (M36, issue #80). After the camera chip, so that its button
   // stands between the camera chip and the gear in the chip row.
   createAlertCentre(topChips, chipRow, layout.view, store, layout, panel.showLearnEntry);
+  // The speaker chip (M87): a computer only (CSS hides it on a phone), before the gear.
+  if (sound.supported) createSoundChip(chipRow);
 
   // The welcome (M85): a first visit to the bare address opens it; Settings → About opens it again.
   welcome = createWelcome(store, layout, sheet, scene !== undefined, () =>
@@ -278,11 +284,11 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   let stepFailed = false;
   const loop = (now: number) => {
     requestAnimationFrame(loop);
+    const raw = last === undefined ? 0 : (now - last) / 1000;
     if (last !== undefined) sums.worstFrameMs = Math.max(sums.worstFrameMs, now - last);
     // The rig moves towards the controls (lagged ropes, smoothed boom), then it is drawn.
     const start = performance.now();
     try {
-      const raw = last === undefined ? 0 : (now - last) / 1000;
       const { exercise: run, settings } = store.getState();
       if (run !== null && run.demo !== null && run.status === 'running') {
         // PHASE10_PHONE_SPEC 4.2: the pilots were tuned at 0.05 s, so a demo plays in parts of at
@@ -357,6 +363,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
       scene?.stats(),
       times,
     );
+    // The sound follows the state with the frame's real seconds (it catches its own errors).
+    sound.frame(raw);
   };
   requestAnimationFrame(loop);
 }

@@ -724,6 +724,7 @@ html[data-layout='stacked'] .sheet-handle {
 
 /* The mode and the settings are tabs on a phone (M51): their chips leave the chip row. */
 html[data-layout='stacked'] .mode-chip,
+html[data-layout='stacked'] .sound-chip,
 html[data-layout='stacked'] .settings-button {
   display: none;
 }
@@ -5636,4 +5637,21 @@ html[data-layout] .exercise-stack[data-place='row'] {
   text-align: start;
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* M87 (PHASE_AUDIO_SPEC 6.4, 6.5): the Sound block in Settings and the speaker chip (a computer only). */
+.sound-group {
+  margin-inline-start: 24px;
+}
+
+.sound-setting .sound-volume {
+  width: 100%;
+  min-height: var(--touch);
+}
+
+.sound-chip {
+  width: var(--touch);
+  height: var(--touch);
+  margin-left: 0;
+  padding: 0;
 }

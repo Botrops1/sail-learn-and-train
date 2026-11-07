@@ -1074,5 +1074,18 @@
   "exercise.bar.addTurn": "+ Turn",
   "exercise.bar.offWinch": "Off",
   "exercise.bar.tail": "Into the self-tailer",
-  "exercise.bar.hold": "Hold ▲"
+  "exercise.bar.hold": "Hold ▲",
+  "sound.label": "Sound",
+  "sound.hint": "Wind, waves, the boat and quiet music, all made by the app. Off until you switch it on; this device remembers it.",
+  "sound.on": "Sound on",
+  "sound.music": "Music",
+  "sound.surroundings": "Surroundings",
+  "sound.surroundings.hint": "Wind, waves, the marina and birds.",
+  "sound.boat": "Boat sounds",
+  "sound.boat.hint": "Sails, the engine, winches, the anchor chain and bumps.",
+  "sound.volume": "Volume",
+  "sound.volumeValue": "{value} %",
+  "sound.unsupported": "This browser cannot play the app's sound.",
+  "sound.chipOn": "Sound on: tap to mute",
+  "sound.chipOff": "Sound off: tap to play"
 }

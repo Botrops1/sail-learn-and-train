@@ -60,9 +60,13 @@ export async function liveM52Checks({ openPage, viewports, outDir, prefix, probl
       check(`${name}: the three chips are visible`, !!mode && !!camera && !!gear, 'chips');
       const view = await page.locator('.view').first().boundingBox();
       if (wide && mode && camera && gear) {
-        const gaps = [camera.x - (mode.x + mode.width), gear.x - (camera.x + camera.width)];
+        // M87: the speaker chip sits between the camera chip and the gear on a computer.
+        const sound = await box(page, 'sound-chip');
+        const beforeGear = sound ?? camera;
+        const gaps = [camera.x - (mode.x + mode.width), gear.x - (beforeGear.x + beforeGear.width)];
+        if (sound) gaps.push(sound.x - (camera.x + camera.width));
         check(
-          'wide: mode chip, camera chip, gear from left to right, 8 px apart',
+          'wide: mode chip, camera chip, (speaker chip,) gear from left to right, 8 px apart',
           gaps.every((gap) => gap >= 0 && gap <= 9),
           JSON.stringify(gaps),
         );
