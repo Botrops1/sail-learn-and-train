@@ -1,6 +1,6 @@
 // M26 (phone layout with a pull-up sheet): scenes and live checks for scripts/shots.mjs
 // (PHASE5_SPEC 7.9). Labels contain "m26", so openPage adds nothing: the app opens as it does
-// without a link (Sailing, Coastal waves, the clock chip shown), the top area ends at 116 px.
+// without a link (Sailing, Coastal waves, the clock chip shown), the top area's height is read from the page.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
 import { dragHandle, setCamera, setSheet, viewBottom } from './ui.mjs';
@@ -24,6 +24,14 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
   const landscape = viewports[3];
   const near = (value, target, tolerance = 1) => Math.abs(value - target) <= tolerance;
   const sheetBox = (page) => page.getByTestId('sheet').boundingBox();
+  // The full height is the view less the top area and the chip row's 60 px (sheetGeometry.ts).
+  // Read from the page: the top area's height changes with the strip and the time bar (M92).
+  const fullPx = (page) =>
+    page.evaluate(() => {
+      const view = document.querySelector('.view');
+      const top = parseFloat(view.style.getPropertyValue('--view-top-h')) || 0;
+      return Math.round(view.getBoundingClientRect().height - top - 60);
+    });
   const heightOf = (page) => page.getByTestId('sheet').getAttribute('data-sheet');
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
 
@@ -57,11 +65,12 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     await handle.click();
     await settle();
     let box = await sheetBox(page);
+    const full = await fullPx(page);
     const chips = await page.getByTestId('view-bottom').boundingBox();
     check(
       'half → full',
-      (await heightOf(page)) === 'full' && near(box.height, 668),
-      `${box.height}`,
+      (await heightOf(page)) === 'full' && near(box.height, full),
+      `${box.height} (full ${full})`,
     );
     check(
       'full: the sheet starts at or below the chip row',
@@ -245,10 +254,11 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     await layoutIs('stacked');
     await page.waitForTimeout(400);
     const box = await sheetBox(page);
+    const full = await fullPx(page);
     check(
       'rotating away and back keeps full',
-      side === 'side' && (await heightOf(page)) === 'full' && near(box.height, 668),
-      `${side}, ${await heightOf(page)}, ${box.height}`,
+      side === 'side' && (await heightOf(page)) === 'full' && near(box.height, full),
+      `${side}, ${await heightOf(page)}, ${box.height} (full ${full})`,
     );
     await context.close();
   }
@@ -287,10 +297,11 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(50);
     const moving = await page.getByTestId('sheet').getAttribute('data-sheet-moving');
     const box = await sheetBox(page);
+    const full = await fullPx(page);
     check(
       'reduced motion: no animation',
-      (await heightOf(page)) === 'full' && moving === 'false' && near(box.height, 668),
-      `${await heightOf(page)}, moving ${moving}, ${box.height}`,
+      (await heightOf(page)) === 'full' && moving === 'false' && near(box.height, full),
+      `${await heightOf(page)}, moving ${moving}, ${box.height} (full ${full})`,
     );
     await context.close();
   }

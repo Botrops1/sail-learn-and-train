@@ -236,7 +236,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         /**
          * M73: canvas position (CSS px) of a tap point on the first visible marina or harbour
          * detail mesh with this part id that is on screen (an instanced mesh: the first instance
-         * that is), or null when none is. The point is the middle of the mesh's box, no higher
+         * that is) and that a tap would reach (the canvas is the top element there, not the sheet
+         * or a chip, and the picker names this part, not a rope in front), or null when none is. The point is the middle of the mesh's box, no higher
          * than 1.5 m above its foot: a yacht's mast and a light's top are thin, so the middle of
          * the hull and of the tower is the point to tap.
          */
@@ -262,7 +263,16 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
                 }
                 const ndc = world.applyMatrix4(object.matrixWorld).project(camera);
                 if (Math.abs(ndc.x) > 1 || Math.abs(ndc.y) > 1 || ndc.z > 1) continue;
-                found = { x: ((ndc.x + 1) / 2) * rect.width, y: ((1 - ndc.y) / 2) * rect.height };
+                const point = {
+                  x: ((ndc.x + 1) / 2) * rect.width,
+                  y: ((1 - ndc.y) / 2) * rect.height,
+                };
+                // Only a point a tap would reach: not under the sheet, the chips or a card.
+                const top = document.elementFromPoint(rect.left + point.x, rect.top + point.y);
+                if (top !== renderer.domElement) continue;
+                // …and not behind a rope or another part that the tap would hit first.
+                if (picker.pick(point.x, point.y, rect.width, rect.height) !== partId) continue;
+                found = point;
               }
             });
           }
