@@ -216,10 +216,13 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
 
       if (await isStacked(page)) {
         await setSheet(page, 'peek');
-        await page.getByTestId('step-card-head').click();
+        // M93: the running step's card opens on a tap; its Open in Exercises button shows the section.
+        const head = page.getByTestId('step-card-head');
+        if ((await head.getAttribute('aria-expanded')) !== 'true') await head.click();
+        await page.getByTestId('step-card-open').click();
         await page.waitForTimeout(600);
         const shown = await page.getByTestId('exercise-step').isVisible();
-        check(`line tap shows the Exercises section ${name}`, shown, String(shown));
+        check(`Open in Exercises shows the Exercises section ${name}`, shown, String(shown));
       }
 
       await showSection(page, 'exercises');
