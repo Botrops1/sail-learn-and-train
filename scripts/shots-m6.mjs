@@ -101,7 +101,8 @@ export async function liveM6Checks({ openPage, viewports, outDir, prefix, proble
     await page.waitForTimeout(1500);
     check(
       'old link: true wind',
-      (await text(page, 'strip-true')).startsWith('True 60° S'),
+      // ±1°, as on the beam reach: weather helm leaves the autopilot about 1° off.
+      /^True (59|60|61)° S/.test(await text(page, 'strip-true')),
       await text(page, 'strip-true'),
     );
     check(
