@@ -221,8 +221,9 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
       const after = await run(page);
       const line = await exerciseLine(page);
       const flashed = await page
-        .getByTestId('exercise-line')
+        .getByTestId('step-card')
         .evaluate((n) => n.classList.contains('exercise-flash'));
+      const cardRow = await page.getByTestId('step-card').getAttribute('data-row');
       const held = after.elapsedS;
       await page.waitForTimeout(2000);
       const still = (await run(page)).elapsedS === held && (await read(page)).paused;
@@ -240,9 +241,10 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
           after.stepPause !== undefined &&
           flashed &&
           /Step 1 done/.test(line ?? '') &&
+          cardRow === '3' &&
           still &&
           going,
-        JSON.stringify({ ring, flashed, line, still, going }),
+        JSON.stringify({ ring, flashed, line, cardRow, still, going }),
       );
       await context.close();
     }

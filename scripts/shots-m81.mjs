@@ -2,7 +2,7 @@
 // clock, on the 390 × 844 phone. Labels contain "m81".
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, showSection } from './ui.mjs';
+import { demoStepCard, demoStepTitle, exerciseLine, showSection } from './ui.mjs';
 
 export const M81_SCENES = [];
 
@@ -21,9 +21,9 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
   const read = (page) => page.evaluate(() => window.__sailExercise.read());
   const act = (page, action) => page.evaluate((a) => window.__sailExercise.dispatch(a), action);
   const tid = (page, id) => page.getByTestId(id);
-  const cardShown = (page) => tid(page, 'exercise-demo-card').isVisible();
-  const cardTitle = async (page) =>
-    ((await tid(page, 'exercise-demo-card').locator('h3').textContent()) ?? '').trim();
+  // M93: the demo card is rows 1 and 2 of the step card.
+  const cardShown = (page) => demoStepCard(page).isVisible();
+  const cardTitle = (page) => demoStepTitle(page);
   const flashing = (page, row) =>
     page.evaluate(
       (id) =>
@@ -124,7 +124,9 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
         break;
       }
       const title = await cardTitle(page);
-      const how = ((await tid(page, 'exercise-demo-card').locator('p').textContent()) ?? '').trim();
+      const how = (
+        (await tid(page, 'step-card-body').locator('p').first().textContent()) ?? ''
+      ).trim();
       titles.push(`${title} / ${how.slice(0, 24)}…`);
       if (title !== `✓ Step ${step} done` || how.length < 10) ok = false;
       if (step === 1) await shot(page, 'm81-phone-watch-step-done');
@@ -217,9 +219,12 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
       'bar-ctl_mainsheet-less disabled',
     );
     const nowLine = (await exerciseLine(page)) ?? '';
+    // M93: the step card is the way on (rows 1–2); the time widget's Resume is off.
     check(
-      'the line points to the card and Resume is off',
-      /Now you: tap/.test(nowLine) && (await tid(page, 'pause-button').isDisabled()),
+      'the card points the way and Resume is off',
+      (await tid(page, 'step-card').getAttribute('data-row')) === '1' &&
+        /Now you$/.test(nowLine) &&
+        (await tid(page, 'pause-button').isDisabled()),
       `"${nowLine}"`,
     );
     await shot(page, 'm81-phone-now-you');
@@ -376,7 +381,7 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
     await act(page, { type: 'setTimeScale', scale: 16 });
     const shown = await untilCard(page, 400);
     const fit = await page.evaluate(() => {
-      const card = document.querySelector('[data-testid="exercise-demo-card"]');
+      const card = document.querySelector('[data-testid="step-card"]');
       const box = card.getBoundingClientRect();
       return {
         right: Math.round(box.right),

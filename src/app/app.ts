@@ -24,8 +24,7 @@ import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
 import { createSoundChip } from '../ui/soundChip';
 import { createSoundEngine } from '../audio/engine';
-import { createExerciseCoach } from '../ui/exerciseCoach';
-import { createExerciseLine } from '../ui/exerciseLine';
+import { createStepCard } from '../ui/stepCard';
 import { createExerciseBar } from '../ui/exerciseBar';
 import { twaSignedDeg } from '../model/exercises';
 import { mpsToKn } from '../model/angles';
@@ -139,8 +138,7 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   topRight.append(topChips);
   top.append(topRight);
   createTimeBar(topRight, layout.view, store, layout);
-  createExerciseLine(top, store, () => panel.showSection('exercises'));
-  createExerciseCoach(top, store, layout);
+  createStepCard(top, store, layout, () => panel.showSection('exercises'));
   // The step bar over the bottom of the view; `reframe` is assigned further down (a no-op without 3D).
   let reframe = () => {};
   const demo = createExerciseDemo(store);

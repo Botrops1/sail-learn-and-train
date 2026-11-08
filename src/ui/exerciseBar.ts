@@ -5,7 +5,6 @@ import {
   barRowsAt,
   barShown,
   barStationsFor,
-  demoCardKind,
   parseRealisticRow,
   rowMatches,
   type BarRowId,
@@ -14,7 +13,7 @@ import { pilotFor } from '../app/exercisePilots';
 import type { AppState, Store } from '../app/store';
 import { snapControl, type ControlId } from '../model/controls';
 import { boat } from '../model/boat';
-import { exerciseDef, exerciseText, type ExerciseDef } from '../model/exercises';
+import { exerciseDef, type ExerciseDef } from '../model/exercises';
 import type { LineCode } from '../model/mooringLines';
 import { tailSpec, type RealisticAction, type StationId } from '../model/realistic';
 import { anchorStatusText, holdButton } from './anchorPanel';
@@ -76,16 +75,7 @@ export function createExerciseBar(
     'data-testid': 'exercise-bar',
     'aria-label': t('exercise.bar.aria'),
   });
-  // M81: the demo card stands first (above the bar); the stack's height counts it, so the framing does.
-  const card = el('div', {
-    class: 'exercise-demo-card',
-    'data-testid': 'exercise-demo-card',
-    hidden: '',
-  });
-  const stack = el('div', { class: 'exercise-stack', 'data-testid': 'exercise-stack' }, [
-    card,
-    bar,
-  ]);
+  const stack = el('div', { class: 'exercise-stack', 'data-testid': 'exercise-stack' }, [bar]);
   view.append(stack);
 
   const all = el(
@@ -815,65 +805,6 @@ export function createExerciseBar(
     }
   };
 
-  let cardKey = '';
-  const renderCard = (state: AppState) => {
-    const run = state.exercise;
-    const cardKind = atPeek() ? demoCardKind(state) : null;
-    const def = run ? exerciseDef(run.id) : undefined;
-    const key = `${cardKind}|${run?.id}|${run?.step}|${currentLanguage()}`;
-    card.hidden = cardKind === null || !run || !def;
-    if (cardKind === null || !run || !def) {
-      cardKey = '';
-      if (card.childElementCount > 0) card.replaceChildren();
-      return;
-    }
-    if (key === cardKey) return;
-    cardKey = key;
-    if (cardKind === 'stepDone') {
-      const finished = def.steps[run.step - 1];
-      const how = finished ? exerciseText(def.id, currentLanguage()).steps[finished.id]?.how : '';
-      const next = el(
-        'button',
-        {
-          type: 'button',
-          class: 'exercise-start',
-          'data-testid': 'exercise-demo-next',
-        },
-        [t('exercise.demo.next')],
-      );
-      next.addEventListener('click', () => store.dispatch({ type: 'setPaused', paused: false }));
-      const tryIt = el(
-        'button',
-        { type: 'button', class: 'exercise-button', 'data-testid': 'exercise-demo-try' },
-        [t('exercise.demo.try')],
-      );
-      tryIt.addEventListener('click', () => {
-        const now = store.getState().exercise;
-        if (now) store.dispatch({ type: 'exercise', command: { back: now.step - 1 } });
-      });
-      card.replaceChildren(
-        el('h3', {}, [t('exercise.demo.stepDone', { n: run.step })]),
-        el('p', {}, [how ?? '']),
-        el('div', { class: 'exercise-buttons' }, [next, tryIt]),
-      );
-    } else {
-      const back = el(
-        'button',
-        { type: 'button', class: 'exercise-start', 'data-testid': 'exercise-demo-back' },
-        [t('exercise.demo.back')],
-      );
-      back.addEventListener('click', () => {
-        const now = store.getState().exercise;
-        if (now) store.dispatch({ type: 'exercise', command: { back: now.demoStep } });
-      });
-      card.replaceChildren(
-        el('h3', {}, [t('exercise.demo.nowYouTitle')]),
-        el('p', {}, [t('exercise.demo.nowYou')]),
-        el('div', { class: 'exercise-buttons' }, [back]),
-      );
-    }
-  };
-
   showMe.addEventListener('click', () =>
     store.dispatch({ type: 'exercise', command: { demo: 'showMe' } }),
   );
@@ -920,7 +851,6 @@ export function createExerciseBar(
       clearFlashes();
       rebuild(state);
     }
-    renderCard(state);
     const show = visible(state);
     if (bar.hidden === show) bar.hidden = !show;
     if (!show) return;

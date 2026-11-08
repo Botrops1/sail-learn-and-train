@@ -260,10 +260,31 @@ export async function waitForLink(page, has, hasNot = []) {
   }
 }
 
-/** M66: the text of the exercise line over the 3D view, or null while it is hidden. */
+/** M66 (M93: the head of the step card): the step line's text over the 3D view, or null while hidden. */
 export async function exerciseLine(page) {
-  const line = page.getByTestId('exercise-line');
+  const line = page.getByTestId('step-card-text');
   return (await line.isVisible()) ? ((await line.textContent()) ?? '').trim() : null;
+}
+
+/**
+ * M93: the step card while it shows the demo moments (row 1 "Now you", row 2 "Step done"), the
+ * card the step bar used to hold (`exercise-demo-card`).
+ */
+export function demoStepCard(page) {
+  return page.locator(
+    '[data-testid="step-card"][data-row="1"], [data-testid="step-card"][data-row="2"]',
+  );
+}
+
+/** M93: the title of the demo moment: the card's head without the "Watching ·" / "Showing ·" prefix. */
+export async function demoStepTitle(page) {
+  return page.getByTestId('step-card-text').evaluate((node) =>
+    Array.from(node.childNodes)
+      .filter((child) => child.nodeType === 3)
+      .map((child) => child.textContent)
+      .join('')
+      .trim(),
+  );
 }
 
 /** M53: opens the Helm section (Realistic ropes) and, if "Go to the helm" shows, walks there. */

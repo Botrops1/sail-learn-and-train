@@ -63,8 +63,8 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(600);
     check(
       'the hint is folded at the start',
-      !(await fold(page, 'exercise-coach-toggle')),
-      `aria-expanded ${await tid(page, 'exercise-coach-toggle').getAttribute('aria-expanded')}`,
+      !(await fold(page, 'step-card-head')),
+      `aria-expanded ${await tid(page, 'step-card-head').getAttribute('aria-expanded')}`,
     );
     // M92: the time widget is always compact; its card is closed at the start.
     check(
@@ -78,7 +78,7 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
 
     // 2. The hint opens softly.
     const before = await area(page);
-    await tid(page, 'exercise-coach-toggle').click();
+    await tid(page, 'step-card-head').click();
     const samples = [];
     for (let i = 0; i < 12; i += 1) {
       await page.waitForTimeout(50);
@@ -94,7 +94,7 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
     );
     await centred(page, 'phone, hint open');
     await shot(page, 'm80-phone-hint-open');
-    await tid(page, 'exercise-coach-toggle').click();
+    await tid(page, 'step-card-head').click();
     await page.waitForTimeout(600);
 
     const peek = await area(page);
@@ -120,7 +120,7 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
     );
 
     // 3. The next step folds the hint again. M92: the time card opens by a tap and closes again.
-    await tid(page, 'exercise-coach-toggle').click();
+    await tid(page, 'step-card-head').click();
     await tid(page, 'time-open').click();
     check('the time card opens by a tap', await fold(page, 'time-open'), 'aria-expanded');
     await page.keyboard.press('Escape');
@@ -129,7 +129,7 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
     check('step 1 is done', (await run(page)).step === 1, `step ${(await run(page)).step}`);
     check(
       'the next step folds the hint again',
-      !(await fold(page, 'exercise-coach-toggle')),
+      !(await fold(page, 'step-card-head')),
       'aria-expanded after the step change',
     );
     await act(page, { type: 'exercise', command: 'stop' });
@@ -156,8 +156,8 @@ export async function liveM80Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(800);
     check(
       'wide: the hint is open',
-      await fold(page, 'exercise-coach-toggle'),
-      `aria-expanded ${await tid(page, 'exercise-coach-toggle').getAttribute('aria-expanded')}`,
+      await fold(page, 'step-card-head'),
+      `aria-expanded ${await tid(page, 'step-card-head').getAttribute('aria-expanded')}`,
     );
     check(
       'wide: no 3D label shows',

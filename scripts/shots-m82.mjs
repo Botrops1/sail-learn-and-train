@@ -2,7 +2,7 @@
 // the test clock, on the 390 × 844 phone. Labels contain "m82".
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { showSection } from './ui.mjs';
+import { demoStepCard, showSection } from './ui.mjs';
 
 export const M82_SCENES = [];
 
@@ -206,7 +206,7 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
     for (let guard = 0; guard < 80; guard += 1) {
       let shown = false;
       for (let i = 0; i < 800; i += 1) {
-        if (await tid(page, 'exercise-demo-card').isVisible()) {
+        if (await demoStepCard(page).isVisible()) {
           shown = true;
           break;
         }
