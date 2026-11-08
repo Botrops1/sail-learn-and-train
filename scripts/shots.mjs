@@ -990,7 +990,6 @@ try {
     const barTop = await viewBottom(page);
     const step = fixedStep ?? (viewport.width < 500 ? 14 : 24);
     let taps = 0;
-    let camSeen = false;
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
       for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
         await page.mouse.click(x, y);
@@ -1002,20 +1001,6 @@ try {
           (await page.getByTestId('sheet').getAttribute('data-sheet')) !== 'peek'
         ) {
           await setSheet(page, 'peek');
-        }
-        if (
-          !camSeen &&
-          !(await page.evaluate(() => window.location.search)).includes(`cam=${cam}`)
-        ) {
-          camSeen = true;
-          const what = await page.evaluate(
-            ([px, py]) => {
-              const n = document.elementFromPoint(px, py);
-              return `${n?.tagName}.${n?.className} [${n?.getAttribute('data-testid')}] sheet=${document.querySelector('[data-testid="sheet"]')?.getAttribute('data-sheet')} url=${window.location.search}`;
-            },
-            [x, y],
-          );
-          console.log(`DEBUG camera left ${cam} at tap ${taps} (${x},${y}): ${what}`);
         }
         const part = await cardPart(page);
         if (!part) continue;
