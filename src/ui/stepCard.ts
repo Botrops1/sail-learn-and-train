@@ -195,7 +195,7 @@ export function createStepCard(
     body.style.overflowY = 'auto';
   };
   headButton.addEventListener('click', () => {
-    if (row >= 5) {
+    if (row === 5 || row === 6) {
       onOpen();
       return;
     }

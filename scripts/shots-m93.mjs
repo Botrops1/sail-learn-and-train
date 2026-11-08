@@ -253,13 +253,16 @@ export async function liveM93Checks({ openPage, viewports, outDir, prefix, probl
         JSON.stringify({ going, widget }),
       );
     } else {
+      // The label names the step it goes back to ("Back to the start of step 3", or "…start").
+      const label = ((await tid(page, 'step-card-back').innerText()) ?? '').trim();
+      const wanted = Number(/step (\d+)$/.exec(label)?.[1] ?? 1) - 1;
       await tid(page, 'step-card-back').click();
       await page.waitForTimeout(500);
       const r = await run(page);
       check(
-        'phone: Back goes to the start of the step',
-        rowNow === '4' && r.status === 'running' && r.step === 0,
-        JSON.stringify({ rowNow, status: r.status, step: r.step }),
+        'phone: Back goes to the start of the step its label names',
+        rowNow === '4' && r.status === 'running' && r.step === wanted,
+        JSON.stringify({ rowNow, label, status: r.status, step: r.step, wanted }),
       );
     }
     await context.close();
@@ -318,14 +321,15 @@ export async function liveM93Checks({ openPage, viewports, outDir, prefix, probl
     const openAtStart = (await expanded(page)) === 'true';
     await tid(page, 'step-card-head').click();
     const folded = (await expanded(page)) === 'false';
-    await page.reload();
+    const stored = await page.evaluate(() => localStorage.getItem('sail-learn.coach'));
+    // The link again, in the same browser: the choice comes from this device, not from the link.
+    await page.goto(new URL(POS, page.url()).href);
     await page.waitForTimeout(800);
-    // A reload ends nothing: the link holds the exercise; start again if it shows the setup card.
-    if (!(await tid(page, 'step-card').isVisible())) await start(page);
+    await start(page);
     check(
       'computer: the hint starts open and the fold is remembered after a reload',
-      openAtStart && folded && (await expanded(page)) === 'false',
-      JSON.stringify({ openAtStart, folded, after: await expanded(page) }),
+      openAtStart && folded && stored === '0' && (await expanded(page)) === 'false',
+      JSON.stringify({ openAtStart, folded, stored, after: await expanded(page) }),
     );
     await context.close();
   }
