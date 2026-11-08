@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Step Card Mockup</title>
+<style>
+  /* Layout: a page of phone and foldable frames that mimic the app's 3D view; one tappable step card each. Single light look on purpose: it copies the app, which is light. */
+  :root {
+    --page: #eef2f5;
+    --ink: #17222b;
+    --muted: #52616d;
+    --line: #d5dde3;
+    --accent: #0b5f95;
+    --accent-soft: #e2eef6;
+    --ok: #2e9e4f;
+    --warn: #ff9f1c;
+    --sea1: #2f8fb3;
+    --sea2: #1d6f94;
+    --touch: 44px;
+    --ui: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color-scheme: light;
+  }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--ui);
+    padding-block: 20px 40px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  h1 { font-size: 22px; margin: 0 0 6px; text-wrap: balance; }
+  h2 { font-size: 17px; margin: 28px 0 8px; }
+  p.lead { margin: 0 0 14px; color: var(--muted); max-width: 62ch; line-height: 1.45; }
+  .states { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+  .states button {
+    min-height: 40px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 8px;
+    background: #fff; color: var(--ink); font: inherit; font-size: 14px; cursor: pointer;
+  }
+  .states button[aria-pressed='true'] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .row { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+  .frame { min-width: 0; }
+  .frame figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; max-width: 360px; }
+
+  /* The 3D view stand-in */
+  .view {
+    position: relative; overflow: hidden; border-radius: 18px; border: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse 30% 14% at 50% 52%, #f4f4f2 0 60%, transparent 62%),
+      linear-gradient(170deg, var(--sea1), var(--sea2));
+  }
+  .phone .view { width: min(360px, calc(100vw - 32px)); height: 640px; }
+  .fold .view { width: min(760px, calc(100vw - 32px)); height: 520px; }
+  .boat {
+    position: absolute; left: 50%; top: 50%; width: 40px; height: 140px; transform: translate(-50%, -50%) rotate(-25deg);
+    background: #fafafa; border-radius: 50% 50% 18% 18% / 70% 70% 12% 12%; box-shadow: 0 2px 8px rgb(0 0 0 / .25);
+  }
+  .top { position: absolute; inset: 8px 8px auto 8px; display: flex; flex-wrap: wrap; gap: 4px; z-index: 2; }
+  .strip, .widget, .card, .bar, .chip {
+    background: rgb(255 255 255 / .92); border: 1px solid var(--line); border-radius: 12px; color: var(--ink);
+  }
+  .strip { flex: 1 1 0; min-width: 0; padding: 4px 6px; font-size: 13px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+  .strip b { font-size: 16px; }
+  .widget { display: flex; border-radius: 14px; overflow: hidden; font-size: 13px; }
+  .widget .l { padding: 4px 6px; line-height: 1.3; }
+  .widget .l span { color: var(--muted); }
+  .widget .r { display: grid; place-items: center; padding: 0 8px; font-weight: 600; border-left: 1px solid var(--line); }
+  .widget .r.orange { background: var(--warn); color: #3a2400; border-left-color: var(--warn); }
+
+  /* The step card */
+  .card { flex: 1 1 100%; border-left: 4px solid var(--line); overflow: hidden; }
+  .fold .card { max-width: 640px; }
+  .card[data-tone='done'] { border-left-color: var(--ok); }
+  .card[data-tone='mistake'] { border-left-color: var(--warn); }
+  .card[data-tone='pause'] { border-left-color: var(--accent); }
+  .head {
+    width: 100%; min-height: var(--touch); padding: 4px 10px 4px 12px; border: 0; background: transparent;
+    display: flex; align-items: center; gap: 8px; text-align: left; font: inherit; font-size: 15px; color: inherit; cursor: pointer;
+  }
+  .head[data-static] { cursor: default; font-weight: 700; }
+  .head .text { flex: 1 1 auto; min-width: 0; }
+  .card.folded .head .text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .tag { color: var(--accent); font-weight: 700; }
+  .chev { flex: none; color: var(--muted); font-size: 14px; }
+  .ring {
+    flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px;
+    background: radial-gradient(closest-side, #fff 74%, transparent 76%), conic-gradient(var(--ok) 60%, rgb(0 0 0 / .14) 0);
+  }
+  .body { padding: 0 12px 10px; font-size: 15px; line-height: 1.4; max-height: 230px; overflow-y: auto; }
+  .body p { margin: 0 0 6px; }
+  .body h4 { margin: 6px 0 2px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .body ul { list-style: none; padding: 0; margin: 2px 0 6px; font-size: 14px; }
+  .body li.ok { color: var(--ok); }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .btn {
+    min-height: var(--touch); padding: 4px 14px; border: 1px solid var(--line); border-radius: 8px; background: #fff;
+    font: inherit; font-size: 15px; color: var(--ink); cursor: pointer;
+  }
+  .btn.main { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  .card.folded .body { display: none; }
+
+  /* The step bar (unchanged in M93) */
+  .bar { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 6px 10px; font-size: 14px; z-index: 2; }
+  .fold .bar { left: 150px; right: 150px; }
+  .bar .barhead { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+  .bar .barhead span.b { border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; color: var(--accent); font-weight: 600; background: var(--accent-soft); }
+  .bar .rowc { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); padding: 6px 0; }
+  .bar .rowc b { display: block; }
+  .bar .rowc small { color: var(--muted); }
+  .bar .steps { display: flex; gap: 6px; }
+  .bar .steps span { min-width: 44px; min-height: 40px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  .mini { position: absolute; left: 8px; bottom: 8px; width: 130px; height: 120px; border-radius: 12px; background: #dcebf5; border: 1px solid var(--line); z-index: 1; }
+  .phone .mini { display: none; }
+
+  .notes { max-width: 70ch; line-height: 1.5; }
+  .notes li { margin-bottom: 4px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .card.flash { animation: flash .9s ease-out; }
+    @keyframes flash { from { box-shadow: 0 0 0 4px rgb(46 158 79 / .55); } to { box-shadow: 0 0 0 0 rgb(46 158 79 / 0); } }
+  }
+  .btn:focus-visible, .head:focus-visible, .states button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<h1>One step card</h1>
+<p class="lead">Mockup for M93 (plan only, nothing is built yet). The step line, the hint and the "Step done" card become one card under the numbers. The controls at the bottom stay as they are. Tap the card's top line to open or close the hint. Pick a moment of the exercise below.</p>
+
+<div class="states" role="group" aria-label="Moment of the exercise">
+  <button type="button" data-state="running" aria-pressed="true">Sailing a step</button>
+  <button type="button" data-state="done">Step done (Watch)</button>
+  <button type="button" data-state="pause">Step done (Pause after each step)</button>
+  <button type="button" data-state="mistake">Mistake</button>
+  <button type="button" data-state="nowyou">Now you (after Show me)</button>
+</div>
+
+<div class="row">
+  <figure class="frame phone" style="margin:0">
+    <div class="view">
+      <div class="boat"></div>
+      <div class="top">
+        <div class="strip"><b>5.7 kn</b> HDG 299° Heel 14° P<br>AUTO 65° S · True 61° S 12 kn<br>App 43° S 16 kn</div>
+        <div class="widget"><div class="l"><span>Time</span> ×1<br>12:00</div><div class="r" data-pause>Pause</div></div>
+        <section class="card folded" data-card></section>
+      </div>
+      <div class="bar">
+        <div class="barhead">The app is doing this step <span class="b">All controls</span></div>
+        <div class="rowc"><div><b>Autopilot</b><small>Holds the wind at 65° S</small></div><div class="steps"><span>◀ 10°</span><span>10° ▶</span></div></div>
+        <div class="rowc"><div><b>Main sheet</b><small>− hauls in · + lets out</small></div><div class="steps"><span>−</span><span>+</span></div></div>
+      </div>
+    </div>
+    <figcaption>Phone (390 px). Row 1: numbers and the time widget, as M92 made them. Row 2: the step card on its own line, as before M92.</figcaption>
+  </figure>
+
+  <figure class="frame fold" style="margin:0">
+    <div class="view">
+      <div class="boat"></div>
+      <div class="top">
+        <div class="strip"><b>0.0 kn</b> HDG 180° · True 90° S 8 kn · App 90° S 8 kn · Engine 800 rpm · Depth 5.0 m</div>
+        <div class="widget"><div class="l"><span>Time</span> ×1<br>12:00</div><div class="r" data-pause>Pause</div></div>
+        <section class="card folded" data-card></section>
+      </div>
+      <div class="mini"></div>
+      <div class="bar">
+        <div class="barhead">The app is doing this step <span class="b">All controls</span></div>
+        <div class="rowc"><div><b>Engine</b><small>Neutral · 800 rpm</small></div><div class="steps"><span>◀</span><span>▶</span></div></div>
+        <div class="rowc"><div><b>Wheel</b><small>− to port · + to starboard</small></div><div class="steps"><span>−</span><span>+</span></div></div>
+      </div>
+    </div>
+    <figcaption>Foldable (side layout). Before: four boxes (line, hint, Step done, controls). After: two (the card, at most 640 px wide, and the controls).</figcaption>
+  </figure>
+</div>
+
+<h2>What changes</h2>
+<ul class="notes">
+  <li><b>Sailing a step:</b> one or two lines ("3/4 · goal"). Tap to read How and the live ✓ / ○ targets. On a phone it folds again at each new step.</li>
+  <li><b>Step done, mistake, Now you:</b> the same card changes colour (green, orange, blue) and shows its buttons. These moments cannot be folded, because the learner must act.</li>
+  <li><b>No more duplicates:</b> the line no longer says "Step 2 done … press Resume" while a second card says "Step 2 done".</li>
+  <li><b>The time widget keeps its Pause / Resume / Carry on button;</b> the card's buttons do the same, right under the explanation.</li>
+</ul>
+
+<script>
+  const STATES = {
+    running: { tone: '', foldable: true, demo: 'Watching · ', head: '3/4 · Motor ahead until the stern is out of the berth, in the fairway (inside the magenta outline).',
+      body: `<p>Put the engine Ahead at about 1200 rpm and keep the wheel centred. Watch the stern leave the gap between the boats.</p>
+             <h4>To pass this step</h4><ul><li class="ok">✓ Stern out of the berth</li><li>○ Inside the magenta outline · now 6 m away</li></ul>
+             <div class="btns"><button type="button" class="btn">Open in Exercises</button></div>`, pause: 'Pause' },
+    done: { tone: 'done', foldable: false, demo: 'Watching · ', head: '✓ Step 2 done',
+      body: `<p>In Harbour gear, tap Let go on both stern lines. Now only the engine and the thrusters hold her.</p>
+             <div class="btns"><button type="button" class="btn main">Next step</button><button type="button" class="btn">Let me try it</button></div>`, pause: 'Resume', orange: true },
+    pause: { tone: 'done', foldable: false, demo: '', head: '✓ Step 2 done',
+      body: `<p>Next: Motor ahead until the stern is out of the berth, in the fairway (inside the magenta outline).</p>
+             <div class="btns"><button type="button" class="btn main">Next step</button></div>`, pause: 'Resume', orange: true },
+    mistake: { tone: 'mistake', foldable: false, demo: '', head: 'Paused: She touched the quay astern (a light touch).',
+      body: `<h4>Why</h4><p>Too much astern with the lines already off: she kept going back.</p>
+             <h4>What to do</h4><p>Use short bursts of the engine; neutral before she reaches the quay.</p>
+             <div class="btns"><button type="button" class="btn main">Carry on</button><button type="button" class="btn">Back to the start of step 3</button></div>`, pause: 'Carry on', orange: true },
+    nowyou: { tone: 'pause', foldable: false, demo: '', head: 'Now you',
+      body: `<p>The boat goes back to where this step started. Then it is your turn.</p>
+             <div class="btns"><button type="button" class="btn main">Back to the start of the step</button></div>`, pause: 'Resume', orange: true },
+  };
+  let state = 'running';
+  const open = new WeakMap();
+  function render() {
+    const s = STATES[state];
+    document.querySelectorAll('[data-card]').forEach((card, i) => {
+      const isOpen = s.foldable ? (open.get(card) ?? false) : true;
+      card.dataset.tone = s.tone;
+      card.classList.toggle('folded', !isOpen);
+      const ring = state === 'running' ? '<span class="ring" aria-hidden="true">3</span>' : '';
+      const chev = s.foldable ? `<span class="chev" aria-hidden="true">${isOpen ? '▴' : '▾'}</span>` : '';
+      const tag = s.demo ? `<span class="tag">${s.demo}</span>` : '';
+      const exp = s.foldable ? ` aria-expanded="${isOpen}" aria-controls="body-${i}"` : ' data-static';
+      card.innerHTML = `<button type="button" class="head"${exp}>${ring}<span class="text">${tag}${s.head}</span>${chev}</button>
+        <div class="body" id="body-${i}">${s.body}</div>`;
+      const head = card.querySelector('.head');
+      if (s.foldable) head.addEventListener('click', () => { open.set(card, !isOpen); render(); });
+    });
+    document.querySelectorAll('[data-pause]').forEach((p) => {
+      p.textContent = s.pause;
+      p.classList.toggle('orange', !!s.orange);
+    });
+  }
+  document.querySelectorAll('.states button').forEach((b) => b.addEventListener('click', () => {
+    state = b.dataset.state;
+    document.querySelectorAll('.states button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    document.querySelectorAll('[data-card]').forEach((c) => { c.classList.remove('flash'); void c.offsetWidth; if (STATES[state].tone === 'done') c.classList.add('flash'); });
+    render();
+  }));
+  render();
+</script>
+</body>
+</html>
