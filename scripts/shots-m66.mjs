@@ -216,10 +216,13 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
 
       if (await isStacked(page)) {
         await setSheet(page, 'peek');
-        await page.getByTestId('exercise-line').click();
+        // M93: the running step's card opens on a tap; its Open in Exercises button shows the section.
+        const head = page.getByTestId('step-card-head');
+        if ((await head.getAttribute('aria-expanded')) !== 'true') await head.click();
+        await page.getByTestId('step-card-open').click();
         await page.waitForTimeout(600);
         const shown = await page.getByTestId('exercise-step').isVisible();
-        check(`line tap shows the Exercises section ${name}`, shown, String(shown));
+        check(`Open in Exercises shows the Exercises section ${name}`, shown, String(shown));
       }
 
       await showSection(page, 'exercises');
@@ -262,15 +265,15 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
       await page.getByTestId('exercise-start').click();
       await page.waitForTimeout(500);
       if (await isStacked(page)) await setSheet(page, 'peek');
-      const coach = page.getByTestId('exercise-coach');
+      const coach = page.getByTestId('step-card');
       // M80: on a phone the hint starts folded at a start and at every step; open it first.
-      const hintToggle = page.getByTestId('exercise-coach-toggle');
+      const hintToggle = page.getByTestId('step-card-head');
       const openHint = async () => {
         if ((await hintToggle.getAttribute('aria-expanded')) !== 'true') await hintToggle.click();
       };
       await openHint();
-      const howText = await page.getByTestId('exercise-coach-how').innerText();
-      const rows = () => page.getByTestId('exercise-coach-targets').locator('li').allInnerTexts();
+      const howText = await page.getByTestId('step-card-how').innerText();
+      const rows = () => page.getByTestId('step-card-targets').locator('li').allInnerTexts();
       const first = await rows();
       check(
         `hint window shows the step and its targets ${name}`,
@@ -300,10 +303,10 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
       await openHint();
       await toggle.click();
       const folded =
-        !(await page.getByTestId('exercise-coach-how').isVisible()) &&
-        (await toggle.innerText()) === 'Show hint';
+        !(await page.getByTestId('step-card-how').isVisible()) &&
+        (await toggle.getAttribute('aria-expanded')) === 'false';
       await toggle.click();
-      const opened = await page.getByTestId('exercise-coach-how').isVisible();
+      const opened = await page.getByTestId('step-card-how').isVisible();
       check(`hint window folds ${name}`, folded && opened, JSON.stringify({ folded, opened }));
       // No part card over the view in Exercises mode.
       await showSection(page, 'ropes');
@@ -339,7 +342,7 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(300);
       await setMode(page, 'easy');
       await page.waitForTimeout(300);
-      const hidden = !(await page.getByTestId('exercise-line').isVisible());
+      const hidden = !(await page.getByTestId('step-card').isVisible());
       const state = await run(page);
       check(
         `mode change ends the run ${name}`,

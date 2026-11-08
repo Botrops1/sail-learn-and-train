@@ -14,7 +14,7 @@ import {
 const shotsSource = readFileSync('scripts/shots.mjs', 'utf8');
 const times = JSON.parse(readFileSync('.github/ci-times.json', 'utf8')) as Record<string, number>;
 const groups = liveGroupNames(shotsSource);
-const newest = ['m92', 'm91', 'm90', 'm89'];
+const newest = ['m93', 'm92', 'm91', 'm90'];
 
 describe('liveGroupNames', () => {
   it('reads the groups of the real scripts/shots.mjs', () => {
@@ -29,11 +29,12 @@ describe('liveGroupNames', () => {
       'm90',
       'm91',
       'm92',
+      'm93',
     ])
       expect(groups).toContain(name);
     expect(new Set(groups).size).toBe(groups.length);
-    // Counted at M92: general, m4b, m4c, m5 to m82 with m60b, m85, m87 to m92, and budget.
-    expect(groups.length).toBe(90);
+    // Counted at M92: general, m4b, m4c, m5 to m82 with m60b, m85, m87 to m93, and budget.
+    expect(groups.length).toBe(91);
   });
 
   it('throws when the object is not found', () => {

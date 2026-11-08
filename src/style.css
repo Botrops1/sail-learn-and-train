@@ -1535,6 +1535,8 @@ html[data-layout='stacked'] .strip-ghost-wide {
 }
 
 html[data-layout='stacked'] .instrument-strip {
+  flex: 1 1 0;
+  min-width: 0;
   padding: 4px;
 }
 
@@ -1549,7 +1551,7 @@ html[data-layout='stacked'] .strip-line {
  * then the apparent wind. A hidden AUTO takes no room.
  */
 html[data-layout='stacked'] .view-top {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 4px;
 }
 
@@ -4956,33 +4958,6 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
   font-weight: 700;
 }
 
-/* The step line: the instrument strip's look, in a row of its own under the strip and the time bar. */
-.exercise-line {
-  flex: 1 1 100%;
-  min-height: var(--touch);
-  padding: 4px 12px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: rgb(255 255 255 / 0.88);
-  color: var(--text);
-  font: inherit;
-  font-size: 15px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  overflow: hidden;
-}
-
-.exercise-line-text {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 /* The hold countdown: a ring that fills as the hold goes on, the seconds left in it. */
 .exercise-ring {
   flex: none;
@@ -5006,12 +4981,7 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
   display: none;
 }
 
-.exercise-line-step-paused {
-  border-color: var(--exercise-ok);
-  border-width: 2px;
-}
-
-/* A step is done: the step line and the hint window flash green for a second. */
+/* A step is done: the step card flashes green for a second. */
 .exercise-flash {
   animation: exercise-flash 1s ease-out;
 }
@@ -5027,69 +4997,128 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
   }
 }
 
-.exercise-line-mistake {
-  border-color: var(--exercise-warning);
-  border-width: 2px;
-}
-
-.exercise-line-paused {
-  border-color: var(--exercise-danger);
-  border-width: 2px;
-}
-
-.exercise-line[hidden] {
-  display: none;
-}
-
-/* The hint window under the step line (owner, PR 144): the step's How text and live targets. */
-.exercise-coach {
+/*
+ * The step card (M93, PHASE_STEP_CARD_SPEC 4.4): the step, its hint, "Step done", "Now you" and a
+ * mistake in one box under the numbers. A 4 px left border carries the tone.
+ */
+.step-card {
   flex: 1 1 100%;
   border: 1px solid var(--line);
+  border-left: 4px solid var(--line);
   border-radius: 12px;
-  background: rgb(255 255 255 / 0.88);
+  background: rgb(255 255 255 / 0.92);
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
+  pointer-events: auto;
+  min-width: 0;
 }
 
-.exercise-coach[hidden],
-.exercise-coach-body[hidden] {
+.step-card[hidden],
+.step-card-body[hidden],
+.step-card-chevron[hidden],
+.step-card-heading[hidden] {
   display: none;
 }
 
-.exercise-coach-toggle {
-  display: block;
+.step-card[data-tone='done'] {
+  border-left-color: var(--exercise-ok);
+}
+
+.step-card[data-tone='mistake'] {
+  border-left-color: #ff9f1c;
+}
+
+.step-card[data-tone='pause'] {
+  border-left-color: var(--accent);
+}
+
+html[data-layout='side'] .step-card,
+html[data-layout='wide'] .step-card {
+  max-width: 640px;
+}
+
+.step-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   min-height: var(--touch);
   padding: 4px 12px;
   border: 0;
   border-radius: 12px;
   background: transparent;
-  color: var(--accent);
+  color: inherit;
   font: inherit;
-  font-weight: 700;
+  font-size: 15px;
   text-align: left;
 }
 
-.exercise-coach-body {
-  padding: 0 12px 8px;
+.step-card[data-row='1'] .step-card-head,
+.step-card[data-row='2'] .step-card-head,
+.step-card[data-row='3'] .step-card-head,
+.step-card[data-row='4'] .step-card-head {
+  cursor: default;
 }
 
-.exercise-coach-body p {
-  margin: 2px 0;
+.step-card-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.exercise-coach-heading {
+/* The text is clamped to two lines while the body is folded or absent, and whole when it is open. */
+.step-card-head[aria-expanded='true'] .step-card-text,
+.step-card[data-row='1'] .step-card-text,
+.step-card[data-row='2'] .step-card-text,
+.step-card[data-row='3'] .step-card-text,
+.step-card[data-row='4'] .step-card-text {
+  display: block;
+  overflow: visible;
+}
+
+.step-card-demo {
+  color: var(--accent);
   font-weight: 700;
 }
 
-.exercise-coach-targets {
+.step-card-chevron {
+  flex: none;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.step-card-body {
+  padding: 0 12px 8px;
+}
+
+.step-card-body p {
+  margin: 2px 0;
+}
+
+.step-card-heading {
+  font-weight: 700;
+}
+
+.step-card-targets {
   margin: 2px 0 0;
   padding: 0;
   list-style: none;
 }
 
-.exercise-coach-targets li.ok {
+.step-card-targets li.ok {
   color: var(--accent);
+}
+
+/* The buttons stay at the foot of the card when its text scrolls (a phone). */
+.step-card-body .exercise-buttons {
+  position: sticky;
+  bottom: 0;
+  margin: 4px 0 0;
+  padding-top: 4px;
+  background: #fff;
 }
 
 /* Mistakes and waypoints (M67, PHASE10_SPEC 7.5). */
@@ -5328,35 +5357,6 @@ html[data-layout='wide'] .exercise-stack {
   color: var(--accent);
 }
 
-/* The demo card: first in the stack, styled like the step card. */
-.exercise-demo-card {
-  pointer-events: auto;
-  padding: 8px 12px 10px;
-  border: 1px solid var(--accent);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: 0 2px 10px rgb(10 20 30 / 0.3);
-  font-size: 15px;
-}
-
-.exercise-demo-card[hidden] {
-  display: none;
-}
-
-.exercise-demo-card h3 {
-  margin: 0 0 4px;
-  font-size: 16px;
-}
-
-.exercise-demo-card p {
-  margin: 0 0 8px;
-}
-
-.exercise-demo-card .exercise-buttons {
-  margin: 0;
-}
-
 /* Watch it comes first on a phone; on a computer: Do it myself, Watch it, then the list. */
 html[data-layout='side'] .exercise-buttons .exercise-watch,
 html[data-layout='wide'] .exercise-buttons .exercise-watch {
@@ -5366,11 +5366,6 @@ html[data-layout='wide'] .exercise-buttons .exercise-watch {
 html[data-layout='side'] .exercise-buttons [data-testid='exercise-list'],
 html[data-layout='wide'] .exercise-buttons [data-testid='exercise-list'] {
   order: 2;
-}
-
-.exercise-line-demo {
-  color: var(--accent);
-  font-weight: 700;
 }
 
 .exercise-watched {

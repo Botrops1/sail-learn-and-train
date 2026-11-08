@@ -3235,10 +3235,10 @@
 | exercise.line | {n}/{total} · {goal} | {n}/{total} · {goal} |
 | exercise.lineHold | · hold {s} s | · держите {s} с |
 | exercise.lineDone | Done ✓ {time} · tap for the summary | Готово ✓ {time} · нажмите, чтобы посмотреть итог |
-| exercise.coach.hide | Hide hint | Скрыть подсказку |
-| exercise.coach.show | Show hint | Показать подсказку |
-| exercise.coach.label | Hint for this step | Подсказка к этому шагу |
 | exercise.coach.targets | To pass this step | Чтобы пройти шаг |
+| exercise.card.label | This step | Этот шаг |
+| exercise.card.next | Next: {goal} | Дальше: {goal} |
+| exercise.card.open | Open in Exercises | Открыть в «Упражнениях» |
 | exercise.target.twa | Wind {min}–{max}° from the bow | Ветер {min}–{max}° от носа |
 | exercise.target.tack.starboard | Wind over the starboard (right) side | Ветер с правого борта |
 | exercise.target.tack.port | Wind over the port (left) side | Ветер с левого борта |
@@ -3260,7 +3260,6 @@
 | exercise.pauseHint | Time stops and the card tells you what went wrong, so you can read it before you go on. | Время останавливается, и карточка объясняет, что пошло не так: можно спокойно прочитать и идти дальше. |
 | exercise.pauseOnStep | Pause after each step | Останавливать после каждого шага |
 | exercise.pauseOnStepHint | Time stops when a step is done, so you can read the next one. Press Resume to go on. | Время останавливается, когда шаг выполнен: можно прочитать следующий. Нажмите «Продолжить», чтобы идти дальше. |
-| exercise.linePausedStep | Step {n} done ✓ Paused: read the next step, then press Resume | Шаг {n} выполнен ✓ Пауза: прочитайте следующий шаг и нажмите «Продолжить» |
 | exercise.fromStep | This link starts at step {n}. | Эта ссылка начинается с шага {n}. |
 | exercise.wentWrong | What went wrong | Что пошло не так |
 | exercise.why | Why | Почему |
@@ -3577,7 +3576,6 @@
 | exercise.demo.nowYou | The boat goes back to where this step started. Then it is your turn. | Лодка вернётся туда, где начался этот шаг. Потом ваша очередь. |
 | exercise.demo.back | Back to the start of the step | Назад, к началу шага |
 | exercise.demo.doIt | Now do it myself | Теперь сам |
-| exercise.demo.lineNow | Done. Now you: tap “Back to the start of the step”. | Готово. Теперь вы: нажмите «Назад, к началу шага». |
 | exercise.bar.otherStation | Nothing at this station for this step. The dot shows where to go. | На этом посту в этом шаге делать нечего. Точка показывает, куда идти. |
 | exercise.bar.clutchOpen | Open: the rope can run | Открыт: конец может идти |
 | exercise.bar.clutchClosed | Closed: holds the rope | Закрыт: держит конец |

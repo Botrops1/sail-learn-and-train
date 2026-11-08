@@ -257,16 +257,13 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
       const gotLee = await waitForMistake(page, 'by-the-lee', 25);
       await page.waitForTimeout(300);
       const state = await run(page);
-      const lineNow = await page.getByTestId('exercise-line').innerText();
-      const flagged = await page
-        .getByTestId('exercise-line')
-        .evaluate((n) => n.classList.contains('exercise-line-mistake'));
+      const lineNow = await page.getByTestId('step-card-text').innerText();
+      const flagged = (await page.getByTestId('step-card').getAttribute('data-tone')) === 'mistake';
       const going = !(await read(page)).paused;
       await page.waitForTimeout(6300);
-      const lineLater = await page.getByTestId('exercise-line').innerText();
-      const flaggedLater = await page
-        .getByTestId('exercise-line')
-        .evaluate((n) => n.classList.contains('exercise-line-mistake'));
+      const lineLater = await page.getByTestId('step-card-text').innerText();
+      const flaggedLater =
+        (await page.getByTestId('step-card').getAttribute('data-tone')) === 'mistake';
       check(
         `not pausing ${name}`,
         reached &&
