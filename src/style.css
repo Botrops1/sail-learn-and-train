@@ -5118,7 +5118,7 @@ html[data-layout='wide'] .step-card {
   bottom: 0;
   margin: 4px 0 0;
   padding-top: 4px;
-  background: rgb(255 255 255 / 0.96);
+  background: #fff;
 }
 
 /* Mistakes and waypoints (M67, PHASE10_SPEC 7.5). */
