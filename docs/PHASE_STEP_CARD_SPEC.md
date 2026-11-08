@@ -6,7 +6,7 @@ Extra milestone, planned on 2026-11-08 from the owner's comment after testing PR
 - **Foldable (side layout):** while an exercise runs, four separate boxes cover most of the 3D view: the step line ("Watching · Step 2 done ✓ Paused: read the next step, then press Resume"), the hint ("Show hint"), the "✓ Step 2 done" card with Next step / Let me try it, and the step bar with the controls. The line and the Step done card also say the same thing twice.
 - The owner's design: **combine the first three into one card**. The hint is hidden inside the step card and opens when the learner wants to read more; Step done is shown by the same card. The controls stay in their own box at the bottom.
 
-The owner asked to "check the market before implementing it": section 2.
+The owner asked for a mockup ("maket") to check before building: [`docs/mockups/step-card.html`](mockups/step-card.html). Section 2 is a short look at how similar apps do it, added as background.
 
 ## 0. How to use this spec
 
@@ -23,7 +23,7 @@ In scope: the phone's top row back to two rows (numbers and time widget in row 1
 
 Out of scope: the step bar's rows and head (Show me, Stop watching, All controls) stay as they are; the Exercises section in the panel stays as it is (its step, mistake and done cards are unchanged); the time widget (M92) is unchanged except the phone row CSS; the camera framing rules (M80) are unchanged (the card reports its height the way the hint did); no new exercise text.
 
-## 2. Market check (what similar apps do, 2026-11-08)
+## 2. How similar apps do it (background, 2026-11-08)
 
 | App / guide | What it does | What we take |
 |---|---|---|
