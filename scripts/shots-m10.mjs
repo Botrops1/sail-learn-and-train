@@ -24,9 +24,10 @@ export const M10_SCENES = [
   },
   { name: 'time-bar', query: '?wd=60&ws=12&ms=20&js=25&tx=4&cam=side-port', waitMs: 2500 },
   {
-    name: 'time-bar-folded',
+    // M92: the time widget's left part opens the time card (the speeds and the clock).
+    name: 'time-bar-card',
     query: '?wd=60&ws=12&ms=20&js=25&tx=4&cam=side-port',
-    click: ['time-fold'],
+    click: ['time-open'],
     waitMs: 2500,
   },
   { name: 'time-bar-slow', query: '?wd=60&ws=12&ms=20&js=25&tx=0.25&cam=top', waitMs: 2500 },
@@ -224,11 +225,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     const status = () => text(page, 'time-status');
     const visible = (id) => page.getByTestId(id).isVisible();
     await page.waitForTimeout(800);
-    check(
-      'time bar: Time ×1 and the buttons show',
-      (await status()) === '×1' && (await visible('time-fastest')),
-      await status(),
-    );
+    check('time bar: Time ×1 shows', (await status()) === '×1', await status());
     // It fits the view and does not cover the strip.
     const boxes = await page.evaluate(() => {
       const box = (id) => document.querySelector(`[data-testid="${id}"]`)?.getBoundingClientRect();
@@ -249,9 +246,10 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     check('time bar: inside the view', boxes.inside, JSON.stringify(boxes));
     check('time bar: does not cover the instrument strip', !boxes.overlap, JSON.stringify(boxes));
     check('time bar: at least 44 px high', boxes.barHeight >= 44, JSON.stringify(boxes));
-    await page.getByTestId('time-faster').click();
-    await page.getByTestId('time-faster').click();
-    check('time bar: › twice gives ×4', (await status()) === '×4', await status());
+    // M92: the speeds are choices in the time card that the widget's left part opens.
+    await page.getByTestId('time-open').click();
+    await page.getByTestId('time-scale-4').click();
+    check('time bar: the 4 choice gives ×4', (await status()) === '×4', await status());
     await page.waitForTimeout(500);
     check(
       'time bar: link has tx=4',
@@ -264,24 +262,21 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       'none',
     );
     await shot(page, 'live-phone-time-bar-x4');
-    await page.getByTestId('time-slowest').click();
-    check('time bar: « gives ×¼', (await status()) === '×¼', await status());
+    await page.getByTestId('time-scale-0.25').click();
+    check('time bar: ¼ gives ×¼', (await status()) === '×¼', await status());
     check(
-      'time bar: ‹ is disabled at ×¼',
-      await page.getByTestId('time-slower').isDisabled(),
-      'disabled',
+      'time bar: the current speed is marked',
+      (await page.getByTestId('time-scale-0.25').getAttribute('aria-pressed')) === 'true' &&
+        (await page.getByTestId('time-scale-1').getAttribute('aria-pressed')) === 'false',
+      'aria-pressed',
     );
     await shot(page, 'live-phone-time-bar-slow');
-    await page.getByTestId('time-status').click();
-    check('time bar: a tap on the status gives ×1', (await status()) === '×1', await status());
-    await page.getByTestId('time-fastest').click();
-    check('time bar: » gives ×16', (await status()) === '×16', await status());
-    check(
-      'time bar: › is disabled at ×16',
-      await page.getByTestId('time-faster').isDisabled(),
-      'disabled',
-    );
-    await page.getByTestId('time-status').click();
+    await page.getByTestId('time-scale-16').click();
+    check('time bar: 16 gives ×16', (await status()) === '×16', await status());
+    await page.getByTestId('time-scale-1').click();
+    check('time bar: ×1 gives normal speed', (await status()) === '×1', await status());
+    await page.keyboard.press('Escape');
+    check('time bar: Escape closes the card', !(await visible('time-card')), 'still open');
     // Pause as in Phase 1.
     await page.getByTestId('pause-button').click();
     check(
@@ -291,24 +286,6 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     );
     await shot(page, 'live-phone-time-bar-paused');
     await page.getByTestId('pause-button').click();
-    // Fold: only "Time" and Pause stay; the fold is remembered on this device.
-    await page.getByTestId('time-fold').click();
-    check(
-      'time bar folded: the buttons are gone',
-      !(await visible('time-fastest')) && !(await visible('time-status')),
-      'hidden',
-    );
-    check('time bar folded: Pause stays', await visible('pause-button'), 'visible');
-    await shot(page, 'live-phone-time-bar-folded');
-    await page.reload({ waitUntil: 'networkidle' });
-    await page.waitForTimeout(500);
-    check(
-      'time bar folded: remembered after a reload',
-      !(await visible('time-fastest')) && (await visible('time-fold')),
-      'folded',
-    );
-    await page.getByTestId('time-fold').click();
-    check('time bar: the word Time opens it again', await visible('time-fastest'), 'open');
     problems.push(...(await auditPage(page, 'm10 time bar')));
     await context.close();
   }
@@ -326,8 +303,8 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
       'held, steady: the "Held still" chip shows, no Pause, no time bar',
       (await text(page, 'held-chip')) === 'Held still' &&
         !(await page.getByTestId('pause-button').isVisible()) &&
-        !(await page.getByTestId('time-fold').isVisible()) &&
-        !(await page.getByTestId('time-fastest').isVisible()),
+        !(await page.getByTestId('time-open').isVisible()) &&
+        !(await page.getByTestId('time-status').isVisible()),
       'chip only',
     );
     check(
@@ -438,7 +415,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     check(
       'tb=0: only Pause shows',
       (await page.getByTestId('pause-button').isVisible()) &&
-        !(await page.getByTestId('time-fastest').isVisible()),
+        !(await page.getByTestId('time-status').isVisible()),
       'only Pause',
     );
     await openSettings(page);
@@ -446,7 +423,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     check(
       'Settings: the switch brings the bar back',
-      await page.getByTestId('time-fastest').isVisible(),
+      await page.getByTestId('time-status').isVisible(),
       'visible',
     );
     check(
@@ -474,7 +451,7 @@ export async function liveM10Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     check(
       'held, gusty: the speed part shows',
-      await page.getByTestId('time-fastest').isVisible(),
+      await page.getByTestId('time-status').isVisible(),
       'visible',
     );
     await context.close();

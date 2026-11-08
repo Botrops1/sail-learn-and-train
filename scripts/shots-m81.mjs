@@ -101,8 +101,7 @@ export async function liveM81Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     const line = (await exerciseLine(page)) ?? '';
     check('the step line starts "Watching ·"', line.startsWith('Watching ·'), `"${line}"`);
-    // On a phone the time bar is folded during a run; the note belongs to the open bar.
-    await tid(page, 'time-fold').click();
+    // M92: the note shows under the compact time widget (it has no fold any more).
     await act(page, { type: 'setTimeScale', scale: 16 });
     await page.waitForTimeout(300);
     check(

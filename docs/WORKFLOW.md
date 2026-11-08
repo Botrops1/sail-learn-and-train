@@ -1015,3 +1015,20 @@ Wind, waves, the boat, the surroundings with birds, and quiet music, all made by
 - [ ] Music: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=10 — switch Sound on and listen for two minutes: slow, quiet music under the wind, never jumping out; it does not repeat.
 - [ ] Music off: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&ws=10 — Settings → Sound → switch "Music" off: the music fades within a few seconds; the wind goes on.
 - [ ] Everything together: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=harbour&pl=marina&tr=busy&ws=12 — sound on for five minutes while you motor out: is anything too loud, annoying or wrong? Say which sound in the PR.
+
+## 20. Time widget (issue #172)
+
+The time bar and the clock in one small widget at the top of the 3D view ([PHASE_TIME_SPEC](PHASE_TIME_SPEC.md)). One PR, M92; no `/review` needed.
+
+### 20.1 Checklist
+
+#### M92: Time and clock in one widget
+
+- [ ] One row on the phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12 — at the top you see the numbers box and, at its right in the same row, one small box: "Time ×1" over "12:00" on the left, "Pause" on the right. There is no second row under them any more.
+- [ ] Pause and Resume: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12 — tap Pause: it turns orange and says Resume, the boat stops moving. Tap Resume: it says Pause again and the boat goes on.
+- [ ] The time card: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12 — tap "Time ×1 / 12:00": a card almost as wide as the screen opens with seven speeds (¼ ½ ×1 2 4 8 16) in one row, and the clock under them. Tap 4: the box says "Time ×4" and the boat moves faster. Tap × to close.
+- [ ] Set the time: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12 — open the card, change the time to 20:30 and tap Set: the box says 20:30 and it gets dark. Tap "Noon, 1 June": back to 12:00.
+- [ ] Carry on in an exercise: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&m=exercise&ex=leave-berth&exl=normal — Start, let go all the lines, then drag the engine lever halfway towards Astern: she backs into the quay and a card says "A light touch". The top-right button now says "Carry on" (orange); tap it: time runs again and it says Pause.
+- [ ] Held still: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12&held=1&sea=flat — the box shows "12:00" and "Held still" (nothing to pause); tap "12:00": the card shows only the clock.
+- [ ] Computer: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12 — on a PC the box sits at the top right of the 3D view, with Attention under it; the card opens at the right, over the Attention card.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12&lang=ru — the box says "Время ×1" and "Пауза"; nothing is cut off.

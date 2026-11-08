@@ -1,14 +1,9 @@
 import type { AppState, Store } from '../app/store';
-import {
-  fastestTimeScale,
-  pauseAvailable,
-  slowestTimeScale,
-  stepTimeScale,
-  timeScaleText,
-  timeSpeedAvailable,
-} from '../model/timeScale';
+import { boat } from '../model/boat';
+import { pauseAvailable, timeScaleText, timeSpeedAvailable } from '../model/timeScale';
 import { demoCardKind } from '../app/exerciseBar';
 import { DEMO_MAX_SCALE, exercisePauseBlocked } from '../app/exerciseRun';
+import { clockAria, createClockParts } from './clockPanel';
 import { el } from './dom';
 import type { LayoutShell } from './layout';
 import { layoutKindOf } from './modes';
@@ -18,108 +13,73 @@ import { setText } from './stepper';
 /** How long the note under the "Held still" chip stays, ms. */
 const NOTE_SHOWN_MS = 6000;
 
-/** Where the fold of the bar is remembered on this device (not in the link). */
+/**
+ * Where the fold of the old time bar (M37) was remembered on this device. Since M92 the widget is
+ * always compact and nothing reads the fold; the key stays so setup files keep their shape
+ * (`device.timeBarFolded`) and Settings → Reset still clears an old value.
+ */
 export const FOLD_KEY = 'sail-learn.timeBarFolded';
 
-function readFolded(): boolean {
-  try {
-    return window.localStorage.getItem(FOLD_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
-function writeFolded(folded: boolean): void {
-  try {
-    window.localStorage.setItem(FOLD_KEY, folded ? '1' : '0');
-  } catch {
-    // Private window or blocked storage: the fold is just not remembered.
-  }
-}
-
 /**
- * The time bar (PHASE2_SPEC 10.3, issue #25), at the top of the 3D view, replacing the Phase 1
- * Pause button: `Time ×1  [«] [‹] [Pause] [›] [»]`. ‹ and › go one step down and up the list of
- * time scales (¼ … 16), « and » straight to the slowest and the fastest, a tap on the ×1 goes
- * back to normal speed. Pause freezes time, exactly as in Phase 1. The word "Time" folds the
- * bar to the Pause button; folded, the word "Time" has the current speed under it (M37, issue #87);
- * the fold is remembered on the device. The speed part shows only where time changes something (Sailing, or a wind that
- * changes) and while the switch in Settings is on; otherwise only Pause shows. Where nothing
- * changes with time at all (Held still, steady wind, Easy ropes; issue #34) Pause is replaced
- * by a "Held still" chip; a tap on it explains in a small note where to change that.
+ * The time widget (M92, issue #172; it joins the time bar of PHASE2_SPEC 10.3 and the clock chip
+ * of PHASE3_SPEC 9.5) at the top right of the 3D view, two rows high:
+ *
+ *   | Time ×1 | Pause |
+ *   | 12:00   |       |
+ *
+ * The left part opens the time card under the top area (nearly the view's width on a phone): the
+ * time speeds as one row of choices (¼ … 16) and the clock (date, sunrise and sunset, set a time).
+ * The right part is the one button for every stop of time: Pause, Resume, or Carry on when an
+ * exercise stopped time for a mistake. The speed shows only where time changes something (Sailing,
+ * or a wind that changes) and while the Time bar switch in Settings is on; the clock only while
+ * the Clock switch is on. Where nothing changes with time at all (Held still, steady wind, Easy
+ * ropes, flat water; issue #34) Pause is replaced by a "Held still" chip that explains itself.
  */
-export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShell): HTMLElement {
-  let folded = readFolded();
-  // M80: during a run on a phone the bar is folded unless the learner opened it in this run;
-  // that tap is not saved, and the saved fold is not touched.
-  let runUnfolded = false;
-  let runActive = false;
-  const duringRun = (state: AppState) => {
-    const status = state.exercise?.status;
-    return status === 'running' || status === 'mistake';
-  };
-  const runFolds = (state: AppState) =>
-    layoutKindOf(layout.viewport()) === 'stacked' && duringRun(state);
-
-  const button = (testId: string, label: string, aria: string, action: () => void) => {
-    const node = el('button', {
-      type: 'button',
-      class: 'time-button',
-      'data-testid': testId,
-      'aria-label': aria,
-    });
-    node.textContent = label;
-    node.addEventListener('click', action);
-    return node;
-  };
+export function createTimeBar(
+  host: HTMLElement,
+  view: HTMLElement,
+  store: Store,
+  layout: LayoutShell,
+): HTMLElement {
+  const clock = createClockParts(store);
   const setScale = (scale: number) => store.dispatch({ type: 'setTimeScale', scale });
-  const step = (direction: -1 | 1) =>
-    setScale(stepTimeScale(store.getState().settings.timeScale, direction));
 
-  const fold = el('button', {
-    type: 'button',
-    class: 'time-label',
-    'data-testid': 'time-fold',
-    'aria-expanded': 'true',
-  });
-  const foldSpeed = el('span', { class: 'time-label-speed', 'data-testid': 'time-fold-speed' });
-  fold.append(el('span', {}, [t('time.label')]), foldSpeed);
-  fold.addEventListener('click', () => {
-    const state = store.getState();
-    if (runFolds(state)) runUnfolded = !runUnfolded;
-    else {
-      folded = !folded;
-      writeFolded(folded);
-    }
-    refresh(state);
-  });
-  const status = el('button', {
-    type: 'button',
-    class: 'time-status',
-    'data-testid': 'time-status',
-  });
-  status.addEventListener('click', () => setScale(1));
-  const slowest = button('time-slowest', '«', t('time.slowest'), () =>
-    setScale(slowestTimeScale()),
+  // The left part: the speed over the clock; a tap opens the card.
+  const speedText = el('span', { class: 'time-status', 'data-testid': 'time-status' });
+  const speedLine = el('span', { class: 'time-open-speed' }, [
+    el('span', { class: 'time-open-word' }, [t('time.label')]),
+    speedText,
+  ]);
+  const open = el(
+    'button',
+    {
+      type: 'button',
+      class: 'time-open',
+      'data-testid': 'time-open',
+      'aria-expanded': 'false',
+      'aria-controls': 'time-card',
+    },
+    [speedLine, clock.chip],
   );
-  slowest.classList.add('time-jump');
-  const slower = button('time-slower', '‹', t('time.slower'), () => step(-1));
-  const faster = button('time-faster', '›', t('time.faster'), () => step(1));
-  const fastest = button('time-fastest', '»', t('time.fastest'), () =>
-    setScale(fastestTimeScale()),
-  );
-  fastest.classList.add('time-jump');
 
-  // Pause is the Phase 1 button, as it was: the same test id, class and strings.
+  // The right part: the one button for every stop of time (Pause, Resume, Carry on).
   const pause = el('button', {
     type: 'button',
     class: 'pause-button',
     'data-testid': 'pause-button',
     'aria-pressed': 'false',
   });
-  pause.addEventListener('click', () =>
-    store.dispatch({ type: 'setPaused', paused: !store.getState().paused }),
-  );
+  // The button keeps the width of its widest word (invisible copies in the same grid cell, as the
+  // strip's cells do, M37), so the strip beside it does not reflow on Pause / Resume. Carry on
+  // (wider) may widen it while a mistake card shows: time is stopped then anyway.
+  // The copies are CSS pseudo-elements (`data-ghost-*`), so the button's text is only its word.
+  pause.dataset.ghostPause = t('pause.pause');
+  pause.dataset.ghostResume = t('pause.resume');
+  let pauseDoes: 'pause' | 'resume' | 'carryOn' = 'pause';
+  pause.addEventListener('click', () => {
+    if (pauseDoes === 'carryOn') store.dispatch({ type: 'exercise', command: 'continue' });
+    else store.dispatch({ type: 'setPaused', paused: pauseDoes === 'pause' });
+  });
 
   // Held still, steady wind, Easy ropes: nothing changes with time, so a chip says why.
   const note = el('p', { class: 'time-held-note', role: 'status', 'data-testid': 'held-note' });
@@ -142,16 +102,12 @@ export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShe
   held.textContent = t('time.held');
   held.hidden = true;
   held.addEventListener('click', () => showNote(note.hidden));
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !note.hidden) showNote(false);
-  });
 
-  // M81: while the app plays an exercise, time runs at ×4 at most; the bar says so.
+  // M81: while the app plays an exercise, time runs at ×4 at most; the widget says so.
   const capped = el('p', { class: 'hint time-demo-capped', 'data-testid': 'time-demo-capped' }, [
     t('exercise.demo.capped'),
   ]);
   capped.hidden = true;
-
   let cappedTimer: number | undefined;
   let cappedOn = false;
   const showCapped = (on: boolean) => {
@@ -165,21 +121,83 @@ export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShe
   const bar = el(
     'div',
     { class: 'time-bar', role: 'group', 'aria-label': t('time.group'), 'data-testid': 'time-bar' },
-    [fold, status, slowest, slower, pause, held, faster, fastest, note, capped],
+    [open, pause, held, note, capped],
   );
   host.append(bar);
+
+  // The card: the speeds, then the clock.
+  const scaleButtons = boat.windModes.timeScales.map((scale) => {
+    const node = el('button', {
+      type: 'button',
+      class: 'time-scale',
+      'data-testid': `time-scale-${scale}`,
+      'aria-pressed': 'false',
+      'aria-label': t('time.scaleAria', { scale: timeScaleText(scale) }),
+    });
+    node.textContent = scale === 1 ? '×1' : timeScaleText(scale);
+    node.addEventListener('click', () => setScale(scale));
+    return { scale, node };
+  });
+  const speedSection = el(
+    'section',
+    { class: 'time-speed', 'data-testid': 'time-speed', 'aria-label': t('time.speedHeading') },
+    [
+      el('h3', { class: 'time-card-heading' }, [t('time.speedHeading')]),
+      el(
+        'div',
+        { class: 'time-scales', role: 'group', 'aria-label': t('time.speedHeading') },
+        scaleButtons.map((b) => b.node),
+      ),
+    ],
+  );
+  const close = el('button', {
+    type: 'button',
+    class: 'clock-close',
+    'data-testid': 'time-card-close',
+    'aria-label': t('time.close'),
+  });
+  close.textContent = '×';
+  const card = el(
+    'div',
+    {
+      class: 'time-card',
+      id: 'time-card',
+      'data-testid': 'time-card',
+      role: 'dialog',
+      'aria-label': t('time.group'),
+    },
+    [close, speedSection, clock.section],
+  );
+  card.hidden = true;
+  view.append(card);
+
+  let cardOpen = false;
+  const setOpen = (next: boolean) => {
+    if (cardOpen === next) return;
+    cardOpen = next;
+    card.hidden = !next;
+    open.setAttribute('aria-expanded', String(next));
+    if (next) {
+      clock.section.hidden = !clock.shown(store.getState());
+      if (!clock.section.hidden) clock.opened();
+    }
+    refresh(store.getState());
+  };
+  open.addEventListener('click', () => setOpen(!cardOpen));
+  close.addEventListener('click', () => {
+    setOpen(false);
+    open.focus();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (cardOpen) setOpen(false);
+    if (!note.hidden) showNote(false);
+  });
 
   let shown = '';
   const refresh = (state: AppState) => {
     const speed = timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar);
-    const active = duringRun(state);
-    if (active !== runActive) {
-      // A run starts (or a link brings one that is running), or it ends: the run's own fold resets.
-      runActive = active;
-      runUnfolded = false;
-    }
-    const runFolded = runFolds(state) && !runUnfolded;
-    const open = speed && !(runFolds(state) ? runFolded : folded);
+    const clockShown = clock.shown(state);
     const scale = state.settings.timeScale;
     const pausable = pauseAvailable(
       state.boat.mode,
@@ -187,47 +205,90 @@ export function createTimeBar(host: HTMLElement, store: Store, layout: LayoutShe
       state.settings.ropesMode,
       state.sea.setting,
     );
-    // A mistake or failed card (and the setup card, until Start) decides when time goes on (PHASE10_SPEC 7.3).
     const runStatus = state.exercise?.status;
+    // A mistake card: the button carries on (the same as the card's Carry on, PHASE10_SPEC 7.3).
+    const mistake = runStatus === 'mistake' && demoCardKind(state) === null;
+    // A failed card and the setup card (until Start) decide when time goes on (PHASE10_SPEC 7.3);
     // M81: while Show me's "Now you" card shows, going on from here is a dead end: Back is the way.
     const blocked =
-      runStatus === 'mistake' ||
       runStatus === 'failed' ||
       runStatus === 'setup' ||
+      (runStatus === 'mistake' && !mistake) ||
       demoCardKind(state) === 'nowYou';
     // Alone (M71): no Pause while the exercise runs; once paused, Resume stays enabled.
     const alone = exercisePauseBlocked(state) && !state.paused;
+    const active = runStatus === 'running' || runStatus === 'mistake';
     const demoCapped = active && state.exercise?.demo != null && scale > DEMO_MAX_SCALE;
-    const key = [speed, open, scale, state.paused, pausable, blocked, alone, demoCapped].join('|');
+    const stopped = state.paused || mistake;
+    const key = [
+      speed,
+      clockShown,
+      scale,
+      stopped,
+      mistake,
+      pausable,
+      blocked,
+      alone,
+      demoCapped,
+      cardOpen,
+      clockShown ? clock.chip.textContent : '',
+      layoutKindOf(layout.viewport()),
+    ].join('|');
     if (key === shown) return;
     shown = key;
-    // The note shows only while the bar is open, and for a few seconds: it must not hide the step line.
-    showCapped(demoCapped && open);
+
+    // The notes show for a few seconds: they must not hide the step line.
+    showCapped(demoCapped);
     bar.dataset.speed = String(speed);
     bar.dataset.held = String(!pausable);
-    pause.hidden = !pausable;
-    held.hidden = pausable;
-    if (pausable) showNote(false);
-    bar.dataset.open = String(open);
-    fold.hidden = !speed;
-    fold.setAttribute('aria-expanded', String(open));
-    fold.setAttribute(
-      'aria-label',
-      open ? t('time.fold') : t('time.unfoldSpeed', { scale: timeScaleText(scale) }),
-    );
-    setText(foldSpeed, `×${timeScaleText(scale)}`);
-    for (const part of [status, slowest, slower, faster, fastest]) part.hidden = !open;
-    setText(status, `×${timeScaleText(scale)}`);
-    status.setAttribute('aria-label', t('time.status', { scale: timeScaleText(scale) }));
-    slowest.disabled = slower.disabled = scale <= slowestTimeScale();
-    faster.disabled = fastest.disabled = scale >= fastestTimeScale();
+    bar.dataset.stopped = String(stopped);
+
+    // The left part: the speed line, the clock line, or both; none of them, no left part.
+    speedLine.hidden = !speed;
+    clock.chip.hidden = !clockShown;
+    open.hidden = !speed && !clockShown;
+    if (open.hidden) setOpen(false);
+    speedSection.hidden = !speed;
+    if (cardOpen) clock.section.hidden = !clockShown;
+    setText(speedText, `×${timeScaleText(scale)}`);
+    const names: string[] = [];
+    if (speed) names.push(t('time.status', { scale: timeScaleText(scale) }));
+    if (clockShown) names.push(clockAria(state.clock.utcMs));
+    names.push(t('time.openHint'));
+    open.setAttribute('aria-label', names.join('. '));
+    for (const { scale: value, node } of scaleButtons) {
+      node.setAttribute('aria-pressed', String(value === scale));
+      node.classList.toggle('is-current', value === scale);
+    }
+
+    // The right part.
+    pause.hidden = !pausable && !mistake;
+    held.hidden = !pause.hidden;
+    if (!held.hidden) showNote(false);
+    pauseDoes = mistake ? 'carryOn' : state.paused ? 'resume' : 'pause';
     pause.disabled = blocked || alone;
-    pause.setAttribute('aria-pressed', String(state.paused));
-    pause.classList.toggle('is-paused', state.paused);
-    setText(pause, t(state.paused ? 'pause.resume' : 'pause.pause'));
+    pause.setAttribute('aria-pressed', String(stopped));
+    pause.classList.toggle('is-paused', stopped);
+    pause.dataset.does = pauseDoes;
+    setText(
+      pause,
+      t(
+        pauseDoes === 'carryOn'
+          ? 'exercise.continue'
+          : pauseDoes === 'resume'
+            ? 'pause.resume'
+            : 'pause.pause',
+      ),
+    );
     const pauseName = alone
       ? t('exercise.alonePause')
-      : t(state.paused ? 'pause.resumeAria' : 'pause.pauseAria');
+      : t(
+          pauseDoes === 'carryOn'
+            ? 'pause.carryOnAria'
+            : pauseDoes === 'resume'
+              ? 'pause.resumeAria'
+              : 'pause.pauseAria',
+        );
     pause.setAttribute('aria-label', pauseName);
     if (alone) pause.title = pauseName;
     else pause.removeAttribute('title');

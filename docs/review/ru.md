@@ -2711,6 +2711,7 @@
 | pause.resume | Resume | Продолжить |
 | pause.pauseAria | Pause: freeze time | Пауза: остановить время |
 | pause.resumeAria | Resume: let time run again | Продолжить: пустить время снова |
+| pause.carryOnAria | Carry on: close the mistake and let time run again | Продолжить: закрыть ошибку и пустить время снова |
 | real.stations.label | Where you stand | Где вы стоите |
 | real.station.port | Port | Левый борт |
 | real.station.starboard | Starboard | Правый борт |
@@ -3019,16 +3020,15 @@
 | time.held.aria | Held still: nothing changes with time. Tap to learn why. | Яхта стоит: со временем ничего не меняется. Нажмите, чтобы узнать почему. |
 | time.held.note | Held still is a boat setting, so there is nothing to pause. You can change it in Conditions, under Boat. | «Яхта стоит» — настройка яхты, поэтому ставить на паузу нечего. Её можно изменить в разделе «Условия», в блоке «Яхта». |
 | time.label | Time | Время |
-| time.fold | Fold the time bar: only Pause stays | Свернуть панель времени: останется только «Пауза» |
-| time.status | Time speed ×{scale}. Tap for normal speed. | Скорость времени ×{scale}. Нажмите для обычной скорости. |
-| time.slowest | Slowest time: ×¼ | Самое медленное время: ×¼ |
-| time.slower | Slower: one step down | Медленнее: на шаг вниз |
-| time.faster | Faster: one step up | Быстрее: на шаг вверх |
-| time.fastest | Fastest time: ×16 | Самое быстрое время: ×16 |
+| time.status | Time speed ×{scale} | Скорость времени ×{scale} |
+| time.speedHeading | Time speed | Скорость времени |
+| time.scaleAria | Time speed ×{scale} | Скорость времени ×{scale} |
+| time.openHint | Tap to change the time speed or set the clock | Нажмите, чтобы изменить скорость времени или задать часы |
+| time.close | Close the time card | Закрыть карточку времени |
 | view.timeBar.label | Time bar | Панель времени |
 | view.timeBar.hint | Slow motion, Pause and speed-up over the 3D view. It shows while sailing, or with a wind that changes. Off: only the Pause button, and time runs normally. | Замедление, пауза и ускорение над 3D-видом. Показывается на ходу или при меняющемся ветре. Выключено: остаётся только кнопка «Пауза», время идёт обычным ходом. |
 | clock.label | Clock | Часы |
-| clock.chipAria | Clock: {time}, {date}. Tap for the date, sunrise and sunset. | Часы: {time}, {date}. Нажмите, чтобы увидеть дату, восход и закат. |
+| clock.chipAria | Clock {time}, {date} | Часы {time}, {date} |
 | clock.zone | {area} · {abbr} (UTC+{hours}) | {area} · {abbr} (UTC+{hours}) |
 | clock.sun | Sunrise {rise} · Sunset {set} | Восход {rise} · Закат {set} |
 | clock.polarDay | The sun does not set today. | Сегодня солнце не заходит. |
@@ -3040,12 +3040,10 @@
 | clock.light.night | Night | Ночь |
 | clock.now | Now | Сейчас |
 | clock.default | Noon, 1 June | Полдень, 1 июня |
-| clock.setLabel | Set a time: | Задать время: |
 | clock.set | Set | Задать |
 | clock.dateAria | Date | Дата |
 | clock.timeAria | Time | Время |
-| clock.hint | The clock runs with the time bar: ×16 makes the sun move 16 times faster, and Pause stops it. | Часы идут вместе с панелью времени: ×16 двигает солнце в 16 раз быстрее, а «Пауза» его останавливает. |
-| clock.close | Close the clock | Закрыть часы |
+| clock.hint | The clock runs with the time speed: ×16 makes the sun move 16 times faster, and Pause stops it. | Часы идут со скоростью времени: ×16 двигает солнце в 16 раз быстрее, а «Пауза» его останавливает. |
 | clock.weekday.0 | Sunday | воскресенье |
 | clock.weekday.1 | Monday | понедельник |
 | clock.weekday.2 | Tuesday | вторник |
@@ -3517,7 +3515,6 @@
 | alert.sailWorn.jib | The jib is worn out from flapping (flogging). Repair it under Status. | Стаксель изношен от хлопанья (заполаскивания). Почините его в разделе «Состояние». |
 | instruments.gustTitle | Gust: the wind is well above its average. Tap to learn more. | Порыв: ветер заметно сильнее среднего. Нажмите, чтобы узнать больше. |
 | instruments.engineTitle | The engine is running. Tap to learn more. | Двигатель работает. Нажмите, чтобы узнать больше. |
-| time.unfoldSpeed | Open the time bar (speed ×{scale}) | Открыть панель времени (скорость ×{scale}) |
 | alerts.at | at {time} on board | в {time} на борту |
 | anchor.label | Anchor | Якорь |
 | anchor.down | Chain out ▼ | Травить цепь ▼ |
