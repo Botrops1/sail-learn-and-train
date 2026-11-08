@@ -1032,3 +1032,20 @@ The time bar and the clock in one small widget at the top of the 3D view ([PHASE
 - [ ] Held still: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12&held=1&sea=flat — the box shows "12:00" and "Held still" (nothing to pause); tap "12:00": the card shows only the clock.
 - [ ] Computer: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12 — on a PC the box sits at the top right of the 3D view, with Attention under it; the card opens at the right, over the Attention card.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?v=1&wd=60&ws=12&lang=ru — the box says "Время ×1" and "Пауза"; nothing is cut off.
+
+## 21. One step card (owner, PR #187)
+
+The step line, the hint and the Step done card become one card over the 3D view, under the numbers ([PHASE_STEP_CARD_SPEC](PHASE_STEP_CARD_SPEC.md), mockup [`docs/mockups/step-card.html`](mockups/step-card.html)). One PR, M93, after #187 (M92) is merged. **M93 needs a `/review` with Opus** before you test it.
+
+### 21.1 Checklist
+
+#### M93: One step card
+
+- [ ] Two rows at the top on a phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — tap Do it myself, then Start. Row 1: the numbers and the time widget side by side. Row 2: one card across the screen, "1/5 · …" in one or two lines with a ▾ at its right. Nothing is squeezed into a narrow column.
+- [ ] The hint inside the card: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start, then tap the card: it opens with How, "To pass this step" and the ✓ / ○ rows, and an "Open in Exercises" button. Tap the card's top line again: it folds back to one or two lines.
+- [ ] Step done in the same card: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — tap Watch it. When the first step is done, the card turns green and says "✓ Step 1 done" with Next step and Let me try it under the text. There is no separate Step done box above the controls any more. Tap Next step: the app goes on.
+- [ ] Only two boxes on a foldable: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — on the foldable (open), tap Watch it. While it runs you see the step card at the top (not wider than about half the screen) and the controls at the bottom, nothing else.
+- [ ] A mistake in the card: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=leave-berth&exl=normal — Do it myself, Start, let go all the lines, then drag the engine lever halfway towards Astern: she backs into the quay. The card turns orange: "Paused: …", why and what to do, with Carry on and Back. Tap Carry on: time runs again.
+- [ ] Pause after each step: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail&exs=1 — Start and do step 1. The card turns green: "✓ Step 1 done" and "Next: …" with the next step's goal, and a Next step button. Tap it: time runs again.
+- [ ] Now you after Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start, then ▶ Show me in the controls box. When the app has done the step, the card says "Now you" with "Back to the start of the step". Tap it: the boat goes back and it is your turn.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail&lang=ru — Start, open the card: the text and the buttons fit on the screen; nothing is cut off.
