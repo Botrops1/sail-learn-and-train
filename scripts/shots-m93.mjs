@@ -324,6 +324,7 @@ export async function liveM93Checks({ openPage, viewports, outDir, prefix, probl
     const stored = await page.evaluate(() => localStorage.getItem('sail-learn.coach'));
     // The link again, in the same browser: the choice comes from this device, not from the link.
     await page.goto(new URL(POS, page.url()).href);
+    await tid(page, 'section-exercises').waitFor({ state: 'attached' });
     await page.waitForTimeout(800);
     await start(page);
     check(
