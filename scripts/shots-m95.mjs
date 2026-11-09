@@ -40,8 +40,18 @@ export async function liveM95Checks({ openPage, viewports, outDir, prefix, probl
     const status = await text(page, 'time-status');
     check('anchored: the status says ×240', status === '×240', status);
     await page.waitForTimeout(15000);
-    const chip = await text(page, 'clock-chip');
-    check('anchored: an hour later the clock reads 21:00 or 21:01', /21:0[01]/.test(chip), chip);
+    // 15 s of test clock is 899 frames of 1/60 s, so 3596 s of app time (20:59:56): wait for the
+    // frame that makes the hour, at most one more second.
+    let chip = await text(page, 'clock-chip');
+    for (let waited = 0; waited < 1000 && !/21:0[01]/.test(chip); waited += 100) {
+      await page.waitForTimeout(100);
+      chip = await text(page, 'clock-chip');
+    }
+    check(
+      'anchored: an hour in about 15 s: the clock reads 21:00 or 21:01',
+      /21:0[01]/.test(chip),
+      chip,
+    );
     await shot(page, 'live-phone-m95-night');
     await context.close();
   }

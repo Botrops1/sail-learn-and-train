@@ -3135,7 +3135,7 @@ Done: ×60 and ×240 work at anchor, tied up and held still, on a phone and a co
 
 - Built as specified. The step cost at ×240 at anchor and the "same night" test passed on the first run (the numbers are in the PR's Tests section). Nothing tuned.
 - `tests/harbourPilot.ts` gets `anchoredState()` (the anchor-shore good run to its `done` frame, then out of the exercise), used by the store and step-cost tests.
-- `tests/ciPlan.test.ts` counts 93 groups and `m95` is among the four newest; `.github/ci-times.json`: `m95` is 300 until its time is known.
+- `tests/ciPlan.test.ts` counts 93 groups and `m95` is among the four newest; `.github/ci-times.json`: `m95` is 60 (measured 30 s locally).
 - The Russian drafts: `time.lapseHeading` = "Ускорение времени", `time.lapseHint` = "Ускорение времени (×60 и ×240) работает на якоре, у причала или когда яхту держат на месте." (`npm run review-doc -- ru` run).
 - Question recorded in the PR: the time-lapse row is hidden (not greyed) while she is sailing free, with the hint in its place. Recommended; merging accepts it.
 

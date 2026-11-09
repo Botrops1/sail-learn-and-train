@@ -91,7 +91,10 @@ export async function liveM92Checks({ openPage, viewports, outDir, prefix, probl
     const card = await box(page, 'time-card');
     const view = await viewBox(page);
     const scales = await page.evaluate(() =>
-      [...document.querySelectorAll('.time-scale')].map((n) => n.getBoundingClientRect().top),
+      [...document.querySelectorAll('.time-scale')]
+        // M95: the time-lapse buttons are hidden away from the anchor.
+        .filter((n) => n.getClientRects().length > 0)
+        .map((n) => n.getBoundingClientRect().top),
     );
     const set = await box(page, 'clock-set');
     check(
