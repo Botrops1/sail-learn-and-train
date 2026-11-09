@@ -1334,6 +1334,13 @@
       "what": "On summer days, when the coast gets warmer than the sea, a mild wind blows in from the sea from the north-west: the maestral.",
       "textStatus": "draft"
     },
+    "term_burin": {
+      "name": "Burin",
+      "alternatives": [{ "term": "land breeze" }],
+      "short": "The light night breeze that blows off the land on the Adriatic coast.",
+      "what": "At night the land cools faster than the sea, so a light breeze blows from the land out to sea: the burin. It is weaker than the day's sea breeze (the maestral) and dies in the morning.",
+      "textStatus": "draft"
+    },
     "term_heel": {
       "name": "Heel",
       "alternatives": [

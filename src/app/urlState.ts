@@ -60,6 +60,7 @@ import { defaultSeaSetting, isSeaSetting } from '../model/waves';
 import {
   initialWindMode,
   isSeed,
+  isClockWind,
   sizeRange,
   type WindModeId,
   type WindModeState,
@@ -625,10 +626,13 @@ export const WIND_MODE_PARAMS: Readonly<Record<Exclude<WindModeId, 'steady'>, st
   shifty: 'shifty',
   building: 'build',
   dying: 'die',
+  summer: 'summer',
+  bura: 'bura',
+  jugo: 'jugo',
 };
 
 /**
- * The wind mode in the link (PHASE2_SPEC 10.3): `wm` = gusty | shifty | build | die, `seed` the
+ * The wind mode in the link (PHASE2_SPEC 10.3): `wm` = gusty | shifty | build | die | summer | bura | jugo (the local winds, M94), `seed` the
  * pattern (1 … 99,999; default 1), `wg` its size (a value outside the mode's range falls back to
  * the mode's default). The pattern always starts at its beginning when a link opens.
  */
@@ -861,7 +865,12 @@ export function serializeUrlState(state: AppState): string {
   params.set('v', String(URL_STATE_VERSION));
   // M58: the boat comes right after the version, only when it is not the Hanse 508 (`parseUrlState` ignores it).
   if (boatId !== HANSE_508.meta.id) params.set('boat', boatId);
-  for (const [key, id] of URL_CONTROLS) params.set(key, String(Math.round(state.controls[id])));
+  // A clock wind (M94) sets the wind itself: `wd` and `ws` would be stale, so they are not written.
+  const clockWind = isClockWind(state.windMode.mode);
+  for (const [key, id] of URL_CONTROLS) {
+    if (clockWind && (id === 'ctl_wind_dir' || id === 'ctl_wind_speed')) continue;
+    params.set(key, String(Math.round(state.controls[id])));
+  }
   const jr = jibReachedParam(state);
   if (jr !== null) params.set('jr', String(jr));
   params.set('cam', state.camera.preset);

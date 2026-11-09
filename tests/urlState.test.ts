@@ -793,3 +793,31 @@ describe('waypoint links (M67, PHASE10_SPEC 7.4)', () => {
     expect(parseUrlState('?exw=1').exercise).toBeNull();
   });
 });
+
+describe('local winds in the link (M94, PHASE10_SPEC 24.4)', () => {
+  const open = (query: string) => parseUrlState(query, DEFAULT_SETTINGS.detail);
+  const stateOf = (query: string) => open(query);
+
+  it('reads the bura and its strength', () => {
+    expect(stateOf('?wm=bura&wg=20').windMode).toMatchObject({ mode: 'bura', size: 20 });
+    expect(stateOf('?wm=bura&wg=40').windMode).toMatchObject({ mode: 'bura', size: 18 });
+  });
+
+  it('a summer day ignores wd and ws and does not write them', () => {
+    const state = stateOf('?wm=summer&wd=90&ws=3&clk=202606011400');
+    expect(Math.abs(state.controls.ctl_wind_speed - 14)).toBeLessThanOrEqual(0.01);
+    expect(state.controls.ctl_wind_dir).toBe(-45);
+    const params = new URLSearchParams(serializeUrlState(state));
+    expect(params.get('wm')).toBe('summer');
+    expect(params.get('clk')).toBe('202606011400');
+    expect(params.has('wd')).toBe(false);
+    expect(params.has('ws')).toBe(false);
+  });
+
+  it('an old link without wm still writes wd and ws', () => {
+    const params = new URLSearchParams(serializeUrlState(stateOf('?wd=60&ws=12')));
+    expect(params.get('wd')).toBe('60');
+    expect(params.get('ws')).toBe('12');
+    expect(params.has('wm')).toBe(false);
+  });
+});

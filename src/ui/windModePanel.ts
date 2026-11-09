@@ -1,7 +1,14 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import { compassDeg } from '../model/angles';
-import { SEED_MAX, SEED_MIN, WIND_MODE_IDS, sizeRange, type WindModeId } from '../model/windModes';
+import {
+  LOCAL_WIND_IDS,
+  SEED_MAX,
+  SEED_MIN,
+  WIND_MODE_IDS,
+  sizeRange,
+  type WindModeId,
+} from '../model/windModes';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
@@ -23,6 +30,9 @@ const SIZE_STEP: Record<WindModeId, number> = {
   shifty: 1,
   building: 1,
   dying: 1,
+  summer: 1,
+  bura: 1,
+  jugo: 1,
 };
 
 /**
@@ -31,9 +41,10 @@ const SIZE_STEP: Record<WindModeId, number> = {
  * pattern`. (The time scale is in the time bar over the 3D view.) All carry the test wind's id (`env_wind`).
  */
 export function createWindModePanel(store: Store): HTMLElement[] {
-  // The five modes.
+  // The five modes, and the three local winds (M94) in a second row of the same radio group.
   const modeOptions = el('div', { class: 'segments segments-wrap' });
-  const modeInputs = WIND_MODE_IDS.map((mode) => {
+  const localOptions = el('div', { class: 'segments segments-wrap' });
+  const modeInputs = [...WIND_MODE_IDS, ...LOCAL_WIND_IDS].map((mode) => {
     const input = el('input', {
       type: 'radio',
       name: 'wind-mode',
@@ -43,7 +54,10 @@ export function createWindModePanel(store: Store): HTMLElement[] {
     input.addEventListener('change', () => {
       if (input.checked) store.dispatch({ type: 'setWindMode', mode });
     });
-    modeOptions.append(
+    const row = (LOCAL_WIND_IDS as readonly WindModeId[]).includes(mode)
+      ? localOptions
+      : modeOptions;
+    row.append(
       el('label', { class: 'segment' }, [input, el('span', {}, [t(`wind.mode.${mode}`)])]),
     );
     return { mode, input };
@@ -60,6 +74,16 @@ export function createWindModePanel(store: Store): HTMLElement[] {
     ],
   );
 
+  const local = el(
+    'fieldset',
+    { class: 'field segmented', 'data-part-id': 'env_wind', 'data-testid': 'wind-local' },
+    [
+      el('legend', {}, [t('wind.local.label')]),
+      el('p', { class: 'hint explain' }, [t('wind.local.hint')]),
+      localOptions,
+    ],
+  );
+
   // The size of the pattern.
   const size = el('input', {
     type: 'range',
@@ -71,7 +95,11 @@ export function createWindModePanel(store: Store): HTMLElement[] {
   size.addEventListener('input', () =>
     store.dispatch({ type: 'setWindSize', size: Number(size.value) }),
   );
-  const sizeName = el('label', { for: 'wind-size', class: 'control-name' });
+  const sizeName = el('label', {
+    for: 'wind-size',
+    class: 'control-name',
+    'data-testid': 'wind-size-name',
+  });
   const newPattern = el(
     'button',
     { type: 'button', class: 'segment', 'data-testid': 'wind-new-pattern' },
@@ -118,7 +146,7 @@ export function createWindModePanel(store: Store): HTMLElement[] {
   store.subscribe(refresh);
   refresh(store.getState());
 
-  return [modes, sizeField];
+  return [modes, local, sizeField];
 }
 
 /** "Wind now: 17 kn from 070°": the true wind with the pattern, under the compass dial. */

@@ -7,6 +7,7 @@ import { setText } from './stepper';
 import { sideLetter } from './autopilotPanel';
 import { boat as boatData } from '../model/boat';
 import { pointToMap } from '../model/lowSpeed';
+import { isClockWind } from '../model/windModes';
 import { depthAt } from '../model/seabed';
 import { rpmNumber } from './enginePanel';
 import type { LayoutShell } from './layout';
@@ -199,10 +200,10 @@ export function createInstrumentStrip(
     }
     setText(auto, badge);
     auto.hidden = badge === '';
-    // GUST: the wind is well above the average the dial sets (gusty mode only; a building wind
-    // is not a gust). The speed of time is shown in the time bar (M37, issue #87).
+    // GUST: the wind is well above the average the dial sets (gusty mode and the clock winds;
+    // a building wind is not a gust). The speed of time is shown in the time bar (M37, issue #87).
     const gusting =
-      state.windMode.mode === 'gusty' &&
+      (state.windMode.mode === 'gusty' || isClockWind(state.windMode.mode)) &&
       state.wind.twsKn > boatData.windModes.gustBadgeFraction * state.controls.ctl_wind_speed;
     if (gust.hidden === gusting) gust.hidden = !gusting;
     // A sail worn out from flapping (M9).

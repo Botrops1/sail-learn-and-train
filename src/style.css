@@ -3004,6 +3004,12 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   cursor: default;
 }
 
+/* A clock wind (M94) sets the wind itself: the dial only shows it. */
+.wind-dial.is-locked {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .autopilot-status {
   margin: 0;
   font-size: var(--font-small);

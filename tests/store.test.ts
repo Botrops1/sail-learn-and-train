@@ -196,3 +196,52 @@ describe('M73: the marina and the bay are solid from open water (PHASE10_SPEC 15
     }
   });
 });
+
+describe('local winds in the store (M94, PHASE10_SPEC 24.4)', () => {
+  const open = (query: string) => parseUrlState(query, initialState().settings.detail);
+
+  it('choosing the summer day at 14:00 writes the mean into the controls', () => {
+    const state = reduce(open('?clk=202606011400'), { type: 'setWindMode', mode: 'summer' });
+    expect(Math.abs(state.controls.ctl_wind_speed - 14)).toBeLessThanOrEqual(0.01);
+    expect(state.controls.ctl_wind_dir).toBe(-45);
+  });
+
+  it('the hand-set wind is refused while a clock wind is on', () => {
+    const state = reduce(open('?clk=202606011400'), { type: 'setWindMode', mode: 'summer' });
+    const next = reduce(state, { type: 'setControls', values: { ctl_wind_speed: 5 } });
+    expect(next).toBe(state);
+  });
+
+  it('the mean falls through the evening and never rises', () => {
+    let state = reduce(open('?clk=202606011959'), { type: 'setWindMode', mode: 'summer' });
+    state = reduce(state, { type: 'setTimeScale', scale: 16 });
+    let last = state.controls.ctl_wind_speed;
+    for (let i = 0; i < 600; i += 1) {
+      state = reduce(state, { type: 'step', dt: 0.05 });
+      expect(state.controls.ctl_wind_speed).toBeLessThanOrEqual(last + 1e-9);
+      last = state.controls.ctl_wind_speed;
+    }
+  });
+
+  it('setting the clock to 23:00 jumps the wind to the burin', () => {
+    const state = reduce(open('?clk=202606011400'), { type: 'setWindMode', mode: 'summer' });
+    const night = reduce(state, { type: 'setClock', utcMs: open('?clk=202606012300').clock.utcMs });
+    expect(Math.abs(night.controls.ctl_wind_dir - 45)).toBeLessThanOrEqual(0.5);
+  });
+
+  it('leaving a clock wind keeps the wind that was blowing, in whole steps, and frees the dial', () => {
+    let state = reduce(open('?clk=202606011300'), { type: 'setWindMode', mode: 'summer' });
+    state = reduce(state, { type: 'setWindMode', mode: 'steady' });
+    expect(state.controls.ctl_wind_speed).toBe(12);
+    expect(state.controls.ctl_wind_dir).toBe(-45);
+    state = reduce(state, { type: 'setControls', values: { ctl_wind_speed: 5 } });
+    expect(state.controls.ctl_wind_speed).toBe(5);
+  });
+
+  it('leaving a clock wind wraps a wind from nearly dead astern into the dial range', () => {
+    const summer = reduce(open('?clk=202606011300'), { type: 'setWindMode', mode: 'summer' });
+    const astern = { ...summer, controls: { ...summer.controls, ctl_wind_dir: -179.7 } };
+    const state = reduce(astern, { type: 'setWindMode', mode: 'steady' });
+    expect(state.controls.ctl_wind_dir).toBe(180);
+  });
+});
