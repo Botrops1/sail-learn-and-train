@@ -1049,3 +1049,44 @@ The step line, the hint and the Step done card become one card over the 3D view,
 - [ ] Pause after each step: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail&exs=1 — Start and do step 1. The card turns green: "✓ Step 1 done" and "Next: …" with the next step's goal, and a Next step button. Tap it: time runs again.
 - [ ] Now you after Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — Start, then ▶ Show me in the controls box. When the app has done the step, the card says "Now you" with "Back to the start of the step". Tap it: the boat goes back and it is your turn.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail&lang=ru — Start, open the card: the text and the buttons fit on the screen; nothing is cut off.
+
+## 22. Phase 10, part c: wind and clock
+
+The wind follows the clock ([PHASE10_SPEC](PHASE10_SPEC.md) 23–30): the Adriatic's local winds, a time-lapse, an exercise's own wind and start time, and three new exercises. One session and one PR per milestone (M94 … M98), started with `/milestone <N>` after M93 is merged. **Every one of them needs a `/review` with Opus** before you test it.
+
+### 22.1 Checklists
+
+#### M94: The Adriatic winds
+
+- [ ] The maestral at two in the afternoon: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wm=summer&clk=202606011400&cam=top — open Conditions: under "Wind changes" a row "Local winds" with Summer day ticked. The dial is greyed with the note "The Summer day sets the wind", and "Wind now" says about 14 kn from 315° (the north-west).
+- [ ] The day goes by: on the same link, open the time card, set the time to 20:00 and tap Set: the wind is almost calm. Set 23:30: a light wind from 045° (off the land, the burin).
+- [ ] The bura: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wm=bura&clk=202606011200&cam=top — the wind comes up from the north-east within two minutes and then blows in hard gusts (the GUST badge comes and goes).
+- [ ] Back to your own wind: on the same link tap Steady: the note goes away and the dial and the speed slider work again, starting from the wind that was blowing.
+- [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=term_burin — the entry "Burin" explains the night land breeze.
+
+#### M95: Time-lapse
+
+- [ ] At anchor: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&pe=-1660.0&pn=0.0&hdg=90&bs=0&an=60&ax=-1600.0,0.0&as=1&wd=90&ws=6&sea=sheltered&clk=202606012000&cam=top — open the time card: a "Time-lapse" row with ×60 and ×240. Tap ×240: an hour passes in about 15 seconds, the sky goes dark, and the boat stays at anchor.
+- [ ] Not at sea: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?clk=202606012000 — the time card has no ×60 or ×240, only the line "Time-lapse (×60 and ×240) works at anchor, tied up or held still".
+- [ ] Raising the anchor stops it: on the first link at ×240, hold Up on the windlass (Anchor section) until the anchor leaves the bottom: the time drops back to ×1.
+
+#### M96: Scripted wind and The afternoon maestral
+
+- [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — every row has a small line with its place ("Open water", "Marina" or "Bay"); "The afternoon maestral" says "Open water · starts 12:20".
+- [ ] The maestral: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=maestral — the setup card says "Starts at 12:20". Do it yourself: time runs ×16 by itself while the wind builds; at 15 knots roll the jib in, then the main, and sail on until 13:30. About five minutes.
+- [ ] Too late: on the same link, Start and do nothing: at about 13:25 she heels too far and the card explains.
+- [ ] Watch it: on the same link, tap Watch: the app sails it for you, the waiting parts at ×16.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=maestral&lang=ru — the setup card reads well and nothing runs off the screen.
+
+#### M97: A bura is coming
+
+- [ ] The bura: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=bura — Start in the calm, roll the jib away and the main to about half before 08:04. The bura comes at 08:04–08:06; in its gusts ease the main sheet. She stays upright through three gusts (time runs ×4 while you wait for them).
+- [ ] Doing nothing: on the same link, Start and leave the sails as they are: when the bura hits she heels far over and the card explains.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=bura&lang=ru — the setup card reads well.
+
+#### M98: A night at anchor, sign-off of part 10c
+
+- [ ] The night: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=night-anchor — anchor with a line ashore as in "Anchoring with a line ashore" (let out about 60 m of chain), then the last step runs the night at ×240 by itself: the evening breeze dies, it goes calm, a breeze comes off the rocks, a squall at 04:00. She holds; the done card shows at 07:00. About ten minutes.
+- [ ] The squall up close: on the same link, after the setup, tap Pause at about 04:00 (the time widget) and look at the boat from the top: the wind from the north-east, the boat pulling on the anchor and the line.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=night-anchor&lang=ru — the setup card reads well.
+- [ ] Every item of the part 10c Definition of Done (PHASE10_SPEC 29) is ticked in the PR.
