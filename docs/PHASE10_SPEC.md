@@ -3022,6 +3022,14 @@ Live checks (test clock):
 
 Done: the three local winds work from Conditions and from links, on a phone and a computer; the tests above and the earlier ones pass; `SHOTS_ONLY=m94,general,m70` pass locally (m70 for the gust counter that now reads the mean), then CI with `CI groups: all` in the PR description (the store, the URL and the Conditions section change). Not in M94: the scripted wind and the exercises (M96–M98), the time-lapse (M95), local winds in Learn's "Try it", a gust preview on the water for the local winds (the dark patches stay for the Gusty mode only: `gustProfile` returns null for other modes, unchanged).
 
+### 24.10 Decided in the M94 PR (recommended; merging accepts it)
+
+- Built as specified, with the spec's numbers: every band of 24.7 held on the first run (summer, size 14, 11:00 2.19, 13:00 11.81, 23:00 5.17; the bura's 9.0 and 21.6; the size 20 maestral reaches 15 kn at 12:41; the trueWind band 16.0–25.0 with a mean of 20.4). Nothing tuned.
+- The locked look also disables the − / + buttons next to the dial and the five presets (not only the dial and the slider): the store already refuses their values, the disabled look tells the learner why.
+- `tests/glossary.test.ts`: the wind group has 13 entries (the new `term_burin`); `tests/ciPlan.test.ts` counts 92 groups and `m94` is among the four newest.
+- `.github/ci-times.json`: `m94` is 300 until its time is known.
+- Question recorded in the PR: the jugo starts at its strength within two minutes (30.2). Recommended; merging accepts it.
+
 ---
 
 ## 25. M95: Time-lapse **(10c)**

@@ -1246,6 +1246,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### бурин (`term_burin`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Burin | бурин |
+| Другие названия | land breeze | ночной бриз |
+| Коротко | The light night breeze that blows off the land on the Adriatic coast. | Лёгкий ночной ветерок с берега на побережье Адриатики. |
+| Что делает / что значит | At night the land cools faster than the sea, so a light breeze blows from the land out to sea: the burin. It is weaker than the day's sea breeze (the maestral) and dies in the morning. | Ночью суша остывает быстрее моря, поэтому с берега в сторону моря дует лёгкий ветерок — бурин. Он слабее дневного морского бриза (маэстрала) и стихает к утру. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### ветер (`env_wind`)
 
 | Поле | English | Русский |
@@ -2986,15 +3001,27 @@
 | wind.mode.shifty | Shifty | Меняющийся |
 | wind.mode.building | Building | Крепчающий |
 | wind.mode.dying | Dying | Стихающий |
+| wind.local.label | Local winds | Местные ветры |
+| wind.local.hint | Winds of this sailing area that follow the clock on board. They set the wind themselves; speed up time to watch them change. | Ветры этого района плавания, которые идут по часам на борту. Они сами задают ветер; ускорьте время, чтобы увидеть, как они меняются. |
+| wind.mode.summer | Summer day | Летний день |
+| wind.mode.bura | Bura | Бора |
+| wind.mode.jugo | Jugo | Юго |
 | wind.mode.steady.hint | The wind stays exactly as set. | Ветер остаётся точно таким, как задано. |
 | wind.mode.gusty.hint | Gusts (short, stronger puffs) come about once a minute, with lulls (weaker spells) between them. A gust also turns the wind a little clockwise. | Порывы (короткие, более сильные дуновения) приходят примерно раз в минуту, между ними — ослабления ветра. Порыв ещё немного поворачивает ветер по часовой стрелке. |
 | wind.mode.shifty.hint | The wind direction swings slowly to and fro around the dial (a shift). | Направление ветра медленно качается туда и обратно вокруг заданного на круге (смена направления ветра). |
 | wind.mode.building.hint | The wind grows steadily from the speed set, then stays strong. | Ветер постепенно усиливается от заданной скорости, потом остаётся сильным. |
 | wind.mode.dying.hint | The wind falls steadily from the speed set, down towards calm. | Ветер постепенно слабеет от заданной скорости почти до штиля. |
+| wind.mode.summer.hint | A summer day on the Adriatic: calm in the morning; from about 10:00 the maestral (a sea breeze) comes in from the north-west, strongest around 14:00 and gone by sunset; after dark a light breeze (the burin) blows off the land until the morning. | Летний день на Адриатике: утром штиль; примерно с 10:00 с северо-запада приходит маэстраль (морской бриз), сильнее всего около 14:00, к закату он стихает; после темноты до утра дует слабый ветерок с берега (бурин). |
+| wind.mode.bura.hint | A strong north-east wind that pours down from the mountains: it starts within two minutes, comes in hard gusts and blows harder at night. | Сильный северо-восточный ветер, который стекает с гор: набирает силу за две минуты, порывы резкие, ночью дует сильнее. |
+| wind.mode.jugo.hint | A steady south-east wind from the sea with few gusts. A real jugo builds over a day or two and raises big waves; here it starts at its strength. | Ровный юго-восточный ветер с моря, почти без порывов. Настоящее юго нарастает день-два и поднимает большую волну; здесь оно сразу начинается на полную силу. |
 | wind.size.gusty | Gust strength {value} % | Сила порыва: {value} % |
 | wind.size.shifty | Shift size {value}° | Размах смены: {value}° |
 | wind.size.building | Change {value} kn over {min} min | Изменение: {value} уз за {min} мин |
 | wind.size.dying | Change {value} kn over {min} min | Изменение: {value} уз за {min} мин |
+| wind.size.summer | Maestral at its strongest {value} kn | Маэстраль в самый сильный момент: {value} уз |
+| wind.size.bura | Bura {value} kn, gusts up to half as strong again | Бора {value} уз, порывы до полутора раз сильнее |
+| wind.size.jugo | Jugo {value} kn | Юго {value} уз |
+| wind.locked | The {wind} sets the wind. Choose Steady to set it yourself. | Ветер задаёт режим «{wind}». Выберите «Ровный», чтобы задать ветер самому. |
 | wind.newPattern | New pattern | Новый узор |
 | wind.newPattern.hint | Draws another random pattern. Building and Dying start their change again. The same link always gives the same pattern. | Рисует другой случайный узор. «Крепчающий» и «Стихающий» начинают изменение заново. Одна и та же ссылка всегда даёт один и тот же узор. |
 | waves.label | Waves | Волны |
