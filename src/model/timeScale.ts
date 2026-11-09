@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import type { AnchorPhase } from './anchor';
 import type { SeaSetting } from './waves';
 import type { WindModeId } from './windModes';
 
@@ -8,7 +9,12 @@ import type { WindModeId } from './windModes';
  */
 
 export function isTimeScale(value: number, data: BoatData = boat): boolean {
-  return data.windModes.timeScales.includes(value);
+  return data.windModes.timeScales.includes(value) || isTimeLapseScale(value, data);
+}
+
+/** ×60 and ×240 (M95): the time-lapse scales, above the list the time bar steps through. */
+export function isTimeLapseScale(value: number, data: BoatData = boat): boolean {
+  return data.windModes.timeLapseScales.includes(value);
 }
 
 /** The scale one step down (−1) or up (+1) the list; it stays at either end. */
@@ -27,6 +33,23 @@ export function slowestTimeScale(data: BoatData = boat): number {
 
 export function fastestTimeScale(data: BoatData = boat): number {
   return data.windModes.timeScales[data.windModes.timeScales.length - 1] ?? 1;
+}
+
+/**
+ * ×60 and ×240 (M95): where the speed part shows (`timeSpeedAvailable`) and the boat is held still,
+ * anchored (on the bottom or set) or has a mooring line made fast.
+ */
+export function timeLapseAvailable(
+  boatMode: 'sailing' | 'held',
+  windMode: WindModeId,
+  timeBar: boolean,
+  anchorPhase: AnchorPhase,
+  linesMadeFast: number,
+): boolean {
+  return (
+    timeSpeedAvailable(boatMode, windMode, timeBar) &&
+    (boatMode === 'held' || anchorPhase === 'bottom' || anchorPhase === 'set' || linesMadeFast > 0)
+  );
 }
 
 const FRACTIONS: Readonly<Record<number, string>> = { 0.25: '¼', 0.5: '½' };

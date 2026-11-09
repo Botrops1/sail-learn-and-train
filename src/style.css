@@ -3725,6 +3725,11 @@ html[data-layout='side'] .time-card {
   gap: 4px;
 }
 
+/* M95: the Time-lapse row is hidden away from the anchor; `display: grid` would override [hidden]. */
+.time-scales[hidden] {
+  display: none;
+}
+
 .time-scale {
   min-width: 0;
   min-height: var(--touch);

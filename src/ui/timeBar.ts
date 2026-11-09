@@ -1,6 +1,11 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
-import { pauseAvailable, timeScaleText, timeSpeedAvailable } from '../model/timeScale';
+import {
+  pauseAvailable,
+  timeLapseAvailable,
+  timeScaleText,
+  timeSpeedAvailable,
+} from '../model/timeScale';
 import { demoCardKind } from '../app/exerciseBar';
 import { DEMO_MAX_SCALE, exercisePauseBlocked } from '../app/exerciseRun';
 import { clockAria, createClockParts } from './clockPanel';
@@ -126,7 +131,7 @@ export function createTimeBar(
   host.append(bar);
 
   // The card: the speeds, then the clock.
-  const scaleButtons = boat.windModes.timeScales.map((scale) => {
+  const scaleButton = (scale: number, text: string) => {
     const node = el('button', {
       type: 'button',
       class: 'time-scale',
@@ -134,10 +139,32 @@ export function createTimeBar(
       'aria-pressed': 'false',
       'aria-label': t('time.scaleAria', { scale: timeScaleText(scale) }),
     });
-    node.textContent = scale === 1 ? '×1' : timeScaleText(scale);
+    node.textContent = text;
     node.addEventListener('click', () => setScale(scale));
     return { scale, node };
-  });
+  };
+  const scaleButtons = boat.windModes.timeScales.map((scale) =>
+    scaleButton(scale, scale === 1 ? '×1' : timeScaleText(scale)),
+  );
+  // Time-lapse (M95): ×60 and ×240, only where the boat is held still, anchored or tied up.
+  const lapseButtons = boat.windModes.timeLapseScales.map((scale) =>
+    scaleButton(scale, `×${timeScaleText(scale)}`),
+  );
+  scaleButtons.push(...lapseButtons);
+  const lapseHeading = el('h3', { class: 'time-card-heading' }, [t('time.lapseHeading')]);
+  const lapseRow = el(
+    'div',
+    {
+      class: 'time-scales',
+      role: 'group',
+      'data-testid': 'time-lapse',
+      'aria-label': t('time.lapseHeading'),
+    },
+    lapseButtons.map((b) => b.node),
+  );
+  const lapseHint = el('p', { class: 'hint', 'data-testid': 'time-lapse-hint' }, [
+    t('time.lapseHint'),
+  ]);
   const speedSection = el(
     'section',
     { class: 'time-speed', 'data-testid': 'time-speed', 'aria-label': t('time.speedHeading') },
@@ -146,8 +173,11 @@ export function createTimeBar(
       el(
         'div',
         { class: 'time-scales', role: 'group', 'aria-label': t('time.speedHeading') },
-        scaleButtons.map((b) => b.node),
+        scaleButtons.filter((b) => !lapseButtons.includes(b)).map((b) => b.node),
       ),
+      lapseHeading,
+      lapseRow,
+      lapseHint,
     ],
   );
   const close = el('button', {
@@ -197,6 +227,13 @@ export function createTimeBar(
   let shown = '';
   const refresh = (state: AppState) => {
     const speed = timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar);
+    const lapse = timeLapseAvailable(
+      state.boat.mode,
+      state.windMode.mode,
+      state.settings.timeBar,
+      state.anchor.phase,
+      state.lines.lines.length,
+    );
     const clockShown = clock.shown(state);
     const scale = state.settings.timeScale;
     const pausable = pauseAvailable(
@@ -222,6 +259,7 @@ export function createTimeBar(
     const stopped = state.paused || mistake;
     const key = [
       speed,
+      lapse,
       clockShown,
       scale,
       stopped,
@@ -249,6 +287,9 @@ export function createTimeBar(
     open.hidden = !speed && !clockShown;
     if (open.hidden) setOpen(false);
     speedSection.hidden = !speed;
+    lapseHeading.hidden = !lapse;
+    lapseRow.hidden = !lapse;
+    lapseHint.hidden = !speed || lapse;
     if (cardOpen) clock.section.hidden = !clockShown;
     setText(speedText, `×${timeScaleText(scale)}`);
     const names: string[] = [];
