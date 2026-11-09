@@ -63,8 +63,8 @@ A setting in the Wind tab from Phase 2 on; exercises pick one. Phase 1's hand-se
 | Gusty | Short gusts (stronger, often veering) and lulls around a mean; strength and frequency adjustable | 2 |
 | Shifty | The direction swings back and forth around a mean | 2 |
 | Building / dying | Speed rises or falls over minutes (time-lapse available) | 2 |
-| Scripted | A sequence used by an exercise (e.g. the EX-B night) | 8 |
-| Adriatic presets *(to-verify, needs sources)* | **Maestral**: afternoon sea breeze from the NW, builds around midday, dies in the evening. **Bura**: from the NE, cold, very gusty and sudden, strongest near the mountains. **Jugo**: from the SE, steady, builds big waves, often with rain and low cloud. | 8 |
+| Scripted | A sequence used by an exercise (e.g. the EX-B night) | 10c (M97: an exercise's `wind`) |
+| Adriatic presets (local winds; PHYSICS_TRUTHS PT-63 … PT-66) | **Maestral**: afternoon sea breeze from the NW, builds around midday, dies in the evening. **Bura**: from the NE, cold, very gusty and sudden, strongest near the mountains. **Jugo**: from the SE, steady, builds big waves, often with rain and low cloud. || 10c (M94: Summer day, Bura, Jugo in Conditions → Local winds) |
 
 ## 5. Equipment these need (added to BOAT_REFERENCE when built; anchor, cleats and fenders are drawn in Phase 6 and work from Phase 7)
 
