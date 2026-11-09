@@ -13,7 +13,13 @@ import {
   type ExerciseRun,
 } from './exerciseRun';
 import { isRegisteredPartId } from '../model/registry';
-import { clampControl, defaultControls, type ControlId, type Controls } from '../model/controls';
+import {
+  clampControl,
+  defaultControls,
+  normalizeWindFrom,
+  type ControlId,
+  type Controls,
+} from '../model/controls';
 import {
   DEFAULT_CAMERA,
   DEFAULT_HELM_VIEW,
@@ -803,7 +809,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         // Out of a clock wind: the hand-set wind starts from what was blowing, in whole steps.
         controls = {
           ...controls,
-          ctl_wind_dir: Math.round(controls.ctl_wind_dir),
+          ctl_wind_dir: normalizeWindFrom(Math.round(controls.ctl_wind_dir)),
           ctl_wind_speed: Math.min(30, Math.max(0, Math.round(controls.ctl_wind_speed))),
         };
       }

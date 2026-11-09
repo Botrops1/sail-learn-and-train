@@ -237,4 +237,11 @@ describe('local winds in the store (M94, PHASE10_SPEC 24.4)', () => {
     state = reduce(state, { type: 'setControls', values: { ctl_wind_speed: 5 } });
     expect(state.controls.ctl_wind_speed).toBe(5);
   });
+
+  it('leaving a clock wind wraps a wind from nearly dead astern into the dial range', () => {
+    const summer = reduce(open('?clk=202606011300'), { type: 'setWindMode', mode: 'summer' });
+    const astern = { ...summer, controls: { ...summer.controls, ctl_wind_dir: -179.7 } };
+    const state = reduce(astern, { type: 'setWindMode', mode: 'steady' });
+    expect(state.controls.ctl_wind_dir).toBe(180);
+  });
 });
