@@ -162,5 +162,16 @@
   "clock": {
     "defaultLocal": "2026-06-01T12:00",
     "note": "owner (issue #26, Phase 3 plan): without a time in the link the clock starts at noon, 1 June (local time)"
+  },
+  "localWinds": {
+    "$comment": "PHASE10_SPEC 24.2: the area's local winds (wind modes summer, bura, jugo). fromDeg: compass, where the wind comes from, signed (-180, 180]. Hours are local time. sizeKn: the strength slider (summer: the maestral's peak; bura and jugo: their mean). Sources: PHYSICS_TRUTHS PT-63 to PT-66; the numbers are assumptions (BOAT_REFERENCE 'Local winds').",
+    "calmKn": 1.5,
+    "summer": {
+      "seaBreeze": { "fromDeg": -45, "startH": 10, "peakH": 14, "fallFromH": 15, "gustPct": 15 },
+      "landBreeze": { "fromDeg": 45, "kn": 6, "riseFromSunsetH": 1, "fullFromSunsetH": 3, "fallAfterSunriseH": 1.5, "gustPct": 10 },
+      "sizeKn": { "min": 8, "max": 22, "default": 14 }
+    },
+    "bura": { "fromDeg": 45, "riseS": 120, "nightPct": 20, "nightRampH": 1, "gustPct": 50, "sizeKn": { "min": 10, "max": 24, "default": 18 } },
+    "jugo": { "fromDeg": 135, "riseS": 120, "gustPct": 10, "sizeKn": { "min": 10, "max": 28, "default": 16 } }
   }
 }

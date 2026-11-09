@@ -2,6 +2,7 @@ import type { AppState, Store } from '../app/store';
 import { compassDeg, wrap180 } from '../model/angles';
 import { controlSpec, normalizeWindFrom, snapControl } from '../model/controls';
 import { beaufort, WIND_PRESETS, windSide } from '../model/wind';
+import { isClockWind } from '../model/windModes';
 import { el } from './dom';
 import { t } from './i18n';
 import { setText, stepButton } from './stepper';
@@ -134,7 +135,8 @@ export function createWindPanel(store: Store): HTMLElement[] {
   };
   let dragging: number | null = null;
   dial.addEventListener('pointerdown', (event) => {
-    if (event.button > 0) return;
+    // A clock wind sets the wind itself (M94): the dial only shows it.
+    if (event.button > 0 || isClockWind(store.getState().windMode.mode)) return;
     dragging = event.pointerId;
     dial.setPointerCapture(event.pointerId);
     setDirection(angleAt(event));
@@ -166,16 +168,17 @@ export function createWindPanel(store: Store): HTMLElement[] {
 
   const directionValue = el('p', { class: 'wind-value', 'aria-hidden': 'true' });
   const windNow = el('p', { class: 'hint wind-now', 'data-testid': 'wind-now' });
+  const lockedNote = el('p', { class: 'hint wind-locked-note', 'data-testid': 'wind-locked-note' });
+  lockedNote.hidden = true;
+  const lessButton = stepButton('−', t('wind.less'), () => nudge(-1));
+  const moreButton = stepButton('+', t('wind.more'), () => nudge(1));
   const directionField = el('fieldset', { class: 'field' }, [
     el('legend', {}, [t('wind.dial.label')]),
     el('p', { class: 'hint explain' }, [t('wind.dial.hint')]),
-    el('div', { class: 'dial-row' }, [
-      stepButton('−', t('wind.less'), () => nudge(-1)),
-      dial,
-      stepButton('+', t('wind.more'), () => nudge(1)),
-    ]),
+    el('div', { class: 'dial-row' }, [lessButton, dial, moreButton]),
     directionValue,
     windNow,
+    lockedNote,
   ]);
 
   // Speed.
@@ -187,6 +190,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
     max: String(speedSpec.max),
     step: '1',
     'data-part-id': 'env_wind',
+    'data-testid': 'wind-speed',
   });
   speed.addEventListener('input', () =>
     store.dispatch({ type: 'setControls', values: { ctl_wind_speed: Number(speed.value) } }),
@@ -234,6 +238,7 @@ export function createWindPanel(store: Store): HTMLElement[] {
     );
     presets.append(button);
   }
+  const presetButtons = Array.from(presets.querySelectorAll('button'));
   const presetField = el('fieldset', { class: 'field' }, [
     el('legend', {}, [t('wind.presets.label')]),
     el('p', { class: 'hint explain' }, [t('wind.presets.hint'), ' ', t('wind.presets.hint2')]),
@@ -258,8 +263,21 @@ export function createWindPanel(store: Store): HTMLElement[] {
       }
       setText(windNow, windNowText(state));
     }
+    // A clock wind (M94) sets the wind itself: the dial, the buttons, the slider and the presets
+    // are locked and a note says why.
+    const locked = isClockWind(state.windMode.mode);
+    if (!previous || locked !== isClockWind(previous.windMode.mode)) {
+      dial.classList.toggle('is-locked', locked);
+      dial.setAttribute('aria-disabled', String(locked));
+      for (const button of [lessButton, moreButton, ...presetButtons]) button.disabled = locked;
+      speed.disabled = locked;
+      lockedNote.hidden = !locked;
+    }
+    if (locked) {
+      setText(lockedNote, t('wind.locked', { wind: t(`wind.mode.${state.windMode.mode}`) }));
+    }
     // The slider: the average when steady, the wind now in a wind mode (issue #33).
-    speedHint.hidden = !patterned;
+    speedHint.hidden = !patterned || locked;
     if (!adjustingSpeed) {
       const shown = patterned
         ? Math.min(speedSpec.max, Math.max(speedSpec.min, Math.round(state.wind.twsKn)))

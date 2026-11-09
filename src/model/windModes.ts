@@ -1,4 +1,5 @@
 import { wrap180 } from './angles';
+import { area, type AreaData } from './area';
 import { boat, type BoatData } from './boat';
 import { mulberry32 } from './random';
 
@@ -7,9 +8,13 @@ import { mulberry32 } from './random';
  * (the dial and the speed slider) plus a pattern. Every pattern is a pure function of the seed
  * and the time, so a link reproduces it and the frame rate does not matter. Pure.
  */
-export type WindModeId = 'steady' | 'gusty' | 'shifty' | 'building' | 'dying';
+export type PatternModeId = 'steady' | 'gusty' | 'shifty' | 'building' | 'dying';
+/** The Adriatic's local winds (M94, PHASE10_SPEC 24): they follow the clock. */
+export type LocalWindId = 'summer' | 'bura' | 'jugo';
+export type WindModeId = PatternModeId | LocalWindId;
 
-export const WIND_MODE_IDS: readonly WindModeId[] = [
+/** The "Wind changes" row of the Conditions section. */
+export const WIND_MODE_IDS: readonly PatternModeId[] = [
   'steady',
   'gusty',
   'shifty',
@@ -17,8 +22,26 @@ export const WIND_MODE_IDS: readonly WindModeId[] = [
   'dying',
 ];
 
+/** The "Local winds" row of the Conditions section (M94). */
+export const LOCAL_WIND_IDS: readonly LocalWindId[] = ['summer', 'bura', 'jugo'];
+
 export function isWindModeId(value: string): value is WindModeId {
-  return (WIND_MODE_IDS as readonly string[]).includes(value);
+  return (
+    (WIND_MODE_IDS as readonly string[]).includes(value) ||
+    (LOCAL_WIND_IDS as readonly string[]).includes(value)
+  );
+}
+
+export function isLocalWind(mode: WindModeId): mode is LocalWindId {
+  return (LOCAL_WIND_IDS as readonly string[]).includes(mode);
+}
+
+/**
+ * A clock wind sets the mean wind itself from the clock; the dial and the speed are not set by
+ * hand (PHASE10_SPEC 23.3). Local winds now; M97 adds the scripted wind.
+ */
+export function isClockWind(mode: WindModeId): boolean {
+  return isLocalWind(mode);
 }
 
 export interface WindModeState {
@@ -55,9 +78,19 @@ export interface SizeRange {
 /** Smallest change of a building or dying wind the slider offers, knots (decided in the M10 PR). */
 const CHANGE_MIN_KN = 1;
 
-export function sizeRange(mode: WindModeId, data: BoatData = boat): SizeRange | null {
+export function sizeRange(
+  mode: WindModeId,
+  data: BoatData = boat,
+  areaData: AreaData = area,
+): SizeRange | null {
   const wm = data.windModes;
   switch (mode) {
+    case 'summer':
+    case 'bura':
+    case 'jugo': {
+      const { min, max, default: dflt } = areaData.localWinds[mode].sizeKn;
+      return { min, max, default: dflt };
+    }
     case 'steady':
       return null;
     case 'gusty':
@@ -98,7 +131,7 @@ export function initialWindMode(
   };
 }
 
-function smoothstep(edge0: number, edge1: number, x: number): number {
+export function smoothstep(edge0: number, edge1: number, x: number): number {
   const u = Math.min(1, Math.max(0, (x - edge0) / (edge1 - edge0)));
   return u * u * (3 - 2 * u);
 }
@@ -171,6 +204,9 @@ export function windAt(
   let twsKn = meanKn;
   switch (wm.mode) {
     case 'steady':
+    case 'summer':
+    case 'bura':
+    case 'jugo':
       break;
     case 'gusty': {
       const g = data.windModes.gusty;

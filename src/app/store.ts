@@ -102,11 +102,12 @@ import {
   type WaveTrain,
 } from '../model/waves';
 import { rigMotion } from '../model/waveMotion';
+import { trueWind, windMean, type WindKey } from '../model/localWinds';
 import {
   initialWindMode,
+  isClockWind,
   isSeed,
   sizeRange,
-  windAt,
   type WindModeId,
   type WindModeState,
   type WindNow,
@@ -352,9 +353,34 @@ function motionOf(boat: BoatState): BoatMotion {
   };
 }
 
-/** The true wind now for the controls' mean and a wind mode, at the rig clock `timeS`. */
-function windNow(controls: Controls, windMode: WindModeState, timeS: number): WindNow {
-  return windAt(controls.ctl_wind_dir, controls.ctl_wind_speed, windMode, timeS);
+/** The true wind now for the controls' mean and a wind mode, at the clock `utcMs` and rig clock `timeS`. */
+function windNow(
+  controls: Controls,
+  windMode: WindModeState,
+  utcMs: number,
+  timeS: number,
+): WindNow {
+  return trueWind(windMode, controls, utcMs, timeS, NO_SCRIPT);
+}
+
+/** The scripted wind comes with M97; local winds read no script. */
+const NO_SCRIPT: readonly WindKey[] | null = null;
+
+/**
+ * A clock wind writes its mean into the controls (PHASE10_SPEC 24.4), exact numbers, so everything
+ * that reads "the mean" (the gust counter, the GUST badge, the anchor scope, the map) keeps
+ * working. Other modes: the controls are returned unchanged. Not rounded, not snapped.
+ */
+function withWindMean(
+  controls: Controls,
+  windMode: WindModeState,
+  utcMs: number,
+  timeS: number,
+): Controls {
+  if (!isClockWind(windMode.mode)) return controls;
+  const m = windMean(windMode, controls, utcMs, timeS, NO_SCRIPT);
+  if (controls.ctl_wind_dir === m.dirDeg && controls.ctl_wind_speed === m.twsKn) return controls;
+  return { ...controls, ctl_wind_dir: m.dirDeg, ctl_wind_speed: m.twsKn };
 }
 
 /**
@@ -378,9 +404,11 @@ function withTimeRule(state: AppState): AppState {
 }
 
 export function initialState(overrides: InitialOverrides = {}): AppState {
-  const controls = { ...defaultControls(), ...overrides.controls };
+  const clockUtcMs = overrides.clockUtcMs ?? defaultClockUtcMs();
+  let controls = { ...defaultControls(), ...overrides.controls };
   const windMode = initialWindMode(overrides.windMode);
-  const wind = windNow(controls, windMode, 0);
+  controls = withWindMean(controls, windMode, clockUtcMs, 0);
+  const wind = windNow(controls, windMode, clockUtcMs, 0);
   // Steady wind: the controls are the wind (Phase 1 and the sailing of M6-M9 exactly).
   const patterned = windMode.mode !== 'steady';
   const engine = initialEngine(overrides.engine);
@@ -428,7 +456,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     sailDamage: NO_DAMAGE,
     engine,
     sea,
-    clock: { utcMs: overrides.clockUtcMs ?? defaultClockUtcMs() },
+    clock: { utcMs: clockUtcMs },
     harbour: overrides.harbour ?? DEFAULT_HARBOUR,
     thrusters: THRUSTERS_OFF,
     contact: NO_CONTACT,
@@ -691,12 +719,13 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (action.id !== null && !isRegisteredPartId(action.id)) return state;
       return { ...state, learn: action.id };
     case 'setControls': {
-      // The exercise sets the wind (PHASE10_SPEC 4.2).
+      // The exercise sets the wind (PHASE10_SPEC 4.2), and so does a clock wind (24.4).
       let values = action.values;
-      if (state.exercise !== null) {
+      if (state.exercise !== null || isClockWind(state.windMode.mode)) {
         values = { ...values };
         delete values.ctl_wind_dir;
         delete values.ctl_wind_speed;
+        if (Object.keys(values).length === 0) return state;
       }
       const controls = withControls(state.controls, values);
       if (controls === state.controls) return state;
@@ -767,10 +796,22 @@ function reduceAction(state: AppState, action: Action): AppState {
         seed: state.windMode.seed,
         startS: state.rig.timeS,
       });
+      let controls = state.controls;
+      if (isClockWind(windMode.mode)) {
+        controls = withWindMean(controls, windMode, state.clock.utcMs, state.rig.timeS);
+      } else if (isClockWind(state.windMode.mode)) {
+        // Out of a clock wind: the hand-set wind starts from what was blowing, in whole steps.
+        controls = {
+          ...controls,
+          ctl_wind_dir: Math.round(controls.ctl_wind_dir),
+          ctl_wind_speed: Math.min(30, Math.max(0, Math.round(controls.ctl_wind_speed))),
+        };
+      }
       return withTimeRule({
         ...state,
+        controls,
         windMode,
-        wind: windNow(state.controls, windMode, state.rig.timeS),
+        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS),
       });
     }
     case 'setWindSize': {
@@ -778,16 +819,31 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (!range || !Number.isFinite(action.size)) return state;
       const size = Math.min(range.max, Math.max(range.min, Math.round(action.size)));
       const windMode = { ...state.windMode, size, startS: state.rig.timeS };
-      return { ...state, windMode, wind: windNow(state.controls, windMode, state.rig.timeS) };
+      const controls = withWindMean(state.controls, windMode, state.clock.utcMs, state.rig.timeS);
+      return {
+        ...state,
+        controls,
+        windMode,
+        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS),
+      };
     }
     case 'setSeaSetting': {
       if (!isSeaSetting(action.setting) || action.setting === state.sea.setting) return state;
       return withTimeRule({ ...state, sea: setSeaSetting(state.sea, action.setting) });
     }
-    case 'setClock':
-      return isClockTime(action.utcMs) && action.utcMs !== state.clock.utcMs
-        ? { ...state, clock: { utcMs: action.utcMs } }
-        : state;
+    case 'setClock': {
+      if (!isClockTime(action.utcMs) || action.utcMs === state.clock.utcMs) return state;
+      // A clock wind jumps to that hour's wind; other modes do not change.
+      const controls = withWindMean(state.controls, state.windMode, action.utcMs, state.rig.timeS);
+      return {
+        ...state,
+        controls,
+        clock: { utcMs: action.utcMs },
+        wind: isClockWind(state.windMode.mode)
+          ? windNow(controls, state.windMode, action.utcMs, state.rig.timeS)
+          : state.wind,
+      };
+    }
     case 'setClockShown':
       return state.settings.clock === action.shown
         ? state
@@ -800,7 +856,13 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (state.windMode.mode === 'steady') return state;
       const seed = isSeed(action.seed) ? action.seed : state.windMode.seed;
       const windMode = { ...state.windMode, seed, startS: state.rig.timeS };
-      return { ...state, windMode, wind: windNow(state.controls, windMode, state.rig.timeS) };
+      const controls = withWindMean(state.controls, windMode, state.clock.utcMs, state.rig.timeS);
+      return {
+        ...state,
+        controls,
+        windMode,
+        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS),
+      };
     }
     case 'setTimeScale':
       if (
@@ -916,14 +978,22 @@ function reduceAction(state: AppState, action: Action): AppState {
       const dt = state.paused ? 0 : frame * state.settings.timeScale;
       const sailing = state.boat.mode === 'sailing';
       // The true wind at the end of this step: the mean with the wind mode's pattern.
-      const wind = windNow(state.controls, state.windMode, state.rig.timeS + dt);
+      // A clock wind first writes its mean (at the clock's end of this step) into the controls.
+      const utcMs = state.clock.utcMs + dt * 1000;
+      const stepControls = withWindMean(
+        state.controls,
+        state.windMode,
+        utcMs,
+        state.rig.timeS + dt,
+      );
+      const wind = windNow(stepControls, state.windMode, utcMs, state.rig.timeS + dt);
       const patterned = state.windMode.mode !== 'steady';
       // The waves follow the wind slowly (M14); paused (dt = 0) they stay the same object.
       const sea = stepSea(state.sea, wind, dt);
       const trains = waveTrains(sea);
       // The clock runs with the simulated time: ×16 is 16 times faster, paused it stands still.
-      const clock = dt === 0 ? state.clock : { utcMs: state.clock.utcMs + dt * 1000 };
-      let controls = state.controls;
+      const clock = dt === 0 ? state.clock : { utcMs };
+      let controls = stepControls;
       let autopilot = state.autopilot;
       // The autopilot moves the wheel's target (not through setControls: it must not switch
       // itself off).
