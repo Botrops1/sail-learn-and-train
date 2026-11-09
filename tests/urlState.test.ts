@@ -821,3 +821,22 @@ describe('local winds in the link (M94, PHASE10_SPEC 24.4)', () => {
     expect(params.has('wm')).toBe(false);
   });
 });
+
+describe('time-lapse links (M95)', () => {
+  const anchored =
+    '?pl=bay&pe=-1660.0&pn=0.0&hdg=90&bs=0&an=60&ax=-1600.0,0.0&as=1&wd=90&ws=6&sea=sheltered';
+  const detail = initialState().settings.detail;
+
+  it('the anchored link with tx=240 opens at ×240', () => {
+    const state = parseUrlState(`${anchored}&tx=240`, detail);
+    expect(state.anchor.phase).toBe('set');
+    expect(state.settings.timeScale).toBe(240);
+    expect(parseUrlState(`${anchored}&tx=60`, detail).settings.timeScale).toBe(60);
+  });
+
+  it('tx=240 in open water opens at ×1; tx=16 is unchanged', () => {
+    expect(parseUrlState('?tx=240', detail).settings.timeScale).toBe(1);
+    expect(parseUrlState('?tx=16', detail).settings.timeScale).toBe(16);
+    expect(parseUrlState(`${anchored}`, detail).settings.timeScale).toBe(1);
+  });
+});

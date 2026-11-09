@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { reduce } from '../src/app/store';
 import { parseUrlState } from '../src/app/urlState';
 import { act, initialState, run } from './motionHelpers';
+import { anchoredState } from './harbourPilot';
 
 /**
  * M13: the heaviest case of the model (gusty wind, time speed-up ×16, sails working) must stay
@@ -59,6 +60,16 @@ describe('the cost of one simulated frame (M13)', () => {
     const frames = 300;
     const started = performance.now();
     for (let i = 0; i < frames; i += 1) state = act(state, { type: 'step', dt: 0.1 });
+    const meanMs = (performance.now() - started) / frames;
+    expect(meanMs).toBeLessThan(6);
+  });
+
+  it('stays under 6 ms on average at anchor at ×240, three slices a frame (M95)', () => {
+    let state = act(anchoredState(), { type: 'setTimeScale', scale: 240 });
+    expect(state.settings.timeScale).toBe(240);
+    const frames = 600;
+    const started = performance.now();
+    for (let i = 0; i < frames; i += 1) state = act(state, { type: 'step', dt: 1 / 60 });
     const meanMs = (performance.now() - started) / frames;
     expect(meanMs).toBeLessThan(6);
   });

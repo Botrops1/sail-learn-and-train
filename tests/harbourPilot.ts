@@ -3,7 +3,7 @@ import type { ExerciseOptions } from '../src/app/exerciseRun';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import type { ExerciseLevel } from '../src/model/exercises';
 import type { RopesMode } from '../src/model/settings';
-import type { Pilot } from '../src/app/exercisePilots';
+import { anchorPilot, type Pilot } from '../src/app/exercisePilots';
 
 /**
  * The scripted learners live in `src/app/exercisePilots.ts` since M81 (Watch and Show me use them);
@@ -64,4 +64,22 @@ export function runFrom(
     timeS: t,
     mistakes: s.exercise?.log.filter((e) => e.kind === 'mistake').length ?? 0,
   };
+}
+
+/**
+ * The state at the frame the anchor-shore good run becomes `done` (PHASE10_SPEC 19.5, frames of
+ * 0.05 s), then out of the exercise and running: the boat lies at anchor with a line ashore
+ * (M95 uses it for the time-lapse tests).
+ */
+export function anchoredState(): AppState {
+  let s = parseUrlState(exerciseStartLink('anchor-shore', initialState(), 'easy'));
+  s = reduce(s, { type: 'exercise', command: 'start' });
+  const pilot = anchorPilot();
+  let t = 0;
+  while (s.exercise !== null && s.exercise.status !== 'done' && t < 450) {
+    s = pilot(s, t);
+    s = reduce(s, { type: 'step', dt: 0.05 });
+    t += 0.05;
+  }
+  return { ...s, exercise: null, paused: false };
 }
