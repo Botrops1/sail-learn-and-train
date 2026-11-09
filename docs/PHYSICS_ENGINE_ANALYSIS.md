@@ -1,6 +1,6 @@
 # Physics engine analysis (input for a later `/plan`)
 
-**Context for planning a physics phase. Not a spec.** Written 2026-11-09, after M93, from the owner's request and a draft plan the owner brought from another tool. Nothing here is built. A later `/plan` reads this in full, asks the questions in section 8 (unless the owner has answered them on the PR that added this file) and writes the spec. Line numbers are as of commit `e8434b3`; function names are the stable reference.
+**Context for planning a physics phase. Not a spec.** Written 2026-11-09, after M93, from the owner's request and a draft plan the owner brought from another tool. Nothing here is built. A later `/plan` reads this in full, reads the owner's answers in section 9 (given on PR #193) and the people-on-board plan in section 8 and writes the spec. Line numbers are as of commit `e8434b3`; function names are the stable reference.
 
 ## 1. The owner's request (2026-11-09)
 
@@ -144,7 +144,7 @@ The roadmap's ideas (ROADMAP "Later" row) include man overboard (a person in the
 
 ## 7. Recommendation and draft milestones
 
-**Recommended: option D.** Every reason except "several bodies" can be met without a dependency and without breaking the pure store, the links and the waypoints. The hard part (the forces) is our own code under every option. An engine earns its cost only when there are several moving bodies, so the decision is best taken with measurements when such a feature is planned.
+**Recommended: option D** (accepted by the owner on PR #193; the engine kept aside for now). Every reason except "several bodies" can be met without a dependency and without breaking the pure store, the links and the waypoints. The hard part (the forces) is our own code under every option. An engine earns its cost only when there are several moving bodies, so the decision is best taken with measurements when such a feature is planned.
 
 Draft milestones for `/plan` (one line each; every one **independent review: required**, since each changes physics formulas or the step order):
 
@@ -153,11 +153,58 @@ Draft milestones for `/plan` (one line each; every one **independent review: req
 3. **Rudder and keel as forces.** Steering from rudder lift (with stall at large angles) and the keel's resistance to turning, in place of the turning-rate formula; a stopped boat still cannot steer (PT-35).
 4. **Heave, pitch and roll from buoyancy.** Buoyancy points on the existing wave surface give heave, pitch and roll as one body; heel and wave roll become one roll.
 5. **Calmer, fuller contact.** A contact method stable with many points touching; the wall stops bouncing her back; a hit can heel her; the ground can lift a keel.
-6. **The engine gate (a spike).** Before MOB, a dinghy or moving boats: measure Rapier's download size, start-up time, determinism in Node and on the phone, and the preview deploy; then decide.
+6. **The engine gate (a spike).** Before MOB, a dinghy or moving boats: measure Rapier's download size, start-up time, determinism in Node and on the phone, and the preview deploy; then decide. **Kept aside for now** (owner, PR #193): not part of the coming phase; it is planned only together with the first feature that needs a second moving body.
 
-1 comes first; 2–5 can be reordered by the owner. Each one keeps the Phase 1–10 rule tests passing or explains, in its PR, which band moved and why.
+1 comes first; 2–5 can be reordered by the owner. Each one keeps the Phase 1–10 rule tests passing or explains, in its PR, which band moved and why. The people on board (section 8) add milestones 7–9.
 
-## 8. Questions for the owner
+## 8. People on board: the captain and the crew
+
+Added on PR #193 at the owner's request: sailors walking the deck (to the bow for the anchor, from one side to the other for the lines) and the user's own captain figure, showing where the user is on the yacht.
+
+### 8.1 The owner's decisions (PR #193, 2026-11-09)
+
+- **By default only the captain is on board**, in every mode: the user, as one figure on the boat.
+- **The crew is for Realistic mode only**, switched on and set up with **its own settings**.
+- **No physics engine for them.** The engine stays aside (section 7, milestone 6).
+
+### 8.2 People are not engine bodies
+
+On deck, a person rides with the boat: a figure that walks set paths on the deck and is carried as she heels and pitches. Simulating feet on a moving, tilting deck in an engine is hard to keep steady (figures slide, jitter, fall off) and teaches nothing about sailing. What a person does to the boat's physics is simpler: **their weight is a mass at a point**. Moving it changes the heel (crew sitting on the high side holds her more upright, a real lesson: "crew to windward") and, very slightly on a 15-tonne boat, the trim (bow down when someone goes forward). That is a few terms added to today's heel and pitch in `stepBoat`; no engine is needed.
+
+A person becomes a **separate physics body only when they leave the boat**: man overboard (in the water, drifting), jumping ashore with a line, a person in the dinghy. Those are the "several moving bodies" of section 4.3, and they stay behind the engine gate.
+
+### 8.3 What exists today
+
+- **Where the user stands**: Realistic mode's stations (port, starboard, helm, mast, bow; `realistic.ts`, `stations` in `hanse508.json`). "One person, one place": moving to another station lets go of the winch buttons and the tail in hand (`realistic.ts`, around line 513). The move is instant and nobody is drawn.
+- **Crew tasks without figures**: the crew walking the lazy line (the line that holds the bow off the quay) to the bow (`lazyWalkS`, 20 s) and swimming a line ashore in the bay (`shoreSwimS`) are timed tasks in `mooringLines.ts` (`kind: 'walkLazy' | 'swimShore'`); `crewPullN` (900 N) is what two crew pull by hand.
+- **Alone / With crew** in the exercises (M71, `exerciseRun.ts` `crew`): Alone means no Pause in a Realistic exercise that has a crew choice; With crew keeps Pause, standing for the extra hands.
+- **Crew weight** is only inside the boat's fixed payload (`physics.payloadNote`: "crew, water, fuel and gear"), so it never moves.
+- **The roadmap's "user's position as one clear idea"** (ROADMAP "Later" row, owner, PR 124): where you stand and where the camera looks from are separate today; one position control should say where you are and let you move. The captain figure is that idea made visible.
+
+### 8.4 How it would work
+
+- **A deck path network** in the boat file: points (helm at each wheel, cockpit sides, the winch stations, the mast foot, the bow, the stern) and the walkways between them along the side decks, in the boat frame. A person is a position on it, walking at a set speed. Pure state in `AppState`, so links, Reset and waypoints keep working.
+- **Drawn** as a simple low-poly figure built by code (no model files, the M3b rule), in the boat group, so it heels and pitches with her. An id in `content/registry/parts.json` and a glossary entry, and inside the triangle budget (`scripts/budget.mjs`).
+- **The captain** (every mode): one figure where the user is. In Easy, Learn and Harbour the captain stands at the helm. In Realistic mode the captain walks to the station the user picks (instead of today's instant switch), and the camera can follow or stay.
+- **The crew** (Realistic mode only): a number of crew set in their own settings; each crew member stands at a place and does tasks on command (go to the bow for the anchor, tend the lines on one side, take a winch, sit on the high side). The timed tasks of today (`walkLazy`, `swimShore`) get a figure that walks the path. With crew in the exercises uses these figures.
+- **Weight**: each person's mass and position add a heel moment and a trim moment in `stepBoat`; the same mass is taken out of the fixed payload so it is not counted twice. The effect on heel is small: a rough estimate from the righting moment (about 3.9 kNm per degree at small angles, GM 1.36 m) gives about 1.3° less heel for three crew of 80 kg moved 2.2 m to the high side, about 2.7° from the low side to the high side. Visible on the instruments, and its own lesson; `/plan` prototypes the real numbers.
+
+### 8.5 Added draft milestones
+
+7. **The captain on board** (every mode): the figure, the deck paths, the captain at the helm, in Realistic mode walking to the chosen station (the walk takes time; Realistic exercises and their pilots re-timed). Joins "where you stand" and the view as one position.
+8. **The crew in Realistic mode**: the crew setting, the figures, their places and tasks on command (anchor at the bow, lines, winch, sit on the high side); today's timed crew tasks drawn as walks; With crew in the exercises uses them.
+9. **Weight on board**: the captain's and the crew's weight in the heel and the trim; the "crew to windward" lesson. Needs milestone 1 (fixed step) and, to be worth seeing, milestone 8.
+
+### 8.6 Open for `/plan` (recommended answers, to confirm when planning)
+
+1. **How many crew?** Recommended: **0 to 3, default 0**, because a Hanse 508 is often sailed short-handed and 3 crew cover the bow, both sides and a winch.
+2. **Crew in the link?** Recommended: **yes**, one short key (absent = 0), because the link reproduces what the user sees (ROADMAP architecture hooks).
+3. **Does the captain's walk take time in Realistic mode?** Recommended: **yes**, a few seconds along the deck path, because the time it takes to get to the bow is part of single-handed sailing; the Realistic pilots are re-timed in that milestone.
+4. **Order and parts.** With 9 milestones the phase is more than 6, so `/plan` splits it (`/plan` skill, section 2). Recommended: **part a** = milestones 1–5 (the physics), **part b** = 7–9 (the people), the engine gate (6) later with man overboard; because the fixed step comes first in every case and the weight milestone needs it.
+
+## 9. Questions for the owner
+
+**Answered by the owner on PR #193 (2026-11-09): all accepted** ("agree with all proposals and plan D, we keep engine aside for now").
 
 1. **Which option?** Recommended: **D** (upgrade our own model now, decide on Rapier when a feature needs several moving bodies), because the engine adds little while there is one boat and costs a dependency, a download and the pure store.
 2. **May the exercises feel a little different?** More realistic motion changes how fast she turns and stops, so the exercise time limits and the Watch / Show me demos are re-timed. Recommended: **yes**, re-timed in each milestone from a prototype, because keeping them frozen would block every realism change.
@@ -165,17 +212,18 @@ Draft milestones for `/plan` (one line each; every one **independent review: req
 4. **Fixed physics step first?** Recommended: **yes**, because it is needed under every option and makes every later milestone testable the same way on every phone.
 5. **Which future feature should trigger the engine gate?** Recommended: **man overboard** (the first idea on the roadmap that needs a second moving body); coming alongside with springs can be done with today's line springs.
 
-## 9. For the planning session to verify or measure
+## 10. For the planning session to verify or measure
 
 - Rapier: the gzip size of the chosen build in a production `vite build`, its start-up time on the owner's phone, whether `-deterministic-compat` gives identical results in Node and Chromium, and loading from a PR preview (only in milestone 6).
 - How sensitive the bands and the pilots are: run the test suite with a prototype of each milestone before writing its bands.
-- Sources for the new rules (section 10), from sailing-school or naval-architecture material, as `docs/PHYSICS_TRUTHS.md` asks.
+- Sources for the new rules (section 11), from sailing-school or naval-architecture material, as `docs/PHYSICS_TRUTHS.md` asks.
 - The Hanse 508 numbers each milestone needs (keel and rudder area and span, a lateral area, buoyancy points from the hull lines in `hanse508.json`); unknown ones become assumptions in `BOAT_REFERENCE.md`, never invented as facts.
 
-## 10. Candidate rules (for `/plan` to add to `PHYSICS_TRUTHS.md`, status `to-verify`)
+## 11. Candidate rules (for `/plan` to add to `PHYSICS_TRUTHS.md`, status `to-verify`)
 
 - **Leeway:** close-hauled she drifts a few degrees to leeward; more when slow, less when fast.
 - **Fixed step:** the same actions give the same motion at 30 and 60 fps (within a small tolerance).
 - **Buoyancy:** at rest she floats at her waterline; a small roll or pitch disturbance dies away without growing.
 - **Rudder:** steering grows with water flow over the rudder; a very large rudder angle turns her less and slows her more (stall).
 - **Mirror:** the same situation on port and starboard gives mirrored motion.
+- **Crew to windward:** crew sitting on the high side reduce the heel; the same crew on the low side increase it.
