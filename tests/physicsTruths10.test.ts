@@ -8,6 +8,11 @@ import { buoyPilot } from './harbourPilot';
 import { MARINA_LAYOUT_IDS, marinaGeometry } from '../src/model/marina';
 import { gybeArrived, gybeStep, windTorqueNm, type GybeSwing } from '../src/model/gybe';
 import type { RealisticAction } from '../src/model/realistic';
+import { area } from '../src/model/area';
+import { utcFromLocal } from '../src/model/clock';
+import { defaultControls } from '../src/model/controls';
+import { localWindMean, trueWind } from '../src/model/localWinds';
+import { initialWindMode } from '../src/model/windModes';
 
 function run(state: AppState, seconds: number): AppState {
   let next = state;
@@ -156,5 +161,52 @@ describe('PT-62', () => {
     // The next frame's `line bl take` is accepted: the bow line is on.
     const next = reduce(pilot(at, t), { type: 'step', dt: 0.05 });
     expect(next.lines.lines.some((l) => l.code === 'bl')).toBe(true);
+  });
+});
+
+describe('Phase 10c rules: the Adriatic winds (PHASE10_SPEC 24.7)', () => {
+  const winds = area.localWinds;
+  const at = (h: number, day = 1) => utcFromLocal(2026, 6, day, h, 0, area);
+
+  it('PT-63 the maestral blows from the north-west in the afternoon and is gone by sunset', () => {
+    const size = winds.summer.sizeKn.default;
+    const afternoon = localWindMean('summer', size, at(14), 0);
+    expect(afternoon.dirDeg).toBeCloseTo(-45, 6);
+    expect(afternoon.twsKn).toBeGreaterThanOrEqual(0.95 * size);
+    for (const h of [8, 21]) {
+      expect(localWindMean('summer', size, at(h), 0).twsKn).toBeCloseTo(winds.calmKn, 6);
+    }
+  });
+
+  it('PT-64 at night a lighter breeze blows off the land', () => {
+    const size = winds.summer.sizeKn.default;
+    const night = localWindMean('summer', size, at(1, 2), 0);
+    expect(night.dirDeg).toBeCloseTo(winds.summer.landBreeze.fromDeg, 6);
+    expect(night.twsKn).toBeLessThan(localWindMean('summer', size, at(14), 0).twsKn);
+    expect(localWindMean('summer', size, at(9, 2), 0).twsKn).toBeCloseTo(winds.calmKn, 6);
+  });
+
+  it('PT-65 the bura comes suddenly, in gusts, and is stronger at night', () => {
+    const size = winds.bura.sizeKn.default;
+    expect(localWindMean('bura', size, at(12), 120).twsKn).toBeGreaterThanOrEqual(0.99 * size);
+    const day = localWindMean('bura', size, at(12), 900).twsKn;
+    expect(localWindMean('bura', size, at(2, 2), 900).twsKn).toBeGreaterThanOrEqual(1.15 * day);
+    const wm = initialWindMode({ mode: 'bura', seed: 1, startS: -120 });
+    let largest = 0;
+    for (let s = 0; s <= 900; s += 1) {
+      largest = Math.max(largest, trueWind(wm, defaultControls(), at(12), s, null).twsKn);
+    }
+    expect(largest).toBeGreaterThanOrEqual(1.4 * day);
+  });
+
+  it('PT-66 the jugo is a steady south-east wind', () => {
+    const size = winds.jugo.sizeKn.default;
+    const m = localWindMean('jugo', size, at(12), 120);
+    expect(m.dirDeg).toBe(135);
+    const wm = initialWindMode({ mode: 'jugo', seed: 1, startS: -120 });
+    for (let s = 0; s <= 900; s += 1) {
+      const w = trueWind(wm, defaultControls(), at(12), s, null);
+      expect(Math.abs(w.twsKn / m.twsKn - 1)).toBeLessThanOrEqual(0.2);
+    }
   });
 });
