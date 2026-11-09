@@ -2738,7 +2738,7 @@ The wind starts to behave like the Adriatic's and follows the clock: a calm morn
 | Wind direction | Compass, where the wind **comes from**, signed (−180, 180], as `ctl_wind_dir` and `WindNow.dirDeg`: −45 = from the north-west, 45 = north-east, 135 = south-east, −90 = west, 90 = east. |
 | Local time | `localParts(state.clock.utcMs, area)` (`src/model/clock.ts`); a **local hour** is `hour + minute / 60 + second / 3600`. "HH:MM" in data is local time in the area's time zone (summer time included). |
 | Sunrise, sunset | `sunTimes(year, month, day, area.position.latitudeDeg, area.position.longitudeDeg)` (`src/model/sun.ts`) for the local date of `utcMs`. On 1 June 2026 in the Adriatic area: sunrise 05:16, sunset 20:28 local. With `polar` (never in the Adriatic) the land breeze and the bura's night part are 0. |
-| Clock winds | `summer`, `bura`, `jugo` (the **local winds**, M94) and `scripted` (M96). In a clock wind **the mean wind is not set by hand**: the store writes it into `controls.ctl_wind_dir` and `controls.ctl_wind_speed` every step (exact numbers, not rounded), so everything that reads "the mean" today (the gust counter, the GUST badge, the anchor panel's scope, the map, the water) keeps working. `setControls` drops those two keys while a clock wind is on. |
+| Clock winds | `summer`, `bura`, `jugo` (the **local winds**, M94) and `scripted` (M97). In a clock wind **the mean wind is not set by hand**: the store writes it into `controls.ctl_wind_dir` and `controls.ctl_wind_speed` every step (exact numbers, not rounded), so everything that reads "the mean" today (the gust counter, the GUST badge, the anchor panel's scope, the map, the water) keeps working. `setControls` drops those two keys while a clock wind is on. |
 | Gusts in a clock wind | A clock wind gives a mean and a **gust size** (`gustPct`); the true wind is `windAt(mean.dirDeg, mean.twsKn, { mode: 'gusty', seed: windMode.seed, size: gustPct, startS: windMode.startS }, timeS)` (Phase 2's gusty pattern), or the mean itself when `gustPct` is 0. |
 | Smoothstep | `ss(a, b, x)`: `u = clamp((x − a) / (b − a), 0, 1)`, `u²(3 − 2u)` (the same as `smoothstep` in `windModes.ts`; export that one as `smoothstep` and use it). |
 | Pattern time | `patternS = max(0, timeS − windMode.startS)`, `timeS` = the rig clock (`state.rig.timeS`). |
@@ -2753,7 +2753,7 @@ The wind starts to behave like the Adriatic's and follows the clock: a calm morn
 | `isClockWind`, `isLocalWind` | `src/model/windModes.ts` (M94; `scripted` from M97) | `(mode: WindModeId) => boolean` | Clock wind: a local wind or `scripted`. Local: `summer`, `bura`, `jugo`. |
 | `sizeRange` | `src/model/windModes.ts` (M94: local winds added) | `sizeRange(mode: WindModeId, data?: BoatData, areaData?: AreaData): SizeRange \| null` | Local winds: `areaData.localWinds[mode].sizeKn`; `scripted`: null. |
 | `localWindMean` | `src/model/localWinds.ts` (M94) | `localWindMean(id: LocalWindId, sizeKn: number, utcMs: number, patternS: number, areaData?: AreaData): WindMean` | 24.3. |
-| `scriptMean` | `src/model/localWinds.ts` (M97) | `scriptMean(points: readonly WindKey[], utcMs: number, areaData?: AreaData): WindMean` | 27.3. |
+| `WindKey` (M94), `scriptMean` (M97) | `src/model/localWinds.ts` | `scriptMean(points: readonly WindKey[], utcMs: number, areaData?: AreaData): WindMean` | 27.3. |
 | `windMean` | `src/model/localWinds.ts` (M94; `scripted` from M97) | `windMean(windMode: WindModeState, controls: Controls, utcMs: number, timeS: number, script: readonly WindKey[] \| null, areaData?: AreaData): WindMean` | The mean of a clock wind; for any other mode `{ dirDeg: controls.ctl_wind_dir, twsKn: controls.ctl_wind_speed, gustPct: 0 }`. |
 | `trueWind` | `src/model/localWinds.ts` (M94) | `trueWind(windMode, controls, utcMs, timeS, script, areaData?, data?): WindNow` | Clock wind: the mean with its gusts (23.3); any other mode: exactly today's `windAt(controls.ctl_wind_dir, controls.ctl_wind_speed, windMode, timeS, data)`. |
 | `timeLapseAvailable`, `isTimeLapseScale` | `src/model/timeScale.ts` (M95) | 25.3 | Where ×60 and ×240 may be chosen. |
@@ -2769,7 +2769,7 @@ New rules (added to `docs/PHYSICS_TRUTHS.md`, "Phase 10 rules", by this planning
 - **PT-65** (M94, M97) the bura: from the north to north-east, it can start suddenly in calm weather, blows in gusts, is stronger at night and raises short, steep waves. **source-checked** [47].
 - **PT-66** (M94) the jugo: from the south-east, steady with few gusts; a real one builds over a day or two and raises big waves. **to-verify**: Wikipedia *Sirocco* [48] gives only the southerly origin, the rain and that it can last from half a day to several days; marinafrapa.hr, yacht.de, meteo.hr and hr.wikipedia.org do not open from the build environment (2026-11-09).
 
-The exercises also test PT-25, PT-29 and PT-13 (M96, M97, through their good runs and mistakes) and PT-31 and PT-57 (M98).
+The exercises also test PT-25, PT-29 and PT-13 (M96, M97, through their good runs and mistakes) and PT-31 (M98).
 
 ### 23.6 Common mistakes (10c)
 
@@ -2792,6 +2792,8 @@ The exercises also test PT-25, PT-29 and PT-13 (M96, M97, through their good run
 
 **`reduce`, M95:** a `step` (not paused) whose scaled time is more than `timeLapseSliceS` is run as `n = ceil(scaled / timeLapseSliceS)` equal slices, each a whole `reduce` call (25.3). At ×16 and below `n` is 1: nothing changes.
 
+**The order in the exported `reduce`** (M95–M97): (1) the time-lapse slicing (M95; a sliced frame returns the result of its slices, each a whole `reduce`); (2) the `demo` branch as today; (3) `next = reduceUnlogged(state, action)`; (4) `logAction` as today; (5) the end of a scripted run (M97, not for `load`); (6) `applyStepSpeed` (M96, not for `load`). Write `reduce` so (5) and (6) run on every path that today returns `next` without `logAction` too (e.g. `step`, `exercise`).
+
 **The coach, M96:** after every action but `load` and `demo`, `applyStepSpeed(previous, next)` (26.3): when the step speed-up of the run changes, the time scale is set to the new one (if allowed) or back to ×1.
 
 **URL keys (10c).**
@@ -2810,7 +2812,7 @@ Old links have none of the new values: nothing changes.
 | Milestone | New | Changed (main) |
 |---|---|---|
 | M94 | `src/model/localWinds.ts`, `tests/localWinds.test.ts`, `scripts/shots-m94.mjs` | `content/areas/adriatic.json`, `src/model/windModes.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/windModePanel.ts`, `src/ui/windPanel.ts`, both `ui.json`, registry, both glossaries, `tests/physicsTruths10.test.ts`, `tests/store.test.ts`, `tests/urlState.test.ts`, docs |
-| M95 | `scripts/shots-m95.mjs` | `content/boat/hanse508.json`, `src/model/timeScale.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/timeBar.ts`, `src/style.css`, both `ui.json`, `tests/timeScale.test.ts`, `tests/store.test.ts`, `tests/stepCost.test.ts`, docs |
+| M95 | `scripts/shots-m95.mjs` | `content/boat/hanse508.json`, `src/model/timeScale.ts`, `src/model/settings.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/timeBar.ts`, both `ui.json`, `tests/timeBar.test.ts`, `tests/store.test.ts`, `tests/stepCost.test.ts`, docs |
 | M96 | `scripts/shots-m96.mjs` | `content/exercises/exercises.json`, both `exercises.json` texts, `src/model/localWinds.ts`, `src/model/exercises.ts`, `src/app/exerciseRun.ts`, `src/app/exercisePilots.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/app/app.ts`, `src/ui/exercisePanel.ts`, `src/ui/stepCard.ts`, `src/ui/timeBar.ts`, both `ui.json`, tests, docs |
 | M97 | `scripts/shots-m97.mjs` | `content/exercises/exercises.json`, both texts, `src/model/windModes.ts`, `src/model/localWinds.ts`, `src/model/exercises.ts`, `src/app/store.ts`, `src/app/urlState.ts`, `src/ui/windModePanel.ts`, `src/app/exercisePilots.ts`, tests, docs |
 | M98 | `scripts/shots-m98.mjs` | `content/exercises/exercises.json`, both texts, `src/app/exercisePilots.ts`, `tests/harbourExercises.test.ts`, `tests/exercisePilots.test.ts`, docs, `README.md` |
@@ -2833,7 +2835,7 @@ Throwaway Vitest files opened the links with `parseUrlState`, stepped `reduce` w
 | M95 | 25 | ×60 and ×240 in the time card at anchor, moored or held still; a night passes in about three minutes | — | M94 | **required** (the step cut into slices, a rule that drops the speed in the shared step) |
 | M96 | 26 | New exercise *The afternoon maestral* (starts 12:20, time runs ×16 while you wait); every list row shows its place, and the start time when it has one; the setup card says when it starts | PT-25 | M95 | **required** (the coach changes the time scale, new check fields, the demo's speed, links of runs) |
 | M97 | 27 | New exercise *A bura is coming*: calm at 08:00, the bura hits at 08:04–08:06 with gusts near 30 kn (the first scripted wind) | PT-65 (PT-25, PT-13 through the good run) | M96 | **required** (a scripted wind in shared state and links; teaches what to do when a strong wind comes suddenly) |
-| M98 | 28 | New exercise *A night at anchor*: anchor with a line ashore at 18:30, then the night in time-lapse with a squall at 04:00; sign-off of part 10c | PT-31, PT-57, PT-64 | M97 | **required** (anchoring safety; a serious mistake that ends the run in the night) |
+| M98 | 28 | New exercise *A night at anchor*: anchor with a line ashore at 18:30, then the night in time-lapse with a squall at 04:00; sign-off of part 10c | PT-31, PT-64 | M97 | **required** (anchoring safety; a serious mistake that ends the run in the night) |
 
 Built in order M94 → M98, each needing the ones before it merged.
 
@@ -2877,12 +2879,12 @@ Changed: `content/areas/adriatic.json` (`localWinds`), `src/model/windModes.ts`,
 ```ts
 export type PatternModeId = 'steady' | 'gusty' | 'shifty' | 'building' | 'dying';
 export type LocalWindId = 'summer' | 'bura' | 'jugo';
-export type WindModeId = PatternModeId | LocalWindId;          // M96 adds | 'scripted'
+export type WindModeId = PatternModeId | LocalWindId;          // M97 adds | 'scripted'
 export const WIND_MODE_IDS: readonly PatternModeId[] = ['steady', 'gusty', 'shifty', 'building', 'dying']; // unchanged: the "Wind changes" row
 export const LOCAL_WIND_IDS: readonly LocalWindId[] = ['summer', 'bura', 'jugo'];
-export function isWindModeId(value: string): value is WindModeId; // any of the two lists (M96: and 'scripted')
+export function isWindModeId(value: string): value is WindModeId; // any of the two lists (M97: and 'scripted')
 export function isLocalWind(mode: WindModeId): mode is LocalWindId;
-export function isClockWind(mode: WindModeId): boolean;          // M94: = isLocalWind; M96: || mode === 'scripted'
+export function isClockWind(mode: WindModeId): boolean;          // M94: = isLocalWind; M97: || mode === 'scripted'
 export function smoothstep(edge0: number, edge1: number, x: number): number; // the existing private one, exported
 export function sizeRange(mode: WindModeId, data: BoatData = boat, areaData: AreaData = area): SizeRange | null;
 // local winds: { min, max, default } = areaData.localWinds[mode].sizeKn
@@ -2899,7 +2901,7 @@ export function windMean(windMode: WindModeState, controls: Controls, utcMs: num
 export function trueWind(windMode: WindModeState, controls: Controls, utcMs: number, timeS: number, script: readonly WindKey[] | null, areaData: AreaData = area, data: BoatData = boat): WindNow;
 ```
 
-(`WindKey` and `scriptMean` come in M96; in M94 declare `export interface WindKey { at: string; fromDeg: number; kn: number; gustPct: number }` already and pass `null` everywhere.)
+(`scriptMean` comes in M97; M94 already declares `export interface WindKey { at: string; fromDeg: number; kn: number; gustPct: number }` and passes `null` everywhere.)
 
 For `localWindMean`, with `p = localParts(utcMs, areaData)`, `h = p.hour + p.minute / 60 + p.second / 3600`, `t = sunTimes(p.year, p.month, p.day, lat, lon)`, `H = 3,600,000` ms, `L = areaData.localWinds`, `ss = smoothstep`:
 
@@ -2937,7 +2939,7 @@ For `localWindMean`, with `p = localParts(utcMs, areaData)`, `h = p.hour + p.min
 
 **`src/app/urlState.ts`:**
 
-- `WIND_MODE_PARAMS` gains `summer: 'summer'`, `bura: 'bura'`, `jugo: 'jugo'` (type `Record<Exclude<WindModeId, 'steady' | 'scripted'>, string>` from M96).
+- `WIND_MODE_PARAMS` gains `summer: 'summer'`, `bura: 'bura'`, `jugo: 'jugo'` (type `Record<Exclude<WindModeId, 'steady' | 'scripted'>, string>` from M97).
 - `parseWindMode` reads them with `wg` in the local wind's `sizeKn` range (outside it: the default) and `seed` as today.
 - When the link's `wm` is a local wind, `wd` and `ws` are parsed as today but have no effect: `initialState` overwrites the controls' wind with the mean. `parseBoat(params, controls.ctl_wind_dir ?? 60, …)` keeps reading the link's `wd` (or 60) for its default autopilot target, which matters only for a link with an autopilot and no `apt` (accepted).
 - `serializeUrlState` writes no `wd` and no `ws` while `isClockWind(state.windMode.mode)`.
@@ -3151,7 +3153,7 @@ export interface CheckSource   { /* as today, and, optional like the other extra
 
 `AppState` has `clock`, so the store passes it as today's sources do. **Target rows** (`checkTargets`, `targetReading`, `src/ui/stepCard.ts`), after the existing ones in this order: `{ kind: 'meanWind'; range }` (value: `Math.round(controls.ctl_wind_speed)`) and `{ kind: 'localHour'; range }` (value: the local time as "HH:MM"). Their texts (26.5): `meanWind` shows `exercise.target.meanWindFrom` when `range[1] ≥ 99`, else `exercise.target.meanWind`; the reading `exercise.target.nowKn`. `localHour` shows `exercise.target.timeFrom` when `range[1] ≥ 24`, else `exercise.target.time` (the hours as "HH:MM": 13.5 → "13:30"); the reading `exercise.target.nowWord`.
 
-**Validation** (in `tests/exercises.test.ts`, where the data is checked today): add `meanWindKn` and `localHour` to `FIELDS`; `checkProblems` reports a range with `min > max` for them; the test "has valid ids, groups, ropes, checks and mistakes" also checks every `speedUp` is in `timeScales` or `timeLapseScales` and > 1. The test "every start link parses, with the wind it names" compares `wd`/`ws` only for a start that has them and whose `wm` is not a local wind (the maestral's start has neither; say so in a comment).
+**Validation** (in `tests/exercises.test.ts`, where the data is checked today): add `meanWindKn` and `localHour` to `FIELDS`; `checkProblems` reports a range with `min > max` for them; the test "has valid ids, groups, ropes, checks and mistakes" also checks every `speedUp` is in `timeScales` or `timeLapseScales` and > 1. The test "every start link parses, with the wind it names" compares `wd`/`ws` only for a start that has both and no `wm` of a local wind and no `wind` (the maestral, bura and night starts have neither; say so in a comment). A new data test: every start's `pl` is absent, `open`, `marina` or `bay` (each has an `exercise.place.*` string).
 
 **The exercise** (appended to `exercises`; it shows in "Wind and weather" after *Too much wind*):
 
@@ -3207,6 +3209,7 @@ Leaving the maestral run keeps the Summer day wind (a local wind is an ordinary 
 - `scale = Math.min(settings.timeScale, Math.max(DEMO_MAX_SCALE, up ?? 0))`;
 - the part length is `isTimeLapseScale(scale) ? boatData.windModes.timeLapseSliceS : DEMO_PART_S` (the night's step, M98: its pilot does nothing then, so the 0.05 s tuning does not matter);
 - the `dt` dispatched stays `appDt / parts / settings.timeScale`.
+- (A learner cannot choose ×60 or ×240 during the maestral: at sea the time-lapse is not available, 25.3.)
 
 `src/ui/timeBar.ts`'s `demoCapped` compares with the same `Math.max(DEMO_MAX_SCALE, stepSpeedUp(state) ?? 0)`. In unit tests there is no `app.ts`: the speed is what `applyStepSpeed` set.
 
@@ -3217,7 +3220,7 @@ export function maestralPilot(): Pilot  // step 0: nothing; step 1: inStep(s) < 
                                         // step 2: jib sheet 75 and main out 60; step 3: main sheet 40.
 ```
 
-`pilotFor('maestral', 'easy', 'easy')` returns it; in Realistic ropes it returns `null` (as the other sailing exercises).
+A control the pilot does not set keeps its value (the start link's `ms=40`, `js=60` until a step changes them), as in every pilot. `pilotFor('maestral', 'easy', 'easy')` returns it; in Realistic ropes it returns `null` (as the other sailing exercises).
 
 ### 26.4 UI (`src/ui/exercisePanel.ts`)
 
@@ -3294,7 +3297,7 @@ Live checks:
 1. The list shows `exercise-meta-maestral` = "Open water · starts 12:20", `exercise-meta-anchor-shore` = "Bay", `exercise-meta-leave-berth` = "Marina".
 2. Open the maestral setup card: `exercise-setup-start` says "Starts at 12:20". Start: `time-status` says "×16". `page.waitForTimeout(100000)`: the step card is on step 2.
 3. Watch (the demo) from setup: after `page.waitForTimeout(30000)` the `clock-chip` has moved at least 6 minutes (the demo runs the wait step at ×16).
-4. The Russian setup card has no overflow.
+4. The Russian setup card (`?m=exercise&ex=maestral&lang=ru`) has no overflow (the overflow check of M70's Russian setup cards).
 
 ### 26.8 Done when / not in M96
 
@@ -3311,7 +3314,7 @@ What the owner sees: a new exercise **A bura is coming** in "Wind and weather" (
 ### 27.1 Files
 
 New: `scripts/shots-m97.mjs`.
-Changed: `content/exercises/exercises.json`, both texts, `src/model/windModes.ts` (`'scripted'`), `src/model/localWinds.ts` (`scriptMean`, `windMean` for `scripted`), `src/model/exercises.ts` (`ExerciseDef.wind`), `src/app/store.ts` (`scriptOf`, the end of a scripted run), `src/app/urlState.ts` (`parseExercise`, `WIND_MODE_PARAMS`), `src/ui/windModePanel.ts` (`SIZE_STEP.scripted`), `src/app/exercisePilots.ts` (`buraPilot`, `pilotFor`), `tests/localWinds.test.ts`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/exercisePilots.test.ts`, `tests/urlState.test.ts`, `tests/physicsTruths10.test.ts`, `docs/PHYSICS_TRUTHS.md` (PT-65's M97 test name), `docs/review/ru-exercises.md`, `scripts/shots.mjs`, `.github/ci-times.json` (`m97`: 300), `docs/CODE_MAP.md`.
+Changed: `content/exercises/exercises.json`, both texts, `src/model/windModes.ts` (`'scripted'`), `src/model/localWinds.ts` (`scriptMean`, `windMean` for `scripted`), `src/model/exercises.ts` (`ExerciseDef.wind`), `src/app/store.ts` (`scriptOf`, the end of a scripted run), `src/app/urlState.ts` (`parseExercise`, `WIND_MODE_PARAMS`), `src/ui/windModePanel.ts` (`SIZE_STEP.scripted`, the hint), `src/ui/windPanel.ts` (the note), both `ui.json`, `docs/review/ru.md`, `src/app/exercisePilots.ts` (`buraPilot`, `pilotFor`), `tests/localWinds.test.ts`, `tests/exercises.test.ts`, `tests/exerciseRun.test.ts`, `tests/exercisePilots.test.ts`, `tests/urlState.test.ts`, `tests/physicsTruths10.test.ts`, `docs/PHYSICS_TRUTHS.md` (PT-65's M97 test name), `docs/review/ru-exercises.md`, `scripts/shots.mjs`, `.github/ci-times.json` (`m97`: 300), `docs/CODE_MAP.md`.
 
 ### 27.2 Data
 
@@ -3374,7 +3377,9 @@ A script is read from its first point onwards and covers less than 24 hours (the
 **`src/app/store.ts`:**
 - `export function scriptOf(state: AppState): readonly WindKey[] | null` = `state.windMode.mode === 'scripted' && state.exercise !== null ? exerciseDef(state.exercise.id)?.wind?.points ?? null : null`. Every `withWindMean` and `trueWind` call of M94 passes `scriptOf(state)` instead of `null` (in `step`, the state before the step; in `initialState`, the state it builds, whose `exercise` comes from `overrides.exercise`).
 - `export function refreshWind(state: AppState): AppState`: the controls' mean (`withWindMean`) and `wind` (`trueWind`) for `state.clock.utcMs`, `state.rig.timeS` and `scriptOf(state)`.
-- **`setWindMode` to `scripted`** is ignored (returns `state`): only an exercise link sets it.
+- **`setWindMode` to `scripted`** is ignored (returns `state`): only an exercise link sets it. During a run every `setWindMode` is locked already (`LOCKED_DURING_EXERCISE`), so the learner cannot leave the script mid-run.
+- **`initialState` needs nothing for `scripted`:** it is built before `parseExercise` sets the mode (its `scriptOf` is null and the mean comes from the controls); `parseExercise`'s `refreshWind` then sets the scripted mean.
+- **The Conditions panel in a scripted run** (`src/ui/windModePanel.ts`, `src/ui/windPanel.ts`): no radio is checked; `wind-mode-hint` shows `wind.mode.scripted.hint` = `The exercise sets the wind and changes it on its own timetable.`; `wind-locked-note` shows `wind.lockedScript` = `The exercise sets the wind.` (both keys after `wind.locked` in both `ui.json`, Russian drafts). `src/ui/windPanel.ts` and both `ui.json` join 27.1's list.
 - **The end of a scripted run.** In the exported `reduce`, right after `reduceUnlogged` (so for every action but `demo`), with `next` its result: if `action.type !== 'load'`, `state.exercise !== null`, `next.exercise === null` and `next.windMode.mode === 'scripted'`, the wind becomes Steady at what was blowing:
   - `windMode = initialWindMode({ mode: 'steady', seed: next.windMode.seed, startS: next.rig.timeS })`;
   - the controls' wind rounded as in M94's `setWindMode` out of a clock wind;
@@ -3434,7 +3439,7 @@ export function buraPilot(): Pilot  // step 0: inStep(s) < 1 ? jib sheet 100 : j
 
 ### 27.6 Browser checks (`scripts/shots-m97.mjs`, test clock)
 
-Scenes: `bura-setup` (`?m=exercise&ex=bura`). Live: `m97 good run` (phone only, `buraPilot`'s logic through `window.__sailExercise`, one decision per 0.2 app seconds): done, no mistake card; during the run, when the step card shows step 3, save a screenshot `bura-gust` (`cam=top` is not needed). The Russian setup card has no overflow.
+Scenes: `bura-setup` (`?m=exercise&ex=bura`). Live: `m97 good run` (phone only, `buraPilot`'s logic through `window.__sailExercise`, one decision per 0.2 app seconds): done, no mistake card; during the run, when the step card shows step 3, save a screenshot `bura-gust` (`cam=top` is not needed). The Russian setup card (`?m=exercise&ex=bura&lang=ru`) has no overflow (as M70's).
 
 ### 27.7 Done when / not in M97
 
@@ -3519,20 +3524,20 @@ export function nightPilot(): Pilot {
 
 ### 28.5 Tests (prototype in brackets)
 
-- `tests/exercisePilots.test.ts`: `HARBOUR_SHOW_ME['night-anchor'] = { easy: [96, 33, 88, 53, 75, 99, 227] }` (Show me from each waypoint, frame seconds: anchor-shore's six limits, then the night: 44,700 app seconds at ×240 is about 186 frame seconds, `ceil(1.2 × 186 + 3)` = 227); add `['night-anchor', 'easy']` to the bar-coverage test's `all` list.
+- `tests/exercisePilots.test.ts`: `HARBOUR_SHOW_ME['night-anchor'] = { easy: [96, 33, 88, 53, 75, 99, 227] }` (Show me from each waypoint, frame seconds: anchor-shore's six Show me limits, kept because Show me starts each step from its waypoint as anchor-shore's does, then the night: 44,700 app seconds at ×240 is about 186 frame seconds, `ceil(1.2 × 186 + 3)` = 227); add `['night-anchor', 'easy']` to the bar-coverage test's `all` list.
 - `tests/harbourExercises.test.ts`, `night-anchor good run`: a loop like `anchorRun` (copy it as `nightRun`: the id `night-anchor`, `nightPilot()`, the limit `t < 650` frame seconds; frames of 0.05 s; the coach sets ×240 in the last step, so a frame there is 12 s of app time in 8 slices of 1.5 s). Per-step limits in frame seconds: `[96, 33, 88, 53, 73, 47, 227]` (`ceil(1.2 × prototype + 3)` of 77.3, 24.2, 70.1, 41.2, 58.0, 36.5 and about 186; `settled` takes 36.5 s here against 78.7 s in M77's prototype: with the script's 10 % gusts the shore line came tight sooner, a measured difference, not a rule). Then:
   - status `done`, no mistake;
   - at the end, local time 07:00:00 to 07:00:30 on 2 June;
   - the chain 55–64 m (60.6);
   - the anchor `set`, `alarm` false;
   - no contact report with `obstacleKind` `ground` (none).
-- `it('PT-31 the night needs the chain the rules ask for')`: at the frame the `scope` step passes, `chainOutM ≥ scopeNeededM(depth, 6)` (as M77's test).
+- In `tests/harbourExercises.test.ts` (where M77's PT tests are), `it('PT-31 the night needs the chain the rules ask for')`: at the frame the `scope` step passes, `chainOutM ≥ scopeNeededM(depth, 6)` (as M77's test).
 - `it('PT-64 the land breeze blows off the rocks at night')`: in the good run at 01:00, `wind.dirDeg` is −90 ± 15 (the gusts veer it a little) and the mean 6 ± 0.01.
 - `tests/exerciseRun.test.ts`, `it('an anchor alarm in the night ends the run; before the night it pauses')` (as M67's alert-mistake tests): `state = restoreWaypoint(goodRunEnd, 6)` (the good run's last state holds every waypoint; waypoint 6 is the start of `the-night`), then Start/Carry on so its status is `running` if it is not; build `next` from it by appending one entry `{ n: alerts.written + 1, kind: 'anchorAlarm', atS: rig.timeS + 0.05, severity: ALERT_INFO.anchorAlarm.severity }` to `alerts.entries`, `written + 1`, and adding 0.05 s to `rig.timeS` and 50 ms to `clock.utcMs`; `stepExercise(state, next)` gives status `failed` and the log's last mistake `dragged-at-night`. The same from `restoreWaypoint(goodRunEnd, 2)` (waypoint 2 is the start of `scope`; waypoint 0 is Start) gives status `mistake` with `dragging`.
 
 ### 28.6 Browser checks (`scripts/shots-m98.mjs`, test clock)
 
-Scenes: `night-setup` (`?m=exercise&ex=night-anchor`). Live: `m98 good run` (phone only, `nightPilot`'s logic through `window.__sailExercise`, one decision per 0.2 app seconds; the night step at ×240 takes about 186 s of `page.waitForTimeout`): during the night, poll `clock-chip` every `page.waitForTimeout(1000)` and, when it first reads 04:05 or later, switch to `cam=top` (the camera menu) and save a screenshot `night-0400`; the done card at 07:00; the list's `exercise-meta-night-anchor` = "Bay · starts 18:30"; the Russian setup card has no overflow.
+Scenes: `night-setup` (`?m=exercise&ex=night-anchor`). Live: `m98 good run` (phone only, `nightPilot`'s logic through `window.__sailExercise`, one decision per 0.2 app seconds; the night step at ×240 takes about 186 s of `page.waitForTimeout`): during the night, poll `clock-chip` every `page.waitForTimeout(1000)` and, when it first reads 04:05 or later, switch to `cam=top` (the camera menu) and save a screenshot `night-0400`; the done card at 07:00; the list's `exercise-meta-night-anchor` = "Bay · starts 18:30"; the Russian setup card (`?m=exercise&ex=night-anchor&lang=ru`) has no overflow (as M70's).
 
 ### 28.7 Done when (sign-off of part 10c)
 

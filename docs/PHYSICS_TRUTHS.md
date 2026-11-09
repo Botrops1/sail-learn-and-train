@@ -96,7 +96,7 @@ Planned ahead on 2026-10-15/16 in [`PHASE7_SPEC.md`](PHASE7_SPEC.md) (M40–M47;
 
 ## Phase 10 rules
 
-Planned on 2026-10-30 in [`PHASE10_SPEC.md`](PHASE10_SPEC.md) (part 10a, M66–M71). The exercises of part 10a also test earlier rules: PT-22 (M66), PT-26 (M67), PT-28 and PT-35 (M69), PT-25 and PT-13 (M70), PT-12 (M71). PT-60 comes with the extra milestone M72 (issue #149, PHASE10_SPEC 14). Part 10c (planned on 2026-11-09, PHASE10_SPEC 23–30, M94–M98) adds PT-63 to PT-66 (the Adriatic's local winds) and tests PT-25, PT-31, PT-57, PT-64 and PT-65 through its exercises. Part 10b (planned on 2026-11-02, PHASE10_SPEC 15–22, M73–M78) adds PT-61 and PT-62 and tests through its exercises PT-27, PT-31, PT-33, PT-48, PT-50, PT-51, PT-52, PT-53 and PT-57. The "How to see it" links work once their milestone is merged.
+Planned on 2026-10-30 in [`PHASE10_SPEC.md`](PHASE10_SPEC.md) (part 10a, M66–M71). The exercises of part 10a also test earlier rules: PT-22 (M66), PT-26 (M67), PT-28 and PT-35 (M69), PT-25 and PT-13 (M70), PT-12 (M71). PT-60 comes with the extra milestone M72 (issue #149, PHASE10_SPEC 14). Part 10c (planned on 2026-11-09, PHASE10_SPEC 23–30, M94–M98) adds PT-63 to PT-66 (the Adriatic's local winds) and tests PT-25, PT-31, PT-64 and PT-65 through its exercises. Part 10b (planned on 2026-11-02, PHASE10_SPEC 15–22, M73–M78) adds PT-61 and PT-62 and tests through its exercises PT-27, PT-31, PT-33, PT-48, PT-50, PT-51, PT-52, PT-53 and PT-57. The "How to see it" links work once their milestone is merged.
 
 | Id | Rule | How to see it | Status |
 |---|---|---|---|
