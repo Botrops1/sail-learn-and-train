@@ -265,6 +265,15 @@ export function anchorPilot(): Pilot {
   };
 }
 
+/**
+ * A night at anchor (M98, PHASE10_SPEC 28.3): the learner of Anchoring with a line ashore, then
+ * nothing in the last step (the night): `anchorPilot`'s default branch would tighten the line forever.
+ */
+export function nightPilot(): Pilot {
+  const anchor = anchorPilot();
+  return (s, t) => (s.exercise?.step === 6 ? s : anchor(s, t));
+}
+
 /** The ring's north (20.2); its east is our berth's centre. */
 const STERN_DROP_NORTH_M = 1442;
 /** Depth of the water (5 m) plus the bow roller's height (1.8 m): the chain's slope (PHASE10_SPEC 20.4). */
@@ -701,6 +710,8 @@ export function pilotFor(id: string, level: ExerciseLevel, ropes: RopesMode): Pi
         return buoyPilot();
       case 'anchor-shore':
         return anchorPilot();
+      case 'night-anchor':
+        return nightPilot();
       case 'stern-to-anchor':
         return sternAnchorPilot();
       default:

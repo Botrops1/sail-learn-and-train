@@ -30,7 +30,7 @@ On your first visit a short **welcome card** offers to start the first exercise 
 
 **Harbour and anchor**
 - **Harbour mode**: engine lever (one lever, astern to ahead), bow and stern **thrusters**, fenders, mooring lines and the windlass (the anchor winch). Move the boat to open water, a made-up Mediterranean **marina** (tight, medium or spacious berths, busy or empty) or a **bay** with a depth map, rocks, shore rings and mooring buoys.
-- Slowly, the wind pushes her sideways and the propeller walks the stern; touching a quay, a yacht or the bottom gives a **damage report**. Go stern-to in the marina, take a bow line to a buoy, or **anchor** (chain out and in, scope, an alarm if the anchor drags, a line ashore).
+- Slowly, the wind pushes her sideways and the propeller walks the stern; touching a quay, a yacht or the bottom gives a **damage report**. Go stern-to in the marina, take a bow line to a buoy, or **anchor** (chain out and in, scope, an alarm if the anchor drags, a line ashore). A night at anchor runs twelve hours in a few minutes, and the wind follows the clock: the Adriatic's maestral, bura and jugo.
 
 **Helm panels and the status**
 - A control panel at each wheel (engine lever and tachometer, thruster joysticks, compass, wind data, autopilot keypad) with live values, and a **Helm camera** at either wheel looking ahead, at the panel or at the ropes.

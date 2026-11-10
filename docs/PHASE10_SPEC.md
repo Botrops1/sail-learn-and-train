@@ -3582,6 +3582,15 @@ Scenes: `night-setup` (`?m=exercise&ex=night-anchor`). Live: `m98 good run` (pho
 
 The exercise can be finished on a phone; every item of section 29 is ticked in the PR; the ROADMAP's Phase 10 row says "10a, 10b and 10c done"; `SHOTS_ONLY=m98,m77,m95` pass, then CI. Not in M98: choosing the anchoring spot freely, two anchors, an anchor light, an anchor watch alarm sound beyond M89's.
 
+### 28.8 Decided in the M98 PR (recommended; merging accepts it)
+
+- Built as specified; no physics number was tuned. The good run holds all night: no alarm, no touch of the bottom, 55–64 m of chain, the anchor set, done at 07:00 on 2 June.
+- **Slip in 28.5: the `settled` limit.** The spec's prototype settled in 36.5 s and gave the limit 47; the build measures 73.5 s (the other steps match the prototype: 77.2, 24.2, 70.1, 41.2, 58.3 and 186.1 s). 73.5 s is close to M77's steady-wind 78.7 s, so the 10 % gusts do not make `settled` faster as the spec guessed. The limit is `ceil(1.2 × 73.5 + 3)` = 92: `[96, 33, 88, 53, 73, 92, 227]`. Show me's limits (`HARBOUR_SHOW_ME['night-anchor']`) are as the spec has them.
+- **Slip in 28.5: the alarm test before the night.** Back to a waypoint (`restoreWaypoint`) starts a settle second in which alerts are ignored (`settleS`, 1 s), so the test runs 1.1 s after `restoreWaypoint(…, 2)` before it adds the alarm. The alarm in the night (from the state at the start of the last step) needs no wait.
+- The Show me test for `night-anchor` has its own timeout of 150 s (the default 30 s is too short for seven runs, the last 186 frame seconds at ×240).
+- The exercise list now has 17 rows: `scripts/shots-m69.mjs` and `scripts/shots-m71.mjs` count `night-anchor`.
+- `tests/ciPlan.test.ts`: 96 groups, `m98` is among the four newest (`m94` drops out of the PR set). `.github/ci-times.json`: `m98` is 600 (measured 975 s locally while the unit tests ran next to it, so a CI machine alone should need less; 600 is the PR part cap in `scripts/ci-plan.mjs`, and `tests/ciPlan.test.ts` rejects a larger one for the PR set, and 800 made the full set 21 parts; the good run is about 12 minutes of real time on the test clock, mostly the night at ×240; the spec's 300 was a placeholder). Phone only, as specified.
+
 ---
 
 ## 29. Definition of Done (part 10c) **(10c)**

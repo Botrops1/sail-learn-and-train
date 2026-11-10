@@ -113,6 +113,7 @@ import { liveM94Checks, M94_SCENES } from './shots-m94.mjs';
 import { liveM95Checks, M95_SCENES } from './shots-m95.mjs';
 import { liveM96Checks, M96_SCENES } from './shots-m96.mjs';
 import { liveM97Checks, M97_SCENES } from './shots-m97.mjs';
+import { liveM98Checks, M98_SCENES } from './shots-m98.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -322,6 +323,7 @@ const SCENES = [
   ...M95_SCENES.map((scene) => ({ ...scene, name: `m95-${scene.name}` })),
   ...M96_SCENES.map((scene) => ({ ...scene, name: `m96-${scene.name}` })),
   ...M97_SCENES.map((scene) => ({ ...scene, name: `m97-${scene.name}` })),
+  ...M98_SCENES.map((scene) => ({ ...scene, name: `m98-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -1189,6 +1191,7 @@ try {
     m95: () => liveM95Checks(onTestClock),
     m96: () => liveM96Checks(onTestClock),
     m97: () => liveM97Checks(onTestClock),
+    m98: () => liveM98Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {
