@@ -101,7 +101,8 @@ Chosen: the **Sketchfab layout**. It already matches the app, it is what the iss
 - `content/lang/en/ui.json`, `content/lang/ru/ui.json`: 5.5.
 - `tests/cameraPresets.test.ts`: 5.7 (one test replaced, new tests added). `tests/picking.test.ts`: the `isDoubleTap` tests.
 - `scripts/shots-m99.mjs` (new, group `m99`; registered in `scripts/shots.mjs`: import, `SCENES` (an empty `M99_SCENES` array is fine), `liveGroups`), `.github/ci-times.json` (`"m99": 300`), `tests/ciPlan.test.ts` (add `'m99'` to the list, count 96 → 97 with the comment "Counted at M99", `newest` becomes `['m99', 'm98', 'm97', 'm96']`).
-- `scripts/shots-m50.mjs`: one wait (5.8, last item).
+- `scripts/shots-m50.mjs`: the tap wait in `tapHandle` (5.8, after item 14).
+- `docs/WORKFLOW.md`: section 23 (the M99 checklist) was written with this plan; leave it unless a link is wrong.
 - Docs: `docs/CODE_MAP.md` (the `cameraRig.ts, cameraPresets.ts` row, `picking.ts` row, `cameraChip.ts` row, `scripts/shots-m99.mjs`, this spec in the docs list), 5.10 of this spec, `docs/ROADMAP.md` (decisions-log row "M99 built"), `docs/review/ru.md` (generated).
 
 ### 5.2 The hand-moved camera (`cameraRig.ts`, `cameraPresets.ts`)
@@ -110,7 +111,6 @@ Chosen: the **Sketchfab layout**. It already matches the app, it is what the iss
 
 ```ts
 controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
-controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN }; // unchanged
 controls.zoomToCursor = true;
 controls.rotateSpeed = cam.rotateSpeed;
 controls.zoomSpeed = cam.zoomSpeed;
@@ -118,7 +118,7 @@ controls.panSpeed = cam.panSpeed;
 controls.cursorStyle = 'grab';
 ```
 
-Shift, Ctrl or Cmd + left drag already slides in `OrbitControls` (three 0.186.1). Do not add code for it.
+`controls.touches` stays as it is (one finger turns, two fingers pinch and slide). Shift, Ctrl or Cmd + left drag already slides in `OrbitControls` (three 0.186.1). Do not add code for it.
 
 **`update(now)` order** (replace the part after the `tween` block):
 
@@ -128,6 +128,8 @@ Shift, Ctrl or Cmd + left drag already slides in `OrbitControls` (three 0.186.1)
 2. **Target clamp without a twist:** `raw = controls.target` as `Vec3`; `target = clampTarget(raw)`; `delta = target − raw`; if `delta` is not zero, add `delta` to `camera.position` as well; then `controls.target.set(...target)`.
 3. **Camera clamp:** `position = clampCameraPosition(camera.position as Vec3, target)`; `camera.position.set(...position)`; `camera.lookAt(controls.target)`.
 4. The existing `lastFreePose` line.
+
+**How zoom to the pointer works in three 0.186.1** (so the checks are read right): with `zoomToCursor` and `screenSpacePanning` (default true), a wheel step moves the camera along the ray under the pointer and then puts the target straight ahead of the camera at the new distance. Zooming at the middle of the free area (the optical axis, M10/M80 view offset) leaves the target where it is. Zooming off-centre moves the camera and the target sideways towards the pointer. A zoom step can leave the camera a little under the polar limit computed before it; step 3's water clamp lifts it that frame and the next frame's limit holds. This is accepted.
 
 **`maxPolarAngle(targetY, distance, minHeight)`:** `distance <= 0` → `Math.PI / 2`; else `Math.acos(Math.min(1, Math.max(-1, (minHeight - targetY) / distance)))`. With a target 9.82 m up and 45 m away, φ max = 1.7839 rad (102.21°), and the camera's lowest height is exactly `minHeight` (0.30 m). `minPolarAngle` stays 0.
 
@@ -162,27 +164,29 @@ So the camera stays where it is and turns its head to the point. It only moves a
 **`centreOn(point)`** in the rig:
 
 - `focus = undefined; pendingMinDistance = false; controls.minDistance = cam.minDistance;`
-- `to = centrePose(currentPose(), point, cam.minDistance, controls.maxDistance)`; `allowDistanceOf(to)`;
+- `from = tween ? tween.to : currentPose()` (the pose it is at or gliding to, as `focus` does); `to = centrePose(from, point, cam.minDistance, controls.maxDistance)` (`controls.maxDistance` on purpose: a preset may have raised it to fit a small phone view, 172 m for Side on a 390 × 844 phone, and a double-tap must not pull the camera in); `allowDistanceOf(to)`;
 - `tween = { from: currentPose(), to, start: performance.now(), mode: 'straight' }`;
 - `movedByHand = true`; if `currentPreset !== 'free'`: `currentPreset = 'free'` and call the `listeners` (as a drag does; `scene.ts` already dispatches `setCameraPreset: free` from `onUserMove`).
-- The `lastFreePose` line in `update` keeps the result once the tween ends.
+- The `lastFreePose` line in `update` keeps the result once the tween ends. A preset chosen during the glide saves the pose of that moment as `lastFreePose` (as `goTo` does today); this is accepted.
 
 ### 5.4 Taps (`picking.ts`, `scene.ts`)
 
-**`Picker.point(x, y, width, height)`:** build the ray exactly as `pick` does (same NDC from the canvas point). Intersect, recursively, the boat root, the water's pick target and the extra roots (the same three things `createPicker` gets). Skip meshes whose `userData.noPick` is true and meshes that are not visible (`visible` false on the mesh or any parent); three's `Raycaster` does not skip them by itself. Return the nearest hit's `point` as `Vec3`, or `null` (the sky).
+**`Picker.point(x, y, width, height)`:** build the ray exactly as `pick` does (same NDC from the canvas point). Intersect, recursively, the boat root, the water's pick target and the extra roots (the same three things `createPicker` gets). Skip meshes whose `userData.noPick` is true and meshes that are not visible (`visible` false on the mesh or any parent); three's `Raycaster` does not skip them by itself. Count only hits whose object is a `THREE.Mesh` (lines and points are ignored: the default `Raycaster` line threshold is 1 m). Return the nearest such hit's `point` as `Vec3`, or `null` (the sky).
 
-**`listenForTaps(canvas, onTap, onDoubleTap)`:** keep a `lastTap: TapMark | null` (canvas coordinates, `event.timeStamp`). For each tap that passes today's tests:
+**`listenForTaps(canvas, onTap, onDoubleTap)`:** keep a `lastTap: TapMark | null`. The mark is taken at the release (`pointerup`): canvas coordinates of the release and its `event.timeStamp`. For each tap that passes today's tests:
 
 - if `isDoubleTap(lastTap, mark)`: call `onDoubleTap(x, y)` only (not `onTap`), and set `lastTap = null` (a third tap is a new single tap);
 - else call `onTap(x, y)` and set `lastTap = mark`.
 
-A drag, a long press, a two-finger touch or a right or middle button sets `lastTap = null`.
+Every early return in `finish` (no start, cancelled, two fingers, a right or middle button, moved too far, held too long) sets `lastTap = null` first.
 
-**`scene.ts`:** the call becomes `listenForTaps(renderer.domElement, <today's onTap>, (x, y) => { const rect = renderer.domElement.getBoundingClientRect(); const point = picker.point(x, y, rect.width, rect.height); if (point) rig.centreOn(point); })`. While `rig.preset` is `'map'`, nothing happens (the canvas is not shown then anyway). `touch-action: none` on `.scene-canvas` already stops the browser's own double-tap zoom.
+Under the browser checks' test clock, `event.timeStamp` follows the test clock (measured 2026-11-10: it stands still while the clock is paused). So on a test-clock page two taps at one spot with no `page.waitForTimeout` between them are a double tap, and taps with `page.waitForTimeout(400)` between them are two single taps.
+
+**`scene.ts`:** the call becomes `listenForTaps(renderer.domElement, <today's onTap>, (x, y) => { const rect = renderer.domElement.getBoundingClientRect(); const point = picker.point(x, y, rect.width, rect.height); if (point) rig.centreOn(point); })`. While `rig.preset` is `'map'`, nothing happens (the canvas is not shown then anyway). `onDoubleTap` does not call `stopSpotlight`: the first tap already ended a spotlight, and `centreOn` replaces the glide back that started. `touch-action: none` on `.scene-canvas` already stops the browser's own double-tap zoom.
 
 ### 5.5 Help line (`cameraChip.ts`) and strings
 
-`cameraChip.ts` passes `hint: \`${t('cam.menuHint')} ${t(touch ? 'cam.moveTouch' : 'cam.moveMouse')}\``, with `touch` from 2. It is one paragraph, the existing `.camera-menu-hint` (no new style). Build it once, when the menu is created.
+`cameraChip.ts` passes `hint: \`${t('cam.menuHint')} ${t(touch ? 'cam.moveTouch' : 'cam.moveMouse')}\``, with `touch` worked out as section 2 says (`(pointer: coarse)`; measured on 2026-11-10: true in a Playwright context with `hasTouch: true`, which `openPage` gives every viewport narrower than 1,000 px). It is one paragraph, the existing `.camera-menu-hint` (no new style). Build it once, when the menu is created.
 
 `content/lang/en/ui.json` (final):
 
@@ -240,13 +244,15 @@ No PHYSICS_TRUTHS rule applies. In `tests/cameraPresets.test.ts`:
 - **M99 centrePose keeps the near limit:** `from = { position: [-0.85, 14.03, -40.05], target: [-0.85, 9.82, 0], fovDeg: 40 }`, `point = [-0.85, 14.03, -39.05]`, limits 3 and 140 → `position` = `[-0.85, 14.03, -42.05]` within 1e-6.
 - **M99 centrePose clamps the target:** `point = [100, 0, 0]` → `target` = `[25, 0, 0]`.
 
+`Picker.point` (in `tests/picking.test.ts`): a 1 m box mesh at the origin as the boat root, an empty `THREE.Group` as the water, a `PerspectiveCamera(40, 1, 0.1, 1000)` at `[0, 0, 10]` looking at the origin (`updateMatrixWorld()` on both): `point(50, 50, 100, 100)` → `[0, 0, 0.5]` within 1e-6; the same with the box's `visible = false` → `null`. `point` must work when the root is itself a mesh and the water is an empty group; the app's real water target is a mesh with an invisible material (`material.visible = false`) but `visible` true, so it is still hit, as it must be.
+
 `isDoubleTap` (in `tests/picking.test.ts`): `(null, {x:0,y:0,time:0})` → false; `({0,0,0}, {10,10,300})` → true; `({0,0,0}, {0,0,400})` → false; `({0,0,0}, {30,0,100})` → false; `({0,0,0}, {24,0,350})` → true (both limits inclusive).
 
 ### 5.8 Browser checks (`scripts/shots-m99.mjs`, group `m99`, test clock)
 
-Every page opens with `openPage(viewport, label, query, { testClock: true })` and `debug=1`, and reads the pose from `window.__sailDebug.cameraPose()`. "Distance" is |position − target|. Wait 800 ms (`page.waitForTimeout`) after each gesture.
+Every page opens with `openPage(viewport, label, query, { testClock: true })` and `debug=1&sea=flat`, and reads the pose from `window.__sailDebug.cameraPose()`. `hitCentres()` and `__sailCamera.freeArea()` are in canvas px: add the canvas's `boundingBox()` x and y before passing a point to `page.mouse` or to a touch (as `shots-m50.mjs` does). Touches go through a helper written in `shots-m99.mjs`: `touch(cdp, type, points)` → `cdp.send('Input.dispatchTouchEvent', { type, touchPoints: points })` with `cdp = await page.context().newCDPSession(page)` (`touchTools` in `shots-m4b.mjs` only swipes with one finger). "Distance" is |position − target|. Wait 800 ms (`page.waitForTimeout`) after each gesture.
 
-Computer (1280 × 800), link `?debug=1&cam=side-port`:
+Computer (1280 × 800), link `?debug=1&sea=flat&cam=side-port`:
 
 1. **Zoom to the pointer:** the wheel at 25 % of the canvas width and 40 % of its height, 5 × `deltaY −200`: the distance is smaller and the target has moved by more than 0.5 m. Fresh page: the same at the centre of the free area (`__sailCamera.freeArea()` middle, half the width): the target moved less than 0.3 m.
 2. **Slide stops without a twist:** read the unit view direction (position − target); right drag 1,200 px to the left in 30 steps: `|target.x| ≤ 25.001` and the view direction differs from the one before by less than 0.01 in every component.
@@ -254,19 +260,21 @@ Computer (1280 × 800), link `?debug=1&cam=side-port`:
 4. **Shift + drag slides:** the same with `keyboard.down('Shift')` and the left button: the target moved by more than 0.5 m.
 5. **Stops above the water:** left drag 600 px upwards in 20 steps; then read the pose 10 times, 100 ms apart: every camera y ≥ 0.299, and the largest change of y between readings < 0.05.
 6. **No jump at the hull:** `__sailDebug.setView([0, 1.5, 4], [0, 1, 0])`; left drag 300 px to the right in 20 steps of 15 px, reading the pose after each step (`page.waitForTimeout(60)`): the largest change of y between readings < 0.5 (before M99: 1.2).
-7. **Double-click on the water centres:** double-click (`page.mouse.dblclick`) at 50 % of the width and 90 % of the free area's height (water in front of the boat): the target's y < 0.5; the link has `cam=free` (`waitForLink`); the camera chip reads "Free".
-8. **Double-click on a part centres and selects it:** fresh page; take the first entry of `__sailDebug.hitCentres()` whose `partId` starts with `fit_`; double-click there: the link has `sel=<that id>`; the target is inside `__sailDebug.partBox(id)` grown by 0.5 m on every side.
-9. **A single tap still only selects:** fresh page; one click on the same hit centre; wait 800 ms: the link has `sel=<id>` and the target moved by less than 0.01 m.
+7. **Double-click on the water centres:** double-click (`page.mouse.dblclick`) at 50 % of the canvas width and y = `top + 0.9 · (bottom − top)` of the free area (water in front of the boat): the target's y < 0.5; the link has `cam=free` (`waitForLink`); the camera chip reads "Free".
+8. **Double-click on a part centres and selects it:** fresh page; take the `fit_` entries of `__sailDebug.hitCentres()` whose point lies inside the free area and the canvas, and use the first one; double-click there: the link has a `sel=` key with some part id (the single tap's `pick` may choose a nearer part than the hit centre's own, which is fine); the target moved by more than 1 m; the target's y is above 0.5 (it is on the boat, not the water). (Not compared with `partBox`: that box is in the boat's frame, the target in the world's.)
+9. **A single tap still only selects** (a selection never starts a spotlight; only the Learn buttons do): fresh page; one click on the same hit centre; wait 800 ms: the link has a `sel=` key and the target moved by less than 0.01 m.
 10. **Help line:** click `camera-chip`: `.camera-menu-hint` contains "wheel to zoom towards the pointer".
 
-Phone (390 × 844, `hasTouch`, `isMobile`), link `?debug=1&cam=side-port`, touch through a CDP session (`Input.dispatchTouchEvent`) at y = 250 (the 3D view above the half sheet):
+Phone (`openPage` with `{ width: 390, height: 844 }`: `hasTouch` true, `isMobile` false), link `?debug=1&sea=flat&cam=side-port`, touch through a CDP session (`Input.dispatchTouchEvent`) at y = 250 (the 3D view above the half sheet):
 
-11. **Pinch towards the fingers:** two fingers at x = 80 and 170 moving apart by 8 px per step for 10 steps: the distance is smaller and the target moved by more than 0.5 m.
-12. **Double-tap on the water:** two taps (touchStart/touchEnd) at the same point with `page.realWaitForTimeout(150)` between them (`isDoubleTap` compares `event.timeStamp`, which is real time even on the test clock), at x = 195 and y = the free area's bottom − 30: the target's y < 0.5 and the link has `cam=free`.
+11. **Pinch towards the fingers:** two fingers at canvas x = 80 and 170 (canvas y = 250) moving apart by 8 px per step for 10 steps: the distance is smaller and the target moved by more than 0.5 m.
+12. **Double-tap on the water:** two taps (touchStart then touchEnd, twice) at the same point with no wait between them (so they are a double tap whatever clock `event.timeStamp` follows), at canvas x = 195 (between the mini-map at the left and the chips at the right) and canvas y = `__sailCamera.freeArea().bottom − 70` (water below the far-away boat): the target's y < 0.5 and the link has `cam=free`.
 13. **Help line:** tap `camera-chip`: `.camera-menu-hint` contains "one finger turns".
 14. **Russian** (`&lang=ru`): the menu hint contains "один палец" and the menu fits on the screen (its bounding box is inside the viewport).
 
-**`scripts/shots-m50.mjs`:** before the second `tapHandle(page)` in the "second tap takes it" check, add `await page.waitForTimeout(400);` with the comment `// M99: two taps closer than 350 ms are a double tap (centre), not a second tap.` (that page is not on the test clock, so this is real time).
+**`scripts/shots-m50.mjs`:** in `tapHandle`, change the closing `page.waitForTimeout(300)` to `450`, with the comment `// M99: two taps closer than 350 ms are a double tap (centre), not a second tap.` That page is not on the test clock, so this is real time, and it covers all three pairs of taps (the port handle, the mast, and Learn).
+
+**Other checks:** any existing check that taps the same spot twice within 350 ms (real time, or test time on a test-clock page) now gets a double tap. If a group fails for that reason, add `await page.waitForTimeout(400);` before the second tap and change nothing else in that check. Say in the PR which checks needed it.
 
 Groups to run locally: `SHOTS_ONLY=m99,m50,m49,m64,m80,m25,general`. The PR description carries `CI groups: all` (the tap handling changes for every part selection).
 
