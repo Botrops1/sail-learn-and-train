@@ -54,10 +54,10 @@ export async function liveM97Checks({ openPage, viewports, outDir, prefix, probl
         if (Math.round(now.controls.ctl_mainsheet) !== want) {
           await controls(page, { ctl_mainsheet: want });
         }
-        // The picture of a gust: the first time the wind is 10 % over a bura's mean.
+        // The picture of a gust: the first time the wind is 10 % over the mean while the bura rises (the three gusts of the step come before 08:07).
         if (
           !shotTaken &&
-          now.controls.ctl_wind_speed > 17 &&
+          now.controls.ctl_wind_speed > 8 &&
           now.twsKn > 1.1 * now.controls.ctl_wind_speed
         ) {
           gustLine = (await exerciseLine(page)) ?? 'no line';
