@@ -842,6 +842,44 @@ describe('time-lapse links (M95)', () => {
   });
 });
 
+describe('A bura is coming in the link (M97, PHASE10_SPEC 27.3)', () => {
+  const notKeys = /[?&](wm|wd|ws|tx)=/;
+
+  it('opens in setup with the scripted wind: 3 kn from the north-east at 08:00', () => {
+    const state = parseUrlState('?m=exercise&ex=bura');
+    expect(state.exercise?.status).toBe('setup');
+    expect(clockParam(state.clock.utcMs)).toBe('202606010800');
+    expect(state.windMode.mode).toBe('scripted');
+    expect(state.controls.ctl_wind_speed).toBeCloseTo(3, 6);
+    expect(state.controls.ctl_wind_dir).toBeCloseTo(45, 6);
+    expect(state.wind.twsKn).toBeCloseTo(3, 6);
+    // The boat starts at the calm's speed and heel, not the default wind's (review finding 2).
+    expect(mpsToKn(state.boat.speedMps)).toBeLessThan(2.5);
+    expect(Math.abs(state.boat.heelDeg)).toBeLessThan(1.5);
+    expect(exerciseStartLink('bura', state, 'easy')).not.toMatch(notKeys);
+    expect(serializeUrlState(state)).not.toMatch(notKeys);
+    expect(serializeUrlState(state)).not.toMatch(/[?&](seed|wg)=/);
+  });
+
+  it('its waypoint link, made after the first step, also opens scripted', () => {
+    let s = reduce(parseUrlState('?m=exercise&ex=bura'), { type: 'exercise', command: 'start' });
+    s = reduce(s, { type: 'setControls', values: { ctl_jib_sheet: 100, ctl_jib_furl: 0 } });
+    for (let i = 0; i < 400 && (s.exercise?.step ?? 0) < 1; i += 1) {
+      s = reduce(s, { type: 'step', dt: 0.05 });
+    }
+    expect(s.exercise?.step).toBe(1);
+    const waypoint = s.exercise?.waypoints[1];
+    expect(waypoint).toBeDefined();
+    const link = waypointLink(s, waypoint as ExerciseWaypoint);
+    expect(link).not.toMatch(notKeys);
+    expect(link).not.toMatch(/[?&](seed|wg)=/);
+    const opened = parseUrlState(link);
+    expect(opened.exercise?.step).toBe(1);
+    expect(opened.windMode.mode).toBe('scripted');
+    expect(opened.controls.ctl_wind_speed).toBeCloseTo(3, 1);
+  });
+});
+
 describe('the afternoon maestral in the link (M96, PHASE10_SPEC 26.6)', () => {
   it('opens in setup at 12:20 with the summer day at size 20, and its links carry no wd, ws or tx', () => {
     const state = parseUrlState('?m=exercise&ex=maestral');

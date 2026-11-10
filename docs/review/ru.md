@@ -3022,6 +3022,8 @@
 | wind.size.bura | Bura {value} kn, gusts up to half as strong again | Бора {value} уз, порывы до полутора раз сильнее |
 | wind.size.jugo | Jugo {value} kn | Юго {value} уз |
 | wind.locked | The {wind} sets the wind. Choose Steady to set it yourself. | Ветер задаёт режим «{wind}». Выберите «Ровный», чтобы задать ветер самому. |
+| wind.lockedScript | The exercise sets the wind. | Ветер задаёт упражнение. |
+| wind.mode.scripted.hint | The exercise sets the wind and changes it on its own timetable. | Упражнение само задаёт ветер и меняет его по своему расписанию. |
 | wind.newPattern | New pattern | Новый узор |
 | wind.newPattern.hint | Draws another random pattern. Building and Dying start their change again. The same link always gives the same pattern. | Рисует другой случайный узор. «Крепчающий» и «Стихающий» начинают изменение заново. Одна и та же ссылка всегда даёт один и тот же узор. |
 | waves.label | Waves | Волны |

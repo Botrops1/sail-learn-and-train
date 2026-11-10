@@ -13,6 +13,7 @@ import {
   type CheckContext,
   type CheckSource,
   type ExerciseCheck,
+  type ExerciseDef,
 } from '../src/model/exercises';
 import { mpsToKn } from '../src/model/angles';
 import { boat } from '../src/model/boat';
@@ -83,6 +84,41 @@ function checkProblems(check: ExerciseCheck): string[] {
   return problems;
 }
 
+/** M97 (PHASE10_SPEC 27.2): what is wrong with a def's wind timetable; empty when nothing is. */
+function windProblems(def: ExerciseDef): string[] {
+  const wind = def.wind;
+  if (wind === undefined) return [];
+  const problems: string[] = [];
+  const { points } = wind;
+  if (points.length < 2) problems.push('fewer than 2 points');
+  const mm = (at: string) => Number(at.slice(0, 2)) * 60 + Number(at.slice(3, 5));
+  const first = points[0];
+  let last = -1;
+  for (const point of points) {
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(point.at)) {
+      problems.push(`bad time ${point.at}`);
+      continue;
+    }
+    const offset = first === undefined ? 0 : (mm(point.at) - mm(first.at) + 1440) % 1440;
+    if (offset <= last) problems.push('offsets do not increase');
+    last = offset;
+    if (!(point.fromDeg > -180 && point.fromDeg <= 180)) problems.push('fromDeg out of range');
+    if (!(point.kn >= 0 && point.kn <= 30)) problems.push('kn out of range');
+    if (!(point.gustPct >= 0 && point.gustPct <= 60)) problems.push('gustPct out of range');
+  }
+  const params = new URLSearchParams(def.start);
+  const clk = params.get('clk');
+  if (
+    clk === null ||
+    first === undefined ||
+    clk.slice(8, 10) + ':' + clk.slice(10, 12) !== first.at
+  ) {
+    problems.push('start clk is not the first point');
+  }
+  if (params.has('wm')) problems.push('start has wm');
+  return problems;
+}
+
 describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
   it('has valid ids, groups, ropes, checks and mistakes', () => {
     expect(new Set(EXERCISES.map((e) => e.id)).size).toBe(EXERCISES.length);
@@ -117,6 +153,8 @@ describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
         } else expect(checkProblems(mistake.on.condition)).toEqual([]);
         for (const id of mistake.steps ?? []) expect(stepIds).toContain(id);
       }
+      // M97: a wind timetable follows 27.2.
+      expect(windProblems(exercise), exercise.id).toEqual([]);
     }
     expect(exercisesFile.schemaVersion).toBe(1);
   });
@@ -128,7 +166,9 @@ describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
       // M96: a start with a local wind (`wm`) has neither `wd` nor `ws` (the wind comes from the
       // clock), and the maestral, bura and night starts name no `wind` either; skip those.
       if (!params.has('ws') && !params.has('wd')) {
-        expect(isLocalWind(state.windMode.mode), exercise.id).toBe(true);
+        expect(isLocalWind(state.windMode.mode) || exercise.wind !== undefined, exercise.id).toBe(
+          true,
+        );
         continue;
       }
       expect(state.controls.ctl_wind_speed).toBe(Number(params.get('ws')));
@@ -145,6 +185,51 @@ describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
         exercise.id,
       ).toBeTypeOf('string');
     }
+  });
+});
+
+describe('a wind timetable is checked (M97, PHASE10_SPEC 27.2)', () => {
+  const bura = EXERCISES.find((e) => e.id === 'bura') as ExerciseDef;
+  const withPoints = (
+    points: readonly { at: string; fromDeg: number; kn: number; gustPct: number }[],
+    start = bura.start,
+  ): ExerciseDef => ({ ...bura, wind: { points }, start });
+  const good = bura.wind?.points ?? [];
+  const p = (i: number) => good[i] as (typeof good)[number];
+
+  it('the bura is valid and has the 08:00 start', () => {
+    expect(bura.wind?.points.length).toBe(4);
+    expect(windProblems(bura)).toEqual([]);
+  });
+
+  it('one bad def per rule gives one problem', () => {
+    expect(windProblems(withPoints([p(0)]))).toEqual(['fewer than 2 points']);
+    expect(windProblems(withPoints([p(0), { ...p(1), at: '8:04' }]))).toEqual(['bad time 8:04']);
+    expect(windProblems(withPoints([p(0), p(1), { ...p(2), at: '08:04' }]))).toEqual([
+      'offsets do not increase',
+    ]);
+    expect(windProblems(withPoints([p(0), { ...p(1), fromDeg: -180 }]))).toEqual([
+      'fromDeg out of range',
+    ]);
+    expect(windProblems(withPoints([p(0), { ...p(1), kn: 31 }]))).toEqual(['kn out of range']);
+    expect(windProblems(withPoints([p(0), { ...p(1), gustPct: 61 }]))).toEqual([
+      'gustPct out of range',
+    ]);
+    expect(
+      windProblems(withPoints(good, bura.start.replace('clk=202606010800', 'clk=202606010830'))),
+    ).toEqual(['start clk is not the first point']);
+    expect(windProblems(withPoints(good, `${bura.start}&wm=bura`))).toEqual(['start has wm']);
+  });
+
+  it('a script may run over midnight', () => {
+    const night = withPoints(
+      [
+        { at: '23:00', fromDeg: 45, kn: 3, gustPct: 0 },
+        { at: '01:00', fromDeg: 45, kn: 6, gustPct: 0 },
+      ],
+      bura.start.replace('clk=202606010800', 'clk=202606012300'),
+    );
+    expect(windProblems(night)).toEqual([]);
   });
 });
 

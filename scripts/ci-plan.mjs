@@ -7,7 +7,7 @@ import { milestoneOf } from './pr-body.mjs';
 
 /** Seconds per part (tunable): a PR's set, and the full set. */
 export const PR_CAP_S = 600;
-export const FULL_CAP_S = 1200;
+export const FULL_CAP_S = 1250;
 /** Scene parts of the matrix, and how many of the newest milestones' groups every PR runs. */
 export const SCENE_SHARDS = 4;
 export const RECENT_GROUPS = 4;

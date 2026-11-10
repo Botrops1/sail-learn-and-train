@@ -488,6 +488,8 @@
   "wind.size.bura": "Bura {value} kn, gusts up to half as strong again",
   "wind.size.jugo": "Jugo {value} kn",
   "wind.locked": "The {wind} sets the wind. Choose Steady to set it yourself.",
+  "wind.lockedScript": "The exercise sets the wind.",
+  "wind.mode.scripted.hint": "The exercise sets the wind and changes it on its own timetable.",
   "wind.newPattern": "New pattern",
   "wind.newPattern.hint": "Draws another random pattern. Building and Dying start their change again. The same link always gives the same pattern.",
   "waves.label": "Waves",

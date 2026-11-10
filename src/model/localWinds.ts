@@ -139,18 +139,64 @@ export function localWindMean(
   }
 }
 
+const DAY_MIN = 1440;
+
+function minutesOf(at: string): number {
+  const [h = '0', m = '0'] = at.split(':');
+  return Number(h) * 60 + Number(m);
+}
+
+/**
+ * The mean wind of a scripted wind (M97, PHASE10_SPEC 27.3): the points' values, joined in a
+ * straight line (the direction the shorter way round), read from the first point's local time
+ * onwards. Before the first point and after the last it holds that point's values.
+ */
+export function scriptMean(
+  points: readonly WindKey[],
+  utcMs: number,
+  areaData: AreaData = area,
+): WindMean {
+  const first = points[0];
+  if (first === undefined) return { dirDeg: 0, twsKn: 0, gustPct: 0 };
+  const start = minutesOf(first.at);
+  const off = points.map((point) => (minutesOf(point.at) - start + DAY_MIN) % DAY_MIN);
+  const p = localParts(utcMs, areaData);
+  const now = p.hour * 60 + p.minute + p.second / 60;
+  const x = (now - start + DAY_MIN) % DAY_MIN;
+  for (let i = 1; i < points.length; i += 1) {
+    const a = points[i - 1];
+    const b = points[i];
+    const offA = off[i - 1];
+    const offB = off[i];
+    if (a === undefined || b === undefined || offA === undefined || offB === undefined) continue;
+    if (x > offB) continue;
+    const u = (x - offA) / (offB - offA);
+    return {
+      dirDeg: wrap180(a.fromDeg + u * wrap180(b.fromDeg - a.fromDeg)),
+      twsKn: a.kn + u * (b.kn - a.kn),
+      gustPct: a.gustPct + u * (b.gustPct - a.gustPct),
+    };
+  }
+  const last = points[points.length - 1] ?? first;
+  // After the last point, and for x = 0 on a one-point script: its values.
+  return { dirDeg: last.fromDeg, twsKn: last.kn, gustPct: last.gustPct };
+}
+
 /**
  * The mean wind: a clock wind's own mean, for any other mode the controls' wind (PHASE10_SPEC
- * 24.3). `script` is for the scripted wind (M97) and is not read yet.
+ * 24.3). `script` is for the scripted wind (M97); without one the controls' wind is the mean.
  */
 export function windMean(
   windMode: WindModeState,
   controls: Controls,
   utcMs: number,
   timeS: number,
-  _script: readonly WindKey[] | null,
+  script: readonly WindKey[] | null,
   areaData: AreaData = area,
 ): WindMean {
+  if (windMode.mode === 'scripted' && script !== null) {
+    return scriptMean(script, utcMs, areaData);
+  }
   if (isLocalWind(windMode.mode)) {
     return localWindMean(
       windMode.mode,
@@ -176,7 +222,7 @@ export function trueWind(
   areaData: AreaData = area,
   data: BoatData = boat,
 ): WindNow {
-  if (!isLocalWind(windMode.mode)) {
+  if (!isLocalWind(windMode.mode) && !(windMode.mode === 'scripted' && script !== null)) {
     return windAt(controls.ctl_wind_dir, controls.ctl_wind_speed, windMode, timeS, data);
   }
   const m = windMean(windMode, controls, utcMs, timeS, script, areaData);

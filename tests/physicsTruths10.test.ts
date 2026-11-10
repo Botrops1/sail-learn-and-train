@@ -246,3 +246,26 @@ describe('Phase 10 rules (PHASE10_SPEC 26.6)', () => {
     expect(overpowered(s)).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('Phase 10 rules (PHASE10_SPEC 27.5)', () => {
+  const frame = (s: AppState): AppState => reduce(s, { type: 'step', dt: 0.05 });
+
+  it('PT-65 the bura arrives suddenly: a run that does nothing is overpowered', () => {
+    let s = reduce(parseUrlState(exerciseStartLink('bura', initialState(), 'easy')), {
+      type: 'exercise',
+      command: { options: { pauseOnMistake: false } },
+    });
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    // Calm at the start, the wind rising between 08:04 and 08:06, the bura by 08:06.
+    expect(s.wind.twsKn).toBeLessThan(4);
+    let largest = 0;
+    for (let i = 0; i < 18000; i += 1) {
+      s = frame(s);
+      largest = Math.max(largest, Math.abs(s.boat.heelDeg));
+    }
+    expect(s.alerts.entries.filter((e) => e.kind === 'overpowered').length).toBeGreaterThanOrEqual(
+      1,
+    );
+    expect(largest).toBeGreaterThan(30);
+  });
+});

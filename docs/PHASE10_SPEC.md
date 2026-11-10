@@ -3361,7 +3361,7 @@ A second test feeds one bad def per rule to a helper `windProblems(def): string[
 {
   "id": "bura", "group": "wind", "ropes": "easy", "crew": false,
   "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
-  "start": "?hdg=135&ms=50&js=60&ap=wind&apt=-90&sea=sheltered&clk=202606010800",
+  "start": "?hdg=135&ms=50&js=60&ap=wind&apt=-90&sea=sheltered&wd=45&ws=3&clk=202606010800",
   "wind": { "points": [
     { "at": "08:00", "fromDeg": 45, "kn": 3, "gustPct": 0 },
     { "at": "08:04", "fromDeg": 45, "kn": 3, "gustPct": 0 },
@@ -3381,7 +3381,7 @@ A second test feeds one bad def per rule to a helper `windProblems(def): string[
 }
 ```
 
-Heading 135 with the wind from 045 is a beam reach on port tack, out to the open sea (23.8). The gusts are 50 % of the mean: up to 30.1 kn with seed 1 over the first 900 s (1.67 × the mean: the gust term's 1.65 plus the pattern's small noise). The gust counter (`settings.gust`) counts a rise to 20 % over the mean, which is now the scripted mean (23.3). `sea=sheltered`: the bura's short waves build over three minutes (`waves.buildTimeS`).
+`wd=45&ws=3` in the start (added in the M97 PR, owner accepted the review's finding 2) makes the boat start at the speed and heel of the calm (2.0 kn, 0.5°) instead of the default wind's; the timetable takes over at once. Heading 135 with the wind from 045 is a beam reach on port tack, out to the open sea (23.8). The gusts are 50 % of the mean: up to 30.1 kn with seed 1 over the first 900 s (1.67 × the mean: the gust term's 1.65 plus the pattern's small noise). The gust counter (`settings.gust`) counts a rise to 20 % over the mean, which is now the scripted mean (23.3). `sea=sheltered`: the bura's short waves build over three minutes (`waves.buildTimeS`).
 
 ### 27.3 Model and app logic
 
@@ -3470,6 +3470,19 @@ Scenes: `bura-setup` (`?m=exercise&ex=bura`). Live: `m97 good run` (phone only, 
 ### 27.7 Done when / not in M97
 
 Done: the exercise can be finished on a phone; tests and `SHOTS_ONLY=m97,m96,m70` pass, then CI with `CI groups: all` (links and the store change). Not in M97: a bura that differs across the area (stronger under the mountains), the cap cloud, the bura's waves beyond the usual fetch.
+
+### 27.8 Decided in the M97 PR (owner accepted the independent review's recommendations: fix findings 1 and 2, leave 3 to 6)
+
+- Built as specified; no number was tuned. `SAILING_LIMITS.bura = [8, 7, 121]` passed at once: the good run takes 3.6, 2.7 and 392.4 app seconds (98.1 frame seconds at ×4), the largest heel is 4.2° (limit 10°; the prototype's 4.1°), no mistake. PT-65: with no action the first `overpowered` comes 341.7 s after Start, while the wind is still rising, and the heel reaches 35.7° (bands: at least one entry, above 30°).
+- **The start is calm (review finding 2, fixed).** The first build had no `wd`/`ws` in the start, so the boat was built in the default wind (12 kn from 060) and showed 6.1 kn and 6° of heel at 08:00 next to a card that says "almost calm: 3 knots". The start now has `&wd=45&ws=3` (the data rules forbid only `wm`): at setup she is at 2.0 kn and 0.5° of heel, 5 s after Start 1.95 kn. The step times and bands did not change.
+- **The full browser set (review finding 1).** The first CI run started before the description's `CI groups: all` line; the push that fixes finding 2 makes it run.
+- Left as is (review findings 3 to 6, owner accepted): the three gusts are counted while the wind is still rising (the step ends about 40 s after the full 18 kn; a planning change if it feels early on the phone: count gusts only once the full wind has come), the 180° turn follows the formula (M98's night is 90° → −90°), PT-65 stays source-checked, the cap change in `ci-plan.mjs` stays.
+- **A slip in 27.5, and what was tested.** 27.5 lists the turn of exactly 180° as "from −90 to from 90, 00:00 → from 180". 27.3's formula (`wrap180(a + u × wrap180(b − a))`) gives south for **90 → −90** (the night of M98) but north (0) for −90 → 90. The code follows the formula; the test uses 90 → −90, so the case M98 needs is the one checked. A script that turns −90 → 90 exactly would pass through north.
+- `scriptMean` with no points returns a calm 0 kn (never reached: the data test needs two points).
+- `initialState` keeps its `scripted` branch only for tests that build a state with `windMode: { mode: 'scripted' }` and an `exercise` override; a link sets the mode afterwards (`withScriptedWind` in `urlState.ts`).
+- `parseExercise` reads the link's `seed` (1 … 99,999) for the scripted wind; a link written by the app has none (a scripted run's link carries no `wm`, `seed` or `wg`), so it is 1.
+- The waypoint's `windMode` stays `scripted` inside the saved state (its `exercise` is null there); `restoreWaypoint` brings back the run and the timetable with it.
+- `tests/ciPlan.test.ts`: 95 groups, `m97` is among the four newest (`m93` drops out of the PR set). `.github/ci-times.json`: `m97` is 144 (measured 144 s locally; the spec's 300 was a placeholder, and 300 made the full set 21 parts, over the test's limit of 20; the parts were full at 1,200 s, so `FULL_CAP_S` in `scripts/ci-plan.mjs` went from 1200 to 1250 (tunable, PHASE_LAUNCH_SPEC 6.2) and the full set packs into 15 live parts again).
 
 ---
 
