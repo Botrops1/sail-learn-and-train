@@ -280,9 +280,36 @@ describe('time-lapse (M95)', () => {
     expect(state.settings.timeScale).toBe(1);
   });
 
-  it('choosing Held still with a steady wind, or the bar off, drops it to ×1', () => {
+  it('switching the time bar off drops it to ×1', () => {
     const state = reduce(open(), { type: 'setTimeScale', scale: 240 });
     expect(reduce(state, { type: 'setTimeBar', timeBar: false }).settings.timeScale).toBe(1);
+  });
+
+  it('choosing Sailing while held still with a gusty wind and nothing holding her drops it to ×1', () => {
+    let state = parseUrlState(
+      '?pl=bay&pe=-1660.0&pn=0.0&hdg=90&bs=0&wd=90&ws=6',
+      initialState().settings.detail,
+    );
+    state = reduce(state, { type: 'setBoatMode', mode: 'held' });
+    state = reduce(state, { type: 'setWindMode', mode: 'gusty' });
+    state = reduce(state, { type: 'setTimeScale', scale: 240 });
+    expect(state.boat.mode).toBe('held');
+    expect(state.settings.timeScale).toBe(240);
+    state = reduce(state, { type: 'setBoatMode', mode: 'sailing' });
+    expect(state.boat.mode).toBe('sailing');
+    expect(state.settings.timeScale).toBe(1);
+  });
+
+  it('letting the last mooring line go drops it to ×1', () => {
+    const berth = '?pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55';
+    let state = reduce(parseUrlState(berth), { type: 'setBoatMode', mode: 'sailing' });
+    expect(state.lines.lines).toHaveLength(1);
+    state = reduce(state, { type: 'setTimeScale', scale: 240 });
+    expect(state.settings.timeScale).toBe(240);
+    state = reduce(state, { type: 'line', code: 'sp', command: 'letGo' });
+    expect(state.lines.lines).toHaveLength(0);
+    state = reduce(state, { type: 'step', dt: 1 / 60 });
+    expect(state.settings.timeScale).toBe(1);
   });
 
   it('slices give the same hour as ×1 and ×16 (an hour at anchor)', { timeout: 60000 }, () => {
