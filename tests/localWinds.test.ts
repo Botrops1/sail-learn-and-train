@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { area } from '../src/model/area';
 import { utcFromLocal } from '../src/model/clock';
 import { defaultControls } from '../src/model/controls';
-import { localHourOf, localWindMean, trueWind } from '../src/model/localWinds';
+import {
+  localHourOf,
+  localWindMean,
+  scriptMean,
+  trueWind,
+  type WindKey,
+} from '../src/model/localWinds';
 import { initialWindMode, sizeRange, windAt } from '../src/model/windModes';
 
 /** 1 June 2026 (or `day` of June) at a local time. */
@@ -111,5 +117,45 @@ describe('localHourOf (M96, PHASE10_SPEC 23.3)', () => {
     expect(localHourOf(utcFromLocal(2026, 6, 1, 13, 30, area))).toBe(13.5);
     expect(localHourOf(utcFromLocal(2026, 6, 1, 0, 0, area))).toBe(0);
     expect(localHourOf(utcFromLocal(2026, 12, 1, 7, 15, area))).toBe(7.25);
+  });
+});
+
+describe('scriptMean (M97, PHASE10_SPEC 27.3)', () => {
+  const bura: WindKey[] = [
+    { at: '08:00', fromDeg: 45, kn: 3, gustPct: 0 },
+    { at: '08:04', fromDeg: 45, kn: 3, gustPct: 0 },
+    { at: '08:06', fromDeg: 45, kn: 18, gustPct: 50 },
+    { at: '10:00', fromDeg: 45, kn: 18, gustPct: 50 },
+  ];
+
+  it("the bura's points: calm, a straight ramp, then held", () => {
+    expect(scriptMean(bura, at(8, 2))).toEqual({ dirDeg: 45, twsKn: 3, gustPct: 0 });
+    expect(scriptMean(bura, utcFromLocal(2026, 6, 1, 8, 3, area) + 59_000).twsKn).toBe(3);
+    const mid = scriptMean(bura, at(8, 5));
+    expect(mid.twsKn).toBeCloseTo(10.5, 6);
+    expect(mid.gustPct).toBeCloseTo(25, 6);
+    expect(scriptMean(bura, at(8, 6)).twsKn).toBeCloseTo(18, 6);
+    expect(scriptMean(bura, at(9, 0))).toEqual({ dirDeg: 45, twsKn: 18, gustPct: 50 });
+    expect(scriptMean(bura, at(11, 0))).toEqual({ dirDeg: 45, twsKn: 18, gustPct: 50 });
+  });
+
+  // The spec's 27.5 lists this case as −90 → 90, but 27.3's formula (and M98's night, 90 → −90)
+  // gives south only for 90 → −90: that is what is tested (decided in the M97 PR).
+  it('a turn of exactly 180° goes through south, over midnight', () => {
+    const night: WindKey[] = [
+      { at: '23:00', fromDeg: 90, kn: 6, gustPct: 0 },
+      { at: '01:00', fromDeg: -90, kn: 2, gustPct: 0 },
+    ];
+    const m = scriptMean(night, at(0, 0, 2));
+    expect(m.twsKn).toBeCloseTo(4, 2);
+    expect(m.dirDeg).toBeCloseTo(180, 2);
+  });
+
+  it('a turn of less than 180° goes the shorter way, through north', () => {
+    const night: WindKey[] = [
+      { at: '23:00', fromDeg: -80, kn: 6, gustPct: 0 },
+      { at: '01:00', fromDeg: 80, kn: 2, gustPct: 0 },
+    ];
+    expect(scriptMean(night, at(0, 0, 2)).dirDeg).toBeCloseTo(0, 2);
   });
 });

@@ -1124,3 +1124,45 @@ describe("a step's speed-up (M96, PHASE10_SPEC 26.3)", () => {
     expect(reduce(off, { type: 'exercise', command: 'start' }).settings.timeScale).toBe(1);
   });
 });
+
+describe('the end of a scripted run (M97, PHASE10_SPEC 27.3)', () => {
+  const buraSetup = (): AppState => parseUrlState('?m=exercise&ex=bura');
+
+  it('leaving Exercises mode makes the wind Steady, in whole numbers (3 kn from 45 at 08:00)', () => {
+    const running = reduce(buraSetup(), { type: 'exercise', command: 'start' });
+    expect(running.windMode.mode).toBe('scripted');
+    const left = reduce(running, { type: 'setAppMode', mode: 'easy' });
+    expect(left.exercise).toBeNull();
+    expect(left.windMode.mode).toBe('steady');
+    expect(left.controls.ctl_wind_speed).toBe(3);
+    expect(left.controls.ctl_wind_dir).toBe(45);
+    expect(left.wind.twsKn).toBeCloseTo(3, 6);
+  });
+
+  it('Stop ends the run and the wind too; setup with a link keeps it scripted', () => {
+    const stopped = reduce(buraSetup(), { type: 'exercise', command: 'stop' });
+    expect(stopped.exercise).toBeNull();
+    expect(stopped.windMode.mode).toBe('steady');
+  });
+
+  it('the learner cannot choose the scripted wind, and cannot leave it during the run', () => {
+    const running = reduce(buraSetup(), { type: 'exercise', command: 'start' });
+    expect(reduce(running, { type: 'setWindMode', mode: 'steady' })).toBe(running);
+    const plain = initialState();
+    expect(reduce(plain, { type: 'setWindMode', mode: 'scripted' })).toBe(plain);
+  });
+
+  it('the wind follows the timetable while she runs', () => {
+    // No pause on a mistake: doing nothing is overpowered from about 341 s and would stop time.
+    let s = reduce(buraSetup(), {
+      type: 'exercise',
+      command: { options: { pauseOnMistake: false } },
+    });
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    for (let i = 0; i < Math.round(230 / 0.05); i += 1) s = reduce(s, { type: 'step', dt: 0.05 });
+    expect(s.controls.ctl_wind_speed).toBeCloseTo(3, 6);
+    for (let i = 0; i < Math.round(170 / 0.05); i += 1) s = reduce(s, { type: 'step', dt: 0.05 });
+    // 08:06:40 (the clock is 400 s on): the held values, 18 kn.
+    expect(s.controls.ctl_wind_speed).toBeCloseTo(18, 6);
+  });
+});

@@ -3471,6 +3471,17 @@ Scenes: `bura-setup` (`?m=exercise&ex=bura`). Live: `m97 good run` (phone only, 
 
 Done: the exercise can be finished on a phone; tests and `SHOTS_ONLY=m97,m96,m70` pass, then CI with `CI groups: all` (links and the store change). Not in M97: a bura that differs across the area (stronger under the mountains), the cap cloud, the bura's waves beyond the usual fetch.
 
+### 27.8 Decided in the M97 PR (recommended; merging accepts it)
+
+- Built as specified; no number was tuned. `SAILING_LIMITS.bura = [8, 7, 121]` passed at once: the good run takes 3.6, 2.7 and 392.4 app seconds (98.1 frame seconds at ×4), the largest heel is 6.2° (limit 10°, the prototype's 4.1° was with a slightly different pilot timing), no mistake. PT-65: with no action the first `overpowered` comes 341.8 s after Start, while the wind is still rising, and the heel reaches 35.6° (bands: at least one entry, above 30°).
+- **A slip in 27.5, and what was tested.** 27.5 lists the turn of exactly 180° as "from −90 to from 90, 00:00 → from 180". 27.3's formula (`wrap180(a + u × wrap180(b − a))`) gives south for **90 → −90** (the night of M98) but north (0) for −90 → 90. The code follows the formula; the test uses 90 → −90, so the case M98 needs is the one checked. A script that turns −90 → 90 exactly would pass through north.
+- `scriptMean` with no points returns a calm 0 kn (never reached: the data test needs two points).
+- `initialState` keeps its `scripted` branch only for tests that build a state with `windMode: { mode: 'scripted' }` and an `exercise` override; a link sets the mode afterwards (`withScriptedWind` in `urlState.ts`).
+- `parseExercise` reads the link's `seed` (1 … 99,999) for the scripted wind; a link written by the app has none (a scripted run's link carries no `wm`, `seed` or `wg`), so it is 1.
+- The waypoint's `windMode` stays `scripted` inside the saved state (its `exercise` is null there); `restoreWaypoint` brings back the run and the timetable with it.
+- `tests/ciPlan.test.ts`: 95 groups, `m97` is among the four newest (`m93` drops out of the PR set).
+- Recorded in the PR for the owner: the scripted wind has no owner-visible control; the Conditions card shows "The exercise sets the wind." while a bura run is open.
+
 ---
 
 ## 28. M98: A night at anchor (sign-off of part 10c) **(10c)**
