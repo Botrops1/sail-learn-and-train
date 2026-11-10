@@ -23,6 +23,7 @@ const SAILING_LIMITS: Record<string, number[]> = {
   'reduce-sail': [8, 7, 15],
   'set-sails': [13, 7, 49, 11, 9],
   'furl-sails': [6, 7, 20, 7],
+  maestral: [101, 8, 7, 220],
 };
 
 /** Show me from each step: harbour limits per level (8.7); stern-to-anchor measured in the M81 PR (57.1, 14.6, 146.5, 1.0, 17.6 s). */

@@ -8,6 +8,7 @@ import {
   checkTargets,
   exerciseDef,
   exerciseText,
+  hourText,
   targetReading,
   type ExerciseDef,
   type TargetRow,
@@ -62,6 +63,14 @@ export function targetText(row: TargetRow): string {
       return t('exercise.target.heading', { to: pad3(row.to), within: row.within });
     case 'quayGap':
       return t('exercise.target.quayGap', { min: row.range[0], max: row.range[1] });
+    case 'meanWind':
+      return row.range[1] >= 99
+        ? t('exercise.target.meanWindFrom', { min: row.range[0] })
+        : t('exercise.target.meanWind', { min: row.range[0], max: row.range[1] });
+    case 'localHour':
+      return row.range[1] >= 24
+        ? t('exercise.target.timeFrom', { from: hourText(row.range[0]) })
+        : t('exercise.target.time', { from: hourText(row.range[0]), to: hourText(row.range[1]) });
   }
 }
 
@@ -76,6 +85,8 @@ function nowText(row: TargetRow, value: number | string): string {
   if (row.kind === 'heading') return t('exercise.target.nowDeg', { value: pad3(Number(value)) });
   if (row.kind === 'quayGap') return t('exercise.target.nowM', { value });
   if (row.kind === 'control') return t('exercise.target.nowPct', { value });
+  if (row.kind === 'meanWind') return t('exercise.target.nowKn', { value });
+  if (row.kind === 'localHour') return t('exercise.target.nowWord', { value });
   const word =
     row.kind === 'trim'
       ? t(`trim.state.${String(value)}` as 'trim.state.good')

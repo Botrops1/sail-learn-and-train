@@ -5,13 +5,14 @@ import { boat } from '../src/model/boat';
 import { twaSignedDeg } from '../src/model/exercises';
 import { mpsToKn } from '../src/model/angles';
 import { buoyPilot } from './harbourPilot';
+import { pilotFor, type Pilot } from '../src/app/exercisePilots';
 import { MARINA_LAYOUT_IDS, marinaGeometry } from '../src/model/marina';
 import { gybeArrived, gybeStep, windTorqueNm, type GybeSwing } from '../src/model/gybe';
 import type { RealisticAction } from '../src/model/realistic';
 import { area } from '../src/model/area';
 import { utcFromLocal } from '../src/model/clock';
 import { defaultControls } from '../src/model/controls';
-import { localWindMean, trueWind } from '../src/model/localWinds';
+import { localHourOf, localWindMean, trueWind } from '../src/model/localWinds';
 import { initialWindMode } from '../src/model/windModes';
 
 function run(state: AppState, seconds: number): AppState {
@@ -208,5 +209,40 @@ describe('Phase 10c rules: the Adriatic winds (PHASE10_SPEC 24.7)', () => {
       const w = trueWind(wm, defaultControls(), at(12), s, null);
       expect(Math.abs(w.twsKn / m.twsKn - 1)).toBeLessThanOrEqual(0.2);
     }
+  });
+});
+
+describe('Phase 10 rules (PHASE10_SPEC 26.6)', () => {
+  const frame = (s: AppState): AppState => reduce(s, { type: 'step', dt: 0.05 });
+  const setup = () => parseUrlState(exerciseStartLink('maestral', initialState(), 'easy'));
+  const overpowered = (s: AppState) =>
+    s.alerts.entries.filter((e) => e.kind === 'overpowered').length;
+
+  it('PT-25 the afternoon maestral: reducing sail keeps her upright', () => {
+    const pilot = pilotFor('maestral', 'easy', 'easy') as Pilot;
+    let s = reduce(setup(), { type: 'exercise', command: 'start' });
+    let t = 0;
+    let largest = 0;
+    while (s.exercise?.status === 'running' && t < 600) {
+      s = frame(pilot(s, t));
+      t += 0.05;
+      largest = Math.max(largest, Math.abs(s.boat.heelDeg));
+    }
+    expect(s.exercise?.status).toBe('done');
+    expect(largest).toBeLessThanOrEqual(22);
+    expect(overpowered(s)).toBe(0);
+    expect(localHourOf(s.clock.utcMs)).toBeGreaterThanOrEqual(13.5);
+    expect(localHourOf(s.clock.utcMs)).toBeLessThan(13.52);
+  });
+
+  it('PT-25 with no action from Start until 13:30 she heels too far (overpowered)', () => {
+    let s = reduce(setup(), {
+      type: 'exercise',
+      command: { options: { pauseOnMistake: false } },
+    });
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    for (let i = 0; i < 60000 && localHourOf(s.clock.utcMs) < 13.5; i += 1) s = frame(s);
+    expect(localHourOf(s.clock.utcMs)).toBeGreaterThanOrEqual(13.5);
+    expect(overpowered(s)).toBeGreaterThanOrEqual(1);
   });
 });

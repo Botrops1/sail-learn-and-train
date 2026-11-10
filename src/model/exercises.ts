@@ -5,11 +5,13 @@ import type { Controls, ControlId } from './controls';
 import type { AnchorPhase, AnchorState } from './anchor';
 import { scopeNeededM } from './anchor';
 import { boat as hanse508, type BoatData } from './boat';
+import type { ClockState } from './clock';
 import type { EngineState } from './engine';
 import type { HarbourState } from './harbour';
 import { insideRect, marinaGeometry, type Rect } from './marina';
 import { canTighten, type LineCode, type LinesState } from './mooringLines';
 import { area, type AreaData } from './area';
+import { localHourOf } from './localWinds';
 import type { Severity } from './contact';
 import { depthAt } from './seabed';
 import type { BoatState, MotionReport } from './motion';
@@ -59,6 +61,10 @@ export interface ExerciseCheck {
   linesTight?: readonly LineCode[];
   fendersOut?: boolean;
   anchor?: { phase?: readonly AnchorPhase[]; chainOutM?: Range; scopeOk?: boolean };
+  /** M96: the mean wind (`controls.ctl_wind_speed`, knots). */
+  meanWindKn?: Range;
+  /** M96: the local hour on board (23.3); false without a clock in the source. */
+  localHour?: Range;
 }
 export interface ExerciseStep {
   id: string;
@@ -70,6 +76,8 @@ export interface ExerciseStep {
   bar: readonly string[];
   /** M82 (PHASE10_PHONE_SPEC 4.4): the rows in Realistic ropes (set-sails and furl-sails only); an empty list is a step that needs nothing. */
   barRealistic?: readonly string[];
+  /** M96: the time scale the coach sets while this step runs (a value of timeScales or timeLapseScales, > 1). */
+  speedUp?: number;
 }
 export type MistakeTrigger =
   | {
@@ -134,6 +142,8 @@ export interface CheckSource {
   harbour?: HarbourState;
   lines?: LinesState;
   anchor?: AnchorState;
+  /** M96: for the `localHour` check; AppState has it. */
+  clock?: ClockState;
 }
 export interface CheckContext {
   events: readonly ExerciseEvent[];
@@ -375,6 +385,10 @@ export function checkPasses(
   if (check.jibOutPct && !inRange(100 * source.rig.jibSolution.unfurled, check.jibOutPct)) {
     return false;
   }
+  if (check.meanWindKn && !inRange(source.controls.ctl_wind_speed, check.meanWindKn)) return false;
+  if (check.localHour) {
+    if (!source.clock || !inRange(localHourOf(source.clock.utcMs), check.localHour)) return false;
+  }
   if (check.engine) {
     if (check.engine.running !== undefined && source.engine.running !== check.engine.running) {
       return false;
@@ -393,7 +407,9 @@ export type TargetRow =
   | { kind: 'trim'; sail: 'main' | 'jib'; states: readonly TrimState[] }
   | { kind: 'control'; id: ControlId; range: Range }
   | { kind: 'heading'; to: number; within: number }
-  | { kind: 'quayGap'; range: Range };
+  | { kind: 'quayGap'; range: Range }
+  | { kind: 'meanWind'; range: Range }
+  | { kind: 'localHour'; range: Range };
 
 /** The rows of a check, in the order a learner reads them (the fields of M66). */
 export function checkTargets(check: ExerciseCheck): TargetRow[] {
@@ -407,6 +423,8 @@ export function checkTargets(check: ExerciseCheck): TargetRow[] {
   }
   if (check.headingDeg) rows.push({ kind: 'heading', ...check.headingDeg });
   if (check.quayGapM) rows.push({ kind: 'quayGap', range: check.quayGapM });
+  if (check.meanWindKn) rows.push({ kind: 'meanWind', range: check.meanWindKn });
+  if (check.localHour) rows.push({ kind: 'localHour', range: check.localHour });
   return rows;
 }
 
@@ -448,7 +466,24 @@ export function targetReading(row: TargetRow, source: CheckSource): TargetReadin
       if (gap === null) return null;
       return { ok: inRange(gap, row.range), value: Math.round(gap * 10) / 10 };
     }
+    case 'meanWind': {
+      const kn = source.controls.ctl_wind_speed;
+      return { ok: inRange(kn, row.range), value: Math.round(kn) };
+    }
+    case 'localHour': {
+      if (!source.clock) return null;
+      const hour = localHourOf(source.clock.utcMs);
+      return { ok: inRange(hour, row.range), value: hourText(hour) };
+    }
   }
+}
+
+/** "13:30" for 13.5 (hours as local time; minutes rounded down so a range's edge reads as written). */
+export function hourText(hours: number): string {
+  const total = Math.floor(hours * 60 + 1e-6);
+  const h = Math.floor(total / 60) % 24;
+  const m = total % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
 const textFiles = import.meta.glob<Record<string, unknown>>('../../content/lang/*/exercises.json', {

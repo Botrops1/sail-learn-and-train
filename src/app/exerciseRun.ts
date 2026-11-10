@@ -14,6 +14,7 @@ import {
 import type { ControlId } from '../model/controls';
 import type { RealisticAction } from '../model/realistic';
 import type { RopesMode } from '../model/settings';
+import { isTimeLapseScale, timeLapseAvailable, timeSpeedAvailable } from '../model/timeScale';
 import type { Action, AppState } from './store';
 
 /**
@@ -126,6 +127,41 @@ export function countGusts(
   if (armed && twsKn >= meanKn * (1 + risePct / 100)) return { gusts: gusts + 1, gustArmed: false };
   if (!armed && twsKn <= meanKn * (1 + rearmPct / 100)) return { gusts, gustArmed: true };
   return { gusts, gustArmed: armed };
+}
+
+/** The current step's speed-up while the run is `running` (also while "pause after each step" holds it), else null (M96). */
+export function stepSpeedUp(state: AppState): number | null {
+  const run = state.exercise;
+  if (run === null || run.status !== 'running') return null;
+  const def = exerciseDef(run.id);
+  return def?.steps[run.step]?.speedUp ?? null;
+}
+
+/**
+ * When the speed-up differs between two states: set the new one (if allowed), or ×1 when the new
+ * state has none (M96, PHASE10_SPEC 26.3). A scale the learner picks during a step is kept until
+ * the step's speed-up changes.
+ */
+export function applyStepSpeed(previous: AppState, next: AppState): AppState {
+  const a = stepSpeedUp(previous);
+  const b = stepSpeedUp(next);
+  if (a === b) return next;
+  if (b === null) {
+    return next.settings.timeScale === 1
+      ? next
+      : { ...next, settings: { ...next.settings, timeScale: 1 } };
+  }
+  const allowed = isTimeLapseScale(b)
+    ? timeLapseAvailable(
+        next.boat.mode,
+        next.windMode.mode,
+        next.settings.timeBar,
+        next.anchor.phase,
+        next.lines.lines.length,
+      )
+    : timeSpeedAvailable(next.boat.mode, next.windMode.mode, next.settings.timeBar);
+  if (!allowed || next.settings.timeScale === b) return next;
+  return { ...next, settings: { ...next.settings, timeScale: b } };
 }
 
 /** The 'continue' command: only from a mistake card; time runs again. */

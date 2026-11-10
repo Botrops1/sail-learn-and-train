@@ -397,5 +397,25 @@
         "fix": "Harbour gear → Fenders: Out, before you come close."
       }
     }
+  },
+  "maestral": {
+    "title": "The afternoon maestral",
+    "summary": "Sail in the light midday wind and roll the sails in as the maestral builds, before it gets strong.",
+    "see": "A summer day, 12:20: about 12 knots from the north-west and full sails on a beam reach (the wind from the side). On the Adriatic in summer the wind gets stronger every afternoon.",
+    "happening": "The maestral is a sea breeze: the land warms up faster than the sea, and air from the sea flows in under the warm air rising over the land. It comes up in the late morning, is strongest around two o'clock and dies by sunset. Today it reaches 20 knots.",
+    "action": "Watch the wind speed. When it reaches 15 knots, roll the jib in to about 40 % (ease its sheet first), then roll the main in to about 60 %. Sail on until half past one.",
+    "mistake": "Waiting until she heels too far: rolling sails in is harder and slower in a strong wind. Reduce sail early.",
+    "done": "You reduced sail before the maestral was at its strongest. On the Adriatic, plan the afternoon: the wind at two is stronger than at noon.",
+    "steps": {
+      "wait": { "goal": "Sail on until the wind reaches 15 knots.", "how": "Nothing to do yet: time runs 16 times faster in this step. Watch TWS (the true wind speed) in the numbers at the top. Pause works as usual." },
+      "jib-in": { "goal": "Roll the jib in to 45 % or less: ease its sheet first.", "how": "In Ropes, set Jib sheet to 100 %, then Jib out to 40 %. With the sheet tight the jib does not roll." },
+      "main-in": { "goal": "Roll the main in to between 50 and 65 %.", "how": "In Ropes, set Jib sheet to about 75 % so the jib stops flapping, then set Mainsail out to 60 %." },
+      "peak": { "goal": "Sail on until 13:30 with less than 22° of heel.", "how": "Time runs 16 times faster again. Set Main sheet to about 40 %. If she heels too far in a gust, ease the main sheet." }
+    },
+    "mistakes": {
+      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "Too much sail for this wind, or the main sheet pulled in too far.", "fix": "Ease the main sheet now, then roll in more sail." },
+      "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away, then roll in more sail." },
+      "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Sheet the flapping sail in until it stops, or roll it in." }
+    }
   }
 }

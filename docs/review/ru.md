@@ -3230,6 +3230,11 @@
 | exercise.group.wind | Wind and weather | Ветер и погода |
 | exercise.group.sails | Setting and furling the sails | Постановка и уборка парусов |
 | exercise.group.harbour | Harbour and anchor | Гавань и якорь |
+| exercise.place.open | Open water | Открытое море |
+| exercise.place.marina | Marina | Марина |
+| exercise.place.bay | Bay | Бухта |
+| exercise.startsAt | starts {time} | начало в {time} |
+| exercise.setup.startsAt | Starts at {time} (time on board). | Начало в {time} (время на борту). |
 | exercise.doneBest | ✓ best {time} | ✓ лучшее {time} |
 | exercise.see | What you see | Что вы видите |
 | exercise.happening | What is happening | Что происходит |
@@ -3280,6 +3285,11 @@
 | exercise.target.nowPct | now {value} % | сейчас {value} % |
 | exercise.target.heading | Heading {to}° (±{within}°) | Курс {to}° (±{within}°) |
 | exercise.target.quayGap | Stern {min}–{max} m from the quay | Корма в {min}–{max} м от причала |
+| exercise.target.meanWindFrom | Wind {min} kn or more | Ветер {min} уз и больше |
+| exercise.target.meanWind | Wind {min}–{max} kn | Ветер {min}–{max} уз |
+| exercise.target.nowKn | now {value} kn | сейчас {value} уз |
+| exercise.target.timeFrom | Time on board {from} or later | Время на борту {from} или позже |
+| exercise.target.time | Time on board {from}–{to} | Время на борту {from}–{to} |
 | exercise.target.nowM | now {value} m | сейчас {value} м |
 | exercise.target.nowWord | now {value} | сейчас {value} |
 | exercise.sections.hidden | Hidden, not needed here: {list}. | Скрыто, здесь не нужно: {list}. |

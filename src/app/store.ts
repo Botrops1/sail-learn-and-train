@@ -1,6 +1,7 @@
 import { boat as boatData } from '../model/boat';
 import { keepsRopesMode, type AppMode } from './appMode';
 import {
+  applyStepSpeed,
   continueRun,
   restoreWaypoint,
   setDemo,
@@ -620,16 +621,17 @@ export function reduce(state: AppState, action: Action): AppState {
     );
   }
   const next = reduceUnlogged(state, action);
-  if (
+  const logged =
     next === state ||
     action.type === 'load' ||
     action.type === 'reset' ||
     action.type === 'exercise' ||
-    action.type === 'step'
-  ) {
-    return next;
-  }
-  return next.exercise !== null ? logAction(state, next, action) : next;
+    action.type === 'step' ||
+    next.exercise === null
+      ? next
+      : logAction(state, next, action);
+  // The coach sets the time scale of a step with a speed-up (M96); a load keeps what it carries.
+  return action.type === 'load' ? logged : applyStepSpeed(state, logged);
 }
 
 /** The actions that change the conditions: ignored while an exercise is set up or running (PHASE10_SPEC 4.2). */

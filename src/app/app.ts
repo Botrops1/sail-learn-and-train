@@ -28,6 +28,8 @@ import { createStepCard } from '../ui/stepCard';
 import { createExerciseBar } from '../ui/exerciseBar';
 import { twaSignedDeg } from '../model/exercises';
 import { mpsToKn } from '../model/angles';
+import { boat } from '../model/boat';
+import { isTimeLapseScale } from '../model/timeScale';
 import { createWelcome, shouldWelcome, welcomeSeen } from '../ui/welcome';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
 import { ropesTabShows } from '../ui/ropesTab';
@@ -35,7 +37,7 @@ import { createInstrumentStrip } from '../ui/instrumentStrip';
 import { createWindIndicator } from '../ui/windIndicator';
 import { defaultDetail } from '../model/settings';
 import { createStore, MAX_STEP_S } from './store';
-import { DEMO_MAX_SCALE, DEMO_PART_S } from './exerciseRun';
+import { DEMO_MAX_SCALE, DEMO_PART_S, stepSpeedUp } from './exerciseRun';
 import { createExerciseDemo } from '../ui/exerciseDemo';
 import { parseUrlState } from './urlState';
 import { startUrlSync } from './urlSync';
@@ -287,10 +289,13 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
       const { exercise: run, settings } = store.getState();
       if (run !== null && run.demo !== null && run.status === 'running') {
         // PHASE10_PHONE_SPEC 4.2: the pilots were tuned at 0.05 s, so a demo plays in parts of at
-        // most that, and at ×4 at most.
-        const scale = Math.min(settings.timeScale, DEMO_MAX_SCALE);
+        // most that, and at ×4 at most; a step's own speed-up (M96) raises that cap, and a
+        // time-lapse step plays in parts of the slice length.
+        const up = stepSpeedUp(store.getState());
+        const scale = Math.min(settings.timeScale, Math.max(DEMO_MAX_SCALE, up ?? 0));
         const appDt = Math.min(raw, MAX_STEP_S) * scale;
-        const parts = Math.max(1, Math.ceil(appDt / DEMO_PART_S));
+        const partS = isTimeLapseScale(scale) ? boat.windModes.timeLapseSliceS : DEMO_PART_S;
+        const parts = Math.max(1, Math.ceil(appDt / partS));
         for (let i = 0; i < parts; i += 1) {
           demo.frame();
           store.dispatch({ type: 'step', dt: appDt / parts / settings.timeScale });
