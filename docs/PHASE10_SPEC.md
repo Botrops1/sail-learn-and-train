@@ -3479,7 +3479,7 @@ Done: the exercise can be finished on a phone; tests and `SHOTS_ONLY=m97,m96,m70
 - `initialState` keeps its `scripted` branch only for tests that build a state with `windMode: { mode: 'scripted' }` and an `exercise` override; a link sets the mode afterwards (`withScriptedWind` in `urlState.ts`).
 - `parseExercise` reads the link's `seed` (1 … 99,999) for the scripted wind; a link written by the app has none (a scripted run's link carries no `wm`, `seed` or `wg`), so it is 1.
 - The waypoint's `windMode` stays `scripted` inside the saved state (its `exercise` is null there); `restoreWaypoint` brings back the run and the timetable with it.
-- `tests/ciPlan.test.ts`: 95 groups, `m97` is among the four newest (`m93` drops out of the PR set). `.github/ci-times.json`: `m97` is 144 (measured 144 s locally; the spec's 300 was a placeholder, and 300 made the full set 21 parts, over the test's limit of 20).
+- `tests/ciPlan.test.ts`: 95 groups, `m97` is among the four newest (`m93` drops out of the PR set). `.github/ci-times.json`: `m97` is 144 (measured 144 s locally; the spec's 300 was a placeholder, and 300 made the full set 21 parts, over the test's limit of 20; the parts were full at 1,200 s, so `FULL_CAP_S` in `scripts/ci-plan.mjs` went from 1200 to 1250 (tunable, PHASE_LAUNCH_SPEC 6.2) and the full set packs into 15 live parts again).
 - Recorded in the PR for the owner: the scripted wind has no owner-visible control; the Conditions card shows "The exercise sets the wind." while a bura run is open.
 
 ---

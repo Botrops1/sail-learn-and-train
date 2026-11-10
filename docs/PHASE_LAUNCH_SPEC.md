@@ -121,7 +121,7 @@ As 4.1.
 
 `npm run lint` runs `prettier --check .`, so write the file as `npm run format` leaves it; the values stay as above. A group missing from the file counts as **300 s**.
 
-Caps (constants in `scripts/ci-plan.mjs`, **tunable**): `PR_CAP_S = 600`, `FULL_CAP_S = 1200`, `SCENE_SHARDS = 4`, `RECENT_GROUPS = 4`.
+Caps (constants in `scripts/ci-plan.mjs`, **tunable**): `PR_CAP_S = 600`, `FULL_CAP_S = 1250` (1200 until M97, whose 144 s group made the full set 21 jobs), `SCENE_SHARDS = 4`, `RECENT_GROUPS = 4`.
 
 ### 6.3 `scripts/ci-plan.mjs` (pure functions plus a small command-line part)
 

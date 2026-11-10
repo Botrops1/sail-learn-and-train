@@ -30,6 +30,7 @@ export async function liveM97Checks({ openPage, viewports, outDir, prefix, probl
     await page.getByTestId('exercise-start').click();
     await page.waitForTimeout(200);
     let shotTaken = false;
+    let gustLine = '';
     let maxHeel = 0;
     let maxMean = 0;
     let status = 'running';
@@ -59,11 +60,9 @@ export async function liveM97Checks({ openPage, viewports, outDir, prefix, probl
           now.controls.ctl_wind_speed > 17 &&
           now.twsKn > 1.1 * now.controls.ctl_wind_speed
         ) {
-          const line = await exerciseLine(page);
-          if (line?.startsWith('3/3 ·')) {
-            await shot(page, 'live-phone-m97-bura-gust');
-            shotTaken = true;
-          }
+          gustLine = (await exerciseLine(page)) ?? 'no line';
+          await shot(page, 'live-phone-m97-bura-gust');
+          shotTaken = true;
         }
       }
       await page.waitForTimeout(200);
@@ -75,6 +74,7 @@ export async function liveM97Checks({ openPage, viewports, outDir, prefix, probl
       end.status === 'done' && mistakes === 0,
       JSON.stringify({ status: end.status, step: end.step, mistakes, maxHeel, maxMean }),
     );
+    check('a gust was met, with the step card on step 3', gustLine.startsWith('3/3 ·'), gustLine);
     check('the bura reached the table (18 kn)', maxMean >= 17.9, `mean ${maxMean.toFixed(2)} kn`);
     check('she stayed upright', maxHeel <= 15, `heel ${maxHeel.toFixed(1)}°`);
     await showSection(page, 'exercises');
