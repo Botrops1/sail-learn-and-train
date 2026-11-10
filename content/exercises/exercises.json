@@ -316,7 +316,7 @@
       "ropes": "easy",
       "crew": false,
       "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
-      "start": "?hdg=135&ms=50&js=60&ap=wind&apt=-90&sea=sheltered&clk=202606010800",
+      "start": "?hdg=135&ms=50&js=60&ap=wind&apt=-90&sea=sheltered&wd=45&ws=3&clk=202606010800",
       "wind": {
         "points": [
           { "at": "08:00", "fromDeg": 45, "kn": 3, "gustPct": 0 },

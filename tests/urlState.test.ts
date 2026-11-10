@@ -853,6 +853,9 @@ describe('A bura is coming in the link (M97, PHASE10_SPEC 27.3)', () => {
     expect(state.controls.ctl_wind_speed).toBeCloseTo(3, 6);
     expect(state.controls.ctl_wind_dir).toBeCloseTo(45, 6);
     expect(state.wind.twsKn).toBeCloseTo(3, 6);
+    // The boat starts at the calm's speed and heel, not the default wind's (review finding 2).
+    expect(mpsToKn(state.boat.speedMps)).toBeLessThan(2.5);
+    expect(Math.abs(state.boat.heelDeg)).toBeLessThan(1.5);
     expect(exerciseStartLink('bura', state, 'easy')).not.toMatch(notKeys);
     expect(serializeUrlState(state)).not.toMatch(notKeys);
     expect(serializeUrlState(state)).not.toMatch(/[?&](seed|wg)=/);
