@@ -109,6 +109,12 @@ export function loadExercise(
  * The Exercises section (PHASE10_SPEC 6.5): the list, the setup card, the step card and the done
  * card. Re-rendered only when the render key changes, not every frame.
  */
+/** "HH:MM" from the start link's `clk` (YYYYMMDDHHmm), or null when the start has none. */
+export function startTimeOf(def: ExerciseDef): string | null {
+  const clk = new URLSearchParams(def.start).get('clk');
+  return clk === null ? null : `${clk.slice(8, 10)}:${clk.slice(10, 12)}`;
+}
+
 export function createExercisePanel(
   store: Store,
   panel: { showSection(id: SectionId): void },
@@ -131,6 +137,14 @@ export function createExercisePanel(
     return `${run?.id}|${debrief ? run?.log.length : ''}|${soFarOpen}|${run?.status}|${run?.step}|${left}|${state.settings.ropesMode}|${currentLanguage()}|${run?.waypoints.length}|${run?.mistake?.atS}|${run?.options.pauseOnMistake}|${run?.options.pauseOnStep}|${run?.options.crew}|${run?.options.level}|${run?.demo}|${shown}`;
   };
 
+  /** "Open water · starts 12:20": the place, and the start time when the start link has `clk` (M96). */
+  function metaText(def: ExerciseDef): string {
+    const pl = new URLSearchParams(def.start).get('pl') ?? 'open';
+    const place = t(`exercise.place.${pl}` as 'exercise.place.open');
+    const time = startTimeOf(def);
+    return time === null ? place : `${place} · ${t('exercise.startsAt', { time })}`;
+  }
+
   function renderList(): void {
     const progress = readProgress();
     for (const group of GROUPS) {
@@ -146,6 +160,11 @@ export function createExercisePanel(
           [
             el('strong', { class: 'exercise-item-title' }, [text.title]),
             el('span', { class: 'hint' }, [text.summary]),
+            el(
+              'span',
+              { class: 'hint exercise-item-meta', 'data-testid': `exercise-meta-${def.id}` },
+              [metaText(def)],
+            ),
           ],
         );
         if (done) {
@@ -223,6 +242,14 @@ export function createExercisePanel(
     const card = el('div', { class: 'exercise-card', 'data-testid': 'exercise-setup' }, [
       el('h3', {}, [text.title]),
     ]);
+    const starts = startTimeOf(def);
+    if (starts !== null) {
+      card.append(
+        el('p', { class: 'hint', 'data-testid': 'exercise-setup-start' }, [
+          t('exercise.setup.startsAt', { time: starts }),
+        ]),
+      );
+    }
     const parts: [string, string][] = [
       [t('exercise.see'), text.see],
       [t('exercise.happening'), text.happening],

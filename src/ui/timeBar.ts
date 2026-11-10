@@ -7,7 +7,7 @@ import {
   timeSpeedAvailable,
 } from '../model/timeScale';
 import { demoCardKind } from '../app/exerciseBar';
-import { DEMO_MAX_SCALE, exercisePauseBlocked } from '../app/exerciseRun';
+import { DEMO_MAX_SCALE, exercisePauseBlocked, stepSpeedUp } from '../app/exerciseRun';
 import { clockAria, createClockParts } from './clockPanel';
 import { el } from './dom';
 import type { LayoutShell } from './layout';
@@ -255,7 +255,10 @@ export function createTimeBar(
     // Alone (M71): no Pause while the exercise runs; once paused, Resume stays enabled.
     const alone = exercisePauseBlocked(state) && !state.paused;
     const active = runStatus === 'running' || runStatus === 'mistake';
-    const demoCapped = active && state.exercise?.demo != null && scale > DEMO_MAX_SCALE;
+    const demoCapped =
+      active &&
+      state.exercise?.demo != null &&
+      scale > Math.max(DEMO_MAX_SCALE, stepSpeedUp(state) ?? 0);
     const stopped = state.paused || mistake;
     const key = [
       speed,

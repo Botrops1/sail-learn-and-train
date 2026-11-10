@@ -400,6 +400,8 @@ export function waypointLink(state: AppState, wp: ExerciseWaypoint): string {
     learn: null,
   });
   const params = new URLSearchParams(link.slice(1));
+  // The coach sets the speed on Start and Back (M96): a step's speed-up is not part of the link.
+  params.delete('tx');
   params.set('ex', run?.id ?? '');
   params.set('exw', String(wp.step));
   params.set('mode', state.settings.ropesMode);

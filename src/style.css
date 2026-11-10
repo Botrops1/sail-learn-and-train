@@ -4910,6 +4910,10 @@ html:not([data-wide='true']) [data-testid='layout-field'] {
   text-align: left;
 }
 
+.exercise-item-meta {
+  display: block;
+}
+
 .exercise-tick {
   color: var(--accent);
   font-weight: 700;
