@@ -3326,6 +3326,7 @@ Done: the maestral exercise can be finished on a phone; the list's tags and the 
 - A `load` (opening a link) is never touched by the coach: an exercise link opens in setup at ×1, and Start sets the speed. A waypoint link carries no `tx` (the coach sets it on Start and Back).
 - `hourText(hours)` in `src/model/exercises.ts` writes the time of a target row ("13:30"); the minute is rounded down, so the edge of a range reads as written.
 - `tests/ciPlan.test.ts` counts 94 groups and `m96` is among the four newest; `.github/ci-times.json`: `m96` is 200 (measured 202 s locally).
+- The full browser set (`CI groups: all`) found two old live checks that listed the exercises by name or count: `scripts/shots-m69.mjs` (the exact list) and `scripts/shots-m71.mjs` (14 items). Both now include `exercise-item-maestral` (15 items).
 - Questions recorded in the PR: whether the 14 older exercises should also get a start time (owner answer 7: no, they keep noon), and whether the place line should be dropped from a row that is "Open water" only because no place is named. Recommended; merging accepts it.
 
 ---
