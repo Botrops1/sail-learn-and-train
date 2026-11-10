@@ -270,6 +270,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
             'exercise-item-reduce-sail',
             // M96 added The afternoon maestral to Wind and weather.
             'exercise-item-maestral',
+            // M97 added A bura is coming.
+            'exercise-item-bura',
             // M71 added the two sails exercises.
             'exercise-item-set-sails',
             'exercise-item-furl-sails',
