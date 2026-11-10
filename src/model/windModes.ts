@@ -11,7 +11,8 @@ import { mulberry32 } from './random';
 export type PatternModeId = 'steady' | 'gusty' | 'shifty' | 'building' | 'dying';
 /** The Adriatic's local winds (M94, PHASE10_SPEC 24): they follow the clock. */
 export type LocalWindId = 'summer' | 'bura' | 'jugo';
-export type WindModeId = PatternModeId | LocalWindId;
+/** `scripted` (M97): the exercise's own wind timetable; only an exercise link sets it. */
+export type WindModeId = PatternModeId | LocalWindId | 'scripted';
 
 /** The "Wind changes" row of the Conditions section. */
 export const WIND_MODE_IDS: readonly PatternModeId[] = [
@@ -28,7 +29,8 @@ export const LOCAL_WIND_IDS: readonly LocalWindId[] = ['summer', 'bura', 'jugo']
 export function isWindModeId(value: string): value is WindModeId {
   return (
     (WIND_MODE_IDS as readonly string[]).includes(value) ||
-    (LOCAL_WIND_IDS as readonly string[]).includes(value)
+    (LOCAL_WIND_IDS as readonly string[]).includes(value) ||
+    value === 'scripted'
   );
 }
 
@@ -38,10 +40,10 @@ export function isLocalWind(mode: WindModeId): mode is LocalWindId {
 
 /**
  * A clock wind sets the mean wind itself from the clock; the dial and the speed are not set by
- * hand (PHASE10_SPEC 23.3). Local winds now; M97 adds the scripted wind.
+ * hand (PHASE10_SPEC 23.3): a local wind or the scripted wind (M97).
  */
 export function isClockWind(mode: WindModeId): boolean {
-  return isLocalWind(mode);
+  return isLocalWind(mode) || mode === 'scripted';
 }
 
 export interface WindModeState {
@@ -92,6 +94,7 @@ export function sizeRange(
       return { min, max, default: dflt };
     }
     case 'steady':
+    case 'scripted':
       return null;
     case 'gusty':
       return {
@@ -204,6 +207,7 @@ export function windAt(
   let twsKn = meanKn;
   switch (wm.mode) {
     case 'steady':
+    case 'scripted':
     case 'summer':
     case 'bura':
     case 'jugo':

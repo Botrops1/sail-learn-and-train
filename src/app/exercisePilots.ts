@@ -478,6 +478,23 @@ export function maestralPilot(): Pilot {
     }
   };
 }
+/** A bura is coming (M97): the jib away, the main to 45 %, then the main sheet eased in each gust. */
+export function buraPilot(): Pilot {
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 0:
+        return inStep(s) < 1
+          ? ctl(s, { ctl_jib_sheet: 100 })
+          : ctl(s, { ctl_jib_sheet: 100, ctl_jib_furl: 0 });
+      case 1:
+        return ctl(s, { ctl_main_furl: 45 });
+      case 2:
+        return ctl(s, { ctl_mainsheet: s.wind.twsKn > 1.1 * s.controls.ctl_wind_speed ? 70 : 45 });
+      default:
+        return s;
+    }
+  };
+}
 export function setSailsPilot(): Pilot {
   const once = onceMaker();
   return (s) => {
@@ -712,6 +729,8 @@ export function pilotFor(id: string, level: ExerciseLevel, ropes: RopesMode): Pi
       return reduceSailPilot();
     case 'maestral':
       return maestralPilot();
+    case 'bura':
+      return buraPilot();
     case 'set-sails':
       return setSailsPilot();
     case 'furl-sails':

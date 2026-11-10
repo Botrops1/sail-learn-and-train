@@ -417,5 +417,48 @@
       "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away, then roll in more sail." },
       "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Sheet the flapping sail in until it stops, or roll it in." }
     }
+  },
+  "bura": {
+    "title": "A bura is coming",
+    "summary": "A calm morning, then a bura hits with gusts near 30 knots. Make the sails small before it arrives.",
+    "see": "08:00, almost calm: 3 knots from the north-east and full sails. In about four minutes a bura will pour down from the mountains to the north-east.",
+    "happening": "The bura is a cold north-east wind that falls from the mountains onto the sea. It can start suddenly on a calm, clear day and comes in hard gusts, here up to about 30 knots. Rolling the sails in takes a moment in a calm, and is hard and slow once the wind has come.",
+    "action": "Roll the jib in completely now, then roll the main in to about half. When the gusts come, ease the main sheet in each gust and pull it in again after it.",
+    "mistake": "Waiting to see how strong it gets: with full sails the first gust lays her over.",
+    "done": "Small sails before the wind came, so she stayed upright through the gusts. When a bura is likely, reduce sail in the calm before it.",
+    "steps": {
+      "jib-away": {
+        "goal": "Roll the jib in to 25 % or less, before the bura arrives.",
+        "how": "In Ropes, set Jib sheet to 100 %, then Jib out to 0 %."
+      },
+      "main-small": {
+        "goal": "Roll the main in to between 30 and 55 %.",
+        "how": "In Ropes, set Mainsail out to 45 %."
+      },
+      "three-gusts": {
+        "goal": "Keep her upright through three gusts.",
+        "how": "Time runs 4 times faster in this step. In each gust set Main sheet to about 70 %, and back to about 45 % when it has passed."
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "heeling too far",
+        "what": "She heeled too far (more than 25°).",
+        "why": "Too much sail for this wind, or the main sheet pulled in too far.",
+        "fix": "Ease the main sheet now, then roll in more sail."
+      },
+      "round-up": {
+        "name": "a round-up",
+        "what": "She turned into the wind by herself (a round-up).",
+        "why": "Too much heel: the rudder lost its grip and the sails turned her into the wind.",
+        "fix": "Ease the main straight away, then roll in more sail."
+      },
+      "sail-worn": {
+        "name": "a worn sail",
+        "what": "A sail is worn from flapping.",
+        "why": "A sail left flapping (flogging) in strong wind wears out fast.",
+        "fix": "Sheet the flapping sail in until it stops, or roll it in."
+      }
+    }
   }
 }

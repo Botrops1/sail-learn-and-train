@@ -60,12 +60,14 @@ import { defaultSeaSetting, isSeaSetting } from '../model/waves';
 import {
   initialWindMode,
   isSeed,
+  SEED_MAX,
+  SEED_MIN,
   isClockWind,
   sizeRange,
   type WindModeId,
   type WindModeState,
 } from '../model/windModes';
-import { initialState, type AppState } from './store';
+import { initialState, refreshWind, type AppState } from './store';
 
 /** URL schema version (PHASE1_SPEC 9.2). Bump when a parameter changes meaning. */
 export const URL_STATE_VERSION = 1;
@@ -315,13 +317,17 @@ function parseExercise(
     const rest = new URLSearchParams(params);
     for (const key of ['ex', 'exw', 'exp', 'exs', 'exc', 'exl']) rest.delete(key);
     const wpState = parseUrlState(`?${rest.toString()}`, fallbackDetail);
-    return {
-      ...wpState,
-      settings: rest.has('lb') ? wpState.settings : { ...wpState.settings, labels: false },
-      appMode: 'exercise',
-      paused: true,
-      exercise: newRun(def.id, Number(exw), options),
-    };
+    return withScriptedWind(
+      {
+        ...wpState,
+        settings: rest.has('lb') ? wpState.settings : { ...wpState.settings, labels: false },
+        appMode: 'exercise',
+        paused: true,
+        exercise: newRun(def.id, Number(exw), options),
+      },
+      def,
+      rest,
+    );
   }
   const merged = new URLSearchParams(def.start);
   const levelKeys = options.level === 'easy' ? undefined : def.levels?.[options.level];
@@ -334,14 +340,28 @@ function parseExercise(
   }
   if (!merged.has('mode')) merged.set('mode', def.ropes);
   const state = parseUrlState(`?${merged.toString()}`, fallbackDetail);
-  return {
-    ...state,
-    // M80 (owner): no `lb` in an exercise link means the 3D names are off.
-    settings: merged.has('lb') ? state.settings : { ...state.settings, labels: false },
-    appMode: 'exercise',
-    paused: true,
-    exercise: newRun(def.id, 0, options),
-  };
+  return withScriptedWind(
+    {
+      ...state,
+      // M80 (owner): no `lb` in an exercise link means the 3D names are off.
+      settings: merged.has('lb') ? state.settings : { ...state.settings, labels: false },
+      appMode: 'exercise',
+      paused: true,
+      exercise: newRun(def.id, 0, options),
+    },
+    def,
+    merged,
+  );
+}
+
+/**
+ * An exercise with a wind timetable (M97, PHASE10_SPEC 27.3) opens with the scripted wind: the
+ * link's seed (or 1) gives the gusts, and the mean is the timetable's at the clock.
+ */
+function withScriptedWind(state: AppState, def: ExerciseDef, params: URLSearchParams): AppState {
+  if (def.wind === undefined) return state;
+  const seed = wholeNumber(params.get('seed'), SEED_MIN, SEED_MAX) ?? SEED_MIN;
+  return refreshWind({ ...state, windMode: { mode: 'scripted', seed, size: 0, startS: 0 } });
 }
 
 /**
@@ -637,7 +657,9 @@ function wholeNumber(value: string | null, min: number, max: number): number | u
 }
 
 /** The wind mode's short name in the link (`wm`); absent = steady. */
-export const WIND_MODE_PARAMS: Readonly<Record<Exclude<WindModeId, 'steady'>, string>> = {
+export const WIND_MODE_PARAMS: Readonly<
+  Record<Exclude<WindModeId, 'steady' | 'scripted'>, string>
+> = {
   gusty: 'gusty',
   shifty: 'shifty',
   building: 'build',
@@ -670,7 +692,8 @@ function parseWindMode(params: URLSearchParams): Partial<WindModeState> {
 export function windModeParams(state: AppState): [string, string][] {
   const result: [string, string][] = [];
   const { windMode, settings } = state;
-  if (windMode.mode !== 'steady') {
+  // `scripted` is the exercise's own wind: the link has no `wm`, `seed` or `wg` (M97).
+  if (windMode.mode !== 'steady' && windMode.mode !== 'scripted') {
     result.push(['wm', WIND_MODE_PARAMS[windMode.mode]]);
     if (windMode.seed !== initialWindMode().seed) result.push(['seed', String(windMode.seed)]);
     if (windMode.size !== initialWindMode({ mode: windMode.mode }).size) {

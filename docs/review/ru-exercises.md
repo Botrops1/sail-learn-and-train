@@ -407,3 +407,28 @@
 | maestral.mistakes.sail-worn.what | A sail is worn from flapping. | Парус износился от хлопанья. |
 | maestral.mistakes.sail-worn.why | A sail left flapping (flogging) in strong wind wears out fast. | Парус, который хлопает на сильном ветру, быстро изнашивается. |
 | maestral.mistakes.sail-worn.fix | Sheet the flapping sail in until it stops, or roll it in. | Выберите шкот хлопающего паруса, пока он не перестанет хлопать, или закрутите его. |
+| bura.title | A bura is coming | Идёт бора |
+| bura.summary | A calm morning, then a bura hits with gusts near 30 knots. Make the sails small before it arrives. | Тихое утро, потом налетает бора с порывами около 30 узлов. Уберите паруса, пока она не пришла. |
+| bura.see | 08:00, almost calm: 3 knots from the north-east and full sails. In about four minutes a bura will pour down from the mountains to the north-east. | 08:00, почти штиль: 3 узла с северо-востока и полные паруса. Минут через четыре с гор на северо-востоке обрушится бора. |
+| bura.happening | The bura is a cold north-east wind that falls from the mountains onto the sea. It can start suddenly on a calm, clear day and comes in hard gusts, here up to about 30 knots. Rolling the sails in takes a moment in a calm, and is hard and slow once the wind has come. | Бора — холодный северо-восточный ветер, который падает с гор на море. Она может начаться внезапно в тихий ясный день и приходит сильными порывами, здесь до 30 узлов. В штиль паруса убираются быстро, а когда ветер уже пришёл, это трудно и медленно. |
+| bura.action | Roll the jib in completely now, then roll the main in to about half. When the gusts come, ease the main sheet in each gust and pull it in again after it. | Сейчас закрутите стаксель полностью, затем закрутите грот примерно наполовину. Когда пойдут порывы, потравливайте шкот грота в каждом порыве и выбирайте его снова после него. |
+| bura.mistake | Waiting to see how strong it gets: with full sails the first gust lays her over. | Ждать, насколько сильным будет ветер: с полными парусами первый же порыв кладёт яхту набок. |
+| bura.done | Small sails before the wind came, so she stayed upright through the gusts. When a bura is likely, reduce sail in the calm before it. | Паруса были маленькими ещё до ветра, поэтому яхта оставалась прямо во всех порывах. Когда возможна бора, уменьшайте паруса в штиль перед ней. |
+| bura.steps.jib-away.goal | Roll the jib in to 25 % or less, before the bura arrives. | Закрутите стаксель до 25 % и меньше, пока бора не пришла. |
+| bura.steps.jib-away.how | In Ropes, set Jib sheet to 100 %, then Jib out to 0 %. | В «Концах» поставьте «Стаксель-шкот» на 100 %, затем «Стаксель наружу» на 0 %. |
+| bura.steps.main-small.goal | Roll the main in to between 30 and 55 %. | Закрутите грот до значения от 30 до 55 %. |
+| bura.steps.main-small.how | In Ropes, set Mainsail out to 45 %. | В «Концах» поставьте «Грот наружу» на 45 %. |
+| bura.steps.three-gusts.goal | Keep her upright through three gusts. | Удержите яхту прямо в трёх порывах. |
+| bura.steps.three-gusts.how | Time runs 4 times faster in this step. In each gust set Main sheet to about 70 %, and back to about 45 % when it has passed. | На этом шаге время идёт в 4 раза быстрее. В каждом порыве поставьте «Гика-шкот» примерно на 70 %, а когда он пройдёт, снова примерно на 45 %. |
+| bura.mistakes.overpowered.name | heeling too far | слишком большой крен |
+| bura.mistakes.overpowered.what | She heeled too far (more than 25°). | Яхта накренилась слишком сильно (больше 25°). |
+| bura.mistakes.overpowered.why | Too much sail for this wind, or the main sheet pulled in too far. | Слишком много парусов для такого ветра или шкот грота выбран слишком туго. |
+| bura.mistakes.overpowered.fix | Ease the main sheet now, then roll in more sail. | Потравите шкот грота сейчас, затем уберите ещё часть парусов. |
+| bura.mistakes.round-up.name | a round-up | брочинг |
+| bura.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Яхта сама повернула в ветер (брочинг). |
+| bura.mistakes.round-up.why | Too much heel: the rudder lost its grip and the sails turned her into the wind. | Слишком большой крен: руль потерял хватку, и паруса повернули яхту в ветер. |
+| bura.mistakes.round-up.fix | Ease the main straight away, then roll in more sail. | Сразу потравите грот, затем уберите ещё часть парусов. |
+| bura.mistakes.sail-worn.name | a worn sail | изношенный парус |
+| bura.mistakes.sail-worn.what | A sail is worn from flapping. | Парус износился от хлопанья. |
+| bura.mistakes.sail-worn.why | A sail left flapping (flogging) in strong wind wears out fast. | Парус, который хлопает на сильном ветру, быстро изнашивается. |
+| bura.mistakes.sail-worn.fix | Sheet the flapping sail in until it stops, or roll it in. | Выберите шкот хлопающего паруса, пока он не перестанет хлопать, или закрутите его. |

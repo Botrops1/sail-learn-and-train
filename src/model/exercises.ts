@@ -6,6 +6,7 @@ import type { AnchorPhase, AnchorState } from './anchor';
 import { scopeNeededM } from './anchor';
 import { boat as hanse508, type BoatData } from './boat';
 import type { ClockState } from './clock';
+import type { WindKey } from './localWinds';
 import type { EngineState } from './engine';
 import type { HarbourState } from './harbour';
 import { insideRect, marinaGeometry, type Rect } from './marina';
@@ -117,6 +118,8 @@ export interface ExerciseDef {
   /** Query keys that replace the start's for that level; the start is Easy. */
   levels?: Partial<Record<'normal' | 'hard', string>>;
   targets?: readonly ExerciseTarget[];
+  /** M97: a wind timetable, read from its first point (the start's `clk`) onwards. */
+  wind?: { points: readonly WindKey[] };
   steps: readonly ExerciseStep[];
   mistakes: readonly ExerciseMistake[];
 }

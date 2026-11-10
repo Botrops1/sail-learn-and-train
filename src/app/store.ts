@@ -13,6 +13,7 @@ import {
   type ExerciseCommand,
   type ExerciseRun,
 } from './exerciseRun';
+import { exerciseDef } from '../model/exercises';
 import { isRegisteredPartId } from '../model/registry';
 import {
   clampControl,
@@ -372,12 +373,68 @@ function windNow(
   windMode: WindModeState,
   utcMs: number,
   timeS: number,
+  script: readonly WindKey[] | null,
 ): WindNow {
-  return trueWind(windMode, controls, utcMs, timeS, NO_SCRIPT);
+  return trueWind(windMode, controls, utcMs, timeS, script);
 }
 
-/** The scripted wind comes with M97; local winds read no script. */
-const NO_SCRIPT: readonly WindKey[] | null = null;
+/** The controls with the wind in whole steps: a hand-set wind starting from what was blowing. */
+function roundedWind(controls: Controls): Controls {
+  return {
+    ...controls,
+    ctl_wind_dir: normalizeWindFrom(Math.round(controls.ctl_wind_dir)),
+    ctl_wind_speed: Math.min(30, Math.max(0, Math.round(controls.ctl_wind_speed))),
+  };
+}
+
+/**
+ * The controls' mean wind and the true wind for the clock and the rig clock of this state
+ * (M97, PHASE10_SPEC 27.3): what a link sets after it has put the scripted wind in.
+ */
+export function refreshWind(state: AppState): AppState {
+  const script = scriptOf(state);
+  const controls = withWindMean(
+    state.controls,
+    state.windMode,
+    state.clock.utcMs,
+    state.rig.timeS,
+    script,
+  );
+  return {
+    ...state,
+    controls,
+    wind: windNow(controls, state.windMode, state.clock.utcMs, state.rig.timeS, script),
+  };
+}
+
+/**
+ * The end of a scripted run (M97): the exercise is gone, so the wind becomes Steady at what was
+ * blowing, in whole steps.
+ */
+function endScriptedWind(next: AppState): AppState {
+  const windMode = initialWindMode({
+    mode: 'steady',
+    seed: next.windMode.seed,
+    startS: next.rig.timeS,
+  });
+  const controls = roundedWind(next.controls);
+  return {
+    ...next,
+    controls,
+    windMode,
+    wind: windNow(controls, windMode, next.clock.utcMs, next.rig.timeS, null),
+  };
+}
+
+/**
+ * The wind timetable of the exercise in this state while the wind is `scripted` (M97,
+ * PHASE10_SPEC 27.3), else null.
+ */
+export function scriptOf(state: AppState): readonly WindKey[] | null {
+  return state.windMode.mode === 'scripted' && state.exercise !== null
+    ? (exerciseDef(state.exercise.id)?.wind?.points ?? null)
+    : null;
+}
 
 /**
  * A clock wind writes its mean into the controls (PHASE10_SPEC 24.4), exact numbers, so everything
@@ -389,9 +446,10 @@ function withWindMean(
   windMode: WindModeState,
   utcMs: number,
   timeS: number,
+  script: readonly WindKey[] | null,
 ): Controls {
   if (!isClockWind(windMode.mode)) return controls;
-  const m = windMean(windMode, controls, utcMs, timeS, NO_SCRIPT);
+  const m = windMean(windMode, controls, utcMs, timeS, script);
   if (controls.ctl_wind_dir === m.dirDeg && controls.ctl_wind_speed === m.twsKn) return controls;
   return { ...controls, ctl_wind_dir: m.dirDeg, ctl_wind_speed: m.twsKn };
 }
@@ -432,8 +490,14 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
   const clockUtcMs = overrides.clockUtcMs ?? defaultClockUtcMs();
   let controls = { ...defaultControls(), ...overrides.controls };
   const windMode = initialWindMode(overrides.windMode);
-  controls = withWindMean(controls, windMode, clockUtcMs, 0);
-  const wind = windNow(controls, windMode, clockUtcMs, 0);
+  // `scripted` needs the exercise's timetable: a link sets it afterwards (`parseExercise`), so
+  // here it is the controls' own wind (M97, PHASE10_SPEC 27.3).
+  const script =
+    windMode.mode === 'scripted' && overrides.exercise
+      ? (exerciseDef(overrides.exercise.id)?.wind?.points ?? null)
+      : null;
+  controls = withWindMean(controls, windMode, clockUtcMs, 0, script);
+  const wind = windNow(controls, windMode, clockUtcMs, 0, script);
   // Steady wind: the controls are the wind (Phase 1 and the sailing of M6-M9 exactly).
   const patterned = windMode.mode !== 'steady';
   const engine = initialEngine(overrides.engine);
@@ -620,7 +684,16 @@ export function reduce(state: AppState, action: Action): AppState {
       state,
     );
   }
-  const next = reduceUnlogged(state, action);
+  let next = reduceUnlogged(state, action);
+  // Leaving Exercises mode, or stopping, ends a run: a scripted wind stays as a Steady one (M97).
+  if (
+    action.type !== 'load' &&
+    state.exercise !== null &&
+    next.exercise === null &&
+    next.windMode.mode === 'scripted'
+  ) {
+    next = endScriptedWind(next);
+  }
   const logged =
     next === state ||
     action.type === 'load' ||
@@ -831,7 +904,8 @@ function reduceAction(state: AppState, action: Action): AppState {
       return leverPct === engine.leverPct ? state : { ...state, engine: { ...engine, leverPct } };
     }
     case 'setWindMode': {
-      if (state.windMode.mode === action.mode) return state;
+      // Only an exercise link sets the scripted wind (M97).
+      if (state.windMode.mode === action.mode || action.mode === 'scripted') return state;
       const windMode = initialWindMode({
         mode: action.mode,
         seed: state.windMode.seed,
@@ -839,20 +913,22 @@ function reduceAction(state: AppState, action: Action): AppState {
       });
       let controls = state.controls;
       if (isClockWind(windMode.mode)) {
-        controls = withWindMean(controls, windMode, state.clock.utcMs, state.rig.timeS);
+        controls = withWindMean(
+          controls,
+          windMode,
+          state.clock.utcMs,
+          state.rig.timeS,
+          scriptOf(state),
+        );
       } else if (isClockWind(state.windMode.mode)) {
         // Out of a clock wind: the hand-set wind starts from what was blowing, in whole steps.
-        controls = {
-          ...controls,
-          ctl_wind_dir: normalizeWindFrom(Math.round(controls.ctl_wind_dir)),
-          ctl_wind_speed: Math.min(30, Math.max(0, Math.round(controls.ctl_wind_speed))),
-        };
+        controls = roundedWind(controls);
       }
       return withTimeRule({
         ...state,
         controls,
         windMode,
-        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS),
+        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS, scriptOf(state)),
       });
     }
     case 'setWindSize': {
@@ -860,12 +936,19 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (!range || !Number.isFinite(action.size)) return state;
       const size = Math.min(range.max, Math.max(range.min, Math.round(action.size)));
       const windMode = { ...state.windMode, size, startS: state.rig.timeS };
-      const controls = withWindMean(state.controls, windMode, state.clock.utcMs, state.rig.timeS);
+      const script = scriptOf(state);
+      const controls = withWindMean(
+        state.controls,
+        windMode,
+        state.clock.utcMs,
+        state.rig.timeS,
+        script,
+      );
       return {
         ...state,
         controls,
         windMode,
-        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS),
+        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS, script),
       };
     }
     case 'setSeaSetting': {
@@ -875,13 +958,20 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'setClock': {
       if (!isClockTime(action.utcMs) || action.utcMs === state.clock.utcMs) return state;
       // A clock wind jumps to that hour's wind; other modes do not change.
-      const controls = withWindMean(state.controls, state.windMode, action.utcMs, state.rig.timeS);
+      const script = scriptOf(state);
+      const controls = withWindMean(
+        state.controls,
+        state.windMode,
+        action.utcMs,
+        state.rig.timeS,
+        script,
+      );
       return {
         ...state,
         controls,
         clock: { utcMs: action.utcMs },
         wind: isClockWind(state.windMode.mode)
-          ? windNow(controls, state.windMode, action.utcMs, state.rig.timeS)
+          ? windNow(controls, state.windMode, action.utcMs, state.rig.timeS, script)
           : state.wind,
       };
     }
@@ -897,12 +987,19 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (state.windMode.mode === 'steady') return state;
       const seed = isSeed(action.seed) ? action.seed : state.windMode.seed;
       const windMode = { ...state.windMode, seed, startS: state.rig.timeS };
-      const controls = withWindMean(state.controls, windMode, state.clock.utcMs, state.rig.timeS);
+      const script = scriptOf(state);
+      const controls = withWindMean(
+        state.controls,
+        windMode,
+        state.clock.utcMs,
+        state.rig.timeS,
+        script,
+      );
       return {
         ...state,
         controls,
         windMode,
-        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS),
+        wind: windNow(controls, windMode, state.clock.utcMs, state.rig.timeS, script),
       };
     }
     case 'setTimeScale':
@@ -1022,13 +1119,15 @@ function reduceAction(state: AppState, action: Action): AppState {
       // The true wind at the end of this step: the mean with the wind mode's pattern.
       // A clock wind first writes its mean (at the clock's end of this step) into the controls.
       const utcMs = state.clock.utcMs + dt * 1000;
+      const script = scriptOf(state);
       const stepControls = withWindMean(
         state.controls,
         state.windMode,
         utcMs,
         state.rig.timeS + dt,
+        script,
       );
-      const wind = windNow(stepControls, state.windMode, utcMs, state.rig.timeS + dt);
+      const wind = windNow(stepControls, state.windMode, utcMs, state.rig.timeS + dt, script);
       const patterned = state.windMode.mode !== 'steady';
       // The waves follow the wind slowly (M14); paused (dt = 0) they stay the same object.
       const sea = stepSea(state.sea, wind, dt);

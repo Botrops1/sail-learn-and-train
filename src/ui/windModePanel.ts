@@ -33,6 +33,7 @@ const SIZE_STEP: Record<WindModeId, number> = {
   summer: 1,
   bura: 1,
   jugo: 1,
+  scripted: 1,
 };
 
 /**
@@ -135,7 +136,7 @@ export function createWindModePanel(store: Store): HTMLElement[] {
         windMode.mode === 'dying' ? boat.windModes.dying.rampS : boat.windModes.building.rampS;
       setText(
         sizeName,
-        t(`wind.size.${windMode.mode as Exclude<WindModeId, 'steady'>}`, {
+        t(`wind.size.${windMode.mode as Exclude<WindModeId, 'steady' | 'scripted'>}`, {
           value: windMode.size,
           min: Math.round(rampS / 60),
         }),

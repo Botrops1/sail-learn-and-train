@@ -274,7 +274,12 @@ export function createWindPanel(store: Store): HTMLElement[] {
       lockedNote.hidden = !locked;
     }
     if (locked) {
-      setText(lockedNote, t('wind.locked', { wind: t(`wind.mode.${state.windMode.mode}`) }));
+      setText(
+        lockedNote,
+        state.windMode.mode === 'scripted'
+          ? t('wind.lockedScript')
+          : t('wind.locked', { wind: t(`wind.mode.${state.windMode.mode}`) }),
+      );
     }
     // The slider: the average when steady, the wind now in a wind mode (issue #33).
     speedHint.hidden = !patterned || locked;
