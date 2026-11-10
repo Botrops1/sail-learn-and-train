@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { area } from '../src/model/area';
 import { utcFromLocal } from '../src/model/clock';
 import { defaultControls } from '../src/model/controls';
-import { localWindMean, trueWind } from '../src/model/localWinds';
+import { localHourOf, localWindMean, trueWind } from '../src/model/localWinds';
 import { initialWindMode, sizeRange, windAt } from '../src/model/windModes';
 
 /** 1 June 2026 (or `day` of June) at a local time. */
@@ -103,5 +103,13 @@ describe('local winds (PHASE10_SPEC 24.3)', () => {
       n += 1;
     }
     expect(Math.abs(sum / n - 20.4)).toBeLessThanOrEqual(0.5);
+  });
+});
+
+describe('localHourOf (M96, PHASE10_SPEC 23.3)', () => {
+  it('is the local hour on board, in the area time zone', () => {
+    expect(localHourOf(utcFromLocal(2026, 6, 1, 13, 30, area))).toBe(13.5);
+    expect(localHourOf(utcFromLocal(2026, 6, 1, 0, 0, area))).toBe(0);
+    expect(localHourOf(utcFromLocal(2026, 12, 1, 7, 15, area))).toBe(7.25);
   });
 });

@@ -15,6 +15,10 @@ import {
   type ExerciseCheck,
 } from '../src/model/exercises';
 import { mpsToKn } from '../src/model/angles';
+import { boat } from '../src/model/boat';
+import { isLocalWind } from '../src/model/windModes';
+import { utcFromLocal } from '../src/model/clock';
+import en from '../content/lang/en/ui.json';
 import exercisesFile from '../content/exercises/exercises.json';
 
 const OPENS = ['ropes', 'autopilot', 'engine', 'sails', 'harbour', 'anchor'];
@@ -43,6 +47,8 @@ const FIELDS = [
   'linesTight',
   'fendersOut',
   'anchor',
+  'meanWindKn',
+  'localHour',
 ];
 const SEVERITIES = ['fender', 'touch', 'bump', 'knock', 'hit'];
 const OBSTACLE_KINDS = ['yacht', 'harbour', 'ground', 'propeller', 'fender', 'lazy-line'];
@@ -56,7 +62,16 @@ function checkProblems(check: ExerciseCheck): string[] {
     const ranges: unknown[] =
       field === 'controls'
         ? Object.values(value as object)
-        : ['twaDeg', 'speedKn', 'heelDeg', 'boomDeg', 'mainOutPct', 'jibOutPct'].includes(field)
+        : [
+              'twaDeg',
+              'speedKn',
+              'heelDeg',
+              'boomDeg',
+              'mainOutPct',
+              'jibOutPct',
+              'meanWindKn',
+              'localHour',
+            ].includes(field)
           ? [value]
           : [];
     for (const range of ranges) {
@@ -79,6 +94,13 @@ describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
       for (const s of exercise.steps) {
         expect(OPENS).toContain(s.opens);
         expect(checkProblems(s.check)).toEqual([]);
+        // M96: a step's speed-up is a time scale above ×1.
+        if (s.speedUp !== undefined) {
+          expect([...boat.windModes.timeScales, ...boat.windModes.timeLapseScales]).toContain(
+            s.speedUp,
+          );
+          expect(s.speedUp).toBeGreaterThan(1);
+        }
         // M74: a step's show and a check's target name a target of the exercise.
         const targets = (exercise.targets ?? []).map((t) => t.id);
         if (s.show !== undefined) expect(targets).toContain(s.show);
@@ -103,8 +125,25 @@ describe('exercise data (PHASE10_SPEC 6.7 test 1)', () => {
     for (const exercise of EXERCISES) {
       const params = new URLSearchParams(exercise.start);
       const state = parseUrlState(exercise.start);
+      // M96: a start with a local wind (`wm`) has neither `wd` nor `ws` (the wind comes from the
+      // clock), and the maestral, bura and night starts name no `wind` either; skip those.
+      if (!params.has('ws') && !params.has('wd')) {
+        expect(isLocalWind(state.windMode.mode), exercise.id).toBe(true);
+        continue;
+      }
       expect(state.controls.ctl_wind_speed).toBe(Number(params.get('ws')));
       expect(state.controls.ctl_wind_dir).toBe(Number(params.get('wd')));
+    }
+  });
+
+  it('every start names its place: none, open, marina or bay (M96)', () => {
+    for (const exercise of EXERCISES) {
+      const pl = new URLSearchParams(exercise.start).get('pl');
+      expect([null, 'open', 'marina', 'bay'], exercise.id).toContain(pl);
+      expect(
+        (en as Record<string, string>)[`exercise.place.${pl ?? 'open'}`],
+        exercise.id,
+      ).toBeTypeOf('string');
     }
   });
 });
@@ -216,6 +255,46 @@ describe('checkPasses (test 4)', () => {
     // A stopped engine counts as neutral (owner, PR 163).
     expect(checkPasses({ engine: { gear: 'neutral' } }, off, none)).toBe(true);
     expect(checkPasses({ engine: { gear: 'ahead' } }, off, none)).toBe(false);
+  });
+});
+
+describe('checkPasses: meanWindKn and localHour (M96)', () => {
+  const none: CheckContext = { events: [], gusts: 0 };
+  let state = parseUrlState('?wd=0&ws=12&ms=12&js=30&hdg=315');
+  for (let i = 0; i < 20; i += 1) state = reduce(state, { type: 'step', dt: 0.05 });
+
+  it('meanWindKn reads the mean wind, both ends included', () => {
+    expect(checkPasses({ meanWindKn: [12, 99] }, state, none)).toBe(true);
+    expect(checkPasses({ meanWindKn: [0, 12] }, state, none)).toBe(true);
+    expect(checkPasses({ meanWindKn: [12.5, 99] }, state, none)).toBe(false);
+    expect(checkPasses({ meanWindKn: [0, 11.5] }, state, none)).toBe(false);
+  });
+
+  it('localHour reads the local time on board, and is false without a clock', () => {
+    const at = (h: number, m: number): CheckSource => ({
+      ...state,
+      clock: { utcMs: utcFromLocal(2026, 6, 1, h, m) },
+    });
+    expect(checkPasses({ localHour: [13.5, 24] }, at(13, 30), none)).toBe(true);
+    expect(checkPasses({ localHour: [13.5, 24] }, at(13, 29), none)).toBe(false);
+    expect(checkPasses({ localHour: [13.5, 14] }, at(14, 0), none)).toBe(true);
+    expect(checkPasses({ localHour: [13.5, 14] }, at(14, 1), none)).toBe(false);
+    const noClock: CheckSource = { ...state };
+    delete noClock.clock;
+    expect(checkPasses({ localHour: [0, 24] }, noClock, none)).toBe(false);
+  });
+
+  it('the maestral steps give a wind row and a time row (heelDeg has no row)', () => {
+    const maestral = EXERCISES.find((e) => e.id === 'maestral');
+    expect(checkTargets(maestral?.steps[0]?.check ?? {}).map((r) => r.kind)).toEqual(['meanWind']);
+    expect(checkTargets(maestral?.steps[3]?.check ?? {}).map((r) => r.kind)).toEqual(['localHour']);
+    const wind = targetReading({ kind: 'meanWind', range: [15, 99] }, state);
+    expect(wind).toEqual({ ok: false, value: 12 });
+    const late: CheckSource = { ...state, clock: { utcMs: utcFromLocal(2026, 6, 1, 13, 30) } };
+    expect(targetReading({ kind: 'localHour', range: [13.5, 24] }, late)).toEqual({
+      ok: true,
+      value: '13:30',
+    });
   });
 });
 

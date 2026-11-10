@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createStore, initialState, reduce, type AppState } from '../src/app/store';
 import {
+  exerciseStartLink,
   jibReachedParam,
   parseUrlState,
   serializeUrlState,
@@ -838,5 +839,25 @@ describe('time-lapse links (M95)', () => {
     expect(parseUrlState('?tx=240', detail).settings.timeScale).toBe(1);
     expect(parseUrlState('?tx=16', detail).settings.timeScale).toBe(16);
     expect(parseUrlState(`${anchored}`, detail).settings.timeScale).toBe(1);
+  });
+});
+
+describe('the afternoon maestral in the link (M96, PHASE10_SPEC 26.6)', () => {
+  it('opens in setup at 12:20 with the summer day at size 20, and its links carry no wd, ws or tx', () => {
+    const state = parseUrlState('?m=exercise&ex=maestral');
+    expect(state.exercise?.status).toBe('setup');
+    expect(clockParam(state.clock.utcMs)).toBe('202606011220');
+    expect(state.windMode.mode).toBe('summer');
+    expect(state.windMode.size).toBe(20);
+    expect(Math.abs(state.controls.ctl_wind_speed - 12.5)).toBeLessThanOrEqual(0.1);
+    expect(state.controls.ctl_wind_dir).toBeCloseTo(-45, 6);
+    const started = reduce(state, { type: 'exercise', command: 'start' });
+    expect(started.settings.timeScale).toBe(16);
+    const waypoint = serializeUrlState(started);
+    for (const link of [exerciseStartLink('maestral', started, 'easy'), waypoint]) {
+      expect(link).not.toMatch(/[?&](wd|ws|tx)=/);
+    }
+    expect(waypoint).toContain('exw=0');
+    expect(waypoint).toContain('wm=summer');
   });
 });

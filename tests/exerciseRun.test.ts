@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applyStepSpeed,
   countGusts,
   exercisePauseBlocked,
   stepExercise,
+  stepSpeedUp,
   type ExerciseOptions,
 } from '../src/app/exerciseRun';
 import { tailSpec, type RealisticAction } from '../src/model/realistic';
@@ -1034,5 +1036,91 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
     expect(parseUrlState('?m=exercise&ex=points-of-sail&exc=1').exercise?.options.crew).toBe(
       'alone',
     );
+  });
+});
+
+describe("a step's speed-up (M96, PHASE10_SPEC 26.3)", () => {
+  const start = (): AppState =>
+    reduce(parseUrlState(exerciseStartLink('maestral', initialState(), 'easy')), {
+      type: 'exercise',
+      command: 'start',
+    });
+  const stepTo = (state: AppState, step: number): AppState => {
+    let s = state;
+    for (let i = 0; i < 40000 && (s.exercise?.step ?? 0) < step; i += 1) {
+      s = reduce(s, { type: 'step', dt: 0.05 });
+    }
+    return s;
+  };
+
+  it('Start sets ×16, passing the wait step sets ×1, entering the peak step sets ×16', () => {
+    const s0 = start();
+    expect(stepSpeedUp(s0)).toBe(16);
+    expect(s0.settings.timeScale).toBe(16);
+    const s1 = stepTo(s0, 1);
+    expect(s1.exercise?.step).toBe(1);
+    expect(s1.settings.timeScale).toBe(1);
+    expect(stepSpeedUp(s1)).toBeNull();
+    // Rolling the sails in (set directly) passes the next two steps.
+    let s = reduce(s1, {
+      type: 'setControls',
+      values: { ctl_jib_sheet: 100, ctl_jib_furl: 40 },
+    });
+    s = stepTo(s, 2);
+    s = reduce(s, {
+      type: 'setControls',
+      values: { ctl_jib_sheet: 75, ctl_main_furl: 60 },
+    });
+    s = stepTo(s, 3);
+    expect(s.exercise?.step).toBe(3);
+    expect(s.settings.timeScale).toBe(16);
+  });
+
+  it('a mistake sets ×1 and Carry on sets ×16 again; done sets ×1; Stop sets ×1', () => {
+    const s0 = start();
+    const hit = reduce(s0, { type: 'step', dt: 0.05 });
+    expect(hit.settings.timeScale).toBe(16);
+    // A mistake card (status mistake) has no speed-up.
+    const flagged: AppState = {
+      ...hit,
+      exercise: hit.exercise ? { ...hit.exercise, status: 'mistake' } : null,
+    };
+    const slow = applyStepSpeed(hit, flagged);
+    expect(slow.settings.timeScale).toBe(1);
+    const carried = reduce(
+      { ...slow, exercise: slow.exercise },
+      {
+        type: 'exercise',
+        command: 'continue',
+      },
+    );
+    expect(carried.settings.timeScale).toBe(16);
+    const done: AppState = {
+      ...carried,
+      exercise: carried.exercise ? { ...carried.exercise, status: 'done' } : null,
+    };
+    expect(applyStepSpeed(carried, done).settings.timeScale).toBe(1);
+    expect(reduce(carried, { type: 'exercise', command: 'stop' }).settings.timeScale).toBe(1);
+  });
+
+  it('a speed the learner chooses is kept until the step changes', () => {
+    const s0 = start();
+    const chosen = reduce(s0, { type: 'setTimeScale', scale: 4 });
+    expect(chosen.settings.timeScale).toBe(4);
+    expect(reduce(chosen, { type: 'step', dt: 0.05 }).settings.timeScale).toBe(4);
+  });
+
+  it('leaving Exercises mode during the wait step sets ×1; a load is not touched', () => {
+    const s0 = start();
+    const real = reduce(s0, { type: 'setAppMode', mode: 'easy' });
+    expect(real.settings.timeScale).toBe(1);
+    // A `load` (a link opening) is not touched by the coach: it opens in setup at ×1 as before.
+    expect(parseUrlState('?m=exercise&ex=maestral').settings.timeScale).toBe(1);
+  });
+
+  it('with the Time bar switch off a speed-up does not apply', () => {
+    const setup = parseUrlState(exerciseStartLink('maestral', initialState(), 'easy'));
+    const off = { ...setup, settings: { ...setup.settings, timeBar: false } };
+    expect(reduce(off, { type: 'exercise', command: 'start' }).settings.timeScale).toBe(1);
   });
 });
