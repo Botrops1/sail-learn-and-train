@@ -380,3 +380,30 @@
 | stern-to-anchor.mistakes.fenders-in.what | You are backing into the berth with the fenders in the locker. | Вы идёте в место задним ходом, а кранцы лежат в рундуке. |
 | stern-to-anchor.mistakes.fenders-in.why | Without fenders the first touch of the boat next door scratches both hulls. | Без кранцев первое касание соседней яхты царапает оба корпуса. |
 | stern-to-anchor.mistakes.fenders-in.fix | Harbour gear → Fenders: Out, before you come close. | «Швартовка» → «Кранцы: За бортом», пока вы ещё далеко. |
+| maestral.title | The afternoon maestral | Дневной маэстраль |
+| maestral.summary | Sail in the light midday wind and roll the sails in as the maestral builds, before it gets strong. | Идите в лёгком полуденном ветре и закручивайте паруса, пока маэстраль нарастает и не стал сильным. |
+| maestral.see | A summer day, 12:20: about 12 knots from the north-west and full sails on a beam reach (the wind from the side). On the Adriatic in summer the wind gets stronger every afternoon. | Летний день, 12:20: около 12 узлов с северо-запада и полные паруса на галфвинде (ветер дует сбоку). Летом на Адриатике ветер каждый день усиливается после полудня. |
+| maestral.happening | The maestral is a sea breeze: the land warms up faster than the sea, and air from the sea flows in under the warm air rising over the land. It comes up in the late morning, is strongest around two o'clock and dies by sunset. Today it reaches 20 knots. | Маэстраль — морской бриз: суша нагревается быстрее моря, и воздух с моря течёт под тёплый воздух, поднимающийся над сушей. Он приходит к концу утра, сильнее всего около двух часов дня и стихает к закату. Сегодня он дойдёт до 20 узлов. |
+| maestral.action | Watch the wind speed. When it reaches 15 knots, roll the jib in to about 40 % (ease its sheet first), then roll the main in to about 60 %. Sail on until half past one. | Следите за скоростью ветра. Когда она дойдёт до 15 узлов, закрутите стаксель примерно до 40 % (сначала потравите его шкот), затем закрутите грот примерно до 60 %. Идите дальше до половины второго. |
+| maestral.mistake | Waiting until she heels too far: rolling sails in is harder and slower in a strong wind. Reduce sail early. | Ждать, пока яхта не накренится слишком сильно: убирать паруса в сильном ветре труднее и дольше. Уменьшайте паруса заранее. |
+| maestral.done | You reduced sail before the maestral was at its strongest. On the Adriatic, plan the afternoon: the wind at two is stronger than at noon. | Вы уменьшили паруса до того, как маэстраль стал самым сильным. На Адриатике планируйте вторую половину дня: ветер в два часа сильнее, чем в полдень. |
+| maestral.steps.wait.goal | Sail on until the wind reaches 15 knots. | Идите дальше, пока ветер не дойдёт до 15 узлов. |
+| maestral.steps.wait.how | Nothing to do yet: time runs 16 times faster in this step. Watch TWS (the true wind speed) in the numbers at the top. Pause works as usual. | Пока ничего делать не нужно: на этом шаге время идёт в 16 раз быстрее. Следите за TWS (скорость истинного ветра) в цифрах вверху. Пауза работает как обычно. |
+| maestral.steps.jib-in.goal | Roll the jib in to 45 % or less: ease its sheet first. | Закрутите стаксель до 45 % и меньше: сначала потравите его шкот. |
+| maestral.steps.jib-in.how | In Ropes, set Jib sheet to 100 %, then Jib out to 40 %. With the sheet tight the jib does not roll. | В «Концах» поставьте «Стаксель-шкот» на 100 %, затем «Стаксель наружу» на 40 %. При тугом шкоте стаксель не сворачивается. |
+| maestral.steps.main-in.goal | Roll the main in to between 50 and 65 %. | Закрутите грот до значения от 50 до 65 %. |
+| maestral.steps.main-in.how | In Ropes, set Jib sheet to about 75 % so the jib stops flapping, then set Mainsail out to 60 %. | В «Концах» поставьте «Стаксель-шкот» примерно на 75 %, чтобы стаксель перестал хлопать, затем «Грот наружу» на 60 %. |
+| maestral.steps.peak.goal | Sail on until 13:30 with less than 22° of heel. | Идите дальше до 13:30 с креном меньше 22°. |
+| maestral.steps.peak.how | Time runs 16 times faster again. Set Main sheet to about 40 %. If she heels too far in a gust, ease the main sheet. | Время снова идёт в 16 раз быстрее. Поставьте «Гика-шкот» примерно на 40 %. Если в порыве яхта кренится слишком сильно, потравите шкот грота. |
+| maestral.mistakes.overpowered.name | heeling too far | слишком большой крен |
+| maestral.mistakes.overpowered.what | She heeled too far (more than 25°). | Яхта накренилась слишком сильно (больше 25°). |
+| maestral.mistakes.overpowered.why | Too much sail for this wind, or the main sheet pulled in too far. | Слишком много парусов для такого ветра или шкот грота выбран слишком туго. |
+| maestral.mistakes.overpowered.fix | Ease the main sheet now, then roll in more sail. | Потравите шкот грота сейчас, затем уберите ещё часть парусов. |
+| maestral.mistakes.round-up.name | a round-up | брочинг |
+| maestral.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Яхта сама повернула в ветер (брочинг). |
+| maestral.mistakes.round-up.why | Too much heel: the rudder lost its grip and the sails turned her into the wind. | Слишком большой крен: руль потерял хватку, и паруса повернули яхту в ветер. |
+| maestral.mistakes.round-up.fix | Ease the main straight away, then roll in more sail. | Сразу потравите грот, затем уберите ещё часть парусов. |
+| maestral.mistakes.sail-worn.name | a worn sail | изношенный парус |
+| maestral.mistakes.sail-worn.what | A sail is worn from flapping. | Парус износился от хлопанья. |
+| maestral.mistakes.sail-worn.why | A sail left flapping (flogging) in strong wind wears out fast. | Парус, который хлопает на сильном ветру, быстро изнашивается. |
+| maestral.mistakes.sail-worn.fix | Sheet the flapping sail in until it stops, or roll it in. | Выберите шкот хлопающего паруса, пока он не перестанет хлопать, или закрутите его. |
