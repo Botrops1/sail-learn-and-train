@@ -105,16 +105,16 @@ export function loadExercise(
   });
 }
 
-/**
- * The Exercises section (PHASE10_SPEC 6.5): the list, the setup card, the step card and the done
- * card. Re-rendered only when the render key changes, not every frame.
- */
 /** "HH:MM" from the start link's `clk` (YYYYMMDDHHmm), or null when the start has none. */
 export function startTimeOf(def: ExerciseDef): string | null {
   const clk = new URLSearchParams(def.start).get('clk');
   return clk === null ? null : `${clk.slice(8, 10)}:${clk.slice(10, 12)}`;
 }
 
+/**
+ * The Exercises section (PHASE10_SPEC 6.5): the list, the setup card, the step card and the done
+ * card. Re-rendered only when the render key changes, not every frame.
+ */
 export function createExercisePanel(
   store: Store,
   panel: { showSection(id: SectionId): void },
