@@ -12,6 +12,7 @@ import {
   goodRun,
   H,
   leavePilot,
+  nightPilot,
   stern,
   sternAnchorPilot,
   turnPilot,
@@ -385,6 +386,89 @@ describe('anchor-shore good run (PHASE10_SPEC 19.5)', () => {
     expect(s.exercise?.log.some((e) => e.kind === 'mistake' && e.mistakeId === 'dragging')).toBe(
       true,
     );
+  });
+});
+
+/**
+ * The night-anchor good run, frame by frame (PHASE10_SPEC 28.5): `anchorRun`'s learner, then the
+ * night at ×240 (the coach sets it in the last step); `watch` sees every state.
+ */
+export function nightRun(watch: (s: AppState, t: number) => void = () => undefined) {
+  let s = parseUrlState(exerciseStartLink('night-anchor', initialState(), 'easy'));
+  s = reduce(s, { type: 'exercise', command: 'start' });
+  const pilot = nightPilot();
+  const stepAt: number[] = [0];
+  let t = 0;
+  while (s.exercise !== null && s.exercise.status !== 'done' && t < 650) {
+    s = pilot(s, t);
+    s = reduce(s, { type: 'step', dt: 0.05 });
+    t += 0.05;
+    watch(s, t);
+    const run = s.exercise;
+    if (run !== null && run.step > stepAt.length - 1) stepAt.push(t);
+  }
+  const run = s.exercise;
+  return {
+    state: s,
+    status: run?.status,
+    durations: stepAt.map((at, i) => (stepAt[i + 1] ?? t) - at),
+    mistakes: run?.log.filter((e) => e.kind === 'mistake') ?? [],
+  };
+}
+
+describe('night-anchor good run (PHASE10_SPEC 28.5)', () => {
+  it('ends done at 07:00 with no mistake, each step within its limit, the anchor set', () => {
+    const result = nightRun();
+    expect(result.status).toBe('done');
+    expect(result.mistakes).toEqual([]);
+    [96, 33, 88, 53, 73, 92, 227].forEach((limit, i) => {
+      expect(
+        result.durations[i] ?? Infinity,
+        `step ${i}: ${result.durations.join(', ')}`,
+      ).toBeLessThanOrEqual(limit);
+    });
+    const { state } = result;
+    // 07:00:00 to 07:00:30 on 2 June, local (summer time: UTC+2).
+    const local = (state.clock.utcMs - Date.UTC(2026, 5, 2, 5, 0, 0)) / 1000;
+    expect(local).toBeGreaterThanOrEqual(0);
+    expect(local).toBeLessThanOrEqual(30);
+    expect(state.anchor.chainOutM).toBeGreaterThanOrEqual(55);
+    expect(state.anchor.chainOutM).toBeLessThanOrEqual(64);
+    expect(state.anchor.phase).toBe('set');
+    expect(state.anchor.alarm).toBe(false);
+    expect(state.contact.reports.filter((r) => obstacleKind(r.obstacleId) === 'ground')).toEqual(
+      [],
+    );
+  });
+
+  it('PT-31 the night needs the chain the rules ask for', () => {
+    let stepBefore = 0;
+    let passed = false;
+    nightRun((s) => {
+      const run = s.exercise;
+      if (run === null) return;
+      const a = s.anchor;
+      if (stepBefore === 2 && run.step === 3) {
+        passed = true;
+        expect(a.chainOutM).toBeGreaterThanOrEqual(scopeNeededM(depthAt(a.eastM, a.northM), 6));
+      }
+      stepBefore = run.step;
+    });
+    expect(passed).toBe(true);
+  });
+
+  it('PT-64 the land breeze blows off the rocks at night', () => {
+    let seen = false;
+    nightRun((s) => {
+      const local = (s.clock.utcMs - Date.UTC(2026, 5, 1, 23, 0, 0)) / 3_600_000;
+      // 01:00 local on 2 June is 23:00 UTC on 1 June.
+      if (!seen && s.exercise?.step === 6 && local >= 0) {
+        seen = true;
+        expect(Math.abs(s.wind.dirDeg + 90)).toBeLessThanOrEqual(15);
+        expect(s.controls.ctl_wind_speed).toBeCloseTo(6, 2);
+      }
+    });
+    expect(seen).toBe(true);
   });
 });
 

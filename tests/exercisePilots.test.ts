@@ -43,6 +43,8 @@ const HARBOUR_SHOW_ME: Record<string, Partial<Record<ExerciseLevel, number[]>>> 
   'turn-own-length': { easy: [29, 44] },
   'mooring-buoy': { easy: [142, 5, 15, 5, 50] },
   'anchor-shore': { easy: [96, 33, 88, 53, 75, 99] },
+  // M98 (PHASE10_SPEC 28.5): anchor-shore's six, then the night: 44,700 app seconds at ×240, about 186 frame seconds.
+  'night-anchor': { easy: [96, 33, 88, 53, 75, 99, 227] },
   'stern-to-anchor': { easy: [72, 21, 179, 5, 25] },
 };
 
@@ -105,7 +107,8 @@ describe('M97 the bura run keeps her upright (PHASE10_SPEC 27.5)', () => {
 describe('M81 Show me from every step', () => {
   for (const [id, byLevel] of Object.entries(HARBOUR_SHOW_ME)) {
     for (const [level, limits] of Object.entries(byLevel) as [ExerciseLevel, number[]][]) {
-      it(`${id} (${level})`, () => {
+      // The night (M98) replays seven Show me runs, the last 186 frame seconds at ×240.
+      it(`${id} (${level})`, { timeout: id === 'night-anchor' ? 150_000 : undefined }, () => {
         const { at } = goodRunStates(id, level);
         expect(at.length).toBe(exerciseDef(id)?.steps.length);
         at.forEach((base, k) => {
@@ -232,6 +235,7 @@ describe('M81 the bar covers what the pilots do (the phone promise)', () => {
     ['turn-own-length', 'easy'],
     ['mooring-buoy', 'easy'],
     ['anchor-shore', 'easy'],
+    ['night-anchor', 'easy'],
     ['stern-to-anchor', 'easy'],
   ];
   for (const [id, level] of all) {

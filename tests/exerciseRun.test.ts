@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   applyStepSpeed,
+  restoreWaypoint,
   countGusts,
   exercisePauseBlocked,
   stepExercise,
@@ -12,6 +13,8 @@ import { debriefRows } from '../src/model/debrief';
 import { exerciseDef, twaSignedDeg, type ExerciseDef } from '../src/model/exercises';
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
+import { ALERT_INFO } from '../src/model/alerts';
+import { nightPilot } from '../src/app/exercisePilots';
 
 function opened(ropes: 'easy' | 'realistic' = 'easy'): AppState {
   return parseUrlState(exerciseStartLink('points-of-sail', initialState(), ropes));
@@ -1164,5 +1167,60 @@ describe('the end of a scripted run (M97, PHASE10_SPEC 27.3)', () => {
     for (let i = 0; i < Math.round(170 / 0.05); i += 1) s = reduce(s, { type: 'step', dt: 0.05 });
     // 08:06:40 (the clock is 400 s on): the held values, 18 kn.
     expect(s.controls.ctl_wind_speed).toBeCloseTo(18, 6);
+  });
+});
+
+describe('M98 an anchor alarm in the night', () => {
+  /** The night-anchor good run up to the frame the night starts (its last step): every waypoint is held. */
+  function atTheNight(): AppState {
+    let s = parseUrlState(exerciseStartLink('night-anchor', initialState(), 'easy'));
+    s = reduce(s, { type: 'exercise', command: 'start' });
+    const pilot = nightPilot();
+    for (let t = 0; t < 650 && s.exercise?.status !== 'done' && s.exercise?.step !== 6; t += 0.05) {
+      s = pilot(s, t);
+      s = reduce(s, { type: 'step', dt: 0.05 });
+    }
+    expect(s.exercise?.step).toBe(6);
+    return s;
+  }
+
+  /** The state one 0.05 s later with an anchor alarm written into the alert history. */
+  function withAlarm(state: AppState): AppState {
+    const written = state.alerts.written + 1;
+    return {
+      ...state,
+      rig: { ...state.rig, timeS: state.rig.timeS + 0.05 },
+      clock: { ...state.clock, utcMs: state.clock.utcMs + 50 },
+      alerts: {
+        entries: [
+          ...state.alerts.entries,
+          {
+            n: written,
+            kind: 'anchorAlarm',
+            atS: state.rig.timeS + 0.05,
+            severity: ALERT_INFO.anchorAlarm.severity,
+          },
+        ],
+        written,
+      },
+    };
+  }
+
+  const lastMistake = (s: AppState) => s.exercise?.log.filter((e) => e.kind === 'mistake').at(-1);
+
+  it('an anchor alarm in the night ends the run; before the night it pauses', () => {
+    const end = atTheNight();
+    const night = reduce(end, { type: 'exercise', command: 'continue' });
+    const base = night.exercise?.status === 'running' ? night : end;
+    const failed = stepExercise(base, withAlarm(base));
+    expect(failed.exercise?.status).toBe('failed');
+    expect(lastMistake(failed)).toMatchObject({ mistakeId: 'dragged-at-night' });
+
+    // Back to a waypoint starts a settle second (alerts in it are ignored): run past it first.
+    const before = run(restoreWaypoint(end, 2), 1.1);
+    expect(before.exercise?.status).toBe('running');
+    const paused = stepExercise(before, withAlarm(before));
+    expect(paused.exercise?.status).toBe('mistake');
+    expect(lastMistake(paused)).toMatchObject({ mistakeId: 'dragging' });
   });
 });

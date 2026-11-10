@@ -335,6 +335,45 @@
         { "id": "round-up", "serious": false, "on": { "alert": "roundUp" } },
         { "id": "sail-worn", "serious": false, "on": { "alert": "sailWorn" } }
       ]
+    },
+    {
+      "id": "night-anchor",
+      "group": "harbour",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["engine", "anchor", "harbour", "autopilot", "helm", "ropes", "status", "conditions", "learn"],
+      "start": "?pl=bay&pe=-1585.0&pn=0.0&hdg=90&bs=0&eng=1&lv=0&ap=off&sea=sheltered&clk=202606011830",
+      "wind": {
+        "points": [
+          { "at": "18:30", "fromDeg": 90, "kn": 6, "gustPct": 10 },
+          { "at": "20:00", "fromDeg": 90, "kn": 6, "gustPct": 10 },
+          { "at": "21:00", "fromDeg": 90, "kn": 2, "gustPct": 0 },
+          { "at": "22:00", "fromDeg": 90, "kn": 2, "gustPct": 0 },
+          { "at": "23:00", "fromDeg": -90, "kn": 6, "gustPct": 10 },
+          { "at": "03:50", "fromDeg": -90, "kn": 6, "gustPct": 10 },
+          { "at": "04:00", "fromDeg": 45, "kn": 14, "gustPct": 30 },
+          { "at": "04:45", "fromDeg": 45, "kn": 14, "gustPct": 30 },
+          { "at": "05:15", "fromDeg": 45, "kn": 4, "gustPct": 10 },
+          { "at": "07:00", "fromDeg": 45, "kn": 2, "gustPct": 0 }
+        ]
+      },
+      "targets": [{ "id": "drop", "shape": "circle", "eastM": -1600, "northM": 0, "radiusM": 5 }],
+      "steps": [
+        { "id": "to-spot", "opens": "engine", "holdS": 2, "show": "drop", "check": { "target": { "id": "drop", "point": "bow" }, "speedKn": [-0.5, 0.5] }, "bar": ["engine", "thrusters"] },
+        { "id": "let-go-anchor", "opens": "anchor", "holdS": 1, "check": { "anchor": { "phase": ["bottom", "set"] } }, "bar": ["windlass", "engine"] },
+        { "id": "scope", "opens": "anchor", "holdS": 1, "check": { "anchor": { "scopeOk": true } }, "bar": ["windlass", "engine", "thrusters"] },
+        { "id": "dig-in", "opens": "engine", "holdS": 2, "check": { "anchor": { "phase": ["set"] } }, "bar": ["engine", "windlass", "thrusters"] },
+        { "id": "shore-line", "opens": "harbour", "holdS": 1, "check": { "linesOn": ["sl"] }, "bar": ["windlass", "engine", "thrusters", "line:sl"] },
+        { "id": "settled", "opens": "harbour", "holdS": 10, "check": { "linesTight": ["sl"], "anchor": { "phase": ["set"] }, "engine": { "gear": "neutral" } }, "bar": ["line:sl", "engine"] },
+        { "id": "the-night", "opens": "anchor", "holdS": 0, "speedUp": 240, "check": { "localHour": [7, 12] }, "bar": ["windlass", "engine"] }
+      ],
+      "mistakes": [
+        { "id": "aground", "serious": false, "on": { "alert": "contact", "severity": ["touch", "bump"], "obstacle": ["ground"] } },
+        { "id": "aground-hard", "serious": true, "on": { "alert": "contact", "severity": ["knock", "hit"], "obstacle": ["ground"] } },
+        { "id": "propeller", "serious": true, "on": { "alert": "contact", "obstacle": ["propeller"] } },
+        { "id": "dragging", "serious": false, "steps": ["to-spot", "let-go-anchor", "scope", "dig-in", "shore-line", "settled"], "on": { "alert": "anchorAlarm" } },
+        { "id": "dragged-at-night", "serious": true, "steps": ["the-night"], "on": { "alert": "anchorAlarm" } }
+      ]
     }
   ]
 }
