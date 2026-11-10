@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { boat } from '../src/model/boat';
 import {
   fastestTimeScale,
+  isTimeLapseScale,
   isTimeScale,
   pauseAvailable,
+  timeLapseAvailable,
   slowestTimeScale,
   stepTimeScale,
   timeScaleText,
@@ -250,5 +252,33 @@ describe('time bar: Pause with waves (PHASE3_SPEC 6.4)', () => {
   it('Held still keeps Pause while the water moves', () => {
     expect(pauseAvailable('held', 'steady', 'easy', 'coastal')).toBe(true);
     expect(pauseAvailable('held', 'steady', 'easy', 'flat')).toBe(false);
+  });
+});
+
+describe('time-lapse: ×60 and ×240 (M95)', () => {
+  it('the scales are known, the list the bar steps through is not changed', () => {
+    expect(boat.windModes.timeLapseScales).toEqual([60, 240]);
+    expect(boat.windModes.timeLapseSliceS).toBe(1.6);
+    expect(isTimeScale(60)).toBe(true);
+    expect(isTimeScale(240)).toBe(true);
+    expect(isTimeScale(32)).toBe(false);
+    expect(isTimeLapseScale(16)).toBe(false);
+    expect(isTimeLapseScale(240)).toBe(true);
+    expect(fastestTimeScale()).toBe(16);
+    expect(stepTimeScale(60, 1)).toBe(2);
+    expect(timeScaleText(60)).toBe('60');
+    expect(timeScaleText(240)).toBe('240');
+  });
+
+  it('is available at anchor, tied up or held still, and not while sailing free', () => {
+    expect(timeLapseAvailable('sailing', 'steady', true, 'set', 0)).toBe(true);
+    expect(timeLapseAvailable('sailing', 'steady', true, 'bottom', 0)).toBe(true);
+    expect(timeLapseAvailable('sailing', 'steady', true, 'hanging', 0)).toBe(false);
+    expect(timeLapseAvailable('sailing', 'steady', true, 'stowed', 1)).toBe(true);
+    expect(timeLapseAvailable('sailing', 'steady', true, 'stowed', 0)).toBe(false);
+    expect(timeLapseAvailable('held', 'gusty', true, 'stowed', 0)).toBe(true);
+    expect(timeLapseAvailable('held', 'summer', true, 'stowed', 0)).toBe(true);
+    expect(timeLapseAvailable('held', 'steady', true, 'stowed', 0)).toBe(false);
+    expect(timeLapseAvailable('sailing', 'steady', false, 'bottom', 0)).toBe(false);
   });
 });

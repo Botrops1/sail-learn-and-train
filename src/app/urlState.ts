@@ -55,7 +55,7 @@ import { pointToMap } from '../model/lowSpeed';
 import type { BoatState } from '../model/motion';
 import { isPlace, placeStart, type PlaceStart } from '../model/places';
 import { depthAt } from '../model/seabed';
-import { isTimeScale } from '../model/timeScale';
+import { isTimeLapseScale, isTimeScale, timeLapseAvailable } from '../model/timeScale';
 import { defaultSeaSetting, isSeaSetting } from '../model/waves';
 import {
   initialWindMode,
@@ -254,9 +254,23 @@ export function parseUrlState(
   // and so does the anchor, whose chain must reach from her bow (M46).
   const lines = linesFromLink(parseLines(params), state.boat, state.harbour);
   const anchor = start ? parseAnchor(params, state.boat) : ANCHOR_STOWED;
-  return lines.length === 0 && anchor === ANCHOR_STOWED
-    ? state
-    : { ...state, anchor, lines: lines.length === 0 ? state.lines : { ...NO_LINES, lines } };
+  const attached =
+    lines.length === 0 && anchor === ANCHOR_STOWED
+      ? state
+      : { ...state, anchor, lines: lines.length === 0 ? state.lines : { ...NO_LINES, lines } };
+  // A time-lapse `tx` opened at ×1 above (nothing held her yet): now that the anchor and the lines
+  // are attached it applies where `timeLapseAvailable` holds (M95).
+  return timeScale !== undefined &&
+    isTimeLapseScale(timeScale) &&
+    timeLapseAvailable(
+      attached.boat.mode,
+      attached.windMode.mode,
+      attached.settings.timeBar,
+      attached.anchor.phase,
+      attached.lines.lines.length,
+    )
+    ? { ...attached, settings: { ...attached.settings, timeScale } }
+    : attached;
 }
 
 /** The keys of an exercise link that belong to the viewer, not to the exercise (PHASE10_SPEC 4.3). */

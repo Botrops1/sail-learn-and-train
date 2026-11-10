@@ -95,7 +95,13 @@ import {
 import { isPlace, placeStart, solidAround, type PlaceId } from '../model/places';
 import { hasThruster, THRUSTERS_OFF, type ThrustDir, type ThrusterState } from '../model/thrusters';
 import { appendTrack, type TrackPoint } from '../model/track';
-import { isTimeScale, pauseAvailable, timeSpeedAvailable } from '../model/timeScale';
+import {
+  isTimeLapseScale,
+  isTimeScale,
+  pauseAvailable,
+  timeLapseAvailable,
+  timeSpeedAvailable,
+} from '../model/timeScale';
 import {
   defaultSeaSetting,
   initialSea,
@@ -404,9 +410,21 @@ function withTimeRule(state: AppState): AppState {
     next = { ...next, paused: false };
   }
   if (settings.timeScale === 1) return next;
-  return timeSpeedAvailable(state.boat.mode, state.windMode.mode, settings.timeBar)
-    ? next
-    : { ...next, settings: { ...settings, timeScale: 1 } };
+  const allowed = isTimeLapseScale(settings.timeScale)
+    ? lapseOk(state)
+    : timeSpeedAvailable(state.boat.mode, state.windMode.mode, settings.timeBar);
+  return allowed ? next : { ...next, settings: { ...settings, timeScale: 1 } };
+}
+
+/** Whether ×60 and ×240 may run in this state (M95): held still, anchored or tied up. */
+function lapseOk(state: AppState): boolean {
+  return timeLapseAvailable(
+    state.boat.mode,
+    state.windMode.mode,
+    state.settings.timeBar,
+    state.anchor.phase,
+    state.lines.lines.length,
+  );
 }
 
 export function initialState(overrides: InitialOverrides = {}): AppState {
@@ -580,6 +598,21 @@ function reduceUnlogged(state: AppState, action: Action): AppState {
  * (PHASE10_SPEC 8.3); the app's own (`demo`, M81) do not.
  */
 export function reduce(state: AppState, action: Action): AppState {
+  // Time-lapse (M95): a frame at ×60 or ×240 is run as equal slices no longer than
+  // `timeLapseSliceS`, each a whole `reduce` call (the alerts, the coach and the log see each).
+  if (action.type === 'step' && !state.paused) {
+    const frame = Math.min(MAX_STEP_S, Math.max(0, action.dt));
+    const slices = Math.ceil(
+      (frame * state.settings.timeScale) / boatData.windModes.timeLapseSliceS - 1e-9,
+    );
+    if (slices > 1) {
+      let sliced = state;
+      for (let i = 0; i < slices; i += 1) {
+        sliced = reduce(sliced, { type: 'step', dt: frame / slices });
+      }
+      return sliced;
+    }
+  }
   if (action.type === 'demo') {
     return action.actions.reduce(
       (s, a) => (a.type === 'step' || a.type === 'demo' ? s : reduceUnlogged(s, a)),
@@ -874,7 +907,8 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (
         !isTimeScale(action.scale) ||
         state.settings.timeScale === action.scale ||
-        !timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar)
+        !timeSpeedAvailable(state.boat.mode, state.windMode.mode, state.settings.timeBar) ||
+        (isTimeLapseScale(action.scale) && !lapseOk(state))
       ) {
         return state;
       }
@@ -1105,7 +1139,7 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (justFouled) contact = withPropellerReport(contact, rig.timeS);
       // The anchor drags, sets or sounds the alarm from the pull at the end of the frame (not in Held still).
       const anchor = sailing ? stepAnchor(windlassed, moving.boat, SEABED_ENV, dt) : windlassed;
-      return {
+      const result: AppState = {
         ...state,
         controls,
         rig,
@@ -1125,6 +1159,11 @@ function reduceAction(state: AppState, action: Action): AppState {
         lines,
         anchor,
       };
+      // The windlass lifted the anchor off the bottom, the last line was let go or Sailing was
+      // chosen with nothing holding her: the time-lapse ends (M95).
+      return isTimeLapseScale(result.settings.timeScale) && !lapseOk(result)
+        ? { ...result, settings: { ...result.settings, timeScale: 1 } }
+        : result;
     }
   }
 }

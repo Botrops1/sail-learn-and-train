@@ -1924,6 +1924,8 @@
     "$comment": "PHASE2_SPEC 10. Teaching wind patterns; all values are assumptions (EXERCISES.md 4).",
     "maxTwsKn": 40,
     "timeScales": [0.25, 0.5, 1, 2, 4, 8, 16],
+    "timeLapseScales": [60, 240],
+    "timeLapseSliceS": 1.6,
     "gusty": {
       "meanIntervalS": 45,
       "riseS": 3,

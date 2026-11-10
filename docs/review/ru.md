@@ -3049,6 +3049,8 @@
 | time.label | Time | Время |
 | time.status | Time speed ×{scale} | Скорость времени ×{scale} |
 | time.speedHeading | Time speed | Скорость времени |
+| time.lapseHeading | Time-lapse | Ускорение времени |
+| time.lapseHint | Time-lapse (×60 and ×240) works at anchor, tied up or held still. | Ускорение времени (×60 и ×240) работает на якоре, у причала или когда яхту держат на месте. |
 | time.scaleAria | Time speed ×{scale} | Скорость времени ×{scale} |
 | time.openHint | Tap to change the time speed or set the clock | Нажмите, чтобы изменить скорость времени или задать часы |
 | time.close | Close the time card | Закрыть карточку времени |

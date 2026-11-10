@@ -515,6 +515,8 @@
   "time.label": "Time",
   "time.status": "Time speed ×{scale}",
   "time.speedHeading": "Time speed",
+  "time.lapseHeading": "Time-lapse",
+  "time.lapseHint": "Time-lapse (×60 and ×240) works at anchor, tied up or held still.",
   "time.scaleAria": "Time speed ×{scale}",
   "time.openHint": "Tap to change the time speed or set the clock",
   "time.close": "Close the time card",

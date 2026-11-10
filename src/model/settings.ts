@@ -57,7 +57,7 @@ export interface Settings {
   labels: boolean;
   detail: Detail;
   /**
-   * Time scale (M10, PHASE2_SPEC 10.2, issue #25): ¼ … 16, one of `windModes.timeScales`. Not
+   * Time scale (M10, PHASE2_SPEC 10.2, issue #25): ¼ … 16, one of `windModes.timeScales` or `timeLapseScales`. Not
    * about the hands: only the world. Always 1 where the time bar has no speed part.
    */
   timeScale: number;

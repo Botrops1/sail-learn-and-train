@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createStore, initialState, reduce, type AppState } from '../src/app/store';
 import { DEFAULT_HELM_VIEW } from '../src/model/settings';
 import { parseUrlState } from '../src/app/urlState';
+import { anchoredState } from './harbourPilot';
 
 describe('store', () => {
   it('applies actions and notifies listeners with the previous state', () => {
@@ -243,5 +244,95 @@ describe('local winds in the store (M94, PHASE10_SPEC 24.4)', () => {
     const astern = { ...summer, controls: { ...summer.controls, ctl_wind_dir: -179.7 } };
     const state = reduce(astern, { type: 'setWindMode', mode: 'steady' });
     expect(state.controls.ctl_wind_dir).toBe(180);
+  });
+});
+
+describe('time-lapse (M95)', () => {
+  const anchoredLink =
+    '?pl=bay&pe=-1660.0&pn=0.0&hdg=90&bs=0&an=60&ax=-1600.0,0.0&as=1&wd=90&ws=6&sea=sheltered';
+  const open = () => parseUrlState(anchoredLink, initialState().settings.detail);
+
+  it('is refused in open water while sailing', () => {
+    const state = initialState();
+    expect(reduce(state, { type: 'setTimeScale', scale: 240 })).toBe(state);
+  });
+
+  it('at anchor a frame is cut into slices: the same state as three slice steps', () => {
+    const state = reduce(open(), { type: 'setTimeScale', scale: 240 });
+    expect(state.settings.timeScale).toBe(240);
+    const frame = reduce(state, { type: 'step', dt: 1 / 60 });
+    expect(frame.rig.timeS - state.rig.timeS).toBeCloseTo(4, 9);
+    let sliced = state;
+    for (let i = 0; i < 3; i += 1) sliced = reduce(sliced, { type: 'step', dt: 1 / 60 / 3 });
+    expect(frame).toEqual(sliced);
+  });
+
+  it('lifting the anchor off the bottom drops the speed to ×1', () => {
+    let state = reduce(open(), { type: 'setTimeScale', scale: 240 });
+    state = reduce(state, { type: 'windlass', motion: 'up' });
+    let guard = 0;
+    while (state.anchor.phase !== 'hanging' && guard < 20000) {
+      expect(state.settings.timeScale).toBe(240);
+      state = reduce(state, { type: 'step', dt: 1 / 60 });
+      guard += 1;
+    }
+    expect(state.anchor.phase).toBe('hanging');
+    expect(state.settings.timeScale).toBe(1);
+  });
+
+  it('switching the time bar off drops it to ×1', () => {
+    const state = reduce(open(), { type: 'setTimeScale', scale: 240 });
+    expect(reduce(state, { type: 'setTimeBar', timeBar: false }).settings.timeScale).toBe(1);
+  });
+
+  it('choosing Sailing while held still with a gusty wind and nothing holding her drops it to ×1', () => {
+    let state = parseUrlState(
+      '?pl=bay&pe=-1660.0&pn=0.0&hdg=90&bs=0&wd=90&ws=6',
+      initialState().settings.detail,
+    );
+    state = reduce(state, { type: 'setBoatMode', mode: 'held' });
+    state = reduce(state, { type: 'setWindMode', mode: 'gusty' });
+    state = reduce(state, { type: 'setTimeScale', scale: 240 });
+    expect(state.boat.mode).toBe('held');
+    expect(state.settings.timeScale).toBe(240);
+    state = reduce(state, { type: 'setBoatMode', mode: 'sailing' });
+    expect(state.boat.mode).toBe('sailing');
+    expect(state.settings.timeScale).toBe(1);
+  });
+
+  it('letting the last mooring line go drops it to ×1', () => {
+    const berth = '?pl=marina&pe=2.8&pn=1490.4&hdg=180&ln=sp:2.55';
+    let state = reduce(parseUrlState(berth), { type: 'setBoatMode', mode: 'sailing' });
+    expect(state.lines.lines).toHaveLength(1);
+    state = reduce(state, { type: 'setTimeScale', scale: 240 });
+    expect(state.settings.timeScale).toBe(240);
+    state = reduce(state, { type: 'line', code: 'sp', command: 'letGo' });
+    expect(state.lines.lines).toHaveLength(0);
+    state = reduce(state, { type: 'step', dt: 1 / 60 });
+    expect(state.settings.timeScale).toBe(1);
+  });
+
+  it('slices give the same hour as ×1 and ×16 (an hour at anchor)', { timeout: 60000 }, () => {
+    const start = reduce(anchoredState(), {
+      type: 'setControls',
+      values: { ctl_wind_dir: 90, ctl_wind_speed: 6 },
+    });
+    const hour = (scale: number, dt: number): AppState => {
+      let s = scale === 1 ? start : reduce(start, { type: 'setTimeScale', scale });
+      expect(s.settings.timeScale).toBe(scale);
+      const frames = Math.round(3600 / (dt * scale));
+      for (let i = 0; i < frames; i += 1) s = reduce(s, { type: 'step', dt });
+      return s;
+    };
+    const base = hour(1, 0.05);
+    for (const [scale, dt] of [
+      [16, 0.1],
+      [240, 1 / 60],
+    ] as const) {
+      const other = hour(scale, dt);
+      expect(Math.abs(other.boat.eastM - base.boat.eastM)).toBeLessThan(0.05);
+      expect(Math.abs(other.boat.northM - base.boat.northM)).toBeLessThan(0.05);
+      expect(Math.abs(other.boat.headingDeg - base.boat.headingDeg)).toBeLessThan(0.1);
+    }
   });
 });
