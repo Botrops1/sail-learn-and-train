@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import type { Vec3 } from '../model/vec3';
 import type { PartUserData } from './boat/parts';
 import { SCENE } from './sceneConfig';
 
@@ -9,9 +10,28 @@ export interface HitCentre {
   y: number;
 }
 
+/** M99: where and when a tap was released (canvas CSS px, ms). */
+export interface TapMark {
+  x: number;
+  y: number;
+  time: number;
+}
+
+/** M99: true when `current` follows `previous` closely enough in time and place to be a double tap. */
+export function isDoubleTap(previous: TapMark | null, current: TapMark): boolean {
+  if (!previous) return false;
+  const { doubleTapMs, doubleTapMaxPx } = SCENE.picking;
+  return (
+    current.time - previous.time <= doubleTapMs &&
+    Math.hypot(current.x - previous.x, current.y - previous.y) <= doubleTapMaxPx
+  );
+}
+
 export interface Picker {
   /** Registry id of the part at a point on the canvas (CSS px from its top-left), or null. */
   pick(x: number, y: number, width: number, height: number): string | null;
+  /** M99: the nearest surface (a mesh, not a line) the tap's ray hits, in the scene's frame, or null (the sky). */
+  point(x: number, y: number, width: number, height: number): Vec3 | null;
   /** Where the small parts' hit areas are on screen right now (for tests and the debug hook). */
   hitCentres(width: number, height: number): HitCentre[];
 }
@@ -147,6 +167,14 @@ export function createPicker(
         (waterHit ? partIdOf(waterHit.object) : null)
       );
     },
+    point(x, y, width, height) {
+      raycaster.setFromCamera(new THREE.Vector2((x / width) * 2 - 1, 1 - (y / height) * 2), camera);
+      const hits = raycaster.intersectObjects([boatRoot, ...extraRoots, water], true);
+      const hit = hits.find(
+        (h) => h.object instanceof THREE.Mesh && isVisibleInTree(h.object) && !isNoPick(h.object),
+      );
+      return hit ? (hit.point.toArray() as Vec3) : null;
+    },
     hitCentres(width, height) {
       collect();
       const centres: HitCentre[] = [];
@@ -162,6 +190,16 @@ export function createPicker(
 
 function isNoPick(object: THREE.Object3D): boolean {
   return (object.userData as Partial<PartUserData>).noPick === true;
+}
+
+/** True when the object and every parent have `visible` set (three's Raycaster does not check). */
+function isVisibleInTree(object: THREE.Object3D): boolean {
+  let current: THREE.Object3D | null = object;
+  while (current) {
+    if (!current.visible) return false;
+    current = current.parent;
+  }
+  return true;
 }
 
 function isThin(object: THREE.Object3D): boolean {

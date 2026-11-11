@@ -30,7 +30,7 @@ import { buildSkyDome } from './skyDome';
 import { skyColours } from './skyColours';
 import { buildWaterSurface } from './waterSurface';
 import { createCameraRig } from './cameraRig';
-import { createPicker } from './picking';
+import { createPicker, isDoubleTap, type TapMark } from './picking';
 import { SCENE } from './sceneConfig';
 import { buildDangerZone } from './dangerZone';
 import { buildWake } from './wake';
@@ -192,30 +192,40 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     mooringLines.object,
     anchorChain.object,
   ]);
-  listenForTaps(renderer.domElement, (x, y) => {
-    // A tap on the 3D view ends the spotlight; its glide back starts after OrbitControls' 'start'.
-    stopSpotlight(true);
-    const rect = renderer.domElement.getBoundingClientRect();
-    const partId = picker.pick(x, y, rect.width, rect.height);
-    const state = store.getState();
-    // M50: the first tap on the handle selects it; the second walks to its station and takes it
-    // (not in Learn, where the Ropes section has no stations to put it back).
-    if (
-      partId === 'part_winch_handle' &&
-      state.selection === 'part_winch_handle' &&
-      state.settings.ropesMode === 'realistic' &&
-      state.appMode !== 'learn' &&
-      state.realistic.handle.place !== 'carried'
-    ) {
-      store.dispatch({
-        type: 'realistic',
-        action: { type: 'station', station: state.realistic.handle.station },
-      });
-      store.dispatch({ type: 'realistic', action: { type: 'handle', to: 'carry' } });
-      return;
-    }
-    store.dispatch({ type: 'select', partId });
-  });
+  listenForTaps(
+    renderer.domElement,
+    (x, y) => {
+      // A tap on the 3D view ends the spotlight; its glide back starts after OrbitControls' 'start'.
+      stopSpotlight(true);
+      const rect = renderer.domElement.getBoundingClientRect();
+      const partId = picker.pick(x, y, rect.width, rect.height);
+      const state = store.getState();
+      // M50: the first tap on the handle selects it; the second walks to its station and takes it
+      // (not in Learn, where the Ropes section has no stations to put it back).
+      if (
+        partId === 'part_winch_handle' &&
+        state.selection === 'part_winch_handle' &&
+        state.settings.ropesMode === 'realistic' &&
+        state.appMode !== 'learn' &&
+        state.realistic.handle.place !== 'carried'
+      ) {
+        store.dispatch({
+          type: 'realistic',
+          action: { type: 'station', station: state.realistic.handle.station },
+        });
+        store.dispatch({ type: 'realistic', action: { type: 'handle', to: 'carry' } });
+        return;
+      }
+      store.dispatch({ type: 'select', partId });
+    },
+    (x, y) => {
+      // M99: a double tap turns the orbit round the spot; the first tap already selected.
+      if (rig.preset === 'map') return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      const point = picker.point(x, y, rect.width, rect.height);
+      if (point) rig.centreOn(point);
+    },
+  );
 
   // Debug only (`?debug=1`): lets the screenshot script aim taps at small and thin parts.
   if (store.getState().settings.debug) {
@@ -860,12 +870,18 @@ function dispose(root: THREE.Object3D): void {
 
 /**
  * Calls `onTap` with canvas coordinates for a short single-finger press that did not move
- * (a drag rotates the camera instead).
+ * (a drag rotates the camera instead). M99: a second such tap close in time and place calls
+ * `onDoubleTap` instead (and not `onTap`); a third tap is a new single tap.
  */
-function listenForTaps(canvas: HTMLElement, onTap: (x: number, y: number) => void): void {
+function listenForTaps(
+  canvas: HTMLElement,
+  onTap: (x: number, y: number) => void,
+  onDoubleTap: (x: number, y: number) => void,
+): void {
   const { tapMaxMovePx, tapMaxDurationMs } = SCENE.picking;
   const down = new Map<number, { x: number; y: number; time: number }>();
   let multiTouch = false;
+  let lastTap: TapMark | null = null;
   canvas.addEventListener('pointerdown', (event) => {
     down.set(event.pointerId, { x: event.clientX, y: event.clientY, time: event.timeStamp });
     if (down.size > 1) multiTouch = true;
@@ -875,11 +891,28 @@ function listenForTaps(canvas: HTMLElement, onTap: (x: number, y: number) => voi
     down.delete(event.pointerId);
     const wasMulti = multiTouch;
     if (down.size === 0) multiTouch = false;
-    if (!start || cancelled || wasMulti || event.button > 0) return;
+    if (!start || cancelled || wasMulti || event.button > 0) {
+      lastTap = null;
+      return;
+    }
     const moved = Math.hypot(event.clientX - start.x, event.clientY - start.y);
-    if (moved > tapMaxMovePx || event.timeStamp - start.time > tapMaxDurationMs) return;
+    if (moved > tapMaxMovePx || event.timeStamp - start.time > tapMaxDurationMs) {
+      lastTap = null;
+      return;
+    }
     const rect = canvas.getBoundingClientRect();
-    onTap(event.clientX - rect.left, event.clientY - rect.top);
+    const mark: TapMark = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top,
+      time: event.timeStamp,
+    };
+    if (isDoubleTap(lastTap, mark)) {
+      lastTap = null;
+      onDoubleTap(mark.x, mark.y);
+    } else {
+      lastTap = mark;
+      onTap(mark.x, mark.y);
+    }
   };
   canvas.addEventListener('pointerup', (event) => finish(event, false));
   canvas.addEventListener('pointercancel', (event) => finish(event, true));

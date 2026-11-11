@@ -5,7 +5,7 @@ import type { CameraPreset } from '../src/model/settings';
 import { initialRig } from '../src/model/sim';
 import { buildBoat } from '../src/render3d/boat';
 import { presetPose } from '../src/render3d/cameraPresets';
-import { createPicker } from '../src/render3d/picking';
+import { createPicker, isDoubleTap } from '../src/render3d/picking';
 import { SCENE } from '../src/render3d/sceneConfig';
 
 /** Small fittings with an enlarged hit area, by the side of the boat they are on. */
@@ -159,5 +159,33 @@ describe('M65: noPick', () => {
     expect(picker.pick(50, 50, 100, 100)).toBe('part_deck');
     front.userData = { partId: 'part_hull' };
     expect(picker.pick(50, 50, 100, 100)).toBe('part_hull');
+  });
+});
+
+describe('M99: double tap and the surface point', () => {
+  it('isDoubleTap: close in time and place, both limits inclusive', () => {
+    const at = (x: number, y: number, time: number) => ({ x, y, time });
+    expect(isDoubleTap(null, at(0, 0, 0))).toBe(false);
+    expect(isDoubleTap(at(0, 0, 0), at(10, 10, 300))).toBe(true);
+    expect(isDoubleTap(at(0, 0, 0), at(0, 0, 400))).toBe(false);
+    expect(isDoubleTap(at(0, 0, 0), at(30, 0, 100))).toBe(false);
+    expect(isDoubleTap(at(0, 0, 0), at(24, 0, 350))).toBe(true);
+  });
+
+  it('Picker.point: the nearest mesh surface, skipping hidden meshes, null for the sky', () => {
+    const box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial());
+    const water = new THREE.Group();
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
+    camera.position.set(0, 0, 10);
+    camera.lookAt(0, 0, 0);
+    camera.updateMatrixWorld();
+    box.updateMatrixWorld();
+    const picker = createPicker(camera, box, water);
+    const hit = picker.point(50, 50, 100, 100);
+    expect(hit).not.toBeNull();
+    [0, 0, 0.5].forEach((v, i) => expect(hit?.[i]).toBeCloseTo(v, 6));
+    expect(picker.point(1, 1, 100, 100)).toBeNull();
+    box.visible = false;
+    expect(picker.point(50, 50, 100, 100)).toBeNull();
   });
 });

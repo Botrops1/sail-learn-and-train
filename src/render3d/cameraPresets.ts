@@ -202,17 +202,71 @@ export function helmPose(view: HelmView, data: BoatData = boat): CameraPose {
 }
 
 /**
- * Keeps the camera above the water and outside the hull (PHASE1_SPEC 6.2): anywhere inside the
- * deck outline and below the deck counts as inside, and is lifted above the deck.
+ * M99: the largest polar angle (radians from straight up) that keeps the camera at least
+ * `minHeight` above the water, for an orbit round a target at `targetY` and `distance` away.
  */
-export function clampCameraPosition(position: Vec3, data: BoatData = boat): Vec3 {
+export function maxPolarAngle(targetY: number, distance: number, minHeight: number): number {
+  if (distance <= 0) return Math.PI / 2;
+  return Math.acos(Math.min(1, Math.max(-1, (minHeight - targetY) / distance)));
+}
+
+/**
+ * M99: the keep-out solid round the hull: `hullClearanceM` outside its sides, ends and deck edge.
+ * False beyond the hull's length (`halfBeamAt` is 0 there).
+ */
+export function insideHull(position: Vec3, data: BoatData = boat): boolean {
+  const m = SCENE.camera.hullClearanceM;
+  const [x, y, z] = position;
+  if (x <= data.hull.transomX - m || x >= data.hull.stemX + m) return false;
+  const xc = Math.min(data.hull.stemX, Math.max(data.hull.transomX, x));
+  return Math.abs(z) < halfBeamAt(xc, data) + m && y < sheerAt(xc, data) + m;
+}
+
+/**
+ * Keeps the camera above the water and outside the hull (PHASE1_SPEC 6.2, M99): water first, then
+ * out of the hull along the line from `target` (no jump while orbiting close). Without a target,
+ * or when that line never leaves the hull, it is lifted above the deck.
+ */
+export function clampCameraPosition(
+  position: Vec3,
+  target: Vec3 | null = null,
+  data: BoatData = boat,
+): Vec3 {
   const cam = SCENE.camera;
-  const [x, , z] = position;
-  let y = Math.max(position[1], cam.minHeightAboveWater);
-  if (Math.abs(z) < halfBeamAt(x, data) && y < sheerAt(x, data)) {
-    y = sheerAt(x, data) + cam.clearanceAboveDeck;
+  const p: Vec3 = [position[0], Math.max(position[1], cam.minHeightAboveWater), position[2]];
+  if (!insideHull(p, data)) return p;
+  if (target) {
+    const d = sub(p, target);
+    const length = Math.hypot(d[0], d[1], d[2]);
+    if (length >= 1e-6) {
+      const u = scale(d, 1 / length);
+      for (let s = length; s <= length + cam.hullPushMaxM; s += cam.hullPushStepM) {
+        const q = add(target, scale(u, s));
+        if (!insideHull(q, data) && q[1] >= cam.minHeightAboveWater) return q;
+      }
+    }
   }
-  return [x, y, z];
+  return [p[0], sheerAt(p[0], data) + cam.hullClearanceM, p[2]];
+}
+
+/**
+ * M99: the pose a double-tap glides to: the camera stays where it is and turns to `point`; it
+ * only moves along that line to stay between `minDistance` and `maxDistance`.
+ */
+export function centrePose(
+  from: CameraPose,
+  point: Vec3,
+  minDistance: number,
+  maxDistance: number,
+  data: BoatData = boat,
+): CameraPose {
+  const target = clampTarget(point, data);
+  const offset = sub(from.position, target);
+  const d = Math.hypot(offset[0], offset[1], offset[2]);
+  const u: Vec3 = d < 1e-6 ? normalize([0, 0.5, -1]) : scale(offset, 1 / d);
+  const dist = Math.min(maxDistance, Math.max(minDistance, d));
+  const position = clampCameraPosition(add(target, scale(u, dist)), target, data);
+  return { position, target, fovDeg: from.fovDeg };
 }
 
 /** Keeps the orbit centre over the water near the boat, so a pan cannot lose the boat. */

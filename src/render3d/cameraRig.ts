@@ -5,7 +5,9 @@ import type { Vec3 } from '../model/vec3';
 import {
   clampCameraPosition,
   clampTarget,
+  centrePose,
   focusPose,
+  maxPolarAngle,
   presetPose,
   type CameraPose,
   type Lens,
@@ -71,6 +73,8 @@ export interface CameraRig {
    * eye stays, the head turns) or jumps to the new pose.
    */
   setHelmView(view: HelmView, animate: boolean): void;
+  /** M99: glides (SCENE.camera.transitionS, straight) so the orbit turns round `point` (centrePose); a hand move: the preset becomes free. Drops a spotlight focus without gliding back. */
+  centreOn(point: Vec3): void;
 }
 
 /**
@@ -91,6 +95,17 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
   controls.minDistance = cam.minDistance;
   controls.maxDistance = cam.maxDistance;
   controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+  // M99: left turns, middle and right slide, the wheel and the pinch zoom towards the pointer.
+  controls.mouseButtons = {
+    LEFT: THREE.MOUSE.ROTATE,
+    MIDDLE: THREE.MOUSE.PAN,
+    RIGHT: THREE.MOUSE.PAN,
+  };
+  controls.zoomToCursor = true;
+  controls.rotateSpeed = cam.rotateSpeed;
+  controls.zoomSpeed = cam.zoomSpeed;
+  controls.panSpeed = cam.panSpeed;
+  controls.cursorStyle = 'grab';
 
   let currentPreset: CameraPreset = 'free';
   let movedByHand = false;
@@ -309,15 +324,25 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         if (t >= 1) tween = undefined;
         return;
       }
+      // M99: the polar limit keeps the camera above the water; it is worked out from the target and
+      // distance as they are before the update.
+      const distance = camera.position.distanceTo(controls.target);
+      controls.maxPolarAngle = maxPolarAngle(controls.target.y, distance, cam.minHeightAboveWater);
       controls.update();
       if (pendingMinDistance && camera.position.distanceTo(controls.target) >= cam.minDistance) {
         controls.minDistance = cam.minDistance;
         pendingMinDistance = false;
       }
-      const position = clampCameraPosition(camera.position.toArray() as Vec3);
-      const target = clampTarget(controls.target.toArray() as Vec3);
-      camera.position.set(...position);
+      // M99: when the target is held back, the camera moves by the same amount (no twist).
+      const raw = controls.target.toArray() as Vec3;
+      const target = clampTarget(raw);
+      const delta: Vec3 = [target[0] - raw[0], target[1] - raw[1], target[2] - raw[2]];
+      if (delta[0] !== 0 || delta[1] !== 0 || delta[2] !== 0) {
+        camera.position.add(new THREE.Vector3(...delta));
+      }
       controls.target.set(...target);
+      const position = clampCameraPosition(camera.position.toArray() as Vec3, target);
+      camera.position.set(...position);
       camera.lookAt(controls.target);
       if (!focus && currentPreset === 'free' && movedByHand) lastFreePose = currentPose();
     },
@@ -376,6 +401,20 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         tween = undefined;
         apply(to);
         controls.update();
+      }
+    },
+    centreOn(point) {
+      focus = undefined;
+      pendingMinDistance = false;
+      controls.minDistance = cam.minDistance;
+      const from = tween ? tween.to : currentPose();
+      const to = centrePose(from, point, cam.minDistance, controls.maxDistance);
+      allowDistanceOf(to);
+      tween = { from: currentPose(), to, start: performance.now(), mode: 'straight' };
+      movedByHand = true;
+      if (currentPreset !== 'free') {
+        currentPreset = 'free';
+        listeners.forEach((listener) => listener());
       }
     },
     setPose(pose) {

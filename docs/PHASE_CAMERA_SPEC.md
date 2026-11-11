@@ -286,7 +286,12 @@ Groups to run locally: `SHOTS_ONLY=m99,m50,m49,m64,m80,m25,general`. The PR desc
 
 ### 5.10 Decided in the M99 PR
 
-(The builder fills this in.)
+All of these are recommended; merging accepts them.
+
+- **The "centrePose keeps the near limit" test numbers (5.7) could not hold.** The spec's point `[-0.85, 14.03, -39.05]` is beyond `maxTargetOffset` (25 m), so step 1 of `centrePose` moves the target to z = −25 and the camera (z = −40.05) is 15 m from it, not 1 m. The formulas are kept; the same geometry is tested 20 m closer to the boat: `from.position = [-0.85, 14.03, -20.05]`, `point = [-0.85, 14.03, -19.05]`, expected `[-0.85, 14.03, -22.05]` (1 m from the point, pushed out to the 3 m limit).
+- **"Shift" in the Russian help line.** The Russian draft in 5.5 names the key Shift in Latin letters; the language test only allows listed Latin words, so `"Shift"` is added to `content/lang/latin-words.json` (the key is printed as Shift on keyboards).
+- **`.github/ci-times.json`:** `"m99"` is set from the measured time of the group (see the PR).
+- **Browser checks of other groups:** see "Tests" in the PR for the groups that needed a `page.waitForTimeout(400)` between two taps (none beyond `scripts/shots-m50.mjs` unless the PR says so).
 
 ## 6. Owner's answers (planning chat, 2026-11-10: "Accept all")
 

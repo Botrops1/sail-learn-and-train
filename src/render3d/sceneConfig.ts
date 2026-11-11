@@ -573,8 +573,15 @@ export const SCENE = {
     maxDistance: 140,
     /** The camera never goes lower than this above the water, metres. */
     minHeightAboveWater: 0.3,
-    /** If the camera ends up inside the hull, it is lifted to this height above the deck. */
-    clearanceAboveDeck: 0.4,
+    /** M99 (tunable, 0.1–0.3): the camera keeps this far outside the hull's sides, ends and deck edge, metres. */
+    hullClearanceM: 0.15,
+    /** M99: the keep-out push marches outwards from the target in steps of this many metres, at most hullPushMaxM. */
+    hullPushStepM: 0.02,
+    hullPushMaxM: 20,
+    /** M99 (tunable, 0.5–2): OrbitControls speeds (1 = three.js default). */
+    rotateSpeed: 1,
+    zoomSpeed: 1,
+    panSpeed: 1,
     /** How far the orbit centre may be panned away from the boat, metres. */
     maxTargetOffset: 25,
     dampingFactor: 0.12,
@@ -591,6 +598,9 @@ export const SCENE = {
     smallPartRadiusPx: 24,
     /** A thin part counts as visible if it is at most this far behind the surface hit, metres. */
     depthSlack: 1.0,
+    /** M99: a second tap within this time (ms, from the first tap's release) and distance (CSS px) is a double tap. */
+    doubleTapMs: 350,
+    doubleTapMaxPx: 24,
   },
   light: {
     skyColor: '#ffffff',
