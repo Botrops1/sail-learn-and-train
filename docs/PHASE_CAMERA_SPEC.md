@@ -290,7 +290,9 @@ All of these are recommended; merging accepts them.
 
 - **The "centrePose keeps the near limit" test numbers (5.7) could not hold.** The spec's point `[-0.85, 14.03, -39.05]` is beyond `maxTargetOffset` (25 m), so step 1 of `centrePose` moves the target to z = −25 and the camera (z = −40.05) is 15 m from it, not 1 m. The formulas are kept; the same geometry is tested 20 m closer to the boat: `from.position = [-0.85, 14.03, -20.05]`, `point = [-0.85, 14.03, -19.05]`, expected `[-0.85, 14.03, -22.05]` (1 m from the point, pushed out to the 3 m limit).
 - **"Shift" in the Russian help line.** The Russian draft in 5.5 names the key Shift in Latin letters; the language test only allows listed Latin words, so `"Shift"` is added to `content/lang/latin-words.json` (the key is printed as Shift on keyboards).
-- **`.github/ci-times.json`:** `"m99"` is set from the measured time of the group (see the PR).
+- **Phone check 12 taps a different spot (5.8).** At canvas x = 195, y = bottom − 70 the first tap selected a small part, and on a phone the info card then appears over the lower part of the 3D view (about y 250–360), so the second tap landed on the card and never reached the canvas. The check now double-taps the water beside the far-away boat, at canvas x = 285, y = `freeArea().bottom − 130` (above the card). Known limit, not changed (the info card is outside this milestone): on a phone a double-tap in the band the card covers loses its second tap to the card.
+- **`FULL_CAP_S` 1250 → 1300** in `scripts/ci-plan.mjs` (tunable, PHASE_LAUNCH_SPEC 6.2), as M97 did: the 15 live parts were full at 1,250 s, so the 170 s group made the full set 21 entries (the test's limit is 20); at 1,300 it packs into 15 live parts again.
+- **`.github/ci-times.json`:** `"m99"` is 170 (the measured time of the group on this machine).
 - **Browser checks of other groups:** see "Tests" in the PR for the groups that needed a `page.waitForTimeout(400)` between two taps (none beyond `scripts/shots-m50.mjs` unless the PR says so).
 
 ## 6. Owner's answers (planning chat, 2026-11-10: "Accept all")

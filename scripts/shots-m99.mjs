@@ -329,8 +329,10 @@ export async function liveM99Checks({ openPage, problems }) {
     const box = await canvasBox(page);
     const area = await freeArea(page);
     const cdp = await context.newCDPSession(page);
-    const x = box.x + 195;
-    const y = box.y + area.bottom - 70;
+    // Water to the side of the far-away boat and above the info card: the first tap selects the water
+    // and its card then covers the lower part of the view, so a second tap there would hit the card.
+    const x = box.x + 285;
+    const y = box.y + area.bottom - 130;
     for (let i = 0; i < 2; i += 1) {
       await touch(cdp, 'touchStart', [point(x, y)]);
       await touch(cdp, 'touchEnd', []);
