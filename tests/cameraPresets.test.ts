@@ -141,7 +141,7 @@ describe('camera clamp', () => {
   it('lifts a camera inside the hull above the deck', () => {
     const [, y] = clampCameraPosition([0, 0.5, 0]);
     expect(y).toBeGreaterThan(sheerAt(0));
-    expect(y).toBeCloseTo(1.72, 2);
+    expect(Math.abs(y - 1.72)).toBeLessThanOrEqual(0.001);
   });
 
   it('leaves a camera outside the boat alone', () => {
@@ -161,7 +161,7 @@ describe('M99: camera limits and centring', () => {
   it('falls back to the lift when the line points into the boat', () => {
     const [x, y, z] = clampCameraPosition([0, 0.5, 0.01], [0, 1, 0]);
     expect(x).toBe(0);
-    expect(y).toBeCloseTo(1.72, 2);
+    expect(Math.abs(y - 1.72)).toBeLessThanOrEqual(0.001);
     expect(z).toBe(0.01);
   });
 
@@ -190,9 +190,9 @@ describe('M99: camera limits and centring', () => {
 
   it('maxPolarAngle keeps the camera above the water', () => {
     const phi = maxPolarAngle(9.82, 45, 0.3);
-    expect(phi).toBeCloseTo(1.7839, 3);
-    expect(9.82 + 45 * Math.cos(phi)).toBeCloseTo(0.3, 2);
-    expect(maxPolarAngle(0, 10, 0.3)).toBeCloseTo(1.5408, 3);
+    expect(Math.abs(phi - 1.7839)).toBeLessThanOrEqual(0.0005);
+    expect(Math.abs(9.82 + 45 * Math.cos(phi) - 0.3)).toBeLessThanOrEqual(0.001);
+    expect(Math.abs(maxPolarAngle(0, 10, 0.3) - 1.5408)).toBeLessThanOrEqual(0.0005);
     expect(maxPolarAngle(9.82, 3, 0.3)).toBeCloseTo(Math.PI, 9);
     expect(maxPolarAngle(1, 0, 0.3)).toBeCloseTo(Math.PI / 2, 9);
   });

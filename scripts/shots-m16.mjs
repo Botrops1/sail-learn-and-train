@@ -88,7 +88,8 @@ export async function liveM16Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm16 buoy 3d', '?wd=90&ws=12&held=1&debug=1');
     await setSheet(page, 'peek');
     await page.waitForTimeout(1500);
-    await page.evaluate(() => window.__sailDebug.setView([6.5, 2.5, 0], [60, 0.5, 0]));
+    // M99: a target is held within 25 m of the boat and the camera now moves with it, so this is the target the view was clamped to before.
+    await page.evaluate(() => window.__sailDebug.setView([6.5, 2.5, 0], [25, 0.5, 0]));
     await page.waitForTimeout(500);
     const spot = await page.evaluate(() => window.__sailWater.buoyScreen('N'));
     const box = await page.locator('canvas.scene-canvas').boundingBox();

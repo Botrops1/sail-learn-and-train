@@ -95,7 +95,8 @@ export async function liveM18Checks({ openPage, viewports, outDir, prefix, probl
     ]) {
       const { context, page } = await openPage(phone, `m18 sky only ${name}`, `${sky}${clk}`);
       await page.waitForTimeout(1500);
-      await page.evaluate(() => window.__sailDebug.setView([-40, 2, 0], [-120, 40, 0]));
+      // M99: a target is held within 25 m of the boat and the camera now moves with it, so this is the target the view was clamped to before.
+      await page.evaluate(() => window.__sailDebug.setView([-40, 2, 0], [-25, 22.04, 0]));
       await page.waitForTimeout(1000);
       stats[name] = await canvasStats(page);
       await shot(page, `live-phone-sky-only-${name}`);

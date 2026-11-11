@@ -192,9 +192,22 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     mooringLines.object,
     anchorChain.object,
   ]);
+  // M99 (review of the PR): the info card a tap opens sits over the lower part of the 3D view on a phone,
+  // so for the double-tap window after a tap it lets taps through to the 3D view (style.css, data-tap-through).
+  let tapThroughTimer: ReturnType<typeof setTimeout> | undefined;
+  const setTapThrough = (on: boolean) => {
+    clearTimeout(tapThroughTimer);
+    const view = renderer.domElement.closest<HTMLElement>('.view');
+    if (!view) return;
+    if (on) {
+      view.dataset.tapThrough = '1';
+      tapThroughTimer = setTimeout(() => setTapThrough(false), SCENE.picking.doubleTapMs);
+    } else delete view.dataset.tapThrough;
+  };
   listenForTaps(
     renderer.domElement,
     (x, y) => {
+      setTapThrough(true);
       // A tap on the 3D view ends the spotlight; its glide back starts after OrbitControls' 'start'.
       stopSpotlight(true);
       const rect = renderer.domElement.getBoundingClientRect();
@@ -220,6 +233,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
     },
     (x, y) => {
       // M99: a double tap turns the orbit round the spot; the first tap already selected.
+      setTapThrough(false);
       if (rig.preset === 'map') return;
       const rect = renderer.domElement.getBoundingClientRect();
       const point = picker.point(x, y, rect.width, rect.height);

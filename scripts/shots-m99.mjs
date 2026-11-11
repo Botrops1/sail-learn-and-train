@@ -354,6 +354,53 @@ export async function liveM99Checks({ openPage, problems }) {
     await context.close();
   }
 
+  // 12b. Double-tap a winch in the opening view (review of the PR): the first tap opens the info card, which
+  //      covers the boat on a phone; the card lets the second tap through, so the camera centres on the winch.
+  {
+    const { context, page } = await open(PHONE, 'double tap winch');
+    const box = await canvasBox(page);
+    const area = await freeArea(page);
+    const cdp = await context.newCDPSession(page);
+    const centre = await page.evaluate(() =>
+      window.__sailDebug.hitCentres().find((h) => h.partId === 'winch_primary_port'),
+    );
+    const inside =
+      centre &&
+      centre.x > 0 &&
+      centre.x < box.width &&
+      centre.y > area.top &&
+      centre.y < area.bottom;
+    check('the port winch is in the free area', Boolean(inside), JSON.stringify(centre));
+    if (inside) {
+      const before = await pose(page);
+      for (let i = 0; i < 2; i += 1) {
+        await touch(cdp, 'touchStart', [point(box.x + centre.x, box.y + centre.y)]);
+        await touch(cdp, 'touchEnd', []);
+      }
+      await page.waitForTimeout(800);
+      const after = await pose(page);
+      check(
+        'a double-tap on the winch centres on it (on the boat)',
+        moved(before, after) > 1 && after.target[1] > 0.5,
+        `target moved ${moved(before, after).toFixed(2)}, y ${after.target[1].toFixed(2)}`,
+      );
+      let link;
+      try {
+        link = await waitForLink(page, ['cam=free', 'sel=']);
+      } catch (error) {
+        link = String(error);
+      }
+      check('the link says cam=free and names a part', link.includes('cam=free'), link);
+      // The card takes taps again once the window has passed.
+      const cardHit = await page.evaluate(() => {
+        const card = document.querySelector('[data-testid="info-card"]');
+        return card ? getComputedStyle(card).pointerEvents : 'none-element';
+      });
+      check('the info card takes taps again after the window', cardHit === 'auto', cardHit);
+    }
+    await context.close();
+  }
+
   // 13. Help line (touch words).
   {
     const { context, page } = await open(PHONE, 'help touch');
