@@ -122,34 +122,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
   /** M49: after a drag ended a focus, the orbit's own near limit returns once the camera is that far out. */
   let pendingMinDistance = false;
 
-  // DEBUG (temporary): what the camera was doing when a gesture started and when the view went to 'free'.
-  const round = (v: number) => Math.round(v * 1000) / 1000;
-  const dbgPos = () => camera.position.toArray().map(round);
-  let dbgStart: unknown = null;
-  const dbgFlip = (source: string) => {
-    const w = window as unknown as { __camFlip?: unknown };
-    if (w.__camFlip) return;
-    w.__camFlip = {
-      source,
-      t: Math.round(performance.now()),
-      start: dbgStart,
-      tween: tween ? { mode: tween.mode, ageMs: Math.round(performance.now() - tween.start) } : null,
-      ease: !!ease,
-      focus: !!focus,
-      interacting,
-      dragReported,
-      pos: dbgPos(),
-    };
-  };
   controls.addEventListener('start', () => {
-    dbgStart = {
-      t: Math.round(performance.now()),
-      tween: tween ? { mode: tween.mode, ageMs: Math.round(performance.now() - tween.start) } : null,
-      ease: !!ease,
-      focus: !!focus,
-      preset: currentPreset,
-      pos: dbgPos(),
-    };
     interacting = true;
     dragReported = false;
     tween = undefined;
@@ -165,7 +138,6 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     }
     movedByHand = true;
     if (currentPreset !== 'free') {
-      dbgFlip('change');
       currentPreset = 'free';
       listeners.forEach((listener) => listener());
     }
@@ -441,13 +413,11 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       tween = { from: currentPose(), to, start: performance.now(), mode: 'straight' };
       movedByHand = true;
       if (currentPreset !== 'free') {
-        dbgFlip('centreOn');
         currentPreset = 'free';
         listeners.forEach((listener) => listener());
       }
     },
     setPose(pose) {
-      dbgFlip('setPose');
       tween = undefined;
       movedByHand = true;
       currentPreset = 'free';
