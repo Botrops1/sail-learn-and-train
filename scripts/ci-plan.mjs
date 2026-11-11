@@ -173,11 +173,7 @@ function main(env) {
       why = chosen.map((name) => `${name} (${plan.reasons.get(name)})`).join(', ');
     }
   }
-  let matrix = docs ? { include: [] } : ciMatrix({ groups: chosen, times, capS });
-  // DEBUG (temporary): only the taps part, three copies side by side.
-  matrix = {
-    include: [1, 2, 3].map((n) => ({ part: `taps debug ${n}`, env: 'SHOTS_NO_SCENES=1 SHOTS_NO_LIVE=1' })),
-  };
+  const matrix = docs ? { include: [] } : ciMatrix({ groups: chosen, times, capS });
   const summary = summaryOf({ scope, why, matrix, times, docs });
   const outputs = `docs=${docs}\nmatrix=${JSON.stringify(matrix)}\n`;
   if (env.GITHUB_OUTPUT) appendFileSync(env.GITHUB_OUTPUT, outputs);

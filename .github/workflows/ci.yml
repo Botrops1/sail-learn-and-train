@@ -99,9 +99,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - run: npx playwright install chromium
       # The cloud sessions' default font (Inter), so text sizes match theirs.
-      # DEBUG (temporary): not fatal while the runners' package mirror cannot be reached.
-      - continue-on-error: true
-        run: |
+      - run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends fonts-inter
           mkdir -p ~/.config/fontconfig
