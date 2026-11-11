@@ -123,9 +123,15 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
   let pendingMinDistance = false;
 
   controls.addEventListener('start', () => {
+    // A glide moves the camera without OrbitControls' update, which then still holds the pose from
+    // before it. Caught up here, before the gesture counts, so the first update inside a tap that
+    // stops a glide is not taken for a hand move (it turned the camera to Free, issue #203).
+    if (tween) {
+      tween = undefined;
+      controls.update();
+    }
     interacting = true;
     dragReported = false;
-    tween = undefined;
   });
   controls.addEventListener('end', () => {
     interacting = false;
