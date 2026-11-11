@@ -995,6 +995,22 @@ try {
     const label = `taps ${viewport.name}/${cam}${fixedStep ? ` (${fixedStep} px)` : ''}`;
     // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
+    // DEBUG (temporary): the last pointer and key events, to read next to window.__camFlip.
+    await page.evaluate(() => {
+      const ev = (window.__evs = []);
+      const add = (text) => {
+        ev.push(text);
+        if (ev.length > 10) ev.shift();
+      };
+      for (const type of ['pointerdown', 'pointerup', 'pointercancel']) {
+        window.addEventListener(
+          type,
+          (e) => add(`${type}@${Math.round(e.timeStamp)} (${Math.round(e.clientX)},${Math.round(e.clientY)})`),
+          true,
+        );
+      }
+      window.addEventListener('keydown', (e) => add(`key ${e.key}@${Math.round(e.timeStamp)}`), true);
+    });
     // The boat is framed largest with the sheet at its lowest (M26).
     await setSheet(page, 'peek');
     await page.waitForTimeout(800);
@@ -1032,6 +1048,11 @@ try {
       }
     }
     const search = await page.evaluate(() => window.location.search);
+    console.log(
+      'CAMFLIP',
+      label,
+      JSON.stringify(await page.evaluate(() => ({ flip: window.__camFlip ?? null, events: window.__evs }))),
+    );
     if (!search.includes(`cam=${cam}`))
       problems.push(`${label}: taps changed the camera (${search})`);
     console.log(`${label}: ${taps} taps`);
