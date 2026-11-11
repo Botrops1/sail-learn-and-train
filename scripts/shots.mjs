@@ -1037,6 +1037,26 @@ try {
     console.log(`${label}: ${taps} taps`);
     await context.close();
   }
+  // Issue #203: a finger-long tap on the 3D view while a helm view button's glide runs must not
+  // turn the camera to Free (the gesture used to take the glide's own movement for a hand move).
+  if (!QUICK) {
+    const label = `taps ${VIEWPORTS[0].name}/helm tap during glide`;
+    const { context, page } = await openPage(VIEWPORTS[0], label, '?cam=helm&lb=0');
+    await setSheet(page, 'peek');
+    await page.waitForTimeout(800);
+    const box = await page.locator('canvas.scene-canvas').boundingBox();
+    await page.getByTestId('helm-other-wheel').click();
+    await page.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.45);
+    await page.mouse.down();
+    await page.waitForTimeout(100);
+    await page.mouse.up();
+    await page.waitForTimeout(800);
+    const search = await page.evaluate(() => window.location.search);
+    if (!search.includes('cam=helm'))
+      problems.push(`${label}: the tap changed the camera (${search})`);
+    console.log(`${label}: ${search.includes('cam=helm') ? 'camera kept' : 'camera changed'}`);
+    await context.close();
+  }
   console.log(
     `identified by tapping: ${[...found.entries()].map(([id, n]) => `${id}×${n}`).join(', ')}`,
   );
