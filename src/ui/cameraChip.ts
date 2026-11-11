@@ -31,6 +31,9 @@ export function createCameraChip(row: HTMLElement, store: Store, map: MapView): 
   if (gear) row.insertBefore(chip, gear);
   else row.append(chip);
 
+  // M99: the help line names the gestures for touch or for a mouse.
+  const touch =
+    typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
   const menu = createChipMenu(
     view,
     chip,
@@ -42,7 +45,7 @@ export function createCameraChip(row: HTMLElement, store: Store, map: MapView): 
     (id) => store.dispatch({ type: 'setCameraPreset', preset: id as CameraPreset }),
     {
       label: t('cam.label'),
-      hint: t('cam.menuHint'),
+      hint: `${t('cam.menuHint')} ${t(touch ? 'cam.moveTouch' : 'cam.moveMouse')}`,
       testId: 'camera-menu',
       hintClass: 'camera-menu-hint',
     },

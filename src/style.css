@@ -220,6 +220,11 @@ html[data-layout='side'] .info-area {
   pointer-events: auto;
 }
 
+/* M99: for the double-tap window after a tap on the 3D view, taps go through the card (scene.ts). */
+.view[data-tap-through] .info-card {
+  pointer-events: none;
+}
+
 html[data-layout='side'] .info-card {
   width: min(100%, 320px);
   max-height: 40vh;

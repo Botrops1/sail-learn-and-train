@@ -114,6 +114,7 @@ import { liveM95Checks, M95_SCENES } from './shots-m95.mjs';
 import { liveM96Checks, M96_SCENES } from './shots-m96.mjs';
 import { liveM97Checks, M97_SCENES } from './shots-m97.mjs';
 import { liveM98Checks, M98_SCENES } from './shots-m98.mjs';
+import { liveM99Checks, M99_SCENES } from './shots-m99.mjs';
 import { checkBudget } from './budget.mjs';
 import {
   closeSettings,
@@ -324,6 +325,7 @@ const SCENES = [
   ...M96_SCENES.map((scene) => ({ ...scene, name: `m96-${scene.name}` })),
   ...M97_SCENES.map((scene) => ({ ...scene, name: `m97-${scene.name}` })),
   ...M98_SCENES.map((scene) => ({ ...scene, name: `m98-${scene.name}` })),
+  ...M99_SCENES.map((scene) => ({ ...scene, name: `m99-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -1000,8 +1002,18 @@ try {
     const barTop = await viewBottom(page);
     const step = fixedStep ?? (viewport.width < 500 ? 14 : 24);
     let taps = 0;
+    // M99: two taps close in time and place are a double tap (it centres the camera and does not
+    // select). The grid is visited with a stride, so consecutive taps are more than 24 px apart
+    // (SCENE.picking.doubleTapMaxPx).
+    const stride = Math.floor(24 / step) + 1;
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
-      for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
+      const columns = [];
+      for (let x = box.x + step / 2; x < box.x + box.width; x += step) columns.push(x);
+      const order = [];
+      for (let first = 0; first < stride; first += 1) {
+        for (let i = first; i < columns.length; i += stride) order.push(columns[i]);
+      }
+      for (const x of order) {
         await page.mouse.click(x, y);
         taps += 1;
         // M51: a tap on the instrument strip opens Conditions and raises the sheet, whose tab row
@@ -1056,6 +1068,8 @@ try {
           await page.mouse.click(x, y);
           const part = await cardPart(page);
           if (part) await page.keyboard.press('Escape');
+          // M99: two taps closer than 350 ms are a double tap (centre), not a second tap.
+          await page.waitForTimeout(400);
           if (part?.id === id) {
             ok = true;
             break;
@@ -1192,6 +1206,7 @@ try {
     m96: () => liveM96Checks(onTestClock),
     m97: () => liveM97Checks(onTestClock),
     m98: () => liveM98Checks(onTestClock),
+    m99: () => liveM99Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   if (!ONLY_SMALL && !NO_LIVE) {

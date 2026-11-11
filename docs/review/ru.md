@@ -3201,7 +3201,9 @@
 | settings.close | Close | Закрыть |
 | settings.about | About | О программе |
 | cam.chip | Camera: {name}. Tap to change the view. | Камера: {name}. Нажмите, чтобы сменить вид. |
-| cam.menuHint | Port is the left side of the boat when you face the bow (the front); starboard is the right side. Drag the 3D view to look around. | Левый борт — слева, если смотреть на нос (вперёд); правый борт — справа. Потяните 3D-вид, чтобы осмотреться. |
+| cam.menuHint | Port is the left side of the boat when you face the bow (the front); starboard is the right side. | Левый борт — слева, если смотреть на нос (вперёд); правый борт — справа. |
+| cam.moveTouch | Move the camera: one finger turns, pinch to zoom, two fingers slide. Double-tap a spot to turn around it. | Камера: один палец — поворот, щипок — приближение, два пальца — сдвиг. Двойное касание точки — вращение вокруг неё. |
+| cam.moveMouse | Move the camera: drag to turn, wheel to zoom towards the pointer, right drag (or Shift + drag) to slide. Double-click a spot to turn around it. | Камера: перетаскивание — поворот, колёсико — приближение к указателю, правая кнопка (или Shift + перетаскивание) — сдвиг. Двойной щелчок по точке — вращение вокруг неё. |
 | helmView.group | Helm view | Вид от штурвала |
 | helmView.ropes | Ropes | Тросы |
 | helmView.ropesLabel | Look at this side's ropes and winch | Посмотреть на тросы и лебёдку этого борта |

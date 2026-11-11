@@ -272,8 +272,6 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
             'exercise-item-maestral',
             // M97 added A bura is coming.
             'exercise-item-bura',
-            // M98 added A night at anchor.
-            'exercise-item-night-anchor',
             // M71 added the two sails exercises.
             'exercise-item-set-sails',
             'exercise-item-furl-sails',
@@ -284,6 +282,8 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
             'exercise-item-mooring-buoy',
             'exercise-item-anchor-shore',
             'exercise-item-stern-to-anchor',
+            // M98 added A night at anchor to Harbour and anchor, after the stern-to exercise.
+            'exercise-item-night-anchor',
           ]),
         JSON.stringify(ids),
       );

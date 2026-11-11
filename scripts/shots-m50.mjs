@@ -73,7 +73,8 @@ export async function liveM50Checks({ openPage, viewports, outDir, prefix, probl
     const centre = await handle(page);
     const box = await page.locator('canvas.scene-canvas').boundingBox();
     await page.mouse.click(box.x + centre.x, box.y + centre.y);
-    await page.waitForTimeout(300);
+    // M99: two taps closer than 350 ms are a double tap (centre), not a second tap.
+    await page.waitForTimeout(450);
   };
   /** Looks straight down at the handle's place, 3 m up, so it sits high above the info card. */
   const lookDownAt = async (page, [x, y, z]) => {

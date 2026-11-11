@@ -5,10 +5,13 @@ import { sheerAt } from '../src/model/hullShape';
 import { helmPedestal } from '../src/model/helmPedestal';
 import { cross, dot, normalize, sub, type Vec3 } from '../src/model/vec3';
 import {
+  centrePose,
   clampCameraPosition,
   focusPose,
   framingBox,
   helmPose,
+  insideHull,
+  maxPolarAngle,
   presetPose,
   viewDirection,
 } from '../src/render3d/cameraPresets';
@@ -22,7 +25,19 @@ describe('camera presets (PHASE1_SPEC 6.2)', () => {
       for (const preset of CAMERA_PRESETS) {
         const pose = presetPose(preset, lens);
         expect(pose.position[1], preset).toBeGreaterThan(0);
-        expect(clampCameraPosition(pose.position), preset).toEqual(pose.position);
+        expect(clampCameraPosition(pose.position, pose.target), preset).toEqual(pose.position);
+      }
+    }
+    // M99: the Helm looks at both wheels.
+    const helms = [
+      { wheel: 'port', look: 'ahead' },
+      { wheel: 'starboard', look: 'ropes' },
+      { wheel: 'port', look: 'panel' },
+    ] as const;
+    for (const lens of [PHONE, DESKTOP]) {
+      for (const helm of helms) {
+        const pose = presetPose('helm', lens, { helm });
+        expect(clampCameraPosition(pose.position, pose.target), helm.look).toEqual(pose.position);
       }
     }
   });
@@ -126,10 +141,85 @@ describe('camera clamp', () => {
   it('lifts a camera inside the hull above the deck', () => {
     const [, y] = clampCameraPosition([0, 0.5, 0]);
     expect(y).toBeGreaterThan(sheerAt(0));
+    expect(Math.abs(y - 1.72)).toBeLessThanOrEqual(0.001);
   });
 
   it('leaves a camera outside the boat alone', () => {
     expect(clampCameraPosition([0, 5, -30])).toEqual([0, 5, -30]);
+  });
+});
+
+describe('M99: camera limits and centring', () => {
+  it('pushes out along the line from the target', () => {
+    const [x, y, z] = clampCameraPosition([0, 1.4, 1.9], [0, 1.4, -3]);
+    expect(x).toBe(0);
+    expect(y).toBe(1.4);
+    expect(z).toBeGreaterThanOrEqual(2.192);
+    expect(z).toBeLessThanOrEqual(2.215);
+  });
+
+  it('falls back to the lift when the line points into the boat', () => {
+    const [x, y, z] = clampCameraPosition([0, 0.5, 0.01], [0, 1, 0]);
+    expect(x).toBe(0);
+    expect(Math.abs(y - 1.72)).toBeLessThanOrEqual(0.001);
+    expect(z).toBe(0.01);
+  });
+
+  it('orbiting close to the hull has no jumps', () => {
+    let largest = 0;
+    let previous: Vec3 | undefined;
+    for (let a = 0; a <= 2 * Math.PI + 1e-9; a += 0.005) {
+      const p = clampCameraPosition([3.5 * Math.sin(a), 1, 3.5 * Math.cos(a)], [0, 1, 0]);
+      if (previous) largest = Math.max(largest, Math.hypot(...(sub(p, previous) as Vec3)));
+      previous = p;
+    }
+    expect(largest).toBeLessThan(0.25);
+  });
+
+  it('insideHull', () => {
+    expect(insideHull([0, 1, 0])).toBe(true);
+    for (const p of [
+      [0, 1, 2.3],
+      [10, 1, 0],
+      [-8.8, 1, 0],
+      [0, 1.8, 0],
+    ] as Vec3[]) {
+      expect(insideHull(p), p.join()).toBe(false);
+    }
+  });
+
+  it('maxPolarAngle keeps the camera above the water', () => {
+    const phi = maxPolarAngle(9.82, 45, 0.3);
+    expect(Math.abs(phi - 1.7839)).toBeLessThanOrEqual(0.0005);
+    expect(Math.abs(9.82 + 45 * Math.cos(phi) - 0.3)).toBeLessThanOrEqual(0.001);
+    expect(Math.abs(maxPolarAngle(0, 10, 0.3) - 1.5408)).toBeLessThanOrEqual(0.0005);
+    expect(maxPolarAngle(9.82, 3, 0.3)).toBeCloseTo(Math.PI, 9);
+    expect(maxPolarAngle(1, 0, 0.3)).toBeCloseTo(Math.PI / 2, 9);
+  });
+
+  it('centrePose keeps the camera and turns to the point', () => {
+    const from = presetPose('side-port', DESKTOP);
+    const pose = centrePose(from, [0, 0, -10], 3, 140);
+    expect(pose.target).toEqual([0, 0, -10]);
+    pose.position.forEach((v, i) => expect(v).toBeCloseTo(from.position[i] as number, 9));
+  });
+
+  it('centrePose keeps the near limit', () => {
+    // The spec's numbers (camera z = -40.05, point z = -39.05) put the point beyond the 25 m target
+    // limit, so the same geometry is shifted 20 m towards the boat (decided in the M99 PR).
+    const from = {
+      position: [-0.85, 14.03, -20.05] as Vec3,
+      target: [-0.85, 9.82, 0] as Vec3,
+      fovDeg: 40,
+    };
+    const pose = centrePose(from, [-0.85, 14.03, -19.05], 3, 140);
+    const expected = [-0.85, 14.03, -22.05];
+    pose.position.forEach((v, i) => expect(v).toBeCloseTo(expected[i] as number, 6));
+  });
+
+  it('centrePose clamps the target', () => {
+    const from = presetPose('side-port', DESKTOP);
+    expect(centrePose(from, [100, 0, 0], 3, 140).target).toEqual([25, 0, 0]);
   });
 });
 
