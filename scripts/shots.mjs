@@ -1002,8 +1002,18 @@ try {
     const barTop = await viewBottom(page);
     const step = fixedStep ?? (viewport.width < 500 ? 14 : 24);
     let taps = 0;
+    // M99: two taps close in time and place are a double tap (it centres the camera and does not
+    // select). The grid is visited with a stride, so consecutive taps are more than 24 px apart
+    // (SCENE.picking.doubleTapMaxPx).
+    const stride = Math.floor(24 / step) + 1;
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
-      for (let x = box.x + step / 2; x < box.x + box.width; x += step) {
+      const columns = [];
+      for (let x = box.x + step / 2; x < box.x + box.width; x += step) columns.push(x);
+      const order = [];
+      for (let first = 0; first < stride; first += 1) {
+        for (let i = first; i < columns.length; i += stride) order.push(columns[i]);
+      }
+      for (const x of order) {
         await page.mouse.click(x, y);
         taps += 1;
         // M51: a tap on the instrument strip opens Conditions and raises the sheet, whose tab row
@@ -1058,6 +1068,8 @@ try {
           await page.mouse.click(x, y);
           const part = await cardPart(page);
           if (part) await page.keyboard.press('Escape');
+          // M99: two taps closer than 350 ms are a double tap (centre), not a second tap.
+          await page.waitForTimeout(400);
           if (part?.id === id) {
             ok = true;
             break;
