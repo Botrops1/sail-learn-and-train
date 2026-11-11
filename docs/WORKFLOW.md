@@ -1090,3 +1090,23 @@ The wind follows the clock ([PHASE10_SPEC](PHASE10_SPEC.md) 23–30): the Adriat
 - [ ] The squall up close: on the same link, after the setup, tap Pause at about 04:00 (the time widget) and look at the boat from the top: the wind from the north-east, the boat pulling on the anchor and the line.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=night-anchor&lang=ru — the setup card reads well.
 - [ ] Every item of the part 10c Definition of Done (PHASE10_SPEC 29) is ticked in the PR.
+
+## 23. Easier camera control (issue #145)
+
+Moving the camera by hand works like a good 3D model viewer, on a phone and on a computer ([PHASE_CAMERA_SPEC](PHASE_CAMERA_SPEC.md)). One PR, M99, started with `/milestone 99`. **M99 needs a `/review` with Opus** before you test it.
+
+### 23.1 Checklist
+
+#### M99: Easier camera control
+
+- [ ] Zoom where you point (phone): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — put two fingers on the front of the boat (the bow) and spread them: the bow grows under your fingers instead of the view zooming to the middle of the mast.
+- [ ] Zoom where you point (computer): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — hold the mouse over the front of the boat and roll the wheel forward: the bow grows and stays under the pointer.
+- [ ] Double-tap to turn round a spot: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — double-tap a winch (the drums by the cockpit at the back): the camera turns smoothly to look at it and the camera button says "Free". Now drag with one finger: the boat turns round that winch. On a computer, double-click instead.
+- [ ] One tap still names a part: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — tap the boom (the long pole under the mainsail) once: its name shows as before and the camera does not move.
+- [ ] Down to the water, no shaking: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — drag one finger (or the mouse) up as far as you can: the camera goes down and stops just above the water, looking up at the boat. Keep dragging: nothing shakes or jumps.
+- [ ] Sliding stops cleanly: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — slide the view far to one side (two fingers on a phone, the right mouse button on a computer): it stops when the boat is near the edge and the view does not turn.
+- [ ] Close to the hull: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — double-tap the side of the hull, spread two fingers until you are close, then turn round with one finger: the camera slides round the hull without jumps and never goes inside it.
+- [ ] More ways to slide (computer): https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — drag with the middle button (press the wheel), then with Shift held and the left button: both slide the view. The pointer is a hand while you drag.
+- [ ] The help line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — tap "Port ▾": under the views, after the line about port and starboard, "Move the camera: one finger turns, pinch to zoom, two fingers slide. Double-tap a spot to turn around it." On a computer it says "drag to turn, wheel to zoom towards the pointer, …".
+- [ ] The camera buttons still work: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm — after moving the camera by hand, pick Port, Top, Bow and Helm from "Free ▾": each glides to its usual view.
+- [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&lang=ru — tap the camera button: the help line is in Russian and fits on the screen.
