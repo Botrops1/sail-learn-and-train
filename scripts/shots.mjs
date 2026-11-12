@@ -1006,6 +1006,9 @@ try {
     // select). The grid is visited with a stride, so consecutive taps are more than 24 px apart
     // (SCENE.picking.doubleTapMaxPx).
     const stride = Math.floor(24 / step) + 1;
+    const recent = [];
+    const sweepStart = Date.now();
+    let changedAt = '';
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
       const columns = [];
       for (let x = box.x + step / 2; x < box.x + box.width; x += step) columns.push(x);
@@ -1016,6 +1019,10 @@ try {
       for (const x of order) {
         await page.mouse.click(x, y);
         taps += 1;
+        // Issue #205: on a camera change, name the taps just before it (page.url() costs no round trip).
+        recent.push(`#${taps} (${Math.round(x)},${Math.round(y)}) +${Date.now() - sweepStart} ms`);
+        if (recent.length > 6) recent.shift();
+        if (!changedAt && !page.url().includes(`cam=${cam}`)) changedAt = recent.join(', ');
         // M51: a tap on the instrument strip opens Conditions and raises the sheet, whose tab row
         // would then take the taps below it (the gear tab shows the language buttons): lower it again.
         if (
@@ -1033,7 +1040,7 @@ try {
     }
     const search = await page.evaluate(() => window.location.search);
     if (!search.includes(`cam=${cam}`))
-      problems.push(`${label}: taps changed the camera (${search})`);
+      problems.push(`${label}: taps changed the camera (${search}); last taps: ${changedAt}`);
     console.log(`${label}: ${taps} taps`);
     await context.close();
   }
