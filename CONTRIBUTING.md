@@ -14,14 +14,24 @@ These are the most useful contributions right now.
 | A sailor | Correct a wrong or unclear sailing fact | [Sailing fact form](https://github.com/Botrops1/sail-learn-and-train/issues/new?template=sailing-fact.yml). Please name a source (a book, a course, a manual, a rule). |
 | A Russian‑speaking sailor | Check the Russian text, which is still an AI draft | Read [`docs/review/ru.md`](docs/review/ru.md) and answer by the entry's code (for example `term_north: ок`) in a [translation form](https://github.com/Botrops1/sail-learn-and-train/issues/new?template=translation.yml). |
 | Someone who speaks another language | Add a language | [`docs/LANGUAGES.md`](docs/LANGUAGES.md): a language is one folder of two text files. |
+| A sailor or instructor | Suggest an exercise | [Exercise form](https://github.com/Botrops1/sail-learn-and-train/issues/new?template=exercise.yml): what the learner sees, what is happening, the right action, the typical mistake. The current list is in [`docs/EXERCISES.md`](docs/EXERCISES.md). |
 | An owner of a similar yacht | Describe your boat | [`docs/BOAT_PROFILE.md`](docs/BOAT_PROFILE.md): a boat profile is one file of numbers, no code. |
+| Someone who knows another boat or sailing area | Propose a new boat or a new harbour, bay or area | [Boat or area form](https://github.com/Botrops1/sail-learn-and-train/issues/new?template=boat-or-area.yml). A yacht laid out like the Hanse 508 is a profile (numbers only); a different rig or deck layout, or a new place, also needs code and is planned as its own step. |
+| Anyone with a phone or computer | Tell us how it runs | Open the app with `?debug=1` added to the address, note the frame rate, and send it with the [bug form](https://github.com/Botrops1/sail-learn-and-train/issues/new?template=bug.yml) or in [Discussions](https://github.com/Botrops1/sail-learn-and-train/discussions). |
 | Anyone | Suggest an idea | [Idea form](https://github.com/Botrops1/sail-learn-and-train/issues/new?template=idea.yml), or ask in [Discussions](https://github.com/Botrops1/sail-learn-and-train/discussions). |
+
+## What happens after you post
+
+- **The owner answers within about a week**, adds a label and may ask for a Share link or a source. This is a one-person project; please be patient.
+- **Labels:** `good first issue` (small and well described, a good start for new contributors), `help wanted` (the owner would welcome someone taking it), `needs source` (waiting for a reference), `exercise idea`, `boat or area`, `translation`, `bug`, `enhancement`.
+- **Want to work on an issue?** Say so in a comment first, so two people don't do the same work.
+- A suggestion that is not taken is not a judgement of it: the app stays small and planned on purpose (clarity over realism).
 
 ## Contributing code
 
 ### Before you start
 
-**Open an issue first** for anything bigger than a small fix. New features are planned phase by phase ([`docs/ROADMAP.md`](docs/ROADMAP.md)), each with a written spec (`docs/PHASE<N>_SPEC.md`), so a pull request that adds an unplanned feature may have to wait for its phase.
+**Open an issue first** for anything bigger than a small fix, and look for `good first issue` if you want somewhere to start. New features are planned phase by phase ([`docs/ROADMAP.md`](docs/ROADMAP.md)), each with a written spec (`docs/PHASE<N>_SPEC.md`), so a pull request that adds an unplanned feature may have to wait for its phase.
 
 ### Set up
 
@@ -56,7 +66,7 @@ These are the same rules the coding agent follows ([`CLAUDE.md`](CLAUDE.md)); if
 5. **Every part and rope has an id** in [`content/registry/parts.json`](content/registry/parts.json) and an entry in every `content/lang/<code>/glossary.json`.
 6. **Translations stay `draft`** until a sailor who speaks the language has checked them.
 7. **No copyrighted material:** no brochure pages or pictures, no text copied from books or courses. Facts and numbers are fine with their source. Photos must be your own.
-8. **Few dependencies, pinned versions.**
+8. **Few dependencies, pinned versions.** No 3D model, picture or sound files for the scene: everything is built by code from the data in `content/`.
 9. **Keep [`docs/CODE_MAP.md`](docs/CODE_MAP.md) current** when you add, remove or rename a file.
 10. A pull request that fixes an issue says `Closes #<number>` in its description.
 
