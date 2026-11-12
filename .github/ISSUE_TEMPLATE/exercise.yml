@@ -1,0 +1,48 @@
+name: Exercise idea
+description: Suggest a guided exercise, something a beginner should practise on the boat.
+labels: ['exercise idea']
+title: 'Exercise: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you! Every exercise in the app is written in the same four parts, so please answer them as well as you can. Short answers are fine. The current list is in [docs/EXERCISES.md](https://github.com/Botrops1/sail-learn-and-train/blob/main/docs/EXERCISES.md).
+  - type: input
+    id: name
+    attributes:
+      label: Name of the exercise
+      placeholder: e.g. Heaving to
+    validations:
+      required: true
+  - type: textarea
+    id: see
+    attributes:
+      label: What the learner sees at the start
+      description: Where the boat is, the wind, the sails, anything else that matters.
+    validations:
+      required: true
+  - type: textarea
+    id: happening
+    attributes:
+      label: What is happening (and why it matters)
+    validations:
+      required: true
+  - type: textarea
+    id: action
+    attributes:
+      label: The right action, step by step
+    validations:
+      required: true
+  - type: textarea
+    id: mistake
+    attributes:
+      label: The typical mistake, and what it leads to
+    validations:
+      required: false
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: A book, a course (e.g. RYA Competent Crew, ASA 101), a school or your own experience; please say which.
+    validations:
+      required: false
