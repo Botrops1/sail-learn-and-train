@@ -122,10 +122,27 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
   /** M49: after a drag ended a focus, the orbit's own near limit returns once the camera is that far out. */
   let pendingMinDistance = false;
 
+  /**
+   * The gesture in progress has really moved: a pointer moved while pressed, or the wheel turned.
+   * OrbitControls also reports 'change' when its update only catches up with a pose the rig set
+   * (a glide, a preset fitted again, the keep-out push); inside a still tap that is not a hand move
+   * and must not turn the camera to Free (issues #203, #205). Capture listeners, so they run before
+   * OrbitControls' own handlers of the same event.
+   */
+  let handMoved = false;
+  domElement.addEventListener('pointerdown', () => (handMoved = false), { capture: true });
+  domElement.addEventListener(
+    'pointermove',
+    (event) => {
+      if (event.buttons !== 0) handMoved = true;
+    },
+    { capture: true },
+  );
+  domElement.addEventListener('wheel', () => (handMoved = true), { capture: true, passive: true });
+
   controls.addEventListener('start', () => {
     // A glide moves the camera without OrbitControls' update, which then still holds the pose from
-    // before it. Caught up here, before the gesture counts, so the first update inside a tap that
-    // stops a glide is not taken for a hand move (it turned the camera to Free, issue #203).
+    // before it: caught up here, before the gesture starts.
     if (tween) {
       tween = undefined;
       controls.update();
@@ -137,7 +154,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
     interacting = false;
   });
   controls.addEventListener('change', () => {
-    if (!interacting) return;
+    if (!interacting || !handMoved) return;
     if (!dragReported) {
       dragReported = true;
       dragListeners.forEach((listener) => listener());
