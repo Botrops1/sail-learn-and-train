@@ -16,8 +16,13 @@
 //   SHOTS_SHARD=1/2      only every 2nd scene, starting with the 1st (CI's two scene parts)
 //   (CI splits the full run into parallel parts with these; see .github/workflows/ci.yml)
 //   SHOTS_OUT=<dir>      output folder (default shots/)
+//   SHOTS_FAILED_FILE=<file>  on a failed run, write which groups (or other units) failed and
+//                        their WRONG lines there as JSON (scripts/ci-shots.mjs retries those)
+//   SHOTS_TEST_FLAKY=once|always  adds the live group "flakytest", which fails on its first run
+//                        only (marker file SHOTS_TEST_FLAKY_MARKER) or every time: it tests the retry
 //   SHOTS_VERBOSE=1      print every line; by default the lines of a scene, a tap sweep or a live
 //                        group are printed only when it went wrong (scripts/quiet-log.mjs)
+import { existsSync, writeFileSync } from 'node:fs';
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from 'playwright';
@@ -1309,6 +1314,17 @@ try {
     m99: () => liveM99Checks(onTestClock),
     budget: () => checkBudget(live),
   };
+  // Test-only (not in CI's group list): a group that fails on its first run only, or always, so the
+  // retry of scripts/ci-shots.mjs can be tried. Without SHOTS_TEST_FLAKY it does not exist.
+  if (process.env.SHOTS_TEST_FLAKY) {
+    liveGroups.flakytest = async () => {
+      const marker = process.env.SHOTS_TEST_FLAKY_MARKER ?? path.join(OUT_DIR, 'flakytest.marker');
+      const fail = process.env.SHOTS_TEST_FLAKY === 'always' || !existsSync(marker);
+      writeFileSync(marker, 'ran\n');
+      if (fail) problems.push('live flakytest: made to fail on purpose');
+      console.log(`live flakytest first-run check: ${fail ? 'WRONG' : 'ok'}`);
+    };
+  }
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
       if (SKIP.includes(name)) continue;
@@ -1370,6 +1386,22 @@ try {
 }
 
 log.restore();
+if (problems.length > 0 && process.env.SHOTS_FAILED_FILE) {
+  // Which units failed, for scripts/ci-shots.mjs: a live group is named by its group; any other
+  // unit, or a problem no unit owns (a late console error), means the whole part has to rerun.
+  const owned = log.failed.reduce((sum, unit) => sum + unit.problems, 0);
+  const groups = log.failed
+    .filter((unit) => unit.name.startsWith('live group '))
+    .map((unit) => ({
+      name: unit.name.slice('live group '.length),
+      lines: unit.reason.length > 0 ? unit.reason : unit.problemLines,
+    }));
+  const whole = groups.length < log.failed.length || problems.length > owned || groups.length === 0;
+  writeFileSync(
+    process.env.SHOTS_FAILED_FILE,
+    JSON.stringify({ whole, groups, problems: problems.slice(0, 30) }),
+  );
+}
 if (problems.length > 0) {
   console.error(`\n${problems.length} problem(s):\n${problems.join('\n')}`);
   process.exit(1);
