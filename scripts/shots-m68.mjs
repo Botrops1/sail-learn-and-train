@@ -3,6 +3,7 @@
 // section folded and sails (no held=1).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { FAST, run, setSpeed, toStep5, turn, waitForStep } from './exercise-drive.mjs';
 import { isStacked, showSection } from './ui.mjs';
 
 const START = 'm=exercise&ex=points-of-sail&exp=0&debug=1';
@@ -17,24 +18,6 @@ export async function liveM68Checks({ openPage, viewports, outDir, prefix, probl
   const phone = viewports[0];
   const desktop = viewports[2];
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
-  const run = (page) => page.evaluate(() => window.__sailExercise.state());
-  const act = (page, action) => page.evaluate((a) => window.__sailExercise.dispatch(a), action);
-  const turn = async (page, times) => {
-    for (let i = 0; i < times; i += 1) {
-      await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
-    }
-  };
-  const controls = (page, values) => act(page, { type: 'setControls', values });
-  /** Waits (app time) until the run is on `step`, at most `limitS`. */
-  const waitForStep = async (page, step, limitS) => {
-    const from = (await run(page)).elapsedS;
-    for (;;) {
-      const now = await run(page);
-      if (now.step >= step) return true;
-      if (now.elapsedS - from > limitS) return false;
-      await page.waitForTimeout(500);
-    }
-  };
   const waitForMistakeCount = async (page, count, limitS) => {
     const from = (await run(page)).elapsedS;
     for (;;) {
@@ -43,29 +26,6 @@ export async function liveM68Checks({ openPage, viewports, outDir, prefix, probl
       if (now.elapsedS - from > limitS) return false;
       await page.waitForTimeout(250);
     }
-  };
-  /** The good run of steps 1 to 4 (M66), leaving the run at step 5. */
-  const toStep5 = async (page) => {
-    const plan = [
-      async () => controls(page, { ctl_mainsheet: 12 }),
-      async () => {
-        await turn(page, 2);
-        await controls(page, { ctl_mainsheet: 25 });
-      },
-      async () => {
-        await turn(page, 3);
-        await controls(page, { ctl_mainsheet: 50, ctl_jib_sheet: 100 });
-      },
-      async () => {
-        await turn(page, 4);
-        await controls(page, { ctl_mainsheet: 100 });
-      },
-    ];
-    for (const [index, doStep] of plan.entries()) {
-      await doStep();
-      if (!(await waitForStep(page, index + 1, 40))) return false;
-    }
-    return true;
   };
   const showExercises = async (page) => {
     if (await isStacked(page)) await showSection(page, 'exercises');
@@ -102,14 +62,18 @@ export async function liveM68Checks({ openPage, viewports, outDir, prefix, probl
       );
       await page.getByTestId('exercise-so-far').click();
 
+      // The two mistakes and the finish go at ×16 (the run does not pause: exp=0).
       await turn(page, 6);
+      await setSpeed(page, FAST);
       const gotBoth = await waitForMistakeCount(page, 2, 60);
+      await setSpeed(page, 1);
       await page.waitForTimeout(300);
       await showExercises(page);
       await page.getByTestId('exercise-waypoint-back-4').click();
       await page.waitForTimeout(500);
       await turn(page, 3);
-      const finished = await waitForStep(page, 5, 40);
+      await setSpeed(page, FAST);
+      const finished = (await waitForStep(page, 5, 40)) <= 40;
       await page.waitForTimeout(500);
       await showExercises(page);
       const summary = await page
@@ -165,7 +129,8 @@ export async function liveM68Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(500);
       const reached = await toStep5(page);
       await turn(page, 3);
-      const finished = await waitForStep(page, 5, 40);
+      await setSpeed(page, FAST);
+      const finished = (await waitForStep(page, 5, 40)) <= 40;
       await page.waitForTimeout(500);
       await showExercises(page);
       await page.getByTestId('debrief-actions-toggle').click();

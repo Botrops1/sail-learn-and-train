@@ -4,7 +4,8 @@
 // 3D frame is ten times slower to draw, and the cards are the same).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, showSection } from './ui.mjs';
+import { FAST, setSpeed } from './exercise-drive.mjs';
+import { exerciseLine, setCamera, showSection } from './ui.mjs';
 
 export const M70_SCENES = [
   {
@@ -45,12 +46,15 @@ export async function liveM70Checks({ openPage, viewports, outDir, prefix, probl
       testClock: true,
     });
     // Wait (app time) until a gust is 100-200 m upwind (values 5-10 of the profile).
+    // At ×16 a poll is 8 s of app time; the gust stays in that band for longer (about 16 s).
     let near = 0;
+    await setSpeed(page, FAST);
     for (let i = 0; i < 160 && near <= 0.5; i += 1) {
       await page.waitForTimeout(500);
       const profile = await page.evaluate(() => window.__sailWater?.gustProfile() ?? null);
       near = profile ? Math.max(...profile.values.slice(5, 11)) : 0;
     }
+    await setSpeed(page, 1);
     check(
       'gust ahead in the profile',
       near > 0.5,
@@ -60,17 +64,11 @@ export async function liveM70Checks({ openPage, viewports, outDir, prefix, probl
     await page.locator('.mini-map').screenshot({
       path: path.join(outDir, `${prefix}live-phone-m70-gust-coming-minimap.png`),
     });
+    // The same page, the same gust: the camera changes to the full map for the third picture.
+    await setCamera(page, 'map');
+    await page.waitForTimeout(500);
+    await shot(page, 'live-phone-m70-gust-coming-map');
     await context.close();
-    const map = await openPage(phone, 'm70 gust coming map', `${query}&cam=map`, {
-      testClock: true,
-    });
-    for (let i = 0; i < 160; i += 1) {
-      await map.page.waitForTimeout(500);
-      const p = await map.page.evaluate(() => window.__sailWater?.gustProfile() ?? null);
-      if (p && Math.max(...p.values.slice(5, 11)) > 0.5) break;
-    }
-    await shot(map.page, 'live-phone-m70-gust-coming-map');
-    await map.context.close();
   }
 
   const start = async (page) => {
@@ -149,12 +147,15 @@ export async function liveM70Checks({ openPage, viewports, outDir, prefix, probl
       await start(page);
       let seen = false;
       let elapsedS = 0;
+      // The run pauses on the mistake, so its time is exact at any scale: ×16 gets there sooner.
+      await setSpeed(page, FAST);
       for (let i = 0; i < 130 && !seen; i += 1) {
         await page.waitForTimeout(500);
         const now = await run(page);
         elapsedS = now.elapsedS;
         seen = now.status === 'mistake';
       }
+      await setSpeed(page, 1);
       await open(page);
       const shown = await waitVisible(page, 'exercise-mistake');
       const text = shown ? await page.getByTestId('exercise-mistake').innerText() : '';

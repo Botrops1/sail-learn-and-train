@@ -2,6 +2,7 @@
 // scripts/shots.mjs, on the test clock (the night at ×240 takes about 186 s of its time).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { PILOT_SPEED, setSpeed } from './exercise-drive.mjs';
 import { setCamera, showSection } from './ui.mjs';
 
 export const M98_SCENES = [
@@ -65,6 +66,8 @@ export async function liveM98Checks({ openPage, viewports, outDir, prefix, probl
     await showSection(page, 'exercises');
     await page.getByTestId('exercise-start').click();
     await page.waitForTimeout(500);
+    // The anchoring goes at the pilot's time scale (exercise-drive.mjs); the night sets ×240 itself.
+    await setSpeed(page, PILOT_SPEED);
     let last = null;
     let more = false;
     let lastTighten = -1;
@@ -89,7 +92,7 @@ export async function liveM98Checks({ openPage, viewports, outDir, prefix, probl
       const r = await run(page);
       last = r;
       if (finished(r)) break;
-      const t = i * TICK_S;
+      const t = r.elapsedS;
       if (r.step === 6) {
         // The night: nothing to do; look at the clock once a second and take the picture after
         // the squall has started (04:05 or later: 245 minutes after midnight).
