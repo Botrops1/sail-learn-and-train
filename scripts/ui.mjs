@@ -3,6 +3,8 @@
 // that a later change of the screen changes only this file. They take a Playwright `page` and find
 // things by data-testid, never by text, so they do not depend on the language.
 
+import { readFileSync } from 'node:fs';
+
 /** M51: the phone tab each section is under: a copy of `TAB_OF` in src/ui/modes.ts (keep them in step). */
 const TAB_OF_JS = {
   mode: 'mode',
@@ -258,6 +260,25 @@ export async function waitForLink(page, has, hasNot = []) {
     }
     await page.waitForTimeout(50);
   }
+}
+
+/**
+ * The panel's group order (a copy of `GROUPS` in src/ui/exercisePanel.ts; tests/exerciseListIds.test.ts
+ * fails when they differ). The panel lists the exercises group by group, in file order inside a group.
+ */
+export const EXERCISE_GROUP_ORDER = ['sailing', 'wind', 'sails', 'harbour'];
+
+/**
+ * The `data-testid` of every exercise-list item, in the order the panel lists them, read from
+ * content/exercises/exercises.json, so a new exercise changes no check that compares the list.
+ */
+export function exerciseItemTestIds() {
+  const { exercises } = JSON.parse(readFileSync('content/exercises/exercises.json', 'utf8'));
+  return EXERCISE_GROUP_ORDER.flatMap((group) =>
+    exercises
+      .filter((exercise) => exercise.group === group)
+      .map((exercise) => `exercise-item-${exercise.id}`),
+  );
 }
 
 /** M66 (M93: the head of the step card): the step line's text over the 3D view, or null while hidden. */

@@ -4,7 +4,7 @@
 // only (a desktop-size 3D frame is ten times slower to draw, and the cards are the same).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, showSection } from './ui.mjs';
+import { exerciseItemTestIds, exerciseLine, showSection } from './ui.mjs';
 
 export const M71_SCENES = [
   {
@@ -277,7 +277,7 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
         /Setting and furling the sails/.test(body) &&
           ids.includes('exercise-item-set-sails') &&
           ids.includes('exercise-item-furl-sails') &&
-          ids.length === 17, // M74 added Leaving the berth, M75 Entering the berth, M76 two more, M77 Anchoring, M78 Stern-to on your anchor, M96 The afternoon maestral, M97 A bura is coming, M98 A night at anchor
+          ids.length === exerciseItemTestIds().length,
         JSON.stringify(ids),
       );
       problems.push(...(await auditPage(page, `m71 ${name} list`)));
