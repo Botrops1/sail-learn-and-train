@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   FULL_CAP_S,
@@ -45,8 +45,25 @@ describe('liveGroupNames', () => {
     ])
       expect(groups).toContain(name);
     expect(new Set(groups).size).toBe(groups.length);
-    // Counted at M99: general, m4b, m4c, m5 to m82 with m60b, m85, m87 to m99, and budget.
-    expect(groups.length).toBe(97);
+  });
+
+  it('has a live group for every scripts/shots-m*.mjs file and a recorded time for every group', () => {
+    // M4a's checks run inside the group `general`; every other file is a group of the same name.
+    const insideGeneral = new Set(['m4a']);
+    const fileGroups = readdirSync('scripts')
+      .map((file) => /^shots-(m[0-9a-z]+)\.mjs$/.exec(file)?.[1])
+      .filter((name): name is string => name !== undefined);
+    expect(fileGroups.length).toBeGreaterThan(0);
+    for (const name of fileGroups) {
+      if (insideGeneral.has(name)) expect(groups).toContain('general');
+      else expect(groups, `scripts/shots-${name}.mjs has no live group`).toContain(name);
+    }
+    for (const name of groups)
+      expect(times, `group ${name} has no line in .github/ci-times.json`).toHaveProperty(name);
+    for (const name of Object.keys(times))
+      expect(groups, `.github/ci-times.json names ${name}, which is not a live group`).toContain(
+        name,
+      );
   });
 
   it('throws when the object is not found', () => {
