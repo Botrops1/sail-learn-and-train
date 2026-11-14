@@ -68,6 +68,33 @@ export function workflowLinks(workflow, id, number) {
   return links;
 }
 
+/**
+ * The links of this PR's preview that stand between backticks: a phone shows them as code and
+ * they cannot be tapped (PR 196).
+ */
+export function backtickedLinks(text, number) {
+  const pattern = new RegExp(`\`+(https://[^\\s\`]*pr-preview/pr-${number}/[^\\s\`]*)\`+`, 'g');
+  return [...String(text ?? '').matchAll(pattern)].map((match) => match[1]);
+}
+
+/**
+ * The numbers of the questions in "## Questions for the owner" that have no "Recommended:". A
+ * question is a line that starts with a number and a full stop, up to the next such line.
+ */
+export function questionsWithoutRecommendation(text) {
+  const lines = String(text ?? '').split('\n');
+  const start = lines.findIndex((line) => line.startsWith('## Questions for the owner'));
+  if (start < 0) return [];
+  const items = [];
+  for (const line of lines.slice(start + 1)) {
+    if (/^#{1,6} /.test(line)) break;
+    const first = /^\s*(\d+)\.\s/.exec(line);
+    if (first) items.push({ number: first[1], text: line });
+    else if (items.length > 0) items[items.length - 1].text += `\n${line}`;
+  }
+  return items.filter((item) => !item.text.includes('Recommended:')).map((item) => item.number);
+}
+
 /** Problems with a PR's title and description, in plain words (empty when it is fine). */
 export function checkPrBody({ title, body, number }, workflow = '') {
   const text = String(body ?? '');
@@ -89,6 +116,12 @@ export function checkPrBody({ title, body, number }, workflow = '') {
   for (const link of workflowLinks(workflow, id, number)) {
     if (!text.includes(link))
       problems.push(`Checklist link from docs/WORKFLOW.md missing: ${link}`);
+  }
+  for (const link of backtickedLinks(text, number)) {
+    problems.push(`Checklist link is in backticks and cannot be tapped: ${link}`);
+  }
+  for (const question of questionsWithoutRecommendation(text)) {
+    problems.push(`Question ${question} has no recommendation.`);
   }
   return problems;
 }
