@@ -21,6 +21,7 @@ export default defineConfig(
     files: [
       'scripts/shots*.mjs',
       'scripts/ui.mjs',
+      'scripts/exercise-drive.mjs',
       'scripts/visual-shots.mjs',
       'scripts/budget.mjs',
       'scripts/a11y-audit.mjs',

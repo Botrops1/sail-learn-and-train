@@ -2,6 +2,7 @@
 // scripts/shots.mjs, on the test clock (the night at ×240 takes about 186 s of its time).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { PILOT_SPEED, setSpeed } from './exercise-drive.mjs';
 import { setCamera, showSection } from './ui.mjs';
 
 export const M98_SCENES = [
@@ -65,6 +66,8 @@ export async function liveM98Checks({ openPage, viewports, outDir, prefix, probl
     await showSection(page, 'exercises');
     await page.getByTestId('exercise-start').click();
     await page.waitForTimeout(500);
+    // The anchoring goes at the pilot's time scale (exercise-drive.mjs); the night sets ×240 itself.
+    await setSpeed(page, PILOT_SPEED);
     let last = null;
     let more = false;
     let lastTighten = -1;
@@ -72,6 +75,7 @@ export async function liveM98Checks({ openPage, viewports, outDir, prefix, probl
     let thruster = 0;
     let lever = 0;
     let nightShot = false;
+    let onMap = false;
     let nightChip = '';
     const setLever = async (pct) => {
       if (lever !== pct) await act(page, { type: 'engine', command: { leverPct: pct } });
@@ -89,10 +93,16 @@ export async function liveM98Checks({ openPage, viewports, outDir, prefix, probl
       const r = await run(page);
       last = r;
       if (finished(r)) break;
-      const t = i * TICK_S;
+      const t = r.elapsedS;
       if (r.step === 6) {
         // The night: nothing to do; look at the clock once a second and take the picture after
         // the squall has started (04:05 or later: 245 minutes after midnight).
+        // The 3D view is not drawn on the map camera: the night goes there, and the top view only
+        // for the picture after the squall began (drawing 190 s of ×240 frames costs most of the group).
+        if (!onMap) {
+          onMap = true;
+          await setCamera(page, 'map');
+        }
         const chip = await text(page, 'clock-chip');
         const m = minutes(chip);
         if (!nightShot && m >= 245 && m < 12 * 60) {
@@ -100,6 +110,7 @@ export async function liveM98Checks({ openPage, viewports, outDir, prefix, probl
           nightChip = chip;
           await setCamera(page, 'top');
           await shot(page, 'live-phone-m98-night-0400');
+          await setCamera(page, 'map');
         }
         await page.waitForTimeout(1000);
         continue;
@@ -147,6 +158,7 @@ export async function liveM98Checks({ openPage, viewports, outDir, prefix, probl
       }
       await page.waitForTimeout(TICK_S * 1000);
     }
+    if (onMap) await setCamera(page, 'top');
     await showSection(page, 'exercises');
     const done = await waitVisible(page, 'exercise-done');
     const doneText = done ? await page.getByTestId('exercise-done').innerText() : '';

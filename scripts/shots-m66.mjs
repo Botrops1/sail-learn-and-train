@@ -3,6 +3,7 @@
 // with every section folded and sails (no held=1).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { act, controls, FAST, run, setSpeed, turn, waitForStep } from './exercise-drive.mjs';
 import {
   exerciseLine,
   isStacked,
@@ -29,24 +30,6 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
   const phone = viewports[0];
   const desktop = viewports[2];
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
-  const run = (page) => page.evaluate(() => window.__sailExercise.state());
-  const act = (page, action) => page.evaluate((a) => window.__sailExercise.dispatch(a), action);
-  const turn = async (page, times) => {
-    for (let i = 0; i < times; i += 1) {
-      await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
-    }
-  };
-  const controls = (page, values) => act(page, { type: 'setControls', values });
-  /** Waits (app time) until the run is on `step`, at most `limitS`; returns the app seconds it took. */
-  const waitForStep = async (page, step, limitS) => {
-    const from = (await run(page)).elapsedS;
-    for (;;) {
-      const now = await run(page);
-      if (now.step >= step) return now.elapsedS - from;
-      if (now.elapsedS - from > limitS) return Infinity;
-      await page.waitForTimeout(500);
-    }
-  };
   const link = (page) => page.evaluate(() => window.location.search);
 
   for (const viewport of [phone, desktop]) {
@@ -143,12 +126,15 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
         ],
         [async () => turn(page, 3), 35],
       ];
+      // The good run goes at ×16 (a step's limit is in app seconds, which the scale multiplies).
+      await setSpeed(page, FAST);
       let slow = '';
       for (const [index, [doStep, limit]] of plan.entries()) {
         await doStep();
         const took = await waitForStep(page, index + 1, limit);
         if (!(took <= limit)) slow += ` step ${index + 1} took ${took}`;
       }
+      await setSpeed(page, 1);
       await page.waitForTimeout(500);
       const finalRun = await run(page);
       check(
