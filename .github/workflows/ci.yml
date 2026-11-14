@@ -15,6 +15,10 @@ on:
         description: 'full or pr'
         type: string
         default: full
+    outputs:
+      flaky:
+        description: 'JSON list of the browser checks that failed once and passed on the retry'
+        value: ${{ jobs.browser-checks.outputs.flaky }}
 
 permissions:
   contents: read
@@ -94,6 +98,9 @@ jobs:
   # the groups the plan names, packed into parts by recorded times (.github/ci-times.json). Fails
   # on console errors, wrong layouts, page scroll, unknown taps and failed live checks. Each live
   # group prints its time ("live group m9: 120 s"); refresh ci-times.json from those.
+  # A part that fails runs once more, for only the groups that failed (scripts/ci-shots.mjs). If
+  # that passes, the job is green with a "Flaky check" warning, and the names go to the summary of
+  # `browser-checks` and (nightly) to an issue; a part that fails twice is red.
   browser-part:
     name: browser (${{ matrix.part }})
     needs: plan
@@ -126,7 +133,19 @@ jobs:
           mkdir -p ~/.config/fontconfig
           cp .github/fontconfig.conf ~/.config/fontconfig/fonts.conf
           fc-match sans-serif
-      - run: env SHOTS_SIZES=phone ${{ matrix.env }} npm run shots
+      - run: node scripts/ci-shots.mjs
+        env:
+          PART_ENV: ${{ matrix.env }}
+          PART_NAME: ${{ matrix.part }}
+          FLAKY_FILE: ${{ runner.temp }}/flaky-${{ strategy.job-index }}.json
+      # The names of checks that failed once and passed on the retry, for `browser-checks`.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: flaky-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/flaky-${{ strategy.job-index }}.json
+          if-no-files-found: ignore
+          retention-days: 7
       # The PNGs are kept as a download only when a part fails.
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -136,12 +155,28 @@ jobs:
           retention-days: 7
 
   # One result for the branch protection rule: green when the plan worked and every part passed
-  # (or none was needed, for a documents-only pull request).
+  # (or none was needed, for a documents-only pull request). Lists the flaky checks (failed once,
+  # passed on the retry) in its summary and in its output `flaky`, which nightly.yml reads.
   browser-checks:
     needs: [plan, browser-part]
     if: always()
     runs-on: ubuntu-latest
+    outputs:
+      flaky: ${{ steps.flaky.outputs.flaky }}
     steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: flaky-*
+          merge-multiple: true
+          path: flaky
+      - id: flaky
+        continue-on-error: true
+        run: node scripts/flaky-report.mjs summary flaky
       - env:
           PLAN: ${{ needs.plan.result }}
           PARTS: ${{ needs.browser-part.result }}
