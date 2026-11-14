@@ -10,9 +10,9 @@ If the PR builds or fixes an issue, add "Closes #<number>".
 ## How to check on your phone
 
 <!--
-Pull requests from branches of this repository get a preview:
-https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ (link also in the bot comment).
 Write each check as a full link with its settings, and say what to do after opening it.
+A pull request from a branch of this repository gets a preview site (the bot comment has its link): use that address.
+A pull request from a fork gets no preview: use the live test site, https://botrops1.github.io/sail-learn-and-train/next/ plus your settings, and say what should look different with your change.
 -->
 
 ## Tests

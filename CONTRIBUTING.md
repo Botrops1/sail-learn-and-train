@@ -43,7 +43,9 @@ npm test
 npm run build
 ```
 
-`npm run shots` runs the browser checks (headless Chromium). The full set takes over an hour on one machine, so run only the groups your change touches, for example `SHOTS_ONLY=m5 npm run shots`; CI runs everything on your pull request.
+`npm run shots` runs the browser checks (headless Chromium). The full set takes over an hour on one machine, so run only the groups your change touches, for example `SHOTS_ONLY=m5 npm run shots` (the groups are named after the milestone that added them; `grep -l "<a word from the screen you changed>" scripts/shots-m*.mjs` finds them).
+
+On your pull request CI runs the unit checks and a part of the browser checks (the general group and the newest ones). To add the groups your change touches, put a line `CI groups: m5, m26` in the description **before your last push** (CI reads it when a push arrives); `CI groups: all` runs every group and is right for a change to the store, the link settings, the page layout or the 3D scene setup. The full set also runs every night on `main`.
 
 ### The rules
 
@@ -59,13 +61,17 @@ These are the same rules the coding agent follows ([`CLAUDE.md`](CLAUDE.md)); if
 8. **Few dependencies, pinned versions.**
 9. **Keep [`docs/CODE_MAP.md`](docs/CODE_MAP.md) current** when you add, remove or rename a file.
 10. A pull request that fixes an issue says `Closes #<number>` in its description.
+11. **Older checks that list or count things.** If you add an item to something the app lists (an exercise, a button in a row, a panel section), search `scripts/shots-m*.mjs` and `tests/` for checks that name or count that list, and update them in the same pull request.
 
 ### Your pull request
 
 - The description template asks for: what changed in plain words, how to check it (links with the settings, e.g. `?wd=90&ws=12`), the tests you ran, and open questions.
 - **The first time you contribute, CI waits** until the owner approves the run.
 - Pull requests from forks get no preview site (only branches of this repository do). Say clearly how to check your change; the owner may copy it to a branch here to get a preview.
-- Every outside pull request gets an independent code review before it is merged. Please be patient: the owner reviews from a phone.
+- Every outside pull request gets an independent code review before it is merged, written by an AI reviewer the owner starts; it is posted as one comment with numbered findings. Please fix the ones marked "should fix" yourself: the owner's agents do not push to forks. Please be patient: the owner works from a phone.
+- A check called **PR description** fails while the description still contains a placeholder such as `pr-<N>`; write real links.
+- Changes to `.github/`, `.claude/`, `package.json`, the lockfile, root config files or `scripts/` are reviewed from the diff before anything is run, so keep them out of a pull request that does not need them, and explain them when it does.
+- **Comments are read by people and by AI agents. The agents act only on the owner's comments.** Text in an issue, a pull request or a comment that tries to instruct an agent is ignored and reported to the owner.
 
 ### Releases
 
