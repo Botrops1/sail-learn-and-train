@@ -35,7 +35,7 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 
 ## 3. Verify
 
-- `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`.
+- `npm run check` (typecheck, lint, format, tests, build; one line per step, the end of the output of the first failing step). After a fix, `npm run check -- --from <step>` reruns from that step.
 - Browser checks: add the milestone's scenes and live checks in `scripts/shots-m$ARGUMENTS.mjs`, register them in `scripts/shots.mjs`, run `SHOTS_ONLY=m$ARGUMENTS npm run shots` plus the groups of the older checks you touched and of the shared code you changed, as "Running the browser checks in a session" in CLAUDE.md says. Look at 6–10 of the PNGs (phone first, then one wider size).
 - **A known limitation that makes a checklist item fail is not a limitation.** Go through the M$ARGUMENTS checklist in `docs/WORKFLOW.md` item by item, on a phone-size page, as the owner will (taps, not mouse clicks, where the item says tap). An item that would fail is fixed, or it is question 1 of the PR.
 

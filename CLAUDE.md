@@ -64,7 +64,7 @@ Only the part you need, found with `grep` (do not read these whole):
 
 ## Verification before you say "done"
 
-- `npm run typecheck`, `npm run lint`, `npm test` and `npm run build` all pass.
+- `npm run check` passes (typecheck, lint, format, unit tests and build, one line per step; on a failure it prints the last 80 lines of the failing step and stops; `npm run check -- --from test` starts at a later step).
 - Every rule of the current phase in `PHYSICS_TRUTHS.md` relevant to your milestone has a test named after its id. Phase 1 rule tests keep passing.
 - **Browser checks** (`scripts/shots.mjs`, Playwright with headless Chromium; available in the cloud environment, do not run `playwright install`). New scenes and live checks go in `scripts/shots-m<N>.mjs`, registered in `shots.mjs` (import, `SCENES`, `liveGroups`).
   - While building: `SHOTS_ONLY=m<N> npm run shots` runs your milestone's scenes and live checks at all sizes.
@@ -82,7 +82,7 @@ Headless Chromium draws the 3D view without a graphics card, at about 15 frames 
 
 - **Test clock.** A check whose result depends on how much app time passes (a crank, a hold, a rope that eases) opens its page with `openPage(viewport, label, query, { testClock: true })`, as the M4a, M4b and M4c checks do. The app's time then stands still, and `page.waitForTimeout(ms)` moves it on by exactly `ms`, the same on every machine (a CSS transition still needs `page.realWaitForTimeout(ms)`). On such a page `page.waitForFunction` waits in real time while the app's time stands still: poll with `page.waitForTimeout` instead (as `waitForLink` in `scripts/ui.mjs` does). Never fix a flaky check by making a pause longer: put it on the test clock or wait for the result itself (`waitForLink`, `locator.waitFor`).
 - **Run in the background, wait for the end.** Start a run as a background command (`run_in_background`); you are told when it ends. Do not start it in the foreground (it hits the 2-minute command limit), do not chain `sleep`, and do not watch the log for a closing line.
-- **Run only what the change touches.** Locally: `SHOTS_ONLY=m<N>` for your milestone, plus the groups of the files you changed (a group crash prints `live <group> stopped`, and the other groups still run). Leave the rest to CI (the PR set in about 15 minutes, the full set every night); after a red `browser-checks`, read the failed part's log with the GitHub tools and rerun only that group locally. From a run's log read the lines with `WRONG`, `STOPPED` or `error`, the `live group` times and the last line (`grep`), not the whole log. Each group prints its time (`live group m9: 120 s`): the parts are packed from `.github/ci-times.json`, so when a group's time changes by more than half, refresh its line there; a new live group adds a line with the time it measured (`SHOTS_ONLY=m<N>`; at most 120 s, see above).
+- **Run only what the change touches.** Locally: `SHOTS_ONLY=m<N>` for your milestone, plus the groups of the files you changed (a group crash prints `live <group> stopped`, and the other groups still run). Leave the rest to CI (the PR set in about 15 minutes, the full set every night); after a red `browser-checks`, read the failed part's log with the GitHub tools and rerun only that group locally. A local run is quiet: it prints the lines of a scene, a tap sweep or a live group only when that part went wrong (`SHOTS_VERBOSE=1` prints everything), so read the output as it is; the `live group` times, the failures and the last line always print. Each group prints its time (`live group m9: 120 s`): the parts are packed from `.github/ci-times.json`, so when a group's time changes by more than half, refresh its line there; a new live group adds a line with the time it measured (`SHOTS_ONLY=m<N>`; at most 120 s, see above).
 - **Stop a run** with `pkill -f "node scripts/[s]hots.mjs"` (the brackets stop the command from matching, and killing, its own shell).
 - **Throwaway scripts** that import Playwright go in `scripts/_<name>.mjs` (ignored by git) and are deleted after: outside the repo, Node does not find `playwright`.
 - Report honestly: what works, what doesn't, what you could not check.
@@ -117,6 +117,7 @@ Keep explanations short and concrete. The owner does not know sailing terms yet:
 | Command | Purpose |
 |---|---|
 | `npm run dev` | Local dev server (for the agent only) |
+| `npm run check` | Typecheck, lint, unit tests and build in one command, one line per step |
 | `npm run build` | Production build into `dist/` |
 | `npm test` | Unit and data tests (Vitest) |
 | `npm run typecheck` | `tsc --noEmit` |
