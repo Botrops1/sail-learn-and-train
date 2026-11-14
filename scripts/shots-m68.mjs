@@ -74,6 +74,7 @@ export async function liveM68Checks({ openPage, viewports, outDir, prefix, probl
       await turn(page, 3);
       await setSpeed(page, FAST);
       const finished = (await waitForStep(page, 5, 40)) <= 40;
+      await setSpeed(page, 1);
       await page.waitForTimeout(500);
       await showExercises(page);
       const summary = await page
@@ -131,6 +132,7 @@ export async function liveM68Checks({ openPage, viewports, outDir, prefix, probl
       await turn(page, 3);
       await setSpeed(page, FAST);
       const finished = (await waitForStep(page, 5, 40)) <= 40;
+      await setSpeed(page, 1);
       await page.waitForTimeout(500);
       await showExercises(page);
       await page.getByTestId('debrief-actions-toggle').click();

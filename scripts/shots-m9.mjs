@@ -88,6 +88,8 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
         { timeout: 2500 },
       )
       .catch(() => undefined);
+    // It must still say so a moment later: not a chip that passes through the expected text.
+    await page.waitForTimeout(300);
     const mainChip = await text(page, 'trim-chip-main');
     check(`${label}: main chip`, mainChip === main, mainChip);
     if (jib) {

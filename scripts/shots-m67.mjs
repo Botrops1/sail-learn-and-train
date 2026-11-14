@@ -56,7 +56,7 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
 
       // 1. Pause on a mistake.
       await turn(page, 6);
-      // At ×16 up to the mistake: the run pauses on it, and the coach puts the scale back to ×1.
+      // At ×16 up to the mistake: the run pauses on it, so its time is exact; then back to ×1.
       await setSpeed(page, FAST);
       const gotLee = await waitForMistake(page, 'by-the-lee', 25);
       await setSpeed(page, 1);
@@ -183,6 +183,7 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
         await turn(page, 3);
         await setSpeed(page, FAST);
         const finished = (await waitForStep(page, 5, 40)) <= 40;
+        await setSpeed(page, 1);
         await page.waitForTimeout(500);
         await showExercises(page);
         const doneVisible = await page

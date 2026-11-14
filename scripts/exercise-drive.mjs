@@ -4,8 +4,10 @@
 //
 // The pages are on the test clock, so every second of app time costs frames to draw. A good run
 // that is only the way to the state a check looks at goes at the highest time scale (`FAST`), as a
-// learner could set it with the time bar; the scale is put back to ×1 before the part that is
-// checked, so mistakes, holds and the six seconds a mistake shows keep their real timing.
+// learner could set it with the time bar. A hold or a limit counts the run's own seconds (which the
+// scale multiplies), so it means the same at any scale; the scale goes back to ×1 (explicitly: the
+// coach resets it only when a step has its own speed-up) before anything that is read after a
+// moment of app time, such as the six seconds a mistake shows or a run that must start at 0 s.
 
 /** The fastest scale of the time bar's list (`windModes.timeScales` in content/boat/hanse508.json). */
 export const FAST = 16;
@@ -23,7 +25,11 @@ export const act = (page, action) =>
   page.evaluate((a) => window.__sailExercise.dispatch(a), action);
 export const controls = (page, values) => act(page, { type: 'setControls', values });
 
-/** Sets the time scale (the time bar's speed); the exercise keeps it until a step has its own speed-up. */
+/**
+ * Sets the time scale (the time bar's speed). The store ignores a scale the page does not allow;
+ * the exercise keeps the scale until a step has its own speed-up, so put it back with
+ * `setSpeed(page, 1)` when the fast part is over.
+ */
 export const setSpeed = (page, scale) => act(page, { type: 'setTimeScale', scale });
 
 /** The autopilot turns 10 degrees to port, `times` times. */
@@ -35,13 +41,14 @@ export async function turn(page, times) {
 
 /**
  * Waits (app time) until the run is on `step`, at most `limitS` app seconds. Returns the app
- * seconds it took, or Infinity.
+ * seconds the run took to start that step (its own `stepStartS`, so a poll that comes late at a
+ * high scale does not add to it), or Infinity.
  */
 export async function waitForStep(page, step, limitS) {
   const from = (await run(page)).elapsedS;
   for (;;) {
     const now = await run(page);
-    if (now.step >= step) return now.elapsedS - from;
+    if (now.step >= step) return now.stepStartS - from;
     if (now.elapsedS - from > limitS) return Infinity;
     await page.waitForTimeout(500);
   }

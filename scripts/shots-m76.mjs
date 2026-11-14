@@ -168,6 +168,8 @@ export async function liveM76Checks({ openPage, viewports, outDir, prefix, probl
       'm76 left circle',
       '?m=exercise&ex=turn-own-length&debug=1',
     );
+    // The card comes after ten seconds of the run's time: real time, so the limit stays meaningful.
+    await setSpeed(page, 1);
     await act(page, { type: 'engine', command: { leverPct: 60 } });
     for (let i = 0; i < 50; i += 1) {
       const r = await run(page);
