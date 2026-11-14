@@ -794,7 +794,8 @@ const NO_LIVE = process.env.SHOTS_NO_LIVE === '1';
 const SKIP = (process.env.SHOTS_SKIP ?? '')
   .split(',')
   .map((m) => m.trim().toLowerCase())
-  .filter(Boolean);
+  .filter(Boolean)
+  .map(groupOf);
 /** SHOTS_SIZES=phone: scenes at phone size only (CI). */
 // SHOTS_SHARD=1/2: every 2nd scene starting with the 1st (CI splits the scenes in two parts).
 const SHARD = /^(\d+)\/(\d+)$/.exec(process.env.SHOTS_SHARD ?? '');
@@ -1144,6 +1145,23 @@ try {
     problems,
   };
   const onTestClock = { ...live, openPage: openOnTestClock };
+  /**
+   * The members of a merged group, one after the other. One that throws is a problem of its own
+   * (named by its milestone) and the others still run, as they did when each was a group.
+   */
+  const members =
+    (...list) =>
+    async () => {
+      for (const [label, run] of list) {
+        try {
+          await run();
+        } catch (error) {
+          problems.push(`live ${label} stopped: ${error instanceof Error ? error.message : error}`);
+          console.log(`live ${label} STOPPED: ${error instanceof Error ? error.stack : error}`);
+          for (const context of browser.contexts()) await context.close().catch(() => undefined);
+        }
+      }
+    };
   /** Live checks per milestone; "general" covers M0–M4a (layout, camera, URL, M2–M4a). */
   const liveGroups = {
     general: () => liveGeneralChecks(),
@@ -1156,33 +1174,30 @@ try {
     m5: () => liveM5Checks(live),
     // Groups merged in H2 run the checks of the milestones named in `GROUP_ALIASES`
     // (scripts/ci-plan.mjs), one after the other, each on its own pages and clock.
-    m6: async () => {
-      await liveM6Checks(live);
-      await liveM7Checks(live);
-    },
+    m6: members(['m6', () => liveM6Checks(live)], ['m7', () => liveM7Checks(live)]),
     m8: () => liveM8Checks(live),
     m9: () => liveM9Checks(live),
     m10: () => liveM10Checks(live),
     m11: () => liveM11Checks(live),
-    m12: async () => {
-      await liveM12Checks(live);
-      await liveM13Checks(live);
-      await liveM19Checks(live);
-    },
-    m14: async () => {
-      await liveM14Checks(live);
-      await liveM72Checks(onTestClock);
-      await liveM80Checks(onTestClock);
-    },
+    m12: members(
+      ['m12', () => liveM12Checks(live)],
+      ['m13', () => liveM13Checks(live)],
+      ['m19', () => liveM19Checks(live)],
+    ),
+    m14: members(
+      ['m14', () => liveM14Checks(live)],
+      ['m72', () => liveM72Checks(onTestClock)],
+      ['m80', () => liveM80Checks(onTestClock)],
+    ),
     m15: () => liveM15Checks(live),
     m16: () => liveM16Checks(live),
     m17: () => liveM17Checks(live),
     m18: () => liveM18Checks(live),
-    m20: async () => {
-      await liveM20Checks(live);
-      await liveM21Checks(live);
-      await liveM22Checks(live);
-    },
+    m20: members(
+      ['m20', () => liveM20Checks(live)],
+      ['m21', () => liveM21Checks(live)],
+      ['m22', () => liveM22Checks(live)],
+    ),
     m23: () => liveM23Checks(live),
     m24: () => liveM24Checks(live),
     m25: () => liveM25Checks(live),
@@ -1200,30 +1215,30 @@ try {
     m37: () => liveM37Checks(onTestClock),
     m38: () => liveM38Checks(onTestClock),
     m39: () => liveM39Checks(onTestClock),
-    m40: async () => {
-      await liveM40Checks(onTestClock);
-      await liveM41Checks(onTestClock);
-      await liveM42Checks(onTestClock);
-      await liveM43Checks(onTestClock);
-    },
-    m44: async () => {
-      await liveM44Checks(onTestClock);
-      await liveM45Checks(onTestClock);
-      await liveM46Checks(onTestClock);
-    },
-    m47: async () => {
-      await liveM47Checks(onTestClock);
-      await liveM57Checks(live);
-      await liveM59Checks(onTestClock);
-    },
+    m40: members(
+      ['m40', () => liveM40Checks(onTestClock)],
+      ['m41', () => liveM41Checks(onTestClock)],
+      ['m42', () => liveM42Checks(onTestClock)],
+      ['m43', () => liveM43Checks(onTestClock)],
+    ),
+    m44: members(
+      ['m44', () => liveM44Checks(onTestClock)],
+      ['m45', () => liveM45Checks(onTestClock)],
+      ['m46', () => liveM46Checks(onTestClock)],
+    ),
+    m47: members(
+      ['m47', () => liveM47Checks(onTestClock)],
+      ['m57', () => liveM57Checks(live)],
+      ['m59', () => liveM59Checks(onTestClock)],
+    ),
     m48: () => liveM48Checks(live),
     m49: () => liveM49Checks(onTestClock),
     m50: () => liveM50Checks(onTestClock),
-    m51: async () => {
-      await liveM51Checks(onTestClock);
-      await liveM53Checks(onTestClock);
-      await liveM55Checks(onTestClock);
-    },
+    m51: members(
+      ['m51', () => liveM51Checks(onTestClock)],
+      ['m53', () => liveM53Checks(onTestClock)],
+      ['m55', () => liveM55Checks(onTestClock)],
+    ),
     m52: () => liveM52Checks(live),
     m54: () => liveM54Checks(live),
     m56: () => liveM56Checks(live),
@@ -1250,19 +1265,19 @@ try {
     m79: () => liveM79Checks(onTestClock),
     m81: () => liveM81Checks(onTestClock),
     m82: () => liveM82Checks(onTestClock),
-    m85: async () => {
-      await liveM85Checks(onTestClock);
-      await liveM91Checks(onTestClock);
-      await liveM92Checks(onTestClock);
-      await liveM95Checks(onTestClock);
-    },
+    m85: members(
+      ['m85', () => liveM85Checks(onTestClock)],
+      ['m91', () => liveM91Checks(onTestClock)],
+      ['m92', () => liveM92Checks(onTestClock)],
+      ['m95', () => liveM95Checks(onTestClock)],
+    ),
     // M87 opens some pages on the real clock (the audio context runs in real time): `openPlain`.
-    m87: async () => {
-      await liveM87Checks({ ...onTestClock, openPlain: openPage });
-      await liveM88Checks(onTestClock);
-      await liveM89Checks(onTestClock);
-      await liveM90Checks(onTestClock);
-    },
+    m87: members(
+      ['m87', () => liveM87Checks({ ...onTestClock, openPlain: openPage })],
+      ['m88', () => liveM88Checks(onTestClock)],
+      ['m89', () => liveM89Checks(onTestClock)],
+      ['m90', () => liveM90Checks(onTestClock)],
+    ),
     m93: () => liveM93Checks(onTestClock),
     m94: () => liveM94Checks(onTestClock),
     m96: () => liveM96Checks(onTestClock),

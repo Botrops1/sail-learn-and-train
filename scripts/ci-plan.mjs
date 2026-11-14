@@ -9,7 +9,7 @@ import { milestoneOf } from './pr-body.mjs';
 
 /** Seconds per part (tunable): a PR's set, and the full set. */
 export const PR_CAP_S = 600;
-export const FULL_CAP_S = 1100;
+export const FULL_CAP_S = 1150;
 /** Scene parts of the matrix, and how many of the newest milestones' groups every PR runs. */
 export const SCENE_SHARDS = 4;
 export const RECENT_GROUPS = 4;
@@ -57,7 +57,7 @@ export function liveGroupNames(source) {
   if (start >= 0) {
     for (const line of lines.slice(start + 1)) {
       if (/^ {2}\};/.test(line)) break;
-      const match = /^\s{4}([a-z0-9]+): (async )?\(\) =>/.exec(line);
+      const match = /^\s{4}([a-z0-9]+): ((async )?\(\) =>|members\()/.exec(line);
       if (match) names.push(match[1]);
     }
   }

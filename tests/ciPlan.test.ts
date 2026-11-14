@@ -311,6 +311,18 @@ describe('GROUP_ALIASES (groups merged into others)', () => {
     ).toEqual(['m14', 'm69']);
   });
 
+  it('runs the checks of every merged milestone inside its group', () => {
+    for (const [old, target] of Object.entries(GROUP_ALIASES)) {
+      const start = shotsSource.indexOf(`    ${target}: members(`);
+      expect(start, `${target} is not a members(...) group in shots.mjs`).toBeGreaterThan(-1);
+      const end = shotsSource.indexOf('\n    ),\n', start);
+      const body = shotsSource.slice(start, end);
+      expect(body, `${target} does not run liveM${old.slice(1)}Checks`).toContain(
+        `liveM${old.slice(1)}Checks(`,
+      );
+    }
+  });
+
   it('keeps a group for every milestone number that had one', () => {
     const old = readdirSync('scripts')
       .map((file) => /^shots-(m[0-9]+[a-z]?)\.mjs$/.exec(file)?.[1])
@@ -336,9 +348,11 @@ describe('the size of the browser-check set (H2)', () => {
     string
   >;
 
-  it('has at most 75 groups and packs into at most 14 parts', () => {
+  it('has at most 75 groups and packs into at most 14 parts, also when the times grow by 5 %', () => {
     expect(groups.length).toBeLessThanOrEqual(75);
     expect(packParts(groups, times, FULL_CAP_S).length).toBeLessThanOrEqual(14);
+    const slower = Object.fromEntries(Object.entries(times).map(([name, s]) => [name, s * 1.05]));
+    expect(packParts(groups, slower, FULL_CAP_S).length).toBeLessThanOrEqual(14);
   });
 
   it('knows the baseline groups', () => {

@@ -191,7 +191,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 - `scripts/ci-plan.mjs` (types in `ci-plan.d.mts`, tests in `tests/ciPlan.test.ts`): plans the browser checks of CI (live groups, docs-only PRs, groups by changed path, packing into parts, the matrix); the `plan` job runs its command line.
 - `GROUP_ALIASES` in `scripts/ci-plan.mjs` names the milestones whose checks run inside an older group (the groups are listed in `liveGroups` of `shots.mjs`).
 - `.github/ci-paths.json`: the changed-file prefixes that run every group or named groups.
-- `.github/ci-times.json`: the recorded seconds of every live group, used to pack the parts; a new live group adds a line (300 if its time is not known).
+- `.github/ci-times.json`: the recorded seconds of every live group, used to pack the parts; a new live group adds a line with its measured time.
 - `.github/ci-budget.json`: a reason for each group that is over 120 s and was added after the groups were merged (a test checks it).
 - `scripts/pr-body.mjs` (types in `pr-body.d.mts`, tests in `tests/prBody.test.ts`): the PR description rules shared by the hook and `pr-body.yml`: no placeholder for the PR number; a milestone PR (`M<N>: …`) has the template's sections, a link to its own preview and every link of its `docs/WORKFLOW.md` checklist.
 - `.github/workflows/` (CI): `ci.yml` (`check`; `plan` chooses the browser parts and reads the PR's title and description from the API at run time; `browser-part` runs each; `browser-checks` sums them up; also started by `nightly.yml` and by hand), `nightly.yml` (the full set every night on `main`; a failure opens or updates the issue *Nightly checks failed*).
