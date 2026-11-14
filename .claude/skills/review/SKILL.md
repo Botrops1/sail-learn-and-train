@@ -19,6 +19,7 @@ Read narrowly: CLAUDE.md, the phase spec that contains the milestone (`grep -l "
 - **What the learner meets first:** the opening screen agrees with the text beside it (wind, speed, sails); a gesture the milestone adds works with a finger on a phone-size page, not only with a mouse (touch and pointer events differ); nothing covers the thing to be tapped.
 - **Sailing sense:** does anything behave in a way a sailor would find wrong? Cite the rule or the source. Sources: every rule was checked once on 2026-10-12. Re-check only what the milestone touches: a rule it implements or whose behaviour it changes, and any still `to-verify`. Open the cited source (fetch it from the container with `curl`; the sailing sites are allowed in the cloud environment) and say per rule whether it still supports what the code now does; recommend status changes, do not edit them.
 - **Older checks:** `grep` `scripts/shots-m*.mjs` and `tests/` for lists and counts of the thing the milestone adds (exercises, chips, buttons, sections, CI groups). One that was not updated will fail the nightly run: "should fix".
+- **Browser-check budget:** a new group over 120 s without a reason in the spec, a browser check of something a unit test could check, or an older check left in place that the new ones repeat: "should fix".
 - **Rules:** no magic numbers outside `hanse508.json`, ids from the registry, `src/model` pure, scope kept, CODE_MAP updated; a "Known limitation" that makes a checklist item fail.
 
 ## The findings (both modes)

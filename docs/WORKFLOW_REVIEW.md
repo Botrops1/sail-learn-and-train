@@ -27,6 +27,12 @@ Ranked by saving against risk. "Sonnet" means a later Sonnet session (high) buil
 | 13 | **Attribution rule said once** (CLAUDE.md) instead of once per skill; the deploy paragraph of CLAUDE.md cut to what a builder needs | About 500 words cut. The new rules of this PR add more than that: CLAUDE.md is about 190 words longer, the skills (read only when a command is used) about 1,000 longer. The lasting cut in what every session reads is item 4 | Low (a hook enforces the rule) | Done here |
 | 14 | **A later part of a phase gets its own spec file** instead of growing the first one | PHASE10_SPEC's shared sections grew to 7,900 words with "(10b)" and "(10c)" insertions that every 10c builder read; a part file carries only what its milestones need | Low | Done here (`/plan`) |
 
+**Added later the same day (browser-check growth):**
+
+| # | Change | Saving | Risk | Who builds |
+|---|---|---|---|---|
+| 15 | **A budget for new browser checks** (join an existing group, at most 120 s for a new one, delete what becomes redundant, logic goes into unit tests) and **a one-time pruning** of the existing set | The set is 97 groups and 19,066 s (5.3 hours of machine time, about 20 parallel jobs) and grew with every milestone; the part cap was raised twice in five milestones. 15 groups hold 47 % of the time; 30 groups take under a minute each and mostly pay for start-up | Medium for the pruning (a deleted check can hide a later break); low for the budget | Budget rule done here (CLAUDE.md, `/plan`, `/review`). Pruning is spec H (Sonnet) |
+
 ## 2. History: the last 25 merged PRs
 
 PRs #177 to #206: 20 with code, 4 plans, 1 analysis. 9 had an independent review. The owner's own comments were almost always "accept all" (8 of the 9 reviews were accepted exactly as recommended), which is why fixing "should fix" findings without waiting is safe.
@@ -199,6 +205,38 @@ A documents PR (plus one test file). Nothing is deleted from the repository's hi
 2. Job `browser-checks` (the summary): list the flaky names in the job summary. In `nightly.yml`: when a run had a flaky name, open or comment on an issue "Flaky check: <group>" (label `flaky`), with the lines.
 3. `/milestone` section 6: the builder no longer re-runs by hand; a warning named on its PR is reported in its reply, and a group with an open "Flaky check" issue is reproduced locally and fixed.
 4. **Done when:** a live check made to fail on its first run only (an environment variable read by a test-only group) shows the warning and a green job; a check that fails twice is red as today.
+
+### Spec H: `Checks: prune and merge the browser-check groups`
+
+**Why:** nothing has ever been removed from the set. Recorded times on 2026-11-14 (`.github/ci-times.json`): 97 groups, 19,066 s. The 15 slowest (`m67` 1462, `m37` 795, `m68` 707, `m66` 697, `m98` 600, `m9` 557, `m75` 555, `m63` 551, `m78` 482, `m65` 465, `m29` 434, `m70` 412, `m76` 403, `m60b` 392, `m50` 387) are 47 % of it; 30 groups take under 60 s.
+
+Build it **after specs A, B and C**, in two PRs so each can be checked: H1 (the slow groups), H2 (the small groups). `CI groups: all` on both. Opus review before each PR opens (`/milestone` section 4).
+
+**Rules for both PRs**
+
+- No check is deleted silently. The PR description has a table: every check removed or merged, and the check (file and name) that still covers the same behaviour, or "moved to `tests/<file>`". A check with no cover stays.
+- A behaviour that needs no browser (a number from the model, a store rule, a link that opens a state) moves to a unit test with the same expected values.
+- Never loosen an expectation to save time. Saving comes from fewer page loads, fewer repeats and faster app time, not from weaker checks.
+- Record before and after times per group from a full CI run of the PR, and refresh `.github/ci-times.json`.
+
+**H1: the 15 slowest groups.** For each, in the order above:
+
+1. Put every check that waits for app time on the test clock (CLAUDE.md, "Test clock") if it is not; replace fixed pauses by waiting for the result.
+2. Run long scripted runs (a whole exercise, a night at anchor) once per group, at the highest time speed the app allows for that state, not once per size or per language; the Russian and the wide-layout variants check their own layout at one moment of the run, not the whole run again.
+3. Share one page between checks that start from the same link and do not change shared state, instead of a new `openPage` each.
+4. `m67` is over the part cap (`FULL_CAP_S` in `scripts/ci-plan.mjs`): after the steps above, if it is still over 600 s, split its good-run check from its mistake checks into two groups.
+5. **Target:** the 15 groups' total falls from 8,899 s to 5,500 s or less. If a group cannot be brought down without weakening it, say why in the PR and leave it.
+
+**H2: the 30 groups under 60 s and the sign-off groups.**
+
+1. Merge groups that open the same screen (the same section, card or mode) into one group named after the oldest of them; a merged group stays under 120 s. Update `scripts/shots.mjs` (`liveGroups`), `.github/ci-times.json` and, after spec A, `.github/ci-paths.json`. The PR-title rule of `scripts/ci-plan.mjs` (a PR titled `M<N>` runs group `m<N>`) must still find a group for every milestone number that had one: add an alias table (of the form `m53 → m48`) in `scripts/ci-plan.mjs` with a unit test.
+2. Phase sign-off groups (`m13`, `m19`, `m24`, `m29`, and the like) that only repeat checks of their phase's other groups: delete the repeats, keep what is unique.
+3. Scenes: where two scenes of different milestones show the same link at the same size, keep one.
+4. **Target:** at most 75 groups, and the full set's total at most 13,500 s (from 19,066 s, with H1). Lower `FULL_CAP_S` so the full set packs into at most 14 parts.
+
+**New unit test (in H2), so the set stays under control:** `tests/ciPlan.test.ts` fails when a group not in a baseline list (the groups that exist when H2 merges, written into the test) has a recorded time over 120 s and is not named, with a reason, in a new `.github/ci-budget.json` (`{ "<group>": "<reason>" }`).
+
+**Not in this spec:** changing what the app does; the tap sweep's coverage; the nightly schedule.
 
 ## 7. What was not checked
 
