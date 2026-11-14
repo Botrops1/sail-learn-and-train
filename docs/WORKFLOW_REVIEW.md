@@ -199,6 +199,8 @@ A documents PR (plus one test file). Nothing is deleted from the repository's hi
 5. Update `/plan` section 1 (the last 12 rows are still in the ROADMAP; older ones are found by `grep` in the archive), CLAUDE.md "What to read" and CODE_MAP for the two new files.
 6. **Done when:** `wc -w` gives CODE_MAP ≤ 5,000, WORKFLOW ≤ 4,000, ROADMAP ≤ 8,000; `npm test` passes; `grep -rn "WORKFLOW.md\|ROADMAP.md" scripts tests .github .claude` shows no reader broken by the move.
 
+**Decided in the spec E PR (owner: "accept all"):** `scripts/pr-body.mjs` reads a PR's own checklist from WORKFLOW while the PR is open, so a sign-off milestone cannot move its own checklist. Its PR moves the earlier checklists of its part to the archive; the next `/plan` PR moves the last one. The comments in `scripts/shots.mjs` and `scripts/shots-m4a/b/c.mjs` that still say "WORKFLOW.md checklist" were left, because `shots.mjs` is on the list that runs the full browser set; the next PR that touches those files fixes them. `tests/docs.test.ts` also found `src/ui/anchorPanel.ts` missing from the old map.
+
 ### Spec F: `CI: retry a failed browser group once and record it`
 
 1. `.github/workflows/ci.yml`, job `browser-part`: when the `shots` step fails, run the same command once more for only the groups (or the scene part, or the taps) that failed. If the second run passes, the job passes and prints `::warning title=Flaky check::<group>: <the WRONG lines of the first run>`.
