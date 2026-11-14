@@ -30,7 +30,8 @@ The owner typed `/milestone $ARGUMENTS`. If no number was given, ask for it and 
 - Anything the spec leaves open that you decide: write it into the milestone's section, marked "decided in the M$ARGUMENTS PR".
 - **Older checks that list or count what you add** (CLAUDE.md working rule): find them now with `grep`, update them, and run their groups in section 3.
 - Commit in small steps with clear messages.
-- New, removed or renamed files: update `docs/CODE_MAP.md`.
+- New, removed or renamed files: update `docs/CODE_MAP.md` (what the file does now, at most 40 words, no history; `tests/docs.test.ts` checks it).
+- **A sign-off milestone** (the last of a phase part, so the spec says): move the checklists of the part's other milestones, with the phase heading, from `docs/WORKFLOW.md` to the end of `docs/archive/CHECKLISTS.md`, unchanged and in order. Leave its own checklist in WORKFLOW: `scripts/pr-body.mjs` reads it from there, and the next planning PR moves it.
 
 ## 3. Verify
 

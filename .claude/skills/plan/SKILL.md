@@ -24,10 +24,10 @@ The owner is not a developer and not a sailor. They answer questions in plain wo
 
 ## 1. Understand (read what the plan needs, not everything)
 
-Everything read here is re-read on every later turn of a long session, so the budget is set here. Aim for about 60,000 tokens of reading before the outline; the big files (the ROADMAP decisions log, the latest spec, `src/model`, `src/render3d`, the boat file, WORKFLOW) are each 20,000–110,000 tokens and are never read whole.
+Everything read here is re-read on every later turn of a long session, so the budget is set here. Aim for about 60,000 tokens of reading before the outline; the big files (the latest spec, `src/model`, `src/render3d`, the boat file, the archives in `docs/archive/`) are each 20,000–110,000 tokens and are never read whole.
 
 - CLAUDE.md and `docs/CODE_MAP.md` in full.
-- `docs/ROADMAP.md`: the phases table, the architecture hooks, the **last 12 rows** of the decisions log, and the rows a `grep` for the phase's theme finds. Not the whole log.
+- `docs/ROADMAP.md`: the phases table, the architecture hooks, the **last 12 rows** of the decisions log (the ROADMAP keeps the last 30; older ones are in `docs/archive/DECISIONS.md`: `grep` it for the phase's theme, never read it whole).
 - **The phase's analysis document**, if its ROADMAP row links one (e.g. `docs/VISUAL_QUALITY_ANALYSIS.md`), in full: it holds the owner's request, the answers already given and the draft milestones.
 - The latest phase spec: **sections 0–5 only** (the general sections; they are the template) and **one** milestone section of the same kind as this phase's (a 3D one for a 3D phase, a panel one for a UI phase) as the example of the level of detail. Not the other milestone sections, and not PHASE2_SPEC as well.
 - `docs/EXERCISES.md` only for an exercises phase; `docs/BOAT_REFERENCE.md` only its "Open questions" section and the rows a `grep` finds for the parts the phase touches.
@@ -96,10 +96,10 @@ One round per milestone by default. Run a second round only for a milestone whos
 
 ## 6. The other documents
 
-Find where each change goes with `grep -n` and read only that part; WORKFLOW alone is over 20,000 tokens.
+Find where each change goes with `grep -n` and read only that part. The finished milestones' checklists and the older decisions are in `docs/archive/`: searched, never read whole.
 
 - `docs/PHYSICS_TRUTHS.md` (only if the phase adds rules): new rules with the next free ids, plain-words statement, "how to see it" link settings, and sources. Open each source (web access is allowed for the usual sailing sites; if a site is blocked, name it to the owner): status `source-checked` when the source supports the rule, else `to-verify`.
-- `docs/WORKFLOW.md`: a checklist per milestone under `#### M<N>: <name>`, every check a full preview link (`https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?…`) with what to do and what the owner should see, in plain words; the link settings the phase adds.
+- `docs/WORKFLOW.md`: under a "Checklists" heading (a phase heading and, for a part, its own), a checklist per milestone under `#### M<N>: <name>`, every check a full preview link (`https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?…`) with what to do and what the owner should see, in plain words; the link settings the phase adds. Checklists of merged milestones do not stay: the sign-off milestone's PR moves the earlier ones of its part to `docs/archive/CHECKLISTS.md` (its own stays until the next planning PR, because `scripts/pr-body.mjs` reads it from WORKFLOW), so **this planning PR first moves any merged milestone's checklist still left in WORKFLOW to the archive**, with its heading, unchanged.
 - `docs/ROADMAP.md`: the phase's status, and a decisions-log row with the owner's answers: at most 80 words, what was decided and the spec section that holds the detail, no function names and no numbers the spec already has.
 - `docs/BOAT_REFERENCE.md`: new assumptions; `content/` only if the plan says data must exist before M1 of the phase.
 
