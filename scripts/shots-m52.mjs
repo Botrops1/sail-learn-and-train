@@ -13,7 +13,6 @@ export const M52_SCENES = [
   { name: 'wide-chips', query: SIDE },
   { name: 'wide-mode-card', query: SIDE, card: 'mode' },
   { name: 'wide-settings-card', query: SIDE, settings: true },
-  { name: 'side-settings-card', query: SIDE, settings: true },
 ];
 
 export async function liveM52Checks({ openPage, viewports, outDir, prefix, problems }) {

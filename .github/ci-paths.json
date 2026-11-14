@@ -14,7 +14,7 @@
     "package-lock.json"
   ],
   "groups": {
-    "content/exercises/": ["m66", "m69", "m70", "m71", "m78", "m80", "m96"],
-    "src/app/exerciseRun.ts": ["m66", "m69", "m70", "m71", "m78", "m80", "m96"]
+    "content/exercises/": ["m14", "m66", "m69", "m70", "m71", "m78", "m96"],
+    "src/app/exerciseRun.ts": ["m14", "m66", "m69", "m70", "m71", "m78", "m96"]
   }
 }

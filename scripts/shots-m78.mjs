@@ -13,7 +13,6 @@ export const M78_SCENES = [
     sheet: 'half',
   },
   { name: 'stern-anchor-ring', query: '?m=exercise&ex=stern-to-anchor&cam=top', sheet: 'peek' },
-  { name: 'harbour-list', query: '?m=exercise', section: 'exercises', sheet: 'half' },
 ];
 
 const DROP_NORTH_M = 1442;
