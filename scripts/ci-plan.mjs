@@ -1,6 +1,8 @@
 // Plans the browser checks of CI (PHASE_LAUNCH_SPEC 6, M83). Pure functions plus a small
 // command-line part that only `.github/workflows/ci.yml` runs (the `plan` job). Uses only Node's
 // own modules, so the job needs no `npm ci`. PR text (title, description) is read as data only.
+// A PR runs the groups its changed files call for (`.github/ci-paths.json`) besides the ones of
+// its title, the newest ones and any named in a "CI groups:" line.
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { milestoneOf } from './pr-body.mjs';
@@ -43,18 +45,39 @@ export function isDocsOnly(files) {
   );
 }
 
+/**
+ * The groups the changed files call for (`.github/ci-paths.json`): `'all'` when a file starts with
+ * one of `paths.all`, else the groups of every `paths.groups` prefix a file starts with (only
+ * names that are live groups), in the order of `groups`.
+ */
+export function pathGroups(files, paths, groups) {
+  if (files.some((file) => paths.all.some((prefix) => file.startsWith(prefix)))) return 'all';
+  const wanted = new Set();
+  for (const file of files) {
+    for (const [prefix, names] of Object.entries(paths.groups)) {
+      if (file.startsWith(prefix)) for (const name of names) wanted.add(name);
+    }
+  }
+  return groups.filter((name) => wanted.has(name));
+}
+
 const numberOf = (name) => {
   const match = /^m(\d+)/.exec(name);
   return match ? Number(match[1]) : null;
 };
 
 /**
- * Why each group of a PR runs: `{ names, reasons }`, or `'all'` for a "CI groups: all" line.
- * (`prGroups` returns only the names.)
+ * Why each group of a PR runs: `{ names, reasons }`, or `{ all }` (why everything runs) for a
+ * "CI groups: all" line or a changed file of `paths.all`. (`prGroups` returns only the names.)
  */
-function prPlan({ title, body, groups }) {
+function prPlan({ title, body, groups, files = [], paths = { all: [], groups: {} } }) {
   const text = String(body ?? '');
-  if (/^CI groups:\s*all\s*$/im.test(text)) return 'all';
+  if (/^CI groups:\s*all\s*$/im.test(text)) return { all: '"CI groups: all" in the description' };
+  const fromFiles = pathGroups(files, paths, groups);
+  if (fromFiles === 'all') {
+    const file = files.find((f) => paths.all.some((prefix) => f.startsWith(prefix)));
+    return { all: `${file} changed (.github/ci-paths.json)` };
+  }
   const reasons = new Map();
   const add = (name, why) => {
     if (groups.includes(name) && !reasons.has(name)) reasons.set(name, why);
@@ -65,6 +88,7 @@ function prPlan({ title, body, groups }) {
     const id = `m${milestone.toLowerCase()}`;
     for (const name of groups) if (new RegExp(`^${id}[a-z]?$`).test(name)) add(name, 'title');
   }
+  for (const name of fromFiles) add(name, 'files');
   const recent = groups
     .filter((name) => numberOf(name) !== null)
     .sort((a, b) => numberOf(b) - numberOf(a) || (a < b ? -1 : a > b ? 1 : 0))
@@ -77,10 +101,10 @@ function prPlan({ title, body, groups }) {
   return { names: groups.filter((name) => reasons.has(name)), reasons };
 }
 
-/** The live groups a PR runs (6.3), or 'all'. */
+/** The live groups a PR runs (6.3), or 'all'. `files` and `paths` are optional. */
 export function prGroups(input) {
   const plan = prPlan(input);
-  return plan === 'all' ? 'all' : plan.names;
+  return 'all' in plan ? 'all' : plan.names;
 }
 
 /** Groups packed into parts of at most `capS` seconds (first fit, longest first). */
@@ -150,9 +174,22 @@ function readList(path) {
     .filter(Boolean);
 }
 
+/** The title and description of the PR as the workflow fetched them just now, or null. */
+function readPr(path) {
+  if (!path || !existsSync(path)) return null;
+  try {
+    const data = JSON.parse(readFileSync(path, 'utf8'));
+    if (data && typeof data === 'object') return data;
+  } catch {
+    // An unreadable file means the call failed: the caller falls back to the event's text.
+  }
+  return null;
+}
+
 function main(env) {
   const groups = liveGroupNames(readFileSync('scripts/shots.mjs', 'utf8'));
   const times = JSON.parse(readFileSync('.github/ci-times.json', 'utf8'));
+  const paths = JSON.parse(readFileSync('.github/ci-paths.json', 'utf8'));
   const scope = env.CI_SCOPE === 'pr' ? 'pr' : 'full';
   let docs = false;
   let chosen = groups;
@@ -160,13 +197,18 @@ function main(env) {
   let why = 'full set (every group)';
   if (scope === 'pr') {
     const files = readList(env.CHANGED_FILES);
-    const plan = prPlan({ title: env.PR_TITLE ?? '', body: env.PR_BODY ?? '', groups });
+    // The description as it is now (a re-run of the jobs reads the new text); the event's own
+    // text is the fallback when the API call failed.
+    const live = readPr(env.PR_FILE);
+    const title = typeof live?.title === 'string' ? live.title : (env.PR_TITLE ?? '');
+    const body = typeof live?.body === 'string' ? live.body : (env.PR_BODY ?? '');
+    const plan = prPlan({ title, body, groups, files: files ?? [], paths });
     if (files && isDocsOnly(files)) {
       docs = true;
       chosen = [];
       why = 'only documents changed';
-    } else if (plan === 'all') {
-      why = '"CI groups: all" in the description';
+    } else if ('all' in plan) {
+      why = plan.all;
     } else {
       chosen = plan.names;
       capS = PR_CAP_S;

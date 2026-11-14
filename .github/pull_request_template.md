@@ -18,7 +18,7 @@ A pull request from a fork gets no preview: use the live test site, https://botr
 ## Tests
 
 <!-- Evidence, not claims: each command and its result (e.g. "npm test: 812 passed"), the browser-check groups run, what could not be checked.
-Optional line, read only when a push arrives (so write it before the last push): `CI groups: m68, m75` adds those browser-check groups to this PR's checks; `CI groups: all` runs every group (use it after changing the store, the URL state, the layout shell or the scene setup). -->
+Optional line, read each time CI runs (so write it before the last push): `CI groups: m68, m75` adds those browser-check groups to this PR's checks; `CI groups: all` runs every group. A change to the store, the URL state, the layout shell or the scene setup already runs every group (.github/ci-paths.json), so it needs no line. -->
 
 ## Questions for the owner
 

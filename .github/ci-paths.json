@@ -1,0 +1,20 @@
+{
+  "all": [
+    "src/app/store.ts",
+    "src/app/urlState.ts",
+    "src/app/urlSync.ts",
+    "src/app/app.ts",
+    "src/render3d/scene.ts",
+    "src/render3d/sceneConfig.ts",
+    "scripts/shots.mjs",
+    "scripts/ui.mjs",
+    "index.html",
+    "vite.config.ts",
+    "package.json",
+    "package-lock.json"
+  ],
+  "groups": {
+    "content/exercises/": ["m66", "m69", "m70", "m71", "m78", "m80", "m96"],
+    "src/app/exerciseRun.ts": ["m66", "m69", "m70", "m71", "m78", "m80", "m96"]
+  }
+}

@@ -98,7 +98,7 @@ Preview of this PR: https://botrops1.github.io/sail-learn-and-train/pr-preview/p
 <the milestone checklist from docs/WORKFLOW.md, every check a full preview link>
 ## Tests
 <evidence, not claims: each command run and its result (e.g. "npm test: 812 passed"), the browser-check groups run, what could not be checked>
-<optional line, read at the next push: CI groups: m68, m75 (or: CI groups: all)>
+<optional line, only for groups the changed files do not imply, read each time CI runs: CI groups: m68, m75 (or: CI groups: all)>
 ## Questions for the owner
 <numbered; each one ends with "Recommended: …, because …">
 Reply "accept all" to take every recommendation, or e.g. "accept all except 2: …".
