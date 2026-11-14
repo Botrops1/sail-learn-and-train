@@ -5,10 +5,14 @@ export const RECENT_GROUPS: number;
 export const UNKNOWN_GROUP_S: number;
 export function liveGroupNames(shotsSource: string): string[];
 export function isDocsOnly(files: string[]): boolean;
+export type CiPaths = { all: string[]; groups: Record<string, string[]> };
+export function pathGroups(files: string[], paths: CiPaths, groups: string[]): string[] | 'all';
 export function prGroups(input: {
   title: string;
   body: string;
   groups: string[];
+  files?: string[];
+  paths?: CiPaths;
 }): string[] | 'all';
 export function packParts(
   groups: string[],

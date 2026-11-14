@@ -40,12 +40,18 @@ jobs:
 
   # Decides which browser checks run (scripts/ci-plan.mjs, PHASE_LAUNCH_SPEC 6): a pull request
   # runs the scenes, the taps, "general", the group of its own milestone (from the title), the
-  # newest groups and any named in a "CI groups: m68, m75" line of its description ("CI groups: all"
-  # runs everything); a pull request that only changes documents runs none. The full set runs from
-  # nightly.yml and before a release. A change to the title or the description takes effect at the
-  # next push. The title and the description reach the script only through env:, never a run: line.
+  # newest groups, the groups its changed files call for (.github/ci-paths.json: a change to the
+  # store, the URL state, the layout shell or the scene setup runs everything) and any named in a
+  # "CI groups: m68, m75" line of its description ("CI groups: all" runs everything); a pull
+  # request that only changes documents runs none. The full set runs from nightly.yml and before
+  # a release. The title and the description are fetched from the API at run time, so "Re-run
+  # jobs" reads them as they are now (the event's text is the fallback if the call fails). They
+  # reach the script only through a file or env:, never a run: line.
   plan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       docs: ${{ steps.plan.outputs.docs }}
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -61,9 +67,24 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: git diff --name-only "$BASE_SHA" HEAD > "$RUNNER_TEMP/changed.txt"
+      - name: Title and description as they are now
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if gh api "repos/$REPO/pulls/$NUMBER" --jq '{title, body}' > "$RUNNER_TEMP/pr.json.tmp"; then
+            mv "$RUNNER_TEMP/pr.json.tmp" "$RUNNER_TEMP/pr.json"
+          else
+            echo "::warning::Could not read the pull request; using the text of the event."
+            rm -f "$RUNNER_TEMP/pr.json.tmp"
+          fi
       - id: plan
         run: node scripts/ci-plan.mjs
         env:
+          PR_FILE: ${{ runner.temp }}/pr.json
           CI_SCOPE: ${{ github.event_name == 'pull_request' && 'pr' || inputs.scope }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
