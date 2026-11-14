@@ -29,8 +29,9 @@ Always:
 
 Only the part you need, found with `grep` (do not read these whole):
 
-- [`docs/ROADMAP.md`](docs/ROADMAP.md): phases and architecture hooks (context only, do not build ahead); the decisions log at the end.
+- [`docs/ROADMAP.md`](docs/ROADMAP.md): phases and architecture hooks (context only, do not build ahead); the decisions log at the end (the last 30 rows; older ones are in `docs/archive/DECISIONS.md`).
 - Earlier phase specs (`docs/PHASE1_SPEC.md`, …): what the current phase builds on (layout, rig solver, ropes, Realistic mode, URL state). The conventions and architecture sections when you touch those areas.
+- [`docs/archive/CHECKLISTS.md`](docs/archive/CHECKLISTS.md) (the phone checklists of merged milestones) and [`docs/archive/DECISIONS.md`](docs/archive/DECISIONS.md) (older decisions, finished phases' table rows): only to look something up, with `grep`.
 - [`docs/BOAT_REFERENCE.md`](docs/BOAT_REFERENCE.md), [`content/boat/hanse508.json`](content/boat/hanse508.json), [`content/registry/parts.json`](content/registry/parts.json): boat facts, sources, assumptions, ids.
 
 ## Working rules
