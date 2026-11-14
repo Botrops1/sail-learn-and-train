@@ -16,6 +16,8 @@
 //   SHOTS_SHARD=1/2      only every 2nd scene, starting with the 1st (CI's two scene parts)
 //   (CI splits the full run into parallel parts with these; see .github/workflows/ci.yml)
 //   SHOTS_OUT=<dir>      output folder (default shots/)
+//   SHOTS_VERBOSE=1      print every line; by default the lines of a scene, a tap sweep or a live
+//                        group are printed only when it went wrong (scripts/quiet-log.mjs)
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from 'playwright';
@@ -117,6 +119,7 @@ import { liveM97Checks, M97_SCENES } from './shots-m97.mjs';
 import { liveM98Checks, M98_SCENES } from './shots-m98.mjs';
 import { liveM99Checks, M99_SCENES } from './shots-m99.mjs';
 import { checkBudget } from './budget.mjs';
+import { createQuietLog } from './quiet-log.mjs';
 import { GROUP_ALIASES, groupOf } from './ci-plan.mjs';
 import {
   closeSettings,
@@ -392,6 +395,8 @@ const LAUNCH_ARGS = [
   '--ignore-gpu-blocklist',
 ];
 
+// Vite's note about the config's extensionless import would print on every run (quiet output).
+process.env.VITE_CONFIG_NATIVE_IGNORE_WARNING = 'true';
 const server = await preview({ preview: { port: 4173, strictPort: false }, logLevel: 'warn' });
 const origin =
   server.resolvedUrls?.local[0]?.replace(/\/sail-learn-and-train\/?$/, '') ??
@@ -406,6 +411,13 @@ if (process.env.SHOTS_KEEP !== '1') await rm(OUT_DIR, { recursive: true, force: 
 await mkdir(OUT_DIR, { recursive: true });
 
 const problems = [];
+// Quiet by default: the lines of a scene, a tap sweep or a live group are held back and printed only
+// if that unit went wrong. Every check calls console.log directly, so the runner swaps it (log.begin
+// and log.end below mark the units); `live group <name>: <n> s`, the failures and the last line
+// always print.
+const log = createQuietLog({ verbose: process.env.SHOTS_VERBOSE === '1', problems });
+log.install();
+let sceneShots = 0;
 
 /**
  * The test clock (live checks of M4a, M4b and M4c; CLAUDE.md, "Running the browser checks"). The app's
@@ -905,6 +917,7 @@ try {
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       if (!inShard(SCENES.indexOf(scene))) continue;
       const label = `${viewport.name}/${scene.name}`;
+      log.begin(label);
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.mode) await setMode(page, scene.mode);
       if (scene.section) await showSection(page, scene.section);
@@ -983,6 +996,8 @@ try {
       await page.screenshot({ path: file });
       console.log(`${file}  layout=${facts.layout}  ${facts.version}  ${facts.url}`);
       await context.close();
+      sceneShots += 1;
+      log.end();
     }
   }
 
@@ -1007,6 +1022,7 @@ try {
       ];
   for (const { viewport, cam, step: fixedStep } of sweeps) {
     const label = `taps ${viewport.name}/${cam}${fixedStep ? ` (${fixedStep} px)` : ''}`;
+    log.begin(label);
     // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
     // The boat is framed largest with the sheet at its lowest (M26).
@@ -1057,11 +1073,13 @@ try {
       problems.push(`${label}: taps changed the camera (${search}); last taps: ${changedAt}`);
     console.log(`${label}: ${taps} taps`);
     await context.close();
+    log.end();
   }
   // Issue #203: a finger-long tap on the 3D view while a helm view button's glide runs must not
   // turn the camera to Free (the gesture used to take the glide's own movement for a hand move).
   if (!QUICK) {
     const label = `taps ${VIEWPORTS[0].name}/helm tap during glide`;
+    log.begin(label);
     const { context, page } = await openPage(VIEWPORTS[0], label, '?cam=helm&lb=0');
     await setSheet(page, 'peek');
     await page.waitForTimeout(800);
@@ -1077,7 +1095,9 @@ try {
       problems.push(`${label}: the tap changed the camera (${search})`);
     console.log(`${label}: ${search.includes('cam=helm') ? 'camera kept' : 'camera changed'}`);
     await context.close();
+    log.end();
   }
+  log.begin('tap sweep summary');
   console.log(
     `identified by tapping: ${[...found.entries()].map(([id, n]) => `${id}×${n}`).join(', ')}`,
   );
@@ -1087,12 +1107,14 @@ try {
   for (const id of MUST_NOT_IDENTIFY) {
     if (found.has(id)) problems.push(`tap sweep found ${id}, which should not be drawn`);
   }
+  log.end();
 
   // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
   // (positions from the debug-only hook) must show its card.
   for (const viewport of QUICK && !ONLY_SMALL ? [] : VIEWPORTS.slice(0, 3)) {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
+      log.begin(label);
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
       await setSheet(page, 'peek');
       await page.waitForTimeout(800);
@@ -1131,6 +1153,7 @@ try {
         `${label}: ${view.expected.length - missing.length}/${view.expected.length} respond`,
       );
       await context.close();
+      log.end();
     }
   }
 
@@ -1292,6 +1315,7 @@ try {
       if (ONLY.length > 0 && !ONLY.includes(name)) continue;
       // A check that throws (a button not found) is one problem; the other groups still run.
       const started = Date.now();
+      log.begin(`live group ${name}`);
       try {
         await run();
       } catch (error) {
@@ -1300,7 +1324,8 @@ try {
         // The pages the failed check left open would keep drawing and slow the next groups.
         for (const context of browser.contexts()) await context.close().catch(() => undefined);
       }
-      console.log(`live group ${name}: ${Math.round((Date.now() - started) / 1000)} s`);
+      log.end();
+      log.say(`live group ${name}: ${Math.round((Date.now() - started) / 1000)} s`);
     }
   }
 } catch (error) {
@@ -1308,6 +1333,7 @@ try {
   // still prints, so a watcher waiting for "problem(s)" is not left waiting.
   problems.push(`stopped: ${error instanceof Error ? error.stack : error}`);
 } finally {
+  log.end();
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));
 }
@@ -1327,6 +1353,7 @@ try {
         ['side', 824, 1168],
         ['plan', 792, 400],
       ]) {
+    log.begin(`compare ${view}`);
     const page = await compareBrowser.newPage({ viewport: { width, height } });
     page.on('pageerror', (error) => problems.push(`compare ${view}: page error: ${error.message}`));
     await page.goto(`${dev.resolvedUrls.local[0]}scripts/compare/index.html?view=${view}`);
@@ -1334,14 +1361,19 @@ try {
     const file = path.join(OUT_DIR, `${PREFIX}compare-${view}-model-vs-sketch.png`);
     await page.screenshot({ path: file });
     console.log(file);
+    log.end();
   }
 } finally {
+  log.end();
   await compareBrowser.close();
   await dev.close();
 }
 
+log.restore();
 if (problems.length > 0) {
   console.error(`\n${problems.length} problem(s):\n${problems.join('\n')}`);
   process.exit(1);
 }
-console.log('\nNo console errors, layouts as expected, no page scroll, taps and camera OK.');
+if (process.env.SHOTS_VERBOSE !== '1' && sceneShots > 0)
+  console.log(`${sceneShots} scene shots ok`);
+console.log('No console errors, layouts as expected, no page scroll, taps and camera OK.');
