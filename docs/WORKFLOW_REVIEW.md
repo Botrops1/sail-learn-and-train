@@ -240,6 +240,8 @@ Build it **after specs A, B and C**, in two PRs so each can be checked: H1 (the 
 
 **Not in this spec:** changing what the app does; the tap sweep's coverage; the nightly schedule.
 
+**Decided in the spec H2 PR (recommended; merging accepts it):** 22 groups were merged into 10 older ones (`GROUP_ALIASES` in `scripts/ci-plan.mjs` lists them; `scripts/shots-m<N>.mjs` keeps its file and runs inside the group named after the oldest), which gives 75 groups. Each merged group's recorded time is the sum of its members, so it stays near 120 s; no page is shared between members, so the merge itself saves no time. The saving is only the repeats deleted: the M13 heaviest-case step check (the M19 check runs the same thresholds on a heavier case), the frame-time-only blocks of M29 and M59 (they had no expectation), and six duplicate scenes. The full set therefore stays near 14,800 s, not 13,500 s: reaching 13,500 s needs the page sharing of H1 applied to more groups, which would touch checks that are not small. `FULL_CAP_S` is 1,150 s (14 parts, and still 14 if every recorded time grows by 5 %). A member of a merged group that throws is reported by its own name and the others still run. `.github/ci-budget.json` starts empty.
+
 ## 7. What was not checked
 
 - No session was run with the new skills. The first milestone built with them is the test; if the reviewer subagent does not start or returns nothing, the builder should say so in the PR and the owner starts `/review <PR>` as before.

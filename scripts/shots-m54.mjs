@@ -5,7 +5,8 @@ import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
 import { closeSettings, columnSections, moveSectionBy, openSettings, setMode } from './ui.mjs';
 
-export const M54_SCENES = [{ name: 'layout-default', query: '?cam=side-port' }];
+/** No scene: the default layout is the one of `m52-wide-chips`. */
+export const M54_SCENES = [];
 
 const DEFAULT_COLUMNS = [
   ['ropes', 'sails', 'autopilot', 'engine', 'place', 'anchor', 'harbour', 'status'],

@@ -9,12 +9,45 @@ import { milestoneOf } from './pr-body.mjs';
 
 /** Seconds per part (tunable): a PR's set, and the full set. */
 export const PR_CAP_S = 600;
-export const FULL_CAP_S = 1300;
+export const FULL_CAP_S = 1150;
 /** Scene parts of the matrix, and how many of the newest milestones' groups every PR runs. */
 export const SCENE_SHARDS = 4;
 export const RECENT_GROUPS = 4;
 /** A group missing from `.github/ci-times.json` counts as this many seconds. */
 export const UNKNOWN_GROUP_S = 300;
+
+/**
+ * Groups that were merged into another one (H2): `<old group name>: <the group that runs its
+ * checks now>`, named after the oldest of a merged set. A PR titled `M<old>`, a "CI groups:" word
+ * and `.github/ci-paths.json` still use the old name; `scripts/shots-m<old>.mjs` keeps its file.
+ */
+export const GROUP_ALIASES = {
+  m7: 'm6',
+  m13: 'm12',
+  m19: 'm12',
+  m72: 'm14',
+  m80: 'm14',
+  m21: 'm20',
+  m22: 'm20',
+  m41: 'm40',
+  m42: 'm40',
+  m43: 'm40',
+  m45: 'm44',
+  m46: 'm44',
+  m53: 'm51',
+  m55: 'm51',
+  m57: 'm47',
+  m59: 'm47',
+  m88: 'm87',
+  m89: 'm87',
+  m90: 'm87',
+  m91: 'm85',
+  m92: 'm85',
+  m95: 'm85',
+};
+
+/** The live group that runs a group's checks: the group itself, or the one it was merged into. */
+export const groupOf = (name) => GROUP_ALIASES[name] ?? name;
 
 /** The keys of `const liveGroups = { … };` in scripts/shots.mjs, in order. */
 export function liveGroupNames(source) {
@@ -24,7 +57,7 @@ export function liveGroupNames(source) {
   if (start >= 0) {
     for (const line of lines.slice(start + 1)) {
       if (/^ {2}\};/.test(line)) break;
-      const match = /^\s{4}([a-z0-9]+): (async )?\(\) =>/.exec(line);
+      const match = /^\s{4}([a-z0-9]+): ((async )?\(\) =>|members\()/.exec(line);
       if (match) names.push(match[1]);
     }
   }
@@ -55,7 +88,7 @@ export function pathGroups(files, paths, groups) {
   const wanted = new Set();
   for (const file of files) {
     for (const [prefix, names] of Object.entries(paths.groups)) {
-      if (file.startsWith(prefix)) for (const name of names) wanted.add(name);
+      if (file.startsWith(prefix)) for (const name of names) wanted.add(groupOf(name));
     }
   }
   return groups.filter((name) => wanted.has(name));
@@ -87,8 +120,9 @@ function prPlan({ title, body, groups, files = [], paths = { all: [], groups: {}
   if (milestone !== null) {
     const id = `m${milestone.toLowerCase()}`;
     for (const name of groups) if (new RegExp(`^${id}[a-z]?$`).test(name)) add(name, 'title');
+    add(groupOf(id), 'title');
   }
-  for (const name of fromFiles) add(name, 'files');
+  for (const name of fromFiles) add(groupOf(name), 'files');
   const recent = groups
     .filter((name) => numberOf(name) !== null)
     .sort((a, b) => numberOf(b) - numberOf(a) || (a < b ? -1 : a > b ? 1 : 0))
@@ -96,7 +130,7 @@ function prPlan({ title, body, groups, files = [], paths = { all: [], groups: {}
   for (const name of recent) add(name, 'recent');
   const named = /^CI groups:\s*(.+)$/im.exec(text);
   if (named) {
-    for (const word of named[1].split(/[,\s]+/)) add(word, 'named');
+    for (const word of named[1].split(/[,\s]+/)) add(groupOf(word), 'named');
   }
   return { names: groups.filter((name) => reasons.has(name)), reasons };
 }

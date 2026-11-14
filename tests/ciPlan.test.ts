@@ -3,9 +3,11 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   FULL_CAP_S,
+  GROUP_ALIASES,
   PR_CAP_S,
   SCENE_SHARDS,
   ciMatrix,
+  groupOf,
   isDocsOnly,
   liveGroupNames,
   packParts,
@@ -29,15 +31,10 @@ describe('liveGroupNames', () => {
       'm4b',
       'm60b',
       'budget',
+      'm85',
       'm87',
-      'm88',
-      'm89',
-      'm90',
-      'm91',
-      'm92',
       'm93',
       'm94',
-      'm95',
       'm96',
       'm97',
       'm98',
@@ -48,7 +45,8 @@ describe('liveGroupNames', () => {
   });
 
   it('has a live group for every scripts/shots-m*.mjs file and a recorded time for every group', () => {
-    // M4a's checks run inside the group `general`; every other file is a group of the same name.
+    // M4a's checks run inside the group `general`; a merged milestone (GROUP_ALIASES) runs inside
+    // the group it was merged into; every other file is a group of the same name.
     const insideGeneral = new Set(['m4a']);
     const fileGroups = readdirSync('scripts')
       .map((file) => /^shots-(m[0-9a-z]+)\.mjs$/.exec(file)?.[1])
@@ -56,7 +54,7 @@ describe('liveGroupNames', () => {
     expect(fileGroups.length).toBeGreaterThan(0);
     for (const name of fileGroups) {
       if (insideGeneral.has(name)) expect(groups).toContain('general');
-      else expect(groups, `scripts/shots-${name}.mjs has no live group`).toContain(name);
+      else expect(groups, `scripts/shots-${name}.mjs has no live group`).toContain(groupOf(name));
     }
     for (const name of groups)
       expect(times, `group ${name} has no line in .github/ci-times.json`).toHaveProperty(name);
@@ -212,9 +210,9 @@ describe('.github/ci-paths.json', () => {
     })
       .split('\n')
       .filter(Boolean)
-      .map((file) => /shots-(m\d+[a-z]?)\.mjs$/.exec(file)?.[1] ?? file)
+      .map((file) => groupOf(/shots-(m\d+[a-z]?)\.mjs$/.exec(file)?.[1] ?? file))
       .sort();
-    expect([...(paths.groups['content/exercises/'] ?? [])].sort()).toEqual(files);
+    expect([...(paths.groups['content/exercises/'] ?? [])].sort()).toEqual([...new Set(files)]);
     expect(paths.groups['src/app/exerciseRun.ts']).toEqual(paths.groups['content/exercises/']);
   });
 });
@@ -279,6 +277,104 @@ describe('CI browser', () => {
     const workflow = readFileSync('.github/workflows/ci.yml', 'utf8');
     for (const match of workflow.matchAll(/playwright:v([\d.]+)-/g)) {
       expect(match[1]).toBe(version);
+    }
+  });
+});
+
+describe('GROUP_ALIASES (groups merged into others)', () => {
+  it('points every old name at a live group, with its file still there', () => {
+    for (const [old, target] of Object.entries(GROUP_ALIASES)) {
+      expect(groups, `${old} is merged into ${target}, which is not a live group`).toContain(
+        target,
+      );
+      expect(groups, `${old} is still a live group of its own`).not.toContain(old);
+      expect(GROUP_ALIASES, `${target} is itself merged`).not.toHaveProperty(target);
+      expect(existsSync(`scripts/shots-${old}.mjs`), `scripts/shots-${old}.mjs`).toBe(true);
+      // The group is named after the oldest of its set.
+      const number = (name: string) => Number(/^m(\d+)/.exec(name)?.[1]);
+      expect(number(target)).toBeLessThan(number(old));
+    }
+  });
+
+  it('runs the group of a merged milestone for its PR title, its CI groups word and its files', () => {
+    expect(prGroups({ title: 'M7: x', body: '', groups })).toContain('m6');
+    expect(prGroups({ title: 'M95: x', body: '', groups })).toContain('m85');
+    expect(prGroups({ title: 'M80: x', body: '', groups })).toContain('m14');
+    expect(prGroups({ title: 'Fix', body: 'CI groups: m88, m59', groups })).toEqual(
+      expect.arrayContaining(['m87', 'm47']),
+    );
+    expect(groupOf('m42')).toBe('m40');
+    expect(groupOf('m40')).toBe('m40');
+    expect(groupOf('m66')).toBe('m66');
+    expect(
+      pathGroups(['x/y'], { all: [], groups: { 'x/': ['m80', 'm14', 'm69'] } }, groups),
+    ).toEqual(['m14', 'm69']);
+  });
+
+  it('runs the checks of every merged milestone inside its group', () => {
+    for (const [old, target] of Object.entries(GROUP_ALIASES)) {
+      const start = shotsSource.indexOf(`    ${target}: members(`);
+      expect(start, `${target} is not a members(...) group in shots.mjs`).toBeGreaterThan(-1);
+      const end = shotsSource.indexOf('\n    ),\n', start);
+      const body = shotsSource.slice(start, end);
+      expect(body, `${target} does not run liveM${old.slice(1)}Checks`).toContain(
+        `liveM${old.slice(1)}Checks(`,
+      );
+    }
+  });
+
+  it('keeps a group for every milestone number that had one', () => {
+    const old = readdirSync('scripts')
+      .map((file) => /^shots-(m[0-9]+[a-z]?)\.mjs$/.exec(file)?.[1])
+      .filter((name): name is string => name !== undefined);
+    for (const name of old.filter((n) => n !== 'm4a')) {
+      const title = `${name[0]?.toUpperCase()}${name.slice(1)}: x`;
+      const result = prGroups({ title, body: '', groups }) as string[];
+      expect(result, `a PR titled ${name} runs no group of its own`).toContain(groupOf(name));
+    }
+  });
+});
+
+describe('the size of the browser-check set (H2)', () => {
+  // The groups that existed when H2 merged. A group added later has a recorded time of at most
+  // 120 s, or a reason in `.github/ci-budget.json`.
+  const baseline = new Set(
+    'general m4b m4c m5 m6 m8 m9 m10 m11 m12 m14 m15 m16 m17 m18 m20 m23 m24 m25 m26 m27 m28 m29 m30 m31 m32 m33 m34 m35 m36 m37 m38 m39 m40 m44 m47 m48 m49 m50 m51 m52 m54 m56 m58 m60 m60b m61 m62 budget m63 m64 m65 m66 m67 m68 m69 m70 m71 m73 m74 m75 m76 m77 m78 m79 m81 m82 m85 m87 m93 m94 m96 m97 m98 m99'.split(
+      ' ',
+    ),
+  );
+  const budget = JSON.parse(readFileSync('.github/ci-budget.json', 'utf8')) as Record<
+    string,
+    string
+  >;
+
+  it('has at most 75 groups and packs into at most 14 parts, also when the times grow by 5 %', () => {
+    expect(groups.length).toBeLessThanOrEqual(75);
+    expect(packParts(groups, times, FULL_CAP_S).length).toBeLessThanOrEqual(14);
+    const slower = Object.fromEntries(Object.entries(times).map(([name, s]) => [name, s * 1.05]));
+    expect(packParts(groups, slower, FULL_CAP_S).length).toBeLessThanOrEqual(14);
+  });
+
+  it('knows the baseline groups', () => {
+    for (const name of baseline) expect(groups, name).toContain(name);
+    expect(baseline.size).toBe(groups.length);
+  });
+
+  it('keeps a group that is not in the baseline at 120 s or less, or names it in ci-budget.json with a reason', () => {
+    for (const name of groups) {
+      if (baseline.has(name) || (times[name] ?? 300) <= 120) continue;
+      const reason = budget[name];
+      expect(
+        typeof reason === 'string' && reason.trim().length > 0,
+        `${name} is recorded at ${times[name]} s: say why in .github/ci-budget.json`,
+      ).toBe(true);
+    }
+  });
+
+  it('has a ci-budget.json that names only live groups and gives each a reason', () => {
+    for (const [name, reason] of Object.entries(budget)) {
+      expect(groups, name).toContain(name);
+      expect(reason.trim().length, name).toBeGreaterThan(0);
     }
   });
 });

@@ -214,20 +214,4 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
     await closeSettings(page);
     await context.close();
   }
-
-  // 7. Frame times (reported only; the owner checks the phone). PHASE5_SPEC 7.9 check 11.
-  {
-    const { context, page } = await openPage(
-      phone,
-      'm29 frames',
-      '?debug=1&wd=60&ws=20&wm=gusty&detail=low',
-    );
-    for (const height of ['peek', 'half']) {
-      await setSheet(page, height);
-      await page.waitForTimeout(3000);
-      const overlay = (await page.getByTestId('debug-overlay').innerText()).replace(/\s+/g, ' ');
-      console.log(`live M29 frame figures at ${height} (reported only): ${overlay.slice(0, 160)}`);
-    }
-    await context.close();
-  }
 }

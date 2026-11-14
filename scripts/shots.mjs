@@ -5,7 +5,8 @@
 // committed; the agent looks at the ones it needs).
 //
 // Options (environment variables):
-//   SHOTS_ONLY=m10       only the scenes and live checks of these milestones (comma list)
+//   SHOTS_ONLY=m10       only the scenes and live checks of these milestones (comma list; a merged
+//                        milestone, e.g. m7, runs its group, m6)
 //   SHOTS_SIZES=phone    scenes at phone size only (CI); live checks and tap checks unchanged
 //   SHOTS_SCENE=<text>   only the scenes whose name contains <text>
 //   SHOTS_ONLY_LIVE=1    only the live checks;  SHOTS_ONLY_SMALL=1  only the small-parts taps
@@ -116,6 +117,7 @@ import { liveM97Checks, M97_SCENES } from './shots-m97.mjs';
 import { liveM98Checks, M98_SCENES } from './shots-m98.mjs';
 import { liveM99Checks, M99_SCENES } from './shots-m99.mjs';
 import { checkBudget } from './budget.mjs';
+import { GROUP_ALIASES, groupOf } from './ci-plan.mjs';
 import {
   closeSettings,
   isStacked,
@@ -771,17 +773,29 @@ async function liveM3Checks() {
 const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
 const ONLY_SMALL = process.env.SHOTS_ONLY_SMALL === '1';
 /** SHOTS_ONLY=m9,m10: only these milestones' scenes and live checks. */
-const ONLY = (process.env.SHOTS_ONLY ?? '')
-  .split(',')
-  .map((m) => m.trim().toLowerCase())
-  .filter(Boolean);
+const ONLY = [
+  ...new Set(
+    (process.env.SHOTS_ONLY ?? '')
+      .split(',')
+      .map((m) => m.trim().toLowerCase())
+      .filter(Boolean)
+      // A group merged into another one (GROUP_ALIASES) runs as part of that one.
+      .map(groupOf),
+  ),
+];
+/** The milestones whose scenes belong to those groups: the groups and the ones merged into them. */
+const ONLY_SCENES = ONLY.flatMap((name) => [
+  name,
+  ...Object.keys(GROUP_ALIASES).filter((alias) => GROUP_ALIASES[alias] === name),
+]);
 const QUICK = ONLY_LIVE || ONLY.length > 0 || process.env.SHOTS_NO_TAPS === '1';
 const NO_LIVE = process.env.SHOTS_NO_LIVE === '1';
 /** SHOTS_SKIP=general,m4b: live-check groups to leave out (another CI part runs them). */
 const SKIP = (process.env.SHOTS_SKIP ?? '')
   .split(',')
   .map((m) => m.trim().toLowerCase())
-  .filter(Boolean);
+  .filter(Boolean)
+  .map(groupOf);
 /** SHOTS_SIZES=phone: scenes at phone size only (CI). */
 // SHOTS_SHARD=1/2: every 2nd scene starting with the 1st (CI splits the scenes in two parts).
 const SHARD = /^(\d+)\/(\d+)$/.exec(process.env.SHOTS_SHARD ?? '');
@@ -887,7 +901,7 @@ try {
     : SCENE_VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
-      if (ONLY.length > 0 && !ONLY.some((m) => scene.name.startsWith(`${m}-`))) continue;
+      if (ONLY.length > 0 && !ONLY_SCENES.some((m) => scene.name.startsWith(`${m}-`))) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       if (!inShard(SCENES.indexOf(scene))) continue;
       const label = `${viewport.name}/${scene.name}`;
@@ -1131,6 +1145,23 @@ try {
     problems,
   };
   const onTestClock = { ...live, openPage: openOnTestClock };
+  /**
+   * The members of a merged group, one after the other. One that throws is a problem of its own
+   * (named by its milestone) and the others still run, as they did when each was a group.
+   */
+  const members =
+    (...list) =>
+    async () => {
+      for (const [label, run] of list) {
+        try {
+          await run();
+        } catch (error) {
+          problems.push(`live ${label} stopped: ${error instanceof Error ? error.message : error}`);
+          console.log(`live ${label} STOPPED: ${error instanceof Error ? error.stack : error}`);
+          for (const context of browser.contexts()) await context.close().catch(() => undefined);
+        }
+      }
+    };
   /** Live checks per milestone; "general" covers M0–M4a (layout, camera, URL, M2–M4a). */
   const liveGroups = {
     general: () => liveGeneralChecks(),
@@ -1141,23 +1172,32 @@ try {
     },
     m4c: () => liveM4cChecks(onTestClock),
     m5: () => liveM5Checks(live),
-    m6: () => liveM6Checks(live),
-    m7: () => liveM7Checks(live),
+    // Groups merged in H2 run the checks of the milestones named in `GROUP_ALIASES`
+    // (scripts/ci-plan.mjs), one after the other, each on its own pages and clock.
+    m6: members(['m6', () => liveM6Checks(live)], ['m7', () => liveM7Checks(live)]),
     m8: () => liveM8Checks(live),
     m9: () => liveM9Checks(live),
     m10: () => liveM10Checks(live),
     m11: () => liveM11Checks(live),
-    m12: () => liveM12Checks(live),
-    m13: () => liveM13Checks(live),
-    m14: () => liveM14Checks(live),
+    m12: members(
+      ['m12', () => liveM12Checks(live)],
+      ['m13', () => liveM13Checks(live)],
+      ['m19', () => liveM19Checks(live)],
+    ),
+    m14: members(
+      ['m14', () => liveM14Checks(live)],
+      ['m72', () => liveM72Checks(onTestClock)],
+      ['m80', () => liveM80Checks(onTestClock)],
+    ),
     m15: () => liveM15Checks(live),
     m16: () => liveM16Checks(live),
     m17: () => liveM17Checks(live),
     m18: () => liveM18Checks(live),
-    m19: () => liveM19Checks(live),
-    m20: () => liveM20Checks(live),
-    m21: () => liveM21Checks(live),
-    m22: () => liveM22Checks(live),
+    m20: members(
+      ['m20', () => liveM20Checks(live)],
+      ['m21', () => liveM21Checks(live)],
+      ['m22', () => liveM22Checks(live)],
+    ),
     m23: () => liveM23Checks(live),
     m24: () => liveM24Checks(live),
     m25: () => liveM25Checks(live),
@@ -1175,26 +1215,34 @@ try {
     m37: () => liveM37Checks(onTestClock),
     m38: () => liveM38Checks(onTestClock),
     m39: () => liveM39Checks(onTestClock),
-    m40: () => liveM40Checks(onTestClock),
-    m41: () => liveM41Checks(onTestClock),
-    m42: () => liveM42Checks(onTestClock),
-    m43: () => liveM43Checks(onTestClock),
-    m44: () => liveM44Checks(onTestClock),
-    m45: () => liveM45Checks(onTestClock),
-    m46: () => liveM46Checks(onTestClock),
-    m47: () => liveM47Checks(onTestClock),
+    m40: members(
+      ['m40', () => liveM40Checks(onTestClock)],
+      ['m41', () => liveM41Checks(onTestClock)],
+      ['m42', () => liveM42Checks(onTestClock)],
+      ['m43', () => liveM43Checks(onTestClock)],
+    ),
+    m44: members(
+      ['m44', () => liveM44Checks(onTestClock)],
+      ['m45', () => liveM45Checks(onTestClock)],
+      ['m46', () => liveM46Checks(onTestClock)],
+    ),
+    m47: members(
+      ['m47', () => liveM47Checks(onTestClock)],
+      ['m57', () => liveM57Checks(live)],
+      ['m59', () => liveM59Checks(onTestClock)],
+    ),
     m48: () => liveM48Checks(live),
     m49: () => liveM49Checks(onTestClock),
     m50: () => liveM50Checks(onTestClock),
-    m51: () => liveM51Checks(onTestClock),
+    m51: members(
+      ['m51', () => liveM51Checks(onTestClock)],
+      ['m53', () => liveM53Checks(onTestClock)],
+      ['m55', () => liveM55Checks(onTestClock)],
+    ),
     m52: () => liveM52Checks(live),
-    m53: () => liveM53Checks(onTestClock),
     m54: () => liveM54Checks(live),
-    m55: () => liveM55Checks(onTestClock),
     m56: () => liveM56Checks(live),
-    m57: () => liveM57Checks(live),
     m58: () => liveM58Checks(live),
-    m59: () => liveM59Checks({ ...onTestClock, realClockPage: live.openPage }),
     m60: () => liveM60Checks(live),
     m60b: () => liveM60bChecks(live),
     m61: () => liveM61Checks(live),
@@ -1208,7 +1256,6 @@ try {
     m69: () => liveM69Checks(onTestClock),
     m70: () => liveM70Checks(onTestClock),
     m71: () => liveM71Checks(onTestClock),
-    m72: () => liveM72Checks(onTestClock),
     m73: () => liveM73Checks(onTestClock),
     m74: () => liveM74Checks(onTestClock),
     m75: () => liveM75Checks(onTestClock),
@@ -1216,20 +1263,23 @@ try {
     m77: () => liveM77Checks(onTestClock),
     m78: () => liveM78Checks(onTestClock),
     m79: () => liveM79Checks(onTestClock),
-    m80: () => liveM80Checks(onTestClock),
     m81: () => liveM81Checks(onTestClock),
     m82: () => liveM82Checks(onTestClock),
-    m85: () => liveM85Checks(onTestClock),
+    m85: members(
+      ['m85', () => liveM85Checks(onTestClock)],
+      ['m91', () => liveM91Checks(onTestClock)],
+      ['m92', () => liveM92Checks(onTestClock)],
+      ['m95', () => liveM95Checks(onTestClock)],
+    ),
     // M87 opens some pages on the real clock (the audio context runs in real time): `openPlain`.
-    m87: () => liveM87Checks({ ...onTestClock, openPlain: openPage }),
-    m88: () => liveM88Checks(onTestClock),
-    m89: () => liveM89Checks(onTestClock),
-    m90: () => liveM90Checks(onTestClock),
-    m91: () => liveM91Checks(onTestClock),
-    m92: () => liveM92Checks(onTestClock),
+    m87: members(
+      ['m87', () => liveM87Checks({ ...onTestClock, openPlain: openPage })],
+      ['m88', () => liveM88Checks(onTestClock)],
+      ['m89', () => liveM89Checks(onTestClock)],
+      ['m90', () => liveM90Checks(onTestClock)],
+    ),
     m93: () => liveM93Checks(onTestClock),
     m94: () => liveM94Checks(onTestClock),
-    m95: () => liveM95Checks(onTestClock),
     m96: () => liveM96Checks(onTestClock),
     m97: () => liveM97Checks(onTestClock),
     m98: () => liveM98Checks(onTestClock),
