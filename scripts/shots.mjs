@@ -395,6 +395,8 @@ const LAUNCH_ARGS = [
   '--ignore-gpu-blocklist',
 ];
 
+// Vite's note about the config's extensionless import would print on every run (quiet output).
+process.env.VITE_CONFIG_NATIVE_IGNORE_WARNING = 'true';
 const server = await preview({ preview: { port: 4173, strictPort: false }, logLevel: 'warn' });
 const origin =
   server.resolvedUrls?.local[0]?.replace(/\/sail-learn-and-train\/?$/, '') ??

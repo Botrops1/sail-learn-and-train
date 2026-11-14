@@ -17,7 +17,7 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "check": "node scripts/check.mjs",
-    "shots": "vite build --logLevel error && node scripts/shots.mjs",
+    "shots": "env VITE_CONFIG_NATIVE_IGNORE_WARNING=true vite build --logLevel error && node scripts/shots.mjs",
     "review-doc": "node scripts/review-doc.mjs"
   },
   "devDependencies": {
