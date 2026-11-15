@@ -1,0 +1,2064 @@
+{
+  "$comment": "Learn entries in one language (PHASE4_SPEC 3.2). Keys are registry ids. English is the source language; other languages translate it.",
+  "language": "de",
+  "entries": {
+    "rope_mainsheet": {
+      "name": "Großschot",
+      "alternatives": [],
+      "short": "Die Leine, die Baum und Großsegel ausschwenken lässt oder sie wieder hereinzieht.",
+      "what": "Fieren (Auslassen) der Großschot lässt den Wind den Baum weiter ausschwenken; Dichtholen zieht den Baum zurück zur Mitte. Die Leine begrenzt nur, wie weit der Baum ausschwenken kann: bei Wind von vorn macht Fieren sie nur lose. Nahe der Mitte bewegt wenig Leine den Baum weit; weit außen bewegt viel Leine ihn nur wenig.",
+      "onThisBoat": "Eine deutsche Großschot: eine Leine mit zwei Enden, eines an jeder Seite der Plicht (die Klemmen heißen „Main sheet“ und „MAIN SHEET“). Sie läuft über drei Blöcke unter dem Baum und zwei gefederte Blöcke am hinteren Ende des Deckshauses. Einen Traveller (eine verschiebbare Schiene für die unteren Blöcke) gibt es nicht.",
+      "mistakes": [
+        {
+          "mistake": "Sie viel weiter fieren, als der Wind es verlangt.",
+          "fix": "Das Großsegel killt an seiner Vorderkante. Holen Sie dicht, bis das Killen gerade aufhört."
+        },
+        {
+          "mistake": "Sie in einer Bö hart dichtgeholt halten.",
+          "fix": "Das Boot krängt stark und schießt von selbst in den Wind. Fieren Sie die Großschot, um die Bö abzulassen."
+        },
+        {
+          "mistake": "Die Klemme unter Last öffnen, während die Leine nicht auf der Winsch ist.",
+          "fix": "Die Leine läuft schnell aus und der Baum fliegt hinaus. Legen Sie die Leine zuerst auf die Winsch, dann öffnen Sie die Klemme."
+        }
+      ],
+      "showMe": "Wind von der Seite und die Großschot auf 60 % gefiert: der Baum ist weit ausgeschwenkt. Tippen Sie unten auf „Großschot“ und holen Sie dicht: der Baum kommt zurück zur Mitte.",
+      "textStatus": "draft"
+    },
+    "rope_jib_sheet": {
+      "name": "Fockschot",
+      "alternatives": [
+        {
+          "term": "Vorsegelschot"
+        }
+      ],
+      "short": "Die Leine, die festlegt, wie weit die Fock ausschwenken kann.",
+      "what": "Dichtholen der Fockschot zieht die hintere Ecke der Fock zum Boot hin; Fieren lässt den Wind die Fock ausschwenken. Bei einer Selbstwendefock lässt Fieren vor allem den oberen Teil des Segels im Twist aufgehen, statt das ganze Segel auszuschwenken.",
+      "onThisBoat": "Eine Schot läuft von der hinteren Ecke der Fock zu einem Wagen auf einer kurzen Schiene vor dem Mast, mit 2:1-Übersetzung (ein Flaschenzug, der den Zug halbiert), dann den Mast hinunter und achtern zu den Steuerbordklemmen. Die Klemme heißt „Genoa sheet“, das Segel ist aber eine Fock. Voll gefiert kommt die Fock nur etwa 30° nach außen.",
+      "mistakes": [
+        {
+          "mistake": "Sie auf einem Raumschotskurs fieren und erwarten, dass die Fock weit ausschwenkt.",
+          "fix": "Eine Selbstwendefock kann nicht weit ausschwenken; weiteres Fieren öffnet nur ihren oberen Teil im Twist. Fieren Sie, bis die Trimmfäden sauber auswehen, nicht weiter."
+        },
+        {
+          "mistake": "Die Fock einrollen, während die Schot noch dicht ist.",
+          "fix": "Die Fock rollt nicht weiter auf. Fieren Sie zuerst die Fockschot, dann ziehen Sie die Rollreffleine."
+        },
+        {
+          "mistake": "Sie bei Wind von der Seite hart dichtholen.",
+          "fix": "Die Fock reißt ab: die Trimmfäden auf ihrer Leeseite hängen herunter. Fieren Sie, bis sie auswehen."
+        }
+      ],
+      "showMe": "Wind von der Seite und die Fockschot voll gefiert: die Fock steht nur etwa 30° außen, aber ihr oberer Teil ist im Twist geöffnet. Tippen Sie unten auf „Fockschot“ und holen Sie dicht, um die Fock flacher zu sehen.",
+      "textStatus": "draft"
+    },
+    "rope_vang": {
+      "name": "Baumniederholer",
+      "alternatives": [
+        {
+          "term": "Niederholer"
+        }
+      ],
+      "short": "Zieht den Baum nach unten, wodurch das Großsegel flacher bleibt und sein oberer Teil nicht im Twist aufgeht.",
+      "what": "Der Niederholer läuft von tief am Mast zur Unterseite des Baums. Dichtgeholt hält er den Baum unten, sodass das Segel flacher bleibt und weniger Twist hat. Gefiert steigt das Baumende und der obere Teil des Segels geht im Twist auf. Ist die Großschot weit gefiert, entscheidet nicht mehr die Schot, sondern der Niederholer, wie hoch der Baum steht.",
+      "onThisBoat": "Ein starrer Niederholer (eine Stange mit Gasdruckfeder innen) mit Leinentalje. Die Feder hält den Baum oben, damit er nicht herunterfällt, wenn der Niederholer gefiert wird; die Leine zieht ihn nur nach unten. Seine Klemme sitzt an Backbord und ist mit „Vang“ beschriftet.",
+      "mistakes": [
+        {
+          "mistake": "Sich darauf verlassen, dass die Großschot den Baum auf einem Raumschotskurs unten hält.",
+          "fix": "Weit außen zieht die Schot seitlich, nicht nach unten, und der Baum hebt sich. Holen Sie den Niederholer dicht, um ihn unten zu halten."
+        },
+        {
+          "mistake": "Niederholer und Toppnant gleichzeitig dichtziehen.",
+          "fix": "Sie ziehen gegeneinander (beide Leinen werden in der App rot). Fieren Sie den Toppnant, sobald das Segel steht."
+        }
+      ],
+      "showMe": "Wind 20 kn von der Seite, Niederholer ganz gefiert: das Baumende ist gestiegen und der obere Teil des Großsegels ist im Twist aufgegangen. Tippen Sie unten auf „Baumniederholer“ und holen Sie dicht: der Baum kommt herunter und das Segel wird flacher.",
+      "textStatus": "draft"
+    },
+    "rope_topping_lift": {
+      "name": "Toppnant",
+      "alternatives": [],
+      "short": "Eine Leine vom Masttopp zum Baumende, die den Baum oben halten kann.",
+      "what": "Der Toppnant trägt den Baum, wenn das Segel ihn nicht oben hält, zum Beispiel wenn das Segel eingerollt ist. Beim Segeln dichtgeholt kämpft er gegen den Niederholer und verdirbt die Segelform, deshalb wird er gefiert, sobald das Segel steht.",
+      "onThisBoat": "An den Backbordklemmen mit „Boom lift“ beschriftet. Die Feder des starren Niederholers hält den Baum ohnehin oben, deshalb trägt der Toppnant auf diesem Boot den Baum nur, wenn er höher dichtgeholt wird, als die Feder ihn hält.",
+      "mistakes": [
+        {
+          "mistake": "Ihn beim Segeln mit dichtgeholtem Niederholer dicht lassen.",
+          "fix": "Die beiden Leinen kämpfen gegeneinander (beide werden in der App rot). Fieren Sie den Toppnant."
+        }
+      ],
+      "showMe": "Kein Wind, Toppnant und Niederholer beide dichtgeholt: sie ziehen gegeneinander und beide Leinen werden rot. Tippen Sie unten auf „Toppnant“ und fieren Sie ihn, um den Kampf zu beenden.",
+      "textStatus": "draft"
+    },
+    "rope_outhaul": {
+      "name": "Unterliekstrecker",
+      "alternatives": [],
+      "short": "Zieht die hintere untere Ecke des Großsegels (das Schothorn) am Baum nach achtern.",
+      "what": "Der Unterliekstrecker zieht das Schothorn zum Ende des Baums. Beim Rollreff im Mast zieht er das Segel beim Ausrollen zugleich aus dem Mast: Er wird zusammen mit dem „out“-Ende der Reffleine dichtgeholt und gefiert, wenn das Segel eingerollt wird.",
+      "onThisBoat": "An den Backbordklemmen mit „Main outhaul“ beschriftet. Im Leicht-Modus der App bewegt er sich zusammen mit „Großsegel ausrollen“. Wie die Leine im Baum läuft, ist auf dem echten Boot noch nicht bestätigt.",
+      "mistakes": [
+        {
+          "mistake": "Das Groß einrollen, ohne den Unterliekstrecker zu fieren.",
+          "fix": "Der Unterliekstrecker hält das Schothorn außen und das Segel kann nicht einrollen. Fieren Sie ihn, während Sie die „in“-Reffleine ziehen."
+        },
+        {
+          "mistake": "Das Groß ausrollen, ohne den Unterliekstrecker dichtzuholen.",
+          "fix": "Das Segel kommt bauchig heraus und erreicht das Ende des Baums nicht. Holen Sie ihn zusammen mit der „out“-Leine dicht."
+        }
+      ],
+      "showMe": "Großsegel voll ausgerollt: der Unterliekstrecker hält sein hinteres Eck am Ende des Baums. Tippen Sie unten auf „Unterliekstrecker“ und rollen Sie das Groß ein Stück ein: das Eck wandert zum Mast.",
+      "textStatus": "draft"
+    },
+    "rope_main_furling_line": {
+      "name": "Reffleine für das Großsegel",
+      "alternatives": [
+        {
+          "term": "Reffleine"
+        }
+      ],
+      "short": "Rollt das Großsegel in den Mast ein oder lässt es aus.",
+      "what": "Beim Rollreff im Mast wird das Großsegel wie eine Jalousie im Mast aufgerollt. Die Reffleine hat zwei Enden: Das Dichtnehmen des „in“-Endes rollt das Segel ein; das Dichtnehmen des „out“-Endes rollt es zusammen mit dem Unterliekstrecker aus, während das „in“-Ende gefiert wird. Wird das Segel nur teilweise eingerollt, wird es bei starkem Wind kleiner (statt zu reffen).",
+      "onThisBoat": "Zwei Klemmen an Steuerbord, beide mit „Main furling“ beschriftet: die linke rollt das Groß ein, die rechte rollt es aus. Wenn die Leine rutscht, lässt sich das Groß von Hand mit dem Winschgriff im Getriebe am Mastfuß einrollen (etwa 40 Umdrehungen).",
+      "mistakes": [
+        {
+          "mistake": "Das „in“-Ende dichtnehmen, ohne das „out“-Ende und den Unterliekstrecker zu fieren.",
+          "fix": "Nichts bewegt sich, oder die Leine klemmt. Fieren Sie zuerst die anderen beiden."
+        },
+        {
+          "mistake": "Das Groß einrollen, während es voll Wind steht.",
+          "fix": "Die Last ist schwer und die Leine kann rutschen. Fieren Sie die Großschot oder luven Sie an, sodass das Segel nicht mehr zieht, und rollen Sie es dann ein."
+        }
+      ],
+      "showMe": "Großsegel 30 % ausgerollt: der größte Teil steckt eingerollt im Mast. Tippen Sie unten auf „Reffleine für das Großsegel“ und stellen Sie „Großsegel ausrollen“ auf 100 %, um es auszurollen.",
+      "textStatus": "draft"
+    },
+    "rope_jib_furling_line": {
+      "name": "Rollreffleine für die Fock",
+      "alternatives": [
+        {
+          "term": "Rollreffleine"
+        }
+      ],
+      "short": "Rollt die Fock um das Vorstag auf oder lässt sie ausrollen.",
+      "what": "Ziehen an der Leine dreht die Trommel am Fuß des Vorstags und rollt die Fock darum auf. Fieren bei gleichzeitigem Ziehen an der Schot lässt die Fock ausrollen. Eine teilweise eingerollte Fock ist kleiner, was bei starkem Wind hilft.",
+      "onThisBoat": "Ein Furlex-Rollreff am Bug. Die Leine läuft an Backbord am Seitendeck nach achtern durch eine einzelne Klemme mit der Aufschrift „JIB ROLL“ zur Backbordwinsch. Die Fockschot muss gefiert sein, damit die Fock aufrollt.",
+      "mistakes": [
+        {
+          "mistake": "An der Rollreffleine ziehen, während die Fockschot dicht ist.",
+          "fix": "Die Fock rollt nicht weiter. Fieren Sie die Fockschot und rollen Sie dann weiter ein."
+        },
+        {
+          "mistake": "Die Leine beim Ausrollen bei starkem Wind frei laufen lassen.",
+          "fix": "Die Fock schießt heraus und schlägt hart. Behalten Sie eine Windung auf der Winsch und lassen Sie sie kontrolliert aus."
+        },
+        {
+          "mistake": "Die Fock bei starkem Wind lange killen lassen.",
+          "fix": "Das Segel verschleißt und kann einreißen. Rollen Sie es ein oder holen Sie die Schot schnell dicht."
+        }
+      ],
+      "showMe": "Fock 40 % ausgerollt mit gefierter Schot: der Rest ist um das Vorstag gerollt. Tippen Sie unten auf „Rollreffleine für die Fock“ und ändern Sie „Fock ausrollen“, um sie ein- oder auszurollen.",
+      "textStatus": "draft"
+    },
+    "rope_main_halyard": {
+      "name": "Großfall",
+      "alternatives": [],
+      "short": "Hält den Kopf des Großsegels oben am Mast.",
+      "what": "Ein Fall zieht ein Segel hoch. Das Großfall hält die obere Ecke des Großsegels (den Kopf) oben am Mast.",
+      "onThisBoat": "Beim Rollreff im Mast bleibt das Segel im Mast hochgezogen; es wird ein- und ausgerollt statt niedergeholt. Die Klemme des Falls an Steuerbord („Main halyard“) bleibt normalerweise zu. Die App verstellt es nicht.",
+      "mistakes": [
+        {
+          "mistake": "Die Klemme des Großfalls versehentlich öffnen (sie liegt neben den Schoten).",
+          "fix": "Der Kopf des Segels kann im Mast nach unten rutschen. Lassen Sie diese Klemme zu und lesen Sie die Aufschrift, bevor Sie eine Klemme öffnen."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "rope_spi_halyard": {
+      "name": "Gennakerfall",
+      "alternatives": [
+        {
+          "term": "Spinnakerfall"
+        }
+      ],
+      "short": "Das Fall für einen Gennaker; auf diesem Boot liegt es nur geparkt.",
+      "what": "Ein Fall, um einen Gennaker (ein großes, leichtes Segel für Wind von hinten) zum Masttopp hochzuziehen.",
+      "onThisBoat": "Ein Gennaker ist nicht an Bord, das Fall ist aber eingebaut; seine Klemme an Backbord ist mit „SPI HALYARD“ beschriftet. Die App zeichnet sein oberes Ende geparkt vorn am Mast herunter (wo es wirklich belegt ist, ist noch nicht bekannt).",
+      "mistakes": [
+        {
+          "mistake": "Das geparkte Fall lose lassen.",
+          "fix": "Es schlägt gegen den Mast und kann sich um das Vorstag oder die Fock wickeln. Halten Sie es geparkt und stramm."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "part_hull": {
+      "name": "Rumpf",
+      "alternatives": [],
+      "short": "Der Körper des Bootes, der schwimmt.",
+      "what": "Der Rumpf ist der wasserdichte Körper, der schwimmt und alles andere trägt. Seine Form unter Wasser entscheidet, wie leicht es sich bewegt und wie stark es krängt.",
+      "onThisBoat": "15,55 m lang über alles, 4,75 m breit, 13,54 m in der Wasserlinie und etwa 14,7 Tonnen leer.",
+      "textStatus": "draft"
+    },
+    "part_bow": {
+      "name": "Bug",
+      "alternatives": [],
+      "short": "Das Vorderende des Bootes.",
+      "what": "Der Bug ist das vordere Ende des Bootes. Richtungen an Bord werden von ihm aus angegeben: voraus ist vor dem Bug.",
+      "onThisBoat": "Auf dem Bug sitzen der Fockroller, die Ankerrolle und die Ankerwinde.",
+      "textStatus": "draft"
+    },
+    "part_stern": {
+      "name": "Heck",
+      "alternatives": [],
+      "short": "Das Hinterende des Bootes.",
+      "what": "Das Heck ist das hintere Ende des Bootes. Achtern bedeutet dahinter.",
+      "onThisBoat": "Ein breites, flaches Heck; die beiden Steuerräder stehen kurz davor.",
+      "textStatus": "draft"
+    },
+    "part_deck": {
+      "name": "Deck",
+      "alternatives": [],
+      "short": "Die Oberseite des Rumpfs, auf der Sie gehen.",
+      "what": "Das Deck schließt den Rumpf nach oben ab. Leinen, Blöcke und Beschläge sind darauf befestigt, und die Crew geht darauf nach vorn.",
+      "onThisBoat": "Die Seitendecks laufen von der Plicht zum Bug, auf jeder Seite des Deckshauses.",
+      "textStatus": "draft"
+    },
+    "part_coachroof": {
+      "name": "Deckshaus",
+      "alternatives": [
+        {
+          "term": "Decksaufbau"
+        }
+      ],
+      "short": "Das erhöhte Dach über der Kabine, zwischen Mast und Plicht.",
+      "what": "Das Deckshaus hebt das Deck über dem Wohnraum darunter an, um Stehhöhe zu schaffen. Die Leinen vom Mast laufen achtern darüber zur Plicht.",
+      "onThisBoat": "Der Mast steht darauf. Die beiden Deckblöcke der Großschot sitzen an seinem hinteren Ende, und abgedeckte Kanäle führen die Leinen vom Mastfuß zu den Klemmen.",
+      "textStatus": "draft"
+    },
+    "part_cockpit": {
+      "name": "Plicht",
+      "alternatives": [
+        {
+          "term": "Cockpit"
+        }
+      ],
+      "short": "Der offene, tiefer gelegte Bereich achtern, in dem die Crew sitzt und steuert.",
+      "what": "In der Plicht sitzt und steuert die Crew, und dort werden die meisten Leinen bedient. Sie liegt tiefer als das Deck, deshalb wirkt sie auf See sicherer.",
+      "onThisBoat": "Zwei Steuerräder achtern, je eine Winsch und eine Klemmenbank auf jeder Seite, der Motorhebel am Steuerrad sowie die Instrumente und das Autopilot-Bedienteil bei den Steuerrädern.",
+      "textStatus": "draft"
+    },
+    "part_companionway": {
+      "name": "Niedergang",
+      "alternatives": [],
+      "short": "Der Einstieg mit Stufen von der Plicht hinunter in die Kabine.",
+      "what": "Der Niedergang ist die Luke mit den Stufen, die nach unten führt.",
+      "mistakes": [
+        {
+          "mistake": "Ihn offen lassen, wenn Wellen überkommen.",
+          "fix": "Wasser kann unter Deck laufen. Schließen Sie ihn bei rauem Wetter."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "part_keel": {
+      "name": "Kiel",
+      "alternatives": [],
+      "short": "Die schwere Flosse unter dem Boot, die es am seitlichen Abtreiben hindert und aufrecht hält.",
+      "what": "Der Kiel hat zwei Aufgaben. Unter Fahrt wirkt er wie eine Tragfläche und verhindert, dass der Wind das Boot seitlich verschiebt, sodass es quer zum Wind und gegen den Wind segeln kann. Sein tief liegendes Gewicht richtet es wieder auf, wenn der Wind es krängt.",
+      "onThisBoat": "Ein L-förmiger Kiel mit 2,40 m Tiefgang (optional ein kürzerer Kiel mit 1,98 m) und einer 4-Tonnen-Ballastbombe am unteren Ende.",
+      "textStatus": "draft"
+    },
+    "part_rudder": {
+      "name": "Ruder",
+      "alternatives": [],
+      "short": "Das Blatt unter dem Heck, das das Boot steuert.",
+      "what": "Drehen am Steuerrad dreht das Ruder. Das vorbeiströmende Wasser drückt das Heck zur Seite, und das Boot dreht. Ohne Fahrt durchs Wasser gibt es keine Strömung, deshalb bewirkt das Ruder nichts.",
+      "onThisBoat": "Ein Ruder, von jedem der beiden Steuerräder gedreht; bei Ausfall der Steuerung kann eine Notpinne gesetzt werden. In der App dreht das Steuerrad das Ruder bis 35° nach jeder Seite.",
+      "mistakes": [
+        {
+          "mistake": "Das Steuerrad hart einschlagen, während das Boot steht.",
+          "fix": "Es passiert nichts: Das Ruder braucht Wasser, das vorbeiströmt. Bringen Sie das Boot zuerst in Fahrt, mit den Segeln oder dem Motor."
+        },
+        {
+          "mistake": "Das Steuerrad immer weiter drehen, wenn das Boot in einer Böe in den Wind dreht.",
+          "fix": "Ein zu weit eingeschlagenes Ruder greift nicht mehr. Fieren Sie stattdessen die Großschot, damit das Boot nicht weiter dreht."
+        }
+      ],
+      "showMe": "Das Steuerrad ist 25° nach Steuerbord gedreht: Schauen Sie durch das Wasser unter dem Heck, um das eingeschlagene Ruderblatt zu sehen. Unter Fahrt dreht das Boot damit nach Steuerbord.",
+      "textStatus": "draft"
+    },
+    "part_saildrive": {
+      "name": "Saildrive und Propeller",
+      "alternatives": [],
+      "short": "Das Antriebsbein des Motors und der Propeller unter dem Rumpf.",
+      "what": "Ein Saildrive ist ein Bein, das vom Motor durch den Rumpfboden nach unten führt, mit dem Propeller am Ende. Es schiebt das Boot vorwärts oder rückwärts, wenn ein Gang eingelegt ist.",
+      "onThisBoat": "Ein Dieselmotor mit etwa 80 PS, ein Saildrive und ein fester Zweiblattpropeller. In der App ergibt Vollgas (2.500 U/min) etwa 9,3 kn.",
+      "mistakes": [
+        {
+          "mistake": "Einen Gang einlegen, während eine Leine im Wasser nahe dem Heck liegt.",
+          "fix": "Der Propeller kann die Leine fassen und den Motor abwürgen. Holen Sie alle Leinen an Bord, bevor Sie einen Gang einlegen."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "part_lifelines": {
+      "name": "Reling und Relingstützen",
+      "alternatives": [
+        {
+          "term": "Seezaun"
+        }
+      ],
+      "short": "Die Drähte rund um den Decksrand, von Pfosten gehalten.",
+      "what": "Relingdrähte laufen am Decksrand entlang und werden von Pfosten (Relingstützen) gehalten. Sie helfen, einen Sturz über Bord zu verhindern, sind aber niedrig: Halten Sie sich zusätzlich am Boot fest.",
+      "mistakes": [
+        {
+          "mistake": "Sich anlehnen oder setzen und das Gewicht auf die Reling bringen.",
+          "fix": "Sie kann sich verbiegen oder nachgeben. Halten Sie sich an etwas Festem fest und bleiben Sie mit dem Gewicht im Boot."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "env_water": {
+      "name": "Wasseroberfläche",
+      "alternatives": [],
+      "short": "Das Meer um das Boot; seine Wellen wachsen mit dem Wind.",
+      "what": "Wellen wachsen mit der Stärke des Winds und mit der Strecke, die er über offenes Wasser bläst. Das Boot hebt und senkt sich, stampft und rollt auf ihnen; Wellen von vorn bremsen es, Wellen von achtern schräg drücken es vom Kurs ab. In der App ist das Wasser durchsichtig, sodass Kiel und Ruder sichtbar bleiben.",
+      "showMe": "Offene See bei 20 kn Wind von der Seite: Wellen von etwa 2 m Höhe bringen das Boot zum Rollen. Ändern Sie „Wellen“ unter Bedingungen, um zu vergleichen.",
+      "textStatus": "draft"
+    },
+    "part_mast": {
+      "name": "Mast",
+      "alternatives": [],
+      "short": "Die hohe Stange, die die Segel oben hält.",
+      "what": "Der Mast hält die Segel hoch. Drähte (das stehende Gut) halten ihn von den Seiten, von vorn und von hinten.",
+      "onThisBoat": "Ein Alumast von Seldén, der auf dem Deckshaus steht, sein Topp etwa 22 m über dem Wasser, mit zwei Paar gepfeilten Salingen. Das Großsegel wird in ihm eingerollt.",
+      "textStatus": "draft"
+    },
+    "part_boom": {
+      "name": "Baum",
+      "alternatives": [],
+      "short": "Die Stange entlang des Unterlieks des Großsegels.",
+      "what": "Der Baum hält das Unterliek des Großsegels vom Mast weg. Er schwenkt über das Boot, wenn der Wind die Seite wechselt; Großschot, Niederholer und Toppnant bestimmen seine Lage.",
+      "onThisBoat": "6,25 m lang, über den Lümmelbeschlag mit dem Mast verbunden. Er kann etwa 72° nach jeder Seite ausschwenken, bevor er die Wanten berühren würde.",
+      "mistakes": [
+        {
+          "mistake": "Bei Wind von hinten im Schwenkbereich des Baums stehen oder sitzen.",
+          "fix": "Bei einer ungewollten Halse kommt der Baum schnell und hart herüber. Halten Sie den Kopf aus der roten Gefahrenzone, die die App zeichnet."
+        }
+      ],
+      "showMe": "Wind von der Seite: der Baum ist auf die windabgewandte Seite ausgeschwenkt. Probieren Sie unten „Großschot“ oder „Baumniederholer“, um ihn in Bewegung zu sehen.",
+      "textStatus": "draft"
+    },
+    "part_gooseneck": {
+      "name": "Lümmelbeschlag",
+      "alternatives": [],
+      "short": "Das Gelenk zwischen Baum und Mast.",
+      "what": "Der Lümmelbeschlag lässt den Baum seitlich schwenken und sich nach oben und unten neigen.",
+      "textStatus": "draft"
+    },
+    "part_spreader": {
+      "name": "Salinge",
+      "alternatives": [],
+      "short": "Kurze Streben aus den Seiten des Masts, die die Wanten spreizen.",
+      "what": "Salinge drücken die Wanten vom Mast weg, damit die Drähte ihn in einem besseren Winkel halten.",
+      "onThisBoat": "Zwei Paar, etwa 6 m und 12 m über dem Mastfuß, um 24° gepfeilt. Bei weit ausgeschwenktem Baum drückt das Großsegel gegen sie.",
+      "textStatus": "draft"
+    },
+    "part_shroud": {
+      "name": "Wanten",
+      "alternatives": [],
+      "short": "Die Drähte, die den Mast von den Seiten her halten.",
+      "what": "Wanten laufen vom Mast zu beiden Seiten des Decks hinunter. Sie hindern den Mast am Seitwärtsfallen und nehmen einen großen Teil der Last der Segel auf.",
+      "onThisBoat": "Die äußeren Wanten stoppen den Baum bei etwa 72° Ausschwenkwinkel.",
+      "textStatus": "draft"
+    },
+    "part_forestay": {
+      "name": "Vorstag",
+      "alternatives": [],
+      "short": "Der Draht vom oberen Mast zum Bug; die Fock wird darauf gesetzt.",
+      "what": "Das Vorstag hält den Mast von vorn. Das Vorliek der Fock läuft daran entlang, und das Rollreff rollt die Fock darum auf.",
+      "onThisBoat": "Ein Vorstag, mit dem Furlex-Fockrollreff an seinem Fuß.",
+      "textStatus": "draft"
+    },
+    "part_backstay": {
+      "name": "Achterstag",
+      "alternatives": [],
+      "short": "Der Draht vom Masttopp zum Heck.",
+      "what": "Das Achterstag hält den Mast von hinten, gegen den Zug von Vorstag und Fock.",
+      "textStatus": "draft"
+    },
+    "env_wind": {
+      "name": "Wind",
+      "alternatives": [],
+      "short": "Die Luft, die über das Wasser streicht; in der App stellen Sie ihn unter „Bedingungen“ ein.",
+      "what": "Der Wind wird durch seine Herkunftsrichtung und seine Geschwindigkeit in Knoten beschrieben. Die Striche in der 3D-Ansicht zeigen ihn. Unter „Bedingungen“ stellen Sie seine Richtung (von 0° Nord, im Uhrzeigersinn) und seine Geschwindigkeit ein und können ihn böig, drehend, zunehmend oder abnehmend machen.",
+      "mistakes": [
+        {
+          "mistake": "Eine Windrichtung als die Richtung lesen, in die der Wind weht.",
+          "fix": "Ein Wind „aus 060°“ weht aus Ostnordost nach Westsüdwest."
+        }
+      ],
+      "showMe": "Wind 12 kn aus 060°: Die Striche zeigen, wie er am Boot vorbeistreicht. Drehen Sie den Regler unter „Bedingungen“, um ihn zu ändern.",
+      "textStatus": "draft"
+    },
+    "part_windex": {
+      "name": "Masttopp-Windanzeiger",
+      "alternatives": [
+        {
+          "term": "Windex",
+          "note": "Markenname, für jeden solchen Anzeiger gebraucht"
+        }
+      ],
+      "short": "Der kleine Pfeil am Masttopp, der zeigt, woher der Wind kommt.",
+      "what": "Er dreht wie eine Wetterfahne und zeigt in den Wind, den das Boot spürt (den scheinbaren Wind). Schauen Sie zu ihm hoch, um den Windwinkel zu prüfen.",
+      "textStatus": "draft"
+    },
+    "part_main_furling_gearbox": {
+      "name": "Rollreffgetriebe im Mast",
+      "alternatives": [],
+      "short": "Das Getriebe am Mastfuß, das die Reffwelle des Großsegels dreht.",
+      "what": "Die Reffleine dreht eine Trommel an diesem Getriebe, das eine Welle im Mast dreht und das Segel ein- oder ausrollt. Eine Aufnahme für den Winschgriff lässt Sie das Segel von Hand rollen.",
+      "onThisBoat": "Ein Seldén-Getriebe mit IN/OUT-Schalter (IN nach links, OUT nach rechts). Mit dem Winschgriff rollen etwa 40 Umdrehungen das Groß ein. Im realistischen Modus finden Sie es an der Station Mast.",
+      "mistakes": [
+        {
+          "mistake": "Kurbeln, während der Schalter auf OUT steht, obwohl Sie das Groß einrollen wollen.",
+          "fix": "Das Segel kommt weiter heraus. Stellen Sie den Schalter zuerst auf IN."
+        }
+      ],
+      "showMe": "Realistischer Modus, Station Mast: das Getriebe mit IN/OUT-Schalter und die Aufnahme für den Winschgriff.",
+      "textStatus": "draft"
+    },
+    "part_jib_furler": {
+      "name": "Fockrollreff",
+      "alternatives": [
+        {
+          "term": "Rollreffanlage"
+        },
+        {
+          "term": "Furlex",
+          "note": "Markenname des Herstellers für dieses Rollreff"
+        }
+      ],
+      "short": "Die Trommel und der Wirbel am Vorstag, die die Fock aufrollen.",
+      "what": "Ziehen an der Rollreffleine dreht die Trommel am Fuß des Vorstags, und die Fock rollt wie eine Jalousie um das Stag auf. Es kann auf halbem Weg stoppen, um die Fock kleiner zu machen.",
+      "onThisBoat": "Ein Seldén Furlex 404S am Bug. Seine Leine läuft an Backbord am Seitendeck nach achtern zur Klemme „JIB ROLL“.",
+      "showMe": "Fock 40 % ausgerollt: der Rest ist oberhalb der Trommel des Rollreffs um das Vorstag gerollt.",
+      "textStatus": "draft"
+    },
+    "sail_main": {
+      "name": "Großsegel",
+      "alternatives": [
+        {
+          "term": "Groß"
+        }
+      ],
+      "short": "Das Segel hinter dem Mast, gehalten von Mast und Baum.",
+      "what": "Das Großsegel wird an Mast und Baum gesetzt. Die Großschot stellt seinen Winkel zum Wind ein, der Baumniederholer seine Verdrehung, und der Unterliekstrecker zieht es am Baum nach achtern aus. Richtig getrimmt treibt es das Boot; zu weit dichtgeholt reißt die Strömung ab, zu weit gefiert killt es.",
+      "onThisBoat": "61 m², in den Mast eingerollt (Rollreffanlage im Mast), ohne Segellatten (Versteifungsstreifen). Bei starkem Wind wird es kleiner gemacht, indem ein Teil in den Mast eingerollt wird.",
+      "mistakes": [
+        {
+          "mistake": "Es für den Windwinkel zu weit dichtholen.",
+          "fix": "Die Strömung reißt ab: weniger Vortrieb und mehr Krängung, und die Trimmfäden auf der abgewandten Seite hängen durch. Fieren Sie, bis sie nach achtern wehen."
+        },
+        {
+          "mistake": "Es zu weit fieren.",
+          "fix": "Sein Vorliek flattert. Holen Sie dicht, bis das Flattern gerade aufhört."
+        },
+        {
+          "mistake": "Bei stärker werdendem Wind alles draußen lassen.",
+          "fix": "Das Boot krängt zu stark und schießt von selbst auf. Rollen Sie einen Teil ein."
+        }
+      ],
+      "showMe": "Mit 60° zum Wind gesegelt und dem Großsegel gut getrimmt: Seine Trimmfäden wehen nach achtern, und es treibt das Boot mit etwa 7 kn. Tippen Sie unten auf „Großschot“ und fieren Sie sie ganz: Das Vorliek beginnt zu killen, und das Boot wird langsamer.",
+      "textStatus": "draft"
+    },
+    "sail_jib": {
+      "name": "Selbstwendefock",
+      "alternatives": [
+        {
+          "term": "Fock"
+        },
+        {
+          "term": "Vorsegel"
+        }
+      ],
+      "short": "Das Vorsegel; es wechselt beim Wenden von selbst die Seite.",
+      "what": "Die Fock wird am Vorstag vor dem Mast gesetzt. Ihre Schot läuft zu einem Wagen auf einer Schiene quer über das Deck, und der Wagen gleitet von selbst auf die andere Seite, wenn der Bug durch den Wind dreht. Wenden braucht also keine Schotarbeit.",
+      "onThisBoat": "51,5 m², an einer Furlex-Rollreffanlage am Bug. Die Schiene ist kurz und gerade, deshalb lässt sich die Fock nicht weit ausfieren: ganz gefiert erreicht sie etwa 30°. Auf der Klemme steht „Genoa sheet“, aber das Segel ist eine Fock, kleiner als eine Genua und ohne Überlappung am Mast.",
+      "mistakes": [
+        {
+          "mistake": "Bei starkem Wind die Fock ganz draußen lassen.",
+          "fix": "Das Boot krängt zu stark und dreht in den Wind. Rollen Sie zuerst einen Teil des Großsegels ein, dann bei Bedarf einen Teil der Fock."
+        },
+        {
+          "mistake": "Die Fock mit dichter Schot einrollen.",
+          "fix": "Fieren Sie die Schot; dann rollt sich die Fock auf."
+        }
+      ],
+      "showMe": "Wind 30° von Steuerbord: Der Wagen der Fock steht am Backbordende seiner Schiene. Drehen Sie unter „Bedingungen“ den Wind auf die andere Bugseite: Der Wagen gleitet von selbst hinüber.",
+      "textStatus": "draft"
+    },
+    "sail_gennaker": {
+      "name": "Gennaker",
+      "alternatives": [
+        {
+          "term": "Asymmetrischer Spinnaker"
+        }
+      ],
+      "short": "Ein großes, leichtes Segel für Wind von hinten; auf diesem Boot nicht an Bord.",
+      "what": "Ein Gennaker ist ein großes, leichtes, gewölbtes Segel, das am Bug und am Masttopp gefahren wird, wenn der Wind von schräg hinten kommt. Er wird für jeden Einsatz gesetzt und wieder geborgen.",
+      "onThisBoat": "Nicht auf dem Referenzboot; nur sein Fall („SPI HALYARD“) ist vorhanden. Das Handbuch nennt 200 m² für den optionalen Gennaker. Die App zeigt das Segel nicht.",
+      "textStatus": "draft"
+    },
+    "sailpart_head": {
+      "name": "Segelkopf",
+      "alternatives": [],
+      "short": "Die obere Ecke eines Segels.",
+      "what": "Der Segelkopf ist die Ecke, an der das Fall nach oben zieht.",
+      "onThisBoat": "Der Segelkopf des Großsegels bleibt oben am Mast, im Rollreffprofil; der Segelkopf der Fock sitzt oben am Vorstag.",
+      "textStatus": "draft"
+    },
+    "sailpart_tack": {
+      "name": "Hals",
+      "alternatives": [],
+      "short": "Die vordere untere Ecke eines Segels.",
+      "what": "Der Hals sitzt vorn unten am Segel: beim Großsegel am Lümmelbeschlag (wo der Baum auf den Mast trifft), bei der Fock an der Rollrefftrommel am Bug. „Hals“ heißt auch die Bewegung des Bugs durch den Wind und die Seite, aus der der Wind kommt: siehe „Wenden“ und „Steuerbordbug“.",
+      "textStatus": "draft"
+    },
+    "sailpart_clew": {
+      "name": "Schothorn",
+      "alternatives": [],
+      "short": "Die hintere untere Ecke eines Segels, an der die Schot zieht.",
+      "what": "Die Schot zieht am Schothorn und stellt so den Winkel des Segels zum Wind ein. Beim Großsegel zieht auch der Unterliekstrecker das Schothorn am Baum entlang.",
+      "onThisBoat": "Wird das Großsegel eingerollt, wandert sein Schothorn am Baum zum Mast; wird die Fock eingerollt, wandert ihr Schothorn nach vorn um das Vorstag.",
+      "textStatus": "draft"
+    },
+    "sailpart_luff": {
+      "name": "Vorliek",
+      "alternatives": [
+        {
+          "term": "Vorderkante"
+        }
+      ],
+      "short": "Die vordere Kante eines Segels.",
+      "what": "Am Vorliek trifft der Wind auf das Segel. Wird ein Segel zu weit gefiert, flattert zuerst das Vorliek: Das ist das Killen.",
+      "onThisBoat": "Das Vorliek des Großsegels läuft im Rollreffprofil des Masts nach oben; das der Fock läuft am Vorstag entlang.",
+      "textStatus": "draft"
+    },
+    "sailpart_leech": {
+      "name": "Achterliek",
+      "alternatives": [
+        {
+          "term": "Hinterkante"
+        }
+      ],
+      "short": "Die hintere Kante eines Segels.",
+      "what": "Am Achterliek verlässt der Wind das Segel. Die Verdrehung ist, wie weit das obere Achterliek zur Seite wegfällt; beim Großsegel steuert sie der Baumniederholer, bei der Fock die Schot.",
+      "textStatus": "draft"
+    },
+    "sailpart_foot": {
+      "name": "Unterliek",
+      "alternatives": [],
+      "short": "Die untere Kante eines Segels.",
+      "what": "Das Unterliek läuft vom Hals zum Schothorn. Das Unterliek des Großsegels läuft am Baum entlang, und der Unterliekstrecker streckt es.",
+      "textStatus": "draft"
+    },
+    "fit_mainsheet_boom_blocks": {
+      "name": "Großschot-Blöcke am Baum",
+      "alternatives": [],
+      "short": "Die drei Rollen unter dem Baum, durch die die Großschot läuft.",
+      "what": "Die Großschot läuft zwischen diesen Blöcken und den Deckblöcken hin und her. Jeder zusätzliche Leinenstrang macht das Ziehen leichter (mehr Übersetzung).",
+      "onThisBoat": "Drei Blöcke unter dem Baum, 2,9 m vom Mast entfernt.",
+      "textStatus": "draft"
+    },
+    "fit_mainsheet_deck_blocks": {
+      "name": "Großschot-Blöcke am Deck",
+      "alternatives": [],
+      "short": "Die zwei gefederten Blöcke am hinteren Ende des Deckshauses für die Großschot.",
+      "what": "Jedes Ende der Großschot kommt vom Baum zu einem dieser Blöcke herunter. Die Federn halten die Blöcke aufrecht.",
+      "onThisBoat": "Je ein Block links und rechts der Mitte, mit zwei Leinensträngen zwischen Baum und jedem Block. Von jedem Block läuft die Leine nach vorn zum Mastfuß und dann achtern im abgedeckten Kanal zu einer Klemme. Einen Traveller gibt es nicht.",
+      "textStatus": "draft"
+    },
+    "fit_self_tacking_track": {
+      "name": "Selbstwendeschiene",
+      "alternatives": [],
+      "short": "Die kurze Schiene quer über das Deck vor dem Mast für den Wagen der Fock.",
+      "what": "Der Wagen der Fockschot gleitet auf dieser Schiene. Wenn das Boot wendet, drückt der Wind die Fock herüber und der Wagen läuft von selbst ans andere Ende.",
+      "onThisBoat": "Gerade, etwa 2,8 m lang, direkt vor dem Mast. Weil sie kurz ist, lässt sich die Fock nicht weit ausfieren.",
+      "showMe": "Der Wagen sitzt am Backbordende der Schiene, abgewandt vom Wind. Drehen Sie den Wind unter Bedingungen auf die andere Seite des Bugs und sehen Sie zu, wie er hinüberläuft.",
+      "textStatus": "draft"
+    },
+    "fit_self_tacking_car": {
+      "name": "Fockwagen",
+      "alternatives": [
+        {
+          "term": "Selbstwendewagen"
+        }
+      ],
+      "short": "Der gleitende Block auf der Schiene, durch den die Fockschot läuft.",
+      "what": "Der Wagen läuft auf der Selbstwendeschiene und trägt den Block der Fockschot. Er gleitet von selbst auf die windabgewandte Seite.",
+      "textStatus": "draft"
+    },
+    "fit_clutch": {
+      "name": "Klemme",
+      "alternatives": [
+        {
+          "term": "Kammklemme"
+        },
+        {
+          "term": "Stopper"
+        }
+      ],
+      "short": "Ein Hebel, der eine Leine festklemmt, sodass sie nicht auslaufen kann.",
+      "what": "Eine geschlossene Klemme hält die Leine: Sie lässt sich noch dichtholen, aber nicht fieren. Um eine Leine zu fieren, nehmen Sie ihre Last auf die Winsch und öffnen dann die Klemme (Hebel oben).",
+      "onThisBoat": "Eine Bank mit fünf Klemmen vor jeder Winsch und eine einzelne Klemme für die Rollreffleine der Fock auf dem Backbord-Seitendeck. Im realistischen Modus öffnen und schließen Sie sie mit dem Hebel.",
+      "mistakes": [
+        {
+          "mistake": "Eine belastete Klemme öffnen, während die Leine nicht auf der Winsch ist.",
+          "fix": "Die Leine läuft schnell aus und kann Hände verbrennen. Legen Sie die Leine zuerst mit einigen Törns auf die Winsch."
+        },
+        {
+          "mistake": "Eine Klemme auf einer Leine schließen, die unter Last ausläuft.",
+          "fix": "Das kann die Leine beschädigen. Nehmen Sie zuerst die Last auf die Winsch und schließen Sie dann die Klemme."
+        }
+      ],
+      "showMe": "Realistischer Modus: Die Klemmen dieser Seite sind die Hebel in der Zeichnung. Hebel oben heißt offen; tippen Sie eine Klemme an, um sie auszuwählen, und tippen Sie erneut, um sie zu öffnen oder zu schließen.",
+      "textStatus": "draft"
+    },
+    "clutch_bank_a": {
+      "name": "Klemmenbank A",
+      "alternatives": [],
+      "short": "Die fünf Klemmen auf der Steuerbordseite.",
+      "what": "Die Reihe Klemmen vor der Steuerbordwinsch. Jede Leine vom Mast endet an einer von ihnen, und jede davon lässt sich auf die Winsch legen.",
+      "onThisBoat": "Der Reihe nach: „Main sheet“, „Main furling“ (rollt das Groß ein), „Main furling“ (rollt es aus), „Main halyard“, „Genoa sheet“ (die Fockschot).",
+      "textStatus": "draft"
+    },
+    "clutch_bank_b": {
+      "name": "Klemmenbank B",
+      "alternatives": [],
+      "short": "Die fünf Klemmen auf der Backbordseite.",
+      "what": "Die Reihe Klemmen vor der Backbordwinsch. Jede Leine vom Mast endet an einer von ihnen, und jede davon lässt sich auf die Winsch legen.",
+      "onThisBoat": "Der Reihe nach: „SPI HALYARD“ (das Spifall), „Boom lift“ (die Toppnant), „Main outhaul“, „MAIN SHEET“ (das andere Ende der Großschot), „Vang“.",
+      "textStatus": "draft"
+    },
+    "clutch_jib_roll": {
+      "name": "Klemme Rollreffleine",
+      "alternatives": [],
+      "short": "Die einzelne Klemme auf dem Backbord-Seitendeck für die Rollreffleine der Fock.",
+      "what": "Sie hält die Rollreffleine der Fock, sodass die Fock so weit eingerollt bleibt, wie sie ist.",
+      "onThisBoat": "Beschriftet mit „JIB ROLL“, neben dem Sprayhood; von dort läuft die Leine nach achtern zur Backbordwinsch.",
+      "textStatus": "draft"
+    },
+    "fit_rope_bin": {
+      "name": "Leinenkasten",
+      "alternatives": [],
+      "short": "Ein Kasten hinter jeder Winsch, in den die losen Enden der Leinen kommen.",
+      "what": "Die losen Enden (Tampen) der Leinen kommen in den Kasten, damit die Plicht frei bleibt und die Leinen beim Fieren ungehindert auslaufen können.",
+      "mistakes": [
+        {
+          "mistake": "Lose Leine auf dem Plichtboden liegen lassen.",
+          "fix": "Jemand kann darüber stolpern, oder die Leine verheddert sich beim Auslaufen. Legen Sie sie in den Kasten."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "fit_winch": {
+      "name": "Winsch",
+      "alternatives": [],
+      "short": "Eine Trommel, die Ihnen die Kraft gibt, eine stark belastete Leine dichtzuholen.",
+      "what": "Die Leine wird im Uhrzeigersinn um die Trommel gelegt. Die Törns halten die Last (jeder zusätzliche Törn vervielfacht den Griff), und das Drehen der Trommel holt die Leine ein. Ein Selbstholer oben greift das Ende, sodass eine Person allein winschen kann.",
+      "onThisBoat": "Auf jeder Seite eine elektrische Lewmar-Winsch mit Selbstholer, bedient mit einer Taste; die Winschkurbel ist die Reserve. Die Winsch wird bei steigender Last langsamer und schaltet ab, wenn die Last zu hoch ist.",
+      "mistakes": [
+        {
+          "mistake": "Die Leine gegen den Uhrzeigersinn auflegen.",
+          "fix": "Die Trommel dreht nur im Uhrzeigersinn, deshalb hält die Leine nicht. Legen Sie sie von oben gesehen im Uhrzeigersinn auf."
+        },
+        {
+          "mistake": "Zu wenige Törns auf einer belasteten Leine.",
+          "fix": "Sie rutscht durch, wenn die Klemme geöffnet wird. Nehmen Sie etwa 4 Törns, um unter Last dichtzuholen, und 2, um kontrolliert zu fieren."
+        },
+        {
+          "mistake": "Die Taste gedrückt halten, wenn die Winsch abschaltet.",
+          "fix": "Die Last ist zu hoch, oft ziehen zwei Leinen gegeneinander. Finden Sie die Ursache (eine geschlossene Klemme, die Toppnant gegen den Baumniederholer) und beheben Sie sie zuerst."
+        }
+      ],
+      "showMe": "Realistischer Modus, Steuerbord: Die Fockschot liegt mit 2 Törns auf der Winsch und wird mit der Hand gehalten. Legen Sie Törns dazu, setzen Sie sie in den Selbstholer und drücken Sie die Winschtaste.",
+      "textStatus": "draft"
+    },
+    "winch_primary_port": {
+      "name": "Winsch Backbord",
+      "alternatives": [],
+      "short": "Die Winsch auf der linken Seite der Plicht.",
+      "what": "Sie bedient die Leinen der Klemmenbank B und die Rollreffleine der Fock.",
+      "onThisBoat": "Elektrisch, mit Selbstholer. Die Winschkurbel wird auf dieser Seite aufbewahrt.",
+      "textStatus": "draft"
+    },
+    "winch_primary_starboard": {
+      "name": "Winsch Steuerbord",
+      "alternatives": [],
+      "short": "Die Winsch auf der rechten Seite der Plicht.",
+      "what": "Sie bedient die Leinen der Klemmenbank A.",
+      "onThisBoat": "Elektrisch, mit Selbstholer.",
+      "textStatus": "draft"
+    },
+    "part_winch_handle": {
+      "name": "Winschkurbel",
+      "alternatives": [],
+      "short": "Eine abnehmbare Kurbel, um eine Winsch oder das Reffgetriebe am Mast von Hand zu drehen.",
+      "what": "Sie passt oben in eine Winsch. In die eine Richtung gekurbelt dreht sie die Trommel schnell, aber kraftlos (1. Gang), in die andere langsam, aber kräftig (2. Gang); die Trommel dreht in beiden Fällen gleich.",
+      "onThisBoat": "Eine Kurbel an Bord, auf der Backbordseite aufbewahrt. Sie wird vor allem am Mast gebraucht, um das Groß von Hand einzurollen, wenn die Reffleine durchrutscht. Solange Sie sie tragen, sind Ihre Hände voll.",
+      "mistakes": [
+        {
+          "mistake": "Die Kurbel nach Gebrauch in der Winsch stecken lassen.",
+          "fix": "Sie kann umherschlagen oder über Bord gehen. Nehmen Sie sie heraus und legen Sie sie an ihren Platz zurück."
+        },
+        {
+          "mistake": "Im 1. Gang gegen eine schwere Last kurbeln.",
+          "fix": "Es bewegt sich kaum etwas. Kurbeln Sie in die andere Richtung (2. Gang)."
+        }
+      ],
+      "showMe": "Realistischer Modus, Station Backbord: Die Winschkurbel steckt in ihrer Halterung. Tippen Sie die Kurbel an, um sie aufzunehmen.",
+      "textStatus": "draft"
+    },
+    "winch_secondary_port": {
+      "name": "Zusatzwinsch Backbord (optional)",
+      "alternatives": [],
+      "short": "Eine zweite Winsch, die manche Boote auf der linken Seite haben; auf diesem Boot nicht.",
+      "what": "Die Werft bietet auf jeder Seite eine zweite Winsch an, damit mehr Leinen gleichzeitig bedient werden können. Das Referenzboot hat sie nicht, deshalb zeichnet die App sie nicht.",
+      "textStatus": "draft"
+    },
+    "winch_secondary_starboard": {
+      "name": "Zusatzwinsch Steuerbord (optional)",
+      "alternatives": [],
+      "short": "Eine zweite Winsch, die manche Boote auf der rechten Seite haben; auf diesem Boot nicht.",
+      "what": "Die Werft bietet auf jeder Seite eine zweite Winsch an, damit mehr Leinen gleichzeitig bedient werden können. Das Referenzboot hat sie nicht, deshalb zeichnet die App sie nicht.",
+      "textStatus": "draft"
+    },
+    "helm_port": {
+      "name": "Steuerrad Backbord",
+      "alternatives": [],
+      "short": "Das Steuerrad auf der linken Seite.",
+      "what": "Beide Steuerräder drehen dasselbe Ruder. Weil Sie von der Seite steuern, sehen Sie an den Segeln vorbei.",
+      "onThisBoat": "Zwei Steuerräder, vor jedem ein Kompass.",
+      "textStatus": "draft"
+    },
+    "helm_starboard": {
+      "name": "Steuerrad Steuerbord",
+      "alternatives": [],
+      "short": "Das Steuerrad auf der rechten Seite.",
+      "what": "Beide Steuerräder drehen dasselbe Ruder. Weil Sie von der Seite steuern, sehen Sie an den Segeln vorbei.",
+      "onThisBoat": "Zwei Steuerräder, vor jedem ein Kompass.",
+      "textStatus": "draft"
+    },
+    "fit_compass": {
+      "name": "Kompass",
+      "alternatives": [],
+      "short": "Zeigt, welchen Kurs das Boot fährt.",
+      "what": "Der Kompass zeigt den Kurs des Bootes in Grad: 0 Nord, 90 Ost, 180 Süd, 270 West.",
+      "onThisBoat": "Je ein Kompass auf dem Panel vor jedem Steuerrad. In der App dreht sich seine Rose mit dem Boot: Lesen Sie den Kurs unter der orangen Marke oben ab.",
+      "textStatus": "draft"
+    },
+    "engine_control": {
+      "name": "Motorsteuerhebel",
+      "alternatives": [
+        {
+          "term": "Gashebel"
+        },
+        {
+          "term": "Einhebelsteuerung"
+        }
+      ],
+      "short": "Ein Hebel für Getriebe und Gas zugleich.",
+      "what": "Nach vorn aus der Mittelstellung geschoben, legt der Hebel den Vorwärtsgang ein und gibt dann mehr Leistung; nach hinten gezogen legt er den Rückwärtsgang ein. In der Mitte ist das Getriebe im Leerlauf. Machen Sie beim Richtungswechsel eine Pause im Leerlauf.",
+      "onThisBoat": "Eine Einhebelsteuerung von Allpa mit START-, STOP- und POWER-Tasten und einem Aufkleber „MAX 2500 RPM“. In der App gibt der Hebel zwei Drittel voraus etwa 1.850 U/min und 8 kn; ganz voraus etwa 9,3 kn. Auf jedem Steuerrad-Panel steht der Hebel an der Stelle, an der der Hebel im Bereich Motor steht, und der Drehzahlmesser daneben zeigt die Drehzahl.",
+      "mistakes": [
+        {
+          "mistake": "Den Hebel von voraus direkt auf rückwärts bewegen.",
+          "fix": "Das Getriebe leidet darunter. Halten Sie einen Moment im Leerlauf an und gehen Sie dann rückwärts."
+        },
+        {
+          "mistake": "Den Motor starten, während ein Gang eingelegt ist.",
+          "fix": "Es fährt sofort los. Bringen Sie den Hebel vor dem Start in die Mittelstellung (Leerlauf)."
+        }
+      ],
+      "showMe": "Kein Wind, Motor läuft, der Hebel zwei Drittel voraus: etwa 1.850 U/min und 8 kn. Der Hebel steht im Bereich Motor.",
+      "textStatus": "draft"
+    },
+    "term_sheet": {
+      "name": "Schot",
+      "alternatives": [],
+      "short": "Eine Leine, die den Winkel eines Segels zum Wind festlegt.",
+      "what": "Eine Schot zieht am Schothorn eines Segels (seiner hinteren unteren Ecke) und legt damit fest, wie weit das Segel nach außen ausschwingen kann. Jedes Segel hat seine eigene: die Großschot und die Fockschot. Auf einem Boot ist eine Schot eine Leine, kein Segel.",
+      "textStatus": "draft"
+    },
+    "term_halyard": {
+      "name": "Fall",
+      "alternatives": [],
+      "short": "Eine Leine, mit der ein Segel gesetzt wird.",
+      "what": "Ein Fall zieht den Kopf eines Segels (seine obere Ecke) am Mast oder am Vorstag nach oben und hält ihn dort.",
+      "onThisBoat": "Das Großsegel bleibt gesetzt und rollt in den Mast, die Fock rollt um das Vorstag, die Fälle werden deshalb kaum angefasst; das Gennakerfall liegt nur belegt und wird nicht benutzt.",
+      "textStatus": "draft"
+    },
+    "term_port": {
+      "name": "Backbord",
+      "alternatives": [
+        {
+          "term": "Bb",
+          "note": "Abkürzung"
+        }
+      ],
+      "short": "Die linke Seite des Bootes, wenn Sie nach vorn schauen.",
+      "what": "Backbord ist die linke Seite, wenn Sie zum Bug schauen, egal wie Sie gerade stehen. Das Positionslicht auf dieser Seite ist rot.",
+      "mistakes": [
+        {
+          "mistake": "„Links“ sagen, während Sie zum Heck schauen.",
+          "fix": "Backbord ändert sich nie: Es ist immer die linke Seite mit Blick nach vorn. An Bord sagen Sie Backbord und Steuerbord."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "term_starboard": {
+      "name": "Steuerbord",
+      "alternatives": [
+        {
+          "term": "Stb",
+          "note": "Abkürzung"
+        }
+      ],
+      "short": "Die rechte Seite des Bootes, wenn Sie nach vorn schauen.",
+      "what": "Steuerbord ist die rechte Seite, wenn Sie zum Bug schauen. Das Positionslicht auf dieser Seite ist grün.",
+      "mistakes": [
+        {
+          "mistake": "Backbord und Steuerbord in der Hektik verwechseln.",
+          "fix": "Eine Merkhilfe: rotes Licht Backbord, grünes Licht Steuerbord, und links ist Backbord."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "term_windward": {
+      "name": "Luv",
+      "alternatives": [],
+      "short": "Die Seite, aus der der Wind kommt.",
+      "what": "Die Luvseite des Bootes ist die Seite, auf die der Wind bläst. Luv bedeutet auch: in Richtung des Windes, also windwärts.",
+      "showMe": "Wind von Steuerbord: Steuerbord ist die Luvseite, und der Baum ist nach Backbord ausgeschwungen, auf die Leeseite.",
+      "textStatus": "draft"
+    },
+    "term_leeward": {
+      "name": "Lee",
+      "alternatives": [
+        {
+          "term": "Leeseite"
+        }
+      ],
+      "short": "Die Seite, die vom Wind abgewandt ist.",
+      "what": "Lee (kurz für Leeseite, seemännisch „Luh“ gesprochen) ist die Seite, von der der Wind wegbläst. Die Segel und der Baum liegen auf der Leeseite, und das Boot krängt zu ihr hin.",
+      "showMe": "Wind von Steuerbord: Baum und Segel liegen an Backbord, der Leeseite.",
+      "textStatus": "draft"
+    },
+    "term_true_wind": {
+      "name": "Wahrer Wind",
+      "alternatives": [],
+      "short": "Der Wind, wie er über das Wasser weht, so wie ihn ein stehendes Boot spürt.",
+      "what": "Der wahre Wind ist die eigene Richtung und Geschwindigkeit des Winds über dem Wasser. „Bedingungen“ stellt ihn ein, und die Instrumente zeigen ihn als TWA und TWS.",
+      "showMe": "Die Karte zeigt den wahren Wind und, während das Boot segelt, den scheinbaren Wind, den es spürt.",
+      "textStatus": "draft"
+    },
+    "term_apparent_wind": {
+      "name": "Scheinbarer Wind",
+      "alternatives": [],
+      "short": "Der Wind, den das Boot spürt: der wahre Wind plus der Wind aus seiner eigenen Fahrt.",
+      "what": "Wenn das Boot fährt, kommt aus seiner Fahrt ein Gegenwind hinzu. Zusammen mit dem wahren Wind ergibt er den scheinbaren Wind, den die Segel spüren und den der Pfeil am Masttopp zeigt. Segelt das Boot gegen den Wind oder quer dazu, kommt der scheinbare Wind weiter von vorn als der wahre und ist stärker; läuft es vom Wind weg, ist er schwächer.",
+      "mistakes": [
+        {
+          "mistake": "Die Segel auf den wahren Wind trimmen.",
+          "fix": "Die Segel spüren den scheinbaren Wind, der bei Fahrt weiter von vorn kommt. Trimmen Sie nach den Trimmfäden und dem Pfeil am Masttopp."
+        }
+      ],
+      "showMe": "Mit Wind von der Seite gesegelt: Die Karte zeigt den scheinbaren Wind weiter von vorn als den wahren Wind.",
+      "textStatus": "draft"
+    },
+    "term_starboard_tack": {
+      "name": "Steuerbordbug",
+      "alternatives": [],
+      "short": "Segeln mit dem Wind von der Steuerbordseite.",
+      "what": "Auf Steuerbordbug kommt der Wind von der Steuerbordseite, und Baum und Segel stehen nach Backbord aus.",
+      "showMe": "Wind von Steuerbord, Baum nach Backbord aus: Das Boot segelt auf Steuerbordbug.",
+      "textStatus": "draft"
+    },
+    "term_port_tack": {
+      "name": "Backbordbug",
+      "alternatives": [],
+      "short": "Segeln mit dem Wind von der Backbordseite.",
+      "what": "Auf Backbordbug kommt der Wind von der Backbordseite, und Baum und Segel stehen nach Steuerbord aus.",
+      "showMe": "Wind von Backbord, Baum nach Steuerbord aus: Das Boot segelt auf Backbordbug.",
+      "textStatus": "draft"
+    },
+    "term_tacking": {
+      "name": "Wenden",
+      "alternatives": [
+        {
+          "term": "über Stag gehen"
+        }
+      ],
+      "short": "Den Bug durch den Wind auf die andere Seite drehen.",
+      "what": "Beim Wenden dreht das Boot in Richtung Wind, durch das Totwasser hindurch und weiter, bis der Wind von der anderen Seite kommt. Mit einer Selbstwendefock braucht es nur das Steuerrad: Fock und Großsegel schwingen von selbst herüber.",
+      "mistakes": [
+        {
+          "mistake": "Zu langsam drehen.",
+          "fix": "Dann bleibt das Boot mit dem Bug im Wind stehen (es liegt in der Wende). Gleichmäßig drehen und Fahrt im Boot halten."
+        }
+      ],
+      "showMe": "Am Wind, der Autopilot hält den Windwinkel: Drücken Sie im Bereich Autopilot auf „Wende“ und sehen Sie zu, wie der Bug durch den Wind dreht und die Fock von selbst herüberkommt.",
+      "textStatus": "draft"
+    },
+    "term_gybe": {
+      "name": "Halsen",
+      "alternatives": [
+        {
+          "term": "Halse",
+          "note": "als Substantiv für das Manöver"
+        }
+      ],
+      "short": "Das Heck durch den Wind drehen, sodass der Baum auf die andere Seite schwingt.",
+      "what": "Bei einer Halse dreht das Heck durch den Wind und der Baum schwingt über das ganze Boot. Macht man sie absichtlich, wird die Großschot vorher dichtgeholt, damit der Baum nur ein kurzes Stück und kontrolliert herüberkommt. Passiert sie unabsichtlich (Patenthalse), kommt er schnell und hart herüber: Das kann Menschen verletzen und Material brechen. Warum der Baum von selbst herüberschwingt: Gefiert wird er zunächst vom Wind draußen gehalten; ein Rollen, eine Welle oder eine kleine Kursänderung bringt ihn in Bewegung, und sobald er die Windlinie überschritten hat (also genau in Richtung der Windquelle zeigt), wirft ihn der Wind herüber.",
+      "mistakes": [
+        {
+          "mistake": "Halsen mit vollkommen gefierter Großschot.",
+          "fix": "Der Baum knallt herüber. Holen Sie die Großschot vor der Drehung dicht und fieren Sie sie auf dem neuen Bug wieder aus."
+        },
+        {
+          "mistake": "Zu weit nach achtern steuern.",
+          "fix": "Der Wind kommt hinter das Großsegel, und es kann von selbst halsen. Bleiben Sie etwas von der Linie genau vor dem Wind weg."
+        }
+      ],
+      "showMe": "Der Autopilot dreht das Boot mit gefierter Großschot durch die Linie genau achtern: Der Baum kommt schnell herüber (Patenthalse), und der rote Bereich zeigt seinen Weg. Bei einer kontrollierten Halse wird die Großschot vorher dichtgeholt.",
+      "textStatus": "draft"
+    },
+    "term_luffing": {
+      "name": "Killen (Segel schlägt)",
+      "alternatives": [],
+      "short": "Ein Segel schlägt an seiner Vorderkante, weil es zu weit gefiert ist.",
+      "what": "Wird ein Segel stärker gefiert, als der Windwinkel verlangt, oder dreht das Boot zu dicht an den Wind, erreicht die Luft beide Seiten der Vorderkante, und das Segel killt. Es treibt das Boot dann nicht mehr, und langes Killen bei starkem Wind verschleißt es.",
+      "mistakes": [
+        {
+          "mistake": "Ein Segel bei starkem Wind killen lassen.",
+          "fix": "Das Segel verschleißt und kann einreißen. Dichtholen oder wegrollen."
+        }
+      ],
+      "showMe": "Die Großschot ist vollkommen gefiert: Das Großsegel killt an seiner Vorderkante. Holen Sie die Großschot (Bereich Leinen) dicht, bis das Killen gerade aufhört.",
+      "textStatus": "draft"
+    },
+    "term_ease": {
+      "name": "Fieren",
+      "alternatives": [
+        {
+          "term": "ausfieren"
+        }
+      ],
+      "short": "Eine Leine nachgeben.",
+      "what": "Fieren heißt, eine Leine langsam und kontrolliert nachzugeben, damit ein Segel weiter nach außen gehen kann oder Last von einer Leine kommt.",
+      "textStatus": "draft"
+    },
+    "term_trim": {
+      "name": "Trimmen / Dichtholen",
+      "alternatives": [
+        {
+          "term": "anholen"
+        }
+      ],
+      "short": "Eine Leine zu sich ziehen; auch: die Segel auf den Wind einstellen.",
+      "what": "Dichtholen zieht eine Leine zu sich. Trimmen heißt, jedes Segel auf den Wind einzustellen: dichtholen, bis es nicht mehr killt, fieren, bis es keinen Strömungsabriss hat.",
+      "textStatus": "draft"
+    },
+    "term_twist": {
+      "name": "Twist",
+      "alternatives": [
+        {
+          "term": "Verwindung"
+        }
+      ],
+      "short": "Wie weit sich das Segel oben im Vergleich zu unten öffnet.",
+      "what": "Mit Twist steht das Segel oben weiter aus als unten. Ein wenig Twist ist normal; mehr Twist lässt Leistung entweichen, was bei starkem Wind hilft. Beim Großsegel steuert ihn der Baumniederholer, bei der Fock die Schot.",
+      "showMe": "Der Baumniederholer ist ganz gefiert: Das Oberteil des Großsegels verwindet sich nach außen. Holen Sie den Baumniederholer (Bereich Leinen) dicht, und der Twist schließt sich.",
+      "textStatus": "draft"
+    },
+    "term_telltale": {
+      "name": "Trimmfäden",
+      "alternatives": [
+        {
+          "term": "Wollfäden"
+        }
+      ],
+      "short": "Bändchen an den Segeln, die zeigen, wie die Luft strömt.",
+      "what": "Trimmfäden sind kurze Bändchen nahe der Segelvorderkante. Beide Seiten wehen gerade nach achtern: guter Trimm. Die Leeseite hängt durch: zu dicht geholt. Die Luvseite hebt sich: zu weit gefiert.",
+      "showMe": "Guter Trimm: Zoomen Sie auf die Vorderkante des Großsegels; die Trimmfäden auf beiden Seiten wehen gerade nach achtern.",
+      "textStatus": "draft"
+    },
+    "part_telltale": {
+      "name": "Trimmfaden",
+      "alternatives": [],
+      "short": "Ein kurzes Bändchen am Segel, das zeigt, wie die Luft darüber strömt.",
+      "what": "Trimmfäden sind kurze Bändchen nahe am Vorliek eines Segels, eines auf jeder Seite. Wehen beide gerade nach achtern: Das Segel ist gut getrimmt. Hängt der Faden auf der windabgewandten Seite durch oder kreist er: Das Segel ist zu weit dichtgeholt. Hebt sich der Faden auf der Windseite: Es ist zu weit gefiert.",
+      "onThisBoat": "Die App zeichnet Trimmfäden nahe am Vorliek beider Segel.",
+      "mistakes": [
+        {
+          "mistake": "Dichtholen, bis das Segel nicht mehr killt, und dann „zur Sicherheit“ noch weiter dichtholen.",
+          "fix": "Die Trimmfäden auf der Leeseite hängen durch: Die Strömung ist abgerissen. Fieren Sie, bis beide Seiten nach achtern wehen."
+        }
+      ],
+      "showMe": "Guter Trimm: Zoomen Sie (mit zwei Fingern) auf das Vorliek des Großsegels nahe am Mast. Die Trimmfäden auf beiden Seiten wehen gerade nach achtern.",
+      "textStatus": "draft"
+    },
+    "term_no_go_zone": {
+      "name": "Totwasser",
+      "alternatives": [],
+      "short": "Die Richtungen etwa 45° beiderseits des Windes, in denen ein Segelboot nicht segeln kann.",
+      "what": "Kein Segelboot kann direkt in den Wind segeln. Etwa 45° um ihn herum (30–50°, je nach Boot) killen die Segel, und es wird langsamer bis zum Stillstand. Um Höhe zu gewinnen, segelt es im Zickzack und wendet von einer Seite auf die andere.",
+      "mistakes": [
+        {
+          "mistake": "In das Totwasser steuern.",
+          "fix": "Die Segel killen und das Boot stoppt. Drehen Sie vom Wind weg, bis die Segel wieder ziehen."
+        }
+      ],
+      "showMe": "Die Karte zeigt das Totwasser als einen Kegel in Richtung Wind. Das Boot segelt knapp außerhalb davon, am Wind.",
+      "textStatus": "draft"
+    },
+    "term_close_hauled": {
+      "name": "Am Wind",
+      "alternatives": [
+        {
+          "term": "hart am Wind"
+        },
+        {
+          "term": "Kreuzen",
+          "note": "am Wind segeln, um Höhe zu gewinnen"
+        }
+      ],
+      "short": "So nah am Wind segeln, wie es geht, etwa 45° daneben.",
+      "what": "Am Wind sind die Segel dichtgeholt, und das Boot segelt so nah am Wind wie möglich, knapp außerhalb des Totwassers. Auf diesem Kurs krängt es am stärksten.",
+      "showMe": "Am Wind: Der Wind steht 45° zum Bug, beide Segel sind dichtgeholt; das Boot krängt etwa 17°.",
+      "textStatus": "draft"
+    },
+    "term_close_reach": {
+      "name": "Anlieger",
+      "alternatives": [],
+      "short": "Segeln mit dem Wind etwa 60° zum Bug, zwischen Am Wind und Halbwind.",
+      "what": "Auf dem Anlieger sind die Segel gegenüber Am Wind etwas gefiert. Das Boot segelt schnell und krängt noch deutlich.",
+      "showMe": "Anlieger: Der Wind steht 60° zum Bug, die Segel sind etwas gefiert; das Boot macht etwa 7,5 kn.",
+      "textStatus": "draft"
+    },
+    "term_beam_reach": {
+      "name": "Halbwind",
+      "alternatives": [],
+      "short": "Segeln mit dem Wind quer zur Bootsachse.",
+      "what": "Auf Halbwind kommt der Wind von der Seite, 90° zum Bug, und die Segel sind etwa zur Hälfte gefiert. Für viele Boote ist das der schnellste Kurs.",
+      "showMe": "Halbwind: Der Wind kommt von der Seite, die Segel sind etwa halb gefiert; das Boot macht etwa 8 kn.",
+      "textStatus": "draft"
+    },
+    "term_broad_reach": {
+      "name": "Raumschots",
+      "alternatives": [],
+      "short": "Segeln mit dem Wind von achtern aus der Seite, etwa 135° zum Bug.",
+      "what": "Raumschots kommt der Wind über die hintere Ecke des Bootes. Die Segel sind weit gefiert; das Boot krängt wenig, und die Fahrt ist bequem.",
+      "showMe": "Raumschots: Der Wind steht 135° zum Bug, die Segel sind weit gefiert; das Boot krängt kaum.",
+      "textStatus": "draft"
+    },
+    "term_run": {
+      "name": "Vor dem Wind",
+      "alternatives": [
+        {
+          "term": "platt vor dem Wind"
+        }
+      ],
+      "short": "Segeln mit dem Wind von achtern.",
+      "what": "Vor dem Wind kommt der Wind (fast) direkt von achtern, und die Segel sind weit gefiert. Das Boot ist langsamer als raumschots, und der Baum kann herüberschwingen, wenn der Wind hinter das Großsegel kommt.",
+      "mistakes": [
+        {
+          "mistake": "Platt vor dem Wind segeln.",
+          "fix": "Der Baum kann unabsichtlich halsen. Steuern Sie ein Stück aus der Linie genau vor dem Wind heraus, damit der Wind klar auf einer Seite bleibt."
+        }
+      ],
+      "showMe": "Vor dem Wind: Der Wind kommt fast direkt von achtern, die Segel sind weit gefiert; etwa 4,7 kn, langsamer als raumschots.",
+      "textStatus": "draft"
+    },
+    "term_reef": {
+      "name": "Reffen",
+      "alternatives": [
+        {
+          "term": "Segelfläche verkleinern"
+        }
+      ],
+      "short": "Ein Segel für starken Wind kleiner machen.",
+      "what": "Reffen macht die Segel kleiner, damit das Boot weniger krängt und bei starkem Wind leichter zu steuern ist. Reffen Sie früh, bevor der Wind stark ist.",
+      "onThisBoat": "Es gibt keine Reffleinen: Das Großsegel wird kleiner, indem ein Teil in den Mast gerollt wird, die Fock, indem ein Teil um das Vorstag gerollt wird; meist zuerst die Fock, dann das Großsegel.",
+      "mistakes": [
+        {
+          "mistake": "Warten, bis der Wind schon stark ist.",
+          "fix": "Segel unter Last wegzurollen ist mühsamer und riskanter. Machen Sie die Segel kleiner, sobald das Boot zu stark krängt."
+        }
+      ],
+      "showMe": "Das Großsegel ist zur Hälfte in den Mast gerollt: halbes Segel, weniger Druck.",
+      "textStatus": "draft"
+    },
+    "term_preventer": {
+      "name": "Bulltalje",
+      "alternatives": [],
+      "short": "Eine Leine, die den Baum draußen hält, damit er nicht herüberschwingen kann.",
+      "what": "Eine Bulltalje läuft vom Baumnende nach vorn und zurück in die Plicht und hält den Baum vor dem Wind draußen, sodass er bei einer Patenthalse nicht herüberschwingen kann.",
+      "onThisBoat": "Dieses Boot hat keine, deshalb lehrt die App die kontrollierte Halse: die Großschot zuerst dichtgeholt.",
+      "textStatus": "draft"
+    },
+    "term_north": {
+      "name": "Nord",
+      "alternatives": [
+        {
+          "term": "N",
+          "note": "Kurzform"
+        }
+      ],
+      "short": "Die Richtung 0° auf dem Kompass.",
+      "what": "Nord ist 0° (oder 360°) auf dem Kompass; Ost ist 90°, Süd 180°, West 270°. Winde werden danach benannt, woher sie kommen, ein Nordwind weht also aus Norden.",
+      "textStatus": "draft"
+    },
+    "term_east": {
+      "name": "Ost",
+      "alternatives": [
+        {
+          "term": "O",
+          "note": "Kurzform"
+        }
+      ],
+      "short": "Die Richtung 90° auf dem Kompass.",
+      "what": "Ost ist 90° auf dem Kompass, wo die Sonne aufgeht. Ein Ostwind weht aus Osten.",
+      "textStatus": "draft"
+    },
+    "term_south": {
+      "name": "Süd",
+      "alternatives": [
+        {
+          "term": "S",
+          "note": "Kurzform"
+        }
+      ],
+      "short": "Die Richtung 180° auf dem Kompass.",
+      "what": "Süd ist 180° auf dem Kompass. Ein Südwind weht aus Süden.",
+      "textStatus": "draft"
+    },
+    "term_west": {
+      "name": "West",
+      "alternatives": [
+        {
+          "term": "W",
+          "note": "Kurzform"
+        }
+      ],
+      "short": "Die Richtung 270° auf dem Kompass.",
+      "what": "West ist 270° auf dem Kompass, wo die Sonne untergeht. Ein Westwind weht aus Westen.",
+      "textStatus": "draft"
+    },
+    "term_compass_point": {
+      "name": "Rumb",
+      "alternatives": [],
+      "short": "Eine der 32 benannten Richtungen des Kompasses, 11¼° auseinander.",
+      "what": "Bevor es Grad gab, benannten Seeleute 32 Richtungen: Nord, Ost, Süd und West, die vier dazwischen (Nordost, Südost, Südwest, Nordwest) und weitere dazwischen. Ein Rumb ist 11¼°, „zwei Rumb vor dem Bug“ liegt also etwa 22° seitlich von geradeaus.",
+      "textStatus": "draft"
+    },
+    "term_ahead": {
+      "name": "Voraus",
+      "alternatives": [],
+      "short": "Vor dem Bug.",
+      "what": "Voraus bezeichnet die Richtung, in die der Bug zeigt; „recht voraus“ ist genau geradeaus. Mit dem Motor heißt „voraus“ vorwärts fahren.",
+      "textStatus": "draft"
+    },
+    "term_astern": {
+      "name": "Achtern",
+      "alternatives": [],
+      "short": "Hinter dem Boot; auch: rückwärts fahren.",
+      "what": "Achtern heißt hinter dem Heck. Mit dem Motor heißt „achtern“ rückwärts fahren (Rückwärtsgang).",
+      "textStatus": "draft"
+    },
+    "term_abeam": {
+      "name": "Querab",
+      "alternatives": [],
+      "short": "Rechtwinklig zum Boot, gerade zur Seite hinaus.",
+      "what": "Etwas querab liegt bei 90° zur Bootsmittellinie, auf der Höhe der Bootsmitte, an Backbord oder Steuerbord. Wind querab ergibt Halbwind.",
+      "textStatus": "draft"
+    },
+    "term_quarter": {
+      "name": "Quarter",
+      "alternatives": [],
+      "short": "Die hinteren Ecken des Bootes, zwischen querab und achtern.",
+      "what": "Die Quarter sind die hinteren Ecken des Bootes. Wind oder Wellen „auf dem Quarter“ kommen schräg von achtern, etwa 135° zum Bug; Wellen von dort sind am schwersten zu steuern.",
+      "showMe": "Wind und Wellen auf dem Steuerbordquarter: Sehen Sie zu, wie das Steuerrad (der Autopilot) ständig korrigiert, während die Wellen das Boot vom Kurs schieben.",
+      "textStatus": "draft"
+    },
+    "term_heading": {
+      "name": "Kurs",
+      "alternatives": [
+        {
+          "term": "Steuerkurs",
+          "note": "genau genommen die Richtung, in die der Bug zeigt; der Kurs über Grund kann davon abweichen"
+        }
+      ],
+      "short": "Die Kompassrichtung, in die der Bug zeigt.",
+      "what": "Der Kurs ist die Richtung, in die der Bug zeigt, in Grad ab Nord: 0 Nord, 90 Ost, 180 Süd, 270 West. Der Modus „Kurs“ des Autopiloten hält ihn.",
+      "showMe": "Die Karte zeigt den Kurs 060°, nach Nordosten, mit Wind von der Seite.",
+      "textStatus": "draft"
+    },
+    "term_wind_direction": {
+      "name": "Windrichtung",
+      "alternatives": [],
+      "short": "Woher der Wind kommt, in Grad oder als Himmelsrichtung.",
+      "what": "Ein Wind wird nach seiner Herkunft benannt: Ein Nordwind weht von Norden nach Süden. In Grad ausgedrückt kommt ein Wind „aus 060°“ aus Nordost.",
+      "mistakes": [
+        {
+          "mistake": "Einen Wind „aus 060°“ so lesen, als wehe er nach 060°.",
+          "fix": "Er weht aus 060° nach 240°: Schauen Sie nach 060°, um ihm ins Gesicht zu sehen."
+        }
+      ],
+      "showMe": "Wind aus 060° (Nordost): Die Striche wehen von dort über das Boot.",
+      "textStatus": "draft"
+    },
+    "term_knot": {
+      "name": "Knoten",
+      "alternatives": [
+        {
+          "term": "kn",
+          "note": "Kurzform"
+        }
+      ],
+      "short": "Eine Seemeile pro Stunde: so wird die Geschwindigkeit auf See gemessen.",
+      "what": "Geschwindigkeiten von Boot und Wind werden auf See in Knoten angegeben. Ein Knoten ist eine Seemeile (1.852 m) pro Stunde, etwa 0,5 m/s oder 1,85 km/h.",
+      "textStatus": "draft"
+    },
+    "term_beaufort": {
+      "name": "Beaufortskala",
+      "alternatives": [
+        {
+          "term": "Windstärke",
+          "note": "z. B. „Stärke 4“"
+        }
+      ],
+      "short": "Die Windstärke als Zahl von 0 bis 12, beurteilt nach ihrer Wirkung auf die See.",
+      "what": "Die Beaufortskala benennt Windstärken von 0 (Flaute) bis 12 (Orkan). Stärke 3 (7–10 kn) bringt die ersten vereinzelten Schaumkronen; Stärke 4 (11–16 kn) ziemlich häufige; Stärke 5 (17–21 kn) viele.",
+      "showMe": "10 kn, die Obergrenze von Stärke 3: die ersten vereinzelten Schaumkronen. Erhöhen Sie den Wind unter „Bedingungen“, um mehr zu sehen.",
+      "textStatus": "draft"
+    },
+    "term_gust": {
+      "name": "Bö",
+      "alternatives": [
+        {
+          "term": "Windstoß"
+        }
+      ],
+      "short": "Ein plötzlicher, kurzer Anstieg des Winds.",
+      "what": "Eine Bö ist ein Stoß stärkeren Winds, der Sekunden dauert und oft aus einer etwas anderen Richtung kommt. Auf dem Wasser kann sie als dunklerer, rauerer Fleck auf das Boot zukommen. In einer Bö krängt das Boot stärker.",
+      "mistakes": [
+        {
+          "mistake": "Die Großschot in einer starken Bö dicht halten.",
+          "fix": "Das Boot krängt hart und dreht in den Wind. Fieren Sie das Groß, wenn die Bö trifft, und trimmen Sie neu, wenn sie vorbei ist."
+        }
+      ],
+      "showMe": "Böiger Wind: Achten Sie nach Luv auf einen dunklen Fleck auf dem Wasser. Wenn er ankommt, zeigt die Instrumentenleiste GUST, und das Boot krängt stärker.",
+      "textStatus": "draft"
+    },
+    "term_lull": {
+      "name": "Abflauen",
+      "alternatives": [
+        {
+          "term": "Windloch"
+        }
+      ],
+      "short": "Ein kurzer Rückgang des Winds.",
+      "what": "Ein Abflauen ist ein Moment schwächeren Winds, oft zwischen zwei Böen. Das Boot richtet sich auf und wird langsamer, und der Wind, den die Segel spüren, kommt ein wenig weiter von vorn.",
+      "textStatus": "draft"
+    },
+    "term_wind_shift": {
+      "name": "Winddreher",
+      "alternatives": [
+        {
+          "term": "Rechtdreher",
+          "note": "der Wind dreht im Uhrzeigersinn"
+        },
+        {
+          "term": "Linkdreher",
+          "note": "der Wind dreht gegen den Uhrzeigersinn"
+        }
+      ],
+      "short": "Eine Änderung der Windrichtung.",
+      "what": "Die Windrichtung ändert sich ständig ein wenig. Ein Dreher, der weiter von vorn kommt, ist ein Header (der Wind schrickt): Das Boot muss abfallen, sonst killen die Segel. Einer, der weiter von hinten kommt, ist ein Lift (der Wind räumt): Das Boot kann höher an den Wind gehen.",
+      "showMe": "Drehender Wind, und der Autopilot hält den Windwinkel: Beobachten Sie, wie der Kurs des Boots schwingt, wenn der Wind dreht.",
+      "textStatus": "draft"
+    },
+    "term_bora": {
+      "name": "Bora",
+      "alternatives": [
+        {
+          "term": "Bura",
+          "note": "der kroatische Name, den Segler dort ebenfalls benutzen"
+        }
+      ],
+      "short": "Ein kalter, sehr böiger Wind aus Nordost in der Adria.",
+      "what": "Die Bora weht aus Nord bis Nordost von den Bergen hinunter an die Adriaküste, meist im Winter. Sie kommt in plötzlichen, starken Böen und wirft kurze, hohe Wellen mit weißen Kämmen auf.",
+      "textStatus": "draft"
+    },
+    "term_jugo": {
+      "name": "Jugo",
+      "alternatives": [
+        {
+          "term": "Schirokko",
+          "note": "der italienische Name für dieselbe Windart"
+        }
+      ],
+      "short": "Ein warmer, feuchter Wind aus Südost in der Adria.",
+      "what": "Der Jugo weht aus Südost, warm und feucht, und kann Regen und Gewitter bringen. Sein Name bedeutet im Kroatischen „südlich“.",
+      "textStatus": "draft"
+    },
+    "term_maestral": {
+      "name": "Maestral",
+      "alternatives": [],
+      "short": "Die sommerliche Seebrise aus Nordwest an der Adriaküste.",
+      "what": "An Sommertagen, wenn die Küste wärmer wird als das Meer, weht ein milder Wind von der See her aus Nordwest: der Maestral.",
+      "textStatus": "draft"
+    },
+    "term_burin": {
+      "name": "Landwind",
+      "alternatives": [],
+      "short": "Die leichte nächtliche Brise, die an der Adriaküste vom Land her weht.",
+      "what": "Nachts kühlt das Land schneller ab als das Meer, deshalb weht eine leichte Brise vom Land hinaus aufs Meer: der Burin. Er ist schwächer als die tagsüber wehende Seebrise (der Maestral) und stirbt am Morgen.",
+      "textStatus": "draft"
+    },
+    "term_heel": {
+      "name": "Krängung",
+      "alternatives": [
+        {
+          "term": "Schräglage"
+        }
+      ],
+      "short": "Das Boot neigt sich auf eine Seite.",
+      "what": "Der Druck des Windes auf die Segel legt das Boot nach Lee über; das Gewicht des Kiels zieht es zurück. Etwas Krängung ist normal; zu viel bremst es und macht es schwer zu steuern. Fieren der Schoten oder Verkleinern der Segel reduziert sie.",
+      "mistakes": [
+        {
+          "mistake": "Bei zu starker Krängung die Schoten noch dichter holen.",
+          "fix": "Das verstärkt die Krängung. Fieren Sie die Großschot oder rollen Sie einen Teil der Segel ein."
+        }
+      ],
+      "showMe": "20 kn bei dichtgeholten Segeln: Das Boot krängt etwa 30°. Fieren Sie die Großschot im Bereich Leinen, und es richtet sich auf.",
+      "textStatus": "draft"
+    },
+    "term_weather_helm": {
+      "name": "Luvgierigkeit",
+      "alternatives": [],
+      "short": "Der Zug des Bootes, in den Wind zu drehen, den Sie am Steuerrad spüren.",
+      "what": "Ein krängendes Boot will mit dem Bug in den Wind drehen. Um den Kurs zu halten, muss das Steuerrad vom Wind weg eingeschlagen gehalten werden. Ein wenig ist normal; viel bedeutet zu viel Krängung oder zu viel Großsegel: Fieren Sie das Großsegel.",
+      "showMe": "Stark krängend bei 20 kn: Der Autopilot hält das Steuerrad vom Wind weg eingeschlagen, um das Boot gerade zu halten. Fieren Sie die Großschot, und das Rad kommt zur Mitte zurück.",
+      "textStatus": "draft"
+    },
+    "term_round_up": {
+      "name": "Aufschießen",
+      "alternatives": [
+        {
+          "term": "Broschieren",
+          "note": "ein heftiges Aufschießen, oft mit Wellen von achtern"
+        }
+      ],
+      "short": "Das Boot dreht von selbst in den Wind, und das Steuerrad kann es nicht aufhalten.",
+      "what": "Hat das Boot in einer Bö zu viel Segeldruck, krängt es, das Ruder verliert seinen Griff, und es schießt mit killenden Segeln in den Wind. Rechtzeitiges Fieren der Großschot verhindert das.",
+      "mistakes": [
+        {
+          "mistake": "Nur mit dem Steuerrad dagegenhalten.",
+          "fix": "Ein hart eingeschlagenes Ruder verliert den Griff. Fieren Sie die Großschot: Das nimmt die Kraft weg, die das Boot dreht."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "term_in_irons": {
+      "name": "In der Wende liegen",
+      "alternatives": [],
+      "short": "Mit dem Bug im Wind stehen geblieben, ohne Steuerwirkung.",
+      "what": "Direkt in den Wind gedreht, verliert das Boot seinen Antrieb: Die Segel killen, es wird langsamer und bleibt stehen, und ohne Wasserströmung am Ruder bewirkt das Steuerrad nichts. Um herauszukommen, lassen Sie es mit eingeschlagenem Ruder rückwärts treiben, bis der Bug vom Wind abfällt, oder nehmen Sie den Motor.",
+      "showMe": "Mit 6 kn direkt in den Wind: Die Segel killen, das Boot wird langsamer und bleibt stehen, und das Steuerrad dreht es nicht mehr.",
+      "textStatus": "draft"
+    },
+    "term_head_up": {
+      "name": "Anluven",
+      "alternatives": [],
+      "short": "Den Bug zum Wind drehen.",
+      "what": "Anluven dreht den Bug näher an den Wind; die Segel müssen dann dichtgeholt werden, sonst killen sie. Das Gegenteil ist abfallen.",
+      "textStatus": "draft"
+    },
+    "term_bear_away": {
+      "name": "Abfallen",
+      "alternatives": [],
+      "short": "Den Bug vom Wind weg drehen.",
+      "what": "Abfallen dreht den Bug weiter vom Wind weg; die Segel müssen dann gefiert werden. Zu weit abfallen mit Wind von achtern riskiert eine Patenthalse.",
+      "textStatus": "draft"
+    },
+    "term_stall": {
+      "name": "Strömungsabriss",
+      "alternatives": [],
+      "short": "Ein Segel, das zu dicht geholt ist, sodass die Luft nicht mehr glatt umströmt.",
+      "what": "Ein Segel mit Strömungsabriss sieht voll aus, zieht aber schlecht und verursacht mehr Krängung; die Trimmfäden auf seiner Leeseite hängen durch oder drehen sich. Fieren Sie die Schot, bis sie gerade nach achtern wehen.",
+      "showMe": "Die Großschot ist bei 60° Wind zum Bug voll dichtgeholt: Das Großsegel hat Strömungsabriss. Fieren Sie im Bereich Leinen auf etwa 25 %, und das Boot wird schneller.",
+      "textStatus": "draft"
+    },
+    "term_hull_speed": {
+      "name": "Rumpfgeschwindigkeit",
+      "alternatives": [],
+      "short": "Die Geschwindigkeit, die ein schweres Boot kaum überschreitet: bei diesem etwa 9 kn.",
+      "what": "Ein schweres Boot schiebt eine Welle vor sich her. Bei etwa 1,34 × √(Wasserlinienlänge in Fuß) Knoten sitzt es in dieser Welle, und mehr Leistung macht es kaum schneller. Bei diesem Boot sind das etwa 8,9 kn.",
+      "showMe": "Vollgas, kein Wind: 2.500 U/min ergeben etwa 9,3 kn. Mit einem Drittel weniger Gas macht es noch etwa 8 kn: Die letzte Leistung bringt kaum Geschwindigkeit.",
+      "textStatus": "draft"
+    },
+    "term_fetch": {
+      "name": "Fetch",
+      "alternatives": [
+        {
+          "term": "Windwirklänge"
+        },
+        {
+          "term": "Anlaufstrecke"
+        }
+      ],
+      "short": "Wie weit der Wind über offenes Wasser geblasen hat, bevor er Sie erreicht.",
+      "what": "Je länger der Fetch und je stärker der Wind, desto größer die Wellen. In einer geschützten Bucht ist der Fetch kurz und die See bleibt klein; auf offener See ist er lang.",
+      "showMe": "Geschütztes Wasser bei 15 kn: kleine Wellen. Stellen Sie „Wellen“ unter Bedingungen auf „Offene See“: Derselbe Wind macht deutlich größere Wellen.",
+      "textStatus": "draft"
+    },
+    "term_white_horses": {
+      "name": "Schaumkronen",
+      "alternatives": [
+        {
+          "term": "Schaumköpfe"
+        }
+      ],
+      "short": "Brechende Wellenkämme, die weiß erscheinen.",
+      "what": "Wenn der Wind etwa 7–10 kn erreicht (Beaufort 3), brechen die ersten Wellenkämme zu weißem Schaum; je stärker der Wind, desto mehr davon.",
+      "showMe": "22 kn auf offener See: überall Schaumkronen. Bei 6 kn gibt es keine.",
+      "textStatus": "draft"
+    },
+    "term_wave_height": {
+      "name": "Wellenhöhe",
+      "alternatives": [
+        {
+          "term": "signifikante Wellenhöhe"
+        }
+      ],
+      "short": "Wie hoch die größeren Wellen sind, von Tal zu Kamm.",
+      "what": "Die in Vorhersagen angegebene Wellenhöhe ist der Mittelwert des höchsten Drittels der Wellen; einzelne Wellen können fast doppelt so hoch sein. Der Block Wellen unter Bedingungen zeigt sie an.",
+      "showMe": "Küstenwellen bei 15 kn: Der Block Wellen unter Bedingungen nennt 0,7 m Höhe und eine Welle alle 3,8 s.",
+      "textStatus": "draft"
+    },
+    "term_heave": {
+      "name": "Schwojen",
+      "alternatives": [],
+      "short": "Das Boot hebt und senkt sich auf den Wellen.",
+      "what": "Schwojen ist die Auf- und Abbewegung, während die Wellen unter dem Boot durchlaufen.",
+      "showMe": "Offene See bei 20 kn, das Boot festgehalten: Es hebt und senkt sich um etwa 0,9 m nach jeder Seite.",
+      "textStatus": "draft"
+    },
+    "term_pitch": {
+      "name": "Stampfen",
+      "alternatives": [],
+      "short": "Der Bug hebt und senkt sich, während die Wellen durchlaufen.",
+      "what": "Stampfen ist das Kippen des Bootes mit dem Bug nach oben und unten. Wellen von vorn oder von achtern lassen es am stärksten stampfen.",
+      "showMe": "Wellen von vorn: Es stampft mit dem Bug auf und ab, um etwa 3°.",
+      "textStatus": "draft"
+    },
+    "term_roll": {
+      "name": "Rollen",
+      "alternatives": [
+        {
+          "term": "Schlingern"
+        }
+      ],
+      "short": "Das Boot schwankt von einer Seite zur anderen.",
+      "what": "Rollen ist das Kippen des Bootes von einer Seite zur anderen. Wellen von der Seite lassen es am stärksten rollen.",
+      "showMe": "Wellen von der Seite: Es rollt um etwa 5° nach jeder Seite.",
+      "textStatus": "draft"
+    },
+    "part_vang_strut": {
+      "name": "Starre Niederholerstange",
+      "alternatives": [
+        {
+          "term": "Rodkicker",
+          "note": "Markenname von Seldén"
+        }
+      ],
+      "short": "Eine gefederte Stange unter dem Baum, die ihn oben hält; die Niederholerleine zieht ihn herunter.",
+      "what": "Ein starrer Niederholer ist eine Stange von tief am Mast zur Unterseite des Baums, mit einer Feder innen. Die Feder drückt den Baum nach oben; die Leinen-Talje des Niederholers zieht ihn nach unten. Damit fällt der Baum nicht herunter, wenn das Segel eingerollt ist.",
+      "onThisBoat": "Ein Seldén Rodkicker mit Gasdruckfeder.",
+      "textStatus": "draft"
+    },
+    "fit_mast_base_turning_blocks": {
+      "name": "Umlenkblöcke am Mastfuß",
+      "alternatives": [],
+      "short": "Der Kranz von Rollen am Mastfuß, der die Leinen nach achtern umlenkt.",
+      "what": "Die Leinen kommen am Mast herunter und werden an diesen Blöcken umgelenkt, sodass sie achtern über das Deckshaus in die Plicht laufen und von dort bedient werden können.",
+      "onThisBoat": "Seldén-Blöcke in einem Kranz um den Mastfuß, ein Block für jede Leine.",
+      "textStatus": "draft"
+    },
+    "fit_line_channels": {
+      "name": "Leinenkanäle",
+      "alternatives": [],
+      "short": "Abgedeckte Kanäle auf dem Deckshaus, die die Leinen zur Plicht führen.",
+      "what": "Sie halten die Leinen vom Mast ordentlich und aus dem Weg unter den Füßen der Crew, während diese nach achtern laufen.",
+      "onThisBoat": "Je ein Kanal auf jeder Seite, der an den Klemmenbänken vor den Winschen endet.",
+      "textStatus": "draft"
+    },
+    "fit_sprayhood": {
+      "name": "Sprayhood",
+      "alternatives": [],
+      "short": "Der zusammenklappbare Stoffschutz vorn in der Plicht.",
+      "what": "Die Sprayhood schützt den Niedergang und den vorderen Teil der Plicht vor Spritzwasser und Wind. Wenn sie nicht gebraucht wird, wird sie zusammengeklappt.",
+      "textStatus": "draft"
+    },
+    "fit_anchor_windlass": {
+      "name": "Ankerwinde",
+      "alternatives": [],
+      "short": "Die elektrische Winsch am Bug, die die Ankerkette auslaufen lässt und einholt.",
+      "what": "Die Ankerwinde lässt den Anker nieder und holt ihn wieder hoch; bedient wird sie mit Schaltern am Bug oder einer Fernbedienung am Ruder.",
+      "onThisBoat": "Auf dem Vordeck hinter der Ankerrolle, in einer runden Vertiefung. Halten Sie „Kette aus“ oder „Kette ein“ im Block Anker gedrückt (an der Station Bug oder im realistischen Modus am Ruder).",
+      "mistakes": [
+        {
+          "mistake": "Finger oder Füße in die Nähe der Kette bringen, während die Winde läuft.",
+          "fix": "Die Kette kann sie einklemmen. Bleiben Sie fern und stoppen Sie die Winde, bevor Sie die Kette anfassen."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "fit_bow_roller": {
+      "name": "Bugrolle",
+      "alternatives": [
+        {
+          "term": "Ankerrolle"
+        }
+      ],
+      "short": "Die Rolle am Bug, über die die Ankerkette läuft.",
+      "what": "Der Anker liegt in der Bugrolle, und seine Kette läuft über sie zur Winde.",
+      "textStatus": "draft"
+    },
+    "fit_mooring_cleat": {
+      "name": "Festmacherklampe",
+      "alternatives": [
+        {
+          "term": "Belegklampe"
+        }
+      ],
+      "short": "Ein kräftiger Beschlag zum Belegen der Festmacherleinen.",
+      "what": "Leinen zu einem Steg oder einer Boje werden um eine Klampe belegt.",
+      "onThisBoat": "Drei auf jeder Seite, auf dem erhöhten Rand am Decksrand: am Bug, in der Mitte und am Heck. Die Bugklampen sind auf einem Foto belegt; die anderen Stellen sind teils geschätzt.",
+      "textStatus": "draft"
+    },
+    "fit_anchor": {
+      "name": "Anker",
+      "alternatives": [],
+      "short": "Der schwere Haken, der das Boot am Meeresboden hält.",
+      "what": "Der Anker wird an seiner Kette hinabgelassen, bis er auf dem Grund liegt; dort gräbt er sich ein und hält das Boot an einer Stelle.",
+      "onThisBoat": "Er liegt in der Bugrolle, an Steuerbord des Fockrollreffs, klar zum Fieren. Lassen Sie die Kette im Block Anker aus, und er geht auf den Grund.",
+      "showMe": "Der Bug von vorn: der Anker hängt in seiner Rolle, die Kette läuft zurück zur Winde.",
+      "textStatus": "draft"
+    },
+    "fit_anchor_chain": {
+      "name": "Ankerkette",
+      "alternatives": [],
+      "short": "Die Kette, die den Anker mit dem Boot verbindet.",
+      "what": "Die Kette läuft vom Anker über die Bugrolle zur Winde und von dort hinunter in den Kettenkasten unter dem Vordeck.",
+      "onThisBoat": "Ein kurzes Stück ist zwischen Winde und Anker zu sehen; der Rest liegt im Kettenkasten.",
+      "textStatus": "draft"
+    },
+    "fit_fairlead": {
+      "name": "Leinenführung",
+      "alternatives": [
+        {
+          "term": "Festmacherführung"
+        }
+      ],
+      "short": "Eine glatte Führung am Decksrand, durch die eine Festmacherleine läuft.",
+      "what": "Eine Leinenführung hält eine Festmacherleine dort, wo sie das Boot verlässt, damit sie nicht am Decksrand scheuert oder abspringt.",
+      "onThisBoat": "Je eine auf jeder Seite nahe dem Bug und nahe dem Heck, neben den Klampen. Die genauen Plätze sind geschätzt.",
+      "textStatus": "draft"
+    },
+    "fit_fender": {
+      "name": "Fender",
+      "alternatives": [],
+      "short": "Ein Gummipuffer, der über die Seite gehängt wird, um den Rumpf zu schützen.",
+      "what": "Fender hängen zwischen dem Boot und einem Steg oder einem anderen Boot, damit die Rümpfe nicht scheuern oder aneinanderschlagen. Sie werden vor dem Ankommen ausgebracht und vor dem Ablegen eingeholt.",
+      "onThisBoat": "Acht, vier auf jeder Seite, beim Segeln in einem Staukasten. Bringen Sie sie im Block Hafenausrüstung aus.",
+      "mistakes": [
+        {
+          "mistake": "Die Fender beim Segeln über die Seite hängen lassen.",
+          "fix": "Sie schlagen gegen den Rumpf und können verloren gehen. Holen Sie sie ein und verstauen Sie sie, sobald Sie aus dem Hafen sind."
+        }
+      ],
+      "showMe": "Das Boot von der Seite mit ausgebrachten Fendern, vier auf jeder Seite.",
+      "textStatus": "draft"
+    },
+    "fit_fender_ball": {
+      "name": "Kugelfender",
+      "alternatives": [],
+      "short": "Ein großer runder Fender für das Heck.",
+      "what": "Ein Kugelfender schützt eine Stelle, an der ein langer Fender abrutschen würde, zum Beispiel das Heck beim Achteraus-Anlegen (mit dem Heck zum Kai).",
+      "onThisBoat": "Einer, mittig am Heck, über das Heck hängend. Er wird mit den anderen Fendern ausgebracht und eingeholt.",
+      "showMe": "Das Boot von Backbord mit ausgebrachten Fendern: der Kugelfender hängt mittig am Heck.",
+      "textStatus": "draft"
+    },
+    "env_wake": {
+      "name": "Kielwasser",
+      "alternatives": [],
+      "short": "Die Spur aufgewühlten Wassers, die das Boot hinter sich lässt.",
+      "what": "Das Kielwasser ist die Spur des aufgewühlten Wassers hinter dem Boot, während es fährt. Ein gerades Kielwasser bedeutet einen gleichmäßigen Kurs; ein gekrümmtes zeigt, dass es gedreht hat.",
+      "showMe": "Schnelle Fahrt mit Wind von der Seite: Das Kielwasser zieht hinter dem Boot her. Drehen Sie das Steuerrad ein wenig, um zu sehen, wie es sich krümmt.",
+      "textStatus": "draft"
+    },
+    "env_boom_danger_zone": {
+      "name": "Gefahrenbereich Baum",
+      "alternatives": [],
+      "short": "Der rote Bereich, den die App zeichnet, wo der Baum bei einer Halse durchschwingen würde.",
+      "what": "Mit Wind von achtern kann der Baum bei einer Patenthalse über die ganze Plicht schwingen, schnell und hart genug, um jemanden zu verletzen. Die App zeichnet den Bereich, den er überstreicht, rot ein, damit Sie wissen, wo Sie nicht stehen dürfen.",
+      "mistakes": [
+        {
+          "mistake": "So weit nach achtern steuern, dass der Wind hinter das Großsegel kommt (Wind von der falschen Seite).",
+          "fix": "Der Baum kann jeden Moment herüberschwingen. Steuern Sie ein Stück zurück zum Wind oder halsen Sie absichtlich mit dichtgeholter Großschot."
+        }
+      ],
+      "showMe": "Vor dem Wind dreht der Autopilot das Boot mit gefierter Großschot durch die Linie genau achtern: eine Patenthalse. Der rote Bereich zeigt, wo der Baum durchschwingt. Halten Sie die Köpfe daraus.",
+      "textStatus": "draft"
+    },
+    "env_buoy": {
+      "name": "Übungsboje",
+      "alternatives": [],
+      "short": "Eine von vier gelben Bojen beim Start, zum Umsegeln.",
+      "what": "Vier gelbe Bojen stehen 200 m nördlich, östlich, südlich und westlich von der Stelle, an der das Boot startet. Nutzen Sie sie als Bahnmarken: Segeln Sie um sie herum, oder prüfen Sie, wie weit Sie gekommen sind.",
+      "showMe": "Die Karte von oben: Zoomen Sie mit − viermal heraus, um die vier Bojen rund um den Start zu sehen.",
+      "textStatus": "draft"
+    },
+    "env_quay": {
+      "name": "Kai",
+      "alternatives": [
+        {
+          "term": "Mole"
+        },
+        {
+          "term": "Schwimmsteg"
+        }
+      ],
+      "short": "Die feste Kante der Marina, an der die Boote festmachen.",
+      "what": "In einer Mittelmeermarina liegen die Boote nebeneinander mit dem Heck zum Kai (achteraus), gehalten von Achterleinen zum Kai und einer Lazy Line am Bug. Ein Ponton ist ein schwimmender Kai.",
+      "onThisBoat": "Die Marina der App hat einen Kai im Norden und einen Schwimmsteg im Süden, dazwischen eine Fahrrinne.",
+      "mistakes": [
+        {
+          "mistake": "Mit dem Bug voran hineinfahren wie in eine Parklücke.",
+          "fix": "Im Mittelmeer fährt man mit dem Heck voran hinein."
+        }
+      ],
+      "showMe": "Die Marina von oben.",
+      "textStatus": "draft"
+    },
+    "env_moored_yacht": {
+      "name": "Festgemachte Yacht",
+      "alternatives": [
+        {
+          "term": "Nachbarboot"
+        }
+      ],
+      "short": "Ein anderes Boot in der Marina; es bewegt sich in der App nie.",
+      "what": "Die Nachbarn sind der schwierigste Teil einer engen Box: Ihre Rümpfe sind nur wenige Zehnerzentimeter entfernt. Fender auf beiden Seiten schützen beide Boote.",
+      "onThisBoat": "Voll: jeder Platz belegt außer Ihrem. Halb voll: ein Nachbar. Leer: keiner.",
+      "mistakes": [
+        {
+          "mistake": "Nur auf den Kai schauen.",
+          "fix": "Achten Sie auf die Buge der Nachbarn: Der Wind drückt Ihren Bug auf ihren."
+        }
+      ],
+      "showMe": "Eine volle Marina von oben.",
+      "textStatus": "draft"
+    },
+    "env_breakwater": {
+      "name": "Wellenbrecher",
+      "alternatives": [
+        {
+          "term": "Mole"
+        },
+        {
+          "term": "Hafenmauer"
+        }
+      ],
+      "short": "Die Steinmauer, die die Wellen aus dem Hafen hält.",
+      "what": "Ein Wellenbrecher ist eine lange Steinschüttung oder eine Betonmauer um einen Hafen. Dahinter bleibt das Wasser ruhig, sodass Boote festmachen können. Boote fahren durch eine Lücke hinein und hinaus: die Einfahrt.",
+      "onThisBoat": "Die Marina der App hat einen Wellenbrecher im Süden und Westen, die Einfahrt liegt nach Westen, und der Kai ist als Nordmole weitergeführt.",
+      "mistakes": [
+        {
+          "mistake": "Dicht um das Ende des Wellenbrechers schneiden.",
+          "fix": "Halten Sie deutlich Abstand: Am Fuß liegen Steine weit unter Wasser aus."
+        }
+      ],
+      "showMe": "Der Wellenbrecher von oben.",
+      "textStatus": "draft"
+    },
+    "env_harbour_light": {
+      "name": "Einfahrtfeuer",
+      "alternatives": [
+        {
+          "term": "Hafenfeuer"
+        }
+      ],
+      "short": "Das rote oder grüne Feuer auf jeder Seite einer Hafeneinfahrt.",
+      "what": "In Europa (IALA-Region A) hält ein von See einlaufendes Boot das rote Feuer an seiner linken (Backbord-)Seite und das grüne an seiner rechten (Steuerbord-)Seite. Nachts blinken sie, damit Sie die Lücke finden.",
+      "onThisBoat": "Rot auf der Nordmole, grün am Westarm: Bei der Einfahrt mit Kurs Ost liegt Rot links.",
+      "mistakes": [
+        {
+          "mistake": "Die Feuer in der falschen Reihenfolge passieren.",
+          "fix": "Bei der Einfahrt von See bleibt Rot links."
+        }
+      ],
+      "showMe": "Die Einfahrt vom Ruder aus gesehen.",
+      "textStatus": "draft"
+    },
+    "env_exercise_target": {
+      "name": "Übungsziel",
+      "alternatives": [],
+      "short": "Wohin die Übung das Boot haben will: ein magentaroter Umriss auf dem Wasser und auf der Karte.",
+      "what": "Wird nur gezeichnet, solange ein Übungsschritt es braucht. Es liegt nicht auf dem echten Wasser; die App zeichnet es, um den Weg zu zeigen.",
+      "onThisBoat": "—",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "env_harbour_building": {
+      "name": "Hafengebäude",
+      "alternatives": [],
+      "short": "Die Häuser hinter dem Kai: Hafenbüro, Cafés, Läden.",
+      "what": "Das Büro einer Marina (wo Sie einchecken und bezahlen) liegt meist am Kai, mit Duschen, Cafés und Läden in der Nähe.",
+      "onThisBoat": "Nur gezeichnet: sechs niedrige Gebäude hinter dem Kai.",
+      "mistakes": [],
+      "showMe": "Die Gebäude vom Boot aus.",
+      "textStatus": "draft"
+    },
+    "fit_autopilot_control": {
+      "name": "Autopilot-Bedienteil",
+      "alternatives": [],
+      "short": "Das Bedienpanel, mit dem der Autopilot steuert.",
+      "what": "Der Autopilot steuert für Sie. Auf Standby steuern Sie selbst; Heading hält den Kompasskurs; Wind hält den Winkel zum wahren Wind. Tack dreht das Boot durch den Wind.",
+      "onThisBoat": "Ein B&G-Bedienteil am Steuerrad. Auf jedem Steuerrad-Panel der App zeigen seine Tasten den Modus (STBY leuchtet auf Standby, AUTO leuchtet, solange er steuert) und die Zeile darüber den Kurs, den er hält. Bedient wird er im Bereich Autopilot.",
+      "mistakes": [
+        {
+          "mistake": "Einen Kompasskurs halten und den Wind vergessen.",
+          "fix": "Dreht der Wind, kann das Boot ins Totwasser oder in eine Halse geraten. Beobachten Sie die Segel, oder lassen Sie den Autopiloten den Windwinkel halten."
+        },
+        {
+          "mistake": "Bei eingeschaltetem Autopiloten das Steuerrad von Hand drehen.",
+          "fix": "Er geht auf Standby (Sie haben das Steuer übernommen). Wählen Sie den Modus neu, wenn er wieder steuern soll."
+        }
+      ],
+      "showMe": "Der Autopilot hält den Winkel zum Wind. Sein Bereich heißt Autopilot: Ändern Sie den Winkel mit seinen Tasten.",
+      "textStatus": "draft"
+    },
+    "fit_instrument_display": {
+      "name": "Instrumentendisplay",
+      "alternatives": [],
+      "short": "Der Bildschirm am Steuerrad, der Geschwindigkeit, Kurs und Wind zeigt.",
+      "what": "Es zeigt die Geschwindigkeit des Bootes, seinen Kurs und den Wind: AWA und AWS, Winkel und Geschwindigkeit des scheinbaren Winds (den die Segel spüren), sowie TWA und TWS, die des wahren Winds.",
+      "onThisBoat": "Ein B&G-Display am Steuerrad. In der App hat jedes Steuerrad-Panel eine Windanzeige mit AWA und AWS, dem Wind, den die Segel spüren; die Leiste oben in der 3D-Ansicht zeigt dieselben Zahlen und mehr (tippen Sie darauf für die Windrose).",
+      "textStatus": "draft"
+    },
+    "fit_helm_pedestal": {
+      "name": "Steuersäule",
+      "alternatives": [
+        {
+          "term": "Kompasssäule"
+        }
+      ],
+      "short": "Die Säule vor jedem Steuerrad, die Kompass und Bedienteile trägt.",
+      "what": "Die Achse des Steuerrads läuft in die Säule. Obenauf sitzt ein kleines Panel mit Kompass und Instrumenten, und ein Stahlbügel davor gibt Ihnen etwas zum Festhalten und hält Knie und Leinen von den Instrumenten fern.",
+      "onThisBoat": "Je eine Säule an jedem Steuerrad, jede mit demselben Panel: der Kompass, die Windanzeige, der Motorhebel und der Drehzahlmesser, die Strahlruder-Joysticks und die Autopilot-Tasten. Die Zeichnung ist eine Vermutung: Es gibt noch kein Foto der Säule.",
+      "showMe": "Der Blick von hinter dem Steuerrad: Vor dem Rad steht die Säule mit ihrem Panel und dem Stahlbügel.",
+      "textStatus": "draft"
+    },
+    "fit_thruster_joysticks": {
+      "name": "Strahlruder-Joysticks",
+      "alternatives": [],
+      "short": "Zwei kleine Hebel, die den Bug oder das Heck zur Seite drücken.",
+      "what": "Solange Sie einen Hebel zur Seite drücken, drückt sein Strahlruder (ein Propeller in einem Tunnel quer durch den Rumpf) dieses Bootsende in dieselbe Richtung. Ein Hebel ist für das Bugstrahlruder, einer für das Heckstrahlruder. Sie helfen bei geringer Fahrt in der Marina; über ein paar Knoten hinaus bewirken sie wenig.",
+      "onThisBoat": "Zwei Joysticks am Steuerrad, einer für jedes Strahlruder. In der App bedienen Sie die Strahlruder im Bereich Motor und in der Schnellleiste.",
+      "showMe": "Der Blick von hinter dem Steuerrad: Die beiden kleinen Strahlruderhebel sitzen unten am Panel, rechts vom Tastenfeld.",
+      "textStatus": "draft"
+    },
+    "fit_winch_handle_rest": {
+      "name": "Winschkurbelhalter",
+      "alternatives": [],
+      "short": "Wo die Winschkurbel am Steuerrad liegt.",
+      "what": "Eine lose liegende Winschkurbel kann verrutschen oder über Bord gehen, deshalb wird sie in einer Halterung oder einer Tasche aufbewahrt, wenn sie nicht in einer Winsch steckt.",
+      "onThisBoat": "In der App liegt die Kurbel auf einem Polster am Plichtboden zwischen den beiden Steuerrädern, zwischen zwei kleinen Anschlägen.",
+      "showMe": "Realistische Leinen, die Kurbel am Steuerrad verstaut: Sie liegt auf dem dunklen Polster zwischen den beiden Steuerrädern, zwischen zwei kleinen Anschlägen.",
+      "textStatus": "draft"
+    },
+    "fit_deck_hatch": {
+      "name": "Decksluke",
+      "alternatives": [],
+      "short": "Ein Fenster im Deck, das sich für Licht und Luft unter Deck öffnen lässt.",
+      "what": "Eine Luke ist ein kräftiges Fenster in einem Rahmen, aufklappbar. Geschlossen und verriegelt hält sie das Wasser draußen; auf See bleibt sie zu, denn eine Welle über Deck läuft durch eine offene Luke hinein.",
+      "onThisBoat": "In der App zwei Luken auf dem Deckshaus und eine auf dem Vordeck. Ihre Plätze sind geschätzt. Bei Detail Niedrig werden sie nicht gezeichnet.",
+      "showMe": "Von oben: zwei Luken auf dem Deckshaus und eine auf dem Vordeck, jede ein heller Rahmen um einen dunklen Deckel.",
+      "textStatus": "draft"
+    },
+    "fit_portlight": {
+      "name": "Rumpffenster",
+      "alternatives": [],
+      "short": "Ein langes, festes Fenster in der Rumpfseite.",
+      "what": "Rumpffenster geben Licht und Aussicht aus der Kajüte. Sie lassen sich nicht öffnen und sind so stark gebaut, dass sie den Wellen standhalten, die gegen die Seite schlagen.",
+      "onThisBoat": "In der App drei Fenster auf jeder Seite. Ihre Größen und Positionen sind eine Vermutung. Bei Detailstufe „Niedrig“ werden sie nicht gezeichnet.",
+      "showMe": "Von der Seite: drei lange dunkle Fenster unterhalb der Deckskante.",
+      "textStatus": "draft"
+    },
+    "term_prop_walk": {
+      "name": "Radeffekt",
+      "alternatives": [],
+      "short": "Bei Rückwärtsfahrt drückt der Propeller das Heck zur Seite.",
+      "what": "Ein Propeller drückt nach hinten, bei Rückwärtsfahrt drückt er zugleich das Heck zur Seite, am stärksten, solange noch keine Fahrt im Boot ist. Welche Seite, hängt von der Drehrichtung des Propellers ab. Skipper nutzen das: Wandert das Heck nach Backbord, legen sie mit der Backbordseite an.",
+      "onThisBoat": "Ein Saildrive mit festem Zweiblattpropeller. In der App wandert das Heck bei Rückwärtsfahrt nach Backbord (eine Annahme, bis der Skipper es prüft): etwa 6° Drehung in 15 s bei halber Rückwärtsfahrt. Ein Saildrive hat weniger Radeffekt als eine Wellenanlage.",
+      "mistakes": [
+        {
+          "mistake": "Gerade rückwärts in eine Box fahren und überrascht sein, dass das Boot dreht.",
+          "fix": "Rechnen Sie mit dem Radeffekt: Beginnen Sie die Drehung früh, oder korrigieren Sie mit einem kurzen Gasstoß voraus und eingeschlagenem Ruder."
+        }
+      ],
+      "showMe": "Kein Wind, Motor halbe Rückwärtsfahrt aus dem Stand: Sehen Sie zu, wie der Bug nach Steuerbord schwingt, während das Heck nach Backbord wandert.",
+      "textStatus": "draft"
+    },
+    "term_windage": {
+      "name": "Windangriffsfläche",
+      "alternatives": [],
+      "short": "Der Druck des Windes auf Rumpf, Mast und eingerollte Segel.",
+      "what": "Auch mit weggerollten Segeln drückt der Wind auf alles über Wasser. Mit Fahrt hält der Kiel das Boot gerade. Unter etwa zwei Knoten tut er das nicht mehr: Das Boot versetzt seitlich, und der Bug, hoch und leicht, weht schneller ab als das Heck, bis es etwa quer zum Wind liegt.",
+      "onThisBoat": "Hohes Freibord, ein 20 m hoher Mast und das eingerollte Großsegel darin: Bei 15 kn querab versetzt das Boot mit etwa 0,6 kn seitlich; steht der Wind 45° zum Bug, fällt der Bug in 30 s etwa 30° ab.",
+      "mistakes": [
+        {
+          "mistake": "Im Fahrwasser anhalten, um zu warten: Der Bug weht ab, und das Boot treibt auf die festgemachten Boote.",
+          "fix": "Halten Sie etwas Fahrt im Boot oder halten Sie es mit Motor und Strahlrudern."
+        }
+      ],
+      "showMe": "Segel weggerollt, 15 kn Wind 45° auf dem Steuerbordbug, stillstehend: Der Bug weht nach Backbord ab.",
+      "textStatus": "draft"
+    },
+    "part_bow_thruster": {
+      "name": "Bugstrahlruder",
+      "alternatives": [],
+      "short": "Ein kleiner Propeller in einem Tunnel quer durch den Bug, der den Bug zur Seite drückt.",
+      "what": "Es drückt den Bug nach Backbord oder Steuerbord, solange der Joystick gehalten wird. Es ist stark, wenn das Boot fast steht, und schwach, sobald es schneller als etwa 2 Knoten fährt, weil das vorbeiströmende Wasser seinen Strahl wegspült.",
+      "onThisBoat": "Ein Tunnel etwa 2 m hinter dem Vorsteven, bedient mit dem linken Joystick am Steuerrad (Eigentümerangabe). In der App drückt es etwa 130 kgf (eine Annahme).",
+      "mistakes": [
+        {
+          "mistake": "Es bei Fahrt gehalten und sich wundern, dass nichts passiert.",
+          "fix": "Reduzieren Sie zuerst die Fahrt und arbeiten Sie dann mit kurzen Stößen."
+        }
+      ],
+      "showMe": "Kein Wind, das Boot steht: Halten Sie den Bug-Joystick nach Steuerbord und beobachten Sie, wie es dreht.",
+      "textStatus": "draft"
+    },
+    "part_stern_thruster": {
+      "name": "Heckstrahlruder",
+      "alternatives": [],
+      "short": "Ein kleiner Propeller in einem Tunnel quer durch das Heck, der das Heck zur Seite drückt.",
+      "what": "Es bewegt das Heck nach Backbord oder Steuerbord. Zusammen mit dem Bugstrahlruder dreht es das Boot auf der Stelle oder bewegt es seitlich zum Kai.",
+      "onThisBoat": "Ein Tunnel quer durch den Rumpf achtern (eine Annahme: Dort ist der Rumpf flach, deshalb ist der Tunnel klein), mit einer Öffnung auf jeder Seite, bedient mit dem rechten Joystick am Steuerrad (Eigentümerangabe). In der App etwa 100 kgf.",
+      "mistakes": [
+        {
+          "mistake": "Bei starkem Seitenwind auf beide Strahlruder zählen.",
+          "fix": "Bei starkem Wind reichen sie nicht: Planen Sie die Annäherung so, dass der Wind hilft, oder bleiben Sie in Fahrt."
+        }
+      ],
+      "showMe": "Kein Wind, das Boot steht: Halten Sie beide Joysticks nach Steuerbord: Es versetzt seitlich.",
+      "textStatus": "draft"
+    },
+    "term_med_mooring": {
+      "name": "Achteraus-Anlegen",
+      "alternatives": [
+        {
+          "term": "Mittelmeer-Anlegen"
+        }
+      ],
+      "short": "Mit dem Heck zum Kai liegen, gehalten von Achterleinen und einer Lazy Line oder dem Anker am Bug.",
+      "what": "Die Boote liegen nebeneinander mit dem Heck zum Kai, so passen viele längs daran. Zwei Achterleinen gehen zu Ringen am Kai; am Bug hält eine Lazy Line (oder Ihr eigener Anker) das Boot vom Kai weg und gegen den Wind.",
+      "onThisBoat": "Rückwärts hinein: Das Heck läuft nach Backbord aus, also früh mit dem Drehen beginnen.",
+      "mistakes": [
+        {
+          "mistake": "Die Lazy Line bei eingelegtem Gang aufnehmen.",
+          "fix": "Erst in den Leerlauf: Eine lose Leine in Propellernähe wickelt sich ein."
+        }
+      ],
+      "showMe": "In der Box mit beiden Achterleinen und der Lazy Line stramm.",
+      "textStatus": "draft"
+    },
+    "rope_lazy_line": {
+      "name": "Lazy Line",
+      "alternatives": [],
+      "short": "Eine Leine vom Kai zu einem Gewicht am Grund, die zum Bug genommen wird.",
+      "what": "Sie liegt zwischen den Boxen auf dem Grund; die Crew hebt sie am Heck mit dem Bootshaken auf, trägt sie am Seitendeck nach vorn und belegt sie auf einer Bugklampe, wobei sie sie stramm holt.",
+      "onThisBoat": "In der App braucht die Crew 20 s, um sie nach vorn zu tragen.",
+      "mistakes": [
+        {
+          "mistake": "Sie lose lassen.",
+          "fix": "Holen Sie sie von Hand so stramm wie möglich, sonst schwingt der Bug auf den Nachbarn."
+        }
+      ],
+      "showMe": "Die Lazy Line am Bug belegt und stramm geholt.",
+      "textStatus": "draft"
+    },
+    "rope_stern_line_port": {
+      "name": "Achterleine Backbord",
+      "alternatives": [],
+      "short": "Eine Leine von einer Heckklampe zu einem Ring am Kai.",
+      "what": "Die beiden Achterleinen halten das Heck einen kurzen Schritt vom Kai entfernt.",
+      "onThisBoat": "Klampen auf beiden Heckquarters.",
+      "mistakes": [
+        {
+          "mistake": "Sie werfen, bevor das Heck nah genug ist.",
+          "fix": "Warten Sie, bis das Heck etwa 4 m entfernt ist."
+        }
+      ],
+      "showMe": "Beide Achterleinen auf den Ringen am Kai.",
+      "textStatus": "draft"
+    },
+    "rope_stern_line_starboard": {
+      "name": "Achterleine Steuerbord",
+      "alternatives": [],
+      "short": "Eine Leine von einer Heckklampe zu einem Ring am Kai.",
+      "what": "Die beiden Achterleinen halten das Heck einen kurzen Schritt vom Kai entfernt.",
+      "onThisBoat": "Klampen auf beiden Heckquarters.",
+      "mistakes": [
+        {
+          "mistake": "Sie werfen, bevor das Heck nah genug ist.",
+          "fix": "Warten Sie, bis das Heck etwa 4 m entfernt ist."
+        }
+      ],
+      "showMe": "Beide Achterleinen auf den Ringen am Kai.",
+      "textStatus": "draft"
+    },
+    "env_quay_ring": {
+      "name": "Kairing",
+      "alternatives": [
+        {
+          "term": "Poller"
+        }
+      ],
+      "short": "Ein Ring am Kai, an dem Leinen belegt werden.",
+      "what": "Ein Ring am Kai, an dem Leinen belegt werden.",
+      "onThisBoat": "Einer an jeder Boxenkante in der Marina der App.",
+      "textStatus": "draft"
+    },
+    "env_seabed": {
+      "name": "Meeresboden",
+      "alternatives": [
+        {
+          "term": "Grund"
+        }
+      ],
+      "short": "Woraus der Grund besteht: Sand, Schlick, Seegras oder Fels.",
+      "what": "Er entscheidet, wie gut ein Anker hält: Sand und Schlick halten gut, Seegras und Fels schlecht.",
+      "onThisBoat": "Die Bucht hat Sand, ein Stück Seegras und felsige Ufer.",
+      "textStatus": "draft"
+    },
+    "env_shore": {
+      "name": "Ufer",
+      "alternatives": [],
+      "short": "Das Land um die Bucht.",
+      "what": "Das Land um die Bucht.",
+      "textStatus": "draft"
+    },
+    "env_rock": {
+      "name": "Unterwasserfels",
+      "alternatives": [
+        {
+          "term": "Unterwasserklippe"
+        }
+      ],
+      "short": "Ein Fels, der nicht über die Wasseroberfläche schaut.",
+      "what": "Die Seekarte kennzeichnet ihn mit einem Kreuz und vier Punkten.",
+      "onThisBoat": "Drei in der Bucht: zwei nahe dem Nordufer und einer versteckt in der Südhälfte.",
+      "textStatus": "draft"
+    },
+    "env_shore_ring": {
+      "name": "Landring",
+      "alternatives": [],
+      "short": "Ein im Fels befestigter Ring für eine Landleine.",
+      "what": "Ein im Fels befestigter Ring für eine Landleine.",
+      "onThisBoat": "Fünf Ringe am hinteren Ufer und am Nordufer.",
+      "textStatus": "draft"
+    },
+    "env_mooring_buoy": {
+      "name": "Festmacheboje",
+      "alternatives": [
+        {
+          "term": "Boje"
+        }
+      ],
+      "short": "Eine an einem Gewicht am Grund befestigte Boje, an der Sie Ihren Bug festmachen.",
+      "what": "Fahren Sie langsam gegen den Wind heran, nehmen Sie sie am Bug mit dem Bootshaken auf und stecken Sie eine Vorleine durch ihren Ring.",
+      "onThisBoat": "Drei Bojen an der Mündung der Bucht.",
+      "mistakes": [
+        {
+          "mistake": "Mit dem Wind von hinten anfahren.",
+          "fix": "Kommen Sie gegen den Wind heran, damit Sie an ihr stoppen können."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "rope_bow_line": {
+      "name": "Vorleine",
+      "alternatives": [],
+      "short": "Eine Leine von einer Bugklampe.",
+      "what": "Eine Leine von einer Bugklampe.",
+      "textStatus": "draft"
+    },
+    "rope_shore_line": {
+      "name": "Landleine",
+      "alternatives": [],
+      "short": "Eine Leine vom Heck zu einem Ring oder einem Felsen am Ufer.",
+      "what": "Zusammen mit dem Anker verwendet, damit das Boot mit dem Heck zum Ufer liegt und nicht schwojt.",
+      "onThisBoat": "Die Crew bringt sie in der App in 30 s an Land.",
+      "textStatus": "draft"
+    },
+    "term_grounding": {
+      "name": "Auf Grund laufen",
+      "alternatives": [
+        {
+          "term": "Grundberührung"
+        }
+      ],
+      "short": "Der Kiel berührt den Grund, wo das Wasser flacher als der Tiefgang ist.",
+      "what": "Der Kiel reicht am tiefsten: 2,4 m bei diesem Boot. Bei sanfter Berührung bringt Sie voller Rückwärtsgang meist den Weg zurück, den Sie gekommen sind; kommen Sie schnell, sitzt das Boot fest. Beobachten Sie die Tiefe, bevor es zu spät ist.",
+      "onThisBoat": "Tiefgang 2,4 m (Standardkiel). Die Tiefe in der Instrumentenleiste wird unter 3,4 m rot. In der App kommt eine Berührung bei 2 kn oder weniger mit vollem Rückwärtsgang wieder frei; bei 3 kn sitzt das Boot fest.",
+      "mistakes": [
+        {
+          "mistake": "Mit Reisegeschwindigkeit in eine Bucht motoren.",
+          "fix": "Verlangsamen Sie nahe dem Ufer und beobachten Sie die Tiefe."
+        }
+      ],
+      "showMe": "Langsam auf das flache Ende der Bucht zu.",
+      "textStatus": "draft"
+    },
+    "fit_windlass_remote": {
+      "name": "Ankerwinden-Fernbedienung",
+      "alternatives": [],
+      "short": "Tasten am Steuerrad, die die Ankerwinde bedienen.",
+      "what": "Damit kann der Rudergänger die Kette ausgeben oder einholen, ohne nach vorn zu gehen.",
+      "onThisBoat": "Am Steuerrad (EXERCISES.md 5, Eigentümerangabe).",
+      "textStatus": "draft"
+    },
+    "term_scope": {
+      "name": "Vorlauf",
+      "alternatives": [],
+      "short": "Wie viel Kette draußen ist, verglichen mit der Tiefe.",
+      "what": "Je mehr Kette, desto flacher zieht sie am Anker, und desto besser hält er; das Gewicht der Kette dämpft auch die Rucke. Bei zu wenig Kette hebt der Zug den Schaft des Ankers, und er schleift.",
+      "onThisBoat": "70 m Kette (eine Annahme). Bei 5 m Wassertiefe ist die Regel des Ausbilders (3 Bootslängen, 47 m) mehr als das 4-Fache der wirksamen Tiefe (27 m).",
+      "mistakes": [
+        {
+          "mistake": "Nur die Wassertiefe an Kette ausgeben und sich zurücklehnen.",
+          "fix": "Geben Sie so viel aus, wie die Prüfung verlangt, und setzen Sie den Anker dann, indem Sie sanft rückwärts gehen."
+        }
+      ],
+      "showMe": "In der Bucht geankert mit 34 m Kette, Wind 15 kn.",
+      "textStatus": "draft"
+    }
+  }
+}

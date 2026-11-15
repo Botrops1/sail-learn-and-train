@@ -1,0 +1,817 @@
+{
+  "$status": "draft",
+  "points-of-sail": {
+    "title": "Trimm auf allen Kursen",
+    "summary": "Drehen Sie vom Am-Wind-Kurs bis vor den Wind und fieren Sie dabei die Segel.",
+    "see": "Sie segeln hart am Wind auf Steuerbordbug: Der Wind kommt über die rechte Seite des Bugs. Die Vorderkante des Großsegels killt.",
+    "happening": "Ein Segel wirkt nur dann wie eine Tragfläche, wenn der Wind im richtigen Winkel darauf trifft. Wenn Sie vom Wind wegdrehen (abfallen), kommt der Wind mehr von der Seite und dann von hinten, deshalb muss jedes Segel weiter gefiert werden.",
+    "action": "Fieren Sie bei jedem Abfallen die Schoten: die Großschot, bis kein Strömungsabriss mehr da ist, die Fockschot auf Kursen quer zum Wind ganz. Vor dem Wind fieren Sie die Großschot vollständig.",
+    "mistake": "Abfallen ohne zu fieren: Die Strömung reißt an den Segeln ab (die Luft strömt nicht mehr glatt über sie), das Boot krängt und wird langsamer. Zu weit drehen vor dem Wind: Der Wind kommt hinter das Großsegel und wirft den Baum herüber (eine unbeabsichtigte Halse).",
+    "done": "Sie sind alle Kurse vom Am Wind bis vor den Wind gesegelt. Je weiter vom Wind weg, desto weiter sind die Segel gefiert.",
+    "steps": {
+      "close-hauled": {
+        "goal": "Am Wind: Dichten Sie das Großsegel an, bis es nicht mehr killt.",
+        "how": "Tippen Sie unter „Leinen“ auf − bei „Großschot“, bis etwa 12 % angezeigt werden. Beobachten Sie den Abschnitt „Segel“: Beide Segel zeigen „Gut“, wenn sie richtig getrimmt sind."
+      },
+      "close-reach": {
+        "goal": "Anlieger: Drehen Sie 20° vom Wind weg, dann fieren Sie das Großsegel.",
+        "how": "Öffnen Sie „Steuerung“ (den Block „Autopilot“) und tippen Sie zweimal auf −10. Jeder Tipp dreht das Boot um 10° nach Backbord (links), vom Wind weg, der von Steuerbord kommt. Fieren Sie dann unter „Leinen“ die „Großschot“ auf etwa 25 %. Bei realistischen Leinen steht der Autopilot an der Ruderstation."
+      },
+      "beam-reach": {
+        "goal": "Halbwind: Wind von der Seite. Fieren Sie das Großsegel und die Fockschot ganz.",
+        "how": "Tippen Sie unter „Steuerung“ noch dreimal auf −10. Fieren Sie dann unter „Leinen“ die „Großschot“ auf etwa 50 % und die „Fockschot“ auf 100 %. Auf Kursen quer zum Wind kann die Selbstwendefock (sie wechselt die Seite von selbst) nicht weit genug ausfahren, um „Gut“ anzuzeigen: Fieren Sie ihre Schot ganz."
+      },
+      "broad-reach": {
+        "goal": "Raumschots: Wind von schräg hinten. Fieren Sie das Großsegel ganz.",
+        "how": "Tippen Sie unter „Steuerung“ noch viermal auf −10. Fieren Sie unter „Leinen“ die „Großschot“ auf 85 % oder mehr: Der Baum stößt an die Wanten (die Drähte, die den Mast halten), weiter kommt das Großsegel nicht aus."
+      },
+      "run": {
+        "goal": "Vor dem Wind: Wind von hinten. Halten Sie den Kurs 10 Sekunden ohne Halse.",
+        "how": "Tippen Sie unter „Steuerung“ noch dreimal auf −10, auf etwa 165° zum Wind. Gehen Sie nicht weiter: Steht der Wind genau von hinten oder schon von der anderen Seite, kann der Baum von selbst herüberschwingen."
+      }
+    },
+    "mistakes": {
+      "accidental-gybe": {
+        "name": "eine unbeabsichtigte Halse",
+        "what": "Der Baum ist von selbst herübergeschwungen (eine unbeabsichtigte Halse).",
+        "why": "Der Wind kam von der anderen Seite hinter das Großsegel: Das Boot hat über den genauen Vor-dem-Wind-Kurs hinaus gedreht.",
+        "fix": "Der Baum ist jetzt auf der anderen Seite, deshalb lässt sich dieser Schritt von hier aus nicht abschließen. Tippen Sie auf „Zurück zum Anfang von Schritt 5“ und drehen Sie diesmal nur dreimal."
+      },
+      "by-the-lee": {
+        "name": "Segeln mit Wind von der falschen Seite",
+        "what": "Sie segeln mit Wind von der falschen Seite: Der Wind kommt von der Seite, auf der der Baum steht.",
+        "why": "Das Boot hat über den genauen Vor-dem-Wind-Kurs hinaus gedreht, deshalb kann der Baum jederzeit herüberkommen.",
+        "fix": "Drehen Sie sofort 10–20° zurück zum Wind: Tippen Sie unter „Steuerung“ ein- oder zweimal auf +10."
+      },
+      "in-irons": {
+        "name": "Stoppen mit dem Bug im Wind",
+        "what": "Das Boot steht mit dem Bug im Wind (liegt in der Wende).",
+        "why": "Das Boot hat zum Wind hin gedreht statt von ihm weg: Bei Wind genau von vorn arbeitet kein Segel.",
+        "fix": "Drehen Sie mit −10 unter „Steuerung“ vom Wind weg (Autopilot „Wind“); reagiert das Boot nicht, machen Sie die Übung „Aus der Wende herauskommen“."
+      }
+    }
+  },
+  "tacking": {
+    "title": "Wenden",
+    "summary": "Drehen Sie den Bug durch den Wind, zuerst mit dem Autopiloten, dann von Hand.",
+    "see": "Sie segeln hart am Wind auf Steuerbordbug: Der Wind kommt über die rechte Seite des Bugs.",
+    "happening": "Um ein Ziel im Luv zu erreichen, segelt ein Segelboot im Zickzack: Es wendet (dreht den Bug durch den Wind) von einer Seite auf die andere. Die Selbstwendefock wechselt die Seite von selbst, daher braucht man nur das Steuerrad.",
+    "action": "Drehen Sie gleichmäßig und drehen Sie weiter, bis der Wind etwa 40° auf der anderen Seite des Bugs steht, dann stellen Sie gerade und lassen Sie das Boot Fahrt aufnehmen, bevor Sie höher an den Wind gehen.",
+    "mistake": "Zu langsam drehen oder gerade stellen, solange der Bug noch in den Wind zeigt: Das Boot stoppt mit dem Bug im Wind (liegt in der Wende) und steuert nicht mehr.",
+    "done": "Sie haben mit dem Autopiloten und von Hand gewendet. Lassen Sie das Steuerrad stehen, bis der Wind klar auf der neuen Seite ist, dann lassen Sie das Boot Fahrt aufnehmen.",
+    "steps": {
+      "tack-autopilot": {
+        "goal": "Wenden Sie mit dem Autopiloten und lassen Sie das Boot dann auf 4 Knoten Fahrt aufnehmen.",
+        "how": "Tippen Sie unter „Steuerung“ auf „Wende“. Der Autopilot dreht das Boot durch den Wind und hält auf der anderen Seite denselben Winkel. Warten Sie, bis die Geschwindigkeit in der Leiste 4 Knoten oder mehr anzeigt."
+      },
+      "tack-by-hand": {
+        "goal": "Wenden Sie jetzt von Hand zurück: Autopilot auf „Standby“, Steuerrad hart nach Backbord.",
+        "how": "Tippen Sie unter „Steuerung“ auf „Standby“ (der Autopilot steuert nicht mehr), stellen Sie dann das „Steuerrad“ auf −25° (nach Backbord: Der Wind kommt jetzt von Backbord, Backbord liegt also zum Wind hin) und halten Sie es dort, während der Bug durch den Wind geht."
+      },
+      "centre-wheel": {
+        "goal": "Wenn der Wind 35° auf der neuen Seite steht, stellen Sie das Steuerrad gerade.",
+        "how": "Beobachten Sie den Windwinkel in der Leiste. Wenn er etwa 35° von Steuerbord anzeigt, stellen Sie das „Steuerrad“ unter „Steuerung“ auf 0°. Stellen Sie früher gerade, bleibt das Boot mit dem Bug im Wind hängen."
+      },
+      "pick-up-speed": {
+        "goal": "Segeln Sie am Wind und lassen Sie das Boot auf 4 Knoten Fahrt aufnehmen.",
+        "how": "Tippen Sie unter „Steuerung“ auf „Wind“ (er hält den Winkel, den das Boot jetzt hat), dann einmal auf „10° nach Backbord“, auf etwa 45° zum Wind. Beide Segel sollten „Gut“ anzeigen."
+      }
+    },
+    "mistakes": {
+      "in-irons": {
+        "name": "Stoppen mit dem Bug im Wind",
+        "what": "Das Boot steht mit dem Bug im Wind (liegt in der Wende).",
+        "why": "Die Drehung war zu langsam, oder das Steuerrad kam zurück in die Mitte, bevor der Bug durch den Wind war. Bei Wind genau von vorn arbeitet kein Segel, und ohne Fahrt wirkt das Ruder nicht.",
+        "fix": "Fieren Sie beide Schoten, legen Sie das Steuerrad hart über und warten Sie, während das Boot rückwärts treibt: Die Übung „Aus der Wende herauskommen“ zeigt, wie es geht."
+      }
+    }
+  },
+  "irons": {
+    "title": "Aus der Wende herauskommen",
+    "summary": "Das Boot steht mit dem Bug im Wind. Bringen Sie es wieder in Fahrt.",
+    "see": "Der Bug zeigt genau in den Wind. Beide Segel killen, das Boot hat keine Fahrt und das Steuerrad wirkt nicht.",
+    "happening": "Bei Wind genau von vorn kann kein Segel arbeiten (das Totwasser). Der Wind schiebt das Boot langsam rückwärts, und rückwärts wirkt das Ruder umgekehrt: Es dreht den Bug vom Wind weg.",
+    "action": "Fieren Sie beide Schoten, legen Sie das Steuerrad hart über und halten Sie es, während das Boot rückwärts treibt. Wenn der Wind etwa 40° auf dem Bug steht, stellen Sie das Steuerrad gerade und holen Sie die Schoten dicht.",
+    "mistake": "Hart dichtholen oder mit dem Steuerrad in der Mitte warten: Das Boot bleibt mit dem Bug im Wind stehen.",
+    "done": "Das Boot segelt wieder. Rückwärts dreht das Ruder den Bug andersherum: Halten Sie das Steuerrad über und haben Sie Geduld.",
+    "steps": {
+      "ease-sheets": {
+        "goal": "Fieren Sie beide Schoten auf 40 % oder mehr.",
+        "how": "Stellen Sie unter „Leinen“ „Großschot“ und „Fockschot“ auf etwa 60 %."
+      },
+      "wheel-over": {
+        "goal": "Legen Sie das Steuerrad hart über und warten Sie, bis der Wind 35° oder mehr auf dem Bug steht.",
+        "how": "Stellen Sie unter „Steuerung“ das „Steuerrad“ auf +30° und halten Sie es dort. Das Boot treibt rückwärts, und der Bug fällt langsam vom Wind weg. Das dauert etwa eine Minute."
+      },
+      "sail-away": {
+        "goal": "Steuerrad gerade stellen, Schoten dichtholen und mit 3 Knoten oder mehr lossegeln.",
+        "how": "Stellen Sie unter „Steuerung“ das „Steuerrad“ auf 0°. Stellen Sie unter „Leinen“ die „Großschot“ auf etwa 12 % und die „Fockschot“ auf etwa 30 %. Beide Segel sollten „Gut“ anzeigen."
+      }
+    },
+    "mistakes": {}
+  },
+  "gybing": {
+    "title": "Halsen: kontrolliert und unbeabsichtigt",
+    "summary": "Drehen Sie das Heck mit dichtgeholter Großschot durch den Wind und sehen Sie dann, was eine unbeabsichtigte Halse anrichtet.",
+    "see": "Sie segeln vor dem Wind auf Steuerbordbug, die Großschot ist ganz gefiert.",
+    "happening": "Bei einer Halse geht das Heck durch den Wind, und der Baum schwingt auf die andere Seite. Ist das Großsegel gefiert, rast der Baum durch die ganze Plicht und stoppt mit einem Schlag. Vorher dichtgeholt bewegt er sich nur ein Stück.",
+    "action": "Holen Sie das Großsegel dicht, bis der Baum fast in der Mitte steht, drehen Sie, bis der Wind auf der anderen Seite ist, und fieren Sie das Großsegel dann wieder.",
+    "mistake": "Mit gefiertem Großsegel durch den Wind drehen oder unbeabsichtigt über den genauen Vor-dem-Wind-Kurs hinaussteuern: Der Baum knallt herüber (eine unbeabsichtigte Halse). Dieses Boot hat keine Bulltalje (eine Leine, die den Baum festhalten würde).",
+    "done": "Eine kontrollierte Halse bewegt den Baum langsam ein kurzes Stück. Eine unbeabsichtigte schleudert ihn schnell herüber, mit großer Last auf der Großschot und auf allem, was im Weg ist. Erst dichtholen.",
+    "steps": {
+      "haul-main": {
+        "goal": "Holen Sie das Großsegel dicht, bis der Baum fast in der Mitte steht.",
+        "how": "Stellen Sie unter „Leinen“ die „Großschot“ auf 5 %. Der Baum kommt bis auf 16° an die Mittellinie heran."
+      },
+      "gybe": {
+        "goal": "Halsen: Drehen Sie, bis der Wind auf der anderen Seite ist.",
+        "how": "Tippen Sie unter „Steuerung“ auf „Halse“ (auf Vorwindkurs heißt die Taste „Wende“ „Halse“). Das Boot dreht durch den Wind, und der Baum geht ein kurzes Stück herüber."
+      },
+      "ease-main": {
+        "goal": "Fieren Sie das Großsegel auf der neuen Seite ganz.",
+        "how": "Stellen Sie unter „Leinen“ die „Großschot“ auf 85 % oder mehr."
+      },
+      "accidental": {
+        "goal": "Sehen Sie jetzt absichtlich eine unbeabsichtigte Halse: Drehen Sie 30° weiter vom Wind weg, über den genauen Vor-dem-Wind-Kurs hinaus.",
+        "how": "Tippen Sie unter „Steuerung“ auf „Kurs“ und dann dreimal auf „10° nach Steuerbord“: Das Boot dreht von 15° vor dem genauen Vor-dem-Wind-Kurs auf 15° dahinter. Zuerst hält der Wind den Baum noch draußen; auf See bringt eine Rollbewegung, eine Welle oder eine kleine Kursänderung ihn in Bewegung (die App gibt ihm diesen Anstoß), und sobald der Baum über die Windlinie hinaus ist (genau dorthin zeigt, woher der Wind kommt), wirft der Wind ihn den Rest des Weges herüber. Beobachten Sie den Halsen-Bericht: die Geschwindigkeit des Baums und die Last auf der Großschot."
+      }
+    },
+    "mistakes": {
+      "accidental-gybe": {
+        "name": "eine unbeabsichtigte Halse",
+        "what": "Der Baum ist von selbst herübergegangen (eine unbeabsichtigte Halse).",
+        "why": "Das Großsegel war noch gefiert, als das Heck durch den Wind ging, oder das Boot wurde über den genauen Vor-dem-Wind-Kurs hinaus gesteuert.",
+        "fix": "Holen Sie das Großsegel dicht, bevor Sie halsen. Vor dem Wind halten Sie den Wind auf der Seite, die dem Baum abgewandt ist: Segeln Sie nie mit Wind von der falschen Seite."
+      }
+    }
+  },
+  "gusts": {
+    "title": "Böen: Großschot fieren",
+    "summary": "Halten Sie das Boot durch drei Böen aufrecht, indem Sie die Großschot fieren.",
+    "see": "Sie segeln am Anlieger bei 15 Knoten Wind mit Böen. Sie erkennen eine Bö auf dem Wasser an einem dunkleren Fleck, der auf Sie zukommt.",
+    "happening": "In einer Bö ist der Wind für einige Sekunden stärker: Die Segel drücken härter, das Boot krängt mehr und will in den Wind drehen (Luvgierigkeit). Fieren der Großschot lässt den zusätzlichen Wind aus dem Segel.",
+    "action": "Wenn eine Bö kommt, fieren Sie die Großschot um etwa 20 %; wenn sie durch ist, holen Sie wieder dicht.",
+    "mistake": "Die Großschot in einer Bö dicht halten: Das Boot krängt über 25°, wird langsamer und kann von selbst in den Wind drehen (aufschießen).",
+    "done": "Großschot fieren in der Bö hält das Boot aufrecht und steuerbar. Der dunkle Fleck auf dem Wasser warnt Sie einige Sekunden, bevor die Bö da ist.",
+    "steps": {
+      "three-gusts": {
+        "goal": "Kommen Sie durch drei Böen: Fieren Sie in jeder die Großschot und holen Sie danach wieder dicht.",
+        "how": "Beobachten Sie die Leiste: Während einer Bö wird GUST angezeigt (ab etwa 16,5 Knoten). Stellen Sie unter „Leinen“ die „Großschot“ auf etwa 45 %, sobald es erscheint, und zurück auf etwa 25 %, wenn es weg ist. Drei starke Böen dauern etwa zweieinhalb Minuten."
+      },
+      "trim-back": {
+        "goal": "Trimmen Sie beide Segel auf „Gut“.",
+        "how": "Wenn GUST aus der Leiste verschwunden ist, stellen Sie die „Großschot“ auf etwa 25 % und die „Fockschot“ auf etwa 50 %. Beide Segel sollten „Gut“ anzeigen; fieren Sie die Großschot wieder, wenn eine Bö kommt."
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "zu starke Krängung",
+        "what": "Das Boot krängte zu stark (mehr als 25°).",
+        "why": "Die Großschot war für diesen Wind zu dicht: Die Segel drückten stärker, als der Kiel das Boot aufrecht halten konnte.",
+        "fix": "Fieren Sie die Großschot, sobald die Bö kommt; holen Sie wieder dicht, wenn sie durch ist."
+      },
+      "round-up": {
+        "name": "Aufschießen",
+        "what": "Das Boot hat von selbst in den Wind gedreht (Aufschießen).",
+        "why": "Zu viel Krängung bei dichter Großschot: Das Ruder verlor seine Wirkung, und die Segel drehten das Boot in den Wind.",
+        "fix": "Fieren Sie sofort die Großschot, und das Boot kommt wieder unter Kontrolle. Fieren Sie bei der nächsten Bö früher."
+      }
+    }
+  },
+  "reduce-sail": {
+    "title": "Zu viel Wind: Segel einrollen",
+    "summary": "Bei 22 Knoten rollen Sie einen Teil der Fock und des Großsegels ein, bis das Boot aufrecht segelt.",
+    "see": "22 Knoten Wind am Anlieger. Das Großsegel ist gefiert, bis es killt, um das Boot aufrecht zu halten; es krängt etwa 20°.",
+    "happening": "Mit vollen Segeln krängt das Boot bei diesem Wind zu stark. Auf diesem Boot rollen sich beide Segel auf (die Fock um das Vorstag, das Großsegel in den Mast), deshalb dauert es eine Minute, sie kleiner zu machen, und niemand muss an Deck.",
+    "action": "Fieren Sie die Fockschot und rollen Sie die Fock auf etwa 40 % ein; rollen Sie das Großsegel auf etwa 60 % ein; holen Sie dann die Großschot dicht, bis das Segel arbeitet.",
+    "mistake": "Die Fock einrollen, während ihre Schot noch dicht ist: Die Fock rollt sich nicht ein. Und Segel, die bei starkem Wind im Killen stehen gelassen werden, verschleißen schnell.",
+    "done": "Mit kleineren Segeln krängt das Boot weniger und segelt fast genauso schnell. Rollen Sie früh ein, bevor der Wind zunimmt.",
+    "steps": {
+      "jib-in": {
+        "goal": "Rollen Sie die Fock auf 45 % oder weniger ein: Fieren Sie vorher ihre Schot.",
+        "how": "Stellen Sie unter „Leinen“ die „Fockschot“ auf 100 %, dann „Fock ausrollen“ auf 40 %. Stellen Sie die „Fockschot“ dann auf etwa 75 %, damit die Fock nicht mehr killt. Bei dichter Schot hört die Fock auf zu rollen."
+      },
+      "main-in": {
+        "goal": "Rollen Sie das Großsegel auf 50 bis 65 % ein.",
+        "how": "Stellen Sie unter „Leinen“ „Großsegel ausrollen“ auf 60 %."
+      },
+      "settle": {
+        "goal": "Holen Sie die Großschot dicht, bis „Gut“ angezeigt wird, bei weniger als 20° Krängung.",
+        "how": "Stellen Sie unter „Leinen“ die „Großschot“ auf etwa 35 % und halten Sie das 10 Sekunden. (Eine teilweise eingerollte Fock zeigt in der App bei jeder Schotstellung „Strömungsabriss“: Lassen Sie ihre Schot auf etwa 75 %.)"
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "zu starke Krängung",
+        "what": "Das Boot krängte zu stark (mehr als 25°).",
+        "why": "Zu viel Segelfläche für diesen Wind, oder die Großschot zu weit dichtgeholt.",
+        "fix": "Fieren Sie jetzt die Großschot und rollen Sie dann mehr Segel ein."
+      },
+      "round-up": {
+        "name": "Aufschießen",
+        "what": "Das Boot hat von selbst in den Wind gedreht (Aufschießen).",
+        "why": "Zu viel Krängung: Das Ruder verlor seine Wirkung, und die Segel drehten das Boot in den Wind.",
+        "fix": "Fieren Sie sofort die Großschot und rollen Sie dann mehr Segel ein."
+      },
+      "sail-worn": {
+        "name": "ein verschlissenes Segel",
+        "what": "Ein Segel ist vom Killen verschlissen.",
+        "why": "Ein Segel, das bei starkem Wind im Killen (Flattern) stehen gelassen wird, verschleißt schnell.",
+        "fix": "Holen Sie das killende Segel dicht, bis es aufhört, oder rollen Sie es ein."
+      }
+    }
+  },
+  "set-sails": {
+    "title": "Segel setzen",
+    "summary": "Fahren Sie mit dem Motor Bug in den Wind, rollen Sie das Großsegel aus, fallen Sie ab, rollen Sie die Fock aus und stoppen Sie den Motor.",
+    "see": "Sie fahren langsam mit dem Motor, beide Segel sind eingerollt, und der Bug zeigt in den Wind. Die Leinen sind auf Realistisch gestellt: Klemmen und Winschen, wie auf dem Boot.",
+    "happening": "Das Großsegel rollt aus dem Mast. Mit dem Bug im Wind kommt es heraus, ohne sich zu füllen, deshalb lässt es sich leicht auf die Winsch nehmen. Wenn es draußen ist, füllt es sich beim Abfallen. Die Fock rollt am Vorstag ab, während ihre Schot eingeholt wird.",
+    "action": "Halten Sie das Boot mit dem Motor auf langsam voraus mit dem Bug im Wind; rollen Sie das Großsegel aus; fallen Sie auf Anlieger ab; rollen Sie die Fock mit ihrer Schot aus; stoppen Sie den Motor.",
+    "mistake": "Das Großsegel ausrollen, wenn der Wind von der Seite kommt: Das halb ausgerollte Segel füllt sich und belastet die Rollanlage. Oder die Winschtaste gedrückt halten, nachdem das Segel draußen ist: Die Winsch schaltet ab.",
+    "done": "Die Segel stehen, und der Motor ist aus. Das Großsegel kommt mit dem Bug im Wind heraus; dann fallen Sie ab und setzen die Fock.",
+    "steps": {
+      "head-to-wind": {
+        "goal": "Fahren Sie langsam mit dem Motor, den Bug im Wind (innerhalb von 20°).",
+        "how": "Der Motor läuft auf langsam voraus, und der Autopilot hält den Kurs. Noch ist nichts zu tun: Beobachten Sie den Windwinkel in der Leiste."
+      },
+      "main-out": {
+        "goal": "Rollen Sie das Großsegel aus (90 % oder mehr), während der Bug in den Wind zeigt.",
+        "how": "Gehen Sie an die Steuerbordstation. Öffnen Sie die linke Klemme „Main furling“ (die Leine, die das Segel einrollt), damit sie auslaufen kann. Legen Sie die rechte Leine „Main furling“ auf die Winsch: drei Windungen, in den Selbstholer, dann halten Sie die Winschtaste. Lassen Sie los, wenn das Großsegel draußen ist."
+      },
+      "bear-away": {
+        "goal": "Drehen Sie auf Anlieger (50–75° zum Wind), das Großsegel zeigt „Gut“.",
+        "how": "Schließen Sie die linke Klemme „Main furling“ und nehmen Sie die Leine von der Winsch. In der Leiste (bei realistischen Leinen: deren Registerkarte „Ruder“) oder im Abschnitt „Ruder“ stellen Sie den Autopiloten auf „Wind“ und tippen sechsmal auf „10° nach Backbord“. Die Großschot bei 30 % passt etwa."
+      },
+      "jib-out": {
+        "goal": "Rollen Sie die Fock aus und trimmen Sie sie auf „Gut“.",
+        "how": "An der Backbordstation öffnen Sie die Klemme JIB ROLL. An der Steuerbordstation legen Sie die Genoaschot auf die Winsch (drei Windungen, Selbstholer) und halten die Taste: Die Fock rollt ab, während die Schot eingeholt wird. Lassen Sie los, wenn die Fock „Gut“ zeigt. Schließen Sie JIB ROLL, wenn die Fock sich nicht mehr bewegt."
+      },
+      "engine-off": {
+        "goal": "Stoppen Sie den Motor und segeln Sie mit 4 Knoten oder mehr.",
+        "how": "In der Leiste (bei realistischen Leinen: deren Registerkarte „Ruder“) oder im Abschnitt „Ruder“ stellen Sie den Gashebel auf Neutral, dann tippen Sie auf „Stopp“."
+      }
+    },
+    "mistakes": {
+      "main-off-wind": {
+        "name": "Großsegel mit Wind von der Seite ausrollen",
+        "what": "Das Großsegel wurde ausgerollt, während der Wind von der Seite kam.",
+        "why": "Steht der Bug 35° oder mehr vom Wind ab, füllt sich das halb ausgerollte Segel und belastet die Rollanlage und den Mast.",
+        "fix": "Hören Sie auf zu winschen, drehen Sie zurück in den Wind (innerhalb von 20°) und rollen Sie es dann den Rest aus."
+      },
+      "winch-cut-out": {
+        "name": "eine abschaltende Winsch",
+        "what": "Die Winsch hat abgeschaltet.",
+        "why": "Die Taste wurde gedrückt gehalten, nachdem die Leine gestoppt hatte (das Segel war ganz aus- oder eingerollt, oder eine Klemme hielt die andere Leine), oder die Last war zu hoch.",
+        "fix": "Lassen Sie die Taste los, wenn das Segel draußen ist. Prüfen Sie, ob die Leine auf der anderen Seite frei auslaufen kann."
+      },
+      "rope-slipping": {
+        "name": "eine rutschende Leine",
+        "what": "Eine Leine ist auf der Winschtrommel durchgerutscht.",
+        "why": "Zu wenige Windungen auf der Winsch für diese Last.",
+        "fix": "Legen Sie eine Windung mehr auf die Winsch."
+      },
+      "clutch-on-running": {
+        "name": "eine geschlossene Klemme auf laufender Leine",
+        "what": "Eine Klemme wurde auf einer laufenden Leine geschlossen.",
+        "why": "Die Leine bewegte sich noch unter Last, und die Klemme kann sie beschädigen.",
+        "fix": "Lassen Sie die Leine erst stoppen (Taste loslassen), dann schließen Sie die Klemme."
+      }
+    }
+  },
+  "furl-sails": {
+    "title": "Segel einrollen",
+    "summary": "Starten Sie den Motor, rollen Sie die Fock ein, drehen Sie den Bug in den Wind und rollen Sie das Großsegel ein.",
+    "see": "Sie segeln am Anlieger, beide Segel sind ausgerollt, und der Motor ist aus. Die Leinen sind auf Realistisch gestellt.",
+    "happening": "Einrollen ist Setzen rückwärts. Die Fock rollt um das Vorstag, wenn an ihrer Rollreffleine gezogen wird und ihre Schot frei ist. Das Großsegel rollt am besten mit dem Bug im Wind in den Mast, wenn es keine Last trägt.",
+    "action": "Starten Sie den Motor und lassen Sie ihn auf Neutral; geben Sie die Fockschot frei und winschen Sie die Rollreffleine der Fock ein; fahren Sie langsam mit dem Motor Bug in den Wind; geben Sie den Unterliekstrecker und die „Out“-Leine des Großsegels frei und winschen Sie dann seine „In“-Leine.",
+    "mistake": "An einer Rollreffleine ziehen, während die Schot oder der Unterliekstrecker das Segel noch hält: Es rollt sich nicht ein, und die Winsch ächzt oder schaltet ab.",
+    "done": "Beide Segel sind eingerollt, und Sie fahren mit dem Motor. Erst die Fock, dann das Großsegel mit dem Bug im Wind.",
+    "steps": {
+      "engine-on": {
+        "goal": "Starten Sie den Motor und lassen Sie ihn auf Neutral.",
+        "how": "In der Leiste (bei realistischen Leinen: deren Registerkarte „Ruder“) oder im Abschnitt „Ruder“ tippen Sie auf „Start“. Lassen Sie den Hebel in der Mitte (Neutral)."
+      },
+      "jib-in": {
+        "goal": "Rollen Sie die Fock ganz ein (5 % oder weniger).",
+        "how": "An der Steuerbordstation öffnen Sie die Klemme der Genoaschot, damit die Schot auslaufen kann. An der Backbordstation legen Sie JIB ROLL auf die Winsch (drei Windungen, Selbstholer) und halten die Taste, bis die Fock eingerollt ist."
+      },
+      "head-to-wind": {
+        "goal": "Fahren Sie langsam voraus mit dem Motor und drehen Sie den Bug in den Wind (innerhalb von 20°).",
+        "how": "In der Leiste (bei realistischen Leinen: deren Registerkarte „Ruder“) oder im Abschnitt „Ruder“ stellen Sie den Gashebel auf langsam voraus (etwa 30 %). Stellen Sie den Autopiloten auf „Kurs“ und tippen Sie sechsmal auf „10° nach Steuerbord“."
+      },
+      "main-in": {
+        "goal": "Rollen Sie das Großsegel in den Mast (5 % oder weniger), mit dem Bug im Wind.",
+        "how": "Nehmen Sie JIB ROLL von der Backbordwinsch und öffnen Sie dort die Klemme des Groß-Unterliekstreckers. An der Steuerbordstation öffnen Sie die rechte Klemme „Main furling“ (die Leine, die das Segel ausrollt), legen die linke Leine „Main furling“ auf die Winsch (drei Windungen, Selbstholer) und halten die Taste, bis das Großsegel eingerollt ist."
+      }
+    },
+    "mistakes": {
+      "main-off-wind": {
+        "name": "Großsegel mit Wind von der Seite einrollen",
+        "what": "Das Großsegel wurde eingerollt, während der Wind von der Seite kam.",
+        "why": "Steht der Bug 35° oder mehr vom Wind ab, trägt das Segel beim Einrollen Last, was die Rollanlage belastet und das Segel im Mast knittern kann.",
+        "fix": "Hören Sie auf zu winschen, drehen Sie zurück in den Wind (innerhalb von 20°) und rollen Sie es dann den Rest ein."
+      },
+      "winch-cut-out": {
+        "name": "eine abschaltende Winsch",
+        "what": "Die Winsch hat abgeschaltet.",
+        "why": "Die Taste wurde gedrückt gehalten, nachdem die Leine gestoppt hatte, oder Schot bzw. Unterliekstrecker hielten das Segel noch.",
+        "fix": "Lassen Sie die Taste los; geben Sie Schot oder Unterliekstrecker frei und winschen Sie dann erneut."
+      },
+      "rope-slipping": {
+        "name": "eine rutschende Leine",
+        "what": "Eine Leine ist auf der Winschtrommel durchgerutscht.",
+        "why": "Zu wenige Windungen auf der Winsch für diese Last.",
+        "fix": "Legen Sie eine Windung mehr auf die Winsch."
+      },
+      "clutch-on-running": {
+        "name": "eine geschlossene Klemme auf laufender Leine",
+        "what": "Eine Klemme wurde auf einer laufenden Leine geschlossen.",
+        "why": "Die Leine bewegte sich noch unter Last, und die Klemme kann sie beschädigen.",
+        "fix": "Lassen Sie die Leine erst stoppen, dann schließen Sie die Klemme."
+      }
+    }
+  },
+  "leave-berth": {
+    "title": "Ablegen vom Liegeplatz",
+    "summary": "Lazy Line und die Achterleinen loswerfen, aus dem Liegeplatz hinausmotoren und zum Ausgang drehen.",
+    "see": "Es liegt achteraus im Liegeplatz: zwei Achterleinen zum Kai, die Lazy Line (eine versenkte Leine vom Kai) hält den Bug, der Motor läuft im Leerlauf. An beiden Seiten können andere Yachten liegen.",
+    "happening": "Sobald die Leinen los sind, hält es nichts mehr. Seitenwind schiebt ein langsames Boot zur Seite und bläst den Bug weg; fahren Sie deshalb mit gleichmäßiger Fahrt hinaus und drehen Sie erst, wenn das Heck frei von den Bugen der anderen Boote ist.",
+    "action": "Zuerst die Lazy Line loswerfen, dann beide Achterleinen; langsam voraus aus dem Liegeplatz motoren; wenn das Heck frei ist, stoppen und das Boot mit beiden Strahlrudern drehen, bis es nach Westen zum Ausgang zeigt; dann voraus motoren.",
+    "mistake": "Zu früh drehen: das Heck schwingt seitlich in das Boot nebenan. Oder zu schnell fahren und die Boote auf der anderen Seite des Fahrwassers rammen (der Gasse zwischen den Reihen).",
+    "done": "Sie sind aus dem Liegeplatz heraus und fahren zum Ausgang. Zuerst die Lazy Line, dann die Achterleinen, langsam hinaus, und erst drehen, wenn das Heck frei ist.",
+    "steps": {
+      "lazy-off": {
+        "goal": "Die Lazy Line loswerfen.",
+        "how": "Hafenmanöver öffnen. Unter Leinen bei „Lazy Line (nach vorn)“ auf Loswerfen tippen. Sie sinkt auf den Grund, frei vom Propeller."
+      },
+      "stern-off": {
+        "goal": "Beide Achterleinen loswerfen.",
+        "how": "In Hafenmanöver bei beiden Achterleinen auf Loswerfen tippen. Jetzt halten nur noch der Motor und die Strahlruder das Boot."
+      },
+      "motor-out": {
+        "goal": "Voraus motoren, bis das Heck aus dem Liegeplatz heraus im Fahrwasser ist (innerhalb der magenta Umrandung).",
+        "how": "Motor öffnen. Den Motorhebel knapp über Leerlauf in Richtung Voraus ziehen (die Zeile darunter zeigt „Gang: voraus“): langsame Fahrt voraus. Das Steuerrad gerade halten. Bei starkem Seitenwind etwas weiter schieben (etwa ein Drittel in Richtung Voraus), damit es nicht auf das Boot nebenan abtreibt."
+      },
+      "turn-out": {
+        "goal": "Drehen, bis es nach Westen zeigt (270°, zum Ausgang), und langsam voraus motoren.",
+        "how": "Hebel zurück auf Leerlauf. Das Bugstrahlruder nach Steuerbord und das Heckstrahlruder nach Backbord halten: das Boot dreht auf der Stelle nach rechts. Wenn der Kompass etwa 270° zeigt, beide loslassen und langsam voraus geben."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "Eine leichte Berührung",
+        "what": "Es hat ein anderes Boot oder den Kai ohne Fender dazwischen berührt.",
+        "why": "Langsame Boote treiben mit dem Wind; eine Berührung im Schritttempo verkratzt das Gelcoat, richtet aber selten mehr an.",
+        "fix": "Langsamer fahren, mit den Strahlrudern abhalten und die Fender auf der näheren Seite ausbringen."
+      },
+      "hard-hit": {
+        "name": "Ein harter Stoß",
+        "what": "Es ist hart gegen ein anderes Boot oder den Kai gestoßen. Die Übung endet hier.",
+        "why": "Über etwa einem Knoten dellt eine zehn Tonnen schwere Yacht einen Rumpf ein oder bricht eine Reling, selbst mit Fendern.",
+        "fix": "In der Nähe anderer Boote und des Kais langsamer fahren: im Hafen nie schneller als im Schritttempo. Auf „Noch einmal“ tippen."
+      },
+      "propeller": {
+        "name": "Eine Leine im Propeller",
+        "what": "Eine Leine im Wasser hat sich um den Propeller gewickelt, der Motor ist ausgefallen. Die Übung endet hier.",
+        "why": "Eine lose Leine nahe am Heck wird in einen drehenden Propeller gesaugt (PT-52). Ohne Motor lässt sich das Boot im Hafen nicht steuern.",
+        "fix": "Den Motor im Leerlauf lassen, solange eine Leine lose im Wasser liegt oder die Crew eine bedient; die Leine zuerst dichtholen oder loswerfen. Auf „Noch einmal“ tippen."
+      },
+      "lazy-line": {
+        "name": "Über die Lazy Line des Nachbarn",
+        "what": "Ihr Kiel oder Ihr Ruder steht über der Lazy Line eines Bootes nebenan, wo die Leine noch flach liegt.",
+        "why": "Die Leine kann sich an Kiel oder Ruder fangen und den Bug wegziehen; dreht der Propeller darüber, wickelt sie sich um den Propeller.",
+        "fix": "Motor auf Leerlauf und das Boot frei treiben lassen. Dann weiter Abstand zu den Bugen der anderen Boote halten: von dort laufen ihre Lazy Lines ins Fahrwasser hinaus."
+      }
+    }
+  },
+  "enter-berth": {
+    "title": "Achteraus in den Liegeplatz einlaufen",
+    "summary": "Fender ausbringen, ausrichten, langsam rückwärts hinein, Achterleinen, Lazy Line, dichtholen.",
+    "see": "Sie sind im Fahrwasser, der Gasse zwischen den beiden Bootsreihen, und motoren langsam nach Osten. Ihr Liegeplatz ist die Lücke mit dem gelben Streifen am Kai, links; die magenta Umrandung markiert sie.",
+    "happening": "Im Mittelmeer geht man mit dem Heck zuerst hinein: die Achterleinen gehen zum Kai, und eine Lazy Line vom Kai hält den Bug. Beim Rückwärtsfahren schiebt der Propeller das Heck zusätzlich seitlich (Radeffekt; in der App nach Backbord), und Seitenwind schiebt ein langsames Boot zur Seite. Bei „Hart“ zählen auch die Lazy Lines der anderen Boote: jede läuft vom Bug eines Bootes ins Fahrwasser hinunter, halten Sie also Kiel und Propeller von deren Bugen frei.",
+    "action": "Fender auf beiden Seiten ausbringen; knapp am Liegeplatz vorbei motoren, stoppen und das Boot mit den Strahlrudern drehen, bis das Heck zum Liegeplatz zeigt; langsam rückwärts hinein, mit den Strahlrudern korrigierend; kurz vor dem Kai stoppen; die Crew wirft die Achterleinen, dann nimmt sie die Lazy Line auf und bringt sie zum Bug; dichtholen.",
+    "mistake": "Zu schnell hinein: schneller als im Schritttempo stoßen Sie gegen den Kai oder das Boot nebenan. Oder den Gang einlegen, während die Crew eine Leine bedient: sie kann sich um den Propeller wickeln.",
+    "done": "Es liegt achteraus fest. Langsam fahren: erst stoppen, dann die Leinen, dann die Lazy Line bei Leerlauf dichtholen.",
+    "steps": {
+      "fenders": {
+        "goal": "Die Fender ausbringen.",
+        "how": "Hafenmanöver öffnen und Fender: ausgebracht wählen. In einem engen Liegeplatz fangen sie die Stöße ab."
+      },
+      "line-up": {
+        "goal": "Über den Liegeplatz hinaus stoppen und drehen, bis das Heck darauf zeigt (Bug 180°, Süden), das Heck höchstens 3 m von der Mitte des Liegeplatzes.",
+        "how": "Motor: Hebel knapp über Leerlauf in Richtung Voraus (langsame Fahrt voraus), bis der Mast etwa 18 m vor dem Liegeplatz ist, dann den Hebel ein Drittel in Richtung Zurück, bis es stoppt (der Wind steht achteraus, es gleitet also weiter, als Sie erwarten), dann Leerlauf. Bugstrahlruder nach Steuerbord und Heckstrahlruder nach Backbord halten, bis der Kompass 180° zeigt."
+      },
+      "reverse-in": {
+        "goal": "Langsam rückwärts in den Liegeplatz und mit dem Heck 0,5–2,8 m vor dem Kai stoppen.",
+        "how": "Motor langsam zurück: der Hebel knapp über Leerlauf in Richtung Zurück („Gang: zurück“). Mit den Strahlrudern gerade halten: wandert das Heck nach links, ein kurzer Stoß Heckstrahlruder nach Steuerbord, und umgekehrt. Kurz vor dem Kai Leerlauf und einen Hauch voraus zum Stoppen."
+      },
+      "stern-lines": {
+        "goal": "Beide Achterleinen zum Kai werfen.",
+        "how": "Hafenmanöver → Leinen: bei beiden Achterleinen auf „An den Kai werfen“ tippen. Das Heck muss höchstens 4 m entfernt und fast gestoppt sein."
+      },
+      "lazy-line": {
+        "goal": "Die Lazy Line aufnehmen und zum Bug bringen.",
+        "how": "Bei der Lazy Line auf „Aufnehmen“ tippen. Die Crew bringt sie zum Bug (etwa 20 s). Den Motor solange im Leerlauf lassen."
+      },
+      "made-fast": {
+        "goal": "Die Lazy Line dichtholen, bis sie handfest sitzt, Motor im Leerlauf.",
+        "how": "Bei der Lazy Line auf Dichtholen tippen, bis „handfest“ angezeigt wird. Sie hält den Bug ab, die Achterleinen halten das Heck: das Boot kann nicht schwojen."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "Eine leichte Berührung",
+        "what": "Es hat ein anderes Boot oder den Kai ohne Fender dazwischen berührt.",
+        "why": "Langsame Boote treiben mit dem Wind; eine Berührung im Schritttempo verkratzt das Gelcoat, richtet aber selten mehr an.",
+        "fix": "Langsamer fahren, mit den Strahlrudern abhalten und die Fender auf der näheren Seite ausbringen."
+      },
+      "hard-hit": {
+        "name": "Ein harter Stoß",
+        "what": "Es ist hart gegen ein anderes Boot oder den Kai gestoßen. Die Übung endet hier.",
+        "why": "Über etwa einem Knoten dellt eine zehn Tonnen schwere Yacht einen Rumpf ein oder bricht eine Reling, selbst mit Fendern.",
+        "fix": "In der Nähe anderer Boote und des Kais langsamer fahren: im Hafen nie schneller als im Schritttempo. Auf „Noch einmal“ tippen."
+      },
+      "propeller": {
+        "name": "Eine Leine im Propeller",
+        "what": "Eine Leine im Wasser hat sich um den Propeller gewickelt, der Motor ist ausgefallen. Die Übung endet hier.",
+        "why": "Eine lose Leine nahe am Heck wird in einen drehenden Propeller gesaugt (PT-52). Ohne Motor lässt sich das Boot im Hafen nicht steuern.",
+        "fix": "Den Motor im Leerlauf lassen, solange eine Leine lose im Wasser liegt oder die Crew eine bedient; die Leine zuerst dichtholen oder loswerfen. Auf „Noch einmal“ tippen."
+      },
+      "lazy-line": {
+        "name": "Über die Lazy Line des Nachbarn",
+        "what": "Ihr Kiel oder Ihr Ruder steht über der Lazy Line eines Bootes nebenan, wo die Leine noch flach liegt.",
+        "why": "Die Leine kann sich an Kiel oder Ruder fangen und den Bug wegziehen; dreht der Propeller darüber, wickelt sie sich um den Propeller.",
+        "fix": "Motor auf Leerlauf und das Boot frei treiben lassen. Dann weiter Abstand zu den Bugen der anderen Boote halten: von dort laufen ihre Lazy Lines ins Fahrwasser hinaus."
+      },
+      "fenders-in": {
+        "name": "Fender noch nicht ausgebracht",
+        "what": "Sie laufen rückwärts in den Liegeplatz ein, während die Fender noch im Staukasten liegen.",
+        "why": "Ohne Fender verkratzt die erste Berührung mit dem Boot nebenan beide Rümpfe.",
+        "fix": "Hafenmanöver → Fender: ausgebracht, bevor Sie näher kommen."
+      }
+    }
+  },
+  "turn-own-length": {
+    "title": "Drehen auf eigener Bootslänge",
+    "summary": "Das Boot im Fahrwasser in einem Kreis drehen, der kaum breiter als seine Länge ist: ein kurzer Vorausstoß, Radeffekt rückwärts, dann die Strahlruder.",
+    "see": "Es steht gestoppt im Fahrwasser, der Bug zeigt nach Osten, an beiden Seiten liegen Boote fest. Der magenta Kreis ist der ganze Platz, den Sie haben.",
+    "happening": "Ein kurzer Gasstoß voraus mit hart gelegtem Ruder dreht das Boot, bevor es Fahrt aufnimmt (Vorausstoß). Beim Rückwärtsfahren schiebt der Propeller das Heck seitlich (Radeffekt): auf diesem Boot lässt die App ihn das Heck nach Backbord drücken (eine Annahme, bis ein Skipper sie bestätigt, PT-27), was den Bug nach Steuerbord dreht, in dieselbe Richtung. Die Strahlruder drücken Bug und Heck seitlich: zusammen, in entgegengesetzte Richtungen, drehen sie das Boot auf der Stelle.",
+    "action": "Steuerrad hart Steuerbord; kurze Stöße voraus und zurück, bis der Bug etwa 120° zeigt; dann das Bugstrahlruder nach Steuerbord und das Heckstrahlruder nach Backbord halten, bis es nach Westen zeigt (270°).",
+    "mistake": "Lange Stöße: das Boot nimmt Fahrt auf und verlässt den Kreis in Richtung der festgemachten Boote.",
+    "done": "Es hat auf eigener Bootslänge gedreht. Kurze Stöße halten es auf der Stelle; die Strahlruder erledigen den Rest.",
+    "steps": {
+      "kick": {
+        "goal": "Das Boot mit Motor und Ruder auf etwa 120° (105°–135°) drehen und dabei im Kreis bleiben.",
+        "how": "Steuerung: Steuerrad hart Steuerbord (Schieber ganz nach rechts). Motor: den Hebel etwa zwei Drittel in Richtung Voraus schieben, 2 Sekunden halten, dann Leerlauf; nach 4 Sekunden etwa zwei Drittel in Richtung Zurück ziehen, bis es sich rückwärts in Bewegung setzt, dann Leerlauf. Einmal wiederholen."
+      },
+      "spin": {
+        "goal": "Es auf der Stelle drehen, bis es nach Westen zeigt (260°–280°), und stoppen.",
+        "how": "Steuerrad gerade. Das Bugstrahlruder nach Steuerbord und das Heckstrahlruder nach Backbord halten. Loslassen, wenn der Kompass 270° zeigt."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "Eine leichte Berührung",
+        "what": "Es hat ein anderes Boot oder den Kai ohne Fender dazwischen berührt.",
+        "why": "Langsame Boote treiben mit dem Wind; eine Berührung im Schritttempo verkratzt das Gelcoat, richtet aber selten mehr an.",
+        "fix": "Langsamer fahren, mit den Strahlrudern abhalten und die Fender auf der näheren Seite ausbringen."
+      },
+      "hard-hit": {
+        "name": "Ein harter Stoß",
+        "what": "Es ist hart gegen ein anderes Boot oder den Kai gestoßen. Die Übung endet hier.",
+        "why": "Über etwa einem Knoten dellt eine zehn Tonnen schwere Yacht einen Rumpf ein oder bricht eine Reling, selbst mit Fendern.",
+        "fix": "In der Nähe anderer Boote und des Kais langsamer fahren: im Hafen nie schneller als im Schritttempo. Auf „Noch einmal“ tippen."
+      },
+      "left-circle": {
+        "name": "Aus dem Kreis",
+        "what": "Es hat den Kreis verlassen.",
+        "why": "Lange Stöße bauen Fahrt auf; in einer Marina ist dafür kein Platz.",
+        "fix": "Kürzere Stöße, und Leerlauf, sobald es sich bewegt. Auf „Zurück zum Anfang…“ tippen, um den Schritt erneut zu versuchen."
+      }
+    }
+  },
+  "mooring-buoy": {
+    "title": "Eine Boje aufnehmen",
+    "summary": "Im Kriechgang gegen den Wind an die Boje heranfahren, sie am Bug aufnehmen, daran liegen, dann loswerfen und rückwärts weggehen.",
+    "see": "Sie motoren in die Bucht auf drei weiße Bojen zu; der magenta Ring markiert die mittlere. Der Wind weht aus der Bucht heraus, auf Sie zu.",
+    "happening": "Gegen den Wind stoppt das Boot von selbst, sobald Sie den Motor aus dem Gang nehmen, sodass Sie langsam an die Boje herankriechen können. Die Crew nimmt sie mit dem Bootshaken auf und belegt die Vorleine. Am Liegeplatz an der Boje hält der Wind den Bug zur Boje.",
+    "action": "Langsam gerade auf die Boje zu motoren, gegen den Wind; auf der letzten Bootslänge in den Kriechgang gehen; am Bug aufnehmen; Motor im Leerlauf; zum Ablegen loswerfen und sanft rückwärts von der Boje weggehen.",
+    "mistake": "Zu schnell oder mit dem Wind von hinten ankommen: das Boot kann nicht stoppen und fährt an der Boje vorbei oder darüber.",
+    "done": "Sie haben die Boje aufgenommen und wieder verlassen, gegen den Wind und im Kriechgang.",
+    "steps": {
+      "approach": {
+        "goal": "Den Bug an die Boje bringen (innerhalb des kleinen Rings), mit unter einem halben Knoten.",
+        "how": "Motor langsame Fahrt voraus (der Hebel knapp über Leerlauf in Richtung Voraus) und gerade auf die Boje zu steuern. Etwa 10 m davor Leerlauf; läuft es noch weiter, einen Moment knapp über Leerlauf in Richtung Zurück, dann wieder Leerlauf."
+      },
+      "bow-line": {
+        "goal": "Die Boje mit der Vorleine aufnehmen.",
+        "how": "Hafenmanöver → Leinen: auf „Boje aufnehmen“ tippen. Das geht nur, wenn der Bug höchstens 2,5 m entfernt und fast gestoppt ist."
+      },
+      "lie": {
+        "goal": "Zehn Sekunden an der Boje liegen, Motor im Leerlauf.",
+        "how": "Hebel auf Leerlauf und warten: der Wind hält den Bug an der Boje."
+      },
+      "let-go": {
+        "goal": "Die Vorleine loswerfen.",
+        "how": "Hafenmanöver → Leinen: Loswerfen bei „Vorleine zur Boje“."
+      },
+      "back-away": {
+        "goal": "Rückwärts weggehen, bis Sie gut frei von der Boje sind (außerhalb des großen Rings).",
+        "how": "Motor langsam zurück: der Hebel knapp über Leerlauf in Richtung Zurück („Gang: zurück“). Die Boje bleibt voraus, frei vom Propeller."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Grund berührt",
+        "what": "Der Kiel hat den Grund berührt.",
+        "why": "Das Wasser ist dort flacher als der Kiel (2,4 m); beobachten Sie die Tiefe im Streifen.",
+        "fix": "Sanft rückwärts in tieferes Wasser und dort bleiben, wo die Tiefe mehr als 3 m zeigt."
+      },
+      "aground-hard": {
+        "name": "Auf Grund gelaufen",
+        "what": "Es ist hart auf den Grund oder die Felsen gelaufen. Die Übung endet hier.",
+        "why": "Schnell auf den Grund gesetzt, klemmt der Kiel, und der Rumpf kann Schaden nehmen (PT-53).",
+        "fix": "Die Tiefe beobachten und langsam herankommen. Auf „Noch einmal“ tippen."
+      }
+    }
+  },
+  "anchor-shore": {
+    "title": "Ankern mit Landleine",
+    "summary": "Den Anker auf der Stelle fallen lassen, genug Kette geben, ihn eingraben, dann zu den Felsen zurücksetzen und eine Leine an Land bringen.",
+    "see": "Sie sind in der Bucht, der Bug zeigt aufs Meer hinaus, die felsige Küste liegt achteraus. Der magenta Ring zeigt, wohin der Anker soll: Sand, 10 m tief.",
+    "happening": "Ein Anker hält nur mit genug Kette: mindestens das Vierfache der Wassertiefe plus die Höhe der Bugrolle, und hier ist die Regel drei Bootslängen (etwa 47 m) die größere (PT-31). Er muss durch sanftes Rückwärtsfahren in den Grund eingegraben werden (PT-57). Eine Leine vom Heck zu einem Ring an den Felsen stoppt dann das Schwojen, sodass das Boot dicht an der Küste liegen kann.",
+    "action": "Langsam rückwärts, bis der Bug über der Stelle ist; den Anker fallen lassen; weiter langsam rückwärtsfahren, während die Kette läuft, bis sie lang genug ist; die Kette stoppen und etwas kräftiger rückwärts, um den Anker einzugraben; ein Stück mehr Kette geben, zur Küste zurücksetzen und die Crew mit der Leine an Land schicken; dichtholen.",
+    "mistake": "Zu wenig Kette: der Anker schleift und das Boot treibt auf die Felsen. Oder zu weit zurücksetzen: Ruder und Kiel berühren den Grund nahe der Küste.",
+    "done": "Es liegt mit Anker und Landleine. Genug Kette geben, den Anker eingraben, die Landleine dichtholen.",
+    "steps": {
+      "to-spot": {
+        "goal": "Langsam rückwärts, bis der Bug über der Stelle ist (innerhalb des Rings), fast gestoppt.",
+        "how": "Motor langsam zurück: der Hebel knapp über Leerlauf in Richtung Zurück („Gang: zurück“). Mit dem Bugstrahlruder gerade halten. Über der Stelle Leerlauf und einen Hauch voraus zum Stoppen."
+      },
+      "let-go-anchor": {
+        "goal": "Den Anker auf den Grund fallen lassen.",
+        "how": "Anker öffnen und „Kette ausgeben ▼“ halten. Den Kettzähler beobachten: bei etwa 12 m erreicht der Anker den Grund."
+      },
+      "scope": {
+        "goal": "Genug Kette geben (der Abschnitt Anker zeigt, wie viel nötig ist: etwa 47 m).",
+        "how": "„Kette ausgeben“ weiterlaufen lassen (oder erneut halten), während der Motor langsam rückwärts läuft, damit die Kette am Grund liegt und nicht als Haufen."
+      },
+      "dig-in": {
+        "goal": "Den Anker eingraben.",
+        "how": "Die Kette stoppen. Motor etwas kräftiger zurück (der Hebel etwa 40 % in Richtung Zurück) für etwa eine halbe Minute: die Kette kommt stramm, und der Anker gräbt sich ein. Der Abschnitt Anker meldet dann, dass er sitzt."
+      },
+      "shore-line": {
+        "goal": "Zur Küste zurücksetzen und eine Leine zu einem Ring bringen.",
+        "how": "Wieder Kette geben und langsam rückwärts, bis das Heck etwa 35 m von der Küste entfernt ist, dann Leerlauf. Hafenmanöver → Leinen: „Eine Leine an Land bringen“. Die Crew schwimmt sie zu einem Ring (etwa 30 s)."
+      },
+      "settled": {
+        "goal": "Die Landleine dichtholen und still liegen, Motor im Leerlauf.",
+        "how": "Bei der Landleine auf Dichtholen tippen, bis sie handfest sitzt. Der Anker hält den Bug, die Leine das Heck."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Grund berührt",
+        "what": "Der Kiel hat den Grund berührt.",
+        "why": "Das Wasser ist dort flacher als der Kiel (2,4 m); beobachten Sie die Tiefe im Streifen.",
+        "fix": "Sanft rückwärts in tieferes Wasser und dort bleiben, wo die Tiefe mehr als 3 m zeigt."
+      },
+      "aground-hard": {
+        "name": "Auf Grund gelaufen",
+        "what": "Es ist hart auf den Grund oder die Felsen gelaufen. Die Übung endet hier.",
+        "why": "Schnell auf den Grund gesetzt, klemmt der Kiel, und der Rumpf kann Schaden nehmen (PT-53).",
+        "fix": "Die Tiefe beobachten und langsam herankommen. Auf „Noch einmal“ tippen."
+      },
+      "propeller": {
+        "name": "Eine Leine im Propeller",
+        "what": "Eine Leine im Wasser hat sich um den Propeller gewickelt, der Motor ist ausgefallen. Die Übung endet hier.",
+        "why": "Eine lose Leine nahe am Heck wird in einen drehenden Propeller gesaugt (PT-52). Ohne Motor lässt sich das Boot im Hafen nicht steuern.",
+        "fix": "Den Motor im Leerlauf lassen, solange eine Leine lose im Wasser liegt oder die Crew eine bedient; die Leine zuerst dichtholen oder loswerfen. Auf „Noch einmal“ tippen."
+      },
+      "dragging": {
+        "name": "Der Anker schleift",
+        "what": "Der Ankeralarm ist angegangen: der Anker rutscht über den Grund.",
+        "why": "Mit zu wenig Kette oder ohne eingegraben zu sein hebt der Zug den Anker aus (PT-54).",
+        "fix": "Mehr Kette geben und ihn dann mit sanftem Rückwärtsfahren erneut eingraben."
+      }
+    }
+  },
+  "stern-to-anchor": {
+    "title": "Achteraus am eigenen Anker",
+    "summary": "Den Anker quer über das Fahrwasser fallen lassen, rückwärts in den Liegeplatz einlaufen und dabei Kette geben, Achterleinen, dann Kette einholen, bis sie stramm ist.",
+    "see": "Sie sind im Fahrwasser vor Ihrem Liegeplatz, der Bug zeigt nach Süden. Dieser Kai hat keine Lazy Lines, also hält Ihr eigener Anker den Bug. Der magenta Ring zeigt, wo er fallen soll: im leeren Liegeplatz auf der anderen Seite des Fahrwassers.",
+    "happening": "Anker und Kette übernehmen die Aufgabe der Lazy Line: voraus ausgelegt und dann strammgeholt halten sie den Bug vom Kai ab, während die Achterleinen das Heck halten.",
+    "action": "Langsam voraus motoren, bis der Bug über dem Ring ist; den Anker fallen lassen; rückwärts zum eigenen Liegeplatz, dabei Kette geben; kurz vor dem Kai stoppen; Achterleinen; Kette einholen, bis sie stramm ist und der Anker sitzt.",
+    "mistake": "Beim Zurücksetzen keine Kette geben: der Anker schleift hinterher und hält nichts. Oder die Kette so hart einholen, dass sie das Heck vom Kai abzieht: dann schaltet die Ankerwinde ab.",
+    "done": "Es liegt achteraus am eigenen Anker. Kette auslegen, während Sie rückwärts einlaufen, dann dichtholen.",
+    "steps": {
+      "to-spot": {
+        "goal": "Langsam voraus motoren, bis der Bug über dem Ring ist, fast gestoppt.",
+        "how": "Motor langsame Fahrt voraus (der Hebel knapp über Leerlauf in Richtung Voraus); der Bug zeigt schon nach Süden zum leeren Liegeplatz gegenüber: mit den Strahlrudern gerade halten. Über dem Ring Leerlauf, ein Hauch zurück zum Stoppen."
+      },
+      "let-go-anchor": {
+        "goal": "Den Anker auf den Grund fallen lassen (5 m).",
+        "how": "Anker: „Kette ausgeben ▼“ halten, bis der Anker auf dem Grund ist."
+      },
+      "reverse-in": {
+        "goal": "Rückwärts in Ihren Liegeplatz einlaufen, dabei Kette geben, und mit dem Heck 0,5–2,8 m vor dem Kai stoppen.",
+        "how": "Motor langsam zurück. Auf „Kette ausgeben“ tippen, wann immer der Kettzähler kleiner ist als der Abstand zum Anker plus ein paar Meter, damit die Kette während der Fahrt nie stramm ist. Mit den Strahlrudern gerade halten. Nahe am Kai Leerlauf."
+      },
+      "stern-lines": {
+        "goal": "Beide Achterleinen zum Kai werfen.",
+        "how": "Hafenmanöver → Leinen: bei beiden Achterleinen „An den Kai werfen“."
+      },
+      "chain-tight": {
+        "goal": "Kette einholen, bis der Anker sitzt und die Kette den Bug hält, Motor im Leerlauf.",
+        "how": "Anker: „Kette einholen ▲“ halten, bis der Abschnitt meldet, dass der Anker sitzt. Schaltet die Ankerwinde ab, ist die Kette zu stramm: 1 m geben."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "Eine leichte Berührung",
+        "what": "Es hat ein anderes Boot oder den Kai ohne Fender dazwischen berührt.",
+        "why": "Langsame Boote treiben mit dem Wind; eine Berührung im Schritttempo verkratzt das Gelcoat, richtet aber selten mehr an.",
+        "fix": "Langsamer fahren, mit den Strahlrudern abhalten und die Fender auf der näheren Seite ausbringen."
+      },
+      "hard-hit": {
+        "name": "Ein harter Stoß",
+        "what": "Es ist hart gegen ein anderes Boot oder den Kai gestoßen. Die Übung endet hier.",
+        "why": "Über etwa einem Knoten dellt eine zehn Tonnen schwere Yacht einen Rumpf ein oder bricht eine Reling, selbst mit Fendern.",
+        "fix": "In der Nähe anderer Boote und des Kais langsamer fahren: im Hafen nie schneller als im Schritttempo. Auf „Noch einmal“ tippen."
+      },
+      "propeller": {
+        "name": "Eine Leine im Propeller",
+        "what": "Eine Leine im Wasser hat sich um den Propeller gewickelt, der Motor ist ausgefallen. Die Übung endet hier.",
+        "why": "Eine lose Leine nahe am Heck wird in einen drehenden Propeller gesaugt (PT-52). Ohne Motor lässt sich das Boot im Hafen nicht steuern.",
+        "fix": "Den Motor im Leerlauf lassen, solange eine Leine lose im Wasser liegt oder die Crew eine bedient; die Leine zuerst dichtholen oder loswerfen. Auf „Noch einmal“ tippen."
+      },
+      "fenders-in": {
+        "name": "Fender noch nicht ausgebracht",
+        "what": "Sie laufen rückwärts in den Liegeplatz ein, während die Fender noch im Staukasten liegen.",
+        "why": "Ohne Fender verkratzt die erste Berührung mit dem Boot nebenan beide Rümpfe.",
+        "fix": "Hafenmanöver → Fender: ausgebracht, bevor Sie näher kommen."
+      }
+    }
+  },
+  "maestral": {
+    "title": "Der nachmittägliche Maestral",
+    "summary": "Im leichten Mittagswind segeln und die Segel einrollen, während der Maestral auffrischt, bevor er stark wird.",
+    "see": "Ein Sommertag, 12:20 Uhr: etwa 12 Knoten aus Nordwest und volle Segel auf Halbwind (der Wind von der Seite). In der Adria wird der Wind im Sommer jeden Nachmittag stärker.",
+    "happening": "Der Maestral ist ein Seewind: das Land erwärmt sich schneller als das Meer, und Luft vom Meer strömt unter der warmen Luft nach, die über dem Land aufsteigt. Er kommt am späten Vormittag auf, ist gegen zwei Uhr am stärksten und stirbt bei Sonnenuntergang. Heute erreicht er 20 Knoten.",
+    "action": "Die Windgeschwindigkeit beobachten. Bei 15 Knoten die Fock auf etwa 40 % einrollen (zuerst die Schot fieren), dann das Großsegel auf etwa 60 % einrollen. Bis halb zwei weitersegeln.",
+    "mistake": "Warten, bis das Boot zu weit krängt: Segel einrollen ist bei starkem Wind mühsamer und langsamer. Segel früh verkleinern.",
+    "done": "Sie haben die Segel verkleinert, bevor der Maestral am stärksten war. In der Adria den Nachmittag einplanen: um zwei ist der Wind stärker als am Mittag.",
+    "steps": {
+      "wait": {
+        "goal": "Weitersegeln, bis der Wind 15 Knoten erreicht.",
+        "how": "Noch nichts zu tun: in diesem Schritt läuft die Zeit 16-mal schneller. Beobachten Sie TWS (die wahre Windgeschwindigkeit) in den Zahlen oben. Pause funktioniert wie gewohnt."
+      },
+      "jib-in": {
+        "goal": "Die Fock auf 45 % oder weniger einrollen: zuerst die Schot fieren.",
+        "how": "Unter Leinen die Fockschot auf 100 % stellen, dann Fock ausrollen auf 40 %."
+      },
+      "main-in": {
+        "goal": "Das Großsegel auf 50 bis 65 % einrollen.",
+        "how": "Unter Leinen die Fockschot auf etwa 75 % stellen, damit die Fock nicht mehr killt, dann Großsegel ausrollen auf 60 % stellen."
+      },
+      "peak": {
+        "goal": "Bis 13:30 weitersegeln, mit weniger als 22° Krängung.",
+        "how": "Die Zeit läuft wieder 16-mal schneller. Die Großschot auf etwa 40 % stellen. Krängt das Boot in einer Bö zu weit, die Großschot fieren."
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "Zu starke Krängung",
+        "what": "Es hat zu weit gekrängt (mehr als 25°).",
+        "why": "Zu viel Segel für diesen Wind oder die Großschot zu weit dichtgeholt.",
+        "fix": "Die Großschot jetzt fieren, dann mehr Segel einrollen."
+      },
+      "round-up": {
+        "name": "Ein Aufschießen",
+        "what": "Es ist von selbst in den Wind gedreht (aufgeschossen).",
+        "why": "Zu viel Krängung: das Ruder verlor seinen Griff, und die Segel drehten das Boot in den Wind.",
+        "fix": "Sofort die Großschot fieren, dann mehr Segel einrollen."
+      },
+      "sail-worn": {
+        "name": "Ein verschlissenes Segel",
+        "what": "Ein Segel ist durch Flattern verschlissen.",
+        "why": "Ein Segel, das bei starkem Wind flattern (killen) gelassen wird, verschleißt schnell.",
+        "fix": "Das flatternde Segel dichtholen, bis es aufhört, oder einrollen."
+      }
+    }
+  },
+  "bura": {
+    "title": "Eine Bora kommt",
+    "summary": "Ein ruhiger Morgen, dann bricht eine Bora mit Böen nahe 30 Knoten herein. Machen Sie die Segel klein, bevor sie ankommt.",
+    "see": "08:00 Uhr, fast windstill: 3 Knoten aus Nordost und volle Segel. In etwa vier Minuten wird eine Bora aus den Bergen im Nordosten hereinbrechen.",
+    "happening": "Die Bora ist ein kalter Nordostwind, der von den Bergen aufs Meer fällt. Sie kann an einem ruhigen, klaren Tag plötzlich einsetzen und kommt in harten Böen, hier bis etwa 30 Knoten. Segel einrollen dauert bei Windstille nur einen Moment und ist mühsam und langsam, sobald der Wind da ist.",
+    "action": "Die Fock jetzt ganz einrollen, dann das Großsegel etwa zur Hälfte einrollen. Wenn die Böen kommen, in jeder Bö die Großschot fieren und danach wieder dichtholen.",
+    "mistake": "Abwarten, wie stark es wird: mit vollen Segeln legt die erste Bö das Boot flach.",
+    "done": "Die Segel waren klein, bevor der Wind kam, deshalb blieb das Boot in den Böen aufrecht. Wenn eine Bora wahrscheinlich ist, Segel in der Ruhe davor verkleinern.",
+    "steps": {
+      "jib-away": {
+        "goal": "Die Fock auf 25 % oder weniger einrollen, bevor die Bora ankommt.",
+        "how": "Unter Leinen die Fockschot auf 100 % stellen, dann Fock ausrollen auf 0 %."
+      },
+      "main-small": {
+        "goal": "Das Großsegel auf 30 bis 55 % einrollen.",
+        "how": "Unter Leinen Großsegel ausrollen auf 45 % stellen."
+      },
+      "three-gusts": {
+        "goal": "Das Boot durch drei Böen aufrecht halten.",
+        "how": "In diesem Schritt läuft die Zeit 4-mal schneller. In jeder Bö die Großschot auf etwa 70 % stellen und nach ihrem Durchzug zurück auf etwa 45 %."
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "Zu starke Krängung",
+        "what": "Es hat zu weit gekrängt (mehr als 25°).",
+        "why": "Zu viel Segel für diesen Wind oder die Großschot zu weit dichtgeholt.",
+        "fix": "Die Großschot jetzt fieren, dann mehr Segel einrollen."
+      },
+      "round-up": {
+        "name": "Ein Aufschießen",
+        "what": "Es ist von selbst in den Wind gedreht (aufgeschossen).",
+        "why": "Zu viel Krängung: das Ruder verlor seinen Griff, und die Segel drehten das Boot in den Wind.",
+        "fix": "Sofort die Großschot fieren, dann mehr Segel einrollen."
+      },
+      "sail-worn": {
+        "name": "Ein verschlissenes Segel",
+        "what": "Ein Segel ist durch Flattern verschlissen.",
+        "why": "Ein Segel, das bei starkem Wind flattern (killen) gelassen wird, verschleißt schnell.",
+        "fix": "Das flatternde Segel dichtholen, bis es aufhört, oder einrollen."
+      }
+    }
+  },
+  "night-anchor": {
+    "title": "Eine Nacht vor Anker",
+    "summary": "Am Abend mit Landleine ankern, dann die Nacht im Zeitraffer vergehen sehen: hält der Anker?",
+    "see": "18:30 Uhr in der Bucht, der abendliche Seewind (6 Knoten) weht vom Meer herein. Der magenta Ring zeigt, wohin der Anker soll. Sie verbringen die Nacht hier.",
+    "happening": "Der Wind dreht in einer Nacht: der Seewind stirbt bei Sonnenuntergang, es wird windstill, nach der Dunkelheit weht ein leichter Wind vom Land her, und vor der Morgendämmerung kann eine Squall kommen. Ein Anker, der um sechs Uhr abends hielt, muss das alles überstehen.",
+    "action": "Ankern wie bei „Ankern mit Landleine“: der Bug über der Stelle, Anker fallen lassen, genug Kette, eingraben, zur Küste zurücksetzen und mehr Kette geben, die Leine an Land und stramm. Für eine Nacht so viel Kette geben, wie die Leine erlaubt, etwa 60 m. Dann die Nacht beobachten.",
+    "mistake": "Zu wenig Kette oder ein nicht eingegrabener Anker: in der Squall vor der Morgendämmerung schleift das Boot auf die Felsen.",
+    "done": "Es hat die ganze Nacht gehalten: den Abendwind, die Windstille, den Landwind und die Squall. Reichlich Kette, eingegraben und eine Leine an Land.",
+    "steps": {
+      "to-spot": {
+        "goal": "Langsam rückwärts, bis der Bug über der Stelle ist (innerhalb des Rings), fast gestoppt.",
+        "how": "Motor langsam zurück: der Hebel knapp über Leerlauf in Richtung Zurück („Gang: zurück“). Mit dem Bugstrahlruder gerade halten. Über der Stelle Leerlauf und einen Hauch voraus zum Stoppen."
+      },
+      "let-go-anchor": {
+        "goal": "Den Anker auf den Grund fallen lassen.",
+        "how": "Anker öffnen und „Kette ausgeben ▼“ halten. Den Kettzähler beobachten: bei etwa 12 m erreicht der Anker den Grund."
+      },
+      "scope": {
+        "goal": "Genug Kette geben (der Abschnitt Anker zeigt, wie viel nötig ist: etwa 47 m).",
+        "how": "„Kette ausgeben“ weiterlaufen lassen (oder erneut halten), während der Motor langsam rückwärts läuft, damit die Kette am Grund liegt und nicht als Haufen."
+      },
+      "dig-in": {
+        "goal": "Den Anker eingraben.",
+        "how": "Die Kette stoppen. Motor etwas kräftiger zurück (der Hebel etwa 40 % in Richtung Zurück) für etwa eine halbe Minute: die Kette kommt stramm, und der Anker gräbt sich ein. Der Abschnitt Anker meldet dann, dass er sitzt."
+      },
+      "shore-line": {
+        "goal": "Zur Küste zurücksetzen und eine Leine zu einem Ring bringen.",
+        "how": "Wieder Kette geben und langsam rückwärts, bis das Heck etwa 35 m von der Küste entfernt ist, dann Leerlauf. Hafenmanöver → Leinen: „Eine Leine an Land bringen“. Die Crew schwimmt sie zu einem Ring (etwa 30 s). Für eine Nacht: etwa 60 m Kette, bis die Leine an Land ist."
+      },
+      "settled": {
+        "goal": "Die Landleine dichtholen und still liegen, Motor im Leerlauf.",
+        "how": "Bei der Landleine auf Dichtholen tippen, bis sie handfest sitzt. Der Anker hält den Bug, die Leine das Heck."
+      },
+      "the-night": {
+        "goal": "Die Nacht beobachten: der Wind dreht, und um 04:00 kommt eine Squall.",
+        "how": "Nichts zu tun: die Zeit läuft 240-mal schneller (ein Zeitraffer) bis 07:00. Auf Pause tippen, um anzuhalten und sich umzusehen."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Grund berührt",
+        "what": "Der Kiel hat den Grund berührt.",
+        "why": "Das Wasser ist dort flacher als der Kiel (2,4 m); beobachten Sie die Tiefe im Streifen.",
+        "fix": "Sanft rückwärts in tieferes Wasser und dort bleiben, wo die Tiefe mehr als 3 m zeigt."
+      },
+      "aground-hard": {
+        "name": "Auf Grund gelaufen",
+        "what": "Es ist hart auf den Grund oder die Felsen gelaufen. Die Übung endet hier.",
+        "why": "Schnell auf den Grund gesetzt, klemmt der Kiel, und der Rumpf kann Schaden nehmen (PT-53).",
+        "fix": "Die Tiefe beobachten und langsam herankommen. Auf „Noch einmal“ tippen."
+      },
+      "propeller": {
+        "name": "Eine Leine im Propeller",
+        "what": "Eine Leine im Wasser hat sich um den Propeller gewickelt, der Motor ist ausgefallen. Die Übung endet hier.",
+        "why": "Eine lose Leine nahe am Heck wird in einen drehenden Propeller gesaugt (PT-52). Ohne Motor lässt sich das Boot im Hafen nicht steuern.",
+        "fix": "Den Motor im Leerlauf lassen, solange eine Leine lose im Wasser liegt oder die Crew eine bedient; die Leine zuerst dichtholen oder loswerfen. Auf „Noch einmal“ tippen."
+      },
+      "dragging": {
+        "name": "Der Anker schleift",
+        "what": "Der Ankeralarm ist angegangen: der Anker rutscht über den Grund.",
+        "why": "Mit zu wenig Kette oder ohne eingegraben zu sein hebt der Zug den Anker aus (PT-54).",
+        "fix": "Mehr Kette geben und ihn dann mit sanftem Rückwärtsfahren erneut eingraben."
+      },
+      "dragged-at-night": {
+        "name": "Schleifen in der Nacht",
+        "what": "Der Anker hat in der Nacht geschleift.",
+        "why": "Die Squall zog stärker, als der Anker halten konnte: zu wenig Kette oder der Anker war nicht gut eingegraben.",
+        "fix": "Neu beginnen und mehr Kette geben, etwa 60 m, bevor die Leine an Land geht."
+      }
+    }
+  }
+}

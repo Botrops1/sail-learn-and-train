@@ -69,6 +69,18 @@ const SAME_AS_ENGLISH: Record<string, string> = {
   'sound.volumeValue': 'only a placeholder and a percent sign',
 };
 
+/**
+ * A language's own quote marks, when they contain an English one. Russian uses « », so nothing is
+ * needed; German uses „ “, and that closing mark is the English one, so only a leftover English
+ * pair is wrong there. `noEnglishQuotes` removes the language's own pairs first, then looks.
+ */
+const OWN_QUOTES: Record<string, RegExp> = { de: /„[^“]*“/g };
+
+function noEnglishQuotes(text: string, code: string): boolean {
+  const own = OWN_QUOTES[code];
+  return !/[“”]/.test(own ? text.replace(own, '') : text);
+}
+
 /** Every text of a language's exercises.json (M66 review: the same scans as the UI strings). */
 function exerciseStrings(code: string): [string, string][] {
   const out: [string, string][] = [];
@@ -87,10 +99,12 @@ function exerciseStrings(code: string): [string, string][] {
 afterEach(() => setLanguage(DEFAULT_LANGUAGE));
 
 describe('languages (PHASE4_SPEC 9.3)', () => {
-  it('1. the app has English and Russian, each named in its own language', () => {
-    expect([...LANGUAGES]).toEqual(['en', 'ru']);
+  it('1. the app has English, German and Russian, each named in its own language', () => {
+    expect([...LANGUAGES]).toEqual(['en', 'de', 'ru']);
     expect(languageName('en')).toBe('English');
+    expect(languageName('de')).toBe('Deutsch');
     expect(languageName('ru')).toBe('Русский');
+    expect(isLanguage('de')).toBe(true);
     expect(isLanguage('ru')).toBe(true);
     expect(isLanguage('xx')).toBe(false);
   });
@@ -134,14 +148,14 @@ describe('languages (PHASE4_SPEC 9.3)', () => {
     }
     for (const code of LANGUAGES.filter((c) => c !== DEFAULT_LANGUAGE)) {
       for (const [key, value] of uiEntries(code)) {
-        expect(value, `${code}/ui/${key}`).not.toMatch(/[“”]/);
+        expect(noEnglishQuotes(value, code), `${code}/ui/${key}`).toBe(true);
       }
       for (const [label, value] of exerciseStrings(code)) {
-        expect(value, label).not.toMatch(/[“”]/);
+        expect(noEnglishQuotes(value, code), label).toBe(true);
       }
       for (const [id, text] of Object.entries(GLOSSARIES[code]?.entries ?? {})) {
         for (const [label, value] of glossaryFields(id, text)) {
-          expect(value, `${code}/${label}`).not.toMatch(/[“”]/);
+          expect(noEnglishQuotes(value, code), `${code}/${label}`).toBe(true);
         }
       }
     }
@@ -260,5 +274,37 @@ describe('languages (PHASE4_SPEC 9.3)', () => {
       expect(UI_STRINGS.ru?.[`pos.${key}`], key).toBe(name.charAt(0).toUpperCase() + name.slice(1));
     }
     expect(UI_STRINGS.ru?.['tab.learn']).toBe('Обучение');
+  });
+
+  it('9. the German names are the words German sailors use, not the English ones', () => {
+    const names: Record<string, string> = {
+      rope_mainsheet: 'Großschot',
+      rope_jib_sheet: 'Fockschot',
+      rope_vang: 'Baumniederholer',
+      rope_topping_lift: 'Toppnant',
+      rope_outhaul: 'Unterliekstrecker',
+      rope_main_halyard: 'Großfall',
+      part_gooseneck: 'Lümmelbeschlag',
+      part_spreader: 'Salinge',
+      part_shroud: 'Wanten',
+      part_cockpit: 'Plicht',
+      part_coachroof: 'Deckshaus',
+      part_companionway: 'Niedergang',
+      sailpart_clew: 'Schothorn',
+      sailpart_luff: 'Vorliek',
+      sailpart_leech: 'Achterliek',
+      term_gybe: 'Halsen',
+      term_tacking: 'Wenden',
+      term_ease: 'Fieren',
+      term_heel: 'Krängung',
+      term_weather_helm: 'Luvgierigkeit',
+      term_prop_walk: 'Radeffekt',
+      term_no_go_zone: 'Totwasser',
+    };
+    for (const [id, name] of Object.entries(names)) {
+      expect(glossaryText(id, 'de')?.name, id).toBe(name);
+    }
+    expect(UI_STRINGS.de?.['tab.ropes']).toBe('Leinen');
+    expect(UI_STRINGS.de?.['quote.label']).toBe('„{text}“');
   });
 });
