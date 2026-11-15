@@ -2,6 +2,7 @@
 // scripts/shots.mjs, on the test clock. Labels contain "m78". The good run is on the phone only.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { PILOT_SPEED, setSpeed } from './exercise-drive.mjs';
 import { showSection } from './ui.mjs';
 
 export const M78_SCENES = [
@@ -12,7 +13,6 @@ export const M78_SCENES = [
     sheet: 'half',
   },
   { name: 'stern-anchor-ring', query: '?m=exercise&ex=stern-to-anchor&cam=top', sheet: 'peek' },
-  { name: 'harbour-list', query: '?m=exercise', section: 'exercises', sheet: 'half' },
 ];
 
 const DROP_NORTH_M = 1442;
@@ -63,6 +63,8 @@ export async function liveM78Checks({ openPage, viewports, outDir, prefix, probl
     await showSection(page, 'exercises');
     await page.getByTestId('exercise-start').click();
     await page.waitForTimeout(500);
+    // The pilot decides once per tick; the run goes at the pilot's time scale (exercise-drive.mjs).
+    await setSpeed(page, PILOT_SPEED);
     let last = null;
     let phase = 0;
     let windlass = 'off';

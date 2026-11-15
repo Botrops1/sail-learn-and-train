@@ -15,6 +15,10 @@ on:
         description: 'full or pr'
         type: string
         default: full
+    outputs:
+      flaky:
+        description: 'JSON list of the browser checks that failed once and passed on the retry'
+        value: ${{ jobs.browser-checks.outputs.flaky }}
 
 permissions:
   contents: read
@@ -40,12 +44,18 @@ jobs:
 
   # Decides which browser checks run (scripts/ci-plan.mjs, PHASE_LAUNCH_SPEC 6): a pull request
   # runs the scenes, the taps, "general", the group of its own milestone (from the title), the
-  # newest groups and any named in a "CI groups: m68, m75" line of its description ("CI groups: all"
-  # runs everything); a pull request that only changes documents runs none. The full set runs from
-  # nightly.yml and before a release. A change to the title or the description takes effect at the
-  # next push. The title and the description reach the script only through env:, never a run: line.
+  # newest groups, the groups its changed files call for (.github/ci-paths.json: a change to the
+  # store, the URL state, the layout shell or the scene setup runs everything) and any named in a
+  # "CI groups: m68, m75" line of its description ("CI groups: all" runs everything); a pull
+  # request that only changes documents runs none. The full set runs from nightly.yml and before
+  # a release. The title and the description are fetched from the API at run time, so "Re-run
+  # jobs" reads them as they are now (the event's text is the fallback if the call fails). They
+  # reach the script only through a file or env:, never a run: line.
   plan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       docs: ${{ steps.plan.outputs.docs }}
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -61,9 +71,24 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: git diff --name-only "$BASE_SHA" HEAD > "$RUNNER_TEMP/changed.txt"
+      - name: Title and description as they are now
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if gh api "repos/$REPO/pulls/$NUMBER" --jq '{title, body}' > "$RUNNER_TEMP/pr.json.tmp"; then
+            mv "$RUNNER_TEMP/pr.json.tmp" "$RUNNER_TEMP/pr.json"
+          else
+            echo "::warning::Could not read the pull request; using the text of the event."
+            rm -f "$RUNNER_TEMP/pr.json.tmp"
+          fi
       - id: plan
         run: node scripts/ci-plan.mjs
         env:
+          PR_FILE: ${{ runner.temp }}/pr.json
           CI_SCOPE: ${{ github.event_name == 'pull_request' && 'pr' || inputs.scope }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
@@ -73,6 +98,9 @@ jobs:
   # the groups the plan names, packed into parts by recorded times (.github/ci-times.json). Fails
   # on console errors, wrong layouts, page scroll, unknown taps and failed live checks. Each live
   # group prints its time ("live group m9: 120 s"); refresh ci-times.json from those.
+  # A part that fails runs once more, for only the groups that failed (scripts/ci-shots.mjs). If
+  # that passes, the job is green with a "Flaky check" warning, and the names go to the summary of
+  # `browser-checks` and (nightly) to an issue; a part that fails twice is red.
   browser-part:
     name: browser (${{ matrix.part }})
     needs: plan
@@ -105,7 +133,19 @@ jobs:
           mkdir -p ~/.config/fontconfig
           cp .github/fontconfig.conf ~/.config/fontconfig/fonts.conf
           fc-match sans-serif
-      - run: env SHOTS_SIZES=phone ${{ matrix.env }} npm run shots
+      - run: node scripts/ci-shots.mjs
+        env:
+          PART_ENV: ${{ matrix.env }}
+          PART_NAME: ${{ matrix.part }}
+          FLAKY_FILE: ${{ runner.temp }}/flaky-${{ strategy.job-index }}.json
+      # The names of checks that failed once and passed on the retry, for `browser-checks`.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: flaky-${{ strategy.job-index }}
+          path: ${{ runner.temp }}/flaky-${{ strategy.job-index }}.json
+          if-no-files-found: ignore
+          retention-days: 7
       # The PNGs are kept as a download only when a part fails.
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -115,12 +155,28 @@ jobs:
           retention-days: 7
 
   # One result for the branch protection rule: green when the plan worked and every part passed
-  # (or none was needed, for a documents-only pull request).
+  # (or none was needed, for a documents-only pull request). Lists the flaky checks (failed once,
+  # passed on the retry) in its summary and in its output `flaky`, which nightly.yml reads.
   browser-checks:
     needs: [plan, browser-part]
     if: always()
     runs-on: ubuntu-latest
+    outputs:
+      flaky: ${{ steps.flaky.outputs.flaky }}
     steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: flaky-*
+          merge-multiple: true
+          path: flaky
+      - id: flaky
+        continue-on-error: true
+        run: node scripts/flaky-report.mjs summary flaky
       - env:
           PLAN: ${{ needs.plan.result }}
           PARTS: ${{ needs.browser-part.result }}

@@ -2,6 +2,7 @@
 // scripts/shots.mjs, on the test clock. Labels contain "m75". The good run is on the phone only.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { PILOT_SPEED, setSpeed } from './exercise-drive.mjs';
 import { setCamera, showSection } from './ui.mjs';
 
 export const M75_SCENES = [
@@ -139,6 +140,7 @@ export async function liveM75Checks({ openPage, viewports, outDir, prefix, probl
     await showSection(page, 'exercises');
     await page.getByTestId('exercise-start').click();
     await page.waitForTimeout(500);
+    await setSpeed(page, PILOT_SPEED);
     const state = { phase: 0 };
     let shownBerth = false;
     let last = null;
@@ -158,7 +160,7 @@ export async function liveM75Checks({ openPage, viewports, outDir, prefix, probl
         await setCamera(page, 'helm');
       }
       await pilotTick(page, state, now);
-      // Each tick moves the app 0.2 s; Hard-to-miss limits are in tests/harbourExercises.test.ts.
+      // Each tick moves the app 0.2 s (× the pilot's scale); Hard-to-miss limits are in tests/harbourExercises.test.ts.
       await page.waitForTimeout(200);
     }
     await showSection(page, 'exercises');
@@ -184,6 +186,7 @@ export async function liveM75Checks({ openPage, viewports, outDir, prefix, probl
     await showSection(page, 'exercises');
     await page.getByTestId('exercise-start').click();
     await page.waitForTimeout(500);
+    await setSpeed(page, PILOT_SPEED);
     const state = { phase: 0 };
     for (let i = 0; i < 1100; i += 1) {
       const r = await run(page);

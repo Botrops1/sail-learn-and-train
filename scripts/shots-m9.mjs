@@ -80,10 +80,26 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
     ['run', '?wd=175&ws=12&ms=100&js=100', 'Pushed (running)', 'Blanketed by the main'],
   ]) {
     const { context, page } = await openPage(phone, `m9 ${label}`, query);
-    await page.waitForTimeout(2500);
+    // Wait for the chips to say what is expected (at most 2.5 s, as the fixed pause was), then read them.
+    await page
+      .waitForFunction(
+        ([id, want]) => document.querySelector(`[data-testid="${id}"]`)?.textContent === want,
+        ['trim-chip-main', main],
+        { timeout: 2500 },
+      )
+      .catch(() => undefined);
+    // It must still say so a moment later: not a chip that passes through the expected text.
+    await page.waitForTimeout(300);
     const mainChip = await text(page, 'trim-chip-main');
     check(`${label}: main chip`, mainChip === main, mainChip);
     if (jib) {
+      await page
+        .waitForFunction(
+          ([id, want]) => document.querySelector(`[data-testid="${id}"]`)?.textContent === want,
+          ['trim-chip-jib', jib],
+          { timeout: 2500 },
+        )
+        .catch(() => undefined);
       const jibChip = await text(page, 'trim-chip-jib');
       check(`${label}: jib chip`, jibChip === jib, jibChip);
     }
@@ -100,13 +116,14 @@ export async function liveM9Checks({ openPage, viewports, outDir, prefix, proble
       ['luffing-windward', '?wd=60&ws=12&ms=100&js=50&cam=side-starboard&debug=1', 1, 6],
       ['luffing-leeward', '?wd=60&ws=12&ms=100&js=50&cam=side-port&debug=1', -1, 6],
     ]) {
+      // One page for the near and the wide picture of a case: only the camera moves.
+      const { context, page } = await openPage(viewport, `m9 ${name} ${viewport.name}`, query);
+      await page.waitForTimeout(2500);
       for (const range of ['near', 'wide']) {
-        const { context, page } = await openPage(viewport, `m9 ${name} ${viewport.name}`, query);
-        await page.waitForTimeout(2500);
         await closeUp(page, closeView(side, range, lean));
         await shot(page, `telltales-${name}-${range}-${viewport.name}`);
-        await context.close();
       }
+      await context.close();
     }
   }
 

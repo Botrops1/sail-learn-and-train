@@ -4,7 +4,7 @@
 // phone only: a desktop-size 3D frame is ten times slower to draw, and the cards are the same.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { exerciseLine, showSection } from './ui.mjs';
+import { exerciseItemTestIds, exerciseLine, showSection } from './ui.mjs';
 
 export const M69_SCENES = [
   {
@@ -260,31 +260,7 @@ export async function liveM69Checks({ openPage, viewports, outDir, prefix, probl
         .evaluateAll((nodes) => nodes.map((n) => n.getAttribute('data-testid')));
       check(
         `list ${name}`,
-        JSON.stringify(ids) ===
-          JSON.stringify([
-            'exercise-item-points-of-sail',
-            'exercise-item-tacking',
-            'exercise-item-irons',
-            'exercise-item-gybing',
-            'exercise-item-gusts',
-            'exercise-item-reduce-sail',
-            // M96 added The afternoon maestral to Wind and weather.
-            'exercise-item-maestral',
-            // M97 added A bura is coming.
-            'exercise-item-bura',
-            // M71 added the two sails exercises.
-            'exercise-item-set-sails',
-            'exercise-item-furl-sails',
-            // M74 added Leaving the berth, M75 Entering the berth, M76 Turning and the buoy, M77 Anchoring, M78 Stern-to on your anchor.
-            'exercise-item-leave-berth',
-            'exercise-item-enter-berth',
-            'exercise-item-turn-own-length',
-            'exercise-item-mooring-buoy',
-            'exercise-item-anchor-shore',
-            'exercise-item-stern-to-anchor',
-            // M98 added A night at anchor to Harbour and anchor, after the stern-to exercise.
-            'exercise-item-night-anchor',
-          ]),
+        JSON.stringify(ids) === JSON.stringify(exerciseItemTestIds()),
         JSON.stringify(ids),
       );
       problems.push(...(await auditPage(page, `m69 ${name} list`)));

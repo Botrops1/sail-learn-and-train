@@ -33,19 +33,20 @@ export async function liveM65Checks({ openPage, viewports, outDir, prefix, probl
     return opened;
   };
 
-  // Close-ups at both detail levels (phone and desktop).
+  // Close-ups at both detail levels (phone and desktop): one page for the six views of a size and
+  // a level, the camera moved with __sailDebug.setView between the pictures.
   for (const viewport of [phone, desktop]) {
     for (const detail of ['high', 'low']) {
+      const { context, page } = await open(viewport, 'close-ups', `detail=${detail}`);
+      await page.addStyleTag({ content: '.debug { display: none !important; }' });
       for (const view of CLOSE_UPS) {
-        const { context, page } = await open(viewport, view.name, `detail=${detail}`);
-        await page.addStyleTag({ content: '.debug { display: none !important; }' });
         await page.evaluate((v) => window.__sailDebug.setView(v.position, v.target, v.fov), view);
         await page.waitForTimeout(1500);
         await page.screenshot({
           path: path.join(outDir, `${prefix}${view.name}-${detail}-${viewport.name}.png`),
         });
-        await context.close();
       }
+      await context.close();
     }
   }
 

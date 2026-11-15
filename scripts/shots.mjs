@@ -5,7 +5,8 @@
 // committed; the agent looks at the ones it needs).
 //
 // Options (environment variables):
-//   SHOTS_ONLY=m10       only the scenes and live checks of these milestones (comma list)
+//   SHOTS_ONLY=m10       only the scenes and live checks of these milestones (comma list; a merged
+//                        milestone, e.g. m7, runs its group, m6)
 //   SHOTS_SIZES=phone    scenes at phone size only (CI); live checks and tap checks unchanged
 //   SHOTS_SCENE=<text>   only the scenes whose name contains <text>
 //   SHOTS_ONLY_LIVE=1    only the live checks;  SHOTS_ONLY_SMALL=1  only the small-parts taps
@@ -15,6 +16,13 @@
 //   SHOTS_SHARD=1/2      only every 2nd scene, starting with the 1st (CI's two scene parts)
 //   (CI splits the full run into parallel parts with these; see .github/workflows/ci.yml)
 //   SHOTS_OUT=<dir>      output folder (default shots/)
+//   SHOTS_FAILED_FILE=<file>  on a failed run, write which groups (or other units) failed and
+//                        their WRONG lines there as JSON (scripts/ci-shots.mjs retries those)
+//   SHOTS_TEST_FLAKY=once|always  adds the live group "flakytest", which fails on its first run
+//                        only (marker file SHOTS_TEST_FLAKY_MARKER) or every time: it tests the retry
+//   SHOTS_VERBOSE=1      print every line; by default the lines of a scene, a tap sweep or a live
+//                        group are printed only when it went wrong (scripts/quiet-log.mjs)
+import { existsSync, writeFileSync } from 'node:fs';
 import { mkdir, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from 'playwright';
@@ -116,6 +124,8 @@ import { liveM97Checks, M97_SCENES } from './shots-m97.mjs';
 import { liveM98Checks, M98_SCENES } from './shots-m98.mjs';
 import { liveM99Checks, M99_SCENES } from './shots-m99.mjs';
 import { checkBudget } from './budget.mjs';
+import { createQuietLog } from './quiet-log.mjs';
+import { GROUP_ALIASES, groupOf } from './ci-plan.mjs';
 import {
   closeSettings,
   isStacked,
@@ -390,6 +400,8 @@ const LAUNCH_ARGS = [
   '--ignore-gpu-blocklist',
 ];
 
+// Vite's note about the config's extensionless import would print on every run (quiet output).
+process.env.VITE_CONFIG_NATIVE_IGNORE_WARNING = 'true';
 const server = await preview({ preview: { port: 4173, strictPort: false }, logLevel: 'warn' });
 const origin =
   server.resolvedUrls?.local[0]?.replace(/\/sail-learn-and-train\/?$/, '') ??
@@ -404,6 +416,13 @@ if (process.env.SHOTS_KEEP !== '1') await rm(OUT_DIR, { recursive: true, force: 
 await mkdir(OUT_DIR, { recursive: true });
 
 const problems = [];
+// Quiet by default: the lines of a scene, a tap sweep or a live group are held back and printed only
+// if that unit went wrong. Every check calls console.log directly, so the runner swaps it (log.begin
+// and log.end below mark the units); `live group <name>: <n> s`, the failures and the last line
+// always print.
+const log = createQuietLog({ verbose: process.env.SHOTS_VERBOSE === '1', problems });
+log.install();
+let sceneShots = 0;
 
 /**
  * The test clock (live checks of M4a, M4b and M4c; CLAUDE.md, "Running the browser checks"). The app's
@@ -771,17 +790,29 @@ async function liveM3Checks() {
 const ONLY_LIVE = process.env.SHOTS_ONLY_LIVE === '1';
 const ONLY_SMALL = process.env.SHOTS_ONLY_SMALL === '1';
 /** SHOTS_ONLY=m9,m10: only these milestones' scenes and live checks. */
-const ONLY = (process.env.SHOTS_ONLY ?? '')
-  .split(',')
-  .map((m) => m.trim().toLowerCase())
-  .filter(Boolean);
+const ONLY = [
+  ...new Set(
+    (process.env.SHOTS_ONLY ?? '')
+      .split(',')
+      .map((m) => m.trim().toLowerCase())
+      .filter(Boolean)
+      // A group merged into another one (GROUP_ALIASES) runs as part of that one.
+      .map(groupOf),
+  ),
+];
+/** The milestones whose scenes belong to those groups: the groups and the ones merged into them. */
+const ONLY_SCENES = ONLY.flatMap((name) => [
+  name,
+  ...Object.keys(GROUP_ALIASES).filter((alias) => GROUP_ALIASES[alias] === name),
+]);
 const QUICK = ONLY_LIVE || ONLY.length > 0 || process.env.SHOTS_NO_TAPS === '1';
 const NO_LIVE = process.env.SHOTS_NO_LIVE === '1';
 /** SHOTS_SKIP=general,m4b: live-check groups to leave out (another CI part runs them). */
 const SKIP = (process.env.SHOTS_SKIP ?? '')
   .split(',')
   .map((m) => m.trim().toLowerCase())
-  .filter(Boolean);
+  .filter(Boolean)
+  .map(groupOf);
 /** SHOTS_SIZES=phone: scenes at phone size only (CI). */
 // SHOTS_SHARD=1/2: every 2nd scene starting with the 1st (CI splits the scenes in two parts).
 const SHARD = /^(\d+)\/(\d+)$/.exec(process.env.SHOTS_SHARD ?? '');
@@ -887,10 +918,11 @@ try {
     : SCENE_VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
-      if (ONLY.length > 0 && !ONLY.some((m) => scene.name.startsWith(`${m}-`))) continue;
+      if (ONLY.length > 0 && !ONLY_SCENES.some((m) => scene.name.startsWith(`${m}-`))) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       if (!inShard(SCENES.indexOf(scene))) continue;
       const label = `${viewport.name}/${scene.name}`;
+      log.begin(label);
       const { context, page } = await openPage(viewport, label, scene.query);
       if (scene.mode) await setMode(page, scene.mode);
       if (scene.section) await showSection(page, scene.section);
@@ -969,6 +1001,8 @@ try {
       await page.screenshot({ path: file });
       console.log(`${file}  layout=${facts.layout}  ${facts.version}  ${facts.url}`);
       await context.close();
+      sceneShots += 1;
+      log.end();
     }
   }
 
@@ -993,6 +1027,7 @@ try {
       ];
   for (const { viewport, cam, step: fixedStep } of sweeps) {
     const label = `taps ${viewport.name}/${cam}${fixedStep ? ` (${fixedStep} px)` : ''}`;
+    log.begin(label);
     // Labels in 3D off (M5): they are tappable and would stand in front of the parts.
     const { context, page } = await openPage(viewport, label, `?cam=${cam}&lb=0`);
     // The boat is framed largest with the sheet at its lowest (M26).
@@ -1006,6 +1041,9 @@ try {
     // select). The grid is visited with a stride, so consecutive taps are more than 24 px apart
     // (SCENE.picking.doubleTapMaxPx).
     const stride = Math.floor(24 / step) + 1;
+    const recent = [];
+    const sweepStart = Date.now();
+    let changedAt = '';
     for (let y = box.y + step / 2; y < barTop - 4; y += step) {
       const columns = [];
       for (let x = box.x + step / 2; x < box.x + box.width; x += step) columns.push(x);
@@ -1016,6 +1054,10 @@ try {
       for (const x of order) {
         await page.mouse.click(x, y);
         taps += 1;
+        // Issue #205: on a camera change, name the taps just before it (page.url() costs no round trip).
+        recent.push(`#${taps} (${Math.round(x)},${Math.round(y)}) +${Date.now() - sweepStart} ms`);
+        if (recent.length > 6) recent.shift();
+        if (!changedAt && !page.url().includes(`cam=${cam}`)) changedAt = recent.join(', ');
         // M51: a tap on the instrument strip opens Conditions and raises the sheet, whose tab row
         // would then take the taps below it (the gear tab shows the language buttons): lower it again.
         if (
@@ -1033,14 +1075,16 @@ try {
     }
     const search = await page.evaluate(() => window.location.search);
     if (!search.includes(`cam=${cam}`))
-      problems.push(`${label}: taps changed the camera (${search})`);
+      problems.push(`${label}: taps changed the camera (${search}); last taps: ${changedAt}`);
     console.log(`${label}: ${taps} taps`);
     await context.close();
+    log.end();
   }
   // Issue #203: a finger-long tap on the 3D view while a helm view button's glide runs must not
   // turn the camera to Free (the gesture used to take the glide's own movement for a hand move).
   if (!QUICK) {
     const label = `taps ${VIEWPORTS[0].name}/helm tap during glide`;
+    log.begin(label);
     const { context, page } = await openPage(VIEWPORTS[0], label, '?cam=helm&lb=0');
     await setSheet(page, 'peek');
     await page.waitForTimeout(800);
@@ -1056,7 +1100,9 @@ try {
       problems.push(`${label}: the tap changed the camera (${search})`);
     console.log(`${label}: ${search.includes('cam=helm') ? 'camera kept' : 'camera changed'}`);
     await context.close();
+    log.end();
   }
+  log.begin('tap sweep summary');
   console.log(
     `identified by tapping: ${[...found.entries()].map(([id, n]) => `${id}×${n}`).join(', ')}`,
   );
@@ -1066,12 +1112,14 @@ try {
   for (const id of MUST_NOT_IDENTIFY) {
     if (found.has(id)) problems.push(`tap sweep found ${id}, which should not be drawn`);
   }
+  log.end();
 
   // Small fittings: in the default Side and Top views, a real tap on each one's hit-area centre
   // (positions from the debug-only hook) must show its card.
   for (const viewport of QUICK && !ONLY_SMALL ? [] : VIEWPORTS.slice(0, 3)) {
     for (const view of SMALL_PART_VIEWS) {
       const label = `small parts ${viewport.name}/${view.cam}`;
+      log.begin(label);
       const { context, page } = await openPage(viewport, label, `?cam=${view.cam}&debug=1&lb=0`);
       await setSheet(page, 'peek');
       await page.waitForTimeout(800);
@@ -1110,6 +1158,7 @@ try {
         `${label}: ${view.expected.length - missing.length}/${view.expected.length} respond`,
       );
       await context.close();
+      log.end();
     }
   }
 
@@ -1124,6 +1173,23 @@ try {
     problems,
   };
   const onTestClock = { ...live, openPage: openOnTestClock };
+  /**
+   * The members of a merged group, one after the other. One that throws is a problem of its own
+   * (named by its milestone) and the others still run, as they did when each was a group.
+   */
+  const members =
+    (...list) =>
+    async () => {
+      for (const [label, run] of list) {
+        try {
+          await run();
+        } catch (error) {
+          problems.push(`live ${label} stopped: ${error instanceof Error ? error.message : error}`);
+          console.log(`live ${label} STOPPED: ${error instanceof Error ? error.stack : error}`);
+          for (const context of browser.contexts()) await context.close().catch(() => undefined);
+        }
+      }
+    };
   /** Live checks per milestone; "general" covers M0–M4a (layout, camera, URL, M2–M4a). */
   const liveGroups = {
     general: () => liveGeneralChecks(),
@@ -1134,23 +1200,32 @@ try {
     },
     m4c: () => liveM4cChecks(onTestClock),
     m5: () => liveM5Checks(live),
-    m6: () => liveM6Checks(live),
-    m7: () => liveM7Checks(live),
+    // Groups merged in H2 run the checks of the milestones named in `GROUP_ALIASES`
+    // (scripts/ci-plan.mjs), one after the other, each on its own pages and clock.
+    m6: members(['m6', () => liveM6Checks(live)], ['m7', () => liveM7Checks(live)]),
     m8: () => liveM8Checks(live),
     m9: () => liveM9Checks(live),
     m10: () => liveM10Checks(live),
     m11: () => liveM11Checks(live),
-    m12: () => liveM12Checks(live),
-    m13: () => liveM13Checks(live),
-    m14: () => liveM14Checks(live),
+    m12: members(
+      ['m12', () => liveM12Checks(live)],
+      ['m13', () => liveM13Checks(live)],
+      ['m19', () => liveM19Checks(live)],
+    ),
+    m14: members(
+      ['m14', () => liveM14Checks(live)],
+      ['m72', () => liveM72Checks(onTestClock)],
+      ['m80', () => liveM80Checks(onTestClock)],
+    ),
     m15: () => liveM15Checks(live),
     m16: () => liveM16Checks(live),
     m17: () => liveM17Checks(live),
     m18: () => liveM18Checks(live),
-    m19: () => liveM19Checks(live),
-    m20: () => liveM20Checks(live),
-    m21: () => liveM21Checks(live),
-    m22: () => liveM22Checks(live),
+    m20: members(
+      ['m20', () => liveM20Checks(live)],
+      ['m21', () => liveM21Checks(live)],
+      ['m22', () => liveM22Checks(live)],
+    ),
     m23: () => liveM23Checks(live),
     m24: () => liveM24Checks(live),
     m25: () => liveM25Checks(live),
@@ -1168,26 +1243,34 @@ try {
     m37: () => liveM37Checks(onTestClock),
     m38: () => liveM38Checks(onTestClock),
     m39: () => liveM39Checks(onTestClock),
-    m40: () => liveM40Checks(onTestClock),
-    m41: () => liveM41Checks(onTestClock),
-    m42: () => liveM42Checks(onTestClock),
-    m43: () => liveM43Checks(onTestClock),
-    m44: () => liveM44Checks(onTestClock),
-    m45: () => liveM45Checks(onTestClock),
-    m46: () => liveM46Checks(onTestClock),
-    m47: () => liveM47Checks(onTestClock),
+    m40: members(
+      ['m40', () => liveM40Checks(onTestClock)],
+      ['m41', () => liveM41Checks(onTestClock)],
+      ['m42', () => liveM42Checks(onTestClock)],
+      ['m43', () => liveM43Checks(onTestClock)],
+    ),
+    m44: members(
+      ['m44', () => liveM44Checks(onTestClock)],
+      ['m45', () => liveM45Checks(onTestClock)],
+      ['m46', () => liveM46Checks(onTestClock)],
+    ),
+    m47: members(
+      ['m47', () => liveM47Checks(onTestClock)],
+      ['m57', () => liveM57Checks(live)],
+      ['m59', () => liveM59Checks(onTestClock)],
+    ),
     m48: () => liveM48Checks(live),
     m49: () => liveM49Checks(onTestClock),
     m50: () => liveM50Checks(onTestClock),
-    m51: () => liveM51Checks(onTestClock),
+    m51: members(
+      ['m51', () => liveM51Checks(onTestClock)],
+      ['m53', () => liveM53Checks(onTestClock)],
+      ['m55', () => liveM55Checks(onTestClock)],
+    ),
     m52: () => liveM52Checks(live),
-    m53: () => liveM53Checks(onTestClock),
     m54: () => liveM54Checks(live),
-    m55: () => liveM55Checks(onTestClock),
     m56: () => liveM56Checks(live),
-    m57: () => liveM57Checks(live),
     m58: () => liveM58Checks(live),
-    m59: () => liveM59Checks({ ...onTestClock, realClockPage: live.openPage }),
     m60: () => liveM60Checks(live),
     m60b: () => liveM60bChecks(live),
     m61: () => liveM61Checks(live),
@@ -1201,7 +1284,6 @@ try {
     m69: () => liveM69Checks(onTestClock),
     m70: () => liveM70Checks(onTestClock),
     m71: () => liveM71Checks(onTestClock),
-    m72: () => liveM72Checks(onTestClock),
     m73: () => liveM73Checks(onTestClock),
     m74: () => liveM74Checks(onTestClock),
     m75: () => liveM75Checks(onTestClock),
@@ -1209,32 +1291,47 @@ try {
     m77: () => liveM77Checks(onTestClock),
     m78: () => liveM78Checks(onTestClock),
     m79: () => liveM79Checks(onTestClock),
-    m80: () => liveM80Checks(onTestClock),
     m81: () => liveM81Checks(onTestClock),
     m82: () => liveM82Checks(onTestClock),
-    m85: () => liveM85Checks(onTestClock),
+    m85: members(
+      ['m85', () => liveM85Checks(onTestClock)],
+      ['m91', () => liveM91Checks(onTestClock)],
+      ['m92', () => liveM92Checks(onTestClock)],
+      ['m95', () => liveM95Checks(onTestClock)],
+    ),
     // M87 opens some pages on the real clock (the audio context runs in real time): `openPlain`.
-    m87: () => liveM87Checks({ ...onTestClock, openPlain: openPage }),
-    m88: () => liveM88Checks(onTestClock),
-    m89: () => liveM89Checks(onTestClock),
-    m90: () => liveM90Checks(onTestClock),
-    m91: () => liveM91Checks(onTestClock),
-    m92: () => liveM92Checks(onTestClock),
+    m87: members(
+      ['m87', () => liveM87Checks({ ...onTestClock, openPlain: openPage })],
+      ['m88', () => liveM88Checks(onTestClock)],
+      ['m89', () => liveM89Checks(onTestClock)],
+      ['m90', () => liveM90Checks(onTestClock)],
+    ),
     m93: () => liveM93Checks(onTestClock),
     m94: () => liveM94Checks(onTestClock),
-    m95: () => liveM95Checks(onTestClock),
     m96: () => liveM96Checks(onTestClock),
     m97: () => liveM97Checks(onTestClock),
     m98: () => liveM98Checks(onTestClock),
     m99: () => liveM99Checks(onTestClock),
     budget: () => checkBudget(live),
   };
+  // Test-only (not in CI's group list): a group that fails on its first run only, or always, so the
+  // retry of scripts/ci-shots.mjs can be tried. Without SHOTS_TEST_FLAKY it does not exist.
+  if (process.env.SHOTS_TEST_FLAKY) {
+    liveGroups.flakytest = async () => {
+      const marker = process.env.SHOTS_TEST_FLAKY_MARKER ?? path.join(OUT_DIR, 'flakytest.marker');
+      const fail = process.env.SHOTS_TEST_FLAKY === 'always' || !existsSync(marker);
+      writeFileSync(marker, 'ran\n');
+      if (fail) problems.push('live flakytest: made to fail on purpose');
+      console.log(`live flakytest first-run check: ${fail ? 'WRONG' : 'ok'}`);
+    };
+  }
   if (!ONLY_SMALL && !NO_LIVE) {
     for (const [name, run] of Object.entries(liveGroups)) {
       if (SKIP.includes(name)) continue;
       if (ONLY.length > 0 && !ONLY.includes(name)) continue;
       // A check that throws (a button not found) is one problem; the other groups still run.
       const started = Date.now();
+      log.begin(`live group ${name}`);
       try {
         await run();
       } catch (error) {
@@ -1243,7 +1340,8 @@ try {
         // The pages the failed check left open would keep drawing and slow the next groups.
         for (const context of browser.contexts()) await context.close().catch(() => undefined);
       }
-      console.log(`live group ${name}: ${Math.round((Date.now() - started) / 1000)} s`);
+      log.end();
+      log.say(`live group ${name}: ${Math.round((Date.now() - started) / 1000)} s`);
     }
   }
 } catch (error) {
@@ -1251,6 +1349,7 @@ try {
   // still prints, so a watcher waiting for "problem(s)" is not left waiting.
   problems.push(`stopped: ${error instanceof Error ? error.stack : error}`);
 } finally {
+  log.end();
   await browser.close();
   await new Promise((resolve) => server.httpServer.close(resolve));
 }
@@ -1270,6 +1369,7 @@ try {
         ['side', 824, 1168],
         ['plan', 792, 400],
       ]) {
+    log.begin(`compare ${view}`);
     const page = await compareBrowser.newPage({ viewport: { width, height } });
     page.on('pageerror', (error) => problems.push(`compare ${view}: page error: ${error.message}`));
     await page.goto(`${dev.resolvedUrls.local[0]}scripts/compare/index.html?view=${view}`);
@@ -1277,14 +1377,35 @@ try {
     const file = path.join(OUT_DIR, `${PREFIX}compare-${view}-model-vs-sketch.png`);
     await page.screenshot({ path: file });
     console.log(file);
+    log.end();
   }
 } finally {
+  log.end();
   await compareBrowser.close();
   await dev.close();
 }
 
+log.restore();
+if (problems.length > 0 && process.env.SHOTS_FAILED_FILE) {
+  // Which units failed, for scripts/ci-shots.mjs: a live group is named by its group; any other
+  // unit, or a problem no unit owns (a late console error), means the whole part has to rerun.
+  const owned = log.failed.reduce((sum, unit) => sum + unit.problems, 0);
+  const groups = log.failed
+    .filter((unit) => unit.name.startsWith('live group '))
+    .map((unit) => ({
+      name: unit.name.slice('live group '.length),
+      lines: unit.reason.length > 0 ? unit.reason : unit.problemLines,
+    }));
+  const whole = groups.length < log.failed.length || problems.length > owned || groups.length === 0;
+  writeFileSync(
+    process.env.SHOTS_FAILED_FILE,
+    JSON.stringify({ whole, groups, problems: problems.slice(0, 30) }),
+  );
+}
 if (problems.length > 0) {
   console.error(`\n${problems.length} problem(s):\n${problems.join('\n')}`);
   process.exit(1);
 }
-console.log('\nNo console errors, layouts as expected, no page scroll, taps and camera OK.');
+if (process.env.SHOTS_VERBOSE !== '1' && sceneShots > 0)
+  console.log(`${sceneShots} scene shots ok`);
+console.log('No console errors, layouts as expected, no page scroll, taps and camera OK.');

@@ -1,7 +1,8 @@
 name: Nightly
 
 # The full browser checks on main every night, on demand, and (M84) before a release.
-# A failure opens one issue labelled "nightly" (or comments on the open one).
+# A failure opens one issue labelled "nightly" (or comments on the open one). A check that failed
+# once and passed on the retry opens or updates "Flaky check: <group>" (label "flaky").
 
 on:
   schedule:
@@ -11,6 +12,7 @@ on:
 permissions:
   contents: read
   issues: write
+  pull-requests: read # ci.yml's plan job asks for it
 
 jobs:
   full:
@@ -36,3 +38,19 @@ jobs:
           else
             gh issue create --title "Nightly checks failed" --label nightly --body "$body"
           fi
+
+  flaky:
+    needs: full
+    if: always() && needs.full.outputs.flaky != '' && needs.full.outputs.flaky != '[]'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      FLAKY: ${{ needs.full.outputs.flaky }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: node scripts/flaky-report.mjs issues

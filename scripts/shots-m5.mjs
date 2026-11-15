@@ -19,7 +19,6 @@ export const M5_SCENES = [
     name: 'realistic-rope-wrapped-helm',
     query: '?mode=realistic&wd=90&ws=12&cam=helm&wp=b5.3.t&wsb=a5.2.h',
   },
-  { name: 'settings-labels-toggle', query: '?cam=side-port', settings: true },
   {
     name: 'footer-disclaimer',
     query: '?wd=60&ws=12',

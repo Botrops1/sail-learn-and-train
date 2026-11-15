@@ -8,7 +8,8 @@ import { isWide, showSection } from './ui.mjs';
 
 const BOAT = '?wd=60&ws=12';
 
-export const M39_SCENES = [{ name: 'start', query: BOAT }];
+/** No scene: the page at its start is the one of the M38 group. */
+export const M39_SCENES = [];
 
 const W1280 = { name: 'w1280', width: 1280, height: 800 };
 const W1920 = { name: 'w1920', width: 1920, height: 1000 };

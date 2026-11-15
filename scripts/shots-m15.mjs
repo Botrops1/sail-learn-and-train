@@ -6,7 +6,6 @@
 /** Screenshots at every size. The script waits `waitMs` before each. */
 export const M15_SCENES = [
   { name: 'feedback-quartering', query: '?wd=135&ws=15&ms=100&js=100&cam=helm', waitMs: 3000 },
-  { name: 'feedback-head', query: '?wd=45&ws=20&ms=20&js=0&sea=open&cam=bow', waitMs: 3000 },
 ];
 
 /** The distinct values `read(page)` gives every 250 ms from 2 s to 12 s after the page loaded. */

@@ -1,9 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   COMMENT_PLACEHOLDERS,
+  REQUIRED_SECTIONS,
+  backtickedLinks,
   checkPrBody,
   milestoneOf,
   placeholders,
+  questionsWithoutRecommendation,
   workflowLinks,
 } from '../scripts/pr-body.mjs';
 
@@ -105,5 +109,53 @@ describe('PR description check', () => {
     expect(
       placeholders('use `/milestone resume 169` in a new session.', COMMENT_PLACEHOLDERS),
     ).toEqual([]);
+  });
+
+  it('fails on a checklist link in backticks, single or double (PR 196)', () => {
+    const title = 'M80: A clear exercise screen';
+    const link = `${PREVIEW}/pr-169/?m=exercise&ex=points-of-sail`;
+    for (const tick of ['`', '``']) {
+      const wrapped = body('169').replace(link, `${tick}${link}${tick}`);
+      expect(checkPrBody({ title, body: wrapped, number: 169 }, WORKFLOW)).toEqual([
+        `Checklist link is in backticks and cannot be tapped: ${link}`,
+      ]);
+    }
+    expect(backtickedLinks(`a \`${PREVIEW}/pr-170/?x=1\` b`, 169)).toEqual([]);
+    expect(backtickedLinks(`a ${link} b \`npm test\``, 169)).toEqual([]);
+  });
+
+  it('fails on a question without a recommendation, and names it', () => {
+    const title = 'M80: A clear exercise screen';
+    const two = body('169').replace(
+      '1. Keep it? Recommended: yes, because it behaves the same.',
+      [
+        '1. Keep it? Recommended: yes, because it behaves the same.',
+        '2. Which colour?',
+        '3. Show the hint?',
+        '   Recommended: no, because the screen is small.',
+      ].join('\n'),
+    );
+    expect(checkPrBody({ title, body: two, number: 169 }, WORKFLOW)).toEqual([
+      'Question 2 has no recommendation.',
+    ]);
+    expect(questionsWithoutRecommendation('## Questions for the owner\nNone\n## Known')).toEqual(
+      [],
+    );
+    expect(questionsWithoutRecommendation('## Tests\n1. Not a question.')).toEqual([]);
+    expect(
+      questionsWithoutRecommendation('## Questions for the owner\n1. A?\n## Known limitations\n'),
+    ).toEqual(['1']);
+  });
+
+  it('REQUIRED_SECTIONS are headings of the CLAUDE.md template and of the PR template', () => {
+    for (const file of ['../CLAUDE.md', '../.github/pull_request_template.md']) {
+      const lines = readFileSync(new URL(file, import.meta.url), 'utf8').split('\n');
+      for (const section of REQUIRED_SECTIONS) {
+        expect(
+          lines.some((line) => line.startsWith(section)),
+          `${section} in ${file}`,
+        ).toBe(true);
+      }
+    }
   });
 });

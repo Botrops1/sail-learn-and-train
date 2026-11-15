@@ -1,8 +1,12 @@
 // M67 (mistakes and waypoints, PHASE10_SPEC 7.8): live checks for scripts/shots.mjs, on the test
 // clock (a hold, a run and the six seconds a mistake shows depend on app time). Labels contain
-// "m67", so openPage starts with every section folded and sails (no held=1).
+// "m67", so openPage starts with every section folded and sails (no held=1). The good run that
+// only leads to the state a check looks at goes at ×16 (scripts/exercise-drive.mjs); the phone runs
+// the whole flow, the desktop the moments that show its own layout (the mistake card, the Carry on
+// button over the view, the waypoint rows).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
+import { FAST, read, run, setSpeed, toStep5, turn, waitForStep } from './exercise-drive.mjs';
 import { exerciseLine, isStacked, showSection, waitForLink } from './ui.mjs';
 
 const START = 'm=exercise&ex=points-of-sail';
@@ -17,25 +21,6 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
   const phone = viewports[0];
   const desktop = viewports[2];
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
-  const run = (page) => page.evaluate(() => window.__sailExercise.state());
-  const read = (page) => page.evaluate(() => window.__sailExercise.read());
-  const act = (page, action) => page.evaluate((a) => window.__sailExercise.dispatch(a), action);
-  const turn = async (page, times) => {
-    for (let i = 0; i < times; i += 1) {
-      await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
-    }
-  };
-  const controls = (page, values) => act(page, { type: 'setControls', values });
-  /** Waits (app time) until the run is on `step`, at most `limitS`. */
-  const waitForStep = async (page, step, limitS) => {
-    const from = (await run(page)).elapsedS;
-    for (;;) {
-      const now = await run(page);
-      if (now.step >= step) return true;
-      if (now.elapsedS - from > limitS) return false;
-      await page.waitForTimeout(500);
-    }
-  };
   /** Waits (app time) until a mistake with this id is the run's last one, at most `limitS`. */
   const waitForMistake = async (page, id, limitS) => {
     const from = (await run(page)).elapsedS;
@@ -47,35 +32,15 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
       await page.waitForTimeout(250);
     }
   };
-  /** The good run of steps 1 to 4 (M66), leaving the run at step 5. */
-  const toStep5 = async (page) => {
-    const plan = [
-      async () => controls(page, { ctl_mainsheet: 12 }),
-      async () => {
-        await turn(page, 2);
-        await controls(page, { ctl_mainsheet: 25 });
-      },
-      async () => {
-        await turn(page, 3);
-        await controls(page, { ctl_mainsheet: 50, ctl_jib_sheet: 100 });
-      },
-      async () => {
-        await turn(page, 4);
-        await controls(page, { ctl_mainsheet: 100 });
-      },
-    ];
-    for (const [index, doStep] of plan.entries()) {
-      await doStep();
-      if (!(await waitForStep(page, index + 1, 40))) return false;
-    }
-    return true;
-  };
   const showExercises = async (page) => {
     if (await isStacked(page)) await showSection(page, 'exercises');
   };
 
   for (const viewport of [phone, desktop]) {
     const name = viewport.name;
+    // The phone runs the whole flow; the desktop the moments that show its own layout (the logic
+    // of the later steps is the same code and is checked once, on the phone).
+    const full = viewport === phone;
 
     // 1 to 4, and 6: one page, in order (pausing on).
     {
@@ -91,7 +56,10 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
 
       // 1. Pause on a mistake.
       await turn(page, 6);
+      // At ×16 up to the mistake: the run pauses on it, so its time is exact; then back to ×1.
+      await setSpeed(page, FAST);
       const gotLee = await waitForMistake(page, 'by-the-lee', 25);
+      await setSpeed(page, 1);
       await page.waitForTimeout(300);
       const state = await run(page);
       const paused = await page.evaluate(() => window.__sailExercise.read().paused);
@@ -135,49 +103,55 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
         running && (await overView.innerText()) === 'Pause',
         JSON.stringify({ running }),
       );
-      const gotGybe = await waitForMistake(page, 'accidental-gybe', 35);
-      await page.waitForTimeout(300);
-      await showExercises(page);
-      const again = await page
-        .getByTestId('exercise-mistake')
-        .isVisible()
-        .catch(() => false);
-      check(
-        `carry on, then the gybe ${name}`,
-        running && gotGybe && again,
-        JSON.stringify({ running, gotGybe, again }),
-      );
+      if (full) {
+        await setSpeed(page, FAST);
+        const gotGybe = await waitForMistake(page, 'accidental-gybe', 35);
+        await setSpeed(page, 1);
+        await page.waitForTimeout(300);
+        await showExercises(page);
+        const again = await page
+          .getByTestId('exercise-mistake')
+          .isVisible()
+          .catch(() => false);
+        check(
+          `carry on, then the gybe ${name}`,
+          running && gotGybe && again,
+          JSON.stringify({ running, gotGybe, again }),
+        );
+      }
 
-      // 3. Back: step 5 again, the boat at about 135 degrees from the wind, no card.
-      const backLabel = await page.getByTestId('exercise-back').innerText();
-      await page.getByTestId('exercise-back').click();
-      await page.waitForTimeout(500);
-      const after = await run(page);
-      const lineAfter = await exerciseLine(page);
-      const twa = Math.abs((await read(page)).twaDeg);
-      const cardGone = !(await page
-        .getByTestId('exercise-mistake')
-        .isVisible()
-        .catch(() => false));
-      check(
-        `back to the start of step 5 ${name}`,
-        /^Back to the start of step 5$/.test(backLabel) &&
-          after.status === 'running' &&
-          after.step === 4 &&
-          /^5\/5 · /.test(lineAfter ?? '') &&
-          twa > 120 &&
-          twa < 150 &&
-          cardGone,
-        JSON.stringify({
-          backLabel,
-          status: after.status,
-          step: after.step,
-          lineAfter,
-          twa,
-          cardGone,
-        }),
-      );
-      await shot(page, `live-${name}-m67-back`);
+      if (full) {
+        // 3. Back: step 5 again, the boat at about 135 degrees from the wind, no card.
+        const backLabel = await page.getByTestId('exercise-back').innerText();
+        await page.getByTestId('exercise-back').click();
+        await page.waitForTimeout(500);
+        const after = await run(page);
+        const lineAfter = await exerciseLine(page);
+        const twa = Math.abs((await read(page)).twaDeg);
+        const cardGone = !(await page
+          .getByTestId('exercise-mistake')
+          .isVisible()
+          .catch(() => false));
+        check(
+          `back to the start of step 5 ${name}`,
+          /^Back to the start of step 5$/.test(backLabel) &&
+            after.status === 'running' &&
+            after.step === 4 &&
+            /^5\/5 · /.test(lineAfter ?? '') &&
+            twa > 120 &&
+            twa < 150 &&
+            cardGone,
+          JSON.stringify({
+            backLabel,
+            status: after.status,
+            step: after.step,
+            lineAfter,
+            twa,
+            cardGone,
+          }),
+        );
+        await shot(page, `live-${name}-m67-back`);
+      }
 
       // 4. Waypoint link: step 4's waypoint opens in a new page at step 4.
       await showExercises(page);
@@ -185,7 +159,7 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
       const rows = await page.locator('[data-testid^="exercise-waypoint-back-"]').count();
       check(`waypoint rows ${name}`, rows === 5 && !!href, `${rows} rows, ${href}`);
       problems.push(...(await auditPage(page, `m67 ${name} waypoints`)));
-      if (href) {
+      if (full && href) {
         const search = new URL(href).search;
         const second = await openPage(viewport, 'm67 waypoint', search, { testClock: true });
         await showExercises(second.page);
@@ -204,45 +178,49 @@ export async function liveM67Checks({ openPage, viewports, outDir, prefix, probl
         await second.context.close();
       }
 
-      // 6. Try again from the done card: finish step 5, then a fresh run.
-      await turn(page, 3);
-      const finished = await waitForStep(page, 5, 40);
-      await page.waitForTimeout(500);
-      await showExercises(page);
-      const doneVisible = await page
-        .getByTestId('exercise-done')
-        .isVisible()
-        .catch(() => false);
-      if (doneVisible) await page.getByTestId('exercise-again').click();
-      await page.waitForTimeout(800);
-      await showExercises(page);
-      const fresh = await run(page);
-      const sheet = (await read(page)).controls.ctl_mainsheet;
-      await page.getByTestId('exercise-start').click();
-      await page.waitForTimeout(500);
-      const started = await run(page);
-      check(
-        `try again ${name}`,
-        finished &&
-          doneVisible &&
-          fresh.status === 'setup' &&
-          fresh.step === 0 &&
-          Math.round(sheet) === 30 &&
-          started.step === 0 &&
-          started.elapsedS < 1,
-        JSON.stringify({
-          finished,
-          doneVisible,
-          status: fresh.status,
-          sheet,
-          elapsed: started.elapsedS,
-        }),
-      );
+      if (full) {
+        // 6. Try again from the done card: finish step 5, then a fresh run.
+        await turn(page, 3);
+        await setSpeed(page, FAST);
+        const finished = (await waitForStep(page, 5, 40)) <= 40;
+        await setSpeed(page, 1);
+        await page.waitForTimeout(500);
+        await showExercises(page);
+        const doneVisible = await page
+          .getByTestId('exercise-done')
+          .isVisible()
+          .catch(() => false);
+        if (doneVisible) await page.getByTestId('exercise-again').click();
+        await page.waitForTimeout(800);
+        await showExercises(page);
+        const fresh = await run(page);
+        const sheet = (await read(page)).controls.ctl_mainsheet;
+        await page.getByTestId('exercise-start').click();
+        await page.waitForTimeout(500);
+        const started = await run(page);
+        check(
+          `try again ${name}`,
+          finished &&
+            doneVisible &&
+            fresh.status === 'setup' &&
+            fresh.step === 0 &&
+            Math.round(sheet) === 30 &&
+            started.step === 0 &&
+            started.elapsedS < 1,
+          JSON.stringify({
+            finished,
+            doneVisible,
+            status: fresh.status,
+            sheet,
+            elapsed: started.elapsedS,
+          }),
+        );
+      }
       await context.close();
     }
 
-    // 5. Not pausing.
-    {
+    // 5. Not pausing (phone only: the same code on every size).
+    if (full) {
       const { context, page } = await openPage(viewport, 'm67 nopause', `?${START}&debug=1`, {
         testClock: true,
       });

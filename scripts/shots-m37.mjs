@@ -19,6 +19,13 @@ export const M37_SCENES = [
   { name: 'card', query: `${BOAT}&tx=16`, click: ['time-open'] },
 ];
 
+/**
+ * The gap between two samples of the top row: at ×16 (tx=16) one second of app time is 16 s of
+ * the boat's time, enough for the numbers to change (speed, heel, wind angle) between samples,
+ * and a 3D frame at a computer window is expensive to draw.
+ */
+const SAMPLE_MS = 1000;
+
 /** The windows of the done-when list (issue #87): a small, a usual and a large computer window. */
 const W1280 = { name: 'w1280', width: 1280, height: 800 };
 const W1920 = { name: 'w1920', width: 1920, height: 1000 };
@@ -66,7 +73,7 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
     );
     const samples = [];
     for (let i = 0; i < 8; i += 1) {
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(SAMPLE_MS);
       samples.push(await boxes(page));
     }
     const first = samples[0];
@@ -193,7 +200,7 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm37 phone', `${BOAT}&tx=16&bs=0&ap=hdg&apt=0`);
     const samples = [];
     for (let i = 0; i < 6; i += 1) {
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(SAMPLE_MS);
       samples.push(await boxes(page));
     }
     check(
@@ -267,7 +274,7 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
     );
     const samples = [];
     for (let i = 0; i < 5; i += 1) {
-      await page.waitForTimeout(2000);
+      await page.waitForTimeout(SAMPLE_MS);
       samples.push(await boxes(page));
     }
     const b = samples[0];

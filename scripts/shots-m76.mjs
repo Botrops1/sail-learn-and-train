@@ -2,6 +2,7 @@
 // checks for scripts/shots.mjs, on the test clock. Labels contain "m76". The runs are phone only.
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { PILOT_SPEED, setSpeed } from './exercise-drive.mjs';
 import { showSection } from './ui.mjs';
 
 export const M76_SCENES = [
@@ -54,6 +55,8 @@ export async function liveM76Checks({ openPage, viewports, outDir, prefix, probl
     await showSection(opened.page, 'exercises');
     await opened.page.getByTestId('exercise-start').click();
     await opened.page.waitForTimeout(500);
+    // The pilot decides once per tick; the run goes at the pilot's time scale (exercise-drive.mjs).
+    await setSpeed(opened.page, PILOT_SPEED);
     return opened;
   };
 
@@ -64,11 +67,12 @@ export async function liveM76Checks({ openPage, viewports, outDir, prefix, probl
     let stepStart = 0;
     let step = -1;
     let ruddered = -1;
+    let shotBursts = false;
     for (let i = 0; i < 1000; i += 1) {
       const r = await run(page);
       last = r;
       if (finished(r)) break;
-      const t = i * TICK_S;
+      const t = r.elapsedS;
       if (r.step !== step) {
         step = r.step;
         stepStart = t;
@@ -88,7 +92,10 @@ export async function liveM76Checks({ openPage, viewports, outDir, prefix, probl
         await thruster(page, now, 'bow', off ? 1 : 0);
         await thruster(page, now, 'stern', off ? -1 : 0);
       }
-      if (i === 120) await shot(page, 'm76-turn-bursts');
+      if (!shotBursts && t >= 24) {
+        shotBursts = true;
+        await shot(page, 'm76-turn-bursts');
+      }
       await page.waitForTimeout(TICK_S * 1000);
     }
     await showSection(page, 'exercises');
@@ -161,6 +168,8 @@ export async function liveM76Checks({ openPage, viewports, outDir, prefix, probl
       'm76 left circle',
       '?m=exercise&ex=turn-own-length&debug=1',
     );
+    // The card comes after ten seconds of the run's time: real time, so the limit stays meaningful.
+    await setSpeed(page, 1);
     await act(page, { type: 'engine', command: { leverPct: 60 } });
     for (let i = 0; i < 50; i += 1) {
       const r = await run(page);

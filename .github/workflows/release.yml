@@ -47,6 +47,7 @@ jobs:
       scope: full
     permissions:
       contents: read
+      pull-requests: read # ci.yml's plan job asks for it
 
   publish:
     needs: checks

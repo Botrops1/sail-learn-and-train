@@ -1,7 +1,6 @@
 // M59 (leftovers, polish and sign-off, PHASE8_SPEC 17.5): live checks for scripts/shots.mjs. Labels
 // contain "m59", so openPage starts with every section folded. The checks that depend on app time
-// (the windlass keys, the fenders hint) run on the test clock (shots.mjs passes `onTestClock`);
-// the frame times are read on the real clock (`realClockPage`) and only reported.
+// (the windlass keys, the fenders hint) run on the test clock (shots.mjs passes `onTestClock`).
 import { auditPage } from './a11y-audit.mjs';
 import { openSettings, setSheet, showSection, showTab } from './ui.mjs';
 
@@ -15,7 +14,7 @@ const LET_GO = '?pl=bay&m=harbour&pe=-1640.0&pn=0.0&hdg=270&wd=-90&ws=10&tx=4';
 /** The stern 18 m from our berth's rings, backing in at 0.5 m/s with the fenders in the locker. */
 const BACKING = '?pl=marina&m=harbour&pe=2.8&pn=1473.4&hdg=180&ws=0&bs=-0.5&tx=4';
 
-export async function liveM59Checks({ openPage, realClockPage, viewports, problems }) {
+export async function liveM59Checks({ openPage, viewports, problems }) {
   const check = (what, ok, detail) => {
     if (!ok) problems.push(`live M59 ${what}: ${detail}`);
     console.log(`live M59 ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
@@ -145,29 +144,6 @@ export async function liveM59Checks({ openPage, realClockPage, viewports, proble
     await page.getByTestId('settings-card').waitFor({ state: 'hidden' });
     await page.getByTestId('section-grip-sails').click();
     problems.push(...(await auditPage(page, 'm59 grip menu')));
-    await context.close();
-  }
-
-  // 5. Frame times, reported only (headless drawing is slow, about 15 fps: no threshold).
-  for (const [name, query, open] of [
-    ['learn winch', '?m=learn&learn=winch_primary_starboard&debug=1', 'learn-show-on-boat'],
-    [
-      'busy marina',
-      '?pl=marina&ml=tight&tr=busy&m=harbour&detail=high&cam=side-port&debug=1',
-      null,
-    ],
-  ]) {
-    const { context, page } = await realClockPage(desktop, `m59 frames ${name}`, query);
-    if (open) {
-      await showSection(page, 'learn');
-      await page.getByTestId(open).click();
-    }
-    await page.waitForTimeout(5000);
-    const text = (await page.getByTestId('debug-overlay').textContent()) ?? '';
-    const match = /Slowest\s*(\d+) ms/.exec(text);
-    console.log(
-      `live M59 frame time (${name}): slowest ${match ? match[1] : '?'} ms (report only)`,
-    );
     await context.close();
   }
 }

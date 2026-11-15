@@ -2,11 +2,8 @@
 // - The accessibility audit (names, text size, touch targets, keyboard) on the Phase 2 controls
 //   that earlier milestones did not audit: the autopilot, the sails panel, the Held still /
 //   Sailing switch with the wind modes and the time bar, the engine at Detail Low.
-// - The heaviest case (gusty wind at ×16, debug overlay) at Detail Low and High: the frame
-//   numbers go to the console. Headless software rendering draws the 3D view on the CPU, so its
-//   FPS says nothing about a phone; the check is the model and panel work per frame ("step" in
-//   the overlay), which must stay small. Labels contain "m13" so the script opens them Sailing.
-import path from 'node:path';
+// - The scene of the heaviest case (gusty wind at ×16, debug overlay). Its step-time check is the
+//   one of the M19 group, on a heavier case. Labels contain "m13" so the script opens them Sailing.
 import { auditPage } from './a11y-audit.mjs';
 import { showSection } from './ui.mjs';
 
@@ -38,13 +35,12 @@ export const M13_SCENES = [
   },
 ];
 
-export async function liveM13Checks({ openPage, viewports, outDir, prefix, problems }) {
+export async function liveM13Checks({ openPage, viewports, problems }) {
   const check = (what, ok, detail) => {
     if (!ok) problems.push(`live M13 ${what}: ${detail}`);
     console.log(`live M13 ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
   };
-  const [phone, desktop] = viewports;
-  const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
+  const [phone] = viewports;
 
   // Accessibility of the Phase 2 controls (phone).
   for (const [name, query, tab, scrollTo] of [
@@ -84,29 +80,5 @@ export async function liveM13Checks({ openPage, viewports, outDir, prefix, probl
     const found = await auditPage(page, `a11y ${name}`);
     check(`accessibility: ${name}`, found.length === 0, found.length ? found.join(' | ') : 'clean');
     await context.close();
-  }
-
-  // The heaviest case at Detail Low and High: the overlay's frame numbers, no crash, no stall.
-  for (const viewport of [phone, desktop]) {
-    for (const detail of ['low', 'high']) {
-      const { context, page } = await openPage(
-        viewport,
-        `m13 heavy ${viewport.name} ${detail}`,
-        `${HEAVY}&detail=${detail}`,
-      );
-      await page.waitForTimeout(4000);
-      const overlay = (await page.getByTestId('debug-overlay').innerText()).replace(/\s+/g, ' ');
-      const stepMs = Number(/step ([\d.]+)/.exec(overlay)?.[1]);
-      console.log(
-        `live M13 frames at ×16 gusty, ${viewport.name}, Detail ${detail}: ${overlay.slice(0, 200)} (software rendering)`,
-      );
-      check(
-        `heaviest case: the step stays small (${viewport.name}, ${detail})`,
-        Number.isFinite(stepMs) && stepMs < 8,
-        `step ${stepMs} ms per frame; ${overlay.slice(0, 100)}`,
-      );
-      if (viewport === phone && detail === 'high') await shot(page, 'live-phone-heavy-high');
-      await context.close();
-    }
   }
 }
