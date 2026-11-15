@@ -238,7 +238,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Self-tacking jib | Selbstwendefock |
 | Andere Namen | jib<br>headsail | Fock<br>Vorsegel |
 | Kurz | The front sail; it changes sides by itself when the boat tacks. | Das Vorsegel; es wechselt beim Wenden von selbst die Seite. |
-| Was es tut / was es bedeutet | The jib is set on the forestay in front of the mast. Its sheet runs to a car on a track across the deck, and the car slides to the other side by itself when the bow turns through the wind, so tacking needs no sheet work. | Die Fock wird am Vorstag vor dem Mast gesetzt. Ihre Schot läuft zu einem Wagen auf einer Schiene quer über das Deck, und der Wagen gleitet von selbst auf die andere Seite, wenn der Bug durch den Wind dreht — Wenden braucht also keine Schotarbeit. |
+| Was es tut / was es bedeutet | The jib is set on the forestay in front of the mast. Its sheet runs to a car on a track across the deck, and the car slides to the other side by itself when the bow turns through the wind, so tacking needs no sheet work. | Die Fock wird am Vorstag vor dem Mast gesetzt. Ihre Schot läuft zu einem Wagen auf einer Schiene quer über das Deck, und der Wagen gleitet von selbst auf die andere Seite, wenn der Bug durch den Wind dreht. Wenden braucht also keine Schotarbeit. |
 | Auf diesem Boot | 51.5 m², on a Furlex roller furler at the bow. The track is short and straight, so the jib cannot be eased far out: fully eased it reaches about 30°. The clutch says “Genoa sheet”, but the sail is a jib, smaller than a genoa and not overlapping the mast. | 51,5 m², an einer Furlex-Rollreffanlage am Bug. Die Schiene ist kurz und gerade, deshalb lässt sich die Fock nicht weit ausfieren: ganz gefiert erreicht sie etwa 30°. Auf der Klemme steht „Genoa sheet“, aber das Segel ist eine Fock, kleiner als eine Genua und ohne Überlappung am Mast. |
 | Typische Fehler | Keeping all of the jib out in strong wind. → She heels too much and turns into the wind. Roll part of the main in first, then part of the jib if needed.<br>Furling the jib with the sheet tight. → Ease the sheet; then the jib rolls up. | Bei starkem Wind die Fock ganz draußen lassen. → Das Boot krängt zu stark und dreht in den Wind. Rollen Sie zuerst einen Teil des Großsegels ein, dann bei Bedarf einen Teil der Fock.<br>Die Fock mit dichter Schot einrollen. → Fieren Sie die Schot; dann rollt sich die Fock auf. |
 | „Zeigen“ | Wind 30° from starboard: the jib’s car sits at the port end of its track. In Conditions, turn the wind to the other side of the bow: the car slides across by itself. | Wind 30° von Steuerbord: Der Wagen der Fock steht am Backbordende seiner Schiene. Drehen Sie unter „Bedingungen“ den Wind auf die andere Bugseite: Der Wagen gleitet von selbst hinüber. |
@@ -1587,7 +1587,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Kurz | The right side of the boat, looking forward. | Die rechte Seite des Bootes, wenn Sie nach vorn schauen. |
 | Was es tut / was es bedeutet | Starboard is the right side when you face the bow. Its navigation light is green. | Steuerbord ist die rechte Seite, wenn Sie zum Bug schauen. Das Positionslicht auf dieser Seite ist grün. |
 | Auf diesem Boot | — | — |
-| Typische Fehler | Mixing up port and starboard in a hurry. → A memory aid: “port” and “left” both have four letters. | Backbord und Steuerbord in der Hektik verwechseln. → Eine Merkhilfe: rotes Licht Backbord, grünes Licht Steuerbord – und links ist Backbord. |
+| Typische Fehler | Mixing up port and starboard in a hurry. → A memory aid: “port” and “left” both have four letters. | Backbord und Steuerbord in der Hektik verwechseln. → Eine Merkhilfe: rotes Licht Backbord, grünes Licht Steuerbord, und links ist Backbord. |
 | „Zeigen“ | — | — |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -1661,7 +1661,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Close-hauled | Am Wind |
 | Andere Namen | beating — sailing close-hauled to get upwind | hart am Wind<br>Kreuzen — am Wind segeln, um Höhe zu gewinnen |
-| Kurz | Sailing as close to the wind as she can, about 45° off it. | So nah am Wind segeln, wie es geht – etwa 45° daneben. |
+| Kurz | Sailing as close to the wind as she can, about 45° off it. | So nah am Wind segeln, wie es geht, etwa 45° daneben. |
 | Was es tut / was es bedeutet | Close-hauled, the sails are pulled in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail. | Am Wind sind die Segel dichtgeholt, und das Boot segelt so nah am Wind wie möglich, knapp außerhalb des Totwassers. Auf diesem Kurs krängt es am stärksten. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
@@ -1753,7 +1753,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Andere Namen | — | — |
 | Kurz | A rope that hoists a sail. | Eine Leine, mit der ein Segel gesetzt wird. |
 | Was es tut / was es bedeutet | A halyard pulls a sail’s head (its top corner) up the mast or the forestay and holds it there. | Ein Fall zieht den Kopf eines Segels (seine obere Ecke) am Mast oder am Vorstag nach oben und hält ihn dort. |
-| Auf diesem Boot | The main stays hoisted and rolls into the mast, and the jib rolls round the forestay, so the halyards are hardly ever touched; the gennaker halyard is parked. | Das Großsegel bleibt gesetzt und rollt in den Mast, die Fock rollt um das Vorstag – die Fälle werden deshalb kaum angefasst; das Gennakerfall liegt nur belegt und wird nicht benutzt. |
+| Auf diesem Boot | The main stays hoisted and rolls into the mast, and the jib rolls round the forestay, so the halyards are hardly ever touched; the gennaker halyard is parked. | Das Großsegel bleibt gesetzt und rollt in den Mast, die Fock rollt um das Vorstag, die Fälle werden deshalb kaum angefasst; das Gennakerfall liegt nur belegt und wird nicht benutzt. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
@@ -1887,7 +1887,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Prop walk | Radeffekt |
 | Andere Namen | paddle-wheel effect | — |
 | Kurz | Going astern, the propeller pushes the stern sideways. | Bei Rückwärtsfahrt drückt der Propeller das Heck zur Seite. |
-| Was es tut / was es bedeutet | A propeller does not only push backwards: going astern it also pushes the stern to one side, most when she has no way on yet. Which side depends on which way the propeller turns. Skippers use it: with the stern walking to port, they come alongside port side to. | Ein Propeller drückt nicht nur nach hinten: Bei Rückwärtsfahrt drückt er das Heck auch zur Seite, am stärksten, solange noch keine Fahrt im Boot ist. Welche Seite, hängt von der Drehrichtung des Propellers ab. Skipper nutzen das: Wandert das Heck nach Backbord, legen sie mit der Backbordseite an. |
+| Was es tut / was es bedeutet | A propeller does not only push backwards: going astern it also pushes the stern to one side, most when she has no way on yet. Which side depends on which way the propeller turns. Skippers use it: with the stern walking to port, they come alongside port side to. | Ein Propeller drückt nach hinten, bei Rückwärtsfahrt drückt er zugleich das Heck zur Seite, am stärksten, solange noch keine Fahrt im Boot ist. Welche Seite, hängt von der Drehrichtung des Propellers ab. Skipper nutzen das: Wandert das Heck nach Backbord, legen sie mit der Backbordseite an. |
 | Auf diesem Boot | A saildrive with a fixed two-blade propeller. In the app the stern walks to port going astern (an assumption until the skipper checks): about 6° of turn in 15 s at half astern. A saildrive walks less than a shaft drive. | Ein Saildrive mit festem Zweiblattpropeller. In der App wandert das Heck bei Rückwärtsfahrt nach Backbord (eine Annahme, bis der Skipper es prüft): etwa 6° Drehung in 15 s bei halber Rückwärtsfahrt. Ein Saildrive hat weniger Radeffekt als eine Wellenanlage. |
 | Typische Fehler | Reversing straight into a berth and being surprised that she turns. → Expect the walk: start the turn early, or use a short burst ahead with the wheel over to correct. | Gerade rückwärts in eine Box fahren und überrascht sein, dass das Boot dreht. → Rechnen Sie mit dem Radeffekt: Beginnen Sie die Drehung früh, oder korrigieren Sie mit einem kurzen Gasstoß voraus und eingeschlagenem Ruder. |
 | „Zeigen“ | No wind, engine half astern from a standstill: watch the bow swing to starboard as the stern walks to port. | Kein Wind, Motor halbe Rückwärtsfahrt aus dem Stand: Sehen Sie zu, wie der Bug nach Steuerbord schwingt, während das Heck nach Backbord wandert. |
@@ -2446,7 +2446,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Exercise target | Übungsziel |
 | Andere Namen | — | — |
 | Kurz | Where the exercise wants the boat to go: a magenta outline on the water and on the map. | Wohin die Übung das Boot haben will: ein magentaroter Umriss auf dem Wasser und auf der Karte. |
-| Was es tut / was es bedeutet | Drawn only while an exercise step needs it. It is not on the real water: it is the app's way of pointing. | Wird nur gezeichnet, solange ein Übungsschritt es braucht. Es ist nicht auf dem echten Wasser: Es ist die Art der App, den Weg zu zeigen. |
+| Was es tut / was es bedeutet | Drawn only while an exercise step needs it. It is not on the real water: it is the app's way of pointing. | Wird nur gezeichnet, solange ein Übungsschritt es braucht. Es liegt nicht auf dem echten Wasser; die App zeichnet es, um den Weg zu zeigen. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -2521,7 +2521,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Breakwater | Wellenbrecher |
 | Andere Namen | mole<br>harbour wall | Mole<br>Hafenmauer |
 | Kurz | The rock wall that keeps the waves out of the harbour. | Die Steinmauer, die die Wellen aus dem Hafen hält. |
-| Was es tut / was es bedeutet | A breakwater is a long pile of rocks or a concrete wall round a harbour. Inside it the water stays calm, so boats can moor. Boats come in and go out through a gap in it, the entrance. | Ein Wellenbrecher ist eine lange Steinschüttung oder eine Betonmauer um einen Hafen. Dahinter bleibt das Wasser ruhig, sodass Boote festmachen können. Boote fahren durch eine Lücke hinein und hinaus — die Einfahrt. |
+| Was es tut / was es bedeutet | A breakwater is a long pile of rocks or a concrete wall round a harbour. Inside it the water stays calm, so boats can moor. Boats come in and go out through a gap in it, the entrance. | Ein Wellenbrecher ist eine lange Steinschüttung oder eine Betonmauer um einen Hafen. Dahinter bleibt das Wasser ruhig, sodass Boote festmachen können. Boote fahren durch eine Lücke hinein und hinaus: die Einfahrt. |
 | Auf diesem Boot | The app's marina has a breakwater on the south and west with the entrance facing west, and the quay carried on as a north mole. | Die Marina der App hat einen Wellenbrecher im Süden und Westen, die Einfahrt liegt nach Westen, und der Kai ist als Nordmole weitergeführt. |
 | Typische Fehler | Cutting close round the end of the breakwater. → Keep well off: rocks spread out under the water near its foot. | Dicht um das Ende des Wellenbrechers schneiden. → Halten Sie deutlich Abstand: Am Fuß liegen Steine weit unter Wasser aus. |
 | „Zeigen“ | The breakwater from above. | Der Wellenbrecher von oben. |
@@ -2555,7 +2555,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | view.detail.high | High | Hoch |
 | view.detail.low | Low | Niedrig |
 | view.labels.label | Labels in 3D | Beschriftungen in 3D |
-| view.labels.hint | Names over the parts and ropes in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Namen über den Teilen und Leinen in der 3D-Ansicht. Wo zwei sich überschneiden, zeigt der wichtigere: zoomen Sie hinein, um mehr zu sehen. Tippen Sie einen Namen an, um ihn auszuwählen. |
+| view.labels.hint | Names over the parts and ropes in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Namen über den Teilen und Leinen in der 3D-Ansicht. Wo zwei sich überschneiden, zeigt der wichtigere Name: zoomen Sie hinein, um mehr zu sehen. Tippen Sie einen Namen an, um ihn auszuwählen. |
 | footer.version | Version {hash} · {date} | Version {hash} · {date} |
 | footer.release | Version {version} · {hash} · {date} | Version {version} · {hash} · {date} |
 | footer.next | Test version (next) · {hash} · {date} | Testversion (next) · {hash} · {date} |
@@ -2687,7 +2687,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Steuerrad {turns} Umdrehungen gegen den Uhrzeigersinn gedreht: Die Hinterkante des Ruderblatts geht nach Backbord, das Boot würde also nach Backbord (links) drehen. |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Die Steuerräder und das Ruder (das Blatt unter dem Heck des Bootes) drehen zusammen. Das Boot dreht nur, solange es Fahrt macht: festgehalten oder gestoppt folgt es dem Steuerrad nicht. |
 | ropes.mode.easy | Easy mode: | Einfach-Modus: |
-| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Einfach-Modus: jede Leine ist ein Schieberegler. Realistisch (unter Modus wählbar) arbeitet die Leinen wie auf dem Boot: mit Klemmen, Winsch und Hand. |
+| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Einfach-Modus: jede Leine ist ein Schieberegler. Im Modus Realistisch arbeiten die Leinen wie auf dem Boot: mit Klemmen, Winsch und Hand. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Klemmenbänke: Tippen Sie auf eine Klemme, um ihre Leine auszuwählen |
 | clutch.bankB | Bank B · port | Bank B · Backbord |
 | clutch.bankA | Bank A · starboard | Bank A · Steuerbord |
@@ -3545,7 +3545,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | thrusters.sternPort | stern to port | Heck nach Backbord |
 | thrusters.sternStarboard | stern to starboard | Heck nach Steuerbord |
 | thrusters.weak | (little effect at this speed) | (geringe Wirkung bei dieser Fahrt) |
-| thrusters.hint | A thruster is a propeller in a tunnel across the hull (thruster: a small sideways propeller). It pushes one end of the boat sideways while you hold the joystick. Bow and stern the same way move her sideways; opposite ways turn her on the spot. They only work well below 2 knots. On a computer in Harbour mode hold A / D for the bow and J / L for the stern: both can work at once. | Ein Strahlruder ist ein Propeller in einem Tunnel quer durch den Rumpf (Strahlruder: ein kleiner Propeller für die Seite). Es drückt ein Ende des Bootes seitwärts, solange Sie den Joystick halten. Bug und Heck in dieselbe Richtung versetzen es seitwärts; in entgegengesetzte Richtungen drehen sie es auf der Stelle. Sie wirken nur unterhalb von 2 Knoten gut. Halten Sie am Computer im Modus Hafen A / D für den Bug und J / L für das Heck: Beide können gleichzeitig arbeiten. |
+| thrusters.hint | A thruster is a propeller in a tunnel across the hull (thruster: a small sideways propeller). It pushes one end of the boat sideways while you hold the joystick. Bow and stern the same way move her sideways; opposite ways turn her on the spot. They only work well below 2 knots. On a computer in Harbour mode hold A / D for the bow and J / L for the stern: both can work at once. | Ein Strahlruder ist ein Propeller in einem Tunnel quer durch den Rumpf (ein kleiner Propeller für die Seite). Es drückt ein Ende des Bootes seitwärts, solange Sie den Joystick halten. Bug und Heck in dieselbe Richtung versetzen es seitwärts; in entgegengesetzte Richtungen drehen sie es auf der Stelle. Sie wirken nur unterhalb von 2 Knoten gut. Halten Sie am Computer im Modus Hafen A / D für den Bug und J / L für das Heck: Beide können gleichzeitig arbeiten. |
 | alerts.title | Attention | Achtung |
 | alerts.label | Alert history | Warnungsverlauf |
 | alerts.chipAria | Attention: open the alert history | Achtung: den Warnungsverlauf öffnen |

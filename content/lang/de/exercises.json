@@ -7,7 +7,7 @@
     "happening": "Ein Segel wirkt nur dann wie eine Tragfläche, wenn der Wind im richtigen Winkel darauf trifft. Wenn Sie vom Wind wegdrehen (abfallen), kommt der Wind mehr von der Seite und dann von hinten, deshalb muss jedes Segel weiter gefiert werden.",
     "action": "Fieren Sie bei jedem Abfallen die Schoten: die Großschot, bis kein Strömungsabriss mehr da ist, die Fockschot auf Kursen quer zum Wind ganz. Vor dem Wind fieren Sie die Großschot vollständig.",
     "mistake": "Abfallen ohne zu fieren: Die Strömung reißt an den Segeln ab (die Luft strömt nicht mehr glatt über sie), das Boot krängt und wird langsamer. Zu weit drehen vor dem Wind: Der Wind kommt hinter das Großsegel und wirft den Baum herüber (eine unbeabsichtigte Halse).",
-    "done": "Sie sind alle Kurse vom Am Wind bis vor den Wind gesegelt. Die Regel: Je weiter vom Wind weg, desto weiter sind die Segel gefiert.",
+    "done": "Sie sind alle Kurse vom Am Wind bis vor den Wind gesegelt. Je weiter vom Wind weg, desto weiter sind die Segel gefiert.",
     "steps": {
       "close-hauled": {
         "goal": "Am Wind: Dichten Sie das Großsegel an, bis es nicht mehr killt.",
@@ -148,7 +148,7 @@
   "gusts": {
     "title": "Böen: Großschot fieren",
     "summary": "Halten Sie das Boot durch drei Böen aufrecht, indem Sie die Großschot fieren.",
-    "see": "Sie segeln am Anlieger bei 15 Knoten Wind mit Böen. Eine Bö zeigt sich auf dem Wasser als dunklerer Fleck, der auf Sie zukommt.",
+    "see": "Sie segeln am Anlieger bei 15 Knoten Wind mit Böen. Sie erkennen eine Bö auf dem Wasser an einem dunkleren Fleck, der auf Sie zukommt.",
     "happening": "In einer Bö ist der Wind für einige Sekunden stärker: Die Segel drücken härter, das Boot krängt mehr und will in den Wind drehen (Luvgierigkeit). Fieren der Großschot lässt den zusätzlichen Wind aus dem Segel.",
     "action": "Wenn eine Bö kommt, fieren Sie die Großschot um etwa 20 %; wenn sie durch ist, holen Sie wieder dicht.",
     "mistake": "Die Großschot in einer Bö dicht halten: Das Boot krängt über 25°, wird langsamer und kann von selbst in den Wind drehen (aufschießen).",
@@ -185,7 +185,7 @@
     "happening": "Mit vollen Segeln krängt das Boot bei diesem Wind zu stark. Auf diesem Boot rollen sich beide Segel auf (die Fock um das Vorstag, das Großsegel in den Mast), deshalb dauert es eine Minute, sie kleiner zu machen, und niemand muss an Deck.",
     "action": "Fieren Sie die Fockschot und rollen Sie die Fock auf etwa 40 % ein; rollen Sie das Großsegel auf etwa 60 % ein; holen Sie dann die Großschot dicht, bis das Segel arbeitet.",
     "mistake": "Die Fock einrollen, während ihre Schot noch dicht ist: Die Fock rollt sich nicht ein. Und Segel, die bei starkem Wind im Killen stehen gelassen werden, verschleißen schnell.",
-    "done": "Kleinere Segel, weniger Krängung, und das Boot segelt fast genauso schnell. Rollen Sie früh ein, bevor der Wind zunimmt.",
+    "done": "Mit kleineren Segeln krängt das Boot weniger und segelt fast genauso schnell. Rollen Sie früh ein, bevor der Wind zunimmt.",
     "steps": {
       "jib-in": {
         "goal": "Rollen Sie die Fock auf 45 % oder weniger ein: Fieren Sie vorher ihre Schot.",
@@ -391,7 +391,7 @@
     "happening": "Im Mittelmeer geht man mit dem Heck zuerst hinein: die Achterleinen gehen zum Kai, und eine Lazy Line vom Kai hält den Bug. Beim Rückwärtsfahren schiebt der Propeller das Heck zusätzlich seitlich (Radeffekt; in der App nach Backbord), und Seitenwind schiebt ein langsames Boot zur Seite. Bei „Hart“ zählen auch die Lazy Lines der anderen Boote: jede läuft vom Bug eines Bootes ins Fahrwasser hinunter, halten Sie also Kiel und Propeller von deren Bugen frei.",
     "action": "Fender auf beiden Seiten ausbringen; knapp am Liegeplatz vorbei motoren, stoppen und das Boot mit den Strahlrudern drehen, bis das Heck zum Liegeplatz zeigt; langsam rückwärts hinein, mit den Strahlrudern korrigierend; kurz vor dem Kai stoppen; die Crew wirft die Achterleinen, dann nimmt sie die Lazy Line auf und bringt sie zum Bug; dichtholen.",
     "mistake": "Zu schnell hinein: schneller als im Schritttempo stoßen Sie gegen den Kai oder das Boot nebenan. Oder den Gang einlegen, während die Crew eine Leine bedient: sie kann sich um den Propeller wickeln.",
-    "done": "Es liegt achteraus fest. Langsam ist das Geheimnis: erst stoppen, dann die Leinen, dann die Lazy Line bei Leerlauf dichtholen.",
+    "done": "Es liegt achteraus fest. Langsam fahren: erst stoppen, dann die Leinen, dann die Lazy Line bei Leerlauf dichtholen.",
     "steps": {
       "fenders": {
         "goal": "Die Fender ausbringen.",
@@ -494,10 +494,10 @@
     "title": "Eine Boje aufnehmen",
     "summary": "Im Kriechgang gegen den Wind an die Boje heranfahren, sie am Bug aufnehmen, daran liegen, dann loswerfen und rückwärts weggehen.",
     "see": "Sie motoren in die Bucht auf drei weiße Bojen zu; der magenta Ring markiert die mittlere. Der Wind weht aus der Bucht heraus, auf Sie zu.",
-    "happening": "Gegen den Wind stoppt das Boot von selbst, sobald Sie den Motor aus dem Gang nehmen, so können Sie langsam an die Boje herankriechen. Die Crew nimmt sie mit dem Bootshaken auf und belegt die Vorleine. Am Liegeplatz an der Boje hält der Wind den Bug zur Boje.",
+    "happening": "Gegen den Wind stoppt das Boot von selbst, sobald Sie den Motor aus dem Gang nehmen, sodass Sie langsam an die Boje herankriechen können. Die Crew nimmt sie mit dem Bootshaken auf und belegt die Vorleine. Am Liegeplatz an der Boje hält der Wind den Bug zur Boje.",
     "action": "Langsam gerade auf die Boje zu motoren, gegen den Wind; auf der letzten Bootslänge in den Kriechgang gehen; am Bug aufnehmen; Motor im Leerlauf; zum Ablegen loswerfen und sanft rückwärts von der Boje weggehen.",
     "mistake": "Zu schnell oder mit dem Wind von hinten ankommen: das Boot kann nicht stoppen und fährt an der Boje vorbei oder darüber.",
-    "done": "Sie haben die Boje aufgenommen und wieder verlassen. Gegen den Wind und im Kriechgang.",
+    "done": "Sie haben die Boje aufgenommen und wieder verlassen, gegen den Wind und im Kriechgang.",
     "steps": {
       "approach": {
         "goal": "Den Bug an die Boje bringen (innerhalb des kleinen Rings), mit unter einem halben Knoten.",
@@ -539,10 +539,10 @@
     "title": "Ankern mit Landleine",
     "summary": "Den Anker auf der Stelle fallen lassen, genug Kette geben, ihn eingraben, dann zu den Felsen zurücksetzen und eine Leine an Land bringen.",
     "see": "Sie sind in der Bucht, der Bug zeigt aufs Meer hinaus, die felsige Küste liegt achteraus. Der magenta Ring zeigt, wohin der Anker soll: Sand, 10 m tief.",
-    "happening": "Ein Anker hält nur mit genug Kette: mindestens das Vierfache der Wassertiefe plus die Höhe der Bugrolle, und hier ist die Regel drei Bootslängen (etwa 47 m) die größere (PT-31). Er muss durch sanftes Rückwärtsfahren in den Grund eingegraben werden (PT-57). Eine Leine vom Heck zu einem Ring an den Felsen stoppt dann das Schwojen, so kann das Boot dicht an der Küste liegen.",
+    "happening": "Ein Anker hält nur mit genug Kette: mindestens das Vierfache der Wassertiefe plus die Höhe der Bugrolle, und hier ist die Regel drei Bootslängen (etwa 47 m) die größere (PT-31). Er muss durch sanftes Rückwärtsfahren in den Grund eingegraben werden (PT-57). Eine Leine vom Heck zu einem Ring an den Felsen stoppt dann das Schwojen, sodass das Boot dicht an der Küste liegen kann.",
     "action": "Langsam rückwärts, bis der Bug über der Stelle ist; den Anker fallen lassen; weiter langsam rückwärtsfahren, während die Kette läuft, bis sie lang genug ist; die Kette stoppen und etwas kräftiger rückwärts, um den Anker einzugraben; ein Stück mehr Kette geben, zur Küste zurücksetzen und die Crew mit der Leine an Land schicken; dichtholen.",
     "mistake": "Zu wenig Kette: der Anker schleift und das Boot treibt auf die Felsen. Oder zu weit zurücksetzen: Ruder und Kiel berühren den Grund nahe der Küste.",
-    "done": "Es liegt mit Anker und Landleine. Genug Kette, eingegraben, dann die Landleine.",
+    "done": "Es liegt mit Anker und Landleine. Genug Kette geben, den Anker eingraben, die Landleine dichtholen.",
     "steps": {
       "to-spot": {
         "goal": "Langsam rückwärts, bis der Bug über der Stelle ist (innerhalb des Rings), fast gestoppt.",
@@ -655,7 +655,7 @@
   },
   "maestral": {
     "title": "Der nachmittägliche Maestral",
-    "summary": "Im leichten Mittagswind segeln und die Segel einrollen, während der Maestral auffrischt — bevor er stark wird.",
+    "summary": "Im leichten Mittagswind segeln und die Segel einrollen, während der Maestral auffrischt, bevor er stark wird.",
     "see": "Ein Sommertag, 12:20 Uhr: etwa 12 Knoten aus Nordwest und volle Segel auf Halbwind (der Wind von der Seite). In der Adria wird der Wind im Sommer jeden Nachmittag stärker.",
     "happening": "Der Maestral ist ein Seewind: das Land erwärmt sich schneller als das Meer, und Luft vom Meer strömt unter der warmen Luft nach, die über dem Land aufsteigt. Er kommt am späten Vormittag auf, ist gegen zwei Uhr am stärksten und stirbt bei Sonnenuntergang. Heute erreicht er 20 Knoten.",
     "action": "Die Windgeschwindigkeit beobachten. Bei 15 Knoten die Fock auf etwa 40 % einrollen (zuerst die Schot fieren), dann das Großsegel auf etwa 60 % einrollen. Bis halb zwei weitersegeln.",
@@ -707,7 +707,7 @@
     "happening": "Die Bora ist ein kalter Nordostwind, der von den Bergen aufs Meer fällt. Sie kann an einem ruhigen, klaren Tag plötzlich einsetzen und kommt in harten Böen, hier bis etwa 30 Knoten. Segel einrollen dauert bei Windstille nur einen Moment und ist mühsam und langsam, sobald der Wind da ist.",
     "action": "Die Fock jetzt ganz einrollen, dann das Großsegel etwa zur Hälfte einrollen. Wenn die Böen kommen, in jeder Bö die Großschot fieren und danach wieder dichtholen.",
     "mistake": "Abwarten, wie stark es wird: mit vollen Segeln legt die erste Bö das Boot flach.",
-    "done": "Kleine Segel, bevor der Wind kam, so blieb das Boot in den Böen aufrecht. Wenn eine Bora wahrscheinlich ist, Segel in der Ruhe davor verkleinern.",
+    "done": "Die Segel waren klein, bevor der Wind kam, deshalb blieb das Boot in den Böen aufrecht. Wenn eine Bora wahrscheinlich ist, Segel in der Ruhe davor verkleinern.",
     "steps": {
       "jib-away": {
         "goal": "Die Fock auf 25 % oder weniger einrollen, bevor die Bora ankommt.",

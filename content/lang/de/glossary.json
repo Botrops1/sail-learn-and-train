@@ -483,7 +483,7 @@
         }
       ],
       "short": "Das Vorsegel; es wechselt beim Wenden von selbst die Seite.",
-      "what": "Die Fock wird am Vorstag vor dem Mast gesetzt. Ihre Schot läuft zu einem Wagen auf einer Schiene quer über das Deck, und der Wagen gleitet von selbst auf die andere Seite, wenn der Bug durch den Wind dreht — Wenden braucht also keine Schotarbeit.",
+      "what": "Die Fock wird am Vorstag vor dem Mast gesetzt. Ihre Schot läuft zu einem Wagen auf einer Schiene quer über das Deck, und der Wagen gleitet von selbst auf die andere Seite, wenn der Bug durch den Wind dreht. Wenden braucht also keine Schotarbeit.",
       "onThisBoat": "51,5 m², an einer Furlex-Rollreffanlage am Bug. Die Schiene ist kurz und gerade, deshalb lässt sich die Fock nicht weit ausfieren: ganz gefiert erreicht sie etwa 30°. Auf der Klemme steht „Genoa sheet“, aber das Segel ist eine Fock, kleiner als eine Genua und ohne Überlappung am Mast.",
       "mistakes": [
         {
@@ -796,7 +796,7 @@
       "alternatives": [],
       "short": "Eine Leine, mit der ein Segel gesetzt wird.",
       "what": "Ein Fall zieht den Kopf eines Segels (seine obere Ecke) am Mast oder am Vorstag nach oben und hält ihn dort.",
-      "onThisBoat": "Das Großsegel bleibt gesetzt und rollt in den Mast, die Fock rollt um das Vorstag – die Fälle werden deshalb kaum angefasst; das Gennakerfall liegt nur belegt und wird nicht benutzt.",
+      "onThisBoat": "Das Großsegel bleibt gesetzt und rollt in den Mast, die Fock rollt um das Vorstag, die Fälle werden deshalb kaum angefasst; das Gennakerfall liegt nur belegt und wird nicht benutzt.",
       "textStatus": "draft"
     },
     "term_port": {
@@ -830,7 +830,7 @@
       "mistakes": [
         {
           "mistake": "Backbord und Steuerbord in der Hektik verwechseln.",
-          "fix": "Eine Merkhilfe: rotes Licht Backbord, grünes Licht Steuerbord – und links ist Backbord."
+          "fix": "Eine Merkhilfe: rotes Licht Backbord, grünes Licht Steuerbord, und links ist Backbord."
         }
       ],
       "textStatus": "draft"
@@ -1034,7 +1034,7 @@
           "note": "am Wind segeln, um Höhe zu gewinnen"
         }
       ],
-      "short": "So nah am Wind segeln, wie es geht – etwa 45° daneben.",
+      "short": "So nah am Wind segeln, wie es geht, etwa 45° daneben.",
       "what": "Am Wind sind die Segel dichtgeholt, und das Boot segelt so nah am Wind wie möglich, knapp außerhalb des Totwassers. Auf diesem Kurs krängt es am stärksten.",
       "showMe": "Am Wind: Der Wind steht 45° zum Bug, beide Segel sind dichtgeholt; das Boot krängt etwa 17°.",
       "textStatus": "draft"
@@ -1685,7 +1685,7 @@
         }
       ],
       "short": "Die Steinmauer, die die Wellen aus dem Hafen hält.",
-      "what": "Ein Wellenbrecher ist eine lange Steinschüttung oder eine Betonmauer um einen Hafen. Dahinter bleibt das Wasser ruhig, sodass Boote festmachen können. Boote fahren durch eine Lücke hinein und hinaus — die Einfahrt.",
+      "what": "Ein Wellenbrecher ist eine lange Steinschüttung oder eine Betonmauer um einen Hafen. Dahinter bleibt das Wasser ruhig, sodass Boote festmachen können. Boote fahren durch eine Lücke hinein und hinaus: die Einfahrt.",
       "onThisBoat": "Die Marina der App hat einen Wellenbrecher im Süden und Westen, die Einfahrt liegt nach Westen, und der Kai ist als Nordmole weitergeführt.",
       "mistakes": [
         {
@@ -1719,7 +1719,7 @@
       "name": "Übungsziel",
       "alternatives": [],
       "short": "Wohin die Übung das Boot haben will: ein magentaroter Umriss auf dem Wasser und auf der Karte.",
-      "what": "Wird nur gezeichnet, solange ein Übungsschritt es braucht. Es ist nicht auf dem echten Wasser: Es ist die Art der App, den Weg zu zeigen.",
+      "what": "Wird nur gezeichnet, solange ein Übungsschritt es braucht. Es liegt nicht auf dem echten Wasser; die App zeichnet es, um den Weg zu zeigen.",
       "onThisBoat": "—",
       "mistakes": [],
       "textStatus": "draft"
@@ -1814,7 +1814,7 @@
       "name": "Radeffekt",
       "alternatives": [],
       "short": "Bei Rückwärtsfahrt drückt der Propeller das Heck zur Seite.",
-      "what": "Ein Propeller drückt nicht nur nach hinten: Bei Rückwärtsfahrt drückt er das Heck auch zur Seite, am stärksten, solange noch keine Fahrt im Boot ist. Welche Seite, hängt von der Drehrichtung des Propellers ab. Skipper nutzen das: Wandert das Heck nach Backbord, legen sie mit der Backbordseite an.",
+      "what": "Ein Propeller drückt nach hinten, bei Rückwärtsfahrt drückt er zugleich das Heck zur Seite, am stärksten, solange noch keine Fahrt im Boot ist. Welche Seite, hängt von der Drehrichtung des Propellers ab. Skipper nutzen das: Wandert das Heck nach Backbord, legen sie mit der Backbordseite an.",
       "onThisBoat": "Ein Saildrive mit festem Zweiblattpropeller. In der App wandert das Heck bei Rückwärtsfahrt nach Backbord (eine Annahme, bis der Skipper es prüft): etwa 6° Drehung in 15 s bei halber Rückwärtsfahrt. Ein Saildrive hat weniger Radeffekt als eine Wellenanlage.",
       "mistakes": [
         {
