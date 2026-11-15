@@ -39,6 +39,30 @@ const WORDING = {
     exercisesHeading: '## Упражнения',
     uiKey: 'key',
   },
+  de: {
+    title: '# Prüfung des deutschen Textes',
+    intro:
+      'Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, die anderen Namen (Alternativen) und die Texte. Schreiben Sie zu jedem Eintrag „ok“ oder die richtige Formulierung mit dem Code des Eintrags (zum Beispiel: term_north — ok). Besonders wichtig sind die an Bord üblichen deutschen Segelbegriffe und die Wörter, die auf diesem Boot gedruckt sind.',
+    field: 'Feld',
+    english: 'English',
+    translated: 'Deutsch',
+    rows: {
+      name: 'Name',
+      alternatives: 'Andere Namen',
+      short: 'Kurz',
+      what: 'Was es tut / was es bedeutet',
+      onThisBoat: 'Auf diesem Boot',
+      mistakes: 'Typische Fehler',
+      showMe: '„Zeigen“',
+      factStatus: 'Belegstatus',
+      textStatus: 'Textstatus',
+      check: 'Prüfung (ok / wie richtig)',
+    },
+    textStatuses: { draft: 'Entwurf', 'sailor-reviewed': 'von einem Segler geprüft' },
+    uiHeading: '## Schaltflächen und Hinweise',
+    exercisesHeading: '## Übungen',
+    uiKey: 'Schlüssel',
+  },
 };
 
 const NONE = '—';

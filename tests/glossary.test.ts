@@ -653,6 +653,17 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
     ).toBe(true);
   });
 
+  it('docs/review/de.md and de-exercises.md (the German texts) are up to date', () => {
+    expect(
+      buildReviewDoc('de') === readFileSync('docs/review/de.md', 'utf8'),
+      'a German text changed: run `npm run review-doc -- de` and commit docs/review/de.md',
+    ).toBe(true);
+    expect(
+      buildExercisesReviewDoc('de') === readFileSync('docs/review/de-exercises.md', 'utf8'),
+      'a German exercise text changed: run `npm run review-doc -- de` and commit docs/review/de-exercises.md',
+    ).toBe(true);
+  });
+
   it('lists every entry once, under the groups of the Learn list', () => {
     const doc = buildReviewDoc('ru');
     for (const id of REGISTRY_IDS) {
