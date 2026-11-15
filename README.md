@@ -6,7 +6,7 @@ A free web app that shows a complete beginner what every rope, sheet and sail of
 
 ### ▶ [Try latest release in your browser](https://botrops1.github.io/sail-learn-and-train/)
 
-## ▶ [Try what is comming next (not yet released)](https://botrops1.github.io/sail-learn-and-train/nex5)
+#### ▶ [Try what is comming next (not yet released)](https://botrops1.github.io/sail-learn-and-train/nex5)
 
 **Who it is for:** someone who has never sailed (or is about to crew on a yacht) and wants to understand the boat before stepping on it. **How it works:** you set a wind, work the ropes, and see at once what the boat and the sails do. Clarity over realism: it teaches how things behave, it is not a simulator for racing.
 
