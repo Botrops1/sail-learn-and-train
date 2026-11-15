@@ -150,7 +150,7 @@ export async function liveM25Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     await openSettings(page);
     const wanted = [
-      '[data-testid="language-en"]',
+      '[data-testid="language-open"]',
       '#labels-toggle',
       '#time-bar-toggle',
       '[data-testid="clock-switch"]',

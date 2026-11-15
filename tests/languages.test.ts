@@ -99,12 +99,14 @@ function exerciseStrings(code: string): [string, string][] {
 afterEach(() => setLanguage(DEFAULT_LANGUAGE));
 
 describe('languages (PHASE4_SPEC 9.3)', () => {
-  it('1. the app has English, German and Russian, each named in its own language', () => {
-    expect([...LANGUAGES]).toEqual(['en', 'de', 'ru']);
+  it('1. the app has English, German, Norwegian and Russian, each named in its own language', () => {
+    expect([...LANGUAGES]).toEqual(['en', 'de', 'no', 'ru']);
     expect(languageName('en')).toBe('English');
     expect(languageName('de')).toBe('Deutsch');
+    expect(languageName('no')).toBe('Norsk');
     expect(languageName('ru')).toBe('Русский');
     expect(isLanguage('de')).toBe(true);
+    expect(isLanguage('no')).toBe(true);
     expect(isLanguage('ru')).toBe(true);
     expect(isLanguage('xx')).toBe(false);
   });
@@ -306,5 +308,48 @@ describe('languages (PHASE4_SPEC 9.3)', () => {
     }
     expect(UI_STRINGS.de?.['tab.ropes']).toBe('Leinen');
     expect(UI_STRINGS.de?.['quote.label']).toBe('„{text}“');
+  });
+
+  it('10. the Norwegian names are the words Norwegian sailors use, not the English ones', () => {
+    const names: Record<string, string> = {
+      rope_mainsheet: 'Storskjøt',
+      rope_jib_sheet: 'Fokkeskjøt',
+      rope_vang: 'Kicker',
+      rope_topping_lift: 'Toppenant',
+      rope_outhaul: 'Utholer',
+      rope_main_halyard: 'Storfall',
+      part_gooseneck: 'Gåsehals',
+      part_spreader: 'Salinger',
+      part_shroud: 'Vant',
+      part_coachroof: 'Dekkshus',
+      part_companionway: 'Nedgang',
+      sailpart_clew: 'Nokk',
+      sailpart_luff: 'Forlik',
+      sailpart_leech: 'Akterlik',
+      term_gybe: 'Jibb',
+      term_tacking: 'Stagvending',
+      term_ease: 'Fire',
+      term_heel: 'Krenging',
+      term_weather_helm: 'Luvgjerrighet',
+      term_prop_walk: 'Propellens sidekraft',
+      term_no_go_zone: 'Dødsone',
+    };
+    for (const [id, name] of Object.entries(names)) {
+      expect(glossaryText(id, 'no')?.name, id).toBe(name);
+    }
+    // The control names in the UI are the glossary names (one term for one thing).
+    expect(UI_STRINGS.no?.['control.mainsheet']).toBe(glossaryText('rope_mainsheet', 'no')?.name);
+    expect(UI_STRINGS.no?.['control.jibSheet']).toBe(glossaryText('rope_jib_sheet', 'no')?.name);
+    expect(UI_STRINGS.no?.['control.vang']).toBe(glossaryText('rope_vang', 'no')?.name);
+    expect(UI_STRINGS.no?.['control.toppingLift']).toBe(
+      glossaryText('rope_topping_lift', 'no')?.name,
+    );
+    for (const key of ['close_hauled', 'close_reach', 'beam_reach', 'broad_reach', 'run']) {
+      const name = glossaryText(`term_${key}`, 'no')?.name ?? '';
+      expect(UI_STRINGS.no?.[`pos.${key}`], key).toBe(name.charAt(0).toUpperCase() + name.slice(1));
+    }
+    expect(UI_STRINGS.no?.['tab.ropes']).toBe('Tau');
+    expect(UI_STRINGS.no?.['quote.label']).toBe('«{text}»');
+    expect(UI_STRINGS.no?.['number.thousandsSeparator']).toBe('\u00a0');
   });
 });

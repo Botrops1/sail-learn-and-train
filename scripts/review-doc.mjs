@@ -63,6 +63,30 @@ const WORDING = {
     exercisesHeading: '## Übungen',
     uiKey: 'Schlüssel',
   },
+  no: {
+    title: '# Gjennomgang av den norske teksten',
+    intro:
+      'Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre navnene (alternativene) og tekstene. Skriv «ok» eller riktig formulering for hver oppføring, med koden til oppføringen (for eksempel: term_north — ok). Særlig viktig er de norske seilerordene som brukes om bord og ordene som står skrevet på denne båten. Ord jeg er minst sikker på: kicker (rope_vang), toppenant, utholer, dødsone, luv og le, låring, luvgjerrighet, brodd, vindøyet, knapp halvvind, slør, lens, stagvending og jibb.',
+    field: 'Felt',
+    english: 'English',
+    translated: 'Norsk',
+    rows: {
+      name: 'Navn',
+      alternatives: 'Andre navn',
+      short: 'Kort',
+      what: 'Hva det gjør / hva det betyr',
+      onThisBoat: 'På denne båten',
+      mistakes: 'Typiske feil',
+      showMe: '«Vis meg»',
+      factStatus: 'Faktastatus',
+      textStatus: 'Tekststatus',
+      check: 'Sjekk (ok / slik er det riktig)',
+    },
+    textStatuses: { draft: 'utkast', 'sailor-reviewed': 'gjennomgått av en seiler' },
+    uiHeading: '## Knapper og hint',
+    exercisesHeading: '## Øvelser',
+    uiKey: 'nøkkel',
+  },
 };
 
 const NONE = '—';

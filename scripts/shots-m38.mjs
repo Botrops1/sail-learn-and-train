@@ -5,7 +5,15 @@
 // `onTestClock`): waitForTimeout moves the app's time on.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { closeSettings, isWide, openSettings, setMode, showSection, showTab } from './ui.mjs';
+import {
+  chooseLanguage,
+  closeSettings,
+  isWide,
+  openSettings,
+  setMode,
+  showSection,
+  showTab,
+} from './ui.mjs';
 
 const BOAT = '?wd=60&ws=12';
 
@@ -220,7 +228,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     );
     await openSettings(page);
     const wanted = [
-      '[data-testid="language-en"]',
+      '[data-testid="language-open"]',
       '#labels-toggle',
       '#time-bar-toggle',
       '[data-testid="clock-switch"]',
@@ -310,7 +318,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await openSettings(page);
     await Promise.all([
       page.waitForNavigation({ waitUntil: 'networkidle' }),
-      page.locator('label:has([data-testid="language-ru"])').click(),
+      chooseLanguage(page, 'ru'),
     ]);
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached' });
     const openAfter = await page.getByTestId('settings-card').isVisible();

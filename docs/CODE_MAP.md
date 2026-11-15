@@ -14,11 +14,11 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 
 | File | What |
 |---|---|
-| `exercises/exercises.json`, `lang/<code>/exercises.json` | The exercises (steps, checks, mistakes, start links; language-neutral) and their texts by the same ids (English source, Russian draft). |
+| `exercises/exercises.json`, `lang/<code>/exercises.json` | The exercises (steps, checks, mistakes, start links; language-neutral) and their texts by the same ids (English source; German, Norwegian and Russian drafts). |
 | `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values. No numbers in code. |
 | `audio/sounds.json` | Every number of the sound: group gains, smoothing, the wind, waves, hull, sails, engine, gear, marina, birds and the `music` block. No sound number in code. |
 | `registry/parts.json` | Every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group`, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
-| `lang/<code>/ui.json` | UI strings of one language, read through `t()`; `en` and `ru` have the same keys in the same order. |
+| `lang/<code>/ui.json` | UI strings of one language, read through `t()`; every language has the same keys as `en`, in the same order. |
 | `lang/latin-words.json` | The Latin words allowed on a Russian screen (instrument letters, makers, quoted foreign words). |
 | `lang/<code>/glossary.json` | The Learn entries of one language by registry id. `en` is the source; `ru` is an AI draft. Read through `model/glossary.ts`. |
 | `areas/adriatic.json` | A sailing area: position, time zone, fetch per Waves setting, practice buoys, default clock, local winds, places, marina and bay. Loaded by id (`model/area.ts`). |
@@ -150,7 +150,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `modes.ts`, `sections.ts` | `modes.ts` (pure) is the table of sections and what each mode does with them (order, phone tab of each, availability with an exercise loaded). `sections.ts` is one section: fold header, optional "?" button for its `.explain` texts. |
 | `modeChip.ts`, `modePicker.ts`, `quickRow.ts` | The mode chip (opens the mode card), the mode picker (body of the Mode tab and card), and the quick row in the sheet's head (the selected rope's − / +, or in Harbour the engine lever and thruster joysticks). |
 | `files.ts`, `deviceSettings.ts` | `downloadJson`, `pickJsonFile`; reading and writing the device's saved settings (columns, time-bar fold, layout) in their stored formats. |
-| `settingsMenu.ts` | The gear's settings card, or on a phone the Settings section: Language, Sound, Labels, Time, Clock, Mini-map, Step size, Detail, Boat (profile download, chooser, import), Your setup, Share, Reset, Debug, About. `createConfirmButton` is the two-tap button. |
+| `settingsMenu.ts` | The gear's settings card, or on a phone the Settings section: Language (one button that opens a dialog listing the languages), Sound, Labels, Time, Clock, Mini-map, Step size, Detail, Boat (profile download, chooser, import), Your setup, Share, Reset, Debug, About. `createConfirmButton` is the two-tap button. |
 | `welcome.ts` | The welcome card for a first visit (Watch the first exercise, Look around the boat, Close); a link with settings never shows it. |
 | `soundSettings.ts`, `soundChip.ts` | The Sound block of Settings (on, Music, Surroundings, Boat sounds, volume) and the speaker chip. |
 | `chipCard.ts` | `createChipCard`: the card that opens above a chip over the 3D view (header with ×, scrolling body, not modal, one overlay at a time). |
@@ -188,7 +188,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 - `scripts/check.mjs` (types in `check.d.mts`): `npm run check` runs typecheck, lint, format, tests and build with each step's output captured, one line per step, the last 80 lines of the first step that fails; `--from <step>` starts later. `scripts/quiet-log.mjs` (types in `quiet-log.d.mts`): `shots.mjs` holds back the lines of a scene, a tap sweep or a live group and prints them only if it went wrong; `tests/quietChecks.test.ts` tests both.
 - `scripts/exercise-drive.mjs`: drives an exercise run from a check (read it, turn, set the controls, wait for a step) and sets the time scale, so a run that only leads to the state a check looks at goes at ×16 (a scripted pilot at ×4).
 - `scripts/budget.mjs`: the `budget` browser check run on every PR: draw calls and triangles in each preset view, both details, Easy and Realistic ropes, against `BUDGET`. `scripts/a11y-audit.mjs`: accessibility audit. `scripts/visual-shots.mjs`: detail-level close-ups. `scripts/compare/`: model against a reference sketch.
-- `scripts/review-doc.mjs` (types in `review-doc.d.mts`): `npm run review-doc -- ru` writes the review document for a sailor who reads one language (`docs/review/ru.md` and `docs/review/ru-exercises.md`); `tests/glossary.test.ts` fails when the committed files are out of date. `docs/LANGUAGES.md`: how to add a language.
+- `scripts/review-doc.mjs` (types in `review-doc.d.mts`): `npm run review-doc -- <code>` writes the review document for a sailor who reads one language (`docs/review/<code>.md` and `<code>-exercises.md`: ru, de, no); `tests/glossary.test.ts` fails when the committed files are out of date. `docs/LANGUAGES.md`: how to add a language.
 - `scripts/ci-shots.mjs` (types in `ci-shots.d.mts`, tests in `tests/ciRetry.test.ts`): runs one browser part of CI and, if it fails, runs only the groups that failed once more (`shots.mjs` writes them to `SHOTS_FAILED_FILE`); a pass the second time is green with a "Flaky check" warning and a record. `scripts/flaky-report.mjs` (types in `flaky-report.d.mts`): turns the records into the `browser-checks` summary and, in `nightly.yml`, into the issue "Flaky check: <group>".
 - `scripts/ci-plan.mjs` (types in `ci-plan.d.mts`, tests in `tests/ciPlan.test.ts`): plans the browser checks of CI (live groups, docs-only PRs, groups by changed path, packing into parts, the matrix); the `plan` job runs its command line.
 - `GROUP_ALIASES` in `scripts/ci-plan.mjs` names the milestones whose checks run inside an older group (the groups are listed in `liveGroups` of `shots.mjs`).
