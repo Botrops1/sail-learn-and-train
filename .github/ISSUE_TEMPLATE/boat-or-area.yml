@@ -1,0 +1,45 @@
+name: New boat or sailing area
+description: Offer or ask for another yacht, or another harbour, bay or sailing area.
+labels: ['boat or area']
+title: 'Boat or area: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you! Everything in the app is built by code from numbers, with no 3D model files, so a new boat or area starts with facts and sources.
+        - **A yacht laid out like the Hanse 508** (in-mast furling main, self-tacking jib, twin wheels…) is just a file of numbers: see [docs/BOAT_PROFILE.md](https://github.com/Botrops1/sail-learn-and-train/blob/main/docs/BOAT_PROFILE.md).
+        - **A different rig or deck layout**, or **a new harbour or sailing area**, also needs code. It is planned as its own step, so describe it here first.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is it?
+      options:
+        - A yacht laid out like the Hanse 508 (a boat profile)
+        - A yacht with a different rig or deck layout
+        - A harbour, marina or bay
+        - A sailing area with its own winds or tides
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: Which boat or place, and why it would help a learner
+    validations:
+      required: true
+  - type: textarea
+    id: facts
+    attributes:
+      label: Facts and sources
+      description: Sizes, layout, depths, winds… and where they come from (a public specification, a pilot book, a chart, your own measurements). Please no copied brochure pages or pictures.
+    validations:
+      required: true
+  - type: dropdown
+    id: help
+    attributes:
+      label: Can you help build it?
+      options:
+        - I can provide the numbers and check the result
+        - I can write code for it
+        - I am only suggesting it
+    validations:
+      required: true
