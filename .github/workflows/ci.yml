@@ -105,7 +105,9 @@ jobs:
     name: browser (${{ matrix.part }})
     needs: plan
     if: needs.plan.outputs.docs != 'true'
-    runs-on: ubuntu-latest
+    # Pinned: Playwright 1.56.1 cannot install Chromium on the ubuntu-26.04 image that
+    # ubuntu-latest moved to in November 2026. Move back when Playwright supports it.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
       fail-fast: false
