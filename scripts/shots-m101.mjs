@@ -26,8 +26,14 @@ export async function liveM101Checks({ openPage, problems }) {
   const press = async (page, key, times = 1) => {
     for (let i = 0; i < times; i += 1) await page.keyboard.press(key);
   };
-  /** The link once it has every part of `has` and none of `hasNot`; after 3 s, the link as it is (so a check fails honestly). */
+  /**
+   * The link once it has every part of `has` and none of `hasNot`; after 3 s, the link as it is (so
+   * a check fails honestly). The link is written 300 ms of app time after a change, and on the test
+   * clock only `waitForTimeout` moves app time: so move it first (waitForLink alone polls in real
+   * time and, on a slow machine, gives up before the link is written).
+   */
   const link = async (page, has, hasNot = []) => {
+    await page.waitForTimeout(500);
     try {
       return await waitForLink(page, has, hasNot);
     } catch {
@@ -88,11 +94,11 @@ export async function liveM101Checks({ openPage, problems }) {
   {
     const { context, page } = await open(DESKTOP, 'autopilot', BASE);
     await clickCanvas(page);
+    // The clock stands still between presses, so the boat has not turned.
     await press(page, 'KeyP');
-    let now = await link(page, [], ['ap=off']);
-    check('P: the autopilot holds the heading', !now.includes('ap=off'), now);
     await press(page, 'ArrowLeft', 5);
-    now = await link(page, ['apt=355']);
+    let now = await link(page, ['apt=355'], ['ap=off']);
+    check('P: the autopilot holds the heading', !now.includes('ap=off'), now);
     check('← five times with the autopilot on: its course is 355', now.includes('apt=355'), now);
     await press(page, 'KeyP');
     now = await link(page, ['ap=off']);
