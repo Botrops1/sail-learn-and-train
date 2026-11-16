@@ -195,7 +195,7 @@ export async function liveM55Checks({ openPage, viewports, outDir, prefix, probl
       text,
     );
     const tag = (await row.locator('[data-testid="status-alert-tag"]').textContent()) ?? '';
-    check('it is tagged Rope', tag === 'Rope', tag);
+    check('it is tagged Line', tag === 'Line', tag);
     await page.waitForTimeout(5000);
     const after = await count(page, rows);
     check('five seconds later still one row', after === 1, String(after));

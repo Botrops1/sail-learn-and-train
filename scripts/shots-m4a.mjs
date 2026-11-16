@@ -84,7 +84,7 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     const hint = await page.locator(`${strip('rope_mainsheet')} .shared-hint`).innerText();
     check(
       `${v} row Main sheet`,
-      (await search(page)).includes('sel=rope_mainsheet') && /one rope, two ends/i.test(hint),
+      (await search(page)).includes('sel=rope_mainsheet') && /one line, two ends/i.test(hint),
       `${await search(page)} | ${hint}`,
     );
     const pressed = await page.locator('.rope-item[aria-pressed="true"]').count();

@@ -776,7 +776,7 @@ async function liveM3Checks() {
     meta = await controlMeta(page, 'rope_jib_furling_line');
     check(
       'sheet 100 % (released): the jib furls completely',
-      !meta.includes('Ease the jib sheet') && meta.includes('0.0 m of rope paid out'),
+      !meta.includes('Ease the jib sheet') && meta.includes('0.0 m of line paid out'),
       meta.replace(/\n/g, ' | '),
     );
     await page.locator('.rope-strip').scrollIntoViewIfNeeded();

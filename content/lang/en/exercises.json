@@ -4,15 +4,15 @@
     "title": "Trim through the points of sail",
     "summary": "Turn from close to the wind to a run, easing the sails as you go.",
     "see": "You are sailing close to the wind (close-hauled) on starboard tack: the wind comes over the right side of the bow. The front edge of the mainsail is flapping.",
-    "happening": "A sail works like a wing only when the wind meets it at the right angle. As you turn away from the wind (bear away), the wind comes more from the side and then from behind, so each sail has to be let out further.",
-    "action": "Each time you bear away, ease (let out) the sheets: the main until it stops being stalled, the jib all the way on a reach. On a run, let the main right out.",
+    "happening": "A sail works like a wing only when the wind meets it at the right angle. As you turn away from the wind (bear away), the wind comes more from the side and then from behind, so each sail has to be eased further.",
+    "action": "Each time you bear away, ease the sheets: the main until it stops being stalled, the jib all the way on a reach. On a run, ease the main right out.",
     "mistake": "Turning away without easing: the sails stall (the air stops flowing smoothly over them), she heels and slows. Turning too far on a run: the wind gets behind the main and throws the boom across (an accidental gybe).",
     "done": "You sailed every point of sail from close-hauled to a run. The rule: the further from the wind, the further out the sails.",
     "steps": {
-      "close-hauled": { "goal": "Close-hauled: haul the main in until it stops flapping.", "how": "In Ropes, tap − on Main sheet until it reads about 12 %. Watch the Sails section: both sails read Good when they are trimmed." },
-      "close-reach": { "goal": "Close reach: turn 20° away from the wind, then ease the main.", "how": "Open Steering (the Autopilot block) and tap −10 twice. Each tap turns her 10° to port (left), away from the wind, which comes over the starboard side. Then, in Ropes, ease Main sheet to about 25 %. With Realistic ropes the Autopilot is at the Helm station." },
-      "beam-reach": { "goal": "Beam reach: wind from the side. Ease the main and let the jib sheet right out.", "how": "In Steering, tap −10 three more times. Then, in Ropes, ease Main sheet to about 50 % and Jib sheet to 100 %. On a reach the self-tacking jib (it changes sides by itself) cannot go out far enough to read Good: let its sheet right out." },
-      "broad-reach": { "goal": "Broad reach: wind from behind the side. Let the main right out.", "how": "In Steering, tap −10 four more times. In Ropes, ease Main sheet to 85 % or more: the boom stops at the shrouds (the wires that hold the mast up), so the main cannot go further out." },
+      "close-hauled": { "goal": "Close-hauled: trim the main until it stops flapping.", "how": "In Lines, tap − on Main sheet until it reads about 12 %. Watch the Sails section: both sails read Good when they are trimmed." },
+      "close-reach": { "goal": "Close reach: turn 20° away from the wind, then ease the main.", "how": "Open Steering (the Autopilot block) and tap −10 twice. Each tap turns her 10° to port (left), away from the wind, which comes over the starboard side. Then, in Lines, ease Main sheet to about 25 %. With Realistic lines the Autopilot is at the Helm station." },
+      "beam-reach": { "goal": "Beam reach: wind from the side. Ease the main and ease the jib sheet right out.", "how": "In Steering, tap −10 three more times. Then, in Lines, ease Main sheet to about 50 % and Jib sheet to 100 %. On a reach the self-tacking jib (it changes sides by itself) cannot go out far enough to read Good: ease its sheet right out." },
+      "broad-reach": { "goal": "Broad reach: wind from behind the side. Ease the main right out.", "how": "In Steering, tap −10 four more times. In Lines, ease Main sheet to 85 % or more: the boom stops at the shrouds (the wires that hold the mast up), so the main cannot go further out." },
       "run": { "goal": "Run: wind from behind. Hold the course for 10 seconds without a gybe.", "how": "In Steering, tap −10 three more times, to about 165° from the wind. Do not go further: with the wind dead behind or on the other side, the boom can swing across by itself." }
     },
     "mistakes": {
@@ -44,32 +44,32 @@
     "summary": "She has stopped head to wind. Get her sailing again.",
     "see": "The bow points straight into the wind. Both sails flap, she has no speed and the wheel does nothing.",
     "happening": "With the wind straight ahead no sail can work (the no-go zone). The wind pushes her slowly backwards, and going backwards the rudder works the other way round: it turns the bow away from the wind.",
-    "action": "Let both sheets out, put the wheel hard over and hold it while she drifts back. When the wind is about 40° on the bow, centre the wheel and sheet in.",
-    "mistake": "Sheeting in hard, or waiting with the wheel in the middle: she stays head to wind.",
+    "action": "Ease both sheets, put the wheel hard over and hold it while she drifts back. When the wind is about 40° on the bow, centre the wheel and trim.",
+    "mistake": "Trimming hard, or waiting with the wheel in the middle: she stays head to wind.",
     "done": "She is sailing again. Going backwards the rudder turns the bow the other way: hold the wheel over and be patient.",
     "steps": {
-      "ease-sheets": {"goal": "Let both sheets out to 40 % or more.", "how": "In Ropes, set Main sheet and Jib sheet to about 60 %."},
+      "ease-sheets": {"goal": "Ease both sheets to 40 % or more.", "how": "In Lines, set Main sheet and Jib sheet to about 60 %."},
       "wheel-over": {"goal": "Put the wheel hard over and wait until the wind is 35° or more on the bow.", "how": "In Steering, set Wheel to +30° and keep it there. She drifts backwards and the bow slowly falls away from the wind. This takes about a minute."},
-      "sail-away": {"goal": "Centre the wheel, sheet in and sail away at 3 knots or more.", "how": "In Steering, set Wheel to 0°. In Ropes, set Main sheet to about 12 % and Jib sheet to about 30 %. Both sails should read Good."}
+      "sail-away": {"goal": "Centre the wheel, trim and sail away at 3 knots or more.", "how": "In Steering, set Wheel to 0°. In Lines, set Main sheet to about 12 % and Jib sheet to about 30 %. Both sails should read Good."}
     },
     "mistakes": {}
   },
   "gybing": {
     "title": "Gybing: controlled and accidental",
-    "summary": "Turn the stern through the wind with the main hauled in, then see what an accidental gybe does.",
-    "see": "You are on a run (the wind from behind) on starboard tack, with the main let right out.",
-    "happening": "In a gybe the stern crosses the wind and the boom swings to the other side. With the main let out, the boom crosses the whole cockpit fast and stops with a bang. Hauled in first, it only moves a little.",
-    "action": "Haul the main in until the boom is near the centre, turn until the wind is on the other side, then let the main out again.",
+    "summary": "Turn the stern through the wind with the main trimmed, then see what an accidental gybe does.",
+    "see": "You are on a run (the wind from behind) on starboard tack, with the main eased right out.",
+    "happening": "In a gybe the stern crosses the wind and the boom swings to the other side. With the main eased, the boom crosses the whole cockpit fast and stops with a bang. Trimmed first, it only moves a little.",
+    "action": "Trim the main until the boom is near the centre, turn until the wind is on the other side, then ease the main again.",
     "mistake": "Turning through the wind with the main still out, or steering past dead downwind without meaning to: the boom slams across (an accidental gybe). This boat has no preventer (a line that would hold the boom out).",
-    "done": "A controlled gybe moves the boom a short way, slowly. An accidental one swings it across fast, with a big load on the main sheet and on anyone in its way. Haul in first.",
+    "done": "A controlled gybe moves the boom a short way, slowly. An accidental one swings it across fast, with a big load on the main sheet and on anyone in its way. Trim first.",
     "steps": {
-      "haul-main": {"goal": "Haul the main in until the boom is near the centre.", "how": "In Ropes, set Main sheet to 5 %. The boom comes within 16° of the centre line."},
+      "haul-main": {"goal": "Trim the main until the boom is near the centre.", "how": "In Lines, set Main sheet to 5 %. The boom comes within 16° of the centre line."},
       "gybe": {"goal": "Gybe: turn until the wind is on the other side.", "how": "In Steering, tap Gybe (the Tack button reads Gybe on a run). She turns through the wind and the boom crosses a short way."},
-      "ease-main": {"goal": "Let the main right out on the new side.", "how": "In Ropes, set Main sheet to 85 % or more."},
+      "ease-main": {"goal": "Ease the main right out on the new side.", "how": "In Lines, set Main sheet to 85 % or more."},
       "accidental": {"goal": "Now see an accidental gybe on purpose: turn 30° further from the wind, past dead downwind.", "how": "In Steering, tap Heading, then “10° to starboard” three times: she turns from 15° short of dead downwind to 15° past it. At first the wind still holds the boom out; at sea a roll, a wave or a small turn starts it across (the app gives it that start), and once the boom is past the line of the wind (pointing straight at where the wind comes from), the wind throws it the rest of the way. Watch the gybe report: the boom’s speed and the load on the main sheet."}
     },
     "mistakes": {
-      "accidental-gybe": {"name": "an accidental gybe", "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Haul the main in before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee."}
+      "accidental-gybe": {"name": "an accidental gybe", "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Trim the main before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee."}
     }
   },
   "gusts": {
@@ -77,15 +77,15 @@
     "summary": "Keep her upright through three gusts by easing the main.",
     "see": "You are on a close reach in 15 knots of wind with gusts. A gust shows on the water as a darker patch coming towards you.",
     "happening": "In a gust the wind is stronger for a few seconds: the sails push harder, she heels more and wants to turn into the wind (weather helm). Easing the main spills the extra wind.",
-    "action": "When a gust hits, ease the main sheet by about 20 %; when it has passed, sheet in again.",
+    "action": "When a gust hits, ease the main sheet by about 20 %; when it has passed, trim again.",
     "mistake": "Holding the main sheet tight in a gust: she heels past 25°, slows down and can turn into the wind by herself (a round-up).",
     "done": "Easing the main in a gust keeps her upright and steering. The dark patch on the water warns you a few seconds before it arrives.",
     "steps": {
-      "three-gusts": { "goal": "Get through three gusts: ease the main in each one, sheet in after.", "how": "Watch the strip: GUST shows while a gust blows (from about 16.5 knots). In Ropes, set Main sheet to about 45 % when it shows, and back to about 25 % when it has gone. Three strong gusts take about two and a half minutes." },
+      "three-gusts": { "goal": "Get through three gusts: ease the main in each one, trim after.", "how": "Watch the strip: GUST shows while a gust blows (from about 16.5 knots). In Lines, set Main sheet to about 45 % when it shows, and back to about 25 % when it has gone. Three strong gusts take about two and a half minutes." },
       "trim-back": { "goal": "Trim both sails to Good.", "how": "When GUST has gone from the strip, set Main sheet to about 25 % and Jib sheet to about 50 %. Both sails should read Good; ease the main again if a gust comes." }
     },
     "mistakes": {
-      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "The main sheet was too tight for the wind: the sails pushed harder than the keel could hold her upright.", "fix": "Ease the main sheet as soon as the gust hits; sheet in again when it has passed." },
+      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "The main sheet was too tight for the wind: the sails pushed harder than the keel could hold her upright.", "fix": "Ease the main sheet as soon as the gust hits; trim again when it has passed." },
       "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel with a tight main: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away and she comes back under control. In the next gust, ease earlier." }
     }
   },
@@ -94,24 +94,24 @@
     "summary": "In 22 knots, roll in part of the jib and the main until she sails upright.",
     "see": "22 knots of wind on a close reach. The main is eased until it flaps, to keep her upright; she heels about 20°.",
     "happening": "With full sails she heels too much in this wind. On this boat both sails roll up (the jib round the forestay, the main into the mast), so making them smaller takes a minute and nobody has to go on deck.",
-    "action": "Ease the jib sheet and roll the jib in to about 40 %; roll the main in to about 60 %; then sheet the main in until it works.",
+    "action": "Ease the jib sheet and roll the jib in to about 40 %; roll the main in to about 60 %; then trim the main until it works.",
     "mistake": "Pulling the jib in with its sheet still tight: the jib will not roll. And sails left flapping in strong wind wear out quickly.",
     "done": "Smaller sails, less heel, and she sails almost as fast. Roll in early, before the wind gets up.",
     "steps": {
-      "jib-in": { "goal": "Roll the jib in to 45 % or less: ease its sheet first.", "how": "In Ropes, set Jib sheet to 100 %, then Jib out to 40 %. Then set Jib sheet to about 75 % so the jib stops flapping. With the sheet tight the jib stops rolling." },
-      "main-in": { "goal": "Roll the main in to between 50 and 65 %.", "how": "In Ropes, set Mainsail out to 60 %." },
-      "settle": { "goal": "Sheet the main in until it reads Good, with less than 20° of heel.", "how": "In Ropes, set Main sheet to about 35 % and hold it for 10 seconds. (A partly rolled jib reads Stalled in the app at any sheet: leave its sheet at about 75 %.)" }
+      "jib-in": { "goal": "Roll the jib in to 45 % or less: ease its sheet first.", "how": "In Lines, set Jib sheet to 100 %, then Jib out to 40 %. Then set Jib sheet to about 75 % so the jib stops flapping. With the sheet tight the jib stops rolling." },
+      "main-in": { "goal": "Roll the main in to between 50 and 65 %.", "how": "In Lines, set Mainsail out to 60 %." },
+      "settle": { "goal": "Trim the main until it reads Good, with less than 20° of heel.", "how": "In Lines, set Main sheet to about 35 % and hold it for 10 seconds. (A partly rolled jib reads Stalled in the app at any sheet: leave its sheet at about 75 %.)" }
     },
     "mistakes": {
-      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "Too much sail for this wind, or the main sheet pulled in too far.", "fix": "Ease the main sheet now, then roll in more sail." },
+      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "Too much sail for this wind, or the main sheet trimmed too far.", "fix": "Ease the main sheet now, then roll in more sail." },
       "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away, then roll in more sail." },
-      "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Sheet the flapping sail in until it stops, or roll it in." }
+      "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Trim the flapping sail until it stops, or roll it in." }
     }
   },
   "set-sails": {
     "title": "Setting the sails",
     "summary": "Motor head to wind, roll the main out, bear away, roll the jib out and stop the engine.",
-    "see": "You are motoring slowly with both sails rolled up and the bow pointing into the wind. The ropes are Realistic: clutches and winches, as on the boat.",
+    "see": "You are motoring slowly with both sails rolled up and the bow pointing into the wind. The lines are Realistic: clutches and winches, as on the boat.",
     "happening": "The main rolls out of the mast. With the bow into the wind it comes out without filling, so it is easy to winch. Once it is out, turning away from the wind fills it. The jib unrolls round the forestay as its sheet is pulled.",
     "action": "Keep her head to wind with the engine slow ahead; roll the main out; bear away to a close reach; roll the jib out with its sheet; stop the engine.",
     "mistake": "Rolling the main out with the wind on the side: the half-unrolled sail fills and loads the furling gear. Or holding a winch button after the sail is out: the winch cuts out.",
@@ -119,48 +119,48 @@
     "steps": {
       "head-to-wind": { "goal": "Motor slowly with the bow into the wind (within 20°).", "how": "The engine runs slow ahead and the autopilot holds the heading. Nothing to do yet: watch the wind angle on the strip." },
       "main-out": { "goal": "Roll the main out (90 % or more) while the bow points into the wind.", "how": "Go to the starboard station. Open the left “Main furling” clutch (the line that rolls the sail in) so it can run out. Put the right “Main furling” line on the winch: three turns, into the self-tailer, then hold the winch button. Let go when the main is out." },
-      "bear-away": { "goal": "Turn to a close reach (50–75° from the wind) with the main reading Good.", "how": "Close the left “Main furling” clutch and take the line off the winch. In the bar (Realistic ropes: its Helm tab) or the Helm section, set the autopilot to Wind and tap “10° to port” six times. The main sheet at 30 % is about right." },
+      "bear-away": { "goal": "Turn to a close reach (50–75° from the wind) with the main reading Good.", "how": "Close the left “Main furling” clutch and take the line off the winch. In the bar (Realistic lines: its Helm tab) or the Helm section, set the autopilot to Wind and tap “10° to port” six times. The main sheet at 30 % is about right." },
       "jib-out": { "goal": "Roll the jib out and sheet it to Good.", "how": "At the port station, open the JIB ROLL clutch. At the starboard station, put the Genoa sheet on the winch (three turns, self-tailer) and hold the button: the jib unrolls as the sheet comes in. Let go when the jib reads Good. Close JIB ROLL when the jib has stopped moving." },
-      "engine-off": { "goal": "Stop the engine and sail at 4 knots or more.", "how": "In the bar (Realistic ropes: its Helm tab) or the Helm section, put the engine lever in neutral, then tap Stop." }
+      "engine-off": { "goal": "Stop the engine and sail at 4 knots or more.", "how": "In the bar (Realistic lines: its Helm tab) or the Helm section, put the engine lever in neutral, then tap Stop." }
     },
     "mistakes": {
       "main-off-wind": { "name": "rolling the main out off the wind", "what": "The main was rolled out with the wind on the side.", "why": "With the bow 35° or more off the wind, the half-unrolled sail fills and loads the furling gear and the mast.", "fix": "Stop winching, turn back into the wind (within 20°), then roll it out the rest of the way." },
-      "winch-cut-out": { "name": "a winch cutting out", "what": "The winch cut out.", "why": "The button was held after the rope had stopped (the sail was fully out or in, or a clutch held the other line), or the load was too high.", "fix": "Let go of the button when the sail is out. Check that the line on the other side is free to run." },
-      "rope-slipping": { "name": "a rope slipping", "what": "A rope slipped on the winch drum.", "why": "Too few turns on the winch for the load.", "fix": "Add a turn on the winch." },
-      "clutch-on-running": { "name": "a clutch closed on a running rope", "what": "A clutch was closed on a running rope.", "why": "The rope was still moving under load, and the clutch can damage it.", "fix": "Let the rope stop first (let go of the button), then close the clutch." }
+      "winch-cut-out": { "name": "a winch cutting out", "what": "The winch cut out.", "why": "The button was held after the line had stopped (the sail was fully out or in, or a clutch held the other line), or the load was too high.", "fix": "Let go of the button when the sail is out. Check that the line on the other side is free to run." },
+      "rope-slipping": { "name": "a line slipping", "what": "A line slipped on the winch drum.", "why": "Too few turns on the winch for the load.", "fix": "Add a turn on the winch." },
+      "clutch-on-running": { "name": "a clutch closed on a running line", "what": "A clutch was closed on a running line.", "why": "The line was still moving under load, and the clutch can damage it.", "fix": "Let the line stop first (let go of the button), then close the clutch." }
     }
   },
   "furl-sails": {
     "title": "Furling the sails",
     "summary": "Start the engine, roll the jib in, turn head to wind and roll the main in.",
-    "see": "You are sailing on a close reach with both sails out and the engine off. The ropes are Realistic.",
+    "see": "You are sailing on a close reach with both sails out and the engine off. The lines are Realistic.",
     "happening": "Rolling up is setting in reverse. The jib rolls round the forestay when its furling line is pulled and its sheet is free. The main rolls into the mast best with the bow into the wind, when it carries no load.",
     "action": "Start the engine and leave it in neutral; free the jib sheet and winch the jib furling line in; motor slowly head to wind; free the outhaul and the main's “out” line, then winch its “in” line.",
     "mistake": "Pulling a furling line while the sheet or the outhaul still holds the sail: it will not roll, and the winch strains or cuts out.",
     "done": "Both sails are rolled up and you are motoring. Jib first, then the main head to wind.",
     "steps": {
-      "engine-on": { "goal": "Start the engine and leave it in neutral.", "how": "In the bar (Realistic ropes: its Helm tab) or the Helm section, tap Start. Leave the lever in the middle (neutral)." },
+      "engine-on": { "goal": "Start the engine and leave it in neutral.", "how": "In the bar (Realistic lines: its Helm tab) or the Helm section, tap Start. Leave the lever in the middle (neutral)." },
       "jib-in": { "goal": "Roll the jib in completely (5 % or less).", "how": "At the starboard station, open the Genoa sheet clutch so the sheet can run. At the port station, put JIB ROLL on the winch (three turns, self-tailer) and hold the button until the jib is rolled up." },
-      "head-to-wind": { "goal": "Motor slow ahead and turn the bow into the wind (within 20°).", "how": "In the bar (Realistic ropes: its Helm tab) or the Helm section, put the engine lever slow ahead (about 30 %). Set the autopilot to Heading and tap “10° to starboard” six times." },
-      "main-in": { "goal": "Roll the main into the mast (5 % or less) with the bow into the wind.", "how": "Take JIB ROLL off the port winch and open the Main outhaul clutch there. At the starboard station, open the right “Main furling” clutch (the line that lets the sail out), put the left “Main furling” line on the winch (three turns, self-tailer) and hold the button until the main is in." }
+      "head-to-wind": { "goal": "Motor slow ahead and turn the bow into the wind (within 20°).", "how": "In the bar (Realistic lines: its Helm tab) or the Helm section, put the engine lever slow ahead (about 30 %). Set the autopilot to Heading and tap “10° to starboard” six times." },
+      "main-in": { "goal": "Roll the main into the mast (5 % or less) with the bow into the wind.", "how": "Take JIB ROLL off the port winch and open the Main outhaul clutch there. At the starboard station, open the right “Main furling” clutch (the line that rolls the sail out), put the left “Main furling” line on the winch (three turns, self-tailer) and hold the button until the main is in." }
     },
     "mistakes": {
       "main-off-wind": { "name": "rolling the main in off the wind", "what": "The main was rolled in with the wind on the side.", "why": "With the bow 35° or more off the wind the sail is loaded while it rolls, which strains the furling gear and can crease the sail inside the mast.", "fix": "Stop winching, turn back into the wind (within 20°), then roll it in the rest of the way." },
-      "winch-cut-out": { "name": "a winch cutting out", "what": "The winch cut out.", "why": "The button was held after the rope had stopped, or the sheet or outhaul still held the sail.", "fix": "Let go of the button; free the sheet or the outhaul, then winch again." },
-      "rope-slipping": { "name": "a rope slipping", "what": "A rope slipped on the winch drum.", "why": "Too few turns on the winch for the load.", "fix": "Add a turn on the winch." },
-      "clutch-on-running": { "name": "a clutch closed on a running rope", "what": "A clutch was closed on a running rope.", "why": "The rope was still moving under load, and the clutch can damage it.", "fix": "Let the rope stop first, then close the clutch." }
+      "winch-cut-out": { "name": "a winch cutting out", "what": "The winch cut out.", "why": "The button was held after the line had stopped, or the sheet or outhaul still held the sail.", "fix": "Let go of the button; free the sheet or the outhaul, then winch again." },
+      "rope-slipping": { "name": "a line slipping", "what": "A line slipped on the winch drum.", "why": "Too few turns on the winch for the load.", "fix": "Add a turn on the winch." },
+      "clutch-on-running": { "name": "a clutch closed on a running line", "what": "A clutch was closed on a running line.", "why": "The line was still moving under load, and the clutch can damage it.", "fix": "Let the line stop first, then close the clutch." }
     }
   },
   "leave-berth": {
     "title": "Leaving the berth",
     "summary": "Let go the lazy line and the stern lines, motor out of the berth and turn towards the entrance.",
-    "see": "She lies stern-to in her berth: two stern lines to the quay, the lazy line (a sunk rope from the quay) holding the bow, the engine running in neutral. Other yachts may lie on both sides.",
+    "see": "She lies stern-to in her berth: two stern lines to the quay, the lazy line (a sunk line from the quay) holding the bow, the engine running in neutral. Other yachts may lie on both sides.",
     "happening": "Once the lines are off, nothing holds her. A side wind pushes a slow boat sideways and blows the bow off, so go out at a steady pace and turn as soon as the stern is clear of the other boats' bows.",
     "action": "Let go the lazy line first, then both stern lines; motor slowly ahead out of the berth; when the stern is clear, stop and turn her with both thrusters until she points west to the entrance; then motor ahead.",
     "mistake": "Turning too early: the stern swings sideways into the boat next door. Or going too fast and hitting the boats across the fairway (the lane between the rows).",
     "done": "You are out of the berth and heading for the entrance. Lazy line first, stern lines next, out slowly, and turn only when the stern is clear.",
     "steps": {
-      "lazy-off": {"goal": "Let go the lazy line.", "how": "Open Harbour gear. Under Lines, tap Let go on \"Lazy line (to the bow)\". It sinks to the bottom, clear of the propeller."},
+      "lazy-off": {"goal": "Let go the lazy line.", "how": "Open Harbour gear. Under Mooring lines, tap Let go on \"Lazy line (to the bow)\". It sinks to the bottom, clear of the propeller."},
       "stern-off": {"goal": "Let go both stern lines.", "how": "In Harbour gear, tap Let go on both stern lines. Now only the engine and the thrusters hold her."},
       "motor-out": {"goal": "Motor ahead until the stern is out of the berth, in the fairway (inside the magenta outline).", "how": "Open Engine. Drag the engine lever just past Neutral towards Ahead (the line under it says \"In gear: ahead\"): slow ahead. Keep the wheel straight. In a strong side wind push it a little further (about a third of the way to Ahead) so she does not drift onto the boat next door."},
       "turn-out": {"goal": "Turn until she points west (270°, towards the entrance) and motor slowly ahead.", "how": "Lever back to Neutral. Hold the bow thruster to starboard and the stern thruster to port: she turns on the spot to the right. When the compass shows about 270°, let go of both and give slow ahead."}
@@ -168,8 +168,8 @@
     "mistakes": {
       "touch": {"name": "A light touch", "what": "She touched another boat or the quay without a fender between.", "why": "Slow boats drift with the wind; a touch at walking pace scratches the gelcoat but rarely does more.", "fix": "Slow down, use the thrusters to hold her off, and put the fenders out on the side that is close."},
       "hard-hit": {"name": "A hard knock", "what": "She hit another boat or the quay hard. The exercise stops here.", "why": "At more than about one knot, ten tonnes of boat dents a hull or breaks a rail, even with fenders.", "fix": "Go slower near other boats and the quay: in a harbour, never faster than you would walk. Tap Try again."},
-      "propeller": {"name": "A rope round the propeller", "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.", "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.", "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."},
-      "lazy-line": {"name": "Over a neighbour's lazy line", "what": "Your keel or rudder is over the lazy line of a boat next door, where the rope is still shallow.", "why": "The rope can catch on the keel or the rudder and pull her bow off; if the propeller turns over it, it winds round the propeller.", "fix": "Engine in neutral and let her drift clear. Then keep further from the other boats' bows: their lazy lines run out from there into the fairway."}
+      "propeller": {"name": "A line round the propeller", "what": "A line in the water caught round the propeller and the engine stopped. The exercise stops here.", "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.", "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."},
+      "lazy-line": {"name": "Over a neighbour's lazy line", "what": "Your keel or rudder is over the lazy line of a boat next door, where the line is still shallow.", "why": "The line can catch on the keel or the rudder and pull her bow off; if the propeller turns over it, it winds round the propeller.", "fix": "Engine in neutral and let her drift clear. Then keep further from the other boats' bows: their lazy lines run out from there into the fairway."}
     }
   },
   "enter-berth": {
@@ -184,15 +184,15 @@
       "fenders": {"goal": "Put the fenders out.", "how": "Open Harbour gear and choose Fenders: Out. In a tight berth they take the knocks."},
       "line-up": {"goal": "Stop past the berth and turn until the stern points at it (bow 180°, south), the stern within 3 m of the berth's middle.", "how": "Engine: lever just past Neutral towards Ahead (slow ahead) until the mast is about 18 m before the berth, then the lever a third of the way towards Astern until she stops (the wind is behind her, so she glides further than you expect), then Neutral. Hold the bow thruster to starboard and the stern thruster to port until the compass shows 180°."},
       "reverse-in": {"goal": "Back into the berth slowly and stop with the stern 0.5–2.8 m from the quay.", "how": "Engine slow astern: the lever just past Neutral towards Astern (\"In gear: astern\"). Keep her straight with the thrusters: if the stern drifts left, a short push of the stern thruster to starboard, and the other way round. Near the quay, Neutral, and a touch ahead to stop."},
-      "stern-lines": {"goal": "Throw both stern lines to the quay.", "how": "Harbour gear → Lines: tap \"Throw it to the quay\" on both stern lines. The stern must be within 4 m and nearly stopped."},
+      "stern-lines": {"goal": "Throw both stern lines to the quay.", "how": "Harbour gear → Mooring lines: tap \"Throw it to the quay\" on both stern lines. The stern must be within 4 m and nearly stopped."},
       "lazy-line": {"goal": "Pick up the lazy line and take it to the bow.", "how": "Tap \"Pick it up\" on the lazy line. The crew walks it to the bow (about 20 s). Keep the engine in neutral meanwhile."},
       "made-fast": {"goal": "Tighten the lazy line until it is hand tight, engine in neutral.", "how": "Tap Tighten on the lazy line until it says hand tight. It holds the bow off, the stern lines hold the stern: she cannot swing."}
     },
     "mistakes": {
       "touch": {"name": "A light touch", "what": "She touched another boat or the quay without a fender between.", "why": "Slow boats drift with the wind; a touch at walking pace scratches the gelcoat but rarely does more.", "fix": "Slow down, use the thrusters to hold her off, and put the fenders out on the side that is close."},
       "hard-hit": {"name": "A hard knock", "what": "She hit another boat or the quay hard. The exercise stops here.", "why": "At more than about one knot, ten tonnes of boat dents a hull or breaks a rail, even with fenders.", "fix": "Go slower near other boats and the quay: in a harbour, never faster than you would walk. Tap Try again."},
-      "propeller": {"name": "A rope round the propeller", "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.", "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.", "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."},
-      "lazy-line": {"name": "Over a neighbour's lazy line", "what": "Your keel or rudder is over the lazy line of a boat next door, where the rope is still shallow.", "why": "The rope can catch on the keel or the rudder and pull her bow off; if the propeller turns over it, it winds round the propeller.", "fix": "Engine in neutral and let her drift clear. Then keep further from the other boats' bows: their lazy lines run out from there into the fairway."},
+      "propeller": {"name": "A line round the propeller", "what": "A line in the water caught round the propeller and the engine stopped. The exercise stops here.", "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.", "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."},
+      "lazy-line": {"name": "Over a neighbour's lazy line", "what": "Your keel or rudder is over the lazy line of a boat next door, where the line is still shallow.", "why": "The line can catch on the keel or the rudder and pull her bow off; if the propeller turns over it, it winds round the propeller.", "fix": "Engine in neutral and let her drift clear. Then keep further from the other boats' bows: their lazy lines run out from there into the fairway."},
       "fenders-in": {"name": "Fenders still in", "what": "You are backing into the berth with the fenders in the locker.", "why": "Without fenders the first touch of the boat next door scratches both hulls.", "fix": "Harbour gear → Fenders: Out, before you come close."}
     }
   },
@@ -250,7 +250,7 @@
       },
       "bow-line": {
         "goal": "Pick up the buoy with the bow line.",
-        "how": "Harbour gear → Lines: tap \"Pick up the buoy\". It works only with the bow within 2.5 m and almost stopped."
+        "how": "Harbour gear → Mooring lines: tap \"Pick up the buoy\". It works only with the bow within 2.5 m and almost stopped."
       },
       "lie": {
         "goal": "Lie to the buoy for 10 seconds with the engine in neutral.",
@@ -258,7 +258,7 @@
       },
       "let-go": {
         "goal": "Let go the bow line.",
-        "how": "Harbour gear → Lines: Let go on \"Bow line to the buoy\"."
+        "how": "Harbour gear → Mooring lines: Let go on \"Bow line to the buoy\"."
       },
       "back-away": {
         "goal": "Back away until you are well clear of the buoy (outside the big ring).",
@@ -282,10 +282,10 @@
   },
   "anchor-shore": {
     "title": "Anchoring with a line ashore",
-    "summary": "Drop the anchor on the spot, let out enough chain, dig it in, then back towards the rocks and take a line ashore.",
+    "summary": "Drop the anchor on the spot, pay out enough chain, dig it in, then back towards the rocks and take a line ashore.",
     "see": "You are in the bay, bow pointing out to sea, the rocky shore behind you. The magenta ring is where the anchor should go: sand, 10 m deep.",
     "happening": "An anchor holds only with enough chain: at least four times the depth plus the height of the bow roller, and here three boat lengths (about 47 m) is the larger rule (PT-31). On the bottom it must be dug in by going gently astern (PT-57). A line from the stern to a ring on the rocks then stops her swinging, so she can lie close to the shore.",
-    "action": "Back slowly until the bow is over the spot; let the anchor go; keep going slowly astern while the chain runs out until it is long enough; stop the chain and go astern a little harder to dig it in; let out a little more, back towards the shore and send the crew ashore with the line; tighten it.",
+    "action": "Back slowly until the bow is over the spot; let the anchor go; keep going slowly astern while the chain runs out until it is long enough; stop the chain and go astern a little harder to dig it in; pay out a little more, back towards the shore and send the crew ashore with the line; tighten it.",
     "mistake": "Too little chain: the anchor drags and she drifts onto the rocks. Or backing too far: the rudder and the keel touch the bottom near the shore.",
     "done": "She lies anchored with a line ashore. Enough chain, dig it in, then the shore line.",
     "steps": {
@@ -298,7 +298,7 @@
         "how": "Open Anchor and hold \"Chain out ▼\". Watch the chain counter: the anchor reaches the bottom at about 12 m."
       },
       "scope": {
-        "goal": "Let out enough chain (the Anchor section shows how much is needed: about 47 m).",
+        "goal": "Pay out enough chain (the Anchor section shows how much is needed: about 47 m).",
         "how": "Keep \"Chain out\" going (or hold it again) while the engine goes slow astern, so the chain lies along the bottom, not in a heap."
       },
       "dig-in": {
@@ -307,7 +307,7 @@
       },
       "shore-line": {
         "goal": "Back towards the shore and take a line to a ring.",
-        "how": "Let out chain again and go slowly astern until the stern is within about 35 m of the shore, then Neutral. Harbour gear → Lines: \"Take a line ashore\". The crew swims it to a ring (about 30 s)."
+        "how": "Pay out chain again and go slowly astern until the stern is within about 35 m of the shore, then Neutral. Harbour gear → Mooring lines: \"Take a line ashore\". The crew swims it to a ring (about 30 s)."
       },
       "settled": {
         "goal": "Tighten the shore line and lie still with the engine in neutral.",
@@ -328,8 +328,8 @@
         "fix": "Watch the depth and come in slowly. Tap Try again."
       },
       "propeller": {
-        "name": "A rope round the propeller",
-        "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.",
+        "name": "A line round the propeller",
+        "what": "A line in the water caught round the propeller and the engine stopped. The exercise stops here.",
         "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.",
         "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."
       },
@@ -337,17 +337,17 @@
         "name": "The anchor is dragging",
         "what": "The anchor alarm went off: the anchor is sliding along the bottom.",
         "why": "With too little chain, or not dug in, the pull lifts the anchor out (PT-54).",
-        "fix": "Let out more chain, then dig it in again going gently astern."
+        "fix": "Pay out more chain, then dig it in again going gently astern."
       }
     }
   },
   "stern-to-anchor": {
     "title": "Stern-to on your own anchor",
-    "summary": "Drop the anchor across the fairway, back into the berth letting the chain out, stern lines, then take in chain until it is tight.",
+    "summary": "Drop the anchor across the fairway, back into the berth paying the chain out, stern lines, then take in chain until it is tight.",
     "see": "You are in the fairway in front of your berth, bow pointing south. This quay has no lazy lines, so your own anchor will hold the bow. The magenta ring is where to drop it: in the empty berth across the fairway.",
     "happening": "The anchor and its chain do the lazy line's job: laid out ahead, then tightened, they hold the bow off the quay while the stern lines hold the stern.",
-    "action": "Motor slowly forward until the bow is over the ring; let the anchor go; back towards your berth, letting out chain as she goes; stop a step from the quay; stern lines; take in chain until it is tight and the anchor is set.",
-    "mistake": "Not letting out chain as you back: the anchor drags behind you and holds nothing. Or taking in chain so hard that it pulls the stern off the quay: the windlass cuts out.",
+    "action": "Motor slowly forward until the bow is over the ring; let the anchor go; back towards your berth, paying out chain as she goes; stop a step from the quay; stern lines; take in chain until it is tight and the anchor is set.",
+    "mistake": "Not paying out chain as you back: the anchor drags behind you and holds nothing. Or taking in chain so hard that it pulls the stern off the quay: the windlass cuts out.",
     "done": "She is stern-to on her own anchor. Lay the chain out as you back in, then tighten it.",
     "steps": {
       "to-spot": {
@@ -359,16 +359,16 @@
         "how": "Anchor: hold \"Chain out ▼\" until the anchor is on the bottom."
       },
       "reverse-in": {
-        "goal": "Back into your berth, letting out chain, and stop with the stern 0.5–2.8 m from the quay.",
+        "goal": "Back into your berth, paying out chain, and stop with the stern 0.5–2.8 m from the quay.",
         "how": "Engine slow astern. Tap \"Chain out\" whenever the chain counter is less than the distance to the anchor plus a few metres, so the chain is never tight while you move. Keep her straight with the thrusters. Neutral near the quay."
       },
       "stern-lines": {
         "goal": "Throw both stern lines to the quay.",
-        "how": "Harbour gear → Lines: \"Throw it to the quay\" on both stern lines."
+        "how": "Harbour gear → Mooring lines: \"Throw it to the quay\" on both stern lines."
       },
       "chain-tight": {
         "goal": "Take in chain until the anchor is set and the chain holds the bow, engine in neutral.",
-        "how": "Anchor: hold \"Chain in ▲\" until the section says the anchor is set. If the windlass cuts out, the chain is too tight: let out 1 m."
+        "how": "Anchor: hold \"Chain in ▲\" until the section says the anchor is set. If the windlass cuts out, the chain is too tight: pay out 1 m."
       }
     },
     "mistakes": {
@@ -385,8 +385,8 @@
         "fix": "Go slower near other boats and the quay: in a harbour, never faster than you would walk. Tap Try again."
       },
       "propeller": {
-        "name": "A rope round the propeller",
-        "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.",
+        "name": "A line round the propeller",
+        "what": "A line in the water caught round the propeller and the engine stopped. The exercise stops here.",
         "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.",
         "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."
       },
@@ -408,14 +408,14 @@
     "done": "You reduced sail before the maestral was at its strongest. On the Adriatic, plan the afternoon: the wind at two is stronger than at noon.",
     "steps": {
       "wait": { "goal": "Sail on until the wind reaches 15 knots.", "how": "Nothing to do yet: time runs 16 times faster in this step. Watch TWS (the true wind speed) in the numbers at the top. Pause works as usual." },
-      "jib-in": { "goal": "Roll the jib in to 45 % or less: ease its sheet first.", "how": "In Ropes, set Jib sheet to 100 %, then Jib out to 40 %. With the sheet tight the jib does not roll." },
-      "main-in": { "goal": "Roll the main in to between 50 and 65 %.", "how": "In Ropes, set Jib sheet to about 75 % so the jib stops flapping, then set Mainsail out to 60 %." },
+      "jib-in": { "goal": "Roll the jib in to 45 % or less: ease its sheet first.", "how": "In Lines, set Jib sheet to 100 %, then Jib out to 40 %. With the sheet tight the jib does not roll." },
+      "main-in": { "goal": "Roll the main in to between 50 and 65 %.", "how": "In Lines, set Jib sheet to about 75 % so the jib stops flapping, then set Mainsail out to 60 %." },
       "peak": { "goal": "Sail on until 13:30 with less than 22° of heel.", "how": "Time runs 16 times faster again. Set Main sheet to about 40 %. If she heels too far in a gust, ease the main sheet." }
     },
     "mistakes": {
-      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "Too much sail for this wind, or the main sheet pulled in too far.", "fix": "Ease the main sheet now, then roll in more sail." },
+      "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "Too much sail for this wind, or the main sheet trimmed too far.", "fix": "Ease the main sheet now, then roll in more sail." },
       "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away, then roll in more sail." },
-      "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Sheet the flapping sail in until it stops, or roll it in." }
+      "sail-worn": { "name": "a worn sail", "what": "A sail is worn from flapping.", "why": "A sail left flapping (flogging) in strong wind wears out fast.", "fix": "Trim the flapping sail until it stops, or roll it in." }
     }
   },
   "bura": {
@@ -423,17 +423,17 @@
     "summary": "A calm morning, then a bura hits with gusts near 30 knots. Make the sails small before it arrives.",
     "see": "08:00, almost calm: 3 knots from the north-east and full sails. In about four minutes a bura will pour down from the mountains to the north-east.",
     "happening": "The bura is a cold north-east wind that falls from the mountains onto the sea. It can start suddenly on a calm, clear day and comes in hard gusts, here up to about 30 knots. Rolling the sails in takes a moment in a calm, and is hard and slow once the wind has come.",
-    "action": "Roll the jib in completely now, then roll the main in to about half. When the gusts come, ease the main sheet in each gust and pull it in again after it.",
+    "action": "Roll the jib in completely now, then roll the main in to about half. When the gusts come, ease the main sheet in each gust and trim it again after it.",
     "mistake": "Waiting to see how strong it gets: with full sails the first gust lays her over.",
     "done": "Small sails before the wind came, so she stayed upright through the gusts. When a bura is likely, reduce sail in the calm before it.",
     "steps": {
       "jib-away": {
         "goal": "Roll the jib in to 25 % or less, before the bura arrives.",
-        "how": "In Ropes, set Jib sheet to 100 %, then Jib out to 0 %."
+        "how": "In Lines, set Jib sheet to 100 %, then Jib out to 0 %."
       },
       "main-small": {
         "goal": "Roll the main in to between 30 and 55 %.",
-        "how": "In Ropes, set Mainsail out to 45 %."
+        "how": "In Lines, set Mainsail out to 45 %."
       },
       "three-gusts": {
         "goal": "Keep her upright through three gusts.",
@@ -444,7 +444,7 @@
       "overpowered": {
         "name": "heeling too far",
         "what": "She heeled too far (more than 25°).",
-        "why": "Too much sail for this wind, or the main sheet pulled in too far.",
+        "why": "Too much sail for this wind, or the main sheet trimmed too far.",
         "fix": "Ease the main sheet now, then roll in more sail."
       },
       "round-up": {
@@ -457,7 +457,7 @@
         "name": "a worn sail",
         "what": "A sail is worn from flapping.",
         "why": "A sail left flapping (flogging) in strong wind wears out fast.",
-        "fix": "Sheet the flapping sail in until it stops, or roll it in."
+        "fix": "Trim the flapping sail until it stops, or roll it in."
       }
     }
   },
@@ -466,7 +466,7 @@
     "summary": "Anchor with a line ashore in the evening, then watch the night go by in time-lapse: does she hold?",
     "see": "18:30 in the bay, the evening sea breeze (6 knots) blowing in from the sea. The magenta ring is where the anchor should go. You will spend the night here.",
     "happening": "The wind changes through a night: the sea breeze dies at sunset, it goes calm, a light breeze blows off the land after dark, and a squall can come before dawn. An anchor that held at six in the evening has to hold through all of that.",
-    "action": "Anchor as in Anchoring with a line ashore: the bow over the spot, let the anchor go, enough chain, dig it in, back towards the rocks letting more chain out, the line ashore and tight. For a night, let out as much chain as the line allows, about 60 m. Then watch the night.",
+    "action": "Anchor as in Anchoring with a line ashore: the bow over the spot, let the anchor go, enough chain, dig it in, back towards the rocks paying more chain out, the line ashore and tight. For a night, pay out as much chain as the line allows, about 60 m. Then watch the night.",
     "mistake": "Too little chain, or an anchor that was not dug in: in the squall before dawn she drags towards the rocks.",
     "done": "She held all night: the evening breeze, the calm, the land breeze and the squall. Plenty of chain, dug in, and a line ashore.",
     "steps": {
@@ -479,7 +479,7 @@
         "how": "Open Anchor and hold \"Chain out ▼\". Watch the chain counter: the anchor reaches the bottom at about 12 m."
       },
       "scope": {
-        "goal": "Let out enough chain (the Anchor section shows how much is needed: about 47 m).",
+        "goal": "Pay out enough chain (the Anchor section shows how much is needed: about 47 m).",
         "how": "Keep \"Chain out\" going (or hold it again) while the engine goes slow astern, so the chain lies along the bottom, not in a heap."
       },
       "dig-in": {
@@ -488,7 +488,7 @@
       },
       "shore-line": {
         "goal": "Back towards the shore and take a line to a ring.",
-        "how": "Let out chain again and go slowly astern until the stern is within about 35 m of the shore, then Neutral. Harbour gear → Lines: \"Take a line ashore\". The crew swims it to a ring (about 30 s). For a night: about 60 m of chain by the time the line is ashore."
+        "how": "Pay out chain again and go slowly astern until the stern is within about 35 m of the shore, then Neutral. Harbour gear → Mooring lines: \"Take a line ashore\". The crew swims it to a ring (about 30 s). For a night: about 60 m of chain by the time the line is ashore."
       },
       "settled": {
         "goal": "Tighten the shore line and lie still with the engine in neutral.",
@@ -513,8 +513,8 @@
         "fix": "Watch the depth and come in slowly. Tap Try again."
       },
       "propeller": {
-        "name": "A rope round the propeller",
-        "what": "A rope in the water caught round the propeller and the engine stopped. The exercise stops here.",
+        "name": "A line round the propeller",
+        "what": "A line in the water caught round the propeller and the engine stopped. The exercise stops here.",
         "why": "A slack line near the stern is sucked into a turning propeller (PT-52). Without the engine you cannot steer in the harbour.",
         "fix": "Keep the engine in neutral while a line is slack in the water or the crew is handling one; tighten or let go the line first. Tap Try again."
       },
@@ -522,13 +522,13 @@
         "name": "The anchor is dragging",
         "what": "The anchor alarm went off: the anchor is sliding along the bottom.",
         "why": "With too little chain, or not dug in, the pull lifts the anchor out (PT-54).",
-        "fix": "Let out more chain, then dig it in again going gently astern."
+        "fix": "Pay out more chain, then dig it in again going gently astern."
       },
       "dragged-at-night": {
         "name": "dragging in the night",
         "what": "The anchor dragged during the night.",
         "why": "The squall pulled harder than the anchor could hold: too little chain, or the anchor was not dug in well.",
-        "fix": "Start again and let out more chain, about 60 m, before the line goes ashore."
+        "fix": "Start again and pay out more chain, about 60 m, before the line goes ashore."
       }
     }
   }

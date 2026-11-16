@@ -86,7 +86,7 @@ export async function liveM89Checks({ openPage, viewports, problems }) {
     let rate = 0;
     let gain = 0;
     for (let i = 0; i < 5; i += 1) {
-      await page.getByRole('button', { name: 'More: Main sheet', exact: true }).click();
+      await page.getByRole('button', { name: 'Ease: Main sheet', exact: true }).click();
       // Read after each 50 ms of app time for 200 ms: the sheet moves only for a moment after a press.
       for (let step = 0; step < 4; step += 1) {
         await page.waitForTimeout(50);

@@ -11,7 +11,7 @@ import {
 } from '../app/exerciseBar';
 import { pilotFor } from '../app/exercisePilots';
 import type { AppState, Store } from '../app/store';
-import { snapControl, type ControlId } from '../model/controls';
+import { SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/controls';
 import { boat } from '../model/boat';
 import { exerciseDef, type ExerciseDef } from '../model/exercises';
 import type { LineCode } from '../model/mooringLines';
@@ -203,8 +203,17 @@ export function createExerciseBar(
         },
       });
     };
-    const less = stepButton('−', t('exercise.bar.lessAria', { name }), () => nudge(-1));
-    const more = stepButton('+', t('exercise.bar.moreAria', { name }), () => nudge(1));
+    const sheet = SHEET_CONTROL_IDS.has(id);
+    const less = stepButton(
+      '−',
+      t(sheet ? 'exercise.bar.trimAria' : 'exercise.bar.lessAria', { name }),
+      () => nudge(-1),
+    );
+    const more = stepButton(
+      '+',
+      t(sheet ? 'exercise.bar.easeAria' : 'exercise.bar.moreAria', { name }),
+      () => nudge(1),
+    );
     less.dataset.testid = `bar-${SAFE_ID(id)}-less`;
     more.dataset.testid = `bar-${SAFE_ID(id)}-more`;
     const value = el('span', { class: 'bar-value', 'data-testid': `bar-value-${SAFE_ID(id)}` });

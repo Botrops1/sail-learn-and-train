@@ -477,7 +477,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
         staticRows,
       }),
     );
-    const fighting = await page.getByText('Red: this rope pulls against another one').count();
+    const fighting = await page.getByText('Red: this line pulls against another one').count();
     check(
       'the red "fighting" colour is explained in the Ropes section',
       fighting > 0,

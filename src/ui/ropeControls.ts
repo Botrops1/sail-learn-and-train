@@ -1,7 +1,7 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import type { RopeStatus } from '../model/boomSolver';
-import { controlSpec, snapControl, type ControlId } from '../model/controls';
+import { controlSpec, SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/controls';
 import { mainFurlLengths } from '../model/mainFurl';
 import { jibFurlingLinePaidOut, jibSheetPaidOutFor } from '../model/jib';
 import { mainsheetPaidOut, sheetPctToClear } from '../model/mainsheet';
@@ -242,6 +242,10 @@ export function createControl(
   const chip = el('span', { class: 'chip', hidden: '' });
   const meta = el('div', { class: 'control-meta', id: `${inputId}-meta` });
 
+  const wheel = view.unit === 'rudder';
+  const sheet = SHEET_CONTROL_IDS.has(view.id);
+  const lessKey = wheel ? 'wheel.less' : sheet ? 'control.trim' : 'control.less';
+  const moreKey = wheel ? 'wheel.more' : sheet ? 'control.ease' : 'control.more';
   const element = el('div', { class: 'control', 'data-part-id': view.partId }, [
     el('div', { class: 'control-head' }, [
       el('label', { for: inputId, class: 'control-name' }, [name]),
@@ -257,13 +261,9 @@ export function createControl(
       : []),
     ...extra,
     el('div', { class: 'control-row' }, [
-      stepButton('−', t(view.unit === 'rudder' ? 'wheel.less' : 'control.less', { name }), () =>
-        nudge(-1),
-      ),
+      stepButton('−', t(lessKey, { name }), () => nudge(-1)),
       slider,
-      stepButton('+', t(view.unit === 'rudder' ? 'wheel.more' : 'control.more', { name }), () =>
-        nudge(1),
-      ),
+      stepButton('+', t(moreKey, { name }), () => nudge(1)),
     ]),
     meta,
   ]);

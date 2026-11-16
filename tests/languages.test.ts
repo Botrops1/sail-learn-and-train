@@ -197,14 +197,14 @@ describe('languages (PHASE4_SPEC 9.3)', () => {
   });
 
   it('6. t() and part() follow the language; an unknown code gives English', () => {
-    expect(t('tab.ropes')).toBe('Ropes');
+    expect(t('tab.ropes')).toBe('Lines');
     setLanguage('ru');
     expect(t('tab.ropes')).toBe('Концы');
     expect(t('tab.learn')).toBe('Обучение');
     expect(part('rope_vang')?.name).toBe('оттяжка гика');
     expect(quoted('Vang')).toBe('«Vang»');
     setLanguage('xx');
-    expect(t('tab.ropes')).toBe('Ropes');
+    expect(t('tab.ropes')).toBe('Lines');
     expect(part('rope_vang')?.name).toBe('Vang');
     expect(quoted('Vang')).toBe('“Vang”');
   });

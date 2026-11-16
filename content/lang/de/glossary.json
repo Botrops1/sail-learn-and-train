@@ -791,6 +791,23 @@
       "what": "Eine Schot zieht am Schothorn eines Segels (seiner hinteren unteren Ecke) und legt damit fest, wie weit das Segel nach außen ausschwingen kann. Jedes Segel hat seine eigene: die Großschot und die Fockschot. Auf einem Boot ist eine Schot eine Leine, kein Segel.",
       "textStatus": "draft"
     },
+    "term_line": {
+      "name": "Leine",
+      "alternatives": [
+        { "term": "Tau", "note": "das Material, bevor es eine Aufgabe hat" }
+      ],
+      "short": "Jedes Tau, das an Bord eine Aufgabe hat.",
+      "what": "An Bord wird ein Tau nach seiner Aufgabe benannt: Eine Schot trimmt ein Segel, ein Fall setzt es, eine Festmacherleine hält das Boot. Zusammen sind sie die Leinen. Seeleute sagen „Tau“ für Tau, das noch keine Aufgabe hat, etwa eine neue Rolle.",
+      "textStatus": "draft"
+    },
+    "term_cunningham": {
+      "name": "Cunningham",
+      "alternatives": [],
+      "short": "Eine Leine, die die Vorderkante eines Großsegels nach unten zieht. Dieses Boot hat keine.",
+      "what": "An einem Großsegel, das an einer Mastschiene hochgezogen wird, zieht das Cunningham die Vorderkante des Segels (das Vorliek) unten herunter. Mehr Spannung verlagert den Bauch des Segels nach vorn und flacht es bei stärkerem Wind ab.",
+      "onThisBoat": "Keines, soweit wir wissen (auf dem echten Boot noch nicht bestätigt). Das Großsegel rollt in den Mast, seine Vorderkante liegt auf der Rollstange im Mast, und nichts zieht sie nach unten; die Spannung kommt vom Großfall.",
+      "textStatus": "draft"
+    },
     "term_halyard": {
       "name": "Fall",
       "alternatives": [],
