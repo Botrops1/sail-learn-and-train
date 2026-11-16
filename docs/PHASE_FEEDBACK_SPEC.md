@@ -182,7 +182,13 @@ Scene names (`learn-realistic-ropes`, `realistic-rope-wrapped-helm`) are names, 
 
 ### 7.11 Decided in the M100 PR
 
-(The builder writes here.)
+All marked "recommended; merging accepts it".
+
+1. **The "no rope" test also ignores `{placeholders}`.** Two strings carry the code name `{rope}` (`alert.ropeSlipping`, `exercise.bar.onWinch`); 7.2 rule 7 keeps it, so `tests/sailorWords.test.ts` removes text in curly braces next to the text in round brackets. Recommended; merging accepts it.
+2. **Where a sentence said "pull in" about a line that is not a sheet** (a clutch, the winch, a furling line), it stays "pull in" (rule 4); "trim" is used only for the two sheets and for sails.
+3. **The mooring-lines block is "Mooring lines"** (`lines.title`) and the five exercise steps that point to "Harbour gear → Lines" say "Harbour gear → Mooring lines". The Lines section's four titles (`tab.ropes`, `debug.ropes`, `helmView.ropes`, `exercise.ropes`) read "Lines". Recommended; merging accepts it.
+4. **Drafts in the other languages** for `control.trim` / `control.ease` and the two exercise-bar keys: German *Trimmen* / *Fieren*, Norwegian *Trim* / *Fire*, Russian *Выбрать* / *Потравить* (sailor verbs, AI drafts). `term_line` is *Leine* / *Line* / *Снасть*. They wait for the sailor reviews (#233). Recommended; merging accepts it.
+5. **Older tests:** the glossary test's `sailing` group size is 32 (30 plus the two new terms), and the language test reads "Lines" for `tab.ropes`. Browser checks `m11`, `m21`, `m23`, `m38`, `m4a`, `m48`, `m55`, `m66` and `shots.mjs` read the new words.
 
 ## 8. M101: Keyboard
 
