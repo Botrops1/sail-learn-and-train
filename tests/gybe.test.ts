@@ -238,7 +238,7 @@ describe('the gybe in the rig (PHASE2_SPEC 11.2)', () => {
     const accidental = gybeReportText(swing(15, 72, -72).report);
     expect(accidental).toMatch(/^Accidental gybe! Boom end 17\.\d m\/s · energy \d+\.\d kJ/);
     expect(accidental).toContain('tonnes');
-    expect(accidental).toContain('haul the main sheet in');
+    expect(accidental).toContain('trim the main sheet before turning');
     const controlled = gybeReportText(swing(15, 10, -10).report);
     expect(controlled).toMatch(
       /^Controlled gybe: boom end \d\.\d m\/s · peak main sheet load \d\.\d kN\.$/,

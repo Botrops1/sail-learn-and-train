@@ -10,11 +10,11 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Jib sheet | Fokkeskjøt |
 | Andre navn | headsail sheet | Forseilskjøt |
-| Kort | The rope that sets how far the jib can swing out. | Tauet som bestemmer hvor langt fokken kan svinge ut. |
-| Hva det gjør / hva det betyr | Hauling the jib sheet in pulls the jib’s back corner towards the boat; easing it lets the wind push the jib out. On a self-tacking jib, easing mostly lets the top of the sail twist open rather than swinging the whole sail out. | Å hale fokkeskjøtet inn drar bakre hjørne av fokken mot båten; å fire det lar vinden presse fokken ut. På en selvslående fokk lar fiing mest toppen av seilet vri seg åpen, i stedet for at hele seilet svinger ut. |
+| Kort | The line that sets how far the jib can swing out. | Tauet som bestemmer hvor langt fokken kan svinge ut. |
+| Hva det gjør / hva det betyr | Trimming the jib sheet pulls the jib’s back corner towards the boat; easing it lets the wind push the jib out. On a self-tacking jib, easing mostly lets the top of the sail twist open rather than swinging the whole sail out. | Å hale fokkeskjøtet inn drar bakre hjørne av fokken mot båten; å fire det lar vinden presse fokken ut. På en selvslående fokk lar fiing mest toppen av seilet vri seg åpen, i stedet for at hele seilet svinger ut. |
 | På denne båten | One sheet runs from the jib’s back corner to a car on a short track in front of the mast, with a 2:1 purchase (a pulley system that halves the pull), then down the mast and aft to the starboard clutches. The clutch says “Genoa sheet”, but the sail is a jib. Fully eased, the jib only reaches about 30° out. | Ett skjøt går fra bakre hjørne av fokken til en vogn på en kort skinne foran masten, med 2:1 talje (et trinsesystem som halverer trekket), så ned langs masten og akterover til stopperne på styrbord side. Stopperen sier «Genoa sheet», men seilet er en fokk. Helt fiet når fokken bare omtrent 30° ut. |
-| Typiske feil | Easing it on a reach and expecting the jib to swing far out. → A self-tacking jib cannot go far out; easing more only twists its top open. Ease until its telltales stream, no further.<br>Furling the jib with the sheet still tight. → The jib stops rolling up. Ease the jib sheet first, then pull the furling line.<br>Hauling it hard in with the wind from the side. → The jib stalls: the telltales on its far side droop. Ease until they stream. | Å fire det på halvvind og vente at fokken svinger langt ut. → En selvslående fokk kan ikke gå langt ut; mer fiing vrir bare toppen åpen. Fire til vimplene strømmer, ikke mer.<br>Å rulle inn fokken mens skjøtet er stramt. → Fokken slutter å rulle seg opp. Fire fokkeskjøtet først, og dra så i rulletauet.<br>Å hale det hardt inn med vinden fra siden. → Fokken stalles: vimplene på den andre siden henger. Fire til de strømmer. |
-| «Vis meg» | Wind from the side and the jib sheet fully eased: the jib is only about 30° out, but its top has twisted open. Tap “Jib sheet” below and haul it in to see the jib flatten. | Vind fra siden og fokkeskjøtet helt fiet: fokken er bare omtrent 30° ute, men toppen har vridd seg åpen. Trykk på «Fokkeskjøt» under og hal det inn for å se fokken flate seg ut. |
+| Typiske feil | Easing it on a reach and expecting the jib to swing far out. → A self-tacking jib cannot go far out; easing more only twists its top open. Ease until its telltales stream, no further.<br>Furling the jib with the sheet still tight. → The jib stops rolling up. Ease the jib sheet first, then pull the furling line.<br>Trimming it hard with the wind from the side. → The jib stalls: the telltales on its far side droop. Ease until they stream. | Å fire det på halvvind og vente at fokken svinger langt ut. → En selvslående fokk kan ikke gå langt ut; mer fiing vrir bare toppen åpen. Fire til vimplene strømmer, ikke mer.<br>Å rulle inn fokken mens skjøtet er stramt. → Fokken slutter å rulle seg opp. Fire fokkeskjøtet først, og dra så i rulletauet.<br>Å hale det hardt inn med vinden fra siden. → Fokken stalles: vimplene på den andre siden henger. Fire til de strømmer. |
+| «Vis meg» | Wind from the side and the jib sheet fully eased: the jib is only about 30° out, but its top has twisted open. Tap “Jib sheet” below and trim it to see the jib flatten. | Vind fra siden og fokkeskjøtet helt fiet: fokken er bare omtrent 30° ute, men toppen har vridd seg åpen. Trykk på «Fokkeskjøt» under og hal det inn for å se fokken flate seg ut. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -41,10 +41,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Vang | Kicker |
 | Andre navn | kicker — British<br>kicking strap — British<br>boom vang | Bomstrekk |
 | Kort | Pulls the boom down, which keeps the mainsail flatter and stops its top twisting open. | Drar bommen ned, som holder storseilet flatere og hindrer at toppen vrir seg åpen. |
-| Hva det gjør / hva det betyr | The vang runs from low on the mast to the underside of the boom. Hauled, it holds the boom down, so the sail stays flatter with less twist. Eased, the boom end rises and the top of the sail twists open. Once the mainsheet is eased well out, the vang, not the sheet, decides how high the boom sits. | Kickeren går fra nederst på masten til undersiden av bommen. Når den er hentet inn, holder den bommen nede, så seilet blir flatere med mindre tvist. Når den er fiet, stiger bomenden og toppen av seilet vrir seg åpen. Når storskjøtet er fiet godt ut, er det kickeren, ikke skjøtet, som avgjør hvor høyt bommen står. |
-| På denne båten | A rigid vang (a strut with a gas spring inside) with a rope tackle. The spring holds the boom up, so the boom does not drop when the vang is eased; the rope only pulls it down. Its clutch is on the port side, labelled “Vang”. | En stiv kicker (en stag med gassfjær inni) med taubloksystem. Fjæren holder bommen oppe, så bommen faller ikke når kickeren fires; tauet drar den bare ned. Stopperen sitter på babord side, merket «Vang». |
-| Typiske feil | Relying on the mainsheet to hold the boom down on a reach. → Far out, the sheet pulls sideways, not down, and the boom lifts. Haul the vang to hold it down.<br>Hauling the vang and the topping lift tight at the same time. → They pull against each other (both ropes turn red in the app). Ease the topping lift once the sail is set. | Å stole på storskjøtet for å holde bommen nede på halvvind. → Langt ute drar skjøtet sideveis, ikke ned, og bommen løftes. Hal inn kickeren for å holde den nede.<br>Å hale kickeren og toppenanten stramt samtidig. → De drar mot hverandre (begge tauene blir røde i appen). Fire toppenanten når seilet er satt. |
-| «Vis meg» | Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and haul it in: the boom comes down and the sail flattens. | Vind 20 kn fra siden, kickeren fiet helt ut: bomenden har løftet seg og toppen av storseilet vrir seg åpen. Trykk på «Kicker» under og hal den inn: bommen kommer ned og seilet flates ut. |
+| Hva det gjør / hva det betyr | The vang runs from low on the mast to the underside of the boom. Pulled on, it holds the boom down, so the sail stays flatter with less twist. Eased, the boom end rises and the top of the sail twists open. Once the mainsheet is eased well out, the vang, not the sheet, decides how high the boom sits. | Kickeren går fra nederst på masten til undersiden av bommen. Når den er hentet inn, holder den bommen nede, så seilet blir flatere med mindre tvist. Når den er fiet, stiger bomenden og toppen av seilet vrir seg åpen. Når storskjøtet er fiet godt ut, er det kickeren, ikke skjøtet, som avgjør hvor høyt bommen står. |
+| På denne båten | A rigid vang (a strut with a gas spring inside) with a tackle. The spring holds the boom up, so the boom does not drop when the vang is eased; the line only pulls it down. Its clutch is on the port side, labelled “Vang”. | En stiv kicker (en stag med gassfjær inni) med taubloksystem. Fjæren holder bommen oppe, så bommen faller ikke når kickeren fires; tauet drar den bare ned. Stopperen sitter på babord side, merket «Vang». |
+| Typiske feil | Relying on the mainsheet to hold the boom down on a reach. → Far out, the sheet pulls sideways, not down, and the boom lifts. Pull the vang on to hold it down.<br>Pulling the vang and the topping lift tight at the same time. → They pull against each other (both lines turn red in the app). Ease the topping lift once the sail is set. | Å stole på storskjøtet for å holde bommen nede på halvvind. → Langt ute drar skjøtet sideveis, ikke ned, og bommen løftes. Hal inn kickeren for å holde den nede.<br>Å hale kickeren og toppenanten stramt samtidig. → De drar mot hverandre (begge tauene blir røde i appen). Fire toppenanten når seilet er satt. |
+| «Vis meg» | Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and pull it on: the boom comes down and the sail flattens. | Vind 20 kn fra siden, kickeren fiet helt ut: bomenden har løftet seg og toppen av storseilet vrir seg åpen. Trykk på «Kicker» under og hal den inn: bommen kommer ned og seilet flates ut. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -58,7 +58,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Kort | Rolls the jib up round the forestay, or lets it unroll. | Ruller fokken opp rundt forstaget, eller lar den rulle ut. |
 | Hva det gjør / hva det betyr | Pulling the line turns the drum at the bottom of the forestay and rolls the jib up around it. Easing it while pulling the sheet lets the jib unroll. A partly rolled jib is smaller, which helps in strong wind. | Når du drar i tauet, dreier det trommelen nederst på forstaget og ruller fokken opp rundt det. Å fire det mens du drar i skjøtet lar fokken rulle ut. En delvis rullet fokk er mindre, noe som hjelper i sterk vind. |
 | På denne båten | A Furlex furler at the bow. The line runs back along the port side deck through a single clutch labelled “JIB ROLL” to the port winch. The jib sheet must be eased for the jib to roll up. | Et Furlex-rulleanlegg ved baugen. Tauet går akterover langs babord sidedekk gjennom én stopper merket «JIB ROLL» til babord vinsj. Fokkeskjøtet må fires for at fokken skal rulle seg opp. |
-| Typiske feil | Pulling the furling line with the jib sheet tight. → The jib stops rolling. Ease the jib sheet, then keep furling.<br>Letting the line run free when unrolling in strong wind. → The jib flies out and flaps hard. Keep a turn of the line on the winch and let it out under control.<br>Leaving the jib flapping for a long time in strong wind. → The sail wears and can tear. Roll it in or sheet it in quickly. | Å dra i rulletauet mens fokkeskjøtet er stramt. → Fokken slutter å rulle. Fire fokkeskjøtet og fortsett å rulle.<br>Å la tauet løpe fritt ved utrulling i sterk vind. → Fokken flyr ut og slår hardt. Ha et slag av tauet på vinsjen og slipp det ut under kontroll.<br>Å la fokken slå lenge i sterk vind. → Seilet slites og kan revne. Rull det inn eller skjøt det inn raskt. |
+| Typiske feil | Pulling the furling line with the jib sheet tight. → The jib stops rolling. Ease the jib sheet, then keep furling.<br>Letting the line run free when unrolling in strong wind. → The jib flies out and flaps hard. Keep a turn of the line on the winch and ease it under control.<br>Leaving the jib flapping for a long time in strong wind. → The sail wears and can tear. Roll it in or trim it quickly. | Å dra i rulletauet mens fokkeskjøtet er stramt. → Fokken slutter å rulle. Fire fokkeskjøtet og fortsett å rulle.<br>Å la tauet løpe fritt ved utrulling i sterk vind. → Fokken flyr ut og slår hardt. Ha et slag av tauet på vinsjen og slipp det ut under kontroll.<br>Å la fokken slå lenge i sterk vind. → Seilet slites og kan revne. Rull det inn eller skjøt det inn raskt. |
 | «Vis meg» | Jib 40 % out with its sheet eased: the rest is rolled round the forestay. Tap “Jib furling line” below and change “Jib out” to roll it in or out. | Fokken 40 % ute med skjøtet fiet: resten er rullet rundt forstaget. Trykk på «Rulletau for fokk» under og endre «Fokk ut» for å rulle den inn eller ut. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
 | Tekststatus | — | utkast |
@@ -70,10 +70,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Main furling line | Rulletau for storseil |
 | Andre navn | furling line | — |
-| Kort | Rolls the mainsail into the mast, or lets it out. | Ruller storseilet inn i masten, eller lar det komme ut. |
-| Hva det gjør / hva det betyr | In-mast furling rolls the mainsail up inside the mast like a blind. The furling line has two tails: hauling the “in” tail rolls the sail in; hauling the “out” tail, together with the outhaul, rolls it out while the “in” tail is eased. Rolling the sail partly in makes it smaller in strong wind (instead of reefing). | Rullemast ruller storseilet opp inne i masten som en rullegardin. Rulletauet har to ender: å hale «inn»-enden ruller seilet inn; å hale «ut»-enden, sammen med utholeren, ruller det ut mens «inn»-enden fires. Å rulle seilet delvis inn gjør det mindre i sterk vind (i stedet for å ta rev). |
+| Kort | Rolls the mainsail into the mast, or rolls it out. | Ruller storseilet inn i masten, eller lar det komme ut. |
+| Hva det gjør / hva det betyr | In-mast furling rolls the mainsail up inside the mast like a blind. The furling line has two tails: pulling the “in” tail rolls the sail in; pulling the “out” tail, together with the outhaul, rolls it out while the “in” tail is eased. Rolling the sail partly in makes it smaller in strong wind (instead of reefing). | Rullemast ruller storseilet opp inne i masten som en rullegardin. Rulletauet har to ender: å hale «inn»-enden ruller seilet inn; å hale «ut»-enden, sammen med utholeren, ruller det ut mens «inn»-enden fires. Å rulle seilet delvis inn gjør det mindre i sterk vind (i stedet for å ta rev). |
 | På denne båten | Two clutches on the starboard side, both labelled “Main furling”: the left one rolls the main in, the right one rolls it out. If the line slips, the main can be rolled in by hand with the winch handle in the gearbox at the foot of the mast (about 40 turns). | To stoppere på styrbord side, begge merket «Main furling»: den venstre ruller storseilet inn, den høyre ruller det ut. Hvis tauet glir, kan storseilet rulles inn for hånd med vinsjsveiven i giret ved foten av masten (omtrent 40 omdreininger). |
-| Typiske feil | Hauling the “in” tail without easing the “out” tail and the outhaul. → Nothing moves, or the line jams. Ease the other two first.<br>Rolling the main in while it is full of wind. → The load is heavy and the line can slip. Ease the mainsheet, or turn closer to the wind, so the sail is not pulling, then roll it in. | Å hale «inn»-enden uten å fire «ut»-enden og utholeren. → Ingenting beveger seg, eller tauet setter seg fast. Fire de to andre først.<br>Å rulle inn storseilet mens det er fullt av vind. → Belastningen er tung og tauet kan gli. Fire storskjøtet, eller sving nærmere vinden, slik at seilet ikke trekker, og rull det så inn. |
+| Typiske feil | Pulling the “in” tail without easing the “out” tail and the outhaul. → Nothing moves, or the line jams. Ease the other two first.<br>Rolling the main in while it is full of wind. → The load is heavy and the line can slip. Ease the mainsheet, or turn closer to the wind, so the sail is not pulling, then roll it in. | Å hale «inn»-enden uten å fire «ut»-enden og utholeren. → Ingenting beveger seg, eller tauet setter seg fast. Fire de to andre først.<br>Å rulle inn storseilet mens det er fullt av vind. → Belastningen er tung og tauet kan gli. Fire storskjøtet, eller sving nærmere vinden, slik at seilet ikke trekker, og rull det så inn. |
 | «Vis meg» | Mainsail 30 % out: most of it is rolled inside the mast. Tap “Main furling line” below and set “Mainsail out” to 100 % to unroll it. | Storseilet 30 % ute: det meste er rullet inn i masten. Trykk på «Rulletau for storseil» under og sett «Storseil ut» til 100 % for å rulle det ut. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
 | Tekststatus | — | utkast |
@@ -100,11 +100,11 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Mainsheet | Storskjøt |
 | Andre navn | — | — |
-| Kort | The rope that lets the boom and mainsail swing out, or pulls them back in. | Tauet som lar bommen og storseilet svinge ut, eller drar dem inn igjen. |
-| Hva det gjør / hva det betyr | Easing (letting out) the mainsheet lets the wind push the boom further out; hauling it in pulls the boom back towards the middle. The rope only limits how far the boom can go: with the wind from ahead, easing it just makes it slack. Near the middle a little rope moves the boom a lot; far out, a lot of rope moves it only a little. | Å fire (slippe ut) storskjøtet lar vinden presse bommen lenger ut; å hale det inn drar bommen tilbake mot midten. Tauet begrenser bare hvor langt bommen kan gå: med vinden forfra gjør fiing det bare slakt. Nær midten flytter litt tau bommen mye; langt ute flytter mye tau den bare litt. |
-| På denne båten | A German mainsheet: one rope with two ends, one at each side of the cockpit (the clutches say “Main sheet” and “MAIN SHEET”). It runs through three blocks under the boom and two spring-mounted blocks at the back of the coachroof. There is no traveller (a sliding car for the lower blocks). | Et tysk storskjøtsystem: ett tau med to ender, én på hver side av cockpiten (stopperne heter «Main sheet» og «MAIN SHEET»). Det løper gjennom tre blokker under bommen og to fjærmonterte blokker bak på dekkshuset. Det finnes ingen traveller (en glidende vogn for de nederste blokkene). |
-| Typiske feil | Easing it far more than the wind needs. → The mainsail flaps along its front edge. Haul in until the flapping just stops.<br>Keeping it hauled hard in a gust. → The boat heels a lot and turns into the wind by herself. Ease the mainsheet to let the gust out.<br>Opening its clutch under load with the rope not on a winch. → The rope runs out fast and the boom flies out. Put the rope on the winch first, then open the clutch. | Å fire det langt mer enn vinden krever. → Storseilet slår langs forkanten. Hal inn til slagingen akkurat stopper.<br>Å holde det hardt inne i et vindkast. → Båten krenger mye og dreier opp i vinden av seg selv. Fire storskjøtet for å slippe kastet ut.<br>Å åpne stopperen under belastning mens tauet ikke ligger på en vinsj. → Tauet løper fort ut og bommen flyr ut. Legg tauet på vinsjen først, og åpne så stopperen. |
-| «Vis meg» | Wind from the side and the mainsheet eased to 60 %: the boom has swung well out. Tap “Mainsheet” below and haul it in: the boom comes back towards the middle. | Vind fra siden og storskjøtet fiet til 60 %: bommen har svingt langt ut. Trykk på «Storskjøt» under og hal det inn: bommen kommer tilbake mot midten. |
+| Kort | The line that lets the boom and mainsail swing out, or pulls them back in. | Tauet som lar bommen og storseilet svinge ut, eller drar dem inn igjen. |
+| Hva det gjør / hva det betyr | Easing (letting out) the mainsheet lets the wind push the boom further out; trimming it pulls the boom back towards the middle. The line only limits how far the boom can go: with the wind from ahead, easing it just makes it slack. Near the middle a little line moves the boom a lot; far out, a lot of line moves it only a little. | Å fire (slippe ut) storskjøtet lar vinden presse bommen lenger ut; å hale det inn drar bommen tilbake mot midten. Tauet begrenser bare hvor langt bommen kan gå: med vinden forfra gjør fiing det bare slakt. Nær midten flytter litt tau bommen mye; langt ute flytter mye tau den bare litt. |
+| På denne båten | A German mainsheet: one line with two ends, one at each side of the cockpit (the clutches say “Main sheet” and “MAIN SHEET”). It runs through three blocks under the boom and two spring-mounted blocks at the back of the coachroof. There is no traveller (a sliding car for the lower blocks). | Et tysk storskjøtsystem: ett tau med to ender, én på hver side av cockpiten (stopperne heter «Main sheet» og «MAIN SHEET»). Det løper gjennom tre blokker under bommen og to fjærmonterte blokker bak på dekkshuset. Det finnes ingen traveller (en glidende vogn for de nederste blokkene). |
+| Typiske feil | Easing it far more than the wind needs. → The mainsail flaps along its front edge. Trim until the flapping just stops.<br>Keeping it trimmed hard in a gust. → The boat heels a lot and turns into the wind by herself. Ease the mainsheet to spill the gust.<br>Opening its clutch under load with the line not on a winch. → The line runs out fast and the boom flies out. Put the line on the winch first, then open the clutch. | Å fire det langt mer enn vinden krever. → Storseilet slår langs forkanten. Hal inn til slagingen akkurat stopper.<br>Å holde det hardt inne i et vindkast. → Båten krenger mye og dreier opp i vinden av seg selv. Fire storskjøtet for å slippe kastet ut.<br>Å åpne stopperen under belastning mens tauet ikke ligger på en vinsj. → Tauet løper fort ut og bommen flyr ut. Legg tauet på vinsjen først, og åpne så stopperen. |
+| «Vis meg» | Wind from the side and the mainsheet eased to 60 %: the boom has swung well out. Tap “Mainsheet” below and trim it: the boom comes back towards the middle. | Vind fra siden og storskjøtet fiet til 60 %: bommen har svingt langt ut. Trykk på «Storskjøt» under og hal det inn: bommen kommer tilbake mot midten. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -116,10 +116,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Topping lift | Toppenant |
 | Andre navn | — | Bomløfter |
 | Kort | A line from the top of the mast to the end of the boom that can hold the boom up. | En line fra toppen av masten til enden av bommen som kan holde bommen oppe. |
-| Hva det gjør / hva det betyr | The topping lift carries the boom when the sail is not holding it up, for example with the sail rolled away. Hauled tight while sailing, it fights the vang and spoils the sail’s shape, so it is eased once the sail is set. | Toppenanten bærer bommen når seilet ikke holder den oppe, for eksempel når seilet er rullet bort. Hvis den står stram under seiling, motarbeider den kickeren og ødelegger seilets form, så den fires når seilet er satt. |
-| På denne båten | Labelled “Boom lift” on the port clutches. The rigid vang’s spring already holds the boom up, so on this boat the topping lift only carries the boom when it is hauled higher than the spring holds it. | Merket «Boom lift» på babord stoppere. Fjæren i den stive kickeren holder allerede bommen oppe, så på denne båten bærer toppenanten bare bommen når den hales høyere enn fjæren holder den. |
-| Typiske feil | Leaving it tight while sailing with the vang hauled. → The two ropes fight (both turn red in the app). Ease the topping lift. | Å la den stå stram under seiling mens kickeren er hentet inn. → De to tauene motarbeider hverandre (begge blir røde i appen). Fire toppenanten. |
-| «Vis meg» | No wind, the topping lift and the vang both hauled tight: they pull against each other and both ropes turn red. Tap “Topping lift” below and ease it to end the fight. | Ingen vind, toppenanten og kickeren begge stramt hentet inn: de drar mot hverandre og begge tauene blir røde. Trykk på «Toppenant» under og fire den for å avslutte kampen. |
+| Hva det gjør / hva det betyr | The topping lift carries the boom when the sail is not holding it up, for example with the sail rolled away. Pulled tight while sailing, it fights the vang and spoils the sail’s shape, so it is eased once the sail is set. | Toppenanten bærer bommen når seilet ikke holder den oppe, for eksempel når seilet er rullet bort. Hvis den står stram under seiling, motarbeider den kickeren og ødelegger seilets form, så den fires når seilet er satt. |
+| På denne båten | Labelled “Boom lift” on the port clutches. The rigid vang’s spring already holds the boom up, so on this boat the topping lift only carries the boom when it is pulled higher than the spring holds it. | Merket «Boom lift» på babord stoppere. Fjæren i den stive kickeren holder allerede bommen oppe, så på denne båten bærer toppenanten bare bommen når den hales høyere enn fjæren holder den. |
+| Typiske feil | Leaving it tight while sailing with the vang pulled on. → The two lines fight (both turn red in the app). Ease the topping lift. | Å la den stå stram under seiling mens kickeren er hentet inn. → De to tauene motarbeider hverandre (begge blir røde i appen). Fire toppenanten. |
+| «Vis meg» | No wind, the topping lift and the vang both pulled tight: they pull against each other and both lines turn red. Tap “Topping lift” below and ease it to end the fight. | Ingen vind, toppenanten og kickeren begge stramt hentet inn: de drar mot hverandre og begge tauene blir røde. Trykk på «Toppenant» under og fire den for å avslutte kampen. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -131,9 +131,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Outhaul | Utholer |
 | Andre navn | clew outhaul | — |
 | Kort | Pulls the mainsail’s back bottom corner (the clew) out along the boom. | Drar bakre nedre hjørne av storseilet (nokken) ut langs bommen. |
-| Hva det gjør / hva det betyr | The outhaul pulls the clew towards the end of the boom. With in-mast furling it also pulls the sail out of the mast as it unrolls: it is hauled together with the furling line’s “out” tail, and eased when the sail is rolled in. | Utholeren drar nokken mot enden av bommen. Med rullemast drar den også seilet ut av masten når det ruller ut: den hales sammen med «ut»-enden av rulletauet, og fires når seilet rulles inn. |
-| På denne båten | Labelled “Main outhaul” on the port clutches. In the app’s Easy mode it moves together with “Mainsail out”. How the rope runs inside the boom is not yet confirmed on the real boat. | Merket «Main outhaul» på babord stoppere. I Enkel modus beveger den seg sammen med «Storseil ut». Hvordan tauet går inne i bommen, er ennå ikke bekreftet på den virkelige båten. |
-| Typiske feil | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without hauling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Haul the outhaul together with the “out” line. | Å rulle inn storseilet uten å fire utholeren. → Utholeren holder nokken ute, og seilet kan ikke rulle inn. Fire utholeren mens du drar i «inn»-rulletauet.<br>Å rulle ut storseilet uten å hale utholeren. → Seilet kommer ut posete og når ikke enden av bommen. Hal utholeren sammen med «ut»-tauet. |
+| Hva det gjør / hva det betyr | The outhaul pulls the clew towards the end of the boom. With in-mast furling it also pulls the sail out of the mast as it unrolls: it is pulled together with the furling line’s “out” tail, and eased when the sail is rolled in. | Utholeren drar nokken mot enden av bommen. Med rullemast drar den også seilet ut av masten når det ruller ut: den hales sammen med «ut»-enden av rulletauet, og fires når seilet rulles inn. |
+| På denne båten | Labelled “Main outhaul” on the port clutches. In the app’s Easy mode it moves together with “Mainsail out”. How the line runs inside the boom is not yet confirmed on the real boat. | Merket «Main outhaul» på babord stoppere. I Enkel modus beveger den seg sammen med «Storseil ut». Hvordan tauet går inne i bommen, er ennå ikke bekreftet på den virkelige båten. |
+| Typiske feil | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without pulling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Pull the outhaul together with the “out” line. | Å rulle inn storseilet uten å fire utholeren. → Utholeren holder nokken ute, og seilet kan ikke rulle inn. Fire utholeren mens du drar i «inn»-rulletauet.<br>Å rulle ut storseilet uten å hale utholeren. → Seilet kommer ut posete og når ikke enden av bommen. Hal utholeren sammen med «ut»-tauet. |
 | «Vis meg» | Mainsail fully out: the outhaul holds its back corner at the end of the boom. Tap “Outhaul” below and roll the main in a little: the corner slides towards the mast. | Storseilet helt ute: utholeren holder bakre hjørne ved enden av bommen. Trykk på «Utholer» under og rull storseilet litt inn: hjørnet glir mot masten. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
 | Tekststatus | — | utkast |
@@ -163,7 +163,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Luff | Forlik |
 | Andre navn | leading edge | Forkant |
 | Kort | The front edge of a sail. | Forkanten av et seil. |
-| Hva det gjør / hva det betyr | The wind meets the sail at the luff. When a sail is let out too far, the luff starts to flap first: that is “luffing”. | Vinden møter seilet ved forlikket. Når et seil fires for langt ut, begynner forlikket å slå først: det er «luffing». |
+| Hva det gjør / hva det betyr | The wind meets the sail at the luff. When a sail is eased too far, the luff starts to flap first: that is “luffing”. | Vinden møter seilet ved forlikket. Når et seil fires for langt ut, begynner forlikket å slå først: det er «luffing». |
 | På denne båten | The mainsail’s luff runs up inside the mast’s furling slot; the jib’s runs along the forestay. | Forlikket på storseilet går opp inne i rulleskjæret i masten; forlikket på fokken går langs forstaget. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -238,9 +238,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Mainsail | Storseil |
 | Andre navn | main | — |
 | Kort | The sail behind the mast, held by the mast and the boom. | Seilet bak masten, holdt av masten og bommen. |
-| Hva det gjør / hva det betyr | The mainsail is set on the mast and the boom. The mainsheet sets its angle to the wind, the vang its twist, and the outhaul pulls it out along the boom. Trimmed right, it drives the boat; pulled in too far it stalls, let out too far it flaps. | Storseilet er satt på masten og bommen. Storskjøtet bestemmer vinkelen mot vinden, kickeren tvisten, og utholeren drar det ut langs bommen. Riktig trimmet driver det båten; hentet for langt inn stalles det, fiet for langt ut slår det. |
+| Hva det gjør / hva det betyr | The mainsail is set on the mast and the boom. The mainsheet sets its angle to the wind, the vang its twist, and the outhaul pulls it out along the boom. Trimmed right, it drives the boat; trimmed in too far it stalls, eased out too far it flaps. | Storseilet er satt på masten og bommen. Storskjøtet bestemmer vinkelen mot vinden, kickeren tvisten, og utholeren drar det ut langs bommen. Riktig trimmet driver det båten; hentet for langt inn stalles det, fiet for langt ut slår det. |
 | På denne båten | 61 m², rolled into the mast (in-mast furling), with no battens (stiffening strips). In strong wind it is made smaller by rolling part of it into the mast. | 61 m², rullet inn i masten (rullemast), uten lattene (stivere remser). I sterk vind gjøres det mindre ved å rulle en del av det inn i masten. |
-| Typiske feil | Pulling it in too far for the wind angle. → It stalls: less drive and more heel, and the telltales on its far side droop. Ease until they stream.<br>Letting it out too far. → Its front edge flaps. Haul in until the flapping just stops.<br>Keeping all of it out as the wind gets strong. → The boat heels too much and turns into the wind by herself. Roll part of it in. | Å hale det for langt inn for vindvinkelen. → Det stalles: mindre drivkraft og mer krenging, og vimplene på den andre siden henger. Fire til de strømmer.<br>Å fire det for langt ut. → Forkanten slår. Hal inn til slagingen akkurat stopper.<br>Å ha hele seilet ute når vinden blir sterk. → Båten krenger for mye og dreier opp i vinden av seg selv. Rull en del av det inn. |
+| Typiske feil | Trimming it too far in for the wind angle. → It stalls: less drive and more heel, and the telltales on its far side droop. Ease until they stream.<br>Easing it too far. → Its front edge flaps. Trim until the flapping just stops.<br>Keeping all of it out as the wind gets strong. → The boat heels too much and turns into the wind by herself. Roll part of it in. | Å hale det for langt inn for vindvinkelen. → Det stalles: mindre drivkraft og mer krenging, og vimplene på den andre siden henger. Fire til de strømmer.<br>Å fire det for langt ut. → Forkanten slår. Hal inn til slagingen akkurat stopper.<br>Å ha hele seilet ute når vinden blir sterk. → Båten krenger for mye og dreier opp i vinden av seg selv. Rull en del av det inn. |
 | «Vis meg» | Sailing 60° off the wind with the mainsail trimmed well: its telltales stream and it drives the boat at about 7 kn. Tap “Mainsheet” below and ease it fully: the front edge starts to flap and she slows down. | Seiling 60° fra vinden med storseilet godt trimmet: vimplene strømmer og det driver båten med omtrent 7 kn. Trykk på «Storskjøt» under og fire det helt ut: forkanten begynner å slå og båten bremser. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
@@ -283,9 +283,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Telltale | Vimpel |
 | Andre navn | tell-tale | Tell-tale |
 | Kort | A short ribbon on a sail that shows how the air flows over it. | Et kort bånd på et seil som viser hvordan luften strømmer over det. |
-| Hva det gjør / hva det betyr | Telltales are short ribbons near the front of a sail, one on each side. Both streaming straight back: the sail is trimmed well. The one on the side away from the wind drooping or spinning: the sail is pulled in too far. The one on the wind’s side lifting: it is let out too far. | Vimpler er korte bånd nær forkanten av et seil, ett på hver side. Begge rett bakover: seilet er godt trimmet. Den på siden bort fra vinden henger eller snurrer: seilet er hentet for langt inn. Den på vindsiden løfter seg: det er fiet for langt ut. |
+| Hva det gjør / hva det betyr | Telltales are short ribbons near the front of a sail, one on each side. Both streaming straight back: the sail is trimmed well. The one on the side away from the wind drooping or spinning: the sail is trimmed too far. The one on the wind’s side lifting: it is eased too far. | Vimpler er korte bånd nær forkanten av et seil, ett på hver side. Begge rett bakover: seilet er godt trimmet. Den på siden bort fra vinden henger eller snurrer: seilet er hentet for langt inn. Den på vindsiden løfter seg: det er fiet for langt ut. |
 | På denne båten | The app draws telltales near the front edge of both sails. | Appen tegner vimpler nær forkanten på begge seilene. |
-| Typiske feil | Hauling in until the sail stops flapping, then hauling more “to be safe”. → The telltales on the far side droop: the sail has stalled. Ease until both sides stream. | Å hale inn til seilet slutter å slå, og så hale mer «for sikkerhets skyld». → Vimplene på den bortvendte siden henger: seilet har stallet. Fire til begge sider strømmer. |
+| Typiske feil | Trimming until the sail stops flapping, then trimming more “to be safe”. → The telltales on the far side droop: the sail has stalled. Ease until both sides stream. | Å hale inn til seilet slutter å slå, og så hale mer «for sikkerhets skyld». → Vimplene på den bortvendte siden henger: seilet har stallet. Fire til begge sider strømmer. |
 | «Vis meg» | Good trim: zoom in (pinch) on the front edge of the mainsail near the mast. The telltales on both sides stream straight back. | God trim: zoom inn (klyp) på forkanten av storseilet nær masten. Vimplene på begge sider strømmer rett bakover. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
@@ -359,9 +359,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Turning blocks at the mast foot | Ledeblokker ved mastefoten |
 | Andre navn | — | — |
-| Kort | The ring of pulleys at the foot of the mast that turn the ropes aft. | Ringen av trinser ved foten av masten som vender tauene akterover. |
-| Hva det gjør / hva det betyr | Ropes come down the mast and turn at these blocks to run aft along the coachroof to the cockpit, so they can be worked from there. | Tau kommer ned langs masten og vendes ved disse blokkene for å løpe akterover langs dekkshuset til cockpiten, så de kan betjenes derfra. |
-| På denne båten | Seldén blocks in a ring round the foot of the mast, one block for each rope. | Seldén-blokker i en ring rundt foten av masten, én blokk for hvert tau. |
+| Kort | The ring of pulleys at the foot of the mast that turn the lines aft. | Ringen av trinser ved foten av masten som vender tauene akterover. |
+| Hva det gjør / hva det betyr | Lines come down the mast and turn at these blocks to run aft along the coachroof to the cockpit, so they can be worked from there. | Tau kommer ned langs masten og vendes ved disse blokkene for å løpe akterover langs dekkshuset til cockpiten, så de kan betjenes derfra. |
+| På denne båten | Seldén blocks in a ring round the foot of the mast, one block for each line. | Seldén-blokker i en ring rundt foten av masten, én blokk for hvert tau. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
@@ -435,7 +435,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Mainsheet blocks on the boom | Skjøteblokker på bommen |
 | Andre navn | — | — |
 | Kort | The three pulleys under the boom that the mainsheet runs through. | De tre trinsene under bommen som storskjøtet løper gjennom. |
-| Hva det gjør / hva det betyr | The mainsheet runs back and forth between these blocks and the deck blocks. Each extra part of rope makes it easier to pull (more purchase). | Storskjøtet løper fram og tilbake mellom disse blokkene og dekksblokkene. Hver ekstra tauparti gjør det lettere å trekke (mer talje). |
+| Hva det gjør / hva det betyr | The mainsheet runs back and forth between these blocks and the deck blocks. Each extra part of line makes it easier to pull (more purchase). | Storskjøtet løper fram og tilbake mellom disse blokkene og dekksblokkene. Hver ekstra tauparti gjør det lettere å trekke (mer talje). |
 | På denne båten | Three blocks under the boom, 2.9 m from the mast. | Tre blokker under bommen, 2,9 m fra masten. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -449,8 +449,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Rigid vang strut | Stiv kicker |
 | Andre navn | rigid kicker — British | — |
-| Kort | A spring-loaded strut under the boom that holds it up; the vang rope pulls it down. | Et fjærbelastet stag under bommen som holder den oppe; kickertauet drar den ned. |
-| Hva det gjør / hva det betyr | A rigid vang is a strut from low on the mast to the underside of the boom, with a spring inside. The spring pushes the boom up; the vang’s rope tackle pulls it down. With it, the boom does not drop when the sail is rolled away. | En stiv kicker er et stag fra nederst på masten til undersiden av bommen, med en fjær inni. Fjæren skyver bommen opp; kickerens taubloksystem drar den ned. Med den faller ikke bommen når seilet er rullet bort. |
+| Kort | A spring-loaded strut under the boom that holds it up; the vang line pulls it down. | Et fjærbelastet stag under bommen som holder den oppe; kickertauet drar den ned. |
+| Hva det gjør / hva det betyr | A rigid vang is a strut from low on the mast to the underside of the boom, with a spring inside. The spring pushes the boom up; the vang’s tackle pulls it down. With it, the boom does not drop when the sail is rolled away. | En stiv kicker er et stag fra nederst på masten til undersiden av bommen, med en fjær inni. Fjæren skyver bommen opp; kickerens taubloksystem drar den ned. Med den faller ikke bommen når seilet er rullet bort. |
 | På denne båten | A Seldén Rodkicker with a gas spring. | En Seldén Rodkicker med gassfjær. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -589,7 +589,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Kort | The engine’s drive leg and propeller under the hull. | Drivbenet til motoren og propellen under skroget. |
 | Hva det gjør / hva det betyr | A saildrive is a leg that comes down through the bottom of the hull from the engine, with the propeller on its end. It pushes the boat ahead or astern when the engine is in gear. | Et saildrive er et ben som går ned gjennom bunnen av skroget fra motoren, med propellen på enden. Det skyver båten forover eller akterover når motoren er i gir. |
 | På denne båten | A diesel engine of about 80 hp, a saildrive and a fixed two-blade propeller. In the app, full throttle (2,500 rpm) gives about 9.3 kn. | En dieselmotor på omtrent 80 hk, et saildrive og en fast toblads propell. I appen gir full gass (2500 o/min) omtrent 9,3 kn. |
-| Typiske feil | Putting the engine in gear with a rope in the water near the stern. → The propeller can catch the rope and stop the engine. Get all ropes on board before you engage gear. | Å legge i gir med et tau i vannet nær hekken. → Propellen kan fange tauet og stoppe motoren. Få alle tau om bord før du legger i gir. |
+| Typiske feil | Putting the engine in gear with a line in the water near the stern. → The propeller can catch the line and stop the engine. Get all lines on board before you engage gear. | Å legge i gir med et tau i vannet nær hekken. → Propellen kan fange tauet og stoppe motoren. Få alle tau om bord før du legger i gir. |
 | «Vis meg» | — | — |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
@@ -635,7 +635,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Andre navn | — | — |
 | Kort | The heavy hook that holds the boat to the seabed. | Den tunge kroken som holder båten fast til havbunnen. |
 | Hva det gjør / hva det betyr | The anchor is let down on its chain until it lies on the seabed, where it digs in and holds the boat in one place. | Ankeret fires ned på kjettingen til det ligger på havbunnen, der det graver seg ned og holder båten på ett sted. |
-| På denne båten | It sits in the bow roller, to starboard of the jib furler, ready to let go. Let the chain out in the Anchor block and it goes down to the bottom. | Det ligger i baugrullen, på styrbord side av fokkerulleanlegget, klart til å slippes. Fire ut kjettingen i Anker-blokken, så går det ned til bunnen. |
+| På denne båten | It sits in the bow roller, to starboard of the jib furler, ready to let go. Pay the chain out in the Anchor block and it goes down to the bottom. | Det ligger i baugrullen, på styrbord side av fokkerulleanlegget, klart til å slippes. Fire ut kjettingen i Anker-blokken, så går det ned til bunnen. |
 | Typiske feil | — | — |
 | «Vis meg» | The bow from the front: the anchor hangs in its roller, with the chain running back to the windlass. | Baugen forfra: ankeret henger i rullen sin, med kjettingen som løper tilbake til ankerspillet. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
@@ -663,8 +663,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Anchor windlass | Ankerspill |
 | Andre navn | — | — |
-| Kort | The electric winch on the bow that lets the anchor chain out and pulls it in. | Den elektriske vinsjen på baugen som fyrer ut ankerkjettingen og henter den inn. |
-| Hva det gjør / hva det betyr | The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm. | Ankerspillet senker ankeret og henter det opp igjen, betjent med brytere ved baugen eller en fjernkontroll ved rorplassen. |
+| Kort | The electric winch on the bow that pays the anchor chain out and pulls it in. | Den elektriske vinsjen på baugen som fyrer ut ankerkjettingen og henter den inn. |
+| Hva det gjør / hva det betyr | The windlass lowers the anchor and raises it again, worked by switches at the bow or a remote at the helm. | Ankerspillet senker ankeret og henter det opp igjen, betjent med brytere ved baugen eller en fjernkontroll ved rorplassen. |
 | På denne båten | On the foredeck behind the anchor roller, in a round recess. Hold "Chain out" or "Chain in" in the Anchor block (at the Bow station or the helm in Realistic mode). | På foredekket bak baugrullen, i en rund fordypning. Hold «Kjetting ut» eller «Kjetting inn» i Anker-blokken (på Baug-plassen eller rorplassen i Realistisk modus). |
 | Typiske feil | Putting fingers or feet near the chain while the windlass runs. → The chain can trap them. Keep clear, and stop the windlass before you touch the chain. | Å ha fingre eller føtter nær kjettingen mens ankerspillet går. → Kjettingen kan klemme dem. Hold deg unna, og stopp ankerspillet før du rører kjettingen. |
 | «Vis meg» | — | — |
@@ -709,7 +709,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Deck | Dekk |
 | Andre navn | — | — |
 | Kort | The top of the hull that you walk on. | Toppen av skroget som du går på. |
-| Hva det gjør / hva det betyr | The deck closes the hull from above. Ropes, blocks and fittings are fixed to it, and the crew walks along it to go forward. | Dekket lukker skroget ovenfra. Tau, blokker og beslag er festet til det, og mannskapet går langs det for å komme framover. |
+| Hva det gjør / hva det betyr | The deck closes the hull from above. Lines, blocks and fittings are fixed to it, and the crew walks along it to go forward. | Dekket lukker skroget ovenfra. Tau, blokker og beslag er festet til det, og mannskapet går langs det for å komme framover. |
 | På denne båten | The side decks run from the cockpit to the bow on each side of the coachroof. | Sidedekkene går fra cockpiten til baugen på hver side av dekkshuset. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -724,8 +724,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Coachroof | Dekkshus |
 | Andre navn | cabin top<br>deckhouse | Kahyttak |
 | Kort | The raised roof over the cabin, between the mast and the cockpit. | Det hevede taket over kahytten, mellom masten og cockpiten. |
-| Hva det gjør / hva det betyr | The coachroof raises the deck over the living space below to give headroom. Ropes from the mast run aft over it to the cockpit. | Dekkshuset hever dekket over oppholdsrommet under for å gi ståhøyde. Tau fra masten løper akterover over det til cockpiten. |
-| På denne båten | The mast stands on it. The mainsheet’s two deck blocks sit at its back end, and covered channels carry the ropes from the foot of the mast to the clutches. | Masten står på det. De to dekksblokkene til storskjøtet sitter ved bakkanten, og dekkede kanaler fører tauene fra foten av masten til stopperne. |
+| Hva det gjør / hva det betyr | The coachroof raises the deck over the living space below to give headroom. Lines from the mast run aft over it to the cockpit. | Dekkshuset hever dekket over oppholdsrommet under for å gi ståhøyde. Tau fra masten løper akterover over det til cockpiten. |
+| På denne båten | The mast stands on it. The mainsheet’s two deck blocks sit at its back end, and covered channels carry the lines from the foot of the mast to the clutches. | Masten står på det. De to dekksblokkene til storskjøtet sitter ved bakkanten, og dekkede kanaler fører tauene fra foten av masten til stopperne. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
@@ -860,7 +860,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Andre navn | — | — |
 | Kort | The two spring-mounted pulleys at the back of the coachroof for the mainsheet. | De to fjærmonterte trinsene bak på dekkshuset for storskjøtet. |
 | Hva det gjør / hva det betyr | Each end of the mainsheet comes down from the boom to one of these blocks. The springs keep the blocks standing up. | Hver ende av storskjøtet kommer ned fra bommen til en av disse blokkene. Fjærene holder blokkene oppreist. |
-| På denne båten | One block each side of the middle, with two parts of rope between the boom and each block. From each block the rope runs forward to the foot of the mast, then aft in the covered channel to a clutch. There is no traveller. | Én blokk på hver side av midten, med to tauparti mellom bommen og hver blokk. Fra hver blokk løper tauet framover til foten av masten, og så akterover i den dekkede kanalen til en stopper. Det finnes ingen traveller. |
+| På denne båten | One block each side of the middle, with two parts of line between the boom and each block. From each block the line runs forward to the foot of the mast, then aft in the covered channel to a clutch. There is no traveller. | Én blokk på hver side av midten, med to tauparti mellom bommen og hver blokk. Fra hver blokk løper tauet framover til foten av masten, og så akterover i den dekkede kanalen til en stopper. Det finnes ingen traveller. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
@@ -888,8 +888,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Line channels | Taukanaler |
 | Andre navn | — | — |
-| Kort | Covered channels on the coachroof that carry the ropes to the cockpit. | Dekkede kanaler på dekkshuset som fører tauene til cockpiten. |
-| Hva det gjør / hva det betyr | They keep the ropes from the mast tidy and out from under the crew’s feet on their way aft. | De holder tauene fra masten ryddige og unna føttene til mannskapet på vei akterover. |
+| Kort | Covered channels on the coachroof that carry the lines to the cockpit. | Dekkede kanaler på dekkshuset som fører tauene til cockpiten. |
+| Hva det gjør / hva det betyr | They keep the lines from the mast tidy and out from under the crew’s feet on their way aft. | De holder tauene fra masten ryddige og unna føttene til mannskapet på vei akterover. |
 | På denne båten | One channel on each side, ending at the clutch banks in front of the winches. | Én kanal på hver side, som ender ved stopperrekkene foran vinsjene. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -936,7 +936,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Port winch | Babord vinsj |
 | Andre navn | — | — |
 | Kort | The winch on the left side of the cockpit. | Vinsjen på venstre side av cockpiten. |
-| Hva det gjør / hva det betyr | It works the ropes of clutch bank B and the jib furling line. | Den betjener tauene i stopperrekke B og rulletauet til fokken. |
+| Hva det gjør / hva det betyr | It works the lines of clutch bank B and the jib furling line. | Den betjener tauene i stopperrekke B og rulletauet til fokken. |
 | På denne båten | Electric, with a self-tailer. The winch handle is kept on this side. | Elektrisk, med selvtailer. Vinsjsveiven oppbevares på denne siden. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -951,7 +951,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Cockpit | Cockpit |
 | Andre navn | — | Sittebrønn |
 | Kort | The open, sunken area at the back where the crew sits and steers. | Det åpne, nedsenkede området bak der mannskapet sitter og styrer. |
-| Hva det gjør / hva det betyr | The cockpit is where the crew sits, steers and works most of the ropes. It lies lower than the deck, so it feels safer at sea. | Cockpiten er der mannskapet sitter, styrer og betjener de fleste tauene. Den ligger lavere enn dekket, så den føles tryggere til sjøs. |
+| Hva det gjør / hva det betyr | The cockpit is where the crew sits, steers and works most of the lines. It lies lower than the deck, so it feels safer at sea. | Cockpiten er der mannskapet sitter, styrer og betjener de fleste tauene. Den ligger lavere enn dekket, så den føles tryggere til sjøs. |
 | På denne båten | Two wheels at the back, one winch and one clutch bank on each side, the engine lever at the helm, and the instruments and the autopilot control by the wheels. | To ratt bak, én vinsj og én stopperrekke på hver side, motorspaken ved rorplassen, og instrumentene og autopilotkontrollen ved rattene. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -966,7 +966,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Port secondary winch (optional) | Ekstra vinsj, babord (tilvalg) |
 | Andre navn | — | — |
 | Kort | A second winch some boats have on the left side; not on this boat. | En ekstra vinsj som noen båter har på venstre side; ikke på denne båten. |
-| Hva det gjør / hva det betyr | The builder offers a second winch on each side, so more ropes can be worked at once. The reference boat does not have them, so the app does not draw them. | Byggeren tilbyr en ekstra vinsj på hver side, så flere tau kan betjenes samtidig. Referansebåten har dem ikke, så appen tegner dem ikke. |
+| Hva det gjør / hva det betyr | The builder offers a second winch on each side, so more lines can be worked at once. The reference boat does not have them, so the app does not draw them. | Byggeren tilbyr en ekstra vinsj på hver side, så flere tau kan betjenes samtidig. Referansebåten har dem ikke, så appen tegner dem ikke. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -981,7 +981,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Starboard secondary winch (optional) | Ekstra vinsj, styrbord (tilvalg) |
 | Andre navn | — | — |
 | Kort | A second winch some boats have on the right side; not on this boat. | En ekstra vinsj som noen båter har på høyre side; ikke på denne båten. |
-| Hva det gjør / hva det betyr | The builder offers a second winch on each side, so more ropes can be worked at once. The reference boat does not have them, so the app does not draw them. | Byggeren tilbyr en ekstra vinsj på hver side, så flere tau kan betjenes samtidig. Referansebåten har dem ikke, så appen tegner dem ikke. |
+| Hva det gjør / hva det betyr | The builder offers a second winch on each side, so more lines can be worked at once. The reference boat does not have them, so the app does not draw them. | Byggeren tilbyr en ekstra vinsj på hver side, så flere tau kan betjenes samtidig. Referansebåten har dem ikke, så appen tegner dem ikke. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -996,7 +996,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Windlass remote | Fjernkontroll for ankerspill |
 | Andre navn | — | — |
 | Kort | Buttons at the helm that run the windlass. | Knapper ved rorplassen som styrer ankerspillet. |
-| Hva det gjør / hva det betyr | Lets the helmsman let the chain out or bring it in without going forward. | Lar rormannen fire ut kjettingen eller hale den inn uten å gå framover. |
+| Hva det gjør / hva det betyr | Lets the helmsman pay the chain out or bring it in without going forward. | Lar rormannen fire ut kjettingen eller hale den inn uten å gå framover. |
 | På denne båten | At the helm (EXERCISES.md 5, owner). | Ved rorplassen (EXERCISES.md 5, eier). |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -1014,7 +1014,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Hva det gjør / hva det betyr | A winch handle left loose can slide away or go over the side, so it is kept in a holder or a pocket when it is not in a winch. | En vinsjsveiv som ligger løs, kan gli bort eller havne over bord, så den oppbevares i en holder eller en lomme når den ikke sitter i en vinsj. |
 | På denne båten | In the app the handle lies on a pad on the cockpit floor between the two wheels, between two small stops. | I appen ligger sveiven på en pute på cockpitgulvet mellom de to rattene, mellom to små stoppere. |
 | Typiske feil | — | — |
-| «Vis meg» | Realistic ropes, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops. | Realistiske tau, sveiven stuvet ved rorplassen: den ligger på den mørke puten mellom de to rattene, mellom to små stoppere. |
+| «Vis meg» | Realistic lines, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops. | Realistiske tau, sveiven stuvet ved rorplassen: den ligger på den mørke puten mellom de to rattene, mellom to små stoppere. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -1086,7 +1086,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Wheel pedestal | Rattsøyle |
 | Andre navn | binnacle | Pidestall |
 | Kort | The column in front of each wheel that carries the compass and the controls. | Søylen foran hvert ratt som bærer kompasset og kontrollene. |
-| Hva det gjør / hva det betyr | The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and ropes off the instruments. | Aksen til rattet går inn i søylen. Øverst sitter et lite panel med kompasset og instrumentene, og et rekkverk i stål foran gir deg noe å holde i og holder knær og tau unna instrumentene. |
+| Hva det gjør / hva det betyr | The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and lines off the instruments. | Aksen til rattet går inn i søylen. Øverst sitter et lite panel med kompasset og instrumentene, og et rekkverk i stål foran gir deg noe å holde i og holder knær og tau unna instrumentene. |
 | På denne båten | One pedestal at each wheel, each with the same panel: the compass, the wind display, the engine lever and the rev counter, the thruster joysticks and the autopilot keys. The drawing is a guess: there is no photo of the pedestal yet. | Én søyle ved hvert ratt, hver med det samme panelet: kompasset, vinddisplayet, motorspaken og turtelleren, joystickene til thrusterne og autopilottastene. Tegningen er et gjett: det finnes ennå ikke noe bilde av søylen. |
 | Typiske feil | — | — |
 | «Vis meg» | The view from behind the wheel: the pedestal with its panel and the steel guard rail stands in front of the wheel. | Utsikten bakfra mot rattet: søylen med panelet og rekkverket i stål står foran rattet. |
@@ -1116,7 +1116,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Clutch bank A | Stopperrekke A |
 | Andre navn | — | — |
 | Kort | The five clutches on the starboard side. | De fem stopperne på styrbord side. |
-| Hva det gjør / hva det betyr | The row of clutches in front of the starboard winch. Each rope from the mast ends at one of them, and any one of them can be put on the winch. | Rekken av stoppere foran styrbord vinsj. Hvert tau fra masten ender i én av dem, og hver av dem kan legges på vinsjen. |
+| Hva det gjør / hva det betyr | The row of clutches in front of the starboard winch. Each line from the mast ends at one of them, and any one of them can be put on the winch. | Rekken av stoppere foran styrbord vinsj. Hvert tau fra masten ender i én av dem, og hver av dem kan legges på vinsjen. |
 | På denne båten | In order: “Main sheet”, “Main furling” (rolls the main in), “Main furling” (rolls it out), “Main halyard”, “Genoa sheet” (the jib sheet). | I rekkefølge: «Main sheet», «Main furling» (ruller storseilet inn), «Main furling» (ruller det ut), «Main halyard», «Genoa sheet» (fokkeskjøtet). |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -1131,7 +1131,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Clutch bank B | Stopperrekke B |
 | Andre navn | — | — |
 | Kort | The five clutches on the port side. | De fem stopperne på babord side. |
-| Hva det gjør / hva det betyr | The row of clutches in front of the port winch. Each rope from the mast ends at one of them, and any one of them can be put on the winch. | Rekken av stoppere foran babord vinsj. Hvert tau fra masten ender i én av dem, og hver av dem kan legges på vinsjen. |
+| Hva det gjør / hva det betyr | The row of clutches in front of the port winch. Each line from the mast ends at one of them, and any one of them can be put on the winch. | Rekken av stoppere foran babord vinsj. Hvert tau fra masten ender i én av dem, og hver av dem kan legges på vinsjen. |
 | På denne båten | In order: “SPI HALYARD” (the gennaker halyard), “Boom lift” (the topping lift), “Main outhaul”, “MAIN SHEET” (the other end of the mainsheet), “Vang”. | I rekkefølge: «SPI HALYARD» (gennakerfallet), «Boom lift» (toppenanten), «Main outhaul», «MAIN SHEET» (den andre enden av storskjøtet), «Vang». |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -1161,7 +1161,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Starboard winch | Styrbord vinsj |
 | Andre navn | — | — |
 | Kort | The winch on the right side of the cockpit. | Vinsjen på høyre side av cockpiten. |
-| Hva det gjør / hva det betyr | It works the ropes of clutch bank A. | Den betjener tauene i stopperrekke A. |
+| Hva det gjør / hva det betyr | It works the lines of clutch bank A. | Den betjener tauene i stopperrekke A. |
 | På denne båten | Electric, with a self-tailer. | Elektrisk, med selvtailer. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -1173,12 +1173,12 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 
 | Felt | English | Norsk |
 |---|---|---|
-| Navn | Rope tail box | Taukasse |
+| Navn | Line bin | Taukasse |
 | Andre navn | — | — |
-| Kort | A box behind each winch where the loose ends of the ropes go. | En kasse bak hver vinsj der de løse tauendene legges. |
-| Hva det gjør / hva det betyr | The loose ends (tails) of the ropes go into the box, so the cockpit stays clear and the ropes can run out freely when eased. | De løse endene (tauendene) legges i kassen, så cockpiten holdes ryddig og tauene kan løpe fritt ut når de fires. |
+| Kort | A box behind each winch where the loose ends of the lines go. | En kasse bak hver vinsj der de løse tauendene legges. |
+| Hva det gjør / hva det betyr | The loose ends (tails) of the lines go into the box, so the cockpit stays clear and the lines can run out freely when eased. | De løse endene (tauendene) legges i kassen, så cockpiten holdes ryddig og tauene kan løpe fritt ut når de fires. |
 | På denne båten | — | — |
-| Typiske feil | Leaving loose rope lying on the cockpit floor. → Someone can trip, or the rope tangles as it runs out. Put it in the box. | Å la løst tau ligge på cockpitgulvet. → Noen kan snuble, eller tauet floker seg når det løper ut. Legg det i kassen. |
+| Typiske feil | Leaving loose line lying on the cockpit floor. → Someone can trip, or the line tangles as it runs out. Put it in the box. | Å la løst tau ligge på cockpitgulvet. → Noen kan snuble, eller tauet floker seg når det løper ut. Legg det i kassen. |
 | «Vis meg» | — | — |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
@@ -1188,12 +1188,12 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 
 | Felt | English | Norsk |
 |---|---|---|
-| Navn | Rope clutch | Taustopper |
+| Navn | Clutch | Taustopper |
 | Andre navn | jammer<br>rope stopper | Stopper |
-| Kort | A lever that grips a rope so it cannot run out. | En spak som griper et tau slik at det ikke kan løpe ut. |
-| Hva det gjør / hva det betyr | A closed clutch holds the rope: it can still be pulled in, but not let out. To let a rope out, take its load on a winch, then open the clutch (lever up). | En lukket stopper holder tauet: det kan fortsatt hales inn, men ikke fires ut. For å fire et tau ut tar du belastningen på en vinsj og åpner så stopperen (spaken opp). |
+| Kort | A lever that grips a line so it cannot run out. | En spak som griper et tau slik at det ikke kan løpe ut. |
+| Hva det gjør / hva det betyr | A closed clutch holds the line: it can still be pulled in, but a loaded line cannot run out. To ease a line, take its load on a winch, then open the clutch (lever up). | En lukket stopper holder tauet: det kan fortsatt hales inn, men ikke fires ut. For å fire et tau ut tar du belastningen på en vinsj og åpner så stopperen (spaken opp). |
 | På denne båten | A bank of five clutches in front of each winch, and one single clutch for the jib furling line on the port side deck. In Realistic mode you open and close them with the lever. | En rekke med fem stoppere foran hver vinsj, og én enkelt stopper for rulletauet til fokken på babord sidedekk. I Realistisk modus åpner og lukker du dem med spaken. |
-| Typiske feil | Opening a loaded clutch with the rope not on the winch. → The rope runs out fast and can burn hands. Put the rope on the winch with a few turns first.<br>Shutting a clutch on a rope that is running out under load. → It can damage the rope. Take the load on the winch first, then close the clutch. | Å åpne en belastet stopper mens tauet ikke ligger på vinsjen. → Tauet løper fort ut og kan brenne hendene. Legg tauet på vinsjen med noen slag først.<br>Å lukke en stopper på et tau som løper ut under belastning. → Det kan skade tauet. Ta belastningen på vinsjen først, og lukk så stopperen. |
+| Typiske feil | Opening a loaded clutch with the line not on the winch. → The line runs out fast and can burn hands. Put the line on the winch with a few turns first.<br>Shutting a clutch on a line that is running out under load. → It can damage the line. Take the load on the winch first, then close the clutch. | Å åpne en belastet stopper mens tauet ikke ligger på vinsjen. → Tauet løper fort ut og kan brenne hendene. Legg tauet på vinsjen med noen slag først.<br>Å lukke en stopper på et tau som løper ut under belastning. → Det kan skade tauet. Ta belastningen på vinsjen først, og lukk så stopperen. |
 | «Vis meg» | Realistic mode: the clutches of this side are the levers in the drawing. Lever up is open; tap a clutch to select it, tap it again to open or close it. | Realistisk modus: stopperne på denne siden er spakene i tegningen. Spaken opp er åpen; trykk på en stopper for å velge den, trykk igjen for å åpne eller lukke den. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
@@ -1205,10 +1205,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Winch | Vinsj |
 | Andre navn | — | — |
-| Kort | A drum that gives you the power to pull in a heavily loaded rope. | En tromme som gir deg kraft til å hale inn et tungt belastet tau. |
-| Hva det gjør / hva det betyr | The rope is wrapped clockwise round the drum. The turns hold the load (each extra turn multiplies the grip), and turning the drum pulls the rope in. A self-tailer on top grips the tail, so one person can winch alone. | Tauet legges med klokken rundt trommelen. Slagene holder belastningen (hvert ekstra slag øker grepet), og når trommelen dreies, hales tauet inn. En selvtailer på toppen griper tauenden, så én person kan vinsje alene. |
+| Kort | A drum that gives you the power to pull in a heavily loaded line. | En tromme som gir deg kraft til å hale inn et tungt belastet tau. |
+| Hva det gjør / hva det betyr | The line is wrapped clockwise round the drum. The turns hold the load (each extra turn multiplies the grip), and turning the drum pulls the line in. A self-tailer on top grips the tail, so one person can winch alone. | Tauet legges med klokken rundt trommelen. Slagene holder belastningen (hvert ekstra slag øker grepet), og når trommelen dreies, hales tauet inn. En selvtailer på toppen griper tauenden, så én person kan vinsje alene. |
 | På denne båten | One electric Lewmar self-tailing winch on each side, worked with a push button; the winch handle is a backup. The winch slows as the load grows and cuts out when the load is too high. | Én elektrisk selvtailende Lewmar-vinsj på hver side, betjent med en trykknapp; vinsjsveiven er en reserve. Vinsjen går saktere når belastningen øker og kobler ut når belastningen er for høy. |
-| Typiske feil | Wrapping the rope anticlockwise. → The drum only turns clockwise, so the rope is not held. Wrap it clockwise, seen from above.<br>Too few turns on a loaded rope. → It slips when the clutch opens. Use about 4 turns to winch under load, 2 to ease under control.<br>Keeping the button pressed when the winch cuts out. → The load is too high, often two ropes pulling against each other. Find out why (a closed clutch, the topping lift against the vang) and fix that first. | Å legge tauet mot klokken. → Trommelen dreier bare med klokken, så tauet blir ikke holdt. Legg det med klokken, sett ovenfra.<br>For få slag på et belastet tau. → Det glir når stopperen åpnes. Bruk omtrent 4 slag for å vinsje under belastning, 2 for å fire under kontroll.<br>Å holde knappen inne når vinsjen kobler ut. → Belastningen er for høy, ofte fordi to tau drar mot hverandre. Finn ut hvorfor (en lukket stopper, toppenanten mot kickeren) og fiks det først. |
+| Typiske feil | Wrapping the line anticlockwise. → The drum only turns clockwise, so the line is not held. Wrap it clockwise, seen from above.<br>Too few turns on a loaded line. → It slips when the clutch opens. Use about 4 turns to winch under load, 2 to ease under control.<br>Keeping the button pressed when the winch cuts out. → The load is too high, often two lines pulling against each other. Find out why (a closed clutch, the topping lift against the vang) and fix that first. | Å legge tauet mot klokken. → Trommelen dreier bare med klokken, så tauet blir ikke holdt. Legg det med klokken, sett ovenfra.<br>For få slag på et belastet tau. → Det glir når stopperen åpnes. Bruk omtrent 4 slag for å vinsje under belastning, 2 for å fire under kontroll.<br>Å holde knappen inne når vinsjen kobler ut. → Belastningen er for høy, ofte fordi to tau drar mot hverandre. Finn ut hvorfor (en lukket stopper, toppenanten mot kickeren) og fiks det først. |
 | «Vis meg» | Realistic mode, starboard: the jib sheet is on the winch with 2 turns, held by hand. Add turns, put it in the self-tailer, and press the winch button. | Realistisk modus, styrbord: fokkeskjøtet ligger på vinsjen med 2 slag, holdt for hånd. Legg på flere slag, sett det i selvtaileren og trykk på vinsjknappen. |
 | Faktastatus | Checked against a written source. | Sjekket mot en skriftlig kilde. |
 | Tekststatus | — | utkast |
@@ -1662,10 +1662,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Close-hauled | Bidevind |
 | Andre navn | beating — sailing close-hauled to get upwind | Kryss — å seile bidevind for å komme opp mot vinden |
 | Kort | Sailing as close to the wind as she can, about 45° off it. | Å seile så nær vinden som mulig, omtrent 45° fra den. |
-| Hva det gjør / hva det betyr | Close-hauled, the sails are pulled in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail. | På bidevind er seilene hentet stramt inn, og båten seiler så nær vinden som den kan, like utenfor dødsonen. Den krenger mest på dette kurset. |
+| Hva det gjør / hva det betyr | Close-hauled, the sails are trimmed in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail. | På bidevind er seilene hentet stramt inn, og båten seiler så nær vinden som den kan, like utenfor dødsonen. Den krenger mest på dette kurset. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
-| «Vis meg» | Close-hauled: the wind 45° off the bow, both sails pulled in; she heels about 17°. | Bidevind: vinden 45° fra baugen, begge seilene hentet inn; båten krenger omtrent 17°. |
+| «Vis meg» | Close-hauled: the wind 45° off the bow, both sails trimmed in; she heels about 17°. | Bidevind: vinden 45° fra baugen, begge seilene hentet inn; båten krenger omtrent 17°. |
 | Faktastatus | Checked against a written source. | Sjekket mot en skriftlig kilde. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -1679,7 +1679,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Kort | The red area the app draws where the boom would sweep in a gybe. | Det røde området appen tegner der bommen ville sveipe ved en jibb. |
 | Hva det gjør / hva det betyr | With the wind from behind, the boom can swing across the whole cockpit in an accidental gybe, fast and hard enough to injure someone. The app draws the area it would sweep in red, so you know where not to stand. | Med vinden bakfra kan bommen svinge over hele cockpiten ved en utilsiktet jibb, fort og hardt nok til å skade noen. Appen tegner området den ville sveipe i rødt, så du vet hvor du ikke skal stå. |
 | På denne båten | — | — |
-| Typiske feil | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet hauled in. | Å styre så langt medvind at vinden kommer bak storseilet (å seile på feil side, «by the lee»). → Bommen kan krysse når som helst. Styr litt tilbake mot vinden, eller jibb med vilje med storskjøtet hentet inn. |
+| Typiske feil | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet trimmed. | Å styre så langt medvind at vinden kommer bak storseilet (å seile på feil side, «by the lee»). → Bommen kan krysse når som helst. Styr litt tilbake mot vinden, eller jibb med vilje med storskjøtet hentet inn. |
 | «Vis meg» | Running, the autopilot turns her through dead downwind with the mainsheet eased: an accidental gybe. The red area shows where the boom sweeps across. Keep heads out of it. | På lens svinger autopiloten båten gjennom rett medvind med storskjøtet fiet: en utilsiktet jibb. Det røde området viser hvor bommen sveiper over. Hold hodene unna. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
@@ -1697,6 +1697,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Typiske feil | Fighting it with the wheel alone. → A rudder turned hard over stops gripping. Ease the mainsheet: that takes away the force that turns her. | Å kjempe mot det med rattet alene. → Et ror som er vridd hardt over, slutter å gripe. Fire storskjøtet: det tar bort kraften som dreier båten. |
 | «Vis meg» | — | — |
 | Faktastatus | Checked against a written source. | Sjekket mot en skriftlig kilde. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Cunningham (`term_cunningham`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Cunningham | Cunningham |
+| Andre navn | — | — |
+| Kort | A line that pulls the front edge of a mainsail down. This boat has none. | En line som drar framkanten av storseilet ned. Denne båten har ingen. |
+| Hva det gjør / hva det betyr | On a mainsail that is hoisted up a mast track, the cunningham pulls the sail’s front edge (the luff) down near the bottom. More tension moves the sail’s fullness forward and flattens it in a stronger wind. | På et storseil som heises opp i et mastespor drar cunninghamen seilets framkant (luffen) ned nær bunnen. Mer strekk flytter bukten i seilet framover og gjør det flatere i sterkere vind. |
+| På denne båten | None, as far as we know (not yet confirmed on the real boat). The mainsail rolls into the mast, so its front edge sits on the furling rod inside the mast and there is nothing to pull it down; its tension comes from the main halyard. | Ingen, så vidt vi vet (ikke bekreftet på den virkelige båten ennå). Storseilet ruller inn i masten, framkanten sitter på rullestangen inne i masten, og det er ingenting som drar den ned; strekket kommer fra storfallet. |
+| Typiske feil | — | — |
+| «Vis meg» | — | — |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
@@ -1721,7 +1736,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Halyard | Fall |
 | Andre navn | — | — |
-| Kort | A rope that hoists a sail. | Et tau som heiser et seil. |
+| Kort | A line that hoists a sail. | Et tau som heiser et seil. |
 | Hva det gjør / hva det betyr | A halyard pulls a sail’s head (its top corner) up the mast or the forestay and holds it there. | Et fall drar toppen av et seil (det øverste hjørnet) opp langs masten eller forstaget og holder det der. |
 | På denne båten | The main stays hoisted and rolls into the mast, and the jib rolls round the forestay, so the halyards are hardly ever touched; the gennaker halyard is parked. | Storseilet blir værende heist og ruller seg inn i masten, og fokken ruller seg rundt forstaget, så fallene blir nesten aldri berørt; gennakerfallet er parkert. |
 | Typiske feil | — | — |
@@ -1751,8 +1766,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Ease | Fire |
 | Andre navn | let out | Slakke |
-| Kort | To let a rope out. | Å slippe et tau ut. |
-| Hva det gjør / hva det betyr | Easing lets a rope out slowly and under control, so a sail can go further out or a load comes off. | Å fire slipper et tau sakte og under kontroll ut, slik at et seil kan gå lenger ut eller en belastning kommer av. |
+| Kort | To let a line run out slowly, under control. | Å slippe et tau ut. |
+| Hva det gjør / hva det betyr | Easing lets a line run out slowly and under control, so a sail can go further out or a load comes off. | Å fire slipper et tau sakte og under kontroll ut, slik at et seil kan gå lenger ut eller en belastning kommer av. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -1797,10 +1812,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Gybe | Jibb |
 | Andre navn | jibe — American spelling | — |
 | Kort | Turning the stern through the wind, so the boom crosses to the other side. | Å dreie hekken gjennom vinden, slik at bommen krysser til den andre siden. |
-| Hva det gjør / hva det betyr | In a gybe the stern turns through the wind and the boom swings across the whole boat. Done on purpose, the mainsheet is hauled in first so the boom crosses a short way, under control. By accident (an accidental gybe) it crosses fast and hard: it can injure people and break gear. Why the boom crosses by itself: let out, it is at first held out by the wind; a roll, a wave or a small turn starts it across, and once it is past the line of the wind (pointing straight at where the wind comes from), the wind throws it. | Ved en jibb dreier hekken gjennom vinden, og bommen svinger over hele båten. Gjort med vilje hales storskjøtet inn først, så bommen krysser en kort vei, under kontroll. Ved et uhell (en utilsiktet jibb) krysser den fort og hardt: den kan skade folk og ødelegge utstyr. Hvorfor bommen krysser av seg selv: fiet ut holdes den først ute av vinden; en rull, en bølge eller en liten sving setter den i gang, og når den er forbi vindlinjen (peker rett mot dit vinden kommer fra), kaster vinden den over. |
+| Hva det gjør / hva det betyr | In a gybe the stern turns through the wind and the boom swings across the whole boat. Done on purpose, the mainsheet is trimmed first so the boom crosses a short way, under control. By accident (an accidental gybe) it crosses fast and hard: it can injure people and break gear. Why the boom crosses by itself: eased out, it is at first held out by the wind; a roll, a wave or a small turn starts it across, and once it is past the line of the wind (pointing straight at where the wind comes from), the wind throws it. | Ved en jibb dreier hekken gjennom vinden, og bommen svinger over hele båten. Gjort med vilje hales storskjøtet inn først, så bommen krysser en kort vei, under kontroll. Ved et uhell (en utilsiktet jibb) krysser den fort og hardt: den kan skade folk og ødelegge utstyr. Hvorfor bommen krysser av seg selv: fiet ut holdes den først ute av vinden; en rull, en bølge eller en liten sving setter den i gang, og når den er forbi vindlinjen (peker rett mot dit vinden kommer fra), kaster vinden den over. |
 | På denne båten | — | — |
-| Typiske feil | Gybing with the mainsheet eased right out. → The boom slams across. Haul the mainsheet in before turning, then ease it out on the new side.<br>Steering too far downwind. → The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind. | Å jibbe med storskjøtet fiet helt ut. → Bommen smeller over. Hal storskjøtet inn før du svinger, og fire det så ut på den nye siden.<br>Å styre for langt rett medvind. → Vinden kommer bak storseilet, og det kan jibbe av seg selv. Hold deg litt unna rett medvind. |
-| «Vis meg» | The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is hauled in first. | Autopiloten svinger båten gjennom rett medvind med storskjøtet fiet: bommen krysser fort (en utilsiktet jibb), og det røde området viser banen. Ved en kontrollert jibb hales storskjøtet inn først. |
+| Typiske feil | Gybing with the mainsheet eased right out. → The boom slams across. Trim the mainsheet before turning, then ease it out on the new side.<br>Steering too far downwind. → The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind. | Å jibbe med storskjøtet fiet helt ut. → Bommen smeller over. Hal storskjøtet inn før du svinger, og fire det så ut på den nye siden.<br>Å styre for langt rett medvind. → Vinden kommer bak storseilet, og det kan jibbe av seg selv. Hold deg litt unna rett medvind. |
+| «Vis meg» | The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is trimmed first. | Autopiloten svinger båten gjennom rett medvind med storskjøtet fiet: bommen krysser fort (en utilsiktet jibb), og det røde området viser banen. Ved en kontrollert jibb hales storskjøtet inn først. |
 | Faktastatus | Checked against a written source. | Sjekket mot en skriftlig kilde. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -1829,8 +1844,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Kort | The boat leaning over to one side. | At båten heller over til én side. |
 | Hva det gjør / hva det betyr | The wind’s push on the sails tips the boat over to leeward; the keel’s weight pulls her back. Some heel is normal; too much slows her and makes her hard to steer. Easing the sheets or making the sails smaller reduces it. | Vindens trykk på seilene tipper båten over mot le; vekten på kjølen drar den tilbake. Litt krenging er normalt; for mye gjør båten treg og vanskelig å styre. Å fire skjøtene eller gjøre seilene mindre reduserer den. |
 | På denne båten | — | — |
-| Typiske feil | Hauling the sheets in harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Å hale skjøtene hardere inn når båten krenger for mye. → Det gir mer krenging. Fire storskjøtet, eller rull inn en del av seilene. |
-| «Vis meg» | 20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes section and she stands up. | 20 kn med seilene hentet inn: båten krenger omtrent 30°. Fire storskjøtet i «Tau»-seksjonen, så retter båten seg opp. |
+| Typiske feil | Trimming the sheets harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Å hale skjøtene hardere inn når båten krenger for mye. → Det gir mer krenging. Fire storskjøtet, eller rull inn en del av seilene. |
+| «Vis meg» | 20 kn with the sails trimmed in: she heels about 30°. Ease the mainsheet in the Lines section and she stands up. | 20 kn med seilene hentet inn: båten krenger omtrent 30°. Fire storskjøtet i «Tau»-seksjonen, så retter båten seg opp. |
 | Faktastatus | Checked against a written source. | Sjekket mot en skriftlig kilde. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -1850,6 +1865,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Line (`term_line`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Line | Line |
+| Andre navn | rope — the material, before it has a job | tau — materialet, før det har en oppgave |
+| Kort | Any rope that has a job on a boat. | Alle tau som har en jobb på en båt. |
+| Hva det gjør / hva det betyr | On a boat a rope is named after its job: a sheet trims a sail, a halyard hoists it, a mooring line holds the boat. Together they are the lines. Sailors say “rope” for rope that has no job yet, such as a new coil. | Om bord får et tau navn etter jobben sin: en skjøt trimmer et seil, et fall heiser det, en fortøyning holder båten. Til sammen er de linene. Seilere sier «tau» om tau som ennå ikke har noen jobb, for eksempel en ny rull. |
+| På denne båten | — | — |
+| Typiske feil | — | — |
+| «Vis meg» | — | — |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Luffe opp (`term_head_up`)
 
 | Felt | English | Norsk |
@@ -1857,7 +1887,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Head up | Luffe opp |
 | Andre navn | luff up<br>come up | Gå opp mot vinden |
 | Kort | To turn the bow towards the wind. | Å dreie baugen mot vinden. |
-| Hva det gjør / hva det betyr | Heading up turns the bow closer to the wind; the sails then need hauling in, or they flap. The opposite is bearing away. | Å luffe opp dreier baugen nærmere vinden; seilene må da hales inn, ellers slår de. Det motsatte er å falle av. |
+| Hva det gjør / hva det betyr | Heading up turns the bow closer to the wind; the sails then need trimming, or they flap. The opposite is bearing away. | Å luffe opp dreier baugen nærmere vinden; seilene må da hales inn, ellers slår de. Det motsatte er å falle av. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -1871,11 +1901,11 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Luffing (sail flapping) | Luffing (seilet slår) |
 | Andre navn | — | — |
-| Kort | A sail flapping at its front edge because it is let out too far. | Et seil som slår i forkanten fordi det er fiet for langt ut. |
+| Kort | A sail flapping at its front edge because it is eased too far. | Et seil som slår i forkanten fordi det er fiet for langt ut. |
 | Hva det gjør / hva det betyr | When a sail is eased more than the wind angle needs, or the boat turns too close to the wind, the air reaches both sides of the front edge and the sail flaps. It no longer drives the boat, and long flapping in strong wind wears it out. | Når et seil fires mer enn vindvinkelen krever, eller båten svinger for nær vinden, når luften begge sider av forkanten og seilet slår. Det driver ikke lenger båten, og langvarig slag i sterk vind sliter det ut. |
 | På denne båten | — | — |
-| Typiske feil | Leaving a sail flapping in strong wind. → It wears and can tear. Haul it in, or roll it away. | Å la et seil slå i sterk vind. → Det slites og kan revne. Hal det inn, eller rull det bort. |
-| «Vis meg» | The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes section) until the flapping just stops. | Storskjøtet er fiet helt ut: storseilet slår langs forkanten. Hal storskjøtet inn («Tau»-seksjonen) til slagingen akkurat stopper. |
+| Typiske feil | Leaving a sail flapping in strong wind. → It wears and can tear. Trim it, or roll it away. | Å la et seil slå i sterk vind. → Det slites og kan revne. Hal det inn, eller rull det bort. |
+| «Vis meg» | The mainsheet is eased right out: the mainsail flaps along its front edge. Trim the mainsheet (Lines section) until the flapping just stops. | Storskjøtet er fiet helt ut: storseilet slår langs forkanten. Hal storskjøtet inn («Tau»-seksjonen) til slagingen akkurat stopper. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -1903,7 +1933,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Andre navn | — | — |
 | Kort | A line that holds the boom out so it cannot gybe across. | En line som holder bommen ute slik at den ikke kan jibbe over. |
 | Hva det gjør / hva det betyr | A preventer runs from the end of the boom forward and back to the cockpit, holding the boom out when running, so it cannot swing across in an accidental gybe. | En preventer går fra enden av bommen forover og tilbake til cockpiten, og holder bommen ute på lens, slik at den ikke kan svinge over ved en utilsiktet jibb. |
-| På denne båten | This boat carries none, so the app teaches the controlled gybe: the mainsheet hauled in first. | Denne båten har ingen, så appen lærer bort den kontrollerte jibben: storskjøtet hales inn først. |
+| På denne båten | This boat carries none, so the app teaches the controlled gybe: the mainsheet trimmed first. | Denne båten har ingen, så appen lærer bort den kontrollerte jibben: storskjøtet hales inn først. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
@@ -1946,8 +1976,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Sheet | Skjøt |
 | Andre navn | — | — |
-| Kort | A rope that sets a sail’s angle to the wind. | Et tau som bestemmer vinkelen til et seil mot vinden. |
-| Hva det gjør / hva det betyr | A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a rope, not the sail. | Et skjøt drar i nokken til et seil (det bakre nedre hjørnet) og bestemmer dermed hvor langt seilet kan svinge ut. Hvert seil har sitt eget: storskjøtet og fokkeskjøtet. På en båt er et skjøt et tau, ikke seilet. |
+| Kort | A line that sets a sail’s angle to the wind. | Et tau som bestemmer vinkelen til et seil mot vinden. |
+| Hva det gjør / hva det betyr | A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a line, not the sail. | Et skjøt drar i nokken til et seil (det bakre nedre hjørnet) og bestemmer dermed hvor langt seilet kan svinge ut. Hvert seil har sitt eget: storskjøtet og fokkeskjøtet. På en båt er et skjøt et tau, ikke seilet. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -2006,11 +2036,11 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 |---|---|---|
 | Navn | Stall | Stall |
 | Andre navn | — | — |
-| Kort | A sail pulled in too far, so the air no longer flows smoothly round it. | Et seil som er hentet for langt inn, slik at luften ikke lenger strømmer jevnt rundt det. |
+| Kort | A sail trimmed too far, so the air no longer flows smoothly round it. | Et seil som er hentet for langt inn, slik at luften ikke lenger strømmer jevnt rundt det. |
 | Hva det gjør / hva det betyr | A stalled sail looks full but drives poorly and makes more heel; the telltales on its far side droop or spin. Ease the sheet until they stream. | Et stallet seil ser fullt ut, men driver dårlig og gir mer krenging; vimplene på den bortvendte siden henger eller snurrer. Fire skjøtet til de strømmer. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
-| «Vis meg» | The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes section and she speeds up. | Storskjøtet er hentet helt inn med vinden 60° fra baugen: storseilet er stallet. Fire det til omtrent 25 % i «Tau»-seksjonen, så øker farten. |
+| «Vis meg» | The mainsheet is trimmed right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Lines section and she speeds up. | Storskjøtet er hentet helt inn med vinden 60° fra baugen: storseilet er stallet. Fire det til omtrent 25 % i «Tau»-seksjonen, så øker farten. |
 | Faktastatus | Checked against a written source. | Sjekket mot en skriftlig kilde. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -2034,10 +2064,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 
 | Felt | English | Norsk |
 |---|---|---|
-| Navn | Trim / haul in | Trimme / hale inn |
-| Andre navn | sheet in | Skjøte inn |
-| Kort | To pull a rope in; also, setting the sails to the wind. | Å dra et tau inn; også å stille seilene etter vinden. |
-| Hva det gjør / hva det betyr | Hauling in pulls a rope in. Trimming means setting each sail to the wind: haul in until it stops flapping, ease until it is not stalled. | Å hale inn drar et tau inn. Å trimme betyr å stille hvert seil etter vinden: hal inn til det slutter å slå, fire til det ikke er stallet. |
+| Navn | Trim | Trimme / hale inn |
+| Andre navn | haul in<br>sheet in | Skjøte inn |
+| Kort | To pull a sheet in; also, setting the sails to the wind. | Å dra et tau inn; også å stille seilene etter vinden. |
+| Hva det gjør / hva det betyr | Trimming pulls a sheet in. It also means setting each sail to the wind: trim until it stops flapping, ease until it is not stalled. | Å hale inn drar et tau inn. Å trimme betyr å stille hvert seil etter vinden: hal inn til det slutter å slå, fire til det ikke er stallet. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
@@ -2055,7 +2085,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Hva det gjør / hva det betyr | With twist, the top of the sail stands further out than the bottom. A little twist is normal; more twist spills power, which helps in strong wind. The vang controls it on the mainsail, the sheet on the jib. | Med tvist står toppen av seilet lenger ut enn bunnen. Litt tvist er normalt; mer tvist slipper ut kraft, som hjelper i sterk vind. Kickeren styrer den på storseilet, skjøtet på fokken. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
-| «Vis meg» | The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes section) and the twist closes. | Kickeren er fiet helt ut: toppen av storseilet vrir seg åpen. Hal kickeren («Tau»-seksjonen) og tvisten lukker seg. |
+| «Vis meg» | The vang is eased all the way: the top of the mainsail twists open. Pull the vang on (Lines section) and the twist closes. | Kickeren er fiet helt ut: toppen av storseilet vrir seg åpen. Hal kickeren («Tau»-seksjonen) og tvisten lukker seg. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -2067,7 +2097,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Navn | Telltales | Vimpler |
 | Andre navn | tell-tales | Tell-tales |
 | Kort | Ribbons on the sails that show how the air flows. | Bånd på seilene som viser hvordan luften strømmer. |
-| Hva det gjør / hva det betyr | Telltales are short ribbons near the front of the sails. Both sides streaming straight back: good trim. The far side drooping: pulled in too far. The near side lifting: let out too far. | Vimpler er korte bånd nær forkanten av seilene. Begge sider rett bakover: god trim. Den bortvendte siden henger: hentet for langt inn. Den nærmeste siden løfter seg: fiet for langt ut. |
+| Hva det gjør / hva det betyr | Telltales are short ribbons near the front of the sails. Both sides streaming straight back: good trim. The far side drooping: trimmed too far. The near side lifting: eased too far. | Vimpler er korte bånd nær forkanten av seilene. Begge sider rett bakover: god trim. Den bortvendte siden henger: hentet for langt inn. Den nærmeste siden løfter seg: fiet for langt ut. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | Good trim: zoom in on the front of the mainsail; the telltales on both sides stream straight back. | God trim: zoom inn på forkanten av storseilet; vimplene på begge sider strømmer rett bakover. |
@@ -2403,7 +2433,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Kort | How much chain is out compared with the depth. | Hvor mye kjetting som er ute sammenlignet med dybden. |
 | Hva det gjør / hva det betyr | The more chain, the flatter it pulls on the anchor, and the better the anchor holds; the chain's weight also softens the jerks. With too little chain the pull lifts the anchor's shank and it drags. | Jo mer kjetting, desto flatere drar den i ankeret, og desto bedre holder ankeret; vekten på kjettingen demper også rykkene. Med for lite kjetting løfter trekket skaftet på ankeret, og det dreger. |
 | På denne båten | 70 m of chain (an assumption). In 5 m of water the instructor's rule (3 boat lengths, 47 m) is more than 4 × the effective depth (27 m). | 70 m kjetting (en antakelse). I 5 m vann er instruktørens regel (3 båtlengder, 47 m) mer enn 4 × den effektive dybden (27 m). |
-| Typiske feil | Letting out just the depth and switching off. → Let out what the check asks for, then set the anchor by going gently astern. | Å fire ut bare dybden og slå av. → Fire ut det kontrollen ber om, og sett så ankeret ved å gå forsiktig akterover. |
+| Typiske feil | Paying out just the depth and switching off. → Pay out what the check asks for, then set the anchor by going gently astern. | Å fire ut bare dybden og slå av. → Fire ut det kontrollen ber om, og sett så ankeret ved å gå forsiktig akterover. |
 | «Vis meg» | Anchored in the bay with 34 m of chain, wind 15 kn. | Ankret i bukta med 34 m kjetting, vind 15 kn. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
@@ -2536,7 +2566,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | app.title | Sail: learn and train | Sail: lær og tren |
 | scene.label | 3D view of the boat | 3D-visning av båten |
 | scene.unsupported | 3D not supported on this device | 3D støttes ikke på denne enheten |
-| scene.unsupportedHint | This browser cannot draw the 3D boat (it needs WebGL). Everything in the panel still works: ropes, wind and settings. Try another browser, or turn on hardware acceleration in the browser's settings. | Denne nettleseren kan ikke tegne 3D-båten (den trenger WebGL). Alt i panelet fungerer fortsatt: tau, vind og innstillinger. Prøv en annen nettleser, eller slå på maskinvareakselerasjon i innstillingene til nettleseren. |
+| scene.unsupportedHint | This browser cannot draw the 3D boat (it needs WebGL). Everything in the panel still works: lines, wind and settings. Try another browser, or turn on hardware acceleration in the browser's settings. | Denne nettleseren kan ikke tegne 3D-båten (den trenger WebGL). Alt i panelet fungerer fortsatt: tau, vind og innstillinger. Prøv en annen nettleser, eller slå på maskinvareakselerasjon i innstillingene til nettleseren. |
 | scene.failed | The 3D view stopped working | 3D-visningen sluttet å virke |
 | scene.failedHint | Reload the page to try again. The panel still works. If it happens again, please report it with the link from Settings → Share. | Last siden på nytt for å prøve igjen. Panelet fungerer fortsatt. Hvis det skjer igjen, rapporter det med lenken fra Innstillinger → Del. |
 | scene.lost | The 3D view is paused | 3D-visningen er satt på pause |
@@ -2544,9 +2574,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | error.banner | Something went wrong. Reload the page; if it happens again, please report it with the link from Settings → Share. | Noe gikk galt. Last siden på nytt; hvis det skjer igjen, rapporter det med lenken fra Innstillinger → Del. |
 | error.details | Technical details | Tekniske detaljer |
 | panel.label | Controls | Kontroller |
-| tab.ropes | Ropes | Tau |
+| tab.ropes | Lines | Tau |
 | view.step.label | Step size | Stegstørrelse |
-| view.step.hint | How much one tap on − or + changes a rope. | Hvor mye ett trykk på − eller + endrer et tau. |
+| view.step.hint | How much one tap on − or + changes a line. | Hvor mye ett trykk på − eller + endrer et tau. |
 | view.step.option | {value} % | {value} % |
 | view.debug.label | Debug overlay | Feilsøkingsvisning |
 | view.debug.hint | Shows frame rate, layout and build version. Useful for bug reports. | Viser bildefrekvens, oppsett og byggversjon. Nyttig i feilrapporter. |
@@ -2555,7 +2585,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | view.detail.high | High | Høy |
 | view.detail.low | Low | Lav |
 | view.labels.label | Labels in 3D | Navn i 3D |
-| view.labels.hint | Names over the parts and ropes in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Navn over delene og tauene i 3D-visningen. Der to ville overlappe, vises det viktigste: zoom inn for å se flere. Trykk på et navn for å velge det. |
+| view.labels.hint | Names over the parts and lines in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Navn over delene og tauene i 3D-visningen. Der to ville overlappe, vises det viktigste: zoom inn for å se flere. Trykk på et navn for å velge det. |
 | footer.version | Version {hash} · {date} | Version {hash} · {date} |
 | footer.release | Version {version} · {hash} · {date} | Version {version} · {hash} · {date} |
 | footer.next | Test version (next) · {hash} · {date} | Testversjon (next) · {hash} · {date} |
@@ -2565,7 +2595,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | footer.maker | Hanse and Hanse 508 are names of their owner. This app is not affiliated with Hanse Yachts. | Hanse og Hanse 508 er navn som tilhører eieren. Denne appen har ingen tilknytning til Hanse Yachts. |
 | footer.report | Report a problem or suggest an idea | Rapporter et problem eller foreslå en idé |
 | welcome.title | Welcome aboard | Velkommen ombord |
-| welcome.body | This app shows a complete beginner what every rope, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Denne appen viser en helt nybegynner hva hvert tau, hvert skjøt og hvert seil på en cruisingbåt gjør. Du bruker kontrollene, og 3D-båten viser hva som skjer. Du trenger ingen seilkunnskap. |
+| welcome.body | This app shows a complete beginner what every line, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Denne appen viser en helt nybegynner hva hvert tau, hvert skjøt og hvert seil på en cruisingbåt gjør. Du bruker kontrollene, og 3D-båten viser hva som skjer. Du trenger ingen seilkunnskap. |
 | welcome.watch | Watch the first exercise | Se den første øvelsen |
 | welcome.look | Look around the boat | Se deg rundt på båten |
 | welcome.close | Close | Lukk |
@@ -2610,7 +2640,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | control.mainFurl | Mainsail out | Storseil ut |
 | control.less | Less: {name} | Mindre: {name} |
 | control.more | More: {name} | Mer: {name} |
-| control.paidOut | {m} m of rope paid out | {m} m tau fiet ut |
+| control.trim | Trim: {name} | Trim: {name} |
+| control.ease | Ease: {name} | Fire: {name} |
+| control.paidOut | {m} m of line paid out | {m} m tau fiet ut |
 | unit.eased | {value} % eased | {value} % fiet |
 | unit.unfurled | {value} % unfurled | {value} % rullet ut |
 | state.taut | taut | stram |
@@ -2622,7 +2654,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | furl.inTail | “In” furling tail: {m} m paid out | Rulletauets «inn»-ende: {m} m fiet ut |
 | furl.outTail | “Out” furling tail: {m} m paid out | Rulletauets «ut»-ende: {m} m fiet ut |
 | furl.outhaul | Outhaul: {m} m paid out | Utholer: {m} m fiet ut |
-| furl.hint | Mainsail out moves three rope ends together: to unfurl, the “out” furling tail and the outhaul are hauled in while the “in” tail pays out. To furl, the other way round. The sail rolls into the mast from its back edge. | Storseil ut flytter tre tauender samtidig: for å rulle ut hales «ut»-enden av rulletauet og utholeren inn, mens «inn»-enden fies ut. For å rulle inn er det motsatt. Seilet ruller seg inn i masten fra bakkanten. |
+| furl.hint | Mainsail out moves three line ends together: to unfurl, the “out” furling tail and the outhaul are pulled in together while the “in” tail pays out. To furl, the other way round. The sail rolls into the mast from its back edge. | Storseil ut flytter tre tauender samtidig: for å rulle ut hales «ut»-enden av rulletauet og utholeren inn, mens «inn»-enden fies ut. For å rulle inn er det motsatt. Seilet ruller seg inn i masten fra bakkanten. |
 | wind.hint | The true wind (the wind over the water). While sailing, the sails feel the apparent wind. | Sann vind (vinden over vannet). Når du seiler, kjenner seilene den tilsynelatende vinden. |
 | wind.dial.label | Wind direction | Vindretning |
 | wind.dial.hint | Drag around the compass, or use − and +. The arrow comes from where the wind blows from. North is at the top; the boat turns as she steers. | Dra rundt kompasset, eller bruk − og +. Pilen kommer fra retningen vinden blåser fra. Nord er øverst; båten dreier etter hvert som den styres. |
@@ -2645,14 +2677,14 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | alert.gybe | GYBE! The boom swung across the boat | JIBB! Bommen svingte over båten |
 | alert.byTheLee | By the lee: gybe risk | Lens på feil side: fare for jibb |
 | alert.byTheLeeStrong | By the lee: the boom can come across any moment. | Lens på feil side: bommen kan komme over når som helst. |
-| gybe.accidental | Accidental gybe! Boom end {speed} m/s · energy {energy} kJ · peak main sheet load {load} kN (about {tonnes} tonnes). Anyone in the boom's way could be badly hurt. Safer: haul the main sheet in before turning (controlled gybe). | Utilsiktet jibb! Bomende {speed} m/s · energi {energy} kJ · høyeste belastning på storskjøtet {load} kN (omtrent {tonnes} tonn). Alle som står i veien for bommen, kan bli alvorlig skadet. Tryggere: hal storskjøtet inn før du svinger (kontrollert jibb). |
+| gybe.accidental | Accidental gybe! Boom end {speed} m/s · energy {energy} kJ · peak main sheet load {load} kN (about {tonnes} tonnes). Anyone in the boom's way could be badly hurt. Safer: trim the main sheet before turning (controlled gybe). | Utilsiktet jibb! Bomende {speed} m/s · energi {energy} kJ · høyeste belastning på storskjøtet {load} kN (omtrent {tonnes} tonn). Alle som står i veien for bommen, kan bli alvorlig skadet. Tryggere: hal storskjøtet inn før du svinger (kontrollert jibb). |
 | gybe.controlled | Controlled gybe: boom end {speed} m/s · peak main sheet load {load} kN. | Kontrollert jibb: bomende {speed} m/s · høyeste belastning på storskjøtet {load} kN. |
 | debug.boom | Boom θ ψ | Boom θ ψ |
 | debug.free | θ free ψ t | θ free ψ t |
 | debug.limits | ψ limits | ψ limits |
 | debug.main | Main | Main |
 | debug.jib | Jib | Jib |
-| debug.ropes | Ropes | Ropes |
+| debug.ropes | Lines | Ropes |
 | main.calm | No wind: the mainsail hangs loose, boom {angle}° out | Ingen vind: storseilet henger slakt, bommen {angle}° ute |
 | main.furled | Mainsail furled (rolled into the mast): no sail for the wind to push, boom {angle}° out | Storseilet er rullet inn (rullet inn i masten): ingen seil for vinden å skyve på, bommen {angle}° ute |
 | alert.overpowered | Heeling a lot: ease the main sheet or roll some sail away | Kraftig krenging: fire storskjøtet eller rull inn litt seil |
@@ -2660,7 +2692,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | alert.tack | Tack: the boom moved across | Stagvending: bommen gikk over |
 | alert.ropeSlipping | {rope}: slipping on the winch drum. Add a turn. | {rope}: glir på vinsjtrommelen. Legg på et slag. |
 | alert.winchCutOut | The {side} winch cut out: too much load. | Vinsjen på {side} koblet ut: for stor belastning. |
-| alert.clutchOnRunning | A clutch was shut on a running rope under load: it can be damaged. | En stopper ble lukket på et tau som løp under belastning: den kan bli skadet. |
+| alert.clutchOnRunning | A clutch was shut on a running line under load: it can be damaged. | En stopper ble lukket på et tau som løp under belastning: den kan bli skadet. |
 | control.jibSheet | Jib sheet | Fokkeskjøt |
 | control.jibFurl | Jib out | Fokk ut |
 | main.fightingLift | The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out. | Toppenanten holder bommen oppe, så storskjøtet trekker mot den (begge røde). Fire toppenanten, eller storskjøtet forbi {pct} %, før bommen kan svinge ut. |
@@ -2687,8 +2719,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Rattene ble vridd {turns} omdreininger mot klokken: rorets bakkant går mot babord, så båten ville svingt til babord (venstre). |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Rattene og roret (bladet under bakre del av båten) dreier sammen. Båten svinger bare mens den beveger seg: står den stille eller er stoppet, svarer den ikke på rattet. |
 | ropes.mode.easy | Easy mode: | Enkel modus: |
-| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Enkel modus: hvert tau er en glidebryter. Realistisk modus (velg den under Modus) betjener tauene som på båten: med stoppere, vinsjen og hånden din. |
-| clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Stopperrekker: trykk på en stopper for å velge tauet |
+| ropes.mode.easyHint | Easy mode: each line is a slider. Realistic mode (choose it under Mode) works the lines as on the boat: clutches, the winch and your hand. | Enkel modus: hvert tau er en glidebryter. Realistisk modus (velg den under Modus) betjener tauene som på båten: med stoppere, vinsjen og hånden din. |
+| clutch.drawingLabel | Clutch banks: tap a clutch to select its line | Stopperrekker: trykk på en stopper for å velge tauet |
 | clutch.bankB | Bank B · port | Rekke B · babord |
 | clutch.bankA | Bank A · starboard | Rekke A · styrbord |
 | clutch.sideDeck | Port side deck, further forward | Babord sidedekk, lenger fram |
@@ -2699,28 +2731,28 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | clutch.tail.furl | the tail that rolls the mainsail in | enden som ruller storseilet inn |
 | clutch.tail.unfurl | the tail that rolls the mainsail out | enden som ruller storseilet ut |
 | clutch.aria | Clutch “{label}”: {name} | Stopper «{label}»: {name} |
-| ropes.strip.label | Selected rope | Valgt tau |
-| ropes.strip.emptyList | Tap a rope in the 3D view or in the list below to work it. | Trykk på et tau i 3D-visningen eller i listen under for å bruke det. |
-| ropes.learnRealistic | Realistic ropes: you work this rope at its station. Choose Realistic mode to work it. | Realistiske tau: du betjener dette tauet på plassen sin. Velg Realistisk modus for å bruke det. |
-| ropes.shared.twoEnds | One rope, two ends. | Ett tau, to ender. |
+| ropes.strip.label | Selected line | Valgt tau |
+| ropes.strip.emptyList | Tap a line in the 3D view or in the list below to work it. | Trykk på et tau i 3D-visningen eller i listen under for å bruke det. |
+| ropes.learnRealistic | Realistic lines: you work this line at its station. Choose Realistic mode to work it. | Realistiske tau: du betjener dette tauet på plassen sin. Velg Realistisk modus for å bruke det. |
+| ropes.shared.twoEnds | One line, two ends. | Ett tau, to ender. |
 | ropes.shared.workAgainst | These work against each other. | Disse motarbeider hverandre. |
-| ropes.sharedDetail.ctl_mainsheet | The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same rope, so it can be worked from either side. | Stopperen «Main sheet» (styrbord) og stopperen «MAIN SHEET» (babord) holder de to endene av samme tau, så det kan betjenes fra begge sider. |
-| ropes.sharedDetail.ctl_main_furl | The two “Main furling” clutches hold the two tails of one furling line: the left one rolls the mainsail in, the right one rolls it out. “Main outhaul” is hauled together with the “out” tail. | De to «Main furling»-stopperne holder de to endene av én rulletaulinje: den venstre ruller storseilet inn, den høyre ruller det ut. «Main outhaul» hales sammen med «ut»-enden. |
+| ropes.sharedDetail.ctl_mainsheet | The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same line, so it can be worked from either side. | Stopperen «Main sheet» (styrbord) og stopperen «MAIN SHEET» (babord) holder de to endene av samme tau, så det kan betjenes fra begge sider. |
+| ropes.sharedDetail.ctl_main_furl | The two “Main furling” clutches hold the two tails of one furling line: the left one rolls the mainsail in, the right one rolls it out. “Main outhaul” is pulled together with the “out” tail. | De to «Main furling»-stopperne holder de to endene av én rulletaulinje: den venstre ruller storseilet inn, den høyre ruller det ut. «Main outhaul» hales sammen med «ut»-enden. |
 | ropes.static.inMastFurling | Not adjusted while sailing: with in-mast furling the main halyard stays hoisted. | Justeres ikke under seiling: med rullemast blir storfallet stående heist. |
 | ropes.static.notRigged | Not used: no gennaker (a big sail for downwind) is rigged on this boat, so its halyard is parked. | Ikke i bruk: det er ikke rigget noen gennaker (et stort seil for medvind) på denne båten, så fallet er parkert. |
 | ropes.static.none | Not adjusted while sailing. | Justeres ikke under seiling. |
-| ropes.list.title | All ropes and the wheel | Alle tau og rattet |
+| ropes.list.title | All lines and the wheel | Alle tau og rattet |
 | ropes.list.static | not adjusted | justeres ikke |
-| ropes.fighting | Red: this rope pulls against another one (fighting) | Rødt: dette tauet trekker mot et annet (motarbeider) |
+| ropes.fighting | Red: this line pulls against another one (fighting) | Rødt: dette tauet trekker mot et annet (motarbeider) |
 | view.share.button | Share: copy link | Del: kopier lenke |
-| view.share.hint | The link opens exactly what you see now: ropes, wheel, wind, camera and the selected part. Paste it into a bug report. | Lenken åpner nøyaktig det du ser nå: tau, ratt, vind, kamera og den valgte delen. Lim den inn i en feilrapport. |
+| view.share.hint | The link opens exactly what you see now: lines, wheel, wind, camera and the selected part. Paste it into a bug report. | Lenken åpner nøyaktig det du ser nå: tau, ratt, vind, kamera og den valgte delen. Lim den inn i en feilrapport. |
 | view.share.copied | Link copied. | Lenke kopiert. |
 | view.share.manual | Copying is not allowed here: the link is selected below, copy it by hand. | Kopiering er ikke tillatt her: lenken er markert under, kopier den for hånd. |
 | view.share.fieldLabel | Link to this view | Lenke til denne visningen |
 | view.reset.button | Reset all | Nullstill alt |
 | view.reset.confirm | Tap again to reset | Trykk igjen for å nullstille |
 | view.reset.done | Everything is back to the start settings. | Alt er tilbake til startinnstillingene. |
-| ropes.mode.easyShortList | tap a rope in the list, then use its slider. | trykk på et tau i listen, og bruk så glidebryteren. |
+| ropes.mode.easyShortList | tap a line in the list, then use its slider. | trykk på et tau i listen, og bruk så glidebryteren. |
 | ropes.strip.more | What does it do? | Hva gjør det? |
 | pause.pause | Pause | Pause |
 | pause.resume | Resume | Fortsett |
@@ -2731,20 +2763,20 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.station.port | Port | Babord |
 | real.station.starboard | Starboard | Styrbord |
 | real.station.helm | Helm | Rorplass |
-| real.paused | Paused: you can open clutches, wrap turns and switch places. Winching, easing and running ropes wait for Resume, then all happen together. | Pauset: du kan åpne stoppere, legge slag og bytte plass. Vinsjing, fiing og løpende tau venter til Fortsett, og så skjer alt samtidig. |
+| real.paused | Paused: you can open clutches, wrap turns and switch places. Winching, easing and running lines wait for Resume, then all happen together. | Pauset: du kan åpne stoppere, legge slag og bytte plass. Vinsjing, fiing og løpende tau venter til Fortsett, og så skjer alt samtidig. |
 | real.drawing.port | Port station seen from above, forward is up: clutch bank B, the JIB ROLL clutch and the port winch | Babord plass sett ovenfra, forover er opp: stopperrekke B, stopperen JIB ROLL og babord vinsj |
 | real.drawing.starboard | Starboard station seen from above, forward is up: clutch bank A and the starboard winch | Styrbord plass sett ovenfra, forover er opp: stopperrekke A og styrbord vinsj |
 | real.sideDeck | Side deck, further forward | Sidedekk, lenger fram |
 | real.winch.port | Port winch | Babord vinsj |
 | real.winch.starboard | Starboard winch | Styrbord vinsj |
-| real.winch.empty | no rope on the winch | ingen tau på vinsjen |
+| real.winch.empty | no line on the winch | ingen tau på vinsjen |
 | real.hand | in your hand | i hånden din |
 | real.turns.none | 0 turns | 0 slag |
 | real.turns.cw | {n} ↻ clockwise | {n} ↻ med klokken |
 | real.turns.ccw | {n} ↺ wrong way | {n} ↺ feil vei |
 | real.button.label | hold to winch | hold for vinsj |
 | real.button.cutOut | cut out | koblet ut |
-| real.button.aria | Electric winch button: hold it to winch the rope in | Elektrisk vinsjknapp: hold den inne for å vinsje tauet inn |
+| real.button.aria | Electric winch button: hold it to winch the line in | Elektrisk vinsjknapp: hold den inne for å vinsje tauet inn |
 | real.clutch.open | open | åpen |
 | real.clutch.closed | closed | lukket |
 | real.clutch.openShort | OPEN | ÅPEN |
@@ -2756,45 +2788,45 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.tag.furl | rolls in | ruller inn |
 | real.tag.unfurl | rolls out | ruller ut |
 | real.tailShort.unfurl | rolls main out | ruller storseilet ut |
-| real.strip.empty | Tap a clutch (a lock that holds a rope) to work its rope. Drag its lever up to open it, down to close it. | Trykk på en stopper (en lås som holder et tau) for å bruke tauet. Dra spaken opp for å åpne den, ned for å lukke den. |
-| real.strip.elsewhere | This rope's clutch is not here: it is at the {station} station. | Stopperen til dette tauet er ikke her: den er på plassen {station}. |
+| real.strip.empty | Tap a clutch (a lock that holds a line) to work its line. Drag its lever up to open it, down to close it. | Trykk på en stopper (en lås som holder et tau) for å bruke tauet. Dra spaken opp for å åpne den, ned for å lukke den. |
+| real.strip.elsewhere | This line's clutch is not here: it is at the {station} station. | Stopperen til dette tauet er ikke her: den er på plassen {station}. |
 | real.strip.go | Go to {station} | Gå til {station} |
-| real.status.clutchOpen | Clutch open: only what holds the tail stops the rope. | Stopperen er åpen: bare det som holder tauenden, stopper tauet. |
-| real.status.clutchClosed | Clutch closed: the rope cannot run out (it can still be pulled in). | Stopperen er lukket: tauet kan ikke løpe ut (det kan fortsatt hales inn). |
+| real.status.clutchOpen | Clutch open: only what holds the tail stops the line. | Stopperen er åpen: bare det som holder tauenden, stopper tauet. |
+| real.status.clutchClosed | Clutch closed: the line cannot run out (it can still be pulled in). | Stopperen er lukket: tauet kan ikke løpe ut (det kan fortsatt hales inn). |
 | real.status.offWinch | Not on the winch: nobody holds the tail. | Ikke på vinsjen: ingen holder tauenden. |
 | real.status.onWinchJaw | On the winch, {wrap}, tail in the self-tailer (the jaw on top that grips it). | På vinsjen, {wrap}, tauenden i selvtaileren (kjeften på toppen som griper den). |
 | real.status.onWinchHand | On the winch, {wrap}, tail in your hand. | På vinsjen, {wrap}, tauenden i hånden din. |
 | real.status.noTurns | 0 turns | 0 slag |
 | real.status.turnsCw | {n} turns clockwise | {n} slag med klokken |
 | real.status.turnsCcw | {n} turns anticlockwise (the wrong way) | {n} slag mot klokken (feil vei) |
-| real.status.load | The sail or boom pulls this rope with about {kn} kN. | Seilet eller bommen trekker i dette tauet med omtrent {kn} kN. |
+| real.status.load | The sail or boom pulls this line with about {kn} kN. | Seilet eller bommen trekker i dette tauet med omtrent {kn} kN. |
 | ropes.load | Load {kn} kN (about {kg} kg) | Belastning {kn} kN (omtrent {kg} kg) |
-| real.status.loadFighting | This rope pulls against another one (fighting): a very high load. | Dette tauet trekker mot et annet (motarbeider): svært høy belastning. |
-| real.status.noPull | Nothing pulls this rope now (it is slack or the sail is not pulling). | Ingenting trekker i tauet nå (det er slakt, eller seilet trekker ikke). |
+| real.status.loadFighting | This line pulls against another one (fighting): a very high load. | Dette tauet trekker mot et annet (motarbeider): svært høy belastning. |
+| real.status.noPull | Nothing pulls this line now (it is slack or the sail is not pulling). | Ingenting trekker i tauet nå (det er slakt, eller seilet trekker ikke). |
 | real.status.hold | With the clutch open it is held up to about {kn} kN. | Med stopperen åpen holdes det opp til omtrent {kn} kN. |
 | real.motion.running | RUNNING OUT: the pull is more than what holds it. | LØPER UT: trekket er større enn det som holder det. |
 | real.motion.runningPaused | Will run out on Resume: the pull is more than what holds it. | Kommer til å løpe ut ved Fortsett: trekket er større enn det som holder det. |
 | real.motion.hauling | Coming in. | Kommer inn. |
 | real.motion.easing | Easing out by hand. | Fires ut for hånd. |
 | real.note.slipping | Slipping on the drum: not enough turns for this load. Add a turn (about 4 to winch under load). | Glir på trommelen: for få slag for denne belastningen. Legg på et slag (omtrent 4 for å vinsje under belastning). |
-| real.note.wrongWay | Wrapped the wrong way: the drum only turns clockwise, so it just spins with the rope. Take the turns off and wrap clockwise. | Lagt feil vei: trommelen dreier bare med klokken, så den spinner bare rundt med tauet. Ta slagene av og legg dem med klokken. |
-| real.note.noTurns | No turns on the drum: wrap the rope clockwise first. | Ingen slag på trommelen: legg tauet med klokken først. |
-| real.note.grabby | Easing in jerks: so many turns that your hand cannot feel the rope. Take a turn off to ease smoothly (about 2). | Fiingen rykker: så mange slag at hånden ikke kjenner tauet. Ta av et slag for å fire jevnt (omtrent 2). |
-| real.note.noLoad | Nothing pulls this rope out: letting go only makes it slack. | Ingenting trekker tauet ut: å slippe det gjør det bare slakt. |
+| real.note.wrongWay | Wrapped the wrong way: the drum only turns clockwise, so it just spins with the line. Take the turns off and wrap clockwise. | Lagt feil vei: trommelen dreier bare med klokken, så den spinner bare rundt med tauet. Ta slagene av og legg dem med klokken. |
+| real.note.noTurns | No turns on the drum: wrap the line clockwise first. | Ingen slag på trommelen: legg tauet med klokken først. |
+| real.note.grabby | Easing in jerks: so many turns that your hand cannot feel the line. Take a turn off to ease smoothly (about 2). | Fiingen rykker: så mange slag at hånden ikke kjenner tauet. Ta av et slag for å fire jevnt (omtrent 2). |
+| real.note.noLoad | Nothing pulls this line out: letting go only makes it slack. | Ingenting trekker tauet ut: å slippe det gjør det bare slakt. |
 | real.note.tooHeavy | Too heavy to pull in by hand: put it on the winch. | For tungt å hale inn for hånd: legg det på vinsjen. |
-| real.note.cutOutFighting | Winch cut out: too much load. This rope pulls against another one (fighting). Ease the other rope first. | Vinsjen koblet ut: for stor belastning. Dette tauet trekker mot et annet (motarbeider). Fire det andre tauet først. |
-| real.note.cutOutEnd | Winch cut out: the rope is fully in and cannot come in further. | Vinsjen koblet ut: tauet er helt inne og kan ikke komme lenger inn. |
-| real.note.cutOutBlocked | Winch cut out: the sail cannot roll because other ropes are held. Open {clutches} so they can run out. | Vinsjen koblet ut: seilet kan ikke rulle fordi andre tau holdes. Åpne {clutches} slik at de kan løpe ut. |
-| real.note.cutOutLoad | Winch cut out: too much load. Luff up (turn towards the wind), ease something else, or check for a fighting rope. | Vinsjen koblet ut: for stor belastning. Luff opp (sving mot vinden), fire noe annet, eller se etter et tau som motarbeider. |
-| real.note.fullyEased | Fully eased: no more rope to let out. | Helt fiet: ikke mer tau å fire ut. |
-| real.notice.clutchClosed | Open the clutch first: a closed clutch never lets a rope out. | Åpne stopperen først: en lukket stopper slipper aldri et tau ut. |
+| real.note.cutOutFighting | Winch cut out: too much load. This line pulls against another one (fighting). Ease the other line first. | Vinsjen koblet ut: for stor belastning. Dette tauet trekker mot et annet (motarbeider). Fire det andre tauet først. |
+| real.note.cutOutEnd | Winch cut out: the line is fully in and cannot come in further. | Vinsjen koblet ut: tauet er helt inne og kan ikke komme lenger inn. |
+| real.note.cutOutBlocked | Winch cut out: the sail cannot roll because other lines are held. Open {clutches} so they can run out. | Vinsjen koblet ut: seilet kan ikke rulle fordi andre tau holdes. Åpne {clutches} slik at de kan løpe ut. |
+| real.note.cutOutLoad | Winch cut out: too much load. Luff up (turn towards the wind), ease something else, or check for a fighting line. | Vinsjen koblet ut: for stor belastning. Luff opp (sving mot vinden), fire noe annet, eller se etter et tau som motarbeider. |
+| real.note.fullyEased | Fully eased: no more line to ease. | Helt fiet: ikke mer tau å fire ut. |
+| real.notice.clutchClosed | Open the clutch first: a closed clutch never lets a line run out. | Åpne stopperen først: en lukket stopper slipper aldri et tau ut. |
 | real.notice.inSelfTailer | Take the tail out of the self-tailer first, then ease it by hand. | Ta tauenden ut av selvtaileren først, og fire så for hånd. |
-| real.notice.winchBusy | One rope per winch: take the other rope off first. | Ett tau per vinsj: ta det andre tauet av først. |
-| real.notice.winchEmpty | Put a rope on the winch first: drag its tail onto the drum. | Legg et tau på vinsjen først: dra tauenden til trommelen. |
+| real.notice.winchBusy | One line per winch: take the other line off first. | Ett tau per vinsj: ta det andre tauet av først. |
+| real.notice.winchEmpty | Put a line on the winch first: drag its tail onto the drum. | Legg et tau på vinsjen først: dra tauenden til trommelen. |
 | real.notice.needTurns | Wrap at least one turn first. | Legg minst ett slag først. |
 | real.notice.staticRope | “{label}” is not worked while sailing: its clutch stays shut. | «{label}» betjenes ikke under seiling: stopperen forblir lukket. |
 | real.notice.notHere | You are not there: “{label}” is at the {station} station. | Du er ikke der: «{label}» er på plassen {station}. |
-| real.notice.onWinch | This rope is on the winch: use the winch button. | Dette tauet er på vinsjen: bruk vinsjknappen. |
+| real.notice.onWinch | This line is on the winch: use the winch button. | Dette tauet er på vinsjen: bruk vinsjknappen. |
 | real.action.open | Open clutch | Åpne stopperen |
 | real.action.close | Close clutch | Lukk stopperen |
 | real.action.onWinch | Put on winch | Legg på vinsj |
@@ -2804,19 +2836,19 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.action.intoJaw | Into self-tailer | Inn i selvtaileren |
 | real.action.outOfJaw | Out of self-tailer | Ut av selvtaileren |
 | real.action.ease | Ease (hold) | Fire (hold) |
-| real.action.easeAria | Ease the rope out by hand (hold to keep easing) | Fire tauet ut for hånd (hold for å fortsette å fire) |
+| real.action.easeAria | Ease the line out by hand (hold to keep easing) | Fire tauet ut for hånd (hold for å fortsette å fire) |
 | real.action.winch | Winch in (hold) | Vinsj inn (hold) |
 | real.action.pull | Pull in by hand (hold) | Hal inn for hånd (hold) |
-| real.alert.running | Rope running at {station}: “{label}” | Tau løper ut ved {station}: «{label}» |
+| real.alert.running | Line running at {station}: “{label}” | Tau løper ut ved {station}: «{label}» |
 | real.alert.cutOut | Winch cut out at {station} | Vinsjen koblet ut ved {station} |
 | real.helm.hint | The helm: the wheel turns the rudder, the lever works the engine. | Rorplassen: rattet dreier roret, spaken styrer motoren. |
-| real.how.title | How to work a rope | Slik betjener du et tau |
-| real.how.1 | 1. A clutch (a lock on the rope) holds it when closed. Drag its lever up to open it. A closed clutch still lets the winch pull the rope in. | 1. En stopper (en lås på tauet) holder tauet når den er lukket. Dra spaken opp for å åpne den. En lukket stopper lar fortsatt vinsjen hale tauet inn. |
-| real.how.2 | 2. Drag the rope's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way). To take the rope off the winch again, circle anticlockwise until it shows 0 turns, then drag the tail back up to its clutch. | 2. Dra tauenden til vinsjen, og sirkel så med fingeren rundt trommelen med klokken: hver sirkel legger på et slag. Mot klokken tar du av et slag (eller legger det feil vei). For å ta tauet av vinsjen igjen sirkler du mot klokken til det står 0 slag, og drar så tauenden tilbake opp til stopperen. |
-| real.how.3 | 3. Drag the tail into the jaw on top (the self-tailer) so the winch holds it, then hold the winch button to pull the rope in. | 3. Dra tauenden inn i kjeften på toppen (selvtaileren) slik at vinsjen holder den, og hold så vinsjknappen inne for å hale tauet inn. |
-| real.how.4 | 4. To ease (let out): open the clutch, take the tail out of the jaw and drag it away from the winch. About 2 turns ease smoothly; with 4 the rope jerks. | 4. For å fire (slippe ut): åpne stopperen, ta tauenden ut av kjeften og dra den bort fra vinsjen. Omtrent 2 slag gir jevn fiing; med 4 rykker tauet. |
-| real.how.5 | 5. Open a loaded clutch with nothing holding the tail and the rope runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm. | 5. Åpner du en belastet stopper uten at noe holder tauenden, løper tauet fort ut. Ta belastningen på vinsjen først. Du står på ett sted om gangen: bytt med Babord, Styrbord og Rorplass. |
-| real.notice.turnsOn | Take the turns off first: circle the drum anticlockwise until it says 0 turns, then drag the rope back to its clutch. | Ta slagene av først: sirkel trommelen mot klokken til det står 0 slag, og dra så tauet tilbake til stopperen. |
+| real.how.title | How to work a line | Slik betjener du et tau |
+| real.how.1 | 1. A clutch (a lock on the line) holds it when closed. Drag its lever up to open it. A closed clutch still lets the winch pull the line in. | 1. En stopper (en lås på tauet) holder tauet når den er lukket. Dra spaken opp for å åpne den. En lukket stopper lar fortsatt vinsjen hale tauet inn. |
+| real.how.2 | 2. Drag the line's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way). To take the line off the winch again, circle anticlockwise until it shows 0 turns, then drag the tail back up to its clutch. | 2. Dra tauenden til vinsjen, og sirkel så med fingeren rundt trommelen med klokken: hver sirkel legger på et slag. Mot klokken tar du av et slag (eller legger det feil vei). For å ta tauet av vinsjen igjen sirkler du mot klokken til det står 0 slag, og drar så tauenden tilbake opp til stopperen. |
+| real.how.3 | 3. Drag the tail into the jaw on top (the self-tailer) so the winch holds it, then hold the winch button to pull the line in. | 3. Dra tauenden inn i kjeften på toppen (selvtaileren) slik at vinsjen holder den, og hold så vinsjknappen inne for å hale tauet inn. |
+| real.how.4 | 4. To ease (let a line run out): open the clutch, take the tail out of the jaw and drag it away from the winch. About 2 turns ease smoothly; with 4 the line jerks. | 4. For å fire (slippe ut): åpne stopperen, ta tauenden ut av kjeften og dra den bort fra vinsjen. Omtrent 2 slag gir jevn fiing; med 4 rykker tauet. |
+| real.how.5 | 5. Open a loaded clutch with nothing holding the tail and the line runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm. | 5. Åpner du en belastet stopper uten at noe holder tauenden, løper tauet fort ut. Ta belastningen på vinsjen først. Du står på ett sted om gangen: bytt med Babord, Styrbord og Rorplass. |
+| real.notice.turnsOn | Take the turns off first: circle the drum anticlockwise until it says 0 turns, then drag the line back to its clutch. | Ta slagene av først: sirkel trommelen mot klokken til det står 0 slag, og dra så tauet tilbake til stopperen. |
 | real.station.mast | Mast | Mast |
 | real.drawing.mast | Mast station seen from above, forward is up: the in-mast furling gearbox with its IN/OUT switch and the socket for the winch handle | Mastplassen sett ovenfra, forover er opp: rullegiret i masten med IN/OUT-bryteren og uttaket for vinsjsveiven |
 | real.strain.label | load | belastning |
@@ -2824,9 +2856,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.strain.handle | The handle needs about {n} N; you can push about {max} N. | Sveiven trenger omtrent {n} N; du kan skyve omtrent {max} N. |
 | real.handle.title | Winch handle | Vinsjsveiv |
 | real.handle.hereStowed | The winch handle lies here. | Vinsjsveiven ligger her. |
-| real.handle.hereWinch | The winch handle is in this winch. Circle its grip to crank: clockwise is 1st gear (fast), anticlockwise 2nd gear (slow, about 4 times stronger). Both pull the rope in. To take the handle out, drag its grip onto the handle slot. | Vinsjsveiven sitter i denne vinsjen. Sirkel med gripet for å sveive: med klokken er 1. gir (raskt), mot klokken 2. gir (sakte, omtrent 4 ganger sterkere). Begge haler tauet inn. For å ta sveiven ut drar du gripet til sveivfestet. |
+| real.handle.hereWinch | The winch handle is in this winch. Circle its grip to crank: clockwise is 1st gear (fast), anticlockwise 2nd gear (slow, about 4 times stronger). Both pull the line in. To take the handle out, drag its grip onto the handle slot. | Vinsjsveiven sitter i denne vinsjen. Sirkel med gripet for å sveive: med klokken er 1. gir (raskt), mot klokken 2. gir (sakte, omtrent 4 ganger sterkere). Begge haler tauet inn. For å ta sveiven ut drar du gripet til sveivfestet. |
 | real.handle.hereGearbox | The winch handle is in the gearbox. Circle its grip to crank: the main rolls the way the switch says. To take the handle out, drag its grip onto the handle slot. | Vinsjsveiven sitter i giret. Sirkel med gripet for å sveive: storseilet ruller den veien bryteren sier. For å ta sveiven ut drar du gripet til sveivfestet. |
-| real.handle.carried | You carry the winch handle. Lay it down (tap the handle slot, or “Leave the handle here”) before you work a rope. | Du bærer vinsjsveiven. Legg den fra deg (trykk på sveivfestet, eller «Legg sveiven her») før du betjener et tau. |
+| real.handle.carried | You carry the winch handle. Lay it down (tap the handle slot, or “Leave the handle here”) before you work a line. | Du bærer vinsjsveiven. Legg den fra deg (trykk på sveivfestet, eller «Legg sveiven her») før du betjener et tau. |
 | real.handle.awayStowed | The winch handle is at {station}. | Vinsjsveiven er ved {station}. |
 | real.handle.awaySocket | The winch handle is in the socket at {station}. | Vinsjsveiven sitter i uttaket ved {station}. |
 | real.handle.take | Take the handle | Ta sveiven |
@@ -2837,16 +2869,16 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.handle.crankCw | Crank ↻ 1st gear (hold) | Sveiv ↻ 1. gir (hold) |
 | real.handle.crankCcw | Crank ↺ 2nd gear (hold) | Sveiv ↺ 2. gir (hold) |
 | real.handle.crank | Crank (hold) | Sveiv (hold) |
-| real.handle.cranking | Cranking: {speed} m of rope a second. | Sveiver: {speed} m tau i sekundet. |
+| real.handle.cranking | Cranking: {speed} m of line a second. | Sveiver: {speed} m tau i sekundet. |
 | real.handleNote.stallGearbox | Too heavy to crank: luff up (turn towards the wind) or ease the main sheet so the sail stops pulling. | For tungt å sveive: luff opp (sving mot vinden) eller fire storskjøtet slik at seilet slutter å trekke. |
 | real.handleNote.gearboxIn | The main is fully rolled in. | Storseilet er helt rullet inn. |
 | real.handleNote.gearboxOut | The main is fully out. To roll it in, set the switch to IN. | Storseilet er helt ute. For å rulle det inn, sett bryteren til IN. |
-| real.handleNote.noRope | No rope on this winch: the handle just turns the empty drum. | Ikke noe tau på denne vinsjen: sveiven dreier bare den tomme trommelen. |
+| real.handleNote.noRope | No line on this winch: the handle just turns the empty drum. | Ikke noe tau på denne vinsjen: sveiven dreier bare den tomme trommelen. |
 | real.note.stallFirst | Too heavy for 1st gear: the handle will not turn. Crank anticlockwise instead (2nd gear: slower, about 4 times stronger). | For tungt for 1. gir: sveiven vil ikke dreie. Sveiv mot klokken i stedet (2. gir: saktere, omtrent 4 ganger sterkere). |
-| real.note.stallSecond | Too heavy even in 2nd gear: luff up (turn towards the wind), ease something else, or check for a fighting rope. | For tungt selv i 2. gir: luff opp (sving mot vinden), fire noe annet, eller se etter et tau som motarbeider. |
-| real.note.stuckFighting | The handle will not turn: this rope pulls against another one (fighting). Ease the other rope first. | Sveiven vil ikke dreie: dette tauet trekker mot et annet (motarbeider). Fire det andre tauet først. |
-| real.note.stuckEnd | The handle will not turn: the rope is fully in. | Sveiven vil ikke dreie: tauet er helt inne. |
-| real.note.stuckBlocked | The handle will not turn: the sail cannot roll because other ropes are held. Open {clutches} so they can run out. | Sveiven vil ikke dreie: seilet kan ikke rulle fordi andre tau holdes. Åpne {clutches} slik at de kan løpe ut. |
+| real.note.stallSecond | Too heavy even in 2nd gear: luff up (turn towards the wind), ease something else, or check for a fighting line. | For tungt selv i 2. gir: luff opp (sving mot vinden), fire noe annet, eller se etter et tau som motarbeider. |
+| real.note.stuckFighting | The handle will not turn: this line pulls against another one (fighting). Ease the other line first. | Sveiven vil ikke dreie: dette tauet trekker mot et annet (motarbeider). Fire det andre tauet først. |
+| real.note.stuckEnd | The handle will not turn: the line is fully in. | Sveiven vil ikke dreie: tauet er helt inne. |
+| real.note.stuckBlocked | The handle will not turn: the sail cannot roll because other lines are held. Open {clutches} so they can run out. | Sveiven vil ikke dreie: seilet kan ikke rulle fordi andre tau holdes. Åpne {clutches} slik at de kan løpe ut. |
 | real.gearbox.title | In-mast furling gearbox | Rullegir i masten |
 | real.gearbox.mast | MAST | MAST |
 | real.gearbox.caption | Furling gearbox | Rullegir |
@@ -2865,15 +2897,15 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.notice.handleNotIn | Put the winch handle in the socket first. | Sett vinsjsveiven i uttaket først. |
 | real.notice.noSocket | The winch handle fits nowhere here. | Vinsjsveiven passer ingen steder her. |
 | real.notice.gearboxNotHere | The gearbox switch is at the {station}. | Girbryteren er ved {station}. |
-| real.how.6 | 6. The winch handle (one on board) is a backup, and every place has a slot where it lies. Tap the slot to take the handle. In a winch it cranks the drum by hand: clockwise is fast but weak, anticlockwise slow but strong. To take it out again, drag its grip onto the slot (the handle only comes out when you let go on the slot). While you carry the handle your hand is full: tap the slot to lay it down before you work a rope. At the Mast it fits the furling gearbox: set the switch to IN, put the handle in and circle its grip to roll the main in, with the “rolls out” line and the outhaul clutches open. | 6. Vinsjsveiven (det er én om bord) er en reserve, og hver plass har et sveivfeste der den ligger. Trykk på sveivfestet for å ta sveiven. I en vinsj sveiver den trommelen for hånd: med klokken er raskt men svakt, mot klokken sakte men sterkt. For å ta den ut igjen drar du gripet til sveivfestet (sveiven kommer bare ut når du slipper på festet). Mens du bærer sveiven er hånden full: trykk på sveivfestet for å legge den fra deg før du betjener et tau. Ved masten passer den i rullegiret: sett bryteren til IN, sett sveiven i og sirkel med gripet for å rulle storseilet inn, med «ruller ut»-tauet og utholerstopperne åpne. |
+| real.how.6 | 6. The winch handle (one on board) is a backup, and every place has a slot where it lies. Tap the slot to take the handle. In a winch it cranks the drum by hand: clockwise is fast but weak, anticlockwise slow but strong. To take it out again, drag its grip onto the slot (the handle only comes out when you let go on the slot). While you carry the handle your hand is full: tap the slot to lay it down before you work a line. At the Mast it fits the furling gearbox: set the switch to IN, put the handle in and circle its grip to roll the main in, with the “rolls out” line and the outhaul clutches open. | 6. Vinsjsveiven (det er én om bord) er en reserve, og hver plass har et sveivfeste der den ligger. Trykk på sveivfestet for å ta sveiven. I en vinsj sveiver den trommelen for hånd: med klokken er raskt men svakt, mot klokken sakte men sterkt. For å ta den ut igjen drar du gripet til sveivfestet (sveiven kommer bare ut når du slipper på festet). Mens du bærer sveiven er hånden full: trykk på sveivfestet for å legge den fra deg før du betjener et tau. Ved masten passer den i rullegiret: sett bryteren til IN, sett sveiven i og sirkel med gripet for å rulle storseilet inn, med «ruller ut»-tauet og utholerstopperne åpne. |
 | real.practice.title | Practice: the main furling line slips | Øving: rulletauet til storseilet glir |
 | real.practice.text | Furling the main at 27 kn while the sail still pulls: the “rolls main in” line has only 1 turn on the Starboard winch. Hold the winch button: the line slips. Fix it by hand at the mast: go to Port and take the winch handle, go to Mast, set the switch to IN, put the handle in and circle its grip. The “rolls out” line and the outhaul are already open. (Two turns on the winch, or luffing first, would also work.) | Å rulle inn storseilet ved 27 kn mens seilet fortsatt trekker: «ruller storseilet inn»-tauet har bare 1 slag på Styrbord vinsj. Hold vinsjknappen: tauet glir. Fiks det for hånd ved masten: gå til Babord og ta vinsjsveiven, gå til Mast, sett bryteren til IN, sett sveiven i og sirkel med gripet. «Ruller ut»-tauet og utholeren er allerede åpne. (To slag på vinsjen, eller å luffe opp først, ville også virke.) |
 | real.practice.button | Set it up | Sett det opp |
 | real.status.haulLoad | Pulling it in takes about {kn} kN. | Å hale det inn tar omtrent {kn} kN. |
 | real.gearbox.flipToIn | Flip the switch left to IN (rolls the main in) | Vipp bryteren til venstre til IN (ruller storseilet inn) |
 | real.gearbox.flipToOut | Flip the switch right to OUT (rolls the main out) | Vipp bryteren til høyre til OUT (ruller storseilet ut) |
-| real.notice.wrongWayJaw | Wrapped the wrong way, the rope cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Lagt feil vei, så tauet kan ikke gå inn i selvtaileren. Ta slagene av og legg det med klokken. |
-| real.notice.closedOnRunning | The clutch stopped the running rope. On a real boat, snapping a clutch shut on a loaded rope that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Stopperen stoppet det løpende tauet. På en ekte båt kan det å smekke en stopper igjen på et belastet tau som løper, rive av kappen: ta belastningen på vinsjen først, og åpne eller lukk så stopperen. |
+| real.notice.wrongWayJaw | Wrapped the wrong way, the line cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Lagt feil vei, så tauet kan ikke gå inn i selvtaileren. Ta slagene av og legg det med klokken. |
+| real.notice.closedOnRunning | The clutch stopped the running line. On a real boat, snapping a clutch shut on a loaded line that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Stopperen stoppet det løpende tauet. På en ekte båt kan det å smekke en stopper igjen på et belastet tau som løper, rive av kappen: ta belastningen på vinsjen først, og åpne eller lukk så stopperen. |
 | real.notice.handleInHand | You are holding the winch handle: lay it down first (tap the handle slot, or “Leave the handle here”). Remember where you left it. | Du holder vinsjsveiven: legg den fra deg først (trykk på sveivfestet, eller «Legg sveiven her»). Husk hvor du la den. |
 | real.handle.slot.rest | tap to take | trykk for å ta |
 | real.handle.slot.carried | tap: lay down | trykk: legg fra deg |
@@ -2886,7 +2918,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.helm.slot | The helm has a slot for the winch handle too. | Rorplassen har også et feste for vinsjsveiven. |
 | real.helm.away | You are at the {station} station. | Du er på plassen {station}. |
 | real.helm.go | Go to the helm | Gå til rorplassen |
-| real.atHelm | You are at the helm. Choose a station to work the ropes. | Du er på rorplassen. Velg en plass for å betjene tauene. |
+| real.atHelm | You are at the helm. Choose a station to work the lines. | Du er på rorplassen. Velg en plass for å betjene tauene. |
 | boat.mode.label | Boat | Båt |
 | boat.mode.held | Held still | Holdt i ro |
 | boat.mode.sailing | Sailing | Seiler |
@@ -2946,7 +2978,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | trim.state.furled | Furled | Rullet inn |
 | trim.state.torn | Torn | Revnet |
 | trim.hint.good | Both telltales stream. | Begge vimplene strømmer. |
-| trim.hint.luffing | Pull the sheet in until the front stops flapping. | Hal skjøtet inn til forkanten slutter å slå. |
+| trim.hint.luffing | Trim the sheet until the front stops flapping. | Hal skjøtet inn til forkanten slutter å slå. |
 | trim.hint.stalled | Ease the sheet: the leeward telltales hang. | Fire skjøtet: vimplene på lesiden henger. |
 | trim.hint.pushed | On a run the wind just pushes the sail. | På lens skyver vinden bare på seilet. |
 | trim.hint.blanketed | The mainsail is taking the jib's wind. | Storseilet tar vinden til fokken. |
@@ -2957,7 +2989,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | trim.repair | Repair sails | Reparer seil |
 | trim.badge | ⚠ sail | ⚠ seil |
 | trim.badgeTitle | A sail is worn out from flapping (flogging). Tap to learn more. | Et seil er slitt av å slå (flogging). Trykk for å lære mer. |
-| trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is let out too far (luffing). The leeward one hanging: the sail is pulled in too far (stalled). | En vimpel er et kort bånd på seilet. Strømmer den bakover: god strømning. Løfter den på luvsiden seg: seilet er fiet for langt ut (slår). Henger den på lesiden: seilet er hentet for langt inn (stallet). |
+| trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is eased too far (luffing). The leeward one hanging: the sail is trimmed too far (stalled). | En vimpel er et kort bånd på seilet. Strømmer den bakover: god strømning. Løfter den på luvsiden seg: seilet er fiet for langt ut (slår). Henger den på lesiden: seilet er hentet for langt inn (stallet). |
 | debug.motion | Boat V/yaw | Boat V/yaw |
 | debug.lowSpeed | Low speed | Low speed |
 | debug.winds | TWA/TWS | TWA/TWS |
@@ -3124,7 +3156,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | card.more | More | Mer |
 | ropes.strip.learn | Read more in Learn | Les mer under Lær |
 | learn.empty | Tap any part of the boat, then “More” on its card, to read about it here. | Trykk på en hvilken som helst del av båten, og så på «Mer» på kortet, for å lese om den her. |
-| learn.kind.rope | Rope | Tau |
+| learn.kind.rope | Line | Tau |
 | learn.kind.sail | Sail | Seil |
 | learn.kind.sailpart | Part of a sail | Del av et seil |
 | learn.kind.part | Part of the boat | Del av båten |
@@ -3162,7 +3194,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | learn.matched | also: {term} | også: {term} |
 | learn.noMatch | Nothing found. Try another word, or a word printed on the boat. | Ingenting funnet. Prøv et annet ord, eller et ord som står skrevet på båten. |
 | learn.back | ‹ All entries | ‹ Alle oppføringer |
-| learn.group.ropes | Ropes ({count}) | Tau ({count}) |
+| learn.group.ropes | Lines ({count}) | Tau ({count}) |
 | learn.group.sails | Sails and their parts ({count}) | Seil og deler av dem ({count}) |
 | learn.group.rig | Mast and rigging ({count}) | Mast og rigg ({count}) |
 | learn.group.hull | Hull and underwater ({count}) | Skrog og under vann ({count}) |
@@ -3205,8 +3237,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | cam.moveTouch | Move the camera: one finger turns, pinch to zoom, two fingers slide. Double-tap a spot to turn around it. | Flytt kameraet: én finger dreier, klyp for å zoome, to fingre skyver. Dobbelttrykk på et sted for å dreie rundt det. |
 | cam.moveMouse | Move the camera: drag to turn, wheel to zoom towards the pointer, right drag (or Shift + drag) to slide. Double-click a spot to turn around it. | Flytt kameraet: dra for å dreie, bruk hjulet for å zoome mot pekeren, høyredra (eller Shift + dra) for å skyve. Dobbeltklikk på et sted for å dreie rundt det. |
 | helmView.group | Helm view | Rorvisning |
-| helmView.ropes | Ropes | Tau |
-| helmView.ropesLabel | Look at this side's ropes and winch | Se på tauene og vinsjen på denne siden |
+| helmView.ropes | Lines | Tau |
+| helmView.ropesLabel | Look at this side's lines and winch | Se på tauene og vinsjen på denne siden |
 | helmView.panel | Panel | Panel |
 | helmView.panelLabel | Look at the panel on the pedestal | Se på panelet på rattsøylen |
 | helmView.otherWheel | Other wheel | Det andre rattet |
@@ -3223,8 +3255,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | mode.harbour | Harbour | Havn |
 | mode.section | Mode: {name} | Modus: {name} |
 | mode.learn.desc | For looking things up. The Learn list comes first; tap any part of the boat to read about it. | For å slå opp ting. Lær-listen kommer først; trykk på en hvilken som helst del av båten for å lese om den. |
-| mode.easy.desc | For learning what each rope does. Every rope is a slider and the boat answers at once. | For å lære hva hvert tau gjør. Hvert tau er en glidebryter, og båten svarer med en gang. |
-| mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the ropes, as on the boat. | For å øve som på dekk. Stoppere, vinsjer og hånden din betjener tauene, som på båten. |
+| mode.easy.desc | For learning what each line does. Every line is a slider and the boat answers at once. | For å lære hva hvert tau gjør. Hvert tau er en glidebryter, og båten svarer med en gang. |
+| mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the lines, as on the boat. | For å øve som på dekk. Stoppere, vinsjer og hånden din betjener tauene, som på båten. |
 | mode.harbour.desc | For bringing her in and out of a harbour. The engine and the thrusters come first. | For å føre båten inn og ut av en havn. Motoren og baug- og hekkpropellen kommer først. |
 | mode.exercise | Exercises | Øvelser |
 | mode.exercise.desc | For practising step by step. Pick an exercise: it sets up the boat and the wind, shows each step and ticks it off when you get it right. | For å øve steg for steg. Velg en øvelse: den setter opp båten og vinden, viser hvert steg og krysser det av når du får det riktig. |
@@ -3244,8 +3276,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.happening | What is happening | Hva som skjer |
 | exercise.action | The right action | Riktig handling |
 | exercise.mistake | The typical mistake | Den typiske feilen |
-| exercise.ropes | Ropes | Tau |
-| exercise.ropes.hint | Easy: every rope is a slider. Realistic: clutches and winches, as on the boat. | Enkel: hvert tau er en glidebryter. Realistisk: stoppere og vinsjer, som på båten. |
+| exercise.ropes | Lines | Tau |
+| exercise.ropes.hint | Easy: every line is a slider. Realistic: clutches and winches, as on the boat. | Enkel: hvert tau er en glidebryter. Realistisk: stoppere og vinsjer, som på båten. |
 | exercise.level | Level | Nivå |
 | exercise.level.easy | Easy | Lett |
 | exercise.level.normal | Normal | Normal |
@@ -3256,7 +3288,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.crew.crew | With crew | Med mannskap |
 | exercise.crew.hint | Alone: no Pause, so set the autopilot before you leave the wheel. With crew: Pause stops time while you set up several people's work. | Alene: ingen Pause, så sett autopiloten før du forlater rattet. Med mannskap: Pause stopper tiden mens du setter opp arbeidet til flere personer. |
 | exercise.alonePause | Alone: no Pause in this exercise | Alene: ingen Pause i denne øvelsen |
-| exercise.aloneNote | Alone: one station at a time and no Pause. The autopilot steers while you work the ropes. | Alene: én plass om gangen og ingen Pause. Autopiloten styrer mens du betjener tauene. |
+| exercise.aloneNote | Alone: one station at a time and no Pause. The autopilot steers while you work the lines. | Alene: én plass om gangen og ingen Pause. Autopiloten styrer mens du betjener tauene. |
 | exercise.steps | Steps | Steg |
 | exercise.start | Do it myself | Gjør det selv |
 | exercise.list | Back to the list | Tilbake til listen |
@@ -3355,7 +3387,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | debrief.rope.clutchOpen | Opened the clutch: {label} | Åpnet stopperen: {label} |
 | debrief.rope.clutchClose | Closed the clutch: {label} | Lukket stopperen: {label} |
 | debrief.rope.onWinch | Put on the winch: {label} | La på vinsjen: {label} |
-| debrief.rope.offWinch | Took the rope off the {side} winch | Tok tauet av vinsjen på {side} |
+| debrief.rope.offWinch | Took the line off the {side} winch | Tok tauet av vinsjen på {side} |
 | debrief.rope.turn | Changed the turns on the {side} winch | Endret slagene på vinsjen på {side} |
 | debrief.rope.selfTailerIn | Into the self-tailer ({side} winch) | Inn i selvtaileren (vinsjen på {side}) |
 | debrief.rope.selfTailerOut | Out of the self-tailer ({side} winch) | Ut av selvtaileren (vinsjen på {side}) |
@@ -3379,7 +3411,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | debrief.fenders.in | Fenders in | Fendere inn |
 | section.conditions | Conditions | Forhold |
 | section.explain | Explain: {name} | Forklaring: {name} |
-| quick.easy | Tap a rope: its − and + appear here. | Trykk på et tau: − og + vises her. |
+| quick.easy | Tap a line: its − and + appear here. | Trykk på et tau: − og + vises her. |
 | quick.realistic | Pull the panel up to work the clutches and winches. | Dra panelet opp for å betjene stoppere og vinsjer. |
 | quick.learn | Tap any part of the boat to learn about it. | Trykk på en hvilken som helst del av båten for å lære om den. |
 | quick.read | Read | Les |
@@ -3407,7 +3439,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | status.tag.danger | Danger | Fare |
 | status.tag.damage | Damage | Skade |
 | status.tag.sail | Sail | Seil |
-| status.tag.rope | Rope | Tau |
+| status.tag.rope | Line | Tau |
 | status.tag.gear | Gear | Utstyr |
 | status.tag.steering | Steering | Styring |
 | layout.grip | Move {name} | Flytt {name} |
@@ -3494,7 +3526,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | damage.lazyLine.rudder | A neighbour's lazy line is under our rudder: it can catch. Neutral, and drift clear. | En nabos lazyline ligger under roret vårt: den kan hekte seg fast. Sett motoren i fri og la båten drive klar. |
 | damage.fenderLost | A {side} fender was torn off and lost (fenders out at speed). | En fender på {side} ble revet av og gikk tapt (fendere ute i fart). |
 | damage.propeller | A line got caught in the propeller and stopped the engine. | En line satte seg fast i propellen og stoppet motoren. |
-| lines.title | Lines | Fortøyninger |
+| lines.title | Mooring lines | Fortøyninger |
 | lines.name.sp | Stern line, port | Hekkfortøyning, babord |
 | lines.name.ss | Stern line, starboard | Hekkfortøyning, styrbord |
 | lines.name.ll | Lazy line (to the bow) | Lazyline (til baugen) |
@@ -3570,18 +3602,18 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | anchor.cutOut | The windlass stopped: too much load. Motor gently towards the anchor. | Ankerspillet stoppet: for stor belastning. Motor sakte mot ankeret. |
 | anchor.scope | Depth {depth} m (with the roller {eff} m) · scope {ratio} : 1 | Dybde {depth} m (med rullen {eff} m) · kjettingforhold {ratio} : 1 |
 | real.station.bow | Bow | Baug |
-| real.bow.hint | At the bow: the windlass lets the anchor chain out and brings it in. Hold a button; let go to stop. | Ved baugen: ankerspillet fyrer ut ankerkjettingen og henter den inn. Hold en knapp; slipp for å stoppe. |
+| real.bow.hint | At the bow: the windlass pays the anchor chain out and brings it in. Hold a button; let go to stop. | Ved baugen: ankerspillet fyrer ut ankerkjettingen og henter den inn. Hold en knapp; slipp for å stoppe. |
 | anchor.enough | Enough chain for the rules. | Nok kjetting etter reglene. |
-| anchor.more | Let out {m} m more (the rules ask for {need} m). | Fire ut {m} m til (reglene krever {need} m). |
+| anchor.more | Pay out {m} m more (the rules ask for {need} m). | Fire ut {m} m til (reglene krever {need} m). |
 | anchor.alarm | Anchor alarm: the anchor is dragging. | Ankeralarm: ankeret dreger. |
 | anchor.silence | OK | OK |
-| anchor.hint | To anchor: head into the wind and stop, let the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | For å ankre: gå opp mot vinden og stopp, fire ut kjettingen mens båten driver bakover til kontrollen sier nok (kjettingforhold: kjetting ute mot dybden; minst 4 × dybden pluss høyden på rullen, eller 3 båtlengder, det som er mest), gå så forsiktig akterover (en tredjedel) i noen sekunder for å grave ankeret ned. Sand og leire holder godt, tang og fjell dårlig. |
+| anchor.hint | To anchor: head into the wind and stop, pay the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | For å ankre: gå opp mot vinden og stopp, fire ut kjettingen mens båten driver bakover til kontrollen sier nok (kjettingforhold: kjetting ute mot dybden; minst 4 × dybden pluss høyden på rullen, eller 3 båtlengder, det som er mest), gå så forsiktig akterover (en tredjedel) i noen sekunder for å grave ankeret ned. Sand og leire holder godt, tang og fjell dårlig. |
 | exercise.bar.aria | Controls for this step | Kontroller for dette steget |
 | exercise.bar.label | This step | Dette steget |
 | exercise.bar.all | All controls | Alle kontroller |
 | exercise.bar.nothing | Nothing to do in this step: watch. | Ingenting å gjøre i dette steget: se på. |
 | exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button | Taster: 1–4 velger en rad · ← → første eller siste knapp · Mellomrom: første knapp |
-| exercise.bar.sheet | − hauls in · + lets out | − haler inn · + fyrer ut |
+| exercise.bar.sheet | − pulls in · + eases | − haler inn · + fyrer ut |
 | exercise.bar.furl | − rolls in · + rolls out | − ruller inn · + ruller ut |
 | exercise.bar.rudder | − to port · + to starboard | − til babord · + til styrbord |
 | exercise.bar.autopilot | Autopilot | Autopilot |
@@ -3598,10 +3630,12 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.bar.fendersIn | In | Inn |
 | exercise.bar.fendersOut | Out | Ut |
 | exercise.bar.windlass | Anchor chain | Ankerkjetting |
-| exercise.bar.ropesRealistic | Ropes: work them at the stations | Tau: betjen dem på plassene |
+| exercise.bar.ropesRealistic | Lines: work them at the stations | Tau: betjen dem på plassene |
 | exercise.bar.stations | Stations | Plasser |
 | exercise.bar.lessAria | Less: {name} | Mindre: {name} |
 | exercise.bar.moreAria | More: {name} | Mer: {name} |
+| exercise.bar.trimAria | Trim {name} | Trim {name} |
+| exercise.bar.easeAria | Ease {name} | Fire {name} |
 | exercise.bar.asternAria | Engine lever 5 % towards astern | Motorspaken 5 % mot akterover |
 | exercise.bar.aheadAria | Engine lever 5 % towards ahead | Motorspaken 5 % mot forover |
 | exercise.watch | Watch it | Se på |
@@ -3620,8 +3654,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.demo.back | Back to the start of the step | Tilbake til starten av steget |
 | exercise.demo.doIt | Now do it myself | Nå gjør jeg det selv |
 | exercise.bar.otherStation | Nothing at this station for this step. The dot shows where to go. | Ingenting på denne plassen for dette steget. Prikken viser hvor du skal gå. |
-| exercise.bar.clutchOpen | Open: the rope can run | Åpen: tauet kan løpe |
-| exercise.bar.clutchClosed | Closed: holds the rope | Lukket: holder tauet |
+| exercise.bar.clutchOpen | Open: the line can run | Åpen: tauet kan løpe |
+| exercise.bar.clutchClosed | Closed: holds the line | Lukket: holder tauet |
 | exercise.bar.open | Open | Åpne |
 | exercise.bar.close | Close | Lukk |
 | exercise.bar.turns | Turns: {n} | Slag: {n} |

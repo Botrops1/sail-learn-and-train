@@ -11,10 +11,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Vang | Baumniederholer |
 | Andere Namen | kicker — British<br>kicking strap — British<br>boom vang | Niederholer |
 | Kurz | Pulls the boom down, which keeps the mainsail flatter and stops its top twisting open. | Zieht den Baum nach unten, wodurch das Großsegel flacher bleibt und sein oberer Teil nicht im Twist aufgeht. |
-| Was es tut / was es bedeutet | The vang runs from low on the mast to the underside of the boom. Hauled, it holds the boom down, so the sail stays flatter with less twist. Eased, the boom end rises and the top of the sail twists open. Once the mainsheet is eased well out, the vang, not the sheet, decides how high the boom sits. | Der Niederholer läuft von tief am Mast zur Unterseite des Baums. Dichtgeholt hält er den Baum unten, sodass das Segel flacher bleibt und weniger Twist hat. Gefiert steigt das Baumende und der obere Teil des Segels geht im Twist auf. Ist die Großschot weit gefiert, entscheidet nicht mehr die Schot, sondern der Niederholer, wie hoch der Baum steht. |
-| Auf diesem Boot | A rigid vang (a strut with a gas spring inside) with a rope tackle. The spring holds the boom up, so the boom does not drop when the vang is eased; the rope only pulls it down. Its clutch is on the port side, labelled “Vang”. | Ein starrer Niederholer (eine Stange mit Gasdruckfeder innen) mit Leinentalje. Die Feder hält den Baum oben, damit er nicht herunterfällt, wenn der Niederholer gefiert wird; die Leine zieht ihn nur nach unten. Seine Klemme sitzt an Backbord und ist mit „Vang“ beschriftet. |
-| Typische Fehler | Relying on the mainsheet to hold the boom down on a reach. → Far out, the sheet pulls sideways, not down, and the boom lifts. Haul the vang to hold it down.<br>Hauling the vang and the topping lift tight at the same time. → They pull against each other (both ropes turn red in the app). Ease the topping lift once the sail is set. | Sich darauf verlassen, dass die Großschot den Baum auf einem Raumschotskurs unten hält. → Weit außen zieht die Schot seitlich, nicht nach unten, und der Baum hebt sich. Holen Sie den Niederholer dicht, um ihn unten zu halten.<br>Niederholer und Toppnant gleichzeitig dichtziehen. → Sie ziehen gegeneinander (beide Leinen werden in der App rot). Fieren Sie den Toppnant, sobald das Segel steht. |
-| „Zeigen“ | Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and haul it in: the boom comes down and the sail flattens. | Wind 20 kn von der Seite, Niederholer ganz gefiert: das Baumende ist gestiegen und der obere Teil des Großsegels ist im Twist aufgegangen. Tippen Sie unten auf „Baumniederholer“ und holen Sie dicht: der Baum kommt herunter und das Segel wird flacher. |
+| Was es tut / was es bedeutet | The vang runs from low on the mast to the underside of the boom. Pulled on, it holds the boom down, so the sail stays flatter with less twist. Eased, the boom end rises and the top of the sail twists open. Once the mainsheet is eased well out, the vang, not the sheet, decides how high the boom sits. | Der Niederholer läuft von tief am Mast zur Unterseite des Baums. Dichtgeholt hält er den Baum unten, sodass das Segel flacher bleibt und weniger Twist hat. Gefiert steigt das Baumende und der obere Teil des Segels geht im Twist auf. Ist die Großschot weit gefiert, entscheidet nicht mehr die Schot, sondern der Niederholer, wie hoch der Baum steht. |
+| Auf diesem Boot | A rigid vang (a strut with a gas spring inside) with a tackle. The spring holds the boom up, so the boom does not drop when the vang is eased; the line only pulls it down. Its clutch is on the port side, labelled “Vang”. | Ein starrer Niederholer (eine Stange mit Gasdruckfeder innen) mit Leinentalje. Die Feder hält den Baum oben, damit er nicht herunterfällt, wenn der Niederholer gefiert wird; die Leine zieht ihn nur nach unten. Seine Klemme sitzt an Backbord und ist mit „Vang“ beschriftet. |
+| Typische Fehler | Relying on the mainsheet to hold the boom down on a reach. → Far out, the sheet pulls sideways, not down, and the boom lifts. Pull the vang on to hold it down.<br>Pulling the vang and the topping lift tight at the same time. → They pull against each other (both lines turn red in the app). Ease the topping lift once the sail is set. | Sich darauf verlassen, dass die Großschot den Baum auf einem Raumschotskurs unten hält. → Weit außen zieht die Schot seitlich, nicht nach unten, und der Baum hebt sich. Holen Sie den Niederholer dicht, um ihn unten zu halten.<br>Niederholer und Toppnant gleichzeitig dichtziehen. → Sie ziehen gegeneinander (beide Leinen werden in der App rot). Fieren Sie den Toppnant, sobald das Segel steht. |
+| „Zeigen“ | Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and pull it on: the boom comes down and the sail flattens. | Wind 20 kn von der Seite, Niederholer ganz gefiert: das Baumende ist gestiegen und der obere Teil des Großsegels ist im Twist aufgegangen. Tippen Sie unten auf „Baumniederholer“ und holen Sie dicht: der Baum kommt herunter und das Segel wird flacher. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -25,11 +25,11 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Jib sheet | Fockschot |
 | Andere Namen | headsail sheet | Vorsegelschot |
-| Kurz | The rope that sets how far the jib can swing out. | Die Leine, die festlegt, wie weit die Fock ausschwenken kann. |
-| Was es tut / was es bedeutet | Hauling the jib sheet in pulls the jib’s back corner towards the boat; easing it lets the wind push the jib out. On a self-tacking jib, easing mostly lets the top of the sail twist open rather than swinging the whole sail out. | Dichtholen der Fockschot zieht die hintere Ecke der Fock zum Boot hin; Fieren lässt den Wind die Fock ausschwenken. Bei einer Selbstwendefock lässt Fieren vor allem den oberen Teil des Segels im Twist aufgehen, statt das ganze Segel auszuschwenken. |
+| Kurz | The line that sets how far the jib can swing out. | Die Leine, die festlegt, wie weit die Fock ausschwenken kann. |
+| Was es tut / was es bedeutet | Trimming the jib sheet pulls the jib’s back corner towards the boat; easing it lets the wind push the jib out. On a self-tacking jib, easing mostly lets the top of the sail twist open rather than swinging the whole sail out. | Dichtholen der Fockschot zieht die hintere Ecke der Fock zum Boot hin; Fieren lässt den Wind die Fock ausschwenken. Bei einer Selbstwendefock lässt Fieren vor allem den oberen Teil des Segels im Twist aufgehen, statt das ganze Segel auszuschwenken. |
 | Auf diesem Boot | One sheet runs from the jib’s back corner to a car on a short track in front of the mast, with a 2:1 purchase (a pulley system that halves the pull), then down the mast and aft to the starboard clutches. The clutch says “Genoa sheet”, but the sail is a jib. Fully eased, the jib only reaches about 30° out. | Eine Schot läuft von der hinteren Ecke der Fock zu einem Wagen auf einer kurzen Schiene vor dem Mast, mit 2:1-Übersetzung (ein Flaschenzug, der den Zug halbiert), dann den Mast hinunter und achtern zu den Steuerbordklemmen. Die Klemme heißt „Genoa sheet“, das Segel ist aber eine Fock. Voll gefiert kommt die Fock nur etwa 30° nach außen. |
-| Typische Fehler | Easing it on a reach and expecting the jib to swing far out. → A self-tacking jib cannot go far out; easing more only twists its top open. Ease until its telltales stream, no further.<br>Furling the jib with the sheet still tight. → The jib stops rolling up. Ease the jib sheet first, then pull the furling line.<br>Hauling it hard in with the wind from the side. → The jib stalls: the telltales on its far side droop. Ease until they stream. | Sie auf einem Raumschotskurs fieren und erwarten, dass die Fock weit ausschwenkt. → Eine Selbstwendefock kann nicht weit ausschwenken; weiteres Fieren öffnet nur ihren oberen Teil im Twist. Fieren Sie, bis die Trimmfäden sauber auswehen, nicht weiter.<br>Die Fock einrollen, während die Schot noch dicht ist. → Die Fock rollt nicht weiter auf. Fieren Sie zuerst die Fockschot, dann ziehen Sie die Rollreffleine.<br>Sie bei Wind von der Seite hart dichtholen. → Die Fock reißt ab: die Trimmfäden auf ihrer Leeseite hängen herunter. Fieren Sie, bis sie auswehen. |
-| „Zeigen“ | Wind from the side and the jib sheet fully eased: the jib is only about 30° out, but its top has twisted open. Tap “Jib sheet” below and haul it in to see the jib flatten. | Wind von der Seite und die Fockschot voll gefiert: die Fock steht nur etwa 30° außen, aber ihr oberer Teil ist im Twist geöffnet. Tippen Sie unten auf „Fockschot“ und holen Sie dicht, um die Fock flacher zu sehen. |
+| Typische Fehler | Easing it on a reach and expecting the jib to swing far out. → A self-tacking jib cannot go far out; easing more only twists its top open. Ease until its telltales stream, no further.<br>Furling the jib with the sheet still tight. → The jib stops rolling up. Ease the jib sheet first, then pull the furling line.<br>Trimming it hard with the wind from the side. → The jib stalls: the telltales on its far side droop. Ease until they stream. | Sie auf einem Raumschotskurs fieren und erwarten, dass die Fock weit ausschwenkt. → Eine Selbstwendefock kann nicht weit ausschwenken; weiteres Fieren öffnet nur ihren oberen Teil im Twist. Fieren Sie, bis die Trimmfäden sauber auswehen, nicht weiter.<br>Die Fock einrollen, während die Schot noch dicht ist. → Die Fock rollt nicht weiter auf. Fieren Sie zuerst die Fockschot, dann ziehen Sie die Rollreffleine.<br>Sie bei Wind von der Seite hart dichtholen. → Die Fock reißt ab: die Trimmfäden auf ihrer Leeseite hängen herunter. Fieren Sie, bis sie auswehen. |
+| „Zeigen“ | Wind from the side and the jib sheet fully eased: the jib is only about 30° out, but its top has twisted open. Tap “Jib sheet” below and trim it to see the jib flatten. | Wind von der Seite und die Fockschot voll gefiert: die Fock steht nur etwa 30° außen, aber ihr oberer Teil ist im Twist geöffnet. Tippen Sie unten auf „Fockschot“ und holen Sie dicht, um die Fock flacher zu sehen. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -70,11 +70,11 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Mainsheet | Großschot |
 | Andere Namen | — | — |
-| Kurz | The rope that lets the boom and mainsail swing out, or pulls them back in. | Die Leine, die Baum und Großsegel ausschwenken lässt oder sie wieder hereinzieht. |
-| Was es tut / was es bedeutet | Easing (letting out) the mainsheet lets the wind push the boom further out; hauling it in pulls the boom back towards the middle. The rope only limits how far the boom can go: with the wind from ahead, easing it just makes it slack. Near the middle a little rope moves the boom a lot; far out, a lot of rope moves it only a little. | Fieren (Auslassen) der Großschot lässt den Wind den Baum weiter ausschwenken; Dichtholen zieht den Baum zurück zur Mitte. Die Leine begrenzt nur, wie weit der Baum ausschwenken kann: bei Wind von vorn macht Fieren sie nur lose. Nahe der Mitte bewegt wenig Leine den Baum weit; weit außen bewegt viel Leine ihn nur wenig. |
-| Auf diesem Boot | A German mainsheet: one rope with two ends, one at each side of the cockpit (the clutches say “Main sheet” and “MAIN SHEET”). It runs through three blocks under the boom and two spring-mounted blocks at the back of the coachroof. There is no traveller (a sliding car for the lower blocks). | Eine deutsche Großschot: eine Leine mit zwei Enden, eines an jeder Seite der Plicht (die Klemmen heißen „Main sheet“ und „MAIN SHEET“). Sie läuft über drei Blöcke unter dem Baum und zwei gefederte Blöcke am hinteren Ende des Deckshauses. Einen Traveller (eine verschiebbare Schiene für die unteren Blöcke) gibt es nicht. |
-| Typische Fehler | Easing it far more than the wind needs. → The mainsail flaps along its front edge. Haul in until the flapping just stops.<br>Keeping it hauled hard in a gust. → The boat heels a lot and turns into the wind by herself. Ease the mainsheet to let the gust out.<br>Opening its clutch under load with the rope not on a winch. → The rope runs out fast and the boom flies out. Put the rope on the winch first, then open the clutch. | Sie viel weiter fieren, als der Wind es verlangt. → Das Großsegel killt an seiner Vorderkante. Holen Sie dicht, bis das Killen gerade aufhört.<br>Sie in einer Bö hart dichtgeholt halten. → Das Boot krängt stark und schießt von selbst in den Wind. Fieren Sie die Großschot, um die Bö abzulassen.<br>Die Klemme unter Last öffnen, während die Leine nicht auf der Winsch ist. → Die Leine läuft schnell aus und der Baum fliegt hinaus. Legen Sie die Leine zuerst auf die Winsch, dann öffnen Sie die Klemme. |
-| „Zeigen“ | Wind from the side and the mainsheet eased to 60 %: the boom has swung well out. Tap “Mainsheet” below and haul it in: the boom comes back towards the middle. | Wind von der Seite und die Großschot auf 60 % gefiert: der Baum ist weit ausgeschwenkt. Tippen Sie unten auf „Großschot“ und holen Sie dicht: der Baum kommt zurück zur Mitte. |
+| Kurz | The line that lets the boom and mainsail swing out, or pulls them back in. | Die Leine, die Baum und Großsegel ausschwenken lässt oder sie wieder hereinzieht. |
+| Was es tut / was es bedeutet | Easing (letting out) the mainsheet lets the wind push the boom further out; trimming it pulls the boom back towards the middle. The line only limits how far the boom can go: with the wind from ahead, easing it just makes it slack. Near the middle a little line moves the boom a lot; far out, a lot of line moves it only a little. | Fieren (Auslassen) der Großschot lässt den Wind den Baum weiter ausschwenken; Dichtholen zieht den Baum zurück zur Mitte. Die Leine begrenzt nur, wie weit der Baum ausschwenken kann: bei Wind von vorn macht Fieren sie nur lose. Nahe der Mitte bewegt wenig Leine den Baum weit; weit außen bewegt viel Leine ihn nur wenig. |
+| Auf diesem Boot | A German mainsheet: one line with two ends, one at each side of the cockpit (the clutches say “Main sheet” and “MAIN SHEET”). It runs through three blocks under the boom and two spring-mounted blocks at the back of the coachroof. There is no traveller (a sliding car for the lower blocks). | Eine deutsche Großschot: eine Leine mit zwei Enden, eines an jeder Seite der Plicht (die Klemmen heißen „Main sheet“ und „MAIN SHEET“). Sie läuft über drei Blöcke unter dem Baum und zwei gefederte Blöcke am hinteren Ende des Deckshauses. Einen Traveller (eine verschiebbare Schiene für die unteren Blöcke) gibt es nicht. |
+| Typische Fehler | Easing it far more than the wind needs. → The mainsail flaps along its front edge. Trim until the flapping just stops.<br>Keeping it trimmed hard in a gust. → The boat heels a lot and turns into the wind by herself. Ease the mainsheet to spill the gust.<br>Opening its clutch under load with the line not on a winch. → The line runs out fast and the boom flies out. Put the line on the winch first, then open the clutch. | Sie viel weiter fieren, als der Wind es verlangt. → Das Großsegel killt an seiner Vorderkante. Holen Sie dicht, bis das Killen gerade aufhört.<br>Sie in einer Bö hart dichtgeholt halten. → Das Boot krängt stark und schießt von selbst in den Wind. Fieren Sie die Großschot, um die Bö abzulassen.<br>Die Klemme unter Last öffnen, während die Leine nicht auf der Winsch ist. → Die Leine läuft schnell aus und der Baum fliegt hinaus. Legen Sie die Leine zuerst auf die Winsch, dann öffnen Sie die Klemme. |
+| „Zeigen“ | Wind from the side and the mainsheet eased to 60 %: the boom has swung well out. Tap “Mainsheet” below and trim it: the boom comes back towards the middle. | Wind von der Seite und die Großschot auf 60 % gefiert: der Baum ist weit ausgeschwenkt. Tippen Sie unten auf „Großschot“ und holen Sie dicht: der Baum kommt zurück zur Mitte. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -85,10 +85,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Main furling line | Reffleine für das Großsegel |
 | Andere Namen | furling line | Reffleine |
-| Kurz | Rolls the mainsail into the mast, or lets it out. | Rollt das Großsegel in den Mast ein oder lässt es aus. |
-| Was es tut / was es bedeutet | In-mast furling rolls the mainsail up inside the mast like a blind. The furling line has two tails: hauling the “in” tail rolls the sail in; hauling the “out” tail, together with the outhaul, rolls it out while the “in” tail is eased. Rolling the sail partly in makes it smaller in strong wind (instead of reefing). | Beim Rollreff im Mast wird das Großsegel wie eine Jalousie im Mast aufgerollt. Die Reffleine hat zwei Enden: Das Dichtnehmen des „in“-Endes rollt das Segel ein; das Dichtnehmen des „out“-Endes rollt es zusammen mit dem Unterliekstrecker aus, während das „in“-Ende gefiert wird. Wird das Segel nur teilweise eingerollt, wird es bei starkem Wind kleiner (statt zu reffen). |
+| Kurz | Rolls the mainsail into the mast, or rolls it out. | Rollt das Großsegel in den Mast ein oder lässt es aus. |
+| Was es tut / was es bedeutet | In-mast furling rolls the mainsail up inside the mast like a blind. The furling line has two tails: pulling the “in” tail rolls the sail in; pulling the “out” tail, together with the outhaul, rolls it out while the “in” tail is eased. Rolling the sail partly in makes it smaller in strong wind (instead of reefing). | Beim Rollreff im Mast wird das Großsegel wie eine Jalousie im Mast aufgerollt. Die Reffleine hat zwei Enden: Das Dichtnehmen des „in“-Endes rollt das Segel ein; das Dichtnehmen des „out“-Endes rollt es zusammen mit dem Unterliekstrecker aus, während das „in“-Ende gefiert wird. Wird das Segel nur teilweise eingerollt, wird es bei starkem Wind kleiner (statt zu reffen). |
 | Auf diesem Boot | Two clutches on the starboard side, both labelled “Main furling”: the left one rolls the main in, the right one rolls it out. If the line slips, the main can be rolled in by hand with the winch handle in the gearbox at the foot of the mast (about 40 turns). | Zwei Klemmen an Steuerbord, beide mit „Main furling“ beschriftet: die linke rollt das Groß ein, die rechte rollt es aus. Wenn die Leine rutscht, lässt sich das Groß von Hand mit dem Winschgriff im Getriebe am Mastfuß einrollen (etwa 40 Umdrehungen). |
-| Typische Fehler | Hauling the “in” tail without easing the “out” tail and the outhaul. → Nothing moves, or the line jams. Ease the other two first.<br>Rolling the main in while it is full of wind. → The load is heavy and the line can slip. Ease the mainsheet, or turn closer to the wind, so the sail is not pulling, then roll it in. | Das „in“-Ende dichtnehmen, ohne das „out“-Ende und den Unterliekstrecker zu fieren. → Nichts bewegt sich, oder die Leine klemmt. Fieren Sie zuerst die anderen beiden.<br>Das Groß einrollen, während es voll Wind steht. → Die Last ist schwer und die Leine kann rutschen. Fieren Sie die Großschot oder luven Sie an, sodass das Segel nicht mehr zieht, und rollen Sie es dann ein. |
+| Typische Fehler | Pulling the “in” tail without easing the “out” tail and the outhaul. → Nothing moves, or the line jams. Ease the other two first.<br>Rolling the main in while it is full of wind. → The load is heavy and the line can slip. Ease the mainsheet, or turn closer to the wind, so the sail is not pulling, then roll it in. | Das „in“-Ende dichtnehmen, ohne das „out“-Ende und den Unterliekstrecker zu fieren. → Nichts bewegt sich, oder die Leine klemmt. Fieren Sie zuerst die anderen beiden.<br>Das Groß einrollen, während es voll Wind steht. → Die Last ist schwer und die Leine kann rutschen. Fieren Sie die Großschot oder luven Sie an, sodass das Segel nicht mehr zieht, und rollen Sie es dann ein. |
 | „Zeigen“ | Mainsail 30 % out: most of it is rolled inside the mast. Tap “Main furling line” below and set “Mainsail out” to 100 % to unroll it. | Großsegel 30 % ausgerollt: der größte Teil steckt eingerollt im Mast. Tippen Sie unten auf „Reffleine für das Großsegel“ und stellen Sie „Großsegel ausrollen“ auf 100 %, um es auszurollen. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
 | Textstatus | — | Entwurf |
@@ -103,7 +103,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Kurz | Rolls the jib up round the forestay, or lets it unroll. | Rollt die Fock um das Vorstag auf oder lässt sie ausrollen. |
 | Was es tut / was es bedeutet | Pulling the line turns the drum at the bottom of the forestay and rolls the jib up around it. Easing it while pulling the sheet lets the jib unroll. A partly rolled jib is smaller, which helps in strong wind. | Ziehen an der Leine dreht die Trommel am Fuß des Vorstags und rollt die Fock darum auf. Fieren bei gleichzeitigem Ziehen an der Schot lässt die Fock ausrollen. Eine teilweise eingerollte Fock ist kleiner, was bei starkem Wind hilft. |
 | Auf diesem Boot | A Furlex furler at the bow. The line runs back along the port side deck through a single clutch labelled “JIB ROLL” to the port winch. The jib sheet must be eased for the jib to roll up. | Ein Furlex-Rollreff am Bug. Die Leine läuft an Backbord am Seitendeck nach achtern durch eine einzelne Klemme mit der Aufschrift „JIB ROLL“ zur Backbordwinsch. Die Fockschot muss gefiert sein, damit die Fock aufrollt. |
-| Typische Fehler | Pulling the furling line with the jib sheet tight. → The jib stops rolling. Ease the jib sheet, then keep furling.<br>Letting the line run free when unrolling in strong wind. → The jib flies out and flaps hard. Keep a turn of the line on the winch and let it out under control.<br>Leaving the jib flapping for a long time in strong wind. → The sail wears and can tear. Roll it in or sheet it in quickly. | An der Rollreffleine ziehen, während die Fockschot dicht ist. → Die Fock rollt nicht weiter. Fieren Sie die Fockschot und rollen Sie dann weiter ein.<br>Die Leine beim Ausrollen bei starkem Wind frei laufen lassen. → Die Fock schießt heraus und schlägt hart. Behalten Sie eine Windung auf der Winsch und lassen Sie sie kontrolliert aus.<br>Die Fock bei starkem Wind lange killen lassen. → Das Segel verschleißt und kann einreißen. Rollen Sie es ein oder holen Sie die Schot schnell dicht. |
+| Typische Fehler | Pulling the furling line with the jib sheet tight. → The jib stops rolling. Ease the jib sheet, then keep furling.<br>Letting the line run free when unrolling in strong wind. → The jib flies out and flaps hard. Keep a turn of the line on the winch and ease it under control.<br>Leaving the jib flapping for a long time in strong wind. → The sail wears and can tear. Roll it in or trim it quickly. | An der Rollreffleine ziehen, während die Fockschot dicht ist. → Die Fock rollt nicht weiter. Fieren Sie die Fockschot und rollen Sie dann weiter ein.<br>Die Leine beim Ausrollen bei starkem Wind frei laufen lassen. → Die Fock schießt heraus und schlägt hart. Behalten Sie eine Windung auf der Winsch und lassen Sie sie kontrolliert aus.<br>Die Fock bei starkem Wind lange killen lassen. → Das Segel verschleißt und kann einreißen. Rollen Sie es ein oder holen Sie die Schot schnell dicht. |
 | „Zeigen“ | Jib 40 % out with its sheet eased: the rest is rolled round the forestay. Tap “Jib furling line” below and change “Jib out” to roll it in or out. | Fock 40 % ausgerollt mit gefierter Schot: der Rest ist um das Vorstag gerollt. Tippen Sie unten auf „Rollreffleine für die Fock“ und ändern Sie „Fock ausrollen“, um sie ein- oder auszurollen. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
 | Textstatus | — | Entwurf |
@@ -116,10 +116,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Topping lift | Toppnant |
 | Andere Namen | — | — |
 | Kurz | A line from the top of the mast to the end of the boom that can hold the boom up. | Eine Leine vom Masttopp zum Baumende, die den Baum oben halten kann. |
-| Was es tut / was es bedeutet | The topping lift carries the boom when the sail is not holding it up, for example with the sail rolled away. Hauled tight while sailing, it fights the vang and spoils the sail’s shape, so it is eased once the sail is set. | Der Toppnant trägt den Baum, wenn das Segel ihn nicht oben hält, zum Beispiel wenn das Segel eingerollt ist. Beim Segeln dichtgeholt kämpft er gegen den Niederholer und verdirbt die Segelform, deshalb wird er gefiert, sobald das Segel steht. |
-| Auf diesem Boot | Labelled “Boom lift” on the port clutches. The rigid vang’s spring already holds the boom up, so on this boat the topping lift only carries the boom when it is hauled higher than the spring holds it. | An den Backbordklemmen mit „Boom lift“ beschriftet. Die Feder des starren Niederholers hält den Baum ohnehin oben, deshalb trägt der Toppnant auf diesem Boot den Baum nur, wenn er höher dichtgeholt wird, als die Feder ihn hält. |
-| Typische Fehler | Leaving it tight while sailing with the vang hauled. → The two ropes fight (both turn red in the app). Ease the topping lift. | Ihn beim Segeln mit dichtgeholtem Niederholer dicht lassen. → Die beiden Leinen kämpfen gegeneinander (beide werden in der App rot). Fieren Sie den Toppnant. |
-| „Zeigen“ | No wind, the topping lift and the vang both hauled tight: they pull against each other and both ropes turn red. Tap “Topping lift” below and ease it to end the fight. | Kein Wind, Toppnant und Niederholer beide dichtgeholt: sie ziehen gegeneinander und beide Leinen werden rot. Tippen Sie unten auf „Toppnant“ und fieren Sie ihn, um den Kampf zu beenden. |
+| Was es tut / was es bedeutet | The topping lift carries the boom when the sail is not holding it up, for example with the sail rolled away. Pulled tight while sailing, it fights the vang and spoils the sail’s shape, so it is eased once the sail is set. | Der Toppnant trägt den Baum, wenn das Segel ihn nicht oben hält, zum Beispiel wenn das Segel eingerollt ist. Beim Segeln dichtgeholt kämpft er gegen den Niederholer und verdirbt die Segelform, deshalb wird er gefiert, sobald das Segel steht. |
+| Auf diesem Boot | Labelled “Boom lift” on the port clutches. The rigid vang’s spring already holds the boom up, so on this boat the topping lift only carries the boom when it is pulled higher than the spring holds it. | An den Backbordklemmen mit „Boom lift“ beschriftet. Die Feder des starren Niederholers hält den Baum ohnehin oben, deshalb trägt der Toppnant auf diesem Boot den Baum nur, wenn er höher dichtgeholt wird, als die Feder ihn hält. |
+| Typische Fehler | Leaving it tight while sailing with the vang pulled on. → The two lines fight (both turn red in the app). Ease the topping lift. | Ihn beim Segeln mit dichtgeholtem Niederholer dicht lassen. → Die beiden Leinen kämpfen gegeneinander (beide werden in der App rot). Fieren Sie den Toppnant. |
+| „Zeigen“ | No wind, the topping lift and the vang both pulled tight: they pull against each other and both lines turn red. Tap “Topping lift” below and ease it to end the fight. | Kein Wind, Toppnant und Niederholer beide dichtgeholt: sie ziehen gegeneinander und beide Leinen werden rot. Tippen Sie unten auf „Toppnant“ und fieren Sie ihn, um den Kampf zu beenden. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -131,9 +131,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Outhaul | Unterliekstrecker |
 | Andere Namen | clew outhaul | — |
 | Kurz | Pulls the mainsail’s back bottom corner (the clew) out along the boom. | Zieht die hintere untere Ecke des Großsegels (das Schothorn) am Baum nach achtern. |
-| Was es tut / was es bedeutet | The outhaul pulls the clew towards the end of the boom. With in-mast furling it also pulls the sail out of the mast as it unrolls: it is hauled together with the furling line’s “out” tail, and eased when the sail is rolled in. | Der Unterliekstrecker zieht das Schothorn zum Ende des Baums. Beim Rollreff im Mast zieht er das Segel beim Ausrollen zugleich aus dem Mast: Er wird zusammen mit dem „out“-Ende der Reffleine dichtgeholt und gefiert, wenn das Segel eingerollt wird. |
-| Auf diesem Boot | Labelled “Main outhaul” on the port clutches. In the app’s Easy mode it moves together with “Mainsail out”. How the rope runs inside the boom is not yet confirmed on the real boat. | An den Backbordklemmen mit „Main outhaul“ beschriftet. Im Leicht-Modus der App bewegt er sich zusammen mit „Großsegel ausrollen“. Wie die Leine im Baum läuft, ist auf dem echten Boot noch nicht bestätigt. |
-| Typische Fehler | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without hauling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Haul the outhaul together with the “out” line. | Das Groß einrollen, ohne den Unterliekstrecker zu fieren. → Der Unterliekstrecker hält das Schothorn außen und das Segel kann nicht einrollen. Fieren Sie ihn, während Sie die „in“-Reffleine ziehen.<br>Das Groß ausrollen, ohne den Unterliekstrecker dichtzuholen. → Das Segel kommt bauchig heraus und erreicht das Ende des Baums nicht. Holen Sie ihn zusammen mit der „out“-Leine dicht. |
+| Was es tut / was es bedeutet | The outhaul pulls the clew towards the end of the boom. With in-mast furling it also pulls the sail out of the mast as it unrolls: it is pulled together with the furling line’s “out” tail, and eased when the sail is rolled in. | Der Unterliekstrecker zieht das Schothorn zum Ende des Baums. Beim Rollreff im Mast zieht er das Segel beim Ausrollen zugleich aus dem Mast: Er wird zusammen mit dem „out“-Ende der Reffleine dichtgeholt und gefiert, wenn das Segel eingerollt wird. |
+| Auf diesem Boot | Labelled “Main outhaul” on the port clutches. In the app’s Easy mode it moves together with “Mainsail out”. How the line runs inside the boom is not yet confirmed on the real boat. | An den Backbordklemmen mit „Main outhaul“ beschriftet. Im Leicht-Modus der App bewegt er sich zusammen mit „Großsegel ausrollen“. Wie die Leine im Baum läuft, ist auf dem echten Boot noch nicht bestätigt. |
+| Typische Fehler | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without pulling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Pull the outhaul together with the “out” line. | Das Groß einrollen, ohne den Unterliekstrecker zu fieren. → Der Unterliekstrecker hält das Schothorn außen und das Segel kann nicht einrollen. Fieren Sie ihn, während Sie die „in“-Reffleine ziehen.<br>Das Groß ausrollen, ohne den Unterliekstrecker dichtzuholen. → Das Segel kommt bauchig heraus und erreicht das Ende des Baums nicht. Holen Sie ihn zusammen mit der „out“-Leine dicht. |
 | „Zeigen“ | Mainsail fully out: the outhaul holds its back corner at the end of the boom. Tap “Outhaul” below and roll the main in a little: the corner slides towards the mast. | Großsegel voll ausgerollt: der Unterliekstrecker hält sein hinteres Eck am Ende des Baums. Tippen Sie unten auf „Unterliekstrecker“ und rollen Sie das Groß ein Stück ein: das Eck wandert zum Mast. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
 | Textstatus | — | Entwurf |
@@ -178,9 +178,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Mainsail | Großsegel |
 | Andere Namen | main | Groß |
 | Kurz | The sail behind the mast, held by the mast and the boom. | Das Segel hinter dem Mast, gehalten von Mast und Baum. |
-| Was es tut / was es bedeutet | The mainsail is set on the mast and the boom. The mainsheet sets its angle to the wind, the vang its twist, and the outhaul pulls it out along the boom. Trimmed right, it drives the boat; pulled in too far it stalls, let out too far it flaps. | Das Großsegel wird an Mast und Baum gesetzt. Die Großschot stellt seinen Winkel zum Wind ein, der Baumniederholer seine Verdrehung, und der Unterliekstrecker zieht es am Baum nach achtern aus. Richtig getrimmt treibt es das Boot; zu weit dichtgeholt reißt die Strömung ab, zu weit gefiert killt es. |
+| Was es tut / was es bedeutet | The mainsail is set on the mast and the boom. The mainsheet sets its angle to the wind, the vang its twist, and the outhaul pulls it out along the boom. Trimmed right, it drives the boat; trimmed in too far it stalls, eased out too far it flaps. | Das Großsegel wird an Mast und Baum gesetzt. Die Großschot stellt seinen Winkel zum Wind ein, der Baumniederholer seine Verdrehung, und der Unterliekstrecker zieht es am Baum nach achtern aus. Richtig getrimmt treibt es das Boot; zu weit dichtgeholt reißt die Strömung ab, zu weit gefiert killt es. |
 | Auf diesem Boot | 61 m², rolled into the mast (in-mast furling), with no battens (stiffening strips). In strong wind it is made smaller by rolling part of it into the mast. | 61 m², in den Mast eingerollt (Rollreffanlage im Mast), ohne Segellatten (Versteifungsstreifen). Bei starkem Wind wird es kleiner gemacht, indem ein Teil in den Mast eingerollt wird. |
-| Typische Fehler | Pulling it in too far for the wind angle. → It stalls: less drive and more heel, and the telltales on its far side droop. Ease until they stream.<br>Letting it out too far. → Its front edge flaps. Haul in until the flapping just stops.<br>Keeping all of it out as the wind gets strong. → The boat heels too much and turns into the wind by herself. Roll part of it in. | Es für den Windwinkel zu weit dichtholen. → Die Strömung reißt ab: weniger Vortrieb und mehr Krängung, und die Trimmfäden auf der abgewandten Seite hängen durch. Fieren Sie, bis sie nach achtern wehen.<br>Es zu weit fieren. → Sein Vorliek flattert. Holen Sie dicht, bis das Flattern gerade aufhört.<br>Bei stärker werdendem Wind alles draußen lassen. → Das Boot krängt zu stark und schießt von selbst auf. Rollen Sie einen Teil ein. |
+| Typische Fehler | Trimming it too far in for the wind angle. → It stalls: less drive and more heel, and the telltales on its far side droop. Ease until they stream.<br>Easing it too far. → Its front edge flaps. Trim until the flapping just stops.<br>Keeping all of it out as the wind gets strong. → The boat heels too much and turns into the wind by herself. Roll part of it in. | Es für den Windwinkel zu weit dichtholen. → Die Strömung reißt ab: weniger Vortrieb und mehr Krängung, und die Trimmfäden auf der abgewandten Seite hängen durch. Fieren Sie, bis sie nach achtern wehen.<br>Es zu weit fieren. → Sein Vorliek flattert. Holen Sie dicht, bis das Flattern gerade aufhört.<br>Bei stärker werdendem Wind alles draußen lassen. → Das Boot krängt zu stark und schießt von selbst auf. Rollen Sie einen Teil ein. |
 | „Zeigen“ | Sailing 60° off the wind with the mainsail trimmed well: its telltales stream and it drives the boat at about 7 kn. Tap “Mainsheet” below and ease it fully: the front edge starts to flap and she slows down. | Mit 60° zum Wind gesegelt und dem Großsegel gut getrimmt: Seine Trimmfäden wehen nach achtern, und es treibt das Boot mit etwa 7 kn. Tippen Sie unten auf „Großschot“ und fieren Sie sie ganz: Das Vorliek beginnt zu killen, und das Boot wird langsamer. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -253,9 +253,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Telltale | Trimmfaden |
 | Andere Namen | tell-tale | — |
 | Kurz | A short ribbon on a sail that shows how the air flows over it. | Ein kurzes Bändchen am Segel, das zeigt, wie die Luft darüber strömt. |
-| Was es tut / was es bedeutet | Telltales are short ribbons near the front of a sail, one on each side. Both streaming straight back: the sail is trimmed well. The one on the side away from the wind drooping or spinning: the sail is pulled in too far. The one on the wind’s side lifting: it is let out too far. | Trimmfäden sind kurze Bändchen nahe am Vorliek eines Segels, eines auf jeder Seite. Wehen beide gerade nach achtern: Das Segel ist gut getrimmt. Hängt der Faden auf der windabgewandten Seite durch oder kreist er: Das Segel ist zu weit dichtgeholt. Hebt sich der Faden auf der Windseite: Es ist zu weit gefiert. |
+| Was es tut / was es bedeutet | Telltales are short ribbons near the front of a sail, one on each side. Both streaming straight back: the sail is trimmed well. The one on the side away from the wind drooping or spinning: the sail is trimmed too far. The one on the wind’s side lifting: it is eased too far. | Trimmfäden sind kurze Bändchen nahe am Vorliek eines Segels, eines auf jeder Seite. Wehen beide gerade nach achtern: Das Segel ist gut getrimmt. Hängt der Faden auf der windabgewandten Seite durch oder kreist er: Das Segel ist zu weit dichtgeholt. Hebt sich der Faden auf der Windseite: Es ist zu weit gefiert. |
 | Auf diesem Boot | The app draws telltales near the front edge of both sails. | Die App zeichnet Trimmfäden nahe am Vorliek beider Segel. |
-| Typische Fehler | Hauling in until the sail stops flapping, then hauling more “to be safe”. → The telltales on the far side droop: the sail has stalled. Ease until both sides stream. | Dichtholen, bis das Segel nicht mehr killt, und dann „zur Sicherheit“ noch weiter dichtholen. → Die Trimmfäden auf der Leeseite hängen durch: Die Strömung ist abgerissen. Fieren Sie, bis beide Seiten nach achtern wehen. |
+| Typische Fehler | Trimming until the sail stops flapping, then trimming more “to be safe”. → The telltales on the far side droop: the sail has stalled. Ease until both sides stream. | Dichtholen, bis das Segel nicht mehr killt, und dann „zur Sicherheit“ noch weiter dichtholen. → Die Trimmfäden auf der Leeseite hängen durch: Die Strömung ist abgerissen. Fieren Sie, bis beide Seiten nach achtern wehen. |
 | „Zeigen“ | Good trim: zoom in (pinch) on the front edge of the mainsail near the mast. The telltales on both sides stream straight back. | Guter Trimm: Zoomen Sie (mit zwei Fingern) auf das Vorliek des Großsegels nahe am Mast. Die Trimmfäden auf beiden Seiten wehen gerade nach achtern. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -283,7 +283,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Luff | Vorliek |
 | Andere Namen | leading edge | Vorderkante |
 | Kurz | The front edge of a sail. | Die vordere Kante eines Segels. |
-| Was es tut / was es bedeutet | The wind meets the sail at the luff. When a sail is let out too far, the luff starts to flap first: that is “luffing”. | Am Vorliek trifft der Wind auf das Segel. Wird ein Segel zu weit gefiert, flattert zuerst das Vorliek: Das ist das Killen. |
+| Was es tut / was es bedeutet | The wind meets the sail at the luff. When a sail is eased too far, the luff starts to flap first: that is “luffing”. | Am Vorliek trifft der Wind auf das Segel. Wird ein Segel zu weit gefiert, flattert zuerst das Vorliek: Das ist das Killen. |
 | Auf diesem Boot | The mainsail’s luff runs up inside the mast’s furling slot; the jib’s runs along the forestay. | Das Vorliek des Großsegels läuft im Rollreffprofil des Masts nach oben; das der Fock läuft am Vorstag entlang. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -345,7 +345,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Mainsheet blocks on the boom | Großschot-Blöcke am Baum |
 | Andere Namen | — | — |
 | Kurz | The three pulleys under the boom that the mainsheet runs through. | Die drei Rollen unter dem Baum, durch die die Großschot läuft. |
-| Was es tut / was es bedeutet | The mainsheet runs back and forth between these blocks and the deck blocks. Each extra part of rope makes it easier to pull (more purchase). | Die Großschot läuft zwischen diesen Blöcken und den Deckblöcken hin und her. Jeder zusätzliche Leinenstrang macht das Ziehen leichter (mehr Übersetzung). |
+| Was es tut / was es bedeutet | The mainsheet runs back and forth between these blocks and the deck blocks. Each extra part of line makes it easier to pull (more purchase). | Die Großschot läuft zwischen diesen Blöcken und den Deckblöcken hin und her. Jeder zusätzliche Leinenstrang macht das Ziehen leichter (mehr Übersetzung). |
 | Auf diesem Boot | Three blocks under the boom, 2.9 m from the mast. | Drei Blöcke unter dem Baum, 2,9 m vom Mast entfernt. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -434,8 +434,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Rigid vang strut | Starre Niederholerstange |
 | Andere Namen | rigid kicker — British | Rodkicker — Markenname von Seldén |
-| Kurz | A spring-loaded strut under the boom that holds it up; the vang rope pulls it down. | Eine gefederte Stange unter dem Baum, die ihn oben hält; die Niederholerleine zieht ihn herunter. |
-| Was es tut / was es bedeutet | A rigid vang is a strut from low on the mast to the underside of the boom, with a spring inside. The spring pushes the boom up; the vang’s rope tackle pulls it down. With it, the boom does not drop when the sail is rolled away. | Ein starrer Niederholer ist eine Stange von tief am Mast zur Unterseite des Baums, mit einer Feder innen. Die Feder drückt den Baum nach oben; die Leinen-Talje des Niederholers zieht ihn nach unten. Damit fällt der Baum nicht herunter, wenn das Segel eingerollt ist. |
+| Kurz | A spring-loaded strut under the boom that holds it up; the vang line pulls it down. | Eine gefederte Stange unter dem Baum, die ihn oben hält; die Niederholerleine zieht ihn herunter. |
+| Was es tut / was es bedeutet | A rigid vang is a strut from low on the mast to the underside of the boom, with a spring inside. The spring pushes the boom up; the vang’s tackle pulls it down. With it, the boom does not drop when the sail is rolled away. | Ein starrer Niederholer ist eine Stange von tief am Mast zur Unterseite des Baums, mit einer Feder innen. Die Feder drückt den Baum nach oben; die Leinen-Talje des Niederholers zieht ihn nach unten. Damit fällt der Baum nicht herunter, wenn das Segel eingerollt ist. |
 | Auf diesem Boot | A Seldén Rodkicker with a gas spring. | Ein Seldén Rodkicker mit Gasdruckfeder. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -449,9 +449,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Turning blocks at the mast foot | Umlenkblöcke am Mastfuß |
 | Andere Namen | — | — |
-| Kurz | The ring of pulleys at the foot of the mast that turn the ropes aft. | Der Kranz von Rollen am Mastfuß, der die Leinen nach achtern umlenkt. |
-| Was es tut / was es bedeutet | Ropes come down the mast and turn at these blocks to run aft along the coachroof to the cockpit, so they can be worked from there. | Die Leinen kommen am Mast herunter und werden an diesen Blöcken umgelenkt, sodass sie achtern über das Deckshaus in die Plicht laufen und von dort bedient werden können. |
-| Auf diesem Boot | Seldén blocks in a ring round the foot of the mast, one block for each rope. | Seldén-Blöcke in einem Kranz um den Mastfuß, ein Block für jede Leine. |
+| Kurz | The ring of pulleys at the foot of the mast that turn the lines aft. | Der Kranz von Rollen am Mastfuß, der die Leinen nach achtern umlenkt. |
+| Was es tut / was es bedeutet | Lines come down the mast and turn at these blocks to run aft along the coachroof to the cockpit, so they can be worked from there. | Die Leinen kommen am Mast herunter und werden an diesen Blöcken umgelenkt, sodass sie achtern über das Deckshaus in die Plicht laufen und von dort bedient werden können. |
+| Auf diesem Boot | Seldén blocks in a ring round the foot of the mast, one block for each line. | Seldén-Blöcke in einem Kranz um den Mastfuß, ein Block für jede Leine. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
@@ -619,7 +619,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Kurz | The engine’s drive leg and propeller under the hull. | Das Antriebsbein des Motors und der Propeller unter dem Rumpf. |
 | Was es tut / was es bedeutet | A saildrive is a leg that comes down through the bottom of the hull from the engine, with the propeller on its end. It pushes the boat ahead or astern when the engine is in gear. | Ein Saildrive ist ein Bein, das vom Motor durch den Rumpfboden nach unten führt, mit dem Propeller am Ende. Es schiebt das Boot vorwärts oder rückwärts, wenn ein Gang eingelegt ist. |
 | Auf diesem Boot | A diesel engine of about 80 hp, a saildrive and a fixed two-blade propeller. In the app, full throttle (2,500 rpm) gives about 9.3 kn. | Ein Dieselmotor mit etwa 80 PS, ein Saildrive und ein fester Zweiblattpropeller. In der App ergibt Vollgas (2.500 U/min) etwa 9,3 kn. |
-| Typische Fehler | Putting the engine in gear with a rope in the water near the stern. → The propeller can catch the rope and stop the engine. Get all ropes on board before you engage gear. | Einen Gang einlegen, während eine Leine im Wasser nahe dem Heck liegt. → Der Propeller kann die Leine fassen und den Motor abwürgen. Holen Sie alle Leinen an Bord, bevor Sie einen Gang einlegen. |
+| Typische Fehler | Putting the engine in gear with a line in the water near the stern. → The propeller can catch the line and stop the engine. Get all lines on board before you engage gear. | Einen Gang einlegen, während eine Leine im Wasser nahe dem Heck liegt. → Der Propeller kann die Leine fassen und den Motor abwürgen. Holen Sie alle Leinen an Bord, bevor Sie einen Gang einlegen. |
 | „Zeigen“ | — | — |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -635,7 +635,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Andere Namen | — | — |
 | Kurz | The heavy hook that holds the boat to the seabed. | Der schwere Haken, der das Boot am Meeresboden hält. |
 | Was es tut / was es bedeutet | The anchor is let down on its chain until it lies on the seabed, where it digs in and holds the boat in one place. | Der Anker wird an seiner Kette hinabgelassen, bis er auf dem Grund liegt; dort gräbt er sich ein und hält das Boot an einer Stelle. |
-| Auf diesem Boot | It sits in the bow roller, to starboard of the jib furler, ready to let go. Let the chain out in the Anchor block and it goes down to the bottom. | Er liegt in der Bugrolle, an Steuerbord des Fockrollreffs, klar zum Fieren. Lassen Sie die Kette im Block Anker aus, und er geht auf den Grund. |
+| Auf diesem Boot | It sits in the bow roller, to starboard of the jib furler, ready to let go. Pay the chain out in the Anchor block and it goes down to the bottom. | Er liegt in der Bugrolle, an Steuerbord des Fockrollreffs, klar zum Fieren. Lassen Sie die Kette im Block Anker aus, und er geht auf den Grund. |
 | Typische Fehler | — | — |
 | „Zeigen“ | The bow from the front: the anchor hangs in its roller, with the chain running back to the windlass. | Der Bug von vorn: der Anker hängt in seiner Rolle, die Kette läuft zurück zur Winde. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
@@ -663,8 +663,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Anchor windlass | Ankerwinde |
 | Andere Namen | — | — |
-| Kurz | The electric winch on the bow that lets the anchor chain out and pulls it in. | Die elektrische Winsch am Bug, die die Ankerkette auslaufen lässt und einholt. |
-| Was es tut / was es bedeutet | The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm. | Die Ankerwinde lässt den Anker nieder und holt ihn wieder hoch; bedient wird sie mit Schaltern am Bug oder einer Fernbedienung am Ruder. |
+| Kurz | The electric winch on the bow that pays the anchor chain out and pulls it in. | Die elektrische Winsch am Bug, die die Ankerkette auslaufen lässt und einholt. |
+| Was es tut / was es bedeutet | The windlass lowers the anchor and raises it again, worked by switches at the bow or a remote at the helm. | Die Ankerwinde lässt den Anker nieder und holt ihn wieder hoch; bedient wird sie mit Schaltern am Bug oder einer Fernbedienung am Ruder. |
 | Auf diesem Boot | On the foredeck behind the anchor roller, in a round recess. Hold "Chain out" or "Chain in" in the Anchor block (at the Bow station or the helm in Realistic mode). | Auf dem Vordeck hinter der Ankerrolle, in einer runden Vertiefung. Halten Sie „Kette aus“ oder „Kette ein“ im Block Anker gedrückt (an der Station Bug oder im realistischen Modus am Ruder). |
 | Typische Fehler | Putting fingers or feet near the chain while the windlass runs. → The chain can trap them. Keep clear, and stop the windlass before you touch the chain. | Finger oder Füße in die Nähe der Kette bringen, während die Winde läuft. → Die Kette kann sie einklemmen. Bleiben Sie fern und stoppen Sie die Winde, bevor Sie die Kette anfassen. |
 | „Zeigen“ | — | — |
@@ -694,7 +694,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Deck | Deck |
 | Andere Namen | — | — |
 | Kurz | The top of the hull that you walk on. | Die Oberseite des Rumpfs, auf der Sie gehen. |
-| Was es tut / was es bedeutet | The deck closes the hull from above. Ropes, blocks and fittings are fixed to it, and the crew walks along it to go forward. | Das Deck schließt den Rumpf nach oben ab. Leinen, Blöcke und Beschläge sind darauf befestigt, und die Crew geht darauf nach vorn. |
+| Was es tut / was es bedeutet | The deck closes the hull from above. Lines, blocks and fittings are fixed to it, and the crew walks along it to go forward. | Das Deck schließt den Rumpf nach oben ab. Leinen, Blöcke und Beschläge sind darauf befestigt, und die Crew geht darauf nach vorn. |
 | Auf diesem Boot | The side decks run from the cockpit to the bow on each side of the coachroof. | Die Seitendecks laufen von der Plicht zum Bug, auf jeder Seite des Deckshauses. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -709,8 +709,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Coachroof | Deckshaus |
 | Andere Namen | cabin top<br>deckhouse | Decksaufbau |
 | Kurz | The raised roof over the cabin, between the mast and the cockpit. | Das erhöhte Dach über der Kabine, zwischen Mast und Plicht. |
-| Was es tut / was es bedeutet | The coachroof raises the deck over the living space below to give headroom. Ropes from the mast run aft over it to the cockpit. | Das Deckshaus hebt das Deck über dem Wohnraum darunter an, um Stehhöhe zu schaffen. Die Leinen vom Mast laufen achtern darüber zur Plicht. |
-| Auf diesem Boot | The mast stands on it. The mainsheet’s two deck blocks sit at its back end, and covered channels carry the ropes from the foot of the mast to the clutches. | Der Mast steht darauf. Die beiden Deckblöcke der Großschot sitzen an seinem hinteren Ende, und abgedeckte Kanäle führen die Leinen vom Mastfuß zu den Klemmen. |
+| Was es tut / was es bedeutet | The coachroof raises the deck over the living space below to give headroom. Lines from the mast run aft over it to the cockpit. | Das Deckshaus hebt das Deck über dem Wohnraum darunter an, um Stehhöhe zu schaffen. Die Leinen vom Mast laufen achtern darüber zur Plicht. |
+| Auf diesem Boot | The mast stands on it. The mainsheet’s two deck blocks sit at its back end, and covered channels carry the lines from the foot of the mast to the clutches. | Der Mast steht darauf. Die beiden Deckblöcke der Großschot sitzen an seinem hinteren Ende, und abgedeckte Kanäle führen die Leinen vom Mastfuß zu den Klemmen. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
@@ -785,7 +785,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Andere Namen | — | — |
 | Kurz | The two spring-mounted pulleys at the back of the coachroof for the mainsheet. | Die zwei gefederten Blöcke am hinteren Ende des Deckshauses für die Großschot. |
 | Was es tut / was es bedeutet | Each end of the mainsheet comes down from the boom to one of these blocks. The springs keep the blocks standing up. | Jedes Ende der Großschot kommt vom Baum zu einem dieser Blöcke herunter. Die Federn halten die Blöcke aufrecht. |
-| Auf diesem Boot | One block each side of the middle, with two parts of rope between the boom and each block. From each block the rope runs forward to the foot of the mast, then aft in the covered channel to a clutch. There is no traveller. | Je ein Block links und rechts der Mitte, mit zwei Leinensträngen zwischen Baum und jedem Block. Von jedem Block läuft die Leine nach vorn zum Mastfuß und dann achtern im abgedeckten Kanal zu einer Klemme. Einen Traveller gibt es nicht. |
+| Auf diesem Boot | One block each side of the middle, with two parts of line between the boom and each block. From each block the line runs forward to the foot of the mast, then aft in the covered channel to a clutch. There is no traveller. | Je ein Block links und rechts der Mitte, mit zwei Leinensträngen zwischen Baum und jedem Block. Von jedem Block läuft die Leine nach vorn zum Mastfuß und dann achtern im abgedeckten Kanal zu einer Klemme. Einen Traveller gibt es nicht. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
@@ -828,8 +828,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Line channels | Leinenkanäle |
 | Andere Namen | — | — |
-| Kurz | Covered channels on the coachroof that carry the ropes to the cockpit. | Abgedeckte Kanäle auf dem Deckshaus, die die Leinen zur Plicht führen. |
-| Was es tut / was es bedeutet | They keep the ropes from the mast tidy and out from under the crew’s feet on their way aft. | Sie halten die Leinen vom Mast ordentlich und aus dem Weg unter den Füßen der Crew, während diese nach achtern laufen. |
+| Kurz | Covered channels on the coachroof that carry the lines to the cockpit. | Abgedeckte Kanäle auf dem Deckshaus, die die Leinen zur Plicht führen. |
+| Was es tut / was es bedeutet | They keep the lines from the mast tidy and out from under the crew’s feet on their way aft. | Sie halten die Leinen vom Mast ordentlich und aus dem Weg unter den Füßen der Crew, während diese nach achtern laufen. |
 | Auf diesem Boot | One channel on each side, ending at the clutch banks in front of the winches. | Je ein Kanal auf jeder Seite, der an den Klemmenbänken vor den Winschen endet. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -906,7 +906,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Windlass remote | Ankerwinden-Fernbedienung |
 | Andere Namen | — | — |
 | Kurz | Buttons at the helm that run the windlass. | Tasten am Steuerrad, die die Ankerwinde bedienen. |
-| Was es tut / was es bedeutet | Lets the helmsman let the chain out or bring it in without going forward. | Damit kann der Rudergänger die Kette ausgeben oder einholen, ohne nach vorn zu gehen. |
+| Was es tut / was es bedeutet | Lets the helmsman pay the chain out or bring it in without going forward. | Damit kann der Rudergänger die Kette ausgeben oder einholen, ohne nach vorn zu gehen. |
 | Auf diesem Boot | At the helm (EXERCISES.md 5, owner). | Am Steuerrad (EXERCISES.md 5, Eigentümerangabe). |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -948,12 +948,12 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 
 | Feld | English | Deutsch |
 |---|---|---|
-| Name | Rope clutch | Klemme |
+| Name | Clutch | Klemme |
 | Andere Namen | jammer<br>rope stopper | Kammklemme<br>Stopper |
-| Kurz | A lever that grips a rope so it cannot run out. | Ein Hebel, der eine Leine festklemmt, sodass sie nicht auslaufen kann. |
-| Was es tut / was es bedeutet | A closed clutch holds the rope: it can still be pulled in, but not let out. To let a rope out, take its load on a winch, then open the clutch (lever up). | Eine geschlossene Klemme hält die Leine: Sie lässt sich noch dichtholen, aber nicht fieren. Um eine Leine zu fieren, nehmen Sie ihre Last auf die Winsch und öffnen dann die Klemme (Hebel oben). |
+| Kurz | A lever that grips a line so it cannot run out. | Ein Hebel, der eine Leine festklemmt, sodass sie nicht auslaufen kann. |
+| Was es tut / was es bedeutet | A closed clutch holds the line: it can still be pulled in, but a loaded line cannot run out. To ease a line, take its load on a winch, then open the clutch (lever up). | Eine geschlossene Klemme hält die Leine: Sie lässt sich noch dichtholen, aber nicht fieren. Um eine Leine zu fieren, nehmen Sie ihre Last auf die Winsch und öffnen dann die Klemme (Hebel oben). |
 | Auf diesem Boot | A bank of five clutches in front of each winch, and one single clutch for the jib furling line on the port side deck. In Realistic mode you open and close them with the lever. | Eine Bank mit fünf Klemmen vor jeder Winsch und eine einzelne Klemme für die Rollreffleine der Fock auf dem Backbord-Seitendeck. Im realistischen Modus öffnen und schließen Sie sie mit dem Hebel. |
-| Typische Fehler | Opening a loaded clutch with the rope not on the winch. → The rope runs out fast and can burn hands. Put the rope on the winch with a few turns first.<br>Shutting a clutch on a rope that is running out under load. → It can damage the rope. Take the load on the winch first, then close the clutch. | Eine belastete Klemme öffnen, während die Leine nicht auf der Winsch ist. → Die Leine läuft schnell aus und kann Hände verbrennen. Legen Sie die Leine zuerst mit einigen Törns auf die Winsch.<br>Eine Klemme auf einer Leine schließen, die unter Last ausläuft. → Das kann die Leine beschädigen. Nehmen Sie zuerst die Last auf die Winsch und schließen Sie dann die Klemme. |
+| Typische Fehler | Opening a loaded clutch with the line not on the winch. → The line runs out fast and can burn hands. Put the line on the winch with a few turns first.<br>Shutting a clutch on a line that is running out under load. → It can damage the line. Take the load on the winch first, then close the clutch. | Eine belastete Klemme öffnen, während die Leine nicht auf der Winsch ist. → Die Leine läuft schnell aus und kann Hände verbrennen. Legen Sie die Leine zuerst mit einigen Törns auf die Winsch.<br>Eine Klemme auf einer Leine schließen, die unter Last ausläuft. → Das kann die Leine beschädigen. Nehmen Sie zuerst die Last auf die Winsch und schließen Sie dann die Klemme. |
 | „Zeigen“ | Realistic mode: the clutches of this side are the levers in the drawing. Lever up is open; tap a clutch to select it, tap it again to open or close it. | Realistischer Modus: Die Klemmen dieser Seite sind die Hebel in der Zeichnung. Hebel oben heißt offen; tippen Sie eine Klemme an, um sie auszuwählen, und tippen Sie erneut, um sie zu öffnen oder zu schließen. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -981,7 +981,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Clutch bank A | Klemmenbank A |
 | Andere Namen | — | — |
 | Kurz | The five clutches on the starboard side. | Die fünf Klemmen auf der Steuerbordseite. |
-| Was es tut / was es bedeutet | The row of clutches in front of the starboard winch. Each rope from the mast ends at one of them, and any one of them can be put on the winch. | Die Reihe Klemmen vor der Steuerbordwinsch. Jede Leine vom Mast endet an einer von ihnen, und jede davon lässt sich auf die Winsch legen. |
+| Was es tut / was es bedeutet | The row of clutches in front of the starboard winch. Each line from the mast ends at one of them, and any one of them can be put on the winch. | Die Reihe Klemmen vor der Steuerbordwinsch. Jede Leine vom Mast endet an einer von ihnen, und jede davon lässt sich auf die Winsch legen. |
 | Auf diesem Boot | In order: “Main sheet”, “Main furling” (rolls the main in), “Main furling” (rolls it out), “Main halyard”, “Genoa sheet” (the jib sheet). | Der Reihe nach: „Main sheet“, „Main furling“ (rollt das Groß ein), „Main furling“ (rollt es aus), „Main halyard“, „Genoa sheet“ (die Fockschot). |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -996,7 +996,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Clutch bank B | Klemmenbank B |
 | Andere Namen | — | — |
 | Kurz | The five clutches on the port side. | Die fünf Klemmen auf der Backbordseite. |
-| Was es tut / was es bedeutet | The row of clutches in front of the port winch. Each rope from the mast ends at one of them, and any one of them can be put on the winch. | Die Reihe Klemmen vor der Backbordwinsch. Jede Leine vom Mast endet an einer von ihnen, und jede davon lässt sich auf die Winsch legen. |
+| Was es tut / was es bedeutet | The row of clutches in front of the port winch. Each line from the mast ends at one of them, and any one of them can be put on the winch. | Die Reihe Klemmen vor der Backbordwinsch. Jede Leine vom Mast endet an einer von ihnen, und jede davon lässt sich auf die Winsch legen. |
 | Auf diesem Boot | In order: “SPI HALYARD” (the gennaker halyard), “Boom lift” (the topping lift), “Main outhaul”, “MAIN SHEET” (the other end of the mainsheet), “Vang”. | Der Reihe nach: „SPI HALYARD“ (das Spifall), „Boom lift“ (die Toppnant), „Main outhaul“, „MAIN SHEET“ (das andere Ende der Großschot), „Vang“. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1023,12 +1023,12 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 
 | Feld | English | Deutsch |
 |---|---|---|
-| Name | Rope tail box | Leinenkasten |
+| Name | Line bin | Leinenkasten |
 | Andere Namen | — | — |
-| Kurz | A box behind each winch where the loose ends of the ropes go. | Ein Kasten hinter jeder Winsch, in den die losen Enden der Leinen kommen. |
-| Was es tut / was es bedeutet | The loose ends (tails) of the ropes go into the box, so the cockpit stays clear and the ropes can run out freely when eased. | Die losen Enden (Tampen) der Leinen kommen in den Kasten, damit die Plicht frei bleibt und die Leinen beim Fieren ungehindert auslaufen können. |
+| Kurz | A box behind each winch where the loose ends of the lines go. | Ein Kasten hinter jeder Winsch, in den die losen Enden der Leinen kommen. |
+| Was es tut / was es bedeutet | The loose ends (tails) of the lines go into the box, so the cockpit stays clear and the lines can run out freely when eased. | Die losen Enden (Tampen) der Leinen kommen in den Kasten, damit die Plicht frei bleibt und die Leinen beim Fieren ungehindert auslaufen können. |
 | Auf diesem Boot | — | — |
-| Typische Fehler | Leaving loose rope lying on the cockpit floor. → Someone can trip, or the rope tangles as it runs out. Put it in the box. | Lose Leine auf dem Plichtboden liegen lassen. → Jemand kann darüber stolpern, oder die Leine verheddert sich beim Auslaufen. Legen Sie sie in den Kasten. |
+| Typische Fehler | Leaving loose line lying on the cockpit floor. → Someone can trip, or the line tangles as it runs out. Put it in the box. | Lose Leine auf dem Plichtboden liegen lassen. → Jemand kann darüber stolpern, oder die Leine verheddert sich beim Auslaufen. Legen Sie sie in den Kasten. |
 | „Zeigen“ | — | — |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -1056,7 +1056,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Cockpit | Plicht |
 | Andere Namen | — | Cockpit |
 | Kurz | The open, sunken area at the back where the crew sits and steers. | Der offene, tiefer gelegte Bereich achtern, in dem die Crew sitzt und steuert. |
-| Was es tut / was es bedeutet | The cockpit is where the crew sits, steers and works most of the ropes. It lies lower than the deck, so it feels safer at sea. | In der Plicht sitzt und steuert die Crew, und dort werden die meisten Leinen bedient. Sie liegt tiefer als das Deck, deshalb wirkt sie auf See sicherer. |
+| Was es tut / was es bedeutet | The cockpit is where the crew sits, steers and works most of the lines. It lies lower than the deck, so it feels safer at sea. | In der Plicht sitzt und steuert die Crew, und dort werden die meisten Leinen bedient. Sie liegt tiefer als das Deck, deshalb wirkt sie auf See sicherer. |
 | Auf diesem Boot | Two wheels at the back, one winch and one clutch bank on each side, the engine lever at the helm, and the instruments and the autopilot control by the wheels. | Zwei Steuerräder achtern, je eine Winsch und eine Klemmenbank auf jeder Seite, der Motorhebel am Steuerrad sowie die Instrumente und das Autopilot-Bedienteil bei den Steuerrädern. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1101,7 +1101,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Wheel pedestal | Steuersäule |
 | Andere Namen | binnacle | Kompasssäule |
 | Kurz | The column in front of each wheel that carries the compass and the controls. | Die Säule vor jedem Steuerrad, die Kompass und Bedienteile trägt. |
-| Was es tut / was es bedeutet | The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and ropes off the instruments. | Die Achse des Steuerrads läuft in die Säule. Obenauf sitzt ein kleines Panel mit Kompass und Instrumenten, und ein Stahlbügel davor gibt Ihnen etwas zum Festhalten und hält Knie und Leinen von den Instrumenten fern. |
+| Was es tut / was es bedeutet | The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and lines off the instruments. | Die Achse des Steuerrads läuft in die Säule. Obenauf sitzt ein kleines Panel mit Kompass und Instrumenten, und ein Stahlbügel davor gibt Ihnen etwas zum Festhalten und hält Knie und Leinen von den Instrumenten fern. |
 | Auf diesem Boot | One pedestal at each wheel, each with the same panel: the compass, the wind display, the engine lever and the rev counter, the thruster joysticks and the autopilot keys. The drawing is a guess: there is no photo of the pedestal yet. | Je eine Säule an jedem Steuerrad, jede mit demselben Panel: der Kompass, die Windanzeige, der Motorhebel und der Drehzahlmesser, die Strahlruder-Joysticks und die Autopilot-Tasten. Die Zeichnung ist eine Vermutung: Es gibt noch kein Foto der Säule. |
 | Typische Fehler | — | — |
 | „Zeigen“ | The view from behind the wheel: the pedestal with its panel and the steel guard rail stands in front of the wheel. | Der Blick von hinter dem Steuerrad: Vor dem Rad steht die Säule mit ihrem Panel und dem Stahlbügel. |
@@ -1130,10 +1130,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Winch | Winsch |
 | Andere Namen | — | — |
-| Kurz | A drum that gives you the power to pull in a heavily loaded rope. | Eine Trommel, die Ihnen die Kraft gibt, eine stark belastete Leine dichtzuholen. |
-| Was es tut / was es bedeutet | The rope is wrapped clockwise round the drum. The turns hold the load (each extra turn multiplies the grip), and turning the drum pulls the rope in. A self-tailer on top grips the tail, so one person can winch alone. | Die Leine wird im Uhrzeigersinn um die Trommel gelegt. Die Törns halten die Last (jeder zusätzliche Törn vervielfacht den Griff), und das Drehen der Trommel holt die Leine ein. Ein Selbstholer oben greift das Ende, sodass eine Person allein winschen kann. |
+| Kurz | A drum that gives you the power to pull in a heavily loaded line. | Eine Trommel, die Ihnen die Kraft gibt, eine stark belastete Leine dichtzuholen. |
+| Was es tut / was es bedeutet | The line is wrapped clockwise round the drum. The turns hold the load (each extra turn multiplies the grip), and turning the drum pulls the line in. A self-tailer on top grips the tail, so one person can winch alone. | Die Leine wird im Uhrzeigersinn um die Trommel gelegt. Die Törns halten die Last (jeder zusätzliche Törn vervielfacht den Griff), und das Drehen der Trommel holt die Leine ein. Ein Selbstholer oben greift das Ende, sodass eine Person allein winschen kann. |
 | Auf diesem Boot | One electric Lewmar self-tailing winch on each side, worked with a push button; the winch handle is a backup. The winch slows as the load grows and cuts out when the load is too high. | Auf jeder Seite eine elektrische Lewmar-Winsch mit Selbstholer, bedient mit einer Taste; die Winschkurbel ist die Reserve. Die Winsch wird bei steigender Last langsamer und schaltet ab, wenn die Last zu hoch ist. |
-| Typische Fehler | Wrapping the rope anticlockwise. → The drum only turns clockwise, so the rope is not held. Wrap it clockwise, seen from above.<br>Too few turns on a loaded rope. → It slips when the clutch opens. Use about 4 turns to winch under load, 2 to ease under control.<br>Keeping the button pressed when the winch cuts out. → The load is too high, often two ropes pulling against each other. Find out why (a closed clutch, the topping lift against the vang) and fix that first. | Die Leine gegen den Uhrzeigersinn auflegen. → Die Trommel dreht nur im Uhrzeigersinn, deshalb hält die Leine nicht. Legen Sie sie von oben gesehen im Uhrzeigersinn auf.<br>Zu wenige Törns auf einer belasteten Leine. → Sie rutscht durch, wenn die Klemme geöffnet wird. Nehmen Sie etwa 4 Törns, um unter Last dichtzuholen, und 2, um kontrolliert zu fieren.<br>Die Taste gedrückt halten, wenn die Winsch abschaltet. → Die Last ist zu hoch, oft ziehen zwei Leinen gegeneinander. Finden Sie die Ursache (eine geschlossene Klemme, die Toppnant gegen den Baumniederholer) und beheben Sie sie zuerst. |
+| Typische Fehler | Wrapping the line anticlockwise. → The drum only turns clockwise, so the line is not held. Wrap it clockwise, seen from above.<br>Too few turns on a loaded line. → It slips when the clutch opens. Use about 4 turns to winch under load, 2 to ease under control.<br>Keeping the button pressed when the winch cuts out. → The load is too high, often two lines pulling against each other. Find out why (a closed clutch, the topping lift against the vang) and fix that first. | Die Leine gegen den Uhrzeigersinn auflegen. → Die Trommel dreht nur im Uhrzeigersinn, deshalb hält die Leine nicht. Legen Sie sie von oben gesehen im Uhrzeigersinn auf.<br>Zu wenige Törns auf einer belasteten Leine. → Sie rutscht durch, wenn die Klemme geöffnet wird. Nehmen Sie etwa 4 Törns, um unter Last dichtzuholen, und 2, um kontrolliert zu fieren.<br>Die Taste gedrückt halten, wenn die Winsch abschaltet. → Die Last ist zu hoch, oft ziehen zwei Leinen gegeneinander. Finden Sie die Ursache (eine geschlossene Klemme, die Toppnant gegen den Baumniederholer) und beheben Sie sie zuerst. |
 | „Zeigen“ | Realistic mode, starboard: the jib sheet is on the winch with 2 turns, held by hand. Add turns, put it in the self-tailer, and press the winch button. | Realistischer Modus, Steuerbord: Die Fockschot liegt mit 2 Törns auf der Winsch und wird mit der Hand gehalten. Legen Sie Törns dazu, setzen Sie sie in den Selbstholer und drücken Sie die Winschtaste. |
 | Belegstatus | Checked against a written source. | Gegen eine schriftliche Quelle geprüft. |
 | Textstatus | — | Entwurf |
@@ -1146,7 +1146,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Port winch | Winsch Backbord |
 | Andere Namen | — | — |
 | Kurz | The winch on the left side of the cockpit. | Die Winsch auf der linken Seite der Plicht. |
-| Was es tut / was es bedeutet | It works the ropes of clutch bank B and the jib furling line. | Sie bedient die Leinen der Klemmenbank B und die Rollreffleine der Fock. |
+| Was es tut / was es bedeutet | It works the lines of clutch bank B and the jib furling line. | Sie bedient die Leinen der Klemmenbank B und die Rollreffleine der Fock. |
 | Auf diesem Boot | Electric, with a self-tailer. The winch handle is kept on this side. | Elektrisch, mit Selbstholer. Die Winschkurbel wird auf dieser Seite aufbewahrt. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1161,7 +1161,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Starboard winch | Winsch Steuerbord |
 | Andere Namen | — | — |
 | Kurz | The winch on the right side of the cockpit. | Die Winsch auf der rechten Seite der Plicht. |
-| Was es tut / was es bedeutet | It works the ropes of clutch bank A. | Sie bedient die Leinen der Klemmenbank A. |
+| Was es tut / was es bedeutet | It works the lines of clutch bank A. | Sie bedient die Leinen der Klemmenbank A. |
 | Auf diesem Boot | Electric, with a self-tailer. | Elektrisch, mit Selbstholer. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1194,7 +1194,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Was es tut / was es bedeutet | A winch handle left loose can slide away or go over the side, so it is kept in a holder or a pocket when it is not in a winch. | Eine lose liegende Winschkurbel kann verrutschen oder über Bord gehen, deshalb wird sie in einer Halterung oder einer Tasche aufbewahrt, wenn sie nicht in einer Winsch steckt. |
 | Auf diesem Boot | In the app the handle lies on a pad on the cockpit floor between the two wheels, between two small stops. | In der App liegt die Kurbel auf einem Polster am Plichtboden zwischen den beiden Steuerrädern, zwischen zwei kleinen Anschlägen. |
 | Typische Fehler | — | — |
-| „Zeigen“ | Realistic ropes, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops. | Realistische Leinen, die Kurbel am Steuerrad verstaut: Sie liegt auf dem dunklen Polster zwischen den beiden Steuerrädern, zwischen zwei kleinen Anschlägen. |
+| „Zeigen“ | Realistic lines, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops. | Realistische Leinen, die Kurbel am Steuerrad verstaut: Sie liegt auf dem dunklen Polster zwischen den beiden Steuerrädern, zwischen zwei kleinen Anschlägen. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -1206,7 +1206,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Port secondary winch (optional) | Zusatzwinsch Backbord (optional) |
 | Andere Namen | — | — |
 | Kurz | A second winch some boats have on the left side; not on this boat. | Eine zweite Winsch, die manche Boote auf der linken Seite haben; auf diesem Boot nicht. |
-| Was es tut / was es bedeutet | The builder offers a second winch on each side, so more ropes can be worked at once. The reference boat does not have them, so the app does not draw them. | Die Werft bietet auf jeder Seite eine zweite Winsch an, damit mehr Leinen gleichzeitig bedient werden können. Das Referenzboot hat sie nicht, deshalb zeichnet die App sie nicht. |
+| Was es tut / was es bedeutet | The builder offers a second winch on each side, so more lines can be worked at once. The reference boat does not have them, so the app does not draw them. | Die Werft bietet auf jeder Seite eine zweite Winsch an, damit mehr Leinen gleichzeitig bedient werden können. Das Referenzboot hat sie nicht, deshalb zeichnet die App sie nicht. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1221,7 +1221,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Starboard secondary winch (optional) | Zusatzwinsch Steuerbord (optional) |
 | Andere Namen | — | — |
 | Kurz | A second winch some boats have on the right side; not on this boat. | Eine zweite Winsch, die manche Boote auf der rechten Seite haben; auf diesem Boot nicht. |
-| Was es tut / was es bedeutet | The builder offers a second winch on each side, so more ropes can be worked at once. The reference boat does not have them, so the app does not draw them. | Die Werft bietet auf jeder Seite eine zweite Winsch an, damit mehr Leinen gleichzeitig bedient werden können. Das Referenzboot hat sie nicht, deshalb zeichnet die App sie nicht. |
+| Was es tut / was es bedeutet | The builder offers a second winch on each side, so more lines can be worked at once. The reference boat does not have them, so the app does not draw them. | Die Werft bietet auf jeder Seite eine zweite Winsch an, damit mehr Leinen gleichzeitig bedient werden können. Das Referenzboot hat sie nicht, deshalb zeichnet die App sie nicht. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1662,10 +1662,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Close-hauled | Am Wind |
 | Andere Namen | beating — sailing close-hauled to get upwind | hart am Wind<br>Kreuzen — am Wind segeln, um Höhe zu gewinnen |
 | Kurz | Sailing as close to the wind as she can, about 45° off it. | So nah am Wind segeln, wie es geht, etwa 45° daneben. |
-| Was es tut / was es bedeutet | Close-hauled, the sails are pulled in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail. | Am Wind sind die Segel dichtgeholt, und das Boot segelt so nah am Wind wie möglich, knapp außerhalb des Totwassers. Auf diesem Kurs krängt es am stärksten. |
+| Was es tut / was es bedeutet | Close-hauled, the sails are trimmed in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail. | Am Wind sind die Segel dichtgeholt, und das Boot segelt so nah am Wind wie möglich, knapp außerhalb des Totwassers. Auf diesem Kurs krängt es am stärksten. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
-| „Zeigen“ | Close-hauled: the wind 45° off the bow, both sails pulled in; she heels about 17°. | Am Wind: Der Wind steht 45° zum Bug, beide Segel sind dichtgeholt; das Boot krängt etwa 17°. |
+| „Zeigen“ | Close-hauled: the wind 45° off the bow, both sails trimmed in; she heels about 17°. | Am Wind: Der Wind steht 45° zum Bug, beide Segel sind dichtgeholt; das Boot krängt etwa 17°. |
 | Belegstatus | Checked against a written source. | Gegen eine schriftliche Quelle geprüft. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -1692,7 +1692,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Head up | Anluven |
 | Andere Namen | luff up<br>come up | — |
 | Kurz | To turn the bow towards the wind. | Den Bug zum Wind drehen. |
-| Was es tut / was es bedeutet | Heading up turns the bow closer to the wind; the sails then need hauling in, or they flap. The opposite is bearing away. | Anluven dreht den Bug näher an den Wind; die Segel müssen dann dichtgeholt werden, sonst killen sie. Das Gegenteil ist abfallen. |
+| Was es tut / was es bedeutet | Heading up turns the bow closer to the wind; the sails then need trimming, or they flap. The opposite is bearing away. | Anluven dreht den Bug näher an den Wind; die Segel müssen dann dichtgeholt werden, sonst killen sie. Das Gegenteil ist abfallen. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1738,7 +1738,22 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Andere Namen | — | — |
 | Kurz | A line that holds the boom out so it cannot gybe across. | Eine Leine, die den Baum draußen hält, damit er nicht herüberschwingen kann. |
 | Was es tut / was es bedeutet | A preventer runs from the end of the boom forward and back to the cockpit, holding the boom out when running, so it cannot swing across in an accidental gybe. | Eine Bulltalje läuft vom Baumnende nach vorn und zurück in die Plicht und hält den Baum vor dem Wind draußen, sodass er bei einer Patenthalse nicht herüberschwingen kann. |
-| Auf diesem Boot | This boat carries none, so the app teaches the controlled gybe: the mainsheet hauled in first. | Dieses Boot hat keine, deshalb lehrt die App die kontrollierte Halse: die Großschot zuerst dichtgeholt. |
+| Auf diesem Boot | This boat carries none, so the app teaches the controlled gybe: the mainsheet trimmed first. | Dieses Boot hat keine, deshalb lehrt die App die kontrollierte Halse: die Großschot zuerst dichtgeholt. |
+| Typische Fehler | — | — |
+| „Zeigen“ | — | — |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Cunningham (`term_cunningham`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Cunningham | Cunningham |
+| Andere Namen | — | — |
+| Kurz | A line that pulls the front edge of a mainsail down. This boat has none. | Eine Leine, die die Vorderkante eines Großsegels nach unten zieht. Dieses Boot hat keine. |
+| Was es tut / was es bedeutet | On a mainsail that is hoisted up a mast track, the cunningham pulls the sail’s front edge (the luff) down near the bottom. More tension moves the sail’s fullness forward and flattens it in a stronger wind. | An einem Großsegel, das an einer Mastschiene hochgezogen wird, zieht das Cunningham die Vorderkante des Segels (das Vorliek) unten nach unten. Mehr Spannung verlagert den Bauch des Segels nach vorn und flacht es bei stärkerem Wind ab. |
+| Auf diesem Boot | None, as far as we know (not yet confirmed on the real boat). The mainsail rolls into the mast, so its front edge sits on the furling rod inside the mast and there is nothing to pull it down; its tension comes from the main halyard. | Keines, soweit wir wissen (auf dem echten Boot noch nicht bestätigt). Das Großsegel rollt in den Mast, seine Vorderkante liegt auf der Rollstange im Mast, und nichts zieht sie nach unten; die Spannung kommt vom Großfall. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
@@ -1751,7 +1766,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Halyard | Fall |
 | Andere Namen | — | — |
-| Kurz | A rope that hoists a sail. | Eine Leine, mit der ein Segel gesetzt wird. |
+| Kurz | A line that hoists a sail. | Eine Leine, mit der ein Segel gesetzt wird. |
 | Was es tut / was es bedeutet | A halyard pulls a sail’s head (its top corner) up the mast or the forestay and holds it there. | Ein Fall zieht den Kopf eines Segels (seine obere Ecke) am Mast oder am Vorstag nach oben und hält ihn dort. |
 | Auf diesem Boot | The main stays hoisted and rolls into the mast, and the jib rolls round the forestay, so the halyards are hardly ever touched; the gennaker halyard is parked. | Das Großsegel bleibt gesetzt und rollt in den Mast, die Fock rollt um das Vorstag, die Fälle werden deshalb kaum angefasst; das Gennakerfall liegt nur belegt und wird nicht benutzt. |
 | Typische Fehler | — | — |
@@ -1766,8 +1781,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Ease | Fieren |
 | Andere Namen | let out | ausfieren |
-| Kurz | To let a rope out. | Eine Leine nachgeben. |
-| Was es tut / was es bedeutet | Easing lets a rope out slowly and under control, so a sail can go further out or a load comes off. | Fieren heißt, eine Leine langsam und kontrolliert nachzugeben, damit ein Segel weiter nach außen gehen kann oder Last von einer Leine kommt. |
+| Kurz | To let a line run out slowly, under control. | Eine Leine nachgeben. |
+| Was es tut / was es bedeutet | Easing lets a line run out slowly and under control, so a sail can go further out or a load comes off. | Fieren heißt, eine Leine langsam und kontrolliert nachzugeben, damit ein Segel weiter nach außen gehen kann oder Last von einer Leine kommt. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1784,7 +1799,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Kurz | The red area the app draws where the boom would sweep in a gybe. | Der rote Bereich, den die App zeichnet, wo der Baum bei einer Halse durchschwingen würde. |
 | Was es tut / was es bedeutet | With the wind from behind, the boom can swing across the whole cockpit in an accidental gybe, fast and hard enough to injure someone. The app draws the area it would sweep in red, so you know where not to stand. | Mit Wind von achtern kann der Baum bei einer Patenthalse über die ganze Plicht schwingen, schnell und hart genug, um jemanden zu verletzen. Die App zeichnet den Bereich, den er überstreicht, rot ein, damit Sie wissen, wo Sie nicht stehen dürfen. |
 | Auf diesem Boot | — | — |
-| Typische Fehler | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet hauled in. | So weit nach achtern steuern, dass der Wind hinter das Großsegel kommt (Wind von der falschen Seite). → Der Baum kann jeden Moment herüberschwingen. Steuern Sie ein Stück zurück zum Wind oder halsen Sie absichtlich mit dichtgeholter Großschot. |
+| Typische Fehler | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet trimmed. | So weit nach achtern steuern, dass der Wind hinter das Großsegel kommt (Wind von der falschen Seite). → Der Baum kann jeden Moment herüberschwingen. Steuern Sie ein Stück zurück zum Wind oder halsen Sie absichtlich mit dichtgeholter Großschot. |
 | „Zeigen“ | Running, the autopilot turns her through dead downwind with the mainsheet eased: an accidental gybe. The red area shows where the boom sweeps across. Keep heads out of it. | Vor dem Wind dreht der Autopilot das Boot mit gefierter Großschot durch die Linie genau achtern: eine Patenthalse. Der rote Bereich zeigt, wo der Baum durchschwingt. Halten Sie die Köpfe daraus. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -1812,10 +1827,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Gybe | Halsen |
 | Andere Namen | jibe — American spelling | Halse — als Substantiv für das Manöver |
 | Kurz | Turning the stern through the wind, so the boom crosses to the other side. | Das Heck durch den Wind drehen, sodass der Baum auf die andere Seite schwingt. |
-| Was es tut / was es bedeutet | In a gybe the stern turns through the wind and the boom swings across the whole boat. Done on purpose, the mainsheet is hauled in first so the boom crosses a short way, under control. By accident (an accidental gybe) it crosses fast and hard: it can injure people and break gear. Why the boom crosses by itself: let out, it is at first held out by the wind; a roll, a wave or a small turn starts it across, and once it is past the line of the wind (pointing straight at where the wind comes from), the wind throws it. | Bei einer Halse dreht das Heck durch den Wind und der Baum schwingt über das ganze Boot. Macht man sie absichtlich, wird die Großschot vorher dichtgeholt, damit der Baum nur ein kurzes Stück und kontrolliert herüberkommt. Passiert sie unabsichtlich (Patenthalse), kommt er schnell und hart herüber: Das kann Menschen verletzen und Material brechen. Warum der Baum von selbst herüberschwingt: Gefiert wird er zunächst vom Wind draußen gehalten; ein Rollen, eine Welle oder eine kleine Kursänderung bringt ihn in Bewegung, und sobald er die Windlinie überschritten hat (also genau in Richtung der Windquelle zeigt), wirft ihn der Wind herüber. |
+| Was es tut / was es bedeutet | In a gybe the stern turns through the wind and the boom swings across the whole boat. Done on purpose, the mainsheet is trimmed first so the boom crosses a short way, under control. By accident (an accidental gybe) it crosses fast and hard: it can injure people and break gear. Why the boom crosses by itself: eased out, it is at first held out by the wind; a roll, a wave or a small turn starts it across, and once it is past the line of the wind (pointing straight at where the wind comes from), the wind throws it. | Bei einer Halse dreht das Heck durch den Wind und der Baum schwingt über das ganze Boot. Macht man sie absichtlich, wird die Großschot vorher dichtgeholt, damit der Baum nur ein kurzes Stück und kontrolliert herüberkommt. Passiert sie unabsichtlich (Patenthalse), kommt er schnell und hart herüber: Das kann Menschen verletzen und Material brechen. Warum der Baum von selbst herüberschwingt: Gefiert wird er zunächst vom Wind draußen gehalten; ein Rollen, eine Welle oder eine kleine Kursänderung bringt ihn in Bewegung, und sobald er die Windlinie überschritten hat (also genau in Richtung der Windquelle zeigt), wirft ihn der Wind herüber. |
 | Auf diesem Boot | — | — |
-| Typische Fehler | Gybing with the mainsheet eased right out. → The boom slams across. Haul the mainsheet in before turning, then ease it out on the new side.<br>Steering too far downwind. → The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind. | Halsen mit vollkommen gefierter Großschot. → Der Baum knallt herüber. Holen Sie die Großschot vor der Drehung dicht und fieren Sie sie auf dem neuen Bug wieder aus.<br>Zu weit nach achtern steuern. → Der Wind kommt hinter das Großsegel, und es kann von selbst halsen. Bleiben Sie etwas von der Linie genau vor dem Wind weg. |
-| „Zeigen“ | The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is hauled in first. | Der Autopilot dreht das Boot mit gefierter Großschot durch die Linie genau achtern: Der Baum kommt schnell herüber (Patenthalse), und der rote Bereich zeigt seinen Weg. Bei einer kontrollierten Halse wird die Großschot vorher dichtgeholt. |
+| Typische Fehler | Gybing with the mainsheet eased right out. → The boom slams across. Trim the mainsheet before turning, then ease it out on the new side.<br>Steering too far downwind. → The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind. | Halsen mit vollkommen gefierter Großschot. → Der Baum knallt herüber. Holen Sie die Großschot vor der Drehung dicht und fieren Sie sie auf dem neuen Bug wieder aus.<br>Zu weit nach achtern steuern. → Der Wind kommt hinter das Großsegel, und es kann von selbst halsen. Bleiben Sie etwas von der Linie genau vor dem Wind weg. |
+| „Zeigen“ | The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is trimmed first. | Der Autopilot dreht das Boot mit gefierter Großschot durch die Linie genau achtern: Der Baum kommt schnell herüber (Patenthalse), und der rote Bereich zeigt seinen Weg. Bei einer kontrollierten Halse wird die Großschot vorher dichtgeholt. |
 | Belegstatus | Checked against a written source. | Gegen eine schriftliche Quelle geprüft. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -1841,11 +1856,11 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Luffing (sail flapping) | Killen (Segel schlägt) |
 | Andere Namen | — | — |
-| Kurz | A sail flapping at its front edge because it is let out too far. | Ein Segel schlägt an seiner Vorderkante, weil es zu weit gefiert ist. |
+| Kurz | A sail flapping at its front edge because it is eased too far. | Ein Segel schlägt an seiner Vorderkante, weil es zu weit gefiert ist. |
 | Was es tut / was es bedeutet | When a sail is eased more than the wind angle needs, or the boat turns too close to the wind, the air reaches both sides of the front edge and the sail flaps. It no longer drives the boat, and long flapping in strong wind wears it out. | Wird ein Segel stärker gefiert, als der Windwinkel verlangt, oder dreht das Boot zu dicht an den Wind, erreicht die Luft beide Seiten der Vorderkante, und das Segel killt. Es treibt das Boot dann nicht mehr, und langes Killen bei starkem Wind verschleißt es. |
 | Auf diesem Boot | — | — |
-| Typische Fehler | Leaving a sail flapping in strong wind. → It wears and can tear. Haul it in, or roll it away. | Ein Segel bei starkem Wind killen lassen. → Das Segel verschleißt und kann einreißen. Dichtholen oder wegrollen. |
-| „Zeigen“ | The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes section) until the flapping just stops. | Die Großschot ist vollkommen gefiert: Das Großsegel killt an seiner Vorderkante. Holen Sie die Großschot (Bereich Leinen) dicht, bis das Killen gerade aufhört. |
+| Typische Fehler | Leaving a sail flapping in strong wind. → It wears and can tear. Trim it, or roll it away. | Ein Segel bei starkem Wind killen lassen. → Das Segel verschleißt und kann einreißen. Dichtholen oder wegrollen. |
+| „Zeigen“ | The mainsheet is eased right out: the mainsail flaps along its front edge. Trim the mainsheet (Lines section) until the flapping just stops. | Die Großschot ist vollkommen gefiert: Das Großsegel killt an seiner Vorderkante. Holen Sie die Großschot (Bereich Leinen) dicht, bis das Killen gerade aufhört. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -1859,9 +1874,24 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Kurz | The boat leaning over to one side. | Das Boot neigt sich auf eine Seite. |
 | Was es tut / was es bedeutet | The wind’s push on the sails tips the boat over to leeward; the keel’s weight pulls her back. Some heel is normal; too much slows her and makes her hard to steer. Easing the sheets or making the sails smaller reduces it. | Der Druck des Windes auf die Segel legt das Boot nach Lee über; das Gewicht des Kiels zieht es zurück. Etwas Krängung ist normal; zu viel bremst es und macht es schwer zu steuern. Fieren der Schoten oder Verkleinern der Segel reduziert sie. |
 | Auf diesem Boot | — | — |
-| Typische Fehler | Hauling the sheets in harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Bei zu starker Krängung die Schoten noch dichter holen. → Das verstärkt die Krängung. Fieren Sie die Großschot oder rollen Sie einen Teil der Segel ein. |
-| „Zeigen“ | 20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes section and she stands up. | 20 kn bei dichtgeholten Segeln: Das Boot krängt etwa 30°. Fieren Sie die Großschot im Bereich Leinen, und es richtet sich auf. |
+| Typische Fehler | Trimming the sheets harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Bei zu starker Krängung die Schoten noch dichter holen. → Das verstärkt die Krängung. Fieren Sie die Großschot oder rollen Sie einen Teil der Segel ein. |
+| „Zeigen“ | 20 kn with the sails trimmed in: she heels about 30°. Ease the mainsheet in the Lines section and she stands up. | 20 kn bei dichtgeholten Segeln: Das Boot krängt etwa 30°. Fieren Sie die Großschot im Bereich Leinen, und es richtet sich auf. |
 | Belegstatus | Checked against a written source. | Gegen eine schriftliche Quelle geprüft. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Leine (`term_line`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Line | Leine |
+| Andere Namen | rope — the material, before it has a job | Tau — das Material, bevor es eine Aufgabe hat |
+| Kurz | Any rope that has a job on a boat. | Jedes Tau, das an Bord eine Aufgabe hat. |
+| Was es tut / was es bedeutet | On a boat a rope is named after its job: a sheet trims a sail, a halyard hoists it, a mooring line holds the boat. Together they are the lines. Sailors say “rope” for rope that has no job yet, such as a new coil. | An Bord wird ein Tau nach seiner Aufgabe benannt: Eine Schot trimmt ein Segel, ein Fall setzt es, eine Festmacherleine hält das Boot. Zusammen sind sie die Leinen. Seeleute sagen „Tau“ für Tau, das noch keine Aufgabe hat, etwa eine neue Rolle. |
+| Auf diesem Boot | — | — |
+| Typische Fehler | — | — |
+| „Zeigen“ | — | — |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
@@ -1946,8 +1976,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Sheet | Schot |
 | Andere Namen | — | — |
-| Kurz | A rope that sets a sail’s angle to the wind. | Eine Leine, die den Winkel eines Segels zum Wind festlegt. |
-| Was es tut / was es bedeutet | A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a rope, not the sail. | Eine Schot zieht am Schothorn eines Segels (seiner hinteren unteren Ecke) und legt damit fest, wie weit das Segel nach außen ausschwingen kann. Jedes Segel hat seine eigene: die Großschot und die Fockschot. Auf einem Boot ist eine Schot eine Leine, kein Segel. |
+| Kurz | A line that sets a sail’s angle to the wind. | Eine Leine, die den Winkel eines Segels zum Wind festlegt. |
+| Was es tut / was es bedeutet | A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a line, not the sail. | Eine Schot zieht am Schothorn eines Segels (seiner hinteren unteren Ecke) und legt damit fest, wie weit das Segel nach außen ausschwingen kann. Jedes Segel hat seine eigene: die Großschot und die Fockschot. Auf einem Boot ist eine Schot eine Leine, kein Segel. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -1976,11 +2006,11 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 |---|---|---|
 | Name | Stall | Strömungsabriss |
 | Andere Namen | — | — |
-| Kurz | A sail pulled in too far, so the air no longer flows smoothly round it. | Ein Segel, das zu dicht geholt ist, sodass die Luft nicht mehr glatt umströmt. |
+| Kurz | A sail trimmed too far, so the air no longer flows smoothly round it. | Ein Segel, das zu dicht geholt ist, sodass die Luft nicht mehr glatt umströmt. |
 | Was es tut / was es bedeutet | A stalled sail looks full but drives poorly and makes more heel; the telltales on its far side droop or spin. Ease the sheet until they stream. | Ein Segel mit Strömungsabriss sieht voll aus, zieht aber schlecht und verursacht mehr Krängung; die Trimmfäden auf seiner Leeseite hängen durch oder drehen sich. Fieren Sie die Schot, bis sie gerade nach achtern wehen. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
-| „Zeigen“ | The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes section and she speeds up. | Die Großschot ist bei 60° Wind zum Bug voll dichtgeholt: Das Großsegel hat Strömungsabriss. Fieren Sie im Bereich Leinen auf etwa 25 %, und das Boot wird schneller. |
+| „Zeigen“ | The mainsheet is trimmed right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Lines section and she speeds up. | Die Großschot ist bei 60° Wind zum Bug voll dichtgeholt: Das Großsegel hat Strömungsabriss. Fieren Sie im Bereich Leinen auf etwa 25 %, und das Boot wird schneller. |
 | Belegstatus | Checked against a written source. | Gegen eine schriftliche Quelle geprüft. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -2004,10 +2034,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 
 | Feld | English | Deutsch |
 |---|---|---|
-| Name | Trim / haul in | Trimmen / Dichtholen |
-| Andere Namen | sheet in | anholen |
-| Kurz | To pull a rope in; also, setting the sails to the wind. | Eine Leine zu sich ziehen; auch: die Segel auf den Wind einstellen. |
-| Was es tut / was es bedeutet | Hauling in pulls a rope in. Trimming means setting each sail to the wind: haul in until it stops flapping, ease until it is not stalled. | Dichtholen zieht eine Leine zu sich. Trimmen heißt, jedes Segel auf den Wind einzustellen: dichtholen, bis es nicht mehr killt, fieren, bis es keinen Strömungsabriss hat. |
+| Name | Trim | Trimmen / Dichtholen |
+| Andere Namen | haul in<br>sheet in | anholen |
+| Kurz | To pull a sheet in; also, setting the sails to the wind. | Eine Leine zu sich ziehen; auch: die Segel auf den Wind einstellen. |
+| Was es tut / was es bedeutet | Trimming pulls a sheet in. It also means setting each sail to the wind: trim until it stops flapping, ease until it is not stalled. | Dichtholen zieht eine Leine zu sich. Trimmen heißt, jedes Segel auf den Wind einzustellen: dichtholen, bis es nicht mehr killt, fieren, bis es keinen Strömungsabriss hat. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
@@ -2022,7 +2052,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Name | Telltales | Trimmfäden |
 | Andere Namen | tell-tales | Wollfäden |
 | Kurz | Ribbons on the sails that show how the air flows. | Bändchen an den Segeln, die zeigen, wie die Luft strömt. |
-| Was es tut / was es bedeutet | Telltales are short ribbons near the front of the sails. Both sides streaming straight back: good trim. The far side drooping: pulled in too far. The near side lifting: let out too far. | Trimmfäden sind kurze Bändchen nahe der Segelvorderkante. Beide Seiten wehen gerade nach achtern: guter Trimm. Die Leeseite hängt durch: zu dicht geholt. Die Luvseite hebt sich: zu weit gefiert. |
+| Was es tut / was es bedeutet | Telltales are short ribbons near the front of the sails. Both sides streaming straight back: good trim. The far side drooping: trimmed too far. The near side lifting: eased too far. | Trimmfäden sind kurze Bändchen nahe der Segelvorderkante. Beide Seiten wehen gerade nach achtern: guter Trimm. Die Leeseite hängt durch: zu dicht geholt. Die Luvseite hebt sich: zu weit gefiert. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | Good trim: zoom in on the front of the mainsail; the telltales on both sides stream straight back. | Guter Trimm: Zoomen Sie auf die Vorderkante des Großsegels; die Trimmfäden auf beiden Seiten wehen gerade nach achtern. |
@@ -2040,7 +2070,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Was es tut / was es bedeutet | With twist, the top of the sail stands further out than the bottom. A little twist is normal; more twist spills power, which helps in strong wind. The vang controls it on the mainsail, the sheet on the jib. | Mit Twist steht das Segel oben weiter aus als unten. Ein wenig Twist ist normal; mehr Twist lässt Leistung entweichen, was bei starkem Wind hilft. Beim Großsegel steuert ihn der Baumniederholer, bei der Fock die Schot. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
-| „Zeigen“ | The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes section) and the twist closes. | Der Baumniederholer ist ganz gefiert: Das Oberteil des Großsegels verwindet sich nach außen. Holen Sie den Baumniederholer (Bereich Leinen) dicht, und der Twist schließt sich. |
+| „Zeigen“ | The vang is eased all the way: the top of the mainsail twists open. Pull the vang on (Lines section) and the twist closes. | Der Baumniederholer ist ganz gefiert: Das Oberteil des Großsegels verwindet sich nach außen. Holen Sie den Baumniederholer (Bereich Leinen) dicht, und der Twist schließt sich. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -2493,7 +2523,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Kurz | How much chain is out compared with the depth. | Wie viel Kette draußen ist, verglichen mit der Tiefe. |
 | Was es tut / was es bedeutet | The more chain, the flatter it pulls on the anchor, and the better the anchor holds; the chain's weight also softens the jerks. With too little chain the pull lifts the anchor's shank and it drags. | Je mehr Kette, desto flacher zieht sie am Anker, und desto besser hält er; das Gewicht der Kette dämpft auch die Rucke. Bei zu wenig Kette hebt der Zug den Schaft des Ankers, und er schleift. |
 | Auf diesem Boot | 70 m of chain (an assumption). In 5 m of water the instructor's rule (3 boat lengths, 47 m) is more than 4 × the effective depth (27 m). | 70 m Kette (eine Annahme). Bei 5 m Wassertiefe ist die Regel des Ausbilders (3 Bootslängen, 47 m) mehr als das 4-Fache der wirksamen Tiefe (27 m). |
-| Typische Fehler | Letting out just the depth and switching off. → Let out what the check asks for, then set the anchor by going gently astern. | Nur die Wassertiefe an Kette ausgeben und sich zurücklehnen. → Geben Sie so viel aus, wie die Prüfung verlangt, und setzen Sie den Anker dann, indem Sie sanft rückwärts gehen. |
+| Typische Fehler | Paying out just the depth and switching off. → Pay out what the check asks for, then set the anchor by going gently astern. | Nur die Wassertiefe an Kette ausgeben und sich zurücklehnen. → Geben Sie so viel aus, wie die Prüfung verlangt, und setzen Sie den Anker dann, indem Sie sanft rückwärts gehen. |
 | „Zeigen“ | Anchored in the bay with 34 m of chain, wind 15 kn. | In der Bucht geankert mit 34 m Kette, Wind 15 kn. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
@@ -2536,7 +2566,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | app.title | Sail: learn and train | Sail: lernen und üben |
 | scene.label | 3D view of the boat | 3D-Ansicht des Bootes |
 | scene.unsupported | 3D not supported on this device | 3D wird auf diesem Gerät nicht unterstützt |
-| scene.unsupportedHint | This browser cannot draw the 3D boat (it needs WebGL). Everything in the panel still works: ropes, wind and settings. Try another browser, or turn on hardware acceleration in the browser's settings. | Dieser Browser kann das 3D-Boot nicht zeichnen (er braucht WebGL). Alles im Panel funktioniert weiterhin: Leinen, Wind und Einstellungen. Versuchen Sie einen anderen Browser, oder schalten Sie die Hardwarebeschleunigung in den Einstellungen des Browsers ein. |
+| scene.unsupportedHint | This browser cannot draw the 3D boat (it needs WebGL). Everything in the panel still works: lines, wind and settings. Try another browser, or turn on hardware acceleration in the browser's settings. | Dieser Browser kann das 3D-Boot nicht zeichnen (er braucht WebGL). Alles im Panel funktioniert weiterhin: Leinen, Wind und Einstellungen. Versuchen Sie einen anderen Browser, oder schalten Sie die Hardwarebeschleunigung in den Einstellungen des Browsers ein. |
 | scene.failed | The 3D view stopped working | Die 3D-Ansicht funktioniert nicht mehr |
 | scene.failedHint | Reload the page to try again. The panel still works. If it happens again, please report it with the link from Settings → Share. | Laden Sie die Seite neu, um es noch einmal zu versuchen. Das Panel funktioniert weiterhin. Wenn es wieder passiert, melden Sie es bitte mit dem Link aus Einstellungen → Teilen. |
 | scene.lost | The 3D view is paused | Die 3D-Ansicht ist pausiert |
@@ -2544,9 +2574,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | error.banner | Something went wrong. Reload the page; if it happens again, please report it with the link from Settings → Share. | Etwas ist schiefgegangen. Laden Sie die Seite neu; wenn es wieder passiert, melden Sie es bitte mit dem Link aus Einstellungen → Teilen. |
 | error.details | Technical details | Technische Details |
 | panel.label | Controls | Bedienung |
-| tab.ropes | Ropes | Leinen |
+| tab.ropes | Lines | Leinen |
 | view.step.label | Step size | Schrittweite |
-| view.step.hint | How much one tap on − or + changes a rope. | Um wie viel ein Tippen auf − oder + eine Leine verändert. |
+| view.step.hint | How much one tap on − or + changes a line. | Um wie viel ein Tippen auf − oder + eine Leine verändert. |
 | view.step.option | {value} % | {value} % |
 | view.debug.label | Debug overlay | Debug-Anzeige |
 | view.debug.hint | Shows frame rate, layout and build version. Useful for bug reports. | Zeigt Bildrate, Layout und Build-Version. Nützlich für Fehlerberichte. |
@@ -2555,7 +2585,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | view.detail.high | High | Hoch |
 | view.detail.low | Low | Niedrig |
 | view.labels.label | Labels in 3D | Beschriftungen in 3D |
-| view.labels.hint | Names over the parts and ropes in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Namen über den Teilen und Leinen in der 3D-Ansicht. Wo zwei sich überschneiden, zeigt der wichtigere Name: zoomen Sie hinein, um mehr zu sehen. Tippen Sie einen Namen an, um ihn auszuwählen. |
+| view.labels.hint | Names over the parts and lines in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Namen über den Teilen und Leinen in der 3D-Ansicht. Wo zwei sich überschneiden, zeigt der wichtigere Name: zoomen Sie hinein, um mehr zu sehen. Tippen Sie einen Namen an, um ihn auszuwählen. |
 | footer.version | Version {hash} · {date} | Version {hash} · {date} |
 | footer.release | Version {version} · {hash} · {date} | Version {version} · {hash} · {date} |
 | footer.next | Test version (next) · {hash} · {date} | Testversion (next) · {hash} · {date} |
@@ -2565,7 +2595,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | footer.maker | Hanse and Hanse 508 are names of their owner. This app is not affiliated with Hanse Yachts. | Hanse und Hanse 508 sind Namen ihres Eigentümers. Diese App ist mit Hanse Yachts nicht verbunden. |
 | footer.report | Report a problem or suggest an idea | Ein Problem melden oder eine Idee vorschlagen |
 | welcome.title | Welcome aboard | Willkommen an Bord |
-| welcome.body | This app shows a complete beginner what every rope, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Diese App zeigt einem Anfänger, was jede Leine, jede Schot und jedes Segel einer Fahrtenyacht tut. Sie bedienen die Steuerung; das 3D-Boot zeigt, was passiert. Segelkenntnisse sind nicht nötig. |
+| welcome.body | This app shows a complete beginner what every line, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Diese App zeigt einem Anfänger, was jede Leine, jede Schot und jedes Segel einer Fahrtenyacht tut. Sie bedienen die Steuerung; das 3D-Boot zeigt, was passiert. Segelkenntnisse sind nicht nötig. |
 | welcome.watch | Watch the first exercise | Erste Übung ansehen |
 | welcome.look | Look around the boat | Rund um das Boot umsehen |
 | welcome.close | Close | Schließen |
@@ -2610,7 +2640,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | control.mainFurl | Mainsail out | Großsegel ausrollen |
 | control.less | Less: {name} | Weniger: {name} |
 | control.more | More: {name} | Mehr: {name} |
-| control.paidOut | {m} m of rope paid out | {m} m Leine gefiert |
+| control.trim | Trim: {name} | Trimmen: {name} |
+| control.ease | Ease: {name} | Fieren: {name} |
+| control.paidOut | {m} m of line paid out | {m} m Leine gefiert |
 | unit.eased | {value} % eased | {value} % gefiert |
 | unit.unfurled | {value} % unfurled | {value} % ausgerollt |
 | state.taut | taut | stramm |
@@ -2622,7 +2654,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | furl.inTail | “In” furling tail: {m} m paid out | Reffleine „In“: {m} m gefiert |
 | furl.outTail | “Out” furling tail: {m} m paid out | Reffleine „Out“: {m} m gefiert |
 | furl.outhaul | Outhaul: {m} m paid out | Unterliekstrecker: {m} m gefiert |
-| furl.hint | Mainsail out moves three rope ends together: to unfurl, the “out” furling tail and the outhaul are hauled in while the “in” tail pays out. To furl, the other way round. The sail rolls into the mast from its back edge. | Großsegel ausrollen bewegt drei Leinenenden zusammen: zum Ausrollen werden die Reffleine „Out“ und der Unterliekstrecker dichter geholt, während die Reffleine „In“ gefiert wird. Zum Reffen umgekehrt. Das Segel rollt sich von seinem Achterliek in den Mast. |
+| furl.hint | Mainsail out moves three line ends together: to unfurl, the “out” furling tail and the outhaul are pulled in together while the “in” tail pays out. To furl, the other way round. The sail rolls into the mast from its back edge. | Großsegel ausrollen bewegt drei Leinenenden zusammen: zum Ausrollen werden die Reffleine „Out“ und der Unterliekstrecker dichter geholt, während die Reffleine „In“ gefiert wird. Zum Reffen umgekehrt. Das Segel rollt sich von seinem Achterliek in den Mast. |
 | wind.hint | The true wind (the wind over the water). While sailing, the sails feel the apparent wind. | Der wahre Wind (der Wind über dem Wasser). Unter Segeln spüren die Segel den scheinbaren Wind. |
 | wind.dial.label | Wind direction | Windrichtung |
 | wind.dial.hint | Drag around the compass, or use − and +. The arrow comes from where the wind blows from. North is at the top; the boat turns as she steers. | Ziehen Sie am Kompass oder nutzen Sie − und +. Der Pfeil kommt von dort, woher der Wind weht. Norden ist oben; das Boot dreht sich, während es steuert. |
@@ -2645,14 +2677,14 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | alert.gybe | GYBE! The boom swung across the boat | HALSE! Der Baum ist über das Boot geschwungen |
 | alert.byTheLee | By the lee: gybe risk | By the lee: Halsegefahr |
 | alert.byTheLeeStrong | By the lee: the boom can come across any moment. | By the lee: Der Baum kann jeden Moment herumschlagen. |
-| gybe.accidental | Accidental gybe! Boom end {speed} m/s · energy {energy} kJ · peak main sheet load {load} kN (about {tonnes} tonnes). Anyone in the boom's way could be badly hurt. Safer: haul the main sheet in before turning (controlled gybe). | Unbeabsichtigte Halse! Baumende {speed} m/s · Energie {energy} kJ · Spitzenlast auf der Großschot {load} kN (etwa {tonnes} Tonnen). Wer im Weg des Baumes steht, kann schwer verletzt werden. Sicherer: Holen Sie die Großschot dicht, bevor Sie abdrehen (kontrollierte Halse). |
+| gybe.accidental | Accidental gybe! Boom end {speed} m/s · energy {energy} kJ · peak main sheet load {load} kN (about {tonnes} tonnes). Anyone in the boom's way could be badly hurt. Safer: trim the main sheet before turning (controlled gybe). | Unbeabsichtigte Halse! Baumende {speed} m/s · Energie {energy} kJ · Spitzenlast auf der Großschot {load} kN (etwa {tonnes} Tonnen). Wer im Weg des Baumes steht, kann schwer verletzt werden. Sicherer: Holen Sie die Großschot dicht, bevor Sie abdrehen (kontrollierte Halse). |
 | gybe.controlled | Controlled gybe: boom end {speed} m/s · peak main sheet load {load} kN. | Kontrollierte Halse: Baumende {speed} m/s · Spitzenlast auf der Großschot {load} kN. |
 | debug.boom | Boom θ ψ | Boom θ ψ |
 | debug.free | θ free ψ t | θ free ψ t |
 | debug.limits | ψ limits | ψ limits |
 | debug.main | Main | Main |
 | debug.jib | Jib | Jib |
-| debug.ropes | Ropes | Ropes |
+| debug.ropes | Lines | Ropes |
 | main.calm | No wind: the mainsail hangs loose, boom {angle}° out | Kein Wind: Das Großsegel hängt lose, Baum {angle}° ausgestellt |
 | main.furled | Mainsail furled (rolled into the mast): no sail for the wind to push, boom {angle}° out | Großsegel eingerollt (in den Mast gerollt): keine Segelfläche, gegen die der Wind drücken kann, Baum {angle}° ausgestellt |
 | alert.overpowered | Heeling a lot: ease the main sheet or roll some sail away | Starke Krängung: Fieren Sie die Großschot oder rollen Sie etwas Segel weg |
@@ -2660,7 +2692,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | alert.tack | Tack: the boom moved across | Wende: Der Baum ist herübergekommen |
 | alert.ropeSlipping | {rope}: slipping on the winch drum. Add a turn. | {rope}: rutscht auf der Winschtrommel. Legen Sie eine Windung auf. |
 | alert.winchCutOut | The {side} winch cut out: too much load. | Die Winsch an {side} hat abgeschaltet: zu große Last. |
-| alert.clutchOnRunning | A clutch was shut on a running rope under load: it can be damaged. | Eine Klemme wurde unter Last auf eine laufende Leine geschlossen: Sie kann beschädigt werden. |
+| alert.clutchOnRunning | A clutch was shut on a running line under load: it can be damaged. | Eine Klemme wurde unter Last auf eine laufende Leine geschlossen: Sie kann beschädigt werden. |
 | control.jibSheet | Jib sheet | Fockschot |
 | control.jibFurl | Jib out | Fock ausrollen |
 | main.fightingLift | The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out. | Der Toppnant hält den Baum hoch, deshalb zieht die Großschot gegen ihn (beide rot). Fieren Sie den Toppnant oder die Großschot über {pct} % hinaus, bevor der Baum ausschwingen kann. |
@@ -2687,8 +2719,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Steuerrad {turns} Umdrehungen gegen den Uhrzeigersinn gedreht: Die Hinterkante des Ruderblatts geht nach Backbord, das Boot würde also nach Backbord (links) drehen. |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Die Steuerräder und das Ruder (das Blatt unter dem Heck des Bootes) drehen zusammen. Das Boot dreht nur, solange es Fahrt macht: festgehalten oder gestoppt folgt es dem Steuerrad nicht. |
 | ropes.mode.easy | Easy mode: | Einfach-Modus: |
-| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Einfach-Modus: jede Leine ist ein Schieberegler. Im Modus Realistisch arbeiten die Leinen wie auf dem Boot: mit Klemmen, Winsch und Hand. |
-| clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Klemmenbänke: Tippen Sie auf eine Klemme, um ihre Leine auszuwählen |
+| ropes.mode.easyHint | Easy mode: each line is a slider. Realistic mode (choose it under Mode) works the lines as on the boat: clutches, the winch and your hand. | Einfach-Modus: jede Leine ist ein Schieberegler. Im Modus Realistisch arbeiten die Leinen wie auf dem Boot: mit Klemmen, Winsch und Hand. |
+| clutch.drawingLabel | Clutch banks: tap a clutch to select its line | Klemmenbänke: Tippen Sie auf eine Klemme, um ihre Leine auszuwählen |
 | clutch.bankB | Bank B · port | Bank B · Backbord |
 | clutch.bankA | Bank A · starboard | Bank A · Steuerbord |
 | clutch.sideDeck | Port side deck, further forward | Backbord-Seitendeck, weiter vorn |
@@ -2699,28 +2731,28 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | clutch.tail.furl | the tail that rolls the mainsail in | das Ende, das das Großsegel einrollt |
 | clutch.tail.unfurl | the tail that rolls the mainsail out | das Ende, das das Großsegel ausrollt |
 | clutch.aria | Clutch “{label}”: {name} | Klemme „{label}“: {name} |
-| ropes.strip.label | Selected rope | Gewählte Leine |
-| ropes.strip.emptyList | Tap a rope in the 3D view or in the list below to work it. | Tippen Sie eine Leine in der 3D-Ansicht oder in der Liste unten an, um sie zu bedienen. |
-| ropes.learnRealistic | Realistic ropes: you work this rope at its station. Choose Realistic mode to work it. | Realistische Leinen: diese Leine bedienen Sie an ihrer Station. Wählen Sie den Modus Realistisch, um sie zu bedienen. |
-| ropes.shared.twoEnds | One rope, two ends. | Eine Leine, zwei Enden. |
+| ropes.strip.label | Selected line | Gewählte Leine |
+| ropes.strip.emptyList | Tap a line in the 3D view or in the list below to work it. | Tippen Sie eine Leine in der 3D-Ansicht oder in der Liste unten an, um sie zu bedienen. |
+| ropes.learnRealistic | Realistic lines: you work this line at its station. Choose Realistic mode to work it. | Realistische Leinen: diese Leine bedienen Sie an ihrer Station. Wählen Sie den Modus Realistisch, um sie zu bedienen. |
+| ropes.shared.twoEnds | One line, two ends. | Eine Leine, zwei Enden. |
 | ropes.shared.workAgainst | These work against each other. | Diese arbeiten gegeneinander. |
-| ropes.sharedDetail.ctl_mainsheet | The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same rope, so it can be worked from either side. | Die Klemme „Main sheet“ (Steuerbord) und die Klemme „MAIN SHEET“ (Backbord) halten die zwei Enden derselben Leine, sie lässt sich also von beiden Seiten bedienen. |
-| ropes.sharedDetail.ctl_main_furl | The two “Main furling” clutches hold the two tails of one furling line: the left one rolls the mainsail in, the right one rolls it out. “Main outhaul” is hauled together with the “out” tail. | Die zwei Klemmen „Main furling“ halten die zwei Tampen einer Reffleine: die linke rollt das Großsegel ein, die rechte rollt es aus. „Main outhaul“ wird zusammen mit dem „out“-Tampen dichtgeholt. |
+| ropes.sharedDetail.ctl_mainsheet | The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same line, so it can be worked from either side. | Die Klemme „Main sheet“ (Steuerbord) und die Klemme „MAIN SHEET“ (Backbord) halten die zwei Enden derselben Leine, sie lässt sich also von beiden Seiten bedienen. |
+| ropes.sharedDetail.ctl_main_furl | The two “Main furling” clutches hold the two tails of one furling line: the left one rolls the mainsail in, the right one rolls it out. “Main outhaul” is pulled together with the “out” tail. | Die zwei Klemmen „Main furling“ halten die zwei Tampen einer Reffleine: die linke rollt das Großsegel ein, die rechte rollt es aus. „Main outhaul“ wird zusammen mit dem „out“-Tampen dichtgeholt. |
 | ropes.static.inMastFurling | Not adjusted while sailing: with in-mast furling the main halyard stays hoisted. | Wird beim Segeln nicht verstellt: bei Rollreff im Mast bleibt das Großfall gesetzt. |
 | ropes.static.notRigged | Not used: no gennaker (a big sail for downwind) is rigged on this boat, so its halyard is parked. | Nicht benutzt: auf diesem Boot ist kein Gennaker (ein großes Segel für vor dem Wind) gesetzt, deshalb ist sein Fall nur belegt. |
 | ropes.static.none | Not adjusted while sailing. | Wird beim Segeln nicht verstellt. |
-| ropes.list.title | All ropes and the wheel | Alle Leinen und das Steuerrad |
+| ropes.list.title | All lines and the wheel | Alle Leinen und das Steuerrad |
 | ropes.list.static | not adjusted | nicht verstellt |
-| ropes.fighting | Red: this rope pulls against another one (fighting) | Rot: diese Leine zieht gegen eine andere (gegenan) |
+| ropes.fighting | Red: this line pulls against another one (fighting) | Rot: diese Leine zieht gegen eine andere (gegenan) |
 | view.share.button | Share: copy link | Teilen: Link kopieren |
-| view.share.hint | The link opens exactly what you see now: ropes, wheel, wind, camera and the selected part. Paste it into a bug report. | Der Link öffnet genau das, was Sie jetzt sehen: Leinen, Steuerrad, Wind, Kamera und das gewählte Teil. Fügen Sie ihn in einen Fehlerbericht ein. |
+| view.share.hint | The link opens exactly what you see now: lines, wheel, wind, camera and the selected part. Paste it into a bug report. | Der Link öffnet genau das, was Sie jetzt sehen: Leinen, Steuerrad, Wind, Kamera und das gewählte Teil. Fügen Sie ihn in einen Fehlerbericht ein. |
 | view.share.copied | Link copied. | Link kopiert. |
 | view.share.manual | Copying is not allowed here: the link is selected below, copy it by hand. | Kopieren ist hier nicht erlaubt: der Link ist unten markiert, kopieren Sie ihn von Hand. |
 | view.share.fieldLabel | Link to this view | Link zu dieser Ansicht |
 | view.reset.button | Reset all | Alles zurücksetzen |
 | view.reset.confirm | Tap again to reset | Zum Zurücksetzen erneut tippen |
 | view.reset.done | Everything is back to the start settings. | Alles ist wieder auf den Startwerten. |
-| ropes.mode.easyShortList | tap a rope in the list, then use its slider. | tippen Sie eine Leine in der Liste an, dann benutzen Sie ihren Schieberegler. |
+| ropes.mode.easyShortList | tap a line in the list, then use its slider. | tippen Sie eine Leine in der Liste an, dann benutzen Sie ihren Schieberegler. |
 | ropes.strip.more | What does it do? | Was macht sie? |
 | pause.pause | Pause | Pause |
 | pause.resume | Resume | Fortsetzen |
@@ -2731,20 +2763,20 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.station.port | Port | Backbord |
 | real.station.starboard | Starboard | Steuerbord |
 | real.station.helm | Helm | Ruder |
-| real.paused | Paused: you can open clutches, wrap turns and switch places. Winching, easing and running ropes wait for Resume, then all happen together. | Pause: Sie können Klemmen öffnen, Törns auflegen und den Platz wechseln. Dichtholen mit der Winsch, Fieren und laufende Leinen warten auf „Weiter“, dann geschieht alles gleichzeitig. |
+| real.paused | Paused: you can open clutches, wrap turns and switch places. Winching, easing and running lines wait for Resume, then all happen together. | Pause: Sie können Klemmen öffnen, Törns auflegen und den Platz wechseln. Dichtholen mit der Winsch, Fieren und laufende Leinen warten auf „Weiter“, dann geschieht alles gleichzeitig. |
 | real.drawing.port | Port station seen from above, forward is up: clutch bank B, the JIB ROLL clutch and the port winch | Station Backbord von oben gesehen, vorn ist oben: Klemmenbank B, die Klemme „JIB ROLL“ und die Backbordwinsch |
 | real.drawing.starboard | Starboard station seen from above, forward is up: clutch bank A and the starboard winch | Station Steuerbord von oben gesehen, vorn ist oben: Klemmenbank A und die Steuerbordwinsch |
 | real.sideDeck | Side deck, further forward | Seitendeck, weiter vorn |
 | real.winch.port | Port winch | Backbordwinsch |
 | real.winch.starboard | Starboard winch | Steuerbordwinsch |
-| real.winch.empty | no rope on the winch | keine Leine auf der Winsch |
+| real.winch.empty | no line on the winch | keine Leine auf der Winsch |
 | real.hand | in your hand | in Ihrer Hand |
 | real.turns.none | 0 turns | 0 Törns |
 | real.turns.cw | {n} ↻ clockwise | {n} ↻ im Uhrzeigersinn |
 | real.turns.ccw | {n} ↺ wrong way | {n} ↺ falsch herum |
 | real.button.label | hold to winch | halten zum Dichtholen |
 | real.button.cutOut | cut out | abgeschaltet |
-| real.button.aria | Electric winch button: hold it to winch the rope in | Taste der elektrischen Winsch: Halten Sie sie, um die Leine dichter zu holen |
+| real.button.aria | Electric winch button: hold it to winch the line in | Taste der elektrischen Winsch: Halten Sie sie, um die Leine dichter zu holen |
 | real.clutch.open | open | offen |
 | real.clutch.closed | closed | geschlossen |
 | real.clutch.openShort | OPEN | OFFEN |
@@ -2756,45 +2788,45 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.tag.furl | rolls in | rollt ein |
 | real.tag.unfurl | rolls out | rollt aus |
 | real.tailShort.unfurl | rolls main out | rollt Groß aus |
-| real.strip.empty | Tap a clutch (a lock that holds a rope) to work its rope. Drag its lever up to open it, down to close it. | Tippen Sie eine Klemme an (eine Sicherung, die eine Leine hält), um an ihrer Leine zu arbeiten. Ziehen Sie ihren Hebel nach oben, um sie zu öffnen, nach unten, um sie zu schließen. |
-| real.strip.elsewhere | This rope's clutch is not here: it is at the {station} station. | Die Klemme dieser Leine ist nicht hier: Sie ist an der Station {station}. |
+| real.strip.empty | Tap a clutch (a lock that holds a line) to work its line. Drag its lever up to open it, down to close it. | Tippen Sie eine Klemme an (eine Sicherung, die eine Leine hält), um an ihrer Leine zu arbeiten. Ziehen Sie ihren Hebel nach oben, um sie zu öffnen, nach unten, um sie zu schließen. |
+| real.strip.elsewhere | This line's clutch is not here: it is at the {station} station. | Die Klemme dieser Leine ist nicht hier: Sie ist an der Station {station}. |
 | real.strip.go | Go to {station} | Zu {station} gehen |
-| real.status.clutchOpen | Clutch open: only what holds the tail stops the rope. | Klemme offen: Nur was den Tampen hält, hält die Leine. |
-| real.status.clutchClosed | Clutch closed: the rope cannot run out (it can still be pulled in). | Klemme geschlossen: Die Leine kann nicht auslaufen (sie kann aber weiter dichter geholt werden). |
+| real.status.clutchOpen | Clutch open: only what holds the tail stops the line. | Klemme offen: Nur was den Tampen hält, hält die Leine. |
+| real.status.clutchClosed | Clutch closed: the line cannot run out (it can still be pulled in). | Klemme geschlossen: Die Leine kann nicht auslaufen (sie kann aber weiter dichter geholt werden). |
 | real.status.offWinch | Not on the winch: nobody holds the tail. | Nicht auf der Winsch: Niemand hält den Tampen. |
 | real.status.onWinchJaw | On the winch, {wrap}, tail in the self-tailer (the jaw on top that grips it). | Auf der Winsch, {wrap}, Tampen im Selbstholer (die Klemmbacke oben, die ihn festhält). |
 | real.status.onWinchHand | On the winch, {wrap}, tail in your hand. | Auf der Winsch, {wrap}, Tampen in Ihrer Hand. |
 | real.status.noTurns | 0 turns | 0 Törns |
 | real.status.turnsCw | {n} turns clockwise | {n} Törns im Uhrzeigersinn |
 | real.status.turnsCcw | {n} turns anticlockwise (the wrong way) | {n} Törns gegen den Uhrzeigersinn (falsch herum) |
-| real.status.load | The sail or boom pulls this rope with about {kn} kN. | Segel oder Baum ziehen an dieser Leine mit etwa {kn} kN. |
+| real.status.load | The sail or boom pulls this line with about {kn} kN. | Segel oder Baum ziehen an dieser Leine mit etwa {kn} kN. |
 | ropes.load | Load {kn} kN (about {kg} kg) | Zug {kn} kN (etwa {kg} kg) |
-| real.status.loadFighting | This rope pulls against another one (fighting): a very high load. | Diese Leine zieht gegen eine andere (gegenan): eine sehr hohe Last. |
-| real.status.noPull | Nothing pulls this rope now (it is slack or the sail is not pulling). | Nichts zieht jetzt an dieser Leine (sie ist lose oder das Segel zieht nicht). |
+| real.status.loadFighting | This line pulls against another one (fighting): a very high load. | Diese Leine zieht gegen eine andere (gegenan): eine sehr hohe Last. |
+| real.status.noPull | Nothing pulls this line now (it is slack or the sail is not pulling). | Nichts zieht jetzt an dieser Leine (sie ist lose oder das Segel zieht nicht). |
 | real.status.hold | With the clutch open it is held up to about {kn} kN. | Mit offener Klemme wird sie bis etwa {kn} kN gehalten. |
 | real.motion.running | RUNNING OUT: the pull is more than what holds it. | LÄUFT AUS: Der Zug ist stärker als das, was sie hält. |
 | real.motion.runningPaused | Will run out on Resume: the pull is more than what holds it. | Läuft bei „Weiter“ aus: Der Zug ist stärker als das, was sie hält. |
 | real.motion.hauling | Coming in. | Kommt herein. |
 | real.motion.easing | Easing out by hand. | Wird von Hand gefiert. |
 | real.note.slipping | Slipping on the drum: not enough turns for this load. Add a turn (about 4 to winch under load). | Rutscht auf der Trommel: zu wenige Törns für diese Last. Legen Sie einen Törn auf (etwa 4 zum Dichtholen unter Last). |
-| real.note.wrongWay | Wrapped the wrong way: the drum only turns clockwise, so it just spins with the rope. Take the turns off and wrap clockwise. | Falsch herum aufgelegt: Die Trommel dreht nur im Uhrzeigersinn, deshalb dreht sie sich mit der Leine nur durch. Nehmen Sie die Törns ab und legen Sie sie im Uhrzeigersinn auf. |
-| real.note.noTurns | No turns on the drum: wrap the rope clockwise first. | Keine Törns auf der Trommel: Legen Sie die Leine zuerst im Uhrzeigersinn auf. |
-| real.note.grabby | Easing in jerks: so many turns that your hand cannot feel the rope. Take a turn off to ease smoothly (about 2). | Fiert ruckartig: so viele Törns, dass Ihre Hand die Leine nicht mehr spürt. Nehmen Sie einen Törn ab, um gleichmäßig zu fieren (etwa 2). |
-| real.note.noLoad | Nothing pulls this rope out: letting go only makes it slack. | Nichts zieht diese Leine heraus: Loslassen macht sie nur lose. |
+| real.note.wrongWay | Wrapped the wrong way: the drum only turns clockwise, so it just spins with the line. Take the turns off and wrap clockwise. | Falsch herum aufgelegt: Die Trommel dreht nur im Uhrzeigersinn, deshalb dreht sie sich mit der Leine nur durch. Nehmen Sie die Törns ab und legen Sie sie im Uhrzeigersinn auf. |
+| real.note.noTurns | No turns on the drum: wrap the line clockwise first. | Keine Törns auf der Trommel: Legen Sie die Leine zuerst im Uhrzeigersinn auf. |
+| real.note.grabby | Easing in jerks: so many turns that your hand cannot feel the line. Take a turn off to ease smoothly (about 2). | Fiert ruckartig: so viele Törns, dass Ihre Hand die Leine nicht mehr spürt. Nehmen Sie einen Törn ab, um gleichmäßig zu fieren (etwa 2). |
+| real.note.noLoad | Nothing pulls this line out: letting go only makes it slack. | Nichts zieht diese Leine heraus: Loslassen macht sie nur lose. |
 | real.note.tooHeavy | Too heavy to pull in by hand: put it on the winch. | Zu schwer, um sie von Hand dichter zu holen: Legen Sie sie auf die Winsch. |
-| real.note.cutOutFighting | Winch cut out: too much load. This rope pulls against another one (fighting). Ease the other rope first. | Winsch abgeschaltet: zu hohe Last. Diese Leine zieht gegen eine andere (gegenan). Fieren Sie zuerst die andere Leine. |
-| real.note.cutOutEnd | Winch cut out: the rope is fully in and cannot come in further. | Winsch abgeschaltet: Die Leine ist ganz eingezogen und kann nicht weiter einlaufen. |
-| real.note.cutOutBlocked | Winch cut out: the sail cannot roll because other ropes are held. Open {clutches} so they can run out. | Winsch abgeschaltet: Das Segel kann nicht rollen, weil andere Leinen gehalten werden. Öffnen Sie {clutches}, damit sie auslaufen können. |
-| real.note.cutOutLoad | Winch cut out: too much load. Luff up (turn towards the wind), ease something else, or check for a fighting rope. | Winsch abgeschaltet: zu hohe Last. Luven Sie an (drehen Sie zum Wind), fieren Sie etwas anderes oder prüfen Sie, ob eine Leine gegenan läuft. |
-| real.note.fullyEased | Fully eased: no more rope to let out. | Ganz gefiert: Es ist keine Leine mehr zum Ausgeben übrig. |
-| real.notice.clutchClosed | Open the clutch first: a closed clutch never lets a rope out. | Öffnen Sie zuerst die Klemme: Eine geschlossene Klemme lässt nie eine Leine aus. |
+| real.note.cutOutFighting | Winch cut out: too much load. This line pulls against another one (fighting). Ease the other line first. | Winsch abgeschaltet: zu hohe Last. Diese Leine zieht gegen eine andere (gegenan). Fieren Sie zuerst die andere Leine. |
+| real.note.cutOutEnd | Winch cut out: the line is fully in and cannot come in further. | Winsch abgeschaltet: Die Leine ist ganz eingezogen und kann nicht weiter einlaufen. |
+| real.note.cutOutBlocked | Winch cut out: the sail cannot roll because other lines are held. Open {clutches} so they can run out. | Winsch abgeschaltet: Das Segel kann nicht rollen, weil andere Leinen gehalten werden. Öffnen Sie {clutches}, damit sie auslaufen können. |
+| real.note.cutOutLoad | Winch cut out: too much load. Luff up (turn towards the wind), ease something else, or check for a fighting line. | Winsch abgeschaltet: zu hohe Last. Luven Sie an (drehen Sie zum Wind), fieren Sie etwas anderes oder prüfen Sie, ob eine Leine gegenan läuft. |
+| real.note.fullyEased | Fully eased: no more line to ease. | Ganz gefiert: Es ist keine Leine mehr zum Ausgeben übrig. |
+| real.notice.clutchClosed | Open the clutch first: a closed clutch never lets a line run out. | Öffnen Sie zuerst die Klemme: Eine geschlossene Klemme lässt nie eine Leine aus. |
 | real.notice.inSelfTailer | Take the tail out of the self-tailer first, then ease it by hand. | Nehmen Sie den Tampen zuerst aus dem Selbstholer, dann fieren Sie von Hand. |
-| real.notice.winchBusy | One rope per winch: take the other rope off first. | Eine Leine je Winsch: Nehmen Sie zuerst die andere Leine ab. |
-| real.notice.winchEmpty | Put a rope on the winch first: drag its tail onto the drum. | Legen Sie zuerst eine Leine auf die Winsch: Ziehen Sie ihren Tampen auf die Trommel. |
+| real.notice.winchBusy | One line per winch: take the other line off first. | Eine Leine je Winsch: Nehmen Sie zuerst die andere Leine ab. |
+| real.notice.winchEmpty | Put a line on the winch first: drag its tail onto the drum. | Legen Sie zuerst eine Leine auf die Winsch: Ziehen Sie ihren Tampen auf die Trommel. |
 | real.notice.needTurns | Wrap at least one turn first. | Legen Sie zuerst mindestens einen Törn auf. |
 | real.notice.staticRope | “{label}” is not worked while sailing: its clutch stays shut. | „{label}“ wird unter Segeln nicht bedient: Ihre Klemme bleibt zu. |
 | real.notice.notHere | You are not there: “{label}” is at the {station} station. | Sie sind nicht dort: „{label}“ liegt an der Station {station}. |
-| real.notice.onWinch | This rope is on the winch: use the winch button. | Diese Leine ist auf der Winsch: Nutzen Sie die Winschtaste. |
+| real.notice.onWinch | This line is on the winch: use the winch button. | Diese Leine ist auf der Winsch: Nutzen Sie die Winschtaste. |
 | real.action.open | Open clutch | Klemme öffnen |
 | real.action.close | Close clutch | Klemme schließen |
 | real.action.onWinch | Put on winch | Auf die Winsch legen |
@@ -2804,19 +2836,19 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.action.intoJaw | Into self-tailer | In den Selbstholer |
 | real.action.outOfJaw | Out of self-tailer | Aus dem Selbstholer |
 | real.action.ease | Ease (hold) | Fieren (halten) |
-| real.action.easeAria | Ease the rope out by hand (hold to keep easing) | Die Leine von Hand fieren (halten, um weiter zu fieren) |
+| real.action.easeAria | Ease the line out by hand (hold to keep easing) | Die Leine von Hand fieren (halten, um weiter zu fieren) |
 | real.action.winch | Winch in (hold) | Dichtholen (halten) |
 | real.action.pull | Pull in by hand (hold) | Von Hand dichtholen (halten) |
-| real.alert.running | Rope running at {station}: “{label}” | Leine läuft an Station {station}: „{label}“ |
+| real.alert.running | Line running at {station}: “{label}” | Leine läuft an Station {station}: „{label}“ |
 | real.alert.cutOut | Winch cut out at {station} | Winsch an Station {station} abgeschaltet |
 | real.helm.hint | The helm: the wheel turns the rudder, the lever works the engine. | Das Ruder: Das Steuerrad dreht das Ruderblatt, der Hebel bedient den Motor. |
-| real.how.title | How to work a rope | So bedienen Sie eine Leine |
-| real.how.1 | 1. A clutch (a lock on the rope) holds it when closed. Drag its lever up to open it. A closed clutch still lets the winch pull the rope in. | 1. Eine Klemme (eine Sicherung an der Leine) hält die Leine, wenn sie geschlossen ist. Ziehen Sie ihren Hebel nach oben, um sie zu öffnen. Eine geschlossene Klemme lässt trotzdem zu, dass die Winsch die Leine dichter holt. |
-| real.how.2 | 2. Drag the rope's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way). To take the rope off the winch again, circle anticlockwise until it shows 0 turns, then drag the tail back up to its clutch. | 2. Ziehen Sie den Tampen der Leine auf die Winsch und kreisen Sie dann mit dem Finger im Uhrzeigersinn um die Trommel: Jeder Kreis legt einen Törn auf. Gegen den Uhrzeigersinn nimmt einen ab (oder legt ihn falsch herum auf). Um die Leine wieder von der Winsch zu nehmen, kreisen Sie gegen den Uhrzeigersinn, bis 0 Törns angezeigt werden, und ziehen Sie den Tampen dann zurück zu ihrer Klemme. |
-| real.how.3 | 3. Drag the tail into the jaw on top (the self-tailer) so the winch holds it, then hold the winch button to pull the rope in. | 3. Ziehen Sie den Tampen in die Klemmbacke oben (den Selbstholer), damit die Winsch ihn hält, und halten Sie dann die Winschtaste, um die Leine dichter zu holen. |
-| real.how.4 | 4. To ease (let out): open the clutch, take the tail out of the jaw and drag it away from the winch. About 2 turns ease smoothly; with 4 the rope jerks. | 4. Zum Fieren (Ausgeben): Öffnen Sie die Klemme, nehmen Sie den Tampen aus der Klemmbacke und ziehen Sie ihn von der Winsch weg. Etwa 2 Törns fieren gleichmäßig; bei 4 ruckt die Leine. |
-| real.how.5 | 5. Open a loaded clutch with nothing holding the tail and the rope runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm. | 5. Wenn Sie eine belastete Klemme öffnen, ohne dass etwas den Tampen hält, läuft die Leine schnell aus. Nehmen Sie die Last zuerst auf die Winsch. Sie stehen immer an einem Platz: Wechseln Sie mit Backbord, Steuerbord und Ruder. |
-| real.notice.turnsOn | Take the turns off first: circle the drum anticlockwise until it says 0 turns, then drag the rope back to its clutch. | Nehmen Sie zuerst die Törns ab: Kreisen Sie gegen den Uhrzeigersinn um die Trommel, bis 0 Törns angezeigt werden, und ziehen Sie die Leine dann zurück zu ihrer Klemme. |
+| real.how.title | How to work a line | So bedienen Sie eine Leine |
+| real.how.1 | 1. A clutch (a lock on the line) holds it when closed. Drag its lever up to open it. A closed clutch still lets the winch pull the line in. | 1. Eine Klemme (eine Sicherung an der Leine) hält die Leine, wenn sie geschlossen ist. Ziehen Sie ihren Hebel nach oben, um sie zu öffnen. Eine geschlossene Klemme lässt trotzdem zu, dass die Winsch die Leine dichter holt. |
+| real.how.2 | 2. Drag the line's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way). To take the line off the winch again, circle anticlockwise until it shows 0 turns, then drag the tail back up to its clutch. | 2. Ziehen Sie den Tampen der Leine auf die Winsch und kreisen Sie dann mit dem Finger im Uhrzeigersinn um die Trommel: Jeder Kreis legt einen Törn auf. Gegen den Uhrzeigersinn nimmt einen ab (oder legt ihn falsch herum auf). Um die Leine wieder von der Winsch zu nehmen, kreisen Sie gegen den Uhrzeigersinn, bis 0 Törns angezeigt werden, und ziehen Sie den Tampen dann zurück zu ihrer Klemme. |
+| real.how.3 | 3. Drag the tail into the jaw on top (the self-tailer) so the winch holds it, then hold the winch button to pull the line in. | 3. Ziehen Sie den Tampen in die Klemmbacke oben (den Selbstholer), damit die Winsch ihn hält, und halten Sie dann die Winschtaste, um die Leine dichter zu holen. |
+| real.how.4 | 4. To ease (let a line run out): open the clutch, take the tail out of the jaw and drag it away from the winch. About 2 turns ease smoothly; with 4 the line jerks. | 4. Zum Fieren (Ausgeben): Öffnen Sie die Klemme, nehmen Sie den Tampen aus der Klemmbacke und ziehen Sie ihn von der Winsch weg. Etwa 2 Törns fieren gleichmäßig; bei 4 ruckt die Leine. |
+| real.how.5 | 5. Open a loaded clutch with nothing holding the tail and the line runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm. | 5. Wenn Sie eine belastete Klemme öffnen, ohne dass etwas den Tampen hält, läuft die Leine schnell aus. Nehmen Sie die Last zuerst auf die Winsch. Sie stehen immer an einem Platz: Wechseln Sie mit Backbord, Steuerbord und Ruder. |
+| real.notice.turnsOn | Take the turns off first: circle the drum anticlockwise until it says 0 turns, then drag the line back to its clutch. | Nehmen Sie zuerst die Törns ab: Kreisen Sie gegen den Uhrzeigersinn um die Trommel, bis 0 Törns angezeigt werden, und ziehen Sie die Leine dann zurück zu ihrer Klemme. |
 | real.station.mast | Mast | Mast |
 | real.drawing.mast | Mast station seen from above, forward is up: the in-mast furling gearbox with its IN/OUT switch and the socket for the winch handle | Station Mast von oben gesehen, vorn ist oben: das Rollreffgetriebe im Mast mit seinem Schalter IN/OUT und die Aufnahme für die Winschkurbel |
 | real.strain.label | load | Last |
@@ -2824,9 +2856,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.strain.handle | The handle needs about {n} N; you can push about {max} N. | Die Kurbel braucht etwa {n} N; Sie können etwa {max} N aufbringen. |
 | real.handle.title | Winch handle | Winschkurbel |
 | real.handle.hereStowed | The winch handle lies here. | Hier liegt die Winschkurbel. |
-| real.handle.hereWinch | The winch handle is in this winch. Circle its grip to crank: clockwise is 1st gear (fast), anticlockwise 2nd gear (slow, about 4 times stronger). Both pull the rope in. To take the handle out, drag its grip onto the handle slot. | Die Winschkurbel steckt in dieser Winsch. Kreisen Sie um ihren Griff, um zu kurbeln: im Uhrzeigersinn ist der 1. Gang (schnell), gegen den Uhrzeigersinn der 2. Gang (langsam, etwa 4-mal stärker). Beide holen die Leine dichter. Um die Kurbel herauszunehmen, ziehen Sie ihren Griff auf die Kurbelablage. |
+| real.handle.hereWinch | The winch handle is in this winch. Circle its grip to crank: clockwise is 1st gear (fast), anticlockwise 2nd gear (slow, about 4 times stronger). Both pull the line in. To take the handle out, drag its grip onto the handle slot. | Die Winschkurbel steckt in dieser Winsch. Kreisen Sie um ihren Griff, um zu kurbeln: im Uhrzeigersinn ist der 1. Gang (schnell), gegen den Uhrzeigersinn der 2. Gang (langsam, etwa 4-mal stärker). Beide holen die Leine dichter. Um die Kurbel herauszunehmen, ziehen Sie ihren Griff auf die Kurbelablage. |
 | real.handle.hereGearbox | The winch handle is in the gearbox. Circle its grip to crank: the main rolls the way the switch says. To take the handle out, drag its grip onto the handle slot. | Die Winschkurbel steckt im Getriebe. Kreisen Sie um ihren Griff, um zu kurbeln: Das Groß rollt so, wie der Schalter zeigt. Um die Kurbel herauszunehmen, ziehen Sie ihren Griff auf die Kurbelablage. |
-| real.handle.carried | You carry the winch handle. Lay it down (tap the handle slot, or “Leave the handle here”) before you work a rope. | Sie tragen die Winschkurbel. Legen Sie sie ab (tippen Sie auf die Kurbelablage oder auf „Kurbel hier ablegen“), bevor Sie an einer Leine arbeiten. |
+| real.handle.carried | You carry the winch handle. Lay it down (tap the handle slot, or “Leave the handle here”) before you work a line. | Sie tragen die Winschkurbel. Legen Sie sie ab (tippen Sie auf die Kurbelablage oder auf „Kurbel hier ablegen“), bevor Sie an einer Leine arbeiten. |
 | real.handle.awayStowed | The winch handle is at {station}. | Die Winschkurbel liegt an Station {station}. |
 | real.handle.awaySocket | The winch handle is in the socket at {station}. | Die Winschkurbel steckt in der Aufnahme an Station {station}. |
 | real.handle.take | Take the handle | Kurbel nehmen |
@@ -2837,16 +2869,16 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.handle.crankCw | Crank ↻ 1st gear (hold) | Kurbeln ↻ 1. Gang (halten) |
 | real.handle.crankCcw | Crank ↺ 2nd gear (hold) | Kurbeln ↺ 2. Gang (halten) |
 | real.handle.crank | Crank (hold) | Kurbeln (halten) |
-| real.handle.cranking | Cranking: {speed} m of rope a second. | Kurbeln: {speed} m Leine je Sekunde. |
+| real.handle.cranking | Cranking: {speed} m of line a second. | Kurbeln: {speed} m Leine je Sekunde. |
 | real.handleNote.stallGearbox | Too heavy to crank: luff up (turn towards the wind) or ease the main sheet so the sail stops pulling. | Zu schwer zum Kurbeln: Luven Sie an (drehen Sie zum Wind) oder fieren Sie die Großschot, damit das Segel nicht mehr zieht. |
 | real.handleNote.gearboxIn | The main is fully rolled in. | Das Groß ist ganz eingerollt. |
 | real.handleNote.gearboxOut | The main is fully out. To roll it in, set the switch to IN. | Das Groß ist ganz ausgerollt. Um es einzurollen, stellen Sie den Schalter auf IN. |
-| real.handleNote.noRope | No rope on this winch: the handle just turns the empty drum. | Keine Leine auf dieser Winsch: Die Kurbel dreht nur die leere Trommel. |
+| real.handleNote.noRope | No line on this winch: the handle just turns the empty drum. | Keine Leine auf dieser Winsch: Die Kurbel dreht nur die leere Trommel. |
 | real.note.stallFirst | Too heavy for 1st gear: the handle will not turn. Crank anticlockwise instead (2nd gear: slower, about 4 times stronger). | Zu schwer für den 1. Gang: Die Kurbel dreht sich nicht. Kurbeln Sie stattdessen gegen den Uhrzeigersinn (2. Gang: langsamer, etwa 4-mal stärker). |
-| real.note.stallSecond | Too heavy even in 2nd gear: luff up (turn towards the wind), ease something else, or check for a fighting rope. | Auch im 2. Gang zu schwer: Luven Sie an (drehen Sie zum Wind), fieren Sie etwas anderes oder prüfen Sie, ob eine Leine gegenan läuft. |
-| real.note.stuckFighting | The handle will not turn: this rope pulls against another one (fighting). Ease the other rope first. | Die Kurbel dreht sich nicht: Diese Leine zieht gegen eine andere (gegenan). Fieren Sie zuerst die andere Leine. |
-| real.note.stuckEnd | The handle will not turn: the rope is fully in. | Die Kurbel dreht sich nicht: Die Leine ist ganz eingezogen. |
-| real.note.stuckBlocked | The handle will not turn: the sail cannot roll because other ropes are held. Open {clutches} so they can run out. | Die Kurbel dreht sich nicht: Das Segel kann nicht rollen, weil andere Leinen gehalten werden. Öffnen Sie {clutches}, damit sie auslaufen können. |
+| real.note.stallSecond | Too heavy even in 2nd gear: luff up (turn towards the wind), ease something else, or check for a fighting line. | Auch im 2. Gang zu schwer: Luven Sie an (drehen Sie zum Wind), fieren Sie etwas anderes oder prüfen Sie, ob eine Leine gegenan läuft. |
+| real.note.stuckFighting | The handle will not turn: this line pulls against another one (fighting). Ease the other line first. | Die Kurbel dreht sich nicht: Diese Leine zieht gegen eine andere (gegenan). Fieren Sie zuerst die andere Leine. |
+| real.note.stuckEnd | The handle will not turn: the line is fully in. | Die Kurbel dreht sich nicht: Die Leine ist ganz eingezogen. |
+| real.note.stuckBlocked | The handle will not turn: the sail cannot roll because other lines are held. Open {clutches} so they can run out. | Die Kurbel dreht sich nicht: Das Segel kann nicht rollen, weil andere Leinen gehalten werden. Öffnen Sie {clutches}, damit sie auslaufen können. |
 | real.gearbox.title | In-mast furling gearbox | Rollreffgetriebe im Mast |
 | real.gearbox.mast | MAST | MAST |
 | real.gearbox.caption | Furling gearbox | Reffgetriebe |
@@ -2865,15 +2897,15 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.notice.handleNotIn | Put the winch handle in the socket first. | Stecken Sie die Winschkurbel zuerst in die Aufnahme. |
 | real.notice.noSocket | The winch handle fits nowhere here. | Die Winschkurbel passt hier nirgends. |
 | real.notice.gearboxNotHere | The gearbox switch is at the {station}. | Der Getriebeschalter ist an Station {station}. |
-| real.how.6 | 6. The winch handle (one on board) is a backup, and every place has a slot where it lies. Tap the slot to take the handle. In a winch it cranks the drum by hand: clockwise is fast but weak, anticlockwise slow but strong. To take it out again, drag its grip onto the slot (the handle only comes out when you let go on the slot). While you carry the handle your hand is full: tap the slot to lay it down before you work a rope. At the Mast it fits the furling gearbox: set the switch to IN, put the handle in and circle its grip to roll the main in, with the “rolls out” line and the outhaul clutches open. | 6. Die Winschkurbel (eine an Bord) ist die Reserve, und jeder Platz hat eine Ablage, auf der sie liegt. Tippen Sie die Ablage an, um die Kurbel zu nehmen. In einer Winsch kurbelt sie die Trommel von Hand: im Uhrzeigersinn schnell, aber schwach, gegen den Uhrzeigersinn langsam, aber kräftig. Um sie wieder herauszunehmen, ziehen Sie ihren Griff auf die Ablage (die Kurbel kommt nur heraus, wenn Sie auf der Ablage loslassen). Solange Sie die Kurbel tragen, ist Ihre Hand voll: Tippen Sie die Ablage an, um sie abzulegen, bevor Sie an einer Leine arbeiten. Am Mast passt sie ins Rollreffgetriebe: Stellen Sie den Schalter auf IN, stecken Sie die Kurbel hinein und kreisen Sie um ihren Griff, um das Groß einzurollen, wobei die Leine „rollt aus“ und die Klemmen des Unterliekstreckers offen sind. |
+| real.how.6 | 6. The winch handle (one on board) is a backup, and every place has a slot where it lies. Tap the slot to take the handle. In a winch it cranks the drum by hand: clockwise is fast but weak, anticlockwise slow but strong. To take it out again, drag its grip onto the slot (the handle only comes out when you let go on the slot). While you carry the handle your hand is full: tap the slot to lay it down before you work a line. At the Mast it fits the furling gearbox: set the switch to IN, put the handle in and circle its grip to roll the main in, with the “rolls out” line and the outhaul clutches open. | 6. Die Winschkurbel (eine an Bord) ist die Reserve, und jeder Platz hat eine Ablage, auf der sie liegt. Tippen Sie die Ablage an, um die Kurbel zu nehmen. In einer Winsch kurbelt sie die Trommel von Hand: im Uhrzeigersinn schnell, aber schwach, gegen den Uhrzeigersinn langsam, aber kräftig. Um sie wieder herauszunehmen, ziehen Sie ihren Griff auf die Ablage (die Kurbel kommt nur heraus, wenn Sie auf der Ablage loslassen). Solange Sie die Kurbel tragen, ist Ihre Hand voll: Tippen Sie die Ablage an, um sie abzulegen, bevor Sie an einer Leine arbeiten. Am Mast passt sie ins Rollreffgetriebe: Stellen Sie den Schalter auf IN, stecken Sie die Kurbel hinein und kreisen Sie um ihren Griff, um das Groß einzurollen, wobei die Leine „rollt aus“ und die Klemmen des Unterliekstreckers offen sind. |
 | real.practice.title | Practice: the main furling line slips | Übung: Die Reffleine des Großsegels rutscht |
 | real.practice.text | Furling the main at 27 kn while the sail still pulls: the “rolls main in” line has only 1 turn on the Starboard winch. Hold the winch button: the line slips. Fix it by hand at the mast: go to Port and take the winch handle, go to Mast, set the switch to IN, put the handle in and circle its grip. The “rolls out” line and the outhaul are already open. (Two turns on the winch, or luffing first, would also work.) | Das Groß bei 27 kn einrollen, während das Segel noch zieht: Die Leine „rollt Groß ein“ hat nur 1 Törn auf der Steuerbordwinsch. Halten Sie die Winschtaste: Die Leine rutscht. Beheben Sie das von Hand am Mast: Gehen Sie nach Backbord und nehmen Sie die Winschkurbel, gehen Sie zum Mast, stellen Sie den Schalter auf IN, stecken Sie die Kurbel hinein und kreisen Sie um ihren Griff. Die Leine „rollt aus“ und der Unterliekstrecker sind bereits offen. (Zwei Törns auf der Winsch oder vorher anluven würden auch funktionieren.) |
 | real.practice.button | Set it up | Einrichten |
 | real.status.haulLoad | Pulling it in takes about {kn} kN. | Dichtholen braucht etwa {kn} kN. |
 | real.gearbox.flipToIn | Flip the switch left to IN (rolls the main in) | Schalter nach links auf IN stellen (rollt das Groß ein) |
 | real.gearbox.flipToOut | Flip the switch right to OUT (rolls the main out) | Schalter nach rechts auf OUT stellen (rollt das Groß aus) |
-| real.notice.wrongWayJaw | Wrapped the wrong way, the rope cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Falsch herum aufgelegt kann die Leine nicht in den Selbstholer. Nehmen Sie die Törns ab und legen Sie sie im Uhrzeigersinn auf. |
-| real.notice.closedOnRunning | The clutch stopped the running rope. On a real boat, snapping a clutch shut on a loaded rope that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Die Klemme hat die laufende Leine gestoppt. Auf einem echten Boot kann eine Klemme, die auf eine laufende, belastete Leine zuschnappt, den Mantel aufscheuern: Nehmen Sie die Last zuerst auf die Winsch, dann öffnen oder schließen Sie die Klemme. |
+| real.notice.wrongWayJaw | Wrapped the wrong way, the line cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Falsch herum aufgelegt kann die Leine nicht in den Selbstholer. Nehmen Sie die Törns ab und legen Sie sie im Uhrzeigersinn auf. |
+| real.notice.closedOnRunning | The clutch stopped the running line. On a real boat, snapping a clutch shut on a loaded line that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Die Klemme hat die laufende Leine gestoppt. Auf einem echten Boot kann eine Klemme, die auf eine laufende, belastete Leine zuschnappt, den Mantel aufscheuern: Nehmen Sie die Last zuerst auf die Winsch, dann öffnen oder schließen Sie die Klemme. |
 | real.notice.handleInHand | You are holding the winch handle: lay it down first (tap the handle slot, or “Leave the handle here”). Remember where you left it. | Sie halten die Winschkurbel: Legen Sie sie zuerst ab (tippen Sie auf die Kurbelablage oder auf „Kurbel hier ablegen“). Merken Sie sich, wo Sie sie gelassen haben. |
 | real.handle.slot.rest | tap to take | tippen zum Nehmen |
 | real.handle.slot.carried | tap: lay down | tippen: ablegen |
@@ -2886,7 +2918,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.helm.slot | The helm has a slot for the winch handle too. | Auch am Ruder gibt es eine Ablage für die Winschkurbel. |
 | real.helm.away | You are at the {station} station. | Sie stehen an der Station {station}. |
 | real.helm.go | Go to the helm | Zum Ruder gehen |
-| real.atHelm | You are at the helm. Choose a station to work the ropes. | Sie stehen am Ruder. Wählen Sie eine Station, um an den Leinen zu arbeiten. |
+| real.atHelm | You are at the helm. Choose a station to work the lines. | Sie stehen am Ruder. Wählen Sie eine Station, um an den Leinen zu arbeiten. |
 | boat.mode.label | Boat | Boot |
 | boat.mode.held | Held still | Festgehalten |
 | boat.mode.sailing | Sailing | Segelnd |
@@ -2946,7 +2978,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | trim.state.furled | Furled | Eingerollt |
 | trim.state.torn | Torn | Beschädigt |
 | trim.hint.good | Both telltales stream. | Beide Trimmfäden laufen. |
-| trim.hint.luffing | Pull the sheet in until the front stops flapping. | Die Schot dichtholen, bis das Vorliek nicht mehr killt. |
+| trim.hint.luffing | Trim the sheet until the front stops flapping. | Die Schot dichtholen, bis das Vorliek nicht mehr killt. |
 | trim.hint.stalled | Ease the sheet: the leeward telltales hang. | Die Schot fieren: die Leetrimmfäden hängen herunter. |
 | trim.hint.pushed | On a run the wind just pushes the sail. | Vor dem Wind schiebt der Wind das Segel nur. |
 | trim.hint.blanketed | The mainsail is taking the jib's wind. | Das Großsegel nimmt der Fock den Wind. |
@@ -2957,7 +2989,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | trim.repair | Repair sails | Segel reparieren |
 | trim.badge | ⚠ sail | ⚠ Segel |
 | trim.badgeTitle | A sail is worn out from flapping (flogging). Tap to learn more. | Ein Segel ist durch Flattern (Killen) verschlissen. Tippen Sie, um mehr zu erfahren. |
-| trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is let out too far (luffing). The leeward one hanging: the sail is pulled in too far (stalled). | Ein Trimmfaden ist ein kurzes Band am Segel. Läuft nach hinten: gute Strömung. Der Luvfaden hebt sich: das Segel ist zu weit gefiert (killt). Der Leefaden hängt: das Segel ist zu dicht geholt (Strömungsabriss). |
+| trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is eased too far (luffing). The leeward one hanging: the sail is trimmed too far (stalled). | Ein Trimmfaden ist ein kurzes Band am Segel. Läuft nach hinten: gute Strömung. Der Luvfaden hebt sich: das Segel ist zu weit gefiert (killt). Der Leefaden hängt: das Segel ist zu dicht geholt (Strömungsabriss). |
 | debug.motion | Boat V/yaw | Boat V/yaw |
 | debug.lowSpeed | Low speed | Low speed |
 | debug.winds | TWA/TWS | TWA/TWS |
@@ -3124,7 +3156,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | card.more | More | Mehr |
 | ropes.strip.learn | Read more in Learn | Mehr lesen unter Lernen |
 | learn.empty | Tap any part of the boat, then “More” on its card, to read about it here. | Tippen Sie ein Teil des Bootes an, dann „Mehr“ auf seiner Karte, um hier darüber zu lesen. |
-| learn.kind.rope | Rope | Leine |
+| learn.kind.rope | Line | Leine |
 | learn.kind.sail | Sail | Segel |
 | learn.kind.sailpart | Part of a sail | Segelteil |
 | learn.kind.part | Part of the boat | Bootsteil |
@@ -3162,7 +3194,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | learn.matched | also: {term} | auch: {term} |
 | learn.noMatch | Nothing found. Try another word, or a word printed on the boat. | Nichts gefunden. Versuchen Sie ein anderes Wort oder ein Wort, das auf dem Boot steht. |
 | learn.back | ‹ All entries | ‹ Alle Einträge |
-| learn.group.ropes | Ropes ({count}) | Leinen ({count}) |
+| learn.group.ropes | Lines ({count}) | Leinen ({count}) |
 | learn.group.sails | Sails and their parts ({count}) | Segel und ihre Teile ({count}) |
 | learn.group.rig | Mast and rigging ({count}) | Mast und Takelage ({count}) |
 | learn.group.hull | Hull and underwater ({count}) | Rumpf und Unterwasserschiff ({count}) |
@@ -3205,8 +3237,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | cam.moveTouch | Move the camera: one finger turns, pinch to zoom, two fingers slide. Double-tap a spot to turn around it. | Kamera bewegen: ein Finger dreht, mit zwei Fingern zoomen, zwei Finger schieben. Doppeltippen Sie auf eine Stelle, um sie zu umkreisen. |
 | cam.moveMouse | Move the camera: drag to turn, wheel to zoom towards the pointer, right drag (or Shift + drag) to slide. Double-click a spot to turn around it. | Kamera bewegen: ziehen zum Drehen, Mausrad zum Zoomen auf den Zeiger, mit der rechten Taste ziehen (oder Umschalt + ziehen) zum Schieben. Doppelklicken Sie auf eine Stelle, um sie zu umkreisen. |
 | helmView.group | Helm view | Blick vom Steuerstand |
-| helmView.ropes | Ropes | Leinen |
-| helmView.ropesLabel | Look at this side's ropes and winch | Die Leinen und die Winsch auf dieser Seite ansehen |
+| helmView.ropes | Lines | Leinen |
+| helmView.ropesLabel | Look at this side's lines and winch | Die Leinen und die Winsch auf dieser Seite ansehen |
 | helmView.panel | Panel | Panel |
 | helmView.panelLabel | Look at the panel on the pedestal | Das Panel am Steuerstand ansehen |
 | helmView.otherWheel | Other wheel | Anderes Steuerrad |
@@ -3223,8 +3255,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | mode.harbour | Harbour | Hafen |
 | mode.section | Mode: {name} | Modus: {name} |
 | mode.learn.desc | For looking things up. The Learn list comes first; tap any part of the boat to read about it. | Zum Nachschlagen. Die Liste Lernen steht vorn; tippen Sie auf ein beliebiges Teil des Bootes, um darüber zu lesen. |
-| mode.easy.desc | For learning what each rope does. Every rope is a slider and the boat answers at once. | Um zu lernen, was jede Leine tut. Jede Leine ist ein Schieber, und das Boot reagiert sofort. |
-| mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the ropes, as on the boat. | Zum Üben wie an Deck. Klemmen, Winschen und Ihre Hand bedienen die Leinen, wie auf dem Boot. |
+| mode.easy.desc | For learning what each line does. Every line is a slider and the boat answers at once. | Um zu lernen, was jede Leine tut. Jede Leine ist ein Schieber, und das Boot reagiert sofort. |
+| mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the lines, as on the boat. | Zum Üben wie an Deck. Klemmen, Winschen und Ihre Hand bedienen die Leinen, wie auf dem Boot. |
 | mode.harbour.desc | For bringing her in and out of a harbour. The engine and the thrusters come first. | Um das Boot in einen Hafen hinein- und wieder hinauszubringen. Motor und Strahlruder stehen vorn. |
 | mode.exercise | Exercises | Übungen |
 | mode.exercise.desc | For practising step by step. Pick an exercise: it sets up the boat and the wind, shows each step and ticks it off when you get it right. | Zum Üben Schritt für Schritt. Wählen Sie eine Übung: Sie stellt Boot und Wind ein, zeigt jeden Schritt und hakt ihn ab, wenn Sie ihn richtig machen. |
@@ -3244,8 +3276,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.happening | What is happening | Was passiert |
 | exercise.action | The right action | Das richtige Vorgehen |
 | exercise.mistake | The typical mistake | Der typische Fehler |
-| exercise.ropes | Ropes | Leinen |
-| exercise.ropes.hint | Easy: every rope is a slider. Realistic: clutches and winches, as on the boat. | Einfach: jede Leine ist ein Schieberegler. Realistisch: Klemmen und Winschen, wie auf dem Boot. |
+| exercise.ropes | Lines | Leinen |
+| exercise.ropes.hint | Easy: every line is a slider. Realistic: clutches and winches, as on the boat. | Einfach: jede Leine ist ein Schieberegler. Realistisch: Klemmen und Winschen, wie auf dem Boot. |
 | exercise.level | Level | Stufe |
 | exercise.level.easy | Easy | Einfach |
 | exercise.level.normal | Normal | Normal |
@@ -3256,7 +3288,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.crew.crew | With crew | Mit Crew |
 | exercise.crew.hint | Alone: no Pause, so set the autopilot before you leave the wheel. With crew: Pause stops time while you set up several people's work. | Allein: keine Pause, stellen Sie also den Autopiloten ein, bevor Sie vom Steuerrad weggehen. Mit Crew: Pause hält die Zeit an, während Sie die Arbeit für mehrere Personen vorbereiten. |
 | exercise.alonePause | Alone: no Pause in this exercise | Allein: keine Pause in dieser Übung |
-| exercise.aloneNote | Alone: one station at a time and no Pause. The autopilot steers while you work the ropes. | Allein: eine Station nach der anderen und keine Pause. Der Autopilot steuert, während Sie die Leinen bedienen. |
+| exercise.aloneNote | Alone: one station at a time and no Pause. The autopilot steers while you work the lines. | Allein: eine Station nach der anderen und keine Pause. Der Autopilot steuert, während Sie die Leinen bedienen. |
 | exercise.steps | Steps | Schritte |
 | exercise.start | Do it myself | Selbst machen |
 | exercise.list | Back to the list | Zurück zur Liste |
@@ -3355,7 +3387,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | debrief.rope.clutchOpen | Opened the clutch: {label} | Klemme geöffnet: {label} |
 | debrief.rope.clutchClose | Closed the clutch: {label} | Klemme geschlossen: {label} |
 | debrief.rope.onWinch | Put on the winch: {label} | Auf die Winsch gelegt: {label} |
-| debrief.rope.offWinch | Took the rope off the {side} winch | Die Leine von der Winsch {side} genommen |
+| debrief.rope.offWinch | Took the line off the {side} winch | Die Leine von der Winsch {side} genommen |
 | debrief.rope.turn | Changed the turns on the {side} winch | Die Umschläge auf der Winsch {side} geändert |
 | debrief.rope.selfTailerIn | Into the self-tailer ({side} winch) | In den Selbstholer (Winsch {side}) |
 | debrief.rope.selfTailerOut | Out of the self-tailer ({side} winch) | Aus dem Selbstholer (Winsch {side}) |
@@ -3379,7 +3411,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | debrief.fenders.in | Fenders in | Fender eingeholt |
 | section.conditions | Conditions | Bedingungen |
 | section.explain | Explain: {name} | Erklären: {name} |
-| quick.easy | Tap a rope: its − and + appear here. | Tippen Sie auf eine Leine: Ihr − und + erscheinen hier. |
+| quick.easy | Tap a line: its − and + appear here. | Tippen Sie auf eine Leine: Ihr − und + erscheinen hier. |
 | quick.realistic | Pull the panel up to work the clutches and winches. | Ziehen Sie das Panel hoch, um Klemmen und Winschen zu bedienen. |
 | quick.learn | Tap any part of the boat to learn about it. | Tippen Sie auf ein beliebiges Teil des Bootes, um darüber zu lernen. |
 | quick.read | Read | Lesen |
@@ -3407,7 +3439,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | status.tag.danger | Danger | Gefahr |
 | status.tag.damage | Damage | Schaden |
 | status.tag.sail | Sail | Segel |
-| status.tag.rope | Rope | Leine |
+| status.tag.rope | Line | Leine |
 | status.tag.gear | Gear | Material |
 | status.tag.steering | Steering | Ruder |
 | layout.grip | Move {name} | {name} verschieben |
@@ -3494,7 +3526,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | damage.lazyLine.rudder | A neighbour's lazy line is under our rudder: it can catch. Neutral, and drift clear. | Die Lazy Line eines Nachbarn liegt unter unserem Ruder: sie kann sich fangen. Neutral stellen und wegdriften. |
 | damage.fenderLost | A {side} fender was torn off and lost (fenders out at speed). | Ein Fender auf der Seite {side} wurde abgerissen und ist verloren (Fender bei Fahrt ausgebracht). |
 | damage.propeller | A line got caught in the propeller and stopped the engine. | Eine Leine hat sich im Propeller verfangen und den Motor gestoppt. |
-| lines.title | Lines | Leinen |
+| lines.title | Mooring lines | Leinen |
 | lines.name.sp | Stern line, port | Achterleine Backbord |
 | lines.name.ss | Stern line, starboard | Achterleine Steuerbord |
 | lines.name.ll | Lazy line (to the bow) | Lazy Line (nach vorn) |
@@ -3570,18 +3602,18 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | anchor.cutOut | The windlass stopped: too much load. Motor gently towards the anchor. | Die Ankerwinde ist stehen geblieben: zu große Last. Fahren Sie sanft zum Anker. |
 | anchor.scope | Depth {depth} m (with the roller {eff} m) · scope {ratio} : 1 | Tiefe {depth} m (mit dem Beschlag {eff} m) · Vorlauf {ratio} : 1 |
 | real.station.bow | Bow | Bug |
-| real.bow.hint | At the bow: the windlass lets the anchor chain out and brings it in. Hold a button; let go to stop. | Am Bug: Die Ankerwinsch gibt die Ankerkette aus und holt sie ein. Halten Sie eine Taste; lassen Sie los, um zu stoppen. |
+| real.bow.hint | At the bow: the windlass pays the anchor chain out and brings it in. Hold a button; let go to stop. | Am Bug: Die Ankerwinsch gibt die Ankerkette aus und holt sie ein. Halten Sie eine Taste; lassen Sie los, um zu stoppen. |
 | anchor.enough | Enough chain for the rules. | Genug Kette für die Regeln. |
-| anchor.more | Let out {m} m more (the rules ask for {need} m). | Lassen Sie {m} m mehr aus (die Regeln verlangen {need} m). |
+| anchor.more | Pay out {m} m more (the rules ask for {need} m). | Lassen Sie {m} m mehr aus (die Regeln verlangen {need} m). |
 | anchor.alarm | Anchor alarm: the anchor is dragging. | Ankeralarm: Der Anker schleift. |
 | anchor.silence | OK | OK |
-| anchor.hint | To anchor: head into the wind and stop, let the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | Zum Ankern: In den Wind drehen und stoppen, die Kette auslaufen lassen, während das Boot zurücksetzt, bis die Prüfung „genug“ meldet (Vorlauf: ausgelaufene Kette zur Tiefe; mindestens 4 × die Tiefe plus die Höhe des Beschlags oder 3 Bootslängen, je nachdem, was größer ist), dann einige Sekunden sanft achtern (ein Drittel) geben, damit der Anker sich eingräbt. Sand und Schlick halten gut, Seegras und Fels schlecht. |
+| anchor.hint | To anchor: head into the wind and stop, pay the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | Zum Ankern: In den Wind drehen und stoppen, die Kette auslaufen lassen, während das Boot zurücksetzt, bis die Prüfung „genug“ meldet (Vorlauf: ausgelaufene Kette zur Tiefe; mindestens 4 × die Tiefe plus die Höhe des Beschlags oder 3 Bootslängen, je nachdem, was größer ist), dann einige Sekunden sanft achtern (ein Drittel) geben, damit der Anker sich eingräbt. Sand und Schlick halten gut, Seegras und Fels schlecht. |
 | exercise.bar.aria | Controls for this step | Bedienung für diesen Schritt |
 | exercise.bar.label | This step | Dieser Schritt |
 | exercise.bar.all | All controls | Alle Bedienelemente |
 | exercise.bar.nothing | Nothing to do in this step: watch. | In diesem Schritt ist nichts zu tun: zusehen. |
 | exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button | Tasten: 1–4 wählen eine Zeile · ← → deren ersten oder letzten Knopf · Leertaste: deren ersten Knopf |
-| exercise.bar.sheet | − hauls in · + lets out | − dichtholen · + fieren |
+| exercise.bar.sheet | − pulls in · + eases | − dichtholen · + fieren |
 | exercise.bar.furl | − rolls in · + rolls out | − einrollen · + ausrollen |
 | exercise.bar.rudder | − to port · + to starboard | − nach Backbord · + nach Steuerbord |
 | exercise.bar.autopilot | Autopilot | Autopilot |
@@ -3598,10 +3630,12 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.bar.fendersIn | In | Ein |
 | exercise.bar.fendersOut | Out | Aus |
 | exercise.bar.windlass | Anchor chain | Ankerkette |
-| exercise.bar.ropesRealistic | Ropes: work them at the stations | Leinen: an den Stationen bedienen |
+| exercise.bar.ropesRealistic | Lines: work them at the stations | Leinen: an den Stationen bedienen |
 | exercise.bar.stations | Stations | Stationen |
 | exercise.bar.lessAria | Less: {name} | Weniger: {name} |
 | exercise.bar.moreAria | More: {name} | Mehr: {name} |
+| exercise.bar.trimAria | Trim {name} | Trimmen: {name} |
+| exercise.bar.easeAria | Ease {name} | Fieren: {name} |
 | exercise.bar.asternAria | Engine lever 5 % towards astern | Gashebel 5 % Richtung achteraus |
 | exercise.bar.aheadAria | Engine lever 5 % towards ahead | Gashebel 5 % Richtung voraus |
 | exercise.watch | Watch it | Zusehen |
@@ -3620,8 +3654,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.demo.back | Back to the start of the step | Zurück zum Anfang des Schritts |
 | exercise.demo.doIt | Now do it myself | Jetzt selbst machen |
 | exercise.bar.otherStation | Nothing at this station for this step. The dot shows where to go. | An dieser Station ist für diesen Schritt nichts zu tun. Der Punkt zeigt, wohin. |
-| exercise.bar.clutchOpen | Open: the rope can run | Offen: die Leine kann laufen |
-| exercise.bar.clutchClosed | Closed: holds the rope | Zu: hält die Leine |
+| exercise.bar.clutchOpen | Open: the line can run | Offen: die Leine kann laufen |
+| exercise.bar.clutchClosed | Closed: holds the line | Zu: hält die Leine |
 | exercise.bar.open | Open | Öffnen |
 | exercise.bar.close | Close | Schließen |
 | exercise.bar.turns | Turns: {n} | Umschläge: {n} |

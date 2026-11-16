@@ -228,8 +228,8 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       await page.getByTestId('section-toggle-ropes').locator('.section-head-title').innerText()
     ).trim();
     check(
-      'English: no lang in the address bar and the Ropes section',
-      ropeTitle === 'Ropes',
+      'English: no lang in the address bar and the Lines section',
+      ropeTitle === 'Lines',
       ropeTitle,
     );
     await openSettings(page);

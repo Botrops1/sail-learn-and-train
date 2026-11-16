@@ -10,11 +10,11 @@
 |---|---|---|
 | Название | Mainsheet | гика-шкот |
 | Другие названия | — | грота-шкот<br>шкот грота |
-| Коротко | The rope that lets the boom and mainsail swing out, or pulls them back in. | Конец, который отпускает гик с гротом наружу или подтягивает их обратно. |
-| Что делает / что значит | Easing (letting out) the mainsheet lets the wind push the boom further out; hauling it in pulls the boom back towards the middle. The rope only limits how far the boom can go: with the wind from ahead, easing it just makes it slack. Near the middle a little rope moves the boom a lot; far out, a lot of rope moves it only a little. | Если потравить (отпустить) гика-шкот, ветер отжимает гик дальше наружу; если выбрать его, гик возвращается к середине. Конец лишь ограничивает, как далеко может уйти гик: при ветре спереди потравленный шкот просто провисает. Возле середины небольшой кусок конца сильно двигает гик; далеко снаружи много конца двигает его лишь чуть-чуть. |
-| На этой яхте | A German mainsheet: one rope with two ends, one at each side of the cockpit (the clutches say “Main sheet” and “MAIN SHEET”). It runs through three blocks under the boom and two spring-mounted blocks at the back of the coachroof. There is no traveller (a sliding car for the lower blocks). | Немецкий гика-шкот: один шкот с двумя концами, по одному с каждого борта кокпита (на стопорах написано «Main sheet» и «MAIN SHEET»). Он проходит через три блока под гиком и два блока на пружинах в задней части рубки. Погона нет (погон — это скользящая каретка для нижних блоков). |
-| Типичные ошибки | Easing it far more than the wind needs. → The mainsail flaps along its front edge. Haul in until the flapping just stops.<br>Keeping it hauled hard in a gust. → The boat heels a lot and turns into the wind by herself. Ease the mainsheet to let the gust out.<br>Opening its clutch under load with the rope not on a winch. → The rope runs out fast and the boom flies out. Put the rope on the winch first, then open the clutch. | Потравить его гораздо больше, чем нужно ветру. → Грот полощет по передней кромке. Выбирайте, пока полоскание не прекратится.<br>Держать его туго выбранным в порыве. → Яхта сильно кренится и сама приводится к ветру. Потравите гика-шкот, чтобы выпустить порыв.<br>Открыть его стопор под нагрузкой, когда конец не на лебёдке. → Конец быстро убегает, и гик вылетает наружу. Сначала возьмите конец на лебёдку, потом открывайте стопор. |
-| «Покажи» | Wind from the side and the mainsheet eased to 60 %: the boom has swung well out. Tap “Mainsheet” below and haul it in: the boom comes back towards the middle. | Ветер сбоку, гика-шкот потравлен до 60 %: гик ушёл далеко наружу. Нажмите ниже «Гика-шкот» и выберите его: гик вернётся к середине. |
+| Коротко | The line that lets the boom and mainsail swing out, or pulls them back in. | Конец, который отпускает гик с гротом наружу или подтягивает их обратно. |
+| Что делает / что значит | Easing (letting out) the mainsheet lets the wind push the boom further out; trimming it pulls the boom back towards the middle. The line only limits how far the boom can go: with the wind from ahead, easing it just makes it slack. Near the middle a little line moves the boom a lot; far out, a lot of line moves it only a little. | Если потравить (отпустить) гика-шкот, ветер отжимает гик дальше наружу; если выбрать его, гик возвращается к середине. Конец лишь ограничивает, как далеко может уйти гик: при ветре спереди потравленный шкот просто провисает. Возле середины небольшой кусок конца сильно двигает гик; далеко снаружи много конца двигает его лишь чуть-чуть. |
+| На этой яхте | A German mainsheet: one line with two ends, one at each side of the cockpit (the clutches say “Main sheet” and “MAIN SHEET”). It runs through three blocks under the boom and two spring-mounted blocks at the back of the coachroof. There is no traveller (a sliding car for the lower blocks). | Немецкий гика-шкот: один шкот с двумя концами, по одному с каждого борта кокпита (на стопорах написано «Main sheet» и «MAIN SHEET»). Он проходит через три блока под гиком и два блока на пружинах в задней части рубки. Погона нет (погон — это скользящая каретка для нижних блоков). |
+| Типичные ошибки | Easing it far more than the wind needs. → The mainsail flaps along its front edge. Trim until the flapping just stops.<br>Keeping it trimmed hard in a gust. → The boat heels a lot and turns into the wind by herself. Ease the mainsheet to spill the gust.<br>Opening its clutch under load with the line not on a winch. → The line runs out fast and the boom flies out. Put the line on the winch first, then open the clutch. | Потравить его гораздо больше, чем нужно ветру. → Грот полощет по передней кромке. Выбирайте, пока полоскание не прекратится.<br>Держать его туго выбранным в порыве. → Яхта сильно кренится и сама приводится к ветру. Потравите гика-шкот, чтобы выпустить порыв.<br>Открыть его стопор под нагрузкой, когда конец не на лебёдке. → Конец быстро убегает, и гик вылетает наружу. Сначала возьмите конец на лебёдку, потом открывайте стопор. |
+| «Покажи» | Wind from the side and the mainsheet eased to 60 %: the boom has swung well out. Tap “Mainsheet” below and trim it: the boom comes back towards the middle. | Ветер сбоку, гика-шкот потравлен до 60 %: гик ушёл далеко наружу. Нажмите ниже «Гика-шкот» и выберите его: гик вернётся к середине. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -40,10 +40,10 @@
 |---|---|---|
 | Название | Main furling line | линь закрутки грота |
 | Другие названия | furling line | — |
-| Коротко | Rolls the mainsail into the mast, or lets it out. | Закручивает грот в мачту или выпускает его. |
-| Что делает / что значит | In-mast furling rolls the mainsail up inside the mast like a blind. The furling line has two tails: hauling the “in” tail rolls the sail in; hauling the “out” tail, together with the outhaul, rolls it out while the “in” tail is eased. Rolling the sail partly in makes it smaller in strong wind (instead of reefing). | Закрутка грота в мачту сворачивает парус внутри мачты, как штору. У линя закрутки два хвоста: если выбирать «входной» хвост, парус сворачивается; если выбирать «выходной» хвост вместе с оттяжкой шкотового угла, парус разворачивается, пока «входной» хвост потравлен. Если парус свернуть частично, он становится меньше при сильном ветре (вместо взятия рифов). |
+| Коротко | Rolls the mainsail into the mast, or rolls it out. | Закручивает грот в мачту или выпускает его. |
+| Что делает / что значит | In-mast furling rolls the mainsail up inside the mast like a blind. The furling line has two tails: pulling the “in” tail rolls the sail in; pulling the “out” tail, together with the outhaul, rolls it out while the “in” tail is eased. Rolling the sail partly in makes it smaller in strong wind (instead of reefing). | Закрутка грота в мачту сворачивает парус внутри мачты, как штору. У линя закрутки два хвоста: если выбирать «входной» хвост, парус сворачивается; если выбирать «выходной» хвост вместе с оттяжкой шкотового угла, парус разворачивается, пока «входной» хвост потравлен. Если парус свернуть частично, он становится меньше при сильном ветре (вместо взятия рифов). |
 | На этой яхте | Two clutches on the starboard side, both labelled “Main furling”: the left one rolls the main in, the right one rolls it out. If the line slips, the main can be rolled in by hand with the winch handle in the gearbox at the foot of the mast (about 40 turns). | Два стопора на правом борту, оба подписаны «Main furling»: левый сворачивает грот, правый выпускает. Если конец проскальзывает, грот можно свернуть вручную ручкой лебёдки в редукторе у основания мачты (около 40 оборотов). |
-| Типичные ошибки | Hauling the “in” tail without easing the “out” tail and the outhaul. → Nothing moves, or the line jams. Ease the other two first.<br>Rolling the main in while it is full of wind. → The load is heavy and the line can slip. Ease the mainsheet, or turn closer to the wind, so the sail is not pulling, then roll it in. | Выбирать «входной» хвост, не потравив «выходной» хвост и оттяжку шкотового угла. → Ничего не двигается, или конец заклинивает. Сначала потравите те два.<br>Закручивать грот, пока он полон ветра. → Нагрузка большая, и конец может проскользнуть. Потравите гика-шкот или приведитесь ближе к ветру, чтобы парус не тянул, и только потом закручивайте. |
+| Типичные ошибки | Pulling the “in” tail without easing the “out” tail and the outhaul. → Nothing moves, or the line jams. Ease the other two first.<br>Rolling the main in while it is full of wind. → The load is heavy and the line can slip. Ease the mainsheet, or turn closer to the wind, so the sail is not pulling, then roll it in. | Выбирать «входной» хвост, не потравив «выходной» хвост и оттяжку шкотового угла. → Ничего не двигается, или конец заклинивает. Сначала потравите те два.<br>Закручивать грот, пока он полон ветра. → Нагрузка большая, и конец может проскользнуть. Потравите гика-шкот или приведитесь ближе к ветру, чтобы парус не тянул, и только потом закручивайте. |
 | «Покажи» | Mainsail 30 % out: most of it is rolled inside the mast. Tap “Main furling line” below and set “Mainsail out” to 100 % to unroll it. | Грот выпущен на 30 %: большая его часть свёрнута внутри мачты. Нажмите ниже «Линь закрутки грота» и поставьте «Грот наружу» на 100 %, чтобы развернуть его. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
@@ -58,7 +58,7 @@
 | Коротко | Rolls the jib up round the forestay, or lets it unroll. | Сворачивает стаксель вокруг штага или выпускает его. |
 | Что делает / что значит | Pulling the line turns the drum at the bottom of the forestay and rolls the jib up around it. Easing it while pulling the sheet lets the jib unroll. A partly rolled jib is smaller, which helps in strong wind. | Если тянуть конец, вращается барабан в нижней части штага, и стаксель сворачивается вокруг него. Если потравливать конец, выбирая шкот, стаксель разворачивается. Частично свёрнутый стаксель меньше, и это помогает при сильном ветре. |
 | На этой яхте | A Furlex furler at the bow. The line runs back along the port side deck through a single clutch labelled “JIB ROLL” to the port winch. The jib sheet must be eased for the jib to roll up. | Закрутка Furlex на носу. Конец идёт назад вдоль левого борта палубы через один стопор с надписью «JIB ROLL» к левой лебёдке. Чтобы стаксель свернулся, стаксель-шкот должен быть потравлен. |
-| Типичные ошибки | Pulling the furling line with the jib sheet tight. → The jib stops rolling. Ease the jib sheet, then keep furling.<br>Letting the line run free when unrolling in strong wind. → The jib flies out and flaps hard. Keep a turn of the line on the winch and let it out under control.<br>Leaving the jib flapping for a long time in strong wind. → The sail wears and can tear. Roll it in or sheet it in quickly. | Тянуть линь закрутки при туго выбранном стаксель-шкоте. → Стаксель перестаёт сворачиваться. Потравите стаксель-шкот, потом продолжайте закручивать.<br>Отпустить конец свободно, когда разворачиваете стаксель при сильном ветре. → Стаксель вылетает и сильно полощет. Держите на лебёдке шлаг конца и выпускайте его под контролем.<br>Долго оставлять стаксель полоскать при сильном ветре. → Парус изнашивается и может порваться. Быстро сверните его или выберите шкот. |
+| Типичные ошибки | Pulling the furling line with the jib sheet tight. → The jib stops rolling. Ease the jib sheet, then keep furling.<br>Letting the line run free when unrolling in strong wind. → The jib flies out and flaps hard. Keep a turn of the line on the winch and ease it under control.<br>Leaving the jib flapping for a long time in strong wind. → The sail wears and can tear. Roll it in or trim it quickly. | Тянуть линь закрутки при туго выбранном стаксель-шкоте. → Стаксель перестаёт сворачиваться. Потравите стаксель-шкот, потом продолжайте закручивать.<br>Отпустить конец свободно, когда разворачиваете стаксель при сильном ветре. → Стаксель вылетает и сильно полощет. Держите на лебёдке шлаг конца и выпускайте его под контролем.<br>Долго оставлять стаксель полоскать при сильном ветре. → Парус изнашивается и может порваться. Быстро сверните его или выберите шкот. |
 | «Покажи» | Jib 40 % out with its sheet eased: the rest is rolled round the forestay. Tap “Jib furling line” below and change “Jib out” to roll it in or out. | Стаксель выпущен на 40 %, его шкот потравлен: остальное свёрнуто вокруг штага. Нажмите ниже «Линь закрутки стакселя» и меняйте «Стаксель наружу», чтобы сворачивать или разворачивать его. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
@@ -71,10 +71,10 @@
 | Название | Vang | оттяжка гика |
 | Другие названия | kicker — British<br>kicking strap — British<br>boom vang | кикер — от английского kicker |
 | Коротко | Pulls the boom down, which keeps the mainsail flatter and stops its top twisting open. | Тянет гик вниз, из-за чего грот становится площе, а его верх не раскрывается в твист. |
-| Что делает / что значит | The vang runs from low on the mast to the underside of the boom. Hauled, it holds the boom down, so the sail stays flatter with less twist. Eased, the boom end rises and the top of the sail twists open. Once the mainsheet is eased well out, the vang, not the sheet, decides how high the boom sits. | Оттяжка гика идёт от нижней части мачты к нижней стороне гика. Когда её выбирают, она удерживает гик внизу, и парус остаётся площе, с меньшим твистом. Когда её потравливают, конец гика поднимается, и верх паруса раскрывается в твист. Когда гика-шкот потравлен далеко наружу, высоту гика определяет не шкот, а оттяжка. |
-| На этой яхте | A rigid vang (a strut with a gas spring inside) with a rope tackle. The spring holds the boom up, so the boom does not drop when the vang is eased; the rope only pulls it down. Its clutch is on the port side, labelled “Vang”. | Жёсткая оттяжка (стойка с газовой пружиной внутри) с канатным полиспастом. Пружина держит гик вверху, поэтому гик не падает, когда оттяжку потравливают; конец лишь тянет его вниз. Её стопор находится на левом борту, подписан «Vang». |
-| Типичные ошибки | Relying on the mainsheet to hold the boom down on a reach. → Far out, the sheet pulls sideways, not down, and the boom lifts. Haul the vang to hold it down.<br>Hauling the vang and the topping lift tight at the same time. → They pull against each other (both ropes turn red in the app). Ease the topping lift once the sail is set. | Рассчитывать, что гика-шкот удержит гик внизу на курсе галфвинд. → Далеко снаружи шкот тянет в сторону, а не вниз, и гик поднимается. Выберите оттяжку гика, чтобы удержать его внизу.<br>Туго выбрать оттяжку гика и топенант одновременно. → Они тянут друг против друга (в приложении оба конца становятся красными). Потравите топенант, когда парус поставлен. |
-| «Покажи» | Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and haul it in: the boom comes down and the sail flattens. | Ветер 20 уз сбоку, оттяжка гика потравлена до конца: конец гика поднялся, и верх грота раскрылся в твист. Нажмите ниже «Оттяжка гика» и выберите её: гик опустится, и парус станет площе. |
+| Что делает / что значит | The vang runs from low on the mast to the underside of the boom. Pulled on, it holds the boom down, so the sail stays flatter with less twist. Eased, the boom end rises and the top of the sail twists open. Once the mainsheet is eased well out, the vang, not the sheet, decides how high the boom sits. | Оттяжка гика идёт от нижней части мачты к нижней стороне гика. Когда её выбирают, она удерживает гик внизу, и парус остаётся площе, с меньшим твистом. Когда её потравливают, конец гика поднимается, и верх паруса раскрывается в твист. Когда гика-шкот потравлен далеко наружу, высоту гика определяет не шкот, а оттяжка. |
+| На этой яхте | A rigid vang (a strut with a gas spring inside) with a tackle. The spring holds the boom up, so the boom does not drop when the vang is eased; the line only pulls it down. Its clutch is on the port side, labelled “Vang”. | Жёсткая оттяжка (стойка с газовой пружиной внутри) с канатным полиспастом. Пружина держит гик вверху, поэтому гик не падает, когда оттяжку потравливают; конец лишь тянет его вниз. Её стопор находится на левом борту, подписан «Vang». |
+| Типичные ошибки | Relying on the mainsheet to hold the boom down on a reach. → Far out, the sheet pulls sideways, not down, and the boom lifts. Pull the vang on to hold it down.<br>Pulling the vang and the topping lift tight at the same time. → They pull against each other (both lines turn red in the app). Ease the topping lift once the sail is set. | Рассчитывать, что гика-шкот удержит гик внизу на курсе галфвинд. → Далеко снаружи шкот тянет в сторону, а не вниз, и гик поднимается. Выберите оттяжку гика, чтобы удержать его внизу.<br>Туго выбрать оттяжку гика и топенант одновременно. → Они тянут друг против друга (в приложении оба конца становятся красными). Потравите топенант, когда парус поставлен. |
+| «Покажи» | Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and pull it on: the boom comes down and the sail flattens. | Ветер 20 уз сбоку, оттяжка гика потравлена до конца: конец гика поднялся, и верх грота раскрылся в твист. Нажмите ниже «Оттяжка гика» и выберите её: гик опустится, и парус станет площе. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -86,9 +86,9 @@
 | Название | Outhaul | оттяжка шкотового угла |
 | Другие названия | clew outhaul | аутхол — от английского outhaul |
 | Коротко | Pulls the mainsail’s back bottom corner (the clew) out along the boom. | Вытягивает задний нижний угол грота (шкотовый угол) вдоль гика. |
-| Что делает / что значит | The outhaul pulls the clew towards the end of the boom. With in-mast furling it also pulls the sail out of the mast as it unrolls: it is hauled together with the furling line’s “out” tail, and eased when the sail is rolled in. | Оттяжка шкотового угла тянет шкотовый угол к концу гика. При закрутке грота в мачту она ещё и вытягивает парус из мачты, когда он разворачивается: её выбирают вместе с «выходным» концом линя закрутки и потравливают, когда парус закручивают. |
-| На этой яхте | Labelled “Main outhaul” on the port clutches. In the app’s Easy mode it moves together with “Mainsail out”. How the rope runs inside the boom is not yet confirmed on the real boat. | Подписана «Main outhaul» на левых стопорах. В лёгком режиме приложения она двигается вместе с «Грот наружу». Как конец проходит внутри гика на настоящей яхте, пока не подтверждено. |
-| Типичные ошибки | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without hauling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Haul the outhaul together with the “out” line. | Закручивать грот, не потравив оттяжку шкотового угла. → Она удерживает шкотовый угол снаружи, и парус не сворачивается. Потравите её, когда тянете «входной» линь закрутки.<br>Разворачивать грот, не выбрав оттяжку шкотового угла. → Парус выходит мешковатым и не доходит до конца гика. Выбирайте её вместе с «выходным» концом. |
+| Что делает / что значит | The outhaul pulls the clew towards the end of the boom. With in-mast furling it also pulls the sail out of the mast as it unrolls: it is pulled together with the furling line’s “out” tail, and eased when the sail is rolled in. | Оттяжка шкотового угла тянет шкотовый угол к концу гика. При закрутке грота в мачту она ещё и вытягивает парус из мачты, когда он разворачивается: её выбирают вместе с «выходным» концом линя закрутки и потравливают, когда парус закручивают. |
+| На этой яхте | Labelled “Main outhaul” on the port clutches. In the app’s Easy mode it moves together with “Mainsail out”. How the line runs inside the boom is not yet confirmed on the real boat. | Подписана «Main outhaul» на левых стопорах. В лёгком режиме приложения она двигается вместе с «Грот наружу». Как конец проходит внутри гика на настоящей яхте, пока не подтверждено. |
+| Типичные ошибки | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without pulling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Pull the outhaul together with the “out” line. | Закручивать грот, не потравив оттяжку шкотового угла. → Она удерживает шкотовый угол снаружи, и парус не сворачивается. Потравите её, когда тянете «входной» линь закрутки.<br>Разворачивать грот, не выбрав оттяжку шкотового угла. → Парус выходит мешковатым и не доходит до конца гика. Выбирайте её вместе с «выходным» концом. |
 | «Покажи» | Mainsail fully out: the outhaul holds its back corner at the end of the boom. Tap “Outhaul” below and roll the main in a little: the corner slides towards the mast. | Грот выпущен полностью: оттяжка шкотового угла держит его задний угол на конце гика. Нажмите ниже «Оттяжка шкотового угла» и немного закрутите грот: угол поедет к мачте. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
@@ -100,11 +100,11 @@
 |---|---|---|
 | Название | Jib sheet | стаксель-шкот |
 | Другие названия | headsail sheet | шкот стакселя |
-| Коротко | The rope that sets how far the jib can swing out. | Конец, который задаёт, как далеко стаксель может уйти наружу. |
-| Что делает / что значит | Hauling the jib sheet in pulls the jib’s back corner towards the boat; easing it lets the wind push the jib out. On a self-tacking jib, easing mostly lets the top of the sail twist open rather than swinging the whole sail out. | Если выбрать стаксель-шкот, задний угол стакселя подтягивается к яхте; если потравить, ветер отжимает стаксель наружу. У самоповоротного стакселя потравленный шкот в основном даёт верхней части паруса раскрыться в твист, а не уводит весь парус наружу. |
+| Коротко | The line that sets how far the jib can swing out. | Конец, который задаёт, как далеко стаксель может уйти наружу. |
+| Что делает / что значит | Trimming the jib sheet pulls the jib’s back corner towards the boat; easing it lets the wind push the jib out. On a self-tacking jib, easing mostly lets the top of the sail twist open rather than swinging the whole sail out. | Если выбрать стаксель-шкот, задний угол стакселя подтягивается к яхте; если потравить, ветер отжимает стаксель наружу. У самоповоротного стакселя потравленный шкот в основном даёт верхней части паруса раскрыться в твист, а не уводит весь парус наружу. |
 | На этой яхте | One sheet runs from the jib’s back corner to a car on a short track in front of the mast, with a 2:1 purchase (a pulley system that halves the pull), then down the mast and aft to the starboard clutches. The clutch says “Genoa sheet”, but the sail is a jib. Fully eased, the jib only reaches about 30° out. | Один шкот идёт от заднего угла стакселя к каретке на коротком погоне перед мачтой, с полиспастом 2:1 (система блоков, которая вдвое уменьшает усилие), затем вниз по мачте и назад к правым стопорам. На стопоре написано «Genoa sheet», но парус — стаксель. Полностью потравленный, стаксель уходит наружу лишь примерно на 30°. |
-| Типичные ошибки | Easing it on a reach and expecting the jib to swing far out. → A self-tacking jib cannot go far out; easing more only twists its top open. Ease until its telltales stream, no further.<br>Furling the jib with the sheet still tight. → The jib stops rolling up. Ease the jib sheet first, then pull the furling line.<br>Hauling it hard in with the wind from the side. → The jib stalls: the telltales on its far side droop. Ease until they stream. | Потравить его на курсе галфвинд и ждать, что стаксель сильно уйдёт наружу. → Самоповоротный стаксель далеко уйти не может; дальнейшее травление лишь раскрывает его верх в твист. Травите, пока его колдунчики не вытянутся по потоку, и не больше.<br>Закручивать стаксель при туго выбранном шкоте. → Стаксель перестаёт сворачиваться. Сначала потравите стаксель-шкот, потом тяните линь закрутки.<br>Туго выбирать его при ветре сбоку. → Стаксель срывает поток: колдунчики на его дальней стороне повисают. Травите, пока они не вытянутся по потоку. |
-| «Покажи» | Wind from the side and the jib sheet fully eased: the jib is only about 30° out, but its top has twisted open. Tap “Jib sheet” below and haul it in to see the jib flatten. | Ветер сбоку, стаксель-шкот потравлен полностью: стаксель уходит наружу лишь примерно на 30°, но его верх раскрылся в твист. Нажмите ниже «Стаксель-шкот» и выберите его: стаксель станет плоским. |
+| Типичные ошибки | Easing it on a reach and expecting the jib to swing far out. → A self-tacking jib cannot go far out; easing more only twists its top open. Ease until its telltales stream, no further.<br>Furling the jib with the sheet still tight. → The jib stops rolling up. Ease the jib sheet first, then pull the furling line.<br>Trimming it hard with the wind from the side. → The jib stalls: the telltales on its far side droop. Ease until they stream. | Потравить его на курсе галфвинд и ждать, что стаксель сильно уйдёт наружу. → Самоповоротный стаксель далеко уйти не может; дальнейшее травление лишь раскрывает его верх в твист. Травите, пока его колдунчики не вытянутся по потоку, и не больше.<br>Закручивать стаксель при туго выбранном шкоте. → Стаксель перестаёт сворачиваться. Сначала потравите стаксель-шкот, потом тяните линь закрутки.<br>Туго выбирать его при ветре сбоку. → Стаксель срывает поток: колдунчики на его дальней стороне повисают. Травите, пока они не вытянутся по потоку. |
+| «Покажи» | Wind from the side and the jib sheet fully eased: the jib is only about 30° out, but its top has twisted open. Tap “Jib sheet” below and trim it to see the jib flatten. | Ветер сбоку, стаксель-шкот потравлен полностью: стаксель уходит наружу лишь примерно на 30°, но его верх раскрылся в твист. Нажмите ниже «Стаксель-шкот» и выберите его: стаксель станет плоским. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -116,10 +116,10 @@
 | Название | Topping lift | топенант гика |
 | Другие названия | — | топенант |
 | Коротко | A line from the top of the mast to the end of the boom that can hold the boom up. | Линь от топа мачты к концу гика, который может удерживать гик вверху. |
-| Что делает / что значит | The topping lift carries the boom when the sail is not holding it up, for example with the sail rolled away. Hauled tight while sailing, it fights the vang and spoils the sail’s shape, so it is eased once the sail is set. | Топенант держит гик, когда парус его не поддерживает, например когда парус свёрнут. Если его туго выбрать на ходу, он борется с оттяжкой гика и портит форму паруса, поэтому его потравливают, когда парус поставлен. |
-| На этой яхте | Labelled “Boom lift” on the port clutches. The rigid vang’s spring already holds the boom up, so on this boat the topping lift only carries the boom when it is hauled higher than the spring holds it. | Подписан «Boom lift» на левых стопорах. Пружина жёсткой оттяжки и так держит гик вверху, поэтому на этой яхте топенант несёт гик, только если его выбрать выше, чем держит пружина. |
-| Типичные ошибки | Leaving it tight while sailing with the vang hauled. → The two ropes fight (both turn red in the app). Ease the topping lift. | Оставить его туго выбранным на ходу при выбранной оттяжке гика. → Эти два конца борются друг с другом (в приложении оба становятся красными). Потравите топенант. |
-| «Покажи» | No wind, the topping lift and the vang both hauled tight: they pull against each other and both ropes turn red. Tap “Topping lift” below and ease it to end the fight. | Ветра нет, топенант и оттяжка гика туго выбраны: они тянут друг против друга, и оба конца краснеют. Нажмите ниже «Топенант гика» и потравите его, чтобы прекратить борьбу. |
+| Что делает / что значит | The topping lift carries the boom when the sail is not holding it up, for example with the sail rolled away. Pulled tight while sailing, it fights the vang and spoils the sail’s shape, so it is eased once the sail is set. | Топенант держит гик, когда парус его не поддерживает, например когда парус свёрнут. Если его туго выбрать на ходу, он борется с оттяжкой гика и портит форму паруса, поэтому его потравливают, когда парус поставлен. |
+| На этой яхте | Labelled “Boom lift” on the port clutches. The rigid vang’s spring already holds the boom up, so on this boat the topping lift only carries the boom when it is pulled higher than the spring holds it. | Подписан «Boom lift» на левых стопорах. Пружина жёсткой оттяжки и так держит гик вверху, поэтому на этой яхте топенант несёт гик, только если его выбрать выше, чем держит пружина. |
+| Типичные ошибки | Leaving it tight while sailing with the vang pulled on. → The two lines fight (both turn red in the app). Ease the topping lift. | Оставить его туго выбранным на ходу при выбранной оттяжке гика. → Эти два конца борются друг с другом (в приложении оба становятся красными). Потравите топенант. |
+| «Покажи» | No wind, the topping lift and the vang both pulled tight: they pull against each other and both lines turn red. Tap “Topping lift” below and ease it to end the fight. | Ветра нет, топенант и оттяжка гика туго выбраны: они тянут друг против друга, и оба конца краснеют. Нажмите ниже «Топенант гика» и потравите его, чтобы прекратить борьбу. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -178,9 +178,9 @@
 | Название | Mainsail | грот |
 | Другие названия | main | — |
 | Коротко | The sail behind the mast, held by the mast and the boom. | Парус позади мачты, который держат мачта и гик. |
-| Что делает / что значит | The mainsail is set on the mast and the boom. The mainsheet sets its angle to the wind, the vang its twist, and the outhaul pulls it out along the boom. Trimmed right, it drives the boat; pulled in too far it stalls, let out too far it flaps. | Грот ставится на мачте и гике. Гика-шкот задаёт его угол к ветру, оттяжка гика — твист, а оттяжка шкотового угла вытягивает его вдоль гика. Если он выбран правильно, он тянет яхту; если выбрать слишком туго, он срывает поток, если потравить слишком сильно, он полощет. |
+| Что делает / что значит | The mainsail is set on the mast and the boom. The mainsheet sets its angle to the wind, the vang its twist, and the outhaul pulls it out along the boom. Trimmed right, it drives the boat; trimmed in too far it stalls, eased out too far it flaps. | Грот ставится на мачте и гике. Гика-шкот задаёт его угол к ветру, оттяжка гика — твист, а оттяжка шкотового угла вытягивает его вдоль гика. Если он выбран правильно, он тянет яхту; если выбрать слишком туго, он срывает поток, если потравить слишком сильно, он полощет. |
 | На этой яхте | 61 m², rolled into the mast (in-mast furling), with no battens (stiffening strips). In strong wind it is made smaller by rolling part of it into the mast. | 61 м², закручивается в мачту (закрутка в мачту), без лат (укрепляющих полос). При сильном ветре его делают меньше, закручивая часть в мачту. |
-| Типичные ошибки | Pulling it in too far for the wind angle. → It stalls: less drive and more heel, and the telltales on its far side droop. Ease until they stream.<br>Letting it out too far. → Its front edge flaps. Haul in until the flapping just stops.<br>Keeping all of it out as the wind gets strong. → The boat heels too much and turns into the wind by herself. Roll part of it in. | Выбрать его слишком туго для угла к ветру. → Он срывает поток: меньше тяги и больше крена, а колдунчики на его дальней стороне повисают. Травите, пока они не вытянутся по потоку.<br>Потравить его слишком сильно. → Его передняя кромка полощет. Выбирайте, пока полоскание не прекратится.<br>Держать весь грот выпущенным, когда ветер усиливается. → Яхта слишком кренится и сама приводится к ветру. Закрутите часть паруса. |
+| Типичные ошибки | Trimming it too far in for the wind angle. → It stalls: less drive and more heel, and the telltales on its far side droop. Ease until they stream.<br>Easing it too far. → Its front edge flaps. Trim until the flapping just stops.<br>Keeping all of it out as the wind gets strong. → The boat heels too much and turns into the wind by herself. Roll part of it in. | Выбрать его слишком туго для угла к ветру. → Он срывает поток: меньше тяги и больше крена, а колдунчики на его дальней стороне повисают. Травите, пока они не вытянутся по потоку.<br>Потравить его слишком сильно. → Его передняя кромка полощет. Выбирайте, пока полоскание не прекратится.<br>Держать весь грот выпущенным, когда ветер усиливается. → Яхта слишком кренится и сама приводится к ветру. Закрутите часть паруса. |
 | «Покажи» | Sailing 60° off the wind with the mainsail trimmed well: its telltales stream and it drives the boat at about 7 kn. Tap “Mainsheet” below and ease it fully: the front edge starts to flap and she slows down. | Курс 60° к ветру, грот хорошо выбран: его колдунчики вытянуты по потоку, и он тянет яхту со скоростью около 7 уз. Нажмите ниже «Гика-шкот» и потравите его до конца: передняя кромка начнёт полоскать, и яхта замедлится. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
@@ -208,9 +208,9 @@
 | Название | Telltale | колдунчик |
 | Другие названия | tell-tale | — |
 | Коротко | A short ribbon on a sail that shows how the air flows over it. | Короткая ленточка на парусе, показывающая, как воздух обтекает парус. |
-| Что делает / что значит | Telltales are short ribbons near the front of a sail, one on each side. Both streaming straight back: the sail is trimmed well. The one on the side away from the wind drooping or spinning: the sail is pulled in too far. The one on the wind’s side lifting: it is let out too far. | Колдунчики — это короткие ленточки у передней кромки паруса, по одной с каждой стороны. Обе развеваются прямо назад: парус выбран правильно. Ленточка со стороны, противоположной ветру, поникла или закручивается: парус выбран слишком сильно. Ленточка со стороны ветра поднялась: парус потравлен слишком сильно. |
+| Что делает / что значит | Telltales are short ribbons near the front of a sail, one on each side. Both streaming straight back: the sail is trimmed well. The one on the side away from the wind drooping or spinning: the sail is trimmed too far. The one on the wind’s side lifting: it is eased too far. | Колдунчики — это короткие ленточки у передней кромки паруса, по одной с каждой стороны. Обе развеваются прямо назад: парус выбран правильно. Ленточка со стороны, противоположной ветру, поникла или закручивается: парус выбран слишком сильно. Ленточка со стороны ветра поднялась: парус потравлен слишком сильно. |
 | На этой яхте | The app draws telltales near the front edge of both sails. | Приложение рисует колдунчики у передней кромки обоих парусов. |
-| Типичные ошибки | Hauling in until the sail stops flapping, then hauling more “to be safe”. → The telltales on the far side droop: the sail has stalled. Ease until both sides stream. | Выбирать, пока парус не перестанет полоскать, а потом выбирать ещё «на всякий случай». → Колдунчики с дальней стороны поникают: на парусе срыв потока. Потравливайте, пока обе стороны не станут развеваться. |
+| Типичные ошибки | Trimming until the sail stops flapping, then trimming more “to be safe”. → The telltales on the far side droop: the sail has stalled. Ease until both sides stream. | Выбирать, пока парус не перестанет полоскать, а потом выбирать ещё «на всякий случай». → Колдунчики с дальней стороны поникают: на парусе срыв потока. Потравливайте, пока обе стороны не станут развеваться. |
 | «Покажи» | Good trim: zoom in (pinch) on the front edge of the mainsail near the mast. The telltales on both sides stream straight back. | Хорошая настройка: приблизьте (щипком) переднюю кромку грота возле мачты. Колдунчики с обеих сторон развеваются прямо назад. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
@@ -238,7 +238,7 @@
 | Название | Luff | передняя шкаторина |
 | Другие названия | leading edge | — |
 | Коротко | The front edge of a sail. | Передняя кромка паруса. |
-| Что делает / что значит | The wind meets the sail at the luff. When a sail is let out too far, the luff starts to flap first: that is “luffing”. | На передней шкаторине ветер встречает парус. Когда парус потравлен слишком сильно, первой начинает полоскать передняя шкаторина: это «заполаскивание». |
+| Что делает / что значит | The wind meets the sail at the luff. When a sail is eased too far, the luff starts to flap first: that is “luffing”. | На передней шкаторине ветер встречает парус. Когда парус потравлен слишком сильно, первой начинает полоскать передняя шкаторина: это «заполаскивание». |
 | На этой яхте | The mainsail’s luff runs up inside the mast’s furling slot; the jib’s runs along the forestay. | Передняя шкаторина грота идёт вверх внутри паза закрутки в мачте; передняя шкаторина стакселя идёт вдоль штага. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -315,7 +315,7 @@
 | Название | Mainsheet blocks on the boom | блоки гика-шкота на гике |
 | Другие названия | — | — |
 | Коротко | The three pulleys under the boom that the mainsheet runs through. | Три блока под гиком, через которые проходит гика-шкот. |
-| Что делает / что значит | The mainsheet runs back and forth between these blocks and the deck blocks. Each extra part of rope makes it easier to pull (more purchase). | Гика-шкот ходит туда и обратно между этими блоками и палубными блоками. Каждая лишняя ветвь конца облегчает тянуть (больше выигрыш в силе). |
+| Что делает / что значит | The mainsheet runs back and forth between these blocks and the deck blocks. Each extra part of line makes it easier to pull (more purchase). | Гика-шкот ходит туда и обратно между этими блоками и палубными блоками. Каждая лишняя ветвь конца облегчает тянуть (больше выигрыш в силе). |
 | На этой яхте | Three blocks under the boom, 2.9 m from the mast. | Три блока под гиком, в 2.9 м от мачты. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -374,8 +374,8 @@
 |---|---|---|
 | Название | Rigid vang strut | жёсткая оттяжка гика |
 | Другие названия | rigid kicker — British | жёсткий кикер |
-| Коротко | A spring-loaded strut under the boom that holds it up; the vang rope pulls it down. | Пружинная стойка под гиком, которая держит его вверху; конец оттяжки гика тянет его вниз. |
-| Что делает / что значит | A rigid vang is a strut from low on the mast to the underside of the boom, with a spring inside. The spring pushes the boom up; the vang’s rope tackle pulls it down. With it, the boom does not drop when the sail is rolled away. | Жёсткая оттяжка гика — это стойка от нижней части мачты к нижней стороне гика с пружиной внутри. Пружина толкает гик вверх, а полиспаст оттяжки гика тянет его вниз. Благодаря ей гик не падает, когда парус свёрнут. |
+| Коротко | A spring-loaded strut under the boom that holds it up; the vang line pulls it down. | Пружинная стойка под гиком, которая держит его вверху; конец оттяжки гика тянет его вниз. |
+| Что делает / что значит | A rigid vang is a strut from low on the mast to the underside of the boom, with a spring inside. The spring pushes the boom up; the vang’s tackle pulls it down. With it, the boom does not drop when the sail is rolled away. | Жёсткая оттяжка гика — это стойка от нижней части мачты к нижней стороне гика с пружиной внутри. Пружина толкает гик вверх, а полиспаст оттяжки гика тянет его вниз. Благодаря ей гик не падает, когда парус свёрнут. |
 | На этой яхте | A Seldén Rodkicker with a gas spring. | Seldén Rodkicker с газовой пружиной. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -434,9 +434,9 @@
 |---|---|---|
 | Название | Turning blocks at the mast foot | отводные блоки у основания мачты |
 | Другие названия | — | — |
-| Коротко | The ring of pulleys at the foot of the mast that turn the ropes aft. | Кольцо блоков у основания мачты, которые поворачивают концы назад. |
-| Что делает / что значит | Ropes come down the mast and turn at these blocks to run aft along the coachroof to the cockpit, so they can be worked from there. | Концы спускаются по мачте и поворачиваются на этих блоках, чтобы идти назад по рубке в кокпит, так что с ними можно работать оттуда. |
-| На этой яхте | Seldén blocks in a ring round the foot of the mast, one block for each rope. | Блоки Seldén кольцом вокруг основания мачты, по одному блоку на каждый конец. |
+| Коротко | The ring of pulleys at the foot of the mast that turn the lines aft. | Кольцо блоков у основания мачты, которые поворачивают концы назад. |
+| Что делает / что значит | Lines come down the mast and turn at these blocks to run aft along the coachroof to the cockpit, so they can be worked from there. | Концы спускаются по мачте и поворачиваются на этих блоках, чтобы идти назад по рубке в кокпит, так что с ними можно работать оттуда. |
+| На этой яхте | Seldén blocks in a ring round the foot of the mast, one block for each line. | Блоки Seldén кольцом вокруг основания мачты, по одному блоку на каждый конец. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
@@ -514,7 +514,7 @@
 | Коротко | The engine’s drive leg and propeller under the hull. | Приводная колонка двигателя и гребной винт под корпусом. |
 | Что делает / что значит | A saildrive is a leg that comes down through the bottom of the hull from the engine, with the propeller on its end. It pushes the boat ahead or astern when the engine is in gear. | Сейлдрайв — это колонка, которая проходит через днище корпуса от двигателя; на её конце стоит гребной винт. Когда двигатель включён на передачу, она толкает лодку вперёд или назад. |
 | На этой яхте | A diesel engine of about 80 hp, a saildrive and a fixed two-blade propeller. In the app, full throttle (2,500 rpm) gives about 9.3 kn. | Дизельный двигатель около 80 л. с., сейлдрайв и неподвижный двухлопастный винт. В приложении полный газ (2 500 об/мин) даёт около 9.3 уз. |
-| Типичные ошибки | Putting the engine in gear with a rope in the water near the stern. → The propeller can catch the rope and stop the engine. Get all ropes on board before you engage gear. | Включить передачу, когда рядом с кормой в воде лежит конец. → Винт может намотать конец, и двигатель заглохнет. Уберите все концы на борт, прежде чем включать передачу. |
+| Типичные ошибки | Putting the engine in gear with a line in the water near the stern. → The propeller can catch the line and stop the engine. Get all lines on board before you engage gear. | Включить передачу, когда рядом с кормой в воде лежит конец. → Винт может намотать конец, и двигатель заглохнет. Уберите все концы на борт, прежде чем включать передачу. |
 | «Покажи» | — | — |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
@@ -633,8 +633,8 @@
 |---|---|---|
 | Название | Line channels | закрытые каналы для концов |
 | Другие названия | — | — |
-| Коротко | Covered channels on the coachroof that carry the ropes to the cockpit. | Закрытые каналы на рубке, которые ведут концы в кокпит. |
-| Что делает / что значит | They keep the ropes from the mast tidy and out from under the crew’s feet on their way aft. | Они сохраняют порядок среди концов от мачты и не дают им путаться под ногами у экипажа по пути назад. |
+| Коротко | Covered channels on the coachroof that carry the lines to the cockpit. | Закрытые каналы на рубке, которые ведут концы в кокпит. |
+| Что делает / что значит | They keep the lines from the mast tidy and out from under the crew’s feet on their way aft. | Они сохраняют порядок среди концов от мачты и не дают им путаться под ногами у экипажа по пути назад. |
 | На этой яхте | One channel on each side, ending at the clutch banks in front of the winches. | По одному каналу с каждой стороны, они заканчиваются у блоков стопоров перед лебёдками. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -754,7 +754,7 @@
 | Название | Deck | палуба |
 | Другие названия | — | — |
 | Коротко | The top of the hull that you walk on. | Верх корпуса, по которому ходят. |
-| Что делает / что значит | The deck closes the hull from above. Ropes, blocks and fittings are fixed to it, and the crew walks along it to go forward. | Палуба закрывает корпус сверху. К ней крепятся концы, блоки и оборудование, и по ней экипаж идёт вперёд. |
+| Что делает / что значит | The deck closes the hull from above. Lines, blocks and fittings are fixed to it, and the crew walks along it to go forward. | Палуба закрывает корпус сверху. К ней крепятся концы, блоки и оборудование, и по ней экипаж идёт вперёд. |
 | На этой яхте | The side decks run from the cockpit to the bow on each side of the coachroof. | Боковые палубы идут от кокпита к носу по обе стороны рубки. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -770,7 +770,7 @@
 | Другие названия | — | — |
 | Коротко | The two spring-mounted pulleys at the back of the coachroof for the mainsheet. | Два блока на пружинах в задней части рубки для гика-шкота. |
 | Что делает / что значит | Each end of the mainsheet comes down from the boom to one of these blocks. The springs keep the blocks standing up. | Каждый конец гика-шкота спускается от гика к одному из этих блоков. Пружины удерживают блоки стоймя. |
-| На этой яхте | One block each side of the middle, with two parts of rope between the boom and each block. From each block the rope runs forward to the foot of the mast, then aft in the covered channel to a clutch. There is no traveller. | По одному блоку по обе стороны от середины, между гиком и каждым блоком по две ветви конца. От каждого блока конец идёт вперёд к основанию мачты, затем назад по закрытому каналу к стопору. Погона нет. |
+| На этой яхте | One block each side of the middle, with two parts of line between the boom and each block. From each block the line runs forward to the foot of the mast, then aft in the covered channel to a clutch. There is no traveller. | По одному блоку по обе стороны от середины, между гиком и каждым блоком по две ветви конца. От каждого блока конец идёт вперёд к основанию мачты, затем назад по закрытому каналу к стопору. Погона нет. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
@@ -814,8 +814,8 @@
 | Название | Coachroof | рубка |
 | Другие названия | cabin top<br>deckhouse | надстройка |
 | Коротко | The raised roof over the cabin, between the mast and the cockpit. | Приподнятая крыша каюты между мачтой и кокпитом. |
-| Что делает / что значит | The coachroof raises the deck over the living space below to give headroom. Ropes from the mast run aft over it to the cockpit. | Рубка приподнимает палубу над жилым помещением внизу, чтобы хватало высоты. Концы от мачты идут по ней назад, в кокпит. |
-| На этой яхте | The mast stands on it. The mainsheet’s two deck blocks sit at its back end, and covered channels carry the ropes from the foot of the mast to the clutches. | На ней стоит мачта. Два палубных блока гика-шкота расположены в её задней части, а закрытые каналы ведут концы от основания мачты к стопорам. |
+| Что делает / что значит | The coachroof raises the deck over the living space below to give headroom. Lines from the mast run aft over it to the cockpit. | Рубка приподнимает палубу над жилым помещением внизу, чтобы хватало высоты. Концы от мачты идут по ней назад, в кокпит. |
+| На этой яхте | The mast stands on it. The mainsheet’s two deck blocks sit at its back end, and covered channels carry the lines from the foot of the mast to the clutches. | На ней стоит мачта. Два палубных блока гика-шкота расположены в её задней части, а закрытые каналы ведут концы от основания мачты к стопорам. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
@@ -858,8 +858,8 @@
 |---|---|---|
 | Название | Anchor windlass | якорная лебёдка |
 | Другие названия | — | брашпиль |
-| Коротко | The electric winch on the bow that lets the anchor chain out and pulls it in. | Электрическая лебёдка на носу, которая травит и выбирает якорную цепь. |
-| Что делает / что значит | The windlass lowers the anchor and hauls it back up, worked by switches at the bow or a remote at the helm. | Лебёдка опускает якорь и поднимает его обратно; ею управляют выключателями на носу или пультом у штурвала. |
+| Коротко | The electric winch on the bow that pays the anchor chain out and pulls it in. | Электрическая лебёдка на носу, которая травит и выбирает якорную цепь. |
+| Что делает / что значит | The windlass lowers the anchor and raises it again, worked by switches at the bow or a remote at the helm. | Лебёдка опускает якорь и поднимает его обратно; ею управляют выключателями на носу или пультом у штурвала. |
 | На этой яхте | On the foredeck behind the anchor roller, in a round recess. Hold "Chain out" or "Chain in" in the Anchor block (at the Bow station or the helm in Realistic mode). | На носовой палубе позади якорного роульса, в круглом углублении. Держите «Травить цепь» или «Выбирать цепь» в блоке «Якорь» (в реалистичном режиме: на носу или у штурвала). |
 | Типичные ошибки | Putting fingers or feet near the chain while the windlass runs. → The chain can trap them. Keep clear, and stop the windlass before you touch the chain. | Держать пальцы или ноги возле цепи, пока работает лебёдка. → Цепь может их зажать. Держитесь в стороне и останавливайте лебёдку, прежде чем трогать цепь. |
 | «Покажи» | — | — |
@@ -890,7 +890,7 @@
 | Другие названия | — | — |
 | Коротко | The heavy hook that holds the boat to the seabed. | Тяжёлый крюк, который держит лодку на дне. |
 | Что делает / что значит | The anchor is let down on its chain until it lies on the seabed, where it digs in and holds the boat in one place. | Якорь опускают на цепи, пока он не ляжет на дно: там он зарывается и удерживает лодку на одном месте. |
-| На этой яхте | It sits in the bow roller, to starboard of the jib furler, ready to let go. Let the chain out in the Anchor block and it goes down to the bottom. | Он лежит в носовом роульсе, по правому борту от закрутки стакселя, готовый к отдаче. Травите цепь в блоке «Якорь», и он уходит на дно. |
+| На этой яхте | It sits in the bow roller, to starboard of the jib furler, ready to let go. Pay the chain out in the Anchor block and it goes down to the bottom. | Он лежит в носовом роульсе, по правому борту от закрутки стакселя, готовый к отдаче. Травите цепь в блоке «Якорь», и он уходит на дно. |
 | Типичные ошибки | — | — |
 | «Покажи» | The bow from the front: the anchor hangs in its roller, with the chain running back to the windlass. | Нос спереди: якорь висит в роульсе, а цепь идёт назад к лебёдке. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
@@ -936,7 +936,7 @@
 | Название | Port secondary winch (optional) | дополнительная левая лебёдка |
 | Другие названия | — | — |
 | Коротко | A second winch some boats have on the left side; not on this boat. | Вторая лебёдка, которая есть на некоторых яхтах, с левой стороны; на этой яхте её нет. |
-| Что делает / что значит | The builder offers a second winch on each side, so more ropes can be worked at once. The reference boat does not have them, so the app does not draw them. | Верфь предлагает вторую лебёдку с каждого борта, чтобы можно было работать с большим числом концов сразу. На эталонной яхте их нет, поэтому приложение их не рисует. |
+| Что делает / что значит | The builder offers a second winch on each side, so more lines can be worked at once. The reference boat does not have them, so the app does not draw them. | Верфь предлагает вторую лебёдку с каждого борта, чтобы можно было работать с большим числом концов сразу. На эталонной яхте их нет, поэтому приложение их не рисует. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -951,7 +951,7 @@
 | Название | Starboard secondary winch (optional) | дополнительная правая лебёдка |
 | Другие названия | — | — |
 | Коротко | A second winch some boats have on the right side; not on this boat. | Вторая лебёдка, которая есть на некоторых яхтах, с правой стороны; на этой яхте её нет. |
-| Что делает / что значит | The builder offers a second winch on each side, so more ropes can be worked at once. The reference boat does not have them, so the app does not draw them. | Верфь предлагает вторую лебёдку с каждого борта, чтобы можно было работать с большим числом концов сразу. На эталонной яхте их нет, поэтому приложение их не рисует. |
+| Что делает / что значит | The builder offers a second winch on each side, so more lines can be worked at once. The reference boat does not have them, so the app does not draw them. | Верфь предлагает вторую лебёдку с каждого борта, чтобы можно было работать с большим числом концов сразу. На эталонной яхте их нет, поэтому приложение их не рисует. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -966,7 +966,7 @@
 | Название | Cockpit | кокпит |
 | Другие названия | — | — |
 | Коротко | The open, sunken area at the back where the crew sits and steers. | Открытая углублённая часть сзади, где экипаж сидит и управляет. |
-| Что делает / что значит | The cockpit is where the crew sits, steers and works most of the ropes. It lies lower than the deck, so it feels safer at sea. | В кокпите экипаж сидит, управляет и работает с большинством концов. Он ниже палубы, поэтому в море кажется безопаснее. |
+| Что делает / что значит | The cockpit is where the crew sits, steers and works most of the lines. It lies lower than the deck, so it feels safer at sea. | В кокпите экипаж сидит, управляет и работает с большинством концов. Он ниже палубы, поэтому в море кажется безопаснее. |
 | На этой яхте | Two wheels at the back, one winch and one clutch bank on each side, the engine lever at the helm, and the instruments and the autopilot control by the wheels. | Два штурвала сзади, по лебёдке и по блоку стопоров с каждой стороны, рукоятка двигателя у штурвала, а приборы и пульт авторулевого — возле штурвалов. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -981,7 +981,7 @@
 | Название | Wheel pedestal | колонка штурвала |
 | Другие названия | binnacle | нактоуз |
 | Коротко | The column in front of each wheel that carries the compass and the controls. | Колонка перед каждым штурвалом, на которой стоят компас и органы управления. |
-| Что делает / что значит | The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and ropes off the instruments. | Ось штурвала входит в колонку. Сверху на ней небольшая панель с компасом и приборами, а перед ней стальная дуга: за неё можно держаться, и она не даёт коленям и концам задеть приборы. |
+| Что делает / что значит | The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and lines off the instruments. | Ось штурвала входит в колонку. Сверху на ней небольшая панель с компасом и приборами, а перед ней стальная дуга: за неё можно держаться, и она не даёт коленям и концам задеть приборы. |
 | На этой яхте | One pedestal at each wheel, each with the same panel: the compass, the wind display, the engine lever and the rev counter, the thruster joysticks and the autopilot keys. The drawing is a guess: there is no photo of the pedestal yet. | У каждого штурвала своя колонка, и панель на всех одинаковая: компас, дисплей ветра, рычаг двигателя и тахометр, джойстики подруливающих устройств и клавиши автопилота. Рисунок — предположение: фотографии колонки пока нет. |
 | Типичные ошибки | — | — |
 | «Покажи» | The view from behind the wheel: the pedestal with its panel and the steel guard rail stands in front of the wheel. | Вид из-за штурвала: перед штурвалом стоит колонка с панелью и стальной дугой. |
@@ -1010,10 +1010,10 @@
 |---|---|---|
 | Название | Winch | лебёдка |
 | Другие названия | — | винч — от английского winch |
-| Коротко | A drum that gives you the power to pull in a heavily loaded rope. | Барабан, который даёт силу для выбирания сильно нагруженного конца. |
-| Что делает / что значит | The rope is wrapped clockwise round the drum. The turns hold the load (each extra turn multiplies the grip), and turning the drum pulls the rope in. A self-tailer on top grips the tail, so one person can winch alone. | Конец наматывают на барабан по часовой стрелке. Шлаги держат нагрузку (каждый лишний шлаг умножает хватку), а вращение барабана выбирает конец. Самозахват сверху зажимает хвост, так что один человек может работать с лебёдкой в одиночку. |
+| Коротко | A drum that gives you the power to pull in a heavily loaded line. | Барабан, который даёт силу для выбирания сильно нагруженного конца. |
+| Что делает / что значит | The line is wrapped clockwise round the drum. The turns hold the load (each extra turn multiplies the grip), and turning the drum pulls the line in. A self-tailer on top grips the tail, so one person can winch alone. | Конец наматывают на барабан по часовой стрелке. Шлаги держат нагрузку (каждый лишний шлаг умножает хватку), а вращение барабана выбирает конец. Самозахват сверху зажимает хвост, так что один человек может работать с лебёдкой в одиночку. |
 | На этой яхте | One electric Lewmar self-tailing winch on each side, worked with a push button; the winch handle is a backup. The winch slows as the load grows and cuts out when the load is too high. | Одна электрическая самозахватывающая лебёдка Lewmar с каждой стороны, управляется кнопкой; ручка лебёдки — запасной вариант. Лебёдка замедляется, когда нагрузка растёт, и отключается, когда нагрузка слишком велика. |
-| Типичные ошибки | Wrapping the rope anticlockwise. → The drum only turns clockwise, so the rope is not held. Wrap it clockwise, seen from above.<br>Too few turns on a loaded rope. → It slips when the clutch opens. Use about 4 turns to winch under load, 2 to ease under control.<br>Keeping the button pressed when the winch cuts out. → The load is too high, often two ropes pulling against each other. Find out why (a closed clutch, the topping lift against the vang) and fix that first. | Намотать конец против часовой стрелки. → Барабан вращается только по часовой стрелке, поэтому конец не удерживается. Наматывайте по часовой стрелке, если смотреть сверху.<br>Слишком мало шлагов на нагруженном конце. → Он проскальзывает, когда стопор открывают. Для выбирания под нагрузкой берите около 4 шлагов, для управляемого потравливания — 2.<br>Продолжать держать кнопку, когда лебёдка отключилась. → Нагрузка слишком велика, часто потому, что два конца тянут друг против друга. Сначала узнайте почему (закрытый стопор, топенант против оттяжки гика) и устраните это. |
+| Типичные ошибки | Wrapping the line anticlockwise. → The drum only turns clockwise, so the line is not held. Wrap it clockwise, seen from above.<br>Too few turns on a loaded line. → It slips when the clutch opens. Use about 4 turns to winch under load, 2 to ease under control.<br>Keeping the button pressed when the winch cuts out. → The load is too high, often two lines pulling against each other. Find out why (a closed clutch, the topping lift against the vang) and fix that first. | Намотать конец против часовой стрелки. → Барабан вращается только по часовой стрелке, поэтому конец не удерживается. Наматывайте по часовой стрелке, если смотреть сверху.<br>Слишком мало шлагов на нагруженном конце. → Он проскальзывает, когда стопор открывают. Для выбирания под нагрузкой берите около 4 шлагов, для управляемого потравливания — 2.<br>Продолжать держать кнопку, когда лебёдка отключилась. → Нагрузка слишком велика, часто потому, что два конца тянут друг против друга. Сначала узнайте почему (закрытый стопор, топенант против оттяжки гика) и устраните это. |
 | «Покажи» | Realistic mode, starboard: the jib sheet is on the winch with 2 turns, held by hand. Add turns, put it in the self-tailer, and press the winch button. | Реалистичный режим, правый борт: стаксель-шкот на лебёдке с 2 шлагами, удерживается рукой. Добавьте шлаги, заложите его в самозахват и нажмите кнопку лебёдки. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
@@ -1026,7 +1026,7 @@
 | Название | Port winch | левая лебёдка |
 | Другие названия | — | — |
 | Коротко | The winch on the left side of the cockpit. | Лебёдка с левой стороны кокпита. |
-| Что делает / что значит | It works the ropes of clutch bank B and the jib furling line. | Она работает с концами блока стопоров B и с линём закрутки стакселя. |
+| Что делает / что значит | It works the lines of clutch bank B and the jib furling line. | Она работает с концами блока стопоров B и с линём закрутки стакселя. |
 | На этой яхте | Electric, with a self-tailer. The winch handle is kept on this side. | Электрическая, с самозахватом. Ручка лебёдки хранится с этой стороны. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1041,7 +1041,7 @@
 | Название | Clutch bank B | левый блок стопоров |
 | Другие названия | — | — |
 | Коротко | The five clutches on the port side. | Пять стопоров с левого борта. |
-| Что делает / что значит | The row of clutches in front of the port winch. Each rope from the mast ends at one of them, and any one of them can be put on the winch. | Ряд стопоров перед левой лебёдкой. Каждый конец от мачты заканчивается в одном из них, и любой из них можно взять на лебёдку. |
+| Что делает / что значит | The row of clutches in front of the port winch. Each line from the mast ends at one of them, and any one of them can be put on the winch. | Ряд стопоров перед левой лебёдкой. Каждый конец от мачты заканчивается в одном из них, и любой из них можно взять на лебёдку. |
 | На этой яхте | In order: “SPI HALYARD” (the gennaker halyard), “Boom lift” (the topping lift), “Main outhaul”, “MAIN SHEET” (the other end of the mainsheet), “Vang”. | По порядку: «SPI HALYARD» (фал геннакера), «Boom lift» (топенант гика), «Main outhaul», «MAIN SHEET» (второй конец гика-шкота), «Vang». |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1074,7 +1074,7 @@
 | Что делает / что значит | A winch handle left loose can slide away or go over the side, so it is kept in a holder or a pocket when it is not in a winch. | Ручка, оставленная где попало, может соскользнуть или упасть за борт, поэтому, пока она не в лебёдке, её держат в держателе или кармане. |
 | На этой яхте | In the app the handle lies on a pad on the cockpit floor between the two wheels, between two small stops. | В приложении ручка лежит на площадке на полу кокпита между двумя штурвалами, между двумя небольшими упорами. |
 | Типичные ошибки | — | — |
-| «Покажи» | Realistic ropes, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops. | Реалистичные тросы, ручка убрана у штурвала: она лежит на тёмной площадке между двумя штурвалами, между двумя упорами. |
+| «Покажи» | Realistic lines, the handle stowed at the helm: it lies on the dark pad between the two wheels, between two small stops. | Реалистичные тросы, ручка убрана у штурвала: она лежит на тёмной площадке между двумя штурвалами, между двумя упорами. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1086,7 +1086,7 @@
 | Название | Starboard winch | правая лебёдка |
 | Другие названия | — | — |
 | Коротко | The winch on the right side of the cockpit. | Лебёдка с правой стороны кокпита. |
-| Что делает / что значит | It works the ropes of clutch bank A. | Она работает с концами блока стопоров A. |
+| Что делает / что значит | It works the lines of clutch bank A. | Она работает с концами блока стопоров A. |
 | На этой яхте | Electric, with a self-tailer. | Электрическая, с самозахватом. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1101,7 +1101,7 @@
 | Название | Clutch bank A | правый блок стопоров |
 | Другие названия | — | — |
 | Коротко | The five clutches on the starboard side. | Пять стопоров с правого борта. |
-| Что делает / что значит | The row of clutches in front of the starboard winch. Each rope from the mast ends at one of them, and any one of them can be put on the winch. | Ряд стопоров перед правой лебёдкой. Каждый конец от мачты заканчивается в одном из них, и любой из них можно взять на лебёдку. |
+| Что делает / что значит | The row of clutches in front of the starboard winch. Each line from the mast ends at one of them, and any one of them can be put on the winch. | Ряд стопоров перед правой лебёдкой. Каждый конец от мачты заканчивается в одном из них, и любой из них можно взять на лебёдку. |
 | На этой яхте | In order: “Main sheet”, “Main furling” (rolls the main in), “Main furling” (rolls it out), “Main halyard”, “Genoa sheet” (the jib sheet). | По порядку: «Main sheet», «Main furling» (сворачивает грот), «Main furling» (разворачивает его), «Main halyard», «Genoa sheet» (стаксель-шкот). |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1146,7 +1146,7 @@
 | Название | Windlass remote | Пульт брашпиля |
 | Другие названия | — | — |
 | Коротко | Buttons at the helm that run the windlass. | Кнопки у штурвала, управляющие брашпилем. |
-| Что делает / что значит | Lets the helmsman let the chain out or bring it in without going forward. | Позволяют рулевому травить или выбирать цепь, не уходя на нос. |
+| Что делает / что значит | Lets the helmsman pay the chain out or bring it in without going forward. | Позволяют рулевому травить или выбирать цепь, не уходя на нос. |
 | На этой яхте | At the helm (EXERCISES.md 5, owner). | У штурвала (владелец). |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1188,12 +1188,12 @@
 
 | Поле | English | Русский |
 |---|---|---|
-| Название | Rope clutch | стопор |
+| Название | Clutch | стопор |
 | Другие названия | jammer<br>rope stopper | — |
-| Коротко | A lever that grips a rope so it cannot run out. | Рычаг, который зажимает конец, чтобы он не убегал. |
-| Что делает / что значит | A closed clutch holds the rope: it can still be pulled in, but not let out. To let a rope out, take its load on a winch, then open the clutch (lever up). | Закрытый стопор держит конец: его всё ещё можно выбирать, но нельзя травить. Чтобы потравить конец, возьмите его нагрузку на лебёдку и затем откройте стопор (рычаг вверх). |
+| Коротко | A lever that grips a line so it cannot run out. | Рычаг, который зажимает конец, чтобы он не убегал. |
+| Что делает / что значит | A closed clutch holds the line: it can still be pulled in, but a loaded line cannot run out. To ease a line, take its load on a winch, then open the clutch (lever up). | Закрытый стопор держит конец: его всё ещё можно выбирать, но нельзя травить. Чтобы потравить конец, возьмите его нагрузку на лебёдку и затем откройте стопор (рычаг вверх). |
 | На этой яхте | A bank of five clutches in front of each winch, and one single clutch for the jib furling line on the port side deck. In Realistic mode you open and close them with the lever. | Блок из пяти стопоров перед каждой лебёдкой и один отдельный стопор для линя закрутки стакселя на левой боковой палубе. В реалистичном режиме вы открываете и закрываете их рычагом. |
-| Типичные ошибки | Opening a loaded clutch with the rope not on the winch. → The rope runs out fast and can burn hands. Put the rope on the winch with a few turns first.<br>Shutting a clutch on a rope that is running out under load. → It can damage the rope. Take the load on the winch first, then close the clutch. | Открыть нагруженный стопор, когда конец не на лебёдке. → Конец быстро убегает и может обжечь руки. Сначала возьмите конец на лебёдку несколькими шлагами.<br>Закрыть стопор на конце, который убегает под нагрузкой. → Это может повредить конец. Сначала возьмите нагрузку на лебёдку, потом закрывайте стопор. |
+| Типичные ошибки | Opening a loaded clutch with the line not on the winch. → The line runs out fast and can burn hands. Put the line on the winch with a few turns first.<br>Shutting a clutch on a line that is running out under load. → It can damage the line. Take the load on the winch first, then close the clutch. | Открыть нагруженный стопор, когда конец не на лебёдке. → Конец быстро убегает и может обжечь руки. Сначала возьмите конец на лебёдку несколькими шлагами.<br>Закрыть стопор на конце, который убегает под нагрузкой. → Это может повредить конец. Сначала возьмите нагрузку на лебёдку, потом закрывайте стопор. |
 | «Покажи» | Realistic mode: the clutches of this side are the levers in the drawing. Lever up is open; tap a clutch to select it, tap it again to open or close it. | Реалистичный режим: стопоры этого борта — рычаги на рисунке. Рычаг вверх — открыт; нажмите на стопор, чтобы выбрать его, и нажмите ещё раз, чтобы открыть или закрыть. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
@@ -1218,12 +1218,12 @@
 
 | Поле | English | Русский |
 |---|---|---|
-| Название | Rope tail box | ящик для концов |
+| Название | Line bin | ящик для концов |
 | Другие названия | — | — |
-| Коротко | A box behind each winch where the loose ends of the ropes go. | Ящик за каждой лебёдкой, куда убирают свободные концы. |
-| Что делает / что значит | The loose ends (tails) of the ropes go into the box, so the cockpit stays clear and the ropes can run out freely when eased. | Свободные концы (хвосты) уходят в ящик, так что кокпит остаётся чистым, а концы свободно убегают при потравливании. |
+| Коротко | A box behind each winch where the loose ends of the lines go. | Ящик за каждой лебёдкой, куда убирают свободные концы. |
+| Что делает / что значит | The loose ends (tails) of the lines go into the box, so the cockpit stays clear and the lines can run out freely when eased. | Свободные концы (хвосты) уходят в ящик, так что кокпит остаётся чистым, а концы свободно убегают при потравливании. |
 | На этой яхте | — | — |
-| Типичные ошибки | Leaving loose rope lying on the cockpit floor. → Someone can trip, or the rope tangles as it runs out. Put it in the box. | Оставлять свободный конец лежать на полу кокпита. → Кто-то может споткнуться, или конец запутается, когда будет убегать. Уберите его в ящик. |
+| Типичные ошибки | Leaving loose line lying on the cockpit floor. → Someone can trip, or the line tangles as it runs out. Put it in the box. | Оставлять свободный конец лежать на полу кокпита. → Кто-то может споткнуться, или конец запутается, когда будет убегать. Уберите его в ящик. |
 | «Покажи» | — | — |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
@@ -1704,10 +1704,10 @@
 
 | Поле | English | Русский |
 |---|---|---|
-| Название | Trim / haul in | выбрать |
-| Другие названия | sheet in | подобрать<br>добрать — выбрать до конца |
-| Коротко | To pull a rope in; also, setting the sails to the wind. | Подтянуть конец; также — настроить паруса по ветру. |
-| Что делает / что значит | Hauling in pulls a rope in. Trimming means setting each sail to the wind: haul in until it stops flapping, ease until it is not stalled. | Выбирать — значит подтягивать конец. Настроить паруса — значит поставить каждый по ветру: выбирайте, пока он не перестанет полоскать, потравливайте, пока на нём не перестанет срываться поток. |
+| Название | Trim | выбрать |
+| Другие названия | haul in<br>sheet in | подобрать<br>добрать — выбрать до конца |
+| Коротко | To pull a sheet in; also, setting the sails to the wind. | Подтянуть конец; также — настроить паруса по ветру. |
+| Что делает / что значит | Trimming pulls a sheet in. It also means setting each sail to the wind: trim until it stops flapping, ease until it is not stalled. | Выбирать — значит подтягивать конец. Настроить паруса — значит поставить каждый по ветру: выбирайте, пока он не перестанет полоскать, потравливайте, пока на нём не перестанет срываться поток. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1753,7 +1753,7 @@
 | Другие названия | — | превентер — от английского preventer |
 | Коротко | A line that holds the boom out so it cannot gybe across. | Конец, который удерживает гик, чтобы он не перелетел на другой борт. |
 | Что делает / что значит | A preventer runs from the end of the boom forward and back to the cockpit, holding the boom out when running, so it cannot swing across in an accidental gybe. | Завал-тали идут от конца гика вперёд и обратно в кокпит и удерживают гик отведённым на фордевинде, чтобы он не мог перелететь при случайном повороте фордевинд. |
-| На этой яхте | This boat carries none, so the app teaches the controlled gybe: the mainsheet hauled in first. | На этой яхте их нет, поэтому приложение учит контролируемому повороту фордевинд: сначала выбирают гика-шкот. |
+| На этой яхте | This boat carries none, so the app teaches the controlled gybe: the mainsheet trimmed first. | На этой яхте их нет, поэтому приложение учит контролируемому повороту фордевинд: сначала выбирают гика-шкот. |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
@@ -1766,11 +1766,26 @@
 |---|---|---|
 | Название | Luffing (sail flapping) | заполаскивание |
 | Другие названия | — | парус полощет — так говорят о самом парусе |
-| Коротко | A sail flapping at its front edge because it is let out too far. | Парус полощет по передней кромке, потому что он потравлен слишком далеко. |
+| Коротко | A sail flapping at its front edge because it is eased too far. | Парус полощет по передней кромке, потому что он потравлен слишком далеко. |
 | Что делает / что значит | When a sail is eased more than the wind angle needs, or the boat turns too close to the wind, the air reaches both sides of the front edge and the sail flaps. It no longer drives the boat, and long flapping in strong wind wears it out. | Когда парус потравлен больше, чем нужно для угла к ветру, или яхта повёрнута слишком близко к ветру, воздух попадает на обе стороны передней кромки, и парус полощет. Он перестаёт тянуть яхту, а долгое полоскание при сильном ветре изнашивает его. |
 | На этой яхте | — | — |
-| Типичные ошибки | Leaving a sail flapping in strong wind. → It wears and can tear. Haul it in, or roll it away. | Оставлять парус полоскать при сильном ветре. → Он изнашивается и может порваться. Выберите его или уберите (закрутите). |
-| «Покажи» | The mainsheet is eased right out: the mainsail flaps along its front edge. Haul the mainsheet in (Ropes section) until the flapping just stops. | Гика-шкот потравлен до конца: грот полощет по передней кромке. Выбирайте гика-шкот (раздел «Концы»), пока полоскание не прекратится. |
+| Типичные ошибки | Leaving a sail flapping in strong wind. → It wears and can tear. Trim it, or roll it away. | Оставлять парус полоскать при сильном ветре. → Он изнашивается и может порваться. Выберите его или уберите (закрутите). |
+| «Покажи» | The mainsheet is eased right out: the mainsail flaps along its front edge. Trim the mainsheet (Lines section) until the flapping just stops. | Гика-шкот потравлен до конца: грот полощет по передней кромке. Выбирайте гика-шкот (раздел «Концы»), пока полоскание не прекратится. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Каннингем (`term_cunningham`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Cunningham | Каннингем |
+| Другие названия | — | — |
+| Коротко | A line that pulls the front edge of a mainsail down. This boat has none. | Снасть, которая тянет вниз переднюю кромку грота. На этой яхте её нет. |
+| Что делает / что значит | On a mainsail that is hoisted up a mast track, the cunningham pulls the sail’s front edge (the luff) down near the bottom. More tension moves the sail’s fullness forward and flattens it in a stronger wind. | На гроте, который поднимают по мачтовому пазу, каннингем тянет переднюю кромку паруса (передний край, лик) вниз у нижнего края. Чем сильнее натяжение, тем дальше вперёд смещается «пузо» паруса и тем плоскее он при сильном ветре. |
+| На этой яхте | None, as far as we know (not yet confirmed on the real boat). The mainsail rolls into the mast, so its front edge sits on the furling rod inside the mast and there is nothing to pull it down; its tension comes from the main halyard. | Нет, насколько мы знаем (на настоящей яхте пока не подтверждено). Грот убирается в мачту, его передняя кромка лежит на вращающемся стержне внутри мачты, и тянуть её вниз нечем; натяжение даёт грота-фал. |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1782,7 +1797,7 @@
 | Название | Telltales | колдунчики |
 | Другие названия | tell-tales | — |
 | Коротко | Ribbons on the sails that show how the air flows. | Ленточки на парусах, которые показывают, как обтекает воздух. |
-| Что делает / что значит | Telltales are short ribbons near the front of the sails. Both sides streaming straight back: good trim. The far side drooping: pulled in too far. The near side lifting: let out too far. | Колдунчики — короткие ленточки у передней кромки парусов. Обе стороны тянутся прямо назад: парус настроен хорошо. Дальняя сторона опускается: парус выбран слишком туго. Ближняя сторона поднимается: парус потравлен слишком сильно. |
+| Что делает / что значит | Telltales are short ribbons near the front of the sails. Both sides streaming straight back: good trim. The far side drooping: trimmed too far. The near side lifting: eased too far. | Колдунчики — короткие ленточки у передней кромки парусов. Обе стороны тянутся прямо назад: парус настроен хорошо. Дальняя сторона опускается: парус выбран слишком туго. Ближняя сторона поднимается: парус потравлен слишком сильно. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | Good trim: zoom in on the front of the mainsail; the telltales on both sides stream straight back. | Хорошая настройка: приблизьте переднюю часть грота; колдунчики с обеих сторон тянутся прямо назад. |
@@ -1799,8 +1814,8 @@
 | Коротко | The boat leaning over to one side. | Яхта наклоняется на один борт. |
 | Что делает / что значит | The wind’s push on the sails tips the boat over to leeward; the keel’s weight pulls her back. Some heel is normal; too much slows her and makes her hard to steer. Easing the sheets or making the sails smaller reduces it. | Давление ветра на паруса наклоняет яхту в подветренную сторону; вес киля возвращает её обратно. Некоторый крен — это нормально; слишком большой замедляет яхту и затрудняет управление. Потравливание шкотов или уменьшение парусов уменьшает его. |
 | На этой яхте | — | — |
-| Типичные ошибки | Hauling the sheets in harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Выбирать шкоты туже, когда яхта сильно кренится. → Это увеличивает крен. Потравите гика-шкот или закрутите часть парусов. |
-| «Покажи» | 20 kn with the sails pulled in: she heels about 30°. Ease the mainsheet in the Ropes section and she stands up. | 20 уз, паруса выбраны: крен около 30°. Потравите гика-шкот в разделе «Концы», и яхта выпрямится. |
+| Типичные ошибки | Trimming the sheets harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Выбирать шкоты туже, когда яхта сильно кренится. → Это увеличивает крен. Потравите гика-шкот или закрутите часть парусов. |
+| «Покажи» | 20 kn with the sails trimmed in: she heels about 30°. Ease the mainsheet in the Lines section and she stands up. | 20 уз, паруса выбраны: крен около 30°. Потравите гика-шкот в разделе «Концы», и яхта выпрямится. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1812,10 +1827,10 @@
 | Название | Close-hauled | крутой бейдевинд |
 | Другие названия | beating — sailing close-hauled to get upwind | бейдевинд<br>острый бейдевинд |
 | Коротко | Sailing as close to the wind as she can, about 45° off it. | Курс как можно ближе к ветру, около 45° от него. |
-| Что делает / что значит | Close-hauled, the sails are pulled in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail. | На крутом бейдевинде паруса выбраны туго, и яхта идёт как можно ближе к ветру, сразу за мёртвой зоной. На этом курсе у неё самый большой крен. |
+| Что делает / что значит | Close-hauled, the sails are trimmed in tight and the boat sails as near to the wind as she can, just outside the no-go zone. She heels most on this point of sail. | На крутом бейдевинде паруса выбраны туго, и яхта идёт как можно ближе к ветру, сразу за мёртвой зоной. На этом курсе у неё самый большой крен. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | Close-hauled: the wind 45° off the bow, both sails pulled in; she heels about 17°. | Крутой бейдевинд: ветер в 45° от носа, оба паруса выбраны; крен около 17°. |
+| «Покажи» | Close-hauled: the wind 45° off the bow, both sails trimmed in; she heels about 17°. | Крутой бейдевинд: ветер в 45° от носа, оба паруса выбраны; крен около 17°. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1859,7 +1874,7 @@
 | Коротко | The red area the app draws where the boom would sweep in a gybe. | Красная область, которую рисует приложение там, где гик прошёл бы при повороте фордевинд. |
 | Что делает / что значит | With the wind from behind, the boom can swing across the whole cockpit in an accidental gybe, fast and hard enough to injure someone. The app draws the area it would sweep in red, so you know where not to stand. | При ветре сзади гик может перелететь через весь кокпит при случайном повороте фордевинд, быстро и с такой силой, что может ранить человека. Приложение рисует область, которую он бы покрыл, красным, чтобы вы знали, где нельзя находиться. |
 | На этой яхте | — | — |
-| Типичные ошибки | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet hauled in. | Рулить так далеко под ветер, что ветер оказывается позади грота (он дует на грот уже с той стороны, куда отведён гик). → Гик может перелететь в любой момент. Слегка приведитесь к ветру или сделайте поворот фордевинд намеренно, с выбранным гика-шкотом. |
+| Типичные ошибки | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet trimmed. | Рулить так далеко под ветер, что ветер оказывается позади грота (он дует на грот уже с той стороны, куда отведён гик). → Гик может перелететь в любой момент. Слегка приведитесь к ветру или сделайте поворот фордевинд намеренно, с выбранным гика-шкотом. |
 | «Покажи» | Running, the autopilot turns her through dead downwind with the mainsheet eased: an accidental gybe. The red area shows where the boom sweeps across. Keep heads out of it. | Фордевинд: авторулевой разворачивает яхту через точку точно по ветру при потравленном гика-шкоте — случайный поворот фордевинд. Красная область показывает, где гик пройдёт через кокпит. Держите головы вне её. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
@@ -1902,10 +1917,10 @@
 | Название | Gybe | поворот фордевинд |
 | Другие названия | jibe — American spelling | поворот через фордевинд |
 | Коротко | Turning the stern through the wind, so the boom crosses to the other side. | Поворот кормой через ветер, при котором гик переходит на другой борт. |
-| Что делает / что значит | In a gybe the stern turns through the wind and the boom swings across the whole boat. Done on purpose, the mainsheet is hauled in first so the boom crosses a short way, under control. By accident (an accidental gybe) it crosses fast and hard: it can injure people and break gear. Why the boom crosses by itself: let out, it is at first held out by the wind; a roll, a wave or a small turn starts it across, and once it is past the line of the wind (pointing straight at where the wind comes from), the wind throws it. | При повороте фордевинд корма проходит через ветер, и гик перелетает через всю яхту. Если это делают намеренно, сначала выбирают гика-шкот, чтобы гик перешёл на короткое расстояние, под контролем. Случайно (случайный поворот фордевинд) он переходит быстро и с силой: он может ранить людей и сломать оборудование. Почему гик перелетает сам: когда грот потравлен, ветер сначала удерживает гик снаружи; крен, волна или небольшой поворот сдвигают его, а когда гик проходит линию ветра (направлен прямо туда, откуда дует ветер), ветер перебрасывает его. |
+| Что делает / что значит | In a gybe the stern turns through the wind and the boom swings across the whole boat. Done on purpose, the mainsheet is trimmed first so the boom crosses a short way, under control. By accident (an accidental gybe) it crosses fast and hard: it can injure people and break gear. Why the boom crosses by itself: eased out, it is at first held out by the wind; a roll, a wave or a small turn starts it across, and once it is past the line of the wind (pointing straight at where the wind comes from), the wind throws it. | При повороте фордевинд корма проходит через ветер, и гик перелетает через всю яхту. Если это делают намеренно, сначала выбирают гика-шкот, чтобы гик перешёл на короткое расстояние, под контролем. Случайно (случайный поворот фордевинд) он переходит быстро и с силой: он может ранить людей и сломать оборудование. Почему гик перелетает сам: когда грот потравлен, ветер сначала удерживает гик снаружи; крен, волна или небольшой поворот сдвигают его, а когда гик проходит линию ветра (направлен прямо туда, откуда дует ветер), ветер перебрасывает его. |
 | На этой яхте | — | — |
-| Типичные ошибки | Gybing with the mainsheet eased right out. → The boom slams across. Haul the mainsheet in before turning, then ease it out on the new side.<br>Steering too far downwind. → The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind. | Делать поворот фордевинд с гика-шкотом, потравленным до конца. → Гик с ударом перелетает на другой борт. Выберите гика-шкот до поворота, потом потравите его на новом борту.<br>Уваливаться слишком далеко под ветер. → Ветер оказывается позади грота, и он может перекинуться сам. Держитесь немного в стороне от курса точно фордевинд. |
-| «Покажи» | The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is hauled in first. | Авторулевой разворачивает яхту через точку точно по ветру при потравленном гика-шкоте: гик перелетает быстро (случайный поворот фордевинд), а красная область показывает его путь. При контролируемом повороте гика-шкот сначала выбирают. |
+| Типичные ошибки | Gybing with the mainsheet eased right out. → The boom slams across. Trim the mainsheet before turning, then ease it out on the new side.<br>Steering too far downwind. → The wind gets behind the main and it can gybe by itself. Stay a little off dead downwind. | Делать поворот фордевинд с гика-шкотом, потравленным до конца. → Гик с ударом перелетает на другой борт. Выберите гика-шкот до поворота, потом потравите его на новом борту.<br>Уваливаться слишком далеко под ветер. → Ветер оказывается позади грота, и он может перекинуться сам. Держитесь немного в стороне от курса точно фордевинд. |
+| «Покажи» | The autopilot turns her through dead downwind with the mainsheet eased: the boom crosses fast (an accidental gybe) and the red area shows its path. In a controlled gybe the mainsheet is trimmed first. | Авторулевой разворачивает яхту через точку точно по ветру при потравленном гика-шкоте: гик перелетает быстро (случайный поворот фордевинд), а красная область показывает его путь. При контролируемом повороте гика-шкот сначала выбирают. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -1931,8 +1946,8 @@
 |---|---|---|
 | Название | Ease | потравить |
 | Другие названия | let out | травить |
-| Коротко | To let a rope out. | Отпустить конец. |
-| Что делает / что значит | Easing lets a rope out slowly and under control, so a sail can go further out or a load comes off. | Потравить — значит отпустить конец медленно и под контролем, чтобы парус мог уйти дальше наружу или нагрузка ослабла. |
+| Коротко | To let a line run out slowly, under control. | Отпустить конец. |
+| Что делает / что значит | Easing lets a line run out slowly and under control, so a sail can go further out or a load comes off. | Потравить — значит отпустить конец медленно и под контролем, чтобы парус мог уйти дальше наружу или нагрузка ослабла. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1962,7 +1977,7 @@
 | Название | Head up | привестись |
 | Другие названия | luff up<br>come up | приводиться |
 | Коротко | To turn the bow towards the wind. | Повернуть нос к ветру. |
-| Что делает / что значит | Heading up turns the bow closer to the wind; the sails then need hauling in, or they flap. The opposite is bearing away. | Привестись — значит повернуть нос ближе к ветру; паруса при этом нужно выбирать, иначе они полощут. Противоположное — увалиться. |
+| Что делает / что значит | Heading up turns the bow closer to the wind; the sails then need trimming, or they flap. The opposite is bearing away. | Привестись — значит повернуть нос ближе к ветру; паруса при этом нужно выбирать, иначе они полощут. Противоположное — увалиться. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -1985,17 +2000,32 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Снасть (`term_line`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Line | Снасть |
+| Другие названия | rope — the material, before it has a job | верёвка — материал, пока у него нет дела |
+| Коротко | Any rope that has a job on a boat. | Любая верёвка, у которой есть дело на яхте. |
+| Что делает / что значит | On a boat a rope is named after its job: a sheet trims a sail, a halyard hoists it, a mooring line holds the boat. Together they are the lines. Sailors say “rope” for rope that has no job yet, such as a new coil. | На яхте верёвку называют по её работе: шкот управляет парусом, фал поднимает его, швартов держит яхту. Все вместе это снасти. «Верёвкой» моряки называют верёвку, у которой ещё нет работы, например новую бухту. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### срыв потока (`term_stall`)
 
 | Поле | English | Русский |
 |---|---|---|
 | Название | Stall | срыв потока |
 | Другие названия | — | перетянутый парус |
-| Коротко | A sail pulled in too far, so the air no longer flows smoothly round it. | Парус выбран слишком туго, и воздух больше не обтекает его плавно. |
+| Коротко | A sail trimmed too far, so the air no longer flows smoothly round it. | Парус выбран слишком туго, и воздух больше не обтекает его плавно. |
 | Что делает / что значит | A stalled sail looks full but drives poorly and makes more heel; the telltales on its far side droop or spin. Ease the sheet until they stream. | Парус со срывом потока выглядит наполненным, но тянет плохо и сильнее кренит яхту; колдунчики на его дальней стороне опускаются или крутятся. Потравливайте шкот, пока они не потянутся ровно. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | The mainsheet is hauled right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Ropes section and she speeds up. | Гика-шкот выбран до конца при ветре в 60° от носа: на гроте срыв потока. Потравите его примерно до 25 % в разделе «Концы», и яхта ускорится. |
+| «Покажи» | The mainsheet is trimmed right in with the wind 60° off the bow: the main is stalled. Ease it to about 25 % in the Lines section and she speeds up. | Гика-шкот выбран до конца при ветре в 60° от носа: на гроте срыв потока. Потравите его примерно до 25 % в разделе «Концы», и яхта ускорится. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -2010,7 +2040,7 @@
 | Что делает / что значит | With twist, the top of the sail stands further out than the bottom. A little twist is normal; more twist spills power, which helps in strong wind. The vang controls it on the mainsail, the sheet on the jib. | При твисте верх паруса стоит дальше наружу, чем низ. Небольшой твист — это нормально; больший твист сбрасывает силу, что помогает при сильном ветре. На гроте его регулирует оттяжка гика, на стакселе — шкот. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | The vang is eased all the way: the top of the mainsail twists open. Haul the vang (Ropes section) and the twist closes. | Оттяжка гика потравлена до конца: верх грота раскрывается в твист. Выберите оттяжку гика (раздел «Концы»), и твист закроется. |
+| «Покажи» | The vang is eased all the way: the top of the mainsail twists open. Pull the vang on (Lines section) and the twist closes. | Оттяжка гика потравлена до конца: верх грота раскрывается в твист. Выберите оттяжку гика (раздел «Концы»), и твист закроется. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -2051,7 +2081,7 @@
 |---|---|---|
 | Название | Halyard | фал |
 | Другие названия | — | — |
-| Коротко | A rope that hoists a sail. | Конец, которым поднимают парус. |
+| Коротко | A line that hoists a sail. | Конец, которым поднимают парус. |
 | Что делает / что значит | A halyard pulls a sail’s head (its top corner) up the mast or the forestay and holds it there. | Фал тянет фаловый угол паруса (его верхний угол) вверх по мачте или по штагу и удерживает его там. |
 | На этой яхте | The main stays hoisted and rolls into the mast, and the jib rolls round the forestay, so the halyards are hardly ever touched; the gennaker halyard is parked. | Грот остаётся поднятым и закручивается в мачту, а стаксель закручивается на штаг, поэтому фалов почти не касаются; фал геннакера убран. |
 | Типичные ошибки | — | — |
@@ -2081,8 +2111,8 @@
 |---|---|---|
 | Название | Sheet | шкот |
 | Другие названия | — | — |
-| Коротко | A rope that sets a sail’s angle to the wind. | Конец, который задаёт угол паруса к ветру. |
-| Что делает / что значит | A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a rope, not the sail. | Шкот тянет шкотовый угол паруса (его задний нижний угол) и тем самым задаёт, насколько далеко парус может отойти наружу. У каждого паруса свой: гика-шкот и стаксель-шкот. На яхте шкот — это конец, а не парус. |
+| Коротко | A line that sets a sail’s angle to the wind. | Конец, который задаёт угол паруса к ветру. |
+| Что делает / что значит | A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a line, not the sail. | Шкот тянет шкотовый угол паруса (его задний нижний угол) и тем самым задаёт, насколько далеко парус может отойти наружу. У каждого паруса свой: гика-шкот и стаксель-шкот. На яхте шкот — это конец, а не парус. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | — | — |
@@ -2313,7 +2343,7 @@
 | Коротко | How much chain is out compared with the depth. | Сколько цепи вытравлено по сравнению с глубиной. |
 | Что делает / что значит | The more chain, the flatter it pulls on the anchor, and the better the anchor holds; the chain's weight also softens the jerks. With too little chain the pull lifts the anchor's shank and it drags. | Чем больше цепи, тем более горизонтально она тянет якорь и тем лучше он держит; вес цепи ещё и смягчает рывки. При короткой цепи тяга поднимает веретено якоря, и он ползёт. |
 | На этой яхте | 70 m of chain (an assumption). In 5 m of water the instructor's rule (3 boat lengths, 47 m) is more than 4 × the effective depth (27 m). | 70 м цепи (предположение). На глубине 5 м правило инструктора (3 длины корпуса, 47 м) больше, чем 4 эффективные глубины (27 м). |
-| Типичные ошибки | Letting out just the depth and switching off. → Let out what the check asks for, then set the anchor by going gently astern. | Вытравить цепь на глубину и успокоиться. → Вытравите сколько требует проверка, затем заставьте якорь забрать малым задним ходом. |
+| Типичные ошибки | Paying out just the depth and switching off. → Pay out what the check asks for, then set the anchor by going gently astern. | Вытравить цепь на глубину и успокоиться. → Вытравите сколько требует проверка, затем заставьте якорь забрать малым задним ходом. |
 | «Покажи» | Anchored in the bay with 34 m of chain, wind 15 kn. | На якоре в бухте, 34 м цепи, ветер 15 узлов. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
@@ -2536,7 +2566,7 @@
 | app.title | Sail: learn and train | Парус: учимся и тренируемся |
 | scene.label | 3D view of the boat | 3D-вид яхты |
 | scene.unsupported | 3D not supported on this device | 3D не поддерживается на этом устройстве |
-| scene.unsupportedHint | This browser cannot draw the 3D boat (it needs WebGL). Everything in the panel still works: ropes, wind and settings. Try another browser, or turn on hardware acceleration in the browser's settings. | Этот браузер не может нарисовать 3D-яхту (нужен WebGL). Всё в панели по-прежнему работает: концы, ветер и настройки. Попробуйте другой браузер или включите аппаратное ускорение в настройках браузера. |
+| scene.unsupportedHint | This browser cannot draw the 3D boat (it needs WebGL). Everything in the panel still works: lines, wind and settings. Try another browser, or turn on hardware acceleration in the browser's settings. | Этот браузер не может нарисовать 3D-яхту (нужен WebGL). Всё в панели по-прежнему работает: концы, ветер и настройки. Попробуйте другой браузер или включите аппаратное ускорение в настройках браузера. |
 | scene.failed | The 3D view stopped working | 3D-вид перестал работать |
 | scene.failedHint | Reload the page to try again. The panel still works. If it happens again, please report it with the link from Settings → Share. | Перезагрузите страницу, чтобы попробовать снова. Панель продолжает работать. Если это повторится, сообщите об этом со ссылкой из «Настройки» → «Поделиться». |
 | scene.lost | The 3D view is paused | 3D-вид приостановлен |
@@ -2544,9 +2574,9 @@
 | error.banner | Something went wrong. Reload the page; if it happens again, please report it with the link from Settings → Share. | Что-то пошло не так. Перезагрузите страницу; если это повторится, сообщите об этом со ссылкой из «Настройки» → «Поделиться». |
 | error.details | Technical details | Технические подробности |
 | panel.label | Controls | Управление |
-| tab.ropes | Ropes | Концы |
+| tab.ropes | Lines | Концы |
 | view.step.label | Step size | Размер шага |
-| view.step.hint | How much one tap on − or + changes a rope. | На сколько один нажим на − или + меняет конец. |
+| view.step.hint | How much one tap on − or + changes a line. | На сколько один нажим на − или + меняет конец. |
 | view.step.option | {value} % | {value} % |
 | view.debug.label | Debug overlay | Отладочная панель |
 | view.debug.hint | Shows frame rate, layout and build version. Useful for bug reports. | Показывает частоту кадров, раскладку и версию сборки. Полезно для сообщений об ошибках. |
@@ -2555,7 +2585,7 @@
 | view.detail.high | High | Высокая |
 | view.detail.low | Low | Низкая |
 | view.labels.label | Labels in 3D | Подписи в 3D |
-| view.labels.hint | Names over the parts and ropes in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Названия над частями и концами в 3D-виде. Если две подписи перекрываются, видна более важная: приблизьте вид, чтобы увидеть больше. Нажмите на название, чтобы выбрать его. |
+| view.labels.hint | Names over the parts and lines in the 3D view. Where two would overlap, the more important one shows: zoom in to see more. Tap a name to select it. | Названия над частями и концами в 3D-виде. Если две подписи перекрываются, видна более важная: приблизьте вид, чтобы увидеть больше. Нажмите на название, чтобы выбрать его. |
 | footer.version | Version {hash} · {date} | Версия {hash} · {date} |
 | footer.release | Version {version} · {hash} · {date} | Версия {version} · {hash} · {date} |
 | footer.next | Test version (next) · {hash} · {date} | Тестовая версия (next) · {hash} · {date} |
@@ -2565,7 +2595,7 @@
 | footer.maker | Hanse and Hanse 508 are names of their owner. This app is not affiliated with Hanse Yachts. | Hanse и Hanse 508 принадлежат их владельцу. Приложение не связано с верфью Hanse. |
 | footer.report | Report a problem or suggest an idea | Сообщить об ошибке или предложить идею |
 | welcome.title | Welcome aboard | Добро пожаловать на борт |
-| welcome.body | This app shows a complete beginner what every rope, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Это приложение показывает новичку, что делает каждый трос, шкот и парус прогулочной яхты. Вы управляете снастями, а 3D-яхта показывает, что происходит. Знать парусный спорт не нужно. |
+| welcome.body | This app shows a complete beginner what every line, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Это приложение показывает новичку, что делает каждый трос, шкот и парус прогулочной яхты. Вы управляете снастями, а 3D-яхта показывает, что происходит. Знать парусный спорт не нужно. |
 | welcome.watch | Watch the first exercise | Посмотреть первое упражнение |
 | welcome.look | Look around the boat | Осмотреть яхту |
 | welcome.close | Close | Закрыть |
@@ -2610,7 +2640,9 @@
 | control.mainFurl | Mainsail out | Грот наружу |
 | control.less | Less: {name} | Меньше: {name} |
 | control.more | More: {name} | Больше: {name} |
-| control.paidOut | {m} m of rope paid out | Вытравлено: {m} м |
+| control.trim | Trim: {name} | Выбрать: {name} |
+| control.ease | Ease: {name} | Потравить: {name} |
+| control.paidOut | {m} m of line paid out | Вытравлено: {m} м |
 | unit.eased | {value} % eased | Потравлено: {value} % |
 | unit.unfurled | {value} % unfurled | Раскручено: {value} % |
 | state.taut | taut | выбран втугую |
@@ -2622,7 +2654,7 @@
 | furl.inTail | “In” furling tail: {m} m paid out | «Входной» хвост закрутки. Вытравлено: {m} м |
 | furl.outTail | “Out” furling tail: {m} m paid out | «Выходной» хвост закрутки. Вытравлено: {m} м |
 | furl.outhaul | Outhaul: {m} m paid out | Оттяжка шкотового угла. Вытравлено: {m} м |
-| furl.hint | Mainsail out moves three rope ends together: to unfurl, the “out” furling tail and the outhaul are hauled in while the “in” tail pays out. To furl, the other way round. The sail rolls into the mast from its back edge. | «Грот наружу» двигает три конца вместе: чтобы раскрутить грот, «выходной» хвост закрутки и оттяжка шкотового угла выбираются, пока «входной» хвост вытравливается. Чтобы закрутить, всё наоборот. Парус сворачивается в мачту, начиная с задней шкаторины. |
+| furl.hint | Mainsail out moves three line ends together: to unfurl, the “out” furling tail and the outhaul are pulled in together while the “in” tail pays out. To furl, the other way round. The sail rolls into the mast from its back edge. | «Грот наружу» двигает три конца вместе: чтобы раскрутить грот, «выходной» хвост закрутки и оттяжка шкотового угла выбираются, пока «входной» хвост вытравливается. Чтобы закрутить, всё наоборот. Парус сворачивается в мачту, начиная с задней шкаторины. |
 | wind.hint | The true wind (the wind over the water). While sailing, the sails feel the apparent wind. | Истинный ветер (ветер над водой). На ходу паруса чувствуют вымпельный ветер. |
 | wind.dial.label | Wind direction | Направление ветра |
 | wind.dial.hint | Drag around the compass, or use − and +. The arrow comes from where the wind blows from. North is at the top; the boat turns as she steers. | Перетащите по компасу или используйте − и +. Стрелка идёт оттуда, откуда дует ветер. Север вверху; яхта поворачивается, когда рулит. |
@@ -2645,14 +2677,14 @@
 | alert.gybe | GYBE! The boom swung across the boat | ФОРДЕВИНД! Гик перекинуло через яхту |
 | alert.byTheLee | By the lee: gybe risk | Ветер с подветренного борта: опасность поворота фордевинд |
 | alert.byTheLeeStrong | By the lee: the boom can come across any moment. | Ветер с подветренного борта: гик может перекинуться в любой момент. |
-| gybe.accidental | Accidental gybe! Boom end {speed} m/s · energy {energy} kJ · peak main sheet load {load} kN (about {tonnes} tonnes). Anyone in the boom's way could be badly hurt. Safer: haul the main sheet in before turning (controlled gybe). | Неуправляемый поворот фордевинд! Конец гика: {speed} м/с · энергия {energy} кДж · пиковая нагрузка на гика-шкот {load} кН (в тоннах: около {tonnes}). Любой, кто окажется на пути гика, может получить тяжёлую травму. Безопаснее: выберите гика-шкот перед поворотом (управляемый поворот фордевинд). |
+| gybe.accidental | Accidental gybe! Boom end {speed} m/s · energy {energy} kJ · peak main sheet load {load} kN (about {tonnes} tonnes). Anyone in the boom's way could be badly hurt. Safer: trim the main sheet before turning (controlled gybe). | Неуправляемый поворот фордевинд! Конец гика: {speed} м/с · энергия {energy} кДж · пиковая нагрузка на гика-шкот {load} кН (в тоннах: около {tonnes}). Любой, кто окажется на пути гика, может получить тяжёлую травму. Безопаснее: выберите гика-шкот перед поворотом (управляемый поворот фордевинд). |
 | gybe.controlled | Controlled gybe: boom end {speed} m/s · peak main sheet load {load} kN. | Управляемый поворот фордевинд: конец гика {speed} м/с · пиковая нагрузка на гика-шкот {load} кН. |
 | debug.boom | Boom θ ψ | Boom θ ψ |
 | debug.free | θ free ψ t | θ free ψ t |
 | debug.limits | ψ limits | ψ limits |
 | debug.main | Main | Main |
 | debug.jib | Jib | Jib |
-| debug.ropes | Ropes | Ropes |
+| debug.ropes | Lines | Ropes |
 | main.calm | No wind: the mainsail hangs loose, boom {angle}° out | Ветра нет: грот висит свободно, гик отведён на {angle}° |
 | main.furled | Mainsail furled (rolled into the mast): no sail for the wind to push, boom {angle}° out | Грот закручен (свёрнут в мачту): ветру нечего толкать, гик отведён на {angle}° |
 | alert.overpowered | Heeling a lot: ease the main sheet or roll some sail away | Сильный крен: потравите гика-шкот или закрутите часть паруса |
@@ -2660,7 +2692,7 @@
 | alert.tack | Tack: the boom moved across | Поворот оверштаг: гик перешёл на другой борт |
 | alert.ropeSlipping | {rope}: slipping on the winch drum. Add a turn. | {rope}: проскальзывает на барабане лебёдки. Добавьте шлаг. |
 | alert.winchCutOut | The {side} winch cut out: too much load. | Лебёдка {side} борта отключилась: слишком большая нагрузка. |
-| alert.clutchOnRunning | A clutch was shut on a running rope under load: it can be damaged. | Стопор закрыли на бегущем нагруженном конце: он может повредиться. |
+| alert.clutchOnRunning | A clutch was shut on a running line under load: it can be damaged. | Стопор закрыли на бегущем нагруженном конце: он может повредиться. |
 | control.jibSheet | Jib sheet | Стаксель-шкот |
 | control.jibFurl | Jib out | Стаксель наружу |
 | main.fightingLift | The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out. | Топенант держит гик наверху, поэтому гика-шкот тянет против него (оба красные). Потравите топенант или гика-шкот дальше отметки {pct} %, прежде чем гик сможет отойти в сторону. |
@@ -2687,8 +2719,8 @@
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Штурвалы повёрнуты против часовой стрелки, оборотов: {turns}. Задняя кромка пера руля уходит к левому борту, поэтому яхта повернула бы к левому борту (влево). |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Штурвалы и перо руля (лопасть под кормой яхты) поворачиваются вместе. Яхта поворачивает, только пока движется: если её держат на месте или она остановилась, она не слушается штурвала. |
 | ropes.mode.easy | Easy mode: | Простой режим: |
-| ropes.mode.easyHint | Easy mode: each rope is a slider. Realistic mode (choose it under Mode) works the ropes as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его в разделе «Режим») работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
-| clutch.drawingLabel | Clutch banks: tap a clutch to select its rope | Блоки стопоров: нажмите на стопор, чтобы выбрать его конец |
+| ropes.mode.easyHint | Easy mode: each line is a slider. Realistic mode (choose it under Mode) works the lines as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его в разделе «Режим») работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
+| clutch.drawingLabel | Clutch banks: tap a clutch to select its line | Блоки стопоров: нажмите на стопор, чтобы выбрать его конец |
 | clutch.bankB | Bank B · port | Блок B · левый борт |
 | clutch.bankA | Bank A · starboard | Блок A · правый борт |
 | clutch.sideDeck | Port side deck, further forward | Левая боковая палуба |
@@ -2699,28 +2731,28 @@
 | clutch.tail.furl | the tail that rolls the mainsail in | хвост, который закручивает грот |
 | clutch.tail.unfurl | the tail that rolls the mainsail out | хвост, который раскручивает грот |
 | clutch.aria | Clutch “{label}”: {name} | Стопор «{label}»: {name} |
-| ropes.strip.label | Selected rope | Выбранный конец |
-| ropes.strip.emptyList | Tap a rope in the 3D view or in the list below to work it. | Нажмите на конец в 3D-виде или в списке ниже, чтобы работать с ним. |
-| ropes.learnRealistic | Realistic ropes: you work this rope at its station. Choose Realistic mode to work it. | Реалистичные концы: с этим концом работают на его месте. Выберите реалистичный режим, чтобы работать с ним. |
-| ropes.shared.twoEnds | One rope, two ends. | Одна снасть, два конца. |
+| ropes.strip.label | Selected line | Выбранный конец |
+| ropes.strip.emptyList | Tap a line in the 3D view or in the list below to work it. | Нажмите на конец в 3D-виде или в списке ниже, чтобы работать с ним. |
+| ropes.learnRealistic | Realistic lines: you work this line at its station. Choose Realistic mode to work it. | Реалистичные концы: с этим концом работают на его месте. Выберите реалистичный режим, чтобы работать с ним. |
+| ropes.shared.twoEnds | One line, two ends. | Одна снасть, два конца. |
 | ropes.shared.workAgainst | These work against each other. | Они тянут друг против друга. |
-| ropes.sharedDetail.ctl_mainsheet | The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same rope, so it can be worked from either side. | Стопор «Main sheet» (правый борт) и стопор «MAIN SHEET» (левый борт) держат два конца одной снасти, поэтому с ней можно работать с любого борта. |
-| ropes.sharedDetail.ctl_main_furl | The two “Main furling” clutches hold the two tails of one furling line: the left one rolls the mainsail in, the right one rolls it out. “Main outhaul” is hauled together with the “out” tail. | Два стопора «Main furling» держат два хвоста одного линя закрутки: левый закручивает грот, правый раскручивает. «Main outhaul» выбирается вместе с «выходным» хвостом. |
+| ropes.sharedDetail.ctl_mainsheet | The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same line, so it can be worked from either side. | Стопор «Main sheet» (правый борт) и стопор «MAIN SHEET» (левый борт) держат два конца одной снасти, поэтому с ней можно работать с любого борта. |
+| ropes.sharedDetail.ctl_main_furl | The two “Main furling” clutches hold the two tails of one furling line: the left one rolls the mainsail in, the right one rolls it out. “Main outhaul” is pulled together with the “out” tail. | Два стопора «Main furling» держат два хвоста одного линя закрутки: левый закручивает грот, правый раскручивает. «Main outhaul» выбирается вместе с «выходным» хвостом. |
 | ropes.static.inMastFurling | Not adjusted while sailing: with in-mast furling the main halyard stays hoisted. | Во время хода не регулируется: при закрутке грота в мачту грота-фал остаётся поднятым. |
 | ropes.static.notRigged | Not used: no gennaker (a big sail for downwind) is rigged on this boat, so its halyard is parked. | Не используется: геннакер (большой парус для ветра сзади) на этой яхте не установлен, поэтому его фал убран. |
 | ropes.static.none | Not adjusted while sailing. | Во время хода не регулируется. |
-| ropes.list.title | All ropes and the wheel | Все концы и штурвал |
+| ropes.list.title | All lines and the wheel | Все концы и штурвал |
 | ropes.list.static | not adjusted | не регулируется |
-| ropes.fighting | Red: this rope pulls against another one (fighting) | Красный: этот конец тянет против другого (перетягивание) |
+| ropes.fighting | Red: this line pulls against another one (fighting) | Красный: этот конец тянет против другого (перетягивание) |
 | view.share.button | Share: copy link | Поделиться: скопировать ссылку |
-| view.share.hint | The link opens exactly what you see now: ropes, wheel, wind, camera and the selected part. Paste it into a bug report. | Ссылка открывает ровно то, что вы видите сейчас: концы, штурвал, ветер, камеру и выбранную часть. Вставьте её в сообщение об ошибке. |
+| view.share.hint | The link opens exactly what you see now: lines, wheel, wind, camera and the selected part. Paste it into a bug report. | Ссылка открывает ровно то, что вы видите сейчас: концы, штурвал, ветер, камеру и выбранную часть. Вставьте её в сообщение об ошибке. |
 | view.share.copied | Link copied. | Ссылка скопирована. |
 | view.share.manual | Copying is not allowed here: the link is selected below, copy it by hand. | Копирование здесь запрещено: ссылка выделена ниже, скопируйте её вручную. |
 | view.share.fieldLabel | Link to this view | Ссылка на этот вид |
 | view.reset.button | Reset all | Сбросить всё |
 | view.reset.confirm | Tap again to reset | Нажмите ещё раз, чтобы сбросить |
 | view.reset.done | Everything is back to the start settings. | Всё вернулось к начальным настройкам. |
-| ropes.mode.easyShortList | tap a rope in the list, then use its slider. | нажмите на конец в списке, затем двигайте его ползунок. |
+| ropes.mode.easyShortList | tap a line in the list, then use its slider. | нажмите на конец в списке, затем двигайте его ползунок. |
 | ropes.strip.more | What does it do? | Что это делает? |
 | pause.pause | Pause | Пауза |
 | pause.resume | Resume | Продолжить |
@@ -2731,20 +2763,20 @@
 | real.station.port | Port | Левый борт |
 | real.station.starboard | Starboard | Правый борт |
 | real.station.helm | Helm | Штурвал |
-| real.paused | Paused: you can open clutches, wrap turns and switch places. Winching, easing and running ropes wait for Resume, then all happen together. | Пауза: можно открывать стопоры, накладывать шлаги и переходить с места на место. Выбирание лебёдкой, травление и убегающие концы ждут «Продолжить», потом всё происходит вместе. |
+| real.paused | Paused: you can open clutches, wrap turns and switch places. Winching, easing and running lines wait for Resume, then all happen together. | Пауза: можно открывать стопоры, накладывать шлаги и переходить с места на место. Выбирание лебёдкой, травление и убегающие концы ждут «Продолжить», потом всё происходит вместе. |
 | real.drawing.port | Port station seen from above, forward is up: clutch bank B, the JIB ROLL clutch and the port winch | Место «Левый борт» сверху, вперёд — вверх: блок стопоров B, стопор «JIB ROLL» и левая лебёдка |
 | real.drawing.starboard | Starboard station seen from above, forward is up: clutch bank A and the starboard winch | Место «Правый борт» сверху, вперёд — вверх: блок стопоров A и правая лебёдка |
 | real.sideDeck | Side deck, further forward | Боковая палуба, вперёд |
 | real.winch.port | Port winch | Левая лебёдка |
 | real.winch.starboard | Starboard winch | Правая лебёдка |
-| real.winch.empty | no rope on the winch | на лебёдке нет конца |
+| real.winch.empty | no line on the winch | на лебёдке нет конца |
 | real.hand | in your hand | в руке |
 | real.turns.none | 0 turns | 0 шлагов |
 | real.turns.cw | {n} ↻ clockwise | {n} ↻ по часовой |
 | real.turns.ccw | {n} ↺ wrong way | {n} ↺ не в ту сторону |
 | real.button.label | hold to winch | держите |
 | real.button.cutOut | cut out | отключилась |
-| real.button.aria | Electric winch button: hold it to winch the rope in | Кнопка электрической лебёдки: держите её, чтобы выбирать конец |
+| real.button.aria | Electric winch button: hold it to winch the line in | Кнопка электрической лебёдки: держите её, чтобы выбирать конец |
 | real.clutch.open | open | открыт |
 | real.clutch.closed | closed | закрыт |
 | real.clutch.openShort | OPEN | ОТКРЫТ |
@@ -2756,45 +2788,45 @@
 | real.tag.furl | rolls in | закручивает |
 | real.tag.unfurl | rolls out | раскручивает |
 | real.tailShort.unfurl | rolls main out | раскручивает грот |
-| real.strip.empty | Tap a clutch (a lock that holds a rope) to work its rope. Drag its lever up to open it, down to close it. | Нажмите на стопор (замок, который держит конец), чтобы работать с его концом. Потяните его рычаг вверх, чтобы открыть, и вниз, чтобы закрыть. |
-| real.strip.elsewhere | This rope's clutch is not here: it is at the {station} station. | Стопор этого конца не здесь, он на месте: {station}. |
+| real.strip.empty | Tap a clutch (a lock that holds a line) to work its line. Drag its lever up to open it, down to close it. | Нажмите на стопор (замок, который держит конец), чтобы работать с его концом. Потяните его рычаг вверх, чтобы открыть, и вниз, чтобы закрыть. |
+| real.strip.elsewhere | This line's clutch is not here: it is at the {station} station. | Стопор этого конца не здесь, он на месте: {station}. |
 | real.strip.go | Go to {station} | Перейти: {station} |
-| real.status.clutchOpen | Clutch open: only what holds the tail stops the rope. | Стопор открыт: конец останавливает только то, что держит хвост. |
-| real.status.clutchClosed | Clutch closed: the rope cannot run out (it can still be pulled in). | Стопор закрыт: конец не может убежать (выбирать его всё равно можно). |
+| real.status.clutchOpen | Clutch open: only what holds the tail stops the line. | Стопор открыт: конец останавливает только то, что держит хвост. |
+| real.status.clutchClosed | Clutch closed: the line cannot run out (it can still be pulled in). | Стопор закрыт: конец не может убежать (выбирать его всё равно можно). |
 | real.status.offWinch | Not on the winch: nobody holds the tail. | Не на лебёдке: хвост никто не держит. |
 | real.status.onWinchJaw | On the winch, {wrap}, tail in the self-tailer (the jaw on top that grips it). | На лебёдке ({wrap}), хвост в самостопорящем зажиме (верхнем зажиме, который его держит). |
 | real.status.onWinchHand | On the winch, {wrap}, tail in your hand. | На лебёдке ({wrap}), хвост в вашей руке. |
 | real.status.noTurns | 0 turns | шлагов нет |
 | real.status.turnsCw | {n} turns clockwise | шлагов по часовой: {n} |
 | real.status.turnsCcw | {n} turns anticlockwise (the wrong way) | шлагов против часовой, не в ту сторону: {n} |
-| real.status.load | The sail or boom pulls this rope with about {kn} kN. | Парус или гик тянет этот конец с силой около {kn} кН. |
+| real.status.load | The sail or boom pulls this line with about {kn} kN. | Парус или гик тянет этот конец с силой около {kn} кН. |
 | ropes.load | Load {kn} kN (about {kg} kg) | Нагрузка: {kn} кН (около {kg} кг) |
-| real.status.loadFighting | This rope pulls against another one (fighting): a very high load. | Этот конец тянет против другого (перетягивание): очень большая нагрузка. |
-| real.status.noPull | Nothing pulls this rope now (it is slack or the sail is not pulling). | Сейчас ничто не тянет этот конец (он провис или парус не тянет). |
+| real.status.loadFighting | This line pulls against another one (fighting): a very high load. | Этот конец тянет против другого (перетягивание): очень большая нагрузка. |
+| real.status.noPull | Nothing pulls this line now (it is slack or the sail is not pulling). | Сейчас ничто не тянет этот конец (он провис или парус не тянет). |
 | real.status.hold | With the clutch open it is held up to about {kn} kN. | С открытым стопором он держится при нагрузке примерно до {kn} кН. |
 | real.motion.running | RUNNING OUT: the pull is more than what holds it. | УБЕГАЕТ: тяга больше, чем то, что его держит. |
 | real.motion.runningPaused | Will run out on Resume: the pull is more than what holds it. | Убежит после «Продолжить»: тяга больше, чем то, что его держит. |
 | real.motion.hauling | Coming in. | Идёт внутрь. |
 | real.motion.easing | Easing out by hand. | Вытравливается рукой. |
 | real.note.slipping | Slipping on the drum: not enough turns for this load. Add a turn (about 4 to winch under load). | Проскальзывает по барабану: шлагов мало для этой нагрузки. Добавьте шлаг (чтобы выбирать под нагрузкой, нужно около 4). |
-| real.note.wrongWay | Wrapped the wrong way: the drum only turns clockwise, so it just spins with the rope. Take the turns off and wrap clockwise. | Намотано не в ту сторону: барабан вращается только по часовой, поэтому он просто крутится вместе с концом. Снимите шлаги и намотайте по часовой. |
-| real.note.noTurns | No turns on the drum: wrap the rope clockwise first. | На барабане нет шлагов: сначала намотайте конец по часовой. |
-| real.note.grabby | Easing in jerks: so many turns that your hand cannot feel the rope. Take a turn off to ease smoothly (about 2). | Травление идёт рывками: шлагов так много, что рука не чувствует конец. Снимите шлаг, чтобы травить плавно (около 2). |
-| real.note.noLoad | Nothing pulls this rope out: letting go only makes it slack. | Ничто не вытягивает этот конец: если его отпустить, он просто провиснет. |
+| real.note.wrongWay | Wrapped the wrong way: the drum only turns clockwise, so it just spins with the line. Take the turns off and wrap clockwise. | Намотано не в ту сторону: барабан вращается только по часовой, поэтому он просто крутится вместе с концом. Снимите шлаги и намотайте по часовой. |
+| real.note.noTurns | No turns on the drum: wrap the line clockwise first. | На барабане нет шлагов: сначала намотайте конец по часовой. |
+| real.note.grabby | Easing in jerks: so many turns that your hand cannot feel the line. Take a turn off to ease smoothly (about 2). | Травление идёт рывками: шлагов так много, что рука не чувствует конец. Снимите шлаг, чтобы травить плавно (около 2). |
+| real.note.noLoad | Nothing pulls this line out: letting go only makes it slack. | Ничто не вытягивает этот конец: если его отпустить, он просто провиснет. |
 | real.note.tooHeavy | Too heavy to pull in by hand: put it on the winch. | Слишком тяжело выбирать рукой: положите конец на лебёдку. |
-| real.note.cutOutFighting | Winch cut out: too much load. This rope pulls against another one (fighting). Ease the other rope first. | Лебёдка отключилась: слишком большая нагрузка. Этот конец тянет против другого (перетягивание). Сначала потравите другой конец. |
-| real.note.cutOutEnd | Winch cut out: the rope is fully in and cannot come in further. | Лебёдка отключилась: конец выбран полностью и дальше не идёт. |
-| real.note.cutOutBlocked | Winch cut out: the sail cannot roll because other ropes are held. Open {clutches} so they can run out. | Лебёдка отключилась: парус не может закручиваться, потому что другие концы удерживаются. Откройте {clutches}, чтобы они могли убежать. |
-| real.note.cutOutLoad | Winch cut out: too much load. Luff up (turn towards the wind), ease something else, or check for a fighting rope. | Лебёдка отключилась: слишком большая нагрузка. Приведитесь (поверните к ветру), потравите что-нибудь другое или проверьте, нет ли перетягивания. |
-| real.note.fullyEased | Fully eased: no more rope to let out. | Потравлено полностью: травить больше нечего. |
-| real.notice.clutchClosed | Open the clutch first: a closed clutch never lets a rope out. | Сначала откройте стопор: закрытый стопор никогда не выпускает конец. |
+| real.note.cutOutFighting | Winch cut out: too much load. This line pulls against another one (fighting). Ease the other line first. | Лебёдка отключилась: слишком большая нагрузка. Этот конец тянет против другого (перетягивание). Сначала потравите другой конец. |
+| real.note.cutOutEnd | Winch cut out: the line is fully in and cannot come in further. | Лебёдка отключилась: конец выбран полностью и дальше не идёт. |
+| real.note.cutOutBlocked | Winch cut out: the sail cannot roll because other lines are held. Open {clutches} so they can run out. | Лебёдка отключилась: парус не может закручиваться, потому что другие концы удерживаются. Откройте {clutches}, чтобы они могли убежать. |
+| real.note.cutOutLoad | Winch cut out: too much load. Luff up (turn towards the wind), ease something else, or check for a fighting line. | Лебёдка отключилась: слишком большая нагрузка. Приведитесь (поверните к ветру), потравите что-нибудь другое или проверьте, нет ли перетягивания. |
+| real.note.fullyEased | Fully eased: no more line to ease. | Потравлено полностью: травить больше нечего. |
+| real.notice.clutchClosed | Open the clutch first: a closed clutch never lets a line run out. | Сначала откройте стопор: закрытый стопор никогда не выпускает конец. |
 | real.notice.inSelfTailer | Take the tail out of the self-tailer first, then ease it by hand. | Сначала выньте хвост из самостопорящего зажима, потом травите рукой. |
-| real.notice.winchBusy | One rope per winch: take the other rope off first. | Один конец на лебёдку: сначала снимите другой конец. |
-| real.notice.winchEmpty | Put a rope on the winch first: drag its tail onto the drum. | Сначала положите конец на лебёдку: перетащите его хвост на барабан. |
+| real.notice.winchBusy | One line per winch: take the other line off first. | Один конец на лебёдку: сначала снимите другой конец. |
+| real.notice.winchEmpty | Put a line on the winch first: drag its tail onto the drum. | Сначала положите конец на лебёдку: перетащите его хвост на барабан. |
 | real.notice.needTurns | Wrap at least one turn first. | Сначала намотайте хотя бы один шлаг. |
 | real.notice.staticRope | “{label}” is not worked while sailing: its clutch stays shut. | «{label}» во время хода не используется: его стопор остаётся закрытым. |
 | real.notice.notHere | You are not there: “{label}” is at the {station} station. | Вы не там: «{label}» находится на месте: {station}. |
-| real.notice.onWinch | This rope is on the winch: use the winch button. | Этот конец на лебёдке: пользуйтесь кнопкой лебёдки. |
+| real.notice.onWinch | This line is on the winch: use the winch button. | Этот конец на лебёдке: пользуйтесь кнопкой лебёдки. |
 | real.action.open | Open clutch | Открыть стопор |
 | real.action.close | Close clutch | Закрыть стопор |
 | real.action.onWinch | Put on winch | Положить на лебёдку |
@@ -2804,19 +2836,19 @@
 | real.action.intoJaw | Into self-tailer | В самостопорящий зажим |
 | real.action.outOfJaw | Out of self-tailer | Из самостопорящего зажима |
 | real.action.ease | Ease (hold) | Травить (держать) |
-| real.action.easeAria | Ease the rope out by hand (hold to keep easing) | Травить конец рукой (держите, чтобы травить дальше) |
+| real.action.easeAria | Ease the line out by hand (hold to keep easing) | Травить конец рукой (держите, чтобы травить дальше) |
 | real.action.winch | Winch in (hold) | Выбрать лебёдкой (держать) |
 | real.action.pull | Pull in by hand (hold) | Выбирать рукой (держать) |
-| real.alert.running | Rope running at {station}: “{label}” | Конец убегает ({station}): «{label}» |
+| real.alert.running | Line running at {station}: “{label}” | Конец убегает ({station}): «{label}» |
 | real.alert.cutOut | Winch cut out at {station} | Лебёдка отключилась: {station} |
 | real.helm.hint | The helm: the wheel turns the rudder, the lever works the engine. | Штурвал: штурвал поворачивает перо руля, рукоятка работает с двигателем. |
-| real.how.title | How to work a rope | Как работать с концом |
-| real.how.1 | 1. A clutch (a lock on the rope) holds it when closed. Drag its lever up to open it. A closed clutch still lets the winch pull the rope in. | 1. Стопор (замок на конце) держит конец, когда закрыт. Потяните его рычаг вверх, чтобы открыть. Закрытый стопор всё равно позволяет лебёдке выбирать конец. |
-| real.how.2 | 2. Drag the rope's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way). To take the rope off the winch again, circle anticlockwise until it shows 0 turns, then drag the tail back up to its clutch. | 2. Перетащите хвост конца на лебёдку, затем водите пальцем по барабану по часовой стрелке: каждый круг добавляет шлаг. Против часовой снимает шлаг (или наматывает не в ту сторону). Чтобы снять конец с лебёдки, водите против часовой, пока не будет 0 шлагов, затем перетащите хвост обратно к стопору. |
-| real.how.3 | 3. Drag the tail into the jaw on top (the self-tailer) so the winch holds it, then hold the winch button to pull the rope in. | 3. Перетащите хвост в зажим сверху (самостопорящий зажим), чтобы лебёдка его держала, затем держите кнопку лебёдки, чтобы выбирать конец. |
-| real.how.4 | 4. To ease (let out): open the clutch, take the tail out of the jaw and drag it away from the winch. About 2 turns ease smoothly; with 4 the rope jerks. | 4. Чтобы травить (отпускать): откройте стопор, выньте хвост из зажима и уведите его от лебёдки. Около 2 шлагов травят плавно; при 4 конец идёт рывками. |
-| real.how.5 | 5. Open a loaded clutch with nothing holding the tail and the rope runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm. | 5. Если открыть нагруженный стопор, когда хвост никто не держит, конец убегает быстро. Сначала возьмите нагрузку на лебёдку. Вы стоите на одном месте за раз: переключайтесь кнопками «Левый борт», «Правый борт» и «Штурвал». |
-| real.notice.turnsOn | Take the turns off first: circle the drum anticlockwise until it says 0 turns, then drag the rope back to its clutch. | Сначала снимите шлаги: водите по барабану против часовой, пока не будет написано 0 шлагов, потом перетащите конец обратно к стопору. |
+| real.how.title | How to work a line | Как работать с концом |
+| real.how.1 | 1. A clutch (a lock on the line) holds it when closed. Drag its lever up to open it. A closed clutch still lets the winch pull the line in. | 1. Стопор (замок на конце) держит конец, когда закрыт. Потяните его рычаг вверх, чтобы открыть. Закрытый стопор всё равно позволяет лебёдке выбирать конец. |
+| real.how.2 | 2. Drag the line's tail onto the winch, then circle your finger around the drum clockwise: each circle adds a turn. Anticlockwise takes one off (or wraps it the wrong way). To take the line off the winch again, circle anticlockwise until it shows 0 turns, then drag the tail back up to its clutch. | 2. Перетащите хвост конца на лебёдку, затем водите пальцем по барабану по часовой стрелке: каждый круг добавляет шлаг. Против часовой снимает шлаг (или наматывает не в ту сторону). Чтобы снять конец с лебёдки, водите против часовой, пока не будет 0 шлагов, затем перетащите хвост обратно к стопору. |
+| real.how.3 | 3. Drag the tail into the jaw on top (the self-tailer) so the winch holds it, then hold the winch button to pull the line in. | 3. Перетащите хвост в зажим сверху (самостопорящий зажим), чтобы лебёдка его держала, затем держите кнопку лебёдки, чтобы выбирать конец. |
+| real.how.4 | 4. To ease (let a line run out): open the clutch, take the tail out of the jaw and drag it away from the winch. About 2 turns ease smoothly; with 4 the line jerks. | 4. Чтобы травить (отпускать): откройте стопор, выньте хвост из зажима и уведите его от лебёдки. Около 2 шлагов травят плавно; при 4 конец идёт рывками. |
+| real.how.5 | 5. Open a loaded clutch with nothing holding the tail and the line runs out fast. Take the load on the winch first. You stand at one place at a time: switch with Port, Starboard and Helm. | 5. Если открыть нагруженный стопор, когда хвост никто не держит, конец убегает быстро. Сначала возьмите нагрузку на лебёдку. Вы стоите на одном месте за раз: переключайтесь кнопками «Левый борт», «Правый борт» и «Штурвал». |
+| real.notice.turnsOn | Take the turns off first: circle the drum anticlockwise until it says 0 turns, then drag the line back to its clutch. | Сначала снимите шлаги: водите по барабану против часовой, пока не будет написано 0 шлагов, потом перетащите конец обратно к стопору. |
 | real.station.mast | Mast | Мачта |
 | real.drawing.mast | Mast station seen from above, forward is up: the in-mast furling gearbox with its IN/OUT switch and the socket for the winch handle | Место «Мачта» сверху, вперёд — вверх: редуктор закрутки грота с переключателем IN/OUT и гнездом для ручки лебёдки |
 | real.strain.label | load | нагрузка |
@@ -2824,9 +2856,9 @@
 | real.strain.handle | The handle needs about {n} N; you can push about {max} N. | Ручке нужно около {n} Н; вы можете давить с силой около {max} Н. |
 | real.handle.title | Winch handle | Ручка лебёдки |
 | real.handle.hereStowed | The winch handle lies here. | Ручка лебёдки лежит здесь. |
-| real.handle.hereWinch | The winch handle is in this winch. Circle its grip to crank: clockwise is 1st gear (fast), anticlockwise 2nd gear (slow, about 4 times stronger). Both pull the rope in. To take the handle out, drag its grip onto the handle slot. | Ручка лебёдки в этой лебёдке. Водите по её рукоятке по кругу, чтобы вращать: по часовой стрелке — 1-я скорость (быстро), против часовой — 2-я скорость (медленно, примерно в 4 раза сильнее). Обе скорости выбирают конец. Чтобы вынуть ручку, перетащите её рукоятку на место для ручки. |
+| real.handle.hereWinch | The winch handle is in this winch. Circle its grip to crank: clockwise is 1st gear (fast), anticlockwise 2nd gear (slow, about 4 times stronger). Both pull the line in. To take the handle out, drag its grip onto the handle slot. | Ручка лебёдки в этой лебёдке. Водите по её рукоятке по кругу, чтобы вращать: по часовой стрелке — 1-я скорость (быстро), против часовой — 2-я скорость (медленно, примерно в 4 раза сильнее). Обе скорости выбирают конец. Чтобы вынуть ручку, перетащите её рукоятку на место для ручки. |
 | real.handle.hereGearbox | The winch handle is in the gearbox. Circle its grip to crank: the main rolls the way the switch says. To take the handle out, drag its grip onto the handle slot. | Ручка лебёдки в редукторе. Водите по её рукоятке по кругу, чтобы вращать: грот закручивается в ту сторону, которую показывает переключатель. Чтобы вынуть ручку, перетащите её рукоятку на место для ручки. |
-| real.handle.carried | You carry the winch handle. Lay it down (tap the handle slot, or “Leave the handle here”) before you work a rope. | Вы несёте ручку лебёдки. Положите её (нажмите на место для ручки или «Оставить ручку здесь»), прежде чем работать с концом. |
+| real.handle.carried | You carry the winch handle. Lay it down (tap the handle slot, or “Leave the handle here”) before you work a line. | Вы несёте ручку лебёдки. Положите её (нажмите на место для ручки или «Оставить ручку здесь»), прежде чем работать с концом. |
 | real.handle.awayStowed | The winch handle is at {station}. | Ручка лебёдки на месте: {station}. |
 | real.handle.awaySocket | The winch handle is in the socket at {station}. | Ручка лебёдки в гнезде, место: {station}. |
 | real.handle.take | Take the handle | Взять ручку |
@@ -2837,16 +2869,16 @@
 | real.handle.crankCw | Crank ↻ 1st gear (hold) | Вращать ↻ 1-я скорость (держать) |
 | real.handle.crankCcw | Crank ↺ 2nd gear (hold) | Вращать ↺ 2-я скорость (держать) |
 | real.handle.crank | Crank (hold) | Вращать (держать) |
-| real.handle.cranking | Cranking: {speed} m of rope a second. | Вращение: {speed} м конца в секунду. |
+| real.handle.cranking | Cranking: {speed} m of line a second. | Вращение: {speed} м конца в секунду. |
 | real.handleNote.stallGearbox | Too heavy to crank: luff up (turn towards the wind) or ease the main sheet so the sail stops pulling. | Слишком тяжело вращать: приведитесь (поверните к ветру) или потравите гика-шкот, чтобы парус перестал тянуть. |
 | real.handleNote.gearboxIn | The main is fully rolled in. | Грот закручен полностью. |
 | real.handleNote.gearboxOut | The main is fully out. To roll it in, set the switch to IN. | Грот выпущен полностью. Чтобы закрутить его, поставьте переключатель на IN. |
-| real.handleNote.noRope | No rope on this winch: the handle just turns the empty drum. | На этой лебёдке нет конца: ручка просто вращает пустой барабан. |
+| real.handleNote.noRope | No line on this winch: the handle just turns the empty drum. | На этой лебёдке нет конца: ручка просто вращает пустой барабан. |
 | real.note.stallFirst | Too heavy for 1st gear: the handle will not turn. Crank anticlockwise instead (2nd gear: slower, about 4 times stronger). | Слишком тяжело для 1-й скорости: ручка не поворачивается. Вращайте против часовой (2-я скорость: медленнее, примерно в 4 раза сильнее). |
-| real.note.stallSecond | Too heavy even in 2nd gear: luff up (turn towards the wind), ease something else, or check for a fighting rope. | Слишком тяжело даже для 2-й скорости: приведитесь (поверните к ветру), потравите что-нибудь другое или проверьте, нет ли перетягивания. |
-| real.note.stuckFighting | The handle will not turn: this rope pulls against another one (fighting). Ease the other rope first. | Ручка не поворачивается: этот конец тянет против другого (перетягивание). Сначала потравите другой конец. |
-| real.note.stuckEnd | The handle will not turn: the rope is fully in. | Ручка не поворачивается: конец выбран полностью. |
-| real.note.stuckBlocked | The handle will not turn: the sail cannot roll because other ropes are held. Open {clutches} so they can run out. | Ручка не поворачивается: парус не может закручиваться, потому что другие концы удерживаются. Откройте {clutches}, чтобы они могли убежать. |
+| real.note.stallSecond | Too heavy even in 2nd gear: luff up (turn towards the wind), ease something else, or check for a fighting line. | Слишком тяжело даже для 2-й скорости: приведитесь (поверните к ветру), потравите что-нибудь другое или проверьте, нет ли перетягивания. |
+| real.note.stuckFighting | The handle will not turn: this line pulls against another one (fighting). Ease the other line first. | Ручка не поворачивается: этот конец тянет против другого (перетягивание). Сначала потравите другой конец. |
+| real.note.stuckEnd | The handle will not turn: the line is fully in. | Ручка не поворачивается: конец выбран полностью. |
+| real.note.stuckBlocked | The handle will not turn: the sail cannot roll because other lines are held. Open {clutches} so they can run out. | Ручка не поворачивается: парус не может закручиваться, потому что другие концы удерживаются. Откройте {clutches}, чтобы они могли убежать. |
 | real.gearbox.title | In-mast furling gearbox | Редуктор закрутки грота |
 | real.gearbox.mast | MAST | МАЧТА |
 | real.gearbox.caption | Furling gearbox | Редуктор закрутки |
@@ -2865,15 +2897,15 @@
 | real.notice.handleNotIn | Put the winch handle in the socket first. | Сначала вставьте ручку лебёдки в гнездо. |
 | real.notice.noSocket | The winch handle fits nowhere here. | Ручка лебёдки здесь никуда не подходит. |
 | real.notice.gearboxNotHere | The gearbox switch is at the {station}. | Переключатель редуктора на месте: {station}. |
-| real.how.6 | 6. The winch handle (one on board) is a backup, and every place has a slot where it lies. Tap the slot to take the handle. In a winch it cranks the drum by hand: clockwise is fast but weak, anticlockwise slow but strong. To take it out again, drag its grip onto the slot (the handle only comes out when you let go on the slot). While you carry the handle your hand is full: tap the slot to lay it down before you work a rope. At the Mast it fits the furling gearbox: set the switch to IN, put the handle in and circle its grip to roll the main in, with the “rolls out” line and the outhaul clutches open. | 6. Ручка лебёдки (одна на борту) — запасной вариант, и на каждом месте есть место для ручки, где она лежит. Нажмите на это место, чтобы взять ручку. В лебёдке она вращает барабан вручную: по часовой стрелке — быстро, но слабо, против часовой — медленно, но сильно. Чтобы вынуть её, перетащите рукоятку на это место (ручка выходит, только когда вы отпускаете палец на месте). Пока вы несёте ручку, ваша рука занята: нажмите на место для ручки, чтобы положить её, прежде чем работать с концом. На мачте она подходит к редуктору закрутки: поставьте переключатель на IN, вставьте ручку и водите рукояткой по кругу, чтобы закрутить грот, при открытых стопорах «выходного» хвоста и оттяжки шкотового угла. |
+| real.how.6 | 6. The winch handle (one on board) is a backup, and every place has a slot where it lies. Tap the slot to take the handle. In a winch it cranks the drum by hand: clockwise is fast but weak, anticlockwise slow but strong. To take it out again, drag its grip onto the slot (the handle only comes out when you let go on the slot). While you carry the handle your hand is full: tap the slot to lay it down before you work a line. At the Mast it fits the furling gearbox: set the switch to IN, put the handle in and circle its grip to roll the main in, with the “rolls out” line and the outhaul clutches open. | 6. Ручка лебёдки (одна на борту) — запасной вариант, и на каждом месте есть место для ручки, где она лежит. Нажмите на это место, чтобы взять ручку. В лебёдке она вращает барабан вручную: по часовой стрелке — быстро, но слабо, против часовой — медленно, но сильно. Чтобы вынуть её, перетащите рукоятку на это место (ручка выходит, только когда вы отпускаете палец на месте). Пока вы несёте ручку, ваша рука занята: нажмите на место для ручки, чтобы положить её, прежде чем работать с концом. На мачте она подходит к редуктору закрутки: поставьте переключатель на IN, вставьте ручку и водите рукояткой по кругу, чтобы закрутить грот, при открытых стопорах «выходного» хвоста и оттяжки шкотового угла. |
 | real.practice.title | Practice: the main furling line slips | Тренировка: линь закрутки грота проскальзывает |
 | real.practice.text | Furling the main at 27 kn while the sail still pulls: the “rolls main in” line has only 1 turn on the Starboard winch. Hold the winch button: the line slips. Fix it by hand at the mast: go to Port and take the winch handle, go to Mast, set the switch to IN, put the handle in and circle its grip. The “rolls out” line and the outhaul are already open. (Two turns on the winch, or luffing first, would also work.) | Закрутка грота при 27 уз, пока парус ещё тянет: на конце «закручивает грот» всего 1 шлаг на правой лебёдке. Держите кнопку лебёдки: линь проскальзывает. Исправьте вручную у мачты: перейдите на «Левый борт» и возьмите ручку лебёдки, перейдите на «Мачта», поставьте переключатель на IN, вставьте ручку и водите её рукояткой по кругу. Стопоры «выходного» хвоста и оттяжки шкотового угла уже открыты. (Помогли бы и два шлага на лебёдке, и предварительный поворот к ветру.) |
 | real.practice.button | Set it up | Подготовить |
 | real.status.haulLoad | Pulling it in takes about {kn} kN. | Чтобы выбрать его, нужно около {kn} кН. |
 | real.gearbox.flipToIn | Flip the switch left to IN (rolls the main in) | Переведите переключатель влево на IN (закручивает грот) |
 | real.gearbox.flipToOut | Flip the switch right to OUT (rolls the main out) | Переведите переключатель вправо на OUT (раскручивает грот) |
-| real.notice.wrongWayJaw | Wrapped the wrong way, the rope cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Конец, намотанный не в ту сторону, не входит в самостопорящий зажим. Снимите шлаги и намотайте его по часовой. |
-| real.notice.closedOnRunning | The clutch stopped the running rope. On a real boat, snapping a clutch shut on a loaded rope that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Стопор остановил убегающий конец. На настоящей яхте резкое закрывание стопора на нагруженном убегающем конце может содрать его оплётку: сначала возьмите нагрузку на лебёдку, потом открывайте или закрывайте стопор. |
+| real.notice.wrongWayJaw | Wrapped the wrong way, the line cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Конец, намотанный не в ту сторону, не входит в самостопорящий зажим. Снимите шлаги и намотайте его по часовой. |
+| real.notice.closedOnRunning | The clutch stopped the running line. On a real boat, snapping a clutch shut on a loaded line that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Стопор остановил убегающий конец. На настоящей яхте резкое закрывание стопора на нагруженном убегающем конце может содрать его оплётку: сначала возьмите нагрузку на лебёдку, потом открывайте или закрывайте стопор. |
 | real.notice.handleInHand | You are holding the winch handle: lay it down first (tap the handle slot, or “Leave the handle here”). Remember where you left it. | Вы держите ручку лебёдки: сначала положите её (нажмите на место для ручки или «Оставить ручку здесь»). Запомните, где вы её оставили. |
 | real.handle.slot.rest | tap to take | взять ручку |
 | real.handle.slot.carried | tap: lay down | положить |
@@ -2886,7 +2918,7 @@
 | real.helm.slot | The helm has a slot for the winch handle too. | На штурвале тоже есть место для ручки лебёдки. |
 | real.helm.away | You are at the {station} station. | Вы на месте «{station}». |
 | real.helm.go | Go to the helm | Перейти к штурвалу |
-| real.atHelm | You are at the helm. Choose a station to work the ropes. | Вы у штурвала. Выберите место, чтобы работать с концами. |
+| real.atHelm | You are at the helm. Choose a station to work the lines. | Вы у штурвала. Выберите место, чтобы работать с концами. |
 | boat.mode.label | Boat | Яхта |
 | boat.mode.held | Held still | Яхта стоит |
 | boat.mode.sailing | Sailing | На ходу |
@@ -2946,7 +2978,7 @@
 | trim.state.furled | Furled | Закручен |
 | trim.state.torn | Torn | Порван |
 | trim.hint.good | Both telltales stream. | Оба колдунчика вытянуты назад. |
-| trim.hint.luffing | Pull the sheet in until the front stops flapping. | Выбирайте шкот, пока передняя кромка не перестанет полоскаться. |
+| trim.hint.luffing | Trim the sheet until the front stops flapping. | Выбирайте шкот, пока передняя кромка не перестанет полоскаться. |
 | trim.hint.stalled | Ease the sheet: the leeward telltales hang. | Потравите шкот: подветренные колдунчики висят. |
 | trim.hint.pushed | On a run the wind just pushes the sail. | На фордевинде ветер просто толкает парус. |
 | trim.hint.blanketed | The mainsail is taking the jib's wind. | Грот забирает ветер у стакселя. |
@@ -2957,7 +2989,7 @@
 | trim.repair | Repair sails | Починить паруса |
 | trim.badge | ⚠ sail | ⚠ парус |
 | trim.badgeTitle | A sail is worn out from flapping (flogging). Tap to learn more. | Парус изношен от полоскания. Нажмите, чтобы узнать больше. |
-| trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is let out too far (luffing). The leeward one hanging: the sail is pulled in too far (stalled). | Колдунчик — короткая ленточка на парусе. Вытянут назад: поток хороший. Наветренный поднимается: парус потравлен слишком сильно (полощет). Подветренный висит: парус выбран слишком сильно (срыв потока). |
+| trim.telltale.hint | A telltale is a short ribbon on the sail. Streaming back: good flow. The windward one lifting: the sail is eased too far (luffing). The leeward one hanging: the sail is trimmed too far (stalled). | Колдунчик — короткая ленточка на парусе. Вытянут назад: поток хороший. Наветренный поднимается: парус потравлен слишком сильно (полощет). Подветренный висит: парус выбран слишком сильно (срыв потока). |
 | debug.motion | Boat V/yaw | Boat V/yaw |
 | debug.lowSpeed | Low speed | Low speed |
 | debug.winds | TWA/TWS | TWA/TWS |
@@ -3124,7 +3156,7 @@
 | card.more | More | Подробнее |
 | ropes.strip.learn | Read more in Learn | Читать дальше в «Обучение» |
 | learn.empty | Tap any part of the boat, then “More” on its card, to read about it here. | Нажмите на любую часть яхты, затем «Подробнее» на её карточке, чтобы прочитать о ней здесь. |
-| learn.kind.rope | Rope | Снасть |
+| learn.kind.rope | Line | Снасть |
 | learn.kind.sail | Sail | Парус |
 | learn.kind.sailpart | Part of a sail | Часть паруса |
 | learn.kind.part | Part of the boat | Часть яхты |
@@ -3162,7 +3194,7 @@
 | learn.matched | also: {term} | также: {term} |
 | learn.noMatch | Nothing found. Try another word, or a word printed on the boat. | Ничего не найдено. Попробуйте другое слово или слово, написанное на яхте. |
 | learn.back | ‹ All entries | ‹ Все статьи |
-| learn.group.ropes | Ropes ({count}) | Концы ({count}) |
+| learn.group.ropes | Lines ({count}) | Концы ({count}) |
 | learn.group.sails | Sails and their parts ({count}) | Паруса и их части ({count}) |
 | learn.group.rig | Mast and rigging ({count}) | Мачта и такелаж ({count}) |
 | learn.group.hull | Hull and underwater ({count}) | Корпус и подводная часть ({count}) |
@@ -3205,8 +3237,8 @@
 | cam.moveTouch | Move the camera: one finger turns, pinch to zoom, two fingers slide. Double-tap a spot to turn around it. | Камера: один палец — поворот, щипок — приближение, два пальца — сдвиг. Двойное касание точки — вращение вокруг неё. |
 | cam.moveMouse | Move the camera: drag to turn, wheel to zoom towards the pointer, right drag (or Shift + drag) to slide. Double-click a spot to turn around it. | Камера: перетаскивание — поворот, колёсико — приближение к указателю, правая кнопка (или Shift + перетаскивание) — сдвиг. Двойной щелчок по точке — вращение вокруг неё. |
 | helmView.group | Helm view | Вид от штурвала |
-| helmView.ropes | Ropes | Тросы |
-| helmView.ropesLabel | Look at this side's ropes and winch | Посмотреть на тросы и лебёдку этого борта |
+| helmView.ropes | Lines | Тросы |
+| helmView.ropesLabel | Look at this side's lines and winch | Посмотреть на тросы и лебёдку этого борта |
 | helmView.panel | Panel | Панель |
 | helmView.panelLabel | Look at the panel on the pedestal | Посмотреть на панель на колонке |
 | helmView.otherWheel | Other wheel | Другой штурвал |
@@ -3223,8 +3255,8 @@
 | mode.harbour | Harbour | Гавань |
 | mode.section | Mode: {name} | Режим: {name} |
 | mode.learn.desc | For looking things up. The Learn list comes first; tap any part of the boat to read about it. | Для справки. Сначала список «Обучение»; нажмите на любую часть яхты, чтобы прочитать о ней. |
-| mode.easy.desc | For learning what each rope does. Every rope is a slider and the boat answers at once. | Чтобы понять, что делает каждый конец. Каждый конец — ползунок, яхта отвечает сразу. |
-| mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the ropes, as on the boat. | Для тренировки, как на палубе. Концами работают стопоры, лебёдки и ваша рука, как на яхте. |
+| mode.easy.desc | For learning what each line does. Every line is a slider and the boat answers at once. | Чтобы понять, что делает каждый конец. Каждый конец — ползунок, яхта отвечает сразу. |
+| mode.realistic.desc | For practising as on deck. Clutches, winches and your hand work the lines, as on the boat. | Для тренировки, как на палубе. Концами работают стопоры, лебёдки и ваша рука, как на яхте. |
 | mode.harbour.desc | For bringing her in and out of a harbour. The engine and the thrusters come first. | Чтобы заходить в гавань и выходить из неё. Сначала двигатель и подруливающие. |
 | mode.exercise | Exercises | Упражнения |
 | mode.exercise.desc | For practising step by step. Pick an exercise: it sets up the boat and the wind, shows each step and ticks it off when you get it right. | Для тренировки по шагам. Выберите упражнение: оно подготовит яхту и ветер, покажет каждый шаг и отметит его, когда у вас получится. |
@@ -3244,8 +3276,8 @@
 | exercise.happening | What is happening | Что происходит |
 | exercise.action | The right action | Правильное действие |
 | exercise.mistake | The typical mistake | Типичная ошибка |
-| exercise.ropes | Ropes | Снасти |
-| exercise.ropes.hint | Easy: every rope is a slider. Realistic: clutches and winches, as on the boat. | Простые: каждая снасть — ползунок. Реалистичные: стопоры и лебёдки, как на яхте. |
+| exercise.ropes | Lines | Снасти |
+| exercise.ropes.hint | Easy: every line is a slider. Realistic: clutches and winches, as on the boat. | Простые: каждая снасть — ползунок. Реалистичные: стопоры и лебёдки, как на яхте. |
 | exercise.level | Level | Уровень |
 | exercise.level.easy | Easy | Лёгкий |
 | exercise.level.normal | Normal | Обычный |
@@ -3256,7 +3288,7 @@
 | exercise.crew.crew | With crew | С экипажем |
 | exercise.crew.hint | Alone: no Pause, so set the autopilot before you leave the wheel. With crew: Pause stops time while you set up several people's work. | Один: без паузы, поэтому включите автопилот, прежде чем отойти от штурвала. С экипажем: пауза останавливает время, пока вы готовите работу за нескольких человек. |
 | exercise.alonePause | Alone: no Pause in this exercise | Один: в этом упражнении нет паузы |
-| exercise.aloneNote | Alone: one station at a time and no Pause. The autopilot steers while you work the ropes. | Один: вы у одного поста за раз, паузы нет. Автопилот ведёт яхту, пока вы работаете со снастями. |
+| exercise.aloneNote | Alone: one station at a time and no Pause. The autopilot steers while you work the lines. | Один: вы у одного поста за раз, паузы нет. Автопилот ведёт яхту, пока вы работаете со снастями. |
 | exercise.steps | Steps | Шаги |
 | exercise.start | Do it myself | Сделаю сам |
 | exercise.list | Back to the list | К списку |
@@ -3355,7 +3387,7 @@
 | debrief.rope.clutchOpen | Opened the clutch: {label} | Открыли стопор: {label} |
 | debrief.rope.clutchClose | Closed the clutch: {label} | Закрыли стопор: {label} |
 | debrief.rope.onWinch | Put on the winch: {label} | Заложили на лебёдку: {label} |
-| debrief.rope.offWinch | Took the rope off the {side} winch | Сняли конец с лебёдки ({side} борта) |
+| debrief.rope.offWinch | Took the line off the {side} winch | Сняли конец с лебёдки ({side} борта) |
 | debrief.rope.turn | Changed the turns on the {side} winch | Изменили число шлагов на лебёдке ({side} борта) |
 | debrief.rope.selfTailerIn | Into the self-tailer ({side} winch) | В самотравящий стопор (лебёдка {side} борта) |
 | debrief.rope.selfTailerOut | Out of the self-tailer ({side} winch) | Из самотравящего стопора (лебёдка {side} борта) |
@@ -3379,7 +3411,7 @@
 | debrief.fenders.in | Fenders in | Кранцы убраны |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
-| quick.easy | Tap a rope: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
+| quick.easy | Tap a line: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
 | quick.realistic | Pull the panel up to work the clutches and winches. | Поднимите панель, чтобы работать стопорами и лебёдками. |
 | quick.learn | Tap any part of the boat to learn about it. | Нажмите на любую часть яхты, чтобы узнать о ней. |
 | quick.read | Read | Читать |
@@ -3407,7 +3439,7 @@
 | status.tag.danger | Danger | Опасность |
 | status.tag.damage | Damage | Повреждение |
 | status.tag.sail | Sail | Парус |
-| status.tag.rope | Rope | Конец |
+| status.tag.rope | Line | Конец |
 | status.tag.gear | Gear | Снаряжение |
 | status.tag.steering | Steering | Управление |
 | layout.grip | Move {name} | Переместить: {name} |
@@ -3494,7 +3526,7 @@
 | damage.lazyLine.rudder | A neighbour's lazy line is under our rudder: it can catch. Neutral, and drift clear. | Мунинг соседа под нашим рулём: он может зацепиться. Нейтраль и дайте яхте отойти. |
 | damage.fenderLost | A {side} fender was torn off and lost (fenders out at speed). | Оторвало и потеряли кранец с {side} борта (кранцы за бортом на ходу). |
 | damage.propeller | A line got caught in the propeller and stopped the engine. | Конец намотался на винт и заглушил двигатель. |
-| lines.title | Lines | Швартовы |
+| lines.title | Mooring lines | Швартовы |
 | lines.name.sp | Stern line, port | Кормовой швартов, левый |
 | lines.name.ss | Stern line, starboard | Кормовой швартов, правый |
 | lines.name.ll | Lazy line (to the bow) | Муринг (на нос) |
@@ -3570,18 +3602,18 @@
 | anchor.cutOut | The windlass stopped: too much load. Motor gently towards the anchor. | Брашпиль остановился: слишком большая нагрузка. Подойдите малым ходом к якорю. |
 | anchor.scope | Depth {depth} m (with the roller {eff} m) · scope {ratio} : 1 | Глубина {depth} м (с роликом {eff} м) · цепь {ratio} : 1 |
 | real.station.bow | Bow | Нос |
-| real.bow.hint | At the bow: the windlass lets the anchor chain out and brings it in. Hold a button; let go to stop. | На носу: брашпиль травит и выбирает якорную цепь. Держите кнопку; отпустите, чтобы остановить. |
+| real.bow.hint | At the bow: the windlass pays the anchor chain out and brings it in. Hold a button; let go to stop. | На носу: брашпиль травит и выбирает якорную цепь. Держите кнопку; отпустите, чтобы остановить. |
 | anchor.enough | Enough chain for the rules. | Цепи достаточно по правилам. |
-| anchor.more | Let out {m} m more (the rules ask for {need} m). | Вытравите ещё {m} м (по правилам нужно {need} м). |
+| anchor.more | Pay out {m} m more (the rules ask for {need} m). | Вытравите ещё {m} м (по правилам нужно {need} м). |
 | anchor.alarm | Anchor alarm: the anchor is dragging. | Якорная тревога: якорь ползёт. |
 | anchor.silence | OK | ОК |
-| anchor.hint | To anchor: head into the wind and stop, let the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | Постановка на якорь: встаньте носом к ветру, остановитесь, травите цепь, пока лодку сносит назад, до отметки «достаточно» (длина цепи к глубине: не меньше 4 глубин с высотой ролика или 3 длин корпуса, что больше), затем дайте малый назад (на треть) на несколько секунд, чтобы якорь зарылся. Песок и ил держат хорошо, трава и камень плохо. |
+| anchor.hint | To anchor: head into the wind and stop, pay the chain out as she drifts back until the check says enough (scope: chain out against the depth; at least 4 × the depth plus the roller's height, or 3 boat lengths, whichever is more), then go gently astern (a third) for a few seconds to dig the anchor in. Sand and mud hold well, weed and rock poorly. | Постановка на якорь: встаньте носом к ветру, остановитесь, травите цепь, пока лодку сносит назад, до отметки «достаточно» (длина цепи к глубине: не меньше 4 глубин с высотой ролика или 3 длин корпуса, что больше), затем дайте малый назад (на треть) на несколько секунд, чтобы якорь зарылся. Песок и ил держат хорошо, трава и камень плохо. |
 | exercise.bar.aria | Controls for this step | Управление на этом шаге |
 | exercise.bar.label | This step | Этот шаг |
 | exercise.bar.all | All controls | Всё управление |
 | exercise.bar.nothing | Nothing to do in this step: watch. | На этом шаге делать нечего: смотрите. |
 | exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button | Клавиши: 1–4 выбор строки · ← → первая или последняя кнопка строки · Пробел: первая кнопка |
-| exercise.bar.sheet | − hauls in · + lets out | − подобрать · + потравить |
+| exercise.bar.sheet | − pulls in · + eases | − подобрать · + потравить |
 | exercise.bar.furl | − rolls in · + rolls out | − свернуть · + развернуть |
 | exercise.bar.rudder | − to port · + to starboard | − к левому борту · + к правому борту |
 | exercise.bar.autopilot | Autopilot | Автопилот |
@@ -3598,10 +3630,12 @@
 | exercise.bar.fendersIn | In | В рундуке |
 | exercise.bar.fendersOut | Out | За бортом |
 | exercise.bar.windlass | Anchor chain | Якорная цепь |
-| exercise.bar.ropesRealistic | Ropes: work them at the stations | Снасти: работайте на постах |
+| exercise.bar.ropesRealistic | Lines: work them at the stations | Снасти: работайте на постах |
 | exercise.bar.stations | Stations | Посты |
 | exercise.bar.lessAria | Less: {name} | Меньше: {name} |
 | exercise.bar.moreAria | More: {name} | Больше: {name} |
+| exercise.bar.trimAria | Trim {name} | Выбрать {name} |
+| exercise.bar.easeAria | Ease {name} | Потравить {name} |
 | exercise.bar.asternAria | Engine lever 5 % towards astern | Рычаг двигателя на 5 % к заднему ходу |
 | exercise.bar.aheadAria | Engine lever 5 % towards ahead | Рычаг двигателя на 5 % к переднему ходу |
 | exercise.watch | Watch it | Смотреть |
@@ -3620,8 +3654,8 @@
 | exercise.demo.back | Back to the start of the step | Назад, к началу шага |
 | exercise.demo.doIt | Now do it myself | Теперь сам |
 | exercise.bar.otherStation | Nothing at this station for this step. The dot shows where to go. | На этом посту в этом шаге делать нечего. Точка показывает, куда идти. |
-| exercise.bar.clutchOpen | Open: the rope can run | Открыт: конец может идти |
-| exercise.bar.clutchClosed | Closed: holds the rope | Закрыт: держит конец |
+| exercise.bar.clutchOpen | Open: the line can run | Открыт: конец может идти |
+| exercise.bar.clutchClosed | Closed: holds the line | Закрыт: держит конец |
 | exercise.bar.open | Open | Открыть |
 | exercise.bar.close | Close | Закрыть |
 | exercise.bar.turns | Turns: {n} | Шлагов: {n} |

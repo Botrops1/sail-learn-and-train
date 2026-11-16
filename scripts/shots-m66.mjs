@@ -98,7 +98,7 @@ export async function liveM66Checks({ openPage, viewports, outDir, prefix, probl
       check(
         `run starts ${name}`,
         first !== null &&
-          first.startsWith('1/5 · Close-hauled: haul the main in until it stops flapping.'),
+          first.startsWith('1/5 · Close-hauled: trim the main until it stops flapping.'),
         String(first),
       );
       const plan = [

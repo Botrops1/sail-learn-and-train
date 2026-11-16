@@ -41,7 +41,7 @@ export async function liveM48Checks({ openPage, viewports, problems }) {
       const text = await page.locator('[data-testid="ropes-easy"] .strip-empty').innerText();
       check(
         `${v} easy: empty text`,
-        text === 'Tap a rope in the 3D view or in the list below to work it.',
+        text === 'Tap a line in the 3D view or in the list below to work it.',
         text,
       );
       const rows = await page.locator('.rope-item').count();
@@ -139,7 +139,7 @@ export async function liveM48Checks({ openPage, viewports, problems }) {
       const { context, page } = await openPage(viewport, 'm48 quick', '?cam=side-port');
       await setSheet(page, 'peek');
       const text = (await page.getByTestId('quick-hint').innerText()).replace(/\s+/g, ' ');
-      check(`${v} quick row`, text.includes('Tap a rope: its − and + appear here.'), text);
+      check(`${v} quick row`, text.includes('Tap a line: its − and + appear here.'), text);
       await context.close();
     }
 

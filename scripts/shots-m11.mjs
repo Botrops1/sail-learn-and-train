@@ -62,7 +62,7 @@ export async function liveM11Checks({ openPage, viewports, outDir, prefix, probl
     check('report: peak main sheet load is several kN', load >= 5 && load <= 40, String(load));
     check(
       'report: says what to do',
-      said.includes('haul the main sheet in before turning'),
+      said.includes('trim the main sheet before turning'),
       said.slice(-80),
     );
     await shot(page, 'live-phone-gybe-report');
