@@ -76,7 +76,7 @@ export async function liveM46Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(phone, 'm46 check', ANCHORED, { testClock: true });
     await showSection(page, 'anchor');
     const words = await text(page, 'anchor-check');
-    check('check: it asks for 13 m more', /^Let out 13 m more/.test(words), words);
+    check('check: it asks for 13 m more', /^Pay out 13 m more/.test(words), words);
     const status = await text(page, 'anchor-status');
     check('check: the anchor is set', /set/.test(status), status);
     await context.close();
