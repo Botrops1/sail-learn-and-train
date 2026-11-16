@@ -96,7 +96,7 @@ export function createKeyHelp(): KeyHelp {
       }
     }
     document.addEventListener('keydown', onKey, true);
-    closeButton.focus();
+    closeButton.focus({ preventScroll: true });
   }
 
   return {

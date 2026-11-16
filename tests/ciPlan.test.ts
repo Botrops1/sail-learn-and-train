@@ -22,7 +22,7 @@ const paths = JSON.parse(readFileSync('.github/ci-paths.json', 'utf8')) as {
   groups: Record<string, string[]>;
 };
 const groups = liveGroupNames(shotsSource);
-const newest = ['m99', 'm98', 'm97', 'm96'];
+const newest = ['m101', 'm99', 'm98', 'm97'];
 
 describe('liveGroupNames', () => {
   it('reads the groups of the real scripts/shots.mjs', () => {

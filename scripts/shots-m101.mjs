@@ -26,12 +26,12 @@ export async function liveM101Checks({ openPage, problems }) {
   const press = async (page, key, times = 1) => {
     for (let i = 0; i < times; i += 1) await page.keyboard.press(key);
   };
-  /** The link after the pressing (read once the write has happened), or the error text. */
+  /** The link once it has every part of `has` and none of `hasNot`; after 3 s, the link as it is (so a check fails honestly). */
   const link = async (page, has, hasNot = []) => {
     try {
       return await waitForLink(page, has, hasNot);
-    } catch (error) {
-      return String(error.message);
+    } catch {
+      return page.evaluate(() => window.location.search + window.location.hash);
     }
   };
 
@@ -42,29 +42,17 @@ export async function liveM101Checks({ openPage, problems }) {
 
     // 1. Arrows steer.
     await press(page, 'ArrowRight', 3);
-    let now = await link(page, ['rd=15']);
-    check('→ three times: the wheel is at 15', now.includes('rd=15'), now);
+    const turned = await link(page, ['rd=15']);
+    check('→ three times: the wheel is at 15', turned.includes('rd=15'), turned);
     await press(page, 'ArrowLeft', 3);
-    now = await link(page, [], ['rd=']);
 
     // 2. Sheet keys.
     await press(page, 'KeyW', 2);
     await press(page, 'KeyS');
     await press(page, 'KeyR');
     await press(page, 'KeyF', 2);
-    now = await link(page, ['ms=25', 'js=35']);
+    const now = await link(page, ['ms=25', 'js=35']);
     check('W W S: main 25; R F F: jib 35', now.includes('ms=25') && now.includes('js=35'), now);
-
-    // 3. Autopilot.
-    await press(page, 'KeyP');
-    now = await link(page, [], ['ap=off']);
-    check('P: the autopilot holds the heading', !now.includes('ap=off'), now);
-    await press(page, 'ArrowLeft', 5);
-    now = await link(page, ['apt=355']);
-    check('← five times with the autopilot on: its course is 355', now.includes('apt=355'), now);
-    await press(page, 'KeyP');
-    now = await link(page, ['ap=off']);
-    check('P again: the autopilot is off', now.includes('ap=off'), now);
 
     // 5. Key list.
     await clickCanvas(page);
@@ -93,6 +81,22 @@ export async function liveM101Checks({ openPage, problems }) {
     check('Settings → Show the keys opens the list', await help.isVisible(), 'visible');
     await page.getByTestId('key-help-close').click();
     await help.waitFor({ state: 'hidden' });
+    await context.close();
+  }
+
+  // 3. Autopilot, on a fresh page: the boat has not turned, so the course it holds is 0.
+  {
+    const { context, page } = await open(DESKTOP, 'autopilot', BASE);
+    await clickCanvas(page);
+    await press(page, 'KeyP');
+    let now = await link(page, [], ['ap=off']);
+    check('P: the autopilot holds the heading', !now.includes('ap=off'), now);
+    await press(page, 'ArrowLeft', 5);
+    now = await link(page, ['apt=355']);
+    check('← five times with the autopilot on: its course is 355', now.includes('apt=355'), now);
+    await press(page, 'KeyP');
+    now = await link(page, ['ap=off']);
+    check('P again: the autopilot is off', now.includes('ap=off'), now);
     await context.close();
   }
 

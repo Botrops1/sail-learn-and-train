@@ -5722,6 +5722,10 @@ html[data-layout] .exercise-stack[data-place='row'] {
 }
 
 /* The key list (M101): key caps in the first column, what they do in the second. */
+.key-help-card {
+  width: min(460px, calc(100vw - 32px));
+}
+
 .key-list {
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -5732,6 +5736,8 @@ html[data-layout] .exercise-stack[data-place='row'] {
 .key-list dt {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
   gap: 4px;
 }
 
@@ -5740,6 +5746,7 @@ html[data-layout] .exercise-stack[data-place='row'] {
 }
 
 .key-list kbd {
+  line-height: 1.3;
   min-width: 1.6em;
   padding: 2px 6px;
   border: 1px solid color-mix(in srgb, currentcolor 40%, transparent);
