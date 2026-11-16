@@ -338,7 +338,12 @@ Record the group's time in `.github/ci-times.json` (`"m101"`).
 
 ### 8.10 Decided in the M101 PR
 
-(The builder writes here.)
+(Recommended; merging accepts it.)
+
+- **The group limit goes from 75 to 76.** The spec asks for a new group `m101` (45 s), and `tests/ciPlan.test.ts` capped the set at 75 groups, so the test's limit is 76 now and `m101` is in its baseline list. The other way would be to run the keys inside an existing group (`GROUP_ALIASES`); the new group keeps the keyboard checks apart from the older ones.
+- **Repeats.** A held key repeats after 150 ms of real time (as 8.3 says); the help key and P ignore repeats.
+- **The key list card is 460 px wide** (the language card's 360 px made it taller than a 800 px window, so its title scrolled out of sight); focusing Close does not scroll it.
+- **`?` in the browser check** is pressed as `Shift+Slash`, which gives `key === '?'` on the check's US keyboard.
 
 ## 9. M102: Point of sail on the mini-map
 
