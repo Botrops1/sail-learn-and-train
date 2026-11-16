@@ -61,7 +61,7 @@ One helper, added by M101:
 | **M100: Sailor words** | English says "line(s)" for the boat's ropes and "Trim / Ease" for sheets; a Learn entry "Cunningham: not on this boat" | #223, #225 (words), #231 (Learn entry) | none | — | not needed |
 | **M101: Keyboard** | On a computer the boat answers keys at once: ← → steer, W / S the mainsheet, R / F the jib sheet, P the autopilot, H or ? the key list | #226, #225 (keys) | none | M100 (the key list uses its words) | not needed |
 | **M102: Point of sail on the mini-map** | The mini-map (bottom left) draws the points of sail around the boat, marks the current one with an arrow and names it | #229 | none (display of the existing bands) | — | not needed |
-| **M103: Word tours** | Learn entries get **Feel it**: the app sails a short exercise for the learner (header and lift; weather helm; the points of sail) | #230 | PT-21, PT-25 (existing, through the new exercises' checks) | M100 | **required** |
+| **M103: Word tours** | Learn entries get **Feel it**: the app sails a short exercise for the learner (header and lift; weather helm; the points of sail) | #230 | PT-21, PT-29 (existing rules, new tests) | M100 | **required** |
 
 ## 7. M100: Sailor words
 
@@ -74,7 +74,7 @@ PR title `M100: Sailor words`; description says `Closes #223` and `Closes #225` 
 - `content/lang/en/ui.json`, `content/lang/en/glossary.json`, `content/lang/en/exercises.json`: the wording pass (7.2).
 - `content/registry/parts.json`: two new terms (7.3).
 - `content/lang/{de,no,ru}/glossary.json`: the two new entries as AI drafts (7.3); nothing else in those files changes (7.4).
-- `src/ui/ropeControls.ts`: the trim / ease labels of the two sheets (7.5).
+- `src/model/controls.ts`, `src/ui/ropeControls.ts`, `src/ui/quickRow.ts`, `src/ui/exerciseBar.ts`: the trim / ease labels of the two sheets (7.5).
 - `tests/sailorWords.test.ts` (new, 7.7); `docs/review/{de,no,ru}.md` and `-exercises.md` regenerated (`npm run review-doc -- <code>`).
 - Older checks that read the old words (7.9).
 
@@ -83,12 +83,14 @@ PR title `M100: Sailor words`; description says `Closes #223` and `Closes #225` 
 Go through every string of the three English files with these rules, in this order. They are the whole decision; do not reword anything else.
 
 1. **rope → line.** Every "rope" / "ropes" / "Rope" / "Ropes" a learner reads becomes "line" / "lines" / "Line" / "Lines", with the article fixed ("a rope" → "a line", "an outhaul rope" stays "an outhaul line"). Compounds: "rope end" → "line end", "rope tail" → "tail", "rope box" / "rope bin" → "line bin", "rope clutch" → "clutch". The panel section and its tab (`tab.ropes`, `debug.ropes`) read **Lines**; `ropes.list.title` reads **All lines and the wheel**; `learn.group.ropes` reads **Lines ({count})** (only the label string changes, not the group id).
-2. **The only places "rope" stays** (the explanation the issue asks to keep): the new `term_line` entry (7.3) and the `alternatives` lists of any glossary entry. Nowhere else.
-3. **Sheets: haul in → trim.** For the mainsheet and the jib sheet (and "sheets" in general), "haul in" / "hauled in" / "hauling in" / "pull in" become "trim" / "trimmed" / "trimming" ("haul the main sheet in" → "trim the mainsheet"). "Sheet in" also becomes "trim".
-4. **Every other line: haul → pull.** For halyards, the vang, the outhaul, the topping lift, furling lines, mooring lines and the anchor chain, "haul (in)" becomes "pull (in)" ("haul the vang" → "pull the vang on", "haul the outhaul" → "pull the outhaul"). "Winch in" stays.
-5. **let out → ease**, for every line ("let the sheet out" → "ease the sheet"; "letting out" → "easing"). "Let go" (of a mooring line, meaning drop it) stays.
+2. **The only places "rope" stays** (the explanation the issue asks to keep): the new `term_line` entry (7.3), the `alternatives` lists of any glossary entry, and text in round brackets (rule 5a). Where "rope" means the material or a length ("a little rope moves the boom a lot"), write "line" too.
+3. **Sheets and sails: haul in → trim.** For the mainsheet and the jib sheet (and "sheets" in general), and for a sail ("haul it in, or roll it away" → "trim it, or roll it away"), "haul in" / "hauled in" / "hauling in" / "pull in" become "trim" / "trimmed" / "trimming". The control keeps its UI name: "haul the main sheet in before turning" → "trim the main sheet before turning". "Sheet in" also becomes "trim". A string that speaks of sheets and other lines together uses rule 4's "pull in".
+4. **Every other line: haul → pull.** For halyards, the vang, the outhaul, the topping lift, furling lines, mooring lines and the anchor chain, "haul (in)" becomes "pull (in)", in every form ("haul the vang" → "pull the vang on", "the outhaul is hauled together with" → "the outhaul is pulled together with"). "Winch in" stays. "Close-hauled" is a point of sail's name and stays.
+5. **let out → ease**, for every line and sail ("let the sheet out" → "ease the sheet"; "the sail is let out too far" → "the sail is eased too far"; "no more rope to let out" → "no more line to ease"). The anchor chain is **paid out** ("let out 30 m of chain" → "pay out 30 m of chain"). Other uses are reworded in plain words ("let the gust out" → "spill the gust"). "Let go" (of a mooring line, meaning drop it) stays.
+5a. **Words in brackets stay.** An explanation in round brackets may keep the old word for a beginner: "ease (let out)" and "a line (a rope with a job)" are fine. The test in 7.7 ignores text in round brackets.
+5b. **Fixed targets** for strings older checks read: `ui.quick.easy` → "Tap a line: its − and + appear here."; `exercise.bar.sheet` "− hauls in · + lets out" → "− trims · + eases"; the gybe hint "haul the main sheet in before turning" → "trim the main sheet before turning"; `ropes.fighting` → "Red: this line pulls against another one (fighting)"; `control.paidOut` → "{m} m of line paid out".
 6. Glossary names: `term_trim` becomes **Trim** (was "Trim / haul in"), with alternatives `[{ "term": "haul in" }, { "term": "sheet in" }]`; its `short` becomes "To pull a sheet in; also, setting the sails to the wind." and its `what` "Trimming pulls a sheet in. It also means setting each sail to the wind: trim until it stops flapping, ease until it is not stalled." `term_ease` keeps the name **Ease**, `short` "To let a line out." `term_sheet`'s last sentence becomes "On a boat a sheet is a line, not the sail."
-7. Keep the meaning, the placeholders (`{rope}` stays as a placeholder name: it is a code name) and the length within 10 % of the old string, so the layouts that reserve a width (the instrument strip, the bar) do not change.
+7. Keep the meaning and the placeholders (`{rope}` stays as a placeholder name: it is a code name). A string under `exercise.bar.*` or `instruments.*` (the step bar and the instrument strip reserve widths) must not get longer; any other string may change length.
 
 ### 7.3 Two new Learn entries
 
@@ -114,12 +116,12 @@ English glossary (`content/lang/en/glossary.json`, `entries`):
   "alternatives": [],
   "short": "A line that pulls the front edge of a mainsail down. This boat has none.",
   "what": "On a mainsail that is hoisted up a mast track, the cunningham pulls the sail’s front edge (the luff) down near the bottom. More tension moves the sail’s fullness forward and flattens it in a stronger wind.",
-  "onThisBoat": "None. The mainsail rolls into the mast, so its front edge sits on the furling rod inside the mast and there is nothing to pull it down. Its tension is set once with the main halyard.",
+  "onThisBoat": "None, as far as we know (not yet confirmed on the real boat). The mainsail rolls into the mast, so its front edge sits on the furling rod inside the mast and there is nothing to pull it down; its tension comes from the main halyard.",
   "textStatus": "draft"
 }
 ```
 
-German, Norwegian and Russian: the same two entries, translated as AI drafts with `textStatus: "draft"` (the glossary test needs every registry id in every language). `docs/BOAT_REFERENCE.md` gets one row in its assumptions: "No cunningham: in-mast furling main, luff on the furling rod (assumption; confirm on the boat)".
+German, Norwegian and Russian: the same two entries, translated as AI drafts with `textStatus: "draft"` (the glossary test needs every registry id in every language). `docs/BOAT_REFERENCE.md` section 5 (Assumptions) gets one row: Assumption "No cunningham (in-mast furling main: the luff sits on the furling rod)" | Value used "none" | Status "assumption; open question 23". If `tests/glossary.test.ts` requires `related` links to point both ways or counts the entries of a group, add the back-links and update the counts.
 
 ### 7.4 Other languages
 
@@ -127,14 +129,14 @@ German, Norwegian and Russian strings do not change (CLAUDE.md: a term changes o
 
 ### 7.5 The sheets' − / + buttons
 
-The visible labels stay "−" and "+". For `ctl_mainsheet` and `ctl_jib_sheet` only (their value is "% eased", so − pulls the sheet in), the buttons' `aria-label` and `title` use two new strings instead of `control.less` / `control.more`:
+The visible labels stay "−" and "+". For `ctl_mainsheet` and `ctl_jib_sheet` only (their value is "% eased", so − pulls the sheet in), the buttons' `aria-label` uses two new strings instead of `control.less` / `control.more` (`stepButton` in `stepper.ts` is unchanged):
 
 | Key | English |
 |---|---|
 | `control.trim` | `Trim: {name}` |
 | `control.ease` | `Ease: {name}` |
 
-Every other control keeps `control.less` / `control.more`. In `ropeControls.ts`, the view of a control gets the label pair from one place (`SHEET_IDS = new Set(['ctl_mainsheet', 'ctl_jib_sheet'])`). The exercise bar's buttons (`exercise.bar.lessAria` / `moreAria`) follow the same rule with two new keys, `exercise.bar.trimAria` "Trim {name}" and `exercise.bar.easeAria` "Ease {name}". De / no / ru get AI drafts of the four keys.
+Every other control keeps `control.less` / `control.more`. The set lives in `src/model/controls.ts`: `export const SHEET_CONTROL_IDS: ReadonlySet<ControlId> = new Set(['ctl_mainsheet', 'ctl_jib_sheet'])`, and the three places that build these labels use it: `src/ui/ropeControls.ts`, `src/ui/quickRow.ts` (lines 111–112 today) and `src/ui/exerciseBar.ts`. The exercise bar's buttons (`exercise.bar.lessAria` / `moreAria`) follow the same rule with two new keys, `exercise.bar.trimAria` "Trim {name}" and `exercise.bar.easeAria` "Ease {name}". De / no / ru get AI drafts of the four keys.
 
 ### 7.6 Strings and registry
 
@@ -144,29 +146,30 @@ New: `control.trim`, `control.ease`, `exercise.bar.trimAria`, `exercise.bar.ease
 
 No PHYSICS_TRUTHS rule applies. New `tests/sailorWords.test.ts`:
 
-- **M100 no "rope" in English text:** walk every string of `content/lang/en/ui.json`, `glossary.json` (`entries`) and `exercises.json`; skip the key `$comment`, every `alternatives` array, and the whole `term_line` entry. No string matches `/\bropes?\b/i`. The failure message names the key path.
-- **M100 no "haul in" / "let out" in English text:** the same walk; no string matches `/\bhaul(s|ed|ing)?\b[^.]{0,30}\bin\b/i` or `/\blet(s|ting)?\b[^.]{0,20}\bout\b/i`.
+- **M100 no "rope" in English text:** walk every string of `content/lang/en/ui.json`, `glossary.json` (`entries`) and `exercises.json`; skip the keys `$comment` and `$status`, every `alternatives` array, and the whole `term_line` entry; remove text in round brackets (`s.replace(/\([^)]*\)/g, '')`) before matching. No string matches `/\bropes?\b/i`. The failure message names the key path.
+- **M100 no "haul" / "let out" in English text:** the same walk and bracket removal; no string matches `/(?<![-\w])haul(s|ed|ing)?\b/i` (so "Close-hauled" and "outhaul" pass) or `/\blet(s|ting)?\b[^.]{0,20}\bout\b/i`.
 - **M100 new terms:** `term_line` and `term_cunningham` exist in the registry with `status: "draft"` and in all four glossaries.
 - The existing language, glossary and review-document tests stay green (they cover the new keys and the regenerated documents).
 
 ### 7.8 Browser checks
 
-No new group: the change is text. Run `SHOTS_ONLY=m11,m21,m38,m48,general` locally (the groups 7.9 changes). No new checks are written.
+No new group: the change is text. Run `SHOTS_ONLY=m11,m21,m23,m38,m48,general` locally (the groups 7.9 changes). No new checks are written. Because English text is read by checks all over the set, the PR runs every group in CI.
 
 ### 7.9 Older checks and tests this milestone changes
 
-Run before pushing: `grep -n -i -E "\\brope|haul|let out" scripts/shots*.mjs tests/*.ts | grep -v -E "rope_|ropes-|ropesMode|ropeId|'ropes'|\"ropes\"|data-testid"` and change every hit that matches English text a learner reads. Known hits (planning grep, 2026-11-16):
+Find every check that reads English text with the old words: `grep -n -E "['\"\`][^'\"\`]*\b([Rr]opes?|[Hh]aul(s|ed|ing)?|[Ll]et out)\b[^'\"\`]*['\"\`]" scripts/*.mjs tests/*.ts`, and change every hit that is text a learner reads (not ids, test ids, scene names or code names). Known hits (planning, 2026-11-16):
 
-- `scripts/shots-m11.mjs:65` `'haul the main sheet in before turning'` → the new wording of that string.
+- `scripts/shots-m11.mjs:65` and `tests/gybe.test.ts:241`: the gybe hint → `'trim the main sheet before turning'` (rule 5b).
 - `scripts/shots-m21.mjs:58` `'Ropes (9)'` → `'Lines (9)'` (both in the check and its label).
-- `scripts/shots-m38.mjs:480` `'Red: this rope pulls against another one'` → `'Red: this line pulls against another one'`.
-- `scripts/shots-m48.mjs:142` `'Tap a rope: its − and + appear here.'` → the new string.
-- `scripts/shots.mjs:779` `'0.0 m of rope paid out'` → `'0.0 m of line paid out'`.
-- `tests/gybe.test.ts:241` `'haul the main sheet in'` → the new wording.
+- `scripts/shots-m23.mjs:232` `'Ropes'` (the English section title) → `'Lines'`.
+- `scripts/shots-m38.mjs:480` → `'Red: this line pulls against another one'`.
+- `scripts/shots-m48.mjs:142` → `'Tap a line: its − and + appear here.'`.
+- `scripts/shots.mjs:779` → `'0.0 m of line paid out'`.
+- `tests/alerts.test.ts` (around line 372) and any other test that compares English alert text.
 
 Scene names (`learn-realistic-ropes`, `realistic-rope-wrapped-helm`) are names, not text: they stay.
 
-`CI groups: m11, m21, m38, m48`
+`CI groups: all`
 
 ### 7.10 Done when / not in this milestone
 
@@ -191,7 +194,7 @@ PR title `M101: Keyboard`; description says `Closes #226`.
 - `src/ui/dom.ts`: `isTypingTarget` (section 3); `src/ui/thrusterPanel.ts` uses it instead of its own test (same behaviour).
 - `src/app/app.ts`: create the keyboard **after** `createExerciseBar` (line 147 today), so the bar's listener runs first (8.3, rule 3).
 - `src/ui/settingsMenu.ts`: the Keyboard row (8.4). `src/style.css`: the dialog's key caps and the row's phone rule.
-- `content/lang/*/ui.json`: the strings of 8.5. `tests/keyboard.test.ts` (new). `scripts/shots-m101.mjs` (new), registered in `scripts/shots.mjs`; `.github/ci-times.json` gets its measured time.
+- `content/lang/*/ui.json`: the strings of 8.5. `tests/keyboard.test.ts` (new). `scripts/shots-m101.mjs` (new), registered in `scripts/shots.mjs`; `.github/ci-times.json` gets its measured time; `m101` is added to the live groups listed in `tests/ciPlan.test.ts` (around line 342).
 - `docs/CODE_MAP.md`: `keyboard.ts` and `keyHelp.ts` in the UI table.
 
 ### 8.2 The keys (`keyAction`)
@@ -210,42 +213,46 @@ export function keyAction(
 | Key (`code`) | Does | Action |
 |---|---|---|
 | `ArrowLeft` / `ArrowRight`, autopilot off (`state.autopilot.mode === 'off'`) | Turns the wheel to port / starboard by one step | `setControls` `{ ctl_rudder: snapControl('ctl_rudder', rudder ∓ step, step) }`, `step = state.settings.step` (the same step the − / + buttons use) |
-| `ArrowLeft` / `ArrowRight`, autopilot on | Moves the autopilot's course to port / starboard | `{ type: 'autopilot', command: { turnDeg: ∓d } }`, `d = boat.physics.autopilot.smallStepDeg` (1), with Shift `largeStepDeg` (10) |
+| `ArrowLeft` / `ArrowRight`, autopilot on (`mode` is `'heading'` or `'wind'`) | Moves the autopilot's course to port / starboard | `{ type: 'autopilot', command: { turnDeg: ∓d } }`, `d = boat.physics.autopilot.smallStepDeg` (1), with Shift `largeStepDeg` (10) |
 | `KeyW` / `KeyS` | Mainsheet trim / ease | `setControls` `{ ctl_mainsheet: snapControl('ctl_mainsheet', value ∓ step, step) }`: W subtracts (trims), S adds (eases) |
 | `KeyR` / `KeyF` | Jib sheet trim / ease | the same with `ctl_jib_sheet` |
 | `KeyP` | Autopilot on / off | mode `'off'` → `{ type: 'autopilot', command: 'heading' }` (holds the present course, as the Heading button does); any other mode → `command: 'off'` |
 | `KeyH`, or `key === '?'` | Opens the key list, or closes it if open | `'help'` |
+
+Shift changes only the arrows with the autopilot on. `?` is read from `key` only (on a German keyboard it is Shift + ß, `code` `Minus`), `H` from `code` only. Keys act in every app mode, paused or not, sailing or held still.
 
 `keyAction` returns `null` when:
 
 - the four sheet keys are pressed with `state.settings.ropesMode !== 'easy'` (in Realistic ropes the sheets are worked at the winches; the key list says so);
 - the new control value equals the present one (at an end of its range);
 - `state.exercise !== null && state.exercise.demo !== null` (the app is playing an exercise for the learner), for every key but the help key;
+- the two arrows while `state.exercise !== null` (any phase of a run: in an exercise the step bar owns ← and → on a computer, and a run never needs the wheel from the arrows); the letter keys still act in an exercise;
 - any other key. `KeyA`, `KeyD`, `KeyJ`, `KeyL` stay the thruster keys (`thrusterPanel.ts`); `keyAction` returns `null` for them.
 
 ### 8.3 `createKeyboard(store: Store, help: KeyHelp): void`
 
-One `keydown` listener on `document` (bubbling phase), and a `keyup` listener that only clears the repeat timer. A key is ignored when any of these holds, checked in this order:
+One `keydown` listener on `document` (bubbling phase), and a `keyup` listener that deletes that key's entry from the repeat map. A key press is handled in this order:
 
-1. `event.ctrlKey || event.altKey || event.metaKey`;
-2. `isTypingTarget(event.target)` (the glossary search, number fields);
-3. `event.defaultPrevented` (the exercise bar's listener handled it: in an exercise on a computer the bar keeps ←, →, −, +, =, Space, Enter and 1–4);
-4. a dialog is open: `document.querySelector('.welcome-backdrop') !== null` or `overlayOpen()` (`chipMenu.ts`); the key list itself is such a dialog, so while it is open only `H` / `?` / Escape reach it (Escape is handled by the dialog);
-5. for the two arrows only: `event.target` is neither `document.body` nor the 3D canvas (a focused tab row, slider, radio group, menu or drawing keeps its own arrows; e.g. `scripts/shots-m39.mjs` and `shots-m54.mjs` press arrows on focused widgets).
+1. ignored if `event.ctrlKey || event.altKey || event.metaKey`;
+2. ignored if `isTypingTarget(event.target)` (the glossary search, number fields);
+3. ignored if `event.defaultPrevented` (another handler, such as the exercise bar's, used it);
+4. **the help key** (`H`, `?`): toggles the key list, unless another modal dialog is open (`document.querySelector('.welcome-backdrop:not([data-testid="key-help-backdrop"])') !== null`: the welcome card, the language dialog). It works while a chip menu or chip card is open.
+5. **every other key** is ignored while any modal dialog is open (`document.querySelector('.welcome-backdrop') !== null`, the key list included) or `overlayOpen()` (`chipMenu.ts`: a chip menu or card, such as the gear's Settings card, is open);
+6. **the two arrows** are ignored unless `event.target` is `document.body` or an `HTMLCanvasElement` (a focused tab row, slider, radio group, menu or drawing keeps its own arrows; e.g. `scripts/shots-m39.mjs` and `shots-m54.mjs` press arrows on focused widgets). The letter keys act whatever has the focus (a focused button does not use W, S, R, F, P or H).
 
-Otherwise `keyAction(event.code, event.key, event.shiftKey, store.getState())`; on a non-null result call `event.preventDefault()`, then dispatch the action or toggle the key list.
+Otherwise `keyAction(event.code, event.key, event.shiftKey, store.getState())`; on a non-null result call `event.preventDefault()`, then dispatch the action or toggle the key list. Escape is not handled here: the open key list closes itself on Escape (8.4).
 
-**Holding a key:** the first `keydown` acts at once; a repeated one (`event.repeat`) acts only when at least **150 ms** (**tunable**) of real time (`performance.now()`) have passed since that key last acted, so a held W trims at about the rate a held − button does. `KeyP` and the help key ignore repeats.
+**Holding a key:** the first `keydown` acts at once; a repeated one (`event.repeat`) acts only when at least **150 ms** (**tunable**) of real time (`performance.now()`) have passed since that key last acted (a `Map<string, number>` from `code` to the time it last acted; `keyup` deletes the entry), so a held W trims at about the rate a held − button does. `KeyP` and the help key ignore repeats.
 
 ### 8.4 The key list (`keyHelp.ts`) and the Settings row
 
-`createKeyHelp(): KeyHelp`, with `interface KeyHelp { open(): void; close(): void; toggle(): void; isOpen(): boolean }`. It builds the same dialog as the language dialog in `settingsMenu.ts` (`welcome-backdrop` > `welcome-card` with `role="dialog"`, `aria-modal`, the rest of the page `inert` while open, Escape and a tap beside the card close it, the focus goes to Close and back to where it was on close). Test ids: `key-help-backdrop`, `key-help` (the card), `key-help-close`.
+`createKeyHelp(): KeyHelp`, with `interface KeyHelp { open(): void; close(): void; toggle(): void; isOpen(): boolean }`. It builds the same kind of dialog as the language dialog in `settingsMenu.ts`, written in `keyHelp.ts` by following that code (do not refactor the language dialog) (`welcome-backdrop` > `welcome-card` with `role="dialog"`, `aria-modal`, the rest of the page `inert` while open, Escape (a capture-phase `keydown` listener on `document` while open, as the language dialog has) and a tap beside the card close it, the focus goes to Close and back to where it was on close). Test ids: `key-help-backdrop`, `key-help` (the card), `key-help-close`.
 
-Content: the title, then a two-column list (`<dl class="key-list">`): the key caps (`<kbd>`, text from code, never translated: `←` `→`, `W` `S`, `R` `F`, `P`, `A` `D`, `J` `L`, `1–4` `Space` `Enter`, `H` `?`) and the description string; then the two notes; then Close (`settings.close`, class `exercise-button`). The `<kbd>` style: 1px border in the card's text colour at 40 % opacity, 4 px radius, 2 px 6 px padding, the app's monospace-free font, `min-width: 1.6em`, centred. No icons.
+Content: the title, then a two-column list (`<dl class="key-list">`): the key caps (`<kbd>`, text from code, never translated: `←` `→`, `W` `S`, `R` `F`, `P`, `A` `D`, `J` `L`, `1–4` `Space` `Enter`, `H` `?`) and the description string; then the two notes; then Close (`settings.close`, class `exercise-button`). The card has the classes `welcome-card language-card key-help-card` (the language card's width). `.key-list { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 12px 0; }`, `dt` holds the caps with 4 px between them, `dd { margin: 0; }`; the two notes are `p.hint` under the list. The `<kbd>` style: 1px border in the card's text colour at 40 % opacity, 4 px radius, 2 px 6 px padding, `font: inherit`, `min-width: 1.6em`, centred. No icons.
 
-**Settings row** (in `buildSettingsBody`, after the language field): `el('div', { class: 'field keys-field', 'data-testid': 'settings-keys-field' })` with the title `settings.keys.label`, the hint `settings.keys.hint` and a button `settings.keys.button` (`data-testid="settings-keys"`, class `exercise-button`) that calls `help.open()`. On a phone layout the row is hidden: `html[data-layout="stacked"] .keys-field { display: none; }`. `createKeyHelp()` is made once in `app.ts` and passed to both `createKeyboard` and the settings body (thread it through the settings builder's options, as the store is).
+**Settings row** (in `buildSettingsBody`, after the language field): `el('div', { class: 'field keys-field', 'data-testid': 'settings-keys-field' })` with the title `settings.keys.label`, the hint `settings.keys.hint` and a button `settings.keys.button` (`data-testid="settings-keys"`, class `exercise-button`) that calls `help.open()`. On a phone layout the row is hidden: `html[data-layout="stacked"] .keys-field { display: none; }`. `createKeyHelp()` is made once in `app.ts`, before the settings are built; `createSettingsContent(store, showWelcome)` gets a third parameter `keyHelp: KeyHelp` and passes it to `buildSettingsBody(store, keyHelp)` (every caller of `createSettingsContent` passes it). `createKeyboard(store, keyHelp)` is called after `createExerciseBar`.
 
-**Exercise bar:** `exercise.bar.keys` gets " · H: all keys" at its end (8.5).
+**Exercise bar:** `exercise.bar.keys` gets " · H: all keys" at its end (8.5), in all four languages (de / no / ru: the drafts' own wording of it). The bar shows that line on a computer only, as today.
 
 ### 8.5 Strings (`ui.json`; English final, de / no / ru AI drafts)
 
@@ -260,7 +267,7 @@ Content: the title, then a two-column list (`<dl class="key-list">`): the key ca
 | `keys.sternThruster` | Stern thruster to port / starboard (Harbour mode) |
 | `keys.bar` | In an exercise: the step bar's rows, its buttons and Show me |
 | `keys.help` | Show or hide this list |
-| `keys.noteRopes` | W, S, R and F work the sheets with Easy ropes. With Realistic ropes you work them at the winches. |
+| `keys.noteRopes` | W, S, R and F work the sheets in Easy mode. In Realistic mode you work them at the winches. |
 | `keys.noteOff` | Keys do nothing while you type in a field or while the app sails an exercise for you. |
 | `settings.keys.label` | Keyboard |
 | `settings.keys.hint` | Press H or ? at any time to see the keys. |
@@ -296,11 +303,13 @@ Computer (1280 × 800), link `?ms=30&js=30&rd=0&ap=off&sea=flat&lb=0` (a link wi
 2. **Sheet keys:** `KeyW` × 2 → `ms=20`; `KeyS` → `ms=25`; `KeyR` → `js=25`; `KeyF` × 2 → `js=35`.
 3. **Autopilot:** `KeyP` → the link no longer has `ap=off` (a hold of the present heading writes no `ap`, `boatParams`); then at once `ArrowLeft` × 5 → the link has `apt=355` (the start heading is 0; the test clock stands still between presses, so the boat has not turned yet); `KeyP` → the link has `ap=off` again.
 4. **Typing does not trigger keys:** open the Learn section, click `learn-search`, type `ws`: `ms` and `js` in the link are unchanged.
-5. **Key list:** click the canvas, press `H`: `key-help` is visible and lists 9 `<dt>` rows; press Escape: hidden. Press `?` (`page.keyboard.press('?')`): visible; click `key-help-backdrop` at its top-left corner: hidden.
+5. **Key list:** click the canvas, press `H`: `key-help` is visible and lists 8 `<dt>` rows; press Escape: hidden. Press `?` (`page.keyboard.press('?')`): visible; click `key-help-backdrop` at its top-left corner: hidden.
 6. **Settings row:** open Settings: `settings-keys` is visible; click it: `key-help` is visible; Close.
-7. **Exercise keeps its keys:** open `?m=exercise&ex=points-of-sail` (use `exerciseStartLink`'s query from the exercises test, or the link the exercise list writes), start it (`exercise-start`), click the canvas, `ArrowRight` once: the link's `rd` is unchanged (the bar took the key).
+7. **No steering in an exercise:** open `?m=exercise&ex=points-of-sail`, click `exercise-start` (the card's *Do it myself* button; it has class `exercise-start` and test id `exercise-start`: check with `grep -n "exercise-start" src/ui/exercisePanel.ts` and use the id it has), click the canvas, `ArrowRight` once: the link's `rd` and `apt` are unchanged.
 
-Phone (390 × 844), link `?sea=flat`: open Settings: `settings-keys-field` is not visible.
+Phone (390 × 844), link `?sea=flat`: open Settings with `openSettings` (`scripts/ui.mjs`): `settings-keys-field` is not visible.
+
+Register the group in `scripts/shots.mjs` (import and `liveGroups`); it has no scenes.
 
 Record the group's time in `.github/ci-times.json` (`"m101"`).
 
@@ -361,14 +370,14 @@ Every bearing is wrapped with `((x % 360) + 360) % 360`. `current` is true for e
 
 ### 9.3 Drawing (`drawPointRose(ctx, state, sizePx)`)
 
-Called in `drawMiniMap` after `drawBuoys` and **before** `drawBoat`, so the boat sits on top. Inputs: `windFrom = compassDeg(state.wind.dirDeg)`, `twa = state.rig.wind.twaDeg`, `heading = state.boat.headingDeg`. The map is north-up, so a bearing `b` points to screen direction `(sin b, −cos b)` from the centre (`bearingToScreen` does this; use it).
+Called in `drawMiniMap` after `drawBuoys` and **before** `drawBoat`, so the boat sits on top. `sizePx` is the `sizePx` `drawMiniMap` gets, the canvas's CSS width (`sizedFor`): **92** on a phone and **156** on a computer (the 96 / 160 px button has a 2 px border). Wrap the drawing in `ctx.save()` / `ctx.restore()` and set `setLineDash([])`, `lineCap = 'butt'` and `lineJoin = 'miter'` at its start (the earlier drawings leave other values). Build the viewport with `miniMapViewport(state, sizePx)` for `bearingToScreen`. Inputs: `windFrom = compassDeg(state.wind.dirDeg)`, `twa = state.rig.wind.twaDeg`, `heading = state.boat.headingDeg`. The map is north-up, so a bearing `b` points to screen direction `(sin b, −cos b)` from the centre (`bearingToScreen` does this; use it).
 
 Data in `MINI_MAP` (all **tunable**, CSS px):
 
 ```ts
 pointRose: {
   /** Ring radius as a share of the canvas size. */
-  radiusShare: 0.4,
+  radiusShare: 0.34,
   /** Degrees left out at each end of an arc, so the bands read as separate pieces. */
   gapDeg: 2,
   lineWidth: 2,
@@ -382,19 +391,19 @@ pointRose: {
   arrowBasePx: 7,
   /** The name at the bottom centre: font size, distance of its middle from the bottom edge. */
   nameFontPx: { stacked: 10, side: 12 },
-  nameFromBottomPx: 8,
+  nameFromBottomPx: 7,
 },
 ```
 
-1. **Arcs:** for each arc of `pointOfSailArcs(windFrom, twa)`, stroke a circle arc of radius `r = radiusShare × sizePx` round the canvas centre, from `fromBearingDeg + gapDeg` to `toBearingDeg − gapDeg`, clockwise. Colour: `noGo`/`noGoCurrent` for `no_go`, else `band`/`bandCurrent`; width `currentLineWidth` for the current arc, else `lineWidth`. (Canvas angles: bearing `b` is canvas angle `(b − 90)` in radians, clockwise positive, because canvas y points down.)
+1. **Arcs:** for each arc of `pointOfSailArcs(windFrom, twa)`, stroke a circle arc of radius `r = radiusShare × sizePx` (CSS px; the context is already scaled by the device pixel ratio) round the canvas centre, from `fromBearingDeg + gapDeg` to `toBearingDeg − gapDeg`, clockwise. Colour: `noGo`/`noGoCurrent` for `no_go`, else `band`/`bandCurrent`; width `currentLineWidth` for the current arc, else `lineWidth`. (Canvas angles: bearing `b` is canvas angle `(b − 90)` in radians, clockwise positive, because canvas y points down.)
 2. **Arrow:** a filled triangle in the current arc's colour, its base centred on the ring at bearing `heading`, its tip `arrowLengthPx` further out, base width `arrowBasePx`, with a 2 px stroke in `COLOURS.halo` drawn first.
 3. **Name:** `haloText(ctx, t(\`pos.short.${id}\`), sizePx / 2, sizePx − nameFromBottomPx, { bold: true, size })`, `size = nameFontPx.stacked` when `sizePx < 120` else `nameFontPx.side`. If the measured text (`ctx.measureText` after setting the font) is wider than `sizePx − 8`, scale the size down by that ratio, not below 8 px.
 
-Nothing else on the mini-map moves. The wind arrow (top left) and "N" (top right) lie outside the ring at both sizes (ring radius 0.4 × size; their centres are 14 px and 10 px from the corners).
+Nothing else on the mini-map moves. With `radiusShare` 0.34 the ring (31.3 px on a phone, 53 px on a computer, plus half the line width) stays clear of the wind arrow (its inner end is about 36 px from the centre on a phone), of "N", and of the name (on a phone the ring's lowest point is at y ≈ 79, the name spans y 80–90).
 
 ### 9.4 The button (`miniMap.ts`)
 
-After each draw, set `button.dataset.pointOfSail` to the current id and, when it changes, the `aria-label` to `t('minimap.openWithPoint', { point: t(\`pos.short.${id}\`) })`. (The browser checks read the attribute; a screen reader hears the point of sail.)
+After each draw, set `button.dataset.pointOfSail` to the current id and, when it changes, the `aria-label` to (until the first draw the button keeps `minimap.open`, which stays in `ui.json`; a language change reloads the page) `t('minimap.openWithPoint', { point: t(\`pos.short.${id}\`) })`. (The browser checks read the attribute; a screen reader hears the point of sail.)
 
 ### 9.5 Strings (`ui.json`; English final, de / no / ru AI drafts)
 
@@ -425,8 +434,9 @@ No PHYSICS_TRUTHS rule changes (the bands are PT-21 / PT-22's existing display d
 
 Labels contain "m28" (so `openPage` keeps the mini-map on). Add to `scripts/shots-m28.mjs`, as one live check on the phone page and one on the computer page, about **10 s** in all (the group is 85 s today):
 
-1. **Scene** `m28-point-rose` (in the file's scene list): `?wd=0&ws=12&hdg=315&ms=12&js=0&ap=hdg&sea=flat&lb=0` (close-hauled on starboard tack), phone and computer sizes.
-2. **Live, phone (390 × 844) and computer (1280 × 800):** open the scene's link; wait 1 s (`page.waitForTimeout`); the `mini-map` button has `data-point-of-sail="close_hauled"` and its `aria-label` contains "Close-hauled". Read the canvas pixels (`page.evaluate` with `getImageData` on `mini-map-canvas`): at bearing 312.5 (the middle of the current arc 305–320) and radius `0.4 × canvas.width`, the darkest pixel of the 5 × 5 square round that point has R + G + B below 300 (the current arc's colour is `#14325a`, the water `#d9ebf6`).
+1. **Scene** `m28-point-rose` (in the file's scene list, `waitMs: 3000` as the others): `?wd=0&ws=12&hdg=315&ms=12&js=0&ap=hdg&sea=flat&lb=0` (close-hauled on starboard tack), phone and computer sizes. Add the live checks as numbered blocks after the file's last one, with its `check` helper.
+2. **Live, phone (390 × 844) and computer (1280 × 800):** open the scene's link; wait 1 s (`page.waitForTimeout`); the `mini-map` button has `data-point-of-sail="close_hauled"` and its `aria-label` contains "Close-hauled".
+2b. **Live, computer, pixels:** open `?wd=0&ws=12&hdg=318&ms=12&js=0&ap=hdg&sea=flat&lb=0` (TWA 42°: close-hauled, the current arc 305–320° with the arrow at 318°); wait 1 s. Read `mini-map-canvas` with `getImageData` in device pixels: centre `(canvas.width / 2, canvas.height / 2)`, radius `0.34 × canvas.width`, point at bearing `b` = `(cx + r sin b, cy − r cos b)`. At bearing **310** (inside the drawn arc 307–318, more than 4° from the arrow) the darkest pixel of the 5 × 5 square round the point has R + G + B **below 300** (`#14325a` sums to 160); at bearing **50** (the same band on the port side, drawn thin and pale) the darkest pixel of its 5 × 5 square sums to **more than 400** (prototype of the blend over `#d9ebf6`: about 509). So the check fails if the current arc is not drawn darker.
 3. **Live, computer:** open `?wd=0&ws=12&hdg=270&ms=60&js=100&ap=hdg&sea=flat&lb=0` (wind on the beam, starboard side): `data-point-of-sail="beam_reach"` after 1 s.
 
 Record the new time of `m28` in `.github/ci-times.json` if it changes by more than half (it should not).
@@ -439,7 +449,7 @@ No older check reads the mini-map's `aria-label` text (planning grep for `minima
 
 ### 9.9 Done when / not in this milestone
 
-**Done when:** `npm run check` passes; the groups in 9.8 pass; the PR's checklist has full links.
+**Done when:** `npm run check` passes; the groups in 9.8 pass; the PR's checklist has full links; CODE_MAP's `pointsOfSail.ts` line says it also gives the mini-map's arcs, and the `miniMap.ts` line that it shows the point of sail.
 
 **Not in this milestone:** points of sail on the 3D view, on the wind dial in the Conditions section or on the instrument strip; changing the bands.
 
@@ -470,7 +480,7 @@ Both new exercises also appear in the exercise list like any other (no hidden fl
 - `src/app/exercisePilots.ts`: `windShiftPilot`, `weatherHelmPilot`, and their cases in `pilotFor` (10.3).
 - `src/ui/learnTab.ts`: the Feel it button (10.4).
 - `content/lang/*/exercises.json`: the two exercises' texts (10.5); `content/lang/*/ui.json`: two strings; `content/lang/*/glossary.json`: `term_wind_shift` alternatives (10.5).
-- `tests/exercisePilots.test.ts`, `tests/exercises.test.ts`, `tests/physicsTruths10.test.ts` (10.6). `scripts/shots-m103.mjs` (new), registered in `shots.mjs`.
+- `tests/exercisePilots.test.ts`, `tests/exercises.test.ts`, `tests/physicsTruths10.test.ts` (10.6). `scripts/shots-m103.mjs` (new), registered in `shots.mjs` (import and `liveGroups`), and `m103` added to the live groups listed in `tests/ciPlan.test.ts` (around line 342) in the same order.
 - `docs/EXERCISES.md`: the two exercises in the catalogue, in the format of the others. `docs/CODE_MAP.md`: `feelIt` in the exercises row if the row names the definition's fields.
 
 ### 10.2 Data (`content/exercises/exercises.json`)
@@ -514,8 +524,8 @@ Add `"feelIt": ["term_close_hauled", "term_close_reach", "term_beam_reach", "ter
   "wind": { "points": [
     { "at": "10:00", "fromDeg": 0, "kn": 12, "gustPct": 0 },
     { "at": "10:02", "fromDeg": 0, "kn": 12, "gustPct": 0 },
-    { "at": "10:03", "fromDeg": 340, "kn": 12, "gustPct": 0 },
-    { "at": "10:09", "fromDeg": 340, "kn": 12, "gustPct": 0 },
+    { "at": "10:03", "fromDeg": -20, "kn": 12, "gustPct": 0 },
+    { "at": "10:09", "fromDeg": -20, "kn": 12, "gustPct": 0 },
     { "at": "10:10", "fromDeg": 20, "kn": 12, "gustPct": 0 },
     { "at": "11:00", "fromDeg": 20, "kn": 12, "gustPct": 0 }
   ] },
@@ -541,6 +551,8 @@ Add `"feelIt": ["term_close_hauled", "term_close_reach", "term_beam_reach", "ter
 What the learner sees first (both exercises open in setup, paused, as every exercise does): **weather-helm**: 10 knots from the north, close-hauled-to-close-reach on starboard tack (TWA 50°), sails Good, heel about 12°, the learner's own camera (an exercise's start never sets the camera: `cam` is one of the viewer's keys, `VIEWER_KEYS` in `urlState.ts`), the autopilot holding 310°; **wind-shift**: 12 knots from the north, close-hauled on starboard tack (TWA 45°), sails Good, about 6.4 knots, the default camera, the autopilot holding 315°.
 
 The timetables and why (prototype on the real model, 2026-11-16, wind changed in one go, 20–60 s settled):
+
+Wind directions in a timetable are written in −180…180 (`windProblems` in `tests/exercises.test.ts`): 340° is `-20`. Each change between two points is a one-minute ramp (`scriptMean` interpolates).
 
 - *wind-shift*: wind 0° → 340° (a 20° header): TWA 45° → **26.1°**, main *luffing*, 6.39 → **2.93** kn. Autopilot −20° (to 295°): TWA **45.1°**, both sails *good*, 5.34 kn. Wind → 20° (a 40° lift from 340°): TWA **85.4°**, both sails *stalled*. Autopilot +40° (to 335°): TWA **44.4°**, both *good*, 6.28 kn. The header is held 10:03–10:09, six app minutes at ×1 for step *bear-away*; the waits run at ×8 and ×16 (values of `windModes.timeScales`).
 - *weather-helm*: at 10 kn the autopilot holds **3.8°** of rudder at **11.9°** heel; at 20 kn **18.0°** of rudder at **31.1°** heel (the heading drifts 5° towards the wind while the autopilot catches up); main sheet eased to 30 %: **5.6°** of rudder at **18.0°** heel (the main reads *luffing* from 30 % on; the step checks heel and the sheet, not the main's trim).
@@ -571,7 +583,7 @@ In `pilotFor`: `case 'wind-shift': return ropes === 'easy' ? windShiftPilot() : 
 
 ### 10.4 Learn: the Feel it button (`learnTab.ts`)
 
-In an entry's view, after *Show it working* (`learn-show-me`) and before *Where is it?*: if `feelItFor(entry.id)` returns `def` and `pilotFor(def.id, 'easy', def.ropes) !== null`, show
+In an entry's view, directly after the *Show it working* block (`learn-show-me`; every tour term has one) and before the `learn-spotlight-hint` that follows the last button: if `feelItFor(entry.id)` returns `def` and `pilotFor(def.id, 'easy', def.ropes) !== null`, show
 
 - a button `learn.feelIt` (`data-testid="learn-feel-it"`, the same class as `learn-show-me`),
 - under it a hint `learn.feelItHint` with `{title}` = the exercise's title in the current language (`exerciseText(def.id, lang).title`), class `hint`.
@@ -587,7 +599,9 @@ A tap: `loadExercise(store, def.id, def.ropes)` (`exercisePanel.ts`), then `stor
 | `learn.feelIt` | Feel it |
 | `learn.feelItHint` | The app sails “{title}” for you and stops after each step. |
 
-`glossary.json`, `term_wind_shift.alternatives`: add `{ "term": "header", "note": "a shift from further ahead: bear away" }` and `{ "term": "lift", "note": "a shift from further aft: you can head up" }` in English; the same two as AI drafts in de / no / ru. If `term_wind_shift.what` does not yet say what a lift is, add the sentence "A shift that comes from further aft is a lift: she can head up and point higher."
+`glossary.json`, `term_wind_shift.alternatives`: add `{ "term": "header", "note": "a shift from further ahead: bear away" }` and `{ "term": "lift", "note": "a shift from further aft: you can head up" }` in English; the same two as AI drafts in de / no / ru. (`term_wind_shift.what` already explains both header and lift; only the alternatives are added.)
+
+The two exercises' entries go at the same positions in all four `content/lang/*/exercises.json` files as in `content/exercises/exercises.json` (`weather-helm` after `gybing`, `wind-shift` after `gusts`), with the steps and mistakes in the data's order (the en / ru key-order test). Those files have one `$status`, not a status per entry. The Russian drafts follow the language test's Latin-word rule (`content/lang/latin-words.json`).
 
 `exercises.json` (English final; de / no / ru AI drafts with the same keys):
 
@@ -661,16 +675,17 @@ A tap: `loadExercise(store, def.id, def.ropes)` (`exercisePanel.ts`), then `stor
 ### 10.6 Tests
 
 - `tests/exercises.test.ts`: **M103 feelIt** — every `feelIt` id is a registry `term` (`kind: "term"`); no id appears in two exercises; every exercise with `feelIt` has a pilot (`pilotFor(id, 'easy', def.ropes) !== null`). `feelItFor('term_wind_shift')?.id === 'wind-shift'`, `feelItFor('term_run')?.id === 'points-of-sail'`, `feelItFor('part_boom') === undefined`. The existing schema, text and order tests cover the two new exercises (update their counts if they count).
-- `tests/exercisePilots.test.ts`: add both to `SAILING_LIMITS` with the measured step times, each limit `ceil(1.2 × measured + 3)` (the file's rule), and write the measured app seconds in a comment as M97 did. Both good runs end `done` with no mistake.
+- `tests/exercisePilots.test.ts`: add both to `SAILING_LIMITS`. The list serves the good run and the "Show me from each step" test, so measure each step's app seconds both ways and use `ceil(1.2 × the larger + 3)` (the file's rule); write the measured values in a comment as M97 did. Both good runs end `done` with no mistake.
 - `tests/physicsTruths10.test.ts` (rule tests named after their ids):
-  - **PT-21 header (wind-shift):** in the good run, at the first frame of step *bear-away* (10:03, still on 315°): `|twaDeg|` in **[20, 32]** (prototype 26.1) and the main's trim is `luffing`.
-  - **PT-29 weather helm (weather-helm):** at the first frame of step *ease-main*: `|controls.ctl_rudder|` ≥ **12** (prototype 18.0) and `|heelDeg|` in [25, 40]; at the end of the run: `|ctl_rudder|` ≤ **9** (prototype 5.6) and `|heelDeg|` ≤ 22.
+  - **PT-21 header (wind-shift):** start the exercise (`started('wind-shift')` as in `exercisePilots.test.ts`) and step it with **no pilot** (the autopilot holds 315°) until the local hour reaches 10.0833 (10:05, two minutes after the header's ramp ends): `|twaDeg|` in **[20, 32]** (prototype 26.1, settled) and the main's trim is `luffing`.
+  - **PT-29 weather helm (weather-helm):** start the exercise and step it with no pilot until 10:04 (local hour 10.0667, two minutes after the wind reached 20 kn): `|controls.ctl_rudder|` ≥ **12** (prototype 18.0) and `|heelDeg|` in **[25, 40]** (prototype 31.1). Then set `ctl_mainsheet` to 30 and step 60 app seconds more: `|ctl_rudder|` ≤ **9** (prototype 5.6) and `|heelDeg|` ≤ **22** (prototype 18.0).
+  - If the good run of *weather-helm* raises a mistake (the `round-up` alert at 31° of heel), lower the 20-knot points of its timetable to 18 (**tunable**), re-measure, and report the before and after values in 10.10. Never widen a band.
 
 ### 10.7 Browser checks (`scripts/shots-m103.mjs`, group `m103`, test clock)
 
 A new group (a new screen path: Learn → Watch). Budget **90 s**: two pages, one watched step each, on the test clock. `openPage(viewport, label, query, { testClock: true })`.
 
-1. **Phone (390 × 844), touch:** `?learn=term_wind_shift&m=learn` (the Learn entry open). `learn-feel-it` is visible and the hint names "Header and lift". Tap it (a touch tap: `locator.tap()` on a page with `hasTouch`). Then: the link has `m=exercise` and `ex=wind-shift` (`waitForLink`); the exercise is running in Watch mode (the step card shows the step text of *header-comes*); advance `page.waitForTimeout(25_000)` (180 app s at ×8 is 22.5 s): the card shows step *bear-away*'s goal text "Bear away 20°".
+1. **Phone (390 × 844), touch:** `?learn=term_wind_shift&m=learn` (the Learn entry open). `learn-feel-it` is visible and the hint names "Header and lift". Tap it (a touch tap: `locator.tap()` on a page with `hasTouch`). Then: the link has `m=exercise` and `ex=wind-shift` (`waitForLink`); the step card shows *header-comes*'s goal "Wait for the wind to shift". Then poll with `page.waitForTimeout(1000)`, at most 40 times, until the step card (`src/ui/stepCard.ts`) shows *bear-away*'s goal "Bear away 20°", or Watch mode's *Next step* button (string `exercise.demo.next`; use the test id it has in the code) is visible; in that case tap it and expect "Bear away 20°" within 5 more polls.
 2. **Computer (1280 × 800):** `?learn=term_weather_helm&m=learn`: click `learn-feel-it`: the link has `ex=weather-helm`, and the step card shows *feel-the-helm*'s goal "Watch the wheel as the wind rises."
 3. **No button where there is no tour:** `?learn=part_boom&m=learn`: `learn-feel-it` count 0.
 
@@ -678,7 +693,7 @@ Record `"m103"` in `.github/ci-times.json`.
 
 ### 10.8 Older checks and tests this milestone changes
 
-The exercise list grows from 17 to 19. Run `grep -n -E "17|seventeen|exercise-item-" scripts/shots-m*.mjs tests/*.ts README.md docs/EXERCISES.md | grep -i -E "exerc|item|list|seventeen"` and update every count of the list (the planning grep found no hard-coded 17 in `tests/`; the README says "seventeen exercises": make it "nineteen"). Groups that open the exercise list or Watch mode: `SHOTS_ONLY=m103,m66,m81,m82,m93,m96,m20`.
+The exercise list grows from 17 to 19. Run `grep -n -E "17|seventeen|exercise-item-" scripts/shots-m*.mjs tests/*.ts README.md docs/EXERCISES.md | grep -i -E "exerc|item|list|seventeen"` and update every count of the list (the planning grep found no hard-coded 17 in `tests/`; the README says "Seventeen exercises today" and lists them by group: make it "Nineteen", add "weather helm" to the *Sailing* list and "a header and a lift (wind shifts)" to *Wind and weather*). Groups that open the exercise list or Watch mode: `SHOTS_ONLY=m103,m66,m81,m82,m93,m96,m20`.
 
 `CI groups: m66, m81, m82, m93, m96, m20`
 
