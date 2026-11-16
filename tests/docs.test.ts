@@ -86,7 +86,14 @@ describe('docs/WORKFLOW.md and the checklist archive', () => {
   const milestoneHeading = /^#{3,4} M\d+[a-z]?:/m;
 
   it('keeps no checklist of a merged milestone: those are in docs/archive/CHECKLISTS.md', () => {
-    expect(read('docs/WORKFLOW.md')).not.toMatch(milestoneHeading);
+    // A planned milestone keeps its checklist in WORKFLOW until it is merged; a merged one is archived.
+    const ids = (text: string) =>
+      new Set(
+        [...text.matchAll(new RegExp(milestoneHeading.source, 'gm'))].map((m) => m[0].trim()),
+      );
+    const archived = ids(read('docs/archive/CHECKLISTS.md'));
+    const both = [...ids(read('docs/WORKFLOW.md'))].filter((heading) => archived.has(heading));
+    expect(both).toEqual([]);
     expect(read('docs/archive/CHECKLISTS.md')).toMatch(/^#{3,4} M99:/m);
   });
 
