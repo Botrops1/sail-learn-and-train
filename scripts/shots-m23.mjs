@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { closeSettings, openSettings, sectionIds, showSection } from './ui.mjs';
+import { chooseLanguage, closeSettings, openSettings, sectionIds, showSection } from './ui.mjs';
 
 /** Every size, all in Russian; the section is opened by its id. */
 export const M23_SCENES = [
@@ -138,8 +138,8 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       JSON.stringify(titles),
     );
     await openSettings(page);
-    const checked = await page.getByTestId('language-ru').isChecked();
-    check('the Russian segment is checked', checked, String(checked));
+    const shown = (await page.getByTestId('language-open').innerText()).trim();
+    check('the Language button names Русский', shown === 'Русский', shown);
     await context.close();
   }
 
@@ -221,7 +221,7 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       '?lang=ru&wd=90&ws=12',
     );
     await openSettings(page);
-    await page.locator('label.segment', { has: page.getByTestId('language-en') }).click();
+    await chooseLanguage(page, 'en');
     await page.waitForURL((url) => !url.search.includes('lang='), { timeout: 5000 });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
     const ropeTitle = (
@@ -233,13 +233,75 @@ export async function liveM23Checks({ openPage, viewports, outDir, prefix, probl
       ropeTitle,
     );
     await openSettings(page);
-    await page.locator('label.segment', { has: page.getByTestId('language-ru') }).click();
+    await chooseLanguage(page, 'ru');
     await page.waitForURL((url) => url.search.includes('lang=ru'), { timeout: 5000 });
     await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
     const title = (
       await page.getByTestId('section-toggle-ropes').locator('.section-head-title').innerText()
     ).trim();
     check('Russian again: the section reads Концы', title === 'Концы', title);
+    await context.close();
+  }
+
+  // 4b. The Language dialog: one button in Settings, a dialog with every language, Norwegian on its own link.
+  {
+    const { context, page } = await openPage(phone, 'm23 language dialog', '?wd=90&ws=12');
+    await openSettings(page);
+    check(
+      'Settings show one Language button, no row of languages',
+      (await page.getByTestId('language-open').count()) === 1 &&
+        (await page.locator('[data-testid="language-setting"] input').count()) === 0,
+      'one button',
+    );
+    await page.getByTestId('language-open').click();
+    const dialog = page.getByTestId('language-dialog');
+    await dialog.waitFor({ state: 'visible' });
+    const codes = await dialog
+      .locator('input[type="radio"]')
+      .evaluateAll((nodes) => nodes.map((node) => node.value));
+    check(
+      'the dialog lists English, German, Norwegian and Russian',
+      codes.join() === 'en,de,no,ru',
+      codes.join(),
+    );
+    check(
+      'the current language is checked',
+      await page.getByTestId('language-en').isChecked(),
+      'en',
+    );
+    await shot(page, 'live-phone-m23-language-dialog');
+    await page.keyboard.press('Escape');
+    await dialog.waitFor({ state: 'hidden' });
+    const back = await page.evaluate(
+      () => document.activeElement?.getAttribute('data-testid') ?? null,
+    );
+    check(
+      'Escape closes the dialog and the button has the focus',
+      back === 'language-open',
+      String(back),
+    );
+    await page.getByTestId('language-open').click();
+    await dialog.waitFor({ state: 'visible' });
+    await page.getByTestId('language-backdrop').click({ position: { x: 5, y: 5 } });
+    await dialog.waitFor({ state: 'hidden' });
+    check('a tap beside the card closes the dialog', true, 'closed');
+    await chooseLanguage(page, 'no');
+    await page.waitForURL((url) => url.search.includes('lang=no'), { timeout: 5000 });
+    await page.waitForSelector('canvas.scene-canvas', { state: 'attached', timeout: 10_000 });
+    const lang = await page.evaluate(() => document.documentElement.lang);
+    const ropes = (
+      await page.getByTestId('section-toggle-ropes').locator('.section-head-title').innerText()
+    ).trim();
+    check(
+      'Norwegian: html lang is no and the Ropes section reads Tau',
+      lang === 'no' && ropes === 'Tau',
+      `${lang} ${ropes}`,
+    );
+    await openSettings(page);
+    const shown = (await page.getByTestId('language-open').innerText()).trim();
+    check('the Language button names Norsk', shown === 'Norsk', shown);
+    await shot(page, 'live-phone-m23-norwegian-settings');
+    problems.push(...(await auditPage(page, 'm23 Norwegian settings')));
     await context.close();
   }
 

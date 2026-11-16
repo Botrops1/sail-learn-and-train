@@ -4,7 +4,15 @@
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
 import { findClipped } from './shots-m23.mjs';
-import { dragHandle, setSheet, showSection, showTab, tabNow, waitForLink } from './ui.mjs';
+import {
+  chooseLanguage,
+  dragHandle,
+  setSheet,
+  showSection,
+  showTab,
+  tabNow,
+  waitForLink,
+} from './ui.mjs';
 
 const SIDE = '?cam=side-port';
 
@@ -168,7 +176,7 @@ export async function liveM51Checks({ openPage, viewports, outDir, prefix, probl
       'hidden',
     );
     await shot(page, 'live-phone-m51-settings');
-    await page.locator('label.segment', { has: page.getByTestId('language-ru') }).click();
+    await chooseLanguage(page, 'ru');
     await page.waitForURL(/lang=ru/);
     await page.getByTestId('panel-tab-settings').waitFor();
     check(

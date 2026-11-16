@@ -5638,6 +5638,40 @@ html[data-layout] .exercise-stack[data-place='row'] {
   width: 100%;
 }
 
+/* The language row in Settings and its dialog: one button however many languages there are. */
+.language-open {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: var(--touch);
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.language-open::after {
+  content: '›';
+  color: var(--muted);
+  font-size: 1.3em;
+}
+
+.language-open:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.language-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .footer .about-button {
   flex-basis: 100%;
   min-height: var(--touch);

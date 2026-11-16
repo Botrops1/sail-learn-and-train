@@ -4,7 +4,7 @@
 // on the side layout (820 x 1000).
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { closeSettings, openSettings, setMode } from './ui.mjs';
+import { chooseLanguage, closeSettings, openSettings, setMode } from './ui.mjs';
 
 const SIDE = '?cam=side-port';
 
@@ -206,7 +206,7 @@ export async function liveM52Checks({ openPage, viewports, outDir, prefix, probl
       await openSettings(page);
       await Promise.all([
         page.waitForNavigation({ waitUntil: 'networkidle' }),
-        page.locator('label:has([data-testid="language-ru"])').click(),
+        chooseLanguage(page, 'ru'),
       ]);
       await page.waitForSelector('canvas.scene-canvas', { state: 'attached' });
       await page.waitForTimeout(500);

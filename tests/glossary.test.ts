@@ -575,6 +575,25 @@ describe('quoted UI labels (PHASE4_SPEC 8.4)', () => {
     }
     expect(checked).toBeGreaterThan(10);
   });
+
+  it('every Norwegian text that belongs to an English text quoting a label uses the Norwegian wording', () => {
+    const no = JSON.parse(readFileSync('content/lang/no/ui.json', 'utf8')) as Record<
+      string,
+      string
+    >;
+    let checked = 0;
+    for (const id of REGISTRY_IDS) {
+      const english = fields(textOf(id, 'en'));
+      const norwegian = fields(textOf(id, 'no')).join('\n');
+      for (const key of Object.keys(QUOTED_UI_LABELS)) {
+        if (english.some((text) => quoting(text, key))) {
+          checked++;
+          expect(norwegian, `no/${id} quotes ${key}`).toContain(`«${no[key]}»`);
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(10);
+  });
 });
 
 describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
@@ -661,6 +680,17 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
     expect(
       buildExercisesReviewDoc('de') === readFileSync('docs/review/de-exercises.md', 'utf8'),
       'a German exercise text changed: run `npm run review-doc -- de` and commit docs/review/de-exercises.md',
+    ).toBe(true);
+  });
+
+  it('docs/review/no.md and no-exercises.md (the Norwegian texts) are up to date', () => {
+    expect(
+      buildReviewDoc('no') === readFileSync('docs/review/no.md', 'utf8'),
+      'a Norwegian text changed: run `npm run review-doc -- no` and commit docs/review/no.md',
+    ).toBe(true);
+    expect(
+      buildExercisesReviewDoc('no') === readFileSync('docs/review/no-exercises.md', 'utf8'),
+      'a Norwegian exercise text changed: run `npm run review-doc -- no` and commit docs/review/no-exercises.md',
     ).toBe(true);
   });
 

@@ -1,0 +1,2090 @@
+{
+  "$comment": "Learn entries in one language (PHASE4_SPEC 3.2). Keys are registry ids. English is the source language; other languages translate it.",
+  "language": "no",
+  "entries": {
+    "rope_mainsheet": {
+      "name": "Storskjøt",
+      "alternatives": [],
+      "short": "Tauet som lar bommen og storseilet svinge ut, eller drar dem inn igjen.",
+      "what": "Å fire (slippe ut) storskjøtet lar vinden presse bommen lenger ut; å hale det inn drar bommen tilbake mot midten. Tauet begrenser bare hvor langt bommen kan gå: med vinden forfra gjør fiing det bare slakt. Nær midten flytter litt tau bommen mye; langt ute flytter mye tau den bare litt.",
+      "onThisBoat": "Et tysk storskjøtsystem: ett tau med to ender, én på hver side av cockpiten (stopperne heter «Main sheet» og «MAIN SHEET»). Det løper gjennom tre blokker under bommen og to fjærmonterte blokker bak på dekkshuset. Det finnes ingen traveller (en glidende vogn for de nederste blokkene).",
+      "mistakes": [
+        {
+          "mistake": "Å fire det langt mer enn vinden krever.",
+          "fix": "Storseilet slår langs forkanten. Hal inn til slagingen akkurat stopper."
+        },
+        {
+          "mistake": "Å holde det hardt inne i et vindkast.",
+          "fix": "Båten krenger mye og dreier opp i vinden av seg selv. Fire storskjøtet for å slippe kastet ut."
+        },
+        {
+          "mistake": "Å åpne stopperen under belastning mens tauet ikke ligger på en vinsj.",
+          "fix": "Tauet løper fort ut og bommen flyr ut. Legg tauet på vinsjen først, og åpne så stopperen."
+        }
+      ],
+      "showMe": "Vind fra siden og storskjøtet fiet til 60 %: bommen har svingt langt ut. Trykk på «Storskjøt» under og hal det inn: bommen kommer tilbake mot midten.",
+      "textStatus": "draft"
+    },
+    "rope_jib_sheet": {
+      "name": "Fokkeskjøt",
+      "alternatives": [
+        {
+          "term": "Forseilskjøt"
+        }
+      ],
+      "short": "Tauet som bestemmer hvor langt fokken kan svinge ut.",
+      "what": "Å hale fokkeskjøtet inn drar bakre hjørne av fokken mot båten; å fire det lar vinden presse fokken ut. På en selvslående fokk lar fiing mest toppen av seilet vri seg åpen, i stedet for at hele seilet svinger ut.",
+      "onThisBoat": "Ett skjøt går fra bakre hjørne av fokken til en vogn på en kort skinne foran masten, med 2:1 talje (et trinsesystem som halverer trekket), så ned langs masten og akterover til stopperne på styrbord side. Stopperen sier «Genoa sheet», men seilet er en fokk. Helt fiet når fokken bare omtrent 30° ut.",
+      "mistakes": [
+        {
+          "mistake": "Å fire det på halvvind og vente at fokken svinger langt ut.",
+          "fix": "En selvslående fokk kan ikke gå langt ut; mer fiing vrir bare toppen åpen. Fire til vimplene strømmer, ikke mer."
+        },
+        {
+          "mistake": "Å rulle inn fokken mens skjøtet er stramt.",
+          "fix": "Fokken slutter å rulle seg opp. Fire fokkeskjøtet først, og dra så i rulletauet."
+        },
+        {
+          "mistake": "Å hale det hardt inn med vinden fra siden.",
+          "fix": "Fokken stalles: vimplene på den andre siden henger. Fire til de strømmer."
+        }
+      ],
+      "showMe": "Vind fra siden og fokkeskjøtet helt fiet: fokken er bare omtrent 30° ute, men toppen har vridd seg åpen. Trykk på «Fokkeskjøt» under og hal det inn for å se fokken flate seg ut.",
+      "textStatus": "draft"
+    },
+    "rope_vang": {
+      "name": "Kicker",
+      "alternatives": [
+        {
+          "term": "Bomstrekk"
+        }
+      ],
+      "short": "Drar bommen ned, som holder storseilet flatere og hindrer at toppen vrir seg åpen.",
+      "what": "Kickeren går fra nederst på masten til undersiden av bommen. Når den er hentet inn, holder den bommen nede, så seilet blir flatere med mindre tvist. Når den er fiet, stiger bomenden og toppen av seilet vrir seg åpen. Når storskjøtet er fiet godt ut, er det kickeren, ikke skjøtet, som avgjør hvor høyt bommen står.",
+      "onThisBoat": "En stiv kicker (en stag med gassfjær inni) med taubloksystem. Fjæren holder bommen oppe, så bommen faller ikke når kickeren fires; tauet drar den bare ned. Stopperen sitter på babord side, merket «Vang».",
+      "mistakes": [
+        {
+          "mistake": "Å stole på storskjøtet for å holde bommen nede på halvvind.",
+          "fix": "Langt ute drar skjøtet sideveis, ikke ned, og bommen løftes. Hal inn kickeren for å holde den nede."
+        },
+        {
+          "mistake": "Å hale kickeren og toppenanten stramt samtidig.",
+          "fix": "De drar mot hverandre (begge tauene blir røde i appen). Fire toppenanten når seilet er satt."
+        }
+      ],
+      "showMe": "Vind 20 kn fra siden, kickeren fiet helt ut: bomenden har løftet seg og toppen av storseilet vrir seg åpen. Trykk på «Kicker» under og hal den inn: bommen kommer ned og seilet flates ut.",
+      "textStatus": "draft"
+    },
+    "rope_topping_lift": {
+      "name": "Toppenant",
+      "alternatives": [
+        {
+          "term": "Bomløfter"
+        }
+      ],
+      "short": "En line fra toppen av masten til enden av bommen som kan holde bommen oppe.",
+      "what": "Toppenanten bærer bommen når seilet ikke holder den oppe, for eksempel når seilet er rullet bort. Hvis den står stram under seiling, motarbeider den kickeren og ødelegger seilets form, så den fires når seilet er satt.",
+      "onThisBoat": "Merket «Boom lift» på babord stoppere. Fjæren i den stive kickeren holder allerede bommen oppe, så på denne båten bærer toppenanten bare bommen når den hales høyere enn fjæren holder den.",
+      "mistakes": [
+        {
+          "mistake": "Å la den stå stram under seiling mens kickeren er hentet inn.",
+          "fix": "De to tauene motarbeider hverandre (begge blir røde i appen). Fire toppenanten."
+        }
+      ],
+      "showMe": "Ingen vind, toppenanten og kickeren begge stramt hentet inn: de drar mot hverandre og begge tauene blir røde. Trykk på «Toppenant» under og fire den for å avslutte kampen.",
+      "textStatus": "draft"
+    },
+    "rope_outhaul": {
+      "name": "Utholer",
+      "alternatives": [],
+      "short": "Drar bakre nedre hjørne av storseilet (nokken) ut langs bommen.",
+      "what": "Utholeren drar nokken mot enden av bommen. Med rullemast drar den også seilet ut av masten når det ruller ut: den hales sammen med «ut»-enden av rulletauet, og fires når seilet rulles inn.",
+      "onThisBoat": "Merket «Main outhaul» på babord stoppere. I Enkel modus beveger den seg sammen med «Storseil ut». Hvordan tauet går inne i bommen, er ennå ikke bekreftet på den virkelige båten.",
+      "mistakes": [
+        {
+          "mistake": "Å rulle inn storseilet uten å fire utholeren.",
+          "fix": "Utholeren holder nokken ute, og seilet kan ikke rulle inn. Fire utholeren mens du drar i «inn»-rulletauet."
+        },
+        {
+          "mistake": "Å rulle ut storseilet uten å hale utholeren.",
+          "fix": "Seilet kommer ut posete og når ikke enden av bommen. Hal utholeren sammen med «ut»-tauet."
+        }
+      ],
+      "showMe": "Storseilet helt ute: utholeren holder bakre hjørne ved enden av bommen. Trykk på «Utholer» under og rull storseilet litt inn: hjørnet glir mot masten.",
+      "textStatus": "draft"
+    },
+    "rope_main_furling_line": {
+      "name": "Rulletau for storseil",
+      "alternatives": [],
+      "short": "Ruller storseilet inn i masten, eller lar det komme ut.",
+      "what": "Rullemast ruller storseilet opp inne i masten som en rullegardin. Rulletauet har to ender: å hale «inn»-enden ruller seilet inn; å hale «ut»-enden, sammen med utholeren, ruller det ut mens «inn»-enden fires. Å rulle seilet delvis inn gjør det mindre i sterk vind (i stedet for å ta rev).",
+      "onThisBoat": "To stoppere på styrbord side, begge merket «Main furling»: den venstre ruller storseilet inn, den høyre ruller det ut. Hvis tauet glir, kan storseilet rulles inn for hånd med vinsjsveiven i giret ved foten av masten (omtrent 40 omdreininger).",
+      "mistakes": [
+        {
+          "mistake": "Å hale «inn»-enden uten å fire «ut»-enden og utholeren.",
+          "fix": "Ingenting beveger seg, eller tauet setter seg fast. Fire de to andre først."
+        },
+        {
+          "mistake": "Å rulle inn storseilet mens det er fullt av vind.",
+          "fix": "Belastningen er tung og tauet kan gli. Fire storskjøtet, eller sving nærmere vinden, slik at seilet ikke trekker, og rull det så inn."
+        }
+      ],
+      "showMe": "Storseilet 30 % ute: det meste er rullet inn i masten. Trykk på «Rulletau for storseil» under og sett «Storseil ut» til 100 % for å rulle det ut.",
+      "textStatus": "draft"
+    },
+    "rope_jib_furling_line": {
+      "name": "Rulletau for fokk",
+      "alternatives": [],
+      "short": "Ruller fokken opp rundt forstaget, eller lar den rulle ut.",
+      "what": "Når du drar i tauet, dreier det trommelen nederst på forstaget og ruller fokken opp rundt det. Å fire det mens du drar i skjøtet lar fokken rulle ut. En delvis rullet fokk er mindre, noe som hjelper i sterk vind.",
+      "onThisBoat": "Et Furlex-rulleanlegg ved baugen. Tauet går akterover langs babord sidedekk gjennom én stopper merket «JIB ROLL» til babord vinsj. Fokkeskjøtet må fires for at fokken skal rulle seg opp.",
+      "mistakes": [
+        {
+          "mistake": "Å dra i rulletauet mens fokkeskjøtet er stramt.",
+          "fix": "Fokken slutter å rulle. Fire fokkeskjøtet og fortsett å rulle."
+        },
+        {
+          "mistake": "Å la tauet løpe fritt ved utrulling i sterk vind.",
+          "fix": "Fokken flyr ut og slår hardt. Ha et slag av tauet på vinsjen og slipp det ut under kontroll."
+        },
+        {
+          "mistake": "Å la fokken slå lenge i sterk vind.",
+          "fix": "Seilet slites og kan revne. Rull det inn eller skjøt det inn raskt."
+        }
+      ],
+      "showMe": "Fokken 40 % ute med skjøtet fiet: resten er rullet rundt forstaget. Trykk på «Rulletau for fokk» under og endre «Fokk ut» for å rulle den inn eller ut.",
+      "textStatus": "draft"
+    },
+    "rope_main_halyard": {
+      "name": "Storfall",
+      "alternatives": [],
+      "short": "Holder toppen av storseilet oppe i masten.",
+      "what": "Et fall heiser et seil. Storfallet holder det øverste hjørnet av storseilet (toppen) i toppen av masten.",
+      "onThisBoat": "Med rullemast blir seilet hengende heist inne i masten; det rulles inn og ut i stedet for å bli firt. Stopperen til fallet på styrbord side («Main halyard») står vanligvis lukket. Appen justerer det ikke.",
+      "mistakes": [
+        {
+          "mistake": "Å åpne storfallstopperen ved en feil (den sitter ved siden av skjøtene).",
+          "fix": "Toppen av seilet kan gli ned inne i masten. La denne stopperen stå lukket, og les merket før du åpner en stopper."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "rope_spi_halyard": {
+      "name": "Gennakerfall",
+      "alternatives": [
+        {
+          "term": "Spinnakerfall"
+        }
+      ],
+      "short": "Fallet for en gennaker; på denne båten er det parkert.",
+      "what": "Et fall for å heise en gennaker (et stort, lett seil for vind bakfra) til toppen av masten.",
+      "onThisBoat": "Båten har ingen gennaker om bord, men fallet er montert; stopperen på babord side er merket «SPI HALYARD». Appen tegner den øvre enden parkert nedover framsiden av masten (hvor det virkelig oppbevares, er ikke kjent ennå).",
+      "mistakes": [
+        {
+          "mistake": "Å la det parkerte fallet henge løst.",
+          "fix": "Det slår mot masten og kan vikle seg rundt forstaget eller fokken. Hold det parkert og stramt."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "part_hull": {
+      "name": "Skrog",
+      "alternatives": [],
+      "short": "Båtens kropp, som flyter.",
+      "what": "Skroget er den vanntette kroppen som flyter og bærer alt annet. Formen under vann avgjør hvor lett båten beveger seg og hvor mye den krenger.",
+      "onThisBoat": "15,55 m lang over alt, 4,75 m bred, 13,54 m i vannlinjen og omtrent 14,7 tonn tom.",
+      "textStatus": "draft"
+    },
+    "part_bow": {
+      "name": "Baug",
+      "alternatives": [],
+      "short": "Fronten av båten.",
+      "what": "Baugen er den fremre enden av båten. Retninger om bord regnes fra den: forover er foran baugen.",
+      "onThisBoat": "Fokkerulleanlegget, ankerrullen og ankerspillet sitter på baugen.",
+      "textStatus": "draft"
+    },
+    "part_stern": {
+      "name": "Hekk",
+      "alternatives": [],
+      "short": "Baksiden av båten.",
+      "what": "Hekken er den bakre enden av båten. Akterover betyr bak den.",
+      "onThisBoat": "En bred, flat hekk; de to rattene står rett foran den.",
+      "textStatus": "draft"
+    },
+    "part_deck": {
+      "name": "Dekk",
+      "alternatives": [],
+      "short": "Toppen av skroget som du går på.",
+      "what": "Dekket lukker skroget ovenfra. Tau, blokker og beslag er festet til det, og mannskapet går langs det for å komme framover.",
+      "onThisBoat": "Sidedekkene går fra cockpiten til baugen på hver side av dekkshuset.",
+      "textStatus": "draft"
+    },
+    "part_coachroof": {
+      "name": "Dekkshus",
+      "alternatives": [
+        {
+          "term": "Kahyttak"
+        }
+      ],
+      "short": "Det hevede taket over kahytten, mellom masten og cockpiten.",
+      "what": "Dekkshuset hever dekket over oppholdsrommet under for å gi ståhøyde. Tau fra masten løper akterover over det til cockpiten.",
+      "onThisBoat": "Masten står på det. De to dekksblokkene til storskjøtet sitter ved bakkanten, og dekkede kanaler fører tauene fra foten av masten til stopperne.",
+      "textStatus": "draft"
+    },
+    "part_cockpit": {
+      "name": "Cockpit",
+      "alternatives": [
+        {
+          "term": "Sittebrønn"
+        }
+      ],
+      "short": "Det åpne, nedsenkede området bak der mannskapet sitter og styrer.",
+      "what": "Cockpiten er der mannskapet sitter, styrer og betjener de fleste tauene. Den ligger lavere enn dekket, så den føles tryggere til sjøs.",
+      "onThisBoat": "To ratt bak, én vinsj og én stopperrekke på hver side, motorspaken ved rorplassen, og instrumentene og autopilotkontrollen ved rattene.",
+      "textStatus": "draft"
+    },
+    "part_companionway": {
+      "name": "Nedgang",
+      "alternatives": [],
+      "short": "Inngangen med trapp fra cockpiten ned i kahytten.",
+      "what": "Nedgangen er luken og trappen som fører under dekk.",
+      "mistakes": [
+        {
+          "mistake": "Å la den stå åpen når bølger begynner å komme om bord.",
+          "fix": "Vann kan strømme ned. Lukk den i grov sjø."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "part_keel": {
+      "name": "Kjøl",
+      "alternatives": [],
+      "short": "Den tunge finnen under båten som hindrer den i å gli sideveis og holder den oppreist.",
+      "what": "Kjølen har to oppgaver. Når den beveger seg gjennom vannet, virker den som en vinge og hindrer vinden i å skyve båten sideveis, så båten kan seile på tvers av og mot vinden. Vekten, lavt nede, drar båten tilbake til oppreist når vinden krenger den.",
+      "onThisBoat": "En L-formet kjøl 2,40 m dyp (en kortere kjøl på 1,98 m er et tilvalg) med en ballastbulb på 4 tonn nederst.",
+      "textStatus": "draft"
+    },
+    "part_rudder": {
+      "name": "Ror",
+      "alternatives": [],
+      "short": "Bladet under bakre del av båten som styrer den.",
+      "what": "Når du dreier rattet, dreier roret. Vannet som strømmer forbi, skyver hekken sideveis, og båten svinger. Uten fart gjennom vannet er det ingen strømning, så roret gjør ingenting.",
+      "onThisBoat": "Ett ror, som kan dreies med begge de to rattene; en nødrorpinne kan monteres hvis styringen svikter. I appen dreier rattet roret opptil 35° til hver side.",
+      "mistakes": [
+        {
+          "mistake": "Å vri rattet hardt over mens båten står stille.",
+          "fix": "Ingenting skjer: roret trenger vann som strømmer forbi. Få båten i fart først, med seilene eller motoren."
+        },
+        {
+          "mistake": "Å vri rattet lenger og lenger mot en båt som dreier opp i vinden i et kast.",
+          "fix": "Et ror som er vridd for langt, slutter å gripe. Fire heller storskjøtet, slik at båten slutter å svinge."
+        }
+      ],
+      "showMe": "Rattet er vridd 25° til styrbord: se gjennom vannet under hekken for å se rorbladet vridd. I fart svinger dette båten til styrbord.",
+      "textStatus": "draft"
+    },
+    "part_saildrive": {
+      "name": "Saildrive og propell",
+      "alternatives": [],
+      "short": "Drivbenet til motoren og propellen under skroget.",
+      "what": "Et saildrive er et ben som går ned gjennom bunnen av skroget fra motoren, med propellen på enden. Det skyver båten forover eller akterover når motoren er i gir.",
+      "onThisBoat": "En dieselmotor på omtrent 80 hk, et saildrive og en fast toblads propell. I appen gir full gass (2500 o/min) omtrent 9,3 kn.",
+      "mistakes": [
+        {
+          "mistake": "Å legge i gir med et tau i vannet nær hekken.",
+          "fix": "Propellen kan fange tauet og stoppe motoren. Få alle tau om bord før du legger i gir."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "part_lifelines": {
+      "name": "Rekkverkswire og støtter",
+      "alternatives": [
+        {
+          "term": "Rekkverk"
+        }
+      ],
+      "short": "Wirene rundt kanten av dekket, holdt oppe av stolper.",
+      "what": "Rekkverkswirene går langs kanten av dekket, holdt oppe av stolper (støtter). De hjelper mot at folk faller over bord, men de er lave: hold deg i båten også.",
+      "mistakes": [
+        {
+          "mistake": "Å lene seg eller sitte med vekten på rekkverkswirene.",
+          "fix": "De kan bøye seg eller gi etter. Hold deg i noe solid og hold vekten innenfor båten."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "env_water": {
+      "name": "Vannoverflate",
+      "alternatives": [],
+      "short": "Sjøen rundt båten; bølgene vokser med vinden.",
+      "what": "Bølgene vokser med vindstyrken og med avstanden vinden blåser over åpent vann. Båten løfter og senker seg, stamper og ruller på dem; bølger forfra bremser den, bølger bakfra på skrå skyver den av kurs. I appen er vannet gjennomsiktig, så kjølen og roret forblir synlige.",
+      "showMe": "Åpent hav i 20 kn vind fra siden: omtrent 2 m høye bølger ruller båten. Endre «Bølger» under «Forhold» for å sammenligne.",
+      "textStatus": "draft"
+    },
+    "part_mast": {
+      "name": "Mast",
+      "alternatives": [],
+      "short": "Den høye staken som holder seilene oppe.",
+      "what": "Masten holder seilene oppe. Wirer (det stående riggen) holder den på plass fra sidene, fronten og baksiden.",
+      "onThisBoat": "En mast i aluminium fra Seldén som står på dekkshuset, med toppen omtrent 22 m over vannet, og to sett bakoverpekende salinger. Storseilet ruller seg opp inne i den.",
+      "textStatus": "draft"
+    },
+    "part_boom": {
+      "name": "Bom",
+      "alternatives": [],
+      "short": "Staken langs nedre kant av storseilet.",
+      "what": "Bommen holder nedre kant av storseilet ute fra masten. Den svinger over båten når vinden skifter side; storskjøtet, kickeren og toppenanten bestemmer hvor den står.",
+      "onThisBoat": "6,25 m lang, festet til masten med gåsehalsen. Den kan svinge omtrent 72° ut til hver side før den ville berøre vantene.",
+      "mistakes": [
+        {
+          "mistake": "Å stå eller sitte i veien for bommen med vinden bakfra.",
+          "fix": "Ved en utilsiktet jibb krysser bommen båten fort og hardt. Hold hodet utenfor den røde faresonen appen tegner."
+        }
+      ],
+      "showMe": "Vind fra siden: bommen har svingt ut til siden bort fra vinden. Prøv «Storskjøt» eller «Kicker» under for å se den bevege seg.",
+      "textStatus": "draft"
+    },
+    "part_gooseneck": {
+      "name": "Gåsehals",
+      "alternatives": [],
+      "short": "Leddet mellom bommen og masten.",
+      "what": "Gåsehalsen lar bommen svinge fra side til side og vippe opp og ned.",
+      "textStatus": "draft"
+    },
+    "part_spreader": {
+      "name": "Salinger",
+      "alternatives": [],
+      "short": "Korte stag ut fra sidene av masten som spenner ut vantene.",
+      "what": "Salingene skyver vantene ut fra masten, så wirene holder den i en bedre vinkel.",
+      "onThisBoat": "To sett, omtrent 6 m og 12 m over foten av masten, pilet bakover 24°. Når bommen er langt ute, presser storseilet mot dem.",
+      "textStatus": "draft"
+    },
+    "part_shroud": {
+      "name": "Vant",
+      "alternatives": [],
+      "short": "Wirene som holder masten oppe fra sidene.",
+      "what": "Vantene går fra masten ned til hver side av dekket. De hindrer masten i å falle sideveis og tar mye av belastningen fra seilene.",
+      "onThisBoat": "De ytre vantene stopper bommen ved omtrent 72° ute.",
+      "textStatus": "draft"
+    },
+    "part_forestay": {
+      "name": "Forstag",
+      "alternatives": [],
+      "short": "Wiren fra høyt oppe på masten til baugen; fokken er satt på den.",
+      "what": "Forstaget holder masten fra forsiden. Forlikket på fokken går langs det, og rulleanlegget ruller fokken opp rundt det.",
+      "onThisBoat": "Ett forstag, med Furlex-rulleanlegget for fokken nederst.",
+      "textStatus": "draft"
+    },
+    "part_backstay": {
+      "name": "Akterstag",
+      "alternatives": [],
+      "short": "Wiren fra toppen av masten til hekken.",
+      "what": "Akterstaget holder masten fra baksiden, mot trekket fra forstaget og fokken.",
+      "textStatus": "draft"
+    },
+    "env_wind": {
+      "name": "Vind",
+      "alternatives": [],
+      "short": "Luften som beveger seg over vannet; i appen stiller du den under «Forhold».",
+      "what": "Vinden beskrives ved hvor den kommer fra og farten i knop. Strekene i 3D-visningen viser den. «Forhold» setter retningen (fra 0° nord, med klokken) og farten, og kan gjøre den kastete, skiftende, økende eller avtagende.",
+      "mistakes": [
+        {
+          "mistake": "Å lese en vindretning som dit vinden blåser.",
+          "fix": "En vind «fra 060°» blåser fra øst-nordøst mot vest-sørvest."
+        }
+      ],
+      "showMe": "Vind 12 kn fra 060°: strekene viser at den blåser forbi båten. Drei skiven under «Forhold» for å endre den.",
+      "textStatus": "draft"
+    },
+    "part_windex": {
+      "name": "Vindfløy i mastetoppen",
+      "alternatives": [
+        {
+          "term": "Windex",
+          "note": "et merkenavn, brukt om alle slike fløyer"
+        }
+      ],
+      "short": "Den lille pilen øverst på masten som viser hvor vinden kommer fra.",
+      "what": "Den dreier seg som en værhane og peker mot vinden båten kjenner (den tilsynelatende vinden). Se opp på den for å sjekke vindvinkelen.",
+      "textStatus": "draft"
+    },
+    "part_main_furling_gearbox": {
+      "name": "Rullegir i masten",
+      "alternatives": [],
+      "short": "Giret ved foten av masten som dreier rulleakselen til storseilet.",
+      "what": "Rulletauet dreier en tromme på dette giret, som dreier en stang inne i masten og ruller seilet inn eller ut. Et uttak for vinsjsveiven lar deg rulle seilet for hånd.",
+      "onThisBoat": "Et Seldén-gir med IN/OUT-bryter (IN til venstre, OUT til høyre). Med vinsjsveiven rulles storseilet inn på omtrent 40 omdreininger. I Realistisk modus er det på Mast-plassen.",
+      "mistakes": [
+        {
+          "mistake": "Å sveive med bryteren på OUT når du vil rulle storseilet inn.",
+          "fix": "Seilet kommer lenger ut. Sett bryteren til IN først."
+        }
+      ],
+      "showMe": "Realistisk modus, Mast-plassen: giret med IN/OUT-bryteren og uttaket for vinsjsveiven.",
+      "textStatus": "draft"
+    },
+    "part_jib_furler": {
+      "name": "Rullefokk-anlegg",
+      "alternatives": [
+        {
+          "term": "Furlex",
+          "note": "produsentens navn på dette anlegget"
+        }
+      ],
+      "short": "Trommelen og svivelen på forstaget som ruller opp fokken.",
+      "what": "Når du drar i rulletauet, dreier trommelen nederst på forstaget, og fokken ruller seg opp rundt staget som en rullegardin. Den kan stoppe halvveis, for å gjøre fokken mindre.",
+      "onThisBoat": "Et Seldén Furlex 404S ved baugen. Tauet går akterover langs babord sidedekk til «JIB ROLL»-stopperen.",
+      "showMe": "Fokken 40 % ute: resten er rullet rundt forstaget, over trommelen på rulleanlegget.",
+      "textStatus": "draft"
+    },
+    "sail_main": {
+      "name": "Storseil",
+      "alternatives": [],
+      "short": "Seilet bak masten, holdt av masten og bommen.",
+      "what": "Storseilet er satt på masten og bommen. Storskjøtet bestemmer vinkelen mot vinden, kickeren tvisten, og utholeren drar det ut langs bommen. Riktig trimmet driver det båten; hentet for langt inn stalles det, fiet for langt ut slår det.",
+      "onThisBoat": "61 m², rullet inn i masten (rullemast), uten lattene (stivere remser). I sterk vind gjøres det mindre ved å rulle en del av det inn i masten.",
+      "mistakes": [
+        {
+          "mistake": "Å hale det for langt inn for vindvinkelen.",
+          "fix": "Det stalles: mindre drivkraft og mer krenging, og vimplene på den andre siden henger. Fire til de strømmer."
+        },
+        {
+          "mistake": "Å fire det for langt ut.",
+          "fix": "Forkanten slår. Hal inn til slagingen akkurat stopper."
+        },
+        {
+          "mistake": "Å ha hele seilet ute når vinden blir sterk.",
+          "fix": "Båten krenger for mye og dreier opp i vinden av seg selv. Rull en del av det inn."
+        }
+      ],
+      "showMe": "Seiling 60° fra vinden med storseilet godt trimmet: vimplene strømmer og det driver båten med omtrent 7 kn. Trykk på «Storskjøt» under og fire det helt ut: forkanten begynner å slå og båten bremser.",
+      "textStatus": "draft"
+    },
+    "sail_jib": {
+      "name": "Selvslående fokk",
+      "alternatives": [
+        {
+          "term": "Fokk"
+        },
+        {
+          "term": "Forseil"
+        }
+      ],
+      "short": "Seilet foran; det skifter side av seg selv når båten vender.",
+      "what": "Fokken er satt på forstaget foran masten. Skjøtet går til en vogn på en skinne tvers over dekket, og vognen glir til den andre siden av seg selv når baugen dreier gjennom vinden, så stagvending krever ikke noe skjøtearbeid.",
+      "onThisBoat": "51,5 m², på et Furlex-rulleanlegg ved baugen. Skinnen er kort og rett, så fokken kan ikke fires langt ut: helt fiet når den omtrent 30°. Stopperen sier «Genoa sheet», men seilet er en fokk, mindre enn en genua og uten overlapp over masten.",
+      "mistakes": [
+        {
+          "mistake": "Å ha hele fokken ute i sterk vind.",
+          "fix": "Båten krenger for mye og dreier opp i vinden. Rull først inn en del av storseilet, og så en del av fokken om nødvendig."
+        },
+        {
+          "mistake": "Å rulle inn fokken med skjøtet stramt.",
+          "fix": "Fire skjøtet; da ruller fokken seg opp."
+        }
+      ],
+      "showMe": "Vind 30° fra styrbord: vognen til fokken står i babord ende av skinnen. Under «Forhold», drei vinden til den andre siden av baugen: vognen glir over av seg selv.",
+      "textStatus": "draft"
+    },
+    "sail_gennaker": {
+      "name": "Gennaker",
+      "alternatives": [
+        {
+          "term": "Asymmetrisk spinnaker"
+        }
+      ],
+      "short": "Et stort, lett seil for vind bakfra; ikke om bord på denne båten.",
+      "what": "En gennaker er et stort, lett, buet seil som flyes fra baugen og toppen av masten når vinden kommer bakfra på skrå. Den settes og tas ned for hver bruk.",
+      "onThisBoat": "Ikke på referansebåten; bare fallet («SPI HALYARD») er montert. Brukerhåndboken oppgir 200 m² for den valgfrie gennakeren. Appen viser ikke seilet.",
+      "textStatus": "draft"
+    },
+    "sailpart_head": {
+      "name": "Topp",
+      "alternatives": [
+        {
+          "term": "Seilhode"
+        }
+      ],
+      "short": "Det øverste hjørnet av et seil.",
+      "what": "Toppen er hjørnet som fallet drar opp.",
+      "onThisBoat": "Toppen på storseilet blir værende øverst i masten, inne i rulleskjæret; toppen på fokken sitter øverst på forstaget.",
+      "textStatus": "draft"
+    },
+    "sailpart_tack": {
+      "name": "Hals",
+      "alternatives": [],
+      "short": "Det fremre nedre hjørnet av et seil.",
+      "what": "Halsen er festet foran nederst på seilet: på storseilet ved gåsehalsen (der bommen møter masten), på fokken ved trommelen på rulleanlegget ved baugen. «Hals» betyr også siden vinden kommer fra: se «Stagvending» og «Styrbord hals».",
+      "textStatus": "draft"
+    },
+    "sailpart_clew": {
+      "name": "Nokk",
+      "alternatives": [],
+      "short": "Det bakre nedre hjørnet av et seil, der skjøtet drar.",
+      "what": "Skjøtet drar i nokken og bestemmer dermed vinkelen til seilet mot vinden. På storseilet drar utholeren også nokken langs bommen.",
+      "onThisBoat": "Når storseilet rulles inn, flytter nokken seg langs bommen mot masten; når fokken rulles inn, flytter nokken seg framover rundt forstaget.",
+      "textStatus": "draft"
+    },
+    "sailpart_luff": {
+      "name": "Forlik",
+      "alternatives": [
+        {
+          "term": "Forkant"
+        }
+      ],
+      "short": "Forkanten av et seil.",
+      "what": "Vinden møter seilet ved forlikket. Når et seil fires for langt ut, begynner forlikket å slå først: det er «luffing».",
+      "onThisBoat": "Forlikket på storseilet går opp inne i rulleskjæret i masten; forlikket på fokken går langs forstaget.",
+      "textStatus": "draft"
+    },
+    "sailpart_leech": {
+      "name": "Akterlik",
+      "alternatives": [
+        {
+          "term": "Bakkant"
+        }
+      ],
+      "short": "Bakkanten av et seil.",
+      "what": "Vinden forlater seilet ved akterlikket. Tvist er hvor mye toppen av akterlikket faller bort til siden; kickeren styrer den på storseilet, skjøtet på fokken.",
+      "textStatus": "draft"
+    },
+    "sailpart_foot": {
+      "name": "Underlik",
+      "alternatives": [],
+      "short": "Nedre kant av et seil.",
+      "what": "Underlikket går fra halsen til nokken. Underlikket på storseilet går langs bommen, og utholeren strekker det.",
+      "textStatus": "draft"
+    },
+    "fit_mainsheet_boom_blocks": {
+      "name": "Skjøteblokker på bommen",
+      "alternatives": [],
+      "short": "De tre trinsene under bommen som storskjøtet løper gjennom.",
+      "what": "Storskjøtet løper fram og tilbake mellom disse blokkene og dekksblokkene. Hver ekstra tauparti gjør det lettere å trekke (mer talje).",
+      "onThisBoat": "Tre blokker under bommen, 2,9 m fra masten.",
+      "textStatus": "draft"
+    },
+    "fit_mainsheet_deck_blocks": {
+      "name": "Skjøteblokker på dekk",
+      "alternatives": [],
+      "short": "De to fjærmonterte trinsene bak på dekkshuset for storskjøtet.",
+      "what": "Hver ende av storskjøtet kommer ned fra bommen til en av disse blokkene. Fjærene holder blokkene oppreist.",
+      "onThisBoat": "Én blokk på hver side av midten, med to tauparti mellom bommen og hver blokk. Fra hver blokk løper tauet framover til foten av masten, og så akterover i den dekkede kanalen til en stopper. Det finnes ingen traveller.",
+      "textStatus": "draft"
+    },
+    "fit_self_tacking_track": {
+      "name": "Skinne for selvslående fokk",
+      "alternatives": [],
+      "short": "Den korte skinnen tvers over dekket foran masten for vognen til fokken.",
+      "what": "Vognen til fokkeskjøtet glir langs denne skinnen. Når båten vender, presser vinden fokken over, og vognen løper til den andre enden av seg selv.",
+      "onThisBoat": "Rett, omtrent 2,8 m lang, rett foran masten. Fordi den er kort, kan ikke fokken fires langt ut.",
+      "showMe": "Vognen står i babord ende av skinnen, bort fra vinden. Drei vinden til den andre siden av baugen under «Forhold» og se den gli over.",
+      "textStatus": "draft"
+    },
+    "fit_self_tacking_car": {
+      "name": "Fokkevogn",
+      "alternatives": [
+        {
+          "term": "Vogn for selvslående fokk"
+        }
+      ],
+      "short": "Den glidende blokken på skinnen som fokkeskjøtet løper gjennom.",
+      "what": "Vognen går på skinnen for den selvslående fokken og bærer blokken til fokkeskjøtet. Den glir av seg selv til siden bort fra vinden.",
+      "textStatus": "draft"
+    },
+    "fit_clutch": {
+      "name": "Taustopper",
+      "alternatives": [
+        {
+          "term": "Stopper"
+        }
+      ],
+      "short": "En spak som griper et tau slik at det ikke kan løpe ut.",
+      "what": "En lukket stopper holder tauet: det kan fortsatt hales inn, men ikke fires ut. For å fire et tau ut tar du belastningen på en vinsj og åpner så stopperen (spaken opp).",
+      "onThisBoat": "En rekke med fem stoppere foran hver vinsj, og én enkelt stopper for rulletauet til fokken på babord sidedekk. I Realistisk modus åpner og lukker du dem med spaken.",
+      "mistakes": [
+        {
+          "mistake": "Å åpne en belastet stopper mens tauet ikke ligger på vinsjen.",
+          "fix": "Tauet løper fort ut og kan brenne hendene. Legg tauet på vinsjen med noen slag først."
+        },
+        {
+          "mistake": "Å lukke en stopper på et tau som løper ut under belastning.",
+          "fix": "Det kan skade tauet. Ta belastningen på vinsjen først, og lukk så stopperen."
+        }
+      ],
+      "showMe": "Realistisk modus: stopperne på denne siden er spakene i tegningen. Spaken opp er åpen; trykk på en stopper for å velge den, trykk igjen for å åpne eller lukke den.",
+      "textStatus": "draft"
+    },
+    "clutch_bank_a": {
+      "name": "Stopperrekke A",
+      "alternatives": [],
+      "short": "De fem stopperne på styrbord side.",
+      "what": "Rekken av stoppere foran styrbord vinsj. Hvert tau fra masten ender i én av dem, og hver av dem kan legges på vinsjen.",
+      "onThisBoat": "I rekkefølge: «Main sheet», «Main furling» (ruller storseilet inn), «Main furling» (ruller det ut), «Main halyard», «Genoa sheet» (fokkeskjøtet).",
+      "textStatus": "draft"
+    },
+    "clutch_bank_b": {
+      "name": "Stopperrekke B",
+      "alternatives": [],
+      "short": "De fem stopperne på babord side.",
+      "what": "Rekken av stoppere foran babord vinsj. Hvert tau fra masten ender i én av dem, og hver av dem kan legges på vinsjen.",
+      "onThisBoat": "I rekkefølge: «SPI HALYARD» (gennakerfallet), «Boom lift» (toppenanten), «Main outhaul», «MAIN SHEET» (den andre enden av storskjøtet), «Vang».",
+      "textStatus": "draft"
+    },
+    "clutch_jib_roll": {
+      "name": "Stopper for fokkerulling",
+      "alternatives": [],
+      "short": "Den enkle stopperen på babord sidedekk for rulletauet til fokken.",
+      "what": "Den holder rulletauet til fokken, slik at fokken forblir rullet opp så langt den er.",
+      "onThisBoat": "Merket «JIB ROLL», ved siden av sprayhooden; fra den løper tauet akterover til babord vinsj.",
+      "textStatus": "draft"
+    },
+    "fit_rope_bin": {
+      "name": "Taukasse",
+      "alternatives": [],
+      "short": "En kasse bak hver vinsj der de løse tauendene legges.",
+      "what": "De løse endene (tauendene) legges i kassen, så cockpiten holdes ryddig og tauene kan løpe fritt ut når de fires.",
+      "mistakes": [
+        {
+          "mistake": "Å la løst tau ligge på cockpitgulvet.",
+          "fix": "Noen kan snuble, eller tauet floker seg når det løper ut. Legg det i kassen."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "fit_winch": {
+      "name": "Vinsj",
+      "alternatives": [],
+      "short": "En tromme som gir deg kraft til å hale inn et tungt belastet tau.",
+      "what": "Tauet legges med klokken rundt trommelen. Slagene holder belastningen (hvert ekstra slag øker grepet), og når trommelen dreies, hales tauet inn. En selvtailer på toppen griper tauenden, så én person kan vinsje alene.",
+      "onThisBoat": "Én elektrisk selvtailende Lewmar-vinsj på hver side, betjent med en trykknapp; vinsjsveiven er en reserve. Vinsjen går saktere når belastningen øker og kobler ut når belastningen er for høy.",
+      "mistakes": [
+        {
+          "mistake": "Å legge tauet mot klokken.",
+          "fix": "Trommelen dreier bare med klokken, så tauet blir ikke holdt. Legg det med klokken, sett ovenfra."
+        },
+        {
+          "mistake": "For få slag på et belastet tau.",
+          "fix": "Det glir når stopperen åpnes. Bruk omtrent 4 slag for å vinsje under belastning, 2 for å fire under kontroll."
+        },
+        {
+          "mistake": "Å holde knappen inne når vinsjen kobler ut.",
+          "fix": "Belastningen er for høy, ofte fordi to tau drar mot hverandre. Finn ut hvorfor (en lukket stopper, toppenanten mot kickeren) og fiks det først."
+        }
+      ],
+      "showMe": "Realistisk modus, styrbord: fokkeskjøtet ligger på vinsjen med 2 slag, holdt for hånd. Legg på flere slag, sett det i selvtaileren og trykk på vinsjknappen.",
+      "textStatus": "draft"
+    },
+    "winch_primary_port": {
+      "name": "Babord vinsj",
+      "alternatives": [],
+      "short": "Vinsjen på venstre side av cockpiten.",
+      "what": "Den betjener tauene i stopperrekke B og rulletauet til fokken.",
+      "onThisBoat": "Elektrisk, med selvtailer. Vinsjsveiven oppbevares på denne siden.",
+      "textStatus": "draft"
+    },
+    "winch_primary_starboard": {
+      "name": "Styrbord vinsj",
+      "alternatives": [],
+      "short": "Vinsjen på høyre side av cockpiten.",
+      "what": "Den betjener tauene i stopperrekke A.",
+      "onThisBoat": "Elektrisk, med selvtailer.",
+      "textStatus": "draft"
+    },
+    "part_winch_handle": {
+      "name": "Vinsjsveiv",
+      "alternatives": [],
+      "short": "En avtakbar sveiv for å dreie en vinsj, eller rullegiret ved masten, for hånd.",
+      "what": "Den passer i toppen av en vinsj. Å sveive den ene veien dreier trommelen raskt men svakt (1. gir), den andre veien sakte men sterkt (2. gir); trommelen dreier samme vei begge ganger.",
+      "onThisBoat": "Én sveiv om bord, oppbevart på babord side. Den brukes mest ved masten, for å rulle inn storseilet for hånd hvis rulletauet glir. Mens du bærer den, er hendene dine opptatt.",
+      "mistakes": [
+        {
+          "mistake": "Å la sveiven bli sittende i vinsjen etter bruk.",
+          "fix": "Den kan piske rundt eller falle over bord. Ta den ut og legg den tilbake på plassen."
+        },
+        {
+          "mistake": "Å sveive i 1. gir mot en tung belastning.",
+          "fix": "Den beveger seg knapt. Sveiv den andre veien (2. gir)."
+        }
+      ],
+      "showMe": "Realistisk modus, Babord-plassen: vinsjsveiven ligger i sveivfestet sitt. Trykk på sveiven for å ta den opp.",
+      "textStatus": "draft"
+    },
+    "winch_secondary_port": {
+      "name": "Ekstra vinsj, babord (tilvalg)",
+      "alternatives": [],
+      "short": "En ekstra vinsj som noen båter har på venstre side; ikke på denne båten.",
+      "what": "Byggeren tilbyr en ekstra vinsj på hver side, så flere tau kan betjenes samtidig. Referansebåten har dem ikke, så appen tegner dem ikke.",
+      "textStatus": "draft"
+    },
+    "winch_secondary_starboard": {
+      "name": "Ekstra vinsj, styrbord (tilvalg)",
+      "alternatives": [],
+      "short": "En ekstra vinsj som noen båter har på høyre side; ikke på denne båten.",
+      "what": "Byggeren tilbyr en ekstra vinsj på hver side, så flere tau kan betjenes samtidig. Referansebåten har dem ikke, så appen tegner dem ikke.",
+      "textStatus": "draft"
+    },
+    "helm_port": {
+      "name": "Babord ratt",
+      "alternatives": [],
+      "short": "Rattet på venstre side.",
+      "what": "Begge rattene dreier det samme roret. Å styre fra siden lar deg se forbi seilene.",
+      "onThisBoat": "To ratt, hvert med et kompass foran seg.",
+      "textStatus": "draft"
+    },
+    "helm_starboard": {
+      "name": "Styrbord ratt",
+      "alternatives": [],
+      "short": "Rattet på høyre side.",
+      "what": "Begge rattene dreier det samme roret. Å styre fra siden lar deg se forbi seilene.",
+      "onThisBoat": "To ratt, hvert med et kompass foran seg.",
+      "textStatus": "draft"
+    },
+    "fit_compass": {
+      "name": "Kompass",
+      "alternatives": [],
+      "short": "Viser hvilken vei båten peker.",
+      "what": "Kompasset viser kursen til båten i grader: 0 nord, 90 øst, 180 sør, 270 vest.",
+      "onThisBoat": "Ett kompass på panelet foran hvert ratt. I appen dreier kortet seg når båten dreier: les kursen under det oransje merket øverst.",
+      "textStatus": "draft"
+    },
+    "engine_control": {
+      "name": "Motorspak",
+      "alternatives": [
+        {
+          "term": "Gasshendel"
+        },
+        {
+          "term": "Enkeltspak"
+        }
+      ],
+      "short": "Én spak for både gir og gass.",
+      "what": "Skjøvet fram fra midten legger spaken motoren i forovergir, og gir så mer kraft; trukket tilbake, akterover. I midten står motoren i fri. Stopp i fri en stund når du bytter retning.",
+      "onThisBoat": "En Allpa enkeltspak med knappene START, STOP og POWER og et klistremerke «MAX 2500 RPM». I appen gir spaken to tredjedeler forover omtrent 1850 o/min og 8 kn; full fart forover omtrent 9,3 kn. På hvert rorpanel står spaken der spaken i «Motor»-seksjonen står, og turtelleren ved siden av viser o/min.",
+      "mistakes": [
+        {
+          "mistake": "Å flytte spaken rett fra forover til akterover.",
+          "fix": "Giret lider. Stopp i fri et øyeblikk, og gå så akterover."
+        },
+        {
+          "mistake": "Å starte motoren med spaken i gir.",
+          "fix": "Båten setter i gang med en gang. Sett spaken i fri før du starter."
+        }
+      ],
+      "showMe": "Ingen vind, motoren går med spaken to tredjedeler forover: omtrent 1850 o/min og 8 kn. Spaken finner du i «Motor»-seksjonen.",
+      "textStatus": "draft"
+    },
+    "term_sheet": {
+      "name": "Skjøt",
+      "alternatives": [],
+      "short": "Et tau som bestemmer vinkelen til et seil mot vinden.",
+      "what": "Et skjøt drar i nokken til et seil (det bakre nedre hjørnet) og bestemmer dermed hvor langt seilet kan svinge ut. Hvert seil har sitt eget: storskjøtet og fokkeskjøtet. På en båt er et skjøt et tau, ikke seilet.",
+      "textStatus": "draft"
+    },
+    "term_halyard": {
+      "name": "Fall",
+      "alternatives": [],
+      "short": "Et tau som heiser et seil.",
+      "what": "Et fall drar toppen av et seil (det øverste hjørnet) opp langs masten eller forstaget og holder det der.",
+      "onThisBoat": "Storseilet blir værende heist og ruller seg inn i masten, og fokken ruller seg rundt forstaget, så fallene blir nesten aldri berørt; gennakerfallet er parkert.",
+      "textStatus": "draft"
+    },
+    "term_port": {
+      "name": "Babord",
+      "alternatives": [
+        {
+          "term": "Bakbord",
+          "note": "et gammelt ord, brukes ikke lenger"
+        }
+      ],
+      "short": "Venstre side av båten, sett forover.",
+      "what": "Babord er venstre side når du ser mot baugen, uansett hvilken vei du står. Lanternen på denne siden er rød.",
+      "mistakes": [
+        {
+          "mistake": "Å si «venstre» mens du ser mot hekken.",
+          "fix": "Babord endrer seg aldri: det er alltid venstre side sett forover. Bruk babord og styrbord om bord."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "term_starboard": {
+      "name": "Styrbord",
+      "alternatives": [],
+      "short": "Høyre side av båten, sett forover.",
+      "what": "Styrbord er høyre side når du ser mot baugen. Lanternen på denne siden er grønn.",
+      "mistakes": [
+        {
+          "mistake": "Å blande sammen babord og styrbord i full fart.",
+          "fix": "Et hint: på gamle båter satt styreåren på høyre side, så «styrbord» er styreårens side; «babord» er siden bak ryggen til den som styrer."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "term_windward": {
+      "name": "Luv",
+      "alternatives": [
+        {
+          "term": "Luvart"
+        }
+      ],
+      "short": "Siden vinden kommer fra.",
+      "what": "Luvsiden av båten er siden vinden blåser mot. Luv betyr også mot vinden.",
+      "showMe": "Vind fra styrbord: styrbord er luvsiden, og bommen har svingt ut til babord, lesiden.",
+      "textStatus": "draft"
+    },
+    "term_leeward": {
+      "name": "Le",
+      "alternatives": [
+        {
+          "term": "Lo"
+        }
+      ],
+      "short": "Siden bort fra vinden.",
+      "what": "Lesiden er siden vinden blåser bort fra. Seilene og bommen ligger på lesiden, og båten krenger mot den.",
+      "showMe": "Vind fra styrbord: bommen og seilene ligger mot babord, lesiden.",
+      "textStatus": "draft"
+    },
+    "term_true_wind": {
+      "name": "Sann vind",
+      "alternatives": [],
+      "short": "Vinden slik den blåser over vannet, slik en båt som ligger stille kjenner den.",
+      "what": "Sann vind er vindens egen retning og fart over vannet. «Forhold» setter den, og instrumentene viser den som TWA og TWS.",
+      "showMe": "Kartet viser den sanne vinden og, mens båten seiler, den tilsynelatende vinden den kjenner.",
+      "textStatus": "draft"
+    },
+    "term_apparent_wind": {
+      "name": "Tilsynelatende vind",
+      "alternatives": [
+        {
+          "term": "Opplevd vind"
+        }
+      ],
+      "short": "Vinden båten kjenner: den sanne vinden pluss vinden fra båtens egen fart.",
+      "what": "Når båten beveger seg, legger farten hennes til en motvind. Sammen med den sanne vinden gir det den tilsynelatende vinden, som er det seilene kjenner og vindfløyen i mastetoppen viser. Når båten seiler mot vinden eller på tvers av den, kommer den tilsynelatende vinden lenger forfra enn den sanne og er sterkere; når den seiler bort fra vinden, er den svakere.",
+      "mistakes": [
+        {
+          "mistake": "Å trimme seilene etter den sanne vinden.",
+          "fix": "Seilene kjenner den tilsynelatende vinden, som kommer lenger forfra når båten er i fart. Trim etter vimplene og vindfløyen i mastetoppen."
+        }
+      ],
+      "showMe": "Seiling med vinden fra siden: kartet viser den tilsynelatende vinden komme lenger forfra enn den sanne vinden.",
+      "textStatus": "draft"
+    },
+    "term_starboard_tack": {
+      "name": "Styrbord hals",
+      "alternatives": [],
+      "short": "Å seile med vinden over styrbord side.",
+      "what": "På styrbord hals kommer vinden fra styrbord side, og bommen og seilene står ute mot babord.",
+      "showMe": "Vind fra styrbord, bommen ute mot babord: båten seiler på styrbord hals.",
+      "textStatus": "draft"
+    },
+    "term_port_tack": {
+      "name": "Babord hals",
+      "alternatives": [],
+      "short": "Å seile med vinden over babord side.",
+      "what": "På babord hals kommer vinden fra babord side, og bommen og seilene står ute mot styrbord.",
+      "showMe": "Vind fra babord, bommen ute mot styrbord: båten seiler på babord hals.",
+      "textStatus": "draft"
+    },
+    "term_tacking": {
+      "name": "Stagvending",
+      "alternatives": [
+        {
+          "term": "Vending"
+        }
+      ],
+      "short": "Å dreie baugen gjennom vinden til den andre siden.",
+      "what": "For å vende dreier båten mot vinden, gjennom dødsonen og videre til vinden kommer over den andre siden. Med en selvslående fokk trengs bare rattet: fokken og storseilet svinger over av seg selv.",
+      "mistakes": [
+        {
+          "mistake": "Å svinge for sakte.",
+          "fix": "Båten stopper rett i vinden (står i vindøyet). Sving jevnt og hold den i fart."
+        }
+      ],
+      "showMe": "Bidevind, autopiloten holder vindvinkelen: trykk på «Vend» i «Autopilot»-seksjonen og se baugen dreie gjennom vinden og fokken krysse av seg selv.",
+      "textStatus": "draft"
+    },
+    "term_gybe": {
+      "name": "Jibb",
+      "alternatives": [],
+      "short": "Å dreie hekken gjennom vinden, slik at bommen krysser til den andre siden.",
+      "what": "Ved en jibb dreier hekken gjennom vinden, og bommen svinger over hele båten. Gjort med vilje hales storskjøtet inn først, så bommen krysser en kort vei, under kontroll. Ved et uhell (en utilsiktet jibb) krysser den fort og hardt: den kan skade folk og ødelegge utstyr. Hvorfor bommen krysser av seg selv: fiet ut holdes den først ute av vinden; en rull, en bølge eller en liten sving setter den i gang, og når den er forbi vindlinjen (peker rett mot dit vinden kommer fra), kaster vinden den over.",
+      "mistakes": [
+        {
+          "mistake": "Å jibbe med storskjøtet fiet helt ut.",
+          "fix": "Bommen smeller over. Hal storskjøtet inn før du svinger, og fire det så ut på den nye siden."
+        },
+        {
+          "mistake": "Å styre for langt rett medvind.",
+          "fix": "Vinden kommer bak storseilet, og det kan jibbe av seg selv. Hold deg litt unna rett medvind."
+        }
+      ],
+      "showMe": "Autopiloten svinger båten gjennom rett medvind med storskjøtet fiet: bommen krysser fort (en utilsiktet jibb), og det røde området viser banen. Ved en kontrollert jibb hales storskjøtet inn først.",
+      "textStatus": "draft"
+    },
+    "term_luffing": {
+      "name": "Luffing (seilet slår)",
+      "alternatives": [],
+      "short": "Et seil som slår i forkanten fordi det er fiet for langt ut.",
+      "what": "Når et seil fires mer enn vindvinkelen krever, eller båten svinger for nær vinden, når luften begge sider av forkanten og seilet slår. Det driver ikke lenger båten, og langvarig slag i sterk vind sliter det ut.",
+      "mistakes": [
+        {
+          "mistake": "Å la et seil slå i sterk vind.",
+          "fix": "Det slites og kan revne. Hal det inn, eller rull det bort."
+        }
+      ],
+      "showMe": "Storskjøtet er fiet helt ut: storseilet slår langs forkanten. Hal storskjøtet inn («Tau»-seksjonen) til slagingen akkurat stopper.",
+      "textStatus": "draft"
+    },
+    "term_ease": {
+      "name": "Fire",
+      "alternatives": [
+        {
+          "term": "Slakke"
+        }
+      ],
+      "short": "Å slippe et tau ut.",
+      "what": "Å fire slipper et tau sakte og under kontroll ut, slik at et seil kan gå lenger ut eller en belastning kommer av.",
+      "textStatus": "draft"
+    },
+    "term_trim": {
+      "name": "Trimme / hale inn",
+      "alternatives": [
+        {
+          "term": "Skjøte inn"
+        }
+      ],
+      "short": "Å dra et tau inn; også å stille seilene etter vinden.",
+      "what": "Å hale inn drar et tau inn. Å trimme betyr å stille hvert seil etter vinden: hal inn til det slutter å slå, fire til det ikke er stallet.",
+      "textStatus": "draft"
+    },
+    "term_twist": {
+      "name": "Tvist",
+      "alternatives": [],
+      "short": "Hvor mye toppen av et seil åpner seg sammenlignet med bunnen.",
+      "what": "Med tvist står toppen av seilet lenger ut enn bunnen. Litt tvist er normalt; mer tvist slipper ut kraft, som hjelper i sterk vind. Kickeren styrer den på storseilet, skjøtet på fokken.",
+      "showMe": "Kickeren er fiet helt ut: toppen av storseilet vrir seg åpen. Hal kickeren («Tau»-seksjonen) og tvisten lukker seg.",
+      "textStatus": "draft"
+    },
+    "term_telltale": {
+      "name": "Vimpler",
+      "alternatives": [
+        {
+          "term": "Tell-tales"
+        }
+      ],
+      "short": "Bånd på seilene som viser hvordan luften strømmer.",
+      "what": "Vimpler er korte bånd nær forkanten av seilene. Begge sider rett bakover: god trim. Den bortvendte siden henger: hentet for langt inn. Den nærmeste siden løfter seg: fiet for langt ut.",
+      "showMe": "God trim: zoom inn på forkanten av storseilet; vimplene på begge sider strømmer rett bakover.",
+      "textStatus": "draft"
+    },
+    "part_telltale": {
+      "name": "Vimpel",
+      "alternatives": [
+        {
+          "term": "Tell-tale"
+        }
+      ],
+      "short": "Et kort bånd på et seil som viser hvordan luften strømmer over det.",
+      "what": "Vimpler er korte bånd nær forkanten av et seil, ett på hver side. Begge rett bakover: seilet er godt trimmet. Den på siden bort fra vinden henger eller snurrer: seilet er hentet for langt inn. Den på vindsiden løfter seg: det er fiet for langt ut.",
+      "onThisBoat": "Appen tegner vimpler nær forkanten på begge seilene.",
+      "mistakes": [
+        {
+          "mistake": "Å hale inn til seilet slutter å slå, og så hale mer «for sikkerhets skyld».",
+          "fix": "Vimplene på den bortvendte siden henger: seilet har stallet. Fire til begge sider strømmer."
+        }
+      ],
+      "showMe": "God trim: zoom inn (klyp) på forkanten av storseilet nær masten. Vimplene på begge sider strømmer rett bakover.",
+      "textStatus": "draft"
+    },
+    "term_no_go_zone": {
+      "name": "Dødsone",
+      "alternatives": [
+        {
+          "term": "Død sektor"
+        }
+      ],
+      "short": "Retningene, omtrent 45° til hver side av vinden, som en seilbåt ikke kan seile i.",
+      "what": "Ingen seilbåt kan seile rett mot vinden. Innenfor omtrent 45° fra den (30–50°, avhengig av båten) slår seilene, og båten bremser til stopp. For å komme mot vinden krysser den i sikksakk, med vending fra den ene siden til den andre.",
+      "mistakes": [
+        {
+          "mistake": "Å styre inn i dødsonen.",
+          "fix": "Seilene slår og båten stopper. Sving bort fra vinden til seilene fylles."
+        }
+      ],
+      "showMe": "Kartet viser dødsonen som en kile mot vinden. Båten seiler like utenfor den, bidevind.",
+      "textStatus": "draft"
+    },
+    "term_close_hauled": {
+      "name": "Bidevind",
+      "alternatives": [
+        {
+          "term": "Kryss",
+          "note": "å seile bidevind for å komme opp mot vinden"
+        }
+      ],
+      "short": "Å seile så nær vinden som mulig, omtrent 45° fra den.",
+      "what": "På bidevind er seilene hentet stramt inn, og båten seiler så nær vinden som den kan, like utenfor dødsonen. Den krenger mest på dette kurset.",
+      "showMe": "Bidevind: vinden 45° fra baugen, begge seilene hentet inn; båten krenger omtrent 17°.",
+      "textStatus": "draft"
+    },
+    "term_close_reach": {
+      "name": "Knapp halvvind",
+      "alternatives": [],
+      "short": "Å seile med vinden omtrent 60° fra baugen, mellom bidevind og halvvind.",
+      "what": "På knapp halvvind er seilene fiet litt fra bidevind. Båten seiler fort og krenger fortsatt godt.",
+      "showMe": "Knapp halvvind: vinden 60° fra baugen, seilene fiet litt; båten seiler omtrent 7,5 kn.",
+      "textStatus": "draft"
+    },
+    "term_beam_reach": {
+      "name": "Halvvind",
+      "alternatives": [],
+      "short": "Å seile med vinden på tvers av båten.",
+      "what": "På halvvind kommer vinden fra siden, 90° fra baugen, og seilene er fiet omtrent halvveis. For mange båter er det den raskeste kursen.",
+      "showMe": "Halvvind: vinden fra siden, seilene fiet omtrent halvveis; båten seiler omtrent 8 kn.",
+      "textStatus": "draft"
+    },
+    "term_broad_reach": {
+      "name": "Slør",
+      "alternatives": [],
+      "short": "Å seile med vinden fra skrått bakfra, omtrent 135° fra baugen.",
+      "what": "På slør kommer vinden over bakre hjørne av båten. Seilene er fiet godt ut; båten krenger lite og turen er behagelig.",
+      "showMe": "Slør: vinden 135° fra baugen, seilene fiet helt ut; båten krenger knapt.",
+      "textStatus": "draft"
+    },
+    "term_run": {
+      "name": "Lens",
+      "alternatives": [
+        {
+          "term": "Medvind"
+        },
+        {
+          "term": "Å lense"
+        }
+      ],
+      "short": "Å seile med vinden bakfra.",
+      "what": "På lens kommer vinden (nesten) rett bakfra, og seilene er fiet helt ut. Båten er langsommere enn på halvvind, og bommen kan jibbe over hvis vinden kommer bak storseilet.",
+      "mistakes": [
+        {
+          "mistake": "Å lense rett medvind.",
+          "fix": "Bommen kan jibbe ved et uhell. Styr litt unna rett medvind, slik at vinden tydelig blir på én side."
+        }
+      ],
+      "showMe": "Lens: vinden nesten rett bakfra, seilene helt ute; omtrent 4,7 kn, langsommere enn på halvvind.",
+      "textStatus": "draft"
+    },
+    "term_reef": {
+      "name": "Rev",
+      "alternatives": [
+        {
+          "term": "Å redusere seil"
+        }
+      ],
+      "short": "Å gjøre et seil mindre for sterk vind.",
+      "what": "Å ta rev gjør seilene mindre, så båten krenger mindre og er lettere å styre i sterk vind. Ta rev tidlig, før vinden er sterk.",
+      "onThisBoat": "Det finnes ingen revliner: storseilet gjøres mindre ved å rulle en del av det inn i masten, og fokken ved å rulle en del rundt forstaget; vanligvis fokken først, så storseilet.",
+      "mistakes": [
+        {
+          "mistake": "Å vente til vinden allerede er sterk.",
+          "fix": "Å rulle inn seil er vanskeligere og farligere under belastning. Gjør seilene mindre så snart båten krenger for mye."
+        }
+      ],
+      "showMe": "Storseilet er rullet halvveis inn i masten: halve seilet, mindre trykk.",
+      "textStatus": "draft"
+    },
+    "term_preventer": {
+      "name": "Preventer",
+      "alternatives": [],
+      "short": "En line som holder bommen ute slik at den ikke kan jibbe over.",
+      "what": "En preventer går fra enden av bommen forover og tilbake til cockpiten, og holder bommen ute på lens, slik at den ikke kan svinge over ved en utilsiktet jibb.",
+      "onThisBoat": "Denne båten har ingen, så appen lærer bort den kontrollerte jibben: storskjøtet hales inn først.",
+      "textStatus": "draft"
+    },
+    "term_north": {
+      "name": "Nord",
+      "alternatives": [
+        {
+          "term": "N",
+          "note": "forkortelse"
+        }
+      ],
+      "short": "Retningen 0° på kompasset.",
+      "what": "Nord er 0° (eller 360°) på kompasset; øst er 90°, sør 180°, vest 270°. Vinder oppkalles etter hvor de kommer fra, så en nordavind blåser fra nord.",
+      "textStatus": "draft"
+    },
+    "term_east": {
+      "name": "Øst",
+      "alternatives": [
+        {
+          "term": "Ø",
+          "note": "forkortelse"
+        }
+      ],
+      "short": "Retningen 90° på kompasset.",
+      "what": "Øst er 90° på kompasset, der sola står opp. En østavind blåser fra øst.",
+      "textStatus": "draft"
+    },
+    "term_south": {
+      "name": "Sør",
+      "alternatives": [
+        {
+          "term": "S",
+          "note": "forkortelse"
+        }
+      ],
+      "short": "Retningen 180° på kompasset.",
+      "what": "Sør er 180° på kompasset. En sønnavind blåser fra sør.",
+      "textStatus": "draft"
+    },
+    "term_west": {
+      "name": "Vest",
+      "alternatives": [
+        {
+          "term": "V",
+          "note": "forkortelse"
+        }
+      ],
+      "short": "Retningen 270° på kompasset.",
+      "what": "Vest er 270° på kompasset, der sola går ned. En vestavind blåser fra vest.",
+      "textStatus": "draft"
+    },
+    "term_compass_point": {
+      "name": "Kompasstrek",
+      "alternatives": [
+        {
+          "term": "Strek"
+        }
+      ],
+      "short": "Én av de 32 navngitte retningene på kompasset, 11¼° fra hverandre.",
+      "what": "Før gradene hadde sjøfolk navn på 32 retninger: nord, øst, sør og vest, de fire mellom dem (nordøst, sørøst, sørvest, nordvest), og flere mellom disse. Én strek er 11¼°, så «to streker fra baugen» er omtrent 22° til den ene siden av rett forover.",
+      "textStatus": "draft"
+    },
+    "term_ahead": {
+      "name": "Forover",
+      "alternatives": [],
+      "short": "Foran baugen.",
+      "what": "Forover betyr i den retningen baugen peker; «rett forut» er rett foran. Med motoren betyr å gå forover å bevege seg framover.",
+      "textStatus": "draft"
+    },
+    "term_astern": {
+      "name": "Akterover",
+      "alternatives": [],
+      "short": "Bak båten; også å bevege seg bakover.",
+      "what": "Akterover betyr bak hekken. Med motoren betyr å gå akterover å bevege seg bakover (revers).",
+      "textStatus": "draft"
+    },
+    "term_abeam": {
+      "name": "Tvers",
+      "alternatives": [
+        {
+          "term": "Rett ut til siden"
+        }
+      ],
+      "short": "I rett vinkel på båten, rett ut til den ene siden.",
+      "what": "Noe som er tvers, ligger 90° på båtens midtlinje, på høyde med midten, til babord eller styrbord. En vind tvers gir halvvind.",
+      "textStatus": "draft"
+    },
+    "term_quarter": {
+      "name": "Låring",
+      "alternatives": [],
+      "short": "De bakre hjørnene av båten, mellom tvers og akterover.",
+      "what": "Låringene er de bakre hjørnene av båten. Vind eller bølger «på låringen» kommer skrått bakfra, omtrent 135° fra baugen; bølger derfra er de vanskeligste å styre i.",
+      "showMe": "Vind og bølger på styrbord låring: se rattet (autopiloten) rette opp kursen om og om igjen mens bølgene skyver båten av kurs.",
+      "textStatus": "draft"
+    },
+    "term_heading": {
+      "name": "Kompasskurs",
+      "alternatives": [
+        {
+          "term": "Kurs",
+          "note": "strengt tatt retningen båten beveger seg over grunnen"
+        }
+      ],
+      "short": "Kompassretningen baugen peker mot.",
+      "what": "Kompasskursen er retningen baugen peker, i grader fra nord: 0 nord, 90 øst, 180 sør, 270 vest. Autopilotens Kurs-modus holder den.",
+      "showMe": "Kartet viser at båten har kurs 060°, mot nordøst, med vinden fra siden.",
+      "textStatus": "draft"
+    },
+    "term_wind_direction": {
+      "name": "Vindretning",
+      "alternatives": [],
+      "short": "Hvor vinden kommer fra, i grader eller med kompassnavn.",
+      "what": "En vind oppkalles etter hvor den kommer fra: en nordavind blåser fra nord mot sør. I grader kommer en vind «fra 060°» fra nordøst.",
+      "mistakes": [
+        {
+          "mistake": "Å lese en vind «fra 060°» som at den blåser mot 060°.",
+          "fix": "Den blåser fra 060° mot 240°: se mot 060° for å vende deg mot den."
+        }
+      ],
+      "showMe": "Vind fra 060° (nordøst): strekene blåser derfra over båten.",
+      "textStatus": "draft"
+    },
+    "term_knot": {
+      "name": "Knop",
+      "alternatives": [
+        {
+          "term": "kn",
+          "note": "forkortelse"
+        }
+      ],
+      "short": "Én nautisk mil i timen: slik måles fart til sjøs.",
+      "what": "Fart for båter og vind til sjøs oppgis i knop. Én knop er én nautisk mil (1852 m) i timen, omtrent 0,5 m/s eller 1,85 km/t.",
+      "textStatus": "draft"
+    },
+    "term_beaufort": {
+      "name": "Beaufort-skalaen",
+      "alternatives": [
+        {
+          "term": "Styrke",
+          "note": "som i «styrke 4»"
+        }
+      ],
+      "short": "Vindstyrke som et tall fra 0 til 12, vurdert etter virkningen på sjøen.",
+      "what": "Beaufort-skalaen gir navn til vindstyrker fra 0 (stille) til 12 (orkan). Styrke 3 (7–10 kn) gir de første spredte skumtoppene; styrke 4 (11–16 kn) ganske mange; styrke 5 (17–21 kn) mange.",
+      "showMe": "10 kn, øverst i styrke 3: de første spredte skumtoppene. Øk vinden under «Forhold» for å se flere.",
+      "textStatus": "draft"
+    },
+    "term_gust": {
+      "name": "Vindkast",
+      "alternatives": [
+        {
+          "term": "Kast"
+        }
+      ],
+      "short": "En plutselig, kort økning i vinden.",
+      "what": "Et vindkast er et drag av sterkere vind som varer noen sekunder, ofte fra en litt annen retning. Det kan vise seg på vannet som et mørkere, ruere felt som kommer mot deg. I et vindkast krenger båten mer.",
+      "mistakes": [
+        {
+          "mistake": "Å holde storskjøtet stramt gjennom et sterkt vindkast.",
+          "fix": "Båten krenger hardt og dreier opp i vinden. Fire storseilet når kastet treffer, og trim igjen når det har passert."
+        }
+      ],
+      "showMe": "Kastete vind: se mot vinden etter et mørkt felt på vannet. Når det kommer, viser stripen «KAST» og båten krenger mer.",
+      "textStatus": "draft"
+    },
+    "term_lull": {
+      "name": "Lulling",
+      "alternatives": [],
+      "short": "Et kort fall i vinden.",
+      "what": "En lulling er et øyeblikk med svakere vind, ofte mellom vindkast. Båten retter seg opp og går saktere, og vinden seilene kjenner, kommer litt lenger forfra.",
+      "textStatus": "draft"
+    },
+    "term_wind_shift": {
+      "name": "Vindskifte",
+      "alternatives": [
+        {
+          "term": "Dreie med klokken",
+          "note": "vinden dreier med klokken"
+        },
+        {
+          "term": "Dreie mot klokken",
+          "note": "vinden dreier mot klokken"
+        }
+      ],
+      "short": "En endring i vindretningen.",
+      "what": "Vindretningen endrer seg stadig litt. Et skifte som kommer lenger forfra tvinger båten til å falle av, ellers slår seilene. Et skifte lenger bakfra lar båten seile nærmere vinden.",
+      "showMe": "Skiftende vind med autopiloten som holder vindvinkelen: se kursen svinge når vinden skifter.",
+      "textStatus": "draft"
+    },
+    "term_bora": {
+      "name": "Bora",
+      "alternatives": [
+        {
+          "term": "Bura",
+          "note": "det kroatiske navnet, også brukt av seilere der"
+        }
+      ],
+      "short": "En kald, svært kastete vind fra nordøst i Adriaterhavet.",
+      "what": "Boraen blåser fra nord til nordøst, ned fra fjellene mot Adriaterhavskysten, oftest om vinteren. Den kommer i plutselige, sterke kast og skaper korte, høye bølger med hvite topper.",
+      "textStatus": "draft"
+    },
+    "term_jugo": {
+      "name": "Jugo",
+      "alternatives": [
+        {
+          "term": "Sirocco",
+          "note": "det italienske navnet på samme type vind"
+        }
+      ],
+      "short": "En varm, fuktig vind fra sørøst i Adriaterhavet.",
+      "what": "Jugoen blåser fra sørøst, varm og fuktig, og kan gi regn og storm. Navnet betyr «sørlig» på kroatisk.",
+      "textStatus": "draft"
+    },
+    "term_maestral": {
+      "name": "Maestral",
+      "alternatives": [],
+      "short": "Sommerens sjøbris fra nordvest langs Adriaterhavskysten.",
+      "what": "På sommerdager, når kysten blir varmere enn sjøen, blåser en mild vind inn fra havet fra nordvest: maestralen.",
+      "textStatus": "draft"
+    },
+    "term_burin": {
+      "name": "Burin",
+      "alternatives": [
+        {
+          "term": "Landbris"
+        }
+      ],
+      "short": "Den svake nattbrisen som blåser fra land langs Adriaterhavskysten.",
+      "what": "Om natten kjøles landet raskere ned enn sjøen, så en svak bris blåser fra land og ut mot havet: burinen. Den er svakere enn dagens sjøbris (maestralen) og dør ut om morgenen.",
+      "textStatus": "draft"
+    },
+    "term_heel": {
+      "name": "Krenging",
+      "alternatives": [
+        {
+          "term": "Å krenge"
+        }
+      ],
+      "short": "At båten heller over til én side.",
+      "what": "Vindens trykk på seilene tipper båten over mot le; vekten på kjølen drar den tilbake. Litt krenging er normalt; for mye gjør båten treg og vanskelig å styre. Å fire skjøtene eller gjøre seilene mindre reduserer den.",
+      "mistakes": [
+        {
+          "mistake": "Å hale skjøtene hardere inn når båten krenger for mye.",
+          "fix": "Det gir mer krenging. Fire storskjøtet, eller rull inn en del av seilene."
+        }
+      ],
+      "showMe": "20 kn med seilene hentet inn: båten krenger omtrent 30°. Fire storskjøtet i «Tau»-seksjonen, så retter båten seg opp.",
+      "textStatus": "draft"
+    },
+    "term_weather_helm": {
+      "name": "Luvgjerrighet",
+      "alternatives": [],
+      "short": "Båtens trang til å dreie opp mot vinden, som kjennes på rattet.",
+      "what": "En båt som krenger, vil dreie baugen opp mot vinden. For å holde en rett kurs må rattet holdes vridd bort fra vinden. Litt er normalt; mye betyr for mye krenging eller for mye storseil: fire storseilet.",
+      "showMe": "Hardt krenget i 20 kn: autopiloten holder rattet vridd bort fra vinden for å holde båten rett. Fire storskjøtet, så kommer rattet tilbake mot midten.",
+      "textStatus": "draft"
+    },
+    "term_round_up": {
+      "name": "Brodd",
+      "alternatives": [
+        {
+          "term": "Brodde",
+          "note": "at båten dreier opp i vinden av seg selv"
+        }
+      ],
+      "short": "Båten dreier opp i vinden av seg selv, og rattet kan ikke stoppe den.",
+      "what": "Overpresset i et vindkast krenger båten, roret mister grepet, og båten svinger opp mot vinden med seilene som slår. Å fire storskjøtet tidlig stopper det.",
+      "mistakes": [
+        {
+          "mistake": "Å kjempe mot det med rattet alene.",
+          "fix": "Et ror som er vridd hardt over, slutter å gripe. Fire storskjøtet: det tar bort kraften som dreier båten."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "term_in_irons": {
+      "name": "I vindøyet",
+      "alternatives": [
+        {
+          "term": "Fastlåst i vinden"
+        }
+      ],
+      "short": "Stoppet rett i vinden, uten styring.",
+      "what": "Når båten er snudd rett mot vinden, mister den drivkraften: seilene slår, den bremser og stopper, og uten vann som strømmer forbi roret gjør rattet ingenting. For å komme ut lar du båten drive bakover med rattet vridd til baugen faller av fra vinden, eller bruker motoren.",
+      "showMe": "Kurs rett mot vinden ved 6 kn: seilene slår, båten bremser til stopp, og rattet dreier den ikke lenger.",
+      "textStatus": "draft"
+    },
+    "term_head_up": {
+      "name": "Luffe opp",
+      "alternatives": [
+        {
+          "term": "Gå opp mot vinden"
+        }
+      ],
+      "short": "Å dreie baugen mot vinden.",
+      "what": "Å luffe opp dreier baugen nærmere vinden; seilene må da hales inn, ellers slår de. Det motsatte er å falle av.",
+      "textStatus": "draft"
+    },
+    "term_bear_away": {
+      "name": "Falle av",
+      "alternatives": [
+        {
+          "term": "Gå bort fra vinden"
+        }
+      ],
+      "short": "Å dreie baugen bort fra vinden.",
+      "what": "Å falle av dreier baugen lenger fra vinden; seilene må da fires ut. Å falle av for langt med vinden bakfra gir fare for en utilsiktet jibb.",
+      "textStatus": "draft"
+    },
+    "term_stall": {
+      "name": "Stall",
+      "alternatives": [],
+      "short": "Et seil som er hentet for langt inn, slik at luften ikke lenger strømmer jevnt rundt det.",
+      "what": "Et stallet seil ser fullt ut, men driver dårlig og gir mer krenging; vimplene på den bortvendte siden henger eller snurrer. Fire skjøtet til de strømmer.",
+      "showMe": "Storskjøtet er hentet helt inn med vinden 60° fra baugen: storseilet er stallet. Fire det til omtrent 25 % i «Tau»-seksjonen, så øker farten.",
+      "textStatus": "draft"
+    },
+    "term_hull_speed": {
+      "name": "Skrogfart",
+      "alternatives": [],
+      "short": "Farten en tung båt knapt kan komme over: omtrent 9 kn for denne.",
+      "what": "En tung båt skyver en bølge foran seg. Nær omtrent 1,34 × √(vannlinjelengde i fot) knop sitter den fast i den bølgen, og mer kraft gir knapt mer fart. For denne båten er det omtrent 8,9 kn.",
+      "showMe": "Full gass, ingen vind: 2500 o/min gir omtrent 9,3 kn. Med en tredjedel mindre gass klarer den fortsatt omtrent 8 kn: de siste kreftene gir lite fart.",
+      "textStatus": "draft"
+    },
+    "term_fetch": {
+      "name": "Vindstrekning",
+      "alternatives": [
+        {
+          "term": "Fetch"
+        }
+      ],
+      "short": "Hvor langt vinden har blåst over åpent vann for å nå deg.",
+      "what": "Jo lengre vindstrekning og jo sterkere vind, desto større bølger. I en skjermet vik er strekningen kort og sjøen forblir liten; på åpent hav er den lang.",
+      "showMe": "Skjermet vann i 15 kn: små bølger. Sett «Bølger» under «Forhold» til «Åpent hav»: den samme vinden gir mye større bølger.",
+      "textStatus": "draft"
+    },
+    "term_white_horses": {
+      "name": "Hvite skumtopper",
+      "alternatives": [
+        {
+          "term": "Skumkroner"
+        }
+      ],
+      "short": "Brytende bølgetopper som viser hvitt.",
+      "what": "Når vinden når omtrent 7–10 kn (styrke 3), begynner de første bølgetoppene å bryte til hvitt skum; jo sterkere vind, desto flere.",
+      "showMe": "22 kn på åpent hav: hvite skumtopper overalt. Ved 6 kn er det ingen.",
+      "textStatus": "draft"
+    },
+    "term_wave_height": {
+      "name": "Bølgehøyde",
+      "alternatives": [
+        {
+          "term": "Signifikant bølgehøyde"
+        }
+      ],
+      "short": "Hvor høye de største bølgene er, fra bølgedal til bølgetopp.",
+      "what": "Bølgehøyden som oppgis i værvarsler, er gjennomsnittet av den høyeste tredjedelen av bølgene; enkeltbølger kan være nesten dobbelt så høye. «Bølger»-blokken under «Forhold» viser den.",
+      "showMe": "Kystbølger i 15 kn: «Bølger»-blokken under «Forhold» sier at de er 0,7 m høye, én hvert 3,8 s.",
+      "textStatus": "draft"
+    },
+    "term_heave": {
+      "name": "Hiv",
+      "alternatives": [],
+      "short": "At båten løfter og senker seg på bølgene.",
+      "what": "Hiv er opp-og-ned-bevegelsen når bølgene passerer under båten.",
+      "showMe": "Åpent hav i 20 kn, båten holdt i ro: den løfter og senker seg omtrent 0,9 m til hver side.",
+      "textStatus": "draft"
+    },
+    "term_pitch": {
+      "name": "Stamping",
+      "alternatives": [
+        {
+          "term": "Å stampe"
+        }
+      ],
+      "short": "At baugen løfter og senker seg når bølgene passerer.",
+      "what": "Stamping er at båten tipper med nesen opp og ned. Bølger forfra eller bakfra får den til å stampe mest.",
+      "showMe": "Bølger forfra: båten stamper, baugen opp og ned, omtrent 3°.",
+      "textStatus": "draft"
+    },
+    "term_roll": {
+      "name": "Rulling",
+      "alternatives": [
+        {
+          "term": "Å rulle"
+        }
+      ],
+      "short": "At båten vugger fra side til side.",
+      "what": "Rulling er at båten tipper fra side til side. Bølger fra siden får den til å rulle mest.",
+      "showMe": "Bølger fra siden: båten ruller omtrent 5° til hver side.",
+      "textStatus": "draft"
+    },
+    "part_vang_strut": {
+      "name": "Stiv kicker",
+      "alternatives": [],
+      "short": "Et fjærbelastet stag under bommen som holder den oppe; kickertauet drar den ned.",
+      "what": "En stiv kicker er et stag fra nederst på masten til undersiden av bommen, med en fjær inni. Fjæren skyver bommen opp; kickerens taubloksystem drar den ned. Med den faller ikke bommen når seilet er rullet bort.",
+      "onThisBoat": "En Seldén Rodkicker med gassfjær.",
+      "textStatus": "draft"
+    },
+    "fit_mast_base_turning_blocks": {
+      "name": "Ledeblokker ved mastefoten",
+      "alternatives": [],
+      "short": "Ringen av trinser ved foten av masten som vender tauene akterover.",
+      "what": "Tau kommer ned langs masten og vendes ved disse blokkene for å løpe akterover langs dekkshuset til cockpiten, så de kan betjenes derfra.",
+      "onThisBoat": "Seldén-blokker i en ring rundt foten av masten, én blokk for hvert tau.",
+      "textStatus": "draft"
+    },
+    "fit_line_channels": {
+      "name": "Taukanaler",
+      "alternatives": [],
+      "short": "Dekkede kanaler på dekkshuset som fører tauene til cockpiten.",
+      "what": "De holder tauene fra masten ryddige og unna føttene til mannskapet på vei akterover.",
+      "onThisBoat": "Én kanal på hver side, som ender ved stopperrekkene foran vinsjene.",
+      "textStatus": "draft"
+    },
+    "fit_sprayhood": {
+      "name": "Sprayhood",
+      "alternatives": [
+        {
+          "term": "Kalesje"
+        }
+      ],
+      "short": "Den sammenleggbare presenningsskjermen foran i cockpiten.",
+      "what": "Sprayhooden skjermer nedgangen og fronten av cockpiten mot sprut og vind. Den kan felles ned når den ikke trengs.",
+      "textStatus": "draft"
+    },
+    "fit_anchor_windlass": {
+      "name": "Ankerspill",
+      "alternatives": [],
+      "short": "Den elektriske vinsjen på baugen som fyrer ut ankerkjettingen og henter den inn.",
+      "what": "Ankerspillet senker ankeret og henter det opp igjen, betjent med brytere ved baugen eller en fjernkontroll ved rorplassen.",
+      "onThisBoat": "På foredekket bak baugrullen, i en rund fordypning. Hold «Kjetting ut» eller «Kjetting inn» i Anker-blokken (på Baug-plassen eller rorplassen i Realistisk modus).",
+      "mistakes": [
+        {
+          "mistake": "Å ha fingre eller føtter nær kjettingen mens ankerspillet går.",
+          "fix": "Kjettingen kan klemme dem. Hold deg unna, og stopp ankerspillet før du rører kjettingen."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "fit_bow_roller": {
+      "name": "Baugrulle",
+      "alternatives": [],
+      "short": "Rullen på baugen som ankerkjettingen løper over.",
+      "what": "Ankeret ligger i baugrullen, og kjettingen løper over den til ankerspillet.",
+      "textStatus": "draft"
+    },
+    "fit_mooring_cleat": {
+      "name": "Fortøyningsklamp",
+      "alternatives": [],
+      "short": "Et sterkt beslag å feste fortøyningene til.",
+      "what": "Fortøyninger til en brygge eller en bøye gjøres fast rundt en klamp.",
+      "onThisBoat": "Tre på hver side, på den hevede kanten ved dekkskanten: ved baugen, midtskips og ved hekken. Baugklampene er på et bilde; de andre stedene er delvis et gjett.",
+      "textStatus": "draft"
+    },
+    "fit_anchor": {
+      "name": "Anker",
+      "alternatives": [],
+      "short": "Den tunge kroken som holder båten fast til havbunnen.",
+      "what": "Ankeret fires ned på kjettingen til det ligger på havbunnen, der det graver seg ned og holder båten på ett sted.",
+      "onThisBoat": "Det ligger i baugrullen, på styrbord side av fokkerulleanlegget, klart til å slippes. Fire ut kjettingen i Anker-blokken, så går det ned til bunnen.",
+      "showMe": "Baugen forfra: ankeret henger i rullen sin, med kjettingen som løper tilbake til ankerspillet.",
+      "textStatus": "draft"
+    },
+    "fit_anchor_chain": {
+      "name": "Ankerkjetting",
+      "alternatives": [],
+      "short": "Kjettingen som forbinder ankeret med båten.",
+      "what": "Kjettingen løper fra ankeret over baugrullen til ankerspillet, og derfra ned i kjettingkassen under foredekket.",
+      "onThisBoat": "Et kort stykke vises mellom ankerspillet og ankeret; resten ligger i kassen.",
+      "textStatus": "draft"
+    },
+    "fit_fairlead": {
+      "name": "Fortøyningsføring",
+      "alternatives": [],
+      "short": "En glatt føring på dekkskanten som en fortøyning løper gjennom.",
+      "what": "En fortøyningsføring holder en fortøyning på plass der den forlater båten, så den ikke slites mot dekkskanten eller hopper av.",
+      "onThisBoat": "Én på hver side nær baugen og nær hekken, ved siden av klampene. De nøyaktige plasseringene er et gjett.",
+      "textStatus": "draft"
+    },
+    "fit_fender": {
+      "name": "Fender",
+      "alternatives": [],
+      "short": "En gummibuffer som henges over siden for å beskytte skroget.",
+      "what": "Fendere henger mellom båten og en brygge eller en annen båt, slik at skrogene ikke gnisser eller støter. De bindes på før du kommer inn og tas inn før du seiler.",
+      "onThisBoat": "Åtte, fire på hver side, oppbevart i et skap under seiling. Legg dem ut i Havneutstyr-blokken.",
+      "mistakes": [
+        {
+          "mistake": "Å la fenderne henge over siden under seiling.",
+          "fix": "De dunker mot skroget og kan gå tapt. Ta dem inn og stuv dem så snart du er ute av havnen."
+        }
+      ],
+      "showMe": "Båten fra siden med fenderne ute, fire på hver side.",
+      "textStatus": "draft"
+    },
+    "fit_fender_ball": {
+      "name": "Ballfender",
+      "alternatives": [],
+      "short": "En stor, rund fender for bakre del av båten.",
+      "what": "En ballfender beskytter et sted der en lang fender ville gli bort, for eksempel hekken når du fortøyer akterfortøyd (med bakre del av båten mot bryggen).",
+      "onThisBoat": "Én, midt på hekken, hengende over bakkanten. Den legges ut og tas inn sammen med de andre fenderne.",
+      "showMe": "Båten fra babord side med fenderne ute: ballfenderen henger midt på hekken.",
+      "textStatus": "draft"
+    },
+    "env_wake": {
+      "name": "Kjølvann",
+      "alternatives": [],
+      "short": "Sporet av oppsprøytet vann båten etterlater seg.",
+      "what": "Kjølvannet er sporet av opprørt vann bak båten når den beveger seg. Et rett kjølvann betyr jevn kurs; et buet viser at båten har svingt.",
+      "showMe": "Fort seiling med vinden fra siden: kjølvannet trekker seg ut bak båten. Vri rattet litt for å se det krumme seg.",
+      "textStatus": "draft"
+    },
+    "env_boom_danger_zone": {
+      "name": "Bomfaresone",
+      "alternatives": [],
+      "short": "Det røde området appen tegner der bommen ville sveipe ved en jibb.",
+      "what": "Med vinden bakfra kan bommen svinge over hele cockpiten ved en utilsiktet jibb, fort og hardt nok til å skade noen. Appen tegner området den ville sveipe i rødt, så du vet hvor du ikke skal stå.",
+      "mistakes": [
+        {
+          "mistake": "Å styre så langt medvind at vinden kommer bak storseilet (å seile på feil side, «by the lee»).",
+          "fix": "Bommen kan krysse når som helst. Styr litt tilbake mot vinden, eller jibb med vilje med storskjøtet hentet inn."
+        }
+      ],
+      "showMe": "På lens svinger autopiloten båten gjennom rett medvind med storskjøtet fiet: en utilsiktet jibb. Det røde området viser hvor bommen sveiper over. Hold hodene unna.",
+      "textStatus": "draft"
+    },
+    "env_buoy": {
+      "name": "Øvelsesbøye",
+      "alternatives": [],
+      "short": "Én av fire gule bøyer nær starten, å seile rundt.",
+      "what": "Fire gule bøyer står 200 m nord, øst, sør og vest for der båten starter. Bruk dem som merker: seil rundt dem, eller sjekk hvor langt du har kommet.",
+      "showMe": "Kartet ovenfra: zoom ut med − fire ganger for å se de fire bøyene rundt starten.",
+      "textStatus": "draft"
+    },
+    "env_quay": {
+      "name": "Kai",
+      "alternatives": [
+        {
+          "term": "Brygge"
+        },
+        {
+          "term": "Pontong",
+          "note": "en flytende kai"
+        }
+      ],
+      "short": "Den faste kanten av marinaen som båtene fortøyer til.",
+      "what": "I en marina i Middelhavet ligger båtene side om side med hekken mot kaien (akterfortøyd), holdt av hekkfortøyninger til kaien og en lazyline ved baugen. En pontong er en flytende kai.",
+      "onThisBoat": "Marinaen i appen har en kai mot nord og en pontong mot sør, med en farled mellom dem.",
+      "mistakes": [
+        {
+          "mistake": "Å komme inn med baugen først som på en parkeringsplass.",
+          "fix": "I Middelhavet går du inn med hekken først."
+        }
+      ],
+      "showMe": "Marinaen ovenfra.",
+      "textStatus": "draft"
+    },
+    "env_moored_yacht": {
+      "name": "Fortøyd båt",
+      "alternatives": [
+        {
+          "term": "Nabo"
+        }
+      ],
+      "short": "En annen båt i marinaen; den beveger seg aldri i appen.",
+      "what": "Naboene er den vanskeligste delen av en trang plass: skrogene deres er noen titalls centimeter unna. Fendere på begge sider beskytter begge båtene.",
+      "onThisBoat": "Travelt: alle plasser er tatt unntatt din. Halvfullt: én nabo. Tomt: ingen.",
+      "mistakes": [
+        {
+          "mistake": "Å se bare på kaien.",
+          "fix": "Se på baugene til naboene: vinden presser baugen din mot deres."
+        }
+      ],
+      "showMe": "En travel marina ovenfra.",
+      "textStatus": "draft"
+    },
+    "env_breakwater": {
+      "name": "Molo",
+      "alternatives": [
+        {
+          "term": "Bølgebryter"
+        },
+        {
+          "term": "Havnemur"
+        }
+      ],
+      "short": "Steinmuren som holder bølgene ute av havnen.",
+      "what": "En molo er en lang haug med stein eller en betongmur rundt en havn. Innenfor den er vannet rolig, så båter kan fortøye. Båtene kommer inn og går ut gjennom et gap i den, innløpet.",
+      "onThisBoat": "Marinaen i appen har en molo i sør og vest med innløpet mot vest, og kaien fortsetter som en molo i nord.",
+      "mistakes": [
+        {
+          "mistake": "Å skjære nær rundt enden av moloen.",
+          "fix": "Hold god avstand: stein spres under vann nær foten av den."
+        }
+      ],
+      "showMe": "Moloen ovenfra.",
+      "textStatus": "draft"
+    },
+    "env_harbour_light": {
+      "name": "Lys ved havneinnløpet",
+      "alternatives": [
+        {
+          "term": "Innseilingslys"
+        }
+      ],
+      "short": "Det røde eller grønne lyset på hver side av et havneinnløp.",
+      "what": "I Europa (IALA region A) holder en båt som kommer inn fra sjøen det røde lyset på venstre (babord) side og det grønne lyset på høyre (styrbord) side. Om natten blinker de, så du finner åpningen.",
+      "onThisBoat": "Rødt på nordmoloen, grønt på vestarmen: når du går inn østover, er rødt på venstre side.",
+      "mistakes": [
+        {
+          "mistake": "Å passere lysene feil vei rundt.",
+          "fix": "Når du kommer inn fra sjøen, forblir rødt på venstre side."
+        }
+      ],
+      "showMe": "Innløpet fra rorplassen.",
+      "textStatus": "draft"
+    },
+    "env_exercise_target": {
+      "name": "Øvelsesmål",
+      "alternatives": [],
+      "short": "Dit øvelsen vil at båten skal gå: en magentafarget omrisslinje på vannet og på kartet.",
+      "what": "Tegnes bare mens et øvelsessteg trenger det. Det finnes ikke på det virkelige vannet: det er appens måte å peke på.",
+      "onThisBoat": "—",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "env_harbour_building": {
+      "name": "Havnebygninger",
+      "alternatives": [],
+      "short": "Husene bak kaien: havnekontoret, kaféer, butikker.",
+      "what": "Kontoret i en marina (der du melder deg inn og betaler) ligger vanligvis på kaien, med dusjer, kaféer og butikker i nærheten.",
+      "onThisBoat": "Bare tegnet: seks lave bygninger bak kaien.",
+      "mistakes": [],
+      "showMe": "Bygningene sett fra båten.",
+      "textStatus": "draft"
+    },
+    "fit_autopilot_control": {
+      "name": "Autopilotpanel",
+      "alternatives": [],
+      "short": "Kontrollpanelet som lar autopiloten styre.",
+      "what": "Autopiloten styrer for deg. På Standby styrer du selv; Kurs holder kompasskursen; Vind holder vinkelen til sann vind. Vend svinger båten gjennom vinden.",
+      "onThisBoat": "Et B&G-panel ved rorplassen. På hvert rorpanel i appen viser tastene modusen (STBY lyser på Standby, AUTO lyser mens den styrer) og linjen over dem kursen den holder. «Autopilot»-seksjonen er der du betjener den.",
+      "mistakes": [
+        {
+          "mistake": "Å holde en kompasskurs og glemme vinden.",
+          "fix": "Hvis vinden skifter, kan båten ende i dødsonen eller jibbe. Følg med på seilene, eller la autopiloten holde vindvinkelen."
+        },
+        {
+          "mistake": "Å vri rattet for hånd mens autopiloten er på.",
+          "fix": "Den går til Standby (du tok rattet). Velg en modus igjen når du vil at den skal styre."
+        }
+      ],
+      "showMe": "Autopiloten holder vinkelen til vinden. Seksjonen heter «Autopilot»: endre vinkelen med knappene.",
+      "textStatus": "draft"
+    },
+    "fit_instrument_display": {
+      "name": "Instrumentdisplay",
+      "alternatives": [],
+      "short": "Skjermen ved rorplassen som viser fart, kurs og vind.",
+      "what": "Den viser farten til båten, kursen og vinden: AWA og AWS, vinkelen og farten til den tilsynelatende vinden (det seilene kjenner), og TWA og TWS, den sanne vindens.",
+      "onThisBoat": "Et B&G-display ved rorplassen. I appen har hvert rorpanel et vinddisplay med AWA og AWS, vinden seilene kjenner; stripen øverst i 3D-visningen viser de samme tallene og mer (trykk på den for vindskiven).",
+      "textStatus": "draft"
+    },
+    "fit_helm_pedestal": {
+      "name": "Rattsøyle",
+      "alternatives": [
+        {
+          "term": "Pidestall"
+        }
+      ],
+      "short": "Søylen foran hvert ratt som bærer kompasset og kontrollene.",
+      "what": "Aksen til rattet går inn i søylen. Øverst sitter et lite panel med kompasset og instrumentene, og et rekkverk i stål foran gir deg noe å holde i og holder knær og tau unna instrumentene.",
+      "onThisBoat": "Én søyle ved hvert ratt, hver med det samme panelet: kompasset, vinddisplayet, motorspaken og turtelleren, joystickene til thrusterne og autopilottastene. Tegningen er et gjett: det finnes ennå ikke noe bilde av søylen.",
+      "showMe": "Utsikten bakfra mot rattet: søylen med panelet og rekkverket i stål står foran rattet.",
+      "textStatus": "draft"
+    },
+    "fit_thruster_joysticks": {
+      "name": "Joysticker for thrusterne",
+      "alternatives": [],
+      "short": "To små spaker som skyver baugen eller hekken sideveis.",
+      "what": "Mens du skyver en spak til siden, skyver thrusteren (en propell i en tunnel gjennom skroget) den enden av båten den veien. Én spak er for baugpropellen, én for hekkpropellen. De hjelper ved lav fart i en marina; ved mer enn noen få knop gjør de lite.",
+      "onThisBoat": "To joysticker ved rorplassen, én for hver thruster. I appen betjener «Motor»-seksjonen og hurtigraden thrusterne.",
+      "showMe": "Utsikten bakfra mot rattet: de to små thrusterspakene sitter nederst på panelet, til høyre for tastaturet.",
+      "textStatus": "draft"
+    },
+    "fit_winch_handle_rest": {
+      "name": "Hvilested for vinsjsveiven",
+      "alternatives": [],
+      "short": "Der vinsjsveiven ligger ved rorplassen.",
+      "what": "En vinsjsveiv som ligger løs, kan gli bort eller havne over bord, så den oppbevares i en holder eller en lomme når den ikke sitter i en vinsj.",
+      "onThisBoat": "I appen ligger sveiven på en pute på cockpitgulvet mellom de to rattene, mellom to små stoppere.",
+      "showMe": "Realistiske tau, sveiven stuvet ved rorplassen: den ligger på den mørke puten mellom de to rattene, mellom to små stoppere.",
+      "textStatus": "draft"
+    },
+    "fit_deck_hatch": {
+      "name": "Dekksluke",
+      "alternatives": [],
+      "short": "Et vindu i dekket som kan åpnes for lys og luft under dekk.",
+      "what": "En luke er et sterkt vindu i en ramme, hengslet slik at det kan åpnes. Lukket og låst holder den vannet ute; til sjøs forblir den lukket, for en bølge over dekket strømmer inn gjennom en åpen luke.",
+      "onThisBoat": "To luker på dekkshuset og én på foredekket i appen. Plasseringen er et gjett. Ved detaljnivå Lav tegnes de ikke.",
+      "showMe": "Ovenfra: to luker på dekkshuset og én på foredekket, hver en lys ramme rundt et mørkt lokk.",
+      "textStatus": "draft"
+    },
+    "fit_portlight": {
+      "name": "Skrogvindu",
+      "alternatives": [
+        {
+          "term": "Koøye",
+          "note": "vanligvis et rundt vindu"
+        }
+      ],
+      "short": "Et langt fast vindu i siden av skroget.",
+      "what": "Skrogvinduer gir lys og utsikt fra kahytten. De kan ikke åpnes, og de er laget sterke nok til bølgene som treffer siden.",
+      "onThisBoat": "Tre vinduer på hver side i appen. Størrelsene og plasseringene er et gjett. Ved detaljnivå Lav tegnes de ikke.",
+      "showMe": "Fra siden: tre lange mørke vinduer under dekkskanten.",
+      "textStatus": "draft"
+    },
+    "term_prop_walk": {
+      "name": "Propellens sidekraft",
+      "alternatives": [
+        {
+          "term": "Prop walk"
+        }
+      ],
+      "short": "Når du går akterover, skyver propellen hekken sideveis.",
+      "what": "En propell skyver ikke bare bakover: når du går akterover, skyver den også hekken til én side, mest når båten ennå ikke har fart. Hvilken side avhenger av hvilken vei propellen dreier. Skippere bruker det: med hekken som går mot babord legger de til med babord side mot kaien.",
+      "onThisBoat": "Et saildrive med en fast toblads propell. I appen går hekken mot babord når du går akterover (en antakelse til skipperen har sjekket): omtrent 6° sving på 15 s ved halv fart akterover. Et saildrive har mindre sidekraft enn en akseldrift.",
+      "mistakes": [
+        {
+          "mistake": "Å rygge rett inn på en plass og bli overrasket over at båten svinger.",
+          "fix": "Regn med sidekraften: start svingen tidlig, eller bruk et kort støt forover med rattet over for å rette opp."
+        }
+      ],
+      "showMe": "Ingen vind, motoren halv fart akterover fra stillstand: se baugen svinge mot styrbord mens hekken går mot babord.",
+      "textStatus": "draft"
+    },
+    "term_windage": {
+      "name": "Vindfang",
+      "alternatives": [],
+      "short": "Vindens trykk på skroget, masten og de rullede seilene.",
+      "what": "Selv med seilene rullet bort presser vinden på alt over vannet. Med fart holder kjølen båten rett. Under omtrent to knop gjør den ikke det lenger: båten glir sideveis, og baugen, høy og lett, blåser raskere nedover vinden enn hekken, til båten ligger omtrent på tvers.",
+      "onThisBoat": "Høye sider, en mast på 20 m og det rullede storseilet inni den: i 15 kn tvers driver båten sideveis med omtrent 0,6 kn; med vinden 45° på baugen faller baugen av omtrent 30° på 30 s.",
+      "mistakes": [
+        {
+          "mistake": "Å stoppe i farleden for å vente: baugen blåser av og båten driver mot de fortøyde båtene.",
+          "fix": "Hold litt fart, eller hold båten med motoren og thrusterne."
+        }
+      ],
+      "showMe": "Seilene rullet bort, vind 15 kn fra 45° på styrbord baug, stillestående: baugen blåser av mot babord.",
+      "textStatus": "draft"
+    },
+    "part_bow_thruster": {
+      "name": "Baugpropell",
+      "alternatives": [
+        {
+          "term": "Baugthruster"
+        }
+      ],
+      "short": "En liten propell i en tunnel tvers gjennom baugen som skyver baugen sideveis.",
+      "what": "Den skyver baugen mot babord eller styrbord mens joysticken holdes. Den er sterk når båten nesten står stille og svak når båten går fortere enn omtrent 2 knop, fordi vannet som strømmer forbi, fører strålen bort.",
+      "onThisBoat": "En tunnel omtrent 2 m bak stevnen, betjent med venstre joystick ved rorplassen (eier). I appen skyver den omtrent 130 kgf (en antakelse).",
+      "mistakes": [
+        {
+          "mistake": "Å holde den inne i fart og lure på hvorfor ingenting skjer.",
+          "fix": "Senk farten først, og bruk så korte støt."
+        }
+      ],
+      "showMe": "Ingen vind, stillestående: hold baugjoysticken mot styrbord og se båten svinge.",
+      "textStatus": "draft"
+    },
+    "part_stern_thruster": {
+      "name": "Hekkpropell",
+      "alternatives": [
+        {
+          "term": "Hekkthruster"
+        }
+      ],
+      "short": "En liten propell i en tunnel tvers gjennom hekken som skyver hekken sideveis.",
+      "what": "Den flytter hekken mot babord eller styrbord. Brukt sammen med baugpropellen dreier den båten på stedet eller flytter den sideveis mot kaien.",
+      "onThisBoat": "En tunnel tvers gjennom skroget akter (en antakelse: skroget er grunt der, så tunnelen er liten), med et hull på hver side, betjent med høyre joystick ved rorplassen (eier). Omtrent 100 kgf i appen.",
+      "mistakes": [
+        {
+          "mistake": "Å regne med begge thrusterne mot sterk sidevind.",
+          "fix": "I sterk vind er de ikke nok: planlegg innseilingen slik at vinden hjelper, eller hold fart."
+        }
+      ],
+      "showMe": "Ingen vind, stillestående: hold begge joystickene mot styrbord: båten flytter seg sideveis.",
+      "textStatus": "draft"
+    },
+    "term_med_mooring": {
+      "name": "Middelhavsfortøyning",
+      "alternatives": [
+        {
+          "term": "Akterfortøyd"
+        }
+      ],
+      "short": "Å ligge med hekken mot kaien, holdt av hekkfortøyninger og en lazyline eller ankeret ved baugen.",
+      "what": "Båtene ligger side om side med hekken mot kaien, så mange får plass langs den. To hekkfortøyninger går til ringer på kaien; ved baugen holder en lazyline (eller ditt eget anker) båten unna kaien og mot vinden.",
+      "onThisBoat": "Rygg inn: hekken går mot babord, så start svingen tidlig.",
+      "mistakes": [
+        {
+          "mistake": "Å ta opp lazylinen med motoren i gir.",
+          "fix": "Fri først: en slakk line nær propellen setter seg fast i den."
+        }
+      ],
+      "showMe": "På plassen med begge hekkfortøyningene og lazylinen stramme.",
+      "textStatus": "draft"
+    },
+    "rope_lazy_line": {
+      "name": "Lazyline",
+      "alternatives": [
+        {
+          "term": "Mooringline"
+        }
+      ],
+      "short": "En line fra kaien til en vekt på bunnen, tatt med til baugen.",
+      "what": "Den ligger på bunnen mellom plassene; mannskapet løfter den med båtshaken ved hekken, går med den framover langs sidedekket og gjør den fast på en baugklamp, og strammer den.",
+      "onThisBoat": "I appen bruker mannskapet 20 s på å gå med den framover.",
+      "mistakes": [
+        {
+          "mistake": "Å la den være slakk.",
+          "fix": "Stram den så hardt du kan for hånd, ellers svinger baugen mot naboen."
+        }
+      ],
+      "showMe": "Lazylinen festet ved baugen og strammet.",
+      "textStatus": "draft"
+    },
+    "rope_stern_line_port": {
+      "name": "Hekkfortøyning, babord",
+      "alternatives": [],
+      "short": "En line fra en hekkklamp til en ring på kaien.",
+      "what": "De to hekkfortøyningene holder hekken et lite steg fra kaien.",
+      "onThisBoat": "Klamper på hver låring av hekken.",
+      "mistakes": [
+        {
+          "mistake": "Å kaste dem før hekken er nær.",
+          "fix": "Vent til hekken er innenfor omtrent 4 m."
+        }
+      ],
+      "showMe": "Begge hekkfortøyningene på kairingene.",
+      "textStatus": "draft"
+    },
+    "rope_stern_line_starboard": {
+      "name": "Hekkfortøyning, styrbord",
+      "alternatives": [],
+      "short": "En line fra en hekkklamp til en ring på kaien.",
+      "what": "De to hekkfortøyningene holder hekken et lite steg fra kaien.",
+      "onThisBoat": "Klamper på hver låring av hekken.",
+      "mistakes": [
+        {
+          "mistake": "Å kaste dem før hekken er nær.",
+          "fix": "Vent til hekken er innenfor omtrent 4 m."
+        }
+      ],
+      "showMe": "Begge hekkfortøyningene på kairingene.",
+      "textStatus": "draft"
+    },
+    "env_quay_ring": {
+      "name": "Kairing",
+      "alternatives": [
+        {
+          "term": "Fortøyningsring"
+        }
+      ],
+      "short": "En ring på kaien som linene bindes til.",
+      "what": "En ring på kaien som linene bindes til.",
+      "onThisBoat": "Én ved kanten av hver plass i marinaen i appen.",
+      "textStatus": "draft"
+    },
+    "env_seabed": {
+      "name": "Havbunn",
+      "alternatives": [
+        {
+          "term": "Bunn"
+        }
+      ],
+      "short": "Det bunnen er laget av: sand, leire, tang eller fjell.",
+      "what": "Den avgjør hvor godt et anker holder: sand og leire holder godt, tang og fjell dårlig.",
+      "onThisBoat": "Bukta har sand, et felt med sjøgress og steinete strender.",
+      "textStatus": "draft"
+    },
+    "env_shore": {
+      "name": "Strand",
+      "alternatives": [],
+      "short": "Landet rundt bukta.",
+      "what": "Landet rundt bukta.",
+      "textStatus": "draft"
+    },
+    "env_rock": {
+      "name": "Blindskjær",
+      "alternatives": [
+        {
+          "term": "Undervannsskjær"
+        }
+      ],
+      "short": "Et skjær som ikke vises over vannet.",
+      "what": "Sjøkartet merker det med et kryss og fire prikker.",
+      "onThisBoat": "Tre i bukta: to nær nordstranda og ett skjult i den sørlige halvdelen.",
+      "textStatus": "draft"
+    },
+    "env_shore_ring": {
+      "name": "Landring",
+      "alternatives": [],
+      "short": "En ring festet i fjellet for et landfeste.",
+      "what": "En ring festet i fjellet for et landfeste.",
+      "onThisBoat": "Fem ringer på baksiden og nordstranda.",
+      "textStatus": "draft"
+    },
+    "env_mooring_buoy": {
+      "name": "Fortøyningsbøye",
+      "alternatives": [
+        {
+          "term": "Bøye"
+        }
+      ],
+      "short": "En bøye festet til en vekt på bunnen som du binder baugen til.",
+      "what": "Kom sakte opp til den mot vinden, ta den opp med båtshaken ved baugen og bind en baugline gjennom ringen.",
+      "onThisBoat": "Tre bøyer ved munningen av bukta.",
+      "mistakes": [
+        {
+          "mistake": "Å nærme seg med vinden i ryggen.",
+          "fix": "Kom opp mot vinden, så du kan stoppe ved den."
+        }
+      ],
+      "textStatus": "draft"
+    },
+    "rope_bow_line": {
+      "name": "Baugline",
+      "alternatives": [],
+      "short": "En line fra en baugklamp.",
+      "what": "En line fra en baugklamp.",
+      "textStatus": "draft"
+    },
+    "rope_shore_line": {
+      "name": "Landfeste",
+      "alternatives": [],
+      "short": "En line fra hekken til en ring eller en stein på land.",
+      "what": "Brukes sammen med ankeret slik at båten ligger med hekken mot land og ikke svinger.",
+      "onThisBoat": "Mannskapet tar det i land på 30 s i appen.",
+      "textStatus": "draft"
+    },
+    "term_grounding": {
+      "name": "Grunnstøting",
+      "alternatives": [
+        {
+          "term": "Å ta grunn"
+        }
+      ],
+      "short": "Kjølen tar i bunnen der vannet er grunnere enn dypgangen.",
+      "what": "Kjølen går dypest: 2,4 m på denne båten. Ta forsiktig i bunnen, og full fart akterover får deg vanligvis av den veien du kom; kommer du inn fort, setter båten seg fast. Følg med på dybden før det er for sent.",
+      "onThisBoat": "Dypgang 2,4 m (standard kjøl). Dybden på stripen blir rød under 3,4 m. I appen kommer en berøring på 2 kn eller mindre av med full fart akterover; ved 3 kn setter båten seg fast.",
+      "mistakes": [
+        {
+          "mistake": "Å motorseile inn i en bukt i marsjfart.",
+          "fix": "Senk farten nær land og følg med på dybden."
+        }
+      ],
+      "showMe": "Sakte inn mot den grunne enden av bukta.",
+      "textStatus": "draft"
+    },
+    "fit_windlass_remote": {
+      "name": "Fjernkontroll for ankerspill",
+      "alternatives": [],
+      "short": "Knapper ved rorplassen som styrer ankerspillet.",
+      "what": "Lar rormannen fire ut kjettingen eller hale den inn uten å gå framover.",
+      "onThisBoat": "Ved rorplassen (EXERCISES.md 5, eier).",
+      "textStatus": "draft"
+    },
+    "term_scope": {
+      "name": "Kjettingforhold",
+      "alternatives": [
+        {
+          "term": "Kjettinglengde"
+        }
+      ],
+      "short": "Hvor mye kjetting som er ute sammenlignet med dybden.",
+      "what": "Jo mer kjetting, desto flatere drar den i ankeret, og desto bedre holder ankeret; vekten på kjettingen demper også rykkene. Med for lite kjetting løfter trekket skaftet på ankeret, og det dreger.",
+      "onThisBoat": "70 m kjetting (en antakelse). I 5 m vann er instruktørens regel (3 båtlengder, 47 m) mer enn 4 × den effektive dybden (27 m).",
+      "mistakes": [
+        {
+          "mistake": "Å fire ut bare dybden og slå av.",
+          "fix": "Fire ut det kontrollen ber om, og sett så ankeret ved å gå forsiktig akterover."
+        }
+      ],
+      "showMe": "Ankret i bukta med 34 m kjetting, vind 15 kn.",
+      "textStatus": "draft"
+    }
+  }
+}

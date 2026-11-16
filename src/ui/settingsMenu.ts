@@ -165,40 +165,136 @@ export function createSettingsMenu(
   return card;
 }
 
-function buildSettingsBody(store: Store): HTMLElement[] {
-  // Language (M23, PHASE4_SPEC 9.4): every element is built once with t(), so choosing a language
-  // reloads the page on the same link with `lang` changed.
-  const languageGroup = el(
-    'fieldset',
-    { class: 'field segmented', 'data-testid': 'language-setting' },
-    [
-      el('legend', {}, [t('view.language.label')]),
-      el('p', { class: 'hint' }, [t('view.language.hint')]),
-    ],
+/**
+ * Language (M23, PHASE4_SPEC 9.4): one button that shows the current language and opens a small
+ * dialog with all of them, so the Settings stay short however many languages there are. Choosing
+ * one reloads the page on the same link with `lang` changed; every text is built once with t().
+ */
+function buildLanguageField(store: Store): HTMLElement {
+  const open = el(
+    'button',
+    {
+      type: 'button',
+      class: 'language-open',
+      'aria-haspopup': 'dialog',
+      'data-testid': 'language-open',
+    },
+    [],
   );
-  const languageOptions = el('div', { class: 'segments' });
-  const languageInputs = LANGUAGES.map((code) => {
-    const input = el('input', {
-      type: 'radio',
-      name: 'language',
-      value: code,
-      'data-testid': `language-${code}`,
-    });
-    input.addEventListener('change', () => {
-      if (!input.checked) return;
-      const state = store.getState();
-      if (code === state.settings.language) return;
-      const link = serializeUrlState({ ...state, settings: { ...state.settings, language: code } });
-      // In the Settings section or the card the page comes back with it open (M38, M52).
-      if (input.closest('[data-section="settings"], .chip-card')) openAfterReload('settings');
-      window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
-    });
-    languageOptions.append(
-      el('label', { class: 'segment' }, [input, el('span', {}, [languageName(code)])]),
-    );
-    return { code, input };
+  const showCurrent = () => {
+    const name = languageName(store.getState().settings.language);
+    open.textContent = name;
+    // A screen reader hears the setting's name too; the visible text is part of the name.
+    open.setAttribute('aria-label', `${t('view.language.label')}: ${name}`);
+  };
+  showCurrent();
+  store.subscribe((state, previous) => {
+    if (!previous || state.settings.language !== previous.settings.language) showCurrent();
   });
-  languageGroup.append(languageOptions);
+
+  let backdrop: HTMLElement | null = null;
+  const inerted: HTMLElement[] = [];
+
+  function close(): void {
+    if (!backdrop) return;
+    document.removeEventListener('keydown', onKey, true);
+    backdrop.remove();
+    backdrop = null;
+    for (const node of inerted.splice(0)) node.removeAttribute('inert');
+    open.focus();
+  }
+  function onKey(event: KeyboardEvent): void {
+    if (event.key !== 'Escape') return;
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    close();
+  }
+
+  function choose(code: string, inSettings: boolean): void {
+    const state = store.getState();
+    if (code === state.settings.language) {
+      close();
+      return;
+    }
+    const link = serializeUrlState({ ...state, settings: { ...state.settings, language: code } });
+    // In the Settings section or the card the page comes back with it open (M38, M52).
+    if (inSettings) openAfterReload('settings');
+    window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
+  }
+
+  function show(): void {
+    if (backdrop) return;
+    const inSettings = open.closest('[data-section="settings"], .chip-card') !== null;
+    const current = store.getState().settings.language;
+    const list = el('div', {
+      class: 'language-list',
+      role: 'radiogroup',
+      'aria-labelledby': 'language-title',
+    });
+    let focusTarget: HTMLInputElement | null = null;
+    for (const code of LANGUAGES) {
+      const input = el('input', {
+        type: 'radio',
+        name: 'language',
+        value: code,
+        'data-testid': `language-${code}`,
+      });
+      input.checked = code === current;
+      input.addEventListener('change', () => {
+        if (input.checked) choose(code, inSettings);
+      });
+      if (code === current || !focusTarget) focusTarget = input;
+      list.append(el('label', { class: 'segment' }, [input, el('span', {}, [languageName(code)])]));
+    }
+    const closeButton = el(
+      'button',
+      { type: 'button', class: 'exercise-button', 'data-testid': 'language-close' },
+      [t('settings.close')],
+    );
+    closeButton.addEventListener('click', close);
+    const card = el(
+      'div',
+      {
+        class: 'welcome-card language-card',
+        role: 'dialog',
+        'aria-modal': 'true',
+        'aria-labelledby': 'language-title',
+        'data-testid': 'language-dialog',
+      },
+      [
+        el('h2', { class: 'welcome-title', id: 'language-title' }, [t('view.language.label')]),
+        el('p', { class: 'welcome-body' }, [t('view.language.hint')]),
+        list,
+        closeButton,
+      ],
+    );
+    const overlay = el('div', { class: 'welcome-backdrop', 'data-testid': 'language-backdrop' }, [
+      card,
+    ]);
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) close();
+    });
+    backdrop = overlay;
+    document.body.append(overlay);
+    for (const node of Array.from(document.body.children)) {
+      if (node !== overlay && node instanceof HTMLElement && !node.hasAttribute('inert')) {
+        node.setAttribute('inert', '');
+        inerted.push(node);
+      }
+    }
+    document.addEventListener('keydown', onKey, true);
+    focusTarget?.focus();
+  }
+  open.addEventListener('click', show);
+
+  return el('div', { class: 'field', 'data-testid': 'language-setting' }, [
+    el('p', { class: 'field-title' }, [t('view.language.label')]),
+    open,
+  ]);
+}
+
+function buildSettingsBody(store: Store): HTMLElement[] {
+  const languageGroup = buildLanguageField(store);
 
   const stepGroup = el('fieldset', { class: 'field segmented' }, [
     el('legend', {}, [t('view.step.label')]),
@@ -311,7 +407,6 @@ function buildSettingsBody(store: Store): HTMLElement[] {
   const sync = (state = store.getState(), previous?: typeof state) => {
     if (previous && state.settings === previous.settings) return;
     const { settings } = state;
-    for (const { code, input } of languageInputs) input.checked = code === settings.language;
     for (const { step, input } of stepInputs) input.checked = step === settings.step;
     for (const { detail, input } of detailInputs) input.checked = detail === settings.detail;
     debugInput.checked = settings.debug;

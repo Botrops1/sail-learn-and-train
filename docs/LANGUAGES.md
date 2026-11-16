@@ -1,6 +1,6 @@
 # Adding a language
 
-The app shows one language at a time. A language is one folder of two JSON files, `content/lang/<code>/`; the Language setting (View tab) lists every folder it finds, and `?lang=<code>` in the link opens it. No code needs to change for the language itself.
+The app shows one language at a time. A language is one folder of JSON files, `content/lang/<code>/` (`ui.json`, `glossary.json`, `exercises.json`); the Language dialog in Settings lists every folder it finds, and `?lang=<code>` in the link opens it. No code needs to change for the language itself.
 
 ## Steps
 

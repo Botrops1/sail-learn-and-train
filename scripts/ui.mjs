@@ -206,6 +206,13 @@ export async function openSettings(page) {
   await page.getByTestId('settings-content').waitFor({ state: 'visible' });
 }
 
+/** Picks a language in the Language dialog (Settings must be open): the page reloads on the new language. */
+export async function chooseLanguage(page, code) {
+  await page.getByTestId('language-open').click();
+  await page.getByTestId('language-dialog').waitFor({ state: 'visible' });
+  await page.locator('label.segment', { has: page.getByTestId(`language-${code}`) }).click();
+}
+
 /** Closes the settings (on a phone (M51) goes back to the Controls tab; elsewhere the card's ×). */
 export async function closeSettings(page) {
   if (await isStacked(page)) {

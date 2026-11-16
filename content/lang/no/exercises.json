@@ -1,0 +1,817 @@
+{
+  "$status": "draft",
+  "points-of-sail": {
+    "title": "Trim gjennom kursene",
+    "summary": "Sving fra bidevind til lens, og fire seilene underveis.",
+    "see": "Du seiler tett inntil vinden (bidevind) på styrbord hals: vinden kommer over høyre side av baugen. Forkanten av storseilet slår.",
+    "happening": "Et seil virker som en vinge bare når vinden treffer det i riktig vinkel. Når du svinger bort fra vinden (faller av), kommer vinden mer fra siden og så bakfra, så hvert seil må fires lenger ut.",
+    "action": "Hver gang du faller av, fire (slipp ut) skjøtene: storseilet til det ikke lenger er stallet, fokken helt ut på halvvind. På lens fires storseilet helt ut.",
+    "mistake": "Å svinge bort uten å fire: seilene stalles (luften slutter å strømme jevnt over dem), båten krenger og bremser. Å svinge for langt på lens: vinden kommer bak storseilet og kaster bommen over (en utilsiktet jibb).",
+    "done": "Du seilte alle kurser fra bidevind til lens. Regelen: jo lenger fra vinden, desto lenger ut skal seilene.",
+    "steps": {
+      "close-hauled": {
+        "goal": "Bidevind: hal storseilet inn til det slutter å slå.",
+        "how": "Under «Tau», trykk − på Storskjøt til det viser omtrent 12 %. Se på «Seil»-seksjonen: begge seilene viser Bra når de er trimmet."
+      },
+      "close-reach": {
+        "goal": "Knapp halvvind: sving 20° bort fra vinden, og fire så storseilet.",
+        "how": "Åpne «Styring» (Autopilot-blokken) og trykk −10 to ganger. Hvert trykk svinger båten 10° mot babord (venstre), bort fra vinden, som kommer over styrbord side. Fire så Storskjøt til omtrent 25 % under «Tau». Med Realistiske tau er Autopiloten på Rorplass."
+      },
+      "beam-reach": {
+        "goal": "Halvvind: vind fra siden. Fire storseilet og la fokkeskjøtet gå helt ut.",
+        "how": "Under «Styring», trykk −10 tre ganger til. Fire så Storskjøt til omtrent 50 % og Fokkeskjøt til 100 % under «Tau». På halvvind kan den selvslående fokken (som skifter side av seg selv) ikke gå langt nok ut til å vise Bra: la skjøtet gå helt ut."
+      },
+      "broad-reach": {
+        "goal": "Slør: vind skrått bakfra. La storseilet gå helt ut.",
+        "how": "Under «Styring», trykk −10 fire ganger til. Fire Storskjøt til 85 % eller mer under «Tau»: bommen stopper ved vantene (wirene som holder masten oppe), så storseilet kan ikke gå lenger ut."
+      },
+      "run": {
+        "goal": "Lens: vind bakfra. Hold kursen i 10 sekunder uten jibb.",
+        "how": "Under «Styring», trykk −10 tre ganger til, til omtrent 165° fra vinden. Gå ikke lenger: med vinden rett bakfra eller på den andre siden kan bommen svinge over av seg selv."
+      }
+    },
+    "mistakes": {
+      "accidental-gybe": {
+        "name": "en utilsiktet jibb",
+        "what": "Bommen svingte over av seg selv (en utilsiktet jibb).",
+        "why": "Vinden kom bak storseilet fra den andre siden: båten svingte forbi rett medvind.",
+        "fix": "Bommen står nå på den andre siden, så dette steget kan ikke bestås herfra. Trykk på «Tilbake til starten av steg 5» og sving bare tre ganger denne gangen."
+      },
+      "by-the-lee": {
+        "name": "å seile på feil side (by the lee)",
+        "what": "Du seiler på feil side (by the lee): vinden kommer fra den siden bommen står på.",
+        "why": "Båten svingte forbi rett medvind, så bommen kan jibbe når som helst.",
+        "fix": "Sving 10–20° tilbake mot vinden med en gang: trykk +10 under «Styring» én eller to ganger."
+      },
+      "in-irons": {
+        "name": "å stoppe rett i vinden",
+        "what": "Båten har stoppet og peker mot vinden (i vindøyet).",
+        "why": "Den svingte mot vinden i stedet for bort fra den: ingen seil virker med vinden rett forfra.",
+        "fix": "Sving bort fra vinden med −10 under «Styring» (Vind-autopilot); svarer ikke båten, gjør øvelsen «Ut av vindøyet»."
+      }
+    }
+  },
+  "tacking": {
+    "title": "Stagvending",
+    "summary": "Sving baugen gjennom vinden, først med autopiloten, så for hånd.",
+    "see": "Du seiler bidevind på styrbord hals: vinden kommer over høyre side av baugen.",
+    "happening": "For å komme til et sted mot vinden seiler en seilbåt i sikksakk: den vender (svinger baugen gjennom vinden) fra den ene siden til den andre. Den selvslående fokken skifter side av seg selv, så bare rattet trengs.",
+    "action": "Sving jevnt og fortsett å svinge til vinden er omtrent 40° på den andre siden av baugen, rett så opp og la båten få fart før du går høyere.",
+    "mistake": "Å svinge for sakte, eller rette opp mens baugen fortsatt peker mot vinden: båten stopper rett i vinden (i vindøyet) og lystrer ikke rattet.",
+    "done": "Du vendte med autopiloten og for hånd. Hold rattet over til vinden er godt på den nye siden, og la så båten få fart.",
+    "steps": {
+      "tack-autopilot": {
+        "goal": "Vend med autopiloten, og la båten få opp farten til 4 knop.",
+        "how": "Under «Styring», trykk Vend. Autopiloten svinger båten gjennom vinden og holder den samme vinkelen på den andre siden. Vent til farten på stripen viser 4 knop eller mer."
+      },
+      "tack-by-hand": {
+        "goal": "Vend nå tilbake for hånd: autopiloten til Standby, rattet hardt mot babord.",
+        "how": "Under «Styring», trykk Standby (autopiloten slutter å styre), sett så Ratt til −25° (mot babord: vinden kommer nå fra babord, så babord er mot den) og hold det der mens baugen krysser vinden."
+      },
+      "centre-wheel": {
+        "goal": "Når vinden er 35° på den nye siden, midtstill rattet.",
+        "how": "Se på vindvinkelen på stripen. Når den viser omtrent 35° fra styrbord, sett Ratt til 0° under «Styring». Hvis du midtstiller tidligere, blir båten stående fast rett i vinden."
+      },
+      "pick-up-speed": {
+        "goal": "Seil bidevind og la båten få opp farten til 4 knop.",
+        "how": "Under «Styring», trykk Vind (den holder vinkelen båten har nå), og deretter «10° til babord» én gang, til omtrent 45° fra vinden. Begge seilene skal vise Bra."
+      }
+    },
+    "mistakes": {
+      "in-irons": {
+        "name": "å stoppe rett i vinden",
+        "what": "Båten har stoppet rett i vinden (i vindøyet).",
+        "why": "Svingen var for sakte, eller rattet kom tilbake til midten før baugen var gjennom vinden. Med vinden rett forfra virker ingen seil, og uten fart gjør roret ingenting.",
+        "fix": "Fire begge skjøtene, sett rattet hardt over og vent mens båten driver bakover: øvelsen «Ut av vindøyet» viser hvordan."
+      }
+    }
+  },
+  "irons": {
+    "title": "Ut av vindøyet",
+    "summary": "Båten har stoppet rett i vinden. Få den til å seile igjen.",
+    "see": "Baugen peker rett inn i vinden. Begge seilene slår, båten har ingen fart og rattet gjør ingenting.",
+    "happening": "Med vinden rett forfra kan ingen seil virke (dødsonen). Vinden skyver båten sakte bakover, og når båten går bakover, virker roret motsatt vei: det dreier baugen bort fra vinden.",
+    "action": "Fire begge skjøtene ut, sett rattet hardt over og hold det mens båten driver bakover. Når vinden er omtrent 40° på baugen, midtstill rattet og hal skjøtene inn.",
+    "mistake": "Å hale skjøtene hardt inn, eller vente med rattet i midten: båten blir stående rett i vinden.",
+    "done": "Båten seiler igjen. Når båten går bakover, dreier roret baugen den andre veien: hold rattet over og ha tålmodighet.",
+    "steps": {
+      "ease-sheets": {
+        "goal": "Fire begge skjøtene ut til 40 % eller mer.",
+        "how": "Under «Tau», sett Storskjøt og Fokkeskjøt til omtrent 60 %."
+      },
+      "wheel-over": {
+        "goal": "Sett rattet hardt over og vent til vinden er 35° eller mer på baugen.",
+        "how": "Under «Styring», sett Ratt til +30° og hold det der. Båten driver bakover og baugen faller sakte av fra vinden. Det tar omtrent ett minutt."
+      },
+      "sail-away": {
+        "goal": "Midtstill rattet, hal inn skjøtene og seil av gårde med 3 knop eller mer.",
+        "how": "Under «Styring», sett Ratt til 0°. Under «Tau», sett Storskjøt til omtrent 12 % og Fokkeskjøt til omtrent 30 %. Begge seilene skal vise Bra."
+      }
+    },
+    "mistakes": {}
+  },
+  "gybing": {
+    "title": "Jibb: kontrollert og utilsiktet",
+    "summary": "Sving hekken gjennom vinden med storseilet hentet inn, og se så hva en utilsiktet jibb gjør.",
+    "see": "Du er på lens (vinden bakfra) på styrbord hals, med storseilet fiet helt ut.",
+    "happening": "Ved en jibb krysser hekken vinden, og bommen svinger over til den andre siden. Med storseilet fiet ut krysser bommen hele cockpiten fort og stopper med et smell. Hentet inn først flytter den seg bare litt.",
+    "action": "Hal storseilet inn til bommen er nær midten, sving til vinden er på den andre siden, og fire så storseilet ut igjen.",
+    "mistake": "Å svinge gjennom vinden mens storseilet fortsatt er ute, eller å styre forbi rett medvind uten å mene det: bommen smeller over (en utilsiktet jibb). Denne båten har ingen preventer (en line som ville holdt bommen ute).",
+    "done": "En kontrollert jibb flytter bommen et kort stykke, sakte. En utilsiktet svinger den over fort, med stor belastning på storskjøtet og på alle som står i veien. Hal inn først.",
+    "steps": {
+      "haul-main": {
+        "goal": "Hal storseilet inn til bommen er nær midten.",
+        "how": "Under «Tau», sett Storskjøt til 5 %. Bommen kommer innenfor 16° fra midtlinjen."
+      },
+      "gybe": {
+        "goal": "Jibb: sving til vinden er på den andre siden.",
+        "how": "Under «Styring», trykk Jibb (Vend-knappen heter Jibb på lens). Båten svinger gjennom vinden og bommen krysser et kort stykke."
+      },
+      "ease-main": {
+        "goal": "La storseilet gå helt ut på den nye siden.",
+        "how": "Under «Tau», sett Storskjøt til 85 % eller mer."
+      },
+      "accidental": {
+        "goal": "Se nå en utilsiktet jibb med vilje: sving 30° lenger fra vinden, forbi rett medvind.",
+        "how": "Under «Styring», trykk Kurs, og deretter «10° til styrbord» tre ganger: båten svinger fra 15° før rett medvind til 15° forbi. Først holder vinden fortsatt bommen ute; til sjøs setter en rull, en bølge eller en liten sving den i gang over (appen gir den den starten), og når bommen er forbi vindlinjen (peker rett mot dit vinden kommer fra), kaster vinden den resten av veien. Se på jibbrapporten: farten til bommen og belastningen på storskjøtet."
+      }
+    },
+    "mistakes": {
+      "accidental-gybe": {
+        "name": "en utilsiktet jibb",
+        "what": "Bommen krysset av seg selv (en utilsiktet jibb).",
+        "why": "Storseilet var fortsatt ute da hekken krysset vinden, eller båten ble styrt forbi rett medvind.",
+        "fix": "Hal storseilet inn før du jibber. På lens, hold vinden på siden bort fra bommen: seil aldri på feil side (by the lee)."
+      }
+    }
+  },
+  "gusts": {
+    "title": "Vindkast: fire storseilet",
+    "summary": "Hold båten oppreist gjennom tre vindkast ved å fire storseilet.",
+    "see": "Du er på knapp halvvind i 15 knop vind med vindkast. Et vindkast vises på vannet som et mørkere felt som kommer mot deg.",
+    "happening": "I et vindkast er vinden sterkere i noen sekunder: seilene presser hardere, båten krenger mer og vil dreie opp i vinden (luvgjerrighet). Å fire storseilet slipper ut den ekstra vinden.",
+    "action": "Når et vindkast treffer, fire storskjøtet omtrent 20 %; når det har passert, hal inn igjen.",
+    "mistake": "Å holde storskjøtet stramt i et vindkast: båten krenger over 25°, bremser og kan dreie opp i vinden av seg selv (brodd).",
+    "done": "Å fire storseilet i et vindkast holder båten oppreist og styrbar. Det mørke feltet på vannet varsler deg noen sekunder før det kommer.",
+    "steps": {
+      "three-gusts": {
+        "goal": "Kom deg gjennom tre vindkast: fire storseilet i hvert av dem og hal inn etterpå.",
+        "how": "Se på stripen: KAST vises mens et vindkast blåser (fra omtrent 16,5 knop). Under «Tau», sett Storskjøt til omtrent 45 % når det vises, og tilbake til omtrent 25 % når det er borte. Tre sterke vindkast tar omtrent to og et halvt minutt."
+      },
+      "trim-back": {
+        "goal": "Trim begge seilene til Bra.",
+        "how": "Når KAST er borte fra stripen, sett Storskjøt til omtrent 25 % og Fokkeskjøt til omtrent 50 %. Begge seilene skal vise Bra; fire storseilet igjen hvis det kommer et vindkast."
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "å krenge for mye",
+        "what": "Båten krenget for mye (mer enn 25°).",
+        "why": "Storskjøtet var for stramt for vinden: seilene presset hardere enn kjølen kunne holde båten oppreist.",
+        "fix": "Fire storskjøtet så snart kastet treffer; hal inn igjen når det har passert."
+      },
+      "round-up": {
+        "name": "en brodd",
+        "what": "Båten dreide opp i vinden av seg selv (en brodd).",
+        "why": "For mye krenging med stramt storseil: roret mistet grepet og seilene dreide båten opp i vinden.",
+        "fix": "Fire storseilet med en gang, så kommer båten under kontroll igjen. Fire tidligere i neste vindkast."
+      }
+    }
+  },
+  "reduce-sail": {
+    "title": "For mye vind: rull inn seilene",
+    "summary": "I 22 knop, rull inn en del av fokken og storseilet til båten seiler oppreist.",
+    "see": "22 knop vind på knapp halvvind. Storseilet er fiet til det slår, for å holde båten oppreist; den krenger omtrent 20°.",
+    "happening": "Med fulle seil krenger båten for mye i denne vinden. På denne båten ruller begge seilene seg opp (fokken rundt forstaget, storseilet inn i masten), så å gjøre dem mindre tar et minutt og ingen må ut på dekk.",
+    "action": "Fire fokkeskjøtet og rull fokken inn til omtrent 40 %; rull storseilet inn til omtrent 60 %; hal så storskjøtet inn til storseilet virker.",
+    "mistake": "Å dra inn fokken mens skjøtet fortsatt er stramt: fokken ruller ikke. Og seil som får slå i sterk vind, slites fort.",
+    "done": "Mindre seil, mindre krenging, og båten seiler nesten like fort. Rull inn tidlig, før vinden tar seg opp.",
+    "steps": {
+      "jib-in": {
+        "goal": "Rull fokken inn til 45 % eller mindre: fire skjøtet først.",
+        "how": "Under «Tau», sett Fokkeskjøt til 100 %, så Fokk ut til 40 %. Sett deretter Fokkeskjøt til omtrent 75 % slik at fokken slutter å slå. Med skjøtet stramt slutter fokken å rulle."
+      },
+      "main-in": {
+        "goal": "Rull storseilet inn til mellom 50 og 65 %.",
+        "how": "Under «Tau», sett Storseil ut til 60 %."
+      },
+      "settle": {
+        "goal": "Hal storskjøtet inn til storseilet viser Bra, med mindre enn 20° krenging.",
+        "how": "Under «Tau», sett Storskjøt til omtrent 35 % og hold det i 10 sekunder. (En delvis rullet fokk viser Stallet i appen ved alle skjøteinnstillinger: la skjøtet stå på omtrent 75 %.)"
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "å krenge for mye",
+        "what": "Båten krenget for mye (mer enn 25°).",
+        "why": "For mye seil for denne vinden, eller storskjøtet hentet for langt inn.",
+        "fix": "Fire storskjøtet nå, og rull så inn mer seil."
+      },
+      "round-up": {
+        "name": "en brodd",
+        "what": "Båten dreide opp i vinden av seg selv (en brodd).",
+        "why": "For mye krenging: roret mistet grepet og seilene dreide båten opp i vinden.",
+        "fix": "Fire storseilet med en gang, og rull så inn mer seil."
+      },
+      "sail-worn": {
+        "name": "et slitt seil",
+        "what": "Et seil er slitt av å slå.",
+        "why": "Et seil som får slå (flogging) i sterk vind, slites fort.",
+        "fix": "Hal det slående seilet inn til det slutter, eller rull det inn."
+      }
+    }
+  },
+  "set-sails": {
+    "title": "Sette seilene",
+    "summary": "Motor rett i vinden, rull ut storseilet, fall av, rull ut fokken og stopp motoren.",
+    "see": "Du motorseiler sakte med begge seilene rullet opp og baugen mot vinden. Tauene er Realistiske: stoppere og vinsjer, som på båten.",
+    "happening": "Storseilet ruller ut av masten. Med baugen mot vinden kommer det ut uten å fylles, så det er lett å vinsje. Når det er ute, fyller det seg når du svinger bort fra vinden. Fokken ruller ut rundt forstaget når skjøtet dras inn.",
+    "action": "Hold baugen mot vinden med motoren sakte forover; rull ut storseilet; fall av til knapp halvvind; rull ut fokken med skjøtet; stopp motoren.",
+    "mistake": "Å rulle ut storseilet med vinden fra siden: det halvt utrullede seilet fylles og belaster rulleutstyret. Eller å holde en vinsjknapp inne etter at seilet er ute: vinsjen kobler ut.",
+    "done": "Seilene er satt og motoren er av. Storseilet kommer ut rett i vinden; fall så av og sett fokken.",
+    "steps": {
+      "head-to-wind": {
+        "goal": "Motor sakte med baugen mot vinden (innenfor 20°).",
+        "how": "Motoren går sakte forover og autopiloten holder kursen. Ingenting å gjøre ennå: se på vindvinkelen på stripen."
+      },
+      "main-out": {
+        "goal": "Rull ut storseilet (90 % eller mer) mens baugen peker mot vinden.",
+        "how": "Gå til styrbord plass. Åpne den venstre «Main furling»-stopperen (tauet som ruller seilet inn) slik at det kan løpe ut. Legg det høyre «Main furling»-tauet på vinsjen: tre slag, inn i selvtaileren, og hold så vinsjknappen inne. Slipp når storseilet er ute."
+      },
+      "bear-away": {
+        "goal": "Sving til knapp halvvind (50–75° fra vinden) med storseilet på Bra.",
+        "how": "Lukk den venstre «Main furling»-stopperen og ta tauet av vinsjen. I linjen (Realistiske tau: fanen Rorplass) eller i Rorplass-seksjonen, sett autopiloten til Vind og trykk «10° til babord» seks ganger. Storskjøtet på 30 % er omtrent riktig."
+      },
+      "jib-out": {
+        "goal": "Rull ut fokken og skjøt den til Bra.",
+        "how": "På babord plass, åpne JIB ROLL-stopperen. På styrbord plass, legg Genoa sheet på vinsjen (tre slag, selvtailer) og hold knappen inne: fokken ruller ut etter hvert som skjøtet kommer inn. Slipp når fokken viser Bra. Lukk JIB ROLL når fokken har sluttet å bevege seg."
+      },
+      "engine-off": {
+        "goal": "Stopp motoren og seil med 4 knop eller mer.",
+        "how": "I linjen (Realistiske tau: fanen Rorplass) eller i Rorplass-seksjonen, sett motorspaken i fri og trykk så Stopp."
+      }
+    },
+    "mistakes": {
+      "main-off-wind": {
+        "name": "å rulle ut storseilet utenfor vinden",
+        "what": "Storseilet ble rullet ut med vinden fra siden.",
+        "why": "Med baugen 35° eller mer fra vinden fylles det halvt utrullede seilet og belaster rulleutstyret og masten.",
+        "fix": "Slutt å vinsje, sving tilbake mot vinden (innenfor 20°), og rull det så ut resten av veien."
+      },
+      "winch-cut-out": {
+        "name": "en vinsj som kobler ut",
+        "what": "Vinsjen koblet ut.",
+        "why": "Knappen ble holdt inne etter at tauet hadde stoppet (seilet var helt ute eller inne, eller en stopper holdt det andre tauet), eller belastningen var for høy.",
+        "fix": "Slipp knappen når seilet er ute. Sjekk at tauet på den andre siden kan løpe fritt."
+      },
+      "rope-slipping": {
+        "name": "et tau som glir",
+        "what": "Et tau gled på vinsjtrommelen.",
+        "why": "For få slag på vinsjen for belastningen.",
+        "fix": "Legg på et slag til på vinsjen."
+      },
+      "clutch-on-running": {
+        "name": "en stopper lukket på et løpende tau",
+        "what": "En stopper ble lukket på et tau som løp.",
+        "why": "Tauet beveget seg fortsatt under belastning, og stopperen kan skade det.",
+        "fix": "La tauet stoppe først (slipp knappen), og lukk så stopperen."
+      }
+    }
+  },
+  "furl-sails": {
+    "title": "Rulle inn seilene",
+    "summary": "Start motoren, rull inn fokken, sving rett i vinden og rull inn storseilet.",
+    "see": "Du seiler på knapp halvvind med begge seilene ute og motoren av. Tauene er Realistiske.",
+    "happening": "Å rulle opp er å sette seil baklengs. Fokken ruller seg rundt forstaget når rulletauet dras og skjøtet er fritt. Storseilet ruller seg best inn i masten med baugen mot vinden, når det ikke bærer noen last.",
+    "action": "Start motoren og la den stå i fri; frigjør fokkeskjøtet og vinsj inn rulletauet til fokken; motor sakte rett i vinden; frigjør utholeren og «ut»-tauet til storseilet, og vinsj så «inn»-tauet.",
+    "mistake": "Å dra i et rulletau mens skjøtet eller utholeren fortsatt holder seilet: det ruller ikke, og vinsjen belastes eller kobler ut.",
+    "done": "Begge seilene er rullet opp og du motorseiler. Fokken først, så storseilet rett i vinden.",
+    "steps": {
+      "engine-on": {
+        "goal": "Start motoren og la den stå i fri.",
+        "how": "I linjen (Realistiske tau: fanen Rorplass) eller i Rorplass-seksjonen, trykk Start. La spaken stå i midten (fri)."
+      },
+      "jib-in": {
+        "goal": "Rull fokken helt inn (5 % eller mindre).",
+        "how": "På styrbord plass, åpne Genoa sheet-stopperen slik at skjøtet kan løpe. På babord plass, legg JIB ROLL på vinsjen (tre slag, selvtailer) og hold knappen inne til fokken er rullet opp."
+      },
+      "head-to-wind": {
+        "goal": "Motor sakte forover og sving baugen mot vinden (innenfor 20°).",
+        "how": "I linjen (Realistiske tau: fanen Rorplass) eller i Rorplass-seksjonen, sett motorspaken sakte forover (omtrent 30 %). Sett autopiloten til Kurs og trykk «10° til styrbord» seks ganger."
+      },
+      "main-in": {
+        "goal": "Rull storseilet inn i masten (5 % eller mindre) med baugen mot vinden.",
+        "how": "Ta JIB ROLL av babord vinsj og åpne Main outhaul-stopperen der. På styrbord plass, åpne den høyre «Main furling»-stopperen (tauet som lar seilet ut), legg det venstre «Main furling»-tauet på vinsjen (tre slag, selvtailer) og hold knappen inne til storseilet er inne."
+      }
+    },
+    "mistakes": {
+      "main-off-wind": {
+        "name": "å rulle inn storseilet utenfor vinden",
+        "what": "Storseilet ble rullet inn med vinden fra siden.",
+        "why": "Med baugen 35° eller mer fra vinden er seilet belastet mens det ruller, noe som belaster rulleutstyret og kan gi bretter i seilet inne i masten.",
+        "fix": "Slutt å vinsje, sving tilbake mot vinden (innenfor 20°), og rull det så inn resten av veien."
+      },
+      "winch-cut-out": {
+        "name": "en vinsj som kobler ut",
+        "what": "Vinsjen koblet ut.",
+        "why": "Knappen ble holdt inne etter at tauet hadde stoppet, eller skjøtet eller utholeren holdt fortsatt seilet.",
+        "fix": "Slipp knappen; frigjør skjøtet eller utholeren, og vinsj så igjen."
+      },
+      "rope-slipping": {
+        "name": "et tau som glir",
+        "what": "Et tau gled på vinsjtrommelen.",
+        "why": "For få slag på vinsjen for belastningen.",
+        "fix": "Legg på et slag til på vinsjen."
+      },
+      "clutch-on-running": {
+        "name": "en stopper lukket på et løpende tau",
+        "what": "En stopper ble lukket på et tau som løp.",
+        "why": "Tauet beveget seg fortsatt under belastning, og stopperen kan skade det.",
+        "fix": "La tauet stoppe først, og lukk så stopperen."
+      }
+    }
+  },
+  "leave-berth": {
+    "title": "Forlate plassen",
+    "summary": "Slipp lazylinen og hekkfortøyningene, motor ut av plassen og sving mot innløpet.",
+    "see": "Båten ligger akterfortøyd på plassen sin: to hekkfortøyninger til kaien, lazylinen (et senket tau fra kaien) som holder baugen, og motoren går i fri. Andre båter kan ligge på begge sider.",
+    "happening": "Når linene er av, holder ingenting båten. En sidevind skyver en sakte båt sideveis og blåser baugen av, så gå ut med jevn fart og sving så snart hekken er klar av baugene til de andre båtene.",
+    "action": "Slipp lazylinen først, så begge hekkfortøyningene; motor sakte forover ut av plassen; når hekken er klar, stopp og sving båten med begge thrusterne til den peker vest mot innløpet; motor så forover.",
+    "mistake": "Å svinge for tidlig: hekken svinger sideveis inn i båten ved siden av. Eller å gå for fort og treffe båtene på den andre siden av farleden (gaten mellom radene).",
+    "done": "Du er ute av plassen og på vei mot innløpet. Lazylinen først, hekkfortøyningene deretter, sakte ut, og sving først når hekken er klar.",
+    "steps": {
+      "lazy-off": {
+        "goal": "Slipp lazylinen.",
+        "how": "Åpne «Havneutstyr». Under «Fortøyninger», trykk Slipp på «Lazyline (til baugen)». Den synker til bunnen, klar av propellen."
+      },
+      "stern-off": {
+        "goal": "Slipp begge hekkfortøyningene.",
+        "how": "Under «Havneutstyr», trykk Slipp på begge hekkfortøyningene. Nå holder bare motoren og thrusterne båten."
+      },
+      "motor-out": {
+        "goal": "Motor forover til hekken er ute av plassen, i farleden (innenfor den magentafargede omrisslinjen).",
+        "how": "Åpne «Motor». Dra motorspaken like forbi Fri mot Forover (linjen under sier «I gir: forover»): sakte forover. Hold rattet rett. I sterk sidevind skyver du den litt lenger (omtrent en tredjedel av veien mot Forover) slik at båten ikke driver inn på båten ved siden av."
+      },
+      "turn-out": {
+        "goal": "Sving til båten peker vest (270°, mot innløpet) og motor sakte forover.",
+        "how": "Spaken tilbake til Fri. Hold baugpropellen mot styrbord og hekkpropellen mot babord: båten svinger på stedet mot høyre. Når kompasset viser omtrent 270°, slipp begge og gi sakte forover."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "En lett berøring",
+        "what": "Båten tok borti en annen båt eller kaien uten fender imellom.",
+        "why": "Sakte båter driver med vinden; en berøring i gangfart riper gelcoaten, men gjør sjelden mer.",
+        "fix": "Senk farten, bruk thrusterne til å holde båten unna, og legg ut fenderne på den siden som er nær."
+      },
+      "hard-hit": {
+        "name": "Et hardt slag",
+        "what": "Båten traff en annen båt eller kaien hardt. Øvelsen stopper her.",
+        "why": "Ved mer enn omtrent én knop bulker ti tonn båt et skrog eller knekker et rekkverk, selv med fendere.",
+        "fix": "Gå saktere nær andre båter og kaien: i en havn aldri fortere enn du ville gått. Trykk Prøv igjen."
+      },
+      "propeller": {
+        "name": "Et tau rundt propellen",
+        "what": "Et tau i vannet satte seg rundt propellen og motoren stoppet. Øvelsen stopper her.",
+        "why": "En slakk line nær hekken suges inn i en roterende propell (PT-52). Uten motor kan du ikke styre i havnen.",
+        "fix": "Hold motoren i fri mens en line er slakk i vannet eller mannskapet håndterer en; stram eller slipp linen først. Trykk Prøv igjen."
+      },
+      "lazy-line": {
+        "name": "Over lazylinen til en nabo",
+        "what": "Kjølen eller roret ditt ligger over lazylinen til en båt ved siden av, der tauet fortsatt er grunt.",
+        "why": "Tauet kan hekte seg på kjølen eller roret og trekke baugen av; hvis propellen dreier over det, vikles det rundt propellen.",
+        "fix": "Motoren i fri og la båten drive klar. Hold deg så lenger fra baugene til de andre båtene: lazylinene deres løper ut derfra og inn i farleden."
+      }
+    }
+  },
+  "enter-berth": {
+    "title": "Gå inn på plassen akterfortøyd",
+    "summary": "Fendere ut, still opp, rygg sakte inn, hekkfortøyninger, lazyline, stram.",
+    "see": "Du er i farleden, gaten mellom de to radene med båter, og motorseiler sakte østover. Plassen din er gapet med den gule stripen på kaien, til venstre; den magentafargede omrisslinjen markerer den.",
+    "happening": "I Middelhavet går du inn med hekken først: hekkfortøyningene går til kaien og en lazyline fra kaien holder baugen. Når du går akterover, skyver propellen også hekken sideveis (propellens sidekraft; i appen mot babord), og en sidevind skyver en sakte båt sideveis. På Vanskelig teller også lazylinene til de andre båtene: hver løper fra baugen på en båt ned i farleden, så hold kjølen og propellen din klar av baugene deres.",
+    "action": "Fendere ut på begge sider; motor like forbi plassen, stopp, og sving båten med thrusterne til hekken peker mot plassen; rygg sakte inn og rett opp med thrusterne; stopp et steg fra kaien; mannskapet kaster hekkfortøyningene, tar så opp lazylinen og tar den med til baugen; stram den.",
+    "mistake": "Å komme inn for fort: ved mer enn gangfart treffer du kaien eller båten ved siden av. Eller å legge i gir mens mannskapet håndterer en line: den kan vikle seg rundt propellen.",
+    "done": "Båten er fortøyd akterfortøyd. Langsomt er hemmeligheten: stopp først, så linene, og stram så lazylinen med motoren i fri.",
+    "steps": {
+      "fenders": {
+        "goal": "Legg ut fenderne.",
+        "how": "Åpne «Havneutstyr» og velg Fendere: Ute. På en trang plass tar de støtene."
+      },
+      "line-up": {
+        "goal": "Stopp forbi plassen og sving til hekken peker mot den (baug 180°, sør), med hekken innenfor 3 m fra midten av plassen.",
+        "how": "Motor: spaken like forbi Fri mot Forover (sakte forover) til masten er omtrent 18 m før plassen, så spaken en tredjedel av veien mot Akterover til båten stopper (vinden er bak den, så den glir lenger enn du venter), og så Fri. Hold baugpropellen mot styrbord og hekkpropellen mot babord til kompasset viser 180°."
+      },
+      "reverse-in": {
+        "goal": "Rygg sakte inn på plassen og stopp med hekken 0,5–2,8 m fra kaien.",
+        "how": "Motoren sakte akterover: spaken like forbi Fri mot Akterover («I gir: akterover»). Hold båten rett med thrusterne: hvis hekken driver mot venstre, et kort trykk på hekkpropellen mot styrbord, og motsatt. Nær kaien, Fri, og et lite støt forover for å stoppe."
+      },
+      "stern-lines": {
+        "goal": "Kast begge hekkfortøyningene til kaien.",
+        "how": "«Havneutstyr» → «Fortøyninger»: trykk «Kast den til kaien» på begge hekkfortøyningene. Hekken må være innenfor 4 m og nesten stoppet."
+      },
+      "lazy-line": {
+        "goal": "Ta opp lazylinen og ta den med til baugen.",
+        "how": "Trykk «Ta den opp» på lazylinen. Mannskapet går med den til baugen (omtrent 20 s). Hold motoren i fri imens."
+      },
+      "made-fast": {
+        "goal": "Stram lazylinen til den er håndstram, motoren i fri.",
+        "how": "Trykk Stram på lazylinen til det står håndstram. Den holder baugen ute, hekkfortøyningene holder hekken: båten kan ikke svinge."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "En lett berøring",
+        "what": "Båten tok borti en annen båt eller kaien uten fender imellom.",
+        "why": "Sakte båter driver med vinden; en berøring i gangfart riper gelcoaten, men gjør sjelden mer.",
+        "fix": "Senk farten, bruk thrusterne til å holde båten unna, og legg ut fenderne på den siden som er nær."
+      },
+      "hard-hit": {
+        "name": "Et hardt slag",
+        "what": "Båten traff en annen båt eller kaien hardt. Øvelsen stopper her.",
+        "why": "Ved mer enn omtrent én knop bulker ti tonn båt et skrog eller knekker et rekkverk, selv med fendere.",
+        "fix": "Gå saktere nær andre båter og kaien: i en havn aldri fortere enn du ville gått. Trykk Prøv igjen."
+      },
+      "propeller": {
+        "name": "Et tau rundt propellen",
+        "what": "Et tau i vannet satte seg rundt propellen og motoren stoppet. Øvelsen stopper her.",
+        "why": "En slakk line nær hekken suges inn i en roterende propell (PT-52). Uten motor kan du ikke styre i havnen.",
+        "fix": "Hold motoren i fri mens en line er slakk i vannet eller mannskapet håndterer en; stram eller slipp linen først. Trykk Prøv igjen."
+      },
+      "lazy-line": {
+        "name": "Over lazylinen til en nabo",
+        "what": "Kjølen eller roret ditt ligger over lazylinen til en båt ved siden av, der tauet fortsatt er grunt.",
+        "why": "Tauet kan hekte seg på kjølen eller roret og trekke baugen av; hvis propellen dreier over det, vikles det rundt propellen.",
+        "fix": "Motoren i fri og la båten drive klar. Hold deg så lenger fra baugene til de andre båtene: lazylinene deres løper ut derfra og inn i farleden."
+      },
+      "fenders-in": {
+        "name": "Fendere fortsatt inne",
+        "what": "Du rygger inn på plassen med fenderne i skapet.",
+        "why": "Uten fendere riper den første berøringen av båten ved siden av begge skrogene.",
+        "fix": "«Havneutstyr» → Fendere: Ute, før du kommer nær."
+      }
+    }
+  },
+  "turn-own-length": {
+    "title": "Snu på egen lengde",
+    "summary": "Snu båten i farleden innenfor en sirkel som ikke er mye bredere enn båtens lengde: et støt forover, propellens sidekraft akterover, så thrusterne.",
+    "see": "Båten står stille i farleden og peker østover, med fortøyde båter på begge sider. Den magentafargede sirkelen er all plassen du har.",
+    "happening": "Et støt forover med rattet hardt over snur båten før den får fart (et «kick» forover). Når du går akterover, skyver propellen hekken sideveis (propellens sidekraft): på denne båten lar appen den skyve hekken mot babord (en antakelse til en skipper bekrefter det, PT-27), som snur baugen mot styrbord, den samme veien. Thrusterne skyver baugen og hekken sideveis: sammen, i motsatte retninger, snurrer de båten på stedet.",
+    "action": "Rattet hardt mot styrbord; korte støt forover og akterover til båten peker omtrent 120°; hold så baugpropellen mot styrbord og hekkpropellen mot babord til båten peker vest (270°).",
+    "mistake": "Lange støt: båten får fart og forlater sirkelen mot de fortøyde båtene.",
+    "done": "Båten snudde på egen lengde. Korte støt holder den på stedet; thrusterne gjør resten.",
+    "steps": {
+      "kick": {
+        "goal": "Sving båten til omtrent 120° (105°–135°) med motoren og rattet, og bli innenfor sirkelen.",
+        "how": "Styring: rattet hardt mot styrbord (glidebryteren helt til høyre). Motor: skyv spaken omtrent to tredjedeler mot Forover i 2 sekunder, så Fri; etter 4 sekunder drar du den omtrent to tredjedeler mot Akterover til båten begynner å gå bakover, så Fri. Gjenta én gang."
+      },
+      "spin": {
+        "goal": "Snurr båten på stedet til den peker vest (260°–280°) og stopp.",
+        "how": "Rattet rett. Hold baugpropellen mot styrbord og hekkpropellen mot babord. Slipp når kompasset viser 270°."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "En lett berøring",
+        "what": "Båten tok borti en annen båt eller kaien uten fender imellom.",
+        "why": "Sakte båter driver med vinden; en berøring i gangfart riper gelcoaten, men gjør sjelden mer.",
+        "fix": "Senk farten, bruk thrusterne til å holde båten unna, og legg ut fenderne på den siden som er nær."
+      },
+      "hard-hit": {
+        "name": "Et hardt slag",
+        "what": "Båten traff en annen båt eller kaien hardt. Øvelsen stopper her.",
+        "why": "Ved mer enn omtrent én knop bulker ti tonn båt et skrog eller knekker et rekkverk, selv med fendere.",
+        "fix": "Gå saktere nær andre båter og kaien: i en havn aldri fortere enn du ville gått. Trykk Prøv igjen."
+      },
+      "left-circle": {
+        "name": "Ut av sirkelen",
+        "what": "Båten forlot sirkelen.",
+        "why": "Lange støt bygger opp fart; i en marina er det ikke plass til det.",
+        "fix": "Kortere støt, og Fri så snart båten beveger seg. Trykk «Tilbake til starten …» for å prøve steget igjen."
+      }
+    }
+  },
+  "mooring-buoy": {
+    "title": "Ta opp en fortøyningsbøye",
+    "summary": "Nærm deg bøyen mot vinden i sneglefart, ta den opp ved baugen, ligg til den, og slipp så og rygg unna.",
+    "see": "Du motorseiler inn i bukta mot tre hvite bøyer; den magentafargede ringen markerer den midterste. Vinden blåser ut av bukta, mot deg.",
+    "happening": "Mot vinden stopper båten av seg selv så snart du tar motoren ut av gir, så du kan snike deg opp til bøyen. Mannskapet tar den opp med båtshaken og fester baugfortøyningen. Når båten ligger til bøyen, holder vinden baugen mot den.",
+    "action": "Motor sakte rett mot bøyen, mot vinden; senk farten til sneglefart den siste båtlengden; ta den opp ved baugen; motoren i fri; for å dra slipper du og rygger forsiktig unna.",
+    "mistake": "Å komme inn fort eller med vinden i ryggen: båten kan ikke stoppe og løper forbi eller over bøyen.",
+    "done": "Du tok opp bøyen og forlot den. Mot vinden og i sneglefart.",
+    "steps": {
+      "approach": {
+        "goal": "Før baugen til bøyen (innenfor den lille ringen) med under en halv knop.",
+        "how": "Motoren sakte forover (spaken like forbi Fri mot Forover) og styr rett mot bøyen. Omtrent 10 m før den, Fri; løper båten fortsatt, et øyeblikk like forbi Fri mot Akterover, og så Fri igjen."
+      },
+      "bow-line": {
+        "goal": "Ta opp bøyen med baugfortøyningen.",
+        "how": "«Havneutstyr» → «Fortøyninger»: trykk «Ta opp bøyen». Det virker bare med baugen innenfor 2,5 m og nesten stoppet."
+      },
+      "lie": {
+        "goal": "Ligg til bøyen i 10 sekunder med motoren i fri.",
+        "how": "Spaken til Fri og vent: vinden holder baugen mot bøyen."
+      },
+      "let-go": {
+        "goal": "Slipp baugfortøyningen.",
+        "how": "«Havneutstyr» → «Fortøyninger»: Slipp på «Baugline til bøyen»."
+      },
+      "back-away": {
+        "goal": "Rygg unna til du er godt klar av bøyen (utenfor den store ringen).",
+        "how": "Motoren sakte akterover: spaken like forbi Fri mot Akterover («I gir: akterover»). Bøyen blir foran, klar av propellen."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Tok i bunnen",
+        "what": "Kjølen tok i bunnen.",
+        "why": "Vannet der er grunnere enn kjølen (2,4 m); følg med på dybden på stripen.",
+        "fix": "Gå forsiktig akterover til dypere vann og hold deg der dybden viser mer enn 3 m."
+      },
+      "aground-hard": {
+        "name": "Grunnstøtte",
+        "what": "Båten gikk hardt på bunnen eller steinene. Øvelsen stopper her.",
+        "why": "I fart på bunnen setter kjølen seg fast og skroget kan bli skadet (PT-53).",
+        "fix": "Følg med på dybden og kom sakte inn. Trykk Prøv igjen."
+      }
+    }
+  },
+  "anchor-shore": {
+    "title": "Ankring med landfeste",
+    "summary": "Slipp ankeret på stedet, fire ut nok kjetting, grav det ned, rygg så mot klippene og ta et landfeste.",
+    "see": "Du er i bukta med baugen ut mot havet og klippestranda bak deg. Den magentafargede ringen er der ankeret skal ned: sand, 10 m dypt.",
+    "happening": "Et anker holder bare med nok kjetting: minst fire ganger dybden pluss høyden på baugrullen, og her er tre båtlengder (omtrent 47 m) den største regelen (PT-31). På bunnen må det graves ned ved å gå forsiktig akterover (PT-57). Et landfeste fra hekken til en ring på klippene hindrer så båten i å svinge, så den kan ligge nær land.",
+    "action": "Rygg sakte til baugen er over stedet; slipp ankeret; fortsett sakte akterover mens kjettingen løper ut til den er lang nok; stopp kjettingen og gå litt hardere akterover for å grave det ned; fire ut litt mer, rygg mot land og send mannskapet i land med linen; stram den.",
+    "mistake": "For lite kjetting: ankeret dreger og båten driver inn på klippene. Eller å rygge for langt: roret og kjølen tar i bunnen nær land.",
+    "done": "Båten ligger for anker med landfeste. Nok kjetting, grav det ned, så landfestet.",
+    "steps": {
+      "to-spot": {
+        "goal": "Rygg sakte til baugen er over stedet (innenfor ringen), nesten stoppet.",
+        "how": "Motoren sakte akterover: spaken like forbi Fri mot Akterover («I gir: akterover»). Hold båten rett med baugpropellen. Over stedet, Fri, og et lite støt forover for å stoppe."
+      },
+      "let-go-anchor": {
+        "goal": "Slipp ankeret ned til bunnen.",
+        "how": "Åpne «Anker» og hold «Kjetting ut ▼». Se på kjettingtelleren: ankeret når bunnen ved omtrent 12 m."
+      },
+      "scope": {
+        "goal": "Fire ut nok kjetting («Anker»-seksjonen viser hvor mye som trengs: omtrent 47 m).",
+        "how": "Fortsett med «Kjetting ut» (eller hold den inne igjen) mens motoren går sakte akterover, slik at kjettingen ligger langs bunnen og ikke i en haug."
+      },
+      "dig-in": {
+        "goal": "Grav ankeret ned.",
+        "how": "Stopp kjettingen. Motoren litt hardere akterover (spaken omtrent 40 % av veien mot Akterover) i omtrent et halvt minutt: kjettingen blir stram og ankeret graver seg ned. «Anker»-seksjonen sier da at det er satt."
+      },
+      "shore-line": {
+        "goal": "Rygg mot land og ta en line til en ring.",
+        "how": "Fire ut kjetting igjen og gå sakte akterover til hekken er innenfor omtrent 35 m fra land, så Fri. «Havneutstyr» → «Fortøyninger»: «Ta en line i land». Mannskapet svømmer den til en ring (omtrent 30 s)."
+      },
+      "settled": {
+        "goal": "Stram landfestet og ligg stille med motoren i fri.",
+        "how": "Trykk Stram på landfestet til det er håndstramt. Ankeret holder baugen, linen hekken."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Tok i bunnen",
+        "what": "Kjølen tok i bunnen.",
+        "why": "Vannet der er grunnere enn kjølen (2,4 m); følg med på dybden på stripen.",
+        "fix": "Gå forsiktig akterover til dypere vann og hold deg der dybden viser mer enn 3 m."
+      },
+      "aground-hard": {
+        "name": "Grunnstøtte",
+        "what": "Båten gikk hardt på bunnen eller steinene. Øvelsen stopper her.",
+        "why": "I fart på bunnen setter kjølen seg fast og skroget kan bli skadet (PT-53).",
+        "fix": "Følg med på dybden og kom sakte inn. Trykk Prøv igjen."
+      },
+      "propeller": {
+        "name": "Et tau rundt propellen",
+        "what": "Et tau i vannet satte seg rundt propellen og motoren stoppet. Øvelsen stopper her.",
+        "why": "En slakk line nær hekken suges inn i en roterende propell (PT-52). Uten motor kan du ikke styre i havnen.",
+        "fix": "Hold motoren i fri mens en line er slakk i vannet eller mannskapet håndterer en; stram eller slipp linen først. Trykk Prøv igjen."
+      },
+      "dragging": {
+        "name": "Ankeret dreger",
+        "what": "Ankeralarmen gikk: ankeret glir langs bunnen.",
+        "why": "Med for lite kjetting, eller uten å være gravd ned, løfter trekket ankeret ut (PT-54).",
+        "fix": "Fire ut mer kjetting, og grav det så ned igjen ved å gå forsiktig akterover."
+      }
+    }
+  },
+  "stern-to-anchor": {
+    "title": "Akterfortøyd på eget anker",
+    "summary": "Slipp ankeret tvers over farleden, rygg inn på plassen mens du fyrer ut kjetting, hekkfortøyninger, og hal så inn kjetting til den er stram.",
+    "see": "Du er i farleden foran plassen din med baugen mot sør. Denne kaien har ingen lazylinjer, så ditt eget anker holder baugen. Den magentafargede ringen er der du skal slippe det: på den tomme plassen på den andre siden av farleden.",
+    "happening": "Ankeret og kjettingen gjør jobben til lazylinen: lagt ut foran og så strammet holder de baugen unna kaien mens hekkfortøyningene holder hekken.",
+    "action": "Motor sakte framover til baugen er over ringen; slipp ankeret; rygg mot plassen din og fire ut kjetting underveis; stopp et steg fra kaien; hekkfortøyninger; hal inn kjetting til den er stram og ankeret er satt.",
+    "mistake": "Å ikke fire ut kjetting mens du rygger: ankeret dras etter deg og holder ingenting. Eller å hale inn kjetting så hardt at den drar hekken fra kaien: ankerspillet kobler ut.",
+    "done": "Båten ligger akterfortøyd på eget anker. Legg ut kjettingen mens du rygger inn, og stram den så.",
+    "steps": {
+      "to-spot": {
+        "goal": "Motor sakte framover til baugen er over ringen, nesten stoppet.",
+        "how": "Motoren sakte forover (spaken like forbi Fri mot Forover); båten peker allerede sørover mot den tomme plassen på den andre siden av farleden: hold den rett med thrusterne. Fri over ringen, et lite støt akterover for å stoppe."
+      },
+      "let-go-anchor": {
+        "goal": "Slipp ankeret ned til bunnen (5 m).",
+        "how": "«Anker»: hold «Kjetting ut ▼» til ankeret er på bunnen."
+      },
+      "reverse-in": {
+        "goal": "Rygg inn på plassen din mens du fyrer ut kjetting, og stopp med hekken 0,5–2,8 m fra kaien.",
+        "how": "Motoren sakte akterover. Trykk «Kjetting ut» hver gang kjettingtelleren viser mindre enn avstanden til ankeret pluss noen meter, så kjettingen aldri er stram mens du beveger deg. Hold båten rett med thrusterne. Fri nær kaien."
+      },
+      "stern-lines": {
+        "goal": "Kast begge hekkfortøyningene til kaien.",
+        "how": "«Havneutstyr» → «Fortøyninger»: «Kast den til kaien» på begge hekkfortøyningene."
+      },
+      "chain-tight": {
+        "goal": "Hal inn kjetting til ankeret er satt og kjettingen holder baugen, motoren i fri.",
+        "how": "«Anker»: hold «Kjetting inn ▲» til seksjonen sier at ankeret er satt. Hvis ankerspillet kobler ut, er kjettingen for stram: fire ut 1 m."
+      }
+    },
+    "mistakes": {
+      "touch": {
+        "name": "En lett berøring",
+        "what": "Båten tok borti en annen båt eller kaien uten fender imellom.",
+        "why": "Sakte båter driver med vinden; en berøring i gangfart riper gelcoaten, men gjør sjelden mer.",
+        "fix": "Senk farten, bruk thrusterne til å holde båten unna, og legg ut fenderne på den siden som er nær."
+      },
+      "hard-hit": {
+        "name": "Et hardt slag",
+        "what": "Båten traff en annen båt eller kaien hardt. Øvelsen stopper her.",
+        "why": "Ved mer enn omtrent én knop bulker ti tonn båt et skrog eller knekker et rekkverk, selv med fendere.",
+        "fix": "Gå saktere nær andre båter og kaien: i en havn aldri fortere enn du ville gått. Trykk Prøv igjen."
+      },
+      "propeller": {
+        "name": "Et tau rundt propellen",
+        "what": "Et tau i vannet satte seg rundt propellen og motoren stoppet. Øvelsen stopper her.",
+        "why": "En slakk line nær hekken suges inn i en roterende propell (PT-52). Uten motor kan du ikke styre i havnen.",
+        "fix": "Hold motoren i fri mens en line er slakk i vannet eller mannskapet håndterer en; stram eller slipp linen først. Trykk Prøv igjen."
+      },
+      "fenders-in": {
+        "name": "Fendere fortsatt inne",
+        "what": "Du rygger inn på plassen med fenderne i skapet.",
+        "why": "Uten fendere riper den første berøringen av båten ved siden av begge skrogene.",
+        "fix": "«Havneutstyr» → Fendere: Ute, før du kommer nær."
+      }
+    }
+  },
+  "maestral": {
+    "title": "Maestralen om ettermiddagen",
+    "summary": "Seil i den svake middagsvinden og rull inn seilene når maestralen tar seg opp, før den blir sterk.",
+    "see": "En sommerdag, kl. 12:20: omtrent 12 knop fra nordvest og fulle seil på halvvind (vinden fra siden). På Adriaterhavet om sommeren blir vinden sterkere hver ettermiddag.",
+    "happening": "Maestralen er en sjøbris: landet blir varmere enn sjøen, og luft fra havet strømmer inn under den varme luften som stiger over land. Den kommer opp seint på formiddagen, er sterkest rundt klokken to og dør ut ved solnedgang. I dag når den 20 knop.",
+    "action": "Følg med på vindhastigheten. Når den når 15 knop, rull inn fokken til omtrent 40 % (fire skjøtet først), og rull så inn storseilet til omtrent 60 %. Seil videre til halv to.",
+    "mistake": "Å vente til båten krenger for mye: å rulle inn seil er vanskeligere og tregere i sterk vind. Reduser seil tidlig.",
+    "done": "Du reduserte seil før maestralen var på det sterkeste. På Adriaterhavet må du planlegge ettermiddagen: vinden klokken to er sterkere enn klokken tolv.",
+    "steps": {
+      "wait": {
+        "goal": "Seil videre til vinden når 15 knop.",
+        "how": "Ingenting å gjøre ennå: tiden går 16 ganger raskere i dette steget. Se på TWS (farten til sann vind) i tallene øverst. Pause virker som vanlig."
+      },
+      "jib-in": {
+        "goal": "Rull fokken inn til 45 % eller mindre: fire skjøtet først.",
+        "how": "Under «Tau», sett Fokkeskjøt til 100 %, så Fokk ut til 40 %. Med skjøtet stramt ruller ikke fokken."
+      },
+      "main-in": {
+        "goal": "Rull storseilet inn til mellom 50 og 65 %.",
+        "how": "Under «Tau», sett Fokkeskjøt til omtrent 75 % slik at fokken slutter å slå, og sett så Storseil ut til 60 %."
+      },
+      "peak": {
+        "goal": "Seil videre til 13:30 med mindre enn 22° krenging.",
+        "how": "Tiden går 16 ganger raskere igjen. Sett Storskjøt til omtrent 40 %. Hvis båten krenger for mye i et vindkast, fire storskjøtet."
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "å krenge for mye",
+        "what": "Båten krenget for mye (mer enn 25°).",
+        "why": "For mye seil for denne vinden, eller storskjøtet hentet for langt inn.",
+        "fix": "Fire storskjøtet nå, og rull så inn mer seil."
+      },
+      "round-up": {
+        "name": "en brodd",
+        "what": "Båten dreide opp i vinden av seg selv (en brodd).",
+        "why": "For mye krenging: roret mistet grepet og seilene dreide båten opp i vinden.",
+        "fix": "Fire storseilet med en gang, og rull så inn mer seil."
+      },
+      "sail-worn": {
+        "name": "et slitt seil",
+        "what": "Et seil er slitt av å slå.",
+        "why": "Et seil som får slå (flogging) i sterk vind, slites fort.",
+        "fix": "Hal det slående seilet inn til det slutter, eller rull det inn."
+      }
+    }
+  },
+  "bura": {
+    "title": "En bura er på vei",
+    "summary": "En stille morgen, så treffer en bura med kast nær 30 knop. Gjør seilene små før den kommer.",
+    "see": "08:00, nesten stille: 3 knop fra nordøst og fulle seil. Om omtrent fire minutter strømmer en bura ned fra fjellene i nordøst.",
+    "happening": "Buraen er en kald nordøstlig vind som faller fra fjellene ut på sjøen. Den kan starte plutselig på en stille, klar dag og kommer i harde kast, her opp til omtrent 30 knop. Å rulle inn seilene tar et øyeblikk i stille, og er hardt og tregt når vinden først har kommet.",
+    "action": "Rull inn fokken helt nå, og rull så inn storseilet til omtrent halvparten. Når kastene kommer, fire storskjøtet i hvert kast og hal det inn igjen etterpå.",
+    "mistake": "Å vente og se hvor sterk den blir: med fulle seil legger det første kastet båten over.",
+    "done": "Små seil før vinden kom, så båten holdt seg oppreist gjennom kastene. Når en bura er sannsynlig, reduser seil i stillheten før den.",
+    "steps": {
+      "jib-away": {
+        "goal": "Rull fokken inn til 25 % eller mindre, før buraen kommer.",
+        "how": "Under «Tau», sett Fokkeskjøt til 100 %, så Fokk ut til 0 %."
+      },
+      "main-small": {
+        "goal": "Rull storseilet inn til mellom 30 og 55 %.",
+        "how": "Under «Tau», sett Storseil ut til 45 %."
+      },
+      "three-gusts": {
+        "goal": "Hold båten oppreist gjennom tre vindkast.",
+        "how": "Tiden går 4 ganger raskere i dette steget. Sett Storskjøt til omtrent 70 % i hvert kast, og tilbake til omtrent 45 % når det har passert."
+      }
+    },
+    "mistakes": {
+      "overpowered": {
+        "name": "å krenge for mye",
+        "what": "Båten krenget for mye (mer enn 25°).",
+        "why": "For mye seil for denne vinden, eller storskjøtet hentet for langt inn.",
+        "fix": "Fire storskjøtet nå, og rull så inn mer seil."
+      },
+      "round-up": {
+        "name": "en brodd",
+        "what": "Båten dreide opp i vinden av seg selv (en brodd).",
+        "why": "For mye krenging: roret mistet grepet og seilene dreide båten opp i vinden.",
+        "fix": "Fire storseilet med en gang, og rull så inn mer seil."
+      },
+      "sail-worn": {
+        "name": "et slitt seil",
+        "what": "Et seil er slitt av å slå.",
+        "why": "Et seil som får slå (flogging) i sterk vind, slites fort.",
+        "fix": "Hal det slående seilet inn til det slutter, eller rull det inn."
+      }
+    }
+  },
+  "night-anchor": {
+    "title": "En natt for anker",
+    "summary": "Anker med landfeste om kvelden, og se så natten gå i tidsforløp: holder det?",
+    "see": "18:30 i bukta, kveldens sjøbris (6 knop) blåser inn fra havet. Den magentafargede ringen er der ankeret skal ned. Du skal tilbringe natten her.",
+    "happening": "Vinden endrer seg gjennom en natt: sjøbrisen dør ut ved solnedgang, det blir stille, en svak bris blåser fra land etter mørkets frembrudd, og et kast kan komme før daggry. Et anker som holdt klokken seks om kvelden, må holde gjennom alt dette.",
+    "action": "Anker som i «Ankring med landfeste»: baugen over stedet, slipp ankeret, nok kjetting, grav det ned, rygg mot klippene mens du fyrer ut mer kjetting, landfestet fast og stramt. For en natt: fire ut så mye kjetting som linen tillater, omtrent 60 m. Se så på natten.",
+    "mistake": "For lite kjetting, eller et anker som ikke var gravd ned: i kastet før daggry dreger båten mot klippene.",
+    "done": "Båten holdt hele natten: kveldsbrisen, stillheten, landbrisen og kastet. Mye kjetting, gravd ned og et landfeste.",
+    "steps": {
+      "to-spot": {
+        "goal": "Rygg sakte til baugen er over stedet (innenfor ringen), nesten stoppet.",
+        "how": "Motoren sakte akterover: spaken like forbi Fri mot Akterover («I gir: akterover»). Hold båten rett med baugpropellen. Over stedet, Fri, og et lite støt forover for å stoppe."
+      },
+      "let-go-anchor": {
+        "goal": "Slipp ankeret ned til bunnen.",
+        "how": "Åpne «Anker» og hold «Kjetting ut ▼». Se på kjettingtelleren: ankeret når bunnen ved omtrent 12 m."
+      },
+      "scope": {
+        "goal": "Fire ut nok kjetting («Anker»-seksjonen viser hvor mye som trengs: omtrent 47 m).",
+        "how": "Fortsett med «Kjetting ut» (eller hold den inne igjen) mens motoren går sakte akterover, slik at kjettingen ligger langs bunnen og ikke i en haug."
+      },
+      "dig-in": {
+        "goal": "Grav ankeret ned.",
+        "how": "Stopp kjettingen. Motoren litt hardere akterover (spaken omtrent 40 % av veien mot Akterover) i omtrent et halvt minutt: kjettingen blir stram og ankeret graver seg ned. «Anker»-seksjonen sier da at det er satt."
+      },
+      "shore-line": {
+        "goal": "Rygg mot land og ta en line til en ring.",
+        "how": "Fire ut kjetting igjen og gå sakte akterover til hekken er innenfor omtrent 35 m fra land, så Fri. «Havneutstyr» → «Fortøyninger»: «Ta en line i land». Mannskapet svømmer den til en ring (omtrent 30 s). For en natt: omtrent 60 m kjetting når linen er i land."
+      },
+      "settled": {
+        "goal": "Stram landfestet og ligg stille med motoren i fri.",
+        "how": "Trykk Stram på landfestet til det er håndstramt. Ankeret holder baugen, linen hekken."
+      },
+      "the-night": {
+        "goal": "Se på natten: vinden dreier, og et kast kommer klokken 04:00.",
+        "how": "Ingenting å gjøre: tiden går 240 ganger raskere (tidsforløp) til 07:00. Trykk Pause for å stoppe og se deg rundt."
+      }
+    },
+    "mistakes": {
+      "aground": {
+        "name": "Tok i bunnen",
+        "what": "Kjølen tok i bunnen.",
+        "why": "Vannet der er grunnere enn kjølen (2,4 m); følg med på dybden på stripen.",
+        "fix": "Gå forsiktig akterover til dypere vann og hold deg der dybden viser mer enn 3 m."
+      },
+      "aground-hard": {
+        "name": "Grunnstøtte",
+        "what": "Båten gikk hardt på bunnen eller steinene. Øvelsen stopper her.",
+        "why": "I fart på bunnen setter kjølen seg fast og skroget kan bli skadet (PT-53).",
+        "fix": "Følg med på dybden og kom sakte inn. Trykk Prøv igjen."
+      },
+      "propeller": {
+        "name": "Et tau rundt propellen",
+        "what": "Et tau i vannet satte seg rundt propellen og motoren stoppet. Øvelsen stopper her.",
+        "why": "En slakk line nær hekken suges inn i en roterende propell (PT-52). Uten motor kan du ikke styre i havnen.",
+        "fix": "Hold motoren i fri mens en line er slakk i vannet eller mannskapet håndterer en; stram eller slipp linen først. Trykk Prøv igjen."
+      },
+      "dragging": {
+        "name": "Ankeret dreger",
+        "what": "Ankeralarmen gikk: ankeret glir langs bunnen.",
+        "why": "Med for lite kjetting, eller uten å være gravd ned, løfter trekket ankeret ut (PT-54).",
+        "fix": "Fire ut mer kjetting, og grav det så ned igjen ved å gå forsiktig akterover."
+      },
+      "dragged-at-night": {
+        "name": "dreging om natten",
+        "what": "Ankeret dregde i løpet av natten.",
+        "why": "Kastet trakk hardere enn ankeret kunne holde: for lite kjetting, eller ankeret var ikke godt nok gravd ned.",
+        "fix": "Start på nytt og fire ut mer kjetting, omtrent 60 m, før linen går i land."
+      }
+    }
+  }
+}
