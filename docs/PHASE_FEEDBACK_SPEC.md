@@ -4,7 +4,7 @@ A small phase made from the first public feedback (Reddit, r/sailing, November 2
 
 ## 0. How to use this spec
 
-- Four milestones, built in order, **one PR each**, titled `M<N>: <name>` (the names are in section 6), each saying `Closes #<n>` for the issues its section names.
+- Four milestones, built in order, **one PR each**, titled `M<N>: <name>` (the names are in section 6), each saying `Closes #<n>` for the issues its section names. Each milestone has its own GitHub issue (#235–#238), a short plain-words card for the owner that links back here; this spec stays the source the builder follows.
 - Read sections 0–5, then **only your milestone's section** (7 for M100, 8 for M101, 9 for M102, 10 for M103). The general rules are in CLAUDE.md. Names (files, functions, store actions, `data-testid`s, string keys, ids) are required. Numbers are final unless marked **tunable**.
 - **Text is data.** The English strings in this spec are final. German, Norwegian and Russian strings are AI drafts the builder writes (CLAUDE.md, "Russian text"; the same rule holds for every language but English): every new key exists in `content/lang/{de,no,ru}/*.json` with `textStatus: "draft"` where the file has that field, and the builder runs `npm run review-doc -- de`, `-- no` and `-- ru` after changing them.
 - **No sailing physics changes** in M100–M102: `src/model` gets no new formula. M103 adds exercise data only (scripted wind, autopilot settings) and one model-free field to the exercise definition type.
@@ -56,18 +56,18 @@ One helper, added by M101:
 
 ## 6. Milestones overview
 
-| Milestone | What the owner sees | Issues | Rules tested | Depends on | Independent review |
+| Milestone | What the owner sees | Issues (milestone issue first) | Rules tested | Depends on | Independent review |
 |---|---|---|---|---|---|
-| **M100: Sailor words** | English says "line(s)" for the boat's ropes and "Trim / Ease" for sheets; a Learn entry "Cunningham: not on this boat" | #223, #225 (words), #231 (Learn entry) | none | — | not needed |
-| **M101: Keyboard** | On a computer the boat answers keys at once: ← → steer, W / S the mainsheet, R / F the jib sheet, P the autopilot, H or ? the key list | #226, #225 (keys) | none | M100 (the key list uses its words) | not needed |
-| **M102: Point of sail on the mini-map** | The mini-map (bottom left) draws the points of sail around the boat, marks the current one with an arrow and names it | #229 | none (display of the existing bands) | — | not needed |
-| **M103: Word tours** | Learn entries get **Feel it**: the app sails a short exercise for the learner (header and lift; weather helm; the points of sail) | #230 | PT-21, PT-29 (existing rules, new tests) | M100 | **required** |
+| **M100: Sailor words** | English says "line(s)" for the boat's ropes and "Trim / Ease" for sheets; a Learn entry "Cunningham: not on this boat" | #235; #223, #225 (words), #231 (Learn entry) | none | — | not needed |
+| **M101: Keyboard** | On a computer the boat answers keys at once: ← → steer, W / S the mainsheet, R / F the jib sheet, P the autopilot, H or ? the key list | #236; #226, #225 (keys) | none | M100 (the key list uses its words) | not needed |
+| **M102: Point of sail on the mini-map** | The mini-map (bottom left) draws the points of sail around the boat, marks the current one with an arrow and names it | #237; #229 | none (display of the existing bands) | — | not needed |
+| **M103: Word tours** | Learn entries get **Feel it**: the app sails a short exercise for the learner (header and lift; weather helm; the points of sail) | #238; #230 | PT-21, PT-29 (existing rules, new tests) | M100 | **required** |
 
 ## 7. M100: Sailor words
 
 **Independent review: not needed** (English text, two Learn entries and one aria rule; no model, store, URL or layout change).
 
-PR title `M100: Sailor words`; description says `Closes #223` and `Closes #225` (#225 is answered by the Easy mode plus M100's words and M101's keys, section 11).
+PR title `M100: Sailor words`; description says `Closes #235` (this milestone's issue), `Closes #223` and `Closes #225` (#225 is answered by the Easy mode plus M100's words and M101's keys, section 11).
 
 ### 7.1 Files
 
@@ -188,7 +188,7 @@ Scene names (`learn-realistic-ropes`, `realistic-rope-wrapped-helm`) are names, 
 
 **Independent review: not needed** (UI input only: the keys dispatch store actions that exist, with the same values the buttons send; no model, store, URL or layout change).
 
-PR title `M101: Keyboard`; description says `Closes #226`.
+PR title `M101: Keyboard`; description says `Closes #236` (this milestone's issue) and `Closes #226`.
 
 ### 8.1 Files
 
@@ -338,7 +338,7 @@ Record the group's time in `.github/ci-times.json` (`"m101"`).
 
 **Independent review: not needed** (a drawing on the mini-map from the existing point-of-sail bands; one pure helper with unit tests; no store, URL or physics change).
 
-PR title `M102: Point of sail on the mini-map`; description says `Closes #229`.
+PR title `M102: Point of sail on the mini-map`; description says `Closes #237` (this milestone's issue) and `Closes #229`.
 
 The sailor's "wind compass in the bottom-left" is the **mini-map** (`src/ui/miniMap.ts`, drawn by `drawMiniMap` in `src/ui/mapView.ts`): north-up, the boat in the middle, the true-wind arrow at the top left, "N" at the top right. It shows while sailing in every mode (unless turned off in Settings or the map camera is open, which already labels every point of sail). M102 adds three things to it: the points of sail as a ring of arcs around the boat, an arrow on the ring along the boat's heading, and the current point of sail's name at the bottom. The instrument strip's heading stays as it is (the issue: keep the numeric heading).
 
@@ -464,7 +464,7 @@ No older check reads the mini-map's `aria-label` text (planning grep for `minima
 
 **Independent review: required** (two new exercises whose checks and texts teach sailing: a wrong band or sentence would teach the wrong thing about wind shifts and weather helm; it adds a field to the exercise definition).
 
-PR title `M103: Word tours`; description says `Closes #230`.
+PR title `M103: Word tours`; description says `Closes #238` (this milestone's issue) and `Closes #230`.
 
 A tour is an **exercise played in Watch mode** (M81): the app sails it, stops after each step and shows the step's text; the learner can take over with *Let me try it*. A Learn entry whose term an exercise lists gets a **Feel it** button that starts that exercise in Watch mode. Three tours:
 
