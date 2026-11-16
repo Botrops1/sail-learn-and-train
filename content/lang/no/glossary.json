@@ -781,6 +781,23 @@
       "what": "Et skjøt drar i nokken til et seil (det bakre nedre hjørnet) og bestemmer dermed hvor langt seilet kan svinge ut. Hvert seil har sitt eget: storskjøtet og fokkeskjøtet. På en båt er et skjøt et tau, ikke seilet.",
       "textStatus": "draft"
     },
+    "term_line": {
+      "name": "Line",
+      "alternatives": [
+        { "term": "tau", "note": "materialet, før det har en oppgave" }
+      ],
+      "short": "Alle tau som har en jobb på en båt.",
+      "what": "Om bord får et tau navn etter jobben sin: en skjøt trimmer et seil, et fall heiser det, en fortøyning holder båten. Til sammen er de linene. Seilere sier «tau» om tau som ennå ikke har noen jobb, for eksempel en ny rull.",
+      "textStatus": "draft"
+    },
+    "term_cunningham": {
+      "name": "Cunningham",
+      "alternatives": [],
+      "short": "En line som drar framkanten av storseilet ned. Denne båten har ingen.",
+      "what": "På et storseil som heises opp i et mastespor drar cunninghamen seilets framkant (luffen) ned nær bunnen. Mer strekk flytter bukten i seilet framover og gjør det flatere i sterkere vind.",
+      "onThisBoat": "Ingen, så vidt vi vet (ikke bekreftet på den virkelige båten ennå). Storseilet ruller inn i masten, framkanten sitter på rullestangen inne i masten, og det er ingenting som drar den ned; strekket kommer fra storfallet.",
+      "textStatus": "draft"
+    },
     "term_halyard": {
       "name": "Fall",
       "alternatives": [],

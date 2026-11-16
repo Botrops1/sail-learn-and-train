@@ -18,6 +18,12 @@ export const CONTROL_IDS = [
 ] as const;
 export type ControlId = (typeof CONTROL_IDS)[number];
 
+/** The two sheets: their value is "% eased", so − trims and + eases (their buttons are named that way). */
+export const SHEET_CONTROL_IDS: ReadonlySet<ControlId> = new Set([
+  'ctl_mainsheet',
+  'ctl_jib_sheet',
+]);
+
 export type Controls = Record<ControlId, number>;
 
 export interface ControlSpec {

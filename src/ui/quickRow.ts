@@ -1,5 +1,5 @@
 import type { AppState, Store } from '../app/store';
-import { snapControl, type ControlId } from '../model/controls';
+import { SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/controls';
 import { gearOf } from '../model/engine';
 import { entryFor } from '../model/panelEntries';
 import { el } from './dom';
@@ -108,8 +108,11 @@ export function createQuickRow(head: HTMLElement, store: Store, sheet: Sheet): v
         setText(name, label);
         setText(value, valueText(view, state.controls[id]));
         const wheel = view.unit === 'rudder';
-        less.setAttribute('aria-label', t(wheel ? 'wheel.less' : 'control.less', { name: label }));
-        more.setAttribute('aria-label', t(wheel ? 'wheel.more' : 'control.more', { name: label }));
+        const sheet = SHEET_CONTROL_IDS.has(id);
+        const lessKey = wheel ? 'wheel.less' : sheet ? 'control.trim' : 'control.less';
+        const moreKey = wheel ? 'wheel.more' : sheet ? 'control.ease' : 'control.more';
+        less.setAttribute('aria-label', t(lessKey, { name: label }));
+        more.setAttribute('aria-label', t(moreKey, { name: label }));
       } else {
         text = t('quick.easy');
       }

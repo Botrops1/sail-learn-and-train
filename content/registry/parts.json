@@ -107,6 +107,8 @@
     {"id": "fit_compass", "kind": "fitting", "phase": 2, "group": "cockpit", "status": "source-checked", "sources": ["brochure"], "related": ["helm_port", "helm_starboard", "fit_autopilot_control"]},
     {"id": "engine_control", "kind": "fitting", "phase": 2, "group": "cockpit", "status": "photo-confirmed", "sources": ["photo:engine"], "related": ["part_saildrive", "helm_port"], "showMe": "?ws=0&cam=side-port&sel=engine_control&sea=flat&eng=1&lv=66"},
     {"id": "term_sheet", "kind": "term", "phase": 4, "group": "sailing", "status": "draft", "sources": [], "related": ["rope_mainsheet", "rope_jib_sheet", "term_ease", "term_trim"]},
+    {"id": "term_line", "kind": "term", "phase": 100, "group": "sailing", "status": "draft", "sources": ["wiki:nautical-terms-a-l"], "related": ["term_sheet", "term_halyard", "term_trim", "term_ease"]},
+    {"id": "term_cunningham", "kind": "term", "phase": 100, "group": "sailing", "status": "draft", "sources": ["wiki:nautical-terms-a-l"], "related": ["rope_main_halyard", "rope_outhaul", "rope_main_furling_line"]},
     {"id": "term_halyard", "kind": "term", "phase": 4, "group": "sailing", "status": "draft", "sources": [], "related": ["rope_main_halyard", "rope_spi_halyard", "sailpart_head"]},
     {"id": "term_port", "kind": "term", "phase": 4, "group": "directions", "status": "draft", "sources": [], "related": ["term_starboard", "term_port_tack", "part_bow"]},
     {"id": "term_starboard", "kind": "term", "phase": 4, "group": "directions", "status": "draft", "sources": [], "related": ["term_port", "term_starboard_tack", "part_bow"]},
