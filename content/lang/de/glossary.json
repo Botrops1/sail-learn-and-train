@@ -804,7 +804,7 @@
       "name": "Cunningham",
       "alternatives": [],
       "short": "Eine Leine, die die Vorderkante eines Großsegels nach unten zieht. Dieses Boot hat keine.",
-      "what": "An einem Großsegel, das an einer Mastschiene hochgezogen wird, zieht das Cunningham die Vorderkante des Segels (das Vorliek) unten nach unten. Mehr Spannung verlagert den Bauch des Segels nach vorn und flacht es bei stärkerem Wind ab.",
+      "what": "An einem Großsegel, das an einer Mastschiene hochgezogen wird, zieht das Cunningham die Vorderkante des Segels (das Vorliek) unten herunter. Mehr Spannung verlagert den Bauch des Segels nach vorn und flacht es bei stärkerem Wind ab.",
       "onThisBoat": "Keines, soweit wir wissen (auf dem echten Boot noch nicht bestätigt). Das Großsegel rollt in den Mast, seine Vorderkante liegt auf der Rollstange im Mast, und nichts zieht sie nach unten; die Spannung kommt vom Großfall.",
       "textStatus": "draft"
     },

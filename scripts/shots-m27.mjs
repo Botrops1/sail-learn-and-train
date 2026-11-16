@@ -331,7 +331,7 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
     const value = (await page.getByTestId('quick-value').innerText()).trim();
     check('quick name', name === 'Main sheet', name);
     check('quick value', value === '40 % eased', value);
-    await page.getByRole('button', { name: 'More: Main sheet', exact: true }).click();
+    await page.getByRole('button', { name: 'Ease: Main sheet', exact: true }).click();
     await waitForLink(page, ['ms=45']);
     await setSheet(page, 'half');
     check(
@@ -339,8 +339,8 @@ export async function liveM27Checks({ openPage, viewports, outDir, prefix, probl
       !(await page.getByTestId('quick-row').isVisible()),
       'visible',
     );
-    const more = await page.getByRole('button', { name: 'More: Main sheet', exact: true }).count();
-    check('one "More: Main sheet" button', more === 1, String(more));
+    const more = await page.getByRole('button', { name: 'Ease: Main sheet', exact: true }).count();
+    check('one "Ease: Main sheet" button', more === 1, String(more));
     await context.close();
   }
 
