@@ -140,7 +140,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 
 | File | What |
 |---|---|
-| `layout.ts`, `layoutMode.ts`, `dom.ts` | Page layout (stacked / side by side / `wide` from 1,280 px, `<html data-wide>`), DOM helper. |
+| `layout.ts`, `layoutMode.ts`, `dom.ts` | Page layout (stacked / side by side / `wide` from 1,280 px, `<html data-wide>`), DOM helpers (`el`, `isTypingTarget`). |
 | `columnHandles.ts`, `columnWidths.ts` | On the wide layout the two panel columns fold (a chip each) and resize (a grip on the left edge); `columnHandles.ts` builds them and keeps the choice in `localStorage`, `columnWidths.ts` is the pure part (limits, defaults, saved text). |
 | `sheet.ts`, `sheetGeometry.ts` | On a phone the panel is a sheet with three heights (peek, half, full), moved by dragging, tapping or keys on its handle or tabs row; tells the 3D view how much of the bottom it covers. `sheetGeometry.ts` is the pure part (heights, snapping). |
 | `i18n.ts` | Strings: `setLanguage`/`currentLanguage`, `t()`, `part()` (name and one-liner), `quoted()`, `formatThousands`. |
@@ -161,6 +161,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: the four stations (Port, Starboard, Mast, Bow), gestures, winch handle and strain bar, the Helm station's body and the windlass remote. |
 | `windPanel.ts`, `windModePanel.ts`, `wavesPanel.ts`, `windIndicator.ts`, `windInstrument.ts` | The Conditions section (wind dial, speed, wind modes with the local winds row, waves, presets), the alert stack over the 3D view, the wind instrument dial. |
 | `thrusterPanel.ts` | The Thrusters block under the engine lever and the joystick itself (also in the quick row and at the Helm station); hidden when the boat has none; A / D and J / L keys in Harbour. |
+| `keyboard.ts`, `keyHelp.ts` | Keys on a computer: `keyAction` (← → steer or move the autopilot, W / S main, R / F jib, P autopilot, H or ? key list) and the one `keydown` listener; the key list dialog. |
 | `anchorPanel.ts` | The Anchor section: the windlass buttons (held to act), the chain counter, the status, the scope check and the alarm; also the Bow station's block and the Helm station's remote. |
 | `placePanel.ts` | The Place section: Open water / Marina / Bay, the marina's layout and traffic, the berth arrow box and a status line. |
 | `harbourPanel.ts` | The Harbour gear section: fenders, the fender hints, the mooring Lines block (take, tighten, ease, let go), clear the propeller, the bay's bow and shore lines. |

@@ -5720,3 +5720,35 @@ html[data-layout] .exercise-stack[data-place='row'] {
   margin-left: 0;
   padding: 0;
 }
+
+/* The key list (M101): key caps in the first column, what they do in the second. */
+.key-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 12px;
+  margin: 12px 0;
+}
+
+.key-list dt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.key-list dd {
+  margin: 0;
+}
+
+.key-list kbd {
+  min-width: 1.6em;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in srgb, currentcolor 40%, transparent);
+  border-radius: 4px;
+  font: inherit;
+  text-align: center;
+}
+
+/* No keyboard on a phone: the row is for a computer. */
+html[data-layout='stacked'] .keys-field {
+  display: none;
+}

@@ -3612,7 +3612,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.bar.label | This step | Dette steget |
 | exercise.bar.all | All controls | Alle kontroller |
 | exercise.bar.nothing | Nothing to do in this step: watch. | Ingenting å gjøre i dette steget: se på. |
-| exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button | Taster: 1–4 velger en rad · ← → første eller siste knapp · Mellomrom: første knapp |
+| exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button · H: all keys | Taster: 1–4 velger en rad · ← → første eller siste knapp · Mellomrom: første knapp · H: alle taster |
 | exercise.bar.sheet | − pulls in · + eases | − haler inn · + fyrer ut |
 | exercise.bar.furl | − rolls in · + rolls out | − ruller inn · + ruller ut |
 | exercise.bar.rudder | − to port · + to starboard | − til babord · + til styrbord |
@@ -3680,3 +3680,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | sound.unsupported | This browser cannot play the app's sound. | Denne nettleseren kan ikke spille av lyden til appen. |
 | sound.chipOn | Sound on: tap to mute | Lyd på: trykk for å dempe |
 | sound.chipOff | Sound off: tap to play | Lyd av: trykk for å spille av |
+| keys.title | Keyboard keys | Tastaturtaster |
+| keys.steer | Steer. With the autopilot on: its course, 1° a press (with Shift: 10°). | Styr. Med autopiloten på: kursen hans, 1° per trykk (med Shift: 10°). |
+| keys.main | Mainsheet: trim / ease | Storskjøt: stram / gi ut |
+| keys.jib | Jib sheet: trim / ease | Fokkeskjøt: stram / gi ut |
+| keys.autopilot | Autopilot on (holds this course) / off | Autopilot på (holder denne kursen) / av |
+| keys.bowThruster | Bow thruster to port / starboard (Harbour mode) | Baugpropell til babord / styrbord (havnemodus) |
+| keys.sternThruster | Stern thruster to port / starboard (Harbour mode) | Akterpropell til babord / styrbord (havnemodus) |
+| keys.bar | In an exercise: the step bar's rows, its buttons and Show me | I en øvelse: trinnlinjens rader, knappene deres og Vis meg |
+| keys.help | Show or hide this list | Vis eller skjul denne listen |
+| keys.noteRopes | W, S, R and F work the sheets in Easy mode. In Realistic mode you work them at the winches. | W, S, R og F styrer skjøtene i enkel modus. I realistisk modus styrer du dem ved vinsjene. |
+| keys.noteOff | Keys do nothing while you type in a field or while the app sails an exercise for you. | Tastene gjør ingenting mens du skriver i et felt eller mens appen seiler en øvelse for deg. |
+| settings.keys.label | Keyboard | Tastatur |
+| settings.keys.hint | Press H or ? at any time to see the keys. | Trykk H eller ? når som helst for å se tastene. |
+| settings.keys.button | Show the keys | Vis tastene |

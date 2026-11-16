@@ -1,6 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { thrusterEnds, thrusterSpeedFactor, type ThrustDir } from '../model/thrusters';
-import { el } from './dom';
+import { el, isTypingTarget } from './dom';
 import { t, type StringKey } from './i18n';
 import { setText } from './stepper';
 import { barRowsFor, barShown } from '../app/exerciseBar';
@@ -92,13 +92,7 @@ function guardPage(store: Store): void {
     if (!(event.code in KEYS) || event.repeat) return;
     if (event.ctrlKey || event.altKey || event.metaKey) return;
     if (!thrusterKeysOn(store.getState())) return;
-    const target = event.target;
-    if (
-      target instanceof HTMLElement &&
-      (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
-    ) {
-      return;
-    }
+    if (isTypingTarget(event.target)) return;
     event.preventDefault();
     held.add(event.code);
     const key = KEYS[event.code];

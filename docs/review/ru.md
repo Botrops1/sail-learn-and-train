@@ -3612,7 +3612,7 @@
 | exercise.bar.label | This step | Этот шаг |
 | exercise.bar.all | All controls | Всё управление |
 | exercise.bar.nothing | Nothing to do in this step: watch. | На этом шаге делать нечего: смотрите. |
-| exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button | Клавиши: 1–4 выбор строки · ← → первая или последняя кнопка строки · Пробел: первая кнопка |
+| exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button · H: all keys | Клавиши: 1–4 выбор строки · ← → первая или последняя кнопка строки · Пробел: первая кнопка · H: все клавиши |
 | exercise.bar.sheet | − pulls in · + eases | − подобрать · + потравить |
 | exercise.bar.furl | − rolls in · + rolls out | − свернуть · + развернуть |
 | exercise.bar.rudder | − to port · + to starboard | − к левому борту · + к правому борту |
@@ -3680,3 +3680,17 @@
 | sound.unsupported | This browser cannot play the app's sound. | Этот браузер не может воспроизводить звук приложения. |
 | sound.chipOn | Sound on: tap to mute | Звук включён: нажмите, чтобы выключить |
 | sound.chipOff | Sound off: tap to play | Звук выключен: нажмите, чтобы включить |
+| keys.title | Keyboard keys | Клавиши |
+| keys.steer | Steer. With the autopilot on: its course, 1° a press (with Shift: 10°). | Руль. При включённом автопилоте: его курс, 1° за нажатие (с Shift: 10°). |
+| keys.main | Mainsheet: trim / ease | Грота-шкот: выбрать / потравить |
+| keys.jib | Jib sheet: trim / ease | Стаксель-шкот: выбрать / потравить |
+| keys.autopilot | Autopilot on (holds this course) / off | Автопилот включить (держит этот курс) / выключить |
+| keys.bowThruster | Bow thruster to port / starboard (Harbour mode) | Носовое подруливающее влево / вправо (режим порта) |
+| keys.sternThruster | Stern thruster to port / starboard (Harbour mode) | Кормовое подруливающее влево / вправо (режим порта) |
+| keys.bar | In an exercise: the step bar's rows, its buttons and Show me | В упражнении: строки панели шага, её кнопки и «Покажи» |
+| keys.help | Show or hide this list | Показать или скрыть этот список |
+| keys.noteRopes | W, S, R and F work the sheets in Easy mode. In Realistic mode you work them at the winches. | W, S, R и F работают со шкотами в простом режиме. В реалистичном режиме шкоты берут на лебёдках. |
+| keys.noteOff | Keys do nothing while you type in a field or while the app sails an exercise for you. | Клавиши ничего не делают, пока вы печатаете в поле или пока приложение само проводит упражнение. |
+| settings.keys.label | Keyboard | Клавиатура |
+| settings.keys.hint | Press H or ? at any time to see the keys. | Нажмите H или ?, чтобы в любой момент увидеть клавиши. |
+| settings.keys.button | Show the keys | Показать клавиши |
