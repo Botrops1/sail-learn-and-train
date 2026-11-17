@@ -33,7 +33,7 @@ The layout fits this app's own geography: the marina lies 1.5 km north of the op
 - `content/registry/parts.json`, `content/lang/{en,de,no,ru}/glossary.json`: the id `env_distant_land` (1.7).
 - `tests/horizonLand.test.ts` (new) (1.8).
 - `scripts/shots-m104.mjs` (new), `scripts/shots.mjs` (import, `SCENES`, the `m18` live group), `scripts/ci-plan.mjs` (`GROUP_ALIASES`: `m104: 'm18'`), `.github/ci-times.json` (`m18` line) (1.10).
-- Docs: this file, `docs/CODE_MAP.md` (the two new files; `area.ts` and `glossary.ts` lines), `docs/BOAT_REFERENCE.md` (one assumption row, 1.3), `docs/ROADMAP.md` (decisions-log row), `docs/review/{de,no,ru}.md` (generated).
+- Docs: this file, `docs/CODE_MAP.md` (in `src/model/`, a row `horizonLand.ts`: "The distant land's outline from the area's ridges (pure)."; in `src/render3d/`, a row after `skyDome.ts, skyColours.ts`: `horizonLand.ts`: "The distant land: two rings of hills round the horizon, fixed to the compass, following the camera so it is never reached."; the `glossary.ts` row also names `FAR_AWAY`), `docs/BOAT_REFERENCE.md` (one assumption row, 1.3), `docs/ROADMAP.md` (decisions-log row), `docs/review/{de,no,ru}.md` (generated).
 
 ### 1.3 Data (`content/areas/adriatic.json`, new top-level key after `bay`)
 
@@ -95,14 +95,23 @@ export function horizonProfile(
 
 1. If `b <= fromDeg` or `b >= toDeg`: return 0.
 2. `lin` = the straight-line interpolation through the points `[fromDeg, 0]`, then each peak, then `[toDeg, 0]`, at `b` (the segment whose ends hold `b`).
-3. `ripple = rippleDeg · (0.6 · sin(23 · b · DEG) + 0.4 · sin(61 · b · DEG)) · min(1, lin / rippleDeg)` (`DEG` from `src/model/angles.ts`; the factor makes the ripple fade out where the ridge meets the sea).
+3. `ripple = rippleDeg · (0.6 · sin(23 · b · DEG) + 0.4 · sin(61 · b · DEG)) · min(1, lin / rippleDeg)` (`DEG` from `src/model/angles.ts`; the factor makes the ripple fade out where the ridge meets the sea). When `rippleDeg === 0`, `ripple = 0` (no division).
 4. Return `max(0, lin + ripple)`.
 
 `horizonProfile`: for each `i`, `b = i · stepDeg`; the value is the largest `ridgeHeightDeg(r, x)` over the ridges `r` of that layer and `x ∈ {b, b + 360, b − 360}` (so a ridge that crosses north counts on both sides). It throws an `Error` when `360 % stepDeg !== 0` or `stepDeg <= 0`.
 
-`src/model/area.ts`: `AreaData = Omit<typeof adriatic, 'places' | 'marina' | 'bay' | 'horizonLand'> & { …; horizonLand: HorizonLandData }` (import the type from `./horizonLand`).
+`src/model/area.ts` (import the type from `./horizonLand`; the existing `as unknown as AreaData` cast of the JSON stays):
 
-Prototype values (the script ran these formulas on the data in 1.3): far layer at 0° = 5.120, at 15° = 5.509, highest 5.582 at 19°; near layer at 0° = 1.300, at 180° = 1.300, highest 1.695 at 349°; far at 125° = 2.509; both layers 0 at every bearing 215°–240°.
+```ts
+export type AreaData = Omit<typeof adriatic, 'places' | 'marina' | 'bay' | 'horizonLand'> & {
+  places: PlaceData[];
+  marina: MarinaData;
+  bay: BayData;
+  horizonLand: HorizonLandData;
+};
+```
+
+Prototype values (the script ran these formulas on the data in 1.3): far layer at 0° = 5.120, at 15° = 5.509 (near at 15° = 1.268), highest 5.582 at 19°; near layer at 0° = 1.300, at 180° = 1.300, highest 1.695 at 349°; far at 125° = 2.509; both layers 0 at every bearing 215°–240°.
 
 ### 1.5 3D (`src/render3d/horizonLand.ts`, `sceneConfig.ts`, `scene.ts`)
 
@@ -112,7 +121,7 @@ Prototype values (the script ran these formulas on the data in 1.3): far layer a
 horizonLand: {
   /** Degrees between outline points (must divide 360). */
   stepDeg: 1,
-  /** Inside the 1000 m far plane and the water's reach (the water square reaches at least 860 m from a camera within 140 m of the boat). */
+  /** Inside the 1000 m far plane (`SCENE.camera.far`) and the water's reach: the water is a 2000 m square centred on the boat (`SCENE.water.size`), the orbit camera stays within 140 m of her (`maxDistance`), so water lies at least 1000 − 140 = 860 m from the camera in every direction. */
   far: { radiusM: 840, dayColour: '#6b7d8c', haze: 0.5 },   // dayColour, haze tunable
   near: { radiusM: 800, dayColour: '#4f5f4c', haze: 0.25 }, // dayColour, haze tunable
   /** At full night the land is this fraction of the horizon colour: a dark shape just visible against the sky. Tunable. */
@@ -129,16 +138,17 @@ export interface HorizonLand {
 export function buildHorizonLand(areaData: AreaData = area): HorizonLand;
 ```
 
-- **Geometry**, one mesh per layer: `p = horizonProfile(areaData.horizonLand.ridges, layer, SCENE.horizonLand.stepDeg)`, `n = p.length`, `R = radiusM`. For `i = 0 … n` (n + 1 columns, column n repeats column 0's height at bearing 360), bearing `b = i · stepDeg`, two vertices in the group's local frame (**x = north, z = east, y = up**, the world group's frame): foot `(R cos b, 0, R sin b)` and top `(R cos b, R tan(p[i mod n] · DEG), R sin b)`. Two triangles per column pair, indexed: 2(n + 1) vertices, 2n triangles (722 vertices and 720 triangles per layer at 1°). The foot sits at sea level so the water and its fog meet it.
-- **Material**: `THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, fog: false, toneMapped: false })` (no fog: the scene's fog ends at 900 m and would turn the land into plain horizon colour; the haze is in the colour below; not tone-mapped, as the sky dome, so its colours match the sky's). `mesh.userData.partId = requirePartId('env_distant_land')`; `mesh.name = 'horizon-land-' + layer`.
-- **update** (every frame): `object.position.set(camera.position.x, 0, camera.position.z)` (follows the camera across, never up or down: unreachable); `object.rotation.y = headingDeg · DEG` (exactly as `world.ts` turns the world group, so a bearing stays on the compass); each layer's `material.color` = `dayColour` lerped towards `horizon` by `haze`, then lerped towards `horizon × nightShade` by `night` (three.js `Color.lerp`, two scratch colours made once).
-- **`scene.ts`**: `const horizonLand = buildHorizonLand();` next to the other builders, `scene.add(horizonLand.object)` (a child of the scene, **not** of `world.group`, which is shifted with the map; **not** in the picker's list, **not** in the reflection scene). In the render function, right after `dome.update(…)`: `horizonLand.update(camera, boatState.headingDeg, colours.horizon, light.night);`.
+- **Geometry**, one mesh per layer: `p = horizonProfile(areaData.horizonLand.ridges, layer, SCENE.horizonLand.stepDeg)`, `n = p.length`, `R = radiusM`. For `i = 0 … n` (n + 1 columns, column n repeats column 0's height at bearing 360), bearing `b = i · stepDeg`, two vertices in the group's local frame (**x = north, z = east, y = up**, the world group's frame): foot `(R cos b, 0, R sin b)` and top `(R cos b, R tan(p[i mod n] · DEG), R sin b)`. Vertex `2i` is column i's foot, `2i + 1` its top; the triangles of column pair i are `(2i, 2i + 2, 2i + 1)` and `(2i + 1, 2i + 2, 2i + 3)`, as an index buffer: 2(n + 1) vertices, 2n triangles (722 vertices and 720 triangles per layer at 1°). The foot sits at sea level: beyond 100 m the water is the flat outer water (`waterSurface.ts`), so the foot meets it and its fog without a gap.
+- **Material**: `THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, fog: false, toneMapped: false })` (no fog: the scene's fog ends at 900 m and would turn the land into plain horizon colour; the haze is in the colour below; not tone-mapped, as the sky dome, so its colours match the sky's). `mesh.userData.partId = requirePartId('env_distant_land')`; `mesh.name = 'horizon-land-' + layer`; default `renderOrder` (opaque, drawn after the sky dome, whose `renderOrder` is −1 and which ignores depth). `dayColour` is made with `new THREE.Color(hex)` (three.js turns the sRGB hex into its linear working colours, as for every scene colour).
+- **update** (every frame; the camera is a direct child of the scene, so `camera.position` is in scene space, as `skyDome.ts` uses it): `object.position.set(camera.position.x, 0, camera.position.z)` (follows the camera across, never up or down: unreachable); `object.rotation.y = headingDeg · DEG` (exactly as `world.ts` turns the world group, so a bearing stays on the compass); each layer's `material.color` = `dayColour` lerped towards `horizon` by `haze`, then lerped towards `horizon × nightShade` by `night` (three.js `Color.lerp`, two scratch colours made once; `horizon` is the shared object `skyColours` returns and is never changed).
+- **`scene.ts`**: `const horizonLand = buildHorizonLand();` next to the other builders, `scene.add(horizonLand.object)` (a child of the scene, **not** of `world.group`, which is shifted with the map; **not** in the picker's list, **not** in the reflection scene). In the render function, right after `dome.update(…)`: `horizonLand.update(camera, boatState.headingDeg, colours.horizon, light.night);` and `drawnHeadingDeg = boatState.headingDeg;` (a new `let drawnHeadingDeg = 0;` declared next to `const horizonLand`, read by the probe in 1.6).
+- **Spotlight**: the land is part of the normal scene pass, so the spotlight's veil darkens it like the water; it is not one of the spotlit meshes.
 - The Top camera looks almost straight down, so the land barely shows there; the map views draw nothing of it (no change to `mapView.ts`).
 
 ### 1.6 Debug hooks (`scene.ts`, inside the existing `?debug=1` `__sailDebug` object)
 
 - `horizonLandState(): { position: Vec3; cameraPosition: Vec3; rotationYDeg: number; vertices: { far: number; near: number } }`: the group's position, the camera's position, `object.rotation.y / DEG`, and each layer's vertex count.
-- `horizonLandProbe(bearingDeg: number, elevationDeg: number): { x: number; y: number; inside: boolean; hit: HorizonLayer | null }`: a ray from the camera towards compass bearing `bearingDeg`, `elevationDeg` above the camera's level. Its direction in the boat frame is built **without** the land's own transform, from the model's `mapToBoat` (`src/model/mapFrame.ts`): `[fwd, stbd] = mapToBoat(sin b, cos b, headingDeg)` (east, north), direction `normalize(fwd, tan(elevationDeg · DEG), stbd)`, with the heading the last frame drew. `hit` is the layer of the first land mesh a `THREE.Raycaster` from `camera.position` along it meets, or null. `x`, `y` are the CSS pixels on the canvas of `camera.position + 100 · direction` (`Vector3.project(camera)`, then `((ndc.x + 1) / 2) · width`, `((1 − ndc.y) / 2) · height` of the canvas's bounding rectangle); `inside` is true when both lie on the canvas and `ndc.z < 1`.
+- `horizonLandProbe(bearingDeg: number, elevationDeg: number): { x: number; y: number; inside: boolean; hit: HorizonLayer | null }`: a ray from the camera towards compass bearing `bearingDeg`, `elevationDeg` above the camera's level. Its direction in the boat frame is built **without** the land's own transform, from the model's `mapToBoat` (`src/model/mapFrame.ts`): `[fwd, stbd] = mapToBoat(sin b, cos b, headingDeg)` (east, north), direction `normalize(fwd, tan(elevationDeg · DEG), stbd)`, with `drawnHeadingDeg` (1.5). Before casting, `horizonLand.object.updateMatrixWorld(true)`. `hit` is the layer of the first of the two land meshes a `THREE.Raycaster` from `camera.position` (the camera's own position, not the rig's target) along it meets, or null. `x`, `y` are the CSS pixels on the canvas of `camera.position + 100 · direction` (`Vector3.project(camera)`, then `((ndc.x + 1) / 2) · width`, `((1 − ndc.y) / 2) · height` of the canvas's bounding rectangle); `inside` is true when both lie on the canvas and `ndc.z < 1`. CSS pixels need no device-pixel-ratio factor (the bounding rectangle is in CSS pixels).
 
 ### 1.7 Learn entry, registry and strings
 
@@ -166,11 +176,11 @@ Unit tests (no browser), on `area.horizonLand` from `src/model/area.ts`:
 1. **Data**: every ridge has `toDeg > fromDeg`, `toDeg − fromDeg < 360`, `rippleDeg ≥ 0`, peaks with bearings strictly rising and strictly inside `(fromDeg, toDeg)` and heights in `[0, 8]`; `layer` is `far` or `near`.
 2. **`ridgeHeightDeg`**: 0 at and outside both ends; at a peak it equals the peak height plus the ripple (`toBeCloseTo`, 6 digits) for "mountains north" at 375; never negative over 0.1° steps across every ridge.
 3. **`horizonProfile`** (stepDeg 1, length 360), bands from the prototype (1.4) ± 0.01: far[0] = 5.120, far[15] = 5.509, far max 5.582 at index 19, far[125] = 2.509; near[0] = 1.300, near[180] = 1.300, near max 1.695 at index 349; both 0 for every index 215–240 (**the open-sea gap**); `stepDeg = 2` gives length 180 and its element 7 equals the stepDeg-1 element 14; `stepDeg = 7` throws.
-4. **Mesh** (`buildHorizonLand()`, three.js in Node as `tests/boatModel.test.ts` does): two meshes, each with 722 vertices; the far layer's foot vertex at bearing 90 (column 90) has `x ≈ 0`, `y = 0`, `z ≈ 840` (`toBeCloseTo`, 3 digits), and its top vertex at bearing 15 has `x ≈ 840 cos 15°`, `z ≈ 840 sin 15°`, `y ≈ 840 · tan(5.509°)` (± 0.2 m); `userData.partId === 'env_distant_land'`; `material.fog === false`.
-5. **Compass frame**: after `update(camera at (12, 5, −7), headingDeg 90, horizon colour, night 0)`, the group's position is `(12, 0, −7)`, and the far layer's foot vertex at bearing 90, taken to world space (`localToWorld`), lies at `x ≈ 12 + 840`, `z ≈ −7` (**east is dead ahead on heading 90**); with heading 0 the foot vertex at bearing 0 lies ahead (`x ≈ 12 + 840`) and the one at bearing 90 to starboard (`z ≈ −7 + 840`).
-6. **Colour**: with `night = 1` each layer's colour equals `horizon × nightShade` (`getHex`); with `night = 0` and horizon `#d6e7f2` the far colour lies closer to the horizon than the near colour (sum of absolute RGB differences).
+4. **Mesh** (`buildHorizonLand()`, three.js in Node as `tests/boatModel.test.ts` does; vertex order as in 1.5): two meshes, each with 722 vertices; the far layer's foot vertex at bearing 90 (vertex 180) has `x ≈ 0`, `y = 0`, `z ≈ 840` (`toBeCloseTo`, 3 digits), and its top vertex at bearing 15 has `x ≈ 840 cos 15°`, `z ≈ 840 sin 15°`, `y ≈ 840 · tan(5.509°)` (± 0.2 m); `userData.partId === 'env_distant_land'`; `material.fog === false`.
+5. **Compass frame**: after `update(camera at (12, 5, −7), headingDeg 90, horizon colour, night 0)` and `object.updateMatrixWorld(true)`, the group's position is `(12, 0, −7)`, and the far layer's foot vertex at bearing 90, taken to world space (`localToWorld`), lies at `x ≈ 12 + 840`, `z ≈ −7` (**east is dead ahead on heading 90**); with heading 0 the foot vertex at bearing 0 lies ahead (`x ≈ 12 + 840`) and the one at bearing 90 to starboard (`z ≈ −7 + 840`).
+6. **Colour**: with `night = 1` each layer's colour equals `horizon.clone().multiplyScalar(nightShade)` (compare `getHex()` of both; the expected value is built from the same `THREE.Color`, so both are in the same colour space); with `night = 0` and horizon `#d6e7f2` the far colour lies closer to the horizon than the near colour (sum of absolute RGB differences).
 
-`tests/glossary.test.ts` keeps passing with the new entry (section 11 finds `'env_distant_land'` in `src/render3d/horizonLand.ts`). Add in it: `FAR_AWAY` ids are registry ids and none is in `NOT_DRAWN`.
+`tests/glossary.test.ts`: section 11 finds `'env_distant_land'` in `src/render3d/horizonLand.ts` unchanged. **Change** "the groups have the expected sizes and members": the `sea` group (index 9 of `GROUPS`) grows from 9 to 10, so the list becomes `[9, 10, 13, 9, 18, 22, 13, 14, 32, 10, 20]`. **Add** in section 11: `FAR_AWAY` ids are registry ids and none is in `NOT_DRAWN`.
 
 ### 1.9 Common mistakes
 
@@ -183,9 +193,9 @@ Unit tests (no browser), on `area.horizonLand` from `src/model/area.ts`:
 
 ### 1.10 Browser checks (`scripts/shots-m104.mjs`, joins group `m18`, the sky's group)
 
-**Budget**: no new group. `scripts/ci-plan.mjs` `GROUP_ALIASES` gets `m104: 'm18'` (so `SHOTS_ONLY=m104` and the PR title run it); in `scripts/shots.mjs` the `m18` live group becomes `m18: async () => { await liveM18Checks(live); await liveM104Checks(live); }`. Expected addition about 30 s (m18 recorded 78 s; the group stays under 120 s); refresh the `m18` line in `.github/ci-times.json` with the measured time. Nothing becomes redundant. The outline, the frame and the colours are unit tests (1.8); the browser checks only what needs the real 3D view.
+**Budget**: no new group. `scripts/ci-plan.mjs` `GROUP_ALIASES` gets `m104: 'm18'` (so `SHOTS_ONLY=m104` and the PR title run it); in `scripts/shots.mjs` import `liveM104Checks` and `M104_SCENES` from `./shots-m104.mjs` and turn the `m18` live group into `m18: members(['m18', () => liveM18Checks(live)], ['m104', () => liveM104Checks(live)]),` (the form `tests/ciPlan.test.ts` requires for a merged milestone, as `m6` does). Expected addition about 30 s (m18 recorded 78 s); change the `m18` line in `.github/ci-times.json` only if the measured time exceeds 117 s (more than half again: CLAUDE.md), and report the measured time in the PR either way; above 120 s, say so in the PR. Nothing becomes redundant. The outline, the frame and the colours are unit tests (1.8); the browser checks only what needs the real 3D view.
 
-**Scenes** (`M104_SCENES`, all sizes, registered in `SCENES` as `m104-<name>`; `BASE = '?wd=0&ws=12&ms=40&js=100&tb=0&clock=0&sea=flat'`):
+**Scenes** (`M104_SCENES`, all sizes, each `waitMs: 2500`, registered in `SCENES` as `{ ...scene, name: \`m104-${scene.name}\` }` as `M18_SCENES` is; the script's label rules treat `m104` labels as they treat `m18`; `BASE = '?wd=0&ws=12&ms=40&js=100&tb=0&clock=0&sea=flat'`):
 
 | name | query | shows |
 |---|---|---|
@@ -203,9 +213,11 @@ Unit tests (no browser), on `area.horizonLand` from `src/model/area.ts`:
 3. **Night, H = 15**: `landNight` at probe (15, 3). **Night, H = 228**: `skyNight` at probe (228, 3). Check `landNight < 0.9 · skyNight`.
 4. **Learn**: `?m=learn&learn=env_distant_land&sea=flat`: the entry's name "Distant land" shows, `learn-show-me` is there, `learn-show-on-boat` is not.
 
-The block luminance: a helper `blockLuminance(page, x, y)` in `shots-m104.mjs` hides the overlays as `canvasStats` in `shots-m18.mjs` does (the same `addStyleTag`), screenshots the canvas clip `{ x: canvas.x + x − 4, y: canvas.y + y − 4, width: 9, height: 9 }`, decodes it in the page and returns the mean of `(0.2126 R + 0.7152 G + 0.0722 B) / 255`. Save `live-phone-land-noon`, `-gap-noon`, `-night`, `-gap-night`.
+The thresholds come from the colours of 1.5 (prototype, sRGB luminance): at noon the horizon is 0.895, the far land 0.726 (ratio 0.81), the near land 0.558; at full night the horizon is 0.075 and both layers 0.051 (ratio 0.68). A star inside the sky block only raises `skyNight`, which helps the check.
 
-**Older checks and tests this milestone changes.** No count or list grows (no exercise, chip, section, URL key or group is added). The scenes and live checks of `m16`, `m17` and `m18` now show land on the horizon; none of them measures the horizon's pixels (`m17`'s sun check reads the sun's projected position, `m18`'s sky-only view looks steeply up, its night check reads the boat's square), so none changes. `scripts/budget.mjs` keeps its limits (two draw calls and 1,440 triangles more). `tests/ciPlan.test.ts`: the group list is unchanged (m104 is an alias); if a test lists the aliases, add `m104`.
+The block luminance: a helper `blockLuminance(page, x, y)` in `shots-m104.mjs`. Before a page's first block: `setSheet(page, 'peek')` (from `./ui.mjs`) and the same `addStyleTag` that hides the overlays in `canvasStats` (`shots-m18.mjs`); they stay hidden for the rest of that page (the probes read the 3D scene, not the page, so they still work). For each block it screenshots the canvas clip `{ x: canvas.x + x − 4, y: canvas.y + y − 4, width: 9, height: 9 }`, decodes it in the page and returns the mean of `(0.2126 R + 0.7152 G + 0.0722 B) / 255`. Save `live-phone-land-noon`, `-gap-noon`, `-night`, `-gap-night`.
+
+**Older checks and tests this milestone changes.** No count or list grows (no exercise, chip, section, URL key or group is added). The scenes and live checks of `m16`, `m17` and `m18` now show land on the horizon; none of them measures the horizon's pixels (`m17`'s sun check reads the sun's projected position, `m18`'s sky-only view looks steeply up, its night check reads the boat's square), so none changes. `scripts/budget.mjs` keeps its limits (two draw calls and 1,440 triangles more). `tests/ciPlan.test.ts`: the group list and its cap are unchanged (m104 is an alias; the test checks that `scripts/shots-m104.mjs` exists and that `m18` runs `liveM104Checks(` through `members(`). `tests/glossary.test.ts`: the group sizes, as in 1.8.
 
 **PR line:** `CI groups: all` (the scene setup changes: CLAUDE.md).
 
