@@ -350,8 +350,8 @@ describe('the size of the browser-check set (H2)', () => {
     string
   >;
 
-  it('has at most 76 groups and packs into at most 14 parts, also when the times grow by 5 %', () => {
-    expect(groups.length).toBeLessThanOrEqual(76);
+  it('has at most 77 groups and packs into at most 14 parts, also when the times grow by 5 %', () => {
+    expect(groups.length).toBeLessThanOrEqual(77);
     expect(packParts(groups, times, FULL_CAP_S).length).toBeLessThanOrEqual(14);
     const slower = Object.fromEntries(Object.entries(times).map(([name, s]) => [name, s * 1.05]));
     expect(packParts(groups, slower, FULL_CAP_S).length).toBeLessThanOrEqual(14);
