@@ -1026,3 +1026,48 @@ Moving the camera by hand works like a good 3D model viewer, on a phone and on a
 - [ ] The help line: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port — tap "Port ▾": under the views, after the line about port and starboard, "Move the camera: one finger turns, pinch to zoom, two fingers slide. Double-tap a spot to turn around it." On a computer it says "drag to turn, wheel to zoom towards the pointer, …".
 - [ ] The camera buttons still work: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=helm — after moving the camera by hand, pick Port, Top, Bow and Helm from "Free ▾": each glides to its usual view.
 - [ ] Russian: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?cam=side-port&lang=ru — tap the camera button: the help line is in Russian and fits on the screen.
+
+## 24. Sailor feedback (issues #223, #225, #226, #229, #230)
+
+Sailor words, keyboard keys, the point of sail on the mini-map and word tours ([PHASE_FEEDBACK_SPEC](PHASE_FEEDBACK_SPEC.md)): M100–M103, one PR each.
+
+### 24.1 Checklists
+
+#### M100: Sailor words
+
+- [ ] Lines, not ropes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat — open the panel: the section that used to be "Ropes" is called "Lines", and its list says "All lines and the wheel". Tap the main sheet in the list and read the texts around it: no "rope" anywhere.
+- [ ] Trim and ease: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&m=learn&learn=term_trim — the Learn entry is called "Trim" and says it means pulling a sheet in. Then open https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&m=learn&learn=term_ease — "Ease": letting a line out.
+- [ ] What a line is: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&m=learn&learn=term_line — a new entry "Line" explains that a rope with a job on a boat is a line.
+- [ ] No cunningham on this boat: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&m=learn&learn=term_cunningham — a new entry says what a cunningham (a line that pulls the front edge of the mainsail down) is, and that this boat has none because its mainsail rolls into the mast.
+- [ ] An exercise in the new words: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gusts — read the exercise card and its steps: they say "ease" and "trim", never "let out" or "haul in".
+- [ ] Other languages unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&lang=de — German looks as before (only English changed).
+
+#### M101: Keyboard
+
+Use a computer for these.
+
+- [ ] Steer with the arrows: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&ap=off — click once on the water, then hold → for a second: the wheel turns and the boat turns to the right. ← turns her back.
+- [ ] Sheets with W S R F: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&ms=50&js=50 — click on the water, press W a few times: the mainsail comes in (trim); S lets it out (ease). R and F do the same for the jib (the front sail).
+- [ ] Autopilot with P: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&ap=off — click on the water, press P: the autopilot takes over. Press ← a few times: the autopilot's course moves 1° per press. Press P again: it lets go.
+- [ ] The key list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat — press H: a card lists all the keys. Escape closes it. Open Settings: a "Keyboard" row has "Show the keys", which opens the same card.
+- [ ] Typing is safe: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat&m=learn — type "wrsf" in the Learn search box: the search shows the letters and the sails do not move.
+- [ ] Exercises keep their keys: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=points-of-sail — start it, press → once: the bar over the boat reacts (as before), the wheel does not.
+- [ ] On the phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?sea=flat — open Settings on your phone: there is no Keyboard row.
+
+#### M102: Point of sail on the mini-map
+
+- [ ] Close-hauled: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=315&ms=12&js=0&ap=hdg&sea=flat — look at the small map at the bottom left: a ring of pieces round the boat, one piece darker with a small arrow on it, and "Close-hauled" written at the bottom.
+- [ ] Beam reach: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=270&ms=60&js=100&ap=hdg&sea=flat — the small map says "Beam reach" (wind from the side), and the dark piece has moved round.
+- [ ] No-go: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=350&ms=12&js=0&ap=hdg&sea=flat — the boat points almost into the wind: the dark piece is red and the map says "No-go".
+- [ ] It follows you: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=315&ms=30&js=30 — open the Controls tab, tap Steering, then pull the panel down by its handle until the small map shows. Tap −10 (10° port) a few times, a few seconds apart: the arrow walks round the ring and the name changes (Close-hauled, Close reach…).
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=135&ms=100&js=100&ap=hdg&sea=flat — on a computer the map is bigger and says "Broad reach"; the wind arrow and the N are still clear of the ring.
+
+#### M103: Word tours
+
+- [ ] Header and lift: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=term_wind_shift — tap "Feel it": the app sails the exercise "Header and lift" for you. Watch the wind turn, the mainsail flap, and the boat turn away; then the wind turns back and the boat turns up. It stops after each step; "Next step" goes on.
+- [ ] Find it by its word: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn — type "header" in the search: "Wind shift" comes up.
+- [ ] Weather helm: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=term_weather_helm — tap "Feel it", choose the Helm camera: as the wind rises the boat heels more and the wheel turns further. After the main is eased, she stands up and the wheel comes back.
+- [ ] Points of sail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=term_beam_reach — "Feel it" plays the points-of-sail exercise.
+- [ ] Try it yourself: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=wind-shift — start it with "Do it myself" and follow the steps: the exercise ends with the debrief.
+- [ ] No button where there is nothing to feel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=part_boom — no "Feel it" button.
+- [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — "Weather helm" is in *Sailing* and "Header and lift" in *Wind and weather*.
