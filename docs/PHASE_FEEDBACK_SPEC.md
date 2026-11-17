@@ -722,7 +722,14 @@ The exercise list grows from 17 to 19. Run `grep -n -E "17|seventeen|exercise-it
 
 ### 10.10 Decided in the M103 PR
 
-(The builder writes here.)
+(Recommended; merging accepts it.)
+
+- **Both new exercises start with the wind from the east (90°), not the north.** The open-water start has land west of about 1,300 m, and the north-wind version (heading 315°) ran aground after about 8 minutes of the good run (the seabed contact stopped the boat; step *head-up* never passed). A link cannot move the boat in open water (`pe` and `pn` only count in a place), so both exercises are the spec's turned by 90°: wind 90°, heading 40° (weather-helm) and 45° (wind-shift), timetable directions 90 / 70 / 110, targets 25° and 65°, and the texts say 45°, 25° and 65°. Every angle to the wind, and so every band of 10.6, is unchanged.
+- **The measured step times are frame seconds,** not app seconds: `reduce` applies a step's `speedUp` (the step sets the time scale), so *header-comes* measures 22.5 and *lift-comes* 25.05, not 180 and 360. `SAILING_LIMITS` uses `ceil(1.2 × the larger + 3)` of these: weather-helm 41, 11; wind-shift 30, 28, 34, 22. The `t < 900` cap of `goodRunStates` is kept (the good run of wind-shift lasts 84 frame seconds, but the cap costs nothing).
+- **The step texts say "Steering"** where the spec says "Autopilot", because that is the visible name of the block the −10 / +10 buttons sit in (the existing exercise texts say the same).
+- **Wording of the other languages.** German uses the sailor words *Header* and *Lift* (as `term_wind_shift` already does), Norwegian *skrall* and *rom*, Russian *заход* and *отход* (the words the Russian glossary already uses); all are AI drafts for the sailor review. The Russian alternatives avoid Latin letters.
+- **The group limit goes from 76 to 77.** The spec asks for a new group `m103` (56 s measured) and `tests/ciPlan.test.ts` capped the set at 76 groups, so the limit is 77 now and `m103` is in the baseline list, as `m101` was.
+- **The Feel it hint block** is a `div.learn-feel-it-block` with the same class as the Show it working block, placed directly after it; an entry without a Show it working block (none of the tour terms) would take the end of the entry.
 
 ## 11. Owner's answers (planning chat, 2026-11-16: "Accept all, for 5 find better keys")
 
