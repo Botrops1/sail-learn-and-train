@@ -20,6 +20,12 @@ export const M28_SCENES = [
   // At ×16 three seconds are 48 s of sailing, so the track is longer than the drawn boat.
   { name: 'mini-map', query: `${BOAT}&tx=16`, waitMs: 3000 },
   { name: 'mini-map-off', query: `${BOAT}&mm=0` },
+  // M102: close-hauled on starboard tack, the point-of-sail ring with its arrow and name.
+  {
+    name: 'point-rose',
+    query: '?wd=0&ws=12&hdg=315&ms=12&js=0&ap=hdg&sea=flat&lb=0',
+    waitMs: 3000,
+  },
 ];
 
 export async function liveM28Checks({ openPage, viewports, outDir, prefix, problems }) {
@@ -243,5 +249,66 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
     check('chips inside 360 px', inside && apart, JSON.stringify(boxes));
     await page.screenshot({ path: path.join(outDir, `${prefix}live-m28-russian-chips.png`) });
     await context.close();
+  }
+
+  // 11. M102: the mini-map names the point of sail and draws it darker (PHASE_FEEDBACK_SPEC 9.7).
+  {
+    const closeHauled = '?wd=0&ws=12&hdg=315&ms=12&js=0&ap=hdg&sea=flat&lb=0';
+    for (const size of [phone, desktop]) {
+      const { context, page } = await openPage(size, `m28 point ${size.name}`, closeHauled);
+      await page.waitForTimeout(1000);
+      const map = page.getByTestId('mini-map');
+      const point = await map.getAttribute('data-point-of-sail');
+      const label = (await map.getAttribute('aria-label')) ?? '';
+      check(
+        `${size.name}: close-hauled named`,
+        point === 'close_hauled' && label.includes('Close-hauled'),
+        `${point}, "${label}"`,
+      );
+      await context.close();
+    }
+
+    // Pixels: the current arc (307 to 318) is darker than its mirror on the port side.
+    const { context, page } = await openPage(
+      desktop,
+      'm28 point pixels',
+      '?wd=0&ws=12&hdg=318&ms=12&js=0&ap=hdg&sea=flat&lb=0',
+    );
+    await page.waitForTimeout(1000);
+    const sums = await page.evaluate(() => {
+      const canvas = document.querySelector('[data-testid="mini-map-canvas"]');
+      const ctx = canvas.getContext('2d');
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const r = 0.34 * canvas.width;
+      const darkest = (bearing) => {
+        const a = (bearing * Math.PI) / 180;
+        const x = Math.round(cx + r * Math.sin(a));
+        const y = Math.round(cy - r * Math.cos(a));
+        const { data } = ctx.getImageData(x - 2, y - 2, 5, 5);
+        let min = Infinity;
+        for (let i = 0; i < data.length; i += 4) {
+          min = Math.min(min, data[i] + data[i + 1] + data[i + 2]);
+        }
+        return min;
+      };
+      return { current: darkest(310), mirror: darkest(50) };
+    });
+    check(
+      'current arc drawn darker than its port-side mirror',
+      sums.current < 300 && sums.mirror > 360,
+      `bearing 310: ${sums.current} (below 300), bearing 50: ${sums.mirror} (above 360)`,
+    );
+    await context.close();
+
+    const beam = await openPage(
+      desktop,
+      'm28 point beam',
+      '?wd=0&ws=12&hdg=270&ms=60&js=100&ap=hdg&sea=flat&lb=0',
+    );
+    await beam.page.waitForTimeout(1000);
+    const beamPoint = await beam.page.getByTestId('mini-map').getAttribute('data-point-of-sail');
+    check('beam reach named', beamPoint === 'beam_reach', String(beamPoint));
+    await beam.context.close();
   }
 }
