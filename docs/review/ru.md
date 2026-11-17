@@ -3694,3 +3694,10 @@
 | settings.keys.label | Keyboard | Клавиатура |
 | settings.keys.hint | Press H or ? at any time to see the keys. | Нажмите H или ?, чтобы в любой момент увидеть клавиши. |
 | settings.keys.button | Show the keys | Показать клавиши |
+| pos.short.no_go | No-go | Мёртвая зона |
+| pos.short.close_hauled | Close-hauled | Крутой бейдевинд |
+| pos.short.close_reach | Close reach | Полный бейдевинд |
+| pos.short.beam_reach | Beam reach | Галфвинд |
+| pos.short.broad_reach | Broad reach | Бакштаг |
+| pos.short.run | Run | Фордевинд |
+| minimap.openWithPoint | Mini-map, now {point}: tap to open the full map. | Мини-карта, сейчас: {point}. Нажмите, чтобы открыть карту. |

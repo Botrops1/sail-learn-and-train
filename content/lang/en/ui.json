@@ -1129,5 +1129,12 @@
   "keys.noteOff": "Keys do nothing while you type in a field or while the app sails an exercise for you.",
   "settings.keys.label": "Keyboard",
   "settings.keys.hint": "Press H or ? at any time to see the keys.",
-  "settings.keys.button": "Show the keys"
+  "settings.keys.button": "Show the keys",
+  "pos.short.no_go": "No-go",
+  "pos.short.close_hauled": "Close-hauled",
+  "pos.short.close_reach": "Close reach",
+  "pos.short.beam_reach": "Beam reach",
+  "pos.short.broad_reach": "Broad reach",
+  "pos.short.run": "Run",
+  "minimap.openWithPoint": "Mini-map, now {point}: tap to open the full map."
 }

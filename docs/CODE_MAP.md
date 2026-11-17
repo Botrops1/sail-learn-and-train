@@ -88,7 +88,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `gybe.ts` | Gybes: the boom's swing under the wind's push, impact energy and sheet load, the danger-zone sector to draw. |
 | `windModes.ts`, `timeScale.ts` | Steady/gusty/shifty/building/dying/scripted wind and the local wind ids; the time scales (with the time-lapse ones), where the speed part shows and where Pause is replaced by "Held still". |
 | `localWinds.ts` | The Adriatic's local winds as functions of the clock (`localWindMean`, `windMean`, `trueWind`, `localHourOf`) and the scripted wind's timetable (`scriptMean`). |
-| `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail, map frame (`mapToBoat`/`boatToMap`, water shift), the track. |
+| `pointsOfSail.ts`, `mapFrame.ts`, `track.ts` | Map helpers: points of sail (and `pointOfSailArcs`, the mini-map's ring of arcs), map frame (`mapToBoat`/`boatToMap`, water shift), the track. |
 | `waves.ts`, `waveMotion.ts`, `area.ts` | Wave size from wind and fetch, the wave trains and surface height; heave, pitch and roll and what the rocking does to sails, steering and speed; the area's data. |
 | `clock.ts`, `sun.ts` | The on-board clock (UTC ms, local and summer time, the `clk` link form) and the sun (height, direction, sunrise and sunset). |
 | `windOnWater.ts` | How many white horses a wind makes, the gust profile upwind, and where the practice buoys are relative to the boat. |
@@ -176,8 +176,8 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `stepCard.ts` | The one card over the 3D view while an exercise runs: Now you, Step done, mistake, stopped, done, the running step with its fold, the hold ring, the live target rows. |
 | `exerciseDemo.ts` | The pilot of Watch and Show me (a closure, never in `AppState`); `app.ts` calls `frame()` before each part of a frame; lets go of held buttons when a demo ends. |
 | `exercisePanel.ts`, `exerciseDebrief.ts` | The Exercises section: the list (groups, place lines, Watched marks), the setup card (crew, level, start time, Watch it or Do it myself), the step, mistake, failed and done cards, waypoints; `exerciseDebrief.ts` draws the debrief. |
-| `mapView.ts` | The bird's-eye map (`cam=map`) and the mini-map's drawing: buoys, the marina, breakwater and buildings, the seabed, rocks, rings, gust bands and the anchor sign; taps name what they hit; `__sailMap` for the checks. |
-| `miniMap.ts` | The mini-map button at the bottom left of the 3D view while Sailing; a tap opens the full map. |
+| `mapView.ts` | The bird's-eye map (`cam=map`) and the mini-map's drawing: buoys, the marina, breakwater and buildings, the seabed, rocks, rings, gust bands, the point-of-sail ring and the anchor sign; taps name what they hit; `__sailMap` for the checks. |
+| `miniMap.ts` | The mini-map button at the bottom left of the 3D view while Sailing; shows the point of sail (`data-point-of-sail`, label); a tap opens the full map. |
 | `spotlight.ts` | The tiny event channel between the Learn buttons and the 3D view, which flies the camera close, darkens the rest and ends on the next tap. |
 | `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | The part card over the 3D view, 3D labels, the debug overlay, error messages. |
 

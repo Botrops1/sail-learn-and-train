@@ -3694,3 +3694,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | settings.keys.label | Keyboard | Tastatur |
 | settings.keys.hint | Press H or ? at any time to see the keys. | Drücken Sie jederzeit H oder ?, um die Tasten zu sehen. |
 | settings.keys.button | Show the keys | Tasten anzeigen |
+| pos.short.no_go | No-go | Totwasser |
+| pos.short.close_hauled | Close-hauled | Am Wind |
+| pos.short.close_reach | Close reach | Anlieger |
+| pos.short.beam_reach | Beam reach | Halbwind |
+| pos.short.broad_reach | Broad reach | Raumschots |
+| pos.short.run | Run | Vor dem Wind |
+| minimap.openWithPoint | Mini-map, now {point}: tap to open the full map. | Minikarte, jetzt {point}: Tippen, um die ganze Karte zu öffnen. |

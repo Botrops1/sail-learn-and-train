@@ -469,7 +469,9 @@ No older check reads the mini-map's `aria-label` text (planning grep for `minima
 
 ### 9.10 Decided in the M102 PR
 
-(The builder writes here.)
+- `drawPointRose` returns nothing; `miniMap.ts` works out the current point of sail itself with `pointOfSail` for the button's attribute and label (recommended; merging accepts it).
+- The two older unit tests in `tests/miniMap.test.ts` that draw on a fake canvas now give it `measureText`, and the "only the N is text" test expects the point-of-sail name as well (recommended; merging accepts it).
+- The German, Norwegian and Russian words are the existing short point-of-sail names (`pos.*`) with the long English "In the no-go zone" shortened to "No-go"; they stay AI drafts for the sailor review (recommended; merging accepts it).
 
 ## 10. M103: Word tours ("Feel it")
 

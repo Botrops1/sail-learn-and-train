@@ -1,6 +1,7 @@
 import type { Store } from '../app/store';
+import { pointOfSail } from '../model/pointsOfSail';
 import { el } from './dom';
-import { t } from './i18n';
+import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
 import { MINI_MAP, drawMiniMap } from './mapView';
 import type { Sheet } from './sheet';
@@ -119,7 +120,17 @@ export function createMiniMap(
       }
       lastDrawMs = nowMs;
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drawMiniMap(context, store.getState(), sizedFor, width);
+      const state = store.getState();
+      drawMiniMap(context, state, sizedFor, width);
+      // The browser checks read the attribute; a screen reader hears the point of sail.
+      const id = pointOfSail(state.rig.wind.twaDeg).id;
+      if (button.dataset.pointOfSail !== id) {
+        button.dataset.pointOfSail = id;
+        button.setAttribute(
+          'aria-label',
+          t('minimap.openWithPoint', { point: t(`pos.short.${id}` as StringKey) }),
+        );
+      }
     },
     hide() {
       hiddenForGood = true;

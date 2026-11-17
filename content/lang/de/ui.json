@@ -1129,5 +1129,12 @@
   "keys.noteOff": "Die Tasten tun nichts, solange Sie in ein Feld tippen oder die App eine Übung für Sie segelt.",
   "settings.keys.label": "Tastatur",
   "settings.keys.hint": "Drücken Sie jederzeit H oder ?, um die Tasten zu sehen.",
-  "settings.keys.button": "Tasten anzeigen"
+  "settings.keys.button": "Tasten anzeigen",
+  "pos.short.no_go": "Totwasser",
+  "pos.short.close_hauled": "Am Wind",
+  "pos.short.close_reach": "Anlieger",
+  "pos.short.beam_reach": "Halbwind",
+  "pos.short.broad_reach": "Raumschots",
+  "pos.short.run": "Vor dem Wind",
+  "minimap.openWithPoint": "Minikarte, jetzt {point}: Tippen, um die ganze Karte zu öffnen."
 }
