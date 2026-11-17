@@ -37,12 +37,14 @@ export async function liveM87Checks({ openPage, openPlain, viewports, outDir, pr
     const { context, page } = await openPlain(phone, 'm87-settings-phone', '?v=1');
     await openSettings(page);
     await tid(page, 'sound-setting').waitFor({ state: 'visible' });
-    const after = await page.evaluate(
-      () =>
-        document
-          .querySelector('[data-testid="sound-setting"]')
-          ?.previousElementSibling?.getAttribute('data-testid') ?? null,
-    );
+    // The Keyboard row (M101) sits between them but is hidden on a phone: skip it.
+    const after = await page.evaluate(() => {
+      let node = document.querySelector('[data-testid="sound-setting"]')?.previousElementSibling;
+      while (node?.getAttribute('data-testid') === 'settings-keys-field') {
+        node = node.previousElementSibling;
+      }
+      return node?.getAttribute('data-testid') ?? null;
+    });
     check('phone Sound block follows Language', after === 'language-setting', String(after));
     check('phone switch is off', !(await tid(page, 'sound-switch').isChecked()), 'unchecked');
     check('phone no context before a tap', (await soundProbe(page)).context === 'none', 'none');

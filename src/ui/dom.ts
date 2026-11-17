@@ -9,3 +9,11 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   node.append(...children);
   return node;
 }
+
+/** True for an input, select or text area, or a content-editable element: keys typed there are text. */
+export function isTypingTarget(target: EventTarget | null): boolean {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || /^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName))
+  );
+}

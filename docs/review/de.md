@@ -3612,7 +3612,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.bar.label | This step | Dieser Schritt |
 | exercise.bar.all | All controls | Alle Bedienelemente |
 | exercise.bar.nothing | Nothing to do in this step: watch. | In diesem Schritt ist nichts zu tun: zusehen. |
-| exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button | Tasten: 1–4 wählen eine Zeile · ← → deren ersten oder letzten Knopf · Leertaste: deren ersten Knopf |
+| exercise.bar.keys | Keys: 1–4 choose a row · ← → its first or last button · Space: its first button · H: all keys | Tasten: 1–4 wählen eine Zeile · ← → deren ersten oder letzten Knopf · Leertaste: deren ersten Knopf · H: alle Tasten |
 | exercise.bar.sheet | − pulls in · + eases | − dichtholen · + fieren |
 | exercise.bar.furl | − rolls in · + rolls out | − einrollen · + ausrollen |
 | exercise.bar.rudder | − to port · + to starboard | − nach Backbord · + nach Steuerbord |
@@ -3680,3 +3680,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | sound.unsupported | This browser cannot play the app's sound. | Dieser Browser kann den Ton der App nicht abspielen. |
 | sound.chipOn | Sound on: tap to mute | Ton an: Tippen zum Stummschalten |
 | sound.chipOff | Sound off: tap to play | Ton aus: Tippen zum Abspielen |
+| keys.title | Keyboard keys | Tastenbelegung |
+| keys.steer | Steer. With the autopilot on: its course, 1° a press (with Shift: 10°). | Steuern. Bei eingeschaltetem Autopilot: sein Kurs, 1° pro Tastendruck (mit Umschalttaste: 10°). |
+| keys.main | Mainsheet: trim / ease | Großschot: dichter / fieren |
+| keys.jib | Jib sheet: trim / ease | Fockschot: dichter / fieren |
+| keys.autopilot | Autopilot on (holds this course) / off | Autopilot ein (hält diesen Kurs) / aus |
+| keys.bowThruster | Bow thruster to port / starboard (Harbour mode) | Bugstrahlruder nach Backbord / Steuerbord (Hafenmodus) |
+| keys.sternThruster | Stern thruster to port / starboard (Harbour mode) | Heckstrahlruder nach Backbord / Steuerbord (Hafenmodus) |
+| keys.bar | In an exercise: the step bar's rows, its buttons and Show me | In einer Übung: die Zeilen der Schrittleiste, ihre Knöpfe und „Zeig es mir“ |
+| keys.help | Show or hide this list | Diese Liste ein- oder ausblenden |
+| keys.noteRopes | W, S, R and F work the sheets in Easy mode. In Realistic mode you work them at the winches. | W, S, R und F bedienen die Schoten im einfachen Modus. Im realistischen Modus bedienen Sie sie an den Winschen. |
+| keys.noteOff | Keys do nothing while you type in a field or while the app sails an exercise for you. | Die Tasten tun nichts, solange Sie in ein Feld tippen oder die App eine Übung für Sie segelt. |
+| settings.keys.label | Keyboard | Tastatur |
+| settings.keys.hint | Press H or ? at any time to see the keys. | Drücken Sie jederzeit H oder ?, um die Tasten zu sehen. |
+| settings.keys.button | Show the keys | Tasten anzeigen |

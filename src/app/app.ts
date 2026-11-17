@@ -17,6 +17,8 @@ import { createMapView } from '../ui/mapView';
 import { createMiniMap, type MiniMap } from '../ui/miniMap';
 import { createModeChip } from '../ui/modeChip';
 import { createPanel, type Panel } from '../ui/panel';
+import { createKeyHelp } from '../ui/keyHelp';
+import { createKeyboard } from '../ui/keyboard';
 import { createSettingsContent, createSettingsMenu, takeOpenAfterReload } from '../ui/settingsMenu';
 import { createModePicker } from '../ui/modePicker';
 import type { ChipCard } from '../ui/chipCard';
@@ -70,10 +72,15 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   // Mode tabs, elsewhere the cards of the gear and the mode chip hold them (`panel.ts` moves them).
   // `welcome` is assigned further down, once the panel and the 3D view exist (as `reframe` is).
   let welcome: { open(): void } | undefined = undefined;
-  const settingsContent = createSettingsContent(store, () => {
-    if (layout.viewport().mode === 'stacked') sheet.setHeight('peek');
-    welcome?.open();
-  });
+  const keyHelp = createKeyHelp();
+  const settingsContent = createSettingsContent(
+    store,
+    () => {
+      if (layout.viewport().mode === 'stacked') sheet.setHeight('peek');
+      welcome?.open();
+    },
+    keyHelp,
+  );
   // The page may have reloaded for a new language: the Settings tab or card opens again (read once).
   const reopen = takeOpenAfterReload() === 'settings';
   // The chip row at the bottom of the view (M25): the gear always (the settings work without
@@ -145,6 +152,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   let reframe = () => {};
   const demo = createExerciseDemo(store);
   createExerciseBar(layout.view, store, layout, sheet, panel, () => reframe(), demo);
+  // After the step bar, so its key listener runs first and keeps ← → and the number keys in a run.
+  createKeyboard(store, keyHelp);
   // CSS hides what would load a scene (and end the run) while an exercise exists.
   const markExercise = () => {
     document.documentElement.toggleAttribute('data-exercise', store.getState().exercise !== null);

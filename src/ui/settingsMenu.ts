@@ -8,6 +8,7 @@ import { shareLink } from '../app/urlSync';
 import { HANSE_508, boat, boatId, boatName } from '../model/boat';
 import { checkBoatProfile, makeBoatProfile } from '../model/boatProfile';
 import { LANGUAGES, languageName } from '../model/languages';
+import type { KeyHelp } from './keyHelp';
 import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { createChipCard, type ChipCard } from './chipCard';
 import { COLUMNS_KEY } from './columnWidths';
@@ -94,7 +95,11 @@ function openAfterReload(id: string): void {
  * body of the Settings section (the Settings tab); elsewhere the body of the settings card the
  * gear opens (`createSettingsMenu`). `panel.ts` moves it.
  */
-export function createSettingsContent(store: Store, showWelcome: () => void): HTMLElement {
+export function createSettingsContent(
+  store: Store,
+  showWelcome: () => void,
+  keyHelp: KeyHelp,
+): HTMLElement {
   const version = versionLine(BUILD_INFO);
   const welcomeAgain = el(
     'button',
@@ -103,7 +108,7 @@ export function createSettingsContent(store: Store, showWelcome: () => void): HT
   );
   welcomeAgain.addEventListener('click', showWelcome);
   return el('div', { class: 'settings-content', 'data-testid': 'settings-content' }, [
-    el('div', { class: 'settings-body' }, buildSettingsBody(store)),
+    el('div', { class: 'settings-body' }, buildSettingsBody(store, keyHelp)),
     el('h3', { class: 'settings-about' }, [t('settings.about')]),
     el('footer', { class: 'footer' }, [
       el('p', { class: 'disclaimer', 'data-testid': 'disclaimer' }, [t('footer.disclaimer')]),
@@ -293,7 +298,22 @@ function buildLanguageField(store: Store): HTMLElement {
   ]);
 }
 
-function buildSettingsBody(store: Store): HTMLElement[] {
+/** Keyboard (M101): a button that opens the key list. Hidden on a phone layout by CSS. */
+function buildKeysField(keyHelp: KeyHelp): HTMLElement {
+  const open = el(
+    'button',
+    { type: 'button', class: 'exercise-button', 'data-testid': 'settings-keys' },
+    [t('settings.keys.button')],
+  );
+  open.addEventListener('click', () => keyHelp.open());
+  return el('div', { class: 'field keys-field', 'data-testid': 'settings-keys-field' }, [
+    el('p', { class: 'field-title' }, [t('settings.keys.label')]),
+    el('p', { class: 'hint' }, [t('settings.keys.hint')]),
+    open,
+  ]);
+}
+
+function buildSettingsBody(store: Store, keyHelp: KeyHelp): HTMLElement[] {
   const languageGroup = buildLanguageField(store);
 
   const stepGroup = el('fieldset', { class: 'field segmented' }, [
@@ -420,6 +440,7 @@ function buildSettingsBody(store: Store): HTMLElement[] {
 
   return [
     languageGroup,
+    buildKeysField(keyHelp),
     buildSoundField(),
     buildBoatField(store),
     labelsField,
