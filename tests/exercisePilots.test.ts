@@ -26,6 +26,10 @@ const SAILING_LIMITS: Record<string, number[]> = {
   maestral: [101, 8, 7, 220],
   // M97 (PHASE10_SPEC 27.5): the prototype's app seconds are 3.6, 2.7 and 392.3 (the last at ×4).
   bura: [8, 7, 121],
+  // M103 (PHASE_FEEDBACK_SPEC 10.6): measured in frame seconds (a step's speed-up applies in `reduce`):
+  // weather-helm 31.2, 6.35 (the same from each step); wind-shift 22.5, 20.6, 25.05, 15.7.
+  'weather-helm': [41, 11],
+  'wind-shift': [30, 28, 34, 22],
 };
 
 /** Show me from each step: harbour limits per level (8.7); stern-to-anchor measured in the M81 PR (57.1, 14.6, 146.5, 1.0, 17.6 s). */
@@ -61,7 +65,7 @@ function goodRunStates(id: string, level: ExerciseLevel): { at: AppState[]; end:
   let s = started(id, level);
   const at: AppState[] = [s];
   let t = 0;
-  while (s.exercise?.status === 'running' && t < 600) {
+  while (s.exercise?.status === 'running' && t < 900) {
     s = dt(pilot(s, t));
     t += 0.05;
     if (s.exercise !== null && s.exercise.step > at.length - 1 && s.exercise.status === 'running') {

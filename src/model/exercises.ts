@@ -120,6 +120,8 @@ export interface ExerciseDef {
   targets?: readonly ExerciseTarget[];
   /** M97: a wind timetable, read from its first point (the start's `clk`) onwards. */
   wind?: { points: readonly WindKey[] };
+  /** M103: registry ids of the Learn entries whose "Feel it" button plays this exercise in Watch mode. */
+  feelIt?: readonly string[];
   steps: readonly ExerciseStep[];
   mistakes: readonly ExerciseMistake[];
 }
@@ -197,6 +199,11 @@ export const EXERCISE_SETTINGS: ExerciseSettings = file.settings;
 
 export function exerciseDef(id: string): ExerciseDef | undefined {
   return EXERCISES.find((exercise) => exercise.id === id);
+}
+
+/** M103: the exercise a Learn entry's "Feel it" plays: the first whose `feelIt` lists the id. */
+export function feelItFor(entryId: string): ExerciseDef | undefined {
+  return EXERCISES.find((exercise) => exercise.feelIt?.includes(entryId));
 }
 
 /** Wind direction minus heading, (−180, 180]; + = wind from starboard (PHASE10_SPEC 3.1). */

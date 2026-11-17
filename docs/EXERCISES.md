@@ -22,6 +22,8 @@ Every exercise uses the same format (ROADMAP Phase 10): **what you see → what 
 - Tacking (self-tacking jib: just the wheel) and the no-go zone (PT-21).
 - Controlled gybe (main sheet hauled in first) vs. accidental gybe (PT-05, PT-24). The reference boat carries no preventer (owner, 2026-10-10).
 - Gust response: ease the main, luff up a little, then bear away again.
+- Weather helm (M103, PT-29): the wheel pulls more as the wind and the heel rise; easing the main takes the heel and the pull off. Played in Watch mode from Learn's *Feel it*. No lee helm: the model has none.
+- Header and lift (M103, PT-21): the wind turns 20° towards the bow (the main flaps, bear away), then 40° the other way (head up). Wind from 90°, a scripted timetable, played in Watch mode from Learn's *Feel it*.
 - Reducing sail as the wind rises: furl the jib partly, then the main (in-mast furling instead of reefing).
 - Heaving-to / stopping the boat; getting out of irons.
 - Man overboard: shout, point, mark, turn back, approach slowly from downwind.

@@ -1296,6 +1296,14 @@
         {
           "term": "Dreie mot klokken",
           "note": "vinden dreier mot klokken"
+        },
+        {
+          "term": "Skrall",
+          "note": "et skifte lenger forfra: fall av"
+        },
+        {
+          "term": "Rom",
+          "note": "et skifte lenger bakfra: du kan seile nærmere vinden"
         }
       ],
       "short": "En endring i vindretningen.",

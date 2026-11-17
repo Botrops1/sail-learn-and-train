@@ -86,6 +86,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | gybing.mistakes.accidental-gybe.what | The boom crossed by itself (an accidental gybe). | Bommen krysset av seg selv (en utilsiktet jibb). |
 | gybing.mistakes.accidental-gybe.why | The main was still out when the stern crossed the wind, or she was steered past dead downwind. | Storseilet var fortsatt ute da hekken krysset vinden, eller båten ble styrt forbi rett medvind. |
 | gybing.mistakes.accidental-gybe.fix | Trim the main before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee. | Hal storseilet inn før du jibber. På lens, hold vinden på siden bort fra bommen: seil aldri på feil side (by the lee). |
+| weather-helm.title | Weather helm | Luvgjerrighet |
+| weather-helm.summary | Feel the wheel pull as she heels, and ease the main to make it light again. | Kjenn trekket i rattet når båten krenger, og fire storseilet så det blir lett igjen. |
+| weather-helm.see | You are sailing upwind on starboard tack in 10 knots, the autopilot steering. Choose the Helm camera (the camera chip) to watch the wheel. | Du seiler bidevind på styrbord halse i 10 knop, autopiloten styrer. Velg Ratt-kameraet (kamerabrikken) for å se på rattet. |
+| weather-helm.happening | When she heels, the boat wants to turn into the wind. To hold her course the wheel must stay turned away from the wind: that pull is weather helm. More wind, more heel, more helm. | Når båten krenger, vil den dreie opp i vinden. For å holde kursen må rattet holdes dreid bort fra vinden: det trekket er luvgjerrighet. Mer vind, mer krenging, mer press på rattet. |
+| weather-helm.action | Watch the wheel as the wind rises to 20 knots, then ease the main sheet until she heels less than about 20°. | Se på rattet mens vinden øker til 20 knop, og fire så storskjøtet til båten krenger mindre enn omtrent 20°. |
+| weather-helm.mistake | Keeping the main sheet tight: she heels past 30°, the rudder works hard and she can turn into the wind by herself (a round-up). | Å holde storskjøtet stramt: båten krenger over 30°, roret må jobbe hardt og båten kan dreie opp i vinden av seg selv (brodd). |
+| weather-helm.done | Easing the main took the heel off and the wheel came back towards the middle. A light helm means the boat is balanced; a heavy one means too much heel. | Å fire storseilet tok bort krengingen, og rattet kom tilbake mot midten. Et lett ratt betyr en balansert båt; et tungt betyr for mye krenging. |
+| weather-helm.steps.feel-the-helm.goal | Watch the wheel as the wind rises. | Se på rattet mens vinden øker. |
+| weather-helm.steps.feel-the-helm.how | The wind goes from 10 to 20 knots in a minute (time runs ×4). She heels to about 30° and the autopilot turns the wheel further and further away from the wind to hold the course. | Vinden går fra 10 til 20 knop på ett minutt (tiden går ×4). Båten krenger til omtrent 30°, og autopiloten dreier rattet lenger og lenger bort fra vinden for å holde kursen. |
+| weather-helm.steps.ease-main.goal | Ease the main until she heels less than 22°. | Fire storseilet til båten krenger mindre enn 22°. |
+| weather-helm.steps.ease-main.how | In Lines, ease Main sheet to about 30 %. The heel drops to about 18° and the wheel comes back to only a few degrees. | Under «Tau», fire Storskjøt til omtrent 30 %. Krengingen synker til omtrent 18°, og rattet går tilbake til bare noen få grader. |
+| weather-helm.mistakes.round-up.name | a round-up | en brodd |
+| weather-helm.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Båten dreide opp i vinden av seg selv (en brodd). |
+| weather-helm.mistakes.round-up.why | Too much heel with a tight main: the rudder could not hold her against the weather helm. | For mye krenging med stramt storseil: roret klarte ikke å holde båten mot luvgjerrigheten. |
+| weather-helm.mistakes.round-up.fix | Ease the main sheet: with less heel the wheel holds her again. | Fire storskjøtet: med mindre krenging holder roret båten igjen. |
 | gusts.title | Gusts: ease the main | Vindkast: fire storseilet |
 | gusts.summary | Keep her upright through three gusts by easing the main. | Hold båten oppreist gjennom tre vindkast ved å fire storseilet. |
 | gusts.see | You are on a close reach in 15 knots of wind with gusts. A gust shows on the water as a darker patch coming towards you. | Du er på knapp halvvind i 15 knop vind med vindkast. Et vindkast vises på vannet som et mørkere felt som kommer mot deg. |
@@ -105,6 +120,25 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | gusts.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Båten dreide opp i vinden av seg selv (en brodd). |
 | gusts.mistakes.round-up.why | Too much heel with a tight main: the rudder lost its grip and the sails turned her into the wind. | For mye krenging med stramt storseil: roret mistet grepet og seilene dreide båten opp i vinden. |
 | gusts.mistakes.round-up.fix | Ease the main straight away and she comes back under control. In the next gust, ease earlier. | Fire storseilet med en gang, så kommer båten under kontroll igjen. Fire tidligere i neste vindkast. |
+| wind-shift.title | Header and lift | Skrall og rom |
+| wind-shift.summary | The wind turns: bear away when it heads you, head up when it lifts you. | Vinden dreier: fall av når den skraller, luv opp når den romser. |
+| wind-shift.see | You are close-hauled on starboard tack in 12 knots, the autopilot holding 45°. Watch the sails and the wind arrow on the mini-map. | Du seiler bidevind på styrbord halse i 12 knop, autopiloten holder 45°. Se på seilene og vindpilen på minikartet. |
+| wind-shift.happening | The wind's direction changes a little all the time. A shift from further ahead is a header: on the same course the sails start to flap and she slows down. A shift from further aft is a lift: the sails are now too tight, and you can head up. | Vindretningen endrer seg litt hele tiden. Et skifte lenger forfra er en skrall: på samme kurs begynner seilene å slå, og båten mister fart. Et skifte lenger bakfra er et romskifte: seilene er nå for stramme, og du kan seile nærmere vinden. |
+| wind-shift.action | In the header, turn the autopilot 20° away from the wind. In the lift, turn it 40° towards the wind. | I skrallen dreier du autopiloten 20° bort fra vinden. I romskiftet dreier du den 40° mot vinden. |
+| wind-shift.mistake | Holding the old course in a header: she sails in the no-go zone, the sails flap and she nearly stops. | Å holde den gamle kursen i en skrall: båten seiler for nær vinden, seilene slår og den stopper nesten. |
+| wind-shift.done | You followed the wind: away from it in the header, towards it in the lift. Sailors upwind steer by the wind, not by the compass. | Du fulgte vinden: bort fra den i skrallen, mot den i romskiftet. Seilere bidevind styrer etter vinden, ikke etter kompasset. |
+| wind-shift.steps.header-comes.goal | Wait for the wind to shift. | Vent på at vinden skifter. |
+| wind-shift.steps.header-comes.how | Time runs ×8. The wind turns 20° towards the bow: the main starts to flap and the speed falls. | Tiden går ×8. Vinden dreier 20° mot baugen: storseilet begynner å slå og farten faller. |
+| wind-shift.steps.bear-away.goal | Bear away 20° to fill the sails again. | Fall av 20° så seilene fylles igjen. |
+| wind-shift.steps.bear-away.how | In Steering, tap −10 twice. She turns to 25° and the sails read Good again. | Under «Styring», trykk −10 to ganger. Båten dreier til 25°, og seilene viser Bra igjen. |
+| wind-shift.steps.lift-comes.goal | Wait for the wind to shift back further. | Vent på at vinden skifter videre tilbake. |
+| wind-shift.steps.lift-comes.how | Time runs ×16. The wind turns 40° towards the stern: the sails are now too tight for the wind. | Tiden går ×16. Vinden dreier 40° mot hekken: seilene er nå for stramme for vinden. |
+| wind-shift.steps.head-up.goal | Head up 40° to sail close-hauled again. | Luv opp 40° for å seile bidevind igjen. |
+| wind-shift.steps.head-up.how | In Steering, tap +10 four times. She turns to 65°: higher than where you started, thanks to the lift. | Under «Styring», trykk +10 fire ganger. Båten dreier til 65°: høyere enn der du begynte, takket være romskiftet. |
+| wind-shift.mistakes.missed-header.name | missing the header | å gå glipp av skrallen |
+| wind-shift.mistakes.missed-header.what | The wind shifted back before you bore away. | Vinden skiftet tilbake før du falt av. |
+| wind-shift.mistakes.missed-header.why | This step only passes while the header blows. | Dette trinnet består bare mens skrallen blåser. |
+| wind-shift.mistakes.missed-header.fix | Tap Back to the start of the step and bear away as soon as the main flaps. | Trykk Tilbake til starten av trinnet og fall av så snart storseilet slår. |
 | reduce-sail.title | Too much wind: roll the sails in | For mye vind: rull inn seilene |
 | reduce-sail.summary | In 22 knots, roll in part of the jib and the main until she sails upright. | I 22 knop, rull inn en del av fokken og storseilet til båten seiler oppreist. |
 | reduce-sail.see | 22 knots of wind on a close reach. The main is eased until it flaps, to keep her upright; she heels about 20°. | 22 knop vind på knapp halvvind. Storseilet er fiet til det slår, for å holde båten oppreist; den krenger omtrent 20°. |

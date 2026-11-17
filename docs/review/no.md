@@ -1416,7 +1416,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Felt | English | Norsk |
 |---|---|---|
 | Navn | Wind shift | Vindskifte |
-| Andre navn | veer — the wind turns clockwise<br>back — the wind turns anticlockwise | Dreie med klokken — vinden dreier med klokken<br>Dreie mot klokken — vinden dreier mot klokken |
+| Andre navn | veer — the wind turns clockwise<br>back — the wind turns anticlockwise<br>header — a shift from further ahead: bear away<br>lift — a shift from further aft: you can head up | Dreie med klokken — vinden dreier med klokken<br>Dreie mot klokken — vinden dreier mot klokken<br>Skrall — et skifte lenger forfra: fall av<br>Rom — et skifte lenger bakfra: du kan seile nærmere vinden |
 | Kort | A change in the wind’s direction. | En endring i vindretningen. |
 | Hva det gjør / hva det betyr | The wind’s direction keeps changing a little. A shift that comes from further ahead is a header: she has to bear away, or the sails flap. One from further behind is a lift: she can point closer to the wind. | Vindretningen endrer seg stadig litt. Et skifte som kommer lenger forfra tvinger båten til å falle av, ellers slår seilene. Et skifte lenger bakfra lar båten seile nærmere vinden. |
 | På denne båten | — | — |
@@ -3174,6 +3174,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | learn.fix | Fix: | Løsning: |
 | learn.showItWorking | Show it working | Vis det i bruk |
 | learn.showMeDone | Showing it. Your phone’s Back button takes you back to where you were. | Viser det. Tilbake-knappen på telefonen tar deg tilbake dit du var. |
+| learn.feelIt | Feel it | Kjenn det |
+| learn.feelItHint | The app sails “{title}” for you and stops after each step. | Appen seiler «{title}» for deg og stopper etter hvert trinn. |
 | learn.whereIsIt | Where is it? | Hvor er det? |
 | learn.spotlightHint | Tap anywhere to see the whole boat again. | Trykk hvor som helst for å se hele båten igjen. |
 | learn.writtenFor | Written for the {name}. | Skrevet for {name}. |

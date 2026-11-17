@@ -610,6 +610,8 @@
   "learn.fix": "Fix:",
   "learn.showItWorking": "Show it working",
   "learn.showMeDone": "Showing it. Your phone’s Back button takes you back to where you were.",
+  "learn.feelIt": "Feel it",
+  "learn.feelItHint": "The app sails “{title}” for you and stops after each step.",
   "learn.whereIsIt": "Where is it?",
   "learn.spotlightHint": "Tap anywhere to see the whole boat again.",
   "learn.writtenFor": "Written for the {name}.",

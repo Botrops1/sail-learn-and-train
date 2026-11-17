@@ -145,6 +145,33 @@
       }
     }
   },
+  "weather-helm": {
+    "title": "Luvgierigkeit",
+    "summary": "Spüren Sie den Zug am Rad, wenn das Boot krängt, und fieren Sie die Großschot, damit es wieder leicht wird.",
+    "see": "Sie segeln auf Steuerbordbug am Wind bei 10 Knoten, der Autopilot steuert. Wählen Sie die Steuerrad-Kamera (der Kamera-Chip), um das Rad zu beobachten.",
+    "happening": "Wenn das Boot krängt, will es in den Wind drehen. Um den Kurs zu halten, muss das Rad vom Wind weg gedreht bleiben: Dieser Zug ist die Luvgierigkeit. Mehr Wind, mehr Krängung, mehr Ruderdruck.",
+    "action": "Beobachten Sie das Rad, während der Wind auf 20 Knoten steigt, und fieren Sie dann die Großschot, bis das Boot weniger als etwa 20° krängt.",
+    "mistake": "Die Großschot dicht halten: Das Boot krängt über 30°, das Ruder muss hart arbeiten, und das Boot kann von selbst in den Wind drehen (aufschießen).",
+    "done": "Das Fieren der Großschot nahm die Krängung weg, und das Rad kam wieder Richtung Mitte. Ein leichtes Ruder bedeutet ein ausgewogenes Boot; ein schweres bedeutet zu viel Krängung.",
+    "steps": {
+      "feel-the-helm": {
+        "goal": "Beobachten Sie das Rad, während der Wind steigt.",
+        "how": "Der Wind steigt in einer Minute von 10 auf 20 Knoten (die Zeit läuft ×4). Das Boot krängt auf etwa 30°, und der Autopilot dreht das Rad immer weiter vom Wind weg, um den Kurs zu halten."
+      },
+      "ease-main": {
+        "goal": "Fieren Sie die Großschot, bis das Boot weniger als 22° krängt.",
+        "how": "Fieren Sie unter „Leinen“ die „Großschot“ auf etwa 30 %. Die Krängung sinkt auf etwa 18°, und das Rad geht auf nur wenige Grad zurück."
+      }
+    },
+    "mistakes": {
+      "round-up": {
+        "name": "Aufschießen",
+        "what": "Das Boot hat von selbst in den Wind gedreht (Aufschießen).",
+        "why": "Zu viel Krängung bei dichter Großschot: Das Ruder konnte das Boot nicht gegen die Luvgierigkeit halten.",
+        "fix": "Fieren Sie die Großschot: Mit weniger Krängung hält das Ruder das Boot wieder."
+      }
+    }
+  },
   "gusts": {
     "title": "Böen: Großschot fieren",
     "summary": "Halten Sie das Boot durch drei Böen aufrecht, indem Sie die Großschot fieren.",
@@ -175,6 +202,41 @@
         "what": "Das Boot hat von selbst in den Wind gedreht (Aufschießen).",
         "why": "Zu viel Krängung bei dichter Großschot: Das Ruder verlor seine Wirkung, und die Segel drehten das Boot in den Wind.",
         "fix": "Fieren Sie sofort die Großschot, und das Boot kommt wieder unter Kontrolle. Fieren Sie bei der nächsten Bö früher."
+      }
+    }
+  },
+  "wind-shift": {
+    "title": "Header und Lift",
+    "summary": "Der Wind dreht: Fallen Sie ab, wenn er Sie abdrängt (Header), und gehen Sie höher, wenn er Sie hochhebt (Lift).",
+    "see": "Sie segeln auf Steuerbordbug hart am Wind bei 12 Knoten, der Autopilot hält 45°. Beobachten Sie die Segel und den Windpfeil auf der Minikarte.",
+    "happening": "Die Windrichtung ändert sich ständig ein wenig. Ein Dreher, der weiter von vorn kommt, ist ein Header: Auf gleichem Kurs beginnen die Segel zu killen, und das Boot wird langsamer. Ein Dreher, der weiter von hinten kommt, ist ein Lift: Die Segel sind nun zu dicht, und Sie können höher an den Wind gehen.",
+    "action": "Drehen Sie im Header den Autopiloten um 20° vom Wind weg. Drehen Sie im Lift um 40° zum Wind hin.",
+    "mistake": "Im Header den alten Kurs halten: Das Boot segelt im Kurs, der nicht gesegelt werden kann, die Segel killen, und es bleibt fast stehen.",
+    "done": "Sie sind dem Wind gefolgt: im Header von ihm weg, im Lift zu ihm hin. Beim Segeln am Wind steuert man nach dem Wind, nicht nach dem Kompass.",
+    "steps": {
+      "header-comes": {
+        "goal": "Warten Sie, bis der Wind dreht.",
+        "how": "Die Zeit läuft ×8. Der Wind dreht um 20° zum Bug hin: Das Großsegel beginnt zu killen, und die Fahrt fällt."
+      },
+      "bear-away": {
+        "goal": "Fallen Sie um 20° ab, damit die Segel wieder stehen.",
+        "how": "Tippen Sie unter „Steuern“ zweimal auf −10. Das Boot dreht auf 25°, und die Segel zeigen wieder „Gut“."
+      },
+      "lift-comes": {
+        "goal": "Warten Sie, bis der Wind weiter zurückdreht.",
+        "how": "Die Zeit läuft ×16. Der Wind dreht um 40° zum Heck hin: Die Segel sind nun zu dicht für den Wind."
+      },
+      "head-up": {
+        "goal": "Gehen Sie um 40° höher, um wieder hart am Wind zu segeln.",
+        "how": "Tippen Sie unter „Steuern“ viermal auf +10. Das Boot dreht auf 65°: höher als am Anfang, dank des Lifts."
+      }
+    },
+    "mistakes": {
+      "missed-header": {
+        "name": "den Header verpasst",
+        "what": "Der Wind drehte zurück, bevor Sie abgefallen sind.",
+        "why": "Dieser Schritt wird nur bestanden, solange der Header weht.",
+        "fix": "Tippen Sie auf „Zurück zum Anfang des Schritts“ und fallen Sie ab, sobald das Großsegel killt."
       }
     }
   },

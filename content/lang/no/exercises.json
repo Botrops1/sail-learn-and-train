@@ -145,6 +145,33 @@
       }
     }
   },
+  "weather-helm": {
+    "title": "Luvgjerrighet",
+    "summary": "Kjenn trekket i rattet når båten krenger, og fire storseilet så det blir lett igjen.",
+    "see": "Du seiler bidevind på styrbord halse i 10 knop, autopiloten styrer. Velg Ratt-kameraet (kamerabrikken) for å se på rattet.",
+    "happening": "Når båten krenger, vil den dreie opp i vinden. For å holde kursen må rattet holdes dreid bort fra vinden: det trekket er luvgjerrighet. Mer vind, mer krenging, mer press på rattet.",
+    "action": "Se på rattet mens vinden øker til 20 knop, og fire så storskjøtet til båten krenger mindre enn omtrent 20°.",
+    "mistake": "Å holde storskjøtet stramt: båten krenger over 30°, roret må jobbe hardt og båten kan dreie opp i vinden av seg selv (brodd).",
+    "done": "Å fire storseilet tok bort krengingen, og rattet kom tilbake mot midten. Et lett ratt betyr en balansert båt; et tungt betyr for mye krenging.",
+    "steps": {
+      "feel-the-helm": {
+        "goal": "Se på rattet mens vinden øker.",
+        "how": "Vinden går fra 10 til 20 knop på ett minutt (tiden går ×4). Båten krenger til omtrent 30°, og autopiloten dreier rattet lenger og lenger bort fra vinden for å holde kursen."
+      },
+      "ease-main": {
+        "goal": "Fire storseilet til båten krenger mindre enn 22°.",
+        "how": "Under «Tau», fire Storskjøt til omtrent 30 %. Krengingen synker til omtrent 18°, og rattet går tilbake til bare noen få grader."
+      }
+    },
+    "mistakes": {
+      "round-up": {
+        "name": "en brodd",
+        "what": "Båten dreide opp i vinden av seg selv (en brodd).",
+        "why": "For mye krenging med stramt storseil: roret klarte ikke å holde båten mot luvgjerrigheten.",
+        "fix": "Fire storskjøtet: med mindre krenging holder roret båten igjen."
+      }
+    }
+  },
   "gusts": {
     "title": "Vindkast: fire storseilet",
     "summary": "Hold båten oppreist gjennom tre vindkast ved å fire storseilet.",
@@ -175,6 +202,41 @@
         "what": "Båten dreide opp i vinden av seg selv (en brodd).",
         "why": "For mye krenging med stramt storseil: roret mistet grepet og seilene dreide båten opp i vinden.",
         "fix": "Fire storseilet med en gang, så kommer båten under kontroll igjen. Fire tidligere i neste vindkast."
+      }
+    }
+  },
+  "wind-shift": {
+    "title": "Skrall og rom",
+    "summary": "Vinden dreier: fall av når den skraller, luv opp når den romser.",
+    "see": "Du seiler bidevind på styrbord halse i 12 knop, autopiloten holder 45°. Se på seilene og vindpilen på minikartet.",
+    "happening": "Vindretningen endrer seg litt hele tiden. Et skifte lenger forfra er en skrall: på samme kurs begynner seilene å slå, og båten mister fart. Et skifte lenger bakfra er et romskifte: seilene er nå for stramme, og du kan seile nærmere vinden.",
+    "action": "I skrallen dreier du autopiloten 20° bort fra vinden. I romskiftet dreier du den 40° mot vinden.",
+    "mistake": "Å holde den gamle kursen i en skrall: båten seiler for nær vinden, seilene slår og den stopper nesten.",
+    "done": "Du fulgte vinden: bort fra den i skrallen, mot den i romskiftet. Seilere bidevind styrer etter vinden, ikke etter kompasset.",
+    "steps": {
+      "header-comes": {
+        "goal": "Vent på at vinden skifter.",
+        "how": "Tiden går ×8. Vinden dreier 20° mot baugen: storseilet begynner å slå og farten faller."
+      },
+      "bear-away": {
+        "goal": "Fall av 20° så seilene fylles igjen.",
+        "how": "Under «Styring», trykk −10 to ganger. Båten dreier til 25°, og seilene viser Bra igjen."
+      },
+      "lift-comes": {
+        "goal": "Vent på at vinden skifter videre tilbake.",
+        "how": "Tiden går ×16. Vinden dreier 40° mot hekken: seilene er nå for stramme for vinden."
+      },
+      "head-up": {
+        "goal": "Luv opp 40° for å seile bidevind igjen.",
+        "how": "Under «Styring», trykk +10 fire ganger. Båten dreier til 65°: høyere enn der du begynte, takket være romskiftet."
+      }
+    },
+    "mistakes": {
+      "missed-header": {
+        "name": "å gå glipp av skrallen",
+        "what": "Vinden skiftet tilbake før du falt av.",
+        "why": "Dette trinnet består bare mens skrallen blåser.",
+        "fix": "Trykk Tilbake til starten av trinnet og fall av så snart storseilet slår."
       }
     }
   },

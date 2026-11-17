@@ -52,7 +52,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `bowGear.ts` | The anchor's fluke, the chain's links and the windlass's deck height as numbers. |
 | `mooringFittings.ts` | Where the mooring cleats, fairleads, fenders and the ball fender stand or hang. |
 | `alerts.ts` | The alert history as numbers: `recordAlerts`, the kinds and their Learn entry and colour (`ALERT_INFO`), tags (`alertTag`), repeat gaps. |
-| `exercises.ts` | The exercise data types and loader, `checkPasses` (every field of a check must hold), targets and their hint rows, `exerciseText`. |
+| `exercises.ts` | The exercise data types and loader, `checkPasses` (every field of a check must hold), targets and their hint rows, `exerciseText`, `feelItFor` (the exercise a Learn entry's Feel it plays). |
 | `debrief.ts` | The run's log as debrief rows (`debriefRows`, with the actions that caused a mistake) and `debriefSummary`. |
 | `lowSpeed.ts` | Slow-speed handling: `ExternalForces` (the hook for thrusters, lines, anchor and contact), wind on the hull, prop walk and wash, sway and yaw inertia. |
 | `thrusters.ts`, `harbourForces.ts` | The bow and stern thruster as numbers (a boat may have none, one or both); `harbourForces` builds the `external` force function `stepBoat` calls every substep (thrusters, contact, lines, ground, chain). |
@@ -156,7 +156,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `chipCard.ts` | `createChipCard`: the card that opens above a chip over the 3D view (header with ×, scrolling body, not modal, one overlay at a time). |
 | `cameraChip.ts`, `chipMenu.ts` | The chip row over the bottom of the 3D view, the camera chip and its menu (with the help line), the Close-map chip; `chipMenu.ts` is the menu behaviour. |
 | `helmViews.ts` | The three Helm-camera buttons (Ropes, Panel, Other wheel), shown only while the camera is on Helm. |
-| `learnTab.ts` | The Learn section: search box, entries in groups, one entry at a time (names, text, "Show it working", "Where is it?", Try it, See also, how sure we are). |
+| `learnTab.ts` | The Learn section: search box, entries in groups, one entry at a time (names, text, "Show it working", "Feel it" (plays an exercise in Watch mode), "Where is it?", Try it, See also, how sure we are). |
 | `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeColours.ts` | The Ropes section (rope list and the selected rope's strip, the Realistic stations), − / + buttons, rope colours and dash patterns. |
 | `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: the four stations (Port, Starboard, Mast, Bow), gestures, winch handle and strain bar, the Helm station's body and the windlass remote. |
 | `windPanel.ts`, `windModePanel.ts`, `wavesPanel.ts`, `windIndicator.ts`, `windInstrument.ts` | The Conditions section (wind dial, speed, wind modes with the local winds row, waves, presets), the alert stack over the 3D view, the wind instrument dial. |

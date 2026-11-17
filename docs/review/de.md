@@ -1401,7 +1401,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Feld | English | Deutsch |
 |---|---|---|
 | Name | Wind shift | Winddreher |
-| Andere Namen | veer — the wind turns clockwise<br>back — the wind turns anticlockwise | Rechtdreher — der Wind dreht im Uhrzeigersinn<br>Linkdreher — der Wind dreht gegen den Uhrzeigersinn |
+| Andere Namen | veer — the wind turns clockwise<br>back — the wind turns anticlockwise<br>header — a shift from further ahead: bear away<br>lift — a shift from further aft: you can head up | Rechtdreher — der Wind dreht im Uhrzeigersinn<br>Linkdreher — der Wind dreht gegen den Uhrzeigersinn<br>Header — ein Dreher von weiter vorn: abfallen<br>Lift — ein Dreher von weiter hinten: höher gehen |
 | Kurz | A change in the wind’s direction. | Eine Änderung der Windrichtung. |
 | Was es tut / was es bedeutet | The wind’s direction keeps changing a little. A shift that comes from further ahead is a header: she has to bear away, or the sails flap. One from further behind is a lift: she can point closer to the wind. | Die Windrichtung ändert sich ständig ein wenig. Ein Dreher, der weiter von vorn kommt, ist ein Header (der Wind schrickt): Das Boot muss abfallen, sonst killen die Segel. Einer, der weiter von hinten kommt, ist ein Lift (der Wind räumt): Das Boot kann höher an den Wind gehen. |
 | Auf diesem Boot | — | — |
@@ -3174,6 +3174,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | learn.fix | Fix: | Behebung: |
 | learn.showItWorking | Show it working | In Aktion zeigen |
 | learn.showMeDone | Showing it. Your phone’s Back button takes you back to where you were. | Wird gezeigt. Die Zurück-Taste Ihres Handys bringt Sie dorthin zurück, wo Sie waren. |
+| learn.feelIt | Feel it | Spüren |
+| learn.feelItHint | The app sails “{title}” for you and stops after each step. | Die App segelt „{title}“ für Sie und hält nach jedem Schritt an. |
 | learn.whereIsIt | Where is it? | Wo ist es? |
 | learn.spotlightHint | Tap anywhere to see the whole boat again. | Tippen Sie irgendwohin, um wieder das ganze Boot zu sehen. |
 | learn.writtenFor | Written for the {name}. | Geschrieben für die {name}. |

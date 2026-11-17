@@ -19,6 +19,7 @@
       "crew": false,
       "sections": ["ropes", "helm", "sails", "autopilot", "conditions", "learn"],
       "start": "?wd=0&ws=12&hdg=315&ms=30&js=30&ap=wind&apt=45&sea=flat",
+      "feelIt": ["term_close_hauled", "term_close_reach", "term_beam_reach", "term_broad_reach", "term_run"],
       "steps": [
         { "id": "close-hauled", "opens": "ropes", "holdS": 5, "check": { "twaDeg": [38, 52], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] }, "bar": ["control:ctl_mainsheet"] },
         { "id": "close-reach", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [58, 72], "tack": "starboard", "mainTrim": ["good"], "jibTrim": ["good"] }, "bar": ["autopilot:turn", "control:ctl_mainsheet"] },
@@ -81,6 +82,28 @@
       ]
     },
     {
+      "id": "weather-helm",
+      "group": "sailing",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "helm", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=90&ws=10&hdg=40&ms=15&js=20&ap=hdg&sea=flat&clk=202606011000",
+      "feelIt": ["term_weather_helm", "term_heel"],
+      "wind": { "points": [
+        { "at": "10:00", "fromDeg": 90, "kn": 10, "gustPct": 0 },
+        { "at": "10:01", "fromDeg": 90, "kn": 10, "gustPct": 0 },
+        { "at": "10:02", "fromDeg": 90, "kn": 20, "gustPct": 0 },
+        { "at": "11:00", "fromDeg": 90, "kn": 20, "gustPct": 0 }
+      ] },
+      "steps": [
+        { "id": "feel-the-helm", "opens": "autopilot", "holdS": 5, "speedUp": 4, "check": { "localHour": [10.0333, 24], "heelDeg": [25, 40] }, "bar": [] },
+        { "id": "ease-main", "opens": "ropes", "holdS": 5, "check": { "heelDeg": [10, 22], "controls": { "ctl_mainsheet": [25, 100] } }, "bar": ["control:ctl_mainsheet"] }
+      ],
+      "mistakes": [
+        { "id": "round-up", "serious": false, "on": { "alert": "roundUp" } }
+      ]
+    },
+    {
       "id": "gusts",
       "group": "wind",
       "ropes": "easy",
@@ -94,6 +117,32 @@
       "mistakes": [
         { "id": "overpowered", "serious": false, "on": { "alert": "overpowered" } },
         { "id": "round-up", "serious": false, "on": { "alert": "roundUp" } }
+      ]
+    },
+    {
+      "id": "wind-shift",
+      "group": "wind",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=90&ws=12&hdg=45&ms=12&js=0&ap=hdg&sea=flat&clk=202606011000",
+      "feelIt": ["term_wind_shift"],
+      "wind": { "points": [
+        { "at": "10:00", "fromDeg": 90, "kn": 12, "gustPct": 0 },
+        { "at": "10:02", "fromDeg": 90, "kn": 12, "gustPct": 0 },
+        { "at": "10:03", "fromDeg": 70, "kn": 12, "gustPct": 0 },
+        { "at": "10:09", "fromDeg": 70, "kn": 12, "gustPct": 0 },
+        { "at": "10:10", "fromDeg": 110, "kn": 12, "gustPct": 0 },
+        { "at": "11:00", "fromDeg": 110, "kn": 12, "gustPct": 0 }
+      ] },
+      "steps": [
+        { "id": "header-comes", "opens": "autopilot", "holdS": 0, "speedUp": 8, "check": { "localHour": [10.05, 24] }, "bar": [] },
+        { "id": "bear-away", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [40, 52], "tack": "starboard", "mainTrim": ["good"], "headingDeg": { "to": 25, "within": 5 } }, "bar": ["autopilot:turn"] },
+        { "id": "lift-comes", "opens": "autopilot", "holdS": 0, "speedUp": 16, "check": { "localHour": [10.1667, 24] }, "bar": [] },
+        { "id": "head-up", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [40, 52], "tack": "starboard", "mainTrim": ["good"], "headingDeg": { "to": 65, "within": 5 } }, "bar": ["autopilot:turn"] }
+      ],
+      "mistakes": [
+        { "id": "missed-header", "serious": false, "steps": ["bear-away"], "on": { "condition": { "localHour": [10.15, 24] }, "forS": 1 } }
       ]
     },
     {
