@@ -2182,6 +2182,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Дальний берег (`env_distant_land`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Distant land | Дальний берег |
+| Другие названия | Mountains<br>Horizon | Горы<br>Горизонт |
+| Коротко | Hills, mountains and islands far away on the horizon. | Холмы, горы и острова далеко на горизонте. |
+| Что делает / что значит | Far away round the sea: high mountains to the north, lower hills in front of them and behind the bay, a long island to the south and open sea to the south-west. In the app you can never reach them: they stay the same distance away however far you sail. They turn round you as the boat turns, so they show how far and how fast you are turning. A helmsman (the person steering) often picks a point far ahead, such as a peak, and steers towards it to keep a straight course. | Далеко вокруг моря: высокие горы на севере, более низкие холмы перед ними и за бухтой, длинный остров на юге и открытое море на юго-западе. В приложении до них не добраться: они остаются на том же расстоянии, как бы далеко ты ни плыл. Они поворачиваются вокруг тебя, когда поворачивает яхта, так что показывают, как далеко и как быстро ты поворачиваешь. Рулевой (тот, кто управляет) часто выбирает далёкую точку, например вершину, и держит на неё курс, чтобы идти прямо. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | Sailing east: the camera looks across the boat to the north, at the mountains. Steer, and the land slides past behind the boat. | Идём на восток: камера смотрит поперёк яхты на север, на горы. Рули, и берег проплывает мимо за кормой. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### килевая качка (`term_pitch`)
 
 | Поле | English | Русский |

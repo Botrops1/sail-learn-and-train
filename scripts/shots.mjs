@@ -44,6 +44,7 @@ import { liveM15Checks, M15_SCENES } from './shots-m15.mjs';
 import { liveM16Checks, M16_SCENES } from './shots-m16.mjs';
 import { liveM17Checks, M17_SCENES } from './shots-m17.mjs';
 import { liveM18Checks, M18_SCENES } from './shots-m18.mjs';
+import { liveM104Checks, M104_SCENES } from './shots-m104.mjs';
 import { liveM19Checks, M19_SCENES } from './shots-m19.mjs';
 import { liveM20Checks, M20_SCENES } from './shots-m20.mjs';
 import { liveM21Checks, M21_SCENES } from './shots-m21.mjs';
@@ -266,6 +267,7 @@ const SCENES = [
   ...M16_SCENES.map((scene) => ({ ...scene, name: `m16-${scene.name}` })),
   ...M17_SCENES.map((scene) => ({ ...scene, name: `m17-${scene.name}` })),
   ...M18_SCENES.map((scene) => ({ ...scene, name: `m18-${scene.name}` })),
+  ...M104_SCENES.map((scene) => ({ ...scene, name: `m104-${scene.name}` })),
   ...M19_SCENES.map((scene) => ({ ...scene, name: `m19-${scene.name}` })),
   ...M20_SCENES.map((scene) => ({ ...scene, name: `m20-${scene.name}` })),
   ...M21_SCENES.map((scene) => ({ ...scene, name: `m21-${scene.name}` })),
@@ -1224,7 +1226,7 @@ try {
     m15: () => liveM15Checks(live),
     m16: () => liveM16Checks(live),
     m17: () => liveM17Checks(live),
-    m18: () => liveM18Checks(live),
+    m18: members(['m18', () => liveM18Checks(live)], ['m104', () => liveM104Checks(live)]),
     m20: members(
       ['m20', () => liveM20Checks(live)],
       ['m21', () => liveM21Checks(live)],

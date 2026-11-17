@@ -1,4 +1,5 @@
 import adriatic from '../../content/areas/adriatic.json';
+import type { HorizonLandData } from './horizonLand';
 import type { MarinaLayoutId } from './marina';
 import type { PlaceId } from './places';
 import type { SeabedType } from './seabed';
@@ -83,10 +84,11 @@ export interface BayData {
 }
 
 /** A sailing area's data (content/areas/<id>.json; PHASE3_SPEC 6.2, PHASE7_SPEC 8.2). */
-export type AreaData = Omit<typeof adriatic, 'places' | 'marina' | 'bay'> & {
+export type AreaData = Omit<typeof adriatic, 'places' | 'marina' | 'bay' | 'horizonLand'> & {
   places: PlaceData[];
   marina: MarinaData;
   bay: BayData;
+  horizonLand: HorizonLandData;
 };
 export const AREAS: Readonly<Record<string, AreaData>> = {
   adriatic: adriatic as unknown as AreaData,

@@ -35,6 +35,19 @@ export const SCENE = {
     glowDirection: [0.4, 1, -0.6] as const,
   },
   /**
+   * The distant land (M104, PHASE_HORIZON_SPEC 1.5): two rings of hills round the horizon, fixed
+   * to the compass and following the camera, so they are never reached.
+   */
+  horizonLand: {
+    /** Degrees between outline points (must divide 360). */
+    stepDeg: 1,
+    /** Inside the 1000 m far plane (`camera.far`) and the water's reach: the water is a 2000 m square centred on the boat (`water.size`), the orbit camera stays within 140 m of her (`maxDistance`), so water lies at least 1000 − 140 = 860 m from the camera in every direction. */
+    far: { radiusM: 840, dayColour: '#6b7d8c', haze: 0.5 }, // dayColour, haze tunable
+    near: { radiusM: 800, dayColour: '#4f5f4c', haze: 0.25 }, // dayColour, haze tunable
+    /** At full night the land is this fraction of the horizon colour: a dark shape just visible against the sky. Tunable. */
+    nightShade: 0.6,
+  },
+  /**
    * The sky for each sun height (M18, PHASE3_SPEC 10.2), sorted by `elevDeg`. Colours are mixed
    * in the linear working space, numbers linearly; outside the rows the end row is used. The
    * rows at 20° and 90° are the old fixed daytime sky.

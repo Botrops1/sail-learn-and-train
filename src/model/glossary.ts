@@ -103,6 +103,9 @@ export const NOT_DRAWN: ReadonlySet<string> = new Set([
   'fit_winch',
 ]);
 
+/** Drawn, but too far away for "Where is it?" to fly to (the entry's Show it working shows it instead). */
+export const FAR_AWAY: ReadonlySet<string> = new Set(['env_distant_land']);
+
 export type SourceLink =
   | { kind: 'url'; href: string; text: string }
   | { kind: 'photo'; href: string; name: string }
