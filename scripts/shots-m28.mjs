@@ -281,14 +281,18 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
       const cx = canvas.width / 2;
       const cy = canvas.height / 2;
       const r = 0.34 * canvas.width;
+      // One read of the whole canvas (a second getImageData makes Chromium warn).
+      const { data, width } = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const darkest = (bearing) => {
         const a = (bearing * Math.PI) / 180;
         const x = Math.round(cx + r * Math.sin(a));
         const y = Math.round(cy - r * Math.cos(a));
-        const { data } = ctx.getImageData(x - 2, y - 2, 5, 5);
         let min = Infinity;
-        for (let i = 0; i < data.length; i += 4) {
-          min = Math.min(min, data[i] + data[i + 1] + data[i + 2]);
+        for (let dy = -2; dy <= 2; dy += 1) {
+          for (let dx = -2; dx <= 2; dx += 1) {
+            const i = ((y + dy) * width + (x + dx)) * 4;
+            min = Math.min(min, data[i] + data[i + 1] + data[i + 2]);
+          }
         }
         return min;
       };
