@@ -3694,3 +3694,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | settings.keys.label | Keyboard | Tastatur |
 | settings.keys.hint | Press H or ? at any time to see the keys. | Trykk H eller ? når som helst for å se tastene. |
 | settings.keys.button | Show the keys | Vis tastene |
+| pos.short.no_go | No-go | Dødsone |
+| pos.short.close_hauled | Close-hauled | Bidevind |
+| pos.short.close_reach | Close reach | Knapp halvvind |
+| pos.short.beam_reach | Beam reach | Halvvind |
+| pos.short.broad_reach | Broad reach | Slør |
+| pos.short.run | Run | Lens |
+| minimap.openWithPoint | Mini-map, now {point}: tap to open the full map. | Minikart, nå {point}: trykk for å åpne hele kartet. |

@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { createStore, initialState, type AppState } from '../src/app/store';
 import { DEFAULT_SETTINGS } from '../src/model/settings';
 import { sceneSettings } from '../src/app/urlSync';
-import { t } from '../src/ui/i18n';
+import { pointOfSail } from '../src/model/pointsOfSail';
+import { t, type StringKey } from '../src/ui/i18n';
 import { MINI_MAP, drawMiniMap, mapToScreen, miniMapViewport } from '../src/ui/mapView';
 
 /** PHASE5_SPEC 9.6, tests 1, 2 and 4 (the link tests are in urlState.test.ts). */
@@ -67,7 +68,7 @@ describe('M28 mini-map', () => {
     expect(store.getState().settings.miniMap).toBe(true);
   });
 
-  it('draws no labels, no heading line and no no-go zone: only the "N" is text', () => {
+  it('draws no labels, no heading line and no no-go zone: only the point of sail and the "N" are text', () => {
     const texts: string[] = [];
     const dashes: number[][] = [];
     const ctx = new Proxy(
@@ -80,13 +81,15 @@ describe('M28 mini-map', () => {
             };
           }
           if (name === 'setLineDash') return (dash: number[]) => dashes.push(dash);
+          if (name === 'measureText') return () => ({ width: 10 });
           return () => undefined;
         },
         set: () => true,
       },
     ) as unknown as CanvasRenderingContext2D;
     drawMiniMap(ctx, initialState(), 92, (text) => text.length * 7);
-    expect(texts).toEqual([t('wind.dial.north')]);
+    const point = pointOfSail(initialState().rig.wind.twaDeg).id;
+    expect(texts).toEqual([t(`pos.short.${point}` as StringKey), t('wind.dial.north')]);
     expect(dashes.filter((dash) => dash.length > 0)).toEqual([]);
   });
   it('draws the gust bands only in gusty wind (owner, PR 151)', () => {
@@ -98,6 +101,7 @@ describe('M28 mini-map', () => {
         {
           get: (_target, name: string) => {
             if (name === 'fill') return () => colours.push(current);
+            if (name === 'measureText') return () => ({ width: 10 });
             return () => undefined;
           },
           set: (_target, name: string, value: unknown) => {

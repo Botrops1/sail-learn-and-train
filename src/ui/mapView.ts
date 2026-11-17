@@ -16,7 +16,7 @@ import {
 } from '../model/marina';
 import { depthAt } from '../model/seabed';
 import { buoyOffsets, gustAt, gustProfile } from '../model/windOnWater';
-import { pointOfSail } from '../model/pointsOfSail';
+import { pointOfSail, pointOfSailArcs } from '../model/pointsOfSail';
 import { requirePartId } from '../model/registry';
 import type { CameraPreset } from '../model/settings';
 import type { TrackPoint } from '../model/track';
@@ -1791,6 +1791,25 @@ export const MINI_MAP = {
   windArrow: { x: 14, y: 14, lengthPx: 18, headPx: 6, lineWidth: 2 },
   /** The "N" at the top right: centre offset from the top-right corner, font size. */
   north: { fromRightPx: 10, fromTopPx: 10, fontPx: 11 },
+  /** The points of sail as a ring round the boat (PHASE_FEEDBACK_SPEC 9.3); all tunable, CSS px. */
+  pointRose: {
+    /** Ring radius as a share of the canvas size. */
+    radiusShare: 0.34,
+    /** Degrees left out at each end of an arc, so the bands read as separate pieces. */
+    gapDeg: 2,
+    lineWidth: 2,
+    currentLineWidth: 4,
+    band: 'rgba(20, 50, 90, 0.35)',
+    bandCurrent: '#14325a',
+    noGo: 'rgba(214, 40, 40, 0.45)',
+    noGoCurrent: '#d62828',
+    /** The heading arrow: a filled triangle on the ring, pointing outwards. */
+    arrowLengthPx: 8,
+    arrowBasePx: 7,
+    /** The name at the bottom centre: font size, distance of its middle from the bottom edge. */
+    nameFontPx: { stacked: 10, side: 12 },
+    nameFromBottomPx: 7,
+  },
 } as const;
 
 /** The mini-map's viewport: north up, the boat in the middle of a square canvas `sizePx` wide. */
@@ -1808,8 +1827,78 @@ export function miniMapViewport(state: AppState, sizePx: number): MapViewport {
 }
 
 /**
- * Draws the mini-map: water, grid, track, buoys (no letters), the boat (no heading line, no
- * selection colour), the true-wind arrow and an "N". No labels, no no-go zone, no apparent wind.
+ * The points of sail as a ring of arcs round the boat, an arrow on the ring along the heading
+ * and the current point's name at the bottom.
+ */
+function drawPointRose(ctx: CanvasRenderingContext2D, state: AppState, sizePx: number): void {
+  const rose = MINI_MAP.pointRose;
+  const view = miniMapViewport(state, sizePx);
+  const twa = state.rig.wind.twaDeg;
+  const arcs = pointOfSailArcs(compassDeg(state.wind.dirDeg), twa);
+  const radius = rose.radiusShare * sizePx;
+  const cx = sizePx / 2;
+  const cy = sizePx / 2;
+  ctx.save();
+  ctx.setLineDash([]);
+  ctx.lineCap = 'butt';
+  ctx.lineJoin = 'miter';
+  let currentColour: string = rose.bandCurrent;
+  let currentId = pointOfSail(twa).id;
+  for (const arc of arcs) {
+    const noGo = arc.id === 'no_go';
+    const colour = arc.current
+      ? noGo
+        ? rose.noGoCurrent
+        : rose.bandCurrent
+      : noGo
+        ? rose.noGo
+        : rose.band;
+    if (arc.current) {
+      currentColour = colour;
+      currentId = arc.id;
+    }
+    const length =
+      ((((arc.toBearingDeg - arc.fromBearingDeg) % 360) + 360) % 360) - 2 * rose.gapDeg;
+    if (length <= 0) continue;
+    // Bearing b is canvas angle b − 90 (canvas y points down, so clockwise is positive).
+    const start = (arc.fromBearingDeg + rose.gapDeg - 90) * DEG;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, start, start + length * DEG);
+    ctx.lineWidth = arc.current ? rose.currentLineWidth : rose.lineWidth;
+    ctx.strokeStyle = colour;
+    ctx.stroke();
+  }
+  // The arrow: its base centred on the ring at the heading, its tip further out.
+  const dir = bearingToScreen(state.boat.headingDeg, view);
+  const baseX = cx + dir.x * radius;
+  const baseY = cy + dir.y * radius;
+  const tipX = baseX + dir.x * rose.arrowLengthPx;
+  const tipY = baseY + dir.y * rose.arrowLengthPx;
+  const half = rose.arrowBasePx / 2;
+  ctx.beginPath();
+  ctx.moveTo(tipX, tipY);
+  ctx.lineTo(baseX - dir.y * half, baseY + dir.x * half);
+  ctx.lineTo(baseX + dir.y * half, baseY - dir.x * half);
+  ctx.closePath();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = COLOURS.halo;
+  ctx.stroke();
+  ctx.fillStyle = currentColour;
+  ctx.fill();
+  // The name, shrunk to fit when a translation is long.
+  const name = t(`pos.short.${currentId}` as StringKey);
+  let size: number = sizePx < 120 ? rose.nameFontPx.stacked : rose.nameFontPx.side;
+  ctx.font = `700 ${size}px system-ui, sans-serif`;
+  const wide = ctx.measureText(name).width;
+  if (wide > sizePx - 8) size = Math.max(8, (size * (sizePx - 8)) / wide);
+  haloText(ctx, name, sizePx / 2, sizePx - rose.nameFromBottomPx, { bold: true, size });
+  ctx.restore();
+}
+
+/**
+ * Draws the mini-map: water, grid, track, buoys (no letters), the points-of-sail ring, the boat
+ * (no heading line, no selection colour), the true-wind arrow and an "N". No labels, no no-go
+ * zone, no apparent wind.
  */
 export function drawMiniMap(
   ctx: CanvasRenderingContext2D,
@@ -1829,6 +1918,7 @@ export function drawMiniMap(
   drawTrack(ctx, state.track, state, view);
   drawAnchor(ctx, state, view, true);
   drawBuoys(ctx, state, view, { letters: false });
+  drawPointRose(ctx, state, sizePx);
   drawBoat(ctx, state, view, mapLayout(state, view, width), {
     headingLine: false,
     selection: false,

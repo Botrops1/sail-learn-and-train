@@ -1129,5 +1129,12 @@
   "keys.noteOff": "Tastene gjør ingenting mens du skriver i et felt eller mens appen seiler en øvelse for deg.",
   "settings.keys.label": "Tastatur",
   "settings.keys.hint": "Trykk H eller ? når som helst for å se tastene.",
-  "settings.keys.button": "Vis tastene"
+  "settings.keys.button": "Vis tastene",
+  "pos.short.no_go": "Dødsone",
+  "pos.short.close_hauled": "Bidevind",
+  "pos.short.close_reach": "Knapp halvvind",
+  "pos.short.beam_reach": "Halvvind",
+  "pos.short.broad_reach": "Slør",
+  "pos.short.run": "Lens",
+  "minimap.openWithPoint": "Minikart, nå {point}: trykk for å åpne hele kartet."
 }

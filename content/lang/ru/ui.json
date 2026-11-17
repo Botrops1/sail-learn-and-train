@@ -1129,5 +1129,12 @@
   "keys.noteOff": "Клавиши ничего не делают, пока вы печатаете в поле или пока приложение само проводит упражнение.",
   "settings.keys.label": "Клавиатура",
   "settings.keys.hint": "Нажмите H или ?, чтобы в любой момент увидеть клавиши.",
-  "settings.keys.button": "Показать клавиши"
+  "settings.keys.button": "Показать клавиши",
+  "pos.short.no_go": "Мёртвая зона",
+  "pos.short.close_hauled": "Крутой бейдевинд",
+  "pos.short.close_reach": "Полный бейдевинд",
+  "pos.short.beam_reach": "Галфвинд",
+  "pos.short.broad_reach": "Бакштаг",
+  "pos.short.run": "Фордевинд",
+  "minimap.openWithPoint": "Мини-карта, сейчас: {point}. Нажмите, чтобы открыть карту."
 }
