@@ -124,7 +124,7 @@ Use a computer for these.
 - [ ] Close-hauled: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=315&ms=12&js=0&ap=hdg&sea=flat — look at the small map at the bottom left: a ring of pieces round the boat, one piece darker with a small arrow on it, and "Close-hauled" written at the bottom.
 - [ ] Beam reach: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=270&ms=60&js=100&ap=hdg&sea=flat — the small map says "Beam reach" (wind from the side), and the dark piece has moved round.
 - [ ] No-go: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=350&ms=12&js=0&ap=hdg&sea=flat — the boat points almost into the wind: the dark piece is red and the map says "No-go".
-- [ ] It follows you: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=315&ms=30&js=30 — in the Autopilot section tap +10 a few times: the arrow walks round the ring and the name changes (Close reach, Beam reach…).
+- [ ] It follows you: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=315&ms=30&js=30 — open the Controls tab, tap Steering, then pull the panel down by its handle until the small map shows. Tap −10 (10° port) a few times, a few seconds apart: the arrow walks round the ring and the name changes (Close-hauled, Close reach…).
 - [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&hdg=135&ms=100&js=100&ap=hdg&sea=flat — on a computer the map is bigger and says "Broad reach"; the wind arrow and the N are still clear of the ring.
 
 #### M103: Word tours
