@@ -234,3 +234,11 @@ Not in this milestone: names on the land; tapping it; the land on the mini-map o
 1. **The land fits this app's marina and bay** (mainland to the north and west, islands to the south and east, open sea to the south-west), not the real view from Split harbour, which would put islands where the app's bay is. The heights follow the real view (1.1).
 2. **A Learn entry "Distant land"** (draft): out of reach, turns round you as you turn, a helmsman steers by a mark far ahead (1.7).
 3. **Always shown**, in every place, sea setting, camera and time of day; no switch, no URL key (1.1).
+
+### 1.13 Decided in the M104 PR (recommended; merging accepts it)
+
+1. **The Learn entry's Show it working link drops `ap=hdg`.** In open water a link without `ap` already holds the heading, and the link must be canonical (the glossary and modes tests round-trip every link), so the link is `?wd=0&ws=12&ms=40&js=100&cam=side-starboard&hdg=90&sea=flat`.
+2. **`horizonLandProbe`'s `hit` is the nearer of the two rings the ray meets** (a low ray meets both; the near ring is at 800 m, the far at 840 m).
+3. **The land's meshes are not frustum-culled**: the strips are seen from inside the ring, so a bounding sphere would only add a way to lose them.
+4. **The review's finding "restore `ap=hdg` in the link" is not taken** (decision 1): with `ap=hdg` and no `apt` the link is not canonical and the glossary and modes tests fail; in open water a link without `ap` already holds the heading.
+5. **Browser-check time**: the `m18` group measured 81 s with `m104` in it (was 78 s), under the 117 s limit, so `.github/ci-times.json` is unchanged.
