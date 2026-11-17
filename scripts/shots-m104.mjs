@@ -152,7 +152,7 @@ export async function liveM104Checks({ openPage, viewports, outDir, prefix, prob
       '?m=learn&learn=env_distant_land&sea=flat',
     );
     await page.waitForTimeout(800);
-    const name = await page.getByText('Distant land', { exact: true }).first().isVisible();
+    const name = (await page.getByTestId('learn-name').textContent()) === 'Distant land';
     const showMe = await page.getByTestId('learn-show-me').count();
     const showOnBoat = await page.getByTestId('learn-show-on-boat').count();
     check(
