@@ -86,6 +86,21 @@
 | gybing.mistakes.accidental-gybe.what | The boom crossed by itself (an accidental gybe). | Гик перелетел сам (случайный фордевинд). |
 | gybing.mistakes.accidental-gybe.why | The main was still out when the stern crossed the wind, or she was steered past dead downwind. | Грот был потравлен, когда корма проходила через ветер, или яхта ушла дальше прямого фордевинда. |
 | gybing.mistakes.accidental-gybe.fix | Trim the main before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee. | Выбирайте грот до поворота. На попутном ветре держите ветер с той стороны, где нет гика: не ходите на подветре (с ветром на стороне гика). |
+| weather-helm.title | Weather helm | Тенденция к приведению |
+| weather-helm.summary | Feel the wheel pull as she heels, and ease the main to make it light again. | Почувствуйте, как штурвал тянет, когда яхта кренится, и потравите грот, чтобы он снова стал лёгким. |
+| weather-helm.see | You are sailing upwind on starboard tack in 10 knots, the autopilot steering. Choose the Helm camera (the camera chip) to watch the wheel. | Вы идёте круто к ветру правым галсом в ветре 10 узлов, рулит авторулевой. Выберите камеру «Штурвал» (кнопка камеры), чтобы следить за штурвалом. |
+| weather-helm.happening | When she heels, the boat wants to turn into the wind. To hold her course the wheel must stay turned away from the wind: that pull is weather helm. More wind, more heel, more helm. | Когда яхта кренится, она стремится повернуть в ветер. Чтобы держать курс, штурвал приходится держать повёрнутым от ветра: этот рывок и есть тенденция к приведению. Больше ветра, больше крен, больше нагрузка на руль. |
+| weather-helm.action | Watch the wheel as the wind rises to 20 knots, then ease the main sheet until she heels less than about 20°. | Следите за штурвалом, пока ветер усиливается до 20 узлов, затем потравите шкот грота, пока крен не станет меньше примерно 20°. |
+| weather-helm.mistake | Keeping the main sheet tight: she heels past 30°, the rudder works hard and she can turn into the wind by herself (a round-up). | Держать шкот грота туго: яхта кренится больше 30°, руль работает изо всех сил, и яхта может сама повернуть в ветер (брочинг). |
+| weather-helm.done | Easing the main took the heel off and the wheel came back towards the middle. A light helm means the boat is balanced; a heavy one means too much heel. | Когда грот потравили, крен ушёл и штурвал вернулся к середине. Лёгкий руль значит, что яхта сбалансирована; тяжёлый — что крен слишком большой. |
+| weather-helm.steps.feel-the-helm.goal | Watch the wheel as the wind rises. | Следите за штурвалом, пока ветер усиливается. |
+| weather-helm.steps.feel-the-helm.how | The wind goes from 10 to 20 knots in a minute (time runs ×4). She heels to about 30° and the autopilot turns the wheel further and further away from the wind to hold the course. | Ветер усиливается с 10 до 20 узлов за минуту (время идёт ×4). Яхта кренится примерно до 30°, и авторулевой поворачивает штурвал всё дальше от ветра, чтобы держать курс. |
+| weather-helm.steps.ease-main.goal | Ease the main until she heels less than 22°. | Потравите грот, пока крен не станет меньше 22°. |
+| weather-helm.steps.ease-main.how | In Lines, ease Main sheet to about 30 %. The heel drops to about 18° and the wheel comes back to only a few degrees. | В «Концах» потравите шкот грота примерно до 30 %. Крен уменьшится примерно до 18°, а штурвал вернётся всего на несколько градусов. |
+| weather-helm.mistakes.round-up.name | a round-up | брочинг |
+| weather-helm.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Яхта сама повернула в ветер (брочинг). |
+| weather-helm.mistakes.round-up.why | Too much heel with a tight main: the rudder could not hold her against the weather helm. | Слишком большой крен при тугом гроте: руль не смог удержать яхту против тенденции к приведению. |
+| weather-helm.mistakes.round-up.fix | Ease the main sheet: with less heel the wheel holds her again. | Потравите шкот грота: при меньшем крене руль снова удерживает яхту. |
 | gusts.title | Gusts: ease the main | Порывы: потравите грот |
 | gusts.summary | Keep her upright through three gusts by easing the main. | Удержите яхту прямо в трёх порывах, потравливая грот. |
 | gusts.see | You are on a close reach in 15 knots of wind with gusts. A gust shows on the water as a darker patch coming towards you. | Вы идёте крутым галфвиндом в ветре 15 узлов с порывами. Порыв виден на воде как тёмное пятно, которое движется к вам. |
@@ -105,6 +120,25 @@
 | gusts.mistakes.round-up.what | She turned into the wind by herself (a round-up). | Яхта сама повернула в ветер (брочинг). |
 | gusts.mistakes.round-up.why | Too much heel with a tight main: the rudder lost its grip and the sails turned her into the wind. | Слишком большой крен при тугом гроте: руль потерял хватку, и паруса повернули яхту в ветер. |
 | gusts.mistakes.round-up.fix | Ease the main straight away and she comes back under control. In the next gust, ease earlier. | Сразу потравите грот, и яхта снова станет управляемой. В следующем порыве травите раньше. |
+| wind-shift.title | Header and lift | Заход и отход ветра |
+| wind-shift.summary | The wind turns: bear away when it heads you, head up when it lifts you. | Ветер меняется: уваливайтесь, когда он заходит, и приводитесь, когда он отходит. |
+| wind-shift.see | You are close-hauled on starboard tack in 12 knots, the autopilot holding 45°. Watch the sails and the wind arrow on the mini-map. | Вы идёте бейдевиндом правым галсом в ветре 12 узлов, авторулевой держит 45°. Следите за парусами и стрелкой ветра на мини-карте. |
+| wind-shift.happening | The wind's direction changes a little all the time. A shift from further ahead is a header: on the same course the sails start to flap and she slows down. A shift from further aft is a lift: the sails are now too tight, and you can head up. | Направление ветра всё время немного меняется. Смена ближе к носу — это заход: на прежнем курсе паруса начинают полоскать, и яхта теряет скорость. Смена ближе к корме — это отход: паруса теперь выбраны слишком туго, и можно приводиться. |
+| wind-shift.action | In the header, turn the autopilot 20° away from the wind. In the lift, turn it 40° towards the wind. | В заходе поверните авторулевого на 20° от ветра. В отходе поверните его на 40° к ветру. |
+| wind-shift.mistake | Holding the old course in a header: she sails in the no-go zone, the sails flap and she nearly stops. | Держать прежний курс в заходе: яхта идёт в мёртвой зоне, паруса полощут, и она почти останавливается. |
+| wind-shift.done | You followed the wind: away from it in the header, towards it in the lift. Sailors upwind steer by the wind, not by the compass. | Вы следовали за ветром: от него в заходе, к нему в отходе. Идя круто к ветру, яхтсмены правят по ветру, а не по компасу. |
+| wind-shift.steps.header-comes.goal | Wait for the wind to shift. | Дождитесь смены ветра. |
+| wind-shift.steps.header-comes.how | Time runs ×8. The wind turns 20° towards the bow: the main starts to flap and the speed falls. | Время идёт ×8. Ветер поворачивает на 20° к носу: грот начинает полоскать, и скорость падает. |
+| wind-shift.steps.bear-away.goal | Bear away 20° to fill the sails again. | Уваливайтесь на 20°, чтобы паруса снова наполнились. |
+| wind-shift.steps.bear-away.how | In Steering, tap −10 twice. She turns to 25° and the sails read Good again. | В «Руле» дважды нажмите −10. Яхта повернёт на 25°, и паруса снова покажут «Хорошо». |
+| wind-shift.steps.lift-comes.goal | Wait for the wind to shift back further. | Дождитесь, пока ветер сместится ещё дальше. |
+| wind-shift.steps.lift-comes.how | Time runs ×16. The wind turns 40° towards the stern: the sails are now too tight for the wind. | Время идёт ×16. Ветер поворачивает на 40° к корме: паруса теперь слишком туго выбраны для такого ветра. |
+| wind-shift.steps.head-up.goal | Head up 40° to sail close-hauled again. | Приведитесь на 40°, чтобы снова идти бейдевиндом. |
+| wind-shift.steps.head-up.how | In Steering, tap +10 four times. She turns to 65°: higher than where you started, thanks to the lift. | В «Руле» четыре раза нажмите +10. Яхта повернёт на 65°: выше, чем вы начинали, благодаря отходу. |
+| wind-shift.mistakes.missed-header.name | missing the header | пропущенный заход |
+| wind-shift.mistakes.missed-header.what | The wind shifted back before you bore away. | Ветер сместился обратно раньше, чем вы увалились. |
+| wind-shift.mistakes.missed-header.why | This step only passes while the header blows. | Этот шаг засчитывается, только пока дует заход. |
+| wind-shift.mistakes.missed-header.fix | Tap Back to the start of the step and bear away as soon as the main flaps. | Нажмите «Назад к началу шага» и уваливайтесь, как только грот начнёт полоскать. |
 | reduce-sail.title | Too much wind: roll the sails in | Слишком много ветра: уберите паруса |
 | reduce-sail.summary | In 22 knots, roll in part of the jib and the main until she sails upright. | При 22 узлах закрутите часть стакселя и грота, пока яхта не пойдёт прямо. |
 | reduce-sail.see | 22 knots of wind on a close reach. The main is eased until it flaps, to keep her upright; she heels about 20°. | Ветер 22 узла, курс крутой галфвинд. Грот потравлен до хлопанья, чтобы яхта держалась прямо; крен около 20°. |

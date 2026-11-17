@@ -610,6 +610,8 @@
   "learn.fix": "Løsning:",
   "learn.showItWorking": "Vis det i bruk",
   "learn.showMeDone": "Viser det. Tilbake-knappen på telefonen tar deg tilbake dit du var.",
+  "learn.feelIt": "Kjenn det",
+  "learn.feelItHint": "Appen seiler «{title}» for deg og stopper etter hvert trinn.",
   "learn.whereIsIt": "Hvor er det?",
   "learn.spotlightHint": "Trykk hvor som helst for å se hele båten igjen.",
   "learn.writtenFor": "Skrevet for {name}.",

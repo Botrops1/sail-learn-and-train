@@ -7,6 +7,7 @@ import {
   EXERCISES,
   EXERCISE_TEXTS,
   checkPasses,
+  feelItFor,
   checkTargets,
   targetReading,
   twaSignedDeg,
@@ -19,6 +20,8 @@ import { mpsToKn } from '../src/model/angles';
 import { boat } from '../src/model/boat';
 import { isLocalWind } from '../src/model/windModes';
 import { utcFromLocal } from '../src/model/clock';
+import registry from '../content/registry/parts.json';
+import { pilotFor } from '../src/app/exercisePilots';
 import en from '../content/lang/en/ui.json';
 import exercisesFile from '../content/exercises/exercises.json';
 
@@ -451,5 +454,35 @@ describe('sections and targets (owner, PR 144)', () => {
       { ok: true, value: 12 },
     );
     expect(targetReading({ kind: 'twa', range: [0, 180] }, { ...state, motion: null })).toBeNull();
+  });
+});
+
+describe('M103 feelIt (PHASE_FEEDBACK_SPEC 10.6)', () => {
+  const termIds = new Set(registry.entries.filter((e) => e.kind === 'term').map((e) => e.id));
+
+  it('every feelIt id is a registry term, listed by one exercise only', () => {
+    const seen = new Set<string>();
+    for (const def of EXERCISES) {
+      for (const id of def.feelIt ?? []) {
+        expect(termIds.has(id), `${def.id}: ${id}`).toBe(true);
+        expect(seen.has(id), `${id} in two exercises`).toBe(false);
+        seen.add(id);
+      }
+    }
+    expect(seen.size).toBeGreaterThan(0);
+  });
+
+  it('every exercise with feelIt has a pilot, so Watch mode can play it', () => {
+    for (const def of EXERCISES.filter((d) => d.feelIt !== undefined)) {
+      expect(pilotFor(def.id, 'easy', def.ropes), def.id).not.toBeNull();
+    }
+  });
+
+  it('feelItFor finds the exercise of a term, and nothing for a part', () => {
+    expect(feelItFor('term_wind_shift')?.id).toBe('wind-shift');
+    expect(feelItFor('term_run')?.id).toBe('points-of-sail');
+    expect(feelItFor('term_weather_helm')?.id).toBe('weather-helm');
+    expect(feelItFor('term_heel')?.id).toBe('weather-helm');
+    expect(feelItFor('part_boom')).toBeUndefined();
   });
 });

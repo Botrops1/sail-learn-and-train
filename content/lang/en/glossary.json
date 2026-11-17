@@ -1316,6 +1316,14 @@
         {
           "term": "back",
           "note": "the wind turns anticlockwise"
+        },
+        {
+          "term": "header",
+          "note": "a shift from further ahead: bear away"
+        },
+        {
+          "term": "lift",
+          "note": "a shift from further aft: you can head up"
         }
       ],
       "short": "A change in the wind’s direction.",

@@ -13,6 +13,9 @@ import {
   type LearnEntry,
 } from '../model/glossary';
 import { HANSE_508, boatId } from '../model/boat';
+import { feelItFor, exerciseText } from '../model/exercises';
+import { pilotFor } from '../app/exercisePilots';
+import { loadExercise } from './exercisePanel';
 import { entryFor } from '../model/panelEntries';
 import { el } from './dom';
 import { currentLanguage, quoted, t, type StringKey } from './i18n';
@@ -259,6 +262,30 @@ export function createLearnTab(
       nodes.push(showMeBlock);
     }
 
+    // M103: a Learn entry that an exercise lists (`feelIt`) gets a button that plays that exercise
+    // in Watch mode, as the exercise card's "Watch it" does; no run is going while it shows.
+    let feelItBlock: HTMLElement | undefined;
+    const tour = feelItFor(entry.id);
+    if (tour !== undefined && pilotFor(tour.id, 'easy', tour.ropes) !== null) {
+      const def = tour;
+      feelItBlock = el(
+        'div',
+        { class: 'learn-show-me learn-feel-it-block', 'data-hide-in-exercise': '' },
+        [
+          button('learn-feel-it', t('learn.feelIt'), () => {
+            loadExercise(store, def.id, def.ropes);
+            store.dispatch({ type: 'exercise', command: { demo: 'watch' } });
+            store.dispatch({ type: 'exercise', command: 'start' });
+            lowerSheet();
+          }),
+          el('p', { class: 'hint' }, [
+            t('learn.feelItHint', { title: exerciseText(def.id, currentLanguage()).title }),
+          ]),
+        ],
+      );
+      nodes.splice(showMeBlock ? nodes.indexOf(showMeBlock) + 1 : nodes.length, 0, feelItBlock);
+    }
+
     let lastButtons: HTMLElement | undefined;
     if (entry.kind !== 'term' && !NOT_DRAWN.has(entry.id)) {
       lastButtons = el('div', { class: 'learn-links' }, [
@@ -270,7 +297,7 @@ export function createLearnTab(
       ]);
       nodes.push(lastButtons);
     }
-    if (lastButtons ?? showMeBlock) {
+    if (lastButtons ?? feelItBlock ?? showMeBlock) {
       const hint = el(
         'p',
         { class: 'hint learn-spotlight-hint', 'data-testid': 'learn-spotlight-hint' },
@@ -278,7 +305,7 @@ export function createLearnTab(
       );
       hint.hidden = spotlightNow() === null;
       spotlightHint = hint;
-      nodes.splice(nodes.indexOf(lastButtons ?? showMeBlock) + 1, 0, hint);
+      nodes.splice(nodes.indexOf(lastButtons ?? feelItBlock ?? showMeBlock) + 1, 0, hint);
     }
 
     if (entry.controls.length > 0) {

@@ -610,6 +610,8 @@
   "learn.fix": "Behebung:",
   "learn.showItWorking": "In Aktion zeigen",
   "learn.showMeDone": "Wird gezeigt. Die Zurück-Taste Ihres Handys bringt Sie dorthin zurück, wo Sie waren.",
+  "learn.feelIt": "Spüren",
+  "learn.feelItHint": "Die App segelt „{title}“ für Sie und hält nach jedem Schritt an.",
   "learn.whereIsIt": "Wo ist es?",
   "learn.spotlightHint": "Tippen Sie irgendwohin, um wieder das ganze Boot zu sehen.",
   "learn.writtenFor": "Geschrieben für die {name}.",

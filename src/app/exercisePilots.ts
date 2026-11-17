@@ -454,6 +454,24 @@ export function gustsPilot(): Pilot {
     }
   };
 }
+/** Header and lift: bear away 20° in the header, head up 40° in the lift. */
+export function windShiftPilot(): Pilot {
+  const once = onceMaker();
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 1:
+        return once(s, 't', (x) => turns(x, 2, -10));
+      case 3:
+        return once(s, 't', (x) => turns(x, 4, 10));
+      default:
+        return s;
+    }
+  };
+}
+/** Weather helm: wait for the wind, then ease the main sheet to 30 %. */
+export function weatherHelmPilot(): Pilot {
+  return (s) => (s.exercise?.step === 1 ? ctl(s, { ctl_mainsheet: 30 }) : s);
+}
 export function reduceSailPilot(): Pilot {
   return (s) => {
     switch (s.exercise?.step) {
@@ -736,6 +754,10 @@ export function pilotFor(id: string, level: ExerciseLevel, ropes: RopesMode): Pi
       return gybingPilot();
     case 'gusts':
       return gustsPilot();
+    case 'weather-helm':
+      return weatherHelmPilot();
+    case 'wind-shift':
+      return windShiftPilot();
     case 'reduce-sail':
       return reduceSailPilot();
     case 'maestral':

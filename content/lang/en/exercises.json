@@ -72,6 +72,33 @@
       "accidental-gybe": {"name": "an accidental gybe", "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Trim the main before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee."}
     }
   },
+  "weather-helm": {
+    "title": "Weather helm",
+    "summary": "Feel the wheel pull as she heels, and ease the main to make it light again.",
+    "see": "You are sailing upwind on starboard tack in 10 knots, the autopilot steering. Choose the Helm camera (the camera chip) to watch the wheel.",
+    "happening": "When she heels, the boat wants to turn into the wind. To hold her course the wheel must stay turned away from the wind: that pull is weather helm. More wind, more heel, more helm.",
+    "action": "Watch the wheel as the wind rises to 20 knots, then ease the main sheet until she heels less than about 20°.",
+    "mistake": "Keeping the main sheet tight: she heels past 30°, the rudder works hard and she can turn into the wind by herself (a round-up).",
+    "done": "Easing the main took the heel off and the wheel came back towards the middle. A light helm means the boat is balanced; a heavy one means too much heel.",
+    "steps": {
+      "feel-the-helm": {
+        "goal": "Watch the wheel as the wind rises.",
+        "how": "The wind goes from 10 to 20 knots in a minute (time runs ×4). She heels to about 30° and the autopilot turns the wheel further and further away from the wind to hold the course."
+      },
+      "ease-main": {
+        "goal": "Ease the main until she heels less than 22°.",
+        "how": "In Lines, ease Main sheet to about 30 %. The heel drops to about 18° and the wheel comes back to only a few degrees."
+      }
+    },
+    "mistakes": {
+      "round-up": {
+        "name": "a round-up",
+        "what": "She turned into the wind by herself (a round-up).",
+        "why": "Too much heel with a tight main: the rudder could not hold her against the weather helm.",
+        "fix": "Ease the main sheet: with less heel the wheel holds her again."
+      }
+    }
+  },
   "gusts": {
     "title": "Gusts: ease the main",
     "summary": "Keep her upright through three gusts by easing the main.",
@@ -87,6 +114,41 @@
     "mistakes": {
       "overpowered": { "name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "The main sheet was too tight for the wind: the sails pushed harder than the keel could hold her upright.", "fix": "Ease the main sheet as soon as the gust hits; trim again when it has passed." },
       "round-up": { "name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel with a tight main: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away and she comes back under control. In the next gust, ease earlier." }
+    }
+  },
+  "wind-shift": {
+    "title": "Header and lift",
+    "summary": "The wind turns: bear away when it heads you, head up when it lifts you.",
+    "see": "You are close-hauled on starboard tack in 12 knots, the autopilot holding 45°. Watch the sails and the wind arrow on the mini-map.",
+    "happening": "The wind's direction changes a little all the time. A shift from further ahead is a header: on the same course the sails start to flap and she slows down. A shift from further aft is a lift: the sails are now too tight, and you can head up.",
+    "action": "In the header, turn the autopilot 20° away from the wind. In the lift, turn it 40° towards the wind.",
+    "mistake": "Holding the old course in a header: she sails in the no-go zone, the sails flap and she nearly stops.",
+    "done": "You followed the wind: away from it in the header, towards it in the lift. Sailors upwind steer by the wind, not by the compass.",
+    "steps": {
+      "header-comes": {
+        "goal": "Wait for the wind to shift.",
+        "how": "Time runs ×8. The wind turns 20° towards the bow: the main starts to flap and the speed falls."
+      },
+      "bear-away": {
+        "goal": "Bear away 20° to fill the sails again.",
+        "how": "In Steering, tap −10 twice. She turns to 25° and the sails read Good again."
+      },
+      "lift-comes": {
+        "goal": "Wait for the wind to shift back further.",
+        "how": "Time runs ×16. The wind turns 40° towards the stern: the sails are now too tight for the wind."
+      },
+      "head-up": {
+        "goal": "Head up 40° to sail close-hauled again.",
+        "how": "In Steering, tap +10 four times. She turns to 65°: higher than where you started, thanks to the lift."
+      }
+    },
+    "mistakes": {
+      "missed-header": {
+        "name": "missing the header",
+        "what": "The wind shifted back before you bore away.",
+        "why": "This step only passes while the header blows.",
+        "fix": "Tap Back to the start of the step and bear away as soon as the main flaps."
+      }
     }
   },
   "reduce-sail": {

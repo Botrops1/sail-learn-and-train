@@ -124,6 +124,7 @@ import { liveM97Checks, M97_SCENES } from './shots-m97.mjs';
 import { liveM98Checks, M98_SCENES } from './shots-m98.mjs';
 import { liveM99Checks, M99_SCENES } from './shots-m99.mjs';
 import { liveM101Checks, M101_SCENES } from './shots-m101.mjs';
+import { liveM103Checks, M103_SCENES } from './shots-m103.mjs';
 import { checkBudget } from './budget.mjs';
 import { createQuietLog } from './quiet-log.mjs';
 import { GROUP_ALIASES, groupOf } from './ci-plan.mjs';
@@ -338,6 +339,7 @@ const SCENES = [
   ...M98_SCENES.map((scene) => ({ ...scene, name: `m98-${scene.name}` })),
   ...M99_SCENES.map((scene) => ({ ...scene, name: `m99-${scene.name}` })),
   ...M101_SCENES.map((scene) => ({ ...scene, name: `m101-${scene.name}` })),
+  ...M103_SCENES.map((scene) => ({ ...scene, name: `m103-${scene.name}` })),
 ];
 
 /** Parts a tap must find somewhere in the sweep (WORKFLOW.md M1 checklist). */
@@ -1315,6 +1317,7 @@ try {
     m98: () => liveM98Checks(onTestClock),
     m99: () => liveM99Checks(onTestClock),
     m101: () => liveM101Checks(onTestClock),
+    m103: () => liveM103Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   // Test-only (not in CI's group list): a group that fails on its first run only, or always, so the

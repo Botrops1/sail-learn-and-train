@@ -1371,7 +1371,7 @@
 | Поле | English | Русский |
 |---|---|---|
 | Название | Wind shift | смена направления ветра |
-| Другие названия | veer — the wind turns clockwise<br>back — the wind turns anticlockwise | ветер заходит — смещается к носу<br>ветер отходит — смещается к корме |
+| Другие названия | veer — the wind turns clockwise<br>back — the wind turns anticlockwise<br>header — a shift from further ahead: bear away<br>lift — a shift from further aft: you can head up | ветер заходит — смещается к носу<br>ветер отходит — смещается к корме<br>заход — смена ближе к носу: уваливайтесь<br>отход — смена ближе к корме: можно приводиться |
 | Коротко | A change in the wind’s direction. | Изменение направления ветра. |
 | Что делает / что значит | The wind’s direction keeps changing a little. A shift that comes from further ahead is a header: she has to bear away, or the sails flap. One from further behind is a lift: she can point closer to the wind. | Направление ветра постоянно немного меняется. Смена, при которой ветер дует из точки ближе к носу, — это «ветер заходит»: яхте приходится уваливаться, иначе паруса полощут. Смена, при которой ветер дует из точки ближе к корме, — это «ветер отходит»: яхта может идти ближе к ветру. |
 | На этой яхте | — | — |
@@ -3174,6 +3174,8 @@
 | learn.fix | Fix: | Как исправить: |
 | learn.showItWorking | Show it working | Показать в работе |
 | learn.showMeDone | Showing it. Your phone’s Back button takes you back to where you were. | Показываю. Кнопка «Назад» на телефоне вернёт вас туда, где вы были. |
+| learn.feelIt | Feel it | Почувствовать |
+| learn.feelItHint | The app sails “{title}” for you and stops after each step. | Приложение проходит для вас упражнение «{title}» и останавливается после каждого шага. |
 | learn.whereIsIt | Where is it? | Где это? |
 | learn.spotlightHint | Tap anywhere to see the whole boat again. | Нажмите в любом месте, чтобы снова увидеть всю яхту. |
 | learn.writtenFor | Written for the {name}. | Написано для {name}. |

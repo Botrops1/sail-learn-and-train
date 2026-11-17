@@ -1300,6 +1300,14 @@
         {
           "term": "Linkdreher",
           "note": "der Wind dreht gegen den Uhrzeigersinn"
+        },
+        {
+          "term": "Header",
+          "note": "ein Dreher von weiter vorn: abfallen"
+        },
+        {
+          "term": "Lift",
+          "note": "ein Dreher von weiter hinten: höher gehen"
         }
       ],
       "short": "Eine Änderung der Windrichtung.",

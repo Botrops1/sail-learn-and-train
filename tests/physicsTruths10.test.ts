@@ -13,6 +13,7 @@ import { area } from '../src/model/area';
 import { utcFromLocal } from '../src/model/clock';
 import { defaultControls } from '../src/model/controls';
 import { localHourOf, localWindMean, trueWind } from '../src/model/localWinds';
+import { sailTrim } from '../src/model/trim';
 import { initialWindMode } from '../src/model/windModes';
 
 function run(state: AppState, seconds: number): AppState {
@@ -267,5 +268,44 @@ describe('Phase 10 rules (PHASE10_SPEC 27.5)', () => {
       1,
     );
     expect(largest).toBeGreaterThan(30);
+  });
+});
+
+describe('Phase feedback rules (PHASE_FEEDBACK_SPEC 10.6)', () => {
+  const frame = (s: AppState): AppState => reduce(s, { type: 'step', dt: 0.05 });
+  const started = (id: string): AppState =>
+    reduce(
+      reduce(parseUrlState(exerciseStartLink(id, initialState(), 'easy')), {
+        type: 'exercise',
+        command: { options: { pauseOnMistake: false } },
+      }),
+      { type: 'exercise', command: 'start' },
+    );
+  const runUntilHour = (s: AppState, hour: number): AppState => {
+    for (let i = 0; i < 400_000 && localHourOf(s.clock.utcMs) < hour; i += 1) s = frame(s);
+    return s;
+  };
+
+  it('PT-21 header (wind-shift): two minutes after a 20° header the main luffs inside the no-go zone', () => {
+    // No pilot: the autopilot keeps its course while the wind turns 20° towards the bow.
+    const s = runUntilHour(started('wind-shift'), 10.0833);
+    expect(localHourOf(s.clock.utcMs)).toBeGreaterThanOrEqual(10.0833);
+    const twa = Math.abs(twaSignedDeg(s));
+    expect(twa).toBeGreaterThanOrEqual(20);
+    expect(twa).toBeLessThanOrEqual(32);
+    const main = sailTrim('main', s.rig, s.motion?.awaDeg ?? 0);
+    expect(main.state).toBe('luffing');
+  });
+
+  it('PT-29 weather helm (weather-helm): 20 knots heel her over and the rudder works hard; easing the main takes both off', () => {
+    let s = runUntilHour(started('weather-helm'), 10.0667);
+    expect(Math.abs(s.controls.ctl_rudder)).toBeGreaterThanOrEqual(12);
+    expect(Math.abs(s.boat.heelDeg)).toBeGreaterThanOrEqual(25);
+    expect(Math.abs(s.boat.heelDeg)).toBeLessThanOrEqual(40);
+    s = reduce(s, { type: 'setControls', values: { ctl_mainsheet: 30 } });
+    const until = s.clock.utcMs + 60_000;
+    for (let i = 0; i < 400_000 && s.clock.utcMs < until; i += 1) s = frame(s);
+    expect(Math.abs(s.controls.ctl_rudder)).toBeLessThanOrEqual(9);
+    expect(Math.abs(s.boat.heelDeg)).toBeLessThanOrEqual(22);
   });
 });
