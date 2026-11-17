@@ -11,6 +11,8 @@ import { DEG } from '../model/angles';
 import { area } from '../model/area';
 import { sunPosition } from '../model/sun';
 import { waveTrains } from '../model/waves';
+import { HORIZON_LAYERS, type HorizonLayer } from '../model/horizonLand';
+import { mapToBoat } from '../model/mapFrame';
 import type { Vec3 } from '../model/vec3';
 import type { Detail } from '../model/settings';
 import type { RenderStats } from '../ui/debugOverlay';
@@ -26,6 +28,7 @@ import { buildMarina } from './marina';
 import { buildSeabed } from './seabed';
 import { buildMooringLines } from './mooringLines';
 import { buildMarks } from './marks';
+import { buildHorizonLand } from './horizonLand';
 import { buildSkyDome } from './skyDome';
 import { skyColours } from './skyColours';
 import { buildWaterSurface } from './waterSurface';
@@ -96,6 +99,12 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   // The dome draws the sky; `render` sets the fog colour every frame.
   const dome = buildSkyDome(cloudTexture());
   scene.add(dome.object);
+  // M104: the distant land. A child of the scene, not of the world group (which is shifted with
+  // the map): it follows the camera, so it is never reached. Not in the picker or reflections.
+  const horizonLand = buildHorizonLand();
+  scene.add(horizonLand.object);
+  /** The heading the land was last drawn with (the debug probe reads it). */
+  let drawnHeadingDeg = 0;
   scene.fog = new THREE.Fog(0xffffff, SCENE.fogNear, SCENE.fogFar);
   // The reflections: the dome seen from the boat, blurred by three.js (PMREM). Made at High
   // detail only, the first time they are needed (phones start on Low and skip the work), and
@@ -374,6 +383,48 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         cameraPose: () => {
           const pose = rig.pose();
           return { position: pose.position, target: pose.target };
+        },
+        /** M104: where the distant land is and how big it is. */
+        horizonLandState: () => ({
+          position: horizonLand.object.position.toArray() as Vec3,
+          cameraPosition: camera.position.toArray() as Vec3,
+          rotationYDeg: horizonLand.object.rotation.y / DEG,
+          vertices: {
+            far: horizonLand.layers.far.geometry.getAttribute('position').count,
+            near: horizonLand.layers.near.geometry.getAttribute('position').count,
+          },
+        }),
+        /**
+         * M104: a ray from the camera towards a compass bearing and an elevation: which land layer
+         * it meets, and where a point along it lands on the canvas (CSS px). The direction comes
+         * from the model's `mapToBoat`, not from the land's own transform.
+         */
+        horizonLandProbe: (bearingDeg: number, elevationDeg: number) => {
+          const b = bearingDeg * DEG;
+          const [fwd, stbd] = mapToBoat(Math.sin(b), Math.cos(b), drawnHeadingDeg);
+          const direction = new THREE.Vector3(fwd, Math.tan(elevationDeg * DEG), stbd).normalize();
+          horizonLand.object.updateMatrixWorld(true);
+          const raycaster = new THREE.Raycaster(camera.position.clone(), direction);
+          // The nearer of the two rings that the ray meets.
+          let hit: HorizonLayer | null = null;
+          let nearest = Infinity;
+          for (const layer of HORIZON_LAYERS) {
+            const first = raycaster.intersectObject(horizonLand.layers[layer], false)[0];
+            if (first && first.distance < nearest) {
+              nearest = first.distance;
+              hit = layer;
+            }
+          }
+          const rect = renderer.domElement.getBoundingClientRect();
+          const ndc = camera.position.clone().addScaledVector(direction, 100).project(camera);
+          const x = ((ndc.x + 1) / 2) * rect.width;
+          const y = ((1 - ndc.y) / 2) * rect.height;
+          return {
+            x,
+            y,
+            inside: x >= 0 && x <= rect.width && y >= 0 && y <= rect.height && ndc.z < 1,
+            hit,
+          };
         },
         /** Draw calls and triangles of the last frame. */
         stats: () => ({
@@ -777,6 +828,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       const colours = skyColours(elevationDeg);
       belowColour.copy(belowDay).lerp(belowNight, light.night);
       dome.update(camera, colours, light.skyDirection, boatState.headingDeg, belowColour);
+      horizonLand.update(camera, boatState.headingDeg, colours.horizon, light.night);
+      drawnHeadingDeg = boatState.headingDeg;
       (scene.fog as THREE.Fog).color.copy(colours.horizon);
       lastSkyDirection.copy(light.skyDirection);
       sunShown = elevationDeg > SCENE.sky.sunCore.fadeFromDeg;

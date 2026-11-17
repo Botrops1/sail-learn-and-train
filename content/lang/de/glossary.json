@@ -1990,6 +1990,21 @@
       "what": "Das Land um die Bucht.",
       "textStatus": "draft"
     },
+    "env_distant_land": {
+      "name": "Fernes Land",
+      "alternatives": [
+        {
+          "term": "Berge"
+        },
+        {
+          "term": "Horizont"
+        }
+      ],
+      "short": "Hügel, Berge und Inseln weit weg am Horizont.",
+      "what": "Weit weg rund um das Meer: hohe Berge im Norden, niedrigere Hügel davor und hinter der Bucht, eine lange Insel im Süden und offenes Meer im Südwesten. In der App kommst du nie hin: Sie bleiben immer gleich weit entfernt, egal wie weit du segelst. Sie drehen sich um dich, wenn sich das Boot dreht, und zeigen so, wie weit und wie schnell du drehst. Ein Rudergänger (die Person am Steuer) wählt oft einen weit entfernten Punkt wie einen Gipfel und steuert darauf zu, um geraden Kurs zu halten.",
+      "showMe": "Nach Osten segeln: Die Kamera blickt quer über das Boot nach Norden zu den Bergen. Steuere, und das Land zieht hinter dem Boot vorbei.",
+      "textStatus": "draft"
+    },
     "env_rock": {
       "name": "Unterwasserfels",
       "alternatives": [

@@ -2012,6 +2012,21 @@
       "what": "Landet rundt bukta.",
       "textStatus": "draft"
     },
+    "env_distant_land": {
+      "name": "Fjernt land",
+      "alternatives": [
+        {
+          "term": "Fjell"
+        },
+        {
+          "term": "Horisont"
+        }
+      ],
+      "short": "Åser, fjell og øyer langt borte ved horisonten.",
+      "what": "Langt borte rundt havet: høye fjell i nord, lavere åser foran dem og bak bukta, en lang øy i sør og åpent hav i sørvest. I appen kan du aldri nå dem: de holder samme avstand uansett hvor langt du seiler. De dreier rundt deg når båten dreier, så de viser hvor langt og hvor fort du svinger. En rorgjenger (personen som styrer) velger ofte et punkt langt frem, for eksempel en topp, og styrer mot det for å holde rett kurs.",
+      "showMe": "Seiler østover: kameraet ser på tvers av båten mot nord, på fjellene. Styr, så glir landet forbi bak båten.",
+      "textStatus": "draft"
+    },
     "env_rock": {
       "name": "Blindskjær",
       "alternatives": [

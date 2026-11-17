@@ -207,6 +207,7 @@
     {"id": "env_quay_ring", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_quay", "term_med_mooring"]},
     {"id": "env_seabed", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
     {"id": "env_shore", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
+    {"id": "env_distant_land", "kind": "environment", "phase": 104, "group": "sea", "status": "draft", "sources": [], "related": ["term_heading", "env_water", "helm_starboard"], "showMe": "?wd=0&ws=12&ms=40&js=100&cam=side-starboard&hdg=90&sea=flat"},
     {"id": "env_rock", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
     {"id": "env_shore_ring", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},
     {"id": "env_mooring_buoy", "kind": "environment", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": []},

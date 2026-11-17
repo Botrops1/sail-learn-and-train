@@ -2122,6 +2122,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 
 ## Wasser und Wellen
 
+### Fernes Land (`env_distant_land`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Distant land | Fernes Land |
+| Andere Namen | Mountains<br>Horizon | Berge<br>Horizont |
+| Kurz | Hills, mountains and islands far away on the horizon. | Hügel, Berge und Inseln weit weg am Horizont. |
+| Was es tut / was es bedeutet | Far away round the sea: high mountains to the north, lower hills in front of them and behind the bay, a long island to the south and open sea to the south-west. In the app you can never reach them: they stay the same distance away however far you sail. They turn round you as the boat turns, so they show how far and how fast you are turning. A helmsman (the person steering) often picks a point far ahead, such as a peak, and steers towards it to keep a straight course. | Weit weg rund um das Meer: hohe Berge im Norden, niedrigere Hügel davor und hinter der Bucht, eine lange Insel im Süden und offenes Meer im Südwesten. In der App kommst du nie hin: Sie bleiben immer gleich weit entfernt, egal wie weit du segelst. Sie drehen sich um dich, wenn sich das Boot dreht, und zeigen so, wie weit und wie schnell du drehst. Ein Rudergänger (die Person am Steuer) wählt oft einen weit entfernten Punkt wie einen Gipfel und steuert darauf zu, um geraden Kurs zu halten. |
+| Auf diesem Boot | — | — |
+| Typische Fehler | — | — |
+| „Zeigen“ | Sailing east: the camera looks across the boat to the north, at the mountains. Steer, and the land slides past behind the boat. | Nach Osten segeln: Die Kamera blickt quer über das Boot nach Norden zu den Bergen. Steuere, und das Land zieht hinter dem Boot vorbei. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Fetch (`term_fetch`)
 
 | Feld | English | Deutsch |

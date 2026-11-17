@@ -11,6 +11,7 @@ import {
   glossaryText,
   groupEntries,
   learnEntry,
+  FAR_AWAY,
   NOT_DRAWN,
   sourceLink,
   type GlossaryText,
@@ -605,7 +606,7 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
 
   it('the groups have the expected sizes and members', () => {
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      9, 10, 13, 9, 18, 22, 13, 14, 32, 9, 20,
+      9, 10, 13, 9, 18, 22, 13, 14, 32, 10, 20,
     ]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',
@@ -644,6 +645,13 @@ describe('11. NOT_DRAWN lists exactly the ids that no mesh or rope carries', () 
 
   it('every listed id is a registry id', () => {
     for (const id of NOT_DRAWN) expect(REGISTRY_IDS, id).toContain(id);
+  });
+
+  it('every FAR_AWAY id is a registry id and none is in NOT_DRAWN', () => {
+    for (const id of FAR_AWAY) {
+      expect(REGISTRY_IDS, id).toContain(id);
+      expect(NOT_DRAWN.has(id), id).toBe(false);
+    }
   });
 
   it('every other id that is not a word appears in the code or the boat data; no listed id does', () => {

@@ -2022,6 +2022,21 @@
       "what": "The land around the bay.",
       "textStatus": "draft"
     },
+    "env_distant_land": {
+      "name": "Distant land",
+      "alternatives": [
+        {
+          "term": "Mountains"
+        },
+        {
+          "term": "Horizon"
+        }
+      ],
+      "short": "Hills, mountains and islands far away on the horizon.",
+      "what": "Far away round the sea: high mountains to the north, lower hills in front of them and behind the bay, a long island to the south and open sea to the south-west. In the app you can never reach them: they stay the same distance away however far you sail. They turn round you as the boat turns, so they show how far and how fast you are turning. A helmsman (the person steering) often picks a point far ahead, such as a peak, and steers towards it to keep a straight course.",
+      "showMe": "Sailing east: the camera looks across the boat to the north, at the mountains. Steer, and the land slides past behind the boat.",
+      "textStatus": "draft"
+    },
     "env_rock": {
       "name": "Underwater rock",
       "alternatives": [],

@@ -2137,6 +2137,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Fjernt land (`env_distant_land`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Distant land | Fjernt land |
+| Andre navn | Mountains<br>Horizon | Fjell<br>Horisont |
+| Kort | Hills, mountains and islands far away on the horizon. | Åser, fjell og øyer langt borte ved horisonten. |
+| Hva det gjør / hva det betyr | Far away round the sea: high mountains to the north, lower hills in front of them and behind the bay, a long island to the south and open sea to the south-west. In the app you can never reach them: they stay the same distance away however far you sail. They turn round you as the boat turns, so they show how far and how fast you are turning. A helmsman (the person steering) often picks a point far ahead, such as a peak, and steers towards it to keep a straight course. | Langt borte rundt havet: høye fjell i nord, lavere åser foran dem og bak bukta, en lang øy i sør og åpent hav i sørvest. I appen kan du aldri nå dem: de holder samme avstand uansett hvor langt du seiler. De dreier rundt deg når båten dreier, så de viser hvor langt og hvor fort du svinger. En rorgjenger (personen som styrer) velger ofte et punkt langt frem, for eksempel en topp, og styrer mot det for å holde rett kurs. |
+| På denne båten | — | — |
+| Typiske feil | — | — |
+| «Vis meg» | Sailing east: the camera looks across the boat to the north, at the mountains. Steer, and the land slides past behind the boat. | Seiler østover: kameraet ser på tvers av båten mot nord, på fjellene. Styr, så glir landet forbi bak båten. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Hiv (`term_heave`)
 
 | Felt | English | Norsk |

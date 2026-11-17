@@ -159,6 +159,25 @@
     "buoys": [[-1450, -100], [-1450, 0], [-1450, 100]],
     "buoyRingHeightM": 0.3
   },
+  "horizonLand": {
+    "$comment": "Distant land round the horizon (M104, issue #200): scenery only, never reached. Bearings in compass degrees, toDeg may pass 360 to cross north; heights in degrees above the horizon. Laid out to fit this area's marina (north) and bay (west); heights after the view from Split (docs/BOAT_REFERENCE.md 5).",
+    "ridges": [
+      { "name": "mountains north", "layer": "far", "fromDeg": 315, "toDeg": 435, "rippleDeg": 0.35,
+        "peaks": [[330, 2.6], [350, 4.8], [375, 5.6], [395, 3.8], [415, 2.4]] },
+      { "name": "mountains west", "layer": "far", "fromDeg": 245, "toDeg": 285, "rippleDeg": 0.35,
+        "peaks": [[255, 1.6], [270, 2.2]] },
+      { "name": "mountains east-south-east", "layer": "far", "fromDeg": 95, "toDeg": 150, "rippleDeg": 0.35,
+        "peaks": [[110, 1.6], [125, 2.4], [140, 1.2]] },
+      { "name": "hills behind the bay", "layer": "near", "fromDeg": 240, "toDeg": 330, "rippleDeg": 0.2,
+        "peaks": [[250, 0.6], [275, 1.0], [300, 0.7], [320, 1.2]] },
+      { "name": "hills north", "layer": "near", "fromDeg": 330, "toDeg": 420, "rippleDeg": 0.2,
+        "peaks": [[345, 1.6], [365, 1.2], [390, 1.5], [410, 0.8]] },
+      { "name": "islet east", "layer": "near", "fromDeg": 70, "toDeg": 95, "rippleDeg": 0.2,
+        "peaks": [[82, 0.5]] },
+      { "name": "island south", "layer": "near", "fromDeg": 150, "toDeg": 215, "rippleDeg": 0.2,
+        "peaks": [[160, 0.7], [180, 1.3], [200, 0.9]] }
+    ]
+  },
   "clock": {
     "defaultLocal": "2026-06-01T12:00",
     "note": "owner (issue #26, Phase 3 plan): without a time in the link the clock starts at noon, 1 June (local time)"
