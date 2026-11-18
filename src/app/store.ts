@@ -14,6 +14,12 @@ import {
   type ExerciseRun,
 } from './exerciseRun';
 import { exerciseDef } from '../model/exercises';
+import {
+  gennakerCommand,
+  STOWED,
+  type GennakerCommand,
+  type GennakerSetup,
+} from '../model/gennaker';
 import { isRegisteredPartId } from '../model/registry';
 import {
   clampControl,
@@ -174,6 +180,8 @@ export interface AppState {
   wind: WindNow;
   /** How worn each sail is from flogging (M9, 0 … 1; 1 = torn). Not in the link. */
   sailDamage: SailDamage;
+  /** M105: how far the optional gennaker is rigged and on which side (stowed unless a link or Settings rigs it). */
+  gennaker: GennakerSetup;
   /** The engine (M12): stopped or running, the lever, rpm and gear. */
   engine: EngineState;
   /** The sea (M14): the Waves setting and the wind the waves are made by (lagged). */
@@ -274,6 +282,8 @@ export type Action =
   | { type: 'setMiniMap'; miniMap: boolean }
   /** New sails: the flogging damage goes back to 0 (M9). */
   | { type: 'repairSails' }
+  /** M105: one rigging step of the gennaker, rig it fully, or stow it. */
+  | { type: 'gennaker'; command: GennakerCommand }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
   | { type: 'load'; state: AppState }
   /** M66: start or stop the exercise, or choose its ropes mode (in setup). */
@@ -316,6 +326,8 @@ export interface InitialOverrides {
   harbour?: HarbourState;
   /** From an exercise link (M66): the run, in setup. */
   exercise?: ExerciseRun | null;
+  /** From a shared link (M105): the gennaker's rigging step and side. Without it: stowed. */
+  gennaker?: GennakerSetup;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -543,6 +555,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     windMode,
     wind,
     sailDamage: NO_DAMAGE,
+    gennaker: overrides.gennaker ?? STOWED,
     engine,
     sea,
     clock: { utcMs: clockUtcMs },
@@ -1015,6 +1028,10 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'setTimeBar':
       if (state.settings.timeBar === action.timeBar) return state;
       return withTimeRule({ ...state, settings: { ...state.settings, timeBar: action.timeBar } });
+    case 'gennaker': {
+      const gennaker = gennakerCommand(state.gennaker, action.command, state.rig.wind.awaDeg, 0);
+      return gennaker === state.gennaker ? state : { ...state, gennaker };
+    }
     case 'repairSails':
       return state.sailDamage.main === 0 && state.sailDamage.jib === 0
         ? state

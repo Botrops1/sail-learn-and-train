@@ -197,21 +197,44 @@ export function buildReviewDoc(code) {
     }
   }
 
-  lines.push(
-    wording.uiHeading,
-    '',
-    `| ${wording.uiKey} | ${wording.english} | ${wording.translated} |`,
-    '|---|---|---|',
-  );
-  for (const key of Object.keys(targetUi)) {
-    lines.push(`| ${cell(key)} | ${uiCell(sourceUi[key])} | ${uiCell(targetUi[key])} |`);
-  }
-  lines.push('');
-
   const text = lines.join('\n');
   const bytes = Buffer.byteLength(text, 'utf8');
   if (bytes > MAX_BYTES) {
     throw new Error(`the review document is ${bytes} bytes, more than ${MAX_BYTES}`);
+  }
+  return text;
+}
+
+/**
+ * The interface texts ("Buttons and hints", `ui.json`) as a document of their own (M105): with the
+ * Learn entries of the gennaker's parts `ru.md` passed what GitHub shows as Markdown, so they are
+ * `<code>-ui.md`, as the exercise texts are `<code>-exercises.md`.
+ */
+export function buildUiReviewDoc(code) {
+  const wording = WORDING[code];
+  if (!wording) {
+    throw new Error(`no review wording for ${code}; add one to scripts/review-doc.mjs`);
+  }
+  const sourceUi = readJson(`content/lang/${SOURCE_LANGUAGE}/ui.json`);
+  const targetUi = readJson(`content/lang/${code}/ui.json`);
+  const lines = [
+    wording.title,
+    '',
+    wording.intro,
+    '',
+    wording.uiHeading,
+    '',
+    `| ${wording.uiKey} | ${wording.english} | ${wording.translated} |`,
+    '|---|---|---|',
+  ];
+  for (const key of Object.keys(targetUi)) {
+    lines.push(`| ${cell(key)} | ${uiCell(sourceUi[key])} | ${uiCell(targetUi[key])} |`);
+  }
+  lines.push('');
+  const text = lines.join('\n');
+  const bytes = Buffer.byteLength(text, 'utf8');
+  if (bytes > MAX_BYTES) {
+    throw new Error(`the interface review document is ${bytes} bytes, more than ${MAX_BYTES}`);
   }
   return text;
 }
@@ -265,6 +288,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     await mkdir(folder, { recursive: true });
     await writeFile(new URL(`${code}.md`, folder), text);
     console.log(`docs/review/${code}.md written (${Buffer.byteLength(text, 'utf8')} bytes)`);
+    const ui = buildUiReviewDoc(code);
+    await writeFile(new URL(`${code}-ui.md`, folder), ui);
+    console.log(`docs/review/${code}-ui.md written (${Buffer.byteLength(ui, 'utf8')} bytes)`);
     const exercises = buildExercisesReviewDoc(code);
     await writeFile(new URL(`${code}-exercises.md`, folder), exercises);
     console.log(

@@ -21,6 +21,7 @@ import {
   vangStrutLength,
 } from './pitchLimits';
 import { boomLocalToWorld, type BoomPose } from './rigGeometry';
+import { gennakerDrawing, STOWED, type GennakerSetup } from './gennaker';
 import type { RigState } from './sim';
 import { add, cross, distance, length, normalize, scale, sub, vec3, type Vec3 } from './vec3';
 
@@ -42,7 +43,11 @@ export type RopeId =
   | 'rope_jib_sheet'
   | 'rope_jib_furling_line'
   | 'rope_main_halyard'
-  | 'rope_spi_halyard';
+  | 'rope_spi_halyard'
+  | 'rope_gennaker_tack_line'
+  | 'rope_gennaker_sheet_port'
+  | 'rope_gennaker_sheet_starboard'
+  | 'rope_gennaker_sock_line';
 
 export interface RopeStrand {
   points: Vec3[];
@@ -332,6 +337,7 @@ export function ropeDrawings(
   rig: RigState,
   data: BoatData = boat,
   winches?: readonly WinchWrap[],
+  gennaker: GennakerSetup = STOWED,
 ): RopeDrawing[] {
   const pose = drawnPose(rig);
   const segments = data.visual.ropeSagSegments;
@@ -527,7 +533,8 @@ export function ropeDrawings(
     outhaul,
     furlingLine,
     ...jibRopes(rig, data, winches, lead),
-    ...halyards(lead, data),
+    ...halyards(lead, data, gennaker),
+    ...gennakerRopes(gennaker, data),
   ];
 }
 
@@ -538,7 +545,11 @@ export function ropeDrawings(
  * halyard is parked: from the masthead down the front of the mast to its shackle at the mast
  * foot, and its tail from the mast foot to "SPI HALYARD". Both are drawn taut.
  */
-function halyards(lead: (rope: RopeId, tail?: string) => Vec3[], data: BoatData): RopeDrawing[] {
+function halyards(
+  lead: (rope: RopeId, tail?: string) => Vec3[],
+  data: BoatData,
+  gennaker: GennakerSetup,
+): RopeDrawing[] {
   const tail = (rope: RopeId): RopeStrand => {
     const exit = mastExitPoint(lineSpec(rope, undefined, data));
     if (!exit) throw new Error(`No mast exit for ${rope} in hanse508.json.`);
@@ -548,17 +559,53 @@ function halyards(lead: (rope: RopeId, tail?: string) => Vec3[], data: BoatData)
   if (!('parked' in spi) || !spi.parked) {
     throw new Error('No parked run for the gennaker halyard in hanse508.json.');
   }
+  const gennakerHalyard = gennakerDrawing(gennaker, data).halyard ?? undefined;
   return [
     { id: 'rope_main_halyard', state: 'taut', strands: [tail('rope_main_halyard')] },
     {
       id: 'rope_spi_halyard',
       state: 'taut',
       strands: [
-        { points: [vec3(spi.parked.masthead), vec3(spi.parked.end)], feed: 0 },
+        { points: gennakerHalyard ?? [vec3(spi.parked.masthead), vec3(spi.parked.end)], feed: 0 },
         tail('rope_spi_halyard'),
       ],
     },
   ];
+}
+
+/**
+ * The gennaker's four lines (M105), each drawn only once its rigging step has put it on: the tack
+ * line and the halyard taut, the sheets and the sock line slack, each piece of them hanging a
+ * little between its points (`sails.gennaker.sheetSlackM`). One strand each, no feed.
+ */
+function gennakerRopes(gennaker: GennakerSetup, data: BoatData): RopeDrawing[] {
+  const drawing = gennakerDrawing(gennaker, data);
+  const segments = data.visual.ropeSagSegments;
+  const slack = data.sails.gennaker.sheetSlackM;
+  const hang = (points: readonly Vec3[]): Vec3[] => {
+    const out: Vec3[] = [];
+    for (let i = 1; i < points.length; i += 1) {
+      const a = points[i - 1];
+      const b = points[i];
+      if (!a || !b) continue;
+      const piece = sagCurve(a, b, slack, segments, data);
+      out.push(...(i === 1 ? piece : piece.slice(1)));
+    }
+    return out;
+  };
+  const drawn: RopeDrawing[] = [];
+  const put = (id: RopeId, state: RopeState, points: Vec3[] | null | undefined) => {
+    if (points) drawn.push({ id, state, strands: [{ points, feed: 0 }] });
+  };
+  put('rope_gennaker_tack_line', 'taut', drawing.tackLine);
+  put('rope_gennaker_sheet_port', 'slack', drawing.sheets ? hang(drawing.sheets.port) : null);
+  put(
+    'rope_gennaker_sheet_starboard',
+    'slack',
+    drawing.sheets ? hang(drawing.sheets.starboard) : null,
+  );
+  put('rope_gennaker_sock_line', 'slack', drawing.sockLine ? hang(drawing.sockLine) : null);
+  return drawn;
 }
 
 /**

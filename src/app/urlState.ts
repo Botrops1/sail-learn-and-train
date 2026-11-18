@@ -6,6 +6,7 @@ import {
   type ExerciseOptions,
   type ExerciseWaypoint,
 } from './exerciseRun';
+import { leewardSide, STOWED, type GennakerSetup, type GennakerStage } from '../model/gennaker';
 import { compassDeg, knToMps, mpsToKn, wrap180, wrap360 } from '../model/angles';
 import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
@@ -251,6 +252,7 @@ export function parseUrlState(
     sea: parseSea(params, start),
     ...parseClock(params),
     harbour,
+    gennaker: parseGennaker(params, controls.ctl_wind_dir ?? 60, boatState.headingDeg ?? 0),
   });
   // The lines need the boat as she lies (the far ends are our berth's), so they come last (M44),
   // and so does the anchor, whose chain must reach from her bow (M46).
@@ -273,6 +275,32 @@ export function parseUrlState(
     )
     ? { ...attached, settings: { ...attached.settings, timeScale } }
     : attached;
+}
+
+/**
+ * `gn` (0-4) and `gx` (`p` / `s`), M105. Anything but 0-4 is stowed; `gx` counts from stage 2 and
+ * is then the leeward side (the wind's angle off the bow) when it is missing or invalid.
+ */
+function parseGennaker(
+  params: URLSearchParams,
+  windDirDeg: number,
+  headingDeg: number,
+): GennakerSetup {
+  const gn = params.get('gn');
+  if (gn === null || !/^[1-4]$/.test(gn)) return STOWED;
+  const stage = Number(gn) as GennakerStage;
+  if (stage < 2) return { ...STOWED, stage };
+  const gx = params.get('gx');
+  const side = gx === 'p' ? -1 : gx === 's' ? 1 : leewardSide(wrap180(windDirDeg - headingDeg));
+  return { ...STOWED, stage, side };
+}
+
+/** The gennaker's link keys: nothing while it is stowed, `gx` only from stage 2. */
+function gennakerParams(setup: GennakerSetup): [string, string][] {
+  if (setup.stage === 0) return [];
+  const result: [string, string][] = [['gn', String(setup.stage)]];
+  if (setup.stage >= 2) result.push(['gx', setup.side === -1 ? 'p' : 's']);
+  return result;
 }
 
 /** The keys of an exercise link that belong to the viewer, not to the exercise (PHASE10_SPEC 4.3). */
@@ -945,6 +973,7 @@ export function serializeUrlState(state: AppState): string {
   for (const [name, value] of clockParams(state)) params.set(name, value);
   if (state.harbour.fendersOut) params.set('fd', '1');
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
+  for (const [name, value] of gennakerParams(state.gennaker)) params.set(name, value);
   if (state.settings.debug) params.set('debug', '1');
   // Commas and colons need no escaping in a query (co=a5,b3 and ln=sp:2.55 stay readable).
   return `?${params.toString().replace(/%2C/g, ',').replace(/%3A/g, ':')}`;

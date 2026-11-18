@@ -258,6 +258,15 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           const rect = renderer.domElement.getBoundingClientRect();
           return picker.hitCentres(rect.width, rect.height);
         },
+        /** M105: true when a mesh of the boat with this part id is visible together with all its parents. */
+        partVisible: (partId: string) => {
+          let seen = false;
+          boatModel.root.traverse((object) => {
+            if (seen || object.userData.partId !== partId) return;
+            seen = visibleUpTree(object);
+          });
+          return seen;
+        },
         /** True if the boat has a mesh with this part id (M58: a boat without a thruster has no tunnel). */
         hasPart: (partId: string) => {
           let found = false;
@@ -787,6 +796,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         flashingRopes(state),
         state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
         state.sailDamage,
+        state.gennaker,
       );
       dangerZone.update(state.rig);
       // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).

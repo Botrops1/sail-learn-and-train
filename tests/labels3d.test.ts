@@ -34,7 +34,10 @@ describe('M5: labels in 3D (model)', () => {
 
   it('every rope has a label, sitting on the rope as drawn', () => {
     const list = anchors();
-    for (const rope of boat.ropes.list) expect(point(list, rope.id), rope.id).toBeDefined();
+    // The gennaker's lines (M105) have no 3D label.
+    for (const rope of boat.ropes.list.filter((r) => !r.id.startsWith('rope_gennaker_'))) {
+      expect(point(list, rope.id), rope.id).toBeDefined();
+    }
   });
 
   it('labels follow what they name: the boom label swings with the boom, the main sheet label with its rope', () => {

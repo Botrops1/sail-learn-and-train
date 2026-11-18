@@ -80,6 +80,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `languages.ts` | The available languages (from every `content/lang/*/ui.json`) and `latinAllowed`. |
 | `glossary.ts` | The glossaries by language, `learnEntry`, `NOT_DRAWN`, `FAR_AWAY`, `sourceLink`, groups and `searchGlossary`. |
 | `horizonLand.ts` | The distant land's outline from the area's ridges (pure). |
+| `gennaker.ts` | The optional gennaker's rigging: stage and side, the commands, the sheets' route outside the lifelines, what each stage draws. |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
 | `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts` | Apparent wind, lift/drag, resistance, speed/heading/position, sideways motion and turning on the spot at low speed. `stepBoat` merges the contacts of its substeps. |
 | `heel.ts`, `sheetLoads.ts` | Heel and weather helm; sheet loads from the sail forces. |
@@ -120,6 +121,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `boat/mooringFittings.ts` | The horn cleats and fairleads on the toerail; static. |
 | `boat/thrusters.ts` | Each thruster's tunnel (only the ends the boat has) and the water jets shown while a joystick is held. |
 | `boat/fenders.ts` | The eight fenders and the ball fender; hidden in the locker. |
+| `boat/gennaker.ts` | The gennaker's bag, sock tube and the two sheet blocks, shown by rigging stage; its lines come from `ropePaths.ts`. |
 | `boat/sailMesh.ts`, `boat/ropes.ts`, `boat/telltales.ts` | Sails, ropes (capped ends, smooth tubes, whipped tails, braid normal map), telltales and the tear mark; `BoatModel.ropeStats()` reads what was drawn. |
 | `boat/winchHandle.ts` | The one winch handle, placed from `handlePose`, hidden when carried or in Easy ropes. |
 | `boat/smallFittings.ts` | High detail only: shroud feet, deck hatches, hull windows and soft contact patches (not pickable). |
@@ -191,7 +193,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 - `scripts/check.mjs` (types in `check.d.mts`): `npm run check` runs typecheck, lint, format, tests and build with each step's output captured, one line per step, the last 80 lines of the first step that fails; `--from <step>` starts later. `scripts/quiet-log.mjs` (types in `quiet-log.d.mts`): `shots.mjs` holds back the lines of a scene, a tap sweep or a live group and prints them only if it went wrong; `tests/quietChecks.test.ts` tests both.
 - `scripts/exercise-drive.mjs`: drives an exercise run from a check (read it, turn, set the controls, wait for a step) and sets the time scale, so a run that only leads to the state a check looks at goes at ×16 (a scripted pilot at ×4).
 - `scripts/budget.mjs`: the `budget` browser check run on every PR: draw calls and triangles in each preset view, both details, Easy and Realistic ropes, against `BUDGET`. `scripts/a11y-audit.mjs`: accessibility audit. `scripts/visual-shots.mjs`: detail-level close-ups. `scripts/compare/`: model against a reference sketch.
-- `scripts/review-doc.mjs` (types in `review-doc.d.mts`): `npm run review-doc -- <code>` writes the review document for a sailor who reads one language (`docs/review/<code>.md` and `<code>-exercises.md`: ru, de, no); `tests/glossary.test.ts` fails when the committed files are out of date. `docs/LANGUAGES.md`: how to add a language.
+- `scripts/review-doc.mjs` (types in `review-doc.d.mts`): `npm run review-doc -- <code>` writes the review document for a sailor who reads one language (`docs/review/<code>.md`, `<code>-ui.md` and `<code>-exercises.md`: ru, de, no); `tests/glossary.test.ts` fails when the committed files are out of date. `docs/LANGUAGES.md`: how to add a language.
 - `scripts/ci-shots.mjs` (types in `ci-shots.d.mts`, tests in `tests/ciRetry.test.ts`): runs one browser part of CI and, if it fails, runs only the groups that failed once more (`shots.mjs` writes them to `SHOTS_FAILED_FILE`); a pass the second time is green with a "Flaky check" warning and a record. `scripts/flaky-report.mjs` (types in `flaky-report.d.mts`): turns the records into the `browser-checks` summary and, in `nightly.yml`, into the issue "Flaky check: <group>".
 - `scripts/ci-plan.mjs` (types in `ci-plan.d.mts`, tests in `tests/ciPlan.test.ts`): plans the browser checks of CI (live groups, docs-only PRs, groups by changed path, packing into parts, the matrix); the `plan` job runs its command line.
 - `GROUP_ALIASES` in `scripts/ci-plan.mjs` names the milestones whose checks run inside an older group (the groups are listed in `liveGroups` of `shots.mjs`).

@@ -424,6 +424,41 @@ function buildSettingsBody(store: Store, keyHelp: KeyHelp): HTMLElement[] {
     el('p', { class: 'hint' }, [t('settings.miniMap.hint')]),
   ]);
 
+  // M105: the optional gennaker, stowed or rigged (the Sails section lists the steps).
+  const gennakerStowed = el(
+    'button',
+    { type: 'button', class: 'segment', 'data-testid': 'gennaker-stowed' },
+    [t('settings.gennaker.stowed')],
+  );
+  const gennakerRigged = el(
+    'button',
+    { type: 'button', class: 'segment', 'data-testid': 'gennaker-rigged' },
+    [t('settings.gennaker.rigged')],
+  );
+  gennakerStowed.addEventListener('click', () =>
+    store.dispatch({ type: 'gennaker', command: 'stow' }),
+  );
+  gennakerRigged.addEventListener('click', () =>
+    store.dispatch({ type: 'gennaker', command: 'rig' }),
+  );
+  const gennakerField = el(
+    'fieldset',
+    { class: 'field segmented', 'data-testid': 'gennaker-setting' },
+    [
+      el('legend', {}, [t('settings.gennaker.label')]),
+      el('p', { class: 'hint' }, [t('settings.gennaker.hint')]),
+      el('div', { class: 'segments' }, [gennakerStowed, gennakerRigged]),
+    ],
+  );
+  const syncGennaker = (state = store.getState(), previous?: typeof state) => {
+    if (previous && state.gennaker.stage === previous.gennaker.stage) return;
+    const rigged = state.gennaker.stage > 0;
+    gennakerStowed.setAttribute('aria-pressed', String(!rigged));
+    gennakerRigged.setAttribute('aria-pressed', String(rigged));
+  };
+  store.subscribe(syncGennaker);
+  syncGennaker();
+
   const sync = (state = store.getState(), previous?: typeof state) => {
     if (previous && state.settings === previous.settings) return;
     const { settings } = state;
@@ -443,6 +478,7 @@ function buildSettingsBody(store: Store, keyHelp: KeyHelp): HTMLElement[] {
     buildKeysField(keyHelp),
     buildSoundField(),
     buildBoatField(store),
+    gennakerField,
     labelsField,
     timeBarField,
     clockField,

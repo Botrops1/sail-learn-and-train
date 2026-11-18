@@ -202,11 +202,17 @@ describe('boat model', () => {
       'rope_topping_lift',
       'rope_vang',
     ]);
-    expect(ropes).toEqual(boat.ropes.list.map((rope) => rope.id).sort());
+    // At stage 0 the gennaker's four lines (M105) are not drawn, so they have no mesh yet.
+    expect(ropes).toEqual(
+      boat.ropes.list
+        .map((rope) => rope.id)
+        .filter((id) => !id.startsWith('rope_gennaker_'))
+        .sort(),
+    );
   });
 
-  it('optional sails are data-driven: the gennaker is not built while disabled', () => {
-    expect(boat.sails.gennaker.enabled).toBe(false);
+  it('optional sails are data-driven: the gennaker can be rigged, but its sail is not drawn before M106', () => {
+    expect(boat.sails.gennaker.enabled).toBe(true);
     expect(partIds.has('sail_gennaker')).toBe(false);
   });
 });

@@ -117,6 +117,14 @@ export function revealRopeStrip(): void {
   }
 }
 
+/** The rigging step (M105) from which each gennaker line is on the boat and so in the list. */
+const GENNAKER_ROPE_STAGE: Readonly<Record<string, number>> = {
+  rope_gennaker_tack_line: 1,
+  rope_gennaker_sheet_port: 2,
+  rope_gennaker_sheet_starboard: 2,
+  rope_gennaker_sock_line: 4,
+};
+
 /** `openEntry` opens an entry in the Learn section (the "Read more in Learn" buttons). */
 export function createRopesTab(
   store: Store,
@@ -221,6 +229,11 @@ export function createRopesTab(
 
   let shown: EntryView | undefined;
   const refresh = (state: AppState, previous?: AppState) => {
+    // M105: the gennaker's lines are listed from the rigging step that puts them on.
+    for (const view of views) {
+      const from = GENNAKER_ROPE_STAGE[view.entry.key];
+      if (from !== undefined) view.row.hidden = state.gennaker.stage < from;
+    }
     if (!previous || state.selection !== previous.selection) {
       const entry = entryFor(state.selection);
       const next = views.find((view) => view.entry === entry);

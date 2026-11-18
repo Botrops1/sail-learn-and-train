@@ -494,9 +494,69 @@
           "term": "Asymmetrisk spinnaker"
         }
       ],
-      "short": "Et stort, lett seil for vind bakfra; ikke om bord på denne båten.",
+      "short": "Et stort, lett seil for vind fra siden eller bakfra; et tilvalg på denne båten.",
       "what": "En gennaker er et stort, lett, buet seil som flyes fra baugen og toppen av masten når vinden kommer bakfra på skrå. Den settes og tas ned for hver bruk.",
-      "onThisBoat": "Ikke på referansebåten; bare fallet («SPI HALYARD») er montert. Brukerhåndboken oppgir 200 m² for den valgfrie gennakeren. Appen viser ikke seilet.",
+      "onThisBoat": "Et tilvalg på Hanse 508 (brukerhåndboken oppgir 200 m², brosjyren 176,4 m²). Det rigges med en halsline i baugen, to skjøter og eget fall («SPI HALYARD»). Innstillinger → Gennaker rigger det.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_tack_line": {
+      "name": "Gennaker-halsline",
+      "alternatives": [],
+      "short": "Holder gennakerens fremre nedre hjørne nede ved baugen.",
+      "what": "En kort line fra et beslag i baugen til gennakerens hals (det fremre nedre hjørnet). Den er det første du fester når du rigger gennakeren. På mange båter kan den fires for å løfte forkanten av seilet; i appen har den fast lengde.",
+      "showMe": "Gennaker rigget, vind fra styrbord: Den røde halslinen går fra beslaget i baugen opp til nedre forkant av strømpen.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sheet_port": {
+      "name": "Gennakerskjøte (babord)",
+      "alternatives": [],
+      "short": "Ett av gennakerens to skjøter; det på siden bort fra vinden gjør jobben.",
+      "what": "Gennakeren har to skjøter, ett på hver side, begge festet til skjøtehjørnet (det bakre nedre hjørnet). Hvert går utenfor alt: utenfor vantene, støttene og rekkverkets wirer, til en blokk nær hekken og videre til den bakre vinsjen på sin side. Skjøtet på siden bort fra vinden (le) trimmer seilet; det andre, det slakke skjøtet, henger slakt til du gybber.",
+      "showMe": "Gennaker rigget, vind fra styrbord: Babord skjøte (den nære) går fra seilets bakre hjørne utenfor alt langs dekkskanten, rundt en blokk nær hekken og videre til vinsjen.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sheet_starboard": {
+      "name": "Gennakerskjøte (styrbord)",
+      "alternatives": [],
+      "short": "Ett av gennakerens to skjøter; det på siden bort fra vinden gjør jobben.",
+      "what": "Gennakeren har to skjøter, ett på hver side, begge festet til skjøtehjørnet (det bakre nedre hjørnet). Hvert går utenfor alt: utenfor vantene, støttene og rekkverkets wirer, til en blokk nær hekken og videre til den bakre vinsjen på sin side. Skjøtet på siden bort fra vinden (le) trimmer seilet; det andre, det slakke skjøtet, henger slakt til du gybber.",
+      "showMe": "Gennaker rigget, vind fra styrbord: Styrbord skjøte (den fjerne, det slakke skjøtet) går utenfor alt langs sin dekkskant, rundt en blokk nær hekken og videre til vinsjen.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sock_line": {
+      "name": "Strømpeline",
+      "alternatives": [],
+      "short": "Trekker strømpen opp for å sette gennakeren og ned for å ta den inn.",
+      "what": "Gennakeren går opp inni et langt tøyrør, strømpen. Linen er en løkke: trekker du i den ene delen, glir strømpen opp langs seilet, som åpner seg og fyller seg; trekker du i den andre, kommer strømpen ned over seilet og kveler det.",
+      "showMe": "Gennaker rigget: Den tynne strømpelinen går fra foten av strømpen ned til baugen.",
+      "textStatus": "draft"
+    },
+    "part_gennaker_sock": {
+      "name": "Gennakerstrømpe",
+      "alternatives": [
+        {
+          "term": "Snuffer"
+        }
+      ],
+      "short": "Et tøyrør som holder gennakeren samlet til du vil ha den.",
+      "what": "Et langt tøyrør med en ring nederst. Gennakeren heises inni det, så den går opp som en harmløs pølse. Trekker du strømpen opp, slippes seilet ut; trekker du den ned, samles det igjen.",
+      "showMe": "Gennaker rigget: Det lange røret fra baugen til toppen av masten er strømpen, med seilet inni.",
+      "textStatus": "draft"
+    },
+    "part_gennaker_bag": {
+      "name": "Gennakersekk",
+      "alternatives": [],
+      "short": "Der gennakeren ligger når den ikke er oppe.",
+      "what": "Gennakeren er pakket i strømpen inni en sekk. For å rigge den kommer sekken til baugen og surres fast, med topp, hals og skjøtehjørne ved åpningen, så halslinen, skjøtene og fallet kan klikkes på før den går opp.",
+      "showMe": "Gennaker ved riggetrinn 3: Sekken ligger på foredekket ved baugen, med halslinen, skjøtene og fallet festet.",
+      "textStatus": "draft"
+    },
+    "fit_gennaker_block": {
+      "name": "Gennakerskjøteblokk",
+      "alternatives": [],
+      "short": "En blokk nær hekken som snur gennakerskjøtet mot vinsjen.",
+      "what": "Én på hver side, på rekkverkskanten nær hekken. Skjøtet kommer fra seilet utenfor alt og snur her, framover til den bakre vinsjen.",
+      "showMe": "Gennaker rigget: Den lille blokken på rekkverkskanten nær hekken snur skjøtet mot vinsjen.",
       "textStatus": "draft"
     },
     "sailpart_head": {

@@ -13,7 +13,7 @@ Everything we know about the real boat, where each fact comes from, and what is 
 | Vang | **Rigid vang**: Seldén Rodkicker (size 30) strut with rope tackle. Its gas spring holds the boom up; the tackle pulls it down | Photo `mast-gooseneck-vang-outhaul.jpg` |
 | Topping lift | Line from the boom end up the mast ("Boom lift") | Photo `mainsheet-german.jpg` |
 | Mast and lines | Two swept-back spreader sets. Lines come down the mast, turn at Seldén blocks around the mast foot and run aft in covered channels on the coachroof | Photos `mast-spreaders.jpg`, `mast-base-turning-blocks*.jpg` |
-| Gennaker | Not rigged (the halyard exists: "SPI HALYARD") | Owner; clutch label |
+| Gennaker | Optional: stowed unless rigged (Settings → Gennaker); its halyard exists ("SPI HALYARD"). See "Gennaker (M105)" in section 5 | Owner; clutch label |
 | Steering | Twin wheels, emergency tiller, compass at each wheel; B&G instrument display and autopilot control at the helm | Brochure; photo `cockpit-winch-clutches.jpg` |
 | Engine | Diesel about 80 hp, saildrive, 2-blade fixed propeller; single-lever control; 2500 rpm limit sticker | Brochure; photo |
 | Winches | 2 × Lewmar self-tailing, **electric** (push button; owner), size about 55 per the brochure, **one per side** next to the wheel, with the clutch bank just in front of it. No secondary winches. Port winch takes bank B and JIB ROLL, starboard winch bank A, one rope at a time. Each side's ropes go to that side's winch (owner). One winch handle on board, used mainly at the mast furling gearbox (IN/OUT switch) to roll the main in by hand when the furling line slips; the model on the drum is not marked (owner), so the EVO 55 power ratios 13.8 / 54 are a stand-in. | Brochure; photo `cockpit-winch-clutches.jpg`; ratios: PHYSICS_TRUTHS source [7] |
@@ -316,6 +316,25 @@ Photos: [`reference/photos/`](reference/photos) (the owner's own, CC BY-SA 4.0).
 | Engine sound (M88) | a 4-cylinder four-stroke diesel, so the engine fires twice per turn (`sounds.json` `engine.firesPerRev`); 800 rpm → 26.7 Hz, 2,500 rpm → 83.3 Hz | **Assumption** (sound only) |
 | Phase 10c: local winds (M94; area data, not boat values: `content/areas/adriatic.json` `localWinds`) | Summer day: the maestral from 315° (north-west) rises from 10:00 to its peak at 14:00, holds until 15:00 and falls to calm by sunset; gusts 15 %; strength 8–22 kn (default 14). Burin (land breeze) from 045° (off the land), 6 kn, rising from 1 h to 3 h after sunset, falling in the 1.5 h after sunrise; gusts 10 %. Calm = 1.5 kn. Bura from 045°, reaches its strength in 2 min, 20 % stronger at night (1 h ramps at sunset and sunrise), gusts 50 %; strength 10–24 kn (default 18). Jugo from 135°, reaches its strength in 2 min, gusts 10 %; 10–28 kn (default 16). The two exercise scripts (the bura at 08:04, the night at anchor) are in `content/exercises/exercises.json` (PHASE10_SPEC 27.2, 28.2) | Directions and the course of the day: PHYSICS_TRUTHS PT-63 … PT-66; the hours, speeds, ramps and gust sizes are **assumptions** for teaching (the charter guides that give hours and speeds do not open from the build environment, 2026-11-09) |
 | No cunningham (M100) | none: with in-mast furling the mainsail's luff sits on the furling rod inside the mast, so nothing pulls it down; its tension comes from the main halyard. The Learn entry `term_cunningham` says so | **Assumption**; open question 23 |
+
+### Gennaker (M105)
+
+The gennaker is a brochure option (176.4 m² in the brochure, 200 m² in the manual; the app uses the manual's, as for the main and jib). Every position below is an **assumption** (`content/boat/hanse508.json` → `sails.gennaker`), tunable only to fix a drawing clash.
+
+| Assumption | Value used | Status |
+|---|---|---|
+| Area | 200 m² (`officialAreaM2`) | Manual figure |
+| Tack fitting and tack | fitting on the bow roller's tip, [6.92, 1.80, 0]; the tack hangs 0.6 m above it on the tack line, [6.95, 2.40, 0] (no bowsprit) | **Assumption** |
+| Head and foot | head [0.35, 21.0, 0] (just under the masthead); foot 11.4 m, rising 4° | **Assumption** (shape is used from M106) |
+| Snuffed clew | 0.3 m aft of and 0.8 m above the tack, [−0.3, 0.8, 0] | **Assumption** |
+| The bag | a cylinder 0.44 m across and 0.6 m long on the foredeck just behind the stem, to port of the jib's furling drum; mouth [6.2, 2.15, −0.25] | **Assumption** (the mouth is placed so the halyard clears the forestay: 0.067 m at the closest) |
+| The sock | 0.36 m across; its line is 0.4 m above the tack and ends at [6.5, 1.85, 0.15] | **Assumption** |
+| Sheet blocks | one each side on the toerail near the stern, [−8.0, 1.5, ±2.1], 0.05 m radius | **Assumption** (the real position is not known) |
+| The sheets' way | along the deck edge, 0.15 m outside it and 0.1–0.15 m above the sheer, at x 5.6, 4, 2, 0, −2, −4, −6 (2 m apart because the deck edge curves), to the block, then the primary winch on that side | **Assumption**: outside the lifelines, shrouds and stanchions |
+| Slack in a sheet or the sock line | 0.3 m a piece (`sheetSlackM`) | **Assumption** (drawing only) |
+| The lazy sheet's route (M106) | via [7.35, 3.4, 0] and [4.5, 2.55, 1.15] on the windward side | **Assumption** |
+| Line sizes | sheets 12 mm × 28 m (manual), tack line 10 mm × 4 m, sock line 8 mm × 44 m | Sheets from the manual; the others **assumptions** |
+| Line colour in the app | vermilion `#d55e00` with the dash pattern `6 2 1 2`; the real sheets' tracer is red | Presentation |
 
 ## 6. Open questions for the skipper / next time aboard
 

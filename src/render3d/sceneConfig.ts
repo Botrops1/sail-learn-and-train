@@ -431,6 +431,8 @@ export const SCENE = {
       halyard: '#4b545c',
       /** M44: the mooring lines of the marina (sky blue, from the same colour-blind-safe set; not in the boat's rope list). */
       mooring: '#56b4e9',
+      /** M105: the gennaker's lines (vermilion, from the same colour-blind-safe set; the real sheets' tracer is red). */
+      gennaker: '#d55e00',
     },
     fighting: '#e8112d',
     /** A rope running out (Realistic mode, PHASE1_SPEC 7.2.2) flashes between its colour and this. */

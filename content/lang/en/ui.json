@@ -175,7 +175,7 @@
   "ropes.sharedDetail.ctl_mainsheet": "The “Main sheet” clutch (starboard) and the “MAIN SHEET” clutch (port) hold the two ends of the same line, so it can be worked from either side.",
   "ropes.sharedDetail.ctl_main_furl": "The two “Main furling” clutches hold the two tails of one furling line: the left one rolls the mainsail in, the right one rolls it out. “Main outhaul” is pulled together with the “out” tail.",
   "ropes.static.inMastFurling": "Not adjusted while sailing: with in-mast furling the main halyard stays hoisted.",
-  "ropes.static.notRigged": "Not used: no gennaker (a big sail for downwind) is rigged on this boat, so its halyard is parked.",
+  "ropes.static.gennaker": "Part of the gennaker: see Sails → Gennaker.",
   "ropes.static.none": "Not adjusted while sailing.",
   "ropes.list.title": "All lines and the wheel",
   "ropes.list.static": "not adjusted",
@@ -862,6 +862,10 @@
   "map.closeShort": "Close",
   "settings.miniMap.label": "Mini-map",
   "settings.miniMap.hint": "A small map in the corner while sailing: the boat, the wind, her track and the buoys. Tap it for the full map.",
+  "settings.gennaker.label": "Gennaker",
+  "settings.gennaker.stowed": "Stowed",
+  "settings.gennaker.rigged": "Rigged",
+  "settings.gennaker.hint": "Rigged puts it up in its sock, ready to set. The Sails section shows the steps.",
   "status.label": "Status",
   "status.hint": "The boat's condition in one place: the sails' wear, the gear, what was hit, and everything that happened, newest first.",
   "status.sails": "Sails",
@@ -1138,5 +1142,12 @@
   "pos.short.beam_reach": "Beam reach",
   "pos.short.broad_reach": "Broad reach",
   "pos.short.run": "Run",
-  "minimap.openWithPoint": "Mini-map, now {point}: tap to open the full map."
+  "minimap.openWithPoint": "Mini-map, now {point}: tap to open the full map.",
+  "gennaker.title": "Gennaker",
+  "gennaker.step1": "Bag to the bow, tack line on",
+  "gennaker.step2": "Sheets led outside everything, to the stern blocks",
+  "gennaker.step3": "Halyard on the head, in front of the forestay",
+  "gennaker.step4": "Hoisted in its sock",
+  "gennaker.next": "Next step",
+  "gennaker.back": "Undo a step"
 }

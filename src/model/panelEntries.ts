@@ -10,7 +10,7 @@ import { isControlId, type ControlId } from './controls';
 /** How the clutches of one control relate (PHASE1_SPEC 7.2 hints). */
 export type SharedKind = 'twoEnds' | 'workAgainst';
 
-export type StaticNote = 'inMastFurling' | 'notRigged';
+export type StaticNote = 'inMastFurling' | 'gennaker';
 
 export interface PanelEntry {
   /** The control id, or the rope id of a static rope. */

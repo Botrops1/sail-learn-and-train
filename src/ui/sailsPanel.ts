@@ -18,6 +18,62 @@ function tone(state: TrimState | 'torn'): 'good' | 'luffing' | 'stalled' | 'idle
   return 'idle';
 }
 
+const GENNAKER_STEPS = [
+  'gennaker.step1',
+  'gennaker.step2',
+  'gennaker.step3',
+  'gennaker.step4',
+] as const;
+
+/**
+ * M105: the gennaker's four rigging steps, shown from the first step on (Settings → Gennaker →
+ * Rigged is the way in from stowed). Each step is ticked when done, the next one is marked, and
+ * two buttons go a step on or undo one (never take the sock down from here: from stage 4 it
+ * comes off only while the sock is down, which M106 adds).
+ */
+function buildGennakerBlock(store: Store): HTMLElement {
+  const items = GENNAKER_STEPS.map((key, index) => {
+    const tick = el('span', { class: 'gennaker-tick', 'aria-hidden': 'true' });
+    const item = el('li', { class: 'gennaker-step', 'data-testid': `gennaker-step-${index + 1}` }, [
+      tick,
+      el('span', {}, [t(key)]),
+    ]);
+    return { item, tick };
+  });
+  const list = el('ol', { class: 'gennaker-steps', 'data-testid': 'gennaker-steps' }, [
+    ...items.map(({ item }) => item),
+  ]);
+  const back = el('button', { type: 'button', class: 'segment', 'data-testid': 'gennaker-back' }, [
+    t('gennaker.back'),
+  ]);
+  const next = el('button', { type: 'button', class: 'segment', 'data-testid': 'gennaker-next' }, [
+    t('gennaker.next'),
+  ]);
+  back.addEventListener('click', () => store.dispatch({ type: 'gennaker', command: 'back' }));
+  next.addEventListener('click', () => store.dispatch({ type: 'gennaker', command: 'next' }));
+  const root = el('div', { class: 'gennaker-block', 'data-testid': 'gennaker-block', hidden: '' }, [
+    el('h4', { class: 'gennaker-title' }, [t('gennaker.title')]),
+    list,
+    el('div', { class: 'segments' }, [back, next]),
+  ]);
+  const refresh = (state: AppState) => {
+    const { stage } = state.gennaker;
+    root.hidden = stage < 1;
+    items.forEach(({ item, tick }, index) => {
+      const done = stage >= index + 1;
+      item.dataset.done = String(done);
+      if (index + 1 === stage + 1) item.setAttribute('aria-current', 'step');
+      else item.removeAttribute('aria-current');
+      tick.textContent = done ? '✓' : '';
+    });
+    back.disabled = stage <= 0;
+    next.disabled = stage >= 4;
+  };
+  store.subscribe(refresh);
+  refresh(store.getState());
+  return root;
+}
+
 /**
  * The Sails block of the Ropes tab (PHASE2_SPEC 9.3): one row per sail with its trim state and
  * what to do about it. The wear bars and Repair sails moved to the Status section (M55,
@@ -41,12 +97,14 @@ export function createSailsPanel(store: Store): HTMLElement {
     return { sail, root, chip, hint };
   });
 
+  const gennaker = buildGennakerBlock(store);
   const root = el(
     'section',
     { class: 'sails-panel', 'data-testid': 'sails-panel', 'aria-label': t('trim.label') },
     [
       el('p', { class: 'hint trim-intro explain' }, [t('trim.intro')]),
       ...rows.map((row) => row.root),
+      gennaker,
     ],
   );
 
