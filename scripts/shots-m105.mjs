@@ -26,12 +26,12 @@ export async function liveM105Checks({ openPage, viewports, problems }) {
     return opened;
   };
   const visible = (page, id) => page.evaluate((part) => window.__sailDebug.partVisible(part), id);
-  /** The page's link once it has every part of `has` and none of `hasNot`, or the link as it is. */
+  /** The page's link once it has every part of `has` and none of `hasNot`, or the link as it is (so a check fails honestly). */
   const link = async (page, has, hasNot = []) => {
     try {
       return await waitForLink(page, has, hasNot);
-    } catch (error) {
-      return error instanceof Error ? error.message : String(error);
+    } catch {
+      return page.evaluate(() => window.location.search + window.location.hash);
     }
   };
 
@@ -41,12 +41,14 @@ export async function liveM105Checks({ openPage, viewports, problems }) {
     await openSettings(page);
     await page.getByTestId('gennaker-rigged').tap();
     const rigged = await link(page, ['gn=4']);
+    await page.waitForTimeout(300);
     check('Rigged: the link has gn=4', rigged.includes('gn=4'), rigged);
     check('Rigged: the sock is drawn', await visible(page, 'part_gennaker_sock'), 'not visible');
     const pressed = await page.getByTestId('gennaker-rigged').getAttribute('aria-pressed');
     check('Rigged: the button shows pressed', pressed === 'true', String(pressed));
     await page.getByTestId('gennaker-stowed').tap();
     const stowed = await link(page, [], ['gn=']);
+    await page.waitForTimeout(300);
     check('Stowed: gn leaves the link', !stowed.includes('gn='), stowed);
     check(
       'Stowed: the sock is gone',
@@ -84,6 +86,7 @@ export async function liveM105Checks({ openPage, viewports, problems }) {
     );
     await page.getByTestId('gennaker-back').tap();
     const two = await link(page, ['gn=2']);
+    await page.waitForTimeout(300);
     check('steps: Undo once gives gn=2', two.includes('gn=2'), two);
     check(
       'steps: the sheet blocks are drawn at gn=2',
