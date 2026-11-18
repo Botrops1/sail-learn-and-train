@@ -6,6 +6,7 @@ import {
   gennakerCommand,
   gennakerDrawing,
   leewardSide,
+  stageToShow,
   sheetLead,
   STOWED,
   type GennakerSetup,
@@ -187,6 +188,21 @@ describe('M105: the drawing', () => {
         .length;
     expect(count(2, 'rope_gennaker_sheet_port')).toBe(count(4, 'rope_gennaker_sheet_port'));
     expect(count(1, 'rope_gennaker_tack_line')).toBe(count(4, 'rope_gennaker_tack_line'));
+  });
+});
+
+describe('M105: Where is it? (Learn)', () => {
+  it('names the stage a part needs, and the drawn stage when it is already on the boat', () => {
+    expect(stageToShow('rope_gennaker_sheet_port', 0)).toBe(2);
+    expect(stageToShow('rope_gennaker_sheet_starboard', 3)).toBe(3);
+    expect(stageToShow('fit_gennaker_block', 1)).toBe(2);
+    expect(stageToShow('rope_gennaker_tack_line', 0)).toBe(1);
+    expect(stageToShow('part_gennaker_sock', 2)).toBe(4);
+    expect(stageToShow('rope_gennaker_sock_line', 4)).toBe(4);
+    expect(stageToShow('part_gennaker_bag', 0)).toBe(3);
+    expect(stageToShow('part_gennaker_bag', 2)).toBe(2);
+    expect(stageToShow('part_gennaker_bag', 4)).toBe(3);
+    expect(stageToShow('rope_vang', 0)).toBeNull();
   });
 });
 

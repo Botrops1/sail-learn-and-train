@@ -168,3 +168,26 @@ export function gennakerDrawing(setup: GennakerSetup, data: BoatData = boat): Ge
     sockLine: [add(tack, scale(along, g.sock.lineFromTackM)), vec3(g.sock.lineEnd)],
   };
 }
+
+/**
+ * The rigging stage a Learn entry's part needs to be on the boat: the tack line from 1, the sheets
+ * and their blocks from 2, the sock and its line at 4; the bag only while it is not yet hoisted
+ * (1 to 3). Null for a part that is not the gennaker's.
+ */
+export function stageToShow(partId: string, stage: GennakerStage): GennakerStage | null {
+  switch (partId) {
+    case 'rope_gennaker_tack_line':
+      return stage >= 1 ? stage : 1;
+    case 'rope_gennaker_sheet_port':
+    case 'rope_gennaker_sheet_starboard':
+    case 'fit_gennaker_block':
+      return stage >= 2 ? stage : 2;
+    case 'rope_gennaker_sock_line':
+    case 'part_gennaker_sock':
+      return 4;
+    case 'part_gennaker_bag':
+      return stage >= 1 && stage <= 3 ? stage : 3;
+    default:
+      return null;
+  }
+}

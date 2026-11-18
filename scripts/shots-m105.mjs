@@ -110,4 +110,31 @@ export async function liveM105Checks({ openPage, viewports, problems }) {
     check('ropes list: the sock line is not', !(await shown('rope_gennaker_sock_line')), 'listed');
     await context.close();
   }
+
+  // 5. Learn, from stowed: "Where is it?" on the port sheet rigs the sheets and flies to them.
+  {
+    const opened = await openPage(
+      phone,
+      'm105 learn',
+      `${B}&m=learn&learn=rope_gennaker_sheet_port&cam=side-starboard&debug=1`,
+      { testClock: true },
+    );
+    const { context, page } = opened;
+    await page.waitForTimeout(800);
+    check(
+      'learn: stowed at first, the sheet is not drawn',
+      !(await visible(page, 'rope_gennaker_sheet_port')),
+      'drawn',
+    );
+    await page.getByTestId('learn-show-on-boat').tap();
+    await page.waitForTimeout(1500);
+    const now = await link(page, ['gn=2']);
+    check('learn: Where is it? rigs the sheets (gn=2)', now.includes('gn=2'), now);
+    check(
+      'learn: the port sheet is drawn after the tap',
+      await visible(page, 'rope_gennaker_sheet_port'),
+      'not drawn',
+    );
+    await context.close();
+  }
 }
