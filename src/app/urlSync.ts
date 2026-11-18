@@ -69,6 +69,7 @@ export function startUrlSync(store: Store): void {
       state.sea.setting === previous.sea.setting &&
       state.selection === previous.selection &&
       state.learn === previous.learn &&
+      state.gennaker === previous.gennaker &&
       state.appMode === previous.appMode &&
       state.harbour.fendersOut === previous.harbour.fendersOut &&
       state.harbour.place === previous.harbour.place &&

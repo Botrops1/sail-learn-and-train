@@ -59,9 +59,9 @@ describe('searchGlossary (PHASE4_SPEC 7.3, 7.6)', () => {
 });
 
 describe('groupEntries (PHASE4_SPEC 7.3, 7.6)', () => {
-  it('7. the ropes group has 9 ids, sorted by English name', () => {
+  it("7. the ropes group has 13 ids (M105 added the gennaker's four), sorted by English name", () => {
     const ids = groupEntries('ropes');
-    expect(ids).toHaveLength(9);
+    expect(ids).toHaveLength(13);
     expect(ids[0]).toBe('rope_spi_halyard');
     expect(ids[ids.length - 1]).toBe('rope_vang');
   });

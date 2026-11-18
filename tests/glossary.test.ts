@@ -20,7 +20,11 @@ import { dangerZone } from '../src/model/gybe';
 import { entryFor } from '../src/model/panelEntries';
 import { significantHeightM, waveTrains } from '../src/model/waves';
 import { reduce } from '../src/app/store';
-import { buildExercisesReviewDoc, buildReviewDoc } from '../scripts/review-doc.mjs';
+import {
+  buildExercisesReviewDoc,
+  buildReviewDoc,
+  buildUiReviewDoc,
+} from '../scripts/review-doc.mjs';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 
 /** The entries that are complete in every language (3.2): M20's 18, M21's 55 and M22's 58 (every registry id). */
@@ -606,7 +610,7 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
 
   it('the groups have the expected sizes and members', () => {
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      9, 10, 13, 9, 18, 22, 13, 14, 32, 10, 20,
+      13, 11, 13, 9, 20, 22, 13, 14, 32, 10, 20,
     ]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',
@@ -672,6 +676,14 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
     ).toBe(true);
   });
 
+  it('docs/review/ru-ui.md (the interface texts) is up to date', () => {
+    const committed = readFileSync('docs/review/ru-ui.md', 'utf8');
+    expect(
+      buildUiReviewDoc('ru') === committed,
+      'a Russian interface text changed: run `npm run review-doc -- ru` and commit docs/review/ru-ui.md',
+    ).toBe(true);
+  });
+
   it('docs/review/ru-exercises.md (the exercise texts) is up to date', () => {
     const committed = readFileSync('docs/review/ru-exercises.md', 'utf8');
     expect(
@@ -680,7 +692,11 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
     ).toBe(true);
   });
 
-  it('docs/review/de.md and de-exercises.md (the German texts) are up to date', () => {
+  it('docs/review/de.md, de-ui.md and de-exercises.md (the German texts) are up to date', () => {
+    expect(
+      buildUiReviewDoc('de') === readFileSync('docs/review/de-ui.md', 'utf8'),
+      'a German interface text changed: run `npm run review-doc -- de` and commit docs/review/de-ui.md',
+    ).toBe(true);
     expect(
       buildReviewDoc('de') === readFileSync('docs/review/de.md', 'utf8'),
       'a German text changed: run `npm run review-doc -- de` and commit docs/review/de.md',
@@ -691,7 +707,11 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
     ).toBe(true);
   });
 
-  it('docs/review/no.md and no-exercises.md (the Norwegian texts) are up to date', () => {
+  it('docs/review/no.md, no-ui.md and no-exercises.md (the Norwegian texts) are up to date', () => {
+    expect(
+      buildUiReviewDoc('no') === readFileSync('docs/review/no-ui.md', 'utf8'),
+      'a Norwegian interface text changed: run `npm run review-doc -- no` and commit docs/review/no-ui.md',
+    ).toBe(true);
     expect(
       buildReviewDoc('no') === readFileSync('docs/review/no.md', 'utf8'),
       'a Norwegian text changed: run `npm run review-doc -- no` and commit docs/review/no.md',
@@ -716,14 +736,17 @@ describe('12. The review document for a sailor (PHASE4_SPEC 10.2)', () => {
       (ui[`learn.group.${group}`] ?? '').replace(/\s*\(?\{count\}\)?/, '').trim(),
     );
     expect(labels.slice(0, GROUPS.length)).toEqual(expected);
-    // The groups and the interface texts (the exercise texts are in ru-exercises.md since M71).
-    expect(labels.length).toBe(GROUPS.length + 1);
+    // Only the groups (the interface texts are in ru-ui.md since M105, the exercise texts in ru-exercises.md since M71).
+    expect(labels.length).toBe(GROUPS.length);
   });
 
   it('is smaller than GitHub shows as Markdown, and has no date', () => {
     const doc = buildReviewDoc('ru');
     expect(Buffer.byteLength(doc, 'utf8')).toBeLessThan(450 * 1024);
     expect(doc).not.toMatch(/\d{4}-\d{2}-\d{2}/);
+    const ui = buildUiReviewDoc('ru');
+    expect(Buffer.byteLength(ui, 'utf8')).toBeLessThan(450 * 1024);
+    expect(ui).not.toMatch(/\d{4}-\d{2}-\d{2}/);
     const exercises = buildExercisesReviewDoc('ru');
     expect(Buffer.byteLength(exercises, 'utf8')).toBeLessThan(450 * 1024);
     expect(exercises).not.toMatch(/\d{4}-\d{2}-\d{2}/);

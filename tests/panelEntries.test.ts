@@ -31,6 +31,10 @@ describe('Ropes tab entries (PHASE1_SPEC 7.2)', () => {
       'ctl_rudder',
       'rope_main_halyard',
       'rope_spi_halyard',
+      'rope_gennaker_tack_line',
+      'rope_gennaker_sheet_port',
+      'rope_gennaker_sheet_starboard',
+      'rope_gennaker_sock_line',
     ]);
     for (const candidate of panelEntries()) {
       expect(isRegisteredPartId(candidate.selectId), candidate.key).toBe(true);
@@ -81,12 +85,20 @@ describe('Ropes tab entries (PHASE1_SPEC 7.2)', () => {
     ]);
   });
 
-  it('static ropes say why they have no control (in-mast furling, gennaker not rigged)', () => {
+  it('static ropes say why they have no control (in-mast furling, the optional gennaker)', () => {
     expect(entry('rope_main_halyard')).toMatchObject({
       controlId: null,
       staticNote: 'inMastFurling',
     });
-    expect(entry('rope_spi_halyard')).toMatchObject({ controlId: null, staticNote: 'notRigged' });
+    for (const key of [
+      'rope_spi_halyard',
+      'rope_gennaker_tack_line',
+      'rope_gennaker_sheet_port',
+      'rope_gennaker_sheet_starboard',
+      'rope_gennaker_sock_line',
+    ]) {
+      expect(entry(key), key).toMatchObject({ controlId: null, staticNote: 'gennaker' });
+    }
   });
 
   it('a part without an entry highlights only itself; no selection highlights nothing', () => {

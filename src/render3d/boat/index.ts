@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { defaultControls, type Controls } from '../../model/controls';
+import { gennakerDrawing, STOWED, type GennakerSetup } from '../../model/gennaker';
 import { carPoint, jibClew } from '../../model/jib';
 import { drawnPose, ropeDrawings, type RopeDrawing, type WinchWrap } from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
@@ -14,6 +15,7 @@ import { buildBowGear } from './bowGear';
 import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
 import { buildFenders } from './fenders';
+import { buildGennaker } from './gennaker';
 import { buildHelmPedestals, type PanelStats } from './helmPedestal';
 import { PANEL_AT_REST, type PanelReadings } from '../../model/helmPanel';
 import type { Vec3 } from '../../model/vec3';
@@ -29,6 +31,9 @@ import { buildTelltales } from './telltales';
 import { buildWinchHandle } from './winchHandle';
 import type { HandlePose } from '../../model/handlePose';
 import { blanketFactor, NO_DAMAGE, type SailDamage } from '../../model/trim';
+
+/** A fully rigged gennaker: what the meshes are built for (the parts it does not draw are hidden). */
+const RIGGED: GennakerSetup = { stage: 4, side: 1, crossS: 0, crossFromDeg: 0 };
 
 export interface BoatModel {
   root: THREE.Group;
@@ -47,6 +52,7 @@ export interface BoatModel {
     flashing?: ReadonlySet<string>,
     winches?: readonly WinchWrap[],
     damage?: SailDamage,
+    gennaker?: GennakerSetup,
   ): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
@@ -94,7 +100,13 @@ export function buildBoat(
   const mainSail = buildSailMesh('sail_main', materials, mainSailGrid(mainInput));
   const jibSail = buildSailMesh('sail_jib', materials, jibSailGrid(jibInput));
   let drawings = ropeDrawings(rig);
-  const ropes = buildRopes(drawings, detail);
+  // The gennaker's four lines get their mesh when their rigging step first draws them.
+  const ropes = buildRopes(drawings, detail, (mesh) => {
+    mesh.castShadow = true;
+    mesh.receiveShadow = false;
+    root.add(mesh);
+  });
+  const gennakerParts = buildGennaker(materials, detail);
   const windex = buildWindex(materials);
   const telltales = buildTelltales(materials);
   const fenders = buildFenders(materials, detail);
@@ -120,6 +132,7 @@ export function buildBoat(
     mainSail.mesh,
     jibSail.mesh,
     ...ropes.objects,
+    ...gennakerParts.objects,
     windex.pivot,
     ...telltales.objects,
   );
@@ -131,6 +144,7 @@ export function buildBoat(
     flashing?: ReadonlySet<string>,
     winches?: readonly WinchWrap[],
     damage: SailDamage = NO_DAMAGE,
+    gennaker: GennakerSetup = STOWED,
   ) => {
     rigParts.setBoomPose(drawnPose(next));
     const main = mainSailInputFor(next, nextControls, next.wind);
@@ -150,8 +164,12 @@ export function buildBoat(
       next.timeS,
     );
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
-    drawings = ropeDrawings(next, boat, winches);
+    drawings = ropeDrawings(next, boat, winches, gennaker);
     ropes.update(drawings, ropeView, flashing);
+    if (gennaker.stage !== drawnGennaker.stage || gennaker.side !== drawnGennaker.side) {
+      drawnGennaker = gennaker;
+      gennakerParts.update(gennakerDrawing(gennaker));
+    }
     windex.update(next.wind.awaDeg);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).
@@ -160,6 +178,7 @@ export function buildBoat(
     for (const pivot of hardware.wheelPivots) pivot.rotation.x = wheel;
     root.updateMatrixWorld(true);
   };
+  let drawnGennaker: GennakerSetup = RIGGED;
   update(rig, controls);
   const anchorMeshes: THREE.Object3D[] = [];
   root.traverse((object) => {

@@ -281,6 +281,17 @@ PR: `Closes #246`. Done when the four steps draw as in 7.3 on both tacks, Settin
 
 Not in this milestone: the sail itself, the sock going up, forces, the gennaker controls (M106); Realistic winches (M107); a tack line control.
 
+### 7.12 Decided in the M105 PR (recommended; merging accepts it)
+
+1. **The sheets go round the bow ahead of the forestay at steps 2 and 3.** The independent review found that a sheet led straight from the bag's mouth to the far deck edge crossed the foredeck behind the forestay, against PT-69. New data key `sails.gennaker.sheetBowVia` `[6.55, 1.95, 0]`; the two sheets at stages 2 and 3 are `[m, sheetBowVia, ...sheetLead(s)]` (11 points); at stage 4 they stay `[C0, ...sheetLead(s)]`. A PT-69 test checks the crossing.
+2. **`sheetSlackM` is 0.03, not 0.3, and the last piece of a sheet (block to winch) is drawn straight.** At 0.3 each 2 m piece hung 0.5 m down the topsides and the last piece dipped into the hull. Drawing only; a test keeps the drawn sheets outside the deck edge below the sheer.
+3. **Rope meshes are created when a rope is first drawn** (`buildRopes(initial, detail, onAdd)`), so a boat at stage 0 has the same meshes as before; a rope that stops being drawn is hidden.
+4. **Learn's "Where is it?" rigs the gennaker as far as the part needs** (`stageToShow`), then flies to it, so the entry works from stowed. M106 must handle a sock that is up (the bag cannot be shown then).
+5. **Every new Learn entry has a `showMe` text** in all four languages (`tests/glossary.test.ts` requires one wherever the registry has a `showMe` link).
+6. **The interface texts of the review documents moved to `docs/review/<code>-ui.md`** (as the exercise texts did in M71), because `ru.md` passed the 450 KiB GitHub shows as Markdown. `npm run review-doc -- <code>` writes the three files; `tests/glossary.test.ts` checks them.
+7. **The Sails block shows from stage 1 only**; the exercise-bar condition of 7.5 is M108's. The Realistic panel needs no change: the gennaker's ropes have no clutch, so they are not in its list.
+8. **Settings → Gennaker is two buttons with `aria-pressed`** (not radio inputs), so a touch tap works on the visible button.
+
 ## 8. M106: Sailing with the gennaker
 
 **Independent review: required** (sail forces, two new controls, the step order; PT rules).

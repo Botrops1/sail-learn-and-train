@@ -2998,6 +2998,7 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   font-weight: 700;
 }
 
+.segmented .segment[aria-pressed='true'],
 .autopilot .segment[aria-pressed='true'] {
   border-color: var(--accent);
   background: var(--accent-soft);
@@ -5757,5 +5758,56 @@ html[data-layout] .exercise-stack[data-place='row'] {
 
 /* No keyboard on a phone: the row is for a computer. */
 html[data-layout='stacked'] .keys-field {
+  display: none;
+}
+
+/* M105: the gennaker's rigging steps in the Sails section. */
+.gennaker-block {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.gennaker-title {
+  margin: 0;
+}
+
+.gennaker-steps {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gennaker-step {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.gennaker-step[data-done='true'] {
+  color: var(--text);
+}
+
+.gennaker-step[aria-current='step'] {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.gennaker-tick {
+  flex: 0 0 1.2em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.gennaker-block .segment:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.gennaker-block[hidden],
+.rope-item[hidden] {
   display: none;
 }

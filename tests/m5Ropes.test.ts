@@ -115,7 +115,13 @@ describe('M5: halyards in 3D', () => {
     const drawn = ropeDrawings(rig)
       .map((r) => r.id)
       .sort();
-    expect(drawn).toEqual(boat.ropes.list.map((r) => r.id).sort());
+    // At stage 0 the gennaker's four lines (M105) are not drawn (tests/gennaker.test.ts has the rest).
+    expect(drawn).toEqual(
+      boat.ropes.list
+        .map((r) => r.id)
+        .filter((id) => !id.startsWith('rope_gennaker_'))
+        .sort(),
+    );
   });
 });
 

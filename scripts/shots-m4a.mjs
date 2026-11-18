@@ -101,7 +101,7 @@ export async function liveM4aChecks({ openPage, viewports, outDir, prefix, probl
     // Static ropes: an info line, no slider.
     for (const [id, text] of [
       ['rope_main_halyard', 'stays hoisted'],
-      ['rope_spi_halyard', 'no gennaker'],
+      ['rope_spi_halyard', 'Part of the gennaker'],
     ]) {
       await row(id).click();
       await page.waitForTimeout(200);

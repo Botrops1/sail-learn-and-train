@@ -275,7 +275,15 @@ function pickSegments(strands: readonly DrawnStrand[]): PickSegment[] {
   return segments;
 }
 
-export function buildRopes(initial: RopeDrawing[], detail: Detail = 'high'): RopeMeshes {
+/**
+ * `onAdd` (M105): called with the mesh of a rope that is drawn for the first time after the build
+ * (the gennaker's lines appear with their rigging step); the caller puts it in the scene.
+ */
+export function buildRopes(
+  initial: RopeDrawing[],
+  detail: Detail = 'high',
+  onAdd?: (mesh: THREE.Mesh) => void,
+): RopeMeshes {
   const texture = stripeTexture();
   const high = detail === 'high';
   const tube: Tube = {
@@ -316,13 +324,22 @@ export function buildRopes(initial: RopeDrawing[], detail: Detail = 'high'): Rop
 
   const update = (drawings: RopeDrawing[], view?: RopeView, flashing?: ReadonlySet<string>) => {
     const drawn = smoothDrawings(drawings);
+    // A rope that is not drawn (the gennaker's lines once their step is undone, M105) is hidden.
+    const drawnIds = new Set<string>(drawn.map((drawing) => drawing.id));
+    for (const [id, rope] of ropes) rope.mesh.visible = drawnIds.has(id);
     let strands = 0;
     let points = 0;
     let whipped = 0;
     let finite = true;
     for (const drawing of drawn) {
-      const rope = ropes.get(drawing.id);
-      if (!rope) continue;
+      let rope = ropes.get(drawing.id);
+      if (!rope) {
+        // First drawn after the build (M105): a mesh of its own, put in the scene by the caller.
+        rope = create(drawing);
+        ropes.set(drawing.id, rope);
+        objects.push(rope.mesh);
+        onAdd?.(rope.mesh);
+      }
       const layout = layoutOf(drawing.strands);
       // A rope put on or taken off a winch, or wrapped with another turn (Realistic mode, M5),
       // has a new number of points: new buffers then. Otherwise they are reused every frame.
@@ -361,10 +378,15 @@ export function buildRopes(initial: RopeDrawing[], detail: Detail = 'high'): Rop
     latest = { strands, points, whipped, finite };
   };
 
-  for (const drawing of smoothDrawings(initial)) ropes.set(drawing.id, create(drawing));
+  const objects: THREE.Mesh[] = [];
+  for (const drawing of smoothDrawings(initial)) {
+    const rope = create(drawing);
+    ropes.set(drawing.id, rope);
+    objects.push(rope.mesh);
+  }
   update(initial);
   return {
-    objects: [...ropes.values()].map((rope) => rope.mesh),
+    objects,
     update,
     stats: () => ({ ...latest, radialSegments: tube.radial, braid: braid !== undefined }),
   };

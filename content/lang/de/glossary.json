@@ -505,9 +505,69 @@
           "term": "Asymmetrischer Spinnaker"
         }
       ],
-      "short": "Ein großes, leichtes Segel für Wind von hinten; auf diesem Boot nicht an Bord.",
+      "short": "Ein großes, leichtes Segel für Wind von der Seite oder von hinten; eine Option auf diesem Boot.",
       "what": "Ein Gennaker ist ein großes, leichtes, gewölbtes Segel, das am Bug und am Masttopp gefahren wird, wenn der Wind von schräg hinten kommt. Er wird für jeden Einsatz gesetzt und wieder geborgen.",
-      "onThisBoat": "Nicht auf dem Referenzboot; nur sein Fall („SPI HALYARD“) ist vorhanden. Das Handbuch nennt 200 m² für den optionalen Gennaker. Die App zeigt das Segel nicht.",
+      "onThisBoat": "Eine Option auf der Hanse 508 (das Handbuch nennt 200 m², die Broschüre 176,4 m²). Er wird mit einer Halsleine am Bug, zwei Schoten und einem eigenen Fall („SPI HALYARD“) angeschlagen. Einstellungen → Gennaker bereitet ihn vor.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_tack_line": {
+      "name": "Gennaker-Halsleine",
+      "alternatives": [],
+      "short": "Hält die vordere untere Ecke des Gennakers am Bug.",
+      "what": "Eine kurze Leine von einem Beschlag am Bug zum Hals des Gennakers (seiner vorderen unteren Ecke). Sie ist das Erste, was man beim Vorbereiten des Gennakers anschlägt. Auf vielen Booten lässt sie sich fieren, damit sich die Vorderkante des Segels hebt; in der App hat sie eine feste Länge.",
+      "showMe": "Gennaker angeschlagen, Wind von Steuerbord: Die rote Halsleine läuft vom Beschlag am Bug hoch zur vorderen Unterseite des Strumpfs.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sheet_port": {
+      "name": "Gennakerschot (Backbord)",
+      "alternatives": [],
+      "short": "Eine der beiden Gennakerschoten; die auf der windabgewandten Seite macht die Arbeit.",
+      "what": "Der Gennaker hat zwei Schoten, eine auf jeder Seite, beide am Schothorn (der hinteren unteren Ecke) befestigt. Jede läuft außen um alles herum: außerhalb der Wanten, der Relingstützen und der Reling, zu einem Block nahe dem Heck und weiter zur hinteren Winsch auf ihrer Seite. Die Schot auf der windabgewandten Seite (Lee) trimmt das Segel; die andere, die lose Schot, hängt durch, bis man halst.",
+      "showMe": "Gennaker angeschlagen, Wind von Steuerbord: Die Backbordschot (die nahe) läuft vom hinteren Eck des Segels außen um alles herum am Deckrand entlang, über einen Block nahe dem Heck zur Winsch.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sheet_starboard": {
+      "name": "Gennakerschot (Steuerbord)",
+      "alternatives": [],
+      "short": "Eine der beiden Gennakerschoten; die auf der windabgewandten Seite macht die Arbeit.",
+      "what": "Der Gennaker hat zwei Schoten, eine auf jeder Seite, beide am Schothorn (der hinteren unteren Ecke) befestigt. Jede läuft außen um alles herum: außerhalb der Wanten, der Relingstützen und der Reling, zu einem Block nahe dem Heck und weiter zur hinteren Winsch auf ihrer Seite. Die Schot auf der windabgewandten Seite (Lee) trimmt das Segel; die andere, die lose Schot, hängt durch, bis man halst.",
+      "showMe": "Gennaker angeschlagen, Wind von Steuerbord: Die Steuerbordschot (die ferne, die lose Schot) läuft außen um alles herum an ihrem Deckrand entlang, über einen Block nahe dem Heck zur Winsch.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sock_line": {
+      "name": "Sockleine",
+      "alternatives": [],
+      "short": "Zieht den Strumpf hoch, um den Gennaker zu setzen, und nach unten, um ihn zu bergen.",
+      "what": "Der Gennaker geht in einem langen Stoffschlauch hoch, dem Strumpf (oder Snuffer). Die Sockleine ist eine Schlaufe: Zieht man an einem Teil, wandert der Strumpf am Segel hoch, und das Segel öffnet sich und füllt sich; zieht man am anderen, kommt der Strumpf über das Segel herunter und erstickt es.",
+      "showMe": "Gennaker angeschlagen: Die dünne Sockleine läuft vom Fuß des Strumpfs hinunter zum Bug.",
+      "textStatus": "draft"
+    },
+    "part_gennaker_sock": {
+      "name": "Gennakerstrumpf",
+      "alternatives": [
+        {
+          "term": "Snuffer"
+        }
+      ],
+      "short": "Ein Stoffschlauch, der den Gennaker zusammenhält, bis man ihn braucht.",
+      "what": "Ein langer Stoffschlauch mit einem Ring an seinem unteren Ende. Der Gennaker wird darin hochgezogen, er geht also als harmlose Wurst nach oben. Zieht man den Strumpf hoch, kommt das Segel frei; zieht man ihn herunter, wird es wieder zusammengefasst.",
+      "showMe": "Gennaker angeschlagen: Der lange Schlauch vom Bug bis zum Masttopp ist der Strumpf, mit dem Segel darin.",
+      "textStatus": "draft"
+    },
+    "part_gennaker_bag": {
+      "name": "Gennakersack",
+      "alternatives": [],
+      "short": "Wo der Gennaker liegt, wenn er nicht oben ist.",
+      "what": "Der Gennaker liegt in seinem Strumpf in einem Sack verpackt. Zum Vorbereiten kommt der Sack an den Bug und wird festgebunden, mit Kopf, Hals und Schothorn an der Öffnung, damit Halsleine, Schoten und Fall angeschlagen werden können, bevor er hochgeht.",
+      "showMe": "Gennaker bei Schritt 3: Der Sack liegt auf dem Vordeck am Bug, mit Halsleine, Schoten und Fall daran.",
+      "textStatus": "draft"
+    },
+    "fit_gennaker_block": {
+      "name": "Gennakerschot-Block",
+      "alternatives": [],
+      "short": "Ein Block nahe dem Heck, der die Gennakerschot zur Winsch umlenkt.",
+      "what": "Je einer auf jeder Seite, auf der Scheuerleiste nahe dem Heck. Die Schot kommt außen um alles herum vom Segel und wird hier nach vorn zur hinteren Winsch umgelenkt.",
+      "showMe": "Gennaker angeschlagen: Der kleine Block auf der Scheuerleiste nahe dem Heck lenkt die Schot zur Winsch um.",
       "textStatus": "draft"
     },
     "sailpart_head": {

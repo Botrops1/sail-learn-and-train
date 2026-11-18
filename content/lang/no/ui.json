@@ -175,7 +175,7 @@
   "ropes.sharedDetail.ctl_mainsheet": "Stopperen «Main sheet» (styrbord) og stopperen «MAIN SHEET» (babord) holder de to endene av samme tau, så det kan betjenes fra begge sider.",
   "ropes.sharedDetail.ctl_main_furl": "De to «Main furling»-stopperne holder de to endene av én rulletaulinje: den venstre ruller storseilet inn, den høyre ruller det ut. «Main outhaul» hales sammen med «ut»-enden.",
   "ropes.static.inMastFurling": "Justeres ikke under seiling: med rullemast blir storfallet stående heist.",
-  "ropes.static.notRigged": "Ikke i bruk: det er ikke rigget noen gennaker (et stort seil for medvind) på denne båten, så fallet er parkert.",
+  "ropes.static.gennaker": "Del av gennakeren: se Seil → Gennaker.",
   "ropes.static.none": "Justeres ikke under seiling.",
   "ropes.list.title": "Alle tau og rattet",
   "ropes.list.static": "justeres ikke",
@@ -862,6 +862,10 @@
   "map.closeShort": "Lukk",
   "settings.miniMap.label": "Minikart",
   "settings.miniMap.hint": "Et lite kart i hjørnet mens du seiler: båten, vinden, sporet etter den og bøyene. Trykk på det for å se hele kartet.",
+  "settings.gennaker.label": "Gennaker",
+  "settings.gennaker.stowed": "Stuet",
+  "settings.gennaker.rigged": "Rigget",
+  "settings.gennaker.hint": "Rigget setter den opp i strømpen, klar til å settes. Seksjonen Seil viser trinnene.",
   "status.label": "Status",
   "status.hint": "Tilstanden til båten på ett sted: slitasjen på seilene, utstyret, hva som ble truffet, og alt som har skjedd, det nyeste først.",
   "status.sails": "Seil",
@@ -1138,5 +1142,12 @@
   "pos.short.beam_reach": "Halvvind",
   "pos.short.broad_reach": "Slør",
   "pos.short.run": "Lens",
-  "minimap.openWithPoint": "Minikart, nå {point}: trykk for å åpne hele kartet."
+  "minimap.openWithPoint": "Minikart, nå {point}: trykk for å åpne hele kartet.",
+  "gennaker.title": "Gennaker",
+  "gennaker.step1": "Sekken til baugen, halslinen på",
+  "gennaker.step2": "Skjøtene lagt utenfor alt, til blokkene akter",
+  "gennaker.step3": "Fallet på toppen, foran forstaget",
+  "gennaker.step4": "Heist i strømpen",
+  "gennaker.next": "Neste trinn",
+  "gennaker.back": "Angre et trinn"
 }

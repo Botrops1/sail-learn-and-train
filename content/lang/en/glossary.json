@@ -516,9 +516,69 @@
           "term": "asymmetric spinnaker"
         }
       ],
-      "short": "A large, light sail for wind from behind; not on board this boat.",
+      "short": "A large, light sail for wind from the side or behind; an option on this boat.",
       "what": "A gennaker is a big, light, curved sail flown from the bow and the top of the mast when the wind comes from behind the side. It is set and taken down for each use.",
-      "onThisBoat": "Not on the reference boat; only its halyard (“SPI HALYARD”) is fitted. The manual gives 200 m² for the optional gennaker. The app does not show the sail.",
+      "onThisBoat": "An option on the Hanse 508 (the manual gives 200 m²; the brochure 176.4 m²). It is rigged with a tack line at the bow, two sheets and its own halyard (“SPI HALYARD”). Settings → Gennaker rigs it.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_tack_line": {
+      "name": "Gennaker tack line",
+      "alternatives": [],
+      "short": "Holds the gennaker's front lower corner down at the bow.",
+      "what": "A short line from a fitting at the bow to the gennaker's tack (its front lower corner). It is the first thing you attach when you rig the gennaker. On many boats it can be eased to let the front of the sail lift; in the app it has a fixed length.",
+      "showMe": "Gennaker rigged, wind from starboard: the red tack line runs from the fitting on the bow up to the bottom front of the sock.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sheet_port": {
+      "name": "Gennaker sheet (port)",
+      "alternatives": [],
+      "short": "One of the gennaker's two sheets; the one on the side away from the wind does the work.",
+      "what": "The gennaker has two sheets, one on each side, both tied to its clew (back lower corner). Each runs outside everything: outside the shrouds, the stanchions and the lifelines, to a block near the stern and on to the aft winch on its side. The sheet on the side away from the wind (leeward) trims the sail; the other one, the lazy sheet, hangs slack until you gybe.",
+      "showMe": "Gennaker rigged, wind from starboard: the port sheet (the near one) runs from the sail's back corner outside everything along the deck edge, round a block near the stern and on to the winch.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sheet_starboard": {
+      "name": "Gennaker sheet (starboard)",
+      "alternatives": [],
+      "short": "One of the gennaker's two sheets; the one on the side away from the wind does the work.",
+      "what": "The gennaker has two sheets, one on each side, both tied to its clew (back lower corner). Each runs outside everything: outside the shrouds, the stanchions and the lifelines, to a block near the stern and on to the aft winch on its side. The sheet on the side away from the wind (leeward) trims the sail; the other one, the lazy sheet, hangs slack until you gybe.",
+      "showMe": "Gennaker rigged, wind from starboard: the starboard sheet (the far one, the lazy sheet) runs outside everything along its deck edge, round a block near the stern and on to the winch.",
+      "textStatus": "draft"
+    },
+    "rope_gennaker_sock_line": {
+      "name": "Sock line",
+      "alternatives": [],
+      "short": "Pulls the sock up to set the gennaker and down to take it in.",
+      "what": "The gennaker goes up inside a long cloth tube, the sock (or snuffer). The sock line is a loop: pull one part and the sock rides up the sail, which opens and fills; pull the other part and the sock comes down over the sail and smothers it.",
+      "showMe": "Gennaker rigged: the thin sock line runs from the foot of the sock down to the bow.",
+      "textStatus": "draft"
+    },
+    "part_gennaker_sock": {
+      "name": "Gennaker sock",
+      "alternatives": [
+        {
+          "term": "Snuffer"
+        }
+      ],
+      "short": "A cloth tube that keeps the gennaker gathered until you want it.",
+      "what": "A long tube of cloth with a ring at its bottom. The gennaker is hoisted inside it, so it goes up as a harmless sausage. Pulling the sock up lets the sail out; pulling it down gathers it again.",
+      "showMe": "Gennaker rigged: the long tube from the bow to the top of the mast is the sock, with the sail inside it.",
+      "textStatus": "draft"
+    },
+    "part_gennaker_bag": {
+      "name": "Gennaker bag",
+      "alternatives": [],
+      "short": "Where the gennaker lives when it is not up.",
+      "what": "The gennaker is packed in its sock inside a bag. To rig it, the bag goes to the bow and is tied down, with the head, tack and clew at its mouth, so the tack line, the sheets and the halyard can be clipped on before it goes up.",
+      "showMe": "Gennaker at rigging step 3: the bag lies on the foredeck at the bow, with the tack line, the sheets and the halyard attached.",
+      "textStatus": "draft"
+    },
+    "fit_gennaker_block": {
+      "name": "Gennaker sheet block",
+      "alternatives": [],
+      "short": "A block near the stern that turns the gennaker sheet towards the winch.",
+      "what": "One on each side, on the toerail near the stern. The sheet comes from the sail outside everything and turns here, forward to the aft winch.",
+      "showMe": "Gennaker rigged: the small block on the toerail near the stern turns the sheet towards the winch.",
       "textStatus": "draft"
     },
     "sailpart_head": {

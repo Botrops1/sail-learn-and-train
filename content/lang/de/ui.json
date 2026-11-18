@@ -175,7 +175,7 @@
   "ropes.sharedDetail.ctl_mainsheet": "Die Klemme „Main sheet“ (Steuerbord) und die Klemme „MAIN SHEET“ (Backbord) halten die zwei Enden derselben Leine, sie lässt sich also von beiden Seiten bedienen.",
   "ropes.sharedDetail.ctl_main_furl": "Die zwei Klemmen „Main furling“ halten die zwei Tampen einer Reffleine: die linke rollt das Großsegel ein, die rechte rollt es aus. „Main outhaul“ wird zusammen mit dem „out“-Tampen dichtgeholt.",
   "ropes.static.inMastFurling": "Wird beim Segeln nicht verstellt: bei Rollreff im Mast bleibt das Großfall gesetzt.",
-  "ropes.static.notRigged": "Nicht benutzt: auf diesem Boot ist kein Gennaker (ein großes Segel für vor dem Wind) gesetzt, deshalb ist sein Fall nur belegt.",
+  "ropes.static.gennaker": "Teil des Gennakers: siehe Segel → Gennaker.",
   "ropes.static.none": "Wird beim Segeln nicht verstellt.",
   "ropes.list.title": "Alle Leinen und das Steuerrad",
   "ropes.list.static": "nicht verstellt",
@@ -862,6 +862,10 @@
   "map.closeShort": "Schließen",
   "settings.miniMap.label": "Minikarte",
   "settings.miniMap.hint": "Eine kleine Karte in der Ecke beim Segeln: das Boot, der Wind, seine Spur und die Bojen. Tippen für die ganze Karte.",
+  "settings.gennaker.label": "Gennaker",
+  "settings.gennaker.stowed": "Verstaut",
+  "settings.gennaker.rigged": "Angeschlagen",
+  "settings.gennaker.hint": "Angeschlagen setzt ihn in seinem Strumpf nach oben, bereit zum Setzen. Der Bereich Segel zeigt die Schritte.",
   "status.label": "Status",
   "status.hint": "Der Zustand des Bootes an einer Stelle: der Verschleiß der Segel, das Material, was getroffen wurde, und alles, was passiert ist, das Neueste zuerst.",
   "status.sails": "Segel",
@@ -1138,5 +1142,12 @@
   "pos.short.beam_reach": "Halbwind",
   "pos.short.broad_reach": "Raumschots",
   "pos.short.run": "Vor dem Wind",
-  "minimap.openWithPoint": "Minikarte, jetzt {point}: Tippen, um die ganze Karte zu öffnen."
+  "minimap.openWithPoint": "Minikarte, jetzt {point}: Tippen, um die ganze Karte zu öffnen.",
+  "gennaker.title": "Gennaker",
+  "gennaker.step1": "Sack zum Bug, Halsleine anschlagen",
+  "gennaker.step2": "Schoten außen um alles herum zu den Blöcken am Heck führen",
+  "gennaker.step3": "Fall am Kopf anschlagen, vor dem Vorstag",
+  "gennaker.step4": "In seinem Strumpf hochgezogen",
+  "gennaker.next": "Nächster Schritt",
+  "gennaker.back": "Einen Schritt zurück"
 }

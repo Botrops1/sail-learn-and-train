@@ -17,6 +17,7 @@ import { HANSE_508, boatId } from '../model/boat';
 import { feelItFor, exerciseText } from '../model/exercises';
 import { pilotFor } from '../app/exercisePilots';
 import { loadExercise } from './exercisePanel';
+import { stageToShow } from '../model/gennaker';
 import { entryFor } from '../model/panelEntries';
 import { el } from './dom';
 import { currentLanguage, quoted, t, type StringKey } from './i18n';
@@ -293,7 +294,24 @@ export function createLearnTab(
         button('learn-show-on-boat', t('learn.whereIsIt'), () => {
           store.dispatch({ type: 'select', partId: entry.id });
           lowerSheet();
-          requestSpotlight(entry.id, 'where');
+          // A gennaker part that is not on the boat yet (M105): rig it as far as the part needs,
+          // and fly to it once the boat has drawn it.
+          const { stage } = store.getState().gennaker;
+          const wanted = stageToShow(entry.id, stage);
+          if (wanted === null || wanted === stage) {
+            requestSpotlight(entry.id, 'where');
+            return;
+          }
+          if (wanted === 4) store.dispatch({ type: 'gennaker', command: 'rig' });
+          else {
+            const command = wanted > stage ? 'next' : 'back';
+            for (let i = 0; i < Math.abs(wanted - stage); i += 1) {
+              store.dispatch({ type: 'gennaker', command });
+            }
+          }
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => requestSpotlight(entry.id, 'where')),
+          );
         }),
       ]);
       nodes.push(lastButtons);
