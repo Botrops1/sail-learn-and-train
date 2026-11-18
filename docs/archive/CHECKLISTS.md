@@ -1071,3 +1071,21 @@ Use a computer for these.
 - [ ] Try it yourself: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=wind-shift — start it with "Do it myself" and follow the steps: the exercise ends with the debrief.
 - [ ] No button where there is nothing to feel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=part_boom — no "Feel it" button.
 - [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — "Weather helm" is in *Sailing* and "Header and lift" in *Wind and weather*.
+
+## 25. Distant land (issue #200)
+
+Mountains, hills and islands round the horizon ([PHASE_HORIZON_SPEC](PHASE_HORIZON_SPEC.md)): M104.
+
+### 25.1 Checklist
+
+#### M104: Distant land on the horizon
+
+- [ ] Mountains to the north: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=40&js=100&cam=side-starboard&hdg=90&sea=flat — behind the boat: high grey-blue mountains, with lower, darker hills in front of them.
+- [ ] They turn with you: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&cam=helm&hdg=0&sea=flat — mountains ahead. Open the Controls tab, tap Steering and turn a few times −10 (to port): the mountains slide across the view. Turn back and they come back.
+- [ ] Out of reach: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&cam=helm&hdg=0&tx=16&sea=flat — wait a minute at time speed ×16: the boat sails a few kilometres, but the mountains ahead do not grow.
+- [ ] Open sea to the south-west: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&cam=helm&hdg=228&sea=flat — ahead only sea and sky. Turn either way and land appears at the sides.
+- [ ] The island to the south: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=40&js=100&cam=side-port&hdg=90&sea=flat — behind the boat a long, low island.
+- [ ] Sunset: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=90&ws=12&ms=40&js=100&cam=side-starboard&hdg=30&clk=202606012020&sea=flat — the low sun over the hills, and the land takes the warm colour of the sky.
+- [ ] Night: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=40&js=100&cam=side-starboard&hdg=90&clk=202606012300&sea=flat — the mountains are a dark shape, just visible against the night sky.
+- [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=env_distant_land — the entry "Distant land" explains it. Tap "Show it working": the view looks across the boat at the mountains. There is no "Where is it?" button.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=40&js=100&cam=side-starboard&hdg=90&sea=flat — on a computer the land runs along the whole horizon behind the boat.
