@@ -331,7 +331,8 @@ The gennaker is a brochure option (176.4 m² in the brochure, 200 m² in the man
 | The sock | 0.36 m across; its line is 0.4 m above the tack and ends at [6.5, 1.85, 0.15] | **Assumption** |
 | Sheet blocks | one each side on the toerail near the stern, [−8.0, 1.5, ±2.1], 0.05 m radius | **Assumption** (the real position is not known) |
 | The sheets' way | along the deck edge, 0.15 m outside it and 0.1–0.15 m above the sheer, at x 5.6, 4, 2, 0, −2, −4, −6 (2 m apart because the deck edge curves), to the block, then the primary winch on that side | **Assumption**: outside the lifelines, shrouds and stanchions |
-| Slack in a sheet or the sock line | 0.3 m a piece (`sheetSlackM`) | **Assumption** (drawing only) |
+| Slack in a sheet or the sock line | 0.03 m a piece (`sheetSlackM`; the spec's 0.3 m made 0.5 m deep loops down the topsides); the last piece of a sheet, block to winch, is drawn straight | **Assumption** (drawing only) |
+| The sheets round the bow (steps 2 and 3) | from the bag's mouth through [6.55, 1.95, 0] (`sheetBowVia`, ahead of the forestay's foot at x 6.28), then aft along the deck edge | **Assumption** (the sheets must not cross behind the forestay) |
 | The lazy sheet's route (M106) | via [7.35, 3.4, 0] and [4.5, 2.55, 1.15] on the windward side | **Assumption** |
 | Line sizes | sheets 12 mm × 28 m (manual), tack line 10 mm × 4 m, sock line 8 mm × 44 m | Sheets from the manual; the others **assumptions** |
 | Line colour in the app | vermilion `#d55e00` with the dash pattern `6 2 1 2`; the real sheets' tracer is red | Presentation |

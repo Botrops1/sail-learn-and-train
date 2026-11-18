@@ -124,9 +124,12 @@ export function gennakerDrawing(setup: GennakerSetup, data: BoatData = boat): Ge
   const head = vec3(g.head);
   const masthead = halyardMasthead(data);
   const clew0 = add(tack, vec3(g.snuffedClewOffset));
-  const sheetsFrom = (from: Vec3) => ({
-    port: [from, ...sheetLead(-1, data)],
-    starboard: [from, ...sheetLead(1, data)],
+  // From the bag the sheets go round ahead of the forestay (`sheetBowVia`) before they run aft
+  // outside everything (PT-69); from the hoisted clew, which is already ahead of it, they do not.
+  const bowVia = vec3(g.sheetBowVia);
+  const sheetsFrom = (from: Vec3, via: readonly Vec3[]) => ({
+    port: [from, ...via, ...sheetLead(-1, data)],
+    starboard: [from, ...via, ...sheetLead(1, data)],
   });
   if (stage === 1) {
     return {
@@ -142,7 +145,7 @@ export function gennakerDrawing(setup: GennakerSetup, data: BoatData = boat): Ge
     return {
       bag: true,
       tackLine: [fitting, mouth],
-      sheets: sheetsFrom(mouth),
+      sheets: sheetsFrom(mouth, [bowVia]),
       halyard: null,
       sock: null,
       sockLine: null,
@@ -152,7 +155,7 @@ export function gennakerDrawing(setup: GennakerSetup, data: BoatData = boat): Ge
     return {
       bag: true,
       tackLine: [fitting, mouth],
-      sheets: sheetsFrom(mouth),
+      sheets: sheetsFrom(mouth, [bowVia]),
       halyard: [masthead, mouth],
       sock: null,
       sockLine: null,
@@ -162,7 +165,7 @@ export function gennakerDrawing(setup: GennakerSetup, data: BoatData = boat): Ge
   return {
     bag: false,
     tackLine: [fitting, tack],
-    sheets: sheetsFrom(clew0),
+    sheets: sheetsFrom(clew0, []),
     halyard: [masthead, head],
     sock: { from: tack, to: head },
     sockLine: [add(tack, scale(along, g.sock.lineFromTackM)), vec3(g.sock.lineEnd)],

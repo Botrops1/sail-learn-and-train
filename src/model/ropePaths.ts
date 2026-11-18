@@ -582,13 +582,15 @@ function gennakerRopes(gennaker: GennakerSetup, data: BoatData): RopeDrawing[] {
   const drawing = gennakerDrawing(gennaker, data);
   const segments = data.visual.ropeSagSegments;
   const slack = data.sails.gennaker.sheetSlackM;
-  const hang = (points: readonly Vec3[]): Vec3[] => {
+  /** A slack line: every piece hangs a little between its points; the last `taut` pieces are straight. */
+  const hang = (points: readonly Vec3[], taut = 0): Vec3[] => {
     const out: Vec3[] = [];
     for (let i = 1; i < points.length; i += 1) {
       const a = points[i - 1];
       const b = points[i];
       if (!a || !b) continue;
-      const piece = sagCurve(a, b, slack, segments, data);
+      const straight = points.length - i <= taut;
+      const piece = straight ? [a, b] : sagCurve(a, b, slack, segments, data);
       out.push(...(i === 1 ? piece : piece.slice(1)));
     }
     return out;
@@ -598,11 +600,11 @@ function gennakerRopes(gennaker: GennakerSetup, data: BoatData): RopeDrawing[] {
     if (points) drawn.push({ id, state, strands: [{ points, feed: 0 }] });
   };
   put('rope_gennaker_tack_line', 'taut', drawing.tackLine);
-  put('rope_gennaker_sheet_port', 'slack', drawing.sheets ? hang(drawing.sheets.port) : null);
+  put('rope_gennaker_sheet_port', 'slack', drawing.sheets ? hang(drawing.sheets.port, 1) : null);
   put(
     'rope_gennaker_sheet_starboard',
     'slack',
-    drawing.sheets ? hang(drawing.sheets.starboard) : null,
+    drawing.sheets ? hang(drawing.sheets.starboard, 1) : null,
   );
   put('rope_gennaker_sock_line', 'slack', drawing.sockLine ? hang(drawing.sockLine) : null);
   return drawn;

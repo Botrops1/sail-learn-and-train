@@ -12,7 +12,7 @@ import {
   type GennakerSetup,
   type GennakerStage,
 } from '../src/model/gennaker';
-import { halfBeamAt } from '../src/model/hullShape';
+import { halfBeamAt, sheerAt } from '../src/model/hullShape';
 import { ropeDrawings } from '../src/model/ropePaths';
 import { initialRig } from '../src/model/sim';
 import { defaultControls } from '../src/model/controls';
@@ -113,6 +113,48 @@ describe('M105: the sheets', () => {
 });
 
 describe('M105: the drawing', () => {
+  it('PT-69 at steps 2 and 3 the sheets cross the centreline ahead of the forestay, never behind it', () => {
+    const footX = vec3(boat.rig.forestay.bottom)[0];
+    for (const stage of [2, 3] as const) {
+      const sheets = gennakerDrawing(at(stage, -1)).sheets;
+      for (const line of [sheets?.port, sheets?.starboard] as Vec3[][]) {
+        let crossings = 0;
+        for (let i = 1; i < line.length; i += 1) {
+          const a = line[i - 1] as Vec3;
+          const b = line[i] as Vec3;
+          if (a[2] * b[2] < 0 || (b[2] === 0 && a[2] !== 0)) {
+            const u = Math.abs(a[2]) / (Math.abs(a[2]) + Math.abs(b[2]));
+            const x = a[0] + (b[0] - a[0]) * u;
+            crossings += 1;
+            expect(x, `stage ${stage}`).toBeGreaterThan(footX + 0.1);
+          }
+        }
+        expect(crossings).toBeGreaterThanOrEqual(1);
+      }
+    }
+  });
+
+  it('the drawn sheets never go inside the hull: below the sheer they stay outside the deck edge', () => {
+    const rig = initialRig(defaultControls());
+    for (const stage of [2, 4] as const) {
+      for (const side of [1, -1] as const) {
+        const setup = at(stage, side);
+        for (const id of ['rope_gennaker_sheet_port', 'rope_gennaker_sheet_starboard']) {
+          const points = ropeDrawings(rig, boat, undefined, setup).find((r) => r.id === id)
+            ?.strands[0]?.points as Vec3[];
+          for (const [x, y, z] of points) {
+            if (x > 5.6 || x < -8.0) continue;
+            if (y < sheerAt(x)) {
+              expect(Math.abs(z), `${id} x ${x.toFixed(2)}`).toBeGreaterThanOrEqual(
+                halfBeamAt(x) - 1e-6,
+              );
+            }
+          }
+        }
+      }
+    }
+  });
+
   const forestayX = (y: number) => {
     const bottom = vec3(boat.rig.forestay.bottom);
     const top = vec3(boat.rig.forestay.top);
@@ -186,7 +228,7 @@ describe('M105: the drawing', () => {
     const count = (stage: GennakerStage, id: string) =>
       ropeDrawings(rig, boat, undefined, at(stage)).find((r) => r.id === id)?.strands[0]?.points
         .length;
-    expect(count(2, 'rope_gennaker_sheet_port')).toBe(count(4, 'rope_gennaker_sheet_port'));
+    expect(count(2, 'rope_gennaker_sheet_port')).toBe(count(3, 'rope_gennaker_sheet_port'));
     expect(count(1, 'rope_gennaker_tack_line')).toBe(count(4, 'rope_gennaker_tack_line'));
   });
 });
