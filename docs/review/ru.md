@@ -2090,6 +2090,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Свободный шкот (`term_lazy_sheet`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Lazy sheet | Свободный шкот |
+| Другие названия | — | — |
+| Коротко | The sheet that is not working, on the side the wind comes from. | Шкот, который сейчас не работает, на стороне, откуда дует ветер. |
+| Что делает / что значит | A sail with two sheets uses one at a time: the leeward one trims, the windward one is lazy and hangs slack. When you gybe, the lazy sheet becomes the working one: pull it in and let the old one go. | У паруса с двумя шкотами работает один: подветренный задаёт угол парус, наветренный свободен и провисает. При перекидывании свободный шкот становится рабочим: выберите его и отдайте старый. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### скорость корпуса (`term_hull_speed`)
 
 | Поле | English | Русский |

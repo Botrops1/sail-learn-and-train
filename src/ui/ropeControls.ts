@@ -23,7 +23,7 @@ export interface ControlView {
   /** data-part-id of the control: its rope's id, or part_rudder for the wheel. */
   partId: string;
   name: StringKey;
-  unit: 'eased' | 'unfurled' | 'rudder';
+  unit: 'eased' | 'unfurled' | 'up' | 'rudder';
   /** Rope state from the solver, if this rope has one. */
   status?: (state: AppState) => RopeStatus;
   paidOut?: (state: AppState) => number;
@@ -74,6 +74,18 @@ export const CONTROL_VIEWS: readonly ControlView[] = [
     name: 'control.jibFurl',
     unit: 'unfurled',
     paidOut: (s) => jibFurlingLinePaidOut(s.rig.jibSolution.unfurled),
+  },
+  {
+    id: 'ctl_gennaker_sheet',
+    partId: 'rope_gennaker_sheet_port',
+    name: 'control.gennakerSheet',
+    unit: 'eased',
+  },
+  {
+    id: 'ctl_gennaker_sock',
+    partId: 'rope_gennaker_sock_line',
+    name: 'control.gennakerSock',
+    unit: 'up',
   },
   {
     id: 'ctl_rudder',
@@ -215,10 +227,11 @@ export function createControl(
   store: Store,
   view: ControlView,
   extra: HTMLElement[] = [],
+  idSuffix = '',
 ): ControlElement {
   const spec = controlSpec(view.id);
   const name = t(view.name);
-  const inputId = `control-${view.id}`;
+  const inputId = `control-${view.id}${idSuffix}`;
   const labels = part(view.partId)?.boatLabels ?? [];
   const set = (value: number) =>
     store.dispatch({

@@ -166,9 +166,17 @@ export function buildBoat(
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
     drawings = ropeDrawings(next, boat, winches, gennaker);
     ropes.update(drawings, ropeView, flashing);
-    if (gennaker.stage !== drawnGennaker.stage || gennaker.side !== drawnGennaker.side) {
+    // The sail and the sock move every frame while it is set; at the other stages the parts only
+    // change with the rigging step, so a still frame is not redrawn.
+    const moving = gennaker.stage === 4 || drawnGennaker.stage === 4;
+    if (moving || gennaker.stage !== drawnGennaker.stage || gennaker.side !== drawnGennaker.side) {
       drawnGennaker = gennaker;
-      gennakerParts.update(gennakerDrawing(gennaker));
+      gennakerParts.update(
+        gennakerDrawing(gennaker, next.gennaker),
+        next.gennaker,
+        next.wind.awsKn,
+        next.timeS,
+      );
     }
     windex.update(next.wind.awaDeg);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn

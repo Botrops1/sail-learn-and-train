@@ -1880,6 +1880,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Faule Schot (`term_lazy_sheet`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Lazy sheet | Faule Schot |
+| Andere Namen | — | — |
+| Kurz | The sheet that is not working, on the side the wind comes from. | Die Schot, die gerade nicht arbeitet, auf der Seite, von der der Wind kommt. |
+| Was es tut / was es bedeutet | A sail with two sheets uses one at a time: the leeward one trims, the windward one is lazy and hangs slack. When you gybe, the lazy sheet becomes the working one: pull it in and let the old one go. | Ein Segel mit zwei Schoten benutzt immer nur eine: die Leeschot trimmt, die Luvschot ist faul und hängt durch. Beim Halsen wird die faule Schot zur arbeitenden: dicht holen und die alte fieren. |
+| Auf diesem Boot | — | — |
+| Typische Fehler | — | — |
+| „Zeigen“ | — | — |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Fieren (`term_ease`)
 
 | Feld | English | Deutsch |

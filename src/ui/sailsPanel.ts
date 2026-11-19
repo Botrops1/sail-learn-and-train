@@ -1,8 +1,10 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
+import { gennakerTrimState } from '../model/gennaker';
 import { isTorn, sailTrim, type SailName, type TrimState } from '../model/trim';
 import { el } from './dom';
-import { t } from './i18n';
+import { t, type StringKey } from './i18n';
+import { controlView, createControl } from './ropeControls';
 import { setText } from './stepper';
 
 const SAILS: { sail: SailName; partId: string }[] = [
@@ -28,8 +30,8 @@ const GENNAKER_STEPS = [
 /**
  * M105: the gennaker's four rigging steps, shown from the first step on (Settings → Gennaker →
  * Rigged is the way in from stowed). Each step is ticked when done, the next one is marked, and
- * two buttons go a step on or undo one (never take the sock down from here: from stage 4 it
- * comes off only while the sock is down, which M106 adds).
+ * two buttons go a step on or undo one (from stage 4 only while the sock is down). At stage 4
+ * (M106) the block also holds the trim line, the sock and sheet rows and the Gybe button.
  */
 function buildGennakerBlock(store: Store): HTMLElement {
   const items = GENNAKER_STEPS.map((key, index) => {
@@ -51,10 +53,28 @@ function buildGennakerBlock(store: Store): HTMLElement {
   ]);
   back.addEventListener('click', () => store.dispatch({ type: 'gennaker', command: 'back' }));
   next.addEventListener('click', () => store.dispatch({ type: 'gennaker', command: 'next' }));
+  const trim = el('p', { class: 'gennaker-trim', 'data-testid': 'gennaker-trim' });
+  const sock = createControl(store, controlView('ctl_gennaker_sock'), [], '-sails');
+  const sheet = createControl(store, controlView('ctl_gennaker_sheet'), [], '-sails');
+  const gybe = el('button', { type: 'button', class: 'segment', 'data-testid': 'gennaker-gybe' }, [
+    t('gennaker.gybe'),
+  ]);
+  gybe.addEventListener('click', () => store.dispatch({ type: 'gennaker', command: 'gybe' }));
+  const sailing = el(
+    'div',
+    { class: 'gennaker-sailing', 'data-testid': 'gennaker-sailing', hidden: '' },
+    [
+      trim,
+      el('div', { 'data-testid': 'gennaker-sock-row' }, [sock.element]),
+      el('div', { 'data-testid': 'gennaker-sheet-row' }, [sheet.element]),
+      el('div', { class: 'segments' }, [gybe]),
+    ],
+  );
   const root = el('div', { class: 'gennaker-block', 'data-testid': 'gennaker-block', hidden: '' }, [
     el('h4', { class: 'gennaker-title' }, [t('gennaker.title')]),
     list,
     el('div', { class: 'segments' }, [back, next]),
+    sailing,
   ]);
   const refresh = (state: AppState) => {
     const { stage } = state.gennaker;
@@ -66,8 +86,17 @@ function buildGennakerBlock(store: Store): HTMLElement {
       else item.removeAttribute('aria-current');
       tick.textContent = done ? '✓' : '';
     });
-    back.disabled = stage <= 0;
+    back.disabled = stage <= 0 || (stage === 4 && state.controls.ctl_gennaker_sock > 0);
     next.disabled = stage >= 4;
+    sailing.hidden = stage < 4;
+    if (stage >= 4) {
+      const trimState = gennakerTrimState(state.gennaker, state.rig.gennaker);
+      setText(trim, t(`gennaker.trim.${trimState}` as StringKey));
+      trim.dataset.state = trimState;
+      sock.refresh(state);
+      sheet.refresh(state);
+      gybe.disabled = state.gennaker.crossS > 0;
+    }
   };
   store.subscribe(refresh);
   refresh(store.getState());

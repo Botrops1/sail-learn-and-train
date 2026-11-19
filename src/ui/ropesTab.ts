@@ -120,9 +120,8 @@ export function revealRopeStrip(): void {
 /** The rigging step (M105) from which each gennaker line is on the boat and so in the list. */
 const GENNAKER_ROPE_STAGE: Readonly<Record<string, number>> = {
   rope_gennaker_tack_line: 1,
-  rope_gennaker_sheet_port: 2,
-  rope_gennaker_sheet_starboard: 2,
-  rope_gennaker_sock_line: 4,
+  ctl_gennaker_sheet: 4,
+  ctl_gennaker_sock: 4,
 };
 
 /** `openEntry` opens an entry in the Learn section (the "Read more in Learn" buttons). */

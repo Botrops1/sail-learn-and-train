@@ -841,6 +841,13 @@
       "what": "Et skjøt drar i nokken til et seil (det bakre nedre hjørnet) og bestemmer dermed hvor langt seilet kan svinge ut. Hvert seil har sitt eget: storskjøtet og fokkeskjøtet. På en båt er et skjøt et tau, ikke seilet.",
       "textStatus": "draft"
     },
+    "term_lazy_sheet": {
+      "name": "Slakk skjøt",
+      "alternatives": [],
+      "short": "Skjøtet som ikke jobber, på siden vinden kommer fra.",
+      "what": "Et seil med to skjøter bruker ett om gangen: le-skjøtet trimmer, lo-skjøtet er slakt og henger. Når du gybber, blir det slakke skjøtet det som jobber: trekk det inn og slipp det gamle.",
+      "textStatus": "draft"
+    },
     "term_line": {
       "name": "Line",
       "alternatives": [

@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
-import type { GennakerDrawing } from '../../model/gennaker';
+import type { GennakerDrawing, GennakerSolution } from '../../model/gennaker';
+import { gennakerSailGrid } from '../../model/sailShape';
 import type { Detail } from '../../model/settings';
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import { partMesh } from './parts';
+import { buildSailMesh } from './sailMesh';
 
 /**
  * The gennaker's solid parts (M105): the bag at the bow, the sock tube from the bow to the
@@ -14,10 +16,23 @@ import { partMesh } from './parts';
  */
 export interface GennakerModel {
   objects: THREE.Object3D[];
-  update(drawing: GennakerDrawing): void;
+  update(drawing: GennakerDrawing, sol: GennakerSolution, windSpeedKn: number, timeS: number): void;
 }
 
 const UP = new THREE.Vector3(0, 1, 0);
+
+/** A sail not yet set: the grid the mesh is first built for. */
+const FIRST: GennakerSolution = {
+  set: false,
+  sockUp: 0,
+  thetaDeg: 15,
+  phiDeg: 15,
+  aoaDeg: 0,
+  blanket: 1,
+  backed: false,
+  fill: 0,
+  side: 1,
+};
 
 export function buildGennaker(materials: BoatMaterials, detail: Detail): GennakerModel {
   const g = boat.sails.gennaker;
@@ -78,8 +93,30 @@ export function buildGennaker(materials: BoatMaterials, detail: Detail): Gennake
   sock.visible = false;
   blocks.visible = false;
 
+  // The sail (M106): drawn while the sock has been pulled up at all; the part above the sock's
+  // mouth is gathered onto the luff.
+  const sailInput = (sol: GennakerSolution, windSpeedKn: number, timeS: number) => ({
+    thetaDeg: sol.thetaDeg,
+    fill: sol.fill,
+    windSpeedKn,
+    timeS,
+    sockUp: sol.sockUp,
+    fallbackSide: sol.side,
+  });
+  const sail = buildSailMesh(
+    'sail_gennaker',
+    materials,
+    gennakerSailGrid({ ...sailInput(FIRST, 0, 0) }),
+    false,
+  );
+
   const direction = new THREE.Vector3();
-  const update = (drawing: GennakerDrawing) => {
+  const update = (
+    drawing: GennakerDrawing,
+    sol: GennakerSolution,
+    windSpeedKn: number,
+    timeS: number,
+  ) => {
     bag.visible = drawing.bag;
     blocks.visible = drawing.sheets !== null;
     sock.visible = drawing.sock !== null;
@@ -92,6 +129,9 @@ export function buildGennaker(materials: BoatMaterials, detail: Detail): Gennake
       sock.scale.set(1, length, 1);
       sock.updateMatrixWorld(true);
     }
+    const drawn = drawing.sock !== null && sol.sockUp > 0.05;
+    if (drawn) sail.update(gennakerSailGrid(sailInput(sol, windSpeedKn, timeS)), true);
+    else if (sail.mesh.visible) sail.mesh.visible = false;
   };
-  return { objects: [bag, sock, blocks], update };
+  return { objects: [bag, sock, blocks, sail.mesh], update };
 }

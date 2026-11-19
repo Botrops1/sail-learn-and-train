@@ -81,6 +81,7 @@
   "control.paidOut": "{m} m of line paid out",
   "unit.eased": "{value} % eased",
   "unit.unfurled": "{value} % unfurled",
+  "unit.up": "{value} % up",
   "state.taut": "taut",
   "state.slack": "slack",
   "state.slackBy": "slack, {m} m spare",
@@ -130,6 +131,8 @@
   "alert.winchCutOut": "The {side} winch cut out: too much load.",
   "alert.clutchOnRunning": "A clutch was shut on a running line under load: it can be damaged.",
   "control.jibSheet": "Jib sheet",
+  "control.gennakerSheet": "Gennaker sheet",
+  "control.gennakerSock": "Gennaker sock",
   "control.jibFurl": "Jib out",
   "main.fightingLift": "The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out.",
   "jib.filled": "Jib filled, {angle}° out",
@@ -1149,5 +1152,15 @@
   "gennaker.step3": "Halyard on the head, in front of the forestay",
   "gennaker.step4": "Hoisted in its sock",
   "gennaker.next": "Next step",
-  "gennaker.back": "Undo a step"
+  "gennaker.back": "Undo a step",
+  "gennaker.trim.snuffed": "In its sock",
+  "gennaker.trim.crossing": "Going round the front to the other side",
+  "gennaker.trim.backed": "On the wrong side: gybe it",
+  "gennaker.trim.blanketed": "Hidden behind the main: steer a little higher",
+  "gennaker.trim.luffing": "Front edge curling: trim a little",
+  "gennaker.trim.good": "Drawing well",
+  "gennaker.trim.stalled": "Trimmed too hard: ease until the edge curls",
+  "gennaker.gybe": "Gybe the gennaker",
+  "gennaker.sock": "Sock",
+  "gennaker.sheet": "Sheet"
 }

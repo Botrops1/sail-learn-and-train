@@ -2105,6 +2105,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Slakk skjøt (`term_lazy_sheet`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Lazy sheet | Slakk skjøt |
+| Andre navn | — | — |
+| Kort | The sheet that is not working, on the side the wind comes from. | Skjøtet som ikke jobber, på siden vinden kommer fra. |
+| Hva det gjør / hva det betyr | A sail with two sheets uses one at a time: the leeward one trims, the windward one is lazy and hangs slack. When you gybe, the lazy sheet becomes the working one: pull it in and let the old one go. | Et seil med to skjøter bruker ett om gangen: le-skjøtet trimmer, lo-skjøtet er slakt og henger. Når du gybber, blir det slakke skjøtet det som jobber: trekk det inn og slipp det gamle. |
+| På denne båten | — | — |
+| Typiske feil | — | — |
+| «Vis meg» | — | — |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Slør (`term_broad_reach`)
 
 | Felt | English | Norsk |

@@ -862,6 +862,13 @@
       "what": "A sheet pulls on a sail’s clew (its back bottom corner) and so sets how far the sail can swing out. Each sail has its own: the mainsheet and the jib sheet. On a boat a sheet is a line, not the sail.",
       "textStatus": "draft"
     },
+    "term_lazy_sheet": {
+      "name": "Lazy sheet",
+      "alternatives": [],
+      "short": "The sheet that is not working, on the side the wind comes from.",
+      "what": "A sail with two sheets uses one at a time: the leeward one trims, the windward one is lazy and hangs slack. When you gybe, the lazy sheet becomes the working one: pull it in and let the old one go.",
+      "textStatus": "draft"
+    },
     "term_line": {
       "name": "Line",
       "alternatives": [

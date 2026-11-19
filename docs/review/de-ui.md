@@ -88,6 +88,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | control.paidOut | {m} m of line paid out | {m} m Leine gefiert |
 | unit.eased | {value} % eased | {value} % gefiert |
 | unit.unfurled | {value} % unfurled | {value} % ausgerollt |
+| unit.up | {value} % up | {value} % oben |
 | state.taut | taut | stramm |
 | state.slack | slack | lose |
 | state.slackBy | slack, {m} m spare | lose, {m} m Reserve |
@@ -137,6 +138,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | alert.winchCutOut | The {side} winch cut out: too much load. | Die Winsch an {side} hat abgeschaltet: zu große Last. |
 | alert.clutchOnRunning | A clutch was shut on a running line under load: it can be damaged. | Eine Klemme wurde unter Last auf eine laufende Leine geschlossen: Sie kann beschädigt werden. |
 | control.jibSheet | Jib sheet | Fockschot |
+| control.gennakerSheet | Gennaker sheet | Gennakerschot |
+| control.gennakerSock | Gennaker sock | Gennaker-Strumpf |
 | control.jibFurl | Jib out | Fock ausrollen |
 | main.fightingLift | The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out. | Der Toppnant hält den Baum hoch, deshalb zieht die Großschot gegen ihn (beide rot). Fieren Sie den Toppnant oder die Großschot über {pct} % hinaus, bevor der Baum ausschwingen kann. |
 | jib.filled | Jib filled, {angle}° out | Fock steht, {angle}° ausgestellt |
@@ -1157,3 +1160,13 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | gennaker.step4 | Hoisted in its sock | In seinem Strumpf hochgezogen |
 | gennaker.next | Next step | Nächster Schritt |
 | gennaker.back | Undo a step | Einen Schritt zurück |
+| gennaker.trim.snuffed | In its sock | In seinem Strumpf |
+| gennaker.trim.crossing | Going round the front to the other side | Geht vorn herum auf die andere Seite |
+| gennaker.trim.backed | On the wrong side: gybe it | Auf der falschen Seite: halsen |
+| gennaker.trim.blanketed | Hidden behind the main: steer a little higher | Hinter dem Großsegel versteckt: etwas höher steuern |
+| gennaker.trim.luffing | Front edge curling: trim a little | Vorliek rollt sich ein: etwas dichter holen |
+| gennaker.trim.good | Drawing well | Steht gut |
+| gennaker.trim.stalled | Trimmed too hard: ease until the edge curls | Zu dicht getrimmt: fieren, bis das Vorliek sich einrollt |
+| gennaker.gybe | Gybe the gennaker | Gennaker halsen |
+| gennaker.sock | Sock | Strumpf |
+| gennaker.sheet | Sheet | Schot |

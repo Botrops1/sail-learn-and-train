@@ -81,6 +81,7 @@
   "control.paidOut": "{m} m tau fiet ut",
   "unit.eased": "{value} % fiet",
   "unit.unfurled": "{value} % rullet ut",
+  "unit.up": "{value} % oppe",
   "state.taut": "stram",
   "state.slack": "slakk",
   "state.slackBy": "slakk, {m} m til overs",
@@ -130,6 +131,8 @@
   "alert.winchCutOut": "Vinsjen på {side} koblet ut: for stor belastning.",
   "alert.clutchOnRunning": "En stopper ble lukket på et tau som løp under belastning: den kan bli skadet.",
   "control.jibSheet": "Fokkeskjøt",
+  "control.gennakerSheet": "Gennakerskjøt",
+  "control.gennakerSock": "Gennakerstrømpe",
   "control.jibFurl": "Fokk ut",
   "main.fightingLift": "Toppenanten holder bommen oppe, så storskjøtet trekker mot den (begge røde). Fire toppenanten, eller storskjøtet forbi {pct} %, før bommen kan svinge ut.",
   "jib.filled": "Fokken står full, {angle}° ute",
@@ -1149,5 +1152,15 @@
   "gennaker.step3": "Fallet på toppen, foran forstaget",
   "gennaker.step4": "Heist i strømpen",
   "gennaker.next": "Neste trinn",
-  "gennaker.back": "Angre et trinn"
+  "gennaker.back": "Angre et trinn",
+  "gennaker.trim.snuffed": "I strømpen",
+  "gennaker.trim.crossing": "Går rundt fronten til den andre siden",
+  "gennaker.trim.backed": "På feil side: gybb den",
+  "gennaker.trim.blanketed": "Skjult bak storseilet: gå litt høyere",
+  "gennaker.trim.luffing": "Forkanten krøller seg: trim litt inn",
+  "gennaker.trim.good": "Trekker godt",
+  "gennaker.trim.stalled": "Trimmet for hardt: fire til kanten krøller seg",
+  "gennaker.gybe": "Gybb gennakeren",
+  "gennaker.sock": "Strømpe",
+  "gennaker.sheet": "Skjøt"
 }
