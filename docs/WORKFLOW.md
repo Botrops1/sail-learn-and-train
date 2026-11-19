@@ -112,7 +112,7 @@ New link settings: `gn` gennaker rigging step (0 stowed, 1 tack line on, 2 sheet
 
 #### M106: Sailing with the gennaker
 
-- [ ] Set it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&cam=side-port — the gennaker is up in its sock. In the Sails section press + on Sock until 100: the sock rides up, the big sail opens on the near (port) side and the speed goes up by about 2 knots.
+- [ ] Set it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&cam=side-port — the gennaker is up in its sock. In the Sails section press + on Sock until 100: the sock rides up, the big sail opens on the near (port) side and the speed goes up by about 3 to 4 knots (from about 5.7 to about 9.2).
 - [ ] Trim to the curl: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm — in the Sails section press + on Sheet a few times: the trim line says "Front edge curling: trim a little". Press − twice: "Drawing well".
 - [ ] Trimmed too hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&gs=0&cam=side-starboard — the trim line says "Trimmed too hard", the boat leans more and is slower than at 25.
 - [ ] Too close to the wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=75&ws=18&ms=40&jf=0&gn=4&gx=p&gu=100&gs=0&ap=wind&apt=75&sea=flat&cam=side-starboard — the boat heels a lot and the "overpowered" alert shows.

@@ -422,6 +422,19 @@ describe('M106: sailing with the gennaker', () => {
     const gybed = reduce(state, { type: 'gennaker', command: 'gybe' });
     expect(gybed.gennaker.crossS).toBeGreaterThan(0);
     expect(gybed.rig.applied.gennakerSheet).toBe(100);
+    // The sheet stays eased for the whole crossing and comes in only afterwards (no jump of the clew).
+    let moving = gybed;
+    const crossS = boat.sails.gennaker.gybeCrossS;
+    for (let t = 0; t < crossS - 0.05; t += 0.1) {
+      moving = reduce(moving, { type: 'step', dt: 0.1 });
+    }
+    expect(moving.gennaker.crossS).toBeGreaterThan(0);
+    expect(moving.rig.applied.gennakerSheet).toBe(100);
+    while (moving.gennaker.crossS > 0) moving = reduce(moving, { type: 'step', dt: 0.05 });
+    expect(moving.rig.applied.gennakerSheet).toBeGreaterThan(90);
+    const before = moving.rig.gennaker.thetaDeg;
+    moving = reduce(moving, { type: 'step', dt: 0.1 });
+    expect(Math.abs(moving.rig.gennaker.thetaDeg - before)).toBeLessThan(15);
     const stowed = reduce(state, { type: 'gennaker', command: 'stow' });
     expect(stowed.controls.ctl_gennaker_sock).toBe(0);
   });

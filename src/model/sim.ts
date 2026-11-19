@@ -422,7 +422,12 @@ export function step(
     // The furling line cannot run ahead of the jib: while the sheet stops the furl, the request
     // waits at the furl reached, so a released sheet lets the jib roll in smoothly, not jump.
     jibFurl: lag(rig.jibSolution.unfurled * 100, target.jibFurl, dt, tau),
-    gennakerSheet: lag(rig.applied.gennakerSheet, target.gennakerSheet, dt, tau),
+    // While the gennaker crosses the boat after a gybe the new sheet stays fully eased (the store
+    // set it); the lag towards the target starts when the crossing ends, so the clew does not jump.
+    gennakerSheet:
+      (options.gennaker?.crossS ?? 0) > 0
+        ? rig.applied.gennakerSheet
+        : lag(rig.applied.gennakerSheet, target.gennakerSheet, dt, tau),
     gennakerSock: lag(rig.applied.gennakerSock, target.gennakerSock, dt, tau),
     rudder: lag(rig.applied.rudder, target.rudder, dt, tau),
   };
