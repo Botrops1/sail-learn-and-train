@@ -92,7 +92,6 @@ export function learnEntry(id: string, language: string = SOURCE_LANGUAGE): Lear
 
 /** Ids that no mesh or rope carries: there is nothing to light up for "Show on the boat". */
 export const NOT_DRAWN: ReadonlySet<string> = new Set([
-  'sail_gennaker',
   'sailpart_head',
   'sailpart_tack',
   'sailpart_clew',

@@ -16,6 +16,7 @@ import {
   type ExternalForces,
 } from './lowSpeed';
 import { sailForces, type SailForces } from './sailForces';
+import type { GennakerSetup } from './gennaker';
 import { initialRig, type RigState } from './sim';
 import type { SailDamage } from './trim';
 import {
@@ -387,6 +388,8 @@ export function steadyState(
     twsKn?: number;
     engineThrustN?: number;
     trains?: readonly WaveTrain[];
+    /** M106: the gennaker's rigging; stowed when missing. */
+    gennaker?: GennakerSetup;
   } = {},
 ): SteadyState {
   const dirDeg = opts.windDirDeg ?? controls.ctl_wind_dir;
@@ -400,7 +403,14 @@ export function steadyState(
   let wind = apparentWind(twsKn, twaDeg, speed, data);
   for (let i = 0; i < 40; i += 1) {
     wind = apparentWind(twsKn, twaDeg, speed, data);
-    const rig = initialRig(controls, data, {}, { velocity: [speed, 0, 0], headingDeg }, override);
+    const rig = initialRig(
+      controls,
+      data,
+      {},
+      { velocity: [speed, 0, 0], headingDeg },
+      override,
+      opts.gennaker,
+    );
     const at = (heel: number) => sailForces(rig, controls, wind.awsKn, wind.awaDeg, heel, data);
     if (opts.heel) {
       // The heel where the sails' heeling moment equals the righting moment (30 bisections).

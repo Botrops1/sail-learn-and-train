@@ -47,3 +47,14 @@ export function sheetLoads(rig: RigState, forces: SailForces, data: BoatData = b
     : 0;
   return { mainSailForceN, jibSailForceN, mainSheetBlocksN, mainSheetRopeN, jibSheetRopeN };
 }
+
+/**
+ * Pull on a gennaker sheet (M106, used by M107's winches): its sail force times a fraction, with
+ * no purchase: the sheet runs straight to the winch.
+ */
+export function gennakerSheetLoadN(forces: SailForces, data: BoatData = boat): number {
+  return (
+    Math.hypot(forces.gennaker.liftN, forces.gennaker.dragN) *
+    data.sails.gennaker.sheet.loadFraction
+  );
+}

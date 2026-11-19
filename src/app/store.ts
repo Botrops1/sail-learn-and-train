@@ -16,6 +16,7 @@ import {
 import { exerciseDef } from '../model/exercises';
 import {
   gennakerCommand,
+  stepGennaker,
   STOWED,
   type GennakerCommand,
   type GennakerSetup,
@@ -337,6 +338,7 @@ function boatFor(
   wind?: WindNow,
   engine: EngineState = initialEngine(),
   trains: readonly WaveTrain[] = [],
+  gennaker: GennakerSetup = STOWED,
 ): BoatState {
   const mode = overrides.mode ?? 'sailing';
   const headingDeg = overrides.headingDeg ?? 0;
@@ -356,6 +358,7 @@ function boatFor(
     heel: true,
     engineThrustN: engineThrustN(engine),
     trains,
+    gennaker,
     ...(wind ? { windDirDeg: wind.dirDeg, twsKn: wind.twsKn } : {}),
   });
   const speedMps = overrides.speedMps ?? steady.speedMps;
@@ -521,6 +524,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     patterned ? wind : undefined,
     engine,
     waveTrains(sea),
+    overrides.gennaker,
   );
   const settings = { ...DEFAULT_SETTINGS, ...overrides.settings };
   return withTimeRule({
@@ -532,6 +536,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
       overrides.history,
       motionOf(boat),
       patterned ? wind : undefined,
+      overrides.gennaker,
     ),
     camera: {
       ...DEFAULT_CAMERA,
@@ -848,6 +853,16 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'setControls': {
       // The exercise sets the wind (PHASE10_SPEC 4.2), and so does a clock wind (24.4).
       let values = action.values;
+      if (
+        state.gennaker.stage < 4 &&
+        ('ctl_gennaker_sheet' in values || 'ctl_gennaker_sock' in values)
+      ) {
+        // The gennaker's two controls work only on a hoisted gennaker.
+        values = { ...values };
+        delete values.ctl_gennaker_sheet;
+        delete values.ctl_gennaker_sock;
+        if (Object.keys(values).length === 0) return state;
+      }
       if (state.exercise !== null || isClockWind(state.windMode.mode)) {
         values = { ...values };
         delete values.ctl_wind_dir;
@@ -1029,8 +1044,28 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (state.settings.timeBar === action.timeBar) return state;
       return withTimeRule({ ...state, settings: { ...state.settings, timeBar: action.timeBar } });
     case 'gennaker': {
-      const gennaker = gennakerCommand(state.gennaker, action.command, state.rig.wind.awaDeg, 0);
-      return gennaker === state.gennaker ? state : { ...state, gennaker };
+      const gennaker = gennakerCommand(
+        state.gennaker,
+        action.command,
+        state.rig.wind.awaDeg,
+        state.controls.ctl_gennaker_sock,
+        state.rig.gennaker.phiDeg,
+      );
+      if (gennaker === state.gennaker) return state;
+      let next: AppState = { ...state, gennaker };
+      // Stowing puts the sock down too.
+      if (action.command === 'stow' && state.controls.ctl_gennaker_sock !== 0) {
+        next = { ...next, controls: { ...state.controls, ctl_gennaker_sock: 0 } };
+      }
+      // A gybe that sends the sail round the front: the old sheet lets go and the new one starts
+      // fully eased (the lag brings it to the target). The only place the store writes `rig.applied`.
+      if (action.command === 'gybe' && gennaker.crossS > 0) {
+        next = {
+          ...next,
+          rig: { ...next.rig, applied: { ...next.rig.applied, gennakerSheet: 100 } },
+        };
+      }
+      return next;
     }
     case 'repairSails':
       return state.sailDamage.main === 0 && state.sailDamage.jib === 0
@@ -1196,10 +1231,12 @@ function reduceAction(state: AppState, action: Action): AppState {
       const windlassed = anchored
         ? stepWindlass(state.anchor, state.boat, SEABED_ENV, dt)
         : state.anchor;
+      const gennaker = stepGennaker(state.gennaker, dt);
       const rig = step({ controls, rig: state.rig }, dt, motionOf(state.boat), undefined, {
         instantRopes: realistic,
         wind: patterned ? wind : undefined,
         damage: state.sailDamage,
+        gennaker,
       });
       const moving = stepBoat(
         state.boat,
@@ -1261,6 +1298,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         ...state,
         controls,
         rig,
+        gennaker,
         realistic: realisticState,
         boat: moving.boat,
         autopilot,

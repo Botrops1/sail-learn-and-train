@@ -28,13 +28,12 @@ describe('Ropes tab entries (PHASE1_SPEC 7.2)', () => {
       'ctl_topping_lift',
       'ctl_main_furl',
       'ctl_jib_furl',
+      'ctl_gennaker_sheet',
+      'ctl_gennaker_sock',
       'ctl_rudder',
       'rope_main_halyard',
       'rope_spi_halyard',
       'rope_gennaker_tack_line',
-      'rope_gennaker_sheet_port',
-      'rope_gennaker_sheet_starboard',
-      'rope_gennaker_sock_line',
     ]);
     for (const candidate of panelEntries()) {
       expect(isRegisteredPartId(candidate.selectId), candidate.key).toBe(true);
@@ -90,15 +89,22 @@ describe('Ropes tab entries (PHASE1_SPEC 7.2)', () => {
       controlId: null,
       staticNote: 'inMastFurling',
     });
-    for (const key of [
-      'rope_spi_halyard',
-      'rope_gennaker_tack_line',
-      'rope_gennaker_sheet_port',
-      'rope_gennaker_sheet_starboard',
-      'rope_gennaker_sock_line',
-    ]) {
+    for (const key of ['rope_spi_halyard', 'rope_gennaker_tack_line']) {
       expect(entry(key), key).toMatchObject({ controlId: null, staticNote: 'gennaker' });
     }
+  });
+
+  it('M106: the gennaker sheet is one control for two ropes (one at a time), the sock another', () => {
+    expect(entry('ctl_gennaker_sheet')).toMatchObject({
+      selectId: 'rope_gennaker_sheet_port',
+      partIds: ['rope_gennaker_sheet_port', 'rope_gennaker_sheet_starboard'],
+      shared: null,
+    });
+    expect(entry('ctl_gennaker_sock')).toMatchObject({
+      selectId: 'rope_gennaker_sock_line',
+      partIds: ['rope_gennaker_sock_line'],
+    });
+    expect(entryFor('rope_gennaker_sheet_starboard')?.key).toBe('ctl_gennaker_sheet');
   });
 
   it('a part without an entry highlights only itself; no selection highlights nothing', () => {

@@ -84,6 +84,8 @@ export const URL_CONTROLS: readonly (readonly [string, ControlId])[] = [
   ['tl', 'ctl_topping_lift'],
   ['mf', 'ctl_main_furl'],
   ['jf', 'ctl_jib_furl'],
+  ['gs', 'ctl_gennaker_sheet'],
+  ['gu', 'ctl_gennaker_sock'],
   ['rd', 'ctl_rudder'],
   ['wd', 'ctl_wind_dir'],
   ['ws', 'ctl_wind_speed'],
@@ -936,6 +938,13 @@ export function serializeUrlState(state: AppState): string {
   const clockWind = isClockWind(state.windMode.mode);
   for (const [key, id] of URL_CONTROLS) {
     if (clockWind && (id === 'ctl_wind_dir' || id === 'ctl_wind_speed')) continue;
+    // The gennaker's two controls (M106) are written only when they differ from their defaults.
+    if (
+      (id === 'ctl_gennaker_sheet' || id === 'ctl_gennaker_sock') &&
+      Math.round(state.controls[id]) === controlSpec(id).default
+    ) {
+      continue;
+    }
     params.set(key, String(Math.round(state.controls[id])));
   }
   const jr = jibReachedParam(state);

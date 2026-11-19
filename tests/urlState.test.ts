@@ -212,6 +212,8 @@ describe('URL state (PHASE1_SPEC 9.2)', () => {
       ctl_topping_lift: 0,
       ctl_main_furl: 35,
       ctl_jib_furl: 70,
+      ctl_gennaker_sheet: 30,
+      ctl_gennaker_sock: 100,
       ctl_rudder: -15,
       ctl_wind_dir: -135,
       ctl_wind_speed: 0,
