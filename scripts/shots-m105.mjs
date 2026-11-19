@@ -96,19 +96,30 @@ export async function liveM105Checks({ openPage, viewports, problems }) {
     await context.close();
   }
 
-  // 4. The Ropes list: the sheets are listed at gn=2, the sock line is not.
+  // 4. The Ropes list: the tack line is listed at gn=1; at gn=4 the sheet and the sock line are, with − / + (M106).
   {
-    const { context, page } = await open('ropes list', '&gn=2');
+    const { context, page } = await open('ropes list', '&gn=4');
     await showSection(page, 'ropes');
     const row = (id) => page.locator(`.rope-item[data-select="${id}"]`);
     const shown = async (id) => (await row(id).count()) > 0 && (await row(id).first().isVisible());
     check(
-      'ropes list: both sheets are listed',
-      (await shown('rope_gennaker_sheet_port')) && (await shown('rope_gennaker_sheet_starboard')),
-      'a sheet is missing',
+      'ropes list: the sheet and the sock line are listed',
+      (await shown('rope_gennaker_sheet_port')) && (await shown('rope_gennaker_sock_line')),
+      'an entry is missing',
     );
-    check('ropes list: the sock line is not', !(await shown('rope_gennaker_sock_line')), 'listed');
+    await row('rope_gennaker_sheet_port').first().tap();
+    const plus = page.locator('[data-part-id="rope_gennaker_sheet_port"] .step-button').last();
+    check('ropes list: the sheet has − / +', (await plus.count()) > 0, 'no stepper');
     await context.close();
+    const early = await open('ropes list early', '&gn=2');
+    await showSection(early.page, 'ropes');
+    const earlyRow = early.page.locator('.rope-item[data-select="rope_gennaker_sheet_port"]');
+    check(
+      'ropes list: the sheets are not listed before the sock is hoisted',
+      (await earlyRow.count()) === 0 || !(await earlyRow.first().isVisible()),
+      'listed',
+    );
+    await early.context.close();
   }
 
   // 5. Learn, from stowed: "Where is it?" on the port sheet rigs the sheets and flies to them.

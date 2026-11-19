@@ -334,6 +334,11 @@ The gennaker is a brochure option (176.4 m² in the brochure, 200 m² in the man
 | Slack in a sheet or the sock line | 0.03 m a piece (`sheetSlackM`; the spec's 0.3 m made 0.5 m deep loops down the topsides); the last piece of a sheet, block to winch, is drawn straight | **Assumption** (drawing only) |
 | The sheets round the bow (steps 2 and 3) | from the bag's mouth through [6.55, 1.95, 0] (`sheetBowVia`, ahead of the forestay's foot at x 6.28), then aft along the deck edge | **Assumption** (the sheets must not cross behind the forestay) |
 | The lazy sheet's route (M106) | via [7.35, 3.4, 0] and [4.5, 2.55, 1.15] on the windward side | **Assumption** |
+| The sheet's reach (M106) | the foot angle φ runs 15° (hauled) to 85° (eased) off the line astern of the tack (`sheet.phiHauledDeg`, `phiEasedDeg`); the sheet's pull is 0.45 of the sail force (`sheet.loadFraction`; no purchase) | **Assumption** |
+| The gennaker's lift and drag (M106) | lift and drag against the angle of attack, peak lift 1.5 at 15° (`aero.liftByAoaDeg`, `dragByAoaDeg`); the sail sees the wind 25° more ahead than the boat does (`aero.entryDeg`); fills between 2° and 8°; stalls above 30° | **Assumption** (a teaching model tuned to PT-67: about 9.2 kn at true wind 12 kn, 120°, against 7.1 kn with the jib) |
+| The main hides it on a run (M106) | from an apparent wind of 145° the main takes the gennaker's wind, down to 0.1 of it at 165° (`blanket.*`); on the windward side within 170° it is backed (`backedBelowAwaDeg`) | **Assumption** |
+| Look (M106) | camber 0.22 of the chord, twist 8° at the head, the sock bunches the top 1.5 m of the sail | **Assumption** (drawing only) |
+| A gybe (M106) | the clew goes round the front of the boat in 5 s (`gybeCrossS`): the outside gybe | **Assumption** |
 | Line sizes | sheets 12 mm × 28 m (manual), tack line 10 mm × 4 m, sock line 8 mm × 44 m | Sheets from the manual; the others **assumptions** |
 | Line colour in the app | vermilion `#d55e00` with the dash pattern `6 2 1 2`; the real sheets' tracer is red | Presentation |
 

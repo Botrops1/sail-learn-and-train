@@ -65,7 +65,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `controls.ts`, `settings.ts`, `steering.ts`, `wind.ts` | Control targets, settings, wheel/rudder, test-wind helpers. |
 | `boomSolver.ts`, `pitchLimits.ts`, `mainsheet.ts`, `mainFurl.ts` | Mainsail and boom: free angle, vang/topping-lift limits, German mainsheet, in-mast furling. |
 | `jib.ts` | Self-tacking jib: car, sheet, furling. |
-| `sailShape.ts` | Sail surface grids for both sails. |
+| `sailShape.ts` | Sail surface grids for the main, the jib and the gennaker. |
 | `ropePaths.ts`, `ropeLengths.ts` | Where each rope runs (polylines), the manual's rope lengths, wraps on winch drums, tails into the rope box, guide blocks on the channel's line. |
 | `ropeSmooth.ts` | The ropes as drawn, for the picture only: rounded corners, whipped tails, steady tube frames. Rope lengths are unchanged. |
 | `backstay.ts` | Where the backstay's block and its two ends stand. |
@@ -80,7 +80,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `languages.ts` | The available languages (from every `content/lang/*/ui.json`) and `latinAllowed`. |
 | `glossary.ts` | The glossaries by language, `learnEntry`, `NOT_DRAWN`, `FAR_AWAY`, `sourceLink`, groups and `searchGlossary`. |
 | `horizonLand.ts` | The distant land's outline from the area's ridges (pure). |
-| `gennaker.ts` | The optional gennaker's rigging: stage and side, the commands, the sheets' route outside the lifelines, what each stage draws. |
+| `gennaker.ts` | The optional gennaker: rigging stage and side, the commands (rig, gybe), the sheets' route, what is drawn, and `solveGennaker` (foot angle, angle of attack, fill, the main hiding it) with its trim state. |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
 | `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts` | Apparent wind, lift/drag, resistance, speed/heading/position, sideways motion and turning on the spot at low speed. `stepBoat` merges the contacts of its substeps. |
 | `heel.ts`, `sheetLoads.ts` | Heel and weather helm; sheet loads from the sail forces. |
@@ -121,7 +121,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `boat/mooringFittings.ts` | The horn cleats and fairleads on the toerail; static. |
 | `boat/thrusters.ts` | Each thruster's tunnel (only the ends the boat has) and the water jets shown while a joystick is held. |
 | `boat/fenders.ts` | The eight fenders and the ball fender; hidden in the locker. |
-| `boat/gennaker.ts` | The gennaker's bag, sock tube and the two sheet blocks, shown by rigging stage; its lines come from `ropePaths.ts`. |
+| `boat/gennaker.ts` | The gennaker's bag, sock tube, sheet blocks and sail (gathered into the sock above its mouth), shown by rigging stage and solution; its lines come from `ropePaths.ts`. |
 | `boat/sailMesh.ts`, `boat/ropes.ts`, `boat/telltales.ts` | Sails, ropes (capped ends, smooth tubes, whipped tails, braid normal map), telltales and the tear mark; `BoatModel.ropeStats()` reads what was drawn. |
 | `boat/winchHandle.ts` | The one winch handle, placed from `handlePose`, hidden when carried or in Easy ropes. |
 | `boat/smallFittings.ts` | High detail only: shroud feet, deck hatches, hull windows and soft contact patches (not pickable). |
