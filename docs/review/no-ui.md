@@ -88,6 +88,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | control.paidOut | {m} m of line paid out | {m} m tau fiet ut |
 | unit.eased | {value} % eased | {value} % fiet |
 | unit.unfurled | {value} % unfurled | {value} % rullet ut |
+| unit.up | {value} % up | {value} % oppe |
 | state.taut | taut | stram |
 | state.slack | slack | slakk |
 | state.slackBy | slack, {m} m spare | slakk, {m} m til overs |
@@ -137,6 +138,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | alert.winchCutOut | The {side} winch cut out: too much load. | Vinsjen på {side} koblet ut: for stor belastning. |
 | alert.clutchOnRunning | A clutch was shut on a running line under load: it can be damaged. | En stopper ble lukket på et tau som løp under belastning: den kan bli skadet. |
 | control.jibSheet | Jib sheet | Fokkeskjøt |
+| control.gennakerSheet | Gennaker sheet | Gennakerskjøt |
+| control.gennakerSock | Gennaker sock | Gennakerstrømpe |
 | control.jibFurl | Jib out | Fokk ut |
 | main.fightingLift | The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out. | Toppenanten holder bommen oppe, så storskjøtet trekker mot den (begge røde). Fire toppenanten, eller storskjøtet forbi {pct} %, før bommen kan svinge ut. |
 | jib.filled | Jib filled, {angle}° out | Fokken står full, {angle}° ute |
@@ -1157,3 +1160,13 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | gennaker.step4 | Hoisted in its sock | Heist i strømpen |
 | gennaker.next | Next step | Neste trinn |
 | gennaker.back | Undo a step | Angre et trinn |
+| gennaker.trim.snuffed | In its sock | I strømpen |
+| gennaker.trim.crossing | Going round the front to the other side | Går rundt fronten til den andre siden |
+| gennaker.trim.backed | On the wrong side: gybe it | På feil side: gybb den |
+| gennaker.trim.blanketed | Hidden behind the main: steer a little higher | Skjult bak storseilet: gå litt høyere |
+| gennaker.trim.luffing | Front edge curling: trim a little | Forkanten krøller seg: trim litt inn |
+| gennaker.trim.good | Drawing well | Trekker godt |
+| gennaker.trim.stalled | Trimmed too hard: ease until the edge curls | Trimmet for hardt: fire til kanten krøller seg |
+| gennaker.gybe | Gybe the gennaker | Gybb gennakeren |
+| gennaker.sock | Sock | Strømpe |
+| gennaker.sheet | Sheet | Skjøt |

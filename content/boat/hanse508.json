@@ -591,7 +591,20 @@
       "sheetVia": [[5.6, 0.15, 0.15], [4.0, 0.1, 0.15], [2.0, 0.1, 0.15], [0.0, 0.1, 0.15], [-2.0, 0.1, 0.15], [-4.0, 0.1, 0.15], [-6.0, 0.1, 0.15]],
       "sheetBowVia": [6.55, 1.95, 0.0],
       "sheetSlackM": 0.03,
-      "lazySheetVia": [[7.35, 3.4, 0.0], [4.5, 2.55, 1.15]]
+      "lazySheetVia": [[7.35, 3.4, 0.0], [4.5, 2.55, 1.15]],
+      "sheet": { "phiHauledDeg": 15, "phiEasedDeg": 85, "loadFraction": 0.45 },
+      "aero": {
+        "entryDeg": 25,
+        "fillStartAoaDeg": 2,
+        "fillFullAoaDeg": 8,
+        "stallAboveAoaDeg": 30,
+        "liftByAoaDeg": [[0, 0], [5, 0.7], [10, 1.3], [15, 1.5], [25, 1.35], [40, 1.05], [60, 0.7], [90, 0.3]],
+        "dragByAoaDeg": [[0, 0.1], [10, 0.15], [15, 0.25], [25, 0.45], [40, 0.7], [60, 0.95], [90, 1.2]]
+      },
+      "blanket": { "fromAwaDeg": 145, "fullAwaDeg": 165, "factorAtFull": 0.1 },
+      "backedBelowAwaDeg": 170,
+      "look": { "camberRatio": 0.22, "twistDeg": 8, "sockBunchM": 1.5 },
+      "gybeCrossS": 5
     },
     "reacher": {
       "enabled": false,
@@ -845,9 +858,9 @@
         "colorKey": "halyard"
       },
       { "id": "rope_gennaker_tack_line", "controlId": null, "static": true, "colorKey": "gennaker" },
-      { "id": "rope_gennaker_sheet_port", "controlId": null, "static": true, "colorKey": "gennaker" },
-      { "id": "rope_gennaker_sheet_starboard", "controlId": null, "static": true, "colorKey": "gennaker" },
-      { "id": "rope_gennaker_sock_line", "controlId": null, "static": true, "colorKey": "gennaker" }
+      { "id": "rope_gennaker_sheet_port", "controlId": "ctl_gennaker_sheet", "oneAtATime": true, "colorKey": "gennaker" },
+      { "id": "rope_gennaker_sheet_starboard", "controlId": "ctl_gennaker_sheet", "oneAtATime": true, "colorKey": "gennaker" },
+      { "id": "rope_gennaker_sock_line", "controlId": "ctl_gennaker_sock", "colorKey": "gennaker" }
     ]
   },
   "controls": {
@@ -905,6 +918,22 @@
         "default": 100
       },
       {
+        "id": "ctl_gennaker_sheet",
+        "label": "Gennaker sheet",
+        "unit": "% eased",
+        "min": 0,
+        "max": 100,
+        "default": 50
+      },
+      {
+        "id": "ctl_gennaker_sock",
+        "label": "Gennaker sock",
+        "unit": "% up",
+        "min": 0,
+        "max": 100,
+        "default": 0
+      },
+      {
         "id": "ctl_rudder",
         "label": "Wheel",
         "unit": "deg rudder",
@@ -938,10 +967,7 @@
     "staticRopeNotes": {
       "rope_main_halyard": "inMastFurling",
       "rope_spi_halyard": "gennaker",
-      "rope_gennaker_tack_line": "gennaker",
-      "rope_gennaker_sheet_port": "gennaker",
-      "rope_gennaker_sheet_starboard": "gennaker",
-      "rope_gennaker_sock_line": "gennaker"
+      "rope_gennaker_tack_line": "gennaker"
     },
     "staticRopeNotesComment": "Why a rope has no control in Phase 1; the UI shows the matching text (ropes.static.*)."
   },

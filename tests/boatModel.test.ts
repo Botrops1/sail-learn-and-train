@@ -127,11 +127,13 @@ describe('boat model', () => {
   });
 
   it('overall size matches the data: length overall, beam, draft and mast height', () => {
-    // The fenders in the locker are hidden but still counted by Box3: leave them out (M33).
+    // The fenders in the locker and the stowed gennaker's sail are hidden but still counted by
+    // Box3: leave them out (M33, M106).
     const box = new THREE.Box3();
+    const hidden = new Set(['fit_fender', 'fit_fender_ball', 'sail_gennaker']);
     model.root.traverse((object) => {
       const id = (object.userData as { partId?: string }).partId;
-      if (object instanceof THREE.Mesh && id !== 'fit_fender' && id !== 'fit_fender_ball') {
+      if (object instanceof THREE.Mesh && !hidden.has(id ?? '')) {
         box.expandByObject(object);
       }
     });
@@ -211,9 +213,11 @@ describe('boat model', () => {
     );
   });
 
-  it('optional sails are data-driven: the gennaker can be rigged, but its sail is not drawn before M106', () => {
+  it('optional sails are data-driven: the gennaker is built but hidden while it is stowed', () => {
     expect(boat.sails.gennaker.enabled).toBe(true);
-    expect(partIds.has('sail_gennaker')).toBe(false);
+    expect(partIds.has('sail_gennaker')).toBe(true);
+    const sail = meshes.find((mesh) => mesh.userData.partId === 'sail_gennaker');
+    expect(sail?.visible).toBe(false);
   });
 });
 

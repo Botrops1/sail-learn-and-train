@@ -36,9 +36,12 @@ interface RopeListEntry {
   static?: boolean;
   /** Moved together with another rope's control (the outhaul with the furling line). */
   coupled?: string;
+  /** Several ropes of one control, one working at a time (the gennaker's two sheets): not "against each other". */
+  oneAtATime?: boolean;
 }
 
 function sharedKind(ropes: RopeListEntry[]): SharedKind | null {
+  if (ropes.every((rope) => rope.oneAtATime)) return null;
   // Two tails that move the sail opposite ways (furl / unfurl), or more than one rope on one
   // control (the outhaul with the furling line): they work against each other.
   if (ropes.length > 1 || ropes.some((rope) => rope.tails?.includes('furl'))) return 'workAgainst';

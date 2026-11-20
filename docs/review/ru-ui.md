@@ -88,6 +88,7 @@
 | control.paidOut | {m} m of line paid out | Вытравлено: {m} м |
 | unit.eased | {value} % eased | Потравлено: {value} % |
 | unit.unfurled | {value} % unfurled | Раскручено: {value} % |
+| unit.up | {value} % up | Поднято: {value} % |
 | state.taut | taut | выбран втугую |
 | state.slack | slack | провис |
 | state.slackBy | slack, {m} m spare | провис, запас: {m} м |
@@ -137,6 +138,8 @@
 | alert.winchCutOut | The {side} winch cut out: too much load. | Лебёдка {side} борта отключилась: слишком большая нагрузка. |
 | alert.clutchOnRunning | A clutch was shut on a running line under load: it can be damaged. | Стопор закрыли на бегущем нагруженном конце: он может повредиться. |
 | control.jibSheet | Jib sheet | Стаксель-шкот |
+| control.gennakerSheet | Gennaker sheet | Шкот геннакера |
+| control.gennakerSock | Gennaker sock | Чулок геннакера |
 | control.jibFurl | Jib out | Стаксель наружу |
 | main.fightingLift | The topping lift holds the boom up, so the main sheet pulls against it (both red). Ease the topping lift, or the main sheet past {pct} %, before the boom can swing out. | Топенант держит гик наверху, поэтому гика-шкот тянет против него (оба красные). Потравите топенант или гика-шкот дальше отметки {pct} %, прежде чем гик сможет отойти в сторону. |
 | jib.filled | Jib filled, {angle}° out | Стаксель наполнен, отведён на {angle}° |
@@ -1157,3 +1160,13 @@
 | gennaker.step4 | Hoisted in its sock | Поднят в чулке |
 | gennaker.next | Next step | Следующий шаг |
 | gennaker.back | Undo a step | Отменить шаг |
+| gennaker.trim.snuffed | In its sock | В чулке |
+| gennaker.trim.crossing | Going round the front to the other side | Идёт вокруг носа на другой борт |
+| gennaker.trim.backed | On the wrong side: gybe it | Не с той стороны: перекиньте его |
+| gennaker.trim.blanketed | Hidden behind the main: steer a little higher | Закрыт гротом: возьмите чуть круче к ветру |
+| gennaker.trim.luffing | Front edge curling: trim a little | Передняя кромка заворачивается: чуть подберите шкот |
+| gennaker.trim.good | Drawing well | Хорошо работает |
+| gennaker.trim.stalled | Trimmed too hard: ease until the edge curls | Выбран слишком туго: потравливайте, пока кромка не завернётся |
+| gennaker.gybe | Gybe the gennaker | Перекинуть геннакер |
+| gennaker.sock | Sock | Чулок |
+| gennaker.sheet | Sheet | Шкот |

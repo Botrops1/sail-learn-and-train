@@ -1,6 +1,8 @@
 import { boat, type BoatData } from './boat';
 import { DEG, interpTable, knToMps } from './angles';
 import type { Controls } from './controls';
+import { gennakerClew } from './gennaker';
+import { vec3 } from './vec3';
 import type { RigState } from './sim';
 import { blanketFactor, NO_DAMAGE, tornForceFactor, type SailDamage } from './trim';
 
@@ -27,6 +29,7 @@ export interface SailForce {
 export interface SailForces {
   main: SailForce;
   jib: SailForce;
+  gennaker: SailForce;
   driveN: number;
   sideN: number;
   /** Heeling moment about the waterline (Nm). Negative when the wind is from starboard. */
@@ -61,8 +64,13 @@ function oneSail(
   beta: number,
   heelFactor: number,
   data: BoatData,
+  tables: {
+    liftByAoaDeg: readonly (readonly number[])[];
+    dragByAoaDeg: readonly (readonly number[])[];
+  } = data.physics.sails,
 ): SailForce {
-  const { liftByAoaDeg, dragByAoaDeg, floggingDragCoefficient } = data.physics.sails;
+  const { liftByAoaDeg, dragByAoaDeg } = tables;
+  const { floggingDragCoefficient } = data.physics.sails;
   const area = sail.furled ? 0 : sail.areaM2;
   const alpha = sail.byTheLee ? 90 : Math.min(90, sail.aoaDeg);
   const f = sail.fill;
@@ -83,7 +91,7 @@ function oneSail(
 }
 
 export function sailForces(
-  rig: Pick<RigState, 'applied' | 'solution' | 'jibSolution'>,
+  rig: Pick<RigState, 'applied' | 'solution' | 'jibSolution' | 'gennaker'>,
   controls: Controls,
   awsKn: number,
   awaDeg: number,
@@ -129,17 +137,37 @@ export function sailForces(
     k * tornForceFactor(damage, 'jib', data),
     data,
   );
-  const sideN = mainForce.sideN + jibForce.sideN;
+  const gn = rig.gennaker;
+  const g = data.sails.gennaker;
+  const gennakerForce = oneSail(
+    {
+      areaM2: g.officialAreaM2 * gn.sockUp,
+      furled: !gn.set,
+      byTheLee: false,
+      aoaDeg: gn.aoaDeg,
+      fill: gn.fill,
+      ceHeightM: (vec3(g.tack)[1] + vec3(g.head)[1] + gennakerClew(gn.thetaDeg, data)[1]) / 3,
+    },
+    q,
+    beta,
+    k,
+    data,
+    g.aero,
+  );
+  const sideN = mainForce.sideN + jibForce.sideN + gennakerForce.sideN;
   const clr = data.physics.hull.clrDepthM;
   const heelMomentNm =
     -Math.sign(awaDeg) *
-    (mainForce.sideN * (mainForce.ceHeightM + clr) + jibForce.sideN * (jibForce.ceHeightM + clr));
+    (mainForce.sideN * (mainForce.ceHeightM + clr) +
+      jibForce.sideN * (jibForce.ceHeightM + clr) +
+      gennakerForce.sideN * (gennakerForce.ceHeightM + clr));
   const windageN =
     -q * data.physics.windage.areaM2 * data.physics.windage.dragCoefficient * Math.cos(beta);
   return {
     main: mainForce,
     jib: jibForce,
-    driveN: mainForce.driveN + jibForce.driveN,
+    gennaker: gennakerForce,
+    driveN: mainForce.driveN + jibForce.driveN + gennakerForce.driveN,
     sideN,
     heelMomentNm,
     windageN,

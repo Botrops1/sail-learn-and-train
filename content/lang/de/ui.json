@@ -81,6 +81,7 @@
   "control.paidOut": "{m} m Leine gefiert",
   "unit.eased": "{value} % gefiert",
   "unit.unfurled": "{value} % ausgerollt",
+  "unit.up": "{value} % oben",
   "state.taut": "stramm",
   "state.slack": "lose",
   "state.slackBy": "lose, {m} m Reserve",
@@ -130,6 +131,8 @@
   "alert.winchCutOut": "Die Winsch an {side} hat abgeschaltet: zu große Last.",
   "alert.clutchOnRunning": "Eine Klemme wurde unter Last auf eine laufende Leine geschlossen: Sie kann beschädigt werden.",
   "control.jibSheet": "Fockschot",
+  "control.gennakerSheet": "Gennakerschot",
+  "control.gennakerSock": "Gennaker-Strumpf",
   "control.jibFurl": "Fock ausrollen",
   "main.fightingLift": "Der Toppnant hält den Baum hoch, deshalb zieht die Großschot gegen ihn (beide rot). Fieren Sie den Toppnant oder die Großschot über {pct} % hinaus, bevor der Baum ausschwingen kann.",
   "jib.filled": "Fock steht, {angle}° ausgestellt",
@@ -1149,5 +1152,15 @@
   "gennaker.step3": "Fall am Kopf anschlagen, vor dem Vorstag",
   "gennaker.step4": "In seinem Strumpf hochgezogen",
   "gennaker.next": "Nächster Schritt",
-  "gennaker.back": "Einen Schritt zurück"
+  "gennaker.back": "Einen Schritt zurück",
+  "gennaker.trim.snuffed": "In seinem Strumpf",
+  "gennaker.trim.crossing": "Geht vorn herum auf die andere Seite",
+  "gennaker.trim.backed": "Auf der falschen Seite: halsen",
+  "gennaker.trim.blanketed": "Hinter dem Großsegel versteckt: etwas höher steuern",
+  "gennaker.trim.luffing": "Vorliek rollt sich ein: etwas dichter holen",
+  "gennaker.trim.good": "Steht gut",
+  "gennaker.trim.stalled": "Zu dicht getrimmt: fieren, bis das Vorliek sich einrollt",
+  "gennaker.gybe": "Gennaker halsen",
+  "gennaker.sock": "Strumpf",
+  "gennaker.sheet": "Schot"
 }

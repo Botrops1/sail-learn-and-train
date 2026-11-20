@@ -12,6 +12,8 @@ export const CONTROL_IDS = [
   'ctl_topping_lift',
   'ctl_main_furl',
   'ctl_jib_furl',
+  'ctl_gennaker_sheet',
+  'ctl_gennaker_sock',
   'ctl_rudder',
   'ctl_wind_dir',
   'ctl_wind_speed',
@@ -22,6 +24,7 @@ export type ControlId = (typeof CONTROL_IDS)[number];
 export const SHEET_CONTROL_IDS: ReadonlySet<ControlId> = new Set([
   'ctl_mainsheet',
   'ctl_jib_sheet',
+  'ctl_gennaker_sheet',
 ]);
 
 export type Controls = Record<ControlId, number>;

@@ -426,6 +426,17 @@ PR: `Closes #247`. Done when every band of 8.4 holds, both tacks mirror, the gyb
 
 Not in this milestone: Realistic winches (M107; until then the Sails block's steppers work in both rope modes); exercises; a gennaker alert of its own (the existing overpowered and round-up alerts cover it); the jib and the gennaker shading each other (the learner furls the jib; the exercises say so).
 
+### 8.10 Decided in the M106 PR (recommended; merging accepts it)
+
+1. **Every band of 8.4 held on the first run**; no tunable key was changed. Speeds at tws 12, twa 120: 9.20 kn with the gennaker, 7.07 without.
+2. **`gennakerDrawing(setup, sol?, data)` takes the solution second and the boat data third** (M105's callers passed the data second; they were updated). `GennakerDrawing` gets `workingSide`: the side of the taut sheet, null while the sail is not set or is crossing (both sheets then hang).
+3. **The two sheets are one control**: both sheet entries of `ropes.list` carry `oneAtATime: true`, so the Ropes tab does not say they "work against each other". The Ropes list shows the sheet and the sock line from stage 4 only; a sheet tapped in 3D at stage 2 or 3 opens a strip whose slider acts on nothing (the store ignores the control below stage 4).
+4. **`createControl` takes an id suffix**, so the Sails block's two rows and the Ropes strip's do not share an input id.
+5. **The sock tube is drawn from the mouth at every sock height** (at 0 it is M105's whole sock); the sock line starts 0.4 m above the mouth. The sail's mesh is built with the boat and hidden while the sock is down. `gennakerSailGrid` takes an optional `fallbackSide` for a foot angle of exactly 0° or 180°.
+6. **Learn's Where is it? on the sail itself** rigs the gennaker if needed and pulls the sock up, because the sail is drawn only with the sock up.
+7. **The new sheet stays fully eased for the whole crossing** (`step` holds `applied.gennakerSheet` while `crossS > 0`) and comes in through the lag afterwards, so the clew does not jump at the end of a gybe (independent review).
+8. **Browser group time**: the M106 checks take 50 s on this slower machine (the whole `m26` group 275 s here against 73 s recorded in CI), so `ci-times.json` is left as it is; CI's own timing will show whether it needs a new line.
+
 ## 9. M107: Gennaker sheets on the winches
 
 **Independent review: required** (the Realistic model's tails and holding).

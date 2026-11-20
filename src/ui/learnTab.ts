@@ -298,12 +298,19 @@ export function createLearnTab(
           // and fly to it once the boat has drawn it.
           const { stage } = store.getState().gennaker;
           const wanted = stageToShow(entry.id, stage);
-          if (wanted === null || wanted === stage) {
+          // The sail itself (M106) is drawn only with its sock pulled up.
+          const needsSock =
+            entry.id === 'sail_gennaker' && store.getState().controls.ctl_gennaker_sock < 50;
+          if (wanted === null || (wanted === stage && !needsSock)) {
             requestSpotlight(entry.id, 'where');
             return;
           }
-          if (wanted === 4) store.dispatch({ type: 'gennaker', command: 'rig' });
-          else {
+          if (wanted === 4) {
+            store.dispatch({ type: 'gennaker', command: 'rig' });
+            if (needsSock) {
+              store.dispatch({ type: 'setControls', values: { ctl_gennaker_sock: 100 } });
+            }
+          } else {
             const command = wanted > stage ? 'next' : 'back';
             for (let i = 0; i < Math.abs(wanted - stage); i += 1) {
               store.dispatch({ type: 'gennaker', command });

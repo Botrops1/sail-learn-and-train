@@ -1,6 +1,7 @@
 import { boat, type BoatData } from './boat';
 import { curveSide, type Side } from './boomSolver';
 import type { Controls } from './controls';
+import { gennakerClew } from './gennaker';
 import { jibClew, jibTwistDeg } from './jib';
 import {
   capShroudPoints,
@@ -168,6 +169,63 @@ export function jibSailGrid(input: JibShapeInput, data: BoatData = boat): SailGr
   );
 }
 
+/** The gennaker's corners (M106): its tack and head are fixed, the clew follows the foot angle θ. */
+export function gennakerSailCorners(thetaDeg: number, data: BoatData = boat): SailCorners {
+  const g = data.sails.gennaker;
+  return { tack: vec3(g.tack), head: vec3(g.head), clew: gennakerClew(thetaDeg, data) };
+}
+
+export interface GennakerShapeInput {
+  /** The signed foot angle: + = clew to starboard. */
+  thetaDeg: number;
+  fill: number;
+  windSpeedKn: number;
+  timeS: number;
+  /** 0..1: how far up the sock has been pulled; the sail above the mouth is still in it. */
+  sockUp: number;
+  /** The side the sail curves to when θ is 0 or 180; missing = starboard. */
+  fallbackSide?: Side;
+}
+
+/**
+ * The gennaker as drawn (M106): the grid of `sailGrid` between its corners, curved to the side
+ * of its clew, and then the sock: every row above the sock's mouth is gathered onto the luff.
+ */
+export function gennakerSailGrid(input: GennakerShapeInput, data: BoatData = boat): SailGrid {
+  const g = data.sails.gennaker;
+  const sine = Math.sin(input.thetaDeg * DEG);
+  const side = (Math.abs(sine) < 1e-9 ? (input.fallbackSide ?? 1) : Math.sign(sine)) as Side;
+  const corners = gennakerSailCorners(input.thetaDeg, data);
+  const grid = sailGrid(
+    {
+      corners,
+      twistDeg: g.look.twistDeg,
+      fill: input.fill,
+      side,
+      windSpeedKn: input.windSpeedKn,
+      timeS: input.timeS,
+      camberRatio: g.look.camberRatio,
+    },
+    data,
+  );
+  const mouthV = gennakerMouthFraction(input.sockUp, data);
+  const stride = grid.columns + 1;
+  for (let i = 0; i <= grid.rows; i += 1) {
+    const v = i / grid.rows;
+    if (v <= mouthV) continue;
+    const luff = add(corners.tack, scale(sub(corners.head, corners.tack), v));
+    for (let j = 0; j < stride; j += 1) grid.points[i * stride + j] = luff;
+  }
+  return grid;
+}
+
+/** The sock's mouth along the luff, 0 (at the tack) to 1 (the head): `sockUp · (1 − bunch / luff length)`. */
+export function gennakerMouthFraction(sockUp: number, data: BoatData = boat): number {
+  const g = data.sails.gennaker;
+  const luffLength = distance(vec3(g.head), vec3(g.tack));
+  return Math.min(1, Math.max(0, sockUp)) * (1 - g.look.sockBunchM / luffLength);
+}
+
 /** Flapping amplitude of a luffing sail, metres: none when filled, more in more wind. */
 function rippleAmplitude(fill: number, windSpeedKn: number, data: BoatData): number {
   const look = data.visual.mainSail;
@@ -186,6 +244,8 @@ interface SailGridInput {
   side: Side;
   windSpeedKn: number;
   timeS: number;
+  /** The camber as a fraction of the chord; missing = the mainsail's. */
+  camberRatio?: number;
 }
 
 /**
@@ -216,7 +276,7 @@ function sailGrid(input: SailGridInput, data: BoatData, layout?: GridLayout): Sa
     const across = cross(axis, chord);
     const size = length(across);
     const normal: Vec3 = size > 1e-9 ? scale(across, input.side / size) : [0, 0, input.side];
-    const depth = fill * look.camberRatio * chordLength;
+    const depth = fill * (input.camberRatio ?? look.camberRatio) * chordLength;
     for (let j = 0; j <= columns; j += 1) {
       const u = layout
         ? columnU(j, columns, layout.contactU[i] ?? 0.5, layout.contactColumn)

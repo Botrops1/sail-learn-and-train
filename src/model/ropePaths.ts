@@ -21,7 +21,7 @@ import {
   vangStrutLength,
 } from './pitchLimits';
 import { boomLocalToWorld, type BoomPose } from './rigGeometry';
-import { gennakerDrawing, STOWED, type GennakerSetup } from './gennaker';
+import { gennakerDrawing, STOWED, type GennakerSetup, type GennakerSolution } from './gennaker';
 import type { RigState } from './sim';
 import { add, cross, distance, length, normalize, scale, sub, vec3, type Vec3 } from './vec3';
 
@@ -534,7 +534,7 @@ export function ropeDrawings(
     furlingLine,
     ...jibRopes(rig, data, winches, lead),
     ...halyards(lead, data, gennaker),
-    ...gennakerRopes(gennaker, data),
+    ...gennakerRopes(gennaker, rig.gennaker, data),
   ];
 }
 
@@ -559,7 +559,7 @@ function halyards(
   if (!('parked' in spi) || !spi.parked) {
     throw new Error('No parked run for the gennaker halyard in hanse508.json.');
   }
-  const gennakerHalyard = gennakerDrawing(gennaker, data).halyard ?? undefined;
+  const gennakerHalyard = gennakerDrawing(gennaker, undefined, data).halyard ?? undefined;
   return [
     { id: 'rope_main_halyard', state: 'taut', strands: [tail('rope_main_halyard')] },
     {
@@ -578,8 +578,12 @@ function halyards(
  * line and the halyard taut, the sheets and the sock line slack, each piece of them hanging a
  * little between its points (`sails.gennaker.sheetSlackM`). One strand each, no feed.
  */
-function gennakerRopes(gennaker: GennakerSetup, data: BoatData): RopeDrawing[] {
-  const drawing = gennakerDrawing(gennaker, data);
+function gennakerRopes(
+  gennaker: GennakerSetup,
+  sol: GennakerSolution,
+  data: BoatData,
+): RopeDrawing[] {
+  const drawing = gennakerDrawing(gennaker, sol, data);
   const segments = data.visual.ropeSagSegments;
   const slack = data.sails.gennaker.sheetSlackM;
   /** A slack line: every piece hangs a little between its points; the last `taut` pieces are straight. */
@@ -600,12 +604,15 @@ function gennakerRopes(gennaker: GennakerSetup, data: BoatData): RopeDrawing[] {
     if (points) drawn.push({ id, state, strands: [{ points, feed: 0 }] });
   };
   put('rope_gennaker_tack_line', 'taut', drawing.tackLine);
-  put('rope_gennaker_sheet_port', 'slack', drawing.sheets ? hang(drawing.sheets.port, 1) : null);
-  put(
-    'rope_gennaker_sheet_starboard',
-    'slack',
-    drawing.sheets ? hang(drawing.sheets.starboard, 1) : null,
-  );
+  // The working sheet is straight and taut; the lazy one and both while crossing hang (M106).
+  const sheet = (side: 1 | -1, points: Vec3[] | undefined) => {
+    if (!points) return;
+    const taut = drawing.workingSide === side;
+    const id = side === 1 ? 'rope_gennaker_sheet_starboard' : 'rope_gennaker_sheet_port';
+    put(id, taut ? 'taut' : 'slack', taut ? points : hang(points, 1));
+  };
+  sheet(-1, drawing.sheets?.port);
+  sheet(1, drawing.sheets?.starboard);
   put('rope_gennaker_sock_line', 'slack', drawing.sockLine ? hang(drawing.sockLine) : null);
   return drawn;
 }

@@ -5,6 +5,7 @@ import { initialSide, solveBoom, type BoomInput, type BoomSolution } from './boo
 import type { Controls } from './controls';
 import { gybeArrived, gybeImpact, gybeStep, type GybeReport, type GybeSwing } from './gybe';
 import { sailForces, type SailForces } from './sailForces';
+import { solveGennaker, STOWED, type GennakerSetup, type GennakerSolution } from './gennaker';
 import { jibSheetReleased, solveJib, type JibInput, type JibSolution } from './jib';
 import { NO_DAMAGE, type SailDamage } from './trim';
 import type { Vec3 } from './vec3';
@@ -42,6 +43,9 @@ export interface AppliedControls {
   jibSheet: number;
   /** Jib out as asked for; the sheet may stop the furl earlier (jib.unfurled is what is reached). */
   jibFurl: number;
+  /** The optional gennaker's sheet (% eased) and sock (% up), M106. */
+  gennakerSheet: number;
+  gennakerSock: number;
   /** Rudder angle, degrees (+ = back edge to starboard). Turns the drawn rudder and wheels. */
   rudder: number;
 }
@@ -85,6 +89,8 @@ export interface RigState {
   /** What is drawn: the jib's rotation around the luff and its fill, moving towards the solve. */
   jibPhi: Spring;
   jibFill: number;
+  /** The gennaker for the latest frame (M106); `set` false while it is stowed or snuffed. */
+  gennaker: GennakerSolution;
   /** Simulation time, seconds (drives the flapping of a luffing sail). */
   timeS: number;
   /**
@@ -153,6 +159,8 @@ function applied(controls: Controls): AppliedControls {
     mainFurl: controls.ctl_main_furl,
     jibSheet: controls.ctl_jib_sheet,
     jibFurl: controls.ctl_jib_furl,
+    gennakerSheet: controls.ctl_gennaker_sheet,
+    gennakerSock: controls.ctl_gennaker_sock,
     rudder: controls.ctl_rudder,
   };
 }
@@ -215,6 +223,7 @@ export function initialRig(
   history: RigHistory = {},
   motion: BoatMotion = AT_REST,
   trueWind?: TrueWind,
+  gennaker: GennakerSetup = STOWED,
 ): RigState {
   const rope = applied(controls);
   const wind = rigWind(controls, motion, data, trueWind);
@@ -252,6 +261,7 @@ export function initialRig(
     jibSolution: { ...jib, tack: false },
     jibPhi: { value: jib.phiDeg, velocity: 0 },
     jibFill: jib.fill,
+    gennaker: solveGennaker(gennaker, rope.gennakerSheet, rope.gennakerSock, wind.awaDeg, data),
     timeS: 0,
     wind,
   };
@@ -317,6 +327,8 @@ export interface StepOptions {
   wind?: TrueWind;
   /** Flogging damage (M9): a torn sail gives less force, so the loads drop. */
   damage?: SailDamage;
+  /** The gennaker's rigging (M106); stowed when missing. */
+  gennaker?: GennakerSetup;
 }
 
 interface GybeProgress {
@@ -410,6 +422,13 @@ export function step(
     // The furling line cannot run ahead of the jib: while the sheet stops the furl, the request
     // waits at the furl reached, so a released sheet lets the jib roll in smoothly, not jump.
     jibFurl: lag(rig.jibSolution.unfurled * 100, target.jibFurl, dt, tau),
+    // While the gennaker crosses the boat after a gybe the new sheet stays fully eased (the store
+    // set it); the lag towards the target starts when the crossing ends, so the clew does not jump.
+    gennakerSheet:
+      (options.gennaker?.crossS ?? 0) > 0
+        ? rig.applied.gennakerSheet
+        : lag(rig.applied.gennakerSheet, target.gennakerSheet, dt, tau),
+    gennakerSock: lag(rig.applied.gennakerSock, target.gennakerSock, dt, tau),
     rudder: lag(rig.applied.rudder, target.rudder, dt, tau),
   };
 
@@ -455,6 +474,13 @@ export function step(
     jibSolution: jib,
     jibPhi: springTo(rig.jibPhi, jib.phiDeg, dt, v.boomSmoothingTimeS),
     jibFill: lag(rig.jibFill, jib.fill, dt, v.boomSmoothingTimeS),
+    gennaker: solveGennaker(
+      options.gennaker ?? STOWED,
+      rope.gennakerSheet,
+      rope.gennakerSock,
+      wind.awaDeg,
+      data,
+    ),
     timeS: rig.timeS + dt,
     wind,
   };
