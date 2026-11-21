@@ -238,6 +238,7 @@
 | real.strip.elsewhere | This line's clutch is not here: it is at the {station} station. | Стопор этого конца не здесь, он на месте: {station}. |
 | real.strip.go | Go to {station} | Перейти: {station} |
 | real.status.clutchOpen | Clutch open: only what holds the tail stops the line. | Стопор открыт: конец останавливает только то, что держит хвост. |
+| real.status.noClutch | No clutch: only the winch, or a hand on the tail, holds this line. Off the winch it runs out. | Стопора нет: эту снасть держит только лебёдка или рука на хвосте. Без лебёдки она травится сама. |
 | real.status.clutchClosed | Clutch closed: the line cannot run out (it can still be pulled in). | Стопор закрыт: конец не может убежать (выбирать его всё равно можно). |
 | real.status.offWinch | Not on the winch: nobody holds the tail. | Не на лебёдке: хвост никто не держит. |
 | real.status.onWinchJaw | On the winch, {wrap}, tail in the self-tailer (the jaw on top that grips it). | На лебёдке ({wrap}), хвост в самостопорящем зажиме (верхнем зажиме, который его держит). |
@@ -1171,3 +1172,4 @@
 | gennaker.gybe | Gybe the gennaker | Перекинуть геннакер |
 | gennaker.sock | Sock | Чулок |
 | gennaker.sheet | Sheet | Шкот |
+| gennaker.sheetOnWinch | Work the sheet at the winch on its side (Port or Starboard station). | Работайте со шкотом на лебёдке его борта (станция «Левый борт» или «Правый борт»). |

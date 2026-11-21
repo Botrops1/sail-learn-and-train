@@ -238,6 +238,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.strip.elsewhere | This line's clutch is not here: it is at the {station} station. | Die Klemme dieser Leine ist nicht hier: Sie ist an der Station {station}. |
 | real.strip.go | Go to {station} | Zu {station} gehen |
 | real.status.clutchOpen | Clutch open: only what holds the tail stops the line. | Klemme offen: Nur was den Tampen hält, hält die Leine. |
+| real.status.noClutch | No clutch: only the winch, or a hand on the tail, holds this line. Off the winch it runs out. | Keine Klemme: Nur die Winsch oder eine Hand am Tampen hält diese Leine. Ohne Winsch läuft sie aus. |
 | real.status.clutchClosed | Clutch closed: the line cannot run out (it can still be pulled in). | Klemme geschlossen: Die Leine kann nicht auslaufen (sie kann aber weiter dichter geholt werden). |
 | real.status.offWinch | Not on the winch: nobody holds the tail. | Nicht auf der Winsch: Niemand hält den Tampen. |
 | real.status.onWinchJaw | On the winch, {wrap}, tail in the self-tailer (the jaw on top that grips it). | Auf der Winsch, {wrap}, Tampen im Selbstholer (die Klemmbacke oben, die ihn festhält). |
@@ -1171,3 +1172,4 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | gennaker.gybe | Gybe the gennaker | Gennaker halsen |
 | gennaker.sock | Sock | Strumpf |
 | gennaker.sheet | Sheet | Schot |
+| gennaker.sheetOnWinch | Work the sheet at the winch on its side (Port or Starboard station). | Bedien die Schot an der Winsch ihrer Seite (Station Backbord oder Steuerbord). |

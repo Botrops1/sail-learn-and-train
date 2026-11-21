@@ -834,8 +834,13 @@ function parseRealistic(params: URLSearchParams): RealisticState {
   const station = params.get('st');
   if (station !== null && isStationId(station)) state.station = station;
   for (const key of (params.get('co') ?? '').split(',')) {
-    if (tailSpec(key)?.controlId) state.open[key] = true;
+    // A line led straight to a winch has no clutch to open (M107).
+    const spec = tailSpec(key);
+    if (spec?.controlId && spec.clutch) state.open[key] = true;
   }
+  // The gennaker's sheets are on a winch only from the rigging step that leads them there.
+  const gn = params.get('gn');
+  const stage = gn !== null && /^[1-4]$/.test(gn) ? Number(gn) : 0;
   const maxTurns = boat.realisticMode.capstan.maxTurns;
   for (const [stationId, name] of Object.entries(WINCH_PARAMS)) {
     const match = WINCH_VALUE.exec(params.get(name) ?? '');
@@ -846,6 +851,7 @@ function parseRealistic(params: URLSearchParams): RealisticState {
     const spec = tailSpec(key);
     const turns = Number(turnsText);
     if (!spec?.controlId || spec.winchId !== winchId || Math.abs(turns) > maxTurns) continue;
+    if (!spec.clutch && stage < boat.cockpitHardware.winchLeads.minStage) continue;
     winch.tail = key;
     winch.turns = turns;
     winch.selfTailer = hold === 't' && turns > 0;

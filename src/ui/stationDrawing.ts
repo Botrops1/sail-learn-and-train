@@ -1,6 +1,9 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import {
+  isKeyOpen,
+  isOpen,
+  shownTailSpecs,
   stationWinch,
   tailSpecs,
   type Notice,
@@ -50,6 +53,8 @@ const D = {
   gap: 8,
   roll: { top: 6, height: 30, width: 128 },
   ropeIn: 14,
+  /** M107: the gennaker's sheet beside the bank: the rope's distance from the position's left edge and from its label plate. */
+  lead: { ropeInset: 9, plateGap: 11 },
   /** M5 (owner, PR #19): tall enough for labels at full text size, written along the clutch. */
   clutchHeight: 200,
   lever: { inset: 7, height: 15, closedDrop: 26 },
@@ -127,11 +132,12 @@ interface ClutchNode {
   spec: TailSpec;
   mid: number;
   group: SVGGElement;
-  lever: SVGRectElement;
-  state: SVGTextElement;
+  /** Null for a line led straight to a winch (the gennaker's sheet): no clutch, no lever. */
+  lever: SVGRectElement | null;
+  state: SVGTextElement | null;
   tail: SVGLineElement;
   knob: SVGCircleElement;
-  leverTop: { open: number; closed: number };
+  leverTop: { open: number; closed: number } | null;
   bottom: number;
 }
 
@@ -160,9 +166,16 @@ export function createStationDrawing(
   options: StationDrawingOptions,
 ): StationDrawing {
   const winchId = stationWinch(station) ?? '';
-  const specs = tailSpecs().filter((spec) => spec.station === station);
+  // The gennaker's sheet is on this drawing only while it is led to the winch (M107); the panel
+  // builds the drawing again when that changes.
+  const specs = shownTailSpecs(store.getState().gennaker.stage).filter(
+    (spec) => spec.station === station,
+  );
   const rollSpec = specs.find((spec) => spec.bankId === boat.cockpitHardware.jibRollClutch.id);
-  const bank = specs.filter((spec) => spec !== rollSpec).sort((a, b) => a.slot - b.slot);
+  const bank = specs
+    .filter((spec) => spec !== rollSpec && spec.clutch)
+    .sort((a, b) => a.slot - b.slot);
+  const leadSpec = specs.find((spec) => !spec.clutch);
 
   const clutchTop = (rollSpec ? D.roll.top + D.roll.height + D.ropeIn : D.ropeIn) + 4;
   const clutchBottom = clutchTop + D.clutchHeight;
@@ -185,7 +198,8 @@ export function createStationDrawing(
   const element = el('div', { class: 'station-wrap', 'data-station': station }, [root, notice]);
 
   const nodes: ClutchNode[] = [];
-  const unit = (D.width - 2 * D.margin - (bank.length - 1) * D.gap) / bank.length;
+  const positions = bank.length + (leadSpec ? 1 : 0);
+  const unit = (D.width - 2 * D.margin - (positions - 1) * D.gap) / positions;
 
   // Clutches of the bank, side by side, ropes arriving from the mast at the top.
   bank.forEach((spec, index) => {
@@ -334,6 +348,77 @@ export function createStationDrawing(
     if (spec.controlId) root.append(tail, knob);
     nodes.push({ spec, mid, group, lever, state, tail, knob, leverTop, bottom: clutchBottom });
   });
+
+  // The gennaker's sheet (M107): one more position after the last clutch, with no clutch, lever
+  // or OPEN sticker: the rope comes straight down to its tail, and only the winch holds it.
+  if (leadSpec) {
+    const x = D.margin + bank.length * (unit + D.gap);
+    const ropeX = x + D.lead.ropeInset;
+    const color = ropeColor(leadSpec.ropeId);
+    const dash = ROPE_DASH[ropeColorKey(leadSpec.ropeId)];
+    const group = svg('g', {
+      class: 'real-lead',
+      'data-key': leadSpec.key,
+      'data-rope-id': leadSpec.ropeId,
+    });
+    const tail = svg('line', {
+      x1: ropeX,
+      y1: clutchTop - D.ropeIn,
+      x2: ropeX,
+      y2: knobY,
+      stroke: color,
+      'stroke-width': D.ropeWidth,
+      'stroke-dasharray': dash,
+      class: 'real-tail',
+    });
+    const knob = svg('circle', {
+      cx: ropeX,
+      cy: knobY,
+      r: D.knobRadius,
+      fill: color,
+      class: 'real-knob',
+      'data-drag': `tail:${leadSpec.key}`,
+    });
+    const plateX = ropeX + D.lead.plateGap;
+    const plateWidth = x + unit - plateX - 2;
+    const labelX = plateX + plateWidth / 2;
+    const labelY = clutchTop + D.clutchHeight / 2;
+    group.append(
+      svg('rect', {
+        x: plateX,
+        y: clutchTop,
+        width: plateWidth,
+        height: D.clutchHeight,
+        rx: 4,
+        class: 'clutch-sticker clutch-sticker-plate',
+      }),
+      svg(
+        'text',
+        {
+          x: labelX,
+          y: labelY,
+          transform: `rotate(-90 ${labelX} ${labelY})`,
+          class: 'clutch-label',
+          'font-size': fitFont(leadSpec.label, D.clutchHeight - 16),
+          'text-anchor': 'middle',
+          'dominant-baseline': 'central',
+        },
+        [leadSpec.label],
+      ),
+    );
+    root.append(group, tail, knob);
+    nodes.push({
+      spec: leadSpec,
+      mid: ropeX,
+      group,
+      lever: null,
+      state: null,
+      tail,
+      knob,
+      leverTop: null,
+      bottom: clutchBottom,
+    });
+  }
 
   // JIB ROLL: on the port side deck, further forward, drawn lying down at the top left.
   if (rollSpec) {
@@ -588,10 +673,10 @@ export function createStationDrawing(
    */
   const easingDrag = (p: { x: number; y: number }, current: Drag, node: ClutchNode): boolean =>
     !overClutch(p, node) && fromClutch(p, node) >= current.clutchFrom;
-  const openClutch = (key: string) => store.getState().realistic.open[key] === true;
+  const openClutch = (key: string) => isKeyOpen(store.getState().realistic, key);
   const winchTail = () => store.getState().realistic.winches[winchId]?.tail ?? null;
   const toggleClutch = (key: string) => {
-    const open = store.getState().realistic.open[key] === true;
+    const open = isKeyOpen(store.getState().realistic, key);
     dispatch({ type: 'clutch', key, open: !open });
   };
 
@@ -862,17 +947,19 @@ export function createStationDrawing(
     const onWinch = winch?.tail ?? null;
     for (const node of nodes) {
       const { spec } = node;
-      const open = real.open[spec.key] === true;
+      const open = isOpen(real, spec);
       const report = real.reports[spec.key];
-      const y = open ? node.leverTop.open : node.leverTop.closed;
-      attr(node.lever, 'y', String(y));
-      node.group.classList.toggle('is-open', open);
       node.group.classList.toggle('is-selected', selected === spec.key);
-      attr(node.group, 'aria-pressed', String(selected === spec.key));
-      const label = clutchAriaLabel(spec, open);
-      attr(node.group, 'aria-label', label);
-      if (spec.controlId) {
-        setText(node.state, t(open ? 'real.clutch.openShort' : 'real.clutch.closedShort'));
+      if (node.lever && node.leverTop) {
+        const y = open ? node.leverTop.open : node.leverTop.closed;
+        attr(node.lever, 'y', String(y));
+        node.group.classList.toggle('is-open', open);
+        attr(node.group, 'aria-pressed', String(selected === spec.key));
+        const label = clutchAriaLabel(spec, open);
+        attr(node.group, 'aria-label', label);
+        if (spec.controlId && node.state) {
+          setText(node.state, t(open ? 'real.clutch.openShort' : 'real.clutch.closedShort'));
+        }
       }
       const here = onWinch === spec.key;
       const running = report?.motion === 'running';

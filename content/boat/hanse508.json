@@ -770,6 +770,15 @@
         "note": "After the clutch: aft along the port side deck ([x, z] pairs, on the deck), over the coaming outboard of clutch bank B ([x, y, z]), to the port winch from forward on its inboard side. Put on the winch (Realistic mode) it wraps the drum; otherwise it runs past the drum into the port rope tail box (cockpitHardware.ropeBins). Until M5 it was always drawn with two turns into the self-tailer."
       }
     },
+    "winchLeads": {
+      "key": "g",
+      "minStage": 2,
+      "leads": [
+        { "slot": 1, "ropeId": "rope_gennaker_sheet_port", "label": "GENNAKER SHEET", "station": "port" },
+        { "slot": 2, "ropeId": "rope_gennaker_sheet_starboard", "label": "GENNAKER SHEET", "station": "starboard" }
+      ],
+      "source": "assumption: the optional gennaker's sheets run straight to the aft winches with no clutch (the brochure's option lists none), so off the winch they run out under load (decided in planning, PHASE_RIGGING_SPEC 13.2 item 5)"
+    },
     "clutchKeyNote": "Short key of each bank (clutch key = bank key + slot, e.g. a5 = Genoa sheet, r1 = JIB ROLL). Used by Realistic mode and its link parameters (PHASE1_SPEC 9.2).",
     "engineControl": {
       "id": "engine_control",
