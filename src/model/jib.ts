@@ -344,7 +344,7 @@ export function decideJibSide(
 ): Side {
   if (windSpeedKn < data.visual.solver.minWindKn) return current;
   if (180 - Math.abs(windFromDeg) < data.visual.gybeHysteresisDeg) return boomSide;
-  return leewardSide(windFromDeg) ?? current;
+  return leewardSide(windFromDeg, data) ?? current;
 }
 
 export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = boat): JibSolution {
@@ -402,7 +402,7 @@ export function solveJib(input: JibInput, memory: JibMemory, data: BoatData = bo
   const heading = Math.abs(jibHeadingDeg(jibClew(phiDeg, 1, data), data));
   const sheetUsed = distance(clew, carPoint(clew, data));
 
-  const leeward = leewardSide(input.windFromDeg);
+  const leeward = leewardSide(input.windFromDeg, data);
   const inGybeBand = 180 - Math.abs(input.windFromDeg) < data.visual.gybeHysteresisDeg;
   const byTheLee = windy && inGybeBand && leeward !== null && leeward !== side;
   const aoaDeg = Math.max(0, Math.abs(input.windFromDeg) - heading);

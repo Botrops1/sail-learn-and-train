@@ -261,7 +261,10 @@ export function initialRig(
     jibSolution: { ...jib, tack: false },
     jibPhi: { value: jib.phiDeg, velocity: 0 },
     jibFill: jib.fill,
-    gennaker: solveGennaker(gennaker, rope.gennakerSheet, rope.gennakerSock, wind.awaDeg, data),
+    gennaker: solveGennaker(gennaker, rope.gennakerSheet, rope.gennakerSock, wind.awaDeg, data, {
+      thetaDeg: solution.thetaDeg,
+      unfurled: rope.mainFurl / 100,
+    }),
     timeS: 0,
     wind,
   };
@@ -480,6 +483,7 @@ export function step(
       rope.gennakerSock,
       wind.awaDeg,
       data,
+      { thetaDeg: solution.thetaDeg, unfurled: rope.mainFurl / 100 },
     ),
     timeS: rig.timeS + dt,
     wind,

@@ -1164,6 +1164,7 @@
 | gennaker.trim.crossing | Going round the front to the other side | Идёт вокруг носа на другой борт |
 | gennaker.trim.backed | On the wrong side: gybe it | Не с той стороны: перекиньте его |
 | gennaker.trim.blanketed | Hidden behind the main: steer a little higher | Закрыт гротом: возьмите чуть круче к ветру |
+| gennaker.trim.pressed | Pressed against the main: ease the sheet | Прижат к гроту: потравите шкот |
 | gennaker.trim.luffing | Front edge curling: trim a little | Передняя кромка заворачивается: чуть подберите шкот |
 | gennaker.trim.good | Drawing well | Хорошо работает |
 | gennaker.trim.stalled | Trimmed too hard: ease until the edge curls | Выбран слишком туго: потравливайте, пока кромка не завернётся |

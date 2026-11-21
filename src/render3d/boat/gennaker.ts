@@ -30,6 +30,7 @@ const FIRST: GennakerSolution = {
   aoaDeg: 0,
   blanket: 1,
   backed: false,
+  pressed: false,
   fill: 0,
   side: 1,
 };

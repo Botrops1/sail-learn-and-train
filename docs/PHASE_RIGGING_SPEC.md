@@ -329,7 +329,7 @@ The flogging drag of a gennaker that is not filled uses the shared `physics.sail
 In `src/model/gennaker.ts`:
 
 ```ts
-export type GennakerTrimState = 'stowed' | 'snuffed' | 'crossing' | 'backed' | 'blanketed' | 'luffing' | 'good' | 'stalled';
+export type GennakerTrimState = 'stowed' | 'snuffed' | 'crossing' | 'backed' | 'blanketed' | 'pressed' | 'luffing' | 'good' | 'stalled';
 export interface GennakerSolution {
   set: boolean;        // stage 4 and sockUp > 0
   sockUp: number;      // 0…1, applied sock / 100; 0 below stage 4
@@ -390,7 +390,7 @@ Run with `steadyState(controls, 0, boat, { heel: true, gennaker: { stage: 4, sid
 | tws 12, twa 150: gain | 2.14 kn | ≥ 1.6 |
 | `solveGennaker` at a fixed `awaDeg = 74` (the apparent angle of the best trim at tws 12, twa 120; no steady state, which is not monotonic near the curl): first integer gs with fill < 0.5 (the curl) | 42 (φ > 44° gives aoa < 5°) | exactly 42 |
 | steady state tws 12, twa 120, ms 60, at gs = curl − 15 (27) vs the best | 9.17 vs 9.20 | ≥ 0.97 · best |
-| same, gs 0: speed; trim state; heel vs gs 30 | 8.57 kn; `stalled`; 13.1° vs 10.6° | 8.30–8.85; stalled; heel(gs 0) > heel(gs 30) |
+| same, gs 0: speed; trim state; heel vs gs 30 | 8.57 kn; `stalled`; 13.1° vs 10.6° (after the fix below: 9.02 kn; `pressed`; 12.6° vs 11.6° at gs 25) | 8.9–9.1; `pressed`; heel(gs 0) > heel(gs 25) |
 
 ### 8.5 Store, URL, UI, 3D
 
@@ -712,3 +712,5 @@ English glossary (final): `part_traveller_track`: name "Traveller", short "A tra
 5. **The gennaker's sheets have no clutch** in Realistic ropes: off the winch, under load, they run out.
 6. **Browser checks join existing groups** (the set is at its 77-group cap).
 7. **This plan supersedes** the sailor-feedback plan's decision that #232 waits for "other yacht setups" (PHASE_FEEDBACK_SPEC 11, answer 2): the owner asked for it now.
+
+**Fix after M106 (owner's bug report; decided in the fix PR, recommended; merging accepts it).** (1) The gennaker cannot go through the mainsail: when the boom is on the gennaker's side and the main is out, the clew stays at least `sails.gennaker.mainClearanceDeg` (5°) outboard of the boom seen from the mast (`mainStopPhiDeg`, `solveGennaker`'s last argument). A sheet hauled harder than that leaves the sail lying against the main: `pressed`, trim line "Pressed against the main: ease the sheet" (before `luffing`, after `blanketed`). With the boom on the other side, or the main furled, `stalled` still applies. (2) Dead astern is one wind: `leewardSide` returns no side within `visual.deadAsternBandDeg` (0.1°) of ±180°, so the boom's side, the sail's curve and "by the lee" no longer flip every few seconds on an exact run.

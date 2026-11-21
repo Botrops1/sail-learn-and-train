@@ -83,9 +83,15 @@ export interface BoomSolution {
 // The shared helper lives in angles.ts (PHASE3_SPEC 3.2); re-exported so importers do not change.
 export { smoothstep } from './angles';
 
-/** The side the wind pushes the boom (and the jib) to: wind from starboard → port. */
-export function leewardSide(windFromDeg: number): Side | null {
-  if (windFromDeg > 0 && windFromDeg < 180) return -1;
+/**
+ * The side the wind pushes the boom (and the jib) to: wind from starboard → port. Dead ahead, and
+ * within `visual.deadAsternBandDeg` of dead astern, there is none: +180° and −180° are the same
+ * wind, and a hair's breadth either way must not flip the boom's side, the sail's curve or the
+ * by-the-lee warning.
+ */
+export function leewardSide(windFromDeg: number, data: BoatData = boat): Side | null {
+  if (Math.abs(windFromDeg) >= 180 - data.visual.deadAsternBandDeg) return null;
+  if (windFromDeg > 0) return -1;
   if (windFromDeg < 0) return 1;
   return null;
 }
@@ -124,7 +130,7 @@ export function decideSide(
   current: Side,
   data: BoatData = boat,
 ): SideDecision {
-  const wanted = leewardSide(windFromDeg);
+  const wanted = leewardSide(windFromDeg, data);
   if (windSpeedKn < data.visual.solver.minWindKn || wanted === null || wanted === current) {
     return { side: current, byTheLee: false, gybe: false, tack: false };
   }

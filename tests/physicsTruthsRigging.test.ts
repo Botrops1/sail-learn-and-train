@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mpsToKn } from '../src/model/angles';
 import { defaultControls, type Controls } from '../src/model/controls';
 import {
+  gennakerClew,
   gennakerTrimState,
   leewardSide,
   solveGennaker,
@@ -124,10 +125,49 @@ describe('PT-68 trim to the curl', () => {
     const nearCurl = run(12, 120, 60, curl - 15);
     expect(nearCurl.speedKn).toBeGreaterThanOrEqual(0.97 * best120.speedKn);
     const hard = run(12, 120, 60, 0);
-    expect(hard.speedKn).toBeGreaterThanOrEqual(8.3);
-    expect(hard.speedKn).toBeLessThanOrEqual(8.85);
-    expect(hard.state).toBe('stalled');
-    expect(hard.heelDeg).toBeGreaterThan(run(12, 120, 60, 30).heelDeg);
+    // Hauled right in, the main stops the sail (it cannot go through it): see the next test.
+    expect(hard.speedKn).toBeGreaterThanOrEqual(8.9);
+    expect(hard.speedKn).toBeLessThan(best120.speedKn);
+    expect(hard.state).toBe('pressed');
+    expect(hard.heelDeg).toBeGreaterThan(best120.heelDeg);
+  });
+
+  it('PT-68 trimmed too hard on a run of the sheet: stalled when the main is not in the way', () => {
+    // Boom on the other side (or the main furled): nothing stops the clew, so it is plain stalled.
+    const setup = setupFor(120);
+    const noMain = { thetaDeg: 0, unfurled: 0 };
+    const sol = solveGennaker(setup, 0, 100, 74, undefined, noMain);
+    expect(sol.pressed).toBe(false);
+    expect(gennakerTrimState(setup, sol)).toBe('stalled');
+  });
+
+  it('the gennaker never goes through the main (bug after M106)', () => {
+    for (const side of [1, -1] as const) {
+      const setup: GennakerSetup = { stage: 4, side, crossS: 0, crossFromDeg: 0 };
+      for (let boom = -72; boom <= 72; boom += 6) {
+        for (let gs = 0; gs <= 100; gs += 10) {
+          const sol = solveGennaker(setup, gs, 100, 100, undefined, {
+            thetaDeg: boom,
+            unfurled: 1,
+          });
+          // Seen from the mast the clew is outboard of the boom (on the boom's side).
+          if (boom * side > 0) {
+            const clew = gennakerClew(sol.thetaDeg);
+            const bearing = (Math.atan2(Math.abs(clew[2]), -clew[0]) * 180) / Math.PI;
+            expect(bearing).toBeGreaterThanOrEqual(Math.abs(boom) + 4.9);
+          }
+        }
+      }
+    }
+    // Hauled in with the boom well out on the same side: pressed against the main.
+    const setup = setupFor(120);
+    const sol = solveGennaker(setup, 0, 100, 74, undefined, { thetaDeg: -60, unfurled: 1 });
+    expect(sol.pressed).toBe(true);
+    expect(gennakerTrimState(setup, sol)).toBe('pressed');
+    // Eased out, it is where the sheet puts it.
+    expect(
+      solveGennaker(setup, 100, 100, 74, undefined, { thetaDeg: -60, unfurled: 1 }).pressed,
+    ).toBe(false);
   });
 });
 

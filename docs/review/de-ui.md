@@ -1164,6 +1164,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | gennaker.trim.crossing | Going round the front to the other side | Geht vorn herum auf die andere Seite |
 | gennaker.trim.backed | On the wrong side: gybe it | Auf der falschen Seite: halsen |
 | gennaker.trim.blanketed | Hidden behind the main: steer a little higher | Hinter dem Großsegel versteckt: etwas höher steuern |
+| gennaker.trim.pressed | Pressed against the main: ease the sheet | Ans Großsegel gedrückt: Schot fieren |
 | gennaker.trim.luffing | Front edge curling: trim a little | Vorliek rollt sich ein: etwas dichter holen |
 | gennaker.trim.good | Drawing well | Steht gut |
 | gennaker.trim.stalled | Trimmed too hard: ease until the edge curls | Zu dicht getrimmt: fieren, bis das Vorliek sich einrollt |
