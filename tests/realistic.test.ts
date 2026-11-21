@@ -829,6 +829,21 @@ describe('M107: gennaker sheets on the winches', () => {
     expect(state.realistic.reports[STBD_SHEET]?.loadN).toBe(0);
     expect(state.realistic.reports[STBD_SHEET]?.motion).toBe('held');
     expect(state.realistic.winches[STBD]?.drumAngle).not.toBe(0);
+    // Cranked with the handle in its socket (1st gear): the same, the drum turns, nothing moves.
+    let cranked = act(
+      state,
+      { type: 'station', station: 'port' },
+      { type: 'handle', to: 'carry' },
+      { type: 'station', station: 'starboard' },
+      { type: 'handle', to: 'socket' },
+      { type: 'button', winch: STBD, held: false },
+    );
+    const angle = cranked.realistic.winches[STBD]?.drumAngle ?? 0;
+    cranked = act(cranked, { type: 'crank', turnsPerS: 1 });
+    cranked = run(cranked, 5);
+    expect(cranked.controls.ctl_gennaker_sheet).toBe(before);
+    expect(cranked.realistic.reports[STBD_SHEET]?.loadN).toBe(0);
+    expect(cranked.realistic.winches[STBD]?.drumAngle).not.toBe(angle);
     // Off the winch it does not run either: nothing pulls it.
     const off = run(gennakerStart('starboard'), 5);
     expect(off.realistic.reports[STBD_SHEET]?.motion).not.toBe('running');

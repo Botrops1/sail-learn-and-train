@@ -117,7 +117,7 @@ export async function liveM107Checks({ openPage, viewports, problems }) {
       `${sheetRow} ${sheetLine}`,
     );
     await showSection(page, 'ropes');
-    const ranOut = await waitForTrim(page, 'luffing', 20);
+    const ranOut = await waitForTrim(page, 'luffing', 5);
     check(
       'port: off the winch the sheet runs out and the sail luffs',
       ranOut !== null,

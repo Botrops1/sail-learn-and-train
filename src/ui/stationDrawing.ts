@@ -131,6 +131,8 @@ function ropeColor(ropeId: string): string {
 interface ClutchNode {
   spec: TailSpec;
   mid: number;
+  /** The middle of the column the clutch (or the sheet's position) takes; `mid` is where its rope runs. */
+  centre: number;
   group: SVGGElement;
   /** Null for a line led straight to a winch (the gennaker's sheet): no clutch, no lever. */
   lever: SVGRectElement | null;
@@ -346,7 +348,18 @@ export function createStationDrawing(
     );
     root.append(group);
     if (spec.controlId) root.append(tail, knob);
-    nodes.push({ spec, mid, group, lever, state, tail, knob, leverTop, bottom: clutchBottom });
+    nodes.push({
+      spec,
+      mid,
+      centre: mid,
+      group,
+      lever,
+      state,
+      tail,
+      knob,
+      leverTop,
+      bottom: clutchBottom,
+    });
   });
 
   // The gennaker's sheet (M107): one more position after the last clutch, with no clutch, lever
@@ -422,6 +435,7 @@ export function createStationDrawing(
     nodes.push({
       spec: leadSpec,
       mid: ropeX,
+      centre: x + unit / 2,
       group,
       lever: null,
       state: null,
@@ -531,6 +545,7 @@ export function createStationDrawing(
     nodes.push({
       spec: rollSpec,
       mid: tailX,
+      centre: tailX,
       group,
       lever,
       state,
@@ -674,7 +689,7 @@ export function createStationDrawing(
     if (node.spec === rollSpec) {
       return p.y < D.roll.top + D.roll.height + D.ropeIn && p.x < D.margin + D.roll.width + 8;
     }
-    return Math.abs(p.x - node.mid) < unit / 2 + D.gap / 2 && p.y < node.bottom;
+    return Math.abs(p.x - node.centre) < unit / 2 + D.gap / 2 && p.y < node.bottom;
   };
   /** Distance from a point to where the rope leaves its clutch (drawing units). */
   const fromClutch = (p: { x: number; y: number }, node: ClutchNode): number =>
