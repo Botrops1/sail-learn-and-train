@@ -124,6 +124,14 @@ Planned on 2026-11-18 in [`PHASE_RIGGING_SPEC.md`](PHASE_RIGGING_SPEC.md) (M105�
 | PT-72 | **A traveller moves the boom sideways without changing the sheet's downward pull**: the car sets the boom's angle, the sheet sets the leech's tension. (M110) | `?pic=traveller&tv=60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top` (M110); test: "PT-72 …" | to-verify: [52] describes the track and car; the effect on the leech is not on that page |
 | PT-73 | **A code 0 is a light-wind sail for close reaching, set on its own furler.** (M109) | `?pic=code0&wd=70&ws=10&ms=40&jf=0&held=1&sea=flat&cam=side-port` (M109); test: "PT-73 …" | source-checked [49] ("points of sail up to a close reach"; "launched furled on its own stay") |
 
+## People on board rules
+
+Planned on 2026-11-21 in [`PHASE_PEOPLE_SPEC.md`](PHASE_PEOPLE_SPEC.md) (M111–M112). Test: "PT-74 …" in `tests/people.test.ts`. The link works once M112 is merged.
+
+| Id | Rule | How to see it | Status |
+|---|---|---|---|
+| PT-74 | **Go forward on the windward (high) side.** Moving along the deck under sail, use the side deck on the side the wind comes from: if you slip, the deck is below you, not the water. (M112) | `?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top`, then tap Bow: he walks forward along the starboard side deck; test: "PT-74 …" in `tests/people.test.ts` | to-verify [53] [54] (both sites did not open from the planning session on 2026-11-21) |
+
 ## Sources
 
 1. Wikipedia, *Point of sail*. https://en.wikipedia.org/wiki/Point_of_sail. No-go zone about 45° (30–50°) either side of the wind; close-hauled about 45°; sails eased progressively when bearing away; gybing defined; "in irons".
@@ -206,6 +214,8 @@ Read on 2026-10-15/16 for Phase 7 (planning):
 50. Wikipedia, *Gennaker*. https://en.wikipedia.org/wiki/Gennaker. "Optimal for a broad reach or run"; "the tack is fastened to the hull or to a bowsprit". Read 2026-11-18.
 51. Wikipedia, *Spinnaker pole*. https://en.wikipedia.org/wiki/Spinnaker_pole. The pole holds the spinnaker's tack to windward, with the guy through its end, an uphaul and a downhaul. Read 2026-11-18.
 52. Wikipedia, *Traveller (nautical fitting)*. https://en.wikipedia.org/wiki/Traveller_(nautical_fitting). A track across the boat with a car ("The block is attached to a \"car\"") the mainsheet's lower block is fixed to. Read 2026-11-18.
+53. US Sailing, *Crew Overboard Prevention: How to Remain Aboard*. https://www.ussailing.org/news/crew-overboard-prevention-how-to-remain-aboard/. Found by a search on 2026-11-21 for going forward on the windward side; not opened (no connection from the planning session).
+54. Yachting Monthly, an article on staying on deck to avoid going overboard (title not read: the page did not open). https://www.yachtingmonthly.com/sailing-skills/stay-deck-avoid-mob-51411. Found by the same search; not opened (no connection).
 
 M47 note (2026-10-22): every Phase 7 rule (PT-27, 31, 33, 34, 47–57) has a test named after its id. The `to-verify` sources were tried again from the cloud environment: yachtingmonthly.com, rya.org.uk, distantshores.ca and sailmagazine.com still do not open (no connection), so PT-34, PT-47, PT-52 and the lazy-line part of PT-51 stay `to-verify`. PT-51 got a second test (the anchor and a shore line in the bay).
 

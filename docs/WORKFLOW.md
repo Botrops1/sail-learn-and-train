@@ -146,3 +146,27 @@ New link settings: `gn` gennaker rigging step (0 stowed, 1 tack line on, 2 sheet
 - [ ] Traveller: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=part_traveller_track — Show it working: a track across the back of the coachroof with a car, the mainsheet going from the car up to the boom; this boat's own mainsheet is hidden.
 - [ ] Move the car: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top — the car is to the left (port) and the boom is out to that side. Drag the Car slider to the middle: the boom comes in to the centre; the sheet stays nearly straight up and down.
 - [ ] Back to normal: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top — tap Close picture: the German mainsheet is back.
+
+#### People on board, part 1 (M111–M112, [PHASE_PEOPLE_SPEC](PHASE_PEOPLE_SPEC.md))
+
+No new link settings: `st` is still the Realistic station and `tx` the time speed.
+
+#### M111: The captain on board
+
+- [ ] At the wheel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — a man in a dark blue jacket and a white captain's cap, with black curly hair and beard, stands behind the near (port) wheel with his hands on it, and leans with the boat.
+- [ ] Through his eyes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=helm — the Helm view: you do not see him, because you are him. Tap Other wheel: still not visible. Choose Side (port) from the camera chip: he now stands behind the far (starboard) wheel.
+- [ ] Tap him: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — tap the captain: the card says "Captain (you)"; tap More for his Learn entry.
+- [ ] At the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=bow&wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-starboard — Realistic ropes: he stands on the foredeck behind the anchor winch. In the Ropes section tap Port: he is at once beside the port winch, next to the wheel.
+- [ ] At the mast: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=mast&wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — he stands on the cabin roof just behind the mast.
+- [ ] Low detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port&detail=low — a simpler captain (chunkier hair) in the same place.
+- [ ] Still smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&sea=flat&cam=side-port — turn the view round with a finger: it moves as smoothly as before the captain came.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — the same picture on a computer.
+
+#### M112: The captain walks
+
+- [ ] Walk to the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — in the Ropes section tap Bow: he walks between the wheels, through the cockpit, up onto the right-hand (starboard) side deck, the side the wind comes from, and along it to the foredeck. Under the station buttons "Walking to Bow… 20 s" counts down.
+- [ ] Wind from the other side: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=-60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Bow: this time he walks along the left-hand (port) side deck.
+- [ ] Wait until you get there: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Starboard and at once try to put a line on the winch there: "Still walking: wait until you get there." About 3 seconds later it works.
+- [ ] Turn back: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Bow, and a few seconds later tap Port: he turns round and walks back to the port winch.
+- [ ] Exercise: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails — choose Watch it: the captain walks between the winches and the wheel as each step needs, and the exercise finishes.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — the same walk on a computer.
