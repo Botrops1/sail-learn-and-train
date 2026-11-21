@@ -341,6 +341,7 @@ The gennaker is a brochure option (176.4 m² in the brochure, 200 m² in the man
 | The main hides it on a run (M106) | from an apparent wind of 145° the main takes the gennaker's wind, down to 0.1 of it at 165° (`blanket.*`); on the windward side within 170° it is backed (`backedBelowAwaDeg`) | **Assumption** |
 | Look (M106) | camber 0.22 of the chord, twist 8° at the head, the sock bunches the top 1.5 m of the sail | **Assumption** (drawing only) |
 | A gybe (M106) | the clew goes round the front of the boat in 5 s (`gybeCrossS`): the outside gybe | **Assumption** |
+| Sheets on the winches (M107) | the two sheets are led straight to the aft winches with no clutch (`cockpitHardware.winchLeads`, key `g`: `g1` port, `g2` starboard), from the rigging step that leads the sheets (2) on; off the winch under load they run out; the sheet's travel between hauled and eased is 12.43 m | **Assumption** (the brochure's option lists no clutch for them) |
 | Line sizes | sheets 12 mm × 28 m (manual), tack line 10 mm × 4 m, sock line 8 mm × 44 m | Sheets from the manual; the others **assumptions** |
 | Line colour in the app | vermilion `#d55e00` with the dash pattern `6 2 1 2`; the real sheets' tracer is red | Presentation |
 

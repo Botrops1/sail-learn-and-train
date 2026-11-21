@@ -74,7 +74,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `handlePose.ts` | Where the winch handle is drawn: lying at a station, in a winch's or the gearbox's socket, or null while carried. |
 | `smallFittings.ts` | Small fittings as numbers: hull width at a height, portlights, shroud feet, stanchion bases, hatches, contact shadows. |
 | `helmPedestal.ts`, `helmPanel.ts` | The helm pedestal's places and frames; what the panel's instruments show (`panelReadings`, lever, joystick and needle angles). |
-| `realistic.ts`, `winch.ts` | Realistic mode: stations, clutches, wraps, self-tailer, handle, gearbox; capstan rule and winch physics. |
+| `realistic.ts`, `winch.ts` | Realistic mode: stations, clutches, winch leads (the gennaker's clutch-less sheets), wraps, self-tailer, handle, gearbox; capstan rule and winch physics. |
 | `labels3d.ts`, `registry.ts` | Where 3D labels sit; registry lookups (`partInfo`: name and one-liner from the glossary, words on the boat from `boatLabels.ts`). |
 | `boatLabels.ts` | The words printed on the boat for an id, from the clutch labels in the boat file. |
 | `languages.ts` | The available languages (from every `content/lang/*/ui.json`) and `latinAllowed`. |
