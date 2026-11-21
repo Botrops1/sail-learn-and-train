@@ -3,6 +3,9 @@ import type { Vec3 } from '../model/vec3';
 import type { PartUserData } from './boat/parts';
 import { SCENE } from './sceneConfig';
 
+/** The captain's part id (M111). */
+const CAPTAIN_ID = 'person_captain';
+
 /** Screen position (CSS px from the canvas's top-left) of a small part's hit-area centre. */
 export interface HitCentre {
   partId: string;
@@ -160,6 +163,9 @@ export function createPicker(
       tap.set(x, y);
 
       if (surfacePart && smallIds.has(surfacePart)) return surfacePart;
+      // M111: a tap that lands on the captain himself is his, even where a fitting's fingertip
+      // area (the winch beside him) also reaches it.
+      if (surfacePart === CAPTAIN_ID) return surfacePart;
       return (
         nearest(smallParts, smallPartRadiusPx, surfaceDistance, width, height) ??
         nearest(segments, tolerancePx, surfaceDistance, width, height) ??

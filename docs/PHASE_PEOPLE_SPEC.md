@@ -311,6 +311,12 @@ PR: `Closes #260`. Done when the captain stands where 7.3 says in every mode on 
 
 Not in this milestone: walking (M112), a crew, weight in the heel, other looks, a label.
 
+### 7.12 Decided in the M111 PR (recommended; merging accepts it)
+
+1. **English glossary text says "Realistic mode", not "Realistic ropes".** The M100 rule (tests/sailorWords) forbids the word "rope" in English text, and the mode's name in the app is "Realistic". The German, Norwegian and Russian drafts follow their own mode names.
+2. **Triangle counts**: 12,604 at High and 3,416 at Low, inside the limits of 7.6. The rule 7 shares were not changed.
+3. **The hair's crown is left out with the cap's alternatives**: only the hair and beard balls that the cap leaves visible are built, so the `rnd` scatter of the balls is unchanged from the mockup's (the crown is built after them).
+
 ## 8. M112: The captain walks
 
 **Independent review: required** (shared Realistic state and model, every Realistic exercise and many older checks).
