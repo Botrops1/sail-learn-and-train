@@ -149,6 +149,8 @@ export function createPicker(
       const boatHits = hits.filter(
         (hit) =>
           hit.object.visible &&
+          // M111: the captain is hidden by hiding his group, so his tap area must be checked up the tree.
+          (partIdOf(hit.object) !== CAPTAIN_ID || isVisibleInTree(hit.object)) &&
           !isNoPick(hit.object) &&
           partIdOf(hit.object) &&
           !isWithin(hit.object, water),

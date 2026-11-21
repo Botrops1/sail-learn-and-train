@@ -63,6 +63,18 @@ export async function liveM111Checks({ openPage, viewports, outDir, prefix, prob
       c?.hidden === true && visible === false,
       JSON.stringify({ c, visible }),
     );
+    // His invisible tap area is just ahead of the eye: a tap at the middle of the view must not open his card.
+    const view = await page.locator('canvas.scene-canvas').boundingBox();
+    await page.touchscreen.tap(view.x + view.width / 2, view.y + view.height * 0.3);
+    await page.waitForTimeout(400);
+    const cardText = (await page.getByTestId('info-card').isVisible())
+      ? ((await page.getByTestId('info-card').textContent()) ?? '')
+      : '';
+    check(
+      'Helm view: a tap ahead does not open his card',
+      !cardText.includes('Captain (you)'),
+      JSON.stringify(cardText.slice(0, 60)),
+    );
     await helmView(page, 'other');
     await page.waitForTimeout(1200);
     c = await captain(page);
