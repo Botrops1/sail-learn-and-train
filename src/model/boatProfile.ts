@@ -250,7 +250,20 @@ function walk(
   }
   if (path === 'boat.people.points' && isPlainObject(reference) && isPlainObject(value)) {
     for (const name of Object.keys(value)) {
-      if (!(name in reference)) problems.add(`${path}.${name}`, 'ids', 'unexpected point');
+      if (!(name in reference)) {
+        problems.add(`${path}.${name}`, 'ids', 'unexpected point');
+        continue;
+      }
+      // `sided` decides the names the code looks up (`<id>_s`, `<id>_p`)
+      const ref = reference[name];
+      const val = value[name];
+      if (
+        isPlainObject(ref) &&
+        isPlainObject(val) &&
+        (ref.sided === true) !== (val.sided === true)
+      ) {
+        problems.add(`${path}.${name}.sided`, 'ids', 'expected the reference value');
+      }
     }
   }
 

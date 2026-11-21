@@ -975,6 +975,7 @@ function configureSunShadow(sun: THREE.DirectionalLight): void {
 /** Frees the GPU memory of a removed boat (geometries and the cloned materials). */
 function dispose(root: THREE.Object3D): void {
   root.traverse((object) => {
+    if (object instanceof THREE.SkinnedMesh) object.skeleton.dispose();
     if (!(object instanceof THREE.Mesh)) return;
     object.geometry.dispose();
     const materials = Array.isArray(object.material) ? object.material : [object.material];

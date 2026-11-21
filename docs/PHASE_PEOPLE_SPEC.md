@@ -316,6 +316,8 @@ Not in this milestone: walking (M112), a crew, weight in the heel, other looks, 
 1. **English glossary text says "Realistic mode", not "Realistic ropes".** The M100 rule (tests/sailorWords) forbids the word "rope" in English text, and the mode's name in the app is "Realistic". The German, Norwegian and Russian drafts follow their own mode names.
 2. **Triangle counts**: 12,604 at High and 3,416 at Low, inside the limits of 7.6. The rule 7 shares were not changed.
 3. **The hair's crown is left out with the cap's alternatives**: only the hair and beard balls that the cap leaves visible are built, so the `rnd` scatter of the balls is unchanged from the mockup's (the crown is built after them).
+4. **A tap on his body wins over a fitting's tap area.** Where the two overlap (for example a rope bin beside the wheel), a tap on his body opens his card; 7.6's "the nearer wins" holds between everything else. His invisible tap area is ignored while he is hidden (the Helm view), so it never takes a tap there.
+5. **The profile check also compares each point's `sided` flag**, because it decides the point names (`_s`, `_p`) the code looks up; test 14 covers it. The scene frees the figure's bone texture when the boat is rebuilt.
 
 ## 8. M112: The captain walks
 

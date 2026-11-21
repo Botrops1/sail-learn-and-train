@@ -203,6 +203,10 @@ describe('M111 boat profile', () => {
     (extra.boat.people.points as Record<string, unknown>).extra = { at: [0, 0, 0] };
     expect(check(extra).ok).toBe(false);
 
+    const sided = make();
+    (sided.boat.people.points.winch as { sided: boolean }).sided = false;
+    expect(check(sided).ok).toBe(false);
+
     const moved = make();
     (moved.boat.people.points.helm.at as number[])[0] = -7.8;
     expect(check(moved).ok).toBe(true);
