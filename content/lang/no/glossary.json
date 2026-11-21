@@ -2174,6 +2174,14 @@
       "onThisBoat": "Ved rorplassen (EXERCISES.md 5, eier).",
       "textStatus": "draft"
     },
+    "person_captain": {
+      "name": "Kaptein (du)",
+      "alternatives": [{ "term": "Skipper" }],
+      "short": "Personen som har ansvaret for båten: i appen er det deg.",
+      "what": "Figuren på dekk er deg, kapteinen (også kalt skipper): personen som er ansvarlig for båten og alle om bord. Når du styrer, står du bak et ratt. I modusen «Realistisk» står du på stasjonen du jobber fra: ved en vinsj, ved masta eller i baugen. Rorvisningen ser gjennom øynene dine, så der ser du ikke deg selv.",
+      "showMe": "Kapteinen står bak babord ratt og styrer.",
+      "textStatus": "draft"
+    },
     "term_scope": {
       "name": "Kjettingforhold",
       "alternatives": [

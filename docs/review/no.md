@@ -1154,6 +1154,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Kaptein (du) (`person_captain`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Captain (you) | Kaptein (du) |
+| Andre navn | Skipper | Skipper |
+| Kort | The person in charge of the boat: in the app, you. | Personen som har ansvaret for båten: i appen er det deg. |
+| Hva det gjør / hva det betyr | The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic mode you stand at the station you work from: by a winch, at the mast or at the bow. The Helm view looks through your eyes, so there you do not see yourself. | Figuren på dekk er deg, kapteinen (også kalt skipper): personen som er ansvarlig for båten og alle om bord. Når du styrer, står du bak et ratt. I modusen «Realistisk» står du på stasjonen du jobber fra: ved en vinsj, ved masta eller i baugen. Rorvisningen ser gjennom øynene dine, så der ser du ikke deg selv. |
+| På denne båten | — | — |
+| Typiske feil | — | — |
+| «Vis meg» | The captain stands behind the port wheel, steering. | Kapteinen står bak babord ratt og styrer. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Kompass (`fit_compass`)
 
 | Felt | English | Norsk |

@@ -244,7 +244,7 @@ Registry (`content/registry/parts.json`, after the last `cockpit` entry): `{ "id
 
 English glossary entry (`content/lang/en/glossary.json`, final; `textStatus: "draft"`; de / no / ru AI drafts):
 
-- `person_captain`: name "Captain (you)"; alternatives `[{ "term": "Skipper" }]`; short "The person in charge of the boat: in the app, you."; what "The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic ropes you stand at the station you work from: by a winch, at the mast or at the bow. The Helm view looks through your eyes, so there you do not see yourself."; showMe "The captain stands behind the port wheel, steering."
+- `person_captain`: name "Captain (you)"; alternatives `[{ "term": "Skipper" }]`; short "The person in charge of the boat: in the app, you."; what "The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic mode you stand at the station you work from: by a winch, at the mast or at the bow. The Helm view looks through your eyes, so there you do not see yourself."; showMe "The captain stands behind the port wheel, steering."
 
 `tests/glossary.test.ts` "the groups have the expected sizes": the sixth number (the `cockpit` group) goes up by 1 (22 → 23 on today's `main`).
 

@@ -1064,6 +1064,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Капитан (вы) (`person_captain`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Captain (you) | Капитан (вы) |
+| Другие названия | Skipper | Шкипер |
+| Коротко | The person in charge of the boat: in the app, you. | Человек, который отвечает за яхту: в приложении это вы. |
+| Что делает / что значит | The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic mode you stand at the station you work from: by a winch, at the mast or at the bow. The Helm view looks through your eyes, so there you do not see yourself. | Фигура на палубе — это вы, капитан (его же называют шкипером): человек, отвечающий за яхту и всех на борту. Когда вы рулите, вы стоите за штурвалом. В режиме «Реалистичный» вы стоите на посту, с которого работаете: у лебёдки, у мачты или на носу. Вид с руля смотрит вашими глазами, поэтому себя там не видно. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | The captain stands behind the port wheel, steering. | Капитан стоит за левым штурвалом и рулит. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### кокпит (`part_cockpit`)
 
 | Поле | English | Русский |
