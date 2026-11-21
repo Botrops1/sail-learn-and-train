@@ -133,7 +133,7 @@
     <li><b>Shoulders and elbows</b> swing and bend (4 joints).</li>
     <li><b>Hips, knees and ankles</b> walk and brace (6 joints).</li>
     <li><b>Body</b> leans and twists at the waist.</li>
-    <li><b>Pipe smoke</b> drifts up from the bowl; the ember glows.</li>
+    <li><b>Pipe ember</b> glows and fades.</li>
     <li><b>Long coat</b> skirts follow each leg, with a vent up the middle.</li>
   </ul>
 </div>
@@ -151,8 +151,8 @@ const C = {
   jacket: 0x1b2946, jacketLight: 0x273a60, trousers: 0x272b34, shirt: 0xf0eee8, tie: 0x14161c,
   shoe: 0x35261c, sole: 0xe6e0d0, gold: 0xd2ab4c, zip: 0x8d96a6,
   hair: 0x121110, capWhite: 0xf1efe8, capBand: 0x1b2946, visor: 0x0e0f13,
-  pipeWood: 0x5b3320, pipeRim: 0x2c1b11, pipeStem: 0x191512, ember: 0xff7a1a, smoke: 0xe9e9e9,
-  knit: 0x2d3441, mouth: 0x3a1c1a,
+  pipeWood: 0x5b3320, pipeRim: 0x2c1b11, pipeStem: 0x191512, ember: 0xff7a1a, 
+  knit: 0x2d3441, knitCuff: 0x3b4554, mouth: 0x3a1c1a,
 };
 
 const D = { // proportions in metres
@@ -405,62 +405,70 @@ function buildSailor() {
   }
 
   // hair and beard: black curls made of many small round balls
-  const balls = [];
-  const ball = (alpha, e, r, out = 0.4, st = [1, 1, 1]) => {
+  const balls = [], crown = []; // the crown hair is its own mesh: it is hidden under a hat
+  let target = balls;
+  const ball = (alpha, e, r, out = 0.4) => {
     const d = dirOf(alpha, e);
-    balls.push({ pos: headPoint(d).addScaledVector(headNormal(d), r * out), r, st });
+    target.push({ pos: headPoint(d).addScaledVector(headNormal(d), r * out), r });
   };
   const mouthDir = new THREE.Vector3(0.12, -0.42, 0.9).normalize();
   const mouth = headPoint(mouthDir);
-  const row = (e, amin, amax, step, rmin, rmax, out) => {
+  let rowNo = 0;
+  /** Balls along a ring at height e from angle a0 to a1: equal gaps, one size, the next ring shifted half a gap. */
+  const ring = (e, a0, a1, step, r, out) => {
     const rho = Math.max(Math.sqrt(1 - e * e), 0.25);
-    const da = step / (0.09 * rho);
-    for (const side of [1, -1]) {
-      for (let a = amin + da * 0.5; a < amax; a += da) {
-        const aa = side * (a + (rnd() - 0.5) * da * 0.5), ee = e + (rnd() - 0.5) * 0.06;
-        const probe = headPoint(dirOf(aa, ee));
-        if (probe.distanceTo(mouth) < 0.026) continue; // leave the mouth free for the pipe
-        ball(aa, ee, rmin + rnd() * (rmax - rmin), out, [1 + rnd() * 0.25, 1, 1 + rnd() * 0.2]);
-      }
+    const n = Math.max(1, Math.round((a1 - a0) / (step / (0.09 * rho))));
+    const da = (a1 - a0) / n, shift = 0.25 + 0.5 * (rowNo % 2);
+    for (let k = 0; k < n; k++) {
+      const a = a0 + (k + shift) * da;
+      if (headPoint(dirOf(a, e)).distanceTo(mouth) < 0.026) continue; // leave the mouth free for the pipe
+      ball(a, e, r, out);
     }
   };
+  const row = (e, amin, amax, step, r, out) => { // both sides of the face
+    ring(e, amin, amax, step, r, out);
+    ring(e, -amax, -amin, step, r, out);
+    rowNo++;
+  };
   // beard: jaw, chin, moustache, sideburns
-  [-0.95, -0.8, -0.65, -0.5, -0.36].forEach((e) => row(e, 0, 1.95, 0.034, 0.016, 0.023, 0.4));
-  row(-0.22, 0.12, 1.6, 0.034, 0.015, 0.021, 0.4);
-  row(-0.08, 1.1, 1.6, 0.034, 0.014, 0.02, 0.4);
+  [-0.96, -0.8, -0.64, -0.48, -0.34].forEach((e) => row(e, 0, 1.95, 0.031, 0.02, 0.4));
+  row(-0.2, 0.12, 1.6, 0.031, 0.02, 0.4);
+  row(-0.06, 1.1, 1.6, 0.031, 0.02, 0.4);
   for (let k = 0; k < 3; k++) { // the beard hangs below the chin
     const n = [5, 3, 1][k];
     for (let i = 0; i < n; i++) {
       const x = n === 1 ? 0 : (i / (n - 1) - 0.5) * 0.07 * (1 - k * 0.35);
-      balls.push({ pos: new THREE.Vector3(x + (rnd() - 0.5) * 0.01, -HD.b - 0.004 - k * 0.02, 0.03 + k * 0.006), r: 0.02 - k * 0.003, st: [1.1, 1.2, 1] });
+      balls.push({ pos: new THREE.Vector3(x, -HD.b - 0.004 - k * 0.02, 0.03 + k * 0.006), r: 0.02 - k * 0.003 });
     }
   }
   // hair: sides, back and crown (the cap hides most of it)
-  [0.46, 0.28, 0.1, -0.08].forEach((e) => row(e, 1.0, Math.PI + 0.01, 0.034, 0.015, 0.023, 0.45));
-  [0.62, 0.76, 0.88, 0.97].forEach((e) => {
-    const rho = Math.sqrt(1 - e * e), da = 0.036 / (0.09 * Math.max(rho, 0.2));
-    for (let a = 0; a < Math.PI * 2; a += da) {
-      const front = a < 0.8 || a > Math.PI * 2 - 0.8; // the forehead stays free
-      if (e < 0.7 && front) continue;
-      ball(a, e, 0.016 + rnd() * 0.007, 0.45, [1.1, 1, 1.1]);
-    }
+  [0.46, 0.28, 0.1, -0.08].forEach((e) => row(e, 1.0, Math.PI + 0.01, 0.031, 0.02, 0.45));
+  target = crown;
+  [0.62, 0.76, 0.88, 0.97].forEach((e) => { // the crown; the forehead stays free
+    if (e < 0.7) ring(e, 0.8, Math.PI * 2 - 0.8, 0.031, 0.02, 0.45);
+    else ring(e, 0, Math.PI * 2, 0.031, 0.02, 0.45);
+    rowNo++;
   });
-  ball(0, 1, 0.022, 0.2);
-  {
-    const geo = new THREE.SphereGeometry(1, 7, 5);
-    const hairBalls = new THREE.InstancedMesh(geo, hairM, balls.length);
+  ball(0, 1, 0.02, 0.2);
+  const ballGeo = new THREE.SphereGeometry(1, 7, 5);
+  const makeBalls = (list) => {
+    const mesh = new THREE.InstancedMesh(ballGeo, hairM, list.length);
     const o = new THREE.Object3D();
-    balls.forEach((b, i) => {
+    list.forEach((b, i) => {
       o.position.copy(b.pos);
       o.rotation.set(rnd() * 6, rnd() * 6, rnd() * 6);
-      o.scale.set(b.r * b.st[0], b.r * b.st[1], b.r * b.st[2]);
+      o.scale.setScalar(b.r);
       o.updateMatrix();
-      hairBalls.setMatrixAt(i, o.matrix);
+      mesh.setMatrixAt(i, o.matrix);
     });
-    hairBalls.castShadow = true;
-    hairBalls.frustumCulled = false;
-    head.add(hairBalls);
-  }
+    mesh.castShadow = true;
+    mesh.frustumCulled = false;
+    head.add(mesh);
+    return mesh;
+  };
+  makeBalls(balls);
+  const crownHair = makeBalls(crown);
+  crownHair.visible = false; // shown only with no hat
   // the mouth: a small dark opening, only there to hold the pipe
   {
     const m = new THREE.Mesh(new THREE.SphereGeometry(1, 10, 8), mat(C.mouth));
@@ -469,7 +477,7 @@ function buildSailor() {
     head.add(m);
   }
 
-  // pipe: a briar pipe with a bent stem, an ember and smoke
+  // pipe: a briar pipe with a bent stem and a glowing ember
   const pipe = pivot(head);
   const stemPts = [mouth.clone().add(new THREE.Vector3(0, 0, -0.004)), mouth.clone().add(new THREE.Vector3(0.03, -0.012, 0.07)), mouth.clone().add(new THREE.Vector3(0.055, -0.02, 0.13)), mouth.clone().add(new THREE.Vector3(0.07, -0.014, 0.165))];
   add(pipe, new THREE.TubeGeometry(new THREE.CatmullRomCurve3(stemPts), 12, 0.0055, 8, false), mat(C.pipeStem, { roughness: 0.4 }));
@@ -479,16 +487,8 @@ function buildSailor() {
   const ember = add(pipe, new THREE.CylinderGeometry(0.016, 0.016, 0.003, 12), mat(C.ember, { emissive: C.ember, emissiveIntensity: 1 }), [bowlBase.x, bowlBase.y + 0.0525, bowlBase.z]);
   ember.castShadow = false;
   P.ember = ember;
-  P.smokeOrigin = new THREE.Vector3(bowlBase.x, bowlBase.y + 0.058, bowlBase.z);
-  P.puffs = [];
-  for (let i = 0; i < 5; i++) {
-    const m = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshStandardMaterial({ color: C.smoke, transparent: true, opacity: 0, depthWrite: false, roughness: 1 }));
-    m.castShadow = false;
-    pipe.add(m);
-    P.puffs.push(m);
-  }
 
-  // captain's cap: white crown, dark blue band, black peak, gold badge with an anchor
+  // captain's cap: white crown, dark blue band with a thin gold line, black peak
   const cap = pivot(head, [0, 0.016, -0.004]);
   cap.rotation.set(-0.05, 0, 0.04);
   add(cap, loft([{ y: 0.055, rx: 0.085, rz: 0.104 }, { y: 0.095, rx: 0.088, rz: 0.107 }], 24), mat(C.capBand, { side: THREE.DoubleSide }));
@@ -497,21 +497,21 @@ function buildSailor() {
   const visor = pivot(cap, [0, 0.062, 0.085]);
   visor.rotation.x = 0.14;
   add(visor, new THREE.CylinderGeometry(1, 1, 0.006, 24, 1, false, -Math.PI / 2, Math.PI), mat(C.visor, { roughness: 0.3 }), [0, 0, 0], [0, 0, 0], [0.09, 1, 0.09]);
-  add(cap, new THREE.CylinderGeometry(0.0185, 0.0185, 0.005, 16).rotateX(Math.PI / 2), goldM, [0, 0.077, 0.108]);
-  const dark = mat(C.capBand);
-  add(cap, new THREE.BoxGeometry(0.0035, 0.022, 0.003), dark, [0, 0.076, 0.1115]); // anchor shaft
-  add(cap, new THREE.BoxGeometry(0.014, 0.0035, 0.003), dark, [0, 0.085, 0.1115]); // anchor stock
-  add(cap, new THREE.TorusGeometry(0.008, 0.002, 4, 10, Math.PI).rotateZ(Math.PI), dark, [0, 0.07, 0.1115]); // anchor arms
 
   // wool watch cap: an alternative
-  const knit = pivot(head, [0, 0, 0]);
-  add(knit, loft([{ y: 0.052, rx: 0.088, rz: 0.108 }, { y: 0.096, rx: 0.09, rz: 0.11 }], 24), mat(C.knit, { roughness: 1, side: THREE.DoubleSide }));
-  add(knit, new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat(C.knit, { roughness: 1, side: THREE.DoubleSide }), [0, 0.09, 0], [0, 0, 0], [0.091, 0.062, 0.112]);
+  const knit = pivot(head);
+  const knitM = mat(C.knit, { roughness: 1, side: THREE.DoubleSide });
+  const hug = (y, off) => { // a ring that follows the head, `off` metres outside it (room for the hair)
+    const k = Math.sqrt(Math.max(0, 1 - (y / HD.b) ** 2));
+    return { y, rx: HD.a * k + off, rz: HD.c * k + off };
+  };
+  add(knit, loft([hug(0.05, 0.028), hug(0.08, 0.028), hug(0.1, 0.028), hug(0.11, 0.027), { y: 0.122, rx: 0.026, rz: 0.03 }], 24, { top: true }), knitM);
+  add(knit, loft([hug(0.043, 0.034), hug(0.085, 0.034)], 24), mat(C.knitCuff, { roughness: 1, side: THREE.DoubleSide })); // the folded cuff
   knit.visible = false;
 
   /* ---------- the look: hat and coat ---------- */
   function setLook({ hat, coat } = {}) {
-    if (hat) { cap.visible = hat === 'captain'; knit.visible = hat === 'knit'; }
+    if (hat) { cap.visible = hat === 'captain'; knit.visible = hat === 'knit'; crownHair.visible = hat === 'none'; }
     if (coat) {
       const long = coat === 'long';
       coatBits.visible = long; jacketBits.visible = !long;
@@ -584,14 +584,7 @@ function buildSailor() {
     P.hip[0].rotation.x = cur.lHx; P.hip[1].rotation.x = cur.rHx;
     P.knee[0].rotation.x = cur.lKx; P.knee[1].rotation.x = cur.rKx;
     P.ankle[0].rotation.x = cur.lAx; P.ankle[1].rotation.x = cur.rAx;
-    // pipe smoke: thin puffs that rise, spread and fade; the ember breathes
-    const o = P.smokeOrigin;
-    P.puffs.forEach((p, i) => {
-      const f = (t / 4 + i / P.puffs.length) % 1;
-      p.position.set(o.x + Math.sin(f * 6 + i * 2) * 0.03 * f + f * 0.05, o.y + f * 0.4, o.z + Math.cos(f * 5 + i) * 0.02 * f);
-      p.scale.setScalar(0.008 + f * 0.04);
-      p.material.opacity = Math.min(1, f * 4) * (1 - f) * 0.4;
-    });
+    // the ember breathes
     P.ember.material.emissiveIntensity = 0.7 + 0.3 * Math.sin(t * 3.1) ** 2;
   }
 
