@@ -1157,6 +1157,7 @@
   "gennaker.trim.crossing": "Går rundt fronten til den andre siden",
   "gennaker.trim.backed": "På feil side: gybb den",
   "gennaker.trim.blanketed": "Skjult bak storseilet: gå litt høyere",
+  "gennaker.trim.pressed": "Presset mot storseilet: fire skjøtet",
   "gennaker.trim.luffing": "Forkanten krøller seg: trim litt inn",
   "gennaker.trim.good": "Trekker godt",
   "gennaker.trim.stalled": "Trimmet for hardt: fire til kanten krøller seg",

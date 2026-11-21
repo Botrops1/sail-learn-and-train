@@ -1164,6 +1164,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | gennaker.trim.crossing | Going round the front to the other side | Går rundt fronten til den andre siden |
 | gennaker.trim.backed | On the wrong side: gybe it | På feil side: gybb den |
 | gennaker.trim.blanketed | Hidden behind the main: steer a little higher | Skjult bak storseilet: gå litt høyere |
+| gennaker.trim.pressed | Pressed against the main: ease the sheet | Presset mot storseilet: fire skjøtet |
 | gennaker.trim.luffing | Front edge curling: trim a little | Forkanten krøller seg: trim litt inn |
 | gennaker.trim.good | Drawing well | Trekker godt |
 | gennaker.trim.stalled | Trimmed too hard: ease until the edge curls | Trimmet for hardt: fire til kanten krøller seg |

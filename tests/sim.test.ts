@@ -99,17 +99,28 @@ describe('rig step (PHASE1_SPEC 7.1, 8.3 step 5, 9.1)', () => {
     expect(rig.tackLabelS).toBe(0);
   });
 
-  it('the sail curves to leeward of the wind, also by the lee and while the boom swings across', () => {
+  it('the sail curves to the side the wind pushes it: leeward, by the lee the boom side until the boom passes the line of the wind', () => {
     const base = { ...defaultControls(), ctl_mainsheet: 100 };
     let rig = initialRig({ ...base, ctl_wind_dir: 170 });
     expect(mainSailInputFor(rig, { ...base, ctl_wind_dir: 170 }).side).toBe(-1);
-    // By the lee: boom still to port, wind from port, so leeward is starboard.
+    // By the lee: boom still out to port, wind from port: the wind still presses the sail out to
+    // port (PT-60), so it curves to port (fix after M106; it used to curve to starboard).
     rig = run(rig, { ...base, ctl_wind_dir: -170 }, 1);
     expect(rig.theta.value).toBeLessThan(0);
-    expect(mainSailInputFor(rig, { ...base, ctl_wind_dir: -170 }).side).toBe(1);
-    // Mid-gybe: the drawn boom is still on the port side; the curve already points to starboard.
-    rig = run(rig, { ...base, ctl_wind_dir: -165 }, 1 / 60);
-    expect(rig.theta.value).toBeLessThan(0);
-    expect(mainSailInputFor(rig, { ...base, ctl_wind_dir: -165 }).side).toBe(1);
+    expect(mainSailInputFor(rig, { ...base, ctl_wind_dir: -170 }).side).toBe(-1);
+    // The gybe: once the drawn boom is past the line of the wind, the curve turns to starboard.
+    const wind = { ...base, ctl_wind_dir: -165 };
+    let crossed = false;
+    for (let i = 0; i < 6 * 60 && !crossed; i += 1) {
+      rig = run(rig, wind, 1 / 60);
+      const past = Math.sin(((-165 + rig.theta.value) * Math.PI) / 180) < -0.01;
+      if (past) {
+        expect(mainSailInputFor(rig, wind).side).toBe(1);
+        crossed = true;
+      } else if (Math.sin(((-165 + rig.theta.value) * Math.PI) / 180) > 0.01) {
+        expect(mainSailInputFor(rig, wind).side).toBe(-1);
+      }
+    }
+    expect(crossed).toBe(true);
   });
 });

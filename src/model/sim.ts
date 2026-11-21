@@ -261,7 +261,10 @@ export function initialRig(
     jibSolution: { ...jib, tack: false },
     jibPhi: { value: jib.phiDeg, velocity: 0 },
     jibFill: jib.fill,
-    gennaker: solveGennaker(gennaker, rope.gennakerSheet, rope.gennakerSock, wind.awaDeg, data),
+    gennaker: solveGennaker(gennaker, rope.gennakerSheet, rope.gennakerSock, wind.awaDeg, data, {
+      thetaDeg: solution.thetaDeg,
+      unfurled: rope.mainFurl / 100,
+    }),
     timeS: 0,
     wind,
   };
@@ -456,11 +459,13 @@ export function step(
           },
           data,
         );
+  // The boom as drawn: the gennaker is stopped by where the main is, not where it is going.
+  const theta = gybe.theta ?? springTo(rig.theta, solution.thetaDeg, dt, v.boomSmoothingTimeS);
   const next: Omit<RigState, 'forces'> = {
     applied: rope,
     input,
     solution,
-    theta: gybe.theta ?? springTo(rig.theta, solution.thetaDeg, dt, v.boomSmoothingTimeS),
+    theta,
     psi: springTo(rig.psi, solution.psiDeg, dt, v.boomSmoothingTimeS),
     fill: lag(rig.fill, solution.fill, dt, v.boomSmoothingTimeS),
     gybing: gybe.swing !== null,
@@ -480,6 +485,7 @@ export function step(
       rope.gennakerSock,
       wind.awaDeg,
       data,
+      { thetaDeg: theta.value, unfurled: rope.mainFurl / 100 },
     ),
     timeS: rig.timeS + dt,
     wind,

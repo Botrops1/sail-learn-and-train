@@ -1,4 +1,4 @@
-import { smoothstep } from './angles';
+import { DEG, smoothstep } from './angles';
 import { boat, type BoatData } from './boat';
 import { availableSheetLength, maxSwingFor, sheetLength } from './mainsheet';
 import {
@@ -83,16 +83,22 @@ export interface BoomSolution {
 // The shared helper lives in angles.ts (PHASE3_SPEC 3.2); re-exported so importers do not change.
 export { smoothstep } from './angles';
 
-/** The side the wind pushes the boom (and the jib) to: wind from starboard → port. */
-export function leewardSide(windFromDeg: number): Side | null {
-  if (windFromDeg > 0 && windFromDeg < 180) return -1;
+/**
+ * The side the wind pushes the boom (and the jib) to: wind from starboard → port. Dead ahead, and
+ * within `visual.deadAsternBandDeg` of dead astern, there is none: +180° and −180° are the same
+ * wind, and a hair's breadth either way must not flip the boom's side, the sail's curve or the
+ * by-the-lee warning.
+ */
+export function leewardSide(windFromDeg: number, data: BoatData = boat): Side | null {
+  if (Math.abs(windFromDeg) >= 180 - data.visual.deadAsternBandDeg) return null;
+  if (windFromDeg > 0) return -1;
   if (windFromDeg < 0) return 1;
   return null;
 }
 
 /** A sensible starting side for a wind direction (dead ahead or astern: port). */
-export function initialSide(windFromDeg: number): Side {
-  return leewardSide(windFromDeg) ?? -1;
+export function initialSide(windFromDeg: number, data: BoatData = boat): Side {
+  return leewardSide(windFromDeg, data) ?? -1;
 }
 
 export interface SideDecision {
@@ -105,12 +111,23 @@ export interface SideDecision {
 }
 
 /**
- * The side the sail curves and twists to: away from the wind (leeward), whichever side the
- * boom is on at the moment (by the lee, or still swinging across in a gybe). Wind dead ahead or
- * astern: the boom's side.
+ * The side the sail curves and twists to: the side the wind pushes it, which is the side the push
+ * of gybe.ts (`windTorqueNm`) turns the boom: −sign(sin(awa + θ)). Normally that is leeward; by
+ * the lee with the boom let out the wind still presses the same face of the sail until the boom
+ * is past the line of the wind, so it keeps curving to the boom's side (PT-60). Right on the
+ * line of the wind (within `visual.deadAsternBandDeg`): leeward, else the boom's side.
  */
-export function curveSide(windFromDeg: number, boomSide: Side): Side {
-  return leewardSide(windFromDeg) ?? boomSide;
+export function curveSide(
+  windFromDeg: number,
+  boomThetaDeg: number,
+  boomSide: Side,
+  data: BoatData = boat,
+): Side {
+  const across = Math.sin((windFromDeg + boomThetaDeg) * DEG);
+  if (Math.abs(across) <= Math.sin(data.visual.deadAsternBandDeg * DEG)) {
+    return leewardSide(windFromDeg, data) ?? boomSide;
+  }
+  return across > 0 ? -1 : 1;
 }
 
 /**
@@ -124,7 +141,7 @@ export function decideSide(
   current: Side,
   data: BoatData = boat,
 ): SideDecision {
-  const wanted = leewardSide(windFromDeg);
+  const wanted = leewardSide(windFromDeg, data);
   if (windSpeedKn < data.visual.solver.minWindKn || wanted === null || wanted === current) {
     return { side: current, byTheLee: false, gybe: false, tack: false };
   }

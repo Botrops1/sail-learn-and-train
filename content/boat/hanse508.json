@@ -604,6 +604,7 @@
       "blanket": { "fromAwaDeg": 145, "fullAwaDeg": 165, "factorAtFull": 0.1 },
       "backedBelowAwaDeg": 170,
       "look": { "camberRatio": 0.22, "twistDeg": 8, "sockBunchM": 1.5 },
+      "mainClearanceDeg": 5,
       "gybeCrossS": 5
     },
     "reacher": {
@@ -1350,6 +1351,7 @@
       "fullyFilled": 10
     },
     "gybeHysteresisDeg": 15,
+    "deadAsternBandDeg": 0.1,
     "baseTwistDeg": 4,
     "twistPerDegBoomRise": 1.5,
     "jibTwistPerDegEasedBeyondTrack": 0.8,

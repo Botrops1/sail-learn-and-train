@@ -269,7 +269,15 @@ export function gennakerClew(thetaDeg: number, data: BoatData = boat): Vec3 {
 }
 
 export type GennakerTrimState =
-  'stowed' | 'snuffed' | 'crossing' | 'backed' | 'blanketed' | 'luffing' | 'good' | 'stalled';
+  | 'stowed'
+  | 'snuffed'
+  | 'crossing'
+  | 'backed'
+  | 'blanketed'
+  | 'pressed'
+  | 'luffing'
+  | 'good'
+  | 'stalled';
 
 export interface GennakerSolution {
   /** Stage 4 and the sock up at all. */
@@ -285,9 +293,41 @@ export interface GennakerSolution {
   /** `factorAtFull`…1: how much of the wind the main leaves it. */
   blanket: number;
   backed: boolean;
+  /** The sheet is hauled harder than the main lets the sail come in: the sail lies against the main. */
+  pressed: boolean;
   /** 0…1. */
   fill: number;
   side: 1 | -1;
+}
+
+/** What the gennaker needs to know of the mainsail: where the boom is and how much sail is out. */
+export interface MainForGennaker {
+  /** The boom's signed angle (degrees; + = to starboard). */
+  thetaDeg: number;
+  /** Unfurled fraction of the main, 0…1. */
+  unfurled: number;
+}
+
+/**
+ * The smallest foot angle φ (from astern of the tack) the main leaves the gennaker: the clew
+ * cannot go inside the main, so seen from the mast it stays `mainClearanceDeg` outboard of the
+ * boom. Only when the boom is on the gennaker's side and the main is out; otherwise the hauled
+ * stop. Solves the foot's triangle: tack → mast → clew.
+ */
+export function mainStopPhiDeg(
+  side: 1 | -1,
+  main: MainForGennaker | undefined,
+  data: BoatData = boat,
+): number {
+  const g = data.sails.gennaker;
+  const hauled = g.sheet.phiHauledDeg;
+  if (!main || main.unfurled < data.visual.solver.furledBelowPct / 100) return hauled;
+  if (main.thetaDeg * side < 0) return hauled;
+  const bearing = Math.min(90, Math.abs(main.thetaDeg) + g.mainClearanceDeg) * DEG;
+  const footFlat = g.footM * Math.cos(g.footElevationDeg * DEG);
+  const toMast = vec3(g.tack)[0] - data.rig.mast.x;
+  const ratio = clamp((toMast * Math.sin(bearing)) / footFlat, -1, 1);
+  return Math.max(hauled, (bearing - Math.asin(ratio)) / DEG);
 }
 
 function clamp(x: number, lo: number, hi: number): number {
@@ -311,6 +351,7 @@ export function solveGennaker(
   sockPct: number,
   awaDeg: number,
   data: BoatData = boat,
+  main?: MainForGennaker,
 ): GennakerSolution {
   const g = data.sails.gennaker;
   const side = setup.side;
@@ -323,6 +364,7 @@ export function solveGennaker(
       aoaDeg: 0,
       blanket: 1,
       backed: false,
+      pressed: false,
       fill: 0,
       side,
     };
@@ -331,9 +373,14 @@ export function solveGennaker(
   const sockUp = clamp(sockPct / 100, 0, 1);
   const set = sockUp > 0;
   const { phiHauledDeg, phiEasedDeg } = g.sheet;
-  const phiT = phiHauledDeg + ((phiEasedDeg - phiHauledDeg) * clamp(sheetPct, 0, 100)) / 100;
+  const phiSheet = phiHauledDeg + ((phiEasedDeg - phiHauledDeg) * clamp(sheetPct, 0, 100)) / 100;
+  // The main stops the clew coming in (the sail lies against it); then the sheet is hauled harder
+  // than the sail goes (`pressed`).
+  const phiStop = mainStopPhiDeg(side, main, data);
+  const phiT = Math.max(phiSheet, phiStop);
+  const pressed = set && phiSheet < phiStop - 0.01;
   // The wind cannot push the clew past where the sail lies along it.
-  const phi = Math.min(phiT, Math.max(phiHauledDeg, b - g.aero.entryDeg));
+  const phi = Math.min(phiT, Math.max(phiStop, b - g.aero.entryDeg));
   const aoaDeg = clamp(b - phi - g.aero.entryDeg, 0, 90);
   const blanket =
     1 - (1 - g.blanket.factorAtFull) * smoothstep(g.blanket.fromAwaDeg, g.blanket.fullAwaDeg, b);
@@ -360,6 +407,7 @@ export function solveGennaker(
     aoaDeg,
     blanket,
     backed,
+    pressed,
     fill,
     side,
   };
@@ -376,6 +424,7 @@ export function gennakerTrimState(
   if (setup.crossS > 0) return 'crossing';
   if (sol.backed) return 'backed';
   if (sol.blanket < 0.5) return 'blanketed';
+  if (sol.pressed && sol.fill >= 0.5) return 'pressed';
   if (sol.fill < 0.5) return 'luffing';
   if (sol.aoaDeg > data.sails.gennaker.aero.stallAboveAoaDeg) return 'stalled';
   return 'good';

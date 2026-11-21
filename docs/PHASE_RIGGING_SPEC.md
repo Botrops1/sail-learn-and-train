@@ -329,7 +329,7 @@ The flogging drag of a gennaker that is not filled uses the shared `physics.sail
 In `src/model/gennaker.ts`:
 
 ```ts
-export type GennakerTrimState = 'stowed' | 'snuffed' | 'crossing' | 'backed' | 'blanketed' | 'luffing' | 'good' | 'stalled';
+export type GennakerTrimState = 'stowed' | 'snuffed' | 'crossing' | 'backed' | 'blanketed' | 'pressed' | 'luffing' | 'good' | 'stalled';
 export interface GennakerSolution {
   set: boolean;        // stage 4 and sockUp > 0
   sockUp: number;      // 0…1, applied sock / 100; 0 below stage 4
@@ -361,7 +361,7 @@ export function stepGennaker(setup: GennakerSetup, dt: number): GennakerSetup;
 
 **`gennakerClew(θ)`** (M105 helper, used from here): `T + footM · (−cos θ · cos e, sin e, sin θ · cos e)`, `e = footElevationDeg`, θ in degrees converted with `DEG`. θ = 15 → `[−4.035, 3.195, 2.943]` (± 0.001).
 
-**`gennakerTrimState`**, first match: stage < 4 → `stowed`; `sockUp ≤ 0.05` → `snuffed`; `crossS > 0` → `crossing`; `backed` → `backed`; `blanket < 0.5` → `blanketed`; `fill < 0.5` → `luffing`; `aoa > stallAboveAoaDeg` → `stalled`; else `good`.
+**`gennakerTrimState`**, first match: stage < 4 → `stowed`; `sockUp ≤ 0.05` → `snuffed`; `crossS > 0` → `crossing`; `backed` → `backed`; `blanket < 0.5` → `blanketed`; `pressed` and `fill ≥ 0.5` → `pressed` (fix after M106); `fill < 0.5` → `luffing`; `aoa > stallAboveAoaDeg` → `stalled`; else `good`.
 
 **`stepGennaker`**: `crossS = max(0, crossS − dt)`; when it reaches 0, `crossFromDeg = 0`; nothing else.
 
@@ -390,7 +390,7 @@ Run with `steadyState(controls, 0, boat, { heel: true, gennaker: { stage: 4, sid
 | tws 12, twa 150: gain | 2.14 kn | ≥ 1.6 |
 | `solveGennaker` at a fixed `awaDeg = 74` (the apparent angle of the best trim at tws 12, twa 120; no steady state, which is not monotonic near the curl): first integer gs with fill < 0.5 (the curl) | 42 (φ > 44° gives aoa < 5°) | exactly 42 |
 | steady state tws 12, twa 120, ms 60, at gs = curl − 15 (27) vs the best | 9.17 vs 9.20 | ≥ 0.97 · best |
-| same, gs 0: speed; trim state; heel vs gs 30 | 8.57 kn; `stalled`; 13.1° vs 10.6° | 8.30–8.85; stalled; heel(gs 0) > heel(gs 30) |
+| same, gs 0: speed; trim state; heel vs gs 30 | 8.57 kn; `stalled`; 13.1° vs 10.6° (after the fix below: 9.02 kn; `pressed`; 12.6° vs 11.6° at gs 25) | 8.9–9.1; `pressed`; heel(gs 0) > heel(gs 25) |
 
 ### 8.5 Store, URL, UI, 3D
 
@@ -402,7 +402,7 @@ Run with `steadyState(controls, 0, boat, { heel: true, gennaker: { stage: 4, sid
 
 ### 8.6 Strings, registry, tests
 
-- `ui.json`: `gennaker.trim.snuffed` "In its sock"; `.crossing` "Going round the front to the other side"; `.backed` "On the wrong side: gybe it"; `.blanketed` "Hidden behind the main: steer a little higher"; `.luffing` "Front edge curling: trim a little"; `.good` "Drawing well"; `.stalled` "Trimmed too hard: ease until the edge curls"; `gennaker.gybe` "Gybe the gennaker"; `gennaker.sock` "Sock"; `gennaker.sheet` "Sheet".
+- `ui.json`: `gennaker.trim.snuffed` "In its sock"; `.crossing` "Going round the front to the other side"; `.backed` "On the wrong side: gybe it"; `.pressed` "Pressed against the main: ease the sheet" (fix after M106); `.blanketed` "Hidden behind the main: steer a little higher"; `.luffing` "Front edge curling: trim a little"; `.good` "Drawing well"; `.stalled` "Trimmed too hard: ease until the edge curls"; `gennaker.gybe` "Gybe the gennaker"; `gennaker.sock` "Sock"; `gennaker.sheet` "Sheet".
 - Registry: `sail_gennaker` `"phase": 106`; a new `term_lazy_sheet` (kind term, group sailing, phase 106, draft, related the two sheets); glossary: name "Lazy sheet", short "The sheet that is not working, on the side the wind comes from.", what "A sail with two sheets uses one at a time: the leeward one trims, the windward one is lazy and hangs slack. When you gybe, the lazy sheet becomes the working one: pull it in and let the old one go." Group sizes in 8.8.
 - `gennakerTrimState` never returns `stowed` while the block shows the trim line (stage 4); the state exists for the exercises (M108), so it has no string.
 - **Tests** (`tests/physicsTruthsRigging.test.ts`, one `it` per band of 8.4, named after the rule; the twa 180 case uses `side = leewardSide(180)` = −1): "PT-67 a gennaker pays on a broad reach", "PT-67 too close to the wind the gennaker is slower and overpowers", "PT-67 dead downwind the main hides it", "PT-68 trim to the curl", "PT-70 the sock: down is no sail". PT-70: at stage 4, `gu = 0` gives `areaM2 = 0`, `driveN = 0` of the gennaker and trim `snuffed`; `gu = 50` gives half the area.
@@ -533,7 +533,7 @@ Mistakes: `jib-still-out` (not serious, `steps: ["hoist", "sock-up", "trim"]`) `
 | `bear-away` | autopilot | `twaDeg [160, 175]`, `tack "starboard"` | 2 | `autopilot:turn` |
 | `haul-main` | ropes | `boomDeg [0, 16]`, `tack "starboard"` | 2 | `control:ctl_mainsheet` |
 | `gybe-main` | autopilot | `event "controlledGybe"`, `tack "port"`, `twaDeg [150, 175]` | 2 | `autopilot:tack` |
-| `gybe-gennaker` | sails | `gennakerTrim ["luffing", "good", "stalled", "blanketed"]`, `tack "port"` | 0 | `gennaker:gybe` |
+| `gybe-gennaker` | sails | `gennakerTrim ["luffing", "good", "stalled", "pressed", "blanketed"]`, `tack "port"` | 0 | `gennaker:gybe` |
 | `come-up` | autopilot | `twaDeg [125, 145]`, `tack "port"`, `gennakerTrim ["good"]` | 5 | `autopilot:turn`, `control:ctl_mainsheet`, `control:ctl_gennaker_sheet` |
 
 (The autopilot's Tack button reads Gybe on a run, as in `gybing`.) Mistakes: `backed` (not serious, `steps: ["gybe-gennaker", "come-up"]`) `{ condition: { gennakerTrim: ["backed"] }, forS: 10 }`; `accidental-gybe` as in `gybing` with `steps: ["bear-away", "haul-main", "gybe-main"]`.
@@ -548,7 +548,7 @@ Mistakes: `jib-still-out` (not serious, `steps: ["hoist", "sock-up", "trim"]`) `
 | `lower` | sails | `gennakerStage [0, 0]` | 0 | `gennaker:steps` |
 | `jib-out` | ropes | `jibOutPct [95, 100]` | 2 | `control:ctl_jib_furl` |
 
-The main hides the gennaker only close to dead downwind: by the formulas of 8.3, at 12 kn true wind a true angle of 170° gives an apparent angle near 160° and the trim `blanketed`, while 165° true still leaves it drawing (apparent near 151°). Mistakes: `douse-in-wind` (not serious, `steps: ["ease", "sock-down"]`) `{ condition: { gennakerTrim: ["good", "luffing", "stalled"], controls: { ctl_gennaker_sock: [1, 90] } }, forS: 2 }` (pulling the sock down while the sail still has wind); `accidental-gybe` as in `gybing` with `steps: ["bear-away", "ease", "sock-down", "lower"]`.
+The main hides the gennaker only close to dead downwind: by the formulas of 8.3, at 12 kn true wind a true angle of 170° gives an apparent angle near 160° and the trim `blanketed`, while 165° true still leaves it drawing (apparent near 151°). Mistakes: `douse-in-wind` (not serious, `steps: ["ease", "sock-down"]`) `{ condition: { gennakerTrim: ["good", "luffing", "stalled", "pressed"], controls: { ctl_gennaker_sock: [1, 90] } }, forS: 2 }` (pulling the sock down while the sail still has wind); `accidental-gybe` as in `gybing` with `steps: ["bear-away", "ease", "sock-down", "lower"]`.
 
 **Texts** (`content/lang/en/exercises.json`, the shape of `gybing`'s: `title`, `summary`, `see`, `happening`, `action`, `mistake`, `done`, each step `{ goal, how }`, each mistake `{ name, what, why, fix }`). Final English below: `title`, `summary`, each step's `goal` and each mistake's `name`. The builder writes the other fields in `gybing`'s style from the facts of this section and sections 7–8 only, and records them as decided in the PR.
 
@@ -712,3 +712,5 @@ English glossary (final): `part_traveller_track`: name "Traveller", short "A tra
 5. **The gennaker's sheets have no clutch** in Realistic ropes: off the winch, under load, they run out.
 6. **Browser checks join existing groups** (the set is at its 77-group cap).
 7. **This plan supersedes** the sailor-feedback plan's decision that #232 waits for "other yacht setups" (PHASE_FEEDBACK_SPEC 11, answer 2): the owner asked for it now.
+
+**Fix after M106 (owner's bug report; decided in the fix PR, recommended; merging accepts it).** (1) The gennaker cannot go through the mainsail: when the boom is on the gennaker's side and the main is out, the clew stays at least `sails.gennaker.mainClearanceDeg` (5°) outboard of the boom seen from the mast (`mainStopPhiDeg`, `solveGennaker`'s last argument). The stop follows the boom as drawn (`rig.theta`), so during a gybe's swing the sail stays outside it. A sheet hauled harder than that leaves the sail lying against the main: `pressed`, trim line "Pressed against the main: ease the sheet" (after `blanketed`, before `luffing`, only while the sail fills; `fill < 0.5` stays `luffing`). PT-68's test band at gs 0 changes with it (table above). With the boom on the other side, or the main furled, `stalled` still applies. (2) Dead astern is one wind: `leewardSide` returns no side within `visual.deadAsternBandDeg` (0.1°) of ±180°, so the boom's side, the sail's curve and "by the lee" no longer flip every few seconds on an exact run. (3) The mainsail's and the jib's curve (camber and twist) follow the side the wind pushes the sail, −sign(sin(awa + θ)) as in `windTorqueNm` (`curveSide`), instead of the side away from the wind: by the lee with the boom let out the wind still presses the sail outwards (PT-60), so it curves to the boom's side; drawn the old way it looked as if the wind came from the bow. This replaces the PHASE1_SPEC 8.6 rule (noted there).

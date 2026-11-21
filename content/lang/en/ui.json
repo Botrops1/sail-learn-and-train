@@ -1157,6 +1157,7 @@
   "gennaker.trim.crossing": "Going round the front to the other side",
   "gennaker.trim.backed": "On the wrong side: gybe it",
   "gennaker.trim.blanketed": "Hidden behind the main: steer a little higher",
+  "gennaker.trim.pressed": "Pressed against the main: ease the sheet",
   "gennaker.trim.luffing": "Front edge curling: trim a little",
   "gennaker.trim.good": "Drawing well",
   "gennaker.trim.stalled": "Trimmed too hard: ease until the edge curls",

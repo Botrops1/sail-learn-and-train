@@ -122,6 +122,16 @@ export async function liveM106Checks({ openPage, viewports, problems }) {
     await context.close();
   }
 
+  // 3b. Hauled right in (the owner's Trimmed too hard link): the main stops the sail, the trim
+  // line says it is pressed against the main (fix after M106).
+  {
+    const { context, page } = await open('pressed', S.replace('&gs=25', '&gs=0'));
+    await showSection(page, 'sails');
+    const pressed = await waitForTrim(page, 'pressed', 5);
+    check('pressed: gs=0, the trim reads pressed', pressed !== null, String(await trim(page)));
+    await context.close();
+  }
+
   // 4. The sail is drawn when set and not when the sock is down; the Ropes list shows the two controls from stage 4.
   {
     const { context, page } = await open('drawn', S);

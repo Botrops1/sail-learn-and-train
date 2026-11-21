@@ -1157,6 +1157,7 @@
   "gennaker.trim.crossing": "Идёт вокруг носа на другой борт",
   "gennaker.trim.backed": "Не с той стороны: перекиньте его",
   "gennaker.trim.blanketed": "Закрыт гротом: возьмите чуть круче к ветру",
+  "gennaker.trim.pressed": "Прижат к гроту: потравите шкот",
   "gennaker.trim.luffing": "Передняя кромка заворачивается: чуть подберите шкот",
   "gennaker.trim.good": "Хорошо работает",
   "gennaker.trim.stalled": "Выбран слишком туго: потравливайте, пока кромка не завернётся",
