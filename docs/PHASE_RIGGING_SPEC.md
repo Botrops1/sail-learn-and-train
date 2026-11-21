@@ -435,7 +435,8 @@ Not in this milestone: Realistic winches (M107; until then the Sails block's ste
 5. **The sock tube is drawn from the mouth at every sock height** (at 0 it is M105's whole sock); the sock line starts 0.4 m above the mouth. The sail's mesh is built with the boat and hidden while the sock is down. `gennakerSailGrid` takes an optional `fallbackSide` for a foot angle of exactly 0° or 180°.
 6. **Learn's Where is it? on the sail itself** rigs the gennaker if needed and pulls the sock up, because the sail is drawn only with the sock up.
 7. **The new sheet stays fully eased for the whole crossing** (`step` holds `applied.gennakerSheet` while `crossS > 0`) and comes in through the lag afterwards, so the clew does not jump at the end of a gybe (independent review).
-8. **Browser group time**: the M106 checks take 50 s on this slower machine (the whole `m26` group 275 s here against 73 s recorded in CI), so `ci-times.json` is left as it is; CI's own timing will show whether it needs a new line.
+8. **Independent review fixes**: the drop area of a rope taken off its winch is the sheet's whole column (not the strip round its rope); the browser check allows the spec's 5 s for the sail to luff, not 20; the lazy sheet is also tested cranked with the handle, not only with the button.
+9. **Browser group time**: the M106 checks take 50 s on this slower machine (the whole `m26` group 275 s here against 73 s recorded in CI), so `ci-times.json` is left as it is; CI's own timing will show whether it needs a new line.
 
 ## 9. M107: Gennaker sheets on the winches
 
