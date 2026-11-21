@@ -424,7 +424,7 @@ export function gennakerTrimState(
   if (setup.crossS > 0) return 'crossing';
   if (sol.backed) return 'backed';
   if (sol.blanket < 0.5) return 'blanketed';
-  if (sol.pressed) return 'pressed';
+  if (sol.pressed && sol.fill >= 0.5) return 'pressed';
   if (sol.fill < 0.5) return 'luffing';
   if (sol.aoaDeg > data.sails.gennaker.aero.stallAboveAoaDeg) return 'stalled';
   return 'good';

@@ -67,8 +67,8 @@ export interface MainSailShapeInput {
 
 /**
  * The mainsail as drawn for a rig state: the drawn boom pose, the unfurled fraction, the drawn
- * fill, and the curve towards leeward. Leeward comes from the wind, not the boom, so the curve
- * never points the wrong way while the boom swings across in a gybe or sails by the lee.
+ * fill, and the curve to the side the wind pushes the sail (see curveSide): leeward, and by the
+ * lee the boom's side until the boom is past the line of the wind.
  */
 export function mainSailInputFor(
   rig: RigState,
@@ -79,7 +79,7 @@ export function mainSailInputFor(
     pose: { thetaDeg: rig.theta.value, psiDeg: rig.psi.value },
     unfurled: rig.applied.mainFurl / 100,
     fill: rig.fill,
-    side: curveSide(wind.awaDeg, rig.solution.side),
+    side: curveSide(wind.awaDeg, rig.theta.value, rig.solution.side),
     windSpeedKn: wind.awsKn,
     timeS: rig.timeS,
   };
@@ -106,7 +106,7 @@ export function jibInputFor(
     phiDeg: rig.jibPhi.value,
     unfurled: rig.jibSolution.unfurled,
     fill: rig.jibFill,
-    side: curveSide(wind.awaDeg, rig.jibSolution.side),
+    side: curveSide(wind.awaDeg, rig.jibPhi.value, rig.jibSolution.side),
     windSpeedKn: wind.awsKn,
     timeS: rig.timeS,
   };
