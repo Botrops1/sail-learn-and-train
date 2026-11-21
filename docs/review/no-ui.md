@@ -238,6 +238,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.strip.elsewhere | This line's clutch is not here: it is at the {station} station. | Stopperen til dette tauet er ikke her: den er på plassen {station}. |
 | real.strip.go | Go to {station} | Gå til {station} |
 | real.status.clutchOpen | Clutch open: only what holds the tail stops the line. | Stopperen er åpen: bare det som holder tauenden, stopper tauet. |
+| real.status.noClutch | No clutch: only the winch, or a hand on the tail, holds this line. Off the winch it runs out. | Ingen stopper: Bare vinsjen eller en hånd på tauenden holder denne linen. Uten vinsj løper den ut. |
 | real.status.clutchClosed | Clutch closed: the line cannot run out (it can still be pulled in). | Stopperen er lukket: tauet kan ikke løpe ut (det kan fortsatt hales inn). |
 | real.status.offWinch | Not on the winch: nobody holds the tail. | Ikke på vinsjen: ingen holder tauenden. |
 | real.status.onWinchJaw | On the winch, {wrap}, tail in the self-tailer (the jaw on top that grips it). | På vinsjen, {wrap}, tauenden i selvtaileren (kjeften på toppen som griper den). |
@@ -1171,3 +1172,4 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | gennaker.gybe | Gybe the gennaker | Gybb gennakeren |
 | gennaker.sock | Sock | Strømpe |
 | gennaker.sheet | Sheet | Skjøt |
+| gennaker.sheetOnWinch | Work the sheet at the winch on its side (Port or Starboard station). | Bruk skjøtet på vinsjen på sin side (stasjon Babord eller Styrbord). |

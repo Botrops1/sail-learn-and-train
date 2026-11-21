@@ -231,6 +231,7 @@
   "real.strip.elsewhere": "Stopperen til dette tauet er ikke her: den er på plassen {station}.",
   "real.strip.go": "Gå til {station}",
   "real.status.clutchOpen": "Stopperen er åpen: bare det som holder tauenden, stopper tauet.",
+  "real.status.noClutch": "Ingen stopper: Bare vinsjen eller en hånd på tauenden holder denne linen. Uten vinsj løper den ut.",
   "real.status.clutchClosed": "Stopperen er lukket: tauet kan ikke løpe ut (det kan fortsatt hales inn).",
   "real.status.offWinch": "Ikke på vinsjen: ingen holder tauenden.",
   "real.status.onWinchJaw": "På vinsjen, {wrap}, tauenden i selvtaileren (kjeften på toppen som griper den).",
@@ -1163,5 +1164,6 @@
   "gennaker.trim.stalled": "Trimmet for hardt: fire til kanten krøller seg",
   "gennaker.gybe": "Gybb gennakeren",
   "gennaker.sock": "Strømpe",
-  "gennaker.sheet": "Skjøt"
+  "gennaker.sheet": "Skjøt",
+  "gennaker.sheetOnWinch": "Bruk skjøtet på vinsjen på sin side (stasjon Babord eller Styrbord)."
 }

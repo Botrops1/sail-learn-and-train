@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
+import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
 import { trimState } from '../src/model/trim';
 import type { Controls } from '../src/model/controls';
 import {
   initialRealistic,
+  isOpen,
   reduceRealistic,
   tailSpec,
   tailSpecs,
@@ -90,6 +92,8 @@ describe('Realistic mode data (hanse508.json → realisticMode, cockpitHardware)
       'b4',
       'b5',
       'r1',
+      'g1',
+      'g2',
     ]);
     for (const spec of specs) {
       const side = spec.station === 'port' ? PORT : STBD;
@@ -718,5 +722,153 @@ describe('Realistic mode: dragging the rope back to its clutch (take off the win
     // The button (no needZeroTurns) takes it off with turns on the drum.
     const button = act(turned, { type: 'offWinch', winch: PORT });
     expect(button.realistic.winches[PORT]?.tail).toBeNull();
+  });
+});
+
+/**
+ * M107: the gennaker's sheets on the aft winches (PHASE_RIGGING_SPEC 9). They are led straight to a
+ * winch with no clutch: off the winch under load they run out; on it they hold. The Realistic
+ * rules PT-16 and PT-18 are the ones that act; no new rule.
+ */
+describe('M107: gennaker sheets on the winches', () => {
+  const PORT_SHEET = 'g1';
+  const STBD_SHEET = 'g2';
+  /** Wind over starboard (the sail is on port), the port sheet works; the sock is up. */
+  function gennakerStart(station: StationId = 'port', sheet = 25): AppState {
+    const state = initialState({
+      controls: {
+        ctl_wind_dir: 120,
+        ctl_wind_speed: 12,
+        ctl_mainsheet: 60,
+        ctl_jib_furl: 0,
+        ctl_gennaker_sheet: sheet,
+        ctl_gennaker_sock: 100,
+      },
+      settings: { ropesMode: 'realistic' },
+      boat: { mode: 'held' },
+      gennaker: { stage: 4, side: -1, crossS: 0, crossFromDeg: 0 },
+    });
+    return act(state, { type: 'station', station });
+  }
+
+  it('the two leads have no clutch, the rest keep theirs; the sheet travel is 12.43 m', () => {
+    for (const spec of tailSpecs()) {
+      expect(spec.clutch, spec.key).toBe(![PORT_SHEET, STBD_SHEET].includes(spec.key));
+    }
+    for (const key of [PORT_SHEET, STBD_SHEET]) {
+      const spec = tailSpec(key);
+      expect(spec?.controlId).toBe('ctl_gennaker_sheet');
+      expect((spec?.metresPerPct ?? 0) * 100).toBeCloseTo(12.43, 1);
+      expect(Math.abs((spec?.metresPerPct ?? 0) * 100 - 12.43)).toBeLessThan(0.02);
+    }
+    expect(tailSpec(PORT_SHEET)?.station).toBe('port');
+    expect(tailSpec(STBD_SHEET)?.station).toBe('starboard');
+  });
+
+  it('a line with no clutch is always open, and the clutch action leaves it alone', () => {
+    const state = gennakerStart();
+    const spec = tailSpec(PORT_SHEET);
+    expect(spec && isOpen(state.realistic, spec)).toBe(true);
+    expect(act(state, { type: 'clutch', key: PORT_SHEET, open: true })).toBe(state);
+    expect(act(state, { type: 'clutch', key: PORT_SHEET, open: false })).toBe(state);
+    expect(Object.keys(state.realistic.open)).not.toContain(PORT_SHEET);
+  });
+
+  it('below the step that leads the sheets to the winches, an action on one is not here', () => {
+    for (const stage of [0, 1] as const) {
+      const next = reduceRealistic(
+        initialRealistic(),
+        { type: 'onWinch', key: PORT_SHEET },
+        boat,
+        stage,
+      );
+      expect(next.notice?.key, `stage ${stage}`).toBe('notHere');
+      expect(next.winches[PORT]?.tail).toBeNull();
+    }
+    const at2 = reduceRealistic(initialRealistic(), { type: 'onWinch', key: PORT_SHEET }, boat, 2);
+    expect(at2.winches[PORT]?.tail).toBe(PORT_SHEET);
+  });
+
+  it('PT-18: off the winch the working sheet runs out under load', () => {
+    let state = gennakerStart();
+    expect(state.rig.gennaker.set).toBe(true);
+    const before = state.controls.ctl_gennaker_sheet;
+    state = run(state, 20);
+    expect(state.controls.ctl_gennaker_sheet - before).toBeGreaterThanOrEqual(20);
+    expect(state.realistic.reports[PORT_SHEET]?.note).not.toBe('noTurns');
+  });
+
+  it('PT-16: on the winch with three turns in the self-tailer it holds', () => {
+    let state = onWinch(gennakerStart(), PORT_SHEET, 3);
+    state = act(state, { type: 'selfTailer', winch: PORT, into: true });
+    const before = state.controls.ctl_gennaker_sheet;
+    state = run(state, 10);
+    expect(Math.abs(state.controls.ctl_gennaker_sheet - before)).toBeLessThan(1);
+  });
+
+  it('the electric winch hauls the working sheet in', () => {
+    let state = onWinch(gennakerStart('port', 60), PORT_SHEET, 3);
+    state = act(state, { type: 'selfTailer', winch: PORT, into: true });
+    state = act(state, { type: 'button', winch: PORT, held: true });
+    const before = state.controls.ctl_gennaker_sheet;
+    state = run(state, 4);
+    expect(state.controls.ctl_gennaker_sheet).toBeLessThan(before - 2);
+  });
+
+  it('the lazy sheet can be wrapped and cranked, and moves nothing', () => {
+    // The working sheet is held on the port winch; the user then works the lazy one at starboard.
+    let state = onWinch(gennakerStart('port'), PORT_SHEET, 3);
+    state = act(state, { type: 'selfTailer', winch: PORT, into: true });
+    state = act(state, { type: 'station', station: 'starboard' });
+    state = onWinch(state, STBD_SHEET, 3);
+    state = act(state, { type: 'selfTailer', winch: STBD, into: true });
+    state = act(state, { type: 'button', winch: STBD, held: true });
+    const before = state.controls.ctl_gennaker_sheet;
+    state = run(state, 5);
+    expect(state.controls.ctl_gennaker_sheet).toBe(before);
+    expect(state.realistic.reports[STBD_SHEET]?.loadN).toBe(0);
+    expect(state.realistic.reports[STBD_SHEET]?.motion).toBe('held');
+    expect(state.realistic.winches[STBD]?.drumAngle).not.toBe(0);
+    // Cranked with the handle in its socket (1st gear): the same, the drum turns, nothing moves.
+    let cranked = act(
+      state,
+      { type: 'station', station: 'port' },
+      { type: 'handle', to: 'carry' },
+      { type: 'station', station: 'starboard' },
+      { type: 'handle', to: 'socket' },
+      { type: 'button', winch: STBD, held: false },
+    );
+    const angle = cranked.realistic.winches[STBD]?.drumAngle ?? 0;
+    cranked = act(cranked, { type: 'crank', turnsPerS: 1 });
+    cranked = run(cranked, 5);
+    expect(cranked.controls.ctl_gennaker_sheet).toBe(before);
+    expect(cranked.realistic.reports[STBD_SHEET]?.loadN).toBe(0);
+    expect(cranked.realistic.winches[STBD]?.drumAngle).not.toBe(angle);
+    // Off the winch it does not run either: nothing pulls it.
+    const off = run(gennakerStart('starboard'), 5);
+    expect(off.realistic.reports[STBD_SHEET]?.motion).not.toBe('running');
+  });
+
+  it('a sheet link survives only while the sheets are led to the winches', () => {
+    const base = '?mode=realistic&wd=120&ws=12&ms=60&jf=0&gx=p&gu=100&gs=25&held=1';
+    const at4 = parseUrlState(`${base}&gn=4&wsb=g2.3.t`);
+    const winch = at4.realistic.winches[STBD];
+    expect(winch?.tail).toBe(STBD_SHEET);
+    expect(winch?.turns).toBe(3);
+    expect(winch?.selfTailer).toBe(true);
+    expect(serializeUrlState(at4)).toContain('wsb=g2.3.t');
+    const at1 = parseUrlState(`${base}&gn=1&wsb=g2.3.t`);
+    expect(at1.realistic.winches[STBD]?.tail).toBeNull();
+    // A lead is never in `co`.
+    const co = parseUrlState(`${base}&gn=4&co=g1,a5`);
+    expect(Object.keys(co.realistic.open)).toEqual(['a5']);
+  });
+
+  it('de-rigging the sheets below the winch step lets go of them', () => {
+    let state = onWinch(gennakerStart(), PORT_SHEET, 2);
+    expect(state.realistic.winches[PORT]?.tail).toBe(PORT_SHEET);
+    state = reduce(state, { type: 'setControls', values: { ctl_gennaker_sock: 0 } });
+    state = reduce(state, { type: 'gennaker', command: 'stow' });
+    expect(state.realistic.winches[PORT]?.tail).toBeNull();
   });
 });

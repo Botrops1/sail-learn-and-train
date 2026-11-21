@@ -4,7 +4,10 @@ import { boat } from '../model/boat';
 import { entryFor } from '../model/panelEntries';
 import {
   STATION_IDS,
+  isOpen,
+  leadsShown,
   runningTails,
+  shownTailSpecs,
   socketAt,
   stationWinch,
   tailSpecs,
@@ -62,12 +65,20 @@ export function tailName(spec: TailSpec): string {
 /** Lines describing a rope end now: clutch, winch, load and what it is doing. */
 function statusLines(state: AppState, spec: TailSpec): { lines: string[]; alert: string | null } {
   const real = state.realistic;
-  const open = real.open[spec.key] === true;
+  const open = isOpen(real, spec);
   const winchId = winchOf(real, spec.key);
   const winch = winchId ? real.winches[winchId] : undefined;
   const report: TailReport | undefined = real.reports[spec.key];
   const lines: string[] = [];
-  lines.push(t(open ? 'real.status.clutchOpen' : 'real.status.clutchClosed'));
+  lines.push(
+    t(
+      !spec.clutch
+        ? 'real.status.noClutch'
+        : open
+          ? 'real.status.clutchOpen'
+          : 'real.status.clutchClosed',
+    ),
+  );
   if (winch) {
     const turns = Math.abs(winch.turns);
     const wrap =
@@ -290,6 +301,8 @@ export function createRealisticPanel(
     refresh(store.getState());
   };
   const drawings = new Map<StationId, StationDrawing>();
+  /** Were the gennaker's sheets led to the winches when the drawings were built (M107)? */
+  let leadsDrawn = leadsShown(store.getState().gennaker.stage);
   for (const station of ['port', 'starboard'] as const) {
     drawings.set(station, createStationDrawing(store, station, { onSelect: select }));
   }
@@ -576,7 +589,9 @@ export function createRealisticPanel(
         spec.ropeId === state.selection ||
         (entry !== undefined && entry.partIds.includes(spec.ropeId));
       if (!selectedSpec || !matches(selectedSpec) || selectedSpec.station !== station) {
-        const atStation = tailSpecs().find((spec) => spec.station === station && matches(spec));
+        const atStation = shownTailSpecs(state.gennaker.stage).find(
+          (spec) => spec.station === station && matches(spec),
+        );
         selected = atStation?.key ?? null;
       }
     }
@@ -604,6 +619,16 @@ export function createRealisticPanel(
     alerts.hidden = list.length === 0;
     pausedLine.hidden = !state.paused;
 
+    // The sheets arrive on (or leave) the winches' drawings as the sail is rigged (M107).
+    if (leadsShown(state.gennaker.stage) !== leadsDrawn) {
+      leadsDrawn = !leadsDrawn;
+      for (const [id, old] of drawings) {
+        if (id !== 'port' && id !== 'starboard') continue;
+        const next = createStationDrawing(store, id, { onSelect: select });
+        old.element.replaceWith(next.element);
+        drawings.set(id, next);
+      }
+    }
     for (const [id, drawing] of drawings) {
       drawing.element.hidden = id !== station;
       if (id === station) drawing.refresh(state, selected);
@@ -660,11 +685,13 @@ export function createRealisticPanel(
     setText(stripAlert, alertLine ?? '');
     stripAlert.classList.toggle('is-running', real.reports[spec.key]?.motion === 'running');
 
-    const open = real.open[spec.key] === true;
+    const open = isOpen(real, spec);
     const winchId = stationWinch(station) ?? '';
     const winch = real.winches[winchId];
     const onThis = winch?.tail === spec.key;
     actions.hidden = isStatic;
+    // A line led straight to a winch has no clutch to open (M107).
+    clutchButton.hidden = !spec.clutch;
     setText(clutchButton, t(open ? 'real.action.close' : 'real.action.open'));
     clutchButton.setAttribute('aria-pressed', String(open));
     setText(winchButton, t(onThis ? 'real.action.offWinch' : 'real.action.onWinch'));

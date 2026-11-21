@@ -2,6 +2,7 @@ import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
 import { isControlId } from '../model/controls';
 import {
+  isKeyOpen,
   tailSpecs,
   type GearboxSwitch,
   type RealisticAction,
@@ -78,7 +79,7 @@ function mustRunFree(rollIn: boolean) {
 /** Is this end free to run: clutch open, not on a winch, not in a hand? */
 function runsFree(real: RealisticState, key: string): boolean {
   const onWinch = Object.values(real.winches).some((w) => w.tail === key);
-  return real.open[key] === true && !onWinch && real.pull !== key && !((real.ease[key] ?? 0) > 0);
+  return isKeyOpen(real, key) && !onWinch && real.pull !== key && !((real.ease[key] ?? 0) > 0);
 }
 
 export interface MastDrawing {

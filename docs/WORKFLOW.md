@@ -124,7 +124,7 @@ New link settings: `gn` gennaker rigging step (0 stowed, 1 tack line on, 2 sheet
 
 - [ ] No clutch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm — at the Port station the gennaker sheet is shown with no clutch. Wait a few seconds: the sheet runs out and the sail flaps.
 - [ ] On the winch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm — put the gennaker sheet on the winch (three turns, into the self-tailer) and crank: the sail fills and the trim line says "Drawing well".
-- [ ] The lazy sheet does nothing: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=starboard&wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm — at the Starboard station the gennaker sheet can be wrapped and cranked, but the sail does not change: that is the lazy sheet.
+- [ ] The lazy sheet does nothing: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=starboard&wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm&wp=g1.3.t — the working sheet is already held on the Port winch. At the Starboard station put the other gennaker sheet on the winch and crank it: the sail does not change, because that one is the lazy sheet.
 
 #### M108: Gennaker exercises
 

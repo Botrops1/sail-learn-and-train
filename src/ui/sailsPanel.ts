@@ -60,13 +60,21 @@ function buildGennakerBlock(store: Store): HTMLElement {
     t('gennaker.gybe'),
   ]);
   gybe.addEventListener('click', () => store.dispatch({ type: 'gennaker', command: 'gybe' }));
+  const sheetRow = el('div', { 'data-testid': 'gennaker-sheet-row' }, [sheet.element]);
+  // In Realistic ropes the sheet is worked at its winch, not with the stepper (M107).
+  const sheetOnWinch = el(
+    'p',
+    { class: 'hint gennaker-on-winch', 'data-testid': 'gennaker-sheet-winch', hidden: '' },
+    [t('gennaker.sheetOnWinch')],
+  );
   const sailing = el(
     'div',
     { class: 'gennaker-sailing', 'data-testid': 'gennaker-sailing', hidden: '' },
     [
       trim,
       el('div', { 'data-testid': 'gennaker-sock-row' }, [sock.element]),
-      el('div', { 'data-testid': 'gennaker-sheet-row' }, [sheet.element]),
+      sheetRow,
+      sheetOnWinch,
       el('div', { class: 'segments' }, [gybe]),
     ],
   );
@@ -95,6 +103,9 @@ function buildGennakerBlock(store: Store): HTMLElement {
       trim.dataset.state = trimState;
       sock.refresh(state);
       sheet.refresh(state);
+      const onWinch = state.settings.ropesMode === 'realistic';
+      sheetRow.hidden = onWinch;
+      sheetOnWinch.hidden = !onWinch;
       gybe.disabled = state.gennaker.crossS > 0;
     }
   };

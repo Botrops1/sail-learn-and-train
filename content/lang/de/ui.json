@@ -231,6 +231,7 @@
   "real.strip.elsewhere": "Die Klemme dieser Leine ist nicht hier: Sie ist an der Station {station}.",
   "real.strip.go": "Zu {station} gehen",
   "real.status.clutchOpen": "Klemme offen: Nur was den Tampen hält, hält die Leine.",
+  "real.status.noClutch": "Keine Klemme: Nur die Winsch oder eine Hand am Tampen hält diese Leine. Ohne Winsch läuft sie aus.",
   "real.status.clutchClosed": "Klemme geschlossen: Die Leine kann nicht auslaufen (sie kann aber weiter dichter geholt werden).",
   "real.status.offWinch": "Nicht auf der Winsch: Niemand hält den Tampen.",
   "real.status.onWinchJaw": "Auf der Winsch, {wrap}, Tampen im Selbstholer (die Klemmbacke oben, die ihn festhält).",
@@ -1163,5 +1164,6 @@
   "gennaker.trim.stalled": "Zu dicht getrimmt: fieren, bis das Vorliek sich einrollt",
   "gennaker.gybe": "Gennaker halsen",
   "gennaker.sock": "Strumpf",
-  "gennaker.sheet": "Schot"
+  "gennaker.sheet": "Schot",
+  "gennaker.sheetOnWinch": "Bedien die Schot an der Winsch ihrer Seite (Station Backbord oder Steuerbord)."
 }

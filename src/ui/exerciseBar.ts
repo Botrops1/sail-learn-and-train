@@ -15,7 +15,7 @@ import { SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/control
 import { boat } from '../model/boat';
 import { exerciseDef, type ExerciseDef } from '../model/exercises';
 import type { LineCode } from '../model/mooringLines';
-import { tailSpec, type RealisticAction, type StationId } from '../model/realistic';
+import { isKeyOpen, tailSpec, type RealisticAction, type StationId } from '../model/realistic';
 import { anchorStatusText, holdButton } from './anchorPanel';
 import { sideLetter } from './autopilotPanel';
 import { overlayOpen } from './chipMenu';
@@ -530,14 +530,14 @@ export function createExerciseBar(
     const { block } = nameBlock(rowId, ropeName(key), line);
     const button = textButton(t('exercise.bar.open'), `bar-clutch-${key}`);
     const toggle = () =>
-      gesture({ type: 'clutch', key, open: !store.getState().realistic.open[key] });
+      gesture({ type: 'clutch', key, open: !isKeyOpen(store.getState().realistic, key) });
     button.addEventListener('click', toggle);
     return {
       id: rowId,
       element: rowElement(rowId, block, [buttonsBox([button])]),
       keys: { space: (down) => down && toggle() },
       refresh(state) {
-        const open = state.realistic.open[key] === true;
+        const open = isKeyOpen(state.realistic, key);
         setText(line, t(open ? 'exercise.bar.clutchOpen' : 'exercise.bar.clutchClosed'));
         setText(button, t(open ? 'exercise.bar.close' : 'exercise.bar.open'));
         button.setAttribute('aria-pressed', String(open));

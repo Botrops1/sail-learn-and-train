@@ -47,6 +47,7 @@ import {
 } from '../model/settings';
 import {
   initialRealistic,
+  dropLeads,
   reduceRealistic,
   stepRealistic,
   type RealisticAction,
@@ -1053,6 +1054,11 @@ function reduceAction(state: AppState, action: Action): AppState {
       );
       if (gennaker === state.gennaker) return state;
       let next: AppState = { ...state, gennaker };
+      // Taking the sheets back out of the winches' reach lets go of them (M107).
+      if (gennaker.stage < boatData.cockpitHardware.winchLeads.minStage) {
+        const realistic = dropLeads(state.realistic);
+        if (realistic !== state.realistic) next = { ...next, realistic };
+      }
       // Stowing puts the sock down too.
       if (action.command === 'stow' && state.controls.ctl_gennaker_sock !== 0) {
         next = { ...next, controls: { ...state.controls, ctl_gennaker_sock: 0 } };
@@ -1072,7 +1078,12 @@ function reduceAction(state: AppState, action: Action): AppState {
         ? state
         : { ...state, sailDamage: NO_DAMAGE };
     case 'realistic': {
-      let realistic = reduceRealistic(state.realistic, action.action);
+      let realistic = reduceRealistic(
+        state.realistic,
+        action.action,
+        undefined,
+        state.gennaker.stage,
+      );
       // While paused nothing runs yet: shutting the clutch then is just preparing.
       if (state.paused && realistic.notice?.key === 'closedOnRunning') {
         realistic = { ...realistic, notice: null };

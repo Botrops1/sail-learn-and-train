@@ -231,6 +231,7 @@
   "real.strip.elsewhere": "This line's clutch is not here: it is at the {station} station.",
   "real.strip.go": "Go to {station}",
   "real.status.clutchOpen": "Clutch open: only what holds the tail stops the line.",
+  "real.status.noClutch": "No clutch: only the winch, or a hand on the tail, holds this line. Off the winch it runs out.",
   "real.status.clutchClosed": "Clutch closed: the line cannot run out (it can still be pulled in).",
   "real.status.offWinch": "Not on the winch: nobody holds the tail.",
   "real.status.onWinchJaw": "On the winch, {wrap}, tail in the self-tailer (the jaw on top that grips it).",
@@ -1163,5 +1164,6 @@
   "gennaker.trim.stalled": "Trimmed too hard: ease until the edge curls",
   "gennaker.gybe": "Gybe the gennaker",
   "gennaker.sock": "Sock",
-  "gennaker.sheet": "Sheet"
+  "gennaker.sheet": "Sheet",
+  "gennaker.sheetOnWinch": "Work the sheet at the winch on its side (Port or Starboard station)."
 }

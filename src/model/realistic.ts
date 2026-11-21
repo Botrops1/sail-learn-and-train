@@ -9,6 +9,7 @@ import {
   minUnfurledFor,
   unfurledAfterSheetHaul,
 } from './jib';
+import { gennakerClew, type GennakerStage } from './gennaker';
 import { mainFurlLengths } from './mainFurl';
 import { mainsheetPaidOut } from './mainsheet';
 import { panelEntries } from './panelEntries';
@@ -16,7 +17,7 @@ import { toppingLiftPaidOut, vangPaidOut } from './pitchLimits';
 import type { WinchWrap } from './ropePaths';
 import type { RigState } from './sim';
 import { gybeImpactPullN } from './gybe';
-import { mainSailForceAtBlocksN, sheetLoads } from './sheetLoads';
+import { gennakerSheetLoadN, mainSailForceAtBlocksN, sheetLoads } from './sheetLoads';
 import {
   easesSmoothly,
   gearboxLinePerTurnM,
@@ -78,6 +79,11 @@ export interface TailSpec {
   payOutSign: 1 | -1;
   /** Metres of rope at the clutch per 1 % of the control. */
   metresPerPct: number;
+  /**
+   * False for a line led straight to a winch with no clutch (the gennaker's sheets, M107): it is
+   * always open, so off the winch it runs out while its load beats the friction.
+   */
+  clutch: boolean;
 }
 
 /** How the clutches of one control work together (from panelEntries: shared kind). */
@@ -106,6 +112,19 @@ function ropeTravelM(ropeId: string, data: BoatData): number {
       return mainFurlLengths(0, data).outhaulPaidOut;
     case 'rope_jib_furling_line':
       return jibFurlingLinePaidOut(1, data);
+    case 'rope_gennaker_sheet_port':
+    case 'rope_gennaker_sheet_starboard': {
+      // One value for both (the sides mirror): the sheet from the block to the clew, hauled
+      // (15°) to eased (85°).
+      const b = data.sails.gennaker.sheetBlock;
+      const from = (thetaDeg: number) => {
+        const clew = gennakerClew(thetaDeg, data);
+        return Math.hypot(clew[0] - b.x, clew[1] - b.y, clew[2] - b.z);
+      };
+      return (
+        from(data.sails.gennaker.sheet.phiEasedDeg) - from(data.sails.gennaker.sheet.phiHauledDeg)
+      );
+    }
     default:
       return 0;
   }
@@ -165,6 +184,7 @@ export function tailSpecs(data: BoatData = boat): TailSpec[] {
       // The "out" furling tail and the outhaul (coupled to it) come in as the sail unrolls.
       payOutSign: tail === 'unfurl' || rope?.coupled ? -1 : 1,
       metresPerPct: ropeTravelM(clutch.ropeId, data) / 100,
+      clutch: true,
     };
   };
   const specs: TailSpec[] = [];
@@ -173,8 +193,93 @@ export function tailSpecs(data: BoatData = boat): TailSpec[] {
   }
   const roll = hw.jibRollClutch;
   specs.push(make(roll, { slot: 1, label: roll.label, ropeId: roll.ropeId }));
+  // Lines led straight to a winch, with no clutch (the gennaker's sheets, M107).
+  const leads = hw.winchLeads;
+  for (const lead of leads.leads) {
+    const rope = ropes.find((r) => r.id === lead.ropeId);
+    const controlId = rope?.controlId && isControlId(rope.controlId) ? rope.controlId : null;
+    const station = stationsOf(data).find((s) => s.id === lead.station);
+    if (!station?.winch || !isStationId(station.id)) {
+      throw new Error(`No Realistic-mode station ${lead.station} has a winch (winchLeads).`);
+    }
+    specs.push({
+      key: `${leads.key}${lead.slot}`,
+      bankId: 'winchLeads',
+      slot: lead.slot,
+      label: lead.label,
+      ropeId: lead.ropeId,
+      tail: null,
+      station: station.id,
+      winchId: station.winch,
+      controlId,
+      payOutSign: 1,
+      metresPerPct: ropeTravelM(lead.ropeId, data) / 100,
+      clutch: false,
+    });
+  }
   specCache.set(data, specs);
   return specs;
+}
+
+/** Is the tail's clutch open? A line with no clutch (a winch lead) is always open. */
+export function isOpen(state: RealisticState, spec: TailSpec): boolean {
+  return !spec.clutch || state.open[spec.key] === true;
+}
+
+/** Are the winch leads (the gennaker's sheets) led to the winches at this rigging step? */
+export function leadsShown(gennakerStage: GennakerStage, data: BoatData = boat): boolean {
+  return gennakerStage >= data.cockpitHardware.winchLeads.minStage;
+}
+
+/** The tails the user can see and work: the clutches, and the winch leads once they are led. */
+export function shownTailSpecs(gennakerStage: GennakerStage, data: BoatData = boat): TailSpec[] {
+  const shown = leadsShown(gennakerStage, data);
+  return tailSpecs(data).filter((spec) => spec.clutch || shown);
+}
+
+/** Is the tail with this key open? A key that is no tail counts as closed. */
+export function isKeyOpen(state: RealisticState, key: string, data: BoatData = boat): boolean {
+  const spec = tailSpec(key, data);
+  return spec ? isOpen(state, spec) : state.open[key] === true;
+}
+
+/** The side of a winch lead's station: port −1, starboard +1 (the gennaker sheet worked there). */
+function leadSide(spec: TailSpec): 1 | -1 {
+  return spec.station === 'port' ? -1 : 1;
+}
+
+/** Is this a winch lead's tail the lazy one (the gennaker's side is the other)? */
+function isLazyLead(spec: TailSpec, rig: RigState): boolean {
+  return !spec.clutch && leadSide(spec) !== rig.gennaker.side;
+}
+
+/**
+ * Takes the winch leads off the winches, and out of the hand: when the sail they belong to is
+ * de-rigged below the step that leads them there (M107). The same object when none is on one.
+ */
+export function dropLeads(state: RealisticState, data: BoatData = boat): RealisticState {
+  const leads = new Set(
+    tailSpecs(data)
+      .filter((spec) => !spec.clutch)
+      .map((spec) => spec.key),
+  );
+  const onWinch = Object.values(state.winches).some((w) => w.tail !== null && leads.has(w.tail));
+  const inHand =
+    (state.pull !== null && leads.has(state.pull)) ||
+    Object.keys(state.ease).some((key) => leads.has(key));
+  if (!onWinch && !inHand) return state;
+  const winches = Object.fromEntries(
+    Object.entries(state.winches).map(([id, w]) => [
+      id,
+      w.tail !== null && leads.has(w.tail) ? { ...emptyWinch(), drumAngle: w.drumAngle } : w,
+    ]),
+  );
+  return {
+    ...state,
+    winches,
+    pull: state.pull !== null && leads.has(state.pull) ? null : state.pull,
+    ease: Object.fromEntries(Object.entries(state.ease).filter(([key]) => !leads.has(key))),
+  };
 }
 
 export function tailSpec(key: string, data: BoatData = boat): TailSpec | undefined {
@@ -481,11 +586,14 @@ export function reduceRealistic(
   state: RealisticState,
   action: RealisticAction,
   data: BoatData = boat,
+  gennakerStage: GennakerStage = 0,
 ): RealisticState {
   const maxTurns = data.realisticMode.capstan.maxTurns;
   const here = (key: string): TailSpec | NoticeKey => {
     const spec = tailSpec(key, data);
     if (!spec || spec.station !== state.station) return 'notHere';
+    // A winch lead exists only while its sail is rigged far enough (the gennaker's sheets).
+    if (!spec.clutch && !leadsShown(gennakerStage, data)) return 'notHere';
     if (!spec.controlId) return 'staticRope';
     return spec;
   };
@@ -536,6 +644,8 @@ export function reduceRealistic(
     case 'clutch': {
       const spec = here(action.key);
       if (typeof spec === 'string') return withNotice(state, spec, action.key);
+      // A line led straight to a winch has no clutch to work.
+      if (!spec.clutch) return state;
       const open = Object.fromEntries(
         Object.entries(state.open).filter(([key]) => key !== action.key),
       );
@@ -599,7 +709,7 @@ export function reduceRealistic(
       const spec = here(action.key);
       if (typeof spec === 'string') return withNotice(state, spec, action.key);
       // PT-15: a closed clutch holds; the rope cannot be let out through it.
-      if (!state.open[action.key]) return withNotice(state, 'clutchClosed', action.key);
+      if (!isOpen(state, spec)) return withNotice(state, 'clutchClosed', action.key);
       const winch = winchOf(state, action.key);
       if (winch && state.winches[winch]?.selfTailer) {
         return withNotice(state, 'inSelfTailer', action.key);
@@ -708,6 +818,10 @@ function ropePullN(
         return (loads.fixedN as Record<string, number | undefined>).rope_jib_furling_line ?? 0;
       }
       return byState(rig.jibSolution.sheet, sheets.jibSheetRopeN);
+    case 'rope_gennaker_sheet_port':
+    case 'rope_gennaker_sheet_starboard':
+      // The working sheet of a set sail carries its pull; the lazy one and an unset sail pull 0.
+      return rig.gennaker.set && !isLazyLead(spec, rig) ? gennakerSheetLoadN(rig.forces, data) : 0;
     case 'rope_vang':
       return byState(rig.solution.vang, fixed);
     case 'rope_topping_lift':
@@ -755,6 +869,8 @@ interface TailWork {
   pull: number;
   resist: number;
   hold: number;
+  /** The gennaker's lazy sheet: it can be worked, but moves nothing (M107). */
+  lazy: boolean;
   /** Rope speed out (+) or in (−), m/s, before group rules. */
   out: number;
   haul: number;
@@ -791,7 +907,7 @@ function jibRollFree(state: RealisticState, data: BoatData): boolean {
   const roll = tailSpecs(data).find((t) => t.controlId === 'ctl_jib_furl');
   if (!roll) return false;
   return (
-    state.open[roll.key] === true &&
+    isOpen(state, roll) &&
     !winchOf(state, roll.key) &&
     state.pull !== roll.key &&
     !((state.ease[roll.key] ?? 0) > 0)
@@ -835,7 +951,7 @@ export function stepRealistic(
     if (!spec.controlId) continue;
     const winchId = winchOf(state, spec.key);
     const winch = winchId ? (state.winches[winchId] ?? null) : null;
-    const open = state.open[spec.key] === true;
+    const open = isOpen(state, spec);
     const easing = (state.ease[spec.key] ?? 0) > 0;
     const pulling = state.pull === spec.key;
     const pull = ropePullN(spec, controls, rig, data, rollFree);
@@ -853,6 +969,7 @@ export function stepRealistic(
       pull,
       resist: ropeResistN(spec, pull, rig, data),
       hold,
+      lazy: isLazyLead(spec, rig),
       out: 0,
       haul: 0,
       motion: 'held',
@@ -888,7 +1005,9 @@ export function stepRealistic(
       const value = controls[group.controlId];
       let haulLoad = w.resist;
       let note: TailNote | null = null;
-      if (w.pull >= rm.loads.fightingN) {
+      if (w.lazy) {
+        // The lazy sheet's drum turns and nothing else changes: no end stop, no fight (M107).
+      } else if (w.pull >= rm.loads.fightingN) {
         note = 'cutOutFighting';
       } else if (atHaulEnd(spec, value)) {
         haulLoad = rm.loads.fightingN;
@@ -1103,6 +1222,8 @@ export function stepRealistic(
       for (const w of tails) {
         // The sheet's haul unrolls the jib instead (below), the sheet itself stays put.
         if (jibUnroll && id === 'ctl_jib_sheet' && w.haul > 0) continue;
+        // The lazy gennaker sheet never moves the control.
+        if (w.lazy) continue;
         const rate = (w.out - w.haul) * w.spec.payOutSign; // m/s in the control's direction
         const pct = rate / w.spec.metresPerPct;
         if (w.haul > 0 && w.blockers.length > 0) continue;
@@ -1196,7 +1317,7 @@ export function stepRealistic(
     // The jib sheet hauled to unroll the jib moves, though its own control stays put (#153).
     const unrolling =
       jibUnroll && w.spec.controlId === 'ctl_jib_sheet' && w.haul > 0 && moved.has('ctl_jib_furl');
-    const moving = changed !== 0 || dt === 0 || unrolling;
+    const moving = !w.lazy && (changed !== 0 || dt === 0 || unrolling);
     let motion = w.motion;
     // While the gearbox turns the mandrel, the furling ends just follow it.
     const byGearbox = gearboxRate !== 0 && w.spec.controlId === gearbox.controlId;
