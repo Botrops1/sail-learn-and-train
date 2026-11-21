@@ -494,6 +494,17 @@ Tail keys are `g1` (port sheet) and `g2` (starboard sheet): a letter and a digit
 
 `tests/realistic.test.ts` as in 9.5; `grep -n "tail:\|data-key\|real-knob" scripts/shots-m4b.mjs scripts/shots-m4c.mjs scripts/shots-m82.mjs` for positions or counts of a station's tails (unchanged without `gn`). **PR line:** `CI groups: all` (the store and the URL state change). PR: `Closes #248`. Done when 9.5 and 9.6 pass and every Realistic test and the groups named stay green. Not in this milestone: a clutch for the gennaker sheets; the tack line or the sock line on a winch; Realistic versions of the exercises.
 
+### 9.8 Decided in the M107 PR (recommended; merging accepts it)
+
+1. **Every number of 9.5 held on the first run**; no tunable key was changed. The sheet's travel is 12.43 m.
+2. **Taking the sheets back below the winch step lets go of them.** If the rigging goes back below step 2 (Back, or Stowed in Settings), a sheet on a winch or in a hand is taken off (`dropLeads`, called by the store's `gennaker` action): otherwise a rope would stay wrapped on a drum whose picture is gone.
+3. **Three small helpers** in `realistic.ts` beside `isOpen`: `leadsShown(stage)`, `shownTailSpecs(stage)` (the clutches, and the leads from step 2) and `isKeyOpen(state, key)` (`isOpen` by key, for the UI loops that hold only a key).
+4. **The lazy sheet has no end stop and no fight**: the hauled-end and blocked-furl rules do not apply to it, and its report always reads "held" with no speed, so a lazy sheet never shows as running or hauling while the working one moves the control.
+5. **The drawing**: the sheet's position is one more column after the last clutch (the others get a little narrower), with its rope running straight down beside a label plate, and no lever or OPEN word. Its tail leaves the foot of the column like a clutch's tail, so on the winch it does not cross the clutches. The strip's "Clutch open / closed" line reads "No clutch: …" (`real.status.noClutch`) and its Open button is hidden.
+6. **Not built:** the 3D view does not wrap the sheet round the winch drum; the rope keeps its route to the winch's foot (the files of 9.1 do not include `ropePaths.ts`).
+7. **The third checklist item holds the working sheet on the Port winch** (`wp=g1.3.t` in its link): with it off the winch it runs out whatever is done at Starboard, so the sail would change and the item would seem to fail.
+8. **Browser group time**: `m33` runs in 147 s on this machine with the M107 checks; `ci-times.json` is left as it is (as for M106), CI's own timing will show whether it needs a new line. The WebGL "GPU stall" console warnings of the first scene of a run come from this container's browser build, not from the change.
+
 ## 10. M108: Gennaker exercises
 
 **Independent review: required** (the handling order it teaches).

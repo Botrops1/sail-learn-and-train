@@ -361,9 +361,20 @@ export function createStationDrawing(
       'data-key': leadSpec.key,
       'data-rope-id': leadSpec.ropeId,
     });
-    const tail = svg('line', {
+    // The rope runs straight down beside its label; from the foot of the position, like the
+    // clutches' tails, it goes to its knob or (on the winch) to the drum.
+    const ropeLine = svg('line', {
       x1: ropeX,
       y1: clutchTop - D.ropeIn,
+      x2: ropeX,
+      y2: clutchBottom,
+      stroke: color,
+      'stroke-width': D.ropeWidth,
+      'stroke-dasharray': dash,
+    });
+    const tail = svg('line', {
+      x1: ropeX,
+      y1: clutchBottom,
       x2: ropeX,
       y2: knobY,
       stroke: color,
@@ -384,6 +395,7 @@ export function createStationDrawing(
     const labelX = plateX + plateWidth / 2;
     const labelY = clutchTop + D.clutchHeight / 2;
     group.append(
+      ropeLine,
       svg('rect', {
         x: plateX,
         y: clutchTop,
