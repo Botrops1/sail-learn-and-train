@@ -164,7 +164,7 @@ No new link settings: `st` is still the Realistic station and `tx` the time spee
 
 #### M112: The captain walks
 
-- [ ] Walk to the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — in the Ropes section tap Bow: he walks between the wheels, through the cockpit, up onto the right-hand (starboard) side deck, the side the wind comes from, and along it to the foredeck. Under the station buttons "Walking to Bow… 19 s" counts down.
+- [ ] Walk to the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — in the Ropes section tap Bow: he walks between the wheels, through the cockpit, up onto the right-hand (starboard) side deck, the side the wind comes from, and along it to the foredeck. Under the station buttons "Walking to Bow… 20 s" counts down.
 - [ ] Wind from the other side: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=-60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Bow: this time he walks along the left-hand (port) side deck.
 - [ ] Wait until you get there: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Starboard and at once try to put a line on the winch there: "Still walking: wait until you get there." About 3 seconds later it works.
 - [ ] Turn back: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Bow, and a few seconds later tap Port: he turns round and walks back to the port winch.
