@@ -345,6 +345,19 @@ The gennaker is a brochure option (176.4 m² in the brochure, 200 m² in the man
 | Line sizes | sheets 12 mm × 28 m (manual), tack line 10 mm × 4 m, sock line 8 mm × 44 m | Sheets from the manual; the others **assumptions** |
 | Line colour in the app | vermilion `#d55e00` with the dash pattern `6 2 1 2`; the real sheets' tracer is red | Presentation |
 
+### People on board (M111)
+
+The captain's spots and walkways (`people` in `content/boat/hanse508.json`) are **assumptions**, measured from the deck numbers of this file and kept clear of the wheels, pedestals, rope boxes, shroud feet, stanchions and hatches (tests check it). He is the owner's mockup figure, 1.75 m tall without his cap; his proportions are picture numbers (`SCENE.people` in `src/render3d/sceneConfig.ts`).
+
+| Assumption | Value used | Status |
+|---|---|---|
+| Behind each wheel (`helm`) | x −7.85, z ±0.88 on the cockpit sole, facing forward; the wheel plane is at x −7.2 | **Assumption** |
+| Beside the winch (`winch`) | x −7.75, z ±1.08, facing the winch (45° to the side) | **Assumption** |
+| The cockpit walkway (`aftCentre`, `cockpitCentre`, `cockpitFront`) | between the two wheels, then to the front of the cockpit | **Assumption** |
+| The side decks (`sideDeckAft`, `sideDeckRoof`, `sideDeckMast`, `sideDeckFwd`) | between the coachroof and the toerail, at least 0.15 m from each; 0.25 m or more from the shroud feet and stanchions | **Assumption** |
+| On the coachroof and foredeck (`coachroofSide`, `mast`, `foredeckSide`, `bow`) | beside and behind the mast by the furling gearbox; on the foredeck behind the windlass | **Assumption** |
+| One stride (`strideM`) | 1.39 m for one full walking cycle (two steps) of the figure, legs 0.85 m, thigh swing 0.42 rad (used from M112) | **Assumption** |
+
 ## 6. Open questions for the skipper / next time aboard
 
 1. When unfurling, is the outhaul hauled together with the "out" furling line, or only tensioned at the end?
