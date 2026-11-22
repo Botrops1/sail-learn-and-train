@@ -2,6 +2,7 @@ import type { AppState, Store } from '../app/store';
 import { parseUrlState } from '../app/urlState';
 import { boat } from '../model/boat';
 import { entryFor } from '../model/panelEntries';
+import { walkSecondsLeft, type WalkState } from '../model/people';
 import {
   STATION_IDS,
   isOpen,
@@ -195,6 +196,14 @@ function alertsFor(state: AppState): Alert[] {
   return alerts;
 }
 
+/** The line under the station bar while the captain walks (M112). */
+function walkText(walk: WalkState): string {
+  return t('real.walking', {
+    station: t(`real.station.${walk.to}` as StringKey),
+    s: walkSecondsLeft(walk),
+  });
+}
+
 /** The Helm section's block (M53): where you stand, and at the helm the wheel and what the helmsman works. */
 export function createHelmStation(store: Store): HTMLElement {
   const dispatch = (action: RealisticAction) => store.dispatch({ type: 'realistic', action });
@@ -238,10 +247,14 @@ export function createHelmStation(store: Store): HTMLElement {
   const refresh = (state: AppState) => {
     const real = state.realistic;
     const here = real.station === 'helm';
-    away.hidden = here;
+    // While he walks the wheel is out of reach, even when he is walking to it (M112).
+    const walking = real.walk !== null;
+    const atWheel = here && !walking;
+    away.hidden = atWheel;
     go.hidden = here;
-    controls.hidden = !here;
-    if (here) wheel.refresh(state);
+    controls.hidden = !atWheel;
+    if (atWheel) wheel.refresh(state);
+    else if (real.walk) setText(away, walkText(real.walk));
     else {
       const where = t(`real.station.${real.station}` as StringKey);
       setText(away, t('real.helm.away', { station: where }));
@@ -282,6 +295,7 @@ export function createRealisticPanel(
     return { station, button, badge };
   });
 
+  const walkStatus = el('p', { class: 'hint', hidden: '', 'data-testid': 'walk-status' });
   const atHelm = el('p', { class: 'hint', hidden: '', 'data-testid': 'real-at-helm' }, [
     t('real.atHelm'),
   ]);
@@ -633,7 +647,9 @@ export function createRealisticPanel(
       drawing.element.hidden = id !== station;
       if (id === station) drawing.refresh(state, selected);
     }
-    atHelm.hidden = station !== 'helm';
+    atHelm.hidden = station !== 'helm' || real.walk !== null;
+    walkStatus.hidden = real.walk === null;
+    if (real.walk) setText(walkStatus, walkText(real.walk));
     bow.hidden = station !== 'bow';
     mast.element.hidden = station !== 'mast';
     if (station === 'mast') mast.refresh(state);
@@ -786,6 +802,7 @@ export function createRealisticPanel(
 
   return [
     stationBar,
+    walkStatus,
     atHelm,
     alerts,
     pausedLine,

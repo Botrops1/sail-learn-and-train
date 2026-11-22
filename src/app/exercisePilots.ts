@@ -3,7 +3,7 @@ import { area } from '../model/area';
 import type { ControlId } from '../model/controls';
 import { boatPoint, exerciseDef, twaSignedDeg, type ExerciseLevel } from '../model/exercises';
 import { marinaGeometry } from '../model/marina';
-import type { RealisticAction } from '../model/realistic';
+import type { RealisticAction, StationId } from '../model/realistic';
 import type { LineCode } from '../model/mooringLines';
 import type { RopesMode } from '../model/settings';
 import {
@@ -346,15 +346,17 @@ const ap = (s: AppState, command: AutopilotCommand) => A(s, { type: 'autopilot',
 const eng = (s: AppState, command: EngineCommand) => A(s, { type: 'engine', command });
 /** Seconds since the current step began (run time, PHASE10_PHONE_SPEC 3.1). */
 const inStep = (s: AppState) => (s.exercise ? s.exercise.elapsedS - s.exercise.stepStartS : 0);
-/** Runs `fn` once per (step, key): the pilot's one-off taps. */
+/** Runs `fn` once per (step, key): the pilot's one-off taps. `once.ran` tells whether a key ran. */
 function onceMaker() {
   const done = new Set<string>();
-  return (s: AppState, key: string, fn: (s: AppState) => AppState) => {
-    const k = `${s.exercise?.step}:${key}`;
+  const key = (s: AppState, name: string) => `${s.exercise?.step}:${name}`;
+  const once = (s: AppState, name: string, fn: (s: AppState) => AppState) => {
+    const k = key(s, name);
     if (done.has(k)) return s;
     done.add(k);
     return fn(s);
   };
+  return Object.assign(once, { ran: (s: AppState, name: string) => done.has(key(s, name)) });
 }
 const turns = (s: AppState, n: number, deg: number) => {
   for (let i = 0; i < n; i += 1) s = ap(s, { turnDeg: deg });
@@ -562,6 +564,10 @@ const W = 'winch_primary_starboard';
 const P = 'winch_primary_port';
 /** M82: walk to the helm (the autopilot and the engine rows stand under Helm in the bar). */
 const atHelm = (s: AppState) => real(s, { type: 'station', station: 'helm' });
+const goTo = (station: StationId) => (s: AppState) => real(s, { type: 'station', station });
+/** M112: true once the captain stands at `station` (no walk going on). */
+const arrived = (s: AppState, station: StationId) =>
+  s.realistic.station === station && s.realistic.walk === null;
 /** Put a rope on the winch, three turns, into the self-tailer (PHASE10_PHONE_SPEC 9.4). */
 const onWinch = (s: AppState, key: string, winch: string) => {
   s = real(s, { type: 'onWinch', key });
@@ -570,136 +576,111 @@ const onWinch = (s: AppState, key: string, winch: string) => {
 };
 /**
  * Setting the sails in Realistic ropes (M82, PHASE10_PHONE_SPEC 9.4): the stations are worked as a
- * learner does, Alone (one person walks between the stations; a station change acts at once).
+ * learner does, Alone (one person walks between the stations). The pilot waits for each walk
+ * (M112): a station is chosen, then the taps follow once he has arrived.
  */
 export function setSailsRealisticPilot(): Pilot {
   const once = onceMaker();
   return (s) => {
     switch (s.exercise?.step) {
       case 1: {
-        s = once(s, 'a', (x) =>
-          real(
-            onWinch(
-              real(real(x, { type: 'station', station: 'starboard' }), {
-                type: 'clutch',
-                key: 'a2',
-                open: true,
-              }),
-              'a3',
-              W,
-            ),
-            { type: 'button', winch: W, held: true },
-          ),
-        );
+        s = once(s, 'a-go', goTo('starboard'));
+        if (once.ran(s, 'a-go') && arrived(s, 'starboard'))
+          s = once(s, 'a', (x) =>
+            real(onWinch(real(x, { type: 'clutch', key: 'a2', open: true }), 'a3', W), {
+              type: 'button',
+              winch: W,
+              held: true,
+            }),
+          );
         if (s.controls.ctl_main_furl >= 99)
           s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
         return s;
       }
-      case 2:
+      case 2: {
         if (inStep(s) < 2) return s;
-        return once(s, 'b', (x) =>
-          turns(
-            ap(
-              real(
-                real(
-                  real(real(x, { type: 'station', station: 'starboard' }), {
-                    type: 'clutch',
-                    key: 'a2',
-                    open: false,
-                  }),
-                  { type: 'offWinch', winch: W },
-                ),
-                { type: 'station', station: 'helm' },
-              ),
-              'wind',
-            ),
-            6,
-            -10,
-          ),
-        );
+        s = once(s, 'b-go', goTo('starboard'));
+        if (once.ran(s, 'b-go') && arrived(s, 'starboard'))
+          s = once(s, 'b', (x) =>
+            real(real(x, { type: 'clutch', key: 'a2', open: false }), {
+              type: 'offWinch',
+              winch: W,
+            }),
+          );
+        if (once.ran(s, 'b')) s = once(s, 'b2-go', atHelm);
+        if (once.ran(s, 'b2-go') && arrived(s, 'helm'))
+          s = once(s, 'b2', (x) => turns(ap(x, 'wind'), 6, -10));
+        return s;
+      }
       case 3: {
-        s = once(s, 'c', (x) =>
-          real(
-            onWinch(
-              real(
-                real(real(x, { type: 'station', station: 'port' }), {
-                  type: 'clutch',
-                  key: 'r1',
-                  open: true,
-                }),
-                { type: 'station', station: 'starboard' },
-              ),
-              'a5',
-              W,
-            ),
-            { type: 'button', winch: W, held: true },
-          ),
-        );
+        s = once(s, 'c-go', goTo('port'));
+        if (once.ran(s, 'c-go') && arrived(s, 'port'))
+          s = once(s, 'c', (x) => real(x, { type: 'clutch', key: 'r1', open: true }));
+        if (once.ran(s, 'c')) s = once(s, 'c2-go', goTo('starboard'));
+        if (once.ran(s, 'c2-go') && arrived(s, 'starboard'))
+          s = once(s, 'c2', (x) =>
+            real(onWinch(x, 'a5', W), { type: 'button', winch: W, held: true }),
+          );
         if (s.controls.ctl_jib_sheet < 50)
           s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
         return s;
       }
       case 4:
-        return once(s, 'e', (x) => eng(eng(atHelm(x), { leverPct: 0 }), 'stop'));
+        s = once(s, 'e-go', atHelm);
+        if (once.ran(s, 'e-go') && arrived(s, 'helm'))
+          s = once(s, 'e', (x) => eng(eng(x, { leverPct: 0 }), 'stop'));
+        return s;
       default:
         return s;
     }
   };
 }
-/** Furling the sails in Realistic ropes (M82, PHASE10_PHONE_SPEC 9.4). */
+/** Furling the sails in Realistic ropes (M82, PHASE10_PHONE_SPEC 9.4); waits for each walk (M112). */
 export function furlSailsRealisticPilot(): Pilot {
   const once = onceMaker();
   return (s) => {
     switch (s.exercise?.step) {
       case 0:
-        return once(s, 'e', (x) => eng(atHelm(x), 'start'));
+        s = once(s, 'e-go', atHelm);
+        if (once.ran(s, 'e-go') && arrived(s, 'helm')) s = once(s, 'e', (x) => eng(x, 'start'));
+        return s;
       case 1: {
-        s = once(s, 'a', (x) =>
-          real(
-            onWinch(
-              real(
-                real(real(x, { type: 'station', station: 'starboard' }), {
-                  type: 'clutch',
-                  key: 'a5',
-                  open: true,
-                }),
-                { type: 'station', station: 'port' },
-              ),
-              'r1',
-              P,
-            ),
-            { type: 'button', winch: P, held: true },
-          ),
-        );
+        s = once(s, 'a-go', goTo('starboard'));
+        if (once.ran(s, 'a-go') && arrived(s, 'starboard'))
+          s = once(s, 'a', (x) => real(x, { type: 'clutch', key: 'a5', open: true }));
+        if (once.ran(s, 'a')) s = once(s, 'a2-go', goTo('port'));
+        if (once.ran(s, 'a2-go') && arrived(s, 'port'))
+          s = once(s, 'a2', (x) =>
+            real(onWinch(x, 'r1', P), { type: 'button', winch: P, held: true }),
+          );
         if (100 * s.rig.jibSolution.unfurled <= 1)
           s = once(s, 'r', (x) => real(x, { type: 'button', winch: P, held: false }));
         return s;
       }
       case 2:
-        return once(s, 'h', (x) => turns(ap(eng(atHelm(x), { leverPct: 30 }), 'heading'), 6, 10));
+        s = once(s, 'h-go', atHelm);
+        if (once.ran(s, 'h-go') && arrived(s, 'helm'))
+          s = once(s, 'h', (x) => turns(ap(eng(x, { leverPct: 30 }), 'heading'), 6, 10));
+        return s;
       case 3: {
-        s = once(s, 'b', (x) =>
-          real(
-            onWinch(
-              real(
-                real(
-                  real(
-                    real(real(x, { type: 'station', station: 'port' }), {
-                      type: 'offWinch',
-                      winch: P,
-                    }),
-                    { type: 'clutch', key: 'b3', open: true },
-                  ),
-                  { type: 'station', station: 'starboard' },
-                ),
-                { type: 'clutch', key: 'a3', open: true },
-              ),
-              'a2',
-              W,
-            ),
-            { type: 'button', winch: W, held: true },
-          ),
-        );
+        s = once(s, 'b-go', goTo('port'));
+        if (once.ran(s, 'b-go') && arrived(s, 'port'))
+          s = once(s, 'b', (x) =>
+            real(real(x, { type: 'offWinch', winch: P }), {
+              type: 'clutch',
+              key: 'b3',
+              open: true,
+            }),
+          );
+        if (once.ran(s, 'b')) s = once(s, 'b2-go', goTo('starboard'));
+        if (once.ran(s, 'b2-go') && arrived(s, 'starboard'))
+          s = once(s, 'b2', (x) =>
+            real(onWinch(real(x, { type: 'clutch', key: 'a3', open: true }), 'a2', W), {
+              type: 'button',
+              winch: W,
+              held: true,
+            }),
+          );
         if (s.controls.ctl_main_furl <= 1)
           s = once(s, 'r', (x) => real(x, { type: 'button', winch: W, held: false }));
         return s;

@@ -2178,7 +2178,7 @@
       "name": "Kaptein (du)",
       "alternatives": [{ "term": "Skipper" }],
       "short": "Personen som har ansvaret for båten: i appen er det deg.",
-      "what": "Figuren på dekk er deg, kapteinen (også kalt skipper): personen som er ansvarlig for båten og alle om bord. Når du styrer, står du bak et ratt. I modusen «Realistisk» står du på stasjonen du jobber fra: ved en vinsj, ved masta eller i baugen. Rorvisningen ser gjennom øynene dine, så der ser du ikke deg selv.",
+      "what": "Figuren på dekk er deg, kapteinen (også kalt skipper): personen som er ansvarlig for båten og alle om bord. Når du styrer, står du bak et ratt. I modusen «Realistisk» står du på stasjonen du jobber fra: ved en vinsj, ved masta eller i baugen. Velger du en annen stasjon, går du dit langs dekket, på den siden vinden kommer fra, og du kan betjene tauene der når du er framme. Rorvisningen ser gjennom øynene dine, så der ser du ikke deg selv.",
       "showMe": "Kapteinen står bak babord ratt og styrer.",
       "textStatus": "draft"
     },

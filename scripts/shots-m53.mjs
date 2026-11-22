@@ -3,7 +3,7 @@
 // test clock (shots.mjs passes `onTestClock`), on the phone and then on the desktop.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { setCamera, showSection, waitForLink } from './ui.mjs';
+import { setCamera, showSection, waitForLink, waitForWalk } from './ui.mjs';
 
 export const M53_SCENES = [
   { name: 'helm-section', query: '?mode=realistic&st=helm&cam=helm' },
@@ -65,6 +65,7 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
       await showSection(page, 'helm');
       const link = await waitForLink(page, ['st=helm']);
       check(`${v} stations: the title tap walks`, link.includes('st=helm'), link);
+      await waitForWalk(page);
       check(`${v} stations: the controls show`, await visible(page, 'engine-helm'), 'engine-helm');
       problems.push(...(await auditPage(page, `m53 ${v} helm open`)));
       await context.close();
@@ -82,6 +83,7 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
       await shot(page, `live-${v}-helm-away`);
       await page.getByTestId('helm-go').click();
       await waitForLink(page, ['st=helm']);
+      await waitForWalk(page);
       check(`${v} away: Go to the helm shows the controls`, await visible(page, 'engine-helm'), '');
       check(`${v} away: helm-away hidden`, !(await visible(page, 'helm-away')), 'helm-away');
       await context.close();

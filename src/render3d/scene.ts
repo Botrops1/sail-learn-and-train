@@ -228,8 +228,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       const rect = renderer.domElement.getBoundingClientRect();
       const partId = picker.pick(x, y, rect.width, rect.height);
       const state = store.getState();
-      // M50: the first tap on the handle selects it; the second walks to its station and takes it
-      // (not in Learn, where the Ropes section has no stations to put it back).
+      // M50: the first tap on the handle selects it; the second walks to its station (M112: it takes
+      // time) and the next one, once he stands there, takes it (not in Learn, where the Ropes
+      // section has no stations to put it back).
       if (
         partId === 'part_winch_handle' &&
         state.selection === 'part_winch_handle' &&
@@ -237,11 +238,15 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         state.appMode !== 'learn' &&
         state.realistic.handle.place !== 'carried'
       ) {
-        store.dispatch({
-          type: 'realistic',
-          action: { type: 'station', station: state.realistic.handle.station },
-        });
-        store.dispatch({ type: 'realistic', action: { type: 'handle', to: 'carry' } });
+        const real = state.realistic;
+        if (real.station !== real.handle.station || real.walk !== null) {
+          store.dispatch({
+            type: 'realistic',
+            action: { type: 'station', station: real.handle.station },
+          });
+        } else {
+          store.dispatch({ type: 'realistic', action: { type: 'handle', to: 'carry' } });
+        }
         return;
       }
       store.dispatch({ type: 'select', partId });

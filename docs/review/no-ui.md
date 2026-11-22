@@ -353,6 +353,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.gearbox.flipToOut | Flip the switch right to OUT (rolls the main out) | Vipp bryteren til høyre til OUT (ruller storseilet ut) |
 | real.notice.wrongWayJaw | Wrapped the wrong way, the line cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Lagt feil vei, så tauet kan ikke gå inn i selvtaileren. Ta slagene av og legg det med klokken. |
 | real.notice.closedOnRunning | The clutch stopped the running line. On a real boat, snapping a clutch shut on a loaded line that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Stopperen stoppet det løpende tauet. På en ekte båt kan det å smekke en stopper igjen på et belastet tau som løper, rive av kappen: ta belastningen på vinsjen først, og åpne eller lukk så stopperen. |
+| real.notice.walking | Still walking: wait until you get there. | Du går fortsatt: vent til du er framme. |
 | real.notice.handleInHand | You are holding the winch handle: lay it down first (tap the handle slot, or “Leave the handle here”). Remember where you left it. | Du holder vinsjsveiven: legg den fra deg først (trykk på sveivfestet, eller «Legg sveiven her»). Husk hvor du la den. |
 | real.handle.slot.rest | tap to take | trykk for å ta |
 | real.handle.slot.carried | tap: lay down | trykk: legg fra deg |
@@ -364,6 +365,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | real.handle.slotAria.away | Winch handle slot: empty, the handle is at another place. | Sveivfeste: tomt, sveiven er på en annen plass. |
 | real.helm.slot | The helm has a slot for the winch handle too. | Rorplassen har også et feste for vinsjsveiven. |
 | real.helm.away | You are at the {station} station. | Du er på plassen {station}. |
+| real.walking | Walking to {station}… {s} s | Går til {station}… {s} s |
 | real.helm.go | Go to the helm | Gå til rorplassen |
 | real.atHelm | You are at the helm. Choose a station to work the lines. | Du er på rorplassen. Velg en plass for å betjene tauene. |
 | boat.mode.label | Boat | Båt |

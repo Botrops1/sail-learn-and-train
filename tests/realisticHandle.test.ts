@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { walkThere } from './motionHelpers';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
@@ -45,8 +46,15 @@ function start(values: Partial<Controls>, station: StationId = 'port'): AppState
   return act(state, { type: 'station', station });
 }
 
+/**
+ * Actions through the store. A station change walks (M112): unless time is paused, the walk is
+ * walked out, so these tests keep working the lines at the new station at once.
+ */
 function act(state: AppState, ...actions: RealisticAction[]): AppState {
-  return actions.reduce((s, action) => reduce(s, { type: 'realistic', action }), state);
+  return actions.reduce((s, action) => {
+    const next = reduce(s, { type: 'realistic', action });
+    return action.type === 'station' && !next.paused ? walkThere(next) : next;
+  }, state);
 }
 
 function run(state: AppState, seconds: number, every?: (s: AppState) => AppState): AppState {

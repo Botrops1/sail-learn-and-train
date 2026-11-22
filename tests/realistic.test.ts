@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { walkSecondsLeft } from '../src/model/people';
+import { walkThere } from './motionHelpers';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { boat } from '../src/model/boat';
@@ -8,6 +10,7 @@ import {
   initialRealistic,
   isOpen,
   reduceRealistic,
+  stepRealistic,
   tailSpec,
   tailSpecs,
   type RealisticAction,
@@ -53,8 +56,15 @@ function start(values: Partial<Controls>, station: StationId = 'port'): AppState
   return act(state, { type: 'station', station });
 }
 
+/**
+ * Actions through the store. A station change walks (M112): unless time is paused, the walk is
+ * walked out, so these tests keep working the lines at the new station at once.
+ */
 function act(state: AppState, ...actions: RealisticAction[]): AppState {
-  return actions.reduce((s, action) => reduce(s, { type: 'realistic', action }), state);
+  return actions.reduce((s, action) => {
+    const next = reduce(s, { type: 'realistic', action });
+    return action.type === 'station' && !next.paused ? walkThere(next) : next;
+  }, state);
 }
 
 /** Runs the store's frame step at 60 fps for `seconds`. */
@@ -325,7 +335,10 @@ describe('PT-19a electric winch', () => {
     );
     s = run(s, 1);
     if (rollOpen) s = act(s, { type: 'clutch', key: JIB_ROLL, open: true });
-    s = act(s, { type: 'station', station: 'starboard' });
+    // The test is about the rope, not the walk (M112): he is at the winch at once, and the open
+    // JIB ROLL has not yet let the wind unroll the jib, as when the exercise's How? is followed.
+    s = reduce(s, { type: 'realistic', action: { type: 'station', station: 'starboard' } });
+    s = { ...s, realistic: { ...s.realistic, walk: null } };
     s = onWinch(s, GENOA, 3);
     return act(
       s,
@@ -870,5 +883,102 @@ describe('M107: gennaker sheets on the winches', () => {
     state = reduce(state, { type: 'setControls', values: { ctl_gennaker_sock: 0 } });
     state = reduce(state, { type: 'gennaker', command: 'stow' });
     expect(state.realistic.winches[PORT]?.tail).toBeNull();
+  });
+});
+
+describe('M112: the captain walks between the stations (PHASE_PEOPLE_SPEC 8.6)', () => {
+  const ctx = { awaDeg: 40, helmSide: -1 as const };
+  const walkingState = () =>
+    reduceRealistic(initialRealistic(), { type: 'station', station: 'bow' }, boat, 0, ctx);
+
+  it('5. a station change starts a walk; gestures are refused, letting go is not', () => {
+    const s = walkingState();
+    expect(s.station).toBe('bow');
+    expect(s.walk).not.toBeNull();
+    expect(Math.abs((s.walk?.lengthM ?? 0) - 16.317)).toBeLessThan(0.002);
+    expect(s.walk?.nodes.slice(0, 2)).toEqual(['helm_p', 'aftCentre']);
+    expect(s.walk?.nodes).toContain('binTop_s');
+
+    const refused = reduceRealistic(s, { type: 'clutch', key: GENOA, open: true }, boat, 0, ctx);
+    expect(refused.notice).toEqual({ key: 'walking', tail: GENOA });
+    expect({ ...refused, notice: null }).toEqual({ ...s, notice: null });
+    for (const action of [
+      { type: 'button', winch: PORT, held: false },
+      { type: 'pull', key: null },
+      { type: 'crank', turnsPerS: 0 },
+      { type: 'clearNotice' },
+    ] as RealisticAction[]) {
+      const next = reduceRealistic(s, action, boat, 0, ctx);
+      expect(next.notice?.key, action.type).not.toBe('walking');
+    }
+    for (const action of [
+      { type: 'button', winch: PORT, held: true },
+      { type: 'pull', key: GENOA },
+      { type: 'crank', turnsPerS: 1 },
+      { type: 'ease', key: GENOA, metres: 1 },
+    ] as RealisticAction[]) {
+      expect(reduceRealistic(s, action, boat, 0, ctx).notice?.key, action.type).toBe('walking');
+    }
+    // The same station again changes nothing, walking or not.
+    expect(reduceRealistic(s, { type: 'station', station: 'bow' }, boat, 0, ctx)).toBe(s);
+  });
+
+  it('6. the walk goes on in the step at 2 m/s and ends at the station', () => {
+    const base = initialState({ settings: { ropesMode: 'realistic' }, boat: { mode: 'held' } });
+    let real = walkingState();
+    const first = stepRealistic(real, base.controls, base.rig, 1).state;
+    expect(first.walk?.doneM).toBeCloseTo(2, 6);
+    // Paused (dt 0): it stands still.
+    expect(stepRealistic(real, base.controls, base.rig, 0).state.walk?.doneM).toBe(0);
+    for (let i = 0; i < 100 && real.walk; i += 1) {
+      real = stepRealistic(real, base.controls, base.rig, 0.5).state;
+    }
+    expect(real.walk).toBeNull();
+    expect(real.station).toBe('bow');
+    const clutch = reduceRealistic(real, { type: 'clutch', key: 'bl', open: true }, boat, 0, ctx);
+    expect(clutch.notice?.key).not.toBe('walking');
+  });
+
+  it('7. without a walk context a station change acts at once', () => {
+    const s = reduceRealistic(initialRealistic(), { type: 'station', station: 'bow' });
+    expect(s.station).toBe('bow');
+    expect(s.walk).toBeNull();
+    // A walk held while in Easy ropes ends with the next (instant) station change.
+    const held = reduceRealistic(walkingState(), { type: 'station', station: 'helm' });
+    expect(held.station).toBe('helm');
+    expect(held.walk).toBeNull();
+  });
+
+  it('8. the store walks in Realistic ropes only; a link and Reset never start mid-walk', () => {
+    const state = initialState({
+      settings: { ropesMode: 'realistic' },
+      boat: { mode: 'held' },
+    });
+    const walking = reduce(state, {
+      type: 'realistic',
+      action: { type: 'station', station: 'mast' },
+    });
+    expect(walking.realistic.walk).not.toBeNull();
+    expect(walking.realistic.station).toBe('mast');
+    expect(walkThere(walking).realistic.walk).toBeNull();
+
+    const loaded = reduce(walking, {
+      type: 'load',
+      state: parseUrlState('?mode=realistic&st=mast'),
+    });
+    expect(loaded.realistic.walk).toBeNull();
+    expect(loaded.realistic.station).toBe('mast');
+    expect(reduce(walking, { type: 'reset' }).realistic.walk).toBeNull();
+
+    // Easy ropes: nothing would step a walk, so none starts.
+    const easy = initialState({ boat: { mode: 'held' } });
+    const moved = reduce(easy, { type: 'realistic', action: { type: 'station', station: 'mast' } });
+    expect(moved.realistic.walk).toBeNull();
+    expect(moved.realistic.station).toBe('mast');
+  });
+
+  it('9. the seconds left are rounded up', () => {
+    const s = walkingState();
+    expect(s.walk && walkSecondsLeft(s.walk)).toBe(9);
   });
 });

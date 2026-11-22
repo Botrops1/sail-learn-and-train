@@ -74,7 +74,7 @@ walk: WalkState | null;
 | Milestone | What the owner sees | Issue | Rules tested | Depends on | Independent review |
 |---|---|---|---|---|---|
 | **M111: The captain on board** | A captain in a dark blue jacket and cap stands behind the wheel in every mode; in Realistic ropes he stands at the station you pick (still a jump); hidden in the Helm view, where you see through his eyes; tap him for his Learn entry | #260 | none | — | **required** (a new kind of 3D object, the skinned figure, inside the phone budget; shared boat model and scene) |
-| **M112: The captain walks** | In Realistic ropes, picking a station makes him walk there along the deck, on the windward side, in the seconds it takes (up to 19 s to the bow); lines can be worked when he arrives; the two Realistic exercises take the walk into account | #261 | PT-74 | M111 | **required** (shared Realistic state and model, every Realistic exercise and older checks) |
+| **M112: The captain walks** | In Realistic ropes, picking a station makes him walk there along the deck, on the windward side, in the seconds it takes (about 9 s to the bow); lines can be worked when he arrives; the two Realistic exercises take the walk into account | #261 | PT-74 | M111 | **required** (shared Realistic state and model, every Realistic exercise and older checks) |
 
 ## 7. M111: The captain on board
 
@@ -254,9 +254,9 @@ No `ui.json` change.
 
 `tests/people.test.ts`:
 
-1. **Points**: `deckPoints()` has 22 points (9 sided × 2 + 4); `helm_p.at` is `[-7.85, 1.0, -0.88]`, `faceDeg` 0; `winch_p.faceDeg` −45, `winch_s.faceDeg` 45; every `_p` point mirrors its `_s` point (`z` negated, x and y equal within 1e-9).
+1. **Points**: `deckPoints()` has 22 points (9 sided × 2 + 4; 25 since M112, 8.10 item 9); `helm_p.at` is `[-7.85, 1.0, -0.88]`, `faceDeg` 0; `winch_p.faceDeg` −45, `winch_s.faceDeg` 45; every `_p` point mirrors its `_s` point (`z` negated, x and y equal within 1e-9).
 2. **Spots**: `stationSpot('port', 1)` `winch_p`; `stationSpot('starboard', -1)` `winch_s`; `stationSpot('helm', 1)` `helm_s`; `stationSpot('helm', -1)` `helm_p`; `stationSpot('mast', 1)` `mast`; `stationSpot('bow', -1)` `bow`.
-3. **On the deck**: every point in the cockpit (`helm`, `winch`, `aftCentre`, `cockpitCentre`, `cockpitFront`) has `y` equal to `deck.cockpit.soleY` and `|z| ≤ deck.cockpit.wellHalfWidth − 0.2`; the `sideDeck*` points have `|y − sheerAt(x)| ≤ 0.005` and `sideDeckInnerHalfWidth(x) + 0.15 ≤ |z| ≤ halfBeamAt(x) − 0.15`; `foredeckSide` and `bow` have `|y − sheerAt(x)| ≤ 0.005` and `|z| ≤ halfBeamAt(x) − 0.3`; `coachroofSide` and `mast` have `y` equal to `deck.coachroof.topY` and `|z| ≤ sideDeckInnerHalfWidth(x) − 0.2`.
+3. **On the deck**: every point in the cockpit (`helm`, `winch`, `aftCentre`, and until M112 `cockpitCentre` and `cockpitFront`) has `y` equal to `deck.cockpit.soleY` and `|z| ≤ deck.cockpit.wellHalfWidth − 0.2`; the `sideDeck*` points have `|y − sheerAt(x)| ≤ 0.005` and `sideDeckInnerHalfWidth(x) + 0.15 ≤ |z| ≤ halfBeamAt(x) − 0.15`; `foredeckSide` and `bow` have `|y − sheerAt(x)| ≤ 0.005` and `|z| ≤ halfBeamAt(x) − 0.3`; `coachroofSide` and `mast` have `y` equal to `deck.coachroof.topY` and `|z| ≤ sideDeckInnerHalfWidth(x) − 0.2`.
 4. **Clear of the gear**: every walkway (both sides expanded) sampled every 0.05 m in (x, z) stays at least 0.25 m from each `shroudFoot(±1).strap.centre` and each `stanchionBases()` point (the prototype's smallest clearance is 0.262 m, on `sideDeckMast_s`–`sideDeckFwd_s`).
 5. **Placement**: Easy ropes, `helmWheel 'port'`: feet `[-7.85, 1.0, -0.88]`, `faceDeg` 0, pose `'steer'`. `'starboard'`: z 0.88. Realistic, station `'port'`, no winch button held: feet `winch_p`, pose `'stand'`; with `winches.winch_primary_port.button = true`: `'work'`. Station `'bow'`: feet `[4.85, 1.682, 0]`, `'stand'`. Station `'helm'` with `helmWheel 'starboard'`: `helm_s`, `'steer'`.
 
@@ -329,7 +329,7 @@ Not in this milestone: walking (M112), a crew, weight in the heel, other looks, 
 
 ### 8.2 Data
 
-`people.walkSpeedMps: 0.8` (after `strideM`; the model and the panel read it as `data.people.walkSpeedMps` / `boat.people.walkSpeedMps`, through `walkSecondsLeft` for the panel, 8.3), with `"walkSpeedMpsNote": "A careful walk on a moving deck, one hand for the boat; assumption"`, recorded in `BOAT_REFERENCE.md`. **Tunable** only if the owner asks for faster or slower walks.
+`people.walkSpeedMps: 2` (owner, PR 264: first 0.8, then 2.5 times faster; after `strideM`; the model and the panel read it as `data.people.walkSpeedMps` / `boat.people.walkSpeedMps`, through `walkSecondsLeft` for the panel, 8.3), with `"walkSpeedMpsNote": "A brisk walk on a moving deck, one hand for the boat; assumption"`, recorded in `BOAT_REFERENCE.md`. **Tunable** only if the owner asks for faster or slower walks.
 
 ### 8.3 Model
 
@@ -361,9 +361,9 @@ export function windwardSide(awaDeg: number, startSide: 1 | -1 | 0): 1 | -1;
 export function walkSecondsLeft(walk: WalkState, data?: BoatData): number;
 ```
 
-- **Walkways**: each `walkways` pair expands as the points do: a pair with a sided point becomes one pair per side (`X_s` with `Y_s` or the centre point `Y`; `X_p` likewise); a pair of two centre points stays one. 23 walkways in all. Lengths are 3D distances.
+- **Walkways**: each `walkways` pair expands as the points do: a pair with a sided point becomes one pair per side (`X_s` with `Y_s` or the centre point `Y`; `X_p` likewise); a pair of two centre points stays one. 26 walkways in all (8.10 item 9). Lengths are 3D distances.
 - **`windwardSide(awaDeg, startSide)`**: `1` when `awaDeg > 0`, `−1` when `awaDeg < 0`; at exactly 0 or ±180, `startSide` (`0` → `1`). **PT-74.**
-- **`deckRoute(from, to, windward)`**: Dijkstra over the expanded walkways. A point with `deck: true` whose side is not `windward` is left out, except `from` and `to` themselves. Returns the points from `from` to `to` inclusive and the length; `from === to` gives `{ nodes: [from], lengthM: 0 }`. If no route exists under the windward rule (a wind shift mid-walk can leave the captain on a now-leeward deck point), search again with every point allowed; if there is still none, throw (the data is broken). Prototype values (tests in 8.6): `helm_p → bow`, windward 1: 15.211 m, through `cockpitFront_s … foredeckSide_s`; windward −1: 15.211 m, the `_p` side; `winch_p → mast`, windward 1: 11.743 m; −1: 11.347 m; `winch_p → winch_s`: 2.219 m (`winch_p helm_p aftCentre helm_s winch_s`); `mast → bow`, windward 1: 7.845 m; `bow → winch_s`, windward −1: 15.434 m.
+- **`deckRoute(from, to, windward)`**: Dijkstra over the expanded walkways. A point with `deck: true` whose side is not `windward` is left out, except `from` and `to` themselves. Returns the points from `from` to `to` inclusive and the length; `from === to` gives `{ nodes: [from], lengthM: 0 }`. If no route exists under the windward rule (a wind shift mid-walk can leave the captain on a now-leeward deck point), search again with every point allowed; if there is still none, throw (the data is broken). Prototype values (tests in 8.6): `helm_p → bow`, windward 1: 16.093 m, through `aftCentre helm_s winch_s binTop_s sideDeckWinch_s … foredeckSide_s`; windward −1: 14.322 m, the `_p` side; `winch_p → mast`, windward 1: 12.626 m; −1: 10.012 m; `winch_p → winch_s`: 2.219 m (`winch_p helm_p aftCentre helm_s winch_s`); `mast → bow`, windward 1: 7.845 m; `bow → winch_s`, windward −1: 16.317 m.
 - **`startWalk`**: `from` is the deck point id the captain stands on, or, when he is turned back mid-walk, the two ends `[a, b]` of the walkway he is on (`b` the end he was walking towards). `windward = windwardSide(awaDeg, side of from (for a pair: of b))`, where a point's side is its `DeckPoint.side` (0 for the centre points `aftCentre`, `cockpitCentre`, `mast`, `bow`); a deck point's position is `deckPoints(data)[id].at` throughout (`at(id)` below); `doneM = 0`; `start = fromFeet`.
   - One id: `route = deckRoute(from, toSpot, windward)`; `nodes = route.nodes.slice(1)`; `WalkState.from = from`; `lengthM = route.lengthM`. If `toSpot === from`, `nodes` is empty and `lengthM` 0: the walk ends on the next step.
   - A pair: for each end `e`, `cost(e) = |fromFeet − at(e)| + deckRoute(e, toSpot, windward).lengthM`; choose the smaller (ties: `b`). `nodes` = the chosen route's nodes (starting with `e`); `WalkState.from` = the other end; `lengthM = cost(e)`.
@@ -415,22 +415,22 @@ const arrived = (s: AppState, station: StationId) => s.realistic.station === sta
 
 1. `deckRoute` gives the prototype lengths of 8.3 within 0.001 m and the node lists written there.
 2. **PT-74 go forward on the windward side**: `startWalk` from `helm_p` to the Bow with `awaDeg = 40` passes only `_s` deck points (and the centre ones); with `awaDeg = −40` only `_p`; with `awaDeg = 0` from `helm_p`, the `_p` side.
-3. `walkPosition`: halfway along `helm_p → bow` (windward 1, `doneM = 7.6055`, half of 15.211) the feet lie on the walkway `sideDeckAft_s`–`sideDeckRoof_s` or `sideDeckRoof_s`–`sideDeckMast_s` (within 1e-6 of the segment), and `faceDeg` is between −30 and 30 (walking forward).
-4. **Turning back**: a walk `helm_p → bow` (windward 1) at `doneM = 5.0` is on `cockpitCentre`–`cockpitFront_s`, 2.664 m past `cockpitCentre`; `startWalk` to `winch_p` from there goes back through `cockpitCentre aftCentre helm_p winch_p`, `lengthM` 5.224 within 0.01.
+3. `walkPosition`: halfway along `helm_p → bow` (windward 1, `doneM` half of 16.093) the feet lie on the walkway `sideDeckAft_s`–`sideDeckRoof_s` or `sideDeckRoof_s`–`sideDeckMast_s` (within 1e-6 of the segment), and `faceDeg` is between −30 and 30 (walking forward).
+4. **Turning back**: a walk `helm_p → bow` (windward 1) at `doneM = 5.0` is on `sideDeckClutch_s`–`sideDeckAft_s`; `startWalk` to `winch_p` from there goes back through `sideDeckClutch_s sideDeckWinch_s binTop_s winch_s helm_s aftCentre helm_p winch_p`, `lengthM` the sum of the pieces within 0.001.
 
 `tests/realistic.test.ts`:
 
-5. With a `WalkContext` `{ awaDeg: 40, helmSide: -1 }` (call `reduceRealistic(state, action, boat, 0, ctx)`): from `initialRealistic()` (Port, `winch_p`) a `station` Bow sets `station: 'bow'` and a walk with `lengthM` 15.434 within 0.002 (`winch_p helm_p` then the starboard side); a `clutch` action then returns the notice `'walking'` and changes nothing else; a `button` with `held: false` is not refused.
-6. `stepRealistic(real, s.controls, s.rig, 1)` with `s = initialState()` (store.ts) and `real` the walking state of test 5 moves `doneM` by 0.8; after enough steps the walk is `null` and a `clutch` at the Bow works as today.
+5. With a `WalkContext` `{ awaDeg: 40, helmSide: -1 }` (call `reduceRealistic(state, action, boat, 0, ctx)`): from `initialRealistic()` (Port, `winch_p`) a `station` Bow sets `station: 'bow'` and a walk with `lengthM` 16.317 within 0.002 (`winch_p helm_p` then the starboard side); a `clutch` action then returns the notice `'walking'` and changes nothing else; a `button` with `held: false` is not refused.
+6. `stepRealistic(real, s.controls, s.rig, 1)` with `s = initialState()` (store.ts) and `real` the walking state of test 5 moves `doneM` by 2; after enough steps the walk is `null` and a `clutch` at the Bow works as today.
 7. Without a `WalkContext`, `station` acts at once (`walk` stays `null`), as before.
 8. Store: `reduce` with `{ type: 'realistic', action: { type: 'station', station: 'mast' } }` in Realistic ropes starts a walk; the store's `load` action with `parseUrlState('?mode=realistic&st=mast')` (as `tests/urlState.test.ts` loads links) gives `walk: null` and station `mast`; `reset` gives `walk: null`.
-9. `walkSecondsLeft` of the walk of test 5 (`awaDeg` 40) at `doneM = 0` is 20 (15.434 / 0.8 = 19.3, rounded up).
+9. `walkSecondsLeft` of the walk of test 5 (`awaDeg` 40) at `doneM = 0` is 9 (16.317 / 2 = 8.2, rounded up).
 
 ### 8.7 Browser checks (`scripts/shots-m112.mjs`, joins group `m17`, test clock)
 
 **Helper** (`scripts/ui.mjs`, type in `ui.d.mts`): `goToStation(page, station)`: for `helm` it calls `goToHelm(page)`; otherwise `showSection(page, 'ropes')`, touch-tap `.station-button[data-station="<station>"]`, then wait until `walk-status` is hidden, polling with `page.waitForTimeout(250)` at most 120 times (as `waitForLink` does; 30 s of app time on the test clock, enough for the longest walk at ×1 or faster), and throw if it is still shown. `goToHelm(page)` (`showSection(page, 'helm')`, `helm-go` only if visible) then waits the same way for `walk-status`; its callers (`holdThruster`, `holdWindlass`) gain at most a few seconds. A tap on the station the captain already stands at starts no walk and returns at once.
 
-**Budget**: no new group. `GROUP_ALIASES` gets `m112: 'm17'`; `m17: members(['m17', () => liveM17Checks(live)], ['m112', () => liveM112Checks(onTestClock)])`. `m17` recorded 72 s; expected addition 40 s (the long walks at ×4); update `.github/ci-times.json` if over 108 s, and `ci-budget.json` if over 120 s.
+**Budget**: no new group. `GROUP_ALIASES` gets `m112: 'm17'`; `m17: members(['m17', () => liveM17Checks(live)], ['m112', () => liveM112Checks(onTestClock)])`. `m17` recorded 72 s; expected addition 40 s (three walk pages); update `.github/ci-times.json` if over 108 s, and `ci-budget.json` if over 120 s.
 
 **Scenes**: none (`M112_SCENES = []`): a scene cannot wait in the middle of a walk; live check 1 saves the picture instead.
 
@@ -438,9 +438,9 @@ const arrived = (s: AppState, station: StationId) => s.realistic.station === sta
 
 Before each tap: `showSection(page, 'ropes')` (the station bar is in it); the taps here are plain touch taps, not `goToStation`, which waits for the arrival. "At once" means after `page.waitForTimeout(100)` (one frame of app time on the test clock).
 
-1. `W&tx=4`: touch-tap `.station-button[data-station="bow"]`; at once `walk-status` is visible and contains "Bow", `captain().pose` is `'walk'`. After `page.waitForTimeout(2500)` (10 s of app time, 8.0 m walked) `captain()` has `x` between −3.0 and −0.6 and `z > 1.5` (on the starboard, windward side deck), and the check saves `page.screenshot` as `m112-walking-<viewport>.png` in the shots folder. Then poll until `walk-status` is hidden (at most 4 s of page time): `captain()` x within 0.01 of 4.85, pose `'stand'`, and the link has `st=bow`.
+1. `W` (×1): touch-tap `.station-button[data-station="bow"]`; at once `walk-status` is visible and contains "Bow", `captain().pose` is `'walk'`. Sampled every 250 ms to the end: no sample with `x` between −7.4 and −3.0 has `z < 1.85` (he stays outside the coaming and the sprayhood), and after 3 s (6 m walked) `captain()` has `x` between −6.4 and −3.6 and `z > 1.8` (on the starboard, windward side deck), and the check saves `page.screenshot` as `m112-walking-<viewport>.png` in the shots folder. Then poll until `walk-status` is hidden (at most 11 s of page time): `captain()` x within 0.01 of 4.85, pose `'stand'`, and the link has `st=bow`.
 2. Refused while walking: `W` (×1); touch-tap the Starboard station, then at once tap the jib sheet's line end in its drawing, `[data-station="starboard"] [data-key="a5"]`, and the `act-clutch` button (as `shots-m4b.mjs` opens a clutch): `[data-station="starboard"] .station-notice` reads "Still walking: wait until you get there." and the link has no `co=a5`; after `waitForTimeout(3500)` the same two taps give `co=a5` in the link.
-3. Turning back: `W&tx=4`; tap Bow; after `waitForTimeout(750)` (3 s of app time, between `aftCentre` and `cockpitCentre`) tap Port: `captain().pose` stays `'walk'`, and within 2 s of page time `walk-status` is hidden and `captain()` is at `winch_p` (x −7.75, z −1.08, within 0.01).
+3. Turning back: `W`; tap Bow; after `waitForTimeout(1250)` (2.5 m walked, between `winch_s` and `binTop_s`) tap Port: `captain().pose` stays `'walk'`, and within 4 s of page time `walk-status` is hidden and `captain()` is at `winch_p` (x −7.75, z −1.08, within 0.01).
 
 ### 8.8 Older checks and tests this milestone changes
 
@@ -454,9 +454,21 @@ Before each tap: `showSection(page, 'ropes')` (the station bar is in it); the ta
 
 ### 8.9 Done when / not in this milestone
 
-PR: `Closes #261`. Done when a station change walks along the windward side at 0.8 m/s, gestures wait for the arrival with the notice, a walk can be turned back, links and Reset never start mid-walk, the two Realistic exercises pass with the new limits (Watch and Show me included), every test of 8.6 and check of 8.7 passes, the older checks of 8.8 are green, `npm run check` passes and the CI run with `CI groups: all` is green.
+PR: `Closes #261`. Done when a station change walks along the windward side at 2 m/s, gestures wait for the arrival with the notice, a walk can be turned back, links and Reset never start mid-walk, the two Realistic exercises pass with the new limits (Watch and Show me included), every test of 8.6 and check of 8.7 passes, the older checks of 8.8 are green, `npm run check` passes and the CI run with `CI groups: all` is green.
 
 Not in this milestone: the camera following the walk, walking between the wheels (the Other wheel button still moves the captain at once), walking in Easy ropes, a crew, weight.
+
+### 8.10 Decided in the M112 PR (recommended; merging accepts it)
+
+1. **A paused walk stands still, and so does the refusal.** While time is paused a station change still starts the walk (the buttons and the link follow at once) but it only goes on when time runs; line ends are refused with "Still walking" meanwhile. The M4b pause check was rewritten for this: a clutch prepared while paused, the walk waiting, and on Resume the rope runs, he walks, and the second clutch is opened on arrival.
+2. **"You are at the helm." (`real-at-helm`) is hidden while he walks to the helm**, because he is not there yet; the Helm section shows the walking line instead (8.4).
+3. **`walkWalkway(walk)`** (`src/model/people.ts`) is the "piece he is on" rule of 8.3, exported so the store-side `station` case and the tests use one function.
+4. **`REALISTIC_LIMITS`** were re-measured as 8.5 asks: set-sails 7.8, 23.15, 34.35, 34.4 and 7.55 s; furl-sails 2.35, 36.55, 14.1 and 24.55 s; limits `ceil(1.2 × measured + 3)`.
+5. **Older checks changed**: `tests/realistic.test.ts` and `tests/realisticHandle.test.ts` walk out a station change in their `act` helper unless time is paused (one test, the open JIB ROLL one, stands him at the winch at once, because the open roll lets the wind unroll the jib while he walks); `exerciseRun` and `physicsTruths10` use `walkThere`. Browser checks: m4b (pause), m4c (two taps), m53 (waits after Go to the helm) and m111 (the Bow arrival) wait for the walk. The m23 language scan only reads text at each station, so it does not wait for the long walks (it would add about 25 s per language).
+6. **Group `m17` is recorded at 141 s** (measured locally with the three walk pages; it was 72 s) and named in `.github/ci-budget.json` with the reason, as 8.7 asks above 120 s. `m4b`, `m4c`, `m51`, `m71`, `m82`, `m23` and the other groups run were not re-recorded: their times moved within the machine's noise, except `m23` (250 s here against 90 s recorded, a page the walks do not touch), left to the nightly run.
+7. **A station change without a walk context ends a walk that was held** (Easy ropes after a walk began in Realistic ropes), so `walk.to === station` always holds (found by the review).
+8. **Tapping the winch handle in the 3D view from afar** (M50: the first tap selects it, the second walked to its station and took it at once): the second tap now only starts the walk, and a tap once he stands there takes the handle, because a line-end gesture such as picking it up is refused while he walks (8.3). Found by the m50 check in CI.
+9. **Owner's report on PR 264: faster, and not across the sprayhood.** (a) The speed is 2 m/s, 2.5 times the first 0.8. (b) The first route left the cockpit at its front and climbed across the coaming and the sprayhood's side. Now he walks out over the top of the rope box behind the winch and forward on the side deck outside the coaming. Data: `cockpitCentre` and `cockpitFront` are gone; `binTop` (on the rope box top, `y` = `coamingTopY`), `sideDeckWinch` and `sideDeckClutch` (outside the coaming at `z` 1.93) are new, `sideDeckAft` moved to `z` 2.0 (outside the sprayhood's side), 25 points and 26 walkways; the 8.3 prototype lengths and the tests of 8.6 and 8.7 follow. The tests check the box top, that the chain `sideDeckWinch … sideDeckRoof` stays outside the coaming (`z` at least 1.9) and the 0.25 m clearance of 7.2 (test 4) holds for the new walkways. The points are tunable only to fix a clash seen in a picture (7.2).
 
 ## 9. Decisions (owner, 2026-11-21, in chat: "Accept all")
 
@@ -471,7 +483,7 @@ Asked before planning, each with its recommendation; the owner accepted all six:
 
 Recorded by this plan (recommended; merging accepts it):
 
-7. **Walking speed 0.8 m/s** (8.2): up to 19 s from the helm to the bow, about 3 s between the two winches.
+7. **Walking speed 2 m/s** (8.2; first 0.8, changed on the owner's report on PR 264): about 9 s from the winch to the bow, about 1 s between the two winches.
 8. **Go forward on the windward side** (PT-74): the walk uses the side deck on the side the wind comes from. Status `to-verify`: the two sources (US Sailing, Yachting Monthly) could not be opened from the planning session.
 9. **Gestures wait for the arrival**, with a notice, and a walk can be turned back; a link opens with the captain at its station.
 10. **The checks join existing groups** (`m73`, `m17`), the set being at its cap.

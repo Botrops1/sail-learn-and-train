@@ -80,7 +80,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `languages.ts` | The available languages (from every `content/lang/*/ui.json`) and `latinAllowed`. |
 | `glossary.ts` | The glossaries by language, `learnEntry`, `NOT_DRAWN`, `FAR_AWAY`, `sourceLink`, groups and `searchGlossary`. |
 | `horizonLand.ts` | The distant land's outline from the area's ridges (pure). |
-| `people.ts`, `figurePose.ts` | The captain: the deck points he stands at, where the mode, station and wheel put him, and his pose's joint angles (pure). |
+| `people.ts`, `figurePose.ts` | The captain: the deck points he stands at, where the mode, station and wheel put him, the walk along the windward side deck between stations, and his pose's joint angles (pure). |
 | `gennaker.ts` | The optional gennaker: rigging stage and side, the commands (rig, gybe), the sheets' route, what is drawn, and `solveGennaker` (foot angle, angle of attack, fill, the main hiding it) with its trim state. |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
 | `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts` | Apparent wind, lift/drag, resistance, speed/heading/position, sideways motion and turning on the spot at low speed. `stepBoat` merges the contacts of its substeps. |
@@ -164,7 +164,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `helmViews.ts` | The three Helm-camera buttons (Ropes, Panel, Other wheel), shown only while the camera is on Helm. |
 | `learnTab.ts` | The Learn section: search box, entries in groups, one entry at a time (names, text, "Show it working", "Feel it" (plays an exercise in Watch mode), "Where is it?", Try it, See also, how sure we are). |
 | `ropesTab.ts`, `ropeControls.ts`, `stepper.ts`, `ropeColours.ts` | The Ropes section (rope list and the selected rope's strip, the Realistic stations), − / + buttons, rope colours and dash patterns. |
-| `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: the four stations (Port, Starboard, Mast, Bow), gestures, winch handle and strain bar, the Helm station's body and the windlass remote. |
+| `realisticPanel.ts`, `stationDrawing.ts`, `mastDrawing.ts`, `handleDrawing.ts` | Realistic mode: the four stations (Port, Starboard, Mast, Bow), gestures, winch handle and strain bar, the walking line under the station buttons, the Helm station's body and the windlass remote. |
 | `windPanel.ts`, `windModePanel.ts`, `wavesPanel.ts`, `windIndicator.ts`, `windInstrument.ts` | The Conditions section (wind dial, speed, wind modes with the local winds row, waves, presets), the alert stack over the 3D view, the wind instrument dial. |
 | `thrusterPanel.ts` | The Thrusters block under the engine lever and the joystick itself (also in the quick row and at the Helm station); hidden when the boat has none; A / D and J / L keys in Harbour. |
 | `keyboard.ts`, `keyHelp.ts` | Keys on a computer: `keyAction` (← → steer or move the autopilot, W / S main, R / F jib, P autopilot, H or ? key list) and the one `keydown` listener; the key list dialog. |

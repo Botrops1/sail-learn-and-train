@@ -126,7 +126,7 @@ Planned on 2026-11-18 in [`PHASE_RIGGING_SPEC.md`](PHASE_RIGGING_SPEC.md) (M105�
 
 ## People on board rules
 
-Planned on 2026-11-21 in [`PHASE_PEOPLE_SPEC.md`](PHASE_PEOPLE_SPEC.md) (M111–M112). Test: "PT-74 …" in `tests/people.test.ts`. The link works once M112 is merged.
+Planned on 2026-11-21 in [`PHASE_PEOPLE_SPEC.md`](PHASE_PEOPLE_SPEC.md) (M111–M112), built in M112. Test: "PT-74 …" in `tests/people.test.ts`.
 
 | Id | Rule | How to see it | Status |
 |---|---|---|---|

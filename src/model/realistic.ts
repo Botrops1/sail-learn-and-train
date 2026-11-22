@@ -12,6 +12,14 @@ import {
 import { gennakerClew, type GennakerStage } from './gennaker';
 import { mainFurlLengths } from './mainFurl';
 import { mainsheetPaidOut } from './mainsheet';
+import {
+  deckPoints,
+  stationSpot,
+  startWalk,
+  walkPosition,
+  walkWalkway,
+  type WalkState,
+} from './people';
 import { panelEntries } from './panelEntries';
 import { toppingLiftPaidOut, vangPaidOut } from './pitchLimits';
 import type { WinchWrap } from './ropePaths';
@@ -447,7 +455,9 @@ export type NoticeKey =
   /** A rope wrapped the wrong way does not feed into the self-tailer (M4b review). */
   | 'wrongWayJaw'
   /** The clutch was shut on a rope running out under load: it stops, but can be damaged. */
-  | 'closedOnRunning';
+  | 'closedOnRunning'
+  /** The captain is walking to another station: line ends wait until he gets there (M112). */
+  | 'walking';
 
 export interface Notice {
   key: NoticeKey;
@@ -475,6 +485,8 @@ export interface RealisticState {
   gearbox: GearboxSwitch;
   /** Latest step's report on the cranked handle, or null while nobody cranks it. */
   handleReport: HandleReport | null;
+  /** M112: the walk to the current station, or null when the captain stands at it. */
+  walk: WalkState | null;
 }
 
 function emptyWinch(): WinchState {
@@ -520,6 +532,7 @@ export function initialRealistic(data: BoatData = boat): RealisticState {
     handle: initialHandle(data),
     gearbox: initialGearbox(data),
     handleReport: null,
+    walk: null,
   };
 }
 
@@ -577,6 +590,12 @@ function setWinch(state: RealisticState, id: string, winch: Partial<WinchState>)
   return { ...state, notice: null, winches: { ...state.winches, [id]: { ...current, ...winch } } };
 }
 
+/** What the walk needs to know (M112): the wind side and the wheel he stands at. */
+export interface WalkContext {
+  awaDeg: number;
+  helmSide: 1 | -1;
+}
+
 /**
  * Applies a user action. Clutches and winches can only be worked at the current station (one
  * person, one place); static ropes (halyards) are not worked. Works while paused too: the
@@ -587,6 +606,7 @@ export function reduceRealistic(
   action: RealisticAction,
   data: BoatData = boat,
   gennakerStage: GennakerStage = 0,
+  walk?: WalkContext,
 ): RealisticState {
   const maxTurns = data.realisticMode.capstan.maxTurns;
   const here = (key: string): TailSpec | NoticeKey => {
@@ -599,6 +619,20 @@ export function reduceRealistic(
   };
   const winchHere = (id: string) =>
     stationWinch(state.station, data) === id ? state.winches[id] : undefined;
+
+  // While the captain walks, only letting go works (M112): a station change (turning back), a
+  // released winch button, taking the tail in hand again, a stopped crank and clearing a notice.
+  if (
+    walk &&
+    state.walk !== null &&
+    action.type !== 'station' &&
+    action.type !== 'clearNotice' &&
+    !(action.type === 'button' && !action.held) &&
+    !(action.type === 'pull' && action.key === null) &&
+    !(action.type === 'crank' && action.turnsPerS === 0)
+  ) {
+    return withNotice(state, 'walking', 'key' in action ? action.key : null);
+  }
 
   // The hand that carries the winch handle cannot work a line end (owner, after M4c): clutches,
   // tails, turns, the self-tailer, the winch button, easing and pulling wait until the handle is
@@ -618,6 +652,27 @@ export function reduceRealistic(
   switch (action.type) {
     case 'station': {
       if (action.station === state.station) return state;
+      // Without a walk context (Easy ropes) the change is instant and ends any walk that was held.
+      let walking: WalkState | null = null;
+      if (walk) {
+        const toSpot = stationSpot(action.station, walk.helmSide, data);
+        const standsAt = stationSpot(state.station, walk.helmSide, data);
+        if (state.walk === null) {
+          const feet = deckPoints(data)[standsAt]?.at;
+          if (!feet) throw new Error(`no deck point ${standsAt}`);
+          walking = startWalk(feet, standsAt, action.station, toSpot, walk.awaDeg, data);
+        } else {
+          const feet = walkPosition(state.walk, data).feet;
+          walking = startWalk(
+            feet,
+            walkWalkway(state.walk, data),
+            action.station,
+            toSpot,
+            walk.awaDeg,
+            data,
+          );
+        }
+      }
       // One person, one place: walking away lets go of the winch buttons and the tail in hand.
       const winches = Object.fromEntries(
         Object.entries(state.winches).map(([id, w]) => [
@@ -639,6 +694,7 @@ export function reduceRealistic(
         pull: null,
         ease: {},
         handle,
+        walk: walking,
       };
     }
     case 'clutch': {
@@ -931,6 +987,11 @@ export function stepRealistic(
   dt: number,
   data: BoatData = boat,
 ): RealisticStep {
+  // M112: the captain's walk first; it ends when its length is done.
+  if (state.walk !== null && dt > 0) {
+    const doneM = state.walk.doneM + data.people.walkSpeedMps * dt;
+    state = { ...state, walk: doneM >= state.walk.lengthM ? null : { ...state.walk, doneM } };
+  }
   const rm = data.realisticMode;
   const friction = rm.loads.ropeFrictionN;
   const hand = rm.hand;

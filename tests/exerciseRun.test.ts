@@ -15,6 +15,7 @@ import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 import { ALERT_INFO } from '../src/model/alerts';
 import { nightPilot } from '../src/app/exercisePilots';
+import { walkThere } from './motionHelpers';
 
 function opened(ropes: 'easy' | 'realistic' = 'easy'): AppState {
   return parseUrlState(exerciseStartLink('points-of-sail', initialState(), ropes));
@@ -442,7 +443,9 @@ describe('the debrief log (PHASE10_SPEC 8.6)', () => {
   it('logs a Realistic clutch with its key and state', () => {
     const real = reduce(opened('realistic'), { type: 'exercise', command: 'start' });
     const station = tailSpec('a2')?.station ?? 'port';
-    const there = reduce(real, { type: 'realistic', action: { type: 'station', station } });
+    const there = walkThere(
+      reduce(real, { type: 'realistic', action: { type: 'station', station } }),
+    );
     expect(actions(there).at(-1)).toMatchObject({ gesture: 'station', target: station });
     const state = reduce(there, {
       type: 'realistic',
@@ -893,7 +896,7 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
     let r = playTo(s, 1, 15);
     t.push(r.took);
     // (2) the main: starboard station, left Main furling open, right one on the winch, hold the button.
-    s = real(r.state, { type: 'station', station: 'starboard' });
+    s = walkThere(real(r.state, { type: 'station', station: 'starboard' }));
     s = real(s, { type: 'clutch', key: 'a2', open: true });
     s = button(onWinch(s, 'a3', W), W, true);
     let held = true;
@@ -914,9 +917,9 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
     r = playTo(s, 3, 60);
     t.push(r.took);
     // (4) the jib: JIB ROLL open at the port station, Genoa sheet on the starboard winch, hold.
-    s = real(r.state, { type: 'station', station: 'port' });
+    s = walkThere(real(r.state, { type: 'station', station: 'port' }));
     s = real(s, { type: 'clutch', key: 'r1', open: true });
-    s = real(s, { type: 'station', station: 'starboard' });
+    s = walkThere(real(s, { type: 'station', station: 'starboard' }));
     s = button(onWinch(s, 'a5', W), W, true);
     held = true;
     r = playTo(s, 4, 80, (n) => {
@@ -953,9 +956,9 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
     let r = playTo(s, 1, 5);
     t.push(r.took);
     // (2) the jib: Genoa sheet clutch open at the starboard station, JIB ROLL on the port winch, hold.
-    s = real(r.state, { type: 'station', station: 'starboard' });
+    s = walkThere(real(r.state, { type: 'station', station: 'starboard' }));
     s = real(s, { type: 'clutch', key: 'a5', open: true });
-    s = real(s, { type: 'station', station: 'port' });
+    s = walkThere(real(s, { type: 'station', station: 'port' }));
     s = button(onWinch(s, 'r1', P), P, true);
     let held = true;
     r = playTo(s, 2, 60, (n) => {
@@ -977,7 +980,7 @@ describe('setting and furling the sails (PHASE10_SPEC 11.7)', () => {
     // (4) JIB ROLL off, the outhaul open, the main's "out" clutch open, the "in" line on the winch.
     s = real(r.state, { type: 'offWinch', winch: P });
     s = real(s, { type: 'clutch', key: 'b3', open: true });
-    s = real(s, { type: 'station', station: 'starboard' });
+    s = walkThere(real(s, { type: 'station', station: 'starboard' }));
     s = real(s, { type: 'clutch', key: 'a3', open: true });
     s = button(onWinch(s, 'a2', W), W, true);
     held = true;
