@@ -5,7 +5,7 @@
 // the Mast station. The foldable and desktop sizes repeat the mast crank with the mouse.
 import path from 'node:path';
 import { line, touchTools } from './shots-m4b.mjs';
-import { setCamera, setSheet, showSection } from './ui.mjs';
+import { goToStation, setCamera, setSheet, showSection } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4C_SCENES = [
@@ -270,7 +270,7 @@ export async function liveM4cChecks({
     );
 
     // Fetch the handle from Port: tap it in the drawing (picks it up).
-    await page.locator('.station-button[data-station="port"]').tap();
+    await goToStation(page, 'port');
     await settle(page);
     await centreOn(page, `${drawing('port')} .real-slot`);
     const pocket = await t.where(`${drawing('port')} .real-slot-box`);
@@ -282,7 +282,7 @@ export async function liveM4cChecks({
       `hd ${await param(page, 'hd')}`,
     );
     // Walk to the mast, drag the handle into the socket, flip the switch.
-    await page.locator('.station-button[data-station="mast"]').tap();
+    await goToStation(page, 'mast');
     await settle(page);
     const md = drawing('mast');
     await centreOn(page, md);

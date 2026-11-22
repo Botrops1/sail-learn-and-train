@@ -356,7 +356,8 @@ The captain's spots and walkways (`people` in `content/boat/hanse508.json`) are 
 | The cockpit walkway (`aftCentre`, `cockpitCentre`, `cockpitFront`) | between the two wheels, then to the front of the cockpit | **Assumption** |
 | The side decks (`sideDeckAft`, `sideDeckRoof`, `sideDeckMast`, `sideDeckFwd`) | between the coachroof and the toerail, at least 0.15 m from each; 0.25 m or more from the shroud feet and stanchions | **Assumption** |
 | On the coachroof and foredeck (`coachroofSide`, `mast`, `foredeckSide`, `bow`) | beside and behind the mast by the furling gearbox; on the foredeck behind the windlass | **Assumption** |
-| One stride (`strideM`) | 1.39 m for one full walking cycle (two steps) of the figure, legs 0.85 m, thigh swing 0.42 rad (used from M112) | **Assumption** |
+| One stride (`strideM`) | 1.39 m for one full walking cycle (two steps) of the figure, legs 0.85 m, thigh swing 0.42 rad | **Assumption** |
+| Walking speed (`walkSpeedMps`) | 0.8 m/s: a careful walk on a moving deck, one hand for the boat; the walk from the helm to the bow takes up to 19 s | **Assumption** |
 
 ## 6. Open questions for the skipper / next time aboard
 

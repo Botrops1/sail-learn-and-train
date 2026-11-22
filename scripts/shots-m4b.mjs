@@ -2,7 +2,7 @@
 // The live checks drive the WORKFLOW.md M4b checklist with real gestures where the app has
 // them (lever drags, tail onto the winch, circling the drum, the jaw, the button).
 import path from 'node:path';
-import { closeSettings, openSettings, setMode, setSheet, showSection } from './ui.mjs';
+import { closeSettings, openSettings, setMode, setSheet, showSection, waitForWalk } from './ui.mjs';
 
 /** Screenshots at every size. */
 export const M4B_SCENES = [
@@ -583,7 +583,8 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // Pause: open a clutch and wrap a winch while paused; nothing moves. Resume: both happen.
+  // Pause: open a clutch while paused; nothing moves, and the walk to the other station waits too
+  // (M112). Resume: the rope runs, he walks, and the clutch opened on arrival runs as well.
   {
     const { context, page } = await openPage(
       phone,
@@ -603,14 +604,23 @@ export async function liveM4bChecks({ openPage, viewports, outDir, prefix, probl
       (await num(page, 'js')) === 30 && (await num(page, 'ms')) === 30,
       paused,
     );
+    const walking = await page.getByTestId('walk-status').innerText();
+    const refusal = await page.locator('[data-station="port"] .station-notice').innerText();
+    check(
+      'pause: the walk waits and the second clutch is refused',
+      /Walking to Port/.test(walking) && /Still walking/.test(refusal),
+      `${walking} | ${refusal}`,
+    );
     const alert = await page.getByTestId('station-alerts').innerText();
     check('pause: alert for the other station', /Starboard/.test(alert), alert);
-    await shot(page, 'live-phone-paused-two-clutches-open');
+    await shot(page, 'live-phone-paused-clutch-open-walk-waits');
     await page.getByTestId('pause-button').click();
+    await waitForWalk(page);
+    await page.getByTestId('act-clutch').click();
     // The address bar follows 300 ms after the ropes stop moving.
     await page.waitForTimeout(3000);
     check(
-      'resume: both run together',
+      'resume: both run',
       (await num(page, 'js')) > 60 && (await num(page, 'ms')) > 50,
       await search(page),
     );

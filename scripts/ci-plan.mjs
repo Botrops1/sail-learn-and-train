@@ -49,6 +49,7 @@ export const GROUP_ALIASES = {
   m106: 'm26',
   m107: 'm33',
   m111: 'm73',
+  m112: 'm17',
 };
 
 /** The live group that runs a group's checks: the group itself, or the one it was merged into. */

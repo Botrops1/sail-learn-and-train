@@ -315,11 +315,38 @@ export async function demoStepTitle(page) {
   );
 }
 
-/** M53: opens the Helm section (Realistic ropes) and, if "Go to the helm" shows, walks there. */
+/**
+ * M112: waits until the captain's walk is over (the panel's `walk-status` line is hidden: read
+ * from the element, since the line sits in the Ropes section, which is hidden while the Helm
+ * section is open). Polls with `page.waitForTimeout` (the test clock moves on by exactly that),
+ * 120 times 250 ms: 30 s of app time, enough for the longest walk at x1 or faster.
+ */
+export async function waitForWalk(page) {
+  for (let i = 0; i < 120; i += 1) {
+    if (await page.getByTestId('walk-status').evaluate((node) => node.hidden)) return;
+    await page.waitForTimeout(250);
+  }
+  throw new Error('waitForWalk: the walk is still going after 30 s of app time');
+}
+
+/** M53: opens the Helm section (Realistic ropes) and, if "Go to the helm" shows, walks there (M112: and waits for the walk). */
 export async function goToHelm(page) {
   await showSection(page, 'helm');
   const go = page.getByTestId('helm-go');
   if (await go.isVisible()) await go.click();
+  await waitForWalk(page);
+}
+
+/**
+ * M112: walks the captain to a station (Realistic ropes) and waits until he is there: `helm` through
+ * `goToHelm`, any other station by the Ropes section's station button. A tap on the station he is
+ * at starts no walk and returns at once.
+ */
+export async function goToStation(page, station) {
+  if (station === 'helm') return goToHelm(page);
+  await showSection(page, 'ropes');
+  await page.locator(`.station-button[data-station="${station}"]`).tap();
+  await waitForWalk(page);
 }
 
 /**

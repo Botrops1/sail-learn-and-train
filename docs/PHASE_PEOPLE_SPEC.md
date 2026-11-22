@@ -458,6 +458,14 @@ PR: `Closes #261`. Done when a station change walks along the windward side at 0
 
 Not in this milestone: the camera following the walk, walking between the wheels (the Other wheel button still moves the captain at once), walking in Easy ropes, a crew, weight.
 
+### 8.10 Decided in the M112 PR (recommended; merging accepts it)
+
+1. **A paused walk stands still, and so does the refusal.** While time is paused a station change still starts the walk (the buttons and the link follow at once) but it only goes on when time runs; line ends are refused with "Still walking" meanwhile. The M4b pause check was rewritten for this: a clutch prepared while paused, the walk waiting, and on Resume the rope runs, he walks, and the second clutch is opened on arrival.
+2. **"You are at the helm." (`real-at-helm`) is hidden while he walks to the helm**, because he is not there yet; the Helm section shows the walking line instead (8.4).
+3. **`walkWalkway(walk)`** (`src/model/people.ts`) is the "piece he is on" rule of 8.3, exported so the store-side `station` case and the tests use one function.
+4. **`REALISTIC_LIMITS`** were re-measured as 8.5 asks: set-sails 7.8, 23.15, 34.35, 34.4 and 7.55 s; furl-sails 2.35, 36.55, 14.1 and 24.55 s; limits `ceil(1.2 × measured + 3)`.
+5. **Older checks changed**: `tests/realistic.test.ts` and `tests/realisticHandle.test.ts` walk out a station change in their `act` helper unless time is paused (one test, the open JIB ROLL one, stands him at the winch at once, because the open roll lets the wind unroll the jib while he walks); `exerciseRun` and `physicsTruths10` use `walkThere`. Browser checks: m4b (pause), m4c (two taps), m53 (waits after Go to the helm) and m111 (the Bow arrival) wait for the walk. The m23 language scan only reads text at each station, so it does not wait for the long walks (it would add about 25 s per language).
+
 ## 9. Decisions (owner, 2026-11-21, in chat: "Accept all")
 
 Asked before planning, each with its recommendation; the owner accepted all six:

@@ -3,7 +3,7 @@
 // (tests/people.test.ts); here only what needs the real 3D view and the taps. The live checks
 // run on the test clock (shots.mjs passes `onTestClock`).
 import path from 'node:path';
-import { helmView, setCamera, setSheet, showSection } from './ui.mjs';
+import { goToStation, helmView, setCamera, setSheet } from './ui.mjs';
 
 const B = '?wd=60&ws=10&ms=40&js=60&held=1&sea=flat';
 
@@ -105,11 +105,14 @@ export async function liveM111Checks({ openPage, viewports, outDir, prefix, prob
       c !== null && near(c.x, -7.75) && near(c.z, -1.08) && c.pose === 'stand',
       JSON.stringify(c),
     );
-    await showSection(page, 'ropes');
-    await page.locator('.station-button[data-station="bow"]').tap();
-    await page.waitForTimeout(600);
+    // M112: he walks there (about 19 s); the check waits for the arrival.
+    await goToStation(page, 'bow');
     c = await captain(page);
-    check('Bow station: on the foredeck at once', c !== null && near(c.x, 4.85), JSON.stringify(c));
+    check(
+      'Bow station: on the foredeck once he has walked',
+      c !== null && near(c.x, 4.85),
+      JSON.stringify(c),
+    );
     await context.close();
   }
 

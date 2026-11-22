@@ -231,18 +231,15 @@ describe('M111 boat profile', () => {
 });
 
 describe('M112 walking', () => {
-  const near = (a: readonly number[], b: readonly number[]) =>
-    Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!, a[2]! - b[2]!);
+  type P3 = readonly [number, number, number];
+  const near = (a: P3, b: P3) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
   /** Distance from `p` to the segment a–b. */
-  const toSegment = (p: readonly number[], a: readonly number[], b: readonly number[]) => {
-    const ab = [b[0]! - a[0]!, b[1]! - a[1]!, b[2]! - a[2]!];
-    const ap = [p[0]! - a[0]!, p[1]! - a[1]!, p[2]! - a[2]!];
-    const len2 = ab[0]! ** 2 + ab[1]! ** 2 + ab[2]! ** 2;
-    const f = Math.min(
-      1,
-      Math.max(0, (ap[0]! * ab[0]! + ap[1]! * ab[1]! + ap[2]! * ab[2]!) / len2),
-    );
-    return near(p, [a[0]! + ab[0]! * f, a[1]! + ab[1]! * f, a[2]! + ab[2]! * f]);
+  const toSegment = (p: P3, a: P3, b: P3) => {
+    const ab: P3 = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+    const ap: P3 = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
+    const len2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2;
+    const f = Math.min(1, Math.max(0, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / len2));
+    return near(p, [a[0] + ab[0] * f, a[1] + ab[1] * f, a[2] + ab[2] * f]);
   };
 
   it('walks at 0.8 m/s (data)', () => {

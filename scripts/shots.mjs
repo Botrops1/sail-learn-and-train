@@ -105,6 +105,7 @@ import { liveM71Checks, M71_SCENES } from './shots-m71.mjs';
 import { liveM72Checks, M72_SCENES } from './shots-m72.mjs';
 import { liveM73Checks, M73_SCENES } from './shots-m73.mjs';
 import { liveM111Checks, M111_SCENES } from './shots-m111.mjs';
+import { liveM112Checks, M112_SCENES } from './shots-m112.mjs';
 import { liveM74Checks, M74_SCENES } from './shots-m74.mjs';
 import { liveM75Checks, M75_SCENES } from './shots-m75.mjs';
 import { liveM76Checks, M76_SCENES } from './shots-m76.mjs';
@@ -331,6 +332,7 @@ const SCENES = [
   ...M72_SCENES.map((scene) => ({ ...scene, name: `m72-${scene.name}` })),
   ...M73_SCENES.map((scene) => ({ ...scene, name: `m73-${scene.name}` })),
   ...M111_SCENES.map((scene) => ({ ...scene, name: `m111-${scene.name}` })),
+  ...M112_SCENES.map((scene) => ({ ...scene, name: `m112-${scene.name}` })),
   ...M74_SCENES.map((scene) => ({ ...scene, name: `m74-${scene.name}` })),
   ...M75_SCENES.map((scene) => ({ ...scene, name: `m75-${scene.name}` })),
   ...M76_SCENES.map((scene) => ({ ...scene, name: `m76-${scene.name}` })),
@@ -1233,7 +1235,7 @@ try {
     ),
     m15: () => liveM15Checks(live),
     m16: () => liveM16Checks(live),
-    m17: () => liveM17Checks(live),
+    m17: members(['m17', () => liveM17Checks(live)], ['m112', () => liveM112Checks(onTestClock)]),
     m18: members(['m18', () => liveM18Checks(live)], ['m104', () => liveM104Checks(live)]),
     m20: members(
       ['m20', () => liveM20Checks(live)],
