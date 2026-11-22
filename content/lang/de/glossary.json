@@ -2156,7 +2156,7 @@
       "name": "Kapitän (du)",
       "alternatives": [{ "term": "Skipper" }],
       "short": "Die Person, die das Boot führt: in der App du.",
-      "what": "Die Figur an Deck bist du, der Kapitän (auch Skipper genannt): die Person, die für das Boot und alle an Bord verantwortlich ist. Beim Steuern stehst du hinter einem Steuerrad. Im Modus „Realistisch“ stehst du an der Station, von der aus du arbeitest: an einer Winsch, am Mast oder am Bug. Die Steuerstand-Ansicht schaut durch deine Augen, dort siehst du dich also nicht selbst.",
+      "what": "Die Figur an Deck bist du, der Kapitän (auch Skipper genannt): die Person, die für das Boot und alle an Bord verantwortlich ist. Beim Steuern stehst du hinter einem Steuerrad. Im Modus „Realistisch“ stehst du an der Station, von der aus du arbeitest: an einer Winsch, am Mast oder am Bug. Wählst du eine andere Station, gehst du an Deck dorthin, auf der Seite, von der der Wind kommt, und kannst ihre Leinen bedienen, sobald du ankommst. Die Steuerstand-Ansicht schaut durch deine Augen, dort siehst du dich also nicht selbst.",
       "showMe": "Der Kapitän steht hinter dem Backbord-Steuerrad und steuert.",
       "textStatus": "draft"
     },

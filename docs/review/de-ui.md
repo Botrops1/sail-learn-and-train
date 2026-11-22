@@ -353,6 +353,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.gearbox.flipToOut | Flip the switch right to OUT (rolls the main out) | Schalter nach rechts auf OUT stellen (rollt das Groß aus) |
 | real.notice.wrongWayJaw | Wrapped the wrong way, the line cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Falsch herum aufgelegt kann die Leine nicht in den Selbstholer. Nehmen Sie die Törns ab und legen Sie sie im Uhrzeigersinn auf. |
 | real.notice.closedOnRunning | The clutch stopped the running line. On a real boat, snapping a clutch shut on a loaded line that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Die Klemme hat die laufende Leine gestoppt. Auf einem echten Boot kann eine Klemme, die auf eine laufende, belastete Leine zuschnappt, den Mantel aufscheuern: Nehmen Sie die Last zuerst auf die Winsch, dann öffnen oder schließen Sie die Klemme. |
+| real.notice.walking | Still walking: wait until you get there. | Sie gehen noch: Warten Sie, bis Sie dort sind. |
 | real.notice.handleInHand | You are holding the winch handle: lay it down first (tap the handle slot, or “Leave the handle here”). Remember where you left it. | Sie halten die Winschkurbel: Legen Sie sie zuerst ab (tippen Sie auf die Kurbelablage oder auf „Kurbel hier ablegen“). Merken Sie sich, wo Sie sie gelassen haben. |
 | real.handle.slot.rest | tap to take | tippen zum Nehmen |
 | real.handle.slot.carried | tap: lay down | tippen: ablegen |
@@ -364,6 +365,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | real.handle.slotAria.away | Winch handle slot: empty, the handle is at another place. | Kurbelablage: leer, die Kurbel ist an einem anderen Platz. |
 | real.helm.slot | The helm has a slot for the winch handle too. | Auch am Ruder gibt es eine Ablage für die Winschkurbel. |
 | real.helm.away | You are at the {station} station. | Sie stehen an der Station {station}. |
+| real.walking | Walking to {station}… {s} s | Gehe zu {station}… {s} s |
 | real.helm.go | Go to the helm | Zum Ruder gehen |
 | real.atHelm | You are at the helm. Choose a station to work the lines. | Sie stehen am Ruder. Wählen Sie eine Station, um an den Leinen zu arbeiten. |
 | boat.mode.label | Boat | Boot |

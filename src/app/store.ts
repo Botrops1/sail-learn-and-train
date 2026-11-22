@@ -1083,6 +1083,13 @@ function reduceAction(state: AppState, action: Action): AppState {
         action.action,
         undefined,
         state.gennaker.stage,
+        // A station change walks only in Realistic ropes (M112): nothing else steps a walk.
+        state.settings.ropesMode === 'realistic'
+          ? {
+              awaDeg: state.rig.wind.awaDeg,
+              helmSide: state.camera.helm.wheel === 'starboard' ? 1 : -1,
+            }
+          : undefined,
       );
       // While paused nothing runs yet: shutting the clutch then is just preparing.
       if (state.paused && realistic.notice?.key === 'closedOnRunning') {

@@ -163,3 +163,10 @@ export function berthLines(
     return { ...line, lengthM };
   });
 }
+
+/** M112: steps until the captain's walk is over (a station change in Realistic ropes walks). */
+export function walkThere(s: AppState): AppState {
+  for (let i = 0; i < 400 && s.realistic.walk; i += 1) s = reduce(s, { type: 'step', dt: 0.25 });
+  if (s.realistic.walk) throw new Error('walkThere: the walk is still going (paused?)');
+  return s;
+}

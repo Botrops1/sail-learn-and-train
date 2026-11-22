@@ -353,6 +353,7 @@
 | real.gearbox.flipToOut | Flip the switch right to OUT (rolls the main out) | Переведите переключатель вправо на OUT (раскручивает грот) |
 | real.notice.wrongWayJaw | Wrapped the wrong way, the line cannot go into the self-tailer. Take the turns off and wrap it clockwise. | Конец, намотанный не в ту сторону, не входит в самостопорящий зажим. Снимите шлаги и намотайте его по часовой. |
 | real.notice.closedOnRunning | The clutch stopped the running line. On a real boat, snapping a clutch shut on a loaded line that is running can strip its cover: take the load on the winch first, then open or close the clutch. | Стопор остановил убегающий конец. На настоящей яхте резкое закрывание стопора на нагруженном убегающем конце может содрать его оплётку: сначала возьмите нагрузку на лебёдку, потом открывайте или закрывайте стопор. |
+| real.notice.walking | Still walking: wait until you get there. | Вы ещё идёте: подождите, пока дойдёте. |
 | real.notice.handleInHand | You are holding the winch handle: lay it down first (tap the handle slot, or “Leave the handle here”). Remember where you left it. | Вы держите ручку лебёдки: сначала положите её (нажмите на место для ручки или «Оставить ручку здесь»). Запомните, где вы её оставили. |
 | real.handle.slot.rest | tap to take | взять ручку |
 | real.handle.slot.carried | tap: lay down | положить |
@@ -364,6 +365,7 @@
 | real.handle.slotAria.away | Winch handle slot: empty, the handle is at another place. | Место для ручки лебёдки: пусто, ручка на другом месте. |
 | real.helm.slot | The helm has a slot for the winch handle too. | На штурвале тоже есть место для ручки лебёдки. |
 | real.helm.away | You are at the {station} station. | Вы на месте «{station}». |
+| real.walking | Walking to {station}… {s} s | Идёте к месту «{station}»… {s} с |
 | real.helm.go | Go to the helm | Перейти к штурвалу |
 | real.atHelm | You are at the helm. Choose a station to work the lines. | Вы у штурвала. Выберите место, чтобы работать с концами. |
 | boat.mode.label | Boat | Яхта |

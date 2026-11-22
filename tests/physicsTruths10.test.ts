@@ -5,6 +5,7 @@ import { boat } from '../src/model/boat';
 import { twaSignedDeg } from '../src/model/exercises';
 import { mpsToKn } from '../src/model/angles';
 import { buoyPilot } from './harbourPilot';
+import { walkThere } from './motionHelpers';
 import { pilotFor, type Pilot } from '../src/app/exercisePilots';
 import { MARINA_LAYOUT_IDS, marinaGeometry } from '../src/model/marina';
 import { gybeArrived, gybeStep, windTorqueNm, type GybeSwing } from '../src/model/gybe';
@@ -60,7 +61,7 @@ describe('Phase 10 rules (PHASE10_SPEC 9.6)', () => {
     s = reduce(s, { type: 'autopilot', command: { turnDeg: -60 } });
     s = run(s, 20);
     const before = s.exercise?.log.length ?? 0;
-    s = real(s, { type: 'station', station: 'starboard' });
+    s = walkThere(real(s, { type: 'station', station: 'starboard' }));
     s = real(s, { type: 'clutch', key: 'a2', open: true });
     s = real(s, { type: 'onWinch', key: 'a3' });
     for (let i = 0; i < 3; i += 1) s = real(s, { type: 'turn', winch: W, delta: 1 });

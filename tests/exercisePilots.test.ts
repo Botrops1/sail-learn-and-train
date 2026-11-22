@@ -312,10 +312,14 @@ describe('M81 pilotFor', () => {
   });
 });
 
-/** PHASE10_PHONE_SPEC 9.6: Realistic ropes, Alone; step limits (s). */
+/**
+ * PHASE10_PHONE_SPEC 9.6: Realistic ropes, Alone; step limits (s), `ceil(1.2 × measured + 3)`.
+ * M112 (the pilots wait for the walks at 0.8 m/s) measured, in seconds: set-sails 7.8, 23.15,
+ * 34.35, 34.4, 7.55; furl-sails 2.35, 36.55, 14.1, 24.55.
+ */
 const REALISTIC_LIMITS: Record<string, number[]> = {
-  'set-sails': [13, 28, 43, 58, 9],
-  'furl-sails': [6, 41, 20, 29],
+  'set-sails': [13, 31, 45, 45, 13],
+  'furl-sails': [6, 47, 20, 33],
 };
 
 const realisticStart = (id: string, start = true): AppState => {

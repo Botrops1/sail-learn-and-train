@@ -1579,6 +1579,8 @@
     "source": "assumption (PHASE_PEOPLE_SPEC 7.2): spots and walkways measured from this file's deck, clear of the wheels, pedestals, rope boxes, shroud feet, stanchions and hatches",
     "strideM": 1.39,
     "strideMNote": "One full walking cycle (two steps) of the mockup's figure: legs 0.85 m, thigh swing 0.42 rad",
+    "walkSpeedMps": 0.8,
+    "walkSpeedMpsNote": "A careful walk on a moving deck, one hand for the boat; assumption",
     "points": {
       "helm": { "at": [-7.85, 1.0, 0.88], "sided": true, "faceDeg": 0 },
       "winch": { "at": [-7.75, 1.0, 1.08], "sided": true, "faceDeg": 45 },

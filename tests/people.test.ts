@@ -4,7 +4,17 @@ import { checkBoatProfile, makeBoatProfile } from '../src/model/boatProfile';
 import { FIGURE_LEG_M, REST_JOINTS, figureJoints } from '../src/model/figurePose';
 import { halfBeamAt, sheerAt } from '../src/model/hullShape';
 import { sideDeckInnerHalfWidth } from '../src/model/deckVolumes';
-import { captainPlacement, deckPoints, stationSpot } from '../src/model/people';
+import {
+  captainPlacement,
+  deckPoints,
+  deckRoute,
+  startWalk,
+  stationSpot,
+  walkPosition,
+  walkSecondsLeft,
+  windwardSide,
+  type WalkState,
+} from '../src/model/people';
 import { initialRealistic, type RealisticState } from '../src/model/realistic';
 import { shroudFoot, stanchionBases } from '../src/model/smallFittings';
 
@@ -217,5 +227,122 @@ describe('M111 boat profile', () => {
     delete old.boat.people;
     const result = check(old);
     expect(result.ok).toBe(true);
+  });
+});
+
+describe('M112 walking', () => {
+  const near = (a: readonly number[], b: readonly number[]) =>
+    Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!, a[2]! - b[2]!);
+  /** Distance from `p` to the segment a–b. */
+  const toSegment = (p: readonly number[], a: readonly number[], b: readonly number[]) => {
+    const ab = [b[0]! - a[0]!, b[1]! - a[1]!, b[2]! - a[2]!];
+    const ap = [p[0]! - a[0]!, p[1]! - a[1]!, p[2]! - a[2]!];
+    const len2 = ab[0]! ** 2 + ab[1]! ** 2 + ab[2]! ** 2;
+    const f = Math.min(
+      1,
+      Math.max(0, (ap[0]! * ab[0]! + ap[1]! * ab[1]! + ap[2]! * ab[2]!) / len2),
+    );
+    return near(p, [a[0]! + ab[0]! * f, a[1]! + ab[1]! * f, a[2]! + ab[2]! * f]);
+  };
+
+  it('walks at 0.8 m/s (data)', () => {
+    expect(boat.people.walkSpeedMps).toBe(0.8);
+  });
+
+  it('1. deckRoute gives the prototype lengths and nodes', () => {
+    const cases: [string, string, 1 | -1, number][] = [
+      ['helm_p', 'bow', 1, 15.211],
+      ['helm_p', 'bow', -1, 15.211],
+      ['winch_p', 'mast', 1, 11.743],
+      ['winch_p', 'mast', -1, 11.347],
+      ['winch_p', 'winch_s', 1, 2.219],
+      ['mast', 'bow', 1, 7.845],
+      ['bow', 'winch_s', -1, 15.434],
+    ];
+    for (const [from, to, windward, length] of cases) {
+      expect(Math.abs(deckRoute(from, to, windward).lengthM - length)).toBeLessThan(0.001);
+    }
+    expect(deckRoute('winch_p', 'winch_s', 1).nodes).toEqual([
+      'winch_p',
+      'helm_p',
+      'aftCentre',
+      'helm_s',
+      'winch_s',
+    ]);
+    const starboard = deckRoute('helm_p', 'bow', 1).nodes;
+    expect(starboard).toContain('cockpitFront_s');
+    expect(starboard).toContain('foredeckSide_s');
+    expect(deckRoute('helm_p', 'bow', -1).nodes).toContain('cockpitFront_p');
+    expect(deckRoute('mast', 'mast', 1)).toEqual({ nodes: ['mast'], lengthM: 0 });
+  });
+
+  it('PT-74 go forward on the windward side', () => {
+    const deckSides = (awaDeg: number) => {
+      const walk = startWalk(pt('helm_p').at, 'helm_p', 'bow', 'bow', awaDeg);
+      return walk.nodes
+        .map((id) => pt(id))
+        .filter((p) => p.deck)
+        .map((p) => p.side);
+    };
+    expect(deckSides(40).length).toBeGreaterThan(0);
+    expect(deckSides(40).every((side) => side === 1)).toBe(true);
+    expect(deckSides(-40).every((side) => side === -1)).toBe(true);
+    // Dead ahead: the side he starts on (port, from helm_p).
+    expect(deckSides(0).every((side) => side === -1)).toBe(true);
+    expect(windwardSide(0, 0)).toBe(1);
+    expect(windwardSide(180, -1)).toBe(-1);
+    expect(windwardSide(-180, 1)).toBe(1);
+  });
+
+  it('3. walkPosition halfway lies on a side-deck walkway, facing forward', () => {
+    const walk: WalkState = {
+      ...startWalk(pt('helm_p').at, 'helm_p', 'bow', 'bow', 40),
+    };
+    expect(Math.abs(walk.lengthM - 15.211)).toBeLessThan(0.001);
+    const halfway = { ...walk, doneM: walk.lengthM / 2 };
+    const { feet, faceDeg } = walkPosition(halfway);
+    const onWay =
+      toSegment(feet, pt('sideDeckAft_s').at, pt('sideDeckRoof_s').at) < 1e-6 ||
+      toSegment(feet, pt('sideDeckRoof_s').at, pt('sideDeckMast_s').at) < 1e-6;
+    expect(onWay).toBe(true);
+    expect(faceDeg).toBeGreaterThan(-30);
+    expect(faceDeg).toBeLessThan(30);
+    // The start and the end.
+    expect(walkPosition({ ...walk, doneM: 0 }).feet).toEqual(pt('helm_p').at);
+    expect(walkPosition({ ...walk, doneM: walk.lengthM })).toEqual({
+      feet: pt('bow').at,
+      faceDeg: 0,
+    });
+  });
+
+  it('4. a walk is turned back from the walkway he is on', () => {
+    const walk = { ...startWalk(pt('helm_p').at, 'helm_p', 'bow', 'bow', 40), doneM: 5.0 };
+    const { feet } = walkPosition(walk);
+    expect(toSegment(feet, pt('cockpitCentre').at, pt('cockpitFront_s').at)).toBeLessThan(1e-6);
+    expect(Math.abs(near(feet, pt('cockpitCentre').at) - 2.664)).toBeLessThan(0.01);
+    const back = startWalk(feet, ['cockpitCentre', 'cockpitFront_s'], 'port', 'winch_p', 40);
+    expect(back.nodes).toEqual(['cockpitCentre', 'aftCentre', 'helm_p', 'winch_p']);
+    expect(back.from).toBe('cockpitFront_s');
+    expect(Math.abs(back.lengthM - 5.224)).toBeLessThan(0.01);
+  });
+
+  it('walkSecondsLeft rounds up', () => {
+    const walk = startWalk(pt('winch_p').at, 'winch_p', 'bow', 'bow', 40);
+    expect(walkSecondsLeft(walk)).toBe(20);
+    expect(walkSecondsLeft({ ...walk, doneM: walk.lengthM - 0.1 })).toBe(1);
+  });
+
+  it('the captain walks in the placement, and stands in Easy ropes', () => {
+    const walk = { ...startWalk(pt('winch_p').at, 'winch_p', 'bow', 'bow', 40), doneM: 3 };
+    const input = {
+      ropesMode: 'realistic' as const,
+      realistic: realistic({ walk, station: 'bow' }),
+      helmWheel: 'port' as const,
+    };
+    const walking = captainPlacement(input);
+    expect(walking.pose).toBe('walk');
+    expect(walking.walkedM).toBe(3);
+    expect(walking.feet).toEqual(walkPosition(walk).feet);
+    expect(captainPlacement({ ...input, ropesMode: 'easy' }).pose).toBe('steer');
   });
 });
