@@ -213,6 +213,69 @@
       "clutch-on-running": { "name": "a clutch closed on a running line", "what": "A clutch was closed on a running line.", "why": "The line was still moving under load, and the clutch can damage it.", "fix": "Let the line stop first, then close the clutch." }
     }
   },
+  "gennaker-rig": {
+    "title": "Rig and hoist the gennaker",
+    "summary": "Rig the gennaker step by step, in the order a crew does it at the bow, then set and trim it on a broad reach.",
+    "see": "You are on a broad reach (the wind from behind and to the side) in 12 knots, the wind over the starboard side, with the main and jib out. The gennaker is still in its bag, with nothing rigged.",
+    "happening": "A gennaker is a big, light sail for wind from behind. A crew rigs it at the bow in a fixed order: the tack line (it holds the sail's front lower corner), the two sheets (they trim the sail; they run outside the shrouds, stanchions and lifelines to blocks at the stern), then the halyard (it hoists the sail). It goes up inside a sock, a long tube that keeps it closed; pulling the sock up opens the sail. The jib is rolled away first, because it would take the gennaker's wind.",
+    "action": "Tap Next step for the tack line, the sheets and the halyard; roll the jib away; tap Next step to hoist; pull the sock up; then ease the sheet until the front edge starts to curl and trim a little.",
+    "mistake": "Hoisting the gennaker with the jib still out: the jib takes the wind the gennaker needs. Or trimming it too hard (the sail stalls) or not enough (the front edge keeps curling).",
+    "done": "The gennaker is rigged, hoisted and drawing. The order is always the same: tack line, sheets, halyard, hoist; the jib goes away first. Ease until the front edge starts to curl, then trim a little.",
+    "steps": {
+      "tack-line": {"goal": "Take the bag to the bow and clip the tack line to the gennaker's tack.", "how": "Tap Next step (in the bar, or in Sails → Gennaker). The bag goes to the bow and its tack line is clipped to the sail's tack (its front lower corner)."},
+      "sheets": {"goal": "Lead both sheets outside everything (shrouds, stanchions, lifelines) to the blocks at the stern.", "how": "Tap Next step. Both sheets are led outside everything, then through the blocks at the stern to the winches."},
+      "halyard": {"goal": "Clip the halyard to the head, in front of the forestay.", "how": "Tap Next step. The halyard is clipped to the head (the top corner), in front of the forestay (the wire from the mast to the bow)."},
+      "furl-jib": {"goal": "Roll the jib away: it would take the gennaker's wind.", "how": "In Lines, ease Jib sheet to 100 % (the jib only rolls away when its sheet is loose), then set Jib out to 0 %: the jib rolls away."},
+      "hoist": {"goal": "Hoist the gennaker in its sock.", "how": "Tap Next step: the gennaker is hoisted, still shut in its sock."},
+      "sock-up": {"goal": "Pull the sock up: the sail opens.", "how": "In Lines, set Gennaker sock to 100 %: the sock goes up and the sail opens."},
+      "trim": {"goal": "Ease the sheet until the front edge starts to curl, then trim a little and hold it there.", "how": "Ease Gennaker sheet (in Lines, or in the bar) until the front edge starts to curl, then trim a little, until the Sails section says “Drawing well”. Hold it."}
+    },
+    "mistakes": {
+      "jib-still-out": {"name": "The jib was still out with the gennaker up", "what": "The gennaker was up and the jib was still out.", "why": "The jib takes the wind the gennaker needs.", "fix": "Roll the jib away before you hoist: in Lines, set Jib out to 0 %."},
+      "overpowered": {"name": "heeling too far", "what": "She heeled too far (more than 25°).", "why": "The main sheet was too tight for the wind: the sails pushed harder than the keel could hold her upright.", "fix": "Ease the main sheet as soon as the gust hits; trim again when it has passed."},
+      "round-up": {"name": "a round-up", "what": "She turned into the wind by herself (a round-up).", "why": "Too much heel with a tight main: the rudder lost its grip and the sails turned her into the wind.", "fix": "Ease the main straight away and she comes back under control. In the next gust, ease earlier."}
+    }
+  },
+  "gennaker-gybe": {
+    "title": "Gybe the gennaker",
+    "summary": "Turn from one broad reach to the other with the gennaker up: the boat gybes, then the gennaker goes round the front to the new side.",
+    "see": "You are on a broad reach with the wind over the starboard side. The gennaker is up and set on the port side, the main is out and the autopilot holds the wind.",
+    "happening": "In a gybe the stern crosses the wind and the boom swings to the other side. The gennaker's clew (its back lower corner) is on the old side. After the boat has gybed, the sail has to go round the front to the new side: the other sheet (the lazy sheet, the one on the windward side) is pulled in and the old one is let go.",
+    "action": "Bear away towards a run, trim the main until the boom is near the centre, gybe, tap Gybe the gennaker, then come up to a broad reach and trim both sails.",
+    "mistake": "Leaving the gennaker on the old side after the boat has gybed: it is backed (the wind pushes it against the boat). Or gybing with the main still out.",
+    "done": "Both sails are on the new side. The boat gybed first, with the main trimmed in; then the gennaker followed: the lazy sheet took over, the old one was let go, and the sail went round the front.",
+    "steps": {
+      "bear-away": {"goal": "Bear away towards a run.", "how": "In Steering, tap “10° to port” three times: she turns from a broad reach towards a run (wind 160–175° from the bow)."},
+      "haul-main": {"goal": "Trim the main until the boom is near the centre.", "how": "In Lines, set Main sheet to 5 %. The boom comes within 16° of the centre line."},
+      "gybe-main": {"goal": "Gybe: turn the stern through the wind.", "how": "In Steering, tap Gybe (the Tack button reads Gybe on a run). She turns through the wind and the boom crosses a short way."},
+      "gybe-gennaker": {"goal": "Gybe the gennaker: the new sheet takes over and the sail goes round the front.", "how": "Tap Gybe the gennaker (in the bar, or in Sails → Gennaker). The new sheet takes over and the sail goes round the front of the boat to the new side."},
+      "come-up": {"goal": "Come up to a broad reach on the new side, ease the main and trim the gennaker.", "how": "In Steering, tap “10° to port” three times (towards the wind). Then set Main sheet to about 70 % and Gennaker sheet to about 40 % until the Sails section says “Drawing well”."}
+    },
+    "mistakes": {
+      "backed": {"name": "The gennaker stayed on the wrong side", "what": "The boat had gybed but the gennaker was still on its old side, backed against the boat.", "why": "Only the boat gybed: the gennaker's sheets did not change over.", "fix": "Tap Gybe the gennaker right after the boat gybes: the sail goes round the front to the new side."},
+      "accidental-gybe": {"name": "an accidental gybe", "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Trim the main before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee."}
+    }
+  },
+  "gennaker-douse": {
+    "title": "Take the gennaker down",
+    "summary": "Bring it down behind the main, where it has no wind, and put it away in its bag.",
+    "see": "You are on a broad reach with the wind over the starboard side. The gennaker is up and drawing, set on the port side, and the jib is rolled away.",
+    "happening": "The gennaker comes down in the reverse order of the hoist. First the boat turns downwind until the main hides the gennaker and takes its wind. Then the sheet is eased and the sock is pulled down over the sail, which gathers it. Last the halyard is lowered and everything is unclipped.",
+    "action": "Bear away towards a run, ease the gennaker sheet, pull the sock down, tap Undo a step four times to unrig, then roll the jib out again.",
+    "mistake": "Pulling the sock down while the sail still has wind in it: the sock has to gather a sail that is pulling.",
+    "done": "The gennaker is down and put away, and the jib is out again. Take it down behind the main with the sheet eased, then unrig in the reverse order.",
+    "steps": {
+      "bear-away": {"goal": "Bear away until the main hides the gennaker.", "how": "In Steering, turn to port (a few taps) until the wind is 170° or more from the bow. The Sails section says the gennaker is hidden behind the main."},
+      "ease": {"goal": "Ease the sheet.", "how": "In Lines, set Gennaker sheet to 70 % or more."},
+      "sock-down": {"goal": "Pull the sock down over the sail.", "how": "In Lines, set Gennaker sock to 0 %: the sock comes down over the sail."},
+      "lower": {"goal": "Lower it and unclip everything, in the reverse order.", "how": "Tap Undo a step four times: the halyard comes off, the sheets and the tack line are unclipped, and the gennaker is put away."},
+      "jib-out": {"goal": "Unroll the jib.", "how": "In Lines, set Jib out to 100 %: the jib rolls out again."}
+    },
+    "mistakes": {
+      "douse-in-wind": {"name": "The sock came down while the sail still had wind", "what": "You pulled the sock down while the gennaker was still drawing.", "why": "A sail with wind in it is hard to gather; behind the main it has none.", "fix": "Bear away until the main hides it and ease the sheet, then pull the sock down."},
+      "accidental-gybe": {"name": "an accidental gybe", "what": "The boom crossed by itself (an accidental gybe).", "why": "The main was still out when the stern crossed the wind, or she was steered past dead downwind.", "fix": "Trim the main before you gybe. On a run keep the wind on the side away from the boom: never sail by the lee."}
+    }
+  },
   "leave-berth": {
     "title": "Leaving the berth",
     "summary": "Let go the lazy line and the stern lines, motor out of the berth and turn towards the entrance.",

@@ -14,6 +14,7 @@ import type { AppState, Store } from '../app/store';
 import { SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/controls';
 import { boat } from '../model/boat';
 import { exerciseDef, type ExerciseDef } from '../model/exercises';
+import { gennakerTrimState } from '../model/gennaker';
 import type { LineCode } from '../model/mooringLines';
 import { isKeyOpen, tailSpec, type RealisticAction, type StationId } from '../model/realistic';
 import { anchorStatusText, holdButton } from './anchorPanel';
@@ -524,6 +525,59 @@ export function createExerciseBar(
       [label],
     );
 
+  // ---- the gennaker (M108) ---------------------------------------------------------------------
+
+  const gennakerStepsRow = (): Row => {
+    const rowId = 'gennaker:steps';
+    const back = textButton(t('gennaker.back'), 'bar-gennaker-back');
+    const next = textButton(t('gennaker.next'), 'bar-gennaker-next');
+    const dispatch = (command: 'back' | 'next') => () => {
+      const button = command === 'back' ? back : next;
+      if (!button.disabled) store.dispatch({ type: 'gennaker', command });
+    };
+    back.addEventListener('click', dispatch('back'));
+    next.addEventListener('click', dispatch('next'));
+    const line = small('');
+    const { block } = nameBlock(rowId, t('gennaker.title'), line);
+    return {
+      id: rowId,
+      element: rowElement(rowId, block, [buttonsBox([back, next])]),
+      keys: {
+        left: (down) => down && dispatch('back')(),
+        right: (down) => down && dispatch('next')(),
+      },
+      refresh(state) {
+        const { stage } = state.gennaker;
+        // The step to do now; once it is all done, the last one stays.
+        const n = Math.min(4, stage + 1);
+        setText(line, t(`gennaker.step${n}` as 'gennaker.step1'));
+        back.disabled = stage <= 0 || (stage === 4 && state.controls.ctl_gennaker_sock > 0);
+        next.disabled = stage >= 4;
+      },
+    };
+  };
+
+  const gennakerGybeRow = (): Row => {
+    const rowId = 'gennaker:gybe';
+    const button = textButton(t('gennaker.gybe'), 'bar-gennaker-gybe');
+    const gybe = () => {
+      if (!button.disabled) store.dispatch({ type: 'gennaker', command: 'gybe' });
+    };
+    button.addEventListener('click', gybe);
+    const line = small('');
+    const { block } = nameBlock(rowId, t('gennaker.title'), line);
+    return {
+      id: rowId,
+      element: rowElement(rowId, block, [buttonsBox([button])]),
+      keys: { space: (down) => down && gybe() },
+      refresh(state) {
+        const trim = gennakerTrimState(state.gennaker, state.rig.gennaker);
+        setText(line, trim === 'stowed' ? '' : t(`gennaker.trim.${trim}` as 'gennaker.trim.good'));
+        button.disabled = state.gennaker.stage !== 4 || state.gennaker.crossS > 0;
+      },
+    };
+  };
+
   const clutchRow = (station: StationId, key: string): Row => {
     const rowId = `clutch:${station}:${key}`;
     const line = small('');
@@ -683,6 +737,8 @@ export function createExerciseBar(
     else if (id === 'thrusters') made = thrustersRow();
     else if (id === 'fenders') made = fendersRow();
     else if (id === 'windlass') made = windlassRow();
+    else if (id === 'gennaker:steps') made = gennakerStepsRow();
+    else if (id === 'gennaker:gybe') made = gennakerGybeRow();
     else if (id === 'ropes') made = ropesRow();
     else if (id.startsWith('clutch:') || id.startsWith('winch:')) {
       const parsed = parseRealisticRow(id);

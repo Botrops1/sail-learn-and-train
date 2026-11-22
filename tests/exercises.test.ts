@@ -53,16 +53,39 @@ const FIELDS = [
   'anchor',
   'meanWindKn',
   'localHour',
+  'gennakerStage',
+  'gennakerTrim',
 ];
 const SEVERITIES = ['fender', 'touch', 'bump', 'knock', 'hit'];
 const OBSTACLE_KINDS = ['yacht', 'harbour', 'ground', 'propeller', 'fender', 'lazy-line'];
 const EVENTS = ['tack', 'tackByHand', 'controlledGybe', 'accidentalGybe'];
+const TRIM_STATES = [
+  'stowed',
+  'snuffed',
+  'crossing',
+  'backed',
+  'blanketed',
+  'pressed',
+  'luffing',
+  'good',
+  'stalled',
+];
 
 function checkProblems(check: ExerciseCheck): string[] {
   const problems: string[] = [];
   for (const [field, value] of Object.entries(check)) {
     if (!FIELDS.includes(field)) problems.push(`unknown field ${field}`);
     if (field === 'event' && !EVENTS.includes(value as string)) problems.push('unknown event');
+    if (field === 'gennakerTrim') {
+      const states = value as string[];
+      if (
+        !Array.isArray(states) ||
+        states.length === 0 ||
+        !states.every((x) => TRIM_STATES.includes(x))
+      ) {
+        problems.push('unknown gennaker trim state');
+      }
+    }
     const ranges: unknown[] =
       field === 'controls'
         ? Object.values(value as object)
@@ -75,6 +98,7 @@ function checkProblems(check: ExerciseCheck): string[] {
               'jibOutPct',
               'meanWindKn',
               'localHour',
+              'gennakerStage',
             ].includes(field)
           ? [value]
           : [];
@@ -386,6 +410,65 @@ describe('checkPasses: meanWindKn and localHour (M96)', () => {
   });
 });
 
+describe('checkPasses: gennakerStage and gennakerTrim (M108)', () => {
+  const none: CheckContext = { events: [], gusts: 0 };
+  // Wind over starboard at 120°, the gennaker hoisted to port with the sock up and the sheet at 25.
+  let hoisted = parseUrlState('?wd=0&ws=12&hdg=240&ms=60&jf=0&gn=4&gx=p&gu=100&gs=25&sea=flat');
+  for (let i = 0; i < 100; i += 1) hoisted = reduce(hoisted, { type: 'step', dt: 0.05 });
+
+  it('gennakerStage reads the rigging step, both ends included', () => {
+    expect(hoisted.gennaker.stage).toBe(4);
+    expect(checkPasses({ gennakerStage: [4, 4] }, hoisted, none)).toBe(true);
+    expect(checkPasses({ gennakerStage: [1, 4] }, hoisted, none)).toBe(true);
+    expect(checkPasses({ gennakerStage: [0, 3] }, hoisted, none)).toBe(false);
+    const stowed = reduce(hoisted, { type: 'gennaker', command: 'stow' });
+    expect(checkPasses({ gennakerStage: [0, 0] }, stowed, none)).toBe(true);
+    expect(checkPasses({ gennakerStage: [1, 4] }, stowed, none)).toBe(false);
+  });
+
+  it('gennakerTrim reads what the sail is doing', () => {
+    expect(checkPasses({ gennakerTrim: ['good'] }, hoisted, none)).toBe(true);
+    expect(checkPasses({ gennakerTrim: ['luffing', 'stalled'] }, hoisted, none)).toBe(false);
+    const stowed = reduce(hoisted, { type: 'gennaker', command: 'stow' });
+    expect(checkPasses({ gennakerTrim: ['stowed'] }, stowed, none)).toBe(true);
+    expect(checkPasses({ gennakerTrim: ['good'] }, stowed, none)).toBe(false);
+  });
+
+  it('a hand-built source with no gennaker fails a check that names one', () => {
+    const bare: CheckSource = { ...hoisted };
+    delete bare.gennaker;
+    expect(checkPasses({ gennakerStage: [0, 4] }, bare, none)).toBe(false);
+    expect(checkPasses({ gennakerTrim: ['stowed', 'good'] }, bare, none)).toBe(false);
+    expect(targetReading({ kind: 'gennakerStage', range: [4, 4] }, bare)).toBeNull();
+  });
+
+  it('the rig steps give a stage row, the trim step a trim row', () => {
+    const rig = EXERCISES.find((e) => e.id === 'gennaker-rig');
+    expect(checkTargets(rig?.steps[0]?.check ?? {}).map((r) => r.kind)).toEqual(['gennakerStage']);
+    expect(checkTargets(rig?.steps[6]?.check ?? {}).map((r) => r.kind)).toEqual([
+      'tack',
+      'gennakerTrim',
+    ]);
+    expect(targetReading({ kind: 'gennakerStage', range: [4, 4] }, hoisted)).toEqual({
+      ok: true,
+      value: 4,
+    });
+    expect(targetReading({ kind: 'gennakerTrim', states: ['good'] }, hoisted)).toEqual({
+      ok: true,
+      value: 'good',
+    });
+  });
+
+  it('the three exercises sit in the Sails group, in Easy ropes, with the fixed ids', () => {
+    for (const id of ['gennaker-rig', 'gennaker-gybe', 'gennaker-douse']) {
+      const def = EXERCISES.find((e) => e.id === id);
+      expect(def?.group, id).toBe('sails');
+      expect(def?.ropes, id).toBe('easy');
+      expect(def?.crew, id).toBe(false);
+    }
+  });
+});
+
 describe('Russian exercise texts', () => {
   it('have no Latin letters (the boat’s own printed words would go to latin-words.json)', () => {
     const ru = EXERCISE_TEXTS['ru'] as Record<string, unknown>;
@@ -458,9 +541,10 @@ describe('sections and targets (owner, PR 144)', () => {
 });
 
 describe('M103 feelIt (PHASE_FEEDBACK_SPEC 10.6)', () => {
-  const termIds = new Set(registry.entries.filter((e) => e.kind === 'term').map((e) => e.id));
+  // M108: the gennaker exercises list the gennaker's sail, rope and part entries too, so any registry id counts.
+  const termIds = new Set(registry.entries.map((e) => e.id));
 
-  it('every feelIt id is a registry term, listed by one exercise only', () => {
+  it('every feelIt id is a registry entry, listed by one exercise only', () => {
     const seen = new Set<string>();
     for (const def of EXERCISES) {
       for (const id of def.feelIt ?? []) {

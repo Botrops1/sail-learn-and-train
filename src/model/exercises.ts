@@ -6,6 +6,12 @@ import type { AnchorPhase, AnchorState } from './anchor';
 import { scopeNeededM } from './anchor';
 import { boat as hanse508, type BoatData } from './boat';
 import type { ClockState } from './clock';
+import {
+  gennakerTrimState,
+  type GennakerCommand,
+  type GennakerSetup,
+  type GennakerTrimState,
+} from './gennaker';
 import type { WindKey } from './localWinds';
 import type { EngineState } from './engine';
 import type { HarbourState } from './harbour';
@@ -66,6 +72,10 @@ export interface ExerciseCheck {
   meanWindKn?: Range;
   /** M96: the local hour on board (23.3); false without a clock in the source. */
   localHour?: Range;
+  /** M108: the gennaker's rigging step, 0 (stowed) to 4 (hoisted in its sock); false without `gennaker` in the source. */
+  gennakerStage?: Range;
+  /** M108: what the gennaker is doing (`gennakerTrimState`); false without `gennaker` in the source. */
+  gennakerTrim?: readonly GennakerTrimState[];
 }
 export interface ExerciseStep {
   id: string;
@@ -149,6 +159,8 @@ export interface CheckSource {
   anchor?: AnchorState;
   /** M96: for the `localHour` check; AppState has it. */
   clock?: ClockState;
+  /** M108: for the gennaker checks (its trim comes from `rig.gennaker`); AppState has it. */
+  gennaker?: GennakerSetup;
 }
 export interface CheckContext {
   events: readonly ExerciseEvent[];
@@ -177,7 +189,8 @@ export type LoggedAction =
   | { type: 'line'; code: LineCode; command: 'take' | 'tighten' | 'ease' | 'letGo'; times?: number }
   | { type: 'thruster'; which: 'bow' | 'stern'; dir: -1 | 1 }
   | { type: 'windlass'; motion: 'down' | 'up' }
-  | { type: 'fenders'; out: boolean };
+  | { type: 'fenders'; out: boolean }
+  | { type: 'gennaker'; command: GennakerCommand };
 
 /** The log the debrief is made from (M66 writes start, step, finish; M67 mistake, back; M68 action, event). */
 export type ExerciseLogEntry =
@@ -358,6 +371,11 @@ function harbourFieldsPass(
   return true;
 }
 
+/** M108: the gennaker's trim state in a source that has a gennaker. */
+function gennakerTrimOf(setup: GennakerSetup, rig: RigState): GennakerTrimState {
+  return gennakerTrimState(setup, rig.gennaker);
+}
+
 /** True when every field of the check holds (PHASE10_SPEC 4.4); false while there is no motion yet. */
 export function checkPasses(
   check: ExerciseCheck,
@@ -396,6 +414,13 @@ export function checkPasses(
     return false;
   }
   if (check.meanWindKn && !inRange(source.controls.ctl_wind_speed, check.meanWindKn)) return false;
+  if (check.gennakerStage) {
+    if (!source.gennaker || !inRange(source.gennaker.stage, check.gennakerStage)) return false;
+  }
+  if (check.gennakerTrim) {
+    if (!source.gennaker) return false;
+    if (!check.gennakerTrim.includes(gennakerTrimOf(source.gennaker, source.rig))) return false;
+  }
   if (check.localHour) {
     if (!source.clock || !inRange(localHourOf(source.clock.utcMs), check.localHour)) return false;
   }
@@ -419,7 +444,9 @@ export type TargetRow =
   | { kind: 'heading'; to: number; within: number }
   | { kind: 'quayGap'; range: Range }
   | { kind: 'meanWind'; range: Range }
-  | { kind: 'localHour'; range: Range };
+  | { kind: 'localHour'; range: Range }
+  | { kind: 'gennakerStage'; range: Range }
+  | { kind: 'gennakerTrim'; states: readonly GennakerTrimState[] };
 
 /** The rows of a check, in the order a learner reads them (the fields of M66). */
 export function checkTargets(check: ExerciseCheck): TargetRow[] {
@@ -435,6 +462,8 @@ export function checkTargets(check: ExerciseCheck): TargetRow[] {
   if (check.quayGapM) rows.push({ kind: 'quayGap', range: check.quayGapM });
   if (check.meanWindKn) rows.push({ kind: 'meanWind', range: check.meanWindKn });
   if (check.localHour) rows.push({ kind: 'localHour', range: check.localHour });
+  if (check.gennakerStage) rows.push({ kind: 'gennakerStage', range: check.gennakerStage });
+  if (check.gennakerTrim) rows.push({ kind: 'gennakerTrim', states: check.gennakerTrim });
   return rows;
 }
 
@@ -484,6 +513,16 @@ export function targetReading(row: TargetRow, source: CheckSource): TargetReadin
       if (!source.clock) return null;
       const hour = localHourOf(source.clock.utcMs);
       return { ok: inRange(hour, row.range), value: hourText(hour) };
+    }
+    case 'gennakerStage': {
+      if (!source.gennaker) return null;
+      const stage = source.gennaker.stage;
+      return { ok: inRange(stage, row.range), value: stage };
+    }
+    case 'gennakerTrim': {
+      if (!source.gennaker) return null;
+      const state = gennakerTrimOf(source.gennaker, source.rig);
+      return { ok: row.states.includes(state), value: state };
     }
   }
 }

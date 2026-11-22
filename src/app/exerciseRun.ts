@@ -504,6 +504,10 @@ function loggedActions(previous: AppState, next: AppState, action: Action): Logg
       if (next.anchor.windlass === previous.anchor.windlass || action.motion === 'off') return [];
       return [{ type: 'windlass', motion: action.motion }];
     }
+    case 'gennaker': {
+      if (next.gennaker === previous.gennaker) return [];
+      return [{ type: 'gennaker', command: action.command }];
+    }
     case 'setFenders': {
       if (next.harbour.fendersOut === previous.harbour.fendersOut) return [];
       return [{ type: 'fenders', out: action.out }];

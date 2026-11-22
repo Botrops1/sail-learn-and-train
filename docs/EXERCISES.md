@@ -25,6 +25,9 @@ Every exercise uses the same format (ROADMAP Phase 10): **what you see → what 
 - Weather helm (M103, PT-29): the wheel pulls more as the wind and the heel rise; easing the main takes the heel and the pull off. Played in Watch mode from Learn's *Feel it*. No lee helm: the model has none.
 - Header and lift (M103, PT-21): the wind turns 20° towards the bow (the main flaps, bear away), then 40° the other way (head up). Wind from 90°, a scripted timetable, played in Watch mode from Learn's *Feel it*.
 - Reducing sail as the wind rises: furl the jib partly, then the main (in-mast furling instead of reefing).
+- Rig and hoist the gennaker (M108, PT-69, `gennaker-rig`, Sails group): the tack line, the two sheets outside everything, the halyard, the hoist in its sock; roll the jib away first; pull the sock up and trim until the front edge just curls. Played in Watch mode from Learn's *Feel it*.
+- Gybe the gennaker (M108, PT-69, `gennaker-gybe`, Sails group): bear away, trim the main, gybe the boat, then gybe the gennaker (the lazy sheet takes over and the sail goes round the front), come up and trim both.
+- Take the gennaker down (M108, PT-70, `gennaker-douse`, Sails group): bear away until the main hides it, ease the sheet, pull the sock down, unrig in the reverse order, roll the jib out.
 - Heaving-to / stopping the boat; getting out of irons.
 - Man overboard: shout, point, mark, turn back, approach slowly from downwind.
 - Motoring in a confined space: turning in the boat's length using prop walk and thrusters.
