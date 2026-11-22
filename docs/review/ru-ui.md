@@ -779,6 +779,10 @@
 | exercise.target.time | Time on board {from}–{to} | Время на борту {from}–{to} |
 | exercise.target.nowM | now {value} m | сейчас {value} м |
 | exercise.target.nowWord | now {value} | сейчас {value} |
+| exercise.target.gennakerStage | Gennaker: step {now} of 4 | Геннакер: шаг {now} из 4 |
+| exercise.target.gennakerTrim | Gennaker: {state} | Геннакер: {state} |
+| exercise.target.gennakerSet | Gennaker: set on its new side | Геннакер: поднят на новом борту |
+| exercise.target.gennakerStowed | stowed | убран |
 | exercise.sections.hidden | Hidden, not needed here: {list}. | Скрыто, здесь не нужно: {list}. |
 | exercise.sections.locked | Set by the exercise, cannot be changed: the wind, the waves and the clock. | Задано упражнением, менять нельзя: ветер, волны и часы. |
 | exercise.pauseOnMistake | Pause when I make a mistake | Остановить, когда я ошибусь |
@@ -860,6 +864,11 @@
 | debrief.windlass.up | Chain in | Цепь вверх |
 | debrief.fenders.out | Fenders out | Кранцы за борт |
 | debrief.fenders.in | Fenders in | Кранцы убраны |
+| debrief.gennaker.next | Gennaker: next step | Геннакер: следующий шаг |
+| debrief.gennaker.back | Gennaker: undo a step | Геннакер: отменён шаг |
+| debrief.gennaker.gybe | Gennaker: gybed | Геннакер: перекинут |
+| debrief.gennaker.rig | Gennaker: rigged | Геннакер: оснащён |
+| debrief.gennaker.stow | Gennaker: stowed | Геннакер: убран |
 | section.conditions | Conditions | Условия |
 | section.explain | Explain: {name} | Пояснение: {name} |
 | quick.easy | Tap a line: its − and + appear here. | Нажмите на конец: здесь появятся − и +. |
