@@ -943,6 +943,10 @@ describe('M112: the captain walks between the stations (PHASE_PEOPLE_SPEC 8.6)',
     const s = reduceRealistic(initialRealistic(), { type: 'station', station: 'bow' });
     expect(s.station).toBe('bow');
     expect(s.walk).toBeNull();
+    // A walk held while in Easy ropes ends with the next (instant) station change.
+    const held = reduceRealistic(walkingState(), { type: 'station', station: 'helm' });
+    expect(held.station).toBe('helm');
+    expect(held.walk).toBeNull();
   });
 
   it('8. the store walks in Realistic ropes only; a link and Reset never start mid-walk', () => {

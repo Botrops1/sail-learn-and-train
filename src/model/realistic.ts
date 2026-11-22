@@ -652,7 +652,8 @@ export function reduceRealistic(
   switch (action.type) {
     case 'station': {
       if (action.station === state.station) return state;
-      let walking: WalkState | null = state.walk;
+      // Without a walk context (Easy ropes) the change is instant and ends any walk that was held.
+      let walking: WalkState | null = null;
       if (walk) {
         const toSpot = stationSpot(action.station, walk.helmSide, data);
         const standsAt = stationSpot(state.station, walk.helmSide, data);

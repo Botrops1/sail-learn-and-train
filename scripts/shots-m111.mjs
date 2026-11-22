@@ -90,7 +90,7 @@ export async function liveM111Checks({ openPage, viewports, outDir, prefix, prob
     await context.close();
   }
 
-  // 3. Realistic ropes: he stands at the station and jumps when another is chosen.
+  // 3. Realistic ropes: he stands at the station and walks there when another is chosen (M112).
   {
     const { context, page } = await openPage(
       phone,

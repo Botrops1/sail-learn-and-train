@@ -12,6 +12,7 @@ import {
   stationSpot,
   walkPosition,
   walkSecondsLeft,
+  walkWalkway,
   windwardSide,
   type WalkState,
 } from '../src/model/people';
@@ -317,7 +318,8 @@ describe('M112 walking', () => {
     const { feet } = walkPosition(walk);
     expect(toSegment(feet, pt('cockpitCentre').at, pt('cockpitFront_s').at)).toBeLessThan(1e-6);
     expect(Math.abs(near(feet, pt('cockpitCentre').at) - 2.664)).toBeLessThan(0.01);
-    const back = startWalk(feet, ['cockpitCentre', 'cockpitFront_s'], 'port', 'winch_p', 40);
+    expect(walkWalkway(walk)).toEqual(['cockpitCentre', 'cockpitFront_s']);
+    const back = startWalk(feet, walkWalkway(walk), 'port', 'winch_p', 40);
     expect(back.nodes).toEqual(['cockpitCentre', 'aftCentre', 'helm_p', 'winch_p']);
     expect(back.from).toBe('cockpitFront_s');
     expect(Math.abs(back.lengthM - 5.224)).toBeLessThan(0.01);
