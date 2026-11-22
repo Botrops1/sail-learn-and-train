@@ -42,6 +42,11 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
     await real(page, { type: 'selfTailer', winch, into: true });
   };
   const button = (page, winch, held) => real(page, { type: 'button', winch, held });
+  /** M112: a station change walks; waits (app time) until he has arrived. */
+  const goTo = async (page, station) => {
+    await real(page, { type: 'station', station });
+    for (let i = 0; i < 120 && (await read(page)).walking; i += 1) await page.waitForTimeout(250);
+  };
   // "Show the controls" folds the Exercises section in the side layout too, so always reopen it.
   const open = (page) => showSection(page, 'exercises');
   const start = async (page) => {
@@ -126,7 +131,7 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
       await shot(page, `live-${phone.name}-m71-alone-step`);
       const first = await exerciseLine(page);
       const s1 = await waitForStep(page, 1, 15);
-      await real(page, { type: 'station', station: 'starboard' });
+      await goTo(page, 'starboard');
       await real(page, { type: 'clutch', key: 'a2', open: true });
       await onWinch(page, 'a3', W);
       await button(page, W, true);
@@ -144,9 +149,9 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
         await act(page, { type: 'autopilot', command: { turnDeg: -10 } });
       }
       const s3 = await waitForStep(page, 3, 60);
-      await real(page, { type: 'station', station: 'port' });
+      await goTo(page, 'port');
       await real(page, { type: 'clutch', key: 'r1', open: true });
-      await real(page, { type: 'station', station: 'starboard' });
+      await goTo(page, 'starboard');
       await onWinch(page, 'a5', W);
       await button(page, W, true);
       const s4 = await waitForStep(
@@ -218,9 +223,9 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
       await start(page);
       await act(page, { type: 'engine', command: 'start' });
       const s1 = await waitForStep(page, 1, 5);
-      await real(page, { type: 'station', station: 'starboard' });
+      await goTo(page, 'starboard');
       await real(page, { type: 'clutch', key: 'a5', open: true });
-      await real(page, { type: 'station', station: 'port' });
+      await goTo(page, 'port');
       await onWinch(page, 'r1', P);
       await button(page, P, true);
       const s2 = await waitForStep(
@@ -237,7 +242,7 @@ export async function liveM71Checks({ openPage, viewports, outDir, prefix, probl
       const s3 = await waitForStep(page, 3, 30);
       await real(page, { type: 'offWinch', winch: P });
       await real(page, { type: 'clutch', key: 'b3', open: true });
-      await real(page, { type: 'station', station: 'starboard' });
+      await goTo(page, 'starboard');
       await real(page, { type: 'clutch', key: 'a3', open: true });
       await onWinch(page, 'a2', W);
       await button(page, W, true);

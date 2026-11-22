@@ -7,7 +7,8 @@ import { demoStepCard, showSection } from './ui.mjs';
 export const M82_SCENES = [];
 
 /** Setting the sails, Realistic, Alone: seconds allowed per step (PHASE10_PHONE_SPEC 9.6). */
-const SET_LIMITS_S = [13, 28, 43, 58, 9];
+// M112: the walks between the stations (0.8 m/s) add 3, 1, 6 and 1 s to steps 2 to 5.
+const SET_LIMITS_S = [13, 31, 44, 64, 10];
 const TICK_MS = 200;
 const W_STARBOARD = 'winch_primary_starboard';
 
@@ -24,6 +25,11 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
   const tid = (page, id) => page.getByTestId(id);
   const tap = async (page, id, n = 1) => {
     for (let i = 0; i < n; i += 1) await tid(page, id).click();
+  };
+  /** M112: taps a station of the step bar and waits (app time) until he has walked there. */
+  const goTo = async (page, station) => {
+    await tap(page, `bar-station-${station}`);
+    for (let i = 0; i < 120 && (await read(page)).walking; i += 1) await page.waitForTimeout(250);
   };
   const flashing = (page, id) =>
     page.evaluate(
@@ -107,7 +113,7 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
       'switch, dot and "nothing at this station" shown while the learner is not at Starboard',
     );
     await shot(page, 'm82-phone-set-step2-other-station');
-    await tap(page, 'bar-station-starboard');
+    await goTo(page, 'starboard');
     check(
       'at Starboard the rows show and the hint goes',
       (await tid(page, 'bar-clutch-a2').isVisible()) &&
@@ -139,7 +145,7 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
         (await tid(page, 'bar-station-helm').locator('.bar-station-dot').isVisible()),
       `autopilot rows at Starboard: ${await tid(page, 'bar-ap-wind').count()}`,
     );
-    await tap(page, 'bar-station-helm');
+    await goTo(page, 'helm');
     check(
       'step 3 at Helm: the autopilot shows and the clutch rows go',
       (await tid(page, 'bar-ap-wind').isVisible()) &&
@@ -152,9 +158,9 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
     await stepDone(2);
 
     // Step 4: the Genoa roll clutch at Port, the Genoa sheet on the Starboard winch.
-    await tap(page, 'bar-station-port');
+    await goTo(page, 'port');
     await tap(page, 'bar-clutch-r1');
-    await tap(page, 'bar-station-starboard');
+    await goTo(page, 'starboard');
     await tap(page, `bar-winch-${W_STARBOARD}-on`);
     await tap(page, `bar-winch-${W_STARBOARD}-turn`, 3);
     await tap(page, `bar-winch-${W_STARBOARD}-tail`);
@@ -167,7 +173,7 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
     await stepDone(3);
 
     // Step 5: the engine to neutral and off, at the helm.
-    await tap(page, 'bar-station-helm');
+    await goTo(page, 'helm');
     await tap(page, 'bar-lever-astern', 6);
     await tap(page, 'engine-startstop-bar');
     await stepDone(4);
@@ -255,7 +261,7 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
       'exercise-bar-showme visible',
     );
     await untilPast(page, 0, 13);
-    await tap(page, 'bar-station-starboard');
+    await goTo(page, 'starboard');
     problems.push(...(await auditPage(page, 'm82 phone realistic bar')));
     await context.close();
   }
@@ -274,7 +280,7 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
     await tid(page, 'exercise-start').click();
     await page.waitForTimeout(500);
     await untilPast(page, 0, 13);
-    await tap(page, 'bar-station-starboard');
+    await goTo(page, 'starboard');
     const focus = await page.evaluate(() => document.activeElement?.tagName ?? '');
     check('a click leaves no button focused', focus !== 'BUTTON', `focus on ${focus}`);
     const winchRow = page.locator('[data-row^="winch:starboard"]');

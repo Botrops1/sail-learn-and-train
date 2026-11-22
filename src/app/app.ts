@@ -195,6 +195,7 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
           anchorEastM: s.anchor.eastM,
           anchorNorthM: s.anchor.northM,
           anchorCutOut: s.anchor.cutOut,
+          walking: s.realistic.walk !== null,
         };
       },
     };

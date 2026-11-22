@@ -65,6 +65,7 @@ export async function liveM53Checks({ openPage, viewports, outDir, prefix, probl
       await showSection(page, 'helm');
       const link = await waitForLink(page, ['st=helm']);
       check(`${v} stations: the title tap walks`, link.includes('st=helm'), link);
+      await waitForWalk(page);
       check(`${v} stations: the controls show`, await visible(page, 'engine-helm'), 'engine-helm');
       problems.push(...(await auditPage(page, `m53 ${v} helm open`)));
       await context.close();
