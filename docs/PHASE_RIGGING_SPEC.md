@@ -585,6 +585,20 @@ The autopilot's turns are relative (`turns(s, n, deg)`, `ap(s, { turnDeg })`; in
 
 `tests/exerciseListIds.test.ts` follows `EXERCISES.length` (19 → 22); `grep -n "exercise-item\|exerciseItemTestIds" scripts/shots-m*.mjs` for checks of the Sails group's list. **PR line:** `CI groups: m66, m103`. PR: `Closes #249`. Done when the three Watch runs and the pilot tests pass. Not in this milestone: Realistic-rope versions of the exercises.
 
+### 10.7 Decided in the M108 PR (recommended; merging accepts it)
+
+1. **`CheckSource.gennaker` is the store's own `GennakerSetup`**, not a `{ stage, trim }` pair: the checks receive the `AppState` itself (no function builds a `CheckSource`), and the trim is worked out from `rig.gennaker` with `gennakerTrimState`. A hand-built source without `gennaker` fails a check that names the stage or the trim, as 10.2 says.
+2. **The `furl-jib` step also shows the jib sheet** (`bar: control:ctl_jib_sheet, control:ctl_jib_furl`) and its pilot eases the sheet to 100 first: the jib only rolls away while its sheet is eased (PT-13), so 10.3's bar with only the furl control left a learner stuck at about 83 % out.
+3. **`feelIt` may name any registry entry**, not only terms: the three gennaker exercises list the gennaker's sail, rope and part entries (10.3), so the M103 test accepts any registry id.
+4. **Target rows**: `gennakerStage` shows the first number of its range ("Gennaker: step {now} of 4"), a range that ends at 0 reads "Gennaker: stowed", and a `gennakerTrim` list of more than two states reads "Gennaker: set on its new side" (`exercise.target.gennakerSet`) instead of five states in a row.
+5. **The `lower` pilot is stateless**: one `back` per call while the stage is above 0, instead of a counter.
+6. **`docs/EXERCISES.md` has no catalogue table**: the three exercises are three bullets in its section 2, in the style of the others.
+7. **The Sails block shows at stage 0 while the step's bar names a `gennaker:` row** (7.5), so the rigging list and its tick are there for the first step.
+8. **The pilots' time limits** (`tests/exercisePilots.test.ts`) are `ceil(1.2 × measured + 3)` of the measured app seconds: rig 0.05, 0.05, 0.05, 1.2, 0.05, 0.05, 5.05; gybe 11.6, 3.35, 12.35, 5.05, 19; douse 23.7, 0.05, 0.05, 0.2, 2.3.
+9. **Main-sheet values changed from 10.3 and 10.4** (found in the review): at 87° and 90° apparent wind the main reads "Stalled" with the main sheet at 60 to 80, and "good" only from about 80 or 90. So `gennaker-rig` starts with `ms=80` (not 60), `gennaker-gybe` with `ms=90` (not 70), and the gybe's `come-up` step sets the main sheet to about 90 % (text and pilot), so no run shows "Stalled" next to a step that says to ease the main. The rig pilot's final sheet is 35 (not 25): with the main at 80, 25 pulls the gennaker against the main ("pressed"), 35 reads "Drawing well". `tests/exercisePilots.test.ts` checks the main reads good at both starts and at the end of both runs.
+10. **The bar's gennaker buttons look switched off when they are** (`.exercise-stack .bar-text-button:disabled`, grey), so "Undo a step" on the first step does not look tappable.
+11. **The other languages' texts** (`see`, `happening`, `action`, `mistake`, `done`, each step's `how`, each new mistake's three lines) are written from the facts of sections 7–8 only; German, Norwegian and Russian are AI drafts.
+
 ## 11. M109: Spinnaker and code 0 pictures
 
 **Independent review: required** (new state and URL key; what the pictures teach).
