@@ -4,7 +4,7 @@
 // debug=1&held=1&sea=flat so tap points do not drift.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { setSheet, showSection, waitForLink } from './ui.mjs';
+import { setSheet, showSection, waitForLink, waitForWalk } from './ui.mjs';
 
 export const M50_SCENES = [];
 
@@ -140,8 +140,12 @@ export async function liveM50Checks({ openPage, viewports, outDir, prefix, probl
       await lookDownAt(page, [-0.13, 1.98, 1.05]);
       await tapHandle(page);
       await tapHandle(page);
+      await waitForLink(page, ['st=mast']);
+      // M112: the second tap walks there; once he stands at the mast the next tap takes it.
+      await waitForWalk(page);
+      await tapHandle(page);
       const link = await waitForLink(page, ['st=mast', 'hd=c']);
-      check(`${v} two taps at the mast: station and carried`, true, link);
+      check(`${v} two taps walk to the mast, the third takes it`, true, link);
       await context.close();
     }
 
