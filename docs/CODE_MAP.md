@@ -80,6 +80,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `languages.ts` | The available languages (from every `content/lang/*/ui.json`) and `latinAllowed`. |
 | `glossary.ts` | The glossaries by language, `learnEntry`, `NOT_DRAWN`, `FAR_AWAY`, `sourceLink`, groups and `searchGlossary`. |
 | `horizonLand.ts` | The distant land's outline from the area's ridges (pure). |
+| `people.ts`, `figurePose.ts` | The captain: the deck points he stands at, where the mode, station and wheel put him, and his pose's joint angles (pure). |
 | `gennaker.ts` | The optional gennaker: rigging stage and side, the commands (rig, gybe), the sheets' route, what is drawn, and `solveGennaker` (foot angle, angle of attack, fill, the main hiding it) with its trim state. |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
 | `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts` | Apparent wind, lift/drag, resistance, speed/heading/position, sideways motion and turning on the spot at low speed. `stepBoat` merges the contacts of its substeps. |
@@ -107,6 +108,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `daylight.ts` | The sun's light from the clock: its direction in the boat frame and at its true height for the sky, and how strong the sun, the sky light and the night are. |
 | `skyDome.ts`, `skyColours.ts` | The sky as a shader on a sphere round the camera (gradient, clouds, sun, stars) and the sky colours for a sun height; also rendered into a small cube map for High detail's reflections. |
 | `horizonLand.ts` | The distant land: two rings of hills round the horizon, fixed to the compass, following the camera so it is never reached. |
+| `people/figureMesh.ts`, `people/captain.ts` | The captain as one skinned mesh with vertex colours, and his model: placed and posed each frame, with an invisible tap area. |
 | `marina.ts` | The marina in 3D (quay, wall, pontoon, rings, our berth's stripe and arrow, moored yachts as instanced meshes), built at map positions in the world group and moved with the boat. |
 | `harbourDetail.ts` | The marina's surroundings: the rock breakwater, entrance lights, paved land, buildings, lamp posts, bollards and the pontoon's floats. |
 | `exerciseTarget.ts` | The magenta outline of the current step's target, hidden when no step shows one. |

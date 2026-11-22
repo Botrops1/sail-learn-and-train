@@ -648,4 +648,36 @@ export const SCENE = {
   },
   /** Low detail: largest device pixel ratio used (high detail: maxPixelRatio). */
   maxPixelRatioLow: 1.5,
+  /**
+   * The captain (M111, PHASE_PEOPLE_SPEC 7.6): the owner's mockup, value for value. Picture
+   * numbers, not boat geometry. Colours are hex; proportions in metres (`body` the mockup's `D`,
+   * `head` its `HD`: half width, half height, half depth).
+   */
+  people: {
+    colours: {
+      skin: 0xc98f6c,
+      skinShade: 0x93614a,
+      jacket: 0x1b2946,
+      jacketLight: 0x273a60,
+      trousers: 0x272b34,
+      shoe: 0x35261c,
+      sole: 0xe6e0d0,
+      gold: 0xd2ab4c,
+      zip: 0x8d96a6,
+      hair: 0x121110,
+      capWhite: 0xf1efe8,
+      capBand: 0x1b2946,
+      visor: 0x0e0f13,
+    },
+    body: { ankleY: 0.08, shin: 0.4, thigh: 0.45, neckUp: 0.545, headUp: 0.155 },
+    head: { a: 0.078, b: 0.112, c: 0.098 },
+    /** He is hidden in the Helm view when his feet are this close (m) to the eye, horizontally. */
+    hideNearEyeM: 0.9,
+    /** The joints ease to a new pose by 1 − exp(−smoothingPerS · dt). */
+    smoothingPerS: 10,
+    /** How fast the body turns to a new facing, degrees per second. */
+    turnDegPerS: 360,
+    /** The tap area round him: radius and height of the invisible cylinder, metres. */
+    pick: { radiusM: 0.2, heightM: 1.8, segments: 8 },
+  },
 } as const;

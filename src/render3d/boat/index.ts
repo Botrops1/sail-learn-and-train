@@ -5,11 +5,13 @@ import { carPoint, jibClew } from '../../model/jib';
 import { drawnPose, ropeDrawings, type RopeDrawing, type WinchWrap } from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
 import { boat } from '../../model/boat';
+import type { CaptainPlacement } from '../../model/people';
 import type { Detail } from '../../model/settings';
 import { initialRig, type RigState } from '../../model/sim';
 import type { ThrusterState } from '../../model/thrusters';
 import { wheelTurnDeg } from '../../model/steering';
 import { buildWindex } from '../wind';
+import { buildCaptain } from '../people/captain';
 import { buildKeel, buildRudder, buildSaildrive } from './appendages';
 import { buildBowGear } from './bowGear';
 import { buildCockpitHardware } from './cockpitHardware';
@@ -74,6 +76,8 @@ export interface BoatModel {
   panelStats(): PanelStats;
   /** M62: shows every panel instrument whatever the distance (the spotlight, 8.4); false hands it back. */
   revealPanels(on: boolean): void;
+  /** M111: places and poses the captain; `t` and `dt` in seconds, `hidden` in the Helm view of his own wheel. */
+  setCaptain(placement: CaptainPlacement, hidden: boolean, t: number, dt: number): void;
 }
 
 /**
@@ -200,6 +204,14 @@ export function buildBoat(
     object.castShadow = !object.material.transparent || id.startsWith('sail_');
     object.receiveShadow = !id.startsWith('rope_') && !object.material.transparent;
   });
+  // The captain joins after the shadow pass above, which would give his tap area shadows.
+  const captain = buildCaptain(detail);
+  captain.object.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    object.castShadow = object instanceof THREE.SkinnedMesh;
+    object.receiveShadow = false;
+  });
+  root.add(captain.object);
   return {
     root,
     boomPivot: rigParts.boomPivot,
@@ -214,6 +226,7 @@ export function buildBoat(
     updatePanel: pedestals.update,
     panelStats: pedestals.stats,
     revealPanels: pedestals.reveal,
+    setCaptain: captain.update,
     setAnchorStowed: (stowed) => {
       for (const mesh of anchorMeshes) mesh.visible = stowed;
     },

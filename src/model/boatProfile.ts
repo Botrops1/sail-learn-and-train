@@ -64,6 +64,15 @@ const NAMING_ARRAYS: ReadonlySet<string> = new Set([
 /** The boat's own id and name may change (`makeBoatProfile` writes them). */
 const FREE_NAMING_PATHS: ReadonlySet<string> = new Set(['boat.meta.id']);
 
+/**
+ * Values made only of names the code looks up (the walkways' point ids, the stations' spots):
+ * the whole value must equal the reference (M111, PHASE_PEOPLE_SPEC 7.2).
+ */
+const WHOLE_NAMING_PATHS: ReadonlySet<string> = new Set([
+  'boat.people.walkways',
+  'boat.people.stationSpots',
+]);
+
 interface Range {
   path: string;
   min: number;
@@ -122,6 +131,7 @@ export const ADDED_KEYS: readonly string[] = [
   'modelDetail.shroudFittings',
   'deckFittings.hatches',
   'deckFittings.portlights',
+  'people',
 ];
 
 /**
@@ -231,6 +241,31 @@ function walk(
   problems: Problems,
 ): void {
   if (problems.full) return;
+
+  if (WHOLE_NAMING_PATHS.has(path)) {
+    if (JSON.stringify(value) !== JSON.stringify(reference)) {
+      problems.add(path, 'ids', 'expected the reference value');
+    }
+    return;
+  }
+  if (path === 'boat.people.points' && isPlainObject(reference) && isPlainObject(value)) {
+    for (const name of Object.keys(value)) {
+      if (!(name in reference)) {
+        problems.add(`${path}.${name}`, 'ids', 'unexpected point');
+        continue;
+      }
+      // `sided` decides the names the code looks up (`<id>_s`, `<id>_p`)
+      const ref = reference[name];
+      const val = value[name];
+      if (
+        isPlainObject(ref) &&
+        isPlainObject(val) &&
+        (ref.sided === true) !== (val.sided === true)
+      ) {
+        problems.add(`${path}.${name}.sided`, 'ids', 'expected the reference value');
+      }
+    }
+  }
 
   if (reference === null) {
     if (NAMING_KEYS.has(key)) {

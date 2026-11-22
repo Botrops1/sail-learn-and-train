@@ -4,6 +4,7 @@ import { highlightIds } from '../model/panelEntries';
 import { handlePose } from '../model/handlePose';
 import { panelReadings } from '../model/helmPanel';
 import { runningRopes, winchWraps } from '../model/realistic';
+import { captainPlacement, type CaptainPlacement } from '../model/people';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
@@ -33,6 +34,7 @@ import { buildSkyDome } from './skyDome';
 import { skyColours } from './skyColours';
 import { buildWaterSurface } from './waterSurface';
 import { createCameraRig } from './cameraRig';
+import { helmPose } from './cameraPresets';
 import { createPicker, isDoubleTap, type TapMark } from './picking';
 import { SCENE } from './sceneConfig';
 import { buildDangerZone } from './dangerZone';
@@ -148,6 +150,10 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   let thrusters = initial.thrusters;
   boatModel.setThrusters(thrusters);
   let anchorStowed = initial.anchor.phase === 'stowed';
+  // M111: the captain's last placement (the debug hook reads it) and the frame time of the last
+  // call, for the pose's easing; reset when the boat is rebuilt.
+  let captainAtMs: number | null = null;
+  let captainLast: { placement: CaptainPlacement; hidden: boolean } | null = null;
   boatModel.setAnchorStowed(anchorStowed);
   // M50: the winch handle is drawn in Realistic ropes only; the check is on the handle's identity.
   let drawnHandle: AppState['realistic']['handle'] | null = null;
@@ -267,6 +273,19 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           });
           return seen;
         },
+        /** M111: the captain's last placement and whether he was hidden; null before the first frame. */
+        captain: () =>
+          captainLast === null
+            ? null
+            : {
+                x: captainLast.placement.feet[0],
+                y: captainLast.placement.feet[1],
+                z: captainLast.placement.feet[2],
+                faceDeg: captainLast.placement.faceDeg,
+                pose: captainLast.placement.pose,
+                hidden: captainLast.hidden,
+                walkedM: captainLast.placement.walkedM,
+              },
         /** True if the boat has a mesh with this part id (M58: a boat without a thruster has no tunnel). */
         hasPart: (partId: string) => {
           let found = false;
@@ -561,6 +580,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       holder.remove(boatModel.root);
       dispose(boatModel.root);
       boatModel = buildBoat(state.controls, state.rig, detail);
+      captainAtMs = null;
       boatModel.setFendersOut(state.harbour.fendersOut);
       boatModel.setThrusters(state.thrusters);
       boatModel.setAnchorStowed(anchorStowed);
@@ -798,6 +818,24 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         state.sailDamage,
         state.gennaker,
       );
+      // M111: the captain stands where the mode, the station and the wheel put him; in the Helm
+      // view of his own wheel the camera is at his eyes, so he is not drawn.
+      const placement = captainPlacement({
+        ropesMode: state.settings.ropesMode,
+        realistic: state.realistic,
+        helmWheel: state.camera.helm.wheel,
+      });
+      const eye = helmPose(state.camera.helm).position;
+      const captainHidden =
+        state.camera.preset === 'helm' &&
+        Math.hypot(placement.feet[0] - eye[0], placement.feet[2] - eye[2]) <
+          SCENE.people.hideNearEyeM;
+      const captainDt =
+        captainAtMs === null ? 0 : Math.min(0.1, Math.max(0, (now - captainAtMs) / 1000));
+      captainAtMs = now;
+      // His idle movement runs on the simulation clock, so Pause freezes him with the rest (issue #32).
+      boatModel.setCaptain(placement, captainHidden, state.rig.timeS, captainDt);
+      captainLast = { placement, hidden: captainHidden };
       dangerZone.update(state.rig);
       // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).
       // They move with the simulation clock, so they stand still while paused (issue #32).
@@ -938,6 +976,7 @@ function configureSunShadow(sun: THREE.DirectionalLight): void {
 /** Frees the GPU memory of a removed boat (geometries and the cloned materials). */
 function dispose(root: THREE.Object3D): void {
   root.traverse((object) => {
+    if (object instanceof THREE.SkinnedMesh) object.skeleton.dispose();
     if (!(object instanceof THREE.Mesh)) return;
     object.geometry.dispose();
     const materials = Array.isArray(object.material) ? object.material : [object.material];

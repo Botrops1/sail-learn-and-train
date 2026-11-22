@@ -244,7 +244,7 @@ Registry (`content/registry/parts.json`, after the last `cockpit` entry): `{ "id
 
 English glossary entry (`content/lang/en/glossary.json`, final; `textStatus: "draft"`; de / no / ru AI drafts):
 
-- `person_captain`: name "Captain (you)"; alternatives `[{ "term": "Skipper" }]`; short "The person in charge of the boat: in the app, you."; what "The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic ropes you stand at the station you work from: by a winch, at the mast or at the bow. The Helm view looks through your eyes, so there you do not see yourself."; showMe "The captain stands behind the port wheel, steering."
+- `person_captain`: name "Captain (you)"; alternatives `[{ "term": "Skipper" }]`; short "The person in charge of the boat: in the app, you."; what "The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic mode you stand at the station you work from: by a winch, at the mast or at the bow. The Helm view looks through your eyes, so there you do not see yourself."; showMe "The captain stands behind the port wheel, steering."
 
 `tests/glossary.test.ts` "the groups have the expected sizes": the sixth number (the `cockpit` group) goes up by 1 (22 → 23 on today's `main`).
 
@@ -310,6 +310,14 @@ No `ui.json` change.
 PR: `Closes #260`. Done when the captain stands where 7.3 says in every mode on both wheels, is hidden in the Helm view of his own wheel, opens his card on a touch tap, keeps within the limits of 7.6 at both details, every test of 7.8 and check of 7.9 passes, `npm run check` passes and the CI run with `CI groups: all` is green (with `budget`).
 
 Not in this milestone: walking (M112), a crew, weight in the heel, other looks, a label.
+
+### 7.12 Decided in the M111 PR (recommended; merging accepts it)
+
+1. **English glossary text says "Realistic mode", not "Realistic ropes".** The M100 rule (tests/sailorWords) forbids the word "rope" in English text, and the mode's name in the app is "Realistic". The German, Norwegian and Russian drafts follow their own mode names.
+2. **Triangle counts**: 12,604 at High and 3,416 at Low, inside the limits of 7.6. The rule 7 shares were not changed.
+3. **The hair's crown is left out with the cap's alternatives**: only the hair and beard balls that the cap leaves visible are built, so the `rnd` scatter of the balls is unchanged from the mockup's (the crown is built after them).
+4. **A tap on his body wins over a fitting's tap area.** Where the two overlap (for example a rope bin beside the wheel), a tap on his body opens his card; 7.6's "the nearer wins" holds between everything else. His invisible tap area is ignored while he is hidden (the Helm view), so it never takes a tap there.
+5. **The profile check also compares each point's `sided` flag**, because it decides the point names (`_s`, `_p`) the code looks up; test 14 covers it. The scene frees the figure's bone texture when the boat is rebuilt.
 
 ## 8. M112: The captain walks
 

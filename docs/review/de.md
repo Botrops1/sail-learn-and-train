@@ -1049,6 +1049,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Kapitän (du) (`person_captain`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Captain (you) | Kapitän (du) |
+| Andere Namen | Skipper | Skipper |
+| Kurz | The person in charge of the boat: in the app, you. | Die Person, die das Boot führt: in der App du. |
+| Was es tut / was es bedeutet | The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic mode you stand at the station you work from: by a winch, at the mast or at the bow. The Helm view looks through your eyes, so there you do not see yourself. | Die Figur an Deck bist du, der Kapitän (auch Skipper genannt): die Person, die für das Boot und alle an Bord verantwortlich ist. Beim Steuern stehst du hinter einem Steuerrad. Im Modus „Realistisch“ stehst du an der Station, von der aus du arbeitest: an einer Winsch, am Mast oder am Bug. Die Steuerstand-Ansicht schaut durch deine Augen, dort siehst du dich also nicht selbst. |
+| Auf diesem Boot | — | — |
+| Typische Fehler | — | — |
+| „Zeigen“ | The captain stands behind the port wheel, steering. | Der Kapitän steht hinter dem Backbord-Steuerrad und steuert. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Klemme (`fit_clutch`)
 
 | Feld | English | Deutsch |
