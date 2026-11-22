@@ -833,7 +833,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       const captainDt =
         captainAtMs === null ? 0 : Math.min(0.1, Math.max(0, (now - captainAtMs) / 1000));
       captainAtMs = now;
-      boatModel.setCaptain(placement, captainHidden, now / 1000, captainDt);
+      // His idle movement runs on the simulation clock, so Pause freezes him with the rest (issue #32).
+      boatModel.setCaptain(placement, captainHidden, state.rig.timeS, captainDt);
       captainLast = { placement, hidden: captainHidden };
       dangerZone.update(state.rig);
       // The sails and the streaks feel the apparent wind (PHASE2_SPEC 6.6).
