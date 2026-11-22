@@ -249,7 +249,7 @@
       "haul-main": {"goal": "Trim the main until the boom is near the centre.", "how": "In Lines, set Main sheet to 5 %. The boom comes within 16° of the centre line."},
       "gybe-main": {"goal": "Gybe: turn the stern through the wind.", "how": "In Steering, tap Gybe (the Tack button reads Gybe on a run). She turns through the wind and the boom crosses a short way."},
       "gybe-gennaker": {"goal": "Gybe the gennaker: the new sheet takes over and the sail goes round the front.", "how": "Tap Gybe the gennaker (in the bar, or in Sails → Gennaker). The new sheet takes over and the sail goes round the front of the boat to the new side."},
-      "come-up": {"goal": "Come up to a broad reach on the new side, ease the main and trim the gennaker.", "how": "In Steering, tap “10° to port” three times (towards the wind). Then set Main sheet to about 70 % and Gennaker sheet to about 40 % until the Sails section says “Drawing well”."}
+      "come-up": {"goal": "Come up to a broad reach on the new side, ease the main and trim the gennaker.", "how": "In Steering, tap “10° to port” three times (towards the wind). Then set Main sheet to about 90 % and Gennaker sheet to about 40 % until the Sails section says “Drawing well”."}
     },
     "mistakes": {
       "backed": {"name": "The gennaker stayed on the wrong side", "what": "The boat had gybed but the gennaker was still on its old side, backed against the boat.", "why": "Only the boat gybed: the gennaker's sheets did not change over.", "fix": "Tap Gybe the gennaker right after the boat gybes: the sail goes round the front to the new side."},

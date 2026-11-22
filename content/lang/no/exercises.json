@@ -429,7 +429,7 @@
       "haul-main": {"goal": "Trim storseilet til bommen er nær midten.", "how": "Under «Liner», sett Storskjøt til 5 %. Bommen kommer innenfor 16° fra midtlinjen."},
       "gybe-main": {"goal": "Gybb: sving hekken gjennom vinden.", "how": "Under «Styring», trykk Jibb (Vend-knappen heter Jibb på lens). Båten svinger gjennom vinden og bommen krysser et kort stykke."},
       "gybe-gennaker": {"goal": "Gybb gennakeren: det nye skjøtet tar over, og seilet går rundt fronten.", "how": "Trykk Gybb gennakeren (i linjen eller under Seil → Gennaker). Det nye skjøtet tar over, og seilet går rundt fronten av båten til den nye siden."},
-      "come-up": {"goal": "Gå opp til en slør på den nye siden, fire storseilet og trim gennakeren.", "how": "Under «Styring», trykk «Sving 10° til babord» tre ganger (mot vinden). Sett så Storskjøt til omtrent 70 % og gennakerskjøtet til omtrent 40 % til Seil-delen sier «Trekker godt»."}
+      "come-up": {"goal": "Gå opp til en slør på den nye siden, fire storseilet og trim gennakeren.", "how": "Under «Styring», trykk «Sving 10° til babord» tre ganger (mot vinden). Sett så Storskjøt til omtrent 90 % og gennakerskjøtet til omtrent 40 % til Seil-delen sier «Trekker godt»."}
     },
     "mistakes": {
       "backed": {"name": "Gennakeren ble på feil side", "what": "Båten hadde gybbet, men gennakeren var fortsatt på sin gamle side, bakket mot båten.", "why": "Bare båten gybbet: gennakerens skjøter ble ikke byttet.", "fix": "Trykk Gybb gennakeren rett etter at båten gybber: seilet går rundt fronten til den nye siden."},

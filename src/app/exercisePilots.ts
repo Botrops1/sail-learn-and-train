@@ -460,7 +460,7 @@ export function gennakerRigPilot(): Pilot {
       case 5:
         return ctl(s, { ctl_gennaker_sock: 100 });
       case 6:
-        return ctl(s, { ctl_gennaker_sheet: 25 });
+        return ctl(s, { ctl_gennaker_sheet: 35 });
       default:
         return s;
     }
@@ -482,7 +482,7 @@ export function gennakerGybePilot(): Pilot {
       case 4:
         return ctl(
           once(s, 't', (x) => turns(x, 3, -10)),
-          { ctl_mainsheet: 70, ctl_gennaker_sheet: 40 },
+          { ctl_mainsheet: 90, ctl_gennaker_sheet: 40 },
         );
       default:
         return s;

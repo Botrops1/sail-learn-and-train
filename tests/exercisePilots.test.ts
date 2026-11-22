@@ -11,6 +11,7 @@ import { pilotActions, pilotFor, type Pilot } from '../src/app/exercisePilots';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 import { exerciseStartLink, parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { exerciseDef, type ExerciseLevel } from '../src/model/exercises';
+import { sailTrim } from '../src/model/trim';
 import { goodRun, runFrom } from './harbourPilot';
 
 /** PHASE10_PHONE_SPEC 8.6, 8.7: step limits (s), `ceil(1.2 × prototype + 3)`. */
@@ -31,9 +32,9 @@ const SAILING_LIMITS: Record<string, number[]> = {
   'weather-helm': [41, 11],
   'wind-shift': [30, 28, 34, 22],
   // M108 (PHASE_RIGGING_SPEC 10.4): measured in app seconds: rig 0.05, 0.05, 0.05, 1.2, 0.05, 0.05, 5.05;
-  // gybe 11.75, 3.25, 12.3, 5.05, 19.25; douse 23.7, 0.05, 0.05, 0.2, 2.3.
+  // gybe 11.6, 3.35, 12.35, 5.05, 19; douse 23.7, 0.05, 0.05, 0.2, 2.3.
   'gennaker-rig': [4, 4, 4, 5, 4, 4, 10],
-  'gennaker-gybe': [18, 7, 18, 10, 27],
+  'gennaker-gybe': [17, 8, 18, 10, 26],
   'gennaker-douse': [32, 4, 4, 4, 6],
 };
 
@@ -489,6 +490,18 @@ describe('M108 the gennaker exercises teach PT-69 and PT-70', () => {
     expect(atSockDown?.rig.gennaker.blanket ?? 1).toBeLessThan(0.5);
     expect(s.gennaker.stage).toBe(0);
     expect(s.controls.ctl_gennaker_sock).toBe(0);
+  });
+
+  it('the main reads good where the exercises start and where the gybe ends (no "Stalled" next to a step that says ease it)', () => {
+    const main = (s: AppState) => sailTrim('main', s.rig, s.motion?.awaDeg ?? 0).state;
+    const settled = (s: AppState): AppState => {
+      for (let i = 0; i < 100; i += 1) s = dt(s);
+      return s;
+    };
+    expect(main(settled(startState('gennaker-rig')))).toBe('good');
+    expect(main(settled(startState('gennaker-gybe')))).toBe('good');
+    expect(main(goodRunStates('gennaker-gybe', 'easy').end)).toBe('good');
+    expect(main(goodRunStates('gennaker-rig', 'easy').end)).toBe('good');
   });
 
   it('the rig exercise rigs in the order of PT-69: tack line, sheets, halyard, hoist', () => {
