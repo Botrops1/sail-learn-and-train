@@ -69,11 +69,10 @@ export async function liveM112Checks({ openPage, viewports, outDir, prefix, prob
     await showSection(page, 'ropes');
     await tapStation(page, 'starboard');
     await page.waitForTimeout(100);
-    const tryClutch = async () => {
-      await page.locator('[data-station="starboard"] [data-key="a5"]').tap();
-      await page.getByTestId('act-clutch').tap();
-    };
-    await tryClutch();
+    // The first tap on the line end selects it; it stays selected, so the second round only works the clutch.
+    await page.locator('[data-station="starboard"] [data-key="a5"]').tap();
+    const workClutch = () => page.getByTestId('act-clutch').tap();
+    await workClutch();
     const notice = await page
       .locator('.station-wrap[data-station="starboard"] .station-notice')
       .innerText();
@@ -84,8 +83,13 @@ export async function liveM112Checks({ openPage, viewports, outDir, prefix, prob
       JSON.stringify({ notice, link }),
     );
     await page.waitForTimeout(3500);
-    await tryClutch();
-    const opened = await waitForLink(page, ['co=a5']).catch(() => '');
+    await workClutch();
+    // The address bar follows 300 ms of app time after the rope moves: poll on the test clock.
+    let opened = '';
+    for (let i = 0; i < 40 && !opened.includes('co=a5'); i += 1) {
+      await page.waitForTimeout(250);
+      opened = await page.evaluate(() => window.location.search);
+    }
     const after = await page
       .locator('.station-wrap[data-station="starboard"] .station-notice')
       .innerText();
