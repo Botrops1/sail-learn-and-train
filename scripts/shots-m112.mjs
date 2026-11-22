@@ -86,7 +86,19 @@ export async function liveM112Checks({ openPage, viewports, outDir, prefix, prob
     await page.waitForTimeout(3500);
     await tryClutch();
     const opened = await waitForLink(page, ['co=a5']).catch(() => '');
-    check('after he has arrived the clutch opens', opened.includes('co=a5'), opened);
+    const after = await page
+      .locator('.station-wrap[data-station="starboard"] .station-notice')
+      .innerText();
+    const state = await page.evaluate(() => ({
+      walking: !document.querySelector('[data-testid="walk-status"]').hidden,
+      link: window.location.search,
+    }));
+    check(
+      'after he has arrived the clutch opens',
+      opened.includes('co=a5'),
+      JSON.stringify({ opened, after, state }),
+    );
+    await shot(page, 'm112-live-arrived');
     await context.close();
   }
 
