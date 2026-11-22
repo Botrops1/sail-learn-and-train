@@ -895,9 +895,9 @@ describe('M112: the captain walks between the stations (PHASE_PEOPLE_SPEC 8.6)',
     const s = walkingState();
     expect(s.station).toBe('bow');
     expect(s.walk).not.toBeNull();
-    expect(Math.abs((s.walk?.lengthM ?? 0) - 15.434)).toBeLessThan(0.002);
+    expect(Math.abs((s.walk?.lengthM ?? 0) - 16.317)).toBeLessThan(0.002);
     expect(s.walk?.nodes.slice(0, 2)).toEqual(['helm_p', 'aftCentre']);
-    expect(s.walk?.nodes).toContain('cockpitFront_s');
+    expect(s.walk?.nodes).toContain('binTop_s');
 
     const refused = reduceRealistic(s, { type: 'clutch', key: GENOA, open: true }, boat, 0, ctx);
     expect(refused.notice).toEqual({ key: 'walking', tail: GENOA });
@@ -923,11 +923,11 @@ describe('M112: the captain walks between the stations (PHASE_PEOPLE_SPEC 8.6)',
     expect(reduceRealistic(s, { type: 'station', station: 'bow' }, boat, 0, ctx)).toBe(s);
   });
 
-  it('6. the walk goes on in the step at 0.8 m/s and ends at the station', () => {
+  it('6. the walk goes on in the step at 2 m/s and ends at the station', () => {
     const base = initialState({ settings: { ropesMode: 'realistic' }, boat: { mode: 'held' } });
     let real = walkingState();
     const first = stepRealistic(real, base.controls, base.rig, 1).state;
-    expect(first.walk?.doneM).toBeCloseTo(0.8, 6);
+    expect(first.walk?.doneM).toBeCloseTo(2, 6);
     // Paused (dt 0): it stands still.
     expect(stepRealistic(real, base.controls, base.rig, 0).state.walk?.doneM).toBe(0);
     for (let i = 0; i < 100 && real.walk; i += 1) {
@@ -979,6 +979,6 @@ describe('M112: the captain walks between the stations (PHASE_PEOPLE_SPEC 8.6)',
 
   it('9. the seconds left are rounded up', () => {
     const s = walkingState();
-    expect(s.walk && walkSecondsLeft(s.walk)).toBe(20);
+    expect(s.walk && walkSecondsLeft(s.walk)).toBe(9);
   });
 });

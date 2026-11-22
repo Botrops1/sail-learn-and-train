@@ -22,11 +22,10 @@ export async function liveM112Checks({ openPage, viewports, outDir, prefix, prob
   const tapStation = (page, station) =>
     page.locator(`.station-button[data-station="${station}"]`).tap();
 
-  // 1. Port to the Bow at x4: along the starboard (windward) side deck, then he stands there.
+  // 1. Port to the Bow: out of the cockpit by the winch, forward on the side deck outside the coaming
+  // (starboard, the windward side), never across the sprayhood; then he stands at the bow.
   {
-    const { context, page } = await openPage(phone, 'm112 walk', `${W}&tx=4`, {
-      testClock: true,
-    });
+    const { context, page } = await openPage(phone, 'm112 walk', W, { testClock: true });
     await page.waitForTimeout(800);
     await showSection(page, 'ropes');
     await tapStation(page, 'bow');
@@ -39,19 +38,30 @@ export async function liveM112Checks({ openPage, viewports, outDir, prefix, prob
       text.includes('Bow') && c?.pose === 'walk',
       JSON.stringify({ text, c }),
     );
-    await page.waitForTimeout(2500);
-    c = await captain(page);
-    check(
-      'after 10 s: on the starboard side deck, abaft the mast',
-      c !== null && c.x > -3.0 && c.x < -0.6 && c.z > 1.5,
-      JSON.stringify(c),
-    );
-    await shot(page, 'm112-walking');
+    const samples = [];
+    let mid = null;
     let over = false;
-    for (let i = 0; i < 16 && !over; i += 1) {
+    for (let i = 0; i < 44 && !over; i += 1) {
+      await page.waitForTimeout(250);
+      c = await captain(page);
+      samples.push(c);
+      if (i === 11) {
+        mid = c;
+        await shot(page, 'm112-walking');
+      }
       over = !(await status.isVisible());
-      if (!over) await page.waitForTimeout(250);
     }
+    check(
+      'after 3 s: on the starboard side deck outside the coaming, abaft the mast',
+      mid !== null && mid.x > -6.4 && mid.x < -3.6 && mid.z > 1.8,
+      JSON.stringify(mid),
+    );
+    const inside = samples.filter((p) => p && p.x > -7.4 && p.x < -3.0 && p.z < 1.85);
+    check(
+      'he never crosses the coaming or the sprayhood (z at least 1.85 between x -7.4 and -3)',
+      inside.length === 0,
+      JSON.stringify(inside.slice(0, 2)),
+    );
     c = await captain(page);
     const link = await waitForLink(page, ['st=bow']);
     check(
@@ -82,7 +92,7 @@ export async function liveM112Checks({ openPage, viewports, outDir, prefix, prob
       notice === 'Still walking: wait until you get there.' && !link.includes('co=a5'),
       JSON.stringify({ notice, link }),
     );
-    await page.waitForTimeout(3500);
+    await page.waitForTimeout(2000);
     await workClutch();
     // The address bar follows 300 ms of app time after the rope moves: poll on the test clock.
     let opened = '';
@@ -106,21 +116,19 @@ export async function liveM112Checks({ openPage, viewports, outDir, prefix, prob
     await context.close();
   }
 
-  // 3. Turned back: tap Port a few seconds into the walk to the Bow.
+  // 3. Turned back: tap Port 2.5 m into the walk to the Bow (between the winch and the rope box).
   {
-    const { context, page } = await openPage(phone, 'm112 back', `${W}&tx=4`, {
-      testClock: true,
-    });
+    const { context, page } = await openPage(phone, 'm112 back', W, { testClock: true });
     await page.waitForTimeout(800);
     await showSection(page, 'ropes');
     await tapStation(page, 'bow');
-    await page.waitForTimeout(750);
+    await page.waitForTimeout(1250);
     await tapStation(page, 'port');
     await page.waitForTimeout(100);
     let c = await captain(page);
     const stillWalking = c?.pose === 'walk';
     let over = false;
-    for (let i = 0; i < 8 && !over; i += 1) {
+    for (let i = 0; i < 16 && !over; i += 1) {
       over = !(await page.getByTestId('walk-status').isVisible());
       if (!over) await page.waitForTimeout(250);
     }

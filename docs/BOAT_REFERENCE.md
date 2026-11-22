@@ -353,11 +353,11 @@ The captain's spots and walkways (`people` in `content/boat/hanse508.json`) are 
 |---|---|---|
 | Behind each wheel (`helm`) | x −7.85, z ±0.88 on the cockpit sole, facing forward; the wheel plane is at x −7.2 | **Assumption** |
 | Beside the winch (`winch`) | x −7.75, z ±1.08, facing the winch (45° to the side) | **Assumption** |
-| The cockpit walkway (`aftCentre`, `cockpitCentre`, `cockpitFront`) | between the two wheels, then to the front of the cockpit | **Assumption** |
+| The way out of the cockpit (`aftCentre`, `binTop`, `sideDeckWinch`, `sideDeckClutch`) | behind the wheels between the two helms (`aftCentre`); up over the rope box behind the winch (`binTop`, on the box top at the coaming's height) and out onto the side deck outside the coaming beside the winch and the clutch bank (z 1.93) (owner, PR 264: not across the sprayhood) | **Assumption** |
 | The side decks (`sideDeckAft`, `sideDeckRoof`, `sideDeckMast`, `sideDeckFwd`) | between the coachroof and the toerail, at least 0.15 m from each; 0.25 m or more from the shroud feet and stanchions | **Assumption** |
 | On the coachroof and foredeck (`coachroofSide`, `mast`, `foredeckSide`, `bow`) | beside and behind the mast by the furling gearbox; on the foredeck behind the windlass | **Assumption** |
 | One stride (`strideM`) | 1.39 m for one full walking cycle (two steps) of the figure, legs 0.85 m, thigh swing 0.42 rad | **Assumption** |
-| Walking speed (`walkSpeedMps`) | 0.8 m/s: a careful walk on a moving deck, one hand for the boat; the walk from the helm to the bow takes up to 19 s | **Assumption** |
+| Walking speed (`walkSpeedMps`) | 2 m/s: a brisk walk on a moving deck, one hand for the boat (owner, PR 264: 0.8 m/s was too slow); from the winch to the bow about 9 s | **Assumption** |
 
 ## 6. Open questions for the skipper / next time aboard
 

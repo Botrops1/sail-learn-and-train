@@ -1576,18 +1576,19 @@
     ]
   },
   "people": {
-    "source": "assumption (PHASE_PEOPLE_SPEC 7.2): spots and walkways measured from this file's deck, clear of the wheels, pedestals, rope boxes, shroud feet, stanchions and hatches",
+    "source": "assumption (PHASE_PEOPLE_SPEC 7.2): spots and walkways measured from this file's deck, clear of the wheels, pedestals, rope boxes, shroud feet, stanchions and hatches; M112 (owner, PR 264): out of the cockpit over the rope box behind the winch and forward on the side deck outside the coaming, not across the sprayhood",
     "strideM": 1.39,
     "strideMNote": "One full walking cycle (two steps) of the mockup's figure: legs 0.85 m, thigh swing 0.42 rad",
-    "walkSpeedMps": 0.8,
-    "walkSpeedMpsNote": "A careful walk on a moving deck, one hand for the boat; assumption",
+    "walkSpeedMps": 2,
+    "walkSpeedMpsNote": "A brisk walk on a moving deck, one hand for the boat; assumption (owner, PR 264: 0.8 m/s was too slow, 2.5 times faster)",
     "points": {
       "helm": { "at": [-7.85, 1.0, 0.88], "sided": true, "faceDeg": 0 },
       "winch": { "at": [-7.75, 1.0, 1.08], "sided": true, "faceDeg": 45 },
       "aftCentre": { "at": [-7.95, 1.0, 0] },
-      "cockpitCentre": { "at": [-6.5, 1.0, 0] },
-      "cockpitFront": { "at": [-3.6, 1.0, 1.0], "sided": true, "deck": true },
-      "sideDeckAft": { "at": [-3.6, 1.507, 1.85], "sided": true, "deck": true },
+      "binTop": { "at": [-8.0, 1.55, 1.55], "sided": true, "deck": true },
+      "sideDeckWinch": { "at": [-7.5, 1.409, 1.93], "sided": true, "deck": true },
+      "sideDeckClutch": { "at": [-6.4, 1.437, 1.93], "sided": true, "deck": true },
+      "sideDeckAft": { "at": [-3.6, 1.507, 2.0], "sided": true, "deck": true },
       "sideDeckRoof": { "at": [-3.0, 1.518, 2.05], "sided": true, "deck": true },
       "sideDeckMast": { "at": [-0.6, 1.56, 1.77], "sided": true, "deck": true },
       "coachroofSide": { "at": [-0.6, 1.96, 1.0], "sided": true, "deck": true },
@@ -1597,8 +1598,8 @@
       "bow": { "at": [4.85, 1.682, 0], "faceDeg": 0 }
     },
     "walkways": [
-      ["helm", "winch"], ["helm", "aftCentre"], ["aftCentre", "cockpitCentre"],
-      ["cockpitCentre", "cockpitFront"], ["cockpitFront", "sideDeckAft"], ["sideDeckAft", "sideDeckRoof"],
+      ["helm", "winch"], ["helm", "aftCentre"], ["winch", "binTop"], ["binTop", "sideDeckWinch"],
+      ["sideDeckWinch", "sideDeckClutch"], ["sideDeckClutch", "sideDeckAft"], ["sideDeckAft", "sideDeckRoof"],
       ["sideDeckRoof", "sideDeckMast"], ["sideDeckMast", "coachroofSide"], ["coachroofSide", "mast"],
       ["sideDeckMast", "sideDeckFwd"], ["sideDeckFwd", "foredeckSide"], ["foredeckSide", "bow"]
     ],

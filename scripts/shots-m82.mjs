@@ -7,7 +7,7 @@ import { demoStepCard, showSection } from './ui.mjs';
 export const M82_SCENES = [];
 
 /** Setting the sails, Realistic, Alone: seconds allowed per step (PHASE10_PHONE_SPEC 9.6). */
-// M112: the walks between the stations (0.8 m/s) add 3, 1, 6 and 1 s to steps 2 to 5.
+// M112: the walks between the stations (2 m/s) add about 1, 0, 2 and 0 s to steps 2 to 5; the limits keep the margin of the first build (0.8 m/s).
 const SET_LIMITS_S = [13, 31, 44, 64, 10];
 const TICK_MS = 200;
 const W_STARBOARD = 'winch_primary_starboard';
