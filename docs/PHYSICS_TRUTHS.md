@@ -132,6 +132,20 @@ Planned on 2026-11-21 in [`PHASE_PEOPLE_SPEC.md`](PHASE_PEOPLE_SPEC.md) (M111–
 |---|---|---|---|
 | PT-74 | **Go forward on the windward (high) side.** Moving along the deck under sail, use the side deck on the side the wind comes from: if you slip, the deck is below you, not the water. (M112) | `?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top`, then tap Bow: he walks forward along the starboard side deck; test: "PT-74 …" in `tests/people.test.ts` | to-verify [53] [54] (both sites did not open from the planning session on 2026-11-21) |
 
+## Training dinghy rules (issue #273)
+
+Planned on 2026-11-23 in [`PHASE_DINGHY_SPEC.md`](PHASE_DINGHY_SPEC.md) (M113–M118). They hold for the Training dinghy only (the Hanse 508 has a ballast keel). Tests: "PT-75 …" in `tests/dinghyBoat.test.ts`, the others in `tests/physicsTruthsDinghy.test.ts`.
+
+| Id | Rule | How to see it | Status |
+|---|---|---|---|
+| PT-75 | **A tiller moves the opposite way to the turn.** Push the tiller to port and the bow turns to starboard. (M113) | `?boat=dinghy&wd=60&ws=8&ms=40&cam=top`, steer to starboard: the tiller swings to port | source-checked [55] |
+| PT-76 | **Leaning out keeps a dinghy flatter.** A dinghy has no heavy keel: the sailor's weight on the high side holds her up, and the further out it is, the more it holds. (M114) | `?boat=dinghy&wd=90&ws=16&ms=55&oh=100&cam=bow`: Sit in → she heels hard; Sit on the side → about 8°; Lean out → upright | source-checked [56] |
+| PT-77 | **In light wind, sit in.** With little wind on the sail, the sailor's weight on the side tips the boat towards the sailor. (M114) | `?boat=dinghy&wd=90&ws=3&ms=50&sp=side&cam=bow`: she heels towards you; Sit in → nearly upright | general (moments; [56]) |
+| PT-78 | **Let the mainsheet go to come upright and slow down.** With the sheet eased the sail flaps and stops pushing: the heel goes and the boat stops. (M114) | `?boat=dinghy&wd=60&ws=14&ms=30&cam=bow`, then ease the mainsheet to 100 % | source-checked [56] |
+| PT-79 | **Centreboard down to sail towards the wind; up with the wind behind.** Down, the board stops her sliding sideways; up, she slides, but with the wind behind there is less drag. (M114) | `?boat=dinghy&wd=45&ws=10&ms=20&sp=side&cb=0&cam=top`: she slides sideways; Centreboard down → she goes straight | source-checked [57] (lateral resistance; less drag when not needed) |
+| PT-80 | **The sailor sits on the side opposite the boom** (the high, windward side) and moves across the boat in a tack or a gybe. (M114, drawn in M115) | `?boat=dinghy&wd=45&ws=10&ms=30&sp=side&cam=top`, tack: the sailor crosses to the new high side | source-checked [56] |
+| PT-81 | **A capsized dinghy is righted by standing on the centreboard; the board must be down.** (M116) | `?boat=dinghy&wd=90&ws=10&cap=s&cb=0&cam=side-starboard`: Swim round, push the board down, stand on it | source-checked [58] |
+
 ## Sources
 
 1. Wikipedia, *Point of sail*. https://en.wikipedia.org/wiki/Point_of_sail. No-go zone about 45° (30–50°) either side of the wind; close-hauled about 45°; sails eased progressively when bearing away; gybing defined; "in irons".
@@ -220,3 +234,7 @@ Read on 2026-10-15/16 for Phase 7 (planning):
 M47 note (2026-10-22): every Phase 7 rule (PT-27, 31, 33, 34, 47–57) has a test named after its id. The `to-verify` sources were tried again from the cloud environment: yachtingmonthly.com, rya.org.uk, distantshores.ca and sailmagazine.com still do not open (no connection), so PT-34, PT-47, PT-52 and the lazy-line part of PT-51 stay `to-verify`. PT-51 got a second test (the anchor and a shore line in the bay).
 
 Not reachable on 2026-10-15/16 (DNS failure from the build environment): sailmagazine.com, yachtingmonthly.com, distantshores.ca, rya.org.uk, sailingissues.com, marineinsight.com. The rules that name them stay `to-verify`.
+55. Wikipedia, *Tiller*. https://en.wikipedia.org/wiki/Tiller. "The tiller is always moved in the direction opposite of which the bow of the boat is to move" (tiller to port turns the bow to starboard).
+56. Wikipedia, *Hiking (sailing)*. https://en.wikipedia.org/wiki/Hiking_(sailing). Moving the crew's weight to windward increases the moment against heeling; without hiking, or easing the sails to reduce the heel, a dinghy capsizes; a tiller extension lets the helm steer while hiked out.
+57. Wikipedia, *Centreboard*. https://en.wikipedia.org/wiki/Centreboard. The board provides lateral resistance; retracting it reduces drag when its full area is not needed.
+58. Wikipedia, *Capsizing*. https://en.wikipedia.org/wiki/Capsizing. A dinghy "can normally be righted by standing or pulling down on the centreboard"; capsizing is an inherent part of dinghy sailing.
