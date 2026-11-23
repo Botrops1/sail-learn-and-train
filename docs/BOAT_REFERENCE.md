@@ -351,7 +351,7 @@ Pictures of sails this boat does not carry, drawn on the boat only while Learn's
 
 | Assumption | Value used | Status |
 |---|---|---|
-| Spinnaker pole | length 5.85 m (`poleLengthM`), 0.04 m radius, its heel on a ring on the front of the mast at [0.2, 3.2, 0]; at right angles to the apparent wind, held between 10° and 85° from straight across (`poleMinDeg`, `poleMaxDeg`) | Length from the manual (`dimensions.rigDimensionsMm.spinnakerPole`); the rest **assumption** |
+| Spinnaker pole | length 5.85 m (`poleLengthM`), 0.04 m radius, its heel on a ring on the front of the mast at [0.2, 3.2, 0]; at right angles to the apparent wind, held between 10° and 85° measured from the bow (the fore-and-aft line) out to the pole's side, so 85° is nearly square across the boat (`poleMinDeg`, `poleMaxDeg`) | Length from the manual (`dimensions.rigDimensionsMm.spinnakerPole`); the rest **assumption** |
 | Spinnaker corners | tack at the pole's outer end, head [0.35, 21.0, 0] (as the gennaker's), clew 30° further aft round the pole's circle (`clewExtraDeg`) at 3.2 m high; curve 0.25 of the chord | **Assumption** (drawing only) |
 | Pole lift and downhaul | the lift from [0.2, 12.0, 0] on the mast to the pole's end; the downhaul from the pole's end to [1.5, 1.62, 0] on the foredeck | **Assumption** |
 | Code 0 | tack [6.95, 2.10, 0] (on the bow roller's tip, lower than the gennaker's), head as the spinnaker's, foot 7.5 m at 12° off the line astern, clew 2.6 m high, curve 0.08 of the chord; furler drum 0.12 m radius × 0.25 m at its tack | **Assumption** |

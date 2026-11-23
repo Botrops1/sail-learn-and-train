@@ -145,4 +145,22 @@ export async function liveM109Checks({ openPage, viewports, outDir, prefix, prob
     );
     await context.close();
   }
+
+  // A tapped part of the picture opens the part card, and the banner steps aside for it.
+  {
+    const { context, page } = await openPage(
+      phone,
+      'm109 part card',
+      '?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard&sel=sail_spinnaker&debug=1',
+      { testClock: true },
+    );
+    await page.waitForTimeout(1500);
+    check(
+      'a selected part of the picture: the part card shows and the banner steps aside',
+      (await page.getByTestId('info-card').isVisible()) &&
+        !(await page.getByTestId('picture-banner').isVisible()),
+      `card ${await page.getByTestId('info-card').isVisible()}, banner ${await page.getByTestId('picture-banner').isVisible()}`,
+    );
+    await context.close();
+  }
 }

@@ -22,15 +22,16 @@ export function createPictureBanner(store: Store): HTMLElement {
   );
   const area = el('div', { class: 'info-area picture-area' }, [card]);
   const render = () => {
-    const { picture } = store.getState();
-    card.hidden = picture === null;
+    const { picture, selection } = store.getState();
+    // A tapped part of the picture opens the part card in the same place: the banner steps aside.
+    card.hidden = picture === null || selection !== null;
     if (picture !== null) {
       text.textContent = t(`picture.${picture}`);
       card.setAttribute('data-picture', picture);
     } else card.removeAttribute('data-picture');
   };
   store.subscribe((state, previous) => {
-    if (state.picture !== previous.picture) render();
+    if (state.picture !== previous.picture || state.selection !== previous.selection) render();
   });
   render();
   return area;

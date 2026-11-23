@@ -18,7 +18,7 @@ export function isPictureId(value: unknown): value is PictureId {
   return typeof value === 'string' && (PICTURE_IDS as readonly string[]).includes(value);
 }
 
-/** The pole's angle from straight across the boat towards the bow: at right angles to the apparent wind, within its stops. */
+/** The pole's angle from the bow (the fore-and-aft line) out to the pole's side: 85° is nearly square across the boat. At right angles to the apparent wind, within its stops. */
 export function polePlanDeg(awaDeg: number, data: BoatData = boat): number {
   const p = data.pictures.spinnaker;
   return Math.min(p.poleMaxDeg, Math.max(p.poleMinDeg, Math.abs(awaDeg) - 90));

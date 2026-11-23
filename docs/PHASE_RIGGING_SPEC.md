@@ -678,7 +678,9 @@ English glossary (final): `sail_spinnaker` "Spinnaker (symmetric)", short "A big
 5. **The pictures' lines are plain tubes** in the gennaker's colour, not the striped ropes of the Ropes section, and have no labels or Realistic behaviour.
 6. **`pictureBanner.ts` adds its own `.info-area`** beside the part card's instead of changing the part card, so the part card's rules stay as they were; it uses the part card's look.
 7. **Learn entries that are only in a picture get "Not on this boat: shown as a picture only (Show it working)."** as their `onThisBoat` line; the Downwind sails entry has none (it compares all three).
-8. **Alternative names:** German "Toppnant (Baum)" and "Vorholer", Norwegian "Toppenant (bom)"; Russian has none. All AI drafts, `textStatus: "draft"`.
+8. **The banner steps aside while a part card is open** (a tapped part of the picture opens the card in the same place); it comes back when the card closes.
+9. **The Learn list check in `scripts/shots-m21.mjs` counts the Lines group as 18**, and the checklist lines for the spinnaker and the guy say what the page shows (the pole points towards you in the starboard view; the guy is drawn but not lit up, because the spotlight finds nothing at the moment Show it working is tapped, as 11.5 accepts).
+10. **Alternative names:** German "Toppnant (Baum)" and "Vorholer", Norwegian "Toppenant (bom)"; Russian has none. All AI drafts, `textStatus: "draft"`.
 
 ## 12. M110: Main traveller picture
 
