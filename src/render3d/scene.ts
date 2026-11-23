@@ -822,6 +822,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
         state.sailDamage,
         state.gennaker,
+        { picture: state.picture },
       );
       // M111: the captain stands where the mode, the station and the wheel put him; in the Helm
       // view of his own wheel the camera is at his eyes, so he is not drawn.

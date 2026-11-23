@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mpsToKn } from '../src/model/angles';
+import { boat } from '../src/model/boat';
 import { defaultControls, type Controls } from '../src/model/controls';
 import {
   gennakerClew,
@@ -9,6 +10,7 @@ import {
   type GennakerSetup,
 } from '../src/model/gennaker';
 import { steadyState } from '../src/model/motion';
+import { codeZeroPicture, polePlanDeg, spinnakerPicture } from '../src/model/pictures';
 import { initialRig } from '../src/model/sim';
 import { bestSpeedKn, best } from './motionHelpers';
 
@@ -179,5 +181,52 @@ describe('PT-70 the sock', () => {
     expect(down.state).toBe('snuffed');
     const half = run(12, 120, 60, 25, 50);
     expect(half.rig.forces.gennaker.areaM2).toBeCloseTo(100, 6);
+  });
+});
+
+describe('PT-71 the spinnaker pole', () => {
+  it('PT-71 the pole goes to windward at right angles to the apparent wind', () => {
+    // Right angles to the wind: |awa| − 90, between the pole's stops (10° and 85°).
+    expect(polePlanDeg(180)).toBe(85);
+    expect(polePlanDeg(130)).toBe(40);
+    expect(polePlanDeg(-130)).toBe(40);
+    expect(polePlanDeg(95)).toBe(10);
+    // Wind over starboard: the pole to starboard, the clew on the other side.
+    const starboardWind = spinnakerPicture(150);
+    expect(starboardWind.poleEnd[2]).toBeGreaterThan(0);
+    expect(starboardWind.clew[2]).toBeLessThan(0);
+    const portWind = spinnakerPicture(-150);
+    expect(portWind.poleEnd[2]).toBeLessThan(0);
+    expect(portWind.clew[2]).toBeGreaterThan(0);
+    // The guy runs from the pole's end to the windward winch; the sheet to the leeward one.
+    const winch = (id: string) => {
+      const w = boat.cockpitHardware.winches.find((candidate) => candidate.id === id);
+      if (!w) throw new Error(id);
+      return w;
+    };
+    const guyEnd = starboardWind.guy[starboardWind.guy.length - 1] as readonly number[];
+    expect(starboardWind.guy[0]).toEqual(starboardWind.poleEnd);
+    expect(guyEnd[2]).toBeCloseTo(winch('winch_primary_starboard').z, 9);
+    const sheetEnd = starboardWind.sheet[starboardWind.sheet.length - 1] as readonly number[];
+    expect(starboardWind.sheet[0]).toEqual(starboardWind.clew);
+    expect(sheetEnd[2]).toBeCloseTo(winch('winch_primary_port').z, 9);
+    // The pole lift hangs from high on the mast and the downhaul goes down to the deck.
+    expect(starboardWind.poleLift[1]).toEqual(starboardWind.poleEnd);
+    expect((starboardWind.poleLift[0] as readonly number[])[1]).toBeGreaterThan(
+      starboardWind.poleEnd[1],
+    );
+    expect((starboardWind.downhaul[1] as readonly number[])[1]).toBeLessThan(
+      starboardWind.poleEnd[1],
+    );
+  });
+});
+
+describe('PT-73 the code 0', () => {
+  it('PT-73 the code 0 is a close-reaching sail: its clew is to leeward, set on its own furler', () => {
+    expect(codeZeroPicture(70).clew[2]).toBeLessThan(0);
+    expect(codeZeroPicture(-70).clew[2]).toBeGreaterThan(0);
+    // Its tack is on the bow roller's tip, not at the pole's end: a furler at the bow.
+    expect(codeZeroPicture(70).tack[0]).toBeGreaterThan(6);
+    expect(codeZeroPicture(70).sheet[0]).toEqual(codeZeroPicture(70).clew);
   });
 });

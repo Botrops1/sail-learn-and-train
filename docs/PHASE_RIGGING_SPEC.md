@@ -669,6 +669,19 @@ English glossary (final): `sail_spinnaker` "Spinnaker (symmetric)", short "A big
 
 `tests/glossary.test.ts` group sizes; `grep -n "learn-show-on-boat" scripts/shots-m*.mjs` (unchanged for other entries). **PR line:** `CI groups: all` (store and URL). PR: `Closes #250`. Not in this milestone: sailing with either sail; the traveller (M110).
 
+### 11.10 Decided in the M109 PR (recommended; merging accepts it)
+
+1. **The group sizes are `[18, 13, 15, 9, 20, 23, 13, 14, 34, 10, 20]`**, not the spec's list: the cockpit group has 23 entries (the spec had 22, an error in the planning count); the other groups are as planned. The ropes group's first entry by English name is now `rope_code_zero_sheet` ("Code 0 sheet").
+2. **Every picture entry has a "Show it working" text** (`showMe`) in the four languages, one or two sentences saying what to look at; the glossary test requires a text wherever the registry has a scene link.
+3. **The pictures' meshes exist from the start**, built for a typical wind (spinnaker 150°, code 0 70°) and hidden, so no mesh is empty; the boat-model tests leave the pictures' parts out of the size and rope-list checks (they are in `PICTURE_ONLY`).
+4. **While a picture shows, the boat model is told the gennaker is stowed** (the state is not changed): its sock, sail and lines are hidden and come back when the picture is closed.
+5. **The pictures' lines are plain tubes** in the gennaker's colour, not the striped ropes of the Ropes section, and have no labels or Realistic behaviour.
+6. **`pictureBanner.ts` adds its own `.info-area`** beside the part card's instead of changing the part card, so the part card's rules stay as they were; it uses the part card's look.
+7. **Learn entries that are only in a picture get "Not on this boat: shown as a picture only (Show it working)."** as their `onThisBoat` line; the Downwind sails entry has none (it compares all three).
+8. **The banner steps aside while a part card is open** (a tapped part of the picture opens the card in the same place); it comes back when the card closes.
+9. **The Learn list check in `scripts/shots-m21.mjs` counts the Lines group as 18**, and the checklist lines for the spinnaker and the guy say what the page shows (the pole points towards you in the starboard view; the guy is drawn but not lit up, because the spotlight finds nothing at the moment Show it working is tapped, as 11.5 accepts).
+10. **Alternative names:** German "Toppnant (Baum)" and "Vorholer", Norwegian "Toppenant (bom)"; Russian has none. All AI drafts, `textStatus: "draft"`.
+
 ## 12. M110: Main traveller picture
 
 **Independent review: required** (new store state, action and URL key; it overrides the drawn boom).

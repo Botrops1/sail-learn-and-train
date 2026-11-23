@@ -6,6 +6,7 @@ import {
   type ExerciseOptions,
   type ExerciseWaypoint,
 } from './exerciseRun';
+import { isPictureId, type PictureId } from '../model/pictures';
 import { leewardSide, STOWED, type GennakerSetup, type GennakerStage } from '../model/gennaker';
 import { compassDeg, knToMps, mpsToKn, wrap180, wrap360 } from '../model/angles';
 import type { AutopilotState } from '../model/autopilot';
@@ -255,6 +256,7 @@ export function parseUrlState(
     ...parseClock(params),
     harbour,
     gennaker: parseGennaker(params, controls.ctl_wind_dir ?? 60, boatState.headingDeg ?? 0),
+    picture: parsePicture(params),
   });
   // The lines need the boat as she lies (the far ends are our berth's), so they come last (M44),
   // and so does the anchor, whose chain must reach from her bow (M46).
@@ -295,6 +297,12 @@ function parseGennaker(
   const gx = params.get('gx');
   const side = gx === 'p' ? -1 : gx === 's' ? 1 : leewardSide(wrap180(windDirDeg - headingDeg));
   return { ...STOWED, stage, side };
+}
+
+/** `pic` (M109): `spinnaker` or `code0`; anything else shows no picture. */
+function parsePicture(params: URLSearchParams): PictureId | null {
+  const pic = params.get('pic');
+  return isPictureId(pic) ? pic : null;
 }
 
 /** The gennaker's link keys: nothing while it is stowed, `gx` only from stage 2. */
@@ -989,6 +997,7 @@ export function serializeUrlState(state: AppState): string {
   if (state.harbour.fendersOut) params.set('fd', '1');
   for (const [name, value] of realisticParams(state.realistic)) params.set(name, value);
   for (const [name, value] of gennakerParams(state.gennaker)) params.set(name, value);
+  if (state.picture !== null) params.set('pic', state.picture);
   if (state.settings.debug) params.set('debug', '1');
   // Commas and colons need no escaping in a query (co=a5,b3 and ln=sp:2.55 stay readable).
   return `?${params.toString().replace(/%2C/g, ',').replace(/%3A/g, ':')}`;

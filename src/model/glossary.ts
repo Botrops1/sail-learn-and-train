@@ -105,6 +105,19 @@ export const NOT_DRAWN: ReadonlySet<string> = new Set([
 /** Drawn, but too far away for "Where is it?" to fly to (the entry's Show it working shows it instead). */
 export const FAR_AWAY: ReadonlySet<string> = new Set(['env_distant_land']);
 
+/** Ids drawn only inside a picture (M109): Learn hides "Where is it?" for them; Show it working shows the picture. */
+export const PICTURE_ONLY: ReadonlySet<string> = new Set([
+  'sail_spinnaker',
+  'part_spinnaker_pole',
+  'rope_spinnaker_sheet',
+  'rope_spinnaker_guy',
+  'rope_pole_lift',
+  'rope_pole_downhaul',
+  'sail_code_zero',
+  'part_code_zero_furler',
+  'rope_code_zero_sheet',
+]);
+
 export type SourceLink =
   | { kind: 'url'; href: string; text: string }
   | { kind: 'photo'; href: string; name: string }

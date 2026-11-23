@@ -21,6 +21,7 @@ import {
   type GennakerCommand,
   type GennakerSetup,
 } from '../model/gennaker';
+import type { PictureId } from '../model/pictures';
 import { isRegisteredPartId } from '../model/registry';
 import {
   clampControl,
@@ -184,6 +185,8 @@ export interface AppState {
   sailDamage: SailDamage;
   /** M105: how far the optional gennaker is rigged and on which side (stowed unless a link or Settings rigs it). */
   gennaker: GennakerSetup;
+  /** M109: the picture of a sail this boat does not carry, shown on the boat (Learn's Show it working); null = none. In the link as `pic`. */
+  picture: PictureId | null;
   /** The engine (M12): stopped or running, the lever, rpm and gear. */
   engine: EngineState;
   /** The sea (M14): the Waves setting and the wind the waves are made by (lagged). */
@@ -286,6 +289,8 @@ export type Action =
   | { type: 'repairSails' }
   /** M105: one rigging step of the gennaker, rig it fully, or stow it. */
   | { type: 'gennaker'; command: GennakerCommand }
+  /** M109: show a picture of a sail this boat does not carry, or close it (null). Nothing in the model changes. */
+  | { type: 'setPicture'; picture: PictureId | null }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
   | { type: 'load'; state: AppState }
   /** M66: start or stop the exercise, or choose its ropes mode (in setup). */
@@ -330,6 +335,8 @@ export interface InitialOverrides {
   exercise?: ExerciseRun | null;
   /** From a shared link (M105): the gennaker's rigging step and side. Without it: stowed. */
   gennaker?: GennakerSetup;
+  /** From a shared link (M109): the picture shown on the boat. Without it: none. */
+  picture?: PictureId | null;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -562,6 +569,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     wind,
     sailDamage: NO_DAMAGE,
     gennaker: overrides.gennaker ?? STOWED,
+    picture: overrides.picture ?? null,
     engine,
     sea,
     clock: { utcMs: clockUtcMs },
@@ -1044,6 +1052,8 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'setTimeBar':
       if (state.settings.timeBar === action.timeBar) return state;
       return withTimeRule({ ...state, settings: { ...state.settings, timeBar: action.timeBar } });
+    case 'setPicture':
+      return action.picture === state.picture ? state : { ...state, picture: action.picture };
     case 'gennaker': {
       const gennaker = gennakerCommand(
         state.gennaker,

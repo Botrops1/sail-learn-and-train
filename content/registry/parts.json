@@ -43,7 +43,8 @@
     "wiki:wind-fetch": "https://en.wikipedia.org/wiki/Wind_fetch",
     "wiki:wind-wave": "https://en.wikipedia.org/wiki/Wind_wave",
     "wiki:significant-wave-height": "https://en.wikipedia.org/wiki/Significant_wave_height",
-    "wiki:ship-motions": "https://en.wikipedia.org/wiki/Ship_motions"
+    "wiki:ship-motions": "https://en.wikipedia.org/wiki/Ship_motions",
+    "wiki:spinnaker": "https://en.wikipedia.org/wiki/Spinnaker"
   },
   "entries": [
     {"id": "rope_mainsheet", "kind": "rope", "phase": 1, "group": "ropes", "status": "photo-confirmed", "sources": ["photo:clutch-bank-a", "photo:clutch-bank-b", "photo:mainsheet"], "controls": ["rope_mainsheet"], "related": ["part_boom", "fit_mainsheet_boom_blocks", "fit_mainsheet_deck_blocks", "term_ease", "term_gybe"], "showMe": "?wd=90&ws=12&ms=60&cam=top&sel=rope_mainsheet&held=1&sea=flat"},
@@ -224,6 +225,16 @@
     {"id": "term_grounding", "kind": "term", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["env_seabed", "fit_instrument_display"], "showMe": "?cam=side-port&pl=bay&pe=-1676.4&pn=0.0&hdg=270&bs=1.0"},
     {"id": "fit_windlass_remote", "kind": "fitting", "phase": 7, "group": "cockpit", "status": "draft", "sources": [], "related": ["fit_anchor_windlass"]},
     {"id": "person_captain", "kind": "part", "phase": 111, "group": "cockpit", "status": "draft", "sources": [], "related": ["helm_port", "helm_starboard", "term_windward"], "showMe": "?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port&sel=person_captain"},
-    {"id": "term_scope", "kind": "term", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["fit_anchor_chain", "fit_anchor", "env_seabed"], "showMe": "?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1606.0,0.0&as=1"}
+    {"id": "term_scope", "kind": "term", "phase": 7, "group": "harbour", "status": "draft", "sources": [], "related": ["fit_anchor_chain", "fit_anchor", "env_seabed"], "showMe": "?wd=90&ws=15&cam=top&pl=bay&pe=-1640.0&pn=0.0&hdg=90&an=34.0&ax=-1606.0,0.0&as=1"},
+    {"id": "sail_spinnaker", "kind": "sail", "phase": 109, "group": "sails", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["part_spinnaker_pole", "rope_spinnaker_sheet", "rope_spinnaker_guy", "rope_pole_lift", "rope_pole_downhaul", "term_downwind_sails"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"},
+    {"id": "part_spinnaker_pole", "kind": "part", "phase": 109, "group": "rig", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_spinnaker", "rope_spinnaker_sheet", "rope_spinnaker_guy", "rope_pole_lift", "rope_pole_downhaul", "term_downwind_sails"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"},
+    {"id": "rope_spinnaker_sheet", "kind": "rope", "phase": 109, "group": "ropes", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_spinnaker", "part_spinnaker_pole", "rope_spinnaker_guy", "rope_pole_lift", "rope_pole_downhaul", "term_downwind_sails"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"},
+    {"id": "rope_spinnaker_guy", "kind": "rope", "phase": 109, "group": "ropes", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_spinnaker", "part_spinnaker_pole", "rope_spinnaker_sheet", "rope_pole_lift", "rope_pole_downhaul", "term_downwind_sails"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"},
+    {"id": "rope_pole_lift", "kind": "rope", "phase": 109, "group": "ropes", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_spinnaker", "part_spinnaker_pole", "rope_spinnaker_sheet", "rope_spinnaker_guy", "rope_pole_downhaul", "term_downwind_sails"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"},
+    {"id": "rope_pole_downhaul", "kind": "rope", "phase": 109, "group": "ropes", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_spinnaker", "part_spinnaker_pole", "rope_spinnaker_sheet", "rope_spinnaker_guy", "rope_pole_lift", "term_downwind_sails"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"},
+    {"id": "sail_code_zero", "kind": "sail", "phase": 109, "group": "sails", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["part_code_zero_furler", "rope_code_zero_sheet", "term_downwind_sails"], "showMe": "?pic=code0&wd=70&ws=10&ms=40&jf=0&held=1&sea=flat&cam=side-port"},
+    {"id": "part_code_zero_furler", "kind": "part", "phase": 109, "group": "rig", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_code_zero", "rope_code_zero_sheet", "term_downwind_sails"], "showMe": "?pic=code0&wd=70&ws=10&ms=40&jf=0&held=1&sea=flat&cam=side-port"},
+    {"id": "rope_code_zero_sheet", "kind": "rope", "phase": 109, "group": "ropes", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_code_zero", "part_code_zero_furler", "term_downwind_sails"], "showMe": "?pic=code0&wd=70&ws=10&ms=40&jf=0&held=1&sea=flat&cam=side-port"},
+    {"id": "term_downwind_sails", "kind": "term", "phase": 109, "group": "sailing", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_gennaker", "sail_spinnaker", "sail_code_zero"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"}
   ]
 }

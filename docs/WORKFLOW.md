@@ -136,8 +136,8 @@ New link settings: `gn` gennaker rigging step (0 stowed, 1 tack line on, 2 sheet
 
 #### M109: Spinnaker and code 0 pictures
 
-- [ ] Spinnaker: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=sail_spinnaker — the entry says it is not on this boat. Tap Show it working: a big round sail on a pole sticking out to the right (starboard, the side the wind comes from), with a card saying it is a picture. Tap Close picture.
-- [ ] The guy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=rope_spinnaker_guy — Show it working: the line from the pole's end back to the stern is highlighted.
+- [ ] Spinnaker: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=sail_spinnaker — the entry says it is not on this boat. Tap Show it working: a big sail ahead of the mast on a pole that sticks out to starboard (the side the wind comes from, so towards you in this view), with a card saying it is a picture. Tap Close picture.
+- [ ] The guy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=rope_spinnaker_guy — Show it working: the line from the pole's end back to the stern (the guy) is drawn along the deck edge; it is not lit up, the picture shows every line in the same colour.
 - [ ] Code 0: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=sail_code_zero — Show it working: a flat sail from the bow on its own roller, wind from ahead of the side.
 - [ ] Compare: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=term_downwind_sails — the entry compares the gennaker, the spinnaker and the code 0.
 

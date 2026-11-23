@@ -2200,6 +2200,99 @@
       ],
       "showMe": "Ankret i bukta med 34 m kjetting, vind 15 kn.",
       "textStatus": "draft"
+    },
+    "sail_spinnaker": {
+      "name": "Spinnaker (symmetrisk)",
+      "alternatives": [],
+      "short": "Et stort, ballongaktig seil for lens og slør, satt på en bom; ikke på denne båten.",
+      "what": "Begge kantene er like lange, og begge kan være den fremre. Dens lo-hjørne (halsen) sitter ytterst på en bom som stikker ut fra masten på den siden vinden kommer fra; hjørnet på den andre siden (skjøtehjørnet) trimmes med skjøtet. Bommen står omtrent vinkelrett på vinden du kjenner; å føre den akterover når du faller av, er det bråsen gjør.",
+      "showMe": "Et bilde av en symmetrisk spinnaker på denne båten: vinden kommer fra styrbord akterut, så bommen stikker ut til styrbord med seilets hals ytterst.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "part_spinnaker_pole": {
+      "name": "Spinnakerbom",
+      "alternatives": [],
+      "short": "Holder spinnakerens hals ut mot lo.",
+      "what": "En bom som er hektet til en ring foran på masten i den ene enden; bråsen går gjennom gapet i den andre enden. En bomløfter (toppenant) holder den oppe, og en nedhaler holder den nede. Håndboken for denne båten oppgir 5,85 m for bommen.",
+      "showMe": "Bommen stikker ut fra masten til den siden vinden kommer fra (styrbord her), omtrent vinkelrett på vinden du kjenner.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "rope_spinnaker_sheet": {
+      "name": "Spinnakerskjøte",
+      "alternatives": [],
+      "short": "Le-skjøtet: trimmer spinnakerens skjøtehjørne.",
+      "what": "Som et fokkeskjøte, på siden bort fra vinden; etter en gybing bytter bråsen og skjøtet oppgaver.",
+      "showMe": "Skjøtet går fra seilets bakre hjørne på siden bort fra vinden (babord her) langs dekkskanten til en blokk akter og vinsjen.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "rope_spinnaker_guy": {
+      "name": "Brass",
+      "alternatives": [],
+      "short": "Lo-skjøtet på en symmetrisk spinnaker: det bestemmer bommens vinkel.",
+      "what": "Det går fra halsen gjennom enden av bommen, tilbake til en blokk akter og en vinsj. Når du hiver det inn, går bommen akterover; når du gir etter, går bommen forover.",
+      "showMe": "Bråsen går fra enden av bommen, utenfor alt, tilbake til blokken akter og vinsjen på styrbord side.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "rope_pole_lift": {
+      "name": "Bomløfter",
+      "alternatives": [
+        {
+          "term": "Toppenant (bom)"
+        }
+      ],
+      "short": "Holder spinnakerbommen oppe.",
+      "what": "Et tau fra masten ned til yttersiden av bommen, slik at bommen holder seg i høyde med skjøtehjørnet.",
+      "showMe": "Bomløfteren er tauet fra høyt oppe på masten ned til enden av bommen.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "rope_pole_downhaul": {
+      "name": "Bomnedhaler",
+      "alternatives": [],
+      "short": "Holder spinnakerbommen nede.",
+      "what": "Fra yttersiden av bommen ned til dekket, slik at seilet ikke kan løfte bommen.",
+      "showMe": "Nedhaleren går fra enden av bommen ned til dekket nær masten.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "sail_code_zero": {
+      "name": "Code 0",
+      "alternatives": [],
+      "short": "Et flatt, lett seil for høy slør, rullet opp på sin egen rulleanordning; ikke på denne båten.",
+      "what": "Flatere enn en gennaker og satt på en egen rulleanordning i baugen, så det rulles ut og inn som en fokk. Det er for lett vind fra forenfor tvers til slør, der en gennaker bare ville slå.",
+      "showMe": "Et bilde av en Code 0: et flatt seil fra baugen, rullet på sin egen trommel. Vinden kommer fra styrbord forenfor tvers, så seilets bakre hjørne er mot babord.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "part_code_zero_furler": {
+      "name": "Code 0-trommel",
+      "alternatives": [],
+      "short": "Trommelen Code 0 rulles opp på.",
+      "what": "En trommel i baugen med sitt eget tau; i seilets forlik ligger en wire som snurrer med trommelen.",
+      "showMe": "Trommelen i baugen som seilets forlik snurrer på.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "rope_code_zero_sheet": {
+      "name": "Code 0-skjøte",
+      "alternatives": [],
+      "short": "Trimmer Code 0.",
+      "what": "Føres som gennakerens skjøte, utenfor alt til en blokk akter.",
+      "showMe": "Code 0-skjøtet går fra seilets bakre hjørne langs babord dekkskant til blokken akter.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde («Vis det i bruk»).",
+      "textStatus": "draft"
+    },
+    "term_downwind_sails": {
+      "name": "Seil for lens og slør",
+      "alternatives": [],
+      "short": "Gennaker, spinnaker og Code 0 sammenlignet.",
+      "what": "En gennaker (asymmetrisk spinnaker) tackes i baugen og trenger ingen bom: enkel for en liten besetning, best på slør. En symmetrisk spinnaker flyr på en bom mot lo: best dypt på lens, flere tau og mer arbeid (brass, skjøte, bomløfter, nedhaler). En Code 0 er flat og på en rulleanordning: for lett vind nærmere vinden enn en gennaker kan gå. Tilvalget på denne båten er gennakeren.",
+      "showMe": "Den symmetriske spinnakeren som bilde. Åpne også oppføringen om Code 0; gennakeren er seilet du kan rigge i Innstillinger.",
+      "textStatus": "draft"
     }
   }
 }

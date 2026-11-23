@@ -4,6 +4,66 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 
 ## Tau
 
+### Bomløfter (`rope_pole_lift`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Pole lift | Bomløfter |
+| Andre navn | Topping lift (pole)<br>Uphaul | Toppenant (bom) |
+| Kort | Holds the spinnaker pole up. | Holder spinnakerbommen oppe. |
+| Hva det gjør / hva det betyr | A line from the mast down to the outer end of the pole, so the pole stays level with the clew. | Et tau fra masten ned til yttersiden av bommen, slik at bommen holder seg i høyde med skjøtehjørnet. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | The pole lift is the line from high up the mast down to the end of the pole. | Bomløfteren er tauet fra høyt oppe på masten ned til enden av bommen. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Bomnedhaler (`rope_pole_downhaul`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Pole downhaul | Bomnedhaler |
+| Andre navn | Foreguy | — |
+| Kort | Holds the spinnaker pole down. | Holder spinnakerbommen nede. |
+| Hva det gjør / hva det betyr | From the outer end of the pole down to the deck, so the sail cannot lift the pole. | Fra yttersiden av bommen ned til dekket, slik at seilet ikke kan løfte bommen. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | The downhaul runs from the end of the pole down to the deck near the mast. | Nedhaleren går fra enden av bommen ned til dekket nær masten. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Brass (`rope_spinnaker_guy`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Guy | Brass |
+| Andre navn | — | — |
+| Kort | The windward sheet of a symmetric spinnaker: it sets the pole's angle. | Lo-skjøtet på en symmetrisk spinnaker: det bestemmer bommens vinkel. |
+| Hva det gjør / hva det betyr | It runs from the tack through the end of the pole, back to a block at the stern and a winch. Pulling it brings the pole aft; easing it lets the pole go forward. | Det går fra halsen gjennom enden av bommen, tilbake til en blokk akter og en vinsj. Når du hiver det inn, går bommen akterover; når du gir etter, går bommen forover. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | The guy runs from the end of the pole, outside everything, back to the block at the stern and the winch on the starboard side. | Bråsen går fra enden av bommen, utenfor alt, tilbake til blokken akter og vinsjen på styrbord side. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Code 0-skjøte (`rope_code_zero_sheet`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Code 0 sheet | Code 0-skjøte |
+| Andre navn | — | — |
+| Kort | Trims the code 0. | Trimmer Code 0. |
+| Hva det gjør / hva det betyr | Led like the gennaker's sheet, outside everything to a block at the stern. | Føres som gennakerens skjøte, utenfor alt til en blokk akter. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | The code 0 sheet runs from the sail's back corner along the port deck edge to the block at the stern. | Code 0-skjøtet går fra seilets bakre hjørne langs babord dekkskant til blokken akter. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Fokkeskjøt (`rope_jib_sheet`)
 
 | Felt | English | Norsk |
@@ -124,6 +184,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Spinnakerskjøte (`rope_spinnaker_sheet`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Spinnaker sheet | Spinnakerskjøte |
+| Andre navn | — | — |
+| Kort | The leeward sheet: trims the spinnaker's clew. | Le-skjøtet: trimmer spinnakerens skjøtehjørne. |
+| Hva det gjør / hva det betyr | Like a jib sheet, on the side away from the wind; after a gybe the guy and the sheet swap jobs. | Som et fokkeskjøte, på siden bort fra vinden; etter en gybing bytter bråsen og skjøtet oppgaver. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | The sheet runs from the sail's back corner on the side away from the wind (port here) along the deck edge to a block at the stern and the winch. | Skjøtet går fra seilets bakre hjørne på siden bort fra vinden (babord her) langs dekkskanten til en blokk akter og vinsjen. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Storfall (`rope_main_halyard`)
 
 | Felt | English | Norsk |
@@ -212,6 +287,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | På denne båten | — | — |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Code 0 (`sail_code_zero`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Code 0 | Code 0 |
+| Andre navn | — | — |
+| Kort | A flat, light sail for close reaching, rolled on its own furler; not on this boat. | Et flatt, lett seil for høy slør, rullet opp på sin egen rulleanordning; ikke på denne båten. |
+| Hva det gjør / hva det betyr | Flatter than a gennaker and set on its own furler at the bow, so it is unrolled and rolled away like a jib. It is for light wind from ahead of the beam to a beam reach, where a gennaker would only flap. | Flatere enn en gennaker og satt på en egen rulleanordning i baugen, så det rulles ut og inn som en fokk. Det er for lett vind fra forenfor tvers til slør, der en gennaker bare ville slå. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | A picture of a code 0: a flat sail from the bow, rolled on its own drum. The wind comes from the starboard side ahead of the beam, so the sail's back corner is to port. | Et bilde av en Code 0: et flatt seil fra baugen, rullet på sin egen trommel. Vinden kommer fra styrbord forenfor tvers, så seilets bakre hjørne er mot babord. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -306,6 +396,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Spinnaker (symmetrisk) (`sail_spinnaker`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Spinnaker (symmetric) | Spinnaker (symmetrisk) |
+| Andre navn | — | — |
+| Kort | A big, balloon-like sail for running and broad reaching, set on a pole; not on this boat. | Et stort, ballongaktig seil for lens og slør, satt på en bom; ikke på denne båten. |
+| Hva det gjør / hva det betyr | Both edges are the same length and either can lead. Its windward corner (the tack) sits at the end of a pole that sticks out from the mast on the side the wind comes from; the corner on the other side (the clew) is trimmed with the sheet. The pole is set at about right angles to the wind you feel; moving it aft as you turn downwind is what the guy does. | Begge kantene er like lange, og begge kan være den fremre. Dens lo-hjørne (halsen) sitter ytterst på en bom som stikker ut fra masten på den siden vinden kommer fra; hjørnet på den andre siden (skjøtehjørnet) trimmes med skjøtet. Bommen står omtrent vinkelrett på vinden du kjenner; å føre den akterover når du faller av, er det bråsen gjør. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | A picture of a symmetric spinnaker on this boat: the wind comes from the starboard quarter, so the pole sticks out to starboard with the sail's tack at its end. | Et bilde av en symmetrisk spinnaker på denne båten: vinden kommer fra styrbord akterut, så bommen stikker ut til styrbord med seilets hals ytterst. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Storseil (`sail_main`)
 
 | Felt | English | Norsk |
@@ -394,6 +499,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | På denne båten | 6.25 m long, joined to the mast by the gooseneck. It can swing about 72° out to each side before it would touch the shrouds. | 6,25 m lang, festet til masten med gåsehalsen. Den kan svinge omtrent 72° ut til hver side før den ville berøre vantene. |
 | Typiske feil | Standing or sitting in the boom’s path with the wind from behind. → In an accidental gybe the boom crosses the boat fast and hard. Keep your head out of the red danger zone the app draws. | Å stå eller sitte i veien for bommen med vinden bakfra. → Ved en utilsiktet jibb krysser bommen båten fort og hardt. Hold hodet utenfor den røde faresonen appen tegner. |
 | «Vis meg» | Wind from the side: the boom has swung out to the side away from the wind. Try “Mainsheet” or “Vang” below to see it move. | Vind fra siden: bommen har svingt ut til siden bort fra vinden. Prøv «Storskjøt» eller «Kicker» under for å se den bevege seg. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Code 0-trommel (`part_code_zero_furler`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Code 0 furler | Code 0-trommel |
+| Andre navn | — | — |
+| Kort | The drum the code 0 rolls up on. | Trommelen Code 0 rulles opp på. |
+| Hva det gjør / hva det betyr | A drum at the bow with its own line; the sail's luff has a cable inside that turns with the drum. | En trommel i baugen med sitt eget tau; i seilets forlik ligger en wire som snurrer med trommelen. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | The drum at the bow that the sail's front edge turns on. | Trommelen i baugen som seilets forlik snurrer på. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
@@ -515,6 +635,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Spinnakerbom (`part_spinnaker_pole`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Spinnaker pole | Spinnakerbom |
+| Andre navn | — | — |
+| Kort | Holds the spinnaker's tack out to windward. | Holder spinnakerens hals ut mot lo. |
+| Hva det gjør / hva det betyr | A pole clipped to a ring on the front of the mast at one end; the guy runs through the jaw at its other end. A pole lift (topping lift) holds it up and a downhaul holds it down. This boat's manual gives 5.85 m for its pole. | En bom som er hektet til en ring foran på masten i den ene enden; bråsen går gjennom gapet i den andre enden. En bomløfter (toppenant) holder den oppe, og en nedhaler holder den nede. Håndboken for denne båten oppgir 5,85 m for bommen. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde («Vis det i bruk»). |
+| Typiske feil | — | — |
+| «Vis meg» | The pole sticks out from the mast to the side the wind comes from (starboard here), at about right angles to the wind you feel. | Bommen stikker ut fra masten til den siden vinden kommer fra (styrbord her), omtrent vinkelrett på vinden du kjenner. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
@@ -2086,6 +2221,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | På denne båten | There are no reef lines: the main is made smaller by rolling part of it into the mast, and the jib by rolling part of it round the forestay; usually the jib first, then the main. | Det finnes ingen revliner: storseilet gjøres mindre ved å rulle en del av det inn i masten, og fokken ved å rulle en del rundt forstaget; vanligvis fokken først, så storseilet. |
 | Typiske feil | Waiting until the wind is already strong. → Rolling sail away is harder and riskier under load. Make the sails smaller as soon as she heels too much. | Å vente til vinden allerede er sterk. → Å rulle inn seil er vanskeligere og farligere under belastning. Gjør seilene mindre så snart båten krenger for mye. |
 | «Vis meg» | The mainsail is rolled halfway into the mast: half the sail, less push. | Storseilet er rullet halvveis inn i masten: halve seilet, mindre trykk. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Seil for lens og slør (`term_downwind_sails`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Downwind sails | Seil for lens og slør |
+| Andre navn | — | — |
+| Kort | The gennaker, the spinnaker and the code 0 compared. | Gennaker, spinnaker og Code 0 sammenlignet. |
+| Hva det gjør / hva det betyr | A gennaker (asymmetric spinnaker) is tacked at the bow and needs no pole: easy for a small crew, best on a broad reach. A symmetric spinnaker flies on a pole to windward: best deep downwind, more lines and more work (guy, sheet, pole lift, downhaul). A code 0 is flat and on a furler: for light wind closer to the wind than a gennaker can go. This boat's option is the gennaker. | En gennaker (asymmetrisk spinnaker) tackes i baugen og trenger ingen bom: enkel for en liten besetning, best på slør. En symmetrisk spinnaker flyr på en bom mot lo: best dypt på lens, flere tau og mer arbeid (brass, skjøte, bomløfter, nedhaler). En Code 0 er flat og på en rulleanordning: for lett vind nærmere vinden enn en gennaker kan gå. Tilvalget på denne båten er gennakeren. |
+| På denne båten | — | — |
+| Typiske feil | — | — |
+| «Vis meg» | The symmetric spinnaker as a picture. Open the code 0 entry to see that one too; the gennaker is the sail you can rig in Settings. | Den symmetriske spinnakeren som bilde. Åpne også oppføringen om Code 0; gennakeren er seilet du kan rigge i Innstillinger. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |

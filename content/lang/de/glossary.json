@@ -2174,6 +2174,103 @@
       ],
       "showMe": "In der Bucht geankert mit 34 m Kette, Wind 15 kn.",
       "textStatus": "draft"
+    },
+    "sail_spinnaker": {
+      "name": "Spinnaker (symmetrisch)",
+      "alternatives": [],
+      "short": "Ein großes, ballonartiges Segel für Vorwind- und raumen Wind, an einem Baum gefahren; nicht auf diesem Boot.",
+      "what": "Beide Kanten sind gleich lang, und jede kann die vordere sein. Seine Luvecke (der Hals) sitzt am Ende eines Baums, der auf der Seite, von der der Wind kommt, vom Mast absteht; die Ecke auf der anderen Seite (das Schothorn) wird mit der Schot getrimmt. Der Baum steht etwa im rechten Winkel zum gefühlten Wind; ihn beim Abfallen nach achtern zu holen, ist die Aufgabe des Achterholers.",
+      "showMe": "Ein Bild eines symmetrischen Spinnakers auf diesem Boot: Der Wind kommt von steuerbord achtern, daher steht der Baum nach Steuerbord ab, mit dem Hals des Segels an seinem Ende.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "part_spinnaker_pole": {
+      "name": "Spinnakerbaum",
+      "alternatives": [],
+      "short": "Hält den Hals des Spinnakers nach Luv hinaus.",
+      "what": "Ein Baum, der mit einem Ende in einen Ring vorn am Mast eingehakt ist; durch das Maul an seinem anderen Ende läuft der Achterholer. Ein Baumlift (Toppnant) hält ihn oben, ein Niederholer hält ihn unten. Das Handbuch dieses Bootes nennt 5,85 m für den Baum.",
+      "showMe": "Der Baum steht vom Mast zu der Seite ab, von der der Wind kommt (hier Steuerbord), etwa im rechten Winkel zum gefühlten Wind.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "rope_spinnaker_sheet": {
+      "name": "Spinnakerschot",
+      "alternatives": [],
+      "short": "Die Leeschot: trimmt das Schothorn des Spinnakers.",
+      "what": "Wie eine Fockschot, auf der windabgewandten Seite; nach einer Halse tauschen Achterholer und Schot ihre Aufgaben.",
+      "showMe": "Die Schot läuft vom hinteren Segeleck auf der windabgewandten Seite (hier Backbord) am Deckrand entlang zu einem Block am Heck und zur Winsch.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "rope_spinnaker_guy": {
+      "name": "Achterholer",
+      "alternatives": [],
+      "short": "Die Luvschot eines symmetrischen Spinnakers: sie bestimmt den Winkel des Baums.",
+      "what": "Er läuft vom Hals durch das Ende des Baums zurück zu einem Block am Heck und einer Winsch. Holt man ihn dicht, geht der Baum nach achtern; fiert man ihn, geht der Baum nach vorn.",
+      "showMe": "Der Achterholer läuft vom Ende des Baums außen um alles zurück zum Block am Heck und zur Winsch auf der Steuerbordseite.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "rope_pole_lift": {
+      "name": "Baumlift",
+      "alternatives": [
+        {
+          "term": "Toppnant (Baum)"
+        }
+      ],
+      "short": "Hält den Spinnakerbaum oben.",
+      "what": "Eine Leine vom Mast zum äußeren Ende des Baums, damit der Baum auf Höhe des Schothorns bleibt.",
+      "showMe": "Der Baumlift ist die Leine von hoch oben am Mast hinunter zum Ende des Baums.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "rope_pole_downhaul": {
+      "name": "Baumniederholer",
+      "alternatives": [
+        {
+          "term": "Vorholer"
+        }
+      ],
+      "short": "Hält den Spinnakerbaum unten.",
+      "what": "Vom äußeren Ende des Baums hinunter zum Deck, damit das Segel den Baum nicht anheben kann.",
+      "showMe": "Der Niederholer läuft vom Ende des Baums hinunter zum Deck nahe am Mast.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "sail_code_zero": {
+      "name": "Code 0",
+      "alternatives": [],
+      "short": "Ein flaches, leichtes Segel für den Halbwindkurs, auf einer eigenen Rollanlage aufgerollt; nicht auf diesem Boot.",
+      "what": "Flacher als ein Gennaker und an einer eigenen Rollanlage am Bug gefahren, sodass es wie eine Fock ausgerollt und weggerollt wird. Es ist für leichten Wind von schräg vorn bis zum Halbwindkurs, wo ein Gennaker nur flattern würde.",
+      "showMe": "Ein Bild eines Code 0: ein flaches Segel vom Bug, auf eine eigene Trommel gerollt. Der Wind kommt von Steuerbord schräg von vorn, daher liegt das hintere Eck des Segels backbord.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "part_code_zero_furler": {
+      "name": "Code-0-Rollanlage",
+      "alternatives": [],
+      "short": "Die Trommel, auf der sich das Code 0 aufrollt.",
+      "what": "Eine Trommel am Bug mit eigener Leine; im Vorliek des Segels steckt ein Kabel, das sich mit der Trommel dreht.",
+      "showMe": "Die Trommel am Bug, auf der sich das Vorliek des Segels dreht.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "rope_code_zero_sheet": {
+      "name": "Code-0-Schot",
+      "alternatives": [],
+      "short": "Trimmt das Code 0.",
+      "what": "Wie die Gennakerschot geführt, außen um alles zu einem Block am Heck.",
+      "showMe": "Die Code-0-Schot läuft vom hinteren Segeleck am Backbord-Deckrand entlang zum Block am Heck.",
+      "onThisBoat": "Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“).",
+      "textStatus": "draft"
+    },
+    "term_downwind_sails": {
+      "name": "Vorwindsegel",
+      "alternatives": [],
+      "short": "Gennaker, Spinnaker und Code 0 im Vergleich.",
+      "what": "Ein Gennaker (asymmetrischer Spinnaker) wird am Bug angeschlagen und braucht keinen Baum: einfach für eine kleine Crew, am besten auf raumem Wind. Ein symmetrischer Spinnaker fliegt an einem Baum nach Luv: am besten tief vor dem Wind, mehr Leinen und mehr Arbeit (Achterholer, Schot, Baumlift, Niederholer). Ein Code 0 ist flach und auf einer Rollanlage: für leichten Wind, näher am Wind, als ein Gennaker fahren kann. Die Option dieses Bootes ist der Gennaker.",
+      "showMe": "Der symmetrische Spinnaker als Bild. Öffnen Sie auch den Eintrag zum Code 0; der Gennaker ist das Segel, das Sie in den Einstellungen anschlagen können.",
+      "textStatus": "draft"
     }
   }
 }

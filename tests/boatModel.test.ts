@@ -4,6 +4,7 @@ import registry from '../content/registry/parts.json';
 import { boat } from '../src/model/boat';
 import { anchorFluke } from '../src/model/bowGear';
 import { defaultControls } from '../src/model/controls';
+import { PICTURE_ONLY } from '../src/model/glossary';
 import { initialRig } from '../src/model/sim';
 import { buildBoat } from '../src/render3d/boat';
 import { SCENE } from '../src/render3d/sceneConfig';
@@ -127,13 +128,13 @@ describe('boat model', () => {
   });
 
   it('overall size matches the data: length overall, beam, draft and mast height', () => {
-    // The fenders in the locker and the stowed gennaker's sail are hidden but still counted by
-    // Box3: leave them out (M33, M106).
+    // The fenders in the locker, the stowed gennaker's sail and the pictures' parts are hidden but
+    // still counted by Box3: leave them out (M33, M106, M109).
     const box = new THREE.Box3();
     const hidden = new Set(['fit_fender', 'fit_fender_ball', 'sail_gennaker']);
     model.root.traverse((object) => {
       const id = (object.userData as { partId?: string }).partId;
-      if (object instanceof THREE.Mesh && !hidden.has(id ?? '')) {
+      if (object instanceof THREE.Mesh && !hidden.has(id ?? '') && !PICTURE_ONLY.has(id ?? '')) {
         box.expandByObject(object);
       }
     });
@@ -192,7 +193,10 @@ describe('boat model', () => {
   });
 
   it('every rope is drawn: the mainsail and jib ropes (M2, M3) and the static halyards (M5)', () => {
-    const ropes = [...partIds].filter((id) => id.startsWith('rope_')).sort();
+    // The pictures' ropes (M109) are built but hidden until a picture shows.
+    const ropes = [...partIds]
+      .filter((id) => id.startsWith('rope_') && !PICTURE_ONLY.has(id))
+      .sort();
     expect(ropes).toEqual([
       'rope_jib_furling_line',
       'rope_jib_sheet',

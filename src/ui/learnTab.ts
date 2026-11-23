@@ -7,6 +7,7 @@ import {
   learnEntry,
   normalizeSearch,
   FAR_AWAY,
+  PICTURE_ONLY,
   NOT_DRAWN,
   searchGlossary,
   sourceLink,
@@ -289,7 +290,12 @@ export function createLearnTab(
     }
 
     let lastButtons: HTMLElement | undefined;
-    if (entry.kind !== 'term' && !NOT_DRAWN.has(entry.id) && !FAR_AWAY.has(entry.id)) {
+    if (
+      entry.kind !== 'term' &&
+      !NOT_DRAWN.has(entry.id) &&
+      !FAR_AWAY.has(entry.id) &&
+      !PICTURE_ONLY.has(entry.id)
+    ) {
       lastButtons = el('div', { class: 'learn-links' }, [
         button('learn-show-on-boat', t('learn.whereIsIt'), () => {
           store.dispatch({ type: 'select', partId: entry.id });

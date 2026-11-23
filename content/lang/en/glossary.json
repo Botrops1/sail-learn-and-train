@@ -2202,6 +2202,106 @@
       ],
       "showMe": "Anchored in the bay with 34 m of chain, wind 15 kn.",
       "textStatus": "draft"
+    },
+    "sail_spinnaker": {
+      "name": "Spinnaker (symmetric)",
+      "alternatives": [],
+      "short": "A big, balloon-like sail for running and broad reaching, set on a pole; not on this boat.",
+      "what": "Both edges are the same length and either can lead. Its windward corner (the tack) sits at the end of a pole that sticks out from the mast on the side the wind comes from; the corner on the other side (the clew) is trimmed with the sheet. The pole is set at about right angles to the wind you feel; moving it aft as you turn downwind is what the guy does.",
+      "showMe": "A picture of a symmetric spinnaker on this boat: the wind comes from the starboard quarter, so the pole sticks out to starboard with the sail's tack at its end.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "part_spinnaker_pole": {
+      "name": "Spinnaker pole",
+      "alternatives": [],
+      "short": "Holds the spinnaker's tack out to windward.",
+      "what": "A pole clipped to a ring on the front of the mast at one end; the guy runs through the jaw at its other end. A pole lift (topping lift) holds it up and a downhaul holds it down. This boat's manual gives 5.85 m for its pole.",
+      "showMe": "The pole sticks out from the mast to the side the wind comes from (starboard here), at about right angles to the wind you feel.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_spinnaker_sheet": {
+      "name": "Spinnaker sheet",
+      "alternatives": [],
+      "short": "The leeward sheet: trims the spinnaker's clew.",
+      "what": "Like a jib sheet, on the side away from the wind; after a gybe the guy and the sheet swap jobs.",
+      "showMe": "The sheet runs from the sail's back corner on the side away from the wind (port here) along the deck edge to a block at the stern and the winch.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_spinnaker_guy": {
+      "name": "Guy",
+      "alternatives": [],
+      "short": "The windward sheet of a symmetric spinnaker: it sets the pole's angle.",
+      "what": "It runs from the tack through the end of the pole, back to a block at the stern and a winch. Pulling it brings the pole aft; easing it lets the pole go forward.",
+      "showMe": "The guy runs from the end of the pole, outside everything, back to the block at the stern and the winch on the starboard side.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_pole_lift": {
+      "name": "Pole lift",
+      "alternatives": [
+        {
+          "term": "Topping lift (pole)"
+        },
+        {
+          "term": "Uphaul"
+        }
+      ],
+      "short": "Holds the spinnaker pole up.",
+      "what": "A line from the mast down to the outer end of the pole, so the pole stays level with the clew.",
+      "showMe": "The pole lift is the line from high up the mast down to the end of the pole.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_pole_downhaul": {
+      "name": "Pole downhaul",
+      "alternatives": [
+        {
+          "term": "Foreguy"
+        }
+      ],
+      "short": "Holds the spinnaker pole down.",
+      "what": "From the outer end of the pole down to the deck, so the sail cannot lift the pole.",
+      "showMe": "The downhaul runs from the end of the pole down to the deck near the mast.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "sail_code_zero": {
+      "name": "Code 0",
+      "alternatives": [],
+      "short": "A flat, light sail for close reaching, rolled on its own furler; not on this boat.",
+      "what": "Flatter than a gennaker and set on its own furler at the bow, so it is unrolled and rolled away like a jib. It is for light wind from ahead of the beam to a beam reach, where a gennaker would only flap.",
+      "showMe": "A picture of a code 0: a flat sail from the bow, rolled on its own drum. The wind comes from the starboard side ahead of the beam, so the sail's back corner is to port.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "part_code_zero_furler": {
+      "name": "Code 0 furler",
+      "alternatives": [],
+      "short": "The drum the code 0 rolls up on.",
+      "what": "A drum at the bow with its own line; the sail's luff has a cable inside that turns with the drum.",
+      "showMe": "The drum at the bow that the sail's front edge turns on.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_code_zero_sheet": {
+      "name": "Code 0 sheet",
+      "alternatives": [],
+      "short": "Trims the code 0.",
+      "what": "Led like the gennaker's sheet, outside everything to a block at the stern.",
+      "showMe": "The code 0 sheet runs from the sail's back corner along the port deck edge to the block at the stern.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "term_downwind_sails": {
+      "name": "Downwind sails",
+      "alternatives": [],
+      "short": "The gennaker, the spinnaker and the code 0 compared.",
+      "what": "A gennaker (asymmetric spinnaker) is tacked at the bow and needs no pole: easy for a small crew, best on a broad reach. A symmetric spinnaker flies on a pole to windward: best deep downwind, more lines and more work (guy, sheet, pole lift, downhaul). A code 0 is flat and on a furler: for light wind closer to the wind than a gennaker can go. This boat's option is the gennaker.",
+      "showMe": "The symmetric spinnaker as a picture. Open the code 0 entry to see that one too; the gennaker is the sail you can rig in Settings.",
+      "textStatus": "draft"
     }
   }
 }

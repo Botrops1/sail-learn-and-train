@@ -2084,5 +2084,31 @@
       "crestNote": "assumption: a point is white where the surface height, as a fraction of the sum of the trains' amplitudes, is above hi = 1 − crestEdgeFactor·√coverage (soft over crestEdgeWidth below it); with three trains this whitens about the coverage fraction of the surface (checked by a test)",
       "source": "Beaufort scale (Wikipedia): perhaps scattered white horses at force 3 (7–10 kn), fairly frequent at 4 (11–16 kn), many at 5 (17–21 kn), more extensive at 6 (22–27 kn), blown in streaks at 7 (28–33 kn). The coverage fractions are a teaching assumption (PT-44)."
     }
+  },
+  "pictures": {
+    "note": "assumption (M109): pictures of sails this boat does not carry, drawn only while Learn's Show it working shows one. poleLengthM is the manual's spinnaker pole (dimensions.rigDimensionsMm.spinnakerPole 5850); the rest are guesses chosen to look right.",
+    "spinnaker": {
+      "poleHeel": [0.2, 3.2, 0.0],
+      "poleLengthM": 5.85,
+      "poleRadiusM": 0.04,
+      "poleMinDeg": 10,
+      "poleMaxDeg": 85,
+      "clewExtraDeg": 30,
+      "clewY": 3.2,
+      "head": [0.35, 21.0, 0.0],
+      "poleLiftFrom": [0.2, 12.0, 0.0],
+      "downhaulTo": [1.5, 1.62, 0.0],
+      "camberRatio": 0.25
+    },
+    "codeZero": {
+      "tack": [6.95, 2.10, 0.0],
+      "head": [0.35, 21.0, 0.0],
+      "footM": 7.5,
+      "phiDeg": 12,
+      "clewY": 2.6,
+      "drumRadiusM": 0.12,
+      "drumLengthM": 0.25,
+      "camberRatio": 0.08
+    }
   }
 }

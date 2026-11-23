@@ -4,6 +4,36 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 
 ## Leinen
 
+### Achterholer (`rope_spinnaker_guy`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Guy | Achterholer |
+| Andere Namen | — | — |
+| Kurz | The windward sheet of a symmetric spinnaker: it sets the pole's angle. | Die Luvschot eines symmetrischen Spinnakers: sie bestimmt den Winkel des Baums. |
+| Was es tut / was es bedeutet | It runs from the tack through the end of the pole, back to a block at the stern and a winch. Pulling it brings the pole aft; easing it lets the pole go forward. | Er läuft vom Hals durch das Ende des Baums zurück zu einem Block am Heck und einer Winsch. Holt man ihn dicht, geht der Baum nach achtern; fiert man ihn, geht der Baum nach vorn. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The guy runs from the end of the pole, outside everything, back to the block at the stern and the winch on the starboard side. | Der Achterholer läuft vom Ende des Baums außen um alles zurück zum Block am Heck und zur Winsch auf der Steuerbordseite. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Baumlift (`rope_pole_lift`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Pole lift | Baumlift |
+| Andere Namen | Topping lift (pole)<br>Uphaul | Toppnant (Baum) |
+| Kurz | Holds the spinnaker pole up. | Hält den Spinnakerbaum oben. |
+| Was es tut / was es bedeutet | A line from the mast down to the outer end of the pole, so the pole stays level with the clew. | Eine Leine vom Mast zum äußeren Ende des Baums, damit der Baum auf Höhe des Schothorns bleibt. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The pole lift is the line from high up the mast down to the end of the pole. | Der Baumlift ist die Leine von hoch oben am Mast hinunter zum Ende des Baums. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Baumniederholer (`rope_vang`)
 
 | Feld | English | Deutsch |
@@ -16,6 +46,36 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | Relying on the mainsheet to hold the boom down on a reach. → Far out, the sheet pulls sideways, not down, and the boom lifts. Pull the vang on to hold it down.<br>Pulling the vang and the topping lift tight at the same time. → They pull against each other (both lines turn red in the app). Ease the topping lift once the sail is set. | Sich darauf verlassen, dass die Großschot den Baum auf einem Raumschotskurs unten hält. → Weit außen zieht die Schot seitlich, nicht nach unten, und der Baum hebt sich. Holen Sie den Niederholer dicht, um ihn unten zu halten.<br>Niederholer und Toppnant gleichzeitig dichtziehen. → Sie ziehen gegeneinander (beide Leinen werden in der App rot). Fieren Sie den Toppnant, sobald das Segel steht. |
 | „Zeigen“ | Wind 20 kn from the side, vang eased all the way: the boom end has lifted and the top of the mainsail twists open. Tap “Vang” below and pull it on: the boom comes down and the sail flattens. | Wind 20 kn von der Seite, Niederholer ganz gefiert: das Baumende ist gestiegen und der obere Teil des Großsegels ist im Twist aufgegangen. Tippen Sie unten auf „Baumniederholer“ und holen Sie dicht: der Baum kommt herunter und das Segel wird flacher. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Baumniederholer (`rope_pole_downhaul`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Pole downhaul | Baumniederholer |
+| Andere Namen | Foreguy | Vorholer |
+| Kurz | Holds the spinnaker pole down. | Hält den Spinnakerbaum unten. |
+| Was es tut / was es bedeutet | From the outer end of the pole down to the deck, so the sail cannot lift the pole. | Vom äußeren Ende des Baums hinunter zum Deck, damit das Segel den Baum nicht anheben kann. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The downhaul runs from the end of the pole down to the deck near the mast. | Der Niederholer läuft vom Ende des Baums hinunter zum Deck nahe am Mast. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Code-0-Schot (`rope_code_zero_sheet`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Code 0 sheet | Code-0-Schot |
+| Andere Namen | — | — |
+| Kurz | Trims the code 0. | Trimmt das Code 0. |
+| Was es tut / was es bedeutet | Led like the gennaker's sheet, outside everything to a block at the stern. | Wie die Gennakerschot geführt, außen um alles zu einem Block am Heck. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The code 0 sheet runs from the sail's back corner along the port deck edge to the block at the stern. | Die Code-0-Schot läuft vom hinteren Segeleck am Backbord-Deckrand entlang zum Block am Heck. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
@@ -169,6 +229,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Spinnakerschot (`rope_spinnaker_sheet`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Spinnaker sheet | Spinnakerschot |
+| Andere Namen | — | — |
+| Kurz | The leeward sheet: trims the spinnaker's clew. | Die Leeschot: trimmt das Schothorn des Spinnakers. |
+| Was es tut / was es bedeutet | Like a jib sheet, on the side away from the wind; after a gybe the guy and the sheet swap jobs. | Wie eine Fockschot, auf der windabgewandten Seite; nach einer Halse tauschen Achterholer und Schot ihre Aufgaben. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The sheet runs from the sail's back corner on the side away from the wind (port here) along the deck edge to a block at the stern and the winch. | Die Schot läuft vom hinteren Segeleck auf der windabgewandten Seite (hier Backbord) am Deckrand entlang zu einem Block am Heck und zur Winsch. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Toppnant (`rope_topping_lift`)
 
 | Feld | English | Deutsch |
@@ -212,6 +287,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Code 0 (`sail_code_zero`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Code 0 | Code 0 |
+| Andere Namen | — | — |
+| Kurz | A flat, light sail for close reaching, rolled on its own furler; not on this boat. | Ein flaches, leichtes Segel für den Halbwindkurs, auf einer eigenen Rollanlage aufgerollt; nicht auf diesem Boot. |
+| Was es tut / was es bedeutet | Flatter than a gennaker and set on its own furler at the bow, so it is unrolled and rolled away like a jib. It is for light wind from ahead of the beam to a beam reach, where a gennaker would only flap. | Flacher als ein Gennaker und an einer eigenen Rollanlage am Bug gefahren, sodass es wie eine Fock ausgerollt und weggerollt wird. Es ist für leichten Wind von schräg vorn bis zum Halbwindkurs, wo ein Gennaker nur flattern würde. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | A picture of a code 0: a flat sail from the bow, rolled on its own drum. The wind comes from the starboard side ahead of the beam, so the sail's back corner is to port. | Ein Bild eines Code 0: ein flaches Segel vom Bug, auf eine eigene Trommel gerollt. Der Wind kommt von Steuerbord schräg von vorn, daher liegt das hintere Eck des Segels backbord. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -321,6 +411,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Spinnaker (symmetrisch) (`sail_spinnaker`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Spinnaker (symmetric) | Spinnaker (symmetrisch) |
+| Andere Namen | — | — |
+| Kurz | A big, balloon-like sail for running and broad reaching, set on a pole; not on this boat. | Ein großes, ballonartiges Segel für Vorwind- und raumen Wind, an einem Baum gefahren; nicht auf diesem Boot. |
+| Was es tut / was es bedeutet | Both edges are the same length and either can lead. Its windward corner (the tack) sits at the end of a pole that sticks out from the mast on the side the wind comes from; the corner on the other side (the clew) is trimmed with the sheet. The pole is set at about right angles to the wind you feel; moving it aft as you turn downwind is what the guy does. | Beide Kanten sind gleich lang, und jede kann die vordere sein. Seine Luvecke (der Hals) sitzt am Ende eines Baums, der auf der Seite, von der der Wind kommt, vom Mast absteht; die Ecke auf der anderen Seite (das Schothorn) wird mit der Schot getrimmt. Der Baum steht etwa im rechten Winkel zum gefühlten Wind; ihn beim Abfallen nach achtern zu holen, ist die Aufgabe des Achterholers. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | A picture of a symmetric spinnaker on this boat: the wind comes from the starboard quarter, so the pole sticks out to starboard with the sail's tack at its end. | Ein Bild eines symmetrischen Spinnakers auf diesem Boot: Der Wind kommt von steuerbord achtern, daher steht der Baum nach Steuerbord ab, mit dem Hals des Segels an seinem Ende. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Trimmfaden (`part_telltale`)
 
 | Feld | English | Deutsch |
@@ -394,6 +499,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Auf diesem Boot | 6.25 m long, joined to the mast by the gooseneck. It can swing about 72° out to each side before it would touch the shrouds. | 6,25 m lang, über den Lümmelbeschlag mit dem Mast verbunden. Er kann etwa 72° nach jeder Seite ausschwenken, bevor er die Wanten berühren würde. |
 | Typische Fehler | Standing or sitting in the boom’s path with the wind from behind. → In an accidental gybe the boom crosses the boat fast and hard. Keep your head out of the red danger zone the app draws. | Bei Wind von hinten im Schwenkbereich des Baums stehen oder sitzen. → Bei einer ungewollten Halse kommt der Baum schnell und hart herüber. Halten Sie den Kopf aus der roten Gefahrenzone, die die App zeichnet. |
 | „Zeigen“ | Wind from the side: the boom has swung out to the side away from the wind. Try “Mainsheet” or “Vang” below to see it move. | Wind von der Seite: der Baum ist auf die windabgewandte Seite ausgeschwenkt. Probieren Sie unten „Großschot“ oder „Baumniederholer“, um ihn in Bewegung zu sehen. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Code-0-Rollanlage (`part_code_zero_furler`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Code 0 furler | Code-0-Rollanlage |
+| Andere Namen | — | — |
+| Kurz | The drum the code 0 rolls up on. | Die Trommel, auf der sich das Code 0 aufrollt. |
+| Was es tut / was es bedeutet | A drum at the bow with its own line; the sail's luff has a cable inside that turns with the drum. | Eine Trommel am Bug mit eigener Leine; im Vorliek des Segels steckt ein Kabel, das sich mit der Trommel dreht. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The drum at the bow that the sail's front edge turns on. | Die Trommel am Bug, auf der sich das Vorliek des Segels dreht. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
@@ -500,6 +620,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Spinnakerbaum (`part_spinnaker_pole`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Spinnaker pole | Spinnakerbaum |
+| Andere Namen | — | — |
+| Kurz | Holds the spinnaker's tack out to windward. | Hält den Hals des Spinnakers nach Luv hinaus. |
+| Was es tut / was es bedeutet | A pole clipped to a ring on the front of the mast at one end; the guy runs through the jaw at its other end. A pole lift (topping lift) holds it up and a downhaul holds it down. This boat's manual gives 5.85 m for its pole. | Ein Baum, der mit einem Ende in einen Ring vorn am Mast eingehakt ist; durch das Maul an seinem anderen Ende läuft der Achterholer. Ein Baumlift (Toppnant) hält ihn oben, ein Niederholer hält ihn unten. Das Handbuch dieses Bootes nennt 5,85 m für den Baum. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht auf diesem Boot: nur als Bild zu sehen („Zeig es in Aktion“). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The pole sticks out from the mast to the side the wind comes from (starboard here), at about right angles to the wind you feel. | Der Baum steht vom Mast zu der Seite ab, von der der Wind kommt (hier Steuerbord), etwa im rechten Winkel zum gefühlten Wind. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
@@ -2222,6 +2357,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | Running dead downwind. → The boom can gybe by accident. Steer a little off dead downwind, so the wind stays clearly on one side. | Platt vor dem Wind segeln. → Der Baum kann unabsichtlich halsen. Steuern Sie ein Stück aus der Linie genau vor dem Wind heraus, damit der Wind klar auf einer Seite bleibt. |
 | „Zeigen“ | Running: the wind from almost straight behind, the sails right out; about 4.7 kn, slower than on a reach. | Vor dem Wind: Der Wind kommt fast direkt von achtern, die Segel sind weit gefiert; etwa 4,7 kn, langsamer als raumschots. |
 | Belegstatus | Checked against a written source. | Gegen eine schriftliche Quelle geprüft. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Vorwindsegel (`term_downwind_sails`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Downwind sails | Vorwindsegel |
+| Andere Namen | — | — |
+| Kurz | The gennaker, the spinnaker and the code 0 compared. | Gennaker, Spinnaker und Code 0 im Vergleich. |
+| Was es tut / was es bedeutet | A gennaker (asymmetric spinnaker) is tacked at the bow and needs no pole: easy for a small crew, best on a broad reach. A symmetric spinnaker flies on a pole to windward: best deep downwind, more lines and more work (guy, sheet, pole lift, downhaul). A code 0 is flat and on a furler: for light wind closer to the wind than a gennaker can go. This boat's option is the gennaker. | Ein Gennaker (asymmetrischer Spinnaker) wird am Bug angeschlagen und braucht keinen Baum: einfach für eine kleine Crew, am besten auf raumem Wind. Ein symmetrischer Spinnaker fliegt an einem Baum nach Luv: am besten tief vor dem Wind, mehr Leinen und mehr Arbeit (Achterholer, Schot, Baumlift, Niederholer). Ein Code 0 ist flach und auf einer Rollanlage: für leichten Wind, näher am Wind, als ein Gennaker fahren kann. Die Option dieses Bootes ist der Gennaker. |
+| Auf diesem Boot | — | — |
+| Typische Fehler | — | — |
+| „Zeigen“ | The symmetric spinnaker as a picture. Open the code 0 entry to see that one too; the gennaker is the sail you can rig in Settings. | Der symmetrische Spinnaker als Bild. Öffnen Sie auch den Eintrag zum Code 0; der Gennaker ist das Segel, das Sie in den Einstellungen anschlagen können. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
