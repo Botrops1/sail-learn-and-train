@@ -1,4 +1,5 @@
 import type { Store } from '../app/store';
+import { hasFeature } from '../model/boat';
 import { CAMERA_PRESETS, type CameraPreset } from '../model/settings';
 import { createChipMenu } from './chipMenu';
 import { el } from './dom';
@@ -37,7 +38,8 @@ export function createCameraChip(row: HTMLElement, store: Store, map: MapView): 
   const menu = createChipMenu(
     view,
     chip,
-    CAMERA_PRESETS.map((preset) => ({
+    // A boat with no wheel has no Helm view (M113; the dinghy's Sailor view comes with M115).
+    CAMERA_PRESETS.filter((preset) => preset !== 'helm' || hasFeature('wheel')).map((preset) => ({
       id: preset,
       testId: `camera-option-${preset}`,
       content: [t(`cam.${preset}` as StringKey)],

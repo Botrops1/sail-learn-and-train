@@ -41,6 +41,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | welcome.body | This app shows a complete beginner what every line, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Denne appen viser en helt nybegynner hva hvert tau, hvert skjøt og hvert seil på en cruisingbåt gjør. Du bruker kontrollene, og 3D-båten viser hva som skjer. Du trenger ingen seilkunnskap. |
 | welcome.watch | Watch the first exercise | Se den første øvelsen |
 | welcome.look | Look around the boat | Se deg rundt på båten |
+| welcome.dinghy | Start on the training dinghy | Start på treningsjollen |
 | welcome.close | Close | Lukk |
 | welcome.later | Settings → About shows this again. | Du finner dette igjen under Innstillinger → Om. |
 | welcome.again | Show the welcome again | Vis velkomsten igjen |
@@ -156,6 +157,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | jib.sheetFightsFurl | The jib is rolled up further than this sheet allows: the sheet pulls against the furling line. Ease the sheet to 100 %, or unfurl the jib. | Fokken er rullet inn lenger enn dette skjøtet tillater: skjøtet trekker mot rulletauet. Fire skjøtet til 100 %, eller rull fokken ut. |
 | jib.windShadow | With the wind from behind, the mainsail would block the jib's wind and the jib would collapse. The app shows this in a later step. | Med vinden rett bakfra ville storseilet stjele vinden fra fokken, og fokken ville falle sammen. Appen viser dette i et senere steg. |
 | control.wheel | Wheel | Ratt |
+| control.tiller | Tiller | Rorpinne |
 | wheel.centred | centred | midtstilt |
 | wheel.starboard | {deg}° to starboard | {deg}° til styrbord |
 | wheel.port | {deg}° to port | {deg}° til babord |
@@ -164,6 +166,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | wheel.turnsClockwise | Wheels turned {turns} turns clockwise: the rudder's back edge goes to starboard, so the boat would turn to starboard (right). | Rattene ble vridd {turns} omdreininger med klokken: rorets bakkant går mot styrbord, så båten ville svingt til styrbord (høyre). |
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Rattene ble vridd {turns} omdreininger mot klokken: rorets bakkant går mot babord, så båten ville svingt til babord (venstre). |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Rattene og roret (bladet under bakre del av båten) dreier sammen. Båten svinger bare mens den beveger seg: står den stille eller er stoppet, svarer den ikke på rattet. |
+| tiller.less | Move the tiller to starboard (the bow turns to port) | Flytt rorpinnen mot styrbord (baugen svinger mot babord) |
+| tiller.more | Move the tiller to port (the bow turns to starboard) | Flytt rorpinnen mot babord (baugen svinger mot styrbord) |
+| tiller.note | The tiller and the rudder (the blade under the back of the boat) move together, the opposite way to where the bow goes: tiller to port, the boat turns to starboard. The boat turns only while she is moving. | Rorpinnen og roret (bladet under bakenden av båten) beveger seg sammen, motsatt vei av der baugen skal: rorpinnen mot babord, båten svinger mot styrbord. Båten svinger bare mens den er i fart. |
 | ropes.mode.easy | Easy mode: | Enkel modus: |
 | ropes.mode.easyHint | Easy mode: each line is a slider. Realistic mode (choose it under Mode) works the lines as on the boat: clutches, the winch and your hand. | Enkel modus: hvert tau er en glidebryter. Realistisk modus (velg den under Modus) betjener tauene som på båten: med stoppere, vinsjen og hånden din. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its line | Stopperrekker: trykk på en stopper for å velge tauet |
@@ -660,9 +665,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | view.language.hint | The whole app switches to this language. The page reloads. | Hele appen bytter til dette språket. Siden lastes på nytt. |
 | boat.label | Boat | Båt |
 | boat.download | Download this boat's profile | Last ned profilen til denne båten |
-| boat.hint | A boat profile is a file with every number of a boat. Start from this one to describe a similar yacht. | En båtprofil er en fil med alle tallene for en båt. Start med denne for å beskrive en lignende yacht. |
+| boat.hint | A boat profile is a file with every number of a boat. Start from the Hanse 508's to describe a similar yacht. | En båtprofil er en fil med alle tallene for en båt. Start med den til Hanse 508 for å beskrive en lignende yacht. |
 | boat.guide | How to make a boat profile | Slik lager du en båtprofil |
 | boat.builtIn | {name} (built in) | {name} (innebygd) |
+| boat.name.dinghy | Training dinghy | Treningsjolle |
 | boat.import | Import a boat profile | Importer en båtprofil |
 | boat.imported | Imported {name}. Choose it above to sail it. | Importerte {name}. Velg den over for å seile den. |
 | boat.remove | Remove this boat | Fjern denne båten |
@@ -671,7 +677,8 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | boat.problem.tooBig | This file is too big to be a boat profile. | Denne filen er for stor til å være en båtprofil. |
 | boat.problem.notJson | This file cannot be read: it is not a boat profile. | Denne filen kan ikke leses: den er ikke en båtprofil. |
 | boat.problem.check | This profile has {count} problems. The first ones: | Denne profilen har {count} problemer. De første: |
-| boat.problem.builtIn | This is the built-in Hanse 508: give your boat its own id. | Dette er den innebygde Hanse 508: gi båten din en egen id. |
+| boat.problem.builtIn | This is a built-in boat: give your boat its own id. | Dette er en innebygd båt: gi båten din en egen id. |
+| boat.problem.notInProfile | {key}: not in a boat profile | {key}: finnes ikke i en båtprofil |
 | boat.problem.full | There are already 10 boats on this device: remove one first. | Det er allerede 10 båter på denne enheten: fjern en først. |
 | boat.problem.storage | This browser did not let the app keep the boat (private window or full storage). | Nettleseren lot ikke appen beholde båten (privat vindu eller full lagring). |
 | number.thousandsSeparator | , | U+00A0 |

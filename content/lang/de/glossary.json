@@ -287,6 +287,51 @@
       "showMe": "Das Steuerrad ist 25° nach Steuerbord gedreht: Schauen Sie durch das Wasser unter dem Heck, um das eingeschlagene Ruderblatt zu sehen. Unter Fahrt dreht das Boot damit nach Steuerbord.",
       "textStatus": "draft"
     },
+    "part_tiller": {
+      "name": "Pinne",
+      "alternatives": [],
+      "short": "Der Stab am oberen Ende des Ruders, mit dem man ein kleines Boot steuert.",
+      "what": "Der Stab am oberen Ende des Ruders, mit dem man ein kleines Boot steuert. Legt man ihn zu einer Seite, dreht der Bug zur anderen: Pinne nach Backbord, das Boot dreht nach Steuerbord.",
+      "onThisBoat": "Ein Stab über dem Heck, fest am Ruder. Der dünne Stock an seinem Ende ist der Pinnenausleger.",
+      "showMe": "Die Jolle von oben. Tippen Sie im Abschnitt Ruder auf „Pinne“ und bewegen Sie sie: Die Pinne schwenkt in die eine Richtung, der Bug dreht in die andere.",
+      "textStatus": "draft"
+    },
+    "part_tiller_extension": {
+      "name": "Pinnenausleger",
+      "alternatives": [],
+      "short": "Ein leichter Stock, am Ende der Pinne angelenkt.",
+      "what": "Ein leichter Stock, am Ende der Pinne angelenkt, damit man auch auf der Seite sitzend oder ausreitend steuern kann.",
+      "onThisBoat": "Der Stock am vorderen Ende der Pinne.",
+      "showMe": "Die Jolle von oben: Der dünne Stock am Ende der Pinne ist der Pinnenausleger. Mit ihm steuern Sie vom Seitendeck aus.",
+      "textStatus": "draft"
+    },
+    "part_centreboard": {
+      "name": "Schwert",
+      "alternatives": [],
+      "short": "Die Finne, die man durch den Boden einer Jolle nach unten schiebt.",
+      "what": "Die Finne, die man durch einen Schlitz im Boden einer Jolle nach unten schiebt. Unten verhindert es, dass das Boot seitlich rutscht; oben lässt es sie rutschen. Bei vielen Trainingsbooten wird es senkrecht hochgezogen und heißt dann Steckschwert.",
+      "onThisBoat": "Es steht in einem Kasten auf dem Boden, ein Stück hinter dem Mast.",
+      "showMe": "Die Jolle von oben, das Schwert unten in seinem Kasten auf dem Boden.",
+      "textStatus": "draft"
+    },
+    "fit_toe_straps": {
+      "name": "Fußschlaufen",
+      "alternatives": [],
+      "short": "Gurte entlang dem Boden des Cockpits.",
+      "what": "Gurte entlang dem Boden des Cockpits. Man hakt die Füße darunter, um sich über die Seite hinauszulehnen, ohne zu fallen.",
+      "onThisBoat": "Zwei Gurte auf dem Boden, je einer beiderseits des Schwertkastens.",
+      "showMe": "Die Jolle von oben: Die beiden Gurte liegen längs auf dem Boden, je einer beiderseits des Schwertkastens.",
+      "textStatus": "draft"
+    },
+    "fit_ratchet_block": {
+      "name": "Ratschenblock",
+      "alternatives": [],
+      "short": "Der Block auf dem Boden, durch den die Großschot läuft.",
+      "what": "Der Block auf dem Boden, durch den die Großschot läuft. Er dreht sich in die eine Richtung frei und hält die Leine in die andere, so hält man die Schot mit weniger Kraft.",
+      "onThisBoat": "Er steht auf dem Boden hinter dem Schwertkasten; die Großschot kommt vom Baum zu ihm herunter.",
+      "showMe": "Die Jolle von oben: der Block auf dem Boden, zu dem die Großschot vom Baum herunterkommt.",
+      "textStatus": "draft"
+    },
     "part_saildrive": {
       "name": "Saildrive und Propeller",
       "alternatives": [],

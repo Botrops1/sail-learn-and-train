@@ -14,7 +14,7 @@ import {
   SOURCE_LANGUAGE,
   type LearnEntry,
 } from '../model/glossary';
-import { HANSE_508, boatId } from '../model/boat';
+import { HANSE_508, boatId, builtInBoat, hasFeature } from '../model/boat';
 import { feelItFor, exerciseText } from '../model/exercises';
 import { pilotFor } from '../app/exercisePilots';
 import { loadExercise } from './exercisePanel';
@@ -218,7 +218,8 @@ export function createLearnTab(
         ),
       );
       // M58 (owner's answer 13): the texts describe the Hanse 508, whatever boat is in use.
-      if (boatId !== HANSE_508.meta.id) {
+      // M113: the dinghy is built in; M117 writes its own texts.
+      if (!builtInBoat(boatId)) {
         nodes.push(
           el('p', { class: 'hint', 'data-testid': 'learn-boat-note' }, [
             t('learn.writtenFor', { name: HANSE_508.meta.name }),
@@ -241,7 +242,9 @@ export function createLearnTab(
     }
 
     let showMeBlock: HTMLElement | undefined;
-    if (entry.showMeQuery) {
+    // M113: the pictures (spinnaker, code 0, traveller) are drawn on the Hanse's geometry: a boat
+    // without a gennaker does not show them.
+    if (entry.showMeQuery && (hasFeature('gennaker') || !entry.showMeQuery.includes('pic='))) {
       const query = entry.showMeQuery;
       const status = el('p', {
         class: 'hint learn-status',

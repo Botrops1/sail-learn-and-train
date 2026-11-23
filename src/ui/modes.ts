@@ -1,5 +1,6 @@
 import type { AppMode } from '../app/appMode';
 import type { AppState } from '../app/store';
+import { hasFeature } from '../model/boat';
 import { exerciseDef } from '../model/exercises';
 import type { StringKey } from './i18n';
 import type { Viewport } from './layout';
@@ -195,13 +196,20 @@ export function sectionAvailable(
     const kept = exerciseDef(state.exercise.id)?.sections;
     if (kept && !kept.includes(id)) return false;
   }
+  // M113 (PHASE_DINGHY_SPEC 7.5): a section for a thing the boat does not have is not shown. The
+  // autopilot section is the Steering section: the steering stays whatever the boat has.
   switch (id) {
     case 'autopilot':
-    case 'engine':
-    case 'anchor':
       return state.settings.ropesMode === 'easy';
+    case 'engine':
+      return state.settings.ropesMode === 'easy' && hasFeature('engine');
+    case 'anchor':
+      return state.settings.ropesMode === 'easy' && hasFeature('anchor');
+    case 'place':
+    case 'harbour':
+      return hasFeature('harbour');
     case 'helm':
-      return state.settings.ropesMode === 'realistic';
+      return state.settings.ropesMode === 'realistic' && hasFeature('winches');
     case 'exercises':
       return state.appMode === 'exercise';
     case 'mode':

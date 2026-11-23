@@ -419,3 +419,16 @@ The second built-in boat, `content/boat/dinghy.json`: an overlay on the Hanse 50
 | Rig | cat rig, daggerboard | — | cat rig, unstayed mast, daggerboard-type centreboard |
 
 The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, the hull's righting table, the centreboard's grip and the outhaul's effect are assumptions marked **tunable** in the spec (8.2); each milestone adds its rows here.
+
+### Dinghy rows added by M113 (all assumptions)
+
+| Value | Number | Note |
+|---|---|---|
+| Hull: stem x, transom x, waterline, canoe body | 1.25 m, −2.2 m, 3.2 m long, 0.16 m deep | a generic trainer's lines, between the two classes above |
+| Rudder | stock at x −2.27 m, blade 0.9 m, ±35° | hangs on the transom |
+| Mast | unstayed round tube 0.065 m, stands 1.25 m behind the bow, top 5.8 m | boom 2.4 m at 1.05 m |
+| Centreboard | 0.32 m chord, 0.75 m below the hull, at x −0.15 m, in a case 0.3 m high | daggerboard-type |
+| Tiller | 1.0 m, extension 0.75 m, pivot at x −2.27 m, 0.42 m high | |
+| Cockpit | floor 0.14 m, 0.96 m wide, from x −2.1 m to −0.45 m; side decks 0.16 m wide | |
+| Toe straps, ratchet block, hand | straps at ±0.2 m from x −1.6 m to −0.6 m; ratchet block at x −1.55 m; hand 0.45 m to the side | |
+| Drawn sizes (decided in the M113 PR) | boom 0.06 × 0.045 m, gooseneck 0.05 m, block radius 0.025 m, rudder 0.03 m thick, rope radius 8 mm, kicker offset 0.03 m | the Hanse's sizes would look huge on 3.45 m; these only change the picture |

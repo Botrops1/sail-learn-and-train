@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { boat } from '../../model/boat';
+import { boat, hasFeature, isDinghy } from '../../model/boat';
 import {
   CENTRED_BOOM,
   selfTackingTrackEnds,
@@ -43,38 +43,44 @@ export interface Rig {
 export function buildRig(materials: BoatMaterials, detail: Detail = 'high'): Rig {
   const segments = detail === 'high' ? 24 : 12;
   const boomPivot = buildBoom(materials, segments);
-  const vang = buildVangStrut(materials);
+  // M113: the dinghy's kicker is a rope tackle (drawn with the ropes): no rigid strut.
+  const vang = isDinghy() ? { tubes: [], follow: () => undefined } : buildVangStrut(materials);
   const setPose = (pose: BoomPose) => {
     setBoomPose(boomPivot, pose);
     vang.follow(pose);
   };
   setPose(CENTRED_BOOM);
-  const track = buildSelfTackingTrack(materials);
+  // The jib's track and car, the standing rigging, the mast-foot blocks and the furling gearbox
+  // are on the boat only with their feature (PHASE_DINGHY_SPEC 7.5).
+  const track = hasFeature('jib') ? buildSelfTackingTrack(materials) : null;
+  const standing = hasFeature('standingRigging');
   return {
     objects: [
       buildMast(materials, segments),
-      ...buildSpreadersAndShrouds(materials),
-      buildStay(
-        'part_forestay',
-        vec3(boat.rig.forestay.bottom),
-        vec3(boat.rig.forestay.top),
-        materials,
-      ),
-      ...buildBackstay(materials, segments),
+      ...(standing ? buildSpreadersAndShrouds(materials) : []),
+      ...(standing
+        ? [
+            buildStay(
+              'part_forestay',
+              vec3(boat.rig.forestay.bottom),
+              vec3(boat.rig.forestay.top),
+              materials,
+            ),
+            ...buildBackstay(materials, segments),
+          ]
+        : []),
       boomPivot,
       ...vang.tubes,
       buildGooseneck(materials),
-      ...buildTurningBlocks(materials),
-      ...buildDeckBlocks(materials, segments),
-      ...buildGearbox(materials),
-      buildJibFurler(materials),
-      track.track,
-      track.car,
+      ...(hasFeature('winches') ? buildTurningBlocks(materials) : []),
+      ...(hasFeature('cabin') ? buildDeckBlocks(materials, segments) : []),
+      ...(hasFeature('mainFurling') ? buildGearbox(materials) : []),
+      ...(track ? [buildJibFurler(materials), track.track, track.car] : []),
     ],
     boomPivot,
     setBoomPose: setPose,
     setCarZ(z) {
-      track.car.position.z = z;
+      if (track) track.car.position.z = z;
     },
   };
 }

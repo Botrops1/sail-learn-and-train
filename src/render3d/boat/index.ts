@@ -4,7 +4,7 @@ import { gennakerDrawing, STOWED, type GennakerSetup } from '../../model/gennake
 import { carPoint, jibClew } from '../../model/jib';
 import { drawnPose, ropeDrawings, type RopeDrawing, type WinchWrap } from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
-import { boat } from '../../model/boat';
+import { boat, hasFeature, isDinghy } from '../../model/boat';
 import type { CaptainPlacement } from '../../model/people';
 import type { Detail } from '../../model/settings';
 import { initialRig, type RigState } from '../../model/sim';
@@ -16,6 +16,7 @@ import { buildKeel, buildRudder, buildSaildrive } from './appendages';
 import { buildBowGear } from './bowGear';
 import { buildCockpitHardware } from './cockpitHardware';
 import { buildDeckGear } from './deckGear';
+import { buildDinghyParts } from './dinghy';
 import { buildFenders } from './fenders';
 import { buildGennaker } from './gennaker';
 import { buildHelmPedestals, type PanelStats } from './helmPedestal';
@@ -50,6 +51,8 @@ export interface BoatView {
    * rig is not changed; only what is drawn follows.
    */
   boomYawDeg?: number | null;
+  /** M113: the dinghy's centreboard, 0 (up) … 100 (down); 100 when missing. */
+  boardPct?: number;
 }
 
 export interface BoatModel {
@@ -110,15 +113,23 @@ export function buildBoat(
   const materials = createMaterials(detail);
   const root = new THREE.Group();
   root.name = 'boat';
+  const dinghy = isDinghy() ? buildDinghyParts(materials) : null;
   const rigParts = buildRig(materials, detail);
   const rudderPivot = buildRudder(materials);
-  const hardware = buildCockpitHardware(materials, detail);
+  if (dinghy) rudderPivot.add(dinghy.tiller);
+  // What a boat has (PHASE_DINGHY_SPEC 7.5): a builder runs only when its feature is on.
+  const hardware =
+    hasFeature('winches') || hasFeature('wheel')
+      ? buildCockpitHardware(materials, detail)
+      : { objects: [], wheelPivots: [] };
   // A sail rolled away below the point where it stops pushing (PT-14) is not drawn.
   const shown = (unfurled: number) => unfurled * 100 >= boat.visual.solver.furledBelowPct;
   const mainInput = mainSailInputFor(rig, controls, rig.wind);
   const jibInput = jibInputFor(rig, controls, rig.wind);
   const mainSail = buildSailMesh('sail_main', materials, mainSailGrid(mainInput));
-  const jibSail = buildSailMesh('sail_jib', materials, jibSailGrid(jibInput));
+  const jibSail = hasFeature('jib')
+    ? buildSailMesh('sail_jib', materials, jibSailGrid(jibInput))
+    : null;
   let drawings = ropeDrawings(rig);
   // The gennaker's four lines get their mesh when their rigging step first draws them.
   const ropes = buildRopes(drawings, detail, (mesh) => {
@@ -126,32 +137,55 @@ export function buildBoat(
     mesh.receiveShadow = false;
     root.add(mesh);
   });
-  const gennakerParts = buildGennaker(materials, detail);
-  const pictures = buildPictures(materials, detail);
+  const gennakerParts = hasFeature('gennaker')
+    ? buildGennaker(materials, detail)
+    : { objects: [], update: () => undefined };
+  const pictures = hasFeature('gennaker')
+    ? buildPictures(materials, detail)
+    : { objects: [], update: () => undefined };
   const windex = buildWindex(materials);
   const telltales = buildTelltales(materials);
-  const fenders = buildFenders(materials, detail);
+  const fenders = hasFeature('harbour')
+    ? buildFenders(materials, detail)
+    : { objects: [], setOut: () => undefined };
   const thrusters = buildThrusters(materials, detail);
-  const handle = buildWinchHandle(materials);
-  const pedestals = buildHelmPedestals(materials, detail);
+  const handle = hasFeature('winches')
+    ? buildWinchHandle(materials)
+    : { group: new THREE.Group(), set: () => undefined };
+  const pedestals = hasFeature('wheel')
+    ? buildHelmPedestals(materials, detail)
+    : {
+        objects: [],
+        setEye: () => undefined,
+        show: () => undefined,
+        update: () => undefined,
+        stats: (): PanelStats => ({
+          latest: PANEL_AT_REST,
+          drawn: PANEL_AT_REST,
+          redraws: 0,
+          pose: { leverDeg: 0, bowDeg: 0, sternDeg: 0 },
+        }),
+        reveal: () => undefined,
+      };
   pedestals.show(PANEL_AT_REST);
   root.add(
     ...buildHull(materials, detail),
-    buildKeel(materials),
+    ...(isDinghy() ? [] : [buildKeel(materials)]),
     rudderPivot,
-    buildSaildrive(materials),
+    ...(hasFeature('engine') ? [buildSaildrive(materials)] : []),
     ...rigParts.objects,
     ...hardware.objects,
     ...pedestals.objects,
-    ...buildDeckGear(materials, detail),
-    ...(detail === 'high' ? buildSmallFittings(materials) : []),
-    ...buildBowGear(materials, detail),
-    ...buildMooringFittings(materials, detail),
+    ...(dinghy ? dinghy.objects : []),
+    ...(hasFeature('cabin') ? buildDeckGear(materials, detail) : []),
+    ...(detail === 'high' && hasFeature('cabin') ? buildSmallFittings(materials) : []),
+    ...(hasFeature('anchor') ? buildBowGear(materials, detail) : []),
+    ...(hasFeature('harbour') ? buildMooringFittings(materials, detail) : []),
     ...fenders.objects,
     ...thrusters.objects,
     handle.group,
     mainSail.mesh,
-    jibSail.mesh,
+    ...(jibSail ? [jibSail.mesh] : []),
     ...ropes.objects,
     ...gennakerParts.objects,
     ...pictures.objects,
@@ -187,12 +221,14 @@ export function buildBoat(
     const drawnJib = jibInputFor(next, nextControls, next.wind);
     const jib = { ...drawnJib, fill: drawnJib.fill * blanketFactor(next.wind.awaDeg) };
     const jibGrid = jibSailGrid(jib);
-    jibSail.update(jibGrid, shown(jib.unfurled));
+    // A boat with no jib draws none and its telltales stay hidden (M113).
+    const jibShown = jibSail !== null && shown(jib.unfurled);
+    jibSail?.update(jibGrid, jibShown);
     telltales.update(
       next,
       next.wind.awaDeg,
       { grid: mainGrid, leeSide: main.side, shown: shown(main.unfurled) },
-      { grid: jibGrid, leeSide: jib.side, shown: shown(jib.unfurled) },
+      { grid: jibGrid, leeSide: jib.side, shown: jibShown },
       damage,
       next.timeS,
     );
@@ -220,6 +256,7 @@ export function buildBoat(
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).
     rudderPivot.rotation.y = (next.applied.rudder * Math.PI) / 180;
+    dinghy?.setBoard(view.boardPct ?? 100);
     const wheel = (wheelTurnDeg(next.applied.rudder) * Math.PI) / 180;
     for (const pivot of hardware.wheelPivots) pivot.rotation.x = wheel;
     root.updateMatrixWorld(true);
@@ -240,14 +277,17 @@ export function buildBoat(
     object.castShadow = !object.material.transparent || id.startsWith('sail_');
     object.receiveShadow = !id.startsWith('rope_') && !object.material.transparent;
   });
-  // The captain joins after the shadow pass above, which would give his tap area shadows.
-  const captain = buildCaptain(detail);
-  captain.object.traverse((object) => {
-    if (!(object instanceof THREE.Mesh)) return;
-    object.castShadow = object instanceof THREE.SkinnedMesh;
-    object.receiveShadow = false;
-  });
-  root.add(captain.object);
+  // The captain joins after the shadow pass above, which would give his tap area shadows. The
+  // dinghy has none (M113; M115 draws its sailor).
+  const captain = isDinghy() ? null : buildCaptain(detail);
+  if (captain) {
+    captain.object.traverse((object) => {
+      if (!(object instanceof THREE.Mesh)) return;
+      object.castShadow = object instanceof THREE.SkinnedMesh;
+      object.receiveShadow = false;
+    });
+    root.add(captain.object);
+  }
   return {
     root,
     boomPivot: rigParts.boomPivot,
@@ -262,7 +302,7 @@ export function buildBoat(
     updatePanel: pedestals.update,
     panelStats: pedestals.stats,
     revealPanels: pedestals.reveal,
-    setCaptain: captain.update,
+    setCaptain: captain ? captain.update : () => undefined,
     setAnchorStowed: (stowed) => {
       for (const mesh of anchorMeshes) mesh.visible = stowed;
     },

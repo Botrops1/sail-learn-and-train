@@ -1,4 +1,5 @@
-import { APP_MODES, type AppMode } from '../app/appMode';
+import { modesForBoat, type AppMode } from '../app/appMode';
+import { boat, boatId } from '../model/boat';
 import type { Store } from '../app/store';
 import { el } from './dom';
 import { t } from './i18n';
@@ -9,10 +10,10 @@ import { t } from './i18n';
  * chip's menu does (`setAppMode`), then `onChosen` runs (the phone's Mode tab goes to Controls or
  * Learn). It is the body of the Mode section (the phone's Mode tab and, until M52, the wide
  * layout) and later of the computer's Mode card (M52). Adding a mode (Harbour, M41) is an entry
- * in `APP_MODES`, its name and its `mode.<id>.desc` strings.
+ * in `APP_MODES`, its name and its `mode.<id>.desc` strings. Only the modes the boat offers are listed (M113).
  */
 export function createModePicker(store: Store, onChosen?: () => void): HTMLElement {
-  const buttons = APP_MODES.map((mode) => {
+  const buttons = modesForBoat(boat, boatId).map((mode) => {
     const button = el(
       'button',
       {

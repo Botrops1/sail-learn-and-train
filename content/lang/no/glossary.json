@@ -283,6 +283,51 @@
       "showMe": "Rattet er vridd 25° til styrbord: se gjennom vannet under hekken for å se rorbladet vridd. I fart svinger dette båten til styrbord.",
       "textStatus": "draft"
     },
+    "part_tiller": {
+      "name": "Rorpinne",
+      "alternatives": [],
+      "short": "Staven fast på toppen av roret som du styrer en liten båt med.",
+      "what": "Staven fast på toppen av roret som du styrer en liten båt med. Skyv den til én side, så svinger baugen til den andre: rorpinnen mot babord, båten svinger mot styrbord.",
+      "onThisBoat": "En stav over bakenden av båten, fast på roret. Den tynne pinnen på enden er forlengeren.",
+      "showMe": "Jollen sett ovenfra. Trykk på «Rorpinne» i Styring-delen og flytt den: rorpinnen svinger til én side og baugen til den andre.",
+      "textStatus": "draft"
+    },
+    "part_tiller_extension": {
+      "name": "Rorpinneforlenger",
+      "alternatives": [],
+      "short": "En lett pinne som er hengslet til enden av rorpinnen.",
+      "what": "En lett pinne som er hengslet til enden av rorpinnen, slik at du kan styre mens du sitter på siden eller henger ut.",
+      "onThisBoat": "Pinnen på fremre ende av rorpinnen.",
+      "showMe": "Jollen sett ovenfra: den tynne pinnen på enden av rorpinnen er forlengeren. Med den kan du styre fra sidedekket.",
+      "textStatus": "draft"
+    },
+    "part_centreboard": {
+      "name": "Sentralbord",
+      "alternatives": [],
+      "short": "Finnen du skyver ned gjennom bunnen på en jolle.",
+      "what": "Finnen du skyver ned gjennom en åpning i bunnen på en jolle. Nede hindrer den båten i å gli sidelengs; oppe lar den henne gli. På mange treningsbåter løftes den rett opp og kalles et daggerboard.",
+      "onThisBoat": "Den står i en kasse på gulvet, litt bak masten.",
+      "showMe": "Jollen sett ovenfra, med sentralbordet nede i kassen på gulvet.",
+      "textStatus": "draft"
+    },
+    "fit_toe_straps": {
+      "name": "Fotstropper",
+      "alternatives": [],
+      "short": "Stropper langs gulvet i cockpiten.",
+      "what": "Stropper langs gulvet i cockpiten. Du hekter føttene under dem for å lene deg ut over siden uten å falle.",
+      "onThisBoat": "To stropper på gulvet, én på hver side av sentralbordkassen.",
+      "showMe": "Jollen sett ovenfra: de to stroppene ligger langs gulvet, én på hver side av sentralbordkassen.",
+      "textStatus": "draft"
+    },
+    "fit_ratchet_block": {
+      "name": "Skralleblokk",
+      "alternatives": [],
+      "short": "Blokken storskjøtet går gjennom på gulvet.",
+      "what": "Blokken storskjøtet går gjennom på gulvet. Den dreier fritt én vei og griper tauet den andre veien, så du holder skjøtet med mindre kraft.",
+      "onThisBoat": "Den står på gulvet bak sentralbordkassen; storskjøtet kommer ned til den fra bommen.",
+      "showMe": "Jollen sett ovenfra: blokken på gulvet, der storskjøtet kommer ned fra bommen.",
+      "textStatus": "draft"
+    },
     "part_saildrive": {
       "name": "Saildrive og propell",
       "alternatives": [],

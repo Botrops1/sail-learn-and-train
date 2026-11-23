@@ -31,7 +31,7 @@ import { createStepCard } from '../ui/stepCard';
 import { createExerciseBar } from '../ui/exerciseBar';
 import { twaSignedDeg } from '../model/exercises';
 import { mpsToKn } from '../model/angles';
-import { boat } from '../model/boat';
+import { boat, boatId } from '../model/boat';
 import { isTimeLapseScale } from '../model/timeScale';
 import { createWelcome, shouldWelcome, welcomeSeen } from '../ui/welcome';
 import { createTimeBar, topClearance, trackTopHeight } from '../ui/timeBar';
@@ -172,6 +172,7 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
       read: () => {
         const s = store.getState();
         return {
+          boatId,
           twsKn: s.wind.twsKn,
           twaDeg: twaSignedDeg(s),
           speedKn: mpsToKn(s.boat.speedMps),

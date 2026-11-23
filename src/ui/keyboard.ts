@@ -1,5 +1,5 @@
 import type { Action, AppState, Store } from '../app/store';
-import { boat } from '../model/boat';
+import { boat, boatHasControl, hasFeature } from '../model/boat';
 import { snapControl, type ControlId } from '../model/controls';
 import { overlayOpen } from './chipMenu';
 import { isTypingTarget } from './dom';
@@ -47,12 +47,13 @@ export function keyAction(code: string, key: string, shift: boolean, state: AppS
 
   const sheet = SHEET_KEYS[code];
   if (sheet) {
-    // In Realistic ropes the sheets are worked at the winches.
-    if (state.settings.ropesMode !== 'easy') return null;
+    // In Realistic ropes the sheets are worked at the winches; a boat without that rope has no key.
+    if (state.settings.ropesMode !== 'easy' || !boatHasControl(sheet[0])) return null;
     return setControl(sheet[0], sheet[1]);
   }
 
   if (code === 'KeyP') {
+    if (!hasFeature('autopilot')) return null;
     return { type: 'autopilot', command: state.autopilot.mode === 'off' ? 'heading' : 'off' };
   }
   return null;

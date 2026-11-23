@@ -21,6 +21,11 @@
       "manual": "Hanse 508 owner's manual (German edition): official rig dimensions, masses, keel dimensions, running rigging table, mast-foot lead plan. Photographed by the owner; not stored (copyrighted). Takes priority over 'drawing'."
     }
   },
+  "features": {
+    "$comment": "What this boat has (PHASE_DINGHY_SPEC 7.5). A missing feature hides its sections, controls, keys and parts.",
+    "jib": true, "mainFurling": true, "gennaker": true, "winches": true, "wheel": true, "engine": true,
+    "autopilot": true, "anchor": true, "harbour": true, "cabin": true, "standingRigging": true, "toppingLift": true
+  },
   "dimensions": {
     "source": "brochure + manual",
     "loa": 15.55,

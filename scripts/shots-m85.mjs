@@ -19,7 +19,7 @@ export async function liveM85Checks({ openPage, viewports, outDir, prefix, probl
   {
     const { context, page } = await openPage(phone, 'm85-welcome-phone', '', { welcome: true });
     await tid(page, 'welcome').waitFor({ state: 'visible' });
-    for (const id of ['welcome-watch', 'welcome-look', 'welcome-close']) {
+    for (const id of ['welcome-watch', 'welcome-look', 'welcome-dinghy', 'welcome-close']) {
       const box = await tid(page, id).boundingBox();
       const ok =
         box !== null &&

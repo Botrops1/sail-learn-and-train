@@ -1,6 +1,6 @@
 # How to make a boat profile
 
-A boat profile is one file with every number of a boat. The app ships with the Hanse 508 only; with a profile you describe a similar yacht (a lighter one, a longer one, one without a thruster) and, from the next milestone on, import it into the app.
+A boat profile is one file with every number of a boat. The app ships with two built-in boats, the Hanse 508 and the Training dinghy (a profile describes a boat like the Hanse 508); with a profile you describe a similar yacht (a lighter one, a longer one, one without a thruster) and, from the next milestone on, import it into the app.
 
 This guide is for someone who is not a developer. You need a text editor (Notepad is enough) and the boat's numbers.
 
@@ -32,6 +32,7 @@ Free to change: lengths, widths, weights, sail areas, the engine, the winches' p
 
 - A genoa on tracks, slab reefing (reefing the main by tying it down in steps), a mainsheet traveller, a single wheel, two anchors, a gennaker in use.
 - Another list of ropes or controls: the ropes keep their ids and their order.
+- A boat that lacks a part the Hanse 508 has (no jib, no winches, no cabin): the `features` block (what the boat has) must equal the Hanse 508's, and a profile may not carry a `dinghy` or `base` key. The app's second built-in boat, the Training dinghy, is made that way inside the app; its profile cannot be downloaded.
 
 These are planned as "nice to have" for later, after the main functions are polished.
 
@@ -64,6 +65,7 @@ The app checks a profile before it uses it. A check names the place in the file,
 | `type` | A value has the wrong kind: text where a number belongs (`expected a number`), or the other way round. |
 | `ids` | A name the app looks up was changed or a list lost an entry: rope ids, control ids, clutch names, part ids. Put the original back. |
 | `length` | A list or a table has a different length than the Hanse 508's (positions need their three numbers, tables need at least two rows and every row as long as the original's, lists of plain entries such as the spreaders must keep their entries in the same order). |
+| `notInProfile` | The file has a key a profile may not have: `dinghy` or `base` (they belong to the built-in Training dinghy). |
 | `thrusters` | `hull.thrusters` must hold none, one or two entries, each with `end` `bow` or `stern`, and no end twice. |
 | `range` | A number is outside what the model can sail sensibly (table below). |
 

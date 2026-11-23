@@ -1,4 +1,4 @@
-import { boat as boatData } from '../model/boat';
+import { boat as boatData, hasFeature } from '../model/boat';
 import { keepsRopesMode, type AppMode } from './appMode';
 import {
   applyStepSpeed,
@@ -125,6 +125,7 @@ import {
   type WaveTrain,
 } from '../model/waves';
 import { rigMotion } from '../model/waveMotion';
+import { initialDinghy, type DinghyState } from '../model/dinghy';
 import { trueWind, windMean, type WindKey } from '../model/localWinds';
 import {
   initialWindMode,
@@ -209,6 +210,8 @@ export interface AppState {
   alerts: AlertLog;
   /** The exercise in progress (M66), or null. In the link as `ex`. */
   exercise: ExerciseRun | null;
+  /** M113: where the sailor sits, the centreboard and the outhaul of the Training dinghy; never read on the Hanse. */
+  dinghy: DinghyState;
 }
 
 /** Engine commands (PHASE2_SPEC 12.3): start, stop, or the lever (−100 … 100, whole numbers). */
@@ -335,6 +338,8 @@ export interface InitialOverrides {
   clockUtcMs?: number;
   /** From a shared link (M33, M42): the fenders and the place. Without it: fenders in the locker, open water. */
   harbour?: HarbourState;
+  /** From a shared link, on the Training dinghy (M113). */
+  dinghy?: DinghyState;
   /** From an exercise link (M66): the run, in setup. */
   exercise?: ExerciseRun | null;
   /** From a shared link (M105): the gennaker's rigging step and side. Without it: stowed. */
@@ -567,7 +572,11 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     realistic: overrides.realistic ?? initialRealistic(),
     paused: false,
     boat,
-    autopilot: overrides.autopilot ?? engageAutopilot('heading', boat, controls.ctl_wind_dir),
+    autopilot:
+      overrides.autopilot ??
+      (hasFeature('autopilot')
+        ? engageAutopilot('heading', boat, controls.ctl_wind_dir)
+        : { mode: 'off', targetDeg: boat.headingDeg, integralDeg: 0 }),
     motion: null,
     autopilotNoticeS: 0,
     track: [],
@@ -587,6 +596,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     anchor: ANCHOR_STOWED,
     alerts: EMPTY_ALERTS,
     exercise: overrides.exercise ?? null,
+    dinghy: overrides.dinghy ?? initialDinghy(),
   });
 }
 

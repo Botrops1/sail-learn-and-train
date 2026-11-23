@@ -298,6 +298,51 @@
       "showMe": "The wheel is turned 25° to starboard: look through the water under the stern to see the rudder blade turned. Under way, this turns the boat to starboard.",
       "textStatus": "draft"
     },
+    "part_tiller": {
+      "name": "Tiller",
+      "alternatives": [],
+      "short": "The bar fixed to the top of the rudder that you steer a small boat with.",
+      "what": "The bar fixed to the top of the rudder that you steer a small boat with. Push it to one side and the bow turns the other way: tiller to port, the boat turns to starboard.",
+      "onThisBoat": "A bar over the back of the boat, fixed to the rudder. The thin stick on its end is the extension.",
+      "showMe": "The dinghy seen from above. Tap “Tiller” in the Steering section and move it: the tiller swings one way and the bow turns the other.",
+      "textStatus": "draft"
+    },
+    "part_tiller_extension": {
+      "name": "Tiller extension",
+      "alternatives": [],
+      "short": "A light stick hinged to the end of the tiller.",
+      "what": "A light stick hinged to the end of the tiller, so you can steer while sitting on the side or leaning out.",
+      "onThisBoat": "The stick on the front end of the tiller.",
+      "showMe": "The dinghy seen from above: the thin stick on the end of the tiller is the extension. It lets you steer from the side deck.",
+      "textStatus": "draft"
+    },
+    "part_centreboard": {
+      "name": "Centreboard",
+      "alternatives": [],
+      "short": "The fin you push down through the bottom of a dinghy.",
+      "what": "The fin you push down through a slot in the bottom of a dinghy. Down, it stops the boat sliding sideways; up, it lets her slide. On many trainers it lifts straight up and is called a daggerboard.",
+      "onThisBoat": "It stands in a case on the floor, a little behind the mast.",
+      "showMe": "The dinghy seen from above, with the centreboard down in its case on the floor.",
+      "textStatus": "draft"
+    },
+    "fit_toe_straps": {
+      "name": "Toe straps",
+      "alternatives": [],
+      "short": "Straps along the floor of the cockpit.",
+      "what": "Straps along the floor of the cockpit. You hook your feet under them to lean out over the side without falling in.",
+      "onThisBoat": "Two straps on the floor, one each side of the centreboard case.",
+      "showMe": "The dinghy seen from above: the two straps lie along the floor, one each side of the centreboard case.",
+      "textStatus": "draft"
+    },
+    "fit_ratchet_block": {
+      "name": "Ratchet block",
+      "alternatives": [],
+      "short": "The block the mainsheet runs through on the floor.",
+      "what": "The block the mainsheet runs through on the floor. It turns freely one way and grips the line the other way, so you can hold the sheet with less effort.",
+      "onThisBoat": "It stands on the floor behind the centreboard case; the mainsheet comes down to it from the boom.",
+      "showMe": "The dinghy seen from above: the block on the floor, where the mainsheet comes down from the boom.",
+      "textStatus": "draft"
+    },
     "part_saildrive": {
       "name": "Saildrive and propeller",
       "alternatives": [],

@@ -16,7 +16,8 @@ export interface BoatProfile {
   boat: BoatData;
 }
 
-export type ProblemKind = 'header' | 'missing' | 'type' | 'ids' | 'length' | 'range' | 'thrusters';
+export type ProblemKind =
+  'header' | 'missing' | 'type' | 'ids' | 'length' | 'range' | 'thrusters' | 'notInProfile';
 
 export interface ProfileProblem {
   /** A path in the file, such as `boat.dimensions.loa` or `boat.ropes.list[3].id`. */
@@ -71,7 +72,12 @@ const FREE_NAMING_PATHS: ReadonlySet<string> = new Set(['boat.meta.id']);
 const WHOLE_NAMING_PATHS: ReadonlySet<string> = new Set([
   'boat.people.walkways',
   'boat.people.stationSpots',
+  // What the boat has (M113): a profile describes a Hanse-shaped boat, so the block must equal it.
+  'boat.features',
 ]);
+
+/** Keys a profile must not carry: the built-in dinghy's overlay and its block (M113). */
+const FORBIDDEN_KEYS: readonly string[] = ['dinghy', 'base'];
 
 interface Range {
   path: string;
@@ -132,6 +138,7 @@ export const ADDED_KEYS: readonly string[] = [
   'deckFittings.hatches',
   'deckFittings.portlights',
   'people',
+  'features',
 ];
 
 /**
@@ -230,6 +237,12 @@ function checkHeader(raw: unknown, problems: Problems): void {
     problems.add('name', 'header', `expected a name of 1 to ${MAX_NAME_LENGTH} characters`);
   }
   if (!isPlainObject(raw.boat)) problems.add('boat', 'header', 'expected an object');
+  for (const key of FORBIDDEN_KEYS) {
+    if (key in raw) problems.add(key, 'notInProfile', 'not in a boat profile');
+    if (isPlainObject(raw.boat) && key in raw.boat) {
+      problems.add(key, 'notInProfile', 'not in a boat profile');
+    }
+  }
 }
 
 /** Walks the reference and the profile together. `key` is the name of the value in its object. */
