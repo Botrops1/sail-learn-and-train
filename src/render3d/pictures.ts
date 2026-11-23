@@ -178,10 +178,15 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
   const travellerRopeMaterial = new THREE.MeshLambertMaterial({
     color: SCENE.ropes.colors.mainsheet,
   });
+  // A part (not a rope) follows the detail rule: lit with reflections at high detail.
+  const carMaterial =
+    detail === 'high'
+      ? new THREE.MeshStandardMaterial({ color: SCENE.ropes.colors.mainsheet, roughness: 0.5 })
+      : travellerRopeMaterial;
   const car = partMesh(
     'part_traveller_car',
     [boxAt([0, 0, 0], [tr.carSizeM, tr.carSizeM, tr.carSizeM])],
-    travellerRopeMaterial,
+    carMaterial,
     [
       [
         [0, 0, 0],
