@@ -93,6 +93,8 @@ M113 creates `DinghyState` with only the four M114 fields at their defaults and 
 
 **Files added**, by milestone: M113 `content/boat/dinghy.json`, `src/model/boatMerge.ts`, `src/model/dinghy.ts` (types), `src/render3d/boat/dinghy.ts`, `tests/dinghyBoat.test.ts`, `scripts/shots-m113.mjs`; M114 `src/ui/dinghyPanel.ts`, `tests/physicsTruthsDinghy.test.ts`, `scripts/shots-m114.mjs`; M115 `scripts/shots-m115.mjs`; M116 `src/ui/capsizePanel.ts`, `scripts/shots-m116.mjs`; M117 `scripts/shots-m117.mjs`; M118 `scripts/shots-m118.mjs`. Each adds its files to `docs/CODE_MAP.md`.
 
+**Reading the state in a browser check.** With `debug=1`, `window.__sailExercise.read()` (`src/app/app.ts`) gives the state the checks read: M113 adds `boatId`, M114 adds `dinghy` (the whole `DinghyState`, with `capsize` from M116); the heel is its existing `heelDeg`. Where a check below says `__sailDebug` reports the boat, the heel or the capsize phase, it means these fields; `__sailDebug` (`scene.ts`) keeps what it has (`captain()`, `partVisible`, `project`).
+
 **Browser checks.** The set is at its cap (77 groups, `tests/ciPlan.test.ts`): every milestone joins an existing group with `members(...)` and a `GROUP_ALIASES` entry, as M111 did with `m73`. Each section names its group.
 
 ## 6. Milestones overview
@@ -293,7 +295,7 @@ The one table the code follows. "Hidden" means not built or `hidden`, never grey
 ### 7.7 Strings, registry and Learn
 
 - `ui.json` (en; de, no, ru drafts): `boat.name.dinghy` "Training dinghy", `welcome.dinghy` "Start on the training dinghy", `control.tiller` "Tiller" (read by `CONTROL_VIEWS` in `src/ui/ropeControls.ts` for `ctl_rudder` on a boat without `wheel`, where the Hanse shows `control.wheel`; the data's `label` is for the documents only), the changed `boat.problem.builtIn` and `boat.hint` (7.3, 7.5), `boat.problem.notInProfile` "{key}: not in a boat profile".
-- Registry (`content/registry/parts.json`), `status: "draft"`, sources Wikipedia *Tiller*, *Centreboard*, *Hiking (sailing)*: `part_tiller` (group `cockpit`), `part_tiller_extension` (`cockpit`), `part_centreboard` (`hull`), `fit_toe_straps` (`cockpit`), `fit_ratchet_block` (`cockpit`). Each has `showMe` to its mesh.
+- Registry (`content/registry/parts.json`), `status: "draft"`, sources Wikipedia *Tiller* and *Centreboard* (`wiki:tiller`, `wiki:centreboard`; `fit_toe_straps` cites `wiki:tiller` until M117 adds `wiki:hiking`): `part_tiller` (group `cockpit`), `part_tiller_extension` (`cockpit`), `part_centreboard` (`hull`), `fit_toe_straps` (`cockpit`), `fit_ratchet_block` (`cockpit`). Each has `showMe` to its mesh.
 - Glossary (en; de, no, ru drafts, `textStatus: "draft"`), name and text:
   - `part_tiller` — **Tiller**: "The bar fixed to the top of the rudder that you steer a small boat with. Push it to one side and the bow turns the other way: tiller to port, the boat turns to starboard."
   - `part_tiller_extension` — **Tiller extension**: "A light stick hinged to the end of the tiller, so you can steer while sitting on the side or leaning out."
@@ -416,7 +418,7 @@ export function outhaulPower(outhaulPct: number, data?: BoatData): number;
 export function nextSailorSide(boomSide: 1 | -1): 1 | -1; // = −boomSide
 export function stepDinghy(state: DinghyState, rig: RigState): DinghyState;
 //   M114: { ...state, sailorSide: nextSailorSide(rig.solution.side) }
-export function initialDinghy(data?: BoatData): DinghyState; // sit defaultSit, boardPct board.defaultPct, outhaulPct outhaul.defaultPct, sailorSide 1
+export function initialDinghy(data?: BoatData, rig?: RigState): DinghyState; // sit defaultSit, boardPct board.defaultPct, outhaulPct outhaul.defaultPct, sailorSide −rig.solution.side (1 without a rig)
 ```
 
 Changes to existing modules:
@@ -464,8 +466,8 @@ From a prototype against the real `initialRig`, `sailForces` and `hullResistance
 - A new section `dinghy` in `SECTION_IDS` (`src/ui/modes.ts`), title `section.dinghy` = "Balance", phone tab `controls`, placed right after `ropes` in the Easy and Learn layouts, available only when `isDinghy()`.
 - Three blocks, at phone size first, every button ≥ 44 px high, the app's existing styles (`.action-button` choices as in the Place section's Open water / Marina / Bay row; the − / + steppers of `stepper.ts` as in the Ropes section). No new colours, no icons.
   - **Where you sit** (`dinghy.sit.label`): three buttons in one row, `data-testid` `sit-in`, `sit-side`, `sit-out`, texts `dinghy.sit.in` "Sit in", `dinghy.sit.side` "Sit on the side", `dinghy.sit.out` "Lean out", the chosen one `aria-pressed="true"`. Under them one line, `dinghy.sit.hint`: "Your weight holds the boat up. Lean out when she heels a lot; sit in when the wind is light."
-  - **Centreboard** (`dinghy.board.label`): − / + stepper, `data-control="dinghy_board"`, value `dinghy.board.value` "Down {pct} %"; − raises (towards 0), + lowers. Hint `dinghy.board.hint`: "Down when sailing towards the wind; half up on a reach; up when the wind is behind."
-  - **Outhaul** (`dinghy.outhaul.label`): − / + stepper, `data-control="dinghy_outhaul"`, value `dinghy.outhaul.value` "Eased {pct} %"; − hauls (flatter), + eases. Hint `dinghy.outhaul.hint`: "Haul it in a strong wind to flatten the sail; ease it in light wind for more power."
+  - **Centreboard** (`dinghy.board.label`): − / + stepper, test ids in 8.9a.9, value `dinghy.board.value` "Down {pct} %"; − raises (towards 0), + lowers. Hint `dinghy.board.hint`: "Down when sailing towards the wind; half up on a reach; up when the wind is behind."
+  - **Outhaul** (`dinghy.outhaul.label`): − / + stepper, test ids in 8.9a.9, value `dinghy.outhaul.value` "Eased {pct} %"; − hauls (flatter), + eases. Hint `dinghy.outhaul.hint`: "Haul it in a strong wind to flatten the sail; ease it in light wind for more power."
   - Steppers move by the step size of Settings → Step size; a held button repeats as the Ropes steppers do.
 - Alert strings: `alert.windwardHeel` "Heeling towards you: sit further in", `alert.overpowered.dinghy` "Heeling a lot: lean out or ease the mainsheet".
 - **3D**: the centreboard mesh follows `boardPct` (7.6); the sail's depth is unchanged (the outhaul is not drawn as a shape change).
@@ -555,7 +557,7 @@ Changed: `content/boat/dinghy.json`, `src/model/dinghy.ts` (the `DinghyData` int
 ### 9.3 Model (pure)
 
 - **`src/model/people.ts`**: `FigurePose` gets `'sit'` and `'hike'`. `CaptainPlacement` gets two optional fields, `hip?: Vec3` and `leanDeg?: number`; the Hanse never sets them. `import type { Sit } from './dinghy'` (type-only, no cycle).
-- `sailorPlacement(sit: Sit, side: 1 | -1, data?: BoatData): CaptainPlacement & { hip: Vec3; leanDeg: number; hand: { aft: Vec3; fwd: Vec3 } }`: `hip` and `feet` from 9.2 with z multiplied by `side`; `leanDeg` from 9.2; `pose` `'hike'` for `out`, else `'sit'`; `walkedM` 0; **facing**: the body's front points along the boat-frame vector `(0.5, 0, −side·0.866)` (across the boat to the other side, turned 30° towards the bow), and `faceDeg` is the value that makes the existing figure's front point there under `captain.ts`'s rule `yaw = (90 − faceDeg)·DEG` (test 9.6.4 checks it). `hand.aft` = hip + `[0.1, 0.35, −side·0.25]`, `hand.fwd` = hip + `[0.35, 0.3, −side·0.15]`, both before the lean; the lean rotates them with the body (about the boat's x axis through the hip, outboard).
+- `sailorPlacement(sit: Sit, side: 1 | -1, data?: BoatData): CaptainPlacement & { hip: Vec3; leanDeg: number; hand: { aft: Vec3; fwd: Vec3 } }`: `hip` and `feet` from 9.2 with z multiplied by `side`; `leanDeg` from 9.2; `pose` `'hike'` for `out`, else `'sit'`; `walkedM` 0; **facing**: the body's front points along the boat-frame vector `(0.5, 0, −side·0.866)` (across the boat to the other side, turned 30° towards the bow), and `faceDeg` is the value that makes the existing figure's front point there under `captain.ts`'s rule `yaw = (90 − faceDeg)·DEG` (test 9.6.4 checks it). `hand.aft` and `hand.fwd` are returned **with the lean applied**: the offsets `[0.1, 0.35, −side·0.25]` and `[0.35, 0.3, −side·0.15]` from the hip, rotated by `leanDeg` outboard about the boat's x axis through the hip.
 - `crossingHip(from: Vec3, to: Vec3, u: number): Vec3` = `from + (to − from)·u − [0, 0.1·sin(π·u), 0]`, `u` in 0…1.
 - **`src/model/figurePose.ts`**: `figureJoints`'s switch gets `'sit'` and `'hike'` (exhaustive). The lean is not a joint: the whole figure is rotated by `leanDeg` (9.4), so the joints only bend legs and arms. `'sit'`: hips bent 90°, knees bent 90°; `'hike'`: hips bent 30°, knees bent 20°; both: the aft arm back and down, the forward arm forward and down. The builder picks the arm angles by eye from the scenes (no distance test: the skeleton has no inverse kinematics); rest joints as `REST_JOINTS`.
 - **`src/model/ropePaths.ts`**: `dinghyRopePaths(rig, data, sit, sailorSide)` (M113's function gets the two new arguments): the mainsheet's tail ends at `sailorPlacement(sit, sailorSide).hand.fwd`.
@@ -661,7 +663,7 @@ export function capsizeHeelDeg(c: CapsizeState, data?: BoatData): number | null;
 
 - **Going over**: `upright` and `|heelDeg| ≥ atHeelDeg` → `goingOver`, `side = sign(heelDeg)`. (It may be either way: leeward from too much wind, windward from sitting out in a lull.)
 - `goingOver` lasts `goingOverS`, then `over`. `capsizeHeelDeg`: in `goingOver` `side · (atHeelDeg + (lyingHeelDeg − atHeelDeg) · smoothstep(0, goingOverS, t))`; in `over` and `swimming` `side · lyingHeelDeg`; in `righting` `side · lyingHeelDeg · (1 − smoothstep(0, rightingS, t))` (`smoothstep` as in `src/model/gennaker.ts`).
-- **Commands**: `'swim'` only in `over` → `swimming` (t 0); the sailor reaches the board when `t ≥ swimS` and the phase stays `swimming` until `'stand'`. `'boardDown'` in `over` or `swimming` sets `boardPct` to 100 (the sailor pushes it down from the water). `'stand'` only in `swimming` with `t ≥ swimS` and `boardPct ≥ minBoardPct` → `righting`; with less board it is refused (the UI shows why, 10.5). `righting` lasts `rightingS`, then `upright`; at that moment the store sets `ctl_mainsheet` to 100 (the sheet let go so she does not sail off), `sit` to `'in'`, `heelDeg` 0, `heelRateDegS` 0.
+- **Commands**: `'swim'` only in `over` → `swimming` (t 0); the sailor reaches the board when `t ≥ swimS` and the phase stays `swimming` until `'stand'`. `'boardDown'` in `goingOver`, `over` or `swimming` (not `righting`) sets `boardPct` to 100 (the sailor pushes it down from the water). `'stand'` only in `swimming` with `t ≥ swimS` and `boardPct ≥ minBoardPct` → `righting`; with less board it is refused (the UI shows why, 10.5). `righting` lasts `rightingS`, then `upright`; at that moment the store sets `ctl_mainsheet` to 100 (the sheet let go so she does not sail off), `sit` to `'in'`, `heelDeg` 0, `heelRateDegS` 0.
 - **`stepBoat` while not upright**: the heel is `capsizeHeelDeg` (the roll integration is skipped), the sails give no force, `speedMps` decays to 0 with the time constant `stopTimeS`, the yaw rate is 0, and she drifts downwind at `driftMps` (east and north from the true wind's direction). Steering does nothing.
 - `stepDinghy(state, rig, boat: BoatState, dt)` (M116's signature) calls `stepCapsize` with `boat.heelDeg` of the last step (`state.boat`).
 
@@ -669,17 +671,17 @@ export function capsizeHeelDeg(c: CapsizeState, data?: BoatData): number | null;
 
 - `DinghyState.capsize: CapsizeState` (default `UPRIGHT`). `DinghyCommand` gets `{ kind: 'capsize'; command: CapsizeCommand }`.
 - While not upright the store ignores `setControls` for `ctl_mainsheet`, `ctl_vang`, `ctl_rudder` and the `sit` and `outhaul` commands (the board command stays: 10.3's `'boardDown'`).
-- URL `cap` (dinghy only): `p` or `s` opens capsized in phase `over` on that side (heel ±85); written only while the phase is `over` (other phases are short and not linked). Reset → `UPRIGHT`.
+- URL `cap` (dinghy only): `p` or `s` opens capsized in phase `over` on that side (heel ±85); written in every phase but `upright` (a link reopens `over`). Reset → `UPRIGHT`.
 - Alert `capsized` (`learnId: 'term_capsize'` from M117; in M116 `'part_centreboard'`, `danger`), fired once when `goingOver` starts: `alert.capsized` "Capsized! Swim round to the centreboard and stand on it".
 
 ### 10.5 UI (`src/ui/capsizePanel.ts`) and 3D
 
-- While the phase is not `upright`, the **Balance** section shows, above its blocks, a capsize block (`data-testid="capsize-block"`), and the step bar's place over the 3D view shows the same block on a phone (`sheet` at peek is enough to reach it). Its parts:
+- While the phase is not `upright`, a capsize card shows over the 3D view (`data-testid="capsize-card"`; where and how: 10.8a.8). Its parts:
   - Title `capsize.title` "Capsized".
   - Step 1: button `capsize-swim`, `capsize.swim` "Swim round to the centreboard", enabled in `over`; while swimming it reads `capsize.swimming` "Swimming round the stern…".
   - Step 2: button `capsize-stand`, `capsize.stand` "Stand on the centreboard", enabled once at the board. If `boardPct < minBoardPct`, a line `capsize.boardUp` "The centreboard is up: push it down first" and a button `capsize-board`, `capsize.boardDown` "Push the centreboard down".
   - One line under them, `capsize.hint`: "Stay with the boat. Let the mainsheet go before she comes up, then climb in over the side."
-- Every other control of the Ropes, Steering and Balance sections is disabled (`disabled`, the existing disabled style) with one line `capsize.locked` "Right the boat first".
+- The locked controls and the `capsize.locked` line "Right the boat first": 10.8a.6 (the board stepper stays enabled).
 - **3D**: the hull lies at the capsize heel (the boat group rolls about its centreline at the waterline, so mast and sail lie on the water); the centreboard sticks out of the high side. The sailor: in `goingOver` and `over` in the water beside the cockpit on the low side (pose `'swim'`: upright in the water to the chest, arms forward); in `swimming` moving round the stern to the board's side over `swimS`; at the board and in `righting`, standing on the board with both hands on the side deck (pose `'standBoard'`); after righting, `'sit'` in. `FigurePose` gets `'swim'` and `'standBoard'`, defined in `figurePose.ts` like 9.3.
 
 ### 10.6 PHYSICS_TRUTHS rule
@@ -687,8 +689,8 @@ export function capsizeHeelDeg(c: CapsizeState, data?: BoatData): number | null;
 **PT-81 A capsized dinghy is righted by standing on the centreboard; the board must be down.** Tests in `tests/physicsTruthsDinghy.test.ts`:
 
 1. A store on the dinghy, 16 kn from 90°, sheet 55, sit in, Sailing: within 10 s the phase is `goingOver` then `over` with `side` −1 (to leeward); the `capsized` alert fired once.
-2. From `over`: `'stand'` before `'swim'` is refused; `'swim'`, 4 s, `'stand'` → `righting`; 3 s later `upright`, heel 0, `ctl_mainsheet` 100, sit `'in'`.
-3. From `cap=s` with `cb=0`: after `'swim'` and 4 s, `'stand'` is refused; `'boardDown'` → `boardPct` 100; `'stand'` now works.
+2. From `over`: `'stand'` before `'swim'` is refused; `'swim'`, 4.1 s, `'stand'` → `righting`; 3.1 s later `upright`, heel 0, `ctl_mainsheet` 100, sit `'in'`.
+3. From `cap=s` with `cb=0`: after `'swim'` and 4.1 s, `'stand'` is refused; `'boardDown'` → `boardPct` 100; `'stand'` now works.
 4. While `over`, 20 s: `speedMps` < 0.05, the position moved downwind by 5 m ± 1, heading unchanged, `setControls({ ctl_rudder: 30 })` changes nothing.
 5. Windward capsize: 0.5 kn, sit on the side: the phase becomes `goingOver` with `side` = the sailor's side.
 
@@ -700,13 +702,13 @@ export function capsizeHeelDeg(c: CapsizeState, data?: BoatData): number | null;
 
 | name | query | shows |
 |---|---|---|
-| `over` | `C&cam=side-starboard` | the dinghy on its side, mast and sail on the water, the sailor in the water; the Capsized block |
+| `over` | `C&cam=side-starboard` | the dinghy on its side, mast and sail on the water, the sailor in the water; the capsize card |
 | `board-up` | `C&cb=0&cam=side-starboard` | the same with the board up |
 
 **Live checks** (phone viewport, `C&debug=1` without `held`, test clock):
 
-1. The capsize block shows; `locator.tap()` on `capsize-swim`; 4 s; `capsize-stand` enabled; tap it; 3 s: the block is gone, `__sailDebug` heel within ±2, the URL has no `cap`.
-2. `C&cb=0&debug=1`: after swim and 4 s, the board line and `capsize-board` show; tap it, then `capsize-stand`: righting starts.
+1. `capsize-card` shows; `locator.tap()` on `capsize-swim`; 4.1 s; `capsize-stand` enabled; tap it; 3.1 s: the card is gone, `__sailDebug` heel within ±2, the URL has no `cap`.
+2. `C&cb=0&debug=1`: after swim and 4.1 s, the board line and `capsize-board` show; tap it, then `capsize-stand`: righting starts.
 3. `?boat=dinghy&wd=90&ws=16&ms=55&sp=in&debug=1`: within 10 s of test time the `capsized` alert shows.
 
 ### 10.8 Older checks and tests this milestone changes
@@ -830,7 +832,7 @@ Changed: `content/exercises/exercises.json`, `content/lang/*/exercises.json`, `c
 |---|---|---|---|
 | `dinghy-go-stop` | `?boat=dinghy&wd=0&ws=8&hdg=270&ms=100&sea=flat` | `pull-in`: `mainTrim ["good"]`, `speedKn [3, 99]`, 5 s, `control:ctl_mainsheet` · `stop`: `controls {ctl_mainsheet: [90, 100]}`, `speedKn [0, 1.5]`, 3 s, `control:ctl_mainsheet` · `go-again`: `mainTrim ["good"]`, `speedKn [3, 99]`, 5 s, `control:ctl_mainsheet` | `capsized` (serious: on the `capsized` alert) |
 | `dinghy-tack` | `?boat=dinghy&wd=0&ws=10&hdg=315&ms=30&sp=side&sea=flat` | `close-hauled`: `tack "starboard"`, `twaDeg [38, 55]`, `mainTrim ["good"]`, 5 s, `control:ctl_rudder`, `control:ctl_mainsheet` · `tack`: `event "tackByHand"`, `tack "port"`, 0 s, `control:ctl_rudder` · `settle`: `tack "port"`, `twaDeg [38, 60]`, `speedKn [2, 99]`, `dinghy {sit: ["side", "out"]}`, 5 s, `control:ctl_rudder`, `dinghy:sit` | `in-irons` (as `tacking`'s), `capsized` |
-| `dinghy-gybe` | `?boat=dinghy&wd=0&ws=10&hdg=205&ms=80&cb=40&sea=flat` | `run`: `tack "starboard"`, `twaDeg [150, 172]`, 5 s, `control:ctl_rudder`, `control:ctl_mainsheet` · `gybe`: `event "controlledGybe"`, `tack "port"`, 0 s, `control:ctl_rudder`, `control:ctl_mainsheet` · `broad-reach`: `tack "port"`, `twaDeg [120, 150]`, `heelDeg [-20, 20]`, 5 s, `control:ctl_rudder` | `accidental-gybe` (as `points-of-sail`'s), `capsized` |
+| `dinghy-gybe` | `?boat=dinghy&wd=0&ws=10&hdg=205&ms=80&cb=40&sea=flat` | `run`: `tack "starboard"`, `twaDeg [150, 172]`, 5 s, `control:ctl_rudder`, `control:ctl_mainsheet`, `dinghy:board` · `gybe`: `event "controlledGybe"`, `tack "port"`, 0 s, `control:ctl_rudder`, `control:ctl_mainsheet` · `broad-reach`: `tack "port"`, `twaDeg [120, 150]`, `heelDeg [-20, 20]`, 5 s, `control:ctl_rudder` | `accidental-gybe` (as `points-of-sail`'s), `capsized` |
 | `dinghy-capsize` | `?boat=dinghy&wd=90&ws=10&cap=s&cb=0&sea=flat` | `swim`: `dinghy {capsize: ["swimming"]}`, 0 s, `capsize:steps` · `board`: `dinghy {boardPct: [50, 100], capsize: ["swimming"]}`, 0 s, `capsize:steps` · `stand`: `dinghy {capsize: ["righting", "upright"]}`, 0 s, `capsize:steps` · `climb-in`: `dinghy {capsize: ["upright"], sit: ["side"]}`, `controls {ctl_mainsheet: [90, 100]}`, 2 s, `dinghy:sit` | none |
 
 - The `capsized` mistake: `{ "id": "capsized", "serious": true, "on": { "alert": "capsized" } }`.
@@ -860,7 +862,7 @@ A pilot for each exercise, for Watch, Show me and the tests: steering by `ctl_ru
 **Live checks** (phone viewport):
 
 1. `?boat=dinghy`: the mode picker has Exercise; the Exercises list shows one group, Dinghy, with four items; the Hanse's groups do not show.
-2. Start `dinghy-capsize` with Watch (finger tap): the step card passes `swim` and the capsize block shows the pilot's taps; the run ends with the done card within 60 s of test time at ×4.
+2. Start `dinghy-capsize` with Watch (finger tap): the step card passes `swim` and the capsize card follows the pilot's commands; the run ends with the done card within 60 s of test time at ×4.
 3. `dinghy-go-stop` with Do it myself: the step bar shows the mainsheet row; tap its − until the sheet is 40 (the start is 100): within 15 s of test time the step card moves to `stop` (driven with `scripts/exercise-drive.mjs`).
 
 ### 12.6 Older checks and tests this milestone changes
@@ -873,7 +875,7 @@ A pilot for each exercise, for Watch, Show me and the tests: steering by `ctl_ru
 
 ### 12.6a Settled in planning (points a builder would otherwise guess)
 
-1. **`opens`**: `ExerciseOpens` gets `'dinghy'` (opens the Balance section). go-stop: every step `ropes`; tack: `close-hauled` and `tack` `autopilot` (the Steering section), `settle` `dinghy`; gybe: every step `autopilot`; capsize: every step `dinghy`.
+1. **`opens`**: `ExerciseOpens` gets `'dinghy'` (opens the Balance section; the capsize card shows over the 3D view whatever is open). go-stop: every step `ropes`; tack: `close-hauled` and `tack` `autopilot` (the Steering section), `settle` `dinghy`; gybe: every step `autopilot`; capsize: every step `dinghy`.
 2. **Types and lists**: `ExerciseGroup` and `ExerciseSection` get `'dinghy'`; `EXERCISE_GROUP_ORDER` (`scripts/ui.mjs`, `ui.d.mts`) gets `dinghy` last. The check source gets `dinghy?: DinghyState` from `AppState` when `isDinghy()` (false-y otherwise, like `gennaker`).
 3. **Bar rows**: `dinghy:sit` = the three Sit buttons (test ids `bar-sit-in`, `bar-sit-side`, `bar-sit-out`); `dinghy:board` = the board stepper (`bar-board-minus`, `bar-board-plus`); `capsize:steps` = the capsize card's three buttons (`bar-capsize-swim`, `bar-capsize-board`, `bar-capsize-stand`), dispatching the same commands. The gybe's `run` step also has `dinghy:board`.
 4. **`feelIt`**: `dinghy-tack` `["term_tacking"]`, `dinghy-gybe` `["term_gybe"]`, `dinghy-capsize` `["term_capsize"]`, `dinghy-go-stop` none. Text keys follow the layout of the existing entries in `content/lang/en/exercises.json` (copy `tacking`'s).
