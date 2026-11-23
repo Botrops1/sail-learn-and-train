@@ -44,7 +44,8 @@
     "wiki:wind-wave": "https://en.wikipedia.org/wiki/Wind_wave",
     "wiki:significant-wave-height": "https://en.wikipedia.org/wiki/Significant_wave_height",
     "wiki:ship-motions": "https://en.wikipedia.org/wiki/Ship_motions",
-    "wiki:spinnaker": "https://en.wikipedia.org/wiki/Spinnaker"
+    "wiki:spinnaker": "https://en.wikipedia.org/wiki/Spinnaker",
+    "wiki:traveller": "https://en.wikipedia.org/wiki/Traveller_(nautical_fitting)"
   },
   "entries": [
     {"id": "rope_mainsheet", "kind": "rope", "phase": 1, "group": "ropes", "status": "photo-confirmed", "sources": ["photo:clutch-bank-a", "photo:clutch-bank-b", "photo:mainsheet"], "controls": ["rope_mainsheet"], "related": ["part_boom", "fit_mainsheet_boom_blocks", "fit_mainsheet_deck_blocks", "term_ease", "term_gybe"], "showMe": "?wd=90&ws=12&ms=60&cam=top&sel=rope_mainsheet&held=1&sea=flat"},
@@ -235,6 +236,9 @@
     {"id": "sail_code_zero", "kind": "sail", "phase": 109, "group": "sails", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["part_code_zero_furler", "rope_code_zero_sheet", "term_downwind_sails"], "showMe": "?pic=code0&wd=70&ws=10&ms=40&jf=0&held=1&sea=flat&cam=side-port"},
     {"id": "part_code_zero_furler", "kind": "part", "phase": 109, "group": "rig", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_code_zero", "rope_code_zero_sheet", "term_downwind_sails"], "showMe": "?pic=code0&wd=70&ws=10&ms=40&jf=0&held=1&sea=flat&cam=side-port"},
     {"id": "rope_code_zero_sheet", "kind": "rope", "phase": 109, "group": "ropes", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_code_zero", "part_code_zero_furler", "term_downwind_sails"], "showMe": "?pic=code0&wd=70&ws=10&ms=40&jf=0&held=1&sea=flat&cam=side-port"},
-    {"id": "term_downwind_sails", "kind": "term", "phase": 109, "group": "sailing", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_gennaker", "sail_spinnaker", "sail_code_zero"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"}
+    {"id": "term_downwind_sails", "kind": "term", "phase": 109, "group": "sailing", "status": "draft", "sources": ["wiki:spinnaker"], "related": ["sail_gennaker", "sail_spinnaker", "sail_code_zero"], "showMe": "?pic=spinnaker&wd=150&ws=12&ms=100&jf=0&held=1&sea=flat&cam=side-starboard"},
+    {"id": "part_traveller_track", "kind": "part", "phase": 110, "group": "deck", "status": "draft", "sources": ["wiki:traveller"], "related": ["part_traveller_car", "rope_traveller_mainsheet", "rope_mainsheet"], "showMe": "?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top"},
+    {"id": "part_traveller_car", "kind": "part", "phase": 110, "group": "deck", "status": "draft", "sources": ["wiki:traveller"], "related": ["part_traveller_track", "rope_traveller_mainsheet", "rope_mainsheet"], "showMe": "?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top"},
+    {"id": "rope_traveller_mainsheet", "kind": "rope", "phase": 110, "group": "ropes", "status": "draft", "sources": ["wiki:traveller"], "related": ["part_traveller_car", "rope_mainsheet"], "showMe": "?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top"}
   ]
 }

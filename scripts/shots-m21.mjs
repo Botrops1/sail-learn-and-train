@@ -55,7 +55,7 @@ export async function liveM21Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(500);
     check('eleven groups', (await groupCount(page)) === 11, String(await groupCount(page)));
     const summary = page.locator('[data-testid="learn-group-ropes"] > summary');
-    check('the first group is Lines (18)', (await summary.innerText()) === 'Lines (18)', '');
+    check('the first group is Lines (19)', (await summary.innerText()) === 'Lines (19)', '');
     await summary.click();
     await page.getByTestId('learn-entry-rope_vang').click();
     check('the entry opens', (await learnName(page)) === 'Vang', await learnName(page));

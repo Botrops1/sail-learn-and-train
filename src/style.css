@@ -4189,6 +4189,25 @@ html[data-layout='side'] .alert-chip {
   cursor: pointer;
 }
 
+/* M110: the traveller picture's slider, in the picture banner. */
+.picture-traveller {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.picture-traveller[hidden] {
+  display: none;
+}
+
+.picture-traveller input[type='range'] {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--touch);
+  margin: 0;
+  accent-color: var(--accent);
+}
+
 .learn-more {
   display: block;
   margin-top: 6px;

@@ -1,17 +1,18 @@
 import { DEG } from './angles';
 import { boat, type BoatData } from './boat';
 import { leewardSide, sheetLead } from './gennaker';
-import { vec3, type Vec3 } from './vec3';
+import { distance, vec3, type Vec3 } from './vec3';
 
 /**
- * Pictures of sails this boat does not carry (PHASE_RIGGING_SPEC 11): a symmetric spinnaker on
- * its pole and a code 0 on its furler, drawn only while Learn's "Show it working" shows one.
+ * Pictures of things this boat does not carry (PHASE_RIGGING_SPEC 11, 12): a symmetric spinnaker
+ * on its pole, a code 0 on its furler and a mainsheet traveller, drawn only while Learn's "Show it
+ * working" shows one.
  * Pure: no DOM, no three.js. Boat frame: x forward, y up, z to starboard. Side: 1 = starboard.
  */
-export type PictureId = 'spinnaker' | 'code0'; // M110 adds 'traveller'
+export type PictureId = 'spinnaker' | 'code0' | 'traveller';
 
 /** The pictures a link can name, in the order Learn lists them. */
-export const PICTURE_IDS: readonly PictureId[] = ['spinnaker', 'code0'];
+export const PICTURE_IDS: readonly PictureId[] = ['spinnaker', 'code0', 'traveller'];
 
 /** True when `value` names a picture (a link's `pic`). */
 export function isPictureId(value: unknown): value is PictureId {
@@ -85,4 +86,40 @@ export function codeZeroPicture(awaDeg: number, data: BoatData = boat): CodeZero
     tack[2] + s * c.footM * Math.sin(c.phiDeg * DEG),
   ];
   return { side: s, tack, head: vec3(c.head), clew, sheet: [clew, ...sheetLead(s, data)] };
+}
+
+export interface TravellerPicture {
+  /** The car on its track. */
+  car: Vec3;
+  /** The boom's swing for this car position (+ = boom to starboard), degrees. */
+  boomDeg: number;
+  /** The boom's sheet point, over the car across the boat. */
+  boomPoint: Vec3;
+  /** From the car's top to the boom's sheet point. */
+  sheetLengthM: number;
+}
+
+/** Where the track lies: across the boat under the boom's sheet blocks, at the coachroof's aft end. */
+export function travellerTrack(data: BoatData = boat): { x: number; y: number } {
+  return {
+    x: vec3(data.rig.boom.gooseneck)[0] - data.rig.mainsheet.boomDistance,
+    y: data.rig.mainsheet.deckBlocks.y,
+  };
+}
+
+/**
+ * The traveller picture for the car's place `carPct` (−100…100 % of the track's half length,
+ * + = starboard): the boom swings until its sheet point is over the car across the boat, held
+ * level (pitch 0).
+ */
+export function travellerPicture(carPct: number, data: BoatData = boat): TravellerPicture {
+  const half = data.pictures.traveller.halfLengthM;
+  const track = travellerTrack(data);
+  const z = (Math.min(100, Math.max(-100, carPct)) / 100) * half;
+  const car: Vec3 = [track.x, track.y, z];
+  const r = data.rig.mainsheet.boomDistance;
+  const boomDeg = Math.asin(z / r) / DEG;
+  const g = vec3(data.rig.boom.gooseneck);
+  const boomPoint: Vec3 = [g[0] - r * Math.cos(boomDeg * DEG), g[1], r * Math.sin(boomDeg * DEG)];
+  return { car, boomDeg, boomPoint, sheetLengthM: distance(boomPoint, car) };
 }

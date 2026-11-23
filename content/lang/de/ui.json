@@ -1179,5 +1179,7 @@
   "gennaker.sheetOnWinch": "Bedien die Schot an der Winsch ihrer Seite (Station Backbord oder Steuerbord).",
   "picture.spinnaker": "Bild: ein symmetrischer Spinnaker, nicht auf diesem Boot.",
   "picture.code0": "Bild: ein Code 0, nicht auf diesem Boot.",
-  "picture.close": "Bild schließen"
+  "picture.close": "Bild schließen",
+  "picture.traveller": "Bild: ein Großschot-Traveller, nicht an diesem Boot.",
+  "picture.travellerCar": "Wagen"
 }

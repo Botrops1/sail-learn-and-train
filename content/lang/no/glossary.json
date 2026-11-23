@@ -2293,6 +2293,33 @@
       "what": "En gennaker (asymmetrisk spinnaker) tackes i baugen og trenger ingen bom: enkel for en liten besetning, best på slør. En symmetrisk spinnaker flyr på en bom mot lo: best dypt på lens, flere tau og mer arbeid (brass, skjøte, bomløfter, nedhaler). En Code 0 er flat og på en rulleanordning: for lett vind nærmere vinden enn en gennaker kan gå. Tilvalget på denne båten er gennakeren.",
       "showMe": "Den symmetriske spinnakeren som bilde. Åpne også oppføringen om Code 0; gennakeren er seilet du kan rigge i Innstillinger.",
       "textStatus": "draft"
+    },
+    "part_traveller_track": {
+      "name": "Travellerskinne",
+      "alternatives": [{ "term": "Traveller" }],
+      "short": "En skinne på tvers av båten som storskjøtets nedre blokk glir på; ikke på denne båten.",
+      "what": "Mange båter har en skinne på tvers i cockpiten eller på dekkshuset med en vogn på; storskjøtet går fra vognen opp til bommen. Skyver du vognen mot le, gir du ut bommen; skyver du den mot midten, henter du bommen inn, og trekket i seilet er det samme. Vognen bestemmer altså bommens vinkel, og skjøtet bestemmer hvor stram seilets bakkant er. Denne båten har tysk storskjøt i stedet: to blokker på dekkshuset og begge ender ført til cockpiten, så skjøtet gjør begge jobbene på en gang.",
+      "showMe": "Et bilde av en traveller: en kort skinne på tvers over bakkanten av dekkshuset med en vogn på. Vinden kommer fra styrbord og vognen er skjøvet mot babord, så bommen står ut mot babord. Bruk glidebryteren for å flytte vognen og se bommen følge etter.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde (Show it working).",
+      "textStatus": "draft"
+    },
+    "part_traveller_car": {
+      "name": "Travellervogn",
+      "alternatives": [],
+      "short": "Vognen som glir på travellerskinnen; storskjøtets nedre blokk sitter på den.",
+      "what": "Blokken på vognen er den nedre enden av storskjøtet. Flytter du vognen, følger skjøtets nedre ende med, og bommen svinger så den blir over den.",
+      "showMe": "Den lille kuben på skinnen. Flytt den med glidebryteren, så følger bommen etter.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_traveller_mainsheet": {
+      "name": "Storskjøt (på traveller)",
+      "alternatives": [],
+      "short": "På en båt med traveller går storskjøtet fra vognen opp til bommen.",
+      "what": "Det har én jobb: å bestemme hvor stram seilets bakkant er. Bommens vinkel er vognens jobb.",
+      "showMe": "Linen fra vognen opp til bommen. Den er omtrent like lang uansett hvor vognen står.",
+      "onThisBoat": "Ikke på denne båten: vises bare som et bilde (Show it working).",
+      "textStatus": "draft"
     }
   }
 }

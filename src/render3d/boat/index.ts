@@ -39,10 +39,17 @@ import { blanketFactor, NO_DAMAGE, type SailDamage } from '../../model/trim';
 /** A fully rigged gennaker: what the meshes are built for (the parts it does not draw are hidden). */
 const RIGGED: GennakerSetup = { stage: 4, side: 1, crossS: 0, crossFromDeg: 0 };
 
-/** M109: what the viewer asks to see besides the boat as the rig solves it (M110 adds to it). */
+/** What the viewer asks to see besides the boat as the rig solves it (M109, M110). */
 export interface BoatView {
   /** A picture of a sail this boat does not carry (Learn's Show it working), drawn on the boat. */
   picture: PictureId | null;
+  /** M110: the traveller picture's car, −100…100 (the picture's boom is drawn for it). */
+  travellerCarPct?: number;
+  /**
+   * M110: the boom's swing drawn instead of the rig's (the traveller picture), or null. The model's
+   * rig is not changed; only what is drawn follows.
+   */
+  boomYawDeg?: number | null;
 }
 
 export interface BoatModel {
@@ -152,6 +159,8 @@ export function buildBoat(
     ...telltales.objects,
   );
 
+  // The mainsheet's deck blocks, hidden while the traveller picture shows (filled below).
+  const deckBlockMeshes: THREE.Object3D[] = [];
   const update = (
     next: RigState,
     nextControls: Controls,
@@ -164,8 +173,14 @@ export function buildBoat(
   ) => {
     // While a picture shows, the gennaker's parts and lines are hidden (11.5): drawn as stowed.
     const gennaker = view.picture === null ? gennakerSet : STOWED;
-    rigParts.setBoomPose(drawnPose(next));
-    const main = mainSailInputFor(next, nextControls, next.wind);
+    // The traveller picture draws the boom, the main and the boom's ropes for its own swing (12.3).
+    const yaw = view.boomYawDeg ?? null;
+    const drawnRig: RigState =
+      yaw === null
+        ? next
+        : { ...next, theta: { value: yaw, velocity: 0 }, psi: { value: 0, velocity: 0 } };
+    rigParts.setBoomPose(drawnPose(drawnRig));
+    const main = mainSailInputFor(drawnRig, nextControls, next.wind);
     const mainGrid = mainSailGrid(main);
     mainSail.update(mainGrid, shown(main.unfurled));
     // On a run the main takes the jib's wind (PT-37): the jib is drawn emptier, flapping.
@@ -182,7 +197,11 @@ export function buildBoat(
       next.timeS,
     );
     rigParts.setCarZ(carPoint(jibClew(jib.phiDeg, jib.unfurled))[2]);
-    drawings = ropeDrawings(next, boat, winches, gennaker);
+    // The traveller replaces the German mainsheet and its deck blocks while its picture shows.
+    const traveller = view.picture === 'traveller';
+    for (const mesh of deckBlockMeshes) mesh.visible = !traveller;
+    drawings = ropeDrawings(drawnRig, boat, winches, gennaker);
+    if (traveller) drawings = drawings.filter((drawing) => drawing.id !== 'rope_mainsheet');
     ropes.update(drawings, ropeView, flashing);
     // The sail and the sock move every frame while it is set; at the other stages the parts only
     // change with the rigging step, so a still frame is not redrawn.
@@ -196,7 +215,7 @@ export function buildBoat(
         next.timeS,
       );
     }
-    pictures.update(view.picture, next.wind.awaDeg);
+    pictures.update(view.picture, next.wind.awaDeg, view.travellerCarPct ?? 0);
     windex.update(next.wind.awaDeg);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).
@@ -209,7 +228,9 @@ export function buildBoat(
   update(rig, controls);
   const anchorMeshes: THREE.Object3D[] = [];
   root.traverse((object) => {
-    if ((object.userData as { partId?: string }).partId === 'fit_anchor') anchorMeshes.push(object);
+    const partId = (object.userData as { partId?: string }).partId;
+    if (partId === 'fit_anchor') anchorMeshes.push(object);
+    if (partId === 'fit_mainsheet_deck_blocks') deckBlockMeshes.push(object);
   });
   // Sun shadows (drawn at high detail only): everything casts; thin ropes and see-through
   // windows do not catch shadows.

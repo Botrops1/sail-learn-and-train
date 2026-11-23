@@ -1187,3 +1187,5 @@
 | picture.spinnaker | Picture: a symmetric spinnaker, not on this boat. | Картинка: симметричный спинакер, которого нет на этой яхте. |
 | picture.code0 | Picture: a code 0, not on this boat. | Картинка: код 0, которого нет на этой яхте. |
 | picture.close | Close picture | Закрыть картинку |
+| picture.traveller | Picture: a mainsheet traveller, not on this boat. | Картинка: тревеллер гика-шкота, на этой яхте его нет. |
+| picture.travellerCar | Car | Каретка |

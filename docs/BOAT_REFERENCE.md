@@ -345,9 +345,9 @@ The gennaker is a brochure option (176.4 m² in the brochure, 200 m² in the man
 | Line sizes | sheets 12 mm × 28 m (manual), tack line 10 mm × 4 m, sock line 8 mm × 44 m | Sheets from the manual; the others **assumptions** |
 | Line colour in the app | vermilion `#d55e00` with the dash pattern `6 2 1 2`; the real sheets' tracer is red | Presentation |
 
-### Pictures (M109)
+### Pictures (M109, M110)
 
-Pictures of sails this boat does not carry, drawn on the boat only while Learn's "Show it working" shows one (`content/boat/hanse508.json` → `pictures`). Not on this boat, so nothing here is a boat fact except the pole's length; the rest are **assumptions** chosen so the picture reads well.
+Pictures of things this boat does not carry, drawn on the boat only while Learn's "Show it working" shows one (`content/boat/hanse508.json` → `pictures`). Not on this boat, so nothing here is a boat fact except the pole's length; the rest are **assumptions** chosen so the picture reads well.
 
 | Assumption | Value used | Status |
 |---|---|---|
@@ -355,6 +355,7 @@ Pictures of sails this boat does not carry, drawn on the boat only while Learn's
 | Spinnaker corners | tack at the pole's outer end, head [0.35, 21.0, 0] (as the gennaker's), clew 30° further aft round the pole's circle (`clewExtraDeg`) at 3.2 m high; curve 0.25 of the chord | **Assumption** (drawing only) |
 | Pole lift and downhaul | the lift from [0.2, 12.0, 0] on the mast to the pole's end; the downhaul from the pole's end to [1.5, 1.62, 0] on the foredeck | **Assumption** |
 | Code 0 | tack [6.95, 2.10, 0] (on the bow roller's tip, lower than the gennaker's), head as the spinnaker's, foot 7.5 m at 12° off the line astern, clew 2.6 m high, curve 0.08 of the chord; furler drum 0.12 m radius × 0.25 m at its tack | **Assumption** |
+| Traveller (M110) | a track across the boat 1.8 m long (`halfLengthM` 0.9) with a 0.04 × 0.03 m section, at x −3.125 (the gooseneck's x minus the boom's sheet-block distance 2.925 m, under the boom's blocks) and at the height of the German mainsheet's deck blocks (1.98 m); a 0.12 m cube car; the boom swings until its sheet point is over the car and is held level; not on this boat (this boat has a German mainsheet, no traveller) | **Assumption** (drawing only) |
 | The pictures' lines | drawn as plain tubes of `visual.ropeRenderRadius` in the gennaker's colour, led like the gennaker's sheets (outside everything, to the block at the stern and the primary winch) | Presentation |
 
 ### People on board (M111)

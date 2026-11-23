@@ -82,7 +82,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `horizonLand.ts` | The distant land's outline from the area's ridges (pure). |
 | `people.ts`, `figurePose.ts` | The captain: the deck points he stands at, where the mode, station and wheel put him, the walk along the windward side deck between stations, and his pose's joint angles (pure). |
 | `gennaker.ts` | The optional gennaker: rigging stage and side, the commands (rig, gybe), the sheets' route, what is drawn, and `solveGennaker` (foot angle, angle of attack, fill, the main hiding it) with its trim state. |
-| `pictures.ts` | The pictures of sails this boat does not carry: `PictureId`, the pole's angle, and where the symmetric spinnaker's and the code 0's corners, pole and lines lie for a wind angle. |
+| `pictures.ts` | The pictures of things this boat does not carry: `PictureId`, the pole's angle, where the symmetric spinnaker's and the code 0's corners, pole and lines lie for a wind angle, and the traveller's car, boom swing and sheet for a car position. |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
 | `apparentWind.ts`, `sailForces.ts`, `hullResistance.ts`, `motion.ts` | Apparent wind, lift/drag, resistance, speed/heading/position, sideways motion and turning on the spot at low speed. `stepBoat` merges the contacts of its substeps. |
 | `heel.ts`, `sheetLoads.ts` | Heel and weather helm; sheet loads from the sail forces. |
@@ -125,7 +125,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `boat/thrusters.ts` | Each thruster's tunnel (only the ends the boat has) and the water jets shown while a joystick is held. |
 | `boat/fenders.ts` | The eight fenders and the ball fender; hidden in the locker. |
 | `boat/gennaker.ts` | The gennaker's bag, sock tube, sheet blocks and sail (gathered into the sock above its mouth), shown by rigging stage and solution; its lines come from `ropePaths.ts`. |
-| `pictures.ts` | The two pictures drawn on the boat (spinnaker with pole and lines, code 0 with its drum and sheet); only the one shown is visible. |
+| `pictures.ts` | The three pictures drawn on the boat (spinnaker with pole and lines, code 0 with its drum and sheet, traveller with track, car and sheet); only the one shown is visible. |
 | `boat/sailMesh.ts`, `boat/ropes.ts`, `boat/telltales.ts` | Sails, ropes (capped ends, smooth tubes, whipped tails, braid normal map), telltales and the tear mark; `BoatModel.ropeStats()` reads what was drawn. |
 | `boat/winchHandle.ts` | The one winch handle, placed from `handlePose`, hidden when carried or in Easy ropes. |
 | `boat/smallFittings.ts` | High detail only: shroud feet, deck hatches, hull windows and soft contact patches (not pickable). |
@@ -188,7 +188,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `miniMap.ts` | The mini-map button at the bottom left of the 3D view while Sailing; shows the point of sail (`data-point-of-sail`, label); a tap opens the full map. |
 | `spotlight.ts` | The tiny event channel between the Learn buttons and the 3D view, which flies the camera close, darkens the rest and ends on the next tap. |
 | `infoCard.ts`, `labels3d.ts`, `debugOverlay.ts`, `errorBoundary.ts` | The part card over the 3D view, 3D labels, the debug overlay, error messages. |
-| `pictureBanner.ts` | The card over the 3D view that names the picture on the boat (not on this boat) and closes it. |
+| `pictureBanner.ts` | The card over the 3D view that names the picture on the boat (not on this boat), closes it, and for the traveller carries the car slider. |
 
 ## Tests and scripts
 

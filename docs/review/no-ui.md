@@ -1187,3 +1187,5 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | picture.spinnaker | Picture: a symmetric spinnaker, not on this boat. | Bilde: en symmetrisk spinnaker, ikke på denne båten. |
 | picture.code0 | Picture: a code 0, not on this boat. | Bilde: en Code 0, ikke på denne båten. |
 | picture.close | Close picture | Lukk bildet |
+| picture.traveller | Picture: a mainsheet traveller, not on this boat. | Bilde: en storskjøt-traveller, ikke på denne båten. |
+| picture.travellerCar | Car | Vogn |

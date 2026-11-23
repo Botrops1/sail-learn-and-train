@@ -1179,5 +1179,7 @@
   "gennaker.sheetOnWinch": "Work the sheet at the winch on its side (Port or Starboard station).",
   "picture.spinnaker": "Picture: a symmetric spinnaker, not on this boat.",
   "picture.code0": "Picture: a code 0, not on this boat.",
-  "picture.close": "Close picture"
+  "picture.close": "Close picture",
+  "picture.traveller": "Picture: a mainsheet traveller, not on this boat.",
+  "picture.travellerCar": "Car"
 }

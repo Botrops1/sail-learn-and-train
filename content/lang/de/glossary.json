@@ -2271,6 +2271,33 @@
       "what": "Ein Gennaker (asymmetrischer Spinnaker) wird am Bug angeschlagen und braucht keinen Baum: einfach für eine kleine Crew, am besten auf raumem Wind. Ein symmetrischer Spinnaker fliegt an einem Baum nach Luv: am besten tief vor dem Wind, mehr Leinen und mehr Arbeit (Achterholer, Schot, Baumlift, Niederholer). Ein Code 0 ist flach und auf einer Rollanlage: für leichten Wind, näher am Wind, als ein Gennaker fahren kann. Die Option dieses Bootes ist der Gennaker.",
       "showMe": "Der symmetrische Spinnaker als Bild. Öffnen Sie auch den Eintrag zum Code 0; der Gennaker ist das Segel, das Sie in den Einstellungen anschlagen können.",
       "textStatus": "draft"
+    },
+    "part_traveller_track": {
+      "name": "Travellerschiene",
+      "alternatives": [{ "term": "Traveller" }],
+      "short": "Eine Schiene quer über das Boot, auf der der untere Block der Großschot gleitet; nicht an diesem Boot.",
+      "what": "Viele Boote haben quer im Cockpit oder auf dem Kajütaufbau eine Schiene mit einem Wagen; die Großschot läuft vom Wagen zum Baum. Schiebt man den Wagen nach Lee, fiert man den Baum; schiebt man ihn zur Mitte, holt man den Baum dicht, und der Zug der Schot am Segel bleibt gleich. Der Wagen bestimmt also den Winkel des Baums, die Schot bestimmt, wie straff das Achterliek ist. Dieses Boot hat stattdessen eine deutsche Großschot: zwei Blöcke auf dem Kajütaufbau und beide Enden ins Cockpit geführt, die Schot erledigt also beide Aufgaben auf einmal.",
+      "showMe": "Ein Bild eines Travellers: eine kurze Schiene quer über dem hinteren Ende des Kajütaufbaus mit einem Wagen. Der Wind kommt von Steuerbord, der Wagen ist nach Backbord geschoben, der Baum steht also nach Backbord hinaus. Mit dem Regler bewegst du den Wagen und siehst, wie der Baum folgt.",
+      "onThisBoat": "Nicht an diesem Boot: nur als Bild gezeigt (Show it working).",
+      "textStatus": "draft"
+    },
+    "part_traveller_car": {
+      "name": "Travellerwagen",
+      "alternatives": [],
+      "short": "Der Wagen, der auf der Travellerschiene gleitet; der untere Block der Großschot sitzt darauf.",
+      "what": "Der Block auf dem Wagen ist das untere Ende der Großschot. Schiebt man den Wagen, wandert das untere Ende der Schot mit, und der Baum schwenkt so, dass er darüber bleibt.",
+      "showMe": "Der kleine Würfel auf der Schiene. Bewege ihn mit dem Regler, der Baum folgt.",
+      "onThisBoat": "Nicht an diesem Boot: nur als Bild gezeigt (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_traveller_mainsheet": {
+      "name": "Großschot (am Traveller)",
+      "alternatives": [],
+      "short": "Auf einem Boot mit Traveller läuft die Großschot vom Wagen zum Baum.",
+      "what": "Sie hat nur eine Aufgabe: Sie bestimmt, wie straff das Achterliek des Segels ist. Der Winkel des Baums ist Sache des Wagens.",
+      "showMe": "Die Leine vom Wagen hinauf zum Baum. Sie bleibt ungefähr gleich lang, wo der Wagen auch steht.",
+      "onThisBoat": "Nicht an diesem Boot: nur als Bild gezeigt (Show it working).",
+      "textStatus": "draft"
     }
   }
 }

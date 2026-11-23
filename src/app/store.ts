@@ -187,6 +187,8 @@ export interface AppState {
   gennaker: GennakerSetup;
   /** M109: the picture of a sail this boat does not carry, shown on the boat (Learn's Show it working); null = none. In the link as `pic`. */
   picture: PictureId | null;
+  /** M110: where the traveller picture's car stands, −100 (port end) … 100 (starboard end); 0 unless that picture shows. In the link as `tv`. */
+  travellerCarPct: number;
   /** The engine (M12): stopped or running, the lever, rpm and gear. */
   engine: EngineState;
   /** The sea (M14): the Waves setting and the wind the waves are made by (lagged). */
@@ -291,6 +293,8 @@ export type Action =
   | { type: 'gennaker'; command: GennakerCommand }
   /** M109: show a picture of a sail this boat does not carry, or close it (null). Nothing in the model changes. */
   | { type: 'setPicture'; picture: PictureId | null }
+  /** M110: slide the traveller picture's car (rounded, −100…100); the boom in the picture follows. */
+  | { type: 'setTravellerCar'; pct: number }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
   | { type: 'load'; state: AppState }
   /** M66: start or stop the exercise, or choose its ropes mode (in setup). */
@@ -337,6 +341,8 @@ export interface InitialOverrides {
   gennaker?: GennakerSetup;
   /** From a shared link (M109): the picture shown on the boat. Without it: none. */
   picture?: PictureId | null;
+  /** From a shared link (M110): the traveller picture's car. Without it: 0. */
+  travellerCarPct?: number;
 }
 
 /** The boat a link describes (PHASE2_SPEC 6.4): without a speed she starts at her steady speed. */
@@ -570,6 +576,7 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     sailDamage: NO_DAMAGE,
     gennaker: overrides.gennaker ?? STOWED,
     picture: overrides.picture ?? null,
+    travellerCarPct: overrides.travellerCarPct ?? 0,
     engine,
     sea,
     clock: { utcMs: clockUtcMs },
@@ -1053,7 +1060,14 @@ function reduceAction(state: AppState, action: Action): AppState {
       if (state.settings.timeBar === action.timeBar) return state;
       return withTimeRule({ ...state, settings: { ...state.settings, timeBar: action.timeBar } });
     case 'setPicture':
-      return action.picture === state.picture ? state : { ...state, picture: action.picture };
+      // A new picture, or none, puts the traveller's car back in the middle (M110).
+      return action.picture === state.picture && state.travellerCarPct === 0
+        ? state
+        : { ...state, picture: action.picture, travellerCarPct: 0 };
+    case 'setTravellerCar': {
+      const pct = Math.min(100, Math.max(-100, Math.round(action.pct))) || 0;
+      return pct === state.travellerCarPct ? state : { ...state, travellerCarPct: pct };
+    }
     case 'gennaker': {
       const gennaker = gennakerCommand(
         state.gennaker,
