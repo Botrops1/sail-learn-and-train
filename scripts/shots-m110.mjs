@@ -60,6 +60,23 @@ export async function liveM110Checks({ openPage, viewports, outDir, prefix, prob
       (await visible(page, 'fit_mainsheet_boom_blocks')),
     'a part has the wrong visibility',
   );
+  // The card must not hide the car: the car's point is outside the banner's box.
+  const point = await page.evaluate(() => window.__sailDebug.partPoint('part_traveller_car', 0.5));
+  const canvas = await page.locator('canvas').first().boundingBox();
+  const box = await banner.boundingBox();
+  const hidden =
+    point !== null &&
+    canvas !== null &&
+    box !== null &&
+    canvas.x + point.x >= box.x &&
+    canvas.x + point.x <= box.x + box.width &&
+    canvas.y + point.y >= box.y &&
+    canvas.y + point.y <= box.y + box.height;
+  check(
+    'the banner does not cover the car',
+    point !== null && !hidden,
+    `car point ${JSON.stringify(point)}, banner ${JSON.stringify(box)}`,
+  );
   const port = await boomZ(page);
   check('the car to port: the boom is out to port', port !== null && port < 0, `boom z ${port}`);
   await page.screenshot({ path: `${outDir}/${prefix}m110-phone-traveller-live.png` });

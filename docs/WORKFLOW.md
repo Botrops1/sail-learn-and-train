@@ -143,7 +143,7 @@ New link settings: `gn` gennaker rigging step (0 stowed, 1 tack line on, 2 sheet
 
 #### M110: Main traveller picture
 
-- [ ] Traveller: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=part_traveller_track — Show it working: a track across the back of the coachroof with a car, the mainsheet going from the car up to the boom; this boat's own mainsheet is hidden.
+- [ ] Traveller: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=part_traveller_track — Show it working: a track across the back of the coachroof with a car, the mainsheet going from the car up to the boom; this boat's own mainsheet is hidden. Pinch to zoom in on the back of the coachroof: the track is dark, the car is an orange cube and the sheet is an orange line up to the boom.
 - [ ] Move the car: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top — the car is to the left (port) and the boom is out to that side. Drag the Car slider to the middle: the boom comes in to the centre; the sheet stays nearly straight up and down.
 - [ ] Back to normal: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top — tap Close picture: the German mainsheet is back.
 

@@ -4189,6 +4189,11 @@ html[data-layout='side'] .alert-chip {
   cursor: pointer;
 }
 
+/* The picture card holds a slider for the traveller: it grows instead of scrolling (a longer text wraps to two lines in German and Russian). */
+html[data-layout='stacked'] .info-card.picture-banner {
+  max-height: none;
+}
+
 /* M110: the traveller picture's slider, in the picture banner. */
 .picture-traveller {
   display: flex;

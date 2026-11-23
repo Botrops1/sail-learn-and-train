@@ -164,7 +164,7 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
   const track = partMesh(
     'part_traveller_track',
     [boxAt([0, 0, 0], [sectionX, sectionY, 2 * tr.halfLengthM])],
-    materials.chrome,
+    materials.dark,
     [
       [
         [0, 0, -tr.halfLengthM],
@@ -173,10 +173,15 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
     ],
   );
   track.position.set(firstTraveller.car[0], firstTraveller.car[1], 0);
+  // The car and the sheet share the mainsheet's colour: the car is the sheet's lower block, and
+  // from the phone's distance a dark track with an orange car is what can be told apart.
+  const travellerRopeMaterial = new THREE.MeshLambertMaterial({
+    color: SCENE.ropes.colors.mainsheet,
+  });
   const car = partMesh(
     'part_traveller_car',
     [boxAt([0, 0, 0], [tr.carSizeM, tr.carSizeM, tr.carSizeM])],
-    materials.fitting,
+    travellerRopeMaterial,
     [
       [
         [0, 0, 0],
@@ -184,9 +189,6 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
       ],
     ],
   );
-  const travellerRopeMaterial = new THREE.MeshLambertMaterial({
-    color: SCENE.ropes.colors.mainsheet,
-  });
   const carTop = (at: Vec3): Vec3 => [at[0], at[1] + tr.carSizeM / 2, at[2]];
   const travellerSheet = makeRope(
     'rope_traveller_mainsheet',
