@@ -11,6 +11,7 @@ import {
 import { el } from '../ui/dom';
 import { currentLanguage, setLanguage, t } from '../ui/i18n';
 import { createInfoCard } from '../ui/infoCard';
+import { createPictureBanner } from '../ui/pictureBanner';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
@@ -218,6 +219,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
         ? panel.showLearnEntry(id)
         : panel.openLearnEntry(id),
   });
+  // M109: the card that says a picture of a sail not on this boat is showing.
+  layout.view.append(createPictureBanner(store));
   panel.onChange(() => card.refresh());
   sheet.onChange(() => {
     card.refresh();

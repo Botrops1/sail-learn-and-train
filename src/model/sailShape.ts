@@ -219,6 +219,22 @@ export function gennakerSailGrid(input: GennakerShapeInput, data: BoatData = boa
   return grid;
 }
 
+/**
+ * A sail of a picture (M109: the symmetric spinnaker, the code 0): the grid between its corners,
+ * full (`fill` 1), no twist, no flapping, curved to `side` (the leeward side) by `camberRatio`.
+ */
+export function pictureSailGrid(
+  corners: SailCorners,
+  side: Side,
+  camberRatio: number,
+  data: BoatData = boat,
+): SailGrid {
+  return sailGrid(
+    { corners, twistDeg: 0, fill: 1, side, windSpeedKn: 0, timeS: 0, camberRatio },
+    data,
+  );
+}
+
 /** The sock's mouth along the luff, 0 (at the tack) to 1 (the head): `sockUp · (1 − bunch / luff length)`. */
 export function gennakerMouthFraction(sockUp: number, data: BoatData = boat): number {
   const g = data.sails.gennaker;

@@ -1184,3 +1184,6 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | gennaker.sock | Sock | Strømpe |
 | gennaker.sheet | Sheet | Skjøt |
 | gennaker.sheetOnWinch | Work the sheet at the winch on its side (Port or Starboard station). | Bruk skjøtet på vinsjen på sin side (stasjon Babord eller Styrbord). |
+| picture.spinnaker | Picture: a symmetric spinnaker, not on this boat. | Bilde: en symmetrisk spinnaker, ikke på denne båten. |
+| picture.code0 | Picture: a code 0, not on this boat. | Bilde: en Code 0, ikke på denne båten. |
+| picture.close | Close picture | Lukk bildet |

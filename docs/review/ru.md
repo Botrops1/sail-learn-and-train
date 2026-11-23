@@ -4,6 +4,21 @@
 
 ## Концы
 
+### брас (`rope_spinnaker_guy`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Guy | брас |
+| Другие названия | — | — |
+| Коротко | The windward sheet of a symmetric spinnaker: it sets the pole's angle. | Наветренный шкот симметричного спинакера: он задаёт угол гика. |
+| Что делает / что значит | It runs from the tack through the end of the pole, back to a block at the stern and a winch. Pulling it brings the pole aft; easing it lets the pole go forward. | Он идёт от галсового угла через конец гика назад к блоку на корме и лебёдке. Выбираете его — гик идёт назад; травите — гик идёт вперёд. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The guy runs from the end of the pole, outside everything, back to the block at the stern and the winch on the starboard side. | Брас идёт от конца гика снаружи всего назад к блоку на корме и лебёдке на правом борту. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### галсовый конец геннакера (`rope_gennaker_tack_line`)
 
 | Поле | English | Русский |
@@ -109,6 +124,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### оттяжка гика (`rope_pole_downhaul`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Pole downhaul | оттяжка гика |
+| Другие названия | Foreguy | — |
+| Коротко | Holds the spinnaker pole down. | Держит спинакер-гик снизу. |
+| Что делает / что значит | From the outer end of the pole down to the deck, so the sail cannot lift the pole. | От внешнего конца гика вниз к палубе, чтобы парус не мог поднять гик. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The downhaul runs from the end of the pole down to the deck near the mast. | Оттяжка идёт от конца гика вниз к палубе возле мачты. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### оттяжка шкотового угла (`rope_outhaul`)
 
 | Поле | English | Русский |
@@ -154,6 +184,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### топенант гика (`rope_pole_lift`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Pole lift | топенант гика |
+| Другие названия | Topping lift (pole)<br>Uphaul | топенант спинакер-гика |
+| Коротко | Holds the spinnaker pole up. | Держит спинакер-гик сверху. |
+| Что делает / что значит | A line from the mast down to the outer end of the pole, so the pole stays level with the clew. | Конец от мачты вниз к внешнему концу гика, чтобы гик оставался на одной высоте со шкотовым углом. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The pole lift is the line from high up the mast down to the end of the pole. | Топенант гика — конец от высоты мачты вниз к концу гика. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### фал геннакера (`rope_spi_halyard`)
 
 | Поле | English | Русский |
@@ -195,6 +240,36 @@
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
 | «Покажи» | Gennaker rigged, wind from starboard: the starboard sheet (the far one, the lazy sheet) runs outside everything along its deck edge, round a block near the stern and on to the winch. | Геннакер оснащён, ветер справа: правый шкот (дальний, слабый шкот) идёт снаружи всего вдоль своего края палубы, через блок у кормы к лебёдке. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### шкот кода 0 (`rope_code_zero_sheet`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Code 0 sheet | шкот кода 0 |
+| Другие названия | — | — |
+| Коротко | Trims the code 0. | Подбирает код 0. |
+| Что делает / что значит | Led like the gennaker's sheet, outside everything to a block at the stern. | Проложен как шкот геннакера, снаружи всего к блоку на корме. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The code 0 sheet runs from the sail's back corner along the port deck edge to the block at the stern. | Шкот кода 0 идёт от заднего угла паруса вдоль левого края палубы к блоку на корме. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### шкот спинакера (`rope_spinnaker_sheet`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Spinnaker sheet | шкот спинакера |
+| Другие названия | — | — |
+| Коротко | The leeward sheet: trims the spinnaker's clew. | Подветренный шкот: подбирает шкотовый угол спинакера. |
+| Что делает / что значит | Like a jib sheet, on the side away from the wind; after a gybe the guy and the sheet swap jobs. | Как шкот стакселя, с подветренной стороны; после поворота фордевинд брас и шкот меняются обязанностями. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The sheet runs from the sail's back corner on the side away from the wind (port here) along the deck edge to a block at the stern and the winch. | Шкот идёт от заднего угла паруса с подветренной стороны (здесь левый борт) вдоль края палубы к блоку на корме и лебёдке. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
@@ -261,6 +336,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### код 0 (`sail_code_zero`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Code 0 | код 0 |
+| Другие названия | — | — |
+| Коротко | A flat, light sail for close reaching, rolled on its own furler; not on this boat. | Плоский лёгкий парус для курсов между бейдевиндом и галфвиндом, наматывается на собственный закрутчик; на этой яхте его нет. |
+| Что делает / что значит | Flatter than a gennaker and set on its own furler at the bow, so it is unrolled and rolled away like a jib. It is for light wind from ahead of the beam to a beam reach, where a gennaker would only flap. | Площе геннакера и поставлен на собственный закрутчик на носу, так что его разворачивают и сворачивают, как стаксель. Он для лёгкого ветра от курса впереди траверза до галфвинда, где геннакер только полоскал бы. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | A picture of a code 0: a flat sail from the bow, rolled on its own drum. The wind comes from the starboard side ahead of the beam, so the sail's back corner is to port. | Картинка кода 0: плоский парус от носа, намотанный на собственный барабан. Ветер дует с правого борта спереди от траверза, поэтому задний угол паруса — к левому борту. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### колдунчик (`part_telltale`)
 
 | Поле | English | Русский |
@@ -318,6 +408,21 @@
 | Типичные ошибки | Keeping all of the jib out in strong wind. → She heels too much and turns into the wind. Roll part of the main in first, then part of the jib if needed.<br>Furling the jib with the sheet tight. → Ease the sheet; then the jib rolls up. | Держать весь стаксель выпущенным при сильном ветре. → Яхта слишком кренится и приводится к ветру. Сначала закрутите часть грота, потом, если нужно, часть стакселя.<br>Закручивать стаксель при туго выбранном шкоте. → Потравите шкот; тогда стаксель свернётся. |
 | «Покажи» | Wind 30° from starboard: the jib’s car sits at the port end of its track. In Conditions, turn the wind to the other side of the bow: the car slides across by itself. | Ветер 30° справа: каретка стакселя стоит у левого края погона. В разделе «Условия» поверните ветер на другую сторону от носа: каретка переедет сама. |
 | Достоверность | Checked against a written source. | Проверено по письменному источнику. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### спинакер (симметричный) (`sail_spinnaker`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Spinnaker (symmetric) | спинакер (симметричный) |
+| Другие названия | — | — |
+| Коротко | A big, balloon-like sail for running and broad reaching, set on a pole; not on this boat. | Большой парус-«шар» для курсов фордевинд и бакштаг, который ставят на спинакер-гике; на этой яхте его нет. |
+| Что делает / что значит | Both edges are the same length and either can lead. Its windward corner (the tack) sits at the end of a pole that sticks out from the mast on the side the wind comes from; the corner on the other side (the clew) is trimmed with the sheet. The pole is set at about right angles to the wind you feel; moving it aft as you turn downwind is what the guy does. | Обе кромки одинаковой длины, и любая может быть передней. Наветренный угол (галсовый угол) закреплён на конце гика, который торчит от мачты в ту сторону, откуда дует ветер; угол с другой стороны (шкотовый угол) подбирают шкотом. Гик стоит примерно под прямым углом к ветру, который вы чувствуете; тянуть его назад, когда вы уваливаетесь, — работа браса. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | A picture of a symmetric spinnaker on this boat: the wind comes from the starboard quarter, so the pole sticks out to starboard with the sail's tack at its end. | Картинка симметричного спинакера на этой яхте: ветер дует с правого борта сзади, поэтому гик торчит на правый борт, а галсовый угол паруса — на его конце. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
@@ -473,6 +578,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### закрутчик кода 0 (`part_code_zero_furler`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Code 0 furler | закрутчик кода 0 |
+| Другие названия | — | — |
+| Коротко | The drum the code 0 rolls up on. | Барабан, на который наматывается код 0. |
+| Что делает / что значит | A drum at the bow with its own line; the sail's luff has a cable inside that turns with the drum. | Барабан на носу с собственным концом; внутри лика паруса есть трос, который вращается вместе с барабаном. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The drum at the bow that the sail's front edge turns on. | Барабан на носу, на котором вращается передняя кромка паруса. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### краспицы (`part_spreader`)
 
 | Поле | English | Русский |
@@ -530,6 +650,21 @@
 | Типичные ошибки | Cranking with the switch on OUT when you want to roll the main in. → The sail comes further out. Set the switch to IN first. | Крутить с переключателем на «OUT», когда нужно свернуть грот. → Парус выходит ещё дальше. Сначала поставьте переключатель на «IN». |
 | «Покажи» | Realistic mode, Mast station: the gearbox with its IN/OUT switch and the socket for the winch handle. | Реалистичный режим, станция «Мачта»: редуктор с переключателем «IN/OUT» и гнездом для ручки лебёдки. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### спинакер-гик (`part_spinnaker_pole`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Spinnaker pole | спинакер-гик |
+| Другие названия | — | — |
+| Коротко | Holds the spinnaker's tack out to windward. | Держит галсовый угол спинакера вынесенным на наветренную сторону. |
+| Что делает / что значит | A pole clipped to a ring on the front of the mast at one end; the guy runs through the jaw at its other end. A pole lift (topping lift) holds it up and a downhaul holds it down. This boat's manual gives 5.85 m for its pole. | Гик, одним концом пристёгнутый к кольцу на передней стороне мачты; через раструб на другом конце проходит брас. Топенант гика держит его сверху, а оттяжка — снизу. В руководстве этой яхты длина гика 5,85 м. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The pole sticks out from the mast to the side the wind comes from (starboard here), at about right angles to the wind you feel. | Гик торчит от мачты в ту сторону, откуда дует ветер (здесь правый борт), примерно под прямым углом к ветру, который вы чувствуете. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
@@ -1996,6 +2131,21 @@
 | На этой яхте | — | — |
 | Типичные ошибки | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet trimmed. | Рулить так далеко под ветер, что ветер оказывается позади грота (он дует на грот уже с той стороны, куда отведён гик). → Гик может перелететь в любой момент. Слегка приведитесь к ветру или сделайте поворот фордевинд намеренно, с выбранным гика-шкотом. |
 | «Покажи» | Running, the autopilot turns her through dead downwind with the mainsheet eased: an accidental gybe. The red area shows where the boom sweeps across. Keep heads out of it. | Фордевинд: авторулевой разворачивает яхту через точку точно по ветру при потравленном гика-шкоте — случайный поворот фордевинд. Красная область показывает, где гик пройдёт через кокпит. Держите головы вне её. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### паруса для попутного ветра (`term_downwind_sails`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Downwind sails | паруса для попутного ветра |
+| Другие названия | — | — |
+| Коротко | The gennaker, the spinnaker and the code 0 compared. | Геннакер, спинакер и код 0 в сравнении. |
+| Что делает / что значит | A gennaker (asymmetric spinnaker) is tacked at the bow and needs no pole: easy for a small crew, best on a broad reach. A symmetric spinnaker flies on a pole to windward: best deep downwind, more lines and more work (guy, sheet, pole lift, downhaul). A code 0 is flat and on a furler: for light wind closer to the wind than a gennaker can go. This boat's option is the gennaker. | Геннакер (асимметричный спинакер) ставят галсовым углом на носу, и гик ему не нужен: просто для малого экипажа, лучше всего на бакштаге. Симметричный спинакер летит на гике на наветренной стороне: лучше всего на глубоком фордевинде, больше снастей и больше работы (брас, шкот, топенант, оттяжка). Код 0 плоский и на закрутчике: для лёгкого ветра ближе к ветру, чем может идти геннакер. Опция этой яхты — геннакер. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | The symmetric spinnaker as a picture. Open the code 0 entry to see that one too; the gennaker is the sail you can rig in Settings. | Симметричный спинакер как картинка. Откройте и статью про код 0; геннакер — парус, который можно оснастить в настройках. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |

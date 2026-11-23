@@ -1184,3 +1184,6 @@
 | gennaker.sock | Sock | Чулок |
 | gennaker.sheet | Sheet | Шкот |
 | gennaker.sheetOnWinch | Work the sheet at the winch on its side (Port or Starboard station). | Работайте со шкотом на лебёдке его борта (станция «Левый борт» или «Правый борт»). |
+| picture.spinnaker | Picture: a symmetric spinnaker, not on this boat. | Картинка: симметричный спинакер, которого нет на этой яхте. |
+| picture.code0 | Picture: a code 0, not on this boat. | Картинка: код 0, которого нет на этой яхте. |
+| picture.close | Close picture | Закрыть картинку |

@@ -31,11 +31,19 @@ import { buildSmallFittings } from './smallFittings';
 import { buildSailMesh } from './sailMesh';
 import { buildTelltales } from './telltales';
 import { buildWinchHandle } from './winchHandle';
+import { buildPictures } from '../pictures';
+import type { PictureId } from '../../model/pictures';
 import type { HandlePose } from '../../model/handlePose';
 import { blanketFactor, NO_DAMAGE, type SailDamage } from '../../model/trim';
 
 /** A fully rigged gennaker: what the meshes are built for (the parts it does not draw are hidden). */
 const RIGGED: GennakerSetup = { stage: 4, side: 1, crossS: 0, crossFromDeg: 0 };
+
+/** M109: what the viewer asks to see besides the boat as the rig solves it (M110 adds to it). */
+export interface BoatView {
+  /** A picture of a sail this boat does not carry (Learn's Show it working), drawn on the boat. */
+  picture: PictureId | null;
+}
 
 export interface BoatModel {
   root: THREE.Group;
@@ -55,6 +63,7 @@ export interface BoatModel {
     winches?: readonly WinchWrap[],
     damage?: SailDamage,
     gennaker?: GennakerSetup,
+    view?: BoatView,
   ): void;
   rudderPivot: THREE.Group;
   wheelPivots: THREE.Group[];
@@ -111,6 +120,7 @@ export function buildBoat(
     root.add(mesh);
   });
   const gennakerParts = buildGennaker(materials, detail);
+  const pictures = buildPictures(materials, detail);
   const windex = buildWindex(materials);
   const telltales = buildTelltales(materials);
   const fenders = buildFenders(materials, detail);
@@ -137,6 +147,7 @@ export function buildBoat(
     jibSail.mesh,
     ...ropes.objects,
     ...gennakerParts.objects,
+    ...pictures.objects,
     windex.pivot,
     ...telltales.objects,
   );
@@ -148,8 +159,11 @@ export function buildBoat(
     flashing?: ReadonlySet<string>,
     winches?: readonly WinchWrap[],
     damage: SailDamage = NO_DAMAGE,
-    gennaker: GennakerSetup = STOWED,
+    gennakerSet: GennakerSetup = STOWED,
+    view: BoatView = { picture: null },
   ) => {
+    // While a picture shows, the gennaker's parts and lines are hidden (11.5): drawn as stowed.
+    const gennaker = view.picture === null ? gennakerSet : STOWED;
     rigParts.setBoomPose(drawnPose(next));
     const main = mainSailInputFor(next, nextControls, next.wind);
     const mainGrid = mainSailGrid(main);
@@ -182,6 +196,7 @@ export function buildBoat(
         next.timeS,
       );
     }
+    pictures.update(view.picture, next.wind.awaDeg);
     windex.update(next.wind.awaDeg);
     // Wheel and rudder (PHASE1_SPEC 6.1, 4): + = rudder's back edge to starboard (a turn
     // around y), wheels turned clockwise as seen from behind them (a turn around x).

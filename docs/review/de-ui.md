@@ -1184,3 +1184,6 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | gennaker.sock | Sock | Strumpf |
 | gennaker.sheet | Sheet | Schot |
 | gennaker.sheetOnWinch | Work the sheet at the winch on its side (Port or Starboard station). | Bedien die Schot an der Winsch ihrer Seite (Station Backbord oder Steuerbord). |
+| picture.spinnaker | Picture: a symmetric spinnaker, not on this boat. | Bild: ein symmetrischer Spinnaker, nicht auf diesem Boot. |
+| picture.code0 | Picture: a code 0, not on this boat. | Bild: ein Code 0, nicht auf diesem Boot. |
+| picture.close | Close picture | Bild schließen |
