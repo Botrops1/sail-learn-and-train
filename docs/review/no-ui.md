@@ -779,6 +779,10 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.target.time | Time on board {from}–{to} | Tid om bord {from}–{to} |
 | exercise.target.nowM | now {value} m | nå {value} m |
 | exercise.target.nowWord | now {value} | nå {value} |
+| exercise.target.gennakerStage | Gennaker: step {now} of 4 | Gennaker: trinn {now} av 4 |
+| exercise.target.gennakerTrim | Gennaker: {state} | Gennaker: {state} |
+| exercise.target.gennakerSet | Gennaker: set on its new side | Gennaker: satt på den nye siden |
+| exercise.target.gennakerStowed | stowed | stuet bort |
 | exercise.sections.hidden | Hidden, not needed here: {list}. | Skjult, ikke nødvendig her: {list}. |
 | exercise.sections.locked | Set by the exercise, cannot be changed: the wind, the waves and the clock. | Satt av øvelsen, kan ikke endres: vinden, bølgene og klokken. |
 | exercise.pauseOnMistake | Pause when I make a mistake | Pause når jeg gjør en feil |
@@ -860,6 +864,11 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | debrief.windlass.up | Chain in | Kjetting inn |
 | debrief.fenders.out | Fenders out | Fendere ut |
 | debrief.fenders.in | Fenders in | Fendere inn |
+| debrief.gennaker.next | Gennaker: next step | Gennaker: neste trinn |
+| debrief.gennaker.back | Gennaker: undo a step | Gennaker: angret et trinn |
+| debrief.gennaker.gybe | Gennaker: gybed | Gennaker: gybbet |
+| debrief.gennaker.rig | Gennaker: rigged | Gennaker: rigget |
+| debrief.gennaker.stow | Gennaker: stowed | Gennaker: stuet bort |
 | section.conditions | Conditions | Forhold |
 | section.explain | Explain: {name} | Forklaring: {name} |
 | quick.easy | Tap a line: its − and + appear here. | Trykk på et tau: − og + vises her. |

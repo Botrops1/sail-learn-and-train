@@ -205,6 +205,69 @@
       ]
     },
     {
+      "id": "gennaker-rig",
+      "group": "sails",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=240&ms=80&js=50&ap=wind&apt=120&sea=flat",
+      "feelIt": ["sail_gennaker", "rope_gennaker_tack_line", "part_gennaker_sock"],
+      "steps": [
+        { "id": "tack-line", "opens": "sails", "holdS": 0, "check": { "gennakerStage": [1, 4] }, "bar": ["gennaker:steps"] },
+        { "id": "sheets", "opens": "sails", "holdS": 0, "check": { "gennakerStage": [2, 4] }, "bar": ["gennaker:steps"] },
+        { "id": "halyard", "opens": "sails", "holdS": 0, "check": { "gennakerStage": [3, 4] }, "bar": ["gennaker:steps"] },
+        { "id": "furl-jib", "opens": "ropes", "holdS": 0, "check": { "jibOutPct": [0, 5] }, "bar": ["control:ctl_jib_sheet", "control:ctl_jib_furl"] },
+        { "id": "hoist", "opens": "sails", "holdS": 0, "check": { "gennakerStage": [4, 4] }, "bar": ["gennaker:steps"] },
+        { "id": "sock-up", "opens": "sails", "holdS": 0, "check": { "controls": { "ctl_gennaker_sock": [95, 100] } }, "bar": ["control:ctl_gennaker_sock"] },
+        { "id": "trim", "opens": "sails", "holdS": 5, "check": { "gennakerTrim": ["good"], "tack": "starboard" }, "bar": ["control:ctl_gennaker_sheet"] }
+      ],
+      "mistakes": [
+        { "id": "jib-still-out", "serious": false, "steps": ["hoist", "sock-up", "trim"], "on": { "condition": { "gennakerStage": [4, 4], "jibOutPct": [20, 100] }, "forS": 1 } },
+        { "id": "overpowered", "serious": false, "on": { "alert": "overpowered" } },
+        { "id": "round-up", "serious": false, "on": { "alert": "roundUp" } }
+      ]
+    },
+    {
+      "id": "gennaker-gybe",
+      "group": "sails",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=225&ms=90&jf=0&gn=4&gx=p&gu=100&gs=40&ap=wind&apt=135&sea=flat",
+      "feelIt": ["term_lazy_sheet"],
+      "steps": [
+        { "id": "bear-away", "opens": "autopilot", "holdS": 2, "check": { "twaDeg": [160, 175], "tack": "starboard" }, "bar": ["autopilot:turn"] },
+        { "id": "haul-main", "opens": "ropes", "holdS": 2, "check": { "boomDeg": [0, 16], "tack": "starboard" }, "bar": ["control:ctl_mainsheet"] },
+        { "id": "gybe-main", "opens": "autopilot", "holdS": 2, "check": { "event": "controlledGybe", "tack": "port", "twaDeg": [150, 175] }, "bar": ["autopilot:tack"] },
+        { "id": "gybe-gennaker", "opens": "sails", "holdS": 0, "check": { "gennakerTrim": ["luffing", "good", "stalled", "pressed", "blanketed"], "tack": "port" }, "bar": ["gennaker:gybe"] },
+        { "id": "come-up", "opens": "autopilot", "holdS": 5, "check": { "twaDeg": [125, 145], "tack": "port", "gennakerTrim": ["good"] }, "bar": ["autopilot:turn", "control:ctl_mainsheet", "control:ctl_gennaker_sheet"] }
+      ],
+      "mistakes": [
+        { "id": "backed", "serious": false, "steps": ["gybe-gennaker", "come-up"], "on": { "condition": { "gennakerTrim": ["backed"] }, "forS": 10 } },
+        { "id": "accidental-gybe", "serious": false, "steps": ["bear-away", "haul-main", "gybe-main"], "on": { "alert": "gybe", "accidental": true } }
+      ]
+    },
+    {
+      "id": "gennaker-douse",
+      "group": "sails",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
+      "start": "?wd=0&ws=12&hdg=240&ms=60&jf=0&gn=4&gx=p&gu=100&gs=30&ap=wind&apt=120&sea=flat",
+      "feelIt": ["rope_gennaker_sock_line"],
+      "steps": [
+        { "id": "bear-away", "opens": "autopilot", "holdS": 2, "check": { "twaDeg": [170, 180], "gennakerTrim": ["blanketed"] }, "bar": ["autopilot:turn"] },
+        { "id": "ease", "opens": "ropes", "holdS": 0, "check": { "controls": { "ctl_gennaker_sheet": [70, 100] } }, "bar": ["control:ctl_gennaker_sheet"] },
+        { "id": "sock-down", "opens": "sails", "holdS": 0, "check": { "controls": { "ctl_gennaker_sock": [0, 2] } }, "bar": ["control:ctl_gennaker_sock"] },
+        { "id": "lower", "opens": "sails", "holdS": 0, "check": { "gennakerStage": [0, 0] }, "bar": ["gennaker:steps"] },
+        { "id": "jib-out", "opens": "ropes", "holdS": 2, "check": { "jibOutPct": [95, 100] }, "bar": ["control:ctl_jib_furl"] }
+      ],
+      "mistakes": [
+        { "id": "douse-in-wind", "serious": false, "steps": ["ease", "sock-down"], "on": { "condition": { "gennakerTrim": ["good", "luffing", "stalled", "pressed"], "controls": { "ctl_gennaker_sock": [1, 90] } }, "forS": 2 } },
+        { "id": "accidental-gybe", "serious": false, "steps": ["bear-away", "ease", "sock-down", "lower"], "on": { "alert": "gybe", "accidental": true } }
+      ]
+    },
+    {
       "id": "leave-berth",
       "group": "harbour",
       "ropes": "easy",

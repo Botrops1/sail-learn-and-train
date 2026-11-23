@@ -779,6 +779,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.target.time | Time on board {from}–{to} | Zeit an Bord {from}–{to} |
 | exercise.target.nowM | now {value} m | jetzt {value} m |
 | exercise.target.nowWord | now {value} | jetzt {value} |
+| exercise.target.gennakerStage | Gennaker: step {now} of 4 | Gennaker: Schritt {now} von 4 |
+| exercise.target.gennakerTrim | Gennaker: {state} | Gennaker: {state} |
+| exercise.target.gennakerSet | Gennaker: set on its new side | Gennaker: auf der neuen Seite gesetzt |
+| exercise.target.gennakerStowed | stowed | verstaut |
 | exercise.sections.hidden | Hidden, not needed here: {list}. | Ausgeblendet, hier nicht nötig: {list}. |
 | exercise.sections.locked | Set by the exercise, cannot be changed: the wind, the waves and the clock. | Von der Übung vorgegeben, nicht änderbar: der Wind, die Wellen und die Uhr. |
 | exercise.pauseOnMistake | Pause when I make a mistake | Pause bei einem Fehler |
@@ -860,6 +864,11 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | debrief.windlass.up | Chain in | Kette einholen |
 | debrief.fenders.out | Fenders out | Fender ausgebracht |
 | debrief.fenders.in | Fenders in | Fender eingeholt |
+| debrief.gennaker.next | Gennaker: next step | Gennaker: nächster Schritt |
+| debrief.gennaker.back | Gennaker: undo a step | Gennaker: einen Schritt zurück |
+| debrief.gennaker.gybe | Gennaker: gybed | Gennaker: gehalst |
+| debrief.gennaker.rig | Gennaker: rigged | Gennaker: aufgeriggt |
+| debrief.gennaker.stow | Gennaker: stowed | Gennaker: verstaut |
 | section.conditions | Conditions | Bedingungen |
 | section.explain | Explain: {name} | Erklären: {name} |
 | quick.easy | Tap a line: its − and + appear here. | Tippen Sie auf eine Leine: Ihr − und + erscheinen hier. |

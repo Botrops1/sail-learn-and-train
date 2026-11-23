@@ -5466,6 +5466,11 @@ html[data-layout='wide'] .exercise-buttons [data-testid='exercise-list'] {
   flex: none;
 }
 
+.exercise-stack .bar-text-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .exercise-stack .windlass-button {
   min-height: var(--bar-touch);
 }

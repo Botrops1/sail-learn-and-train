@@ -442,6 +442,74 @@ export function gybingPilot(): Pilot {
     }
   };
 }
+const gennakerCmd = (s: AppState, command: 'next' | 'back' | 'gybe') =>
+  A(s, { type: 'gennaker', command });
+/** The gennaker, rigged step by step at the bow, set with its sock and trimmed on a broad reach. */
+export function gennakerRigPilot(): Pilot {
+  const once = onceMaker();
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 0:
+      case 1:
+      case 2:
+      case 4:
+        return once(s, 'next', (x) => gennakerCmd(x, 'next'));
+      case 3:
+        // The jib only rolls away while its sheet is eased (PT-13).
+        return ctl(s, { ctl_jib_sheet: 100, ctl_jib_furl: 0 });
+      case 5:
+        return ctl(s, { ctl_gennaker_sock: 100 });
+      case 6:
+        return ctl(s, { ctl_gennaker_sheet: 35 });
+      default:
+        return s;
+    }
+  };
+}
+/** Bear away, haul the main, gybe, gybe the gennaker, come up and trim both. */
+export function gennakerGybePilot(): Pilot {
+  const once = onceMaker();
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 0:
+        return once(s, 't', (x) => turns(x, 3, -10));
+      case 1:
+        return ctl(s, { ctl_mainsheet: 5 });
+      case 2:
+        return once(s, 'g', (x) => ap(x, 'tack'));
+      case 3:
+        return once(s, 'gg', (x) => gennakerCmd(x, 'gybe'));
+      case 4:
+        return ctl(
+          once(s, 't', (x) => turns(x, 3, -10)),
+          { ctl_mainsheet: 90, ctl_gennaker_sheet: 40 },
+        );
+      default:
+        return s;
+    }
+  };
+}
+/** Bear away behind the main, ease the sheet, pull the sock down, lower it, unroll the jib. */
+export function gennakerDousePilot(): Pilot {
+  const once = onceMaker();
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 0:
+        return once(s, 't', (x) => turns(x, 10, -5));
+      case 1:
+        return ctl(s, { ctl_gennaker_sheet: 100 });
+      case 2:
+        return ctl(s, { ctl_gennaker_sock: 0 });
+      case 3:
+        // One step back per call (one per 0.05 s part of a frame) until it is stowed.
+        return s.gennaker.stage > 0 ? gennakerCmd(s, 'back') : s;
+      case 4:
+        return ctl(s, { ctl_jib_furl: 100 });
+      default:
+        return s;
+    }
+  };
+}
 const GUSTS_EASE_ABOVE_KN = 16.5; // the GUST badge's threshold in this exercise (1.1 × 15 kn)
 /** The GUST badge shows above 1.1 × the mean wind: ease the main while it shows. */
 export function gustsPilot(): Pilot {
@@ -733,6 +801,12 @@ export function pilotFor(id: string, level: ExerciseLevel, ropes: RopesMode): Pi
       return ironsPilot();
     case 'gybing':
       return gybingPilot();
+    case 'gennaker-rig':
+      return gennakerRigPilot();
+    case 'gennaker-gybe':
+      return gennakerGybePilot();
+    case 'gennaker-douse':
+      return gennakerDousePilot();
     case 'gusts':
       return gustsPilot();
     case 'weather-helm':

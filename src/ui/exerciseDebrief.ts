@@ -77,6 +77,8 @@ export function actionText(action: LoggedAction): string {
       return t(`debrief.windlass.${action.motion}` as 'debrief.windlass.down');
     case 'fenders':
       return t(action.out ? 'debrief.fenders.out' : 'debrief.fenders.in');
+    case 'gennaker':
+      return t(`debrief.gennaker.${action.command}` as 'debrief.gennaker.next');
     case 'realistic': {
       const target = action.target;
       const label = (target !== null ? tailSpec(target)?.label : undefined) ?? target ?? '';

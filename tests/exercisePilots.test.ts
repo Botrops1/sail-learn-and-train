@@ -11,6 +11,7 @@ import { pilotActions, pilotFor, type Pilot } from '../src/app/exercisePilots';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 import { exerciseStartLink, parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { exerciseDef, type ExerciseLevel } from '../src/model/exercises';
+import { sailTrim } from '../src/model/trim';
 import { goodRun, runFrom } from './harbourPilot';
 
 /** PHASE10_PHONE_SPEC 8.6, 8.7: step limits (s), `ceil(1.2 × prototype + 3)`. */
@@ -30,6 +31,11 @@ const SAILING_LIMITS: Record<string, number[]> = {
   // weather-helm 31.2, 6.35 (the same from each step); wind-shift 22.5, 20.6, 25.05, 15.7.
   'weather-helm': [41, 11],
   'wind-shift': [30, 28, 34, 22],
+  // M108 (PHASE_RIGGING_SPEC 10.4): measured in app seconds: rig 0.05, 0.05, 0.05, 1.2, 0.05, 0.05, 5.05;
+  // gybe 11.6, 3.35, 12.35, 5.05, 19; douse 23.7, 0.05, 0.05, 0.2, 2.3.
+  'gennaker-rig': [4, 4, 4, 5, 4, 4, 10],
+  'gennaker-gybe': [17, 8, 18, 10, 26],
+  'gennaker-douse': [32, 4, 4, 4, 6],
 };
 
 /** Show me from each step: harbour limits per level (8.7); stern-to-anchor measured in the M81 PR (57.1, 14.6, 146.5, 1.0, 17.6 s). */
@@ -449,4 +455,57 @@ describe('M82 Realistic pilots (Setting and Furling the sails, Alone)', () => {
       expect(s.exercise?.log.filter((e) => e.kind === 'mistake')).toEqual([]);
     });
   }
+});
+
+describe('M108 the gennaker exercises teach PT-69 and PT-70', () => {
+  it('PT-69 the gybe exercise: the gennaker ends on the new side, drawing, after the boat gybed', () => {
+    const { at, end } = goodRunStates('gennaker-gybe', 'easy');
+    expect(at[0]?.gennaker).toMatchObject({ stage: 4, side: -1 });
+    expect(end.exercise?.status).toBe('done');
+    // Wind over port now, so the gennaker is on the starboard side (the clew's z is positive).
+    expect(end.gennaker.side).toBe(1);
+    expect(end.rig.wind.awaDeg).toBeLessThan(0);
+    expect(end.rig.gennaker.thetaDeg).toBeGreaterThan(0);
+  });
+
+  it('PT-70 the douse exercise: the sock comes down behind the main, the sail is put away', () => {
+    const pilot = pilotFor('gennaker-douse', 'easy', 'easy') as Pilot;
+    let s = started('gennaker-douse');
+    let t = 0;
+    let atSockDown: AppState | null = null;
+    while (s.exercise?.status === 'running' && t < 300) {
+      const before = s;
+      s = dt(pilot(s, t));
+      t += 0.05;
+      if (
+        atSockDown === null &&
+        before.controls.ctl_gennaker_sock > 0 &&
+        s.controls.ctl_gennaker_sock === 0
+      ) {
+        atSockDown = before;
+      }
+    }
+    expect(s.exercise?.status).toBe('done');
+    // When the sock came down the sail was hidden behind the main (no wind in it).
+    expect(atSockDown?.rig.gennaker.blanket ?? 1).toBeLessThan(0.5);
+    expect(s.gennaker.stage).toBe(0);
+    expect(s.controls.ctl_gennaker_sock).toBe(0);
+  });
+
+  it('the main reads good where the exercises start and where the gybe ends (no "Stalled" next to a step that says ease it)', () => {
+    const main = (s: AppState) => sailTrim('main', s.rig, s.motion?.awaDeg ?? 0).state;
+    const settled = (s: AppState): AppState => {
+      for (let i = 0; i < 100; i += 1) s = dt(s);
+      return s;
+    };
+    expect(main(settled(startState('gennaker-rig')))).toBe('good');
+    expect(main(settled(startState('gennaker-gybe')))).toBe('good');
+    expect(main(goodRunStates('gennaker-gybe', 'easy').end)).toBe('good');
+    expect(main(goodRunStates('gennaker-rig', 'easy').end)).toBe('good');
+  });
+
+  it('the rig exercise rigs in the order of PT-69: tack line, sheets, halyard, hoist', () => {
+    const { at } = goodRunStates('gennaker-rig', 'easy');
+    expect(at.map((state) => state.gennaker.stage)).toEqual([0, 1, 2, 3, 3, 4, 4]);
+  });
 });

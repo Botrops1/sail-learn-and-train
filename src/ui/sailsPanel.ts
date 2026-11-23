@@ -1,5 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { boat } from '../model/boat';
+import { exerciseDef } from '../model/exercises';
 import { gennakerTrimState } from '../model/gennaker';
 import { isTorn, sailTrim, type SailName, type TrimState } from '../model/trim';
 import { el } from './dom';
@@ -26,6 +27,14 @@ const GENNAKER_STEPS = [
   'gennaker.step3',
   'gennaker.step4',
 ] as const;
+
+/** M108: the running exercise's current step has a gennaker row in its bar, so the block shows at stage 0. */
+function exerciseShowsGennaker(state: AppState): boolean {
+  const run = state.exercise;
+  if (run === null) return false;
+  const bar = exerciseDef(run.id)?.steps[run.step]?.bar ?? [];
+  return bar.some((row) => row.startsWith('gennaker:'));
+}
 
 /**
  * M105: the gennaker's four rigging steps, shown from the first step on (Settings → Gennaker →
@@ -86,7 +95,7 @@ function buildGennakerBlock(store: Store): HTMLElement {
   ]);
   const refresh = (state: AppState) => {
     const { stage } = state.gennaker;
-    root.hidden = stage < 1;
+    root.hidden = stage < 1 && !exerciseShowsGennaker(state);
     items.forEach(({ item, tick }, index) => {
       const done = stage >= index + 1;
       item.dataset.done = String(done);

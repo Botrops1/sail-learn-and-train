@@ -32,7 +32,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `store.ts` | The single store: `AppState`, all actions, the `step` order. `reduce` cuts a fast time-lapse frame into slices and applies a step's speed-up; the `demo` action replays a pilot without logging it. |
 | `appMode.ts` | `AppMode` (`learn`, `easy`, `realistic`, `harbour`) and the mode chip's choices. |
 | `exerciseRun.ts` | The coach, pure: `ExerciseRun`, `newRun`, `startRun`, `stepExercise` (a step's check and hold), mistakes from alerts and held conditions, waypoints and `restoreWaypoint`, the action log, run events (tack, gybe, gusts), crew and level options, the demo and a step's speed-up. |
-| `exerciseBar.ts` | The step bar's pure part: which control rows a step shows (`barRowsFor`), which row an action works (`barRowOf`), Realistic-ropes rows and stations. |
+| `exerciseBar.ts` | The step bar's pure part: which control rows a step shows (`barRowsFor`), which row an action works (`barRowOf`), the gennaker rows, Realistic-ropes rows and stations. |
 | `exerciseProgress.ts` | The ticks, best times and watched marks of the exercises on this device (`localStorage`). |
 | `exercisePilots.ts` | The scripted learners of every exercise (`pilotFor`, `pilotActions`), used by Watch and Show me and by the tests. |
 | `urlState.ts` | URL parameters ↔ state: schema version, defaults, old links, place, boat, exercise and waypoint keys. |
@@ -178,7 +178,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `statusPanel.ts` | The Status section: Sails, Gear, Damage and What happened (history with tag filter). |
 | `instrumentStrip.ts`, `autopilotPanel.ts`, `sailsPanel.ts`, `timeBar.ts` | The instrument strip (cells, badges that open their Learn entry, depth in a place), the Steering and Sails sections, and the time widget (`Time ×1` over the clock; its card has the speeds, the time-lapse row and the clock; the right button is Pause, Resume, Carry on or "Held still"). |
 | `clockPanel.ts` | The clock's parts for the time widget: the local time chip and the time card's clock part (date, area, sunrise and sunset, Set, Now, Noon). |
-| `exerciseBar.ts` (ui) | The step bar over the bottom of the 3D view while an exercise runs: one row per control the step needs (steppers, autopilot, engine, thrusters, lines, fenders, windlass, Realistic stations, clutches and winches), "All controls", keys, ▶ Show me; sets `--exercise-stack-h` so the chips sit above it. |
+| `exerciseBar.ts` (ui) | The step bar over the bottom of the 3D view while an exercise runs: one row per control the step needs (steppers, autopilot, engine, thrusters, lines, fenders, windlass, the gennaker's steps and Gybe, Realistic stations, clutches and winches), "All controls", keys, ▶ Show me; sets `--exercise-stack-h` so the chips sit above it. |
 | `stepCard.ts` | The one card over the 3D view while an exercise runs: Now you, Step done, mistake, stopped, done, the running step with its fold, the hold ring, the live target rows. |
 | `exerciseDemo.ts` | The pilot of Watch and Show me (a closure, never in `AppState`); `app.ts` calls `frame()` before each part of a frame; lets go of held buttons when a demo ends. |
 | `exercisePanel.ts`, `exerciseDebrief.ts` | The Exercises section: the list (groups, place lines, Watched marks), the setup card (crew, level, start time, Watch it or Do it myself), the step, mistake, failed and done cards, waypoints; `exerciseDebrief.ts` draws the debrief. |

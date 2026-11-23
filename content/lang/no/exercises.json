@@ -393,6 +393,69 @@
       }
     }
   },
+  "gennaker-rig": {
+    "title": "Rigg og heis gennakeren",
+    "summary": "Rigg gennakeren trinn for trinn, i den rekkefølgen en mannskap gjør det i baugen, og sett og trim den på en slør.",
+    "see": "Du seiler på slør (vinden kommer bakfra og fra siden) i 12 knop, med vinden over styrbord side, og storseil og fokk ute. Gennakeren ligger fortsatt i sekken, og ingenting er rigget.",
+    "happening": "En gennaker er et stort, lett seil for vind bakfra. Mannskapet rigger den i baugen i en fast rekkefølge: halslinen (den holder seilets nedre fremre hjørne), de to skjøtene (de trimmer seilet; de går utenfor vantene, stagene og rekkverket til blokker akterut), og så fallet (det heiser seilet). Gennakeren går opp i en strømpe, et langt rør som holder den lukket; når strømpen trekkes opp, åpner seilet seg. Fokken rulles inn først, fordi den ville tatt vinden fra gennakeren.",
+    "action": "Trykk Neste trinn for halslinen, skjøtene og fallet; rull inn fokken; trykk Neste trinn for å heise; trekk strømpen opp; fire så skjøtet til forkanten begynner å krølle seg, og trim litt inn.",
+    "mistake": "Å heise gennakeren mens fokken fortsatt er ute: fokken tar vinden gennakeren trenger. Eller å trimme den for hardt (seilet stalles) eller for lite (forkanten fortsetter å krølle seg).",
+    "done": "Gennakeren er rigget, heist og trekker. Rekkefølgen er alltid den samme: halslin, skjøter, fall, heis; fokken går bort først. Fire til forkanten begynner å krølle seg, og trim så litt inn.",
+    "steps": {
+      "tack-line": {"goal": "Ta sekken til baugen og fest halslinen i gennakerens hals.", "how": "Trykk Neste trinn (i linjen eller under Seil → Gennaker). Sekken går til baugen, og halslinen festes i seilets hals (det nedre fremre hjørnet)."},
+      "sheets": {"goal": "Legg begge skjøtene utenfor alt (vant, rekkverksstolper, rekkverk) til blokkene akterut.", "how": "Trykk Neste trinn. Begge skjøtene legges utenfor alt, så gjennom blokkene akterut til vinsjene."},
+      "halyard": {"goal": "Fest fallet i toppen, foran forstaget.", "how": "Trykk Neste trinn. Fallet festes i toppen (det øverste hjørnet), foran forstaget (wiren fra masten til baugen)."},
+      "furl-jib": {"goal": "Rull inn fokken: den ville tatt vinden fra gennakeren.", "how": "Under «Liner», fire fokkeskjøtet til 100 % (fokken ruller seg bare inn når skjøtet er slakt), og sett så Fokk ut til 0 %: fokken ruller seg inn."},
+      "hoist": {"goal": "Heis gennakeren i strømpen.", "how": "Trykk Neste trinn: gennakeren heises, fortsatt lukket i strømpen."},
+      "sock-up": {"goal": "Trekk strømpen opp: seilet åpner seg.", "how": "Under «Liner», sett Gennaker-strømpe til 100 %: strømpen går opp og seilet åpner seg."},
+      "trim": {"goal": "Fire skjøtet til forkanten begynner å krølle seg, trim så litt inn og hold det der.", "how": "Fire gennakerskjøtet (under «Liner» eller i linjen) til forkanten begynner å krølle seg, og trim så litt inn til Seil-delen sier «Trekker godt». Hold det der."}
+    },
+    "mistakes": {
+      "jib-still-out": {"name": "Fokken var fortsatt ute med gennakeren oppe", "what": "Gennakeren var oppe, og fokken var fortsatt ute.", "why": "Fokken tar vinden gennakeren trenger.", "fix": "Rull inn fokken før du heiser: under «Liner», sett Fokk ut til 0 %."},
+      "overpowered": {"name": "å krenge for mye", "what": "Båten krenget for mye (mer enn 25°).", "why": "Storskjøtet var for stramt for vinden: seilene presset hardere enn kjølen kunne holde båten oppreist.", "fix": "Fire storskjøtet så snart kastet treffer; hal inn igjen når det har passert."},
+      "round-up": {"name": "en brodd", "what": "Båten dreide opp i vinden av seg selv (en brodd).", "why": "For mye krenging med stramt storseil: roret mistet grepet og seilene dreide båten opp i vinden.", "fix": "Fire storseilet med en gang, så kommer båten under kontroll igjen. Fire tidligere i neste vindkast."}
+    }
+  },
+  "gennaker-gybe": {
+    "title": "Gybb gennakeren",
+    "summary": "Sving fra en slør til den andre med gennakeren oppe: båten gybber, og så går gennakeren rundt fronten til den nye siden.",
+    "see": "Du seiler på slør med vinden over styrbord side. Gennakeren er oppe og satt på babord side, storseilet er ute, og autopiloten holder vinden.",
+    "happening": "Ved en gybb krysser hekken vinden, og bommen svinger over til den andre siden. Gennakerens skjøtehjørne (det nedre bakre hjørnet) er på den gamle siden. Når båten har gybbet, må seilet rundt fronten til den nye siden: det andre skjøtet (det slakke skjøtet, det på lesiden) hales inn, og det gamle slippes.",
+    "action": "Gå mot lens, trim storseilet til bommen er nær midten, gybb, trykk Gybb gennakeren, gå så opp til en slør og trim begge seilene.",
+    "mistake": "Å la gennakeren bli på den gamle siden etter at båten har gybbet: den blir bakket (vinden presser den mot båten). Eller å gybbe mens storseilet fortsatt er ute.",
+    "done": "Begge seilene er på den nye siden. Båten gybbet først, med storseilet trimmet inn; så fulgte gennakeren: det slakke skjøtet tok over, det gamle ble sluppet, og seilet gikk rundt fronten.",
+    "steps": {
+      "bear-away": {"goal": "Gå mot lens.", "how": "Under «Styring», trykk «Sving 10° til babord» tre ganger: båten svinger fra en slør mot lens (vind 160–175° fra baugen)."},
+      "haul-main": {"goal": "Trim storseilet til bommen er nær midten.", "how": "Under «Liner», sett Storskjøt til 5 %. Bommen kommer innenfor 16° fra midtlinjen."},
+      "gybe-main": {"goal": "Gybb: sving hekken gjennom vinden.", "how": "Under «Styring», trykk Jibb (Vend-knappen heter Jibb på lens). Båten svinger gjennom vinden og bommen krysser et kort stykke."},
+      "gybe-gennaker": {"goal": "Gybb gennakeren: det nye skjøtet tar over, og seilet går rundt fronten.", "how": "Trykk Gybb gennakeren (i linjen eller under Seil → Gennaker). Det nye skjøtet tar over, og seilet går rundt fronten av båten til den nye siden."},
+      "come-up": {"goal": "Gå opp til en slør på den nye siden, fire storseilet og trim gennakeren.", "how": "Under «Styring», trykk «Sving 10° til babord» tre ganger (mot vinden). Sett så Storskjøt til omtrent 90 % og gennakerskjøtet til omtrent 40 % til Seil-delen sier «Trekker godt»."}
+    },
+    "mistakes": {
+      "backed": {"name": "Gennakeren ble på feil side", "what": "Båten hadde gybbet, men gennakeren var fortsatt på sin gamle side, bakket mot båten.", "why": "Bare båten gybbet: gennakerens skjøter ble ikke byttet.", "fix": "Trykk Gybb gennakeren rett etter at båten gybber: seilet går rundt fronten til den nye siden."},
+      "accidental-gybe": {"name": "en utilsiktet jibb", "what": "Bommen krysset av seg selv (en utilsiktet jibb).", "why": "Storseilet var fortsatt ute da hekken krysset vinden, eller båten ble styrt forbi rett medvind.", "fix": "Hal storseilet inn før du jibber. På lens, hold vinden på siden bort fra bommen: seil aldri på feil side (by the lee)."}
+    }
+  },
+  "gennaker-douse": {
+    "title": "Ta gennakeren ned",
+    "summary": "Ta den ned bak storseilet, der den ikke har vind, og stue den bort i sekken.",
+    "see": "Du seiler på slør med vinden over styrbord side. Gennakeren er oppe og trekker, satt på babord side, og fokken er rullet inn.",
+    "happening": "Gennakeren tas ned i omvendt rekkefølge av heisingen. Først svinger båten medvind til storseilet skjuler gennakeren og tar vinden fra den. Så fires skjøtet, og strømpen trekkes ned over seilet og samler det. Til slutt fires fallet, og alt løsnes.",
+    "action": "Gå mot lens, fire gennakerskjøtet, trekk strømpen ned, trykk Angre et trinn fire ganger for å rigge ned, og rull så ut fokken igjen.",
+    "mistake": "Å trekke strømpen ned mens seilet fortsatt har vind i seg: strømpen må samle et seil som trekker.",
+    "done": "Gennakeren er nede og stuet bort, og fokken er ute igjen. Ta den ned bak storseilet med skjøtet firt, og rigg så ned i omvendt rekkefølge.",
+    "steps": {
+      "bear-away": {"goal": "Gå medvind til storseilet skjuler gennakeren.", "how": "Under «Styring», sving til babord (noen trykk) til vinden er 170° eller mer fra baugen. Seil-delen sier at gennakeren er skjult bak storseilet."},
+      "ease": {"goal": "Fire skjøtet.", "how": "Under «Liner», sett gennakerskjøtet til 70 % eller mer."},
+      "sock-down": {"goal": "Trekk strømpen ned over seilet.", "how": "Under «Liner», sett Gennaker-strømpe til 0 %: strømpen kommer ned over seilet."},
+      "lower": {"goal": "Fire det ned og løsne alt, i omvendt rekkefølge.", "how": "Trykk Angre et trinn fire ganger: fallet løsnes, skjøtene og halslinen løsnes, og gennakeren stues bort."},
+      "jib-out": {"goal": "Rull ut fokken.", "how": "Under «Liner», sett Fokk ut til 100 %: fokken ruller seg ut igjen."}
+    },
+    "mistakes": {
+      "douse-in-wind": {"name": "Strømpen kom ned mens seilet fortsatt hadde vind", "what": "Du trakk strømpen ned mens gennakeren fortsatt trakk.", "why": "Et seil med vind i er vanskelig å samle; bak storseilet har det ingen.", "fix": "Gå medvind til storseilet skjuler det, og fire skjøtet; trekk så strømpen ned."},
+      "accidental-gybe": {"name": "en utilsiktet jibb", "what": "Bommen krysset av seg selv (en utilsiktet jibb).", "why": "Storseilet var fortsatt ute da hekken krysset vinden, eller båten ble styrt forbi rett medvind.", "fix": "Hal storseilet inn før du jibber. På lens, hold vinden på siden bort fra bommen: seil aldri på feil side (by the lee)."}
+    }
+  },
   "leave-berth": {
     "title": "Forlate plassen",
     "summary": "Slipp lazylinen og hekkfortøyningene, motor ut av plassen og sving mot innløpet.",

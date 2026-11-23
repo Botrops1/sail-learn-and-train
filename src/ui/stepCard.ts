@@ -13,6 +13,7 @@ import {
   type ExerciseDef,
   type TargetRow,
 } from '../model/exercises';
+import type { GennakerTrimState } from '../model/gennaker';
 import { el } from './dom';
 import { SCENE } from '../render3d/sceneConfig';
 import { currentLanguage, t } from './i18n';
@@ -71,7 +72,28 @@ export function targetText(row: TargetRow): string {
       return row.range[1] >= 24
         ? t('exercise.target.timeFrom', { from: hourText(row.range[0]) })
         : t('exercise.target.time', { from: hourText(row.range[0]), to: hourText(row.range[1]) });
+    case 'gennakerStage':
+      // A range that ends at 0 is "put it away".
+      return row.range[1] === 0
+        ? t('exercise.target.gennakerTrim', { state: gennakerStateText('stowed') })
+        : t('exercise.target.gennakerStage', { now: row.range[0] });
+    case 'gennakerTrim':
+      // A long list of states is "any state of a sail that is set": say that instead of listing five.
+      return row.states.length > 2
+        ? t('exercise.target.gennakerSet')
+        : t('exercise.target.gennakerTrim', {
+            state: row.states
+              .map((state) => gennakerStateText(state))
+              .join(t('exercise.target.or')),
+          });
   }
+}
+
+/** M108: the words for a gennaker trim state (`stowed` has its own string, the others are the Sails block's). */
+function gennakerStateText(state: GennakerTrimState): string {
+  return state === 'stowed'
+    ? t('exercise.target.gennakerStowed')
+    : t(`gennaker.trim.${state}` as 'gennaker.trim.good');
 }
 
 /** 270 → "270", 90 → "090". */
@@ -87,6 +109,10 @@ function nowText(row: TargetRow, value: number | string): string {
   if (row.kind === 'control') return t('exercise.target.nowPct', { value });
   if (row.kind === 'meanWind') return t('exercise.target.nowKn', { value });
   if (row.kind === 'localHour') return t('exercise.target.nowWord', { value });
+  if (row.kind === 'gennakerStage') return t('exercise.target.nowWord', { value });
+  if (row.kind === 'gennakerTrim') {
+    return t('exercise.target.nowWord', { value: gennakerStateText(value as GennakerTrimState) });
+  }
   const word =
     row.kind === 'trim'
       ? t(`trim.state.${String(value)}` as 'trim.state.good')
