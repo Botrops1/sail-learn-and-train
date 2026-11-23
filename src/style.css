@@ -4194,6 +4194,12 @@ html[data-layout='stacked'] .info-card.picture-banner {
   max-height: none;
 }
 
+/* The traveller sits low at the stern, where the card would cover it: on a phone its card goes to the top of the view (below the wind chip), over the bow. */
+html[data-layout='stacked'] .picture-area[data-picture='traveller'] {
+  top: 92px;
+  bottom: auto;
+}
+
 /* M110: the traveller picture's slider, in the picture banner. */
 .picture-traveller {
   display: flex;

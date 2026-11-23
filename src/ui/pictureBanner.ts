@@ -46,7 +46,11 @@ export function createPictureBanner(store: Store): HTMLElement {
     if (picture !== null) {
       text.textContent = t(`picture.${picture}`);
       card.setAttribute('data-picture', picture);
-    } else card.removeAttribute('data-picture');
+      area.setAttribute('data-picture', picture);
+    } else {
+      card.removeAttribute('data-picture');
+      area.removeAttribute('data-picture');
+    }
   };
   store.subscribe((state, previous) => {
     if (
