@@ -71,6 +71,17 @@ describe('M58: boats kept on the device (PHASE8_SPEC 16.8)', () => {
     expect(saveBoat(boatOf('b4'))).toBe('storage');
   });
 
+  it('3b. the dinghy is built in too: never saved, and chosen and started by id (M113)', () => {
+    expect(saveBoat(boatOf('dinghy'))).toBe('builtIn');
+    expect(storedBoats()).toEqual([]);
+    setChosenBoat('dinghy');
+    expect(chosenBoat()).toBe('dinghy');
+    expect(startBoatId('')).toBe('dinghy');
+    expect(startBoatId('?v=1&boat=dinghy')).toBe('dinghy');
+    setChosenBoat('not-here');
+    expect(chosenBoat()).toBe('hanse508');
+  });
+
   it('4. a stored entry that fails the checks is dropped', () => {
     saveBoat(boatOf('good'));
     saveBoat(boatOf('bad'));

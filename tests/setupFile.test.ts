@@ -126,3 +126,16 @@ describe('M58: the boat in a setup file (PHASE8_SPEC 16.6)', () => {
     });
   });
 });
+
+describe('M113: the setup file on the training dinghy', () => {
+  it('a dinghy setup round-trips by id, with no profile inside', () => {
+    const file = makeSetupFile('?v=1&boat=dinghy&wd=60', device(), SAVED_AT);
+    expect('boatProfile' in file).toBe(false);
+    const read = readSetupFile(JSON.stringify(file));
+    expect(read.ok && read.link).toBe('?v=1&boat=dinghy&wd=60');
+    // A profile that names a built-in id is refused.
+    const profile = makeBoatProfile('dinghy', 'Mine', HANSE_508);
+    const bad = readSetupFile(JSON.stringify({ ...file, boatProfile: profile }));
+    expect(bad).toEqual({ ok: false, problem: 'badBoat' });
+  });
+});

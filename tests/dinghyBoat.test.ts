@@ -18,6 +18,10 @@ import {
   type FeatureId,
 } from '../src/model/boat';
 import { tillerAngleDeg } from '../src/model/dinghy';
+import { modesForBoat } from '../src/app/appMode';
+import { exercisesForBoat } from '../src/model/exercises';
+import { parseUrlState, serializeUrlState } from '../src/app/urlState';
+import { sectionAvailable } from '../src/ui/modes';
 import { defaultControls } from '../src/model/controls';
 import { initialRig } from '../src/model/sim';
 import { buildBoat } from '../src/render3d/boat';
@@ -253,5 +257,61 @@ describe('M113: the dinghy in 3D', () => {
     useBoat(HANSE_508.meta.id, HANSE_508.meta.name, HANSE_508);
     const hanse = count(buildBoat().root);
     expect(dinghy).toBeLessThan(hanse);
+  });
+});
+
+describe('M113: the dinghy in the link, the modes and the sections', () => {
+  it('7.8.5. the dinghy link ignores and never writes the keys of what it lacks', () => {
+    useDinghy();
+    const state = parseUrlState(
+      '?boat=dinghy&js=70&mf=0&ap=wind&pl=marina&mode=realistic&gn=3&hw=s',
+      'low',
+    );
+    expect(state.controls.ctl_jib_sheet).toBe(controlSpec('ctl_jib_sheet').default);
+    expect(state.controls.ctl_main_furl).toBe(100);
+    expect(state.autopilot.mode).toBe('off');
+    expect(state.harbour.place).toBe('open');
+    expect(state.settings.ropesMode).toBe('easy');
+    expect(state.gennaker.stage).toBe(0);
+    const link = serializeUrlState(state);
+    expect(link).toContain('boat=dinghy');
+    for (const key of ['js', 'mf', 'ap', 'apt', 'pl', 'gn', 'hw']) {
+      expect(new URLSearchParams(link).has(key), key).toBe(false);
+    }
+    expect(link).not.toContain('mode=realistic');
+    // A Helm link opens the side view; an exercise of the yacht opens without the exercise.
+    expect(parseUrlState('?boat=dinghy&cam=helm', 'low').camera.preset).toBe('side-port');
+    expect(parseUrlState('?boat=dinghy&ex=points-of-sail', 'low').exercise).toBeNull();
+  });
+
+  it('7.8.6. the modes and the sections', () => {
+    expect(modesForBoat(HANSE_508, 'hanse508')).toEqual([
+      'learn',
+      'easy',
+      'realistic',
+      'harbour',
+      'exercise',
+    ]);
+    expect(modesForBoat(DINGHY.data, 'dinghy')).toEqual(['learn', 'easy']);
+    useDinghy();
+    const state = initialState();
+    for (const id of ['engine', 'anchor', 'place', 'harbour', 'helm'] as const) {
+      expect(sectionAvailable(id, state), id).toBe(false);
+    }
+    for (const id of ['autopilot', 'ropes'] as const) {
+      expect(sectionAvailable(id, state), id).toBe(true);
+    }
+  });
+
+  it('7.8.9. the exercises of each boat', () => {
+    expect(exercisesForBoat('hanse508')).toHaveLength(22);
+    expect(exercisesForBoat('dinghy')).toHaveLength(0);
+  });
+
+  it('Reset on the dinghy keeps the dinghy defaults and the hand steering', () => {
+    useDinghy();
+    const state = reduce(initialState(), { type: 'reset' });
+    expect(state.dinghy).toEqual({ sit: 'in', boardPct: 100, outhaulPct: 50, sailorSide: 1 });
+    expect(state.autopilot.mode).toBe('off');
   });
 });

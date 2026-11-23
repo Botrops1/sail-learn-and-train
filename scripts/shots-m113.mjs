@@ -211,7 +211,7 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
     const clean = !/[?&](js|ap|apt)=/.test(after);
     check(
       'keys: R and P do nothing and have no line in the list',
-      before === after.slice(0, before.length) || clean,
+      before === after && clean,
       JSON.stringify({ before, after, lines }),
     );
     check(

@@ -99,7 +99,10 @@ export function createWelcome(
     dinghy?.addEventListener('click', () => {
       close();
       setChosenBoat('dinghy');
-      window.location.assign(`${window.location.pathname}?v=1&boat=dinghy`);
+      // The language lives only in the link: keep it, as the Settings chooser does.
+      const { language } = store.getState().settings;
+      const langKey = language === 'en' ? '' : `&lang=${language}`;
+      window.location.assign(`${window.location.pathname}?v=1&boat=dinghy${langKey}`);
     });
     closeButton.addEventListener('click', close);
 

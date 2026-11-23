@@ -693,7 +693,8 @@ function buildBoatField(store: Store): HTMLElement {
     field.append(el('div', { class: 'actions' }, [remove]));
   }
   field.append(
-    el('p', { class: 'hint' }, [t('boat.hint')]),
+    // The profile hint goes with the download: the dinghy has no profile to download (M113).
+    ...(boatId === 'dinghy' ? [] : [el('p', { class: 'hint' }, [t('boat.hint')])]),
     el(
       'a',
       {

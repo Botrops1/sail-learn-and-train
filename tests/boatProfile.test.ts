@@ -323,3 +323,27 @@ describe('boat-file keys added after version 1 (M60, PHASE9_SPEC 6.6)', () => {
     }
   });
 });
+
+describe('M113: profiles and the built-in boats', () => {
+  it('an old profile without `features` is filled; a changed `features` fails', () => {
+    const old = broken((b) => delete (b as Record<string, unknown>).features);
+    expect(checkBoatProfile(old).ok).toBe(true);
+    const noJib = problemsOf(checkBoatProfile(broken((b) => (b.features.jib = false))));
+    expect(noJib.map((p) => [p.path, p.kind])).toEqual([['boat.features', 'ids']]);
+  });
+
+  it('a `dinghy` or `base` key is not in a boat profile', () => {
+    const withDinghy = problemsOf(
+      checkBoatProfile(broken((b) => ((b as Record<string, unknown>).dinghy = {}))),
+    );
+    expect(withDinghy).toContainEqual({
+      path: 'dinghy',
+      kind: 'notInProfile',
+      detail: 'not in a boat profile',
+    });
+    const withBase = problemsOf(
+      checkBoatProfile(broken((b) => ((b as Record<string, unknown>).base = 'hanse508'))),
+    );
+    expect(withBase.map((p) => p.path)).toContain('base');
+  });
+});
