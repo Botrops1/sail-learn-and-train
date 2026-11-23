@@ -1089,3 +1089,82 @@ Mountains, hills and islands round the horizon ([PHASE_HORIZON_SPEC](PHASE_HORIZ
 - [ ] Night: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=40&js=100&cam=side-starboard&hdg=90&clk=202606012300&sea=flat — the mountains are a dark shape, just visible against the night sky.
 - [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=env_distant_land — the entry "Distant land" explains it. Tap "Show it working": the view looks across the boat at the mountains. There is no "Where is it?" button.
 - [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=0&ws=12&ms=40&js=100&cam=side-starboard&hdg=90&sea=flat — on a computer the land runs along the whole horizon behind the boat.
+
+## 26. Rigging detail (issue #232)
+
+#### Rigging detail (M105–M110, [PHASE_RIGGING_SPEC](PHASE_RIGGING_SPEC.md))
+
+New link settings: `gn` gennaker rigging step (0 stowed, 1 tack line on, 2 sheets led, 3 halyard on, 4 hoisted in its sock), `gx` its side (`p` / `s`), `gs` gennaker sheet (% eased), `gu` gennaker sock (% up), `pic` a picture (`spinnaker`, `code0`, `traveller`), `tv` the traveller car (−100…100).
+
+#### M105: Gennaker rigged
+
+- [ ] Rig it from Settings: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=10&ms=60&jf=0&held=1&sea=flat&cam=side-starboard — open Settings, find Gennaker and tap Rigged: a long tube (the sock with the sail inside) runs from the bow to the top of the mast, with red lines (the sheets) along both sides to the stern. Tap Stowed: it disappears.
+- [ ] Step 1, the bag: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=10&ms=60&jf=0&held=1&sea=flat&gn=1&cam=bow — a bag at the bow with a short red line (the tack line) from the bow fitting to it.
+- [ ] Step 2, the sheets: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=10&ms=60&jf=0&held=1&sea=flat&gn=2&cam=top — two red lines from the bag along the outside of each side, outside the posts and wires round the deck, to a block near the stern and on to the big winch on that side.
+- [ ] Step 3, the halyard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=10&ms=60&jf=0&held=1&sea=flat&gn=3&cam=side-starboard — the halyard comes down from the top of the mast in front of the forestay to the bag.
+- [ ] Step by step: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=10&ms=60&jf=0&held=1&sea=flat&gn=1&cam=side-starboard — in the Sails section, the Gennaker block lists four steps, the first ticked. Tap Next step three times and watch each step appear; tap Undo a step once and the last one goes.
+- [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=rope_gennaker_sheet_port — the entry explains the two sheets and the lazy one. Tap Where is it?: the camera flies to the port sheet.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=10&ms=60&jf=0&held=1&sea=flat&gn=4&cam=side-starboard — the same picture on a computer.
+
+#### M106: Sailing with the gennaker
+
+- [ ] Set it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&cam=side-port — the gennaker is up in its sock. In the Sails section press + on Sock until 100: the sock rides up, the big sail opens on the near (port) side and the speed goes up by about 3 to 4 knots (from about 5.7 to about 9.2).
+- [ ] Trim to the curl: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm — in the Sails section press + on Sheet a few times: the trim line says "Front edge curling: trim a little". Press − twice: "Drawing well".
+- [ ] Trimmed too hard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&ap=wind&apt=120&sea=flat&gu=100&gs=0&cam=side-starboard — the trim line says "Pressed against the main: ease the sheet": the sail lies against the main and does not go through it; the boat leans more and is slower than at 25. Press + on Sheet until the line reads "Drawing well".
+- [ ] Too close to the wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=75&ws=18&ms=40&jf=0&gn=4&gx=p&gu=100&gs=0&ap=wind&apt=75&sea=flat&cam=side-starboard — the boat heels a lot and the "overpowered" alert shows.
+- [ ] Dead downwind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=180&ws=12&ms=100&jf=0&gn=4&gx=p&gu=100&gs=80&sea=flat&cam=top — the gennaker hangs limp behind the main; the trim line says "Hidden behind the main".
+- [ ] Gybe it: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=top — tap Gybe the gennaker: the sail swings round in front of the bow to the other side, where it has no wind (the boat has not turned), and the Sails section says "On the wrong side: gybe it". Tap it again: it comes back and fills.
+- [ ] Take it in: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=side-starboard — press − on Sock to 0: the sock comes down over the sail.
+
+#### M107: Gennaker sheets on the winches
+
+- [ ] No clutch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm — at the Port station the gennaker sheet is shown with no clutch. Wait a few seconds: the sheet runs out and the sail flaps.
+- [ ] On the winch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm — put the gennaker sheet on the winch (three turns, into the self-tailer) and crank: the sail fills and the trim line says "Drawing well".
+- [ ] The lazy sheet does nothing: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=starboard&wd=120&ws=12&ms=60&jf=0&gn=4&gx=p&gs=25&ap=wind&apt=120&sea=flat&gu=100&cam=helm&wp=g1.3.t — the working sheet is already held on the Port winch. At the Starboard station put the other gennaker sheet on the winch and crank it: the sail does not change, because that one is the lazy sheet.
+
+#### M108: Gennaker exercises
+
+- [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise — in the Sails group there are three new exercises: Rig and hoist the gennaker, Gybe the gennaker, Take the gennaker down.
+- [ ] Watch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gennaker-rig — tap Watch it: the app rigs, hoists, sets and trims the gennaker step by step.
+- [ ] Do it yourself: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gennaker-rig — tap Do it myself and follow the steps with the buttons in the bar.
+- [ ] Gybe: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gennaker-gybe — Watch it, then try it.
+- [ ] Take it down: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=gennaker-douse — Watch it: the boat turns downwind first, so the main hides the gennaker before the sock comes down.
+
+#### M109: Spinnaker and code 0 pictures
+
+- [ ] Spinnaker: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=sail_spinnaker — the entry says it is not on this boat. Tap Show it working: a big sail ahead of the mast on a pole that sticks out to starboard (the side the wind comes from, so towards you in this view), with a card saying it is a picture. Tap Close picture.
+- [ ] The guy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=rope_spinnaker_guy — Show it working: the line from the pole's end back to the stern (the guy) is drawn along the deck edge; it is not lit up, the picture shows every line in the same colour.
+- [ ] Code 0: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=sail_code_zero — Show it working: a flat sail from the bow on its own roller, wind from ahead of the side.
+- [ ] Compare: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=term_downwind_sails — the entry compares the gennaker, the spinnaker and the code 0.
+
+#### M110: Main traveller picture
+
+- [ ] Traveller: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=learn&learn=part_traveller_track — Show it working: a track across the back of the coachroof with a car, the mainsheet going from the car up to the boom; this boat's own mainsheet is hidden. Pinch to zoom in on the back of the coachroof: the track is dark, the car is an orange cube and the sheet is an orange line up to the boom.
+- [ ] Move the car: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top — the car is to the left (port) and the boom is out to that side. Drag the Car slider to the middle: the boom comes in to the centre; the sheet stays nearly straight up and down.
+- [ ] Back to normal: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pic=traveller&tv=-60&wd=60&ws=10&ms=30&jf=0&held=1&sea=flat&cam=top — tap Close picture: the German mainsheet is back.
+
+## 27. People on board, part 1
+
+#### People on board, part 1 (M111–M112, [PHASE_PEOPLE_SPEC](PHASE_PEOPLE_SPEC.md))
+
+No new link settings: `st` is still the Realistic station and `tx` the time speed.
+
+#### M111: The captain on board
+
+- [ ] At the wheel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — a man in a dark blue jacket and a white captain's cap, with black curly hair and beard, stands behind the near (port) wheel with his hands on it, and leans with the boat.
+- [ ] Through his eyes: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=helm — the Helm view: you do not see him, because you are him. Tap Other wheel: still not visible. Choose Side (port) from the camera chip: he now stands behind the far (starboard) wheel.
+- [ ] Tap him: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — tap the captain: the card says "Captain (you)"; tap More for his Learn entry.
+- [ ] At the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=bow&wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-starboard — Realistic ropes: he stands on the foredeck behind the anchor winch. In the Ropes section tap Port: he is at once beside the port winch, next to the wheel.
+- [ ] At the mast: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=mast&wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — he stands on the cabin roof just behind the mast.
+- [ ] Low detail: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port&detail=low — a simpler captain (chunkier hair) in the same place.
+- [ ] Still smooth: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&sea=flat&cam=side-port — turn the view round with a finger: it moves as smoothly as before the captain came.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&held=1&sea=flat&cam=side-port — the same picture on a computer.
+
+#### M112: The captain walks
+
+- [ ] Walk to the bow: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — in the Ropes section tap Bow: he walks past the wheels, out over the rope box behind the winch onto the right-hand (starboard) side deck outside the cockpit wall, the side the wind comes from, and along it to the foredeck, without crossing the cockpit's hood. Under the station buttons "Walking to Bow… 9 s" counts down.
+- [ ] Wind from the other side: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=-60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Bow: this time he walks along the left-hand (port) side deck.
+- [ ] Wait until you get there: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Starboard and at once try to put a line on the winch there: "Still walking: wait until you get there." A second or two later it works.
+- [ ] Turn back: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Bow, and a few seconds later tap Port: he turns round and walks back to the port winch.
+- [ ] Exercise: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails — choose Watch it: the captain walks between the winches and the wheel as each step needs, and the exercise finishes.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — the same walk on a computer.

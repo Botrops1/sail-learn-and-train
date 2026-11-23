@@ -405,3 +405,17 @@ Answered from the October photos and the owner: two-line main furling (right clu
 ### Photo checklist (if you are near a Hanse 508 again)
 
 The foredeck from above · the mainsheet from the boom to the deck, both sides · the cockpit from above showing which rope goes to which winch · the furling drum at the bow · the boom: vang, topping lift and outhaul exit · the wind instrument while sailing · the telltales on the sails · the builder's plate.
+
+## 7. Training dinghy (issue #273, [PHASE_DINGHY_SPEC](PHASE_DINGHY_SPEC.md))
+
+The second built-in boat, `content/boat/dinghy.json`: an overlay on the Hanse 508's file with only the keys that differ. It is a **generic** one-person trainer, not one class: every number is an **assumption** chosen between two common trainers (Wikipedia class pages, read 2026-11-23):
+
+| | Topper | Laser Pico | Training dinghy (ours) |
+|---|---|---|---|
+| Length overall | 3.38 m | 3.50 m | 3.45 m |
+| Beam | 1.19 m | 1.43 m | 1.30 m |
+| Hull weight | 43 kg | 60 kg | 55 kg with the rig |
+| Mainsail | 5.3 m² (also 4.2 and 6.4) | 5.1 m² (jib 1.57 m² optional) | 5.2 m², no jib |
+| Rig | cat rig, daggerboard | — | cat rig, unstayed mast, daggerboard-type centreboard |
+
+The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, the hull's righting table, the centreboard's grip and the outhaul's effect are assumptions marked **tunable** in the spec (8.2); each milestone adds its rows here.
