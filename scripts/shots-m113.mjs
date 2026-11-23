@@ -27,9 +27,10 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
   const read = (page) => page.evaluate(() => window.__sailExercise.read());
   const visible = (page, id) => page.evaluate((part) => window.__sailDebug.partVisible(part), id);
 
-  // 1. A fresh page: the welcome card offers the dinghy; a finger tap starts on it.
+  // 1. A fresh page: the welcome card offers the dinghy; a finger tap starts on it. The label also
+  // names m85 so openPage adds no `held`, `sea`, `clock` or `mm` key: a bare address shows the card.
   {
-    const { context, page } = await openPage(phone, 'm113 welcome', '', { welcome: true });
+    const { context, page } = await openPage(phone, 'm85 m113 welcome', '', { welcome: true });
     const button = page.getByTestId('welcome-dinghy');
     await button.waitFor({ state: 'visible', timeout: 15_000 });
     const buttons = await page
@@ -37,9 +38,11 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
       .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-testid')));
     await shot(page, 'm113-live-welcome');
     await button.tap();
-    let link = '';
+    // The page reloads on the dinghy: wait for the new address, not for a read in the old page.
+    let link;
     try {
-      link = await waitForLink(page, ['boat=dinghy']);
+      await page.waitForURL((url) => url.search.includes('boat=dinghy'), { timeout: 15_000 });
+      link = page.url();
     } catch (error) {
       link = String(error);
     }
@@ -73,9 +76,10 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
       .evaluate((select) => [...select.options].map((option) => option.value));
     const downloadOnHanse = await page.getByTestId('boat-download').isVisible();
     await page.getByTestId('boat-select').selectOption('dinghy');
-    let link = '';
+    let link;
     try {
-      link = await waitForLink(page, ['boat=dinghy']);
+      await page.waitForURL((url) => url.search.includes('boat=dinghy'), { timeout: 15_000 });
+      link = page.url();
     } catch (error) {
       link = String(error);
     }
@@ -109,21 +113,26 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
     const rows = await page
       .locator('.rope-item')
       .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-select')));
+    const names = await page
+      .locator('.rope-item .rope-item-name')
+      .evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim()));
     await showSection(page, 'autopilot');
-    const steering = await page.locator('#control-ctl_rudder').count();
-    const autopilot = await page.getByTestId('autopilot').count();
-    const label = await page.locator('label[for="control-ctl_rudder"]').innerText();
+    const steeringSection = page.getByTestId('section-autopilot');
+    const steering = await steeringSection.locator('#control-ctl_rudder').count();
+    const autopilot = await steeringSection.getByTestId('autopilot').count();
+    const label = await steeringSection.locator('label[for="control-ctl_rudder"]').innerText();
     const ids = await sectionIds(page);
     const bad = ['engine', 'anchor', 'place', 'harbour', 'helm'].filter((id) => ids.includes(id));
     check(
       'sections: Learn and Easy, two lines, the steering without autopilot buttons',
       modes.join() === 'learn,easy' &&
         rows.join() === 'rope_mainsheet,rope_vang' &&
+        names[1] === 'Kicker' &&
         steering === 1 &&
         autopilot === 0 &&
         label.trim() === 'Tiller' &&
         bad.length === 0,
-      JSON.stringify({ modes, rows, steering, autopilot, label, bad, ids }),
+      JSON.stringify({ modes, rows, names, steering, autopilot, label, bad, ids }),
     );
     await setSheet(page, 'half');
     await shot(page, 'm113-live-sections');

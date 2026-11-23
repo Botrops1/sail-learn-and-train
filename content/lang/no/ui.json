@@ -73,6 +73,7 @@
   "debug.selection": "Selected",
   "control.mainsheet": "Storskjøt",
   "control.vang": "Kicker",
+  "control.kicker": "Kicker",
   "control.toppingLift": "Toppenant",
   "control.mainFurl": "Storseil ut",
   "control.less": "Mindre: {name}",

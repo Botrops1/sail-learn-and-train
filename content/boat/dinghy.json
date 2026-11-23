@@ -21,7 +21,7 @@
     "rightingMomentSource": "assumption for M113 only: the hull and a sailor sitting on the side together; M114 replaces it by dinghy.rightingNmByHeelDeg and the sailor's weight"
   },
   "hull": {
-    "stemX": 1.25, "transomX": -2.2,
+    "stemX": 1.25, "bowFittingTipX": 1.25, "transomX": -2.2,
     "deckEdgeHalfBeam": { "points": [[1.25, 0.03], [1.1, 0.2], [0.8, 0.38], [0.4, 0.53], [0, 0.61], [-0.5, 0.65], [-1.0, 0.65], [-1.6, 0.62], [-2.2, 0.55]] },
     "sheerHeight": { "points": [[1.25, 0.45], [0.5, 0.38], [-0.5, 0.35], [-2.2, 0.33]] },
     "waterline": { "fwdX": 1.15, "aftX": -2.05, "transomBottomY": 0.04 },
@@ -68,7 +68,23 @@
     "rudderThickness": 0.03,
     "vangTackleOffset": 0.03
   },
-  "visual": { "ropeRenderRadius": 0.008 },
+  "visual": {
+    "ropeRenderRadius": 0.008,
+    "labels3d": {
+      "list": [
+        { "id": "sail_main", "at": "mainSail" },
+        { "id": "part_mast", "at": [0, 3.6, 0] },
+        { "id": "part_boom", "at": "boom", "distance": 1.4 },
+        { "id": "rope_mainsheet", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_vang", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "part_tiller", "at": [-1.8, 0.55, 0] },
+        { "id": "part_rudder", "at": [-2.27, -0.25, 0] },
+        { "id": "part_centreboard", "at": [-0.15, 0.4, 0] },
+        { "id": "fit_ratchet_block", "at": [-1.55, 0.3, 0] },
+        { "id": "fit_toe_straps", "at": [-1.1, 0.25, 0.2] }
+      ]
+    }
+  },
   "physics": {
     "mass": { "payloadKg": 70, "payloadNote": "assumption: one adult sailor" },
     "hull": { "wettedSurfaceM2": 2.6, "linearDragNPerMps": 3, "effectiveDraftM": 0.9, "clrDepthM": 0.35, "rudderAreaM2": 0.12 },

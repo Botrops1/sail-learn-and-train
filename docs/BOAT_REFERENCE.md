@@ -431,4 +431,5 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Tiller | 1.0 m, extension 0.75 m, pivot at x −2.27 m, 0.42 m high | |
 | Cockpit | floor 0.14 m, 0.96 m wide, from x −2.1 m to −0.45 m; side decks 0.16 m wide | |
 | Toe straps, ratchet block, hand | straps at ±0.2 m from x −1.6 m to −0.6 m; ratchet block at x −1.55 m; hand 0.45 m to the side | |
+| Bow tip, label points (decided in the M113 PR) | `hull.bowFittingTipX` 1.25 m (the camera frames the hull up to it); `visual.labels3d.list` names only the dinghy's parts | the Hanse's would frame a boat 8 m long and name a keel and a jib |
 | Drawn sizes (decided in the M113 PR) | boom 0.06 × 0.045 m, gooseneck 0.05 m, block radius 0.025 m, rudder 0.03 m thick, rope radius 8 mm, kicker offset 0.03 m | the Hanse's sizes would look huge on 3.45 m; these only change the picture |

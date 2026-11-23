@@ -80,6 +80,7 @@
 | debug.selection | Selected | Selected |
 | control.mainsheet | Main sheet | Гика-шкот |
 | control.vang | Vang | Оттяжка гика |
+| control.kicker | Kicker | Оттяжка гика |
 | control.toppingLift | Topping lift | Топенант гика |
 | control.mainFurl | Mainsail out | Грот наружу |
 | control.less | Less: {name} | Меньше: {name} |

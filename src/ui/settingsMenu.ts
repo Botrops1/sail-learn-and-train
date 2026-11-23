@@ -633,7 +633,11 @@ function buildBoatField(store: Store): HTMLElement {
           t('boat.problem.check', { count: check.problems.length }),
           check.problems
             .slice(0, BOAT_PROBLEMS_SHOWN)
-            .map((problem) => `${problem.path}: ${problem.detail}`),
+            .map((problem) =>
+              problem.kind === 'notInProfile'
+                ? t('boat.problem.notInProfile', { key: problem.path })
+                : `${problem.path}: ${problem.detail}`,
+            ),
         );
         return;
       }

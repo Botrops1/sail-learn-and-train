@@ -73,6 +73,7 @@
   "debug.selection": "Selected",
   "control.mainsheet": "Гика-шкот",
   "control.vang": "Оттяжка гика",
+  "control.kicker": "Оттяжка гика",
   "control.toppingLift": "Топенант гика",
   "control.mainFurl": "Грот наружу",
   "control.less": "Меньше: {name}",

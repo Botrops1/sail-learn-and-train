@@ -1,5 +1,5 @@
 import type { AppState, Store } from '../app/store';
-import { boat, hasFeature } from '../model/boat';
+import { boat, hasFeature, isDinghy } from '../model/boat';
 import type { RopeStatus } from '../model/boomSolver';
 import { controlSpec, SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/controls';
 import { mainFurlLengths } from '../model/mainFurl';
@@ -98,8 +98,19 @@ export const CONTROL_VIEWS: readonly ControlView[] = [
 export function controlView(id: ControlId): ControlView {
   const view = CONTROL_VIEWS.find((candidate) => candidate.id === id);
   if (!view) throw new Error(`No panel view for ${id}.`);
-  // A boat without a wheel is steered with a tiller (M113).
-  return id === 'ctl_rudder' && !hasFeature('wheel') ? { ...view, name: 'control.tiller' } : view;
+  return named(view);
+}
+
+/** A boat without a wheel is steered with a tiller, and the dinghy's vang is a kicker (M113). */
+function named(view: ControlView): ControlView {
+  if (view.id === 'ctl_rudder' && !hasFeature('wheel')) return { ...view, name: 'control.tiller' };
+  if (view.id === 'ctl_vang' && isDinghy()) return { ...view, name: 'control.kicker' };
+  return view;
+}
+
+/** Every control's view as the boat in use names it (M113). */
+export function controlViews(): ControlView[] {
+  return CONTROL_VIEWS.map(named);
 }
 
 /** "Load 1.8 kN (about 180 kg)": newtons in kN with one decimal, kg rounded to 10 kg. */

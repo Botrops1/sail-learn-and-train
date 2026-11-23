@@ -80,6 +80,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | debug.selection | Selected | Selected |
 | control.mainsheet | Main sheet | Großschot |
 | control.vang | Vang | Baumniederholer |
+| control.kicker | Kicker | Baumniederholer |
 | control.toppingLift | Topping lift | Toppnant |
 | control.mainFurl | Mainsail out | Großsegel ausrollen |
 | control.less | Less: {name} | Weniger: {name} |

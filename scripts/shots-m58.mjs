@@ -285,7 +285,7 @@ export async function liveM58Checks({ openPage, viewports, outDir, prefix, probl
     const builtIn = await importFile(page, testProfile({ id: 'hanse508', name: 'Mine' }));
     check(
       `bad ${view}: the built-in id`,
-      builtIn === 'This is the built-in Hanse 508: give your boat its own id.',
+      builtIn === 'This is a built-in boat: give your boat its own id.',
       builtIn,
     );
     await context.close();

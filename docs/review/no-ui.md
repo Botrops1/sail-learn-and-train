@@ -80,6 +80,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | debug.selection | Selected | Selected |
 | control.mainsheet | Main sheet | Storskjøt |
 | control.vang | Vang | Kicker |
+| control.kicker | Kicker | Kicker |
 | control.toppingLift | Topping lift | Toppenant |
 | control.mainFurl | Mainsail out | Storseil ut |
 | control.less | Less: {name} | Mindre: {name} |
