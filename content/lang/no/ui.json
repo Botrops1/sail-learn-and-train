@@ -1179,5 +1179,7 @@
   "gennaker.sheetOnWinch": "Bruk skjøtet på vinsjen på sin side (stasjon Babord eller Styrbord).",
   "picture.spinnaker": "Bilde: en symmetrisk spinnaker, ikke på denne båten.",
   "picture.code0": "Bilde: en Code 0, ikke på denne båten.",
-  "picture.close": "Lukk bildet"
+  "picture.close": "Lukk bildet",
+  "picture.traveller": "Bilde: en storskjøt-traveller, ikke på denne båten.",
+  "picture.travellerCar": "Vogn"
 }

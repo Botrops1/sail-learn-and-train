@@ -1,25 +1,31 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { boat } from '../model/boat';
-import { codeZeroPicture, spinnakerPicture, type PictureId } from '../model/pictures';
+import {
+  codeZeroPicture,
+  spinnakerPicture,
+  travellerPicture,
+  type PictureId,
+} from '../model/pictures';
 import { pictureSailGrid } from '../model/sailShape';
 import type { Detail } from '../model/settings';
 import { vec3, type Vec3 } from '../model/vec3';
 import type { BoatMaterials } from './boat/materials';
-import { partMesh, type PickSegment } from './boat/parts';
+import { boxAt, partMesh, type PickSegment } from './boat/parts';
 import { buildSailMesh } from './boat/sailMesh';
 import { SCENE } from './sceneConfig';
 
 /**
- * The pictures of sails this boat does not carry (M109, PHASE_RIGGING_SPEC 11.5): a symmetric
- * spinnaker with its pole and lines, and a code 0 on its furler. Only the meshes of the picture
- * shown are visible; the geometry is rebuilt only when the picture or the wind angle (rounded to a
- * degree) changes. The part ids are written out here: tests/glossary.test.ts checks that a drawn
+ * The pictures of things this boat does not carry (M109, PHASE_RIGGING_SPEC 11.5; M110, 12.3): a
+ * symmetric spinnaker with its pole and lines, a code 0 on its furler and a mainsheet traveller
+ * (track, car and sheet). Only the meshes of the picture shown are visible; the geometry is
+ * rebuilt only when the picture, the wind angle (rounded to a degree) or the traveller's car
+ * changes. The part ids are written out here: tests/glossary.test.ts checks that a drawn
  * id appears in the source.
  */
 export interface PicturesModel {
   objects: THREE.Object3D[];
-  update(picture: PictureId | null, awaDeg: number): void;
+  update(picture: PictureId | null, awaDeg: number, travellerCarPct?: number): void;
 }
 
 const UP = new THREE.Vector3(0, 1, 0);
@@ -70,12 +76,16 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
   const ropeMaterial = new THREE.MeshLambertMaterial({ color: SCENE.ropes.colors.gennaker });
 
   // The first points are a rope as drawn for a typical wind, so every mesh has a real geometry.
-  const makeRope = (partId: string, points: readonly Vec3[]): PictureRope => {
+  const makeRope = (
+    partId: string,
+    points: readonly Vec3[],
+    material: THREE.Material = ropeMaterial,
+  ): PictureRope => {
     const radius = boat.visual.ropeRenderRadius;
     const mesh = partMesh(
       partId,
       [tubeGeometry(points, radius, radial)],
-      ropeMaterial,
+      material,
       segmentsOf(points),
     );
     mesh.visible = false;
@@ -147,6 +157,52 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
   drum.visible = false;
   const codeSheet = makeRope('rope_code_zero_sheet', firstCode.sheet);
 
+  // The traveller: a track across the boat, a car on it and the sheet from the car to the boom.
+  const tr = p.traveller;
+  const [sectionX, sectionY] = tr.trackSectionM as [number, number];
+  const firstTraveller = travellerPicture(0);
+  const track = partMesh(
+    'part_traveller_track',
+    [boxAt([0, 0, 0], [sectionX, sectionY, 2 * tr.halfLengthM])],
+    materials.dark,
+    [
+      [
+        [0, 0, -tr.halfLengthM],
+        [0, 0, tr.halfLengthM],
+      ],
+    ],
+  );
+  track.position.set(firstTraveller.car[0], firstTraveller.car[1], 0);
+  // The car and the sheet share the mainsheet's colour: the car is the sheet's lower block, and
+  // from the phone's distance a dark track with an orange car is what can be told apart.
+  const travellerRopeMaterial = new THREE.MeshLambertMaterial({
+    color: SCENE.ropes.colors.mainsheet,
+  });
+  // A part (not a rope) follows the detail rule: lit with reflections at high detail.
+  const carMaterial =
+    detail === 'high'
+      ? new THREE.MeshStandardMaterial({ color: SCENE.ropes.colors.mainsheet, roughness: 0.5 })
+      : travellerRopeMaterial;
+  const car = partMesh(
+    'part_traveller_car',
+    [boxAt([0, 0, 0], [tr.carSizeM, tr.carSizeM, tr.carSizeM])],
+    carMaterial,
+    [
+      [
+        [0, 0, 0],
+        [0, 0, 0],
+      ],
+    ],
+  );
+  const carTop = (at: Vec3): Vec3 => [at[0], at[1] + tr.carSizeM / 2, at[2]];
+  const travellerSheet = makeRope(
+    'rope_traveller_mainsheet',
+    [carTop(firstTraveller.car), firstTraveller.boomPoint],
+    travellerRopeMaterial,
+  );
+  track.visible = false;
+  car.visible = false;
+
   const spinnakerObjects: THREE.Object3D[] = [
     spinnakerSail.mesh,
     pole,
@@ -156,19 +212,24 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
     downhaul.mesh,
   ];
   const codeObjects: THREE.Object3D[] = [codeSail.mesh, drum, codeSheet.mesh];
+  const travellerObjects: THREE.Object3D[] = [track, car, travellerSheet.mesh];
 
   const direction = new THREE.Vector3();
   let shown: PictureId | null = null;
-  let shownAwa = Number.NaN;
-  const update = (picture: PictureId | null, awaDeg: number) => {
+  let shownKey = Number.NaN;
+  const update = (picture: PictureId | null, awaDeg: number, travellerCarPct = 0) => {
     const rounded = Math.round(awaDeg);
-    if (picture === shown && (picture === null || rounded === shownAwa)) return;
+    // The traveller does not look at the wind: its picture changes with the car only.
+    const key = picture === 'traveller' ? travellerCarPct : rounded;
+    if (picture === shown && (picture === null || key === shownKey)) return;
     shown = picture;
-    shownAwa = rounded;
+    shownKey = key;
     const spinnaker = picture === 'spinnaker';
     const codeZero = picture === 'code0';
+    const traveller = picture === 'traveller';
     for (const object of spinnakerObjects) object.visible = spinnaker;
     for (const object of codeObjects) object.visible = codeZero;
+    for (const object of travellerObjects) object.visible = traveller;
     if (spinnaker) {
       const s = spinnakerPicture(rounded);
       spinnakerSail.update(
@@ -197,7 +258,11 @@ export function buildPictures(materials: BoatMaterials, detail: Detail): Picture
         true,
       );
       codeSheet.set(c.sheet);
+    } else if (traveller) {
+      const picture = travellerPicture(travellerCarPct);
+      car.position.set(picture.car[0], picture.car[1], picture.car[2]);
+      travellerSheet.set([carTop(picture.car), picture.boomPoint]);
     }
   };
-  return { objects: [...spinnakerObjects, ...codeObjects], update };
+  return { objects: [...spinnakerObjects, ...codeObjects, ...travellerObjects], update };
 }

@@ -731,6 +731,17 @@ English glossary (final): `part_traveller_track`: name "Traveller", short "A tra
 
 `tests/glossary.test.ts` group sizes (12.4). **PR line:** `CI groups: all` (store and URL state). PR: `Closes #251`, `Closes #232`. Done when 12.5 and 12.6 pass and `npm run check` and CI are green. Not in this milestone: a traveller you can sail with; the tackle's separate parts and blocks.
 
+### 12.8 Decided in the M110 PR (recommended; merging accepts it)
+
+1. **The browser checks join group `m36`, not `m17`.** `m17` already holds the M112 walk pages and measures 141 s (`.github/ci-budget.json`), so adding 30 s there would push it further over; `m36` recorded 76 s and was a plain entry. `GROUP_ALIASES` has `m110: 'm36'`.
+2. **The group sizes are `[19, 13, 15, 9, 22, 23, 13, 14, 34, 10, 20]`**, not the spec's list: the cockpit group has 23 entries (as in M109); Lines gains the traveller's sheet and Deck the track and the car. The older check in `scripts/shots-m21.mjs` that names the Lines count says 19.
+3. **Setting a picture always puts the car back in the middle**, also when the same picture is set again, so a Learn "Show it working" link that carries `tv` is read through `load` and Close picture never leaves a car position behind.
+4. **Every traveller entry has a "Show it working" text** in the four languages (as decided for M109, 11.10 note 2), and the Russian entries use the wording of the other picture entries ("Нет на этой яхте", «Показать в работе»).
+5. **The track is dark and the car and the sheet are the mainsheet's orange** (a plain tube, no stripes, labels or Realistic behaviour, as the pictures' other lines): on a phone the boat is small, and a dark track with an orange car is what can be told apart.
+6. **While the traveller shows, only what is drawn changes**: the boom, the main, the vang and the boom's ropes use a copy of the rig with the boom's swing for the car; the model's rig, the 3D labels, the danger zone and the telltales keep the real one (12.3).
+7. **On a phone the traveller's card sits at the top of the view** (below the wind chip, over the bow), because the car is low at the stern, where the other pictures' card would cover it; it grows instead of scrolling when a German or Russian text wraps to two lines. A browser check tests that the card does not cover the car.
+8. **The preset cameras show the traveller small on a phone** and a link cannot carry a camera pose, so the checklist says to pinch to zoom in on the back of the coachroof (question 1 of the PR).
+
 ## 13. Owner's answers and decisions
 
 ### 13.1 Owner's answers (planning chat, 2026-11-18: "Accept all")

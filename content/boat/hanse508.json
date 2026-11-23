@@ -2109,6 +2109,11 @@
       "drumRadiusM": 0.12,
       "drumLengthM": 0.25,
       "camberRatio": 0.08
+    },
+    "traveller": {
+      "halfLengthM": 0.9,
+      "carSizeM": 0.12,
+      "trackSectionM": [0.04, 0.03]
     }
   }
 }

@@ -10,13 +10,18 @@ import {
   type GennakerSetup,
 } from '../src/model/gennaker';
 import { steadyState } from '../src/model/motion';
-import { codeZeroPicture, polePlanDeg, spinnakerPicture } from '../src/model/pictures';
+import {
+  codeZeroPicture,
+  polePlanDeg,
+  spinnakerPicture,
+  travellerPicture,
+} from '../src/model/pictures';
 import { initialRig } from '../src/model/sim';
 import { bestSpeedKn, best } from './motionHelpers';
 
 /**
  * PHASE_RIGGING_SPEC 8.4: the gennaker's bands, run against the real `steadyState`.
- * PT-67 (a gennaker pays), PT-68 (trim to the curl), PT-70 (the sock).
+ * PT-67 (a gennaker pays), PT-68 (trim to the curl), PT-70 (the sock); the pictures' PT-71, PT-72, PT-73.
  */
 const MAINSHEETS = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 const GENNAKER_SHEETS = Array.from({ length: 21 }, (_, i) => i * 5);
@@ -228,5 +233,21 @@ describe('PT-73 the code 0', () => {
     // Its tack is on the bow roller's tip, not at the pole's end: a furler at the bow.
     expect(codeZeroPicture(70).tack[0]).toBeGreaterThan(6);
     expect(codeZeroPicture(70).sheet[0]).toEqual(codeZeroPicture(70).clew);
+  });
+});
+
+describe('PT-72 the traveller', () => {
+  it("PT-72 the car sets the boom's angle; the sheet's length hardly changes", () => {
+    expect(travellerPicture(0).boomDeg).toBeCloseTo(0, 9);
+    expect(travellerPicture(100).boomDeg).toBeCloseTo(17.92, 2);
+    expect(travellerPicture(-100).boomDeg).toBeCloseTo(-17.92, 2);
+    const lengths: number[] = [];
+    for (const pct of [-100, -60, 0, 60, 100]) {
+      const picture = travellerPicture(pct);
+      // The boom's sheet point is over the car, across the boat.
+      expect(picture.boomPoint[2], `pct ${pct}`).toBeCloseTo(picture.car[2], 9);
+      lengths.push(picture.sheetLengthM);
+    }
+    expect(Math.max(...lengths) - Math.min(...lengths)).toBeLessThan(0.01 * Math.min(...lengths));
   });
 });

@@ -71,6 +71,7 @@ export function startUrlSync(store: Store): void {
       state.learn === previous.learn &&
       state.gennaker === previous.gennaker &&
       state.picture === previous.picture &&
+      state.travellerCarPct === previous.travellerCarPct &&
       state.appMode === previous.appMode &&
       state.harbour.fendersOut === previous.harbour.fendersOut &&
       state.harbour.place === previous.harbour.place &&

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { AppState, Store } from '../app/store';
 import { highlightIds } from '../model/panelEntries';
+import { travellerPicture } from '../model/pictures';
 import { handlePose } from '../model/handlePose';
 import { panelReadings } from '../model/helmPanel';
 import { runningRopes, winchWraps } from '../model/realistic';
@@ -822,7 +823,12 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         state.settings.ropesMode === 'realistic' ? winchWraps(state.realistic) : undefined,
         state.sailDamage,
         state.gennaker,
-        { picture: state.picture },
+        {
+          picture: state.picture,
+          travellerCarPct: state.travellerCarPct,
+          boomYawDeg:
+            state.picture === 'traveller' ? travellerPicture(state.travellerCarPct).boomDeg : null,
+        },
       );
       // M111: the captain stands where the mode, the station and the wheel put him; in the Helm
       // view of his own wheel the camera is at his eyes, so he is not drawn.

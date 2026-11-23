@@ -184,6 +184,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Großschot (am Traveller) (`rope_traveller_mainsheet`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Mainsheet (on a traveller) | Großschot (am Traveller) |
+| Andere Namen | — | — |
+| Kurz | On a boat with a traveller, the mainsheet runs from the car up to the boom. | Auf einem Boot mit Traveller läuft die Großschot vom Wagen zum Baum. |
+| Was es tut / was es bedeutet | It does one job: it sets how tight the sail's back edge is. The boom's angle is the car's job. | Sie hat nur eine Aufgabe: Sie bestimmt, wie straff das Achterliek des Segels ist. Der Winkel des Baums ist Sache des Wagens. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht an diesem Boot: nur als Bild gezeigt (Show it working). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The line from the car up to the boom. It stays about the same length wherever the car is. | Die Leine vom Wagen hinauf zum Baum. Sie bleibt ungefähr gleich lang, wo der Wagen auch steht. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Reffleine für das Großsegel (`rope_main_furling_line`)
 
 | Feld | English | Deutsch |
@@ -1134,6 +1149,36 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Travellerschiene (`part_traveller_track`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Traveller | Travellerschiene |
+| Andere Namen | — | Traveller |
+| Kurz | A track across the boat that the mainsheet's lower block slides on; not on this boat. | Eine Schiene quer über das Boot, auf der der untere Block der Großschot gleitet; nicht an diesem Boot. |
+| Was es tut / was es bedeutet | Many boats have a track across the cockpit or the coachroof with a car on it; the mainsheet runs from the car up to the boom. Sliding the car to leeward lets the boom out; sliding it back towards the middle brings the boom in, and the sheet's pull on the sail stays the same. So the car sets the boom's angle and the sheet sets how tight the back edge of the sail is. This boat has a German mainsheet instead: two blocks on the coachroof and both ends led to the cockpit, so the sheet does both jobs at once. | Viele Boote haben quer im Cockpit oder auf dem Kajütaufbau eine Schiene mit einem Wagen; die Großschot läuft vom Wagen zum Baum. Schiebt man den Wagen nach Lee, fiert man den Baum; schiebt man ihn zur Mitte, holt man den Baum dicht, und der Zug der Schot am Segel bleibt gleich. Der Wagen bestimmt also den Winkel des Baums, die Schot bestimmt, wie straff das Achterliek ist. Dieses Boot hat stattdessen eine deutsche Großschot: zwei Blöcke auf dem Kajütaufbau und beide Enden ins Cockpit geführt, die Schot erledigt also beide Aufgaben auf einmal. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht an diesem Boot: nur als Bild gezeigt (Show it working). |
+| Typische Fehler | — | — |
+| „Zeigen“ | A picture of a traveller: a short track across the aft end of the coachroof with a car on it. The wind comes from starboard and the car is slid to port, so the boom is out to port. Use the slider to move the car and watch the boom follow. | Ein Bild eines Travellers: eine kurze Schiene quer über dem hinteren Ende des Kajütaufbaus mit einem Wagen. Der Wind kommt von Steuerbord, der Wagen ist nach Backbord geschoben, der Baum steht also nach Backbord hinaus. Mit dem Regler bewegst du den Wagen und siehst, wie der Baum folgt. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Travellerwagen (`part_traveller_car`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Traveller car | Travellerwagen |
+| Andere Namen | — | — |
+| Kurz | The car that slides on the traveller track; the mainsheet's lower block is on it. | Der Wagen, der auf der Travellerschiene gleitet; der untere Block der Großschot sitzt darauf. |
+| Was es tut / was es bedeutet | The block on the car is the lower end of the mainsheet. Slide the car and the sheet's lower end moves with it, so the boom swings to stay over it. | Der Block auf dem Wagen ist das untere Ende der Großschot. Schiebt man den Wagen, wandert das untere Ende der Schot mit, und der Baum schwenkt so, dass er darüber bleibt. |
+| Auf diesem Boot | Not on this boat: shown as a picture only (Show it working). | Nicht an diesem Boot: nur als Bild gezeigt (Show it working). |
+| Typische Fehler | — | — |
+| „Zeigen“ | The small cube on the track. Move it with the slider and the boom follows. | Der kleine Würfel auf der Schiene. Bewege ihn mit dem Regler, der Baum folgt. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 

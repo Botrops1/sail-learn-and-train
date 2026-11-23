@@ -2302,6 +2302,33 @@
       "what": "A gennaker (asymmetric spinnaker) is tacked at the bow and needs no pole: easy for a small crew, best on a broad reach. A symmetric spinnaker flies on a pole to windward: best deep downwind, more lines and more work (guy, sheet, pole lift, downhaul). A code 0 is flat and on a furler: for light wind closer to the wind than a gennaker can go. This boat's option is the gennaker.",
       "showMe": "The symmetric spinnaker as a picture. Open the code 0 entry to see that one too; the gennaker is the sail you can rig in Settings.",
       "textStatus": "draft"
+    },
+    "part_traveller_track": {
+      "name": "Traveller",
+      "alternatives": [],
+      "short": "A track across the boat that the mainsheet's lower block slides on; not on this boat.",
+      "what": "Many boats have a track across the cockpit or the coachroof with a car on it; the mainsheet runs from the car up to the boom. Sliding the car to leeward lets the boom out; sliding it back towards the middle brings the boom in, and the sheet's pull on the sail stays the same. So the car sets the boom's angle and the sheet sets how tight the back edge of the sail is. This boat has a German mainsheet instead: two blocks on the coachroof and both ends led to the cockpit, so the sheet does both jobs at once.",
+      "showMe": "A picture of a traveller: a short track across the aft end of the coachroof with a car on it. The wind comes from starboard and the car is slid to port, so the boom is out to port. Use the slider to move the car and watch the boom follow.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "part_traveller_car": {
+      "name": "Traveller car",
+      "alternatives": [],
+      "short": "The car that slides on the traveller track; the mainsheet's lower block is on it.",
+      "what": "The block on the car is the lower end of the mainsheet. Slide the car and the sheet's lower end moves with it, so the boom swings to stay over it.",
+      "showMe": "The small cube on the track. Move it with the slider and the boom follows.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_traveller_mainsheet": {
+      "name": "Mainsheet (on a traveller)",
+      "alternatives": [],
+      "short": "On a boat with a traveller, the mainsheet runs from the car up to the boom.",
+      "what": "It does one job: it sets how tight the sail's back edge is. The boom's angle is the car's job.",
+      "showMe": "The line from the car up to the boom. It stays about the same length wherever the car is.",
+      "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
     }
   }
 }

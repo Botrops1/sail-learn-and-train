@@ -50,6 +50,7 @@ export const GROUP_ALIASES = {
   m107: 'm33',
   m108: 'm103',
   m109: 'm101',
+  m110: 'm36',
   m111: 'm73',
   m112: 'm17',
 };

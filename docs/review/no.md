@@ -229,6 +229,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Storskjøt (på traveller) (`rope_traveller_mainsheet`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Mainsheet (on a traveller) | Storskjøt (på traveller) |
+| Andre navn | — | — |
+| Kort | On a boat with a traveller, the mainsheet runs from the car up to the boom. | På en båt med traveller går storskjøtet fra vognen opp til bommen. |
+| Hva det gjør / hva det betyr | It does one job: it sets how tight the sail's back edge is. The boom's angle is the car's job. | Det har én jobb: å bestemme hvor stram seilets bakkant er. Bommens vinkel er vognens jobb. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde (Show it working). |
+| Typiske feil | — | — |
+| «Vis meg» | The line from the car up to the boom. It stays about the same length wherever the car is. | Linen fra vognen opp til bommen. Den er omtrent like lang uansett hvor vognen står. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Strømpeline (`rope_gennaker_sock_line`)
 
 | Felt | English | Norsk |
@@ -1133,6 +1148,36 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | På denne båten | One channel on each side, ending at the clutch banks in front of the winches. | Én kanal på hver side, som ender ved stopperrekkene foran vinsjene. |
 | Typiske feil | — | — |
 | «Vis meg» | — | — |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Travellerskinne (`part_traveller_track`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Traveller | Travellerskinne |
+| Andre navn | — | Traveller |
+| Kort | A track across the boat that the mainsheet's lower block slides on; not on this boat. | En skinne på tvers av båten som storskjøtets nedre blokk glir på; ikke på denne båten. |
+| Hva det gjør / hva det betyr | Many boats have a track across the cockpit or the coachroof with a car on it; the mainsheet runs from the car up to the boom. Sliding the car to leeward lets the boom out; sliding it back towards the middle brings the boom in, and the sheet's pull on the sail stays the same. So the car sets the boom's angle and the sheet sets how tight the back edge of the sail is. This boat has a German mainsheet instead: two blocks on the coachroof and both ends led to the cockpit, so the sheet does both jobs at once. | Mange båter har en skinne på tvers i cockpiten eller på dekkshuset med en vogn på; storskjøtet går fra vognen opp til bommen. Skyver du vognen mot le, gir du ut bommen; skyver du den mot midten, henter du bommen inn, og trekket i seilet er det samme. Vognen bestemmer altså bommens vinkel, og skjøtet bestemmer hvor stram seilets bakkant er. Denne båten har tysk storskjøt i stedet: to blokker på dekkshuset og begge ender ført til cockpiten, så skjøtet gjør begge jobbene på en gang. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde (Show it working). |
+| Typiske feil | — | — |
+| «Vis meg» | A picture of a traveller: a short track across the aft end of the coachroof with a car on it. The wind comes from starboard and the car is slid to port, so the boom is out to port. Use the slider to move the car and watch the boom follow. | Et bilde av en traveller: en kort skinne på tvers over bakkanten av dekkshuset med en vogn på. Vinden kommer fra styrbord og vognen er skjøvet mot babord, så bommen står ut mot babord. Bruk glidebryteren for å flytte vognen og se bommen følge etter. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Travellervogn (`part_traveller_car`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Traveller car | Travellervogn |
+| Andre navn | — | — |
+| Kort | The car that slides on the traveller track; the mainsheet's lower block is on it. | Vognen som glir på travellerskinnen; storskjøtets nedre blokk sitter på den. |
+| Hva det gjør / hva det betyr | The block on the car is the lower end of the mainsheet. Slide the car and the sheet's lower end moves with it, so the boom swings to stay over it. | Blokken på vognen er den nedre enden av storskjøtet. Flytter du vognen, følger skjøtets nedre ende med, og bommen svinger så den blir over den. |
+| På denne båten | Not on this boat: shown as a picture only (Show it working). | Ikke på denne båten: vises bare som et bilde (Show it working). |
+| Typiske feil | — | — |
+| «Vis meg» | The small cube on the track. Move it with the slider and the boom follows. | Den lille kuben på skinnen. Flytt den med glidebryteren, så følger bommen etter. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |

@@ -4189,6 +4189,36 @@ html[data-layout='side'] .alert-chip {
   cursor: pointer;
 }
 
+/* The picture card holds a slider for the traveller: it grows instead of scrolling (a longer text wraps to two lines in German and Russian). */
+html[data-layout='stacked'] .info-card.picture-banner {
+  max-height: none;
+}
+
+/* The traveller sits low at the stern, where the card would cover it: on a phone its card goes to the top of the view (below the wind chip), over the bow. */
+html[data-layout='stacked'] .picture-area[data-picture='traveller'] {
+  top: 92px;
+  bottom: auto;
+}
+
+/* M110: the traveller picture's slider, in the picture banner. */
+.picture-traveller {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.picture-traveller[hidden] {
+  display: none;
+}
+
+.picture-traveller input[type='range'] {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--touch);
+  margin: 0;
+  accent-color: var(--accent);
+}
+
 .learn-more {
   display: block;
   margin-top: 6px;

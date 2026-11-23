@@ -116,6 +116,9 @@ export const PICTURE_ONLY: ReadonlySet<string> = new Set([
   'sail_code_zero',
   'part_code_zero_furler',
   'rope_code_zero_sheet',
+  'part_traveller_track',
+  'part_traveller_car',
+  'rope_traveller_mainsheet',
 ]);
 
 export type SourceLink =

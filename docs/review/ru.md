@@ -49,6 +49,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Гика-шкот (на тревеллере) (`rope_traveller_mainsheet`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Mainsheet (on a traveller) | Гика-шкот (на тревеллере) |
+| Другие названия | — | — |
+| Коротко | On a boat with a traveller, the mainsheet runs from the car up to the boom. | На лодке с тревеллером гика-шкот идёт от каретки вверх к гику. |
+| Что делает / что значит | It does one job: it sets how tight the sail's back edge is. The boom's angle is the car's job. | У него одна задача: задавать натяжение задней кромки паруса. Угол гика — дело каретки. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The line from the car up to the boom. It stays about the same length wherever the car is. | Линь от каретки вверх к гику. Его длина почти не меняется, где бы ни стояла каретка. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### грота-фал (`rope_main_halyard`)
 
 | Поле | English | Русский |
@@ -882,6 +897,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Каретка тревеллера (`part_traveller_car`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Traveller car | Каретка тревеллера |
+| Другие названия | — | — |
+| Коротко | The car that slides on the traveller track; the mainsheet's lower block is on it. | Каретка, которая скользит по рельсу; на ней стоит нижний блок гика-шкота. |
+| Что делает / что значит | The block on the car is the lower end of the mainsheet. Slide the car and the sheet's lower end moves with it, so the boom swings to stay over it. | Блок на каретке — нижний конец гика-шкота. Двигаете каретку — вместе с ней движется нижний конец шкота, и гик поворачивается так, чтобы остаться над ним. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | The small cube on the track. Move it with the slider and the boom follows. | Маленький кубик на рельсе. Двигайте его ползунком, гик следует за ним. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### киповая планка (`fit_fairlead`)
 
 | Поле | English | Русский |
@@ -1073,6 +1103,21 @@
 | На этой яхте | — | — |
 | Типичные ошибки | Leaving it open when waves start coming aboard. → Water can pour below. Close it in rough weather. | Оставить его открытым, когда на борт начинают заходить волны. → Вода может хлынуть вниз. В свежую погоду закрывайте его. |
 | «Покажи» | — | — |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Тревеллер (рельс) (`part_traveller_track`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Traveller | Тревеллер (рельс) |
+| Другие названия | — | — |
+| Коротко | A track across the boat that the mainsheet's lower block slides on; not on this boat. | Рельс поперёк лодки, по которому скользит нижний блок гика-шкота; на этой яхте его нет. |
+| Что делает / что значит | Many boats have a track across the cockpit or the coachroof with a car on it; the mainsheet runs from the car up to the boom. Sliding the car to leeward lets the boom out; sliding it back towards the middle brings the boom in, and the sheet's pull on the sail stays the same. So the car sets the boom's angle and the sheet sets how tight the back edge of the sail is. This boat has a German mainsheet instead: two blocks on the coachroof and both ends led to the cockpit, so the sheet does both jobs at once. | На многих лодках поперёк кокпита или рубки лежит рельс с кареткой; гика-шкот идёт от каретки вверх к гику. Если сдвинуть каретку под ветер, гик отпускается; если сдвинуть к середине, гик подбирается, а натяжение шкота на парус остаётся тем же. Так каретка задаёт угол гика, а шкот задаёт натяжение задней кромки паруса. На этой яхте вместо этого немецкая система гика-шкота: два блока на рубке и оба конца выведены в кокпит, так что шкот выполняет обе задачи сразу. |
+| На этой яхте | Not on this boat: shown as a picture only (Show it working). | Нет на этой яхте: показано только как картинка («Показать в работе»). |
+| Типичные ошибки | — | — |
+| «Покажи» | A picture of a traveller: a short track across the aft end of the coachroof with a car on it. The wind comes from starboard and the car is slid to port, so the boom is out to port. Use the slider to move the car and watch the boom follow. | Картинка тревеллера: короткий рельс поперёк задней части рубки с кареткой. Ветер дует справа, каретка сдвинута влево, поэтому гик выставлен влево. Двигайте каретку ползунком и смотрите, как гик следует за ней. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |

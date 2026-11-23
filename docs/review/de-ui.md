@@ -1187,3 +1187,5 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | picture.spinnaker | Picture: a symmetric spinnaker, not on this boat. | Bild: ein symmetrischer Spinnaker, nicht auf diesem Boot. |
 | picture.code0 | Picture: a code 0, not on this boat. | Bild: ein Code 0, nicht auf diesem Boot. |
 | picture.close | Close picture | Bild schließen |
+| picture.traveller | Picture: a mainsheet traveller, not on this boat. | Bild: ein Großschot-Traveller, nicht an diesem Boot. |
+| picture.travellerCar | Car | Wagen |
