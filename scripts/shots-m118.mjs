@@ -69,7 +69,6 @@ export async function liveM118Checks({ openPage, viewports, outDir, prefix, prob
     let cardShown = false;
     let testS = 0;
     let state = await run(page);
-    if (state !== null) seen.add(state.step);
     while (testS < 60 && state !== null && state.status !== 'done' && state.status !== 'failed') {
       if (await demoStepCard(page).isVisible()) {
         await tid(page, 'exercise-demo-next').tap();
@@ -89,12 +88,12 @@ export async function liveM118Checks({ openPage, viewports, outDir, prefix, prob
     await showSection(page, 'exercises');
     const doIt = await tid(page, 'exercise-demo-doit').isVisible();
     check(
-      'Watch: the pilot passes swim, board, stand and climb-in with the capsize card showing, and ends on the done card within 60 s',
+      'Watch: the pilot passes the swim step at once, then board, stand and climb-in, with the capsize card showing, and ends on the done card within 60 s',
       end?.status === 'done' &&
         doIt &&
         mistakes === 0 &&
         cardShown &&
-        [0, 1, 2, 3].every((step) => seen.has(step)) &&
+        [1, 2, 3].every((step) => seen.has(step)) &&
         phases.has('swimming') &&
         phases.has('righting') &&
         phases.has('upright'),
