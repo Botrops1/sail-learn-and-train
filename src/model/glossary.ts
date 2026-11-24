@@ -1,5 +1,6 @@
 import registry from '../../content/registry/parts.json';
 import { boatLabelsFor } from './boatLabels';
+import { HANSE_508, boatId, builtInBoat } from './boat';
 
 /** The facts' status (one per entry, language-neutral) and the text's (one per entry and language). */
 export type FactStatus = 'draft' | 'source-checked' | 'photo-confirmed' | 'sailor-reviewed';
@@ -42,23 +43,44 @@ export const GLOSSARIES: Readonly<Record<string, GlossaryFile>> = Object.fromEnt
   }),
 );
 
-/** The text of one entry in one language; undefined if that language or entry is missing (no fallback). */
-export function glossaryText(
-  id: string,
-  language: string = SOURCE_LANGUAGE,
-): GlossaryText | undefined {
-  return GLOSSARIES[language]?.entries[id];
-}
-
 type RegistryEntry = (typeof registry.entries)[number] & {
   controls?: string[];
   related?: string[];
   showMe?: string;
+  boats?: string[];
 };
 
 const ENTRIES: ReadonlyMap<string, RegistryEntry> = new Map(
   (registry.entries as RegistryEntry[]).map((entry) => [entry.id, entry]),
 );
+
+/** Whether a registry id is on a boat (M117): its `boats` list, and every boat when it has none. */
+export function partOnBoat(id: string, onBoatId: string): boolean {
+  const boats = ENTRIES.get(id)?.boats;
+  return boats === undefined || boats.includes(onBoatId);
+}
+
+/**
+ * The text of one entry in one language; undefined if that language or entry is missing (no
+ * fallback). The boat in use may have its own text for the entry (`<id>@<boatId>`, M117), which
+ * replaces the whole entry. On a built-in boat other than the Hanse 508, an entry without one has
+ * no "On this boat" block: its Hanse text would be wrong there.
+ */
+export function glossaryText(
+  id: string,
+  language: string = SOURCE_LANGUAGE,
+): GlossaryText | undefined {
+  const entries = GLOSSARIES[language]?.entries;
+  const own = entries?.[`${id}@${boatId}`];
+  if (own) return own;
+  const text = entries?.[id];
+  if (text?.onThisBoat === undefined || boatId === HANSE_508.meta.id || !builtInBoat(boatId)) {
+    return text;
+  }
+  const withoutHanseText = { ...text };
+  delete withoutHanseText.onThisBoat;
+  return withoutHanseText;
+}
 
 /** Everything the Learn tab shows for an entry: registry facts plus the text in one language. */
 export interface LearnEntry {
@@ -73,18 +95,19 @@ export interface LearnEntry {
   text: GlossaryText;
 }
 
+/** The entry of an id on the boat in use; undefined for an id that is not on it (M117). Controls and related ids not on the boat are left out. */
 export function learnEntry(id: string, language: string = SOURCE_LANGUAGE): LearnEntry | undefined {
   const entry = ENTRIES.get(id);
   const text = glossaryText(id, language);
-  if (!entry || !text) return undefined;
+  if (!entry || !text || !partOnBoat(id, boatId)) return undefined;
   return {
     id,
     kind: entry.kind,
     status: entry.status as FactStatus,
     sources: [...entry.sources],
     boatLabels: boatLabelsFor(id),
-    controls: [...(entry.controls ?? [])],
-    related: [...(entry.related ?? [])],
+    controls: (entry.controls ?? []).filter((other) => partOnBoat(other, boatId)),
+    related: (entry.related ?? []).filter((other) => partOnBoat(other, boatId)),
     showMeQuery: entry.showMe ?? null,
     text,
   };
@@ -185,11 +208,10 @@ export interface SearchHit {
 export function searchGlossary(query: string, language: string = SOURCE_LANGUAGE): SearchHit[] {
   const q = normalizeSearch(query);
   if (q === '') return [];
-  const entries = GLOSSARIES[language]?.entries ?? {};
   const hits: { hit: SearchHit; rank: number }[] = [];
   for (const entry of registry.entries) {
-    const text = entries[entry.id];
-    if (!text) continue;
+    const text = glossaryText(entry.id, language);
+    if (!text || !partOnBoat(entry.id, boatId)) continue;
     const name = normalizeSearch(text.name);
     let rank = -1;
     let matched: string | null = null;
@@ -220,11 +242,11 @@ const GROUP_OF: ReadonlyMap<string, string> = new Map(
   ),
 );
 
-/** The ids of a group, sorted by their name in the language (localeCompare with the language code). */
+/** The ids of a group on the boat in use, sorted by their name in the language (localeCompare with the language code). */
 export function groupEntries(group: GroupId, language: string = SOURCE_LANGUAGE): string[] {
   const nameOf = (id: string): string => glossaryText(id, language)?.name ?? id;
   return registry.entries
     .map((entry) => entry.id)
-    .filter((id) => GROUP_OF.get(id) === group)
+    .filter((id) => GROUP_OF.get(id) === group && partOnBoat(id, boatId))
     .sort((a, b) => nameOf(a).localeCompare(nameOf(b), language));
 }

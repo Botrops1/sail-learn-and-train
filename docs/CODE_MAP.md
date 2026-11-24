@@ -18,10 +18,10 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values, and the `features` the boat has. No numbers in code. |
 | `boat/dinghy.json` | The Training dinghy as an overlay on the Hanse file: only the keys that differ, its features (all off) and its `dinghy` block (centreboard, tiller, toe straps, cockpit, the sailor's seats, hands, crossing and eye). |
 | `audio/sounds.json` | Every number of the sound: group gains, smoothing, the wind, waves, hull, sails, engine, gear, marina, birds and the `music` block. No sound number in code. |
-| `registry/parts.json` | Every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group`, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
+| `registry/parts.json` | Every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group`, `boats`, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
 | `lang/<code>/ui.json` | UI strings of one language, read through `t()`; every language has the same keys as `en`, in the same order. |
 | `lang/latin-words.json` | The Latin words allowed on a Russian screen (instrument letters, makers, quoted foreign words). |
-| `lang/<code>/glossary.json` | The Learn entries of one language by registry id. `en` is the source; `ru` is an AI draft. Read through `model/glossary.ts`. |
+| `lang/<code>/glossary.json` | The Learn entries of one language by registry id. `en` is the source; `ru` is an AI draft. A key `<id>@<boat>` is a boat's own text for an entry. Read through `model/glossary.ts`. |
 | `areas/adriatic.json` | A sailing area: position, time zone, fetch per Waves setting, practice buoys, default clock, local winds, places, marina and bay. Loaded by id (`model/area.ts`). |
 
 ## `src/app/` (state and wiring)
@@ -78,10 +78,10 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `smallFittings.ts` | Small fittings as numbers: hull width at a height, portlights, shroud feet, stanchion bases, hatches, contact shadows. |
 | `helmPedestal.ts`, `helmPanel.ts` | The helm pedestal's places and frames; what the panel's instruments show (`panelReadings`, lever, joystick and needle angles). |
 | `realistic.ts`, `winch.ts` | Realistic mode: stations, clutches, winch leads (the gennaker's clutch-less sheets), wraps, self-tailer, handle, gearbox; capstan rule and winch physics. |
-| `labels3d.ts`, `registry.ts` | Where 3D labels sit; registry lookups (`partInfo`: name and one-liner from the glossary, words on the boat from `boatLabels.ts`). |
-| `boatLabels.ts` | The words printed on the boat for an id, from the clutch labels in the boat file. |
+| `labels3d.ts`, `registry.ts` | Where 3D labels sit; registry lookups (`partInfo`: name and one-liner from the glossary, words on the boat from `boatLabels.ts`; `partOnBoat`). |
+| `boatLabels.ts` | The words printed on the boat for an id, from the clutch labels in the boat file (none on a boat without winches). |
 | `languages.ts` | The available languages (from every `content/lang/*/ui.json`) and `latinAllowed`. |
-| `glossary.ts` | The glossaries by language, `learnEntry`, `NOT_DRAWN`, `FAR_AWAY`, `sourceLink`, groups and `searchGlossary`. |
+| `glossary.ts` | The glossaries by language (a boat's own text `<id>@<boat>` first), `partOnBoat`, `learnEntry`, `NOT_DRAWN`, `FAR_AWAY`, `sourceLink`, groups and `searchGlossary`; all list only ids on the boat in use. |
 | `horizonLand.ts` | The distant land's outline from the area's ridges (pure). |
 | `people.ts`, `figurePose.ts` | The captain: the deck points he stands at, where the mode, station and wheel put him, the walk along the windward side deck between stations, the dinghy sailor's seats, hands, crossing and place in a capsize, and the poses' joint angles (pure). |
 | `gennaker.ts` | The optional gennaker: rigging stage and side, the commands (rig, gybe), the sheets' route, what is drawn, and `solveGennaker` (foot angle, angle of attack, fill, the main hiding it) with its trim state. |

@@ -6,12 +6,16 @@ import registry from '../content/registry/parts.json';
 import { mpsToKn } from '../src/model/angles';
 import { DINGHY, HANSE_508, useBoat } from '../src/model/boat';
 import { boatLabelsFor } from '../src/model/boatLabels';
+import { BUILT_IN_BOATS } from '../src/model/boat';
+import { part } from '../src/ui/i18n';
 import {
   GLOSSARIES,
   GROUPS,
   glossaryText,
   groupEntries,
   learnEntry,
+  partOnBoat,
+  searchGlossary,
   FAR_AWAY,
   NOT_DRAWN,
   sourceLink,
@@ -187,6 +191,8 @@ const entries = registry.entries as {
   showMe?: string;
 }[];
 const REGISTRY_IDS = entries.map((entry) => entry.id);
+/** M117: a key `<id>@<boatId>` is a boat's own text for an entry. */
+const isOwnText = (key: string): boolean => key.includes('@');
 
 const nonEmpty = (text: string | undefined): boolean =>
   typeof text === 'string' && text.trim() !== '';
@@ -209,8 +215,35 @@ describe('glossary files (PHASE4_SPEC 6.8)', () => {
     for (const code of LANGUAGES) {
       const file = must(GLOSSARIES[code], code);
       expect(file.language, code).toBe(code);
-      expect(Object.keys(file.entries), code).toEqual(REGISTRY_IDS);
+      expect(
+        Object.keys(file.entries).filter((key) => !isOwnText(key)),
+        code,
+      ).toEqual(REGISTRY_IDS);
     }
+  });
+
+  it('1b. every @ key names a registry id and a built-in boat; every language has the same @ keys as en', () => {
+    const ownKeys = (code: string): string[] =>
+      Object.keys(must(GLOSSARIES[code], code).entries).filter(isOwnText);
+    const english = ownKeys('en');
+    expect(english.length).toBeGreaterThan(0);
+    for (const key of english) {
+      const [id, boatOf] = key.split('@');
+      expect(REGISTRY_IDS, key).toContain(id);
+      expect(
+        BUILT_IN_BOATS.map((boat) => boat.id),
+        key,
+      ).toContain(boatOf);
+      // The boat's text replaces the whole entry: every field of a complete entry is there.
+      for (const code of LANGUAGES) {
+        const text = must(GLOSSARIES[code]?.entries[key], `${code}/${key}`);
+        expect(nonEmpty(text.name), `${code}/${key}`).toBe(true);
+        expect(nonEmpty(text.short), `${code}/${key}`).toBe(true);
+        expect(nonEmpty(text.what), `${code}/${key}`).toBe(true);
+        expect(text.textStatus, `${code}/${key}`).toBe('draft');
+      }
+    }
+    for (const code of LANGUAGES) expect(ownKeys(code), code).toEqual(english);
   });
 
   it('2. names, alternatives and text status are well formed', () => {
@@ -614,9 +647,14 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
   });
 
   it('the groups have the expected sizes and members', () => {
+    // The Hanse 508's list (M117: without the dinghy's own parts).
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      19, 13, 15, 10, 22, 27, 13, 14, 34, 10, 20,
+      19, 13, 15, 9, 22, 23, 13, 14, 34, 10, 20,
     ]);
+    // The registry as a whole: the hull and the cockpit hold the dinghy's parts, sailing its two terms (M117).
+    const inRegistry = (group: string): number =>
+      (entries as { group?: string }[]).filter((entry) => entry.group === group).length;
+    expect(GROUPS.map(inRegistry)).toEqual([19, 13, 15, 10, 22, 27, 13, 14, 36, 10, 20]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',
       part_telltale: 'sails',
@@ -635,6 +673,155 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
     };
     for (const [id, group] of Object.entries(samples)) {
       expect(groupEntries(group as (typeof GROUPS)[number]), id).toContain(id);
+    }
+  });
+});
+
+describe('M117: Learn per boat (PHASE_DINGHY_SPEC 11)', () => {
+  const onDinghy = <T>(body: () => T): T => {
+    useBoat(DINGHY.id, DINGHY.name, DINGHY.data);
+    try {
+      return body();
+    } finally {
+      useBoat(HANSE_508.meta.id, HANSE_508.meta.name, HANSE_508);
+    }
+  };
+
+  it('2. partOnBoat reads the registry boats field', () => {
+    expect(partOnBoat('fit_winch', 'dinghy')).toBe(false);
+    expect(partOnBoat('part_tiller', 'hanse508')).toBe(false);
+    expect(partOnBoat('rope_mainsheet', 'dinghy')).toBe(true);
+    expect(partOnBoat('rope_mainsheet', 'hanse508')).toBe(true);
+    expect(partOnBoat('term_hiking', 'dinghy')).toBe(true);
+    expect(partOnBoat('term_hiking', 'hanse508')).toBe(false);
+    expect(partOnBoat('term_heel', 'dinghy')).toBe(true);
+    expect(partOnBoat('sail_gennaker', 'dinghy')).toBe(false);
+  });
+
+  it('3. the boat in use decides the name and the text', () => {
+    expect(part('rope_vang')?.name).toBe('Vang');
+    expect(learnEntry('rope_vang')?.text.what).toMatch(/rigid vang|runs from low on the mast/);
+    onDinghy(() => {
+      expect(part('rope_vang')?.name).toBe('Kicker');
+      expect(learnEntry('rope_vang')?.text.name).toBe('Kicker');
+      expect(learnEntry('rope_vang')?.text.onThisBoat).toBeFalsy();
+      expect(learnEntry('term_capsize')?.text.what).toMatch(/centreboard/);
+      expect(learnEntry('term_hiking')?.text.alternatives.map((alt) => alt.term)).toEqual([
+        'hiking',
+        'sitting out',
+      ]);
+    });
+    expect(part('rope_vang')?.name).toBe('Vang');
+  });
+
+  it('on the dinghy an entry without its own text has no "On this boat" block', () => {
+    expect(learnEntry('part_boom')?.text.onThisBoat).toBeTruthy();
+    onDinghy(() => {
+      expect(glossaryText('part_boom')?.onThisBoat).toBeUndefined();
+      expect(glossaryText('part_boom')?.what).toBeTruthy();
+    });
+  });
+
+  it('an id that is not on the boat has no entry, no hit and no place in the list, and links to it are left out', () => {
+    expect(learnEntry('part_tiller')).toBeUndefined();
+    expect(learnEntry('term_capsize')).toBeUndefined();
+    expect(searchGlossary('tiller').length).toBe(0);
+    expect(groupEntries('sailing')).not.toContain('term_hiking');
+    onDinghy(() => {
+      expect(learnEntry('fit_winch')).toBeUndefined();
+      expect(learnEntry('part_tiller')?.id).toBe('part_tiller');
+      expect(searchGlossary('winch')).toEqual([]);
+      expect(searchGlossary('tiller').map((hit) => hit.id)).toEqual([
+        'part_tiller',
+        'part_tiller_extension',
+      ]);
+      expect(groupEntries('sailing')).toContain('term_capsize');
+      for (const group of GROUPS) {
+        for (const id of groupEntries(group)) {
+          const entry = learnEntry(id);
+          expect(entry, id).toBeDefined();
+          for (const other of [...(entry?.related ?? []), ...(entry?.controls ?? [])]) {
+            expect(partOnBoat(other, 'dinghy'), `${id} -> ${other}`).toBe(true);
+          }
+        }
+      }
+      // part_boom's controls: the topping lift is not on the dinghy.
+      expect(learnEntry('part_boom')?.controls).toEqual(['rope_mainsheet', 'rope_vang']);
+    });
+  });
+
+  it('the words printed on the boat are the Hanse’s: none on the dinghy', () => {
+    expect(boatLabelsFor('rope_vang')).toEqual(['Vang']);
+    onDinghy(() => {
+      expect(boatLabelsFor('rope_vang')).toEqual([]);
+      expect(boatLabelsFor('rope_outhaul')).toEqual([]);
+    });
+  });
+
+  it('the shared ids stay on both boats, and the Hanse-only groups are marked', () => {
+    const hanseOnlyGroups = new Set(['hull', 'deck', 'cockpit', 'rig', 'ropes', 'harbour']);
+    const both = new Set([
+      'part_hull',
+      'part_bow',
+      'part_stern',
+      'part_rudder',
+      'part_deck',
+      'part_cockpit',
+      'part_mast',
+      'part_boom',
+      'part_gooseneck',
+      'part_windex',
+      'rope_mainsheet',
+      'rope_vang',
+      'rope_outhaul',
+      'person_captain',
+      'env_exercise_target',
+    ]);
+    const boatsOf = (entry: { id: string }): string[] | undefined =>
+      (entry as { boats?: string[] }).boats;
+    for (const entry of entries as { id: string; group?: string }[]) {
+      if (both.has(entry.id)) expect(boatsOf(entry), entry.id).toBeUndefined();
+      else if (hanseOnlyGroups.has(entry.group ?? '') && boatsOf(entry)?.[0] !== 'dinghy') {
+        expect(boatsOf(entry), entry.id).toEqual(['hanse508']);
+      }
+    }
+    for (const id of [
+      'part_tiller',
+      'part_tiller_extension',
+      'part_centreboard',
+      'fit_toe_straps',
+      'fit_ratchet_block',
+      'term_hiking',
+      'term_capsize',
+    ]) {
+      expect(boatsOf({ id, ...(entries.find((e) => e.id === id) as object) }), id).toEqual([
+        'dinghy',
+      ]);
+    }
+    for (const id of [
+      'sail_jib',
+      'sail_gennaker',
+      'part_gennaker_sock',
+      'sail_spinnaker',
+      'sail_code_zero',
+      'term_lazy_sheet',
+      'term_prop_walk',
+      'term_downwind_sails',
+      'term_med_mooring',
+    ]) {
+      expect(boatsOf({ id, ...(entries.find((e) => e.id === id) as object) }), id).toEqual([
+        'hanse508',
+      ]);
+    }
+  });
+
+  it('the dinghy’s two new terms carry their sources and a scene set on the dinghy', () => {
+    for (const id of ['term_hiking', 'term_capsize']) {
+      const entry = entries.find((candidate) => candidate.id === id);
+      expect(entry?.status).toBe('draft');
+      expect(entry?.showMe, id).toContain('boat=dinghy');
+      expect(entry?.sources, id).toEqual([id === 'term_hiking' ? 'wiki:hiking' : 'wiki:capsizing']);
+      expect(sourceLink(entry?.sources[0] ?? '', 'https://example.test')?.kind, id).toBe('url');
     }
   });
 });

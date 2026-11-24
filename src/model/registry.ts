@@ -1,6 +1,8 @@
 import registry from '../../content/registry/parts.json';
 import { boatLabelsFor } from './boatLabels';
-import { glossaryText } from './glossary';
+import { glossaryText, partOnBoat } from './glossary';
+
+export { partOnBoat };
 
 /** Every id the app may attach to a mesh or rope (content/registry/parts.json). */
 const KNOWN_IDS: ReadonlySet<string> = new Set(registry.entries.map((entry) => entry.id));

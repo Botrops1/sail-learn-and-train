@@ -858,6 +858,17 @@ PR: `Closes #278`. Done when Learn on the dinghy lists only its parts and terms 
 
 Not in this milestone: dinghy texts beyond 11.2 (a later "Learn texts per boat" pass can add more `@dinghy` keys as data).
 
+### 11.8 Decided in the M117 PR (recommended; merging accepts it)
+
+1. **The outhaul text says "Pulled tight", not "Hauled tight".** The rule of M100 (`tests/sailorWords.test.ts`: no "haul" in English text) fails on the spec's wording; the rest of the sentence is as written.
+2. **The two new terms have a "Show it working" text**, which test 4 of the glossary tests requires wherever the registry has a scene. It names the real buttons: for `term_hiking` it says that "Sit in" in the Balance section tips her right over (16 kn, sheet 55: PT-76), for `term_capsize` "Swim round to the centreboard" and "Stand on the centreboard". The `@dinghy` entries have no scene text (their ids' scenes are the Hanse's, which the dinghy does not show, 11.6a.4).
+3. **`learnEntry` itself returns nothing for an id that is not on the boat**, and drops the ids not on the boat from its `related` and `controls` lists: so "See also" and "Try it" follow the boat without their own filter (11.3 names the Related links; the Try it buttons follow the same rule, for example the topping lift on the boom's entry).
+4. **The Hanse's list is the one it had before M113.** M113 added the dinghy's five parts to the registry without a `boats` field, so they showed on the Hanse until now: `hull` is 9 entries and `cockpit` 23 (was 10 and 27), the registry as a whole has `sailing` 36. The Hanse's group sizes in `tests/glossary.test.ts` say so.
+5. **"On this boat" on a built-in boat other than the Hanse**: an entry with no `@` text has no such block (11.6a.1); a boat from a profile keeps the Hanse text and its "written for the Hanse 508" note, as before.
+6. **The review documents** list each `@dinghy` entry under its id with a line "On the training dinghy:" in the language's own words (`WORDING.onDinghy` in `scripts/review-doc.mjs`), as a table of name, other names, short, text, status and the check row.
+7. **Related ids of the two new terms:** `term_hiking` → `fit_toe_straps`, `term_heel`, `rope_mainsheet`; `term_capsize` → `part_centreboard`, `term_heel`, `rope_mainsheet`. `fit_toe_straps` now cites `wiki:hiking` (as 8.2's note said it would).
+8. **Languages:** the German, Norwegian and Russian texts are AI drafts and quote the real button names of each language (`dinghy.sit.in`, `capsize.swim`, `capsize.stand`).
+
 ## 12. M118: Dinghy exercises
 
 **Independent review: required** (teaches handling and what to do in a capsize; new exercise checks).

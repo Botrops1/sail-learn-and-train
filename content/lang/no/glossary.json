@@ -896,7 +896,10 @@
     "term_line": {
       "name": "Line",
       "alternatives": [
-        { "term": "tau", "note": "materialet, før det har en oppgave" }
+        {
+          "term": "tau",
+          "note": "materialet, før det har en oppgave"
+        }
       ],
       "short": "Alle tau som har en jobb på en båt.",
       "what": "Om bord får et tau navn etter jobben sin: en skjøt trimmer et seil, et fall heiser det, en fortøyning holder båten. Til sammen er de linene. Seilere sier «tau» om tau som ennå ikke har noen jobb, for eksempel en ny rull.",
@@ -1481,6 +1484,30 @@
         }
       ],
       "showMe": "20 kn med seilene hentet inn: båten krenger omtrent 30°. Fire storskjøtet i «Tau»-seksjonen, så retter båten seg opp.",
+      "textStatus": "draft"
+    },
+    "term_hiking": {
+      "name": "Å sitte ut (hiking)",
+      "alternatives": [
+        {
+          "term": "hiking"
+        }
+      ],
+      "short": "Å sitte på siden med føttene under fotstroppene og kroppen ut over vannet.",
+      "what": "Å sitte på siden med føttene under fotstroppene og kroppen ut over vannet. Vekten din holder da båten oppe mot vindens press på seilet. Jo hardere det blåser, jo lenger ut lener du deg; i lett vind sitter du inn, ellers heller båten mot deg.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "showMe": "Jolla sett forfra i sterk vind, mens du lener deg ut: vekten din holder henne flat. Trykk «Sitt inne» i seksjonen Balanse, så velter hun helt: da ser du hvorfor man lener seg ut.",
+      "textStatus": "draft"
+    },
+    "term_capsize": {
+      "name": "Kantring",
+      "alternatives": [],
+      "short": "Når en jolle velter og ligger på siden.",
+      "what": "Når en jolle velter og ligger på siden. Det hører med til å lære å seile. Bli ved båten, svøm rundt hekken til sentralbordet, pass på at det er skjøvet ned, og stå på det: vekten din henter henne opp. Slipp storskjøtet før hun kommer opp, så hun ikke seiler av gårde uten deg.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "showMe": "Jolla ligger på siden med seileren i vannet. Trykk «Svøm til slepekjølen» og deretter «Stå på slepekjølen»: hun kommer opp.",
       "textStatus": "draft"
     },
     "term_weather_helm": {
@@ -2221,7 +2248,11 @@
     },
     "person_captain": {
       "name": "Kaptein (du)",
-      "alternatives": [{ "term": "Skipper" }],
+      "alternatives": [
+        {
+          "term": "Skipper"
+        }
+      ],
       "short": "Personen som har ansvaret for båten: i appen er det deg.",
       "what": "Figuren på dekk er deg, kapteinen (også kalt skipper): personen som er ansvarlig for båten og alle om bord. Når du styrer, står du bak et ratt. I modusen «Realistisk» står du på stasjonen du jobber fra: ved en vinsj, ved masta eller i baugen. Velger du en annen stasjon, går du dit langs dekket, på den siden vinden kommer fra, og du kan betjene tauene der når du er framme. Rorvisningen ser gjennom øynene dine, så der ser du ikke deg selv.",
       "showMe": "Kapteinen står bak babord ratt og styrer.",
@@ -2341,7 +2372,11 @@
     },
     "part_traveller_track": {
       "name": "Travellerskinne",
-      "alternatives": [{ "term": "Traveller" }],
+      "alternatives": [
+        {
+          "term": "Traveller"
+        }
+      ],
       "short": "En skinne på tvers av båten som storskjøtets nedre blokk glir på; ikke på denne båten.",
       "what": "Mange båter har en skinne på tvers i cockpiten eller på dekkshuset med en vogn på; storskjøtet går fra vognen opp til bommen. Skyver du vognen mot le, gir du ut bommen; skyver du den mot midten, henter du bommen inn, og trekket i seilet er det samme. Vognen bestemmer altså bommens vinkel, og skjøtet bestemmer hvor stram seilets bakkant er. Denne båten har tysk storskjøt i stedet: to blokker på dekkshuset og begge ender ført til cockpiten, så skjøtet gjør begge jobbene på en gang.",
       "showMe": "Et bilde av en traveller: en kort skinne på tvers over bakkanten av dekkshuset med en vogn på. Vinden kommer fra styrbord og vognen er skjøvet mot babord, så bommen står ut mot babord. Bruk glidebryteren for å flytte vognen og se bommen følge etter.",
@@ -2364,6 +2399,69 @@
       "what": "Det har én jobb: å bestemme hvor stram seilets bakkant er. Bommens vinkel er vognens jobb.",
       "showMe": "Linen fra vognen opp til bommen. Den er omtrent like lang uansett hvor vognen står.",
       "onThisBoat": "Ikke på denne båten: vises bare som et bilde (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_outhaul@dinghy": {
+      "name": "Utholer",
+      "alternatives": [],
+      "short": "Tauet som drar bakre nedre hjørne av seilet ut langs bommen.",
+      "what": "Tauet som drar bakre nedre hjørne av seilet ut langs bommen. Hardt tatt inn er seilet flatere og lettere å holde i sterk vind; firet er det fyldigere og kraftigere i lett vind.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "rope_vang@dinghy": {
+      "name": "Kicker",
+      "alternatives": [],
+      "short": "Tauet fra foten av masta til bommen.",
+      "what": "Tauet fra foten av masta til bommen. Tatt hardt inn holder det bommen nede, så seilet holder seg flatere og ikke vrir seg åpent i toppen; firet løfter bommen seg og toppen av seilet slipper ut vind.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "rope_mainsheet@dinghy": {
+      "name": "Storskjøt",
+      "alternatives": [],
+      "short": "Tauet som drar bommen inn.",
+      "what": "Tauet som drar bommen inn. På denne jolla går det fra enden av bommen til en skralleblokk på gulvet, og du holder det i hånden. Slipper du det, slår seilet: båten bremser og retter seg opp.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "part_rudder@dinghy": {
+      "name": "Ror",
+      "alternatives": [],
+      "short": "Bladet som henger på baksiden av båten og styrer den.",
+      "what": "Bladet som henger på baksiden av båten og styrer den. Du flytter det med rorpinnen: rorpinnen mot babord, og båten svinger mot styrbord.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "part_mast@dinghy": {
+      "name": "Mast",
+      "alternatives": [],
+      "short": "Staken som holder seilet oppe.",
+      "what": "Staken som holder seilet oppe. På denne jolla har den ingen wirer som holder den: den står i et hull i dekket og bøyer seg litt i et vindkast.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "person_captain@dinghy": {
+      "name": "Seiler (du)",
+      "alternatives": [],
+      "short": "Det er deg.",
+      "what": "Det er deg. Du sitter på siden motsatt av bommen, med rorpinneforlengeren i den bakre hånden og storskjøtet i den fremre. I en vending eller en kråkevending flytter du deg over båten.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "term_heel@dinghy": {
+      "name": "Krenging",
+      "alternatives": [],
+      "short": "Båten som heller.",
+      "what": "Båten som heller. En jolle har ingen tung kjøl: din egen vekt holder henne oppe. Len deg ut for å holde henne flat, eller fire storskjøtet; heller hun mot deg, sitt inn.",
+      "onThisBoat": "",
+      "mistakes": [],
       "textStatus": "draft"
     }
   }

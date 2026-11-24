@@ -917,7 +917,10 @@
     "term_line": {
       "name": "Line",
       "alternatives": [
-        { "term": "rope", "note": "the material, before it has a job" }
+        {
+          "term": "rope",
+          "note": "the material, before it has a job"
+        }
       ],
       "short": "Any rope that has a job on a boat.",
       "what": "On a boat a rope is named after its job: a sheet trims a sail, a halyard hoists it, a mooring line holds the boat. Together they are the lines. Sailors say “rope” for rope that has no job yet, such as a new coil.",
@@ -1476,7 +1479,11 @@
     },
     "term_burin": {
       "name": "Burin",
-      "alternatives": [{ "term": "land breeze" }],
+      "alternatives": [
+        {
+          "term": "land breeze"
+        }
+      ],
       "short": "The light night breeze that blows off the land on the Adriatic coast.",
       "what": "At night the land cools faster than the sea, so a light breeze blows from the land out to sea: the burin. It is weaker than the day's sea breeze (the maestral) and dies in the morning.",
       "textStatus": "draft"
@@ -1497,6 +1504,33 @@
         }
       ],
       "showMe": "20 kn with the sails trimmed in: she heels about 30°. Ease the mainsheet in the Lines section and she stands up.",
+      "textStatus": "draft"
+    },
+    "term_hiking": {
+      "name": "Leaning out (hiking)",
+      "alternatives": [
+        {
+          "term": "hiking"
+        },
+        {
+          "term": "sitting out"
+        }
+      ],
+      "short": "Sitting on the side with your feet under the toe straps and your body out over the water.",
+      "what": "Sitting on the side with your feet under the toe straps and your body out over the water. Your weight then holds the boat up against the wind's push on the sail. The harder it blows, the further you lean out; in light wind you sit in, or the boat tips towards you.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "showMe": "The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she tips right over, so you can see why you lean out.",
+      "textStatus": "draft"
+    },
+    "term_capsize": {
+      "name": "Capsize",
+      "alternatives": [],
+      "short": "When a dinghy tips over and lies on its side.",
+      "what": "When a dinghy tips over and lies on its side. It is part of learning to sail one. Stay with the boat, swim round the stern to the centreboard, make sure it is pushed down, and stand on it: your weight brings her up. Let the mainsheet go before she comes up so she does not sail off without you.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "showMe": "The dinghy lies on her side with the sailor in the water. Tap “Swim round to the centreboard”, then “Stand on the centreboard”: she comes up.",
       "textStatus": "draft"
     },
     "term_weather_helm": {
@@ -1920,7 +1954,11 @@
     },
     "fit_helm_pedestal": {
       "name": "Wheel pedestal",
-      "alternatives": [{ "term": "binnacle" }],
+      "alternatives": [
+        {
+          "term": "binnacle"
+        }
+      ],
       "short": "The column in front of each wheel that carries the compass and the controls.",
       "what": "The wheel’s axle runs into the pedestal. On top sits a small panel with the compass and the instruments, and a steel guard rail in front of it gives you something to hold and keeps knees and lines off the instruments.",
       "onThisBoat": "One pedestal at each wheel, each with the same panel: the compass, the wind display, the engine lever and the rev counter, the thruster joysticks and the autopilot keys. The drawing is a guess: there is no photo of the pedestal yet.",
@@ -2227,7 +2265,11 @@
     },
     "person_captain": {
       "name": "Captain (you)",
-      "alternatives": [{ "term": "Skipper" }],
+      "alternatives": [
+        {
+          "term": "Skipper"
+        }
+      ],
       "short": "The person in charge of the boat: in the app, you.",
       "what": "The figure on deck is you, the captain (also called the skipper): the person responsible for the boat and everyone on board. When you steer, you stand behind a wheel. In Realistic mode you stand at the station you work from: by a winch, at the mast or at the bow. Picking another station makes you walk there along the deck, on the side the wind comes from, and you can work its lines when you arrive. The Helm view looks through your eyes, so there you do not see yourself.",
       "showMe": "The captain stands behind the port wheel, steering.",
@@ -2373,6 +2415,69 @@
       "what": "It does one job: it sets how tight the sail's back edge is. The boom's angle is the car's job.",
       "showMe": "The line from the car up to the boom. It stays about the same length wherever the car is.",
       "onThisBoat": "Not on this boat: shown as a picture only (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_outhaul@dinghy": {
+      "name": "Outhaul",
+      "alternatives": [],
+      "short": "The line that pulls the bottom back corner of the sail out along the boom.",
+      "what": "The line that pulls the bottom back corner of the sail out along the boom. Pulled tight, the sail is flatter and easier to hold in a strong wind; eased, it is fuller and more powerful in light wind.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "rope_vang@dinghy": {
+      "name": "Kicker",
+      "alternatives": [],
+      "short": "The line from the bottom of the mast to the boom.",
+      "what": "The line from the bottom of the mast to the boom. Pulled tight it holds the boom down, so the sail stays flatter and does not twist open at the top; eased, the boom lifts and the top of the sail spills wind.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "rope_mainsheet@dinghy": {
+      "name": "Mainsheet",
+      "alternatives": [],
+      "short": "The line that pulls the boom in.",
+      "what": "The line that pulls the boom in. On this dinghy it runs from the end of the boom to a ratchet block on the floor and you hold it in your hand. Let it go and the sail flaps: the boat slows down and comes upright.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "part_rudder@dinghy": {
+      "name": "Rudder",
+      "alternatives": [],
+      "short": "The blade hung on the back of the boat that steers her.",
+      "what": "The blade hung on the back of the boat that steers her. You move it with the tiller: tiller to port, the boat turns to starboard.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "part_mast@dinghy": {
+      "name": "Mast",
+      "alternatives": [],
+      "short": "The pole that holds the sail up.",
+      "what": "The pole that holds the sail up. On this dinghy it has no wires holding it: it stands in a hole in the deck and bends a little in a gust.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "person_captain@dinghy": {
+      "name": "Sailor (you)",
+      "alternatives": [],
+      "short": "That is you.",
+      "what": "That is you. You sit on the side opposite the boom, the tiller extension in your back hand and the mainsheet in your front hand. In a tack or a gybe you move across the boat.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "term_heel@dinghy": {
+      "name": "Heel",
+      "alternatives": [],
+      "short": "The boat leaning over.",
+      "what": "The boat leaning over. A dinghy has no heavy keel: your own weight holds her up. Lean out to keep her flat, or let the mainsheet out; if she leans towards you, sit in.",
+      "onThisBoat": "",
+      "mistakes": [],
       "textStatus": "draft"
     }
   }

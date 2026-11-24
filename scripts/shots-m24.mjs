@@ -21,7 +21,10 @@ export async function liveM24Checks({ openPage, viewports, outDir, prefix, probl
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
 
   // 1. What to expect: from the registry, read in Node.
-  const registry = readJson('content/registry/parts.json').entries;
+  // M117: the Hanse 508's entries (the run opens the Hanse); the dinghy's own parts and terms are not in its list.
+  const registry = readJson('content/registry/parts.json').entries.filter(
+    (entry) => !entry.boats || entry.boats.includes('hanse508'),
+  );
   const groups = new Set(registry.map((entry) => entry.group));
   const showMeIds = registry.filter((entry) => entry.showMe).map((entry) => entry.id);
   check('the registry has ids', registry.length > 0, String(registry.length));

@@ -1,12 +1,32 @@
 import { describe, expect, it } from 'vitest';
 import registry from '../content/registry/parts.json';
+import { BUILT_IN_BOATS } from '../src/model/boat';
 import { boatLabelsFor } from '../src/model/boatLabels';
-import { isRegisteredPartId, partInfo, requirePartId } from '../src/model/registry';
+import { isRegisteredPartId, partInfo, partOnBoat, requirePartId } from '../src/model/registry';
 
 describe('part registry', () => {
   it('ids are unique', () => {
     const ids = registry.entries.map((entry) => entry.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('the boats field, where an entry has one, lists built-in boat ids, each once', () => {
+    const builtIn = BUILT_IN_BOATS.map((boat) => boat.id);
+    for (const entry of registry.entries as { id: string; boats?: string[] }[]) {
+      if (entry.boats === undefined) continue;
+      expect(Array.isArray(entry.boats), entry.id).toBe(true);
+      expect(entry.boats.length, entry.id).toBeGreaterThan(0);
+      expect(new Set(entry.boats).size, entry.id).toBe(entry.boats.length);
+      for (const boatOf of entry.boats) expect(builtIn, entry.id).toContain(boatOf);
+    }
+  });
+
+  it('partOnBoat: an entry without boats is on every boat', () => {
+    expect(partOnBoat('fit_winch', 'dinghy')).toBe(false);
+    expect(partOnBoat('part_tiller', 'hanse508')).toBe(false);
+    expect(partOnBoat('rope_mainsheet', 'dinghy')).toBe(true);
+    expect(partOnBoat('term_gybe', 'dinghy')).toBe(true);
+    expect(partOnBoat('part_made_up', 'dinghy')).toBe(true);
   });
 
   it('an invented id fails loudly', () => {
