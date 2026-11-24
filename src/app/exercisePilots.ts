@@ -1,6 +1,7 @@
 import { wrap180 } from '../model/angles';
 import { area } from '../model/area';
 import type { ControlId } from '../model/controls';
+import { atBoard, type DinghyCommand } from '../model/dinghy';
 import { boatPoint, exerciseDef, twaSignedDeg, type ExerciseLevel } from '../model/exercises';
 import { marinaGeometry } from '../model/marina';
 import type { RealisticAction, StationId } from '../model/realistic';
@@ -442,6 +443,108 @@ export function gybingPilot(): Pilot {
     }
   };
 }
+// ---- the Training dinghy (M118, PHASE_DINGHY_SPEC 12.3) ----------------------------------------
+
+const dinghy = (s: AppState, command: DinghyCommand) => A(s, { type: 'dinghy', command });
+const sheet = (s: AppState, pct: number) => ctl(s, { ctl_mainsheet: pct });
+/**
+ * The dinghy's heading hold: the rudder that steers the wind angle towards `targetTwa` (signed, +
+ * = wind over starboard). A boat that turns to starboard (rudder +) lowers the signed angle, so the
+ * error is `twa − target` (the spec's formula, 12.3, with the sign that settles on the target).
+ */
+const holdTwa = (s: AppState, targetTwa: number) =>
+  rudder(s, Math.round(clamp(1.5 * (twaSignedDeg(s) - targetTwa), -30, 30)));
+/** The hold towards the middle of the step's `twaDeg`, on the tack the step names (else the tack she is on). */
+function holdStepTwa(s: AppState): AppState {
+  const run = s.exercise;
+  const check = run ? exerciseDef(run.id)?.steps[run.step]?.check : undefined;
+  if (!check?.twaDeg) return s;
+  const side =
+    check.tack === 'port' ? -1 : check.tack === 'starboard' ? 1 : twaSignedDeg(s) < 0 ? -1 : 1;
+  return holdTwa(s, (side * (check.twaDeg[0] + check.twaDeg[1])) / 2);
+}
+
+/**
+ * Go and stop: beam reach, the sheet at 50, 100, 50 %. (The spec says 40, but on this beam reach
+ * the sail reads Stalled there and Good starts at about 45: decided in the M118 PR.)
+ */
+export function dinghyGoStopPilot(): Pilot {
+  return (s) => {
+    const sign = twaSignedDeg(s) < 0 ? -1 : 1;
+    const held = holdTwa(s, sign * 90);
+    switch (s.exercise?.step) {
+      case 0:
+        return sheet(held, 50);
+      case 1:
+        return sheet(held, 100);
+      case 2:
+        return sheet(held, 50);
+      default:
+        return held;
+    }
+  };
+}
+
+/** Tack: hold close-hauled, rudder +30 (towards the wind on starboard tack) through the tack, sit on the side on the new tack. */
+export function dinghyTackPilot(): Pilot {
+  const once = onceMaker();
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 0:
+        return holdStepTwa(s);
+      case 1:
+        return rudder(s, 30);
+      case 2:
+        return holdStepTwa(once(s, 'sit', (x) => dinghy(x, { kind: 'sit', sit: 'side' })));
+      default:
+        return s;
+    }
+  };
+}
+
+/**
+ * Gybe: hold the run with the sheet hauled in to 8 % (the boom must be within 20° of the middle at
+ * the gybe, or it is an accidental gybe; the spec's 60 % leaves it 50° out), rudder −30 until the
+ * boom has crossed, then the hold on the broad reach with the sheet eased: decided in the M118 PR.
+ */
+export function dinghyGybePilot(): Pilot {
+  return (s) => {
+    switch (s.exercise?.step) {
+      case 0:
+        return sheet(holdStepTwa(s), 8);
+      case 1:
+        return rudder(sheet(s, 8), -30);
+      case 2:
+        return sheet(holdStepTwa(s), 50);
+      default:
+        return s;
+    }
+  };
+}
+
+/** Capsize: swim round, push the board down once at it, stand on it, then sit on the side. */
+export function dinghyCapsizePilot(): Pilot {
+  const capsize = (s: AppState, command: 'swim' | 'boardDown' | 'stand') =>
+    dinghy(s, { kind: 'capsize', command });
+  return (s) => {
+    const c = s.dinghy.capsize;
+    switch (s.exercise?.step) {
+      case 0:
+        return c.phase === 'over' ? capsize(s, 'swim') : s;
+      case 1:
+        return atBoard(c) ? capsize(s, 'boardDown') : s;
+      case 2:
+        return capsize(s, 'stand');
+      case 3:
+        return c.phase === 'upright' && s.dinghy.sit !== 'side'
+          ? dinghy(s, { kind: 'sit', sit: 'side' })
+          : s;
+      default:
+        return s;
+    }
+  };
+}
+
 const gennakerCmd = (s: AppState, command: 'next' | 'back' | 'gybe') =>
   A(s, { type: 'gennaker', command });
 /** The gennaker, rigged step by step at the bow, set with its sock and trimmed on a broad reach. */
@@ -765,6 +868,22 @@ export function furlSailsRealisticPilot(): Pilot {
  * (M82) Setting and Furling the sails also in Realistic ropes.
  */
 export function pilotFor(id: string, level: ExerciseLevel, ropes: RopesMode): Pilot | null {
+  if (exerciseDef(id)?.group === 'dinghy') {
+    // M118: the dinghy's four exercises run in Easy ropes only.
+    if (ropes !== 'easy') return null;
+    switch (id) {
+      case 'dinghy-go-stop':
+        return dinghyGoStopPilot();
+      case 'dinghy-tack':
+        return dinghyTackPilot();
+      case 'dinghy-gybe':
+        return dinghyGybePilot();
+      case 'dinghy-capsize':
+        return dinghyCapsizePilot();
+      default:
+        return null;
+    }
+  }
   if (exerciseDef(id)?.group === 'harbour') {
     switch (id) {
       case 'leave-berth':

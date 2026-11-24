@@ -938,5 +938,138 @@
         "fix": "Start på nytt og fire ut mer kjetting, omtrent 60 m, før linen går i land."
       }
     }
+  },
+  "dinghy-go-stop": {
+    "title": "Gå og stoppe",
+    "summary": "En jolle går når seilet trekker, og stopper når du slipper storskjøtet.",
+    "see": "Vinden kommer fra siden, og storskjøtet (tauet som trekker seilet inn) er slakket helt ut, så seilet slår og båten har ingen fremdrift.",
+    "happening": "Et seil driver båten bare mens det er trukket inn nok til at det slutter å slå. Når storskjøtet er sluppet, skyver seilet ingenting: båten bremser og stopper, og krengingen forsvinner også. Å slippe storskjøtet er den raskeste bremsen en seiljolle har.",
+    "action": "Trekk inn storskjøtet til seilet akkurat slutter å slå og båten tar fart; slipp det for å stoppe; trekk det inn igjen for å seile videre.",
+    "mistake": "Å holde storskjøtet stramt når båten krenger mye: den kan kantre. Slipp storskjøtet, så reiser den seg.",
+    "done": "Du startet og stoppet båten med storskjøtet alene. Husk det: krenger båten for mye eller går noe galt, slipp storskjøtet.",
+    "steps": {
+      "pull-in": {
+        "goal": "Trekk inn storskjøtet til seilet slutter å slå og båten tar fart.",
+        "how": "Trykk − på Storskjøt (det trekker tauet inn) til seilet viser Bra og farten på stripen passerer 3 knop. Hold det slik i fem sekunder."
+      },
+      "stop": {
+        "goal": "Slipp storskjøtet: seilet slår og båten bremser.",
+        "how": "Trykk + på Storskjøt til det viser 90 % eller mer (helt ute). Seilet slår og skyver ikke lenger; vent til farten er under 1,5 knop."
+      },
+      "go-again": {
+        "goal": "Trekk det inn igjen og seil videre.",
+        "how": "Trykk − på Storskjøt til seilet viser Bra og farten passerer 3 knop igjen."
+      }
+    },
+    "mistakes": {
+      "capsized": {
+        "name": "kantring",
+        "what": "Båten kantret.",
+        "why": "Et vindkast veltet den mens storskjøtet var trukket inn. Vekten din holder den bare opp til et punkt; å slippe storskjøtet er det som får den opp.",
+        "fix": "Neste gang: slipp storskjøtet så snart båten krenger mye."
+      }
+    }
+  },
+  "dinghy-tack": {
+    "title": "Stagvending",
+    "summary": "Sving baugen gjennom vinden; du flytter deg over til den nye høye siden.",
+    "see": "Du seiler skarpt på styrbord halsning (så nær vinden som seilet tillater) og sitter på siden av dekket. Vinden kommer over høyre side av baugen.",
+    "happening": "For å komme opp mot vinden seiler en båt i sikksakk: den stagvender (svinger baugen gjennom vinden) fra den ene siden til den andre. Bommen svinger over, og det gjør du også: du sitter alltid på den høye siden, siden vinden kommer fra.",
+    "action": "Skyv rorpinnen bort fra deg, mot seilet, og hold den der til vinden står omtrent 45° på den andre siden. Sentrer så rorpinnen og sett deg på den nye høye siden.",
+    "mistake": "Å sentrere rorpinnen for tidlig: baugen stopper mot vinden (i vindøyet), og båten svarer ikke på roret.",
+    "done": "Du stagvendte, sentrerte rorpinnen og flyttet deg til den nye høye siden. Sett deg på den høye siden igjen etter hver stagvending.",
+    "steps": {
+      "close-hauled": {
+        "goal": "Seil så nær vinden som seilet tillater: skyv rorpinnen bort hvis båten peker for høyt og seilet slår.",
+        "how": "Styr med roret til vinden er 38 til 55° fra baugen og seilet viser Bra. − svinger til babord, + til styrbord."
+      },
+      "tack": {
+        "goal": "Skyv rorpinnen bort fra deg, mot seilet, og hold den der: baugen svinger gjennom vinden.",
+        "how": "Sett roret til + (mot styrbord, mot vinden) og hold det der mens baugen krysser vinden. Bommen svinger over av seg selv."
+      },
+      "settle": {
+        "goal": "Sentrer rorpinnen på den nye kursen og sett deg på den nye høye siden.",
+        "how": "Når vinden er omtrent 45° på den nye siden, ta roret tilbake til midten, og trykk så Sitt på siden (eller Len deg ut)."
+      }
+    },
+    "mistakes": {
+      "in-irons": {
+        "name": "å stoppe mot vinden",
+        "what": "Båten har stoppet mot vinden.",
+        "why": "Rorpinnen kom tilbake til midten før baugen var gjennom vinden. Med vinden rett forfra gjør seilet ingenting, og uten fart gjør roret ingenting.",
+        "fix": "Slipp storskjøtet, styr til den andre siden og vent mens båten faller av; trekk så inn og start på nytt."
+      },
+      "capsized": {
+        "name": "kantring",
+        "what": "Båten kantret.",
+        "why": "Et vindkast veltet den, eller du satt for langt inne.",
+        "fix": "Neste gang: slipp storskjøtet så snart båten krenger mye, og sitt lenger ute."
+      }
+    }
+  },
+  "dinghy-gybe": {
+    "title": "Jibb",
+    "summary": "Sving akterenden gjennom vinden. Bommen går fort over: dukk.",
+    "see": "Du seiler med vinden bakfra, bommen ute over babord side og sverdet for det meste oppe.",
+    "happening": "For å bytte side med vinden bakfra tar du en jibb: akterenden går gjennom vinden, og bommen svinger over båten, fort og med kraft. Hold storskjøtet i hånden og hodet nede.",
+    "action": "Trekk inn storskjøtet litt, sving akterenden gjennom vinden og la bommen gå over, styr så rett frem på den nye siden og hold båten flat.",
+    "mistake": "Å ta jibb med storskjøtet helt ute: bommen slår over med full fart.",
+    "done": "Du tok en kontrollert jibb og falt til ro på den nye siden. Trekk alltid inn storskjøtet litt først, og hold hodet nede.",
+    "steps": {
+      "run": {
+        "goal": "Fall av til vinden er bakfra, med sverdet for det meste oppe.",
+        "how": "Styr med roret til vinden er 150 til 172° fra baugen. Hev sverdet med − (omtrent halvveis er nok) og trekk storskjøtet inn til omtrent 10 %, så bommen står nesten midt i båten."
+      },
+      "gybe": {
+        "goal": "Trekk rorpinnen mot deg og hold storskjøtet i hånden: bommen svinger over. Hold hodet nede.",
+        "how": "Med storskjøtet fortsatt inne (omtrent 10 %) styrer du mot babord (−) og holder det til bommen har gått over. En bom som står langt ute slår over med kraft: det regnes som en utilsiktet jibb."
+      },
+      "broad-reach": {
+        "goal": "Styr rett frem på den nye siden og hold båten flat.",
+        "how": "Ta roret tilbake til midten når vinden er 120 til 150° på den nye siden. Krenger båten, sitt lenger ute."
+      }
+    },
+    "mistakes": {
+      "accidental-gybe": {
+        "name": "utilsiktet jibb",
+        "what": "Bommen slo over av seg selv.",
+        "why": "Vinden kom bak seilet mens storskjøtet var slakket helt ut, så det slo over uten kontroll.",
+        "fix": "Trekk inn storskjøtet litt før du svinger akterenden gjennom vinden, så bommen går sakte over."
+      },
+      "capsized": {
+        "name": "kantring",
+        "what": "Båten kantret.",
+        "why": "Bommen som slo over med kraft, eller et vindkast, veltet den.",
+        "fix": "Neste gang: slipp storskjøtet så snart båten krenger mye."
+      }
+    }
+  },
+  "dinghy-capsize": {
+    "title": "Kantre og reise henne opp",
+    "summary": "Båten ligger på siden. Slik får du den opp igjen.",
+    "see": "Jollen ligger på siden med mast og seil i vannet. Du er i vannet ved siden av den.",
+    "happening": "Én person kan reise en jolle: svøm rundt til sverdet, forsikre deg om at det er nede, stå på det og len deg bakover. Vekten din får båten opp. Storskjøtet holdes løst så seilet ikke fylles igjen.",
+    "action": "Bli ved båten. Svøm til sverdet, trykk det ned hvis det er oppe, stå på det og len deg bakover; når båten er oppe, klatre inn over siden og sett deg på den høye siden.",
+    "mistake": "Å prøve å stå på et sverd som fortsatt er oppe: det er ingenting å stå på, og båten kommer ikke opp.",
+    "done": "Båten er oppreist igjen og du er om bord. Hold storskjøtet fritt til du sitter på den høye siden.",
+    "steps": {
+      "swim": {
+        "goal": "Svøm rundt akterenden til sverdet. Bli ved båten.",
+        "how": "Trykk Svøm til slepekjølen og vent mens seileren svømmer rundt akterenden."
+      },
+      "board": {
+        "goal": "Sverdet er oppe: trykk det ned.",
+        "how": "Trykk Trykk slepekjølen ned."
+      },
+      "stand": {
+        "goal": "Stå på sverdet og len deg bakover: vekten din får båten opp.",
+        "how": "Trykk Stå på slepekjølen og vent mens båten kommer opp."
+      },
+      "climb-in": {
+        "goal": "Klatre inn over siden og sett deg på den høye siden, storskjøtet fortsatt fritt.",
+        "how": "Trykk Sitt på siden, og la storskjøtet stå helt ute i to sekunder."
+      }
+    },
+    "mistakes": {}
   }
 }

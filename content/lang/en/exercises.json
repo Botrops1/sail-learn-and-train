@@ -656,5 +656,138 @@
         "fix": "Start again and pay out more chain, about 60 m, before the line goes ashore."
       }
     }
+  },
+  "dinghy-go-stop": {
+    "title": "Go and stop",
+    "summary": "A dinghy goes when the sail pulls and stops when you let the mainsheet go.",
+    "see": "The wind comes from the side and the mainsheet (the line that pulls the sail in) is let right out, so the sail flaps and the boat has no push.",
+    "happening": "A sail pushes the boat only while it is pulled in far enough to stop flapping. With the mainsheet let go it pushes nothing: the boat slows down and stops, and the heel goes too. Letting the mainsheet go is the quickest brake a sailing dinghy has.",
+    "action": "Pull the mainsheet in until the sail just stops flapping and she picks up speed; let it go to stop; pull it in again to sail on.",
+    "mistake": "Holding the mainsheet tight when she heels a lot: she can go over. Let the mainsheet go and she comes upright.",
+    "done": "You started and stopped the boat with the mainsheet alone. Remember it: whenever she heels too far or something goes wrong, let the mainsheet go.",
+    "steps": {
+      "pull-in": {
+        "goal": "Pull the mainsheet in until the sail stops flapping and the boat picks up speed.",
+        "how": "Tap − on Mainsheet (it pulls the line in) until the sail reads Good and the speed on the strip passes 3 knots. Hold it there for five seconds."
+      },
+      "stop": {
+        "goal": "Let the mainsheet go: the sail flaps and the boat slows down.",
+        "how": "Tap + on Mainsheet until it reads 90 % or more (all the way out). The sail flaps and stops pushing; wait until the speed is under 1.5 knots."
+      },
+      "go-again": {
+        "goal": "Pull it in again and sail on.",
+        "how": "Tap − on Mainsheet until the sail reads Good and the speed passes 3 knots again."
+      }
+    },
+    "mistakes": {
+      "capsized": {
+        "name": "going over",
+        "what": "She went over.",
+        "why": "A gust pushed her over while the mainsheet was in. Your weight only holds her up so far; letting the mainsheet go is what brings her up.",
+        "fix": "Next time let the mainsheet out as soon as she heels a lot."
+      }
+    }
+  },
+  "dinghy-tack": {
+    "title": "Tack",
+    "summary": "Turn the bow through the wind; you move across to the new high side.",
+    "see": "You are sailing close-hauled on starboard tack (as close to the wind as the sail allows), sitting on the side deck. The wind comes over the right side of the bow.",
+    "happening": "To go upwind a boat zigzags: she tacks (turns her bow through the wind) from one side to the other. The boom swings across, and so do you: you always sit on the high side, the side the wind comes from.",
+    "action": "Push the tiller away from you, towards the sail, and keep it there until the wind is about 45° on the other side. Then centre the tiller and sit on the new high side.",
+    "mistake": "Centring the tiller too early: the bow stops pointing into the wind (in irons) and she will not steer.",
+    "done": "You tacked, centred the tiller and moved to the new high side. After every tack, sit on the high side again.",
+    "steps": {
+      "close-hauled": {
+        "goal": "Sail as close to the wind as the sail allows: push the tiller away if she points too high and the sail flaps.",
+        "how": "Steer with the rudder row until the wind is 38 to 55° from the bow and the sail reads Good. − turns her to port, + to starboard."
+      },
+      "tack": {
+        "goal": "Push the tiller away from you, towards the sail, and keep it there: the bow turns through the wind.",
+        "how": "Set the rudder to + (to starboard, towards the wind) and keep it there while the bow crosses the wind. The boom swings over by itself."
+      },
+      "settle": {
+        "goal": "Centre the tiller on the new course and sit on the new high side.",
+        "how": "When the wind is about 45° on the new side, bring the rudder back to the middle, then tap Sit on the side (or Lean out)."
+      }
+    },
+    "mistakes": {
+      "in-irons": {
+        "name": "stopping head to wind",
+        "what": "She has stopped head to wind (in irons).",
+        "why": "The tiller came back to the centre before the bow was through the wind. With the wind straight ahead the sail does nothing, and with no speed the rudder does nothing.",
+        "fix": "Let the mainsheet go, steer the other way and wait while she falls off to one side; then pull in and start again."
+      },
+      "capsized": {
+        "name": "going over",
+        "what": "She went over.",
+        "why": "A gust pushed her over, or you sat too far in.",
+        "fix": "Next time let the mainsheet out as soon as she heels a lot, and sit further out."
+      }
+    }
+  },
+  "dinghy-gybe": {
+    "title": "Gybe",
+    "summary": "Turn the stern through the wind. The boom crosses fast: duck.",
+    "see": "You are sailing downwind with the wind behind you, the boom out over the port side and the centreboard mostly up.",
+    "happening": "To change sides with the wind behind you, you gybe: the stern passes through the wind and the boom swings across the boat, fast and with force. Keep the mainsheet in hand and your head down.",
+    "action": "Pull the mainsheet in a little, turn the stern through the wind and let the boom cross, then steer straight on the new side and keep her flat.",
+    "mistake": "Gybing with the mainsheet right out: the boom slams across with all its swing.",
+    "done": "You gybed under control and settled on the new side. Always pull the mainsheet in a little first and keep your head down.",
+    "steps": {
+      "run": {
+        "goal": "Bear away until the wind is behind you, the centreboard mostly up.",
+        "how": "Steer with the rudder row until the wind is 150 to 172° from the bow. Raise the centreboard with − (about halfway is enough) and pull the mainsheet in to about 10 %, so the boom sits nearly in the middle."
+      },
+      "gybe": {
+        "goal": "Pull the tiller towards you and keep the mainsheet in hand: the boom swings across. Keep your head down.",
+        "how": "With the mainsheet still in (about 10 %), steer to port (−) and keep it there until the boom has crossed. A boom that is far out swings across with force: that counts as an accidental gybe."
+      },
+      "broad-reach": {
+        "goal": "Steer straight on the new side and keep her flat.",
+        "how": "Bring the rudder back to the middle when the wind is 120 to 150° on the new side. If she heels, sit further out."
+      }
+    },
+    "mistakes": {
+      "accidental-gybe": {
+        "name": "gybing by accident",
+        "what": "The boom swung across by itself.",
+        "why": "The wind got behind the sail while the mainsheet was eased right out, so it flipped over without control.",
+        "fix": "Pull the mainsheet in a little before you turn the stern through the wind, so the boom crosses slowly."
+      },
+      "capsized": {
+        "name": "going over",
+        "what": "She went over.",
+        "why": "The boom crossing with force, or a gust, tipped her over.",
+        "fix": "Next time let the mainsheet out as soon as she heels a lot."
+      }
+    }
+  },
+  "dinghy-capsize": {
+    "title": "Capsize and right her",
+    "summary": "The boat is on her side. This is how you get her back up.",
+    "see": "The dinghy lies on her side with the mast and sail on the water. You are in the water beside her.",
+    "happening": "One person can right a dinghy: swim round to the centreboard, make sure it is down, stand on it and lean back. Your weight brings her up. The mainsheet stays loose so the sail does not fill again.",
+    "action": "Stay with the boat. Swim to the centreboard, push it down if it is up, stand on it and lean back; when she is up, climb in over the side and sit on the high side.",
+    "mistake": "Trying to stand on a centreboard that is still up: there is nothing to stand on, and she will not come up.",
+    "done": "She is upright again and you are back in. Keep the mainsheet free until you are sitting on the high side.",
+    "steps": {
+      "swim": {
+        "goal": "Swim round the stern to the centreboard. Stay with the boat.",
+        "how": "Tap Swim round to the centreboard and wait while the sailor swims round the stern."
+      },
+      "board": {
+        "goal": "The centreboard is up: push it down.",
+        "how": "Tap Push the centreboard down."
+      },
+      "stand": {
+        "goal": "Stand on the centreboard and lean back: your weight brings her up.",
+        "how": "Tap Stand on the centreboard and wait while she comes up."
+      },
+      "climb-in": {
+        "goal": "Climb in over the side and sit on the high side, the mainsheet still free.",
+        "how": "Tap Sit on the side, and leave the mainsheet all the way out for two seconds."
+      }
+    },
+    "mistakes": {}
   }
 }

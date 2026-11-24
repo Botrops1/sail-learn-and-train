@@ -1,7 +1,8 @@
 import { exerciseStartLink, parseUrlState } from '../src/app/urlState';
 import type { ExerciseOptions } from '../src/app/exerciseRun';
 import { initialState, reduce, type AppState } from '../src/app/store';
-import type { ExerciseLevel } from '../src/model/exercises';
+import { DINGHY, HANSE_508, useBoat } from '../src/model/boat';
+import { exerciseDef, type ExerciseLevel } from '../src/model/exercises';
 import type { RopesMode } from '../src/model/settings';
 import { anchorPilot, type Pilot } from '../src/app/exercisePilots';
 
@@ -11,6 +12,20 @@ import { anchorPilot, type Pilot } from '../src/app/exercisePilots';
  */
 export * from '../src/app/exercisePilots';
 
+/**
+ * M118: runs `fn` with the boat the exercise is written for in use (the Training dinghy for a
+ * dinghy exercise, the Hanse 508 otherwise) and puts the Hanse 508 back after.
+ */
+export function withBoatOf<T>(id: string, fn: () => T): T {
+  const dinghy = exerciseDef(id)?.boat === 'dinghy';
+  if (dinghy) useBoat(DINGHY.id, DINGHY.name, DINGHY.data);
+  try {
+    return fn();
+  } finally {
+    if (dinghy) useBoat(HANSE_508.meta.id, HANSE_508.meta.name, HANSE_508);
+  }
+}
+
 /** PHASE10_SPEC 16.7: a scripted good run; each step within its limit (app seconds from its start). */
 export function goodRun(
   id: string,
@@ -19,6 +34,17 @@ export function goodRun(
   limitS: number,
   ropes: RopesMode = 'easy',
   options: Partial<ExerciseOptions> = {},
+) {
+  return withBoatOf(id, () => goodRunOnBoat(id, level, pilot, limitS, ropes, options));
+}
+
+function goodRunOnBoat(
+  id: string,
+  level: ExerciseLevel,
+  pilot: Pilot,
+  limitS: number,
+  ropes: RopesMode,
+  options: Partial<ExerciseOptions>,
 ) {
   let s = parseUrlState(exerciseStartLink(id, initialState(), ropes, { level }));
   if (Object.keys(options).length > 0) {

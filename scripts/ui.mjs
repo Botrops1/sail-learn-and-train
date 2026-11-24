@@ -274,17 +274,18 @@ export async function waitForLink(page, has, hasNot = []) {
  * The panel's group order (a copy of `GROUPS` in src/ui/exercisePanel.ts; tests/exerciseListIds.test.ts
  * fails when they differ). The panel lists the exercises group by group, in file order inside a group.
  */
-export const EXERCISE_GROUP_ORDER = ['sailing', 'wind', 'sails', 'harbour'];
+export const EXERCISE_GROUP_ORDER = ['sailing', 'wind', 'sails', 'harbour', 'dinghy'];
 
 /**
- * The `data-testid` of every exercise-list item, in the order the panel lists them, read from
+ * The `data-testid` of every exercise-list item of a boat (M118: the Hanse 508 unless a boat is
+ * named; an exercise with no `boat` is the Hanse's), in the order the panel lists them, read from
  * content/exercises/exercises.json, so a new exercise changes no check that compares the list.
  */
-export function exerciseItemTestIds() {
+export function exerciseItemTestIds(boat = 'hanse508') {
   const { exercises } = JSON.parse(readFileSync('content/exercises/exercises.json', 'utf8'));
   return EXERCISE_GROUP_ORDER.flatMap((group) =>
     exercises
-      .filter((exercise) => exercise.group === group)
+      .filter((exercise) => exercise.group === group && (exercise.boat ?? 'hanse508') === boat)
       .map((exercise) => `exercise-item-${exercise.id}`),
   );
 }

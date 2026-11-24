@@ -12,15 +12,22 @@ describe('exerciseItemTestIds (the list the browser checks expect)', () => {
     expect(EXERCISE_GROUP_ORDER).toEqual(panelOrder);
   });
 
-  it('names every exercise once, grouped as the panel lists them', () => {
-    const ids = exerciseItemTestIds();
-    expect(ids).toHaveLength(EXERCISES.length);
-    expect(new Set(ids).size).toBe(ids.length);
-    const expected = EXERCISE_GROUP_ORDER.flatMap((group) =>
-      EXERCISES.filter((exercise) => exercise.group === group).map(
-        (exercise) => `exercise-item-${exercise.id}`,
-      ),
-    );
-    expect(ids).toEqual(expected);
+  it('names every exercise of a boat once, grouped as the panel lists them', () => {
+    for (const boat of ['hanse508', 'dinghy']) {
+      const own = EXERCISES.filter((exercise) => (exercise.boat ?? 'hanse508') === boat);
+      const ids = exerciseItemTestIds(boat);
+      expect(ids, boat).toHaveLength(own.length);
+      expect(new Set(ids).size).toBe(ids.length);
+      const expected = EXERCISE_GROUP_ORDER.flatMap((group) =>
+        own
+          .filter((exercise) => exercise.group === group)
+          .map((exercise) => `exercise-item-${exercise.id}`),
+      );
+      expect(ids, boat).toEqual(expected);
+    }
+    // The Hanse's list is the default and never holds a dinghy exercise (M118).
+    expect(exerciseItemTestIds()).toEqual(exerciseItemTestIds('hanse508'));
+    expect(exerciseItemTestIds()).toHaveLength(22);
+    expect(exerciseItemTestIds('dinghy')).toHaveLength(4);
   });
 });

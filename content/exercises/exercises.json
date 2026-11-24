@@ -486,6 +486,78 @@
         { "id": "dragging", "serious": false, "steps": ["to-spot", "let-go-anchor", "scope", "dig-in", "shore-line", "settled"], "on": { "alert": "anchorAlarm" } },
         { "id": "dragged-at-night", "serious": true, "steps": ["the-night"], "on": { "alert": "anchorAlarm" } }
       ]
+    },
+    {
+      "id": "dinghy-go-stop",
+      "boat": "dinghy",
+      "group": "dinghy",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "dinghy", "autopilot", "conditions", "learn"],
+      "start": "?boat=dinghy&wd=0&ws=8&hdg=270&ms=100&sea=flat",
+      "steps": [
+        { "id": "pull-in", "opens": "ropes", "holdS": 5, "check": { "mainTrim": ["good"], "speedKn": [3, 99] }, "bar": ["control:ctl_mainsheet"] },
+        { "id": "stop", "opens": "ropes", "holdS": 3, "check": { "controls": { "ctl_mainsheet": [90, 100] }, "speedKn": [0, 2] }, "bar": ["control:ctl_mainsheet"] },
+        { "id": "go-again", "opens": "ropes", "holdS": 5, "check": { "mainTrim": ["good"], "speedKn": [3, 99] }, "bar": ["control:ctl_mainsheet"] }
+      ],
+      "mistakes": [
+        { "id": "capsized", "serious": true, "on": { "alert": "capsized" } }
+      ]
+    },
+    {
+      "id": "dinghy-tack",
+      "boat": "dinghy",
+      "group": "dinghy",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "dinghy", "autopilot", "conditions", "learn"],
+      "start": "?boat=dinghy&wd=0&ws=10&hdg=315&ms=15&sp=side&sea=flat",
+      "feelIt": ["term_tacking"],
+      "steps": [
+        { "id": "close-hauled", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [38, 55], "mainTrim": ["good"] }, "bar": ["control:ctl_rudder", "control:ctl_mainsheet"] },
+        { "id": "tack", "opens": "autopilot", "holdS": 0, "check": { "event": "tackByHand", "tack": "port" }, "bar": ["control:ctl_rudder"] },
+        { "id": "settle", "opens": "dinghy", "holdS": 5, "check": { "tack": "port", "twaDeg": [38, 60], "speedKn": [2, 99], "dinghy": { "sit": ["side", "out"] } }, "bar": ["control:ctl_rudder", "dinghy:sit"] }
+      ],
+      "mistakes": [
+        { "id": "in-irons", "serious": false, "on": { "condition": { "twaDeg": [0, 20], "speedKn": [-99, 1] }, "forS": 5 } },
+        { "id": "capsized", "serious": true, "on": { "alert": "capsized" } }
+      ]
+    },
+    {
+      "id": "dinghy-gybe",
+      "boat": "dinghy",
+      "group": "dinghy",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "dinghy", "autopilot", "conditions", "learn"],
+      "start": "?boat=dinghy&wd=0&ws=10&hdg=205&ms=80&cb=40&sea=flat",
+      "feelIt": ["term_gybe"],
+      "steps": [
+        { "id": "run", "opens": "autopilot", "holdS": 5, "check": { "tack": "starboard", "twaDeg": [150, 172] }, "bar": ["control:ctl_rudder", "control:ctl_mainsheet", "dinghy:board"] },
+        { "id": "gybe", "opens": "autopilot", "holdS": 0, "check": { "event": "controlledGybe", "tack": "port" }, "bar": ["control:ctl_rudder", "control:ctl_mainsheet"] },
+        { "id": "broad-reach", "opens": "autopilot", "holdS": 5, "check": { "tack": "port", "twaDeg": [120, 150], "heelDeg": [-20, 20] }, "bar": ["control:ctl_rudder"] }
+      ],
+      "mistakes": [
+        { "id": "accidental-gybe", "serious": false, "on": { "alert": "gybe", "accidental": true } },
+        { "id": "capsized", "serious": true, "on": { "alert": "capsized" } }
+      ]
+    },
+    {
+      "id": "dinghy-capsize",
+      "boat": "dinghy",
+      "group": "dinghy",
+      "ropes": "easy",
+      "crew": false,
+      "sections": ["ropes", "dinghy", "autopilot", "conditions", "learn"],
+      "start": "?boat=dinghy&wd=90&ws=10&cap=s&cb=0&sea=flat",
+      "feelIt": ["term_capsize"],
+      "steps": [
+        { "id": "swim", "opens": "dinghy", "holdS": 0, "check": { "dinghy": { "capsize": ["swimming"] } }, "bar": ["capsize:steps"] },
+        { "id": "board", "opens": "dinghy", "holdS": 0, "check": { "dinghy": { "boardPct": [50, 100], "capsize": ["swimming"] } }, "bar": ["capsize:steps"] },
+        { "id": "stand", "opens": "dinghy", "holdS": 0, "check": { "dinghy": { "capsize": ["righting", "upright"] } }, "bar": ["capsize:steps"] },
+        { "id": "climb-in", "opens": "dinghy", "holdS": 2, "check": { "dinghy": { "capsize": ["upright"], "sit": ["side"] }, "controls": { "ctl_mainsheet": [90, 100] } }, "bar": ["dinghy:sit"] }
+      ],
+      "mistakes": []
     }
   ]
 }

@@ -295,7 +295,7 @@ describe('M113: the dinghy in the link, the modes and the sections', () => {
       'harbour',
       'exercise',
     ]);
-    expect(modesForBoat(DINGHY.data, 'dinghy')).toEqual(['learn', 'easy']);
+    expect(modesForBoat(DINGHY.data, 'dinghy')).toEqual(['learn', 'easy', 'exercise']);
     useDinghy();
     const state = initialState();
     for (const id of ['engine', 'anchor', 'place', 'harbour', 'helm'] as const) {
@@ -308,7 +308,7 @@ describe('M113: the dinghy in the link, the modes and the sections', () => {
 
   it('7.8.9. the exercises of each boat', () => {
     expect(exercisesForBoat('hanse508')).toHaveLength(22);
-    expect(exercisesForBoat('dinghy')).toHaveLength(0);
+    expect(exercisesForBoat('dinghy')).toHaveLength(4);
   });
 
   it('Reset on the dinghy keeps the dinghy defaults and the hand steering', () => {

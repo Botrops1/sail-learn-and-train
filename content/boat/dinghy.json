@@ -92,7 +92,12 @@
     "steering": { "turnLengthM": 2.5, "yawLagS": 0.6, "turnNote": "assumption (M115, issue #283): yaw rate = speed × tan(rudder) / turnLengthM; 2.5 m gives a turning circle of about 9 m across at 30 degrees of rudder (the first value, 4 m, let her stall head to wind before the bow was through it). Tunable." },
     "lowSpeed": { "cgX": -0.5, "keelLiftNPerMps2": 700, "lateralAreaM2": 0.15, "lateralDragCoefficient": 0.6, "swayLinearDragNPerMps": 10, "radiusOfGyrationM": 0.9, "yawLinearDampingNmPerRadS": 40, "windageSideAreaM2": 1.2 },
     "heel": { "maxHeelDeg": 50, "overpoweredHeelDeg": 20, "roundUpMinHeelDeg": 20 },
-    "gybe": { "boomMassKg": 3, "sailMassKg": 2 }
+    "gybe": {
+      "boomMassKg": 3,
+      "sailMassKg": 2,
+      "minReportJ": 5,
+      "reportNote": "assumption (M118): a light dinghy boom swings with little energy (about 10 J from 13 degrees, 20 J from 20), so the Hanse's 50 J bump threshold left every controlled gybe unreported and the Gybe exercise could not be finished; 5 J reports a gybe from a boom hauled in to about 10 degrees. Tunable."
+    }
   },
   "dinghy": {
     "$comment": "Parts only the dinghy has (PHASE_DINGHY_SPEC 7.2). M114 adds crew, rightingNmByHeelDeg, board and outhaul; M115 seats; M116 capsize.",

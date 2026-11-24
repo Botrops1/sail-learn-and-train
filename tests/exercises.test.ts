@@ -25,8 +25,8 @@ import { pilotFor } from '../src/app/exercisePilots';
 import en from '../content/lang/en/ui.json';
 import exercisesFile from '../content/exercises/exercises.json';
 
-const OPENS = ['ropes', 'autopilot', 'engine', 'sails', 'harbour', 'anchor'];
-const GROUPS = ['sailing', 'wind', 'sails', 'harbour'];
+const OPENS = ['ropes', 'dinghy', 'autopilot', 'engine', 'sails', 'harbour', 'anchor'];
+const GROUPS = ['sailing', 'wind', 'sails', 'harbour', 'dinghy'];
 // The check fields known so far (M66); later milestones add theirs and this list.
 const FIELDS = [
   'twaDeg',
@@ -55,7 +55,9 @@ const FIELDS = [
   'localHour',
   'gennakerStage',
   'gennakerTrim',
+  'dinghy',
 ];
+const PHASES = ['upright', 'goingOver', 'over', 'swimming', 'righting'];
 const SEVERITIES = ['fender', 'touch', 'bump', 'knock', 'hit'];
 const OBSTACLE_KINDS = ['yacht', 'harbour', 'ground', 'propeller', 'fender', 'lazy-line'];
 const EVENTS = ['tack', 'tackByHand', 'controlledGybe', 'accidentalGybe'];
@@ -84,6 +86,22 @@ function checkProblems(check: ExerciseCheck): string[] {
         !states.every((x) => TRIM_STATES.includes(x))
       ) {
         problems.push('unknown gennaker trim state');
+      }
+    }
+    if (field === 'dinghy') {
+      const d = value as { sit?: string[]; boardPct?: number[]; capsize?: string[] };
+      for (const key of Object.keys(d)) {
+        if (!['sit', 'boardPct', 'capsize'].includes(key))
+          problems.push(`unknown dinghy field ${key}`);
+      }
+      if (d.sit && !d.sit.every((x) => ['in', 'side', 'out'].includes(x))) problems.push('bad sit');
+      if (d.capsize && !d.capsize.every((x) => PHASES.includes(x)))
+        problems.push('bad capsize phase');
+      if (
+        d.boardPct &&
+        !(d.boardPct.length === 2 && (d.boardPct[0] ?? 0) <= (d.boardPct[1] ?? 0))
+      ) {
+        problems.push('bad range in dinghy.boardPct');
       }
     }
     const ranges: unknown[] =
@@ -490,6 +508,7 @@ describe('Russian exercise texts', () => {
 describe('sections and targets (owner, PR 144)', () => {
   const SECTIONS = [
     'ropes',
+    'dinghy',
     'helm',
     'sails',
     'autopilot',
