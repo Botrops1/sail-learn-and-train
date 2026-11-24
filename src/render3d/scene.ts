@@ -5,7 +5,15 @@ import { travellerPicture } from '../model/pictures';
 import { handlePose } from '../model/handlePose';
 import { panelReadings } from '../model/helmPanel';
 import { runningRopes, winchWraps } from '../model/realistic';
-import { captainPlacement, type CaptainPlacement } from '../model/people';
+import { smoothstep } from '../model/angles';
+import { isDinghy } from '../model/boat';
+import {
+  captainPlacement,
+  crossingSailor,
+  sailorPlacement,
+  type CaptainPlacement,
+  type SailorPlacement,
+} from '../model/people';
 import { boat } from '../model/boat';
 import { halfBeamAt } from '../model/hullShape';
 import { labelAnchors } from '../model/labels3d';
@@ -155,6 +163,14 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   // call, for the pose's easing; reset when the boat is rebuilt.
   let captainAtMs: number | null = null;
   let captainLast: { placement: CaptainPlacement; hidden: boolean } | null = null;
+  // M115: the dinghy sailor's side as drawn (he takes a moment to cross the boat), how long the
+  // crossing has run, the simulation time of the last frame (a Reset puts it back) and the eye
+  // last handed to the camera.
+  let shownSide: 1 | -1 | null = null;
+  let crossT = 0;
+  let sailorTimeS = 0;
+  let sailorEyeKey = '';
+  type SailorDrawn = { placement: SailorPlacement; side: number };
   boatModel.setAnchorStowed(anchorStowed);
   // M50: the winch handle is drawn in Realistic ropes only; the check is on the handle's identity.
   let drawnHandle: AppState['realistic']['handle'] | null = null;
@@ -287,6 +303,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
                 x: captainLast.placement.feet[0],
                 y: captainLast.placement.feet[1],
                 z: captainLast.placement.feet[2],
+                /** M115: the drawn pelvis (the dinghy sailor; during a crossing too). */
+                hip: captainLast.placement.hip ?? null,
                 faceDeg: captainLast.placement.faceDeg,
                 pose: captainLast.placement.pose,
                 hidden: captainLast.hidden,
@@ -815,6 +833,48 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         eye: camera.position.toArray() as [number, number, number],
         metresPerPixelAt1m: 2 / (camera.projectionMatrix.elements[5] * canvasHeight),
       };
+      // The captain's idle movement and the sailor's crossing run on the frame time, not at all
+      // while paused.
+      const captainDt =
+        captainAtMs === null ? 0 : Math.min(0.1, Math.max(0, (now - captainAtMs) / 1000));
+      captainAtMs = now;
+      // M115: the dinghy's sailor sits opposite the boom; when the boom crosses, he crosses the
+      // boat over `dinghy.crossS` seconds (drawing only). A link, Reset or a boat start shows
+      // him at once on the state's side.
+      let sailor: SailorDrawn | null = null;
+      if (isDinghy()) {
+        const crossS = boat.dinghy?.crossS ?? 1;
+        const side = state.dinghy.sailorSide;
+        if (shownSide === null || state.rig.timeS < sailorTimeS - 1e-6) {
+          shownSide = side;
+          crossT = 0;
+        }
+        sailorTimeS = state.rig.timeS;
+        if (side !== shownSide) {
+          crossT += state.paused ? 0 : captainDt;
+          if (crossT >= crossS) {
+            shownSide = side;
+            crossT = 0;
+          }
+        } else crossT = 0;
+        if (side !== shownSide) {
+          const u = smoothstep(0, crossS, crossT);
+          sailor = {
+            placement: crossingSailor(state.dinghy.sit, shownSide, u),
+            side: shownSide * (1 - 2 * u),
+          };
+        } else {
+          sailor = {
+            placement: sailorPlacement(state.dinghy.sit, shownSide),
+            side: shownSide,
+          };
+        }
+        const key = `${sailor.placement.hip.join(',')}|${sailor.side}`;
+        if (key !== sailorEyeKey) {
+          sailorEyeKey = key;
+          rig.setSailorEye({ hip: sailor.placement.hip, side: sailor.side });
+        }
+      }
       boatModel.update(
         state.rig,
         state.controls,
@@ -829,23 +889,33 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           boomYawDeg:
             state.picture === 'traveller' ? travellerPicture(state.travellerCarPct).boomDeg : null,
           boardPct: state.dinghy.boardPct,
+          sailor:
+            sailor && shownSide !== null
+              ? {
+                  sit: state.dinghy.sit,
+                  sailorSide: shownSide,
+                  handFwd: sailor.placement.hand.fwd,
+                  handAft: sailor.placement.hand.aft,
+                }
+              : undefined,
         },
       );
       // M111: the captain stands where the mode, the station and the wheel put him; in the Helm
       // view of his own wheel the camera is at his eyes, so he is not drawn.
-      const placement = captainPlacement({
-        ropesMode: state.settings.ropesMode,
-        realistic: state.realistic,
-        helmWheel: state.camera.helm.wheel,
-      });
-      const eye = helmPose(state.camera.helm).position;
+      const placement: CaptainPlacement = sailor
+        ? sailor.placement
+        : captainPlacement({
+            ropesMode: state.settings.ropesMode,
+            realistic: state.realistic,
+            helmWheel: state.camera.helm.wheel,
+          });
+      // On the dinghy the camera of the Sailor view sits at his eyes, so he is not drawn there.
+      const eye = sailor ? null : helmPose(state.camera.helm).position;
       const captainHidden =
         state.camera.preset === 'helm' &&
-        Math.hypot(placement.feet[0] - eye[0], placement.feet[2] - eye[2]) <
-          SCENE.people.hideNearEyeM;
-      const captainDt =
-        captainAtMs === null ? 0 : Math.min(0.1, Math.max(0, (now - captainAtMs) / 1000));
-      captainAtMs = now;
+        (eye === null ||
+          Math.hypot(placement.feet[0] - eye[0], placement.feet[2] - eye[2]) <
+            SCENE.people.hideNearEyeM);
       // His idle movement runs on the simulation clock, so Pause freezes him with the rest (issue #32).
       boatModel.setCaptain(placement, captainHidden, state.rig.timeS, captainDt);
       captainLast = { placement, hidden: captainHidden };

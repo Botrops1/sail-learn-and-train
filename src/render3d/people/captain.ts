@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { DEG } from '../../model/angles';
-import { figureJoints, REST_JOINTS, type JointAngles } from '../../model/figurePose';
+import { figureJoints, mirrorJoints, REST_JOINTS, type JointAngles } from '../../model/figurePose';
 import type { CaptainPlacement } from '../../model/people';
 import type { Detail } from '../../model/settings';
 import { SCENE } from '../sceneConfig';
@@ -27,6 +27,9 @@ function turnToward(from: number, to: number, maxStep: number): number {
   return from + Math.max(-maxStep, Math.min(maxStep, diff));
 }
 
+const UP = new THREE.Vector3(0, 1, 0);
+const RIGHT = new THREE.Vector3(1, 0, 0);
+
 export function buildCaptain(detail: Detail): CaptainModel {
   const { mesh, bones } = buildFigureMesh(detail);
   mesh.userData = { partId: 'person_captain', noPick: true };
@@ -46,6 +49,12 @@ export function buildCaptain(detail: Detail): CaptainModel {
 
   const current: JointAngles = { ...REST_JOINTS };
   let placed = false;
+  let yawNow = 0;
+  /** Standing pelvis height above the feet: where the dinghy sailor's hip joint sits in the figure. */
+  const pelvisM = SCENE.people.body.ankleY + SCENE.people.body.shin + SCENE.people.body.thigh;
+  const qYaw = new THREE.Quaternion();
+  const qLean = new THREE.Quaternion();
+  const pelvis = new THREE.Vector3();
 
   const poseBones = (j: JointAngles) => {
     const b = (name: BoneName) => bones[name];
@@ -76,19 +85,38 @@ export function buildCaptain(detail: Detail): CaptainModel {
     object,
     update(placement, hidden, t, dt) {
       object.visible = !hidden;
-      object.position.set(...placement.feet);
       const yaw = (90 - placement.faceDeg) * DEG;
-      const target = figureJoints(placement.pose, t, placement.walkedM);
+      const sailor = placement.hip !== undefined;
+      // The dinghy sailor (M115) sits on the other side of the boat as a mirror image of himself.
+      const side = placement.hip !== undefined && placement.hip[2] < 0 ? -1 : 1;
+      let target = figureJoints(placement.pose, t, placement.walkedM);
+      if (sailor && side === -1) target = mirrorJoints(target);
       if (!placed) {
-        object.rotation.y = yaw;
+        yawNow = yaw;
         Object.assign(current, target);
         placed = true;
       } else {
-        object.rotation.y = turnToward(object.rotation.y, yaw, SCENE.people.turnDegPerS * DEG * dt);
+        yawNow = turnToward(yawNow, yaw, SCENE.people.turnDegPerS * DEG * dt);
         const a = 1 - Math.exp(-SCENE.people.smoothingPerS * dt);
         for (const key of Object.keys(target) as (keyof JointAngles)[]) {
           current[key] += (target[key] - current[key]) * a;
         }
+      }
+      if (placement.hip) {
+        // The pelvis goes to `hip`, the whole figure leans outboard about the boat's x axis
+        // through it (the sign of the hip's z is the side), after the turn about his own up axis.
+        qYaw.setFromAxisAngle(UP, yawNow);
+        qLean.setFromAxisAngle(RIGHT, side * (placement.leanDeg ?? 0) * DEG);
+        object.quaternion.copy(qLean).multiply(qYaw);
+        pelvis.set(0, pelvisM + current.rootY, 0).applyQuaternion(object.quaternion);
+        object.position.set(
+          placement.hip[0] - pelvis.x,
+          placement.hip[1] - pelvis.y,
+          placement.hip[2] - pelvis.z,
+        );
+      } else {
+        object.position.set(...placement.feet);
+        object.rotation.set(0, yawNow, 0);
       }
       poseBones(current);
     },

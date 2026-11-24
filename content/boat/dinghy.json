@@ -100,7 +100,6 @@
     "tiller": { "pivot": [-2.27, 0.42, 0], "lengthM": 1.0, "extensionM": 0.75 },
     "toeStraps": { "fromX": -1.6, "toX": -0.6, "halfZ": 0.2, "y": 0.14 },
     "ratchetBlock": [-1.55, 0.18, 0],
-    "sheetHand": [-1.4, 0.55, 0.45],
     "cockpit": { "fwdX": -0.45, "aftX": -2.1, "halfWidth": 0.48, "floorY": 0.14 },
     "sideDeckWidthM": 0.16,
     "crew": {
@@ -113,6 +112,20 @@
     "board": { "defaultPct": 100, "wettedM2": 0.5, "liftUpNPerMps2": 30, "note": "assumption: both faces of the board add wetted surface when down; with the board up the hull alone resists sliding (Centreboard: lateral resistance; raised to cut drag when not needed). Tunable." },
     "outhaul": { "defaultPct": 50, "powerAtTight": 0.85, "note": "assumption: hauled tight, the flatter sail gives 85 % of the force of a full one. Tunable." },
     "windwardHeelAlertDeg": 10,
-    "windwardHeelAfterS": 1
+    "windwardHeelAfterS": 1,
+    "seats": {
+      "$comment": "Where the sailor's hips and feet are for each Sit, on the starboard side (z mirrored for port), and how far the whole body leans outboard from upright (degrees). Assumption, chosen to look right.",
+      "in": { "hip": [-1.25, 0.26, 0.3], "feet": [-0.9, 0.14, 0.05], "leanDeg": 0 },
+      "side": { "hip": [-1.25, 0.43, 0.6], "feet": [-0.95, 0.14, 0.3], "leanDeg": 15 },
+      "out": { "hip": [-1.25, 0.45, 0.72], "feet": [-1.0, 0.16, 0.2], "leanDeg": 60 }
+    },
+    "sailorHands": {
+      "$comment": "Offsets from the hip (forward, up, across): the hand on the tiller extension (aft) and the hand on the mainsheet (fwd). The across number is multiplied by minus the side, so the hands are inboard of the hip. Assumption, chosen to look right.",
+      "aft": [0.1, 0.35, 0.25],
+      "fwd": [0.35, 0.3, 0.15]
+    },
+    "faceTurnDeg": 30,
+    "crossS": 1.5,
+    "sailorEye": { "aboveHipM": 0.75, "lookDownDeg": 10, "lookToLeewardDeg": 15 }
   }
 }

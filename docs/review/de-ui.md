@@ -67,12 +67,15 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | cam.top | Top | Oben |
 | cam.bow | Bow | Bug |
 | cam.helm | Helm | Steuerstand |
+| cam.sailor | Sailor | Segler |
+| cam.sailor.hint | From the sailor's seat, looking forward. | Vom Sitz des Seglers aus, nach vorn blickend. |
 | cam.free | Free | Frei |
 | cam.short.side-port | Port | Bb |
 | cam.short.side-starboard | Stbd | Stb |
 | cam.short.top | Top | Oben |
 | cam.short.bow | Bow | Bug |
 | cam.short.helm | Helm | Steuerstand |
+| cam.short.sailor | Sailor | Segler |
 | cam.short.free | Free | Frei |
 | card.label | Selected part | Ausgewähltes Teil |
 | card.boatLabel | On the boat: {labels} | Am Boot: {labels} |

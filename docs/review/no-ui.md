@@ -67,12 +67,15 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | cam.top | Top | Ovenfra |
 | cam.bow | Bow | Baug |
 | cam.helm | Helm | Rorplass |
+| cam.sailor | Sailor | Seiler |
+| cam.sailor.hint | From the sailor's seat, looking forward. | Fra seilerens sete, med blikket forover. |
 | cam.free | Free | Fri |
 | cam.short.side-port | Port | Bb |
 | cam.short.side-starboard | Stbd | Sb |
 | cam.short.top | Top | Topp |
 | cam.short.bow | Bow | Baug |
 | cam.short.helm | Helm | Ror |
+| cam.short.sailor | Sailor | Seiler |
 | cam.short.free | Free | Fri |
 | card.label | Selected part | Valgt del |
 | card.boatLabel | On the boat: {labels} | På båten: {labels} |

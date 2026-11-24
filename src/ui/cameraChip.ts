@@ -22,6 +22,10 @@ export function createCameraChip(row: HTMLElement, store: Store, map: MapView): 
   const view = row.parentElement;
   if (!view) return;
 
+  /** The name of a view in the strings: a boat with no wheel has the Sailor view in the Helm's place (M115). */
+  const nameOf = (preset: CameraPreset): string =>
+    preset === 'helm' && !hasFeature('wheel') ? 'sailor' : preset;
+
   const label = el('span', { class: 'chip-label' });
   const chip = el(
     'button',
@@ -38,11 +42,12 @@ export function createCameraChip(row: HTMLElement, store: Store, map: MapView): 
   const menu = createChipMenu(
     view,
     chip,
-    // A boat with no wheel has no Helm view (M113; the dinghy's Sailor view comes with M115).
-    CAMERA_PRESETS.filter((preset) => preset !== 'helm' || hasFeature('wheel')).map((preset) => ({
+    // A boat with no wheel has no Helm views: its `helm` entry is the Sailor view (M115).
+    CAMERA_PRESETS.map((preset) => ({
       id: preset,
       testId: `camera-option-${preset}`,
-      content: [t(`cam.${preset}` as StringKey)],
+      content: [t(`cam.${nameOf(preset)}` as StringKey)],
+      ...(nameOf(preset) === 'sailor' ? { title: t('cam.sailor.hint') } : {}),
     })),
     (id) => store.dispatch({ type: 'setCameraPreset', preset: id as CameraPreset }),
     {
@@ -56,8 +61,11 @@ export function createCameraChip(row: HTMLElement, store: Store, map: MapView): 
   const sync = (state = store.getState(), previous?: typeof state) => {
     if (previous && state.camera.preset === previous.camera.preset) return;
     const preset = state.camera.preset;
-    label.textContent = t(`cam.short.${preset}` as StringKey);
-    chip.setAttribute('aria-label', t('cam.chip', { name: t(`cam.${preset}` as StringKey) }));
+    label.textContent = t(`cam.short.${nameOf(preset)}` as StringKey);
+    chip.setAttribute(
+      'aria-label',
+      t('cam.chip', { name: t(`cam.${nameOf(preset)}` as StringKey) }),
+    );
     menu.setChecked(preset);
   };
   store.subscribe(sync);

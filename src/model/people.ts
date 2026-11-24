@@ -1,5 +1,6 @@
 import { DEG } from './angles';
 import { boat, type BoatData } from './boat';
+import type { Sit } from './dinghy';
 import { stationWinch, type RealisticState, type StationId } from './realistic';
 import type { HelmWheel, RopesMode } from './settings';
 import type { Vec3 } from './vec3';
@@ -20,7 +21,7 @@ export interface DeckPoint {
   faceDeg: number | null;
 }
 
-export type FigurePose = 'stand' | 'steer' | 'work' | 'walk';
+export type FigurePose = 'stand' | 'steer' | 'work' | 'walk' | 'sit' | 'hike';
 
 export interface CaptainInput {
   ropesMode: RopesMode;
@@ -35,6 +36,10 @@ export interface CaptainPlacement {
   pose: FigurePose;
   /** Metres walked in the current walk (0 when standing): the stride's phase. */
   walkedM: number;
+  /** M115 (the dinghy sailor only): where the pelvis is; the Hanse never sets it. */
+  hip?: Vec3;
+  /** M115: how far the whole body leans outboard from upright (degrees, ≥ 0; outboard = away from the centreline). */
+  leanDeg?: number;
 }
 
 interface PointData {
@@ -366,4 +371,110 @@ export function walkPosition(
 /** Whole seconds left of the walk, for the panel. */
 export function walkSecondsLeft(walk: WalkState, data: BoatData = boat): number {
   return Math.ceil((walk.lengthM - walk.doneM) / data.people.walkSpeedMps);
+}
+
+// ---------------------------------------------------------------------------------------------
+// The sailor in the dinghy (M115, PHASE_DINGHY_SPEC 9.3)
+// ---------------------------------------------------------------------------------------------
+
+/** The sailor's placement: the pelvis, the lean and where his two hands are (boat frame, lean applied). */
+export type SailorPlacement = CaptainPlacement & {
+  hip: Vec3;
+  leanDeg: number;
+  hand: { aft: Vec3; fwd: Vec3 };
+};
+
+function dinghyOf(data: BoatData) {
+  if (!data.dinghy) throw new Error('The sailor needs the dinghy boat data.');
+  return data.dinghy;
+}
+
+/** The seat's hip and feet on the starboard side, mirrored to `side` (z × side). */
+function seatPoints(sit: Sit, side: 1 | -1, data: BoatData): { hip: Vec3; feet: Vec3 } {
+  const seat = dinghyOf(data).seats[sit];
+  return {
+    hip: [seat.hip[0], seat.hip[1], seat.hip[2] * side],
+    feet: [seat.feet[0], seat.feet[1], seat.feet[2] * side],
+  };
+}
+
+/**
+ * Both hands, from the hip: the offsets from `dinghy.sailorHands` (the z offset is `−zSide` times its third number; `zSide`, 1 starboard … −1 port, fractional while
+ * crossing) rotated by the lean about the boat's x axis through the hip (`leanRad` > 0 leans to +z).
+ */
+function sailorHands(
+  hip: Vec3,
+  zSide: number,
+  leanRad: number,
+  data: BoatData,
+): { aft: Vec3; fwd: Vec3 } {
+  const { aft, fwd } = dinghyOf(data).sailorHands;
+  const c = Math.cos(leanRad);
+  const s = Math.sin(leanRad);
+  const place = (o: Vec3): Vec3 => {
+    const z = -zSide * o[2];
+    return [hip[0] + o[0], hip[1] + o[1] * c - z * s, hip[2] + o[1] * s + z * c];
+  };
+  return { aft: place(aft), fwd: place(fwd) };
+}
+
+/**
+ * Where the sailor sits for `sit` on `side` (1 starboard, −1 port): pelvis, feet, lean, facing
+ * (his front points along `(0.5, 0, −side·0.866)`: across the boat, turned 30° towards the bow)
+ * and the two hands, lean applied.
+ */
+export function sailorPlacement(sit: Sit, side: 1 | -1, data: BoatData = boat): SailorPlacement {
+  const { hip, feet } = seatPoints(sit, side, data);
+  const leanDeg = dinghyOf(data).seats[sit].leanDeg;
+  return {
+    feet,
+    hip,
+    leanDeg,
+    // captain.ts turns the figure by yaw = (90 − faceDeg)·DEG: its front (+z) then points at
+    // (cos faceDeg, 0, sin faceDeg), which is (0.5, 0, −side·0.866) for faceDeg = −side·60.
+    faceDeg: -side * (90 - dinghyOf(data).faceTurnDeg),
+    pose: sit === 'out' ? 'hike' : 'sit',
+    walkedM: 0,
+    hand: sailorHands(hip, side, side * leanDeg * DEG, data),
+  };
+}
+
+/** The pelvis on the way from one seat to the other: a straight line that dips a little in the middle. */
+export function crossingHip(from: Vec3, to: Vec3, u: number): Vec3 {
+  return [
+    from[0] + (to[0] - from[0]) * u,
+    from[1] + (to[1] - from[1]) * u - 0.1 * Math.sin(Math.PI * u),
+    from[2] + (to[2] - from[2]) * u,
+  ];
+}
+
+/**
+ * The sailor part-way across (drawing only): `u` 0…1 from the seat on `from` to the one on
+ * `−from`. He sits (never hikes) while crossing; the lean is `leanDeg·|1 − 2u|`, upright in the
+ * middle, and he turns through facing forward.
+ */
+export function crossingSailor(
+  sit: Sit,
+  from: 1 | -1,
+  u: number,
+  data: BoatData = boat,
+): SailorPlacement {
+  const a = seatPoints(sit, from, data);
+  const b = seatPoints(sit, from === 1 ? -1 : 1, data);
+  const hip = crossingHip(a.hip, b.hip, u);
+  const k = 1 - 2 * u;
+  const seatLean = dinghyOf(data).seats[sit].leanDeg;
+  return {
+    feet: [
+      a.feet[0] + (b.feet[0] - a.feet[0]) * u,
+      a.feet[1] + (b.feet[1] - a.feet[1]) * u,
+      a.feet[2] + (b.feet[2] - a.feet[2]) * u,
+    ],
+    hip,
+    leanDeg: seatLean * Math.abs(k),
+    faceDeg: -from * (90 - dinghyOf(data).faceTurnDeg) * k,
+    pose: 'sit',
+    walkedM: 0,
+    hand: sailorHands(hip, from * k, from * k * seatLean * DEG, data),
+  };
 }

@@ -139,7 +139,7 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
     await context.close();
   }
 
-  // 4. The Helm view is not offered, and a link that asks for it opens the side view.
+  // 4. The Helm views are not offered: the menu has the Sailor view (M115), and a link that asks for Helm opens it.
   {
     const { context, page } = await openPage(phone, 'm113 camera', `${D}&cam=helm&debug=1`);
     await canvasReady(page);
@@ -149,8 +149,11 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
       .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-testid')));
     const chip = (await page.getByTestId('camera-chip').innerText()).trim();
     check(
-      'camera: no Helm entry, the chip says Side',
-      !options.includes('camera-option-helm') && options.length >= 4 && /side|port/i.test(chip),
+      'camera: the Helm entry is the Sailor view, the chip says Sailor',
+      options.includes('camera-option-helm') &&
+        options.length >= 5 &&
+        (await page.getByTestId('camera-option-helm').innerText()).trim() === 'Sailor' &&
+        /sailor/i.test(chip),
       JSON.stringify({ options, chip }),
     );
     await context.close();
@@ -169,6 +172,7 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
       'fit_ratchet_block',
       'part_deck',
       'part_cockpit',
+      'person_captain', // the sailor (M115)
     ]) {
       shown[id] = await visible(page, id);
     }
@@ -180,7 +184,6 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
       'fit_anchor_windlass',
       'fit_fender',
       'part_shroud',
-      'person_captain',
     ]) {
       hidden[id] = await visible(page, id);
     }

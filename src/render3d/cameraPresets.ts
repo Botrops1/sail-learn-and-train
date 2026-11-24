@@ -1,5 +1,6 @@
-import { boat, type BoatData } from '../model/boat';
+import { boat, hasFeature, type BoatData } from '../model/boat';
 import { halfBeamAt, sheerAt } from '../model/hullShape';
+import { sailorPlacement } from '../model/people';
 import { helmPedestal } from '../model/helmPedestal';
 import { DEFAULT_HELM_VIEW, type CameraPreset, type HelmView } from '../model/settings';
 import { add, cross, dot, normalize, scale, sub, type Vec3 } from '../model/vec3';
@@ -25,6 +26,11 @@ export interface PresetOptions {
   topBowUp?: boolean;
   /** M64: the Helm camera's wheel and direction. */
   helm?: HelmView;
+  /**
+   * M115: where the dinghy sailor's pelvis is as drawn (it moves while he crosses the boat) and
+   * the side he is on, −1…1 (fractional while crossing). Without it the sailor's own seat is used.
+   */
+  sailor?: { hip: Vec3; side: number };
 }
 
 export interface Lens {
@@ -125,7 +131,14 @@ export function presetPose(
   data: BoatData = boat,
 ): CameraPose {
   const cam = SCENE.camera;
-  if (preset === 'helm') return helmPose(options.helm ?? DEFAULT_HELM_VIEW, data);
+  if (preset === 'helm') {
+    // A boat with no wheel has the Sailor view instead of the Helm views (M115).
+    if (!hasFeature('wheel', data)) {
+      const seat = sailorPlacement(data.dinghy?.crew.defaultSit ?? 'in', 1, data);
+      return sailorPose(options.sailor ?? { hip: seat.hip, side: 1 }, data);
+    }
+    return helmPose(options.helm ?? DEFAULT_HELM_VIEW, data);
+  }
   const box = framingBox(data, preset === 'top');
   const target: Vec3 = scale(add(box.min, box.max), 0.5);
   const direction = {
@@ -150,6 +163,30 @@ export function presetPose(
     position: add(target, scale(direction, distance)),
     target,
     fovDeg: cam.verticalFovDeg,
+  };
+}
+
+/**
+ * M115: the view from the dinghy sailor's seat: the eye `sailorEye.aboveHipM` above the pelvis,
+ * looking along the bow turned `lookToLeewardDeg` to the side opposite the sailor and
+ * `lookDownDeg` down, with the Helm view's wide lens.
+ */
+export function sailorPose(sailor: { hip: Vec3; side: number }, data: BoatData = boat): CameraPose {
+  const cam = SCENE.camera;
+  const eyeData = data.dinghy?.sailorEye;
+  if (!eyeData) throw new Error('the Sailor view needs the dinghy boat data');
+  const eye: Vec3 = add(sailor.hip, [0, eyeData.aboveHipM, 0]);
+  const down = eyeData.lookDownDeg * DEG;
+  const yaw = eyeData.lookToLeewardDeg * DEG;
+  const look: Vec3 = [
+    Math.cos(down) * Math.cos(yaw),
+    -Math.sin(down),
+    -sailor.side * Math.cos(down) * Math.sin(yaw),
+  ];
+  return {
+    position: eye,
+    target: add(eye, scale(look, cam.helmTargetDistance)),
+    fovDeg: cam.helmVerticalFovDeg,
   };
 }
 

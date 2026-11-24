@@ -23,7 +23,6 @@ export interface DinghyData {
   tiller: { pivot: [number, number, number]; lengthM: number; extensionM: number };
   toeStraps: { fromX: number; toX: number; halfZ: number; y: number };
   ratchetBlock: [number, number, number];
-  sheetHand: [number, number, number];
   cockpit: { fwdX: number; aftX: number; halfWidth: number; floorY: number };
   sideDeckWidthM: number;
   /** M114: the sailor's weight (the mass is `physics.mass.payloadKg`). */
@@ -37,6 +36,19 @@ export interface DinghyData {
   windwardHeelAlertDeg: number;
   /** M114: and for this many seconds before the alert shows. */
   windwardHeelAfterS: number;
+  /** M115: where the sailor's hips and feet are for each Sit on the starboard side, and the whole-body lean outboard (degrees). */
+  seats: Record<
+    Sit,
+    { hip: [number, number, number]; feet: [number, number, number]; leanDeg: number }
+  >;
+  /** M115: offsets from the hip (forward, up, across) of the hand on the tiller extension and the one on the mainsheet. */
+  sailorHands: { aft: [number, number, number]; fwd: [number, number, number] };
+  /** M115: the sailor's front points across the boat, turned this many degrees towards the bow. */
+  faceTurnDeg: number;
+  /** M115: seconds the sailor takes to cross the boat in a tack or gybe (drawing only). */
+  crossS: number;
+  /** M115: the Sailor view's eye above the hip, how far it looks down, and how far to leeward. */
+  sailorEye: { aboveHipM: number; lookDownDeg: number; lookToLeewardDeg: number };
 }
 
 /** What the learner changes on the dinghy besides the shared controls (M114 adds the actions). */
