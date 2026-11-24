@@ -161,7 +161,7 @@ describe('The Hanse is untouched', () => {
 function run(
   start: AppState,
   seconds: number,
-  each?: (state: AppState, t: number) => boolean | void,
+  each?: (state: AppState, t: number) => boolean | undefined,
 ): AppState {
   let state = start;
   const steps = Math.round(seconds / 0.1);
