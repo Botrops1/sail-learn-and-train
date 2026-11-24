@@ -11,6 +11,7 @@ import {
   type Sit,
 } from '../src/model/dinghy';
 import { initialState, reduce, type AppState } from '../src/app/store';
+import { crewOutShare } from '../src/model/dinghy';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { MODE_LAYOUTS, sectionAvailable } from '../src/ui/modes';
 import { completeLayout } from '../src/ui/sectionLayout';
@@ -243,6 +244,43 @@ describe('PT-80 The sailor sits opposite the boom', () => {
     expect(state.motion?.awaDeg ?? 0).toBeLessThan(-20);
     expect(state.dinghy.sailorSide).toBe(-1);
     expect(sign(state)).toBe(-1);
+  });
+});
+
+describe('PT-80 The sailor comes through the middle in a tack (issue #283, M115)', () => {
+  it('crewOutShare: out on his side beyond 25 degrees, in the middle within 10, smooth between', () => {
+    useDinghy();
+    expect(crewOutShare(40, DINGHY.data)).toBe(1);
+    expect(crewOutShare(-25, DINGHY.data)).toBe(1);
+    expect(crewOutShare(0, DINGHY.data)).toBe(0);
+    expect(crewOutShare(-10, DINGHY.data)).toBe(0);
+    const mid = crewOutShare(17.5, DINGHY.data);
+    expect(mid).toBeGreaterThan(0.4);
+    expect(mid).toBeLessThan(0.6);
+    expect(crewMomentNm(0, 'side', 1, DINGHY.data, 5)).toBe(0);
+    expect(crewMomentNm(0, 'side', 1, DINGHY.data, 60)).toBe(
+      crewMomentNm(0, 'side', 1, DINGHY.data),
+    );
+  });
+
+  it('steering through the wind: close-hauled, the tiller at +30, she tacks and the sailor crosses', () => {
+    useDinghy();
+    const link = '?boat=dinghy&wd=0&ws=10&hdg=315&ms=15&sp=side&rd=30&sea=flat';
+    const start = parseUrlState(link, 'low');
+    expect(start.dinghy.sailorSide).toBe(1);
+    let crossedAt = -1;
+    let maxHeel = 0;
+    const end = run(start, 12, (s, t) => {
+      maxHeel = Math.max(maxHeel, Math.abs(s.boat.heelDeg));
+      if (crossedAt < 0 && s.dinghy.sailorSide === -1) crossedAt = t;
+      return undefined;
+    });
+    expect(crossedAt).toBeGreaterThan(0);
+    expect(crossedAt).toBeLessThan(8);
+    expect(end.dinghy.sailorSide).toBe(-1);
+    expect(end.motion?.awaDeg ?? 0).toBeLessThan(0);
+    // She does not go over on the way: the sailor is in the middle while the sail is empty.
+    expect(maxHeel).toBeLessThan(45);
   });
 });
 

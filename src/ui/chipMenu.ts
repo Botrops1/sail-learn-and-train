@@ -5,6 +5,8 @@ export interface ChipMenuItem {
   id: string;
   testId: string;
   content: (string | HTMLElement)[];
+  /** A tooltip with a line of help for this item (M115: the Sailor view). */
+  title?: string;
 }
 
 export interface ChipMenuOptions {
@@ -81,6 +83,7 @@ export function createChipMenu(
         tabindex: '-1',
         'data-testid': item.testId,
         'data-item': item.id,
+        ...(item.title ? { title: item.title } : {}),
       },
       item.content,
     );

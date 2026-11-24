@@ -73,6 +73,11 @@ export interface CameraRig {
    * eye stays, the head turns) or jumps to the new pose.
    */
   setHelmView(view: HelmView, animate: boolean): void;
+  /**
+   * M115: where the dinghy sailor's pelvis is as drawn and his side (−1…1); the Sailor view's eye follows it. While the
+   * preset is Helm the camera moves with it (a glide under way is redirected).
+   */
+  setSailorEye(sailor: { hip: Vec3; side: number }): void;
   /** M99: glides (SCENE.camera.transitionS, straight) so the orbit turns round `point` (centrePose); a hand move: the preset becomes free. Drops a spotlight focus without gliding back. */
   centreOn(point: Vec3): void;
 }
@@ -308,7 +313,7 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
         top -= fromTop;
         inset = Math.max(0, inset - (shortBy - fromTop));
       }
-      options = { ...presetOptions, helm: options.helm };
+      options = { ...presetOptions, helm: options.helm, sailor: options.sailor };
       if (!applied || width !== viewport.width || height !== viewport.height) {
         ease = undefined;
         applyViewport(width, height, inset, top);
@@ -422,6 +427,16 @@ export function createCameraRig(domElement: HTMLElement): CameraRig {
       if (animate) tween = { from: currentPose(), to, start: performance.now(), mode: 'straight' };
       else {
         tween = undefined;
+        apply(to);
+        controls.update();
+      }
+    },
+    setSailorEye(sailor) {
+      options = { ...options, sailor };
+      if (currentPreset !== 'helm' || interacting) return;
+      const to = presetPose('helm', lens, options);
+      if (tween) tween.to = to;
+      else {
         apply(to);
         controls.update();
       }

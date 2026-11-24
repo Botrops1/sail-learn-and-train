@@ -124,7 +124,7 @@ New link settings (on the dinghy only): `boat=dinghy` the Training dinghy, `sp` 
 
 - [ ] Sitting: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&held=1&sea=flat&cam=side-starboard — a sailor sits against the near side, one hand on the tiller stick, the other holding the mainsheet.
 - [ ] On the side and leaning out: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&sp=side&held=1&sea=flat&cam=side-starboard — on the side deck; tap Lean out: feet under the straps, body out over the water.
-- [ ] Tack: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=0&ws=10&hdg=315&ms=30&sp=side&sea=flat&cam=top — steer to the right until the wind is on the other side: the boom crosses and the sailor moves across to the new high side.
+- [ ] Tack: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=0&ws=10&hdg=315&ms=15&sp=side&sea=flat&cam=top — steer to the right until the wind is on the other side: the boom crosses and the sailor moves across to the new high side.
 - [ ] Sailor view: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&sp=side&sea=flat&cam=helm — you look forward from the sailor's seat; the camera menu calls it Sailor.
 - [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&sp=out&held=1&sea=flat&cam=side-port — the same on a computer.
 

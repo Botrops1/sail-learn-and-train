@@ -2,7 +2,13 @@ import * as THREE from 'three';
 import { defaultControls, type Controls } from '../../model/controls';
 import { gennakerDrawing, STOWED, type GennakerSetup } from '../../model/gennaker';
 import { carPoint, jibClew } from '../../model/jib';
-import { drawnPose, ropeDrawings, type RopeDrawing, type WinchWrap } from '../../model/ropePaths';
+import {
+  drawnPose,
+  ropeDrawings,
+  type DrawnSailor,
+  type RopeDrawing,
+  type WinchWrap,
+} from '../../model/ropePaths';
 import { jibInputFor, jibSailGrid, mainSailGrid, mainSailInputFor } from '../../model/sailShape';
 import { boat, hasFeature, isDinghy } from '../../model/boat';
 import type { CaptainPlacement } from '../../model/people';
@@ -53,6 +59,8 @@ export interface BoatView {
   boomYawDeg?: number | null;
   /** M113: the dinghy's centreboard, 0 (up) … 100 (down); 100 when missing. */
   boardPct?: number;
+  /** M115: where the dinghy's sailor sits and his hands as drawn (the sheet and the tiller extension follow them). */
+  sailor?: DrawnSailor & { handAft?: Vec3 };
 }
 
 export interface BoatModel {
@@ -236,7 +244,7 @@ export function buildBoat(
     // The traveller replaces the German mainsheet and its deck blocks while its picture shows.
     const traveller = view.picture === 'traveller';
     for (const mesh of deckBlockMeshes) mesh.visible = !traveller;
-    drawings = ropeDrawings(drawnRig, boat, winches, gennaker);
+    drawings = ropeDrawings(drawnRig, boat, winches, gennaker, view.sailor);
     if (traveller) drawings = drawings.filter((drawing) => drawing.id !== 'rope_mainsheet');
     ropes.update(drawings, ropeView, flashing);
     // The sail and the sock move every frame while it is set; at the other stages the parts only
@@ -257,6 +265,9 @@ export function buildBoat(
     // around y), wheels turned clockwise as seen from behind them (a turn around x).
     rudderPivot.rotation.y = (next.applied.rudder * Math.PI) / 180;
     dinghy?.setBoard(view.boardPct ?? 100);
+    if (dinghy && view.sailor?.handAft) {
+      dinghy.aimExtension(view.sailor.handAft, next.applied.rudder);
+    }
     const wheel = (wheelTurnDeg(next.applied.rudder) * Math.PI) / 180;
     for (const pivot of hardware.wheelPivots) pivot.rotation.x = wheel;
     root.updateMatrixWorld(true);
@@ -277,17 +288,15 @@ export function buildBoat(
     object.castShadow = !object.material.transparent || id.startsWith('sail_');
     object.receiveShadow = !id.startsWith('rope_') && !object.material.transparent;
   });
-  // The captain joins after the shadow pass above, which would give his tap area shadows. The
-  // dinghy has none (M113; M115 draws its sailor).
-  const captain = isDinghy() ? null : buildCaptain(detail);
-  if (captain) {
-    captain.object.traverse((object) => {
-      if (!(object instanceof THREE.Mesh)) return;
-      object.castShadow = object instanceof THREE.SkinnedMesh;
-      object.receiveShadow = false;
-    });
-    root.add(captain.object);
-  }
+  // The captain joins after the shadow pass above, which would give his tap area shadows. On the
+  // dinghy he is its sailor (M115).
+  const captain = buildCaptain(detail);
+  captain.object.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    object.castShadow = object instanceof THREE.SkinnedMesh;
+    object.receiveShadow = false;
+  });
+  root.add(captain.object);
   return {
     root,
     boomPivot: rigParts.boomPivot,
@@ -302,7 +311,7 @@ export function buildBoat(
     updatePanel: pedestals.update,
     panelStats: pedestals.stats,
     revealPanels: pedestals.reveal,
-    setCaptain: captain ? captain.update : () => undefined,
+    setCaptain: captain.update,
     setAnchorStowed: (stowed) => {
       for (const mesh of anchorMeshes) mesh.visible = stowed;
     },

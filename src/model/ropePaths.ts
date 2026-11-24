@@ -1,4 +1,6 @@
 import { boat, isDinghy, type BoatData } from './boat';
+import { nextSailorSide, type Sit } from './dinghy';
+import { sailorPlacement } from './people';
 import type { RopeState } from './boomSolver';
 import { halfBeamAt, sheerAt } from './hullShape';
 import { carPoint, jibClew, jibFurlingLinePaidOut, jibSheetPaidOutFor, jibSheetSpan } from './jib';
@@ -327,6 +329,13 @@ export interface WinchWrap {
   selfTailer: boolean;
 }
 
+/** M115: where the dinghy's sailor sits and the hand he holds the mainsheet with, as drawn (his crossing). */
+export interface DrawnSailor {
+  sit: Sit;
+  sailorSide: 1 | -1;
+  handFwd?: Vec3;
+}
+
 /**
  * The ropes as polylines. Every tail runs on from its clutch into the rope tail box behind the
  * winch on its side (M5). `winches`: Realistic mode's winch setup: a rope on a winch is drawn
@@ -338,8 +347,11 @@ export function ropeDrawings(
   data: BoatData = boat,
   winches?: readonly WinchWrap[],
   gennaker: GennakerSetup = STOWED,
+  sailor?: DrawnSailor,
 ): RopeDrawing[] {
-  if (isDinghy(data)) return dinghyRopePaths(rig, data);
+  if (isDinghy(data)) {
+    return dinghyRopePaths(rig, data, sailor?.sit, sailor?.sailorSide, sailor?.handFwd);
+  }
   const pose = drawnPose(rig);
   const segments = data.visual.ropeSagSegments;
   const radius = data.visual.ropeRenderRadius;
@@ -539,16 +551,20 @@ export function ropeDrawings(
   ];
 }
 
-/** Length of the mainsheet's tail rising from the ratchet block towards the sailor's hand. */
-const DINGHY_SHEET_TAIL_M = 0.5;
-
 /**
  * M113 (PHASE_DINGHY_SPEC 7.3): the Training dinghy's two lines. The mainsheet runs from the boom
- * (at `rig.mainsheet.boomDistance`) down to the ratchet block on the floor, then a 0.5 m tail
- * rises towards the sailor's hand, which is on the sailor's side (opposite the boom); the kicker
- * runs from the mast foot to the boom at `rig.vang.boomDistance`. No other rope is drawn.
+ * (at `rig.mainsheet.boomDistance`) down to the ratchet block on the floor, then the tail rises
+ * to the sailor's forward hand (M115: `sailorPlacement(sit, sailorSide).hand.fwd`, or `handFwd`,
+ * the hand as drawn while he crosses the boat); the kicker runs from the mast foot to the boom
+ * at `rig.vang.boomDistance`. No other rope is drawn.
  */
-export function dinghyRopePaths(rig: RigState, data: BoatData = boat): RopeDrawing[] {
+export function dinghyRopePaths(
+  rig: RigState,
+  data: BoatData = boat,
+  sit: Sit = data.dinghy?.crew.defaultSit ?? 'in',
+  sailorSide: 1 | -1 = nextSailorSide(rig.solution.side),
+  handFwd?: Vec3,
+): RopeDrawing[] {
   const dinghy = data.dinghy;
   if (!dinghy) throw new Error('dinghyRopePaths needs the dinghy boat data.');
   const pose = drawnPose(rig);
@@ -559,11 +575,7 @@ export function dinghyRopePaths(rig: RigState, data: BoatData = boat): RopeDrawi
 
   const boomEnd = local([-data.rig.mainsheet.boomDistance, boomBottom, 0]);
   const ratchet = vec3(dinghy.ratchetBlock);
-  const sailorSide = -solution.side;
-  const hand = vec3(dinghy.sheetHand);
-  const handPoint: Vec3 = [hand[0], hand[1], hand[2] * sailorSide];
-  const toHand = sub(handPoint, ratchet);
-  const tailEnd = add(ratchet, scale(normalize(toHand), DINGHY_SHEET_TAIL_M));
+  const tailEnd = handFwd ?? sailorPlacement(sit, sailorSide, data).hand.fwd;
   const straight = (a: Vec3, b: Vec3): Vec3[] => sagCurve(a, b, 0, segments, data);
   const sheetSlack = solution.mainsheet.state === 'slack' ? solution.mainsheet.slack : 0;
 

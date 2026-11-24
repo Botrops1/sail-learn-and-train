@@ -67,12 +67,15 @@
 | cam.top | Top | Сверху |
 | cam.bow | Bow | Нос |
 | cam.helm | Helm | Штурвал |
+| cam.sailor | Sailor | Яхтсмен |
+| cam.sailor.hint | From the sailor's seat, looking forward. | С места яхтсмена, взгляд вперёд. |
 | cam.free | Free | Свободная |
 | cam.short.side-port | Port | ЛБ |
 | cam.short.side-starboard | Stbd | ПБ |
 | cam.short.top | Top | Верх |
 | cam.short.bow | Bow | Нос |
 | cam.short.helm | Helm | Руль |
+| cam.short.sailor | Sailor | Яхтсмен |
 | cam.short.free | Free | Обзор |
 | card.label | Selected part | Выбранная часть |
 | card.boatLabel | On the boat: {labels} | На яхте написано: {labels} |

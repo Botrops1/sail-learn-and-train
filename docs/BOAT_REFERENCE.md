@@ -443,3 +443,17 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Centreboard | wetted surface 0.5 m² when down; sideways grip 30 N per (m/s · m/s) with it up, the Hanse's keel value (700) with it down | the grip is a straight mix of the two by the board's position; raising it cuts drag when it is not needed (Centreboard) |
 | Outhaul | hauled tight the sail gives 85 % of the force of a full one | |
 | Heel warning | towards the sailor by more than 10° for 1 s | "Heeling towards you: sit further in"; the warning's two numbers are in the `dinghy` block |
+
+### Dinghy rows added by M115 (all assumptions, chosen to look right; `dinghy.seats`, `sailorHands`, `crossS`, `sailorEye`)
+
+| Value | Number | Note |
+|---|---|---|
+| Sailor's hip (x, y, z, starboard side; z is mirrored for port) | sitting in (−1.25, 0.26, 0.3) m, on the side deck (−1.25, 0.43, 0.6) m, leaning out (−1.25, 0.45, 0.72) m | the pelvis the figure is drawn from |
+| Sailor's feet | (−0.9, 0.14, 0.05), (−0.95, 0.14, 0.3), (−1.0, 0.16, 0.2) m | leaning out: under the toe straps (`toeStraps.halfZ` 0.2 m) |
+| Lean outboard | 0°, 15°, 60° | the whole body, about the boat's length axis through the hip |
+| Facing | across the boat, turned 30° towards the bow (`dinghy.faceTurnDeg`) | so he looks forward past the mast |
+| Hands, from the hip (forward, up, across inboard) | tiller extension hand (0.1, 0.35, 0.25) m; mainsheet hand (0.35, 0.3, 0.15) m (`dinghy.sailorHands`) | the mainsheet's tail ends in the second one; the extension points at the first. The M113 value `dinghy.sheetHand` is gone |
+| Crossing the boat | 1.5 s (`dinghy.crossS`), the hip dips 0.1 m in the middle, upright in the middle | drawing only: the model's weight moves at once (M114) |
+| Sailor view | eye 0.75 m above the hip, looking 10° down and 15° towards the side he is not on (`dinghy.sailorEye`) | |
+| The sailor in the middle for a tack (issue #283) | out on his side beyond 25° of apparent wind, in the middle within 10° (`dinghy.crew.tack`), smooth between | a close-hauled dinghy sails at about 30°, so steady sailing is untouched; without it his side-deck weight tipped the luffing boat over to windward and she could not turn through the wind. **Tunable** |
+| Turning (issue #283) | `physics.steering.turnLengthM` 2.5 m (was 4 m) | at 30° of rudder the turning circle is about 9 m across; with 4 m she stalled head to wind before the bow was through it. **Tunable** |

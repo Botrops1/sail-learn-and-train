@@ -1,5 +1,5 @@
 import type { Store } from '../app/store';
-import { boat } from '../model/boat';
+import { boat, hasFeature } from '../model/boat';
 import { el } from './dom';
 import { t } from './i18n';
 
@@ -58,7 +58,8 @@ export function createHelmViews(view: HTMLElement, store: Store): HTMLElement {
 
   const sync = () => {
     const { preset, helm } = store.getState().camera;
-    group.hidden = preset !== 'helm';
+    // A boat with no wheel (the dinghy) has the Sailor view in this place: no buttons (M115).
+    group.hidden = preset !== 'helm' || !hasFeature('wheel');
     ropes.setAttribute('aria-pressed', String(helm.look === 'ropes'));
     panel.setAttribute('aria-pressed', String(helm.look === 'panel'));
   };

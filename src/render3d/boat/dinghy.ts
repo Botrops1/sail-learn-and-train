@@ -26,6 +26,12 @@ export interface DinghyParts {
   tiller: THREE.Group;
   /** Puts the centreboard `pct` % of the way down (0 = fully up, 100 = fully down). */
   setBoard(pct: number): void;
+  /**
+   * M115: points the tiller extension from its hinge (the tiller's front end) at the sailor's aft
+   * hand, `hand` in the boat frame, for the rudder at `rudderDeg`. It keeps its length and need
+   * not touch the hand.
+   */
+  aimExtension(hand: Vec3, rudderDeg: number): void;
 }
 
 /** Positions of the centre line's stations between two x values, each at most `GAP` apart. */
@@ -155,23 +161,34 @@ export function buildDinghyParts(materials: BoatMaterials): DinghyParts {
   );
   const extension = partMesh(
     'part_tiller_extension',
-    [
-      cylinderBetween(
-        [tiller.lengthM, 0, 0],
-        [tiller.lengthM + tiller.extensionM, 0, 0],
-        0.008,
-        10,
-      ),
-    ],
+    [cylinderBetween([0, 0, 0], [tiller.extensionM, 0, 0], 0.008, 10)],
     materials.fitting,
     [
       [
-        [tiller.lengthM, 0, 0],
-        [tiller.lengthM + tiller.extensionM, 0, 0],
+        [0, 0, 0],
+        [tiller.extensionM, 0, 0],
       ],
     ],
   );
-  group.add(bar, extension);
+  // The extension hangs on a hinge at the tiller's front end.
+  const hinge = new THREE.Group();
+  hinge.name = 'tillerExtensionHinge';
+  hinge.position.set(tiller.lengthM, 0, 0);
+  hinge.add(extension);
+  const along = new THREE.Vector3(1, 0, 0);
+  const aim = new THREE.Vector3();
+  const aimExtension = (hand: Vec3, rudderDeg: number) => {
+    // The hand in the tiller's own frame: undo the rudder's turn about the stock, then the offset.
+    const t = (rudderDeg * Math.PI) / 180;
+    const dx = hand[0] - stockX;
+    const dz = hand[2];
+    const lx = dx * Math.cos(t) - dz * Math.sin(t) - group.position.x;
+    const lz = dx * Math.sin(t) + dz * Math.cos(t) - group.position.z;
+    aim.set(lx - tiller.lengthM, hand[1] - group.position.y, lz);
+    if (aim.lengthSq() < 1e-9) return;
+    hinge.quaternion.setFromUnitVectors(along, aim.normalize());
+  };
+  group.add(bar, hinge);
 
   // The toe straps: a flat strap on each side, held up at both ends by a small block.
   const strapGeometries: THREE.BufferGeometry[] = [];
@@ -203,5 +220,5 @@ export function buildDinghyParts(materials: BoatMaterials): DinghyParts {
     ),
   );
 
-  return { objects, tiller: group, setBoard };
+  return { objects, tiller: group, setBoard, aimExtension };
 }

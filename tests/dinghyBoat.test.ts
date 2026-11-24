@@ -204,6 +204,7 @@ describe('M113: the dinghy in 3D', () => {
         'sail_main',
         'rope_mainsheet',
         'rope_vang',
+        'person_captain', // the sailor (M115)
       ]) {
         expect(ids.has(id), `${detail} ${id}`).toBe(true);
       }
@@ -220,7 +221,6 @@ describe('M113: the dinghy in 3D', () => {
         'helm_starboard',
         'fit_anchor_windlass',
         'fit_fender',
-        'person_captain',
         'rope_jib_sheet',
       ]) {
         expect(ids.has(id), `${detail} ${id}`).toBe(false);
@@ -279,8 +279,8 @@ describe('M113: the dinghy in the link, the modes and the sections', () => {
       expect(new URLSearchParams(link).has(key), key).toBe(false);
     }
     expect(link).not.toContain('mode=realistic');
-    // A Helm link opens the side view; an exercise of the yacht opens without the exercise.
-    expect(parseUrlState('?boat=dinghy&cam=helm', 'low').camera.preset).toBe('side-port');
+    // A Helm link opens the Sailor view (M115); an exercise of the yacht opens without the exercise.
+    expect(parseUrlState('?boat=dinghy&cam=helm', 'low').camera.preset).toBe('helm');
     expect(parseUrlState('?boat=dinghy&ex=points-of-sail', 'low').exercise).toBeNull();
   });
 

@@ -145,6 +145,59 @@ function steer(t: number): Partial<JointAngles> {
   };
 }
 
+/**
+ * The dinghy sailor (M115): the hips and knees bend, both arms reach forward and down (the left
+ * one holds the tiller extension and the right one the mainsheet when he sits on the starboard
+ * side: he faces across the boat), and the head looks ahead. The lean is not a joint:
+ * the whole figure is rotated (captain.ts). `hike` stretches the legs out under the toe straps.
+ */
+function sit(t: number, hike: boolean): Partial<JointAngles> {
+  return {
+    lHx: hike ? -0.52 : -Math.PI / 2,
+    rHx: hike ? -0.52 : -Math.PI / 2,
+    lKx: hike ? 0.35 : Math.PI / 2,
+    rKx: hike ? 0.35 : Math.PI / 2,
+    // Seated: elbows by the sides, forearms forward at the belly. Hiking he leans far back, so
+    // the arms reach further out in front of him to stay about level.
+    lSx: hike ? -0.6 : -0.1,
+    lEx: hike ? -1.0 : -1.9,
+    lSz: 0.05,
+    rSx: hike ? -0.7 : -0.35,
+    rEx: hike ? -0.9 : -1.45,
+    rSz: -0.3,
+    torsoX: hike ? -0.05 : 0.02,
+    headX: 0.05,
+    headY: -0.6 + Math.sin(t * 0.5) * 0.05,
+    brow: Math.max(0, Math.sin(t * 1.1)) * 0.3,
+  };
+}
+
+/** The same pose seen in a mirror: left and right limbs swap, the turns about the up axis flip. */
+export function mirrorJoints(j: JointAngles): JointAngles {
+  return {
+    ...j,
+    torsoY: -j.torsoY,
+    torsoZ: -j.torsoZ,
+    headY: -j.headY,
+    headZ: -j.headZ,
+    browTilt: -j.browTilt,
+    lSx: j.rSx,
+    lSz: -j.rSz,
+    lEx: j.rEx,
+    lEz: -j.rEz,
+    rSx: j.lSx,
+    rSz: -j.lSz,
+    rEx: j.lEx,
+    rEz: -j.lEz,
+    lHx: j.rHx,
+    lKx: j.rKx,
+    lAx: j.rAx,
+    rHx: j.lHx,
+    rKx: j.lKx,
+    rAx: j.lAx,
+  };
+}
+
 /** The joint angles of `pose` at time `t` (s); the walk's phase comes from `walkedM`. */
 export function figureJoints(
   pose: FigurePose,
@@ -159,6 +212,10 @@ export function figureJoints(
       return { ...REST_JOINTS, ...work(t) };
     case 'steer':
       return { ...REST_JOINTS, ...steer(t) };
+    case 'sit':
+      return { ...REST_JOINTS, ...sit(t, false) };
+    case 'hike':
+      return { ...REST_JOINTS, ...sit(t, true) };
     case 'walk':
       return { ...REST_JOINTS, ...walk((2 * Math.PI * walkedM) / data.people.strideM) };
   }

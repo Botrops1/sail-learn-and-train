@@ -1,13 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { boat } from '../src/model/boat';
+import { boat, builtInBoat } from '../src/model/boat';
+import { nextSailorSide, type Sit } from '../src/model/dinghy';
+import { DEG } from '../src/model/angles';
+import { dinghyRopePaths } from '../src/model/ropePaths';
+import { initialRig } from '../src/model/sim';
+import { defaultControls } from '../src/model/controls';
 import { checkBoatProfile, makeBoatProfile } from '../src/model/boatProfile';
 import { FIGURE_LEG_M, REST_JOINTS, figureJoints } from '../src/model/figurePose';
 import { halfBeamAt, sheerAt } from '../src/model/hullShape';
 import { sideDeckInnerHalfWidth } from '../src/model/deckVolumes';
 import {
   captainPlacement,
+  crossingHip,
+  crossingSailor,
   deckPoints,
   deckRoute,
+  sailorPlacement,
   startWalk,
   stationSpot,
   walkPosition,
@@ -390,5 +398,93 @@ describe('M112 walking', () => {
     expect(walking.walkedM).toBe(3);
     expect(walking.feet).toEqual(walkPosition(walk).feet);
     expect(captainPlacement({ ...input, ropesMode: 'easy' }).pose).toBe('steer');
+  });
+});
+
+// ---------------------------------------------------------------------------------------------
+// M115: the sailor in the dinghy (PHASE_DINGHY_SPEC 9.6)
+// ---------------------------------------------------------------------------------------------
+
+describe('M115 the dinghy sailor', () => {
+  const dinghy = builtInBoat('dinghy')?.data;
+  if (!dinghy) throw new Error('no dinghy');
+  const SITS: Sit[] = ['in', 'side', 'out'];
+  const near = (a: readonly number[], b: readonly number[], digits = 9) => {
+    for (let i = 0; i < 3; i++) expect(a[i]).toBeCloseTo(b[i] ?? 0, digits);
+  };
+
+  it('1. sailorPlacement puts the hips and feet where the seats say, mirrored for port', () => {
+    const side = sailorPlacement('side', 1, dinghy);
+    near(side.hip, [-1.25, 0.43, 0.6]);
+    near(side.feet, [-0.95, 0.14, 0.3]);
+    expect(side.pose).toBe('sit');
+    near(sailorPlacement('side', -1, dinghy).hip, [-1.25, 0.43, -0.6]);
+    const out = sailorPlacement('out', 1, dinghy);
+    expect(out.pose).toBe('hike');
+    expect(out.leanDeg).toBe(60);
+    expect(sailorPlacement('in', 1, dinghy).walkedM).toBe(0);
+  });
+
+  it('2. the new poses have finite joints', () => {
+    for (const pose of ['sit', 'hike'] as const) {
+      for (const v of Object.values(figureJoints(pose, 1.3, 0)))
+        expect(Number.isFinite(v)).toBe(true);
+    }
+  });
+
+  it('3. PT-80 the sailor sits opposite the boom; the crossing starts and ends on the seats', () => {
+    for (const sit of SITS) {
+      for (const boomSide of [1, -1] as const) {
+        const hip = sailorPlacement(sit, nextSailorSide(boomSide), dinghy).hip;
+        expect(Math.sign(hip[2])).toBe(-boomSide);
+      }
+    }
+    const a = sailorPlacement('side', 1, dinghy).hip;
+    const b = sailorPlacement('side', -1, dinghy).hip;
+    near(crossingHip(a, b, 0), a);
+    near(crossingHip(a, b, 1), b);
+    const mid = crossingHip(a, b, 0.5);
+    near([mid[0], mid[1] + 0.1, mid[2]], [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2]);
+    // the drawn crossing: the seats at both ends, upright in the middle
+    near(crossingSailor('side', 1, 0, dinghy).hip, a);
+    near(crossingSailor('side', 1, 1, dinghy).hip, b);
+    expect(crossingSailor('out', 1, 0.5, dinghy).leanDeg).toBeCloseTo(0, 9);
+    expect(crossingSailor('out', 1, 0, dinghy).pose).toBe('sit');
+  });
+
+  it('4. the body faces across the boat, turned 30 degrees towards the bow', () => {
+    for (const [side, z] of [
+      [1, -0.866],
+      [-1, 0.866],
+    ] as const) {
+      const yaw = (90 - sailorPlacement('side', side, dinghy).faceDeg) * DEG;
+      // captain.ts turns the figure about the up axis; its front is +z
+      const front: [number, number, number] = [Math.sin(yaw), 0, Math.cos(yaw)];
+      const angle = Math.acos(Math.min(1, front[0] * 0.5 + front[2] * z)) / DEG;
+      expect(angle).toBeLessThan(1);
+    }
+  });
+
+  it('5. the mainsheet ends in the forward hand, for each sit and side', () => {
+    for (const sit of SITS) {
+      for (const side of [1, -1] as const) {
+        const rig = initialRig(defaultControls(), dinghy);
+        const sheet = dinghyRopePaths(rig, dinghy, sit, side).find(
+          (d) => d.id === 'rope_mainsheet',
+        );
+        const tail = sheet?.strands.find((strand) => strand.tailEnd);
+        const last = tail?.points[tail.points.length - 1];
+        expect(last).toBeDefined();
+        near(last ?? [0, 0, 0], sailorPlacement(sit, side, dinghy).hand.fwd);
+      }
+    }
+  });
+
+  it('6. the hands go with the lean: leaning out lifts them away from the centreline', () => {
+    const upright = sailorPlacement('in', 1, dinghy);
+    const out = sailorPlacement('out', 1, dinghy);
+    // the lean is about the x axis through the hip: forward offsets do not change, the hand moves outboard
+    expect(out.hand.fwd[0] - out.hip[0]).toBeCloseTo(upright.hand.fwd[0] - upright.hip[0], 9);
+    expect(out.hand.fwd[2] - out.hip[2]).toBeGreaterThan(upright.hand.fwd[2] - upright.hip[2]);
   });
 });

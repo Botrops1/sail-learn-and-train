@@ -140,7 +140,7 @@ const DINGHY_IGNORED_KEYS: readonly string[] = [
 /**
  * A link's keys as the boat in use reads them: on the dinghy the keys above and the controls it
  * does not show are removed, a mode the boat does not offer (Realistic, Harbour) is dropped so
- * the link opens in Easy, and Helm is Side. The Hanse's keys pass unchanged.
+ * the link opens in Easy (`cam=helm` is the Sailor view, M115). The Hanse's keys pass unchanged.
  */
 function paramsForBoat(source: URLSearchParams): URLSearchParams {
   if (!isDinghy()) return source;
@@ -152,7 +152,6 @@ function paramsForBoat(source: URLSearchParams): URLSearchParams {
   if (m !== null && !(modes as readonly string[]).includes(m)) params.delete('m');
   const mode = params.get('mode');
   if (mode !== null && !(modes as readonly string[]).includes(mode)) params.delete('mode');
-  if (params.get('cam') === 'helm') params.set('cam', 'side-port');
   return params;
 }
 

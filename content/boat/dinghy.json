@@ -89,7 +89,7 @@
     "mass": { "payloadKg": 70, "payloadNote": "assumption: one adult sailor" },
     "hull": { "wettedSurfaceM2": 2.6, "linearDragNPerMps": 3, "effectiveDraftM": 0.9, "clrDepthM": 0.35, "rudderAreaM2": 0.12 },
     "windage": { "areaM2": 0.8 },
-    "steering": { "turnLengthM": 4, "yawLagS": 0.6 },
+    "steering": { "turnLengthM": 2.5, "yawLagS": 0.6, "turnNote": "assumption (M115, issue #283): yaw rate = speed × tan(rudder) / turnLengthM; 2.5 m gives a turning circle of about 9 m across at 30 degrees of rudder (the first value, 4 m, let her stall head to wind before the bow was through it). Tunable." },
     "lowSpeed": { "cgX": -0.5, "keelLiftNPerMps2": 700, "lateralAreaM2": 0.15, "lateralDragCoefficient": 0.6, "swayLinearDragNPerMps": 10, "radiusOfGyrationM": 0.9, "yawLinearDampingNmPerRadS": 40, "windageSideAreaM2": 1.2 },
     "heel": { "maxHeelDeg": 50, "overpoweredHeelDeg": 20, "roundUpMinHeelDeg": 20 },
     "gybe": { "boomMassKg": 3, "sailMassKg": 2 }
@@ -100,19 +100,37 @@
     "tiller": { "pivot": [-2.27, 0.42, 0], "lengthM": 1.0, "extensionM": 0.75 },
     "toeStraps": { "fromX": -1.6, "toX": -0.6, "halfZ": 0.2, "y": 0.14 },
     "ratchetBlock": [-1.55, 0.18, 0],
-    "sheetHand": [-1.4, 0.55, 0.45],
     "cockpit": { "fwdX": -0.45, "aftX": -2.1, "halfWidth": 0.48, "floorY": 0.14 },
     "sideDeckWidthM": 0.16,
     "crew": {
       "armM": { "in": 0.15, "side": 0.6, "out": 1.0 },
       "armNote": "assumption: horizontal distance from the centreline to the sailor's centre of mass: sitting on the floor against the high side, sitting on the side deck, leaning out with the feet under the toe straps (Hiking (sailing): the crew's weight moved to windward increases the moment against heeling). The mass is physics.mass.payloadKg.",
-      "defaultSit": "in"
+      "defaultSit": "in",
+      "tack": {
+        "centredAwaDeg": 10,
+        "fullAwaDeg": 25,
+        "note": "assumption (M115, issue #283): to tack, the sailor comes into the middle of the boat while the bow is within about 10 degrees of the wind and is out on his side again beyond 25 degrees; a close-hauled dinghy sails at about 30 degrees apparent, so steady sailing is untouched. Without it his side-deck weight tipped the luffing boat over to windward and she could not turn through the wind. Tunable."
+      }
     },
     "rightingNmByHeelDeg": [[0, 0], [5, 110], [10, 200], [15, 260], [20, 290], [30, 260], [40, 170], [50, 100]],
     "rightingNote": "assumption: the hull's own righting moment with the sailor on the centreline, peaking at 20 degrees as the side goes under; small, because a dinghy has no ballast keel. Tunable.",
     "board": { "defaultPct": 100, "wettedM2": 0.5, "liftUpNPerMps2": 30, "note": "assumption: both faces of the board add wetted surface when down; with the board up the hull alone resists sliding (Centreboard: lateral resistance; raised to cut drag when not needed). Tunable." },
     "outhaul": { "defaultPct": 50, "powerAtTight": 0.85, "note": "assumption: hauled tight, the flatter sail gives 85 % of the force of a full one. Tunable." },
     "windwardHeelAlertDeg": 10,
-    "windwardHeelAfterS": 1
+    "windwardHeelAfterS": 1,
+    "seats": {
+      "$comment": "Where the sailor's hips and feet are for each Sit, on the starboard side (z mirrored for port), and how far the whole body leans outboard from upright (degrees). Assumption, chosen to look right.",
+      "in": { "hip": [-1.25, 0.26, 0.3], "feet": [-0.9, 0.14, 0.05], "leanDeg": 0 },
+      "side": { "hip": [-1.25, 0.43, 0.6], "feet": [-0.95, 0.14, 0.3], "leanDeg": 15 },
+      "out": { "hip": [-1.25, 0.45, 0.72], "feet": [-1.0, 0.16, 0.2], "leanDeg": 60 }
+    },
+    "sailorHands": {
+      "$comment": "Offsets from the hip (forward, up, across): the hand on the tiller extension (aft) and the hand on the mainsheet (fwd). The across number is multiplied by minus the side, so the hands are inboard of the hip. Assumption, chosen to look right.",
+      "aft": [0.1, 0.35, 0.25],
+      "fwd": [0.35, 0.3, 0.15]
+    },
+    "faceTurnDeg": 30,
+    "crossS": 1.5,
+    "sailorEye": { "aboveHipM": 0.75, "lookDownDeg": 10, "lookToLeewardDeg": 15 }
   }
 }

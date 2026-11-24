@@ -5,7 +5,7 @@
  * runs on the Hanse 508.
  */
 import { boat, type BoatData } from './boat';
-import { DEG, interpTable } from './angles';
+import { DEG, interpTable, smoothstep } from './angles';
 import type { RigState } from './sim';
 
 /** Where the sailor sits: on the floor, on the side deck, or leaning out under the toe straps. */
@@ -23,11 +23,16 @@ export interface DinghyData {
   tiller: { pivot: [number, number, number]; lengthM: number; extensionM: number };
   toeStraps: { fromX: number; toX: number; halfZ: number; y: number };
   ratchetBlock: [number, number, number];
-  sheetHand: [number, number, number];
   cockpit: { fwdX: number; aftX: number; halfWidth: number; floorY: number };
   sideDeckWidthM: number;
   /** M114: the sailor's weight (the mass is `physics.mass.payloadKg`). */
-  crew: { armM: Record<Sit, number>; armNote: string; defaultSit: Sit };
+  crew: {
+    armM: Record<Sit, number>;
+    armNote: string;
+    defaultSit: Sit;
+    /** M115: the sailor's weight is out on his side only when the apparent wind is at least `fullAwaDeg` off the bow; he is in the middle (no moment) within `centredAwaDeg`. */
+    tack: { centredAwaDeg: number; fullAwaDeg: number; note: string };
+  };
   /** M114: the hull's own righting moment (Nm) against the heel (degrees). */
   rightingNmByHeelDeg: number[][];
   rightingNote: string;
@@ -37,6 +42,19 @@ export interface DinghyData {
   windwardHeelAlertDeg: number;
   /** M114: and for this many seconds before the alert shows. */
   windwardHeelAfterS: number;
+  /** M115: where the sailor's hips and feet are for each Sit on the starboard side, and the whole-body lean outboard (degrees). */
+  seats: Record<
+    Sit,
+    { hip: [number, number, number]; feet: [number, number, number]; leanDeg: number }
+  >;
+  /** M115: offsets from the hip (forward, up, across) of the hand on the tiller extension and the one on the mainsheet. */
+  sailorHands: { aft: [number, number, number]; fwd: [number, number, number] };
+  /** M115: the sailor's front points across the boat, turned this many degrees towards the bow. */
+  faceTurnDeg: number;
+  /** M115: seconds the sailor takes to cross the boat in a tack or gybe (drawing only). */
+  crossS: number;
+  /** M115: the Sailor view's eye above the hip, how far it looks down, and how far to leeward. */
+  sailorEye: { aboveHipM: number; lookDownDeg: number; lookToLeewardDeg: number };
 }
 
 /** What the learner changes on the dinghy besides the shared controls (M114 adds the actions). */
@@ -63,15 +81,37 @@ function dinghyOf(data: BoatData): DinghyData {
 
 const G = (data: BoatData) => data.physics.constants.gravityMps2;
 
-/** The sailor's weight about the centreline, signed like heelDeg (Nm). */
+/**
+ * M115: the share of the sailor's weight that is out on his side (0…1). Head to the wind, in the
+ * turn of a tack or gybe, he comes into the middle to cross the boat; with the wind further
+ * round he is on his side again.
+ */
+export function crewOutShare(awaDeg: number, data: BoatData = boat): number {
+  const { centredAwaDeg, fullAwaDeg } = dinghyOf(data).crew.tack;
+  return smoothstep(centredAwaDeg, fullAwaDeg, Math.abs(awaDeg));
+}
+
+/**
+ * The sailor's weight about the centreline, signed like heelDeg (Nm). With `awaDeg` (M115) it is
+ * scaled by `crewOutShare`: without it the sailor is always out on his side.
+ */
 export function crewMomentNm(
   heelDeg: number,
   sit: Sit,
   side: 1 | -1,
   data: BoatData = boat,
+  awaDeg?: number,
 ): number {
   const d = dinghyOf(data);
-  return side * data.physics.mass.payloadKg * G(data) * d.crew.armM[sit] * Math.cos(heelDeg * DEG);
+  const share = awaDeg === undefined ? 1 : crewOutShare(awaDeg, data);
+  return (
+    side *
+    data.physics.mass.payloadKg *
+    G(data) *
+    d.crew.armM[sit] *
+    share *
+    Math.cos(heelDeg * DEG)
+  );
 }
 
 /** The hull's own righting moment, signed like heelDeg (Nm). */
