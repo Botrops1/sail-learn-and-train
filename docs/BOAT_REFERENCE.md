@@ -439,7 +439,7 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Value | Number | Note |
 |---|---|---|
 | Sailor's arm (distance of his centre of mass from the centreline) | sitting in 0.15 m, on the side deck 0.6 m, leaning out 1.0 m | sitting on the floor against the high side, on the side deck, feet under the toe straps; moving the crew's weight to windward increases the moment against heeling (Hiking (sailing)) |
-| Hull's own righting moment | 0, 110, 200, 260, 290, 260, 170, 60 Nm at 0, 5, 10, 15, 20, 30, 40, 50° | with the sailor on the centreline; small, because a dinghy has no ballast keel; peaks at 20° as the side goes under; `dimensions.rightingMomentKNmAt30Deg` is 0.26 (the table at 30°) |
+| Hull's own righting moment | 0, 110, 200, 260, 290, 260, 170, 100 Nm at 0, 5, 10, 15, 20, 30, 40, 50° (the last value was 60 in the spec; 100 lets a sailor sitting in right her from 50° in light wind) | with the sailor on the centreline; small, because a dinghy has no ballast keel; peaks at 20° as the side goes under; `dimensions.rightingMomentKNmAt30Deg` is 0.26 (the table at 30°) |
 | Centreboard | wetted surface 0.5 m² when down; sideways grip 30 N per (m/s · m/s) with it up, the Hanse's keel value (700) with it down | the grip is a straight mix of the two by the board's position; raising it cuts drag when it is not needed (Centreboard) |
 | Outhaul | hauled tight the sail gives 85 % of the force of a full one | |
 | Heel warning | towards the sailor by more than 10° for 1 s | "Heeling towards you: sit further in"; the warning's two numbers are in the `dinghy` block |

@@ -108,7 +108,7 @@
       "armNote": "assumption: horizontal distance from the centreline to the sailor's centre of mass: sitting on the floor against the high side, sitting on the side deck, leaning out with the feet under the toe straps (Hiking (sailing): the crew's weight moved to windward increases the moment against heeling). The mass is physics.mass.payloadKg.",
       "defaultSit": "in"
     },
-    "rightingNmByHeelDeg": [[0, 0], [5, 110], [10, 200], [15, 260], [20, 290], [30, 260], [40, 170], [50, 60]],
+    "rightingNmByHeelDeg": [[0, 0], [5, 110], [10, 200], [15, 260], [20, 290], [30, 260], [40, 170], [50, 100]],
     "rightingNote": "assumption: the hull's own righting moment with the sailor on the centreline, peaking at 20 degrees as the side goes under; small, because a dinghy has no ballast keel. Tunable.",
     "board": { "defaultPct": 100, "wettedM2": 0.5, "liftUpNPerMps2": 30, "note": "assumption: both faces of the board add wetted surface when down; with the board up the hull alone resists sliding (Centreboard: lateral resistance; raised to cut drag when not needed). Tunable." },
     "outhaul": { "defaultPct": 50, "powerAtTight": 0.85, "note": "assumption: hauled tight, the flatter sail gives 85 % of the force of a full one. Tunable." },
