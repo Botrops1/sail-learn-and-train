@@ -78,16 +78,16 @@ export async function liveM116Checks({ openPage, viewports, problems }) {
     await context.close();
   }
 
-  // 3. A strong breeze: sitting on the side she is upright (about -16 degrees); Sit in and within
-  // 10 s she goes over and "Capsized!" is in the alert list.
+  // 3. A strong breeze, held still, the sheet at 55 and sitting in: tap Sailing and within 10 s she
+  // goes over (about 3 s on every machine) and "Capsized!" is in the alert list.
   {
     const { context, page } = await open(
       'goes over',
-      '?boat=dinghy&wd=90&ws=18&ms=55&sp=side&debug=1',
+      '?boat=dinghy&wd=90&ws=18&ms=55&sp=in&held=1&debug=1',
     );
     const upright = (await read(page)).dinghy.capsize.phase === 'upright';
-    await showSection(page, 'dinghy');
-    await page.getByTestId('sit-in').tap();
+    await showSection(page, 'conditions');
+    await page.locator('label:has([data-testid="boat-mode-sailing"])').tap();
     let phase = 'upright';
     for (let i = 0; i < 20 && phase === 'upright'; i += 1) {
       await page.waitForTimeout(500);
@@ -99,7 +99,7 @@ export async function liveM116Checks({ openPage, viewports, problems }) {
       .locator('[data-testid="alert-item"]')
       .evaluateAll((nodes) => nodes.map((node) => (node.textContent ?? '').trim()));
     check(
-      'upright on the side; Sit in: she goes over within 10 s and the alert list says Capsized',
+      'held upright; Sailing: she goes over within 10 s and the alert list says Capsized',
       upright && phase !== 'upright' && texts.some((text) => text.includes('Capsized!')),
       JSON.stringify({ upright, phase, texts }),
     );

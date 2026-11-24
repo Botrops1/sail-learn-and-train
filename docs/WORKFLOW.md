@@ -130,7 +130,7 @@ New link settings (on the dinghy only): `boat=dinghy` the Training dinghy, `sp` 
 
 #### M116: Capsize and righting
 
-- [ ] Going over: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=18&ms=55&sp=side&sea=flat&cam=side-starboard — she sails upright on the side deck; open Balance and tap "Sit in": within a few seconds she tips over, "Capsized!", mast and sail on the water, the sailor in the water.
+- [ ] Going over: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=18&ms=55&sp=in&held=1&sea=flat&cam=side-starboard — she is held still and upright; open Conditions and tap Sailing: about 3 seconds later she tips over, "Capsized!", mast and sail on the water, the sailor in the water.
 - [ ] Right her: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=-90&ws=12&cap=s&sea=flat&cam=side-starboard — tap "Swim round to the centreboard", wait, then "Stand on the centreboard": she comes up, the mainsheet loose, the sailor climbs in.
 - [ ] Board up: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=-90&ws=12&cap=s&cb=0&sea=flat&cam=side-starboard — after swimming round it says the board is up; tap "Push the centreboard down", then stand on it.
 - [ ] Locked: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=-90&ws=12&cap=s&sea=flat — while she is over, the mainsheet and steering buttons are greyed with "Right the boat first".
