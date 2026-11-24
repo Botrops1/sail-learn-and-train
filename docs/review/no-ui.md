@@ -1197,3 +1197,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | picture.close | Close picture | Lukk bildet |
 | picture.traveller | Picture: a mainsheet traveller, not on this boat. | Bilde: en storskjøt-traveller, ikke på denne båten. |
 | picture.travellerCar | Car | Vogn |
+| section.dinghy | Balance | Balanse |
+| dinghy.sit.label | Where you sit | Hvor du sitter |
+| dinghy.sit.in | Sit in | Sitt inne |
+| dinghy.sit.side | Sit on the side | Sitt på siden |
+| dinghy.sit.out | Lean out | Len deg ut |
+| dinghy.sit.hint | Your weight holds the boat up. Lean out when she heels a lot; sit in when the wind is light. | Vekten din holder båten oppe. Len deg ut når den krenger mye; sitt inne når vinden er svak. |
+| dinghy.board.label | Centreboard | Sverd |
+| dinghy.board.value | Down {pct} % | Nede {pct} % |
+| dinghy.board.hint | Down when sailing towards the wind; half up on a reach; up when the wind is behind. | Nede når du seiler mot vinden; halvt oppe på halvvind; oppe når vinden er bak. |
+| dinghy.board.raise | Raise the centreboard | Hev sverdet |
+| dinghy.board.lower | Lower the centreboard | Senk sverdet |
+| dinghy.outhaul.label | Outhaul | Utstrekker |
+| dinghy.outhaul.value | Eased {pct} % | Firet {pct} % |
+| dinghy.outhaul.hint | Pull it tight in a strong wind to flatten the sail; ease it in light wind for more power. | Stram den i sterk vind for å flate ut seilet; fire den i svak vind for mer kraft. |
+| dinghy.outhaul.haul | Pull the outhaul tight | Stram utstrekkeren |
+| dinghy.outhaul.ease | Ease the outhaul | Fire utstrekkeren |
+| alert.windwardHeel | Heeling towards you: sit further in | Krenger mot deg: sitt lenger inn |
+| alert.overpowered.dinghy | Heeling a lot: lean out or ease the mainsheet | Kraftig krenging: len deg ut eller fire storskjøtet |

@@ -433,3 +433,13 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Toe straps, ratchet block, hand | straps at ±0.2 m from x −1.6 m to −0.6 m; ratchet block at x −1.55 m; hand 0.45 m to the side | |
 | Bow tip, label points (decided in the M113 PR) | `hull.bowFittingTipX` 1.25 m (the camera frames the hull up to it); `visual.labels3d.list` names only the dinghy's parts | the Hanse's would frame a boat 8 m long and name a keel and a jib |
 | Drawn sizes (decided in the M113 PR) | boom 0.06 × 0.045 m, gooseneck 0.05 m, block radius 0.025 m, rudder 0.03 m thick, rope radius 8 mm, kicker offset 0.03 m | the Hanse's sizes would look huge on 3.45 m; these only change the picture |
+
+### Dinghy rows added by M114 (all assumptions, marked **tunable** in the spec, 8.2)
+
+| Value | Number | Note |
+|---|---|---|
+| Sailor's arm (distance of his centre of mass from the centreline) | sitting in 0.15 m, on the side deck 0.6 m, leaning out 1.0 m | sitting on the floor against the high side, on the side deck, feet under the toe straps; moving the crew's weight to windward increases the moment against heeling (Hiking (sailing)) |
+| Hull's own righting moment | 0, 110, 200, 260, 290, 260, 170, 60 Nm at 0, 5, 10, 15, 20, 30, 40, 50° | with the sailor on the centreline; small, because a dinghy has no ballast keel; peaks at 20° as the side goes under; `dimensions.rightingMomentKNmAt30Deg` is 0.26 (the table at 30°) |
+| Centreboard | wetted surface 0.5 m² when down; sideways grip 30 N per (m/s · m/s) with it up, the Hanse's keel value (700) with it down | the grip is a straight mix of the two by the board's position; raising it cuts drag when it is not needed (Centreboard) |
+| Outhaul | hauled tight the sail gives 85 % of the force of a full one | |
+| Heel warning | towards the sailor by more than 10° for 1 s | "Heeling towards you: sit further in"; the warning's two numbers are in the `dinghy` block |

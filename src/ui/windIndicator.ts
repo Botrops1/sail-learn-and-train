@@ -1,5 +1,5 @@
 import type { AppState, Store } from '../app/store';
-import { boat } from '../model/boat';
+import { boat, isDinghy } from '../model/boat';
 import { el } from './dom';
 import { createAnchorAlarmAlert, createDamageAlert } from './damageReport';
 import { createGybeReport } from './gybeReport';
@@ -35,7 +35,11 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
     [t('alert.roundUp')],
   );
   const overpowered = el('div', { class: 'rig-alert', 'data-testid': 'overpowered-label' }, [
-    t('alert.overpowered'),
+    t(isDinghy() ? 'alert.overpowered.dinghy' : 'alert.overpowered'),
+  ]);
+  // M114: the dinghy heeling towards the sailor.
+  const windwardHeel = el('div', { class: 'rig-alert', 'data-testid': 'windward-heel-label' }, [
+    t('alert.windwardHeel'),
   ]);
   const alerts = el('div', { class: 'rig-alerts', 'aria-live': 'polite' }, [
     gybe,
@@ -43,6 +47,7 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
     tack,
     byTheLee,
     overpowered,
+    windwardHeel,
     wheel,
   ]);
   host.append(alerts);
@@ -64,6 +69,9 @@ export function createWindIndicator(host: HTMLElement, store: Store): void {
     // Heeled over for more than 2 s, and the round-up (M8, PHASE2_SPEC 8.4).
     const heavy = state.boat.overpoweredS > OVERPOWERED_AFTER_S;
     if (overpowered.hidden === heavy) overpowered.hidden = !heavy;
+    const toward =
+      boat.dinghy !== undefined && state.boat.windwardHeelS > boat.dinghy.windwardHeelAfterS;
+    if (windwardHeel.hidden === toward) windwardHeel.hidden = !toward;
     const turning = state.boat.roundUpS > 0;
     if (roundUp.hidden === turning) roundUp.hidden = !turning;
     const tookWheel = state.autopilotNoticeS > 0;

@@ -61,6 +61,7 @@ import {
   type LineCode,
   type MooringLine,
 } from '../model/mooringLines';
+import { initialDinghy, type DinghyState } from '../model/dinghy';
 import { pointToMap } from '../model/lowSpeed';
 import type { BoatState } from '../model/motion';
 import { isPlace, placeStart, type PlaceStart } from '../model/places';
@@ -323,6 +324,7 @@ export function parseUrlState(
     gennaker: parseGennaker(params, controls.ctl_wind_dir ?? 60, boatState.headingDeg ?? 0),
     picture: parsePicture(params),
     travellerCarPct: parseTravellerCar(params),
+    dinghy: parseDinghy(params),
   });
   // The lines need the boat as she lies (the far ends are our berth's), so they come last (M44),
   // and so does the anchor, whose chain must reach from her bow (M46).
@@ -363,6 +365,41 @@ function parseGennaker(
   const gx = params.get('gx');
   const side = gx === 'p' ? -1 : gx === 's' ? 1 : leewardSide(wrap180(windDirDeg - headingDeg));
   return { ...STOWED, stage, side };
+}
+
+/**
+ * `sp` (`in` / `side` / `out`), `cb` (0-100) and `oh` (0-100), M114: the dinghy's seat, centreboard
+ * and outhaul. Read only on the dinghy; anything else in them is the default.
+ */
+function parseDinghy(params: URLSearchParams): DinghyState | undefined {
+  if (!isDinghy()) return undefined;
+  const defaults = initialDinghy();
+  const sp = params.get('sp');
+  const percent = (key: string, fallback: number): number => {
+    const raw = params.get(key);
+    if (raw === null || !/^\d+$/.test(raw)) return fallback;
+    const value = Number(raw);
+    return value <= 100 ? value : fallback;
+  };
+  return {
+    ...defaults,
+    sit: sp === 'in' || sp === 'side' || sp === 'out' ? sp : defaults.sit,
+    boardPct: percent('cb', defaults.boardPct),
+    outhaulPct: percent('oh', defaults.outhaulPct),
+  };
+}
+
+/** The dinghy's link keys, only when they differ from the boat's defaults (`sp`, `cb`, `oh`). */
+function dinghyParams(state: AppState): [string, string][] {
+  if (!isDinghy()) return [];
+  const defaults = initialDinghy();
+  const result: [string, string][] = [];
+  if (state.dinghy.sit !== defaults.sit) result.push(['sp', state.dinghy.sit]);
+  if (state.dinghy.boardPct !== defaults.boardPct)
+    result.push(['cb', String(state.dinghy.boardPct)]);
+  if (state.dinghy.outhaulPct !== defaults.outhaulPct)
+    result.push(['oh', String(state.dinghy.outhaulPct)]);
+  return result;
 }
 
 /** `pic` (M109): `spinnaker` or `code0`; anything else shows no picture. */
@@ -1083,6 +1120,7 @@ export function serializeUrlState(state: AppState): string {
   if (state.picture === 'traveller' && state.travellerCarPct !== 0)
     params.set('tv', String(state.travellerCarPct));
   if (state.settings.debug) params.set('debug', '1');
+  for (const [name, value] of dinghyParams(state)) params.set(name, value);
   // The dinghy has none of these things (M113): its link never carries their keys.
   if (isDinghy()) {
     for (const key of DINGHY_IGNORED_KEYS) params.delete(key);

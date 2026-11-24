@@ -29,6 +29,7 @@ import {
 } from './sectionLayout';
 import { createSectionMove } from './sectionMove';
 import { createExercisePanel } from './exercisePanel';
+import { createDinghyPanel } from './dinghyPanel';
 import { createEnginePanel } from './enginePanel';
 import { createHarbourPanel } from './harbourPanel';
 import { createPlacePanel } from './placePanel';
@@ -145,6 +146,7 @@ export function createPanel(
       explain: true,
     },
     ropes: { content: createRopesTab(store, openLearnEntry, showSection), explain: true },
+    dinghy: { content: createDinghyPanel(store), explain: true },
     helm: { content: [createHelmStation(store)], explain: true },
     sails: { content: [createSailsPanel(store)], explain: true },
     autopilot: { content: createSteeringPanel(store), explain: false },

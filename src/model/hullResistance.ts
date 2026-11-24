@@ -1,5 +1,6 @@
 import { boat, type BoatData } from './boat';
 import { DEG, interpTable } from './angles';
+import { boardWettedM2 } from './dinghy';
 
 /**
  * Hull resistance (PHASE2_SPEC 6.3): friction (ITTC-style line), wave-making against the Froude
@@ -27,16 +28,19 @@ export function hullResistance(
   heelDeg: number,
   rudderDeg: number,
   data: BoatData = boat,
+  boardPct = 100,
 ): Resistance {
   const p = data.physics;
   const { waterDensityKgM3: rho, gravityMps2: g, waterViscosityM2s: nu } = p.constants;
   const lwl = data.dimensions.lwl;
   const v = Math.abs(speedMps);
   const hull = p.hull;
+  // M114: the dinghy's centreboard adds wetted surface when it is down.
+  const wettedM2 = hull.wettedSurfaceM2 + (data.dinghy ? boardWettedM2(boardPct, data) : 0);
 
   const re = Math.max(1e5, (v * hull.frictionLengthFraction * lwl) / nu);
   const cf = 0.075 / (Math.log10(re) - 2) ** 2;
-  const frictionN = 0.5 * rho * v * v * hull.wettedSurfaceM2 * cf * (1 + hull.formFactor);
+  const frictionN = 0.5 * rho * v * v * wettedM2 * cf * (1 + hull.formFactor);
 
   const froude = v / Math.sqrt(g * lwl);
   const residuaryN = interpTable(hull.residuaryPerWeightByFroude, froude) * boatMassKg(data) * g;

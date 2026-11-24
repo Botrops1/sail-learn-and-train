@@ -8,7 +8,7 @@ Where things are, so a session can go straight to the right file instead of sear
 
 The 3D view fills the page; over it sit the chip row, the mini-map, the time widget and the info card. The panel is a sheet with five tabs on a phone (`ui/sheet.ts`, `ui/panelTabs.ts`), docked on the right in the side layout, with a second column from 1,280 px wide (`ui/panel.ts`); its content is a list of sections ordered and opened by the mode (`ui/modes.ts`). UI code only dispatches actions; it never changes state directly. `src/style.css` holds all the styles. `app/urlSync.ts` writes the state into the address bar.
 
-Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `reset`, `load` (from a link), `setCameraPreset`, `setDetail`, `setLabels`, `setDebug`, `setStep`, `setPaused`, `setRopesMode`, `realistic` (Realistic-mode gestures), `setBoatMode`, `autopilot`, `engine`, `setWindMode`, `newWindPattern`, `setWindSize`, `setClock`, `setClockShown`, `setTimeBar`, `setTimeScale`, `setSeaSetting`, `setMiniMap`, `setFenders`, `thruster`, `line`, `clearPropeller`, `windlass`, `silenceAnchorAlarm`, `goToPlace`, `setMarinaLayout`, `setTraffic`, `repairSails`, `demo`.
+Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `reset`, `load` (from a link), `setCameraPreset`, `setDetail`, `setLabels`, `setDebug`, `setStep`, `setPaused`, `setRopesMode`, `realistic` (Realistic-mode gestures), `setBoatMode`, `autopilot`, `engine`, `setWindMode`, `newWindPattern`, `setWindSize`, `setClock`, `setClockShown`, `setTimeBar`, `setTimeScale`, `setSeaSetting`, `setMiniMap`, `setFenders`, `thruster`, `line`, `clearPropeller`, `windlass`, `silenceAnchorAlarm`, `goToPlace`, `setMarinaLayout`, `setTraffic`, `repairSails`, `dinghy`, `demo`.
 
 ## `content/` (data, no code)
 
@@ -49,7 +49,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `sim.ts` | Per-frame rig state and `step`: controls → boom, jib, sails, ropes. |
 | `boat.ts` | The boat in use as live bindings (`boat`, `boatId`, `boatName`): the Hanse 508 unless `useBoat()` ran first. Read `boat` at call time, never copy it into a module constant. Also the built-in boats (`BUILT_IN_BOATS`, `DINGHY`) and `hasFeature`, `isDinghy`, `boatHasControl`. |
 | `boatMerge.ts` | `mergeBoat`: a boat file written as an overlay on the Hanse's (objects merge, arrays replace, `controls.list` merges by id). |
-| `dinghy.ts` | The Training dinghy's types (`DinghyData`, `DinghyState`, `Sit`), its starting state and the tiller's drawn angle. |
+| `dinghy.ts` | The Training dinghy: its types, starting state and the tiller's drawn angle; the sailor's weight and the hull's own righting moment, the centreboard's grip, the outhaul's power and the sailor's side. |
 | `boatProfile.ts` | The boat profile file: `makeBoatProfile`, `checkBoatProfile` (shape against the Hanse 508, then ranges), `fillAddedKeys` for old profiles. Guide: `docs/BOAT_PROFILE.md`. |
 | `rigGeometry.ts`, `hullShape.ts`, `deckVolumes.ts` | Boat data and the static geometry derived from it: hull sections, deck volumes, toerail, channel lanes, the coachroof outline. |
 | `bowGear.ts` | The anchor's fluke, the chain's links and the windlass's deck height as numbers. |
@@ -179,6 +179,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `harbourPanel.ts` | The Harbour gear section: fenders, the fender hints, the mooring Lines block (take, tighten, ease, let go), clear the propeller, the bay's bow and shore lines. |
 | `damageReport.ts` | The damage alert in the alert stack and the damage list (`damageText`). |
 | `alertCentre.ts` | The alert history list with tag chips and filter, the Attention button and the history card. |
+| `dinghyPanel.ts` | The dinghy's Balance section: where the sailor sits, the centreboard and the outhaul steppers. |
 | `enginePanel.ts` | The Engine section (Start/Stop, lever slider, tachometer) and the lever at the Helm station. |
 | `gybeReport.ts` | The gybe report (boom speed, energy, peak main sheet load) in the alert stack. |
 | `statusPanel.ts` | The Status section: Sails, Gear, Damage and What happened (history with tag filter). |

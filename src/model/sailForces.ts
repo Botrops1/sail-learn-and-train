@@ -98,6 +98,7 @@ export function sailForces(
   heelDeg: number,
   data: BoatData = boat,
   damage: SailDamage = NO_DAMAGE,
+  mainPower = 1,
 ): SailForces {
   void controls; // the rig already holds the applied controls
   const { main, jib } = data.sails;
@@ -119,7 +120,7 @@ export function sailForces(
     },
     q,
     beta,
-    k * tornForceFactor(damage, 'main', data),
+    k * tornForceFactor(damage, 'main', data) * mainPower,
     data,
   );
   const jibForce = oneSail(

@@ -19,6 +19,7 @@ export const DEFAULT_WIDE_LAYOUT: SectionLayout = {
     [
       'exercises',
       'ropes',
+      'dinghy',
       'helm',
       'sails',
       'autopilot',
@@ -59,7 +60,10 @@ export function completeLayout(layout: RawLayout | SectionLayout | null): Sectio
     for (const id of DEFAULT_WIDE_LAYOUT.columns[column]) {
       if (!seen.has(id)) {
         seen.add(id);
-        result.columns[column].push(id);
+        // M114: the Balance section goes right after Ropes in an arrangement saved without it.
+        const after = id === 'dinghy' ? result.columns[column].indexOf('ropes') : -1;
+        if (after >= 0) result.columns[column].splice(after + 1, 0, id);
+        else result.columns[column].push(id);
       }
     }
   }

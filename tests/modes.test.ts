@@ -186,7 +186,9 @@ describe('M53: the Helm section (11.5)', () => {
   it('follows ropes in Easy, Learn and Realistic, and engine in Harbour', () => {
     for (const mode of ['easy', 'learn', 'realistic'] as const) {
       const { order } = MODE_LAYOUTS[mode];
-      expect(order.indexOf('helm'), mode).toBe(order.indexOf('ropes') + 1);
+      // M114: the Balance section stands between Ropes and Helm.
+      expect(order.indexOf('dinghy'), mode).toBe(order.indexOf('ropes') + 1);
+      expect(order.indexOf('helm'), mode).toBe(order.indexOf('dinghy') + 1);
     }
     const harbour = MODE_LAYOUTS.harbour.order;
     expect(harbour.indexOf('helm')).toBe(harbour.indexOf('engine') + 1);
