@@ -2,7 +2,7 @@
 // Joins the m101 group, on the test clock. The rules (when she goes over, what the commands do,
 // the drift, the link) are unit tests (tests/physicsTruthsDinghy.test.ts); here the card and a
 // finger tap on its two steps, and what a phone shows while she is over.
-import { showSection } from './ui.mjs';
+import { showSection, waitForLink } from './ui.mjs';
 
 /** The dinghy over on its starboard side, 12 kn abeam; the board down (`cb=0` for up). */
 const C = '?boat=dinghy&wd=90&ws=12&cap=s&held=1&sea=flat';
@@ -41,7 +41,8 @@ export async function liveM116Checks({ openPage, viewports, problems }) {
     await page.getByTestId('capsize-stand').tap();
     await page.waitForTimeout(3100);
     const end = await read(page);
-    const url = await link(page);
+    // The link is written a moment after the state changes.
+    const url = await waitForLink(page, [], ['cap=']).catch(() => link(page));
     check(
       'the card shows, Stand waits for the swim, two taps right her: card gone, heel within 2, no cap in the link',
       shown &&
@@ -109,7 +110,7 @@ export async function liveM116Checks({ openPage, viewports, problems }) {
     const seat = await page.getByTestId('sit-out').isDisabled();
     const outhaul = await page.getByTestId('dinghy-outhaul-plus').isDisabled();
     const board = await page.getByTestId('dinghy-board-minus').isEnabled();
-    const line = await page.getByTestId('capsize-locked').first().isVisible();
+    const line = await page.getByTestId('section-dinghy').getByTestId('capsize-locked').isVisible();
     await showSection(page, 'autopilot');
     const tiller = await page.getByTestId('section-autopilot').locator('input[type=range]').first();
     const tillerOff = await tiller.isDisabled();
