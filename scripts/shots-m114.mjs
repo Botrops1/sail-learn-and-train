@@ -53,8 +53,12 @@ export async function liveM114Checks({ openPage, viewports, problems }) {
       JSON.stringify({ link, heel: out.heelDeg, sit: out.dinghy.sit }),
     );
     await page.getByTestId('sit-in').tap();
-    await page.waitForTimeout(5000);
-    const inn = await read(page);
+    // The roll takes a few seconds to reach the clamp (test time, so the same on every machine).
+    let inn = await read(page);
+    for (let i = 0; i < 20 && inn.heelDeg > -49; i += 1) {
+      await page.waitForTimeout(1000);
+      inn = await read(page);
+    }
     const alert = await page.getByTestId('overpowered-label').isVisible();
     check(
       'Sit in: she heels over (clamped) and the "lean out" warning shows',
