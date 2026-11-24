@@ -1168,3 +1168,50 @@ No new link settings: `st` is still the Realistic station and `tx` the time spee
 - [ ] Turn back: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — tap Bow, and a few seconds later tap Port: he turns round and walks back to the port winch.
 - [ ] Exercise: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=exercise&ex=set-sails — choose Watch it: the captain walks between the winches and the wheel as each step needs, and the exercise finishes.
 - [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic&st=port&wd=60&ws=10&ms=40&js=60&sea=flat&cam=top — the same walk on a computer.
+
+#### Training dinghy (M113–M118, [PHASE_DINGHY_SPEC](PHASE_DINGHY_SPEC.md))
+
+New link settings (on the dinghy only): `boat=dinghy` the Training dinghy, `sp` where you sit (`in`, `side`, `out`), `cb` centreboard (% down), `oh` outhaul (% eased), `cap` capsized on that side (`p` / `s`). `cam=helm` is the Sailor view on the dinghy.
+
+#### M113: Choose the training dinghy
+
+- [ ] Welcome: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — open it in a private window (or after clearing the site's data): the welcome card has "Start on the training dinghy". Tap it: a small open boat with one sail appears.
+- [ ] The boat: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=side-port — a 3.5 m dinghy: open cockpit, the fin (centreboard) under it, the rudder on the back with a tiller and a thin stick on it (the extension), one sail on a mast with no wires. No wheel, no winches, no cabin, no captain yet.
+- [ ] From above: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=top — straps on the floor, a block on the floor where the mainsheet comes down, the tiller over the back.
+- [ ] Choose a boat: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=8 — Settings → Boat: the list has "Hanse 508 (built in)" and "Training dinghy (built in)". Choose the dinghy: the app starts again on it; "Download this boat's profile" is gone. Choose the Hanse again: everything is back.
+- [ ] Only what it has: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40 — the mode choice has only Learn and Easy; Controls has two lines (Mainsheet, Kicker) and the steering; no Engine, Anchor, Place or Harbour anywhere; the camera menu has no Helm.
+- [ ] Steering: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40&cam=top — steer to the right with the steering buttons: the boat turns right and the tiller swings to the left.
+- [ ] Hanse unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=10&ms=40&js=60&cam=side-port — the Hanse 508 with the captain, as before.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=side-port — the same on a computer.
+
+#### M114: Dinghy sailing
+
+- [ ] Your weight: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=16&ms=55&oh=100&sea=flat&cam=bow — in the Balance section tap Sit in: she heels far over. Sit on the side: she comes up to a small lean. Lean out: nearly upright.
+- [ ] Light wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=3&ms=50&sp=side&sea=flat&cam=bow — she leans towards you and a warning says "Heeling towards you: sit further in". Tap Sit in: she comes back up.
+- [ ] Let it go: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=14&ms=30&sea=flat&cam=bow — she starts heeled far over; ease the mainsheet to 100 %: the sail flaps, she comes upright and stops.
+- [ ] Centreboard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=45&ws=10&ms=20&sp=side&cb=0&sea=flat&cam=top — with the board up she slides sideways (watch the wake). Tap + on Centreboard to 100 %: she goes straight.
+- [ ] Outhaul: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=16&ms=55&oh=100&sp=side&sea=flat — in the first ten seconds, tap Outhaul − to 0 % and watch the Heel and speed numbers for two seconds: both drop a little; tap + to 100 %: both rise again. (With nobody steering she slowly turns by herself, so a later try compares a different course.)
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=16&ms=55&oh=100&sp=side&sea=flat&cam=side-port — the Balance section on a computer.
+
+#### M115: The sailor in the dinghy
+
+- [ ] Sitting: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&held=1&sea=flat&cam=side-starboard — a sailor sits against the near side, one hand on the tiller stick, the other holding the mainsheet.
+- [ ] On the side and leaning out: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&sp=side&held=1&sea=flat&cam=side-starboard — on the side deck; tap Lean out: feet under the straps, body out over the water.
+- [ ] Tack: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=0&ws=10&hdg=315&ms=15&sp=side&sea=flat&cam=top — steer to the right until the wind is on the other side: the boom crosses and the sailor moves across to the new high side.
+- [ ] Sailor view: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&sp=side&sea=flat&cam=helm — you look forward from the sailor's seat; the camera menu calls it Sailor.
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=12&ms=40&sp=out&held=1&sea=flat&cam=side-port — the same on a computer.
+
+#### M116: Capsize and righting
+
+- [ ] Going over: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=18&ms=55&sp=in&held=1&sea=flat&cam=side-starboard — she is held still and upright; open Conditions and tap Sailing: about 3 seconds later she tips over, "Capsized!", mast and sail on the water, the sailor in the water.
+- [ ] Right her: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=-90&ws=12&cap=s&sea=flat&cam=side-starboard — tap "Swim round to the centreboard", wait, then "Stand on the centreboard": she comes up, the mainsheet loose, the sailor climbs in.
+- [ ] Board up: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=-90&ws=12&cap=s&cb=0&sea=flat&cam=side-starboard — after swimming round it says the board is up; tap "Push the centreboard down", then stand on it.
+- [ ] Locked: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=-90&ws=12&cap=s&sea=flat — while she is over, the mainsheet and steering buttons are greyed with "Right the boat first".
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=-90&ws=12&cap=s&sea=flat&cam=side-starboard — the same on a computer.
+
+#### M117: Learn for the dinghy
+
+- [ ] Only its parts: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&m=learn — search "winch": nothing; search "tiller": Tiller and Tiller extension.
+- [ ] Kicker: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&learn=rope_vang — the entry is called Kicker and talks about the dinghy.
+- [ ] New entries: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&learn=term_capsize — "Capsize" says what to do; also try https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&learn=term_hiking
+- [ ] Hanse unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=rope_vang — the Hanse's Vang entry as before.

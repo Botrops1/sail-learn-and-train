@@ -728,6 +728,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.group.wind | Wind and weather | Vind og vær |
 | exercise.group.sails | Setting and furling the sails | Sette og rulle seilene |
 | exercise.group.harbour | Harbour and anchor | Havn og anker |
+| exercise.group.dinghy | Dinghy | Jolle |
 | exercise.place.open | Open water | Åpent vann |
 | exercise.place.marina | Marina | Marina |
 | exercise.place.bay | Bay | Bukt |
@@ -1132,6 +1133,9 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | exercise.bar.clutchOpen | Open: the line can run | Åpen: tauet kan løpe |
 | exercise.bar.clutchClosed | Closed: holds the line | Lukket: holder tauet |
 | exercise.bar.open | Open | Åpne |
+| exercise.bar.swim | Swim round | Svøm dit |
+| exercise.bar.boardDown | Board down | Sverd ned |
+| exercise.bar.stand | Stand on it | Stå på det |
 | exercise.bar.close | Close | Lukk |
 | exercise.bar.turns | Turns: {n} | Slag: {n} |
 | exercise.bar.cutOut | the motor cut out: ease the load | motoren koblet ut: fire belastningen |

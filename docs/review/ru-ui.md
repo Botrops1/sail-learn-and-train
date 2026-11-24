@@ -728,6 +728,7 @@
 | exercise.group.wind | Wind and weather | Ветер и погода |
 | exercise.group.sails | Setting and furling the sails | Постановка и уборка парусов |
 | exercise.group.harbour | Harbour and anchor | Гавань и якорь |
+| exercise.group.dinghy | Dinghy | Динги |
 | exercise.place.open | Open water | Открытое море |
 | exercise.place.marina | Marina | Марина |
 | exercise.place.bay | Bay | Бухта |
@@ -1132,6 +1133,9 @@
 | exercise.bar.clutchOpen | Open: the line can run | Открыт: конец может идти |
 | exercise.bar.clutchClosed | Closed: holds the line | Закрыт: держит конец |
 | exercise.bar.open | Open | Открыть |
+| exercise.bar.swim | Swim round | Подплыть |
+| exercise.bar.boardDown | Board down | Шверт вниз |
+| exercise.bar.stand | Stand on it | Встать на него |
 | exercise.bar.close | Close | Закрыть |
 | exercise.bar.turns | Turns: {n} | Шлагов: {n} |
 | exercise.bar.cutOut | the motor cut out: ease the load | мотор отключился: ослабьте нагрузку |
