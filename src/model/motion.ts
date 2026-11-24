@@ -301,7 +301,7 @@ export function stepBoat(
     // Roll: the sails heel her, the hull's shape rights her, the water damps it.
     let rollRate = heelRateDegS * DEG;
     // The dinghy's sailor adds his weight to the moments (M114, PT-76, PT-77).
-    const crewNm = dinghy ? crewMomentNm(heelDeg, dinghy.sit, dinghy.side, data) : 0;
+    const crewNm = dinghy ? crewMomentNm(heelDeg, dinghy.sit, dinghy.side, data, wind.awaDeg) : 0;
     rollRate +=
       ((forces.heelMomentNm + crewNm - rightingMomentNm(heelDeg, data) - damping * rollRate) /
         inertia) *
@@ -476,7 +476,7 @@ export function steadyState(
       const maxHeel = data.physics.heel.maxHeelDeg;
       const f = (heel: number) =>
         at(heel).heelMomentNm +
-        crewMomentNm(heel, dinghy.sit, side, data) -
+        crewMomentNm(heel, dinghy.sit, side, data, wind.awaDeg) -
         rightingMomentNm(heel, data);
       const f0 = f(0);
       let found = 0;

@@ -16,7 +16,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 |---|---|
 | `exercises/exercises.json`, `lang/<code>/exercises.json` | The exercises (steps, checks, mistakes, start links; language-neutral) and their texts by the same ids (English source; German, Norwegian and Russian drafts). |
 | `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values, and the `features` the boat has. No numbers in code. |
-| `boat/dinghy.json` | The Training dinghy as an overlay on the Hanse file: only the keys that differ, its features (all off) and its `dinghy` block (centreboard, tiller, toe straps, cockpit). |
+| `boat/dinghy.json` | The Training dinghy as an overlay on the Hanse file: only the keys that differ, its features (all off) and its `dinghy` block (centreboard, tiller, toe straps, cockpit, the sailor's seats, hands, crossing and eye). |
 | `audio/sounds.json` | Every number of the sound: group gains, smoothing, the wind, waves, hull, sails, engine, gear, marina, birds and the `music` block. No sound number in code. |
 | `registry/parts.json` | Every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group`, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
 | `lang/<code>/ui.json` | UI strings of one language, read through `t()`; every language has the same keys as `en`, in the same order. |
@@ -49,7 +49,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `sim.ts` | Per-frame rig state and `step`: controls → boom, jib, sails, ropes. |
 | `boat.ts` | The boat in use as live bindings (`boat`, `boatId`, `boatName`): the Hanse 508 unless `useBoat()` ran first. Read `boat` at call time, never copy it into a module constant. Also the built-in boats (`BUILT_IN_BOATS`, `DINGHY`) and `hasFeature`, `isDinghy`, `boatHasControl`. |
 | `boatMerge.ts` | `mergeBoat`: a boat file written as an overlay on the Hanse's (objects merge, arrays replace, `controls.list` merges by id). |
-| `dinghy.ts` | The Training dinghy: its types, starting state and the tiller's drawn angle; the sailor's weight and the hull's own righting moment, the centreboard's grip, the outhaul's power and the sailor's side. |
+| `dinghy.ts` | The Training dinghy: its types, starting state and the tiller's drawn angle; the sailor's weight (in the middle for a tack) and the hull's own righting moment, the centreboard's grip, the outhaul's power and the sailor's side. |
 | `boatProfile.ts` | The boat profile file: `makeBoatProfile`, `checkBoatProfile` (shape against the Hanse 508, then ranges), `fillAddedKeys` for old profiles. Guide: `docs/BOAT_PROFILE.md`. |
 | `rigGeometry.ts`, `hullShape.ts`, `deckVolumes.ts` | Boat data and the static geometry derived from it: hull sections, deck volumes, toerail, channel lanes, the coachroof outline. |
 | `bowGear.ts` | The anchor's fluke, the chain's links and the windlass's deck height as numbers. |
@@ -83,7 +83,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `languages.ts` | The available languages (from every `content/lang/*/ui.json`) and `latinAllowed`. |
 | `glossary.ts` | The glossaries by language, `learnEntry`, `NOT_DRAWN`, `FAR_AWAY`, `sourceLink`, groups and `searchGlossary`. |
 | `horizonLand.ts` | The distant land's outline from the area's ridges (pure). |
-| `people.ts`, `figurePose.ts` | The captain: the deck points he stands at, where the mode, station and wheel put him, the walk along the windward side deck between stations, and his pose's joint angles (pure). |
+| `people.ts`, `figurePose.ts` | The captain: the deck points he stands at, where the mode, station and wheel put him, the walk along the windward side deck between stations, the dinghy sailor's seats, hands and crossing, and the poses' joint angles (pure). |
 | `gennaker.ts` | The optional gennaker: rigging stage and side, the commands (rig, gybe), the sheets' route, what is drawn, and `solveGennaker` (foot angle, angle of attack, fill, the main hiding it) with its trim state. |
 | `pictures.ts` | The pictures of things this boat does not carry: `PictureId`, the pole's angle, where the symmetric spinnaker's and the code 0's corners, pole and lines lie for a wind angle, and the traveller's car, boom swing and sheet for a car position. |
 | `angles.ts`, `vec3.ts`, `random.ts` | Shared helpers: angles and units, vectors, seeded random. |
@@ -105,14 +105,14 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | File | What |
 |---|---|
 | `scene.ts`, `sceneConfig.ts` | Renderer, lights (the sun's from the clock), per-frame update; colours, sizes, camera framing, frame-rate keys (`SCENE.performance`). |
-| `cameraRig.ts`, `cameraPresets.ts` | Camera control and the presets (Side, Top, Bow, Helm). Frames the boat in the area left by the sheet, chips and step stack (eased when only those change); the spotlight's close-up and way back; helm views; the hand camera (zoom to the pointer, slide, stop above the water, stay out of the hull, turn round a double-tapped point). |
+| `cameraRig.ts`, `cameraPresets.ts` | Camera control and the presets (Side, Top, Bow, Helm; on the dinghy the Sailor view from the drawn hip). Frames the boat in the area left by the sheet, chips and step stack (eased when only those change); the spotlight's close-up and way back; helm views; the hand camera (zoom to the pointer, slide, stop above the water, stay out of the hull, turn round a double-tapped point). |
 | `picking.ts` | Tap-to-identify hit testing; double-tap detection and the surface point a tap's ray hits. |
 | `environment.ts`, `world.ts`, `wake.ts`, `wind.ts` | The cloud and ripple textures, the world group (steps the water along the map), the wake, wind streaks. |
 | `waterSurface.ts` | The water: wave mesh with its grid lines, flat outer water to the horizon, the tap plane; vertex colours (wind darkening, gust patch, white crests); `heightAt`. |
 | `daylight.ts` | The sun's light from the clock: its direction in the boat frame and at its true height for the sky, and how strong the sun, the sky light and the night are. |
 | `skyDome.ts`, `skyColours.ts` | The sky as a shader on a sphere round the camera (gradient, clouds, sun, stars) and the sky colours for a sun height; also rendered into a small cube map for High detail's reflections. |
 | `horizonLand.ts` | The distant land: two rings of hills round the horizon, fixed to the compass, following the camera so it is never reached. |
-| `people/figureMesh.ts`, `people/captain.ts` | The captain as one skinned mesh with vertex colours, and his model: placed and posed each frame, with an invisible tap area. |
+| `people/figureMesh.ts`, `people/captain.ts` | The captain as one skinned mesh with vertex colours, and his model: placed and posed each frame (the dinghy sailor by his hip, leaning outboard), with an invisible tap area. |
 | `marina.ts` | The marina in 3D (quay, wall, pontoon, rings, our berth's stripe and arrow, moored yachts as instanced meshes), built at map positions in the world group and moved with the boat. |
 | `harbourDetail.ts` | The marina's surroundings: the rock breakwater, entrance lights, paved land, buildings, lamp posts, bollards and the pontoon's floats. |
 | `exerciseTarget.ts` | The magenta outline of the current step's target, hidden when no step shows one. |
@@ -122,7 +122,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `dangerZone.ts` | The red sector the boom sweeps in a gybe, and its faint outline by the lee. |
 | `mooringLines.ts` | The mooring lines in 3D: each line that is on as a tube from its cleat (slack ones sag), our berth's lazy line, and the one the crew walks. |
 | `boat/index.ts` | Builds the boat and applies the solved rig each frame; each builder runs only when the boat has its feature. |
-| `boat/dinghy.ts` | The Training dinghy's own parts: deck, open cockpit, centreboard and its case, tiller with its extension, toe straps and ratchet block. |
+| `boat/dinghy.ts` | The Training dinghy's own parts: deck, open cockpit, centreboard and its case, tiller with its extension (aimed at the sailor's hand), toe straps and ratchet block. |
 | `boat/hull.ts`, `boat/appendages.ts`, `boat/deckGear.ts`, `boat/cockpitHardware.ts`, `boat/rig.ts`, `boat/parts.ts` | Hull (toerail, coamings, roof lip), keel/rudder, deck gear and rope-channel mouldings, wheels/winches/clutches/rope boxes, mast/boom/stays/backstay/guide blocks/furling gearbox, part helpers (blocks, rounded boxes). |
 | `boat/bowGear.ts` | The bow roller, anchor, chain and windlass on the foredeck; static. |
 | `boat/mooringFittings.ts` | The horn cleats and fairleads on the toerail; static. |

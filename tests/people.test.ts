@@ -459,7 +459,7 @@ describe('M115 the dinghy sailor', () => {
     ] as const) {
       const yaw = (90 - sailorPlacement('side', side, dinghy).faceDeg) * DEG;
       // captain.ts turns the figure about the up axis; its front is +z
-      const front = [Math.sin(yaw), 0, Math.cos(yaw)];
+      const front: [number, number, number] = [Math.sin(yaw), 0, Math.cos(yaw)];
       const angle = Math.acos(Math.min(1, front[0] * 0.5 + front[2] * z)) / DEG;
       expect(angle).toBeLessThan(1);
     }

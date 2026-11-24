@@ -5,7 +5,7 @@
  * runs on the Hanse 508.
  */
 import { boat, type BoatData } from './boat';
-import { DEG, interpTable } from './angles';
+import { DEG, interpTable, smoothstep } from './angles';
 import type { RigState } from './sim';
 
 /** Where the sailor sits: on the floor, on the side deck, or leaning out under the toe straps. */
@@ -26,7 +26,13 @@ export interface DinghyData {
   cockpit: { fwdX: number; aftX: number; halfWidth: number; floorY: number };
   sideDeckWidthM: number;
   /** M114: the sailor's weight (the mass is `physics.mass.payloadKg`). */
-  crew: { armM: Record<Sit, number>; armNote: string; defaultSit: Sit };
+  crew: {
+    armM: Record<Sit, number>;
+    armNote: string;
+    defaultSit: Sit;
+    /** M115: the sailor's weight is out on his side only when the apparent wind is at least `fullAwaDeg` off the bow; he is in the middle (no moment) within `centredAwaDeg`. */
+    tack: { centredAwaDeg: number; fullAwaDeg: number; note: string };
+  };
   /** M114: the hull's own righting moment (Nm) against the heel (degrees). */
   rightingNmByHeelDeg: number[][];
   rightingNote: string;
@@ -75,15 +81,37 @@ function dinghyOf(data: BoatData): DinghyData {
 
 const G = (data: BoatData) => data.physics.constants.gravityMps2;
 
-/** The sailor's weight about the centreline, signed like heelDeg (Nm). */
+/**
+ * M115: the share of the sailor's weight that is out on his side (0…1). Head to the wind, in the
+ * turn of a tack or gybe, he comes into the middle to cross the boat; with the wind further
+ * round he is on his side again.
+ */
+export function crewOutShare(awaDeg: number, data: BoatData = boat): number {
+  const { centredAwaDeg, fullAwaDeg } = dinghyOf(data).crew.tack;
+  return smoothstep(centredAwaDeg, fullAwaDeg, Math.abs(awaDeg));
+}
+
+/**
+ * The sailor's weight about the centreline, signed like heelDeg (Nm). With `awaDeg` (M115) it is
+ * scaled by `crewOutShare`: without it the sailor is always out on his side.
+ */
 export function crewMomentNm(
   heelDeg: number,
   sit: Sit,
   side: 1 | -1,
   data: BoatData = boat,
+  awaDeg?: number,
 ): number {
   const d = dinghyOf(data);
-  return side * data.physics.mass.payloadKg * G(data) * d.crew.armM[sit] * Math.cos(heelDeg * DEG);
+  const share = awaDeg === undefined ? 1 : crewOutShare(awaDeg, data);
+  return (
+    side *
+    data.physics.mass.payloadKg *
+    G(data) *
+    d.crew.armM[sit] *
+    share *
+    Math.cos(heelDeg * DEG)
+  );
 }
 
 /** The hull's own righting moment, signed like heelDeg (Nm). */
