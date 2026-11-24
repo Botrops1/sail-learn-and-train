@@ -72,7 +72,9 @@ export async function liveM114Checks({ openPage, viewports, problems }) {
   {
     const { context, page } = await open('board', '?boat=dinghy&ws=8&debug=1');
     await showSection(page, 'dinghy');
-    for (let i = 0; i < 5; i += 1) await page.getByTestId('dinghy-board-minus').tap();
+    // One key press is one step. A finger tap that lasts past the hold delay on a slow machine counts as a held button and repeats (the same for every stepper), so the steps are keyed.
+    await page.getByTestId('dinghy-board-minus').focus();
+    for (let i = 0; i < 5; i += 1) await page.keyboard.press('Enter');
     const link = await waitForLink(page, ['cb=75']).catch(() => 'no cb=75');
     const value = (await page.getByTestId('dinghy-board-value').innerText()).trim();
     check(
