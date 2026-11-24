@@ -543,6 +543,16 @@ PR: `Closes #275`. Done when the Balance section works at phone size, the dinghy
 
 Not in this milestone: the sailor figure and moving across (M115; the side changes at once here), capsize as an event (M116), the sail's shape changing with the outhaul.
 
+### 8.11 Decided in the M114 PR (recommended; merging accepts it)
+
+1. **Righting table at 50°: 100 Nm (the spec had 60).** `rightingNmByHeelDeg`'s last value is tunable. With 60, a sailor sitting in (66 Nm at 50°) held her at the clamp: the light-wind check (open on the side, tap Sit in) never came back. With 100 she returns to about +4° in 10 s. Every band of 8.4 and every PT test passed before and after (the walk to the balance stops well before 50°).
+2. **English outhaul texts say "pull tight", not "haul".** `tests/sailorWords.test.ts` (M100) forbids "haul" in English text, so `dinghy.outhaul.hint` is "Pull it tight in a strong wind to flatten the sail; ease it in light wind for more power." and `dinghy.outhaul.haul` is "Pull the outhaul tight". The key names are unchanged.
+3. **The heel warning's time is data.** `dinghy.windwardHeelAfterS` (1 s) sits beside `windwardHeelAlertDeg`; no number is left in code. The warning has its own label over the view (`windward-heel-label`) as well as its entry in the alert history.
+4. **PT-80's store test changes the wind's side.** The model cannot yet steer the dinghy through the wind: at the spec's numbers (and on `main` before M114) she stops with the wind 13–17° on the bow and falls back. The test turns the wind from 60° to −60° at 12 kn instead and checks that the boom, the sailor and his weight cross. The tack by steering is issue #283, for the start of M115 (its "Tack" check and M118's tack exercise need it).
+5. **Outhaul and computer-size checks use `ws=16&ms=55&oh=100&sp=side`.** At 12 kn with the tiller left alone the dinghy heeled towards the sailor and bore away, so a try ten seconds after opening compared a different course. The new link shows the effect in the first seconds (heel −8.5° to −3.3° and 7.2 to 6.2 kn at outhaul 0, back up at 100). The "Let it go" check opens sitting in (no `sp=side`), as `PHYSICS_TRUTHS` PT-78 says: a sailor on the side deck with the sheet fully eased tips her over to windward (PT-77).
+6. **Small additions.** `ExerciseSection` gains `dinghy` (so M118's exercises can keep the section); the debug read gains `dinghy` (the whole `DinghyState`); the browser-check helper's tab table gains `dinghy`.
+7. **Not changed.** The centreboard case still lies under the foredeck (see 7.12, point 9); M114 only draws the board up and down. The group m8's recorded time is not changed (the local run took 14 s more than the baseline on this machine).
+
 ## 9. M115: The sailor in the dinghy
 
 **Independent review: not needed** (a figure and a camera view; no model, store or URL change).
