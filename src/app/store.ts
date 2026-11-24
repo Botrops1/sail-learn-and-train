@@ -126,6 +126,8 @@ import {
 } from '../model/waves';
 import { rigMotion } from '../model/waveMotion';
 import {
+  capsizeCommand,
+  capsizeHeelDeg,
   initialDinghy,
   nextSailorSide,
   outhaulPower,
@@ -371,6 +373,8 @@ function boatFor(
 ): BoatState {
   const mode = overrides.mode ?? 'sailing';
   const headingDeg = overrides.headingDeg ?? 0;
+  // M116: a link that opens capsized lies at that heel with no way on.
+  const lying = dinghy ? capsizeHeelDeg(dinghy.capsize) : null;
   if (mode === 'held') {
     return initialBoat({
       ...overrides,
@@ -379,8 +383,11 @@ function boatFor(
       speedMps: 0,
       yawRateDegS: 0,
       swayMps: 0,
-      heelDeg: 0,
+      heelDeg: lying ?? 0,
     });
+  }
+  if (lying !== null) {
+    return initialBoat({ ...overrides, mode, headingDeg, speedMps: 0, heelDeg: lying });
   }
   // She opens settled: at her steady speed and heel (a link may give the speed).
   const steady = steadyState(controls, headingDeg, undefined, {
@@ -620,6 +627,14 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
         }
       : (overrides.dinghy ?? initialDinghy()),
   });
+}
+
+/** M116: the controls that do nothing while the dinghy is over. */
+const CAPSIZE_LOCKED: readonly ControlId[] = ['ctl_mainsheet', 'ctl_vang', 'ctl_rudder'];
+
+/** M116: the dinghy is going over, over, swimming or righting. */
+export function capsized(state: Pick<AppState, 'dinghy'>): boolean {
+  return isDinghy() && state.dinghy.capsize.phase !== 'upright';
 }
 
 function withControls(controls: Controls, values: Partial<Controls>): Controls {
@@ -901,6 +916,13 @@ function reduceAction(state: AppState, action: Action): AppState {
     case 'setControls': {
       // The exercise sets the wind (PHASE10_SPEC 4.2), and so does a clock wind (24.4).
       let values = action.values;
+      if (capsized(state)) {
+        // M116: while she is over the sheet, kicker and tiller do nothing (the wind keys pass).
+        values = Object.fromEntries(
+          Object.entries(values).filter(([id]) => !CAPSIZE_LOCKED.includes(id as ControlId)),
+        );
+        if (Object.keys(values).length === 0) return state;
+      }
       if (
         state.gennaker.stage < 4 &&
         ('ctl_gennaker_sheet' in values || 'ctl_gennaker_sock' in values)
@@ -936,7 +958,7 @@ function reduceAction(state: AppState, action: Action): AppState {
               speedMps: 0,
               yawRateDegS: 0,
               swayMps: 0,
-              heelDeg: 0,
+              heelDeg: (isDinghy() ? capsizeHeelDeg(state.dinghy.capsize) : null) ?? 0,
               heelRateDegS: 0,
               roundUpS: 0,
               overpoweredS: 0,
@@ -1236,13 +1258,23 @@ function reduceAction(state: AppState, action: Action): AppState {
       const c = action.command;
       const d = state.dinghy;
       const pct = (value: number) => Math.min(100, Math.max(0, Math.round(value)));
-      const next: DinghyState =
-        c.kind === 'sit'
-          ? { ...d, sit: c.sit }
-          : c.kind === 'board'
-            ? { ...d, boardPct: pct(c.pct) }
-            : { ...d, outhaulPct: pct(c.pct) };
-      return next.sit === d.sit && next.boardPct === d.boardPct && next.outhaulPct === d.outhaulPct
+      // M116: while she is over the seat and the outhaul cannot be changed; the board can.
+      const over = d.capsize.phase !== 'upright';
+      let next: DinghyState;
+      if (c.kind === 'capsize') {
+        const done = capsizeCommand(d.capsize, c.command, d.boardPct);
+        next = { ...d, capsize: done.capsize, boardPct: done.boardPct };
+      } else if (c.kind === 'sit') {
+        next = over ? d : { ...d, sit: c.sit };
+      } else if (c.kind === 'board') {
+        next = { ...d, boardPct: pct(c.pct) };
+      } else {
+        next = over ? d : { ...d, outhaulPct: pct(c.pct) };
+      }
+      return next.sit === d.sit &&
+        next.boardPct === d.boardPct &&
+        next.outhaulPct === d.outhaulPct &&
+        next.capsize === d.capsize
         ? state
         : { ...state, dinghy: next };
     }
@@ -1329,7 +1361,17 @@ function reduceAction(state: AppState, action: Action): AppState {
         gennaker,
       });
       // M114: the sailor takes the side opposite the boom the rig just settled on (Held still too).
-      const dinghy = isDinghy() ? stepDinghy(state.dinghy, rig) : state.dinghy;
+      // M116: and goes over at the heel of the last step; Held still and Pause stop the capsize timers.
+      let dinghy = isDinghy()
+        ? stepDinghy(state.dinghy, rig, state.boat, sailing ? dt : 0)
+        : state.dinghy;
+      // The end of righting: the sheet is let go (so she does not sail off) and the sailor sits in.
+      const comingUp =
+        state.dinghy.capsize.phase === 'righting' && dinghy.capsize.phase === 'upright';
+      if (comingUp) {
+        dinghy = { ...dinghy, sit: 'in' };
+        controls = withControls(controls, { ctl_mainsheet: 100 });
+      }
       const moving = stepBoat(
         state.boat,
         {
@@ -1347,6 +1389,7 @@ function reduceAction(state: AppState, action: Action): AppState {
                 side: dinghy.sailorSide,
                 boardPct: dinghy.boardPct,
                 mainPower: outhaulPower(dinghy.outhaulPct),
+                capsize: dinghy.capsize,
               }
             : undefined,
           rudderLimitDeg:
@@ -1374,6 +1417,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         },
         dt,
       );
+      const boatAfter = comingUp ? { ...moving.boat, heelDeg: 0, heelRateDegS: 0 } : moving.boat;
       // After the boat moved: the damage report, then the fenders torn off at speed (4.3 step 6).
       // Held still: nothing touches anything and the fender timer stands still.
       let contact = state.contact;
@@ -1400,7 +1444,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         rig,
         gennaker,
         realistic: realisticState,
-        boat: moving.boat,
+        boat: boatAfter,
         autopilot,
         motion: moving.report,
         wind,

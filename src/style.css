@@ -5846,3 +5846,54 @@ html[data-layout='stacked'] .keys-field {
 .rope-item[hidden] {
   display: none;
 }
+
+/*
+ * The capsize card (M116, PHASE_DINGHY_SPEC 10.5): over the 3D view above the step card while the
+ * dinghy is over. A 4 px left border in the warning colour, like the step card's mistake tone.
+ */
+.capsize-card {
+  flex: 1 1 100%;
+  padding: 4px 12px 8px;
+  border: 1px solid var(--line);
+  border-left: 4px solid #ff9f1c;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.92);
+  color: var(--text);
+  font-size: 15px;
+  pointer-events: auto;
+  min-width: 0;
+}
+
+.capsize-card[hidden],
+.capsize-card [hidden],
+.capsize-locked[hidden] {
+  display: none;
+}
+
+html[data-layout='side'] .capsize-card,
+html[data-layout='wide'] .capsize-card {
+  max-width: 640px;
+}
+
+.capsize-title {
+  margin: 4px 0 2px;
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.capsize-card .exercise-buttons {
+  margin: 4px 0;
+}
+
+.capsize-card button:disabled {
+  opacity: 0.5;
+}
+
+.capsize-board-line,
+.capsize-hint {
+  margin: 2px 0;
+}
+
+.capsize-locked {
+  font-weight: 700;
+}

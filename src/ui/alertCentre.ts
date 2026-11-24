@@ -31,6 +31,7 @@ const ALERT_TEXT: Readonly<
   byTheLee: 'alert.byTheLee',
   overpowered: 'alert.overpowered',
   windwardHeel: 'alert.windwardHeel',
+  capsized: 'alert.capsized',
   roundUp: 'alert.roundUp',
   tookWheel: 'autopilot.tookWheel',
   fendersOut: 'harbour.fenders.hint',

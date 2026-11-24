@@ -1,6 +1,6 @@
 import { DEG } from './angles';
 import { boat, type BoatData } from './boat';
-import type { Sit } from './dinghy';
+import { capsizeSailorHip, type CapsizeState, type Sit } from './dinghy';
 import { stationWinch, type RealisticState, type StationId } from './realistic';
 import type { HelmWheel, RopesMode } from './settings';
 import type { Vec3 } from './vec3';
@@ -21,7 +21,8 @@ export interface DeckPoint {
   faceDeg: number | null;
 }
 
-export type FigurePose = 'stand' | 'steer' | 'work' | 'walk' | 'sit' | 'hike';
+export type FigurePose =
+  'stand' | 'steer' | 'work' | 'walk' | 'sit' | 'hike' | 'swim' | 'standBoard';
 
 export interface CaptainInput {
   ropesMode: RopesMode;
@@ -476,5 +477,32 @@ export function crossingSailor(
     pose: 'sit',
     walkedM: 0,
     hand: sailorHands(hip, from * k, from * k * seatLean * DEG, data),
+  };
+}
+
+/**
+ * M116 (PHASE_DINGHY_SPEC 10.5 and 10.8a.10): the sailor in a capsize, in the boat's heading frame
+ * (turned with the heading, not rolled): in the water beside the cockpit, swimming round the stern
+ * to the board, then standing on it; null while she is upright (M115's seat applies). The hands
+ * are where the seat's hands were (the sheet and the tiller extension are not held now).
+ */
+export function capsizeSailor(c: CapsizeState, data: BoatData = boat): SailorPlacement | null {
+  const hip = capsizeSailorHip(c, data);
+  if (!hip) return null;
+  const k = dinghyOf(data).capsize.sailor;
+  const standing = c.phase === 'righting';
+  const feet: Vec3 = standing
+    ? [k.standFeet[0], k.standFeet[1], k.standFeet[2] * c.side]
+    : [hip[0], hip[1] - 0.85, hip[2]];
+  return {
+    feet,
+    hip,
+    // Standing on the board he leans back, away from the hull (the lean is about the boat's x axis towards the hip's side).
+    leanDeg: standing ? 25 : 0,
+    // He always faces the hull: across the boat, towards the centreline.
+    faceDeg: (hip[2] * c.side < 0 ? 90 : -90) * c.side,
+    pose: standing ? 'standBoard' : 'swim',
+    walkedM: 0,
+    hand: { aft: hip, fwd: hip },
   };
 }

@@ -131,6 +131,26 @@
     },
     "faceTurnDeg": 30,
     "crossS": 1.5,
-    "sailorEye": { "aboveHipM": 0.75, "lookDownDeg": 10, "lookToLeewardDeg": 15 }
+    "sailorEye": { "aboveHipM": 0.75, "lookDownDeg": 10, "lookToLeewardDeg": 15 },
+    "capsize": {
+      "$comment": "PHASE_DINGHY_SPEC 10. Assumptions except where a source is named.",
+      "atHeelDeg": 48,
+      "lyingHeelDeg": 85,
+      "goingOverS": 1.5,
+      "swimS": 4,
+      "rightingS": 3,
+      "minBoardPct": 50,
+      "driftMps": 0.25,
+      "stopTimeS": 2,
+      "sailor": {
+        "$comment": "Where the sailor's hips are in a capsize, in the boat's heading frame (turned with the heading, not rolled), z multiplied by the side she lies on. Assumption, chosen to look right.",
+        "inWater": [-1.0, -0.45, 1.1],
+        "astern": [-2.9, -0.45, 0],
+        "atBoard": [-0.15, -0.45, -1.3],
+        "standHip": [-0.15, 1.05, -1.0],
+        "standFeet": [-0.15, 0.22, -0.7]
+      },
+      "source": "Wikipedia, Capsizing: a dinghy can normally be righted by standing or pulling down on the centreboard; capsizing is an inherent part of dinghy sailing"
+    }
   }
 }

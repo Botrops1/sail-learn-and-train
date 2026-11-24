@@ -1218,3 +1218,13 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | dinghy.outhaul.ease | Ease the outhaul | Unterliekstrecker fieren |
 | alert.windwardHeel | Heeling towards you: sit further in | Krängung zu Ihnen hin: weiter nach innen setzen |
 | alert.overpowered.dinghy | Heeling a lot: lean out or ease the mainsheet | Starke Krängung: ausreiten oder die Großschot fieren |
+| alert.capsized | Capsized! Swim round to the centreboard and stand on it | Gekentert! Schwimm zum Schwert und steig darauf |
+| capsize.title | Capsized | Gekentert |
+| capsize.righting | Coming up… | Sie richtet sich auf… |
+| capsize.swim | Swim round to the centreboard | Zum Schwert schwimmen |
+| capsize.swimming | Swimming round the stern… | Ums Heck schwimmen… |
+| capsize.stand | Stand on the centreboard | Auf das Schwert steigen |
+| capsize.boardUp | The centreboard is up: push it down first | Das Schwert ist oben: erst nach unten drücken |
+| capsize.boardDown | Push the centreboard down | Das Schwert nach unten drücken |
+| capsize.hint | Stay with the boat. Let the mainsheet go before she comes up, then climb in over the side. | Bleib beim Boot. Lass die Großschot los, bevor sie sich aufrichtet, und steig dann über die Seite ein. |
+| capsize.locked | Right the boat first | Erst das Boot aufrichten |

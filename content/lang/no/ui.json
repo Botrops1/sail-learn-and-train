@@ -1210,5 +1210,15 @@
   "dinghy.outhaul.haul": "Stram utstrekkeren",
   "dinghy.outhaul.ease": "Fire utstrekkeren",
   "alert.windwardHeel": "Krenger mot deg: sitt lenger inn",
-  "alert.overpowered.dinghy": "Kraftig krenging: len deg ut eller fire storskjøtet"
+  "alert.overpowered.dinghy": "Kraftig krenging: len deg ut eller fire storskjøtet",
+  "alert.capsized": "Kantret! Svøm til slepekjølen og stå på den",
+  "capsize.title": "Kantret",
+  "capsize.righting": "Hun reiser seg…",
+  "capsize.swim": "Svøm til slepekjølen",
+  "capsize.swimming": "Svømmer rundt akterenden…",
+  "capsize.stand": "Stå på slepekjølen",
+  "capsize.boardUp": "Slepekjølen er oppe: trykk den ned først",
+  "capsize.boardDown": "Trykk slepekjølen ned",
+  "capsize.hint": "Bli ved båten. Slipp storskjøtet før hun reiser seg, og klatre så inn over siden.",
+  "capsize.locked": "Rett opp båten først"
 }

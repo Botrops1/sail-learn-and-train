@@ -139,12 +139,12 @@ Planned on 2026-11-23 in [`PHASE_DINGHY_SPEC.md`](PHASE_DINGHY_SPEC.md) (M113–
 | Id | Rule | How to see it | Status |
 |---|---|---|---|
 | PT-75 | **A tiller moves the opposite way to the turn.** Push the tiller to port and the bow turns to starboard. (M113) | `?boat=dinghy&wd=60&ws=8&ms=40&cam=top`, steer to starboard: the tiller swings to port | source-checked [55] |
-| PT-76 | **Leaning out keeps a dinghy flatter.** A dinghy has no heavy keel: the sailor's weight on the high side holds her up, and the further out it is, the more it holds. (M114) | `?boat=dinghy&wd=90&ws=16&ms=55&oh=100&cam=bow`: Sit in → she heels hard; Sit on the side → about 8°; Lean out → upright | source-checked [56] |
+| PT-76 | **Leaning out keeps a dinghy flatter.** A dinghy has no heavy keel: the sailor's weight on the high side holds her up, and the further out it is, the more it holds. (M114) | `?boat=dinghy&wd=90&ws=16&ms=55&oh=100&sp=side&cam=bow` (opens about −8°): Sit in → she heels hard; Lean out → upright | source-checked [56] |
 | PT-77 | **In light wind, sit in.** With little wind on the sail, the sailor's weight on the side tips the boat towards the sailor. (M114) | `?boat=dinghy&wd=90&ws=3&ms=50&sp=side&cam=bow`: she heels towards you; Sit in → nearly upright | general (moments; [56]) |
-| PT-78 | **Let the mainsheet go to come upright and slow down.** With the sheet eased the sail flaps and stops pushing: the heel goes and the boat stops. (M114) | `?boat=dinghy&wd=60&ws=14&ms=30&cam=bow`, then ease the mainsheet to 100 % | source-checked [56] |
+| PT-78 | **Let the mainsheet go to come upright and slow down.** With the sheet eased the sail flaps and stops pushing: the heel goes and the boat stops. (M114) | `?boat=dinghy&wd=60&ws=14&ms=30&sp=side&cam=bow` (opens about −25°), then ease the mainsheet to 100 % | source-checked [56] |
 | PT-79 | **Centreboard down to sail towards the wind; up with the wind behind.** Down, the board stops her sliding sideways; up, she slides, but with the wind behind there is less drag. (M114) | `?boat=dinghy&wd=45&ws=10&ms=20&sp=side&cb=0&cam=top`: she slides sideways; Centreboard down → she goes straight | source-checked [57] (lateral resistance; less drag when not needed) |
 | PT-80 | **The sailor sits on the side opposite the boom** (the high, windward side) and moves across the boat in a tack or a gybe. (M114, drawn in M115) | `?boat=dinghy&wd=0&ws=10&hdg=315&ms=15&sp=side&cam=top`, steer to the right through the wind: the sailor crosses to the new high side | source-checked [56] |
-| PT-81 | **A capsized dinghy is righted by standing on the centreboard; the board must be down.** (M116) | `?boat=dinghy&wd=90&ws=10&cap=s&cb=0&cam=side-starboard`: Swim round, push the board down, stand on it | source-checked [58] |
+| PT-81 | **A capsized dinghy is righted by standing on the centreboard; the board must be down.** (M116) | `?boat=dinghy&wd=-90&ws=10&cap=s&cb=0&cam=side-starboard`: Swim round, push the board down, stand on it | source-checked [58] |
 
 ## Sources
 

@@ -105,6 +105,8 @@ export interface BoatModel {
   revealPanels(on: boolean): void;
   /** M111: places and poses the captain; `t` and `dt` in seconds, `hidden` in the Helm view of his own wheel. */
   setCaptain(placement: CaptainPlacement, hidden: boolean, t: number, dt: number): void;
+  /** M116: the captain (the dinghy's sailor) moves into `frame` (a group that is not rolled, for a capsize) or, with null, back onto the boat. */
+  setCaptainFrame(frame: THREE.Object3D | null): void;
 }
 
 /**
@@ -312,6 +314,10 @@ export function buildBoat(
     panelStats: pedestals.stats,
     revealPanels: pedestals.reveal,
     setCaptain: captain.update,
+    setCaptainFrame: (frame) => {
+      const parent = frame ?? root;
+      if (captain.object.parent !== parent) parent.add(captain.object);
+    },
     setAnchorStowed: (stowed) => {
       for (const mesh of anchorMeshes) mesh.visible = stowed;
     },

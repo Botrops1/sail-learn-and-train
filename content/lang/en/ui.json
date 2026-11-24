@@ -1210,5 +1210,15 @@
   "dinghy.outhaul.haul": "Pull the outhaul tight",
   "dinghy.outhaul.ease": "Ease the outhaul",
   "alert.windwardHeel": "Heeling towards you: sit further in",
-  "alert.overpowered.dinghy": "Heeling a lot: lean out or ease the mainsheet"
+  "alert.overpowered.dinghy": "Heeling a lot: lean out or ease the mainsheet",
+  "alert.capsized": "Capsized! Swim round to the centreboard and stand on it",
+  "capsize.title": "Capsized",
+  "capsize.righting": "Coming up…",
+  "capsize.swim": "Swim round to the centreboard",
+  "capsize.swimming": "Swimming round the stern…",
+  "capsize.stand": "Stand on the centreboard",
+  "capsize.boardUp": "The centreboard is up: push it down first",
+  "capsize.boardDown": "Push the centreboard down",
+  "capsize.hint": "Stay with the boat. Let the mainsheet go before she comes up, then climb in over the side.",
+  "capsize.locked": "Right the boat first"
 }

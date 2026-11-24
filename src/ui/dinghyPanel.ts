@@ -1,5 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import type { Sit } from '../model/dinghy';
+import { createCapsizeLockedLine, lockWhileCapsized } from './capsizePanel';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 import { setText, stepButton } from './stepper';
@@ -101,5 +102,8 @@ export function createDinghyPanel(store: Store): HTMLElement[] {
   };
   store.subscribe(sync);
   sync(store.getState());
-  return [seats, seatHint, board.block, outhaul.block];
+  // M116: while she is over the seat and the outhaul are locked; the board stepper is not.
+  lockWhileCapsized(store, seats);
+  lockWhileCapsized(store, outhaul.block);
+  return [createCapsizeLockedLine(store), seats, seatHint, board.block, outhaul.block];
 }

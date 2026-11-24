@@ -4,9 +4,15 @@ import { DINGHY, HANSE_508, useBoat } from '../src/model/boat';
 import { defaultControls, type Controls } from '../src/model/controls';
 import { steadyState, type SteadyState } from '../src/model/motion';
 import {
+  capsizeCommand,
+  capsizeHeelDeg,
   crewMomentNm,
   initialDinghy,
   nextSailorSide,
+  stepCapsize,
+  UPRIGHT,
+  type CapsizeCommand,
+  type CapsizeState,
   type DinghyState,
   type Sit,
 } from '../src/model/dinghy';
@@ -343,5 +349,159 @@ describe('M114: the link and the panel', () => {
     // A saved arrangement from before this section gets it right after Ropes.
     const saved = completeLayout({ columns: [['ropes', 'sails'], []] });
     expect(saved.columns[0].slice(0, 3)).toEqual(['ropes', 'dinghy', 'sails']);
+  });
+});
+
+describe('PT-81 A capsized dinghy is righted by standing on the centreboard; the board must be down', () => {
+  const cmd = (state: AppState, command: CapsizeCommand): AppState =>
+    reduce(state, { type: 'dinghy', command: { kind: 'capsize', command } });
+  const over = (query = ''): AppState => {
+    useDinghy();
+    return parseUrlState(`?boat=dinghy&wd=-90&ws=12&cap=s${query}`, 'low');
+  };
+
+  it('1. a strong breeze abeam, sheet 55, sit in, from rest: she goes over to leeward within 15 s, one capsized alert', () => {
+    // Decided in the M116 PR: 18 kn, not the spec's 16: from rest at heading 0 she accelerates and
+    // rounds up in 16 kn before the heel passes -34°; in 18 kn she goes over after about 3 s.
+    const start = dinghyState(
+      { ctl_wind_dir: 90, ctl_wind_speed: 18, ctl_mainsheet: 55 },
+      { sit: 'in' },
+      { headingDeg: 0, heelDeg: 0, speedMps: 0 },
+    );
+    expect(start.dinghy.capsize.phase).toBe('upright');
+    const phases: string[] = ['upright'];
+    const end = run(start, 15, (s) => {
+      if (phases[phases.length - 1] !== s.dinghy.capsize.phase) phases.push(s.dinghy.capsize.phase);
+      return undefined;
+    });
+    expect(phases.slice(0, 3)).toEqual(['upright', 'goingOver', 'over']);
+    expect(end.dinghy.capsize.side).toBe(-1);
+    expect(end.alerts.entries.filter((e) => e.kind === 'capsized')).toHaveLength(1);
+  });
+
+  it('2. stand before swim is refused; swim, 4.1 s, stand: she comes up in 3 s with the sheet let go and the sailor in', () => {
+    let state = over();
+    expect(state.dinghy.capsize).toMatchObject({ phase: 'over', side: 1 });
+    expect(Math.abs(state.boat.heelDeg)).toBe(85);
+    expect(cmd(state, 'stand')).toBe(state);
+    state = cmd(state, 'swim');
+    expect(state.dinghy.capsize.phase).toBe('swimming');
+    state = run(state, 4.1);
+    state = cmd(state, 'stand');
+    expect(state.dinghy.capsize.phase).toBe('righting');
+    let heelWhenUp: number | null = null;
+    state = run(state, 3.1, (s) => {
+      if (heelWhenUp === null && s.dinghy.capsize.phase === 'upright') heelWhenUp = s.boat.heelDeg;
+      return undefined;
+    });
+    expect(heelWhenUp).toBe(0);
+    expect(state.dinghy.capsize.phase).toBe('upright');
+    expect(Math.abs(state.boat.heelDeg)).toBeLessThan(2);
+    expect(state.controls.ctl_mainsheet).toBe(100);
+    expect(state.dinghy.sit).toBe('in');
+  });
+
+  it('3. with the board up the stand is refused until it is pushed down', () => {
+    let state = over('&cb=0');
+    expect(state.dinghy.boardPct).toBe(0);
+    state = run(cmd(state, 'swim'), 4.1);
+    expect(cmd(state, 'stand')).toBe(state);
+    state = cmd(state, 'boardDown');
+    expect(state.dinghy.boardPct).toBe(100);
+    expect(cmd(state, 'stand').dinghy.capsize.phase).toBe('righting');
+    // The board stepper's own command works in every phase, and `boardDown` not while righting.
+    const righting = cmd(state, 'stand');
+    const lifted = reduce(righting, { type: 'dinghy', command: { kind: 'board', pct: 0 } });
+    expect(lifted.dinghy.boardPct).toBe(0);
+    expect(cmd(lifted, 'boardDown')).toBe(lifted);
+  });
+
+  it('4. over for 20 s: no way on, drifts about 5 m downwind, heading and controls unchanged', () => {
+    const start = over();
+    const locked = reduce(start, { type: 'setControls', values: { ctl_rudder: 30 } });
+    expect(locked).toBe(start);
+    expect(reduce(start, { type: 'dinghy', command: { kind: 'sit', sit: 'out' } })).toBe(start);
+    expect(reduce(start, { type: 'dinghy', command: { kind: 'outhaul', pct: 0 } })).toBe(start);
+    // The wind keys still pass.
+    expect(
+      reduce(start, { type: 'setControls', values: { ctl_wind_speed: 10 } }).controls
+        .ctl_wind_speed,
+    ).toBe(10);
+    const end = run(start, 20);
+    expect(end.boat.speedMps).toBeLessThan(0.05);
+    const moved = Math.hypot(
+      end.boat.eastM - start.boat.eastM,
+      end.boat.northM - start.boat.northM,
+    );
+    expect(moved).toBeGreaterThan(4);
+    expect(moved).toBeLessThan(6);
+    expect(end.boat.headingDeg).toBe(start.boat.headingDeg);
+    // The wind blows from -90 (west): she drifts east.
+    expect(end.boat.eastM).toBeGreaterThan(start.boat.eastM);
+  });
+
+  it('5. light wind, sitting on the side: she goes over to windward, onto the sailor’s side', () => {
+    const start = dinghyState(
+      { ctl_wind_dir: 90, ctl_wind_speed: 0.5, ctl_mainsheet: 50 },
+      { sit: 'side', outhaulPct: 100 },
+      { headingDeg: 0, heelDeg: 0, speedMps: 0 },
+    );
+    const sailorSide = start.dinghy.sailorSide;
+    const end = run(start, 30, (s) => s.dinghy.capsize.phase !== 'upright');
+    expect(end.dinghy.capsize.phase).toBe('goingOver');
+    expect(end.dinghy.capsize.side).toBe(sailorSide);
+  });
+
+  it('the capsize functions: the heel through each phase, the timers and the stand rules', () => {
+    useDinghy();
+    const d = DINGHY.data;
+    expect(capsizeHeelDeg(UPRIGHT, d)).toBeNull();
+    const going = (t: number): CapsizeState => ({ phase: 'goingOver', side: -1, t });
+    expect(capsizeHeelDeg(going(0), d)).toBeCloseTo(-48, 6);
+    expect(capsizeHeelDeg(going(1.5), d)).toBeCloseTo(-85, 6);
+    expect(capsizeHeelDeg({ phase: 'swimming', side: 1, t: 1 }, d)).toBe(85);
+    expect(capsizeHeelDeg({ phase: 'righting', side: 1, t: 3 }, d)).toBeCloseTo(0, 6);
+    // dt 0 (Held still, Pause): the timers stand still.
+    const swimming: CapsizeState = { phase: 'swimming', side: 1, t: 2 };
+    expect(stepCapsize(swimming, 0, 0, d)).toBe(swimming);
+    expect(stepCapsize(going(1), 0, 0, d)).toEqual(going(1));
+    // The boundary: at the board from `swimS`, not before.
+    expect(capsizeCommand({ ...swimming, t: 3.99 }, 'stand', 100, d).capsize.phase).toBe(
+      'swimming',
+    );
+    expect(capsizeCommand({ ...swimming, t: 4 }, 'stand', 100, d).capsize.phase).toBe('righting');
+    expect(capsizeCommand({ ...swimming, t: 4 }, 'stand', 49, d).capsize.phase).toBe('swimming');
+    expect(capsizeCommand({ ...swimming, t: 4 }, 'stand', 50, d).capsize.phase).toBe('righting');
+    expect(capsizeCommand(UPRIGHT, 'boardDown', 0, d).boardPct).toBe(0);
+  });
+
+  it('Held still: the timers stand still, the boat lies at the phase heel and the commands work', () => {
+    let state = over('&held=1');
+    expect(state.boat.mode).toBe('held');
+    expect(state.boat.heelDeg).toBe(85);
+    state = cmd(state, 'swim');
+    state = run(state, 5);
+    expect(state.dinghy.capsize).toMatchObject({ phase: 'swimming', t: 0 });
+    expect(state.boat.heelDeg).toBe(85);
+  });
+
+  it('the link: cap opens over, is written in every phase but upright, and Reset puts her upright', () => {
+    let state = over();
+    const params = (s: AppState) => new URLSearchParams(serializeUrlState(s));
+    expect(params(state).get('cap')).toBe('s');
+    expect(params(cmd(state, 'swim')).get('cap')).toBe('s');
+    expect(parseUrlState('?boat=dinghy&cap=p', 'low').dinghy.capsize).toMatchObject({
+      phase: 'over',
+      side: -1,
+    });
+    expect(parseUrlState('?boat=dinghy&cap=x', 'low').dinghy.capsize.phase).toBe('upright');
+    state = reduce(state, { type: 'reset' });
+    expect(state.dinghy.capsize.phase).toBe('upright');
+    expect(params(state).has('cap')).toBe(false);
+    // The Hanse never reads or writes it.
+    useBoat(HANSE_508.meta.id, HANSE_508.meta.name, HANSE_508);
+    const hanse = parseUrlState('?cap=s', 'low');
+    expect(hanse.dinghy.capsize.phase).toBe('upright');
+    expect(params(hanse).has('cap')).toBe(false);
   });
 });
