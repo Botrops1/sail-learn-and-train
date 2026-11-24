@@ -212,6 +212,7 @@ describe('PT-79 Centreboard (the boat in motion)', () => {
       const angles: number[] = [];
       run(start, 60, (state, t) => {
         if (t > 50) angles.push(Math.atan2(state.boat.swayMps, state.boat.speedMps));
+        return false;
       });
       return Math.abs(angles.reduce((a, b) => a + b, 0) / angles.length);
     };
@@ -226,8 +227,8 @@ describe('PT-80 The sailor sits opposite the boom', () => {
   });
 
   it('wind from the other side (a tack): the boom crosses, the sailor and his weight with it', () => {
-    // Decided in the M114 PR: a turn through the wind stalls a 125 kg dinghy at the spec's numbers
-    // (the luffing sail stops her before she is through), so the test changes the wind's side.
+    // Decided in the M114 PR: the model cannot yet steer the dinghy through the wind (the issue
+    // "After M114: review findings for later"), so the test changes the wind's side instead.
     const start = dinghyState(
       { ctl_wind_dir: 60, ctl_wind_speed: 12, ctl_mainsheet: 40 },
       {},
