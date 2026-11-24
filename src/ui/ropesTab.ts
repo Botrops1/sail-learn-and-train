@@ -1,5 +1,6 @@
 import type { AppState, Store } from '../app/store';
-import { hasFeature } from '../model/boat';
+import { hasFeature, isDinghy } from '../model/boat';
+import { createCapsizeLockedLine, lockWhileCapsized } from './capsizePanel';
 import { entryFor, panelEntries, type PanelEntry } from '../model/panelEntries';
 import { SCENE } from '../render3d/sceneConfig';
 import { el } from './dom';
@@ -261,7 +262,10 @@ export function createRopesTab(
     ' ',
     t('ropes.mode.easyShortList'),
   ]);
+  // M116: while the dinghy is over the sheet and kicker cannot be moved.
+  if (isDinghy()) lockWhileCapsized(store, strip);
   const easy = el('div', { class: 'ropes-easy', 'data-testid': 'ropes-easy' }, [
+    ...(isDinghy() ? [createCapsizeLockedLine(store)] : []),
     modeParagraph,
     strip,
     learnRealistic,

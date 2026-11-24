@@ -61,7 +61,7 @@ import {
   type LineCode,
   type MooringLine,
 } from '../model/mooringLines';
-import { initialDinghy, type DinghyState } from '../model/dinghy';
+import { initialDinghy, UPRIGHT, type DinghyState } from '../model/dinghy';
 import { pointToMap } from '../model/lowSpeed';
 import type { BoatState } from '../model/motion';
 import { isPlace, placeStart, type PlaceStart } from '../model/places';
@@ -368,12 +368,14 @@ function parseGennaker(
 
 /**
  * `sp` (`in` / `side` / `out`), `cb` (0-100) and `oh` (0-100), M114: the dinghy's seat, centreboard
- * and outhaul. Read only on the dinghy; anything else in them is the default.
+ * and outhaul; `cap` (`p` / `s`), M116: opens capsized, over, on that side. Read only on the
+ * dinghy; anything else in them is the default.
  */
 function parseDinghy(params: URLSearchParams): DinghyState | undefined {
   if (!isDinghy()) return undefined;
   const defaults = initialDinghy();
   const sp = params.get('sp');
+  const cap = params.get('cap');
   const percent = (key: string, fallback: number): number => {
     const raw = params.get(key);
     if (raw === null || !/^\d+$/.test(raw)) return fallback;
@@ -385,6 +387,8 @@ function parseDinghy(params: URLSearchParams): DinghyState | undefined {
     sit: sp === 'in' || sp === 'side' || sp === 'out' ? sp : defaults.sit,
     boardPct: percent('cb', defaults.boardPct),
     outhaulPct: percent('oh', defaults.outhaulPct),
+    capsize:
+      cap === 'p' || cap === 's' ? { phase: 'over', side: cap === 's' ? 1 : -1, t: 0 } : UPRIGHT,
   };
 }
 
@@ -398,6 +402,10 @@ function dinghyParams(state: AppState): [string, string][] {
     result.push(['cb', String(state.dinghy.boardPct)]);
   if (state.dinghy.outhaulPct !== defaults.outhaulPct)
     result.push(['oh', String(state.dinghy.outhaulPct)]);
+  // In every phase but upright (a link reopens over).
+  if (state.dinghy.capsize.phase !== 'upright') {
+    result.push(['cap', state.dinghy.capsize.side === 1 ? 's' : 'p']);
+  }
   return result;
 }
 

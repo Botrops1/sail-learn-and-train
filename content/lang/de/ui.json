@@ -1210,5 +1210,15 @@
   "dinghy.outhaul.haul": "Unterliekstrecker durchsetzen",
   "dinghy.outhaul.ease": "Unterliekstrecker fieren",
   "alert.windwardHeel": "Krängung zu Ihnen hin: weiter nach innen setzen",
-  "alert.overpowered.dinghy": "Starke Krängung: ausreiten oder die Großschot fieren"
+  "alert.overpowered.dinghy": "Starke Krängung: ausreiten oder die Großschot fieren",
+  "alert.capsized": "Gekentert! Schwimm zum Schwert und steig darauf",
+  "capsize.title": "Gekentert",
+  "capsize.righting": "Sie richtet sich auf…",
+  "capsize.swim": "Zum Schwert schwimmen",
+  "capsize.swimming": "Ums Heck schwimmen…",
+  "capsize.stand": "Auf das Schwert steigen",
+  "capsize.boardUp": "Das Schwert ist oben: erst nach unten drücken",
+  "capsize.boardDown": "Das Schwert nach unten drücken",
+  "capsize.hint": "Bleib beim Boot. Lass die Großschot los, bevor sie sich aufrichtet, und steig dann über die Seite ein.",
+  "capsize.locked": "Erst das Boot aufrichten"
 }

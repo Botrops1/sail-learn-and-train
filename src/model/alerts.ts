@@ -18,6 +18,7 @@ export const ALERT_KINDS = [
   'byTheLee',
   'overpowered',
   'windwardHeel',
+  'capsized',
   'roundUp',
   'tookWheel',
   'fendersOut',
@@ -47,6 +48,8 @@ export const ALERT_INFO: Readonly<Record<AlertKind, AlertKindInfo>> = {
   overpowered: { learnId: 'term_heel', severity: 'warning' },
   // M114: the dinghy heeling towards the sailor (his weight on the low side of the sail's push).
   windwardHeel: { learnId: 'term_heel', severity: 'warning' },
+  // M116: the dinghy goes over (M117 gives it its own entry, term_capsize).
+  capsized: { learnId: 'part_centreboard', severity: 'danger' },
   roundUp: { learnId: 'term_round_up', severity: 'danger' },
   tookWheel: { learnId: 'fit_autopilot_control', severity: 'info' },
   fendersOut: { learnId: 'fit_fender', severity: 'info' },
@@ -125,6 +128,7 @@ export function alertTag(entry: AlertEntry): AlertTag {
       return 'steering';
     case 'byTheLee':
     case 'roundUp':
+    case 'capsized':
     case 'anchorAlarm':
       return 'danger';
     case 'overpowered':
@@ -157,6 +161,8 @@ export interface AlertSource {
   rig: RigState;
   boat: BoatState;
   autopilotNoticeS: number;
+  /** M116: the dinghy's capsize; an alert fires when she starts to go over. */
+  dinghy?: { capsize: { phase: string } };
   harbour: HarbourState;
   sailDamage: Readonly<Record<WornSail, number>>;
   /** M46: the anchor; its alarm is an alert. */
@@ -211,6 +217,10 @@ function started(previous: AlertSource, next: AlertSource): AlertKind[] {
     next.boat.windwardHeelS > windwardAfterS
   ) {
     kinds.push('windwardHeel');
+  }
+  // M116: once, as `upright` turns `goingOver` (a link that opens over does not fire it).
+  if (previous.dinghy?.capsize.phase === 'upright' && next.dinghy?.capsize.phase === 'goingOver') {
+    kinds.push('capsized');
   }
   if (previous.boat.roundUpS <= 0 && next.boat.roundUpS > 0) kinds.push('roundUp');
   if (previous.autopilotNoticeS <= 0 && next.autopilotNoticeS > 0) kinds.push('tookWheel');

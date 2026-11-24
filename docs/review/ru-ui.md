@@ -1218,3 +1218,13 @@
 | dinghy.outhaul.ease | Ease the outhaul | Потравить оттяжку |
 | alert.windwardHeel | Heeling towards you: sit further in | Крен в вашу сторону: сядьте глубже |
 | alert.overpowered.dinghy | Heeling a lot: lean out or ease the mainsheet | Сильный крен: свесьтесь за борт или потравите гика-шкот |
+| alert.capsized | Capsized! Swim round to the centreboard and stand on it | Опрокинулись! Подплывите к шверту и встаньте на него |
+| capsize.title | Capsized | Опрокидывание |
+| capsize.righting | Coming up… | Лодка встаёт… |
+| capsize.swim | Swim round to the centreboard | Подплыть к шверту |
+| capsize.swimming | Swimming round the stern… | Плывёте вокруг кормы… |
+| capsize.stand | Stand on the centreboard | Встать на шверт |
+| capsize.boardUp | The centreboard is up: push it down first | Шверт поднят: сначала опустите его |
+| capsize.boardDown | Push the centreboard down | Опустить шверт |
+| capsize.hint | Stay with the boat. Let the mainsheet go before she comes up, then climb in over the side. | Держитесь за лодку. Отпустите грота-шкот, пока она не встала, потом залезайте через борт. |
+| capsize.locked | Right the boat first | Сначала поставьте лодку |

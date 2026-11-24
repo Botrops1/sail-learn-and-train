@@ -152,7 +152,10 @@ describe('M113: the Training dinghy as a boat', () => {
       expect(Number.isFinite(s.boat.speedMps)).toBe(true);
       expect(Number.isFinite(s.boat.heelDeg)).toBe(true);
       expect(Number.isFinite(s.rig.solution.thetaDeg)).toBe(true);
-      expect(Math.abs(s.boat.heelDeg)).toBeLessThanOrEqual(50.001);
+      // M116: past 48 degrees she goes over; until then the heel stays within the clamp.
+      if (s.dinghy.capsize.phase === 'upright') {
+        expect(Math.abs(s.boat.heelDeg)).toBeLessThanOrEqual(50.001);
+      }
     }
   });
 
@@ -311,7 +314,13 @@ describe('M113: the dinghy in the link, the modes and the sections', () => {
   it('Reset on the dinghy keeps the dinghy defaults and the hand steering', () => {
     useDinghy();
     const state = reduce(initialState(), { type: 'reset' });
-    expect(state.dinghy).toEqual({ sit: 'in', boardPct: 100, outhaulPct: 50, sailorSide: 1 });
+    expect(state.dinghy).toEqual({
+      sit: 'in',
+      boardPct: 100,
+      outhaulPct: 50,
+      sailorSide: 1,
+      capsize: { phase: 'upright', side: 1, t: 0 },
+    });
     expect(state.autopilot.mode).toBe('off');
   });
 });

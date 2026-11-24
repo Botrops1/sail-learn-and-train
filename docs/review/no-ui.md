@@ -1218,3 +1218,13 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | dinghy.outhaul.ease | Ease the outhaul | Fire utstrekkeren |
 | alert.windwardHeel | Heeling towards you: sit further in | Krenger mot deg: sitt lenger inn |
 | alert.overpowered.dinghy | Heeling a lot: lean out or ease the mainsheet | Kraftig krenging: len deg ut eller fire storskjøtet |
+| alert.capsized | Capsized! Swim round to the centreboard and stand on it | Kantret! Svøm til slepekjølen og stå på den |
+| capsize.title | Capsized | Kantret |
+| capsize.righting | Coming up… | Hun reiser seg… |
+| capsize.swim | Swim round to the centreboard | Svøm til slepekjølen |
+| capsize.swimming | Swimming round the stern… | Svømmer rundt akterenden… |
+| capsize.stand | Stand on the centreboard | Stå på slepekjølen |
+| capsize.boardUp | The centreboard is up: push it down first | Slepekjølen er oppe: trykk den ned først |
+| capsize.boardDown | Push the centreboard down | Trykk slepekjølen ned |
+| capsize.hint | Stay with the boat. Let the mainsheet go before she comes up, then climb in over the side. | Bli ved båten. Slipp storskjøtet før hun reiser seg, og klatre så inn over siden. |
+| capsize.locked | Right the boat first | Rett opp båten først |

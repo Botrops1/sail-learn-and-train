@@ -9,6 +9,7 @@ import { smoothstep } from '../model/angles';
 import { isDinghy } from '../model/boat';
 import {
   captainPlacement,
+  capsizeSailor,
   crossingSailor,
   sailorPlacement,
   type CaptainPlacement,
@@ -152,6 +153,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const initial = store.getState();
   const holder = new THREE.Group();
   holder.name = 'boatHolder';
+  // M116: the capsized dinghy's sailor is drawn in this group: the boat's frame without the roll,
+  // so he floats upright while the hull lies over.
+  const levelHolder = new THREE.Group();
+  levelHolder.name = 'boatHolderLevel';
+  let captainLevel = false;
   let detail: Detail = initial.settings.detail;
   let boatModel = buildBoat(initial.controls, initial.rig, detail);
   let fendersOut = initial.harbour.fendersOut;
@@ -207,7 +213,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
   const anchorChain = buildAnchorChain(detail);
   world.group.add(anchorChain.object);
   const wake = buildWake();
-  scene.add(holder, world.group, wake.object, streaks.object);
+  scene.add(holder, levelHolder, world.group, wake.object, streaks.object);
 
   const rig = createCameraRig(renderer.domElement);
   const camera = rig.camera;
@@ -605,6 +611,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       dispose(boatModel.root);
       boatModel = buildBoat(state.controls, state.rig, detail);
       captainAtMs = null;
+      captainLevel = false;
       boatModel.setFendersOut(state.harbour.fendersOut);
       boatModel.setThrusters(state.thrusters);
       boatModel.setAnchorStowed(anchorStowed);
@@ -869,10 +876,22 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
             side: shownSide,
           };
         }
-        const key = `${sailor.placement.hip.join(',')}|${sailor.side}`;
+      }
+      // M116: in a capsize the sailor is in the water or on the board, in the unrolled frame.
+      const swimmer = isDinghy() ? capsizeSailor(state.dinghy.capsize) : null;
+      if (captainLevel !== (swimmer !== null)) {
+        captainLevel = swimmer !== null;
+        boatModel.setCaptainFrame(captainLevel ? levelHolder : null);
+      }
+      // The sheet and the tiller extension keep to his seat; he himself and the Sailor view's eye follow the swimmer.
+      const drawn: SailorDrawn | null = swimmer
+        ? { placement: swimmer, side: state.dinghy.capsize.side }
+        : sailor;
+      if (drawn) {
+        const key = `${drawn.placement.hip.join(',')}|${drawn.side}`;
         if (key !== sailorEyeKey) {
           sailorEyeKey = key;
-          rig.setSailorEye({ hip: sailor.placement.hip, side: sailor.side });
+          rig.setSailorEye({ hip: drawn.placement.hip, side: drawn.side });
         }
       }
       boatModel.update(
@@ -902,15 +921,15 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
       );
       // M111: the captain stands where the mode, the station and the wheel put him; in the Helm
       // view of his own wheel the camera is at his eyes, so he is not drawn.
-      const placement: CaptainPlacement = sailor
-        ? sailor.placement
+      const placement: CaptainPlacement = drawn
+        ? drawn.placement
         : captainPlacement({
             ropesMode: state.settings.ropesMode,
             realistic: state.realistic,
             helmWheel: state.camera.helm.wheel,
           });
       // On the dinghy the camera of the Sailor view sits at his eyes, so he is not drawn there.
-      const eye = sailor ? null : helmPose(state.camera.helm).position;
+      const eye = drawn ? null : helmPose(state.camera.helm).position;
       const captainHidden =
         state.camera.preset === 'helm' &&
         (eye === null ||
@@ -933,6 +952,8 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         0,
         boatState.waves.pitchDeg * DEG,
       );
+      levelHolder.position.y = boatState.waves.heaveM;
+      levelHolder.rotation.set(0, 0, boatState.waves.pitchDeg * DEG);
       // M62/M63: the helm panels: instruments hide when the camera is far, the lever and joysticks
       // follow the state, the faces redraw when near and changed (the last frame's matrices do).
       panelEye.copy(camera.position);

@@ -172,6 +172,42 @@ function sit(t: number, hike: boolean): Partial<JointAngles> {
   };
 }
 
+/** M116: upright in the water to the chest, arms forward, treading water a little. */
+function swim(t: number): Partial<JointAngles> {
+  const k = Math.sin(t * 2.2);
+  return {
+    lSx: -1.2 + k * 0.1,
+    rSx: -1.2 - k * 0.1,
+    lEx: -0.3,
+    rEx: -0.3,
+    torsoX: 0.05,
+    headX: -0.1,
+    headY: 0,
+    brow: 0.4,
+    rootY: k * 0.004,
+  };
+}
+
+/** M116: standing on the centreboard, knees a little bent, both hands forward on the side deck, looking at it. */
+function standBoard(t: number): Partial<JointAngles> {
+  return {
+    lSx: -1.15,
+    rSx: -1.15,
+    lEx: -0.15,
+    rEx: -0.15,
+    lHx: -0.2,
+    rHx: -0.2,
+    lKx: 0.3,
+    rKx: 0.3,
+    lAx: -0.1,
+    rAx: -0.1,
+    torsoX: 0.02,
+    headX: 0.1,
+    headY: Math.sin(t * 0.5) * 0.05,
+    brow: 0.3,
+  };
+}
+
 /** The same pose seen in a mirror: left and right limbs swap, the turns about the up axis flip. */
 export function mirrorJoints(j: JointAngles): JointAngles {
   return {
@@ -216,6 +252,10 @@ export function figureJoints(
       return { ...REST_JOINTS, ...sit(t, false) };
     case 'hike':
       return { ...REST_JOINTS, ...sit(t, true) };
+    case 'swim':
+      return { ...REST_JOINTS, ...swim(t) };
+    case 'standBoard':
+      return { ...REST_JOINTS, ...standBoard(t) };
     case 'walk':
       return { ...REST_JOINTS, ...walk((2 * Math.PI * walkedM) / data.people.strideM) };
   }

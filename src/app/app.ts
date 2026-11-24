@@ -27,6 +27,7 @@ import { createSheet } from '../ui/sheet';
 import { createAlertCentre } from '../ui/alertCentre';
 import { createSoundChip } from '../ui/soundChip';
 import { createSoundEngine } from '../audio/engine';
+import { createCapsizeCard } from '../ui/capsizePanel';
 import { createStepCard } from '../ui/stepCard';
 import { createExerciseBar } from '../ui/exerciseBar';
 import { twaSignedDeg } from '../model/exercises';
@@ -148,6 +149,8 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   topRight.append(topChips);
   top.append(topRight);
   createTimeBar(topRight, layout.view, store, layout);
+  // M116: the capsize card sits above the step card.
+  createCapsizeCard(top, store);
   createStepCard(top, store, layout, () => panel.showSection('exercises'));
   // The step bar over the bottom of the view; `reframe` is assigned further down (a no-op without 3D).
   let reframe = () => {};

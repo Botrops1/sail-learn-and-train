@@ -2,7 +2,14 @@ import { apparentWind } from './apparentWind';
 import { DEG, interpTable, wrap180, wrap360 } from './angles';
 import { boat as hanse508, type BoatData } from './boat';
 import { controlSpec, type Controls } from './controls';
-import { boardLift, crewMomentNm, outhaulPower, type Sit } from './dinghy';
+import {
+  boardLift,
+  capsizeHeelDeg,
+  crewMomentNm,
+  outhaulPower,
+  type CapsizeState,
+  type Sit,
+} from './dinghy';
 import { rightingMomentNm, rollDamping, rollInertia } from './heel';
 import { boatMassKg, hullResistance, type Resistance } from './hullResistance';
 import {
@@ -106,7 +113,14 @@ export interface MotionInputs {
    * M114, the Training dinghy only (absent on the Hanse: today's behaviour): the sailor's seat and
    * side, the centreboard, and the share of the mainsail's force the outhaul leaves.
    */
-  dinghy?: { sit: Sit; side: 1 | -1; boardPct: number; mainPower: number };
+  dinghy?: {
+    sit: Sit;
+    side: 1 | -1;
+    boardPct: number;
+    mainPower: number;
+    /** M116: while not upright she lies at the capsize heel, gives no force and drifts (10.3). */
+    capsize: CapsizeState;
+  };
 }
 
 export interface MotionReport {
@@ -203,6 +217,18 @@ export function stepBoat(
   }
   const dinghy = inputs.dinghy;
   const windwardAlertDeg = data.dinghy?.windwardHeelAlertDeg ?? Infinity;
+  // M116: a capsized dinghy lies at the phase's heel (Held still and Pause too), sails and steering do nothing.
+  const capsizeHeel = dinghy ? capsizeHeelDeg(dinghy.capsize, data) : null;
+  const capsizeData = capsizeHeel === null ? undefined : data.dinghy?.capsize;
+  if (capsizeHeel !== null) {
+    heelDeg = capsizeHeel;
+    heelRateDegS = 0;
+    swayMps = 0;
+    yawRateDegS = 0;
+    roundUpS = 0;
+    overpoweredS = 0;
+    windwardHeelS = 0;
+  }
   let report: MotionReport | undefined;
   const hits = new Map<string, ContactHit>();
   for (let i = 0; i < count; i += 1) {
@@ -231,7 +257,7 @@ export function stepBoat(
       data,
       rocking.sideMps + swayMps,
     );
-    const forces = sailForces(
+    const sailed = sailForces(
       inputs.rig,
       inputs.controls,
       wind.awsKn,
@@ -241,6 +267,9 @@ export function stepBoat(
       inputs.damage,
       dinghy?.mainPower,
     );
+    const forces = capsizeData
+      ? { ...sailed, driveN: 0, sideN: 0, heelMomentNm: 0, windageN: 0 }
+      : sailed;
     const resistance = hullResistance(
       speedMps,
       forces.sideN,
@@ -278,6 +307,17 @@ export function stepBoat(
     if (held) {
       report = makeReport(1, inputs.rudderDeg, false);
       break;
+    }
+    if (capsizeData) {
+      // Over: no sail, steering or engine force; her way dies away and she drifts downwind (10.3).
+      speedMps *= Math.exp(-h / capsizeData.stopTimeS);
+      const psiNow = headingDeg * DEG;
+      const away = (inputs.windDirDeg + 180) * DEG;
+      const drift = inputs.twsKn > 0 ? capsizeData.driftMps : 0;
+      eastM += (speedMps * Math.sin(psiNow) + drift * Math.sin(away)) * h;
+      northM += (speedMps * Math.cos(psiNow) + drift * Math.cos(away)) * h;
+      report = makeReport(1, 0, false);
+      continue;
     }
 
     const push = forces.driveN + forces.windageN + inputs.engineThrustN + ext.surgeN;
@@ -384,9 +424,11 @@ export function stepBoat(
   // Held still: the boat is returned as it is (the store has already zeroed its speed), with
   // the wave motion.
   const next: BoatState = held
-    ? waves === boatState.waves
-      ? boatState
-      : { ...boatState, waves }
+    ? capsizeHeel === null
+      ? waves === boatState.waves
+        ? boatState
+        : { ...boatState, waves }
+      : { ...boatState, heelDeg, heelRateDegS, waves }
     : {
         ...boatState,
         headingDeg,

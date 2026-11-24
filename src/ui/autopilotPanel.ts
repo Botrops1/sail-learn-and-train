@@ -1,6 +1,7 @@
 import type { AppState, Store } from '../app/store';
 import { wrap180 } from '../model/angles';
-import { boat, hasFeature } from '../model/boat';
+import { boat, hasFeature, isDinghy } from '../model/boat';
+import { createCapsizeLockedLine, lockWhileCapsized } from './capsizePanel';
 import { el } from './dom';
 import { t } from './i18n';
 import { controlView, createControl } from './ropeControls';
@@ -24,7 +25,12 @@ export function createSteeringPanel(store: Store): HTMLElement[] {
   store.subscribe(wheel.refresh);
   wheel.refresh(store.getState());
   // A boat with no autopilot (the dinghy, M113) keeps the steering control only.
-  if (!hasFeature('autopilot')) return [wheel.element];
+  if (!hasFeature('autopilot')) {
+    // M116: while the dinghy is over the tiller does nothing.
+    if (!isDinghy()) return [wheel.element];
+    lockWhileCapsized(store, wheel.element);
+    return [createCapsizeLockedLine(store), wheel.element];
+  }
   return [wheel.element, createAutopilotPanel(store, { heading: false })];
 }
 
