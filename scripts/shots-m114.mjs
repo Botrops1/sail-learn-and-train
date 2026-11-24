@@ -61,10 +61,14 @@ export async function liveM114Checks({ openPage, viewports, problems }) {
     for (let i = 0; i < 30 && !(worst <= -30 && alert); i += 1) {
       await page.waitForTimeout(500);
       worst = Math.min(worst, (await read(page)).heelDeg);
-      alert = alert || (await page.getByTestId('overpowered-label').isVisible());
+      // M116: past 48 degrees she goes over: the capsize card shows instead of (or after) the warning.
+      alert =
+        alert ||
+        (await page.getByTestId('overpowered-label').isVisible()) ||
+        (await page.getByTestId('capsize-card').isVisible());
     }
     check(
-      'Sit in: she heels far over and the "lean out" warning shows',
+      'Sit in: she heels far over and the "lean out" warning or the capsize card shows',
       worst <= -30 && alert,
       JSON.stringify({ worst, alert }),
     );

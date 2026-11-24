@@ -457,3 +457,13 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Sailor view | eye 0.75 m above the hip, looking 10° down and 15° towards the side he is not on (`dinghy.sailorEye`) | |
 | The sailor in the middle for a tack (issue #283) | out on his side beyond 25° of apparent wind, in the middle within 10° (`dinghy.crew.tack`), smooth between | a close-hauled dinghy sails at about 30°, so steady sailing is untouched; without it his side-deck weight tipped the luffing boat over to windward and she could not turn through the wind. **Tunable** |
 | Turning (issue #283) | `physics.steering.turnLengthM` 2.5 m (was 4 m) | at 30° of rudder the turning circle is about 9 m across; with 4 m she stalled head to wind before the bow was through it. **Tunable** |
+
+### Dinghy rows added by M116 (all assumptions; `dinghy.capsize`)
+
+| Value | Number | Note |
+|---|---|---|
+| Goes over at | 48° of heel either way, then lies at 85° | the heel clamp is 50°, so a heel that reaches the clamp always goes over; either way: to leeward from too much wind, to windward from sitting out in a lull |
+| Going over, swimming round, coming up | 1.5 s, 4 s, 3 s | the swim goes round the stern to the board's side |
+| Centreboard needed to stand on it | at least 50 % down | standing on a board that is up does nothing (Capsizing: a dinghy is righted by standing or pulling down on the centreboard) |
+| Over | no sail, steering or engine force; her way dies away with a time constant of 2 s; she drifts downwind at 0.25 m/s | she lies with the mast and sail on the water |
+| Sailor's hip in a capsize (x, y, z, in the heading frame, z times the side she lies on) | in the water (−1.0, −0.45, 1.1) m; astern (−2.9, −0.45, 0); at the board (−0.15, −0.45, −1.3); standing on it (−0.15, 1.05, −1.0), feet (−0.15, 0.22, −0.7) | chosen to look right; he leans back 25° while standing |
