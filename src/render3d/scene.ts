@@ -828,6 +828,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           travellerCarPct: state.travellerCarPct,
           boomYawDeg:
             state.picture === 'traveller' ? travellerPicture(state.travellerCarPct).boomDeg : null,
+          boardPct: state.dinghy.boardPct,
         },
       );
       // M111: the captain stands where the mode, the station and the wheel put him; in the Helm

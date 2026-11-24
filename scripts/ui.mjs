@@ -10,6 +10,7 @@ const TAB_OF_JS = {
   mode: 'mode',
   exercises: 'controls',
   ropes: 'controls',
+  dinghy: 'controls',
   helm: 'controls',
   sails: 'controls',
   autopilot: 'controls',

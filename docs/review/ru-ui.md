@@ -1197,3 +1197,21 @@
 | picture.close | Close picture | Закрыть картинку |
 | picture.traveller | Picture: a mainsheet traveller, not on this boat. | Картинка: тревеллер гика-шкота, на этой яхте его нет. |
 | picture.travellerCar | Car | Каретка |
+| section.dinghy | Balance | Баланс |
+| dinghy.sit.label | Where you sit | Где вы сидите |
+| dinghy.sit.in | Sit in | Сидеть внутри |
+| dinghy.sit.side | Sit on the side | Сидеть на борту |
+| dinghy.sit.out | Lean out | Свеситься за борт |
+| dinghy.sit.hint | Your weight holds the boat up. Lean out when she heels a lot; sit in when the wind is light. | Ваш вес удерживает лодку. Свешивайтесь за борт, когда крен большой; сидите внутри, когда ветер слабый. |
+| dinghy.board.label | Centreboard | Шверт |
+| dinghy.board.value | Down {pct} % | Опущен на {pct} % |
+| dinghy.board.hint | Down when sailing towards the wind; half up on a reach; up when the wind is behind. | Опущен — при движении против ветра; наполовину — в галфвинд; поднят — при попутном ветре. |
+| dinghy.board.raise | Raise the centreboard | Поднять шверт |
+| dinghy.board.lower | Lower the centreboard | Опустить шверт |
+| dinghy.outhaul.label | Outhaul | Оттяжка нижней шкаторины |
+| dinghy.outhaul.value | Eased {pct} % | Потравлена на {pct} % |
+| dinghy.outhaul.hint | Pull it tight in a strong wind to flatten the sail; ease it in light wind for more power. | Выбирайте её при сильном ветре, чтобы парус стал плоским; травите при слабом ветре — больше силы. |
+| dinghy.outhaul.haul | Pull the outhaul tight | Выбрать оттяжку |
+| dinghy.outhaul.ease | Ease the outhaul | Потравить оттяжку |
+| alert.windwardHeel | Heeling towards you: sit further in | Крен в вашу сторону: сядьте глубже |
+| alert.overpowered.dinghy | Heeling a lot: lean out or ease the mainsheet | Сильный крен: свесьтесь за борт или потравите гика-шкот |

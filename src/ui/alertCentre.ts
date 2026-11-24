@@ -9,6 +9,7 @@ import {
   type AlertSeverity,
   type AlertTag,
 } from '../model/alerts';
+import { isDinghy } from '../model/boat';
 import { STATION_IDS, stationWinch } from '../model/realistic';
 import { damageText } from './damageReport';
 import { el } from './dom';
@@ -29,6 +30,7 @@ const ALERT_TEXT: Readonly<
   tack: 'alert.tack',
   byTheLee: 'alert.byTheLee',
   overpowered: 'alert.overpowered',
+  windwardHeel: 'alert.windwardHeel',
   roundUp: 'alert.roundUp',
   tookWheel: 'autopilot.tookWheel',
   fendersOut: 'harbour.fenders.hint',
@@ -59,6 +61,8 @@ export function alertText(entry: AlertEntry): string {
     }
     case 'clutchOnRunning':
       return t('alert.clutchOnRunning');
+    case 'overpowered':
+      return t(isDinghy() ? 'alert.overpowered.dinghy' : 'alert.overpowered');
     default:
       return t(ALERT_TEXT[entry.kind]);
   }

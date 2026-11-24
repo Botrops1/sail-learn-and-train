@@ -173,6 +173,7 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
         const s = store.getState();
         return {
           boatId,
+          dinghy: s.dinghy,
           twsKn: s.wind.twsKn,
           twaDeg: twaSignedDeg(s),
           speedKn: mpsToKn(s.boat.speedMps),

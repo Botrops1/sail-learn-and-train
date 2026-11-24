@@ -1197,3 +1197,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | picture.close | Close picture | Bild schließen |
 | picture.traveller | Picture: a mainsheet traveller, not on this boat. | Bild: ein Großschot-Traveller, nicht an diesem Boot. |
 | picture.travellerCar | Car | Wagen |
+| section.dinghy | Balance | Balance |
+| dinghy.sit.label | Where you sit | Wo Sie sitzen |
+| dinghy.sit.in | Sit in | Innen sitzen |
+| dinghy.sit.side | Sit on the side | Auf dem Seitendeck sitzen |
+| dinghy.sit.out | Lean out | Ausreiten |
+| dinghy.sit.hint | Your weight holds the boat up. Lean out when she heels a lot; sit in when the wind is light. | Ihr Gewicht hält das Boot aufrecht. Reiten Sie aus, wenn es stark krängt; sitzen Sie innen, wenn der Wind schwach ist. |
+| dinghy.board.label | Centreboard | Schwert |
+| dinghy.board.value | Down {pct} % | Unten {pct} % |
+| dinghy.board.hint | Down when sailing towards the wind; half up on a reach; up when the wind is behind. | Unten beim Segeln gegen den Wind; halb hoch auf halbem Wind; oben bei Wind von hinten. |
+| dinghy.board.raise | Raise the centreboard | Schwert hochziehen |
+| dinghy.board.lower | Lower the centreboard | Schwert absenken |
+| dinghy.outhaul.label | Outhaul | Unterliekstrecker |
+| dinghy.outhaul.value | Eased {pct} % | Gefiert {pct} % |
+| dinghy.outhaul.hint | Pull it tight in a strong wind to flatten the sail; ease it in light wind for more power. | Bei starkem Wind durchsetzen, um das Segel flach zu machen; bei leichtem Wind fieren für mehr Kraft. |
+| dinghy.outhaul.haul | Pull the outhaul tight | Unterliekstrecker durchsetzen |
+| dinghy.outhaul.ease | Ease the outhaul | Unterliekstrecker fieren |
+| alert.windwardHeel | Heeling towards you: sit further in | Krängung zu Ihnen hin: weiter nach innen setzen |
+| alert.overpowered.dinghy | Heeling a lot: lean out or ease the mainsheet | Starke Krängung: ausreiten oder die Großschot fieren |

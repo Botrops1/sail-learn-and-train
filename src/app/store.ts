@@ -1,4 +1,4 @@
-import { boat as boatData, hasFeature } from '../model/boat';
+import { boat as boatData, hasFeature, isDinghy } from '../model/boat';
 import { keepsRopesMode, type AppMode } from './appMode';
 import {
   applyStepSpeed,
@@ -125,7 +125,14 @@ import {
   type WaveTrain,
 } from '../model/waves';
 import { rigMotion } from '../model/waveMotion';
-import { initialDinghy, type DinghyState } from '../model/dinghy';
+import {
+  initialDinghy,
+  nextSailorSide,
+  outhaulPower,
+  stepDinghy,
+  type DinghyCommand,
+  type DinghyState,
+} from '../model/dinghy';
 import { trueWind, windMean, type WindKey } from '../model/localWinds';
 import {
   initialWindMode,
@@ -300,6 +307,8 @@ export type Action =
   | { type: 'setTravellerCar'; pct: number }
   /** Replace the whole state (a practice scenario opened from its link, M4c). */
   | { type: 'load'; state: AppState }
+  /** M114: where the dinghy's sailor sits, the centreboard and the outhaul (ignored on the Hanse). */
+  | { type: 'dinghy'; command: DinghyCommand }
   /** M66: start or stop the exercise, or choose its ropes mode (in setup). */
   | { type: 'exercise'; command: ExerciseCommand }
   /**
@@ -358,6 +367,7 @@ function boatFor(
   engine: EngineState = initialEngine(),
   trains: readonly WaveTrain[] = [],
   gennaker: GennakerSetup = STOWED,
+  dinghy?: DinghyState,
 ): BoatState {
   const mode = overrides.mode ?? 'sailing';
   const headingDeg = overrides.headingDeg ?? 0;
@@ -379,6 +389,10 @@ function boatFor(
     trains,
     gennaker,
     ...(wind ? { windDirDeg: wind.dirDeg, twsKn: wind.twsKn } : {}),
+    // M114: the dinghy opens at the heel her seat, board and outhaul give (the sailor on the windward side).
+    ...(dinghy
+      ? { dinghy: { sit: dinghy.sit, boardPct: dinghy.boardPct, outhaulPct: dinghy.outhaulPct } }
+      : {}),
   });
   const speedMps = overrides.speedMps ?? steady.speedMps;
   const heelDeg = overrides.heelDeg ?? steady.heelDeg;
@@ -544,19 +558,21 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     engine,
     waveTrains(sea),
     overrides.gennaker,
+    isDinghy() ? (overrides.dinghy ?? initialDinghy()) : undefined,
   );
   const settings = { ...DEFAULT_SETTINGS, ...overrides.settings };
+  const rig = initialRig(
+    controls,
+    undefined,
+    overrides.history,
+    motionOf(boat),
+    patterned ? wind : undefined,
+    overrides.gennaker,
+  );
   return withTimeRule({
     controls,
     // A link opens with the rig already settled for the apparent wind: no swing on load.
-    rig: initialRig(
-      controls,
-      undefined,
-      overrides.history,
-      motionOf(boat),
-      patterned ? wind : undefined,
-      overrides.gennaker,
-    ),
+    rig,
     camera: {
       ...DEFAULT_CAMERA,
       ...overrides.camera,
@@ -596,7 +612,13 @@ export function initialState(overrides: InitialOverrides = {}): AppState {
     anchor: ANCHOR_STOWED,
     alerts: EMPTY_ALERTS,
     exercise: overrides.exercise ?? null,
-    dinghy: overrides.dinghy ?? initialDinghy(),
+    // M114: the sailor sits opposite the boom of the opening rig (only the dinghy reads it).
+    dinghy: isDinghy()
+      ? {
+          ...(overrides.dinghy ?? initialDinghy(boatData, rig)),
+          sailorSide: nextSailorSide(rig.solution.side),
+        }
+      : (overrides.dinghy ?? initialDinghy()),
   });
 }
 
@@ -918,6 +940,7 @@ function reduceAction(state: AppState, action: Action): AppState {
               heelRateDegS: 0,
               roundUpS: 0,
               overpoweredS: 0,
+              windwardHeelS: 0,
             }
           : { ...state.boat, mode: 'sailing' };
       // A new run starts a new track; held still keeps the one drawn so far.
@@ -1208,6 +1231,21 @@ function reduceAction(state: AppState, action: Action): AppState {
         return state;
       }
       return state.paused === action.paused ? state : { ...state, paused: action.paused };
+    case 'dinghy': {
+      if (!isDinghy()) return state;
+      const c = action.command;
+      const d = state.dinghy;
+      const pct = (value: number) => Math.min(100, Math.max(0, Math.round(value)));
+      const next: DinghyState =
+        c.kind === 'sit'
+          ? { ...d, sit: c.sit }
+          : c.kind === 'board'
+            ? { ...d, boardPct: pct(c.pct) }
+            : { ...d, outhaulPct: pct(c.pct) };
+      return next.sit === d.sit && next.boardPct === d.boardPct && next.outhaulPct === d.outhaulPct
+        ? state
+        : { ...state, dinghy: next };
+    }
     case 'load':
       // A link never changes the language of the page that is open (M23: changing it reloads).
       return {
@@ -1290,6 +1328,8 @@ function reduceAction(state: AppState, action: Action): AppState {
         damage: state.sailDamage,
         gennaker,
       });
+      // M114: the sailor takes the side opposite the boom the rig just settled on (Held still too).
+      const dinghy = isDinghy() ? stepDinghy(state.dinghy, rig) : state.dinghy;
       const moving = stepBoat(
         state.boat,
         {
@@ -1301,6 +1341,14 @@ function reduceAction(state: AppState, action: Action): AppState {
           engineThrustN: engineThrustN(engine),
           damage: state.sailDamage,
           trains,
+          dinghy: isDinghy()
+            ? {
+                sit: dinghy.sit,
+                side: dinghy.sailorSide,
+                boardPct: dinghy.boardPct,
+                mainPower: outhaulPower(dinghy.outhaulPct),
+              }
+            : undefined,
           rudderLimitDeg:
             autopilot.mode === 'off' ? undefined : boatData.physics.autopilot.maxRudderDeg,
           // Open-water sailing does no extra work: the hook is built only while a thruster runs,
@@ -1366,6 +1414,7 @@ function reduceAction(state: AppState, action: Action): AppState {
         harbour,
         lines,
         anchor,
+        dinghy,
       };
       // The windlass lifted the anchor off the bottom, the last line was let go or Sailing was
       // chosen with nothing holding her: the time-lapse ends (M95).

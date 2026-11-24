@@ -107,6 +107,7 @@ export interface ExerciseMistake {
 /** The panel sections an exercise may keep (the Mode, Exercises and Settings sections always stay). */
 export type ExerciseSection =
   | 'ropes'
+  | 'dinghy'
   | 'helm'
   | 'sails'
   | 'autopilot'

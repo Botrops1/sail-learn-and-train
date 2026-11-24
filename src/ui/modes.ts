@@ -1,6 +1,6 @@
 import type { AppMode } from '../app/appMode';
 import type { AppState } from '../app/store';
-import { hasFeature } from '../model/boat';
+import { hasFeature, isDinghy } from '../model/boat';
 import { exerciseDef } from '../model/exercises';
 import type { StringKey } from './i18n';
 import type { Viewport } from './layout';
@@ -16,6 +16,7 @@ export const SECTION_IDS = [
   'mode',
   'exercises',
   'ropes',
+  'dinghy',
   'helm',
   'sails',
   'autopilot',
@@ -47,6 +48,7 @@ export const TAB_OF: Readonly<Record<SectionId, PanelTab>> = {
   mode: 'mode',
   exercises: 'controls',
   ropes: 'controls',
+  dinghy: 'controls',
   helm: 'controls',
   sails: 'controls',
   autopilot: 'controls',
@@ -65,6 +67,7 @@ export const SECTION_TITLES: Record<SectionId, StringKey> = {
   mode: 'mode.label',
   exercises: 'exercise.label',
   ropes: 'tab.ropes',
+  dinghy: 'section.dinghy',
   helm: 'real.station.helm',
   sails: 'trim.label',
   autopilot: 'steering.label',
@@ -91,6 +94,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
     order: [
       'mode',
       'ropes',
+      'dinghy',
       'helm',
       'sails',
       'autopilot',
@@ -109,6 +113,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
     order: [
       'mode',
       'ropes',
+      'dinghy',
       'helm',
       'sails',
       'conditions',
@@ -128,6 +133,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'mode',
       'learn',
       'ropes',
+      'dinghy',
       'helm',
       'sails',
       'autopilot',
@@ -153,6 +159,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'conditions',
       'sails',
       'ropes',
+      'dinghy',
       'autopilot',
       'learn',
       'exercises',
@@ -164,6 +171,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
       'mode',
       'exercises',
       'ropes',
+      'dinghy',
       'helm',
       'sails',
       'autopilot',
@@ -208,6 +216,8 @@ export function sectionAvailable(
     case 'place':
     case 'harbour':
       return hasFeature('harbour');
+    case 'dinghy':
+      return isDinghy();
     case 'helm':
       return state.settings.ropesMode === 'realistic' && hasFeature('winches');
     case 'exercises':

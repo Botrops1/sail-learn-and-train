@@ -17,6 +17,7 @@ export const ALERT_KINDS = [
   'tack',
   'byTheLee',
   'overpowered',
+  'windwardHeel',
   'roundUp',
   'tookWheel',
   'fendersOut',
@@ -44,6 +45,8 @@ export const ALERT_INFO: Readonly<Record<AlertKind, AlertKindInfo>> = {
   tack: { learnId: 'term_tacking', severity: 'info' },
   byTheLee: { learnId: 'term_gybe', severity: 'warning' },
   overpowered: { learnId: 'term_heel', severity: 'warning' },
+  // M114: the dinghy heeling towards the sailor (his weight on the low side of the sail's push).
+  windwardHeel: { learnId: 'term_heel', severity: 'warning' },
   roundUp: { learnId: 'term_round_up', severity: 'danger' },
   tookWheel: { learnId: 'fit_autopilot_control', severity: 'info' },
   fendersOut: { learnId: 'fit_fender', severity: 'info' },
@@ -74,7 +77,7 @@ export function wornSail(damage: Readonly<Record<WornSail, number>>): WornSail |
 }
 
 /** Warnings that can come and go every second: written again only after `repeatGapS`. */
-const FLICKERING: readonly AlertKind[] = ['byTheLee', 'overpowered', 'fendersIn'];
+const FLICKERING: readonly AlertKind[] = ['byTheLee', 'overpowered', 'windwardHeel', 'fendersIn'];
 /** M55: the rope and winch warnings of Realistic mode: written again only after `ropeRepeatGapS`, per kind and rope or winch. */
 const ROPE_REPEATING: readonly AlertKind[] = ['ropeSlipping', 'winchCutOut', 'clutchOnRunning'];
 
@@ -125,6 +128,7 @@ export function alertTag(entry: AlertEntry): AlertTag {
     case 'anchorAlarm':
       return 'danger';
     case 'overpowered':
+    case 'windwardHeel':
     case 'sailWorn':
       return 'sail';
     case 'fendersOut':
@@ -198,6 +202,15 @@ function started(previous: AlertSource, next: AlertSource): AlertKind[] {
     next.boat.overpoweredS > overpoweredAfterS
   ) {
     kinds.push('overpowered');
+  }
+  // M114: the dinghy only (the Hanse's `windwardHeelS` stays 0); read at call time.
+  const windwardAfterS = boat.dinghy?.windwardHeelAfterS;
+  if (
+    windwardAfterS !== undefined &&
+    previous.boat.windwardHeelS <= windwardAfterS &&
+    next.boat.windwardHeelS > windwardAfterS
+  ) {
+    kinds.push('windwardHeel');
   }
   if (previous.boat.roundUpS <= 0 && next.boat.roundUpS > 0) kinds.push('roundUp');
   if (previous.autopilotNoticeS <= 0 && next.autopilotNoticeS > 0) kinds.push('tookWheel');

@@ -2,6 +2,7 @@ import { apparentWind } from './apparentWind';
 import { DEG, interpTable, wrap180, wrap360 } from './angles';
 import { boat as hanse508, type BoatData } from './boat';
 import { controlSpec, type Controls } from './controls';
+import { boardLift, crewMomentNm, outhaulPower, type Sit } from './dinghy';
 import { rightingMomentNm, rollDamping, rollInertia } from './heel';
 import { boatMassKg, hullResistance, type Resistance } from './hullResistance';
 import {
@@ -50,6 +51,8 @@ export interface BoatState {
   roundUpS: number;
   /** Seconds she has been heeled more than `heel.overpoweredHeelDeg` (M8). */
   overpoweredS: number;
+  /** M114, dinghy only: seconds her heel has been towards the sailor by more than `dinghy.windwardHeelAlertDeg`. */
+  windwardHeelS: number;
   /** Metres east and north of where the boat started. */
   eastM: number;
   northM: number;
@@ -68,6 +71,7 @@ export function initialBoat(overrides: Partial<BoatState> = {}): BoatState {
     heelRateDegS: 0,
     roundUpS: 0,
     overpoweredS: 0,
+    windwardHeelS: 0,
     eastM: 0,
     northM: 0,
     waves: initialWaveMotion(),
@@ -98,6 +102,11 @@ export interface MotionInputs {
    * start of every substep with the boat as it stands then (M40).
    */
   external?: (boat: BoatState) => ExternalForces;
+  /**
+   * M114, the Training dinghy only (absent on the Hanse: today's behaviour): the sailor's seat and
+   * side, the centreboard, and the share of the mainsail's force the outhaul leaves.
+   */
+  dinghy?: { sit: Sit; side: 1 | -1; boardPct: number; mainPower: number };
 }
 
 export interface MotionReport {
@@ -175,6 +184,7 @@ export function stepBoat(
     heelRateDegS,
     roundUpS,
     overpoweredS,
+    windwardHeelS,
   } = boatState;
   let { eastM, northM, waves } = boatState;
   const trains = inputs.trains ?? NO_TRAINS;
@@ -189,7 +199,10 @@ export function stepBoat(
     speedMps = 0;
     swayMps = 0;
     heelDeg = 0;
+    windwardHeelS = 0;
   }
+  const dinghy = inputs.dinghy;
+  const windwardAlertDeg = data.dinghy?.windwardHeelAlertDeg ?? Infinity;
   let report: MotionReport | undefined;
   const hits = new Map<string, ContactHit>();
   for (let i = 0; i < count; i += 1) {
@@ -226,8 +239,16 @@ export function stepBoat(
       heelDeg,
       data,
       inputs.damage,
+      dinghy?.mainPower,
     );
-    const resistance = hullResistance(speedMps, forces.sideN, heelDeg, inputs.rudderDeg, data);
+    const resistance = hullResistance(
+      speedMps,
+      forces.sideN,
+      heelDeg,
+      inputs.rudderDeg,
+      data,
+      dinghy?.boardPct,
+    );
     const makeReport = (
       grip: number,
       effectiveRudderDeg: number,
@@ -266,21 +287,38 @@ export function stepBoat(
     speedMps += acceleration * h;
     if (before !== 0 && Math.sign(speedMps) !== Math.sign(before)) {
       // Crossed zero: she stops if the push cannot beat the resistance at the new speed.
-      const after = hullResistance(speedMps, forces.sideN, heelDeg, inputs.rudderDeg, data);
+      const after = hullResistance(
+        speedMps,
+        forces.sideN,
+        heelDeg,
+        inputs.rudderDeg,
+        data,
+        dinghy?.boardPct,
+      );
       if (Math.abs(push) < after.totalN) speedMps = 0;
     }
 
     // Roll: the sails heel her, the hull's shape rights her, the water damps it.
     let rollRate = heelRateDegS * DEG;
+    // The dinghy's sailor adds his weight to the moments (M114, PT-76, PT-77).
+    const crewNm = dinghy ? crewMomentNm(heelDeg, dinghy.sit, dinghy.side, data) : 0;
     rollRate +=
-      ((forces.heelMomentNm - rightingMomentNm(heelDeg, data) - damping * rollRate) / inertia) * h;
+      ((forces.heelMomentNm + crewNm - rightingMomentNm(heelDeg, data) - damping * rollRate) /
+        inertia) *
+      h;
     heelDeg += (rollRate * h) / DEG;
     if (Math.abs(heelDeg) >= heelData.maxHeelDeg) {
       heelDeg = Math.sign(heelDeg) * heelData.maxHeelDeg;
       rollRate = 0;
     }
     heelRateDegS = rollRate / DEG;
-    overpoweredS = Math.abs(heelDeg) > heelData.overpoweredHeelDeg ? overpoweredS + h : 0;
+    if (dinghy) {
+      // On the dinghy "overpowered" is a heel away from the sailor; towards him is the other warning.
+      overpoweredS = heelDeg * dinghy.side < -heelData.overpoweredHeelDeg ? overpoweredS + h : 0;
+      windwardHeelS = heelDeg * dinghy.side > windwardAlertDeg ? windwardHeelS + h : 0;
+    } else {
+      overpoweredS = Math.abs(heelDeg) > heelData.overpoweredHeelDeg ? overpoweredS + h : 0;
+    }
 
     // Steering: the rudder loses grip as she heels, and the heel itself turns her to windward.
     const gripNow = interpTable(heelData.rudderGripByHeelDeg, Math.abs(heelDeg));
@@ -301,15 +339,18 @@ export function stepBoat(
       inputs.rudderDeg,
       data,
     );
+    const keelLift = dinghy ? boardLift(dinghy.boardPct, data) : ls.keelLiftNPerMps2;
     const swayDrag =
-      (ls.keelLiftNPerMps2 * Math.abs(speedMps) + ls.swayLinearDragNPerMps) * swayMps +
+      (keelLift * Math.abs(speedMps) + ls.swayLinearDragNPerMps) * swayMps +
       0.5 *
         data.physics.constants.waterDensityKgM3 *
         ls.lateralDragCoefficient *
         ls.lateralAreaM2 *
         Math.abs(swayMps) *
         swayMps;
-    swayMps += ((low.sideN + ext.sideN - swayDrag) / swayMass) * h;
+    // The dinghy's sails push her sideways (wind over starboard: to port); the Hanse's keel holds her.
+    const sailSideN = dinghy ? -Math.sign(wind.awaDeg) * forces.sideN : 0;
+    swayMps += ((low.sideN + ext.sideN + sailSideN - swayDrag) / swayMass) * h;
 
     const grip = steerShare(speedMps, data);
     const loose = 1 - grip;
@@ -356,6 +397,7 @@ export function stepBoat(
         heelRateDegS,
         roundUpS,
         overpoweredS,
+        windwardHeelS,
         eastM,
         northM,
         waves,
@@ -368,7 +410,14 @@ export interface SteadyState {
   heelDeg: number;
   awsKn: number;
   awaDeg: number;
+  /** M114: a heel that reached `maxHeelDeg` with no balance: over on the leeward or the windward side; 'none' otherwise and on the Hanse. */
+  capsize: 'none' | 'leeward' | 'windward';
+  /** M114: the angle between her heading and her track through the water, degrees (0 on the Hanse). */
+  leewayDeg: number;
 }
+
+/** M114: the step of the dinghy's heel walk, degrees. */
+const HEEL_WALK_STEP_DEG = 0.25;
 
 /**
  * The speed the boat settles at with the controls as they are and her heading held
@@ -390,6 +439,8 @@ export function steadyState(
     trains?: readonly WaveTrain[];
     /** M106: the gennaker's rigging; stowed when missing. */
     gennaker?: GennakerSetup;
+    /** M114: the Training dinghy's seat, centreboard and outhaul (`side` defaults to the windward side). */
+    dinghy?: { sit: Sit; side?: 1 | -1; boardPct: number; outhaulPct: number };
   } = {},
 ): SteadyState {
   const dirDeg = opts.windDirDeg ?? controls.ctl_wind_dir;
@@ -398,8 +449,13 @@ export function steadyState(
     opts.windDirDeg === undefined && opts.twsKn === undefined ? undefined : { dirDeg, twsKn };
   const twaDeg = wrap180(dirDeg - headingDeg);
   const thrustN = opts.engineThrustN ?? 0;
+  const dinghy = opts.dinghy;
+  const mainPower = dinghy ? outhaulPower(dinghy.outhaulPct, data) : 1;
+  const boardPct = dinghy?.boardPct;
   let heelDeg = 0;
   let speed = 0;
+  let capsize: SteadyState['capsize'] = 'none';
+  let lastSideN = 0;
   let wind = apparentWind(twsKn, twaDeg, speed, data);
   for (let i = 0; i < 40; i += 1) {
     wind = apparentWind(twsKn, twaDeg, speed, data);
@@ -411,8 +467,49 @@ export function steadyState(
       override,
       opts.gennaker,
     );
-    const at = (heel: number) => sailForces(rig, controls, wind.awsKn, wind.awaDeg, heel, data);
-    if (opts.heel) {
+    const at = (heel: number) =>
+      sailForces(rig, controls, wind.awsKn, wind.awaDeg, heel, data, undefined, mainPower);
+    capsize = 'none';
+    if (opts.heel && dinghy) {
+      // The dinghy: walk out from upright until the moments balance (M114, 8.3).
+      const side = dinghy.side ?? (wind.awaDeg >= 0 ? 1 : -1);
+      const maxHeel = data.physics.heel.maxHeelDeg;
+      const f = (heel: number) =>
+        at(heel).heelMomentNm +
+        crewMomentNm(heel, dinghy.sit, side, data) -
+        rightingMomentNm(heel, data);
+      const f0 = f(0);
+      let found = 0;
+      if (f0 !== 0) {
+        const dir = Math.sign(f0);
+        let inside = 0;
+        let outside = 0;
+        let balanced = false;
+        for (let phi = 0; Math.abs(phi) < maxHeel;) {
+          const next = phi + dir * HEEL_WALK_STEP_DEG;
+          if (Math.sign(f(next)) !== dir) {
+            inside = phi;
+            outside = next;
+            balanced = true;
+            break;
+          }
+          phi = next;
+        }
+        if (balanced) {
+          for (let k = 0; k < 30; k += 1) {
+            const mid = (inside + outside) / 2;
+            if (Math.sign(f(mid)) === dir) inside = mid;
+            else outside = mid;
+          }
+          found = (inside + outside) / 2;
+        } else {
+          found = dir * maxHeel;
+          const leewardSign = wind.awaDeg >= 0 ? -1 : 1;
+          capsize = dir === leewardSign ? 'leeward' : 'windward';
+        }
+      }
+      heelDeg = capsize === 'none' ? 0.5 * heelDeg + 0.5 * found : found;
+    } else if (opts.heel) {
       // The heel where the sails' heeling moment equals the righting moment (30 bisections).
       let lowHeel = 0;
       let highHeel = data.physics.heel.maxHeelDeg;
@@ -426,6 +523,7 @@ export function steadyState(
       heelDeg = 0.5 * heelDeg + 0.5 * found;
     }
     const forces = at(heelDeg);
+    lastSideN = forces.sideN;
     let low = 0;
     let high = 10;
     for (let k = 0; k < 30; k += 1) {
@@ -434,12 +532,22 @@ export function steadyState(
         forces.driveN +
         forces.windageN +
         thrustN -
-        hullResistance(mid, forces.sideN, heelDeg, 0, data).totalN -
+        hullResistance(mid, forces.sideN, heelDeg, 0, data, boardPct).totalN -
         addedResistanceN(mid, headingDeg, opts.trains ?? NO_TRAINS, data);
       if (net > 0) low = mid;
       else high = mid;
     }
     speed = 0.5 * speed + 0.5 * ((low + high) / 2);
   }
-  return { speedMps: speed, heelDeg, awsKn: wind.awsKn, awaDeg: wind.awaDeg };
+  // M114: how far she slides sideways; the sails' side force against the board's grip and the hull's drag.
+  let leewayDeg = 0;
+  if (dinghy && speed >= 0.05) {
+    const ls = data.physics.lowSpeed;
+    const a =
+      0.5 * data.physics.constants.waterDensityKgM3 * ls.lateralDragCoefficient * ls.lateralAreaM2;
+    const b = boardLift(dinghy.boardPct, data) * speed + ls.swayLinearDragNPerMps;
+    const sway = (-b + Math.sqrt(b * b + 4 * a * lastSideN)) / (2 * a);
+    leewayDeg = Math.atan2(sway, speed) / DEG;
+  }
+  return { speedMps: speed, heelDeg, awsKn: wind.awsKn, awaDeg: wind.awaDeg, capsize, leewayDeg };
 }

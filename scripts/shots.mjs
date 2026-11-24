@@ -92,6 +92,7 @@ import { liveM56Checks, M56_SCENES } from './shots-m56.mjs';
 import { liveM57Checks, M57_SCENES } from './shots-m57.mjs';
 import { liveM58Checks, M58_SCENES } from './shots-m58.mjs';
 import { liveM113Checks, M113_SCENES } from './shots-m113.mjs';
+import { liveM114Checks, M114_SCENES } from './shots-m114.mjs';
 import { liveM59Checks, M59_SCENES } from './shots-m59.mjs';
 import { liveM60Checks, M60_SCENES } from './shots-m60.mjs';
 import { liveM60bChecks, M60B_SCENES } from './shots-m60b.mjs';
@@ -323,6 +324,7 @@ const SCENES = [
   ...M57_SCENES.map((scene) => ({ ...scene, name: `m57-${scene.name}` })),
   ...M58_SCENES.map((scene) => ({ ...scene, name: `m58-${scene.name}` })),
   ...M113_SCENES.map((scene) => ({ ...scene, name: `m113-${scene.name}` })),
+  ...M114_SCENES.map((scene) => ({ ...scene, name: `m114-${scene.name}` })),
   ...M59_SCENES.map((scene) => ({ ...scene, name: `m59-${scene.name}` })),
   ...M60_SCENES.map((scene) => ({ ...scene, name: `m60-${scene.name}` })),
   ...M60B_SCENES.map((scene) => ({ ...scene, name: `m60b-${scene.name}` })),
@@ -1227,7 +1229,11 @@ try {
     // Groups merged in H2 run the checks of the milestones named in `GROUP_ALIASES`
     // (scripts/ci-plan.mjs), one after the other, each on its own pages and clock.
     m6: members(['m6', () => liveM6Checks(live)], ['m7', () => liveM7Checks(live)]),
-    m8: members(['m8', () => liveM8Checks(live)], ['m105', () => liveM105Checks(onTestClock)]),
+    m8: members(
+      ['m8', () => liveM8Checks(live)],
+      ['m105', () => liveM105Checks(onTestClock)],
+      ['m114', () => liveM114Checks(onTestClock)],
+    ),
     m9: () => liveM9Checks(live),
     m10: () => liveM10Checks(live),
     m11: () => liveM11Checks(live),

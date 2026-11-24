@@ -115,10 +115,10 @@ New link settings (on the dinghy only): `boat=dinghy` the Training dinghy, `sp` 
 
 - [ ] Your weight: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=16&ms=55&oh=100&sea=flat&cam=bow — in the Balance section tap Sit in: she heels far over. Sit on the side: she comes up to a small lean. Lean out: nearly upright.
 - [ ] Light wind: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=3&ms=50&sp=side&sea=flat&cam=bow — she leans towards you and a warning says "Heeling towards you: sit further in". Tap Sit in: she comes back up.
-- [ ] Let it go: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=14&ms=30&sp=side&sea=flat&cam=bow — ease the mainsheet to 100 %: the sail flaps, she comes upright and stops.
+- [ ] Let it go: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=14&ms=30&sea=flat&cam=bow — she starts heeled far over; ease the mainsheet to 100 %: the sail flaps, she comes upright and stops.
 - [ ] Centreboard: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=45&ws=10&ms=20&sp=side&cb=0&sea=flat&cam=top — with the board up she slides sideways (watch the wake). Tap + on Centreboard to 100 %: she goes straight.
-- [ ] Outhaul: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=12&ms=50&sp=side&sea=flat — Outhaul − to 0 %: a little less heel and speed; + to 100 %: a little more.
-- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=12&ms=50&sp=side&sea=flat&cam=side-port — the Balance section on a computer.
+- [ ] Outhaul: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=16&ms=55&oh=100&sp=side&sea=flat — in the first ten seconds, tap Outhaul − to 0 % and watch the Heel and speed numbers for two seconds: both drop a little; tap + to 100 %: both rise again. (With nobody steering she slowly turns by herself, so a later try compares a different course.)
+- [ ] Computer size: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=90&ws=16&ms=55&oh=100&sp=side&sea=flat&cam=side-port — the Balance section on a computer.
 
 #### M115: The sailor in the dinghy
 
