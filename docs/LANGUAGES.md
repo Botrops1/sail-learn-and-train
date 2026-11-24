@@ -12,7 +12,7 @@ The app shows one language at a time. A language is one folder of JSON files, `c
 4. Set every `textStatus` to `draft`. It becomes `sailor-reviewed` only after a sailor who speaks the language has checked it (a `/bug` PR does that).
 5. If the language does not use Latin letters, the Latin-letter scan applies to it too: `content/lang/latin-words.json` lists the Latin words allowed on its screen (instrument letters, makers, quoted foreign words). Add what a translation really needs there, and nothing else.
 6. Run `npm test`. The tests list every missing or extra key and every incomplete entry.
-7. For a reviewer, add the language's wording to `scripts/review-doc.mjs` (the `WORDING` table: the title, the introduction, the column and row names) and run `npm run review-doc -- <code>`. It writes `docs/review/<code>.md`: one table per entry, English next to the new language, with an empty row for the reviewer's answer. Commit it; a test fails when a text changes and the document is not regenerated.
+7. For a reviewer, add the language's wording to `scripts/review-doc.mjs` (the `WORDING` table: the title, the introduction, the column and row names, and `onDinghy`, the line that heads an entry's text for the dinghy) and run `npm run review-doc -- <code>`. It writes `docs/review/<code>.md`: one table per entry, English next to the new language, with an empty row for the reviewer's answer. Commit it; a test fails when a text changes and the document is not regenerated.
 
 Nothing else changes.
 

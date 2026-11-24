@@ -48,8 +48,8 @@ export const ALERT_INFO: Readonly<Record<AlertKind, AlertKindInfo>> = {
   overpowered: { learnId: 'term_heel', severity: 'warning' },
   // M114: the dinghy heeling towards the sailor (his weight on the low side of the sail's push).
   windwardHeel: { learnId: 'term_heel', severity: 'warning' },
-  // M116: the dinghy goes over (M117 gives it its own entry, term_capsize).
-  capsized: { learnId: 'part_centreboard', severity: 'danger' },
+  // M116: the dinghy goes over.
+  capsized: { learnId: 'term_capsize', severity: 'danger' },
   roundUp: { learnId: 'term_round_up', severity: 'danger' },
   tookWheel: { learnId: 'fit_autopilot_control', severity: 'info' },
   fendersOut: { learnId: 'fit_fender', severity: 'info' },

@@ -49,6 +49,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+**Auf der Trainingsjolle:**
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Kicker | Baumniederholer |
+| Andere Namen | — | Kicker |
+| Kurz | The line from the bottom of the mast to the boom. | Die Leine vom unteren Ende des Mastes zum Baum. |
+| Was es tut / was es bedeutet | The line from the bottom of the mast to the boom. Pulled tight it holds the boom down, so the sail stays flatter and does not twist open at the top; eased, the boom lifts and the top of the sail spills wind. | Die Leine vom unteren Ende des Mastes zum Baum. Dichtgeholt hält sie den Baum unten, sodass das Segel flacher bleibt und oben nicht im Twist aufgeht; gefiert hebt sich der Baum und der obere Teil des Segels lässt Wind ab. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Baumniederholer (`rope_pole_downhaul`)
 
 | Feld | English | Deutsch |
@@ -184,6 +195,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+**Auf der Trainingsjolle:**
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Mainsheet | Großschot |
+| Andere Namen | — | — |
+| Kurz | The line that pulls the boom in. | Die Leine, die den Baum hereinholt. |
+| Was es tut / was es bedeutet | The line that pulls the boom in. On this dinghy it runs from the end of the boom to a ratchet block on the floor and you hold it in your hand. Let it go and the sail flaps: the boat slows down and comes upright. | Die Leine, die den Baum hereinholt. Auf dieser Jolle läuft sie vom Baumende zu einem Ratschenblock am Boden und man hält sie in der Hand. Lässt man sie los, schlägt das Segel: Das Boot wird langsamer und richtet sich auf. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Großschot (am Traveller) (`rope_traveller_mainsheet`)
 
 | Feld | English | Deutsch |
@@ -286,6 +308,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without pulling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Pull the outhaul together with the “out” line. | Das Groß einrollen, ohne den Unterliekstrecker zu fieren. → Der Unterliekstrecker hält das Schothorn außen und das Segel kann nicht einrollen. Fieren Sie ihn, während Sie die „in“-Reffleine ziehen.<br>Das Groß ausrollen, ohne den Unterliekstrecker dichtzuholen. → Das Segel kommt bauchig heraus und erreicht das Ende des Baums nicht. Holen Sie ihn zusammen mit der „out“-Leine dicht. |
 | „Zeigen“ | Mainsail fully out: the outhaul holds its back corner at the end of the boom. Tap “Outhaul” below and roll the main in a little: the corner slides towards the mast. | Großsegel voll ausgerollt: der Unterliekstrecker hält sein hinteres Eck am Ende des Baums. Tippen Sie unten auf „Unterliekstrecker“ und rollen Sie das Groß ein Stück ein: das Eck wandert zum Mast. |
 | Belegstatus | Seen on the reference boat (photo). | Am Referenzboot gesehen (Foto). |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+**Auf der Trainingsjolle:**
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Outhaul | Unterliekstrecker |
+| Andere Namen | — | — |
+| Kurz | The line that pulls the bottom back corner of the sail out along the boom. | Die Leine, die die hintere untere Ecke des Segels am Baum nach achtern zieht. |
+| Was es tut / was es bedeutet | The line that pulls the bottom back corner of the sail out along the boom. Pulled tight, the sail is flatter and easier to hold in a strong wind; eased, it is fuller and more powerful in light wind. | Die Leine, die die hintere untere Ecke des Segels am Baum nach achtern zieht. Dichtgeholt ist das Segel flacher und bei viel Wind leichter zu halten; gefiert ist es bauchiger und bei Leichtwind kraftvoller. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
@@ -593,6 +626,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+**Auf der Trainingsjolle:**
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Mast | Mast |
+| Andere Namen | — | — |
+| Kurz | The pole that holds the sail up. | Die Stange, die das Segel oben hält. |
+| Was es tut / was es bedeutet | The pole that holds the sail up. On this dinghy it has no wires holding it: it stands in a hole in the deck and bends a little in a gust. | Die Stange, die das Segel oben hält. Auf dieser Jolle wird sie von keinen Drähten gehalten: Sie steht in einem Loch im Deck und biegt sich in einer Böe ein wenig. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Masttopp-Windanzeiger (`part_windex`)
 
 | Feld | English | Deutsch |
@@ -802,6 +846,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | Turning the wheel hard over while the boat is stopped. → Nothing happens: the rudder needs water flowing past it. Get her moving first, with the sails or the engine.<br>Turning the wheel further and further against a boat that turns into the wind in a gust. → A rudder turned too far stops gripping. Ease the mainsheet instead, so she stops turning. | Das Steuerrad hart einschlagen, während das Boot steht. → Es passiert nichts: Das Ruder braucht Wasser, das vorbeiströmt. Bringen Sie das Boot zuerst in Fahrt, mit den Segeln oder dem Motor.<br>Das Steuerrad immer weiter drehen, wenn das Boot in einer Böe in den Wind dreht. → Ein zu weit eingeschlagenes Ruder greift nicht mehr. Fieren Sie stattdessen die Großschot, damit das Boot nicht weiter dreht. |
 | „Zeigen“ | The wheel is turned 25° to starboard: look through the water under the stern to see the rudder blade turned. Under way, this turns the boat to starboard. | Das Steuerrad ist 25° nach Steuerbord gedreht: Schauen Sie durch das Wasser unter dem Heck, um das eingeschlagene Ruderblatt zu sehen. Unter Fahrt dreht das Boot damit nach Steuerbord. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+**Auf der Trainingsjolle:**
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Rudder | Ruder |
+| Andere Namen | — | — |
+| Kurz | The blade hung on the back of the boat that steers her. | Das Blatt am Heck des Bootes, das es steuert. |
+| Was es tut / was es bedeutet | The blade hung on the back of the boat that steers her. You move it with the tiller: tiller to port, the boat turns to starboard. | Das Blatt am Heck des Bootes, das es steuert. Man bewegt es mit der Pinne: Pinne nach Backbord, das Boot dreht nach Steuerbord. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
@@ -1271,6 +1326,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | — | — |
 | „Zeigen“ | The captain stands behind the port wheel, steering. | Der Kapitän steht hinter dem Backbord-Steuerrad und steuert. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+**Auf der Trainingsjolle:**
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Sailor (you) | Segler (du) |
+| Andere Namen | — | — |
+| Kurz | That is you. | Das bist du. |
+| Was es tut / was es bedeutet | That is you. You sit on the side opposite the boom, the tiller extension in your back hand and the mainsheet in your front hand. In a tack or a gybe you move across the boat. | Das bist du. Du sitzt auf der Seite gegenüber dem Baum, den Pinnenausleger in der hinteren Hand und die Großschot in der vorderen. Bei einer Wende oder einer Halse wechselst du die Seite im Boot. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
@@ -2090,6 +2156,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Ausreiten (Hiking) (`term_hiking`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Leaning out (hiking) | Ausreiten (Hiking) |
+| Andere Namen | hiking<br>sitting out | Hiking<br>Rausreiten |
+| Kurz | Sitting on the side with your feet under the toe straps and your body out over the water. | Man sitzt auf der Bordkante, die Füße unter den Fußschlaufen und den Körper draußen über dem Wasser. |
+| Was es tut / was es bedeutet | Sitting on the side with your feet under the toe straps and your body out over the water. Your weight then holds the boat up against the wind's push on the sail. The harder it blows, the further you lean out; in light wind you sit in, or the boat tips towards you. | Man sitzt auf der Bordkante, die Füße unter den Fußschlaufen und den Körper draußen über dem Wasser. Das eigene Gewicht hält das Boot dann gegen den Druck des Windes im Segel aufrecht. Je stärker es weht, desto weiter lehnt man sich hinaus; bei Leichtwind sitzt man innen, sonst kippt das Boot zu einem hin. |
+| Auf diesem Boot | — | — |
+| Typische Fehler | — | — |
+| „Zeigen“ | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she leans over towards you. | Die Jolle von vorn bei starkem Wind, du lehnst dich hinaus: Dein Gewicht hält sie flach. Tippen Sie im Abschnitt Balance auf „Innen sitzen“, und sie neigt sich zu dir. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Backbordbug (`term_port_tack`)
 
 | Feld | English | Deutsch |
@@ -2240,6 +2321,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Kentern (`term_capsize`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Capsize | Kentern |
+| Andere Namen | — | — |
+| Kurz | When a dinghy tips over and lies on its side. | Wenn eine Jolle umkippt und auf der Seite liegt. |
+| Was es tut / was es bedeutet | When a dinghy tips over and lies on its side. It is part of learning to sail one. Stay with the boat, swim round the stern to the centreboard, make sure it is pushed down, and stand on it: your weight brings her up. Let the mainsheet go before she comes up so she does not sail off without you. | Wenn eine Jolle umkippt und auf der Seite liegt. Das gehört zum Segelnlernen dazu. Bleiben Sie beim Boot, schwimmen Sie um das Heck zum Schwert, achten Sie darauf, dass es heruntergeschoben ist, und stellen Sie sich darauf: Ihr Gewicht richtet sie auf. Lassen Sie die Großschot los, bevor sie hochkommt, damit sie nicht ohne Sie davonsegelt. |
+| Auf diesem Boot | — | — |
+| Typische Fehler | — | — |
+| „Zeigen“ | The dinghy lies on her side with the sailor in the water. Tap “Swim round to the centreboard”, then “Stand on the centreboard”: she comes up. | Die Jolle liegt auf der Seite, der Segler im Wasser. Tippen Sie auf „Zum Schwert schwimmen“ und dann auf „Auf das Schwert steigen“: Sie richtet sich auf. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Killen (Segel schlägt) (`term_luffing`)
 
 | Feld | English | Deutsch |
@@ -2267,6 +2363,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Typische Fehler | Trimming the sheets harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Bei zu starker Krängung die Schoten noch dichter holen. → Das verstärkt die Krängung. Fieren Sie die Großschot oder rollen Sie einen Teil der Segel ein. |
 | „Zeigen“ | 20 kn with the sails trimmed in: she heels about 30°. Ease the mainsheet in the Lines section and she stands up. | 20 kn bei dichtgeholten Segeln: Das Boot krängt etwa 30°. Fieren Sie die Großschot im Bereich Leinen, und es richtet sich auf. |
 | Belegstatus | Checked against a written source. | Gegen eine schriftliche Quelle geprüft. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+**Auf der Trainingsjolle:**
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Heel | Krängung |
+| Andere Namen | — | — |
+| Kurz | The boat leaning over. | Das Boot neigt sich. |
+| Was es tut / was es bedeutet | The boat leaning over. A dinghy has no heavy keel: your own weight holds her up. Lean out to keep her flat, or let the mainsheet out; if she leans towards you, sit in. | Das Boot neigt sich. Eine Jolle hat keinen schweren Kiel: Dein eigenes Gewicht hält sie aufrecht. Lehne dich hinaus, um sie flach zu halten, oder fiere die Großschot; neigt sie sich zu dir, setz dich nach innen. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 

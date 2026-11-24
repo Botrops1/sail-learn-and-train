@@ -154,6 +154,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+**På treningsjolla:**
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Kicker | Kicker |
+| Andre navn | — | — |
+| Kort | The line from the bottom of the mast to the boom. | Tauet fra foten av masta til bommen. |
+| Hva det gjør / hva det betyr | The line from the bottom of the mast to the boom. Pulled tight it holds the boom down, so the sail stays flatter and does not twist open at the top; eased, the boom lifts and the top of the sail spills wind. | Tauet fra foten av masta til bommen. Tatt hardt inn holder det bommen nede, så seilet holder seg flatere og ikke vrir seg åpent i toppen; firet løfter bommen seg og toppen av seilet slipper ut vind. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Rulletau for fokk (`rope_jib_furling_line`)
 
 | Felt | English | Norsk |
@@ -229,6 +240,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+**På treningsjolla:**
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Mainsheet | Storskjøt |
+| Andre navn | — | — |
+| Kort | The line that pulls the boom in. | Tauet som drar bommen inn. |
+| Hva det gjør / hva det betyr | The line that pulls the boom in. On this dinghy it runs from the end of the boom to a ratchet block on the floor and you hold it in your hand. Let it go and the sail flaps: the boat slows down and comes upright. | Tauet som drar bommen inn. På denne jolla går det fra enden av bommen til en skralleblokk på gulvet, og du holder det i hånden. Slipper du det, slår seilet: båten bremser og retter seg opp. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Storskjøt (på traveller) (`rope_traveller_mainsheet`)
 
 | Felt | English | Norsk |
@@ -286,6 +308,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Typiske feil | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without pulling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Pull the outhaul together with the “out” line. | Å rulle inn storseilet uten å fire utholeren. → Utholeren holder nokken ute, og seilet kan ikke rulle inn. Fire utholeren mens du drar i «inn»-rulletauet.<br>Å rulle ut storseilet uten å hale utholeren. → Seilet kommer ut posete og når ikke enden av bommen. Hal utholeren sammen med «ut»-tauet. |
 | «Vis meg» | Mainsail fully out: the outhaul holds its back corner at the end of the boom. Tap “Outhaul” below and roll the main in a little: the corner slides towards the mast. | Storseilet helt ute: utholeren holder bakre hjørne ved enden av bommen. Trykk på «Utholer» under og rull storseilet litt inn: hjørnet glir mot masten. |
 | Faktastatus | Seen on the reference boat (photo). | Sett på referansebåten (bilde). |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+**På treningsjolla:**
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Outhaul | Utholer |
+| Andre navn | — | — |
+| Kort | The line that pulls the bottom back corner of the sail out along the boom. | Tauet som drar bakre nedre hjørne av seilet ut langs bommen. |
+| Hva det gjør / hva det betyr | The line that pulls the bottom back corner of the sail out along the boom. Pulled tight, the sail is flatter and easier to hold in a strong wind; eased, it is fuller and more powerful in light wind. | Tauet som drar bakre nedre hjørne av seilet ut langs bommen. Hardt tatt inn er seilet flatere og lettere å holde i sterk vind; firet er det fyldigere og kraftigere i lett vind. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
@@ -593,6 +626,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+**På treningsjolla:**
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Mast | Mast |
+| Andre navn | — | — |
+| Kort | The pole that holds the sail up. | Staken som holder seilet oppe. |
+| Hva det gjør / hva det betyr | The pole that holds the sail up. On this dinghy it has no wires holding it: it stands in a hole in the deck and bends a little in a gust. | Staken som holder seilet oppe. På denne jolla har den ingen wirer som holder den: den står i et hull i dekket og bøyer seg litt i et vindkast. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Rullefokk-anlegg (`part_jib_furler`)
 
 | Felt | English | Norsk |
@@ -802,6 +846,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Typiske feil | Turning the wheel hard over while the boat is stopped. → Nothing happens: the rudder needs water flowing past it. Get her moving first, with the sails or the engine.<br>Turning the wheel further and further against a boat that turns into the wind in a gust. → A rudder turned too far stops gripping. Ease the mainsheet instead, so she stops turning. | Å vri rattet hardt over mens båten står stille. → Ingenting skjer: roret trenger vann som strømmer forbi. Få båten i fart først, med seilene eller motoren.<br>Å vri rattet lenger og lenger mot en båt som dreier opp i vinden i et kast. → Et ror som er vridd for langt, slutter å gripe. Fire heller storskjøtet, slik at båten slutter å svinge. |
 | «Vis meg» | The wheel is turned 25° to starboard: look through the water under the stern to see the rudder blade turned. Under way, this turns the boat to starboard. | Rattet er vridd 25° til styrbord: se gjennom vannet under hekken for å se rorbladet vridd. I fart svinger dette båten til styrbord. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+**På treningsjolla:**
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Rudder | Ror |
+| Andre navn | — | — |
+| Kort | The blade hung on the back of the boat that steers her. | Bladet som henger på baksiden av båten og styrer den. |
+| Hva det gjør / hva det betyr | The blade hung on the back of the boat that steers her. You move it with the tiller: tiller to port, the boat turns to starboard. | Bladet som henger på baksiden av båten og styrer den. Du flytter det med rorpinnen: rorpinnen mot babord, og båten svinger mot styrbord. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
@@ -1376,6 +1431,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Typiske feil | — | — |
 | «Vis meg» | The captain stands behind the port wheel, steering. | Kapteinen står bak babord ratt og styrer. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+**På treningsjolla:**
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Sailor (you) | Seiler (du) |
+| Andre navn | — | — |
+| Kort | That is you. | Det er deg. |
+| Hva det gjør / hva det betyr | That is you. You sit on the side opposite the boom, the tiller extension in your back hand and the mainsheet in your front hand. In a tack or a gybe you move across the boat. | Det er deg. Du sitter på siden motsatt av bommen, med rorpinneforlengeren i den bakre hånden og storskjøtet i den fremre. I en vending eller en kråkevending flytter du deg over båten. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
@@ -2195,6 +2261,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Kantring (`term_capsize`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Capsize | Kantring |
+| Andre navn | — | — |
+| Kort | When a dinghy tips over and lies on its side. | Når en jolle velter og ligger på siden. |
+| Hva det gjør / hva det betyr | When a dinghy tips over and lies on its side. It is part of learning to sail one. Stay with the boat, swim round the stern to the centreboard, make sure it is pushed down, and stand on it: your weight brings her up. Let the mainsheet go before she comes up so she does not sail off without you. | Når en jolle velter og ligger på siden. Det hører med til å lære å seile. Bli ved båten, svøm rundt hekken til sentralbordet, pass på at det er skjøvet ned, og stå på det: vekten din henter henne opp. Slipp storskjøtet før hun kommer opp, så hun ikke seiler av gårde uten deg. |
+| På denne båten | — | — |
+| Typiske feil | — | — |
+| «Vis meg» | The dinghy lies on her side with the sailor in the water. Tap “Swim round to the centreboard”, then “Stand on the centreboard”: she comes up. | Jolla ligger på siden med seileren i vannet. Trykk «Svøm til slepekjølen» og deretter «Stå på slepekjølen»: hun kommer opp. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Knapp halvvind (`term_close_reach`)
 
 | Felt | English | Norsk |
@@ -2222,6 +2303,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Typiske feil | Trimming the sheets harder when she heels too much. → That makes more heel. Ease the mainsheet, or roll part of the sails in. | Å hale skjøtene hardere inn når båten krenger for mye. → Det gir mer krenging. Fire storskjøtet, eller rull inn en del av seilene. |
 | «Vis meg» | 20 kn with the sails trimmed in: she heels about 30°. Ease the mainsheet in the Lines section and she stands up. | 20 kn med seilene hentet inn: båten krenger omtrent 30°. Fire storskjøtet i «Tau»-seksjonen, så retter båten seg opp. |
 | Faktastatus | Checked against a written source. | Sjekket mot en skriftlig kilde. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+**På treningsjolla:**
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Heel | Krenging |
+| Andre navn | — | — |
+| Kort | The boat leaning over. | Båten som heller. |
+| Hva det gjør / hva det betyr | The boat leaning over. A dinghy has no heavy keel: your own weight holds her up. Lean out to keep her flat, or let the mainsheet out; if she leans towards you, sit in. | Båten som heller. En jolle har ingen tung kjøl: din egen vekt holder henne oppe. Len deg ut for å holde henne flat, eller fire storskjøtet; heller hun mot deg, sitt inn. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
@@ -2521,6 +2613,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | På denne båten | High topsides, a 20 m mast and the furled main inside it: in 15 kn on the beam she drifts sideways at about 0.6 kn; with the wind 45° on the bow, the bow falls off about 30° in 30 s. | Høye sider, en mast på 20 m og det rullede storseilet inni den: i 15 kn tvers driver båten sideveis med omtrent 0,6 kn; med vinden 45° på baugen faller baugen av omtrent 30° på 30 s. |
 | Typiske feil | Stopping in the fairway to wait: the bow blows off and she drifts onto the moored boats. → Keep a little way on, or hold her with the engine and the thrusters. | Å stoppe i farleden for å vente: baugen blåser av og båten driver mot de fortøyde båtene. → Hold litt fart, eller hold båten med motoren og thrusterne. |
 | «Vis meg» | Sails rolled away, wind 15 kn from 45° on the starboard bow, standing still: the bow blows off to port. | Seilene rullet bort, vind 15 kn fra 45° på styrbord baug, stillestående: baugen blåser av mot babord. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Å sitte ut (hiking) (`term_hiking`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Leaning out (hiking) | Å sitte ut (hiking) |
+| Andre navn | hiking<br>sitting out | hiking |
+| Kort | Sitting on the side with your feet under the toe straps and your body out over the water. | Å sitte på siden med føttene under fotstroppene og kroppen ut over vannet. |
+| Hva det gjør / hva det betyr | Sitting on the side with your feet under the toe straps and your body out over the water. Your weight then holds the boat up against the wind's push on the sail. The harder it blows, the further you lean out; in light wind you sit in, or the boat tips towards you. | Å sitte på siden med føttene under fotstroppene og kroppen ut over vannet. Vekten din holder da båten oppe mot vindens press på seilet. Jo hardere det blåser, jo lenger ut lener du deg; i lett vind sitter du inn, ellers heller båten mot deg. |
+| På denne båten | — | — |
+| Typiske feil | — | — |
+| «Vis meg» | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she leans over towards you. | Jolla sett forfra i sterk vind, mens du lener deg ut: vekten din holder henne flat. Trykk «Sitt inne» i seksjonen Balanse, så heller hun mot deg. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |

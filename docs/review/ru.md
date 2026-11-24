@@ -49,6 +49,17 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+**На учебной динге:**
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Mainsheet | гика-шкот |
+| Другие названия | — | — |
+| Коротко | The line that pulls the boom in. | Конец, который подтягивает гик. |
+| Что делает / что значит | The line that pulls the boom in. On this dinghy it runs from the end of the boom to a ratchet block on the floor and you hold it in your hand. Let it go and the sail flaps: the boat slows down and comes upright. | Конец, который подтягивает гик. На этой динге он идёт от конца гика к блоку с храповиком на полу, и вы держите его в руке. Отпустите его — парус заполощет: лодка замедлится и встанет прямо. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### Гика-шкот (на тревеллере) (`rope_traveller_mainsheet`)
 
 | Поле | English | Русский |
@@ -139,6 +150,17 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+**На учебной динге:**
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Kicker | оттяжка гика |
+| Другие названия | — | кикер |
+| Коротко | The line from the bottom of the mast to the boom. | Конец от низа мачты к гику. |
+| Что делает / что значит | The line from the bottom of the mast to the boom. Pulled tight it holds the boom down, so the sail stays flatter and does not twist open at the top; eased, the boom lifts and the top of the sail spills wind. | Конец от низа мачты к гику. Выбранный туго, он держит гик внизу, поэтому парус остаётся площе и его верх не раскрывается в твист; отданный — гик поднимается, и верх паруса стравливает ветер. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### оттяжка гика (`rope_pole_downhaul`)
 
 | Поле | English | Русский |
@@ -166,6 +188,17 @@
 | Типичные ошибки | Rolling the main in without easing the outhaul. → The outhaul holds the clew out and the sail cannot roll in. Ease the outhaul as you pull the “in” furling line.<br>Unrolling the main without pulling the outhaul. → The sail comes out baggy and does not reach the end of the boom. Pull the outhaul together with the “out” line. | Закручивать грот, не потравив оттяжку шкотового угла. → Она удерживает шкотовый угол снаружи, и парус не сворачивается. Потравите её, когда тянете «входной» линь закрутки.<br>Разворачивать грот, не выбрав оттяжку шкотового угла. → Парус выходит мешковатым и не доходит до конца гика. Выбирайте её вместе с «выходным» концом. |
 | «Покажи» | Mainsail fully out: the outhaul holds its back corner at the end of the boom. Tap “Outhaul” below and roll the main in a little: the corner slides towards the mast. | Грот выпущен полностью: оттяжка шкотового угла держит его задний угол на конце гика. Нажмите ниже «Оттяжка шкотового угла» и немного закрутите грот: угол поедет к мачте. |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+**На учебной динге:**
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Outhaul | оттяжка шкотового угла |
+| Другие названия | — | — |
+| Коротко | The line that pulls the bottom back corner of the sail out along the boom. | Конец, который вытягивает задний нижний угол паруса вдоль гика. |
+| Что делает / что значит | The line that pulls the bottom back corner of the sail out along the boom. Pulled tight, the sail is flatter and easier to hold in a strong wind; eased, it is fuller and more powerful in light wind. | Конец, который вытягивает задний нижний угол паруса вдоль гика. Выбранный туго, парус площе и его легче держать в сильный ветер; отданный — полнее и мощнее в слабый ветер. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
@@ -638,6 +671,17 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+**На учебной динге:**
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Mast | мачта |
+| Другие названия | — | — |
+| Коротко | The pole that holds the sail up. | Шест, который держит парус. |
+| Что делает / что значит | The pole that holds the sail up. On this dinghy it has no wires holding it: it stands in a hole in the deck and bends a little in a gust. | Шест, который держит парус. На этой динге его не держат ванты: он стоит в гнезде в палубе и немного гнётся в порыве. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### отводные блоки у основания мачты (`fit_mast_base_turning_blocks`)
 
 | Поле | English | Русский |
@@ -847,6 +891,17 @@
 | Типичные ошибки | Turning the wheel hard over while the boat is stopped. → Nothing happens: the rudder needs water flowing past it. Get her moving first, with the sails or the engine.<br>Turning the wheel further and further against a boat that turns into the wind in a gust. → A rudder turned too far stops gripping. Ease the mainsheet instead, so she stops turning. | Резко повернуть штурвал до упора, пока лодка стоит. → Ничего не произойдёт: перу руля нужна обтекающая вода. Сначала разгоните яхту парусами или двигателем.<br>Всё дальше и дальше поворачивать штурвал, когда в порыве лодка приводится к ветру. → Слишком сильно повёрнутое перо руля перестаёт «держать». Вместо этого потравите гика-шкот, чтобы яхта перестала приводиться. |
 | «Покажи» | The wheel is turned 25° to starboard: look through the water under the stern to see the rudder blade turned. Under way, this turns the boat to starboard. | Штурвал повёрнут на 25° вправо: посмотрите сквозь воду под кормой — перо руля повёрнуто. На ходу это поворачивает лодку вправо. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+**На учебной динге:**
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Rudder | перо руля |
+| Другие названия | — | — |
+| Коротко | The blade hung on the back of the boat that steers her. | Лопасть, подвешенная на корме, которая рулит лодкой. |
+| Что делает / что значит | The blade hung on the back of the boat that steers her. You move it with the tiller: tiller to port, the boat turns to starboard. | Лопасть, подвешенная на корме, которая рулит лодкой. Вы двигаете её румпелем: румпель к левому борту — лодка поворачивает к правому. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
@@ -1286,6 +1341,17 @@
 | Типичные ошибки | — | — |
 | «Покажи» | The captain stands behind the port wheel, steering. | Капитан стоит за левым штурвалом и рулит. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+**На учебной динге:**
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Sailor (you) | Яхтсмен (вы) |
+| Другие названия | — | — |
+| Коротко | That is you. | Это вы. |
+| Что делает / что значит | That is you. You sit on the side opposite the boom, the tiller extension in your back hand and the mainsheet in your front hand. In a tack or a gybe you move across the boat. | Это вы. Вы сидите на борту напротив гика, продолжение румпеля в задней руке, гика-шкот в передней. При повороте оверштаг или фордевинд вы перебираетесь на другой борт. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
@@ -2195,6 +2261,17 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+**На учебной динге:**
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Heel | крен |
+| Другие названия | — | — |
+| Коротко | The boat leaning over. | Лодка наклоняется. |
+| Что делает / что значит | The boat leaning over. A dinghy has no heavy keel: your own weight holds her up. Lean out to keep her flat, or let the mainsheet out; if she leans towards you, sit in. | Лодка наклоняется. У динги нет тяжёлого киля: её держит ваш собственный вес. Откреньте, чтобы держать её ровно, или потравите гика-шкот; если она кренится на вас, сядьте внутрь. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### крутой бейдевинд (`term_close_hauled`)
 
 | Поле | English | Русский |
@@ -2251,6 +2328,36 @@
 | На этой яхте | — | — |
 | Типичные ошибки | Steering so far downwind that the wind gets behind the mainsail (sailing by the lee). → The boom can cross at any moment. Steer a little back towards the wind, or gybe on purpose with the mainsheet trimmed. | Рулить так далеко под ветер, что ветер оказывается позади грота (он дует на грот уже с той стороны, куда отведён гик). → Гик может перелететь в любой момент. Слегка приведитесь к ветру или сделайте поворот фордевинд намеренно, с выбранным гика-шкотом. |
 | «Покажи» | Running, the autopilot turns her through dead downwind with the mainsheet eased: an accidental gybe. The red area shows where the boom sweeps across. Keep heads out of it. | Фордевинд: авторулевой разворачивает яхту через точку точно по ветру при потравленном гика-шкоте — случайный поворот фордевинд. Красная область показывает, где гик пройдёт через кокпит. Держите головы вне её. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### опрокидывание (`term_capsize`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Capsize | опрокидывание |
+| Другие названия | — | — |
+| Коротко | When a dinghy tips over and lies on its side. | Когда динга переворачивается и лежит на боку. |
+| Что делает / что значит | When a dinghy tips over and lies on its side. It is part of learning to sail one. Stay with the boat, swim round the stern to the centreboard, make sure it is pushed down, and stand on it: your weight brings her up. Let the mainsheet go before she comes up so she does not sail off without you. | Когда динга переворачивается и лежит на боку. Это часть обучения. Оставайтесь у лодки, плывите вокруг кормы к шверту, убедитесь, что он опущен, и встаньте на него: ваш вес поднимет её. Отпустите гика-шкот до того, как она встанет, чтобы она не уплыла без вас. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | The dinghy lies on her side with the sailor in the water. Tap “Swim round to the centreboard”, then “Stand on the centreboard”: she comes up. | Динга лежит на боку, яхтсмен в воде. Нажмите «Подплыть к шверту» и затем «Встать на шверт»: она поднимается. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### откренивание (`term_hiking`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Leaning out (hiking) | откренивание |
+| Другие названия | hiking<br>sitting out | хайкинг |
+| Коротко | Sitting on the side with your feet under the toe straps and your body out over the water. | Сидеть на борту, ноги под ремнями, а тело за бортом над водой. |
+| Что делает / что значит | Sitting on the side with your feet under the toe straps and your body out over the water. Your weight then holds the boat up against the wind's push on the sail. The harder it blows, the further you lean out; in light wind you sit in, or the boat tips towards you. | Сидеть на борту, ноги под ремнями, а тело за бортом над водой. Ваш вес тогда удерживает лодку против давления ветра на парус. Чем сильнее ветер, тем дальше вы отклоняетесь; в слабый ветер вы сидите внутри, иначе лодка наклонится к вам. |
+| На этой яхте | — | — |
+| Типичные ошибки | — | — |
+| «Покажи» | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she leans over towards you. | Динга спереди в сильный ветер, вы откренены: ваш вес держит её ровно. Нажмите «Сидеть внутри» в разделе «Баланс», и она наклонится к вам. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |

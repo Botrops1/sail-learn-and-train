@@ -38,6 +38,7 @@ const WORDING = {
     uiHeading: '## Кнопки и подсказки',
     exercisesHeading: '## Упражнения',
     uiKey: 'key',
+    onDinghy: 'На учебной динге:',
   },
   de: {
     title: '# Prüfung des deutschen Textes',
@@ -62,6 +63,7 @@ const WORDING = {
     uiHeading: '## Schaltflächen und Hinweise',
     exercisesHeading: '## Übungen',
     uiKey: 'Schlüssel',
+    onDinghy: 'Auf der Trainingsjolle:',
   },
   no: {
     title: '# Gjennomgang av den norske teksten',
@@ -86,6 +88,7 @@ const WORDING = {
     uiHeading: '## Knapper og hint',
     exercisesHeading: '## Øvelser',
     uiKey: 'nøkkel',
+    onDinghy: 'På treningsjolla:',
   },
 };
 
@@ -194,6 +197,34 @@ export function buildReviewDoc(code) {
       lines.push(`### ${cell(text.name)} (\`${id}\`)`, '', ...header);
       for (const [field, left, right] of rows) lines.push(`| ${field} | ${left} | ${right} |`);
       lines.push('');
+      // M117: the boat's own text for the entry (`<id>@dinghy`), once, under the entry it replaces.
+      const own = `${id}@dinghy`;
+      if (source[own] !== undefined) {
+        const enOwn = source[own];
+        const textOwn = target[own];
+        if (!textOwn) throw new Error(`${own}: no ${code} entry`);
+        for (const field of ['name', 'short', 'what']) {
+          if (!empty(enOwn[field]) && empty(textOwn[field])) {
+            throw new Error(`${own}: ${code} lacks the field ${field}`);
+          }
+        }
+        lines.push(`**${wording.onDinghy}**`, '', ...header);
+        for (const [field, left, right] of [
+          [wording.rows.name, textCell(enOwn.name), textCell(textOwn.name)],
+          [
+            wording.rows.alternatives,
+            alternativesCell(enOwn.alternatives),
+            alternativesCell(textOwn.alternatives),
+          ],
+          [wording.rows.short, textCell(enOwn.short), textCell(textOwn.short)],
+          [wording.rows.what, textCell(enOwn.what), textCell(textOwn.what)],
+          [wording.rows.textStatus, NONE, textCell(wording.textStatuses[textOwn.textStatus])],
+          [wording.rows.check, '', ''],
+        ]) {
+          lines.push(`| ${field} | ${left} | ${right} |`);
+        }
+        lines.push('');
+      }
     }
   }
 

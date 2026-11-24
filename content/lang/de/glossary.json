@@ -906,7 +906,10 @@
     "term_line": {
       "name": "Leine",
       "alternatives": [
-        { "term": "Tau", "note": "das Material, bevor es eine Aufgabe hat" }
+        {
+          "term": "Tau",
+          "note": "das Material, bevor es eine Aufgabe hat"
+        }
       ],
       "short": "Jedes Tau, das an Bord eine Aufgabe hat.",
       "what": "An Bord wird ein Tau nach seiner Aufgabe benannt: Eine Schot trimmt ein Segel, ein Fall setzt es, eine Festmacherleine hält das Boot. Zusammen sind sie die Leinen. Seeleute sagen „Tau“ für Tau, das noch keine Aufgabe hat, etwa eine neue Rolle.",
@@ -1481,6 +1484,33 @@
         }
       ],
       "showMe": "20 kn bei dichtgeholten Segeln: Das Boot krängt etwa 30°. Fieren Sie die Großschot im Bereich Leinen, und es richtet sich auf.",
+      "textStatus": "draft"
+    },
+    "term_hiking": {
+      "name": "Ausreiten (Hiking)",
+      "alternatives": [
+        {
+          "term": "Hiking"
+        },
+        {
+          "term": "Rausreiten"
+        }
+      ],
+      "short": "Man sitzt auf der Bordkante, die Füße unter den Fußschlaufen und den Körper draußen über dem Wasser.",
+      "what": "Man sitzt auf der Bordkante, die Füße unter den Fußschlaufen und den Körper draußen über dem Wasser. Das eigene Gewicht hält das Boot dann gegen den Druck des Windes im Segel aufrecht. Je stärker es weht, desto weiter lehnt man sich hinaus; bei Leichtwind sitzt man innen, sonst kippt das Boot zu einem hin.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "showMe": "Die Jolle von vorn bei starkem Wind, du lehnst dich hinaus: Dein Gewicht hält sie flach. Tippen Sie im Abschnitt Balance auf „Innen sitzen“, und sie neigt sich zu dir.",
+      "textStatus": "draft"
+    },
+    "term_capsize": {
+      "name": "Kentern",
+      "alternatives": [],
+      "short": "Wenn eine Jolle umkippt und auf der Seite liegt.",
+      "what": "Wenn eine Jolle umkippt und auf der Seite liegt. Das gehört zum Segelnlernen dazu. Bleiben Sie beim Boot, schwimmen Sie um das Heck zum Schwert, achten Sie darauf, dass es heruntergeschoben ist, und stellen Sie sich darauf: Ihr Gewicht richtet sie auf. Lassen Sie die Großschot los, bevor sie hochkommt, damit sie nicht ohne Sie davonsegelt.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "showMe": "Die Jolle liegt auf der Seite, der Segler im Wasser. Tippen Sie auf „Zum Schwert schwimmen“ und dann auf „Auf das Schwert steigen“: Sie richtet sich auf.",
       "textStatus": "draft"
     },
     "term_weather_helm": {
@@ -2199,7 +2229,11 @@
     },
     "person_captain": {
       "name": "Kapitän (du)",
-      "alternatives": [{ "term": "Skipper" }],
+      "alternatives": [
+        {
+          "term": "Skipper"
+        }
+      ],
       "short": "Die Person, die das Boot führt: in der App du.",
       "what": "Die Figur an Deck bist du, der Kapitän (auch Skipper genannt): die Person, die für das Boot und alle an Bord verantwortlich ist. Beim Steuern stehst du hinter einem Steuerrad. Im Modus „Realistisch“ stehst du an der Station, von der aus du arbeitest: an einer Winsch, am Mast oder am Bug. Wählst du eine andere Station, gehst du an Deck dorthin, auf der Seite, von der der Wind kommt, und kannst ihre Leinen bedienen, sobald du ankommst. Die Steuerstand-Ansicht schaut durch deine Augen, dort siehst du dich also nicht selbst.",
       "showMe": "Der Kapitän steht hinter dem Backbord-Steuerrad und steuert.",
@@ -2319,7 +2353,11 @@
     },
     "part_traveller_track": {
       "name": "Travellerschiene",
-      "alternatives": [{ "term": "Traveller" }],
+      "alternatives": [
+        {
+          "term": "Traveller"
+        }
+      ],
       "short": "Eine Schiene quer über das Boot, auf der der untere Block der Großschot gleitet; nicht an diesem Boot.",
       "what": "Viele Boote haben quer im Cockpit oder auf dem Kajütaufbau eine Schiene mit einem Wagen; die Großschot läuft vom Wagen zum Baum. Schiebt man den Wagen nach Lee, fiert man den Baum; schiebt man ihn zur Mitte, holt man den Baum dicht, und der Zug der Schot am Segel bleibt gleich. Der Wagen bestimmt also den Winkel des Baums, die Schot bestimmt, wie straff das Achterliek ist. Dieses Boot hat stattdessen eine deutsche Großschot: zwei Blöcke auf dem Kajütaufbau und beide Enden ins Cockpit geführt, die Schot erledigt also beide Aufgaben auf einmal.",
       "showMe": "Ein Bild eines Travellers: eine kurze Schiene quer über dem hinteren Ende des Kajütaufbaus mit einem Wagen. Der Wind kommt von Steuerbord, der Wagen ist nach Backbord geschoben, der Baum steht also nach Backbord hinaus. Mit dem Regler bewegst du den Wagen und siehst, wie der Baum folgt.",
@@ -2342,6 +2380,73 @@
       "what": "Sie hat nur eine Aufgabe: Sie bestimmt, wie straff das Achterliek des Segels ist. Der Winkel des Baums ist Sache des Wagens.",
       "showMe": "Die Leine vom Wagen hinauf zum Baum. Sie bleibt ungefähr gleich lang, wo der Wagen auch steht.",
       "onThisBoat": "Nicht an diesem Boot: nur als Bild gezeigt (Show it working).",
+      "textStatus": "draft"
+    },
+    "rope_outhaul@dinghy": {
+      "name": "Unterliekstrecker",
+      "alternatives": [],
+      "short": "Die Leine, die die hintere untere Ecke des Segels am Baum nach achtern zieht.",
+      "what": "Die Leine, die die hintere untere Ecke des Segels am Baum nach achtern zieht. Dichtgeholt ist das Segel flacher und bei viel Wind leichter zu halten; gefiert ist es bauchiger und bei Leichtwind kraftvoller.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "rope_vang@dinghy": {
+      "name": "Baumniederholer",
+      "alternatives": [
+        {
+          "term": "Kicker"
+        }
+      ],
+      "short": "Die Leine vom unteren Ende des Mastes zum Baum.",
+      "what": "Die Leine vom unteren Ende des Mastes zum Baum. Dichtgeholt hält sie den Baum unten, sodass das Segel flacher bleibt und oben nicht im Twist aufgeht; gefiert hebt sich der Baum und der obere Teil des Segels lässt Wind ab.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "rope_mainsheet@dinghy": {
+      "name": "Großschot",
+      "alternatives": [],
+      "short": "Die Leine, die den Baum hereinholt.",
+      "what": "Die Leine, die den Baum hereinholt. Auf dieser Jolle läuft sie vom Baumende zu einem Ratschenblock am Boden und man hält sie in der Hand. Lässt man sie los, schlägt das Segel: Das Boot wird langsamer und richtet sich auf.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "part_rudder@dinghy": {
+      "name": "Ruder",
+      "alternatives": [],
+      "short": "Das Blatt am Heck des Bootes, das es steuert.",
+      "what": "Das Blatt am Heck des Bootes, das es steuert. Man bewegt es mit der Pinne: Pinne nach Backbord, das Boot dreht nach Steuerbord.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "part_mast@dinghy": {
+      "name": "Mast",
+      "alternatives": [],
+      "short": "Die Stange, die das Segel oben hält.",
+      "what": "Die Stange, die das Segel oben hält. Auf dieser Jolle wird sie von keinen Drähten gehalten: Sie steht in einem Loch im Deck und biegt sich in einer Böe ein wenig.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "person_captain@dinghy": {
+      "name": "Segler (du)",
+      "alternatives": [],
+      "short": "Das bist du.",
+      "what": "Das bist du. Du sitzt auf der Seite gegenüber dem Baum, den Pinnenausleger in der hinteren Hand und die Großschot in der vorderen. Bei einer Wende oder einer Halse wechselst du die Seite im Boot.",
+      "onThisBoat": "",
+      "mistakes": [],
+      "textStatus": "draft"
+    },
+    "term_heel@dinghy": {
+      "name": "Krängung",
+      "alternatives": [],
+      "short": "Das Boot neigt sich.",
+      "what": "Das Boot neigt sich. Eine Jolle hat keinen schweren Kiel: Dein eigenes Gewicht hält sie aufrecht. Lehne dich hinaus, um sie flach zu halten, oder fiere die Großschot; neigt sie sich zu dir, setz dich nach innen.",
+      "onThisBoat": "",
+      "mistakes": [],
       "textStatus": "draft"
     }
   }
