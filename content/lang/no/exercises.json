@@ -954,7 +954,7 @@
       },
       "stop": {
         "goal": "Slipp storskjøtet: seilet slår og båten bremser.",
-        "how": "Trykk + på Storskjøt til det viser 90 % eller mer (helt ute). Seilet slår og skyver ikke lenger; vent til farten er under 1,5 knop."
+        "how": "Trykk + på Storskjøt til det viser 90 % eller mer (helt ute). Seilet slår og skyver ikke lenger; vent til farten er under 2 knop."
       },
       "go-again": {
         "goal": "Trekk det inn igjen og seil videre.",
@@ -980,7 +980,7 @@
     "done": "Du stagvendte, sentrerte rorpinnen og flyttet deg til den nye høye siden. Sett deg på den høye siden igjen etter hver stagvending.",
     "steps": {
       "close-hauled": {
-        "goal": "Seil så nær vinden som seilet tillater: skyv rorpinnen bort hvis båten peker for høyt og seilet slår.",
+        "goal": "Seil så nær vinden som seilet tillater: trekk rorpinnen mot deg hvis båten peker for høyt og seilet slår.",
         "how": "Styr med roret til vinden er 38 til 55° fra baugen og seilet viser Bra. − svinger til babord, + til styrbord."
       },
       "tack": {
@@ -1018,11 +1018,11 @@
     "steps": {
       "run": {
         "goal": "Fall av til vinden er bakfra, med sverdet for det meste oppe.",
-        "how": "Styr med roret til vinden er 150 til 172° fra baugen. Hev sverdet med − (omtrent halvveis er nok) og trekk storskjøtet inn til omtrent 10 %, så bommen står nesten midt i båten."
+        "how": "Styr med roret til vinden er 150 til 172° fra baugen. Hev sverdet med − (omtrent halvveis er nok) og trekk storskjøtet inn til 10 % eller mindre, så bommen står nesten midt i båten."
       },
       "gybe": {
         "goal": "Trekk rorpinnen mot deg og hold storskjøtet i hånden: bommen svinger over. Hold hodet nede.",
-        "how": "Med storskjøtet fortsatt inne (omtrent 10 %) styrer du mot babord (−) og holder det til bommen har gått over. En bom som står langt ute slår over med kraft: det regnes som en utilsiktet jibb."
+        "how": "Med storskjøtet fortsatt inne (10 % eller mindre) styrer du mot babord (−) og holder det til bommen har gått over. En bom som står langt ute slår over med kraft: det regnes som en utilsiktet jibb."
       },
       "broad-reach": {
         "goal": "Styr rett frem på den nye siden og hold båten flat.",

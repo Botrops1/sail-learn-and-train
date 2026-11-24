@@ -95,8 +95,8 @@
     "gybe": {
       "boomMassKg": 3,
       "sailMassKg": 2,
-      "minReportJ": 5,
-      "reportNote": "assumption (M118): a light dinghy boom swings with little energy (about 10 J from 13 degrees, 20 J from 20), so the Hanse's 50 J bump threshold left every controlled gybe unreported and the Gybe exercise could not be finished; 5 J reports a gybe from a boom hauled in to about 10 degrees. Tunable."
+      "minReportJ": 0,
+      "reportNote": "assumption (M118): a light dinghy boom swings with little energy (about 10 J from 13 degrees, 0 with the sheet fully in), so the Hanse's 50 J bump threshold left every controlled gybe unreported and the Gybe exercise could not be finished; 0 reports every gybe, an accidental one (boom more than 20 degrees out) as such. Tunable."
     }
   },
   "dinghy": {

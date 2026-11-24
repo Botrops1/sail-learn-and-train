@@ -670,7 +670,7 @@ export function createExerciseBar(
         const c = state.dinghy.capsize;
         const boardUp = state.dinghy.boardPct < (boat.dinghy?.capsize.minBoardPct ?? 0);
         swim.disabled = c.phase !== 'over';
-        down.disabled = !(c.phase === 'goingOver' || c.phase === 'over' || c.phase === 'swimming');
+        down.disabled = !((c.phase === 'over' || c.phase === 'swimming') && boardUp);
         stand.disabled = !(c.phase === 'swimming' && atBoard(c) && !boardUp);
         setText(line, c.phase === 'swimming' ? t('capsize.swimming') : '');
       },

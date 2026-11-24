@@ -472,4 +472,4 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 
 | Value | Number | Note |
 |---|---|---|
-| A gybe bump worth reporting | 5 J (the Hanse: 50 J) | a light dinghy boom swings with about 10 J from 13° and 20 J from 20°, so at 50 J no controlled gybe (boom within 20° of the middle) was ever reported and the Gybe exercise could not be finished. **Tunable** |
+| A gybe bump worth reporting | 0 J (the Hanse: 50 J) | a light dinghy boom swings with about 10 J from 13° and 20 J from 20°, and none at all with the sheet fully in, so at 50 J no controlled gybe (boom within 20° of the middle) was ever reported and the Gybe exercise could not be finished. Every gybe is now reported; one from more than 20° is reported as accidental. **Tunable** |

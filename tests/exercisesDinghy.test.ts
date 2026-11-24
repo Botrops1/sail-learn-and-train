@@ -132,6 +132,29 @@ describe('the dinghy exercises (M118, 12.4)', () => {
     });
   });
 
+  it('the gybe finishes with the sheet hauled in to 0, 5 or 10 %, and is accidental from 15 %', () => {
+    withBoatOf('dinghy-gybe', () => {
+      const good = pilot('dinghy-gybe');
+      const withSheet =
+        (pct: number): Pilot =>
+        (s, t) => {
+          const next = good(s, t);
+          const step = s.exercise?.step ?? 0;
+          return step < 2
+            ? reduce(next, { type: 'setControls', values: { ctl_mainsheet: pct } })
+            : next;
+        };
+      for (const pct of [0, 5, 10]) {
+        const run = runFrom(started('dinghy-gybe'), withSheet(pct), () => false, 90);
+        expect(run.state.exercise?.status, `sheet ${pct} %`).toBe('done');
+        expect(run.mistakes, `sheet ${pct} %`).toBe(0);
+      }
+      const loose = runFrom(started('dinghy-gybe'), withSheet(15), () => false, 90);
+      const mistake = loose.state.exercise?.log.find((e) => e.kind === 'mistake');
+      expect(mistake).toMatchObject({ mistakeId: 'accidental-gybe' });
+    });
+  });
+
   it('5. exercisesForBoat: the four for the dinghy, the 22 for the Hanse 508', () => {
     expect(exercisesForBoat('dinghy').map((e) => e.id)).toEqual(IDS);
     expect(exercisesForBoat('hanse508')).toHaveLength(22);

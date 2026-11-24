@@ -954,7 +954,7 @@
       },
       "stop": {
         "goal": "Lassen Sie die Großschot los: Das Segel schlägt, und das Boot wird langsamer.",
-        "how": "Tippen Sie bei Großschot auf +, bis 90 % oder mehr angezeigt wird (ganz gefiert). Das Segel schlägt und schiebt nicht mehr; warten Sie, bis die Fahrt unter 1,5 Knoten liegt."
+        "how": "Tippen Sie bei Großschot auf +, bis 90 % oder mehr angezeigt wird (ganz gefiert). Das Segel schlägt und schiebt nicht mehr; warten Sie, bis die Fahrt unter 2 Knoten liegt."
       },
       "go-again": {
         "goal": "Holen Sie sie wieder dicht und segeln Sie weiter.",
@@ -980,7 +980,7 @@
     "done": "Sie haben gewendet, die Pinne mittig gestellt und auf die neue hohe Seite gewechselt. Setzen Sie sich nach jeder Wende wieder auf die hohe Seite.",
     "steps": {
       "close-hauled": {
-        "goal": "Segeln Sie so nah am Wind, wie das Segel es zulässt: Drücken Sie die Pinne weg, wenn das Boot zu hoch ansteuert und das Segel schlägt.",
+        "goal": "Segeln Sie so nah am Wind, wie das Segel es zulässt: Ziehen Sie die Pinne zu sich, wenn das Boot zu hoch ansteuert und das Segel schlägt.",
         "how": "Steuern Sie mit der Ruderzeile, bis der Wind 38 bis 55° vom Bug kommt und das Segel „Gut“ anzeigt. − dreht nach Backbord, + nach Steuerbord."
       },
       "tack": {
@@ -1018,11 +1018,11 @@
     "steps": {
       "run": {
         "goal": "Fallen Sie ab, bis der Wind von hinten kommt, das Schwert größtenteils oben.",
-        "how": "Steuern Sie mit der Ruderzeile, bis der Wind 150 bis 172° vom Bug kommt. Heben Sie das Schwert mit − an (etwa halb reicht) und holen Sie die Großschot auf etwa 10 % dicht, damit der Baum fast mittschiffs steht."
+        "how": "Steuern Sie mit der Ruderzeile, bis der Wind 150 bis 172° vom Bug kommt. Heben Sie das Schwert mit − an (etwa halb reicht) und holen Sie die Großschot auf höchstens 10 % dicht, damit der Baum fast mittschiffs steht."
       },
       "gybe": {
         "goal": "Ziehen Sie die Pinne zu sich und halten Sie die Großschot in der Hand: Der Baum schwingt hinüber. Kopf runter.",
-        "how": "Mit der Großschot weiter dicht (etwa 10 %) steuern Sie nach Backbord (−) und halten das, bis der Baum hinübergeschwungen ist. Ein weit ausgestellter Baum schlägt mit Kraft hinüber: Das gilt als unbeabsichtigtes Halsen."
+        "how": "Mit der Großschot weiter dicht (höchstens 10 %) steuern Sie nach Backbord (−) und halten das, bis der Baum hinübergeschwungen ist. Ein weit ausgestellter Baum schlägt mit Kraft hinüber: Das gilt als unbeabsichtigtes Halsen."
       },
       "broad-reach": {
         "goal": "Steuern Sie auf der neuen Seite geradeaus und halten Sie das Boot flach.",

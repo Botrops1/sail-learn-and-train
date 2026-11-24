@@ -4,7 +4,7 @@ import type { AlertEntry, AlertKind } from './alerts';
 import type { Controls, ControlId } from './controls';
 import type { AnchorPhase, AnchorState } from './anchor';
 import { scopeNeededM } from './anchor';
-import { boat as hanse508, boatId, type BoatData } from './boat';
+import { boat as hanse508, boatId, isDinghy, type BoatData } from './boat';
 import type { CapsizePhase, DinghyState, Sit } from './dinghy';
 import type { ClockState } from './clock';
 import {
@@ -168,7 +168,7 @@ export interface CheckSource {
   clock?: ClockState;
   /** M108: for the gennaker checks (its trim comes from `rig.gennaker`); AppState has it. */
   gennaker?: GennakerSetup;
-  /** M118: for the `dinghy` check; AppState has it (the Hanse never reads it). */
+  /** M118: for the `dinghy` check; AppState has it, but only the dinghy in use reads it (`checkPasses`). */
   dinghy?: DinghyState;
 }
 export interface CheckContext {
@@ -437,7 +437,7 @@ export function checkPasses(
   }
   if (check.dinghy) {
     const d = source.dinghy;
-    if (!d) return false;
+    if (!d || !isDinghy()) return false;
     if (check.dinghy.sit && !check.dinghy.sit.includes(d.sit)) return false;
     if (check.dinghy.boardPct && !inRange(d.boardPct, check.dinghy.boardPct)) return false;
     if (check.dinghy.capsize && !check.dinghy.capsize.includes(d.capsize.phase)) return false;

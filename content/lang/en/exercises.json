@@ -672,7 +672,7 @@
       },
       "stop": {
         "goal": "Let the mainsheet go: the sail flaps and the boat slows down.",
-        "how": "Tap + on Mainsheet until it reads 90 % or more (all the way out). The sail flaps and stops pushing; wait until the speed is under 1.5 knots."
+        "how": "Tap + on Mainsheet until it reads 90 % or more (all the way out). The sail flaps and stops pushing; wait until the speed is under 2 knots."
       },
       "go-again": {
         "goal": "Pull it in again and sail on.",
@@ -698,7 +698,7 @@
     "done": "You tacked, centred the tiller and moved to the new high side. After every tack, sit on the high side again.",
     "steps": {
       "close-hauled": {
-        "goal": "Sail as close to the wind as the sail allows: push the tiller away if she points too high and the sail flaps.",
+        "goal": "Sail as close to the wind as the sail allows: pull the tiller towards you if she points too high and the sail flaps.",
         "how": "Steer with the rudder row until the wind is 38 to 55° from the bow and the sail reads Good. − turns her to port, + to starboard."
       },
       "tack": {
@@ -736,11 +736,11 @@
     "steps": {
       "run": {
         "goal": "Bear away until the wind is behind you, the centreboard mostly up.",
-        "how": "Steer with the rudder row until the wind is 150 to 172° from the bow. Raise the centreboard with − (about halfway is enough) and pull the mainsheet in to about 10 %, so the boom sits nearly in the middle."
+        "how": "Steer with the rudder row until the wind is 150 to 172° from the bow. Raise the centreboard with − (about halfway is enough) and pull the mainsheet in to 10 % or less, so the boom sits nearly in the middle."
       },
       "gybe": {
         "goal": "Pull the tiller towards you and keep the mainsheet in hand: the boom swings across. Keep your head down.",
-        "how": "With the mainsheet still in (about 10 %), steer to port (−) and keep it there until the boom has crossed. A boom that is far out swings across with force: that counts as an accidental gybe."
+        "how": "With the mainsheet still in (10 % or less), steer to port (−) and keep it there until the boom has crossed. A boom that is far out swings across with force: that counts as an accidental gybe."
       },
       "broad-reach": {
         "goal": "Steer straight on the new side and keep her flat.",
