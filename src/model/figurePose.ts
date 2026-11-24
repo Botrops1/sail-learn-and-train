@@ -146,9 +146,9 @@ function steer(t: number): Partial<JointAngles> {
 }
 
 /**
- * The dinghy sailor (M115): the hips and knees bend, the aft arm (the left one when he sits on
- * the starboard side: he faces across the boat) hangs back and bent towards the tiller extension,
- * the forward arm reaches for the mainsheet, and the head looks ahead. The lean is not a joint:
+ * The dinghy sailor (M115): the hips and knees bend, both arms reach forward and down (the left
+ * one holds the tiller extension and the right one the mainsheet when he sits on the starboard
+ * side: he faces across the boat), and the head looks ahead. The lean is not a joint:
  * the whole figure is rotated (captain.ts). `hike` stretches the legs out under the toe straps.
  */
 function sit(t: number, hike: boolean): Partial<JointAngles> {
@@ -157,10 +157,14 @@ function sit(t: number, hike: boolean): Partial<JointAngles> {
     rHx: hike ? -0.52 : -Math.PI / 2,
     lKx: hike ? 0.35 : Math.PI / 2,
     rKx: hike ? 0.35 : Math.PI / 2,
-    lSx: 0.3,
-    lEx: -0.6,
-    rSx: -0.8,
-    rEx: -0.7,
+    // Seated: elbows by the sides, forearms forward at the belly. Hiking he leans far back, so
+    // the arms reach further out in front of him to stay about level.
+    lSx: hike ? -0.6 : -0.1,
+    lEx: hike ? -1.0 : -1.9,
+    lSz: 0.05,
+    rSx: hike ? -0.7 : -0.35,
+    rEx: hike ? -0.9 : -1.45,
+    rSz: -0.3,
     torsoX: hike ? -0.05 : 0.02,
     headX: 0.05,
     headY: -0.6 + Math.sin(t * 0.5) * 0.05,
