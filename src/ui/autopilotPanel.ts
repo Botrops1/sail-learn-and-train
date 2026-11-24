@@ -1,6 +1,6 @@
 import type { AppState, Store } from '../app/store';
 import { wrap180 } from '../model/angles';
-import { boat } from '../model/boat';
+import { boat, hasFeature } from '../model/boat';
 import { el } from './dom';
 import { t } from './i18n';
 import { controlView, createControl } from './ropeControls';
@@ -23,6 +23,8 @@ export function createSteeringPanel(store: Store): HTMLElement[] {
   const wheel = createControl(store, controlView('ctl_rudder'));
   store.subscribe(wheel.refresh);
   wheel.refresh(store.getState());
+  // A boat with no autopilot (the dinghy, M113) keeps the steering control only.
+  if (!hasFeature('autopilot')) return [wheel.element];
   return [wheel.element, createAutopilotPanel(store, { heading: false })];
 }
 

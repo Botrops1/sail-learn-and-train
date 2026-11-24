@@ -850,6 +850,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Schwert (`part_centreboard`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Centreboard | Schwert |
+| Andere Namen | — | — |
+| Kurz | The fin you push down through the bottom of a dinghy. | Die Finne, die man durch den Boden einer Jolle nach unten schiebt. |
+| Was es tut / was es bedeutet | The fin you push down through a slot in the bottom of a dinghy. Down, it stops the boat sliding sideways; up, it lets her slide. On many trainers it lifts straight up and is called a daggerboard. | Die Finne, die man durch einen Schlitz im Boden einer Jolle nach unten schiebt. Unten verhindert es, dass das Boot seitlich rutscht; oben lässt es sie rutschen. Bei vielen Trainingsbooten wird es senkrecht hochgezogen und heißt dann Steckschwert. |
+| Auf diesem Boot | It stands in a case on the floor, a little behind the mast. | Es steht in einem Kasten auf dem Boden, ein Stück hinter dem Mast. |
+| Typische Fehler | — | — |
+| „Zeigen“ | The dinghy seen from above, with the centreboard down in its case on the floor. | Die Jolle von oben, das Schwert unten in seinem Kasten auf dem Boden. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ## An Deck
 
 ### Anker (`fit_anchor`)
@@ -1214,6 +1229,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Fußschlaufen (`fit_toe_straps`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Toe straps | Fußschlaufen |
+| Andere Namen | — | — |
+| Kurz | Straps along the floor of the cockpit. | Gurte entlang dem Boden des Cockpits. |
+| Was es tut / was es bedeutet | Straps along the floor of the cockpit. You hook your feet under them to lean out over the side without falling in. | Gurte entlang dem Boden des Cockpits. Man hakt die Füße darunter, um sich über die Seite hinauszulehnen, ohne zu fallen. |
+| Auf diesem Boot | Two straps on the floor, one each side of the centreboard case. | Zwei Gurte auf dem Boden, je einer beiderseits des Schwertkastens. |
+| Typische Fehler | — | — |
+| „Zeigen“ | The dinghy seen from above: the two straps lie along the floor, one each side of the centreboard case. | Die Jolle von oben: Die beiden Gurte liegen längs auf dem Boden, je einer beiderseits des Schwertkastens. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Instrumentendisplay (`fit_instrument_display`)
 
 | Feld | English | Deutsch |
@@ -1349,6 +1379,36 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
 
+### Pinne (`part_tiller`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Tiller | Pinne |
+| Andere Namen | — | — |
+| Kurz | The bar fixed to the top of the rudder that you steer a small boat with. | Der Stab am oberen Ende des Ruders, mit dem man ein kleines Boot steuert. |
+| Was es tut / was es bedeutet | The bar fixed to the top of the rudder that you steer a small boat with. Push it to one side and the bow turns the other way: tiller to port, the boat turns to starboard. | Der Stab am oberen Ende des Ruders, mit dem man ein kleines Boot steuert. Legt man ihn zu einer Seite, dreht der Bug zur anderen: Pinne nach Backbord, das Boot dreht nach Steuerbord. |
+| Auf diesem Boot | A bar over the back of the boat, fixed to the rudder. The thin stick on its end is the extension. | Ein Stab über dem Heck, fest am Ruder. Der dünne Stock an seinem Ende ist der Pinnenausleger. |
+| Typische Fehler | — | — |
+| „Zeigen“ | The dinghy seen from above. Tap “Tiller” in the Steering section and move it: the tiller swings one way and the bow turns the other. | Die Jolle von oben. Tippen Sie im Abschnitt Ruder auf „Pinne“ und bewegen Sie sie: Die Pinne schwenkt in die eine Richtung, der Bug dreht in die andere. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Pinnenausleger (`part_tiller_extension`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Tiller extension | Pinnenausleger |
+| Andere Namen | — | — |
+| Kurz | A light stick hinged to the end of the tiller. | Ein leichter Stock, am Ende der Pinne angelenkt. |
+| Was es tut / was es bedeutet | A light stick hinged to the end of the tiller, so you can steer while sitting on the side or leaning out. | Ein leichter Stock, am Ende der Pinne angelenkt, damit man auch auf der Seite sitzend oder ausreitend steuern kann. |
+| Auf diesem Boot | The stick on the front end of the tiller. | Der Stock am vorderen Ende der Pinne. |
+| Typische Fehler | — | — |
+| „Zeigen“ | The dinghy seen from above: the thin stick on the end of the tiller is the extension. It lets you steer from the side deck. | Die Jolle von oben: Der dünne Stock am Ende der Pinne ist der Pinnenausleger. Mit ihm steuern Sie vom Seitendeck aus. |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
 ### Plicht (`part_cockpit`)
 
 | Feld | English | Deutsch |
@@ -1360,6 +1420,21 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Auf diesem Boot | Two wheels at the back, one winch and one clutch bank on each side, the engine lever at the helm, and the instruments and the autopilot control by the wheels. | Zwei Steuerräder achtern, je eine Winsch und eine Klemmenbank auf jeder Seite, der Motorhebel am Steuerrad sowie die Instrumente und das Autopilot-Bedienteil bei den Steuerrädern. |
 | Typische Fehler | — | — |
 | „Zeigen“ | — | — |
+| Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
+| Textstatus | — | Entwurf |
+| Prüfung (ok / wie richtig) |  |  |
+
+### Ratschenblock (`fit_ratchet_block`)
+
+| Feld | English | Deutsch |
+|---|---|---|
+| Name | Ratchet block | Ratschenblock |
+| Andere Namen | — | — |
+| Kurz | The block the mainsheet runs through on the floor. | Der Block auf dem Boden, durch den die Großschot läuft. |
+| Was es tut / was es bedeutet | The block the mainsheet runs through on the floor. It turns freely one way and grips the line the other way, so you can hold the sheet with less effort. | Der Block auf dem Boden, durch den die Großschot läuft. Er dreht sich in die eine Richtung frei und hält die Leine in die andere, so hält man die Schot mit weniger Kraft. |
+| Auf diesem Boot | It stands on the floor behind the centreboard case; the mainsheet comes down to it from the boom. | Er steht auf dem Boden hinter dem Schwertkasten; die Großschot kommt vom Baum zu ihm herunter. |
+| Typische Fehler | — | — |
+| „Zeigen“ | The dinghy seen from above: the block on the floor, where the mainsheet comes down from the boom. | Die Jolle von oben: der Block auf dem Boden, zu dem die Großschot vom Baum herunterkommt. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |

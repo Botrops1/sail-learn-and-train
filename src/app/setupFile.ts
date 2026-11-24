@@ -5,9 +5,8 @@
  * storage; `ui/deviceSettings.ts` does that.
  */
 import { parseColumns, serializeColumns, type ColumnState } from '../ui/columnWidths';
-import { HANSE_508 } from '../model/boat';
 import { checkBoatProfile, type BoatProfile } from '../model/boatProfile';
-import { linkBoatId } from './boatStore';
+import { BUILT_IN_IDS, linkBoatId } from './boatStore';
 import {
   completeLayout,
   parseLayout,
@@ -102,11 +101,7 @@ export function readSetupFile(
   if (file.boatProfile !== undefined) {
     const check = checkBoatProfile(file.boatProfile);
     // The profile must be an imported one that the link names (a built-in id is never imported).
-    if (
-      !check.ok ||
-      check.profile.id === HANSE_508.meta.id ||
-      check.profile.id !== linkBoatId(link)
-    ) {
+    if (!check.ok || BUILT_IN_IDS.has(check.profile.id) || check.profile.id !== linkBoatId(link)) {
       return { ok: false, problem: 'badBoat' };
     }
     boatProfile = check.profile;

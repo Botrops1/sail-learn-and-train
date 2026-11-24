@@ -5,7 +5,15 @@ import { makeSetupFile, readSetupFile, setupFileName } from '../app/setupFile';
 import type { Store } from '../app/store';
 import { serializeUrlState } from '../app/urlState';
 import { shareLink } from '../app/urlSync';
-import { HANSE_508, boat, boatId, boatName } from '../model/boat';
+import {
+  BUILT_IN_BOATS,
+  HANSE_508,
+  boat,
+  boatId,
+  boatName,
+  builtInBoat,
+  hasFeature,
+} from '../model/boat';
 import { checkBoatProfile, makeBoatProfile } from '../model/boatProfile';
 import { LANGUAGES, languageName } from '../model/languages';
 import type { KeyHelp } from './keyHelp';
@@ -478,7 +486,7 @@ function buildSettingsBody(store: Store, keyHelp: KeyHelp): HTMLElement[] {
     buildKeysField(keyHelp),
     buildSoundField(),
     buildBoatField(store),
-    gennakerField,
+    ...(hasFeature('gennaker') ? [gennakerField] : []),
     labelsField,
     timeBarField,
     clockField,
@@ -524,6 +532,11 @@ export function createConfirmButton(
   });
 }
 
+/** The name of a built-in boat on the screen (M113: the dinghy's name is a string). */
+function builtInName(id: string): string {
+  return id === 'dinghy' ? t('boat.name.dinghy') : (builtInBoat(id)?.name ?? id);
+}
+
 /** How many problems of a bad profile the Boat field lists. */
 const BOAT_PROBLEMS_SHOWN = 5;
 
@@ -551,9 +564,9 @@ function buildBoatField(store: Store): HTMLElement {
   });
   const fillSelect = () => {
     select.replaceChildren(
-      el('option', { value: HANSE_508.meta.id }, [
-        t('boat.builtIn', { name: HANSE_508.meta.name }),
-      ]),
+      ...BUILT_IN_BOATS.map((built) =>
+        el('option', { value: built.id }, [t('boat.builtIn', { name: builtInName(built.id) })]),
+      ),
       ...storedBoats().map((profile) => el('option', { value: profile.id }, [profile.name])),
     );
     select.value = boatId;
@@ -620,7 +633,11 @@ function buildBoatField(store: Store): HTMLElement {
           t('boat.problem.check', { count: check.problems.length }),
           check.problems
             .slice(0, BOAT_PROBLEMS_SHOWN)
-            .map((problem) => `${problem.path}: ${problem.detail}`),
+            .map((problem) =>
+              problem.kind === 'notInProfile'
+                ? t('boat.problem.notInProfile', { key: problem.path })
+                : `${problem.path}: ${problem.detail}`,
+            ),
         );
         return;
       }
@@ -642,13 +659,19 @@ function buildBoatField(store: Store): HTMLElement {
   const field = el('div', { class: 'field', 'data-testid': 'boat-field' }, [
     el('p', { class: 'field-title' }, [t('boat.label')]),
     select,
-    el('p', { class: 'boat-name', 'data-testid': 'boat-name' }, [boatName]),
-    el('div', { class: 'actions' }, [download, importButton]),
+    el('p', { class: 'boat-name', 'data-testid': 'boat-name' }, [
+      builtInBoat(boatId) ? builtInName(boatId) : boatName,
+    ]),
+    el('div', { class: 'actions' }, [
+      // A built-in boat other than the Hanse 508 has no downloadable profile (M113).
+      ...(boatId === 'dinghy' ? [] : [download]),
+      importButton,
+    ]),
     input,
     status,
     problems,
   ]);
-  if (boatId !== HANSE_508.meta.id) {
+  if (!builtInBoat(boatId)) {
     const remove = el(
       'button',
       {
@@ -670,7 +693,8 @@ function buildBoatField(store: Store): HTMLElement {
     field.append(el('div', { class: 'actions' }, [remove]));
   }
   field.append(
-    el('p', { class: 'hint' }, [t('boat.hint')]),
+    // The profile hint goes with the download: the dinghy has no profile to download (M113).
+    ...(boatId === 'dinghy' ? [] : [el('p', { class: 'hint' }, [t('boat.hint')])]),
     el(
       'a',
       {
@@ -723,8 +747,7 @@ function buildSetupFile(store: Store): HTMLElement {
     const name = setupFileName(now);
     // The address bar can lag the store by 300 ms, so the link is built from the store.
     const link = serializeUrlState(store.getState());
-    const profile =
-      boatId === HANSE_508.meta.id ? undefined : storedBoats().find((p) => p.id === boatId);
+    const profile = builtInBoat(boatId) ? undefined : storedBoats().find((p) => p.id === boatId);
     downloadJson(name, makeSetupFile(link, readDeviceSettings(), now.toISOString(), profile));
     status.textContent = t('setup.saved', { name });
   });

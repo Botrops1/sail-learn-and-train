@@ -15,7 +15,8 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | File | What |
 |---|---|
 | `exercises/exercises.json`, `lang/<code>/exercises.json` | The exercises (steps, checks, mistakes, start links; language-neutral) and their texts by the same ids (English source; German, Norwegian and Russian drafts). |
-| `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values. No numbers in code. |
+| `boat/hanse508.json` | All boat geometry, ropes, clutch banks, winches, stations, `physics`, `windModes`, tuning values, and the `features` the boat has. No numbers in code. |
+| `boat/dinghy.json` | The Training dinghy as an overlay on the Hanse file: only the keys that differ, its features (all off) and its `dinghy` block (centreboard, tiller, toe straps, cockpit). |
 | `audio/sounds.json` | Every number of the sound: group gains, smoothing, the wind, waves, hull, sails, engine, gear, marina, birds and the `music` block. No sound number in code. |
 | `registry/parts.json` | Every id a mesh, rope or control may carry, with language-neutral facts only (kind, `group`, fact status, sources, `controls`, `related`, `showMe`). Names and texts are in the glossaries. |
 | `lang/<code>/ui.json` | UI strings of one language, read through `t()`; every language has the same keys as `en`, in the same order. |
@@ -30,7 +31,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `app.ts` | Builds everything, runs the frame loop, FPS and frame times for the debug overlay; shows the note for a link to a boat not on this device. |
 | `boatStore.ts` | The imported boats on this device (`localStorage`): `storedBoats`, `saveBoat`, `removeBoat`, `chosenBoat`, `setChosenBoat`, `linkBoatId`, `startBoatId`. Imports only `model/boat` and `model/boatProfile`, because `main.ts` reads it first. |
 | `store.ts` | The single store: `AppState`, all actions, the `step` order. `reduce` cuts a fast time-lapse frame into slices and applies a step's speed-up; the `demo` action replays a pilot without logging it. |
-| `appMode.ts` | `AppMode` (`learn`, `easy`, `realistic`, `harbour`) and the mode chip's choices. |
+| `appMode.ts` | `AppMode` (`learn`, `easy`, `realistic`, `harbour`, `exercise`) and `modesForBoat`, the modes a boat offers. |
 | `exerciseRun.ts` | The coach, pure: `ExerciseRun`, `newRun`, `startRun`, `stepExercise` (a step's check and hold), mistakes from alerts and held conditions, waypoints and `restoreWaypoint`, the action log, run events (tack, gybe, gusts), crew and level options, the demo and a step's speed-up. |
 | `exerciseBar.ts` | The step bar's pure part: which control rows a step shows (`barRowsFor`), which row an action works (`barRowOf`), the gennaker rows, Realistic-ropes rows and stations. |
 | `exerciseProgress.ts` | The ticks, best times and watched marks of the exercises on this device (`localStorage`). |
@@ -46,7 +47,9 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | File | What |
 |---|---|
 | `sim.ts` | Per-frame rig state and `step`: controls → boom, jib, sails, ropes. |
-| `boat.ts` | The boat in use as live bindings (`boat`, `boatId`, `boatName`): the Hanse 508 unless `useBoat()` ran first. Read `boat` at call time, never copy it into a module constant. |
+| `boat.ts` | The boat in use as live bindings (`boat`, `boatId`, `boatName`): the Hanse 508 unless `useBoat()` ran first. Read `boat` at call time, never copy it into a module constant. Also the built-in boats (`BUILT_IN_BOATS`, `DINGHY`) and `hasFeature`, `isDinghy`, `boatHasControl`. |
+| `boatMerge.ts` | `mergeBoat`: a boat file written as an overlay on the Hanse's (objects merge, arrays replace, `controls.list` merges by id). |
+| `dinghy.ts` | The Training dinghy's types (`DinghyData`, `DinghyState`, `Sit`), its starting state and the tiller's drawn angle. |
 | `boatProfile.ts` | The boat profile file: `makeBoatProfile`, `checkBoatProfile` (shape against the Hanse 508, then ranges), `fillAddedKeys` for old profiles. Guide: `docs/BOAT_PROFILE.md`. |
 | `rigGeometry.ts`, `hullShape.ts`, `deckVolumes.ts` | Boat data and the static geometry derived from it: hull sections, deck volumes, toerail, channel lanes, the coachroof outline. |
 | `bowGear.ts` | The anchor's fluke, the chain's links and the windlass's deck height as numbers. |
@@ -118,7 +121,8 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `marks.ts` | The four practice buoys (sphere, pole, X topmark) floating on the drawn water, tappable. |
 | `dangerZone.ts` | The red sector the boom sweeps in a gybe, and its faint outline by the lee. |
 | `mooringLines.ts` | The mooring lines in 3D: each line that is on as a tube from its cleat (slack ones sag), our berth's lazy line, and the one the crew walks. |
-| `boat/index.ts` | Builds the boat and applies the solved rig each frame. |
+| `boat/index.ts` | Builds the boat and applies the solved rig each frame; each builder runs only when the boat has its feature. |
+| `boat/dinghy.ts` | The Training dinghy's own parts: deck, open cockpit, centreboard and its case, tiller with its extension, toe straps and ratchet block. |
 | `boat/hull.ts`, `boat/appendages.ts`, `boat/deckGear.ts`, `boat/cockpitHardware.ts`, `boat/rig.ts`, `boat/parts.ts` | Hull (toerail, coamings, roof lip), keel/rudder, deck gear and rope-channel mouldings, wheels/winches/clutches/rope boxes, mast/boom/stays/backstay/guide blocks/furling gearbox, part helpers (blocks, rounded boxes). |
 | `boat/bowGear.ts` | The bow roller, anchor, chain and windlass on the foredeck; static. |
 | `boat/mooringFittings.ts` | The horn cleats and fairleads on the toerail; static. |

@@ -4,7 +4,7 @@ import type { AlertEntry, AlertKind } from './alerts';
 import type { Controls, ControlId } from './controls';
 import type { AnchorPhase, AnchorState } from './anchor';
 import { scopeNeededM } from './anchor';
-import { boat as hanse508, type BoatData } from './boat';
+import { boat as hanse508, boatId, type BoatData } from './boat';
 import type { ClockState } from './clock';
 import {
   gennakerTrimState,
@@ -119,6 +119,8 @@ export type ExerciseSection =
   | 'status';
 export interface ExerciseDef {
   id: string;
+  /** The built-in boat the exercise is for (M113); missing = the Hanse 508. */
+  boat?: string;
   group: ExerciseGroup;
   ropes: RopesMode;
   crew: boolean;
@@ -214,9 +216,14 @@ export function exerciseDef(id: string): ExerciseDef | undefined {
   return EXERCISES.find((exercise) => exercise.id === id);
 }
 
-/** M103: the exercise a Learn entry's "Feel it" plays: the first whose `feelIt` lists the id. */
+/** M113: the exercises written for a boat (an exercise with no `boat` is the Hanse 508's). */
+export function exercisesForBoat(id: string): ExerciseDef[] {
+  return EXERCISES.filter((exercise) => (exercise.boat ?? 'hanse508') === id);
+}
+
+/** M103: the exercise a Learn entry's "Feel it" plays: the first (of the boat in use) whose `feelIt` lists the id. */
 export function feelItFor(entryId: string): ExerciseDef | undefined {
-  return EXERCISES.find((exercise) => exercise.feelIt?.includes(entryId));
+  return exercisesForBoat(boatId).find((exercise) => exercise.feelIt?.includes(entryId));
 }
 
 /** Wind direction minus heading, (−180, 180]; + = wind from starboard (PHASE10_SPEC 3.1). */

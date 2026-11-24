@@ -267,8 +267,8 @@ export async function liveM58Checks({ openPage, viewports, outDir, prefix, probl
       String(await stored(page)),
     );
     check(
-      `bad ${view}: the select has the Hanse 508 only`,
-      (await options(page)).length === 1,
+      `bad ${view}: the select has the two built-in boats only`,
+      (await options(page)).length === 2,
       (await options(page)).join(' | '),
     );
     await page.getByTestId('boat-problems').scrollIntoViewIfNeeded();
@@ -285,7 +285,7 @@ export async function liveM58Checks({ openPage, viewports, outDir, prefix, probl
     const builtIn = await importFile(page, testProfile({ id: 'hanse508', name: 'Mine' }));
     check(
       `bad ${view}: the built-in id`,
-      builtIn === 'This is the built-in Hanse 508: give your boat its own id.',
+      builtIn === 'This is a built-in boat: give your boat its own id.',
       builtIn,
     );
     await context.close();

@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import registry from '../content/registry/parts.json';
 import { mpsToKn } from '../src/model/angles';
+import { DINGHY, HANSE_508, useBoat } from '../src/model/boat';
 import { boatLabelsFor } from '../src/model/boatLabels';
 import {
   GLOSSARIES,
@@ -322,7 +323,11 @@ describe('show-me links (PHASE4_SPEC 3.5, 6.8)', () => {
     for (const entry of withScene) {
       const query = must(entry.showMe, entry.id);
       expect(query.startsWith('?'), entry.id).toBe(true);
+      // A link for the training dinghy is read with the dinghy in use, as the app starts it (M113).
+      const dinghy = new URLSearchParams(query).get('boat') === 'dinghy';
+      if (dinghy) useBoat(DINGHY.id, DINGHY.name, DINGHY.data);
       const back = new URLSearchParams(serializeUrlState(parseUrlState(query, 'low')));
+      if (dinghy) useBoat(HANSE_508.meta.id, HANSE_508.meta.name, HANSE_508);
       for (const [key, value] of new URLSearchParams(query)) {
         expect(back.get(key), `${entry.id}: ${key}`).toBe(value);
         expect(['learn', 'detail', 'debug', 'lang'], `${entry.id}: ${key}`).not.toContain(key);
@@ -610,7 +615,7 @@ describe('groups (PHASE4_SPEC 7.2, 7.6)', () => {
 
   it('the groups have the expected sizes and members', () => {
     expect(GROUPS.map((group) => groupEntries(group).length)).toEqual([
-      19, 13, 15, 9, 22, 23, 13, 14, 34, 10, 20,
+      19, 13, 15, 10, 22, 27, 13, 14, 34, 10, 20,
     ]);
     const samples: Record<string, string> = {
       rope_vang: 'ropes',

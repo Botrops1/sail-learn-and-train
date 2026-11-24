@@ -41,6 +41,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | welcome.body | This app shows a complete beginner what every line, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Diese App zeigt einem Anfänger, was jede Leine, jede Schot und jedes Segel einer Fahrtenyacht tut. Sie bedienen die Steuerung; das 3D-Boot zeigt, was passiert. Segelkenntnisse sind nicht nötig. |
 | welcome.watch | Watch the first exercise | Erste Übung ansehen |
 | welcome.look | Look around the boat | Rund um das Boot umsehen |
+| welcome.dinghy | Start on the training dinghy | Auf der Trainingsjolle beginnen |
 | welcome.close | Close | Schließen |
 | welcome.later | Settings → About shows this again. | Einstellungen → Über zeigt das wieder an. |
 | welcome.again | Show the welcome again | Begrüßung erneut anzeigen |
@@ -79,6 +80,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | debug.selection | Selected | Selected |
 | control.mainsheet | Main sheet | Großschot |
 | control.vang | Vang | Baumniederholer |
+| control.kicker | Kicker | Baumniederholer |
 | control.toppingLift | Topping lift | Toppnant |
 | control.mainFurl | Mainsail out | Großsegel ausrollen |
 | control.less | Less: {name} | Weniger: {name} |
@@ -156,6 +158,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | jib.sheetFightsFurl | The jib is rolled up further than this sheet allows: the sheet pulls against the furling line. Ease the sheet to 100 %, or unfurl the jib. | Die Fock ist weiter eingerollt, als diese Schot zulässt: die Schot zieht gegen die Rollreffleine. Fieren Sie die Schot auf 100 %, oder rollen Sie die Fock aus. |
 | jib.windShadow | With the wind from behind, the mainsail would block the jib's wind and the jib would collapse. The app shows this in a later step. | Bei Wind von hinten würde das Großsegel der Fock den Wind nehmen und die Fock würde zusammenfallen. Die App zeigt das in einem späteren Schritt. |
 | control.wheel | Wheel | Steuerrad |
+| control.tiller | Tiller | Pinne |
 | wheel.centred | centred | mittig |
 | wheel.starboard | {deg}° to starboard | {deg}° nach Steuerbord |
 | wheel.port | {deg}° to port | {deg}° nach Backbord |
@@ -164,6 +167,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | wheel.turnsClockwise | Wheels turned {turns} turns clockwise: the rudder's back edge goes to starboard, so the boat would turn to starboard (right). | Steuerrad {turns} Umdrehungen im Uhrzeigersinn gedreht: Die Hinterkante des Ruderblatts geht nach Steuerbord, das Boot würde also nach Steuerbord (rechts) drehen. |
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Steuerrad {turns} Umdrehungen gegen den Uhrzeigersinn gedreht: Die Hinterkante des Ruderblatts geht nach Backbord, das Boot würde also nach Backbord (links) drehen. |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Die Steuerräder und das Ruder (das Blatt unter dem Heck des Bootes) drehen zusammen. Das Boot dreht nur, solange es Fahrt macht: festgehalten oder gestoppt folgt es dem Steuerrad nicht. |
+| tiller.less | Move the tiller to starboard (the bow turns to port) | Die Pinne nach Steuerbord legen (der Bug dreht nach Backbord) |
+| tiller.more | Move the tiller to port (the bow turns to starboard) | Die Pinne nach Backbord legen (der Bug dreht nach Steuerbord) |
+| tiller.note | The tiller and the rudder (the blade under the back of the boat) move together, the opposite way to where the bow goes: tiller to port, the boat turns to starboard. The boat turns only while she is moving. | Pinne und Ruder (das Blatt unter dem Heck des Bootes) bewegen sich gemeinsam, entgegengesetzt zur Richtung des Bugs: Pinne nach Backbord, das Boot dreht nach Steuerbord. Das Boot dreht nur, solange es fährt. |
 | ropes.mode.easy | Easy mode: | Einfach-Modus: |
 | ropes.mode.easyHint | Easy mode: each line is a slider. Realistic mode (choose it under Mode) works the lines as on the boat: clutches, the winch and your hand. | Einfach-Modus: jede Leine ist ein Schieberegler. Im Modus Realistisch arbeiten die Leinen wie auf dem Boot: mit Klemmen, Winsch und Hand. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its line | Klemmenbänke: Tippen Sie auf eine Klemme, um ihre Leine auszuwählen |
@@ -660,9 +666,10 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | view.language.hint | The whole app switches to this language. The page reloads. | Die ganze App wechselt in diese Sprache. Die Seite wird neu geladen. |
 | boat.label | Boat | Boot |
 | boat.download | Download this boat's profile | Profil dieses Bootes herunterladen |
-| boat.hint | A boat profile is a file with every number of a boat. Start from this one to describe a similar yacht. | Ein Bootsprofil ist eine Datei mit allen Zahlen eines Bootes. Nehmen Sie dieses als Ausgangspunkt, um eine ähnliche Yacht zu beschreiben. |
+| boat.hint | A boat profile is a file with every number of a boat. Start from the Hanse 508's to describe a similar yacht. | Ein Bootsprofil ist eine Datei mit allen Zahlen eines Bootes. Nehmen Sie das der Hanse 508 als Ausgangspunkt, um eine ähnliche Yacht zu beschreiben. |
 | boat.guide | How to make a boat profile | So erstellen Sie ein Bootsprofil |
 | boat.builtIn | {name} (built in) | {name} (integriert) |
+| boat.name.dinghy | Training dinghy | Trainingsjolle |
 | boat.import | Import a boat profile | Bootsprofil importieren |
 | boat.imported | Imported {name}. Choose it above to sail it. | {name} importiert. Wählen Sie es oben aus, um damit zu segeln. |
 | boat.remove | Remove this boat | Dieses Boot entfernen |
@@ -671,7 +678,8 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | boat.problem.tooBig | This file is too big to be a boat profile. | Diese Datei ist zu groß für ein Bootsprofil. |
 | boat.problem.notJson | This file cannot be read: it is not a boat profile. | Diese Datei lässt sich nicht lesen: sie ist kein Bootsprofil. |
 | boat.problem.check | This profile has {count} problems. The first ones: | Dieses Profil hat {count} Probleme. Die ersten: |
-| boat.problem.builtIn | This is the built-in Hanse 508: give your boat its own id. | Das ist die mitgelieferte Hanse 508: geben Sie Ihrem Boot eine eigene id. |
+| boat.problem.builtIn | This is a built-in boat: give your boat its own id. | Das ist ein mitgeliefertes Boot: geben Sie Ihrem Boot eine eigene id. |
+| boat.problem.notInProfile | {key}: not in a boat profile | {key}: nicht in einem Bootsprofil |
 | boat.problem.full | There are already 10 boats on this device: remove one first. | Auf diesem Gerät sind schon 10 Boote: entfernen Sie zuerst eines. |
 | boat.problem.storage | This browser did not let the app keep the boat (private window or full storage). | Dieser Browser hat der App das Boot nicht behalten lassen (privates Fenster oder voller Speicher). |
 | number.thousandsSeparator | , | . |

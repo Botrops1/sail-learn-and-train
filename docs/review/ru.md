@@ -850,6 +850,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Шверт (`part_centreboard`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Centreboard | Шверт |
+| Другие названия | — | — |
+| Коротко | The fin you push down through the bottom of a dinghy. | Плавник, который опускают вниз через дно динги. |
+| Что делает / что значит | The fin you push down through a slot in the bottom of a dinghy. Down, it stops the boat sliding sideways; up, it lets her slide. On many trainers it lifts straight up and is called a daggerboard. | Плавник, который опускают вниз через прорезь в дне динги. Опущенный, он не даёт лодке дрейфовать вбок; поднятый — позволяет ей скользить. На многих учебных лодках его поднимают прямо вверх. |
+| На этой яхте | It stands in a case on the floor, a little behind the mast. | Он стоит в коробке на полу, немного позади мачты. |
+| Типичные ошибки | — | — |
+| «Покажи» | The dinghy seen from above, with the centreboard down in its case on the floor. | Динги сверху, шверт опущен в своей коробке на полу. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ## На палубе
 
 ### блок шкота геннакера (`fit_gennaker_block`)
@@ -1184,6 +1199,21 @@
 
 ## В кокпите
 
+### Блок с храповиком (`fit_ratchet_block`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Ratchet block | Блок с храповиком |
+| Другие названия | — | — |
+| Коротко | The block the mainsheet runs through on the floor. | Блок на полу, через который идёт грота-шкот. |
+| Что делает / что значит | The block the mainsheet runs through on the floor. It turns freely one way and grips the line the other way, so you can hold the sheet with less effort. | Блок на полу, через который идёт грота-шкот. В одну сторону он вращается свободно, в другую — держит трос, так что шкот держать легче. |
+| На этой яхте | It stands on the floor behind the centreboard case; the mainsheet comes down to it from the boom. | Он стоит на полу позади коробки шверта; грота-шкот спускается к нему от гика. |
+| Типичные ошибки | — | — |
+| «Покажи» | The dinghy seen from above: the block on the floor, where the mainsheet comes down from the boom. | Динги сверху: блок на полу, к которому грота-шкот спускается от гика. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### джойстики подруливающих устройств (`fit_thruster_joysticks`)
 
 | Поле | English | Русский |
@@ -1424,6 +1454,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Продолжение румпеля (`part_tiller_extension`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Tiller extension | Продолжение румпеля |
+| Другие названия | — | — |
+| Коротко | A light stick hinged to the end of the tiller. | Лёгкая палка, шарнирно закреплённая на конце румпеля. |
+| Что делает / что значит | A light stick hinged to the end of the tiller, so you can steer while sitting on the side or leaning out. | Лёгкая палка, шарнирно закреплённая на конце румпеля, чтобы управлять, сидя на борту или вывалившись наружу. |
+| На этой яхте | The stick on the front end of the tiller. | Палка на переднем конце румпеля. |
+| Типичные ошибки | — | — |
+| «Покажи» | The dinghy seen from above: the thin stick on the end of the tiller is the extension. It lets you steer from the side deck. | Динги сверху: тонкая палка на конце румпеля — его продолжение. С ним можно управлять с бортового настила. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### пульт авторулевого (`fit_autopilot_control`)
 
 | Поле | English | Русский |
@@ -1454,6 +1499,21 @@
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 
+### Ремни для ног (`fit_toe_straps`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Toe straps | Ремни для ног |
+| Другие названия | — | — |
+| Коротко | Straps along the floor of the cockpit. | Ремни вдоль пола кокпита. |
+| Что делает / что значит | Straps along the floor of the cockpit. You hook your feet under them to lean out over the side without falling in. | Ремни вдоль пола кокпита. Под них подсовывают ноги, чтобы вывалиться за борт и не упасть. |
+| На этой яхте | Two straps on the floor, one each side of the centreboard case. | Два ремня на полу, по одному с каждой стороны коробки шверта. |
+| Типичные ошибки | — | — |
+| «Покажи» | The dinghy seen from above: the two straps lie along the floor, one each side of the centreboard case. | Динги сверху: два ремня лежат вдоль пола, по одному с каждой стороны коробки шверта. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
 ### рукоятка газ-реверс (`engine_control`)
 
 | Поле | English | Русский |
@@ -1466,6 +1526,21 @@
 | Типичные ошибки | Moving the lever from ahead straight to astern. → The gearbox suffers. Stop in neutral for a moment, then go astern.<br>Starting the engine with the lever in gear. → She moves off at once. Put the lever in neutral before you start. | Переводить рычаг с переднего хода сразу на задний. → Коробке передач это вредно. Остановитесь на мгновение в нейтрали, потом включайте задний ход.<br>Запускать двигатель с рычагом, включённым на передачу. → Яхта сразу тронется с места. Поставьте рычаг в нейтраль перед запуском. |
 | «Покажи» | No wind, engine running with the lever two-thirds ahead: about 1,850 rpm and 8 kn. The Engine section has the lever. | Безветрие, двигатель работает, рычаг на две трети вперёд: около 1 850 об/мин и 8 уз. Рычаг находится в разделе «Двигатель». |
 | Достоверность | Seen on the reference boat (photo). | Видно на яхте-образце (фото). |
+| Статус текста | — | черновик |
+| Проверка (ок / как правильно) |  |  |
+
+### Румпель (`part_tiller`)
+
+| Поле | English | Русский |
+|---|---|---|
+| Название | Tiller | Румпель |
+| Другие названия | — | — |
+| Коротко | The bar fixed to the top of the rudder that you steer a small boat with. | Рычаг на верхушке руля, которым управляют маленькой лодкой. |
+| Что делает / что значит | The bar fixed to the top of the rudder that you steer a small boat with. Push it to one side and the bow turns the other way: tiller to port, the boat turns to starboard. | Рычаг на верхушке руля, которым управляют маленькой лодкой. Отведите его в одну сторону — и нос повернётся в другую: румпель влево, лодка поворачивает вправо. |
+| На этой яхте | A bar over the back of the boat, fixed to the rudder. The thin stick on its end is the extension. | Рычаг над кормой, жёстко связан с рулём. Тонкая палка на его конце — продолжение румпеля. |
+| Типичные ошибки | — | — |
+| «Покажи» | The dinghy seen from above. Tap “Tiller” in the Steering section and move it: the tiller swings one way and the bow turns the other. | Динги сверху. Нажмите «Румпель» в разделе «Рулевое управление» и двигайте его: румпель качнётся в одну сторону, а нос повернёт в другую. |
+| Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |
 

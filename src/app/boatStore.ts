@@ -5,7 +5,7 @@
  * module that copies a boat value into a constant at load. Every storage access is in
  * `try/catch` through `globalThis.localStorage`, so tests can put a stand-in there.
  */
-import { HANSE_508 } from '../model/boat';
+import { BUILT_IN_BOATS, HANSE_508 } from '../model/boat';
 import { BOAT_ID_PATTERN, checkBoatProfile, type BoatProfile } from '../model/boatProfile';
 
 export const BOATS_KEY = 'sail-learn.boats';
@@ -13,6 +13,8 @@ export const BOAT_KEY = 'sail-learn.boat';
 export const MAX_BOATS = 10;
 
 const BUILT_IN_ID = HANSE_508.meta.id;
+/** The ids of the boats the app ships with (M113): the Hanse 508 and the Training dinghy. */
+export const BUILT_IN_IDS: ReadonlySet<string> = new Set(BUILT_IN_BOATS.map((b) => b.id));
 
 function storage(): Storage | null {
   try {
@@ -46,7 +48,7 @@ export function storedBoats(): BoatProfile[] {
     const check = checkBoatProfile(entry);
     if (!check.ok) continue;
     const { profile } = check;
-    if (profile.id === BUILT_IN_ID || boats.some((b) => b.id === profile.id)) continue;
+    if (BUILT_IN_IDS.has(profile.id) || boats.some((b) => b.id === profile.id)) continue;
     boats.push(profile);
     if (boats.length >= MAX_BOATS) break;
   }
@@ -66,7 +68,7 @@ function writeBoats(boats: BoatProfile[]): boolean {
 
 /** Adds or replaces (same id) a checked profile. */
 export function saveBoat(profile: BoatProfile): 'ok' | 'builtIn' | 'full' | 'storage' {
-  if (profile.id === BUILT_IN_ID) return 'builtIn';
+  if (BUILT_IN_IDS.has(profile.id)) return 'builtIn';
   const boats = storedBoats();
   const at = boats.findIndex((b) => b.id === profile.id);
   if (at >= 0) boats[at] = profile;
@@ -79,10 +81,11 @@ export function removeBoat(id: string): void {
   writeBoats(storedBoats().filter((b) => b.id !== id));
 }
 
-/** The id chosen last, if it matches `BOAT_ID_PATTERN`; else 'hanse508'. */
+/** The id chosen last, if it is a built-in boat or a stored one; else 'hanse508'. */
 export function chosenBoat(): string {
   const id = readRaw(BOAT_KEY);
-  return id !== null && BOAT_ID_PATTERN.test(id) ? id : BUILT_IN_ID;
+  if (id === null || !BOAT_ID_PATTERN.test(id)) return BUILT_IN_ID;
+  return BUILT_IN_IDS.has(id) || storedBoats().some((b) => b.id === id) ? id : BUILT_IN_ID;
 }
 
 export function setChosenBoat(id: string): void {
@@ -101,10 +104,10 @@ export function linkBoatId(search: string): string {
 
 /**
  * The boat to start with: the link's boat when the address has a query; with no query, the boat
- * chosen last if it is among the stored ones, else the Hanse 508.
+ * chosen last if it is a built-in one or among the stored ones, else the Hanse 508.
  */
 export function startBoatId(search: string): string {
   if (search.replace(/^\?/, '') !== '') return linkBoatId(search);
   const id = chosenBoat();
-  return id !== BUILT_IN_ID && storedBoats().some((b) => b.id === id) ? id : BUILT_IN_ID;
+  return BUILT_IN_IDS.has(id) || storedBoats().some((b) => b.id === id) ? id : BUILT_IN_ID;
 }

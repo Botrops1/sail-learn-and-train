@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { APP_MODES } from '../src/app/appMode';
 import { initialState, reduce, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
+import { DINGHY, HANSE_508, useBoat } from '../src/model/boat';
 import { GROUPS, groupEntries, learnEntry } from '../src/model/glossary';
 import { MODE_LAYOUTS, SECTION_IDS, TAB_OF, sectionAvailable } from '../src/ui/modes';
 
@@ -130,7 +131,11 @@ describe('Show me links (8.8 test 5)', () => {
         if (!query) continue;
         checked++;
         expect(query, id).not.toMatch(/[?&]m=/);
+        // A link for the training dinghy is read with the dinghy in use, as the app starts it (M113).
+        const dinghy = new URLSearchParams(query).get('boat') === 'dinghy';
+        if (dinghy) useBoat(DINGHY.id, DINGHY.name, DINGHY.data);
         const back = new URLSearchParams(serializeUrlState(parseUrlState(query, 'low')));
+        if (dinghy) useBoat(HANSE_508.meta.id, HANSE_508.meta.name, HANSE_508);
         for (const [key, value] of new URLSearchParams(query)) {
           expect(back.get(key), `${id}: ${key}`).toBe(value);
         }

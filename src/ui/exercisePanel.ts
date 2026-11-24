@@ -9,8 +9,9 @@ import {
 import { exerciseStartLink, parseUrlState, waypointLink } from '../app/urlState';
 import type { AppState, Store } from '../app/store';
 import { alertTimeText } from '../model/alerts';
+import { boatId } from '../model/boat';
 import {
-  EXERCISES,
+  exercisesForBoat,
   EXERCISE_SETTINGS,
   exerciseDef,
   exerciseText,
@@ -148,7 +149,7 @@ export function createExercisePanel(
   function renderList(): void {
     const progress = readProgress();
     for (const group of GROUPS) {
-      const inGroup = EXERCISES.filter((exercise) => exercise.group === group);
+      const inGroup = exercisesForBoat(boatId).filter((exercise) => exercise.group === group);
       if (inGroup.length === 0) continue;
       root.append(el('h3', { class: 'section-title' }, [groupTitle(group)]));
       for (const def of inGroup) {

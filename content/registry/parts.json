@@ -45,7 +45,9 @@
     "wiki:significant-wave-height": "https://en.wikipedia.org/wiki/Significant_wave_height",
     "wiki:ship-motions": "https://en.wikipedia.org/wiki/Ship_motions",
     "wiki:spinnaker": "https://en.wikipedia.org/wiki/Spinnaker",
-    "wiki:traveller": "https://en.wikipedia.org/wiki/Traveller_(nautical_fitting)"
+    "wiki:traveller": "https://en.wikipedia.org/wiki/Traveller_(nautical_fitting)",
+    "wiki:tiller": "https://en.wikipedia.org/wiki/Tiller",
+    "wiki:centreboard": "https://en.wikipedia.org/wiki/Centreboard"
   },
   "entries": [
     {"id": "rope_mainsheet", "kind": "rope", "phase": 1, "group": "ropes", "status": "photo-confirmed", "sources": ["photo:clutch-bank-a", "photo:clutch-bank-b", "photo:mainsheet"], "controls": ["rope_mainsheet"], "related": ["part_boom", "fit_mainsheet_boom_blocks", "fit_mainsheet_deck_blocks", "term_ease", "term_gybe"], "showMe": "?wd=90&ws=12&ms=60&cam=top&sel=rope_mainsheet&held=1&sea=flat"},
@@ -66,6 +68,11 @@
     {"id": "part_companionway", "kind": "part", "phase": 1, "group": "deck", "status": "draft", "sources": [], "related": ["part_cockpit", "fit_sprayhood"]},
     {"id": "part_keel", "kind": "part", "phase": 1, "group": "hull", "status": "draft", "sources": ["brochure"], "related": ["part_hull", "part_rudder"]},
     {"id": "part_rudder", "kind": "part", "phase": 1, "group": "hull", "status": "draft", "sources": [], "controls": ["part_rudder"], "related": ["helm_port", "helm_starboard", "part_keel", "fit_autopilot_control"], "showMe": "?wd=90&ws=12&rd=25&cam=top&sel=part_rudder&held=1&sea=flat"},
+    {"id": "part_tiller", "kind": "part", "phase": 113, "group": "cockpit", "status": "draft", "sources": ["wiki:tiller"], "controls": ["part_rudder"], "related": ["part_tiller_extension", "part_rudder"], "showMe": "?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=top&sel=part_tiller"},
+    {"id": "part_tiller_extension", "kind": "part", "phase": 113, "group": "cockpit", "status": "draft", "sources": ["wiki:tiller"], "controls": ["part_rudder"], "related": ["part_tiller", "part_rudder"], "showMe": "?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=top&sel=part_tiller_extension"},
+    {"id": "part_centreboard", "kind": "part", "phase": 113, "group": "hull", "status": "draft", "sources": ["wiki:centreboard"], "related": ["part_hull"], "showMe": "?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=top&sel=part_centreboard"},
+    {"id": "fit_toe_straps", "kind": "part", "phase": 113, "group": "cockpit", "status": "draft", "sources": ["wiki:tiller"], "related": ["part_cockpit"], "showMe": "?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=top&sel=fit_toe_straps"},
+    {"id": "fit_ratchet_block", "kind": "part", "phase": 113, "group": "cockpit", "status": "draft", "sources": ["wiki:tiller"], "related": ["rope_mainsheet"], "showMe": "?boat=dinghy&wd=60&ws=8&ms=40&held=1&sea=flat&cam=top&sel=fit_ratchet_block"},
     {"id": "part_saildrive", "kind": "part", "phase": 2, "group": "hull", "status": "draft", "sources": ["brochure"], "related": ["engine_control", "part_hull"]},
     {"id": "part_lifelines", "kind": "part", "phase": 1, "group": "deck", "status": "draft", "sources": ["brochure"], "related": ["part_deck"]},
     {"id": "env_water", "kind": "environment", "phase": 1, "group": "sea", "status": "draft", "sources": [], "related": ["env_wake", "env_wind", "env_buoy"], "showMe": "?wd=90&ws=20&ms=40&js=100&cam=side-port&sel=env_water&sea=open"},

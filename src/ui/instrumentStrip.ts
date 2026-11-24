@@ -5,7 +5,7 @@ import { el } from './dom';
 import { t } from './i18n';
 import { setText } from './stepper';
 import { sideLetter } from './autopilotPanel';
-import { boat as boatData } from '../model/boat';
+import { boat as boatData, hasFeature } from '../model/boat';
 import { pointToMap } from '../model/lowSpeed';
 import { isClockWind } from '../model/windModes';
 import { depthAt } from '../model/seabed';
@@ -142,7 +142,10 @@ export function createInstrumentStrip(
         cell('00.0 kn', speed),
         cell('HDG 000°', heading),
         cell('Heel 00° S', heel, undefined, 'strip-cell-sailing'),
-        cell('AUTO 000° S', auto, 'AUTO wind 000° S', 'strip-cell-sailing'),
+        // A boat with no autopilot (the dinghy, M113) has no place kept for its badge.
+        ...(hasFeature('autopilot')
+          ? [cell('AUTO 000° S', auto, 'AUTO wind 000° S', 'strip-cell-sailing')]
+          : []),
       ]),
       el('span', { class: 'strip-line strip-winds' }, [
         cell('True 000° S · 00 kn', trueWind),

@@ -1,4 +1,7 @@
+import { setChosenBoat } from '../app/boatStore';
 import type { Store } from '../app/store';
+import { boatId } from '../model/boat';
+import { exercisesForBoat } from '../model/exercises';
 import { el } from './dom';
 import { loadExercise } from './exercisePanel';
 import { t } from './i18n';
@@ -32,7 +35,7 @@ function markSeen(): void {
 
 /**
  * The welcome card (M85, PHASE_LAUNCH_SPEC 9.3): a modal card over the whole window with three
- * ways on: watch the first exercise, look around the boat, or close. Any way of closing it
+ * ways on: watch the first exercise, look around the boat, start on the training dinghy (M113), or close. Any way of closing it
  * remembers that it was seen. `open()` shows it again (Settings → About).
  */
 export function createWelcome(
@@ -70,8 +73,15 @@ export function createWelcome(
     const button = (testid: string, className: string, text: string): HTMLButtonElement =>
       el('button', { type: 'button', class: className, 'data-testid': testid }, [text]);
 
-    const watch = canWatch ? button('welcome-watch', 'exercise-start', t('welcome.watch')) : null;
+    // M113: "Watch the first exercise" is the Hanse's; a boat with no exercises has none to watch.
+    const watch =
+      canWatch && exercisesForBoat(boatId).length > 0
+        ? button('welcome-watch', 'exercise-start', t('welcome.watch'))
+        : null;
     const look = button('welcome-look', 'exercise-start', t('welcome.look'));
+    // M113: start on the Training dinghy (not shown when it is the boat in use).
+    const dinghy =
+      boatId === 'dinghy' ? null : button('welcome-dinghy', 'exercise-button', t('welcome.dinghy'));
     const closeButton = button('welcome-close', 'exercise-button', t('welcome.close'));
 
     watch?.addEventListener('click', () => {
@@ -85,6 +95,14 @@ export function createWelcome(
       close();
       store.dispatch({ type: 'setAppMode', mode: 'learn' });
       showLearn();
+    });
+    dinghy?.addEventListener('click', () => {
+      close();
+      setChosenBoat('dinghy');
+      // The language lives only in the link: keep it, as the Settings chooser does.
+      const { language } = store.getState().settings;
+      const langKey = language === 'en' ? '' : `&lang=${language}`;
+      window.location.assign(`${window.location.pathname}?v=1&boat=dinghy${langKey}`);
     });
     closeButton.addEventListener('click', close);
 
@@ -102,6 +120,7 @@ export function createWelcome(
         el('p', { class: 'welcome-body' }, [t('welcome.body')]),
         ...(watch ? [watch] : []),
         look,
+        ...(dinghy ? [dinghy] : []),
         closeButton,
         el('p', { class: 'welcome-later' }, [t('welcome.later')]),
       ],

@@ -41,6 +41,7 @@
 | welcome.body | This app shows a complete beginner what every line, sheet and sail of a cruising yacht does. You work the controls; the 3D boat shows what happens. No sailing knowledge needed. | Это приложение показывает новичку, что делает каждый трос, шкот и парус прогулочной яхты. Вы управляете снастями, а 3D-яхта показывает, что происходит. Знать парусный спорт не нужно. |
 | welcome.watch | Watch the first exercise | Посмотреть первое упражнение |
 | welcome.look | Look around the boat | Осмотреть яхту |
+| welcome.dinghy | Start on the training dinghy | Начать на учебном динги |
 | welcome.close | Close | Закрыть |
 | welcome.later | Settings → About shows this again. | Это окно снова можно открыть: Настройки → О программе. |
 | welcome.again | Show the welcome again | Показать приветствие снова |
@@ -79,6 +80,7 @@
 | debug.selection | Selected | Selected |
 | control.mainsheet | Main sheet | Гика-шкот |
 | control.vang | Vang | Оттяжка гика |
+| control.kicker | Kicker | Оттяжка гика |
 | control.toppingLift | Topping lift | Топенант гика |
 | control.mainFurl | Mainsail out | Грот наружу |
 | control.less | Less: {name} | Меньше: {name} |
@@ -156,6 +158,7 @@
 | jib.sheetFightsFurl | The jib is rolled up further than this sheet allows: the sheet pulls against the furling line. Ease the sheet to 100 %, or unfurl the jib. | Стаксель закручен дальше, чем позволяет этот шкот: шкот тянет против линя закрутки. Потравите шкот до 100 % или раскрутите стаксель. |
 | jib.windShadow | With the wind from behind, the mainsail would block the jib's wind and the jib would collapse. The app shows this in a later step. | При ветре сзади грот закрыл бы стакселю ветер, и стаксель бы обвис. Приложение покажет это на одном из следующих шагов. |
 | control.wheel | Wheel | Штурвал |
+| control.tiller | Tiller | Румпель |
 | wheel.centred | centred | по центру |
 | wheel.starboard | {deg}° to starboard | {deg}° к правому борту |
 | wheel.port | {deg}° to port | {deg}° к левому борту |
@@ -164,6 +167,9 @@
 | wheel.turnsClockwise | Wheels turned {turns} turns clockwise: the rudder's back edge goes to starboard, so the boat would turn to starboard (right). | Штурвалы повёрнуты по часовой стрелке, оборотов: {turns}. Задняя кромка пера руля уходит к правому борту, поэтому яхта повернула бы к правому борту (вправо). |
 | wheel.turnsAnticlockwise | Wheels turned {turns} turns anticlockwise: the rudder's back edge goes to port, so the boat would turn to port (left). | Штурвалы повёрнуты против часовой стрелки, оборотов: {turns}. Задняя кромка пера руля уходит к левому борту, поэтому яхта повернула бы к левому борту (влево). |
 | wheel.visualOnly | The wheels and the rudder (the blade under the back of the boat) turn together. The boat turns only while she is moving: held still, or stopped, she does not answer the wheel. | Штурвалы и перо руля (лопасть под кормой яхты) поворачиваются вместе. Яхта поворачивает, только пока движется: если её держат на месте или она остановилась, она не слушается штурвала. |
+| tiller.less | Move the tiller to starboard (the bow turns to port) | Переложить румпель к правому борту (нос уйдёт влево) |
+| tiller.more | Move the tiller to port (the bow turns to starboard) | Переложить румпель к левому борту (нос уйдёт вправо) |
+| tiller.note | The tiller and the rudder (the blade under the back of the boat) move together, the opposite way to where the bow goes: tiller to port, the boat turns to starboard. The boat turns only while she is moving. | Румпель и руль (перо под кормой лодки) двигаются вместе, в сторону, противоположную той, куда идёт нос: румпель влево — лодка поворачивает вправо. Лодка поворачивает только на ходу. |
 | ropes.mode.easy | Easy mode: | Простой режим: |
 | ropes.mode.easyHint | Easy mode: each line is a slider. Realistic mode (choose it under Mode) works the lines as on the boat: clutches, the winch and your hand. | Простой режим: каждый конец — ползунок. Реалистичный режим (выберите его в разделе «Режим») работает с концами как на яхте: стопоры, лебёдка и ваша рука. |
 | clutch.drawingLabel | Clutch banks: tap a clutch to select its line | Блоки стопоров: нажмите на стопор, чтобы выбрать его конец |
@@ -660,9 +666,10 @@
 | view.language.hint | The whole app switches to this language. The page reloads. | Всё приложение переходит на этот язык. Страница перезагрузится. |
 | boat.label | Boat | Яхта |
 | boat.download | Download this boat's profile | Скачать профиль этой яхты |
-| boat.hint | A boat profile is a file with every number of a boat. Start from this one to describe a similar yacht. | Профиль яхты — файл со всеми её числами. Начните с этого, чтобы описать похожую яхту. |
+| boat.hint | A boat profile is a file with every number of a boat. Start from the Hanse 508's to describe a similar yacht. | Профиль яхты — файл со всеми её числами. Начните с профиля Hanse 508, чтобы описать похожую яхту. |
 | boat.guide | How to make a boat profile | Как сделать профиль яхты |
 | boat.builtIn | {name} (built in) | {name} (встроенная) |
+| boat.name.dinghy | Training dinghy | Учебный динги |
 | boat.import | Import a boat profile | Загрузить профиль яхты |
 | boat.imported | Imported {name}. Choose it above to sail it. | Загружено: {name}. Выберите её выше, чтобы ходить на ней. |
 | boat.remove | Remove this boat | Удалить эту яхту |
@@ -671,7 +678,8 @@
 | boat.problem.tooBig | This file is too big to be a boat profile. | Файл слишком большой для профиля яхты. |
 | boat.problem.notJson | This file cannot be read: it is not a boat profile. | Этот файл не читается: это не профиль яхты. |
 | boat.problem.check | This profile has {count} problems. The first ones: | В этом профиле проблем: {count}. Первые из них: |
-| boat.problem.builtIn | This is the built-in Hanse 508: give your boat its own id. | Это встроенная Hanse 508: дайте своей яхте собственный идентификатор. |
+| boat.problem.builtIn | This is a built-in boat: give your boat its own id. | Это встроенная лодка: дайте своей лодке собственный идентификатор. |
+| boat.problem.notInProfile | {key}: not in a boat profile | {key}: нет в профиле яхты |
 | boat.problem.full | There are already 10 boats on this device: remove one first. | На этом устройстве уже 10 яхт: сначала удалите одну. |
 | boat.problem.storage | This browser did not let the app keep the boat (private window or full storage). | Браузер не дал приложению сохранить яхту (приватное окно или память заполнена). |
 | number.thousandsSeparator | , | U+00A0 |

@@ -1,5 +1,5 @@
 import type { AppState, Store } from '../app/store';
-import { boat } from '../model/boat';
+import { boat, hasFeature } from '../model/boat';
 import { exerciseDef } from '../model/exercises';
 import { gennakerTrimState } from '../model/gennaker';
 import { isTorn, sailTrim, type SailName, type TrimState } from '../model/trim';
@@ -12,6 +12,11 @@ const SAILS: { sail: SailName; partId: string }[] = [
   { sail: 'main', partId: 'sail_main' },
   { sail: 'jib', partId: 'sail_jib' },
 ];
+
+/** The sails the boat in use carries (M113: a boat without a jib has the main only). */
+function sailsOfBoat(): { sail: SailName; partId: string }[] {
+  return SAILS.filter(({ sail }) => sail !== 'jib' || hasFeature('jib'));
+}
 
 /** The state chip's colour family: green good, amber luffing, red stalled, grey the rest. */
 function tone(state: TrimState | 'torn'): 'good' | 'luffing' | 'stalled' | 'idle' {
@@ -129,7 +134,7 @@ function buildGennakerBlock(store: Store): HTMLElement {
  * `createSailWear`). The words carry the meaning; the colour only helps.
  */
 export function createSailsPanel(store: Store): HTMLElement {
-  const rows = SAILS.map(({ sail, partId }) => {
+  const rows = sailsOfBoat().map(({ sail, partId }) => {
     const chip = el('span', { class: 'trim-chip', 'data-testid': `trim-chip-${sail}` });
     const hint = el('p', { class: 'trim-hint', 'data-testid': `trim-hint-${sail}` });
     const root = el(
@@ -146,14 +151,15 @@ export function createSailsPanel(store: Store): HTMLElement {
     return { sail, root, chip, hint };
   });
 
-  const gennaker = buildGennakerBlock(store);
+  // The gennaker block only on a boat that can carry one (M113).
+  const gennaker = hasFeature('gennaker') ? buildGennakerBlock(store) : null;
   const root = el(
     'section',
     { class: 'sails-panel', 'data-testid': 'sails-panel', 'aria-label': t('trim.label') },
     [
       el('p', { class: 'hint trim-intro explain' }, [t('trim.intro')]),
       ...rows.map((row) => row.root),
-      gennaker,
+      ...(gennaker ? [gennaker] : []),
     ],
   );
 
@@ -185,7 +191,7 @@ export function createSailsPanel(store: Store): HTMLElement {
  * with its name and a wear bar once it has flogged, and Repair sails when one is torn.
  */
 export function createSailWear(store: Store): HTMLElement {
-  const rows = SAILS.map(({ sail }) => {
+  const rows = sailsOfBoat().map(({ sail }) => {
     const barFill = el('span', { class: 'trim-wear-fill' });
     const wearText = el('span', { class: 'trim-wear-text' });
     const wear = el('div', { class: 'trim-wear', 'data-testid': `trim-wear-${sail}`, hidden: '' }, [

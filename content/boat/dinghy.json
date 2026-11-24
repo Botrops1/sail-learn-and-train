@@ -1,0 +1,107 @@
+{
+  "$comment": "Training dinghy for sail-learn-and-train: an overlay on hanse508.json (src/model/boatMerge.ts). Only the keys that differ. A generic one-person trainer between a Topper and a Laser Pico (docs/BOAT_REFERENCE.md section 7).",
+  "base": "hanse508",
+  "meta": {
+    "id": "dinghy",
+    "name": "Training dinghy",
+    "model": "Generic one-person training dinghy",
+    "variant": "Cat rig (one sail) on an unstayed two-piece mast, daggerboard-type centreboard, transom-hung rudder with a tiller and extension, mainsheet from the boom end to a ratchet block on the floor"
+  },
+  "features": {
+    "jib": false, "mainFurling": false, "gennaker": false, "winches": false, "wheel": false, "engine": false,
+    "autopilot": false, "anchor": false, "harbour": false, "cabin": false, "standingRigging": false, "toppingLift": false
+  },
+  "dimensions": {
+    "source": "assumption between the Topper and the Laser Pico (Wikipedia class pages, 2026-11-23)",
+    "loa": 3.45, "hullLength": 3.45, "lwl": 3.2, "beam": 1.3, "draft": 0.9,
+    "displacementTonnes": 0.125, "mastAboveWaterline": 5.8, "engineHp": 0,
+    "sailAreaM2": { "mainInMastFurling": 5.2, "mainStandardBattened": 5.2, "selfTackingJib": 0, "gennaker": 0, "reacher": 0, "source": "assumption (5.2 m2 main only)" },
+    "massesKg": { "lightshipStandardKeel": 55, "lightCraftStandardKeel": 55, "fullyLoadedStandardKeelCatA": 125, "rigSheetDisplacement": 55, "ballast": 0 },
+    "rightingMomentKNmAt30Deg": 0.6,
+    "rightingMomentSource": "assumption for M113 only: the hull and a sailor sitting on the side together; M114 replaces it by dinghy.rightingNmByHeelDeg and the sailor's weight"
+  },
+  "hull": {
+    "stemX": 1.25, "bowFittingTipX": 1.25, "transomX": -2.2,
+    "deckEdgeHalfBeam": { "points": [[1.25, 0.03], [1.1, 0.2], [0.8, 0.38], [0.4, 0.53], [0, 0.61], [-0.5, 0.65], [-1.0, 0.65], [-1.6, 0.62], [-2.2, 0.55]] },
+    "sheerHeight": { "points": [[1.25, 0.45], [0.5, 0.38], [-0.5, 0.35], [-2.2, 0.33]] },
+    "waterline": { "fwdX": 1.15, "aftX": -2.05, "transomBottomY": 0.04 },
+    "canoeBody": { "maxDepthBelowWL": 0.16, "deepestX": -0.4 },
+    "rudder": { "stockX": -2.27, "topY": 0.3, "bottomY": -0.6, "chordTop": 0.26, "chordBottom": 0.2, "maxAngleDeg": 35, "maxAngleSource": "assumption" },
+    "thrusters": []
+  },
+  "rig": {
+    "mast": { "x": 0, "footY": 0.37, "topY": 5.8, "airDraftY": 5.8, "sectionForeAft": 0.065, "sectionAthwart": 0.065, "sectionSource": "assumption: round aluminium tube, unstayed" },
+    "boom": { "gooseneck": [0, 1.05, 0], "length": 2.4, "maxSwingDeg": 75, "maxSwingSource": "assumption: no shrouds; the sheet stops the boom; 75 keeps the gybe rule startPushFactor (0.85) above sin2(maxSwing - gybeHysteresis) = 0.75" },
+    "mainsheet": { "system": "Centre mainsheet: boom end block to a ratchet block on the floor, tail in the sailor's hand", "boomDistance": 2.2, "deckBlocks": { "x": -1.55, "y": 0.18, "halfZ": 0.04 }, "partsPerSide": 1 },
+    "vang": { "mastPoint": [0, 0.5, 0], "boomDistance": 0.55, "type": "Kicker: a rope tackle from the mast foot to the boom", "render": "A rope tackle", "strutStopDeg": -12, "strutStopSource": "assumption: no strut; the boom droops until the sail's leech holds it" }
+  },
+  "sails": {
+    "main": { "type": "Dacron sail with a sleeve round the mast, no furling", "tackHeightAboveBoom": 0.07, "headY": 5.7, "footLength": 2.3, "modelledAreaM2": 5.27, "officialAreaM2": 5.2 },
+    "jib": { "officialAreaM2": 0 },
+    "gennaker": { "officialAreaM2": 0 }
+  },
+  "ropes": {
+    "list": [
+      { "id": "rope_mainsheet", "controlId": "ctl_mainsheet", "working": "boom end block <-> ratchet block on the floor, tail to the hand", "colorKey": "mainsheet" },
+      { "id": "rope_vang", "controlId": "ctl_vang", "working": "mast foot <-> boom (kicker tackle)", "colorKey": "control" }
+    ]
+  },
+  "controls": {
+    "list": [
+      { "id": "ctl_mainsheet", "default": 50 },
+      { "id": "ctl_vang", "label": "Kicker", "default": 50 },
+      { "id": "ctl_topping_lift", "default": 100 },
+      { "id": "ctl_main_furl", "default": 100 },
+      { "id": "ctl_rudder", "label": "Tiller", "min": -35, "max": 35, "default": 0 },
+      { "id": "ctl_wind_speed", "max": 25, "default": 8 }
+    ]
+  },
+  "steering": {
+    "rudderSign": "ctl_rudder > 0: the rudder's back edge to starboard and the tiller to port; the boat turns to starboard. The tiller is always moved the opposite way to where the bow should go.",
+    "rudderSignSource": "Wikipedia, Tiller"
+  },
+  "modelDetail": {
+    "hullSectionExponent": 3,
+    "boomSection": { "height": 0.06, "width": 0.045 },
+    "gooseneckSize": 0.05,
+    "block": { "radius": 0.025 },
+    "rudderThickness": 0.03,
+    "vangTackleOffset": 0.03
+  },
+  "visual": {
+    "ropeRenderRadius": 0.008,
+    "labels3d": {
+      "list": [
+        { "id": "sail_main", "at": "mainSail" },
+        { "id": "part_mast", "at": [0, 3.6, 0] },
+        { "id": "part_boom", "at": "boom", "distance": 1.4 },
+        { "id": "rope_mainsheet", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "rope_vang", "at": "rope", "strand": 0, "fraction": 0.5 },
+        { "id": "part_tiller", "at": [-1.8, 0.55, 0] },
+        { "id": "part_rudder", "at": [-2.27, -0.25, 0] },
+        { "id": "part_centreboard", "at": [-0.15, 0.4, 0] },
+        { "id": "fit_ratchet_block", "at": [-1.55, 0.3, 0] },
+        { "id": "fit_toe_straps", "at": [-1.1, 0.25, 0.2] }
+      ]
+    }
+  },
+  "physics": {
+    "mass": { "payloadKg": 70, "payloadNote": "assumption: one adult sailor" },
+    "hull": { "wettedSurfaceM2": 2.6, "linearDragNPerMps": 3, "effectiveDraftM": 0.9, "clrDepthM": 0.35, "rudderAreaM2": 0.12 },
+    "windage": { "areaM2": 0.8 },
+    "steering": { "turnLengthM": 4, "yawLagS": 0.6 },
+    "lowSpeed": { "cgX": -0.5, "keelLiftNPerMps2": 700, "lateralAreaM2": 0.15, "lateralDragCoefficient": 0.6, "swayLinearDragNPerMps": 10, "radiusOfGyrationM": 0.9, "yawLinearDampingNmPerRadS": 40, "windageSideAreaM2": 1.2 },
+    "heel": { "maxHeelDeg": 50, "overpoweredHeelDeg": 20, "roundUpMinHeelDeg": 20 },
+    "gybe": { "boomMassKg": 3, "sailMassKg": 2 }
+  },
+  "dinghy": {
+    "$comment": "Parts only the dinghy has (PHASE_DINGHY_SPEC 7.2). M114 adds crew, rightingNmByHeelDeg, board and outhaul; M115 seats; M116 capsize.",
+    "centreboard": { "x": -0.15, "chordM": 0.32, "depthBelowHullM": 0.75, "thicknessM": 0.02, "caseTopY": 0.3 },
+    "tiller": { "pivot": [-2.27, 0.42, 0], "lengthM": 1.0, "extensionM": 0.75 },
+    "toeStraps": { "fromX": -1.6, "toX": -0.6, "halfZ": 0.2, "y": 0.14 },
+    "ratchetBlock": [-1.55, 0.18, 0],
+    "sheetHand": [-1.4, 0.55, 0.45],
+    "cockpit": { "fwdX": -0.45, "aftX": -2.1, "halfWidth": 0.48, "floorY": 0.14 },
+    "sideDeckWidthM": 0.16
+  }
+}

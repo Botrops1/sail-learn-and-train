@@ -13,7 +13,15 @@ import type { AutopilotState } from '../model/autopilot';
 import { controlSpec, normalizeWindFrom, type ControlId, type Controls } from '../model/controls';
 import { clockParam, defaultClockUtcMs, parseClockParam } from '../model/clock';
 import { settledJibUnfurled } from '../model/jib';
-import { HANSE_508, boatId } from '../model/boat';
+import {
+  HANSE_508,
+  boat as boatInUse,
+  boatHasControl,
+  boatId,
+  hasFeature,
+  isDinghy,
+} from '../model/boat';
+import { modesForBoat } from './appMode';
 import { isLanguage } from '../model/languages';
 import { isRegisteredPartId } from '../model/registry';
 import {
@@ -92,6 +100,61 @@ export const URL_CONTROLS: readonly (readonly [string, ControlId])[] = [
   ['ws', 'ctl_wind_speed'],
 ];
 
+/**
+ * M113 (PHASE_DINGHY_SPEC 7.4): link keys for things the Training dinghy does not have: the
+ * autopilot, engine, place and harbour, lines, anchor, Realistic mode, gennaker and pictures,
+ * and the Helm view. A dinghy link ignores them and never writes them.
+ */
+const DINGHY_IGNORED_KEYS: readonly string[] = [
+  'ap',
+  'apt',
+  'eng',
+  'lv',
+  'pl',
+  'ml',
+  'tr',
+  'fd',
+  'ba',
+  'pe',
+  'pn',
+  'ln',
+  'an',
+  'ax',
+  'as',
+  'st',
+  'co',
+  'wp',
+  'wsb',
+  'hd',
+  'gb',
+  'gn',
+  'gx',
+  'pic',
+  'tv',
+  'hw',
+  'hl',
+  'jr',
+];
+
+/**
+ * A link's keys as the boat in use reads them: on the dinghy the keys above and the controls it
+ * does not show are removed, a mode the boat does not offer (Realistic, Harbour) is dropped so
+ * the link opens in Easy, and Helm is Side. The Hanse's keys pass unchanged.
+ */
+function paramsForBoat(source: URLSearchParams): URLSearchParams {
+  if (!isDinghy()) return source;
+  const params = new URLSearchParams(source);
+  for (const key of DINGHY_IGNORED_KEYS) params.delete(key);
+  for (const [key, id] of URL_CONTROLS) if (!boatHasControl(id)) params.delete(key);
+  const modes = modesForBoat(boatInUse, boatId);
+  const m = params.get('m');
+  if (m !== null && !(modes as readonly string[]).includes(m)) params.delete('m');
+  const mode = params.get('mode');
+  if (mode !== null && !(modes as readonly string[]).includes(mode)) params.delete('mode');
+  if (params.get('cam') === 'helm') params.set('cam', 'side-port');
+  return params;
+}
+
 const INTEGER = /^-?\d+$/;
 /** A decimal such as `0.25` (the time scale `tx`). */
 const DECIMAL = /^\d+(\.\d+)?$/;
@@ -107,11 +170,13 @@ export function parseUrlState(
   search: string,
   fallbackDetail: Detail = DEFAULT_SETTINGS.detail,
 ): AppState {
-  const params = new URLSearchParams(search);
+  const params = paramsForBoat(new URLSearchParams(search));
 
-  // An exercise link (M66): the exercise's own start, plus the viewer's keys.
+  // An exercise link (M66): the exercise's own start, plus the viewer's keys. An exercise written
+  // for another boat opens without it (M113).
   const exerciseId = params.get('ex');
-  const exercise = exerciseId === null ? undefined : exerciseDef(exerciseId);
+  const found = exerciseId === null ? undefined : exerciseDef(exerciseId);
+  const exercise = found && (found.boat ?? HANSE_508.meta.id) === boatId ? found : undefined;
   if (exercise) return parseExercise(params, exercise, fallbackDetail);
 
   const controls: Partial<Controls> = {};
@@ -784,8 +849,15 @@ function parseBoat(
     } else if (start) boatState.speedMps = 0;
   }
   const ap = params.get('ap');
+  // A boat with no autopilot (the dinghy) is always steered by hand.
   const mode =
-    ap === 'off' ? 'off' : ap === 'wind' ? 'wind' : ap === null && start ? 'off' : 'heading';
+    ap === 'off' || !hasFeature('autopilot')
+      ? 'off'
+      : ap === 'wind'
+        ? 'wind'
+        : ap === null && start
+          ? 'off'
+          : 'heading';
   const apt = params.get('apt');
   const targetDeg =
     mode === 'wind'
@@ -1011,6 +1083,11 @@ export function serializeUrlState(state: AppState): string {
   if (state.picture === 'traveller' && state.travellerCarPct !== 0)
     params.set('tv', String(state.travellerCarPct));
   if (state.settings.debug) params.set('debug', '1');
+  // The dinghy has none of these things (M113): its link never carries their keys.
+  if (isDinghy()) {
+    for (const key of DINGHY_IGNORED_KEYS) params.delete(key);
+    for (const [key, id] of URL_CONTROLS) if (!boatHasControl(id)) params.delete(key);
+  }
   // Commas and colons need no escaping in a query (co=a5,b3 and ln=sp:2.55 stay readable).
   return `?${params.toString().replace(/%2C/g, ',').replace(/%3A/g, ':')}`;
 }

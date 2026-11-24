@@ -1,5 +1,5 @@
 import type { AppState, Store } from '../app/store';
-import { boat } from '../model/boat';
+import { boat, hasFeature, isDinghy } from '../model/boat';
 import type { RopeStatus } from '../model/boomSolver';
 import { controlSpec, SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/controls';
 import { mainFurlLengths } from '../model/mainFurl';
@@ -98,7 +98,19 @@ export const CONTROL_VIEWS: readonly ControlView[] = [
 export function controlView(id: ControlId): ControlView {
   const view = CONTROL_VIEWS.find((candidate) => candidate.id === id);
   if (!view) throw new Error(`No panel view for ${id}.`);
+  return named(view);
+}
+
+/** A boat without a wheel is steered with a tiller, and the dinghy's vang is a kicker (M113). */
+function named(view: ControlView): ControlView {
+  if (view.id === 'ctl_rudder' && !hasFeature('wheel')) return { ...view, name: 'control.tiller' };
+  if (view.id === 'ctl_vang' && isDinghy()) return { ...view, name: 'control.kicker' };
   return view;
+}
+
+/** Every control's view as the boat in use names it (M113). */
+export function controlViews(): ControlView[] {
+  return CONTROL_VIEWS.map(named);
 }
 
 /** "Load 1.8 kN (about 180 kg)": newtons in kN with one decimal, kg rounded to 10 kg. */
@@ -200,6 +212,10 @@ function metaLines(view: ControlView, state: AppState): string[] {
     }
     case 'ctl_rudder': {
       const rudder = state.rig.applied.rudder;
+      if (!hasFeature('wheel')) {
+        lines.push(t('tiller.note'));
+        break;
+      }
       const turns = Math.abs(wheelTurns(rudder));
       if (Math.round(Math.abs(rudder)) > 0) {
         lines.push(
@@ -257,8 +273,21 @@ export function createControl(
 
   const wheel = view.unit === 'rudder';
   const sheet = SHEET_CONTROL_IDS.has(view.id);
-  const lessKey = wheel ? 'wheel.less' : sheet ? 'control.trim' : 'control.less';
-  const moreKey = wheel ? 'wheel.more' : sheet ? 'control.ease' : 'control.more';
+  const tiller = wheel && !hasFeature('wheel');
+  const lessKey = tiller
+    ? 'tiller.less'
+    : wheel
+      ? 'wheel.less'
+      : sheet
+        ? 'control.trim'
+        : 'control.less';
+  const moreKey = tiller
+    ? 'tiller.more'
+    : wheel
+      ? 'wheel.more'
+      : sheet
+        ? 'control.ease'
+        : 'control.more';
   const element = el('div', { class: 'control', 'data-part-id': view.partId }, [
     el('div', { class: 'control-head' }, [
       el('label', { for: inputId, class: 'control-name' }, [name]),

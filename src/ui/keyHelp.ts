@@ -1,3 +1,4 @@
+import { boat, hasFeature } from '../model/boat';
 import { el } from './dom';
 import { t, type StringKey } from './i18n';
 
@@ -20,6 +21,16 @@ const ROWS: readonly (readonly [readonly string[], StringKey])[] = [
   [['1–4', 'Space', 'Enter'], 'keys.bar'],
   [['H', '?'], 'keys.help'],
 ];
+
+/** Whether the boat in use has what a key works (M113: the dinghy has no jib, autopilot or thrusters). */
+function keyApplies(text: StringKey): boolean {
+  if (text === 'keys.jib') return hasFeature('jib');
+  if (text === 'keys.autopilot') return hasFeature('autopilot');
+  if (text === 'keys.bowThruster' || text === 'keys.sternThruster') {
+    return boat.hull.thrusters.length > 0;
+  }
+  return true;
+}
 
 /** Made once; the dialog is built each time it opens (as the language dialog is). */
 export function createKeyHelp(): KeyHelp {
@@ -48,7 +59,7 @@ export function createKeyHelp(): KeyHelp {
     if (backdrop) return;
     returnTo = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const list = el('dl', { class: 'key-list' });
-    for (const [caps, text] of ROWS) {
+    for (const [caps, text] of ROWS.filter(([, key]) => keyApplies(key))) {
       list.append(
         el(
           'dt',

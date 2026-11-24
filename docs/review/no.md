@@ -820,6 +820,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Sentralbord (`part_centreboard`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Centreboard | Sentralbord |
+| Andre navn | — | — |
+| Kort | The fin you push down through the bottom of a dinghy. | Finnen du skyver ned gjennom bunnen på en jolle. |
+| Hva det gjør / hva det betyr | The fin you push down through a slot in the bottom of a dinghy. Down, it stops the boat sliding sideways; up, it lets her slide. On many trainers it lifts straight up and is called a daggerboard. | Finnen du skyver ned gjennom en åpning i bunnen på en jolle. Nede hindrer den båten i å gli sidelengs; oppe lar den henne gli. På mange treningsbåter løftes den rett opp og kalles et daggerboard. |
+| På denne båten | It stands in a case on the floor, a little behind the mast. | Den står i en kasse på gulvet, litt bak masten. |
+| Typiske feil | — | — |
+| «Vis meg» | The dinghy seen from above, with the centreboard down in its case on the floor. | Jollen sett ovenfra, med sentralbordet nede i kassen på gulvet. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Skrog (`part_hull`)
 
 | Felt | English | Norsk |
@@ -1289,6 +1304,21 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |
 
+### Fotstropper (`fit_toe_straps`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Toe straps | Fotstropper |
+| Andre navn | — | — |
+| Kort | Straps along the floor of the cockpit. | Stropper langs gulvet i cockpiten. |
+| Hva det gjør / hva det betyr | Straps along the floor of the cockpit. You hook your feet under them to lean out over the side without falling in. | Stropper langs gulvet i cockpiten. Du hekter føttene under dem for å lene deg ut over siden uten å falle. |
+| På denne båten | Two straps on the floor, one each side of the centreboard case. | To stropper på gulvet, én på hver side av sentralbordkassen. |
+| Typiske feil | — | — |
+| «Vis meg» | The dinghy seen from above: the two straps lie along the floor, one each side of the centreboard case. | Jollen sett ovenfra: de to stroppene ligger langs gulvet, én på hver side av sentralbordkassen. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
 ### Hvilested for vinsjsveiven (`fit_winch_handle_rest`)
 
 | Felt | English | Norsk |
@@ -1390,6 +1420,51 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | På denne båten | One pedestal at each wheel, each with the same panel: the compass, the wind display, the engine lever and the rev counter, the thruster joysticks and the autopilot keys. The drawing is a guess: there is no photo of the pedestal yet. | Én søyle ved hvert ratt, hver med det samme panelet: kompasset, vinddisplayet, motorspaken og turtelleren, joystickene til thrusterne og autopilottastene. Tegningen er et gjett: det finnes ennå ikke noe bilde av søylen. |
 | Typiske feil | — | — |
 | «Vis meg» | The view from behind the wheel: the pedestal with its panel and the steel guard rail stands in front of the wheel. | Utsikten bakfra mot rattet: søylen med panelet og rekkverket i stål står foran rattet. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Rorpinne (`part_tiller`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Tiller | Rorpinne |
+| Andre navn | — | — |
+| Kort | The bar fixed to the top of the rudder that you steer a small boat with. | Staven fast på toppen av roret som du styrer en liten båt med. |
+| Hva det gjør / hva det betyr | The bar fixed to the top of the rudder that you steer a small boat with. Push it to one side and the bow turns the other way: tiller to port, the boat turns to starboard. | Staven fast på toppen av roret som du styrer en liten båt med. Skyv den til én side, så svinger baugen til den andre: rorpinnen mot babord, båten svinger mot styrbord. |
+| På denne båten | A bar over the back of the boat, fixed to the rudder. The thin stick on its end is the extension. | En stav over bakenden av båten, fast på roret. Den tynne pinnen på enden er forlengeren. |
+| Typiske feil | — | — |
+| «Vis meg» | The dinghy seen from above. Tap “Tiller” in the Steering section and move it: the tiller swings one way and the bow turns the other. | Jollen sett ovenfra. Trykk på «Rorpinne» i Styring-delen og flytt den: rorpinnen svinger til én side og baugen til den andre. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Rorpinneforlenger (`part_tiller_extension`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Tiller extension | Rorpinneforlenger |
+| Andre navn | — | — |
+| Kort | A light stick hinged to the end of the tiller. | En lett pinne som er hengslet til enden av rorpinnen. |
+| Hva det gjør / hva det betyr | A light stick hinged to the end of the tiller, so you can steer while sitting on the side or leaning out. | En lett pinne som er hengslet til enden av rorpinnen, slik at du kan styre mens du sitter på siden eller henger ut. |
+| På denne båten | The stick on the front end of the tiller. | Pinnen på fremre ende av rorpinnen. |
+| Typiske feil | — | — |
+| «Vis meg» | The dinghy seen from above: the thin stick on the end of the tiller is the extension. It lets you steer from the side deck. | Jollen sett ovenfra: den tynne pinnen på enden av rorpinnen er forlengeren. Med den kan du styre fra sidedekket. |
+| Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
+| Tekststatus | — | utkast |
+| Sjekk (ok / slik er det riktig) |  |  |
+
+### Skralleblokk (`fit_ratchet_block`)
+
+| Felt | English | Norsk |
+|---|---|---|
+| Navn | Ratchet block | Skralleblokk |
+| Andre navn | — | — |
+| Kort | The block the mainsheet runs through on the floor. | Blokken storskjøtet går gjennom på gulvet. |
+| Hva det gjør / hva det betyr | The block the mainsheet runs through on the floor. It turns freely one way and grips the line the other way, so you can hold the sheet with less effort. | Blokken storskjøtet går gjennom på gulvet. Den dreier fritt én vei og griper tauet den andre veien, så du holder skjøtet med mindre kraft. |
+| På denne båten | It stands on the floor behind the centreboard case; the mainsheet comes down to it from the boom. | Den står på gulvet bak sentralbordkassen; storskjøtet kommer ned til den fra bommen. |
+| Typiske feil | — | — |
+| «Vis meg» | The dinghy seen from above: the block on the floor, where the mainsheet comes down from the boom. | Jollen sett ovenfra: blokken på gulvet, der storskjøtet kommer ned fra bommen. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |

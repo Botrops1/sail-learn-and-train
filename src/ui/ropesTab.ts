@@ -1,10 +1,11 @@
 import type { AppState, Store } from '../app/store';
+import { hasFeature } from '../model/boat';
 import { entryFor, panelEntries, type PanelEntry } from '../model/panelEntries';
 import { SCENE } from '../render3d/sceneConfig';
 import { el } from './dom';
 import { part, quoted, t, type StringKey } from './i18n';
 import {
-  CONTROL_VIEWS,
+  controlViews,
   createControl,
   stateText,
   valueText,
@@ -133,14 +134,14 @@ export function createRopesTab(
   const select = (entry: PanelEntry) => store.dispatch({ type: 'select', partId: entry.selectId });
 
   const ordered: PanelEntry[] = [
-    ...CONTROL_VIEWS.filter((view) => view.id !== WHEEL).flatMap((view) =>
-      panelEntries().filter((entry) => entry.controlId === view.id),
-    ),
+    ...controlViews()
+      .filter((view) => view.id !== WHEEL)
+      .flatMap((view) => panelEntries().filter((entry) => entry.controlId === view.id)),
     ...panelEntries().filter((entry) => entry.controlId === null),
   ];
 
   const views: EntryView[] = ordered.map((entry) => {
-    const view = CONTROL_VIEWS.find((candidate) => candidate.id === entry.controlId);
+    const view = controlViews().find((candidate) => candidate.id === entry.controlId);
     let block: HTMLElement;
     let refresh: (state: AppState) => void = () => undefined;
     let name: string;
@@ -271,10 +272,17 @@ export function createRopesTab(
   ]);
 
   // Realistic mode (M4b): stations, clutches and winches worked by hand.
-  const realistic = el('div', { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' }, [
-    ...createRealisticPanel(store, openEntry, showSection),
-    el('p', { class: 'hint explain' }, [t('ropes.fighting')]),
-  ]);
+  // A boat without winches (the dinghy, M113) has no Realistic mode: nothing is built for it.
+  const realistic = el(
+    'div',
+    { class: 'ropes-realistic', 'data-testid': 'ropes-realistic' },
+    hasFeature('winches')
+      ? [
+          ...createRealisticPanel(store, openEntry, showSection),
+          el('p', { class: 'hint explain' }, [t('ropes.fighting')]),
+        ]
+      : [],
+  );
 
   const showMode = (state: AppState, previous?: AppState) => {
     if (

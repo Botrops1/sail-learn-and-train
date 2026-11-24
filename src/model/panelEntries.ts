@@ -63,7 +63,10 @@ export function panelEntries(data: BoatData = boat): PanelEntry[] {
     const id = control.id;
     if (id === 'ctl_rudder') {
       // The wheel moves the rudder (decision 2026-10-08: its id is part_rudder) and both wheels.
-      const helms = data.cockpitHardware.helms.map((helm) => helm.id);
+      // On a boat without a wheel (M113) the steering is the tiller and its extension.
+      const helms = data.features.wheel
+        ? data.cockpitHardware.helms.map((helm) => helm.id)
+        : ['part_tiller', 'part_tiller_extension'];
       entries.push({
         key: id,
         controlId: id,

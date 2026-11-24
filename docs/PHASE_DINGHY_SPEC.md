@@ -369,6 +369,18 @@ PR: `Closes #274`. Done when the dinghy can be chosen in Settings and from the w
 
 Not in this milestone: the sailor's weight, the centreboard and outhaul controls (M114), the sailor figure and the Sailor view (M115), capsize (M116), dinghy Learn texts (M117), exercises (M118).
 
+### 7.12 Decided in the M113 PR (recommended; merging accepts it)
+
+1. **Drawn sizes, camera box and label points.** `dinghy.json` also holds `modelDetail` (boom 0.06 × 0.045 m, gooseneck 0.05 m, block radius 0.025 m, rudder 0.03 m, kicker offset 0.03 m), `visual.ropeRenderRadius` 0.008 m, `visual.labels3d.list` (only the dinghy's parts) and `hull.bowFittingTipX` 1.25 m. With the Hanse's values the boom would be 24 cm tall, the lines 5 cm thick, the camera would frame an 8 m boat and 3D labels would name a keel and a jib. Only the picture changes.
+2. **The tiller turns with the rudder.** It is a child of the rudder's pivot, so it makes the same turn about the stock; its front end then goes to the side opposite the rudder's back edge ("tiller angle = −rudder angle", `tillerAngleDeg`).
+3. **Hand steering and names.** The dinghy's autopilot is always Standby (`ap`, `apt` are ignored; the Steering section holds the tiller control only). The panel names are "Tiller" and "Kicker" (`control.tiller`, `control.kicker`); the tiller's buttons and note use `tiller.less`, `tiller.more` and `tiller.note`. The 3D tag of the kicker line still says "Vang" until M117 writes the dinghy's Learn names.
+4. **Mainsheet tail**: 0.5 m long from the ratchet block towards the hand point (`DINGHY_SHEET_TAIL_M` in `ropePaths.ts`, the number is in 7.3).
+5. **Keys.** The key list drops the thruster rows (A / D, J / L) on a boat without thrusters, and the R / F and P rows and keys on the dinghy.
+6. **Welcome and chooser.** "Start on the training dinghy" opens `?v=1&boat=dinghy` (keeping the language) and remembers the choice; "Watch the first exercise" is hidden while a boat has no exercises. On the dinghy the profile download, its hint and "Remove" are hidden.
+7. **Profile problems.** A `dinghy` or `base` key, at the top of the file or in `boat`, is reported as `<key>: not in a boat profile` (`boat.problem.notInProfile`, translated).
+8. **Browser group time.** Group m58's recorded time is 125 s: an estimate from the local share of the M113 pages (70 s of 342 s), not measured on CI; the CI run measures it (`.github/ci-budget.json` names the group).
+9. **Seen and left for M114.** The centreboard case (x −0.33 … 0.03) lies under the foredeck (the open cockpit starts at x −0.45), so the case cannot be seen from above; M114's planning should move the board aft or `cockpit.fwdX` forward.
+
 ## 8. M114: Dinghy sailing
 
 **Independent review: required** (heel and sideways-motion formulas, a new store action and URL keys).

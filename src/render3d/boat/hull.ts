@@ -1,6 +1,6 @@
 import type * as THREE from 'three';
 import type { Detail } from '../../model/settings';
-import { boat } from '../../model/boat';
+import { boat, hasFeature } from '../../model/boat';
 import {
   coachroofBaseY,
   coachroofHalfOutline,
@@ -33,6 +33,14 @@ const PANEL = 0.04;
  */
 export function buildHull(materials: BoatMaterials, detail: Detail = 'high'): THREE.Object3D[] {
   const stations = hullStations();
+  // M113: a boat without a cabin (the dinghy) has the shell and its two end caps here; its deck and
+  // open cockpit are drawn by `dinghy.ts`.
+  if (!hasFeature('cabin')) {
+    return [
+      partMesh('part_hull', [hullShell(stations), endCap(boat.hull.stemX, +1)], materials.hull),
+      partMesh('part_stern', [endCap(boat.hull.transomX, -1)], materials.hull),
+    ];
+  }
   return [
     partMesh('part_hull', [hullShell(stations), endCap(boat.hull.stemX, +1)], materials.hull),
     partMesh(
