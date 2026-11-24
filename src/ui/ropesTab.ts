@@ -263,7 +263,13 @@ export function createRopesTab(
     t('ropes.mode.easyShortList'),
   ]);
   // M116: while the dinghy is over the sheet and kicker cannot be moved.
-  if (isDinghy()) lockWhileCapsized(store, strip);
+  if (isDinghy()) {
+    lockWhileCapsized(
+      store,
+      strip,
+      (control) => control.getAttribute('data-testid') === 'strip-learn',
+    );
+  }
   const easy = el('div', { class: 'ropes-easy', 'data-testid': 'ropes-easy' }, [
     ...(isDinghy() ? [createCapsizeLockedLine(store)] : []),
     modeParagraph,

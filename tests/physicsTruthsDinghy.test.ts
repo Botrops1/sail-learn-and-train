@@ -357,14 +357,17 @@ describe('PT-81 A capsized dinghy is righted by standing on the centreboard; the
     reduce(state, { type: 'dinghy', command: { kind: 'capsize', command } });
   const over = (query = ''): AppState => {
     useDinghy();
-    return parseUrlState(`?boat=dinghy&wd=90&ws=12&cap=s${query}`, 'low');
+    return parseUrlState(`?boat=dinghy&wd=-90&ws=12&cap=s${query}`, 'low');
   };
 
-  it('1. 16 kn abeam, sheet 55, sit in: she goes over to leeward within 15 s, one capsized alert', () => {
-    // Decided in the M116 PR: the test starts from the link (the boat opens settled, as live check 3
-    // does), because from rest at heading 0 she accelerates and rounds up before the heel passes -32.
-    useDinghy();
-    const start = parseUrlState('?boat=dinghy&wd=90&ws=16&ms=55&sp=in', 'low');
+  it('1. a strong breeze abeam, sheet 55, sit in, from rest: she goes over to leeward within 15 s, one capsized alert', () => {
+    // Decided in the M116 PR: 18 kn, not the spec's 16: from rest at heading 0 she accelerates and
+    // rounds up in 16 kn before the heel passes -34°; in 18 kn she goes over after about 3 s.
+    const start = dinghyState(
+      { ctl_wind_dir: 90, ctl_wind_speed: 18, ctl_mainsheet: 55 },
+      { sit: 'in' },
+      { headingDeg: 0, heelDeg: 0, speedMps: 0 },
+    );
     expect(start.dinghy.capsize.phase).toBe('upright');
     const phases: string[] = ['upright'];
     const end = run(start, 15, (s) => {
@@ -386,7 +389,12 @@ describe('PT-81 A capsized dinghy is righted by standing on the centreboard; the
     state = run(state, 4.1);
     state = cmd(state, 'stand');
     expect(state.dinghy.capsize.phase).toBe('righting');
-    state = run(state, 3.1);
+    let heelWhenUp: number | null = null;
+    state = run(state, 3.1, (s) => {
+      if (heelWhenUp === null && s.dinghy.capsize.phase === 'upright') heelWhenUp = s.boat.heelDeg;
+      return undefined;
+    });
+    expect(heelWhenUp).toBe(0);
     expect(state.dinghy.capsize.phase).toBe('upright');
     expect(Math.abs(state.boat.heelDeg)).toBeLessThan(2);
     expect(state.controls.ctl_mainsheet).toBe(100);
@@ -428,8 +436,8 @@ describe('PT-81 A capsized dinghy is righted by standing on the centreboard; the
     expect(moved).toBeGreaterThan(4);
     expect(moved).toBeLessThan(6);
     expect(end.boat.headingDeg).toBe(start.boat.headingDeg);
-    // The wind blows from 90 (east): she drifts west.
-    expect(end.boat.eastM).toBeLessThan(start.boat.eastM);
+    // The wind blows from -90 (west): she drifts east.
+    expect(end.boat.eastM).toBeGreaterThan(start.boat.eastM);
   });
 
   it('5. light wind, sitting on the side: she goes over to windward, onto the sailor’s side', () => {

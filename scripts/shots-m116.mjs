@@ -4,8 +4,8 @@
 // finger tap on its two steps, and what a phone shows while she is over.
 import { showSection, waitForLink } from './ui.mjs';
 
-/** The dinghy over on its starboard side, 12 kn abeam; the board down (`cb=0` for up). */
-const C = '?boat=dinghy&wd=90&ws=12&cap=s&held=1&sea=flat';
+/** The dinghy over on its starboard side with the wind from port (she went over away from the wind, the boom lies on the water), 12 kn; the board down (`cb=0` for up). */
+const C = '?boat=dinghy&wd=-90&ws=12&cap=s&held=1&sea=flat';
 
 /** Screenshots at every size: lying over with the sailor in the water, and with the board up. */
 export const M116_SCENES = [
@@ -27,7 +27,7 @@ export async function liveM116Checks({ openPage, viewports, problems }) {
     await opened.page.waitForTimeout(800);
     return opened;
   };
-  const free = '?boat=dinghy&wd=90&ws=12&cap=s&sea=flat&debug=1';
+  const free = '?boat=dinghy&wd=-90&ws=12&cap=s&sea=flat&debug=1';
 
   // 1. Right her: Swim round, wait, Stand on the board; she comes up and the card goes.
   {
@@ -78,12 +78,16 @@ export async function liveM116Checks({ openPage, viewports, problems }) {
     await context.close();
   }
 
-  // 3. A breeze with the sheet held: within 10 s she goes over and "Capsized!" is in the alert list.
+  // 3. A strong breeze: sitting on the side she is upright (about -16 degrees); Sit in and within
+  // 10 s she goes over and "Capsized!" is in the alert list.
   {
     const { context, page } = await open(
       'goes over',
-      '?boat=dinghy&wd=90&ws=16&ms=55&sp=in&debug=1',
+      '?boat=dinghy&wd=90&ws=18&ms=55&sp=side&debug=1',
     );
+    const upright = (await read(page)).dinghy.capsize.phase === 'upright';
+    await showSection(page, 'dinghy');
+    await page.getByTestId('sit-in').tap();
     let phase = 'upright';
     for (let i = 0; i < 20 && phase === 'upright'; i += 1) {
       await page.waitForTimeout(500);
@@ -95,9 +99,9 @@ export async function liveM116Checks({ openPage, viewports, problems }) {
       .locator('[data-testid="alert-item"]')
       .evaluateAll((nodes) => nodes.map((node) => (node.textContent ?? '').trim()));
     check(
-      'she goes over within 10 s and the alert list says Capsized',
-      phase !== 'upright' && texts.some((text) => text.includes('Capsized!')),
-      JSON.stringify({ phase, texts }),
+      'upright on the side; Sit in: she goes over within 10 s and the alert list says Capsized',
+      upright && phase !== 'upright' && texts.some((text) => text.includes('Capsized!')),
+      JSON.stringify({ upright, phase, texts }),
     );
     await context.close();
   }
