@@ -2357,7 +2357,7 @@
 | Что делает / что значит | Sitting on the side with your feet under the toe straps and your body out over the water. Your weight then holds the boat up against the wind's push on the sail. The harder it blows, the further you lean out; in light wind you sit in, or the boat tips towards you. | Сидеть на борту, ноги под ремнями, а тело за бортом над водой. Ваш вес тогда удерживает лодку против давления ветра на парус. Чем сильнее ветер, тем дальше вы отклоняетесь; в слабый ветер вы сидите внутри, иначе лодка наклонится к вам. |
 | На этой яхте | — | — |
 | Типичные ошибки | — | — |
-| «Покажи» | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she leans over towards you. | Динга спереди в сильный ветер, вы откренены: ваш вес держит её ровно. Нажмите «Сидеть внутри» в разделе «Баланс», и она наклонится к вам. |
+| «Покажи» | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she tips right over, so you can see why you lean out. | Динга спереди в сильный ветер, вы откренены: ваш вес держит её ровно. Нажмите «Сидеть внутри» в разделе «Баланс», и она полностью опрокинется: так видно, зачем откреняться. |
 | Достоверность | Not yet checked: written by AI from general sailing knowledge. | Не проверено: написано ИИ по общим знаниям о парусном деле. |
 | Статус текста | — | черновик |
 | Проверка (ок / как правильно) |  |  |

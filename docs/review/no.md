@@ -2627,7 +2627,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | Hva det gjør / hva det betyr | Sitting on the side with your feet under the toe straps and your body out over the water. Your weight then holds the boat up against the wind's push on the sail. The harder it blows, the further you lean out; in light wind you sit in, or the boat tips towards you. | Å sitte på siden med føttene under fotstroppene og kroppen ut over vannet. Vekten din holder da båten oppe mot vindens press på seilet. Jo hardere det blåser, jo lenger ut lener du deg; i lett vind sitter du inn, ellers heller båten mot deg. |
 | På denne båten | — | — |
 | Typiske feil | — | — |
-| «Vis meg» | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she leans over towards you. | Jolla sett forfra i sterk vind, mens du lener deg ut: vekten din holder henne flat. Trykk «Sitt inne» i seksjonen Balanse, så heller hun mot deg. |
+| «Vis meg» | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she tips right over, so you can see why you lean out. | Jolla sett forfra i sterk vind, mens du lener deg ut: vekten din holder henne flat. Trykk «Sitt inne» i seksjonen Balanse, så velter hun helt: da ser du hvorfor man lener seg ut. |
 | Faktastatus | Not yet checked: written by AI from general sailing knowledge. | Ikke sjekket ennå: skrevet av KI ut fra generell seilkunnskap. |
 | Tekststatus | — | utkast |
 | Sjekk (ok / slik er det riktig) |  |  |

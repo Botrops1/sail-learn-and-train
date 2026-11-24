@@ -2166,7 +2166,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | Was es tut / was es bedeutet | Sitting on the side with your feet under the toe straps and your body out over the water. Your weight then holds the boat up against the wind's push on the sail. The harder it blows, the further you lean out; in light wind you sit in, or the boat tips towards you. | Man sitzt auf der Bordkante, die Füße unter den Fußschlaufen und den Körper draußen über dem Wasser. Das eigene Gewicht hält das Boot dann gegen den Druck des Windes im Segel aufrecht. Je stärker es weht, desto weiter lehnt man sich hinaus; bei Leichtwind sitzt man innen, sonst kippt das Boot zu einem hin. |
 | Auf diesem Boot | — | — |
 | Typische Fehler | — | — |
-| „Zeigen“ | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she leans over towards you. | Die Jolle von vorn bei starkem Wind, du lehnst dich hinaus: Dein Gewicht hält sie flach. Tippen Sie im Abschnitt Balance auf „Innen sitzen“, und sie neigt sich zu dir. |
+| „Zeigen“ | The dinghy seen from the front in a strong wind, with you leaning out: your weight holds her flat. Tap “Sit in” in the Balance section and she tips right over, so you can see why you lean out. | Die Jolle von vorn bei starkem Wind, du lehnst dich hinaus: Dein Gewicht hält sie flach. Tippen Sie im Abschnitt Balance auf „Innen sitzen“, und sie kippt ganz um: So sehen Sie, warum man sich hinauslehnt. |
 | Belegstatus | Not yet checked: written by AI from general sailing knowledge. | Noch nicht geprüft: von KI aus allgemeinem Segelwissen geschrieben. |
 | Textstatus | — | Entwurf |
 | Prüfung (ok / wie richtig) |  |  |
