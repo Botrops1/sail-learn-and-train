@@ -79,6 +79,10 @@ describe('M5: labels in 3D (model)', () => {
       const third = ((tack[axis] ?? 0) + (head[axis] ?? 0) + (clew[axis] ?? 0)) / 3;
       expect(p[axis], `axis ${axis}`).toBeCloseTo(third, 6);
     }
+    // While a picture shows the gennaker is drawn as stowed: no label either.
+    expect(
+      point(labelAnchors(rig, ropeDrawings(rig), boat, { picture: true }), 'sail_gennaker'),
+    ).toBeUndefined();
     // Snuffed (sock down): no label.
     const snuffed = initialRig(
       { ...controls, ctl_gennaker_sock: 0 },

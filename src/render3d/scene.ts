@@ -1033,7 +1033,9 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
               theta: { value: yaw, velocity: 0 },
               psi: { value: 0, velocity: 0 },
             };
-      for (const anchor of labelAnchors(labelRig, boatModel.ropeDrawings())) {
+      for (const anchor of labelAnchors(labelRig, boatModel.ropeDrawings(), boat, {
+        picture: labelState.picture !== null,
+      })) {
         if (onBoard && anchor.point[1] < 0) continue;
         projected
           .set(...anchor.point)

@@ -307,6 +307,7 @@ export function createLearnTab(
     ) {
       lastButtons = el('div', { class: 'learn-links' }, [
         button('learn-show-on-boat', t('learn.whereIsIt'), () => {
+          if (packedAwayNote) packedAwayNote.hidden = true;
           store.dispatch({ type: 'select', partId: entry.id });
           lowerSheet();
           // A gennaker part that is not on the boat yet (M105): rig it as far as the part needs,
