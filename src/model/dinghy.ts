@@ -261,6 +261,29 @@ export function capsizeHeelDeg(c: CapsizeState, data: BoatData = boat): number |
   }
 }
 
+/**
+ * The boom's swing as drawn in a capsize (issue #286), or null to draw the rig's own. The model's
+ * boom stays on the side away from the wind; when she goes over towards the sailor that is the
+ * high side, and the boom would stand up in the air. It is drawn swinging across to the low side,
+ * as far as she has gone over, so it lies on the water; and back as she is righted. `thetaDeg`:
+ * the rig's swing (+ = to starboard); the result has the same size.
+ */
+export function capsizeBoomYawDeg(
+  c: CapsizeState,
+  thetaDeg: number,
+  data: BoatData = boat,
+): number | null {
+  const heel = capsizeHeelDeg(c, data);
+  if (heel === null || Math.sign(thetaDeg) === c.side || thetaDeg === 0) return null;
+  const k = dinghyOf(data).capsize;
+  const gone =
+    c.phase === 'goingOver'
+      ? (Math.abs(heel) - k.atHeelDeg) / (k.lyingHeelDeg - k.atHeelDeg)
+      : Math.abs(heel) / k.lyingHeelDeg;
+  const across = smoothstep(0, 1, gone);
+  return thetaDeg * (1 - 2 * across);
+}
+
 /** M116: the sailor's position in the heading frame (hip, forward/up/across), or null while upright. */
 export function capsizeSailorHip(
   c: CapsizeState,

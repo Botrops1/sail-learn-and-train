@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { boat } from '../../model/boat';
-import { halfBeamAt, keelLineAt, sheerAt } from '../../model/hullShape';
+import { halfBeamAt, halfBeamAtHeight, keelLineAt, sheerAt } from '../../model/hullShape';
 import { vec3, type Vec3 } from '../../model/vec3';
 import type { BoatMaterials } from './materials';
 import {
@@ -36,6 +36,8 @@ export interface DinghyParts {
 
 /** Positions of the centre line's stations between two x values, each at most `GAP` apart. */
 const GAP = 0.25;
+/** Strips in the cockpit's forward wall (it follows the hull's curved side). */
+const WALL_STEPS = 4;
 
 function stationsBetween(a: number, b: number): number[] {
   const steps = Math.max(1, Math.ceil((b - a) / GAP));
@@ -82,18 +84,38 @@ function sideDecks(): THREE.BufferGeometry {
   return triangles(positions);
 }
 
-/** The cockpit floor between `aftX` and `fwdX`, `±halfWidth` wide, at `floorY`. */
+/**
+ * The cockpit floor at `floorY` from the transom to `fwdX`, out to the hull's side at that height
+ * (so no gap shows the water under the side decks), and the cockpit's forward wall: a bulkhead at
+ * `fwdX` from the floor up to the foredeck (so the space under the foredeck is closed too).
+ */
 function cockpitFloor(): THREE.BufferGeometry {
   const c = boat.dinghy?.cockpit;
   if (!c) return triangles([]);
   const positions: number[] = [];
-  pushQuad(
-    positions,
-    [c.aftX, c.floorY, -c.halfWidth],
-    [c.aftX, c.floorY, c.halfWidth],
-    [c.fwdX, c.floorY, c.halfWidth],
-    [c.fwdX, c.floorY, -c.halfWidth],
+  const xs = stationsBetween(boat.hull.transomX, c.fwdX);
+  for (let i = 0; i < xs.length - 1; i += 1) {
+    const x0 = xs[i] ?? 0;
+    const x1 = xs[i + 1] ?? 0;
+    const [w0, w1] = [halfBeamAtHeight(x0, c.floorY), halfBeamAtHeight(x1, c.floorY)];
+    pushQuad(
+      positions,
+      [x0, c.floorY, -w0],
+      [x0, c.floorY, w0],
+      [x1, c.floorY, w1],
+      [x1, c.floorY, -w1],
+    );
+  }
+  const top = sheerAt(c.fwdX);
+  const levels = Array.from(
+    { length: WALL_STEPS + 1 },
+    (_, i) => c.floorY + ((top - c.floorY) * i) / WALL_STEPS,
   );
+  for (let i = 0; i < WALL_STEPS; i += 1) {
+    const [y0, y1] = [levels[i] ?? 0, levels[i + 1] ?? 0];
+    const [w0, w1] = [halfBeamAtHeight(c.fwdX, y0), halfBeamAtHeight(c.fwdX, y1)];
+    pushQuad(positions, [c.fwdX, y0, -w0], [c.fwdX, y0, w0], [c.fwdX, y1, w1], [c.fwdX, y1, -w1]);
+  }
   return triangles(positions);
 }
 

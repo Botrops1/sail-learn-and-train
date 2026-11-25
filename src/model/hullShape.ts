@@ -75,3 +75,18 @@ export function sectionPoint(x: number, s: number, data: BoatData = boat): [numb
   const y = top - (top - bottom) * Math.pow(Math.cos(angle), 2 / n);
   return [y, z];
 }
+
+/**
+ * Half the hull's width at height `y` above the keel line's datum (the waterline) at station x,
+ * on the hull's section (0 at or below the keel line, the deck edge's half beam at or above the
+ * sheer). Where a floor at that height meets the hull's side.
+ */
+export function halfBeamAtHeight(x: number, y: number, data: BoatData = boat): number {
+  const n = data.modelDetail.hullSectionExponent;
+  const top = sheerAt(x, data);
+  const bottom = Math.min(keelLineAt(x, data), top);
+  if (y >= top) return halfBeamAt(x, data);
+  if (y <= bottom) return 0;
+  const up = (top - y) / (top - bottom);
+  return halfBeamAt(x, data) * Math.pow(1 - Math.pow(up, n), 1 / n);
+}

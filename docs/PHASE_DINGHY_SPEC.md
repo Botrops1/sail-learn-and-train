@@ -206,7 +206,7 @@ Changed: `content/boat/hanse508.json` (`features`), `src/model/boat.ts`, `src/mo
   },
   "dinghy": {
     "$comment": "Parts only the dinghy has (PHASE_DINGHY_SPEC 7.2). M114 adds crew, rightingNmByHeelDeg, board and outhaul; M115 seats; M116 capsize.",
-    "centreboard": { "x": -0.15, "chordM": 0.32, "depthBelowHullM": 0.75, "thicknessM": 0.02, "caseTopY": 0.3 },
+    "centreboard": { "x": -0.65, "chordM": 0.32, "depthBelowHullM": 0.75, "thicknessM": 0.02, "caseTopY": 0.3 },
     "tiller": { "pivot": [-2.27, 0.42, 0], "lengthM": 1.0, "extensionM": 0.75 },
     "toeStraps": { "fromX": -1.6, "toX": -0.6, "halfZ": 0.2, "y": 0.14 },
     "ratchetBlock": [-1.55, 0.18, 0],
@@ -674,9 +674,9 @@ New: `src/ui/capsizePanel.ts`, `scripts/shots-m116.mjs`. Changed: `content/boat/
     "$comment": "Where the sailor's hips are in a capsize, in the boat's heading frame (turned with the heading, not rolled), z multiplied by the side she lies on. Assumption, chosen to look right.",
     "inWater": [-1.0, -0.45, 1.1],
     "astern": [-2.9, -0.45, 0],
-    "atBoard": [-0.15, -0.45, -1.3],
-    "standHip": [-0.15, 1.05, -1.0],
-    "standFeet": [-0.15, 0.22, -0.7]
+    "atBoard": [-0.65, -0.45, -1.3],
+    "standHip": [-0.65, 1.05, -1.0],
+    "standFeet": [-0.65, 0.22, -0.7]
   },
   "source": "Wikipedia, Capsizing: a dinghy can normally be righted by standing or pulling down on the centreboard; capsizing is an inherent part of dinghy sailing"
 }

@@ -7,6 +7,7 @@ import { panelReadings } from '../model/helmPanel';
 import { runningRopes, winchWraps } from '../model/realistic';
 import { smoothstep } from '../model/angles';
 import { isDinghy } from '../model/boat';
+import { capsizeBoomYawDeg } from '../model/dinghy';
 import {
   captainPlacement,
   capsizeSailor,
@@ -906,7 +907,11 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
           picture: state.picture,
           travellerCarPct: state.travellerCarPct,
           boomYawDeg:
-            state.picture === 'traveller' ? travellerPicture(state.travellerCarPct).boomDeg : null,
+            state.picture === 'traveller'
+              ? travellerPicture(state.travellerCarPct).boomDeg
+              : isDinghy()
+                ? capsizeBoomYawDeg(state.dinghy.capsize, state.rig.theta.value)
+                : null,
           boardPct: state.dinghy.boardPct,
           sailor:
             sailor && shownSide !== null

@@ -17,7 +17,11 @@ import {
   type BoatData,
   type FeatureId,
 } from '../src/model/boat';
-import { tillerAngleDeg } from '../src/model/dinghy';
+import { UPRIGHT, capsizeBoomYawDeg, tillerAngleDeg, type CapsizeState } from '../src/model/dinghy';
+import { halfBeamAt, halfBeamAtHeight, sectionPoint, sheerAt } from '../src/model/hullShape';
+import { partInfo } from '../src/model/registry';
+import { t } from '../src/ui/i18n';
+import { drawMiniMap } from '../src/ui/mapView';
 import { modesForBoat } from '../src/app/appMode';
 import { exercisesForBoat } from '../src/model/exercises';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
@@ -322,5 +326,107 @@ describe('M113: the dinghy in the link, the modes and the sections', () => {
       capsize: { phase: 'upright', side: 1, t: 0 },
     });
     expect(state.autopilot.mode).toBe('off');
+  });
+});
+
+describe('Issues #282 and #286: the review findings left over from M113 and M116', () => {
+  const dinghyData = () => {
+    const data = DINGHY.data.dinghy;
+    if (!data) throw new Error('the dinghy has no dinghy block');
+    return data;
+  };
+  it('#282.1. the centreboard case stands inside the open cockpit, so it shows from above', () => {
+    useDinghy();
+    const { centreboard, cockpit } = dinghyData();
+    const half = (centreboard.chordM + 0.04) / 2;
+    expect(centreboard.x + half).toBeLessThanOrEqual(cockpit.fwdX);
+    expect(centreboard.x - half).toBeGreaterThanOrEqual(cockpit.aftX);
+    // And the sailor's feet in the Sit in seat are clear of its aft end.
+    expect(dinghyData().seats.in.feet[0]).toBeLessThan(centreboard.x - half);
+  });
+
+  it('#282.2. the kicker has one name: the 3D tag and the Controls row both say Kicker', () => {
+    useDinghy();
+    expect(partInfo('rope_vang')?.name).toBe('Kicker');
+    expect(t('control.kicker')).toBe('Kicker');
+  });
+
+  it('#282 (comment 2). no water shows through the dinghy: the floor meets the hull and a wall closes the cockpit forward', () => {
+    useDinghy();
+    const { cockpit } = dinghyData();
+    // The hull's section at the floor's height.
+    const [y, z] = sectionPoint(-1, 0.6);
+    expect(halfBeamAtHeight(-1, y)).toBeCloseTo(z, 6);
+    expect(halfBeamAtHeight(-1, -5)).toBe(0);
+    expect(halfBeamAtHeight(-1, 5)).toBeCloseTo(halfBeamAt(-1), 6);
+    const model = buildBoat(
+      { ...defaultControls(), ctl_wind_dir: 60, ctl_wind_speed: 8 },
+      initialRig(defaultControls()),
+      'low',
+    );
+    const box = new THREE.Box3();
+    model.root.traverse((o) => {
+      if ((o.userData as { partId?: string }).partId === 'part_cockpit') box.expandByObject(o);
+    });
+    // Out to the hull (wider than the old 0.48 m), aft to the transom, up to the foredeck.
+    expect(box.max.z).toBeGreaterThan(cockpit.halfWidth + 0.1);
+    expect(box.min.x).toBeCloseTo(DINGHY.data.hull.transomX, 6);
+    expect(box.max.y).toBeCloseTo(sheerAt(cockpit.fwdX), 6);
+  });
+
+  it('#282 (comment 1). the map and mini-map draw no jib on the dinghy', () => {
+    const boomsAndJibs = (): number => {
+      let strokes = 0;
+      let width = 0;
+      const ctx = new Proxy(
+        {},
+        {
+          get: (_target, key) => {
+            if (key === 'lineWidth') return width;
+            if (key === 'stroke') return () => (width === 4 ? (strokes += 1) : 0);
+            if (key === 'measureText') return () => ({ width: 0 });
+            return () => undefined;
+          },
+          set: (_target, key, value) => {
+            if (key === 'lineWidth') width = value as number;
+            return true;
+          },
+        },
+      ) as unknown as CanvasRenderingContext2D;
+      drawMiniMap(ctx, initialState(), 96, () => 0);
+      return strokes;
+    };
+    useBoat(HANSE_508.meta.id, HANSE_508.meta.name, HANSE_508);
+    const hanse = boomsAndJibs();
+    useDinghy();
+    expect(hanse - boomsAndJibs()).toBe(1);
+  });
+
+  it('#286.1. a capsize towards the wind draws the boom fallen to the low side, and back as she comes up', () => {
+    useDinghy();
+    const k = dinghyData().capsize;
+    const state = (phase: CapsizeState['phase'], side: 1 | -1, t = 0): CapsizeState => ({
+      phase,
+      side,
+      t,
+    });
+    // Upright: the rig's own swing.
+    expect(capsizeBoomYawDeg(UPRIGHT, 40)).toBeNull();
+    // The boom on the starboard side, she goes over to port: it swings across, to port.
+    expect(capsizeBoomYawDeg(state('goingOver', -1, 0), 40)).toBeCloseTo(40, 3);
+    expect(capsizeBoomYawDeg(state('goingOver', -1, k.goingOverS), 40)).toBeCloseTo(-40, 3);
+    const mid = capsizeBoomYawDeg(state('goingOver', -1, k.goingOverS / 2), 40) ?? NaN;
+    expect(mid).toBeGreaterThan(-40);
+    expect(mid).toBeLessThan(40);
+    for (const phase of ['over', 'swimming'] as const) {
+      expect(capsizeBoomYawDeg(state(phase, -1), 40)).toBeCloseTo(-40, 3);
+      expect(capsizeBoomYawDeg(state(phase, 1), -40)).toBeCloseTo(40, 3);
+    }
+    // Righting: back to the rig's own swing.
+    expect(capsizeBoomYawDeg(state('righting', -1, 0), 40)).toBeCloseTo(-40, 3);
+    expect(capsizeBoomYawDeg(state('righting', -1, k.rightingS), 40)).toBeCloseTo(40, 3);
+    // The ordinary capsize (the boom already on the low side) draws the rig as it is.
+    expect(capsizeBoomYawDeg(state('over', 1), 40)).toBeNull();
+    expect(capsizeBoomYawDeg(state('over', -1), -40)).toBeNull();
   });
 });
