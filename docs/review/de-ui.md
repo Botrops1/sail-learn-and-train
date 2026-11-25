@@ -728,6 +728,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.group.wind | Wind and weather | Wind und Wetter |
 | exercise.group.sails | Setting and furling the sails | Segel setzen und einrollen |
 | exercise.group.harbour | Harbour and anchor | Hafen und Ankern |
+| exercise.group.dinghy | Dinghy | Jolle |
 | exercise.place.open | Open water | Freies Wasser |
 | exercise.place.marina | Marina | Marina |
 | exercise.place.bay | Bay | Bucht |
@@ -1132,6 +1133,9 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | exercise.bar.clutchOpen | Open: the line can run | Offen: die Leine kann laufen |
 | exercise.bar.clutchClosed | Closed: holds the line | Zu: hält die Leine |
 | exercise.bar.open | Open | Öffnen |
+| exercise.bar.swim | Swim round | Hinschwimmen |
+| exercise.bar.boardDown | Board down | Schwert runter |
+| exercise.bar.stand | Stand on it | Daraufstehen |
 | exercise.bar.close | Close | Schließen |
 | exercise.bar.turns | Turns: {n} | Umschläge: {n} |
 | exercise.bar.cutOut | the motor cut out: ease the load | der Winschmotor hat abgeschaltet: Last verringern |

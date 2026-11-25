@@ -11,7 +11,8 @@ import type { Action, AppState } from './store';
  * view. Pure (no DOM): the DOM part is `src/ui/exerciseBar.ts`.
  *
  * A row id is one of `control:<ControlId>`, `autopilot:turn`, `autopilot:mode`, `autopilot:tack`,
- * `engine`, `thrusters`, `line:<LineCode>`, `fenders`, `windlass`, `gennaker:steps`, `gennaker:gybe`. M82 adds, for the rope stations of
+ * `engine`, `thrusters`, `line:<LineCode>`, `fenders`, `windlass`, `gennaker:steps`, `gennaker:gybe`; the Training
+ * dinghy's `dinghy:sit`, `dinghy:board` and `capsize:steps` (M118). M82 adds, for the rope stations of
  * Realistic ropes, `clutch:<StationId>:<clutch key>` and `winch:<StationId>:<winch id>:<rope key>`
  * (a step's `barRealistic` data). The placeholder `ropes` is made by `barRowsFor` for Realistic
  * ropes and never stored in the data; the station switch's `stations` only names a flash.
@@ -33,6 +34,9 @@ const PLAIN_ROWS: readonly string[] = [
   'windlass',
   'gennaker:steps',
   'gennaker:gybe',
+  'dinghy:sit',
+  'dinghy:board',
+  'capsize:steps',
 ];
 
 /** M82: the two stations that have clutches and a winch. */
@@ -176,6 +180,12 @@ export function barRowOf(action: Action): BarRowId[] {
       return ['windlass'];
     case 'gennaker':
       return [action.command === 'gybe' ? 'gennaker:gybe' : 'gennaker:steps'];
+    case 'dinghy': {
+      const c = action.command;
+      if (c.kind === 'sit') return ['dinghy:sit'];
+      if (c.kind === 'board') return ['dinghy:board'];
+      return c.kind === 'capsize' ? ['capsize:steps'] : [];
+    }
     case 'realistic':
       return realisticRowOf(action.action);
     default:

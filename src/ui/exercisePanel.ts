@@ -32,7 +32,7 @@ import {
 import type { Sheet } from './sheet';
 import { createConfirmButton } from './settingsMenu';
 
-const GROUPS: readonly ExerciseGroup[] = ['sailing', 'wind', 'sails', 'harbour'];
+const GROUPS: readonly ExerciseGroup[] = ['sailing', 'wind', 'sails', 'harbour', 'dinghy'];
 
 /**
  * The panel section "Show the controls" (and the step bar's "All controls") opens for a step: the

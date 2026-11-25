@@ -938,5 +938,138 @@
         "fix": "Neu beginnen und mehr Kette geben, etwa 60 m, bevor die Leine an Land geht."
       }
     }
+  },
+  "dinghy-go-stop": {
+    "title": "Fahren und Stoppen",
+    "summary": "Eine Jolle fährt, wenn das Segel zieht, und bleibt stehen, wenn Sie die Großschot loslassen.",
+    "see": "Der Wind kommt von der Seite, und die Großschot (die Leine, die das Segel dichtholt) ist ganz gefiert: Das Segel schlägt, und das Boot hat keinen Vortrieb.",
+    "happening": "Ein Segel treibt das Boot nur an, solange es weit genug dichtgeholt ist und nicht mehr schlägt. Mit losgelassener Großschot schiebt es nichts: Das Boot wird langsamer und bleibt stehen, und die Krängung verschwindet auch. Die Großschot loszulassen ist die schnellste Bremse einer Segeljolle.",
+    "action": "Holen Sie die Großschot dicht, bis das Segel gerade nicht mehr schlägt und das Boot Fahrt aufnimmt; lassen Sie sie los, um zu stoppen; holen Sie sie wieder dicht, um weiterzusegeln.",
+    "mistake": "Die Großschot festhalten, wenn das Boot stark krängt: Es kann kentern. Lassen Sie die Großschot los, und es richtet sich auf.",
+    "done": "Sie haben das Boot allein mit der Großschot gestartet und gestoppt. Merken Sie sich das: Krängt das Boot zu stark oder geht etwas schief, lassen Sie die Großschot los.",
+    "steps": {
+      "pull-in": {
+        "goal": "Holen Sie die Großschot dicht, bis das Segel nicht mehr schlägt und das Boot Fahrt aufnimmt.",
+        "how": "Tippen Sie bei Großschot auf − (es holt die Leine dicht), bis das Segel „Gut“ anzeigt und die Fahrt auf dem Streifen 3 Knoten übersteigt. Halten Sie das fünf Sekunden."
+      },
+      "stop": {
+        "goal": "Lassen Sie die Großschot los: Das Segel schlägt, und das Boot wird langsamer.",
+        "how": "Tippen Sie bei Großschot auf +, bis 90 % oder mehr angezeigt wird (ganz gefiert). Das Segel schlägt und schiebt nicht mehr; warten Sie, bis die Fahrt unter 2 Knoten liegt."
+      },
+      "go-again": {
+        "goal": "Holen Sie sie wieder dicht und segeln Sie weiter.",
+        "how": "Tippen Sie bei Großschot auf −, bis das Segel „Gut“ anzeigt und die Fahrt wieder über 3 Knoten liegt."
+      }
+    },
+    "mistakes": {
+      "capsized": {
+        "name": "Kentern",
+        "what": "Das Boot ist gekentert.",
+        "why": "Eine Bö hat es umgeworfen, während die Großschot dicht war. Ihr Gewicht hält es nur bis zu einem gewissen Punkt; die Großschot loszulassen richtet es auf.",
+        "fix": "Lassen Sie die Großschot das nächste Mal los, sobald das Boot stark krängt."
+      }
+    }
+  },
+  "dinghy-tack": {
+    "title": "Wenden",
+    "summary": "Drehen Sie den Bug durch den Wind; Sie wechseln auf die neue hohe Seite.",
+    "see": "Sie segeln hart am Wind auf Steuerbordbug (so nah am Wind, wie das Segel es zulässt) und sitzen auf dem Seitendeck. Der Wind kommt über die rechte Seite des Bugs.",
+    "happening": "Um gegen den Wind zu kommen, kreuzt ein Boot im Zickzack: Es wendet (dreht den Bug durch den Wind) von einer Seite auf die andere. Der Baum schwingt hinüber, und Sie auch: Sie sitzen immer auf der hohen Seite, von der der Wind kommt.",
+    "action": "Drücken Sie die Pinne von sich weg, zum Segel hin, und halten Sie sie dort, bis der Wind etwa 45° auf der anderen Seite steht. Dann Pinne mittig und auf die neue hohe Seite setzen.",
+    "mistake": "Die Pinne zu früh mittig stellen: Der Bug bleibt im Wind stehen (im Wind) und das Boot lässt sich nicht mehr steuern.",
+    "done": "Sie haben gewendet, die Pinne mittig gestellt und auf die neue hohe Seite gewechselt. Setzen Sie sich nach jeder Wende wieder auf die hohe Seite.",
+    "steps": {
+      "close-hauled": {
+        "goal": "Segeln Sie so nah am Wind, wie das Segel es zulässt: Ziehen Sie die Pinne zu sich, wenn das Boot zu hoch ansteuert und das Segel schlägt.",
+        "how": "Steuern Sie mit der Ruderzeile, bis der Wind 38 bis 55° vom Bug kommt und das Segel „Gut“ anzeigt. − dreht nach Backbord, + nach Steuerbord."
+      },
+      "tack": {
+        "goal": "Drücken Sie die Pinne von sich weg, zum Segel hin, und halten Sie sie dort: Der Bug dreht durch den Wind.",
+        "how": "Stellen Sie das Ruder auf + (nach Steuerbord, zum Wind hin) und halten Sie es dort, während der Bug durch den Wind dreht. Der Baum schwingt von selbst hinüber."
+      },
+      "settle": {
+        "goal": "Stellen Sie die Pinne auf dem neuen Kurs mittig und setzen Sie sich auf die neue hohe Seite.",
+        "how": "Wenn der Wind etwa 45° auf der neuen Seite steht, bringen Sie das Ruder zurück in die Mitte und tippen Sie dann auf „Auf dem Seitendeck sitzen“ (oder „Ausreiten“)."
+      }
+    },
+    "mistakes": {
+      "in-irons": {
+        "name": "Stehenbleiben im Wind",
+        "what": "Das Boot ist im Wind stehen geblieben.",
+        "why": "Die Pinne kam in die Mitte zurück, bevor der Bug durch den Wind war. Mit Wind genau von vorn tut das Segel nichts, und ohne Fahrt tut das Ruder nichts.",
+        "fix": "Lassen Sie die Großschot los, steuern Sie zur anderen Seite und warten Sie, bis das Boot abfällt; dann dichtholen und neu beginnen."
+      },
+      "capsized": {
+        "name": "Kentern",
+        "what": "Das Boot ist gekentert.",
+        "why": "Eine Bö hat es umgeworfen, oder Sie saßen zu weit innen.",
+        "fix": "Lassen Sie die Großschot das nächste Mal los, sobald das Boot stark krängt, und sitzen Sie weiter außen."
+      }
+    }
+  },
+  "dinghy-gybe": {
+    "title": "Halsen",
+    "summary": "Drehen Sie das Heck durch den Wind. Der Baum schlägt schnell hinüber: Kopf runter.",
+    "see": "Sie segeln vor dem Wind, der Baum steht auf der Backbordseite, und das Schwert ist größtenteils oben.",
+    "happening": "Um mit dem Wind von hinten die Seite zu wechseln, halst man: Das Heck geht durch den Wind, und der Baum schwingt schnell und mit Kraft über das Boot. Halten Sie die Großschot in der Hand und den Kopf unten.",
+    "action": "Holen Sie die Großschot etwas dicht, drehen Sie das Heck durch den Wind und lassen Sie den Baum hinüber, dann steuern Sie auf der neuen Seite geradeaus und halten das Boot flach.",
+    "mistake": "Halsen mit ganz gefierter Großschot: Der Baum schlägt mit seinem ganzen Schwung hinüber.",
+    "done": "Sie haben kontrolliert gehalst und sich auf der neuen Seite eingerichtet. Holen Sie immer erst die Großschot etwas dicht und halten Sie den Kopf unten.",
+    "steps": {
+      "run": {
+        "goal": "Fallen Sie ab, bis der Wind von hinten kommt, das Schwert größtenteils oben.",
+        "how": "Steuern Sie mit der Ruderzeile, bis der Wind 150 bis 172° vom Bug kommt. Heben Sie das Schwert mit − an (etwa halb reicht) und holen Sie die Großschot auf höchstens 10 % dicht, damit der Baum fast mittschiffs steht."
+      },
+      "gybe": {
+        "goal": "Ziehen Sie die Pinne zu sich und halten Sie die Großschot in der Hand: Der Baum schwingt hinüber. Kopf runter.",
+        "how": "Mit der Großschot weiter dicht (höchstens 10 %) steuern Sie nach Backbord (−) und halten das, bis der Baum hinübergeschwungen ist. Ein weit ausgestellter Baum schlägt mit Kraft hinüber: Das gilt als unbeabsichtigtes Halsen."
+      },
+      "broad-reach": {
+        "goal": "Steuern Sie auf der neuen Seite geradeaus und halten Sie das Boot flach.",
+        "how": "Bringen Sie das Ruder zurück in die Mitte, wenn der Wind 120 bis 150° auf der neuen Seite steht. Krängt das Boot, sitzen Sie weiter außen."
+      }
+    },
+    "mistakes": {
+      "accidental-gybe": {
+        "name": "Unbeabsichtigtes Halsen",
+        "what": "Der Baum ist von selbst hinübergeschlagen.",
+        "why": "Der Wind kam hinter das Segel, während die Großschot ganz gefiert war, sodass es unkontrolliert umschlug.",
+        "fix": "Holen Sie die Großschot etwas dicht, bevor Sie das Heck durch den Wind drehen, damit der Baum langsam hinübergeht."
+      },
+      "capsized": {
+        "name": "Kentern",
+        "what": "Das Boot ist gekentert.",
+        "why": "Der Baum, der mit Kraft hinüberschlug, oder eine Bö hat es umgeworfen.",
+        "fix": "Lassen Sie die Großschot das nächste Mal los, sobald das Boot stark krängt."
+      }
+    }
+  },
+  "dinghy-capsize": {
+    "title": "Kentern und aufrichten",
+    "summary": "Das Boot liegt auf der Seite. So bekommen Sie es wieder hoch.",
+    "see": "Die Jolle liegt auf der Seite, Mast und Segel im Wasser. Sie sind neben ihr im Wasser.",
+    "happening": "Eine Person kann eine Jolle aufrichten: zum Schwert schwimmen, prüfen, dass es unten ist, daraufsteigen und sich zurücklehnen. Ihr Gewicht richtet das Boot auf. Die Großschot bleibt lose, damit sich das Segel nicht wieder füllt.",
+    "action": "Bleiben Sie beim Boot. Schwimmen Sie zum Schwert, drücken Sie es nach unten, wenn es oben ist, steigen Sie darauf und lehnen Sie sich zurück; ist das Boot oben, steigen Sie über die Seite ein und setzen sich auf die hohe Seite.",
+    "mistake": "Auf ein Schwert steigen wollen, das noch oben ist: Es gibt nichts zum Daraufstehen, und das Boot kommt nicht hoch.",
+    "done": "Das Boot ist wieder aufrecht und Sie sind wieder drin. Lassen Sie die Großschot lose, bis Sie auf der hohen Seite sitzen.",
+    "steps": {
+      "swim": {
+        "goal": "Schwimmen Sie ums Heck zum Schwert. Bleiben Sie beim Boot.",
+        "how": "Tippen Sie auf „Zum Schwert schwimmen“ und warten Sie, während der Segler ums Heck schwimmt."
+      },
+      "board": {
+        "goal": "Das Schwert ist oben: Drücken Sie es nach unten.",
+        "how": "Tippen Sie auf „Das Schwert nach unten drücken“."
+      },
+      "stand": {
+        "goal": "Steigen Sie auf das Schwert und lehnen Sie sich zurück: Ihr Gewicht richtet das Boot auf.",
+        "how": "Tippen Sie auf „Auf das Schwert steigen“ und warten Sie, bis das Boot oben ist."
+      },
+      "climb-in": {
+        "goal": "Steigen Sie über die Seite ein und setzen Sie sich auf die hohe Seite, die Großschot noch lose.",
+        "how": "Tippen Sie auf „Auf dem Seitendeck sitzen“ und lassen Sie die Großschot zwei Sekunden lang ganz gefiert."
+      }
+    },
+    "mistakes": {}
   }
 }

@@ -4,7 +4,8 @@ import type { AlertEntry, AlertKind } from './alerts';
 import type { Controls, ControlId } from './controls';
 import type { AnchorPhase, AnchorState } from './anchor';
 import { scopeNeededM } from './anchor';
-import { boat as hanse508, boatId, type BoatData } from './boat';
+import { boat as hanse508, boatId, isDinghy, type BoatData } from './boat';
+import type { CapsizePhase, DinghyState, Sit } from './dinghy';
 import type { ClockState } from './clock';
 import {
   gennakerTrimState,
@@ -33,9 +34,10 @@ import type { WindNow } from './windModes';
  * content/exercises/exercises.json, the checks that read the app's state, and the texts. Pure.
  */
 export type Range = readonly [number, number];
-export type ExerciseGroup = 'sailing' | 'wind' | 'sails' | 'harbour';
+export type ExerciseGroup = 'sailing' | 'wind' | 'sails' | 'harbour' | 'dinghy';
 /** The section "Show the controls" opens (a subset of the panel's section ids). */
-export type ExerciseOpens = 'ropes' | 'autopilot' | 'engine' | 'sails' | 'harbour' | 'anchor';
+export type ExerciseOpens =
+  'ropes' | 'dinghy' | 'autopilot' | 'engine' | 'sails' | 'harbour' | 'anchor';
 export type ExerciseLevel = 'easy' | 'normal' | 'hard';
 export type BoatPoint = 'bow' | 'stern' | 'centre';
 export type ObstacleKind = 'yacht' | 'harbour' | 'ground' | 'propeller' | 'fender' | 'lazy-line';
@@ -76,6 +78,8 @@ export interface ExerciseCheck {
   gennakerStage?: Range;
   /** M108: what the gennaker is doing (`gennakerTrimState`); false without `gennaker` in the source. */
   gennakerTrim?: readonly GennakerTrimState[];
+  /** M118: where the sailor sits, the centreboard and the capsize phase; false without `dinghy` in the source. */
+  dinghy?: { sit?: readonly Sit[]; boardPct?: Range; capsize?: readonly CapsizePhase[] };
 }
 export interface ExerciseStep {
   id: string;
@@ -164,6 +168,8 @@ export interface CheckSource {
   clock?: ClockState;
   /** M108: for the gennaker checks (its trim comes from `rig.gennaker`); AppState has it. */
   gennaker?: GennakerSetup;
+  /** M118: for the `dinghy` check; AppState has it, but only the dinghy in use reads it (`checkPasses`). */
+  dinghy?: DinghyState;
 }
 export interface CheckContext {
   events: readonly ExerciseEvent[];
@@ -428,6 +434,13 @@ export function checkPasses(
   if (check.gennakerTrim) {
     if (!source.gennaker) return false;
     if (!check.gennakerTrim.includes(gennakerTrimOf(source.gennaker, source.rig))) return false;
+  }
+  if (check.dinghy) {
+    const d = source.dinghy;
+    if (!d || !isDinghy()) return false;
+    if (check.dinghy.sit && !check.dinghy.sit.includes(d.sit)) return false;
+    if (check.dinghy.boardPct && !inRange(d.boardPct, check.dinghy.boardPct)) return false;
+    if (check.dinghy.capsize && !check.dinghy.capsize.includes(d.capsize.phase)) return false;
   }
   if (check.localHour) {
     if (!source.clock || !inRange(localHourOf(source.clock.utcMs), check.localHour)) return false;

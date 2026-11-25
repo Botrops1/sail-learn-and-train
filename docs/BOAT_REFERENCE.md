@@ -467,3 +467,9 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Centreboard needed to stand on it | at least 50 % down | standing on a board that is up does nothing (Capsizing: a dinghy is righted by standing or pulling down on the centreboard) |
 | Over | no sail, steering or engine force; her way dies away with a time constant of 2 s; she drifts downwind at 0.25 m/s | she lies with the mast and sail on the water |
 | Sailor's hip in a capsize (x, y, z, in the heading frame, z times the side she lies on) | in the water (−1.0, −0.45, 1.1) m; astern (−2.9, −0.45, 0); at the board (−0.15, −0.45, −1.3); standing on it (−0.15, 1.05, −1.0), feet (−0.15, 0.22, −0.7) | chosen to look right; he leans back 25° while standing |
+
+### Dinghy rows added by M118 (assumption; `physics.gybe.minReportJ`)
+
+| Value | Number | Note |
+|---|---|---|
+| A gybe bump worth reporting | 0 J (the Hanse: 50 J) | a light dinghy boom swings with about 10 J from 13° and 20 J from 20°, and none at all with the sheet fully in, so at 50 J no controlled gybe (boom within 20° of the middle) was ever reported and the Gybe exercise could not be finished. Every gybe is now reported; one from more than 20° is reported as accidental. **Tunable** |

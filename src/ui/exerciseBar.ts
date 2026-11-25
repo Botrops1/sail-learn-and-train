@@ -13,6 +13,7 @@ import { pilotFor } from '../app/exercisePilots';
 import type { AppState, Store } from '../app/store';
 import { SHEET_CONTROL_IDS, snapControl, type ControlId } from '../model/controls';
 import { boat } from '../model/boat';
+import { atBoard, type Sit } from '../model/dinghy';
 import { exerciseDef, type ExerciseDef } from '../model/exercises';
 import { gennakerTrimState } from '../model/gennaker';
 import type { LineCode } from '../model/mooringLines';
@@ -578,6 +579,104 @@ export function createExerciseBar(
     };
   };
 
+  // ---- the Training dinghy (M118) --------------------------------------------------------------
+
+  const SITS: readonly Sit[] = ['in', 'side', 'out'];
+  const sitRow = (): Row => {
+    const rowId = 'dinghy:sit';
+    const buttons = SITS.map((sit) => {
+      const button = el(
+        'button',
+        {
+          type: 'button',
+          class: 'segment bar-mode',
+          'aria-pressed': 'false',
+          'data-testid': `bar-sit-${sit}`,
+        },
+        [t(`dinghy.sit.${sit}` as StringKey)],
+      );
+      button.addEventListener('click', () => {
+        if (!button.disabled) store.dispatch({ type: 'dinghy', command: { kind: 'sit', sit } });
+      });
+      return button;
+    });
+    const { block } = nameBlock(rowId, t('dinghy.sit.label'), null);
+    const move = (delta: number) => {
+      const index = SITS.indexOf(store.getState().dinghy.sit);
+      const next = SITS[Math.max(0, Math.min(SITS.length - 1, index + delta))];
+      if (next !== undefined)
+        store.dispatch({ type: 'dinghy', command: { kind: 'sit', sit: next } });
+    };
+    return {
+      id: rowId,
+      element: rowElement(rowId, block, [buttonsBox(buttons)]),
+      keys: { left: (down) => down && move(-1), right: (down) => down && move(1) },
+      refresh(state) {
+        buttons.forEach((button, i) => {
+          button.setAttribute('aria-pressed', String(state.dinghy.sit === SITS[i]));
+          button.disabled = state.dinghy.capsize.phase !== 'upright';
+        });
+      },
+    };
+  };
+
+  const boardRow = (): Row => {
+    const rowId = 'dinghy:board';
+    const nudge = (direction: 1 | -1) => {
+      const state = store.getState();
+      store.dispatch({
+        type: 'dinghy',
+        command: { kind: 'board', pct: state.dinghy.boardPct + direction * state.settings.step },
+      });
+    };
+    const less = stepButton('−', t('dinghy.board.raise'), () => nudge(-1));
+    const more = stepButton('+', t('dinghy.board.lower'), () => nudge(1));
+    less.dataset.testid = 'bar-board-minus';
+    more.dataset.testid = 'bar-board-plus';
+    const value = el('span', { class: 'bar-value', 'data-testid': 'bar-value-board' });
+    const { block } = nameBlock(rowId, t('dinghy.board.label'), null);
+    return {
+      id: rowId,
+      element: rowElement(rowId, block, [buttonsBox([less, value, more])]),
+      keys: { left: (down) => down && nudge(-1), right: (down) => down && nudge(1) },
+      refresh: (state) =>
+        setText(value, t('dinghy.board.value', { pct: Math.round(state.dinghy.boardPct) })),
+    };
+  };
+
+  /** The capsize card's three buttons, so a phone need not leave the bar (`dispatch` is the card's own command). */
+  const capsizeStepsRow = (): Row => {
+    const rowId = 'capsize:steps';
+    const swim = textButton(t('exercise.bar.swim'), 'bar-capsize-swim');
+    const down = textButton(t('exercise.bar.boardDown'), 'bar-capsize-board');
+    const stand = textButton(t('exercise.bar.stand'), 'bar-capsize-stand');
+    const send = (button: HTMLButtonElement, command: 'swim' | 'boardDown' | 'stand') => {
+      button.addEventListener('click', () => {
+        if (!button.disabled) {
+          store.dispatch({ type: 'dinghy', command: { kind: 'capsize', command } });
+        }
+      });
+    };
+    send(swim, 'swim');
+    send(down, 'boardDown');
+    send(stand, 'stand');
+    const line = small('');
+    const { block } = nameBlock(rowId, t('capsize.title'), line);
+    return {
+      id: rowId,
+      element: rowElement(rowId, block, [buttonsBox([swim, down, stand])]),
+      keys: {},
+      refresh(state) {
+        const c = state.dinghy.capsize;
+        const boardUp = state.dinghy.boardPct < (boat.dinghy?.capsize.minBoardPct ?? 0);
+        swim.disabled = c.phase !== 'over';
+        down.disabled = !((c.phase === 'over' || c.phase === 'swimming') && boardUp);
+        stand.disabled = !(c.phase === 'swimming' && atBoard(c) && !boardUp);
+        setText(line, c.phase === 'swimming' ? t('capsize.swimming') : '');
+      },
+    };
+  };
+
   const clutchRow = (station: StationId, key: string): Row => {
     const rowId = `clutch:${station}:${key}`;
     const line = small('');
@@ -739,6 +838,9 @@ export function createExerciseBar(
     else if (id === 'windlass') made = windlassRow();
     else if (id === 'gennaker:steps') made = gennakerStepsRow();
     else if (id === 'gennaker:gybe') made = gennakerGybeRow();
+    else if (id === 'dinghy:sit') made = sitRow();
+    else if (id === 'dinghy:board') made = boardRow();
+    else if (id === 'capsize:steps') made = capsizeStepsRow();
     else if (id === 'ropes') made = ropesRow();
     else if (id.startsWith('clutch:') || id.startsWith('winch:')) {
       const parsed = parseRealisticRow(id);

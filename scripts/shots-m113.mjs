@@ -101,7 +101,7 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
     await context.close();
   }
 
-  // 3. Only what the dinghy has: two modes, two rope rows, the steering, no other sections.
+  // 3. Only what the dinghy has: three modes (Exercise from M118), two rope rows, the steering, no other sections.
   {
     const { context, page } = await openPage(phone, 'm113 sections', `${D}&debug=1`);
     await canvasReady(page);
@@ -124,8 +124,8 @@ export async function liveM113Checks({ openPage, viewports, outDir, prefix, prob
     const ids = await sectionIds(page);
     const bad = ['engine', 'anchor', 'place', 'harbour', 'helm'].filter((id) => ids.includes(id));
     check(
-      'sections: Learn and Easy, two lines, the steering without autopilot buttons',
-      modes.join() === 'learn,easy' &&
+      'sections: Learn, Easy and Exercise, two lines, the steering without autopilot buttons',
+      modes.join() === 'learn,easy,exercise' &&
         rows.join() === 'rope_mainsheet,rope_vang' &&
         names[1] === 'Kicker' &&
         steering === 1 &&

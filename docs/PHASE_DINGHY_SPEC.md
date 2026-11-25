@@ -949,6 +949,26 @@ PR: `Closes #279`. Done when the four exercises run with Watch and Do it myself 
 
 Not in this milestone: more dinghy exercises (man overboard, coming to a buoy), a debrief text of its own.
 
+### 12.8 Decided in the M118 PR (recommended; merging accepts it)
+
+Four numbers of the plan did not work on this boat when the pilots ran against the real model. Each is replaced as below; the table in 12.2 and the text in 12.3 are otherwise as built.
+
+1. **`dinghy-tack` starts with `ms=15`**, not 30. At 30 the sailor on the side deck tips the slow boat over in the first second (the same finding as M115, 9.10, and M115's own check uses 15). At 15 she opens upright and close-hauled at about 4 knots.
+2. **`dinghy-go-stop`: the pilot's sheet is 50, 100, 50**, not 40, 100, 40. On this beam reach in 8 knots the sail reads Stalled at 40 and Good from about 45 (50: 4.4 knots). The Do it myself check (12.5.3) taps − down to 50.
+3. **`dinghy-go-stop`, step `stop`: `speedKn [0, 2]`**, not `[0, 1.5]` (owner question 1). With the sheet let right out and nobody steering, this boat coasts on at 1.52 knots on a beam reach and never goes below 1.5, so the step could not pass for a learner; 2 knots is still less than half the 4.4 knots it started from.
+4. **`dinghy-gybe`: the pilot hauls the sheet in to 8 % in the `run` step**, not 60 % in the turn (the step texts say "10 % or less"), and the dinghy's data gets `physics.gybe.minReportJ` 0 J (the Hanse: 50 J; owner question 2), so every gybe is reported, in free sailing too. A gybe is controlled only when the boom is within 20° of the middle, which on the dinghy is a sheet of about 10 % or less; at 60 % the boom is 50° out and the gybe is accidental. And a light dinghy boom swings with 10 to 18 J from 13 to 18°, so at 50 J no controlled gybe was ever reported and the `controlledGybe` event could not happen. At 0 J every gybe is reported (with the sheet fully in the boom does not move and the energy is 0); one from more than 20° is reported as accidental. The sheet range that gives a controlled gybe is 0 to about 10 %.
+
+Also decided:
+
+- **The heading hold** is `rudder = clamp(1.5 · (twa − targetTwa), −30, 30)` with the wind angle signed as in section 2, rounded to a whole degree. The sign in 12.3 (target − twa) steers away from the target: a boat that turns to starboard lowers the signed angle.
+- **The capsize pilot** pushes the board down and stands up when `atBoard` is true (the sailor has swum round), not after a fixed 4.1 s.
+- **The texts** not given in 12.2 (`see`, `happening`, `action`, `mistake`, `done`, each step's `how`, a mistake's `name`, `why` and `fix`) are written in English by the builder; the spec's strings are each step's `goal` and the `capsized` mistake's `what` and `fix`. German, Norwegian and Russian are drafts.
+- **The bar rows**: `dinghy:sit` disables its buttons while she is over; `capsize:steps` enables each button exactly when the capsize card enables it (Board down: over or swimming, and only while the board is up). Keys: ← → move the seat or the board.
+- **Test 12.4.4** builds its start from the plain link `?boat=dinghy&wd=0&ws=16&hdg=270&ms=100&sp=in&sea=flat` with a run attached (the wind of a running exercise cannot be changed), lets the sheet out for the first 2 s (an alert in the coach's first second is not a mistake), then holds it at 0: she goes over after about 4 s.
+- **`dinghy-tack`, `close-hauled` goal** (owner question 3): the plan's "push the tiller away if she points too high and the sail flaps" has the tiller backwards (away from you turns her towards the wind, which is what the `tack` step uses it for). It reads "pull the tiller towards you if she points too high and the sail flaps" (RYA Start Sailing: tiller towards the sail heads up, away from the sail bears away).
+- The check source reads `AppState.dinghy` only while the boat in use is the dinghy (`isDinghy()`); on the Hanse a `dinghy` check is false.
+- `feelIt` of the three exercises that have one is as in 12.6a.4.
+
 ## 13. Decisions (owner, 2026-11-23, in chat: "accept all")
 
 1. **The boat**: a generic "Training dinghy", 3.45 m, one 5.2 m² sail, numbers between the Topper and the Laser Pico (7.2).
