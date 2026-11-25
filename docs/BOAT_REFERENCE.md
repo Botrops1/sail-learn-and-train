@@ -427,7 +427,7 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Hull: stem x, transom x, waterline, canoe body | 1.25 m, −2.2 m, 3.2 m long, 0.16 m deep | a generic trainer's lines, between the two classes above |
 | Rudder | stock at x −2.27 m, blade 0.9 m, ±35° | hangs on the transom |
 | Mast | unstayed round tube 0.065 m, stands 1.25 m behind the bow, top 5.8 m | boom 2.4 m at 1.05 m |
-| Centreboard | 0.32 m chord, 0.75 m below the hull, at x −0.15 m, in a case 0.3 m high | daggerboard-type |
+| Centreboard | 0.32 m chord, 0.75 m below the hull, at x −0.65 m (just inside the cockpit, so the case shows from above), in a case 0.3 m high | daggerboard-type |
 | Tiller | 1.0 m, extension 0.75 m, pivot at x −2.27 m, 0.42 m high | |
 | Cockpit | floor 0.14 m, 0.96 m wide, from x −2.1 m to −0.45 m; side decks 0.16 m wide | |
 | Toe straps, ratchet block, hand | straps at ±0.2 m from x −1.6 m to −0.6 m; ratchet block at x −1.55 m; hand 0.45 m to the side | |
@@ -466,10 +466,19 @@ The sailor is one adult of 70 kg (`physics.mass.payloadKg`). The sitting arms, t
 | Going over, swimming round, coming up | 1.5 s, 4 s, 3 s | the swim goes round the stern to the board's side |
 | Centreboard needed to stand on it | at least 50 % down | standing on a board that is up does nothing (Capsizing: a dinghy is righted by standing or pulling down on the centreboard) |
 | Over | no sail, steering or engine force; her way dies away with a time constant of 2 s; she drifts downwind at 0.25 m/s | she lies with the mast and sail on the water |
-| Sailor's hip in a capsize (x, y, z, in the heading frame, z times the side she lies on) | in the water (−1.0, −0.45, 1.1) m; astern (−2.9, −0.45, 0); at the board (−0.15, −0.45, −1.3); standing on it (−0.15, 1.05, −1.0), feet (−0.15, 0.22, −0.7) | chosen to look right; he leans back 25° while standing |
+| Sailor's hip in a capsize (x, y, z, in the heading frame, z times the side she lies on) | in the water (−1.0, −0.45, 1.1) m; astern (−2.9, −0.45, 0); at the board (−0.65, −0.45, −1.3); standing on it (−0.65, 1.05, −1.0), feet (−0.65, 0.22, −0.7) | chosen to look right (x follows the board, issue #282); he leans back 25° while standing |
 
 ### Dinghy rows added by M118 (assumption; `physics.gybe.minReportJ`)
 
 | Value | Number | Note |
 |---|---|---|
 | A gybe bump worth reporting | 0 J (the Hanse: 50 J) | a light dinghy boom swings with about 10 J from 13° and 20 J from 20°, and none at all with the sheet fully in, so at 50 J no controlled gybe (boom within 20° of the middle) was ever reported and the Gybe exercise could not be finished. Every gybe is now reported; one from more than 20° is reported as accidental. **Tunable** |
+
+### Dinghy rows added by the review fixes of issues #282 and #286 (drawing only; assumptions)
+
+| Value | Number | Note |
+|---|---|---|
+| Centreboard position | x −0.65 m (was −0.15 m): the case spans x −0.83 to −0.47 m | the spec's −0.15 put the case under the foredeck, which starts at x −0.45 m; now the case is in the open cockpit, forward of the sailor's feet (x −0.9 m) |
+| Cockpit floor and forward wall | the floor runs from the transom to x −0.45 m out to the hull's side at 0.14 m; a wall closes the cockpit there, up to the foredeck | drawing only: before, the water showed under the side decks and the foredeck |
+| The boom in a capsize towards the wind | drawn swinging to the low side as she goes over, back as she comes up | drawing only: the model's boom stays on the side away from the wind, which stood it up in the air when she lay on the other side |
+| Leaning out with nobody at the tiller (issue #286, finding 2) | no change | at 16 kn she turns slowly away from the wind and the heel towards the sailor grows until she goes over: plausible, and the texts already tell the learner to sit in when she leans towards them (the Heel and Leaning out entries) |

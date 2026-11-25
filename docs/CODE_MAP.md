@@ -49,7 +49,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `sim.ts` | Per-frame rig state and `step`: controls → boom, jib, sails, ropes. |
 | `boat.ts` | The boat in use as live bindings (`boat`, `boatId`, `boatName`): the Hanse 508 unless `useBoat()` ran first. Read `boat` at call time, never copy it into a module constant. Also the built-in boats (`BUILT_IN_BOATS`, `DINGHY`) and `hasFeature`, `isDinghy`, `boatHasControl`. |
 | `boatMerge.ts` | `mergeBoat`: a boat file written as an overlay on the Hanse's (objects merge, arrays replace, `controls.list` merges by id). |
-| `dinghy.ts` | The Training dinghy: its types, starting state and the tiller's drawn angle; the sailor's weight (in the middle for a tack) and the hull's own righting moment, the centreboard's grip, the outhaul's power and the sailor's side; the capsize (its phases and timers, the learner's commands, the heel and the sailor's place while over). |
+| `dinghy.ts` | The Training dinghy: its types, starting state and the tiller's drawn angle; the sailor's weight (in the middle for a tack) and the hull's own righting moment, the centreboard's grip, the outhaul's power and the sailor's side; the capsize (its phases and timers, the learner's commands, the heel, the sailor's place and the boom's drawn swing while over). |
 | `boatProfile.ts` | The boat profile file: `makeBoatProfile`, `checkBoatProfile` (shape against the Hanse 508, then ranges), `fillAddedKeys` for old profiles. Guide: `docs/BOAT_PROFILE.md`. |
 | `rigGeometry.ts`, `hullShape.ts`, `deckVolumes.ts` | Boat data and the static geometry derived from it: hull sections, deck volumes, toerail, channel lanes, the coachroof outline. |
 | `bowGear.ts` | The anchor's fluke, the chain's links and the windlass's deck height as numbers. |
@@ -122,7 +122,7 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 | `dangerZone.ts` | The red sector the boom sweeps in a gybe, and its faint outline by the lee. |
 | `mooringLines.ts` | The mooring lines in 3D: each line that is on as a tube from its cleat (slack ones sag), our berth's lazy line, and the one the crew walks. |
 | `boat/index.ts` | Builds the boat and applies the solved rig each frame; each builder runs only when the boat has its feature. |
-| `boat/dinghy.ts` | The Training dinghy's own parts: deck, open cockpit, centreboard and its case, tiller with its extension (aimed at the sailor's hand), toe straps and ratchet block. |
+| `boat/dinghy.ts` | The Training dinghy's own parts: deck, open cockpit (floor out to the hull's side, a forward wall), centreboard and its case, tiller with its extension (aimed at the sailor's hand), toe straps and ratchet block. |
 | `boat/hull.ts`, `boat/appendages.ts`, `boat/deckGear.ts`, `boat/cockpitHardware.ts`, `boat/rig.ts`, `boat/parts.ts` | Hull (toerail, coamings, roof lip), keel/rudder, deck gear and rope-channel mouldings, wheels/winches/clutches/rope boxes, mast/boom/stays/backstay/guide blocks/furling gearbox, part helpers (blocks, rounded boxes). |
 | `boat/bowGear.ts` | The bow roller, anchor, chain and windlass on the foredeck; static. |
 | `boat/mooringFittings.ts` | The horn cleats and fairleads on the toerail; static. |

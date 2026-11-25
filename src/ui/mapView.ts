@@ -2,7 +2,7 @@ import { shownTarget } from '../app/exerciseRun';
 import type { AppState, Store } from '../app/store';
 import { DEG, compassDeg, wrap180 } from '../model/angles';
 import { rollerPoint } from '../model/anchor';
-import { boat } from '../model/boat';
+import { boat, hasFeature } from '../model/boat';
 import { area } from '../model/area';
 import { jibClew } from '../model/jib';
 import { pointToMap } from '../model/lowSpeed';
@@ -1729,22 +1729,24 @@ function drawBoat(
   ctx.strokeStyle = selected ? COLOURS.select : COLOURS.hullLine;
   ctx.stroke();
 
-  // The boom from the gooseneck at the drawn swing, and the jib's chord from the tack.
+  // The boom from the gooseneck at the drawn swing, and (with a jib) the jib's chord from the tack.
   const [gx = 0] = boat.rig.boom.gooseneck;
   const theta = state.rig.theta.value * DEG;
   const psi = state.rig.psi.value * DEG;
   const reach = boat.rig.boom.length * Math.cos(psi);
   const boomEnd = at(gx - reach * Math.cos(theta), reach * Math.sin(theta));
-  const jibClewPoint = jibClew(state.rig.jibPhi.value, state.rig.jibSolution.unfurled);
-  const [tackX = 0, , tackZ = 0] = boat.sails.jib.tack;
-  const [clewX = 0, , clewZ = 0] = jibClewPoint;
-  const jibTack = at(tackX, tackZ);
-  const jibEnd = at(clewX, clewZ);
   const boomStart = at(gx, 0);
-  for (const [a, b] of [
-    [boomStart, boomEnd],
-    [jibTack, jibEnd],
-  ] as const) {
+  const sails: (readonly [ScreenPoint, ScreenPoint])[] = [[boomStart, boomEnd]];
+  // A boat with no jib (the dinghy) draws only the boom.
+  if (hasFeature('jib')) {
+    const [tackX = 0, , tackZ = 0] = boat.sails.jib.tack;
+    const [clewX = 0, , clewZ = 0] = jibClew(
+      state.rig.jibPhi.value,
+      state.rig.jibSolution.unfurled,
+    );
+    sails.push([at(tackX, tackZ), at(clewX, clewZ)]);
+  }
+  for (const [a, b] of sails) {
     ctx.lineCap = 'round';
     ctx.strokeStyle = COLOURS.sailLine;
     ctx.lineWidth = 4;
