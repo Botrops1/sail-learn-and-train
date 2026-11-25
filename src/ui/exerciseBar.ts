@@ -30,6 +30,7 @@ import type { LayoutShell } from './layout';
 import { layoutKindOf, type SectionId } from './modes';
 import { controlView, valueText } from './ropeControls';
 import type { Sheet } from './sheet';
+import { walkText } from './realisticPanel';
 import { noticeText } from './stationDrawing';
 import { setText, stepButton } from './stepper';
 import type { ExerciseDemo } from './exerciseDemo';
@@ -147,6 +148,14 @@ export function createExerciseBar(
     'aria-live': 'polite',
     hidden: '',
   });
+  // While the captain walks to another station: the same countdown as under the Ropes section's
+  // station buttons (M112), so a tap on the rows ("Still walking") is explained in the bar.
+  const walkLine = el('p', {
+    class: 'bar-walk',
+    'data-testid': 'bar-walk',
+    'aria-live': 'off',
+    hidden: '',
+  });
   const rowsBox = el('div', { class: 'bar-rows' });
   const nothing = el('p', { class: 'bar-nothing', 'data-testid': 'bar-nothing', hidden: '' }, [
     t('exercise.bar.nothing'),
@@ -154,7 +163,7 @@ export function createExerciseBar(
   const keysHint = el('p', { class: 'bar-keys', 'data-testid': 'bar-keys', hidden: '' }, [
     t('exercise.bar.keys'),
   ]);
-  bar.append(head, stationsBox, otherStation, rowsBox, noticeLine, nothing, keysHint);
+  bar.append(head, stationsBox, otherStation, walkLine, rowsBox, noticeLine, nothing, keysHint);
 
   const kind = () => layoutKindOf(layout.viewport());
 
@@ -997,6 +1006,9 @@ export function createExerciseBar(
     const wanted = text !== '' && !stationsBox.hidden;
     setText(noticeLine, wanted ? text : '');
     if (noticeLine.hidden === wanted) noticeLine.hidden = !wanted;
+    const walking = real.walk !== null && !stationsBox.hidden;
+    setText(walkLine, real.walk !== null && walking ? walkText(real.walk) : '');
+    if (walkLine.hidden === walking) walkLine.hidden = !walking;
   };
 
   const refresh = (state: AppState) => {

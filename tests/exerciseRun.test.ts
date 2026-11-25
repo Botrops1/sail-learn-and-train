@@ -440,6 +440,17 @@ describe('the debrief log (PHASE10_SPEC 8.6)', () => {
     expect(actions(state).at(-1)).toMatchObject({ command: 'turn', turnDeg: -60 });
   });
 
+  it('merges the same gennaker command repeated quickly into one row with a count (M108 review)', () => {
+    let state = started();
+    for (let i = 0; i < 3; i += 1) state = reduce(state, { type: 'gennaker', command: 'next' });
+    const rows = actions(state).filter((a) => a.type === 'gennaker');
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ type: 'gennaker', command: 'next', times: 3 });
+    // A different command is a new row.
+    state = reduce(state, { type: 'gennaker', command: 'back' });
+    expect(actions(state).filter((a) => a.type === 'gennaker')).toHaveLength(2);
+  });
+
   it('logs a Realistic clutch with its key and state', () => {
     const real = reduce(opened('realistic'), { type: 'exercise', command: 'start' });
     const station = tailSpec('a2')?.station ?? 'port';

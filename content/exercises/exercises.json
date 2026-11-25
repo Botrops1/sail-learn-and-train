@@ -210,7 +210,7 @@
       "ropes": "easy",
       "crew": false,
       "sections": ["ropes", "sails", "autopilot", "conditions", "learn"],
-      "start": "?wd=0&ws=12&hdg=240&ms=80&js=50&ap=wind&apt=120&sea=flat",
+      "start": "?wd=0&ws=12&hdg=240&ms=80&js=50&gs=15&ap=wind&apt=120&sea=flat",
       "feelIt": ["sail_gennaker", "rope_gennaker_tack_line", "part_gennaker_sock"],
       "steps": [
         { "id": "tack-line", "opens": "sails", "holdS": 0, "check": { "gennakerStage": [1, 4] }, "bar": ["gennaker:steps"] },

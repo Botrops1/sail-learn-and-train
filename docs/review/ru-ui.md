@@ -186,6 +186,7 @@
 | clutch.tail.furl | the tail that rolls the mainsail in | хвост, который закручивает грот |
 | clutch.tail.unfurl | the tail that rolls the mainsail out | хвост, который раскручивает грот |
 | clutch.aria | Clutch “{label}”: {name} | Стопор «{label}»: {name} |
+| real.lead.aria | Line “{label}”: {name} (no clutch; it is held on the winch) | Конец «{label}»: {name} (без стопора; его держат на лебёдке) |
 | ropes.strip.label | Selected line | Выбранный конец |
 | ropes.strip.emptyList | Tap a line in the 3D view or in the list below to work it. | Нажмите на конец в 3D-виде или в списке ниже, чтобы работать с ним. |
 | ropes.learnRealistic | Realistic lines: you work this line at its station. Choose Realistic mode to work it. | Реалистичные концы: с этим концом работают на его месте. Выберите реалистичный режим, чтобы работать с ним. |
@@ -636,6 +637,7 @@
 | learn.feelItHint | The app sails “{title}” for you and stops after each step. | Приложение проходит для вас упражнение «{title}» и останавливается после каждого шага. |
 | learn.whereIsIt | Where is it? | Где это? |
 | learn.spotlightHint | Tap anywhere to see the whole boat again. | Нажмите в любом месте, чтобы снова увидеть всю яхту. |
+| learn.packedAway | It is packed away: the gennaker is up, so this part is not on deck. Take the sail down first to see it. | Она убрана: геннакер поднят, поэтому этой детали нет на палубе. Сначала спустите парус, чтобы увидеть её. |
 | learn.writtenFor | Written for the {name}. | Написано для {name}. |
 | learn.tryIt | Try it: | Попробуйте: |
 | learn.related | See also: | См. также: |
@@ -877,7 +879,7 @@
 | debrief.fenders.out | Fenders out | Кранцы за борт |
 | debrief.fenders.in | Fenders in | Кранцы убраны |
 | debrief.gennaker.next | Gennaker: next step | Геннакер: следующий шаг |
-| debrief.gennaker.back | Gennaker: undo a step | Геннакер: отменён шаг |
+| debrief.gennaker.back | Gennaker: one step back | Геннакер: шаг назад |
 | debrief.gennaker.gybe | Gennaker: gybed | Геннакер: перекинут |
 | debrief.gennaker.rig | Gennaker: rigged | Геннакер: оснащён |
 | debrief.gennaker.stow | Gennaker: stowed | Геннакер: убран |

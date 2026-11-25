@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import { gennakerClew } from './gennaker';
 import { jibClew } from './jib';
 import { boomPoint, mainSailCorners } from './rigGeometry';
 import { drawnPose, type RopeDrawing } from './ropePaths';
@@ -80,6 +81,12 @@ function anchorOf(
       if (!shown(unfurled)) return undefined;
       const { tack, head, clew } = mainSailCorners(unfurled, drawnPose(rig), data);
       return centroid(tack, head, clew);
+    }
+    case 'gennakerSail': {
+      // Only while the sail is set (the sock up at all); a snuffed sail has no label of its own.
+      if (!rig.gennaker.set) return undefined;
+      const { tack, head } = data.sails.gennaker;
+      return centroid(vec3(tack), vec3(head), gennakerClew(rig.gennaker.thetaDeg, data));
     }
     case 'jibSail': {
       const unfurled = rig.jibSolution.unfurled;

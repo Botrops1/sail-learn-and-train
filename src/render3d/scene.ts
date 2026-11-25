@@ -7,6 +7,7 @@ import { panelReadings } from '../model/helmPanel';
 import { runningRopes, winchWraps } from '../model/realistic';
 import { smoothstep } from '../model/angles';
 import { isDinghy } from '../model/boat';
+import type { RigState } from '../model/sim';
 import { capsizeBoomYawDeg } from '../model/dinghy';
 import {
   captainPlacement,
@@ -906,12 +907,7 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         {
           picture: state.picture,
           travellerCarPct: state.travellerCarPct,
-          boomYawDeg:
-            state.picture === 'traveller'
-              ? travellerPicture(state.travellerCarPct).boomDeg
-              : isDinghy()
-                ? capsizeBoomYawDeg(state.dinghy.capsize, state.rig.theta.value)
-                : null,
+          boomYawDeg: drawnBoomYaw(state),
           boardPct: state.dinghy.boardPct,
           sailor:
             sailor && shownSide !== null
@@ -1025,7 +1021,19 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
         eye.x > boat.hull.transomX &&
         eye.x < boat.hull.stemX &&
         Math.abs(eye.z) < halfBeamAt(eye.x);
-      for (const anchor of labelAnchors(store.getState().rig, boatModel.ropeDrawings())) {
+      // The labels follow the boom as drawn: the traveller picture and a capsized dinghy draw
+      // their own swing, not the model's (issue 271).
+      const labelState = store.getState();
+      const yaw = drawnBoomYaw(labelState);
+      const labelRig: RigState =
+        yaw === null
+          ? labelState.rig
+          : {
+              ...labelState.rig,
+              theta: { value: yaw, velocity: 0 },
+              psi: { value: 0, velocity: 0 },
+            };
+      for (const anchor of labelAnchors(labelRig, boatModel.ropeDrawings())) {
         if (onBoard && anchor.point[1] < 0) continue;
         projected
           .set(...anchor.point)
@@ -1047,6 +1055,15 @@ export function createScene(host: HTMLElement, store: Store): SceneView {
 const projected = new THREE.Vector3();
 
 const NO_ROPES: ReadonlySet<string> = new Set();
+
+/**
+ * The boom's swing the boat is drawn with when it is not the model's: the traveller picture's, or a
+ * capsized dinghy's; null when the model's boom is drawn.
+ */
+function drawnBoomYaw(state: AppState): number | null {
+  if (state.picture === 'traveller') return travellerPicture(state.travellerCarPct).boomDeg;
+  return isDinghy() ? capsizeBoomYawDeg(state.dinghy.capsize, state.rig.theta.value) : null;
+}
 
 /**
  * Ropes running out in Realistic mode flash (PHASE1_SPEC 7.2.2): on for half of each period of

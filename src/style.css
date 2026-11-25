@@ -2520,6 +2520,15 @@ html[data-layout='stacked'] .rope-strip:not(.is-empty) {
   stroke-width: 3;
 }
 
+.real-lead {
+  outline: none;
+}
+
+.real-lead:focus-visible .clutch-sticker-plate {
+  stroke: var(--focus);
+  stroke-width: 3;
+}
+
 .real-lever-slot {
   fill: #12171b;
 }
@@ -5518,6 +5527,7 @@ html[data-layout='wide'] .exercise-buttons [data-testid='exercise-list'] {
 }
 
 .bar-nothing,
+.bar-walk,
 .bar-keys {
   margin: 6px 0 0;
   color: var(--muted);
@@ -5525,6 +5535,7 @@ html[data-layout='wide'] .exercise-buttons [data-testid='exercise-list'] {
 }
 
 .bar-nothing[hidden],
+.bar-walk[hidden],
 .bar-keys[hidden] {
   display: none;
 }

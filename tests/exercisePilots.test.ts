@@ -11,6 +11,7 @@ import { pilotActions, pilotFor, type Pilot } from '../src/app/exercisePilots';
 import { initialState, reduce, type Action, type AppState } from '../src/app/store';
 import { exerciseStartLink, parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { exerciseDef, type ExerciseLevel } from '../src/model/exercises';
+import { gennakerTrimState } from '../src/model/gennaker';
 import { sailTrim } from '../src/model/trim';
 import { goodRun, runFrom } from './harbourPilot';
 
@@ -502,6 +503,16 @@ describe('M108 the gennaker exercises teach PT-69 and PT-70', () => {
     expect(main(settled(startState('gennaker-gybe')))).toBe('good');
     expect(main(goodRunStates('gennaker-gybe', 'easy').end)).toBe('good');
     expect(main(goodRunStates('gennaker-rig', 'easy').end)).toBe('good');
+  });
+
+  it("the rig exercise's trim step does not pass by itself: the sheet starts hauled in, so the learner must touch it (M108 review)", () => {
+    const { at } = goodRunStates('gennaker-rig', 'easy');
+    let s = at[6] as AppState;
+    expect(s.exercise?.step).toBe(6);
+    for (let i = 0; i < 400; i += 1) s = dt(s);
+    expect(gennakerTrimState(s.gennaker, s.rig.gennaker)).not.toBe('good');
+    expect(s.exercise?.step).toBe(6);
+    expect(s.exercise?.status).toBe('running');
   });
 
   it('the rig exercise rigs in the order of PT-69: tack line, sheets, halyard, hoist', () => {

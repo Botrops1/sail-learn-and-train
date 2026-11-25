@@ -162,6 +162,12 @@ export function clutchAriaLabel(spec: TailSpec, open: boolean): string {
   )}`;
 }
 
+/** The accessible name of a rope that runs to the winch with no clutch (the gennaker's sheet, M107). */
+export function leadAriaLabel(spec: TailSpec): string {
+  const name = part(spec.ropeId)?.name ?? spec.ropeId;
+  return t('real.lead.aria', { label: spec.label, name });
+}
+
 export function createStationDrawing(
   store: Store,
   station: Exclude<StationId, 'helm'>,
@@ -371,6 +377,9 @@ export function createStationDrawing(
     const dash = ROPE_DASH[ropeColorKey(leadSpec.ropeId)];
     const group = svg('g', {
       class: 'real-lead',
+      role: 'button',
+      tabindex: '0',
+      'aria-label': leadAriaLabel(leadSpec),
       'data-key': leadSpec.key,
       'data-rope-id': leadSpec.ropeId,
     });
@@ -926,6 +935,14 @@ export function createStationDrawing(
 
   // Keyboard: Enter / Space selects a clutch (again: opens or closes it), arrows open / close.
   root.addEventListener('keydown', (event) => {
+    // A rope with no clutch (the gennaker's sheet): Enter / Space selects it, as a tap on its knob.
+    const lead = (event.target as Element).closest('.real-lead');
+    if (lead && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      const leadKey = lead.getAttribute('data-key');
+      if (leadKey) options.onSelect(leadKey);
+      return;
+    }
     const target = (event.target as Element).closest('[data-drag]');
     const what = target?.getAttribute('data-drag') ?? '';
     if (what === 'button' && (event.key === ' ' || event.key === 'Enter')) {
@@ -988,6 +1005,7 @@ export function createStationDrawing(
           setText(node.state, t(open ? 'real.clutch.openShort' : 'real.clutch.closedShort'));
         }
       }
+      if (!node.lever) attr(node.group, 'aria-pressed', String(selected === spec.key));
       const here = onWinch === spec.key;
       const running = report?.motion === 'running';
       node.tail.classList.toggle('is-running', running);

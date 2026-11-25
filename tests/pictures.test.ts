@@ -11,7 +11,7 @@ import {
   travellerPicture,
 } from '../src/model/pictures';
 import { pictureSailGrid } from '../src/model/sailShape';
-import { distance, vec3 } from '../src/model/vec3';
+import { distance, vec3, type Vec3 } from '../src/model/vec3';
 
 describe('M109: pictures in the state and the link', () => {
   it('`pic` round-trips through the link', () => {
@@ -61,13 +61,42 @@ describe('M109: the pictures', () => {
     expect(polePlanDeg(0)).toBe(boat.pictures.spinnaker.poleMinDeg);
   });
 
-  it('the picture sail is full: its middle row bulges to the side given', () => {
+  it('the picture sail is full: its middle row bulges forward, to leeward of the sail', () => {
     const picture = spinnakerPicture(150);
     const corners = { tack: picture.poleEnd, head: picture.head, clew: picture.clew };
     const grid = pictureSailGrid(corners, -1, boat.pictures.spinnaker.camberRatio);
     const flat = pictureSailGrid(corners, -1, 0);
     const mid = Math.floor(grid.rows / 2) * (grid.columns + 1) + Math.floor(grid.columns / 2);
-    expect(grid.points[mid]?.[2]).toBeLessThan((flat.points[mid]?.[2] ?? 0) - 0.05);
+    // The clew is the tack's mirror image, so the sail stands across the boat and its belly
+    // bulges forward (the wind comes from astern), not sideways (issue 269).
+    expect(grid.points[mid]?.[0]).toBeGreaterThan((flat.points[mid]?.[0] ?? 0) + 0.05);
+  });
+
+  it('on a broad reach the picture sail flies in front of the forestay and its clew well forward of the main (issue 269)', () => {
+    const picture = spinnakerPicture(150);
+    const [topX = 0, topY = 1] = boat.rig.forestay.top;
+    const [bottomX = 0, bottomY = 0] = boat.rig.forestay.bottom;
+    const stayX = (y: number) => topX + ((bottomX - topX) * (topY - y)) / (topY - bottomY);
+    const grid = pictureSailGrid(
+      { tack: picture.poleEnd, head: picture.head, clew: picture.clew },
+      picture.side === 1 ? -1 : 1,
+      boat.pictures.spinnaker.camberRatio,
+    );
+    const stride = grid.columns + 1;
+    let aft = 0;
+    for (let row = 0; row <= grid.rows; row += 1) {
+      // The point of this row where the sail crosses the middle of the boat (z nearest 0).
+      let across = grid.points[row * stride] as Vec3;
+      for (let col = 1; col < stride; col += 1) {
+        const q = grid.points[row * stride + col] as Vec3;
+        if (Math.abs(q[2]) < Math.abs(across[2])) across = q;
+      }
+      if (across[0] < stayX(across[1])) aft += 1;
+    }
+    // Before the fix 13 of the 17 rows lay behind the stay, by up to 1.2 m.
+    expect(aft).toBeLessThanOrEqual(2);
+    // The clew was abeam the mast (x 0.2, the end of the boom); now it is well forward of it.
+    expect(picture.clew[0]).toBeGreaterThan(2);
   });
 
   it('every id that is only drawn inside a picture is in the registry, drawn by the pictures', () => {

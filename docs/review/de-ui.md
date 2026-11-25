@@ -186,6 +186,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | clutch.tail.furl | the tail that rolls the mainsail in | das Ende, das das Großsegel einrollt |
 | clutch.tail.unfurl | the tail that rolls the mainsail out | das Ende, das das Großsegel ausrollt |
 | clutch.aria | Clutch “{label}”: {name} | Klemme „{label}“: {name} |
+| real.lead.aria | Line “{label}”: {name} (no clutch; it is held on the winch) | Leine „{label}“: {name} (ohne Klemme; sie wird auf der Winsch gehalten) |
 | ropes.strip.label | Selected line | Gewählte Leine |
 | ropes.strip.emptyList | Tap a line in the 3D view or in the list below to work it. | Tippen Sie eine Leine in der 3D-Ansicht oder in der Liste unten an, um sie zu bedienen. |
 | ropes.learnRealistic | Realistic lines: you work this line at its station. Choose Realistic mode to work it. | Realistische Leinen: diese Leine bedienen Sie an ihrer Station. Wählen Sie den Modus Realistisch, um sie zu bedienen. |
@@ -636,6 +637,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | learn.feelItHint | The app sails “{title}” for you and stops after each step. | Die App segelt „{title}“ für Sie und hält nach jedem Schritt an. |
 | learn.whereIsIt | Where is it? | Wo ist es? |
 | learn.spotlightHint | Tap anywhere to see the whole boat again. | Tippen Sie irgendwohin, um wieder das ganze Boot zu sehen. |
+| learn.packedAway | It is packed away: the gennaker is up, so this part is not on deck. Take the sail down first to see it. | Es ist weggepackt: Der Gennaker ist oben, deshalb liegt dieses Teil nicht an Deck. Nehmen Sie zuerst das Segel herunter, um es zu sehen. |
 | learn.writtenFor | Written for the {name}. | Geschrieben für die {name}. |
 | learn.tryIt | Try it: | Selbst probieren: |
 | learn.related | See also: | Siehe auch: |
@@ -877,7 +879,7 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | debrief.fenders.out | Fenders out | Fender ausgebracht |
 | debrief.fenders.in | Fenders in | Fender eingeholt |
 | debrief.gennaker.next | Gennaker: next step | Gennaker: nächster Schritt |
-| debrief.gennaker.back | Gennaker: undo a step | Gennaker: einen Schritt zurück |
+| debrief.gennaker.back | Gennaker: one step back | Gennaker: einen Schritt zurück |
 | debrief.gennaker.gybe | Gennaker: gybed | Gennaker: gehalst |
 | debrief.gennaker.rig | Gennaker: rigged | Gennaker: aufgeriggt |
 | debrief.gennaker.stow | Gennaker: stowed | Gennaker: verstaut |

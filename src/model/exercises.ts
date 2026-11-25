@@ -199,7 +199,7 @@ export type LoggedAction =
   | { type: 'thruster'; which: 'bow' | 'stern'; dir: -1 | 1 }
   | { type: 'windlass'; motion: 'down' | 'up' }
   | { type: 'fenders'; out: boolean }
-  | { type: 'gennaker'; command: GennakerCommand };
+  | { type: 'gennaker'; command: GennakerCommand; times?: number };
 
 /** The log the debrief is made from (M66 writes start, step, finish; M67 mistake, back; M68 action, event). */
 export type ExerciseLogEntry =

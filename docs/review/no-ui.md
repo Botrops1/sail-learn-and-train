@@ -186,6 +186,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | clutch.tail.furl | the tail that rolls the mainsail in | enden som ruller storseilet inn |
 | clutch.tail.unfurl | the tail that rolls the mainsail out | enden som ruller storseilet ut |
 | clutch.aria | Clutch “{label}”: {name} | Stopper «{label}»: {name} |
+| real.lead.aria | Line “{label}”: {name} (no clutch; it is held on the winch) | Tau «{label}»: {name} (uten stopper; det holdes på vinsjen) |
 | ropes.strip.label | Selected line | Valgt tau |
 | ropes.strip.emptyList | Tap a line in the 3D view or in the list below to work it. | Trykk på et tau i 3D-visningen eller i listen under for å bruke det. |
 | ropes.learnRealistic | Realistic lines: you work this line at its station. Choose Realistic mode to work it. | Realistiske tau: du betjener dette tauet på plassen sin. Velg Realistisk modus for å bruke det. |
@@ -636,6 +637,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | learn.feelItHint | The app sails “{title}” for you and stops after each step. | Appen seiler «{title}» for deg og stopper etter hvert trinn. |
 | learn.whereIsIt | Where is it? | Hvor er det? |
 | learn.spotlightHint | Tap anywhere to see the whole boat again. | Trykk hvor som helst for å se hele båten igjen. |
+| learn.packedAway | It is packed away: the gennaker is up, so this part is not on deck. Take the sail down first to see it. | Den er pakket bort: Gennakeren er oppe, så denne delen er ikke på dekk. Ta seilet ned først for å se den. |
 | learn.writtenFor | Written for the {name}. | Skrevet for {name}. |
 | learn.tryIt | Try it: | Prøv det: |
 | learn.related | See also: | Se også: |
@@ -877,7 +879,7 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | debrief.fenders.out | Fenders out | Fendere ut |
 | debrief.fenders.in | Fenders in | Fendere inn |
 | debrief.gennaker.next | Gennaker: next step | Gennaker: neste trinn |
-| debrief.gennaker.back | Gennaker: undo a step | Gennaker: angret et trinn |
+| debrief.gennaker.back | Gennaker: one step back | Gennaker: ett trinn tilbake |
 | debrief.gennaker.gybe | Gennaker: gybed | Gennaker: gybbet |
 | debrief.gennaker.rig | Gennaker: rigged | Gennaker: rigget |
 | debrief.gennaker.stow | Gennaker: stowed | Gennaker: stuet bort |

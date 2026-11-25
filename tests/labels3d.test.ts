@@ -4,6 +4,7 @@ import { defaultControls, type Controls } from '../src/model/controls';
 import { alongPolyline, labelAnchors, placeLabels } from '../src/model/labels3d';
 import { isRegisteredPartId } from '../src/model/registry';
 import { ropeDrawings } from '../src/model/ropePaths';
+import { gennakerClew } from '../src/model/gennaker';
 import { initialRig } from '../src/model/sim';
 import type { Vec3 } from '../src/model/vec3';
 
@@ -21,7 +22,8 @@ describe('M5: labels in 3D (model)', () => {
     expect(new Set(ids).size).toBe(ids.length);
     for (const id of ids) expect(isRegisteredPartId(id), id).toBe(true);
     const list = anchors();
-    expect(list.map((anchor) => anchor.id)).toEqual(ids);
+    // The gennaker's label shows only while the sail is set (below).
+    expect(list.map((anchor) => anchor.id)).toEqual(ids.filter((id) => id !== 'sail_gennaker'));
     for (const { id, point: p } of list) {
       expect(p.every(Number.isFinite), id).toBe(true);
       expect(p[0], id).toBeGreaterThan(boat.hull.transomX - 1);
@@ -54,6 +56,39 @@ describe('M5: labels in 3D (model)', () => {
     expect(point(furled, 'sail_main')).toBeUndefined();
     expect(point(furled, 'sail_jib')).toBeUndefined();
     expect(point(furled, 'part_mast')).toBeDefined();
+  });
+
+  it('the set gennaker has its own label, on the sail, ahead of the mainsail label (M106 review)', () => {
+    const setup = { stage: 4 as const, side: 1 as const, crossS: 0, crossFromDeg: 0 };
+    const controls = {
+      ...defaultControls(),
+      ctl_wind_dir: 120,
+      ctl_wind_speed: 12,
+      ctl_gennaker_sock: 100,
+    };
+    const rig = initialRig(controls, boat, {}, undefined, undefined, setup);
+    expect(rig.gennaker.set).toBe(true);
+    const list = labelAnchors(rig, ropeDrawings(rig));
+    const ids = list.map((anchor) => anchor.id);
+    expect(ids).toContain('sail_gennaker');
+    expect(ids.indexOf('sail_gennaker')).toBeLessThan(ids.indexOf('sail_main'));
+    const p = point(list, 'sail_gennaker') as Vec3;
+    const { tack, head } = boat.sails.gennaker;
+    const clew = gennakerClew(rig.gennaker.thetaDeg);
+    for (const axis of [0, 1, 2] as const) {
+      const third = ((tack[axis] ?? 0) + (head[axis] ?? 0) + (clew[axis] ?? 0)) / 3;
+      expect(p[axis], `axis ${axis}`).toBeCloseTo(third, 6);
+    }
+    // Snuffed (sock down): no label.
+    const snuffed = initialRig(
+      { ...controls, ctl_gennaker_sock: 0 },
+      boat,
+      {},
+      undefined,
+      undefined,
+      setup,
+    );
+    expect(point(labelAnchors(snuffed, ropeDrawings(snuffed)), 'sail_gennaker')).toBeUndefined();
   });
 
   it('a point along a polyline, by length', () => {

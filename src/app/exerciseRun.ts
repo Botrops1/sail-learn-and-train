@@ -552,6 +552,11 @@ function merge(last: ExerciseLogEntry | undefined, act: LoggedAction, atS: numbe
     if (old.type === 'line' && old.code === act.code && old.command === act.command) {
       merged = { ...old, times: (old.times ?? 1) + 1 };
     }
+  } else if (act.type === 'gennaker') {
+    // The same step again and again (four taps of "back" to lower the sail) is one line, ×4.
+    if (old.type === 'gennaker' && old.command === act.command) {
+      merged = { ...old, times: (old.times ?? 1) + 1 };
+    }
   } else if (act.type === 'realistic') {
     if (
       old.type === 'realistic' &&

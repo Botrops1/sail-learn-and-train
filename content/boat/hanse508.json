@@ -1328,8 +1328,9 @@
   "visual": {
     "$comment": "Teaching approximations for Phase 1. Not physics. Tune freely, keep them here.",
     "labels3d": {
-      "$comment": "M5: names shown over the 3D view (Settings, Labels in 3D). In priority order: where two labels would overlap on screen, the one higher in the list wins (the selected part's label always shows). 'at' is a point in boat coordinates, or: 'mainSail' / 'jibSail' (the middle of the sail as drawn), 'boom' (distance metres from the gooseneck, moves with the boom), 'rope' (fraction of the way along one strand of the rope as drawn), 'hardware' (the cockpit fitting with this id in cockpitHardware, lift metres above it). Points are estimates chosen to sit on or next to each part; only the drawing uses them.",
+      "$comment": "M5: names shown over the 3D view (Settings, Labels in 3D). In priority order: where two labels would overlap on screen, the one higher in the list wins (the selected part's label always shows). 'at' is a point in boat coordinates, or: 'mainSail' / 'jibSail' / 'gennakerSail' (the middle of the sail as drawn; the gennaker's only while it is set), 'boom' (distance metres from the gooseneck, moves with the boom), 'rope' (fraction of the way along one strand of the rope as drawn), 'hardware' (the cockpit fitting with this id in cockpitHardware, lift metres above it). Points are estimates chosen to sit on or next to each part; only the drawing uses them.",
       "list": [
+        { "id": "sail_gennaker", "at": "gennakerSail" },
         { "id": "sail_main", "at": "mainSail" },
         { "id": "sail_jib", "at": "jibSail" },
         { "id": "part_mast", "at": [0, 16.5, 0] },
@@ -2091,16 +2092,16 @@
     }
   },
   "pictures": {
-    "note": "assumption (M109): pictures of sails this boat does not carry, drawn only while Learn's Show it working shows one. poleLengthM is the manual's spinnaker pole (dimensions.rigDimensionsMm.spinnakerPole 5850); the rest are guesses chosen to look right.",
+    "note": "assumption (M109): pictures of sails this boat does not carry, drawn only while Learn's Show it working shows one. poleLengthM is the manual's spinnaker pole (dimensions.rigDimensionsMm.spinnakerPole 5850); the rest are guesses chosen to look right. The spinnaker's clew is the tack's mirror image (clewExtraDeg 0) and its head flies 2 m ahead of the masthead (head x 2.0), so on a broad reach the sail lies in front of the forestay, as a spinnaker does (issue 269).",
     "spinnaker": {
       "poleHeel": [0.2, 3.2, 0.0],
       "poleLengthM": 5.85,
       "poleRadiusM": 0.04,
       "poleMinDeg": 10,
       "poleMaxDeg": 85,
-      "clewExtraDeg": 30,
+      "clewExtraDeg": 0,
       "clewY": 3.2,
-      "head": [0.35, 21.0, 0.0],
+      "head": [2.0, 21.0, 0.0],
       "poleLiftFrom": [0.2, 12.0, 0.0],
       "downhaulTo": [1.5, 1.62, 0.0],
       "camberRatio": 0.25
