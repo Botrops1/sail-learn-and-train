@@ -108,6 +108,24 @@ export async function liveM107Checks({ openPage, viewports, problems }) {
         (await page.locator(`${drawing('port')} [data-drag="clutch:g1"]`).count()) === 0,
       'lever and clutch drag absent',
     );
+    // The sheet's position is a keyboard button too (the clutches have always been one).
+    const lead = page.locator(`${drawing('port')} .real-lead`);
+    check(
+      'port: the sheet position is a labelled button the keyboard reaches',
+      (await lead.getAttribute('role')) === 'button' &&
+        (await lead.getAttribute('tabindex')) === '0' &&
+        ((await lead.getAttribute('aria-label')) ?? '').length > 0,
+      `${await lead.getAttribute('role')} ${await lead.getAttribute('tabindex')}`,
+    );
+    await lead.focus();
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(300);
+    check(
+      'port: Enter on the sheet position selects it',
+      ((await lead.getAttribute('class')) ?? '').includes('is-selected') &&
+        (await lead.getAttribute('aria-pressed')) === 'true',
+      `${await lead.getAttribute('class')} ${await lead.getAttribute('aria-pressed')}`,
+    );
     await showSection(page, 'sails');
     const sheetRow = await page.getByTestId('gennaker-sheet-row').isVisible();
     const sheetLine = await page.getByTestId('gennaker-sheet-winch').isVisible();

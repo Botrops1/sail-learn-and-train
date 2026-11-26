@@ -197,7 +197,7 @@ function alertsFor(state: AppState): Alert[] {
 }
 
 /** The line under the station bar while the captain walks (M112). */
-function walkText(walk: WalkState): string {
+export function walkText(walk: WalkState): string {
   return t('real.walking', {
     station: t(`real.station.${walk.to}` as StringKey),
     s: walkSecondsLeft(walk),

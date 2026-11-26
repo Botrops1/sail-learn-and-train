@@ -148,4 +148,26 @@ export async function liveM105Checks({ openPage, viewports, problems }) {
     );
     await context.close();
   }
+
+  // 6. Learn, hoisted: "Where is it?" on the bag leaves the sail up and says the bag is packed away.
+  {
+    const opened = await openPage(
+      phone,
+      'm105 learn packed away',
+      `${B}&gn=4&gu=100&m=learn&learn=part_gennaker_bag&cam=side-starboard&debug=1`,
+      { testClock: true },
+    );
+    const { context, page } = opened;
+    await page.waitForTimeout(800);
+    await page.getByTestId('learn-show-on-boat').tap();
+    await page.waitForTimeout(1500);
+    const now = await link(page, ['gn=4']);
+    check('learn packed away: the gennaker stays hoisted (gn=4)', now.includes('gn=4'), now);
+    check(
+      'learn packed away: the note says the bag is packed away',
+      await page.getByTestId('learn-packed-away').isVisible(),
+      'no note',
+    );
+    await context.close();
+  }
 }

@@ -113,7 +113,21 @@ export async function liveM82Checks({ openPage, viewports, outDir, prefix, probl
       'switch, dot and "nothing at this station" shown while the learner is not at Starboard',
     );
     await shot(page, 'm82-phone-set-step2-other-station');
-    await goTo(page, 'starboard');
+    await tap(page, 'bar-station-starboard');
+    const walkText = (await tid(page, 'bar-walk').isVisible())
+      ? await tid(page, 'bar-walk').innerText()
+      : '';
+    check(
+      'while he walks the bar says "Walking to Starboard"',
+      /Walking to Starboard/.test(walkText),
+      JSON.stringify(walkText),
+    );
+    for (let i = 0; i < 120 && (await read(page)).walking; i += 1) await page.waitForTimeout(250);
+    check(
+      'the walking line is gone once he has arrived',
+      await tid(page, 'bar-walk').isHidden(),
+      '',
+    );
     check(
       'at Starboard the rows show and the hint goes',
       (await tid(page, 'bar-clutch-a2').isVisible()) &&

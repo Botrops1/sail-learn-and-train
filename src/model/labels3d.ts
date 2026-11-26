@@ -1,4 +1,5 @@
 import { boat, type BoatData } from './boat';
+import { gennakerClew } from './gennaker';
 import { jibClew } from './jib';
 import { boomPoint, mainSailCorners } from './rigGeometry';
 import { drawnPose, type RopeDrawing } from './ropePaths';
@@ -66,11 +67,18 @@ function hardwarePoint(id: string, data: BoatData): Vec3 | undefined {
   return fitting ? [fitting.x, fitting.y, fitting.z] : undefined;
 }
 
+/** What the 3D view is showing besides the rig itself. */
+export interface LabelView {
+  /** A picture (spinnaker, code 0, traveller) is drawn: the gennaker is drawn as stowed. */
+  picture?: boolean;
+}
+
 function anchorOf(
   spec: LabelSpec,
   rig: RigState,
   drawings: readonly RopeDrawing[],
   data: BoatData,
+  view: LabelView,
 ): Vec3 | undefined {
   const shown = (unfurled: number) => unfurled * 100 >= data.visual.solver.furledBelowPct;
   if (Array.isArray(spec.at)) return spec.at.length === 3 ? vec3(spec.at) : undefined;
@@ -80,6 +88,13 @@ function anchorOf(
       if (!shown(unfurled)) return undefined;
       const { tack, head, clew } = mainSailCorners(unfurled, drawnPose(rig), data);
       return centroid(tack, head, clew);
+    }
+    case 'gennakerSail': {
+      // Only while the sail is drawn (the sock up past the renderer's 5 %, no picture shown); a
+      // snuffed sail has no label of its own.
+      if (view.picture || !rig.gennaker.set || rig.gennaker.sockUp <= 0.05) return undefined;
+      const { tack, head } = data.sails.gennaker;
+      return centroid(vec3(tack), vec3(head), gennakerClew(rig.gennaker.thetaDeg, data));
     }
     case 'jibSail': {
       const unfurled = rig.jibSolution.unfurled;
@@ -113,10 +128,11 @@ export function labelAnchors(
   rig: RigState,
   drawings: readonly RopeDrawing[],
   data: BoatData = boat,
+  view: LabelView = {},
 ): LabelAnchor[] {
   const anchors: LabelAnchor[] = [];
   for (const spec of data.visual.labels3d.list as LabelSpec[]) {
-    const point = anchorOf(spec, rig, drawings, data);
+    const point = anchorOf(spec, rig, drawings, data, view);
     if (point && point.every(Number.isFinite)) anchors.push({ id: spec.id, point });
   }
   return anchors;

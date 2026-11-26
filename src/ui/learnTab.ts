@@ -100,6 +100,7 @@ export function createLearnTab(
 
   /** The entry shown has one hint line, visible while a spotlight is on (M49). */
   let spotlightHint: HTMLElement | undefined;
+  let packedAwayNote: HTMLElement | undefined;
   // (Reads the spotlight itself: a spotlight that finds nothing to light is ended inside its own call.)
   onSpotlight(() => {
     if (spotlightHint) spotlightHint.hidden = spotlightNow() === null;
@@ -175,6 +176,7 @@ export function createLearnTab(
   const entryView = (entry: LearnEntry): HTMLElement => {
     const { text } = entry;
     spotlightHint = undefined;
+    packedAwayNote = undefined;
     const nodes: (HTMLElement | undefined)[] = [];
 
     nodes.push(
@@ -305,6 +307,7 @@ export function createLearnTab(
     ) {
       lastButtons = el('div', { class: 'learn-links' }, [
         button('learn-show-on-boat', t('learn.whereIsIt'), () => {
+          if (packedAwayNote) packedAwayNote.hidden = true;
           store.dispatch({ type: 'select', partId: entry.id });
           lowerSheet();
           // A gennaker part that is not on the boat yet (M105): rig it as far as the part needs,
@@ -318,15 +321,20 @@ export function createLearnTab(
             requestSpotlight(entry.id, 'where');
             return;
           }
+          // A part that is packed away while the sail is up (the bag at stage 4): Learn does not
+          // take the sail down for a look, and there is nothing drawn to fly to.
+          if (wanted < stage) {
+            if (packedAwayNote) packedAwayNote.hidden = false;
+            return;
+          }
           if (wanted === 4) {
             store.dispatch({ type: 'gennaker', command: 'rig' });
             if (needsSock) {
               store.dispatch({ type: 'setControls', values: { ctl_gennaker_sock: 100 } });
             }
           } else {
-            const command = wanted > stage ? 'next' : 'back';
-            for (let i = 0; i < Math.abs(wanted - stage); i += 1) {
-              store.dispatch({ type: 'gennaker', command });
+            for (let i = 0; i < wanted - stage; i += 1) {
+              store.dispatch({ type: 'gennaker', command: 'next' });
             }
           }
           requestAnimationFrame(() =>
@@ -345,6 +353,17 @@ export function createLearnTab(
       hint.hidden = spotlightNow() === null;
       spotlightHint = hint;
       nodes.splice(nodes.indexOf(lastButtons ?? feelItBlock ?? showMeBlock) + 1, 0, hint);
+    }
+    if (lastButtons && (stageToShow(entry.id, 4) ?? 4) < 4) {
+      // Shown by "Where is it?" when the part is packed away (see its handler).
+      const note = el(
+        'p',
+        { class: 'hint learn-packed-away', 'data-testid': 'learn-packed-away', role: 'status' },
+        [t('learn.packedAway')],
+      );
+      note.hidden = true;
+      packedAwayNote = note;
+      nodes.splice(nodes.indexOf(lastButtons) + 1, 0, note);
     }
 
     if (entry.controls.length > 0) {
