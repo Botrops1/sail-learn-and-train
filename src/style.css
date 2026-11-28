@@ -1461,12 +1461,12 @@ html[data-layout='stacked'] .strip-cell:has(.strip-speed) {
 
 html[data-layout='console'] .rig-alerts {
   top: auto;
-  bottom: 64px;
+  bottom: calc(var(--view-bottom-inset, 0px) + 64px);
 }
 
 /* Beside the panel the mini-map is 160 px and would cover the warnings: they sit above it (M28 review). */
 html[data-layout='console'] .view[data-mini-map] .rig-alerts {
-  bottom: calc(60px + 160px + 8px);
+  bottom: calc(var(--view-bottom-inset, 0px) + 60px + 160px + 8px);
 }
 
 .rig-alert {
