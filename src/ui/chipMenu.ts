@@ -40,8 +40,20 @@ let overlay: { close: () => void } | undefined;
  * runs it when it opens.
  */
 export function closeOpenMenus(): void {
+  closeChipOverlays();
+  drawerClose?.();
+}
+
+/** Closes the chip menu and the chip card that are open, not the console's drawer (M119). */
+export function closeChipOverlays(): void {
   openMenu?.close();
   overlay?.close();
+}
+
+/** M119: the console's one drawer; it closes when a chip menu or a chip card opens (it is not an overlay: the keys keep working). */
+let drawerClose: (() => void) | undefined;
+export function registerDrawer(close: () => void): void {
+  drawerClose = close;
 }
 
 /** True while a chip menu or a registered chip card is open (the exercise bar's keys wait then). */

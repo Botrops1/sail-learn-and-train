@@ -166,7 +166,10 @@ export async function liveM87Checks({ openPage, openPlain, viewports, outDir, pr
   }
 
   // 7. A computer: the speaker chip before the gear, no overlap, and it follows Settings.
-  for (const vp of [wide, { name: 'desktop-1024x768', width: 1024, height: 768, layout: 'side' }]) {
+  for (const vp of [
+    wide,
+    { name: 'desktop-1024x768', width: 1024, height: 768, layout: 'console' },
+  ]) {
     const { context, page } = await openPlain(vp, `m87-chip-${vp.width}`, '?v=1&ws=15');
     const chip = tid(page, 'sound-chip');
     await chip.waitFor({ state: 'visible' });

@@ -20,7 +20,6 @@ import { initialState, reduce, type AppState } from '../src/app/store';
 import { crewOutShare } from '../src/model/dinghy';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { MODE_LAYOUTS, sectionAvailable } from '../src/ui/modes';
-import { completeLayout } from '../src/ui/sectionLayout';
 import type { BoatState } from '../src/model/motion';
 
 /**
@@ -346,9 +345,6 @@ describe('M114: the link and the panel', () => {
         expect(order.indexOf('dinghy')).toBe(order.indexOf('ropes') + 1);
       }
     }
-    // A saved arrangement from before this section gets it right after Ropes.
-    const saved = completeLayout({ columns: [['ropes', 'sails'], []] });
-    expect(saved.columns[0].slice(0, 3)).toEqual(['ropes', 'dinghy', 'sails']);
   });
 });
 

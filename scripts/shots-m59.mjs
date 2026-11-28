@@ -142,8 +142,6 @@ export async function liveM59Checks({ openPage, viewports, problems }) {
     problems.push(...(await auditPage(page, 'm59 card settings')));
     await page.keyboard.press('Escape');
     await page.getByTestId('settings-card').waitFor({ state: 'hidden' });
-    await page.getByTestId('section-grip-sails').click();
-    problems.push(...(await auditPage(page, 'm59 grip menu')));
     await context.close();
   }
 }

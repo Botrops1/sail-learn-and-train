@@ -33,8 +33,8 @@ export type SectionId = (typeof SECTION_IDS)[number];
 
 export interface ModeLayout {
   /**
-   * Every section exactly once, top to bottom (stacked layout, and the side layout's column; the
-   * wide layout's two columns come from the saved layout, sectionLayout.ts, M54).
+   * Every section exactly once, top to bottom (stacked layout; the
+   * console's drawers and blocks keep this order).
    */
   order: readonly SectionId[];
 }
@@ -81,12 +81,48 @@ export const SECTION_TITLES: Record<SectionId, StringKey> = {
   settings: 'settings.title',
 };
 
-/** The layouts of `src/ui/layoutMode.ts` (with the wide one told apart). */
-export type LayoutKind = 'stacked' | 'side' | 'wide';
+/** The layouts of `src/ui/layoutMode.ts`. */
+export type LayoutKind = 'stacked' | 'console';
 
-/** The layout kind of a viewport (the wide layout told apart from the side one). */
 export function layoutKindOf(viewport: Viewport): LayoutKind {
-  return viewport.wide ? 'wide' : viewport.mode;
+  return viewport.mode;
+}
+
+/** A block of the console's band (PHASE_CONSOLE_SPEC 7.4). */
+export type BlockId = 'port' | 'wheel' | 'engine' | 'starboard' | 'harbour' | 'sails';
+/** A drawer of the console menu. */
+export type DrawerId =
+  'exercises' | 'learn' | 'lines' | 'harbour' | 'conditions' | 'place' | 'status';
+export type ConsolePlace =
+  { block: BlockId } | { drawer: DrawerId } | { replacedBy: BlockId } | null;
+
+/** Where a section is on the console layout (PHASE_CONSOLE_SPEC 7.4). */
+export function consolePlace(id: SectionId, ropes: 'easy' | 'realistic'): ConsolePlace {
+  switch (id) {
+    case 'autopilot':
+      return ropes === 'easy' ? { block: 'wheel' } : null;
+    case 'helm':
+      return ropes === 'realistic' ? { block: 'wheel' } : null;
+    case 'engine':
+    case 'dinghy':
+      return { block: 'engine' };
+    case 'sails':
+      return { block: 'sails' };
+    case 'ropes':
+      return { drawer: 'lines' };
+    case 'harbour':
+    case 'anchor':
+      return { drawer: 'harbour' };
+    case 'conditions':
+    case 'exercises':
+    case 'learn':
+    case 'place':
+    case 'status':
+      return { drawer: id };
+    case 'mode':
+    case 'settings':
+      return null;
+  }
 }
 
 export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
@@ -197,7 +233,7 @@ export const MODE_LAYOUTS: Readonly<Record<AppMode, ModeLayout>> = {
 export function sectionAvailable(
   id: SectionId,
   state: AppState,
-  layout: LayoutKind = 'side',
+  layout: LayoutKind = 'console',
 ): boolean {
   // Owner, PR 144: while an exercise is loaded the sections it does not use are hidden.
   if (state.exercise && id !== 'mode' && id !== 'exercises' && id !== 'settings') {

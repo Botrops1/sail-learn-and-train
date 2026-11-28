@@ -2,7 +2,8 @@ import type { AppState, Store } from '../app/store';
 import { entryFor } from '../model/panelEntries';
 import { createAnchorPanel } from './anchorPanel';
 import { createSteeringPanel } from './autopilotPanel';
-import { createColumnHandles } from './columnHandles';
+import { BLOCK_IDS, type ConsoleView } from './console';
+import type { ConsoleMenu } from './consoleMenu';
 import { el } from './dom';
 import { t } from './i18n';
 import type { LayoutShell } from './layout';
@@ -12,22 +13,15 @@ import {
   SECTION_IDS,
   SECTION_TITLES,
   TAB_OF,
+  consolePlace,
   layoutKindOf,
   sectionAvailable,
+  type BlockId,
   type LayoutKind,
   type SectionId,
 } from './modes';
 import type { ChipCard } from './chipCard';
 import { createPanelTabs, type PanelTab } from './panelTabs';
-import {
-  LAYOUT_KEY,
-  completeLayout,
-  parseLayout,
-  serializeLayout,
-  type SectionLayout,
-  type WideSectionId,
-} from './sectionLayout';
-import { createSectionMove } from './sectionMove';
 import { createExercisePanel } from './exercisePanel';
 import { createDinghyPanel } from './dinghyPanel';
 import { createEnginePanel } from './enginePanel';
@@ -86,23 +80,6 @@ export function scrollToSection(element: HTMLElement): void {
   if (content && element.offsetParent !== null) content.scrollTop = 0;
 }
 
-/** M54: the arrangement saved on this device, completed; the default when nothing usable is saved. */
-function readArrangement(): SectionLayout {
-  try {
-    return completeLayout(parseLayout(window.localStorage.getItem(LAYOUT_KEY)));
-  } catch {
-    return completeLayout(null);
-  }
-}
-
-function writeArrangement(arrangement: SectionLayout): void {
-  try {
-    window.localStorage.setItem(LAYOUT_KEY, serializeLayout(arrangement));
-  } catch {
-    // Private window or blocked storage: the arrangement is just not remembered.
-  }
-}
-
 export function createPanel(
   host: HTMLElement,
   store: Store,
@@ -112,17 +89,9 @@ export function createPanel(
   modePicker: HTMLElement,
   cards: { mode: ChipCard; settings: ChipCard },
   reopen: boolean,
+  consoleParts: { console: ConsoleView; menu: ConsoleMenu },
 ): Panel {
   const body = el('div', { class: 'panel-body panel-scroll' });
-  // The second column of the wide layout (PHASE5_SPEC 10.2): empty and hidden otherwise.
-  const second = el('div', {
-    class: 'panel-second panel-scroll',
-    'data-testid': 'second-column',
-    role: 'region',
-    'aria-label': t('panel.second'),
-    tabindex: '0',
-    hidden: '',
-  });
   const tabs = createPanelTabs(store);
   sheet.tabs.append(tabs.element);
   const listeners: (() => void)[] = [];
@@ -185,11 +154,13 @@ export function createPanel(
   }
 
   createQuickRow(sheet.head, store, sheet);
-  host.append(body, second);
-  // M39: on the wide layout the columns collapse and change width (columnHandles.ts).
-  const columns = createColumnHandles(host, [body, second], layout, () => changed());
-  // M54: where the sections are on the wide layout. Read once here, written only after a move.
-  let arrangement = readArrangement();
+  host.append(body);
+  const { console: consoleView, menu } = consoleParts;
+  menu.onChange(() => changed());
+  // For the browser checks: where a section is on the console layout (read-only).
+  (window as unknown as Record<string, unknown>).__sailPanel = {
+    placeOf: (id: SectionId) => consolePlace(id, store.getState().settings.ropesMode),
+  };
 
   const layoutKindNow = (): LayoutKind => layoutKindOf(layout.viewport());
   let layoutKind = layoutKindNow();
@@ -211,14 +182,15 @@ export function createPanel(
   syncBody('controls');
 
   /**
-   * Puts each section where the layout says: on the wide layout the two columns hold the saved
-   * arrangement (M54, the same in every mode; Mode and Settings are hidden there and stay in
-   * column 1); otherwise everything is in column 1, in the mode's order. Moves the elements,
-   * never rebuilds them, and keeps the focus where it was.
+   * Puts each section where the layout says. On the console layout (PHASE_CONSOLE_SPEC 7.4) a
+   * section goes into its block of the band or its drawer's pane (`consolePlace`), in the mode's
+   * order, and stays open; a section with no place there is taken out of the page. On a phone
+   * everything is in one list, in the mode's order. Moves the elements, never rebuilds them, and
+   * keeps the focus where it was.
    */
   function place(state: AppState): void {
     const mode = MODE_LAYOUTS[state.appMode];
-    const wide = layoutKind === 'wide';
+    const onConsole = layoutKind === 'console';
     const elementOf = (id: SectionId) => sections.get(id)?.element as HTMLElement;
     const focused = document.activeElement;
     const focusedInside =
@@ -226,7 +198,6 @@ export function createPanel(
       focused !== document.body &&
       SECTION_IDS.some((id) => elementOf(id).contains(focused));
 
-    second.hidden = !wide;
     // M52: the mode picker and the settings are built once. A phone shows them in the Mode and
     // Settings sections (its tabs); elsewhere the cards of the mode chip and the gear hold them.
     const stacked = layoutKind === 'stacked';
@@ -238,18 +209,35 @@ export function createPanel(
     ] as const) {
       if (target && content.parentElement !== target) target.append(content);
     }
-    if (wide) {
-      second.append(...arrangement.columns[1].map(elementOf));
-      body.append(
-        ...['mode', ...arrangement.columns[0], 'settings'].map((id) => elementOf(id as SectionId)),
-      );
+    if (onConsole) {
+      const ropes = state.settings.ropesMode;
+      const inBlock = new Map<BlockId, SectionId[]>();
+      for (const id of mode.order) {
+        const spot = consolePlace(id, ropes);
+        if (spot && 'block' in spot)
+          inBlock.set(spot.block, [...(inBlock.get(spot.block) ?? []), id]);
+        else if (spot && 'drawer' in spot) menu.pane(spot.drawer).append(elementOf(id));
+        else elementOf(id).remove();
+        if (spot) sections.get(id)?.setOpen(true);
+      }
+      for (const block of BLOCK_IDS) {
+        const ids = inBlock.get(block) ?? [];
+        const slot = consoleView.slot(block);
+        slot.append(...ids.map(elementOf));
+        const title = slot.querySelector<HTMLElement>('.console-title');
+        if (title) title.textContent = ids[0] ? t(SECTION_TITLES[ids[0]]) : '';
+        placed.set(block, ids);
+      }
     } else {
       body.append(...mode.order.map(elementOf));
     }
+    syncBlocks();
     if (focusedInside && document.activeElement !== focused) {
       (focused as HTMLElement).focus({ preventScroll: true });
     }
   }
+  /** The sections of each block of the console, in order (for hiding an empty block). */
+  const placed = new Map<BlockId, SectionId[]>();
 
   /** Opens `id` and folds the other sections of its column (M35: one open at a time). */
   let openCount = 0;
@@ -265,6 +253,7 @@ export function createPanel(
       syncBody(TAB_OF[id]);
       tabs.select(TAB_OF[id], false);
     }
+    if (layoutKind === 'console') return;
     for (const other of SECTION_IDS) {
       const view = sections.get(other);
       if (other !== id && view && view.element.parentElement === section.element.parentElement) {
@@ -273,61 +262,43 @@ export function createPanel(
     }
   }
 
-  /** After the layout moved sections between columns: in each column only the latest opened stays open. */
+  /** After the layout changed: on a phone only the latest opened section stays open. */
   function keepOneOpenPerColumn(): void {
-    for (const column of [body, second]) {
-      const open = SECTION_IDS.filter((id) => {
-        const view = sections.get(id);
-        return view?.isOpen() && view.element.parentElement === column;
-      }).sort((a, b) => (openedAt.get(b) ?? 0) - (openedAt.get(a) ?? 0));
-      for (const id of open.slice(1)) sections.get(id)?.setOpen(false);
-    }
+    if (layoutKind !== 'stacked') return;
+    const open = SECTION_IDS.filter((id) => sections.get(id)?.isOpen()).sort(
+      (a, b) => (openedAt.get(b) ?? 0) - (openedAt.get(a) ?? 0),
+    );
+    for (const id of open.slice(1)) sections.get(id)?.setOpen(false);
   }
-
-  /** M54: a section was moved (a drag, the menu or the keys). Keeps and saves the arrangement, places the sections. */
-  function applyMove(next: SectionLayout, moved: WideSectionId): void {
-    arrangement = next;
-    writeArrangement(next);
-    place(store.getState());
-    const view = sections.get(moved);
-    if (!view) return;
-    columns.reveal(view.element);
-    // The moved section wins in its new column.
-    if (view.isOpen()) openOnly(moved);
-    else keepOneOpenPerColumn();
-    changed();
-  }
-  createSectionMove({
-    sections,
-    columns: [body, second],
-    layout: () => arrangement,
-    apply: applyMove,
-    isCollapsed: columns.isCollapsed,
-  });
 
   /**
    * Folds every section at the start (M35); a link that names something to look at opens the
    * section that shows it: a Learn entry in Learn mode, a selected rope or the wheel otherwise.
    */
+  function linkTarget(state: AppState): SectionId | null {
+    if (state.appMode === 'exercise') return 'exercises';
+    if (state.appMode === 'learn') return state.learn !== null ? 'learn' : null;
+    if (state.appMode === 'harbour') return sectionAvailable('engine', state) ? 'engine' : 'helm';
+    const wheel = wheelSection(state);
+    if (wheel) return wheel;
+    if (entryFor(state.selection)) return 'ropes';
+    if (state.settings.ropesMode === 'realistic' && state.realistic.station === 'helm')
+      return 'helm';
+    return null;
+  }
+
   function applyOpen(state: AppState, fromLink = false): void {
-    for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
-    if (fromLink) {
-      if (state.appMode === 'exercise') openOnly('exercises');
-      else if (state.appMode === 'learn' && state.learn !== null) openOnly('learn');
-      else if (state.appMode === 'harbour') openHarbourFirst(state);
-      else if (state.appMode !== 'learn' && wheelSection(state)) {
-        openOnly(wheelSection(state) ?? 'helm');
-      } else if (state.appMode !== 'learn' && entryFor(state.selection)) openOnly('ropes');
-      else if (
-        state.appMode !== 'learn' &&
-        state.settings.ropesMode === 'realistic' &&
-        state.realistic.station === 'helm'
-      ) {
-        openOnly('helm');
-      }
+    if (layoutKind === 'console') {
+      // The blocks are always open; a link that names something opens its drawer.
+      const target = fromLink ? linkTarget(state) : null;
+      if (target) showSection(target);
+      return;
     }
+    for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
+    const target = fromLink ? linkTarget(state) : null;
+    if (target) openOnly(target);
     // A new language reloads the page: the Settings tab it was chosen in is open again (M38, M52;
-    // on the side and wide layouts the settings card reopens, settingsMenu.ts).
+    // on the console the settings card reopens, settingsMenu.ts).
     if (fromLink && reopen && layoutKind === 'stacked') openOnly('settings');
   }
 
@@ -337,6 +308,7 @@ export function createPanel(
    * engine and thrusters are in the Helm section (M53), that opens in its place.
    */
   function openHarbourFirst(state: AppState): void {
+    if (layoutKind === 'console') return;
     openOnly(sectionAvailable('engine', state) ? 'engine' : 'helm');
   }
 
@@ -351,7 +323,14 @@ export function createPanel(
     else if (state.appMode === 'harbour') openHarbourFirst(state);
     else keepOneOpenPerColumn();
     body.scrollTop = 0;
-    second.scrollTop = 0;
+  }
+
+  /** A block with no available section is hidden. */
+  function syncBlocks(): void {
+    for (const block of BLOCK_IDS) {
+      const ids = placed.get(block) ?? [];
+      consoleView.slot(block).hidden = !ids.some((id) => !sections.get(id)?.element.hidden);
+    }
   }
 
   function applyAvailable(state: AppState): void {
@@ -359,6 +338,8 @@ export function createPanel(
       const section = sections.get(id);
       if (section) section.element.hidden = !sectionAvailable(id, state, layoutKind);
     }
+    syncBlocks();
+    menu.update();
   }
 
   /** A run locks the wind and the place: their bodies are inert under a note (PHASE10_SPEC 6.5). */
@@ -423,12 +404,19 @@ export function createPanel(
   function showSection(id: SectionId): void {
     const section = sections.get(id);
     if (!section) return;
+    if (layoutKind === 'console') {
+      const spot = consolePlace(id, store.getState().settings.ropesMode);
+      if (spot && 'drawer' in spot) {
+        menu.open(spot.drawer);
+        section.element.scrollIntoView?.({ block: 'nearest' });
+      }
+      changed();
+      return;
+    }
     const raise = sheet.atPeek();
     // M51: on a phone the section's tab is shown first.
     if (layoutKind === 'stacked') tabs.select(TAB_OF[id], true);
     openOnly(id);
-    // Asked for by name (a link in the view, a "?"): a collapsed column opens to show it.
-    columns.reveal(section.element);
     if (raise) sheet.setHeight('half');
     scrollToId(id);
     // The sheet may still be growing: scroll again when it has finished.
@@ -500,7 +488,12 @@ export function createPanel(
       state.appMode !== 'harbour'
     ) {
       const wheel = wheelSection(state);
-      if (wheel) openOnly(wheel);
+      if (layoutKind === 'console') {
+        if (!wheel) {
+          showSection('ropes');
+          revealRopeStrip();
+        }
+      } else if (wheel) openOnly(wheel);
       else {
         openOnly('ropes');
         if (!sheet.atPeek()) revealRopeStrip();
@@ -516,17 +509,21 @@ export function createPanel(
     }
     changed();
   });
+  menu.setActive(layoutKind === 'console');
   layout.onChange(() => {
     const before = layoutKind;
     const now = layoutKindNow();
     if (now === before) return;
     layoutKind = now;
-    // Sections follow the layout and keep their open states (a phone turned sideways keeps the
-    // open section); only one stays open per column.
+    menu.setActive(now === 'console');
     place(store.getState());
     applyAvailable(store.getState());
-    keepOneOpenPerColumn();
     if (now === 'stacked') {
+      // Leaving the console: every section folds, the Controls section open last opens again.
+      for (const id of SECTION_IDS) sections.get(id)?.setOpen(false);
+      if (lastControls && sectionAvailable(lastControls, store.getState(), now)) {
+        openOnly(lastControls);
+      }
       // M51: the tab of the open section, or Controls.
       const open = SECTION_IDS.find((id) => sections.get(id)?.isOpen());
       const tab = open ? TAB_OF[open] : 'controls';
@@ -542,13 +539,17 @@ export function createPanel(
     showSection,
     shows: (id) => {
       const section = sections.get(id);
+      if (!section) return false;
+      if (layoutKind === 'console') {
+        const spot = consolePlace(id, store.getState().settings.ropesMode);
+        if (!spot || !section.element.isConnected || section.element.hidden) return false;
+        return 'drawer' in spot ? menu.openId() === spot.drawer : true;
+      }
       return Boolean(
-        section &&
         section.isOpen() &&
         !section.element.hidden &&
         !sheet.atPeek() &&
-        (layoutKind !== 'stacked' || tabs.current() === TAB_OF[id]) &&
-        !columns.isCollapsed(section.element),
+        (layoutKind !== 'stacked' || tabs.current() === TAB_OF[id]),
       );
     },
     openLearnEntry,

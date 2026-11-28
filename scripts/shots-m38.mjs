@@ -8,7 +8,7 @@ import { auditPage } from './a11y-audit.mjs';
 import {
   chooseLanguage,
   closeSettings,
-  isWide,
+  isConsole,
   openSettings,
   setMode,
   showSection,
@@ -46,7 +46,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
   const column = (page, selector) =>
     page.evaluate(
       (sel) =>
-        [...document.querySelectorAll(`${sel} > [data-section]`)]
+        [...document.querySelectorAll(`${sel} [data-section]`)]
           .filter((node) => !node.hidden)
           .map((node) => node.getAttribute('data-section')),
       selector,
@@ -62,14 +62,12 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     const name = viewport.name;
     const { context, page } = await openPage(viewport, `m38 wide ${name}`, `${BOAT}&sel=part_hull`);
     await page.waitForTimeout(1500);
-    check(`${name}: wide layout`, await isWide(page), String(await isWide(page)));
-    const first = await column(page, '.panel-body');
-    const second = await column(page, '[data-testid="second-column"]');
+    check(`${name}: console layout`, await isConsole(page), String(await isConsole(page)));
+    const shown = await column(page, 'body');
     check(
-      `${name}: Easy, column 1 has no Mode and no Settings section`,
-      first.join() === 'ropes,sails,autopilot,engine,place,anchor,harbour,status' &&
-        second.join() === 'conditions,learn',
-      JSON.stringify({ first, second }),
+      `${name}: Easy, no Mode and no Settings section`,
+      !shown.includes('mode') && !shown.includes('settings'),
+      JSON.stringify(shown),
     );
     check(
       `${name}: the mode chip and the gear are in the chip row`,
@@ -192,7 +190,7 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await setMode(page, 'learn');
     await page.waitForTimeout(300);
     link = await search(page);
-    const learnColumn = await column(page, '.panel-body');
+    const learnColumn = await column(page, 'body');
     check(
       'Learn: the link has m=learn, column 1 has no Mode and no Settings',
       link.includes('m=learn') &&
@@ -370,13 +368,13 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     // Wide: the open card closes.
     await openSettings(page);
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.waitForFunction(() => document.documentElement.dataset.wide === 'true');
+    await page.waitForFunction(() => document.documentElement.dataset.console === 'wide');
     await page.waitForTimeout(300);
     check('turning wide closes the card', !(await visible(page, 'settings-card')), 'wide');
     await openSettings(page);
     check('the gear opens the card there too', await visible(page, 'settings-content'), 'card');
     await page.setViewportSize({ width: 820, height: 1000 });
-    await page.waitForFunction(() => document.documentElement.dataset.wide !== 'true');
+    await page.waitForFunction(() => document.documentElement.dataset.console !== 'wide');
     await page.waitForTimeout(300);
     await openSettings(page);
     check(

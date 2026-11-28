@@ -1,18 +1,11 @@
 /**
  * M56 (issue #111; PHASE8_SPEC 14): the setup file, as pure helpers. The file holds the link (the
- * boat, the wind, the place, every setting, the language) and what this device remembers (column
- * widths and folds, the folded time bar, the section layout). Nothing here touches `window` or
+ * boat, the wind, the place, every setting, the language) and what this device remembers (the folded
+ * time bar; an old file's column widths and section layout are read and ignored, M119). Nothing here touches `window` or
  * storage; `ui/deviceSettings.ts` does that.
  */
-import { parseColumns, serializeColumns, type ColumnState } from '../ui/columnWidths';
 import { checkBoatProfile, type BoatProfile } from '../model/boatProfile';
 import { BUILT_IN_IDS, linkBoatId } from './boatStore';
-import {
-  completeLayout,
-  parseLayout,
-  serializeLayout,
-  type SectionLayout,
-} from '../ui/sectionLayout';
 
 export const SETUP_VERSION = 1;
 
@@ -21,9 +14,7 @@ export const SETUP_LINK_MAX = 8000;
 
 /** What this device remembers, in memory. */
 export interface DeviceSettings {
-  columns: ColumnState;
   timeBarFolded: boolean;
-  layout: SectionLayout | null;
 }
 
 /** As written in the file (PHASE8_SPEC 14.2): the stored shapes. */
@@ -33,7 +24,7 @@ export interface SetupFile {
   version: number;
   savedAt: string;
   link: string;
-  device: { columns: unknown; timeBarFolded: boolean; layout: unknown };
+  device: { timeBarFolded: boolean };
   /** M58: the imported boat in use (not the Hanse 508), so the file carries it to another device. */
   boatProfile?: BoatProfile;
 }
@@ -52,11 +43,7 @@ export function makeSetupFile(
     version: SETUP_VERSION,
     savedAt: savedAtIso,
     link,
-    device: {
-      columns: JSON.parse(serializeColumns(device.columns)),
-      timeBarFolded: device.timeBarFolded,
-      layout: device.layout === null ? null : JSON.parse(serializeLayout(device.layout)),
-    },
+    device: { timeBarFolded: device.timeBarFolded },
     ...(boatProfile ? { boatProfile } : {}),
   };
 }
@@ -68,9 +55,8 @@ export function setupFileName(date: Date): string {
 }
 
 /**
- * Checks a file's text and returns the link and the device settings in memory. The device part
- * is cleaned with `parseColumns` / `parseLayout`: bad or missing parts become the defaults, never
- * an error (a file from outside is never trusted).
+ * Checks a file's text and returns the link and the device settings in memory. Bad or missing
+ * device parts become the defaults, never an error (a file from outside is never trusted).
  */
 export function readSetupFile(
   text: string,
@@ -110,18 +96,10 @@ export function readSetupFile(
     typeof file.device === 'object' && file.device !== null && !Array.isArray(file.device)
       ? (file.device as Record<string, unknown>)
       : {};
-  const rawLayout =
-    device.layout === undefined || device.layout === null
-      ? null
-      : parseLayout(JSON.stringify(device.layout));
   return {
     ok: true,
     link,
     ...(boatProfile ? { boatProfile } : {}),
-    device: {
-      columns: parseColumns(device.columns === undefined ? null : JSON.stringify(device.columns)),
-      timeBarFolded: device.timeBarFolded === true,
-      layout: rawLayout === null ? null : completeLayout(rawLayout),
-    },
+    device: { timeBarFolded: device.timeBarFolded === true },
   };
 }

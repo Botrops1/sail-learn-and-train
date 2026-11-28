@@ -153,10 +153,7 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
     const { context, page } = await openPage(landscape, 'm35 landscape', BOAT);
     await page.waitForTimeout(500);
     await showSection(page, 'ropes');
-    const heads = await headBoxes(page);
     const ids = await sectionIds(page);
-    const height = heads[ids[0]].bottom - heads[ids[0]].top;
-    check('sideways: headers are thin (34 px)', height >= 33 && height <= 36, String(height));
     // M55: ten headers (Status is the tenth) no longer fit one sideways phone screen; the panel scrolls, so the last one is reached by scrolling.
     await page.getByTestId(`section-${ids[ids.length - 1]}`).scrollIntoViewIfNeeded();
     const reached = await headBoxes(page);

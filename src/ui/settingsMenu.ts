@@ -19,15 +19,12 @@ import { LANGUAGES, languageName } from '../model/languages';
 import type { KeyHelp } from './keyHelp';
 import { DETAIL_LEVELS, STEP_SIZES } from '../model/settings';
 import { createChipCard, type ChipCard } from './chipCard';
-import { COLUMNS_KEY } from './columnWidths';
 import { readDeviceSettings, writeDeviceSettings } from './deviceSettings';
 import { el } from './dom';
 import { downloadJson, pickJsonFile } from './files';
 import { t, type StringKey } from './i18n';
 import type { LayoutShell } from './layout';
-import { LAYOUT_KEY } from './sectionLayout';
 import { buildSoundField } from './soundSettings';
-import { FOLD_KEY } from './timeBar';
 
 /** The guide to making a boat profile (M57). */
 const BOAT_GUIDE_URL =
@@ -168,9 +165,9 @@ export function createSettingsMenu(
   const card = createChipCard(gear, t('settings.title'), 'settings-card', 'settings-title');
 
   // A layout change closes the card.
-  let kind = `${layout.viewport().mode}${layout.viewport().wide}`;
+  let kind = `${layout.viewport().mode}${layout.viewport().console}`;
   layout.onChange((viewport) => {
-    const now = `${viewport.mode}${viewport.wide}`;
+    const now = `${viewport.mode}${viewport.console}`;
     if (now !== kind) card.close(false);
     kind = now;
   });
@@ -493,7 +490,6 @@ function buildSettingsBody(store: Store, keyHelp: KeyHelp): HTMLElement[] {
     miniMapField,
     stepGroup,
     detailGroup,
-    buildLayoutReset(store),
     buildSetupFile(store),
     ...buildShareAndReset(store),
     debugField,
@@ -785,43 +781,6 @@ function buildSetupFile(store: Store): HTMLElement {
     input,
     el('p', { class: 'hint' }, [t('setup.hint')]),
     status,
-  ]);
-}
-
-/**
- * M54 (PHASE8_SPEC 12.2): Reset layout puts the sections, the column widths and folds and the time
- * bar back as at the start. Built always; CSS shows it on the wide layout only. The page loads
- * again, as a change of language does, with the Settings reopened.
- */
-function buildLayoutReset(store: Store): HTMLElement {
-  const button = el(
-    'button',
-    {
-      type: 'button',
-      class: 'action-button action-reset',
-      'data-testid': 'layout-reset',
-    },
-    [t('layout.reset')],
-  );
-  createConfirmButton(
-    button,
-    { idle: t('layout.reset'), confirm: t('layout.resetConfirm') },
-    () => {
-      try {
-        for (const key of [LAYOUT_KEY, COLUMNS_KEY, FOLD_KEY]) window.localStorage.removeItem(key);
-      } catch {
-        // Private window: nothing was remembered.
-      }
-      openAfterReload('settings');
-      // The address bar can lag the store by 300 ms, so the link is built from the store.
-      const link = serializeUrlState(store.getState());
-      window.location.replace(`${window.location.pathname}${link}${window.location.hash}`);
-    },
-  );
-  return el('div', { class: 'field', 'data-testid': 'layout-field' }, [
-    el('p', { class: 'field-title' }, [t('layout.label')]),
-    el('div', { class: 'actions' }, [button]),
-    el('p', { class: 'hint' }, [t('layout.resetHint')]),
   ]);
 }
 

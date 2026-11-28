@@ -217,30 +217,19 @@ export async function liveM36Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // The "?" opens the entry where the Learn section is: the mode and the columns stay as they were
-  // (owner, PR #85: it moved Learn to the left column and Ropes to the right).
+  // The "?" opens the entry where the Learn section is: the mode stays as it was
+  // (owner, PR #85: it moved sections between columns).
   {
     const { context, page } = await openPage(desktop, 'm36 desktop learn', `${BOAT}&held=1&fd=1`);
-    const inColumn2 = (id) =>
-      page.evaluate(
-        (sectionId) =>
-          !!document.querySelector(
-            `[data-testid="second-column"] [data-testid="section-${sectionId}"]`,
-          ),
-        id,
-      );
-    const before = { learn: await inColumn2('learn'), ropes: await inColumn2('ropes') };
     await showSection(page, 'conditions');
     await page.locator('label:has([data-testid="boat-mode-sailing"])').click();
     await page.waitForTimeout(500);
     await items(page).first().getByTestId('alert-learn').click();
     await page.waitForTimeout(500);
-    const after = { learn: await inColumn2('learn'), ropes: await inColumn2('ropes') };
-    check(
-      'the ? keeps the sections in their columns',
-      before.learn === after.learn && before.ropes === after.ropes && before.learn && !before.ropes,
-      JSON.stringify({ before, after }),
+    const drawer = await page.evaluate(
+      () => document.querySelector('[data-testid="drawer"]:not([hidden])')?.dataset.drawer ?? null,
     );
+    check('the ? opens the Learn drawer', drawer === 'learn', String(drawer));
     // M52: on the wide layout the mode chip names the mode.
     const chipText = await page.getByTestId('mode-chip').innerText();
     check('the ? keeps the mode', chipText.includes('Mode: Easy'), chipText);

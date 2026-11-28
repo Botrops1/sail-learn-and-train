@@ -4,7 +4,7 @@
 // here depends on app time, so the checks run on the real clock.
 import path from 'node:path';
 import { auditPage } from './a11y-audit.mjs';
-import { columnSections, moveSectionBy, openSettings } from './ui.mjs';
+import { openSettings } from './ui.mjs';
 
 export const M56_SCENES = [];
 
@@ -36,12 +36,10 @@ export async function liveM56Checks({ openPage, viewports, outDir, prefix, probl
   };
   const canvasReady = (page) => page.waitForSelector('canvas.scene-canvas', { state: 'attached' });
 
-  // 1. Save, on the wide layout: the file holds the link, the layout (M92: the time bar has no fold any more).
+  // 1. Save, on the console: the file holds the link (M92: the time bar has no fold any more).
   let saved;
   {
     const { context, page } = await openPage(desktop, 'm56 save', '?wd=90&ws=16&lang=ru&cam=top');
-    await page.getByTestId('section-grip-learn').waitFor();
-    await moveSectionBy(page, 'conditions', 'other');
     await openSettings(page);
     const button = page.getByTestId('setup-save');
     await button.scrollIntoViewIfNeeded();
@@ -74,60 +72,16 @@ export async function liveM56Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 2. Load into a fresh page: the page loads again on the file's link, with the layout.
+  // 2. Load into a fresh page: the page loads again on the file's link, and the device settings.
   if (saved) {
     const { context, page } = await openPage(desktop, 'm56 load', '?');
-    await page.getByTestId('section-grip-learn').waitFor();
-    check(
-      'load: starts with the default columns',
-      (await columnSections(page))[0].every((id) => id !== 'conditions'),
-      JSON.stringify(await columnSections(page)),
-    );
     await openSettings(page);
     await page.getByTestId('setup-file').setInputFiles(inJson(saved));
     await page.waitForURL(/wd=90/);
     await canvasReady(page);
-    await page.getByTestId('section-grip-learn').waitFor();
     const link = await page.evaluate(() => window.location.search);
     check('load: the link has wd=90 and lang=ru', /wd=90/.test(link) && /lang=ru/.test(link), link);
-    const columns = await columnSections(page);
-    check(
-      'load: conditions is in column 1',
-      columns[0].includes('conditions'),
-      JSON.stringify(columns),
-    );
     await shot(page, 'live-load');
-    await context.close();
-  }
-
-  // 3. A file without a saved layout puts the computer back to the default arrangement.
-  {
-    const { context, page } = await openPage(desktop, 'm56 default layout', '?');
-    await page.getByTestId('section-grip-learn').waitFor();
-    await moveSectionBy(page, 'conditions', 'other');
-    const moved = await columnSections(page);
-    check('default layout: moved first', moved[0].includes('conditions'), JSON.stringify(moved));
-    await openSettings(page);
-    const file = Buffer.from(
-      JSON.stringify({
-        app: 'sail-learn-and-train',
-        kind: 'setup',
-        version: 1,
-        savedAt: new Date().toISOString(),
-        link: '?v=1&wd=-90',
-        device: { timeBarFolded: false, layout: null },
-      }),
-    );
-    await page.getByTestId('setup-file').setInputFiles(inJson(file));
-    await page.waitForURL(/wd=-90/);
-    await canvasReady(page);
-    await page.getByTestId('section-grip-learn').waitFor();
-    const columns = await columnSections(page);
-    check(
-      'default layout: conditions is back in column 2',
-      columns[1].includes('conditions') && !columns[0].includes('conditions'),
-      JSON.stringify(columns),
-    );
     await context.close();
   }
 

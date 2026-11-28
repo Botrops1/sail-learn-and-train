@@ -1,13 +1,13 @@
 import { el } from './dom';
 import { t } from './i18n';
-import { isWide, layoutModeFor, type LayoutMode } from './layoutMode';
+import { consoleWidthOf, layoutModeFor, type LayoutMode } from './layoutMode';
 
 export interface Viewport {
   width: number;
   height: number;
   mode: LayoutMode;
-  /** Side by side and 1,280 px or wider: the panel has a second column (PHASE5_SPEC 10.2). */
-  wide: boolean;
+  /** On the console layout: a window under 1,280 px is narrow, else wide; null on the phone layout. */
+  console: 'narrow' | 'wide' | null;
 }
 
 export interface LayoutShell {
@@ -21,7 +21,7 @@ export interface LayoutShell {
 }
 
 /**
- * The two-region shell: 3D view and panel, stacked or side by side (PHASE1_SPEC 5.1).
+ * The two-region shell: 3D view and panel (a sheet on the phone layout; hidden on the console layout, whose controls are in the console and its drawers).
  * The mode is set on <html data-layout="..."> and switches live on resize, rotation and fold.
  */
 export function createLayout(host: HTMLElement): LayoutShell {
@@ -37,7 +37,7 @@ export function createLayout(host: HTMLElement): LayoutShell {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const mode = layoutModeFor(width, height);
-    return { width, height, mode, wide: isWide(width, mode) };
+    return { width, height, mode, console: mode === 'console' ? consoleWidthOf(width) : null };
   }
 
   function apply(): void {
@@ -46,11 +46,12 @@ export function createLayout(host: HTMLElement): LayoutShell {
       next.width !== current.width ||
       next.height !== current.height ||
       next.mode !== current.mode ||
-      next.wide !== current.wide;
+      next.console !== current.console;
     current = next;
     document.documentElement.dataset.layout = next.mode;
-    if (next.wide) document.documentElement.dataset.wide = 'true';
-    else delete document.documentElement.dataset.wide;
+    if (next.console) document.documentElement.dataset.console = next.console;
+    else delete document.documentElement.dataset.console;
+    delete document.documentElement.dataset.wide;
     if (changed) listeners.forEach((listener) => listener(next));
   }
 

@@ -97,7 +97,7 @@ export function createDebugOverlay(host: HTMLElement, store: Store): DebugOverla
           t('debug.work'),
           times ? `step ${times.stepMs.toFixed(1)} · 3D ${times.drawMs.toFixed(1)} ms` : '–',
         ],
-        [t('debug.layout'), t(viewport.mode === 'side' ? 'layout.side' : 'layout.stacked')],
+        [t('debug.layout'), t(viewport.mode === 'console' ? 'layout.console' : 'layout.stacked')],
         [t('debug.viewport'), `${viewport.width}×${viewport.height}`],
         [t('debug.aspect'), (viewport.width / viewport.height).toFixed(2)],
         [t('debug.dpr'), `${pixelRatio.device.toFixed(2)} → ${pixelRatio.render.toFixed(2)}`],

@@ -4,7 +4,7 @@ import { initialState, reduce, type AppState } from '../src/app/store';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
 import { DINGHY, HANSE_508, useBoat } from '../src/model/boat';
 import { GROUPS, groupEntries, learnEntry } from '../src/model/glossary';
-import { MODE_LAYOUTS, SECTION_IDS, TAB_OF, sectionAvailable } from '../src/ui/modes';
+import { MODE_LAYOUTS, SECTION_IDS, TAB_OF, consolePlace, sectionAvailable } from '../src/ui/modes';
 
 describe('MODE_LAYOUTS (PHASE5_SPEC 4.4, 8.8 test 1)', () => {
   for (const mode of APP_MODES) {
@@ -26,10 +26,9 @@ describe('sectionAvailable (8.8 test 2)', () => {
     }
     for (const id of ['mode', 'settings'] as const) {
       expect(sectionAvailable(id, easy, 'stacked')).toBe(true);
-      expect(sectionAvailable(id, easy, 'side')).toBe(false);
+      expect(sectionAvailable(id, easy, 'console')).toBe(false);
       expect(sectionAvailable(id, easy)).toBe(false);
-      expect(sectionAvailable(id, easy, 'wide')).toBe(false);
-      expect(sectionAvailable(id, real, 'wide')).toBe(false);
+      expect(sectionAvailable(id, real, 'console')).toBe(false);
     }
     for (const id of ['ropes', 'sails', 'conditions', 'learn', 'place', 'harbour'] as const) {
       expect(sectionAvailable(id, easy)).toBe(true);
@@ -180,7 +179,7 @@ describe('M53: the Helm section (11.5)', () => {
     expect(sectionAvailable('helm', easy)).toBe(false);
     expect(sectionAvailable('helm', real)).toBe(true);
     expect(sectionAvailable('helm', real, 'stacked')).toBe(true);
-    expect(sectionAvailable('helm', real, 'wide')).toBe(true);
+    expect(sectionAvailable('helm', real, 'console')).toBe(true);
   });
 
   it('follows ropes in Easy, Learn and Realistic, and engine in Harbour', () => {
@@ -203,7 +202,7 @@ describe('M55: the Status section (13.4)', () => {
   it('is always available, on the Controls tab, and follows the Harbour gear in every mode', () => {
     const easy = initialState();
     const real = reduce(easy, { type: 'setAppMode', mode: 'realistic' });
-    for (const layout of ['stacked', 'side', 'wide'] as const) {
+    for (const layout of ['stacked', 'console'] as const) {
       expect(sectionAvailable('status', easy, layout)).toBe(true);
       expect(sectionAvailable('status', real, layout)).toBe(true);
     }
@@ -246,5 +245,31 @@ describe('an exercise hides the sections it does not use (owner, PR 144)', () =>
     for (const id of ['engine', 'place', 'anchor', 'harbour', 'status'] as const) {
       expect(sectionAvailable(id, list), id).toBe(true);
     }
+  });
+});
+
+describe('console places (PHASE_CONSOLE_SPEC 7.4)', () => {
+  it('the steering and the helm share the wheel block, one per ropes mode', () => {
+    expect(consolePlace('autopilot', 'easy')).toEqual({ block: 'wheel' });
+    expect(consolePlace('autopilot', 'realistic')).toBeNull();
+    expect(consolePlace('helm', 'realistic')).toEqual({ block: 'wheel' });
+    expect(consolePlace('helm', 'easy')).toBeNull();
+  });
+
+  it('engine and balance share the engine block; sails have their own', () => {
+    expect(consolePlace('engine', 'easy')).toEqual({ block: 'engine' });
+    expect(consolePlace('dinghy', 'easy')).toEqual({ block: 'engine' });
+    expect(consolePlace('sails', 'realistic')).toEqual({ block: 'sails' });
+  });
+
+  it('the rest are drawers; Mode and Settings have no place', () => {
+    expect(consolePlace('ropes', 'easy')).toEqual({ drawer: 'lines' });
+    expect(consolePlace('harbour', 'easy')).toEqual({ drawer: 'harbour' });
+    expect(consolePlace('anchor', 'easy')).toEqual({ drawer: 'harbour' });
+    for (const id of ['conditions', 'exercises', 'learn', 'place', 'status'] as const) {
+      expect(consolePlace(id, 'easy')).toEqual({ drawer: id });
+    }
+    expect(consolePlace('mode', 'easy')).toBeNull();
+    expect(consolePlace('settings', 'easy')).toBeNull();
   });
 });

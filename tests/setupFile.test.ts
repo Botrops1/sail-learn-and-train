@@ -9,28 +9,21 @@ import {
 import { HANSE_508 } from '../src/model/boat';
 import { makeBoatProfile } from '../src/model/boatProfile';
 import { parseUrlState, serializeUrlState } from '../src/app/urlState';
-import { defaultColumns } from '../src/ui/columnWidths';
-import { DEFAULT_WIDE_LAYOUT, moveSection } from '../src/ui/sectionLayout';
 
 const SAVED_AT = '2026-10-23T10:15:00.000Z';
 
-const device = (): DeviceSettings => ({
-  columns: { widths: [450, 320], collapsed: [false, true] },
-  timeBarFolded: true,
-  layout: moveSection(DEFAULT_WIDE_LAYOUT, 'conditions', 0, 0),
-});
+const device = (): DeviceSettings => ({ timeBarFolded: true });
 
 const fileText = (patch: Record<string, unknown>): string =>
   JSON.stringify({
-    ...makeSetupFile('?v=1&wd=90', { ...device(), layout: null }, SAVED_AT),
+    ...makeSetupFile('?v=1&wd=90', device(), SAVED_AT),
     ...patch,
   });
 
 describe('M56: the setup file (PHASE8_SPEC 14.6)', () => {
   it('makeSetupFile → JSON → readSetupFile gives the same link and device', () => {
     const file = makeSetupFile('?v=1&wd=90&ws=16', device(), SAVED_AT);
-    expect(file.device.columns).toEqual({ w: [450, 320], c: [0, 1] });
-    expect((file.device.layout as { v: number }).v).toBe(1);
+    expect(file.device).toEqual({ timeBarFolded: true });
     const read = readSetupFile(JSON.stringify(file));
     expect(read).toEqual({ ok: true, link: '?v=1&wd=90&ws=16', device: device() });
   });
@@ -59,25 +52,32 @@ describe('M56: the setup file (PHASE8_SPEC 14.6)', () => {
 
   it('turns a bad or missing device part into the defaults, never an error', () => {
     const garbage = JSON.parse(fileText({}));
-    garbage.device.columns = 'garbage';
-    garbage.device.layout = { v: 7 };
     garbage.device.timeBarFolded = 'yes';
     const read = readSetupFile(JSON.stringify(garbage));
     expect(read).toEqual({
       ok: true,
       link: '?v=1&wd=90',
-      device: { columns: defaultColumns(), timeBarFolded: false, layout: null },
+      device: { timeBarFolded: false },
     });
 
     const bare = JSON.parse(fileText({}));
-    delete bare.device.columns;
-    delete bare.device.layout;
     delete bare.device.timeBarFolded;
     expect(readSetupFile(JSON.stringify(bare))).toEqual(read);
 
     const noDevice = JSON.parse(fileText({}));
     delete noDevice.device;
     expect(readSetupFile(JSON.stringify(noDevice))).toEqual(read);
+  });
+
+  it('accepts an old file with columns and a layout, and ignores both', () => {
+    const old = JSON.parse(fileText({}));
+    old.device.columns = { w: [450, 320], c: [0, 1] };
+    old.device.layout = { v: 1, columns: [['ropes'], []] };
+    expect(readSetupFile(JSON.stringify(old))).toEqual({
+      ok: true,
+      link: '?v=1&wd=90',
+      device: { timeBarFolded: true },
+    });
   });
 
   it('keeps the link of the start state', () => {
@@ -91,7 +91,7 @@ describe('M56: the setup file (PHASE8_SPEC 14.6)', () => {
 describe('M58: the boat in a setup file (PHASE8_SPEC 16.6)', () => {
   const text = (link: string, boatProfile: unknown): string =>
     JSON.stringify({
-      ...makeSetupFile(link, { ...device(), layout: null }, SAVED_AT),
+      ...makeSetupFile(link, device(), SAVED_AT),
       boatProfile,
     });
 

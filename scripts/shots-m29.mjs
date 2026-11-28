@@ -24,109 +24,83 @@ export async function liveM29Checks({ openPage, viewports, outDir, prefix, probl
   };
   const [phone, foldable, desktop] = viewports;
   const landscape = viewports[3];
-  const secondColumn = (page) => page.getByTestId('second-column');
-  /** The ids of the sections that are direct children of a column, in DOM order. */
-  const idsIn = (page, selector) =>
-    page.evaluate(
-      (css) =>
-        [...document.querySelectorAll(`${css} > [data-section]`)]
-          .filter((node) => !node.hidden)
-          .map((node) => node.getAttribute('data-section')),
-      selector,
-    );
-  const openStates = (page, selector) =>
-    page.evaluate(
-      (css) =>
-        [...document.querySelectorAll(`${css} > [data-section]`)].map((node) =>
-          node.getAttribute('data-open'),
-        ),
-      selector,
-    );
-  const isWide = (page) => page.evaluate(() => document.documentElement.dataset.wide === 'true');
+  const layoutNow = (page) =>
+    page.evaluate(() => ({
+      layout: document.documentElement.dataset.layout,
+      size: document.documentElement.dataset.console ?? null,
+    }));
   const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
-  // 1. Column 2 holds the saved layout's sections (M54: the same in every mode); the pictures of the
-  // three modes. Which of them is open: the one a link names (Learn's entry), else none (M35).
-  for (const [mode, query, expected, expectedOpen] of [
-    ['easy', `${BOAT}`, ['conditions', 'learn'], ['false', 'false']],
-    ['learn', '?m=learn&learn=rope_vang', ['conditions', 'learn'], ['false', 'true']],
-    ['realistic', '?mode=realistic&st=port', ['conditions', 'learn'], ['false', 'false']],
+  // 1. On the console Conditions and Learn are in drawers (M119), the same in every mode; the pictures of
+  // the three modes. Learn's entry (a link) opens its section in the Learn drawer.
+  for (const [mode, query] of [
+    ['easy', `${BOAT}`],
+    ['learn', '?m=learn&learn=rope_vang'],
+    ['realistic', '?mode=realistic&st=port'],
   ]) {
     const { context, page } = await openPage(desktop, `m29 wide ${mode}`, query);
     await page.waitForTimeout(500);
-    check(`${mode}: second column visible`, await secondColumn(page).isVisible(), 'visible');
-    const ids = await idsIn(page, '[data-testid="second-column"]');
-    const open = await openStates(page, '[data-testid="second-column"]');
+    const reached = [];
+    for (const id of ['conditions', 'learn']) {
+      await showSection(page, id);
+      if (await sectionShown(page, id)) reached.push(id);
+    }
     check(
-      `${mode}: column 2 holds ${expected.join(', ')}, open states ${expectedOpen.join(', ')}`,
-      same(ids, expected) && same(open, expectedOpen),
-      `${ids.join(', ')} (${open.join(', ')})`,
+      `${mode}: Conditions and Learn reach their drawers`,
+      same(reached, ['conditions', 'learn']),
+      reached.join(', '),
     );
     await page.screenshot({ path: `${outDir}/${prefix}live-wide-${mode}.png` });
     await context.close();
   }
 
-  // 2. One pixel under the limit: one column, every section in column 1.
+  // 2. One pixel under the wide limit: the narrow console, the same sections.
   {
     const { context, page } = await openPage(desktop, 'm29 narrow', BOAT);
     await page.setViewportSize({ width: 1279, height: 900 });
-    await page.waitForFunction(() => !document.documentElement.dataset.wide);
-    check('1279 px: second column hidden', await secondColumn(page).isHidden(), 'hidden');
-    const ids = await idsIn(page, '.panel-body');
-    // M38: without the Mode and Settings sections (those are for the wide layout only).
-    // M55: the Status section makes ten.
-    check('1279 px: all ten sections in column 1', ids.length === 10, ids.join(', '));
+    await page.waitForFunction(() => document.documentElement.dataset.console === 'narrow');
+    const now = await layoutNow(page);
     check(
-      '1279 px: column 2 is empty',
-      (await idsIn(page, '[data-testid="second-column"]')).length === 0,
-      'empty',
+      '1279 px: the console is narrow',
+      now.layout === 'console' && now.size === 'narrow',
+      JSON.stringify(now),
     );
     await context.close();
   }
 
-  // 3. Wide → side keeps the open states; side → wide fills column 2 again; the dial still works.
+  // 3. Wide -> narrow keeps the drawer; narrow -> wide too; the dial still works in its drawer.
   {
     const { context, page } = await openPage(desktop, 'm29 resize', BOAT);
     await showSection(page, 'conditions');
     await page.setViewportSize({ width: 1000, height: 900 });
-    await page.waitForFunction(() => !document.documentElement.dataset.wide);
-    check('1000 px: second column hidden', await secondColumn(page).isHidden(), 'hidden');
-    check(
-      '1000 px: all ten sections in column 1',
-      (await idsIn(page, '.panel-body')).length === 10,
-      'ten',
-    );
-    check(
-      '1000 px: Conditions keeps its open state',
-      (await page.getByTestId('section-conditions').getAttribute('data-open')) === 'true',
-      await page.getByTestId('section-conditions').getAttribute('data-open'),
-    );
+    await page.waitForFunction(() => document.documentElement.dataset.console === 'narrow');
+    check('1000 px: Conditions is still shown', await sectionShown(page, 'conditions'), 'shown');
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.waitForFunction(() => document.documentElement.dataset.wide === 'true');
-    const ids = await idsIn(page, '[data-testid="second-column"]');
+    await page.waitForFunction(() => document.documentElement.dataset.console === 'wide');
     check(
-      '1440 px again: conditions, learn in column 2',
-      same(ids, ['conditions', 'learn']),
-      ids.join(', '),
+      '1440 px again: Conditions is still shown',
+      await sectionShown(page, 'conditions'),
+      'shown',
     );
-    await showSection(page, 'conditions');
     const dial = page.getByTestId('wind-dial');
     await dial.scrollIntoViewIfNeeded();
     const box = await dial.boundingBox();
     await dial.click({ position: { x: box.width - 8, y: box.height / 2 } });
     const link = await waitForLink(page, ['wd=90']);
-    check('the wind dial in column 2 turns the wind to east', true, link);
+    check('the wind dial in its drawer turns the wind to east', true, link);
     await context.close();
   }
 
-  // 4. Smaller screens never show a second column.
+  // 4. Smaller screens: the foldable is a narrow console, the landscape phone is stacked.
   for (const viewport of [foldable, landscape]) {
     const { context, page } = await openPage(viewport, `m29 narrow ${viewport.width}`, BOAT);
     await page.waitForTimeout(300);
+    const now = await layoutNow(page);
+    const expected = viewport === foldable ? 'console' : 'stacked';
     check(
-      `${viewport.width} x ${viewport.height}: not wide, no second column`,
-      !(await isWide(page)) && (await secondColumn(page).isHidden()),
-      `wide ${await isWide(page)}`,
+      `${viewport.width} x ${viewport.height}: ${expected}, not wide`,
+      now.layout === expected && now.size !== 'wide',
+      JSON.stringify(now),
     );
     await context.close();
   }

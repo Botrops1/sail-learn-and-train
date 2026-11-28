@@ -60,7 +60,17 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | debug.step | Step | Step |
 | debug.build | Build | Build |
 | layout.stacked | stacked | stablet |
-| layout.side | side by side | side om side |
+| console.label | Boat controls | Båtkontroller |
+| menu.label | Menu | Meny |
+| menu.exercises | Exercises | Øvelser |
+| menu.learn | Learn | Lær |
+| menu.lines | Lines | Liner |
+| menu.harbour | Harbour gear | Havneutstyr |
+| menu.conditions | Conditions | Forhold |
+| menu.place | Place | Sted |
+| menu.status | Status | Status |
+| drawer.close | Close | Lukk |
+| layout.console | Console | Konsoll |
 | cam.label | Camera | Kamera |
 | cam.side-port | Side (port) | Side (babord) |
 | cam.side-starboard | Side (starboard) | Side (styrbord) |
@@ -920,16 +930,6 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | status.tag.rope | Line | Tau |
 | status.tag.gear | Gear | Utstyr |
 | status.tag.steering | Steering | Styring |
-| layout.grip | Move {name} | Flytt {name} |
-| layout.gripHint | Drag to another place, or use the arrow keys. | Dra til et annet sted, eller bruk piltastene. |
-| layout.up | Move up | Flytt opp |
-| layout.down | Move down | Flytt ned |
-| layout.other | Move to the other column | Flytt til den andre kolonnen |
-| layout.moved | {name}: column {column}, place {position}. | {name}: kolonne {column}, plass {position}. |
-| layout.label | Layout | Oppsett |
-| layout.reset | Reset layout | Nullstill oppsettet |
-| layout.resetConfirm | Tap again to reset the layout | Trykk igjen for å nullstille oppsettet |
-| layout.resetHint | Puts the sections back in their columns, and the columns and the time bar as they were at the start. | Legger seksjonene tilbake i kolonnene sine, og kolonnene og tidslinjen som de var ved starten. |
 | setup.label | Your setup | Ditt oppsett |
 | setup.save | Save to a file | Lagre til en fil |
 | setup.load | Load from a file | Last inn fra en fil |
@@ -941,16 +941,6 @@ Dette er et utkast skrevet av en KI. Vær så snill å sjekke navnene, de andre 
 | setup.problem.newer | This setup file comes from a newer version of the app. | Denne oppsettfilen kommer fra en nyere versjon av appen. |
 | setup.problem.badLink | This setup file is damaged: its boat settings cannot be read. | Denne oppsettfilen er skadet: båtinnstillingene kan ikke leses. |
 | setup.problem.badBoat | The boat in this setup file does not pass the profile checks. | Båten i denne oppsettfilen består ikke profilkontrollene. |
-| panel.second | More sections | Flere seksjoner |
-| columns.resize.1 | Width of the left panel column | Bredden på venstre panelkolonne |
-| columns.resize.2 | Width of the right panel column | Bredden på høyre panelkolonne |
-| columns.resize.hint | Drag to change the width, or use the arrow keys. Double-click to reset. | Dra for å endre bredden, eller bruk piltastene. Dobbeltklikk for å nullstille. |
-| columns.hide.1 | Hide the left panel column | Skjul venstre panelkolonne |
-| columns.show.1 | Show the left panel column | Vis venstre panelkolonne |
-| columns.hide.2 | Hide the right panel column | Skjul høyre panelkolonne |
-| columns.name.1 | Controls | Kontroller |
-| columns.name.2 | More | Mer |
-| columns.show.2 | Show the right panel column | Vis høyre panelkolonne |
 | harbour.title | Harbour gear | Havneutstyr |
 | harbour.fenders | Fenders | Fendere |
 | harbour.fenders.explain | Rubber buffers hung over the side to protect the hull in a marina. They stay in a locker while sailing. | Gummibuffere som henges over siden for å beskytte skroget i en marina. De ligger i et skap mens du seiler. |

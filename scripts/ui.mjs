@@ -48,6 +48,23 @@ export async function tabNow(page) {
 
 /** Opens a section (folded ones are opened), raises a sheet at its lowest height to half, and scrolls the section into view (M27). Ids: ropes, sails, autopilot, engine, conditions, learn, harbour (mode and settings on a phone only, M52). */
 export async function showSection(page, id) {
+  if (await isConsole(page)) {
+    // The console: a block is always on screen; a drawer opens from the menu.
+    const place = await placeOf(page, id);
+    if (!place) {
+      // Mode and Settings have no place on the console: their cards open from the chip row.
+      if (id === 'settings') await openSettings(page);
+      else if (id === 'mode') await page.getByTestId('mode-chip').click();
+      else throw new Error(`showSection: section ${id} has no place on the console`);
+      return;
+    }
+    if ('drawer' in place && (await openDrawer(page)) !== place.drawer) {
+      await page.getByTestId(`menu-${place.drawer}`).click();
+      await page.getByTestId('drawer').waitFor({ state: 'visible' });
+    }
+    await page.getByTestId(`section-${id}`).scrollIntoViewIfNeeded();
+    return;
+  }
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`showSection: unknown section ${id}`);
   // M51: on a phone the section's tab first (this also raises a sheet at peek).
@@ -66,6 +83,13 @@ export async function showSection(page, id) {
 
 /** True if the section's content is shown now (open, not hidden, and the sheet not at peek). */
 export async function sectionShown(page, id) {
+  if (await isConsole(page)) {
+    const place = await placeOf(page, id);
+    if (!place) return false;
+    if ('drawer' in place && (await openDrawer(page)) !== place.drawer) return false;
+    const node = page.getByTestId(`section-${id}`);
+    return (await node.count()) > 0 && (await node.isVisible());
+  }
   if (await sheetAtPeek(page)) return false;
   const section = page.getByTestId(`section-${id}`);
   if ((await section.count()) === 0) throw new Error(`sectionShown: unknown section ${id}`);
@@ -75,9 +99,21 @@ export async function sectionShown(page, id) {
   );
 }
 
-/** M38: true on the wide layout (side by side, 1,280 px or wider: two columns). */
-export async function isWide(page) {
-  return page.evaluate(() => document.documentElement.dataset.wide === 'true');
+/** True on the console layout (a computer, a tablet held sideways, an unfolded foldable). */
+export async function isConsole(page) {
+  return page.evaluate(() => document.documentElement.dataset.layout === 'console');
+}
+
+/** Where a section is on the console layout now: `{ block }`, `{ drawer }` or null (the app's own table, `window.__sailPanel`). */
+async function placeOf(page, id) {
+  return page.evaluate((sectionId) => window.__sailPanel?.placeOf(sectionId) ?? null, id);
+}
+
+/** The drawer that is open on the console layout, or null. */
+async function openDrawer(page) {
+  return page.evaluate(
+    () => document.querySelector('[data-testid="drawer"]:not([hidden])')?.dataset.drawer ?? null,
+  );
 }
 
 /** M27: chooses a mode (learn, easy, realistic, harbour): from the Mode tab (M51, phone) or the mode card the mode chip opens (M52, side and wide layouts). */
@@ -91,7 +127,7 @@ export async function setMode(page, mode) {
   await page.getByTestId(`mode-choice-${mode}`).click();
 }
 
-/** M35: the ids of the sections that are shown now (open or folded), in page order, columns 1 then 2. */
+/** M35: the ids of the sections that are available now (open or folded), in page order; on the console those with a place in a block or a drawer. */
 export async function sectionIds(page) {
   return page.evaluate(() =>
     [...document.querySelectorAll('[data-section]')]
@@ -405,23 +441,6 @@ export async function holdWindlass(page, dir, ms, suffix = '') {
   } finally {
     await page.mouse.up();
   }
-}
-
-/** M54: moves a section on the wide layout with its grip menu: 'up' | 'down' | 'other'. */
-export async function moveSectionBy(page, id, how) {
-  await page.getByTestId(`section-grip-${id}`).click();
-  await page.getByTestId(`layout-${how}`).click();
-}
-
-/** M54: the section ids of column 1 and column 2 on the wide layout, top to bottom (hidden ones left out). */
-export async function columnSections(page) {
-  return page.evaluate(() =>
-    ['.panel-body', '.panel-second'].map((css) =>
-      [...document.querySelectorAll(`${css} > [data-section]`)]
-        .filter((node) => !node.hidden)
-        .map((node) => node.getAttribute('data-section')),
-    ),
-  );
 }
 
 /**

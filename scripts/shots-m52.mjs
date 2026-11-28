@@ -37,7 +37,7 @@ export async function liveM52Checks({ openPage, viewports, outDir, prefix, probl
 
   for (const viewport of [desktop, foldable]) {
     const wide = viewport === desktop;
-    const name = wide ? 'wide' : 'side';
+    const name = wide ? 'wide' : 'narrow';
 
     // 1. No Mode and no Settings section; the chips, in order, close together at the right.
     {

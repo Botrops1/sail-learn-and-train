@@ -224,19 +224,27 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     await context.close();
   }
 
-  // 8. Side layout: no handle, panel on the right, no inset.
-  for (const viewport of [desktop, landscape]) {
-    const { context, page } = await openPage(viewport, 'm26 side', '?wd=60&ws=12');
+  // 8. The console (a computer) has no sheet and no handle; a landscape phone keeps the sheet.
+  {
+    const { context, page } = await openPage(desktop, 'm26 console', '?wd=60&ws=12');
     const handle = await page.getByTestId('sheet-handle').isHidden();
-    const sheet = await sheetBox(page);
-    const view = await page.locator('.view').boundingBox();
-    const inset = await page
-      .locator('.shell')
-      .evaluate((shell) => shell.style.getPropertyValue('--view-bottom-inset'));
+    const sheet = await page.getByTestId('sheet').isHidden();
+    const band = await page.getByTestId('console').isVisible();
     check(
-      `side layout ${viewport.name}`,
-      handle && sheet.x >= view.x + view.width - 1 && inset === '0px',
-      `handle hidden ${handle}, sheet x ${sheet.x}, view right ${view.x + view.width}, inset ${inset}`,
+      `console layout ${desktop.name}`,
+      handle && sheet && band,
+      `handle hidden ${handle}, sheet hidden ${sheet}, console ${band}`,
+    );
+    await context.close();
+  }
+  {
+    const { context, page } = await openPage(landscape, 'm26 landscape', '?wd=60&ws=12');
+    const layout = await page.evaluate(() => document.documentElement.dataset.layout);
+    const handle = await page.getByTestId('sheet-handle').isVisible();
+    check(
+      `phone layout ${landscape.name}`,
+      layout === 'stacked' && handle,
+      `layout ${layout}, handle ${handle}`,
     );
     await context.close();
   }
@@ -248,7 +256,7 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     const layoutIs = (layout) =>
       page.waitForFunction((wanted) => document.documentElement.dataset.layout === wanted, layout);
     await page.setViewportSize({ width: 844, height: 390 });
-    await layoutIs('side');
+    await layoutIs('stacked');
     const side = await page.evaluate(() => document.documentElement.dataset.layout);
     await page.setViewportSize({ width: 390, height: 844 });
     await layoutIs('stacked');
@@ -257,7 +265,7 @@ export async function liveM26Checks({ openPage, viewports, outDir, prefix, probl
     const full = await fullPx(page);
     check(
       'rotating away and back keeps full',
-      side === 'side' && (await heightOf(page)) === 'full' && near(box.height, full),
+      side === 'stacked' && (await heightOf(page)) === 'full' && near(box.height, full),
       `${side}, ${await heightOf(page)}, ${box.height} (full ${full})`,
     );
     await context.close();

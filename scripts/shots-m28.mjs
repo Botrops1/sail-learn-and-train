@@ -206,8 +206,8 @@ export async function liveM28Checks({ openPage, viewports, outDir, prefix, probl
   // 10. Beside the panel the warnings (Gybe!, Round-up, …) sit above the mini-map, never under it
   // (independent review of PR 68, finding 1): the alert stack's bottom edge is above its top.
   for (const size of [
-    { name: 'foldable-820x1000', width: 820, height: 1000, layout: 'side' },
-    { name: 'tablet-1024x768', width: 1024, height: 768, layout: 'side' },
+    { name: 'foldable-820x1000', width: 820, height: 1000, layout: 'console' },
+    { name: 'tablet-1024x768', width: 1024, height: 768, layout: 'console' },
   ]) {
     const { context, page } = await openPage(size, `m28 alerts ${size.name}`, BOAT);
     await page.waitForTimeout(500);

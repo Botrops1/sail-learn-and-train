@@ -71,7 +71,6 @@ import { liveM35Checks, M35_SCENES } from './shots-m35.mjs';
 import { liveM36Checks, M36_SCENES } from './shots-m36.mjs';
 import { liveM37Checks, M37_SCENES } from './shots-m37.mjs';
 import { liveM38Checks, M38_SCENES } from './shots-m38.mjs';
-import { liveM39Checks, M39_SCENES } from './shots-m39.mjs';
 import { liveM40Checks, M40_SCENES } from './shots-m40.mjs';
 import { liveM41Checks, M41_SCENES } from './shots-m41.mjs';
 import { liveM42Checks, M42_SCENES } from './shots-m42.mjs';
@@ -86,7 +85,6 @@ import { liveM50Checks, M50_SCENES } from './shots-m50.mjs';
 import { liveM51Checks, M51_SCENES } from './shots-m51.mjs';
 import { liveM52Checks, M52_SCENES } from './shots-m52.mjs';
 import { liveM53Checks, M53_SCENES } from './shots-m53.mjs';
-import { liveM54Checks, M54_SCENES } from './shots-m54.mjs';
 import { liveM55Checks, M55_SCENES } from './shots-m55.mjs';
 import { liveM56Checks, M56_SCENES } from './shots-m56.mjs';
 import { liveM57Checks, M57_SCENES } from './shots-m57.mjs';
@@ -97,6 +95,7 @@ import { liveM115Checks, M115_SCENES } from './shots-m115.mjs';
 import { liveM116Checks, M116_SCENES } from './shots-m116.mjs';
 import { liveM117Checks, M117_SCENES } from './shots-m117.mjs';
 import { liveM118Checks, M118_SCENES } from './shots-m118.mjs';
+import { liveM119Checks, M119_SCENES } from './shots-m119.mjs';
 import { liveM59Checks, M59_SCENES } from './shots-m59.mjs';
 import { liveM60Checks, M60_SCENES } from './shots-m60.mjs';
 import { liveM60bChecks, M60B_SCENES } from './shots-m60b.mjs';
@@ -162,13 +161,13 @@ const BASE_PATH = '/sail-learn-and-train/';
 /** The three sizes from the spec, plus a landscape phone to show the rotation switch. */
 const VIEWPORTS = [
   { name: 'phone-390x844', width: 390, height: 844, layout: 'stacked' },
-  { name: 'foldable-820x1000', width: 820, height: 1000, layout: 'side' },
-  { name: 'desktop-1440x900', width: 1440, height: 900, layout: 'side' },
+  { name: 'foldable-820x1000', width: 820, height: 1000, layout: 'console' },
+  { name: 'desktop-1440x900', width: 1440, height: 900, layout: 'console' },
   {
     name: 'phone-landscape-844x390',
     width: 844,
     height: 390,
-    layout: 'side',
+    layout: 'stacked',
     only: [
       'wind-beam-side-port',
       'pt11-jib-sheet-100-bow',
@@ -307,7 +306,6 @@ const SCENES = [
   ...M36_SCENES.map((scene) => ({ ...scene, name: `m36-${scene.name}` })),
   ...M37_SCENES.map((scene) => ({ ...scene, name: `m37-${scene.name}` })),
   ...M38_SCENES.map((scene) => ({ ...scene, name: `m38-${scene.name}` })),
-  ...M39_SCENES.map((scene) => ({ ...scene, name: `m39-${scene.name}` })),
   ...M40_SCENES.map((scene) => ({ ...scene, name: `m40-${scene.name}` })),
   ...M41_SCENES.map((scene) => ({ ...scene, name: `m41-${scene.name}` })),
   ...M42_SCENES.map((scene) => ({ ...scene, name: `m42-${scene.name}` })),
@@ -322,7 +320,6 @@ const SCENES = [
   ...M51_SCENES.map((scene) => ({ ...scene, name: `m51-${scene.name}` })),
   ...M52_SCENES.map((scene) => ({ ...scene, name: `m52-${scene.name}` })),
   ...M53_SCENES.map((scene) => ({ ...scene, name: `m53-${scene.name}` })),
-  ...M54_SCENES.map((scene) => ({ ...scene, name: `m54-${scene.name}` })),
   ...M55_SCENES.map((scene) => ({ ...scene, name: `m55-${scene.name}` })),
   ...M56_SCENES.map((scene) => ({ ...scene, name: `m56-${scene.name}` })),
   ...M57_SCENES.map((scene) => ({ ...scene, name: `m57-${scene.name}` })),
@@ -333,6 +330,7 @@ const SCENES = [
   ...M116_SCENES.map((scene) => ({ ...scene, name: `m116-${scene.name}` })),
   ...M117_SCENES.map((scene) => ({ ...scene, name: `m117-${scene.name}` })),
   ...M118_SCENES.map((scene) => ({ ...scene, name: `m118-${scene.name}` })),
+  ...M119_SCENES.map((scene) => ({ ...scene, name: `m119-${scene.name}` })),
   ...M59_SCENES.map((scene) => ({ ...scene, name: `m59-${scene.name}` })),
   ...M60_SCENES.map((scene) => ({ ...scene, name: `m60-${scene.name}` })),
   ...M60B_SCENES.map((scene) => ({ ...scene, name: `m60b-${scene.name}` })),
@@ -514,11 +512,16 @@ async function waitForGpu(page) {
  * something that does not depend on the app's time (a CSS transition) uses a real wait instead:
  * `page.realWaitForTimeout(ms)`. `welcome: true` leaves the welcome card (M85) unmarked as seen.
  */
-async function openPage(viewport, label, query, { testClock = false, welcome = false } = {}) {
+async function openPage(
+  viewport,
+  label,
+  query,
+  { testClock = false, welcome = false, touch = false } = {},
+) {
   const context = await browser.newContext({
     viewport: { width: viewport.width, height: viewport.height },
     deviceScaleFactor: 1,
-    hasTouch: viewport.width < 1000,
+    hasTouch: viewport.width < 1000 || touch,
     isMobile: false,
   });
   if (!welcome) {
@@ -862,11 +865,13 @@ async function liveGeneralChecks() {
   const { context, page } = await openPage(VIEWPORTS[0], 'live', '?lb=0');
   const steps = [
     { width: 390, height: 844, layout: 'stacked' },
-    { width: 844, height: 390, layout: 'side' },
+    { width: 844, height: 390, layout: 'stacked' },
     { width: 699, height: 600, layout: 'stacked' },
-    { width: 700, height: 600, layout: 'side' },
+    { width: 800, height: 600, layout: 'console' },
     { width: 800, height: 1001, layout: 'stacked' },
-    { width: 1440, height: 900, layout: 'side' },
+    { width: 820, height: 1000, layout: 'console' },
+    { width: 904, height: 840, layout: 'console' },
+    { width: 1440, height: 900, layout: 'console' },
   ];
   for (const step of steps) {
     await page.setViewportSize({ width: step.width, height: step.height });
@@ -952,6 +957,7 @@ try {
     : SCENE_VIEWPORTS) {
     for (const scene of SCENES) {
       if (viewport.only && !viewport.only.includes(scene.name)) continue;
+      if (scene.viewports && !scene.viewports.includes(viewport.name)) continue;
       if (ONLY.length > 0 && !ONLY_SCENES.some((m) => scene.name.startsWith(`${m}-`))) continue;
       if (process.env.SHOTS_SCENE && !scene.name.includes(process.env.SHOTS_SCENE)) continue;
       if (!inShard(SCENES.indexOf(scene))) continue;
@@ -1283,7 +1289,6 @@ try {
     ),
     m37: () => liveM37Checks(onTestClock),
     m38: () => liveM38Checks(onTestClock),
-    m39: () => liveM39Checks(onTestClock),
     m40: members(
       ['m40', () => liveM40Checks(onTestClock)],
       ['m41', () => liveM41Checks(onTestClock)],
@@ -1309,7 +1314,6 @@ try {
       ['m55', () => liveM55Checks(onTestClock)],
     ),
     m52: () => liveM52Checks(live),
-    m54: () => liveM54Checks(live),
     m56: () => liveM56Checks(live),
     m58: members(['m58', () => liveM58Checks(live)], ['m113', () => liveM113Checks(live)]),
     m60: () => liveM60Checks(live),
@@ -1367,6 +1371,7 @@ try {
       ['m108', () => liveM108Checks(onTestClock)],
       ['m118', () => liveM118Checks(onTestClock)],
     ),
+    m119: () => liveM119Checks(onTestClock),
     budget: () => checkBudget(live),
   };
   // Test-only (not in CI's group list): a group that fails on its first run only, or always, so the

@@ -286,7 +286,7 @@ export function createAlertCentre(
 
   // Open at the start only where there is room: a computer window (the wide layout). A phone held
   // sideways or a narrow side-by-side window starts folded, so the card never hides the boat.
-  const roomy = () => layout.viewport().wide;
+  const roomy = () => layout.viewport().console === 'wide';
   // Until the viewer folds or opens it, the layout decides (open in a wide window, folded otherwise).
   let touched = false;
   let seen = 0;

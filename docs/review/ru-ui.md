@@ -60,7 +60,17 @@
 | debug.step | Step | Step |
 | debug.build | Build | Build |
 | layout.stacked | stacked | друг над другом |
-| layout.side | side by side | рядом |
+| console.label | Boat controls | Управление яхтой |
+| menu.label | Menu | Меню |
+| menu.exercises | Exercises | Упражнения |
+| menu.learn | Learn | Учёба |
+| menu.lines | Lines | Снасти |
+| menu.harbour | Harbour gear | Швартовное снаряжение |
+| menu.conditions | Conditions | Условия |
+| menu.place | Place | Место |
+| menu.status | Status | Состояние |
+| drawer.close | Close | Закрыть |
+| layout.console | Console | Консоль |
 | cam.label | Camera | Камера |
 | cam.side-port | Side (port) | Борт (левый) |
 | cam.side-starboard | Side (starboard) | Борт (правый) |
@@ -920,16 +930,6 @@
 | status.tag.rope | Line | Конец |
 | status.tag.gear | Gear | Снаряжение |
 | status.tag.steering | Steering | Управление |
-| layout.grip | Move {name} | Переместить: {name} |
-| layout.gripHint | Drag to another place, or use the arrow keys. | Перетащите в другое место или используйте клавиши со стрелками. |
-| layout.up | Move up | Выше |
-| layout.down | Move down | Ниже |
-| layout.other | Move to the other column | В другую колонку |
-| layout.moved | {name}: column {column}, place {position}. | {name}: колонка {column}, место {position}. |
-| layout.label | Layout | Расположение |
-| layout.reset | Reset layout | Сбросить расположение |
-| layout.resetConfirm | Tap again to reset the layout | Нажмите ещё раз, чтобы сбросить расположение |
-| layout.resetHint | Puts the sections back in their columns, and the columns and the time bar as they were at the start. | Возвращает разделы в их колонки, а колонки и шкалу времени — как было в начале. |
 | setup.label | Your setup | Ваши настройки |
 | setup.save | Save to a file | Сохранить в файл |
 | setup.load | Load from a file | Загрузить из файла |
@@ -941,16 +941,6 @@
 | setup.problem.newer | This setup file comes from a newer version of the app. | Этот файл настроек из более новой версии приложения. |
 | setup.problem.badLink | This setup file is damaged: its boat settings cannot be read. | Файл настроек повреждён: настройки яхты не читаются. |
 | setup.problem.badBoat | The boat in this setup file does not pass the profile checks. | Яхта в этом файле настроек не проходит проверку профиля. |
-| panel.second | More sections | Ещё разделы |
-| columns.resize.1 | Width of the left panel column | Ширина левого столбца панели |
-| columns.resize.2 | Width of the right panel column | Ширина правого столбца панели |
-| columns.resize.hint | Drag to change the width, or use the arrow keys. Double-click to reset. | Потяните, чтобы изменить ширину, или используйте стрелки. Двойной щелчок возвращает прежнюю ширину. |
-| columns.hide.1 | Hide the left panel column | Скрыть левый столбец панели |
-| columns.show.1 | Show the left panel column | Показать левый столбец панели |
-| columns.hide.2 | Hide the right panel column | Скрыть правый столбец панели |
-| columns.name.1 | Controls | Управление |
-| columns.name.2 | More | Ещё |
-| columns.show.2 | Show the right panel column | Показать правый столбец панели |
 | harbour.title | Harbour gear | Для стоянки |
 | harbour.fenders | Fenders | Кранцы |
 | harbour.fenders.explain | Rubber buffers hung over the side to protect the hull in a marina. They stay in a locker while sailing. | Резиновые подушки, которые вывешивают за борт, чтобы защитить корпус у причала. На ходу они лежат в рундуке. |

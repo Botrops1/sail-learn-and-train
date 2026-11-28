@@ -60,7 +60,17 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | debug.step | Step | Step |
 | debug.build | Build | Build |
 | layout.stacked | stacked | untereinander |
-| layout.side | side by side | nebeneinander |
+| console.label | Boat controls | Bootsbedienung |
+| menu.label | Menu | Menü |
+| menu.exercises | Exercises | Übungen |
+| menu.learn | Learn | Lernen |
+| menu.lines | Lines | Leinen |
+| menu.harbour | Harbour gear | Hafenausrüstung |
+| menu.conditions | Conditions | Bedingungen |
+| menu.place | Place | Ort |
+| menu.status | Status | Status |
+| drawer.close | Close | Schließen |
+| layout.console | Console | Konsole |
 | cam.label | Camera | Kamera |
 | cam.side-port | Side (port) | Seite (Backbord) |
 | cam.side-starboard | Side (starboard) | Seite (Steuerbord) |
@@ -920,16 +930,6 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | status.tag.rope | Line | Leine |
 | status.tag.gear | Gear | Material |
 | status.tag.steering | Steering | Ruder |
-| layout.grip | Move {name} | {name} verschieben |
-| layout.gripHint | Drag to another place, or use the arrow keys. | An eine andere Stelle ziehen, oder die Pfeiltasten verwenden. |
-| layout.up | Move up | Nach oben verschieben |
-| layout.down | Move down | Nach unten verschieben |
-| layout.other | Move to the other column | In die andere Spalte verschieben |
-| layout.moved | {name}: column {column}, place {position}. | {name}: Spalte {column}, Platz {position}. |
-| layout.label | Layout | Anordnung |
-| layout.reset | Reset layout | Anordnung zurücksetzen |
-| layout.resetConfirm | Tap again to reset the layout | Erneut tippen, um die Anordnung zurückzusetzen |
-| layout.resetHint | Puts the sections back in their columns, and the columns and the time bar as they were at the start. | Setzt die Abschnitte in ihre Spalten zurück und die Spalten und die Zeitleiste so, wie sie am Anfang waren. |
 | setup.label | Your setup | Ihr Setup |
 | setup.save | Save to a file | In eine Datei speichern |
 | setup.load | Load from a file | Aus einer Datei laden |
@@ -941,16 +941,6 @@ Dies ist ein Entwurf, den eine KI geschrieben hat. Bitte prüfen Sie die Namen, 
 | setup.problem.newer | This setup file comes from a newer version of the app. | Diese Setup-Datei stammt aus einer neueren Version der App. |
 | setup.problem.badLink | This setup file is damaged: its boat settings cannot be read. | Diese Setup-Datei ist beschädigt: Ihre Bootseinstellungen können nicht gelesen werden. |
 | setup.problem.badBoat | The boat in this setup file does not pass the profile checks. | Das Boot in dieser Setup-Datei besteht die Prüfungen des Profils nicht. |
-| panel.second | More sections | Weitere Abschnitte |
-| columns.resize.1 | Width of the left panel column | Breite der linken Panelspalte |
-| columns.resize.2 | Width of the right panel column | Breite der rechten Panelspalte |
-| columns.resize.hint | Drag to change the width, or use the arrow keys. Double-click to reset. | Ziehen, um die Breite zu ändern, oder die Pfeiltasten verwenden. Doppelklicken zum Zurücksetzen. |
-| columns.hide.1 | Hide the left panel column | Linke Panelspalte ausblenden |
-| columns.show.1 | Show the left panel column | Linke Panelspalte einblenden |
-| columns.hide.2 | Hide the right panel column | Rechte Panelspalte ausblenden |
-| columns.name.1 | Controls | Bedienung |
-| columns.name.2 | More | Mehr |
-| columns.show.2 | Show the right panel column | Rechte Panelspalte einblenden |
 | harbour.title | Harbour gear | Hafenausrüstung |
 | harbour.fenders | Fenders | Fender |
 | harbour.fenders.explain | Rubber buffers hung over the side to protect the hull in a marina. They stay in a locker while sailing. | Gummipuffer, die über die Seite gehängt werden, um den Rumpf im Hafen zu schützen. Beim Segeln liegen sie in einem Schapp. |

@@ -9,10 +9,14 @@ import {
   webglAvailable,
 } from '../ui/errorBoundary';
 import { el } from '../ui/dom';
-import { currentLanguage, setLanguage, t } from '../ui/i18n';
+import { currentLanguage, setLanguage, t, type StringKey } from '../ui/i18n';
+import { sectionAvailable, type DrawerId, type SectionId } from '../ui/modes';
 import { createInfoCard } from '../ui/infoCard';
 import { createPictureBanner } from '../ui/pictureBanner';
 import { createLabels3d, type Labels3d } from '../ui/labels3d';
+import { createConsole } from '../ui/console';
+import { createMenu } from '../ui/consoleMenu';
+import { removeOldDeviceKeys } from '../ui/deviceSettings';
 import { createLayout } from '../ui/layout';
 import { createMapView } from '../ui/mapView';
 import { createMiniMap, type MiniMap } from '../ui/miniMap';
@@ -64,6 +68,7 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   const store = createStore(initial);
   startUrlSync(store);
 
+  removeOldDeviceKeys();
   const layout = createLayout(host);
   const reportError = installErrorBanner(layout.root);
   // The top area (strip, time bar, clock) is built first: the sheet sizes itself below it. It
@@ -96,6 +101,29 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   const settingsCard = createSettingsMenu(chipRow, layout, reopen);
   // The sound (M87): off until the learner switches it on; the engine starts inside a tap.
   const sound = createSoundEngine(store);
+  // The console (a band of blocks along the bottom) and the menu with its one drawer: built once
+  // on every layout, shown on the console layout only (`panel.ts` fills them).
+  const consoleView = createConsole(layout.view, store, layout);
+  const menuSections: [DrawerId, StringKey, SectionId[]][] = [
+    ['exercises', 'menu.exercises', ['exercises']],
+    ['learn', 'menu.learn', ['learn']],
+    ['lines', 'menu.lines', ['ropes']],
+    ['harbour', 'menu.harbour', ['harbour', 'anchor']],
+    ['conditions', 'menu.conditions', ['conditions']],
+    ['place', 'menu.place', ['place']],
+    ['status', 'menu.status', ['status']],
+  ];
+  const menu = createMenu(
+    layout.view,
+    store,
+    menuSections.map(([id, label, sections]) => ({
+      id,
+      label: t(label),
+      sections,
+      shown: () =>
+        sections.some((section) => sectionAvailable(section, store.getState(), 'console')),
+    })),
+  );
   const panel: Panel = createPanel(
     layout.panel,
     store,
@@ -105,7 +133,9 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
     modePicker,
     { mode: modeCard, settings: settingsCard },
     reopen,
+    { console: consoleView, menu },
   );
+  store.subscribe(() => menu.update());
   const debug = createDebugOverlay(layout.view, store);
 
   // Error boundary (M5): without WebGL, or if the 3D view fails, a message takes its place and
@@ -148,7 +178,15 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
   const topChips = el('div', { class: 'top-chips' });
   topRight.append(topChips);
   top.append(topRight);
-  createTimeBar(topRight, layout.view, store, layout);
+  const timeBar = createTimeBar(topRight, layout.view, store, layout);
+  // On the console the time widget stands right of the strip in the top row; on a phone it
+  // belongs to the wrapper of the top right.
+  const placeTimeBar = () => {
+    if (layout.viewport().mode === 'console') top.insertBefore(timeBar, topRight);
+    else topRight.append(timeBar);
+  };
+  layout.onChange(placeTimeBar);
+  placeTimeBar();
   // M116: the capsize card sits above the step card.
   createCapsizeCard(top, store);
   createStepCard(top, store, layout, () => panel.showSection('exercises'));
@@ -262,7 +300,7 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
           : Infinity;
       const inset = stacked
         ? sheet.cameraInset() + stackPx
-        : viewBox.bottom - Math.min(chipRow.getBoundingClientRect().top, barTop);
+        : viewBox.bottom - Math.min(chipRow.getBoundingClientRect().top, barTop, consoleView.top());
       view.resize(
         layout.view.clientWidth,
         layout.view.clientHeight,
@@ -274,7 +312,9 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
       );
     };
     reframe = resize;
-    new ResizeObserver(resize).observe(layout.view);
+    const observer = new ResizeObserver(resize);
+    observer.observe(layout.view);
+    observer.observe(consoleView.root);
     resize();
   }
   // The history of the short alerts (M36, issue #80). After the camera chip, so that its button
