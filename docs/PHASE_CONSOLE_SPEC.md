@@ -4,7 +4,7 @@ Planned with `/plan` on 2026-11-28 from the concept of PR #293 ([`UI_CONCEPT_ANA
 
 ## 0. How to use this spec
 
-- Six milestones, built in order, **one PR each**, titled `M<N>: <name>` (names in section 6), each saying `Closes #<n>` for its own milestone issue; only M124 also closes #161 (#272 stays open for part B). Each milestone has its own GitHub issue (section 6): a short card for the owner that links back here. This spec is what the builder follows.
+- Six milestones, built in order, **one PR each**, titled `M<N>: <name>` (names in section 6), each saying `Closes #<n>` for its own milestone issue; only M124 also closes #161 (#272 stays open for part B). Each milestone has its own GitHub issue (#296–#301, section 6): a short card for the owner that links back here. This spec is what the builder follows.
 - Read sections 0–5, then **only your milestone's section** (7 for M119, 8 M120, 9 M121, 10 M122, 11 M123, 12 M124). The general rules are in CLAUDE.md. Names (files, functions, store actions, `data-testid`s, CSS custom properties, string keys, URL keys) are required. Numbers are final unless marked **tunable**: a tunable number may change, and the PR reports the old and the new value.
 - **Nothing in `src/model` changes in M119–M123**, and every PHYSICS_TRUTHS test keeps passing untouched. M124 changes the store and the URL (section 12), not the sailing.
 - **Text is data.** The English strings here are final. German, Norwegian and Russian strings are AI drafts the builder writes. Every new key exists in `content/lang/{de,no,ru}/ui.json`, and the builder runs `npm run review-doc -- de`, `-- no` and `-- ru` after changing them.
@@ -133,12 +133,12 @@ Drawn in `docs/mockups/console-look.html` (the planning PR's picture page; the b
 
 | Milestone | What the owner sees | Issues (milestone issue first) | Rules tested | Depends on | Independent review |
 |---|---|---|---|---|---|
-| **M119: Console shell** | On a computer, tablet or unfolded Fold the 3D view fills the window; a dark console band along the bottom holds today's steering, engine and sails controls; a menu at the top right opens Exercises, Learn, Lines, Harbour, Conditions, Place and Status as drawers; the side columns are gone | #M119; #161, #272 | none (all earlier rules keep passing) | — | **required** (the layout shell, every older browser check, old setup files) |
-| **M120: Wheel and engine** | A drawn wheel you drag, the autopilot buttons, an engine lever you drag with Start/Stop and rpm, the thrusters always there and working; the sails strip above them; key caps on every control | #M120; #161 | none | M119 | **not needed** (controls that dispatch the existing actions) |
-| **M121: Port and starboard lines** | Port lines on the left, starboard lines on the right, each where its clutch is on the boat; in Realistic both clutch banks and winches always visible, the captain walking across when you use the other side; no Mast or Bow station on the computer | #M121; #161 | none | M120 | **required** (Realistic gestures, the walk, which line is on which side) |
-| **M122: Harbour gear and conditions** | A folded Harbour strip at the right end that unfolds (fenders, mooring lines, anchor and windlass) and narrows the other blocks; a wind compass at the top right that unfolds to the wind and waves, with Set up to change them | #M122; #161 | none | M121 | **not needed** (moves existing controls) |
-| **M123: Exercises on the console** | No step bar on the computer; the exact control the step needs (a line, a button, one sail's status, the wind compass) has a slow orange pulsing outline and the rest of the console is dimmed; the exercise list in its drawer | #M123; #161 | none | M122 | **required** (what an exercise marks teaches the handling; older exercise checks) |
-| **M124: What you are doing, and controls** | The mode chip offers "What you are doing" (Learn, Sail freely, Exercise) and "Controls" (Easy, Realistic); Harbour is now Sail freely at the marina or in the bay; every old link opens as before; part A signed off | #M124; #272 | none | M123 | **required** (store, URL keys and old links) |
+| **M119: Console shell** | On a computer, tablet or unfolded Fold the 3D view fills the window; a dark console band along the bottom holds today's steering, engine and sails controls; a menu at the top right opens Exercises, Learn, Lines, Harbour, Conditions, Place and Status as drawers; the side columns are gone | #296; #161, #272 | none (all earlier rules keep passing) | — | **required** (the layout shell, every older browser check, old setup files) |
+| **M120: Wheel and engine** | A drawn wheel you drag, the autopilot buttons, an engine lever you drag with Start/Stop and rpm, the thrusters always there and working; the sails strip above them; key caps on every control | #297; #161 | none | M119 | **not needed** (controls that dispatch the existing actions) |
+| **M121: Port and starboard lines** | Port lines on the left, starboard lines on the right, each where its clutch is on the boat; in Realistic both clutch banks and winches always visible, the captain walking across when you use the other side; no Mast or Bow station on the computer | #298; #161 | none | M120 | **required** (Realistic gestures, the walk, which line is on which side) |
+| **M122: Harbour gear and conditions** | A folded Harbour strip at the right end that unfolds (fenders, mooring lines, anchor and windlass) and narrows the other blocks; a wind compass at the top right that unfolds to the wind and waves, with Set up to change them | #299; #161 | none | M121 | **not needed** (moves existing controls) |
+| **M123: Exercises on the console** | No step bar on the computer; the exact control the step needs (a line, a button, one sail's status, the wind compass) has a slow orange pulsing outline and the rest of the console is dimmed; the exercise list in its drawer | #300; #161 | none | M122 | **required** (what an exercise marks teaches the handling; older exercise checks) |
+| **M124: What you are doing, and controls** | The mode chip offers "What you are doing" (Learn, Sail freely, Exercise) and "Controls" (Easy, Realistic); Harbour is now Sail freely at the marina or in the bay; every old link opens as before; part A signed off | #301; #272 | none | M123 | **required** (store, URL keys and old links) |
 
 ## 7. M119: Console shell
 
@@ -318,7 +318,7 @@ New `ui.json` keys (English): `console.label` "Boat controls", `menu.label` "Men
 
 ### 7.15 Done when / not in this milestone
 
-PR: `Closes #M119`. Done when the console layout follows 7.3 at every size, the view is full width, every section is reachable in a block or a drawer, the old columns, grips and movable sections are gone, the phone layout is unchanged, every test of 7.11 and check of 7.12 passes, `npm run check` passes and the CI run with `CI groups: all` is green.
+PR: `Closes #296`. Done when the console layout follows 7.3 at every size, the view is full width, every section is reachable in a block or a drawer, the old columns, grips and movable sections are gone, the phone layout is unchanged, every test of 7.11 and check of 7.12 passes, `npm run check` passes and the CI run with `CI groups: all` is green.
 
 Not in this milestone: the drawn wheel and engine lever, the sails strip and key caps (M120); the line blocks (M121); the harbour block and the conditions widget (M122); exercise outlines (M123); the two choices (M124).
 
@@ -432,7 +432,7 @@ Queries: `S = '?wd=60&ws=12&ms=40&sea=flat'` (sailing, not held: `held=1` freeze
 
 ### 8.11 Done when / not in this milestone
 
-PR: `Closes #M120`. Done when the wheel, autopilot, engine, thrusters and the sails strip work by mouse, finger and keys as 8.2–8.6 say, on the Hanse in both ropes modes and on the dinghy, every test of 8.8 and check of 8.9 passes, `npm run check` passes and CI is green.
+PR: `Closes #297`. Done when the wheel, autopilot, engine, thrusters and the sails strip work by mouse, finger and keys as 8.2–8.6 say, on the Hanse in both ropes modes and on the dinghy, every test of 8.8 and check of 8.9 passes, `npm run check` passes and CI is green.
 
 Not in this milestone: the line blocks (M121); the harbour block (M122); exercise outlines (M123).
 
@@ -527,7 +527,7 @@ Block titles: Easy `{lines.port}` / `{lines.starboard}`; Realistic `{lines.port}
 
 ### 9.9 Done when / not in this milestone
 
-PR: `Closes #M121`. Done when the port and starboard blocks show the lines of 9.3 in Easy and both stations in Realistic, the walk works from either block, the Lines drawer is gone, the dinghy shows its lines on the left, every test of 9.6 and check of 9.7 passes, `npm run check` passes and CI is green.
+PR: `Closes #298`. Done when the port and starboard blocks show the lines of 9.3 in Easy and both stations in Realistic, the walk works from either block, the Lines drawer is gone, the dinghy shows its lines on the left, every test of 9.6 and check of 9.7 passes, `npm run check` passes and CI is green.
 
 Not in this milestone: the bow line and windlass (M122, the harbour block); exercise outlines (M123).
 
@@ -616,7 +616,7 @@ Custom sizes use `page.setViewportSize`; widths are read after `page.realWaitFor
 
 ### 10.9 Done when / not in this milestone
 
-PR: `Closes #M122`. Done when the harbour block folds and unfolds as 10.2–10.3 say at the three widths, the anchor works in both ropes modes on the console, the conditions widget shows the wind and opens the Conditions drawer with Set up, every test of 10.6 and check of 10.7 passes, `npm run check` passes and CI is green.
+PR: `Closes #299`. Done when the harbour block folds and unfolds as 10.2–10.3 say at the three widths, the anchor works in both ropes modes on the console, the conditions widget shows the wind and opens the Conditions drawer with Set up, every test of 10.6 and check of 10.7 passes, `npm run check` passes and CI is green.
 
 Not in this milestone: the navigation chart; exercise outlines (M123).
 
@@ -735,7 +735,7 @@ The step card's buttons use the bar's strings `exercise.bar.showMe` "▶ Show me
 
 ### 11.11 Done when / not in this milestone
 
-PR: `Closes #M123`. Done when an exercise on the console shows no step bar, outlines exactly the targets of 11.2 with the pulse of 11.4, dims the other blocks, brings a hidden target into view, the step card carries Show me, the keys of 11.6 work, every test of 11.8 and check of 11.9 passes, `npm run check` passes and CI is green.
+PR: `Closes #300`. Done when an exercise on the console shows no step bar, outlines exactly the targets of 11.2 with the pulse of 11.4, dims the other blocks, brings a hidden target into view, the step card carries Show me, the keys of 11.6 work, every test of 11.8 and check of 11.9 passes, `npm run check` passes and CI is green.
 
 Not in this milestone: lighting the part on the 3D boat (part B); new exercise data fields.
 
@@ -837,7 +837,7 @@ New keys of 12.6: `mode.activity`, `mode.controls`, `activity.learn`, `activity.
 
 ### 12.11 Done when / not in this milestone
 
-PR: `Closes #M124`. Done when the picker offers the two choices on both layouts, Harbour mode is gone and Sail freely in a place does what it did, every old link of 12.4 opens as it says, every test of 12.8 and check of 12.9 passes, `npm run check` passes and the CI run with `CI groups: all` is green.
+PR: `Closes #301`, `Closes #161`. Done when the picker offers the two choices on both layouts, Harbour mode is gone and Sail freely in a place does what it did, every old link of 12.4 opens as it says, every test of 12.8 and check of 12.9 passes, `npm run check` passes and the CI run with `CI groups: all` is green.
 
 Not in this milestone: new activities (Quest, Race, Arcade, First person: later, section 1).
 
