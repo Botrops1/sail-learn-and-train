@@ -4,6 +4,7 @@ description: Fix a bug the owner found on the live sail-learn-and-train site, or
 argument-hint: <link from the Share button, or "issue <number>"> <what happened, what you expected>
 disable-model-invocation: true
 model: sonnet
+effort: medium
 ---
 
 # Fix a bug
