@@ -4,6 +4,7 @@ description: Build one milestone of sail-learn-and-train from its phase spec (e.
 argument-hint: <milestone number, e.g. 11> | resume <PR number>
 disable-model-invocation: true
 model: sonnet
+effort: medium
 ---
 
 # Build milestone M$ARGUMENTS
@@ -93,7 +94,7 @@ Each time the PR wakes you, first look at **who wrote** the comment (CLAUDE.md, 
 - Otherwise (nothing new):
 
 1. Unsubscribe from the PR (`unsubscribe_pr_activity`).
-2. Post one comment on the PR, this exact text with the real number: "Stopped watching this PR. To continue (your answers, problems found), comment here, then start a new session (Sonnet, high) and type `/milestone resume <PR number>`. If all is fine, merge: merging accepts every recommendation."
+2. Post one comment on the PR, this exact text with the real number: "Stopped watching this PR. To continue (your answers, problems found), comment here, then start a new session and type `/milestone resume <PR number>`. If all is fine, merge: merging accepts every recommendation."
 3. Tell the owner the same in chat, in two lines, and stop.
 
 If `send_later` is not available, stop as soon as CI is green and nothing waits on you. If CI is still running and you cannot schedule, say so in chat and stop; do not end a turn "waiting".
