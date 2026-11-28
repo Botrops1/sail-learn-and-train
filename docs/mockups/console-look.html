@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Console look</title>
+<!--
+  The look of the computer console (PHASE_CONSOLE_SPEC 2.3, "instrument night", owner's choice A).
+  A still picture, not the app: the controls do not work. Three frames: the wide console in Easy
+  during an exercise step, the same in Realistic, and the narrow console with Harbour gear unfolded.
+-->
+<style>
+  :root {
+    --page: #e9eef2; --ink: #17222b;
+    --console-band: rgb(10 24 38 / 0.78);
+    --console-block: rgb(22 42 62 / 0.92);
+    --console-edge: rgb(150 190 220 / 0.22);
+    --console-text: #eef4f8;
+    --console-muted: #9fb3c3;
+    --console-accent: #4fb3e8;
+    --console-need: #ff9f1c;
+    --console-ok: #4cc38a;
+    --console-warn: #f0b429;
+    --console-radius: 12px;
+    --focus: #e07b00;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --page: #0d1620; --ink: #e6edf2; }
+  }
+  :root[data-theme="dark"] { --page: #0d1620; --ink: #e6edf2; }
+  body { margin: 0; background: var(--page); color: var(--ink); padding: 16px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 28px 0 8px; }
+  p.note { margin: 0 0 12px; max-width: 70ch; line-height: 1.45; }
+  .frame-wrap { overflow-x: auto; padding-bottom: 8px; }
+  .frame { position: relative; overflow: hidden; border-radius: 10px; box-shadow: 0 4px 18px rgb(0 0 0 / 0.25);
+    background: linear-gradient(#bcd9ee 0%, #dbeaf4 38%, #3f7fa6 38.2%, #2b6a91 70%, #1f5577 100%); }
+  .frame.wide { width: 1440px; height: 900px; }
+  .frame.narrow { width: 904px; height: 840px; }
+  .boat { position: absolute; left: 50%; top: 22%; transform: translateX(-50%); width: 420px; }
+  .frame.narrow .boat { width: 320px; top: 16%; }
+
+  /* Overlays over the 3D view */
+  .ov { position: absolute; color: var(--console-text); }
+  .glass { background: var(--console-block); border: 1px solid var(--console-edge); border-radius: var(--console-radius); }
+  .instruments { left: 8px; top: 8px; display: flex; gap: 2px; padding: 6px; }
+  .cell { padding: 4px 10px; text-align: center; }
+  .cell b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .cell span { font-size: 11px; color: var(--console-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .time { top: 8px; padding: 10px 14px; font-weight: 600; }
+  .menu { right: 8px; top: 8px; width: 128px; padding: 6px; display: flex; flex-direction: column; gap: 4px; }
+  .menu button { all: unset; padding: 10px 10px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: default; }
+  .menu button.on { background: rgb(79 179 232 / 0.18); color: var(--console-accent); }
+  .cond { right: 8px; width: 128px; height: 128px; display: grid; place-items: center; }
+  .narrow .cond { width: 96px; height: 96px; }
+  .step { left: 50%; transform: translateX(-50%); top: 8px; width: 560px; background: #fff; color: #17222b;
+    border-radius: 12px; padding: 12px 16px; box-shadow: 0 8px 24px rgb(0 0 0 / 0.25); }
+  .step small { color: #52616d; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+  .step p { margin: 4px 0 0; }
+  .minimap { left: 8px; width: 150px; height: 150px; border-radius: 50%; }
+  .chips { right: 8px; display: flex; gap: 6px; }
+  .chip { background: rgb(255 255 255 / 0.9); color: #17222b; border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; }
+
+  /* The console */
+  .band { position: absolute; left: 0; right: 0; bottom: 0; height: 240px; background: var(--console-band);
+    backdrop-filter: blur(8px); border-top: 1px solid var(--console-edge); padding: 12px; box-sizing: border-box;
+    display: grid; gap: 8px; grid-template-columns: minmax(200px, 1fr) 300px 220px minmax(200px, 1fr) 40px; }
+  .narrow .band { height: 240px; grid-template-columns: minmax(160px, 1fr) 220px 160px minmax(160px, 1fr) 40px; }
+  .block { background: var(--console-block); border: 1px solid var(--console-edge); border-radius: var(--console-radius);
+    padding: 10px; color: var(--console-text); position: relative; overflow: hidden; min-width: 0; }
+  .title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--console-muted);
+    display: flex; justify-content: space-between; }
+  .row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 6px; margin-top: 7px; }
+  .row .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .val { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ctl { display: flex; gap: 6px; align-items: center; }
+  .btn { width: 44px; height: 32px; border-radius: 10px; border: 1px solid var(--console-edge); background: rgb(255 255 255 / 0.06);
+    color: var(--console-text); display: grid; place-items: center; font-weight: 700; font-size: 16px; box-sizing: border-box; }
+  .btn.on { border-color: var(--console-accent); color: var(--console-accent); background: rgb(79 179 232 / 0.18); }
+  .bar { height: 6px; border-radius: 3px; background: rgb(255 255 255 / 0.1); grid-column: 1 / -1; }
+  .bar i { display: block; height: 100%; border-radius: 3px; background: var(--console-accent); }
+  kbd { font: 11px system-ui; border: 1px solid var(--console-edge); border-radius: 4px; padding: 0 4px; color: var(--console-muted); margin-left: 4px; }
+  .dim { opacity: .5; }
+  .need { outline: 2px solid var(--console-need); outline-offset: 2px; border-radius: 10px; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { outline-color: rgb(255 159 28 / 1); } 50% { outline-color: rgb(255 159 28 / 0.35); } }
+  @media (prefers-reduced-motion: reduce) { .need { animation: none; } }
+  .sails { position: absolute; bottom: 240px; height: 40px; box-sizing: border-box; display: flex; gap: 14px; align-items: center;
+    padding: 0 12px; border-radius: 12px 12px 0 0; border-bottom: none; font-size: 14px; font-weight: 600; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .harbour-strip { display: grid; place-items: center; padding: 0; }
+  .harbour-strip span { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--console-muted); }
+  .center { display: grid; place-items: center; }
+  .big { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .unit { font-size: 12px; color: var(--console-muted); }
+  .seg { display: flex; gap: 4px; margin-top: 6px; }
+  .seg .btn { width: auto; padding: 0 8px; font-size: 13px; flex: 1; }
+  .station { display: grid; grid-template-columns: 1fr 92px; gap: 8px; margin-top: 6px; height: calc(100% - 22px); }
+  .clutches { display: flex; gap: 5px; align-items: flex-end; }
+  .clutch { flex: 1; height: 120px; border-radius: 8px; border: 1px solid var(--console-edge); background: rgb(255 255 255 / 0.05);
+    display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 10px; color: var(--console-muted); }
+  .clutch b { writing-mode: vertical-rl; transform: rotate(180deg); color: var(--console-text); font-size: 12px; }
+  .lever { width: 14px; height: 30px; border-radius: 4px; background: var(--console-muted); }
+  .lever.closed { background: var(--console-ok); }
+  .winch { width: 92px; height: 92px; border-radius: 50%; border: 6px solid rgb(255 255 255 / 0.14); box-sizing: border-box;
+    display: grid; place-items: center; font-size: 12px; color: var(--console-muted); }
+  .walk { position: absolute; inset: 30px 10px 10px; display: grid; place-items: center; background: rgb(10 24 38 / 0.6);
+    border-radius: 8px; font-weight: 600; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 14px; margin: 10px 0 0; max-width: 1440px; }
+</style>
+</head>
+<body>
+<h1>Console look: "instrument night"</h1>
+<p class="note">A still picture of the look of the computer console (PHASE_CONSOLE_SPEC 2.3). Positions, colours and sizes are the spec's. The sea, sky and boat stand in for the 3D view. Scroll sideways to see the whole frame on a small screen.</p>
+
+<h2>1. Wide console (1440 × 900), Easy lines, an exercise step that needs the main sheet</h2>
+<div class="frame-wrap"><div class="frame wide" role="img" aria-label="Wide console in Easy with the main sheet outlined">
+  <svg class="boat" viewBox="0 0 420 300" aria-hidden="true"><path d="M60 230 L360 230 L330 262 L95 262 Z" fill="#f4f6f8"/><path d="M205 20 L205 226" stroke="#c9d1d8" stroke-width="5"/><path d="M211 30 Q300 120 318 222 L211 222 Z" fill="#ffffff" opacity=".92"/><path d="M199 40 Q140 140 110 222 L199 222 Z" fill="#f7f9fb" opacity=".85"/></svg>
+  <div class="ov glass instruments"><div class="cell"><b>6.4</b><span>kn</span></div><div class="cell"><b>214°</b><span>heading</span></div><div class="cell"><b>12°</b><span>heel</span></div></div>
+  <div class="ov glass time" style="left:268px">Time ×1 · 14:20</div>
+  <div class="ov step"><small>Step 2 of 5</small><p><b>Ease the main sheet</b> until the telltales stream.</p></div>
+  <div class="ov glass menu"><button class="on">Exercises</button><button>Learn</button><button>Place</button><button>Status</button></div>
+  <div class="ov glass cond" style="top:232px"><svg width="104" height="104" viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="46" fill="none" stroke="rgb(150 190 220 / .35)" stroke-width="2"/><text x="52" y="16" fill="#9fb3c3" font-size="10" text-anchor="middle">N</text><path d="M52 52 L80 22" stroke="#4fb3e8" stroke-width="4" stroke-linecap="round"/><text x="52" y="60" fill="#eef4f8" font-size="16" font-weight="600" text-anchor="middle">14 kn</text></svg></div>
+  <div class="ov glass minimap" style="bottom:256px"></div>
+  <div class="ov chips" style="bottom:256px"><span class="chip">Exercise ▾</span><span class="chip">Behind ▾</span><span class="chip">⚙</span></div>
+  <div class="band">
+    <div class="block dim"><div class="title">Port lines</div>
+      <div class="row"><span class="name">Vang<kbd>V</kbd></span><span class="ctl"><span class="btn">−</span><span class="val">40%</span><span class="btn">+</span></span><div class="bar"><i style="width:40%"></i></div></div>
+      <div class="row"><span class="name">Outhaul</span><span class="ctl"><span class="btn">−</span><span class="val">30%</span><span class="btn">+</span></span><div class="bar"><i style="width:30%"></i></div></div>
+      <div class="row need"><span class="name">Main sheet<kbd>W</kbd><kbd>S</kbd></span><span class="ctl"><span class="btn">−</span><span class="val">55%</span><span class="btn">+</span></span><div class="bar"><i style="width:55%"></i></div></div>
+    </div>
+    <div class="block dim"><div class="title">Wheel <span>Autopilot</span></div>
+      <div class="center" style="margin-top:2px"><svg width="118" height="118" viewBox="0 0 118 118" aria-hidden="true"><circle cx="59" cy="59" r="50" fill="none" stroke="rgb(255 255 255 / .55)" stroke-width="7"/><circle cx="59" cy="59" r="9" fill="rgb(255 255 255 / .55)"/><g stroke="rgb(255 255 255 / .45)" stroke-width="4"><path d="M59 59 L59 9"/><path d="M59 59 L102 84"/><path d="M59 59 L16 84"/></g><path d="M52 6 L66 6" stroke="#4fb3e8" stroke-width="7" stroke-linecap="round"/></svg></div>
+      <div class="seg"><span class="btn on">Standby</span><span class="btn">Auto</span><span class="btn">Wind</span></div>
+    </div>
+    <div class="block dim"><div class="title">Engine <span style="color:var(--console-ok)">● on</span></div>
+      <div style="display:grid;grid-template-columns:44px 1fr;gap:10px;margin-top:8px">
+        <svg width="44" height="120" viewBox="0 0 44 120" aria-hidden="true"><rect x="18" y="6" width="8" height="108" rx="4" fill="rgb(255 255 255 / .12)"/><rect x="6" y="52" width="32" height="16" rx="6" fill="#eef4f8"/><text x="22" y="4" fill="#9fb3c3" font-size="9" text-anchor="middle">AHEAD</text></svg>
+        <div><div class="big">800</div><div class="unit">rpm · neutral</div><div class="seg" style="margin-top:10px"><span class="btn">Stop</span></div><div class="unit" style="margin-top:10px">Bow thruster</div><div class="seg"><span class="btn">◀ A</span><span class="btn">D ▶</span></div></div>
+      </div>
+    </div>
+    <div class="block dim"><div class="title">Starboard lines</div>
+      <div class="row need"><span class="name">Main sheet<kbd>W</kbd><kbd>S</kbd></span><span class="ctl"><span class="btn">−</span><span class="val">55%</span><span class="btn">+</span></span><div class="bar"><i style="width:55%"></i></div></div>
+      <div class="row"><span class="name">Main furling</span><span class="ctl"><span class="btn">−</span><span class="val">0%</span><span class="btn">+</span></span><div class="bar"><i style="width:0%"></i></div></div>
+      <div class="row"><span class="name">Jib sheet<kbd>R</kbd><kbd>F</kbd></span><span class="ctl"><span class="btn">−</span><span class="val">45%</span><span class="btn">+</span></span><div class="bar"><i style="width:45%"></i></div></div>
+    </div>
+    <div class="block harbour-strip dim"><span>Harbour ▸</span></div>
+  </div>
+  <div class="ov glass sails" style="left:calc(12px + (1440px - 24px - 32px - 300px - 220px - 40px) / 2 + 8px); width:528px; bottom:240px"><span><span class="dot need" style="background:var(--console-warn)"></span>Main: Luffing</span><span class="dim"><span class="dot" style="background:var(--console-ok)"></span>Jib: Good</span></div>
+</div></div>
+<div class="legend"><span>Orange pulsing outline: the control this step needs (both main sheet rows, and the main's status).</span><span>Everything else: dimmed, still usable.</span></div>
+
+<h2>2. Wide console, Realistic lines, the captain at the starboard winch</h2>
+<div class="frame-wrap"><div class="frame wide" style="height:300px; background:#2b6a91" role="img" aria-label="Realistic console band">
+  <div class="band">
+    <div class="block"><div class="title">Port · clutch bank B</div>
+      <div class="station"><div class="clutches"><div class="clutch"><b>SPI HAL</b><span class="lever"></span></div><div class="clutch"><b>BOOM LIFT</b><span class="lever closed"></span></div><div class="clutch"><b>OUTHAUL</b><span class="lever closed"></span></div><div class="clutch"><b>MAIN SHEET</b><span class="lever closed"></span></div><div class="clutch"><b>VANG</b><span class="lever closed"></span></div></div><div class="winch">port winch</div></div>
+      <div class="walk">Tap to walk to port</div>
+    </div>
+    <div class="block"><div class="title">Wheel <span>Autopilot</span></div><div class="center" style="height:150px;color:var(--console-muted)">(as frame 1)</div></div>
+    <div class="block"><div class="title">Engine</div><div class="center" style="height:150px;color:var(--console-muted)">(as frame 1)</div></div>
+    <div class="block"><div class="title">Starboard · clutch bank A <span style="color:var(--console-accent)">you are here</span></div>
+      <div class="station"><div class="clutches"><div class="clutch"><b>MAIN SHEET</b><span class="lever closed"></span></div><div class="clutch"><b>FURL IN</b><span class="lever closed"></span></div><div class="clutch"><b>FURL OUT</b><span class="lever closed"></span></div><div class="clutch"><b>MAIN HAL</b><span class="lever closed"></span></div><div class="clutch"><b>GENOA SHEET</b><span class="lever"></span></div></div><div class="winch" style="border-color:rgb(79 179 232 / .6);color:var(--console-text)">3 turns</div></div>
+    </div>
+    <div class="block harbour-strip"><span>Harbour ▸</span></div>
+  </div>
+</div></div>
+
+<h2>3. Narrow console (904 × 840, a Fold unfolded), Harbour gear open</h2>
+<div class="frame-wrap"><div class="frame narrow" role="img" aria-label="Narrow console with harbour gear raised">
+  <svg class="boat" viewBox="0 0 420 300" aria-hidden="true"><path d="M60 230 L360 230 L330 262 L95 262 Z" fill="#f4f6f8"/><path d="M205 20 L205 226" stroke="#c9d1d8" stroke-width="5"/></svg>
+  <div class="ov glass instruments"><div class="cell"><b>0.8</b><span>kn</span></div><div class="cell"><b>182°</b><span>heading</span></div></div>
+  <div class="ov glass menu"><button>Exercises</button><button>Learn</button><button class="on">Place</button><button>Status</button></div>
+  <div class="ov glass cond" style="top:196px"><svg width="80" height="80" viewBox="0 0 104 104" aria-hidden="true"><circle cx="52" cy="52" r="46" fill="none" stroke="rgb(150 190 220 / .35)" stroke-width="2"/><path d="M52 52 L24 26" stroke="#4fb3e8" stroke-width="5" stroke-linecap="round"/></svg></div>
+  <div class="ov glass" style="right:12px; bottom:252px; width:300px; height:240px; padding:10px; box-sizing:border-box">
+    <div class="title">Harbour gear <span>◂ fold</span></div>
+    <div class="unit" style="margin-top:8px">Fenders</div><div class="seg"><span class="btn on">Out</span><span class="btn">In</span></div>
+    <div class="unit" style="margin-top:8px">Stern lines</div><div class="seg"><span class="btn">Take</span><span class="btn">Tighten</span><span class="btn">Ease</span><span class="btn">Let go</span></div>
+    <div class="unit" style="margin-top:8px">Anchor · 0 m out</div><div class="seg"><span class="btn">▼ Down</span><span class="btn">▲ Up</span></div>
+  </div>
+  <div class="band">
+    <div class="block"><div class="title">Port lines</div><div class="row"><span class="name">Vang</span><span class="val">40%</span></div><div class="row"><span class="name">Main sheet</span><span class="val">55%</span></div></div>
+    <div class="block"><div class="title">Wheel</div><div class="center" style="height:150px"><svg width="96" height="96" viewBox="0 0 118 118" aria-hidden="true"><circle cx="59" cy="59" r="50" fill="none" stroke="rgb(255 255 255 / .55)" stroke-width="7"/><path d="M52 6 L66 6" stroke="#4fb3e8" stroke-width="7" stroke-linecap="round"/></svg></div></div>
+    <div class="block"><div class="title">Engine</div><div class="big" style="margin-top:12px">1200</div><div class="unit">rpm · astern</div></div>
+    <div class="block"><div class="title">Starboard lines</div><div class="row"><span class="name">Jib sheet</span><span class="val">45%</span></div></div>
+    <div class="block harbour-strip" style="border-color:var(--console-accent)"><span>Harbour ◂</span></div>
+  </div>
+</div></div>
+<p class="note" style="margin-top:10px">On a console narrower than 1,000 px there is no room to narrow the other blocks, so the unfolded Harbour gear rises above the band on the right (spec 10.4). From 1,000 px wide it sits in the band and the other blocks narrow.</p>
+</body>
+</html>
