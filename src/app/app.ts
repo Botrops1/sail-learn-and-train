@@ -135,7 +135,15 @@ export function startApp(host: HTMLElement, options: { missingBoat?: string | nu
     reopen,
     { console: consoleView, menu },
   );
-  store.subscribe(() => menu.update());
+  // The step card and the exercise bar stand where the drawer does, so starting an exercise closes
+  // the Exercises drawer ("Open in Exercises" on the step card brings it back).
+  let wasRunning = store.getState().exercise?.status === 'running';
+  store.subscribe(() => {
+    const running = store.getState().exercise?.status === 'running';
+    if (running && !wasRunning && menu.openId() === 'exercises') menu.close();
+    wasRunning = running;
+    menu.update();
+  });
   const debug = createDebugOverlay(layout.view, store);
 
   // Error boundary (M5): without WebGL, or if the 3D view fails, a message takes its place and

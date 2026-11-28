@@ -5883,7 +5883,8 @@ html[data-layout='console'] .view-top {
   flex-direction: column;
   width: 380px;
   max-width: calc(100% - 16px - 128px - 8px);
-  max-height: calc(100% - var(--console-h) - 24px);
+  /* Above the chip row (44 px high, 8 px above the band), which stays tappable. */
+  max-height: calc(100% - var(--console-h) - 68px);
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--console-radius);
