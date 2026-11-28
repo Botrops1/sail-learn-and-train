@@ -100,7 +100,7 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
       !!first.bar && !!first.top && first.bar.x + first.bar.w <= first.top.x + first.top.w,
       JSON.stringify(first),
     );
-    // M92: the clock is inside the time widget; the Attention chip is under it.
+    // M92: the clock is inside the time widget; the Attention chip is under it (M119: beside it on the console layout, where the row has room).
     check(
       `${name}: the clock is in the widget and the Attention chip under it`,
       !!first.clock &&
@@ -108,8 +108,10 @@ export async function liveM37Checks({ openPage, viewports, outDir, prefix, probl
         !!first.bar &&
         first.clock.y >= first.bar.y &&
         first.clock.y + first.clock.h <= first.bar.y + first.bar.h &&
-        first.alert.y >= first.bar.y + first.bar.h &&
-        first.alert.x + first.alert.w <= first.bar.x + first.bar.w + 1,
+        // Under the bar (a phone), or on the console layout beside it, on its left.
+        ((first.alert.y >= first.bar.y + first.bar.h &&
+          first.alert.x + first.alert.w <= first.bar.x + first.bar.w + 1) ||
+          first.alert.x + first.alert.w <= first.bar.x),
       JSON.stringify(first),
     );
     check(
