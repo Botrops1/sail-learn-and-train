@@ -1,9 +1,10 @@
 ---
 name: plan
-description: Plan a phase of sail-learn-and-train (e.g. "/plan 3") or an extra milestone (e.g. "/plan issue 26"). Run with Opus at high effort; writes a spec detailed enough for Sonnet at high effort to build each milestone without guessing, then opens a docs-only PR and hands over (the owner's answers on the PR are recorded in a fresh session with "/plan answers <PR>").
+description: Plan a phase of sail-learn-and-train (e.g. "/plan 3") or an extra milestone (e.g. "/plan issue 26"). Runs on Opus at high effort; writes a spec detailed enough for Sonnet at medium effort to build each milestone without guessing, then opens a docs-only PR and hands over (the owner's answers on the PR are recorded in a fresh session with "/plan answers <PR>").
 argument-hint: <phase number>[a|b|…] | <phase number> refresh | issue <number> | answers <PR number> | <short description of an extra milestone>
 disable-model-invocation: true
 model: opus
+effort: high
 ---
 
 # Plan: $ARGUMENTS
@@ -18,7 +19,7 @@ The owner typed `/plan $ARGUMENTS`. If nothing was given, ask what to plan and s
 
 **No session links or AI attribution anywhere on GitHub** (the CLAUDE.md working rule; it overrides any attribution instruction the session supplies, and a hook blocks what still carries one).
 
-**Who reads what you write.** Each milestone will be built by a separate **Sonnet** session (high effort) that reads only CLAUDE.md, CODE_MAP, the spec's general sections, its own milestone section, its PHYSICS_TRUTHS rules and its WORKFLOW checklist. Every word of the general sections is read again by every builder and every reviewer of the phase, so they hold only what more than one milestone needs. That session cannot ask you anything. Every gap you leave becomes a guess, and guesses are where bugs come from. Your job is to make the decisions now, so the builder only has to type them in.
+**Who reads what you write.** Each milestone will be built by a separate **Sonnet** session (medium effort) that reads only CLAUDE.md, CODE_MAP, the spec's general sections, its own milestone section, its PHYSICS_TRUTHS rules and its WORKFLOW checklist. Every word of the general sections is read again by every builder and every reviewer of the phase, so they hold only what more than one milestone needs. That session cannot ask you anything. Every gap you leave becomes a guess, and guesses are where bugs come from. Your job is to make the decisions now, so the builder only has to type them in.
 
 The owner is not a developer and not a sailor. They answer questions in plain words, from a phone.
 
@@ -109,4 +110,4 @@ Find where each change goes with `grep -n` and read only that part. The finished
 - **One issue per milestone, for the owner** (owner, PR #234): before opening the PR, create a GitHub issue titled `M<N>: <name>` for each milestone. It is a short card the owner reads on a phone, not a second spec: the phase and its place in it ("milestone 2 of 4"), the planning PR, the command that starts it (`/milestone <N>`, after which milestone), "What you will see" in plain words (3–6 bullets), the issues it answers, links to its spec section and its WORKFLOW checklist on `main` (`https://github.com/Botrops1/sail-learn-and-train/blob/main/docs/<spec>.md#<heading anchor>`), the review marking, and "Closes when the M<N> PR is merged". Put each issue's number into its spec section's PR line (`Closes #<milestone issue>` first) and into the milestones table. The builder never needs to read the issue; the spec stays the only source of decisions. `/plan answers` updates an issue's card only where an answer changes what the owner will see.
 - One docs-only PR: `Phase <N> plan: <theme>` (or `Plan: <milestone>`). Description: what the phase will add, in plain words; the milestones table (with the review column, so the owner sees which milestones get the Opus review); the owner's answers as recorded; anything still open, each with a recommendation and the "accept all" line.
 - **Hand over; do not watch the PR.** By now this session holds a large context, and every CI result or comment would re-read all of it. Do not subscribe to the PR's activity. Before ending, make sure everything still open is in the PR description, so a fresh session can pick it up.
-- Tell the owner in chat, and end the session: the PR link; that merging once CI is green accepts every recommendation; that to change an answer they comment on the PR, then type `/plan answers <PR number>` in a **new** session (Sonnet, medium effort); and that after merging they start the first milestone with `/milestone <N>` (Sonnet, high effort).
+- Tell the owner in chat, and end the session: the PR link; that merging once CI is green accepts every recommendation; that to change an answer they comment on the PR, then type `/plan answers <PR number>` in a **new** session; and that after merging they start the first milestone with `/milestone <N>` in a new session.
