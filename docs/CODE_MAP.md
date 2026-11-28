@@ -6,7 +6,7 @@ Where things are, so a session can go straight to the right file instead of sear
 
 `src/main.ts` puts the chosen or linked boat in place (`useBoat`), then loads the app → `app/app.ts` builds the layout, the 3D scene and the panel, then runs the frame loop: each `requestAnimationFrame` dispatches `{ type: 'step', dt }` to the store (`app/store.ts`), which advances the pure model (`model/sim.ts` and the sailing modules, order in PHASE2_SPEC 4.2); then the renderers and panels read the new state.
 
-The 3D view fills the page; over it sit the chip row, the mini-map, the time widget and the info card. The panel is a sheet with five tabs on a phone (`ui/sheet.ts`, `ui/panelTabs.ts`), docked on the right in the side layout, with a second column from 1,280 px wide (`ui/panel.ts`); its content is a list of sections ordered and opened by the mode (`ui/modes.ts`). UI code only dispatches actions; it never changes state directly. `src/style.css` holds all the styles. `app/urlSync.ts` writes the state into the address bar.
+The 3D view fills the page; over it sit the chip row, the mini-map, the time widget and the info card. The panel is a sheet with five tabs on a phone (`ui/sheet.ts`, `ui/panelTabs.ts`), replaced on a computer or tablet by the console, a band of blocks with a menu and a drawer (`ui/console.ts`, `ui/panel.ts`); its content is a list of sections ordered and opened by the mode (`ui/modes.ts`). UI code only dispatches actions; it never changes state directly. `src/style.css` holds all the styles. `app/urlSync.ts` writes the state into the address bar.
 
 Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `reset`, `load` (from a link), `setCameraPreset`, `setDetail`, `setLabels`, `setDebug`, `setStep`, `setPaused`, `setRopesMode`, `realistic` (Realistic-mode gestures), `setBoatMode`, `autopilot`, `engine`, `setWindMode`, `newWindPattern`, `setWindSize`, `setClock`, `setClockShown`, `setTimeBar`, `setTimeScale`, `setSeaSetting`, `setMiniMap`, `setFenders`, `thruster`, `line`, `clearPropeller`, `windlass`, `silenceAnchorAlarm`, `goToPlace`, `setMarinaLayout`, `setTraffic`, `repairSails`, `dinghy`, `demo`.
 
@@ -152,16 +152,15 @@ Store actions (see `store.ts`): `step`, `setControls`, `select`, `openLearn`, `r
 
 | File | What |
 |---|---|
-| `layout.ts`, `layoutMode.ts`, `dom.ts` | Page layout (stacked / side by side / `wide` from 1,280 px, `<html data-wide>`), DOM helpers (`el`, `isTypingTarget`). |
-| `columnHandles.ts`, `columnWidths.ts` | On the wide layout the two panel columns fold (a chip each) and resize (a grip on the left edge); `columnHandles.ts` builds them and keeps the choice in `localStorage`, `columnWidths.ts` is the pure part (limits, defaults, saved text). |
+| `layout.ts`, `layoutMode.ts`, `dom.ts` | Page layout: `console` (from 800 × 560, not taller than 1.25 × wide; narrow or wide from 1,280 px) or `stacked` (phone), `<html data-layout data-console>`; DOM helpers. |
+| `console.ts`, `consoleMenu.ts` | The console's bottom band of blocks (Steering, Balance, Sails, Harbour) that hold the sections; the menu at the top right and its one drawer. |
 | `sheet.ts`, `sheetGeometry.ts` | On a phone the panel is a sheet with three heights (peek, half, full), moved by dragging, tapping or keys on its handle or tabs row; tells the 3D view how much of the bottom it covers. `sheetGeometry.ts` is the pure part (heights, snapping). |
 | `i18n.ts` | Strings: `setLanguage`/`currentLanguage`, `t()`, `part()` (name and one-liner), `quoted()`, `formatThousands`. |
 | `panelTabs.ts` | The phone's five tabs (Mode, Controls, Conditions, Learn, Settings) under the sheet's handle; only says which is chosen, `panel.ts` decides what shows. |
-| `sectionLayout.ts`, `sectionMove.ts` | Movable sections on the wide layout: the pure arrangement (default, complete, move, parse, serialize) and the DOM part (grip, drag, menu, keys). |
-| `panel.ts` | The panel as a list of sections built once and ordered by the mode; one open at a time per column; the second column; the saved arrangement; which sections show under each phone tab; opens a section for a link, a rope or a Learn entry; moves the mode picker and settings content between the phone's tabs and the cards. |
+| `panel.ts` | The panel as a list of sections built once and ordered by the mode; places them in the console's blocks and drawers or under the phone's tabs; opens a section for a link, a rope or a Learn entry. |
 | `modes.ts`, `sections.ts` | `modes.ts` (pure) is the table of sections and what each mode does with them (order, phone tab of each, availability with an exercise loaded). `sections.ts` is one section: fold header, optional "?" button for its `.explain` texts. |
 | `modeChip.ts`, `modePicker.ts`, `quickRow.ts` | The mode chip (opens the mode card), the mode picker (body of the Mode tab and card), and the quick row in the sheet's head (the selected rope's − / +, or in Harbour the engine lever and thruster joysticks). |
-| `files.ts`, `deviceSettings.ts` | `downloadJson`, `pickJsonFile`; reading and writing the device's saved settings (columns, time-bar fold, layout) in their stored formats. |
+| `files.ts`, `deviceSettings.ts` | `downloadJson`, `pickJsonFile`; reading and writing the device's saved settings (time-bar fold) in their stored format. |
 | `settingsMenu.ts` | The gear's settings card, or on a phone the Settings section: Language (one button that opens a dialog listing the languages), Sound, Labels, Time, Clock, Mini-map, Step size, Detail, Boat (profile download, chooser, import), Your setup, Share, Reset, Debug, About. `createConfirmButton` is the two-tap button. |
 | `welcome.ts` | The welcome card for a first visit (Watch the first exercise, Look around the boat, Close); a link with settings never shows it. |
 | `soundSettings.ts`, `soundChip.ts` | The Sound block of Settings (on, Music, Surroundings, Boat sounds, volume) and the speaker chip. |

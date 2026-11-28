@@ -217,17 +217,22 @@ export async function liveM119Checks({ openPage, viewports, problems }) {
 
   // 7. A finger on a tablet: the menu and the autopilot's heading button.
   {
-    const { context, page } = await openPage(tablet, 'm119 tablet', E, {
-      testClock: true,
-      touch: true,
-    });
+    const { context, page } = await openPage(
+      tablet,
+      'm119 tablet',
+      '?wd=60&ws=12&ms=40&sea=flat&ap=off',
+      {
+        testClock: true,
+        touch: true,
+      },
+    );
     await page.waitForTimeout(500);
     await tid(page, 'menu-learn').tap();
     await tid(page, 'drawer').waitFor({ state: 'visible' });
     const opened = await drawerNow(page);
     await tid(page, 'drawer-close').tap();
     await tid(page, 'autopilot-heading').tap();
-    const linked = await waitForLink(page, ['ap=']).then(
+    const linked = await waitForLink(page, [], ['ap=off']).then(
       () => true,
       () => false,
     );

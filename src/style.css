@@ -5775,7 +5775,7 @@ html[data-layout='console'] .view-top {
   min-height: 16px;
   padding-right: 36px;
   color: var(--console-muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -5846,7 +5846,7 @@ html[data-layout='console'] .view-top {
 }
 
 .console-menu-item {
-  min-height: 36px;
+  min-height: var(--touch);
   padding: 4px 10px;
   border: 0;
   border-radius: 10px;
@@ -5872,12 +5872,6 @@ html[data-layout='console'] .view-top {
 .drawer-close:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
-}
-
-@media (pointer: coarse) {
-  .console-menu-item {
-    min-height: 40px;
-  }
 }
 
 .console-drawer {
@@ -5931,7 +5925,7 @@ html[data-layout='console'] .view-top {
 .drawer-body {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 4px 16px 12px;
+  padding: 4px 0 12px;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -5942,13 +5936,14 @@ html[data-layout='console'] .view-top {
 
 .drawer-pane .section-body {
   min-height: 0;
-  padding: 8px 0;
+  padding: 8px 16px;
   overflow: visible;
 }
 
 .drawer-pane .section-head {
   display: flex;
   justify-content: flex-end;
+  padding: 0 16px;
 }
 
 @media (prefers-reduced-motion: reduce) {
