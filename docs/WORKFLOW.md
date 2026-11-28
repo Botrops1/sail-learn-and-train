@@ -92,14 +92,57 @@ Usage: cloud sessions share your plan's limits with normal chat (and with your o
 
 Test links set the app to a known state. Base: the PR's preview, `https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/` (the links below use the live site; the same `?…` part works after the preview address). Parameters: `wd` wind from (°, + = starboard), `ws` wind speed (kn), `ms` mainsheet, `js` jib sheet, `vg` vang, `tl` topping lift, `mf` mainsail out, `jf` jib out (all %), `cam` camera. Since M4a also `rd` wheel (° of rudder, + = to starboard), `sel` the selected rope or part, `jr` how far the jib is out when the sheet was hauled against a furled jib (written by Share), `lg=0` legend hidden. Since M4b also `mode=realistic`, `st` the station (`starboard`, `helm`), `co` the open clutches (e.g. `co=a5` = Genoa sheet), `wp` / `wsb` the rope on the port / starboard winch (e.g. `wsb=a5.3.t` = Genoa sheet, 3 turns, tail in the self-tailer). Since M4c also `st=mast`, `hd` where the winch handle is (`c` = you carry it, and your hand is full: no rope can be worked, `mast.w` = in the gearbox socket, `starboard.w` = in the starboard winch, `port.s` = lying at Port, where it starts), `gb=in` the gearbox switch. Since M5 also `lb=0` labels in 3D off (they are on by default).
 
-The checklists of merged milestones (M0 to M117) are in [`archive/CHECKLISTS.md`](archive/CHECKLISTS.md). A milestone that is not built yet has its checklist here, under a "Checklists" heading, once its phase is planned; the PR of the phase part's sign-off milestone moves the earlier ones to the archive, and the next planning PR moves the last.
+The checklists of merged milestones (M0 to M118) are in [`archive/CHECKLISTS.md`](archive/CHECKLISTS.md). A milestone that is not built yet has its checklist here, under a "Checklists" heading, once its phase is planned; the PR of the phase part's sign-off milestone moves the earlier ones to the archive, and the next planning PR moves the last.
 
 ### Checklists
 
-#### M118: Dinghy exercises
+Console, part A ([PHASE_CONSOLE_SPEC](PHASE_CONSOLE_SPEC.md)). Check on a computer, and on the Fold unfolded where a line says so; the phone checks are on a phone.
 
-- [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — choose the Exercise mode: one group, Dinghy, with Go and stop, Tack, Gybe, Capsize and right her.
-- [ ] Watch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — start "Capsize and right her" with Watch it: the pilot swims round, pushes the board down, stands on it and climbs in.
-- [ ] Do it yourself: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — start "Go and stop" with Do it myself and follow the step card to the end.
-- [ ] Tack yourself: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — start "Tack" with Do it myself: after the tack the card asks you to sit on the new high side.
-- [ ] Hanse unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — on the Hanse the exercise list is as before, without the Dinghy group.
+#### M119: Console shell
+
+- [ ] The console: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — on a computer: the boat fills the whole window; a dark band along the bottom holds Steering, Engine and Sails; the side columns are gone.
+- [ ] The menu: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — click Lines in the menu at the top right: a drawer with the lines opens; click Learn: the drawer changes to Learn; press Esc: it closes.
+- [ ] Fold: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — on the Fold unfolded, held both ways: the console both ways. Folded (the cover screen): the phone layout with the sheet.
+- [ ] Realistic: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40&mode=realistic — the middle block shows the Helm station.
+- [ ] Phone unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — on the phone: the sheet and its tabs as before, no band.
+- [ ] Dinghy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40 — the band shows the tiller and the Balance controls; the menu has no Harbour gear or Place.
+
+#### M120: Wheel and engine
+
+- [ ] Wheel: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — drag the wheel round with the mouse (on the Fold, with a finger): the angle under it changes and the boat turns.
+- [ ] Autopilot: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — press Auto: the wheel stops taking a drag and a line says the autopilot is steering; press Standby: you steer again.
+- [ ] Engine: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — press Start, then drag the lever up: it says Ahead and the rpm rises.
+- [ ] Thrusters at sea: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — hold the right half of the bow thruster (or the D key): the bow swings, in open water.
+- [ ] Sails strip: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=95 — the strip above the wheel says "Main: Luffing"; More opens the Sails drawer.
+- [ ] Walk to the helm: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40&mode=realistic&st=starboard — the wheel is covered by a "walk to the helm" button; press it: the captain walks, then the wheel works.
+- [ ] Tiller: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40 — drag the tiller to the left: the dinghy turns to the right.
+
+#### M121: Port and starboard lines
+
+- [ ] Easy lines: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — the left block has topping lift, main sheet, vang and jib furling; the right block has main sheet, main furling and jib sheet; + on one main sheet moves both.
+- [ ] Keys: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — W and S move the main sheet, R and F the jib sheet.
+- [ ] Realistic: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40&mode=realistic&st=starboard — both clutch banks with their winches show; the left one says "Walk to port"; press it: the captain walks across and the winch tools move to the left.
+- [ ] Fold: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40&mode=realistic&st=starboard — on the Fold unfolded: the winch tools rise above the right block without covering the wheel.
+- [ ] Dinghy: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&wd=60&ws=8&ms=40 — its two lines (main sheet, kicker) on the left.
+
+#### M122: Harbour gear and conditions
+
+- [ ] Folded: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&wd=60&ws=8 — a narrow "Harbour gear" strip at the right end of the band; click it: fenders, mooring lines and the anchor unfold and the other blocks get narrower; click again: it folds.
+- [ ] Fold: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina&wd=60&ws=8 — on the Fold unfolded: the harbour gear rises above the band on the right.
+- [ ] Anchor in Realistic: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=bay&mode=realistic&wd=60&ws=8 — unfold the harbour gear and hold Down: chain goes out.
+- [ ] Compass: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — the compass at the top right shows 12 kn; click it: Conditions open; choosing a wave size does nothing until you turn Set up on, then it works.
+
+#### M123: Exercises on the console
+
+- [ ] Outline: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — choose Exercise in the mode chip and start "Trim through the points of sail" with Do it myself: both main sheet rows, Main and Jib in the sails strip and the compass have a slow orange outline; the other blocks are dimmed; there is no step bar.
+- [ ] Show me: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — in the same exercise, press Show me on the step card: the app plays the step.
+- [ ] Realistic: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?mode=realistic — choose Exercise and start "Setting the sails" with Do it myself: on the step that needs the starboard winch, the outline shows where to walk and which clutch to open.
+- [ ] Harbour: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?pl=marina — choose Exercise and start "Entering the berth stern-to" with Do it myself: at the fenders step the harbour gear unfolds by itself with the fenders outlined.
+- [ ] Phone unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12 — on the phone, the same exercise has its step bar as before.
+
+#### M124: What you are doing, and controls
+
+- [ ] Two choices: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — the chip at the bottom right says "Sail freely · Easy"; open it: "What you are doing" and "Controls"; choose Realistic: the chip says "Sail freely · Realistic" and the line blocks show the clutch banks.
+- [ ] Learn: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — choose Learn: the chip says "Learn".
+- [ ] Old harbour link: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?m=harbour&pl=marina&wd=60&ws=8 — opens Sail freely at the marina; on the phone the Controls tab starts with the engine, as Harbour mode did.
+- [ ] Phone: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?wd=60&ws=12&ms=40 — on the phone the Mode tab shows the two groups.

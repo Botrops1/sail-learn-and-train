@@ -1215,3 +1215,11 @@ New link settings (on the dinghy only): `boat=dinghy` the Training dinghy, `sp` 
 - [ ] Kicker: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&learn=rope_vang — the entry is called Kicker and talks about the dinghy.
 - [ ] New entries: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&learn=term_capsize — "Capsize" says what to do; also try https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy&learn=term_hiking
 - [ ] Hanse unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?learn=rope_vang — the Hanse's Vang entry as before.
+
+#### M118: Dinghy exercises
+
+- [ ] The list: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — choose the Exercise mode: one group, Dinghy, with Go and stop, Tack, Gybe, Capsize and right her.
+- [ ] Watch: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — start "Capsize and right her" with Watch it: the pilot swims round, pushes the board down, stands on it and climbs in.
+- [ ] Do it yourself: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — start "Go and stop" with Do it myself and follow the step card to the end.
+- [ ] Tack yourself: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/?boat=dinghy — start "Tack" with Do it myself: after the tack the card asks you to sit on the new high side.
+- [ ] Hanse unchanged: https://botrops1.github.io/sail-learn-and-train/pr-preview/pr-<N>/ — on the Hanse the exercise list is as before, without the Dinghy group.
