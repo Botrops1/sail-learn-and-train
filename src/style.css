@@ -1817,7 +1817,7 @@ html[data-layout='console'] .view[data-mini-map] .rig-alerts {
 
 .clutch-caption {
   fill: var(--text);
-  font-size: 12.5px;
+  font-size: 14px; /* the drawing scales to the drawer's width: 13 px on screen at the narrowest */
   font-weight: 700;
 }
 

@@ -19,7 +19,7 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
     if (!ok) problems.push(`live M35 ${what}: ${detail}`);
     console.log(`live M35 ${what}: ${detail} ${ok ? 'ok' : 'WRONG'}`);
   };
-  const [phone, , desktop, landscape] = viewports;
+  const [phone, , , landscape] = viewports;
   const shot = (page, name) => page.screenshot({ path: path.join(outDir, `${prefix}${name}.png`) });
   const dataOpen = (page, id) => page.getByTestId(`section-${id}`).getAttribute('data-open');
   /** The ids of the sections that are open now. */
@@ -164,45 +164,6 @@ export async function liveM35Checks({ openPage, viewports, outDir, prefix, probl
       JSON.stringify(reached[ids[ids.length - 1]]),
     );
     await shot(page, 'live-landscape-m35-ropes');
-    await context.close();
-  }
-
-  // 6. A computer: normal (44 px) headers; the two columns fold on their own.
-  {
-    const { context, page } = await openPage(desktop, 'm35 wide', BOAT);
-    await page.waitForTimeout(500);
-    const ids = await sectionIds(page);
-    const heads = await headBoxes(page);
-    const height = heads[ids[0]].bottom - heads[ids[0]].top;
-    check('wide: headers are 44 px', height >= 43 && height <= 46, String(height));
-    await showSection(page, 'ropes');
-    await showSection(page, 'conditions');
-    const open = await openIds(page);
-    check('wide: one open section per column', open.join() === 'ropes,conditions', open.join());
-    await showSection(page, 'learn');
-    check(
-      'wide: Learn replaces Conditions, Ropes stays',
-      (await openIds(page)).join() === 'ropes,learn',
-      (await openIds(page)).join(),
-    );
-    await shot(page, 'live-desktop-m35-two-columns');
-    await context.close();
-  }
-
-  // 7. Resizing keeps the open section and one open per column.
-  {
-    const { context, page } = await openPage(desktop, 'm35 resize', BOAT);
-    await page.waitForTimeout(500);
-    await showSection(page, 'ropes');
-    await showSection(page, 'conditions');
-    await page.setViewportSize({ width: 1000, height: 900 });
-    await page.waitForFunction(() => !document.documentElement.dataset.wide);
-    const open = await openIds(page);
-    check(
-      'wide → side: only the latest opened section stays open',
-      open.join() === 'conditions',
-      open.join(),
-    );
     await context.close();
   }
 

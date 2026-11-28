@@ -85,7 +85,11 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
 
     // The corners.
     const view = await box(page, 'view-top'); // only to know the view's left edge
-    const viewBox = await page.locator('.view').first().boundingBox();
+    const fullBox = await page.locator('.view').first().boundingBox();
+    // M119: the corners are those of the view above the console band.
+    const bandLoc = page.locator('.console:visible');
+    const band = (await bandLoc.count()) ? await bandLoc.first().boundingBox() : null;
+    const viewBox = { ...fullBox, height: fullBox.height - (band ? band.height : 0) };
     const mini = await box(page, 'mini-map');
     const camera = await box(page, 'camera-chip');
     const gear = await box(page, 'settings-button');
@@ -273,7 +277,8 @@ export async function liveM38Checks({ openPage, viewports, outDir, prefix, probl
     await page.waitForTimeout(300);
     const status = await page.locator('.action-status').first().innerText();
     check('Share gives its message', status.length > 0, status);
-    // Reset asks twice and empties the Attention history.
+    // Reset asks twice and empties the Attention history. (The open card covers the menu: close it first.)
+    await closeSettings(page);
     await showSection(page, 'conditions');
     await page.locator('label:has([data-testid="boat-mode-sailing"])').click();
     await page.waitForTimeout(500);
